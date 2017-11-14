@@ -583,7 +583,7 @@ namespace Apache
           /// Private constructor to wrap a native object pointer
           /// </summary>
           /// <param name="nativeptr">The native object pointer</param>
-          inline CacheableHashSetType<TYPEID, HSTYPE>(apache::geode::client::SerializablePtr nativeptr)
+          inline CacheableHashSetType<TYPEID, HSTYPE>(std::shared_ptr<apache::geode::client::Serializable> nativeptr)
             : Serializable(nativeptr) { }
 
           /// <summary>
@@ -650,13 +650,13 @@ namespace Apache
       }                                                                     \
       \
             internal:                                                               \
-              static IGeodeSerializable^ Create(apache::geode::client::SerializablePtr obj)            \
+              static IGeodeSerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj)            \
       {                                                                     \
       return gcnew m(obj);                                                \
       }                                                                     \
       \
             private:                                                                \
-              inline m(apache::geode::client::SerializablePtr nativeptr)                            \
+              inline m(std::shared_ptr<apache::geode::client::Serializable> nativeptr)                            \
               : Internal::CacheableHashSetType<Apache::Geode::Client::GeodeClassIds::m, HSTYPE>(nativeptr) { }             \
       };
 

@@ -85,7 +85,7 @@ namespace apache {
         /// key the detail of the entry event.
         /// </param>
 
-        virtual CacheableKeyPtr getRoutingObject(const EntryEvent& key);
+        virtual std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent& key);
 
         /// <summary>
         /// Returns the name of the PartitionResolver.

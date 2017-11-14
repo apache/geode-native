@@ -25,7 +25,8 @@ TEST(AttributesFactoryTest, setEntryIdleTimeoutSeconds) {
   AttributesFactory attributesFactory;
   attributesFactory.setEntryIdleTimeout(ExpirationAction::DESTROY,
                                         std::chrono::seconds(10));
-  auto regionAttributes = attributesFactory.createRegionAttributes();
+  std::shared_ptr<RegionAttributes> regionAttributes =
+      attributesFactory.createRegionAttributes();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes->getEntryIdleTimeout());
 }
 
@@ -33,7 +34,8 @@ TEST(AttributesFactoryTest, setEntryTimeToLiveSeconds) {
   AttributesFactory attributesFactory;
   attributesFactory.setEntryTimeToLive(ExpirationAction::DESTROY,
                                        std::chrono::seconds(10));
-  auto regionAttributes = attributesFactory.createRegionAttributes();
+  std::shared_ptr<RegionAttributes> regionAttributes =
+      attributesFactory.createRegionAttributes();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes->getEntryTimeToLive());
 }
 
@@ -41,7 +43,8 @@ TEST(AttributesFactoryTest, setRegionIdleTimeoutSeconds) {
   AttributesFactory attributesFactory;
   attributesFactory.setRegionIdleTimeout(ExpirationAction::DESTROY,
                                          std::chrono::seconds(10));
-  auto regionAttributes = attributesFactory.createRegionAttributes();
+  std::shared_ptr<RegionAttributes> regionAttributes =
+      attributesFactory.createRegionAttributes();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes->getRegionIdleTimeout());
 }
 
@@ -49,6 +52,7 @@ TEST(AttributesFactoryTest, setRegionTimeToLiveSeconds) {
   AttributesFactory attributesFactory;
   attributesFactory.setRegionTimeToLive(ExpirationAction::DESTROY,
                                         std::chrono::seconds(10));
-  auto regionAttributes = attributesFactory.createRegionAttributes();
+  std::shared_ptr<RegionAttributes> regionAttributes =
+      attributesFactory.createRegionAttributes();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes->getRegionTimeToLive());
 }

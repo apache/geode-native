@@ -344,7 +344,7 @@ class ExpiryAttributes {
 class PersistManager {
   std::string m_libraryName;
   std::string m_libraryFunctionName;
-  PropertiesPtr m_properties;
+  std::shared_ptr<Properties> m_properties;
 
   void setLibraryName(std::string name) { m_libraryName = name; }
   void setLibraryFunctionName(std::string name) {
@@ -359,7 +359,7 @@ class PersistManager {
 
   const char* getLibraryName() { return m_libraryName.c_str(); }
   const char* getLibraryFunctionName() { return m_libraryFunctionName.c_str(); }
-  PropertiesPtr& getProperties() { return m_properties; }
+  std::shared_ptr<Properties>& getProperties() { return m_properties; }
 };
 
 // ----------------------------------------------------------------------------
@@ -443,7 +443,7 @@ class Attributes {
  public:
   Attributes(const DOMNode* node);
 
-  RegionAttributesPtr getAttributes() {
+  std::shared_ptr<RegionAttributes> getAttributes() {
     return m_factory.createRegionAttributes();
   }
 
@@ -481,7 +481,7 @@ class FwkRegion {
 
   const std::string& getName() const { return m_name; }
   Attributes* getAttributes() { return m_attributes; }
-  const RegionAttributesPtr getAttributesPtr() const {
+  const std::shared_ptr<RegionAttributes> getAttributesPtr() const {
     return m_attributes->getAttributes();
   }
   void print() const { FWKINFO("FwkRegion " << m_name); }
@@ -491,9 +491,9 @@ class FwkRegion {
 
 class FwkPool {
   std::string m_name;
-  CachePtr m_cache;
+  std::shared_ptr<Cache> m_cache;
   PoolManager* m_poolManager;
-  PoolFactoryPtr m_poolFactory;
+  std::shared_ptr<PoolFactory> m_poolFactory;
   bool m_locators;
   bool m_servers;
 
@@ -608,10 +608,10 @@ class FwkPool {
     }
   }
 
-  //  PoolPtr createPoolForPerf() { return
+  //  std::shared_ptr<Pool> createPoolForPerf() { return
   //  m_poolFactory->create(m_name.c_str()); }
 
-  //  PoolPtr createPool() const {
+  //  std::shared_ptr<Pool> createPool() const {
   //    if (m_name.empty()) {
   //      FWKEXCEPTION("Pool name not specified.");
   //    } else {

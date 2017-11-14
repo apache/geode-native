@@ -32,11 +32,10 @@ LIBEXP AuthInitialize* createUserPasswordAuthInitInstance() {
   return new UserPasswordAuthInit();
 }
 }
-
-PropertiesPtr UserPasswordAuthInit::getCredentials(
-    const PropertiesPtr& securityprops, const char* server) {
+std::shared_ptr<Properties> UserPasswordAuthInit::getCredentials(
+    const std::shared_ptr<Properties>& securityprops, const char* server) {
   // LOGDEBUG("UserPasswordAuthInit: inside userPassword::getCredentials");
-  CacheablePtr userName;
+  std::shared_ptr<Cacheable> userName;
   if (securityprops == nullptr ||
       (userName = securityprops->find(SECURITY_USERNAME)) == nullptr) {
     throw AuthenticationFailedException(
@@ -44,17 +43,17 @@ PropertiesPtr UserPasswordAuthInit::getCredentials(
         "property [" SECURITY_USERNAME "] not set.");
   }
 
-  PropertiesPtr credentials = Properties::create();
-  credentials->insert(SECURITY_USERNAME, userName->toString()->asChar());
-  CacheablePtr passwd = securityprops->find(SECURITY_PASSWORD);
-  // If password is not provided then use empty string as the password.
-  if (passwd == nullptr) {
-    passwd = CacheableString::create("");
-  }
-  credentials->insert(SECURITY_PASSWORD, passwd->toString()->asChar());
-  // LOGDEBUG("UserPasswordAuthInit: inserted username:password - %s:%s",
-  //    userName->toString()->asChar(), passwd->toString()->asChar());
-  return credentials;
+ auto credentials = Properties::create();
+ credentials->insert(SECURITY_USERNAME, userName->toString()->asChar());
+ std::shared_ptr<Cacheable> passwd = securityprops->find(SECURITY_PASSWORD);
+ // If password is not provided then use empty string as the password.
+ if (passwd == nullptr) {
+   passwd = CacheableString::create("");
+ }
+ credentials->insert(SECURITY_PASSWORD, passwd->toString()->asChar());
+ // LOGDEBUG("UserPasswordAuthInit: inserted username:password - %s:%s",
+ //    userName->toString()->asChar(), passwd->toString()->asChar());
+ return credentials;
 }
 }  // namespace client
 }  // namespace geode

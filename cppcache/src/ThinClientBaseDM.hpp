@@ -109,7 +109,7 @@ class ThinClientBaseDM {
 
   virtual TcrEndpoint* getActiveEndpoint() { return nullptr; }
 
-  virtual bool checkDupAndAdd(EventIdPtr eventid) {
+  virtual bool checkDupAndAdd(std::shared_ptr<EventId> eventid) {
     return m_connManager.checkDupAndAdd(eventid);
   }
 

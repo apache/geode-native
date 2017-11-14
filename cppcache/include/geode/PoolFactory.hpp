@@ -37,7 +37,7 @@ namespace client {
 
 class CacheImpl;
 class PoolAttributes;
-
+class Pool;
 /**
  * This interface provides for the configuration and creation of instances of
  * {@link Pool}.
@@ -490,7 +490,7 @@ class CPPCACHE_EXPORT PoolFactory {
    * @throws IllegalStateException if a locator or server has not been added.
    * @return the newly created pool.
    */
-  PoolPtr create(const char* name);
+  std::shared_ptr<Pool> create(const char* name);
 
   /**
    * By default setPRSingleHopEnabled is true<br>
@@ -520,7 +520,7 @@ class CPPCACHE_EXPORT PoolFactory {
   PoolFactory(const Cache& cache);
   PoolFactory(const PoolFactory&);
   void addCheck(const char* host, int port);
-  PoolAttributesPtr m_attrs;
+  std::shared_ptr<PoolAttributes> m_attrs;
   bool m_isSubscriptionRedundancy;
   bool m_addedServerOrLocator;
   const Cache& m_cache;

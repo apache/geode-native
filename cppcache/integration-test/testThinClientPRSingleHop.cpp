@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
+#define ROOT_NAME "testThinClientPRSingleHop"
+#define ROOT_SCOPE DISTRIBUTED_ACK
+
 #include <string>
 
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include <ace/ACE.h>
 
-#include <geode/GeodeCppCache.hpp>
 #include <geode/statistics/StatisticsFactory.hpp>
 
 #include "fw_dunit.hpp"
 #include "BuiltinCacheableWrappers.hpp"
 #include "Utils.hpp"
-
-#define ROOT_NAME "testThinClientPRSingleHop"
-#define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "CacheHelper.hpp"
 
@@ -97,7 +96,7 @@ std::string convertHostToCanonicalForm(const char* endpoints) {
 
 class putThread : public ACE_Task_Base {
  private:
-  RegionPtr regPtr;
+  std::shared_ptr<Region> regPtr;
   int m_min;
   int m_max;
   bool m_isWarmUpTask;
@@ -115,7 +114,7 @@ class putThread : public ACE_Task_Base {
 
   int svc(void) {
     bool networkhop ATTR_UNUSED = false;
-    CacheableKeyPtr keyPtr;
+    std::shared_ptr<CacheableKey> keyPtr;
     int rand;
     for (int i = m_min; i < m_max; i++) {
       if (!m_isWarmUpTask) {
@@ -174,7 +173,7 @@ class putThread : public ACE_Task_Base {
       }
     }
     LOG("releaseThreadLocalConnection PutThread");
-    PoolPtr pool =
+    auto pool =
         getHelper()->getCache()->getPoolManager().find("__TEST_POOL1__");
     pool->releaseThreadLocalConnection();
     LOG("releaseThreadLocalConnection PutThread done");
@@ -272,7 +271,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_LocatorTL)
   {
     initClient(true);
 
-    RegionPtr regPtr = getHelper()->createPooledRegionStickySingleHop(
+    auto regPtr = getHelper()->createPooledRegionStickySingleHop(
         regionNames[0], USE_ACK, locatorsG, "__TEST_POOL1__", false, false);
     ASSERT(regPtr != nullptr, "Failed to create region.");
     regPtr = getHelper()->createPooledRegionStickySingleHop(
@@ -288,7 +287,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
     LOG("WarmUpTask started.");
     int failureCount = 0;
     int metadatarefreshCount = 0;
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
 
     // This is to get MetaDataService going.
     for (int i = 0; i < 2000; i++) {
@@ -369,7 +368,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask3)
     LOG("WarmUpTask3 started.");
     int failureCount = 0;
     int metadatarefreshCount = 0;
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
 
     // This is to get MetaDataService going.
     for (int i = 0; i < 2000; i++) {
@@ -479,10 +478,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForAllKeysTask)
     LOG("CheckPrSingleHopForAllKeysTask started.");
     static int taskIndexPut = 0;
 
-    std::vector<int8_t> keyTypes =
-        CacheableWrapperFactory::getRegisteredKeyTypes();
-    std::vector<int8_t> valueTypes =
-        CacheableWrapperFactory::getRegisteredValueTypes();
+    auto keyTypes = CacheableWrapperFactory::getRegisteredKeyTypes();
+    auto valueTypes = CacheableWrapperFactory::getRegisteredValueTypes();
 
     size_t keyTypeIndex = taskIndexPut / valueTypes.size();
     size_t valueTypeIndex = taskIndexPut % valueTypes.size();
@@ -501,8 +498,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForAllKeysTask)
         (key->maxKeys() < DEFAULTNUMKEYS ? key->maxKeys() : DEFAULTNUMKEYS);
     delete key;
 
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
-    RegionPtr verifyReg = getHelper()->getRegion(regionNames[1]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    auto verifyReg = getHelper()->getRegion(regionNames[1]);
     for (int i = 0; i < maxKeys; i++) {
       CacheableWrapper* tmpkey =
           CacheableWrapperFactory::createInstance(keyTypeId);
@@ -625,7 +622,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
   {
     LOG("CheckPrSingleHopForIntKeysTask2 started.");
 
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
 
     for (int i = 2000; i < 3000; i++) {
       auto keyPtr =
@@ -807,7 +804,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
     LOG("CheckPrSingleHopForIntKeysTask2 get completed.");
 
     for (int i = 1000; i < 2000; i++) {
-      VectorOfCacheableKey keys;
+      std::vector<std::shared_ptr<CacheableKey>> keys;
       for (int j = i; j < i + 5; j++) {
         keys.push_back(CacheableInt32::create(j));
       }
@@ -863,8 +860,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForGetAllTask)
   {
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
-    VectorOfCacheableKey keys;
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     for (int i = 0; i < 100; i++) {
       auto keyPtr =
           std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
@@ -887,7 +884,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
   {
     LOG("CheckPrSingleHopForIntKeysTask started.");
 
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
 
     for (int i = 2000; i < 3000; i++) {
       auto keyPtr =
@@ -1048,7 +1045,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
     LOG("CheckPrSingleHopForIntKeysTask get completed.");
 
     for (int i = 1000; i < 2000; i++) {
-      VectorOfCacheableKey keys;
+      std::vector<std::shared_ptr<CacheableKey>> keys;
       for (int j = i; j < i + 5; j++) {
         keys.push_back(CacheableInt32::create(j));
       }
@@ -1150,7 +1147,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
   {
-    PoolPtr pool =
+    auto pool =
         getHelper()->getCache()->getPoolManager().find("__TEST_POOL1__");
     if (pool->getThreadLocalConnections()) {
       LOG("releaseThreadLocalConnection1 doing...");
@@ -1235,8 +1232,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CheckGetAllTask)
   {
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
-    VectorOfCacheableKey keys;
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     for (int i = 0; i < 100000; i++) {
       auto keyPtr =
           std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));

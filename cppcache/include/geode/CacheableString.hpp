@@ -112,12 +112,13 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    *
    * This should be used only for ASCII strings.
    */
-  static CacheableStringPtr create(const char* value, int32_t len = 0) {
+  static std::shared_ptr<CacheableString> create(const char* value,
+                                                 int32_t len = 0) {
     if (nullptr == value) {
       return nullptr;
     }
 
-    CacheableStringPtr str = std::make_shared<CacheableString>();
+    auto str = std::make_shared<CacheableString>();
     str->initString(value, len);
     return str;
   }
@@ -132,12 +133,13 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    *
    * CAUTION: use this only when you really know what you are doing.
    */
-  static CacheableStringPtr createNoCopy(char* value, int32_t len = 0) {
+  static std::shared_ptr<CacheableString> createNoCopy(char* value,
+                                                       int32_t len = 0) {
     if (nullptr == value) {
       return nullptr;
     }
 
-    CacheableStringPtr str = std::make_shared<CacheableString>();
+    auto str = std::make_shared<CacheableString>();
     str->initStringNoCopy(value, len);
     return str;
   }
@@ -148,12 +150,13 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    *
    * This should be used for non-ASCII strings.
    */
-  static CacheableStringPtr create(const wchar_t* value, int32_t len = 0) {
+  static std::shared_ptr<CacheableString> create(const wchar_t* value,
+                                                 int32_t len = 0) {
     if (nullptr == value) {
       return nullptr;
     }
 
-    CacheableStringPtr str = std::make_shared<CacheableString>();
+    auto str = std::make_shared<CacheableString>();
     str->initString(value, len);
     return str;
   }
@@ -168,12 +171,13 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    *
    * CAUTION: use this only when you really know what you are doing.
    */
-  static CacheableStringPtr createNoCopy(wchar_t* value, int32_t len = 0) {
+  static std::shared_ptr<CacheableString> createNoCopy(wchar_t* value,
+                                                       int32_t len = 0) {
     if (nullptr == value) {
       return nullptr;
     }
 
-    CacheableStringPtr str = std::make_shared<CacheableString>();
+    auto str = std::make_shared<CacheableString>();
     str->initStringNoCopy(value, len);
     return str;
   }
@@ -240,7 +244,7 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    */
   const char* toString() { return reinterpret_cast<const char*>(m_str); }
 
-  virtual CacheableStringPtr toString() const {
+  virtual std::shared_ptr<CacheableString> toString() const {
     // TODO this cast seems odd
     return std::const_pointer_cast<CacheableString>(
         std::static_pointer_cast<const CacheableString>(shared_from_this()));
@@ -289,47 +293,48 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
 };
 
 /** overload of apache::geode::client::createKeyArr to pass char* */
-inline CacheableKeyPtr createKeyArr(const char* value) {
+inline std::shared_ptr<CacheableKey> createKeyArr(const char* value) {
   return CacheableString::create(value);
 }
 
 /** overload of apache::geode::client::createKeyArr to pass wchar_t* */
-inline CacheableKeyPtr createKeyArr(const wchar_t* value) {
+inline std::shared_ptr<CacheableKey> createKeyArr(const wchar_t* value) {
   return CacheableString::create(value);
 }
 
 /** overload of apache::geode::client::createValueArr to pass char* */
-inline CacheablePtr createValueArr(const char* value) {
+inline std::shared_ptr<Cacheable> createValueArr(const char* value) {
   return CacheableString::create(value);
 }
 
 /** overload of apache::geode::client::createValueArr to pass wchar_t* */
-inline CacheablePtr createValueArr(const wchar_t* value) {
+inline std::shared_ptr<Cacheable> createValueArr(const wchar_t* value) {
   return CacheableString::create(value);
 }
 
 template <typename TVALUE>
-inline CacheablePtr createValue(const TVALUE* value) {
+inline std::shared_ptr<Cacheable> createValue(const TVALUE* value) {
   return CacheableString::create(value);
 }
 
 template <class TKEY>
-inline CacheableKeyPtr createKey(const std::shared_ptr<TKEY>& value) {
-  return CacheableKeyPtr(value);
+inline std::shared_ptr<CacheableKey> createKey(
+    const std::shared_ptr<TKEY>& value) {
+  return std::shared_ptr<CacheableKey>(value);
 }
 
 template <typename TKEY>
-inline CacheableKeyPtr createKey(const TKEY* value) {
+inline std::shared_ptr<CacheableKey> createKey(const TKEY* value) {
   return createKeyArr(value);
 }
 
 template <class PRIM>
-inline CacheableKeyPtr CacheableKey::create(const PRIM value) {
+inline std::shared_ptr<CacheableKey> CacheableKey::create(const PRIM value) {
   return createKey(value);
 }
 
 template <class PRIM>
-inline SerializablePtr Serializable::create(const PRIM value) {
+inline std::shared_ptr<Serializable> Serializable::create(const PRIM value) {
   return createKey(value);
 }
 

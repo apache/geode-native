@@ -238,8 +238,7 @@ void* getFactoryFunc(const char* lib, const char* funcName) {
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
-
-CacheLoaderPtr RegionAttributes::getCacheLoader() {
+std::shared_ptr<CacheLoader> RegionAttributes::getCacheLoader() {
   if ((m_cacheLoader == nullptr) && (m_cacheLoaderLibrary != nullptr)) {
     if (CacheXmlParser::managedCacheLoaderFn != nullptr &&
         strchr(m_cacheLoaderFactory, '.') != nullptr) {
@@ -256,26 +255,24 @@ CacheLoaderPtr RegionAttributes::getCacheLoader() {
   }
   return m_cacheLoader;
 }
-
-CacheWriterPtr RegionAttributes::getCacheWriter() {
-  if ((m_cacheWriter == nullptr) && (m_cacheWriterLibrary != nullptr)) {
-    if (CacheXmlParser::managedCacheWriterFn != nullptr &&
-        strchr(m_cacheWriterFactory, '.') != nullptr) {
-      // this is a managed library
-      m_cacheWriter.reset((*CacheXmlParser::managedCacheWriterFn)(
-          m_cacheWriterLibrary, m_cacheWriterFactory));
-    } else {
-      CacheWriter* (*funcptr)();
-      funcptr = reinterpret_cast<CacheWriter* (*)()>(
-          apache::geode::client::impl::getFactoryFunc(m_cacheWriterLibrary,
-                                                      m_cacheWriterFactory));
-      m_cacheWriter.reset(funcptr());
-    }
-  }
-  return m_cacheWriter;
+ std::shared_ptr<CacheWriter> RegionAttributes::getCacheWriter() {
+   if ((m_cacheWriter == nullptr) && (m_cacheWriterLibrary != nullptr)) {
+     if (CacheXmlParser::managedCacheWriterFn != nullptr &&
+         strchr(m_cacheWriterFactory, '.') != nullptr) {
+       // this is a managed library
+       m_cacheWriter.reset((*CacheXmlParser::managedCacheWriterFn)(
+           m_cacheWriterLibrary, m_cacheWriterFactory));
+     } else {
+       CacheWriter* (*funcptr)();
+       funcptr = reinterpret_cast<CacheWriter* (*)()>(
+           apache::geode::client::impl::getFactoryFunc(m_cacheWriterLibrary,
+                                                       m_cacheWriterFactory));
+       m_cacheWriter.reset(funcptr());
+     }
+   }
+   return m_cacheWriter;
 }
-
-CacheListenerPtr RegionAttributes::getCacheListener() {
+ std::shared_ptr<CacheListener> RegionAttributes::getCacheListener() {
   if ((m_cacheListener == nullptr) && (m_cacheListenerLibrary != nullptr)) {
     if (CacheXmlParser::managedCacheListenerFn != nullptr &&
         strchr(m_cacheListenerFactory, '.') != nullptr) {
@@ -294,8 +291,7 @@ CacheListenerPtr RegionAttributes::getCacheListener() {
   }
   return m_cacheListener;
 }
-
-PartitionResolverPtr RegionAttributes::getPartitionResolver() {
+ std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver() {
   if ((m_partitionResolver == nullptr) &&
       (m_partitionResolverLibrary != nullptr)) {
     if (CacheXmlParser::managedPartitionResolverFn != nullptr &&
@@ -315,8 +311,7 @@ PartitionResolverPtr RegionAttributes::getPartitionResolver() {
   }
   return m_partitionResolver;
 }
-
-PersistenceManagerPtr RegionAttributes::getPersistenceManager() {
+ std::shared_ptr<PersistenceManager> RegionAttributes::getPersistenceManager() {
   if ((m_persistenceManager == nullptr) && (m_persistenceLibrary != nullptr)) {
     if (CacheXmlParser::managedPartitionResolverFn != nullptr &&
         strchr(m_persistenceFactory, '.') != nullptr) {
@@ -378,8 +373,7 @@ bool RegionAttributes::getClientNotificationEnabled() const {
 const char* RegionAttributes::getPersistenceLibrary() {
   return m_persistenceLibrary;
 }
-
-PropertiesPtr RegionAttributes::getPersistenceProperties() {
+ std::shared_ptr<Properties> RegionAttributes::getPersistenceProperties() {
   return m_persistenceProperties;
 }
 
@@ -714,7 +708,7 @@ void RegionAttributes::setCacheWriter(const char* lib, const char* func) {
 }
 
 void RegionAttributes::setPersistenceManager(const char* lib, const char* func,
-                                             const PropertiesPtr& config) {
+                                             const std::shared_ptr<Properties>& config) {
   GF_R_ASSERT(lib != nullptr);
   GF_R_ASSERT(func != nullptr);
   copyStringAttribute(m_persistenceLibrary, lib);

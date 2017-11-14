@@ -64,7 +64,7 @@ void ThinClientStickyManager::addStickyConnection(TcrConnection* conn) {
     if (it != m_stickyConnList.end()) {
       oldConn->setAndGetBeingUsed(false, false);
       m_stickyConnList.erase(it);
-      PoolPtr p = nullptr;
+      std::shared_ptr<Pool> p = nullptr;
       (*TssConnectionWrapper::s_geodeTSSConn)->setConnection(nullptr, p);
       m_dm->put(oldConn, false);
     }

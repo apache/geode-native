@@ -31,7 +31,6 @@
  */
 
 // Include the Geode library.
-#include <geode/GeodeCppCache.hpp>
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
@@ -41,22 +40,22 @@ int main(int argc, char** argv) {
   try {
     // Create CacheFactory using the user specified settings or from the
     // geode.properties file by default.
-    PropertiesPtr prp = Properties::create();
+    auto prp = Properties::create();
     prp->insert("cache-xml-file", "XMLs/clientExceptions.xml");
 
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory(prp);
+    auto cacheFactory = CacheFactory::createCacheFactory(prp);
 
     LOGINFO("Created CacheFactory");
 
     // Create a Geode Cache with the "clientExceptions.xml" Cache XML file.
-    CachePtr cachePtr = cacheFactory->setSubscriptionEnabled(true)->create();
+    auto cachePtr = cacheFactory->setSubscriptionEnabled(true)->create();
 
     LOGINFO("Created the Geode Cache");
 
     // Get the example Regions from the Cache which are declared in the Cache
     // XML file.
-    RegionPtr regionPtr = cachePtr->getRegion("exampleRegion");
-    RegionPtr regionPtr2 = cachePtr->getRegion("exampleRegion2");
+    auto regionPtr = cachePtr->getRegion("exampleRegion");
+    auto regionPtr2 = cachePtr->getRegion("exampleRegion2");
 
     LOGINFO("Obtained the Regions from the Cache");
 
@@ -67,23 +66,23 @@ int main(int argc, char** argv) {
     LOGINFO("Put the first Entry into the Region");
 
     // Put an Entry into the Region by manually creating a Key and a Value pair.
-    CacheableKeyPtr keyPtr = CacheableInt32::create(123);
-    CacheablePtr valuePtr = CacheableString::create("123");
+    auto keyPtr = CacheableInt32::create(123);
+    auto valuePtr = CacheableString::create("123");
     regionPtr->put(keyPtr, valuePtr);
 
     LOGINFO("Put the second Entry into the Region");
 
     // Get Entries back out of the Region.
-    CacheablePtr result1Ptr = regionPtr->get("Key1");
+    auto result1Ptr = regionPtr->get("Key1");
 
     LOGINFO("Obtained the first Entry from the Region");
 
-    CacheablePtr result2Ptr = regionPtr->get(keyPtr);
+    auto result2Ptr = regionPtr->get(keyPtr);
 
     LOGINFO("Obtained the second Entry from the Region");
 
     // Destroy exampleRegion2.
-    SerializablePtr userDataPtr = nullptr;
+    std::shared_ptr<Serializable> userDataPtr = nullptr;
     regionPtr2->destroyRegion(userDataPtr);
 
     try {
@@ -100,10 +99,10 @@ int main(int argc, char** argv) {
     try {
       // Its not valid to create two instances of Cache with different settings.
       // If the settings are the same it returns the existing Cache instance.
-      CacheFactoryPtr cacheFactory2 = CacheFactory::createCacheFactory(prp);
-      CachePtr cachePtr1 = cacheFactory2->setSubscriptionEnabled(true)
-                               ->addServer("localhost", 40405)
-                               ->create();
+      auto cacheFactory2 = CacheFactory::createCacheFactory(prp);
+      auto cachePtr1 = cacheFactory2->setSubscriptionEnabled(true)
+                           ->addServer("localhost", 40405)
+                           ->create();
       LOGINFO("UNEXPECTED: Cache create should not have succeeded");
 
       return 1;

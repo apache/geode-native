@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <ace/High_Res_Timer.h>
 
 #include <ace/OS.h>
@@ -49,7 +48,7 @@ void initClient(int redundancyLevel) {
 
   s_isGridClient = !s_isGridClient;
   if (cacheHelper == nullptr) {
-    PropertiesPtr config = Properties::create();
+    auto config = Properties::create();
     if (s_isGridClient) {
       config->insert("grid-client", "true");
     }
@@ -64,7 +63,7 @@ void initClient()  // For POOL API redendency will be set at POOL level.
   static bool s_isGridClient = true;
   s_isGridClient = !s_isGridClient;
   if (cacheHelper == nullptr) {
-    PropertiesPtr config = Properties::create();
+    auto config = Properties::create();
     if (s_isGridClient) {
       config->insert("grid-client", "true");
     }
@@ -106,10 +105,10 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   }
   free(buf);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableKeyPtr keyPtr = createKey(key);
+  auto keyPtr = createKey(key);
 
   // if the region is no ack, then we may need to wait...
   if (!isCreated) {
@@ -205,8 +204,8 @@ void createRegion(const char* name, bool ackMode,
   fflush(stdout);
   char* endpoints = nullptr;
   // ack, caching
-  RegionPtr regPtr = getHelper()->createRegion(
-      name, ackMode, true, nullptr, endpoints, clientNotificationEnabled);
+  auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
+                                          endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -216,10 +215,10 @@ void createEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  auto keyPtr = createKey(key);
+  auto valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
@@ -241,10 +240,10 @@ void updateEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Update entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  auto keyPtr = createKey(key);
+  auto valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -266,9 +265,9 @@ void doNetsearch(const char* name, const char* key, const char* value) {
       key, value, name);
   fflush(stdout);
   // Get entry created in Process A, verify entry is correct
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+  auto keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -303,7 +302,7 @@ const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 const bool USE_ACK = true;
 void initClientAndRegion(int redundancy) {
-  PropertiesPtr pp = Properties::create();
+  auto pp = Properties::create();
   g_redundancyLevel = redundancy;
   getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true,
                                       redundancy);
@@ -385,13 +384,13 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, RegisterKeys)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
 
-    CacheableKeyPtr keyPtr0 = CacheableKey::create(keys[0]);
-    CacheableKeyPtr keyPtr2 = CacheableKey::create(keys[2]);
+    auto keyPtr0 = CacheableKey::create(keys[0]);
+    auto keyPtr2 = CacheableKey::create(keys[2]);
 
-    VectorOfCacheableKey keys0, keys1;
+    std::vector<std::shared_ptr<CacheableKey>> keys0, keys1;
     keys0.push_back(keyPtr0);
     keys1.push_back(keyPtr2);
     if (g_redundancyLevel > 1) {
@@ -503,11 +502,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepEight)
     verifyEntry(regionNames[1], keys[2], vals[2]);
     verifyEntry(regionNames[1], keys[3], vals[3]);
 
-    RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
 
-    CacheableKeyPtr keyPtr2 = CacheableKey::create(keys[2]);
+    auto keyPtr2 = CacheableKey::create(keys[2]);
 
-    VectorOfCacheableKey keys1;
+    std::vector<std::shared_ptr<CacheableKey>> keys1;
     keys1.push_back(keyPtr2);
     regPtr1->unregisterKeys(keys1);
     LOG("StepEight complete.");

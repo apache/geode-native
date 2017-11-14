@@ -36,7 +36,6 @@
  */
 
 // Include the Geode library.
-#include <geode/GeodeCppCache.hpp>
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
@@ -45,24 +44,22 @@ using namespace apache::geode::client;
 int main(int argc, char** argv) {
   try {
     // Create a Geode Cache.
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+    auto cacheFactory = CacheFactory::createCacheFactory();
 
-    CachePtr cachePtr = cacheFactory->create();
+    auto cachePtr = cacheFactory->create();
 
     LOGINFO("Created the Geode Cache");
 
-    RegionFactoryPtr regionFactory =
-        cachePtr->createRegionFactory(CACHING_PROXY);
+    auto regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
 
     LOGINFO("Created the RegionFactory");
 
     // Create the example Region Programmatically.
-    RegionPtr regionPtr = regionFactory->create("exampleRegion");
+    auto regionPtr = regionFactory->create("exampleRegion");
 
-    CacheableKeyPtr keyPtr = CacheableInt32::create(123);
+    auto keyPtr = CacheableInt32::create(123);
     LOGINFO("Created the Region Programmatically.");
-    CacheTransactionManagerPtr txManager =
-        cachePtr->getCacheTransactionManager();
+    auto txManager = cachePtr->getCacheTransactionManager();
     // start a transaction
     txManager->begin();
     LOGINFO("Transaction Started");

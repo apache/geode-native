@@ -169,7 +169,7 @@ class PoolAttributes {
 
   void addServer(const char* host, int port);
 
-  PoolAttributesPtr clone();
+  std::shared_ptr<PoolAttributes> clone();
 
   /** Return true if all the attributes are equal to those of other. */
   bool operator==(const PoolAttributes& other) const;

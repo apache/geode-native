@@ -74,8 +74,8 @@ namespace apache {
         /// </summary>
         virtual ~ManagedResultCollectorGeneric() { }
 
-        CacheableVectorPtr getResult(std::chrono::milliseconds timeout = native::DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
-        void addResult(const CacheablePtr& result) override;
+        std::shared_ptr<CacheableVector> getResult(std::chrono::milliseconds timeout = native::DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+        void addResult(const std::shared_ptr<Cacheable>& result) override;
         void endResults() override;
         void clearResults() override;
 

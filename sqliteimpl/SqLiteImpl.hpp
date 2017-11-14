@@ -49,7 +49,8 @@ class SqLiteImpl : public PersistenceManager {
    * @throws InitfailedException if persistence directory/environment directory
    * initialization fails.
    */
-  void init(const RegionPtr& regionptr, const PropertiesPtr& diskProperties);
+  void init(const std::shared_ptr<Region>& regionptr,
+            const std::shared_ptr<Properties>& diskProperties);
 
   /**
    * Stores a key-value pair in the SqLite implementation.
@@ -57,8 +58,8 @@ class SqLiteImpl : public PersistenceManager {
    * @param value the value to write
    * @throws DiskFailureException if the write fails due to disk failure.
    */
-  void write(const CacheableKeyPtr& key, const CacheablePtr& value,
-             void*& dbHandle);
+  void write(const std::shared_ptr<CacheableKey>& key,
+             const std::shared_ptr<Cacheable>& value, void*& dbHandle);
 
   /**
    * Writes the entire region into the SqLite implementation.
@@ -68,12 +69,13 @@ class SqLiteImpl : public PersistenceManager {
 
   /**
    * Reads the value for the key from SqLite.
-   * @returns value of type CacheablePtr.
+   * @returns value of type std::shared_ptr<Cacheable>.
    * @param key is the key for which the value has to be read.
    * @throws IllegalArgumentException if the key is NULL.
    * @throws DiskCorruptException if the data to be read is corrupt.
    */
-  CacheablePtr read(const CacheableKeyPtr& key, void*& dbHandle);
+  std::shared_ptr<Cacheable> read(const std::shared_ptr<CacheableKey>& key,
+                                  void*& dbHandle);
 
   /**
    * Read all the keys and values for a region stored in SqLite.
@@ -86,7 +88,7 @@ class SqLiteImpl : public PersistenceManager {
    * @throws RegionDestroyedException is the region is already destroyed.
    * @throws EntryNotFoundException if the entry is not found on the disk.
    */
-  // void invalidate(const CacheableKeyPtr& key);
+  // void invalidate(const std::shared_ptr<CacheableKey>& key);
 
   /**
    * Destroys an entry stored in SqLite. .
@@ -94,7 +96,7 @@ class SqLiteImpl : public PersistenceManager {
    * @throws RegionDestroyedException is the region is already destroyed.
    * @throws EntryNotFoundException if the entry is not found on the disk.
    */
-  void destroy(const CacheableKeyPtr& key, void*& dbHandle);
+  void destroy(const std::shared_ptr<CacheableKey>& key, void*& dbHandle);
 
   /**
    * Returns number of entries stored in SqLite for the region.
@@ -132,7 +134,7 @@ class SqLiteImpl : public PersistenceManager {
  private:
   SqLiteHelper* m_sqliteHelper;
 
-  RegionPtr m_regionPtr;
+  std::shared_ptr<Region> m_regionPtr;
   std::string m_regionDBFile;
   std::string m_regionDir;
   std::string m_persistanceDir;

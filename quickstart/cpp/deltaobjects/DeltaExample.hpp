@@ -18,8 +18,6 @@
 #ifndef __Delta_Example__
 #define __Delta_Example__
 
-#include <geode/GeodeCppCache.hpp>
-
 using namespace apache::geode::client;
 
 class DeltaExample : public Cacheable, public Delta {
@@ -147,7 +145,9 @@ class DeltaExample : public Cacheable, public Delta {
 
   virtual uint32_t objectSize() const { return 0; }
 
-  DeltaPtr clone() { return DeltaPtr(new DeltaExample(this)); }
+  std::shared_ptr<Delta> clone() {
+    return std::shared_ptr<Delta>(new DeltaExample(this));
+  }
 
   virtual ~DeltaExample() {}
 

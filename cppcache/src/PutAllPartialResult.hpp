@@ -30,13 +30,12 @@ namespace geode {
 namespace client {
 
 class PutAllPartialResult;
-typedef std::shared_ptr<PutAllPartialResult> PutAllPartialResultPtr;
 
 class PutAllPartialResult : public Serializable {
  private:
-  VersionedCacheableObjectPartListPtr m_succeededKeys;
-  CacheableKeyPtr m_firstFailedKey;
-  ExceptionPtr m_firstCauseOfFailure;
+  std::shared_ptr<VersionedCacheableObjectPartList> m_succeededKeys;
+  std::shared_ptr<CacheableKey> m_firstFailedKey;
+  std::shared_ptr<Exception> m_firstCauseOfFailure;
   int32_t m_totalMapSize;
   ACE_RW_Thread_Mutex g_readerWriterLock;
 
@@ -49,15 +48,15 @@ class PutAllPartialResult : public Serializable {
   // Add all succeededKeys and firstfailedKey.
   // Before calling this, we must read PutAllPartialResultServerException and
   // formulate obj of type PutAllPartialResult.
-  void consolidate(PutAllPartialResultPtr other);
+  void consolidate(std::shared_ptr<PutAllPartialResult> other);
 
-  ExceptionPtr getFailure() { return m_firstCauseOfFailure; }
+  std::shared_ptr<Exception> getFailure() { return m_firstCauseOfFailure; }
 
-  void addKeysAndVersions(VersionedCacheableObjectPartListPtr keysAndVersion);
+  void addKeysAndVersions(std::shared_ptr<VersionedCacheableObjectPartList> keysAndVersion);
 
-  void addKeys(VectorOfCacheableKeyPtr m_keys);
+  void addKeys(std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>> > m_keys);
 
-  void saveFailedKey(CacheableKeyPtr key, ExceptionPtr cause) {
+  void saveFailedKey(std::shared_ptr<CacheableKey> key, std::shared_ptr<Exception> cause) {
     if (key == nullptr) {
       return;
     }
@@ -68,10 +67,10 @@ class PutAllPartialResult : public Serializable {
     }
   }
 
-  VersionedCacheableObjectPartListPtr getSucceededKeysAndVersions();
+  std::shared_ptr<VersionedCacheableObjectPartList> getSucceededKeysAndVersions();
 
   // Returns the first key that failed
-  CacheableKeyPtr getFirstFailedKey() { return m_firstFailedKey; }
+  std::shared_ptr<CacheableKey> getFirstFailedKey() { return m_firstFailedKey; }
 
   // Returns there's failedKeys
   bool hasFailure() { return m_firstFailedKey != nullptr; }
@@ -79,7 +78,7 @@ class PutAllPartialResult : public Serializable {
   // Returns there's saved succeed keys
   bool hasSucceededKeys();
 
-  virtual CacheableStringPtr toString() const {
+  virtual std::shared_ptr<CacheableString> toString() const {
     char msgStr1[1024];
     if (m_firstFailedKey != nullptr) {
       ACE_OS::snprintf(msgStr1, 1024, "[ Key =%s ]",

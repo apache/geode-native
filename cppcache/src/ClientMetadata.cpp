@@ -26,9 +26,9 @@ namespace geode {
 namespace client {
 
 ClientMetadata::ClientMetadata(
-    int totalNumBuckets, CacheableStringPtr colocatedWith,
+    int totalNumBuckets, std::shared_ptr<CacheableString> colocatedWith,
     ThinClientPoolDM* tcrdm,
-    std::vector<FixedPartitionAttributesImplPtr>* fpaSet)
+    std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* fpaSet)
     : m_partitionNames(nullptr),
       m_previousOne(nullptr),
       m_totalNumBuckets(totalNumBuckets),
@@ -107,15 +107,14 @@ int ClientMetadata::getTotalNumBuckets() {
   LOGFINE("Inside getPartitionResolver");
   return m_partitionResolver;
 }*/
-
-CacheableStringPtr ClientMetadata::getColocatedWith() {
+std::shared_ptr<CacheableString> ClientMetadata::getColocatedWith() {
   // ReadGuard guard (m_readWriteLock);
   return m_colocatedWith;
 }
 
-void ClientMetadata::getServerLocation(int bucketId, bool tryPrimary,
-                                       BucketServerLocationPtr& serverLocation,
-                                       int8_t& version) {
+void ClientMetadata::getServerLocation(
+    int bucketId, bool tryPrimary,
+    std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   // ReadGuard guard (m_readWriteLock);
   checkBucketId(bucketId);
   // BucketServerLocationsType locations =
@@ -182,40 +181,40 @@ void ClientMetadata::updateBucketServerLocations(
     for (BucketServerLocationsType::iterator iter =
              bucketServerLocations.begin();
          iter != bucketServerLocations.end(); ++iter) {
-      CacheableStringArrayPtr groups = (*iter)->getServerGroups();
-      if ((groups != nullptr) && (groups->length() > 0)) {
-        bool added = false;
-        for (int i = 0; i < groups->length(); i++) {
-          CacheableStringPtr cs = (*groups)[i];
-          if (cs->length() > 0) {
-            std::string str = cs->toString();
-            if ((ACE_OS::strcmp(str.c_str(), serverGroup.c_str()) == 0)) {
-              added = true;
-              if ((*iter)->isPrimary()) {
-                primaries.push_back(*iter);
-                break;
-              } else {
-                secondaries.push_back(*iter);
-                break;
-              }
-            }
-          } else {
-            added = true;
-            if ((*iter)->isPrimary()) {
-              primaries.push_back(*iter);
-            } else {
-              secondaries.push_back(*iter);
-            }
-          }
-        }
-        if (!added) {
-          (*iter)->setServername(nullptr);
-          if ((*iter)->isPrimary()) {
-            primaries.push_back(*iter);
-          } else {
-            secondaries.push_back(*iter);
-          }
-        }
+     auto groups = (*iter)->getServerGroups();
+     if ((groups != nullptr) && (groups->length() > 0)) {
+       bool added = false;
+       for (int i = 0; i < groups->length(); i++) {
+         auto cs = (*groups)[i];
+         if (cs->length() > 0) {
+           std::string str = cs->toString();
+           if ((ACE_OS::strcmp(str.c_str(), serverGroup.c_str()) == 0)) {
+             added = true;
+             if ((*iter)->isPrimary()) {
+               primaries.push_back(*iter);
+               break;
+             } else {
+               secondaries.push_back(*iter);
+               break;
+             }
+           }
+         } else {
+           added = true;
+           if ((*iter)->isPrimary()) {
+             primaries.push_back(*iter);
+           } else {
+             secondaries.push_back(*iter);
+           }
+         }
+       }
+       if (!added) {
+         (*iter)->setServername(nullptr);
+         if ((*iter)->isPrimary()) {
+           primaries.push_back(*iter);
+         } else {
+           secondaries.push_back(*iter);
+         }
+       }
       }
     }
 
@@ -338,48 +337,46 @@ void ClientMetadata::populateDummyServers(int bucketId,
 }
 
 int ClientMetadata::assignFixedBucketId(const char* partitionName,
-                                        CacheableKeyPtr resolvekey) {
+                                        std::shared_ptr<CacheableKey> resolvekey) {
   LOGDEBUG(
       "FPR assignFixedBucketId partititonname = %s , m_fpaMap.size() = %d ",
       partitionName, m_fpaMap.size());
   FixedMapType::iterator iter = m_fpaMap.find(partitionName);
   if (iter != m_fpaMap.end()) {
-    std::vector<int> attList = iter->second;
-    int32_t hc = resolvekey->hashcode();
-    int bucketId = std::abs(hc % (attList.at(0)));
-    int partitionBucketID = bucketId + attList.at(1);
-    return partitionBucketID;
+   auto attList =iter->second;
+   int32_t hc = resolvekey->hashcode();
+   int bucketId = std::abs(hc % (attList.at(0)));
+   int partitionBucketID = bucketId + attList.at(1);
+   return partitionBucketID;
   } else {
     return -1;
   }
 }
 
-std::vector<BucketServerLocationPtr> ClientMetadata::adviseServerLocations(
-    int bucketId) {
+std::vector<std::shared_ptr<BucketServerLocation>>
+ClientMetadata::adviseServerLocations(int bucketId) {
   checkBucketId(bucketId);
   return m_bucketServerLocationsList[bucketId];
 }
-
-BucketServerLocationPtr ClientMetadata::advisePrimaryServerLocation(
-    int bucketId) {
-  std::vector<BucketServerLocationPtr> locations =
-      adviseServerLocations(bucketId);
-  for (std::vector<BucketServerLocationPtr>::iterator iter = locations.begin();
+std::shared_ptr<BucketServerLocation>
+ClientMetadata::advisePrimaryServerLocation(int bucketId) {
+  auto locations = adviseServerLocations(bucketId);
+  for (std::vector<std::shared_ptr<BucketServerLocation>>::iterator iter =
+           locations.begin();
        iter != locations.end(); ++iter) {
-    BucketServerLocationPtr location = *iter;
+    auto location = *iter;
     if (location->isPrimary()) {
       return location;
     }
   }
   return nullptr;
 }
-
-BucketServerLocationPtr ClientMetadata::adviseRandomServerLocation() {
+ std::shared_ptr<BucketServerLocation> ClientMetadata::adviseRandomServerLocation() {
   if (m_bucketServerLocationsList.size() > 0) {
     RandGen randGen;
     size_t random = randGen(m_bucketServerLocationsList.size());
     checkBucketId(random);
-    std::vector<BucketServerLocationPtr> locations =
+    auto locations =
         m_bucketServerLocationsList[random];
     if (locations.size() == 0) return nullptr;
     return locations.at(0);

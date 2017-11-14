@@ -28,12 +28,16 @@
         runPdxTests(true, false);
 }
 END_MAIN*/
+#include <string>
 
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
+
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
-#include <string>
+
+#include <geode/PdxInstance.hpp>
+#include <geode/UserFunctionExecutionException.hpp>
+#include <geode/FunctionService.hpp>
 
 #define ROOT_NAME "testThinClientPdxTests"
 #define ROOT_SCOPE DISTRIBUTED_ACK
@@ -81,7 +85,7 @@ bool genericValCompare(T1 value1, T2 value2) /*const*/
 }
 
 void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields,
-                const PropertiesPtr& configPtr = nullptr) {
+                const std::shared_ptr<Properties>& configPtr = nullptr) {
   LOGINFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, isPdxIgnoreUnreadFields, false,
@@ -94,7 +98,7 @@ void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields,
 
 void initClientN(const bool isthinClient, bool isPdxIgnoreUnreadFields,
                  bool isPdxReadSerialized = false,
-                 const PropertiesPtr& configPtr = nullptr) {
+                 const std::shared_ptr<Properties>& configPtr = nullptr) {
   LOGINFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, isPdxIgnoreUnreadFields,
@@ -105,7 +109,7 @@ void initClientN(const bool isthinClient, bool isPdxIgnoreUnreadFields,
 
 void stepOneN(bool isPdxIgnoreUnreadFields = false,
               bool isPdxReadSerialized = false,
-              PropertiesPtr config = nullptr) {
+              std::shared_ptr<Properties> config = nullptr) {
   try {
     // serializationRegistry->addType(Position::createDeserializable);
     // serializationRegistry->addType(Portfolio::createDeserializable);
@@ -138,10 +142,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwoPoolLoc1)
 END_TASK_DEFINITION
 ///////////////
 
-void initClient1WithClientName(const bool isthinClient,
-                               const PropertiesPtr& configPtr = nullptr) {
+void initClient1WithClientName(
+    const bool isthinClient,
+    const std::shared_ptr<Properties>& configPtr = nullptr) {
   if (cacheHelper == nullptr) {
-    PropertiesPtr config = configPtr;
+    auto config = configPtr;
     if (config == nullptr) {
       config = Properties::create();
     }
@@ -151,10 +156,11 @@ void initClient1WithClientName(const bool isthinClient,
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 
-void initClient2WithClientName(const bool isthinClient,
-                               const PropertiesPtr& configPtr = nullptr) {
+void initClient2WithClientName(
+    const bool isthinClient,
+    const std::shared_ptr<Properties>& configPtr = nullptr) {
   if (cacheHelper == nullptr) {
-    PropertiesPtr config = configPtr;
+    auto config = configPtr;
     if (config == nullptr) {
       config = Properties::create();
     }
@@ -186,7 +192,7 @@ void stepOneForClient2(bool isPdxIgnoreUnreadFields = false) {
   LOG("StepOne complete.");
 }
 void stepOne(bool isPdxIgnoreUnreadFields = false,
-             PropertiesPtr config = nullptr) {
+             std::shared_ptr<Properties> config = nullptr) {
   try {
     // serializationRegistry->addType(Position::createDeserializable);
     // serializationRegistry->addType(Portfolio::createDeserializable);
@@ -261,7 +267,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOnePoolLocSysConfig)
   {
     LOG("Starting Step One with Pool + Locator lists");
-    PropertiesPtr config = Properties::create();
+    auto config = Properties::create();
     config->insert("on-client-disconnect-clear-pdxType-Ids", "true");
     stepOne(false, config);
   }
@@ -270,7 +276,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwoPoolLocSysConfig)
   {
     LOG("Starting Step One with Pool + Locator lists");
-    PropertiesPtr config = Properties::create();
+    auto config = Properties::create();
     config->insert("on-client-disconnect-clear-pdxType-Ids", "true");
     stepOne(false, config);
   }
@@ -383,8 +389,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwoPoolLoc_PDX)
   }
 END_TASK_DEFINITION
 
-void checkPdxInstanceToStringAtServer(RegionPtr regionPtr) {
-  CacheableKeyPtr keyport = CacheableKey::create("success");
+void checkPdxInstanceToStringAtServer(std::shared_ptr<Region> regionPtr) {
+  auto keyport = CacheableKey::create("success");
   auto boolPtr =
       std::dynamic_pointer_cast<CacheableBoolean>(regionPtr->get(keyport));
   bool val = boolPtr->value();
@@ -396,7 +402,9 @@ void checkPdxInstanceToStringAtServer(RegionPtr regionPtr) {
 // testPdxWriterAPIsWithInvalidArgs
 DUNIT_TASK_DEFINITION(CLIENT1, testPdxWriterAPIsWithInvalidArgs)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     try {
       serializationRegistry->addPdxType(InvalidPdxUsage::createDeserializable);
     } catch (const IllegalStateException&) {
@@ -410,11 +418,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, testPdxWriterAPIsWithInvalidArgs)
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     int expectedExceptionCount = 0;
 
     // Put operation
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto pdxobj = std::make_shared<PdxTests::InvalidPdxUsage>();
     regPtr0->put(keyport, pdxobj);
 
@@ -430,9 +438,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, testPdxWriterAPIsWithInvalidArgs)
            "toDataExceptionCount");
 
     // Get Operation and check fromDataExceptionCount, Expected is 41.
-    PdxTests::InvalidPdxUsagePtr obj2 =
-        std::dynamic_pointer_cast<PdxTests::InvalidPdxUsage>(
-            regPtr0->get(keyport));
+    auto obj2 = std::dynamic_pointer_cast<PdxTests::InvalidPdxUsage>(
+        regPtr0->get(keyport));
     // LOGINFO("TASK::testPdxWriterAPIsWithInvalidArgs:: fromData ExceptionCOunt
     // :: %d ", obj2->getfromDataExceptionCount());
     expectedExceptionCount = obj2->getfromDataExceptionCount();
@@ -446,7 +453,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, testPdxReaderAPIsWithInvalidArgs)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     try {
       serializationRegistry->addPdxType(InvalidPdxUsage::createDeserializable);
     } catch (const IllegalStateException&) {
@@ -459,13 +468,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, testPdxReaderAPIsWithInvalidArgs)
       // ignore exception
     }
     int expectedExceptionCount = 0;
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     // Get Operation. Check fromDataExceptionCount. Expected is 41.
-    CacheableKeyPtr keyport1 = CacheableKey::create(1);
-    PdxTests::InvalidPdxUsagePtr obj1 =
-        std::dynamic_pointer_cast<PdxTests::InvalidPdxUsage>(
-            regPtr0->get(keyport1));
+    auto keyport1 = CacheableKey::create(1);
+    auto obj1 = std::dynamic_pointer_cast<PdxTests::InvalidPdxUsage>(
+        regPtr0->get(keyport1));
 
     // Check the exception count:: expected is 41.
     // LOGINFO("TASK::testPdxReaderAPIsWithInvalidArgs:: fromDataExceptionCount
@@ -482,7 +490,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testPutWithMultilevelInheritance)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(PdxTests::Child::createDeserializable);
@@ -490,17 +500,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, testPutWithMultilevelInheritance)
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     int expectedExceptionCount ATTR_UNUSED = 0;
 
     // Put operation
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto pdxobj = std::make_shared<PdxTests::Child>();
     regPtr0->put(keyport, pdxobj);
     LOGINFO("TASK::testPutWithMultilevelInheritance:: Put successful");
 
     // Get Operation and check fromDataExceptionCount, Expected is 41.
-    PdxTests::ChildPtr obj2 =
+    auto obj2 =
         std::dynamic_pointer_cast<PdxTests::Child>(regPtr0->get(keyport));
     // LOGINFO("Task: testPutWithMultilevelInheritance: got members :: %d %d %d
     // %d
@@ -517,7 +527,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, testGetWithMultilevelInheritance)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(PdxTests::Child::createDeserializable);
@@ -525,10 +537,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, testGetWithMultilevelInheritance)
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport1 = CacheableKey::create(1);
-    PdxTests::ChildPtr obj1 =
+    auto keyport1 = CacheableKey::create(1);
+    auto obj1 =
         std::dynamic_pointer_cast<PdxTests::Child>(regPtr0->get(keyport1));
 
     auto pdxobj = std::make_shared<PdxTests::Child>();
@@ -549,10 +561,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet1)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
-    CacheableInt32Ptr valPtr = CacheableInt32::create(123);
+    auto keyport = CacheableKey::create(1);
+    auto valPtr = CacheableInt32::create(123);
     regPtr0->put(keyport, valPtr);
 
     auto getVal =
@@ -569,7 +581,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet1)
             cacheHelper->getCache()->getPdxReadSerialized());
     auto jsonDoc =
         std::dynamic_pointer_cast<PdxInstance>(regPtr0->get("jsondoc1"));
-    CacheableStringPtr toString = jsonDoc->toString();
+    auto toString = jsonDoc->toString();
     LOGINFO("Task:JavaPutGet: Result = %s ", toString->asChar());
     /*
     int16_t age = 0;
@@ -582,11 +594,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet1)
     jsonDoc->getField("lastName", &stringVal1);
     */
 
-    CacheablePtr object2 = jsonDoc->getCacheableField("kids");
+    auto object2 = jsonDoc->getCacheableField("kids");
     auto listPtr = std::dynamic_pointer_cast<CacheableLinkedList>(object2);
     LOGINFO("Task:JavaPutGet: list size = %d", listPtr->size());
 
-    CacheableLinkedListPtr m_linkedlist = CacheableLinkedList::create();
+    auto m_linkedlist = CacheableLinkedList::create();
     m_linkedlist->push_back(CacheableString::create("Manan"));
     m_linkedlist->push_back(CacheableString::create("Nishka"));
 
@@ -604,10 +616,13 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -618,13 +633,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto pdxobj = std::make_shared<PdxTests::PdxType>();
     regPtr0->put(keyport, pdxobj);
 
-    PdxTests::PdxTypePtr obj2 =
+    auto obj2 =
         std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport));
 
     auto boolPtr =
@@ -633,16 +648,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
     LOGDEBUG("Task:JavaPutGet: isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Task JavaPutGet:Objects of type PdxType should be equal");
-
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, JavaGet)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -652,17 +669,17 @@ DUNIT_TASK_DEFINITION(CLIENT2, JavaGet)
       // ignore exception
     }
     LOGDEBUG("JavaGet-1 Line_309");
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport1 = CacheableKey::create(1);
+    auto keyport1 = CacheableKey::create(1);
     auto pdxobj = std::make_shared<PdxTests::PdxType>();
     LOGDEBUG("JavaGet-2 Line_314");
-    PdxTests::PdxTypePtr obj1 =
+    auto obj1 =
         std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport1));
     LOGDEBUG("JavaGet-3 Line_316");
-    CacheableKeyPtr keyport2 = CacheableKey::create("putFromjava");
+    auto keyport2 = CacheableKey::create("putFromjava");
     LOGDEBUG("JavaGet-4 Line_316");
-    PdxTests::PdxTypePtr obj2 =
+    auto obj2 =
         std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport2));
     LOGDEBUG("JavaGet-5 Line_320");
   }
@@ -670,7 +687,9 @@ END_TASK_DEFINITION
 /***************************************************************/
 DUNIT_TASK_DEFINITION(CLIENT2, putAtVersionTwoR21)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(
@@ -679,9 +698,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, putAtVersionTwoR21)
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto np = std::make_shared<PdxTypesR2V2>();
 
     regPtr0->put(keyport, np);
@@ -698,7 +717,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOneR22)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(
@@ -707,9 +728,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOneR22)
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto np = std::make_shared<PdxTypesV1R2>();
 
     auto pRet = std::dynamic_pointer_cast<PdxTypesV1R2>(regPtr0->get(keyport));
@@ -726,9 +747,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwoR23)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto np = std::make_shared<PdxTypesR2V2>();
 
@@ -746,9 +767,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOneR24)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto np = std::make_shared<PdxTypesV1R2>();
 
     auto pRet = std::dynamic_pointer_cast<PdxTypesV1R2>(regPtr0->get(keyport));
@@ -765,17 +786,20 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne31)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxType3V1::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType3V1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto np = std::make_shared<PdxType3V1>();
 
     regPtr0->put(keyport, np);
@@ -791,7 +815,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo32)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(
@@ -800,10 +826,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo32)
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto np = std::make_shared<PdxTypes3V2>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto pRet = std::dynamic_pointer_cast<PdxTypes3V2>(regPtr0->get(keyport));
     bool isEqual = np->equals(pRet);
@@ -818,9 +844,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne33)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto np = std::make_shared<PdxType3V1>();
 
     auto pRet = std::dynamic_pointer_cast<PdxType3V1>(regPtr0->get(keyport));
@@ -837,11 +863,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo34)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     auto np = std::make_shared<PdxTypes3V2>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto pRet = std::dynamic_pointer_cast<PdxTypes3V2>(regPtr0->get(keyport));
 
@@ -857,16 +883,19 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne21)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxType2V1::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType2V1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto np = std::make_shared<PdxType2V1>();
 
     regPtr0->put(keyport, np);
@@ -882,7 +911,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo22)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(
@@ -891,10 +922,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo22)
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto np = std::make_shared<PdxTypes2V2>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto pRet = std::dynamic_pointer_cast<PdxTypes2V2>(regPtr0->get(keyport));
     bool isEqual = np->equals(pRet);
@@ -909,11 +940,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne23)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     auto np = std::make_shared<PdxType2V1>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto pRet = std::dynamic_pointer_cast<PdxType2V1>(regPtr0->get(keyport));
 
@@ -929,9 +960,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo24)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto np = std::make_shared<PdxTypes2V2>();
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto pRet = std::dynamic_pointer_cast<PdxTypes2V2>(regPtr0->get(keyport));
 
@@ -947,22 +978,25 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne11)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxType1V1::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType1V1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto np = std::make_shared<PdxTests::PdxType1V1>();
 
     regPtr0->put(keyport, np);
 
-    PdxTests::PdxType1V1Ptr pRet =
+    auto pRet =
         std::dynamic_pointer_cast<PdxTests::PdxType1V1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
@@ -975,7 +1009,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, putAtVersionTwo1)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(
@@ -986,9 +1022,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, putAtVersionTwo1)
 
     PdxTests::PdxTypesR1V2::reset(false);
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto np = std::make_shared<PdxTypesR1V2>();
 
     regPtr0->put(keyport, np);
@@ -1004,7 +1040,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne2)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(
@@ -1013,11 +1051,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne2)
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     auto np = std::make_shared<PdxTypesV1R1>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto pRet = std::dynamic_pointer_cast<PdxTypesV1R1>(regPtr0->get(keyport));
 
@@ -1033,10 +1071,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo3)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto np = std::make_shared<PdxTypesR1V2>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto pRet = std::dynamic_pointer_cast<PdxTypesR1V2>(regPtr0->get(keyport));
     bool isEqual = np->equals(pRet);
@@ -1051,10 +1089,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne4)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto np = std::make_shared<PdxTypesV1R1>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto pRet = std::dynamic_pointer_cast<PdxTypesV1R1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
@@ -1069,11 +1107,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo5)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto np = std::make_shared<PdxTypesR1V2>();
 
     // GET
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto pRet = std::dynamic_pointer_cast<PdxTypesR1V2>(regPtr0->get(keyport));
 
@@ -1089,10 +1127,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne6)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto np = std::make_shared<PdxTypesV1R1>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto pRet = std::dynamic_pointer_cast<PdxTypesV1R1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
@@ -1107,7 +1145,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, putV2PdxUI)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(
@@ -1117,9 +1157,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, putV2PdxUI)
     }
     // PdxTests::PdxTypesIgnoreUnreadFieldsV2::reset(false);
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto np = std::make_shared<PdxTypesIgnoreUnreadFieldsV2>();
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     regPtr0->put(keyport, np);
 
     auto pRet = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV2>(
@@ -1137,7 +1177,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, putV1PdxUI)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(
@@ -1146,8 +1188,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, putV1PdxUI)
       // ignore exception
     }
     // PdxTests::PdxTypesIgnoreUnreadFieldsV1::reset(false);
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto keyport = CacheableKey::create(1);
 
     auto pRet = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV1>(
         regPtr0->get(keyport));
@@ -1157,10 +1199,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getV2PdxUI)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto np = std::make_shared<PdxTypesIgnoreUnreadFieldsV2>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto pRet = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV2>(
         regPtr0->get(keyport));
 
@@ -1174,7 +1216,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo12)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(
@@ -1183,11 +1227,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo12)
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     auto np = std::make_shared<PdxTypes1V2>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto pRet = std::dynamic_pointer_cast<PdxTypes1V2>(regPtr0->get(keyport));
 
@@ -1203,10 +1247,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne13)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto np = std::make_shared<PdxType1V1>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto pRet = std::dynamic_pointer_cast<PdxType1V1>(regPtr0->get(keyport));
     bool isEqual = np->equals(pRet);
@@ -1223,10 +1267,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo14)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto np = std::make_shared<PdxTypes1V2>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto pRet = std::dynamic_pointer_cast<PdxTypes1V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
@@ -1242,11 +1286,11 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne15)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto np = std::make_shared<PdxType1V1>();
 
     // GET
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto pRet = std::dynamic_pointer_cast<PdxType1V1>(regPtr0->get(keyport));
 
@@ -1277,10 +1321,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo16)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto np = std::make_shared<PdxTypes1V2>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto pRet = std::dynamic_pointer_cast<PdxTypes1V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
@@ -1306,24 +1350,28 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Puts2)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto pdxobj = std::make_shared<PdxTests::PdxTypes1>();
 
     regPtr0->put(keyport, pdxobj);
 
-    CacheableKeyPtr keyport2 = CacheableKey::create(2);
+    auto keyport2 = CacheableKey::create(2);
 
     auto pdxobj2 = std::make_shared<PdxTests::PdxTypes2>();
 
@@ -1343,9 +1391,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, forCleanup)
   {
     LOGINFO("Do put to clean the pdxtype registry");
     try {
-      RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+      auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-      CacheableKeyPtr keyport = CacheableKey::create(1);
+      auto keyport = CacheableKey::create(1);
 
       auto pdxobj = std::make_shared<PdxTests::PdxTypes1>();
 
@@ -1359,15 +1407,15 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Puts22)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto pdxobj = std::make_shared<PdxTests::PdxTypes1>();
 
     regPtr0->put(keyport, pdxobj);
 
-    CacheableKeyPtr keyport2 = CacheableKey::create(2);
+    auto keyport2 = CacheableKey::create(2);
 
     auto pdxobj2 = std::make_shared<PdxTests::PdxTypes2>();
 
@@ -1385,19 +1433,22 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, Get2)
   {
-
     try {
-      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
 
-      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(2);
-    PdxTests::PdxTypes2Ptr obj2 =
+    auto keyport = CacheableKey::create(2);
+    auto obj2 =
         std::dynamic_pointer_cast<PdxTests::PdxTypes2>(regPtr0->get(keyport));
 
     LOG("Get2 complete.\n");
@@ -1406,9 +1457,12 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGet)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1419,15 +1473,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGet)
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto pdxobj = std::make_shared<PdxTests::PdxType>();
 
     regPtr0->put(keyport, pdxobj);
 
-    PdxTests::PdxTypePtr obj2 =
+    auto obj2 =
         std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport));
 
     checkPdxInstanceToStringAtServer(regPtr0);
@@ -1472,7 +1526,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyNestedPdxInGet)
   {
     LOG("PutAndVerifyNestedPdxInGet started.");
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(NestedPdx::createDeserializable);
@@ -1481,21 +1537,23 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyNestedPdxInGet)
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     auto p1 = std::make_shared<NestedPdx>();
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     regPtr0->put(keyport, p1);
 
@@ -1510,7 +1568,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutMixedVersionNestedPdx)
   {
     LOG("PutMixedVersionNestedPdx started.");
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(
@@ -1520,13 +1580,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutMixedVersionNestedPdx)
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1536,12 +1598,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutMixedVersionNestedPdx)
     auto p2 = std::make_shared<MixedVersionNestedPdx>();
     auto p3 = std::make_shared<MixedVersionNestedPdx>();
     LOG("RegionPtr regPtr0 = getHelper()->getRegion(\"DistRegionAck\");");
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    LOG("CacheableKeyPtr keyport1 = CacheableKey::create(1);");
-    CacheableKeyPtr keyport1 = CacheableKey::create(1);
-    CacheableKeyPtr keyport2 = CacheableKey::create(2);
-    CacheableKeyPtr keyport3 = CacheableKey::create(3);
+    LOG("std::shared_ptr<CacheableKey> keyport1 = CacheableKey::create(1);");
+    auto keyport1 = CacheableKey::create(1);
+    auto keyport2 = CacheableKey::create(2);
+    auto keyport3 = CacheableKey::create(3);
 
     LOG("regPtr0->put(keyport1, p1 );");
     regPtr0->put(keyport1, p1);
@@ -1555,7 +1617,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGFSInGet)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     try {
       serializationRegistry->addType(
           PdxInsideIGeodeSerializable::createDeserializable);
@@ -1614,10 +1678,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGFSInGet)
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto np = std::make_shared<PdxInsideIGeodeSerializable>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     regPtr0->put(keyport, np);
 
     // GET
@@ -1632,7 +1696,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, VerifyPdxInGFSGetOnly)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     try {
       serializationRegistry->addType(
           PdxInsideIGeodeSerializable::createDeserializable);
@@ -1691,11 +1757,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyPdxInGFSGetOnly)
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto orig = std::make_shared<PdxInsideIGeodeSerializable>();
 
     // GET
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto pRet = std::dynamic_pointer_cast<PdxInsideIGeodeSerializable>(
         regPtr0->get(keyport));
     ASSERT(pRet->equals(orig) == true,
@@ -1709,7 +1775,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyMixedVersionNestedGetOnly)
   {
     LOG("VerifyMixedVersionNestedGetOnly started.");
 
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     try {
       serializationRegistry->addPdxType(
           MixedVersionNestedPdx::createDeserializable);
@@ -1718,23 +1786,25 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyMixedVersionNestedGetOnly)
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     auto p1 = std::make_shared<MixedVersionNestedPdx>();
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport1 = CacheableKey::create(1);
-    CacheableKeyPtr keyport2 = CacheableKey::create(2);
-    CacheableKeyPtr keyport3 = CacheableKey::create(3);
+    auto keyport1 = CacheableKey::create(1);
+    auto keyport2 = CacheableKey::create(2);
+    auto keyport3 = CacheableKey::create(3);
 
     auto obj1 = std::dynamic_pointer_cast<MixedVersionNestedPdx>(
         regPtr0->get(keyport1));
@@ -1753,7 +1823,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyNestedGetOnly)
   {
     LOG("VerifyNestedGetOnly started.");
 
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     try {
       serializationRegistry->addPdxType(NestedPdx::createDeserializable);
     } catch (const IllegalStateException&) {
@@ -1761,21 +1833,23 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyNestedGetOnly)
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     auto p1 = std::make_shared<NestedPdx>();
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     auto obj2 = std::dynamic_pointer_cast<NestedPdx>(regPtr0->get(keyport));
 
@@ -1787,9 +1861,12 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, VerifyGetOnly)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1800,10 +1877,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyGetOnly)
       // ignore exception
     }
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
-    PdxTests::PdxTypePtr obj2 =
+    auto keyport = CacheableKey::create(1);
+    auto obj2 =
         std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport));
 
     checkPdxInstanceToStringAtServer(regPtr0);
@@ -1842,7 +1919,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     try {
       serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
@@ -1905,11 +1984,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
 
     // Region region0 = CacheHelper.GetVerifyRegion<object,
     // object>(m_regionNames[0]);
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     bool flag = false;
     {
       auto p1 = std::make_shared<PdxTypes1>();
-      CacheableKeyPtr keyport = CacheableKey::create(11);
+      auto keyport = CacheableKey::create(11);
       regPtr0->put(keyport, p1);
       auto pRet = std::dynamic_pointer_cast<PdxTypes1>(regPtr0->get(keyport));
 
@@ -1951,7 +2030,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
 
     {
       auto p2 = std::make_shared<PdxTypes2>();
-      CacheableKeyPtr keyport2 = CacheableKey::create(12);
+      auto keyport2 = CacheableKey::create(12);
       regPtr0->put(keyport2, p2);
       auto pRet2 = std::dynamic_pointer_cast<PdxTypes2>(regPtr0->get(keyport2));
 
@@ -1993,7 +2072,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
 
     {
       auto p3 = std::make_shared<PdxTypes3>();
-      CacheableKeyPtr keyport3 = CacheableKey::create(13);
+      auto keyport3 = CacheableKey::create(13);
       regPtr0->put(keyport3, p3);
       auto pRet3 = std::dynamic_pointer_cast<PdxTypes3>(regPtr0->get(keyport3));
 
@@ -2035,7 +2114,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
 
     {
       auto p4 = std::make_shared<PdxTypes4>();
-      CacheableKeyPtr keyport4 = CacheableKey::create(14);
+      auto keyport4 = CacheableKey::create(14);
       regPtr0->put(keyport4, p4);
       auto pRet4 = std::dynamic_pointer_cast<PdxTypes4>(regPtr0->get(keyport4));
 
@@ -2077,7 +2156,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
 
     {
       auto p5 = std::make_shared<PdxTypes5>();
-      CacheableKeyPtr keyport5 = CacheableKey::create(15);
+      auto keyport5 = CacheableKey::create(15);
       regPtr0->put(keyport5, p5);
       auto pRet5 = std::dynamic_pointer_cast<PdxTypes5>(regPtr0->get(keyport5));
 
@@ -2119,7 +2198,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
 
     {
       auto p6 = std::make_shared<PdxTypes6>();
-      CacheableKeyPtr keyport6 = CacheableKey::create(16);
+      auto keyport6 = CacheableKey::create(16);
       regPtr0->put(keyport6, p6);
       auto pRet6 = std::dynamic_pointer_cast<PdxTypes6>(regPtr0->get(keyport6));
 
@@ -2161,7 +2240,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
 
     {
       auto p7 = std::make_shared<PdxTypes7>();
-      CacheableKeyPtr keyport7 = CacheableKey::create(17);
+      auto keyport7 = CacheableKey::create(17);
       regPtr0->put(keyport7, p7);
       auto pRet7 = std::dynamic_pointer_cast<PdxTypes7>(regPtr0->get(keyport7));
 
@@ -2203,7 +2282,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
 
     {
       auto p8 = std::make_shared<PdxTypes8>();
-      CacheableKeyPtr keyport8 = CacheableKey::create(18);
+      auto keyport8 = CacheableKey::create(18);
       regPtr0->put(keyport8, p8);
       auto pRet8 = std::dynamic_pointer_cast<PdxTypes8>(regPtr0->get(keyport8));
 
@@ -2245,7 +2324,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
 
     {
       auto p9 = std::make_shared<PdxTypes9>();
-      CacheableKeyPtr keyport9 = CacheableKey::create(19);
+      auto keyport9 = CacheableKey::create(19);
       regPtr0->put(keyport9, p9);
       auto pRet9 = std::dynamic_pointer_cast<PdxTypes9>(regPtr0->get(keyport9));
 
@@ -2287,7 +2366,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
 
     {
       auto p10 = std::make_shared<PdxTypes10>();
-      CacheableKeyPtr keyport10 = CacheableKey::create(20);
+      auto keyport10 = CacheableKey::create(20);
       regPtr0->put(keyport10, p10);
       auto pRet10 =
           std::dynamic_pointer_cast<PdxTypes10>(regPtr0->get(keyport10));
@@ -2336,20 +2415,20 @@ END_TASK_DEFINITION
 // C1.generateJavaPdxType
 DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    CacheablePtr args = CacheableKey::create("saveAllJavaPdxTypes");
-    CacheableKeyPtr key = CacheableKey::create(1);
-    CacheableVectorPtr routingObj = CacheableVector::create();
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto args = CacheableKey::create("saveAllJavaPdxTypes");
+    auto key = CacheableKey::create(1);
+    auto routingObj = CacheableVector::create();
     routingObj->push_back(key);
 
-    ExecutionPtr funcExec = FunctionService::onRegion(regPtr0);
+    auto funcExec = FunctionService::onRegion(regPtr0);
 
-    ResultCollectorPtr collector = funcExec->withArgs(args)
-                                       ->withFilter(routingObj)
-                                       ->execute("ComparePdxTypes");
+    auto collector = funcExec->withArgs(args)
+                         ->withFilter(routingObj)
+                         ->execute("ComparePdxTypes");
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
-    CacheableVectorPtr result = collector->getResult();
+    auto result = collector->getResult();
     LOGINFO("NIL:: testTCPDXTests: result->size = %d ", result->size());
     if (result == nullptr) {
       ASSERT(false, "echo String : result is nullptr");
@@ -2398,7 +2477,9 @@ END_TASK_DEFINITION
 // C1.putAllPdxTypes
 DUNIT_TASK_DEFINITION(CLIENT1, putAllPdxTypes)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
@@ -2454,46 +2535,46 @@ DUNIT_TASK_DEFINITION(CLIENT1, putAllPdxTypes)
     // serializationRegistry->addPdxType(PdxTests.PortfolioPdx.CreateDeserializable);
     // serializationRegistry->addPdxType(PdxTests.PositionPdx.CreateDeserializable);
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     auto p1 = std::make_shared<PdxTypes1>();
-    CacheableKeyPtr keyport1 = CacheableKey::create(p1->getClassName());
+    auto keyport1 = CacheableKey::create(p1->getClassName());
     regPtr0->put(keyport1, p1);
 
     auto p2 = std::make_shared<PdxTypes2>();
-    CacheableKeyPtr keyport2 = CacheableKey::create(p2->getClassName());
+    auto keyport2 = CacheableKey::create(p2->getClassName());
     regPtr0->put(keyport2, p2);
 
     auto p3 = std::make_shared<PdxTypes3>();
-    CacheableKeyPtr keyport3 = CacheableKey::create(p3->getClassName());
+    auto keyport3 = CacheableKey::create(p3->getClassName());
     regPtr0->put(keyport3, p3);
 
     auto p4 = std::make_shared<PdxTypes4>();
-    CacheableKeyPtr keyport4 = CacheableKey::create(p4->getClassName());
+    auto keyport4 = CacheableKey::create(p4->getClassName());
     regPtr0->put(keyport4, p4);
 
     auto p5 = std::make_shared<PdxTypes5>();
-    CacheableKeyPtr keyport5 = CacheableKey::create(p5->getClassName());
+    auto keyport5 = CacheableKey::create(p5->getClassName());
     regPtr0->put(keyport5, p5);
 
     auto p6 = std::make_shared<PdxTypes6>();
-    CacheableKeyPtr keyport6 = CacheableKey::create(p6->getClassName());
+    auto keyport6 = CacheableKey::create(p6->getClassName());
     regPtr0->put(keyport6, p6);
 
     auto p7 = std::make_shared<PdxTypes7>();
-    CacheableKeyPtr keyport7 = CacheableKey::create(p7->getClassName());
+    auto keyport7 = CacheableKey::create(p7->getClassName());
     regPtr0->put(keyport7, p7);
 
     auto p8 = std::make_shared<PdxTypes8>();
-    CacheableKeyPtr keyport8 = CacheableKey::create(p8->getClassName());
+    auto keyport8 = CacheableKey::create(p8->getClassName());
     regPtr0->put(keyport8, p8);
 
     auto p9 = std::make_shared<PdxTypes9>();
-    CacheableKeyPtr keyport9 = CacheableKey::create(p9->getClassName());
+    auto keyport9 = CacheableKey::create(p9->getClassName());
     regPtr0->put(keyport9, p9);
 
     auto p10 = std::make_shared<PdxTypes10>();
-    CacheableKeyPtr keyport10 = CacheableKey::create(p10->getClassName());
+    auto keyport10 = CacheableKey::create(p10->getClassName());
     regPtr0->put(keyport10, p10);
 
     //
@@ -2503,20 +2584,20 @@ END_TASK_DEFINITION
 // C1.verifyDotNetPdxTypes
 DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    CacheablePtr args = CacheableKey::create("compareDotNETPdxTypes");
-    CacheableKeyPtr key = CacheableKey::create(1);
-    CacheableVectorPtr routingObj = CacheableVector::create();
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto args = CacheableKey::create("compareDotNETPdxTypes");
+    auto key = CacheableKey::create(1);
+    auto routingObj = CacheableVector::create();
     routingObj->push_back(key);
 
-    ExecutionPtr funcExec = FunctionService::onRegion(regPtr0);
+    auto funcExec = FunctionService::onRegion(regPtr0);
 
-    ResultCollectorPtr collector = funcExec->withArgs(args)
-                                       ->withFilter(routingObj)
-                                       ->execute("ComparePdxTypes");
+    auto collector = funcExec->withArgs(args)
+                         ->withFilter(routingObj)
+                         ->execute("ComparePdxTypes");
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
-    CacheableVectorPtr result = collector->getResult();
+    auto result = collector->getResult();
     LOGINFO("NIL:: testTCPDXTests:verifyDotNetPdxTypes result->size = %d ",
             result->size());
     if (result == nullptr) {
@@ -2568,17 +2649,20 @@ END_TASK_DEFINITION
 // c1.client1PutsV1Object
 DUNIT_TASK_DEFINITION(CLIENT1, client1PutsV1Object)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxType3V1::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType3V1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     PdxTests::PdxType3V1::reset(false);
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto keyport = CacheableKey::create(1);
     auto np = std::make_shared<PdxType3V1>();
 
     regPtr0->put(keyport, np);
@@ -2587,7 +2671,9 @@ END_TASK_DEFINITION
 // c2.client2GetsV1ObjectAndPutsV2Object
 DUNIT_TASK_DEFINITION(CLIENT2, client2GetsV1ObjectAndPutsV2Object)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(
@@ -2596,10 +2682,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, client2GetsV1ObjectAndPutsV2Object)
       // ignore exception
     }
     PdxTests::PdxTypes3V2::reset(false);
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     // get v1 object
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     auto pRet = std::dynamic_pointer_cast<PdxTypes3V2>(regPtr0->get(keyport));
 
     // now put v2 object
@@ -2612,18 +2698,18 @@ END_TASK_DEFINITION
 // c3.client3GetsV2Object
 DUNIT_TASK_DEFINITION(CLIENT3, client3GetsV2Object)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    CacheablePtr args = CacheableKey::create("compareDotNETPdxTypes");
-    CacheableKeyPtr key = CacheableKey::create(1);
-    CacheableVectorPtr routingObj = CacheableVector::create();
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto args = CacheableKey::create("compareDotNETPdxTypes");
+    auto key = CacheableKey::create(1);
+    auto routingObj = CacheableVector::create();
     routingObj->push_back(key);
 
-    ExecutionPtr funcExec = FunctionService::onRegion(regPtr0);
+    auto funcExec = FunctionService::onRegion(regPtr0);
 
-    ResultCollectorPtr collector = funcExec->execute("IterateRegion");
+    auto collector = funcExec->execute("IterateRegion");
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
-    CacheableVectorPtr result = collector->getResult();
+    auto result = collector->getResult();
     LOGINFO("NIL:: testTCPDXTests:verifyDotNetPdxTypes result->size = %d ",
             result->size());
     if (result == nullptr) {
@@ -2673,7 +2759,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
   {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
       serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
@@ -2729,11 +2817,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
     // serializationRegistry->addPdxType(PdxTests.PortfolioPdx.CreateDeserializable);
     // serializationRegistry->addPdxType(PdxTests.PositionPdx.CreateDeserializable);
 
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     bool flag = false;
     {
       auto p1 = std::make_shared<PdxTypes1>();
-      CacheableKeyPtr keyport = CacheableKey::create(11);
+      auto keyport = CacheableKey::create(11);
       auto pRet = std::dynamic_pointer_cast<PdxTypes1>(regPtr0->get(keyport));
 
       flag = p1->equals(pRet);
@@ -2775,7 +2863,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
 
     {
       auto p2 = std::make_shared<PdxTypes2>();
-      CacheableKeyPtr keyport2 = CacheableKey::create(12);
+      auto keyport2 = CacheableKey::create(12);
       auto pRet2 = std::dynamic_pointer_cast<PdxTypes2>(regPtr0->get(keyport2));
 
       flag = p2->equals(pRet2);
@@ -2817,7 +2905,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
 
     {
       auto p3 = std::make_shared<PdxTypes3>();
-      CacheableKeyPtr keyport3 = CacheableKey::create(13);
+      auto keyport3 = CacheableKey::create(13);
       auto pRet3 = std::dynamic_pointer_cast<PdxTypes3>(regPtr0->get(keyport3));
 
       flag = p3->equals(pRet3);
@@ -2859,7 +2947,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
 
     {
       auto p4 = std::make_shared<PdxTypes4>();
-      CacheableKeyPtr keyport4 = CacheableKey::create(14);
+      auto keyport4 = CacheableKey::create(14);
       auto pRet4 = std::dynamic_pointer_cast<PdxTypes4>(regPtr0->get(keyport4));
 
       flag = p4->equals(pRet4);
@@ -2901,7 +2989,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
 
     {
       auto p5 = std::make_shared<PdxTypes5>();
-      CacheableKeyPtr keyport5 = CacheableKey::create(15);
+      auto keyport5 = CacheableKey::create(15);
       auto pRet5 = std::dynamic_pointer_cast<PdxTypes5>(regPtr0->get(keyport5));
 
       flag = p5->equals(pRet5);
@@ -2943,7 +3031,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
 
     {
       auto p6 = std::make_shared<PdxTypes6>();
-      CacheableKeyPtr keyport6 = CacheableKey::create(16);
+      auto keyport6 = CacheableKey::create(16);
       auto pRet6 = std::dynamic_pointer_cast<PdxTypes6>(regPtr0->get(keyport6));
 
       flag = p6->equals(pRet6);
@@ -2985,7 +3073,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
 
     {
       auto p7 = std::make_shared<PdxTypes7>();
-      CacheableKeyPtr keyport7 = CacheableKey::create(17);
+      auto keyport7 = CacheableKey::create(17);
       auto pRet7 = std::dynamic_pointer_cast<PdxTypes7>(regPtr0->get(keyport7));
 
       flag = p7->equals(pRet7);
@@ -3027,7 +3115,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
 
     {
       auto p8 = std::make_shared<PdxTypes8>();
-      CacheableKeyPtr keyport8 = CacheableKey::create(18);
+      auto keyport8 = CacheableKey::create(18);
       auto pRet8 = std::dynamic_pointer_cast<PdxTypes8>(regPtr0->get(keyport8));
 
       flag = p8->equals(pRet8);
@@ -3069,7 +3157,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
 
     {
       auto p9 = std::make_shared<PdxTypes9>();
-      CacheableKeyPtr keyport9 = CacheableKey::create(19);
+      auto keyport9 = CacheableKey::create(19);
       auto pRet9 = std::dynamic_pointer_cast<PdxTypes9>(regPtr0->get(keyport9));
 
       flag = p9->equals(pRet9);
@@ -3111,7 +3199,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
 
     {
       auto p10 = std::make_shared<PdxTypes10>();
-      CacheableKeyPtr keyport10 = CacheableKey::create(20);
+      auto keyport10 = CacheableKey::create(20);
       auto pRet10 =
           std::dynamic_pointer_cast<PdxTypes10>(regPtr0->get(keyport10));
 
@@ -3157,13 +3245,13 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, putOperation)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     regPtr0->put(1, 1);
 
     // Verify the CLientName.::putOperation
-    // RegionPtr testReg = getHelper()->getRegion("testregion");
-    CacheablePtr valuePtr1 = regPtr0->get("clientName1");
+    // auto testReg = getHelper()->getRegion("testregion");
+    auto valuePtr1 = regPtr0->get("clientName1");
     const char* clientName1 =
         (std::dynamic_pointer_cast<CacheableString>(valuePtr1))->asChar();
     LOGINFO(" C1.putOperation Got ClientName1 = %s ", clientName1);
@@ -3174,13 +3262,13 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getOperation)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
-    CacheablePtr value = regPtr0->get(keyport);
+    auto keyport = CacheableKey::create(1);
+    auto value = regPtr0->get(keyport);
 
     // Verify Client Name for C2
-    CacheablePtr valuePtr2 = regPtr0->get("clientName2");
+    auto valuePtr2 = regPtr0->get("clientName2");
     const char* clientName2 =
         (std::dynamic_pointer_cast<CacheableString>(valuePtr2))->asChar();
     LOGINFO(" C2.getOperation Got ClientName2 = %s ", clientName2);
@@ -3191,11 +3279,14 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, putCharTypes)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(PdxTests::CharTypes::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::CharTypes::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -3204,7 +3295,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putCharTypes)
 
     LOG("Trying to populate PDX objects.....\n");
     auto pdxobj = std::make_shared<PdxTests::CharTypes>();
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     // PUT Operation
     regPtr0->put(keyport, pdxobj);
@@ -3221,21 +3312,24 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, getCharTypes)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     LOG("Trying to GET PDX objects.....\n");
     try {
-      serializationRegistry->addPdxType(PdxTests::CharTypes::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::CharTypes::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     auto localPdxptr = std::make_shared<PdxTests::CharTypes>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     LOG("Client-2 PdxTests::CharTypes GET OP Start....");
-    PdxTests::CharTypesPtr remotePdxptr =
+    auto remotePdxptr =
         std::dynamic_pointer_cast<PdxTests::CharTypes>(regPtr0->get(keyport));
     LOG("Client-2 PdxTests::CharTypes GET OP Done....");
 
@@ -3261,12 +3355,15 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     // QueryHelper * qh = &QueryHelper::getHelper();
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -3281,27 +3378,37 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 
     LOG("Trying to populate PDX objects.....\n");
     auto pdxobj = std::make_shared<PdxTests::PdxType>();
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
 
     // PUT Operation
     regPtr0->put(keyport, pdxobj);
     LOG("PdxTests::PdxType: PUT Done successfully....");
 
     // PUT CacheableObjectArray as a Value
-    CacheableKeyPtr keyport2 = CacheableKey::create(2);
-    CacheableObjectArrayPtr m_objectArray;
+    auto keyport2 = CacheableKey::create(2);
+    std::shared_ptr<CacheableObjectArray> m_objectArray;
 
     m_objectArray = CacheableObjectArray::create();
-    m_objectArray->push_back(AddressPtr(new Address(1, "street0", "city0")));
-    m_objectArray->push_back(AddressPtr(new Address(2, "street1", "city1")));
-    m_objectArray->push_back(AddressPtr(new Address(3, "street2", "city2")));
-    m_objectArray->push_back(AddressPtr(new Address(4, "street3", "city3")));
-    m_objectArray->push_back(AddressPtr(new Address(5, "street4", "city4")));
-    m_objectArray->push_back(AddressPtr(new Address(6, "street5", "city5")));
-    m_objectArray->push_back(AddressPtr(new Address(7, "street6", "city6")));
-    m_objectArray->push_back(AddressPtr(new Address(8, "street7", "city7")));
-    m_objectArray->push_back(AddressPtr(new Address(9, "street8", "city8")));
-    m_objectArray->push_back(AddressPtr(new Address(10, "street9", "city9")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(1, "street0", "city0")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(2, "street1", "city1")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(3, "street2", "city2")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(4, "street3", "city3")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(5, "street4", "city4")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(6, "street5", "city5")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(7, "street6", "city6")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(8, "street7", "city7")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(9, "street8", "city8")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(10, "street9", "city9")));
 
     // PUT Operation
     regPtr0->put(keyport2, m_objectArray);
@@ -3348,8 +3455,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 
     // Now update new keys with updated stats values, so that other client can
     // verify these values with its stats.
-    CacheableKeyPtr keyport3 = CacheableKey::create(3);
-    CacheableKeyPtr keyport4 = CacheableKey::create(4);
+    auto keyport3 = CacheableKey::create(3);
+    auto keyport4 = CacheableKey::create(4);
     regPtr0->put(keyport3,
                  CacheableInt32::create(lregPtr->getCacheImpl()
                                             ->getCachePerfStats()
@@ -3367,14 +3474,17 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
   {
     // initClient(true);
-    RegionPtr regPtr0 = getHelper()->getRegion("DistRegionAck");
+    auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     // QueryHelper * qh = &QueryHelper::getHelper();
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     LOG("Trying to GET PDX objects.....\n");
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -3386,31 +3496,31 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
     }
 
     // Create local CacheableObjectArray
-    CacheableObjectArrayPtr m_localObjectArray;
+    std::shared_ptr<CacheableObjectArray> m_localObjectArray;
     m_localObjectArray = CacheableObjectArray::create();
     m_localObjectArray->push_back(
-        AddressPtr(new Address(1, "street0", "city0")));
+        std::shared_ptr<Address>(new Address(1, "street0", "city0")));
     m_localObjectArray->push_back(
-        AddressPtr(new Address(2, "street1", "city1")));
+        std::shared_ptr<Address>(new Address(2, "street1", "city1")));
     m_localObjectArray->push_back(
-        AddressPtr(new Address(3, "street2", "city2")));
+        std::shared_ptr<Address>(new Address(3, "street2", "city2")));
     m_localObjectArray->push_back(
-        AddressPtr(new Address(4, "street3", "city3")));
+        std::shared_ptr<Address>(new Address(4, "street3", "city3")));
     m_localObjectArray->push_back(
-        AddressPtr(new Address(5, "street4", "city4")));
+        std::shared_ptr<Address>(new Address(5, "street4", "city4")));
     m_localObjectArray->push_back(
-        AddressPtr(new Address(6, "street5", "city5")));
+        std::shared_ptr<Address>(new Address(6, "street5", "city5")));
     m_localObjectArray->push_back(
-        AddressPtr(new Address(7, "street6", "city6")));
+        std::shared_ptr<Address>(new Address(7, "street6", "city6")));
     m_localObjectArray->push_back(
-        AddressPtr(new Address(8, "street7", "city7")));
+        std::shared_ptr<Address>(new Address(8, "street7", "city7")));
     m_localObjectArray->push_back(
-        AddressPtr(new Address(9, "street8", "city8")));
+        std::shared_ptr<Address>(new Address(9, "street8", "city8")));
     m_localObjectArray->push_back(
-        AddressPtr(new Address(10, "street9", "city9")));
+        std::shared_ptr<Address>(new Address(10, "street9", "city9")));
 
     // Get remote CacheableObjectArray on key 2
-    CacheableKeyPtr keyport2 = CacheableKey::create(2);
+    auto keyport2 = CacheableKey::create(2);
     LOGINFO("Client-2 PdxTests::PdxType GET OP Start....");
     auto remoteCObjArray =
         std::dynamic_pointer_cast<CacheableObjectArray>(regPtr0->get(keyport2));
@@ -3440,9 +3550,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
 
     auto localPdxptr = std::make_shared<PdxTests::PdxType>();
 
-    CacheableKeyPtr keyport = CacheableKey::create(1);
+    auto keyport = CacheableKey::create(1);
     LOG("Client-2 PdxTests::PdxType GET OP Start....");
-    PdxTests::PdxTypePtr remotePdxptr =
+    auto remotePdxptr =
         std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport));
     LOG("Client-2 PdxTests::PdxType GET OP Done....");
 
@@ -3498,8 +3608,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
                 ->getCachePerfStats()
                 .getPdxDeSerializationBytes());
 
-    CacheableKeyPtr keyport3 = CacheableKey::create(3);
-    CacheableKeyPtr keyport4 = CacheableKey::create(4);
+    auto keyport3 = CacheableKey::create(3);
+    auto keyport4 = CacheableKey::create(4);
     auto int32Ptr =
         std::dynamic_pointer_cast<CacheableInt32>(regPtr0->get(keyport3));
     auto int64Ptr =

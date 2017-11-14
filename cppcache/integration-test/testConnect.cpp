@@ -18,15 +18,15 @@
 #define ROOT_NAME "testConnect"
 
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
+#include <geode/CacheFactory.hpp>
 
 using namespace apache::geode::client;
 
 const char* host_name = "Suds";
 DUNIT_TASK(s1p1, CreateRegionOne)
   {
-    CacheFactoryPtr factory = CacheFactory::createCacheFactory();
-    CachePtr cache = factory->create();
+    auto factory = CacheFactory::createCacheFactory();
+    auto cache = factory->create();
     try {
       cache->getDistributedSystem().connect();
       FAIL("Expected an exception.");

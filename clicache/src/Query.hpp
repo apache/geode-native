@@ -190,7 +190,7 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static Query<TResult>^ Create( apache::geode::client::QueryPtr nativeptr )
+        inline static Query<TResult>^ Create( std::shared_ptr<apache::geode::client::Query> nativeptr )
         {
           return __nullptr == nativeptr ? nullptr :
             gcnew Query<TResult>( nativeptr );
@@ -203,12 +203,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Query( apache::geode::client::QueryPtr nativeptr )
+        inline Query( std::shared_ptr<apache::geode::client::Query> nativeptr )
         {
           m_nativeptr = gcnew native_shared_ptr<native::Query>(nativeptr);
         }
 
-        ISelectResults<TResult>^ WrapResults(const apache::geode::client::SelectResultsPtr& selectResults);
+        ISelectResults<TResult>^ WrapResults(const std::shared_ptr<apache::geode::client::SelectResults>& selectResults);
 
         native_shared_ptr<native::Query>^ m_nativeptr;
       };

@@ -61,7 +61,7 @@ DUNIT_TASK(CLIENT1, StartC1)
     createPool(poolName, locHostPort, serverGroup, 0, true);
     createRegionAndAttachPool(poolRegNames[0], USE_ACK, poolName);
 
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     regPtr0->registerAllKeys();
 
     LOG("Clnt1Init complete.");

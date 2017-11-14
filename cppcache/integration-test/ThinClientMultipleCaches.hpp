@@ -23,7 +23,6 @@
 #include <string>
 
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <geode/CacheFactory.hpp>
 
 #include "CacheHelper.hpp"
@@ -48,8 +47,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
     LOG("SERVER1 started");
   }
 END_TASK_DEFINITION
-
-RegionPtr createRegionFromCache(std::shared_ptr<Cache> cache) {
+std::shared_ptr<Region> createRegionFromCache(std::shared_ptr<Cache> cache) {
   auto poolFactory = cache->getPoolManager().createFactory();
   CacheHelper::getHelper().addServerLocatorEPs(locatorsG, poolFactory, true);
   poolFactory->create("DistRegionAck");

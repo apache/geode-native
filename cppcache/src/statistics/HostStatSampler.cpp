@@ -545,7 +545,7 @@ void HostStatSampler::putStatsInAdminRegion() {
     // Get Values of gets, puts,misses,listCalls,numThreads
     static bool initDone = false;
     static std::string clientId = "";
-    AdminRegionPtr adminRgn = m_statMngr->getAdminRegion();
+    auto adminRgn = m_statMngr->getAdminRegion();
     if (adminRgn == nullptr) return;
     auto conn_man = adminRgn->getConnectionManager();
     if (conn_man->isNetDown()) {
@@ -581,8 +581,8 @@ void HostStatSampler::putStatsInAdminRegion() {
           cpuTime = HostStatHelper::getCpuTime();
         }
         static int numCPU = ACE_OS::num_processors();
-        ClientHealthStatsPtr obj = ClientHealthStats::create(
-            gets, puts, misses, numListeners, numThreads, cpuTime, numCPU);
+        auto obj = ClientHealthStats::create(gets, puts, misses, numListeners,
+                                             numThreads, cpuTime, numCPU);
         if (clientId.empty()) {
           ACE_TCHAR hostName[256];
           ACE_OS::hostname(hostName, sizeof(hostName) - 1);
@@ -597,7 +597,7 @@ void HostStatSampler::putStatsInAdminRegion() {
           clientId = memId->getDSMemberIdForThinClientUse();
         }
 
-        CacheableKeyPtr keyPtr = CacheableString::create(clientId.c_str());
+        auto keyPtr = CacheableString::create(clientId.c_str());
         adminRgn->put(keyPtr, obj);
       }
     }

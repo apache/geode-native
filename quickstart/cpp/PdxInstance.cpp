@@ -31,7 +31,6 @@
 */
 
 // Include the Geode library.
-#include <geode/GeodeCppCache.hpp>
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
@@ -60,9 +59,9 @@ class Person {
 int main(int argc, char** argv) {
   try {
     // Create a Geode Cache.
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+    auto cacheFactory = CacheFactory::createCacheFactory();
 
-    CachePtr cachePtr =
+    auto cachePtr =
         cacheFactory->set("cache-xml-file", "XMLs/clientPdxInstance.xml")
             ->create();
 
@@ -70,14 +69,14 @@ int main(int argc, char** argv) {
 
     // Get the example Region from the Cache which is declared in the Cache XML
     // file.
-    RegionPtr regionPtr = cachePtr->getRegion("Person");
+    auto regionPtr = cachePtr->getRegion("Person");
 
     LOGINFO("Obtained the Region from the Cache.");
 
     Person* p = new Person("Jack", 7, 21);
 
     // PdxInstanceFactory for Person class
-    PdxInstanceFactoryPtr pif = cachePtr->createPdxInstanceFactory("Person");
+    auto pif = cachePtr->createPdxInstanceFactory("Person");
     LOGINFO("Created PdxInstanceFactory for Person class");
 
     pif->writeString("m_name", p->getName());
@@ -85,7 +84,7 @@ int main(int argc, char** argv) {
     pif->markIdentityField("m_id");
     pif->writeInt("m_age", p->getAge());
 
-    PdxInstancePtr pdxInstance = pif->create();
+    auto pdxInstance = pif->create();
 
     LOGINFO("Created PdxInstance for Person class");
 
@@ -93,7 +92,9 @@ int main(int argc, char** argv) {
 
     LOGINFO("Populated PdxInstance Object");
 
-    PdxInstancePtr retPdxInstance = std::dynamic_pointer_cast<apache::geode::client::PdxInstance>(regionPtr->get("Key1"));
+    auto retPdxInstance =
+        std::dynamic_pointer_cast<apache::geode::client::PdxInstance>(
+            regionPtr->get("Key1"));
 
     LOGINFO("Got PdxInstance Object");
 

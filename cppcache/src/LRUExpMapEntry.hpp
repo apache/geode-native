@@ -54,7 +54,7 @@ class CPPCACHE_EXPORT LRUExpMapEntry : public MapEntryImpl,
         ExpEntryProperties(true) {}
 
   inline LRUExpMapEntry(ExpiryTaskManager* expiryTaskManager,
-                        const CacheableKeyPtr& key)
+                        const std::shared_ptr<CacheableKey>& key)
       : MapEntryImpl(key), ExpEntryProperties(expiryTaskManager) {}
 
  private:
@@ -62,8 +62,6 @@ class CPPCACHE_EXPORT LRUExpMapEntry : public MapEntryImpl,
   LRUExpMapEntry(const LRUExpMapEntry&);
   LRUExpMapEntry& operator=(const LRUExpMapEntry&);
 };
-
-typedef std::shared_ptr<LRUExpMapEntry> LRUExpMapEntryPtr;
 
 class CPPCACHE_EXPORT VersionedLRUExpMapEntry : public LRUExpMapEntry,
                                                 public VersionStamp {
@@ -76,7 +74,7 @@ class CPPCACHE_EXPORT VersionedLRUExpMapEntry : public LRUExpMapEntry,
   inline explicit VersionedLRUExpMapEntry(bool noInit) : LRUExpMapEntry(true) {}
 
   inline VersionedLRUExpMapEntry(ExpiryTaskManager* expiryTaskManager,
-                                 const CacheableKeyPtr& key)
+                                 const std::shared_ptr<CacheableKey>& key)
       : LRUExpMapEntry(expiryTaskManager, key) {}
 
  private:
@@ -85,8 +83,6 @@ class CPPCACHE_EXPORT VersionedLRUExpMapEntry : public LRUExpMapEntry,
   VersionedLRUExpMapEntry& operator=(const VersionedLRUExpMapEntry&);
 };
 
-typedef std::shared_ptr<VersionedLRUExpMapEntry> VersionedLRUExpMapEntryPtr;
-
 class CPPCACHE_EXPORT LRUExpEntryFactory : public EntryFactory {
  public:
   using EntryFactory::EntryFactory;
@@ -94,8 +90,8 @@ class CPPCACHE_EXPORT LRUExpEntryFactory : public EntryFactory {
   virtual ~LRUExpEntryFactory() {}
 
   virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
-                           const CacheableKeyPtr& key,
-                           MapEntryImplPtr& result) const;
+                           const std::shared_ptr<CacheableKey>& key,
+                           std::shared_ptr<MapEntryImpl>& result) const;
 };
 }  // namespace client
 }  // namespace geode

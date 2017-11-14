@@ -220,7 +220,7 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
   // deserialization for PR FX HA
   uint8_t* hostAddr;
   int32_t len, hostPort, dcport, vPID;
-  CacheableStringPtr hostname, dsName, uniqueTag, durableClientId;
+  std::shared_ptr<CacheableString> hostname, dsName, uniqueTag, durableClientId;
   int8_t splitbrain, vmKind;
 
   len = input.readArrayLen();  // inetaddress len
@@ -266,7 +266,7 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
 Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
   uint8_t* hostAddr;
   int32_t len, hostPort, vmViewId = 0;
-  CacheableStringPtr hostname, dsName, uniqueTag, vmViewIdstr;
+  std::shared_ptr<CacheableString> hostname, dsName, uniqueTag, vmViewIdstr;
 
   len = input.readArrayLen();  // inetaddress len
   m_hostAddrLocalMem = true;

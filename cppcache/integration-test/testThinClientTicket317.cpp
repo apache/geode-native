@@ -68,7 +68,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, doLocalDestroyAndDestroy)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->localDestroy(keys[0]);
     regPtr->destroy(keys[0]);
     verifyDestroyed(regionNames[0], keys[0]);
@@ -77,8 +77,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, doLocalDestroyAndDestroy)
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, verifyKeyDestroyedOnServer)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    CacheablePtr value = regPtr->get(keys[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
+    auto value = regPtr->get(keys[0]);
     if (value != nullptr) {
       FAIL("Entry not destroyed on server.");
     }
@@ -87,7 +87,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, verifyKeyDestroyedfromClient1)
   {
     try {
-      RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+      auto regPtr = getHelper()->getRegion(regionNames[0]);
       regPtr->get(keys[0]);
     } catch (const EntryNotFoundException&) {
       // expected

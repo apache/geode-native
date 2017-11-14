@@ -44,7 +44,6 @@ class ClientConnectionResponse : public ServerLocationResponse {
   bool m_serverFound;
   ServerLocation m_server;
 };
-typedef std::shared_ptr<ClientConnectionResponse> ClientConnectionResponsePtr;
 
 }  // namespace client
 }  // namespace geode

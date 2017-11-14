@@ -46,7 +46,7 @@ namespace Apache
       generic<class TKey, class TValue>
 			Apache::Geode::Client::TransactionId^ TransactionEvent<TKey, TValue>::TransactionId::get( )
       {
-        apache::geode::client::TransactionIdPtr & nativeptr(
+        std::shared_ptr<apache::geode::client::TransactionId> & nativeptr(
           NativePtr->getTransactionId( ) );
 
 				return Apache::Geode::Client::TransactionId::Create(
@@ -56,14 +56,14 @@ namespace Apache
       generic<class TKey, class TValue>
       array<EntryEvent<TKey, TValue>^>^ TransactionEvent<TKey, TValue>::Events::get( )
       {
-        apache::geode::client::VectorOfEntryEvent vee;
+        std::vector<std::shared_ptr<apache::geode::client::EntryEvent>> vee;
         vee = NativePtr->getEvents();
         array<EntryEvent<TKey, TValue>^>^ events =
           gcnew array<EntryEvent<TKey, TValue>^>( vee.size( ) );
         // Loop through the unmanaged event objects to convert them to the managed generic objects. 
         for( System::Int32 index = 0; index < vee.size( ); index++ )
         {
-          apache::geode::client::EntryEventPtr& nativeptr( vee[ index ] );
+          std::shared_ptr<apache::geode::client::EntryEvent>& nativeptr( vee[ index ] );
           EntryEvent<TKey, TValue> entryEvent( nativeptr.get() );
           events[ index ] = (%entryEvent);
         }

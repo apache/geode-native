@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 
@@ -35,7 +34,7 @@
 static int clientWithNothing = 0;
 void initClient() {
   if (cacheHelper == nullptr) {
-    PropertiesPtr config = Properties::create();
+    auto config = Properties::create();
     if (clientWithNothing > 1) config->insert("grid-client", "true");
     clientWithNothing += 1;
     cacheHelper = new CacheHelper(true, config);
@@ -118,8 +117,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_EndPoint)
                                              "__TESTPOOL1_", false);
       getHelper()->createRegionAndAttachPool(regionNames[1], NO_ACK,
                                              "__TESTPOOL2_", false);
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-      RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+      auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+      auto regPtr1 = getHelper()->getRegion(regionNames[1]);
       for (int i = 0; i < 100; i++) {
         regPtr0->put(keys[0], vals[0]);
         regPtr1->put(keys[2], vals[2]);
@@ -151,8 +150,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_EndPoint)
                                              "__TESTPOOL1_", false);
       getHelper()->createRegionAndAttachPool(regionNames[1], NO_ACK,
                                              "__TESTPOOL2_", false);
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-      RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+      auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+      auto regPtr1 = getHelper()->getRegion(regionNames[1]);
       for (int i = 0; i < 100; i++) {
         regPtr0->put(keys[1], vals[1]);
         regPtr1->put(keys[3], vals[3]);
@@ -168,8 +167,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_1)
   {
     try {
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-      RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+      auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+      auto regPtr1 = getHelper()->getRegion(regionNames[1]);
       auto checkPtr =
           std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[2]));
       ASSERT(checkPtr == nullptr, "checkPtr should be null");
@@ -191,8 +190,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_2)
   {
     try {
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-      RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+      auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+      auto regPtr1 = getHelper()->getRegion(regionNames[1]);
       for (int i = 0; i < 100; i++) {
         regPtr0->put(keys[0], regPtr1->get(keys[2]));
         regPtr1->put(keys[2], regPtr0->get(keys[0]));
@@ -288,8 +287,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_SecureEndPoint)
                                              "__TESTPOOL1_", false);
       getHelper()->createRegionAndAttachPool(regionNames[1], NO_ACK,
                                              "__TESTPOOL2_", false);
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-      RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+      auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+      auto regPtr1 = getHelper()->getRegion(regionNames[1]);
       for (int i = 0; i < 100; i++) {
         regPtr0->put(keys[0], vals[0]);
         regPtr1->put(keys[2], vals[2]);
@@ -322,8 +321,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_SecureEndPoint)
                                              "__TESTPOOL1_", false);
       getHelper()->createRegionAndAttachPool(regionNames[1], NO_ACK,
                                              "__TESTPOOL2_", false);
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-      RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+      auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+      auto regPtr1 = getHelper()->getRegion(regionNames[1]);
       for (int i = 0; i < 100; i++) {
         regPtr0->put(keys[1], vals[1]);
         regPtr1->put(keys[3], vals[3]);
@@ -339,8 +338,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_secureclient1)
   {
     try {
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-      RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+      auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+      auto regPtr1 = getHelper()->getRegion(regionNames[1]);
       auto checkPtr =
           std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[2]));
       ASSERT(checkPtr == nullptr, "checkPtr should be null");
@@ -357,8 +356,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_secureclient2)
   {
     try {
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-      RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+      auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+      auto regPtr1 = getHelper()->getRegion(regionNames[1]);
       for (int i = 0; i < 100; i++) {
         regPtr0->put(keys[0], regPtr1->get(keys[2]));
         regPtr1->put(keys[2], regPtr0->get(keys[0]));

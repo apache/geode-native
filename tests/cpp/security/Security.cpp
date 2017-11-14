@@ -96,7 +96,7 @@ TESTTASK doCloseCache() {
   return result;
 }
 
-void Security::getClientSecurityParams(PropertiesPtr prop,
+void Security::getClientSecurityParams(std::shared_ptr<Properties> prop,
                                        std::string credentials) {
   std::string securityParams = getStringValue("securityParams");
 
@@ -121,7 +121,7 @@ void Security::getClientSecurityParams(PropertiesPtr prop,
 
   if (prop == nullptr) prop = Properties::create();
 
-  CredentialGeneratorPtr cg = CredentialGenerator::create(sc);
+  auto cg = CredentialGenerator::create(sc);
   cg->getAuthInit(prop);
 
   if (securityParams == "valid" || securityParams == "VALID") {
@@ -161,7 +161,7 @@ void Security::checkTest(const char *taskId) {
   std::lock_guard<spinlock_mutex> guard(m_lck);
   setTask(taskId);
   if (m_cache == nullptr || m_cache->isClosed()) {
-    PropertiesPtr pp = Properties::create();
+    auto pp = Properties::create();
 
     getClientSecurityParams(pp, getStringValue("credentials"));
 
@@ -327,13 +327,13 @@ int32_t Security::doServerKeys()
 
   int32_t expected = getIntValue( "expectedCount" );
 
-  RegionPtr regionPtr = getRegionPtr();
+ auto regionPtr = getRegionPtr();
   if ( regionPtr == NULL ) {
     FWKEXCEPTION( "Security::doServerKeys(): No region to perform operations
 on." );
   }
 
-  VectorOfCacheableKey keysVec;
+  std::vector<std::shared_ptr<CacheableKey>>  keysVec;
   try {
     regionPtr->serverKeys( keysVec );
   } catch( Exception & e ) {
@@ -403,7 +403,7 @@ int32_t Security::initKeys(bool useDefault) {
 
 void Security::initStrKeys(int32_t low, int32_t high,
                            const std::string &keyBase) {
-  m_KeysA = new CacheableStringPtr[m_MaxKeys];
+  m_KeysA = new std::shared_ptr<CacheableString>[m_MaxKeys];
   const char *const base = keyBase.c_str();
 
   char buf[128];
@@ -440,7 +440,7 @@ int32_t Security::initValues(int32_t numKeys, int32_t siz, bool useDefault) {
 
   m_MaxValues = numKeys;
 
-  m_CValue = new CacheableBytesPtr[m_MaxValues];
+  m_CValue = new std::shared_ptr<CacheableBytes>[m_MaxValues];
 
   char *buf = new char[siz];
   memset(buf, 'V', siz);
@@ -462,7 +462,7 @@ int32_t Security::createRegion() {
   try {
     createPool();
     RegionHelper help(g_test);
-    RegionPtr region = help.createRootRegion(m_cache);
+    auto region = help.createRootRegion(m_cache);
 
     std::string key(region->getName());
     bbIncrement(REGIONSBB, key);
@@ -492,20 +492,20 @@ int32_t Security::verifyInterestList()
 
   try {
     int32_t countUpdate = 0;
-    RegionPtr region = getRegionPtr();
+   auto region = getRegionPtr();
     int32_t numOfRegisterKeys = getIntValue( "registerKeys");
     int32_t payload = getIntValue( "valueSizes");
 
-    VectorOfCacheableKey keys;
+    std::vector<std::shared_ptr<CacheableKey>>  keys;
     region->keys(keys);
-    CacheableBytesPtr valuePtr;
-    CacheableKeyPtr keyPtr;
+    std::shared_ptr<CacheableBytes> valuePtr;
+    std::shared_ptr<CacheableKey> keyPtr;
     uint32_t valueSize;
     for(int32_t i = 0; i < (int32_t) keys.size(); i++)
     {
       keyPtr = keys.at(i);
-      valuePtr = std::dynamic_pointer_cast<CacheableBytes>( region->get(keyPtr) );
-      valueSize = valuePtr->length();
+      valuePtr = std::dynamic_pointer_cast<CacheableBytes>( region->get(keyPtr)
+); valueSize = valuePtr->length();
 
       if( (int32_t)valueSize == payload )
       {
@@ -545,7 +545,7 @@ int32_t Security::populateRegion()
   FWKINFO( "In Security::populateRegion()" );
 
   try {
-    RegionPtr region = getRegionPtr();
+   auto region = getRegionPtr();
     TestClient * clnt = TestClient::getTestClient();
     resetValue( "distinctKeys" );
     initValues( initKeys());
@@ -579,7 +579,7 @@ int32_t Security::registerInterestList() {
   FWKINFO("In Security::registerInterestList()");
 
   try {
-    RegionPtr region = getRegionPtr();
+    auto region = getRegionPtr();
     int32_t numKeys = getIntValue("distinctKeys");  // check distince keys first
     if (numKeys <= 0) {
       // FWKSEVERE( "Failed to initialize keys with numKeys :" <<  numKeys);
@@ -593,7 +593,7 @@ int32_t Security::registerInterestList() {
     clearKeys();
     m_MaxKeys = numOfRegisterKeys;
     m_KeyIndexBegin = low;
-    VectorOfCacheableKey registerKeyList;
+    std::vector<std::shared_ptr<CacheableKey>> registerKeyList;
     int32_t keySize = getIntValue("keySize");
     keySize = (keySize > 0) ? keySize : 10;
     std::string keyBase(keySize, 'A');
@@ -629,7 +629,7 @@ int32_t Security::registerRegexList() {
   int32_t result = FWK_SEVERE;
   FWKINFO("In Security::registerRegexList()");
   try {
-    RegionPtr region = getRegionPtr();
+    auto region = getRegionPtr();
     std::string registerRegex = getStringValue("registerRegex");
     FWKINFO("Security::registerRegexList region name is "
             << region->getName() << "regex is: " << registerRegex.c_str());
@@ -654,7 +654,7 @@ int32_t Security::unregisterRegexList() {
   int32_t result = FWK_SEVERE;
   FWKINFO("In Security::unregisterRegexList()");
   try {
-    RegionPtr region = getRegionPtr();
+    auto region = getRegionPtr();
     std::string unregisterRegex = getStringValue("unregisterRegex");
     FWKINFO("Security::unregisterRegexList region name is "
             << region->getName() << "regex is: " << unregisterRegex.c_str());
@@ -680,7 +680,7 @@ int32_t Security::registerAllKeys() {
   FWKINFO("In Security::registerAllKeys()");
 
   try {
-    RegionPtr region = getRegionPtr();
+    auto region = getRegionPtr();
     FWKINFO("Security::registerAllKeys region name is " << region->getName());
     region->registerAllKeys();
     result = FWK_SUCCESS;
@@ -740,9 +740,8 @@ int32_t Security::checkValues() {
 }
 
 // ----------------------------------------------------------------------------
-
-RegionPtr Security::getRegionPtr(const char *reg) {
-  RegionPtr region;
+std::shared_ptr<Region> Security::getRegionPtr(const char *reg) {
+  std::shared_ptr<Region> region;
   std::string name;
 
   if (reg == NULL) {
@@ -815,8 +814,8 @@ bool Security::checkReady(int32_t numClients) {
   return false;
 }
 //----------------------------------------------------------------------------
-CacheablePtr Security::getUserObject(const std::string &objType) {
-  CacheablePtr usrObj = nullptr;
+std::shared_ptr<Cacheable> Security::getUserObject(const std::string &objType) {
+  std::shared_ptr<Cacheable> usrObj = nullptr;
   resetValue("entryCount");
   int numOfKeys =
       getIntValue("entryCount");  // number of key should be multiple of 20
@@ -839,8 +838,8 @@ CacheablePtr Security::getUserObject(const std::string &objType) {
   return usrObj;
 }
 // ----------------------------------------------------------------------------
-CacheableStringPtr Security::getKey(int32_t max) {
-  CacheableStringPtr keyPtr;
+std::shared_ptr<CacheableString> Security::getKey(int32_t max) {
+  std::shared_ptr<CacheableString> keyPtr;
   char buf[32];
   resetValue("objectType");
   const std::string objectType = getStringValue("objectType");
@@ -894,42 +893,42 @@ void Security::runQuery(int32_t &queryCnt) {
                                  static_cast<uint32_t>(QueryStrings::RSsize()));
 
     ACE_Time_Value startTime, endTime;
-    QueryServicePtr qs = m_cache->getQueryService();
-    QueryPtr qry;
-    SelectResultsPtr results;
-    resetValue("largeSetQuery");
-    resetValue("unsupportedPRQuery");
-    bool islargeSetQuery = g_test->getBoolValue("largeSetQuery");
-    bool isUnsupportedPRQuery = g_test->getBoolValue("unsupportedPRQuery");
-    if (allowQuery(resultsetQueries[i].category,
-                   resultsetQueries[i].haveLargeResultset, islargeSetQuery,
-                   isUnsupportedPRQuery)) {
-      FWKINFO(" running resultsetQueries["
-              << i << "] query : " << resultsetQueries[i].query());
-      qry = qs->newQuery(resultsetQueries[i].query());
-      startTime = ACE_OS::gettimeofday();
-      results = qry->execute(std::chrono::seconds{600});
-      endTime = ACE_OS::gettimeofday() - startTime;
-      FWKINFO(" Time Taken to execute the reselt set query : "
-              << resultsetQueries[i].query() << ": is " << endTime.sec() << "."
-              << endTime.usec() << " sec");
-      queryCnt++;
-    }
-    i = GsRandom::random(static_cast<uint32_t>(0),
-                         static_cast<uint32_t>(QueryStrings::SSsize()));
-    if (allowQuery(structsetQueries[i].category,
-                   structsetQueries[i].haveLargeResultset, islargeSetQuery,
-                   isUnsupportedPRQuery)) {
-      FWKINFO(" running structsetQueries["
-              << i << "] query : " << structsetQueries[i].query());
-      qry = qs->newQuery(structsetQueries[i].query());
-      startTime = ACE_OS::gettimeofday();
-      results = qry->execute(std::chrono::seconds{600});
-      endTime = ACE_OS::gettimeofday() - startTime;
-      FWKINFO(" Time Taken to execute the struct set query : "
-              << structsetQueries[i].query() << ": is " << endTime.sec() << "."
-              << endTime.usec() << " sec");
-      queryCnt++;
+   auto qs = m_cache->getQueryService();
+   std::shared_ptr<Query> qry;
+   std::shared_ptr<SelectResults> results;
+   resetValue("largeSetQuery");
+   resetValue("unsupportedPRQuery");
+   bool islargeSetQuery = g_test->getBoolValue("largeSetQuery");
+   bool isUnsupportedPRQuery = g_test->getBoolValue("unsupportedPRQuery");
+   if (allowQuery(resultsetQueries[i].category,
+                  resultsetQueries[i].haveLargeResultset, islargeSetQuery,
+                  isUnsupportedPRQuery)) {
+     FWKINFO(" running resultsetQueries["
+             << i << "] query : " << resultsetQueries[i].query());
+     qry = qs->newQuery(resultsetQueries[i].query());
+     startTime = ACE_OS::gettimeofday();
+     results = qry->execute(std::chrono::seconds{600});
+     endTime = ACE_OS::gettimeofday() - startTime;
+     FWKINFO(" Time Taken to execute the reselt set query : "
+             << resultsetQueries[i].query() << ": is " << endTime.sec() << "."
+             << endTime.usec() << " sec");
+     queryCnt++;
+   }
+   i = GsRandom::random(static_cast<uint32_t>(0),
+                        static_cast<uint32_t>(QueryStrings::SSsize()));
+   if (allowQuery(structsetQueries[i].category,
+                  structsetQueries[i].haveLargeResultset, islargeSetQuery,
+                  isUnsupportedPRQuery)) {
+     FWKINFO(" running structsetQueries["
+             << i << "] query : " << structsetQueries[i].query());
+     qry = qs->newQuery(structsetQueries[i].query());
+     startTime = ACE_OS::gettimeofday();
+     results = qry->execute(std::chrono::seconds{600});
+     endTime = ACE_OS::gettimeofday() - startTime;
+     FWKINFO(" Time Taken to execute the struct set query : "
+             << structsetQueries[i].query() << ": is " << endTime.sec() << "."
+             << endTime.usec() << " sec");
+     queryCnt++;
     }
   } catch (Exception &e) {
     FWKEXCEPTION(
@@ -962,9 +961,9 @@ int32_t Security::doEntryOperations() {
   ACE_Time_Value end = ACE_OS::gettimeofday() + ACE_Time_Value(secondsToRun);
   ACE_Time_Value now;
 
-  CacheableStringPtr keyPtr;
-  CacheablePtr valuePtr;
-  CacheablePtr tmpValue;
+  std::shared_ptr<CacheableString> keyPtr;
+  std::shared_ptr<Cacheable> valuePtr;
+  std::shared_ptr<Cacheable> tmpValue;
   char *valBuf = new char[valSize + 1];
   memset(valBuf, 'A', valSize);
   valBuf[valSize] = 0;
@@ -973,98 +972,101 @@ int32_t Security::doEntryOperations() {
   std::string objectType;
 
   int32_t creates = 0, puts = 0, gets = 0, dests = 0, invals = 0, query = 0;
-  RegionPtr regionPtr = getRegionPtr();
-  if (regionPtr == nullptr) {
-    fwkResult = FWK_SEVERE;
-    FWKSEVERE(
-        "CacheServerTest::doEntryOperations(): No region to perform operations "
-        "on.");
-    now = end;  // Do not do the loop
-  }
+ auto regionPtr = getRegionPtr();
+ if (regionPtr == nullptr) {
+   fwkResult = FWK_SEVERE;
+   FWKSEVERE(
+       "CacheServerTest::doEntryOperations(): No region to perform operations "
+       "on.");
+   now = end;  // Do not do the loop
+ }
 
-  FWKINFO("doEntryOperations will work for " << secondsToRun << " using "
-                                             << valSize << " byte values.");
+ FWKINFO("doEntryOperations will work for " << secondsToRun << " using "
+                                            << valSize << " byte values.");
 
-  PaceMeter meter(opsSec);
-  objectType = getStringValue("objectType");
-  while (now < end) {
-    try {
-      opcode = getStringValue("entryOps");
-      if (opcode.empty()) {
-        opcode = "no-op";
-      }
-      if (opcode == "add") {
-        keyPtr = getKey(entryCount);
-        if (!objectType.empty()) {
-          tmpValue = getUserObject(objectType);
-        } else {
-          tmpValue = CacheableBytes::create(
-              reinterpret_cast<const unsigned char *>(valBuf),
-              static_cast<int32_t>(strlen(valBuf)));
-        }
-        regionPtr->create(keyPtr, tmpValue);
-        creates++;
-      } else {
-        keyPtr = getKey(entryCount);
-        if (opcode == "update") {
-          if (!objectType.empty()) {
-            tmpValue = getUserObject(objectType);
-          } else {
-            int32_t keyVal = atoi(keyPtr->toString());
-            tmpValue = CacheableBytes::create(
-                reinterpret_cast<const unsigned char *>(valBuf),
-                static_cast<int32_t>(strlen(valBuf)));
-            int32_t *val =
-                (int32_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)->value());
-            *val = (*val == keyVal) ? keyVal + 1
-                                    : keyVal;  // alternate the value so that it
-                                               // can be validated later.
-            int64_t *adjNow =
-                (int64_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)->value() + 4);
-            *adjNow = getAdjustedNowMicros();
-          }
-          regionPtr->put(keyPtr, tmpValue);
-          puts++;
-        } else if (opcode == "invalidate") {
-          regionPtr->invalidate(keyPtr);
-          invals++;
-        } else if (opcode == "destroy") {
-          regionPtr->destroy(keyPtr);
-          dests++;
-        } else if (opcode == "read") {
-          valuePtr = regionPtr->get(keyPtr);
-          gets++;
-        } else if (opcode == "read+localdestroy") {
-          valuePtr = regionPtr->get(keyPtr);
-          gets++;
-          regionPtr->localDestroy(keyPtr);
-          dests++;
-        } else if (opcode == "query") {
-          runQuery(query);
-        } else {
-          FWKSEVERE("Invalid operation specified: " << opcode);
-        }
-      }
-    } catch (TimeoutException &e) {
-      fwkResult = FWK_SEVERE;
-      FWKSEVERE("Caught unexpected timeout exception during entry "
-                << opcode << " operation: " << e.getMessage()
-                << " continuing with test.");
-    } catch (EntryExistsException &ignore) {
-      ignore.getMessage();
-    } catch (EntryNotFoundException &ignore) {
-      ignore.getMessage();
-    } catch (EntryDestroyedException &ignore) {
-      ignore.getMessage();
-    } catch (Exception &e) {
-      end = 0;
-      fwkResult = FWK_SEVERE;
-      FWKSEVERE("Caught unexpected exception during entry "
-                << opcode << " operation: " << e.getMessage()
-                << " exiting task.");
-    }
-    meter.checkPace();
-    now = ACE_OS::gettimeofday();
+ PaceMeter meter(opsSec);
+ objectType = getStringValue("objectType");
+ while (now < end) {
+   try {
+     opcode = getStringValue("entryOps");
+     if (opcode.empty()) {
+       opcode = "no-op";
+     }
+     if (opcode == "add") {
+       keyPtr = getKey(entryCount);
+       if (!objectType.empty()) {
+         tmpValue = getUserObject(objectType);
+       } else {
+         tmpValue = CacheableBytes::create(
+             reinterpret_cast<const unsigned char *>(valBuf),
+             static_cast<int32_t>(strlen(valBuf)));
+       }
+       regionPtr->create(keyPtr, tmpValue);
+       creates++;
+     } else {
+       keyPtr = getKey(entryCount);
+       if (opcode == "update") {
+         if (!objectType.empty()) {
+           tmpValue = getUserObject(objectType);
+         } else {
+           int32_t keyVal = atoi(keyPtr->toString());
+           tmpValue = CacheableBytes::create(
+               reinterpret_cast<const unsigned char *>(valBuf),
+               static_cast<int32_t>(strlen(valBuf)));
+           int32_t *val =
+               (int32_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
+                               ->value());
+           *val = (*val == keyVal) ? keyVal + 1
+                                   : keyVal;  // alternate the value so that it
+                                              // can be validated later.
+           int64_t *adjNow =
+               (int64_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
+                               ->value() +
+                           4);
+           *adjNow = getAdjustedNowMicros();
+         }
+         regionPtr->put(keyPtr, tmpValue);
+         puts++;
+       } else if (opcode == "invalidate") {
+         regionPtr->invalidate(keyPtr);
+         invals++;
+       } else if (opcode == "destroy") {
+         regionPtr->destroy(keyPtr);
+         dests++;
+       } else if (opcode == "read") {
+         valuePtr = regionPtr->get(keyPtr);
+         gets++;
+       } else if (opcode == "read+localdestroy") {
+         valuePtr = regionPtr->get(keyPtr);
+         gets++;
+         regionPtr->localDestroy(keyPtr);
+         dests++;
+       } else if (opcode == "query") {
+         runQuery(query);
+       } else {
+         FWKSEVERE("Invalid operation specified: " << opcode);
+       }
+     }
+   } catch (TimeoutException &e) {
+     fwkResult = FWK_SEVERE;
+     FWKSEVERE("Caught unexpected timeout exception during entry "
+               << opcode << " operation: " << e.getMessage()
+               << " continuing with test.");
+   } catch (EntryExistsException &ignore) {
+     ignore.getMessage();
+   } catch (EntryNotFoundException &ignore) {
+     ignore.getMessage();
+   } catch (EntryDestroyedException &ignore) {
+     ignore.getMessage();
+   } catch (Exception &e) {
+     end = 0;
+     fwkResult = FWK_SEVERE;
+     FWKSEVERE("Caught unexpected exception during entry "
+               << opcode << " operation: " << e.getMessage()
+               << " exiting task.");
+   }
+   meter.checkPace();
+   now = ACE_OS::gettimeofday();
   }
   keyPtr = nullptr;
   valuePtr = nullptr;

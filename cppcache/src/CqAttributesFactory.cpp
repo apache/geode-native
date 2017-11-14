@@ -23,14 +23,16 @@ using namespace apache::geode::client;
 CqAttributesFactory::CqAttributesFactory() {
   m_cqAttributes = std::make_shared<CqAttributesImpl>();
 }
-CqAttributesFactory::CqAttributesFactory(const CqAttributesPtr &cqAttributes) {
+CqAttributesFactory::CqAttributesFactory(
+    const std::shared_ptr<CqAttributes> &cqAttributes) {
   auto vl = cqAttributes->getCqListeners();
   m_cqAttributes = std::make_shared<CqAttributesImpl>();
   std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
       ->setCqListeners(vl);
 }
 
-void CqAttributesFactory::addCqListener(const CqListenerPtr &cqListener) {
+void CqAttributesFactory::addCqListener(
+    const std::shared_ptr<CqListener> &cqListener) {
   if (cqListener == nullptr) {
     throw IllegalArgumentException("addCqListener parameter was null");
   }
@@ -43,8 +45,7 @@ void CqAttributesFactory::initCqListeners(
   std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
       ->setCqListeners(cqListeners);
 }
-
-CqAttributesPtr CqAttributesFactory::create() {
-  return CqAttributesPtr(
+std::shared_ptr<CqAttributes> CqAttributesFactory::create() {
+  return std::shared_ptr<CqAttributes>(
       std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)->clone());
 }

@@ -60,13 +60,13 @@ class CPPCACHE_EXPORT CacheXmlParser : public CacheXml {
   CacheXmlCreation* m_cacheCreation;
   std::string m_error;
   int32_t m_nestedRegions;
-  PropertiesPtr m_config;
+  std::shared_ptr<Properties> m_config;
   std::string m_parserMessage;
   bool m_flagCacheXmlException;
   bool m_flagIllegalStateException;
   bool m_flagAnyOtherException;
   bool m_flagExpirationAttribute;
-  std::map<std::string, RegionAttributesPtr> namedRegions;
+  std::map<std::string, std::shared_ptr<RegionAttributes>> namedRegions;
   std::shared_ptr<PoolFactory> m_poolFactory;
 
   Cache* m_cache;

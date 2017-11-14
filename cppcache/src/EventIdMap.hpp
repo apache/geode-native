@@ -42,10 +42,8 @@ namespace client {
 class EventSequence;
 class EventIdMap;
 
-typedef std::shared_ptr<EventSequence> EventSequencePtr;
-typedef std::shared_ptr<EventIdMap> EventIdMapPtr;
-
-typedef std::pair<EventSourcePtr, EventSequencePtr> EventIdMapEntry;
+typedef std::pair<std::shared_ptr<EventSource>, std::shared_ptr<EventSequence>>
+    EventIdMapEntry;
 typedef std::vector<EventIdMapEntry> EventIdMapEntryList;
 
 typedef ACE_Guard<ACE_Recursive_Thread_Mutex> MapGuard;
@@ -60,9 +58,10 @@ typedef ACE_Guard<ACE_Recursive_Thread_Mutex> MapGuard;
  */
 class CPPCACHE_EXPORT EventIdMap {
  private:
-  typedef std::unordered_map<EventSourcePtr, EventSequencePtr,
-                             dereference_hash<EventSourcePtr>,
-                             dereference_equal_to<EventSourcePtr>>
+  typedef std::unordered_map<std::shared_ptr<EventSource>,
+                             std::shared_ptr<EventSequence>,
+                             dereference_hash<std::shared_ptr<EventSource>>,
+                             dereference_equal_to<std::shared_ptr<EventSource>>>
       map_type;
 
   std::chrono::milliseconds m_expiry;
@@ -86,27 +85,27 @@ class CPPCACHE_EXPORT EventIdMap {
   /** Find out if entry is duplicate
    * @return true if the entry exists else false
    */
-  bool isDuplicate(EventSourcePtr key, EventSequencePtr value);
+  bool isDuplicate(std::shared_ptr<EventSource> key, std::shared_ptr<EventSequence> value);
 
-  /** Construct an EventIdMapEntry from an EventIdPtr */
-  static EventIdMapEntry make(EventIdPtr eventid);
+  /** Construct an EventIdMapEntry from an std::shared_ptr<EventId> */
+  static EventIdMapEntry make(std::shared_ptr<EventId> eventid);
 
   /** Put an item and return true if it is new or false if it existed and was
    * updated
    * @param onlynew Only put if the sequence id does not exist or is higher
    * @return true if the entry was updated or inserted otherwise false
    */
-  bool put(EventSourcePtr key, EventSequencePtr value, bool onlynew = false);
+  bool put(std::shared_ptr<EventSource> key, std::shared_ptr<EventSequence> value, bool onlynew = false);
 
   /** Update the deadline for the entry
    * @return true if the entry exists else false
    */
-  bool touch(EventSourcePtr key);
+  bool touch(std::shared_ptr<EventSource> key);
 
   /** Remove an item from the map
    *  @return true if the entry was found and removed else return false
    */
-  bool remove(EventSourcePtr key);
+  bool remove(std::shared_ptr<EventSource> key);
 
   /** Collect all map entries who acked flag is false and set their acked flags
    * to true */

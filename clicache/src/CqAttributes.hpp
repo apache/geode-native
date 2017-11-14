@@ -61,7 +61,7 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static CqAttributes<TKey, TResult>^ Create( native::CqAttributesPtr nativeptr )
+        inline static CqAttributes<TKey, TResult>^ Create( std::shared_ptr<native::CqAttributes> nativeptr )
         {
           return __nullptr == nativeptr ? nullptr :
             gcnew CqAttributes( nativeptr );
@@ -78,7 +78,7 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CqAttributes( native::CqAttributesPtr nativeptr )
+        inline CqAttributes( std::shared_ptr<native::CqAttributes> nativeptr )
         {
           m_nativeptr = gcnew native_shared_ptr<native::CqAttributes>(nativeptr);
         }

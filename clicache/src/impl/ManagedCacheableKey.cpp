@@ -126,10 +126,10 @@ namespace apache
         return 0;
       }
 
-      apache::geode::client::CacheableStringPtr ManagedCacheableKeyGeneric::toString() const
+      std::shared_ptr<apache::geode::client::CacheableString> ManagedCacheableKeyGeneric::toString() const
       {
         try {
-          apache::geode::client::CacheableStringPtr cStr;
+          std::shared_ptr<apache::geode::client::CacheableString> cStr;
           Apache::Geode::Client::CacheableString::GetCacheableString(
             m_managedptr->ToString(), cStr);
           return cStr;

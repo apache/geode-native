@@ -20,10 +20,11 @@
 namespace apache {
 namespace geode {
 namespace client {
-EntryEvent::EntryEvent(const RegionPtr& region, const CacheableKeyPtr& key,
-                       const CacheablePtr& oldValue,
-                       const CacheablePtr& newValue,
-                       const SerializablePtr& aCallbackArgument,
+EntryEvent::EntryEvent(const std::shared_ptr<Region>& region,
+                       const std::shared_ptr<CacheableKey>& key,
+                       const std::shared_ptr<Cacheable>& oldValue,
+                       const std::shared_ptr<Cacheable>& newValue,
+                       const std::shared_ptr<Serializable>& aCallbackArgument,
                        const bool remoteOrigin)
     : m_region(region),
       m_key(key),

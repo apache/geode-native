@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include "ThinClientHelper.hpp"
 #include "ace/Process.h"
 
@@ -33,8 +32,7 @@ const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 const char* regionNamesAuth[] = {"DistRegionAck"};
-
-CredentialGeneratorPtr credentialGeneratorHandler;
+std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
@@ -111,44 +109,44 @@ opCodeList::value_type tmpAArr[] = {OP_CREATE,       OP_UPDATE,
 #define TYPE_USER_CLIENT 'U'
 
 void initClientAuth(char UserType) {
-  PropertiesPtr config = Properties::create();
-  opCodeList wr(tmpWArr, tmpWArr + sizeof tmpWArr / sizeof *tmpWArr);
-  opCodeList rt(tmpRArr, tmpRArr + sizeof tmpRArr / sizeof *tmpRArr);
-  opCodeList ad(tmpAArr, tmpAArr + sizeof tmpAArr / sizeof *tmpAArr);
-  credentialGeneratorHandler->getAuthInit(config);
-  switch (UserType) {
-    case 'W':
-      credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config,
-                                                              nullptr);
-      printf("User is %s Pass is %s ",
-             config->find("security-username")->asChar(),
-             (config->find("security-password") != nullptr
-                  ? config->find("security-password")->asChar()
-                  : " not set"));
-      break;
-    case 'R':
-      credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config,
-                                                              nullptr);
-      printf("User is %s Pass is %s ",
-             config->find("security-username")->asChar(),
-             (config->find("security-password") != nullptr
-                  ? config->find("security-password")->asChar()
-                  : " not set"));
-      break;
-    case 'A':
-      credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config,
-                                                              nullptr);
-      printf("User is %s Pass is %s ",
-             config->find("security-username")->asChar(),
-             (config->find("security-password") != nullptr
-                  ? config->find("security-password")->asChar()
-                  : " not set"));
-    default:
-      break;
-  }
+ auto config = Properties::create();
+ opCodeList wr(tmpWArr, tmpWArr + sizeof tmpWArr / sizeof *tmpWArr);
+ opCodeList rt(tmpRArr, tmpRArr + sizeof tmpRArr / sizeof *tmpRArr);
+ opCodeList ad(tmpAArr, tmpAArr + sizeof tmpAArr / sizeof *tmpAArr);
+ credentialGeneratorHandler->getAuthInit(config);
+ switch (UserType) {
+   case 'W':
+     credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config,
+                                                             nullptr);
+     printf("User is %s Pass is %s ",
+            config->find("security-username")->asChar(),
+            (config->find("security-password") != nullptr
+                 ? config->find("security-password")->asChar()
+                 : " not set"));
+     break;
+   case 'R':
+     credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config,
+                                                             nullptr);
+     printf("User is %s Pass is %s ",
+            config->find("security-username")->asChar(),
+            (config->find("security-password") != nullptr
+                 ? config->find("security-password")->asChar()
+                 : " not set"));
+     break;
+   case 'A':
+     credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config,
+                                                             nullptr);
+     printf("User is %s Pass is %s ",
+            config->find("security-username")->asChar(),
+            (config->find("security-password") != nullptr
+                 ? config->find("security-password")->asChar()
+                 : " not set"));
+   default:
+     break;
+ }
 
-  try {
-    initClient(true, config);
+ try {
+   initClient(true, config);
   } catch (...) {
     throw;
   }
@@ -159,7 +157,7 @@ void initClientAuth(char UserType) {
 
 class putThread : public ACE_Task_Base {
  public:
-  putThread(RegionPtr r, bool regInt = false, int waitTime = 0) {
+  putThread(std::shared_ptr<Region> r, bool regInt = false, int waitTime = 0) {
     m_reg = r;
     m_regInt = regInt;
     m_numthreads = 1;
@@ -196,9 +194,9 @@ class putThread : public ACE_Task_Base {
     int ops = 0;
     int32_t pid = ACE_OS::getpid();
     ACE_thread_t thr_id = ACE_OS::thr_self();
-    CacheableKeyPtr key;
-    CacheableStringPtr value;
-    VectorOfCacheableKey keys0;
+    std::shared_ptr<CacheableKey> key;
+    std::shared_ptr<CacheableString> value;
+    std::vector<std::shared_ptr<CacheableKey>> keys0;
     char buf[20];
     char valbuf[20];
     if (m_regInt) {
@@ -216,10 +214,10 @@ class putThread : public ACE_Task_Base {
       key = CacheableKey::create(buf);
       if (m_opcode == 0) {
         if (m_isCallBack) {
-          CacheableBooleanPtr boolptr = CacheableBoolean::create("true");
-          sprintf(valbuf, "client1-value%d", ops);
-          value = CacheableString::create(valbuf);
-          m_reg->put(key, value, boolptr);
+         auto boolptr = CacheableBoolean::create("true");
+         sprintf(valbuf, "client1-value%d", ops);
+         value = CacheableString::create(valbuf);
+         m_reg->put(key, value, boolptr);
         } else {
           sprintf(valbuf, "client2-value%d", ops);
           value = CacheableString::create(valbuf);
@@ -237,8 +235,8 @@ class putThread : public ACE_Task_Base {
       } else {
         try {
           if (m_isCallBack) {
-            CacheableBooleanPtr boolptr = CacheableBoolean::create("true");
-            m_reg->destroy(key, boolptr);
+           auto boolptr = CacheableBoolean::create("true");
+           m_reg->destroy(key, boolptr);
           } else {
             m_reg->destroy(key);
           }
@@ -251,7 +249,7 @@ class putThread : public ACE_Task_Base {
     return 0;
   }
 
-  RegionPtr m_reg;
+  std::shared_ptr<Region> m_reg;
   bool m_run;
   int m_opcode;
   int m_numops;

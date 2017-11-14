@@ -38,7 +38,6 @@ namespace geode {
 namespace client {
 
 class RegionConfig;
-typedef std::shared_ptr<RegionConfig> RegionConfigPtr;
 
 class CPPCACHE_EXPORT RegionConfig {
  public:

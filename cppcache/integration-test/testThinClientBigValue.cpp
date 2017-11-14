@@ -34,9 +34,9 @@ using namespace test;
 
 void grow(int* iptr) { *iptr = *iptr + GROWTH; }
 
-void putSize(RegionPtr& rptr, const char* buf, int size) {
+void putSize(std::shared_ptr<Region>& rptr, const char* buf, int size) {
   char msg[1024];
-  CacheableKeyPtr keyPtr = CacheableKey::create(buf);
+  auto keyPtr = CacheableKey::create(buf);
   uint8_t base = 0;
 
   uint8_t* valbuf = new uint8_t[size + 1];
@@ -48,8 +48,8 @@ void putSize(RegionPtr& rptr, const char* buf, int size) {
       base++;
     }
   }
-  CacheableBytesPtr valPtr = CacheableBytes::create(valbuf, size);
-  // CacheableStringPtr valPtr = CacheableString::create( valbuf);
+  auto valPtr = CacheableBytes::create(valbuf, size);
+  // auto valPtr = CacheableString::create( valbuf);
   sprintf(msg, "about to put key: %s, with value size: %d", buf, size);
   LOG(msg);
   rptr->put(keyPtr, valPtr);
@@ -58,7 +58,7 @@ void putSize(RegionPtr& rptr, const char* buf, int size) {
   LOG(msg);
 }
 
-void verify(CacheableBytesPtr& valuePtr, int size) {
+void verify(std::shared_ptr<CacheableBytes>& valuePtr, int size) {
   char msg[200];
   sprintf(msg, "verifying value of size %d", size);
   ASSERT(size == 0 || valuePtr != nullptr, msg);
@@ -126,7 +126,7 @@ END_TASK(SetupClient2)
 
 DUNIT_TASK(CLIENT1, puts)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     char buf[1024];
     LOG("Beginning puts.");
     int expectEntries = 0;
@@ -145,7 +145,7 @@ END_TASK(puts)
 
 DUNIT_TASK(CLIENT2, VerifyPuts)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     // region should already have n entries...
     int entriesExpected ATTR_UNUSED =
         dunit::globals()->getIntValue("entriesToExpect");
@@ -153,8 +153,8 @@ DUNIT_TASK(CLIENT2, VerifyPuts)
     for (int i = 0; i <= MAX_PAYLOAD; grow(&i)) {
       char keybuf[100];
       sprintf(keybuf, "key%010d", i);
-      CacheableKeyPtr keyPtr = CacheableKey::create(keybuf);
-      CacheableBytesPtr valPtr =
+      auto keyPtr = CacheableKey::create(keybuf);
+      auto valPtr =
           std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(keyPtr));
       int ntry = 20;
       while ((ntry-- > 0) && (valPtr == nullptr)) {
@@ -170,7 +170,7 @@ END_TASK(VerifyPuts)
 
 DUNIT_TASK(CLIENT1, ManyPuts)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     LOG("Beginning many puts.");
     int expectEntries = 0;
     char keybuf[100];
@@ -188,7 +188,7 @@ END_TASK(ManyPuts)
 
 DUNIT_TASK(CLIENT2, VerifyManyPuts)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     // region should already have n entries...
     int entriesExpected = dunit::globals()->getIntValue("entriesToExpect");
 
@@ -206,7 +206,7 @@ END_TASK(VerifyManyPuts)
 
 DUNIT_TASK(CLIENT1, UpdateManyPuts)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     LOG("Beginning updated many puts.");
     int expectEntries = 0;
     char keybuf[100];
@@ -225,7 +225,7 @@ END_TASK(UpdateManyPuts)
 DUNIT_TASK(CLIENT2, VerifyOldManyPuts)
   {
     // region should given old entries from cache
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     int entriesExpected = dunit::globals()->getIntValue("entriesToExpect");
 
     char keybuf[100];
@@ -243,7 +243,7 @@ END_TASK(VerifyOldManyPuts)
 
 DUNIT_TASK(CLIENT2, VerifyUpdatedManyPuts)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     // region should already have n entries...
     int entriesExpected = dunit::globals()->getIntValue("entriesToExpect");
     // invalidate the region to force getting new values
@@ -264,13 +264,13 @@ END_TASK(VerifyUpdatedManyPuts)
 
 DUNIT_TASK(CLIENT2, VerifyUpdatedManyPutsGetAll)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     // region should already have n entries...
     int entriesExpected = dunit::globals()->getIntValue("entriesToExpect");
     // invalidate the region to force getting new values
     regPtr->localInvalidateRegion();
 
-    VectorOfCacheableKey vec;
+    std::vector<std::shared_ptr<CacheableKey>> vec;
     char keybuf[100];
     for (int index = 0; index < entriesExpected; ++index) {
       sprintf(keybuf, "keys1%010d", index);
@@ -309,12 +309,12 @@ END_TASK(UpdateManyPutsInt64)
 
 DUNIT_TASK(CLIENT2, VerifyManyPutsInt64)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     int entriesExpected = dunit::globals()->getIntValue("entriesToExpect");
 
     for (int64_t index = 0; index < entriesExpected; ++index) {
       int64_t key = index * index * index;
-      // CacheableStringPtr valPtr =
+      // auto valPtr =
       // std::dynamic_pointer_cast<CacheableString>(regPtr->get(key));
       auto valPtr = std::dynamic_pointer_cast<CacheableString>(
           regPtr->get(CacheableInt64::create(key)));
@@ -324,11 +324,11 @@ DUNIT_TASK(CLIENT2, VerifyManyPutsInt64)
     LOG("On client Found all int64 entries with "
         "correct size via get.");
     for (int64_t index = 0; index < entriesExpected; ++index) {
-      // CacheableKeyPtr key =
+      // auto key =
       // CacheableKey::create(CacheableInt64::create(index
       // * index * index));
-      CacheableKeyPtr key = CacheableInt64::create(index * index * index);
-      RegionEntryPtr entry = regPtr->getEntry(key);
+      auto key = CacheableInt64::create(index * index * index);
+      auto entry = regPtr->getEntry(key);
       ASSERT(entry != nullptr, "expected non-null entry");
       auto valPtr =
           std::dynamic_pointer_cast<CacheableString>(entry->getValue());
@@ -342,14 +342,14 @@ END_TASK(VerifyManyPutsInt64)
 
 DUNIT_TASK(CLIENT2, VerifyUpdatedManyPutsInt64GetAll)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     // region should already have n entries...
     int entriesExpected = dunit::globals()->getIntValue("entriesToExpect");
     // invalidate the region to force getting new
     // values
     regPtr->localInvalidateRegion();
 
-    VectorOfCacheableKey vec;
+    std::vector<std::shared_ptr<CacheableKey>> vec;
     for (int64_t index = 0; index < entriesExpected; ++index) {
       int64_t key = index * index * index;
       vec.push_back(CacheableInt64::create(key));

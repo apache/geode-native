@@ -34,16 +34,16 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
 
   char* pkid;
 
-  PositionPdxPtr position1;
-  PositionPdxPtr position2;
-  CacheableHashMapPtr positions;
+  std::shared_ptr<PositionPdx> position1;
+  std::shared_ptr<PositionPdx> position2;
+  std::shared_ptr<CacheableHashMap> positions;
   char* type;
   char* status;
   char** names;
   static const char* secIds[];
   int8_t* newVal;
   int32_t newValSize;
-  CacheableDatePtr creationDate;
+  std::shared_ptr<CacheableDate> creationDate;
   int8_t* arrayNull;
   int8_t* arrayZeroSize;
 
@@ -66,11 +66,11 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
 
   char* getPkid() { return pkid; }
 
-  PositionPdxPtr getP1() { return position1; }
+  std::shared_ptr<PositionPdx> getP1() { return position1; }
 
-  PositionPdxPtr getP2() { return position2; }
+  std::shared_ptr<PositionPdx> getP2() { return position2; }
 
-  CacheableHashMapPtr getPositions() { return positions; }
+  std::shared_ptr<CacheableHashMap> getPositions() { return positions; }
 
   bool testMethod(bool booleanArg) { return true; }
 
@@ -84,7 +84,7 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
 
   const char* getClassName() { return this->type; }
 
-  CacheableDatePtr getCreationDate() { return creationDate; }
+  std::shared_ptr<CacheableDate> getCreationDate() { return creationDate; }
 
   int8_t* getArrayNull() { return arrayNull; }
 
@@ -96,12 +96,11 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
-  virtual void toData(PdxWriterPtr pw);
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 };
 
-typedef std::shared_ptr<PortfolioPdx> PortfolioPdxPtr;
 }  // namespace testobject
 #endif

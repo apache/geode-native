@@ -50,14 +50,13 @@ extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
 namespace apache {
 namespace geode {
 namespace client {
-
-CacheFactoryPtr CacheFactory::createCacheFactory(
-    const PropertiesPtr& configPtr) {
+std::shared_ptr<CacheFactory> CacheFactory::createCacheFactory(
+    const std::shared_ptr<Properties>& configPtr) {
   return std::make_shared<CacheFactory>(configPtr);
 }
 
 void CacheFactory::create_(const char* name, const char* id_data,
-                           CachePtr& cptr, bool readPdxSerialized) {
+                           std::shared_ptr<Cache>& cptr, bool readPdxSerialized) {
   cptr = nullptr;
   if (name == nullptr) {
     throw IllegalArgumentException("CacheFactory::create: name is nullptr");
@@ -83,54 +82,53 @@ CacheFactory::CacheFactory() {
   dsProp = nullptr;
 }
 
-CacheFactory::CacheFactory(const PropertiesPtr dsProps) {
+CacheFactory::CacheFactory(const std::shared_ptr<Properties> dsProps) {
   ignorePdxUnreadFields = false;
   pdxReadSerialized = false;
   this->dsProp = dsProps;
 }
+ std::shared_ptr<Cache> CacheFactory::create() {
+   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
 
-CachePtr CacheFactory::create() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
+   LOGFINE("CacheFactory called DistributedSystem::connect");
+   auto cache = create(DEFAULT_CACHE_NAME, nullptr);
 
-  LOGFINE("CacheFactory called DistributedSystem::connect");
-  auto cache = create(DEFAULT_CACHE_NAME, nullptr);
+   auto& cacheImpl = cache->m_cacheImpl;
+   const auto& serializationRegistry = cacheImpl->getSerializationRegistry();
+   const auto& pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
+   const auto& memberListForVersionStamp =
+       std::ref(*(cacheImpl->getMemberListForVersionStamp()));
 
-  auto& cacheImpl = cache->m_cacheImpl;
-  const auto& serializationRegistry = cacheImpl->getSerializationRegistry();
-  const auto& pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
-  const auto& memberListForVersionStamp =
-      std::ref(*(cacheImpl->getMemberListForVersionStamp()));
+   serializationRegistry->addType2(
+       std::bind(TXCommitMessage::create, memberListForVersionStamp));
 
-  serializationRegistry->addType2(
-      std::bind(TXCommitMessage::create, memberListForVersionStamp));
+   serializationRegistry->addType(
+       GeodeTypeIds::PdxType,
+       std::bind(PdxType::CreateDeserializable, pdxTypeRegistry));
 
-  serializationRegistry->addType(
-      GeodeTypeIds::PdxType,
-      std::bind(PdxType::CreateDeserializable, pdxTypeRegistry));
+   serializationRegistry->addType(
+       std::bind(VersionTag::createDeserializable, memberListForVersionStamp));
 
-  serializationRegistry->addType(
-      std::bind(VersionTag::createDeserializable, memberListForVersionStamp));
+   serializationRegistry->addType2(
+       GeodeTypeIdsImpl::DiskVersionTag,
+       std::bind(DiskVersionTag::createDeserializable,
+                 memberListForVersionStamp));
 
-  serializationRegistry->addType2(
-      GeodeTypeIdsImpl::DiskVersionTag,
-      std::bind(DiskVersionTag::createDeserializable,
-                memberListForVersionStamp));
+   serializationRegistry->setPdxTypeHandler([](DataInput& dataInput) {
+     return PdxHelper::deserializePdx(dataInput, false);
+   });
 
-  serializationRegistry->setPdxTypeHandler([](DataInput& dataInput) {
-    return PdxHelper::deserializePdx(dataInput, false);
-  });
+   pdxTypeRegistry->setPdxIgnoreUnreadFields(cache->getPdxIgnoreUnreadFields());
+   pdxTypeRegistry->setPdxReadSerialized(cache->getPdxReadSerialized());
 
-  pdxTypeRegistry->setPdxIgnoreUnreadFields(cache->getPdxIgnoreUnreadFields());
-  pdxTypeRegistry->setPdxReadSerialized(cache->getPdxReadSerialized());
-
-  return cache;
+   return cache;
 }
-
-CachePtr CacheFactory::create(const char* name,
-                              const CacheAttributesPtr& attrs /*= nullptr*/) {
+std::shared_ptr<Cache> CacheFactory::create(
+    const char* name,
+    const std::shared_ptr<CacheAttributes>& attrs /*= nullptr*/) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
 
-  CachePtr cptr;
+  std::shared_ptr<Cache> cptr;
   create_(name, "", cptr, pdxReadSerialized);
   cptr->m_cacheImpl->setAttributes(attrs);
   try {
@@ -162,27 +160,24 @@ CachePtr CacheFactory::create(const char* name,
 }
 
 CacheFactory::~CacheFactory() {}
-
-CacheFactoryPtr CacheFactory::set(const char* name, const char* value) {
+ std::shared_ptr<CacheFactory> CacheFactory::set(const char* name, const char* value) {
   if (this->dsProp == nullptr) {
     this->dsProp = Properties::create();
   }
   this->dsProp->insert(name, value);
   return shared_from_this();
 }
-
-CacheFactoryPtr CacheFactory::setAuthInitialize(
-    const AuthInitializePtr& handler) {
+ std::shared_ptr<CacheFactory> CacheFactory::setAuthInitialize(
+    const std::shared_ptr<AuthInitialize>& handler) {
   this->authInitialize = handler;
   return shared_from_this();
+ }
+ std::shared_ptr<CacheFactory> CacheFactory::setPdxIgnoreUnreadFields(
+     bool ignore) {
+   ignorePdxUnreadFields = ignore;
+   return shared_from_this();
 }
-
-CacheFactoryPtr CacheFactory::setPdxIgnoreUnreadFields(bool ignore) {
-  ignorePdxUnreadFields = ignore;
-  return shared_from_this();
-}
-
-CacheFactoryPtr CacheFactory::setPdxReadSerialized(bool prs) {
+std::shared_ptr<CacheFactory> CacheFactory::setPdxReadSerialized(bool prs) {
   pdxReadSerialized = prs;
   return shared_from_this();
 }

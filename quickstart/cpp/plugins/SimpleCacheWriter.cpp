@@ -45,6 +45,6 @@ bool SimpleCacheWriter::beforeRegionDestroy(const RegionEvent& event) {
   return true;
 }
 
-void SimpleCacheWriter::close(const RegionPtr& region) {
+void SimpleCacheWriter::close(const std::shared_ptr<Region>& region) {
   LOGINFO("SimpleCacheWriter: Got a close event.");
 }

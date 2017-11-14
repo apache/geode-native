@@ -147,10 +147,10 @@ namespace apache
         return 0;
       }
 
-      apache::geode::client::CacheableStringPtr PdxManagedCacheableKey::toString() const
+      std::shared_ptr<apache::geode::client::CacheableString> PdxManagedCacheableKey::toString() const
       {
         try {
-          apache::geode::client::CacheableStringPtr cStr;
+          std::shared_ptr<apache::geode::client::CacheableString> cStr;
           Apache::Geode::Client::CacheableString::GetCacheableString(
             m_managedptr->ToString(), cStr);
           return cStr;
@@ -284,12 +284,12 @@ namespace apache
         }
       }
 
-      DeltaPtr PdxManagedCacheableKey::clone()
+      std::shared_ptr<Delta> PdxManagedCacheableKey::clone()
       {
         try {
           if (auto cloneable = dynamic_cast<ICloneable^>((Apache::Geode::Client::IGeodeDelta^) m_managedDeltaptr)) {
             auto Mclone = dynamic_cast<Apache::Geode::Client::IPdxSerializable^>(cloneable->Clone());
-            return DeltaPtr(static_cast<PdxManagedCacheableKey*>(SafeGenericM2UMConvert(Mclone)));
+            return std::shared_ptr<Delta>(static_cast<PdxManagedCacheableKey*>(SafeGenericM2UMConvert(Mclone)));
           } else {
             return Delta::clone();
           }

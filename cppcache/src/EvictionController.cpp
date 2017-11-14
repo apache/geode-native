@@ -155,7 +155,7 @@ void EvictionController::evict(int32_t percentage) {
 
   for (size_t i = 0; i < regionTmpVector.size(); i++) {
     std::string str = regionTmpVector.at(i);
-    RegionPtr rptr;
+    std::shared_ptr<Region> rptr;
     m_cacheImpl->getRegion(str.c_str(), rptr);
     if (rptr != nullptr) {
       RegionInternal* rimpl = dynamic_cast<RegionInternal*>(rptr.get());

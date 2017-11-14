@@ -27,7 +27,6 @@
  */
 
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include "testobject/PdxType.hpp"
@@ -68,7 +67,7 @@ END_TASK_DEFINITION
 
 void initClient(const bool isthinClient) {
   if (cacheHelper == nullptr) {
-    PropertiesPtr config = Properties::create();
+    auto config = Properties::create();
     if (g_isGridClient) {
       config->insert("grid-client", "true");
     }
@@ -109,10 +108,10 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   LOG(buf);
   free(buf);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableKeyPtr keyPtr = createKey(key);
+  auto keyPtr = createKey(key);
 
   // if the region is no ack, then we may need to wait...
   if (noKey == false) {  // need to find the key!
@@ -204,9 +203,8 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr =
-      getHelper()->createRegion(name, ackMode, cachingEnable, nullptr,
-                                endpoints, clientNotificationEnabled);
+  auto regPtr = getHelper()->createRegion(name, ackMode, cachingEnable, nullptr,
+                                          endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -217,7 +215,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("createRegion_Pool() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr =
+  auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -231,7 +229,7 @@ void createPooledRegionSticky(const char* name, bool ackMode,
   LOG("createRegion_Pool() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr = getHelper()->createPooledRegionSticky(
+  auto regPtr = getHelper()->createPooledRegionSticky(
       name, ackMode, locators, poolname, cachingEnable,
       clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -244,10 +242,10 @@ void createEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  auto keyPtr = createKey(key);
+  auto valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(!regPtr->containsKey(keyPtr),
@@ -264,7 +262,7 @@ void createEntry(const char* name, const char* key, const char* value) {
 }
 
 void createAndVerifyEntry(const char* name) {
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   /*1. create new entry with long key and long value */
@@ -296,7 +294,7 @@ void createAndVerifyEntry(const char* name) {
 
   /*3.create new with entry nullptr key and nullptr value.
    * IllegalArgumentException thrown*/
-  CacheableInt32Ptr x;
+  std::shared_ptr<CacheableInt32> x;
   try {
     regPtr->create(x, 1);
     LOG("Entry with null key and value created successfully");
@@ -319,7 +317,7 @@ void createAndVerifyEntry(const char* name) {
   // serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
   auto keyObject1 = std::make_shared<PdxTests::PdxType>();
   regPtr->create(keyObject1, x);
-  CacheablePtr retVal = regPtr->get(keyObject1);
+  auto retVal = regPtr->get(keyObject1);
   ASSERT(retVal == x, "retVal and x should match.");
 
   /*6.create new with entry userobject cantain all cacheable type ( like
@@ -348,7 +346,7 @@ void createAndVerifyEntry(const char* name) {
    * string value*/
   auto keyObject3 = std::make_shared<PdxTests::PdxType>();
   regPtr->create(keyObject3, "testString");
-  CacheablePtr strVal = regPtr->get(keyObject3);
+  auto strVal = regPtr->get(keyObject3);
   ASSERT(strcmp(strVal->toString()->asChar(), "testString") == 0,
          "strVal should be testString.");
 
@@ -360,7 +358,7 @@ void createAndVerifyEntry(const char* name) {
   auto keyObject4 = std::make_shared<PdxTests::PdxType>();
   auto valObject = std::make_shared<PdxTests::PdxType>();
   regPtr->create(keyObject4, valObject);
-  PdxTests::PdxTypePtr objVal =
+  auto objVal =
       std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr->get(keyObject4));
   ASSERT(valObject == objVal, "valObject and objVal should match.");
 
@@ -399,9 +397,9 @@ void createEntryTwice(const char* name, const char* key, const char* value) {
   sprintf(message, "Creating entry -- key: %s  value: %s in region %s\n", key,
           value, name);
   LOG(message);
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto keyPtr = createKey(key);
+  auto valPtr = CacheableString::create(value);
+  auto regPtr = getHelper()->getRegion(name);
   regPtr->create(keyPtr, valPtr);
   try {
     regPtr->create(keyPtr, valPtr);
@@ -422,10 +420,10 @@ void updateEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Update entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+  auto keyPtr = createKey(key);
+  auto valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -446,9 +444,9 @@ void doGetAgain(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Get entry created in Process A, verify entry is correct
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+  auto keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "get  region name%s\n", regPtr->getName());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -478,9 +476,9 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   fflush(stdout);
   static int count = 0;
   // Get entry created in Process A, verify entry is correct
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+  auto keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -558,11 +556,10 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolForUpdateLocatorList)
   {
     /*
-    PoolPtr  createPool(const char* poolName, const char* locators, const char*
-    serverGroup,
-                  const char* servers = nullptr, int redundancy = 0, bool
-    clientNotification = false, int subscriptionAckInterval = -1,
-                  int connections = -1, int loadConditioningInterval = - 1, bool
+    std::shared_ptr<Pool>  createPool(const char* poolName, const char*
+    locators, const char* serverGroup, const char* servers = nullptr, int
+    redundancy = 0, bool clientNotification = false, int subscriptionAckInterval
+    = -1, int connections = -1, int loadConditioningInterval = - 1, bool
     isMultiuserMode = false, int updateLocatorListInterval = 5000 )
     */
     initClient(true);
@@ -575,11 +572,10 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolForDontUpdateLocatorList)
   {
     /*
-    PoolPtr  createPool(const char* poolName, const char* locators, const char*
-    serverGroup,
-                  const char* servers = nullptr, int redundancy = 0, bool
-    clientNotification = false, int subscriptionAckInterval = -1,
-                  int connections = -1, int loadConditioningInterval = - 1, bool
+    std::shared_ptr<Pool>  createPool(const char* poolName, const char*
+    locators, const char* serverGroup, const char* servers = nullptr, int
+    redundancy = 0, bool clientNotification = false, int subscriptionAckInterval
+    = -1, int connections = -1, int loadConditioningInterval = - 1, bool
     isMultiuserMode = false, int updateLocatorListInterval = 5000 )
     */
     initClient(true);
@@ -594,8 +590,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyUpdateLocatorListThread)
     int sleepSeconds = 60;
     dunit::sleep(sleepSeconds * 1000);
 
-    PoolPtr pptr =
-        getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
+    auto pptr = getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
     int updateIntervalSeconds = pptr->getUpdateLocatorListInterval().count() / 1000;
 
     int numLocatorListUpdates =
@@ -698,8 +693,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
-    RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
-    RegionPtr reg1 = getHelper()->getRegion(regionNames[1]);
+    auto reg0 = getHelper()->getRegion(regionNames[0]);
+    auto reg1 = getHelper()->getRegion(regionNames[1]);
     auto vec0 = reg0->serverKeys();
     auto vec1 = reg1->serverKeys();
     ASSERT(vec0.size() == 2, "Should have 2 keys in first region.");
@@ -747,10 +742,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight_Pool)
   {
     createPooledRegion(regionNames[2], NO_ACK, locatorsG, "__TESTPOOL1_", false,
                        false);
-    RegionPtr reg = getHelper()->getRegion(regionNames[2]);
+    auto reg = getHelper()->getRegion(regionNames[2]);
     LOG("REGION Created with Caching Enabled false");
-    CacheableKeyPtr keyPtr = createKey(CREATE_TWICE_KEY);
-    CacheableStringPtr valPtr = CacheableString::create(CREATE_TWICE_VALUE);
+    auto keyPtr = createKey(CREATE_TWICE_KEY);
+    auto valPtr = CacheableString::create(CREATE_TWICE_VALUE);
     try {
       reg->create(keyPtr, valPtr);
       char message[200];
@@ -775,17 +770,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight_Pool_Sticky)
   {
     createPooledRegionSticky(regionNames[2], NO_ACK, locatorsG, "__TESTPOOL1_",
                              false, false);
-    RegionPtr reg = getHelper()->getRegion(regionNames[2]);
+    auto reg = getHelper()->getRegion(regionNames[2]);
     LOG("REGION Created with Caching Enabled false");
-    CacheableKeyPtr keyPtr = createKey(CREATE_TWICE_KEY);
-    CacheableStringPtr valPtr = CacheableString::create(CREATE_TWICE_VALUE);
+    auto keyPtr = createKey(CREATE_TWICE_KEY);
+    auto valPtr = CacheableString::create(CREATE_TWICE_VALUE);
 
-    RegionPtr reg0 = getHelper()->getRegion(regionNames[0]);
-    RegionPtr reg1 = getHelper()->getRegion(regionNames[1]);
+    auto reg0 = getHelper()->getRegion(regionNames[0]);
+    auto reg1 = getHelper()->getRegion(regionNames[1]);
     reg0->localInvalidate(createKey(keys[1]));
     reg1->localInvalidate(createKey(keys[3]));
-    PoolPtr pool =
-        getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
+    auto pool = getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
     ASSERT(pool != nullptr, "Pool Should have been found");
     doNetsearch(regionNames[0], keys[1], nvals[1]);
     doNetsearch(regionNames[1], keys[3], nvals[3]);

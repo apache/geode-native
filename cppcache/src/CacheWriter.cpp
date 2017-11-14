@@ -28,7 +28,7 @@ CacheWriter::CacheWriter() {}
 
 CacheWriter::~CacheWriter() {}
 
-void CacheWriter::close(const RegionPtr& region) {}
+void CacheWriter::close(const std::shared_ptr<Region>& region) {}
 
 bool CacheWriter::beforeUpdate(const EntryEvent& event) { return true; }
 

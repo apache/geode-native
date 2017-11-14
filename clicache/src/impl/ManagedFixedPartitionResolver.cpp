@@ -214,7 +214,7 @@ namespace apache
         return NULL;
       }
 
-      CacheableKeyPtr ManagedFixedPartitionResolverGeneric::getRoutingObject(const EntryEvent& key)
+      std::shared_ptr<CacheableKey> ManagedFixedPartitionResolverGeneric::getRoutingObject(const EntryEvent& key)
       {
         try {
           return m_managedptr->getRoutingObject(key);

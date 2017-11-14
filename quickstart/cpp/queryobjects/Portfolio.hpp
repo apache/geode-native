@@ -22,7 +22,6 @@
 #ifndef __PORTFOLIO_HPP__
 #define __PORTFOLIO_HPP__
 
-#include <geode/GeodeCppCache.hpp>
 #include "Position.hpp"
 
 using namespace apache::geode::client;
@@ -32,21 +31,22 @@ namespace testobject {
 class TESTOBJECT_EXPORT Portfolio : public Serializable {
  private:
   int32_t ID;
-  CacheableStringPtr pkid;
-  PositionPtr position1;
-  PositionPtr position2;
-  CacheableHashMapPtr positions;
-  CacheableStringPtr type;
+  std::shared_ptr<CacheableString> pkid;
+  std::shared_ptr<Position> position1;
+  std::shared_ptr<Position> position2;
+  std::shared_ptr<CacheableHashMap> positions;
+  std::shared_ptr<CacheableString> type;
   char* status;
-  CacheableStringArrayPtr names;
+  std::shared_ptr<CacheableStringArray> names;
   static const char* secIds[];
   uint8_t* newVal;
   int32_t newValSize;
-  CacheableDatePtr creationDate;
+  std::shared_ptr<CacheableDate> creationDate;
   uint8_t* arrayNull;
   uint8_t* arrayZeroSize;
 
-  inline uint32_t getObjectSize(const SerializablePtr& obj) const {
+  inline uint32_t getObjectSize(
+      const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -61,7 +61,7 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
         arrayNull(NULL),
         arrayZeroSize(NULL) {}
   Portfolio(int32_t id, uint32_t size = 0,
-            CacheableStringArrayPtr nm = nullptr);
+            std::shared_ptr<CacheableStringArray> nm = nullptr);
   virtual ~Portfolio();
 
   virtual uint32_t objectSize() const {
@@ -91,13 +91,13 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
     }
   }
 
-  CacheableStringPtr getPkid() { return pkid; }
+  std::shared_ptr<CacheableString> getPkid() { return pkid; }
 
-  PositionPtr getP1() { return position1; }
+  std::shared_ptr<Position> getP1() { return position1; }
 
-  PositionPtr getP2() { return position2; }
+  std::shared_ptr<Position> getP2() { return position2; }
 
-  CacheableHashMapPtr getPositions() { return positions; }
+  std::shared_ptr<CacheableHashMap> getPositions() { return positions; }
 
   bool testMethod(bool booleanArg) { return true; }
 
@@ -109,9 +109,9 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
 
   int32_t getNewValSize() { return newValSize; }
 
-  CacheableStringPtr getType() { return this->type; }
+  std::shared_ptr<CacheableString> getType() { return this->type; }
 
-  CacheableDatePtr getCreationDate() { return creationDate; }
+  std::shared_ptr<CacheableDate> getCreationDate() { return creationDate; }
 
   uint8_t* getArrayNull() { return arrayNull; }
 
@@ -122,9 +122,8 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
   virtual void toData(DataOutput& output) const;
   virtual Serializable* fromData(DataInput& input);
   virtual int32_t classId() const { return 0x03; }
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 };
 
-typedef std::shared_ptr<Portfolio> PortfolioPtr;
 }  // namespace testobject
 #endif

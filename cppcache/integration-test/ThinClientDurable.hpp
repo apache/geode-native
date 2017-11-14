@@ -60,8 +60,8 @@ class OperMonitor : public CacheListener {
   void check(const EntryEvent& event) {
     m_ops++;
 
-    CacheableKeyPtr key = event.getKey();
-    CacheableInt32Ptr value = nullptr;
+    auto key = event.getKey();
+    std::shared_ptr<CacheableInt32> value = nullptr;
     try {
       value = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
     } catch (Exception&) {
@@ -137,19 +137,12 @@ class OperMonitor : public CacheListener {
   virtual void afterRegionInvalidate(const RegionEvent& event){};
   virtual void afterRegionDestroy(const RegionEvent& event){};
 };
-typedef std::shared_ptr<OperMonitor> OperMonitorPtr;
 
-void setCacheListener(const char* regName, OperMonitorPtr monitor) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName, std::shared_ptr<OperMonitor> monitor) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(monitor);
-}
-
-OperMonitorPtr mon1C1 = nullptr;
-OperMonitorPtr mon2C1 = nullptr;
-
-OperMonitorPtr mon1C2 = nullptr;
-OperMonitorPtr mon2C2 = nullptr;
+}std::shared_ptr<OperMonitor> mon1C1 = nullptr;std::shared_ptr<OperMonitor> mon2C1=nullptr;std::shared_ptr<OperMonitor> mon1C2 = nullptr;std::shared_ptr<OperMonitor> mon2C2=nullptr;
 
 /* Total 10 Keys , alternate durable and non-durable */
 const char* mixKeys[] = {"Key-1", "D-Key-1", "L-Key", "LD-Key"};
@@ -159,8 +152,8 @@ const char* testRegex[] = {"D-Key-.*", "Key-.*"};
 #include "ThinClientTasks_C2S2.hpp"
 
 void initClientCache(int durableIdx, int redundancy,
-                     std::chrono::seconds durableTimeout, OperMonitorPtr& mon1,
-                     OperMonitorPtr& mon2, int sleepDuration = 0) {
+                     std::chrono::seconds durableTimeout, std::shared_ptr<OperMonitor>& mon1,
+                     std::shared_ptr<OperMonitor>& mon2, int sleepDuration = 0) {
   // Sleep before starting , Used for Timeout testing.
   if (sleepDuration) SLEEP(sleepDuration);
 
@@ -171,8 +164,8 @@ void initClientCache(int durableIdx, int redundancy,
 
   getHelper()->cachePtr->readyForEvents();
 
-  RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
-  RegionPtr regPtr1 = getHelper()->getRegion(regionNames[1]);
+ auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+ auto regPtr1 = getHelper()->getRegion(regionNames[1]);
 
   // Register Regex in both region.
   regPtr0->registerRegex(testRegex[0], true);
@@ -181,18 +174,18 @@ void initClientCache(int durableIdx, int redundancy,
   regPtr1->registerRegex(testRegex[1], false);
 
   // Register List in both regions
-  VectorOfCacheableKey v;
-  CacheableKeyPtr ldkey = CacheableKey::create(mixKeys[3]);
+  std::vector<std::shared_ptr<CacheableKey>>  v;
+ auto ldkey = CacheableKey::create(mixKeys[3]);
   v.push_back(ldkey);
   regPtr0->registerKeys(v, true);
   regPtr1->registerKeys(v, true);
   v.clear();
-  CacheableKeyPtr lkey = CacheableKey::create(mixKeys[2]);
-  v.push_back(lkey);
-  regPtr0->registerKeys(v);
-  regPtr1->registerKeys(v);
+ auto lkey = CacheableKey::create(mixKeys[2]);
+ v.push_back(lkey);
+ regPtr0->registerKeys(v);
+ regPtr1->registerKeys(v);
 
-  LOG("Clnt1Init complete.");
+ LOG("Clnt1Init complete.");
 }
 
 void feederUpdate(int value, int ignoreR2 = false) {

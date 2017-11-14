@@ -30,29 +30,28 @@
  */
 
 // Include the Geode library.
-#include <geode/GeodeCppCache.hpp>
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
 
 char* getFuncIName = (char*)"MultiGetFunctionI";
 
-void runWithUserRoot(CachePtr cachePtr) {
+void runWithUserRoot(std::shared_ptr<Cache> cachePtr) {
   // user root's credential who is authorized to do put/get operations
-  PropertiesPtr credentials = Properties::create();
+  auto credentials = Properties::create();
 
   credentials->insert("security-username", "root");
   credentials->insert("security-password", "root");
 
   // Create user cache by passing credentials
-  RegionServicePtr userCache1 = cachePtr->createAuthenticatedView(credentials);
+  auto userCache1 = cachePtr->createAuthenticatedView(credentials);
 
   // Create region using usercache
-  RegionPtr regionPtr1 = userCache1->getRegion("partition_region");
+  auto regionPtr1 = userCache1->getRegion("partition_region");
 
   LOGINFO("Obtained the Region from the Cache");
 
-  CacheableKeyPtr key = CacheableKey::create("Key1");
+  auto key = CacheableKey::create("Key1");
 
   // doing operation on behalf of user "writer2"
   regionPtr1->put(key, "Value1");
@@ -60,24 +59,24 @@ void runWithUserRoot(CachePtr cachePtr) {
   LOGINFO("Entry created in the Region");
 
   // Get Entries back out of the Region.
-  CacheablePtr result1Ptr = regionPtr1->get(key);
+  auto result1Ptr = regionPtr1->get(key);
 
   // to execute function on server
   bool getResult = true;
-  CacheableVectorPtr routingObj = CacheableVector::create();
+  auto routingObj = CacheableVector::create();
 
   routingObj->push_back(key);
 
   // test data independant function with result on one server
   LOGINFO("test data independant function with result on one server");
-  CacheablePtr args = routingObj;
+  auto args = routingObj;
   char buf[128];
 
-  ExecutionPtr exc = FunctionService::onServer(userCache1);
+  auto exc = FunctionService::onServer(userCache1);
 
-  CacheableVectorPtr executeFunctionResult =
+  auto executeFunctionResult =
       exc->withArgs(args)->execute(getFuncIName, getResult)->getResult();
-  CacheableVectorPtr resultList = CacheableVector::create();
+  auto resultList = CacheableVector::create();
   if (executeFunctionResult == nullptr) {
     LOGINFO("get executeFunctionResult is NULL");
   } else {
@@ -100,10 +99,9 @@ void runWithUserRoot(CachePtr cachePtr) {
   // test for Query
 
   // Execute a Query which returns a ResultSet.
-  QueryServicePtr qrySvcPtr = userCache1->getQueryService();
-  QueryPtr qryPtr =
-      qrySvcPtr->newQuery("SELECT DISTINCT * FROM /partition_region");
-  SelectResultsPtr resultsPtr = qryPtr->execute();
+  auto qrySvcPtr = userCache1->getQueryService();
+  auto qryPtr = qrySvcPtr->newQuery("SELECT DISTINCT * FROM /partition_region");
+  auto resultsPtr = qryPtr->execute();
 
   LOGINFO("ResultSet Query returned %d rows", resultsPtr->size());
 
@@ -113,23 +111,23 @@ void runWithUserRoot(CachePtr cachePtr) {
   LOGINFO("User root done put/get ops successfully");
 }
 
-void runWithUserWriter(CachePtr cachePtr) {
+void runWithUserWriter(std::shared_ptr<Cache> cachePtr) {
   // user writer2's credentials who is authorixed to do only put operation
-  PropertiesPtr credentials = Properties::create();
+  auto credentials = Properties::create();
 
   credentials->insert("security-username", "writer2");
   credentials->insert("security-password", "writer2");
 
   // Create user cache by passing credentials
-  RegionServicePtr userCache2 = cachePtr->createAuthenticatedView(credentials);
+  auto userCache2 = cachePtr->createAuthenticatedView(credentials);
 
   // Create region using usercache
-  RegionPtr regionPtr2 = userCache2->getRegion("partition_region");
+  auto regionPtr2 = userCache2->getRegion("partition_region");
 
   LOGINFO("Entry created in the Region");
 
   // Get Entries back out of the Region.
-  CacheablePtr result1Ptr = regionPtr2->get("Key1");
+  auto result1Ptr = regionPtr2->get("Key1");
 
   // collect NotAuthorized exception
 
@@ -140,7 +138,7 @@ void runWithUserWriter(CachePtr cachePtr) {
 // The MultiuserSecurityExample QuickStart example.
 int main(int argc, char** argv) {
   try {
-    PropertiesPtr secProp = Properties::create();
+    auto secProp = Properties::create();
 
     // By setting this property client will send credential in encrypted form.
     // to do this one need to setup OpenSSL.
@@ -151,19 +149,18 @@ int main(int argc, char** argv) {
     // overriding secProp properties.
 
     // Create a Geode Cache.
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory(secProp);
+    auto cacheFactory = CacheFactory::createCacheFactory(secProp);
 
-    CachePtr cachePtr =
-        cacheFactory->setMultiuserAuthentication(true)->create();
+    auto cachePtr = cacheFactory->setMultiuserAuthentication(true)->create();
 
     LOGINFO("Created the Geode Cache with multiuser enable.");
 
-    RegionFactoryPtr regionFactory = cachePtr->createRegionFactory(PROXY);
+    auto regionFactory = cachePtr->createRegionFactory(PROXY);
 
     LOGINFO("Created the RegionFactory");
 
     // Create the example Region Programmatically.
-    RegionPtr regionPtr = regionFactory->create("partition_region");
+    auto regionPtr = regionFactory->create("partition_region");
 
     runWithUserRoot(cachePtr);
 

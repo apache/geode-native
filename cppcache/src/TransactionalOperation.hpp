@@ -29,8 +29,7 @@
 #include <geode/geode_globals.hpp>
 #include <geode/geode_types.hpp>
 #include <geode/Cacheable.hpp>
-#include <geode/VectorT.hpp>
-
+#include <vector>
 namespace apache {
 namespace geode {
 namespace client {
@@ -52,21 +51,20 @@ enum ServerRegionOperation {
   GF_PUT_ALL
 };
 
-_GF_PTR_DEF_(TransactionalOperation, TransactionalOperationPtr);
-
+class CacheableKey;
 class TransactionalOperation {
  public:
   TransactionalOperation(ServerRegionOperation op, const char* regionName,
-                         CacheableKeyPtr key, VectorOfCacheablePtr arguments);
+                         std::shared_ptr<CacheableKey> key, std::shared_ptr<std::vector<std::shared_ptr<Cacheable>> > arguments);
   virtual ~TransactionalOperation();
 
-  CacheablePtr replay(Cache* cache);
+  std::shared_ptr<Cacheable> replay(Cache* cache);
 
  private:
   ServerRegionOperation m_operation;
   const char* m_regionName;
-  CacheableKeyPtr m_key;
-  VectorOfCacheablePtr m_arguments;
+  std::shared_ptr<CacheableKey> m_key;
+  std::shared_ptr<std::vector<std::shared_ptr<Cacheable>> > m_arguments;
 };
 }  // namespace client
 }  // namespace geode

@@ -60,7 +60,7 @@ namespace apache {
 
         virtual ~ManagedTransactionWriterGeneric( ) { }
 
-        virtual void beforeCommit(apache::geode::client::TransactionEventPtr& te);
+        virtual void beforeCommit(std::shared_ptr<apache::geode::client::TransactionEvent>& te);
 
         inline Apache::Geode::Client::ITransactionWriter^ ptr( ) const
         {

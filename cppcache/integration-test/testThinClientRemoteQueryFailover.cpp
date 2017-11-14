@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include <ace/Task.h>
@@ -116,7 +115,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, RegisterTypesAndCreatePoolAndRegion)
 
     initClient(true);
     try {
-      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
 
       serializationRegistry->addType(Position::createDeserializable);
       serializationRegistry->addType(Portfolio::createDeserializable);
@@ -131,7 +132,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RegisterTypesAndCreatePoolAndRegion)
     createPool(poolNames[0], locHostPort, nullptr, 0, true);
     createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
 
-    RegionPtr rptr = getHelper()->cachePtr->getRegion(qRegionNames[0]);
+    auto rptr = getHelper()->cachePtr->getRegion(qRegionNames[0]);
 
     auto port1 = std::make_shared<Portfolio>(1, 100);
     auto port2 = std::make_shared<Portfolio>(2, 200);
@@ -152,18 +153,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, ValidateQueryExecutionAcrossServerFailure)
     try {
       kst = new KillServerThread();
 
-      QueryServicePtr qs = nullptr;
+      std::shared_ptr<QueryService> qs = nullptr;
       if (isPoolConfig) {
-        PoolPtr pool1 = findPool(poolNames[0]);
+        auto pool1 = findPool(poolNames[0]);
         qs = pool1->getQueryService();
       } else {
         qs = getHelper()->cachePtr->getQueryService();
       }
 
       for (int i = 0; i < 10000; i++) {
-        QueryPtr qry = qs->newQuery("select distinct * from /Portfolios");
+        auto qry = qs->newQuery("select distinct * from /Portfolios");
 
-        SelectResultsPtr results;
+        std::shared_ptr<SelectResults> results;
         results = qry->execute();
 
         if (i == 10) {

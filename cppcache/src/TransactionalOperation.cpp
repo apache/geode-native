@@ -32,19 +32,18 @@ namespace apache {
 namespace geode {
 namespace client {
 
-TransactionalOperation::TransactionalOperation(ServerRegionOperation op,
-                                               const char* regionName,
-                                               CacheableKeyPtr key,
-                                               VectorOfCacheablePtr arguments)
+TransactionalOperation::TransactionalOperation(
+    ServerRegionOperation op, const char* regionName,
+    std::shared_ptr<CacheableKey> key,
+    std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> arguments)
     : m_operation(op),
       m_regionName(regionName),
       m_key(key),
       m_arguments(arguments) {}
 
 TransactionalOperation::~TransactionalOperation() {}
-
-CacheablePtr TransactionalOperation::replay(Cache* cache) {
-  CacheablePtr result = nullptr;
+std::shared_ptr<Cacheable> TransactionalOperation::replay(Cache* cache) {
+  std::shared_ptr<Cacheable> result = nullptr;
 
   switch (m_operation) {
     case GF_CONTAINS_KEY:
@@ -64,9 +63,9 @@ CacheablePtr TransactionalOperation::replay(Cache* cache) {
       cache->getRegion(m_regionName)->destroy(m_key, m_arguments->at(0));
       break;
     case GF_EXECUTE_FUNCTION: {
-      ExecutionPtr execution;
+      std::shared_ptr<Execution> execution;
       if (m_regionName == nullptr) {
-        execution = FunctionService::onServer(CachePtr(cache));
+        execution = FunctionService::onServer(std::shared_ptr<Cache>(cache));
       } else {
         execution = FunctionService::onRegion(cache->getRegion(m_regionName));
       }
@@ -94,7 +93,8 @@ CacheablePtr TransactionalOperation::replay(Cache* cache) {
           std::static_pointer_cast<RegionInternal>(
               cache->getRegion(m_regionName))
               ->getAll_internal(
-                  *std::dynamic_pointer_cast<VectorOfCacheableKey>(
+                  *std::dynamic_pointer_cast<
+                      std::vector<std::shared_ptr<CacheableKey>>>(
                       m_arguments->at(0)),
                   nullptr,
                   std::static_pointer_cast<CacheableBoolean>(m_arguments->at(3))
@@ -115,7 +115,8 @@ CacheablePtr TransactionalOperation::replay(Cache* cache) {
     case GF_KEY_SET: {
       auto tmp = cache->getRegion(m_regionName)->serverKeys();
       auto serverKeys =
-          std::dynamic_pointer_cast<VectorOfCacheableKey>(m_arguments->at(0));
+          std::dynamic_pointer_cast<std::vector<std::shared_ptr<CacheableKey>>>(
+              m_arguments->at(0));
       serverKeys->insert(serverKeys->end(), tmp.begin(), tmp.end());
       break;
     }

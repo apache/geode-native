@@ -37,22 +37,24 @@ static bool isLocator = false;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
-TallyListenerPtr reg1Listener1;
-TallyWriterPtr reg1Writer1;
+std::shared_ptr<TallyListener> reg1Listener1;
+std::shared_ptr<TallyWriter> reg1Writer1;
 int numCreates = 0;
 int numUpdates = 0;
 int numInvalidates = 0;
 int numDestroys = 0;
 
-void setCacheListener(const char* regName, TallyListenerPtr regListener) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName,
+                      std::shared_ptr<TallyListener> regListener) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
 }
 
-void setCacheWriter(const char* regName, TallyWriterPtr regWriter) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheWriter(const char* regName,
+                    std::shared_ptr<TallyWriter> regWriter) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheWriter(regWriter);
 }
 
@@ -150,7 +152,7 @@ void putAllWithOneEntryTimeoutWithCallBackArg(
 DUNIT_TASK_DEFINITION(CLIENT1, testTimeoutException)
   {
     printf("start task testTimeoutException\n");
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
 
     regPtr->registerAllKeys();
 
@@ -189,7 +191,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, testWithoutTimeoutException)
   {
     printf("start task testWithoutTimeoutException\n");
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
 
     // regPtr->registerAllKeys();
 

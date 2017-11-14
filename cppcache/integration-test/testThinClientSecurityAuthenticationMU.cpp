@@ -19,7 +19,6 @@
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 
@@ -35,7 +34,7 @@ using namespace test;
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 const char* regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
-CredentialGeneratorPtr credentialGeneratorHandler;
+std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
@@ -72,12 +71,11 @@ void initCredentialGenerator() {
 
   loopNum++;
   if (loopNum > 2) loopNum = 1;
-}
-PropertiesPtr userCreds;
+} std::shared_ptr<Properties> userCreds;
 void initClientAuth(char credentialsType) {
   printf(" in initclientAuth 0 = %c ", credentialsType);
   userCreds = Properties::create();
-  PropertiesPtr config = Properties::create();
+ auto config = Properties::create();
   if (credentialGeneratorHandler == nullptr) {
     FAIL("credentialGeneratorHandler is nullptr");
   }
@@ -189,11 +187,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
                               false, -1, true, 0);
       LOG(" 5");
       // need to insure pool name
-      PoolPtr pool = getPool(regionNamesAuth[0]);
+     auto pool = getPool(regionNamesAuth[0]);
       LOG(" 6");
       if (pool != nullptr) {
         LOG(" 7");
-        RegionServicePtr virtualCache = getVirtualCache(userCreds, pool);
+       auto virtualCache = getVirtualCache(userCreds, pool);
         LOG(" 8");
         virtualCache->getRegion(regionNamesAuth[0])->put(keys[0], vals[0]);
         LOG("Operation allowed, something is wrong.");
@@ -222,10 +220,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
                               false, -1, true, 0);
       char buff[128] = {'\0'};
       sprintf(buff, "%s_0", regionNamesAuth[0]);
-      PoolPtr pool = getPool(regionNamesAuth[0]);
+     auto pool = getPool(regionNamesAuth[0]);
       if (pool != nullptr) {
-        RegionServicePtr virtualCache = getVirtualCache(userCreds, pool);
-        RegionPtr virtualRegion = virtualCache->getRegion(regionNamesAuth[0]);
+        auto virtualCache = getVirtualCache(userCreds, pool);
+        auto virtualRegion = virtualCache->getRegion(regionNamesAuth[0]);
         virtualRegion->create(keys[0], vals[0]);
         virtualRegion->put(keys[0], nvals[0]);
         virtualRegion->containsKeyOnServer(
@@ -251,9 +249,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepThree)
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr,
                               false, -1, true, 0);
       // need to insure pool name
-      PoolPtr pool = getPool(regionNamesAuth[0]);
+     auto pool = getPool(regionNamesAuth[0]);
       if (pool != nullptr) {
-        RegionServicePtr virtualCache = getVirtualCache(userCreds, pool);
+        auto virtualCache = getVirtualCache(userCreds, pool);
         virtualCache->getRegion(regionNamesAuth[0])->put(keys[0], vals[0]);
       } else {
         LOG("Pool is nullptr");
@@ -282,9 +280,9 @@ DUNIT_TASK_DEFINITION(CLIENT3, StepFour)
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr,
                               false, -1, true, 0);
       // need to insure pool name
-      PoolPtr pool = getPool(regionNamesAuth[0]);
+     auto pool = getPool(regionNamesAuth[0]);
       if (pool != nullptr) {
-        RegionServicePtr virtualCache = getVirtualCache(userCreds, pool);
+        auto virtualCache = getVirtualCache(userCreds, pool);
         virtualCache->getRegion(regionNamesAuth[0])->put(keys[0], vals[0]);
       } else {
         LOG("Pool is nullptr");
@@ -314,16 +312,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFive)
       createRegionForSecurity(regionNamesAuth[1], USE_ACK, false, nullptr,
                               false, -1, true, 0);
       // need to insure pool name
-      PoolPtr pool = getPool(regionNamesAuth[1]);
-      RegionServicePtr virtualCache;
-      RegionPtr virtualRegion;
+     auto pool = getPool(regionNamesAuth[1]);
+      std::shared_ptr<RegionService> virtualCache;
+      std::shared_ptr<Region> virtualRegion;
       if (pool != nullptr) {
         virtualCache = getVirtualCache(userCreds, pool);
         virtualRegion = virtualCache->getRegion(regionNamesAuth[1]);
       } else {
         LOG("Pool is nullptr");
       }
-      CacheableKeyPtr keyPtr = CacheableKey::create(keys[0]);
+     auto keyPtr = CacheableKey::create(keys[0]);
       LOG("before get");
       auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
           virtualRegion->get(keyPtr));
@@ -353,10 +351,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
                               false, -1, true, 0);
       char buff[128] = {'\0'};
       sprintf(buff, "%s_1", regionNamesAuth[0]);
-      PoolPtr pool = getPool(regionNamesAuth[0]);
+     auto pool = getPool(regionNamesAuth[0]);
       if (pool != nullptr) {
-        RegionServicePtr virtualCache = getVirtualCache(userCreds, pool);
-        RegionPtr virtualRegion = virtualCache->getRegion(regionNamesAuth[0]);
+        auto virtualCache = getVirtualCache(userCreds, pool);
+        auto virtualRegion = virtualCache->getRegion(regionNamesAuth[0]);
         virtualRegion->create(keys[0], vals[0]);
         virtualRegion->put(keys[0], nvals[0]);
         LOG("Operation allowed, something is wrong.");
@@ -389,10 +387,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSeven)
                               false, -1, true, 0);
       char buff[128] = {'\0'};
       sprintf(buff, "%s_0", regionNamesAuth[0]);
-      PoolPtr pool = getPool(regionNamesAuth[0]);
+     auto pool = getPool(regionNamesAuth[0]);
       if (pool != nullptr) {
-        RegionServicePtr virtualCache = getVirtualCache(userCreds, pool);
-        RegionPtr virtualRegion = virtualCache->getRegion(regionNamesAuth[0]);
+        auto virtualCache = getVirtualCache(userCreds, pool);
+        auto virtualRegion = virtualCache->getRegion(regionNamesAuth[0]);
         virtualRegion->create(keys[0], vals[0]);
         virtualRegion->put(keys[0], nvals[0]);
         LOG("Operation allowed, something is wrong.");
@@ -420,9 +418,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       createRegionForSecurity(regionNamesAuth[1], USE_ACK, false, nullptr,
                               false, -1, true, 0);
       // need to insure pool name
-      PoolPtr pool = getPool(regionNamesAuth[1]);
-      RegionServicePtr virtualCache;
-      RegionPtr virtualRegion;
+     auto pool = getPool(regionNamesAuth[1]);
+      std::shared_ptr<RegionService> virtualCache;
+      std::shared_ptr<Region> virtualRegion;
       if (pool != nullptr) {
         virtualCache = getVirtualCache(userCreds, pool);
         virtualRegion = virtualCache->getRegion(regionNamesAuth[1]);
@@ -430,29 +428,29 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
         LOG("Pool is nullptr");
       }
 
-      CacheTransactionManagerPtr txManager =
+     auto txManager =
           getHelper()->getCache()->getCacheTransactionManager();
-      LOG("txManager got");
-      txManager->begin();
-      LOG("txManager begin done");
-      virtualRegion->put("TxKey", "TxValue");
-      LOG("createEntryTx done");
-      txManager->commit();
-      LOG("txManager commit done");
+     LOG("txManager got");
+     txManager->begin();
+     LOG("txManager begin done");
+     virtualRegion->put("TxKey", "TxValue");
+     LOG("createEntryTx done");
+     txManager->commit();
+     LOG("txManager commit done");
 
-      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
-          virtualRegion->get("TxKey"));
-      ASSERT(checkPtr != nullptr, "Value not found.");
-      LOGINFO("checkPtr->asChar() = %s ", checkPtr->asChar());
-      ASSERT(strcmp("TxValue", checkPtr->asChar()) == 0, "Value not correct.");
-      if (checkPtr != nullptr && !strcmp("TxValue", checkPtr->asChar())) {
-        LOG("checkPtr is not null");
-        char buf[1024];
-        sprintf(buf, "In net search, get returned %s for key %s",
-                checkPtr->asChar(), "TxKey");
-        LOG(buf);
-      } else {
-        LOG("checkPtr is nullptr");
+     auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
+         virtualRegion->get("TxKey"));
+     ASSERT(checkPtr != nullptr, "Value not found.");
+     LOGINFO("checkPtr->asChar() = %s ", checkPtr->asChar());
+     ASSERT(strcmp("TxValue", checkPtr->asChar()) == 0, "Value not correct.");
+     if (checkPtr != nullptr && !strcmp("TxValue", checkPtr->asChar())) {
+       LOG("checkPtr is not null");
+       char buf[1024];
+       sprintf(buf, "In net search, get returned %s for key %s",
+               checkPtr->asChar(), "TxKey");
+       LOG(buf);
+     } else {
+       LOG("checkPtr is nullptr");
       }
 
       txManager->begin();

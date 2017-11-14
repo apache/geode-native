@@ -134,7 +134,7 @@ namespace apache
 
         virtual bool hasDelta();
 
-        virtual apache::geode::client::DeltaPtr clone();
+        virtual std::shared_ptr<apache::geode::client::Delta> clone();
 
         /// <summary>
         /// return the hashcode for this key.

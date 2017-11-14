@@ -17,7 +17,7 @@
 
 #define ROOT_NAME "testLinkage"
 
-#include <geode/GeodeCppCache.hpp>
+#include <geode/AttributesFactory.hpp>
 #include "fw_helper.hpp"
 
 using namespace apache::geode::client;
@@ -31,13 +31,13 @@ BEGIN_TEST(LinkageTest)
   AttributesFactory af;
 
   {
-    CacheablePtr cacheablePtr;
-    CacheableKeyPtr cacheableKeyPtr;
-    RegionPtr regionPtr;
+    std::shared_ptr<Cacheable> cacheablePtr;
+    std::shared_ptr<CacheableKey> cacheableKeyPtr;
+    std::shared_ptr<Region> regionPtr;
     AttributesMutator am(regionPtr);
-    RegionEntryPtr regionEntryPtr;
-    CacheableStringPtr cacheableStringPtr;
-    CachePtr cachePtr;
+    std::shared_ptr<RegionEntry> regionEntryPtr;
+    std::shared_ptr<CacheableString> cacheableStringPtr;
+    std::shared_ptr<Cache> cachePtr;
     // add other ptr types here...
   }
   {
@@ -77,19 +77,19 @@ BEGIN_TEST(LinkageTest)
     EntryExistsException aEntryExistsException("EntryExistsException");
   }
 
-  CachePtr cachePtr;
-  CacheFactoryPtr cacheFactoryPtr = CacheFactory::createCacheFactory();
+  std::shared_ptr<Cache> cachePtr;
+  auto cacheFactoryPtr = CacheFactory::createCacheFactory();
   cachePtr = cacheFactoryPtr->create();
   // Cache cache;
   ASSERT((!cachePtr->isClosed()), "cache shouldn't be closed.");
-  RegionPtr rptr;
-  SerializablePtr callback;
+  std::shared_ptr<Region> rptr;
+  std::shared_ptr<Serializable> callback;
   //    CacheListener cl;
-  CacheListenerPtr clPtr;
+  std::shared_ptr<CacheListener> clPtr;
   //    CacheLoader cacheloader;
-  CacheLoaderPtr cldPtr;
+  std::shared_ptr<CacheLoader> cldPtr;
   //    CacheStatistics cstats; NOT yet...
 
   //    CacheWriter cwriter;
-  CacheWriterPtr cwPtr;
+  std::shared_ptr<CacheWriter> cwPtr;
 END_TEST(LinkageTest)

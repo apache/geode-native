@@ -402,7 +402,7 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
                 ((int)m_redundantEndpoints.size() <= m_redundancyLevel) ||
                 m_redundancyLevel == -1);
 
-  RemoteQueryServicePtr queryServicePtr;
+  std::shared_ptr<RemoteQueryService> queryServicePtr;
   ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_poolHADM);
   if (poolDM) {
     queryServicePtr = std::dynamic_pointer_cast<RemoteQueryService>(
@@ -805,12 +805,10 @@ bool ThinClientRedundancyManager::sendMakePrimaryMesg(
      * is supposed to fail due to notauthorized exception then causing
      * subsequent maintainredundancy calls to fail for other ops like CQ
     if ( request != nullptr && region != nullptr ) {
-      const VectorOfCacheableKey* keys = request->getKeys( );
-      bool isDurable = request->isDurable( );
-      if ( keys == nullptr || keys->empty( ) ) {
-        const std::string& regex = request->getRegex( );
-        if ( !regex.empty( ) ) {
-          region->addRegex( regex, isDurable );
+      const std::vector<std::shared_ptr<CacheableKey>> * keys =
+    request->getKeys( ); bool isDurable = request->isDurable( ); if ( keys ==
+    nullptr || keys->empty( ) ) { const std::string& regex = request->getRegex(
+    ); if ( !regex.empty( ) ) { region->addRegex( regex, isDurable );
         }
       } else {
         region->addKeys( *keys, isDurable );
@@ -868,13 +866,12 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
                  ? 5
                  : attempts;  // at least 5 attempts if ep lists are small.
 
-  ProxyCachePtr proxyCache = nullptr;
+  std::shared_ptr<ProxyCache> proxyCache = nullptr;
 
   while (attempts--) {
     if (err != GF_NOERR || m_redundantEndpoints.empty()) {
-      UserAttributesPtr userAttr =
-          TSSUserAttributesWrapper::s_geodeTSSUserAttributes
-              ->getUserAttributes();
+      auto userAttr = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
+                          ->getUserAttributes();
       if (userAttr != nullptr) proxyCache = userAttr->getProxyCache();
       err = maintainRedundancyLevel();
       // we continue on fatal error because MRL only tries a handshake without
@@ -1270,7 +1267,8 @@ void ThinClientRedundancyManager::startPeriodicAck() {
 
 // notification dup check with the help of eventidmap - called by
 // ThinClientRegion
-bool ThinClientRedundancyManager::checkDupAndAdd(EventIdPtr eventid) {
+bool ThinClientRedundancyManager::checkDupAndAdd(
+    std::shared_ptr<EventId> eventid) {
   EventIdMapEntry entry = EventIdMap::make(eventid);
   return m_eventidmap.put(entry.first, entry.second, true);
 }

@@ -41,6 +41,6 @@ void SimpleCacheListener::afterRegionDestroy(const RegionEvent& event) {
   LOGINFO("SimpleCacheListener: Got an afterRegionDestroy event.");
 }
 
-void SimpleCacheListener::close(const RegionPtr& region) {
+void SimpleCacheListener::close(const std::shared_ptr<Region>& region) {
   LOGINFO("SimpleCacheListener: Got a close event.");
 }

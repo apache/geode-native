@@ -72,7 +72,7 @@ namespace Apache
       generic<class TKey, class TValue>
       Apache::Geode::Client::CacheStatistics^ RegionEntry<TKey, TValue>::Statistics::get( )
       {
-        apache::geode::client::CacheStatisticsPtr nativeptr;
+        std::shared_ptr<apache::geode::client::CacheStatistics> nativeptr;
         try
         {
           nativeptr = m_nativeptr->get()->getStatistics();

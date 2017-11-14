@@ -51,7 +51,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-typedef std::map<std::string, RegionConfigPtr> RegionConfigMapT;
+typedef std::map<std::string, std::shared_ptr<RegionConfig>> RegionConfigMapT;
 
 class CPPCACHE_EXPORT CacheConfig {
  public:

@@ -24,7 +24,6 @@
 #include <string>
 #include <map>
 
-#include <geode/GeodeCppCache.hpp>
 #include <geode/util/chrono/duration.hpp>
 
 #include "fwklib/FrameworkTest.hpp"
@@ -65,7 +64,7 @@ class RegionHelper {
   }
 
   std::string regionAttributesToString() {
-    RegionAttributesPtr atts = m_region->getAttributesPtr();
+    auto atts = m_region->getAttributesPtr();
     return regionAttributesToString(atts);
   }
 
@@ -74,11 +73,11 @@ class RegionHelper {
   const std::string specName() { return m_spec; }
 
   std::string regionTag() {
-    RegionAttributesPtr atts = m_region->getAttributesPtr();
+    auto atts = m_region->getAttributesPtr();
     return regionTag(atts);
   }
 
-  static std::string regionTag(RegionAttributesPtr attr) {
+  static std::string regionTag(std::shared_ptr<RegionAttributes> attr) {
     std::string sString;
 
     sString += attr->getCachingEnabled() ? "Caching" : "NoCache";
@@ -90,7 +89,8 @@ class RegionHelper {
     *  @param attr Return a string describing this region.
     *  @retval A String representing aRegion.
     */
-  static std::string regionAttributesToString(RegionAttributesPtr& attr) {
+  static std::string regionAttributesToString(
+      std::shared_ptr<RegionAttributes>& attr) {
     std::string sString;
 
     sString += "\ncaching: ";
@@ -150,7 +150,7 @@ class RegionHelper {
     return sString;
   }
   void setRegionAttributes(RegionFactory& regionFac) {
-    RegionAttributesPtr atts = m_region->getAttributesPtr();
+    auto atts = m_region->getAttributesPtr();
     regionFac.setCachingEnabled(atts->getCachingEnabled());
     if (atts->getCacheListenerLibrary() != NULL &&
         atts->getCacheListenerFactory() != NULL) {
@@ -204,8 +204,8 @@ class RegionHelper {
     regionFac.setConcurrencyChecksEnabled(atts->getConcurrencyChecksEnabled());
   }
 
-  RegionPtr createRootRegion(CachePtr& cachePtr) {
-    RegionPtr region;
+  std::shared_ptr<Region> createRootRegion(std::shared_ptr<Cache>& cachePtr) {
+    std::shared_ptr<Region> region;
     std::string regionName = m_region->getName();
     if (regionName.empty()) {
       FWKEXCEPTION("Region name not specified.");
@@ -213,7 +213,8 @@ class RegionHelper {
     return createRootRegion(cachePtr, regionName);
   }
 
-  RegionPtr createRootRegion(CachePtr& cachePtr, std::string regionName) {
+  std::shared_ptr<Region> createRootRegion(std::shared_ptr<Cache>& cachePtr,
+                                           std::string regionName) {
     if (regionName.empty()) {
       regionName = m_region->getName();
       FWKINFO("region name is " << regionName);

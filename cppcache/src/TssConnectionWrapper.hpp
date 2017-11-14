@@ -33,7 +33,7 @@ typedef std::map<std::string, TcrConnection*> EpNameVsConnection;
 
 class PoolWrapper {
  private:
-  PoolPtr m_pool;
+  std::shared_ptr<Pool> m_pool;
   EpNameVsConnection m_EpnameVsConnection;
   PoolWrapper& operator=(const PoolWrapper&);
   PoolWrapper(const PoolWrapper&);
@@ -43,7 +43,7 @@ class PoolWrapper {
   void setSHConnection(TcrEndpoint* ep, TcrConnection* conn);
   PoolWrapper();
   ~PoolWrapper();
-  void releaseSHConnections(PoolPtr pool);
+  void releaseSHConnections(std::shared_ptr<Pool> pool);
   TcrConnection* getAnyConnection();
 };
 
@@ -52,7 +52,7 @@ typedef std::map<std::string, PoolWrapper*> poolVsEndpointConnMap;
 class TssConnectionWrapper {
  private:
   TcrConnection* m_tcrConn;
-  PoolPtr m_pool;
+  std::shared_ptr<Pool> m_pool;
   poolVsEndpointConnMap m_poolVsEndpointConnMap;
   TssConnectionWrapper& operator=(const TssConnectionWrapper&);
   TssConnectionWrapper(const TssConnectionWrapper&);
@@ -62,7 +62,7 @@ class TssConnectionWrapper {
   static ACE_TSS<TssConnectionWrapper>* s_geodeTSSConn;
   TcrConnection* getConnection() { return m_tcrConn; }
   TcrConnection* getSHConnection(TcrEndpoint* ep, const char* poolname);
-  void setConnection(TcrConnection* conn, const PoolPtr& pool) {
+  void setConnection(TcrConnection* conn, const std::shared_ptr<Pool>& pool) {
     m_tcrConn = conn;
     m_pool = pool;
   }
@@ -70,7 +70,7 @@ class TssConnectionWrapper {
   TcrConnection** getConnDoublePtr() { return &m_tcrConn; }
   TssConnectionWrapper();
   ~TssConnectionWrapper();
-  void releaseSHConnections(PoolPtr p);
+  void releaseSHConnections(std::shared_ptr<Pool> p);
   TcrConnection* getAnyConnection(const char* poolname);
 };
 }  // namespace client

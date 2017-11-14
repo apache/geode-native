@@ -59,7 +59,7 @@ class StatisticsManager {
   // Mutex to lock the list of Stats
   ACE_Recursive_Thread_Mutex m_statsListLock;
 
-  AdminRegionPtr m_adminRegion;
+  std::shared_ptr<AdminRegion> m_adminRegion;
 
   std::unique_ptr<GeodeStatisticsFactory> m_statisticsFactory;
 
@@ -72,11 +72,11 @@ class StatisticsManager {
                     const std::chrono::seconds durableTimeout,
                     int64_t statFileLimit = 0, int64_t statDiskSpaceLimit = 0);
 
-  void RegisterAdminRegion(AdminRegionPtr adminRegPtr) {
+  void RegisterAdminRegion(std::shared_ptr<AdminRegion> adminRegPtr) {
     m_adminRegion = adminRegPtr;
   }
 
-  AdminRegionPtr getAdminRegion() { return m_adminRegion; }
+  std::shared_ptr<AdminRegion> getAdminRegion() { return m_adminRegion; }
 
   void forceSample();
 

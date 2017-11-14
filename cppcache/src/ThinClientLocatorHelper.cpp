@@ -124,7 +124,7 @@ GfErrType ThinClientLocatorHelper::getAllServers(
 
       auto di = m_poolDM->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
                    reinterpret_cast<uint8_t*>(buff), receivedLength);
-      GetAllServersResponsePtr response(nullptr);
+      std::shared_ptr<GetAllServersResponse> response(nullptr);
 
       /* adongre
        * SSL Enabled on Location and not in the client
@@ -215,7 +215,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
       }
       auto di = m_poolDM->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
                    reinterpret_cast<uint8_t*>(buff), receivedLength);
-      QueueConnectionResponsePtr response(nullptr);
+      std::shared_ptr<QueueConnectionResponse> response(nullptr);
 
       /* adongre
        * ssl defect
@@ -317,7 +317,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
       }
       auto di = m_poolDM->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
                    reinterpret_cast<uint8_t*>(buff), receivedLength);
-      ClientConnectionResponsePtr response;
+      std::shared_ptr<ClientConnectionResponse> response;
 
       /* adongre
        * SSL is enabled on locator and not in the client
@@ -421,7 +421,7 @@ GfErrType ThinClientLocatorHelper::updateLocators(
       di->rewindCursor(1);
 
       response = di->readObject<LocatorListResponse>();
-      std::vector<ServerLocation> locators = response->getLocators();
+      auto locators = response->getLocators();
       if (locators.size() > 0) {
         RandGen randGen;
         std::random_shuffle(locators.begin(), locators.end(), randGen);

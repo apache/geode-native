@@ -38,38 +38,38 @@ class ThinClientPoolDM;
 
 class CPPCACHE_EXPORT ProxyRemoteQueryService : public QueryService {
  public:
-  ProxyRemoteQueryService(ProxyCachePtr cptr);
+  ProxyRemoteQueryService(std::shared_ptr<ProxyCache> cptr);
 
-  QueryPtr newQuery(const char* querystring);
+  std::shared_ptr<Query> newQuery(const char* querystring);
 
   ~ProxyRemoteQueryService() {}
-  virtual CqQueryPtr newCq(const char* querystr, const CqAttributesPtr& cqAttr,
-                           bool isDurable = false);
-  virtual CqQueryPtr newCq(const char* name, const char* querystr,
-                           const CqAttributesPtr& cqAttr,
-                           bool isDurable = false);
+  virtual std::shared_ptr<CqQuery> newCq(
+      const char* querystr, const std::shared_ptr<CqAttributes>& cqAttr,
+      bool isDurable = false);
+  virtual std::shared_ptr<CqQuery> newCq(
+      const char* name, const char* querystr,
+      const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable = false);
   virtual void closeCqs();
   virtual QueryService::query_container_type getCqs();
-  virtual CqQueryPtr getCq(const char* name);
+  virtual std::shared_ptr<CqQuery> getCq(const char* name);
   virtual void executeCqs();
   virtual void stopCqs();
-  virtual CqServiceStatisticsPtr getCqServiceStatistics();
-  virtual CacheableArrayListPtr getAllDurableCqsFromServer();
+  virtual std::shared_ptr<CqServiceStatistics> getCqServiceStatistics();
+  virtual std::shared_ptr<CacheableArrayList> getAllDurableCqsFromServer();
 
  private:
   void unSupportedException(const char* operationName);
-  void addCqQuery(const CqQueryPtr& cqQuery);
+  void addCqQuery(const std::shared_ptr<CqQuery>& cqQuery);
   void closeCqs(bool keepAlive);
 
-  QueryServicePtr m_realQueryService;
-  ProxyCachePtr m_proxyCache;
+  std::shared_ptr<QueryService> m_realQueryService;
+  std::shared_ptr<ProxyCache> m_proxyCache;
   query_container_type m_cqQueries;
   // lock for cqQuery list;
   ACE_Recursive_Thread_Mutex m_cqQueryListLock;
   friend class ProxyCache;
 };
 
-typedef std::shared_ptr<ProxyRemoteQueryService> ProxyRemoteQueryServicePtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -14,21 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#define ROOT_NAME "testThinClientPutAllPRSingleHop"
+#define ROOT_SCOPE DISTRIBUTED_ACK
+
 #include <string>
 
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 
-#include <geode/GeodeCppCache.hpp>
 #include <geode/statistics/StatisticsFactory.hpp>
 
 #include "fw_dunit.hpp"
 #include "BuiltinCacheableWrappers.hpp"
 #include "Utils.hpp"
-
-#define ROOT_NAME "testThinClientPutAllPRSingleHop"
-#define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "CacheHelper.hpp"
 
@@ -107,7 +107,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_EndpointTL)
   {
     initClient(true);
 
-    RegionPtr regPtr = getHelper()->createPooledRegionStickySingleHop(
+    auto regPtr = getHelper()->createPooledRegionStickySingleHop(
         regionNames[0], USE_ACK, nullptr, "__TEST_POOL1__", false, false);
     ASSERT(regPtr != nullptr, "Failed to create region.");
     regPtr = getHelper()->createPooledRegionStickySingleHop(
@@ -123,7 +123,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
     LOG("WarmUpTask started.");
     int failureCount = 0;
     int metadatarefreshCount = 0;
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
 
     // This is to get MetaDataService going.
     for (int i = 3000; i < 8000; i++) {
@@ -199,7 +199,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
   {
     LOG("CheckPrSingleHopForIntKeysTask started.");
 
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
 
     LOG("CheckPrSingleHopForIntKeysTask get completed.");
 
@@ -261,7 +261,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopRemoveAllForIntKeysTask)
   {
     LOG("CheckPrSingleHopRemoveAllForIntKeysTask started.");
 
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
 
     LOG("CheckPrSingleHopForIntKeysTask get completed.");
 
@@ -269,7 +269,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopRemoveAllForIntKeysTask)
       LOGINFO("Iteration removeAll Start ");
       try {
         HashMapOfCacheable valMap;
-        VectorOfCacheableKey keys;
+        std::vector<std::shared_ptr<CacheableKey>> keys;
         for (int j = 1000; j < 25000; j++) {
           auto keyPtr = CacheableInt32::create(j);
           auto valPtr = CacheableInt32::create(keyPtr->hashcode());
@@ -335,7 +335,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
   {
-    PoolPtr pool =
+    auto pool =
         getHelper()->getCache()->getPoolManager().find("__TEST_POOL1__");
     if (pool->getThreadLocalConnections()) {
       LOG("releaseThreadLocalConnection1 doing...");

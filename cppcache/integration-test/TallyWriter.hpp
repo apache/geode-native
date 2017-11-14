@@ -20,14 +20,10 @@
  * limitations under the License.
  */
 
-#include <geode/GeodeCppCache.hpp>
-
 using namespace apache::geode::client;
 using namespace test;
 
 class TallyWriter;
-
-typedef std::shared_ptr<TallyWriter> TallyWriterPtr;
 
 class TallyWriter : virtual public CacheWriter {
  private:
@@ -38,9 +34,9 @@ class TallyWriter : virtual public CacheWriter {
   bool isWriterInvoke;
   bool isCallbackCalled;
   bool isWriterfailed;
-  CacheableKeyPtr m_lastKey;
-  CacheablePtr m_lastValue;
-  CacheableKeyPtr m_callbackArg;
+  std::shared_ptr<CacheableKey> m_lastKey;
+  std::shared_ptr<Cacheable> m_lastValue;
+  std::shared_ptr<CacheableKey> m_callbackArg;
 
  public:
   TallyWriter()
@@ -93,7 +89,7 @@ class TallyWriter : virtual public CacheWriter {
     return !isWriterfailed;
   }
 
-  virtual void close(const RegionPtr& region) { LOG("TallyWriter::close"); }
+  virtual void close(const std::shared_ptr<Region>& region) { LOG("TallyWriter::close"); }
 
   int expectCreates(int expected) {
     int tries = 0;
@@ -119,7 +115,7 @@ class TallyWriter : virtual public CacheWriter {
   int getInvalidates() { return m_invalidates; }
   int getDestroys() { return m_destroys; }
   void setWriterFailed() { isWriterfailed = true; }
-  void setCallBackArg(const CacheableKeyPtr& callbackArg) {
+  void setCallBackArg(const std::shared_ptr<CacheableKey>& callbackArg) {
     m_callbackArg = callbackArg;
   }
   void resetWriterInvokation() {
@@ -128,9 +124,9 @@ class TallyWriter : virtual public CacheWriter {
   }
   bool isWriterInvoked() { return isWriterInvoke; }
   bool isCallBackArgCalled() { return isCallbackCalled; }
-  CacheableKeyPtr getLastKey() { return m_lastKey; }
+  std::shared_ptr<CacheableKey> getLastKey() { return m_lastKey; }
 
-  CacheablePtr getLastValue() { return m_lastValue; }
+  std::shared_ptr<Cacheable> getLastValue() { return m_lastValue; }
 
   void showTallies() {
     char buf[1024];

@@ -201,7 +201,7 @@ namespace apache
         }
         return NULL;
       }
-      void ManagedTransactionWriterGeneric::beforeCommit(apache::geode::client::TransactionEventPtr& te)
+      void ManagedTransactionWriterGeneric::beforeCommit(std::shared_ptr<apache::geode::client::TransactionEvent>& te)
       {
         try {
           Apache::Geode::Client::TransactionEvent  mevent(te.get());

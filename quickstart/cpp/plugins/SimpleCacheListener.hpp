@@ -24,7 +24,6 @@
  */
 
 // Include the Geode library.
-#include <geode/GeodeCppCache.hpp>
 #include <geode/CacheListener.hpp>
 
 // Use the "geode" namespace.
@@ -40,5 +39,5 @@ class SimpleCacheListener : public CacheListener {
   virtual void afterDestroy(const EntryEvent& event);
   virtual void afterRegionInvalidate(const RegionEvent& event);
   virtual void afterRegionDestroy(const RegionEvent& event);
-  virtual void close(const RegionPtr& region);
+  virtual void close(const std::shared_ptr<Region>& region);
 };

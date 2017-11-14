@@ -17,7 +17,6 @@
 #include "fw_dunit.hpp"
 #include <string>
 #include <cstdlib>
-#include <geode/GeodeCppCache.hpp>
 #include <geode/FunctionService.hpp>
 #include <geode/Execution.hpp>
 
@@ -35,7 +34,7 @@ using namespace apache::geode::client;
 
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-CredentialGeneratorPtr credentialGeneratorHandler;
+std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
@@ -101,211 +100,216 @@ void initCredentialGenerator() {
 //#define USER_CLIENT s2p2
 
 const char* regionNamesAuth[] = {"DistRegionAck"};
+ std::shared_ptr<Properties> userCreds;
+ void initClientAuth() {
+   userCreds = Properties::create();
+   auto config = Properties::create();
+   credentialGeneratorHandler->getAuthInit(config);
 
-PropertiesPtr userCreds;
-void initClientAuth() {
-  userCreds = Properties::create();
-  PropertiesPtr config = Properties::create();
-  credentialGeneratorHandler->getAuthInit(config);
+   credentialGeneratorHandler->getValidCredentials(userCreds);
 
-  credentialGeneratorHandler->getValidCredentials(userCreds);
+   try {
+     initClient(true, config);
+   } catch (...) {
+     throw;
+   }
+ }
 
-  try {
-    initClient(true, config);
-  } catch (...) {
-    throw;
-  }
-}
+ typedef enum { OP_GET = 0, OP_PUT = 1 } UserOpCode;
 
-typedef enum { OP_GET = 0, OP_PUT = 1 } UserOpCode;
+ class UserThread : public ACE_Task_Base {
+   int m_numberOfOps;
+   int m_numberOfUsers;
+   std::shared_ptr<RegionService> m_userCache;
+   std::shared_ptr<Region> m_userRegion;
+   int m_userId;
+   bool m_failed;
+   bool getValidOps;
+   int m_totalOpsPassed;
 
-class UserThread : public ACE_Task_Base {
-  int m_numberOfOps;
-  int m_numberOfUsers;
-  RegionServicePtr m_userCache;
-  RegionPtr m_userRegion;
-  int m_userId;
-  bool m_failed;
-  bool getValidOps;
-  int m_totalOpsPassed;
+   int getNextOp() { return (rand() % 17) % 2; }
 
-  int getNextOp() { return (rand() % 17) % 2; }
+   int getNextKeyIdx() {
+     if (getValidOps) {
+       getValidOps = false;
+       return m_userId;
+     } else {
+       getValidOps = true;
+     }
+     int nextNumber = (rand() % 541) % (m_numberOfUsers + 1);
+     if (nextNumber == m_userId)
+       return (nextNumber + 1) % (m_numberOfUsers + 1);
+     return nextNumber;
+   }
 
-  int getNextKeyIdx() {
-    if (getValidOps) {
-      getValidOps = false;
-      return m_userId;
-    } else {
-      getValidOps = true;
-    }
-    int nextNumber = (rand() % 541) % (m_numberOfUsers + 1);
-    if (nextNumber == m_userId) return (nextNumber + 1) % (m_numberOfUsers + 1);
-    return nextNumber;
-  }
+   void getOp() {
+     LOG("Get ops");
+     bool isPassed = false;
+     char key[10] = {'\0'};
+     try {
+       int nextKey = getNextKeyIdx();
 
-  void getOp() {
-    LOG("Get ops");
-    bool isPassed = false;
-    char key[10] = {'\0'};
-    try {
-      int nextKey = getNextKeyIdx();
+       sprintf(key, "key%d", nextKey);
+       char tmp[256] = {'\0'};
+       sprintf(tmp, "User is doing get. user id = %d, key = %s", m_userId, key);
+       LOG(tmp);
+       isPassed = ifUserIdInKey(key);
+       m_userRegion->get(key);
+       LOG("op got passed");
+       m_totalOpsPassed++;
+     } catch (const apache::geode::client::NotAuthorizedException&) {
+       LOG("NotAuthorizedException Caught");
+       if (isPassed) {
+         char tmp[256] = {'\0'};
+         sprintf(tmp,
+                 "Get ops should have passed for user id = %d for key = %s",
+                 m_userId, key);
+         LOG(tmp);
+         m_failed = true;
+       }
+     } catch (const apache::geode::client::Exception& other) {
+       other.printStackTrace();
+       m_failed = true;
+       char tmp[256] = {'\0'};
+       sprintf(tmp, "Some other geode exception got for user id = %d",
+               m_userId);
+       LOG(tmp);
+       LOG(other.getMessage());
+       m_failed = true;
+     } catch (...) {
+       m_failed = true;
+       char tmp[256] = {'\0'};
+       sprintf(tmp, "Some other exception got for user id = %d", m_userId);
+       LOG(tmp);
+     }
+   }
 
-      sprintf(key, "key%d", nextKey);
-      char tmp[256] = {'\0'};
-      sprintf(tmp, "User is doing get. user id = %d, key = %s", m_userId, key);
-      LOG(tmp);
-      isPassed = ifUserIdInKey(key);
-      m_userRegion->get(key);
-      LOG("op got passed");
-      m_totalOpsPassed++;
-    } catch (const apache::geode::client::NotAuthorizedException&) {
-      LOG("NotAuthorizedException Caught");
-      if (isPassed) {
-        char tmp[256] = {'\0'};
-        sprintf(tmp, "Get ops should have passed for user id = %d for key = %s",
-                m_userId, key);
-        LOG(tmp);
-        m_failed = true;
-      }
-    } catch (const apache::geode::client::Exception& other) {
-      other.printStackTrace();
-      m_failed = true;
-      char tmp[256] = {'\0'};
-      sprintf(tmp, "Some other geode exception got for user id = %d", m_userId);
-      LOG(tmp);
-      LOG(other.getMessage());
-      m_failed = true;
-    } catch (...) {
-      m_failed = true;
-      char tmp[256] = {'\0'};
-      sprintf(tmp, "Some other exception got for user id = %d", m_userId);
-      LOG(tmp);
-    }
-  }
+   void putOp() {
+     LOG("Put ops");
+     bool isPassed = false;
+     char key[10] = {'\0'};
+     try {
+       int nextKey = getNextKeyIdx();
 
-  void putOp() {
-    LOG("Put ops");
-    bool isPassed = false;
-    char key[10] = {'\0'};
-    try {
-      int nextKey = getNextKeyIdx();
+       sprintf(key, "key%d", nextKey);
+       char tmp[256] = {'\0'};
+       sprintf(tmp, "User is doing put. user id = %d, key = %s", m_userId, key);
+       LOG(tmp);
+       isPassed = ifUserIdInKey(key);
+       m_userRegion->put(key, "val");
+       LOG("op got passed");
+       m_totalOpsPassed++;
+     } catch (const apache::geode::client::NotAuthorizedException&) {
+       LOG("NotAuthorizedException Caught");
+       if (isPassed) {
+         char tmp[256] = {'\0'};
+         sprintf(tmp,
+                 "Put ops should have passed for user id = %d for key = %s",
+                 m_userId, key);
+         LOG(tmp);
+         m_failed = true;
+       }
+     } catch (const apache::geode::client::Exception& other) {
+       other.printStackTrace();
+       m_failed = true;
+       char tmp[256] = {'\0'};
+       sprintf(tmp, "Some other geode exception got for user id = %d",
+               m_userId);
+       LOG(tmp);
+       LOG(other.getMessage());
+       m_failed = true;
+     } catch (...) {
+       m_failed = true;
+       char tmp[256] = {'\0'};
+       sprintf(tmp, "Some other exception got for user id = %d", m_userId);
+       LOG(tmp);
+     }
+   }
 
-      sprintf(key, "key%d", nextKey);
-      char tmp[256] = {'\0'};
-      sprintf(tmp, "User is doing put. user id = %d, key = %s", m_userId, key);
-      LOG(tmp);
-      isPassed = ifUserIdInKey(key);
-      m_userRegion->put(key, "val");
-      LOG("op got passed");
-      m_totalOpsPassed++;
-    } catch (const apache::geode::client::NotAuthorizedException&) {
-      LOG("NotAuthorizedException Caught");
-      if (isPassed) {
-        char tmp[256] = {'\0'};
-        sprintf(tmp, "Put ops should have passed for user id = %d for key = %s",
-                m_userId, key);
-        LOG(tmp);
-        m_failed = true;
-      }
-    } catch (const apache::geode::client::Exception& other) {
-      other.printStackTrace();
-      m_failed = true;
-      char tmp[256] = {'\0'};
-      sprintf(tmp, "Some other geode exception got for user id = %d", m_userId);
-      LOG(tmp);
-      LOG(other.getMessage());
-      m_failed = true;
-    } catch (...) {
-      m_failed = true;
-      char tmp[256] = {'\0'};
-      sprintf(tmp, "Some other exception got for user id = %d", m_userId);
-      LOG(tmp);
-    }
-  }
+   bool ifUserIdInKey(const char* key) {
+     std::string s1(key);
+     char tmp[10];
+     sprintf(tmp, "%d", m_userId);
+     std::string userId(tmp);
 
-  bool ifUserIdInKey(const char* key) {
-    std::string s1(key);
-    char tmp[10];
-    sprintf(tmp, "%d", m_userId);
-    std::string userId(tmp);
+     size_t found = s1.rfind(userId);
+     if (found != std::string::npos) return true;
+     return false;
+   }
 
-    size_t found = s1.rfind(userId);
-    if (found != std::string::npos) return true;
-    return false;
-  }
+  public:
+   UserThread() {
+     getValidOps = true;
+     m_totalOpsPassed = 0;
+   }
+   void setParameters(int numberOfOps, int userId, std::shared_ptr<Pool> pool,
+                      int numberOfUsers) {
+     printf(
+         "userthread constructor nOo = %d, userid = %d, numberOfUsers = %d\n",
+         numberOfOps, userId, numberOfUsers);
+     m_userId = userId;
+     m_failed = false;
+     auto creds = Properties::create();
+     char tmp[25] = {'\0'};
+     sprintf(tmp, "user%d", userId);
 
- public:
-  UserThread() {
-    getValidOps = true;
-    m_totalOpsPassed = 0;
-  }
-  void setParameters(int numberOfOps, int userId, PoolPtr pool,
-                     int numberOfUsers) {
-    printf("userthread constructor nOo = %d, userid = %d, numberOfUsers = %d\n",
-           numberOfOps, userId, numberOfUsers);
-    m_userId = userId;
-    m_failed = false;
-    PropertiesPtr creds = Properties::create();
-    char tmp[25] = {'\0'};
-    sprintf(tmp, "user%d", userId);
+     creds->insert("security-username", tmp);
+     creds->insert("security-password", tmp);
 
-    creds->insert("security-username", tmp);
-    creds->insert("security-password", tmp);
+     m_numberOfOps = numberOfOps;
+     m_userCache = getVirtualCache(creds, pool);
+     m_userRegion = m_userCache->getRegion(regionNamesAuth[0]);
+     m_numberOfUsers = numberOfUsers;
+   }
 
-    m_numberOfOps = numberOfOps;
-    m_userCache = getVirtualCache(creds, pool);
-    m_userRegion = m_userCache->getRegion(regionNamesAuth[0]);
-    m_numberOfUsers = numberOfUsers;
-  }
+   void start() { activate(THR_NEW_LWP | THR_JOINABLE); }
 
-  void start() { activate(THR_NEW_LWP | THR_JOINABLE); }
+   void stop() {
+     /*if (m_run) {
+        m_run = false;
+        wait();
+     }*/
+   }
 
-  void stop() {
-    /*if (m_run) {
-       m_run = false;
-       wait();
-    }*/
-  }
+   int svc(void) {
+     int nOps = 0;
+     char key[10] = {'\0'};
+     char val[10] = {'\0'};
+     printf("User thread first put started\n");
+     // users data
+     sprintf(key, "key%d", m_userId);
+     sprintf(val, "val%d", m_userId);
+     printf("User thread first put started key = %s val =%s\n", key, val);
+     m_userRegion->put(key, val);
+     printf("User thread first put completed\n");
+     while (nOps++ < m_numberOfOps && !m_failed) {
+       int nextOp = getNextOp();
+       switch (nextOp) {
+         case 0:
+           getOp();
+           break;
+         case 1:
+           putOp();
+           break;
+         default:
+           LOG("Something is worng.");
+           break;
+       }
+     }
+     m_userCache->close();
+     return 0;
+   }
 
-  int svc(void) {
-    int nOps = 0;
-    char key[10] = {'\0'};
-    char val[10] = {'\0'};
-    printf("User thread first put started\n");
-    // users data
-    sprintf(key, "key%d", m_userId);
-    sprintf(val, "val%d", m_userId);
-    printf("User thread first put started key = %s val =%s\n", key, val);
-    m_userRegion->put(key, val);
-    printf("User thread first put completed\n");
-    while (nOps++ < m_numberOfOps && !m_failed) {
-      int nextOp = getNextOp();
-      switch (nextOp) {
-        case 0:
-          getOp();
-          break;
-        case 1:
-          putOp();
-          break;
-        default:
-          LOG("Something is worng.");
-          break;
-      }
-    }
-    m_userCache->close();
-    return 0;
-  }
+   bool isUserOpsFailed() {
+     if (m_failed) {
+       char tmp[256] = {'\0'};
+       sprintf(tmp, "User ops failed for this user id = %d", m_userId);
+       LOG(tmp);
+     }
+     return m_failed;
+   }
 
-  bool isUserOpsFailed() {
-    if (m_failed) {
-      char tmp[256] = {'\0'};
-      sprintf(tmp, "User ops failed for this user id = %d", m_userId);
-      LOG(tmp);
-    }
-    return m_failed;
-  }
-
-  int getTotalOpsPassed() { return m_totalOpsPassed; }
+   int getTotalOpsPassed() { return m_totalOpsPassed; }
 };
 
 DUNIT_TASK_DEFINITION(CLIENT_1, StartServer1)
@@ -358,7 +362,7 @@ DUNIT_TASK_DEFINITION(CLIENT_1, StepOne)
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr,
                               false, -1, true, 0);
       LOG("Region created successfully");
-      PoolPtr pool = getPool(regionNamesAuth[0]);
+     auto pool = getPool(regionNamesAuth[0]);
       int m_numberOfUsers = 3;
       int m_numberOfOps = 10;
       UserThread* uthreads = new UserThread[m_numberOfUsers];

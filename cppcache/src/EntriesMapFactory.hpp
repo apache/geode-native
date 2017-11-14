@@ -34,7 +34,7 @@ class CPPCACHE_EXPORT EntriesMapFactory {
    * type of entries map.
    */
   static EntriesMap* createMap(RegionInternal* region,
-                               const RegionAttributesPtr& attrs);
+                               const std::shared_ptr<RegionAttributes>& attrs);
 
  private:
   /** @brief not to be instantiated. */

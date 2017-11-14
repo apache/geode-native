@@ -28,7 +28,7 @@ using namespace apache::geode::client;
 
 TcrHADistributionManager::TcrHADistributionManager(
     ThinClientRegion* theRegion, TcrConnectionManager& connManager,
-    CacheAttributesPtr cacheAttributes)
+    std::shared_ptr<CacheAttributes> cacheAttributes)
     : ThinClientDistributionManager(connManager, theRegion),
       m_cacheAttributes(cacheAttributes),
       m_theTcrConnManager(connManager) {

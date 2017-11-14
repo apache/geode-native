@@ -42,12 +42,12 @@ class CPPCACHE_EXPORT FunctionServiceImpl : public FunctionService {
   /**
    * This function is used in multiuser mode to execute function on server.
    */
-  // virtual ExecutionPtr onServer();
+  // virtual std::shared_ptr<Execution> onServer();
 
   /**
    * This function is used in multiuser mode to execute function on server.
    */
-  // virtual ExecutionPtr onServers();
+  // virtual std::shared_ptr<Execution> onServers();
 
   virtual ~FunctionServiceImpl() {}
 
@@ -55,11 +55,12 @@ class CPPCACHE_EXPORT FunctionServiceImpl : public FunctionService {
   FunctionServiceImpl(const FunctionService &);
   FunctionServiceImpl &operator=(const FunctionService &);
 
-  FunctionServiceImpl(ProxyCachePtr proxyCache);
+  FunctionServiceImpl(std::shared_ptr<ProxyCache> proxyCache);
 
-  static FunctionServicePtr getFunctionService(ProxyCachePtr proxyCache);
+  static std::shared_ptr<FunctionService> getFunctionService(
+      std::shared_ptr<ProxyCache> proxyCache);
 
-  ProxyCachePtr m_proxyCache;
+  std::shared_ptr<ProxyCache> m_proxyCache;
   friend class ProxyCache;
 
   FRIEND_STD_SHARED_PTR(FunctionServiceImpl)

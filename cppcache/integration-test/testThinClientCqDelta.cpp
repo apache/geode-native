@@ -53,7 +53,7 @@ class CqDeltaListener : public CqListener {
   CqDeltaListener() : m_deltaCount(0), m_valueCount(0) {}
 
   virtual void onEvent(const CqEvent& aCqEvent) {
-    CacheableBytesPtr deltaValue = aCqEvent.getDeltaValue();
+    auto deltaValue = aCqEvent.getDeltaValue();
     DeltaTestImpl newValue;
     auto input = getHelper()->getCache()->createDataInput(
         deltaValue->value(), deltaValue->length());
@@ -61,8 +61,7 @@ class CqDeltaListener : public CqListener {
     if (newValue.getIntVar() == 5) {
       m_deltaCount++;
     }
-    DeltaTestImplPtr dptr =
-        std::static_pointer_cast<DeltaTestImpl>(aCqEvent.getNewValue());
+    auto dptr = std::static_pointer_cast<DeltaTestImpl>(aCqEvent.getNewValue());
     if (dptr->getIntVar() == 5) {
       m_valueCount++;
     }
@@ -75,8 +74,8 @@ class CqDeltaListener : public CqListener {
   int m_deltaCount;
   int m_valueCount;
 };
-typedef std::shared_ptr<CqDeltaListener> CqDeltaListenerPtr;
-CqDeltaListenerPtr g_CqListener;
+
+std::shared_ptr<CqDeltaListener> g_CqListener;
 
 void initClient(const bool isthinClient) {
   if (cacheHelper == nullptr) {
@@ -104,7 +103,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("createRegion_Pool() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr =
+  auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -116,7 +115,7 @@ void createPooledLRURegion(const char* name, bool ackMode, const char* locators,
                            bool clientNotificationEnabled = false,
                            bool cachingEnable = true) {
   LOG(" createPooledLRURegion entered");
-  RegionPtr regPtr = getHelper()->createPooledRegionDiscOverFlow(
+  auto regPtr = getHelper()->createPooledRegionDiscOverFlow(
       name, ackMode, locators, poolname, cachingEnable,
       clientNotificationEnabled, std::chrono::seconds(0),
       std::chrono::seconds(0), std::chrono::seconds(0), std::chrono::seconds(0),
@@ -130,8 +129,8 @@ void createRegion(const char* name, bool ackMode,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   // ack, caching
-  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
-                                               clientNotificationEnabled);
+  auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
+                                          clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -148,7 +147,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1)
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_",
                        true);
     try {
-      SerializationRegistryPtr serializationRegistry =
+      auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
 
@@ -165,7 +164,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2)
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_",
                        true);
     try {
-      SerializationRegistryPtr serializationRegistry =
+      auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
 
@@ -173,18 +172,17 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2)
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
     }
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
 
-    PoolPtr pool =
-        getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
-    QueryServicePtr qs;
+    auto pool = getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
+    std::shared_ptr<QueryService> qs;
     qs = pool->getQueryService();
     CqAttributesFactory cqFac;
     g_CqListener = std::make_shared<CqDeltaListener>();
-    CqListenerPtr cqListener = g_CqListener;
+    auto cqListener = g_CqListener;
     cqFac.addCqListener(cqListener);
-    CqAttributesPtr cqAttr = cqFac.create();
-    CqQueryPtr qry =
+    auto cqAttr = cqFac.create();
+    auto qry =
         qs->newCq("Cq_with_delta",
                   "select * from /DistRegionAck d where d.intVar > 4", cqAttr);
     qs->executeCqs();
@@ -196,7 +194,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1_NoPools)
     initClientNoPools();
     createRegion(regionNames[0], USE_ACK, true);
     try {
-      SerializationRegistryPtr serializationRegistry =
+      auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
 
@@ -212,7 +210,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_NoPools)
     initClientNoPools();
     createRegion(regionNames[0], USE_ACK, true);
     try {
-      SerializationRegistryPtr serializationRegistry =
+      auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
 
@@ -220,16 +218,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_NoPools)
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
     }
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
 
-    QueryServicePtr qs;
+    std::shared_ptr<QueryService> qs;
     qs = getHelper()->getQueryService();
     CqAttributesFactory cqFac;
     g_CqListener = std::make_shared<CqDeltaListener>();
-    CqListenerPtr cqListener = g_CqListener;
+    auto cqListener = g_CqListener;
     cqFac.addCqListener(cqListener);
-    CqAttributesPtr cqAttr = cqFac.create();
-    CqQueryPtr qry =
+    auto cqAttr = cqFac.create();
+    auto qry =
         qs->newCq("Cq_with_delta",
                   "select * from /DistRegionAck d where d.intVar > 4", cqAttr);
     qs->executeCqs();
@@ -238,10 +236,10 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client1_Put)
   {
-    CacheableKeyPtr keyPtr = createKey(keys[0]);
+    auto keyPtr = createKey(keys[0]);
     auto dptr = std::make_shared<DeltaTestImpl>();
-    CacheablePtr valPtr(dptr);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    std::shared_ptr<Cacheable> valPtr(dptr);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->put(keyPtr, valPtr);
     dptr->setIntVar(5);
     dptr->setDelta(true);

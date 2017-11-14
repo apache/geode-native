@@ -20,8 +20,6 @@
 #ifndef GEODE_TESTOBJECT_TIMESTAMPEDOBJECT_H_
 #define GEODE_TESTOBJECT_TIMESTAMPEDOBJECT_H_
 
-#include <geode/GeodeCppCache.hpp>
-
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
 #define TESTOBJECT_EXPORT LIBEXP
@@ -48,7 +46,6 @@ class TESTOBJECT_EXPORT TimestampedObject
   virtual uint32_t objectSize() const { return 0; }
   virtual ~TimestampedObject() {}
 };
-typedef std::shared_ptr<TimestampedObject> TimestampedObjectPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_TIMESTAMPEDOBJECT_H_

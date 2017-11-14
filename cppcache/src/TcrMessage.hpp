@@ -34,7 +34,6 @@
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/ExceptionTypes.hpp>
-#include <geode/VectorT.hpp>
 #include <geode/CacheableBuiltins.hpp>
 
 #include "InterestResultPolicy.hpp"
@@ -209,7 +208,7 @@ class CPPCACHE_EXPORT TcrMessage {
     }
     return false;
   }
-  static VersionTagPtr readVersionTagPart(
+  static std::shared_ptr<VersionTag> readVersionTagPart(
       DataInput& input, uint16_t endpointMemId,
       MemberListForVersionStamp& memberListForVersionStamp);
 
@@ -232,13 +231,13 @@ class CPPCACHE_EXPORT TcrMessage {
   //  = false, bool receiveValues = true, ThinClientBaseDM *connectionDM =
   //  nullptr);
 
-  void InitializeGetallMsg(const SerializablePtr& aCallbackArgument);
+  void InitializeGetallMsg(const std::shared_ptr<Serializable>& aCallbackArgument);
   // for multiuser cache close
 
   // Updates the early ack byte of the message to reflect that it is a retry op
   void updateHeaderForRetry();
 
-  inline const VectorOfCacheableKey* getKeys() const { return m_keyList; }
+  inline const std::vector<std::shared_ptr<CacheableKey>> * getKeys() const { return m_keyList; }
 
   inline const std::string& getRegex() const { return m_regex; }
 
@@ -312,12 +311,12 @@ class CPPCACHE_EXPORT TcrMessage {
                                                 // that was made if this is a
                                                 // reply
   int32_t getMessageTypeRequest() const;
-  CacheableKeyPtr getKey() const;
-  const CacheableKeyPtr& getKeyRef() const;
-  CacheablePtr getValue() const;
-  const CacheablePtr& getValueRef() const;
-  CacheablePtr getCallbackArgument() const;
-  const CacheablePtr& getCallbackArgumentRef() const;
+  std::shared_ptr<CacheableKey> getKey() const;
+  const std::shared_ptr<CacheableKey>& getKeyRef() const;
+  std::shared_ptr<Cacheable> getValue() const;
+  const std::shared_ptr<Cacheable>& getValueRef() const;
+  std::shared_ptr<Cacheable> getCallbackArgument() const;
+  const std::shared_ptr<Cacheable>& getCallbackArgumentRef() const;
 
   const std::map<std::string, int>* getCqs() const;
   bool getBoolValue() const { return m_boolValue; };
@@ -331,7 +330,7 @@ class CPPCACHE_EXPORT TcrMessage {
   const char* getMsgBody() const;
   uint32_t getMsgLength() const;
   uint32_t getMsgBodyLength() const;
-  EventIdPtr getEventId() const;
+  std::shared_ptr<EventId> getEventId() const;
 
   int32_t getTransId() const;
   void setTransId(int32_t txId);
@@ -369,11 +368,11 @@ class CPPCACHE_EXPORT TcrMessage {
   }
   TcrChunkedResult* getChunkedResultHandler() { return m_chunkedResult; }
   void setVersionedObjectPartList(
-      VersionedCacheableObjectPartListPtr versionObjPartListptr) {
+      std::shared_ptr<VersionedCacheableObjectPartList> versionObjPartListptr) {
     m_versionObjPartListptr = versionObjPartListptr;
   }
 
-  VersionedCacheableObjectPartListPtr getVersionedObjectPartList() {
+  std::shared_ptr<VersionedCacheableObjectPartList> getVersionedObjectPartList() {
     return m_versionObjPartListptr;
   }
 
@@ -382,11 +381,11 @@ class CPPCACHE_EXPORT TcrMessage {
   //  getDeltaBytes( ) is called *only* by CqService, returns a CacheableBytes
   //  that
   // takes ownership of delta bytes.
-  CacheableBytesPtr getDeltaBytes() {
+  std::shared_ptr<CacheableBytes> getDeltaBytes() {
     if (m_deltaBytes == nullptr) {
       return nullptr;
     }
-    CacheableBytesPtr retVal(
+    std::shared_ptr<CacheableBytes> retVal(
         CacheableBytes::createNoCopy(m_deltaBytes, m_deltaBytesLen));
     m_deltaBytes = nullptr;
     return retVal;
@@ -417,19 +416,19 @@ class CPPCACHE_EXPORT TcrMessage {
 
   int32_t getNumBuckets() const { return m_bucketCount; }
 
-  CacheableStringPtr getColocatedWith() const { return m_colocatedWith; }
+  std::shared_ptr<CacheableString> getColocatedWith() const { return m_colocatedWith; }
 
-  CacheableStringPtr getPartitionResolver() const {
+  std::shared_ptr<CacheableString> getPartitionResolver() const {
     return m_partitionResolverName;
   }
 
-  std::vector<std::vector<BucketServerLocationPtr> >* getMetadata() {
+  std::vector<std::vector<std::shared_ptr<BucketServerLocation>> >* getMetadata() {
     return m_metadata;
   }
 
-  std::vector<FixedPartitionAttributesImplPtr>* getFpaSet() { return m_fpaSet; }
+  std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* getFpaSet() { return m_fpaSet; }
 
-  CacheableHashSetPtr getFailedNode() { return m_failedNode; }
+  std::shared_ptr<CacheableHashSet> getFailedNode() { return m_failedNode; }
 
   bool isCallBackArguement() const { return m_isCallBackArguement; }
 
@@ -437,16 +436,16 @@ class CPPCACHE_EXPORT TcrMessage {
     m_isCallBackArguement = aCallBackArguement;
   }
 
-  void setBucketServerLocation(BucketServerLocationPtr serverLocation) {
+  void setBucketServerLocation(std::shared_ptr<BucketServerLocation> serverLocation) {
     m_bucketServerLocation = serverLocation;
   }
-  void setVersionTag(VersionTagPtr versionTag) { m_versionTag = versionTag; }
-  VersionTagPtr getVersionTag() { return m_versionTag; }
+  void setVersionTag(std::shared_ptr<VersionTag> versionTag) { m_versionTag = versionTag; }
+  std::shared_ptr<VersionTag> getVersionTag() { return m_versionTag; }
   uint8_t hasResult() const { return m_hasResult; }
-  CacheableHashMapPtr getTombstoneVersions() const {
+  std::shared_ptr<CacheableHashMap> getTombstoneVersions() const {
     return m_tombstoneVersions;
   }
-  CacheableHashSetPtr getTombstoneKeys() const { return m_tombstoneKeys; }
+  std::shared_ptr<CacheableHashSet> getTombstoneKeys() const { return m_tombstoneKeys; }
 
   bool isFEAnotherHop();
 
@@ -514,24 +513,26 @@ class CPPCACHE_EXPORT TcrMessage {
 
   void handleSpecialFECase();
   bool m_feAnotherHop;
-  void writeBytesOnly(const SerializablePtr& se);
-  SerializablePtr readCacheableBytes(DataInput& input, int lenObj);
-  SerializablePtr readCacheableString(DataInput& input, int lenObj);
+  void writeBytesOnly(const std::shared_ptr<Serializable>& se);
+  std::shared_ptr<Serializable> readCacheableBytes(DataInput& input,
+                                                   int lenObj);
+  std::shared_ptr<Serializable> readCacheableString(DataInput& input,
+                                                    int lenObj);
 
   static std::atomic<int32_t> m_transactionId;
   static uint8_t* m_keepalive;
   const static int m_flag_empty;
   const static int m_flag_concurrency_checks;
 
-  CacheableBytesPtr m_connectionIDBytes;
+  std::shared_ptr<CacheableBytes> m_connectionIDBytes;
   bool isSecurityOn;
   uint8_t m_isLastChunkAndisSecurityHeader;
   bool m_isSecurityHeaderAdded;
-  PropertiesPtr m_creds;
+  std::shared_ptr<Properties> m_creds;
   int32_t m_securityHeaderLength;
   bool m_isMetaRegion;
 
-  CacheableStringPtr exceptionMessage;
+  std::shared_ptr<CacheableString> exceptionMessage;
 
   TcrMessage(const TcrMessage&) = delete;
   TcrMessage& operator=(const TcrMessage&) = delete;
@@ -554,9 +555,10 @@ class CPPCACHE_EXPORT TcrMessage {
                       MemberListForVersionStamp& memberListForVersionStamp);
   void readOldValue(DataInput& input);
   void readPrMetaData(DataInput& input);
-  void writeObjectPart(const SerializablePtr& se, bool isDelta = false,
-                       bool callToData = false,
-                       const VectorOfCacheableKey* getAllKeyList = nullptr);
+  void writeObjectPart(const std::shared_ptr<Serializable>& se,
+                       bool isDelta = false, bool callToData = false,
+                       const std::vector<std::shared_ptr<CacheableKey>>*
+                           getAllKeyList = nullptr);
   void writeHeader(uint32_t msgType, uint32_t numOfParts);
   void writeRegionPart(const std::string& regionName);
   void writeStringPart(const std::string& str);
@@ -579,10 +581,10 @@ class CPPCACHE_EXPORT TcrMessage {
   void readStringPart(DataInput& input, uint32_t* len, char** str);
   void readCqsPart(DataInput& input);
   void readHashMapForGCVersions(apache::geode::client::DataInput& input,
-                                CacheableHashMapPtr& value);
+                                std::shared_ptr<CacheableHashMap>& value);
   void readHashSetForGCVersions(apache::geode::client::DataInput& input,
-                                CacheableHashSetPtr& value);
-  DSMemberForVersionStampPtr readDSMember(
+                                std::shared_ptr<CacheableHashSet>& value);
+  std::shared_ptr<DSMemberForVersionStamp> readDSMember(
       apache::geode::client::DataInput& input);
   std::unique_ptr<DataOutput> m_request;
   int32_t m_msgType;
@@ -598,13 +600,13 @@ class CPPCACHE_EXPORT TcrMessage {
   ThinClientBaseDM* m_tcdm;
   TcrChunkedResult* m_chunkedResult;
 
-  const VectorOfCacheableKey* m_keyList;
-  CacheableKeyPtr m_key;
-  CacheablePtr m_value;
-  CacheableHashSetPtr m_failedNode;
-  CacheablePtr m_callbackArgument;
-  VersionTagPtr m_versionTag;
-  EventIdPtr m_eventid;
+  const std::vector<std::shared_ptr<CacheableKey>>* m_keyList;
+  std::shared_ptr<CacheableKey> m_key;
+  std::shared_ptr<Cacheable> m_value;
+  std::shared_ptr<CacheableHashSet> m_failedNode;
+  std::shared_ptr<Cacheable> m_callbackArgument;
+  std::shared_ptr<VersionTag> m_versionTag;
+  std::shared_ptr<EventId> m_eventid;
   std::string m_regionName;
   const Region* m_region;
   std::string m_regex;
@@ -617,12 +619,12 @@ class CPPCACHE_EXPORT TcrMessage {
   bool m_shouldIgnore;
   int8_t m_metaDataVersion;
   int8_t m_serverGroupVersion;
-  std::vector<BucketServerLocationPtr> m_bucketServerLocations;
-  std::vector<std::vector<BucketServerLocationPtr> >* m_metadata;
+  std::vector<std::shared_ptr<BucketServerLocation>> m_bucketServerLocations;
+  std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>* m_metadata;
   int32_t m_bucketCount;
-  CacheableStringPtr m_colocatedWith;
-  CacheableStringPtr m_partitionResolverName;
-  CacheableVectorPtr m_vectorPtr;
+  std::shared_ptr<CacheableString> m_colocatedWith;
+  std::shared_ptr<CacheableString> m_partitionResolverName;
+  std::shared_ptr<CacheableVector> m_vectorPtr;
   uint32_t m_numCqPart;
   uint32_t m_msgTypeForCq;  // new part since 7.0 for cq event message type.
   std::map<std::string, int>* m_cqs;
@@ -632,26 +634,26 @@ class CPPCACHE_EXPORT TcrMessage {
   uint8_t* m_deltaBytes;
   int32_t m_deltaBytesLen;
   bool m_isCallBackArguement;
-  BucketServerLocationPtr m_bucketServerLocation;
+  std::shared_ptr<BucketServerLocation> m_bucketServerLocation;
   uint32_t m_entryNotFound;
-  std::vector<FixedPartitionAttributesImplPtr>* m_fpaSet;
+  std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* m_fpaSet;
   std::vector<int8_t>* m_functionAttributes;
   uint8_t m_hasResult;
-  CacheableHashMapPtr m_tombstoneVersions;
-  CacheableHashSetPtr m_tombstoneKeys;
+  std::shared_ptr<CacheableHashMap> m_tombstoneVersions;
+  std::shared_ptr<CacheableHashSet> m_tombstoneKeys;
   /*Added this member for PutALL versioning changes*/
-  VersionedCacheableObjectPartListPtr m_versionObjPartListptr;
+  std::shared_ptr<VersionedCacheableObjectPartList> m_versionObjPartListptr;
 
   friend class TcrMessageHelper;
 };
 
 class TcrMessageDestroyRegion : public TcrMessage {
  public:
-  TcrMessageDestroyRegion(std::unique_ptr<DataOutput> dataOutput,
-                          const Region* region,
-                          const SerializablePtr& aCallbackArgument,
-                          std::chrono::milliseconds messageResponsetimeout,
-                          ThinClientBaseDM* connectionDM);
+  TcrMessageDestroyRegion(
+      std::unique_ptr<DataOutput> dataOutput, const Region* region,
+      const std::shared_ptr<Serializable>& aCallbackArgument,
+      std::chrono::milliseconds messageResponsetimeout,
+      ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageDestroyRegion() {}
 
@@ -662,7 +664,7 @@ class TcrMessageClearRegion : public TcrMessage {
  public:
   TcrMessageClearRegion(std::unique_ptr<DataOutput> dataOutput,
                         const Region* region,
-                        const SerializablePtr& aCallbackArgument,
+                        const std::shared_ptr<Serializable>& aCallbackArgument,
                         std::chrono::milliseconds messageResponsetimeout,
                         ThinClientBaseDM* connectionDM);
 
@@ -711,7 +713,8 @@ class TcrMessageQueryWithParameters : public TcrMessage {
  public:
   TcrMessageQueryWithParameters(
       std::unique_ptr<DataOutput> dataOutput, const std::string& regionName,
-      const SerializablePtr& aCallbackArgument, CacheableVectorPtr paramList,
+      const std::shared_ptr<Serializable>& aCallbackArgument,
+      std::shared_ptr<CacheableVector> paramList,
       std::chrono::milliseconds messageResponsetimeout,
       ThinClientBaseDM* connectionDM);
 
@@ -723,8 +726,9 @@ class TcrMessageQueryWithParameters : public TcrMessage {
 class TcrMessageContainsKey : public TcrMessage {
  public:
   TcrMessageContainsKey(std::unique_ptr<DataOutput> dataOutput,
-                        const Region* region, const CacheableKeyPtr& key,
-                        const SerializablePtr& aCallbackArgument,
+                        const Region* region,
+                        const std::shared_ptr<CacheableKey>& key,
+                        const std::shared_ptr<Serializable>& aCallbackArgument,
                         bool isContainsKey, ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageContainsKey() {}
@@ -745,8 +749,9 @@ class TcrMessageGetDurableCqs : public TcrMessage {
 class TcrMessageRequest : public TcrMessage {
  public:
   TcrMessageRequest(std::unique_ptr<DataOutput> dataOutput,
-                    const Region* region, const CacheableKeyPtr& key,
-                    const SerializablePtr& aCallbackArgument,
+                    const Region* region,
+                    const std::shared_ptr<CacheableKey>& key,
+                    const std::shared_ptr<Serializable>& aCallbackArgument,
                     ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageRequest() {}
@@ -757,8 +762,9 @@ class TcrMessageRequest : public TcrMessage {
 class TcrMessageInvalidate : public TcrMessage {
  public:
   TcrMessageInvalidate(std::unique_ptr<DataOutput> dataOutput,
-                       const Region* region, const CacheableKeyPtr& key,
-                       const SerializablePtr& aCallbackArgument,
+                       const Region* region,
+                       const std::shared_ptr<CacheableKey>& key,
+                       const std::shared_ptr<Serializable>& aCallbackArgument,
                        ThinClientBaseDM* connectionDM = nullptr);
 
  private:
@@ -767,9 +773,10 @@ class TcrMessageInvalidate : public TcrMessage {
 class TcrMessageDestroy : public TcrMessage {
  public:
   TcrMessageDestroy(std::unique_ptr<DataOutput> dataOutput,
-                    const Region* region, const CacheableKeyPtr& key,
-                    const CacheablePtr& value,
-                    const SerializablePtr& aCallbackArgument,
+                    const Region* region,
+                    const std::shared_ptr<CacheableKey>& key,
+                    const std::shared_ptr<Cacheable>& value,
+                    const std::shared_ptr<Serializable>& aCallbackArgument,
                     ThinClientBaseDM* connectionDM = nullptr);
 
  private:
@@ -779,8 +786,9 @@ class TcrMessageRegisterInterestList : public TcrMessage {
  public:
   TcrMessageRegisterInterestList(
       std::unique_ptr<DataOutput> dataOutput, const Region* region,
-      const VectorOfCacheableKey& keys, bool isDurable = false,
-      bool isCachingEnabled = false, bool receiveValues = true,
+      const std::vector<std::shared_ptr<CacheableKey>>& keys,
+      bool isDurable = false, bool isCachingEnabled = false,
+      bool receiveValues = true,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
       ThinClientBaseDM* connectionDM = nullptr);
 
@@ -793,8 +801,9 @@ class TcrMessageUnregisterInterestList : public TcrMessage {
  public:
   TcrMessageUnregisterInterestList(
       std::unique_ptr<DataOutput> dataOutput, const Region* region,
-      const VectorOfCacheableKey& keys, bool isDurable = false,
-      bool isCachingEnabled = false, bool receiveValues = true,
+      const std::vector<std::shared_ptr<CacheableKey>>& keys,
+      bool isDurable = false, bool isCachingEnabled = false,
+      bool receiveValues = true,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
       ThinClientBaseDM* connectionDM = nullptr);
 
@@ -806,9 +815,10 @@ class TcrMessageUnregisterInterestList : public TcrMessage {
 class TcrMessagePut : public TcrMessage {
  public:
   TcrMessagePut(std::unique_ptr<DataOutput> dataOutput, const Region* region,
-                const CacheableKeyPtr& key, const CacheablePtr& value,
-                const SerializablePtr& aCallbackArgument, bool isDelta = false,
-                ThinClientBaseDM* connectionDM = nullptr,
+                const std::shared_ptr<CacheableKey>& key,
+                const std::shared_ptr<Cacheable>& value,
+                const std::shared_ptr<Serializable>& aCallbackArgument,
+                bool isDelta = false, ThinClientBaseDM* connectionDM = nullptr,
                 bool isMetaRegion = false, bool fullValueAfterDeltaFail = false,
                 const char* regionName = nullptr);
 
@@ -921,7 +931,7 @@ class TcrMessagePutAll : public TcrMessage {
                    const HashMapOfCacheable& map,
                    std::chrono::milliseconds messageResponsetimeout,
                    ThinClientBaseDM* connectionDM,
-                   const SerializablePtr& aCallbackArgument);
+                   const std::shared_ptr<Serializable>& aCallbackArgument);
 
   virtual ~TcrMessagePutAll() {}
 
@@ -931,8 +941,9 @@ class TcrMessagePutAll : public TcrMessage {
 class TcrMessageRemoveAll : public TcrMessage {
  public:
   TcrMessageRemoveAll(std::unique_ptr<DataOutput> dataOutput,
-                      const Region* region, const VectorOfCacheableKey& keys,
-                      const SerializablePtr& aCallbackArgument,
+                      const Region* region,
+                      const std::vector<std::shared_ptr<CacheableKey>>& keys,
+                      const std::shared_ptr<Serializable>& aCallbackArgument,
                       ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageRemoveAll() {}
@@ -968,9 +979,10 @@ class TcrMessageExecuteRegionFunction : public TcrMessage {
  public:
   TcrMessageExecuteRegionFunction(
       std::unique_ptr<DataOutput> dataOutput, const std::string& funcName,
-      const Region* region, const CacheablePtr& args,
-      CacheableVectorPtr routingObj, uint8_t getResult,
-      CacheableHashSetPtr failedNodes, std::chrono::milliseconds timeout,
+      const Region* region, const std::shared_ptr<Cacheable>& args,
+      std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
+      std::shared_ptr<CacheableHashSet> failedNodes,
+      std::chrono::milliseconds timeout,
       ThinClientBaseDM* connectionDM = nullptr, int8_t reExecute = 0);
 
   virtual ~TcrMessageExecuteRegionFunction() {}
@@ -982,9 +994,9 @@ class TcrMessageExecuteRegionFunctionSingleHop : public TcrMessage {
  public:
   TcrMessageExecuteRegionFunctionSingleHop(
       std::unique_ptr<DataOutput> dataOutput, const std::string& funcName,
-      const Region* region, const CacheablePtr& args,
-      CacheableHashSetPtr routingObj, uint8_t getResult,
-      CacheableHashSetPtr failedNodes, bool allBuckets,
+      const Region* region, const std::shared_ptr<Cacheable>& args,
+      std::shared_ptr<CacheableHashSet> routingObj, uint8_t getResult,
+      std::shared_ptr<CacheableHashSet> failedNodes, bool allBuckets,
       std::chrono::milliseconds timeout, ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageExecuteRegionFunctionSingleHop() {}
@@ -1025,7 +1037,7 @@ class TcrMessageSize : public TcrMessage {
 class TcrMessageUserCredential : public TcrMessage {
  public:
   TcrMessageUserCredential(std::unique_ptr<DataOutput> dataOutput,
-                           PropertiesPtr creds,
+                           std::shared_ptr<Properties> creds,
                            ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageUserCredential() {}
@@ -1046,7 +1058,7 @@ class TcrMessageRemoveUserAuth : public TcrMessage {
 class TcrMessageGetPdxIdForType : public TcrMessage {
  public:
   TcrMessageGetPdxIdForType(std::unique_ptr<DataOutput> dataOutput,
-                            const CacheablePtr& pdxType,
+                            const std::shared_ptr<Cacheable>& pdxType,
                             ThinClientBaseDM* connectionDM,
                             int32_t pdxTypeId = 0);
 
@@ -1058,7 +1070,7 @@ class TcrMessageGetPdxIdForType : public TcrMessage {
 class TcrMessageAddPdxType : public TcrMessage {
  public:
   TcrMessageAddPdxType(std::unique_ptr<DataOutput> dataOutput,
-                       const CacheablePtr& pdxType,
+                       const std::shared_ptr<Cacheable>& pdxType,
                        ThinClientBaseDM* connectionDM, int32_t pdxTypeId = 0);
 
   virtual ~TcrMessageAddPdxType() {}
@@ -1069,7 +1081,7 @@ class TcrMessageAddPdxType : public TcrMessage {
 class TcrMessageGetPdxIdForEnum : public TcrMessage {
  public:
   TcrMessageGetPdxIdForEnum(std::unique_ptr<DataOutput> dataOutput,
-                            const CacheablePtr& pdxType,
+                            const std::shared_ptr<Cacheable>& pdxType,
                             ThinClientBaseDM* connectionDM,
                             int32_t pdxTypeId = 0);
 
@@ -1081,7 +1093,7 @@ class TcrMessageGetPdxIdForEnum : public TcrMessage {
 class TcrMessageAddPdxEnum : public TcrMessage {
  public:
   TcrMessageAddPdxEnum(std::unique_ptr<DataOutput> dataOutput,
-                       const CacheablePtr& pdxType,
+                       const std::shared_ptr<Cacheable>& pdxType,
                        ThinClientBaseDM* connectionDM, int32_t pdxTypeId = 0);
 
   virtual ~TcrMessageAddPdxEnum() {}
@@ -1134,7 +1146,7 @@ class TcrMessageKeySet : public TcrMessage {
 class TcrMessageRequestEventValue : public TcrMessage {
  public:
   TcrMessageRequestEventValue(std::unique_ptr<DataOutput> dataOutput,
-                              EventIdPtr eventId);
+                              std::shared_ptr<EventId> eventId);
 
   virtual ~TcrMessageRequestEventValue() {}
 
@@ -1163,10 +1175,11 @@ class TcrMessageUpdateClientNotification : public TcrMessage {
 
 class TcrMessageGetAll : public TcrMessage {
  public:
-  TcrMessageGetAll(std::unique_ptr<DataOutput> dataOutput, const Region* region,
-                   const VectorOfCacheableKey* keys,
-                   ThinClientBaseDM* connectionDM = nullptr,
-                   const SerializablePtr& aCallbackArgument = nullptr);
+  TcrMessageGetAll(
+      std::unique_ptr<DataOutput> dataOutput, const Region* region,
+      const std::vector<std::shared_ptr<CacheableKey>>* keys,
+      ThinClientBaseDM* connectionDM = nullptr,
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
   virtual ~TcrMessageGetAll() {}
 
@@ -1177,8 +1190,8 @@ class TcrMessageExecuteFunction : public TcrMessage {
  public:
   TcrMessageExecuteFunction(std::unique_ptr<DataOutput> dataOutput,
                             const std::string& funcName,
-                            const CacheablePtr& args, uint8_t getResult,
-                            ThinClientBaseDM* connectionDM,
+                            const std::shared_ptr<Cacheable>& args,
+                            uint8_t getResult, ThinClientBaseDM* connectionDM,
                             std::chrono::milliseconds timeout);
 
   virtual ~TcrMessageExecuteFunction() {}

@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-#include <geode/GeodeCppCache.hpp>
 #include <cstdlib>
 #include <geode/SystemProperties.hpp>
 #include <ace/OS.h>
@@ -40,17 +39,17 @@ using namespace unitTests;
 class CacheImplHelper : public CacheHelper {
  public:
   CacheImplHelper(const char* member_id,
-                  const PropertiesPtr& configPtr = nullptr)
+                  const std::shared_ptr<Properties>& configPtr = nullptr)
       : CacheHelper(member_id, configPtr) {}
 
-  CacheImplHelper(const PropertiesPtr& configPtr = nullptr)
+  CacheImplHelper(const std::shared_ptr<Properties>& configPtr = nullptr)
       : CacheHelper(configPtr) {}
 
-  virtual void createRegion(const char* regionName, RegionPtr& regionPtr,
-                            uint32_t size, bool ack = false,
-                            bool cacheServerClient = false,
+  virtual void createRegion(const char* regionName,
+                            std::shared_ptr<Region>& regionPtr, uint32_t size,
+                            bool ack = false, bool cacheServerClient = false,
                             bool cacheEnabled = true) {
-    RegionAttributesPtr regAttrs;
+    std::shared_ptr<RegionAttributes> regAttrs;
     AttributesFactory attrFactory;
     // set lru attributes...
     attrFactory.setLruEntriesLimit(0);     // no limit.

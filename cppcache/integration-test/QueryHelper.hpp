@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-#include <geode/GeodeCppCache.hpp>
 #include <cstdlib>
 #include <geode/SystemProperties.hpp>
 #include <ace/OS.h>
@@ -70,21 +69,23 @@ class QueryHelper {
 
   virtual ~QueryHelper() { ; }
 
-  virtual void populatePortfolioData(RegionPtr& pregion, int setSize,
-                                     int numSets, int32_t objSize = 1,
-                                     CacheableStringArrayPtr nm = nullptr);
-  virtual void populatePositionData(RegionPtr& pregion, int setSize,
-                                    int numSets);
-  virtual void populatePortfolioPdxData(RegionPtr& pregion, int setSize,
-                                        int numSets, int32_t objSize = 1,
+  virtual void populatePortfolioData(
+      std::shared_ptr<Region>& pregion, int setSize, int numSets,
+      int32_t objSize = 1, std::shared_ptr<CacheableStringArray> nm = nullptr);
+  virtual void populatePositionData(std::shared_ptr<Region>& pregion,
+                                    int setSize, int numSets);
+  virtual void populatePortfolioPdxData(std::shared_ptr<Region>& pregion,
+                                        int setSize, int numSets,
+                                        int32_t objSize = 1,
                                         char** nm = nullptr);
-  virtual void populatePositionPdxData(RegionPtr& pregion, int setSize,
-                                       int numSets);
-  virtual void populatePDXObject(RegionPtr& pregion);
-  virtual void getPDXObject(RegionPtr& pregion);
+  virtual void populatePositionPdxData(std::shared_ptr<Region>& pregion,
+                                       int setSize, int numSets);
+  virtual void populatePDXObject(std::shared_ptr<Region>& pregion);
+  virtual void getPDXObject(std::shared_ptr<Region>& pregion);
 
-  virtual bool verifyRS(SelectResultsPtr& resultset, int rowCount);
-  virtual bool verifySS(SelectResultsPtr& structset, int rowCount,
+  virtual bool verifyRS(std::shared_ptr<SelectResults>& resultset,
+                        int rowCount);
+  virtual bool verifySS(std::shared_ptr<SelectResults>& structset, int rowCount,
                         int fieldCount);
 
   // utility methods
@@ -155,9 +156,9 @@ QueryHelper* QueryHelper::singleton = nullptr;
 
 //===========================================================================================
 
-void QueryHelper::populatePortfolioData(RegionPtr& rptr, int setSize,
-                                        int numSets, int32_t objSize,
-                                        CacheableStringArrayPtr nm) {
+void QueryHelper::populatePortfolioData(
+    std::shared_ptr<Region>& rptr, int setSize, int numSets, int32_t objSize,
+    std::shared_ptr<CacheableStringArray> nm) {
   // lets reset the counter for uniform population of position objects
   Position::resetCounter();
 
@@ -168,7 +169,7 @@ void QueryHelper::populatePortfolioData(RegionPtr& rptr, int setSize,
       char portname[100] = {0};
       ACE_OS::sprintf(portname, "port%d-%d", set, current);
 
-      CacheableKeyPtr keyport = CacheableKey::create(portname);
+      auto keyport = CacheableKey::create(portname);
       // printf(" QueryHelper::populatePortfolioData creating key = %s and
       // puting data \n",portname);
       rptr->put(keyport, port);
@@ -183,8 +184,8 @@ void QueryHelper::populatePortfolioData(RegionPtr& rptr, int setSize,
 const char* secIds[] = {"SUN", "IBM",  "YHOO", "GOOG", "MSFT",
                         "AOL", "APPL", "ORCL", "SAP",  "DELL"};
 
-void QueryHelper::populatePositionData(RegionPtr& rptr, int setSize,
-                                       int numSets) {
+void QueryHelper::populatePositionData(std::shared_ptr<Region>& rptr,
+                                       int setSize, int numSets) {
   int numSecIds = sizeof(secIds) / sizeof(char*);
 
   for (int set = 1; set <= numSets; set++) {
@@ -195,16 +196,16 @@ void QueryHelper::populatePositionData(RegionPtr& rptr, int setSize,
       char posname[100] = {0};
       ACE_OS::sprintf(posname, "pos%d-%d", set, current);
 
-      CacheableKeyPtr keypos = CacheableKey::create(posname);
+      auto keypos = CacheableKey::create(posname);
       rptr->put(keypos, pos);
     }
   }
   // positionSetSize = setSize; positionNumSets = numSets;
 }
 
-void QueryHelper::populatePortfolioPdxData(RegionPtr& rptr, int setSize,
-                                           int numSets, int32_t objSize,
-                                           char** nm) {
+void QueryHelper::populatePortfolioPdxData(std::shared_ptr<Region>& rptr,
+                                           int setSize, int numSets,
+                                           int32_t objSize, char** nm) {
   // lets reset the counter for uniform population of position objects
   PositionPdx::resetCounter();
 
@@ -215,7 +216,7 @@ void QueryHelper::populatePortfolioPdxData(RegionPtr& rptr, int setSize,
       char portname[100] = {0};
       ACE_OS::sprintf(portname, "port%d-%d", set, current);
 
-      CacheableKeyPtr keyport = CacheableKey::create(portname);
+      auto keyport = CacheableKey::create(portname);
 
       rptr->put(keyport, port);
       LOGINFO("populatePortfolioPdxData:: Put for iteration current = %d done",
@@ -228,8 +229,8 @@ void QueryHelper::populatePortfolioPdxData(RegionPtr& rptr, int setSize,
   printf("all puts done \n");
 }
 
-void QueryHelper::populatePositionPdxData(RegionPtr& rptr, int setSize,
-                                          int numSets) {
+void QueryHelper::populatePositionPdxData(std::shared_ptr<Region>& rptr,
+                                          int setSize, int numSets) {
   int numSecIds = sizeof(secIds) / sizeof(char*);
 
   for (int set = 1; set <= numSets; set++) {
@@ -240,14 +241,14 @@ void QueryHelper::populatePositionPdxData(RegionPtr& rptr, int setSize,
       char posname[100] = {0};
       ACE_OS::sprintf(posname, "pos%d-%d", set, current);
 
-      CacheableKeyPtr keypos = CacheableKey::create(posname);
+      auto keypos = CacheableKey::create(posname);
       rptr->put(keypos, pos);
     }
   }
   // positionSetSize = setSize; positionNumSets = numSets;
 }
 
-void QueryHelper::populatePDXObject(RegionPtr& rptr) {
+void QueryHelper::populatePDXObject(std::shared_ptr<Region>& rptr) {
   // Register PdxType Object
 
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(rptr->getCache().get());
@@ -256,7 +257,7 @@ void QueryHelper::populatePDXObject(RegionPtr& rptr) {
 
   // Creating object of type PdxObject
   auto pdxobj = std::make_shared<PdxTests::PdxType>();
-  CacheableKeyPtr keyport = CacheableKey::create("ABC");
+  auto keyport = CacheableKey::create("ABC");
 
   // PUT Operation
   rptr->put(keyport, pdxobj);
@@ -284,11 +285,11 @@ void QueryHelper::populatePDXObject(RegionPtr& rptr) {
   LOG("NIL:200:PUT Operation successfully Done....End");
 }
 
-void QueryHelper::getPDXObject(RegionPtr& rptr) {
+void QueryHelper::getPDXObject(std::shared_ptr<Region>& rptr) {
   // Remote GET for PdxObject
   // PdxObject *obj2 = dynamic_cast<PdxObject *> ((rptr->get(keyport)).get());
 
-  CacheableKeyPtr keyport = CacheableKey::create("ABC");
+  auto keyport = CacheableKey::create("ABC");
   LOG("Client-2 PdxObject GET OP Start....");
   auto obj2 = std::dynamic_pointer_cast<PdxTests::PdxType>(rptr->get(keyport));
   LOG("Client-2 PdxObject GET OP Done....");
@@ -307,20 +308,20 @@ void QueryHelper::getPDXObject(RegionPtr& rptr) {
   */
 }
 
-bool QueryHelper::verifyRS(SelectResultsPtr& resultSet, int expectedRows) {
+bool QueryHelper::verifyRS(std::shared_ptr<SelectResults>& resultSet,
+                           int expectedRows) {
   if (!std::dynamic_pointer_cast<ResultSet>(resultSet)) {
     return false;
   }
 
-  ResultSetPtr rsptr =
-      std::static_pointer_cast<ResultSet>(resultSet);
+  auto rsptr = std::static_pointer_cast<ResultSet>(resultSet);
 
   int foundRows = 0;
 
   SelectResultsIterator iter = rsptr->getIterator();
 
   for (int32_t rows = 0; rows < rsptr->size(); rows++) {
-    SerializablePtr ser = (*rsptr)[rows];
+    auto ser = (*rsptr)[rows];
     foundRows++;
   }
 
@@ -330,8 +331,8 @@ bool QueryHelper::verifyRS(SelectResultsPtr& resultSet, int expectedRows) {
   return false;
 }
 
-bool QueryHelper::verifySS(SelectResultsPtr& structSet, int expectedRows,
-                           int expectedFields) {
+bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
+                           int expectedRows, int expectedFields) {
   if (!std::dynamic_pointer_cast<StructSet>(structSet)) {
     if (expectedRows == 0 && expectedFields == 0) {
       return true;  // quite possible we got a null set back.
@@ -340,14 +341,13 @@ bool QueryHelper::verifySS(SelectResultsPtr& structSet, int expectedRows,
     return false;
   }
 
-  StructSetPtr ssptr =
-      std::static_pointer_cast<StructSet>(structSet);
+  auto ssptr = std::static_pointer_cast<StructSet>(structSet);
 
   int foundRows = 0;
 
   for (SelectResults::Iterator iter = ssptr->begin(); iter != ssptr->end();
        iter++) {
-    SerializablePtr ser = (*iter);
+    auto ser = (*iter);
     foundRows++;
 
     Struct* siptr = dynamic_cast<Struct*>(ser.get());
@@ -360,7 +360,7 @@ bool QueryHelper::verifySS(SelectResultsPtr& structSet, int expectedRows,
     int foundFields = 0;
 
     for (int32_t cols = 0; cols < siptr->length(); cols++) {
-      SerializablePtr field = (*siptr)[cols];
+      auto field = (*siptr)[cols];
       foundFields++;
     }
 

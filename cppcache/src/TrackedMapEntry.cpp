@@ -20,15 +20,15 @@
 
 using namespace apache::geode::client;
 
-void TrackedMapEntry::getKey(CacheableKeyPtr& result) const {
+void TrackedMapEntry::getKey(std::shared_ptr<CacheableKey>& result) const {
   m_entry->getKeyI(result);
 }
 
-void TrackedMapEntry::getValue(CacheablePtr& result) const {
+void TrackedMapEntry::getValue(std::shared_ptr<Cacheable>& result) const {
   m_entry->getValueI(result);
 }
 
-void TrackedMapEntry::setValue(const CacheablePtr& value) {
+void TrackedMapEntry::setValue(const std::shared_ptr<Cacheable>& value) {
   m_entry->setValueI(value);
 }
 

@@ -28,8 +28,8 @@ std::string g_default_persistence_directory = "GeodeRegionData";
 
 using namespace apache::geode::client;
 
-void SqLiteImpl::init(const RegionPtr& region,
-                      const PropertiesPtr& diskProperties) {
+void SqLiteImpl::init(const std::shared_ptr<Region>& region,
+                      const std::shared_ptr<Properties>& diskProperties) {
   // Set the default values
 
   int maxPageCount = 0;
@@ -38,9 +38,9 @@ void SqLiteImpl::init(const RegionPtr& region,
   m_persistanceDir = g_default_persistence_directory;
   std::string regionName = region->getName();
   if (diskProperties != nullptr) {
-    CacheableStringPtr maxPageCountPtr = diskProperties->find(MAX_PAGE_COUNT);
-    CacheableStringPtr pageSizePtr = diskProperties->find(PAGE_SIZE);
-    CacheableStringPtr persDir = diskProperties->find(PERSISTENCE_DIR);
+    auto maxPageCountPtr = diskProperties->find(MAX_PAGE_COUNT);
+    auto pageSizePtr = diskProperties->find(PAGE_SIZE);
+    auto persDir = diskProperties->find(PERSISTENCE_DIR);
 
     if (maxPageCountPtr != nullptr) {
       maxPageCount = atoi(maxPageCountPtr->asChar());
@@ -109,7 +109,8 @@ void SqLiteImpl::init(const RegionPtr& region,
   }
 }
 
-void SqLiteImpl::write(const CacheableKeyPtr& key, const CacheablePtr& value,
+void SqLiteImpl::write(const std::shared_ptr<CacheableKey>& key,
+                       const std::shared_ptr<Cacheable>& value,
                        void*& dbHandle) {
   // Serialize key and value.
   auto* cache = m_regionPtr->getCache().get();
@@ -130,8 +131,8 @@ void SqLiteImpl::write(const CacheableKeyPtr& key, const CacheablePtr& value,
 }
 
 bool SqLiteImpl::writeAll() { return true; }
-
-CacheablePtr SqLiteImpl::read(const CacheableKeyPtr& key, void*& dbHandle) {
+std::shared_ptr<Cacheable> SqLiteImpl::read(
+    const std::shared_ptr<CacheableKey>& key, void*& dbHandle) {
   // Serialize key.
   auto keyDataBuffer = m_regionPtr->getCache()->createDataOutput();
   uint32_t keyBufferSize;
@@ -146,9 +147,9 @@ CacheablePtr SqLiteImpl::read(const CacheableKeyPtr& key, void*& dbHandle) {
   }
 
   // Deserialize object and return value.
-  auto valueDataBuffer = m_regionPtr->getCache()->createDataInput(reinterpret_cast<uint8_t*>(valueData),
-                            valueBufferSize);
-  CacheablePtr retValue;
+  auto valueDataBuffer = m_regionPtr->getCache()->createDataInput(
+      reinterpret_cast<uint8_t*>(valueData), valueBufferSize);
+  std::shared_ptr<Cacheable> retValue;
   valueDataBuffer->readObject(retValue);
 
   // Free memory for serialized form of Cacheable object.
@@ -174,7 +175,7 @@ void SqLiteImpl::destroyRegion() {
 #endif
 }
 
-void SqLiteImpl::destroy(const CacheableKeyPtr& key, void*& dbHandle) {
+void SqLiteImpl::destroy(const std::shared_ptr<CacheableKey>& key, void*& dbHandle) {
   // Serialize key and value.
   auto keyDataBuffer = m_regionPtr->getCache()->createDataOutput();
   uint32_t keyBufferSize;

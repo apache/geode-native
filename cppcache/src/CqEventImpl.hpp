@@ -49,15 +49,18 @@ namespace client {
  */
 
 class ThinClientBaseDM;
-
+class EventId;
 class CqEventImpl : public CqEvent {
  public:
-  CqEventImpl(CqQueryPtr& cQuery, CqOperation::CqOperationType baseOp,
-              CqOperation::CqOperationType cqOp, CacheableKeyPtr& key,
-              CacheablePtr& value, ThinClientBaseDM* tcrdm,
-              CacheableBytesPtr deltaBytes, EventIdPtr eventId);
+  CqEventImpl(std::shared_ptr<CqQuery>& cQuery,
+              CqOperation::CqOperationType baseOp,
+              CqOperation::CqOperationType cqOp,
+              std::shared_ptr<CacheableKey>& key,
+              std::shared_ptr<Cacheable>& value, ThinClientBaseDM* tcrdm,
+              std::shared_ptr<CacheableBytes> deltaBytes,
+              std::shared_ptr<EventId> eventId);
 
-  CqQueryPtr getCq() const;
+  std::shared_ptr<CqQuery> getCq() const;
 
   /**
    * Get the operation on the base region that triggered this event.
@@ -74,32 +77,32 @@ class CqEventImpl : public CqEvent {
    * Get the key relating to the event.
    * @return Object key.
    */
-  CacheableKeyPtr getKey() const;
+  std::shared_ptr<CacheableKey> getKey() const;
 
   /**
    * Get the new value of the modification.
    *  If there is no new value because this is a delete, then
    *  return null.
    */
-  CacheablePtr getNewValue() const;
+  std::shared_ptr<Cacheable> getNewValue() const;
 
   bool getError();
 
   std::string toString();
 
-  CacheableBytesPtr getDeltaValue() const;
+  std::shared_ptr<CacheableBytes> getDeltaValue() const;
 
  private:
   CqEventImpl();
-  CqQueryPtr m_cQuery;
+  std::shared_ptr<CqQuery> m_cQuery;
   CqOperation::CqOperationType m_baseOp;
   CqOperation::CqOperationType m_queryOp;
-  CacheableKeyPtr m_key;
-  CacheablePtr m_newValue;
+  std::shared_ptr<CacheableKey> m_key;
+  std::shared_ptr<Cacheable> m_newValue;
   bool m_error;
   ThinClientBaseDM* m_tcrdm;
-  CacheableBytesPtr m_deltaValue;
-  EventIdPtr m_eventId;
+  std::shared_ptr<CacheableBytes> m_deltaValue;
+  std::shared_ptr<EventId> m_eventId;
 };
 }  // namespace client
 }  // namespace geode

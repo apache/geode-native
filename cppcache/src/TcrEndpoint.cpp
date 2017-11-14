@@ -307,7 +307,7 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
     this->setConnected();
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointAuthenticationLock);
     GfErrType err = GF_NOERR;
-    PropertiesPtr creds = getCredentials();
+    auto creds = getCredentials();
 
     if (creds != nullptr) {
       LOGDEBUG("TcrEndpoint::authenticateEndpoint got creds from app = %d",
@@ -350,8 +350,7 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
     m_isAuthenticated = true;
   }
 }
-
-PropertiesPtr TcrEndpoint::getCredentials() {
+std::shared_ptr<Properties> TcrEndpoint::getCredentials() {
   const auto& distributedSystem = m_cacheImpl->getDistributedSystem();
   const auto& tmpSecurityProperties =
       distributedSystem.getSystemProperties().getSecurityProperties();
@@ -591,7 +590,7 @@ void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
   }
 }
 
-bool TcrEndpoint::checkDupAndAdd(EventIdPtr eventid) {
+bool TcrEndpoint::checkDupAndAdd(std::shared_ptr<EventId> eventid) {
   return m_cacheImpl->tcrConnectionManager().checkDupAndAdd(eventid);
 }
 
@@ -651,7 +650,7 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
         if (!msg->hasCqPart()) {
           if (msg->getMessageType() != TcrMessage::CLIENT_MARKER) {
             const std::string& regionFullPath1 = msg->getRegionName();
-            RegionPtr region1;
+            std::shared_ptr<Region> region1;
             m_cacheImpl->getRegion(regionFullPath1.c_str(), region1);
             if (region1 != nullptr &&
                 !static_cast<ThinClientRegion*>(region1.get())
@@ -685,7 +684,7 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
           if (!msg->hasCqPart())  // || msg->isInterestListPassed())
           {
             const std::string& regionFullPath = msg->getRegionName();
-            RegionPtr region;
+            std::shared_ptr<Region> region;
             m_cacheImpl->getRegion(regionFullPath.c_str(), region);
             if (region != nullptr) {
               static_cast<ThinClientRegion*>(region.get())
@@ -698,11 +697,11 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
             }
           } else {
             LOGDEBUG("receive cq notification %d", msg->getMessageType());
-            QueryServicePtr queryService = getQueryService();
-            if (queryService != nullptr) {
-              static_cast<RemoteQueryService*>(queryService.get())
-                  ->receiveNotification(msg);
-            }
+           auto queryService = getQueryService();
+           if (queryService != nullptr) {
+             static_cast<RemoteQueryService*>(queryService.get())
+                 ->receiveNotification(msg);
+           }
           }
         }
       }
@@ -1341,17 +1340,16 @@ bool TcrEndpoint::isQueueHosted() { return m_isQueueHosted; }
 void TcrEndpoint::processMarker() {
   m_cacheImpl->tcrConnectionManager().processMarker();
 }
-
-QueryServicePtr TcrEndpoint::getQueryService() {
-  return m_cacheImpl->getQueryService(true);
-}
-void TcrEndpoint::sendRequestForChunkedResponse(const TcrMessage& request,
-                                                TcrMessageReply& reply,
-                                                TcrConnection* conn) {
-  conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply);
-}
-void TcrEndpoint::closeFailedConnection(TcrConnection*& conn) {
-  closeConnection(conn);
+ std::shared_ptr<QueryService> TcrEndpoint::getQueryService() {
+   return m_cacheImpl->getQueryService(true);
+ }
+ void TcrEndpoint::sendRequestForChunkedResponse(const TcrMessage& request,
+                                                 TcrMessageReply& reply,
+                                                 TcrConnection* conn) {
+   conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply);
+ }
+ void TcrEndpoint::closeFailedConnection(TcrConnection*& conn) {
+   closeConnection(conn);
 }
 
 }  // namespace client

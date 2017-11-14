@@ -30,8 +30,8 @@ namespace client {
 
 class CPPCACHE_EXPORT EnumInfo : public CacheableKey {
  private:
-  CacheableStringPtr m_enumClassName;
-  CacheableStringPtr m_enumName;
+  std::shared_ptr<CacheableString> m_enumClassName;
+  std::shared_ptr<CacheableString> m_enumName;
   int32_t m_ordinal;
 
  public:
@@ -50,18 +50,19 @@ class CPPCACHE_EXPORT EnumInfo : public CacheableKey {
   }
   virtual int32_t classId() const { return 0; }
   virtual int8_t typeId() const { return GeodeTypeIds::EnumInfo; }
-  virtual CacheableStringPtr toString() const {
+  virtual std::shared_ptr<CacheableString> toString() const {
     return CacheableString::create("EnumInfo");
   }
   virtual bool operator==(const CacheableKey& other) const;
   virtual int32_t hashcode() const;
 
   virtual int8_t DSFID() const;
-  CacheableStringPtr getEnumClassName() const { return m_enumClassName; }
-  CacheableStringPtr getEnumName() const { return m_enumName; }
+  std::shared_ptr<CacheableString> getEnumClassName() const {
+    return m_enumClassName;
+  }
+  std::shared_ptr<CacheableString> getEnumName() const { return m_enumName; }
   int32_t getEnumOrdinal() const { return m_ordinal; }
 };
-typedef std::shared_ptr<EnumInfo> EnumInfoPtr;
 
 }  // namespace client
 }  // namespace geode

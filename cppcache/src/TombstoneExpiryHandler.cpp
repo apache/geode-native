@@ -30,7 +30,7 @@
 using namespace apache::geode::client;
 
 TombstoneExpiryHandler::TombstoneExpiryHandler(
-    TombstoneEntryPtr entryPtr, TombstoneList* tombstoneList,
+    std::shared_ptr<TombstoneEntry> entryPtr, TombstoneList* tombstoneList,
     std::chrono::milliseconds duration, CacheImpl* cacheImpl)
     : m_entryPtr(entryPtr),
       m_duration(duration),
@@ -39,7 +39,7 @@ TombstoneExpiryHandler::TombstoneExpiryHandler(
 
 int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
                                            const void* arg) {
-  CacheableKeyPtr key;
+  std::shared_ptr<CacheableKey> key;
   m_entryPtr->getEntry()->getKeyI(key);
   int64_t creationTime = m_entryPtr->getTombstoneCreationTime();
   int64_t curr_time = static_cast<int64_t>(current_time.get_msec());
@@ -83,7 +83,7 @@ int TombstoneExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
 }
 
 inline void TombstoneExpiryHandler::DoTheExpirationAction(
-    const CacheableKeyPtr& key) {
+    const std::shared_ptr<CacheableKey>& key) {
   LOGDEBUG(
       "EntryExpiryHandler::DoTheExpirationAction LOCAL_DESTROY "
       "for region entry with key %s",

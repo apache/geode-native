@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <geode/CqAttributesFactory.hpp>
 #include <geode/CqAttributes.hpp>
 #include <geode/CqListener.hpp>
@@ -83,7 +82,7 @@ void initClientCq(const bool isthinClient) {
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 
   try {
-    SerializationRegistryPtr serializationRegistry =
+    auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     serializationRegistry->addType(Position::createDeserializable);
@@ -231,7 +230,6 @@ class MyCqStatusListener : public CqStatusListener {
     m_cqsConnectedCount = 0;
   }
 };
-typedef std::shared_ptr<MyCqStatusListener> MyCqStatusListenerPtr;
 
 DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateLocator)
   {
@@ -301,11 +299,11 @@ END_TASK_DEFINITION
 void stepOne() {
   initClientCq(true);
   createRegionForCQ(regionNamesCq[0], USE_ACK, true);
-  RegionPtr regptr = getHelper()->getRegion(regionNamesCq[0]);
-  RegionAttributesPtr lattribPtr = regptr->getAttributes();
-  RegionPtr subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+ auto regptr = getHelper()->getRegion(regionNamesCq[0]);
+ std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
+ auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
 
-  LOG("StepOne complete.");
+ LOG("StepOne complete.");
 }
 
 void initCqStatusClient() {
@@ -350,11 +348,11 @@ END_TASK_DEFINITION
 void stepOne2() {
   initClientCq(true);
   createRegionForCQ(regionNamesCq[0], USE_ACK, true);
-  RegionPtr regptr = getHelper()->getRegion(regionNamesCq[0]);
-  RegionAttributesPtr lattribPtr = regptr->getAttributes();
-  RegionPtr subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+ auto regptr = getHelper()->getRegion(regionNamesCq[0]);
+ std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
+ auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
 
-  LOG("StepOne2 complete.");
+ LOG("StepOne2 complete.");
 }
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepOne2_PoolLocator)
@@ -363,17 +361,17 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
-    RegionPtr subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
+   auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
+   auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+   QueryHelper* qh = &QueryHelper::getHelper();
 
-    if (!m_isPdx) {
-      qh->populatePortfolioData(regPtr0, 2, 1, 1);
-      qh->populatePositionData(subregPtr0, 2, 1);
-    } else {
-      qh->populatePortfolioPdxData(regPtr0, 2, 1, 1);
-      qh->populatePositionPdxData(subregPtr0, 2, 1);
+   if (!m_isPdx) {
+     qh->populatePortfolioData(regPtr0, 2, 1, 1);
+     qh->populatePositionData(subregPtr0, 2, 1);
+   } else {
+     qh->populatePortfolioPdxData(regPtr0, 2, 1, 1);
+     qh->populatePositionPdxData(subregPtr0, 2, 1);
     }
 
     LOG("StepTwo complete.");
@@ -385,9 +383,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     uint8_t i = 0;
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    PoolPtr pool =
+    auto pool =
         getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
-    QueryServicePtr qs;
+    std::shared_ptr<QueryService> qs;
     if (pool != nullptr) {
       // Using region name as pool name as in ThinClientCq.hpp
       qs = pool->getQueryService();
@@ -398,8 +396,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     for (i = 0; i < MAX_LISTNER; i++) {
       auto cqLstner = std::make_shared<MyCqListener>(i);
       cqFac.addCqListener(cqLstner);
-      CqAttributesPtr cqAttr = cqFac.create();
-      CqQueryPtr qry = qs->newCq(cqNames[i], queryStrings[i], cqAttr);
+     auto cqAttr = cqFac.create();
+     auto qry = qs->newCq(cqNames[i], queryStrings[i], cqAttr);
     }
 
     try {
@@ -420,28 +418,28 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     {
       try {
         LOG("Testing bug #1026");
-        RegionPtr regionPtr = getHelper()->getRegion(regionNamesCq[0]);
-        regionPtr->put("1026_Key1", "asdas");
-        regionPtr->put("1026_Key2",
-                       "Schüler");  // string with extended charater set
-        regionPtr->put("1026_Key3",
-                       "Gebäude");  // string with extended charater set
-        regionPtr->put("1026_Key4",
-                       "Königin");  // string with extended charater set
+       auto regionPtr = getHelper()->getRegion(regionNamesCq[0]);
+       regionPtr->put("1026_Key1", "asdas");
+       regionPtr->put("1026_Key2",
+                      "Schüler");  // string with extended charater set
+       regionPtr->put("1026_Key3",
+                      "Gebäude");  // string with extended charater set
+       regionPtr->put("1026_Key4",
+                      "Königin");  // string with extended charater set
 
-        const char* qryStr = "select * from /Portfolios p where p='Schüler'";
+       const char* qryStr = "select * from /Portfolios p where p='Schüler'";
 
-        CqListenerPtr cqLstner(new MyCqListener1026);
-        cqFac.addCqListener(cqLstner);
-        CqAttributesPtr cqAttr = cqFac.create();
-        CqQueryPtr qry = qs->newCq((char*)"1026_MyCq", qryStr, cqAttr);
+       std::shared_ptr<CqListener> cqLstner(new MyCqListener1026);
+       cqFac.addCqListener(cqLstner);
+       auto cqAttr = cqFac.create();
+       auto qry = qs->newCq((char*)"1026_MyCq", qryStr, cqAttr);
 
-        // execute Cq Query with initial Results
-        CqResultsPtr resultsPtr = qry->executeWithInitialResults();
+       // execute Cq Query with initial Results
+       auto resultsPtr = qry->executeWithInitialResults();
 
-        LOGINFO("ResultSet Query returned %d rows", resultsPtr->size());
-        LOG("Testing bug #1026 Complete");
-        // Iterate through the rows of the query result.
+       LOGINFO("ResultSet Query returned %d rows", resultsPtr->size());
+       LOG("Testing bug #1026 Complete");
+       // Iterate through the rows of the query result.
       } catch (const Exception& geodeExcp) {
         LOGERROR("CqQuery Geode Exception: %s", geodeExcp.getMessage());
         FAIL(geodeExcp.getMessage());
@@ -453,34 +451,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo2)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
-    RegionPtr subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
+   auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
+   auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+   QueryHelper* qh = &QueryHelper::getHelper();
 
+   if (!m_isPdx) {
+     qh->populatePortfolioData(regPtr0, 3, 2, 1);
+     qh->populatePositionData(subregPtr0, 3, 2);
+   } else {
+     qh->populatePortfolioPdxData(regPtr0, 3, 2, 1);
+     qh->populatePositionPdxData(subregPtr0, 3, 2);
+    }
+
+  std::shared_ptr<Cacheable> port = nullptr;
+  for (int i = 1; i < 3; i++) {
     if (!m_isPdx) {
-      qh->populatePortfolioData(regPtr0, 3, 2, 1);
-      qh->populatePositionData(subregPtr0, 3, 2);
+      port = std::shared_ptr<Cacheable>(new Portfolio(i, 2));
     } else {
-      qh->populatePortfolioPdxData(regPtr0, 3, 2, 1);
-      qh->populatePositionPdxData(subregPtr0, 3, 2);
+      port = std::shared_ptr<Cacheable>(new PortfolioPdx(i, 2));
     }
 
-    CacheablePtr port = nullptr;
-    for (int i = 1; i < 3; i++) {
-      if (!m_isPdx) {
-        port = CacheablePtr(new Portfolio(i, 2));
-      } else {
-        port = CacheablePtr(new PortfolioPdx(i, 2));
-      }
+    auto keyport = CacheableKey::create("port1-1");
+    regPtr0->put(keyport, port);
+    SLEEP(10);  // sleep a while to allow server query to complete
+  }
 
-      CacheableKeyPtr keyport = CacheableKey::create("port1-1");
-      regPtr0->put(keyport, port);
-      SLEEP(10);  // sleep a while to allow server query to complete
-    }
-
-    LOG("StepTwo2 complete. Sleeping .25 min for server query to complete...");
-    SLEEP(15000);  // sleep .25 min to allow server query to complete
+  LOG("StepTwo2 complete. Sleeping .25 min for server query to complete...");
+  SLEEP(15000);  // sleep .25 min to allow server query to complete
   }
 END_TASK_DEFINITION
 
@@ -488,9 +486,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    PoolPtr pool =
+    auto pool =
         getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
-    QueryServicePtr qs;
+    std::shared_ptr<QueryService> qs;
     if (pool != nullptr) {
       // Using region name as pool name as in ThinClientCq.hpp
       qs = pool->getQueryService();
@@ -517,83 +515,83 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     for (i = 0; i < MAX_LISTNER; i++) {
       sprintf(buf, "get info for cq[%s]:", cqNames[i]);
       LOG(buf);
-      CqQueryPtr cqy = qs->getCq(cqNames[i]);
-      CqStatisticsPtr cqStats = cqy->getStatistics();
-      sprintf(buf,
-              "Cq[%s]From CqStatistics: numInserts[%d], numDeletes[%d], "
-              "numUpdates[%d], numEvents[%d]",
-              cqNames[i], cqStats->numInserts(), cqStats->numDeletes(),
-              cqStats->numUpdates(), cqStats->numEvents());
-      LOG(buf);
-      for (j = 0; j <= i; j++) {
-        inserts[j] += cqStats->numInserts();
-        updates[j] += cqStats->numUpdates();
-        deletes[j] += cqStats->numDeletes();
-        events[j] += cqStats->numEvents();
-      }
-      CqAttributesPtr cqAttr = cqy->getCqAttributes();
-      auto vl = cqAttr->getCqListeners();
-      sprintf(buf, "number of listeners for cq[%s] is %zd", cqNames[i],
-              vl.size());
-      LOG(buf);
-      ASSERT(vl.size() == i + 1, "incorrect number of listeners");
-      if (i == (MAX_LISTNER - 1)) {
-        MyCqListener* myLl[MAX_LISTNER];
-        for (int k = 0; k < MAX_LISTNER; k++) {
-          MyCqListener* ml = dynamic_cast<MyCqListener*>(vl[k].get());
-          myLl[ml->getId()] = ml;
-        }
-        for (j = 0; j < MAX_LISTNER; j++) {
-          MyCqListener* ml = myLl[j];
-          sprintf(buf,
-                  "MyCount for Listener[%d]: numInserts[%d], numDeletes[%d], "
-                  "numUpdates[%d], numEvents[%d]",
-                  j, ml->getNumInserts(), ml->getNumDeletes(),
-                  ml->getNumUpdates(), ml->getNumEvents());
-          LOG(buf);
-          sprintf(buf,
-                  "sum of stats for Listener[%d]: numInserts[%d], "
-                  "numDeletes[%d], numUpdates[%d], numEvents[%d]",
-                  j, inserts[j], deletes[j], updates[j], events[j]);
-          LOG(buf);
-          ASSERT(ml->getNumInserts() == inserts[j],
-                 "accumulative insert count incorrect");
-          ASSERT(ml->getNumUpdates() == updates[j],
-                 "accumulative updates count incorrect");
-          ASSERT(ml->getNumDeletes() == deletes[j],
-                 "accumulative deletes count incorrect");
-          ASSERT(ml->getNumEvents() == events[j],
-                 "accumulative events count incorrect");
-        }
-        LOG("removing listener");
-        CqAttributesMutatorPtr cqAttrMtor = cqy->getCqAttributesMutator();
-        CqListenerPtr ptr = vl[0];
-        cqAttrMtor->removeCqListener(ptr);
-        vl = cqAttr->getCqListeners();
-        sprintf(buf, "number of listeners for cq[%s] is %zd", cqNames[i],
-                vl.size());
-        LOG(buf);
-        ASSERT(vl.size() == i, "incorrect number of listeners");
-      }
+     auto cqy = qs->getCq(cqNames[i]);
+     auto cqStats = cqy->getStatistics();
+     sprintf(buf,
+             "Cq[%s]From CqStatistics: numInserts[%d], numDeletes[%d], "
+             "numUpdates[%d], numEvents[%d]",
+             cqNames[i], cqStats->numInserts(), cqStats->numDeletes(),
+             cqStats->numUpdates(), cqStats->numEvents());
+     LOG(buf);
+     for (j = 0; j <= i; j++) {
+       inserts[j] += cqStats->numInserts();
+       updates[j] += cqStats->numUpdates();
+       deletes[j] += cqStats->numDeletes();
+       events[j] += cqStats->numEvents();
+     }
+     auto cqAttr = cqy->getCqAttributes();
+     auto vl = cqAttr->getCqListeners();
+     sprintf(buf, "number of listeners for cq[%s] is %zd", cqNames[i],
+             vl.size());
+     LOG(buf);
+     ASSERT(vl.size() == i + 1, "incorrect number of listeners");
+     if (i == (MAX_LISTNER - 1)) {
+       MyCqListener* myLl[MAX_LISTNER];
+       for (int k = 0; k < MAX_LISTNER; k++) {
+         MyCqListener* ml = dynamic_cast<MyCqListener*>(vl[k].get());
+         myLl[ml->getId()] = ml;
+       }
+       for (j = 0; j < MAX_LISTNER; j++) {
+         MyCqListener* ml = myLl[j];
+         sprintf(buf,
+                 "MyCount for Listener[%d]: numInserts[%d], numDeletes[%d], "
+                 "numUpdates[%d], numEvents[%d]",
+                 j, ml->getNumInserts(), ml->getNumDeletes(),
+                 ml->getNumUpdates(), ml->getNumEvents());
+         LOG(buf);
+         sprintf(buf,
+                 "sum of stats for Listener[%d]: numInserts[%d], "
+                 "numDeletes[%d], numUpdates[%d], numEvents[%d]",
+                 j, inserts[j], deletes[j], updates[j], events[j]);
+         LOG(buf);
+         ASSERT(ml->getNumInserts() == inserts[j],
+                "accumulative insert count incorrect");
+         ASSERT(ml->getNumUpdates() == updates[j],
+                "accumulative updates count incorrect");
+         ASSERT(ml->getNumDeletes() == deletes[j],
+                "accumulative deletes count incorrect");
+         ASSERT(ml->getNumEvents() == events[j],
+                "accumulative events count incorrect");
+       }
+       LOG("removing listener");
+       auto cqAttrMtor = cqy->getCqAttributesMutator();
+       auto ptr = vl[0];
+       cqAttrMtor->removeCqListener(ptr);
+       vl = cqAttr->getCqListeners();
+       sprintf(buf, "number of listeners for cq[%s] is %zd", cqNames[i],
+               vl.size());
+       LOG(buf);
+       ASSERT(vl.size() == i, "incorrect number of listeners");
+     }
     }
     try {
-      CqQueryPtr cqy = qs->getCq(cqNames[1]);
-      cqy->stop();
+     auto cqy = qs->getCq(cqNames[1]);
+     cqy->stop();
 
-      cqy = qs->getCq(cqNames[6]);
+     cqy = qs->getCq(cqNames[6]);
 
-      sprintf(buf, "cq[%s] should have been running!", cqNames[6]);
-      ASSERT(cqy->isRunning() == true, buf);
-      bool got_exception = false;
-      try {
-        cqy->execute();
-      } catch (IllegalStateException& excp) {
-        std::string failmsg = "";
-        failmsg += excp.getName();
-        failmsg += ": ";
-        failmsg += excp.getMessage();
-        LOG(failmsg.c_str());
-        got_exception = true;
+     sprintf(buf, "cq[%s] should have been running!", cqNames[6]);
+     ASSERT(cqy->isRunning() == true, buf);
+     bool got_exception = false;
+     try {
+       cqy->execute();
+     } catch (IllegalStateException& excp) {
+       std::string failmsg = "";
+       failmsg += excp.getName();
+       failmsg += ": ";
+       failmsg += excp.getMessage();
+       LOG(failmsg.c_str());
+       got_exception = true;
       }
       sprintf(buf, "cq[%s] should gotten exception!", cqNames[6]);
       ASSERT(got_exception == true, buf);
@@ -621,43 +619,43 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       FAIL(failmsg.c_str());
       excp.printStackTrace();
     }
-    CqServiceStatisticsPtr serviceStats = qs->getCqServiceStatistics();
-    ASSERT(serviceStats != nullptr, "serviceStats is nullptr");
-    sprintf(buf,
-            "numCqsActive=%d, numCqsCreated=%d, "
-            "numCqsClosed=%d,numCqsStopped=%d, numCqsOnClient=%d",
-            serviceStats->numCqsActive(), serviceStats->numCqsCreated(),
-            serviceStats->numCqsClosed(), serviceStats->numCqsStopped(),
-            serviceStats->numCqsOnClient());
+   auto serviceStats = qs->getCqServiceStatistics();
+   ASSERT(serviceStats != nullptr, "serviceStats is nullptr");
+   sprintf(buf,
+           "numCqsActive=%d, numCqsCreated=%d, "
+           "numCqsClosed=%d,numCqsStopped=%d, numCqsOnClient=%d",
+           serviceStats->numCqsActive(), serviceStats->numCqsCreated(),
+           serviceStats->numCqsClosed(), serviceStats->numCqsStopped(),
+           serviceStats->numCqsOnClient());
+   LOG(buf);
+   /*
+   for(i=0; i < MAX_LISTNER; i++)
+   {
+   auto cqy = qs->getCq(cqNames[i]);
+    CqState::StateType state = cqy->getState();
+    CqState cqState;
+    cqState.setState(state);
+    sprintf(buf, "cq[%s] is in state[%s]", cqNames[i], cqState.toString());
     LOG(buf);
-    /*
-    for(i=0; i < MAX_LISTNER; i++)
-    {
-     CqQueryPtr cqy = qs->getCq(cqNames[i]);
-     CqState::StateType state = cqy->getState();
-     CqState cqState;
-     cqState.setState(state);
-     sprintf(buf, "cq[%s] is in state[%s]", cqNames[i], cqState.toString());
-     LOG(buf);
-    }
-    */
+   }
+   */
 
-    ASSERT(serviceStats->numCqsActive() == 6, "active count incorrect!");
-    ASSERT(serviceStats->numCqsCreated() == 9, "created count incorrect!");
-    ASSERT(serviceStats->numCqsClosed() == 1, "closed count incorrect!");
-    ASSERT(serviceStats->numCqsStopped() == 2, "stopped count incorrect!");
-    ASSERT(serviceStats->numCqsOnClient() == 8, "cq count incorrect!");
+   ASSERT(serviceStats->numCqsActive() == 6, "active count incorrect!");
+   ASSERT(serviceStats->numCqsCreated() == 9, "created count incorrect!");
+   ASSERT(serviceStats->numCqsClosed() == 1, "closed count incorrect!");
+   ASSERT(serviceStats->numCqsStopped() == 2, "stopped count incorrect!");
+   ASSERT(serviceStats->numCqsOnClient() == 8, "cq count incorrect!");
 
-    try {
-      qs->stopCqs();
-    } catch (Exception& excp) {
-      std::string failmsg = "";
-      failmsg += excp.getName();
-      failmsg += ": ";
-      failmsg += excp.getMessage();
-      LOG(failmsg.c_str());
-      FAIL(failmsg.c_str());
-      excp.printStackTrace();
+   try {
+     qs->stopCqs();
+   } catch (Exception& excp) {
+     std::string failmsg = "";
+     failmsg += excp.getName();
+     failmsg += ": ";
+     failmsg += excp.getMessage();
+     LOG(failmsg.c_str());
+     FAIL(failmsg.c_str());
+     excp.printStackTrace();
     }
     sprintf(buf,
             "numCqsActive=%d, numCqsCreated=%d, "
@@ -698,20 +696,20 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     i = 0;
     auto cqLstner = std::make_shared<MyCqListener>(i);
     cqFac.addCqListener(cqLstner);
-    CqAttributesPtr cqAttr = cqFac.create();
-    try {
-      CqQueryPtr qry = qs->newCq(cqNames[i], queryStrings[i], cqAttr);
-      qry->execute();
-      qry->stop();
-      qry->close();
-    } catch (Exception& excp) {
-      std::string failmsg = "";
-      failmsg += excp.getName();
-      failmsg += ": ";
-      failmsg += excp.getMessage();
-      LOG(failmsg.c_str());
-      FAIL(failmsg.c_str());
-      excp.printStackTrace();
+   auto cqAttr = cqFac.create();
+   try {
+     auto qry = qs->newCq(cqNames[i], queryStrings[i], cqAttr);
+     qry->execute();
+     qry->stop();
+     qry->close();
+   } catch (Exception& excp) {
+     std::string failmsg = "";
+     failmsg += excp.getName();
+     failmsg += ": ";
+     failmsg += excp.getMessage();
+     LOG(failmsg.c_str());
+     FAIL(failmsg.c_str());
+     excp.printStackTrace();
     }
 
     LOG("StepFour complete.");
@@ -798,41 +796,39 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ)
   {
     SLEEP(10000);
     // Create CqAttributes and Install Listener
-    PoolPtr pool = getHelper()->getCache()->getPoolManager().find(regionName);
-    QueryServicePtr qs = pool->getQueryService();
-    CqAttributesFactory cqFac;
-    auto cqLstner = std::make_shared<MyCqStatusListener>(100);
-    cqFac.addCqListener(cqLstner);
-    CqAttributesPtr cqAttr = cqFac.create();
-    CqQueryPtr cq =
-        qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
+   auto pool = getHelper()->getCache()->getPoolManager().find(regionName);
+   auto qs = pool->getQueryService();
+   CqAttributesFactory cqFac;
+   auto cqLstner = std::make_shared<MyCqStatusListener>(100);
+   cqFac.addCqListener(cqLstner);
+   auto cqAttr = cqFac.create();
+   auto cq = qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
 
-    cq->execute();
-    SLEEP(20000);
+   cq->execute();
+   SLEEP(20000);
 
-    cqAttr = cq->getCqAttributes();
-    auto vl = cqAttr->getCqListeners();
-    MyCqStatusListener* myStatusCq =
-        dynamic_cast<MyCqStatusListener*>(vl[0].get());
-    LOGINFO("checkCQStatusOnConnect = %d ", myStatusCq->getCqsConnectedCount());
-    ASSERT(myStatusCq->getCqsConnectedCount() == 1,
-           "incorrect number of CqStatus Connected count.");
-    LOG("createCQ complete.");
+   cqAttr = cq->getCqAttributes();
+   auto vl = cqAttr->getCqListeners();
+   MyCqStatusListener* myStatusCq =
+       dynamic_cast<MyCqStatusListener*>(vl[0].get());
+   LOGINFO("checkCQStatusOnConnect = %d ", myStatusCq->getCqsConnectedCount());
+   ASSERT(myStatusCq->getCqsConnectedCount() == 1,
+          "incorrect number of CqStatus Connected count.");
+   LOG("createCQ complete.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
   {
-    PoolPtr pool =
+    auto pool =
         getHelper()->getCache()->getPoolManager().find("__TEST_POOL1__");
-    QueryServicePtr qs = pool->getQueryService();
+    auto qs = pool->getQueryService();
     CqAttributesFactory cqFac;
     auto cqLstner = std::make_shared<MyCqStatusListener>(100);
     cqFac.addCqListener(cqLstner);
-    CqAttributesPtr cqAttr = cqFac.create();
+    auto cqAttr = cqFac.create();
 
-    CqQueryPtr cq =
-        qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
+    auto cq = qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
     cq->execute();
     SLEEP(20000);
 
@@ -844,14 +840,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
     ASSERT(myStatusCq->getCqsConnectedCount() == 1,
            "incorrect number of CqStatus Connected count.");
 
-    PoolPtr pool2 =
+    auto pool2 =
         getHelper()->getCache()->getPoolManager().find("__TEST_POOL2__");
-    QueryServicePtr qs2 = pool2->getQueryService();
+    auto qs2 = pool2->getQueryService();
     CqAttributesFactory cqFac1;
     auto cqLstner1 = std::make_shared<MyCqStatusListener>(101);
     cqFac1.addCqListener(cqLstner1);
-    CqAttributesPtr cqAttr1 = cqFac1.create();
-    CqQueryPtr cq2 =
+    auto cqAttr1 = cqFac1.create();
+    auto cq2 =
         qs2->newCq(const_cast<char*>(cqName1), cqQueryStatusString1, cqAttr1);
     cq2->execute();
     SLEEP(20000);
@@ -865,16 +861,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
     ASSERT(myStatusCq2->getCqsConnectedCount() == 1,
            "incorrect number of CqStatus Connected count.");
 
-    RegionPtr regPtr0 = getHelper()->getRegion(regionName);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionName1);
-    CacheablePtr val = nullptr;
+    auto regPtr0 = getHelper()->getRegion(regionName);
+    auto regPtr1 = getHelper()->getRegion(regionName1);
+    std::shared_ptr<Cacheable> val = nullptr;
     char KeyStr[256] = {0};
     char valStr[256] = {0};
     for (int i = 1; i <= 5; i++) {
       ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
       ACE_OS::snprintf(valStr, 256, "val-%d ", i);
-      CacheableKeyPtr keyport = CacheableKey::create(KeyStr);
-      CacheablePtr valport = CacheableString::create(valStr);
+      auto keyport = CacheableKey::create(KeyStr);
+      auto valport = CacheableString::create(valStr);
       regPtr0->put(keyport, valport);
       regPtr1->put(keyport, valport);
       SLEEP(10 * 1000);  // sleep a while to allow server query to complete
@@ -894,12 +890,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
 END_TASK_DEFINITION
 
 void executeCq(const char* poolName, const char* name) {
-  PoolPtr pool = getHelper()->getCache()->getPoolManager().find(poolName);
-  QueryServicePtr qs;
-  if (pool != nullptr) {
-    qs = pool->getQueryService();
+ auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
+ std::shared_ptr<QueryService> qs;
+ if (pool != nullptr) {
+   qs = pool->getQueryService();
   }
-  CqQueryPtr cq = qs->getCq(const_cast<char*>(name));
+  auto cq = qs->getCq(const_cast<char*>(name));
   cq->execute();
   SLEEP(20000);
   LOG("executeCq complete");
@@ -914,13 +910,13 @@ END_TASK_DEFINITION
 
 void checkCQStatusOnConnect(const char* poolName, const char* name,
                             int connect) {
-  PoolPtr pool = getHelper()->getCache()->getPoolManager().find(poolName);
-  QueryServicePtr qs;
-  if (pool != nullptr) {
-    qs = pool->getQueryService();
+ auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
+ std::shared_ptr<QueryService> qs;
+ if (pool != nullptr) {
+   qs = pool->getQueryService();
   }
-  CqQueryPtr cq = qs->getCq(const_cast<char*>(name));
-  CqAttributesPtr cqAttr = cq->getCqAttributes();
+  auto cq = qs->getCq(const_cast<char*>(name));
+  auto cqAttr = cq->getCqAttributes();
   auto vl = cqAttr->getCqListeners();
   MyCqStatusListener* myStatusCq =
       dynamic_cast<MyCqStatusListener*>(vl[0].get());
@@ -957,13 +953,13 @@ END_TASK_DEFINITION
 
 void checkCQStatusOnDisConnect(const char* poolName, const char* cqName,
                                int disconnect) {
-  PoolPtr pool = getHelper()->getCache()->getPoolManager().find(poolName);
-  QueryServicePtr qs;
-  if (pool != nullptr) {
-    qs = pool->getQueryService();
+ auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
+ std::shared_ptr<QueryService> qs;
+ if (pool != nullptr) {
+   qs = pool->getQueryService();
   }
-  CqQueryPtr cq = qs->getCq(const_cast<char*>(cqName));
-  CqAttributesPtr cqAttr = cq->getCqAttributes();
+  auto cq = qs->getCq(const_cast<char*>(cqName));
+  auto cqAttr = cq->getCqAttributes();
   auto vl = cqAttr->getCqListeners();
   auto myStatusCq = std::dynamic_pointer_cast<MyCqStatusListener>(vl[0]);
   LOGINFO("checkCQStatusOnDisConnect = %d ",
@@ -1007,33 +1003,33 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, putEntries)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(regionName);
-    RegionPtr regPtr1 = getHelper()->getRegion(regionName1);
-    CacheablePtr val = nullptr;
-    char KeyStr[256] = {0};
-    char valStr[256] = {0};
-    for (int i = 1; i <= 5; i++) {
-      ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
-      ACE_OS::snprintf(valStr, 256, "val-%d ", i);
-      CacheableKeyPtr keyport = CacheableKey::create(KeyStr);
-      CacheablePtr valport = CacheableString::create(valStr);
-      regPtr0->put(keyport, valport);
-      regPtr1->put(keyport, valport);
-      SLEEP(10 * 1000);  // sleep a while to allow server query to complete
-    }
-    LOGINFO("putEntries complete");
+   auto regPtr0 = getHelper()->getRegion(regionName);
+   auto regPtr1 = getHelper()->getRegion(regionName1);
+   std::shared_ptr<Cacheable> val = nullptr;
+   char KeyStr[256] = {0};
+   char valStr[256] = {0};
+   for (int i = 1; i <= 5; i++) {
+     ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
+     ACE_OS::snprintf(valStr, 256, "val-%d ", i);
+     auto keyport = CacheableKey::create(KeyStr);
+     auto valport = CacheableString::create(valStr);
+     regPtr0->put(keyport, valport);
+     regPtr1->put(keyport, valport);
+     SLEEP(10 * 1000);  // sleep a while to allow server query to complete
+   }
+   LOGINFO("putEntries complete");
   }
 END_TASK_DEFINITION
 
 void checkCQStatusOnPutEvent(const char* poolName, const char* cqName,
                              int count) {
-  PoolPtr pool = getHelper()->getCache()->getPoolManager().find(poolName);
-  QueryServicePtr qs;
-  if (pool != nullptr) {
-    qs = pool->getQueryService();
+ auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
+ std::shared_ptr<QueryService> qs;
+ if (pool != nullptr) {
+   qs = pool->getQueryService();
   }
-  CqQueryPtr cq = qs->getCq(const_cast<char*>(cqName));
-  CqAttributesPtr cqAttr = cq->getCqAttributes();
+  auto cq = qs->getCq(const_cast<char*>(cqName));
+  auto cqAttr = cq->getCqAttributes();
   auto vl = cqAttr->getCqListeners();
   MyCqStatusListener* myStatusCq =
       dynamic_cast<MyCqStatusListener*>(vl[0].get());
@@ -1061,115 +1057,114 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
   {
     SLEEP(10000);
     // Create CqAttributes and Install Listener
-    PoolPtr pool = getHelper()->getCache()->getPoolManager().find(regionName);
-    QueryServicePtr qs = pool->getQueryService();
-    CqAttributesFactory cqFac;
-    auto cqLstner = std::make_shared<MyCqListener>(1);
-    auto cqStatusLstner = std::make_shared<MyCqStatusListener>(100);
-    cqFac.addCqListener(cqLstner);
-    cqFac.addCqListener(cqStatusLstner);
-    CqAttributesPtr cqAttr = cqFac.create();
+   auto pool = getHelper()->getCache()->getPoolManager().find(regionName);
+   auto qs = pool->getQueryService();
+   CqAttributesFactory cqFac;
+   auto cqLstner = std::make_shared<MyCqListener>(1);
+   auto cqStatusLstner = std::make_shared<MyCqStatusListener>(100);
+   cqFac.addCqListener(cqLstner);
+   cqFac.addCqListener(cqStatusLstner);
+   auto cqAttr = cqFac.create();
 
-    CqQueryPtr cq =
-        qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
-    cq->execute();
-    SLEEP(20000);
-    LOG("ProcessCQ Query executed.");
+   auto cq = qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
+   cq->execute();
+   SLEEP(20000);
+   LOG("ProcessCQ Query executed.");
 
-    RegionPtr regPtr0 = getHelper()->getRegion(regionName);
-    CacheablePtr val = nullptr;
-    char KeyStr[256] = {0};
-    char valStr[256] = {0};
-    for (int i = 1; i <= 5; i++) {
-      ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
-      ACE_OS::snprintf(valStr, 256, "val-%d ", i);
-      CacheableKeyPtr keyport = CacheableKey::create(KeyStr);
-      CacheablePtr valport = CacheableString::create(valStr);
-      regPtr0->put(keyport, valport);
-      SLEEP(10 * 1000);  // sleep a while to allow server query to complete
-    }
-    LOGINFO("putEntries complete");
+   auto regPtr0 = getHelper()->getRegion(regionName);
+   std::shared_ptr<Cacheable> val = nullptr;
+   char KeyStr[256] = {0};
+   char valStr[256] = {0};
+   for (int i = 1; i <= 5; i++) {
+     ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
+     ACE_OS::snprintf(valStr, 256, "val-%d ", i);
+     auto keyport = CacheableKey::create(KeyStr);
+     auto valport = CacheableString::create(valStr);
+     regPtr0->put(keyport, valport);
+     SLEEP(10 * 1000);  // sleep a while to allow server query to complete
+   }
+   LOGINFO("putEntries complete");
 
-    cqAttr = cq->getCqAttributes();
-    auto vl = cqAttr->getCqListeners();
-    ASSERT(vl.size() == 2, "incorrect number of CqListeners count.");
-    MyCqStatusListener* myStatusCq =
-        dynamic_cast<MyCqStatusListener*>(vl[1].get());
-    LOGINFO("No of insert events = %d ", myStatusCq->getNumInserts());
-    LOGINFO("No of OnCqConnected events = %d ",
-            myStatusCq->getCqsConnectedCount());
-    ASSERT(myStatusCq->getNumInserts() == 5,
-           "incorrect number of CqStatus Updates count.");
-    ASSERT(myStatusCq->getCqsConnectedCount() == 1,
-           "incorrect number of CqStatus Connected count.");
+   cqAttr = cq->getCqAttributes();
+   auto vl = cqAttr->getCqListeners();
+   ASSERT(vl.size() == 2, "incorrect number of CqListeners count.");
+   MyCqStatusListener* myStatusCq =
+       dynamic_cast<MyCqStatusListener*>(vl[1].get());
+   LOGINFO("No of insert events = %d ", myStatusCq->getNumInserts());
+   LOGINFO("No of OnCqConnected events = %d ",
+           myStatusCq->getCqsConnectedCount());
+   ASSERT(myStatusCq->getNumInserts() == 5,
+          "incorrect number of CqStatus Updates count.");
+   ASSERT(myStatusCq->getCqsConnectedCount() == 1,
+          "incorrect number of CqStatus Connected count.");
 
-    MyCqListener* myCq = dynamic_cast<MyCqListener*>(vl[0].get());
-    LOGINFO("No of insert events = %d ", myCq->getNumInserts());
-    ASSERT(myCq->getNumInserts() == 5,
-           "incorrect number of CqStatus Updates count.");
+   MyCqListener* myCq = dynamic_cast<MyCqListener*>(vl[0].get());
+   LOGINFO("No of insert events = %d ", myCq->getNumInserts());
+   ASSERT(myCq->getNumInserts() == 5,
+          "incorrect number of CqStatus Updates count.");
 
-    CqAttributesMutatorPtr cqAttrMtor = cq->getCqAttributesMutator();
-    CqListenerPtr ptr = vl[0];
-    cqAttrMtor->removeCqListener(ptr);
-    vl = cqAttr->getCqListeners();
-    LOGINFO("number of listeners = %d", vl.size());
+   auto cqAttrMtor = cq->getCqAttributesMutator();
+   auto ptr = vl[0];
+   cqAttrMtor->removeCqListener(ptr);
+   vl = cqAttr->getCqListeners();
+   LOGINFO("number of listeners = %d", vl.size());
 
-    ASSERT(vl.size() == 1, "incorrect number of listeners");
+   ASSERT(vl.size() == 1, "incorrect number of listeners");
 
-    cqAttrMtor->removeCqListener(vl[0]);
-    LOGINFO("removeCqListener again");
-    vl = cqAttr->getCqListeners();
-    LOGINFO("number of listeners = %d", vl.size());
+   cqAttrMtor->removeCqListener(vl[0]);
+   LOGINFO("removeCqListener again");
+   vl = cqAttr->getCqListeners();
+   LOGINFO("number of listeners = %d", vl.size());
 
-    ASSERT(vl.size() == 0, "incorrect number of listeners");
+   ASSERT(vl.size() == 0, "incorrect number of listeners");
 
-    std::vector<CqListenerPtr> v2;
-    v2.push_back(cqStatusLstner);
-    v2.push_back(cqLstner);
-    cqAttrMtor->setCqListeners(v2);
-    LOG("ProcessCQ setCqListeneres done.");
+   std::vector<std::shared_ptr<CqListener>> v2;
+   v2.push_back(cqStatusLstner);
+   v2.push_back(cqLstner);
+   cqAttrMtor->setCqListeners(v2);
+   LOG("ProcessCQ setCqListeneres done.");
 
-    cqAttr = cq->getCqAttributes();
-    auto vl3 = cqAttr->getCqListeners();
-    ASSERT(vl3.size() == 2, "incorrect number of CqListeners count.");
+   cqAttr = cq->getCqAttributes();
+   auto vl3 = cqAttr->getCqListeners();
+   ASSERT(vl3.size() == 2, "incorrect number of CqListeners count.");
 
-    auto myStatusCq2 = std::dynamic_pointer_cast<MyCqStatusListener>(vl3[0]);
-    myStatusCq2->clear();
+   auto myStatusCq2 = std::dynamic_pointer_cast<MyCqStatusListener>(vl3[0]);
+   myStatusCq2->clear();
 
-    for (int i = 1; i <= 5; i++) {
-      ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
-      ACE_OS::snprintf(valStr, 256, "val-%d ", i);
-      CacheableKeyPtr keyport = CacheableKey::create(KeyStr);
-      CacheablePtr valport = CacheableString::create(valStr);
-      regPtr0->put(keyport, valport);
-      SLEEP(10 * 1000);  // sleep a while to allow server query to complete
-    }
-    LOGINFO("putEntries complete again");
+   for (int i = 1; i <= 5; i++) {
+     ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
+     ACE_OS::snprintf(valStr, 256, "val-%d ", i);
+     auto keyport = CacheableKey::create(KeyStr);
+     auto valport = CacheableString::create(valStr);
+     regPtr0->put(keyport, valport);
+     SLEEP(10 * 1000);  // sleep a while to allow server query to complete
+   }
+   LOGINFO("putEntries complete again");
 
-    std::vector<CqListenerPtr> vl21;
-    vl21.push_back(cqStatusLstner);
-    vl21.push_back(cqLstner);
-    cqFac.initCqListeners(vl21);
-    LOGINFO("initCqListeners complete.");
+   std::vector<std::shared_ptr<CqListener>> vl21;
+   vl21.push_back(cqStatusLstner);
+   vl21.push_back(cqLstner);
+   cqFac.initCqListeners(vl21);
+   LOGINFO("initCqListeners complete.");
 
-    cqAttr = cq->getCqAttributes();
-    auto vl2 = cqAttr->getCqListeners();
-    ASSERT(vl2.size() == 2, "incorrect number of CqListeners count.");
-    myStatusCq2 = std::dynamic_pointer_cast<MyCqStatusListener>(vl2[0]);
-    LOGINFO("No of insert events = %d ", myStatusCq2->getNumUpdates());
-    LOGINFO("No of OnCqConnected events = %d ",
-            myStatusCq2->getCqsConnectedCount());
-    ASSERT(myStatusCq2->getNumUpdates() == 5,
-           "incorrect number of CqStatus Updates count.");
-    ASSERT(myStatusCq2->getCqsConnectedCount() == 0,
-           "incorrect number of CqStatus Connected count.");
+   cqAttr = cq->getCqAttributes();
+   auto vl2 = cqAttr->getCqListeners();
+   ASSERT(vl2.size() == 2, "incorrect number of CqListeners count.");
+   myStatusCq2 = std::dynamic_pointer_cast<MyCqStatusListener>(vl2[0]);
+   LOGINFO("No of insert events = %d ", myStatusCq2->getNumUpdates());
+   LOGINFO("No of OnCqConnected events = %d ",
+           myStatusCq2->getCqsConnectedCount());
+   ASSERT(myStatusCq2->getNumUpdates() == 5,
+          "incorrect number of CqStatus Updates count.");
+   ASSERT(myStatusCq2->getCqsConnectedCount() == 0,
+          "incorrect number of CqStatus Connected count.");
 
-    auto myCq2 = std::dynamic_pointer_cast<MyCqListener>(vl2[1]);
-    LOGINFO("No of insert events = %d ", myCq2->getNumInserts());
-    ASSERT(myCq2->getNumUpdates() == 5,
-           "incorrect number of CqStatus Updates count.");
+   auto myCq2 = std::dynamic_pointer_cast<MyCqListener>(vl2[1]);
+   LOGINFO("No of insert events = %d ", myCq2->getNumInserts());
+   ASSERT(myCq2->getNumUpdates() == 5,
+          "incorrect number of CqStatus Updates count.");
 
-    LOG("ProcessCQ complete.");
+   LOG("ProcessCQ complete.");
   }
 END_TASK_DEFINITION
 

@@ -30,7 +30,6 @@
  */
 
 // Include the Geode library.
-#include <geode/GeodeCppCache.hpp>
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
@@ -45,47 +44,48 @@ int main(int argc, char** argv) {
   try {
     // Create CacheFactory using the settings from the geode.properties file by
     // default.
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+    auto cacheFactory = CacheFactory::createCacheFactory();
     LOGINFO("Created CacheFactory");
 
     // Create a Geode Cache.
-    CachePtr cachePtr = cacheFactory->setSubscriptionEnabled(true)
-                            ->addServer("localhost", 50505)
-                            ->addServer("localhost", 40404)
-                            ->create();
+    auto cachePtr = cacheFactory->setSubscriptionEnabled(true)
+                        ->addServer("localhost", 50505)
+                        ->addServer("localhost", 40404)
+                        ->create();
     LOGINFO("Created the Geode Cache");
 
     // Create the example Region Programmatically
-    RegionPtr regPtr0 = cachePtr->createRegionFactory(CACHING_PROXY)
-                            ->create("partition_region");
+    auto regPtr0 = cachePtr->createRegionFactory(CACHING_PROXY)
+                       ->create("partition_region");
     LOGINFO("Created the Region");
 
     regPtr0->registerAllKeys();
     char buf[128];
 
-    CacheableVectorPtr resultList = CacheableVector::create();
+    auto resultList = CacheableVector::create();
     for (int i = 0; i < 34; i++) {
       sprintf(buf, "VALUE--%d", i);
-      CacheablePtr value(CacheableString::create(buf));
+      std::shared_ptr<Cacheable> value(CacheableString::create(buf));
 
       sprintf(buf, "KEY--%d", i);
-      CacheableKeyPtr key = CacheableKey::create(buf);
+      auto key = CacheableKey::create(buf);
       regPtr0->put(key, value);
     }
 
     bool getResult = true;
-    CacheableVectorPtr routingObj = CacheableVector::create();
+    auto routingObj = CacheableVector::create();
     for (int i = 0; i < 34; i++) {
       if (i % 2 == 0) continue;
       sprintf(buf, "KEY--%d", i);
-      CacheableKeyPtr key = CacheableKey::create(buf);
+      auto key = CacheableKey::create(buf);
       routingObj->push_back(key);
     }
 
     LOGINFO("test data independent function with result on one server");
-    CacheablePtr args = routingObj;
-    ExecutionPtr exc = FunctionService::onServer((RegionServicePtr)cachePtr);
-    CacheableVectorPtr executeFunctionResult =
+    auto args = routingObj;
+    auto exc =
+        FunctionService::onServer((std::shared_ptr<RegionService>)cachePtr);
+    auto executeFunctionResult =
         exc->withArgs(args)->execute(getFuncIName)->getResult();
     if (executeFunctionResult == nullptr) {
       LOGINFO("get executeFunctionResult is NULL");
@@ -113,7 +113,7 @@ int main(int argc, char** argv) {
 
     LOGINFO("test data independent function with result on all servers");
     getResult = true;
-    exc = FunctionService::onServers((RegionServicePtr)cachePtr);
+    exc = FunctionService::onServers((std::shared_ptr<RegionService>)cachePtr);
     executeFunctionResult =
         exc->withArgs(args)->execute(getFuncIName)->getResult();
     if (executeFunctionResult == nullptr) {

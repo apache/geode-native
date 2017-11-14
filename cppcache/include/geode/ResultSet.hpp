@@ -25,7 +25,6 @@
 #include "ExceptionTypes.hpp"
 
 #include "SelectResults.hpp"
-#include "VectorT.hpp"
 
 #include "SelectResultsIterator.hpp"
 
@@ -65,7 +64,7 @@ class CPPCACHE_EXPORT ResultSet : public SelectResults {
    * @throws IllegalArgumentException if the index is out of bounds.
    * @returns A smart pointer to the item indexed.
    */
-  virtual const SerializablePtr operator[](int32_t index) const = 0;
+  virtual const std::shared_ptr<Serializable> operator[](int32_t index) const = 0;
 
   /**
    * Get a SelectResultsIterator with which to iterate over the items in the

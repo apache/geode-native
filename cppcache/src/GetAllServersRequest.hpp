@@ -32,7 +32,7 @@ namespace geode {
 namespace client {
 
 class GetAllServersRequest : public Serializable {
-  CacheableStringPtr m_serverGroup;
+  std::shared_ptr<CacheableString> m_serverGroup;
 
  public:
   GetAllServersRequest(const std::string& serverGroup) : Serializable() {

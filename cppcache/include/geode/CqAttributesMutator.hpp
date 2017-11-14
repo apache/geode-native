@@ -22,8 +22,7 @@
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
-#include "VectorT.hpp"
-
+#include <vector>
 /**
  * @file
  */
@@ -31,7 +30,7 @@
 namespace apache {
 namespace geode {
 namespace client {
-
+class CqListener;
 /**
  * @class CqAttributesMutator CqAttributesMutator.hpp
  *
@@ -47,7 +46,7 @@ class CPPCACHE_EXPORT CqAttributesMutator {
    * @param aListener the user defined CQ listener to add to the CqQuery.
    * @throws IllegalArgumentException if <code>aListener</code> is nullptr
    */
-  virtual void addCqListener(const CqListenerPtr& aListener) = 0;
+  virtual void addCqListener(const std::shared_ptr<CqListener>& aListener) = 0;
 
   /**
    * Removes given CQ listener from the list of CQ listeners on this CqQuery.
@@ -57,7 +56,7 @@ class CPPCACHE_EXPORT CqAttributesMutator {
    * @param aListener the CQ listener to remove from the CqQuery.
    * @throws IllegalArgumentException if <code>aListener</code> is nullptr
    */
-  virtual void removeCqListener(const CqListenerPtr& aListener) = 0;
+  virtual void removeCqListener(const std::shared_ptr<CqListener>& aListener) = 0;
 
   /**
    * Adds the given set CqListner on this CQ. If the CQ already has CqListeners,
@@ -69,7 +68,7 @@ class CPPCACHE_EXPORT CqAttributesMutator {
    * has a nullptr element
    */
   virtual void setCqListeners(
-      const std::vector<CqListenerPtr>& newListeners) = 0;
+      const std::vector<std::shared_ptr<CqListener>>& newListeners) = 0;
 };
 }  // namespace client
 }  // namespace geode

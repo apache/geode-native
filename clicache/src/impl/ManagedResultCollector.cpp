@@ -146,7 +146,7 @@ namespace apache
         return NULL;
       }
 
-      void ManagedResultCollectorGeneric::addResult(const CacheablePtr& result)
+      void ManagedResultCollectorGeneric::addResult(const std::shared_ptr<Cacheable>& result)
       {
         try {
           Object^ rs = Apache::Geode::Client::Serializable::GetManagedValueGeneric<Object^>(result);
@@ -164,15 +164,15 @@ namespace apache
         }
       }
 
-      CacheableVectorPtr ManagedResultCollectorGeneric::getResult(std::chrono::milliseconds timeout)
+      std::shared_ptr<CacheableVector> ManagedResultCollectorGeneric::getResult(std::chrono::milliseconds timeout)
       {
         try {
           //array<IGeodeSerializable^>^ rs = m_managedptr->GetResult(timeout);
-          //apache::geode::client::CacheableVectorPtr rsptr = apache::geode::client::CacheableVector::create();
+          //std::shared_ptr<apache::geode::client::CacheableVector> rsptr = apache::geode::client::CacheableVector::create();
           //for( int index = 0; index < rs->Length; index++ )
           //{
-          //  //apache::geode::client::CacheablePtr valueptr(Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<IGeodeSerializable^>(rs[ index]));
-          //  apache::geode::client::CacheablePtr valueptr (SafeMSerializableConvert(rs[ index]));
+          //  //std::shared_ptr<apache::geode::client::Cacheable> valueptr(Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<IGeodeSerializable^>(rs[ index]));
+          //  std::shared_ptr<apache::geode::client::Cacheable> valueptr (SafeMSerializableConvert(rs[ index]));
           //  rsptr->push_back(valueptr);
           //}
           //return rsptr;

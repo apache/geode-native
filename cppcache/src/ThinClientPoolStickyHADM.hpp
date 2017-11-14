@@ -26,14 +26,14 @@ namespace geode {
 namespace client {
 class ThinClientPoolStickyHADM : public ThinClientPoolHADM {
  public:
-  ThinClientPoolStickyHADM(const char* name, PoolAttributesPtr poolAttrs,
+  ThinClientPoolStickyHADM(const char* name,
+                           std::shared_ptr<PoolAttributes> poolAttrs,
                            TcrConnectionManager& connManager)
       : ThinClientPoolHADM(name, poolAttrs, connManager) {
     m_sticky = true;
   }
   virtual ~ThinClientPoolStickyHADM() {}
 };
-typedef std::shared_ptr<ThinClientPoolStickyHADM> ThinClientPoolStickyHADMPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

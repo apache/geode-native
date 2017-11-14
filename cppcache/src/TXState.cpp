@@ -32,7 +32,7 @@ namespace geode {
 namespace client {
 
 TXState::TXState(Cache* cache) {
-  m_txId = TXIdPtr(new TXId());
+  m_txId = std::shared_ptr<TXId>(new TXId());
   m_closed = false;
   m_modSerialNum = 0;
   m_dirty = false;
@@ -48,59 +48,58 @@ TXState::TXState(Cache* cache) {
 }
 
 TXState::~TXState() {}
-
-TXIdPtr TXState::getTransactionId() { return m_txId; }
+std::shared_ptr<TXId> TXState::getTransactionId() { return m_txId; }
 
 int32_t TXState::nextModSerialNum() {
   m_modSerialNum += 1;
   return m_modSerialNum;
 }
+ std::shared_ptr<Cacheable> TXState::replay(bool isRollback) {
+   GfErrTypeThrowException("Replay is unsupported", GF_NOTSUP);
+   int retryAttempts = 3;
 
-CacheablePtr TXState::replay(bool isRollback) {
-  GfErrTypeThrowException("Replay is unsupported", GF_NOTSUP);
-  int retryAttempts = 3;
+   std::shared_ptr<Cacheable> result = nullptr;
 
-  CacheablePtr result = nullptr;
+   ReplayControl replayControl(this);
+   m_dirty = false;
+   // if retryAttempts < 0 we retry until there are no servers available
+   for (int i = 0; (retryAttempts < 0) || (i < retryAttempts); i++) {
+     // try {
+     if (isRollback) {  // need to roll back these
+       try {
+         m_cache->getCacheTransactionManager()
+             ->rollback();  // this.firstProxy.rollback(proxy.getTxId().getUniqId());
+       } catch (const Exception& ex) {
+         LOGFINE(
+             "caught exception when rolling back before retrying transaction "
+             "%s",
+             ex.getMessage());
+       }
+     }
+     m_txId = std::shared_ptr<TXId>(new TXId());
+     // LOGFINE("retrying transaction after loss of state in server.  Attempt #"
+     // + (i+1));
+     try {
+       for (const auto& operation : m_operations) {
+         result = operation->replay(m_cache);
+       }
 
-  ReplayControl replayControl(this);
-  m_dirty = false;
-  // if retryAttempts < 0 we retry until there are no servers available
-  for (int i = 0; (retryAttempts < 0) || (i < retryAttempts); i++) {
-    // try {
-    if (isRollback) {  // need to roll back these
-      try {
-        m_cache->getCacheTransactionManager()
-            ->rollback();  // this.firstProxy.rollback(proxy.getTxId().getUniqId());
-      } catch (const Exception& ex) {
-        LOGFINE(
-            "caught exception when rolling back before retrying transaction %s",
-            ex.getMessage());
-      }
-    }
-    m_txId = TXIdPtr(new TXId());
-    // LOGFINE("retrying transaction after loss of state in server.  Attempt #"
-    // + (i+1));
-    try {
-      for (const auto& operation : m_operations) {
-        result = operation->replay(m_cache);
-      }
+       return result;
+     } catch (const TransactionDataNodeHasDepartedException& ex) {
+       LOGDEBUG("Transaction exception:%s", ex.getMessage());
+       isRollback = false;
+       // try again
+     } catch (const TransactionDataRebalancedException& ex) {
+       LOGDEBUG("Transaction exception:%s", ex.getMessage());
+       isRollback = true;
+       // try again
+     }
+   }
 
-      return result;
-    } catch (const TransactionDataNodeHasDepartedException& ex) {
-      LOGDEBUG("Transaction exception:%s", ex.getMessage());
-      isRollback = false;
-      // try again
-    } catch (const TransactionDataRebalancedException& ex) {
-      LOGDEBUG("Transaction exception:%s", ex.getMessage());
-      isRollback = true;
-      // try again
-    }
-  }
+   GfErrTypeThrowException(
+       "Unable to reestablish transaction context on servers", GF_EUNDEF);
 
-  GfErrTypeThrowException(
-      "Unable to reestablish transaction context on servers", GF_EUNDEF);
-
-  return nullptr;
+   return nullptr;
 }
 
 void TXState::releaseStickyConnection() {
@@ -129,10 +128,11 @@ void TXState::releaseStickyConnection() {
   // manager.releaseThreadLocalConnection();
 }
 
-void TXState::recordTXOperation(ServerRegionOperation op,
-                                const char* regionName, CacheableKeyPtr key,
-                                VectorOfCacheablePtr arguments) {
-  m_operations.push_back(TransactionalOperationPtr(
+void TXState::recordTXOperation(
+    ServerRegionOperation op, const char* regionName,
+    std::shared_ptr<CacheableKey> key,
+    std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> arguments) {
+  m_operations.push_back(std::shared_ptr<TransactionalOperation>(
       new TransactionalOperation(op, regionName, key, arguments)));
 }
 }  // namespace client

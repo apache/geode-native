@@ -21,7 +21,7 @@
 #include <iostream>
 #include <math.h>
 
-#include <geode/GeodeCppCache.hpp>
+#include <geode/CacheFactory.hpp>
 
 #include "fw_helper.hpp"
 
@@ -29,8 +29,8 @@ using namespace apache::geode::client;
 
 int testXmlCacheCreationWithRefid(const char* fileName) {
   char* host_name = (char*)"XML_CACHE_CREATION_TEST";
-  CacheFactoryPtr cacheFactory;
-  CachePtr cptr;
+  std::shared_ptr<CacheFactory> cacheFactory;
+  std::shared_ptr<Cache> cptr;
 
   char* path = ACE_OS::getenv("TESTSRC");
   std::string directory(path);
@@ -63,13 +63,13 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  RegionPtr Root1;
-  RegionPtr SubRegion1;
-  RegionPtr SubRegion11;
-  RegionPtr SubRegion2;
+  std::shared_ptr<Region> Root1;
+  std::shared_ptr<Region> SubRegion1;
+  std::shared_ptr<Region> SubRegion11;
+  std::shared_ptr<Region> SubRegion2;
 
-  RegionPtr Root2;
-  RegionPtr SubRegion21;
+  std::shared_ptr<Region> Root2;
+  std::shared_ptr<Region> SubRegion21;
 
   std::cout << "Verify whether all the regions are created" << std::endl;
 
@@ -88,7 +88,7 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
 
   std::cout << "Verify whether region 'SubRegion11' has correct attributes" << std::endl;
 
-  RegionAttributesPtr atts = SubRegion11->getAttributes();
+  auto atts = SubRegion11->getAttributes();
 
   if (atts->getCachingEnabled() != true) {
     LOGINFO("Caching is not enabled in SubRegion11");

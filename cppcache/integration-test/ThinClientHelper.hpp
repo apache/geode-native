@@ -22,7 +22,6 @@
 
 #include <chrono>
 
-#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include "testUtils.hpp"
@@ -49,12 +48,12 @@ using namespace unitTests;
 CacheHelper* cacheHelper = nullptr;
 
 void initGridClient(const bool isthinClient,
-                    const PropertiesPtr& configPtr = nullptr) {
+                    const std::shared_ptr<Properties>& configPtr = nullptr) {
   static bool s_isGridClient = true;
 
   s_isGridClient = !s_isGridClient;
   if (cacheHelper == nullptr) {
-    PropertiesPtr config = configPtr;
+    auto config = configPtr;
     if (config == nullptr) {
       config = Properties::create();
     }
@@ -65,7 +64,7 @@ void initGridClient(const bool isthinClient,
 }
 
 void initClient(const bool isthinClient,
-                const PropertiesPtr& configPtr = nullptr) {
+                const std::shared_ptr<Properties>& configPtr = nullptr) {
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, configPtr);
   }
@@ -74,7 +73,7 @@ void initClient(const bool isthinClient,
 
 void initClientWithPool(const bool isthinClient, const char* poolName,
                         const char* locators, const char* serverGroup,
-                        const PropertiesPtr& configPtr = nullptr,
+                        const std::shared_ptr<Properties>& configPtr = nullptr,
                         int redundancy = 0, bool clientNotification = false,
                         int subscriptionAckInterval = -1, int connections = -1,
                         int loadConditioningInterval = -1,
@@ -89,9 +88,10 @@ void initClientWithPool(const bool isthinClient, const char* poolName,
 }
 
 /* For HA Clients */
-void initClient(int redundancyLevel, const PropertiesPtr& configPtr = nullptr) {
+void initClient(int redundancyLevel,
+                const std::shared_ptr<Properties>& configPtr = nullptr) {
   if (cacheHelper == nullptr) {
-    PropertiesPtr config = configPtr;
+    auto config = configPtr;
     if (config == nullptr) {
       config = Properties::create();
     }
@@ -101,12 +101,12 @@ void initClient(int redundancyLevel, const PropertiesPtr& configPtr = nullptr) {
 }
 
 void initGridClient(int redundancyLevel,
-                    const PropertiesPtr& configPtr = nullptr) {
+                    const std::shared_ptr<Properties>& configPtr = nullptr) {
   static bool s_isGridClient = true;
 
   s_isGridClient = !s_isGridClient;
   if (cacheHelper == nullptr) {
-    PropertiesPtr config = configPtr;
+    auto config = configPtr;
     if (config == nullptr) {
       config = Properties::create();
     }
@@ -178,10 +178,10 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   LOG(buf);
   free(buf);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableKeyPtr keyPtr = createKey(key);
+  auto keyPtr = createKey(key);
 
   if (noKey == false) {  // need to find the key!
     ASSERT(regPtr->containsKey(keyPtr), "Key not found in region.");
@@ -285,10 +285,10 @@ void _verifyIntEntry(const char* name, const char* key, const int val,
     free(buf);
   }
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  CacheableKeyPtr keyPtr = createKey(key);
+  auto keyPtr = createKey(key);
 
   // if the region is no ack, then we may need to wait...
   if (!isCreated) {
@@ -369,20 +369,20 @@ void _verifyIntEntry(const char* name, const char* key, const int val,
 
 void createRegion(const char* name, bool ackMode,
                   bool clientNotificationEnabled = false,
-                  const CacheListenerPtr& listener = nullptr,
+                  const std::shared_ptr<CacheListener>& listener = nullptr,
                   bool caching = true) {
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   // ack, caching
-  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, caching, listener,
-                                               clientNotificationEnabled);
+  auto regPtr = getHelper()->createRegion(name, ackMode, caching, listener,
+                                          clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-RegionPtr createOverflowRegion(const char* name, bool ackMode, int lel = 0,
-                               bool clientNotificationEnabled = true,
-                               bool caching = true) {
+std::shared_ptr<Region> createOverflowRegion(
+    const char* name, bool ackMode, int lel = 0,
+    bool clientNotificationEnabled = true, bool caching = true) {
   std::string bdb_dir = "BDB";
   std::string bdb_dirEnv = "BDBEnv";
   AttributesFactory af;
@@ -390,7 +390,7 @@ RegionPtr createOverflowRegion(const char* name, bool ackMode, int lel = 0,
   af.setLruEntriesLimit(lel);
   af.setDiskPolicy(DiskPolicyType::OVERFLOWS);
 
-  PropertiesPtr sqLiteProps = Properties::create();
+  auto sqLiteProps = Properties::create();
   sqLiteProps->insert("PageSize", "65536");
   sqLiteProps->insert("MaxPageCount", "1073741823");
   std::string sqlite_dir =
@@ -399,19 +399,18 @@ RegionPtr createOverflowRegion(const char* name, bool ackMode, int lel = 0,
   sqLiteProps->insert("PersistenceDirectory", sqlite_dir.c_str());
   af.setPersistenceManager("SqLiteImpl", "createSqLiteInstance", sqLiteProps);
 
-  RegionAttributesPtr rattrsPtr = af.createRegionAttributes();
-  CachePtr cache = getHelper()->cachePtr;
+  std::shared_ptr<RegionAttributes> rattrsPtr = af.createRegionAttributes();
+  auto cache = getHelper()->cachePtr;
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
-  RegionPtr regionPtr;
+  std::shared_ptr<Region> regionPtr;
   cacheImpl->createRegion(name, rattrsPtr, regionPtr);
   return regionPtr;
 }
-
-RegionPtr createPooledRegion(const char* name, bool ackMode,
-                             const char* locators, const char* poolname,
-                             bool clientNotificationEnabled = false,
-                             const CacheListenerPtr& listener = nullptr,
-                             bool caching = true) {
+std::shared_ptr<Region> createPooledRegion(
+    const char* name, bool ackMode, const char* locators, const char* poolname,
+    bool clientNotificationEnabled = false,
+    const std::shared_ptr<CacheListener>& listener = nullptr,
+    bool caching = true) {
   LOG("createPooledRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
@@ -421,7 +420,7 @@ RegionPtr createPooledRegion(const char* name, bool ackMode,
   }
 
   // ack, caching
-  RegionPtr regPtr = getHelper()->createPooledRegion(
+  auto regPtr = getHelper()->createPooledRegion(
       name, ackMode, locators, poolname, caching, clientNotificationEnabled,
       std::chrono::seconds(0), std::chrono::seconds(0), std::chrono::seconds(0),
       std::chrono::seconds(0), 0, listener);
@@ -430,59 +429,56 @@ RegionPtr createPooledRegion(const char* name, bool ackMode,
   LOG("Region created.");
   return regPtr;
 }
+ std::shared_ptr<Pool> findPool(const char* poolName) {
+   LOG("findPool() entered.");
+   auto poolPtr = getHelper()->getCache()->getPoolManager().find(poolName);
+   ASSERT(poolPtr != nullptr, "Failed to find pool.");
+   return poolPtr;
+ }
+ std::shared_ptr<Pool> createPool(
+     const char* poolName, const char* locators, const char* serverGroup,
+     int redundancy = 0, bool clientNotification = false,
+     std::chrono::milliseconds subscriptionAckInterval =
+         std::chrono::milliseconds::zero(),
+     int connections = -1, int loadConditioningInterval = -1) {
+   LOG("createPool() entered.");
 
-PoolPtr findPool(const char* poolName) {
-  LOG("findPool() entered.");
-  PoolPtr poolPtr = getHelper()->getCache()->getPoolManager().find(poolName);
-  ASSERT(poolPtr != nullptr, "Failed to find pool.");
-  return poolPtr;
-}
-PoolPtr createPool(const char* poolName, const char* locators,
-                   const char* serverGroup, int redundancy = 0,
-                   bool clientNotification = false,
-                   std::chrono::milliseconds subscriptionAckInterval =
-                       std::chrono::milliseconds::zero(),
-                   int connections = -1, int loadConditioningInterval = -1) {
-  LOG("createPool() entered.");
+   auto poolPtr = getHelper()->createPool(
+       poolName, locators, serverGroup, redundancy, clientNotification,
+       subscriptionAckInterval, connections, loadConditioningInterval);
+   ASSERT(poolPtr != nullptr, "Failed to create pool.");
+   LOG("Pool created.");
+   return poolPtr;
+ }
+ std::shared_ptr<Pool> createPoolAndDestroy(
+     const char* poolName, const char* locators, const char* serverGroup,
+     int redundancy = 0, bool clientNotification = false,
+     std::chrono::milliseconds subscriptionAckInterval =
+         std::chrono::milliseconds::zero(),
+     int connections = -1) {
+   LOG("createPoolAndDestroy() entered.");
 
-  PoolPtr poolPtr = getHelper()->createPool(
-      poolName, locators, serverGroup, redundancy, clientNotification,
-      subscriptionAckInterval, connections, loadConditioningInterval);
-  ASSERT(poolPtr != nullptr, "Failed to create pool.");
-  LOG("Pool created.");
-  return poolPtr;
-}
-
-PoolPtr createPoolAndDestroy(const char* poolName, const char* locators,
-                             const char* serverGroup, int redundancy = 0,
-                             bool clientNotification = false,
-                             std::chrono::milliseconds subscriptionAckInterval =
-                                 std::chrono::milliseconds::zero(),
-                             int connections = -1) {
-  LOG("createPoolAndDestroy() entered.");
-
-  PoolPtr poolPtr = getHelper()->createPool(
-      poolName, locators, serverGroup, redundancy, clientNotification,
-      subscriptionAckInterval, connections);
-  ASSERT(poolPtr != nullptr, "Failed to create pool.");
-  poolPtr->destroy();
-  LOG("Pool created and destroyed.");
-  return poolPtr;
+   auto poolPtr = getHelper()->createPool(poolName, locators, serverGroup,
+                                          redundancy, clientNotification,
+                                          subscriptionAckInterval, connections);
+   ASSERT(poolPtr != nullptr, "Failed to create pool.");
+   poolPtr->destroy();
+   LOG("Pool created and destroyed.");
+   return poolPtr;
 }
 // this will create pool even endpoints and locatorhost has been not defined
-PoolPtr createPool2(const char* poolName, const char* locators,
+std::shared_ptr<Pool> createPool2(const char* poolName, const char* locators,
                     const char* serverGroup, const char* servers = nullptr,
                     int redundancy = 0, bool clientNotification = false) {
   LOG("createPool2() entered.");
 
-  PoolPtr poolPtr = getHelper()->createPool2(
+  auto poolPtr = getHelper()->createPool2(
       poolName, locators, serverGroup, servers, redundancy, clientNotification);
   ASSERT(poolPtr != nullptr, "Failed to create pool.");
   LOG("Pool created.");
   return poolPtr;
 }
-
-RegionPtr createRegionAndAttachPool(
+std::shared_ptr<Region> createRegionAndAttachPool(
     const char* name, bool ack, const char* poolName, bool caching = true,
     const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
     const std::chrono::seconds& eit = std::chrono::seconds::zero(),
@@ -490,7 +486,7 @@ RegionPtr createRegionAndAttachPool(
     const std::chrono::seconds& rit = std::chrono::seconds::zero(), int lel = 0,
     ExpirationAction::Action action = ExpirationAction::DESTROY) {
   LOG("createRegionAndAttachPool() entered.");
-  RegionPtr regPtr = getHelper()->createRegionAndAttachPool(
+ auto regPtr = getHelper()->createRegionAndAttachPool(
       name, ack, poolName, caching, ettl, eit, rttl, rit, lel, action);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
@@ -503,23 +499,23 @@ void createEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+ auto keyPtr = createKey(key);
+ auto valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != nullptr, "Region not found.");
+ auto regPtr = getHelper()->getRegion(name);
+ ASSERT(regPtr != nullptr, "Region not found.");
 
-  ASSERT(!regPtr->containsKey(keyPtr),
-         "Key should not have been found in region.");
-  ASSERT(!regPtr->containsValueForKey(keyPtr),
-         "Value should not have been found in region.");
+ ASSERT(!regPtr->containsKey(keyPtr),
+        "Key should not have been found in region.");
+ ASSERT(!regPtr->containsValueForKey(keyPtr),
+        "Value should not have been found in region.");
 
-  // regPtr->create( keyPtr, valPtr );
-  regPtr->put(keyPtr, valPtr);
-  LOG("Created entry.");
+ // regPtr->create( keyPtr, valPtr );
+ regPtr->put(keyPtr, valPtr);
+ LOG("Created entry.");
 
-  verifyEntry(name, key, value);
-  LOG("Entry created.");
+ verifyEntry(name, key, value);
+ LOG("Entry created.");
 }
 
 void updateEntry(const char* name, const char* key, const char* value,
@@ -529,15 +525,14 @@ void updateEntry(const char* name, const char* key, const char* value,
           value, name);
   fflush(stdout);
   // Update entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+ auto keyPtr = createKey(key);
+ auto valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != nullptr, "Region not found.");
+ auto regPtr = getHelper()->getRegion(name);
+ ASSERT(regPtr != nullptr, "Region not found.");
 
-  if (checkKey) {
-    ASSERT(regPtr->containsKey(keyPtr),
-           "Key should have been found in region.");
+ if (checkKey) {
+   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
   }
   if (checkVal) {
     ASSERT(regPtr->containsValueForKey(keyPtr),
@@ -560,9 +555,9 @@ void doNetsearch(const char* name, const char* key, const char* value,
       key, value, name);
   fflush(stdout);
   // Get entry created in Process A, verify entry is correct
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+ auto keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+ auto regPtr = getHelper()->getRegion(name);
   fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -598,17 +593,17 @@ void createIntEntry(const char* name, const char* key, const int value,
   fflush(stdout);
 
   // Create entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableInt32Ptr valPtr = CacheableInt32::create(value);
+ auto keyPtr = createKey(key);
+ auto valPtr = CacheableInt32::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != nullptr, "Region not found.");
+ auto regPtr = getHelper()->getRegion(name);
+ ASSERT(regPtr != nullptr, "Region not found.");
 
-  if (onlyCreate) {
-    ASSERT(!regPtr->containsKey(keyPtr),
-           "Key should not have been found in region.");
-    ASSERT(!regPtr->containsValueForKey(keyPtr),
-           "Value should not have been found in region.");
+ if (onlyCreate) {
+   ASSERT(!regPtr->containsKey(keyPtr),
+          "Key should not have been found in region.");
+   ASSERT(!regPtr->containsValueForKey(keyPtr),
+          "Value should not have been found in region.");
   }
 
   regPtr->put(keyPtr, valPtr);
@@ -623,9 +618,9 @@ void invalidateEntry(const char* name, const char* key) {
   fprintf(stdout, "Invalidating entry -- key: %s  in region %s\n", key, name);
   fflush(stdout);
   // Invalidate entry, verify entry is invalidated
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+ auto keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+ auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -644,9 +639,9 @@ void destroyEntry(const char* name, const char* key) {
   fprintf(stdout, "Destroying entry -- key: %s  in region %s\n", key, name);
   fflush(stdout);
   // Destroy entry, verify entry is destroyed
-  CacheableKeyPtr keyPtr = CacheableKey::create(key);
+ auto keyPtr = CacheableKey::create(key);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
+ auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
@@ -660,7 +655,7 @@ void destroyEntry(const char* name, const char* key) {
 
 void destroyRegion(const char* name) {
   LOG("destroyRegion() entered.");
-  RegionPtr regPtr = getHelper()->getRegion(name);
+ auto regPtr = getHelper()->getRegion(name);
   regPtr->localDestroyRegion();
   LOG("Region destroyed.");
 }
@@ -670,46 +665,51 @@ class RegionOperations {
   RegionOperations(const char* name)
       : m_regionPtr(getHelper()->getRegion(name)) {}
 
-  void putOp(int keys = 1, const SerializablePtr& aCallbackArgument = nullptr) {
+  void putOp(int keys = 1, const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100];
     for (int i = 1; i <= keys; i++) {
       sprintf(keybuf, "key%d", i);
       sprintf(valbuf, "value%d", i);
-      CacheableStringPtr valPtr = CacheableString::create(valbuf);
+      auto valPtr = CacheableString::create(valbuf);
       m_regionPtr->put(keybuf, valPtr, aCallbackArgument);
     }
   }
-  void invalidateOp(int keys = 1,
-                    const SerializablePtr& aCallbackArgument = nullptr) {
+  void invalidateOp(
+      int keys = 1,
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100];
     for (int i = 1; i <= keys; i++) {
       sprintf(keybuf, "key%d", i);
-      CacheableStringPtr valPtr = CacheableString::create(valbuf);
+      auto valPtr = CacheableString::create(valbuf);
       m_regionPtr->localInvalidate(keybuf, aCallbackArgument);
     }
   }
-  void destroyOp(int keys = 1, const SerializablePtr& aCallbackArgument = nullptr) {
+  void destroyOp(
+      int keys = 1,
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100];
     for (int i = 1; i <= keys; i++) {
       sprintf(keybuf, "key%d", i);
-      CacheableStringPtr valPtr = CacheableString::create(valbuf);
+      auto valPtr = CacheableString::create(valbuf);
       m_regionPtr->destroy(keybuf, aCallbackArgument);
     }
   }
-  void removeOp(int keys = 1, const SerializablePtr& aCallbackArgument = nullptr) {
+  void removeOp(
+      int keys = 1,
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100];
     for (int i = 1; i <= keys; i++) {
       sprintf(keybuf, "key%d", i);
       sprintf(valbuf, "value%d", i);
-      CacheableStringPtr valPtr = CacheableString::create(valbuf);
+      auto valPtr = CacheableString::create(valbuf);
       m_regionPtr->remove(keybuf, valPtr, aCallbackArgument);
     }
   }
-  RegionPtr m_regionPtr;
+  std::shared_ptr<Region> m_regionPtr;
 };
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTHELPER_H_

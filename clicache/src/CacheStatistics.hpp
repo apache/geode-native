@@ -134,7 +134,7 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static CacheStatistics^ Create( apache::geode::client::CacheStatisticsPtr nativeptr )
+        inline static CacheStatistics^ Create( std::shared_ptr<apache::geode::client::CacheStatistics> nativeptr )
         {
           return __nullptr == nativeptr ? nullptr :
             gcnew CacheStatistics( nativeptr );
@@ -147,7 +147,7 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheStatistics( apache::geode::client::CacheStatisticsPtr nativeptr )
+        inline CacheStatistics( std::shared_ptr<apache::geode::client::CacheStatistics> nativeptr )
         {
            m_nativeptr = gcnew native_shared_ptr<native::CacheStatistics>(nativeptr);
         }

@@ -17,13 +17,14 @@
 
 #define ROOT_NAME "testThinClientPoolExecuteFunctionThrowsException"
 
-#include "fw_dunit.hpp"
-#include "ThinClientHelper.hpp"
-#include "testobject/VariousPdxTypes.hpp"
-
 #include <thread>
 #include <chrono>
 
+#include "fw_dunit.hpp"
+#include "ThinClientHelper.hpp"
+#include "testobject/VariousPdxTypes.hpp"
+#include <geode/UserFunctionExecutionException.hpp>
+#include <geode/FunctionService.hpp>
 #include <geode/DefaultResultCollector.hpp>
 
 using namespace PdxTests;
@@ -58,42 +59,48 @@ char* FEOnRegionPrSHOP_OptimizeForWrite =
     (char*)"FEOnRegionPrSHOP_OptimizeForWrite";
 char* FETimeOut = (char*)"FunctionExecutionTimeOut";
 
-#define verifyGetResults()                                                    \
-  bool found = false;                                                         \
-  for (int j = 0; j < 34; j++) {                                              \
-    if (j % 2 == 0) continue;                                                 \
-    sprintf(buf, "VALUE--%d", j);                                             \
-    if (strcmp(buf, dynCast<CacheableStringPtr>(resultList->operator[](i))    \
-                        ->asChar()) == 0) {                                   \
-      LOGINFO(                                                                \
-          "buf = %s "                                                         \
-          "dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar() " \
-          "= %s ",                                                            \
-          buf,                                                                \
-          dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());  \
-      found = true;                                                           \
-      break;                                                                  \
-    }                                                                         \
-  }                                                                           \
+#define verifyGetResults()                                                     \
+  bool found = false;                                                          \
+  for (int j = 0; j < 34; j++) {                                               \
+    if (j % 2 == 0) continue;                                                  \
+    sprintf(buf, "VALUE--%d", j);                                              \
+    if (strcmp(buf, dynCast<std::shared_ptr<CacheableString>>(                 \
+                        resultList->operator[](i))                             \
+                        ->asChar()) == 0) {                                    \
+      LOGINFO(                                                                 \
+          "buf = %s "                                                          \
+          "dynCast<std::shared_ptr<CacheableString>>(resultList->operator[]("  \
+          "i))->asChar() "                                                     \
+          "= %s ",                                                             \
+          buf,                                                                 \
+          dynCast<std::shared_ptr<CacheableString>>(resultList->operator[](i)) \
+              ->asChar());                                                     \
+      found = true;                                                            \
+      break;                                                                   \
+    }                                                                          \
+  }                                                                            \
   ASSERT(found, "this returned value is invalid");
 
-#define verifyGetKeyResults()                                                 \
-  bool found = false;                                                         \
-  for (int j = 0; j < 34; j++) {                                              \
-    if (j % 2 == 0) continue;                                                 \
-    sprintf(buf, "KEY--%d", j);                                               \
-    if (strcmp(buf, dynCast<CacheableStringPtr>(resultList->operator[](i))    \
-                        ->asChar()) == 0) {                                   \
-      LOGINFO(                                                                \
-          "buf = %s "                                                         \
-          "dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar() " \
-          "= %s ",                                                            \
-          buf,                                                                \
-          dynCast<CacheableStringPtr>(resultList->operator[](i))->asChar());  \
-      found = true;                                                           \
-      break;                                                                  \
-    }                                                                         \
-  }                                                                           \
+#define verifyGetKeyResults()                                                  \
+  bool found = false;                                                          \
+  for (int j = 0; j < 34; j++) {                                               \
+    if (j % 2 == 0) continue;                                                  \
+    sprintf(buf, "KEY--%d", j);                                                \
+    if (strcmp(buf, dynCast<std::shared_ptr<CacheableString>>(                 \
+                        resultList->operator[](i))                             \
+                        ->asChar()) == 0) {                                    \
+      LOGINFO(                                                                 \
+          "buf = %s "                                                          \
+          "dynCast<std::shared_ptr<CacheableString>>(resultList->operator[]("  \
+          "i))->asChar() "                                                     \
+          "= %s ",                                                             \
+          buf,                                                                 \
+          dynCast<std::shared_ptr<CacheableString>>(resultList->operator[](i)) \
+              ->asChar());                                                     \
+      found = true;                                                            \
+      break;                                                                   \
+    }                                                                          \
+  }                                                                            \
   ASSERT(found, "this returned KEY is invalid");
 
 #define verifyPutResults()                   \
@@ -114,12 +121,13 @@ class MyResultCollector : public DefaultResultCollector {
       : m_endResultCount(0), m_addResultCount(0), m_getResultCount(0) {}
   ~MyResultCollector() {}
 
-  CacheableVectorPtr getResult(std::chrono::milliseconds timeout) override {
+  std::shared_ptr<CacheableVector> getResult(
+      std::chrono::milliseconds timeout) override {
     m_getResultCount++;
     return DefaultResultCollector::getResult(timeout);
   }
 
-  void addResult(const CacheablePtr& resultItem) override {
+  void addResult(const std::shared_ptr<Cacheable>& resultItem) override {
     m_addResultCount++;
     if (resultItem == nullptr) {
       return;
@@ -148,7 +156,6 @@ class MyResultCollector : public DefaultResultCollector {
   uint32_t m_addResultCount;
   uint32_t m_getResultCount;
 };
-typedef std::shared_ptr<MyResultCollector> MyResultCollectorPtr;
 
 DUNIT_TASK_DEFINITION(LOCATOR1, StartLocator1)
   {
@@ -182,8 +189,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
     // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
     // createRegionAndAttachPool(poolRegNames[0],USE_ACK, poolName);
 
-    RegionPtr regPtr0 =
-        createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
+    auto regPtr0 = createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
     regPtr0->registerAllKeys();
 
@@ -193,15 +199,15 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     char buf[128];
 
     for (int i = 0; i < 34; i++) {
       sprintf(buf, "VALUE--%d", i);
-      CacheablePtr value(CacheableString::create(buf));
+      std::shared_ptr<Cacheable> value(CacheableString::create(buf));
 
       sprintf(buf, "KEY--%d", i);
-      CacheableKeyPtr key = CacheableKey::create(buf);
+      auto key = CacheableKey::create(buf);
       regPtr0->put(key, value);
     }
     std::this_thread::sleep_for(
@@ -211,41 +217,40 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     // onRegion-------------------------------//
 
     for (int i = 1; i <= 200; i++) {
-      CacheablePtr value(CacheableInt32::create(i));
+      std::shared_ptr<Cacheable> value(CacheableInt32::create(i));
 
       sprintf(buf, "execKey-%d", i);
-      CacheableKeyPtr key = CacheableKey::create(buf);
+      auto key = CacheableKey::create(buf);
       regPtr0->put(key, value);
     }
     LOG("Put for execKey's on region complete.");
 
     LOG("Adding filter");
-    CacheableArrayListPtr arrList = CacheableArrayList::create();
-    for (int i = 100; i < 120; i++) {
-      sprintf(buf, "execKey-%d", i);
-      CacheableKeyPtr key = CacheableKey::create(buf);
-      arrList->push_back(key);
-    }
+   auto arrList = CacheableArrayList::create();
+   for (int i = 100; i < 120; i++) {
+     sprintf(buf, "execKey-%d", i);
+     auto key = CacheableKey::create(buf);
+     arrList->push_back(key);
+   }
 
-    CacheableVectorPtr filter = CacheableVector::create();
-    for (int i = 100; i < 120; i++) {
-      sprintf(buf, "execKey-%d", i);
-      CacheableKeyPtr key = CacheableKey::create(buf);
-      filter->push_back(key);
-    }
-    LOG("Adding filter done.");
+   auto filter = CacheableVector::create();
+   for (int i = 100; i < 120; i++) {
+     sprintf(buf, "execKey-%d", i);
+     auto key = CacheableKey::create(buf);
+     filter->push_back(key);
+   }
+   LOG("Adding filter done.");
 
-    CacheablePtr args = CacheableBoolean::create(1);
+   auto args = CacheableBoolean::create(1);
 
-    ExecutionPtr funcExec = FunctionService::onRegion(regPtr0);
-    ASSERT(funcExec != nullptr, "onRegion Returned nullptr");
+   auto funcExec = FunctionService::onRegion(regPtr0);
+   ASSERT(funcExec != nullptr, "onRegion Returned nullptr");
 
-    ResultCollectorPtr collector =
-        funcExec->withArgs(args)->withFilter(filter)->execute(
-            exFuncNameSendException, std::chrono::seconds(15));
-    ASSERT(collector != nullptr, "onRegion collector nullptr");
+   auto collector = funcExec->withArgs(args)->withFilter(filter)->execute(
+       exFuncNameSendException, std::chrono::seconds(15));
+   ASSERT(collector != nullptr, "onRegion collector nullptr");
 
-    CacheableVectorPtr result = collector->getResult();
+   auto result = collector->getResult();
 
     if (result == nullptr) {
       ASSERT(false, "echo String : result is nullptr");
@@ -273,12 +278,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     try {
-      CacheableVectorPtr fil = CacheableVector::create();
+      auto fil = CacheableVector::create();
       fil->push_back(CacheableInt32::create(1));
-      ExecutionPtr exe = FunctionService::onRegion(regPtr0);
+      auto exe = FunctionService::onRegion(regPtr0);
 
       LOGINFO("Executing the exception test it is expected to throw.");
-      CacheableVectorPtr executeFunctionResult3 =
+      auto executeFunctionResult3 =
           funcExec->withArgs(arrList)
               ->withFilter(filter)
               ->execute("ThinClientRegionExceptionTest",

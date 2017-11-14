@@ -43,7 +43,7 @@ void CacheableObjectArray::fromData(DataInput& input) {
     input.read();  // ignore string typeid
     uint16_t classLen = input.readInt16();
     input.advanceCursor(classLen);
-    CacheablePtr obj;
+    std::shared_ptr<Cacheable> obj;
     for (int32_t index = 0; index < len; index++) {
       input.readObject(obj);
       push_back(obj);

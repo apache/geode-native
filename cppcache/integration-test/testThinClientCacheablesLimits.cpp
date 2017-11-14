@@ -14,8 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#define ROOT_NAME "testThinClientCacheablesLimits"
+#define ROOT_SCOPE DISTRIBUTED_ACK
+
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include "BuiltinCacheableWrappers.hpp"
 
 #include <ace/OS.h>
@@ -23,8 +26,6 @@
 
 #include <cstring>
 
-#define ROOT_NAME "testThinClientCacheablesLimits"
-#define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "CacheHelper.hpp"
 #include "ThinClientHelper.hpp"
@@ -64,8 +65,8 @@ void createRegion(const char* name, bool ackMode,
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  RegionPtr regPtr = getHelper()->createRegion(name, ackMode, false, nullptr,
-                                               clientNotificationEnabled);
+  auto regPtr = getHelper()->createRegion(name, ackMode, false, nullptr,
+                                          clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
@@ -105,15 +106,14 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
   {
     int sizeArray = sizeof(keyArr) / sizeof(int);
-    RegionPtr verifyReg = getHelper()->getRegion(_regionNames[1]);
+    auto verifyReg = getHelper()->getRegion(_regionNames[1]);
     for (int count = 0; count < sizeArray; count++) {
       uint8_t* ptr = createRandByteArray(keyArr[count]);
       char* ptrChar = createRandCharArray(keyArr[count]);
 
-      CacheableBytesPtr emptyBytesArr = CacheableBytes::create();
-      CacheableBytesPtr bytePtrSent =
-          CacheableBytes::createNoCopy(ptr, keyArr[count]);
-      CacheableStringPtr stringPtrSent =
+      auto emptyBytesArr = CacheableBytes::create();
+      auto bytePtrSent = CacheableBytes::createNoCopy(ptr, keyArr[count]);
+      auto stringPtrSent =
           CacheableString::createNoCopy(ptrChar, keyArr[count]);
 
       verifyReg->put(KEY_BYTE, bytePtrSent);

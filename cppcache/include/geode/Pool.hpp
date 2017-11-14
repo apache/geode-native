@@ -198,7 +198,7 @@ class CPPCACHE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
    * <p> If a pool has no locators, then it cannot discover servers or locators
    * at runtime.
    */
-  virtual const CacheableStringArrayPtr getLocators() const = 0;
+  virtual const std::shared_ptr<CacheableStringArray> getLocators() const = 0;
 
   /**
    * Returns an unmodifiable list of
@@ -207,7 +207,7 @@ class CPPCACHE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
    * when the pool was created or were discovered using this pools {@link
    * #getLocators locators}.
    */
-  virtual const CacheableStringArrayPtr getServers() = 0;
+  virtual const std::shared_ptr<CacheableStringArray> getServers() = 0;
 
   /**
    * Destroys this pool closing any connections it produced.
@@ -238,7 +238,7 @@ class CPPCACHE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
    * @see Cache#getQueryService
    * @return the QueryService
    */
-  virtual QueryServicePtr getQueryService() = 0;
+  virtual std::shared_ptr<QueryService> getQueryService() = 0;
 
   virtual ~Pool();
 
@@ -277,8 +277,8 @@ class CPPCACHE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
   int getPendingEventCount() const;
 
  protected:
-  Pool(PoolAttributesPtr attr);
-  PoolAttributesPtr m_attrs;
+  Pool(std::shared_ptr<PoolAttributes> attr);
+  std::shared_ptr<PoolAttributes> m_attrs;
 
  private:
   /**
@@ -291,8 +291,8 @@ class CPPCACHE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
    * @returns Logical instance of cache to do operations on behalf of one
    * particular user.
    */
-  virtual RegionServicePtr createSecureUserCache(PropertiesPtr credentials,
-                                                 CacheImpl* cacheImpl);
+  virtual std::shared_ptr<RegionService> createSecureUserCache(
+      std::shared_ptr<Properties> credentials, CacheImpl* cacheImpl);
 
   Pool(const Pool&);
 

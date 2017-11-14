@@ -18,7 +18,6 @@
 #define ROOT_NAME "testExpiration"
 
 #include "fw_helper.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 
@@ -28,21 +27,21 @@ ExpirationAction::Action action = ExpirationAction::DESTROY;
 
 // This test is for serially running the tests.
 
-size_t getNumOfEntries(RegionPtr& R1) {
-  VectorOfCacheableKey v = R1->keys();
+size_t getNumOfEntries(std::shared_ptr<Region>& R1) {
+  std::vector<std::shared_ptr<CacheableKey>> v = R1->keys();
   LOGFINE("Number of keys in region %s is %d", R1->getFullPath(), v.size());
   return v.size();
 }
 
-void startDSandCreateCache(CachePtr& cache) {
-  PropertiesPtr pp = Properties::create();
-  CacheFactoryPtr cacheFactoryPtr = CacheFactory::createCacheFactory(pp);
+void startDSandCreateCache(std::shared_ptr<Cache>& cache) {
+  auto pp = Properties::create();
+  auto cacheFactoryPtr = CacheFactory::createCacheFactory(pp);
   cache = cacheFactoryPtr->create();
   ASSERT(cache != nullptr, "cache not equal to null expected");
 }
 
-void doNPuts(RegionPtr& rptr, int n) {
-  CacheableStringPtr value;
+void doNPuts(std::shared_ptr<Region>& rptr, int n) {
+  std::shared_ptr<CacheableString> value;
   char buf[16];
   memset(buf, 'A', 15);
   buf[15] = '\0';
@@ -52,15 +51,14 @@ void doNPuts(RegionPtr& rptr, int n) {
 
   for (int i = 0; i < n; i++) {
     sprintf(buf, "KeyA - %d", i + 1);
-    CacheableKeyPtr key = CacheableKey::create(buf);
+    auto key = CacheableKey::create(buf);
     LOGINFO("Putting key %s value %s in region %s", buf, value->toString(),
             rptr->getFullPath());
     rptr->put(key, value);
   }
 }
-
-CacheableKeyPtr do1Put(RegionPtr& rptr) {
-  CacheableStringPtr value;
+std::shared_ptr<CacheableKey> do1Put(std::shared_ptr<Region>& rptr) {
+  std::shared_ptr<CacheableString> value;
   char buf[16];
   memset(buf, 'A', 15);
   buf[15] = '\0';
@@ -69,15 +67,15 @@ CacheableKeyPtr do1Put(RegionPtr& rptr) {
   ASSERT(value != nullptr, "Failed to create value.");
 
   sprintf(buf, "KeyA - %d", 0 + 1);
-  CacheableKeyPtr key = CacheableKey::create(buf);
-  LOGINFO("Putting key %s value %s in region %s", buf, value->toString(),
-          rptr->getFullPath());
-  rptr->put(key, value);
-  return key;
+ auto key = CacheableKey::create(buf);
+ LOGINFO("Putting key %s value %s in region %s", buf, value->toString(),
+         rptr->getFullPath());
+ rptr->put(key, value);
+ return key;
 }
 
 void setExpTimes(
-    RegionAttributesPtr& attrs,
+    std::shared_ptr<RegionAttributes>& attrs,
     const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
     const std::chrono::seconds& eit = std::chrono::seconds::zero(),
     const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
@@ -94,7 +92,7 @@ void setExpTimes(
 
 BEGIN_TEST(TEST_EXPIRATION)
   {
-    CachePtr cache;
+    std::shared_ptr<Cache> cache;
 
     startDSandCreateCache(cache);
 
@@ -104,10 +102,10 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     size_t n;
 
-    RegionAttributesPtr attrs_1;
+    std::shared_ptr<RegionAttributes> attrs_1;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
     setExpTimes(attrs_1);
-    RegionPtr R1;
+    std::shared_ptr<Region> R1;
     cacheImpl->createRegion("R1", attrs_1, R1);
     ASSERT(R1 != nullptr, "Expected R1 to be NON-nullptr");
 
@@ -120,12 +118,12 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R1->isDestroyed() == false, "Expected R1 to be alive");
 
-    RegionAttributesPtr attrs_2;
+    std::shared_ptr<RegionAttributes> attrs_2;
 
     setExpTimes(attrs_2, std::chrono::seconds(20), std::chrono::seconds(2),
                 std::chrono::seconds(0), std::chrono::seconds(0));
 
-    RegionPtr R2;
+    std::shared_ptr<Region> R2;
     cacheImpl->createRegion("R2", attrs_2, R2);
     ASSERT(R2 != nullptr, "Expected R2 to be NON-nullptr");
     LOG("Region R2 created");
@@ -138,12 +136,12 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R2->isDestroyed() == false, "Expected R2 to be alive");
 
-    RegionAttributesPtr attrs_3;
+    std::shared_ptr<RegionAttributes> attrs_3;
     // rttl = 20, reit = 2
     setExpTimes(attrs_3, std::chrono::seconds(0), std::chrono::seconds(0),
                 std::chrono::seconds(20), std::chrono::seconds(2));
 
-    RegionPtr R3;
+    std::shared_ptr<Region> R3;
     cacheImpl->createRegion("R3", attrs_3, R3);
     ASSERT(R3 != nullptr, "Expected R3 to be NON-nullptr");
 
@@ -151,12 +149,12 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R3->isDestroyed() == false, "Expected R3 to be alive");
 
-    RegionAttributesPtr attrs_4;
+    std::shared_ptr<RegionAttributes> attrs_4;
 
     setExpTimes(attrs_4, std::chrono::seconds(5), std::chrono::seconds(0),
                 std::chrono::seconds(0), std::chrono::seconds(0));
 
-    RegionPtr R4;
+    std::shared_ptr<Region> R4;
     cacheImpl->createRegion("R4", attrs_4, R4);
     ASSERT(R4 != nullptr, "Expected R4 to be NON-nullptr");
 
@@ -170,16 +168,16 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R4->isDestroyed() == false, "Expected R4 to be alive");
 
-    RegionAttributesPtr attrs_5;
+    std::shared_ptr<RegionAttributes> attrs_5;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
     setExpTimes(attrs_5, std::chrono::seconds(0), std::chrono::seconds(5),
                 std::chrono::seconds(0), std::chrono::seconds(0));
 
-    RegionPtr R5;
+    std::shared_ptr<Region> R5;
     cacheImpl->createRegion("R5", attrs_5, R5);
     ASSERT(R5 != nullptr, "Expected R5 to be NON-nullptr");
 
-    CacheableKeyPtr key_0 = do1Put(R5);
+    auto key_0 = do1Put(R5);
 
     ACE_OS::sleep(2);
 
@@ -198,12 +196,12 @@ BEGIN_TEST(TEST_EXPIRATION)
     ASSERT(n == 0, "Expected 0 entry");
     ASSERT(R5->isDestroyed() == false, "Expected R5 to be alive");
 
-    RegionAttributesPtr attrs_6;
+    std::shared_ptr<RegionAttributes> attrs_6;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
     setExpTimes(attrs_6, std::chrono::seconds(0), std::chrono::seconds(0),
                 std::chrono::seconds(5), std::chrono::seconds(0));
 
-    RegionPtr R6;
+    std::shared_ptr<Region> R6;
     cacheImpl->createRegion("R6", attrs_6, R6);
     ASSERT(R6 != nullptr, "Expected R6 to be NON-nullptr");
 
@@ -217,12 +215,12 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R6->isDestroyed() == true, "Expected R6 to be dead");
 
-    RegionAttributesPtr attrs_7;
+    std::shared_ptr<RegionAttributes> attrs_7;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
     setExpTimes(attrs_7, std::chrono::seconds(0), std::chrono::seconds(0),
                 std::chrono::seconds(0), std::chrono::seconds(5));
 
-    RegionPtr R7;
+    std::shared_ptr<Region> R7;
     cacheImpl->createRegion("R7", attrs_7, R7);
     ASSERT(R7 != nullptr, "Expected R7 to be NON-nullptr");
 
@@ -236,16 +234,16 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R7->isDestroyed() == true, "Expected R7 to be dead");
 
-    RegionAttributesPtr attrs_8;
+    std::shared_ptr<RegionAttributes> attrs_8;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
     setExpTimes(attrs_8, std::chrono::seconds(10), std::chrono::seconds(0),
                 std::chrono::seconds(0), std::chrono::seconds(0));
 
-    RegionPtr R8;
+    std::shared_ptr<Region> R8;
     cacheImpl->createRegion("R8", attrs_8, R8);
     ASSERT(R8 != nullptr, "Expected R8 to be NON-nullptr");
 
-    CacheableKeyPtr key = do1Put(R8);
+    auto key = do1Put(R8);
 
     ACE_OS::sleep(5);
 
@@ -256,16 +254,16 @@ BEGIN_TEST(TEST_EXPIRATION)
     n = getNumOfEntries(R8);
     ASSERT(n == 0, "Expected 1 entries");
 
-    RegionAttributesPtr attrs_9;
+    std::shared_ptr<RegionAttributes> attrs_9;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
     setExpTimes(attrs_9, std::chrono::seconds(0), std::chrono::seconds(0),
                 std::chrono::seconds(0), std::chrono::seconds(8));
 
-    RegionPtr R9;
+    std::shared_ptr<Region> R9;
     cacheImpl->createRegion("R9", attrs_9, R9);
     ASSERT(R9 != nullptr, "Expected R9 to be NON-nullptr");
 
-    CacheableKeyPtr key_1 = do1Put(R9);
+    auto key_1 = do1Put(R9);
 
     ACE_OS::sleep(5);
 
@@ -278,12 +276,12 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R9->isDestroyed() == false, "Expected R9 to be alive");
 
-    RegionAttributesPtr attrs_10;
+    std::shared_ptr<RegionAttributes> attrs_10;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
     setExpTimes(attrs_10, std::chrono::seconds(6), std::chrono::seconds(0),
                 std::chrono::seconds(0), std::chrono::seconds(12));
 
-    RegionPtr R10;
+    std::shared_ptr<Region> R10;
     cacheImpl->createRegion("R10", attrs_10, R10);
     ASSERT(R10 != nullptr, "Expected R10 to be NON-nullptr");
 
@@ -298,17 +296,17 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R10->isDestroyed() == true, "Expected R10 to be dead");
 
-    RegionAttributesPtr attrs_11;
+    std::shared_ptr<RegionAttributes> attrs_11;
 
     // ettl = 0, eit = 0, rttl = 0, reit = 0
     setExpTimes(attrs_11, std::chrono::seconds(0), std::chrono::seconds(4),
                 std::chrono::seconds(0), std::chrono::seconds(7));
 
-    RegionPtr R11;
+    std::shared_ptr<Region> R11;
     cacheImpl->createRegion("R11", attrs_11, R11);
     ASSERT(R11 != nullptr, "Expected R11 to be NON-nullptr");
 
-    CacheableKeyPtr k11 = do1Put(R11);
+    auto k11 = do1Put(R11);
 
     ACE_OS::sleep(3);
 
@@ -326,16 +324,16 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R11->isDestroyed() == true, "Expected R11 to be dead");
 
-    RegionAttributesPtr attrs_12;
+    std::shared_ptr<RegionAttributes> attrs_12;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
     setExpTimes(attrs_12, std::chrono::seconds(5), std::chrono::seconds(0),
                 std::chrono::seconds(0), std::chrono::seconds(0));
 
-    RegionPtr R12;
+    std::shared_ptr<Region> R12;
     cacheImpl->createRegion("R12", attrs_12, R12);
     ASSERT(R12 != nullptr, "Expected R12 to be NON-nullptr");
 
-    CacheableKeyPtr key_3 = do1Put(R12);
+    auto key_3 = do1Put(R12);
 
     ACE_OS::sleep(6);
 
@@ -345,12 +343,12 @@ BEGIN_TEST(TEST_EXPIRATION)
     ASSERT(R12->isDestroyed() == false, "Expected R12 to be alive");
     /////////
 
-    RegionAttributesPtr attrs_14;
+    std::shared_ptr<RegionAttributes> attrs_14;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
     setExpTimes(attrs_14, std::chrono::seconds(0), std::chrono::seconds(0),
                 std::chrono::seconds(10), std::chrono::seconds(0));
 
-    RegionPtr R14;
+    std::shared_ptr<Region> R14;
     cacheImpl->createRegion("R14", attrs_14, R14);
     ASSERT(R14 != nullptr, "Expected R14 to be NON-nullptr");
 
@@ -360,16 +358,16 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R14->isDestroyed() == true, "Expected R14 to be dead");
 
-    RegionAttributesPtr attrs_15;
+    std::shared_ptr<RegionAttributes> attrs_15;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
     setExpTimes(attrs_15, std::chrono::seconds(0), std::chrono::seconds(5),
                 std::chrono::seconds(0), std::chrono::seconds(0));
 
-    RegionPtr R15;
+    std::shared_ptr<Region> R15;
     cacheImpl->createRegion("R15", attrs_15, R15);
     ASSERT(R15 != nullptr, "Expected R15 to be NON-nullptr");
 
-    CacheableKeyPtr key_4 = do1Put(R15);
+    auto key_4 = do1Put(R15);
 
     ACE_OS::sleep(2);
 
@@ -380,12 +378,12 @@ BEGIN_TEST(TEST_EXPIRATION)
     ASSERT(R15->isDestroyed() == false, "Expected R15 to be alive");
 
     //////////////
-    RegionAttributesPtr attrs_18;
+    std::shared_ptr<RegionAttributes> attrs_18;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
     setExpTimes(attrs_18, std::chrono::seconds(6), std::chrono::seconds(3),
                 std::chrono::seconds(0), std::chrono::seconds(0));
 
-    RegionPtr R18;
+    std::shared_ptr<Region> R18;
     cacheImpl->createRegion("R18", attrs_18, R18);
     ASSERT(R18 != nullptr, "Expected R18 to be NON-nullptr");
 
@@ -400,12 +398,12 @@ BEGIN_TEST(TEST_EXPIRATION)
     n = getNumOfEntries(R18);
     ASSERT(n == 0, "ttl is over so it should be 0");
 
-    RegionAttributesPtr attrs_19;
+    std::shared_ptr<RegionAttributes> attrs_19;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
     setExpTimes(attrs_19, std::chrono::seconds(0), std::chrono::seconds(0),
                 std::chrono::seconds(6), std::chrono::seconds(3));
 
-    RegionPtr R19;
+    std::shared_ptr<Region> R19;
     cacheImpl->createRegion("R19x", attrs_19, R19);
     ASSERT(R19 != nullptr, "Expected R19 to be NON-nullptr");
 

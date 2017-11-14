@@ -30,7 +30,7 @@ namespace client {
 
 class ThinClientPoolHADM : public ThinClientPoolDM {
  public:
-  ThinClientPoolHADM(const char* name, PoolAttributesPtr poolAttr,
+  ThinClientPoolHADM(const char* name, std::shared_ptr<PoolAttributes> poolAttr,
                      TcrConnectionManager& connManager);
 
   void init();
@@ -59,7 +59,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
 
   void sendNotificationCloseMsgs();
 
-  bool checkDupAndAdd(EventIdPtr eventid) {
+  bool checkDupAndAdd(std::shared_ptr<EventId> eventid) {
     return m_redundancyManager->checkDupAndAdd(eventid);
   }
 
@@ -144,7 +144,6 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   friend class ThinClientRedundancyManager;
   static const char* NC_Redundancy;
 };
-typedef std::shared_ptr<ThinClientPoolHADM> ThinClientPoolHADMPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

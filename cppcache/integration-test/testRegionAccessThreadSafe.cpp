@@ -16,7 +16,6 @@
  */
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <ace/Task.h>
 #include <ace/Recursive_Thread_Mutex.h>
 
@@ -41,7 +40,7 @@ class GetRegionThread : public ACE_Task_Base {
     while (m_running == true) {
       SLEEP(40);
       try {
-        RegionPtr rptr = getHelper()->getRegion(m_path.c_str());
+        auto rptr = getHelper()->getRegion(m_path.c_str());
         if (rptr != nullptr) {
           ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_mutex);
           ASSERT(m_regionCreateDone == true, "regionCreate Not Done");
@@ -57,7 +56,7 @@ class GetRegionThread : public ACE_Task_Base {
         continue;
       }
       try {
-        RegionPtr rptr = getHelper()->getRegion(m_subPath.c_str());
+        auto rptr = getHelper()->getRegion(m_subPath.c_str());
         if (rptr != nullptr) {
           ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_mutex);
           ASSERT(m_subRegionCreateDone == true, "subRegionCreate Not Done");
@@ -97,7 +96,7 @@ bool isLocator = true;
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 GetRegionThread* getThread = nullptr;
-RegionPtr regionPtr;
+std::shared_ptr<Region> regionPtr;
 DUNIT_TASK(s1p1, Setup)
   {
     CacheHelper::initLocator(1);
@@ -120,9 +119,9 @@ DUNIT_TASK(s2p2, CreateNormalRegion)
         "DistRegionAck", USE_ACK, locHostPort, "__TEST_POOL1__", true, true);
     getThread->setRegionFlag();
     AttributesFactory af;
-    RegionAttributesPtr rattrsPtr = af.createRegionAttributes();
-    getThread->setSubRegionFlag();
-    LOG("create normal region successful");
+   std::shared_ptr<RegionAttributes> rattrsPtr = af.createRegionAttributes();
+   getThread->setSubRegionFlag();
+   LOG("create normal region successful");
   }
 END_TASK(CreateNormalRegion)
 

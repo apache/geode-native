@@ -537,7 +537,7 @@ class CPPCACHE_EXPORT DataInput {
   template <class PTR>
   inline std::shared_ptr<PTR> readObject(
       bool throwOnError = DINP_THROWONERROR_DEFAULT) {
-    SerializablePtr sPtr = readObjectInternal();
+    auto sPtr = readObjectInternal();
     if (throwOnError) {
       return std::dynamic_pointer_cast<PTR>(sPtr);
     } else {
@@ -556,31 +556,31 @@ class CPPCACHE_EXPORT DataInput {
     return readInt32();
   }
 
-  inline CacheableStringPtr readNativeString() {
-    CacheableStringPtr csPtr;
+  inline std::shared_ptr<CacheableString> readNativeString() {
+    std::shared_ptr<CacheableString> csPtr;
     const int64_t compId = read();
     if (compId == GeodeTypeIds::NullObj) {
       csPtr = nullptr;
     } else if (compId == GeodeTypeIds::CacheableNullString) {
-      csPtr = CacheableStringPtr(dynamic_cast<CacheableString*>(
+      csPtr = std::shared_ptr<CacheableString>(dynamic_cast<CacheableString*>(
           CacheableString::createDeserializable()));
     } else if (compId ==
                apache::geode::client::GeodeTypeIds::CacheableASCIIString) {
-      csPtr = CacheableStringPtr(dynamic_cast<CacheableString*>(
+      csPtr = std::shared_ptr<CacheableString>(dynamic_cast<CacheableString*>(
           CacheableString::createDeserializable()));
       csPtr->fromData(*this);
     } else if (compId ==
                apache::geode::client::GeodeTypeIds::CacheableASCIIStringHuge) {
-      csPtr = CacheableStringPtr(dynamic_cast<CacheableString*>(
+      csPtr = std::shared_ptr<CacheableString>(dynamic_cast<CacheableString*>(
           CacheableString::createDeserializableHuge()));
       csPtr->fromData(*this);
     } else if (compId == apache::geode::client::GeodeTypeIds::CacheableString) {
-      csPtr = CacheableStringPtr(dynamic_cast<CacheableString*>(
+      csPtr = std::shared_ptr<CacheableString>(dynamic_cast<CacheableString*>(
           CacheableString::createUTFDeserializable()));
       csPtr->fromData(*this);
     } else if (compId ==
                apache::geode::client::GeodeTypeIds::CacheableStringHuge) {
-      csPtr = CacheableStringPtr(dynamic_cast<CacheableString*>(
+      csPtr = std::shared_ptr<CacheableString>(dynamic_cast<CacheableString*>(
           CacheableString::createUTFDeserializableHuge()));
       csPtr->fromData(*this);
     } else {
@@ -591,7 +591,7 @@ class CPPCACHE_EXPORT DataInput {
     return csPtr;
   }
 
-  inline SerializablePtr readDirectObject(int8_t typeId = -1) {
+  inline std::shared_ptr<Serializable> readDirectObject(int8_t typeId = -1) {
     return readObjectInternal(typeId);
   }
 
@@ -599,7 +599,9 @@ class CPPCACHE_EXPORT DataInput {
    * Read a <code>Serializable</code> object from the <code>DataInput</code>.
    * Null objects are handled.
    */
-  inline void readObject(SerializablePtr& ptr) { ptr = readObjectInternal(); }
+  inline void readObject(std::shared_ptr<Serializable>& ptr) {
+    ptr = readObjectInternal();
+  }
 
   inline void readObject(wchar_t* value) {
     uint16_t temp = readInt16();
@@ -899,7 +901,7 @@ class CPPCACHE_EXPORT DataInput {
   const char* m_poolName;
   const Cache* m_cache;
 
-  SerializablePtr readObjectInternal(int8_t typeId = -1);
+  std::shared_ptr<Serializable> readObjectInternal(int8_t typeId = -1);
 
   template <typename mType>
   void readObject(mType** value, int32_t& length) {

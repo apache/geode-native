@@ -38,13 +38,13 @@ class CPPCACHE_EXPORT TestMapAction : public virtual LRUAction {
 
   virtual ~TestMapAction() {}
 
-  virtual bool evict(const MapEntryImplPtr& mePtr) {
-    CacheableKeyPtr keyPtr;
+  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
+    std::shared_ptr<CacheableKey> keyPtr;
     mePtr->getKeyI(keyPtr);
     /** @TODO try catch.... return true or false. */
-    CacheablePtr cPtr;  // old value.
-    MapEntryImplPtr me;
-    VersionTagPtr versionTag;
+    std::shared_ptr<Cacheable> cPtr;  // old value.
+    std::shared_ptr<MapEntryImpl> me;
+    std::shared_ptr<VersionTag> versionTag;
     return (m_eMap->remove(keyPtr, cPtr, me, 0, versionTag, false) == GF_NOERR);
   }
 
@@ -108,15 +108,16 @@ LRUEntriesMap::~LRUEntriesMap() { delete m_action; }
  * If LRUAction is LRUInvalidateAction, then increment if old value was absent.
  * If LRUAction is one of Destroys, then increment if old Entry was absent.
  */
-GfErrType LRUEntriesMap::create(const CacheableKeyPtr& key,
-                                const CacheablePtr& newValue,
-                                MapEntryImplPtr& me, CacheablePtr& oldValue,
+GfErrType LRUEntriesMap::create(const std::shared_ptr<CacheableKey>& key,
+                                const std::shared_ptr<Cacheable>& newValue,
+                                std::shared_ptr<MapEntryImpl>& me,
+                                std::shared_ptr<Cacheable>& oldValue,
                                 int updateCount, int destroyTracker,
-                                VersionTagPtr versionTag) {
+                                std::shared_ptr<VersionTag> versionTag) {
   MapSegment* segmentRPtr = segmentFor(key);
   GfErrType err = GF_NOERR;
   {  // SYNCHRONIZE_SEGMENT(segmentRPtr);
-    MapEntryImplPtr mePtr;
+    std::shared_ptr<MapEntryImpl> mePtr;
     if ((err = segmentRPtr->create(key, newValue, me, oldValue, updateCount,
                                    destroyTracker, versionTag)) != GF_NOERR) {
       return err;
@@ -129,7 +130,7 @@ GfErrType LRUEntriesMap::create(const CacheableKeyPtr& key,
     if (!CacheableToken::isInvalid(oldValue)) {
       m_size++;
     }
-    CacheablePtr tmpValue;
+    std::shared_ptr<Cacheable> tmpValue;
     segmentRPtr->getEntry(key, mePtr, tmpValue);
     if (mePtr == nullptr) {
       return err;
@@ -163,7 +164,7 @@ GfErrType LRUEntriesMap::processLRU() {
 GfErrType LRUEntriesMap::evictionHelper() {
   GfErrType err = GF_NOERR;
   //  ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_mutex );
-  MapEntryImplPtr lruEntryPtr;
+  std::shared_ptr<MapEntryImpl> lruEntryPtr;
   m_lruList.getLRUEntry(lruEntryPtr);
   if (lruEntryPtr == nullptr) {
     err = GF_ENOENT;
@@ -194,9 +195,10 @@ void LRUEntriesMap::processLRU(int32_t numEntriesToEvict) {
   }
 }
 
-GfErrType LRUEntriesMap::invalidate(const CacheableKeyPtr& key,
-                                    MapEntryImplPtr& me, CacheablePtr& oldValue,
-                                    VersionTagPtr versionTag) {
+GfErrType LRUEntriesMap::invalidate(const std::shared_ptr<CacheableKey>& key,
+                                    std::shared_ptr<MapEntryImpl>& me,
+                                    std::shared_ptr<Cacheable>& oldValue,
+                                    std::shared_ptr<VersionTag> versionTag) {
   int64_t newSize = 0;
   MapSegment* segmentRPtr = segmentFor(key);
   bool isTokenAdded = false;
@@ -247,10 +249,12 @@ GfErrType LRUEntriesMap::invalidate(const CacheableKeyPtr& key,
   return err;
 }
 
-GfErrType LRUEntriesMap::put(const CacheableKeyPtr& key,
-                             const CacheablePtr& newValue, MapEntryImplPtr& me,
-                             CacheablePtr& oldValue, int updateCount,
-                             int destroyTracker, VersionTagPtr versionTag,
+GfErrType LRUEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
+                             const std::shared_ptr<Cacheable>& newValue,
+                             std::shared_ptr<MapEntryImpl>& me,
+                             std::shared_ptr<Cacheable>& oldValue,
+                             int updateCount, int destroyTracker,
+                             std::shared_ptr<VersionTag> versionTag,
                              bool& isUpdate, DataInput* delta) {
   MapSegment* segmentRPtr = segmentFor(key);
   GF_D_ASSERT(segmentRPtr != nullptr);
@@ -263,7 +267,7 @@ GfErrType LRUEntriesMap::put(const CacheableKeyPtr& key,
       segmentRPtr->acquire();
       segmentLocked = true;
     }
-    MapEntryImplPtr mePtr;
+    std::shared_ptr<MapEntryImpl> mePtr;
     if ((err = segmentRPtr->put(key, newValue, me, oldValue, updateCount,
                                 destroyTracker, isUpdate, versionTag, delta)) !=
         GF_NOERR) {
@@ -311,19 +315,20 @@ GfErrType LRUEntriesMap::put(const CacheableKeyPtr& key,
     if (isUpdate == false) {
       ++m_size;
       ++m_validEntries;
-      CacheablePtr tmpValue;
+      std::shared_ptr<Cacheable> tmpValue;
       segmentRPtr->getEntry(key, mePtr, tmpValue);
       // mePtr cannot be null, we just put it...
-      // must convert to an LRUMapEntryImplPtr...
+      // must convert to an std::shared_ptr<LRUMapEntryImpl>...
       GF_D_ASSERT(mePtr != nullptr);
       m_lruList.appendEntry(mePtr);
       me = mePtr;
     } else {
       if (!CacheableToken::isToken(newValue) && isOldValueToken) {
-        CacheablePtr tmpValue;
+        std::shared_ptr<Cacheable> tmpValue;
         segmentRPtr->getEntry(key, mePtr, tmpValue);
         mePtr->getLRUProperties().clearEvicted();
-        m_lruList.appendEntry(MapEntryImplPtr(mePtr->getImplPtr()));
+        m_lruList.appendEntry(
+            std::shared_ptr<MapEntryImpl>(mePtr->getImplPtr()));
         me = mePtr;
       }
     }
@@ -364,8 +369,9 @@ GfErrType LRUEntriesMap::put(const CacheableKeyPtr& key,
  * as recently used. Note, getEntry, entries, and values do not mark entries
  * as recently used.
  */
-bool LRUEntriesMap::get(const CacheableKeyPtr& key, CacheablePtr& returnPtr,
-                        MapEntryImplPtr& me) {
+bool LRUEntriesMap::get(const std::shared_ptr<CacheableKey>& key,
+                        std::shared_ptr<Cacheable>& returnPtr,
+                        std::shared_ptr<MapEntryImpl>& me) {
   char logkey[2048];
   key->logString(logkey, 2040);
   // LOGDEBUG("key = %s", logkey);
@@ -379,17 +385,17 @@ bool LRUEntriesMap::get(const CacheableKeyPtr& key, CacheablePtr& returnPtr,
   }
   {
     returnPtr = nullptr;
-    MapEntryImplPtr mePtr;
+    std::shared_ptr<MapEntryImpl> mePtr;
     if (false == segmentRPtr->getEntry(key, mePtr, returnPtr)) {
       if (segmentLocked == true) segmentRPtr->release();
       return false;
     }
     // segmentRPtr->get(key, returnPtr, mePtr);
-    MapEntryImplPtr nodeToMark = mePtr;
+    auto nodeToMark = mePtr;
     LRUEntryProperties& lruProps = nodeToMark->getLRUProperties();
     if (returnPtr != nullptr && CacheableToken::isOverflowed(returnPtr)) {
       void* persistenceInfo = lruProps.getPersistenceInfo();
-      CacheablePtr tmpObj;
+      std::shared_ptr<Cacheable> tmpObj;
       try {
         tmpObj = m_pmPtr->read(key, persistenceInfo);
       } catch (Exception& ex) {
@@ -402,9 +408,9 @@ bool LRUEntriesMap::get(const CacheableKeyPtr& key, CacheablePtr& returnPtr,
 
       returnPtr = tmpObj;
 
-      CacheablePtr oldValue;
+      std::shared_ptr<Cacheable> oldValue;
       bool isUpdate;
-      VersionTagPtr versionTag;
+      std::shared_ptr<VersionTag> versionTag;
       if (GF_NOERR == segmentRPtr->put(key, tmpObj, mePtr, oldValue, 0, 0,
                                        isUpdate, versionTag, nullptr)) {
         // m_entriesRetrieved++;
@@ -443,9 +449,11 @@ bool LRUEntriesMap::get(const CacheableKeyPtr& key, CacheablePtr& returnPtr,
   }
 }
 
-GfErrType LRUEntriesMap::remove(const CacheableKeyPtr& key,
-                                CacheablePtr& result, MapEntryImplPtr& me,
-                                int updateCount, VersionTagPtr versionTag,
+GfErrType LRUEntriesMap::remove(const std::shared_ptr<CacheableKey>& key,
+                                std::shared_ptr<Cacheable>& result,
+                                std::shared_ptr<MapEntryImpl>& me,
+                                int updateCount,
+                                std::shared_ptr<VersionTag> versionTag,
                                 bool afterRemote) {
   MapSegment* segmentRPtr = segmentFor(key);
   bool isEntryFound = true;
@@ -496,11 +504,11 @@ void LRUEntriesMap::updateMapSize(int64_t size) {
     m_evictionControllerPtr->updateRegionHeapInfo(size);
   }
 }
-
-CacheablePtr LRUEntriesMap::getFromDisk(const CacheableKeyPtr& key,
-                                        MapEntryImplPtr& me) const {
+std::shared_ptr<Cacheable> LRUEntriesMap::getFromDisk(
+    const std::shared_ptr<CacheableKey>& key,
+    std::shared_ptr<MapEntryImpl>& me) const {
   void* persistenceInfo = me->getLRUProperties().getPersistenceInfo();
-  CacheablePtr tmpObj;
+  std::shared_ptr<Cacheable> tmpObj;
   try {
     LOGDEBUG("Reading value from persistence layer for key: %s",
              key->toString()->asChar());

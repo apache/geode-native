@@ -35,16 +35,16 @@ class PortfolioPdxAuto : public apache::geode::client::PdxSerializable {
 
   GFID char* pkid;
 
-  GFID PositionPdxPtr position1;
-  GFID PositionPdxPtr position2;
-  GFID CacheableHashMapPtr positions;
+  GFID std::shared_ptr<PositionPdx> position1;
+  GFID std::shared_ptr<PositionPdx> position2;
+  GFID std::shared_ptr<CacheableHashMap> positions;
   GFID char* type;
   GFID char* status;
   // char** names;
   // static const char* secIds[];
   GFID int8_t* newVal;
   GFARRAYSIZE(newVal) int32_t newValSize;
-  GFID CacheableDatePtr creationDate;
+  GFID std::shared_ptr<CacheableDate> creationDate;
   GFID int8_t* arrayNull;
   GFARRAYSIZE(arrayNull) int32_t arrayNullSize;
 
@@ -72,11 +72,11 @@ class PortfolioPdxAuto : public apache::geode::client::PdxSerializable {
 
   char* getPkid() { return pkid; }
 
-  PositionPdxPtr getP1() { return position1; }
+  std::shared_ptr<PositionPdx> getP1() { return position1; }
 
-  PositionPdxPtr getP2() { return position2; }
+  std::shared_ptr<PositionPdx> getP2() { return position2; }
 
-  CacheableHashMapPtr getPositions() { return positions; }
+  std::shared_ptr<CacheableHashMap> getPositions() { return positions; }
 
   bool testMethod(bool booleanArg) { return true; }
 
@@ -90,7 +90,7 @@ class PortfolioPdxAuto : public apache::geode::client::PdxSerializable {
 
   const char* getClassName() { return this->type; }
 
-  CacheableDatePtr getCreationDate() { return creationDate; }
+  std::shared_ptr<CacheableDate> getCreationDate() { return creationDate; }
 
   int8_t* getArrayNull() { return arrayNull; }
 
@@ -98,14 +98,12 @@ class PortfolioPdxAuto : public apache::geode::client::PdxSerializable {
 
   const char* getClassName() const;
 
-  virtual void toData(PdxWriterPtr pw);
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void toData(std::shared_ptr<PdxWriter> pw);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
   static PdxSerializable* createDeserializable();
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 };
-
-typedef std::shared_ptr<PortfolioPdxAuto> PortfolioPdxPtr;
 }
 #endif

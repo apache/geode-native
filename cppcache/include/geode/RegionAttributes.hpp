@@ -83,21 +83,21 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
    * <code>CacheLoader</code> , nullptr if there is no CacheLoader for this
    * region.
    */
-  CacheLoaderPtr getCacheLoader();
+  std::shared_ptr<CacheLoader> getCacheLoader();
 
   /** Gets the cache writer for the region.
    * @return  a pointer that points to the region's ,
    * <code>CacheWriter</code> , nullptr if there is no CacheWriter for this
    * region
    */
-  CacheWriterPtr getCacheWriter();
+  std::shared_ptr<CacheWriter> getCacheWriter();
 
   /** Gets the cache listener for the region.
    * @return  a pointer that points to the region's ,
    * <code>CacheListener</code> , nullptr if there is no CacheListener defined
    * for this region.
    */
-  CacheListenerPtr getCacheListener();
+  std::shared_ptr<CacheListener> getCacheListener();
 
   /** Gets the partition resolver for the partition region.
    * @return  a pointer that points to the region's ,
@@ -105,7 +105,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
    * defined
    * for this region.
    */
-  PartitionResolverPtr getPartitionResolver();
+  std::shared_ptr<PartitionResolver> getPartitionResolver();
 
   /** Gets the <code>timeToLive</code> expiration attributes for the region as a
    * whole.
@@ -297,7 +297,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   /**
    * This method returns the properties pointer which is set for persistence.
    */
-  PropertiesPtr getPersistenceProperties();
+  std::shared_ptr<Properties> getPersistenceProperties();
 
   /** Gets the persistence for the region.
    * @return  a pointer that points to the region's ,
@@ -305,7 +305,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
    * for this
    * region.
    */
-  PersistenceManagerPtr getPersistenceManager();
+  std::shared_ptr<PersistenceManager> getPersistenceManager();
 
   /** TODO
    * Returns the name of the {@link Pool} that this region
@@ -338,7 +338,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   void setCacheWriter(const char* libpath, const char* factoryFuncName);
   void setPartitionResolver(const char* libpath, const char* factoryFuncName);
   void setPersistenceManager(const char* lib, const char* func,
-                             const PropertiesPtr& config);
+                             const std::shared_ptr<Properties>& config);
   void setEndpoints(const char* endpoints);
   void setPoolName(const char* poolName);
   void setCloningEnabled(bool isClonable);
@@ -365,10 +365,10 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   ExpirationAction::Action m_entryTimeToLiveExpirationAction;
   ExpirationAction::Action m_entryIdleTimeoutExpirationAction;
   ExpirationAction::Action m_lruEvictionAction;
-  CacheWriterPtr m_cacheWriter;
-  CacheLoaderPtr m_cacheLoader;
-  CacheListenerPtr m_cacheListener;
-  PartitionResolverPtr m_partitionResolver;
+  std::shared_ptr<CacheWriter> m_cacheWriter;
+  std::shared_ptr<CacheLoader> m_cacheLoader;
+  std::shared_ptr<CacheListener> m_cacheListener;
+  std::shared_ptr<PartitionResolver> m_partitionResolver;
   uint32_t m_lruEntriesLimit;
   bool m_caching;
   uint32_t m_maxValueDistLimit;
@@ -392,8 +392,8 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   bool m_clientNotificationEnabled;
   char* m_persistenceLibrary;
   char* m_persistenceFactory;
-  PropertiesPtr m_persistenceProperties;
-  PersistenceManagerPtr m_persistenceManager;
+  std::shared_ptr<Properties> m_persistenceProperties;
+  std::shared_ptr<PersistenceManager> m_persistenceManager;
   char* m_poolName;
   bool m_isClonable;
   bool m_isConcurrencyChecksEnabled;

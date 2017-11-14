@@ -48,8 +48,6 @@ const char* locatorsG =
 using namespace apache::geode::client;
 class CallbackListener;
 
-typedef std::shared_ptr<CallbackListener> CallbackListenerPtr;
-
 class CallbackListener : public CacheListener {
  private:
   int m_creates;
@@ -59,8 +57,8 @@ class CallbackListener : public CacheListener {
   int m_regionInvalidate;
   int m_regionDestroy;
   int m_regionClear;
-  // CacheableStringPtr m_callbackArg;
-  CacheablePtr m_callbackArg;
+  // std::shared_ptr<CacheableString> m_callbackArg;
+  std::shared_ptr<Cacheable> m_callbackArg;
 
  public:
   CallbackListener()
@@ -86,28 +84,28 @@ class CallbackListener : public CacheListener {
   int getRegionInvalidates() { return m_regionInvalidate; }
   int getRegionDestroys() { return m_regionDestroy; }
   int getRegionClear() { return m_regionClear; }
-  void setCallBackArg(const CacheablePtr& callbackArg) {
+  void setCallBackArg(const std::shared_ptr<Cacheable>& callbackArg) {
     m_callbackArg = callbackArg;
   }
 
-  void check(CacheablePtr eventCallback, int& updateEvent) {
+  void check(std::shared_ptr<Cacheable> eventCallback, int& updateEvent) {
     if (m_callbackArg != nullptr) {
       try {
         auto mCallbkArg = std::dynamic_pointer_cast<Portfolio>(m_callbackArg);
 
         auto callbkArg = std::dynamic_pointer_cast<Portfolio>(eventCallback);
 
-        CacheableStringPtr fromCallback = callbkArg->getPkid();
-        CacheableStringPtr mCallback = mCallbkArg->getPkid();
+       auto fromCallback = callbkArg->getPkid();
+       auto mCallback = mCallbkArg->getPkid();
 
-        LOGFINE(" values are %s === %s ", fromCallback->asChar(),
-                mCallback->asChar());
+       LOGFINE(" values are %s === %s ", fromCallback->asChar(),
+               mCallback->asChar());
 
-        if (*(fromCallback.get()) == *(mCallback.get())) {
-          LOGFINE("values are same");
-          updateEvent++;
-        } else {
-          LOGFINE("values are NOT same");
+       if (*(fromCallback.get()) == *(mCallback.get())) {
+         LOGFINE("values are same");
+         updateEvent++;
+       } else {
+         LOGFINE("values are NOT same");
         }
       } catch (const ClassCastException& ex) {
         LOGFINE(" in class cast exception %s ", ex.getMessage());
@@ -169,189 +167,190 @@ class CallbackListener : public CacheListener {
   }
 };
 //---------------------------------------------------------------------------------
+ std::shared_ptr<CallbackListener> reg1Listener1 = nullptr;
+ std::shared_ptr<CacheableString> callBackStrPtr;
+ std::shared_ptr<Cacheable> callBackPortFolioPtr;
 
-CallbackListenerPtr reg1Listener1 = nullptr;
-CacheableStringPtr callBackStrPtr;
+ void setCacheListener(const char* regName,
+                       std::shared_ptr<CallbackListener> regListener) {
+   auto reg = getHelper()->getRegion(regName);
+   auto attrMutator = reg->getAttributesMutator();
+   attrMutator->setCacheListener(regListener);
+ }
 
-CacheablePtr callBackPortFolioPtr;
+ void validateEventCount(int line) {
+   LOGINFO("ValidateEvents called from line (%d).", line);
+   int num = reg1Listener1->getCreates();
+   char buf[1024];
+   sprintf(buf, "Didn't get expected callback arg in aftercreate event");
+   ASSERT(7 == num, buf);
+   num = reg1Listener1->getUpdates();
+   sprintf(buf, "Didn't get expected callback arg in afterupdate events");
+   ASSERT(3 == num, buf);
+   num = reg1Listener1->getInvalidates();
+   sprintf(buf, "Didn't get expected callback arg in afterInvalidates events");
+   ASSERT(2 == num, buf);
+   num = reg1Listener1->getDestroys();
+   sprintf(buf, "Didn't get expected callback arg in afterdestroy events");
+   ASSERT(5 == num, buf);
+   num = reg1Listener1->getRegionInvalidates();
+   sprintf(buf,
+           "Didn't get expected callback arg in afterRegionInvalidates events");
+   ASSERT(1 == num, buf);
+   num = reg1Listener1->getRegionDestroys();
+   sprintf(buf,
+           "Didn't get expected callback arg in afterRegiondestroy events");
+   ASSERT(1 == num, buf);
+   num = reg1Listener1->getRegionClear();
+   sprintf(buf, "Didn't get expected callback arg in afterRegionClear events");
+   ASSERT(1 == num, buf);
+ }
 
-void setCacheListener(const char* regName, CallbackListenerPtr regListener) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
-  attrMutator->setCacheListener(regListener);
-}
+ DUNIT_TASK_DEFINITION(SERVER1, StartServer)
+   {
+     if (isLocalServer) {
+       CacheHelper::initServer(1, "cacheserver_notify_subscription5.xml");
+     }
+     LOG("SERVER started");
+   }
+ END_TASK_DEFINITION
 
-void validateEventCount(int line) {
-  LOGINFO("ValidateEvents called from line (%d).", line);
-  int num = reg1Listener1->getCreates();
-  char buf[1024];
-  sprintf(buf, "Didn't get expected callback arg in aftercreate event");
-  ASSERT(7 == num, buf);
-  num = reg1Listener1->getUpdates();
-  sprintf(buf, "Didn't get expected callback arg in afterupdate events");
-  ASSERT(3 == num, buf);
-  num = reg1Listener1->getInvalidates();
-  sprintf(buf, "Didn't get expected callback arg in afterInvalidates events");
-  ASSERT(2 == num, buf);
-  num = reg1Listener1->getDestroys();
-  sprintf(buf, "Didn't get expected callback arg in afterdestroy events");
-  ASSERT(5 == num, buf);
-  num = reg1Listener1->getRegionInvalidates();
-  sprintf(buf,
-          "Didn't get expected callback arg in afterRegionInvalidates events");
-  ASSERT(1 == num, buf);
-  num = reg1Listener1->getRegionDestroys();
-  sprintf(buf, "Didn't get expected callback arg in afterRegiondestroy events");
-  ASSERT(1 == num, buf);
-  num = reg1Listener1->getRegionClear();
-  sprintf(buf, "Didn't get expected callback arg in afterRegionClear events");
-  ASSERT(1 == num, buf);
-}
+ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1_Pool_Locator)
+   {
+     initClient(true);
 
-DUNIT_TASK_DEFINITION(SERVER1, StartServer)
-  {
-    if (isLocalServer) {
-      CacheHelper::initServer(1, "cacheserver_notify_subscription5.xml");
-    }
-    LOG("SERVER started");
-  }
-END_TASK_DEFINITION
+     callBackStrPtr = CacheableString::create("Gemstone's Callback");
 
-DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1_Pool_Locator)
-  {
-    initClient(true);
+     createPooledRegion(regionNames[0], false /*ack mode*/, locatorsG,
+                        "__TEST_POOL1__", true /*client notification*/);
+     auto serializationRegistry =
+         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+             ->getSerializationRegistry();
+     serializationRegistry->addType(Portfolio::createDeserializable);
+     serializationRegistry->addType(Position::createDeserializable);
+     reg1Listener1 = std::make_shared<CallbackListener>();
+     callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
 
-    callBackStrPtr = CacheableString::create("Gemstone's Callback");
+     reg1Listener1->setCallBackArg(callBackPortFolioPtr);
+     setCacheListener(regionNames[0], reg1Listener1);
+     auto regPtr = getHelper()->getRegion(regionNames[0]);
+     regPtr->registerAllKeys();
+   }
+ END_TASK_DEFINITION
 
-    createPooledRegion(regionNames[0], false /*ack mode*/, locatorsG,
-                       "__TEST_POOL1__", true /*client notification*/);
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
-    serializationRegistry->addType(Portfolio::createDeserializable);
-    serializationRegistry->addType(Position::createDeserializable);
-    reg1Listener1 = std::make_shared<CallbackListener>();
-    callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
+ DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2_Pool_Locator)
+   {
+     initClient(true);
 
-    reg1Listener1->setCallBackArg(callBackPortFolioPtr);
-    setCacheListener(regionNames[0], reg1Listener1);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    regPtr->registerAllKeys();
-  }
-END_TASK_DEFINITION
+     callBackStrPtr = CacheableString::create("Gemstone's Callback");
 
-DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2_Pool_Locator)
-  {
-    initClient(true);
+     createPooledRegion(regionNames[0], false /*ack mode*/, locatorsG,
+                        "__TEST_POOL1__", true /*client notification*/);
+   }
+ END_TASK_DEFINITION
 
-    callBackStrPtr = CacheableString::create("Gemstone's Callback");
+ DUNIT_TASK_DEFINITION(CLIENT2, testCreatesAndUpdates)
+   {
+     auto regPtr = getHelper()->getRegion(regionNames[0]);
 
-    createPooledRegion(regionNames[0], false /*ack mode*/, locatorsG,
-                       "__TEST_POOL1__", true /*client notification*/);
-  }
-END_TASK_DEFINITION
+     callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
+     regPtr->create("aaa", "bbb", callBackPortFolioPtr);
+     regPtr->create(keys[1], vals[1], callBackPortFolioPtr);
+     regPtr->put(keys[1], nvals[1], callBackPortFolioPtr);
+   }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(CLIENT2, testCreatesAndUpdates)
-  {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidates)
+   {
+     auto regPtr = getHelper()->getRegion(regionNames[0]);
 
-    callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
-    regPtr->create("aaa", "bbb", callBackPortFolioPtr);
-    regPtr->create(keys[1], vals[1], callBackPortFolioPtr);
-    regPtr->put(keys[1], nvals[1], callBackPortFolioPtr);
-  }
-END_TASK_DEFINITION
+     callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
+     regPtr->localCreate(1234, 1234, callBackPortFolioPtr);
+     regPtr->localCreate(12345, 12345, callBackPortFolioPtr);
+     regPtr->localCreate(12346, 12346, callBackPortFolioPtr);
+     regPtr->localPut(1234, vals[1], callBackPortFolioPtr);
+     regPtr->localInvalidate(1234, callBackPortFolioPtr);
+     ASSERT(regPtr->localRemove(12345, 12345, callBackPortFolioPtr) == true,
+            "Result of remove should be true, as this value exists locally.");
+     ASSERT(regPtr->containsKey(12345) == false, "containsKey should be false");
+     ASSERT(regPtr->localRemoveEx(12346, callBackPortFolioPtr) == true,
+            "Result of remove should be true, as this value exists locally.");
+     ASSERT(regPtr->containsKey(12346) == false, "containsKey should be false");
+     regPtr->invalidate(keys[1], callBackPortFolioPtr);
+     regPtr->invalidateRegion(callBackPortFolioPtr);
+   }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(CLIENT1, testInvalidates)
-  {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+ DUNIT_TASK_DEFINITION(CLIENT2, testDestroy)
+   {
+     auto regPtr = getHelper()->getRegion(regionNames[0]);
 
-    callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
-    regPtr->localCreate(1234, 1234, callBackPortFolioPtr);
-    regPtr->localCreate(12345, 12345, callBackPortFolioPtr);
-    regPtr->localCreate(12346, 12346, callBackPortFolioPtr);
-    regPtr->localPut(1234, vals[1], callBackPortFolioPtr);
-    regPtr->localInvalidate(1234, callBackPortFolioPtr);
-    ASSERT(regPtr->localRemove(12345, 12345, callBackPortFolioPtr) == true,
-           "Result of remove should be true, as this value exists locally.");
-    ASSERT(regPtr->containsKey(12345) == false, "containsKey should be false");
-    ASSERT(regPtr->localRemoveEx(12346, callBackPortFolioPtr) == true,
-           "Result of remove should be true, as this value exists locally.");
-    ASSERT(regPtr->containsKey(12346) == false, "containsKey should be false");
-    regPtr->invalidate(keys[1], callBackPortFolioPtr);
-    regPtr->invalidateRegion(callBackPortFolioPtr);
-  }
-END_TASK_DEFINITION
+     callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
+     regPtr->destroy(keys[1], callBackPortFolioPtr);
+     ASSERT(regPtr->removeEx("aaa", callBackPortFolioPtr) == true,
+            "Result of remove should be true, as this value exists.");
+   }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(CLIENT2, testDestroy)
-  {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+ DUNIT_TASK_DEFINITION(CLIENT2, testRemove)
+   {
+     auto regPtr = getHelper()->getRegion(regionNames[0]);
+     regPtr->remove(keys[1], nvals[1], callBackPortFolioPtr);
+     regPtr->destroyRegion(callBackPortFolioPtr);
+   }
+ END_TASK_DEFINITION
+ DUNIT_TASK_DEFINITION(CLIENT1, testlocalClear)
+   {
+     auto regPtr = getHelper()->getRegion(regionNames[0]);
+     regPtr->localClear(callBackPortFolioPtr);
+   }
+ END_TASK_DEFINITION
 
-    callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
-    regPtr->destroy(keys[1], callBackPortFolioPtr);
-    ASSERT(regPtr->removeEx("aaa", callBackPortFolioPtr) == true,
-           "Result of remove should be true, as this value exists.");
-  }
-END_TASK_DEFINITION
+ DUNIT_TASK_DEFINITION(CLIENT1, testValidate)
+   {
+     dunit::sleep(10000);
+     validateEventCount(__LINE__);
+   }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(CLIENT2, testRemove)
-  {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    regPtr->remove(keys[1], nvals[1], callBackPortFolioPtr);
-    regPtr->destroyRegion(callBackPortFolioPtr);
-  }
-END_TASK_DEFINITION
-DUNIT_TASK_DEFINITION(CLIENT1, testlocalClear)
-  {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    regPtr->localClear(callBackPortFolioPtr);
-  }
-END_TASK_DEFINITION
+ DUNIT_TASK_DEFINITION(CLIENT1, StopClient1)
+   {
+     cleanProc();
+     LOG("CLIENT1 stopped");
+   }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(CLIENT1, testValidate)
-  {
-    dunit::sleep(10000);
-    validateEventCount(__LINE__);
-  }
-END_TASK_DEFINITION
+ DUNIT_TASK_DEFINITION(CLIENT2, StopClient2)
+   {
+     cleanProc();
+     LOG("CLIENT2 stopped");
+   }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(CLIENT1, StopClient1)
-  {
-    cleanProc();
-    LOG("CLIENT1 stopped");
-  }
-END_TASK_DEFINITION
+ DUNIT_TASK_DEFINITION(SERVER1, StopServer)
+   {
+     if (isLocalServer) CacheHelper::closeServer(1);
+     LOG("SERVER stopped");
+   }
+ END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(CLIENT2, StopClient2)
-  {
-    cleanProc();
-    LOG("CLIENT2 stopped");
-  }
-END_TASK_DEFINITION
+ DUNIT_MAIN
+   {
+     CALL_TASK(CreateLocator1);
+     CALL_TASK(CreateServer1_With_Locator_XML5)
 
-DUNIT_TASK_DEFINITION(SERVER1, StopServer)
-  {
-    if (isLocalServer) CacheHelper::closeServer(1);
-    LOG("SERVER stopped");
-  }
-END_TASK_DEFINITION
-
-DUNIT_MAIN
-  {
-    CALL_TASK(CreateLocator1);
-    CALL_TASK(CreateServer1_With_Locator_XML5)
-
-    CALL_TASK(SetupClient1_Pool_Locator);
-    CALL_TASK(SetupClient2_Pool_Locator);
-    CALL_TASK(testCreatesAndUpdates);
-    CALL_TASK(testInvalidates);
-    CALL_TASK(testDestroy);
-    CALL_TASK(testCreatesAndUpdates);
-    CALL_TASK(testlocalClear);
-    CALL_TASK(testRemove);
-    CALL_TASK(testValidate);
-    CALL_TASK(StopClient1);
-    CALL_TASK(StopClient2);
-    CALL_TASK(StopServer);
-    CALL_TASK(CloseLocator1);
-  }
-END_MAIN
-
+     CALL_TASK(SetupClient1_Pool_Locator);
+     CALL_TASK(SetupClient2_Pool_Locator);
+     CALL_TASK(testCreatesAndUpdates);
+     CALL_TASK(testInvalidates);
+     CALL_TASK(testDestroy);
+     CALL_TASK(testCreatesAndUpdates);
+     CALL_TASK(testlocalClear);
+     CALL_TASK(testRemove);
+     CALL_TASK(testValidate);
+     CALL_TASK(StopClient1);
+     CALL_TASK(StopClient2);
+     CALL_TASK(StopServer);
+     CALL_TASK(CloseLocator1);
+   }
+ END_MAIN

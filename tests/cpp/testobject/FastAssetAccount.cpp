@@ -62,7 +62,7 @@ void FastAssetAccount::fromData(apache::geode::client::DataInput& input) {
   timestamp = input.readInt64();
 }
 
-CacheableStringPtr FastAssetAccount::toString() const {
+std::shared_ptr<CacheableString> FastAssetAccount::toString() const {
   char buf[102500];
   sprintf(buf,
           "FastAssetAccount:[acctId = %d customerName = %s netWorth = %f "

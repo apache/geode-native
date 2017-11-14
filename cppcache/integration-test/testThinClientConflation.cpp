@@ -80,18 +80,12 @@ class OperMonitor : public CacheListener {
     ASSERT(m_value == 5, buf);
   }
 };
-typedef std::shared_ptr<OperMonitor> OperMonitorPtr;
 
-void setCacheListener(const char* regName, OperMonitorPtr monitor) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+void setCacheListener(const char* regName, std::shared_ptr<OperMonitor> monitor) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(monitor);
-}
-
-OperMonitorPtr mon1C1 = nullptr;
-OperMonitorPtr mon2C1 = nullptr;
-OperMonitorPtr mon1C2 = nullptr;
-OperMonitorPtr mon2C2 = nullptr;
+}std::shared_ptr<OperMonitor> mon1C1 = nullptr;std::shared_ptr<OperMonitor> mon2C1=nullptr;std::shared_ptr<OperMonitor> mon1C2=nullptr;std::shared_ptr<OperMonitor> mon2C2=nullptr;
 
 const char* regions[] = {"ConflatedRegion", "NonConflatedRegion"};
 
@@ -99,7 +93,7 @@ const char* regions[] = {"ConflatedRegion", "NonConflatedRegion"};
 #include "ThinClientTasks_C2S2.hpp"
 #include "LocatorHelper.hpp"
 
-void initClientCache(OperMonitorPtr& mon1, OperMonitorPtr& mon2, int durableIdx,
+void initClientCache(std::shared_ptr<OperMonitor>& mon1, std::shared_ptr<OperMonitor>& mon2, int durableIdx,
                      const char* conflation) {
   initClientAndTwoRegions(durableIdx, 0, std::chrono::seconds(300), conflation,
                           regions);
@@ -110,8 +104,8 @@ void initClientCache(OperMonitorPtr& mon1, OperMonitorPtr& mon2, int durableIdx,
 
   setCacheListener(regions[0], mon1);
   setCacheListener(regions[1], mon2);
-  RegionPtr regPtr0 = getHelper()->getRegion(regions[0]);
-  RegionPtr regPtr1 = getHelper()->getRegion(regions[1]);
+ auto regPtr0 = getHelper()->getRegion(regions[0]);
+ auto regPtr1 = getHelper()->getRegion(regions[1]);
 
   regPtr0->registerAllKeys(true);
   regPtr1->registerAllKeys(true);

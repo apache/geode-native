@@ -29,6 +29,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+class TransactionId;
 
 class CPPCACHE_EXPORT CacheTransactionManager {
  public:
@@ -90,33 +91,33 @@ class CPPCACHE_EXPORT CacheTransactionManager {
    *         the thread was not associated with a transaction
    * @since 3.6.2
    */
-  virtual TransactionIdPtr suspend() = 0;
+  virtual std::shared_ptr<TransactionId> suspend() = 0;
 
   /**
-  * On the current thread, resumes a transaction that was previously suspended
-  * using {@link #suspend()}
-  *
-  * @param transactionId
-  *          the transaction to resume
-  * @throws IllegalStateException
-  *           if the thread is associated with a transaction or if
-  *           {@link #isSuspended(TransactionId)} would return false for the
-  *           given transactionId
-  * @since 3.6.2
-  */
-  virtual void resume(TransactionIdPtr transactionId) = 0;
+   * On the current thread, resumes a transaction that was previously suspended
+   * using {@link #suspend()}
+   *
+   * @param transactionId
+   *          the transaction to resume
+   * @throws IllegalStateException
+   *           if the thread is associated with a transaction or if
+   *           {@link #isSuspended(TransactionId)} would return false for the
+   *           given transactionId
+   * @since 3.6.2
+   */
+  virtual void resume(std::shared_ptr<TransactionId> transactionId) = 0;
 
   /**
-  * This method can be used to determine if a transaction with the given
-  * transaction identifier is currently suspended locally. This method does not
-  * check other members for transaction status.
-  *
-  * @param transactionId
-  * @return true if the transaction is in suspended state, false otherwise
-  * @since 3.6.2
-  * @see #exists(TransactionId)
-  */
-  virtual bool isSuspended(TransactionIdPtr transactionId) = 0;
+   * This method can be used to determine if a transaction with the given
+   * transaction identifier is currently suspended locally. This method does not
+   * check other members for transaction status.
+   *
+   * @param transactionId
+   * @return true if the transaction is in suspended state, false otherwise
+   * @since 3.6.2
+   * @see #exists(TransactionId)
+   */
+  virtual bool isSuspended(std::shared_ptr<TransactionId> transactionId) = 0;
 
   /**
    * On the current thread, resumes a transaction that was previously suspended
@@ -135,7 +136,7 @@ class CPPCACHE_EXPORT CacheTransactionManager {
    * @return true if the transaction was resumed, false otherwise
    * @since 3.6.2
    */
-  virtual bool tryResume(TransactionIdPtr transactionId) = 0;
+  virtual bool tryResume(std::shared_ptr<TransactionId> transactionId) = 0;
 
   /**
    * On the current thread, resumes a transaction that was previously suspended
@@ -158,7 +159,7 @@ class CPPCACHE_EXPORT CacheTransactionManager {
    * @since 3.6.2
    * @see #tryResume(TransactionId)
    */
-  virtual bool tryResume(TransactionIdPtr transactionId,
+  virtual bool tryResume(std::shared_ptr<TransactionId> transactionId,
                          std::chrono::milliseconds waitTime) = 0;
 
   /**
@@ -172,15 +173,15 @@ class CPPCACHE_EXPORT CacheTransactionManager {
    * @since 3.6.2
    * @see #isSuspended(TransactionId)
    */
-  virtual bool exists(TransactionIdPtr transactionId) = 0;
+  virtual bool exists(std::shared_ptr<TransactionId> transactionId) = 0;
 
   /** Returns the transaction identifier for the current thread
-  *
-  * @return the transaction identifier or null if no transaction exists
-  *
-  * @since 3.6.2
-  */
-  virtual TransactionIdPtr getTransactionId() = 0;
+   *
+   * @return the transaction identifier or null if no transaction exists
+   *
+   * @since 3.6.2
+   */
+  virtual std::shared_ptr<TransactionId> getTransactionId() = 0;
 
   /** Reports the existence of a Transaction for this thread
    *

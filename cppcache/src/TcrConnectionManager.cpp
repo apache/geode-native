@@ -85,7 +85,7 @@ void TcrConnectionManager::init(bool isPool) {
         m_pingTaskId, pingInterval.count());
   }
 
-  CacheAttributesPtr cacheAttributes = m_cache->getAttributes();
+  auto cacheAttributes = m_cache->getAttributes();
   const char *endpoints;
   m_redundancyManager->m_HAenabled = false;
 
@@ -163,7 +163,7 @@ void TcrConnectionManager::close() {
     GF_SAFE_DELETE(m_failoverTask);
   }
 
-  CacheAttributesPtr cacheAttributes = m_cache->getAttributes();
+  auto cacheAttributes = m_cache->getAttributes();
   if (cacheAttributes != nullptr &&
       (cacheAttributes->getRedundancyLevel() > 0 || m_isDurable)) {
     if (m_servermonitorTaskId > 0) {

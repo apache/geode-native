@@ -23,6 +23,7 @@
 /**
  * @file
  */
+#include <memory>
 
 #include "geode_globals.hpp"
 #include "Serializable.hpp"
@@ -31,11 +32,11 @@ namespace apache {
 namespace geode {
 namespace client {
 
-typedef SerializablePtr CacheablePtr;
 typedef Serializable Cacheable;
 
 template <typename TVALUE>
-inline CacheablePtr createValue(const std::shared_ptr<TVALUE>& value) {
+inline std::shared_ptr<Cacheable> createValue(
+    const std::shared_ptr<TVALUE>& value) {
   return std::dynamic_pointer_cast<Cacheable>(value);
 }
 

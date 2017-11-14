@@ -46,7 +46,8 @@ class CPPCACHE_EXPORT NoResult : public ResultCollector {
   NoResult() = default;
   virtual ~NoResult() override = default;
 
-  inline void addResult(const CacheablePtr& resultOfSingleExecution) override {
+  inline void addResult(
+      const std::shared_ptr<Cacheable>& resultOfSingleExecution) override {
     throw UnsupportedOperationException("can not add to NoResult");
   }
 
@@ -54,7 +55,7 @@ class CPPCACHE_EXPORT NoResult : public ResultCollector {
     throw UnsupportedOperationException("can not close on NoResult");
   }
 
-  inline CacheableVectorPtr getResult(
+  inline std::shared_ptr<CacheableVector> getResult(
       std::chrono::milliseconds timeout =
           DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
     throw FunctionExecutionException(

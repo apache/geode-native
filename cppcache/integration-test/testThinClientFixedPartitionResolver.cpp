@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include "BuiltinCacheableWrappers.hpp"
 #include <Utils.hpp>
 #include <geode/FixedPartitionResolver.hpp>
@@ -45,7 +44,7 @@ class CustomFixedPartitionResolver1 : public FixedPartitionResolver {
     return "CustomFixedPartitionResolver1";
   }
 
-  CacheableKeyPtr getRoutingObject(const EntryEvent& opDetails) {
+  std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent& opDetails) {
     LOG("CustomFixedPartitionResolver1::getRoutingObject()");
     int32_t key = atoi(opDetails.getKey()->toString()->asChar());
     int32_t newKey = key + 5;
@@ -84,7 +83,7 @@ class CustomFixedPartitionResolver2 : public FixedPartitionResolver {
     return "CustomFixedPartitionResolver2";
   }
 
-  CacheableKeyPtr getRoutingObject(const EntryEvent& opDetails) {
+  std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent& opDetails) {
     LOG("CustomFixedPartitionResolver2::getRoutingObject()");
     int32_t key = atoi(opDetails.getKey()->toString()->asChar());
     int32_t newKey = key + 4;
@@ -123,7 +122,7 @@ class CustomFixedPartitionResolver3 : public FixedPartitionResolver {
     return "CustomFixedPartitionResolver3";
   }
 
-  CacheableKeyPtr getRoutingObject(const EntryEvent& opDetails) {
+  std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent& opDetails) {
     LOG("CustomFixedPartitionResolver3::getRoutingObject()");
     int32_t key = atoi(opDetails.getKey()->toString()->asChar());
     int32_t newKey = key % 5;
@@ -228,7 +227,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
 
     LOGDEBUG("CheckPrSingleHopForIntKeysTask_REGION create region  = %s ",
              partitionRegionName);
-    RegionPtr dataReg = getHelper()->getRegion(partitionRegionName);
+    auto dataReg = getHelper()->getRegion(partitionRegionName);
 
     for (int i = 0; i < 3000; i++) {
       auto keyPtr =
@@ -321,7 +320,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
     LOG("CheckPrSingleHopForIntKeysTask_REGION get completed.");
 
     for (int i = 1000; i < 2000; i++) {
-      VectorOfCacheableKey keys;
+      std::vector<std::shared_ptr<CacheableKey>> keys;
       for (int j = i; j < i + 5; j++) {
         keys.push_back(CacheableInt32::create(j));
       }

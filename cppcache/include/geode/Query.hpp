@@ -65,7 +65,7 @@ class CPPCACHE_EXPORT Query {
    * @returns A smart pointer to the SelectResults which can either be a
    * ResultSet or a StructSet.
    */
-  virtual SelectResultsPtr execute(
+  virtual std::shared_ptr<SelectResults> execute(
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
@@ -87,8 +87,8 @@ class CPPCACHE_EXPORT Query {
    * ResultSet or a StructSet.
    */
 
-  virtual SelectResultsPtr execute(
-      CacheableVectorPtr paramList,
+  virtual std::shared_ptr<SelectResults> execute(
+      std::shared_ptr<CacheableVector> paramList,
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
   /**
    * Get the query string provided when a new Query was created from a

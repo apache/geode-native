@@ -51,7 +51,6 @@ class SystemProperties;
  */
 
 class DistributedSystemImpl;
-typedef std::shared_ptr<DistributedSystemImpl> DistributedSystemImplPtr;
 
 class CPPCACHE_EXPORT DistributedSystemImpl {
   /**

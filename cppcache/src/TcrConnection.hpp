@@ -291,7 +291,8 @@ class CPPCACHE_EXPORT TcrConnection {
     return *m_connectionManager;
   }
 
-  CacheableBytesPtr encryptBytes(CacheableBytesPtr data) {
+  std::shared_ptr<CacheableBytes> encryptBytes(
+      std::shared_ptr<CacheableBytes> data) {
     if (m_dh != nullptr) {
       return m_dh->encrypt(data);
     } else {
@@ -299,7 +300,8 @@ class CPPCACHE_EXPORT TcrConnection {
     }
   }
 
-  CacheableBytesPtr decryptBytes(CacheableBytesPtr data) {
+  std::shared_ptr<CacheableBytes> decryptBytes(
+      std::shared_ptr<CacheableBytes> data) {
     if (m_dh != nullptr) {
       return m_dh->decrypt(data);
     } else {
@@ -348,27 +350,27 @@ class CPPCACHE_EXPORT TcrConnection {
   /**
    * Reads bytes from socket and handles error conditions in case of Handshake.
    */
-  CacheableBytesPtr readHandshakeData(int32_t msgLength,
-                                      std::chrono::microseconds connectTimeout);
+  std::shared_ptr<CacheableBytes> readHandshakeData(
+      int32_t msgLength, std::chrono::microseconds connectTimeout);
 
   /**
    * Reads raw bytes (without appending nullptr terminator) from socket and
    * handles error conditions in case of Handshake.
    */
-  CacheableBytesPtr readHandshakeRawData(
+  std::shared_ptr<CacheableBytes> readHandshakeRawData(
       int32_t msgLength, std::chrono::microseconds connectTimeout);
   /**
    * Reads a string from socket and handles error conditions in case of
    * Handshake.
    */
-  CacheableStringPtr readHandshakeString(
+  std::shared_ptr<CacheableString> readHandshakeString(
       std::chrono::microseconds connectTimeout);
 
   /**
    * Reads a byte array (using initial length) from socket and handles error
    * conditions in case of Handshake.
    */
-  CacheableBytesPtr readHandshakeByteArray(
+  std::shared_ptr<CacheableBytes> readHandshakeByteArray(
       std::chrono::microseconds connectTimeout);
 
   /**

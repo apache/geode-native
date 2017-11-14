@@ -23,8 +23,7 @@ DefaultResultCollector::DefaultResultCollector()
     : resultList(CacheableVector::create()), ready(false) {}
 
 DefaultResultCollector::~DefaultResultCollector() noexcept {}
-
-CacheableVectorPtr DefaultResultCollector::getResult(
+std::shared_ptr<CacheableVector> DefaultResultCollector::getResult(
     std::chrono::milliseconds timeout) {
   std::unique_lock<std::mutex> lk(readyMutex);
   if (readyCondition.wait_for(lk, timeout, [this] { return ready; })) {
@@ -36,7 +35,7 @@ CacheableVectorPtr DefaultResultCollector::getResult(
       "getResult() method");
 }
 
-void DefaultResultCollector::addResult(const CacheablePtr& result) {
+void DefaultResultCollector::addResult(const std::shared_ptr<Cacheable>& result) {
   resultList->push_back(result);
 }
 

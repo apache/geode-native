@@ -75,7 +75,7 @@ namespace Apache
       /// This delegate should return an object of type <c>IGeodeSerializable</c>
       /// given a native object.
       /// </remarks>
-      delegate Apache::Geode::Client::IGeodeSerializable^ WrapperDelegateGeneric(native::SerializablePtr obj);
+      delegate Apache::Geode::Client::IGeodeSerializable^ WrapperDelegateGeneric(std::shared_ptr<native::Serializable> obj);
 
 			/// <summary>
       /// Signature of function delegates passed to
@@ -318,81 +318,81 @@ namespace Apache
          static Dictionary<String^, PdxTypeFactoryMethod^>^ PdxDelegateMap =
           gcnew Dictionary<String^, PdxTypeFactoryMethod^>();
        
-        static String^ GetString(native::CacheableStringPtr cStr);//native::CacheableString*
+        static String^ GetString(std::shared_ptr<native::CacheableString> cStr);//native::CacheableString*
         
         // These are the new static methods to get/put data from c++
 
         //byte
-        static Byte getByte(native::SerializablePtr nativeptr);
+        static Byte getByte(std::shared_ptr<native::Serializable> nativeptr);
         
-        static native::CacheableKeyPtr getCacheableByte(SByte val);
+        static std::shared_ptr<native::CacheableKey> getCacheableByte(SByte val);
         
         //boolean
-        static bool getBoolean(native::SerializablePtr nativeptr);
+        static bool getBoolean(std::shared_ptr<native::Serializable> nativeptr);
         
-        static native::CacheableKeyPtr getCacheableBoolean(bool val);
+        static std::shared_ptr<native::CacheableKey> getCacheableBoolean(bool val);
         
         //widechar
-        static Char getChar(native::SerializablePtr nativeptr);
+        static Char getChar(std::shared_ptr<native::Serializable> nativeptr);
         
-        static native::CacheableKeyPtr getCacheableWideChar(Char val);
+        static std::shared_ptr<native::CacheableKey> getCacheableWideChar(Char val);
         
         //double
-        static double getDouble(native::SerializablePtr nativeptr);
+        static double getDouble(std::shared_ptr<native::Serializable> nativeptr);
         
-        static native::CacheableKeyPtr getCacheableDouble(double val);
+        static std::shared_ptr<native::CacheableKey> getCacheableDouble(double val);
         
         //float
-        static float getFloat(native::SerializablePtr nativeptr);
+        static float getFloat(std::shared_ptr<native::Serializable> nativeptr);
         
-        static native::CacheableKeyPtr getCacheableFloat(float val);
+        static std::shared_ptr<native::CacheableKey> getCacheableFloat(float val);
         
         //int16
-        static System::Int16 getInt16(native::SerializablePtr nativeptr);
+        static System::Int16 getInt16(std::shared_ptr<native::Serializable> nativeptr);
         
-        static native::CacheableKeyPtr getCacheableInt16(int val);
+        static std::shared_ptr<native::CacheableKey> getCacheableInt16(int val);
         
         //int32
-        static System::Int32 getInt32(native::SerializablePtr nativeptr);
+        static System::Int32 getInt32(std::shared_ptr<native::Serializable> nativeptr);
         
-        static native::CacheableKeyPtr getCacheableInt32(System::Int32 val);
+        static std::shared_ptr<native::CacheableKey> getCacheableInt32(System::Int32 val);
         
         //int64
-        static System::Int64 getInt64(native::SerializablePtr nativeptr);
+        static System::Int64 getInt64(std::shared_ptr<native::Serializable> nativeptr);
         
-        static native::CacheableKeyPtr getCacheableInt64(System::Int64 val);
+        static std::shared_ptr<native::CacheableKey> getCacheableInt64(System::Int64 val);
         
         //cacheable ascii string
-        static String^ getASCIIString(native::SerializablePtr nativeptr);        
+        static String^ getASCIIString(std::shared_ptr<native::Serializable> nativeptr);
 
-        static native::CacheableKeyPtr getCacheableASCIIString(String^ val);
+        static std::shared_ptr<native::CacheableKey> getCacheableASCIIString(String^ val);
 
-        static native::CacheableKeyPtr getCacheableASCIIString2(String^ val);
+        static std::shared_ptr<native::CacheableKey> getCacheableASCIIString2(String^ val);
         
         //cacheable ascii string huge
-        static String^ getASCIIStringHuge(native::SerializablePtr nativeptr);
+        static String^ getASCIIStringHuge(std::shared_ptr<native::Serializable> nativeptr);
         
-        static native::CacheableKeyPtr getCacheableASCIIStringHuge(String^ val);        
+        static std::shared_ptr<native::CacheableKey> getCacheableASCIIStringHuge(String^ val);
 
         //cacheable string
-        static String^ getUTFString(native::SerializablePtr nativeptr);        
+        static String^ getUTFString(std::shared_ptr<native::Serializable> nativeptr);
 
-        static native::CacheableKeyPtr getCacheableUTFString(String^ val);
+        static std::shared_ptr<native::CacheableKey> getCacheableUTFString(String^ val);
         
 
         //cacheable string huge
-        static String^ getUTFStringHuge(native::SerializablePtr nativeptr);
+        static String^ getUTFStringHuge(std::shared_ptr<native::Serializable> nativeptr);
         
 
-        static native::CacheableKeyPtr getCacheableUTFStringHuge(String^ val);
+        static std::shared_ptr<native::CacheableKey> getCacheableUTFStringHuge(String^ val);
         
 
-       static native::CacheableStringPtr GetCacheableString(String^ value);       
+       static std::shared_ptr<native::CacheableString> GetCacheableString(String^ value);
 
-       static native::CacheableStringPtr GetCacheableString2(String^ value); 
+       static std::shared_ptr<native::CacheableString> GetCacheableString2(String^ value);
 
        /*
-        static String^ GetString(native::CacheableStringPtr cStr)//native::CacheableString*
+        static String^ GetString(std::shared_ptr<native::CacheableString> cStr)//native::CacheableString*
         {
           if (cStr == nullptr) {
             return nullptr;
@@ -425,7 +425,7 @@ namespace Apache
         /// Internal constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Apache::Geode::Client::Serializable(native::SerializablePtr nativeptr)
+        inline Apache::Geode::Client::Serializable(std::shared_ptr<native::Serializable> nativeptr)
         {
           m_nativeptr = gcnew native_shared_ptr<native::Serializable>(nativeptr);
         }
@@ -452,19 +452,19 @@ namespace Apache
         static void UnregisterTypeGeneric(Byte typeId, Cache^ cache);
 
         generic<class TValue>
-        static TValue GetManagedValueGeneric(native::SerializablePtr val);
+        static TValue GetManagedValueGeneric(std::shared_ptr<native::Serializable> val);
 
         generic<class TKey>
-        static native::CacheableKeyPtr GetUnmanagedValueGeneric(TKey key);
+        static std::shared_ptr<native::CacheableKey> GetUnmanagedValueGeneric(TKey key);
 
         generic<class TKey>
-        static native::CacheableKeyPtr GetUnmanagedValueGeneric(TKey key, bool isAciiChar);
+        static std::shared_ptr<native::CacheableKey> GetUnmanagedValueGeneric(TKey key, bool isAciiChar);
 
         generic<class TKey>
-        static native::CacheableKeyPtr GetUnmanagedValueGeneric(Type^ managedType, TKey key);
+        static std::shared_ptr<native::CacheableKey> GetUnmanagedValueGeneric(Type^ managedType, TKey key);
 
         generic<class TKey>
-        static native::CacheableKeyPtr GetUnmanagedValueGeneric(Type^ managedType, TKey key, bool isAsciiChar);
+        static std::shared_ptr<native::CacheableKey> GetUnmanagedValueGeneric(Type^ managedType, TKey key, bool isAsciiChar);
 
         /// <summary>
         /// Static map of <c>TypeFactoryMethod</c> delegates created

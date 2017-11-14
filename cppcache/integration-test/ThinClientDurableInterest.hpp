@@ -52,7 +52,7 @@ class OperMonitor : public CacheListener {
   void check(const EntryEvent& event) {
     m_ops++;
 
-    CacheableKeyPtr key = event.getKey();
+    auto key = event.getKey();
     auto value = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
 
     char buf[256];
@@ -114,23 +114,21 @@ class OperMonitor : public CacheListener {
     LOG("afterRegionLive called.");
   }
 };
-typedef std::shared_ptr<OperMonitor> OperMonitorPtr;
 
 const char* mixKeys[] = {"Key-1", "D-Key-1", "Key-2", "D-Key-2"};
-const char* testRegex[] = {"D-Key-.*", "Key-.*"};
-OperMonitorPtr mon1, mon2;
+const char* testRegex[] = {"D-Key-.*", "Key-.*"}; std::shared_ptr<OperMonitor> mon1, mon2;
 
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"
 
-void setCacheListener(const char* regName, OperMonitorPtr monitor) {
+void setCacheListener(const char* regName, std::shared_ptr<OperMonitor> monitor) {
   LOGINFO("setCacheListener to %s ", regName);
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(monitor);
 }
 
-void initClientWithIntrest(int ClientIdx, OperMonitorPtr& mon) {
+void initClientWithIntrest(int ClientIdx, std::shared_ptr<OperMonitor>& mon) {
   if (mon == nullptr) {
     mon = std::make_shared<OperMonitor>();
   }
@@ -145,13 +143,13 @@ void initClientWithIntrest(int ClientIdx, OperMonitorPtr& mon) {
     LOG("Exception occured while sending readyForEvents");
   }
 
-  RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+ auto regPtr0 = getHelper()->getRegion(regionNames[0]);
   regPtr0->registerRegex(testRegex[0], true);
   regPtr0->registerRegex(testRegex[1], false);
 }
 
-void initClientWithIntrest2(int ClientIdx, OperMonitorPtr& monitor1,
-                            OperMonitorPtr& monitor2) {
+void initClientWithIntrest2(int ClientIdx, std::shared_ptr<OperMonitor>& monitor1,
+                            std::shared_ptr<OperMonitor>& monitor2) {
   initClientAndTwoRegionsAndTwoPools(0, ClientIdx, std::chrono::seconds(60));
   if (monitor1 == nullptr) {
     monitor1 = std::make_shared<OperMonitor>(1);
@@ -163,7 +161,7 @@ void initClientWithIntrest2(int ClientIdx, OperMonitorPtr& monitor1,
   setCacheListener(regionNames[1], monitor2);
 }
 
-void initClientNoIntrest(int ClientIdx, OperMonitorPtr mon) {
+void initClientNoIntrest(int ClientIdx, std::shared_ptr<OperMonitor> mon) {
   initClientAndRegion(0, ClientIdx);
 
   setCacheListener(regionNames[0], mon);
@@ -171,13 +169,13 @@ void initClientNoIntrest(int ClientIdx, OperMonitorPtr mon) {
   getHelper()->cachePtr->readyForEvents();
 }
 
-void initClientRemoveIntrest(int ClientIdx, OperMonitorPtr mon) {
+void initClientRemoveIntrest(int ClientIdx, std::shared_ptr<OperMonitor> mon) {
   initClientAndRegion(0, ClientIdx);
   setCacheListener(regionNames[0], mon);
   getHelper()->cachePtr->readyForEvents();
 
   // Only unregister durable Intrest.
-  RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+ auto regPtr0 = getHelper()->getRegion(regionNames[0]);
   regPtr0->registerRegex(testRegex[0], true);
   regPtr0->unregisterRegex(testRegex[0]);
 }

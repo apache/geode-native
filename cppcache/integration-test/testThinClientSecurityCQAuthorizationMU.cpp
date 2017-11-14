@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <geode/CqAttributesFactory.hpp>
 #include <geode/CqAttributes.hpp>
 #include <geode/CqListener.hpp>
@@ -54,7 +53,7 @@ using namespace apache::geode::client;
 
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-CredentialGeneratorPtr credentialGeneratorHandler;
+std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define CLIENT2 s1p2
@@ -148,76 +147,76 @@ void initCredentialGenerator() {
     FAIL("credentialGeneratorHandler is nullptr");
   }
 }
+ std::shared_ptr<Properties> userCreds;
+ void initClientCq(const bool isthinClient) {
+   userCreds = Properties::create();
+   auto config = Properties::create();
+   // credentialGeneratorHandler->getAuthInit(config);
+   credentialGeneratorHandler->getValidCredentials(userCreds);
 
-PropertiesPtr userCreds;
-void initClientCq(const bool isthinClient) {
-  userCreds = Properties::create();
-  PropertiesPtr config = Properties::create();
-  // credentialGeneratorHandler->getAuthInit(config);
-  credentialGeneratorHandler->getValidCredentials(userCreds);
+   if (cacheHelper == nullptr) {
+     cacheHelper = new CacheHelper(isthinClient, config);
+   }
+   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
+   try {
+     auto serializationRegistry =
+         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+             ->getSerializationRegistry();
+     serializationRegistry->addType(Position::createDeserializable);
+     serializationRegistry->addType(Portfolio::createDeserializable);
+   } catch (const IllegalStateException&) {
+     // ignore exception
+   }
+ }
 
-  if (cacheHelper == nullptr) {
-    cacheHelper = new CacheHelper(isthinClient, config);
-  }
-  ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
-  try {
-    SerializationRegistryPtr serializationRegistry =
-        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
-            ->getSerializationRegistry();
-    serializationRegistry->addType(Position::createDeserializable);
-    serializationRegistry->addType(Portfolio::createDeserializable);
-  } catch (const IllegalStateException&) {
-    // ignore exception
-  }
-}
+ DUNIT_TASK_DEFINITION(CLIENT1, CreateServer1)
+   {
+     initCredentialGenerator();
+     std::string cmdServerAuthenticator;
 
-DUNIT_TASK_DEFINITION(CLIENT1, CreateServer1)
-  {
-    initCredentialGenerator();
-    std::string cmdServerAuthenticator;
+     if (isLocalServer) {
+       cmdServerAuthenticator = credentialGeneratorHandler->getServerCmdParams(
+           "authenticator:authorizer:authorizerPP", getXmlPath());
+       printf("string %s", cmdServerAuthenticator.c_str());
+       CacheHelper::initServer(
+           1, "remotequery.xml", nullptr,
+           const_cast<char*>(cmdServerAuthenticator.c_str()));
+       LOG("Server1 started");
+     }
+   }
+ END_TASK_DEFINITION
 
-    if (isLocalServer) {
-      cmdServerAuthenticator = credentialGeneratorHandler->getServerCmdParams(
-          "authenticator:authorizer:authorizerPP", getXmlPath());
-      printf("string %s", cmdServerAuthenticator.c_str());
-      CacheHelper::initServer(
-          1, "remotequery.xml", nullptr,
-          const_cast<char*>(cmdServerAuthenticator.c_str()));
-      LOG("Server1 started");
-    }
-  }
-END_TASK_DEFINITION
+ DUNIT_TASK_DEFINITION(CLIENT1, CreateServer2)
+   {
+     std::string cmdServerAuthenticator;
 
-DUNIT_TASK_DEFINITION(CLIENT1, CreateServer2)
-  {
-    std::string cmdServerAuthenticator;
+     if (isLocalServer) {
+       cmdServerAuthenticator = credentialGeneratorHandler->getServerCmdParams(
+           "authenticator:authorizer:authorizerPP", getXmlPath());
+       printf("string %s", cmdServerAuthenticator.c_str());
+       CacheHelper::initServer(
+           2, "remotequery2.xml", nullptr,
+           const_cast<char*>(cmdServerAuthenticator.c_str()));
+       LOG("Server2 started");
+     }
+     SLEEP(20000);
+   }
+ END_TASK_DEFINITION
 
-    if (isLocalServer) {
-      cmdServerAuthenticator = credentialGeneratorHandler->getServerCmdParams(
-          "authenticator:authorizer:authorizerPP", getXmlPath());
-      printf("string %s", cmdServerAuthenticator.c_str());
-      CacheHelper::initServer(
-          2, "remotequery2.xml", nullptr,
-          const_cast<char*>(cmdServerAuthenticator.c_str()));
-      LOG("Server2 started");
-    }
-    SLEEP(20000);
-  }
-END_TASK_DEFINITION
+ void stepOne(bool pool = false, bool locator = false) {
+   LOG("StepOne1 complete. 1");
+   initClientCq(true);
+   LOG("StepOne1 complete. 2");
+   createRegionForCQMU(regionNamesCq[0], USE_ACK, true, 0, nullptr, false,
+                       true);
+   LOG("StepOne1 complete. 3");
+   auto regptr = getHelper()->getRegion(regionNamesCq[0]);
+   LOG("StepOne1 complete. 4");
+   std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
+   LOG("StepOne1 complete. 5");
+   auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
 
-void stepOne(bool pool = false, bool locator = false) {
-  LOG("StepOne1 complete. 1");
-  initClientCq(true);
-  LOG("StepOne1 complete. 2");
-  createRegionForCQMU(regionNamesCq[0], USE_ACK, true, 0, nullptr, false, true);
-  LOG("StepOne1 complete. 3");
-  RegionPtr regptr = getHelper()->getRegion(regionNamesCq[0]);
-  LOG("StepOne1 complete. 4");
-  RegionAttributesPtr lattribPtr = regptr->getAttributes();
-  LOG("StepOne1 complete. 5");
-  RegionPtr subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
-
-  LOG("StepOne complete.");
+   LOG("StepOne complete.");
 }
 
 void stepOne2(bool pool = false, bool locator = false) {
@@ -226,11 +225,11 @@ void stepOne2(bool pool = false, bool locator = false) {
   LOG("StepOne2 complete. 2");
   createRegionForCQMU(regionNamesCq[0], USE_ACK, true, 0, nullptr, false, true);
   LOG("StepOne2 complete. 3");
-  RegionPtr regptr = getHelper()->getRegion(regionNamesCq[0]);
+ auto regptr = getHelper()->getRegion(regionNamesCq[0]);
   LOG("StepOne2 complete. 4");
-  RegionAttributesPtr lattribPtr = regptr->getAttributes();
+  std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
   LOG("StepOne2 complete. 5");
-  RegionPtr subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+  auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
 
   LOG("StepOne2 complete.");
 }
@@ -245,21 +244,20 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepOne2_PoolEP)
     stepOne2(true, false);
   }
 END_TASK_DEFINITION
-
-PoolPtr getPool(const char* name) {
+ std::shared_ptr<Pool> getPool(const char* name) {
   return getHelper()->getCache()->getPoolManager().find(name);
+ }
+ std::shared_ptr<RegionService> getVirtualCache(
+     std::shared_ptr<Properties> creds, const char* name) {
+   return getHelper()->getCache()->createAuthenticatedView(creds, name);
 }
 
-RegionServicePtr getVirtualCache(PropertiesPtr creds, const char* name) {
-  return getHelper()->getCache()->createAuthenticatedView(creds, name);
-}
-
-static RegionServicePtr userCache;
-static QueryServicePtr userQueryService;
+static std::shared_ptr<RegionService> userCache;
+static std::shared_ptr<QueryService> userQueryService;
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
   {
-    PropertiesPtr creds = Properties::create();
+    auto creds = Properties::create();
     char tmp[25] = {'\0'};
     sprintf(tmp, "user%d", 4);
 
@@ -267,10 +265,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
     creds->insert("security-password", tmp);
 
     userCache = getVirtualCache(creds, regionNamesCq[0]);
-    RegionPtr regPtr0 = userCache->getRegion(regionNamesCq[0]);
-    RegionPtr subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
+   auto regPtr0 = userCache->getRegion(regionNamesCq[0]);
+   auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
-    LOG("StepTwo complete.");
+   LOG("StepTwo complete.");
   }
 END_TASK_DEFINITION
 
@@ -281,7 +279,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     // userCache = getVirtualCache(userCreds, regionNamesCq[0]);
 
     userQueryService = userCache->getQueryService();
-    QueryServicePtr qs;
+    std::shared_ptr<QueryService> qs;
 
     qs = userQueryService;
 
@@ -290,10 +288,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
         auto cqLstner = std::make_shared<MyCqListener>(i);
         CqAttributesFactory cqFac;
         cqFac.addCqListener(cqLstner);
-        CqAttributesPtr cqAttr = cqFac.create();
+       auto cqAttr = cqFac.create();
 
-        CqQueryPtr qry = qs->newCq(cqNames[i], queryStrings[i], cqAttr);
-        qry->execute();
+       auto qry = qs->newCq(cqNames[i], queryStrings[i], cqAttr);
+       qry->execute();
       }
 
       LOG("EXECUTE 1 START");
@@ -316,7 +314,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo2)
   {
-    PropertiesPtr creds = Properties::create();
+   auto creds = Properties::create();
     char tmp[25] = {'\0'};
     sprintf(tmp, "user%d", 3);
 
@@ -324,32 +322,32 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo2)
     creds->insert("security-password", tmp);
 
     userCache = getVirtualCache(creds, regionNamesCq[0]);
-    RegionPtr regPtr0 = userCache->getRegion(regionNamesCq[0]);
-    RegionPtr subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
+   auto regPtr0 = userCache->getRegion(regionNamesCq[0]);
+   auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+   QueryHelper* qh = &QueryHelper::getHelper();
 
-    qh->populatePortfolioData(regPtr0, 3, 2, 1);
-    qh->populatePositionData(subregPtr0, 3, 2);
-    for (int i = 1; i <= 4; i++) {
-      auto port = std::make_shared<Portfolio>(i, 2);
+   qh->populatePortfolioData(regPtr0, 3, 2, 1);
+   qh->populatePositionData(subregPtr0, 3, 2);
+   for (int i = 1; i <= 4; i++) {
+     auto port = std::make_shared<Portfolio>(i, 2);
 
-      char tmp[25] = {'\0'};
-      sprintf(tmp, "port1-%d", i);
-      CacheableKeyPtr keyport = CacheableKey::create(tmp);
+     char tmp[25] = {'\0'};
+     sprintf(tmp, "port1-%d", i);
+     auto keyport = CacheableKey::create(tmp);
       regPtr0->put(keyport, port);
       SLEEP(10);  // sleep a while to allow server query to complete
-    }
+   }
 
-    LOG("StepTwo2 complete. Sleeping .25 min for server query to complete...");
-    SLEEP(15000);  // sleep .25 min to allow server query to complete
+   LOG("StepTwo2 complete. Sleeping .25 min for server query to complete...");
+   SLEEP(15000);  // sleep .25 min to allow server query to complete
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
-    // CachePtr userCache = getVirtualCache(userCreds, regionNamesCq[0]);
-    QueryServicePtr qs;
+    //auto userCache = getVirtualCache(userCreds, regionNamesCq[0]);
+    std::shared_ptr<QueryService> qs;
 
     qs = userQueryService;
 
@@ -372,8 +370,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     for (i = 0; i < MAX_LISTNER; i++) {
       sprintf(buf, "get info for cq[%s]:", cqNames[i]);
       LOG(buf);
-      CqQueryPtr cqy = qs->getCq(cqNames[i]);
-      // CqStatisticsPtr cqStats = cqy->getStatistics();
+     auto cqy = qs->getCq(cqNames[i]);
+      //auto cqStats = cqy->getStatistics();
     }
 
     // if key port1-4 then only query 3 and 4 will satisfied
@@ -401,10 +399,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     {
       sprintf(buf, "get info for cq[%s]:", cqNames[i]);
       LOG(buf);
-      CqQueryPtr cqy = qs->getCq(cqNames[i]);
+     auto cqy = qs->getCq(cqNames[i]);
       cqy->stop();
       cqy->close();
-     // CqStatisticsPtr cqStats = cqy->getStatistics();
+     //auto cqStats = cqy->getStatistics();
     }*/
 
     // userCache->close();
@@ -434,8 +432,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
     for (i = 0; i < MAX_LISTNER; i++) {
       sprintf(buf, "get info for cq[%s]:", cqNames[i]);
       LOG(buf);
-      CqQueryPtr cqy = qs->getCq(cqNames[i]);
-      // CqStatisticsPtr cqStats = cqy->getStatistics();
+     auto cqy = qs->getCq(cqNames[i]);
+      //auto cqStats = cqy->getStatistics();
     }
 
     // if key port1-4 then only query 3 and 4 will satisfied
@@ -463,10 +461,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
     {
       sprintf(buf, "get info for cq[%s]:", cqNames[i]);
       LOG(buf);
-      CqQueryPtr cqy = qs->getCq(cqNames[i]);
+     auto cqy = qs->getCq(cqNames[i]);
       cqy->stop();
       cqy->close();
-     // CqStatisticsPtr cqStats = cqy->getStatistics();
+     //auto cqStats = cqy->getStatistics();
     }*/
 
     userCache->close();

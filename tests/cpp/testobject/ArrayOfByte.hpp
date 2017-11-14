@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-#include <geode/GeodeCppCache.hpp>
 #include <string>
 #include "fwklib/FwkLog.hpp"
 #include "fwklib/FrameworkTest.hpp"
@@ -47,8 +46,8 @@ namespace testobject {
 
 class TESTOBJECT_EXPORT ArrayOfByte {
  public:
-  static CacheableBytesPtr init(int size, bool encodeKey,
-                                bool encodeTimestamp) {
+  static std::shared_ptr<CacheableBytes> init(int size, bool encodeKey,
+                                              bool encodeTimestamp) {
     if (encodeKey) {
       DataOutputInternal dos;
       try {
@@ -80,7 +79,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
     }
   }
 
-  static int64_t getTimestamp(CacheableBytesPtr bytes,
+  static int64_t getTimestamp(std::shared_ptr<CacheableBytes> bytes,
                               SerializationRegistry &serializationRegistry) {
     if (bytes == nullptr) {
       throw apache::geode::client::IllegalArgumentException(
@@ -99,7 +98,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
     }
   }
 
-  static void resetTimestamp(CacheableBytesPtr bytes,
+  static void resetTimestamp(std::shared_ptr<CacheableBytes> bytes,
                              SerializationRegistry &serializationRegistry) {
     DataInputInternal di(bytes->value(), bytes->length(), nullptr);
     int32_t index;

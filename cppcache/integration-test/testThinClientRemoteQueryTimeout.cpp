@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include <string>
@@ -58,7 +57,9 @@ static bool m_isPdx = false;
 void stepOne() {
   initClient(true);
   try {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     serializationRegistry->addType(Position::createDeserializable);
     serializationRegistry->addType(Portfolio::createDeserializable);
 
@@ -71,9 +72,9 @@ void stepOne() {
   createPool(poolNames[0], locHostPort, nullptr, 0, true);
   createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
 
-  RegionPtr regptr = getHelper()->getRegion(qRegionNames[0]);
-  RegionAttributesPtr lattribPtr = regptr->getAttributes();
-  RegionPtr subregPtr = regptr->createSubregion(qRegionNames[1], lattribPtr);
+  auto regptr = getHelper()->getRegion(qRegionNames[0]);
+  std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
+  auto subregPtr = regptr->createSubregion(qRegionNames[1], lattribPtr);
 
   LOG("StepOne complete.");
 }
@@ -119,8 +120,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(qRegionNames[0]);
-    RegionPtr subregPtr0 = regPtr0->getSubregion(qRegionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(qRegionNames[0]);
+    auto subregPtr0 = regPtr0->getSubregion(qRegionNames[1]);
 
     QueryHelper* qh = &QueryHelper::getHelper();
 
@@ -140,17 +141,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = nullptr;
+    std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
-      PoolPtr pool1 = findPool(poolNames[0]);
+      auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    QueryPtr qry =
-        qs->newQuery(const_cast<char*>(resultsetQueries[34].query()));
+    auto qry = qs->newQuery(const_cast<char*>(resultsetQueries[34].query()));
 
-    SelectResultsPtr results;
+    std::shared_ptr<SelectResults> results;
 
     try {
       LOG("EXECUTE 1 START");
@@ -184,17 +184,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = nullptr;
+    std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
-      PoolPtr pool1 = findPool(poolNames[0]);
+      auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    QueryPtr qry =
-        qs->newQuery(const_cast<char*>(resultsetQueries[34].query()));
+    auto qry = qs->newQuery(const_cast<char*>(resultsetQueries[34].query()));
 
-    SelectResultsPtr results;
+    std::shared_ptr<SelectResults> results;
 
     try {
       LOG("EXECUTE 2 START");
@@ -224,17 +223,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = nullptr;
+    std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
-      PoolPtr pool1 = findPool(poolNames[0]);
+      auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    QueryPtr qry =
-        qs->newQuery(const_cast<char*>(structsetQueries[17].query()));
+    auto qry = qs->newQuery(const_cast<char*>(structsetQueries[17].query()));
 
-    SelectResultsPtr results;
+    std::shared_ptr<SelectResults> results;
 
     try {
       LOG("EXECUTE 3 START");
@@ -268,17 +266,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = nullptr;
+    std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
-      PoolPtr pool1 = findPool(poolNames[0]);
+      auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    QueryPtr qry =
-        qs->newQuery(const_cast<char*>(structsetQueries[17].query()));
+    auto qry = qs->newQuery(const_cast<char*>(structsetQueries[17].query()));
 
-    SelectResultsPtr results;
+    std::shared_ptr<SelectResults> results;
 
     try {
       LOG("EXECUTE 4 START");
@@ -308,22 +305,22 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = nullptr;
+    std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
-      PoolPtr pool1 = findPool(poolNames[0]);
+      auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    QueryPtr qry =
+    auto qry =
         qs->newQuery(const_cast<char*>(structsetParamQueries[5].query()));
 
-    SelectResultsPtr results;
+    std::shared_ptr<SelectResults> results;
 
     try {
       LOG("EXECUTE 5 START");
 
-      CacheableVectorPtr paramList = CacheableVector::create();
+      auto paramList = CacheableVector::create();
 
       for (int j = 0; j < numSSQueryParam[5]; j++) {
         if (atoi(queryparamSetSS[5][j]) != 0) {
@@ -361,22 +358,22 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = nullptr;
+    std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
-      PoolPtr pool1 = findPool(poolNames[0]);
+      auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    QueryPtr qry =
+    auto qry =
         qs->newQuery(const_cast<char*>(structsetParamQueries[5].query()));
 
-    SelectResultsPtr results;
+    std::shared_ptr<SelectResults> results;
 
     try {
       LOG("EXECUTE 6 START");
 
-      CacheableVectorPtr paramList = CacheableVector::create();
+      auto paramList = CacheableVector::create();
 
       for (int j = 0; j < numSSQueryParam[5]; j++) {
         if (atoi(queryparamSetSS[5][j]) != 0) {
@@ -411,17 +408,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyNegativeValueTimeout)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = nullptr;
+    std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
-      PoolPtr pool1 = findPool(poolNames[0]);
+      auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    QueryPtr qry =
-        qs->newQuery(const_cast<char*>(resultsetQueries[34].query()));
+    auto qry = qs->newQuery(const_cast<char*>(resultsetQueries[34].query()));
 
-    SelectResultsPtr results;
+    std::shared_ptr<SelectResults> results;
 
     try {
       LOG("Task::verifyNegativeValueTimeout - EXECUTE 1 START");
@@ -457,17 +453,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyLargeValueTimeout)
   {
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = nullptr;
+    std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
-      PoolPtr pool1 = findPool(poolNames[0]);
+      auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    QueryPtr qry =
-        qs->newQuery(const_cast<char*>(resultsetQueries[34].query()));
+    auto qry = qs->newQuery(const_cast<char*>(resultsetQueries[34].query()));
 
-    SelectResultsPtr results;
+    std::shared_ptr<SelectResults> results;
 
     try {
       LOG("Task:: verifyLargeValueTimeout - EXECUTE 1 START");

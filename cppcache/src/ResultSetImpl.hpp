@@ -40,13 +40,13 @@ class CPPCACHE_EXPORT ResultSetImpl
     : public ResultSet,
       public std::enable_shared_from_this<ResultSetImpl> {
  public:
-  ResultSetImpl(const CacheableVectorPtr& response);
+  ResultSetImpl(const std::shared_ptr<CacheableVector>& response);
 
   bool isModifiable() const;
 
   int32_t size() const;
 
-  const SerializablePtr operator[](int32_t index) const;
+  const std::shared_ptr<Serializable> operator[](int32_t index) const;
 
   SelectResultsIterator getIterator();
 
@@ -59,7 +59,7 @@ class CPPCACHE_EXPORT ResultSetImpl
   ~ResultSetImpl();
 
  private:
-  CacheableVectorPtr m_resultSetVector;
+  std::shared_ptr<CacheableVector> m_resultSetVector;
   // UNUSED int32_t m_nextIndex;
 };
 }  // namespace client

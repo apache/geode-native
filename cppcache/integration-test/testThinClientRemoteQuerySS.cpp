@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include <string>
@@ -65,106 +64,103 @@ std::string checkNullString(const std::string* str) {
     return ((str == nullptr) ? "(null)" : *str);
 }
 
-void _printFields(CacheablePtr field, Struct* ssptr, int32_t& fields) {
- try {
-  if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(field)) {
-  printf("   pulled %s :- ID %d, pkid %s\n",
-           ssptr->getFieldName(fields).c_str(), portfolio->getID(),
-           checkNullString(portfolio->getPkid()->asChar()));
-    printf("   pulled %s :- ID %d, pkid %s\n",
-           ssptr->getFieldName(fields).c_str(), portfolio->getID(),
-           checkNullString(portfolio->getPkid()->asChar()));
-  } else if (auto position = std::dynamic_pointer_cast<Position>(field)) {
-    printf("   pulled %s :- secId %s, shares %d\n",
-           ssptr->getFieldName(fields).c_str(),
-           checkNullString(position->getSecId()->asChar()),
-           position->getSharesOutstanding());
-  } else if (auto portfolioPdx =
-                 std::dynamic_pointer_cast<PortfolioPdx>(field)) {
-    printf("   pulled %s :- ID %d, pkid %s\n",
-           ssptr->getFieldName(fields).c_str(),
-           portfolioPdx->getID(),
-           checkNullString(portfolioPdx->getPkid()));
-  } else if (auto positionPdx = std::dynamic_pointer_cast<PositionPdx>(field)) {
-    printf("   pulled %s :- secId %s, shares %d\n",
-           ssptr->getFieldName(fields).c_str(),
-           checkNullString(positionPdx->getSecId()),
-           positionPdx->getSharesOutstanding());
-  } else {
-    if (auto str = std::dynamic_pointer_cast<CacheableString>(field)) {
-      if (str->isWideString()) {
-        printf("   pulled %s :- %S\n",
-               ssptr->getFieldName(fields).c_str(),
-               checkNullString(str->asWChar()));
-      } else {
-        printf("   pulled %s :- %s\n",
-               ssptr->getFieldName(fields).c_str(),
-               checkNullString(str->asChar()));
-      }
-    } else if (auto boolptr =
-                   std::dynamic_pointer_cast<CacheableBoolean>(field)) {
-      printf("   pulled %s :- %s\n",
+void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
+                  int32_t& fields) {
+  try {
+    if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(field)) {
+      printf("   pulled %s :- ID %d, pkid %s\n",
+             ssptr->getFieldName(fields).c_str(), portfolio->getID(),
+             checkNullString(portfolio->getPkid()->asChar()));
+      printf("   pulled %s :- ID %d, pkid %s\n",
+             ssptr->getFieldName(fields).c_str(), portfolio->getID(),
+             checkNullString(portfolio->getPkid()->asChar()));
+    } else if (auto position = std::dynamic_pointer_cast<Position>(field)) {
+      printf("   pulled %s :- secId %s, shares %d\n",
              ssptr->getFieldName(fields).c_str(),
-             boolptr->toString()->asChar());
+             checkNullString(position->getSecId()->asChar()),
+             position->getSharesOutstanding());
+    } else if (auto portfolioPdx =
+                   std::dynamic_pointer_cast<PortfolioPdx>(field)) {
+      printf("   pulled %s :- ID %d, pkid %s\n",
+             ssptr->getFieldName(fields).c_str(), portfolioPdx->getID(),
+             checkNullString(portfolioPdx->getPkid()));
+    } else if (auto positionPdx =
+                   std::dynamic_pointer_cast<PositionPdx>(field)) {
+      printf("   pulled %s :- secId %s, shares %d\n",
+             ssptr->getFieldName(fields).c_str(),
+             checkNullString(positionPdx->getSecId()),
+             positionPdx->getSharesOutstanding());
     } else {
-      if (auto ptr = std::dynamic_pointer_cast<CacheableKey>(field)) {
-        char buff[1024] = {'\0'};
-        ptr->logString(&buff[0], 1024);
-        printf("   pulled %s :- %s \n",
-               ssptr->getFieldName(fields).c_str(), buff);
-      } else if (auto strArr =
-                     std::dynamic_pointer_cast<CacheableStringArray>(field)) {
-        printf(" string array object printing \n\n");
-        for (int stri = 0; stri < strArr->length(); stri++) {
-          if (strArr->operator[](stri)->isWideString()) {
-            printf("   pulled %s(%d) - %S \n",
-                   ssptr->getFieldName(fields).c_str(), stri,
-                   checkNullString(strArr->operator[](stri)->asWChar()));
-          } else {
-            printf("   pulled %s(%d) - %s \n",
-                   ssptr->getFieldName(fields).c_str(), stri,
-                   checkNullString(strArr->operator[](stri)->asChar()));
-          }
+      if (auto str = std::dynamic_pointer_cast<CacheableString>(field)) {
+        if (str->isWideString()) {
+          printf("   pulled %s :- %S\n", ssptr->getFieldName(fields).c_str(),
+                 checkNullString(str->asWChar()));
+        } else {
+          printf("   pulled %s :- %s\n", ssptr->getFieldName(fields).c_str(),
+                 checkNullString(str->asChar()));
         }
-      } else if (auto map =
-                     std::dynamic_pointer_cast<CacheableHashMap>(field)) {
-        int index = 0;
-        for (const auto& iter : *map) {
-          printf("   hashMap %d of %zd ... \n", ++index, map->size());
-          _printFields(iter.first, ssptr, fields);
-          _printFields(iter.second, ssptr, fields);
-        }
-        printf("   end of map \n");
-      } else if (auto structimpl = std::dynamic_pointer_cast<Struct>(field)) {
-        printf("   structImpl %s {\n",
-               ssptr->getFieldName(fields).c_str());
-        for (int32_t inner_fields = 0; inner_fields < structimpl->length();
-             inner_fields++) {
-          SerializablePtr field = (*structimpl)[inner_fields];
-          if (field == nullptr) {
-            printf("we got null fields here, probably we have nullptr data\n");
-            continue;
-          }
-
-          _printFields(field, structimpl.get(), inner_fields);
-
-        }  // end of field iterations
-        printf("   } //end of %s\n",
-               ssptr->getFieldName(fields).c_str());
+      } else if (auto boolptr =
+                     std::dynamic_pointer_cast<CacheableBoolean>(field)) {
+        printf("   pulled %s :- %s\n", ssptr->getFieldName(fields).c_str(),
+               boolptr->toString()->asChar());
       } else {
-        printf(
-            "unknown field data.. couldn't even convert it to Cacheable "
-            "variants\n");
-      }
-    }
+        if (auto ptr = std::dynamic_pointer_cast<CacheableKey>(field)) {
+          char buff[1024] = {'\0'};
+          ptr->logString(&buff[0], 1024);
+          printf("   pulled %s :- %s \n", ssptr->getFieldName(fields).c_str(),
+                 buff);
+        } else if (auto strArr =
+                       std::dynamic_pointer_cast<CacheableStringArray>(field)) {
+          printf(" string array object printing \n\n");
+          for (int stri = 0; stri < strArr->length(); stri++) {
+            if (strArr->operator[](stri)->isWideString()) {
+              printf("   pulled %s(%d) - %S \n",
+                     ssptr->getFieldName(fields).c_str(), stri,
+                     checkNullString(strArr->operator[](stri)->asWChar()));
+            } else {
+              printf("   pulled %s(%d) - %s \n",
+                     ssptr->getFieldName(fields).c_str(), stri,
+                     checkNullString(strArr->operator[](stri)->asChar()));
+            }
+          }
+        } else if (auto map =
+                       std::dynamic_pointer_cast<CacheableHashMap>(field)) {
+          int index = 0;
+          for (const auto& iter : *map) {
+            printf("   hashMap %d of %zd ... \n", ++index, map->size());
+            _printFields(iter.first, ssptr, fields);
+            _printFields(iter.second, ssptr, fields);
+          }
+          printf("   end of map \n");
+        } else if (auto structimpl = std::dynamic_pointer_cast<Struct>(field)) {
+          printf("   structImpl %s {\n", ssptr->getFieldName(fields).c_str());
+          for (int32_t inner_fields = 0; inner_fields < structimpl->length();
+               inner_fields++) {
+            auto field = (*structimpl)[inner_fields];
+            if (field == nullptr) {
+              printf(
+                  "we got null fields here, probably we have nullptr data\n");
+              continue;
+            }
 
-  }  // end of else
+            _printFields(field, structimpl.get(), inner_fields);
+
+          }  // end of field iterations
+          printf("   } //end of %s\n", ssptr->getFieldName(fields).c_str());
+        } else {
+          printf(
+              "unknown field data.. couldn't even convert it to Cacheable "
+              "variants\n");
+        }
+      }
+
+    }  // end of else
   } catch (const std::out_of_range& e) {
     printf("Caught a non-fatal out_of_range exception: %s", e.what());
   }
 }
 
-void _verifyStructSet(StructSetPtr& ssptr, int i) {
+void _verifyStructSet(std::shared_ptr<StructSet>& ssptr, int i) {
   printf("query idx %d \n", i);
   for (int32_t rows = 0; rows < ssptr->size(); rows++) {
     if (rows > (int32_t)QueryHelper::getHelper().getPortfolioSetSize()) {
@@ -179,7 +175,7 @@ void _verifyStructSet(StructSetPtr& ssptr, int i) {
 
     printf("   Row : %d \n", rows);
     for (int32_t fields = 0; fields < siptr->length(); fields++) {
-      SerializablePtr field = (*siptr)[fields];
+      auto field = (*siptr)[fields];
       if (field == nullptr) {
         printf("we got null fields here, probably we have nullptr data\n");
         continue;
@@ -205,9 +201,9 @@ void compareMaps(HashMapOfCacheable& map, HashMapOfCacheable& expectedMap) {
     const auto& expectedVal = expectedIter->second;
 
     if (std::dynamic_pointer_cast<PositionPdx>(expectedVal)) {
-      const PositionPdxPtr& posVal =
+      const std::shared_ptr<PositionPdx>& posVal =
           std::dynamic_pointer_cast<PositionPdx>(val);
-      const PositionPdxPtr& expectedPosVal =
+      const std::shared_ptr<PositionPdx>& expectedPosVal =
           std::static_pointer_cast<PositionPdx>(expectedVal);
       ASSERT(*expectedPosVal->getSecId() == *posVal->getSecId(),
              "Expected the secIDs to be equal in PositionPdx");
@@ -215,9 +211,9 @@ void compareMaps(HashMapOfCacheable& map, HashMapOfCacheable& expectedMap) {
                  posVal->getSharesOutstanding(),
              "Expected the sharesOutstanding to be equal in PositionPdx");
     } else {
-      const PortfolioPdxPtr& portVal =
+      const std::shared_ptr<PortfolioPdx>& portVal =
           std::dynamic_pointer_cast<PortfolioPdx>(val);
-      const PortfolioPdxPtr& expectedPortVal =
+      const std::shared_ptr<PortfolioPdx>& expectedPortVal =
           std::dynamic_pointer_cast<PortfolioPdx>(expectedVal);
       ASSERT(expectedPortVal->getID() == portVal->getID(),
              "Expected the IDs to be equal in PortfolioPdx");
@@ -230,7 +226,9 @@ void compareMaps(HashMapOfCacheable& map, HashMapOfCacheable& expectedMap) {
 void stepOne() {
   initGridClient(true);
   try {
-    SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
 
     serializationRegistry->addType(Position::createDeserializable);
     serializationRegistry->addType(Portfolio::createDeserializable);
@@ -248,9 +246,9 @@ void stepOne() {
   createRegionAndAttachPool(qRegionNames[2], USE_ACK, poolNames[0]);
   createRegionAndAttachPool(qRegionNames[3], USE_ACK, poolNames[0]);
 
-  RegionPtr regptr = getHelper()->getRegion(qRegionNames[0]);
-  RegionAttributesPtr lattribPtr = regptr->getAttributes();
-  RegionPtr subregPtr = regptr->createSubregion(qRegionNames[1], lattribPtr);
+  auto regptr = getHelper()->getRegion(qRegionNames[0]);
+  std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
+  auto subregPtr = regptr->createSubregion(qRegionNames[1], lattribPtr);
 
   LOG("StepOne complete.");
 }
@@ -330,7 +328,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     bool doAnyErrorOccured = false;
     auto* qh = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = nullptr;
+    std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
       auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -370,7 +368,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     bool doAnyErrorOccured = false;
     auto qh = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = nullptr;
+    std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
       auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -421,7 +419,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
     bool doAnyErrorOccured = false;
     auto* qh = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = nullptr;
+    std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
       auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();
@@ -491,8 +489,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
 
     int numSecIds = sizeof(secIds) / sizeof(char*);
 
-    VectorOfCacheableKey posKeys;
-    VectorOfCacheableKey portKeys;
+    std::vector<std::shared_ptr<CacheableKey>> posKeys;
+    std::vector<std::shared_ptr<CacheableKey>> portKeys;
     HashMapOfCacheable expectedPosMap;
     HashMapOfCacheable expectedPortMap;
 
@@ -564,7 +562,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, DoQuerySSError)
   {
     auto* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-    QueryServicePtr qs = nullptr;
+    std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
       auto pool1 = findPool(poolNames[0]);
       qs = pool1->getQueryService();

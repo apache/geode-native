@@ -44,7 +44,7 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
    * the Java side.
    */
   PdxWrapper(void* userObject, const char* className,
-             PdxSerializerPtr pdxSerializerPtr);
+             std::shared_ptr<PdxSerializer> pdxSerializerPtr);
 
   /**
    * Returns the pointer to the user object which is deserialized with a
@@ -71,12 +71,12 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
    *@brief serialize this object in geode PDX format
    *@param PdxWriter to serialize the PDX object
    **/
-  void toData(PdxWriterPtr output);
+  void toData(std::shared_ptr<PdxWriter> output);
   /**
    *@brief Deserialize this object
    *@param PdxReader to Deserialize the PDX object
    **/
-  void fromData(PdxReaderPtr input);
+  void fromData(std::shared_ptr<PdxReader> input);
   /**
    *@brief serialize this object
    **/
@@ -106,19 +106,20 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
    * the subclasses.
    * The default implementation renders the classname.
    */
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   virtual ~PdxWrapper();
 
  private:
   /** hide default constructor */
   PdxWrapper();
-  PdxWrapper(const char* className, PdxSerializerPtr pdxSerializerPtr);
+  PdxWrapper(const char* className,
+             std::shared_ptr<PdxSerializer> pdxSerializerPtr);
 
   FRIEND_STD_SHARED_PTR(PdxWrapper)
 
   void* m_userObject;
-  PdxSerializerPtr m_serializer;
+  std::shared_ptr<PdxSerializer> m_serializer;
   UserDeallocator m_deallocator;
   UserObjectSizer m_sizer;
   char* m_className;
