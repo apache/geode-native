@@ -27,7 +27,7 @@
 #include <memory>
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
-#include "StackTrace.hpp"
+
 
 namespace apache {
 namespace geode {
@@ -38,6 +38,7 @@ namespace client {
 class Exception;
 class DistributedSystem;
 class CacheableString;
+class StackTrace;
 /**
  * @class Exception Exception.hpp
  * A description of an exception that occurred during a cache operation.

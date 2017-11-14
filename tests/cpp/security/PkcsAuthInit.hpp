@@ -33,7 +33,7 @@
 
 #define KSSL_H 1
 //#define OPENSSL_NO_KRB5 1
-//#include <openssl/ssl.h>
+#include <openssl/ssl.h>
 
 /**
  * @file
