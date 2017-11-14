@@ -108,14 +108,14 @@ std::shared_ptr<Region> LocalRegion::getParentRegion() const {
 void LocalRegion::updateAccessAndModifiedTime(bool modified) {
   // locking not required since setters use atomic operations
   if (regionExpiryEnabled()) {
-    time_t currTime = ACE_OS::gettimeofday().sec();
+    auto now = std::chrono::system_clock::now();
     LOGDEBUG("Setting last accessed time for region %s to %d", getFullPath(),
-             currTime);
-    m_cacheStatistics->setLastAccessedTime(static_cast<uint32_t>(currTime));
+             now.time_since_epoch().count());
+    m_cacheStatistics->setLastAccessedTime(now);
     if (modified) {
       LOGDEBUG("Setting last modified time for region %s to %d", getFullPath(),
-               currTime);
-      m_cacheStatistics->setLastModifiedTime(static_cast<uint32_t>(currTime));
+               now.time_since_epoch().count());
+      m_cacheStatistics->setLastModifiedTime(now);
     }
     // TODO:  should we really touch the parent region??
     RegionInternal* ri = dynamic_cast<RegionInternal*>(m_parentRegion.get());
@@ -661,16 +661,17 @@ void LocalRegion::setRegionExpiryTask() {
   if (regionExpiryEnabled()) {
     auto rptr = std::static_pointer_cast<RegionInternal>(shared_from_this());
     const auto& duration = getRegionExpiryDuration();
-    auto handler = new RegionExpiryHandler(rptr, getRegionExpiryAction(),
-                                           duration.count());
-    int64_t expiryTaskId =
+    auto handler =
+        new RegionExpiryHandler(rptr, getRegionExpiryAction(), duration);
+    auto expiryTaskId =
         rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-            handler, duration.count(), 0);
+            handler, duration, std::chrono::seconds::zero());
     handler->setExpiryTaskId(expiryTaskId);
     LOGFINE(
         "expiry for region [%s], expiry task id = %d, duration = %d, "
         "action = %d",
-        m_fullPath.c_str(), expiryTaskId, duration.count(), getRegionExpiryAction());
+        m_fullPath.c_str(), expiryTaskId, duration.count(),
+        getRegionExpiryAction());
   }
 }
 
@@ -682,10 +683,10 @@ void LocalRegion::registerEntryExpiryTask(
   expProps.initStartTime();
   auto rptr = std::static_pointer_cast<RegionInternal>(shared_from_this());
   const auto& duration = getEntryExpiryDuration();
-  auto handler = new EntryExpiryHandler(rptr, entry, getEntryExpirationAction(),
-                                        duration.count());
+  auto handler =
+      new EntryExpiryHandler(rptr, entry, getEntryExpirationAction(), duration);
   int64_t id = rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-      handler, duration.count(), 0);
+      handler, duration, std::chrono::seconds::zero());
   if (Log::finestEnabled()) {
     std::shared_ptr<CacheableKey> key;
     entry->getKeyI(key);
@@ -2755,7 +2756,7 @@ void LocalRegion::updateAccessAndModifiedTimeForEntry(std::shared_ptr<MapEntryIm
   // locking is not required since setters use atomic operations
   if (ptr != nullptr && entryExpiryEnabled()) {
     ExpEntryProperties& expProps = ptr->getExpProperties();
-    uint32_t currTime = static_cast<uint32_t>(ACE_OS::gettimeofday().sec());
+    auto currTime = std::chrono::system_clock::now();
     std::shared_ptr<CacheableString> keyStr;
     if (Log::debugEnabled()) {
       std::shared_ptr<CacheableKey> key;
@@ -2763,11 +2764,13 @@ void LocalRegion::updateAccessAndModifiedTimeForEntry(std::shared_ptr<MapEntryIm
       keyStr = Utils::getCacheableKeyString(key);
     }
     LOGDEBUG("Setting last accessed time for key [%s] in region %s to %d",
-             keyStr->asChar(), getFullPath(), currTime);
+             keyStr->asChar(), getFullPath(),
+             currTime.time_since_epoch().count());
     expProps.updateLastAccessTime(currTime);
     if (modified) {
       LOGDEBUG("Setting last modified time for key [%s] in region %s to %d",
-               keyStr->asChar(), getFullPath(), currTime);
+               keyStr->asChar(), getFullPath(),
+               currTime.time_since_epoch().count());
       expProps.updateLastModifiedTime(currTime);
     }
   }
@@ -2885,7 +2888,7 @@ bool LocalRegion::isStatisticsEnabled() {
 
 bool LocalRegion::useModifiedTimeForRegionExpiry() {
   const auto& region_ttl = m_regionAttributes->getRegionTimeToLive();
-  if (region_ttl.count() > 0) {
+  if (region_ttl > std::chrono::seconds::zero()) {
     return true;
   } else {
     return false;
@@ -2893,7 +2896,7 @@ bool LocalRegion::useModifiedTimeForRegionExpiry() {
 }
 
 bool LocalRegion::useModifiedTimeForEntryExpiry() {
-  if (m_regionAttributes->getEntryTimeToLive().count() > 0) {
+  if (m_regionAttributes->getEntryTimeToLive() > std::chrono::seconds::zero()) {
     return true;
   } else {
     return false;
@@ -2902,7 +2905,8 @@ bool LocalRegion::useModifiedTimeForEntryExpiry() {
 
 bool LocalRegion::isEntryIdletimeEnabled() {
   if (m_regionAttributes->getCachingEnabled() &&
-      0 != m_regionAttributes->getEntryIdleTimeout().count()) {
+      m_regionAttributes->getEntryIdleTimeout() >
+          std::chrono::seconds::zero()) {
     return true;
   } else {
     return false;
@@ -2919,7 +2923,7 @@ ExpirationAction::Action LocalRegion::getEntryExpirationAction() const {
 
 ExpirationAction::Action LocalRegion::getRegionExpiryAction() const {
   const auto& region_ttl = m_regionAttributes->getRegionTimeToLive();
-  if (region_ttl.count() > 0) {
+  if (region_ttl > std::chrono::seconds::zero()) {
     return m_regionAttributes->getRegionTimeToLiveAction();
   } else {
     return m_regionAttributes->getRegionIdleTimeoutAction();
@@ -2929,7 +2933,7 @@ ExpirationAction::Action LocalRegion::getRegionExpiryAction() const {
 std::chrono::seconds LocalRegion::getRegionExpiryDuration() const {
   const auto& region_ttl = m_regionAttributes->getRegionTimeToLive();
   const auto& region_idle = m_regionAttributes->getRegionIdleTimeout();
-  if (region_ttl.count() > 0) {
+  if (region_ttl > std::chrono::seconds::zero()) {
     return region_ttl;
   } else {
     return region_idle;
@@ -2940,7 +2944,7 @@ std::chrono::seconds LocalRegion::getEntryExpiryDuration() const {
   const auto& entry_ttl = m_regionAttributes->getEntryTimeToLive();
   const auto& entry_idle = m_regionAttributes->getEntryIdleTimeout();
 
-  if (entry_ttl.count() > 0) {
+  if (entry_ttl > std::chrono::seconds::zero()) {
     return entry_ttl;
   } else {
     return entry_idle;

@@ -23,7 +23,7 @@
 #include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "Cache.hpp"
-#include "TimeSpanUtils.hpp"
+#include "TimeUtils.hpp"
 
 namespace Apache
 {
@@ -40,7 +40,7 @@ namespace Apache
 
 			  try
 			  {
-			    m_nativeptr->get()->setFreeConnectionTimeout( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(connectionTimeout) );
+			    m_nativeptr->get()->setFreeConnectionTimeout( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(connectionTimeout) );
 			  }
 			  finally
 			  {
@@ -58,7 +58,7 @@ namespace Apache
 
 			  try
 			  {
-			    m_nativeptr->get()->setLoadConditioningInterval( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(loadConditioningInterval) );
+			    m_nativeptr->get()->setLoadConditioningInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(loadConditioningInterval) );
 			  }
 			  finally
 			  {
@@ -94,7 +94,7 @@ namespace Apache
 
 			  try
 			  {
-			    m_nativeptr->get()->setReadTimeout( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout) );
+			    m_nativeptr->get()->setReadTimeout( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout) );
 			  }
 			  finally
 			  {
@@ -148,7 +148,7 @@ namespace Apache
 
 			  try
 			  {
-			    m_nativeptr->get()->setIdleTimeout( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(idleTimeout) );
+			    m_nativeptr->get()->setIdleTimeout( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(idleTimeout) );
 			  }
 			  finally
 			  {
@@ -184,7 +184,7 @@ namespace Apache
 
 			  try
 			  {
-			    m_nativeptr->get()->setPingInterval( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(pingInterval) );
+			    m_nativeptr->get()->setPingInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(pingInterval) );
 			  }
 			  finally
 			  {
@@ -202,7 +202,7 @@ namespace Apache
 
 			  try
 			  {
-			    m_nativeptr->get()->setUpdateLocatorListInterval( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(updateLocatorListInterval) );
+			    m_nativeptr->get()->setUpdateLocatorListInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(updateLocatorListInterval) );
 			  }
 			  finally
 			  {
@@ -220,7 +220,7 @@ namespace Apache
 
 			  try
 			  {
-			    m_nativeptr->get()->setStatisticInterval( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(statisticInterval) );
+			    m_nativeptr->get()->setStatisticInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(statisticInterval) );
 			  }
 			  finally
 			  {
@@ -349,7 +349,7 @@ namespace Apache
 
 			  try
 			  {
-			    m_nativeptr->get()->setSubscriptionMessageTrackingTimeout( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(messageTrackingTimeout) );
+			    m_nativeptr->get()->setSubscriptionMessageTrackingTimeout( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(messageTrackingTimeout) );
 			  }
 			  finally
 			  {
@@ -367,7 +367,7 @@ namespace Apache
 
 			  try
 			  {
-			    m_nativeptr->get()->setSubscriptionAckInterval( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(ackInterval) );
+			    m_nativeptr->get()->setSubscriptionAckInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(ackInterval) );
 			  }
 			  finally
 			  {

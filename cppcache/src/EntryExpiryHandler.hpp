@@ -50,7 +50,8 @@ class CPPCACHE_EXPORT EntryExpiryHandler : public ACE_Event_Handler {
    */
   EntryExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
                      std::shared_ptr<MapEntryImpl>& entryPtr,
-                     ExpirationAction::Action action, uint32_t duration);
+                     ExpirationAction::Action action,
+                     std::chrono::seconds duration);
 
   /** This task object will be registered with the Timer Queue.
    *  When the timer expires the handle_timeout is invoked.
@@ -70,7 +71,7 @@ class CPPCACHE_EXPORT EntryExpiryHandler : public ACE_Event_Handler {
   ExpirationAction::Action m_action;
   // Duration after which the task should be reset in case of
   // modification.
-  uint32_t m_duration;
+  std::chrono::seconds m_duration;
   // perform the actual expiration action
   void DoTheExpirationAction(const std::shared_ptr<CacheableKey>& key);
 };

@@ -32,7 +32,7 @@ using namespace apache::geode::client;
 
 RegionExpiryHandler::RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
                                          ExpirationAction::Action action,
-                                         uint32_t duration)
+                                         std::chrono::seconds duration)
     : m_regionPtr(rptr),
       m_action(action),
       m_duration(duration),
@@ -43,33 +43,36 @@ RegionExpiryHandler::RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
 
 int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
                                         const void* arg) {
-  time_t curr_time = current_time.sec();
+  auto curr_time = std::chrono::system_clock::from_time_t(current_time.sec());
   try {
-    auto ptr = m_regionPtr->getStatistics();
-    uint32_t lastTimeForExp = ptr->getLastAccessedTime();
-    if (m_regionPtr->getAttributes()->getRegionTimeToLive().count() > 0) {
-      lastTimeForExp = ptr->getLastModifiedTime();
+    auto statistics = m_regionPtr->getStatistics();
+    auto lastTimeForExp = statistics->getLastAccessedTime();
+    if (m_regionPtr->getAttributes()->getRegionTimeToLive() >
+        std::chrono::seconds::zero()) {
+      lastTimeForExp = statistics->getLastModifiedTime();
     }
 
-    int32_t sec = static_cast<int32_t>(curr_time) - lastTimeForExp - m_duration;
+    auto elapsed = curr_time - lastTimeForExp;
     LOGDEBUG("Entered region expiry task handler for region [%s]: %d,%d,%d,%d",
-             m_regionPtr->getFullPath(), curr_time, lastTimeForExp, m_duration,
-             sec);
-    if (sec >= 0) {
+             m_regionPtr->getFullPath(), curr_time.time_since_epoch().count(),
+             lastTimeForExp.time_since_epoch().count(), m_duration.count(),
+             elapsed.count());
+    if (elapsed >= m_duration) {
       DoTheExpirationAction();
     } else {
+      auto remaining = m_duration - elapsed;
       // reset the task after
       // (lastAccessTime + entryExpiryDuration - curr_time) in seconds
       LOGDEBUG("Resetting expiry task for region [%s] after %d sec",
-               m_regionPtr->getFullPath(), -sec);
+               m_regionPtr->getFullPath(), remaining.count());
       m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
-          m_expiryTaskId, -sec);
+          m_expiryTaskId, remaining);
       return 0;
     }
     LOGDEBUG("Removing expiry task for region [%s]",
              m_regionPtr->getFullPath());
     m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
-        m_expiryTaskId, 0);
+        m_expiryTaskId, std::chrono::seconds::zero());
   } catch (...) {
     // Ignore whatever exception comes
   }

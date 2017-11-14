@@ -16,7 +16,7 @@
  */
 
 #include "CacheStatistics.hpp"
-
+#include "TimeUtils.hpp"
 
 namespace Apache
 {
@@ -27,11 +27,11 @@ namespace Apache
 
       using namespace System;
 
-      System::UInt32 CacheStatistics::LastModifiedTime::get( )
+      System::DateTime CacheStatistics::LastModifiedTime::get( )
       {
         try
         {
-          return m_nativeptr->get()->getLastModifiedTime( );
+          return TimeUtils::TimePointToDateTime(m_nativeptr->get()->getLastModifiedTime());
         }
         finally
         {
@@ -39,11 +39,11 @@ namespace Apache
         }
       }
 
-      System::UInt32 CacheStatistics::LastAccessedTime::get()
+      System::DateTime CacheStatistics::LastAccessedTime::get()
       {
         try
         {
-          return m_nativeptr->get()->getLastAccessedTime();
+          return TimeUtils::TimePointToDateTime(m_nativeptr->get()->getLastAccessedTime());
         }
         finally
         {

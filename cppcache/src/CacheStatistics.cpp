@@ -17,27 +17,26 @@
 
 #include <geode/CacheStatistics.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
-CacheStatistics::CacheStatistics() {
-  m_lastModifiedTime = 0;
-  m_lastAccessTime = 0;
-}
-
-CacheStatistics::~CacheStatistics() {}
-
-void CacheStatistics::setLastModifiedTime(uint32_t lmt) {
+void CacheStatistics::setLastModifiedTime(time_point lmt) {
   m_lastModifiedTime = lmt;
 }
 
-void CacheStatistics::setLastAccessedTime(uint32_t lat) {
+void CacheStatistics::setLastAccessedTime(time_point lat) {
   m_lastAccessTime = lat;
 }
 
-uint32_t CacheStatistics::getLastModifiedTime() const {
+CacheStatistics::time_point CacheStatistics::getLastModifiedTime() const {
   return m_lastModifiedTime;
 }
 
-uint32_t CacheStatistics::getLastAccessedTime() const {
+CacheStatistics::time_point CacheStatistics::getLastAccessedTime() const {
   return m_lastAccessTime;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -14,7 +14,7 @@
 # limitations under the License.
 
 cmake_minimum_required(VERSION 3.4)
-project(Apache.Geode.Test)
+project(Apache.Geode.Test CXX)
 
 file(GLOB SOURCES "*.cpp")
 
@@ -52,6 +52,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   COMPILE_FLAGS "/clr"
   VS_GLOBAL_CLRSupport "true"
   VS_GLOBAL_KEYWORD "ManagedCProj"
+  VS_GLOBAL_TestProjectType UnitTest
+  VS_GLOBAL_PROJECT_TYPES "{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
   VS_GLOBAL_ROOTNAMESPACE ${PROJECT_NAME}
   VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
   VS_DOTNET_REFERENCES "System;System.Xml;Microsoft.VisualStudio.QualityTools.UnitTestFramework"
@@ -63,6 +65,7 @@ set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${SHARED_LINKER_FLAG
 
 include_directories(${CMAKE_SOURCE_DIR}/clicache/src)
 include_directories(${CMAKE_SOURCE_DIR}/cppcache/src)
+include_directories(${CMAKE_SOURCE_DIR}/cppcache/include)
 #PCH issues
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 

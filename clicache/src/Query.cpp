@@ -21,7 +21,7 @@
 #include "StructSet.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
-#include "TimeSpanUtils.hpp"
+#include "TimeUtils.hpp"
 
 namespace Apache
 {
@@ -36,7 +36,7 @@ namespace Apache
       generic<class TResult>
       ISelectResults<TResult>^ Query<TResult>::Execute(  )
       {
-        return Execute( TimeSpanUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT) );
+        return Execute( TimeUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT) );
       }
 
       generic<class TResult>
@@ -46,7 +46,7 @@ namespace Apache
 
           try
           {
-            return WrapResults( m_nativeptr->get()->execute( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout) ));
+            return WrapResults( m_nativeptr->get()->execute( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout) ));
           }
           finally
           {
@@ -59,7 +59,7 @@ namespace Apache
       generic<class TResult>
       ISelectResults<TResult>^ Query<TResult>::Execute( array<Object^>^ paramList)
       {
-        return Execute(paramList, TimeSpanUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT));
+        return Execute(paramList, TimeUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT));
       }
 
       generic<class TResult>
@@ -76,7 +76,7 @@ namespace Apache
 
           try
           {
-            return WrapResults( m_nativeptr->get()->execute(rsptr, TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout) ));
+            return WrapResults( m_nativeptr->get()->execute(rsptr, TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout) ));
           }
           finally
           {

@@ -20,7 +20,7 @@
 #include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
-#include "TimeSpanUtils.hpp"
+#include "TimeUtils.hpp"
 
 using namespace System;
 
@@ -54,7 +54,7 @@ namespace Apache
       generic<class TResult>
       System::Collections::Generic::ICollection<TResult>^  ResultCollector<TResult>::GetResult()
       {
-        return GetResult( TimeSpanUtils::DurationToTimeSpan(DEFAULT_QUERY_RESPONSE_TIMEOUT) );
+        return GetResult( TimeUtils::DurationToTimeSpan(DEFAULT_QUERY_RESPONSE_TIMEOUT) );
       }
 
       generic<class TResult>
@@ -63,7 +63,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
           try
           {
-            auto results = m_nativeptr->get()->getResult(TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
+            auto results = m_nativeptr->get()->getResult(TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
             auto rs = gcnew array<TResult>(results->size());
             for (System::Int32 index = 0; index < results->size(); index++)
             {

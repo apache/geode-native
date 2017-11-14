@@ -19,7 +19,7 @@
 #include "impl/ManagedTransactionListener.hpp"
 #include "impl/ManagedTransactionWriter.hpp"
 #include "CacheTransactionManager.hpp"
-#include "TimeSpanUtils.hpp"
+#include "TimeUtils.hpp"
 
 namespace Apache
 {
@@ -187,7 +187,7 @@ namespace Apache
 
           try
           {
-            return m_nativeptr->get()->tryResume(transactionId->GetNative(), TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(waitTime));
+            return m_nativeptr->get()->tryResume(transactionId->GetNative(), TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(waitTime));
           }
           finally
           {

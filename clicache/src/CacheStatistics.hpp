@@ -58,10 +58,6 @@ namespace Apache
         /// value provided by a loader. The modification time on a region is
         /// propagated upward to parent regions, transitively, to the root region.
         /// </para><para>
-        /// The number is expressed as the number of milliseconds since January 1, 1970.
-        /// The granularity may be as coarse as 100ms, so the accuracy may be off by
-        /// up to 50ms.
-        /// </para><para>
         /// Entry and subregion creation will update the modification time on a
         /// region, but <c>Region.Destroy</c>, <c>Region.DestroyRegion</c>,
         /// <c>Region.Invalidate</c>, and <c>Region.InvalidateRegion</c>
@@ -70,22 +66,17 @@ namespace Apache
         /// </remarks>
         /// <returns>
         /// the last modification time of the region or the entry;
-        /// returns 0 if the entry is invalid or the modification time is uninitialized.
         /// </returns>
         /// <seealso cref="Region.Put" />
         /// <seealso cref="Region.Get" />
         /// <seealso cref="Region.Create" />
         /// <seealso cref="Region.CreateSubRegion" />
-        property System::UInt32 LastModifiedTime
+        property System::DateTime LastModifiedTime
         {
           /// <summary>
           /// Get the last modified time of an entry or a region.
           /// </summary>
-          /// <returns>
-          /// the last accessed time expressed as the number of milliseconds since
-          /// January 1, 1970.
-          /// </returns>
-          System::UInt32 get( );
+          System::DateTime get( );
         }
 
         /// <summary>
@@ -99,28 +90,19 @@ namespace Apache
         /// so <c>LastAccessedTime</c> is always greater than or equal to
         /// <c>LastModifiedTime</c>. The <c>LastAccessedTime</c> on a region is
         /// propagated upward to parent regions, transitively, to the the root region.
-        /// </para><para>
-        /// The number is expressed as the number of milliseconds since
-        /// January 1, 1970. The granularity may be as coarse as 100ms, so
-        /// the accuracy may be off by up to 50ms.
         /// </para>
         /// </remarks>
         /// <returns>
         /// the last access time of the region or the entry's value;
-        /// returns 0 if entry is invalid or access time is uninitialized.
         /// </returns>
         /// <seealso cref="Region.Get" />
         /// <seealso cref="LastModifiedTime" />
-        property System::UInt32 LastAccessedTime
+        property System::DateTime LastAccessedTime
         {
           /// <summary>
           /// Get the last accessed time of an entry or a region.
           /// </summary>
-          /// <returns>
-          /// the last accessed time expressed as the number of milliseconds since
-          /// January 1, 1970.
-          /// </returns>
-          System::UInt32 get( );
+          System::DateTime get( );
         }
 
 

@@ -494,26 +494,30 @@ std::shared_ptr<Pool> CacheHelper::createPool2(
 }
 
 void CacheHelper::logPoolAttributes(std::shared_ptr<Pool>& pool) {
+  using namespace apache::geode::util::chrono::duration;
   LOG("logPoolAttributes() entered");
   LOGINFO("CPPTEST: Pool attribtes for pool %s are as follows:",
           pool->getName());
-  LOGINFO("getFreeConnectionTimeout: %d", pool->getFreeConnectionTimeout());
+  LOGINFO("getFreeConnectionTimeout: %s",
+          to_string(pool->getFreeConnectionTimeout()).c_str());
   LOGINFO("getLoadConditioningInterval: %d",
-          pool->getLoadConditioningInterval());
+          to_string(pool->getLoadConditioningInterval()).c_str());
   LOGINFO("getSocketBufferSize: %d", pool->getSocketBufferSize());
-  LOGINFO("getReadTimeout: %d", pool->getReadTimeout());
+  LOGINFO("getReadTimeout: %d", to_string(pool->getReadTimeout()).c_str());
   LOGINFO("getMinConnections: %d", pool->getMinConnections());
   LOGINFO("getMaxConnections: %d", pool->getMaxConnections());
-  LOGINFO("getIdleTimeout: %d", pool->getIdleTimeout());
-  LOGINFO("getPingInterval: %d", pool->getPingInterval());
-  LOGINFO("getStatisticInterval: %d", pool->getStatisticInterval());
+  LOGINFO("getIdleTimeout: %d", to_string(pool->getIdleTimeout()).c_str());
+  LOGINFO("getPingInterval: %d", to_string(pool->getPingInterval()).c_str());
+  LOGINFO("getStatisticInterval: %d",
+          to_string(pool->getStatisticInterval()).c_str());
   LOGINFO("getRetryAttempts: %d", pool->getRetryAttempts());
   LOGINFO("getSubscriptionEnabled: %s",
           pool->getSubscriptionEnabled() ? "true" : "false");
   LOGINFO("getSubscriptionRedundancy: %d", pool->getSubscriptionRedundancy());
   LOGINFO("getSubscriptionMessageTrackingTimeout: %d",
-          pool->getSubscriptionMessageTrackingTimeout());
-  LOGINFO("getSubscriptionAckInterval: %d", pool->getSubscriptionAckInterval());
+          to_string(pool->getSubscriptionMessageTrackingTimeout()).c_str());
+  LOGINFO("getSubscriptionAckInterval: %d",
+          to_string(pool->getSubscriptionAckInterval()).c_str());
   LOGINFO("getServerGroup: %s", pool->getServerGroup());
   LOGINFO("getThreadLocalConnections: %s",
           pool->getThreadLocalConnections() ? "true" : "false");
