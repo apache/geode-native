@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Threading;
+using System.Linq;
 
 namespace Apache.Geode.Client.UnitTests
 {
@@ -962,6 +963,7 @@ namespace Apache.Geode.Client.UnitTests
 
       object args = 5000 * 1000;
 
+      Execution<object> exc = Client.FunctionService<object>.OnRegion<object, object>(region);
       for (int k = 0; k < 210; k++)
       {
         int j = 0;
@@ -973,16 +975,10 @@ namespace Apache.Geode.Client.UnitTests
         }
         Util.Log("filter count= {0}.", filter.Length);
 
-        Execution<object> exc = Client.FunctionService<object>.OnRegion<object, object>(region);
         IResultCollector<object> rc = exc.WithArgs<Object>(args).WithFilter<object>(filter).Execute(FuncTimeOutName, TimeSpan.FromSeconds(5000));
         ICollection<object> FunctionResult = rc.GetResult();
         Util.Log("ExecuteFETimeOut onRegion FunctionResult.Count = {0} ", FunctionResult.Count);        
-        foreach (Boolean item in FunctionResult)
-        {
-          Util.Log("on region:ExecuteFETimeOut:= {0}.", item);
-          Assert.AreEqual(true, item, "ExecuteFETimeOut item not true");
-          break;
-        }
+        Assert.AreEqual(true, FunctionResult.Any(), "ExecuteFETimeOut item never true");
         Util.Log("ExecuteFETimeOut onRegion Done");
       }
 
