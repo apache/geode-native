@@ -19,11 +19,14 @@
 
 #ifndef GEODE_MAPENTRY_H_
 #define GEODE_MAPENTRY_H_
+
 #include <atomic>
+#include <memory>
+#include <utility>
+
 #include <geode/geode_globals.hpp>
 #include <geode/Cacheable.hpp>
 #include <geode/CacheableKey.hpp>
-#include <memory>
 #include <geode/ExceptionTypes.hpp>
 
 #include "CacheImpl.hpp"
@@ -31,8 +34,6 @@
 #include "RegionInternal.hpp"
 #include "CacheableToken.hpp"
 #include "VersionStamp.hpp"
-#include <ace/OS.h>
-#include <utility>
 
 namespace apache {
 namespace geode {
@@ -49,9 +50,11 @@ class CacheImpl;
  */
 class CPPCACHE_EXPORT ExpEntryProperties {
  public:
+  typedef std::chrono::system_clock::time_point time_point;
+
   inline ExpEntryProperties(ExpiryTaskManager* expiryTaskManager)
-      : m_lastAccessTime(0),
-        m_lastModifiedTime(0),
+      : m_lastAccessTime(time_point()),
+        m_lastModifiedTime(time_point()),
         m_expiryTaskId(-1),
         m_expiryTaskManager(expiryTaskManager) {
     // The reactor always gives +ve id while scheduling.
@@ -59,23 +62,22 @@ class CPPCACHE_EXPORT ExpEntryProperties {
     // for this entry. // TODO confirm
   }
 
-  inline uint32_t getLastAccessTime() const { return m_lastAccessTime; }
+  inline time_point getLastAccessTime() const { return m_lastAccessTime; }
 
-  inline uint32_t getLastModifiedTime() const { return m_lastModifiedTime; }
+  inline time_point getLastModifiedTime() const { return m_lastModifiedTime; }
 
   //  moved time initialization outside of constructor to avoid
   // the costly gettimeofday call in MapSegment spinlock
   inline void initStartTime() {
-    uint32_t currTime = static_cast<uint32_t>(ACE_OS::gettimeofday().sec());
-    m_lastModifiedTime = currTime;
+    m_lastModifiedTime = std::chrono::system_clock::now();
+    m_lastAccessTime = std::chrono::system_clock::now();
+  }
+
+  inline void updateLastAccessTime(time_point currTime) {
     m_lastAccessTime = currTime;
   }
 
-  inline void updateLastAccessTime(uint32_t currTime) {
-    m_lastAccessTime = currTime;
-  }
-
-  inline void updateLastModifiedTime(uint32_t currTime) {
+  inline void updateLastModifiedTime(time_point currTime) {
     m_lastModifiedTime = currTime;
   }
 
@@ -91,13 +93,14 @@ class CPPCACHE_EXPORT ExpEntryProperties {
 
  protected:
   // this constructor deliberately skips initializing any fields
-  inline explicit ExpEntryProperties(bool noInit) {}
+  inline explicit ExpEntryProperties(bool noInit)
+      : m_lastAccessTime(time_point()), m_lastModifiedTime(time_point()) {}
 
  private:
   /** last access time in secs, 32bit.. */
-  std::atomic<uint32_t> m_lastAccessTime;
+  std::atomic<time_point> m_lastAccessTime;
   /** last modified time in secs, 32bit.. */
-  std::atomic<uint32_t> m_lastModifiedTime;
+  std::atomic<time_point> m_lastModifiedTime;
   /** The expiry task id for this particular entry.. **/
   long m_expiryTaskId;
   ExpiryTaskManager* m_expiryTaskManager;

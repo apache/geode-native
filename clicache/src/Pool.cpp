@@ -22,7 +22,7 @@
 #include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
-#include "TimeSpanUtils.hpp"
+#include "TimeUtils.hpp"
 
 
 namespace Apache
@@ -52,7 +52,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getFreeConnectionTimeout());
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->getFreeConnectionTimeout());
         }
         finally
         {
@@ -66,7 +66,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getLoadConditioningInterval());
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->getLoadConditioningInterval());
         }
         finally
         {
@@ -94,7 +94,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getReadTimeout());
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->getReadTimeout());
         }
         finally
         {
@@ -136,7 +136,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getIdleTimeout());
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->getIdleTimeout());
         }
         finally
         {
@@ -150,7 +150,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getPingInterval());
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->getPingInterval());
         }
         finally
         {
@@ -164,7 +164,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getUpdateLocatorListInterval());
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->getUpdateLocatorListInterval());
         }
         finally
         {
@@ -178,7 +178,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getStatisticInterval());
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->getStatisticInterval());
         }
         finally
         {
@@ -248,7 +248,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getSubscriptionMessageTrackingTimeout());
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->getSubscriptionMessageTrackingTimeout());
         }
         finally
         {
@@ -262,7 +262,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getSubscriptionAckInterval());
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->getSubscriptionAckInterval());
         }
         finally
         {

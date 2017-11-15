@@ -27,7 +27,7 @@
 #include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
-#include "TimeSpanUtils.hpp"
+#include "TimeUtils.hpp"
 
 using namespace System;
 
@@ -112,7 +112,7 @@ namespace Apache
         try
         {
           ManagedString mg_function(func);
-          auto rc = m_nativeptr->get()->execute(mg_function.CharPtr, TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
+          auto rc = m_nativeptr->get()->execute(mg_function.CharPtr, TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
           if (m_rc == nullptr)
             return gcnew ResultCollector<TResult>(rc);
           else
@@ -128,7 +128,7 @@ namespace Apache
       generic<class TResult>
       IResultCollector<TResult>^ Execution<TResult>::Execute(String^ func)
       {
-        return Execute(func, TimeSpanUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT));
+        return Execute(func, TimeUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT));
       }
     }  // namespace Client
   }  // namespace Geode

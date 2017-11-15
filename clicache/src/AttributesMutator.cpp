@@ -23,7 +23,7 @@
 #include "impl/CacheLoader.hpp"
 #include "impl/CacheWriter.hpp"
 #include "impl/CacheListener.hpp"
-#include "TimeSpanUtils.hpp"
+#include "TimeUtils.hpp"
 
 namespace Apache
 {
@@ -40,7 +40,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->setEntryIdleTimeout( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(idleTimeout) ));
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->setEntryIdleTimeout( TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(idleTimeout) ));
         }
         finally
         {
@@ -69,7 +69,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->setEntryTimeToLive( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeToLive) ));
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->setEntryTimeToLive( TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeToLive) ));
         }
         finally
         {
@@ -98,7 +98,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->setRegionIdleTimeout( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(idleTimeout) ));
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->setRegionIdleTimeout( TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(idleTimeout) ));
         }
         finally
         {
@@ -127,7 +127,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->setRegionTimeToLive( TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeToLive) ));
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->setRegionTimeToLive( TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeToLive) ));
         }
         finally
         {

@@ -235,11 +235,6 @@ class CPPCACHE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
                           bool cancelExistingTask = false);
 
   long scheduleExpiryTask(ACE_Event_Handler* handler,
-                          const std::chrono::microseconds expTime,
-                          const std::chrono::microseconds interval,
-                          const bool cancelExistingTask = false);
-
-  long scheduleExpiryTask(ACE_Event_Handler* handler,
                           ACE_Time_Value expTimeValue,
                           ACE_Time_Value intervalVal,
                           bool cancelExistingTask = false);
@@ -248,7 +243,7 @@ class CPPCACHE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
   long scheduleExpiryTask(ACE_Event_Handler* handler,
                           std::chrono::duration<ExpRep, ExpPeriod> expTime,
                           std::chrono::duration<IntRep, IntPeriod> interval,
-                          bool cancelExistingTask) {
+                          bool cancelExistingTask = false) {
     LOGFINER(
         "ExpiryTaskManager: expTime %s, interval %s, cancelExistingTask %d",
         util::chrono::duration::to_string(expTime).c_str(),
@@ -272,6 +267,13 @@ class CPPCACHE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
    * invoked from the current time.
    */
   int resetTask(id_type id, uint32_t sec);
+
+  template <class Rep, class Period>
+  int resetTask(id_type id, std::chrono::duration<Rep, Period> duration) {
+    ACE_Time_Value interval(duration);
+    return m_reactor->reset_timer_interval(id, interval);
+  }
+
   /**
    * for cancelling an already registered task.
    * returns '0' if successful '-1' on failure.

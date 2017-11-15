@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_REGIONEXPIRYHANDLER_H_
-#define GEODE_REGIONEXPIRYHANDLER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_REGIONEXPIRYHANDLER_H_
+#define GEODE_REGIONEXPIRYHANDLER_H_
+
+#include <ace/Time_Value_T.h>
 
 #include <geode/geode_globals.hpp>
 #include <geode/Region.hpp>
@@ -48,7 +50,8 @@ class CPPCACHE_EXPORT RegionExpiryHandler : public ACE_Event_Handler {
    * Constructor
    */
   RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
-                      ExpirationAction::Action action, uint32_t duration);
+                      ExpirationAction::Action action,
+                      std::chrono::seconds duration);
 
   /** This handler object will be registered with the Timer Queue.
    *  When the timer expires the handle_timeout is invoked.
@@ -63,7 +66,7 @@ class CPPCACHE_EXPORT RegionExpiryHandler : public ACE_Event_Handler {
  private:
   std::shared_ptr<RegionInternal> m_regionPtr;
   ExpirationAction::Action m_action;
-  uint32_t m_duration;
+  std::chrono::seconds m_duration;
   long m_expiryTaskId;
   // perform the actual expiration action
   void DoTheExpirationAction();

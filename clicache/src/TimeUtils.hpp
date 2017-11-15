@@ -33,7 +33,7 @@ namespace Apache
 
       using ticks = std::chrono::duration<long long, std::ratio<1, 10000000>>;
       
-      class TimeSpanUtils
+      class TimeUtils
       {
       public:
         template <class _Duration>
@@ -50,7 +50,24 @@ namespace Apache
         inline static TimeSpan DurationToTimeSpan(ticks duration)
         {
           return TimeSpan::FromTicks(duration.count());
-        }      
+        }    
+
+        inline static DateTime TimePointToDateTime(std::chrono::system_clock::time_point timePoint) {
+          using namespace std::chrono;
+          auto t = duration_cast<ticks>(timePoint.time_since_epoch());
+          t += epochDifference;
+          return DateTime(t.count());
+        }
+
+        inline static std::chrono::system_clock::time_point DateTimeToTimePoint(DateTime dateTime) {
+          using namespace std::chrono;
+          auto t = ticks(dateTime.Ticks);
+          t -= epochDifference;
+          return system_clock::time_point(t);
+        }
+
+      private:
+        static constexpr auto epochDifference = ticks(621355968000000000);
       };
     }  // namespace Client
   }  // namespace Geode

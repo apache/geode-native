@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHESTATISTICS_H_
-#define GEODE_CACHESTATISTICS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,16 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CACHESTATISTICS_H_
+#define GEODE_CACHESTATISTICS_H_
+
+#include <atomic>
+#include <chrono>
+
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
-#include <atomic>
 
 /**
  * @file
@@ -35,48 +37,47 @@ namespace client {
 class LocalRegion;
 
 /**
-*@class CacheStatistics CacheStatistics.hpp
-*
-*Defines common statistical information
-*for both the region and its entries. All of these methods may throw a
-*CacheClosedException, RegionDestroyedException, or EntryDestroyedException.
-*
-*@see Region::getStatistics
-*@see RegionEntry::getStatistics
-*/
-class CPPCACHE_EXPORT CacheStatistics  {
+ *@class CacheStatistics CacheStatistics.hpp
+ *
+ *Defines common statistical information
+ *for both the region and its entries. All of these methods may throw a
+ *CacheClosedException, RegionDestroyedException, or EntryDestroyedException.
+ *
+ *@see Region::getStatistics
+ *@see RegionEntry::getStatistics
+ */
+class CPPCACHE_EXPORT CacheStatistics {
  public:
-  CacheStatistics();
+  typedef std::chrono::system_clock::time_point time_point;
 
-  virtual ~CacheStatistics();
+  CacheStatistics()
+      : m_lastAccessTime(time_point()), m_lastModifiedTime(time_point()){};
+  CacheStatistics(const CacheStatistics&) = delete;
+  virtual ~CacheStatistics() = default;
 
-  /** For an entry, returns the time that the entry's value was last modified.
+  /**
+   * For an entry, returns the time that the entry's value was last modified.
    * For a region, returns the last time any of the region's entries' values or
    * the values in subregions' entries were modified. The
    * modification may have been initiated locally, or it may have been an update
    * distributed from another cache. It may also have been a new value provided
    * by a loader. The modification time on a region is propagated upward to
-   * parent
-   * regions, transitively, to the root region.
-   * <p>
-   * The number is expressed as the number of milliseconds since January 1,
-   * 1970.
-   * The granularity may be as coarse as 100ms, so the accuracy may be off by
-   * up to 50ms.
+   * parent regions, transitively, to the root region.
    * <p>
    * Entry and subregion creation will update the modification time on a
    * region, but <code>destroy</code>, <code>destroyRegion</code>,
    * <code>invalidate</code>, and <code>invalidateRegion</code>
    * do not update the modification time.
    * @return the last modification time of the region or the entry;
-   * returns 0 if the entry is invalid or the modification time is
-   * uninitialized.
+   * returns std::chrono::system_clock epoch if the entry is invalid or the
+   * modification time is uninitialized.
+   *
    * @see Region::put
    * @see Region::get
    * @see Region::create
    * @see Region::createSubregion
    */
-  virtual uint32_t getLastModifiedTime() const;
+  virtual time_point getLastModifiedTime() const;
 
   /**
    * For an entry, returns the last time it was accessed via
@@ -87,28 +88,26 @@ class CPPCACHE_EXPORT CacheStatistics  {
    * <code>lastAccessedTime</code> is always <code>>= lastModifiedTime</code>.
    * The <code>lastAccessedTime</code> on a region is propagated upward to
    * parent regions, transitively, to the the root region.
-   * <p>
-   * The number is expressed as the number of milliseconds
-   * since January 1, 1970.
-   * The granularity may be as coarse as 100ms, so the accuracy may be off by
-   * up to 50ms.
    *
    * @return the last access time of the region or the entry's value;
-   * returns 0 if entry is invalid or access time is uninitialized.
+   * returns std::chrono::system_clock epoch if the entry is invalid or the
+   * modification time is uninitialized.
+   *
    * @see Region::get
    * @see getLastModifiedTime
    */
-  virtual uint32_t getLastAccessedTime() const;
+  virtual time_point getLastAccessedTime() const;
 
  private:
-  virtual void setLastAccessedTime(uint32_t lat);
-  virtual void setLastModifiedTime(uint32_t lmt);
+  virtual void setLastAccessedTime(time_point lat);
+  virtual void setLastModifiedTime(time_point lmt);
 
-  std::atomic<uint32_t> m_lastAccessTime;
-  std::atomic<uint32_t> m_lastModifiedTime;
+  std::atomic<time_point> m_lastAccessTime;
+  std::atomic<time_point> m_lastModifiedTime;
 
   friend class LocalRegion;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

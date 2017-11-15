@@ -25,7 +25,7 @@
 #include "ResultSet.hpp"
 #include "StructSet.hpp"
 #include "ExceptionTypes.hpp"
-#include "TimeSpanUtils.hpp"
+#include "TimeUtils.hpp"
 
 namespace Apache
 {
@@ -40,7 +40,7 @@ namespace Apache
       generic<class TKey, class TResult>
       ICqResults<TResult>^ CqQuery<TKey, TResult>::ExecuteWithInitialResults()
       {
-        return ExecuteWithInitialResults(TimeSpanUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT));
+        return ExecuteWithInitialResults(TimeUtils::DurationToTimeSpan(native::DEFAULT_QUERY_RESPONSE_TIMEOUT));
       }
 
       generic<class TKey, class TResult>
@@ -49,7 +49,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
           try
           {
-            auto nativeptr = m_nativeptr->get()->executeWithInitialResults(TimeSpanUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
+            auto nativeptr = m_nativeptr->get()->executeWithInitialResults(TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
  
             if (auto structptr = std::dynamic_pointer_cast<native::StructSet>(nativeptr))
             {

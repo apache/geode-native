@@ -33,7 +33,7 @@
 #include "CacheListenerAdapter.hpp"
 #include "CacheWriterAdapter.hpp"
 #include "impl/SafeConvert.hpp"
-#include "TimeSpanUtils.hpp"
+#include "TimeUtils.hpp"
 
 namespace Apache
 {
@@ -164,7 +164,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getRegionTimeToLive( ));
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->getRegionTimeToLive( ));
         }
         finally
         {
@@ -190,7 +190,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getRegionIdleTimeout( ));
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->getRegionIdleTimeout( ));
         }
         finally
         {
@@ -216,7 +216,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getEntryTimeToLive( ));
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->getEntryTimeToLive( ));
         }
         finally
         {
@@ -242,7 +242,7 @@ namespace Apache
       {
         try
         {
-          return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->get()->getEntryIdleTimeout( ));
+          return TimeUtils::DurationToTimeSpan(m_nativeptr->get()->getEntryIdleTimeout( ));
         }
         finally
         {

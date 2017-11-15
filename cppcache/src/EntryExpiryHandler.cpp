@@ -33,7 +33,7 @@ using namespace apache::geode::client;
 EntryExpiryHandler::EntryExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
                                        std::shared_ptr<MapEntryImpl>& entryPtr,
                                        ExpirationAction::Action action,
-                                       uint32_t duration)
+                                       std::chrono::seconds duration)
     : m_regionPtr(rptr),
       m_entryPtr(entryPtr),
       m_action(action),
@@ -45,31 +45,33 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
   m_entryPtr->getKeyI(key);
   ExpEntryProperties& expProps = m_entryPtr->getExpProperties();
   try {
-    uint32_t curr_time = static_cast<uint32_t>(current_time.sec());
+    auto curr_time = std::chrono::system_clock::from_time_t(current_time.sec());
 
-    uint32_t lastTimeForExp = expProps.getLastAccessTime();
+    auto lastTimeForExp = expProps.getLastAccessTime();
     if (m_regionPtr->getAttributes()->getEntryTimeToLive().count() > 0) {
       lastTimeForExp = expProps.getLastModifiedTime();
     }
 
-    int32_t sec = curr_time - lastTimeForExp - m_duration;
+    auto elapsed = curr_time - lastTimeForExp;
     LOGDEBUG(
         "Entered entry expiry task handler for key [%s] of region [%s]: "
         "%d,%d,%d,%d",
         Utils::getCacheableKeyString(key)->asChar(), m_regionPtr->getFullPath(),
-        curr_time, lastTimeForExp, m_duration, sec);
-    if (sec >= 0) {
+        curr_time.time_since_epoch().count(),
+        lastTimeForExp.time_since_epoch().count(), m_duration.count(),
+        elapsed.count());
+    if (elapsed >= m_duration) {
       DoTheExpirationAction(key);
     } else {
       // reset the task after
       // (lastAccessTime + entryExpiryDuration - curr_time) in seconds
+      auto remaining = m_duration - elapsed;
       LOGDEBUG(
-          "Resetting expiry task %d secs later for key [%s] of region "
-          "[%s]",
-          -sec, Utils::getCacheableKeyString(key)->asChar(),
+          "Resetting expiry task %d secs later for key [%s] of region [%s]",
+          remaining.count(), Utils::getCacheableKeyString(key)->asChar(),
           m_regionPtr->getFullPath());
       m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
-          expProps.getExpiryTaskId(), -sec);
+          expProps.getExpiryTaskId(), remaining);
       return 0;
     }
   } catch (...) {
@@ -79,7 +81,7 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
            Utils::getCacheableKeyString(key)->asChar(),
            m_regionPtr->getFullPath());
   m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
-      expProps.getExpiryTaskId(), 0);
+      expProps.getExpiryTaskId(), std::chrono::seconds::zero());
   //  we now delete the handler in GF_Timer_Heap_ImmediateReset_T
   // and always return success.
 

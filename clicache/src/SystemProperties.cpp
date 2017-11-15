@@ -17,7 +17,7 @@
 
 #include "SystemProperties.hpp"
 #include "impl/SafeConvert.hpp"
-#include "TimeSpanUtils.hpp"
+#include "TimeUtils.hpp"
 
 namespace Apache
 {
@@ -36,7 +36,7 @@ namespace Apache
 
       TimeSpan SystemProperties::StatisticsSampleInterval::get( )
       {
-        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->statisticsSampleInterval( ));
+        return TimeUtils::DurationToTimeSpan(m_nativeptr->statisticsSampleInterval( ));
       }
 
       bool SystemProperties::StatisticsEnabled::get( )
@@ -81,22 +81,22 @@ namespace Apache
       
       TimeSpan SystemProperties::PingInterval::get( )
       {
-        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->pingInterval( ));
+        return TimeUtils::DurationToTimeSpan(m_nativeptr->pingInterval( ));
       }
       
       TimeSpan SystemProperties::RedundancyMonitorInterval::get( )
       {
-        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->redundancyMonitorInterval( ));
+        return TimeUtils::DurationToTimeSpan(m_nativeptr->redundancyMonitorInterval( ));
       }
       
       TimeSpan SystemProperties::NotifyAckInterval::get( )
       {
-        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->notifyAckInterval( ));
+        return TimeUtils::DurationToTimeSpan(m_nativeptr->notifyAckInterval( ));
       }
       
       TimeSpan SystemProperties::NotifyDupCheckLife::get( )
       {
-        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->notifyDupCheckLife( ));
+        return TimeUtils::DurationToTimeSpan(m_nativeptr->notifyDupCheckLife( ));
       }
       
       bool SystemProperties::DebugStackTraceEnabled::get( )
@@ -183,12 +183,12 @@ namespace Apache
 
       TimeSpan SystemProperties::DurableTimeout::get( )
       {
-        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->durableTimeout( ));
+        return TimeUtils::DurationToTimeSpan(m_nativeptr->durableTimeout( ));
       }
 
       TimeSpan SystemProperties::ConnectTimeout::get( )
       {
-        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->connectTimeout( ));
+        return TimeUtils::DurationToTimeSpan(m_nativeptr->connectTimeout( ));
       }
 
       String^ SystemProperties::ConflateEvents::get( )
@@ -198,7 +198,7 @@ namespace Apache
 
       TimeSpan SystemProperties::SuspendedTxTimeout::get( )
       {
-        return TimeSpanUtils::DurationToTimeSpan(m_nativeptr->suspendedTxTimeout( ));
+        return TimeUtils::DurationToTimeSpan(m_nativeptr->suspendedTxTimeout( ));
       }
 
        bool SystemProperties::OnClientDisconnectClearPdxTypeIds::get( )
