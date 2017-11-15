@@ -17,11 +17,12 @@
 
 #pragma once
 
+
 #include "../IPdxInstance.hpp"
 #include "../IPdxSerializable.hpp"
 #include "../DataInput.hpp"
 #include "PdxLocalWriter.hpp"
-#include "IWritablePdxInstance.hpp"
+#include "../IWritablePdxInstance.hpp"
 
 namespace apache {
 namespace geode {

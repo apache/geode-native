@@ -77,7 +77,7 @@ while (iter.hasNext())
    PortfolioPtr port(dynamic_cast<Portfolio*> (ser.ptr()));
    if (port != NULLPTR)
    {
-      printf("\nPortfolio object is - %s \n", port->toString()->asChar() );
+      printf("\nPortfolio object is - %s \n", port->toString().c_str() );
    }
 } // end of rows
 ```

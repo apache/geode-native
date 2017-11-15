@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_OSSTATISTICSIMPL_H_
-#define GEODE_STATISTICS_OSSTATISTICSIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,19 +15,25 @@
  * limitations under the License.
  */
 
-#include <geode/statistics/Statistics.hpp>
-#include "StatisticsTypeImpl.hpp"
-#include <geode/statistics/StatisticsFactory.hpp>
-#include <NonCopyable.hpp>
+#pragma once
 
-using namespace apache::geode::client;
+#ifndef GEODE_STATISTICS_OSSTATISTICSIMPL_H_
+#define GEODE_STATISTICS_OSSTATISTICSIMPL_H_
+
+#include <geode/statistics/Statistics.hpp>
+#include <geode/statistics/StatisticsFactory.hpp>
+
+#include "StatisticsTypeImpl.hpp"
+#include "NonCopyable.hpp"
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
 namespace statistics {
+
+using namespace apache::geode::client;
 
 /**
  * An implementation of {@link Statistics} that stores its statistics
@@ -63,7 +64,7 @@ class OsStatisticsImpl : public Statistics,
   StatisticsTypeImpl* statsType;
 
   /** The display name of this statistics instance */
-  const char* textId;
+  const std::string textId;
 
   /** Numeric information display with these statistics */
   int64_t numericId;
@@ -85,20 +86,20 @@ class OsStatisticsImpl : public Statistics,
   double* doubleStorage;
 
   ///////////////////////Private Methods//////////////////////////
-  bool isOpen();
+  bool isOpen() const;
 
-  int32_t getIntId(StatisticDescriptor* descriptor);
+  int32_t getIntId(const StatisticDescriptor* descriptor) const;
 
-  int32_t getLongId(StatisticDescriptor* descriptor);
+  int32_t getLongId(const StatisticDescriptor* descriptor) const;
 
-  int32_t getDoubleId(StatisticDescriptor* descriptor);
+  int32_t getDoubleId(const StatisticDescriptor* descriptor) const;
 
   //////////////////////  Static private Methods  //////////////////////
 
   static int64_t calcNumericId(StatisticsFactory* system, int64_t userValue);
 
-  static const char* calcTextId(StatisticsFactory* system,
-                                const char* userValue);
+  static std::string calcTextId(StatisticsFactory* system,
+                                const std::string& userValue);
 
   ///////////////////////  Constructors  ///////////////////////
 
@@ -119,97 +120,98 @@ class OsStatisticsImpl : public Statistics,
    */
 
  public:
-  OsStatisticsImpl(StatisticsType* type, const char* textId, int64_t numericId,
-                   int64_t uniqueId, StatisticsFactory* system);
+  OsStatisticsImpl(StatisticsType* type, const std::string& textId,
+                   int64_t numericId, int64_t uniqueId,
+                   StatisticsFactory* system);
 
   ~OsStatisticsImpl();
 
   //////////////////////  Instance Methods  //////////////////////
 
-  int32_t nameToId(const char* name);
+  int32_t nameToId(const std::string& name) const override;
 
-  StatisticDescriptor* nameToDescriptor(const char* name);
+  StatisticDescriptor* nameToDescriptor(const std::string& name) const override;
 
-  bool isClosed();
+  bool isClosed() const override;
 
-  bool isShared();
+  bool isShared() const override;
 
-  bool isAtomic();
+  bool isAtomic() const override;
 
-  void close();
+  void close() override;
   /////////////////////////Attribute methods//////////////////////////
 
-  StatisticsType* getType();
+  StatisticsType* getType() const override;
 
-  const char* getTextId();
+  const std::string& getTextId() const override;
 
-  int64_t getNumericId();
+  int64_t getNumericId() const override;
 
-  int64_t getUniqueId();
+  int64_t getUniqueId() const override;
 
   ////////////////////////  set() Methods  ///////////////////////
 
-  void setInt(char* name, int32_t value);
+  void setInt(const std::string& name, int32_t value) override;
 
-  void setInt(StatisticDescriptor* descriptor, int32_t value);
+  void setInt(const StatisticDescriptor* descriptor, int32_t value) override;
 
-  void setInt(int32_t id, int32_t value);
+  void setInt(int32_t id, int32_t value) override;
 
-  void setLong(char* name, int64_t value);
+  void setLong(const std::string& name, int64_t value) override;
 
-  void setLong(StatisticDescriptor* descriptor, int64_t value);
+  void setLong(const StatisticDescriptor* descriptor, int64_t value) override;
 
-  void setLong(int32_t id, int64_t value);
+  void setLong(int32_t id, int64_t value) override;
 
-  void setDouble(char* name, double value);
+  void setDouble(const std::string& name, double value) override;
 
-  void setDouble(StatisticDescriptor* descriptor, double value);
+  void setDouble(const StatisticDescriptor* descriptor, double value) override;
 
-  void setDouble(int32_t id, double value);
+  void setDouble(int32_t id, double value) override;
 
   ///////////////////////  get() Methods  ///////////////////////
 
-  int32_t getInt(char* name);
+  int32_t getInt(const std::string& name) const override;
 
-  int32_t getInt(StatisticDescriptor* descriptor);
+  int32_t getInt(const StatisticDescriptor* descriptor) const override;
 
-  int32_t getInt(int32_t id);
+  int32_t getInt(int32_t id) const override;
 
-  int64_t getLong(char* name);
+  int64_t getLong(const std::string& name) const override;
 
-  int64_t getLong(StatisticDescriptor* descriptor);
+  int64_t getLong(const StatisticDescriptor* descriptor) const override;
 
-  int64_t getLong(int32_t id);
+  int64_t getLong(int32_t id) const override;
 
-  double getDouble(char* name);
+  double getDouble(const std::string& name) const override;
 
-  double getDouble(StatisticDescriptor* descriptor);
+  double getDouble(const StatisticDescriptor* descriptor) const override;
 
-  double getDouble(int32_t id);
+  double getDouble(int32_t id) const override;
 
-  int64_t getRawBits(StatisticDescriptor* descriptor);
-
-  int64_t getRawBits(char* name);
+  int64_t getRawBits(const StatisticDescriptor* descriptor) const override;
 
   ////////////////////////  inc() Methods  ////////////////////////
 
-  int32_t incInt(char* name, int32_t delta);
+  int32_t incInt(const std::string& name, int32_t delta) override;
 
-  int32_t incInt(StatisticDescriptor* descriptor, int32_t delta);
+  int32_t incInt(const StatisticDescriptor* descriptor, int32_t delta) override;
 
-  int32_t incInt(int32_t id, int32_t delta);
+  int32_t incInt(int32_t id, int32_t delta) override;
 
-  int64_t incLong(char* name, int64_t delta);
+  int64_t incLong(const std::string& name, int64_t delta) override;
 
-  int64_t incLong(StatisticDescriptor* descriptor, int64_t delta);
+  int64_t incLong(const StatisticDescriptor* descriptor,
+                  int64_t delta) override;
 
-  int64_t incLong(int32_t id, int64_t delta);
+  int64_t incLong(int32_t id, int64_t delta) override;
 
-  double incDouble(char* name, double delta);
+  double incDouble(const std::string& name, double delta) override;
 
-  double incDouble(StatisticDescriptor* descriptor, double delta);
+  double incDouble(const StatisticDescriptor* descriptor,
+                   double delta) override;
 
-  double incDouble(int32_t id, double delta);
+  double incDouble(int32_t id, double delta) override;
 
   ////////////////////////  store() Methods  ///////////////////////
  protected:
@@ -227,17 +229,17 @@ class OsStatisticsImpl : public Statistics,
    * Returns the value of the statistic of type <code>int</code> at
    * the given offset, but performs no type checking.
    */
-  int32_t _getInt(int32_t offset);
+  int32_t _getInt(int32_t offset) const;
 
-  int64_t _getLong(int32_t offset);
+  int64_t _getLong(int32_t offset) const;
 
-  double _getDouble(int32_t offset);
+  double _getDouble(int32_t offset) const;
 
   /**
    * Returns the bits that represent the raw value of the
    * specified statistic descriptor.
    */
-  int64_t _getRawBits(StatisticDescriptor* stat);
+  int64_t _getRawBits(const StatisticDescriptor* stat) const;
 
   ////////////////////////  inc() Methods  ////////////////////////
   /**
@@ -256,7 +258,7 @@ class OsStatisticsImpl : public Statistics,
 
 };  // class
 
-}  // namespace client
+}  // namespace statistics
 }  // namespace geode
 }  // namespace apache
 

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_SYSTEMPROPERTIES_H_
-#define GEODE_SYSTEMPROPERTIES_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_SYSTEMPROPERTIES_H_
+#define GEODE_SYSTEMPROPERTIES_H_
 
 #include "Properties.hpp"
 #include "util/Log.hpp"
@@ -41,7 +41,6 @@ namespace client {
  * set from DistributedSystem::connect.
  *
  */
-
 class CPPCACHE_EXPORT SystemProperties {
  public:
   /**
@@ -53,7 +52,10 @@ class CPPCACHE_EXPORT SystemProperties {
    * member type to SERVER.
    */
   SystemProperties(const std::shared_ptr<Properties>& propertiesPtr,
-                   const char* configFile = nullptr);
+                   const std::string& configFile = "");
+
+  SystemProperties(const SystemProperties& rhs) = delete;
+  void operator=(const SystemProperties& rhs) = delete;
 
   /**
    * Destructor.
@@ -94,29 +96,33 @@ class CPPCACHE_EXPORT SystemProperties {
   /**
    * Returns the path of the private key file for SSL use.
    */
-  const char* sslKeyStore() const { return m_sslKeyStore; }
+  const std::string& sslKeyStore() const { return m_sslKeyStore; }
 
   /**
    * Returns the client keystore password.
    */
-  const char* sslKeystorePassword() const { return m_sslKeystorePassword; }
+  const std::string& sslKeystorePassword() const {
+    return m_sslKeystorePassword;
+  }
 
   /**
    * Returns the path of the public key file for SSL use.
    */
-  const char* sslTrustStore() const { return m_sslTrustStore; }
+  const std::string& sslTrustStore() const { return m_sslTrustStore; }
 
   /**
    * Returns the name of the filename into which statistics would
    * be archived.
    */
-  const char* statisticsArchiveFile() const { return m_statisticsArchiveFile; }
+  const std::string& statisticsArchiveFile() const {
+    return m_statisticsArchiveFile;
+  }
 
   /**
    * Returns the name of the filename into which logging would
    * be done.
    */
-  const char* logFilename() const { return m_logFilename; }
+  const std::string& logFilename() const { return m_logFilename; }
 
   /**
    * Returns the log level at which logging would be done.
@@ -183,7 +189,7 @@ class CPPCACHE_EXPORT SystemProperties {
   /**
    * Returns the durable client ID
    */
-  const char* durableClientId() const { return m_durableClientId; }
+  const std::string& durableClientId() const { return m_durableClientId; }
 
   /**
    * Returns the durable timeout
@@ -216,27 +222,11 @@ class CPPCACHE_EXPORT SystemProperties {
   /**
    * Returns client Queueconflation option
    */
-  char* conflateEvents() const { return m_conflateEvents; }
+  const std::string& conflateEvents() const { return m_conflateEvents; }
 
-  /**
-   * Returns  true if the stack trace is enabled ,false otherwise
-   */
-  const bool debugStackTraceEnabled() const { return m_debugStackTraceEnabled; }
+  const std::string& name() const { return m_name; }
 
-  /**
-   * Returns true if crash dump generation for unhandled fatal errors
-   * is enabled, false otherwise.
-   * By default crash dumps are created in the current working directory.
-   * If log-file has been specified then they are created in the same
-   * directory as the log file, and having the same prefix as log file.
-   * The default prefix is "geode_cpp".
-   * The actual dump file will have timestamp and process ID in the full name.
-   */
-  inline const bool crashDumpEnabled() const { return m_crashDumpEnabled; }
-
-  const char* name() const { return m_name; }
-
-  const char* cacheXMLFile() const { return m_cacheXMLFile; }
+  const std::string& cacheXMLFile() const { return m_cacheXMLFile; }
 
   /**
    * Returns the log-file-size-limit.
@@ -298,17 +288,13 @@ class CPPCACHE_EXPORT SystemProperties {
   }
 
   /** Return the security diffie hellman secret key algo */
-  const char* securityClientDhAlgo() const {
-    return (m_securityClientDhAlgo == nullptr
-                ? ""
-                : m_securityClientDhAlgo->asChar());
+  const std::string& securityClientDhAlgo() const {
+    return m_securityClientDhAlgo;
   }
 
   /** Return the keystore (.pem file ) path */
-  const char* securityClientKsPath() const {
-    return (m_securityClientKsPath == nullptr
-                ? ""
-                : m_securityClientKsPath->asChar());
+  const std::string& securityClientKsPath() const {
+    return m_securityClientKsPath;
   }
 
   /** Returns securityPropertiesPtr.
@@ -329,10 +315,7 @@ class CPPCACHE_EXPORT SystemProperties {
    * Check whether Diffie-Hellman based credentials encryption is on.
    * @return bool flag to indicate whether DH for credentials is on.
    */
-  bool isDhOn() const {
-    return m_securityClientDhAlgo != nullptr &&
-           m_securityClientDhAlgo->length() > 0;
-  }
+  bool isDhOn() const { return !m_securityClientDhAlgo.empty(); }
 
   /**
    * Checks to see if this native client is being invoked as part of small
@@ -390,23 +373,19 @@ class CPPCACHE_EXPORT SystemProperties {
 
   bool m_appDomainEnabled;
 
-  char* m_statisticsArchiveFile;
+  std::string m_statisticsArchiveFile;
 
-  char* m_logFilename;
+  std::string m_logFilename;
 
   Log::LogLevel m_logLevel;
 
   int m_sessions;
 
-  char* m_name;
-
-  bool m_debugStackTraceEnabled;
-
-  bool m_crashDumpEnabled;
+  std::string m_name;
 
   bool m_disableShufflingEndpoint;
 
-  char* m_cacheXMLFile;
+  std::string m_cacheXMLFile;
 
   uint32_t m_logFileSizeLimit;
   uint32_t m_logDiskSpaceLimit;
@@ -428,10 +407,10 @@ class CPPCACHE_EXPORT SystemProperties {
 
   std::shared_ptr<Properties> m_securityPropertiesPtr;
 
-  std::shared_ptr<CacheableString> m_securityClientDhAlgo;
-  std::shared_ptr<CacheableString> m_securityClientKsPath;
+  std::string m_securityClientDhAlgo;
+  std::string m_securityClientKsPath;
 
-  char* m_durableClientId;
+  std::string m_durableClientId;
   std::chrono::seconds m_durableTimeout;
 
   std::chrono::milliseconds m_connectTimeout;
@@ -444,12 +423,12 @@ class CPPCACHE_EXPORT SystemProperties {
 
   bool m_sslEnabled;
   bool m_timestatisticsEnabled;
-  char* m_sslKeyStore;
-  char* m_sslTrustStore;
+  std::string m_sslKeyStore;
+  std::string m_sslTrustStore;
 
-  char* m_sslKeystorePassword;
+  std::string m_sslKeystorePassword;
 
-  char* m_conflateEvents;
+  std::string m_conflateEvents;
 
   uint32_t m_threadPoolSize;
   std::chrono::seconds m_suspendedTxTimeout;
@@ -457,22 +436,19 @@ class CPPCACHE_EXPORT SystemProperties {
   bool m_disableChunkHandlerThread;
   bool m_onClientDisconnectClearPdxTypeIds;
 
- private:
   /**
    * Processes the given property/value pair, saving
    * the results internally:
    */
-  void processProperty(const char* property, const char* value);
+  void processProperty(const std::string& property, const std::string& value);
+  static bool parseBooleanProperty(const std::string& property,
+                                   const std::string& value);
   template <class _Rep, class _Period>
-  void parseDurationProperty(const std::string& property,
-                             const std::string& value,
-                             std::chrono::duration<_Rep, _Period>& duration);
+  static void parseDurationProperty(
+      const std::string& property, const std::string& value,
+      std::chrono::duration<_Rep, _Period>& duration);
 
- private:
-  SystemProperties(const SystemProperties& rhs);  // never defined
-  void operator=(const SystemProperties& rhs);    // never defined
-
-  void throwError(const char* msg);
+  static void throwError(const std::string& msg);
 
  public:
   friend class DistributedSystemImpl;

@@ -302,7 +302,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   auto keyPtr = CacheableKey::create(key);
 
   auto regPtr = getHelper()->getRegion(name);
-  fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
+  fprintf(stdout, "netsearch  region %s\n", regPtr->getName().c_str());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
 
@@ -684,7 +684,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThirteen)
     map0.emplace(keyObject6, CacheableString::create("testString"));
     regPtr0->putAll(map0);
     auto checkPtr1 = regPtr0->get(keyObject6);
-    ASSERT(strcmp(checkPtr1->toString()->asChar(), "testString") == 0,
+    ASSERT(strcmp(checkPtr1->toString().c_str(), "testString") == 0,
            "strVal should be testString.");
     map0.clear();
 

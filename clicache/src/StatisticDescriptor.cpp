@@ -16,8 +16,8 @@
  */
 
 
+
 #include "StatisticDescriptor.hpp"
-#include "impl/ManagedString.hpp"
 
 
 namespace Apache
@@ -26,6 +26,7 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace msclr::interop;
 
       System::Int32 StatisticDescriptor::ID::get( )
       {
@@ -34,12 +35,12 @@ namespace Apache
 
       String^ StatisticDescriptor::Name::get( )
       {
-        return ManagedString::Get( m_nativeptr->getName() );
+        return marshal_as<String^>( m_nativeptr->getName() );
       }
 
       String^ StatisticDescriptor::Description::get( )
       {
-        return ManagedString::Get( m_nativeptr->getDescription() );
+        return marshal_as<String^>( m_nativeptr->getDescription() );
       }
 
       int8_t StatisticDescriptor::IsCounter::get( )
@@ -54,7 +55,7 @@ namespace Apache
 
       String^ StatisticDescriptor::Unit::get()
       {
-        return ManagedString::Get(m_nativeptr->getUnit());
+        return marshal_as<String^>(m_nativeptr->getUnit());
       }
     }  // namespace Client
   }  // namespace Geode

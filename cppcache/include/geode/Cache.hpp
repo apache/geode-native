@@ -82,7 +82,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * @param cacheXml
    *        Valid cache.xml file
    */
-  virtual void initializeDeclarativeCache(const char* cacheXml) override;
+  virtual void initializeDeclarativeCache(const std::string& cacheXml) override;
 
   /** Returns the name of this cache.
    * @return the string name of this cache
@@ -138,7 +138,8 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * @param path the region's name, such as <code>AuthRegion</code>.
    * @returns region, or nullptr if no such region exists.
    */
-  virtual std::shared_ptr<Region> getRegion(const char* path) override;
+  virtual std::shared_ptr<Region> getRegion(
+      const std::string& path) const override;
 
   /**
    * Returns a set of root regions in the cache. This set is a snapshot and
@@ -148,7 +149,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * @param regions the returned set of
    * regions
    */
-  virtual std::vector<std::shared_ptr<Region>> rootRegions() override;
+  virtual std::vector<std::shared_ptr<Region>> rootRegions() const override;
 
   /**
    * Gets the QueryService from which a new Query can be obtained.
@@ -163,7 +164,8 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * PoolManager}
    * @returns A smart pointer to the QueryService.
    */
-  virtual std::shared_ptr<QueryService> getQueryService(const char* poolName);
+  virtual std::shared_ptr<QueryService> getQueryService(
+      const std::string& poolName) const;
 
   /**
    * Send the "client ready" message to the server from a durable client.
@@ -195,25 +197,26 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
 
   virtual std::shared_ptr<RegionService> createAuthenticatedView(
       std::shared_ptr<Properties> userSecurityProperties,
-      const char* poolName = nullptr);
+      const std::string& poolName);
 
   /**
    * Get the CacheTransactionManager instance for this Cache.
    * @return The CacheTransactionManager instance.
    * @throws CacheClosedException if the cache is closed.
    */
-  virtual std::shared_ptr<CacheTransactionManager> getCacheTransactionManager();
+  virtual std::shared_ptr<CacheTransactionManager> getCacheTransactionManager()
+      const;
 
   /**
    * Returns whether Cache saves unread fields for Pdx types.
    */
-  virtual bool getPdxIgnoreUnreadFields() override;
+  virtual bool getPdxIgnoreUnreadFields() const override;
 
   /**
    * Returns whether { @link PdxInstance} is preferred for PDX types instead of
    * C++ object.
    */
-  virtual bool getPdxReadSerialized() override;
+  virtual bool getPdxReadSerialized() const override;
 
   virtual TypeRegistry& getTypeRegistry();
 
@@ -226,7 +229,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    * @return the factory
    */
   virtual std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
-      const char* className) override;
+      std::string className) const override;
 
   virtual statistics::StatisticsFactory* getStatisticsFactory() const;
 

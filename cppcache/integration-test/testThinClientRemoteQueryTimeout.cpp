@@ -148,7 +148,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    auto qry = qs->newQuery(const_cast<char*>(resultsetQueries[34].query()));
+    auto qry = qs->newQuery(resultsetQueries[34].query());
 
     std::shared_ptr<SelectResults> results;
 
@@ -191,7 +191,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    auto qry = qs->newQuery(const_cast<char*>(resultsetQueries[34].query()));
+    auto qry = qs->newQuery((resultsetQueries[34].query()));
 
     std::shared_ptr<SelectResults> results;
 
@@ -230,7 +230,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    auto qry = qs->newQuery(const_cast<char*>(structsetQueries[17].query()));
+    auto qry = qs->newQuery(structsetQueries[17].query());
 
     std::shared_ptr<SelectResults> results;
 
@@ -273,7 +273,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    auto qry = qs->newQuery(const_cast<char*>(structsetQueries[17].query()));
+    auto qry = qs->newQuery(structsetQueries[17].query());
 
     std::shared_ptr<SelectResults> results;
 
@@ -312,8 +312,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    auto qry =
-        qs->newQuery(const_cast<char*>(structsetParamQueries[5].query()));
+    auto qry = qs->newQuery(structsetParamQueries[5].query());
 
     std::shared_ptr<SelectResults> results;
 
@@ -365,8 +364,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    auto qry =
-        qs->newQuery(const_cast<char*>(structsetParamQueries[5].query()));
+    auto qry = qs->newQuery((structsetParamQueries[5].query()));
 
     std::shared_ptr<SelectResults> results;
 
@@ -415,7 +413,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyNegativeValueTimeout)
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    auto qry = qs->newQuery(const_cast<char*>(resultsetQueries[34].query()));
+    auto qry = qs->newQuery((resultsetQueries[34].query()));
 
     std::shared_ptr<SelectResults> results;
 
@@ -460,7 +458,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyLargeValueTimeout)
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-    auto qry = qs->newQuery(const_cast<char*>(resultsetQueries[34].query()));
+    auto qry = qs->newQuery((resultsetQueries[34].query()));
 
     std::shared_ptr<SelectResults> results;
 

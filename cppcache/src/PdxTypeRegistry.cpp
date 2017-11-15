@@ -41,7 +41,8 @@ size_t PdxTypeRegistry::testNumberOfPreservedData() const {
   return preserveData.size();
 }
 
-int32_t PdxTypeRegistry::getPDXIdForType(const char* type, const char* poolname,
+int32_t PdxTypeRegistry::getPDXIdForType(const std::string& type,
+                                         const std::string& poolname,
                                          std::shared_ptr<PdxType> nType,
                                          bool checkIfThere) {
   // WriteGuard guard(g_readerWriterLock);
@@ -64,11 +65,11 @@ int32_t PdxTypeRegistry::getPDXIdForType(const char* type, const char* poolname,
 }
 
 int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
-                                         const char* poolname) {
+                                         const std::string& poolname) {
   int32_t typeId = 0;
   {
     ReadGuard read(g_readerWriterLock);
-    PdxTypeToTypeIdMap::iterator iter = pdxTypeToTypeIdMap.find(nType);
+    auto&& iter = pdxTypeToTypeIdMap.find(nType);
     if (iter != pdxTypeToTypeIdMap.end()) {
       typeId = iter->second;
       if (typeId != 0) {
@@ -79,7 +80,7 @@ int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
 
   WriteGuard write(g_readerWriterLock);
 
-  PdxTypeToTypeIdMap::iterator iter = pdxTypeToTypeIdMap.find(nType);
+  auto&& iter = pdxTypeToTypeIdMap.find(nType);
   if (iter != pdxTypeToTypeIdMap.end()) {
     typeId = iter->second;
     if (typeId != 0) {
@@ -122,33 +123,28 @@ void PdxTypeRegistry::addPdxType(int32_t typeId,
   std::pair<int32_t, std::shared_ptr<PdxType>> pc(typeId, pdxType);
   typeIdToPdxType.insert(pc);
 }
-std::shared_ptr<PdxType> PdxTypeRegistry::getPdxType(int32_t typeId) {
+
+std::shared_ptr<PdxType> PdxTypeRegistry::getPdxType(int32_t typeId) const {
   ReadGuard guard(g_readerWriterLock);
-  std::shared_ptr<PdxType> retValue = nullptr;
-  TypeIdVsPdxType::iterator iter;
-  iter = typeIdToPdxType.find(typeId);
+  auto&& iter = typeIdToPdxType.find(typeId);
   if (iter != typeIdToPdxType.end()) {
-    retValue = (*iter).second;
-    return retValue;
+    return iter->second;
   }
   return nullptr;
 }
 
-void PdxTypeRegistry::addLocalPdxType(const char* localType,
+void PdxTypeRegistry::addLocalPdxType(const std::string& localType,
                                       std::shared_ptr<PdxType> pdxType) {
   WriteGuard guard(g_readerWriterLock);
-  localTypeToPdxType.insert(
-      std::pair<std::string, std::shared_ptr<PdxType>>(localType, pdxType));
+  localTypeToPdxType.emplace(localType, pdxType);
 }
+
 std::shared_ptr<PdxType> PdxTypeRegistry::getLocalPdxType(
-    const char* localType) {
+    const std::string& localType) const {
   ReadGuard guard(g_readerWriterLock);
-  std::shared_ptr<PdxType> localTypePtr = nullptr;
-  TypeNameVsPdxType::iterator it;
-  it = localTypeToPdxType.find(localType);
+  auto&& it = localTypeToPdxType.find(localType);
   if (it != localTypeToPdxType.end()) {
-    localTypePtr = (*it).second;
-    return localTypePtr;
+    return it->second;
   }
   return nullptr;
 }
@@ -156,19 +152,16 @@ std::shared_ptr<PdxType> PdxTypeRegistry::getLocalPdxType(
 void PdxTypeRegistry::setMergedType(int32_t remoteTypeId,
                                     std::shared_ptr<PdxType> mergedType) {
   WriteGuard guard(g_readerWriterLock);
-  std::pair<int32_t, std::shared_ptr<PdxType>> mergedTypePair(remoteTypeId,
-                                                              mergedType);
-  remoteTypeIdToMergedPdxType.insert(mergedTypePair);
+  remoteTypeIdToMergedPdxType.emplace(remoteTypeId, mergedType);
 }
-std::shared_ptr<PdxType> PdxTypeRegistry::getMergedType(int32_t remoteTypeId) {
-  std::shared_ptr<PdxType> retVal = nullptr;
-  TypeIdVsPdxType::iterator it;
-  it = remoteTypeIdToMergedPdxType.find(remoteTypeId);
+
+std::shared_ptr<PdxType> PdxTypeRegistry::getMergedType(
+    int32_t remoteTypeId) const {
+  auto&& it = remoteTypeIdToMergedPdxType.find(remoteTypeId);
   if (it != remoteTypeIdToMergedPdxType.end()) {
-    retVal = (*it).second;
-    return retVal;
+    return it->second;
   }
-  return retVal;
+  return nullptr;
 }
 
 void PdxTypeRegistry::setPreserveData(
@@ -201,7 +194,7 @@ void PdxTypeRegistry::setPreserveData(
       "preservedData");
 }
 std::shared_ptr<PdxRemotePreservedData> PdxTypeRegistry::getPreserveData(
-    std::shared_ptr<PdxSerializable> pdxobj) {
+    std::shared_ptr<PdxSerializable> pdxobj) const {
   ReadGuard guard(getPreservedDataLock());
   const auto& iter = preserveData.find((pdxobj));
   if (iter != preserveData.end()) {
@@ -237,41 +230,38 @@ int32_t PdxTypeRegistry::getEnumValue(std::shared_ptr<EnumInfo> ei) {
   enumToInt = tmp;
   return val;
 }
+
 std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
   // TODO locking - naive concurrent optimization?
-  std::shared_ptr<EnumInfo> ret;
-  std::shared_ptr<CacheableHashMap> tmp;
   auto enumValPtr = CacheableInt32::create(enumVal);
 
-  tmp = intToEnum;
+  auto&& tmp = intToEnum;
   {
-    const auto& entry = tmp->find(enumValPtr);
+    auto&& entry = tmp->find(enumValPtr);
     if (entry != tmp->end()) {
-      ret = std::static_pointer_cast<EnumInfo>(entry->second);
-    }
-
-    if (ret) {
-      return ret;
+      auto&& ret = std::static_pointer_cast<EnumInfo>(entry->second);
+      if (ret) {
+        return ret;
+      }
     }
   }
 
   WriteGuard guard(g_readerWriterLock);
   tmp = intToEnum;
   {
-    const auto& entry = tmp->find(enumValPtr);
+    auto&& entry = tmp->find(enumValPtr);
     if (entry != tmp->end()) {
-      ret = std::static_pointer_cast<EnumInfo>(entry->second);
-    }
-
-    if (ret) {
-      return ret;
+      auto&& ret = std::static_pointer_cast<EnumInfo>(entry->second);
+      if (ret) {
+        return ret;
+      }
     }
   }
 
-  ret = std::static_pointer_cast<EnumInfo>(
-      static_cast<ThinClientPoolDM*>(
-          cache->getPoolManager().getAll().begin()->second.get())
-               ->GetEnum(enumVal));
+  auto&& ret = std::static_pointer_cast<EnumInfo>(
+      std::static_pointer_cast<ThinClientPoolDM>(
+          cache->getPoolManager().getAll().begin()->second)
+          ->GetEnum(enumVal));
   tmp = intToEnum;
   (*tmp)[enumValPtr] = ret;
   intToEnum = tmp;

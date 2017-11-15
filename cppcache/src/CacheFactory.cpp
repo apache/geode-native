@@ -50,23 +50,26 @@ extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
 namespace apache {
 namespace geode {
 namespace client {
+
 std::shared_ptr<CacheFactory> CacheFactory::createCacheFactory(
     const std::shared_ptr<Properties>& configPtr) {
   return std::make_shared<CacheFactory>(configPtr);
 }
 
-const char* CacheFactory::getVersion() { return PRODUCT_VERSION; }
-
-const char* CacheFactory::getProductDescription() {
-  return PRODUCT_VENDOR " " PRODUCT_NAME " " PRODUCT_VERSION " (" PRODUCT_BITS
-                        ") " PRODUCT_BUILDDATE;
+const std::string& CacheFactory::getVersion() {
+  static std::string version{PRODUCT_VERSION};
+  return version;
 }
 
-CacheFactory::CacheFactory() {
-  ignorePdxUnreadFields = false;
-  pdxReadSerialized = false;
-  dsProp = nullptr;
+const std::string& CacheFactory::getProductDescription() {
+  static std::string description{PRODUCT_VENDOR
+                                 " " PRODUCT_NAME " " PRODUCT_VERSION
+                                 " (" PRODUCT_BITS ") " PRODUCT_BUILDDATE};
+  return description;
 }
+
+CacheFactory::CacheFactory()
+    : ignorePdxUnreadFields(false), pdxReadSerialized(false), dsProp(nullptr) {}
 
 CacheFactory::CacheFactory(const std::shared_ptr<Properties> dsProps) {
   ignorePdxUnreadFields = false;
@@ -74,13 +77,13 @@ CacheFactory::CacheFactory(const std::shared_ptr<Properties> dsProps) {
   this->dsProp = dsProps;
 }
 
-Cache CacheFactory::create() {
+Cache CacheFactory::create() const {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
 
   LOGFINE("CacheFactory called DistributedSystem::connect");
   auto cache = create(DEFAULT_CACHE_NAME, nullptr);
 
-  auto& cacheImpl = cache.m_cacheImpl;
+  auto& cacheImpl = cache->m_cacheImpl;
   const auto& serializationRegistry = cacheImpl->getSerializationRegistry();
   const auto& pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
   const auto& memberListForVersionStamp =
@@ -105,32 +108,27 @@ Cache CacheFactory::create() {
     return PdxHelper::deserializePdx(dataInput, false);
   });
 
-  pdxTypeRegistry->setPdxIgnoreUnreadFields(cache.getPdxIgnoreUnreadFields());
-  pdxTypeRegistry->setPdxReadSerialized(cache.getPdxReadSerialized());
+  pdxTypeRegistry->setPdxIgnoreUnreadFields(cache->getPdxIgnoreUnreadFields());
+  pdxTypeRegistry->setPdxReadSerialized(cache->getPdxReadSerialized());
 
   return cache;
 }
 
 Cache CacheFactory::create(
-    const char* name,
-    const std::shared_ptr<CacheAttributes>& attrs /*= nullptr*/) {
+    std::string name,
+    const std::shared_ptr<CacheAttributes>& attrs /*= nullptr*/) const {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
 
-  if (name == nullptr) {
-    throw IllegalArgumentException("CacheFactory::create: name is nullptr");
-  }
-  if (name[0] == '\0') {
-    name = "NativeCache";
-  }
+  auto cptr =
+      std::make_shared<Cache>(std::move(name), dsProp, ignorePdxUnreadFields,
+                              pdxReadSerialized, authInitialize);
+  cptr->m_cacheImpl->setAttributes(attrs);
 
-  auto cache = Cache(name, dsProp, ignorePdxUnreadFields,
-                    pdxReadSerialized, authInitialize);
-  cache.m_cacheImpl->setAttributes(attrs);
   try {
-    const auto cacheXml =
-        cache.getDistributedSystem().getSystemProperties().cacheXMLFile();
-    if (cacheXml != 0 && strlen(cacheXml) > 0) {
-      cache.initializeDeclarativeCache(cacheXml);
+    auto&& cacheXml =
+        cptr->getDistributedSystem().getSystemProperties().cacheXMLFile();
+    if (!cacheXml.empty()) {
+      cptr->initializeDeclarativeCache(cacheXml);
     } else {
       cache.m_cacheImpl->initServices();
     }
@@ -152,8 +150,8 @@ Cache CacheFactory::create(
   return cache;
 }
 
-CacheFactory::~CacheFactory() {}
- std::shared_ptr<CacheFactory> CacheFactory::set(const char* name, const char* value) {
+std::shared_ptr<CacheFactory> CacheFactory::set(const std::string& name,
+                                                const std::string& value) {
   if (this->dsProp == nullptr) {
     this->dsProp = Properties::create();
   }

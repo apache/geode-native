@@ -99,18 +99,21 @@ class TESTOBJECT_EXPORT Child : public Parent, public PdxSerializable {
 
   int32_t getMember_f() { return m_f; }
 
-  std::shared_ptr<CacheableString> toString() const {
+  std::string toString() const override {
     char idbuf[512];
     sprintf(idbuf, " Child:: %d %d %d %d %d %d ", m_a, m_b, m_c, m_d, m_e, m_f);
-    return CacheableString::create(idbuf);
+    return idbuf;
   }
 
-  const char* getClassName() const { return "PdxTests.Child"; }
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests.Child";
+    return className;
+  }
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(std::shared_ptr<PdxWriter> pw) {
+  void toData(std::shared_ptr<PdxWriter> pw) const override {
     pw->writeInt("m_a", m_a);
     pw->writeInt("m_b", m_b);
     pw->writeInt("m_c", m_c);
@@ -119,7 +122,7 @@ class TESTOBJECT_EXPORT Child : public Parent, public PdxSerializable {
     pw->writeInt("m_f", m_f);
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) {
+  void fromData(std::shared_ptr<PdxReader> pr) override {
     m_a = pr->readInt("m_a");
     m_b = pr->readInt("m_b");
     m_c = pr->readInt("m_c");
@@ -176,11 +179,11 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
 
   CharTypes() { init(); }
 
-  std::shared_ptr<CacheableString> toString() const {
+  std::string toString() const override {
     char idbuf[1024];
     sprintf(idbuf, "%c %lc %c %c %lc %lc", m_ch, m_widechar, m_chArray[0],
             m_chArray[1], m_widecharArray[0], m_widecharArray[1]);
-    return CacheableString::create(idbuf);
+    return idbuf;
   }
 
   bool equals(CharTypes& other) const {
@@ -221,19 +224,22 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
     return true;
   }
 
-  const char* getClassName() const { return "PdxTests.CharTypes"; }
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests.CharTypes";
+    return className;
+  }
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(std::shared_ptr<PdxWriter> pw) {
+  void toData(std::shared_ptr<PdxWriter> pw) const override {
     pw->writeChar("m_ch", m_ch);
     pw->writeChar("m_widechar", m_widechar);
     pw->writeCharArray("m_chArray", m_chArray, 2);
     pw->writeWideCharArray("m_widecharArray", m_widecharArray, 2);
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) {
+  void fromData(std::shared_ptr<PdxReader> pr) override {
     m_ch = pr->readChar("m_ch");
     m_widechar = pr->readWideChar("m_widechar");
     m_chArray = pr->readCharArray("m_chArray", m_wcharArrayLen);
@@ -253,10 +259,10 @@ class TESTOBJECT_EXPORT Address : public PdxSerializable {
  public:
   Address() {}
 
-  std::shared_ptr<CacheableString> toString() const {
+  std::string toString() const override {
     char idbuf[1024];
     sprintf(idbuf, "%d %s %s", _aptNumber, _street, _city);
-    return CacheableString::create(idbuf);
+    return idbuf;
   }
 
   Address(int32_t aptN, const char* street, const char* city) {
@@ -287,18 +293,21 @@ class TESTOBJECT_EXPORT Address : public PdxSerializable {
     return true;
   }
 
-  const char* getClassName() const { return "PdxTests.Address"; }
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests.Address";
+    return className;
+  }
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
+  void toData(std::shared_ptr<PdxWriter> pw) const override {
     pw->writeInt("_aptNumber", _aptNumber);  // 4
     pw->writeString("_street", _street);
     pw->writeString("_city", _city);
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) {
+  void fromData(std::shared_ptr<PdxReader> pr) override {
     _aptNumber = pr->readInt("_aptNumber");
     _street = pr->readString("_street");
     _city = pr->readString("_city");
@@ -648,7 +657,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
 
   virtual ~PdxType() {}
 
-  virtual uint32_t objectSize() const {
+  virtual uint32_t objectSize() const override {
     uint32_t objectSize = sizeof(PdxType);
     return objectSize;
   }
@@ -764,13 +773,16 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) /*const*/;
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 
-  const char* getClassName() const { return "PdxTests.PdxType"; }
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests.PdxType";
+    return className;
+  }
 
   static PdxSerializable* createDeserializable() { return new PdxType(); }
 

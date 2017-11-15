@@ -169,11 +169,11 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
    * @throws NotConnectedException if the cache is not connected
    * @throws UnknownException otherwise
    */
-  void createRegion(const char* name,
+  void createRegion(std::string name,
                     const std::shared_ptr<RegionAttributes>& aRegionAttributes,
                     std::shared_ptr<Region>& regionPtr);
 
-  void getRegion(const char* path, std::shared_ptr<Region>& rptr);
+  void getRegion(const std::string& path, std::shared_ptr<Region>& rptr);
 
   /**
    * Returns a set of root regions in the cache. Does not cause any
@@ -310,8 +310,9 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
 
   void sendNotificationCloseMsgs();
 
-  void validateRegionAttributes(const char* name,
-                                const std::shared_ptr<RegionAttributes>& attrs) const;
+  void validateRegionAttributes(
+      const std::string& name,
+      const std::shared_ptr<RegionAttributes>& attrs) const;
 
   inline void getSubRegions(MapOfRegionWithLock& srm) {
     MapOfRegionGuard guard(m_regions->mutex());

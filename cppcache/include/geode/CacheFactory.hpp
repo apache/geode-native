@@ -20,10 +20,9 @@
 #ifndef GEODE_CACHEFACTORY_H_
 #define GEODE_CACHEFACTORY_H_
 
-#include <chrono>
+#include <string>
 
 #include "geode_globals.hpp"
-#include "util/chrono/duration.hpp"
 #include "DistributedSystem.hpp"
 #include "Cache.hpp"
 #include "CacheAttributes.hpp"
@@ -39,6 +38,7 @@ namespace client {
 
 class CppCacheLibrary;
 class AuthInitialize;
+
 /**
  * @class CacheFactory CacheFactory.hpp
  * Top level class for configuring and using Geode on a client.This should be
@@ -61,17 +61,17 @@ class CPPCACHE_EXPORT CacheFactory
   /**
    * To create the instance of {@link Cache}.
    */
-  Cache create();
+  Cache create() const;
 
   /** Returns the version of the cache implementation.
    * For the 1.0 release of Geode, the string returned is <code>1.0</code>.
    * @return the version of the cache implementation as a <code>String</code>
    */
-  static const char* getVersion();
+  static const std::string& getVersion();
 
   /** Returns the product description string including product name and version.
    */
-  static const char* getProductDescription();
+  static const std::string& getProductDescription();
 
   /**
    * Control whether pdx ignores fields that were unread during deserialization.
@@ -102,7 +102,8 @@ class CPPCACHE_EXPORT CacheFactory
    * @param authInitialize
    * @return this ClientCacheFactory
    */
-  std::shared_ptr<CacheFactory> setAuthInitialize(const std::shared_ptr<AuthInitialize>& authInitialize);
+  std::shared_ptr<CacheFactory> setAuthInitialize(
+      const std::shared_ptr<AuthInitialize>& authInitialize);
 
   /** Sets the object preference to PdxInstance type.
    * When a cached object that was serialized as a PDX is read
@@ -131,7 +132,8 @@ class CPPCACHE_EXPORT CacheFactory
    * @return a reference to <code>this</code>
    * @since 3.5
    */
-  std::shared_ptr<CacheFactory> set(const char* name, const char* value);
+  std::shared_ptr<CacheFactory> set(const std::string& name,
+                                    const std::string& value);
 
  private:
   std::shared_ptr<Properties> dsProp;
@@ -140,15 +142,13 @@ class CPPCACHE_EXPORT CacheFactory
   std::shared_ptr<AuthInitialize> authInitialize;
 
   Cache create(
-      const char* name,
-      const std::shared_ptr<CacheAttributes>& attrs = nullptr);
+      const std::string name,
+      const std::shared_ptr<CacheAttributes>& attrs = nullptr) const;
 
   // no instances allowed
   CacheFactory();
-  CacheFactory(const std::shared_ptr<Properties> dsProps);
-
- private:
-  ~CacheFactory();
+  explicit CacheFactory(const std::shared_ptr<Properties> dsProps);
+  ~CacheFactory() = default;
 
   friend class CppCacheLibrary;
   friend class RegionFactory;

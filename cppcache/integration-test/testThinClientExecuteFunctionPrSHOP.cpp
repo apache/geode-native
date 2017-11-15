@@ -167,7 +167,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
 
     for (int i = 0; i < 230; i++) {
       sprintf(buf, "VALUE--%d", i);
-      std::shared_ptr<Cacheable> value(CacheableString::create(buf));
+      auto value = CacheableString::create(buf);
       regPtr0->put(i, value);
     }
     LOG("Put done.");

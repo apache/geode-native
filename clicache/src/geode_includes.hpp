@@ -15,12 +15,30 @@
  * limitations under the License.
  */
 
-// geode_includes.hpp : include file for standard system include files,
-// and all project specific include files.
-
 #pragma once
 
-//#include "impl/ManagedCacheableKeyGCHandle.hpp"
-#include "impl/SafeConvert.hpp"
+#include <winsock2.h>
+#include <vcclr.h>
+#include <msclr/marshal_cppstd.h>
+#include <msclr/lock.h>
 
 #include <string>
+#include <memory>
+#include <vector>
+
+// Include public headers from CPP Cache
+#include "begin_native.hpp"
+#include <geode/Cache.hpp>
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/CacheLoader.hpp>
+#include <geode/CacheListener.hpp>
+#include <geode/FixedPartitionResolver.hpp>
+#include <geode/CacheWriter.hpp>
+#include <geode/GeodeTypeIds.hpp>
+#include "end_native.hpp"
+
+// Include private headers from CPP Cache
+#include "begin_native.hpp"
+#include <CacheImpl.hpp>
+#include <DistributedSystemImpl.hpp>
+#include "end_native.hpp"

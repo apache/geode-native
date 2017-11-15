@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
+
 #include "PdxWriterWithTypeCollector.hpp"
 #include "../DataOutput.hpp"
-#include "begin_native.hpp"
+#include "../begin_native.hpp"
 #include <geode/GeodeTypeIds.hpp>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "../GeodeClassIds.hpp"
 #include "PdxHelper.hpp"

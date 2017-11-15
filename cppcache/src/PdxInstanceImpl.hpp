@@ -53,7 +53,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see serializationRegistry->addPdxType
    */
-  virtual std::shared_ptr<PdxSerializable> getObject();
+  virtual std::shared_ptr<PdxSerializable> getObject() override;
 
   /**
    * Checks if the named field exists and returns the result.
@@ -63,7 +63,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @return <code>true</code> if the named field exists; otherwise
    * <code>false</code>
    */
-  virtual bool hasField(const char* fieldname);
+  virtual bool hasField(const std::string& fieldname) override;
 
   /**
    * Reads the named field and set its value in bool type out param.
@@ -74,7 +74,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual bool getBooleanField(const char* fieldname) const;
+  virtual bool getBooleanField(const std::string& fieldname) const override;
 
   /**
    * Reads the named field and set its value in signed char type out param.
@@ -89,7 +89,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual int8_t getByteField(const char* fieldname) const;
+  virtual int8_t getByteField(const std::string& fieldname) const override;
 
   /**
    * Reads the named field and set its value in int16_t type out param.
@@ -100,7 +100,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual int16_t getShortField(const char* fieldname) const;
+  virtual int16_t getShortField(const std::string& fieldname) const override;
 
   /**
    * Reads the named field and set its value in int32_t type out param.
@@ -109,7 +109,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @param value value of the field to be set with int32_t type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    */
-  virtual int32_t getIntField(const char* fieldname) const;
+  virtual int32_t getIntField(const std::string& fieldname) const override;
 
   /**
    * Reads the named field and set its value in int64_t type out param.
@@ -120,7 +120,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual int64_t getLongField(const char* fieldname) const;
+  virtual int64_t getLongField(const std::string& fieldname) const override;
 
   /**
    * Reads the named field and set its value in float type out param.
@@ -131,7 +131,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual float getFloatField(const char* fieldname) const;
+  virtual float getFloatField(const std::string& fieldname) const override;
 
   /**
    * Reads the named field and set its value in double type out param.
@@ -142,7 +142,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual double getDoubleField(const char* fieldname) const;
+  virtual double getDoubleField(const std::string& fieldname) const override;
 
   /**
    * Reads the named field and set its value in char type out param.
@@ -153,7 +153,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual char16_t getCharField(const char* fieldName) const;
+  virtual char16_t getCharField(const std::string& fieldName) const override;
 
   /**
    * Reads the named field and set its value in bool array type out param.
@@ -165,8 +165,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, bool** value,
-                        int32_t& length) const;
+  virtual void getField(const std::string& fieldname, bool** value,
+                        int32_t& length) const override;
 
   /**
    * Reads the named field and set its value in signed char array type out
@@ -181,8 +181,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, signed char** value,
-                        int32_t& length) const;
+  virtual void getField(const std::string& fieldname, signed char** value,
+                        int32_t& length) const override;
 
   /**
    * Reads the named field and set its value in unsigned char array type out
@@ -199,8 +199,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, unsigned char** value,
-                        int32_t& length) const;
+  virtual void getField(const std::string& fieldname, unsigned char** value,
+                        int32_t& length) const override;
 
   /**
    * Reads the named field and set its value in int16_t array type out param.
@@ -212,8 +212,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, int16_t** value,
-                        int32_t& length) const;
+  virtual void getField(const std::string& fieldname, int16_t** value,
+                        int32_t& length) const override;
 
   /**
    * Reads the named field and set its value in int32_t array type out param.
@@ -225,8 +225,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, int32_t** value,
-                        int32_t& length) const;
+  virtual void getField(const std::string& fieldname, int32_t** value,
+                        int32_t& length) const override;
 
   /**
    * Reads the named field and set its value in int64_t array type out param.
@@ -238,8 +238,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, int64_t** value,
-                        int32_t& length) const;
+  virtual void getField(const std::string& fieldname, int64_t** value,
+                        int32_t& length) const override;
 
   /**
    * Reads the named field and set its value in float array type out param.
@@ -251,8 +251,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, float** value,
-                        int32_t& length) const;
+  virtual void getField(const std::string& fieldname, float** value,
+                        int32_t& length) const override;
 
   /**
    * Reads the named field and set its value in double array type out param.
@@ -264,8 +264,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, double** value,
-                        int32_t& length) const;
+  virtual void getField(const std::string& fieldname, double** value,
+                        int32_t& length) const override;
 
   // charArray
   /**
@@ -278,8 +278,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldName, wchar_t** value,
-                        int32_t& length) const;
+  virtual void getField(const std::string& fieldName, wchar_t** value,
+                        int32_t& length) const override;
 
   /**
    * Reads the named field and set its value in char array type out param.
@@ -291,8 +291,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldName, char** value,
-                        int32_t& length) const;
+  virtual void getField(const std::string& fieldName, char** value,
+                        int32_t& length) const override;
 
   // String
   /**
@@ -304,7 +304,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, wchar_t** value) const;
+  virtual void getField(const std::string& fieldname,
+                        wchar_t** value) const override;
 
   /**
    * Reads the named field and set its value in char* type out param.
@@ -315,7 +316,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, char** value) const;
+  virtual void getField(const std::string& fieldname,
+                        char** value) const override;
 
   // StringArray
   /**
@@ -328,8 +330,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, wchar_t*** value,
-                        int32_t& length) const;
+  virtual void getField(const std::string& fieldname, wchar_t*** value,
+                        int32_t& length) const override;
 
   /**
    * Reads the named field and set its value in char* array type out param.
@@ -341,8 +343,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, char*** value,
-                        int32_t& length) const;
+  virtual void getField(const std::string& fieldname, char*** value,
+                        int32_t& length) const override;
 
   /**
    * Reads the named field and set its value in std::shared_ptr<CacheableDate>
@@ -356,7 +358,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @see PdxInstance#hasField
    */
   virtual std::shared_ptr<CacheableDate> getCacheableDateField(
-      const char* fieldname) const;
+      const std::string& fieldname) const override;
 
   /**
    * Reads the named field and set its value in array of byte arrays type out
@@ -370,8 +372,9 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldName, int8_t*** value,
-                        int32_t& arrayLength, int32_t*& elementLength) const;
+  virtual void getField(const std::string& fieldName, int8_t*** value,
+                        int32_t& arrayLength,
+                        int32_t*& elementLength) const override;
 
   /**
    * Reads the named field and set its value in std::shared_ptr<Cacheable> type
@@ -388,7 +391,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @see PdxInstance#hasField
    */
   virtual std::shared_ptr<Cacheable> getCacheableField(
-      const char* fieldname) const;
+      const std::string& fieldname) const override;
 
   /**
    * Reads the named field and set its value in
@@ -405,7 +408,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @see PdxInstance#hasField
    */
   virtual std::shared_ptr<CacheableObjectArray> getCacheableObjectArrayField(
-      const char* fieldname) const;
+      const std::string& fieldname) const override;
 
   /**
    * Set the existing named field to the given value.
@@ -420,7 +423,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, bool value);
+  virtual void setField(const std::string& fieldName, bool value) override;
 
   /**
    * Set the existing named field to the given value.
@@ -439,7 +442,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, signed char value);
+  virtual void setField(const std::string& fieldName,
+                        signed char value) override;
 
   /**
    * Set the existing named field to the given value.
@@ -458,7 +462,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, unsigned char value);
+  virtual void setField(const std::string& fieldName,
+                        unsigned char value) override;
 
   /**
    * Set the existing named field to the given value.
@@ -473,7 +478,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, int16_t value);
+  virtual void setField(const std::string& fieldName, int16_t value) override;
 
   /**
    * Set the existing named field to the given value.
@@ -488,7 +493,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, int32_t value);
+  virtual void setField(const std::string& fieldName, int32_t value) override;
 
   /**
    * Set the existing named field to the given value.
@@ -503,7 +508,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, int64_t value);
+  virtual void setField(const std::string& fieldName, int64_t value) override;
 
   /**
    * Set the existing named field to the given value.
@@ -518,7 +523,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, float value);
+  virtual void setField(const std::string& fieldName, float value) override;
 
   /**
    * Set the existing named field to the given value.
@@ -533,7 +538,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, double value);
+  virtual void setField(const std::string& fieldName, double value) override;
 
   /**
    * Set the existing named field to the given value.
@@ -548,7 +553,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, char16_t value);
+  virtual void setField(const std::string& fieldName, char16_t value) override;
 
   /**
    * Set the existing named field to the given value.
@@ -565,8 +570,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName,
-                        std::shared_ptr<CacheableDate> value);
+  virtual void setField(const std::string& fieldName,
+                        std::shared_ptr<CacheableDate> value) override;
 
   /**
    * Set the existing named field to the given value.
@@ -583,7 +588,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, bool* value, int32_t length);
+  virtual void setField(const std::string& fieldName, bool* value,
+                        int32_t length) override;
 
   /**
    * Set the existing named field to the given value.
@@ -604,8 +610,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, signed char* value,
-                        int32_t length);
+  virtual void setField(const std::string& fieldName, signed char* value,
+                        int32_t length) override;
 
   /**
    * Set the existing named field to the given value.
@@ -626,8 +632,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, unsigned char* value,
-                        int32_t length);
+  virtual void setField(const std::string& fieldName, unsigned char* value,
+                        int32_t length) override;
 
   /**
    * Set the existing named field to the given value.
@@ -644,7 +650,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, int16_t* value, int32_t length);
+  virtual void setField(const std::string& fieldName, int16_t* value,
+                        int32_t length) override;
 
   /**
    * Set the existing named field to the given value.
@@ -661,7 +668,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, int32_t* value, int32_t length);
+  virtual void setField(const std::string& fieldName, int32_t* value,
+                        int32_t length) override;
 
   /**
    * Set the existing named field to the given value.
@@ -678,7 +686,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, int64_t* value, int32_t length);
+  virtual void setField(const std::string& fieldName, int64_t* value,
+                        int32_t length) override;
 
   /**
    * Set the existing named field to the given value.
@@ -695,7 +704,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, float* value, int32_t length);
+  virtual void setField(const std::string& fieldName, float* value,
+                        int32_t length) override;
 
   /**
    * Set the existing named field to the given value.
@@ -712,7 +722,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, double* value, int32_t length);
+  virtual void setField(const std::string& fieldName, double* value,
+                        int32_t length) override;
 
   /**
    * Set the existing named field to the given value.
@@ -727,7 +738,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, const wchar_t* value);
+  virtual void setField(const std::string& fieldName,
+                        const wchar_t* value) override;
 
   /**
    * Set the existing named field to the given value.
@@ -742,7 +754,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, const char* value);
+  virtual void setField(const std::string& fieldName,
+                        const char* value) override;
 
   /**
    * Set the existing named field to the given value.
@@ -759,7 +772,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, wchar_t* value, int32_t length);
+  virtual void setField(const std::string& fieldName, wchar_t* value,
+                        int32_t length) override;
 
   /**
    * Set the existing named field to the given value.
@@ -776,7 +790,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, char* value, int32_t length);
+  virtual void setField(const std::string& fieldName, char* value,
+                        int32_t length) override;
 
   /**
    * Set the existing named field to the given value.
@@ -793,7 +808,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, wchar_t** value, int32_t length);
+  virtual void setField(const std::string& fieldName, wchar_t** value,
+                        int32_t length) override;
 
   /**
    * Set the existing named field to the given value.
@@ -810,7 +826,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, char** value, int32_t length);
+  virtual void setField(const std::string& fieldName, char** value,
+                        int32_t length) override;
 
   /**
    * Set the existing named field to the given value.
@@ -829,8 +846,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, int8_t** value,
-                        int32_t arrayLength, int32_t* elementLength);
+  virtual void setField(const std::string& fieldName, int8_t** value,
+                        int32_t arrayLength, int32_t* elementLength) override;
 
   /**
    * Set the existing named field to the given value.
@@ -846,8 +863,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName,
-                        std::shared_ptr<Cacheable> value);
+  virtual void setField(const std::string& fieldName,
+                        std::shared_ptr<Cacheable> value) override;
 
   /**
    * Set the existing named field to the given value.
@@ -864,8 +881,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName,
-                        std::shared_ptr<CacheableObjectArray> value);
+  virtual void setField(const std::string& fieldName,
+                        std::shared_ptr<CacheableObjectArray> value) override;
 
   /**
    * Checks if the named field was {@link PdxWriter#markIdentityField}marked as
@@ -878,7 +895,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @return <code>true</code> if the named field exists and was marked as an
    * identify field; otherwise <code>false</code>
    */
-  virtual bool isIdentityField(const char* fieldname);
+  virtual bool isIdentityField(const std::string& fieldname) override;
 
   /**
    * Creates and returns a {@link WritablePdxInstance} whose initial
@@ -887,7 +904,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * made to the returned value will not modify this PdxInstance.
    * @return a {@link WritablePdxInstance}
    */
-  virtual std::shared_ptr<WritablePdxInstance> createWriter();
+  virtual std::shared_ptr<WritablePdxInstance> createWriter() override;
 
   /**
    * Generates a hashcode based on the identity fields of
@@ -907,7 +924,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see serializationRegistry->addPdxType
    */
-  virtual int32_t hashcode() const;
+  virtual int32_t hashcode() const override;
 
   /**
    * Prints out all of the identity fields of this PdxInstance.
@@ -920,18 +937,22 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see serializationRegistry->addPdxType
    */
-  virtual std::shared_ptr<CacheableString> toString() const;
+  virtual std::string toString() const override;
 
   /**
    * @brief serialize this object. This is an internal method.
    */
-  virtual void toData(DataOutput& output) const { PdxInstance::toData(output); }
+  virtual void toData(DataOutput& output) const override {
+    PdxInstance::toData(output);
+  }
 
   /**
    * @brief deserialize this object, typical implementation should return
    * the 'this' pointer. This is an internal method.
    */
-  virtual void fromData(DataInput& input) { PdxInstance::fromData(input); }
+  virtual void fromData(DataInput& input) override {
+    PdxInstance::fromData(input);
+  }
 
   /**
    * Returns true if the given CacheableKey derived object is equals to this
@@ -975,19 +996,19 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    *
    * @see serializationRegistry->addPdxType
    */
-  virtual bool operator==(const CacheableKey& other) const;
+  virtual bool operator==(const CacheableKey& other) const override;
 
   /** @return the size of the object in bytes
    * This is an internal method.
    * It is used in case of heap LRU property is set.
    */
-  virtual uint32_t objectSize() const;
+  virtual uint32_t objectSize() const override;
 
   /**
    * Return an unmodifiable list of the field names on this PdxInstance.
    * @return an unmodifiable list of the field names on this PdxInstance
    */
-  virtual std::shared_ptr<CacheableStringArray> getFieldNames();
+  virtual std::shared_ptr<CacheableStringArray> getFieldNames() override;
 
   // From PdxSerializable
   /**
@@ -995,13 +1016,13 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * method.
    * @param PdxWriter to serialize the PDX object
    */
-  virtual void toData(std::shared_ptr<PdxWriter> output) /*const*/;
+  virtual void toData(std::shared_ptr<PdxWriter> output) const override;
 
   /**
    * @brief Deserialize this object. This is an internal method.
    * @param PdxReader to Deserialize the PDX object
    */
-  virtual void fromData(std::shared_ptr<PdxReader> input);
+  virtual void fromData(std::shared_ptr<PdxReader> input) override;
 
   /**
    * Return the full name of the class that this pdx instance represents.
@@ -1010,9 +1031,10 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * to get classname
    * or if PdxType is not defined for PdxInstance.
    */
-  virtual const char* getClassName() const;
+  virtual const std::string& getClassName() const override;
 
-  virtual PdxFieldTypes::PdxFieldType getFieldType(const char* fieldname) const;
+  virtual PdxFieldTypes::PdxFieldType getFieldType(
+      const std::string& fieldname) const override;
 
   void setPdxId(int32_t typeId);
 
@@ -1083,8 +1105,9 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   bool compareDefaultBytes(DataInput& dataInput, int start, int end,
                            int8_t* defaultBytes, int32_t length) const;
 
-  void writeField(std::shared_ptr<PdxWriter> writer, const char* fieldName,
-                  int typeId, std::shared_ptr<Cacheable> value);
+  void writeField(std::shared_ptr<PdxWriter> writer,
+                  const std::string& fieldName, int typeId,
+                  std::shared_ptr<Cacheable> value);
 
   void writeUnmodifieldField(DataInput& dataInput, int startPos, int endPos,
                              std::shared_ptr<PdxLocalWriter> localWriter);
@@ -1102,6 +1125,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
                        std::vector<std::shared_ptr<PdxFieldType>>& other) const;
 
   std::shared_ptr<PdxTypeRegistry> getPdxTypeRegistry() const;
+
+  void toDataMutable(std::shared_ptr<PdxWriter> output);
 
   static int deepArrayHashCode(std::shared_ptr<Cacheable> obj);
 
@@ -1154,7 +1179,8 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
       std::shared_ptr<CacheableHashTable> Obj,
       std::shared_ptr<CacheableHashTable> OtherObj);
 
-  std::unique_ptr<DataInput> getDataInputForField(const char* fieldname) const;
+  std::unique_ptr<DataInput> getDataInputForField(
+      const std::string& fieldname) const;
 
   static int8_t m_BooleanDefaultBytes[];
   static int8_t m_ByteDefaultBytes[];

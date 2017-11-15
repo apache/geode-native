@@ -154,31 +154,29 @@ void StatDataOutput::openFile(std::string filename, int64_t size) {
 
 // Constructor and Member functions of ResourceType class
 
-ResourceType::ResourceType(int32_t idArg, StatisticsType *typeArg) {
-  StatisticsType *typeImpl = dynamic_cast<StatisticsType *>(typeArg);
-  if (typeImpl == nullptr) {
-    std::string s("could not down cast to StatisticsType");
-    throw NullPointerException(s.c_str());
-  }
+ResourceType::ResourceType(int32_t idArg, const StatisticsType *typeArg) {
   this->id = idArg;
-  this->stats = typeImpl->getStatistics();
-  int32_t desc = typeImpl->getDescriptorsCount();
+  this->stats = typeArg->getStatistics();
+  int32_t desc = typeArg->getDescriptorsCount();
   this->numOfDescriptors = desc;
 }
 
-int32_t ResourceType::getId() { return this->id; }
+int32_t ResourceType::getId() const { return this->id; }
 
-int32_t ResourceType::getNumOfDescriptors() { return this->numOfDescriptors; }
+int32_t ResourceType::getNumOfDescriptors() const {
+  return this->numOfDescriptors;
+}
 
-StatisticDescriptor **ResourceType::getStats() { return this->stats; }
+StatisticDescriptor **ResourceType::getStats() const { return this->stats; }
 
 // Constructor and Member functions of ResourceInst class
 
 ResourceInst::ResourceInst(int32_t idArg, Statistics *resourceArg,
-                           ResourceType *typeArg, StatDataOutput *dataOutArg) {
+                           const ResourceType *typeArg,
+                           StatDataOutput *dataOutArg)
+    : type(typeArg) {
   this->id = idArg;
   this->resource = resourceArg;
-  this->type = typeArg;
   this->dataOut = dataOutArg;
   int32_t cnt = type->getNumOfDescriptors();
   archivedStatValues = new int64_t[cnt];
@@ -196,7 +194,7 @@ int32_t ResourceInst::getId() { return this->id; }
 
 Statistics *ResourceInst::getResource() { return this->resource; }
 
-ResourceType *ResourceInst::getType() { return this->type; }
+const ResourceType *ResourceInst::getType() const { return this->type; }
 
 int64_t ResourceInst::getStatValue(StatisticDescriptor *f) {
   return this->resource->getRawBits(f);
@@ -392,9 +390,8 @@ StatArchiveWriter::~StatArchiveWriter() {
     delete dataBuffer;
     dataBuffer = nullptr;
   }
-  std::map<StatisticsType *, ResourceType *>::iterator p;
-  for (p = resourceTypeMap.begin(); p != resourceTypeMap.end(); p++) {
-    ResourceType *rt = (*p).second;
+  for (const auto &p : resourceTypeMap) {
+    auto rt = p.second;
     GF_SAFE_DELETE(rt);
   }
 }
@@ -548,7 +545,7 @@ bool StatArchiveWriter::resourceInstMapHas(Statistics *sp) {
 
 void StatArchiveWriter::allocateResourceInst(Statistics *s) {
   if (s->isClosed()) return;
-  ResourceType *type = getResourceType(s);
+  const auto type = getResourceType(s);
 
   ResourceInst *ri = new ResourceInst(resourceInstId, s, type, dataBuffer);
   if (ri == nullptr) {
@@ -565,32 +562,30 @@ void StatArchiveWriter::allocateResourceInst(Statistics *s) {
   resourceInstId++;
 }
 
-ResourceType *StatArchiveWriter::getResourceType(Statistics *s) {
-  StatisticsType *type = s->getType();
+const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
+  const auto type = s->getType();
   if (type == nullptr) {
     std::string s("could not know the type of the statistics object");
     throw NullPointerException(s.c_str());
   }
-  ResourceType *rt = nullptr;
-  std::map<StatisticsType *, ResourceType *>::iterator p;
-  p = resourceTypeMap.find(type);
+  const ResourceType *rt = nullptr;
+  const auto p = resourceTypeMap.find(type);
   if (p != resourceTypeMap.end()) {
-    rt = (*p).second;
+    rt = p->second;
   } else {
     rt = new ResourceType(resourceTypeId, type);
     if (type == nullptr) {
       std::string s("could not allocate memory for a new resourcetype");
       throw NullPointerException(s.c_str());
     }
-    resourceTypeMap.insert(
-        std::pair<StatisticsType *, ResourceType *>(type, rt));
+    resourceTypeMap.emplace(type, rt);
     // write the type to the archive
     this->dataBuffer->writeByte(RESOURCE_TYPE_TOKEN);
     this->dataBuffer->writeInt(resourceTypeId);
     this->dataBuffer->writeString(type->getName());
     this->dataBuffer->writeString(type->getDescription());
-    StatisticDescriptor **stats = rt->getStats();
-    int32_t descCnt = rt->getNumOfDescriptors();
+    auto stats = rt->getStats();
+    auto descCnt = rt->getNumOfDescriptors();
     this->dataBuffer->writeShort(static_cast<int16_t>(descCnt));
     for (int32_t i = 0; i < descCnt; i++) {
       std::string statsName = stats[i]->getName();

@@ -16,7 +16,7 @@
  */
 
 
-#include "gfcli/Utils.hpp"
+#include "Utils.hpp"
 #include "begin_native.hpp"
 #include <Utils.hpp>
 #include "end_native.hpp"
@@ -70,8 +70,9 @@ namespace Apache
     System::Int32 Utils::LastError::get( )
     {
        return apache::geode::client::Utils::getLastError( );
+    }
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
 
-}

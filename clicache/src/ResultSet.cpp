@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
+
+
 #include "ResultSet.hpp"
 #include "SelectResultsIterator.hpp"
-#include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
 

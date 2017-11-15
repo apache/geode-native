@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "begin_native.hpp"
 #include "CacheImpl.hpp"
 #include "SerializationRegistry.hpp"
@@ -22,7 +23,6 @@
 
 #include "Properties.hpp"
 #include "impl/ManagedVisitor.hpp"
-#include "impl/ManagedString.hpp"
 #include "impl/SafeConvert.hpp"
 #include "ExceptionTypes.hpp"
 
@@ -183,13 +183,11 @@ namespace Apache
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::Load( String^ fileName )
       {
-        ManagedString mg_fname( fileName );
-
         _GF_MG_EXCEPTION_TRY2
 
           try
           {
-            m_nativeptr->get()->load( mg_fname.CharPtr );
+            m_nativeptr->get()->load( marshal_as<std::string>(fileName) );
           }
           finally
           {

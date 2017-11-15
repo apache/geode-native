@@ -16,11 +16,12 @@
  */
 
 #pragma once
+
 //#include "../DataOutput.hpp"
-#include "begin_native.hpp"
+#include "../begin_native.hpp"
 #include <geode/DataOutput.hpp>
 #include "SerializationRegistry.hpp"
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "../IPdxSerializable.hpp"
 using namespace System;

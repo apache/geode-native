@@ -37,7 +37,7 @@ Portfolio::Portfolio(int32_t i, uint32_t size,
   memcpy(status, statusStr, statusSize);
   char buf[100];
   sprintf(buf, "type%d", (i % 3));
-  type = CacheableString::create(buf);
+  type = buf;
   int numSecIds = sizeof(secIds) / sizeof(char*);
   position1 =
       std::make_shared<Position>(secIds[Position::cnt % numSecIds], Position::cnt * 1000);
@@ -100,7 +100,7 @@ Serializable* Portfolio::fromData(DataInput& input) {
   input.readBytes(&arrayZeroSize, &tmp);
   return this;
 }
-std::shared_ptr<CacheableString> Portfolio::toString() const {
+std::string Portfolio::toString() const {
   char idbuf[1024];
   sprintf(idbuf, "PortfolioObject: [ ID=%d", ID);
   char pkidbuf[1024];
@@ -113,20 +113,20 @@ std::shared_ptr<CacheableString> Portfolio::toString() const {
   }
   char position1buf[2048];
   if (position1 != nullptr) {
-    sprintf(position1buf, "\t\t\t  P1: %s", position1->toString()->asChar());
+    sprintf(position1buf, "\t\t\t  P1: %s", position1->toString().c_str());
   } else {
     sprintf(position1buf, "\t\t\t  P1: %s", "NULL");
   }
   char position2buf[2048];
   if (position2 != nullptr) {
-    sprintf(position2buf, " P2: %s", position2->toString()->asChar());
+    sprintf(position2buf, " P2: %s", position2->toString().c_str());
   } else {
     sprintf(position2buf, " P2: %s ]", "NULL");
   }
   char creationdatebuf[2048];
   if (creationDate != nullptr) {
     sprintf(creationdatebuf, "creation Date %s",
-            creationDate->toString()->asChar());
+            creationDate->toString().c_str());
   } else {
     sprintf(creationdatebuf, "creation Date %s", "NULL");
   }

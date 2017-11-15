@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-#include "QueryStringsM.hpp"
-#include "impl/ManagedString.hpp"
+#include <string>
 
+#include <msclr/marshal_cppstd.h>
+
+#include "QueryStringsM.hpp"
 
 namespace Apache
 {
@@ -27,17 +29,16 @@ namespace Apache
     {
       namespace Tests
       {
+        using namespace msclr::interop;
 
         // Region: QueryStrings method definitions
 
         void QueryStrings::Init( QueryCategory pcategory, String^ pquery,
           Boolean pisLargeResultset )
         {
-          Apache::Geode::Client::ManagedString mg_pquery( pquery );
-
            auto nativeptr = std::unique_ptr<testData::QueryStrings>(new testData::QueryStrings(
             static_cast<testData::queryCategory>( pcategory ),
-            mg_pquery.CharPtr, pisLargeResultset ));
+            marshal_as<std::string>(pquery), pisLargeResultset ));
            m_nativeptr = gcnew native_conditional_unique_ptr<testData::QueryStrings>(std::move(nativeptr));
         }
 
@@ -87,7 +88,7 @@ namespace Apache
         {
           try
           {
-            return Apache::Geode::Client::ManagedString::Get( m_nativeptr->get()->query( ) );
+            return marshal_as<String^>( m_nativeptr->get()->query( ) );
           }
           finally
           {

@@ -17,17 +17,20 @@
 
 #pragma once
 
+
+#include <Windows.h>
+#include <msclr/marshal_cppstd.h>
+
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
 #include <geode/ExceptionTypes.hpp>
 #include "end_native.hpp"
 
-#include "impl/ManagedString.hpp"
-
 
 using namespace System;
 using namespace System::Collections::Generic;
 using namespace System::Runtime::Serialization;
+using namespace msclr::interop;
 
 namespace Apache
 {
@@ -131,8 +134,7 @@ namespace Apache
         inline static String^ GetStackTrace(
           const apache::geode::client::Exception& nativeEx )
         {
-          std::string nativeExStack = nativeEx.getStackTrace();
-          return ManagedString::Get(nativeExStack.c_str());
+          return marshal_as<String^>(nativeEx.getStackTrace());
         }
 
         /// <summary>
@@ -161,10 +163,8 @@ namespace Apache
               if (ex->InnerException != nullptr) {
                 cause = GeodeException::GetNative(ex->InnerException);
               }
-              ManagedString mg_exStr(MgSysExPrefix + ex->ToString());
-              auto message = std::string(mg_exStr.CharPtr) + cause->what();
               return std::make_shared<apache::geode::client::Exception>(
-                  message);
+                  marshal_as<std::string>(MgSysExPrefix + ex->ToString()) + cause->getMessage());
             }
           }
           return nullptr;
@@ -176,14 +176,12 @@ namespace Apache
         /// </summary>
         virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
         {
-          String^ msg = this->Message + ": " + this->StackTrace;
-          ManagedString mg_msg(msg);
           std::shared_ptr<apache::geode::client::Exception> cause;
           if (this->InnerException != nullptr) {
             cause = GeodeException::GetNative(this->InnerException);
           }
-          auto message = std::string(mg_msg.CharPtr) + cause->what();
-          return std::make_shared<apache::geode::client::Exception>(message);
+          return std::make_shared<apache::geode::client::Exception>(
+            marshal_as<std::string>(this->Message + ": " + this->StackTrace) + cause->getMessage());
         }
 
         /// <summary>
@@ -207,9 +205,8 @@ namespace Apache
             if (ex->InnerException != nullptr) {
               cause = GeodeException::GetNative(ex->InnerException);
             }
-            ManagedString mg_exStr(MgSysExPrefix + ex->ToString());
-            auto message = std::string(mg_exStr.CharPtr) + cause->what();
-            throw apache::geode::client::Exception(message);
+            throw apache::geode::client::Exception(
+              marshal_as<std::string>(MgSysExPrefix + ex->ToString()) + cause->getMessage());
           }
         }
 
@@ -327,12 +324,12 @@ namespace Apache
       \
       internal: \
         x(const apache::geode::client::y& nativeEx) \
-          : GeodeException(ManagedString::Get(nativeEx.what()), \
+          : GeodeException(marshal_as<String^>(nativeEx.getMessage()), \
               gcnew GeodeException(GeodeException::GetStackTrace( \
                 nativeEx))) { } \
         \
         x(const apache::geode::client::y& nativeEx, Exception^ innerException) \
-          : GeodeException(ManagedString::Get(nativeEx.what()), \
+          : GeodeException(marshal_as<String^>(nativeEx.getMessage()), \
               innerException) { } \
         \
         static GeodeException^ Create(const apache::geode::client::Exception& ex, \
@@ -351,14 +348,12 @@ namespace Apache
         } \
         virtual std::shared_ptr<apache::geode::client::Exception> GetNative() override \
         { \
-          String^ msg = this->Message + ": " + this->StackTrace; \
-          ManagedString mg_msg(msg); \
           std::shared_ptr<apache::geode::client::Exception> cause; \
           if (this->InnerException != nullptr) { \
             cause = GeodeException::GetNative(this->InnerException); \
           } \
-          auto message = std::string(mg_msg.CharPtr) + cause->what(); \
-          return std::make_shared<apache::geode::client::y>(message); \
+          return std::make_shared<apache::geode::client::y>( \
+            marshal_as<std::string>(this->Message + ": " + this->StackTrace) + cause->getMessage()); \
         } \
       }
 

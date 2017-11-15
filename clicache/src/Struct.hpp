@@ -18,6 +18,7 @@
 
 #pragma once
 
+
 #include "geode_defs.hpp"
 #include "Serializable.hpp"
 #include "begin_native.hpp"

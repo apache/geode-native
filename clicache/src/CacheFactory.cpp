@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "ExceptionTypes.hpp"
 #include "CacheFactory.hpp"
 #include "Cache.hpp"
@@ -34,7 +35,7 @@ namespace Apache
   {
     namespace Client
     {
-
+      using namespace msclr::interop;
       namespace native = apache::geode::client;
 
       CacheFactory^ CacheFactory::CreateCacheFactory()
@@ -116,13 +117,12 @@ namespace Apache
 
       String^ CacheFactory::Version::get( )
       {
-        return ManagedString::Get( native::CacheFactory::getVersion( ) );
+        return marshal_as<String^>(native::CacheFactory::getVersion());
       }
 
       String^ CacheFactory::ProductDescription::get( )
       {
-        return ManagedString::Get(
-          native::CacheFactory::getProductDescription( ) );
+        return marshal_as<String^>(native::CacheFactory::getProductDescription());
       }
 
 
@@ -163,11 +163,9 @@ namespace Apache
       CacheFactory^ CacheFactory::Set(String^ name, String^ value)
       {
         _GF_MG_EXCEPTION_TRY2
-          ManagedString mg_name( name );
-          ManagedString mg_value( value );
           try
           {
-            m_nativeptr->get()->set( mg_name.CharPtr, mg_value.CharPtr );
+            m_nativeptr->get()->set(marshal_as<std::string>(name), marshal_as<std::string>(value));
           }
           finally
           {

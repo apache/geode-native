@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-#pragma once
+
+
+
 
 #include "Region.hpp"
 #include "Pool.hpp"
@@ -53,8 +55,7 @@ namespace Apache
 
       Pool^ PoolManager::Find(String^ name)
       {
-        ManagedString mg_name( name );
-        auto pool = m_nativeref.find(mg_name.CharPtr);
+        auto pool = m_nativeref.find(marshal_as<std::string>(name));
         return Pool::Create(pool);
       }
 

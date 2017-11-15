@@ -46,10 +46,10 @@ void BatchObject::fromData(apache::geode::client::DataInput& input) {
   batch = input.readInt32();
   byteArray = input.readObject<CacheableBytes>();
 }
-std::shared_ptr<CacheableString> BatchObject::toString() const {
+std::string BatchObject::toString() const {
   char buf[102500];
   sprintf(buf,
           "BatchObject:[index = %d timestamp = %lld batch = %d byteArray=%d ]",
           index, timestamp, batch, byteArray->length());
-  return CacheableString::create(buf);
+  return buf;
 }

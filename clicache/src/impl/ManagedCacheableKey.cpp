@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-#include "begin_native.hpp"
+
+#include "../begin_native.hpp"
 #include <GeodeTypeIdsImpl.hpp>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "../ICacheableKey.hpp"
 #include "ManagedCacheableKey.hpp"
@@ -126,13 +127,10 @@ namespace apache
         return 0;
       }
 
-      std::shared_ptr<apache::geode::client::CacheableString> ManagedCacheableKeyGeneric::toString() const
+      std::string ManagedCacheableKeyGeneric::toString() const
       {
         try {
-          std::shared_ptr<apache::geode::client::CacheableString> cStr;
-          Apache::Geode::Client::CacheableString::GetCacheableString(
-            m_managedptr->ToString(), cStr);
-          return cStr;
+          return marshal_as<std::string>(m_managedptr->ToString());
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();
@@ -193,25 +191,6 @@ namespace apache
                              (Apache::Geode::Client::IGeodeSerializable^)m_managedptr)
                              ->GetHashCode();
           return m_hashcode;
-        }
-        catch (Apache::Geode::Client::GeodeException^ ex) {
-          ex->ThrowNative();
-        }
-        catch (System::Exception^ ex) {
-          Apache::Geode::Client::GeodeException::ThrowNative(ex);
-        }
-        return 0;
-      }
-
-      size_t ManagedCacheableKeyGeneric::logString(char* buffer, size_t maxLength) const
-      {
-        try {
-          if (maxLength > 0) {
-            String^ logstr = m_managedptr->GetType()->Name + '(' +
-              m_managedptr->ToString() + ')';
-            Apache::Geode::Client::ManagedString mg_str(logstr);
-            return snprintf(buffer, maxLength, "%s", mg_str.CharPtr);
-          }
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();

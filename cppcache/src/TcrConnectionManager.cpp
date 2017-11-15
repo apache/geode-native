@@ -14,6 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <set>
+#include <thread>
+#include <chrono>
+
+#include <ace/INET_Addr.h>
+
+#include <geode/SystemProperties.hpp>
+
 #include "TcrConnectionManager.hpp"
 #include "TcrEndpoint.hpp"
 #include "ExpiryHandler_T.hpp"
@@ -27,18 +36,15 @@
 #include "ThinClientRegion.hpp"
 #include "ThinClientHARegion.hpp"
 #include "TcrConnection.hpp"
-#include <geode/SystemProperties.hpp>
 #include "RemoteQueryService.hpp"
 #include "ThinClientLocatorHelper.hpp"
 #include "ServerLocation.hpp"
-#include <ace/INET_Addr.h>
-#include <set>
-#include <thread>
-#include <chrono>
+#include "util/exception.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 volatile bool TcrConnectionManager::TEST_DURABLE_CLIENT_CRASH = false;
 
 const char *TcrConnectionManager::NC_Redundancy = "NC Redundancy";
@@ -71,7 +77,7 @@ void TcrConnectionManager::init(bool isPool) {
     return;
   }
   auto &props = m_cache->getDistributedSystem().getSystemProperties();
-  m_isDurable = strlen(props.durableClientId()) > 0;
+  m_isDurable = !props.durableClientId().empty();
   auto pingInterval = (props.pingInterval() / 2);
   if (!props.isGridClient() && !isPool) {
     ACE_Event_Handler *connectionChecker =
@@ -86,14 +92,14 @@ void TcrConnectionManager::init(bool isPool) {
   }
 
   auto cacheAttributes = m_cache->getAttributes();
-  const char *endpoints;
+  const auto &endpoints = cacheAttributes->getEndpoints();
   m_redundancyManager->m_HAenabled = false;
 
   if (cacheAttributes != nullptr &&
       (cacheAttributes->getRedundancyLevel() > 0 || m_isDurable) &&
-      (endpoints = cacheAttributes->getEndpoints()) != nullptr &&
-      strcmp(endpoints, "none") != 0) {
-    initializeHAEndpoints(endpoints);  // no distributaion manager at this point
+      !endpoints.empty() && endpoints != "none") {
+    // no distributaion manager at this point
+    initializeHAEndpoints(endpoints.c_str());
     m_redundancyManager->initialize(cacheAttributes->getRedundancyLevel());
     //  Call maintain redundancy level, so primary is available for notification
     //  operations.
@@ -102,9 +108,8 @@ void TcrConnectionManager::init(bool isPool) {
         m_redundancyManager->m_HAenabled ||
         ThinClientBaseDM::isDeltaEnabledOnServer();
 
-    ACE_Event_Handler *redundancyChecker =
-        new ExpiryHandler_T<TcrConnectionManager>(
-            this, &TcrConnectionManager::checkRedundancy);
+    const auto redundancyChecker = new ExpiryHandler_T<TcrConnectionManager>(
+        this, &TcrConnectionManager::checkRedundancy);
     const auto redundancyMonitorInterval = props.redundancyMonitorInterval();
 
     m_servermonitorTaskId = m_cache->getExpiryTaskManager().scheduleExpiryTask(

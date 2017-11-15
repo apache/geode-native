@@ -91,16 +91,15 @@ class CPPCACHE_EXPORT Utils {
     str.append(typeIdName);
   }
 
-  inline static std::shared_ptr<CacheableString> demangleTypeName(
-      const char* typeIdName) {
+  inline static std::string demangleTypeName(const char* typeIdName) {
 #ifdef __GNUC__
     size_t len;
     char* demangledName = _gnuDemangledName(typeIdName, len);
     if (demangledName != nullptr) {
-      return CacheableString::createNoCopy(demangledName, len);
+      return std::string(demangledName, len);
     }
 #endif
-    return CacheableString::create(typeIdName);
+    return std::string(typeIdName);
   }
 
   static int logWideString(char* buf, size_t maxLen, const wchar_t* wStr);
@@ -111,15 +110,8 @@ class CPPCACHE_EXPORT Utils {
   inline static std::shared_ptr<CacheableString> getCacheableKeyString(
       const std::shared_ptr<CacheableKey>& key) {
     std::shared_ptr<CacheableString> result;
-    if (key != nullptr) {
-      char* buf;
-      GF_NEW(buf, char[_GF_MSG_LIMIT + 1]);
-      key->logString(buf, _GF_MSG_LIMIT);
-      // the length given here is not correct but we want to save
-      // the cost of a "strlen" and the value here does not matter
-      // assuming the caller will use the result only for logging by
-      // invoking "->asChar()"
-      result = CacheableString::createNoCopy(buf, _GF_MSG_LIMIT);
+    if (key) {
+      result = CacheableString::create(key->toString().c_str());
     } else {
       result = CacheableString::create("(null)");
     }
@@ -132,16 +124,7 @@ class CPPCACHE_EXPORT Utils {
       if (const auto key = std::dynamic_pointer_cast<CacheableKey>(val)) {
         return getCacheableKeyString(key);
       } else {
-        const std::shared_ptr<CacheableString>& cStr = val->toString();
-        if (cStr != nullptr) {
-          if (cStr->isCString()) {
-            return cStr;
-          } else {
-            char buf[_GF_MSG_LIMIT + 1];
-            (void)logWideString(buf, _GF_MSG_LIMIT, cStr->asWChar());
-            return CacheableString::create(buf);
-          }
-        }
+        return CacheableString::create(val->toString().c_str());
       }
     }
 
@@ -177,7 +160,8 @@ class CPPCACHE_EXPORT Utils {
                                int32_t statId, int64_t start);
 
   static void parseEndpointNamesString(
-      const char* endpoints, std::unordered_set<std::string>& endpointNames);
+      std::string endpoints, std::unordered_set<std::string>& endpointNames);
+
   static void parseEndpointString(const char* endpoints, std::string& host,
                                   uint16_t& port);
 

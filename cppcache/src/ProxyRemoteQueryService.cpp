@@ -14,16 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "ProxyRemoteQueryService.hpp"
 #include "ThinClientPoolDM.hpp"
 #include <geode/PoolManager.hpp>
 #include "CqQueryImpl.hpp"
 
+namespace apache {
+namespace geode {
+namespace client {
+
 ProxyRemoteQueryService::ProxyRemoteQueryService(
     std::shared_ptr<ProxyCache> cptr)
     : m_proxyCache(cptr) {}
+
 std::shared_ptr<Query> ProxyRemoteQueryService::newQuery(
-    const char* querystring) {
+    std::string querystring) {
   if (!m_proxyCache->isClosed()) {
     auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
     auto pool = m_proxyCache->m_cacheImpl->getCache()->getPoolManager().find(
@@ -41,16 +47,15 @@ std::shared_ptr<Query> ProxyRemoteQueryService::newQuery(
   throw IllegalStateException("UserCache has been closed.");
 }
 
-void ProxyRemoteQueryService::unSupportedException(const char* operationName) {
-  char msg[256] = {'\0'};
-  ACE_OS::snprintf(msg, 256,
-                   "%s operation is not supported when pool is in multiuser "
-                   "authentication mode.",
-                   operationName);
-  throw UnsupportedOperationException(msg);
+void ProxyRemoteQueryService::unSupportedException(
+    const std::string& operationName) {
+  throw UnsupportedOperationException(operationName +
+                                      "operation is not supported when pool is "
+                                      "in multiuser authentication mode.");
 }
+
 std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
-    const char* querystr, const std::shared_ptr<CqAttributes>& cqAttr,
+    std::string querystr, const std::shared_ptr<CqAttributes>& cqAttr,
     bool isDurable) {
   if (!m_proxyCache->isClosed()) {
     auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
@@ -77,8 +82,9 @@ void ProxyRemoteQueryService::addCqQuery(
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
   m_cqQueries.push_back(cqQuery);
 }
+
 std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
-    const char* name, const char* querystr,
+    std::string name, std::string querystr,
     const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable) {
   if (!m_proxyCache->isClosed()) {
     auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
@@ -105,33 +111,32 @@ void ProxyRemoteQueryService::closeCqs() { closeCqs(false); }
 void ProxyRemoteQueryService::closeCqs(bool keepAlive) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
 
-  for (auto& q : m_cqQueries) {
-    std::string cqName = q->getName();
+  for (auto&& q : m_cqQueries) {
     try {
       if (!(q->isDurable() && keepAlive)) {
         q->close();
       } else {
         // need to just cleanup client side data structure
-        auto cqImpl = std::static_pointer_cast<CqQueryImpl>(q);
+        auto&& cqImpl = std::static_pointer_cast<CqQueryImpl>(q);
         cqImpl->close(false);
       }
     } catch (QueryException& qe) {
-      Log::fine(("Failed to close the CQ, CqName : " + cqName +
-                 " Error : " + qe.what())
-                    .c_str());
+      LOGFINE("Failed to close the CQ, CqName : " + q->getName() +
+              " Error : " + qe.getMessage());
     } catch (CqClosedException& cce) {
-      Log::fine(("Failed to close the CQ, CqName : " + cqName +
-                 " Error : " + cce.what())
-                    .c_str());
+      LOGFINE("Failed to close the CQ, CqName : " + q->getName() +
+              " Error : " + cce.getMessage());
     }
   }
 }
 
-QueryService::query_container_type ProxyRemoteQueryService::getCqs() {
+QueryService::query_container_type ProxyRemoteQueryService::getCqs() const {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
   return m_cqQueries;
 }
- std::shared_ptr<CqQuery> ProxyRemoteQueryService::getCq(const char* name) {
+
+std::shared_ptr<CqQuery> ProxyRemoteQueryService::getCq(
+    const std::string& name) const {
   if (!m_proxyCache->isClosed()) {
     auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
     auto pool = m_proxyCache->m_cacheImpl->getCache()->getPoolManager().find(
@@ -152,18 +157,15 @@ QueryService::query_container_type ProxyRemoteQueryService::getCqs() {
 void ProxyRemoteQueryService::executeCqs() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
 
-  for (auto& q : m_cqQueries) {
-    std::string cqName = q->getName();
+  for (auto&& q : m_cqQueries) {
     try {
       q->execute();
     } catch (QueryException& qe) {
-      Log::fine(("Failed to excecue the CQ, CqName : " + cqName +
-                 " Error : " + qe.what())
-                    .c_str());
+      LOGFINE("Failed to execute the CQ, CqName : " + q->getName() +
+              " Error : " + qe.getMessage());
     } catch (CqClosedException& cce) {
-      Log::fine(("Failed to excecue the CQ, CqName : " + cqName +
-                 " Error : " + cce.what())
-                    .c_str());
+      LOGFINE("Failed to execute the CQ, CqName : " + q->getName() +
+              " Error : " + cce.getMessage());
     }
   }
 }
@@ -171,27 +173,30 @@ void ProxyRemoteQueryService::executeCqs() {
 void ProxyRemoteQueryService::stopCqs() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
 
-  for (auto& q : m_cqQueries) {
-    std::string cqName = q->getName();
+  for (auto&& q : m_cqQueries) {
     try {
       q->stop();
     } catch (QueryException& qe) {
-      Log::fine(("Failed to stop the CQ, CqName : " + cqName +
-                 " Error : " + qe.what())
-                    .c_str());
+      LOGFINE("Failed to stop the CQ, CqName : " + q->getName() +
+              " Error : " + qe.getMessage());
     } catch (CqClosedException& cce) {
-      Log::fine(("Failed to stop the CQ, CqName : " + cqName +
-                 " Error : " + cce.what())
-                    .c_str());
+      LOGFINE("Failed to stop the CQ, CqName : " + q->getName() +
+              " Error : " + cce.getMessage());
     }
   }
 }
- std::shared_ptr<CqServiceStatistics> ProxyRemoteQueryService::getCqServiceStatistics() {
+
+std::shared_ptr<CqServiceStatistics>
+ProxyRemoteQueryService::getCqServiceStatistics() const {
   unSupportedException("getCqServiceStatistics()");
   return nullptr;
  }
  std::shared_ptr<CacheableArrayList>
- ProxyRemoteQueryService::getAllDurableCqsFromServer() {
+ ProxyRemoteQueryService::getAllDurableCqsFromServer() const {
    unSupportedException("getAllDurableCqsFromServer()");
    return nullptr;
  }
+
+ }  // namespace client
+ }  // namespace geode
+ }  // namespace apache

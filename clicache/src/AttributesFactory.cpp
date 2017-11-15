@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "AttributesFactory.hpp"
 #include "Region.hpp"
 #include "impl/ManagedCacheLoader.hpp"
@@ -42,6 +43,7 @@
 #include <memory>
 #include "end_native.hpp"
 
+
 namespace Apache
 {
   namespace Geode
@@ -50,6 +52,7 @@ namespace Apache
     {
       using namespace System;
       using namespace System::Collections::Generic;
+      using namespace msclr::interop;
 
       namespace native = apache::geode::client;
 
@@ -160,12 +163,10 @@ namespace Apache
       AttributesFactory<TKey, TValue>^ AttributesFactory<TKey, TValue>::SetCacheLoader( String^ libPath, String^ factoryFunctionName )
       {
         throw gcnew System::NotSupportedException;
-        ManagedString mg_libpath( libPath );
-        ManagedString mg_factoryFunctionName( factoryFunctionName );
 
         try
         {
-          m_nativeptr->get()->setCacheLoader( mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr );
+          m_nativeptr->get()->setCacheLoader( marshal_as<std::string>(libPath), marshal_as<std::string>(factoryFunctionName) );
         }
         finally
         {
@@ -178,12 +179,10 @@ namespace Apache
       AttributesFactory<TKey, TValue>^ AttributesFactory<TKey, TValue>::SetCacheWriter( String^ libPath, String^ factoryFunctionName )
       {
         throw gcnew System::NotSupportedException;
-        ManagedString mg_libpath( libPath );
-        ManagedString mg_factoryFunctionName( factoryFunctionName );
 
         try
         {
-          m_nativeptr->get()->setCacheWriter( mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr );
+          m_nativeptr->get()->setCacheWriter( marshal_as<std::string>(libPath), marshal_as<std::string>(factoryFunctionName) );
         }
         finally
         {
@@ -196,12 +195,10 @@ namespace Apache
       AttributesFactory<TKey, TValue>^ AttributesFactory<TKey, TValue>::SetCacheListener( String^ libPath, String^ factoryFunctionName )
       {
         throw gcnew System::NotSupportedException;
-        ManagedString mg_libpath( libPath );
-        ManagedString mg_factoryFunctionName( factoryFunctionName );
 
         try
         {
-          m_nativeptr->get()->setCacheListener( mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr );
+          m_nativeptr->get()->setCacheListener( marshal_as<std::string>(libPath), marshal_as<std::string>(factoryFunctionName) );
         }
         finally
         {
@@ -214,12 +211,10 @@ namespace Apache
       AttributesFactory<TKey, TValue>^ AttributesFactory<TKey, TValue>::SetPartitionResolver( String^ libPath, String^ factoryFunctionName )
       {
         throw gcnew System::NotSupportedException;
-        ManagedString mg_libpath( libPath );
-        ManagedString mg_factoryFunctionName( factoryFunctionName );
 
         try
         {
-          m_nativeptr->get()->setPartitionResolver( mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr );
+          m_nativeptr->get()->setPartitionResolver( marshal_as<std::string>(libPath), marshal_as<std::string>(factoryFunctionName) );
         }
         finally
         {
@@ -327,12 +322,10 @@ namespace Apache
       AttributesFactory<TKey, TValue>^ AttributesFactory<TKey, TValue>::SetPersistenceManager( String^ libPath,
         String^ factoryFunctionName, Properties<String^, String^>^ config )
       {        
-        ManagedString mg_libpath( libPath );
-        ManagedString mg_factoryFunctionName( factoryFunctionName );
 
         try
         {
-          m_nativeptr->get()->setPersistenceManager(mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr, config->GetNative());
+          m_nativeptr->get()->setPersistenceManager(marshal_as<std::string>(libPath), marshal_as<std::string>(factoryFunctionName), config->GetNative());
         }
         finally
         {
@@ -347,11 +340,10 @@ namespace Apache
       generic<class TKey, class TValue>
       AttributesFactory<TKey, TValue>^ AttributesFactory<TKey, TValue>::SetPoolName( String^ poolName )
       {
-        ManagedString mg_poolName( poolName );
 
         try
         {
-          m_nativeptr->get()->setPoolName( mg_poolName.CharPtr );
+          m_nativeptr->get()->setPoolName( marshal_as<std::string>(poolName) );
         }
         finally
         {

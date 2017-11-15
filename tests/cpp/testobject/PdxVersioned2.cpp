@@ -273,7 +273,7 @@ void PdxVersioned2::init(const char* key) {
   lengthArr[1] = 2;
 }
 
-void PdxTests::PdxVersioned2::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
+void PdxTests::PdxVersioned2::toData(std::shared_ptr<PdxWriter> pw) const {
   // TODO:delete it later
 
   int* lengthArr = new int[2];
@@ -378,7 +378,7 @@ void PdxTests::PdxVersioned2::fromData(std::shared_ptr<PdxReader> pr) {
   // TODO:Check for size
   m_pdxEnum = pr->readObject("m_pdxEnum");
 }
-std::shared_ptr<CacheableString> PdxTests::PdxVersioned2::toString() const {
+std::string PdxTests::PdxVersioned2::toString() const {
   char idbuf[1024];
   // sprintf(idbuf,"PdxObject: [ m_bool=%d ] [m_byte=%d] [m_int16=%d]
   // [m_int32=%d] [m_float=%f] [m_double=%lf] [ m_string=%s ]",m_bool, m_byte,
@@ -386,7 +386,7 @@ std::shared_ptr<CacheableString> PdxTests::PdxVersioned2::toString() const {
   // sprintf(idbuf,"PdxObject testPdxObject:[m_int32=%d] string = %s",
   // m_int32,m_string);
   sprintf(idbuf, "PdxVersioned 2 : %s", m_string);
-  return CacheableString::create(idbuf);
+  return idbuf;
 }
 
 bool PdxTests::PdxVersioned2::equals(PdxTests::PdxVersioned2& other,

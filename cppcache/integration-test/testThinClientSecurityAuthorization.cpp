@@ -456,10 +456,10 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
 
     rptr = getHelper()->getRegion(regionNamesAuth[0]);
-    sprintf(buf, "%s: %d", rptr->getName(), i);
+    sprintf(buf, "%s: %d", rptr->getName().c_str(), i);
     auto key = createKey(buf);
-    sprintf(buf, "testUpdate::%s: value of %d", rptr->getName(), i);
-    auto valuePtr = CacheableString::create(buf);
+    sprintf(buf, "testUpdate::%s: value of %d", rptr->getName().c_str(), i);
+    auto valuePtr = buf;
     try {
       LOG("Trying put Operation");
       rptr->put(key, valuePtr);

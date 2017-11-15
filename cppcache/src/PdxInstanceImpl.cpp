@@ -34,14 +34,6 @@
  * correct precision specifiers. Fix : using ACE_OS::snprintf
  */
 
-#define VERIFY_PDX_INSTANCE_FIELD_THROW                                 \
-  if (pft == nullptr) {                                                 \
-    char excpStr[256] = {0};                                            \
-    ACE_OS::snprintf(excpStr, 256, "PdxInstance doesn't has field %s ", \
-                     fieldname);                                        \
-    throw IllegalStateException(excpStr);                               \
-  }
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -95,7 +87,7 @@ PdxInstanceImpl::PdxInstanceImpl(
 }
 
 void PdxInstanceImpl::writeField(std::shared_ptr<PdxWriter> writer,
-                                 const char* fieldName, int typeId,
+                                 const std::string& fieldName, int typeId,
                                  std::shared_ptr<Cacheable> value) {
   switch (typeId) {
     case PdxFieldTypes::INT: {
@@ -553,7 +545,7 @@ bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj,
                        "PdxInstance cannot calculate equals of the field %s "
                        "since equals is only supported for CacheableKey "
                        "derived types ",
-                       obj->toString()->asChar());
+                       obj->toString().c_str());
       throw IllegalStateException(excpStr);
     }
   }
@@ -701,7 +693,7 @@ int PdxInstanceImpl::deepArrayHashCode(std::shared_ptr<Cacheable> obj) {
                        "PdxInstance cannot calculate hashcode of the field %s "
                        "since hashcode is only supported for CacheableKey "
                        "derived types ",
-                       obj->toString()->asChar());
+                       obj->toString().c_str());
       throw IllegalStateException(excpStr);
     }
   }
@@ -800,477 +792,457 @@ std::shared_ptr<PdxType> PdxInstanceImpl::getPdxType() const {
   return pType;
 }
 
-bool PdxInstanceImpl::isIdentityField(const char* fieldname) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldname);
- if (pft != nullptr) {
-   return pft->getIdentityField();
+bool PdxInstanceImpl::isIdentityField(const std::string& fieldname) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldname.c_str());
+  if (pft != nullptr) {
+    return pft->getIdentityField();
   }
   return false;
 }
 
-bool PdxInstanceImpl::hasField(const char* fieldname) {
- auto pf = getPdxType();
- auto pft = pf->getPdxField(fieldname);
- return (pft != nullptr);
+bool PdxInstanceImpl::hasField(const std::string& fieldname) {
+  auto pf = getPdxType();
+  auto pft = pf->getPdxField(fieldname.c_str());
+  return (pft != nullptr);
 }
 
-bool PdxInstanceImpl::getBooleanField(const char* fieldname) const {
+bool PdxInstanceImpl::getBooleanField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   return dataInput->readBoolean();
 }
 
-int8_t PdxInstanceImpl::getByteField(const char* fieldname) const {
+int8_t PdxInstanceImpl::getByteField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   return dataInput->read();
 }
 
-int16_t PdxInstanceImpl::getShortField(const char* fieldname) const {
+int16_t PdxInstanceImpl::getShortField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   return dataInput->readInt16();
 }
 
-int32_t PdxInstanceImpl::getIntField(const char* fieldname) const {
+int32_t PdxInstanceImpl::getIntField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   return dataInput->readInt32();
 }
 
-int64_t PdxInstanceImpl::getLongField(const char* fieldname) const {
+int64_t PdxInstanceImpl::getLongField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   return dataInput->readInt64();
 }
 
-float PdxInstanceImpl::getFloatField(const char* fieldname) const {
+float PdxInstanceImpl::getFloatField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   return dataInput->readFloat();
 }
 
-double PdxInstanceImpl::getDoubleField(const char* fieldname) const {
+double PdxInstanceImpl::getDoubleField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   return dataInput->readDouble();
 }
 
-char16_t PdxInstanceImpl::getCharField(const char* fieldname) const {
+char16_t PdxInstanceImpl::getCharField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   return dataInput->readInt16();
 }
 
-void PdxInstanceImpl::getField(const char* fieldname, bool** value,
+void PdxInstanceImpl::getField(const std::string& fieldname, bool** value,
                                int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   dataInput->readBooleanArray(value, length);
 }
 
-void PdxInstanceImpl::getField(const char* fieldname, signed char** value,
-                               int32_t& length) const {
+void PdxInstanceImpl::getField(const std::string& fieldname,
+                               signed char** value, int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   int8_t* temp = nullptr;
   dataInput->readByteArray(&temp, length);
   *value = (signed char*)temp;
 }
 
-void PdxInstanceImpl::getField(const char* fieldname, unsigned char** value,
-                               int32_t& length) const {
+void PdxInstanceImpl::getField(const std::string& fieldname,
+                               unsigned char** value, int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   int8_t* temp = nullptr;
   dataInput->readByteArray(&temp, length);
   *value = reinterpret_cast<unsigned char*>(temp);
 }
 
-void PdxInstanceImpl::getField(const char* fieldname, int16_t** value,
+void PdxInstanceImpl::getField(const std::string& fieldname, int16_t** value,
                                int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   dataInput->readShortArray(value, length);
 }
 
-void PdxInstanceImpl::getField(const char* fieldname, int32_t** value,
+void PdxInstanceImpl::getField(const std::string& fieldname, int32_t** value,
                                int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   dataInput->readIntArray(value, length);
 }
 
-void PdxInstanceImpl::getField(const char* fieldname, int64_t** value,
+void PdxInstanceImpl::getField(const std::string& fieldname, int64_t** value,
                                int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   dataInput->readLongArray(value, length);
 }
 
-void PdxInstanceImpl::getField(const char* fieldname, float** value,
+void PdxInstanceImpl::getField(const std::string& fieldname, float** value,
                                int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   dataInput->readFloatArray(value, length);
 }
 
-void PdxInstanceImpl::getField(const char* fieldname, double** value,
+void PdxInstanceImpl::getField(const std::string& fieldname, double** value,
                                int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   dataInput->readDoubleArray(value, length);
 }
 
-void PdxInstanceImpl::getField(const char* fieldname, wchar_t** value,
+void PdxInstanceImpl::getField(const std::string& fieldname, wchar_t** value,
                                int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   dataInput->readWideCharArray(value, length);
 }
 
-void PdxInstanceImpl::getField(const char* fieldname, char** value,
+void PdxInstanceImpl::getField(const std::string& fieldname, char** value,
                                int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   dataInput->readCharArray(value, length);
 }
 
-void PdxInstanceImpl::getField(const char* fieldname, wchar_t** value) const {
+void PdxInstanceImpl::getField(const std::string& fieldname,
+                               wchar_t** value) const {
   auto dataInput = getDataInputForField(fieldname);
   wchar_t* temp = nullptr;
   dataInput->readWideString(&temp);
   *value = temp;
 }
 
-void PdxInstanceImpl::getField(const char* fieldname, char** value) const {
+void PdxInstanceImpl::getField(const std::string& fieldname,
+                               char** value) const {
   auto dataInput = getDataInputForField(fieldname);
   char* temp = nullptr;
   dataInput->readString(&temp);
   *value = temp;
 }
 
-void PdxInstanceImpl::getField(const char* fieldname, wchar_t*** value,
+void PdxInstanceImpl::getField(const std::string& fieldname, wchar_t*** value,
                                int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   dataInput->readWideStringArray(value, length);
 }
 
-void PdxInstanceImpl::getField(const char* fieldname, char*** value,
+void PdxInstanceImpl::getField(const std::string& fieldname, char*** value,
                                int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   dataInput->readStringArray(value, length);
 }
 std::shared_ptr<CacheableDate> PdxInstanceImpl::getCacheableDateField(
-    const char* fieldname) const {
+    const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   auto value = CacheableDate::create();
   value->fromData(*dataInput);
   return value;
 }
- std::shared_ptr<Cacheable> PdxInstanceImpl::getCacheableField(const char* fieldname) const {
+std::shared_ptr<Cacheable> PdxInstanceImpl::getCacheableField(
+    const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   std::shared_ptr<Cacheable> value;
   dataInput->readObject(value);
   return value;
- }
- std::shared_ptr<CacheableObjectArray>
- PdxInstanceImpl::getCacheableObjectArrayField(const char* fieldname) const {
-   auto dataInput = getDataInputForField(fieldname);
-   auto value = CacheableObjectArray::create();
-   value->fromData(*dataInput);
-   return value;
- }
+}
+std::shared_ptr<CacheableObjectArray>
+PdxInstanceImpl::getCacheableObjectArrayField(
+    const std::string& fieldname) const {
+  auto dataInput = getDataInputForField(fieldname);
+  auto value = CacheableObjectArray::create();
+  value->fromData(*dataInput);
+  return value;
+}
 
- void PdxInstanceImpl::getField(const char* fieldname, int8_t*** value,
-                                int32_t& arrayLength,
-                                int32_t*& elementLength) const {
-   auto dataInput = getDataInputForField(fieldname);
-   dataInput->readArrayOfByteArrays(value, arrayLength, &elementLength);
- }
- std::shared_ptr<CacheableString> PdxInstanceImpl::toString() const {
-   /* adongre - Coverity II
-    * CID 29265: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination. Use snprintf() instead, or correct precision specifiers. Fix
-    * : using ACE_OS::snprintf
-    */
-   auto pt = getPdxType();
-   std::string toString = "PDX[";
-   char buf[2048];
-   ACE_OS::snprintf(buf, 2048, "%d", pt->getTypeId());
-   toString += buf;
-   toString += ",";
-   ACE_OS::snprintf(buf, 2048, "%s", pt->getPdxClassName());
-   toString += buf;
-   toString += "]{";
-   bool firstElement = true;
-   auto identityFields = getIdentityPdxFields(pt);
-   for (size_t i = 0; i < static_cast<int>(identityFields.size()); i++) {
-     if (firstElement) {
-       firstElement = false;
-     } else {
-       toString += ",";
-     }
-     ACE_OS::snprintf(buf, 2048, "%s", identityFields.at(i)->getFieldName());
-     toString += buf;
-     toString += "=";
+void PdxInstanceImpl::getField(const std::string& fieldname, int8_t*** value,
+                               int32_t& arrayLength,
+                               int32_t*& elementLength) const {
+  auto dataInput = getDataInputForField(fieldname);
+  dataInput->readArrayOfByteArrays(value, arrayLength, &elementLength);
+}
 
-     switch (identityFields.at(i)->getTypeId()) {
-       case PdxFieldTypes::BOOLEAN: {
-         bool value = getBooleanField(identityFields.at(i)->getFieldName());
-         ACE_OS::snprintf(buf, 2048, "%s", value ? "true" : "false");
-         toString += buf;
-         break;
-       }
-       case PdxFieldTypes::BYTE: {
-         signed char value = getByteField(identityFields.at(i)->getFieldName());
-         ACE_OS::snprintf(buf, 2048, "%d", value);
-         toString += buf;
-         break;
-       }
-       case PdxFieldTypes::SHORT: {
-         int16_t value = getShortField(identityFields.at(i)->getFieldName());
-         ACE_OS::snprintf(buf, 2048, "%d", value);
-         toString += buf;
-         break;
-       }
-       case PdxFieldTypes::INT: {
-         int32_t value = getIntField(identityFields.at(i)->getFieldName());
-         ACE_OS::snprintf(buf, 2048, "%d", value);
-         toString += buf;
-         break;
-       }
-       case PdxFieldTypes::LONG: {
-         int64_t value = getLongField(identityFields.at(i)->getFieldName());
-         ACE_OS::snprintf(buf, 2048, "%lld", value);
-         toString += buf;
-         break;
-       }
-       case PdxFieldTypes::FLOAT: {
-         float value = getFloatField(identityFields.at(i)->getFieldName());
-         ACE_OS::snprintf(buf, 2048, "%f", value);
-         toString += buf;
-         break;
-       }
-       case PdxFieldTypes::DOUBLE: {
-         double value = getDoubleField(identityFields.at(i)->getFieldName());
-         ACE_OS::snprintf(buf, 2048, "%f", value);
-         toString += buf;
-         break;
-       }
-       case PdxFieldTypes::CHAR: {
-         auto value = getCharField(identityFields.at(i)->getFieldName());
-         ACE_OS::snprintf(buf, 2048, "%c", value);
-         toString += buf;
-         break;
-       }
-       case PdxFieldTypes::STRING: {
-         wchar_t* value = 0;
-         getField(identityFields.at(i)->getFieldName(), &value);
-         ACE_OS::snprintf(buf, 2048, "%ls", value);
-         toString += buf;
-         break;
-       }
-       case PdxFieldTypes::CHAR_ARRAY: {
-         wchar_t* value = 0;
-         int32_t length;
-         getField(identityFields.at(i)->getFieldName(), &value, length);
-         if (length > 0) {
-           for (int i = 0; i < length; i++) {
-             ACE_OS::snprintf(buf, 2048, "%c\t", value[i]);
-             toString += buf;
-           }
-           GF_SAFE_DELETE_ARRAY(value);
-         }
-         break;
-       }
-       case PdxFieldTypes::STRING_ARRAY: {
-         wchar_t** value = 0;
-         int32_t length;
-         getField(identityFields.at(i)->getFieldName(), &value, length);
-         if (length > 0) {
-           for (int i = 0; i < length; i++) {
-             ACE_OS::snprintf(buf, 2048, "%ls\t", value[i]);
-             toString += buf;
-           }
-         }
-         break;
-       }
-       case PdxFieldTypes::BYTE_ARRAY: {
-         signed char* value = 0;
-         int32_t length;
-         getField(identityFields.at(i)->getFieldName(), &value, length);
-         if (length > 0) {
-           for (int i = 0; i < length; i++) {
-             ACE_OS::snprintf(buf, 2048, "%d\t", value[i]);
-             toString += buf;
-           }
-           GF_SAFE_DELETE_ARRAY(value);
-         }
-         break;
-       }
-       case PdxFieldTypes::SHORT_ARRAY: {
-         int16_t* value = 0;
-         int32_t length;
-         getField(identityFields.at(i)->getFieldName(), &value, length);
-         if (length > 0) {
-           for (int i = 0; i < length; i++) {
-             ACE_OS::snprintf(buf, 2048, "%d\t", value[i]);
-             toString += buf;
-           }
-           GF_SAFE_DELETE_ARRAY(value);
-         }
-         break;
-       }
-       case PdxFieldTypes::INT_ARRAY: {
-         int32_t* value = 0;
-         int32_t length;
-         getField(identityFields.at(i)->getFieldName(), &value, length);
-         if (length > 0) {
-           for (int i = 0; i < length; i++) {
-             ACE_OS::snprintf(buf, 2048, "%d\t", value[i]);
-             toString += buf;
-           }
-           GF_SAFE_DELETE_ARRAY(value);
-         }
-         break;
-       }
-       case PdxFieldTypes::LONG_ARRAY: {
-         int64_t* value = 0;
-         int32_t length;
-         getField(identityFields.at(i)->getFieldName(), &value, length);
-         if (length > 0) {
-           for (int i = 0; i < length; i++) {
-             ACE_OS::snprintf(buf, 2048, "%lld\t", value[i]);
-             toString += buf;
-           }
-         }
-         break;
-       }
-       case PdxFieldTypes::FLOAT_ARRAY: {
-         float* value = 0;
-         int32_t length;
-         getField(identityFields.at(i)->getFieldName(), &value, length);
-         if (length > 0) {
-           for (int i = 0; i < length; i++) {
-             ACE_OS::snprintf(buf, 2048, "%f\t", value[i]);
-             toString += buf;
-           }
-           GF_SAFE_DELETE_ARRAY(value);
-         }
-         break;
-       }
-       case PdxFieldTypes::DOUBLE_ARRAY: {
-         double* value = 0;
-         int32_t length;
-         getField(identityFields.at(i)->getFieldName(), &value, length);
-         if (length > 0) {
-           for (int i = 0; i < length; i++) {
-             ACE_OS::snprintf(buf, 2048, "%f\t", value[i]);
-             toString += buf;
-           }
-         }
-         break;
-       }
-       case PdxFieldTypes::DATE: {
-         auto value =
-             getCacheableDateField(identityFields.at(i)->getFieldName());
-         if (value != nullptr) {
-           ACE_OS::snprintf(buf, 2048, "%s", value->toString()->asChar());
-           toString += buf;
-         }
-         break;
-       }
-       case PdxFieldTypes::BOOLEAN_ARRAY: {
-         bool* value = 0;
-         int32_t length;
-         getField(identityFields.at(i)->getFieldName(), &value, length);
-         if (length > 0) {
-           for (int i = 0; i < length; i++) {
-             ACE_OS::snprintf(buf, 2048, "%s\t", value[i] ? "true" : "false");
-             toString += buf;
-           }
-           GF_SAFE_DELETE_ARRAY(value);
-         }
-         break;
-       }
-       case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS: {
-         int8_t** value = 0;
-         int32_t arrayLength;
-         int32_t* elementLength;
-         getField(identityFields.at(i)->getFieldName(), &value, arrayLength,
-                  elementLength);
-         if (arrayLength > 0) {
-           for (int j = 0; j < arrayLength; j++) {
-             for (int k = 0; k < elementLength[j]; k++) {
-               ACE_OS::snprintf(buf, 2048, "%d\t", value[j][k]);
-               toString += buf;
-             }
-           }
-         }
-         break;
-       }
-       case PdxFieldTypes::OBJECT_ARRAY: {
-         auto value =
-             getCacheableObjectArrayField(identityFields.at(i)->getFieldName());
-         if (value != nullptr) {
-           ACE_OS::snprintf(buf, 2048, "%s\t", value->toString()->asChar());
-           toString += buf;
-         }
-         break;
-       }
-       default: {
-         auto value = getCacheableField(identityFields.at(i)->getFieldName());
-         if (value != nullptr) {
-           ACE_OS::snprintf(buf, 2048, "%s\t", value->toString()->asChar());
-           toString += buf;
-         }
-       }
-     }
-   }
-   toString += "}";
+std::string PdxInstanceImpl::toString() const {
+  /* adongre - Coverity II
+   * CID 29265: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
+   * "sprintf" can cause a
+   * buffer overflow when done incorrectly. Because sprintf() assumes an
+   * arbitrarily long string,
+   * callers must be careful not to overflow the actual space of the
+   * destination. Use snprintf() instead, or correct precision specifiers. Fix
+   * : using ACE_OS::snprintf
+   */
+  auto pt = getPdxType();
+  std::string toString = "PDX[" + std::to_string(pt->getTypeId()) + "," +
+                         pt->getPdxClassName() + "]{";
+  bool firstElement = true;
+  auto identityFields = getIdentityPdxFields(pt);
+  for (size_t i = 0; i < static_cast<int>(identityFields.size()); i++) {
+    if (firstElement) {
+      firstElement = false;
+    } else {
+      toString += ",";
+    }
+    toString += identityFields.at(i)->getFieldName();
+    toString += "=";
 
-   return CacheableString::create(toString.c_str());
- }
- std::shared_ptr<PdxSerializable> PdxInstanceImpl::getObject() {
-   auto dataInput = m_cache->createDataInput(m_buffer, m_bufferLength);
-   int64_t sampleStartNanos =
-       m_enableTimeStatistics ? Utils::startStatOpTime() : 0;
-   //[ToDo] do we have to call incPdxDeSerialization here?
-   auto ret =
-       PdxHelper::deserializePdx(*dataInput, true, m_typeId, m_bufferLength);
+    switch (identityFields.at(i)->getTypeId()) {
+      case PdxFieldTypes::BOOLEAN: {
+        auto&& value = getBooleanField(identityFields.at(i)->getFieldName());
+        toString += value ? "true" : "false";
+        break;
+      }
+      case PdxFieldTypes::BYTE: {
+        auto&& value = getByteField(identityFields.at(i)->getFieldName());
+        toString += std::to_string(value);
+        break;
+      }
+      case PdxFieldTypes::SHORT: {
+        int16_t value = getShortField(identityFields.at(i)->getFieldName());
+        toString += std::to_string(value);
+        break;
+      }
+      case PdxFieldTypes::INT: {
+        int32_t value = getIntField(identityFields.at(i)->getFieldName());
+        toString += std::to_string(value);
+        break;
+      }
+      case PdxFieldTypes::LONG: {
+        int64_t value = getLongField(identityFields.at(i)->getFieldName());
+        toString += std::to_string(value);
+        break;
+      }
+      case PdxFieldTypes::FLOAT: {
+        float value = getFloatField(identityFields.at(i)->getFieldName());
+        toString += std::to_string(value);
+        break;
+      }
+      case PdxFieldTypes::DOUBLE: {
+        double value = getDoubleField(identityFields.at(i)->getFieldName());
+        toString += std::to_string(value);
+        break;
+      }
+      case PdxFieldTypes::CHAR: {
+        auto value = getCharField(identityFields.at(i)->getFieldName());
+        // TODO string convert UTF16 to UTF8
+        toString += value;
+        break;
+      }
+      case PdxFieldTypes::STRING: {
+        char* value = 0;
+        getField(identityFields.at(i)->getFieldName(), &value);
+        toString += value;
+        break;
+      }
+      case PdxFieldTypes::CHAR_ARRAY: {
+        wchar_t* value = 0;
+        int32_t length;
+        getField(identityFields.at(i)->getFieldName(), &value, length);
+        if (length > 0) {
+          for (int i = 0; i < length; i++) {
+            // TODO string fix mismatch from wchar to char16_t
+            toString += static_cast<char>(value[i]);
+          }
+          GF_SAFE_DELETE_ARRAY(value);
+        }
+        break;
+      }
+      case PdxFieldTypes::STRING_ARRAY: {
+        char** value = 0;
+        int32_t length;
+        getField(identityFields.at(i)->getFieldName(), &value, length);
+        if (length > 0) {
+          for (int i = 0; i < length; i++) {
+            toString += value[i];
+          }
+          GF_SAFE_DELETE_ARRAY(value);
+        }
+        break;
+      }
+      case PdxFieldTypes::BYTE_ARRAY: {
+        signed char* value = 0;
+        int32_t length;
+        getField(identityFields.at(i)->getFieldName(), &value, length);
+        if (length > 0) {
+          for (int i = 0; i < length; i++) {
+            toString += std::to_string(value[i]);
+          }
+          GF_SAFE_DELETE_ARRAY(value);
+        }
+        break;
+      }
+      case PdxFieldTypes::SHORT_ARRAY: {
+        int16_t* value = 0;
+        int32_t length;
+        getField(identityFields.at(i)->getFieldName(), &value, length);
+        if (length > 0) {
+          for (int i = 0; i < length; i++) {
+            toString += std::to_string(value[i]);
+          }
+          GF_SAFE_DELETE_ARRAY(value);
+        }
+        break;
+      }
+      case PdxFieldTypes::INT_ARRAY: {
+        int32_t* value = 0;
+        int32_t length;
+        getField(identityFields.at(i)->getFieldName(), &value, length);
+        if (length > 0) {
+          for (int i = 0; i < length; i++) {
+            toString += std::to_string(value[i]);
+          }
+          GF_SAFE_DELETE_ARRAY(value);
+        }
+        break;
+      }
+      case PdxFieldTypes::LONG_ARRAY: {
+        int64_t* value = 0;
+        int32_t length;
+        getField(identityFields.at(i)->getFieldName(), &value, length);
+        if (length > 0) {
+          for (int i = 0; i < length; i++) {
+            toString += std::to_string(value[i]);
+          }
+        }
+        break;
+      }
+      case PdxFieldTypes::FLOAT_ARRAY: {
+        float* value = 0;
+        int32_t length;
+        getField(identityFields.at(i)->getFieldName(), &value, length);
+        if (length > 0) {
+          for (int i = 0; i < length; i++) {
+            toString += std::to_string(value[i]);
+          }
+          GF_SAFE_DELETE_ARRAY(value);
+        }
+        break;
+      }
+      case PdxFieldTypes::DOUBLE_ARRAY: {
+        double* value = 0;
+        int32_t length;
+        getField(identityFields.at(i)->getFieldName(), &value, length);
+        if (length > 0) {
+          for (int i = 0; i < length; i++) {
+            toString += std::to_string(value[i]);
+          }
+        }
+        break;
+      }
+      case PdxFieldTypes::DATE: {
+        auto value =
+            getCacheableDateField(identityFields.at(i)->getFieldName());
+        if (value != nullptr) {
+          toString += value->toString().c_str();
+        }
+        break;
+      }
+      case PdxFieldTypes::BOOLEAN_ARRAY: {
+        bool* value = 0;
+        int32_t length;
+        getField(identityFields.at(i)->getFieldName(), &value, length);
+        if (length > 0) {
+          for (int i = 0; i < length; i++) {
+            toString += value[i] ? "true" : "false";
+          }
+          GF_SAFE_DELETE_ARRAY(value);
+        }
+        break;
+      }
+      case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS: {
+        int8_t** value = 0;
+        int32_t arrayLength;
+        int32_t* elementLength;
+        getField(identityFields.at(i)->getFieldName(), &value, arrayLength,
+                 elementLength);
+        if (arrayLength > 0) {
+          for (int j = 0; j < arrayLength; j++) {
+            for (int k = 0; k < elementLength[j]; k++) {
+              toString += std::to_string(value[j][k]);
+            }
+          }
+        }
+        break;
+      }
+      case PdxFieldTypes::OBJECT_ARRAY: {
+        auto value =
+            getCacheableObjectArrayField(identityFields.at(i)->getFieldName());
+        if (value != nullptr) {
+          toString += value->toString().c_str();
+        }
+        break;
+      }
+      default: {
+        auto value = getCacheableField(identityFields.at(i)->getFieldName());
+        if (value != nullptr) {
+          toString += value->toString().c_str();
+        }
+      }
+    }
+  }
+  toString += "}";
 
-   if (m_cacheStats != nullptr) {
-     if (m_enableTimeStatistics) {
-       Utils::updateStatOpTime(
-           m_cacheStats->getStat(),
-           m_cacheStats->getPdxInstanceDeserializationTimeId(),
-           sampleStartNanos);
-     }
-     m_cacheStats->incPdxInstanceDeserializations();
-   }
-   return ret;
- }
+  return toString;
+}
 
- void PdxInstanceImpl::equatePdxFields(
-     std::vector<std::shared_ptr<PdxFieldType>>& my,
-     std::vector<std::shared_ptr<PdxFieldType>>& other) const {
-   int otherIdx = -1;
-   for (int32_t i = 0; i < static_cast<int32_t>(my.size()); i++) {
-     auto myF = my.at(i);
-     if (!myF->equals(m_DefaultPdxFieldType)) {
-       for (int32_t j = 0; j < static_cast<int32_t>(other.size()); j++) {
-         if (myF->equals(other[j])) {
-           otherIdx = j;
-           break;
-         } else {
-           otherIdx = -1;
-         }
-       }
+std::shared_ptr<PdxSerializable> PdxInstanceImpl::getObject() {
+  auto dataInput = m_cache->createDataInput(m_buffer, m_bufferLength);
+  int64_t sampleStartNanos =
+      m_enableTimeStatistics ? Utils::startStatOpTime() : 0;
+  //[ToDo] do we have to call incPdxDeSerialization here?
+  auto ret =
+      PdxHelper::deserializePdx(*dataInput, true, m_typeId, m_bufferLength);
 
-       if (otherIdx == -1)  // field not there
-       {
-         if (i < static_cast<int32_t>(other.size())) {
-           auto tmp = other.at(i);
-           other.at(i) = m_DefaultPdxFieldType;
-           other.push_back(tmp);
-         } else {
-           other.push_back(m_DefaultPdxFieldType);
-         }
-       } else if (otherIdx != i) {
-         auto tmp = other.at(i);
-         other.at(i) = other.at(otherIdx);
-         other.at(otherIdx) = tmp;
-       }
-     }
-   }
+  if (m_cacheStats != nullptr) {
+    if (m_enableTimeStatistics) {
+      Utils::updateStatOpTime(
+          m_cacheStats->getStat(),
+          m_cacheStats->getPdxInstanceDeserializationTimeId(),
+          sampleStartNanos);
+    }
+    m_cacheStats->incPdxInstanceDeserializations();
+  }
+  return ret;
+}
+
+void PdxInstanceImpl::equatePdxFields(
+    std::vector<std::shared_ptr<PdxFieldType>>& my,
+    std::vector<std::shared_ptr<PdxFieldType>>& other) const {
+  int otherIdx = -1;
+  for (int32_t i = 0; i < static_cast<int32_t>(my.size()); i++) {
+    auto myF = my.at(i);
+    if (!myF->equals(m_DefaultPdxFieldType)) {
+      for (int32_t j = 0; j < static_cast<int32_t>(other.size()); j++) {
+        if (myF->equals(other[j])) {
+          otherIdx = j;
+          break;
+        } else {
+          otherIdx = -1;
+        }
+      }
+
+      if (otherIdx == -1)  // field not there
+      {
+        if (i < static_cast<int32_t>(other.size())) {
+          auto tmp = other.at(i);
+          other.at(i) = m_DefaultPdxFieldType;
+          other.push_back(tmp);
+        } else {
+          other.push_back(m_DefaultPdxFieldType);
+        }
+      } else if (otherIdx != i) {
+        auto tmp = other.at(i);
+        other.at(i) = other.at(otherIdx);
+        other.at(otherIdx) = tmp;
+      }
+    }
+  }
 }
 
 bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
@@ -1281,31 +1253,30 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
     return false;
   }
 
- auto myPdxType = getPdxType();
- auto otherPdxType = otherPdx->getPdxType();
+  auto myPdxType = getPdxType();
+  auto otherPdxType = otherPdx->getPdxType();
 
-  char* myPdxClassName = myPdxType->getPdxClassName();
-  char* otherPdxClassName = otherPdxType->getPdxClassName();
+  auto&& myPdxClassName = myPdxType->getPdxClassName();
+  auto&& otherPdxClassName = otherPdxType->getPdxClassName();
 
-  if (ACE_OS::strcmp(otherPdxClassName, myPdxClassName) != 0) {
+  if (otherPdxClassName != myPdxClassName) {
     return false;
   }
 
-  auto myPdxIdentityFieldList =
-      getIdentityPdxFields(myPdxType);
-  auto otherPdxIdentityFieldList =
-      otherPdx->getIdentityPdxFields(otherPdxType);
+  auto myPdxIdentityFieldList = getIdentityPdxFields(myPdxType);
+  auto otherPdxIdentityFieldList = otherPdx->getIdentityPdxFields(otherPdxType);
 
   equatePdxFields(myPdxIdentityFieldList, otherPdxIdentityFieldList);
   equatePdxFields(otherPdxIdentityFieldList, myPdxIdentityFieldList);
 
   auto myDataInput = m_cache->createDataInput(m_buffer, m_bufferLength);
-  auto otherDataInput = m_cache->createDataInput(otherPdx->m_buffer, otherPdx->m_bufferLength);
+  auto otherDataInput =
+      m_cache->createDataInput(otherPdx->m_buffer, otherPdx->m_bufferLength);
 
   int fieldTypeId = -1;
   for (size_t i = 0; i < myPdxIdentityFieldList.size(); i++) {
-   auto myPFT = myPdxIdentityFieldList.at(i);
-   auto otherPFT = otherPdxIdentityFieldList.at(i);
+    auto myPFT = myPdxIdentityFieldList.at(i);
+    auto otherPFT = otherPdxIdentityFieldList.at(i);
 
     LOGDEBUG("pdxfield %s ",
              ((myPFT != m_DefaultPdxFieldType) ? myPFT->getFieldName()
@@ -1346,8 +1317,8 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
         break;
       }
       case PdxFieldTypes::OBJECT: {
-      std::shared_ptr<Cacheable> object = nullptr;
-      std::shared_ptr<Cacheable> otherObject = nullptr;
+        std::shared_ptr<Cacheable> object = nullptr;
+        std::shared_ptr<Cacheable> otherObject = nullptr;
         if (!myPFT->equals(m_DefaultPdxFieldType)) {
           setOffsetForObject(*myDataInput, myPdxType, myPFT->getSequenceId());
           myDataInput->readObject(object);
@@ -1369,9 +1340,8 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
         break;
       }
       case PdxFieldTypes::OBJECT_ARRAY: {
-       auto otherObjectArray =
-            CacheableObjectArray::create();
-       auto objectArray = CacheableObjectArray::create();
+        auto otherObjectArray = CacheableObjectArray::create();
+        auto objectArray = CacheableObjectArray::create();
 
         if (!myPFT->equals(m_DefaultPdxFieldType)) {
           setOffsetForObject(*myDataInput, myPdxType, myPFT->getSequenceId());
@@ -1409,7 +1379,8 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
   return true;
 }
 
-bool PdxInstanceImpl::compareRawBytes(PdxInstanceImpl& other, std::shared_ptr<PdxType> myPT,
+bool PdxInstanceImpl::compareRawBytes(PdxInstanceImpl& other,
+                                      std::shared_ptr<PdxType> myPT,
                                       std::shared_ptr<PdxFieldType> myF,
                                       DataInput& myDataInput,
                                       std::shared_ptr<PdxType> otherPT,
@@ -1456,9 +1427,10 @@ bool PdxInstanceImpl::compareRawBytes(PdxInstanceImpl& other, std::shared_ptr<Pd
     }
   }
 }
- std::shared_ptr<CacheableStringArray> PdxInstanceImpl::getFieldNames() {
- auto pt = getPdxType();
-  std::vector<std::shared_ptr<PdxFieldType>>* vectorOfFieldTypes = pt->getPdxFieldTypes();
+std::shared_ptr<CacheableStringArray> PdxInstanceImpl::getFieldNames() {
+  auto pt = getPdxType();
+  std::vector<std::shared_ptr<PdxFieldType>>* vectorOfFieldTypes =
+      pt->getPdxFieldTypes();
   int size = static_cast<int>(vectorOfFieldTypes->size());
   std::shared_ptr<CacheableString>* ptrArr = nullptr;
   if (size > 0) {
@@ -1476,11 +1448,13 @@ bool PdxInstanceImpl::compareRawBytes(PdxInstanceImpl& other, std::shared_ptr<Pd
 }
 
 PdxFieldTypes::PdxFieldType PdxInstanceImpl::getFieldType(
-    const char* fieldname) const {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldname);
+    const std::string& fieldname) const {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldname.c_str());
 
-  VERIFY_PDX_INSTANCE_FIELD_THROW;
+  if (!pft) {
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldname);
+  }
 
   return static_cast<PdxFieldTypes::PdxFieldType>(pft->getTypeId());
 }
@@ -1494,7 +1468,11 @@ void PdxInstanceImpl::writeUnmodifieldField(
   }
 }
 
-void PdxInstanceImpl::toData(std::shared_ptr<PdxWriter> writer) /*const*/ {
+void PdxInstanceImpl::toData(std::shared_ptr<PdxWriter> writer) const {
+  const_cast<PdxInstanceImpl*>(this)->toDataMutable(writer);
+}
+
+void PdxInstanceImpl::toDataMutable(std::shared_ptr<PdxWriter> writer) {
   auto pt = getPdxType();
   std::vector<std::shared_ptr<PdxFieldType>>* pdxFieldList =
       pt->getPdxFieldTypes();
@@ -1510,10 +1488,9 @@ void PdxInstanceImpl::toData(std::shared_ptr<PdxWriter> writer) /*const*/ {
                currPf->getFieldName(), currPf->IsVariableLengthType());
       std::shared_ptr<Cacheable> value = nullptr;
 
-      FieldVsValues::iterator iter =
-          m_updatedFields.find(currPf->getFieldName());
+      auto&& iter = m_updatedFields.find(currPf->getFieldName());
       if (iter != m_updatedFields.end()) {
-        value = ((*iter).second);
+        value = iter->second;
       } else {
         value = nullptr;
       }
@@ -1552,7 +1529,7 @@ void PdxInstanceImpl::fromData(std::shared_ptr<PdxReader> input) {
       "PdxInstance::FromData( .. ) shouldn't have called");
 }
 
-const char* PdxInstanceImpl::getClassName() const {
+const std::string& PdxInstanceImpl::getClassName() const {
   if (m_typeId != 0) {
     auto pdxtype = getPdxTypeRegistry()->getPdxType(m_typeId);
     if (pdxtype == nullptr) {
@@ -1576,13 +1553,14 @@ void PdxInstanceImpl::setPdxId(int32_t typeId) {
   }
 }
 
-std::vector<std::shared_ptr<PdxFieldType>> PdxInstanceImpl::getIdentityPdxFields(
-    std::shared_ptr<PdxType> pt) const {
-  std::vector<std::shared_ptr<PdxFieldType>>* pdxFieldList = pt->getPdxFieldTypes();
+std::vector<std::shared_ptr<PdxFieldType>>
+PdxInstanceImpl::getIdentityPdxFields(std::shared_ptr<PdxType> pt) const {
+  std::vector<std::shared_ptr<PdxFieldType>>* pdxFieldList =
+      pt->getPdxFieldTypes();
   std::vector<std::shared_ptr<PdxFieldType>> retList;
   int size = static_cast<int>(pdxFieldList->size());
   for (int i = 0; i < size; i++) {
-   auto pft = pdxFieldList->at(i);
+    auto pft = pdxFieldList->at(i);
     if (pft->getIdentityField()) retList.push_back(pft);
   }
 
@@ -1633,7 +1611,8 @@ int PdxInstanceImpl::getOffset(DataInput& dataInput,
                               serializedLength);
 }
 
-int PdxInstanceImpl::getRawHashCode(std::shared_ptr<PdxType> pt, std::shared_ptr<PdxFieldType> pField,
+int PdxInstanceImpl::getRawHashCode(std::shared_ptr<PdxType> pt,
+                                    std::shared_ptr<PdxFieldType> pField,
                                     DataInput& dataInput) const {
   int pos = getOffset(dataInput, pt, pField->getSequenceId());
   int nextpos =
@@ -1721,16 +1700,19 @@ bool PdxInstanceImpl::hasDefaultBytes(std::shared_ptr<PdxFieldType> pField,
       return compareDefaultBytes(dataInput, start, end, m_IntDefaultBytes, 4);
     }
     case PdxFieldTypes::STRING: {
-      return compareDefaultBytes(dataInput, start, end, m_StringDefaultBytes, 1);
+      return compareDefaultBytes(dataInput, start, end, m_StringDefaultBytes,
+                                 1);
     }
     case PdxFieldTypes::BOOLEAN: {
-      return compareDefaultBytes(dataInput, start, end, m_BooleanDefaultBytes, 1);
+      return compareDefaultBytes(dataInput, start, end, m_BooleanDefaultBytes,
+                                 1);
     }
     case PdxFieldTypes::FLOAT: {
       return compareDefaultBytes(dataInput, start, end, m_FloatDefaultBytes, 4);
     }
     case PdxFieldTypes::DOUBLE: {
-      return compareDefaultBytes(dataInput, start, end, m_DoubleDefaultBytes, 8);
+      return compareDefaultBytes(dataInput, start, end, m_DoubleDefaultBytes,
+                                 8);
     }
     case PdxFieldTypes::CHAR: {
       return compareDefaultBytes(dataInput, start, end, m_CharDefaultBytes, 2);
@@ -1755,13 +1737,15 @@ bool PdxInstanceImpl::hasDefaultBytes(std::shared_ptr<PdxFieldType> pField,
     case PdxFieldTypes::STRING_ARRAY:
     case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS:
     case PdxFieldTypes::OBJECT_ARRAY: {
-      return compareDefaultBytes(dataInput, start, end, m_NULLARRAYDefaultBytes, 1);
+      return compareDefaultBytes(dataInput, start, end, m_NULLARRAYDefaultBytes,
+                                 1);
     }
     case PdxFieldTypes::DATE: {
       return compareDefaultBytes(dataInput, start, end, m_DateDefaultBytes, 8);
     }
     case PdxFieldTypes::OBJECT: {
-      return compareDefaultBytes(dataInput, start, end, m_ObjectDefaultBytes, 1);
+      return compareDefaultBytes(dataInput, start, end, m_ObjectDefaultBytes,
+                                 1);
     }
     default: {
       throw IllegalStateException("hasDefaultBytes unable to find typeID ");
@@ -1769,544 +1753,324 @@ bool PdxInstanceImpl::hasDefaultBytes(std::shared_ptr<PdxFieldType> pField,
   }
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, bool value) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+void PdxInstanceImpl::setField(const std::string& fieldName, bool value) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BOOLEAN) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29233: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
- auto cacheableObject = CacheableBoolean::create(value);
+  auto cacheableObject = CacheableBoolean::create(value);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, signed char value) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+void PdxInstanceImpl::setField(const std::string& fieldName,
+                               signed char value) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29233: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
- auto cacheableObject = CacheableByte::create(value);
+  auto cacheableObject = CacheableByte::create(value);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, unsigned char value) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+void PdxInstanceImpl::setField(const std::string& fieldName,
+                               unsigned char value) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29236: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
- auto cacheableObject = CacheableByte::create(value);
+  auto cacheableObject = CacheableByte::create(value);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, int16_t value) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+void PdxInstanceImpl::setField(const std::string& fieldName, int16_t value) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::SHORT) {
-    char excpStr[256] = {0};
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
   auto cacheableObject = CacheableInt16::create(value);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, int32_t value) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+void PdxInstanceImpl::setField(const std::string& fieldName, int32_t value) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::INT) {
     char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29234: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
- auto cacheableObject = CacheableInt32::create(value);
+  auto cacheableObject = CacheableInt32::create(value);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, int64_t value) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+void PdxInstanceImpl::setField(const std::string& fieldName, int64_t value) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::LONG) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29235: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
- auto cacheableObject = CacheableInt64::create(value);
+  auto cacheableObject = CacheableInt64::create(value);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, float value) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+void PdxInstanceImpl::setField(const std::string& fieldName, float value) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::FLOAT) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29232: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
- auto cacheableObject = CacheableFloat::create(value);
+  auto cacheableObject = CacheableFloat::create(value);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, double value) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+void PdxInstanceImpl::setField(const std::string& fieldName, double value) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::DOUBLE) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29231: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
- auto cacheableObject = CacheableDouble::create(value);
+  auto cacheableObject = CacheableDouble::create(value);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, char16_t value) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+void PdxInstanceImpl::setField(const std::string& fieldName, char16_t value) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::CHAR) {
-    char excpStr[256] = {0};
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
   auto cacheableObject = CacheableCharacter::create(value);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, std::shared_ptr<CacheableDate> value) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+void PdxInstanceImpl::setField(const std::string& fieldName,
+                               std::shared_ptr<CacheableDate> value) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::DATE) {
-    char excpStr[256] = {0};
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
   auto cacheableObject = value;
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, std::shared_ptr<Cacheable> value) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+void PdxInstanceImpl::setField(const std::string& fieldName,
+                               std::shared_ptr<Cacheable> value) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::OBJECT) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29212: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
   m_updatedFields[fieldName] = value;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName,
+void PdxInstanceImpl::setField(const std::string& fieldName,
                                std::shared_ptr<CacheableObjectArray> value) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::OBJECT_ARRAY) {
-    char excpStr[256] = {0};
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
   m_updatedFields[fieldName] = value;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, bool* value,
+void PdxInstanceImpl::setField(const std::string& fieldName, bool* value,
                                int32_t length) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BOOLEAN_ARRAY) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29218: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
- auto cacheableObject = BooleanArray::create(value, length);
+  auto cacheableObject = BooleanArray::create(value, length);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, signed char* value,
-                               int32_t length) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
-
- if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE_ARRAY) {
-   char excpStr[256] = {0};
-   /* adongre - Coverity II
-    * CID 29217: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
-   ACE_OS::snprintf(
-       excpStr, 256,
-       "PdxInstance doesn't has field %s or type of field not matched %s ",
-       fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-   throw IllegalStateException(excpStr);
- }
- auto cacheableObject =
-     CacheableBytes::create(reinterpret_cast<uint8_t*>(value), length);
- m_updatedFields[fieldName] = cacheableObject;
-}
-
-void PdxInstanceImpl::setField(const char* fieldName, unsigned char* value,
+void PdxInstanceImpl::setField(const std::string& fieldName, signed char* value,
                                int32_t length) {
   auto pt = getPdxType();
-  auto pft = pt->getPdxField(fieldName);
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE_ARRAY) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29222: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
- auto cacheableObject =
-      CacheableBytes::create((uint8_t*)value, length);
+  auto cacheableObject =
+      CacheableBytes::create(reinterpret_cast<uint8_t*>(value), length);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, int16_t* value,
+void PdxInstanceImpl::setField(const std::string& fieldName,
+                               unsigned char* value, int32_t length) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
+
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE_ARRAY) {
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
+  }
+  auto cacheableObject = CacheableBytes::create((uint8_t*)value, length);
+  m_updatedFields[fieldName] = cacheableObject;
+}
+
+void PdxInstanceImpl::setField(const std::string& fieldName, int16_t* value,
                                int32_t length) {
   auto pt = getPdxType();
-  auto pft = pt->getPdxField(fieldName);
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::SHORT_ARRAY) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29225: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
- auto cacheableObject = CacheableInt16Array::create(value, length);
+  auto cacheableObject = CacheableInt16Array::create(value, length);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, int32_t* value,
-                               int32_t length) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
-
- if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::INT_ARRAY) {
-   char excpStr[256] = {0};
-   /* adongre - Coverity II
-    * CID 29223: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
-   ACE_OS::snprintf(
-       excpStr, 256,
-       "PdxInstance doesn't has field %s or type of field not matched %s ",
-       fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-   throw IllegalStateException(excpStr);
- }
- auto cacheableObject = CacheableInt32Array::create(value, length);
- m_updatedFields[fieldName] = cacheableObject;
-}
-
-void PdxInstanceImpl::setField(const char* fieldName, int64_t* value,
+void PdxInstanceImpl::setField(const std::string& fieldName, int32_t* value,
                                int32_t length) {
   auto pt = getPdxType();
-  auto pft = pt->getPdxField(fieldName);
+  auto pft = pt->getPdxField(fieldName.c_str());
+
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::INT_ARRAY) {
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
+  }
+  auto cacheableObject = CacheableInt32Array::create(value, length);
+  m_updatedFields[fieldName] = cacheableObject;
+}
+
+void PdxInstanceImpl::setField(const std::string& fieldName, int64_t* value,
+                               int32_t length) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::LONG_ARRAY) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29224: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
   auto cacheableObject = CacheableInt64Array::create(value, length);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, float* value,
+void PdxInstanceImpl::setField(const std::string& fieldName, float* value,
                                int32_t length) {
   auto pt = getPdxType();
-  auto pft = pt->getPdxField(fieldName);
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::FLOAT_ARRAY) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29221: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
   auto cacheableObject = CacheableFloatArray::create(value, length);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, double* value,
+void PdxInstanceImpl::setField(const std::string& fieldName, double* value,
                                int32_t length) {
   auto pt = getPdxType();
-  auto pft = pt->getPdxField(fieldName);
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::DOUBLE_ARRAY) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29220: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
   auto cacheableObject = CacheableDoubleArray::create(value, length);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, wchar_t* value,
+void PdxInstanceImpl::setField(const std::string& fieldName, wchar_t* value,
                                int32_t length) {
   auto pt = getPdxType();
-  auto pft = pt->getPdxField(fieldName);
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::CHAR_ARRAY) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29226: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
   auto ptr = CharArray::create(value, length);
   m_updatedFields[fieldName] = ptr;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, char* value,
+void PdxInstanceImpl::setField(const std::string& fieldName, char* value,
                                int32_t length) {
   auto pt = getPdxType();
-  auto pft = pt->getPdxField(fieldName);
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::CHAR_ARRAY) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29219: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
   size_t size = strlen(value) + 1;
   wchar_t* tempWideCharArray = new wchar_t[size];
@@ -2316,113 +2080,67 @@ void PdxInstanceImpl::setField(const char* fieldName, char* value,
   delete[] tempWideCharArray;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, const wchar_t* value) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
-
- if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING) {
-   char excpStr[256] = {0};
-   /* adongre - Coverity II
-    * CID 29213: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
-   ACE_OS::snprintf(
-       excpStr, 256,
-       "PdxInstance doesn't has field %s or type of field not matched %s ",
-       fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-   throw IllegalStateException(excpStr);
- }
- auto ptr = CacheableString::create(value);
- m_updatedFields[fieldName] = ptr;
-}
-
-void PdxInstanceImpl::setField(const char* fieldName, const char* value) {
+void PdxInstanceImpl::setField(const std::string& fieldName,
+                               const wchar_t* value) {
   auto pt = getPdxType();
-  auto pft = pt->getPdxField(fieldName);
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29227: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
- auto ptr = CacheableString::create(value);
+  auto ptr = CacheableString::create(value);
   m_updatedFields[fieldName] = ptr;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, int8_t** value,
-                               int32_t arrayLength, int32_t* elementLength) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+void PdxInstanceImpl::setField(const std::string& fieldName,
+                               const char* value) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
- if (pft != nullptr &&
-     pft->getTypeId() != PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS) {
-   char excpStr[256] = {0};
-   /* adongre - Coverity II
-    * CID 29214: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-    * "sprintf" can cause a
-    * buffer overflow when done incorrectly. Because sprintf() assumes an
-    * arbitrarily long string,
-    * callers must be careful not to overflow the actual space of the
-    * destination.
-    * Use snprintf() instead, or correct precision specifiers.
-    * Fix : using ACE_OS::snprintf
-    */
-   ACE_OS::snprintf(
-       excpStr, 256,
-       "PdxInstance doesn't has field %s or type of field not matched %s ",
-       fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-   throw IllegalStateException(excpStr);
- }
- auto cacheableObject = CacheableVector::create();
- for (int i = 0; i < arrayLength; i++) {
-   auto ptr = CacheableBytes::create(reinterpret_cast<uint8_t*>(value[i]),
-                                     elementLength[i]);
-   cacheableObject->push_back(ptr);
- }
- m_updatedFields[fieldName] = cacheableObject;
+  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING) {
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
+  }
+  auto ptr = CacheableString::create(value);
+  m_updatedFields[fieldName] = ptr;
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, wchar_t** value,
+void PdxInstanceImpl::setField(const std::string& fieldName, int8_t** value,
+                               int32_t arrayLength, int32_t* elementLength) {
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
+
+  if (pft != nullptr &&
+      pft->getTypeId() != PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS) {
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
+  }
+  auto cacheableObject = CacheableVector::create();
+  for (int i = 0; i < arrayLength; i++) {
+    auto ptr = CacheableBytes::create(reinterpret_cast<uint8_t*>(value[i]),
+                                      elementLength[i]);
+    cacheableObject->push_back(ptr);
+  }
+  m_updatedFields[fieldName] = cacheableObject;
+}
+
+void PdxInstanceImpl::setField(const std::string& fieldName, wchar_t** value,
                                int32_t length) {
   auto pt = getPdxType();
-  auto pft = pt->getPdxField(fieldName);
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING_ARRAY) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29216: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
   std::shared_ptr<CacheableString>* ptrArr = nullptr;
   if (length > 0) {
@@ -2435,37 +2153,18 @@ void PdxInstanceImpl::setField(const char* fieldName, wchar_t** value,
     auto cacheableObject = CacheableStringArray::create(ptrArr, length);
     m_updatedFields[fieldName] = cacheableObject;
   }
-
-  /* adongre - Coverity II
-   * CID 29202: Resource leak (RESOURCE_LEAK)
-   */
-  /*if ( ptrArr ) {
-    delete [] ptrArr ;
-  }*/
 }
 
-void PdxInstanceImpl::setField(const char* fieldName, char** value,
+void PdxInstanceImpl::setField(const std::string& fieldName, char** value,
                                int32_t length) {
- auto pt = getPdxType();
- auto pft = pt->getPdxField(fieldName);
+  auto pt = getPdxType();
+  auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING_ARRAY) {
-    char excpStr[256] = {0};
-    /* adongre - Coverity II
-     * CID 29215: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "PdxInstance doesn't has field %s or type of field not matched %s ",
-        fieldName, (pft != nullptr ? pft->toString()->asChar() : ""));
-    throw IllegalStateException(excpStr);
+    throw IllegalStateException(
+        "PdxInstance doesn't have field " + fieldName +
+        " or type of field not matched " +
+        (pft != nullptr ? pft->toString().c_str() : ""));
   }
   std::shared_ptr<CacheableString>* ptrArr = nullptr;
   if (length > 0) {
@@ -2478,15 +2177,10 @@ void PdxInstanceImpl::setField(const char* fieldName, char** value,
     auto cacheableObject = CacheableStringArray::create(ptrArr, length);
     m_updatedFields[fieldName] = cacheableObject;
   }
-  /* adongre - Coverity II
-   * CID 29201: Resource leak (RESOURCE_LEAK)
-   */
-  /*if ( ptrArr ) {
-    delete [] ptrArr;
-  }*/
 }
 
-void PdxInstanceImpl::setOffsetForObject(DataInput& dataInput, std::shared_ptr<PdxType> pt,
+void PdxInstanceImpl::setOffsetForObject(DataInput& dataInput,
+                                         std::shared_ptr<PdxType> pt,
                                          int sequenceId) const {
   int pos = getOffset(dataInput, pt, sequenceId);
   dataInput.reset();
@@ -2504,15 +2198,18 @@ uint32_t PdxInstanceImpl::objectSize() const {
   }
   return size;
 }
- std::shared_ptr<PdxTypeRegistry> PdxInstanceImpl::getPdxTypeRegistry() const {
+std::shared_ptr<PdxTypeRegistry> PdxInstanceImpl::getPdxTypeRegistry() const {
   return m_pdxTypeRegistry;
 }
 
-std::unique_ptr<DataInput> PdxInstanceImpl::getDataInputForField(const char* fieldname) const {
+std::unique_ptr<DataInput> PdxInstanceImpl::getDataInputForField(
+    const std::string& fieldname) const {
   auto pt = getPdxType();
-  auto pft = pt->getPdxField(fieldname);
+  auto pft = pt->getPdxField(fieldname.c_str());
 
-  VERIFY_PDX_INSTANCE_FIELD_THROW;
+  if (!pft) {
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldname);
+  }
 
   auto dataInput = m_cache->createDataInput(m_buffer, m_bufferLength);
   auto pos = getOffset(*dataInput, pt, pft->getSequenceId());

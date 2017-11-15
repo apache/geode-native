@@ -51,8 +51,8 @@ class ThinClientTallyLoader : public TallyLoader {
     char lstrvalue[32];
     sprintf(lstrvalue, "%i", loadValue);
    auto lreturnValue = CacheableString::create(lstrvalue);
-   if (key != nullptr && (nullptr != rp->getAttributes()->getEndpoints() ||
-                          rp->getAttributes()->getPoolName() != nullptr)) {
+   if (key != nullptr && (!rp->getAttributes()->getEndpoints().empty() ||
+                          !rp->getAttributes()->getPoolName().empty())) {
      LOGDEBUG("Putting the value (%s) for local region clients only ",
               lstrvalue);
      rp->put(key, lreturnValue);
@@ -63,7 +63,7 @@ class ThinClientTallyLoader : public TallyLoader {
   void close(const std::shared_ptr<Region>& region) {
     LOG(" ThinClientTallyLoader::close() called");
     if (region != nullptr) {
-      LOGINFO(" Region %s is Destroyed = %d ", region->getName(),
+      LOGINFO(" Region %s is Destroyed = %d ", region->getName().c_str(),
               region->isDestroyed());
       ASSERT(region->isDestroyed() == true,
              "region.isDestroyed should return true");
@@ -138,7 +138,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testLoader)
 
    auto regEntryPtr = regionPtr->getEntry(keyPtr);
    auto valuePtr = regEntryPtr->getValue();
-   int val = atoi(valuePtr->toString()->asChar());
+   int val = atoi(valuePtr->toString().c_str());
    LOGFINE("val for keyPtr is %d", val);
    numLoads++;
    validateEventCount(__LINE__);
@@ -153,7 +153,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testDestroy)
    regionPtr->get(keyPtr2);
    auto regEntryPtr2 = regionPtr->getEntry(keyPtr2);
    auto valuePtr2 = regEntryPtr2->getValue();
-   int val2 = atoi(valuePtr2->toString()->asChar());
+   int val2 = atoi(valuePtr2->toString().c_str());
    LOGFINE("val2 for keyPtr2 is %d", val2);
    numLoads++;
    validateEventCount(__LINE__);
@@ -169,7 +169,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateKey)
    regionPtr->get(keyPtr2);
    auto regEntryPtr = regionPtr->getEntry(keyPtr2);
    auto valuePtr = regEntryPtr->getValue();
-   int val = atoi(valuePtr->toString()->asChar());
+   int val = atoi(valuePtr->toString().c_str());
    LOGFINE("val for keyPtr1 is %d", val);
    numLoads++;
    validateEventCount(__LINE__);
@@ -183,7 +183,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateKey)
    regionPtr->get(keyPtr4);
    auto regEntryPtr1 = regionPtr->getEntry(keyPtr4);
    auto valuePtr1 = regEntryPtr1->getValue();
-   int val1 = atoi(valuePtr1->toString()->asChar());
+   int val1 = atoi(valuePtr1->toString().c_str());
    LOGFINE("val1 for keyPtr4 is %d", val1);
    numLoads++;
    validateEventCount(__LINE__);
@@ -192,7 +192,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateKey)
    regionPtr->get(keyPtr4);
    auto regEntryPtr2 = regionPtr->getEntry(keyPtr4);
    auto valuePtr2 = regEntryPtr2->getValue();
-   int val2 = atoi(valuePtr2->toString()->asChar());
+   int val2 = atoi(valuePtr2->toString().c_str());
    LOGFINE("val2 for keyPtr4 is %d", val2);
    numLoads++;
    validateEventCount(__LINE__);
@@ -209,7 +209,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateRegion)
    regionPtr->get(keyPtr3);
    auto regEntryPtr = regionPtr->getEntry(keyPtr3);
    auto valuePtr = regEntryPtr->getValue();
-   int val = atoi(valuePtr->toString()->asChar());
+   int val = atoi(valuePtr->toString().c_str());
    LOGFINE("val for keyPtr3 is %d", val);
    numLoads++;
    validateEventCount(__LINE__);
@@ -225,7 +225,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateRegion)
    regionPtr->get(keyPtr4);
    auto regEntryPtr1 = regionPtr->getEntry(keyPtr4);
    auto valuePtr1 = regEntryPtr1->getValue();
-   int val1 = atoi(valuePtr1->toString()->asChar());
+   int val1 = atoi(valuePtr1->toString().c_str());
    LOGFINE("val1 for keyPtr4 is %d", val1);
    numLoads++;
    validateEventCount(__LINE__);
@@ -234,7 +234,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateRegion)
    regionPtr->get(keyPtr4);
    auto regEntryPtr2 = regionPtr->getEntry(keyPtr4);
    auto valuePtr2 = regEntryPtr2->getValue();
-   int val2 = atoi(valuePtr2->toString()->asChar());
+   int val2 = atoi(valuePtr2->toString().c_str());
    LOGFINE("val2 for keyPtr4 is %d", val2);
    numLoads++;
    validateEventCount(__LINE__);

@@ -219,8 +219,9 @@ void QueryHelper::populatePortfolioPdxData(std::shared_ptr<Region>& rptr,
       auto keyport = CacheableKey::create(portname);
 
       rptr->put(keyport, port);
-      LOGINFO("populatePortfolioPdxData:: Put for iteration current = %d done",
-              current);
+      // LOGINFO("populatePortfolioPdxData:: Put for iteration current = %d
+      // done",
+      //        current);
     }
   }
   // portfolioSetSize = setSize; portfolioNumSets = numSets; objectSize =
@@ -251,7 +252,7 @@ void QueryHelper::populatePositionPdxData(std::shared_ptr<Region>& rptr,
 void QueryHelper::populatePDXObject(std::shared_ptr<Region>& rptr) {
   // Register PdxType Object
 
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(&rptr->getCache());
+  auto cacheImpl = CacheRegionHelper::getCacheImpl(&rptr->getCache());
   cacheImpl->getSerializationRegistry()->addPdxType(PdxTests::PdxType::createDeserializable);
   LOG("PdxObject Registered Successfully....");
 

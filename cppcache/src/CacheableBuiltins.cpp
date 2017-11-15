@@ -24,26 +24,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-int gf_sprintf(char* buffer, const char* fmt, ...) {
-  va_list args;
-  int result;
-
-  va_start(args, fmt);
-  result = ACE_OS::vsprintf(buffer, fmt, args);
-  va_end(args);
-  return result;
-}
-
-int gf_snprintf(char* buffer, int32_t maxLength, const char* fmt, ...) {
-  va_list args;
-  int result;
-
-  va_start(args, fmt);
-  result = ACE_OS::vsnprintf(buffer, maxLength, fmt, args);
-  va_end(args);
-  return result;
-}
-
 #define _GF_CACHEABLE_KEY_DEF_(k, s) \
   const char tName_##k[] = #k;       \
   const char tStr_##k[] = s;

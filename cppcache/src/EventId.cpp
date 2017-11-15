@@ -166,13 +166,6 @@ void EventId::initFromTSS_SameThreadIdAndSameSequenceId() {
 
 EventId::~EventId() {}
 
-/** used to render as a string for logging. */
-size_t EventId::logString(char* buffer, size_t maxLength) const {
-  return ACE_OS::snprintf(buffer, maxLength,
-                          "EventId( memID=[binary], thr=%" PRIi64
-                          ", seq=%" PRIi64 " )",
-                          m_eidThr, m_eidSeq);
-}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

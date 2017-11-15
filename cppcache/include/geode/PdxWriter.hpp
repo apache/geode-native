@@ -58,7 +58,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty
    */
-  virtual std::shared_ptr<PdxWriter> writeChar(const char* fieldName,
+  virtual std::shared_ptr<PdxWriter> writeChar(const std::string& fieldName,
                                                char value) = 0;
 
   /**
@@ -71,7 +71,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty
    */
-  virtual std::shared_ptr<PdxWriter> writeChar(const char* fieldName,
+  virtual std::shared_ptr<PdxWriter> writeChar(const std::string& fieldName,
                                                char16_t value) = 0;
 
   /**
@@ -84,7 +84,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty
    */
-  virtual std::shared_ptr<PdxWriter> writeBoolean(const char* fieldName,
+  virtual std::shared_ptr<PdxWriter> writeBoolean(const std::string& fieldName,
                                                   bool value) = 0;
 
   /**
@@ -97,7 +97,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty
    */
-  virtual std::shared_ptr<PdxWriter> writeByte(const char* fieldName,
+  virtual std::shared_ptr<PdxWriter> writeByte(const std::string& fieldName,
                                                int8_t value) = 0;
 
   /**
@@ -110,7 +110,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty
    */
-  virtual std::shared_ptr<PdxWriter> writeShort(const char* fieldName,
+  virtual std::shared_ptr<PdxWriter> writeShort(const std::string& fieldName,
                                                 int16_t value) = 0;
 
   /**
@@ -123,7 +123,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty
    */
-  virtual std::shared_ptr<PdxWriter> writeInt(const char* fieldName,
+  virtual std::shared_ptr<PdxWriter> writeInt(const std::string& fieldName,
                                               int32_t value) = 0;
 
   /**
@@ -136,7 +136,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty
    */
-  virtual std::shared_ptr<PdxWriter> writeLong(const char* fieldName,
+  virtual std::shared_ptr<PdxWriter> writeLong(const std::string& fieldName,
                                                int64_t value) = 0;
 
   /**
@@ -149,7 +149,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty
    */
-  virtual std::shared_ptr<PdxWriter> writeFloat(const char* fieldName,
+  virtual std::shared_ptr<PdxWriter> writeFloat(const std::string& fieldName,
                                                 float value) = 0;
 
   /**
@@ -162,7 +162,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty
    */
-  virtual std::shared_ptr<PdxWriter> writeDouble(const char* fieldName,
+  virtual std::shared_ptr<PdxWriter> writeDouble(const std::string& fieldName,
                                                  double value) = 0;
 
   /**
@@ -176,7 +176,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * or fieldName is nullptr or empty
    */
   virtual std::shared_ptr<PdxWriter> writeDate(
-      const char* fieldName, std::shared_ptr<CacheableDate> date) = 0;
+      const std::string& fieldName, std::shared_ptr<CacheableDate> date) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -188,7 +188,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty
    */
-  virtual std::shared_ptr<PdxWriter> writeString(const char* fieldName,
+  virtual std::shared_ptr<PdxWriter> writeString(const std::string& fieldName,
                                                  const char* value) = 0;
 
   /**
@@ -201,8 +201,8 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty
    */
-  virtual std::shared_ptr<PdxWriter> writeWideString(const char* fieldName,
-                                                     const wchar_t* value) = 0;
+  virtual std::shared_ptr<PdxWriter> writeWideString(
+      const std::string& fieldName, const wchar_t* value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -222,7 +222,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxWriter> writeObject(
-      const char* fieldName, std::shared_ptr<Cacheable> value) = 0;
+      const std::string& fieldName, std::shared_ptr<Cacheable> value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -235,9 +235,8 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxWriter> writeBooleanArray(const char* fieldName,
-                                                       bool* array,
-                                                       int length) = 0;
+  virtual std::shared_ptr<PdxWriter> writeBooleanArray(
+      const std::string& fieldName, bool* array, int length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -250,9 +249,8 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxWriter> writeWideCharArray(const char* fieldName,
-                                                        wchar_t* array,
-                                                        int length) = 0;
+  virtual std::shared_ptr<PdxWriter> writeWideCharArray(
+      const std::string& fieldName, wchar_t* array, int length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -265,9 +263,8 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxWriter> writeCharArray(const char* fieldName,
-                                                    char* array,
-                                                    int length) = 0;
+  virtual std::shared_ptr<PdxWriter> writeCharArray(
+      const std::string& fieldName, char* array, int length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -280,9 +277,8 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxWriter> writeByteArray(const char* fieldName,
-                                                    int8_t* array,
-                                                    int length) = 0;
+  virtual std::shared_ptr<PdxWriter> writeByteArray(
+      const std::string& fieldName, int8_t* array, int length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -295,9 +291,8 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxWriter> writeShortArray(const char* fieldName,
-                                                     int16_t* array,
-                                                     int length) = 0;
+  virtual std::shared_ptr<PdxWriter> writeShortArray(
+      const std::string& fieldName, int16_t* array, int length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -310,7 +305,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxWriter> writeIntArray(const char* fieldName,
+  virtual std::shared_ptr<PdxWriter> writeIntArray(const std::string& fieldName,
                                                    int32_t* array,
                                                    int length) = 0;
 
@@ -325,9 +320,8 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxWriter> writeLongArray(const char* fieldName,
-                                                    int64_t* array,
-                                                    int length) = 0;
+  virtual std::shared_ptr<PdxWriter> writeLongArray(
+      const std::string& fieldName, int64_t* array, int length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -340,9 +334,8 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxWriter> writeFloatArray(const char* fieldName,
-                                                     float* array,
-                                                     int length) = 0;
+  virtual std::shared_ptr<PdxWriter> writeFloatArray(
+      const std::string& fieldName, float* array, int length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -355,9 +348,8 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxWriter> writeDoubleArray(const char* fieldName,
-                                                      double* array,
-                                                      int length) = 0;
+  virtual std::shared_ptr<PdxWriter> writeDoubleArray(
+      const std::string& fieldName, double* array, int length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -370,9 +362,8 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxWriter> writeStringArray(const char* fieldName,
-                                                      char** array,
-                                                      int length) = 0;
+  virtual std::shared_ptr<PdxWriter> writeStringArray(
+      const std::string& fieldName, char** array, int length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -385,9 +376,8 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxWriter> writeWideStringArray(const char* fieldName,
-                                                          wchar_t** array,
-                                                          int length) = 0;
+  virtual std::shared_ptr<PdxWriter> writeWideStringArray(
+      const std::string& fieldName, wchar_t** array, int length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -404,7 +394,8 @@ class CPPCACHE_EXPORT PdxWriter {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxWriter> writeObjectArray(
-      const char* fieldName, std::shared_ptr<CacheableObjectArray> array) = 0;
+      const std::string& fieldName,
+      std::shared_ptr<CacheableObjectArray> array) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -420,7 +411,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxWriter> writeArrayOfByteArrays(
-      const char* fieldName, int8_t** array, int arrayLength,
+      const std::string& fieldName, int8_t** array, int arrayLength,
       int* elementLength) = 0;
 
   /**
@@ -447,7 +438,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field does not exist.
    */
   virtual std::shared_ptr<PdxWriter> markIdentityField(
-      const char* fieldName) = 0;
+      const std::string& fieldName) = 0;
 
   /**
    * Writes the given unread fields to the serialized form.

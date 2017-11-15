@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TRANSACTIONID_H_
-#define GEODE_TRANSACTIONID_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,7 +15,13 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_TRANSACTIONID_H_
+#define GEODE_TRANSACTIONID_H_
+
 #include <memory>
+
 #include "geode_base.hpp"
 
 namespace apache {

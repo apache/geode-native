@@ -34,6 +34,15 @@ class DataInputInternal : public DataInput {
   virtual const Cache* getCache() override {
     throw FatalInternalException("DataInputInternal does not have a Cache");
   }
+
+  inline static const std::string& getPoolName(const DataInput& dataInput) {
+    return dataInput.getPoolName();
+  }
+
+  inline static void setPoolName(DataInput& dataInput,
+                                 const std::string& poolName) {
+    return dataInput.setPoolName(poolName);
+  }
 };
 
 }  // namespace client

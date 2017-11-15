@@ -32,11 +32,11 @@ class MyPdxClass : public PdxSerializable {
  public:
   MyPdxClass();
   ~MyPdxClass();
-  virtual void toData(std::shared_ptr<PdxWriter> output);
-  virtual void fromData(std::shared_ptr<PdxReader> input);
+  virtual void toData(std::shared_ptr<PdxWriter> output) const override;
+  virtual void fromData(std::shared_ptr<PdxReader> input) override;
   virtual void setAString(std::string a_string);
   virtual std::string getAString();
-  virtual const char *getClassName() const;
+  virtual const std::string &getClassName() const override;
 
   static PdxSerializable *CreateDeserializable();
 
@@ -52,14 +52,17 @@ std::string MyPdxClass::getAString() { return _a_string; }
 
 MyPdxClass::~MyPdxClass() {}
 
-void MyPdxClass::toData(std::shared_ptr<PdxWriter> output) {
+void MyPdxClass::toData(std::shared_ptr<PdxWriter> output) const {
   output->writeString("name", _a_string.c_str());
 }
 
 void MyPdxClass::fromData(std::shared_ptr<PdxReader> input) {
   _a_string = input->readString("name");
 }
-const char *MyPdxClass::getClassName() const { return "MyPdxClass"; }
+const std::string &MyPdxClass::getClassName() const {
+  static std::string name = "MyPdxClass";
+  return name;
+}
 
 PdxSerializable *MyPdxClass::CreateDeserializable() { return new MyPdxClass(); }
 

@@ -39,36 +39,45 @@ class CustomFixedPartitionResolver1 : public FixedPartitionResolver {
  public:
   CustomFixedPartitionResolver1() {}
   ~CustomFixedPartitionResolver1() {}
-  const char* getName() {
+  const std::string& getName() override {
+    static std::string name = "CustomFixedPartitionResolver1";
     LOG("CustomFixedPartitionResolver1::getName()");
-    return "CustomFixedPartitionResolver1";
+    return name;
   }
 
-  std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent& opDetails) {
+  std::shared_ptr<CacheableKey> getRoutingObject(
+      const EntryEvent& opDetails) override {
     LOG("CustomFixedPartitionResolver1::getRoutingObject()");
-    int32_t key = atoi(opDetails.getKey()->toString()->asChar());
+    int32_t key = atoi(opDetails.getKey()->toString().c_str());
     int32_t newKey = key + 5;
     return CacheableKey::create(newKey);
   }
 
-  const char* getPartitionName(const EntryEvent& opDetails) {
+  const std::string& getPartitionName(const EntryEvent& opDetails) override {
     LOG("CustomFixedPartitionResolver1::getPartitionName()");
-    int32_t key = atoi(opDetails.getKey()->toString()->asChar());
+    int32_t key = atoi(opDetails.getKey()->toString().c_str());
     int32_t newkey = key % 6;
     if (newkey == 0) {
-      return "P1";
+      static std::string P1 = "P1";
+      return P1;
     } else if (newkey == 1) {
-      return "P2";
+      static std::string P2 = "P2";
+      return P2;
     } else if (newkey == 2) {
-      return "P3";
+      static std::string P3 = "P3";
+      return P3;
     } else if (newkey == 3) {
-      return "P4";
+      static std::string P4 = "P4";
+      return P4;
     } else if (newkey == 4) {
-      return "P5";
+      static std::string P5 = "P5";
+      return P5;
     } else if (newkey == 5) {
-      return "P6";
+      static std::string P6 = "P6";
+      return P6;
     } else {
-      return "Invalid";
+      static std::string Invalid = "Invalid";
+      return Invalid;
     }
   }
 };
@@ -78,36 +87,45 @@ class CustomFixedPartitionResolver2 : public FixedPartitionResolver {
  public:
   CustomFixedPartitionResolver2() {}
   ~CustomFixedPartitionResolver2() {}
-  const char* getName() {
+  const std::string& getName() override {
+    static std::string name = "CustomFixedPartitionResolver2";
     LOG("CustomFixedPartitionResolver2::getName()");
-    return "CustomFixedPartitionResolver2";
+    return name;
   }
 
-  std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent& opDetails) {
+  std::shared_ptr<CacheableKey> getRoutingObject(
+      const EntryEvent& opDetails) override {
     LOG("CustomFixedPartitionResolver2::getRoutingObject()");
-    int32_t key = atoi(opDetails.getKey()->toString()->asChar());
+    int32_t key = atoi(opDetails.getKey()->toString().c_str());
     int32_t newKey = key + 4;
     return CacheableKey::create(newKey /*key*/);
   }
 
-  const char* getPartitionName(const EntryEvent& opDetails) {
+  const std::string& getPartitionName(const EntryEvent& opDetails) override {
     LOG("CustomFixedPartitionResolver2::getPartitionName()");
-    int32_t key = atoi(opDetails.getKey()->toString()->asChar());
+    int32_t key = atoi(opDetails.getKey()->toString().c_str());
     int32_t newkey = key % 6;
     if (newkey == 0) {
-      return "P1";
+      static std::string P1 = "P1";
+      return P1;
     } else if (newkey == 1) {
-      return "P2";
+      static std::string P2 = "P2";
+      return P2;
     } else if (newkey == 2) {
-      return "P3";
+      static std::string P3 = "P3";
+      return P3;
     } else if (newkey == 3) {
-      return "P4";
+      static std::string P4 = "P4";
+      return P4;
     } else if (newkey == 4) {
-      return "P5";
+      static std::string P5 = "P5";
+      return P5;
     } else if (newkey == 5) {
-      return "P6";
+      static std::string P6 = "P6";
+      return P6;
     } else {
-      return "Invalid";
+      static std::string Invalid = "Invalid";
+      return Invalid;
     }
   }
 };
@@ -117,30 +135,36 @@ class CustomFixedPartitionResolver3 : public FixedPartitionResolver {
  public:
   CustomFixedPartitionResolver3() {}
   ~CustomFixedPartitionResolver3() {}
-  const char* getName() {
+  const std::string& getName() override {
+    static std::string name = "CustomFixedPartitionResolver3";
     LOG("CustomFixedPartitionResolver3::getName()");
-    return "CustomFixedPartitionResolver3";
+    return name;
   }
 
-  std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent& opDetails) {
+  std::shared_ptr<CacheableKey> getRoutingObject(
+      const EntryEvent& opDetails) override {
     LOG("CustomFixedPartitionResolver3::getRoutingObject()");
-    int32_t key = atoi(opDetails.getKey()->toString()->asChar());
+    int32_t key = atoi(opDetails.getKey()->toString().c_str());
     int32_t newKey = key % 5;
     return CacheableKey::create(newKey /*key*/);
   }
 
-  const char* getPartitionName(const EntryEvent& opDetails) {
+  const std::string& getPartitionName(const EntryEvent& opDetails) override {
     LOG("CustomFixedPartitionResolver3::getPartitionName()");
-    int32_t key = atoi(opDetails.getKey()->toString()->asChar());
+    int32_t key = atoi(opDetails.getKey()->toString().c_str());
     int32_t newkey = key % 3;
     if (newkey == 0) {
-      return "P1";
+      static std::string P1 = "P1";
+      return P1;
     } else if (newkey == 1) {
-      return "P2";
+      static std::string P2 = "P2";
+      return P2;
     } else if (newkey == 2) {
-      return "P3";
+      static std::string P3 = "P3";
+      return P3;
     } else {
-      return "Invalid";
+      static std::string Invalid = "Invalid";
+      return Invalid;
     }
   }
 };
@@ -261,7 +285,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
         FAIL("Put caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName(),
+        LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("Put caused unexpected exception");
@@ -305,7 +329,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
         FAIL("get caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName(),
+        LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("get caused unexpected exception");
@@ -349,8 +373,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
         FAIL("getAll caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: getALL caused unexpected %s: %s", ex.getName(),
-                 ex.what());
+        LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
+                 ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
         throw IllegalStateException("TEST FAIL");
@@ -385,8 +409,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
         FAIL("getAll caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: getALL caused unexpected %s: %s", ex.getName(),
-                 ex.what());
+        LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
+                 ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
         throw IllegalStateException("TEST FAIL");
@@ -428,8 +452,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
         FAIL("destroy caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: destroy caused unexpected %s: %s", ex.getName(),
-                 ex.what());
+        LOGERROR("CPPTEST: destroy caused unexpected %s: %s",
+                 ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("destroy caused unexpected exception");
         throw IllegalStateException("TEST FAIL");

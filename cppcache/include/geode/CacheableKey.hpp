@@ -51,16 +51,6 @@ class CPPCACHE_EXPORT CacheableKey : public Cacheable {
   /** return the hashcode for this key. */
   virtual int32_t hashcode() const = 0;
 
-  /** Copy the string form of a key into a char* buffer for logging purposes.
-   *
-   * Implementations should only generate a string as long as maxLength chars,
-   * and return the number of chars written. buffer is expected to be large
-   * enough to hold at least maxLength chars.
-   *
-   * The default implementation renders the classname and instance address.
-   */
-  virtual int32_t logString(char* buffer, int32_t maxLength) const;
-
   /**
    * Factory method that creates the key type that matches the type of value.
    *

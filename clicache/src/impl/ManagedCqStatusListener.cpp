@@ -16,6 +16,7 @@
  */
 
 
+
 #include "ManagedCqStatusListener.hpp"
 #include "../ICqStatusListener.hpp"
 #include "../CqEvent.hpp"
@@ -130,11 +131,9 @@ namespace apache
         }
         catch (System::Exception^ ex)
         {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedCqStatusListenerGeneric: Got an exception while "
-            "loading managed library: ";
-          ex_str += mg_exStr.CharPtr;
-          throw IllegalArgumentException(ex_str.c_str());
+            "loading managed library: " + marshal_as<std::string>(ex->ToString());
+          throw IllegalArgumentException(ex_str);
         }
         return NULL;
       }
@@ -150,11 +149,9 @@ namespace apache
           ex->ThrowNative();
         }
         catch (System::Exception^ ex) {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedCqStatusListenerGeneric: Got an exception in"
-            "onEvent: ";
-          ex_str += mg_exStr.CharPtr;
-          throw IllegalArgumentException(ex_str.c_str());
+            "onEvent: " + marshal_as<std::string>(ex->ToString());
+          throw IllegalArgumentException(ex_str);
         }
       }
 
@@ -173,11 +170,9 @@ namespace apache
           ex->ThrowNative();
         }
         catch (System::Exception^ ex) {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedCqStatusListenerGeneric: Got an exception in"
-            "close: ";
-          ex_str += mg_exStr.CharPtr;
-          throw IllegalArgumentException(ex_str.c_str());
+            "close: " + marshal_as<std::string>(ex->ToString());
+          throw IllegalArgumentException(ex_str);
         }
       }
 
@@ -190,11 +185,9 @@ namespace apache
           ex->ThrowNative();
         }
         catch (System::Exception^ ex) {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedCqStatusListenerGeneric: Got an exception in"
-            "onCqDisconnected: ";
-          ex_str += mg_exStr.CharPtr;
-          throw IllegalArgumentException(ex_str.c_str());
+            "onCqDisconnected: "+ marshal_as<std::string>(ex->ToString());
+          throw IllegalArgumentException(ex_str);
         }
       }
 
@@ -207,11 +200,9 @@ namespace apache
           ex->ThrowNative();
         }
         catch (System::Exception^ ex) {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedCqStatusListenerGeneric: Got an exception in"
-            "OnCqConnected: ";
-          ex_str += mg_exStr.CharPtr;
-          throw IllegalArgumentException(ex_str.c_str());
+            "OnCqConnected: "+ marshal_as<std::string>(ex->ToString());
+          throw IllegalArgumentException(ex_str);
         }
       }
 

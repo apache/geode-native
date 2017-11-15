@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 //#include "../gf_includesN.hpp"
 #include "ManagedCacheLoader.hpp"
 #include "../Region.hpp"
@@ -205,11 +206,9 @@ namespace apache
         }
         catch (System::Exception^ ex)
         {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedCacheLoaderGeneric: Got an exception while "
-            "loading managed library: ";
-          ex_str += mg_exStr.CharPtr;
-          throw IllegalArgumentException(ex_str.c_str());
+            "loading managed library: " + marshal_as<std::string>(ex->ToString());
+          throw IllegalArgumentException(ex_str);
         }
         return NULL;
       }

@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
+
+
 #include "begin_native.hpp"
 #include <geode/QueryService.hpp>
 #include "end_native.hpp"
 
-//#include "geode_includes.hpp"
+
 #include "CqAttributesFactory.hpp"
 #include "impl/ManagedCqListener.hpp"
 #include "ICqListener.hpp"

@@ -114,7 +114,7 @@ void doAttrTestingAndCreatePool(const char* poolName) {
      "UpdateLocatorListInterval Should have been 122000");
  ASSERT(pptr->getStatisticInterval() == std::chrono::milliseconds(120000),
         "StatisticInterval Should have been 120000");
- ASSERT(strcmp(pptr->getServerGroup(), "ServerGroup1") == 0,
+ ASSERT(pptr->getServerGroup() == "ServerGroup1",
         "ServerGroup Should have been ServerGroup1");
  ASSERT(pptr->getSubscriptionEnabled() == true,
         "SubscriptionEnabled Should have been true");
@@ -136,7 +136,7 @@ void doAttrTesting(const char* poolName1) {
   auto pptr = getHelper()->getCache()->getPoolManager().find(poolName1);
   // auto pptr = poolFacPtr->find(poolName1);
 
-  ASSERT(strcmp(pptr->getName(), "clientPool") == 0,
+  ASSERT(pptr->getName() == "clientPool",
          "Pool name should have been clientPool");
   ASSERT(pptr->getFreeConnectionTimeout() == std::chrono::milliseconds(10000),
          "FreeConnectionTimeout Should have been 10000");
@@ -158,7 +158,7 @@ void doAttrTesting(const char* poolName1) {
       "UpdateLocatorListInterval Should have been 25000");
   ASSERT(pptr->getStatisticInterval() == std::chrono::seconds(1),
          "StatisticInterval Should have been 1");
-  ASSERT(strcmp(pptr->getServerGroup(), "ServerGroup1") == 0,
+  ASSERT(pptr->getServerGroup() == "ServerGroup1",
          "ServerGroup Should have been ServerGroup1");
   ASSERT(pptr->getSubscriptionEnabled() == true,
          "SubscriptionEnabled Should have been true");

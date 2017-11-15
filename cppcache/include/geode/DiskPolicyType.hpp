@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_DISKPOLICYTYPE_H_
-#define GEODE_DISKPOLICYTYPE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,10 +15,18 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_DISKPOLICYTYPE_H_
+#define GEODE_DISKPOLICYTYPE_H_
+
+#include <string>
+
+#include "geode_globals.hpp"
+
 /**
  * @file
  */
-#include "geode_globals.hpp"
 
 namespace apache {
 namespace geode {
@@ -43,10 +46,12 @@ class CPPCACHE_EXPORT DiskPolicyType {
   typedef enum { NONE = 0, OVERFLOWS, PERSIST } PolicyType;
 
   /** Returns the Name of the Lru action represented by specified ordinal. */
-  static const char* fromOrdinal(const uint8_t ordinal);
+  static const std::string& fromOrdinal(const uint8_t ordinal);
+
+  static const std::string& fromEnum(const PolicyType policyType);
 
   /** Returns the type of the Lru action represented by name. */
-  static PolicyType fromName(const char* name);
+  static PolicyType fromName(const std::string& name);
 
   /** Returns whether this is one of the overflow to disk type.
    * @return true if this is any action other than NONE
@@ -59,6 +64,7 @@ class CPPCACHE_EXPORT DiskPolicyType {
   inline static bool isNone(const PolicyType type) {
     return (type == DiskPolicyType::NONE);
   }
+
   /** Return whether this is <code>persist</code>. */
   inline static bool isPersist(const PolicyType type) {
     return (type == DiskPolicyType::PERSIST);
@@ -66,8 +72,8 @@ class CPPCACHE_EXPORT DiskPolicyType {
 
  private:
   /** No instance allowed. */
-  DiskPolicyType(){};
-  static const char* names[];
+  DiskPolicyType() = delete;
+  static const std::string names[];
 };
 }  // namespace client
 }  // namespace geode

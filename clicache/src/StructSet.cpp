@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
+
+
 #include "StructSet.hpp"
 #include "SelectResultsIterator.hpp"
 #include "ExceptionTypes.hpp"
@@ -97,13 +98,11 @@ namespace Apache
       generic<class TResult>
       size_t StructSet<TResult>::GetFieldIndex( String^ fieldName )
       {
-        ManagedString mg_fieldName( fieldName );
-
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
           try
           {
-            return m_nativeptr->get()->getFieldIndex( mg_fieldName.CharPtr );
+            return m_nativeptr->get()->getFieldIndex( marshal_as<std::string>(fieldName) );
           }
           finally
           {
@@ -118,7 +117,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get(m_nativeptr->get()->getFieldName(static_cast<System::Int32> (index)).c_str());
+          return marshal_as<String^>(m_nativeptr->get()->getFieldName(static_cast<System::Int32> (index)));
         }
         finally
         {

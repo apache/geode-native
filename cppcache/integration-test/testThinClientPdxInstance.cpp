@@ -585,7 +585,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxPut)
            "pdxInstanceDeserializationTime should be greater than 0.");
 
     auto toString = pIPtr1->toString();
-    LOGINFO("pdxinstance toString = %s ", toString->asChar());
+    LOGINFO("pdxinstance toString = %s ", toString.c_str());
     int pdxInstHashcode = pIPtr1->hashcode();
     LOGINFO("pdxinstance hash code = %d ", pdxInstHashcode);
 
@@ -644,8 +644,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
     auto pIPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     LOG("PdxObject get Successful....");
 
-    LOGINFO("pdxinstance classname = %s ", pIPtr->getClassName());
-    ASSERT(strcmp(pIPtr->getClassName(), "PdxTests.PdxType") == 0,
+    LOGINFO("pdxinstance classname = " + pIPtr->getClassName());
+    ASSERT(pIPtr->getClassName() == "PdxTests.PdxType",
            "pdxInstance.getClassName should return PdxTests.PdxType.");
 
     auto pt = pIPtr->getObject();
@@ -653,7 +653,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
     LOG("PdxObject getObject Successful....");
 
     LOG("Statistics for for (PdxTests.PdxType) PdxInstance ");
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(rptr.get()));
+    auto&& lregPtr = std::dynamic_pointer_cast<LocalRegion>(rptr);
 
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
@@ -696,7 +696,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
     auto pIPtr1 = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport1));
     LOG("ParentPdxObject get Successful....");
     auto toString = pIPtr1->toString();
-    LOGINFO("ParentPdxObject toString = %s ", toString->asChar());
+    LOGINFO("ParentPdxObject toString = %s ", toString.c_str());
     auto pt1 = std::dynamic_pointer_cast<ParentPdx>(pIPtr1->getObject());
     LOG("ParentPdxObject getObject Successful....");
 
@@ -1052,11 +1052,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(
         enumObject->getEnumOrdinal() == pdxobjPtr->getEnum()->getEnumOrdinal(),
         "enumObject ordinal should be equal");
-    ASSERT(strcmp(enumObject->getEnumClassName(),
-                  pdxobjPtr->getEnum()->getEnumClassName()) == 0,
+    ASSERT(enumObject->getEnumClassName() ==
+               pdxobjPtr->getEnum()->getEnumClassName(),
            "enumObject classname should be equal");
-    ASSERT(strcmp(enumObject->getEnumName(),
-                  pdxobjPtr->getEnum()->getEnumName()) == 0,
+    ASSERT(enumObject->getEnumName() == pdxobjPtr->getEnum()->getEnumName(),
            "enumObject enumname should be equal");
     ASSERT(pIPtr->getFieldType("m_pdxEnum") == PdxFieldTypes::OBJECT,
            "Type Value OBJECT Mismatch");
@@ -2479,15 +2478,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     std::shared_ptr<PdxInstance> ret = pifPtr->create();
     LOG("PdxInstancePtr created....");
 
-    LOGINFO("PdxInstance getClassName = %s ", ret->getClassName());
-    ASSERT(strcmp(ret->getClassName(), "PdxTests.PdxType") == 0,
+    LOGINFO("PdxInstance getClassName = " + ret->getClassName());
+    ASSERT(ret->getClassName() == "PdxTests.PdxType",
            "pdxInstance.getClassName should return PdxTests.PdxType.");
 
     auto psPtr = ret->getObject();
     LOG("getObject created....");
 
     LOG("Statistics for for (PdxTests.PdxType) PdxInstance ");
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(rptr.get()));
+    auto&& lregPtr = std::dynamic_pointer_cast<LocalRegion>(rptr);
 
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
@@ -2597,8 +2596,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     std::shared_ptr<PdxInstance> ip2 = if2->create();
     LOG("PdxInstancePtr created");
 
-    LOGINFO("PdxInstance getClassName = %s ", ip2->getClassName());
-    ASSERT(strcmp(ip2->getClassName(), "testobject::ParentPdx") == 0,
+    LOGINFO("PdxInstance getClassName = " + ip2->getClassName());
+    ASSERT(ip2->getClassName() == "testobject::ParentPdx",
            "pdxInstance.getClassName should return testobject::ParentPdx.");
 
     auto keyport = CacheableKey::create("pp");
@@ -2609,8 +2608,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     LOG("get done....");
 
     LOGINFO(
-        "pdxInstanceDeserializations for (testobject::ParentPdx) PdxInstance  "
-        "= "
+        "pdxInstanceDeserializations for (testobject::ParentPdx) PdxInstance = "
         "%d ",
         lregPtr->getCacheImpl()
             ->getCachePerfStats()
@@ -2620,7 +2618,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
         lregPtr->getCacheImpl()->getCachePerfStats().getPdxInstanceCreations());
     LOGINFO(
         "pdxInstanceDeserializationTime for(testobject::ParentPdx) PdxInstance "
-        " "
         "= %d ",
         lregPtr->getCacheImpl()
             ->getCachePerfStats()

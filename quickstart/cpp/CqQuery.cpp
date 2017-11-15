@@ -139,20 +139,20 @@ int main(int argc, char** argv) {
     while (iter.hasNext()) {
       auto ser = iter.next();
       if (ser != nullptr) {
-        LOGINFO(" query pulled object %s\n", ser->toString()->asChar());
+        LOGINFO(" query pulled object %s\n", ser->toString().c_str());
 
         std::shared_ptr<Struct> stPtr(dynamic_cast<Struct*>(ser.get()));
         if (stPtr != nullptr) {
           LOGINFO(" got struct ptr ");
           auto serKey = (*(stPtr.get()))["key"];
           if (serKey != nullptr) {
-            LOGINFO("got struct key %s\n", serKey->toString()->asChar());
+            LOGINFO("got struct key %s\n", serKey->toString().c_str());
           }
 
           auto serVal = (*(stPtr.get()))["value"];
 
           if (serVal != nullptr) {
-            LOGINFO("  got struct value %s\n", serVal->toString()->asChar());
+            LOGINFO("  got struct value %s\n", serVal->toString().c_str());
           }
         }
       } else {

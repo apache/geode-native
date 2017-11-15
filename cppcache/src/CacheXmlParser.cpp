@@ -32,21 +32,19 @@
 #include <dlfcn.h>
 #endif
 
-using namespace apache::geode::client;
-
 namespace apache {
 namespace geode {
 namespace client {
+
 namespace impl {
-void* getFactoryFunc(const char* lib, const char* funcName);
+void* getFactoryFunc(const std::string& lib, const std::string& funcName);
 }  // namespace impl
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
+
+
+namespace {
 
 using namespace apache::geode::client::impl;
 
-namespace {
 std::vector<std::pair<std::string, int>> parseEndPoints(
     const std::string& str) {
   std::vector<std::pair<std::string, int>> endPoints;
@@ -1711,3 +1709,7 @@ CacheXmlParser::~CacheXmlParser() { GF_SAFE_DELETE(m_cacheCreation); }
 void CacheXmlParser::setError(const std::string& err) { m_error = err; }
 
 const std::string& CacheXmlParser::getError() const { return m_error; }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

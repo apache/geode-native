@@ -89,7 +89,7 @@ class CPPCACHE_EXPORT DistributedSystem {
    */
   virtual const std::string& getName() const;
 
-  statistics::StatisticsManager* getStatisticsManager() {
+  statistics::StatisticsManager* getStatisticsManager() const {
     return m_statisticsManager.get();
   }
 
@@ -108,22 +108,21 @@ class CPPCACHE_EXPORT DistributedSystem {
  private:
   std::string m_name;
   bool m_connected;
-
   std::unique_ptr<statistics::StatisticsManager> m_statisticsManager;
-
   std::unique_ptr<SystemProperties> m_sysProps;
 
  public:
   DistributedSystemImpl* m_impl;
-  friend class CacheRegionHelper;
-  friend class DistributedSystemImpl;
-  friend class TcrConnection;
 
  private:
   DistributedSystem(const DistributedSystem&);
   const DistributedSystem& operator=(const DistributedSystem&);
 
-  void logSystemInformation();
+  void logSystemInformation() const;
+
+  friend class CacheRegionHelper;
+  friend class DistributedSystemImpl;
+  friend class TcrConnection;
 };
 }  // namespace client
 }  // namespace geode

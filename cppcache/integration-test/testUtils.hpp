@@ -127,13 +127,12 @@ class TestUtils {
     }
     std::vector<std::shared_ptr<CacheableKey>> v = rptr->keys();
     auto len = v.size();
-    sprintf(buf, "Total keys in region %s : %zu\n", rptr->getName(), len);
+    sprintf(buf, "Total keys in region %s : %zu\n", rptr->getName().c_str(),
+            len);
     LOG(buf);
     for (uint32_t i = 0; i < len; i++) {
-      char keyText[100];
-      v[i]->logString(keyText, 100);
       sprintf(buf, "key[%u] = '%s'\n", i,
-              (v[i] == nullptr) ? "nullptr KEY" : keyText);
+              (v[i] == nullptr) ? "nullptr KEY" : v[i]->toString().c_str());
       LOG(buf);
     }
   }
@@ -146,17 +145,16 @@ class TestUtils {
     }
     std::vector<std::shared_ptr<CacheableKey>> v = rptr->keys();
     auto len = v.size();
-    sprintf(buf, "Total keys in region %s : %zu\n", rptr->getName(), len);
+    sprintf(buf, "Total keys in region %s : %zu\n", rptr->getName().c_str(),
+            len);
     LOG(buf);
     for (uint32_t i = 0; i < len; i++) {
       auto keyPtr = v[i];
-      char keyText[100];
-      keyPtr->logString(keyText, 100);
       auto valPtr =
           std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr));
       sprintf(buf, "key[%u] = '%s', value[%u]='%s'\n", i,
-              (keyPtr == nullptr) ? "nullptr KEY" : keyText, i,
-              (valPtr == nullptr) ? "NULL_VALUE" : valPtr->asChar());
+              (keyPtr == nullptr) ? "nullptr KEY" : keyPtr->toString().c_str(),
+              i, (valPtr == nullptr) ? "NULL_VALUE" : valPtr->asChar());
       LOG(buf);
     }
   }
@@ -169,7 +167,8 @@ class TestUtils {
     }
     auto v = rptr->values();
     auto len = v.size();
-    sprintf(buf, "Total values in region %s : %zu\n", rptr->getName(), len);
+    sprintf(buf, "Total values in region %s : %zu\n", rptr->getName().c_str(),
+            len);
     LOG(buf);
     for (size_t i = 0; i < len; i++) {
       auto value = std::dynamic_pointer_cast<CacheableString>(v[i]);

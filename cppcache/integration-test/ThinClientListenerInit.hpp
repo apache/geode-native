@@ -64,8 +64,8 @@ class ThinClientTallyLoader : public TallyLoader {
     char lstrvalue[32];
     sprintf(lstrvalue, "%i", loadValue);
     auto lreturnValue = CacheableString::create(lstrvalue);
-    if (key != nullptr && (nullptr != rp->getAttributes()->getEndpoints() ||
-                           rp->getAttributes()->getPoolName() != nullptr)) {
+    if (key && (!rp->getAttributes()->getEndpoints().empty() ||
+                !rp->getAttributes()->getPoolName().empty())) {
       LOGDEBUG("Putting the value (%s) for local region clients only ",
                lstrvalue);
       rp->put(key, lreturnValue);
@@ -155,7 +155,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testLoaderAndWriter)
 
     auto regEntryPtr = regPtr->getEntry(keyPtr);
     auto valuePtr = regEntryPtr->getValue();
-    int val = atoi(valuePtr->toString()->asChar());
+    int val = atoi(valuePtr->toString().c_str());
     LOGFINE("val for keyPtr is %d", val);
     ASSERT(val == 0, "Expected value CacheLoad value should be 0");
     numLoads++;
@@ -228,7 +228,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testDestroy)
     regPtr->get(keyPtr1);
     auto regEntryPtr = regPtr->getEntry(keyPtr1);
     auto valuePtr = regEntryPtr->getValue();
-    int val = atoi(valuePtr->toString()->asChar());
+    int val = atoi(valuePtr->toString().c_str());
     LOGFINE("val for keyPtr1 is %d", val);
     ASSERT(val == 0, "Expected value CacheLoad value should be 0");
     numUpdates++;
@@ -238,7 +238,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testDestroy)
     regPtr->get(keyPtr2);
     auto regEntryPtr1 = regPtr->getEntry(keyPtr2);
     auto valuePtr1 = regEntryPtr1->getValue();
-    int val1 = atoi(valuePtr1->toString()->asChar());
+    int val1 = atoi(valuePtr1->toString().c_str());
     LOGFINE("val1 for keyPtr2 is %d", val1);
     ASSERT(val1 == 1, "Expected value CacheLoad value should be 1");
     numLoads++;

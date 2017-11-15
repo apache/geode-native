@@ -16,6 +16,7 @@
  */
 
 #pragma once
+
 #include "../IPdxUnreadFields.hpp"
 
 using namespace System;

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_REGIONENTRY_H_
-#define GEODE_REGIONENTRY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_REGIONENTRY_H_
+#define GEODE_REGIONENTRY_H_
 
 #include "geode_globals.hpp"
 #include "CacheableKey.hpp"
@@ -84,6 +84,7 @@ class CPPCACHE_EXPORT RegionEntry {
    * @return true if this entry has been destroyed
    */
   bool isDestroyed() const;
+
   /**
    * @brief destructor
    */

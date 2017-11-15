@@ -17,10 +17,11 @@
 
 #pragma once
 
+
 #include "../geode_defs.hpp"
-#include "begin_native.hpp"
+#include "../begin_native.hpp"
 #include <geode/RegionService.hpp>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "../native_shared_ptr.hpp"
 #include "../RegionShortcut.hpp"

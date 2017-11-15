@@ -30,14 +30,15 @@
 #include "ProcessStats.hpp"
 #include "GeodeStatisticsFactory.hpp"
 
-using namespace apache::geode::client;
-
 /** @file
  */
 
 namespace apache {
 namespace geode {
 namespace statistics {
+
+using namespace apache::geode::client;
+
 /**
  * <P>This class provides the interface for statistics about a
  * Windows operating system process that is using a Geode system.

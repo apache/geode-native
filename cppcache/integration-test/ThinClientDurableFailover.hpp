@@ -69,7 +69,7 @@ class OperMonitor : public CacheListener {
     auto keyPtr = std::dynamic_pointer_cast<CacheableString>(key);
     if (keyPtr != nullptr && value != nullptr) {
       char buf[256] = {'\0'};
-      sprintf(buf, " Got Key: %s, Value: %d", keyPtr->toString(),
+      sprintf(buf, " Got Key: %s, Value: %d", keyPtr->toString().c_str(),
               value->value());
       LOG(buf);
     }
@@ -101,7 +101,8 @@ class OperMonitor : public CacheListener {
       auto keyPtr = std::dynamic_pointer_cast<CacheableString>(item.first);
       auto valuePtr = std::dynamic_pointer_cast<CacheableInt32>(item.second);
 
-      if (strchr(keyPtr->toString(), 'D') == nullptr) { /*Non Durable Key */
+      if (keyPtr->toString().find('D') ==
+          std::string::npos) { /*Non Durable Key */
         sprintf(buf,
                 "Expected final value for nonDurable Keys = %d, Actual = %d",
                 nonDurableValue, valuePtr->value());
@@ -133,11 +134,14 @@ class OperMonitor : public CacheListener {
   virtual void afterRegionDestroy(const RegionEvent& event){};
 };
 
-void setCacheListener(const char* regName, std::shared_ptr<OperMonitor> monitor) {
+void setCacheListener(const char* regName,
+                      std::shared_ptr<OperMonitor> monitor) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(monitor);
-}std::shared_ptr<OperMonitor> mon1 = nullptr;std::shared_ptr<OperMonitor> mon2=nullptr;
+}
+std::shared_ptr<OperMonitor> mon1 = nullptr;
+std::shared_ptr<OperMonitor> mon2 = nullptr;
 
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"
@@ -146,8 +150,9 @@ void setCacheListener(const char* regName, std::shared_ptr<OperMonitor> monitor)
 const char* mixKeys[] = {"Key-1", "D-Key-1", "L-Key", "LD-Key"};
 const char* testRegex[] = {"D-Key-.*", "Key-.*"};
 
-void initClientCache(int redundancy, int durableTimeout, std::shared_ptr<OperMonitor>& mon,
-                     int sleepDuration = 0, int durableIdx = 0) {
+void initClientCache(int redundancy, int durableTimeout,
+                     std::shared_ptr<OperMonitor>& mon, int sleepDuration = 0,
+                     int durableIdx = 0) {
   if (sleepDuration) SLEEP(sleepDuration);
 
   if (mon == nullptr) {
@@ -165,7 +170,7 @@ void initClientCache(int redundancy, int durableTimeout, std::shared_ptr<OperMon
 
   getHelper()->cachePtr->readyForEvents();
 
- auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+  auto regPtr0 = getHelper()->getRegion(regionNames[0]);
 
   // for R =1 it will get a redundancy error
   try {

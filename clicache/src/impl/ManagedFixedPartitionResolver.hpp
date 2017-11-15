@@ -17,11 +17,12 @@
 
 #pragma once
 
+
 #include "../geode_defs.hpp"
 #include <vcclr.h>
-#include "begin_native.hpp"
+#include "../begin_native.hpp"
 #include <geode/FixedPartitionResolver.hpp>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 
 #include "FixedPartitionResolver.hpp"
@@ -83,7 +84,7 @@ namespace apache {
         /// key the detail of the entry event.
         /// </param>
 
-        virtual std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent& key);
+        virtual std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent& key) override;
 
         /// <summary>
         /// Returns the name of the FixedPartitionResolver.
@@ -96,7 +97,7 @@ namespace apache {
         /// the name of the FixedPartitionResolver
         /// </returns>
         /// </remarks>
-        virtual const char* getName();
+        virtual const std::string& getName() override;
 
 
         /// <summary>
@@ -108,7 +109,7 @@ namespace apache {
         /// <returns>
         /// partition-name associated with node which allows mapping of given data to user defined partition.
         /// </returns>
-        virtual const char* getPartitionName(const EntryEvent& opDetails);
+        virtual const std::string& getPartitionName(const EntryEvent& opDetails) override;
 
 
         /// <summary>

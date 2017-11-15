@@ -17,6 +17,7 @@
 #ifdef CSTX_COMMENTED
 #pragma once
 
+
 #include "../geode_defs.hpp"
 #include <vcclr.h>
 #include <cppcache/TransactionWriter.hpp>

@@ -185,7 +185,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       auto value = CacheableString::create(buf);
 
       sprintf(buf, "KEY--%d", i);
-      auto key = CacheableKey::create(buf);
+      auto key = CacheableString::create(buf);
       regPtr0->put(key, value);
     }
     SLEEP(10000);  // let the put finish
@@ -310,7 +310,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
       auto value = CacheableString::create(buf);
 
       sprintf(buf, "KEY--%d", i);
-      auto key = CacheableKey::create(buf);
+      auto key = CacheableString::create(buf);
       regPtr0->put(key, value);
     }
     SLEEP(10000);  // let the put finish

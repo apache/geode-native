@@ -25,6 +25,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class PdxWriter;
 class PdxReader;
 
@@ -33,23 +34,11 @@ class CPPCACHE_EXPORT PdxSerializable : public CacheableKey {
   PdxSerializable();
   virtual ~PdxSerializable();
 
-  // for virtual overloads bring base toData/fromData in scope otherwise
-  // child classes won't be able to override as desired
-  // Solaris compiler gives "hides the virtual function" warnings when
-  // compiling child classes while other compilers silently
-  // accept but will cause problems with overloaded calls (in this case
-  //   no implicit conversion from std::shared_ptr<PdxWriter> to DataOutput etc
-  //   exists so no imminent danger)
-  // see
-  // http://www.oracle.com/technetwork/server-storage/solarisstudio/documentation/cplusplus-faq-355066.html#Coding1
-  // using Serializable::toData;
-  // using Serializable::fromData;
-
   /**
    *@brief serialize this object in geode PDX format
    *@param PdxWriter to serialize the PDX object
    **/
-  virtual void toData(std::shared_ptr<PdxWriter> output) /*const*/ = 0;
+  virtual void toData(std::shared_ptr<PdxWriter> output) const = 0;
 
   /**
    *@brief Deserialize this object
@@ -65,43 +54,43 @@ class CPPCACHE_EXPORT PdxSerializable : public CacheableKey {
    * Note that this should not be overridden by custom implementations
    * and is reserved only for builtin types.
    */
-  virtual int8_t typeId() const;
+  virtual int8_t typeId() const override;
 
   /** return true if this key matches other. */
-  virtual bool operator==(const CacheableKey& other) const;
+  virtual bool operator==(const CacheableKey& other) const override;
 
   /** return the hashcode for this key. */
-  virtual int32_t hashcode() const;
+  virtual int32_t hashcode() const override;
 
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const;
+  virtual void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object, typical implementation should return
    * the 'this' pointer.
    **/
-  virtual void fromData(DataInput& input);
+  virtual void fromData(DataInput& input) override;
 
   /**
    *@brief return the classId of the instance being serialized.
    * This is used by deserialization to determine what instance
    * type to create and derserialize into.
    */
-  virtual int32_t classId() const { return 0x10; }
+  virtual int32_t classId() const override { return 0x10; }
 
   /**
    * Display this object as 'string', which depends on the implementation in
    * the subclasses.
    * The default implementation renders the classname.
    */
-  virtual std::shared_ptr<CacheableString> toString() const;
+  virtual std::string toString() const override;
 
   /**
    * Get the Type for the Object. Equivalent to the C# Type->GetType() API.
    */
-  virtual const char* getClassName() const = 0;
+  virtual const std::string& getClassName() const = 0;
 };
 
 }  // namespace client

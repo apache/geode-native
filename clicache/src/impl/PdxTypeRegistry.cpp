@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-#pragma once
 
-#include "begin_native.hpp"
+
+
+#include "../begin_native.hpp"
 #include <geode/Cache.hpp>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "PdxTypeRegistry.hpp"
 #include "../Serializable.hpp"
 #include "PdxWrapper.hpp"
-#include "Cache.hpp"
+#include "../Cache.hpp"
 
 using namespace System;
 
@@ -47,7 +48,7 @@ namespace Apache
 					return preserveData->Count;
 				}
 
-        Int32 PdxTypeRegistry::GetPDXIdForType(Type^ pdxType, const char* poolname, PdxType^ nType, bool checkIfThere)
+        Int32 PdxTypeRegistry::GetPDXIdForType(Type^ pdxType, String^ poolname, PdxType^ nType, bool checkIfThere)
         {
           if(checkIfThere)
           {
@@ -78,7 +79,7 @@ namespace Apache
             
         }
 
-        Int32 PdxTypeRegistry::GetPDXIdForType(PdxType^ pType, const char* poolname)
+        Int32 PdxTypeRegistry::GetPDXIdForType(PdxType^ pType, String^ poolname)
         {
           IDictionary<PdxType^, Int32>^ tmp = pdxTypeToTypeId;
           Int32 typeId = 0;

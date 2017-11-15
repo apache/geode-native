@@ -32,7 +32,7 @@ namespace geode {
 namespace client {
 
 PdxWriterWithTypeCollector::PdxWriterWithTypeCollector(
-    DataOutput& output, const char* domainClassName,
+    DataOutput& output, std::string domainClassName,
     std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
     : PdxLocalWriter(output, nullptr, pdxTypeRegistry) {
   m_domainClassName = domainClassName;
@@ -100,182 +100,183 @@ std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeUnreadFields(
   return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeChar(
-    const char* fieldName, char value) {
+    const std::string& fieldName, char value) {
   m_pdxType->addFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,
                                      PdxTypes::CHAR_SIZE);
   PdxLocalWriter::writeChar(fieldName, value);
   return shared_from_this();
 }
- std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeChar(const char* fieldName,
-                                                   char16_t value) {
-   m_pdxType->addFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,
-                                      PdxTypes::CHAR_SIZE);
-   PdxLocalWriter::writeChar(fieldName, value);
-   return shared_from_this();
+std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeChar(
+    const std::string& fieldName, char16_t value) {
+  m_pdxType->addFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,
+                                     PdxTypes::CHAR_SIZE);
+  PdxLocalWriter::writeChar(fieldName, value);
+  return shared_from_this();
  }
  std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeBoolean(
-     const char* fieldName, bool value) {
+     const std::string& fieldName, bool value) {
    m_pdxType->addFixedLengthTypeField(
        fieldName, "boolean", PdxFieldTypes::BOOLEAN, PdxTypes::BOOLEAN_SIZE);
    PdxLocalWriter::writeBoolean(fieldName, value);
    return shared_from_this();
  }
  std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeByte(
-     const char* fieldName, int8_t value) {
+     const std::string& fieldName, int8_t value) {
    m_pdxType->addFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,
                                       PdxTypes::BYTE_SIZE);
    PdxLocalWriter::writeByte(fieldName, value);
    return shared_from_this();
 }
- std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeShort(const char* fieldName,
-                                                    int16_t value) {
+std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeShort(
+    const std::string& fieldName, int16_t value) {
   m_pdxType->addFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT,
                                      PdxTypes::SHORT_SIZE);
   PdxLocalWriter::writeShort(fieldName, value);
   return shared_from_this();
  }
- std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeInt(const char* fieldName,
-                                                  int32_t value) {
-  m_pdxType->addFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT,
-                                     PdxTypes::INTEGER_SIZE);
-  PdxLocalWriter::writeInt(fieldName, value);
-  return shared_from_this();
+ std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeInt(
+     const std::string& fieldName, int32_t value) {
+   m_pdxType->addFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT,
+                                      PdxTypes::INTEGER_SIZE);
+   PdxLocalWriter::writeInt(fieldName, value);
+   return shared_from_this();
  }
  std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeLong(
-     const char* fieldName, int64_t value) {
+     const std::string& fieldName, int64_t value) {
    m_pdxType->addFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG,
                                       PdxTypes::LONG_SIZE);
    PdxLocalWriter::writeLong(fieldName, value);
    return shared_from_this();
  }
  std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeFloat(
-     const char* fieldName, float value) {
+     const std::string& fieldName, float value) {
    m_pdxType->addFixedLengthTypeField(fieldName, "float", PdxFieldTypes::FLOAT,
                                       PdxTypes::FLOAT_SIZE);
    PdxLocalWriter::writeFloat(fieldName, value);
    return shared_from_this();
  }
  std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeDouble(
-     const char* fieldName, double value) {
+     const std::string& fieldName, double value) {
    m_pdxType->addFixedLengthTypeField(
        fieldName, "double", PdxFieldTypes::DOUBLE, PdxTypes::DOUBLE_SIZE);
    PdxLocalWriter::writeDouble(fieldName, value);
    return shared_from_this();
 }
- std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeDate(const char* fieldName,
-                                                   std::shared_ptr<CacheableDate> date) {
-   m_pdxType->addFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE,
-                                      PdxTypes::DATE_SIZE);
-   PdxLocalWriter::writeDate(fieldName, date);
-   return shared_from_this();
+std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeDate(
+    const std::string& fieldName, std::shared_ptr<CacheableDate> date) {
+  m_pdxType->addFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE,
+                                     PdxTypes::DATE_SIZE);
+  PdxLocalWriter::writeDate(fieldName, date);
+  return shared_from_this();
 }
- std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeString(const char* fieldName,
-                                                     const char* value) {
-   m_pdxType->addVariableLengthTypeField(fieldName, "String",
-                                         PdxFieldTypes::STRING);
-   PdxLocalWriter::writeString(fieldName, value);
-   return shared_from_this();
+std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeString(
+    const std::string& fieldName, const char* value) {
+  m_pdxType->addVariableLengthTypeField(fieldName, "String",
+                                        PdxFieldTypes::STRING);
+  PdxLocalWriter::writeString(fieldName, value);
+  return shared_from_this();
  }
  std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeWideString(
-     const char* fieldName, const wchar_t* value) {
+     const std::string& fieldName, const wchar_t* value) {
    m_pdxType->addVariableLengthTypeField(fieldName, "String",
                                          PdxFieldTypes::STRING);
    PdxLocalWriter::writeWideString(fieldName, value);
    return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeObject(
-    const char* fieldName, std::shared_ptr<Serializable> value) {
+    const std::string& fieldName, std::shared_ptr<Serializable> value) {
   m_pdxType->addVariableLengthTypeField(fieldName, "Serializable",
                                         PdxFieldTypes::OBJECT);
   PdxLocalWriter::writeObject(fieldName, value);
   return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeBooleanArray(
-    const char* fieldName, bool* array, int length) {
+    const std::string& fieldName, bool* array, int length) {
   m_pdxType->addVariableLengthTypeField(fieldName, "bool[]",
                                         PdxFieldTypes::BOOLEAN_ARRAY);
   PdxLocalWriter::writeBooleanArray(fieldName, array, length);
   return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeCharArray(
-    const char* fieldName, char* array, int length) {
+    const std::string& fieldName, char* array, int length) {
   m_pdxType->addVariableLengthTypeField(fieldName, "char[]",
                                         PdxFieldTypes::CHAR_ARRAY);
   PdxLocalWriter::writeCharArray(fieldName, array, length);
   return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeWideCharArray(
-    const char* fieldName, wchar_t* array, int length) {
+    const std::string& fieldName, wchar_t* array, int length) {
   m_pdxType->addVariableLengthTypeField(fieldName, "char[]",
                                         PdxFieldTypes::CHAR_ARRAY);
   PdxLocalWriter::writeWideCharArray(fieldName, array, length);
   return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeByteArray(
-    const char* fieldName, int8_t* array, int length) {
+    const std::string& fieldName, int8_t* array, int length) {
   m_pdxType->addVariableLengthTypeField(fieldName, "byte[]",
                                         PdxFieldTypes::BYTE_ARRAY);
   PdxLocalWriter::writeByteArray(fieldName, array, length);
   return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeShortArray(
-    const char* fieldName, int16_t* array, int length) {
+    const std::string& fieldName, int16_t* array, int length) {
   m_pdxType->addVariableLengthTypeField(fieldName, "short[]",
                                         PdxFieldTypes::SHORT_ARRAY);
   PdxLocalWriter::writeShortArray(fieldName, array, length);
   return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeIntArray(
-    const char* fieldName, int32_t* array, int length) {
+    const std::string& fieldName, int32_t* array, int length) {
   m_pdxType->addVariableLengthTypeField(fieldName, "int[]",
                                         PdxFieldTypes::INT_ARRAY);
   PdxLocalWriter::writeIntArray(fieldName, array, length);
   return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeLongArray(
-    const char* fieldName, int64_t* array, int length) {
+    const std::string& fieldName, int64_t* array, int length) {
   m_pdxType->addVariableLengthTypeField(fieldName, "long[]",
                                         PdxFieldTypes::LONG_ARRAY);
   PdxLocalWriter::writeLongArray(fieldName, array, length);
   return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeFloatArray(
-    const char* fieldName, float* array, int length) {
+    const std::string& fieldName, float* array, int length) {
   m_pdxType->addVariableLengthTypeField(fieldName, "float[]",
                                         PdxFieldTypes::FLOAT_ARRAY);
   PdxLocalWriter::writeFloatArray(fieldName, array, length);
   return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeDoubleArray(
-    const char* fieldName, double* array, int length) {
+    const std::string& fieldName, double* array, int length) {
   m_pdxType->addVariableLengthTypeField(fieldName, "double[]",
                                         PdxFieldTypes::DOUBLE_ARRAY);
   PdxLocalWriter::writeDoubleArray(fieldName, array, length);
   return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeStringArray(
-    const char* fieldName, char** array, int length) {
+    const std::string& fieldName, char** array, int length) {
   m_pdxType->addVariableLengthTypeField(fieldName, "String[]",
                                         PdxFieldTypes::STRING_ARRAY);
   PdxLocalWriter::writeStringArray(fieldName, array, length);
   return shared_from_this();
 }
- std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeWideStringArray(
-    const char* fieldName, wchar_t** array, int length) {
-   m_pdxType->addVariableLengthTypeField(fieldName, "String[]",
-                                         PdxFieldTypes::STRING_ARRAY);
-   PdxLocalWriter::writeWideStringArray(fieldName, array, length);
-   return shared_from_this();
+std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeWideStringArray(
+    const std::string& fieldName, wchar_t** array, int length) {
+  m_pdxType->addVariableLengthTypeField(fieldName, "String[]",
+                                        PdxFieldTypes::STRING_ARRAY);
+  PdxLocalWriter::writeWideStringArray(fieldName, array, length);
+  return shared_from_this();
  }
  std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeObjectArray(
-     const char* fieldName, std::shared_ptr<CacheableObjectArray> array) {
+     const std::string& fieldName,
+     std::shared_ptr<CacheableObjectArray> array) {
    m_pdxType->addVariableLengthTypeField(fieldName, "Object[]",
                                          PdxFieldTypes::OBJECT_ARRAY);
    PdxLocalWriter::writeObjectArray(fieldName, array);
    return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeArrayOfByteArrays(
-    const char* fieldName, int8_t** byteArrays, int arrayLength,
+    const std::string& fieldName, int8_t** byteArrays, int arrayLength,
     int* elementLength) {
   m_pdxType->addVariableLengthTypeField(fieldName, "byte[][]",
                                         PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS);
@@ -284,7 +285,7 @@ std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeArrayOfByteArrays(
   return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::markIdentityField(
-    const char* fieldName) {
+    const std::string& fieldName) {
   auto pft = m_pdxType->getPdxField(fieldName);
   if (pft == nullptr) {
     throw IllegalStateException(

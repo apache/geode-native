@@ -42,12 +42,11 @@ RegionFactory::RegionFactory(RegionShortcut preDefinedRegion,
       m_cacheImpl(cacheImpl) {
   setRegionShortcut();
 }
-std::shared_ptr<Region> RegionFactory::create(const char* name) {
+std::shared_ptr<Region> RegionFactory::create(std::string name) {
   std::shared_ptr<Region> retRegionPtr = nullptr;
   std::shared_ptr<RegionAttributes> regAttr =
       m_attributeFactory->createRegionAttributes();
-  if (m_preDefinedRegion != LOCAL && (regAttr->getPoolName() == nullptr ||
-                                      strlen(regAttr->getPoolName()) == 0)) {
+  if (m_preDefinedRegion != LOCAL && regAttr->getPoolName().empty()) {
     auto pool = m_cacheImpl->getPoolManager().getDefaultPool();
     if (!pool) {
       throw IllegalStateException("No pool for non-local region.");
@@ -102,26 +101,26 @@ RegionFactory& RegionFactory::setPartitionResolver(
   return *this;
 }
 
-RegionFactory& RegionFactory::setCacheLoader(const char* lib,
-                                             const char* func) {
+RegionFactory& RegionFactory::setCacheLoader(const std::string& lib,
+                                             const std::string& func) {
   m_attributeFactory->setCacheLoader(lib, func);
   return *this;
 }
 
-RegionFactory& RegionFactory::setCacheWriter(const char* lib,
-                                             const char* func) {
+RegionFactory& RegionFactory::setCacheWriter(const std::string& lib,
+                                             const std::string& func) {
   m_attributeFactory->setCacheWriter(lib, func);
   return *this;
 }
 
-RegionFactory& RegionFactory::setCacheListener(const char* lib,
-                                               const char* func) {
+RegionFactory& RegionFactory::setCacheListener(const std::string& lib,
+                                               const std::string& func) {
   m_attributeFactory->setCacheListener(lib, func);
   return *this;
 }
 
-RegionFactory& RegionFactory::setPartitionResolver(const char* lib,
-                                                   const char* func) {
+RegionFactory& RegionFactory::setPartitionResolver(const std::string& lib,
+                                                   const std::string& func) {
   m_attributeFactory->setPartitionResolver(lib, func);
   return *this;
 }
@@ -197,13 +196,13 @@ RegionFactory& RegionFactory::setPersistenceManager(
 }
 
 RegionFactory& RegionFactory::setPersistenceManager(
-    const char* lib, const char* func,
+    const std::string& lib, const std::string& func,
     const std::shared_ptr<Properties>& config) {
   m_attributeFactory->setPersistenceManager(lib, func, config);
   return *this;
 }
 
-RegionFactory& RegionFactory::setPoolName(const char* name) {
+RegionFactory& RegionFactory::setPoolName(const std::string& name) {
   m_attributeFactory->setPoolName(name);
   return *this;
 }

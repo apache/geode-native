@@ -132,7 +132,7 @@ DUNIT_TASK(CLIENT1, StepThree)
 
         else {
           if (ser != nullptr) {
-            printf(" query pulled object %s\n", ser->toString()->asChar());
+            printf(" query pulled object %s\n", ser->toString().c_str());
           } else {
             printf("   query pulled bad object\n");
           }

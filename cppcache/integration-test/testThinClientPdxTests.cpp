@@ -582,7 +582,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet1)
     auto jsonDoc =
         std::dynamic_pointer_cast<PdxInstance>(regPtr0->get("jsondoc1"));
     auto toString = jsonDoc->toString();
-    LOGINFO("Task:JavaPutGet: Result = %s ", toString->asChar());
+    LOGINFO("Task:JavaPutGet: Result = %s ", toString.c_str());
     /*
     int16_t age = 0;
     jsonDoc->getField("age", age);
@@ -2538,43 +2538,43 @@ DUNIT_TASK_DEFINITION(CLIENT1, putAllPdxTypes)
     auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     auto p1 = std::make_shared<PdxTypes1>();
-    auto keyport1 = CacheableKey::create(p1->getClassName());
+    auto keyport1 = CacheableKey::create(p1->getClassName().c_str());
     regPtr0->put(keyport1, p1);
 
     auto p2 = std::make_shared<PdxTypes2>();
-    auto keyport2 = CacheableKey::create(p2->getClassName());
+    auto keyport2 = CacheableKey::create(p2->getClassName().c_str());
     regPtr0->put(keyport2, p2);
 
     auto p3 = std::make_shared<PdxTypes3>();
-    auto keyport3 = CacheableKey::create(p3->getClassName());
+    auto keyport3 = CacheableKey::create(p3->getClassName().c_str());
     regPtr0->put(keyport3, p3);
 
     auto p4 = std::make_shared<PdxTypes4>();
-    auto keyport4 = CacheableKey::create(p4->getClassName());
+    auto keyport4 = CacheableKey::create(p4->getClassName().c_str());
     regPtr0->put(keyport4, p4);
 
     auto p5 = std::make_shared<PdxTypes5>();
-    auto keyport5 = CacheableKey::create(p5->getClassName());
+    auto keyport5 = CacheableKey::create(p5->getClassName().c_str());
     regPtr0->put(keyport5, p5);
 
     auto p6 = std::make_shared<PdxTypes6>();
-    auto keyport6 = CacheableKey::create(p6->getClassName());
+    auto keyport6 = CacheableKey::create(p6->getClassName().c_str());
     regPtr0->put(keyport6, p6);
 
     auto p7 = std::make_shared<PdxTypes7>();
-    auto keyport7 = CacheableKey::create(p7->getClassName());
+    auto keyport7 = CacheableKey::create(p7->getClassName().c_str());
     regPtr0->put(keyport7, p7);
 
     auto p8 = std::make_shared<PdxTypes8>();
-    auto keyport8 = CacheableKey::create(p8->getClassName());
+    auto keyport8 = CacheableKey::create(p8->getClassName().c_str());
     regPtr0->put(keyport8, p8);
 
     auto p9 = std::make_shared<PdxTypes9>();
-    auto keyport9 = CacheableKey::create(p9->getClassName());
+    auto keyport9 = CacheableKey::create(p9->getClassName().c_str());
     regPtr0->put(keyport9, p9);
 
     auto p10 = std::make_shared<PdxTypes10>();
-    auto keyport10 = CacheableKey::create(p10->getClassName());
+    auto keyport10 = CacheableKey::create(p10->getClassName().c_str());
     regPtr0->put(keyport10, p10);
 
     //

@@ -49,7 +49,7 @@ class CPPCACHE_EXPORT RegionFactory {
    * this cache
    * @throws CacheClosedException if the cache is closed
    */
-  std::shared_ptr<Region> create(const char* name);
+  std::shared_ptr<Region> create(std::string name);
 
   /** Sets the cache loader for the next <code>RegionAttributes</code> created.
    * @param cacheLoader the cache loader or nullptr if no loader
@@ -85,32 +85,32 @@ class CPPCACHE_EXPORT RegionFactory {
    * of the region.
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setCacheLoader(const char* libpath,
-                                const char* factoryFuncName);
+  RegionFactory& setCacheLoader(const std::string& libpath,
+                                const std::string& factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the writer
    * of the region.
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setCacheWriter(const char* libpath,
-                                const char* factoryFuncName);
+  RegionFactory& setCacheWriter(const std::string& libpath,
+                                const std::string& factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the listener
    * of the region.
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setCacheListener(const char* libpath,
-                                  const char* factoryFuncName);
+  RegionFactory& setCacheListener(const std::string& libpath,
+                                  const std::string& factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the
    * partition resolver of the region.
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setPartitionResolver(const char* libpath,
-                                      const char* factoryFuncName);
+  RegionFactory& setPartitionResolver(const std::string& libpath,
+                                      const std::string& factoryFuncName);
 
   // EXPIRATION ATTRIBUTES
 
@@ -160,7 +160,7 @@ class CPPCACHE_EXPORT RegionFactory {
    * @return a reference to <code>this</code>
    */
   RegionFactory& setPersistenceManager(
-      const char* libpath, const char* factoryFuncName,
+      const std::string& libpath, const std::string& factoryFuncName,
       const std::shared_ptr<Properties>& config = nullptr);
 
   /** Sets the PersistenceManager for the next <code>RegionAttributes</code>
@@ -238,7 +238,7 @@ class CPPCACHE_EXPORT RegionFactory {
    *        the name of the Pool to which region will be attached.
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setPoolName(const char* name);
+  RegionFactory& setPoolName(const std::string& name);
 
   /*
    * Set boolean to enable/disable cloning while applying delta.

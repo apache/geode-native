@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-#pragma once
+
+
+
 
 #include "Pool.hpp"
 #include "PoolFactory.hpp"
 
-#include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "Cache.hpp"
 #include "TimeUtils.hpp"
@@ -231,15 +232,13 @@ namespace Apache
           return this;
 		  }
 
-
       PoolFactory^ PoolFactory::SetServerGroup( String^ group )
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-        ManagedString mg_servergroup( group );
 			  try
 			  {
-			    m_nativeptr->get()->setServerGroup( mg_servergroup.CharPtr );
+			    m_nativeptr->get()->setServerGroup( marshal_as<std::string>(group) );
 			  }
 			  finally
 			  {
@@ -255,10 +254,9 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-        ManagedString mg_host( host );
 			  try
 			  {
-			    m_nativeptr->get()->addLocator( mg_host.CharPtr, port );
+			    m_nativeptr->get()->addLocator( marshal_as<std::string>(host), port );
 			  }
 			  finally
 			  {
@@ -274,10 +272,9 @@ namespace Apache
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-			  ManagedString mg_host( host );
 			  try
 			  {
-			    m_nativeptr->get()->addServer( mg_host.CharPtr, port );
+			    m_nativeptr->get()->addServer( marshal_as<std::string>(host), port );
 			  }
 			  finally
 			  {
@@ -434,10 +431,9 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          ManagedString mg_name(name);
           try
           {
-            return Pool::Create(m_nativeptr->get()->create(mg_name.CharPtr));
+            return Pool::Create(m_nativeptr->get()->create(marshal_as<std::string>(name)));
           }
           finally
           {

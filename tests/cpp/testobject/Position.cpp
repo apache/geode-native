@@ -119,10 +119,11 @@ void Position::fromData(apache::geode::client::DataInput& input) {
   volatility = input.readInt64();
   pid = input.readInt32();
 }
-std::shared_ptr<CacheableString> Position::toString() const {
+std::string Position::toString() const {
   char buf[2048];
   sprintf(buf,
           "Position Object:[ secId=%s type=%ls sharesOutstanding=%d id=%d ]",
-          secId->toString(), this->secType, this->sharesOutstanding, this->pid);
-  return CacheableString::create(buf);
+          secId->toString().c_str(), this->secType, this->sharesOutstanding,
+          this->pid);
+  return buf;
 }

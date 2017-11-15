@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
+
 #include "Pool.hpp"
 #include "QueryService.hpp"
 #include "CacheableString.hpp"
 #include "Cache.hpp"
-#include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
 #include "TimeUtils.hpp"
@@ -32,13 +32,14 @@ namespace Apache
     namespace Client
     {
 
+      using namespace msclr::interop;
       using namespace System;
 
       String^ Pool::Name::get( )
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getName( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getName( ) );
         }
         finally
         {
@@ -276,7 +277,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getServerGroup( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getServerGroup( ) );
         }
         finally
         {
@@ -294,10 +295,10 @@ namespace Apache
           int length = locators->length();
           if (length > 0)
           {
-            array<String^>^ result = gcnew array<String^>(length);
+            auto result = gcnew array<String^>(length);
             for (int item = 0; item < length; item++)
             {
-              result[item] = CacheableString::GetString((*locators)[item].get());
+              result[item] = marshal_as<String^>((*locators)[item]->toString());
             }
             return result;
           }
@@ -324,7 +325,7 @@ namespace Apache
             array<String^>^ result = gcnew array<String^>(length);
             for (int item = 0; item < length; item++)
             {
-              result[item] = CacheableString::GetString((*servers)[item].get());
+              result[item] = marshal_as<String^>((*servers)[item]->toString());
             }
             return result;
           }

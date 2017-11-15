@@ -280,7 +280,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   auto keyPtr = CacheableKey::create(key);
 
   auto regPtr = getHelper()->getRegion(name);
-  fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
+  fprintf(stdout, "netsearch  region %s\n", regPtr->getName().c_str());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
 
@@ -364,14 +364,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, RegisterEmptyNullAndNonExistentRegex)
     try {
       LOG("Registering empty regex");
       regPtr0->registerRegex("");
-      FAIL("Did not get expected exception!");
-    } catch (Exception& excp) {
-      LOG(excp.what());
-    }
-
-    try {
-      LOG("Registering null regex");
-      regPtr1->registerRegex(nullptr);
       FAIL("Did not get expected exception!");
     } catch (Exception& excp) {
       LOG(excp.what());

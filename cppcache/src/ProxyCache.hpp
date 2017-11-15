@@ -82,7 +82,8 @@ class CPPCACHE_EXPORT ProxyCache
    * @param path the region's path, such as <code>RootA/Sub1/Sub1A</code>.
    * @returns region, or nullptr if no such region exists.
    */
-  virtual std::shared_ptr<Region> getRegion(const char* path) override;
+  virtual std::shared_ptr<Region> getRegion(
+      const std::string& path) const override;
 
   /**
    * Gets the QueryService from which a new Query can be obtained.
@@ -99,7 +100,7 @@ class CPPCACHE_EXPORT ProxyCache
    * @param regions the returned set of
    * regions
    */
-  virtual std::vector<std::shared_ptr<Region>> rootRegions() override;
+  virtual std::vector<std::shared_ptr<Region>> rootRegions() const override;
 
   /**
    * @brief destructor
@@ -117,7 +118,7 @@ class CPPCACHE_EXPORT ProxyCache
    * @return the factory
    */
   virtual std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
-      const char* className) override;
+      std::string className) const override;
 
  private:
   /**

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_EXPIRATIONACTION_H_
-#define GEODE_EXPIRATIONACTION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,13 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_EXPIRATIONACTION_H_
+#define GEODE_EXPIRATIONACTION_H_
+
+#include <string>
+
 #include "geode_globals.hpp"
 
 /**
@@ -29,6 +31,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 /**
  * @class ExpirationAction ExpirationAction.hpp
  * Enumerated type for expiration actions.
@@ -36,21 +39,16 @@ namespace client {
  * @see ExpirationAttributes
  */
 class CPPCACHE_EXPORT ExpirationAction {
-  // public static methods
  public:
-  // types of action
-
   typedef enum {
     /** When the region or cached object expires, it is invalidated. */
     INVALIDATE = 0,
     /** When expired, invalidated locally only. */
     LOCAL_INVALIDATE,
-
     /** When the region or cached object expires, it is destroyed. */
     DESTROY,
     /** When expired, destroyed locally only. */
     LOCAL_DESTROY,
-
     /** invalid type. */
     INVALID_ACTION
   } Action;
@@ -58,7 +56,7 @@ class CPPCACHE_EXPORT ExpirationAction {
   /**
   * @param name the name of the expiration action
   */
-  static Action fromName(const char* name);
+  static Action fromName(const std::string& name);
 
   /**
    * Returns whether this is the action for distributed invalidate.
@@ -103,12 +101,13 @@ class CPPCACHE_EXPORT ExpirationAction {
   }
 
   /** Return the ExpirationAction represented by the specified ordinal */
-  static const char* fromOrdinal(const int ordinal);
+  static const std::string& fromOrdinal(const int ordinal);
+
+  static const std::string& fromEnum(const Action action);
 
  private:
-  ExpirationAction();
-  ~ExpirationAction();
-  static char* names[];
+  ExpirationAction() = delete;
+  static const std::string names[];
 };
 }  // namespace client
 }  // namespace geode

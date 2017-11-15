@@ -14,16 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <geode/SystemProperties.hpp>
+
 #include "AdminRegion.hpp"
 #include "CacheImpl.hpp"
-#include <geode/SystemProperties.hpp>
 #include "ThinClientRegion.hpp"
-#include <statistics/StatisticsManager.hpp>
 #include "ThinClientPoolDM.hpp"
+#include "statistics/StatisticsManager.hpp"
+#include "util/exception.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 std::shared_ptr<AdminRegion> AdminRegion::create(CacheImpl* cache,
                                                  ThinClientBaseDM* distMan) {
   auto adminRegion = std::make_shared<AdminRegion>();

@@ -34,33 +34,32 @@ class UserFunctionExecutionException;
  *sendException in case of Function execution.
  **/
 class UserFunctionExecutionException : public Serializable {
-  /**
-   * @brief public methods
-   */
-
  public:
-  /**
-   * @brief destructor
-   */
-  virtual ~UserFunctionExecutionException() {}
-
   /**
    * @brief constructors
    */
-  UserFunctionExecutionException(std::shared_ptr<CacheableString> msg);
+  explicit UserFunctionExecutionException(std::shared_ptr<CacheableString> msg);
+  UserFunctionExecutionException(const UserFunctionExecutionException& other) =
+      delete;
+  void operator=(const UserFunctionExecutionException& other) = delete;
+
+  /**
+   * @brief destructor
+   */
+  virtual ~UserFunctionExecutionException() = default;
 
   /**
    *@brief serialize this object
    * @throws IllegalStateException If this api is called from User code.
    **/
-  virtual void toData(DataOutput& output) const;
+  virtual void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object, typical implementation should return
    * the 'this' pointer.
    * @throws IllegalStateException If this api is called from User code.
    **/
-  virtual void fromData(DataInput& input);
+  virtual void fromData(DataInput& input) override;
 
   /**
    *@brief Return the classId of the instance being serialized.
@@ -71,7 +70,7 @@ class UserFunctionExecutionException : public Serializable {
    * Using a negative value may result in undefined behavior.
    * @throws IllegalStateException If this api is called from User code.
    */
-  virtual int32_t classId() const;
+  virtual int32_t classId() const override;
 
   /**
    *@brief return the size in bytes of the instance being serialized.
@@ -82,7 +81,7 @@ class UserFunctionExecutionException : public Serializable {
    * Note that you must implement this only if you use the HeapLRU feature.
    * @throws IllegalStateException If this api is called from User code.
    */
-  virtual uint32_t objectSize() const;
+  virtual uint32_t objectSize() const override;
 
   /**
    *@brief return the typeId byte of the instance being serialized.
@@ -92,7 +91,7 @@ class UserFunctionExecutionException : public Serializable {
    * Note that this should not be overridden by custom implementations
    * and is reserved only for builtin types.
    */
-  virtual int8_t typeId() const;
+  virtual int8_t typeId() const override;
 
   /**
    *@brief return as std::shared_ptr<CacheableString> the Exception message
@@ -105,15 +104,12 @@ class UserFunctionExecutionException : public Serializable {
    *returned from geode sendException api.
    **/
   std::shared_ptr<CacheableString> getName() {
-    const char* msg = "UserFunctionExecutionException";
-    auto str = CacheableString::create(msg);
-    return str;
+    static const auto name =
+        CacheableString::create("UserFunctionExecutionException");
+    return name;
   }
 
  private:
-  // never implemented.
-  UserFunctionExecutionException(const UserFunctionExecutionException& other);
-  void operator=(const UserFunctionExecutionException& other);
 
   std::shared_ptr<CacheableString> m_message;  // error message
 };

@@ -25,7 +25,10 @@ PartitionResolver::PartitionResolver() {}
 
 PartitionResolver::~PartitionResolver() {}
 
-const char* PartitionResolver::getName() { return "PartitionResolver"; }
+const std::string& PartitionResolver::getName() {
+  static std::string name = "PartitionResolver";
+  return name;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -24,6 +24,8 @@
  * @file
  */
 
+#include <string>
+
 #include "geode_globals.hpp"
 #include "Serializable.hpp"
 #include "DataInput.hpp"
@@ -58,7 +60,7 @@ class CPPCACHE_EXPORT Properties : public Serializable {
    *
    * @throws NullPointerException if the key is null
    */
-  std::shared_ptr<CacheableString> find(const char* key);
+  std::shared_ptr<CacheableString> find(const std::string& key);
   /**
    * Return the value for the given <code>CacheableKey</code>,
    * or nullptr if not found.
@@ -72,14 +74,14 @@ class CPPCACHE_EXPORT Properties : public Serializable {
    *
    * @throws NullPointerException if the key is null
    */
-  void insert(const char* key, const char* value);
+  void insert(const std::string& key, const std::string& value);
 
   /**
    * Add or update the int value for key.
    *
    * @throws NullPointerException if the key is null
    */
-  void insert(const char* key, const int value);
+  void insert(const std::string& key, const int value);
 
   /**
    * Add or update Cacheable value for CacheableKey
@@ -90,7 +92,7 @@ class CPPCACHE_EXPORT Properties : public Serializable {
               const std::shared_ptr<Cacheable>& value);
 
   template <class _Rep, class _Period>
-  void insert(const char* key,
+  void insert(std::string key,
               const std::chrono::duration<_Rep, _Period>& value) {
     insert(key, util::chrono::duration::to_string(value).c_str());
   }
@@ -100,7 +102,7 @@ class CPPCACHE_EXPORT Properties : public Serializable {
    *
    * @throws NullPointerException if the key is null
    */
-  void remove(const char* key);
+  void remove(const std::string& key);
 
   /**
    * Remove the <code>CacheableKey</code> from the collection.
@@ -129,28 +131,28 @@ class CPPCACHE_EXPORT Properties : public Serializable {
   /** Read property values from a file, overriding what is currently
    * in the properties object.
    */
-  void load(const char* fileName);
+  void load(const std::string& fileName);
 
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const;
+  virtual void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object
    **/
-  virtual void fromData(DataInput& input);
+  virtual void fromData(DataInput& input) override;
 
   /** Return an empty instance for deserialization. */
   static Serializable* createDeserializable();
 
   /** Return class id for serialization. */
-  virtual int32_t classId() const;
+  virtual int32_t classId() const override;
 
   /** Return type id for serialization. */
-  virtual int8_t typeId() const;
+  virtual int8_t typeId() const override;
 
-  virtual uint32_t objectSize() const {
+  virtual uint32_t objectSize() const override {
     return 0;  // don't care to set the right value
   }
 

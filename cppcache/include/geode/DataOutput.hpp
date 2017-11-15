@@ -661,16 +661,6 @@ class CPPCACHE_EXPORT DataOutput {
     }
   }
 
-  /*
-   * This is for internal use
-   */
-  const char* getPoolName() { return m_poolName; }
-
-  /*
-   * This is for internal use
-   */
-  void setPoolName(const char* poolName) { m_poolName = poolName; }
-
   uint8_t* getBufferCopyFrom(const uint8_t* from, uint32_t length) {
     uint8_t* result;
     GF_NEW(result, uint8_t[length]);
@@ -699,7 +689,6 @@ class CPPCACHE_EXPORT DataOutput {
   static void acquireLock();
   static void releaseLock();
 
-  const char* m_poolName;
   // memory m_buffer to encode to.
   uint8_t* m_bytes;
   // cursor.
@@ -712,6 +701,7 @@ class CPPCACHE_EXPORT DataOutput {
   // flag to indicate we have a big buffer
   volatile bool m_haveBigBuffer;
   const Cache* m_cache;
+  std::reference_wrapper<const std::string> m_poolName;
 
   inline static void getEncodedLength(const char val, int32_t& encodedLen) {
     if ((val == 0) || (val & 0x80)) {
@@ -770,6 +760,12 @@ class CPPCACHE_EXPORT DataOutput {
 
   inline void writeNoCheck(int8_t value) {
     writeNoCheck(static_cast<uint8_t>(value));
+  }
+
+  const std::string& getPoolName() const { return m_poolName; }
+
+  void setPoolName(const std::string& poolName) {
+    m_poolName = std::ref(poolName);
   }
 
   static uint8_t* checkoutBuffer(uint32_t* size);

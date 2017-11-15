@@ -575,8 +575,8 @@ GfErrType ThinClientRedundancyManager::createQueueEP(TcrEndpoint* ep,
 GfErrType ThinClientRedundancyManager::createPoolQueueEP(
     TcrEndpoint* ep, const TcrMessage* request, TcrMessageReply* reply,
     bool isPrimary) {
-  LOGFINE("Recovering subscriptions on endpoint [%s] from pool %s",
-          ep->name().c_str(), m_poolHADM->getName());
+  LOGFINE("Recovering subscriptions on endpoint [" + ep->name() +
+          "] from pool " + m_poolHADM->getName());
 
   GfErrType err = GF_NOERR;
   if ((err = ep->registerDM(false, !isPrimary, false, m_poolHADM)) ==
@@ -596,12 +596,12 @@ GfErrType ThinClientRedundancyManager::createPoolQueueEP(
         try {
           err = rqsService->executeAllCqs(ep);
         } catch (const Exception& excp) {
-          LOGFINE("Failed to recover CQs on endpoint[%s]: %s",
-                  ep->name().c_str(), excp.what());
+          LOGFINE("Failed to recover CQs on endpoint[" + ep->name() + "]: %s" +
+                  excp.getMessage());
           ep->unregisterDM(false);  // Argument is useless
           err = GF_NOTCON;
         } catch (...) {
-          LOGFINE("Failed to recover CQs on endpoint[%s]", ep->name().c_str());
+          LOGFINE("Failed to recover CQs on endpoint[" + ep->name() + "]");
           ep->unregisterDM(false);  // Argument is useless
           err = GF_NOTCON;
         }
@@ -638,7 +638,7 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
       "manager.");
   LOGFINE("Subscription redundancy level set to %d %s %s", redundancyLevel,
           m_poolHADM != nullptr ? "for pool" : "",
-          m_poolHADM != nullptr ? m_poolHADM->getName() : "");
+          m_poolHADM != nullptr ? m_poolHADM->getName().c_str() : "");
   m_redundancyLevel = redundancyLevel;
   m_HAenabled = (redundancyLevel > 0 || m_theTcrConnManager->isDurable() ||
                  ThinClientBaseDM::isDeltaEnabledOnServer());

@@ -101,10 +101,10 @@ apache::geode::client::Serializable* Position::fromData(
   input.readInt(&pid);
   return this;
 }
-std::shared_ptr<CacheableString> Position::toString() const {
+std::string Position::toString() const {
   char buf[2048];
   sprintf(buf,
           "Position Object:[ secId=%s type=%ls sharesOutstanding=%d id=%d ]",
           secId->toString(), this->secType, this->sharesOutstanding, this->pid);
-  return CacheableString::create(buf);
+  return buf;
 }

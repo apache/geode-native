@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 //#include "../../geode_includes.hpp"
 //#include "../../../geode_includes.hpp"
 #include "ManagedResultCollector.hpp"
@@ -137,11 +138,9 @@ namespace apache
         }
         catch (System::Exception^ ex)
         {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedResultCollector: Got an exception while "
-            "loading managed library: ";
-          ex_str += mg_exStr.CharPtr;
-          throw apache::geode::client::IllegalArgumentException(ex_str.c_str());
+            "loading managed library: " + marshal_as<std::string>(ex->ToString());
+          throw apache::geode::client::IllegalArgumentException(ex_str);
         }
         return NULL;
       }
@@ -156,11 +155,9 @@ namespace apache
           ex->ThrowNative();
         }
         catch (System::Exception^ ex) {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedResultCollector: Got an exception in"
-            "addResult: ";
-          ex_str += mg_exStr.CharPtr;
-          throw apache::geode::client::IllegalArgumentException(ex_str.c_str());
+            "addResult: " + marshal_as<std::string>(ex->ToString());
+          throw apache::geode::client::IllegalArgumentException(ex_str);
         }
       }
 
@@ -182,11 +179,9 @@ namespace apache
           ex->ThrowNative();
         }
         catch (System::Exception^ ex) {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedResultCollector: Got an exception in"
-            "getResult: ";
-          ex_str += mg_exStr.CharPtr;
-          throw apache::geode::client::IllegalArgumentException(ex_str.c_str());
+            "getResult: " + marshal_as<std::string>(ex->ToString());
+          throw apache::geode::client::IllegalArgumentException(ex_str);
         }
         return nullptr;
       }
@@ -199,11 +194,9 @@ namespace apache
           ex->ThrowNative();
         }
         catch (System::Exception^ ex) {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedResultCollector: Got an exception in"
-            "endResults: ";
-          ex_str += mg_exStr.CharPtr;
-          throw apache::geode::client::IllegalArgumentException(ex_str.c_str());
+            "endResults: " + marshal_as<std::string>(ex->ToString());
+          throw apache::geode::client::IllegalArgumentException(ex_str);
         }
       }
       void ManagedResultCollectorGeneric::clearResults()
@@ -215,11 +208,9 @@ namespace apache
           ex->ThrowNative();
         }
         catch (System::Exception^ ex) {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedResultCollector: Got an exception in"
-            "clearResults: ";
-          ex_str += mg_exStr.CharPtr;
-          throw apache::geode::client::IllegalArgumentException(ex_str.c_str());
+            "clearResults: " + marshal_as<std::string>(ex->ToString());
+          throw apache::geode::client::IllegalArgumentException(ex_str);
         }
       }
     }  // namespace client

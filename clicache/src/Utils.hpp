@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-
-
 #pragma once
+
 
 #include <geode/geode_base.hpp>
 #include "geode_defs.hpp"

@@ -93,75 +93,57 @@ void PdxLocalReader::MoveStream() {
   m_dataInput->reset(m_startPosition + m_serializedLengthWithOffsets);
 }
 
-void PdxLocalReader::checkEmptyFieldName(const char* fieldName) {
-  if (fieldName == nullptr) {
-    throw IllegalStateException("Field name is null");
-  }
-}
-
-char PdxLocalReader::readChar(const char* fieldName) {
-  checkEmptyFieldName(fieldName);
+char PdxLocalReader::readChar(const std::string& fieldName) {
   uint16_t value = m_dataInput->readInt16();
   return (static_cast<char>(value));
 }
 
-wchar_t PdxLocalReader::readWideChar(const char* fieldName) {
-  checkEmptyFieldName(fieldName);
+wchar_t PdxLocalReader::readWideChar(const std::string& fieldName) {
   uint16_t value = m_dataInput->readInt16();
   return static_cast<wchar_t>(value);
 }
 
-bool PdxLocalReader::readBoolean(const char* fieldName) {
-  checkEmptyFieldName(fieldName);
+bool PdxLocalReader::readBoolean(const std::string& fieldName) {
   return m_dataInput->readBoolean();
 }
 
-int8_t PdxLocalReader::readByte(const char* fieldName) {
-  checkEmptyFieldName(fieldName);
+int8_t PdxLocalReader::readByte(const std::string& fieldName) {
   return m_dataInput->read();
 }
 
-int16_t PdxLocalReader::readShort(const char* fieldName) {
-  checkEmptyFieldName(fieldName);
+int16_t PdxLocalReader::readShort(const std::string& fieldName) {
   return m_dataInput->readInt16();
 }
 
-int32_t PdxLocalReader::readInt(const char* fieldName) {
-  checkEmptyFieldName(fieldName);
+int32_t PdxLocalReader::readInt(const std::string& fieldName) {
   return m_dataInput->readInt32();
 }
 
-int64_t PdxLocalReader::readLong(const char* fieldName) {
-  checkEmptyFieldName(fieldName);
+int64_t PdxLocalReader::readLong(const std::string& fieldName) {
   return m_dataInput->readInt64();
 }
 
-float PdxLocalReader::readFloat(const char* fieldName) {
-  checkEmptyFieldName(fieldName);
+float PdxLocalReader::readFloat(const std::string& fieldName) {
   return m_dataInput->readFloat();
 }
 
-double PdxLocalReader::readDouble(const char* fieldName) {
-  checkEmptyFieldName(fieldName);
+double PdxLocalReader::readDouble(const std::string& fieldName) {
   return m_dataInput->readDouble();
 }
 
-char* PdxLocalReader::readString(const char* fieldName) {
-  checkEmptyFieldName(fieldName);
+char* PdxLocalReader::readString(const std::string& fieldName) {
   char* str;
   m_dataInput->readString(&str);
   return str;
 }
 
-wchar_t* PdxLocalReader::readWideString(const char* fieldName) {
-  checkEmptyFieldName(fieldName);
+wchar_t* PdxLocalReader::readWideString(const std::string& fieldName) {
   wchar_t* str;
   m_dataInput->readWideString(&str);
   return str;
 }
 std::shared_ptr<Serializable> PdxLocalReader::readObject(
-    const char* fieldName) {
-  checkEmptyFieldName(fieldName);
+    const std::string& fieldName) {
   std::shared_ptr<Serializable> ptr;
   m_dataInput->readObject(ptr);
   if (ptr != nullptr) {
@@ -171,93 +153,87 @@ std::shared_ptr<Serializable> PdxLocalReader::readObject(
   }
 }
 
-char* PdxLocalReader::readCharArray(const char* fieldName,
+char* PdxLocalReader::readCharArray(const std::string& fieldName,
                                     int32_t& length) {  // TODO:: need to return
                                                         // Length to user for
                                                         // all primitive arrays
-  checkEmptyFieldName(fieldName);
   char* charArray = nullptr;
   m_dataInput->readCharArray(&charArray, length);
   return charArray;
 }
 
 wchar_t* PdxLocalReader::readWideCharArray(
-    const char* fieldName,
+    const std::string& fieldName,
     int32_t& length) {  // TODO:: need to return Length to user for all
                         // primitive arrays
-  checkEmptyFieldName(fieldName);
   wchar_t* charArray = nullptr;
   m_dataInput->readWideCharArray(&charArray, length);
   return charArray;
 }
-bool* PdxLocalReader::readBooleanArray(const char* fieldName, int32_t& length) {
-  checkEmptyFieldName(fieldName);
+bool* PdxLocalReader::readBooleanArray(const std::string& fieldName,
+                                       int32_t& length) {
   bool* boolArray = nullptr;
   m_dataInput->readBooleanArray(&boolArray, length);
   return boolArray;
 }
 
-int8_t* PdxLocalReader::readByteArray(const char* fieldName, int32_t& length) {
-  checkEmptyFieldName(fieldName);
+int8_t* PdxLocalReader::readByteArray(const std::string& fieldName,
+                                      int32_t& length) {
   int8_t* byteArray = nullptr;
   m_dataInput->readByteArray(&byteArray, length);
   return byteArray;
 }
 
-int16_t* PdxLocalReader::readShortArray(const char* fieldName,
+int16_t* PdxLocalReader::readShortArray(const std::string& fieldName,
                                         int32_t& length) {
-  checkEmptyFieldName(fieldName);
   int16_t* shortArray = nullptr;
   m_dataInput->readShortArray(&shortArray, length);
   return shortArray;
 }
 
-int32_t* PdxLocalReader::readIntArray(const char* fieldName, int32_t& length) {
-  checkEmptyFieldName(fieldName);
+int32_t* PdxLocalReader::readIntArray(const std::string& fieldName,
+                                      int32_t& length) {
   int32_t* intArray = nullptr;
   m_dataInput->readIntArray(&intArray, length);
   return intArray;
 }
 
-int64_t* PdxLocalReader::readLongArray(const char* fieldName, int32_t& length) {
-  checkEmptyFieldName(fieldName);
+int64_t* PdxLocalReader::readLongArray(const std::string& fieldName,
+                                       int32_t& length) {
   int64_t* longArray = nullptr;
   m_dataInput->readLongArray(&longArray, length);
   return longArray;
 }
 
-float* PdxLocalReader::readFloatArray(const char* fieldName, int32_t& length) {
-  checkEmptyFieldName(fieldName);
+float* PdxLocalReader::readFloatArray(const std::string& fieldName,
+                                      int32_t& length) {
   float* floatArray = nullptr;
   m_dataInput->readFloatArray(&floatArray, length);
   return floatArray;
 }
 
-double* PdxLocalReader::readDoubleArray(const char* fieldName,
+double* PdxLocalReader::readDoubleArray(const std::string& fieldName,
                                         int32_t& length) {
-  checkEmptyFieldName(fieldName);
   double* doubleArray = nullptr;
   m_dataInput->readDoubleArray(&doubleArray, length);
   return doubleArray;
 }
 
-char** PdxLocalReader::readStringArray(const char* fieldName, int32_t& length) {
-  checkEmptyFieldName(fieldName);
+char** PdxLocalReader::readStringArray(const std::string& fieldName,
+                                       int32_t& length) {
   char** stringArray = nullptr;
   m_dataInput->readStringArray(&stringArray, length);
   return stringArray;
 }
 
-wchar_t** PdxLocalReader::readWideStringArray(const char* fieldName,
+wchar_t** PdxLocalReader::readWideStringArray(const std::string& fieldName,
                                               int32_t& length) {
-  checkEmptyFieldName(fieldName);
   wchar_t** stringArray = nullptr;
   m_dataInput->readWideStringArray(&stringArray, length);
   return stringArray;
 }
 std::shared_ptr<CacheableObjectArray> PdxLocalReader::readObjectArray(
-    const char* fieldName) {
-  checkEmptyFieldName(fieldName);
+    const std::string& fieldName) {
   auto coa = CacheableObjectArray::create();
   coa->fromData(*m_dataInput);
   LOGDEBUG("PdxLocalReader::readObjectArray coa->size() = %d", coa->size());
@@ -267,16 +243,15 @@ std::shared_ptr<CacheableObjectArray> PdxLocalReader::readObjectArray(
   return coa;
 }
 
-int8_t** PdxLocalReader::readArrayOfByteArrays(const char* fieldName,
+int8_t** PdxLocalReader::readArrayOfByteArrays(const std::string& fieldName,
                                                int32_t& arrayLength,
                                                int32_t** elementLength) {
-  checkEmptyFieldName(fieldName);
   int8_t** arrofBytearr = nullptr;
   m_dataInput->readArrayOfByteArrays(&arrofBytearr, arrayLength, elementLength);
   return arrofBytearr;
 }
-std::shared_ptr<CacheableDate> PdxLocalReader::readDate(const char* fieldName) {
-  checkEmptyFieldName(fieldName);
+std::shared_ptr<CacheableDate> PdxLocalReader::readDate(
+    const std::string& fieldName) {
   auto cd = CacheableDate::create();
   cd->fromData(*m_dataInput);
   return cd;
@@ -342,17 +317,18 @@ std::shared_ptr<CacheableDate> PdxLocalReader::readDate(const char* fieldName) {
    return nullptr;
 }
 
-bool PdxLocalReader::hasField(const char* fieldName) {
+bool PdxLocalReader::hasField(const std::string& fieldName) {
   return m_pdxType->getPdxField(fieldName) != nullptr;
 }
 
-bool PdxLocalReader::isIdentityField(const char* fieldName) {
- auto pft = m_pdxType->getPdxField(fieldName);
+bool PdxLocalReader::isIdentityField(const std::string& fieldName) {
+  auto pft = m_pdxType->getPdxField(fieldName);
   return (pft != nullptr) && (pft->getIdentityField());
 }
 
 void PdxLocalReader::readCollection(
-    const char* fieldName, std::shared_ptr<CacheableArrayList>& collection) {
+    const std::string& fieldName,
+    std::shared_ptr<CacheableArrayList>& collection) {
   collection = m_dataInput->readObject<CacheableArrayList>();
 }
 std::shared_ptr<PdxUnreadFields> PdxLocalReader::readUnreadFields() {

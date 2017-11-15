@@ -128,21 +128,20 @@ std::string Utils::convertHostToCanonicalForm(const char* endpoints) {
 }
 
 void Utils::parseEndpointNamesString(
-    const char* endpoints, std::unordered_set<std::string>& endpointNames) {
-  std::string endpointsStr(endpoints);
+    std::string endpoints, std::unordered_set<std::string>& endpointNames) {
   // Parse this string to get all hostnames and port numbers.
   std::string endpoint;
-  std::string::size_type length = endpointsStr.size();
+  std::string::size_type length = endpoints.size();
   std::string::size_type pos = 0;
   do {
-    pos = endpointsStr.find(',', 0);
+    pos = endpoints.find(',', 0);
     if (pos != std::string::npos) {
-      endpoint = endpointsStr.substr(0, pos);
+      endpoint = endpoints.substr(0, pos);
       pos += 1;  // skip ','
       length -= (pos);
-      endpointsStr = endpointsStr.substr(pos, length);
+      endpoints = endpoints.substr(pos, length);
     } else {
-      endpoint = endpointsStr;
+      endpoint = endpoints;
     }
     // trim white spaces.
     std::string::size_type wpos = endpoint.find_last_not_of(' ');

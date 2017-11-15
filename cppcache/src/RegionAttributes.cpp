@@ -27,7 +27,10 @@
 #include <geode/DataInput.hpp>
 #include <geode/Properties.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
+
 RegionAttributes::RegionAttributes()
     : Serializable(),
       m_regionTimeToLiveExpirationAction(ExpirationAction::INVALIDATE),
@@ -35,10 +38,6 @@ RegionAttributes::RegionAttributes()
       m_entryTimeToLiveExpirationAction(ExpirationAction::INVALIDATE),
       m_entryIdleTimeoutExpirationAction(ExpirationAction::INVALIDATE),
       m_lruEvictionAction(ExpirationAction::LOCAL_DESTROY),
-      m_cacheWriter(nullptr),
-      m_cacheLoader(nullptr),
-      m_cacheListener(nullptr),
-      m_partitionResolver(nullptr),
       m_lruEntriesLimit(0),
       m_caching(true),
       m_maxValueDistLimit(100 * 1024),
@@ -49,166 +48,17 @@ RegionAttributes::RegionAttributes()
       m_initialCapacity(10000),
       m_loadFactor(0.75),
       m_concurrencyLevel(16),
-      m_cacheLoaderLibrary(nullptr),
-      m_cacheWriterLibrary(nullptr),
-      m_cacheListenerLibrary(nullptr),
-      m_partitionResolverLibrary(nullptr),
-      m_cacheLoaderFactory(nullptr),
-      m_cacheWriterFactory(nullptr),
-      m_cacheListenerFactory(nullptr),
-      m_partitionResolverFactory(nullptr),
       m_diskPolicy(DiskPolicyType::NONE),
-      m_endpoints(nullptr),
       m_clientNotificationEnabled(false),
-      m_persistenceLibrary(nullptr),
-      m_persistenceFactory(nullptr),
       m_persistenceProperties(nullptr),
       m_persistenceManager(nullptr),
-      m_poolName(nullptr),
       m_isClonable(false),
       m_isConcurrencyChecksEnabled(true) {}
 
-RegionAttributes::RegionAttributes(const RegionAttributes& rhs)
-    : m_regionTimeToLiveExpirationAction(
-          rhs.m_regionTimeToLiveExpirationAction),
-      m_regionIdleTimeoutExpirationAction(
-          rhs.m_regionIdleTimeoutExpirationAction),
-      m_entryTimeToLiveExpirationAction(rhs.m_entryTimeToLiveExpirationAction),
-      m_entryIdleTimeoutExpirationAction(
-          rhs.m_entryIdleTimeoutExpirationAction),
-      m_lruEvictionAction(rhs.m_lruEvictionAction),
-      m_cacheWriter(rhs.m_cacheWriter),
-      m_cacheLoader(rhs.m_cacheLoader),
-      m_cacheListener(rhs.m_cacheListener),
-      m_partitionResolver(rhs.m_partitionResolver),
-      m_lruEntriesLimit(rhs.m_lruEntriesLimit),
-      m_caching(rhs.m_caching),
-      m_maxValueDistLimit(rhs.m_maxValueDistLimit),
-      m_entryIdleTimeout(rhs.m_entryIdleTimeout),
-      m_entryTimeToLive(rhs.m_entryTimeToLive),
-      m_regionIdleTimeout(rhs.m_regionIdleTimeout),
-      m_regionTimeToLive(rhs.m_regionTimeToLive),
-      m_initialCapacity(rhs.m_initialCapacity),
-      m_loadFactor(rhs.m_loadFactor),
-      m_concurrencyLevel(rhs.m_concurrencyLevel),
-      m_diskPolicy(rhs.m_diskPolicy),
-      m_clientNotificationEnabled(rhs.m_clientNotificationEnabled),
-      m_persistenceProperties(rhs.m_persistenceProperties),
-      m_persistenceManager(rhs.m_persistenceManager),
-      m_isClonable(rhs.m_isClonable),
-      m_isConcurrencyChecksEnabled(rhs.m_isConcurrencyChecksEnabled) {
-  if (rhs.m_cacheLoaderLibrary != nullptr) {
-    size_t len = strlen(rhs.m_cacheLoaderLibrary) + 1;
-    m_cacheLoaderLibrary = new char[len];
-    ACE_OS::strncpy(m_cacheLoaderLibrary, rhs.m_cacheLoaderLibrary, len);
-  } else {
-    m_cacheLoaderLibrary = nullptr;
-  }
-  if (rhs.m_cacheWriterLibrary != nullptr) {
-    size_t len = strlen(rhs.m_cacheWriterLibrary) + 1;
-    m_cacheWriterLibrary = new char[len];
-    ACE_OS::strncpy(m_cacheWriterLibrary, rhs.m_cacheWriterLibrary, len);
-  } else {
-    m_cacheWriterLibrary = nullptr;
-  }
-  if (rhs.m_cacheListenerLibrary != nullptr) {
-    size_t len = strlen(rhs.m_cacheListenerLibrary) + 1;
-    m_cacheListenerLibrary = new char[len];
-    ACE_OS::strncpy(m_cacheListenerLibrary, rhs.m_cacheListenerLibrary, len);
-  } else {
-    m_cacheListenerLibrary = nullptr;
-  }
-  if (rhs.m_partitionResolverLibrary != nullptr) {
-    size_t len = strlen(rhs.m_partitionResolverLibrary) + 1;
-    m_partitionResolverLibrary = new char[len];
-    ACE_OS::strncpy(m_partitionResolverLibrary, rhs.m_partitionResolverLibrary,
-                    len);
-  } else {
-    m_partitionResolverLibrary = nullptr;
-  }
-  if (rhs.m_cacheLoaderFactory != nullptr) {
-    size_t len = strlen(rhs.m_cacheLoaderFactory) + 1;
-    m_cacheLoaderFactory = new char[len];
-    ACE_OS::strncpy(m_cacheLoaderFactory, rhs.m_cacheLoaderFactory, len);
-  } else {
-    m_cacheLoaderFactory = nullptr;
-  }
-  if (rhs.m_cacheWriterFactory != nullptr) {
-    size_t len = strlen(rhs.m_cacheWriterFactory) + 1;
-    m_cacheWriterFactory = new char[len];
-    ACE_OS::strncpy(m_cacheWriterFactory, rhs.m_cacheWriterFactory, len);
-  } else {
-    m_cacheWriterFactory = nullptr;
-  }
-  if (rhs.m_cacheListenerFactory != nullptr) {
-    size_t len = strlen(rhs.m_cacheListenerFactory) + 1;
-    m_cacheListenerFactory = new char[len];
-    ACE_OS::strncpy(m_cacheListenerFactory, rhs.m_cacheListenerFactory, len);
-  } else {
-    m_cacheListenerFactory = nullptr;
-  }
-  if (rhs.m_partitionResolverFactory != nullptr) {
-    size_t len = strlen(rhs.m_partitionResolverFactory) + 1;
-    m_partitionResolverFactory = new char[len];
-    ACE_OS::strncpy(m_partitionResolverFactory, rhs.m_partitionResolverFactory,
-                    len);
-  } else {
-    m_partitionResolverFactory = nullptr;
-  }
-  if (rhs.m_endpoints != nullptr) {
-    size_t len = strlen(rhs.m_endpoints) + 1;
-    m_endpoints = new char[len];
-    ACE_OS::strncpy(m_endpoints, rhs.m_endpoints, len);
-  } else {
-    m_endpoints = nullptr;
-  }
-  if (rhs.m_poolName != nullptr) {
-    size_t len = strlen(rhs.m_poolName) + 1;
-    m_poolName = new char[len];
-    ACE_OS::strncpy(m_poolName, rhs.m_poolName, len);
-  } else {
-    m_poolName = nullptr;
-  }
-  if (rhs.m_persistenceLibrary != nullptr) {
-    size_t len = strlen(rhs.m_persistenceLibrary) + 1;
-    m_persistenceLibrary = new char[len];
-    ACE_OS::strncpy(m_persistenceLibrary, rhs.m_persistenceLibrary, len);
-  } else {
-    m_persistenceLibrary = nullptr;
-  }
-  if (rhs.m_persistenceFactory != nullptr) {
-    size_t len = strlen(rhs.m_persistenceFactory) + 1;
-    m_persistenceFactory = new char[len];
-    ACE_OS::strncpy(m_persistenceFactory, rhs.m_persistenceFactory, len);
-  } else {
-    m_persistenceFactory = nullptr;
-  }
-}
+RegionAttributes::RegionAttributes(const RegionAttributes& rhs) = default;
 
-#define RA_DELSTRING(x) \
-  if (x != nullptr) {   \
-    delete[] x;         \
-  }                     \
-  x = nullptr
+RegionAttributes::~RegionAttributes() = default;
 
-RegionAttributes::~RegionAttributes() {
-  RA_DELSTRING(m_cacheLoaderLibrary);
-  RA_DELSTRING(m_cacheWriterLibrary);
-  RA_DELSTRING(m_cacheListenerLibrary);
-  RA_DELSTRING(m_partitionResolverLibrary);
-  RA_DELSTRING(m_cacheLoaderFactory);
-  RA_DELSTRING(m_cacheWriterFactory);
-  RA_DELSTRING(m_cacheListenerFactory);
-  RA_DELSTRING(m_partitionResolverFactory);
-  RA_DELSTRING(m_endpoints);
-  RA_DELSTRING(m_persistenceLibrary);
-  RA_DELSTRING(m_persistenceFactory);
-  RA_DELSTRING(m_poolName);
-}
-
-namespace apache {
-namespace geode {
-namespace client {
 namespace impl {
 
 /**
@@ -217,34 +67,28 @@ namespace impl {
  * lib in java System.loadLibrary( "x" ); Where x is a component of the name
  * lib<x>.so on unix, or <x>.dll on windows.
  */
-void* getFactoryFunc(const char* lib, const char* funcName) {
+void* getFactoryFunc(const std::string& lib, const std::string& funcName) {
   ACE_DLL dll;
-  if (dll.open(lib, ACE_DEFAULT_SHLIB_MODE, 0) == -1) {
-    // error...
-    char msg[1000];
-    ACE_OS::snprintf(msg, 1000, "cannot open library: %s", lib);
-    throw IllegalArgumentException(msg);
+  if (dll.open(lib.c_str(), ACE_DEFAULT_SHLIB_MODE, 0) == -1) {
+    throw IllegalArgumentException("cannot open library: " + lib);
   }
-  void* func = dll.symbol(funcName);
+  void* func = dll.symbol(funcName.c_str());
   if (func == nullptr) {
-    char msg[1000];
-    ACE_OS::snprintf(msg, 1000, "cannot find factory function %s in library %s",
-                     funcName, lib);
-    throw IllegalArgumentException(msg);
+    throw IllegalArgumentException("cannot find factory function " + funcName +
+                                   " in library " + lib);
   }
   return func;
 }
+
 }  // namespace impl
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
+
 std::shared_ptr<CacheLoader> RegionAttributes::getCacheLoader() {
-  if ((m_cacheLoader == nullptr) && (m_cacheLoaderLibrary != nullptr)) {
-    if (CacheXmlParser::managedCacheLoaderFn != nullptr &&
-        strchr(m_cacheLoaderFactory, '.') != nullptr) {
+  if (!m_cacheLoader && !m_cacheLoaderLibrary.empty()) {
+    if (CacheXmlParser::managedCacheLoaderFn &&
+        m_cacheLoaderFactory.find('.') != std::string::npos) {
       // this is a managed library
       m_cacheLoader.reset((*CacheXmlParser::managedCacheLoaderFn)(
-          m_cacheLoaderLibrary, m_cacheLoaderFactory));
+          m_cacheLoaderLibrary.c_str(), m_cacheLoaderFactory.c_str()));
     } else {
       CacheLoader* (*funcptr)();
       funcptr = reinterpret_cast<CacheLoader* (*)()>(
@@ -255,32 +99,30 @@ std::shared_ptr<CacheLoader> RegionAttributes::getCacheLoader() {
   }
   return m_cacheLoader;
 }
- std::shared_ptr<CacheWriter> RegionAttributes::getCacheWriter() {
-   if ((m_cacheWriter == nullptr) && (m_cacheWriterLibrary != nullptr)) {
-     if (CacheXmlParser::managedCacheWriterFn != nullptr &&
-         strchr(m_cacheWriterFactory, '.') != nullptr) {
-       // this is a managed library
-       m_cacheWriter.reset((*CacheXmlParser::managedCacheWriterFn)(
-           m_cacheWriterLibrary, m_cacheWriterFactory));
-     } else {
-       CacheWriter* (*funcptr)();
-       funcptr = reinterpret_cast<CacheWriter* (*)()>(
-           apache::geode::client::impl::getFactoryFunc(m_cacheWriterLibrary,
-                                                       m_cacheWriterFactory));
-       m_cacheWriter.reset(funcptr());
-     }
-   }
-   return m_cacheWriter;
+std::shared_ptr<CacheWriter> RegionAttributes::getCacheWriter() {
+  if (!m_cacheWriter && !m_cacheWriterLibrary.empty()) {
+    if (CacheXmlParser::managedCacheWriterFn &&
+        m_cacheWriterFactory.find('.') != std::string::npos) {
+      // this is a managed library
+      m_cacheWriter.reset((*CacheXmlParser::managedCacheWriterFn)(
+          m_cacheWriterLibrary.c_str(), m_cacheWriterFactory.c_str()));
+    } else {
+      CacheWriter* (*funcptr)();
+      funcptr = reinterpret_cast<CacheWriter* (*)()>(
+          apache::geode::client::impl::getFactoryFunc(m_cacheWriterLibrary,
+                                                      m_cacheWriterFactory));
+      m_cacheWriter.reset(funcptr());
+    }
+  }
+  return m_cacheWriter;
 }
- std::shared_ptr<CacheListener> RegionAttributes::getCacheListener() {
-  if ((m_cacheListener == nullptr) && (m_cacheListenerLibrary != nullptr)) {
-    if (CacheXmlParser::managedCacheListenerFn != nullptr &&
-        strchr(m_cacheListenerFactory, '.') != nullptr) {
-      // LOGDEBUG( "RegionAttributes::getCacheListener: Trying to create
-      // instance from managed library." );
+std::shared_ptr<CacheListener> RegionAttributes::getCacheListener() {
+  if (!m_cacheListener && !m_cacheListenerLibrary.empty()) {
+    if (CacheXmlParser::managedCacheListenerFn &&
+        m_cacheListenerFactory.find('.') != std::string::npos) {
       // this is a managed library
       m_cacheListener.reset((*CacheXmlParser::managedCacheListenerFn)(
-          m_cacheListenerLibrary, m_cacheListenerFactory));
+          m_cacheListenerLibrary.c_str(), m_cacheListenerFactory.c_str()));
     } else {
       CacheListener* (*funcptr)();
       funcptr = reinterpret_cast<CacheListener* (*)()>(
@@ -291,16 +133,14 @@ std::shared_ptr<CacheLoader> RegionAttributes::getCacheLoader() {
   }
   return m_cacheListener;
 }
- std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver() {
-  if ((m_partitionResolver == nullptr) &&
-      (m_partitionResolverLibrary != nullptr)) {
-    if (CacheXmlParser::managedPartitionResolverFn != nullptr &&
-        strchr(m_partitionResolverFactory, '.') != nullptr) {
-      // LOGDEBUG( "RegionAttributes::getCacheListener: Trying to create
-      // instance from managed library." );
+std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver() {
+  if (!m_partitionResolver && !m_partitionResolverLibrary.empty()) {
+    if (CacheXmlParser::managedPartitionResolverFn &&
+        m_partitionResolverFactory.find('.') != std::string::npos) {
       // this is a managed library
       m_partitionResolver.reset((*CacheXmlParser::managedPartitionResolverFn)(
-          m_partitionResolverLibrary, m_partitionResolverFactory));
+          m_partitionResolverLibrary.c_str(),
+          m_partitionResolverFactory.c_str()));
     } else {
       PartitionResolver* (*funcptr)();
       funcptr = reinterpret_cast<PartitionResolver* (*)()>(
@@ -311,16 +151,13 @@ std::shared_ptr<CacheLoader> RegionAttributes::getCacheLoader() {
   }
   return m_partitionResolver;
 }
- std::shared_ptr<PersistenceManager> RegionAttributes::getPersistenceManager() {
-  if ((m_persistenceManager == nullptr) && (m_persistenceLibrary != nullptr)) {
-    if (CacheXmlParser::managedPartitionResolverFn != nullptr &&
-        strchr(m_persistenceFactory, '.') != nullptr) {
-      LOGDEBUG(
-          "RegionAttributes::getPersistenceManager: Trying to create instance "
-          "from managed library.");
+std::shared_ptr<PersistenceManager> RegionAttributes::getPersistenceManager() {
+  if (!m_persistenceManager && !m_persistenceLibrary.empty()) {
+    if (CacheXmlParser::managedPartitionResolverFn &&
+        m_persistenceFactory.find('.') != std::string::npos) {
       // this is a managed library
       m_persistenceManager.reset((*CacheXmlParser::managedPersistenceManagerFn)(
-          m_persistenceLibrary, m_persistenceFactory));
+          m_persistenceLibrary.c_str(), m_persistenceFactory.c_str()));
     } else {
       PersistenceManager* (*funcptr)();
       funcptr = reinterpret_cast<PersistenceManager* (*)()>(
@@ -331,49 +168,49 @@ std::shared_ptr<CacheLoader> RegionAttributes::getCacheLoader() {
   }
   return m_persistenceManager;
 }
-const char* RegionAttributes::getCacheLoaderFactory() {
+const std::string& RegionAttributes::getCacheLoaderFactory() {
   return m_cacheLoaderFactory;
 }
 
-const char* RegionAttributes::getCacheWriterFactory() {
+const std::string& RegionAttributes::getCacheWriterFactory() {
   return m_cacheWriterFactory;
 }
 
-const char* RegionAttributes::getCacheListenerFactory() {
+const std::string& RegionAttributes::getCacheListenerFactory() {
   return m_cacheListenerFactory;
 }
 
-const char* RegionAttributes::getPartitionResolverFactory() {
+const std::string& RegionAttributes::getPartitionResolverFactory() {
   return m_partitionResolverFactory;
 }
 
-const char* RegionAttributes::getPersistenceFactory() {
+const std::string& RegionAttributes::getPersistenceFactory() {
   return m_persistenceFactory;
 }
-const char* RegionAttributes::getCacheLoaderLibrary() {
+const std::string& RegionAttributes::getCacheLoaderLibrary() {
   return m_cacheLoaderLibrary;
 }
 
-const char* RegionAttributes::getCacheWriterLibrary() {
+const std::string& RegionAttributes::getCacheWriterLibrary() {
   return m_cacheWriterLibrary;
 }
 
-const char* RegionAttributes::getCacheListenerLibrary() {
+const std::string& RegionAttributes::getCacheListenerLibrary() {
   return m_cacheListenerLibrary;
 }
 
-const char* RegionAttributes::getPartitionResolverLibrary() {
+const std::string& RegionAttributes::getPartitionResolverLibrary() {
   return m_partitionResolverLibrary;
 }
 
-const char* RegionAttributes::getEndpoints() { return m_endpoints; }
+const std::string& RegionAttributes::getEndpoints() { return m_endpoints; }
 bool RegionAttributes::getClientNotificationEnabled() const {
   return m_clientNotificationEnabled;
 }
-const char* RegionAttributes::getPersistenceLibrary() {
+const std::string& RegionAttributes::getPersistenceLibrary() {
   return m_persistenceLibrary;
 }
- std::shared_ptr<Properties> RegionAttributes::getPersistenceProperties() {
+std::shared_ptr<Properties> RegionAttributes::getPersistenceProperties() {
   return m_persistenceProperties;
 }
 
@@ -428,7 +265,7 @@ uint32_t RegionAttributes::getLruEntriesLimit() const {
 DiskPolicyType::PolicyType RegionAttributes::getDiskPolicy() const {
   return m_diskPolicy;
 }
-const char* RegionAttributes::getPoolName() const { return m_poolName; }
+const std::string& RegionAttributes::getPoolName() const { return m_poolName; }
 Serializable* RegionAttributes::createDeserializable() {
   return new RegionAttributes();
 }
@@ -439,9 +276,6 @@ int8_t RegionAttributes::typeId() const {
   return GeodeTypeIds::RegionAttributes;
 }
 
-namespace apache {
-namespace geode {
-namespace client {
 namespace impl {
 
 void writeBool(DataOutput& out, bool field) {
@@ -450,29 +284,22 @@ void writeBool(DataOutput& out, bool field) {
 
 void readBool(DataInput& in, bool* field) { *field = in.read() ? true : false; }
 
-void writeCharStar(DataOutput& out, const char* field) {
-  if (field == nullptr) {
-    out.writeBytes(reinterpret_cast<const int8_t*>(""),
-                   static_cast<uint32_t>(0));
-  } else {
-    out.writeBytes((int8_t*)field, static_cast<uint32_t>(strlen(field)) + 1);
-  }
+void writeString(DataOutput& out, const std::string& field) {
+  out.writeBytes((int8_t*)field.c_str(),
+                 static_cast<uint32_t>(field.length()) + 1);
 }
 
-/** this one allocates the memory and modifies field to point to it. */
-void readCharStar(DataInput& in, char** field) {
-  GF_D_ASSERT(*field == nullptr);
-  int32_t memlen = in.readArrayLen();
-  if (memlen != 0) {
-    *field = new char[memlen];
-    in.readBytesOnly(reinterpret_cast<int8_t*>(*field), memlen);
-  }
+void readString(DataInput& in, std::string& field) {
+  // length including null terminator
+  auto len = in.readArrayLen();
+  // currentBufferPosition is read-only and we are only reading, cast away const
+  field = std::string(const_cast<char*>(reinterpret_cast<const char*>(
+                          in.currentBufferPosition())),
+                      len - 1);
+  in.advanceCursor(len);
 }
 
 }  // namespace impl
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
 
 void RegionAttributes::toData(DataOutput& out) const {
   out.writeInt(static_cast<int32_t>(m_regionTimeToLive.count()));
@@ -493,20 +320,20 @@ void RegionAttributes::toData(DataOutput& out) const {
   apache::geode::client::impl::writeBool(out, m_caching);
   apache::geode::client::impl::writeBool(out, m_clientNotificationEnabled);
 
-  apache::geode::client::impl::writeCharStar(out, m_cacheLoaderLibrary);
-  apache::geode::client::impl::writeCharStar(out, m_cacheLoaderFactory);
-  apache::geode::client::impl::writeCharStar(out, m_cacheWriterLibrary);
-  apache::geode::client::impl::writeCharStar(out, m_cacheWriterFactory);
-  apache::geode::client::impl::writeCharStar(out, m_cacheListenerLibrary);
-  apache::geode::client::impl::writeCharStar(out, m_cacheListenerFactory);
-  apache::geode::client::impl::writeCharStar(out, m_partitionResolverLibrary);
-  apache::geode::client::impl::writeCharStar(out, m_partitionResolverFactory);
+  apache::geode::client::impl::writeString(out, m_cacheLoaderLibrary);
+  apache::geode::client::impl::writeString(out, m_cacheLoaderFactory);
+  apache::geode::client::impl::writeString(out, m_cacheWriterLibrary);
+  apache::geode::client::impl::writeString(out, m_cacheWriterFactory);
+  apache::geode::client::impl::writeString(out, m_cacheListenerLibrary);
+  apache::geode::client::impl::writeString(out, m_cacheListenerFactory);
+  apache::geode::client::impl::writeString(out, m_partitionResolverLibrary);
+  apache::geode::client::impl::writeString(out, m_partitionResolverFactory);
   out.writeInt(static_cast<int32_t>(m_diskPolicy));
-  apache::geode::client::impl::writeCharStar(out, m_endpoints);
-  apache::geode::client::impl::writeCharStar(out, m_persistenceLibrary);
-  apache::geode::client::impl::writeCharStar(out, m_persistenceFactory);
+  apache::geode::client::impl::writeString(out, m_endpoints);
+  apache::geode::client::impl::writeString(out, m_persistenceLibrary);
+  apache::geode::client::impl::writeString(out, m_persistenceFactory);
   out.writeObject(m_persistenceProperties);
-  apache::geode::client::impl::writeCharStar(out, m_poolName);
+  apache::geode::client::impl::writeString(out, m_poolName);
   apache::geode::client::impl::writeBool(out, m_isConcurrencyChecksEnabled);
 }
 
@@ -533,20 +360,20 @@ void RegionAttributes::fromData(DataInput& in) {
   apache::geode::client::impl::readBool(in, &m_caching);
   apache::geode::client::impl::readBool(in, &m_clientNotificationEnabled);
 
-  apache::geode::client::impl::readCharStar(in, &m_cacheLoaderLibrary);
-  apache::geode::client::impl::readCharStar(in, &m_cacheLoaderFactory);
-  apache::geode::client::impl::readCharStar(in, &m_cacheWriterLibrary);
-  apache::geode::client::impl::readCharStar(in, &m_cacheWriterFactory);
-  apache::geode::client::impl::readCharStar(in, &m_cacheListenerLibrary);
-  apache::geode::client::impl::readCharStar(in, &m_cacheListenerFactory);
-  apache::geode::client::impl::readCharStar(in, &m_partitionResolverLibrary);
-  apache::geode::client::impl::readCharStar(in, &m_partitionResolverFactory);
+  apache::geode::client::impl::readString(in, m_cacheLoaderLibrary);
+  apache::geode::client::impl::readString(in, m_cacheLoaderFactory);
+  apache::geode::client::impl::readString(in, m_cacheWriterLibrary);
+  apache::geode::client::impl::readString(in, m_cacheWriterFactory);
+  apache::geode::client::impl::readString(in, m_cacheListenerLibrary);
+  apache::geode::client::impl::readString(in, m_cacheListenerFactory);
+  apache::geode::client::impl::readString(in, m_partitionResolverLibrary);
+  apache::geode::client::impl::readString(in, m_partitionResolverFactory);
   m_diskPolicy = static_cast<DiskPolicyType::PolicyType>(in.readInt32());
-  apache::geode::client::impl::readCharStar(in, &m_endpoints);
-  apache::geode::client::impl::readCharStar(in, &m_persistenceLibrary);
-  apache::geode::client::impl::readCharStar(in, &m_persistenceFactory);
+  apache::geode::client::impl::readString(in, m_endpoints);
+  apache::geode::client::impl::readString(in, m_persistenceLibrary);
+  apache::geode::client::impl::readString(in, m_persistenceFactory);
   m_persistenceProperties = in.readObject<Properties>(true);
-  apache::geode::client::impl::readCharStar(in, &m_poolName);
+  apache::geode::client::impl::readString(in, m_poolName);
   apache::geode::client::impl::readBool(in, &m_isConcurrencyChecksEnabled);
 }
 
@@ -583,46 +410,40 @@ bool RegionAttributes::operator==(const RegionAttributes& other) const {
     return false;
   }
 
-  if (0 != compareStringAttribute(m_cacheLoaderLibrary,
-                                  other.m_cacheLoaderLibrary)) {
+  if (m_cacheLoaderLibrary != other.m_cacheLoaderLibrary) {
     return false;
   }
-  if (0 != compareStringAttribute(m_cacheLoaderFactory,
-                                  other.m_cacheLoaderFactory)) {
+  if (m_cacheLoaderFactory != other.m_cacheLoaderFactory) {
     return false;
   }
-  if (0 != compareStringAttribute(m_cacheWriterLibrary,
-                                  other.m_cacheWriterLibrary)) {
+  if (m_cacheWriterLibrary != other.m_cacheWriterLibrary) {
     return false;
   }
-  if (0 != compareStringAttribute(m_cacheWriterFactory,
-                                  other.m_cacheWriterFactory)) {
+  if (m_cacheWriterFactory != other.m_cacheWriterFactory) {
     return false;
   }
-  if (0 != compareStringAttribute(m_cacheListenerLibrary,
-                                  other.m_cacheListenerLibrary)) {
+  if (m_cacheListenerLibrary != other.m_cacheListenerLibrary) {
     return false;
   }
-  if (0 != compareStringAttribute(m_cacheListenerFactory,
-                                  other.m_cacheListenerFactory)) {
+  if (m_cacheListenerFactory != other.m_cacheListenerFactory) {
     return false;
   }
-  if (0 != compareStringAttribute(m_partitionResolverLibrary,
-                                  other.m_partitionResolverLibrary)) {
+  if (m_partitionResolverLibrary != other.m_partitionResolverLibrary) {
     return false;
   }
-  if (0 != compareStringAttribute(m_partitionResolverFactory,
-                                  other.m_partitionResolverFactory)) {
+  if (m_partitionResolverFactory != other.m_partitionResolverFactory) {
     return false;
   }
-  if (m_diskPolicy != other.m_diskPolicy) return false;
-  if (0 != compareStringAttribute(m_endpoints, other.m_endpoints)) return false;
-  if (0 != compareStringAttribute(m_persistenceLibrary,
-                                  other.m_persistenceLibrary)) {
+  if (m_diskPolicy != other.m_diskPolicy) {
     return false;
   }
-  if (0 != compareStringAttribute(m_persistenceFactory,
-                                  other.m_persistenceFactory)) {
+  if (m_endpoints != other.m_endpoints) {
+    return false;
+  }
+  if (m_persistenceLibrary != other.m_persistenceLibrary) {
+    return false;
+  }
+  if (m_persistenceFactory != other.m_persistenceFactory) {
     return false;
   }
   if (m_isConcurrencyChecksEnabled != other.m_isConcurrencyChecksEnabled) {
@@ -630,18 +451,6 @@ bool RegionAttributes::operator==(const RegionAttributes& other) const {
   }
 
   return true;
-}
-
-int32_t RegionAttributes::compareStringAttribute(char* attributeA,
-                                                 char* attributeB) {
-  if (attributeA == nullptr && attributeB == nullptr) {
-    return 0;
-  } else if (attributeA == nullptr && attributeB != nullptr) {
-    return -1;
-  } else if (attributeA != nullptr && attributeB == nullptr) {
-    return -1;
-  }
-  return (strcmp(attributeA, attributeB));
 }
 
 /** Return true if any of the attributes are not equal to those of other. */
@@ -679,49 +488,44 @@ void RegionAttributes::validateSerializableAttributes() {
   }
 }
 
-void RegionAttributes::setCacheListener(const char* lib, const char* func) {
-  GF_R_ASSERT(lib != nullptr);
-  GF_R_ASSERT(func != nullptr);
-  copyStringAttribute(m_cacheListenerLibrary, lib);
-  copyStringAttribute(m_cacheListenerFactory, func);
+void RegionAttributes::setCacheListener(const std::string& lib,
+                                        const std::string& func) {
+  m_cacheListenerLibrary = lib;
+  m_cacheListenerFactory = func;
 }
 
-void RegionAttributes::setPartitionResolver(const char* lib, const char* func) {
-  GF_R_ASSERT(lib != nullptr);
-  GF_R_ASSERT(func != nullptr);
-  copyStringAttribute(m_partitionResolverLibrary, lib);
-  copyStringAttribute(m_partitionResolverFactory, func);
+void RegionAttributes::setPartitionResolver(const std::string& lib,
+                                            const std::string& func) {
+  m_partitionResolverLibrary = lib;
+  m_partitionResolverFactory = func;
 }
 
-void RegionAttributes::setCacheLoader(const char* lib, const char* func) {
-  GF_R_ASSERT(lib != nullptr);
-  GF_R_ASSERT(func != nullptr);
-  copyStringAttribute(m_cacheLoaderLibrary, lib);
-  copyStringAttribute(m_cacheLoaderFactory, func);
+void RegionAttributes::setCacheLoader(const std::string& lib,
+                                      const std::string& func) {
+  m_cacheLoaderLibrary = lib;
+  m_cacheLoaderFactory = func;
 }
 
-void RegionAttributes::setCacheWriter(const char* lib, const char* func) {
-  GF_R_ASSERT(lib != nullptr);
-  GF_R_ASSERT(func != nullptr);
-  copyStringAttribute(m_cacheWriterLibrary, lib);
-  copyStringAttribute(m_cacheWriterFactory, func);
+void RegionAttributes::setCacheWriter(const std::string& lib,
+                                      const std::string& func) {
+  m_cacheWriterLibrary = lib;
+  m_cacheWriterFactory = func;
 }
 
-void RegionAttributes::setPersistenceManager(const char* lib, const char* func,
-                                             const std::shared_ptr<Properties>& config) {
-  GF_R_ASSERT(lib != nullptr);
-  GF_R_ASSERT(func != nullptr);
-  copyStringAttribute(m_persistenceLibrary, lib);
-  copyStringAttribute(m_persistenceFactory, func);
+void RegionAttributes::setPersistenceManager(
+    const std::string& lib, const std::string& func,
+    const std::shared_ptr<Properties>& config) {
+  m_persistenceLibrary = lib;
+  m_persistenceFactory = func;
   m_persistenceProperties = config;
 }
 
-void RegionAttributes::setEndpoints(const char* endpoints) {
-  copyStringAttribute(m_endpoints, endpoints);
+void RegionAttributes::setEndpoints(const std::string& endpoints) {
+  m_endpoints = endpoints;
 }
 
-void RegionAttributes::setPoolName(const char* poolName) {
-  copyStringAttribute(m_poolName, poolName);
+void RegionAttributes::setPoolName(const std::string& poolName) {
+  m_poolName = poolName;
 }
 
 void RegionAttributes::setCachingEnabled(bool enable) { m_caching = enable; }
@@ -733,13 +537,6 @@ void RegionAttributes::setDiskPolicy(DiskPolicyType::PolicyType diskPolicy) {
   m_diskPolicy = diskPolicy;
 }
 
-void RegionAttributes::copyStringAttribute(char*& lhs, const char* rhs) {
-  if (lhs != nullptr) {
-    delete[] lhs;
-  }
-  lhs = Utils::copyString(rhs);
-}
-
 void RegionAttributes::setCloningEnabled(bool isClonable) {
   m_isClonable = isClonable;
 }
@@ -747,3 +544,7 @@ void RegionAttributes::setCloningEnabled(bool isClonable) {
 void RegionAttributes::setConcurrencyChecksEnabled(bool enable) {
   m_isConcurrencyChecksEnabled = enable;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

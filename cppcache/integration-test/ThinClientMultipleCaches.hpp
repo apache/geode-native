@@ -74,9 +74,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupAndTestMutlipleCaches)
     LOG("Doing get() on second cache.");
     auto value = region2->get("a")->toString();
 
-    ASSERT(std::strcmp(value->asChar(), "key") == 0,
+    ASSERT(value == "key",
            std::string("Expected value 'key' didn't equal actual value '")
-               .append(value->asChar())
+               .append(value)
                .append("'")
                .c_str());
   }

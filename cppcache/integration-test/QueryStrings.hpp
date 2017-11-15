@@ -57,14 +57,11 @@ enum queryCategory {
 
 class QueryStrings {
  public:
-  QueryStrings(queryCategory pcategory, const char* pquery,
-               bool pisLargeResultset = false) {
-    size_t querylen = static_cast<int>(strlen(pquery));
-    if (querylen < MAX_QRY_LENGTH) memcpy(_query, pquery, querylen);
-    memset(&_query[querylen], '\0', 1);
-    category = pcategory;
-    haveLargeResultset = pisLargeResultset;
-  }
+  QueryStrings(queryCategory pcategory, std::string pquery,
+               bool pisLargeResultset = false)
+      : category(pcategory),
+        _query(std::move(pquery)),
+        haveLargeResultset(pisLargeResultset) {}
 
   static int RSsize() { return RS_ARRAY_SIZE; };
   static int RSPsize() { return RSP_ARRAY_SIZE; };
@@ -74,11 +71,11 @@ class QueryStrings {
   static int SSOPLsize() { return SSOPL_ARRAY_SIZE; };
   static int RQsize() { return RQ_ARRAY_SIZE; };
   static int CQRSsize() { return CQRS_ARRAY_SIZE; };
-  const char* query() const { return _query; };
+  const std::string& query() const { return _query; };
 
  public:
-  char _query[MAX_QRY_LENGTH];
   queryCategory category;
+  std::string _query;
   bool haveLargeResultset;
 
  private:

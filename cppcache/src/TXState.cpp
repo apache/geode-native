@@ -14,18 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TXState.cpp
- *
- *  Created on: 09-Feb-2011
- *      Author: ankurs
- */
+
+#include <geode/Cache.hpp>
 
 #include "TXState.hpp"
 #include "TransactionalOperation.hpp"
-#include <geode/Cache.hpp>
 #include "TssConnectionWrapper.hpp"
 #include "ThinClientPoolDM.hpp"
+#include "util/exception.hpp"
 
 namespace apache {
 namespace geode {

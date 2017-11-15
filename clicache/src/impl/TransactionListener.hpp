@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 #ifdef CSTX_COMMENTED
-#pragma once 
+#pragma once
+
+#include "geode_includes.hpp" 
 
 
 
-//#include "../geode_includes.hpp"
+
 #include "../TransactionListenerAdapter.hpp"
 #include "../ITransactionListener.hpp"
 #include "../TransactionEvent.hpp"

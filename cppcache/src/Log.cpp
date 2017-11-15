@@ -495,7 +495,7 @@ const char* Log::levelToChars(Log::LogLevel level) {
   }
 }
 
-Log::LogLevel Log::charsToLevel(const char* chars) {
+Log::LogLevel Log::charsToLevel(const std::string& chars) {
   std::string level = chars;
 
   if (level.empty()) return Log::None;
@@ -551,6 +551,10 @@ char* Log::formatLogLine(char* buf, Log::LogLevel level) {
                    (unsigned long)ACE_OS::thr_self());
 
   return buf;
+}
+
+void Log::put(LogLevel level, const std::string& msg) {
+  put(level, msg.c_str());
 }
 
 // int g_count = 0;
@@ -703,15 +707,15 @@ void Log::put(LogLevel level, const char* msg) {
 }
 
 void Log::putThrow(LogLevel level, const char* msg, const Exception& ex) {
-  char buf[128] = {0};
-  ACE_OS::snprintf(buf, 128, "Geode exception %s thrown: ", ex.getName());
-  put(level, (std::string(buf) + ex.what() + "\n" + msg).c_str());
+  std::string message = "Geode exception " + ex.getName() +
+                        " thrown: " + ex.getMessage() + "\n" + msg;
+  put(level, message);
 }
 
 void Log::putCatch(LogLevel level, const char* msg, const Exception& ex) {
-  char buf[128] = {0};
-  ACE_OS::snprintf(buf, 128, "Geode exception %s caught: ", ex.getName());
-  put(level, (std::string(buf) + ex.what() + "\n" + msg).c_str());
+  std::string message = "Geode exception " + ex.getName() +
+                        " caught: " + ex.getMessage() + "\n" + msg;
+  put(level, message);
 }
 
 void Log::enterFn(LogLevel level, const char* functionName) {

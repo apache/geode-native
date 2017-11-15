@@ -14,14 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/geode_globals.hpp>
+
 #include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
+
+#include <geode/geode_globals.hpp>
+
 #include "WindowsProcessStats.hpp"
 #include "HostStatHelperWin.hpp"
 #include "HostStatHelper.hpp"
 
-using namespace apache::geode::statistics;
+namespace apache {
+namespace geode {
+namespace statistics {
 
 WindowsProcessStats::WindowsProcessStats(
     GeodeStatisticsFactory* statisticsFactory, int64_t pid, const char* name) {
@@ -230,3 +235,7 @@ WindowsProcessStats::~WindowsProcessStats() {
   m_statsType = nullptr;
   stats = nullptr;
 }
+
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

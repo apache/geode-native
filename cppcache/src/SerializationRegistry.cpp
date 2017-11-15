@@ -238,19 +238,17 @@ void SerializationRegistry::removeType2(int64_t compId) {
   theTypeMap.unbind2(compId);
 }
 std::shared_ptr<PdxSerializable> SerializationRegistry::getPdxType(
-    char* className) {
+    const std::string& className) const {
   TypeFactoryMethodPdx objectType = nullptr;
   theTypeMap.findPdxType(className, objectType);
   std::shared_ptr<PdxSerializable> pdxObj;
   if (nullptr == objectType) {
     try {
-      pdxObj =
-          std::make_shared<PdxWrapper>((const char*)className, pdxSerializer);
+      pdxObj = std::make_shared<PdxWrapper>(className, pdxSerializer);
     } catch (const Exception&) {
-      LOGERROR(
-          "Unregistered class %s during PDX deserialization: Did the "
-          "application register the PDX type or serializer?",
-          className);
+      LOGERROR("Unregistered class " + className +
+               " during PDX deserialization: Did the application register the "
+               "PDX type or serializer?");
       throw IllegalStateException(
           "Unregistered class or serializer in PDX deserialization");
     }
@@ -415,48 +413,47 @@ void TheTypeMap::unbind2(int64_t compId) {
 void TheTypeMap::bindPdxType(TypeFactoryMethodPdx func) {
   PdxSerializable* obj = func();
   std::lock_guard<util::concurrent::spinlock_mutex> guard(m_pdxTypemapLock);
-  const char* objFullName = obj->getClassName();
+  auto&& objFullName = obj->getClassName();
 
   int bindRes = m_pdxTypemap->bind(objFullName, func);
 
   delete obj;
 
   if (bindRes == 1) {
-    LOGERROR("A object with FullName %s is already registered.", objFullName);
+    LOGERROR("A object with FullName " + objFullName +
+             " is already registered.");
     throw IllegalStateException(
         "A Object with "
         "given FullName is already registered.");
   } else if (bindRes == -1) {
-    LOGERROR(
-        "Unknown error "
-        "while adding Pdx Object named %s to map.",
-        objFullName);
+    LOGERROR("Unknown error while adding Pdx Object named " + objFullName +
+             " to map.");
     throw IllegalStateException(
         "Unknown error "
         "while adding type to map.");
   }
 }
 
-void TheTypeMap::findPdxType(char* objFullName, TypeFactoryMethodPdx& func) {
+void TheTypeMap::findPdxType(const std::string& objFullName,
+                             TypeFactoryMethodPdx& func) const {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(m_pdxTypemapLock);
   m_pdxTypemap->find(objFullName, func);
 }
 
-void TheTypeMap::rebindPdxType(char* objFullName, TypeFactoryMethodPdx func) {
+void TheTypeMap::rebindPdxType(std::string objFullName,
+                               TypeFactoryMethodPdx func) {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(m_pdxTypemapLock);
   int bindRes = m_pdxTypemap->rebind(objFullName, func);
   if (bindRes == -1) {
-    LOGERROR(
-        "Unknown error "
-        "while adding Pdx Object FullName %s to map.",
-        objFullName);
+    LOGERROR("Unknown error while adding Pdx Object FullName " + objFullName +
+             " to map.");
     throw IllegalStateException(
         "Unknown error "
         "while adding type to map.");
   }
 }
 
-void TheTypeMap::unbindPdxType(char* objFullName) {
+void TheTypeMap::unbindPdxType(const std::string& objFullName) {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(m_pdxTypemapLock);
   m_pdxTypemap->unbind(objFullName);
 }

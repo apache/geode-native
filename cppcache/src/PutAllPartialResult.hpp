@@ -78,11 +78,11 @@ class PutAllPartialResult : public Serializable {
   // Returns there's saved succeed keys
   bool hasSucceededKeys();
 
-  virtual std::shared_ptr<CacheableString> toString() const {
+  virtual std::string toString() const override {
     char msgStr1[1024];
     if (m_firstFailedKey != nullptr) {
       ACE_OS::snprintf(msgStr1, 1024, "[ Key =%s ]",
-                       m_firstFailedKey->toString()->asChar());
+                       m_firstFailedKey->toString().c_str());
     }
 
     char msgStr2[1024];
@@ -105,32 +105,32 @@ class PutAllPartialResult : public Serializable {
     char stringBuf[7000];
     ACE_OS::snprintf(stringBuf, 7000, "PutAllPartialResult: %s%s", msgStr1,
                      msgStr2);
-    return CacheableString::create(stringBuf);
+    return std::string(stringBuf);
   }
 
-  void toData(DataOutput& output) const {
+  void toData(DataOutput& output) const override {
     throw IllegalStateException(
         "PutAllPartialResult::toData is not intended for use.");
   }
 
-  void fromData(DataInput& input) {
+  void fromData(DataInput& input) override {
     throw IllegalStateException(
         "PutAllPartialResult::fromData is not intended for use.");
   }
 
-  int32_t classId() const {
+  int32_t classId() const override {
     throw IllegalStateException(
         "PutAllPartialResult::classId is not intended for use.");
     return 0;
   }
 
-  uint32_t objectSize() const {
+  uint32_t objectSize() const override {
     throw IllegalStateException(
         "PutAllPartialResult::objectSize is not intended for use.");
     return 0;
   }
 
-  int8_t typeId() const { return static_cast<int8_t>(0); }
+  int8_t typeId() const override { return static_cast<int8_t>(0); }
 };
 
 }  // namespace client

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "ManagedFixedPartitionResolver.hpp"
 #include "../IFixedPartitionResolver.hpp"
 #include "../Region.hpp"
@@ -196,7 +197,7 @@ namespace apache
             ex_str += typeName.CharPtr;
             ex_str += "] in assembly: ";
             ex_str += assemblyPath;
-            throw IllegalArgumentException(ex_str.c_str());
+            throw IllegalArgumentException(ex_str);
           }
         }
         catch (const apache::geode::client::Exception&)
@@ -205,11 +206,9 @@ namespace apache
         }
         catch (System::Exception^ ex)
         {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedFixedPartitionResolverGeneric: Got an exception while "
-            "loading managed library: ";
-          ex_str += mg_exStr.CharPtr;
-          throw IllegalArgumentException(ex_str.c_str());
+            "loading managed library: "+ marshal_as<std::string>(ex->ToString());
+          throw IllegalArgumentException(ex_str);
         }
         return NULL;
       }
@@ -228,7 +227,7 @@ namespace apache
         return nullptr;
       }
 
-      const char* ManagedFixedPartitionResolverGeneric::getName()
+      const std::string& ManagedFixedPartitionResolverGeneric::getName()
       {
         try {
           return m_managedptr->getName();
@@ -242,7 +241,7 @@ namespace apache
         return NULL;
       }
 
-      const char* ManagedFixedPartitionResolverGeneric::getPartitionName(const EntryEvent& opDetails)
+      const std::string& ManagedFixedPartitionResolverGeneric::getPartitionName(const EntryEvent& opDetails)
       {
         try {
           return m_managedptr->getPartitionName(opDetails);

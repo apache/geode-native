@@ -77,8 +77,8 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
                       int loadConditioningInterval, int minConnections,
                       int maxConnections, int retryAttempts,
                       std::chrono::milliseconds idleTimeout, int pingInterval,
-                      const char* name, int readTimeout,
-                      const char* serverGroup, int socketBufferSize,
+                      const std::string& name, int readTimeout,
+                      const std::string& serverGroup, int socketBufferSize,
                       bool subscriptionEnabled,
                       int subscriptionMessageTrackingTimeout,
                       int subscriptionAckInterval, int subscriptionRedundancy,
@@ -95,9 +95,9 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
 
   std::cout << "Checking pool " << pool->getName() << std::endl;
 
-  if (strcmp(pool->getName(), name)) {
+  if (pool->getName() != name) {
     sprintf(logmsg, "checkPoolAttribs: Pool name expected [%s], actual [%s]",
-            name, pool->getName() == nullptr ? "null" : pool->getName());
+            name.c_str(), pool->getName().c_str());
     LOG(logmsg);
     return false;
   }
@@ -171,11 +171,10 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
     LOG(logmsg);
     return false;
   }
-  if (strcmp(serverGroup, pool->getServerGroup())) {
-    sprintf(
-        logmsg, "checkPoolAttribs: Pool serverGroup expected [%s], actual [%s]",
-        serverGroup,
-        pool->getServerGroup() == nullptr ? "null" : pool->getServerGroup());
+  if (serverGroup != pool->getServerGroup()) {
+    sprintf(logmsg,
+            "checkPoolAttribs: Pool serverGroup expected [%s], actual [%s]",
+            serverGroup.c_str(), pool->getServerGroup().c_str());
     LOG(logmsg);
     return false;
   }
@@ -348,19 +347,19 @@ int testXmlCacheCreationWithPools() {
 
   std::cout << "Test the attributes of region" << std::endl;
 
-  const char* poolNameReg1 = regPtr1->getAttributes()->getPoolName();
-  const char* poolNameSubReg = subRegPtr->getAttributes()->getPoolName();
-  const char* poolNameReg2 = regPtr2->getAttributes()->getPoolName();
+  const auto& poolNameReg1 = regPtr1->getAttributes()->getPoolName();
+  const auto& poolNameSubReg = subRegPtr->getAttributes()->getPoolName();
+  const auto& poolNameReg2 = regPtr2->getAttributes()->getPoolName();
 
-  if (strcmp(poolNameReg1, "test_pool_1")) {
+  if (poolNameReg1 != "test_pool_1") {
     std::cout << "Wrong pool name for region 1" << std::endl;
     return -1;
   }
-  if (strcmp(poolNameReg2, "test_pool_2")) {
+  if (poolNameReg2 != "test_pool_2") {
     std::cout << "Wrong pool name for region 2" << std::endl;
     return -1;
   }
-  if (strcmp(poolNameSubReg, "test_pool_2")) {
+  if (poolNameSubReg != "test_pool_2") {
     std::cout << "Wrong pool name for sub region" << std::endl;
     return -1;
   }

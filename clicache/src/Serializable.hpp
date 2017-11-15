@@ -17,6 +17,7 @@
 
 #pragma once
 
+
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
 #include <geode/CacheableKey.hpp>
@@ -25,7 +26,6 @@
 
 #include "IGeodeSerializable.hpp"
 #include "IGeodeDelta.hpp"
-#include "impl/ManagedString.hpp"
 #include "native_shared_ptr.hpp"
 #include "impl/EnumInfo.hpp"
 #include "Log.hpp"
@@ -299,8 +299,8 @@ namespace Apache
 
       internal:
 
-				static System::Int32 GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType, Cache^ cache);
-				static IGeodeSerializable^ GetPDXTypeById(const char* poolName, System::Int32 typeId, Cache^ cache);
+				static System::Int32 GetPDXIdForType(String^ poolName, IGeodeSerializable^ pdxType, Cache^ cache);
+				static IGeodeSerializable^ GetPDXTypeById(String^ poolName, System::Int32 typeId, Cache^ cache);
 				static IPdxSerializable^ Serializable::GetPdxType(String^ className);
 				static void RegisterPDXManagedCacheableKey(Cache^ cache);
         static bool IsObjectAndPdxSerializerRegistered(String^ className);
@@ -317,9 +317,7 @@ namespace Apache
 
          static Dictionary<String^, PdxTypeFactoryMethod^>^ PdxDelegateMap =
           gcnew Dictionary<String^, PdxTypeFactoryMethod^>();
-       
-        static String^ GetString(std::shared_ptr<native::CacheableString> cStr);//native::CacheableString*
-        
+               
         // These are the new static methods to get/put data from c++
 
         //byte
@@ -390,21 +388,6 @@ namespace Apache
        static std::shared_ptr<native::CacheableString> GetCacheableString(String^ value);
 
        static std::shared_ptr<native::CacheableString> GetCacheableString2(String^ value);
-
-       /*
-        static String^ GetString(std::shared_ptr<native::CacheableString> cStr)//native::CacheableString*
-        {
-          if (cStr == nullptr) {
-            return nullptr;
-          }
-          else if (cStr->isWideString()) {
-            return ManagedString::Get(cStr->asWChar());
-          }
-          else {
-            return ManagedString::Get(cStr->asChar());
-          }
-        }
-        */
 
         static array<Byte>^ getSByteArray(array<SByte>^ sArray);
         

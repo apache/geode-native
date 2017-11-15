@@ -16,8 +16,10 @@
  */
 
 
+
 #include "ManagedPersistenceManager.hpp"
 #include "../IPersistenceManager.hpp"
+#include "ManagedString.hpp"
 
 #include <string>
 
@@ -199,11 +201,9 @@ namespace apache
         }
         catch (System::Exception^ ex)
         {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedPersistenceManagerGeneric: Got an exception while "
-            "loading managed library: ";
-          ex_str += mg_exStr.CharPtr;
-          throw IllegalArgumentException(ex_str.c_str());
+            "loading managed library: " + marshal_as<std::string>(ex->ToString());
+          throw IllegalArgumentException(ex_str);
         }
         return NULL;
       }

@@ -59,32 +59,38 @@ class CPPCACHE_EXPORT CqQuery  {
    * QueryService.
    * @returns The query string.
    */
-  virtual const char* getQueryString() const = 0;
+  virtual const std::string& getQueryString() const = 0;
+
   /**
    * Get teh query object generated for this CQs query.
    * @return Query object fort he query string
    */
   virtual std::shared_ptr<Query> getQuery() const = 0;
+
   /**
    * Get the name of the CQ.
    * @return the name of the CQ.
    */
-  virtual const char* getName() const = 0;
+  virtual const std::string& getName() const = 0;
+
   /**
    * Get the statistics information of this CQ.
    * @return CqStatistics, the CqStatistics object.
    */
-  virtual const std::shared_ptr<CqStatistics> getStatistics() const = 0;
+  virtual std::shared_ptr<CqStatistics> getStatistics() const = 0;
+
   /**
    * Get the Attributes of this CQ.
    * @return CqAttributes, the CqAttributes object.
    */
-  virtual const std::shared_ptr<CqAttributes> getCqAttributes() const = 0;
+  virtual std::shared_ptr<CqAttributes> getCqAttributes() const = 0;
+
   /**
    * Get the AttributesMutator of this CQ.
    * @return CqAttributesMutator, the CqAttributesMutator object.
    */
-  virtual const std::shared_ptr<CqAttributesMutator> getCqAttributesMutator() const = 0;
+  virtual std::shared_ptr<CqAttributesMutator> getCqAttributesMutator()
+      const = 0;
 
   /**
    * Start executing the CQ or if this CQ is stopped earlier, resumes execution
@@ -126,6 +132,7 @@ class CPPCACHE_EXPORT CqQuery  {
    * @endnativeclient
    */
   virtual void execute() = 0;
+
   /**
    *  Stops this CqQuery without releasing resources. Puts the CqQuery into
    *  the STOPPED state. Can be resumed by calling execute or
@@ -157,27 +164,26 @@ class CPPCACHE_EXPORT CqQuery  {
    * This allows to check if the CQ is in running or active.
    * @return boolean true if running, false otherwise
    */
-  virtual bool isRunning() = 0;
+  virtual bool isRunning() const = 0;
 
   /**
    * This allows to check if the CQ is in stopped.
    * @return boolean true if stopped, false otherwise
    */
-  virtual bool isStopped() = 0;
+  virtual bool isStopped() const = 0;
 
   /**
    * This allows to check if the CQ is closed.
    * @return boolean true if closed, false otherwise
    */
-  virtual bool isClosed() = 0;
+  virtual bool isClosed() const = 0;
 
   /**
    * This allows to check if the CQ is durable.
    * @return boolean true if durable, false otherwise
    * @since 5.5
    */
-  virtual bool isDurable() = 0;
-
+  virtual bool isDurable() const = 0;
 };
 
 }  // namespace client

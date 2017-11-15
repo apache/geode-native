@@ -292,7 +292,7 @@ void verifyGetAll(std::shared_ptr<Region> region, int startIndex) {
       auto key = std::dynamic_pointer_cast<CacheableKey>(iter.first);
       auto mVal = iter.second;
       if (mVal != nullptr) {
-        int val = atoi(mVal->toString()->asChar());
+        int val = atoi(mVal->toString().c_str());
         ASSERT(val == i, "value not matched");
       }
     }
@@ -393,7 +393,7 @@ BEGIN_TEST(OverFlowTest)
       char sqliteDirSubRgn[512];
       sprintf(sqliteDirSubRgn, "%s/%s_%u/_%s_SubRegion/file_0.db",
               sqlite_dir.c_str(), hname, ACE_OS::getpid(),
-              regionPtr->getName());
+              regionPtr->getName().c_str());
 
       ACE_stat fileStat;
       ASSERT(ACE_OS::stat(sqliteDirSubRgn, &fileStat) == -1,
@@ -493,8 +493,8 @@ BEGIN_TEST(OverFlowTest_SqLiteFull)
                         // catching generic message as we dont
                         // have any specific sqlitefull exception
       char buffer[1024];
-      sprintf(buffer, "Got expected exception %s: msg = %s", ex.getName(),
-              ex.what());
+      sprintf(buffer, "Got expected exception %s: msg = %s",
+              ex.getName().c_str(), ex.what());
       LOG(buffer);
     }
 

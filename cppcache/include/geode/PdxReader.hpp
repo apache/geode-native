@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PDXREADER_H_
-#define GEODE_PDXREADER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_PDXREADER_H_
+#define GEODE_PDXREADER_H_
+
 #include "CacheableBuiltins.hpp"
 #include "PdxUnreadFields.hpp"
 
@@ -30,6 +30,7 @@ namespace client {
 class PdxReader;
 class CacheableObjectArray;
 class CacheableDate;
+
 /**
  * A PdxReader will be passed to PdxSerializable.fromData or
  * during deserialization of a PDX. The domain class needs to deserialize field
@@ -74,7 +75,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual char readChar(const char* fieldName) = 0;
+  virtual char readChar(const std::string& fieldName) = 0;
 
   /**
    * Read a wide char value from the <code>PdxReader</code>.
@@ -85,7 +86,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual wchar_t readWideChar(const char* fieldName) = 0;
+  virtual wchar_t readWideChar(const std::string& fieldName) = 0;
 
   /**
    * Read a bool value from the <code>PdxReader</code>.
@@ -96,7 +97,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual bool readBoolean(const char* fieldName) = 0;
+  virtual bool readBoolean(const std::string& fieldName) = 0;
 
   /**
    * Read a int8_t value from the <code>PdxReader</code>.
@@ -107,7 +108,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual int8_t readByte(const char* fieldName) = 0;
+  virtual int8_t readByte(const std::string& fieldName) = 0;
 
   /**
    * Read a int16_t value from the <code>PdxReader</code>.
@@ -118,7 +119,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual int16_t readShort(const char* fieldName) = 0;
+  virtual int16_t readShort(const std::string& fieldName) = 0;
 
   /**
    * Read a int32_t value from the <code>PdxReader</code>.
@@ -129,7 +130,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual int32_t readInt(const char* fieldName) = 0;
+  virtual int32_t readInt(const std::string& fieldName) = 0;
 
   /**
    * Read a int64_t value from the <code>PdxReader</code>.
@@ -140,7 +141,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual int64_t readLong(const char* fieldName) = 0;
+  virtual int64_t readLong(const std::string& fieldName) = 0;
 
   /**
    * Read a float value from the <code>PdxReader</code>.
@@ -151,7 +152,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual float readFloat(const char* fieldName) = 0;
+  virtual float readFloat(const std::string& fieldName) = 0;
 
   /**
    * Read a double value from the <code>PdxReader</code>.
@@ -162,7 +163,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual double readDouble(const char* fieldName) = 0;
+  virtual double readDouble(const std::string& fieldName) = 0;
 
   /**
    * Read a char* value from the <code>PdxReader</code>.
@@ -174,7 +175,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual char* readString(const char* fieldName) = 0;
+  virtual char* readString(const std::string& fieldName) = 0;
 
   /**
    * Read a wchar_t* value from the <code>PdxReader</code>.
@@ -186,7 +187,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual wchar_t* readWideString(const char* fieldName) = 0;
+  virtual wchar_t* readWideString(const std::string& fieldName) = 0;
 
   /**
    * Read a std::shared_ptr<Cacheable> value from the <code>PdxReader</code>.
@@ -197,7 +198,8 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual std::shared_ptr<Cacheable> readObject(const char* fieldName) = 0;
+  virtual std::shared_ptr<Cacheable> readObject(
+      const std::string& fieldName) = 0;
 
   /**
    * Read a char* value from the <code>PdxReader</code> and sets array length.
@@ -209,7 +211,8 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual char* readCharArray(const char* fieldName, int32_t& length) = 0;
+  virtual char* readCharArray(const std::string& fieldName,
+                              int32_t& length) = 0;
 
   /**
    * Read a wchar_t* value from the <code>PdxReader</code> and sets array
@@ -222,7 +225,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual wchar_t* readWideCharArray(const char* fieldName,
+  virtual wchar_t* readWideCharArray(const std::string& fieldName,
                                      int32_t& length) = 0;
 
   /**
@@ -234,7 +237,8 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual bool* readBooleanArray(const char* fieldName, int32_t& length) = 0;
+  virtual bool* readBooleanArray(const std::string& fieldName,
+                                 int32_t& length) = 0;
 
   /**
    * Read a int8_t* value from the <code>PdxReader</code> and sets array length.
@@ -246,7 +250,8 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual int8_t* readByteArray(const char* fieldName, int32_t& length) = 0;
+  virtual int8_t* readByteArray(const std::string& fieldName,
+                                int32_t& length) = 0;
 
   /**
    * Read a int16_t* value from the <code>PdxReader</code> and sets array
@@ -259,7 +264,8 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual int16_t* readShortArray(const char* fieldName, int32_t& length) = 0;
+  virtual int16_t* readShortArray(const std::string& fieldName,
+                                  int32_t& length) = 0;
 
   /**
    * Read a int32_t* value from the <code>PdxReader</code> and sets array
@@ -272,7 +278,8 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual int32_t* readIntArray(const char* fieldName, int32_t& length) = 0;
+  virtual int32_t* readIntArray(const std::string& fieldName,
+                                int32_t& length) = 0;
 
   /**
    * Read a int64_t* value from the <code>PdxReader</code> and sets array
@@ -285,7 +292,8 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual int64_t* readLongArray(const char* fieldName, int32_t& length) = 0;
+  virtual int64_t* readLongArray(const std::string& fieldName,
+                                 int32_t& length) = 0;
 
   /**
    * Read a float* value from the <code>PdxReader</code> and sets array length.
@@ -297,7 +305,8 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual float* readFloatArray(const char* fieldName, int32_t& length) = 0;
+  virtual float* readFloatArray(const std::string& fieldName,
+                                int32_t& length) = 0;
 
   /**
    * Read a double* value from the <code>PdxReader</code> and sets array length.
@@ -309,7 +318,8 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual double* readDoubleArray(const char* fieldName, int32_t& length) = 0;
+  virtual double* readDoubleArray(const std::string& fieldName,
+                                  int32_t& length) = 0;
 
   /**
    * Read a char** value from the <code>PdxReader</code> and sets array length.
@@ -322,7 +332,8 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual char** readStringArray(const char* fieldName, int32_t& length) = 0;
+  virtual char** readStringArray(const std::string& fieldName,
+                                 int32_t& length) = 0;
 
   /**
    * Read a wchar_t** value from the <code>PdxReader</code> and sets array
@@ -336,7 +347,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual wchar_t** readWideStringArray(const char* fieldName,
+  virtual wchar_t** readWideStringArray(const std::string& fieldName,
                                         int32_t& length) = 0;
 
   /**
@@ -350,7 +361,7 @@ class CPPCACHE_EXPORT PdxReader {
    * @see PdxReader#hasField
    */
   virtual std::shared_ptr<CacheableObjectArray> readObjectArray(
-      const char* fieldName) = 0;
+      const std::string& fieldName) = 0;
 
   /**
    * Read a int8_t** value from the <code>PdxReader</code> and sets
@@ -365,7 +376,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual int8_t** readArrayOfByteArrays(const char* fieldName,
+  virtual int8_t** readArrayOfByteArrays(const std::string& fieldName,
                                          int32_t& arrayLength,
                                          int32_t** elementLength) = 0;
 
@@ -379,7 +390,8 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual std::shared_ptr<CacheableDate> readDate(const char* fieldName) = 0;
+  virtual std::shared_ptr<CacheableDate> readDate(
+      const std::string& fieldName) = 0;
 
   /**
    * Checks if the named field exists and returns the result.
@@ -389,7 +401,7 @@ class CPPCACHE_EXPORT PdxReader {
    * @return <code>true</code> if the named field exists; otherwise
    * <code>false</code>
    */
-  virtual bool hasField(const char* fieldName) = 0;
+  virtual bool hasField(const std::string& fieldName) = 0;
 
   /**
    * Checks if the named field was {@link PdxWriter#markIdentityField}marked as
@@ -402,7 +414,7 @@ class CPPCACHE_EXPORT PdxReader {
    * @return <code>true</code> if the named field exists and was marked as an
    * identify field; otherwise <code>false</code>
    */
-  virtual bool isIdentityField(const char* fieldName) = 0;
+  virtual bool isIdentityField(const std::string& fieldName) = 0;
 
   /**
    * This method returns an object that represents all the unread fields which

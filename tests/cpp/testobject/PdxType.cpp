@@ -71,7 +71,7 @@ bool PdxTests::PdxType::generic2DCompare(T1** value1, T2** value2, int length,
 // PdxType::~PdxObject() {
 //}
 
-void PdxTests::PdxType::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
+void PdxTests::PdxType::toData(std::shared_ptr<PdxWriter> pw) const {
   // TODO:delete it later
 
   int* lengthArr = new int[2];
@@ -263,13 +263,13 @@ void PdxTests::PdxType::fromData(std::shared_ptr<PdxReader> pr) {
 
   LOGINFO("PdxObject::readObject() for enum Done...");
 }
-std::shared_ptr<CacheableString> PdxTests::PdxType::toString() const {
+std::string PdxTests::PdxType::toString() const {
   char idbuf[1024];
   // sprintf(idbuf,"PdxObject: [ m_bool=%d ] [m_byte=%d] [m_int16=%d]
   // [m_int32=%d] [m_float=%f] [m_double=%lf] [ m_string=%s ]",m_bool, m_byte,
   // m_int16, m_int32, m_float, m_double, m_string);
   sprintf(idbuf, "PdxObject:[m_int32=%d]", m_int32);
-  return CacheableString::create(idbuf);
+  return idbuf;
 }
 
 bool PdxTests::PdxType::equals(PdxTests::PdxType& other,
@@ -335,10 +335,8 @@ bool PdxTests::PdxType::equals(PdxTests::PdxType& other,
   auto myenum = std::dynamic_pointer_cast<CacheableEnum>(m_pdxEnum);
   auto otenum = std::dynamic_pointer_cast<CacheableEnum>(ot->m_pdxEnum);
   if (myenum->getEnumOrdinal() != otenum->getEnumOrdinal()) return false;
-  if (strcmp(myenum->getEnumClassName(), otenum->getEnumClassName()) != 0) {
-    return false;
-  }
-  if (strcmp(myenum->getEnumName(), otenum->getEnumName()) != 0) return false;
+  if (myenum->getEnumClassName() != otenum->getEnumClassName()) return false;
+  if (myenum->getEnumName() != otenum->getEnumName()) return false;
 
   genericValCompare(ot->m_arraylist->size(), m_arraylist->size());
   for (int k = 0; k < m_arraylist->size(); k++) {

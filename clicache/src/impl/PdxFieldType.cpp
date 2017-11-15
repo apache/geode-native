@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-#pragma once
+
+
+
 #include "PdxFieldType.hpp"
-#include "begin_native.hpp"
+#include "../begin_native.hpp"
 #include <geode/GeodeTypeIds.hpp>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 
 using namespace System;

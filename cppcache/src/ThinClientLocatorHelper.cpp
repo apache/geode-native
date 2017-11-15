@@ -69,9 +69,9 @@ Connector* ThinClientLocatorHelper::createConnection(
                                .getSystemProperties();
   if (m_poolDM && systemProperties.sslEnabled()) {
     socket = new TcpSslConn(hostname, port, waitSeconds, maxBuffSizePool,
-                            systemProperties.sslTrustStore(),
-                            systemProperties.sslKeyStore(),
-                            systemProperties.sslKeystorePassword());
+                            systemProperties.sslTrustStore().c_str(),
+                            systemProperties.sslKeyStore().c_str(),
+                            systemProperties.sslKeystorePassword().c_str());
   } else {
     socket = new TcpConn(hostname, port, waitSeconds, maxBuffSizePool);
   }
@@ -142,8 +142,8 @@ GfErrType ThinClientLocatorHelper::getAllServers(
     } catch (const AuthenticationRequiredException&) {
       continue;
     } catch (const Exception& excp) {
-      LOGFINE("Exception while querying locator: %s: %s", excp.getName(),
-              excp.what());
+      LOGFINE("Exception while querying locator: %s: %s",
+              excp.getName().c_str(), excp.what());
       continue;
     }
   }
@@ -233,8 +233,8 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
     } catch (const AuthenticationRequiredException& excp) {
       throw excp;
     } catch (const Exception& excp) {
-      LOGFINE("Exception while querying locator: %s: %s", excp.getName(),
-              excp.what());
+      LOGFINE("Exception while querying locator: %s: %s",
+              excp.getName().c_str(), excp.what());
       continue;
     }
   }
@@ -345,8 +345,8 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
     } catch (const AuthenticationRequiredException& excp) {
       throw excp;
     } catch (const Exception& excp) {
-      LOGFINE("Exception while querying locator: %s: %s", excp.getName(),
-              excp.what());
+      LOGFINE("Exception while querying locator: %s: %s",
+              excp.getName().c_str(), excp.what());
       continue;
     }
   }
@@ -405,8 +405,11 @@ GfErrType ThinClientLocatorHelper::updateLocators(
       if (receivedLength <= 0) {
         continue;
       }
-      auto di = m_poolDM->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
-                  reinterpret_cast<uint8_t*>(buff), receivedLength);
+      auto di = m_poolDM->getConnectionManager()
+                    .getCacheImpl()
+                    ->getCache()
+                    ->createDataInput(reinterpret_cast<uint8_t*>(buff),
+                                      receivedLength);
       auto response = std::make_shared<LocatorListResponse>();
 
       /* adongre
@@ -443,8 +446,8 @@ GfErrType ThinClientLocatorHelper::updateLocators(
     } catch (const AuthenticationRequiredException& excp) {
       throw excp;
     } catch (const Exception& excp) {
-      LOGFINE("Exception while querying locator: %s: %s", excp.getName(),
-              excp.what());
+      LOGFINE("Exception while querying locator: %s: %s",
+              excp.getName().c_str(), excp.what());
       continue;
     }
   }

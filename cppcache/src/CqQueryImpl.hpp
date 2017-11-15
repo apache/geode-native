@@ -103,12 +103,12 @@ class CqQueryImpl : public CqQuery,
   /**
    * returns CQ name
    */
-  const char* getName() const override;
+  const std::string& getName() const override;
 
   /**
    * sets the CqName.
    */
-  void setName(std::string& cqName);
+  void setName(std::string cqName);
 
   /**
    * Initializes the CqQuery.
@@ -148,7 +148,7 @@ class CqQueryImpl : public CqQuery,
   /**
    * Returns the QueryString of this CQ.
    */
-  const char* getQueryString() const override;
+  const std::string& getQueryString() const override;
 
   /**
    * Return the query after replacing region names with parameters
@@ -159,13 +159,13 @@ class CqQueryImpl : public CqQuery,
   /**
    * @see org.apache.geode.cache.query.CqQuery#getStatistics()
    */
-  const std::shared_ptr<CqStatistics> getStatistics() const override;
+  std::shared_ptr<CqStatistics> getStatistics() const override;
 
   CqQueryVsdStats& getVsdStats() {
     return *dynamic_cast<CqQueryVsdStats*>(m_stats.get());
   }
 
-  const std::shared_ptr<CqAttributes> getCqAttributes() const override;
+  std::shared_ptr<CqAttributes> getCqAttributes() const override;
 
   std::shared_ptr<Region> getCqBaseRegion();
 
@@ -223,13 +223,12 @@ class CqQueryImpl : public CqQuery,
    */
   void setCqState(CqState::StateType state);
 
-  const std::shared_ptr<CqAttributesMutator> getCqAttributesMutator()
-      const override;
+  std::shared_ptr<CqAttributesMutator> getCqAttributesMutator() const override;
 
   /**
    * @return Returns the cqOperation.
    */
-  CqOperation::CqOperationType getCqOperation();
+  CqOperation::CqOperationType getCqOperation() const;
 
   /**
    * @param cqOperation The cqOperation to set.
@@ -246,31 +245,31 @@ class CqQueryImpl : public CqQuery,
    * Return true if the CQ is in running state
    * @return true if running, false otherwise
    */
-  bool isRunning() override;
+  bool isRunning() const override;
 
   /**
    * Return true if the CQ is in Sstopped state
    * @return true if stopped, false otherwise
    */
-  bool isStopped() override;
+  bool isStopped() const override;
 
   /**
    * Return true if the CQ is closed
    * @return true if closed, false otherwise
    */
-  bool isClosed() override;
+  bool isClosed() const override;
 
   /**
    * Return true if the CQ is durable
    * @return true if durable, false otherwise
    */
-  bool isDurable() override;
+  bool isDurable() const override;
 
   inline ThinClientBaseDM* getDM() { return m_tccdm; }
 
  private:
   void updateStats();
-  ACE_Recursive_Thread_Mutex m_mutex;
+  mutable ACE_Recursive_Thread_Mutex m_mutex;
   void sendStopOrClose(TcrMessage::MsgType requestType);
   ThinClientBaseDM* m_tccdm;
   std::shared_ptr<ProxyCache> m_proxyCache;

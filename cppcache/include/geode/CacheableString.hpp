@@ -54,14 +54,14 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const;
+  virtual void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object
    * Throw IllegalArgumentException if the packed CacheableString is not less
    * than 64K bytes.
    **/
-  virtual void fromData(DataInput& input);
+  virtual void fromData(DataInput& input) override;
 
   /** creation function for strings */
   static Serializable* createDeserializable();
@@ -80,7 +80,7 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int32_t classId() const;
+  virtual int32_t classId() const override;
 
   /**
    * Return the typeId byte of the instance being serialized.
@@ -97,13 +97,13 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
    * <code>GeodeTypeIds::CacheableStringHuge</code> for char* and wchar_t*
    * respectively.
    */
-  virtual int8_t typeId() const;
+  virtual int8_t typeId() const override;
 
   /** return true if this key matches other. */
-  virtual bool operator==(const CacheableKey& other) const;
+  virtual bool operator==(const CacheableKey& other) const override;
 
   /** return the hashcode for this key. */
-  virtual int32_t hashcode() const;
+  virtual int32_t hashcode() const override;
 
   /**
    * Factory method for creating an instance of CacheableString from
@@ -230,35 +230,12 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
   /** Return the length of the contained string. */
   inline uint32_t length() const { return m_len; }
 
-  /**
-   * Display this object as c string. In this case, it returns the same
-   * value as asChar() when underlying type is a char* and returns the same
-   * value as asWChar() cast to char* when the underlying type is a wchar_t*.
-   * To handle this correctly the user should find the actual type by calling
-   * typeId() or isWideString() and cast to the correct type accordingly.
-   * Note: this is a debugging API, not intended for getting the exact value
-   * of the CacheableString. In a future release this may return a more
-   * summary representation. This is historical. It is preferred that the
-   * user call logString or asChar/asWChar, depending on the need.
-   */
-  const char* toString() { return reinterpret_cast<const char*>(m_str); }
-
-  virtual std::shared_ptr<CacheableString> toString() const {
-    // TODO this cast seems odd
-    return std::const_pointer_cast<CacheableString>(
-        std::static_pointer_cast<const CacheableString>(shared_from_this()));
-  }
-
-  /** get the name of the class of this object for logging purpose */
-  virtual const char* className() const { return "CacheableString"; }
+  virtual std::string toString() const override;
 
   /** Destructor */
   virtual ~CacheableString();
 
-  /** used to render as a string for logging. */
-  virtual int32_t logString(char* buffer, int32_t maxLength) const;
-
-  virtual uint32_t objectSize() const;
+  virtual uint32_t objectSize() const override;
 
  protected:
   /** Private method to populate the <code>CacheableString</code>. */
@@ -287,8 +264,8 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
 
  private:
   // never implemented.
-  void operator=(const CacheableString& other);
-  CacheableString(const CacheableString& other);
+  void operator=(const CacheableString& other) = delete;
+  CacheableString(const CacheableString& other) = delete;
 };
 
 /** overload of apache::geode::client::createKeyArr to pass char* */

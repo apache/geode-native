@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-//#include "../geode_includes.hpp"
+
+
 #include "ManagedPartitionResolver.hpp"
 #include "../IPartitionResolver.hpp"
 #include "../Region.hpp"
@@ -209,11 +210,9 @@ namespace apache
         }
         catch (System::Exception^ ex)
         {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedPartitionResolverGeneric: Got an exception while "
-            "loading managed library: ";
-          ex_str += mg_exStr.CharPtr;
-          throw IllegalArgumentException(ex_str.c_str());
+            "loading managed library: " + marshal_as<std::string>(ex->ToString());
+          throw IllegalArgumentException(ex_str);
         }
         return NULL;
       }
@@ -232,7 +231,7 @@ namespace apache
         return nullptr;
       }
 
-      const char* ManagedPartitionResolverGeneric::getName()
+      const std::string& ManagedPartitionResolverGeneric::getName() 
       {
         try {
           return m_managedptr->getName();

@@ -14,9 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <geode/SystemProperties.hpp>
+
 #include "ThinClientPoolHADM.hpp"
 #include "ExpiryHandler_T.hpp"
-#include <geode/SystemProperties.hpp>
+#include "util/exception.hpp"
 
 using namespace apache::geode::client;
 const char* ThinClientPoolHADM::NC_Redundancy = "NC Redundancy";
@@ -245,9 +248,8 @@ void ThinClientPoolHADM::readyForEvents() {
     init();
   }
 
-  const char* durable = sysProp.durableClientId();
-
-  if (durable != nullptr && strlen(durable) > 0) {
+  auto&& durable = sysProp.durableClientId();
+  if (!durable.empty()) {
     m_redundancyManager->readyForEvents();
   }
 }
@@ -257,12 +259,8 @@ void ThinClientPoolHADM::netDown() {
 
   {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointsLock);
-
-    for (ACE_Map_Manager<std::string, TcrEndpoint*,
-                         ACE_Recursive_Thread_Mutex>::iterator currItr =
-             m_endpoints.begin();
-         currItr != m_endpoints.end(); currItr++) {
-      (*currItr).int_id_->setConnectionStatus(false);
+    for (auto&& currItr : m_endpoints) {
+      currItr.int_id_->setConnectionStatus(false);
     }
   }
 

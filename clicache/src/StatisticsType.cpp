@@ -16,12 +16,9 @@
  */
 
 
-
-//#include "geode_includes.hpp"
 #include "StatisticsType.hpp"
 #include "StatisticDescriptor.hpp"
 
-#include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
 
@@ -32,15 +29,16 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace msclr::interop;
 
       String^ StatisticsType::Name::get()
       {
-        return ManagedString::Get( m_nativeptr->getName() );
+        return marshal_as<String^>( m_nativeptr->getName() );
       }
 
       String^ StatisticsType::Description::get()
       {
-        return ManagedString::Get( m_nativeptr->getDescription() );
+        return marshal_as<String^>( m_nativeptr->getDescription() );
       }
 
       array<StatisticDescriptor^>^ StatisticsType::Statistics::get()
@@ -60,17 +58,15 @@ namespace Apache
 
       System::Int32 StatisticsType::NameToId( String^ name )
       {
-        ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return m_nativeptr->nameToId(mg_name.CharPtr);
+          return m_nativeptr->nameToId(marshal_as<std::string>(name));
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       StatisticDescriptor^ StatisticsType::NameToDescriptor( String^ name )
       {
-        ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return StatisticDescriptor::Create(m_nativeptr->nameToDescriptor(mg_name.CharPtr));
+          return StatisticDescriptor::Create(m_nativeptr->nameToDescriptor(marshal_as<std::string>(name)));
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 

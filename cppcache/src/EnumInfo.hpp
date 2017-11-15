@@ -39,24 +39,22 @@ class CPPCACHE_EXPORT EnumInfo : public CacheableKey {
   EnumInfo();
   EnumInfo(const char* enumClassName, const char* enumName, int32_t m_ordinal);
   static Serializable* createDeserializable() { return new EnumInfo(); }
-  virtual void toData(DataOutput& output) const;
-  virtual void fromData(DataInput& input);
-  virtual uint32_t objectSize() const {
+  virtual void toData(DataOutput& output) const override;
+  virtual void fromData(DataInput& input) override;
+  virtual uint32_t objectSize() const override {
     uint32_t size = sizeof(EnumInfo);
     size += sizeof(int32_t);
     size += m_enumClassName->objectSize();
     size += m_enumName->objectSize();
     return size;
   }
-  virtual int32_t classId() const { return 0; }
-  virtual int8_t typeId() const { return GeodeTypeIds::EnumInfo; }
-  virtual std::shared_ptr<CacheableString> toString() const {
-    return CacheableString::create("EnumInfo");
-  }
-  virtual bool operator==(const CacheableKey& other) const;
-  virtual int32_t hashcode() const;
+  virtual int32_t classId() const override { return 0; }
+  virtual int8_t typeId() const override { return GeodeTypeIds::EnumInfo; }
+  virtual std::string toString() const override { return "EnumInfo"; }
+  virtual bool operator==(const CacheableKey& other) const override;
+  virtual int32_t hashcode() const override;
 
-  virtual int8_t DSFID() const;
+  virtual int8_t DSFID() const override;
   std::shared_ptr<CacheableString> getEnumClassName() const {
     return m_enumClassName;
   }

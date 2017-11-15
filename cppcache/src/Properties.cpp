@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-#include <geode/Properties.hpp>
-#include <geode/GeodeTypeIds.hpp>
-
-#include <string>
 #include <ace/Hash_Map_Manager.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
-#include "ace/config-lite.h"
-#include "ace/Versioned_Namespace.h"
+#include <ace/config-lite.h>
+#include <ace/Versioned_Namespace.h>
 #include <ace/OS_NS_stdio.h>
+
+#include <geode/Properties.hpp>
+#include <geode/GeodeTypeIds.hpp>
 
 ACE_BEGIN_VERSIONED_NAMESPACE_DECL
 
@@ -88,22 +87,12 @@ Properties::~Properties() {
   }
 }
 
-/** this return value must be stored in a std::shared_ptr<CacheableString>. */
-std::shared_ptr<CacheableString> Properties::find(const char* key) {
-  if (key == nullptr) {
-    throw NullPointerException("Properties::find: Null key given.");
-  }
-  auto keyptr = CacheableString::create(key);
+std::shared_ptr<CacheableString> Properties::find(const std::string& key) {
+  auto keyptr = CacheableString::create(key.c_str());
   CacheableKeyCacheableMapGuard guard(MAP->mutex());
   std::shared_ptr<Cacheable> value;
-  int status = MAP->find(keyptr, value);
-  if (status != 0) {
-    return nullptr;
-  }
-  if (value == nullptr) {
-    return nullptr;
-  }
-  return value->toString();
+  MAP->find(keyptr, value);
+  return std::dynamic_pointer_cast<CacheableString>(value);
 }
 std::shared_ptr<Cacheable> Properties::find(
     const std::shared_ptr<CacheableKey>& key) {
@@ -112,51 +101,36 @@ std::shared_ptr<Cacheable> Properties::find(
   }
   CacheableKeyCacheableMapGuard guard(MAP->mutex());
   std::shared_ptr<Cacheable> value;
-  int status = MAP->find(key, value);
-  if (status != 0) {
-    return nullptr;
-  }
+  MAP->find(key, value);
   return value;
 }
 
-void Properties::insert(const char* key, const char* value) {
-  if (key == nullptr) {
-    throw NullPointerException("Properties::insert: Null key given.");
-  }
-  auto keyptr = CacheableString::create(key);
-  auto valptr = (value == nullptr ? CacheableString::create("")
-                                  : CacheableString::create(value));
+void Properties::insert(const std::string& key, const std::string& value) {
+  auto keyptr = CacheableString::create(key.c_str());
+  auto valptr = CacheableString::create(value.c_str());
   MAP->rebind(keyptr, valptr);
 }
 
-void Properties::insert(const char* key, const int value) {
-  if (key == nullptr) {
-    throw NullPointerException("Properties::insert: Null key given.");
-  }
-  auto keyptr = CacheableString::create(key);
+void Properties::insert(const std::string& key, const int value) {
+  auto keyptr = CacheableString::create(key.c_str());
   auto valptr = CacheableString::create(std::to_string(value).c_str());
   MAP->rebind(keyptr, valptr);
 }
 
-void Properties::insert(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value) {
+void Properties::insert(const std::shared_ptr<CacheableKey>& key,
+                        const std::shared_ptr<Cacheable>& value) {
   if (key == nullptr) {
     throw NullPointerException("Properties::insert: Null key given.");
   }
   MAP->rebind(key, value);
 }
 
-void Properties::remove(const char* key) {
-  if (key == nullptr) {
-    throw NullPointerException("Properties::remove: Null key given.");
-  }
-  auto keyptr = CacheableString::create(key);
+void Properties::remove(const std::string& key) {
+  auto keyptr = CacheableString::create(key.c_str());
   MAP->unbind(keyptr);
 }
 
 void Properties::remove(const std::shared_ptr<CacheableKey>& key) {
-  if (key == nullptr) {
-    throw NullPointerException("Properties::remove: Null key given.");
-  }
   MAP->unbind(key);
 }
 
@@ -166,12 +140,9 @@ uint32_t Properties::getSize() const {
 
 void Properties::foreach (Visitor& visitor) const {
   CacheableKeyCacheableMapGuard guard(MAP->mutex());
-  CacheableKeyCacheableMap::iterator iter = MAP->begin();
-  while (iter != MAP->end()) {
-    auto key = (*iter).ext_id_;
-    auto val = (*iter).int_id_;
-    visitor.visit(key, val);
-    ++iter;
+
+  for (auto&& entry : *MAP) {
+    visitor.visit(entry.ext_id_, entry.int_id_);
   }
 }
 
@@ -191,8 +162,7 @@ void Properties::addAll(const std::shared_ptr<Properties>& other) {
   other->foreach (aCopier);
 }
 
-void Properties::load(const char* fileName) {
-  GF_R_ASSERT(fileName != nullptr);
+void Properties::load(const std::string& fileName) {
   PropertiesFile pf(*this);
   pf.readFile(fileName);
 }

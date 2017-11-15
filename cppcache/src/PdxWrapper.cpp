@@ -30,17 +30,11 @@ namespace apache {
 namespace geode {
 namespace client {
 
-PdxWrapper::PdxWrapper(void *userObject, const char *className,
+PdxWrapper::PdxWrapper(void *userObject, std::string className,
                        std::shared_ptr<PdxSerializer> pdxSerializerPtr)
-    : m_userObject(userObject), m_serializer(pdxSerializerPtr) {
-  if (className != nullptr) {
-    m_className = Utils::copyString(className);
-  } else {
-    LOGERROR("Class name not provided to PdxWrapper constructor");
-    throw IllegalArgumentException(
-        "Class name not provided to PdxWrapper constructor");
-  }
-
+    : m_userObject(userObject),
+      m_className(className),
+      m_serializer(pdxSerializerPtr) {
   if (m_serializer == nullptr) {
     LOGERROR("No registered PDX serializer found for PdxWrapper");
     throw IllegalArgumentException(
@@ -51,8 +45,8 @@ PdxWrapper::PdxWrapper(void *userObject, const char *className,
 
   if (m_deallocator == nullptr) {
     LOGERROR(
-        "No deallocator function found from PDX serializer for PdxWrapper for "
-        "%s",
+        "No deallocator function found from PDX serializer for PdxWrapper "
+        "for " +
         className);
     throw IllegalArgumentException(
         "No deallocator function found from PDX serializer for PdxWrapper");
@@ -62,17 +56,9 @@ PdxWrapper::PdxWrapper(void *userObject, const char *className,
   m_sizer = m_serializer->getObjectSizer(className);
 }
 
-PdxWrapper::PdxWrapper(const char *className,
+PdxWrapper::PdxWrapper(std::string className,
                        std::shared_ptr<PdxSerializer> pdxSerializerPtr)
-    : m_serializer(pdxSerializerPtr) {
-  if (className != nullptr) {
-    m_className = Utils::copyString(className);
-  } else {
-    LOGERROR("Class name not provided to PdxWrapper for deserialization");
-    throw IllegalArgumentException(
-        "Class name not provided to PdxWrapper for deserialization");
-  }
-
+    : m_className(className), m_serializer(pdxSerializerPtr) {
   if (m_serializer == nullptr) {
     LOGERROR(
         "No registered PDX serializer found for PdxWrapper deserialization");
@@ -80,12 +66,12 @@ PdxWrapper::PdxWrapper(const char *className,
         "No registered PDX serializer found for PdxWrapper deserialization");
   }
 
-  m_deallocator = m_serializer->getDeallocator(className);
+  m_deallocator = m_serializer->getDeallocator(className.c_str());
 
   if (m_deallocator == nullptr) {
     LOGERROR(
         "No deallocator function found from PDX serializer for PdxWrapper "
-        "deserialization for %s",
+        "deserialization for " +
         className);
     throw IllegalArgumentException(
         "No deallocator function found from PDX serializer for PdxWrapper "
@@ -93,7 +79,7 @@ PdxWrapper::PdxWrapper(const char *className,
   }
 
   /* m_sizer can be nullptr - required only if heap LRU is enabled */
-  m_sizer = m_serializer->getObjectSizer(className);
+  m_sizer = m_serializer->getObjectSizer(className.c_str());
 
   /* adongre   - Coverity II
    * CID 29277: Uninitialized pointer field (UNINIT_CTOR)
@@ -109,9 +95,7 @@ void *PdxWrapper::getObject(bool detach) {
   return retVal;
 }
 
-const char *PdxWrapper::getClassName() const {
-  return (const char *)m_className;
-}
+const std::string &PdxWrapper::getClassName() const { return m_className; }
 
 bool PdxWrapper::operator==(const CacheableKey &other) const {
   PdxWrapper *wrapper =
@@ -127,9 +111,9 @@ int32_t PdxWrapper::hashcode() const {
   return apache::geode::client::serializer::hashcode(hash);
 }
 
-void PdxWrapper::toData(std::shared_ptr<PdxWriter> output) {
+void PdxWrapper::toData(std::shared_ptr<PdxWriter> output) const {
   if (m_userObject != nullptr) {
-    m_serializer->toData(m_userObject, (const char *)m_className, output);
+    m_serializer->toData(m_userObject, m_className.c_str(), output);
   } else {
     LOGERROR("User object is nullptr or detached in PdxWrapper toData");
     throw IllegalStateException(
@@ -138,7 +122,7 @@ void PdxWrapper::toData(std::shared_ptr<PdxWriter> output) {
 }
 
 void PdxWrapper::fromData(std::shared_ptr<PdxReader> input) {
-  m_userObject = m_serializer->fromData((const char *)m_className, input);
+  m_userObject = m_serializer->fromData(m_className.c_str(), input);
 }
 
 void PdxWrapper::toData(DataOutput &output) const {
@@ -155,20 +139,19 @@ uint32_t PdxWrapper::objectSize() const {
   if (m_sizer == nullptr || m_userObject == nullptr) {
     return 0;
   } else {
-    return m_sizer(m_userObject, (const char *)m_className);
+    return m_sizer(m_userObject, m_className.c_str());
   }
 }
-std::shared_ptr<CacheableString> PdxWrapper::toString() const {
+std::string PdxWrapper::toString() const {
   std::string message = "PdxWrapper for ";
   message += m_className;
-  return CacheableString::create(message.c_str());
+  return message.c_str();
 }
 
 PdxWrapper::~PdxWrapper() {
   if (m_userObject != nullptr) {
-    m_deallocator(m_userObject, (const char *)m_className);
+    m_deallocator(m_userObject, m_className);
   }
-  delete[] m_className;
 }
 
 }  // namespace client

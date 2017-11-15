@@ -24,7 +24,6 @@
 #include "StatisticsType.hpp"
 #include "StatisticDescriptor.hpp"
 #include "Statistics.hpp"
-#include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
 
@@ -35,6 +34,7 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace msclr::interop;
 
       StatisticDescriptor^ StatisticsFactory::CreateIntCounter( String^ name, String^ description,String^ units )
       {
@@ -43,12 +43,13 @@ namespace Apache
 
       StatisticDescriptor^ StatisticsFactory::CreateIntCounter(String^ name, String^ description,String^ units, bool largerBetter)
       {
-        ManagedString mg_name( name );
-        ManagedString mg_description( description );
-        ManagedString mg_units( units );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return StatisticDescriptor::Create(m_nativeptr->createIntCounter(mg_name.CharPtr, mg_description.CharPtr, mg_units.CharPtr, largerBetter));
+          return StatisticDescriptor::Create(m_nativeptr->createIntCounter(
+              marshal_as<std::string>(name),
+              marshal_as<std::string>(description),
+              marshal_as<std::string>(units),
+              largerBetter));
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -60,12 +61,13 @@ namespace Apache
 
       StatisticDescriptor^ StatisticsFactory::CreateLongCounter( String^ name, String^ description,String^ units, bool largerBetter )
       {
-        ManagedString mg_name( name );
-        ManagedString mg_description( description );
-        ManagedString mg_units( units );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return StatisticDescriptor::Create(m_nativeptr->createLongCounter(mg_name.CharPtr, mg_description.CharPtr, mg_units.CharPtr, largerBetter));
+          return StatisticDescriptor::Create(m_nativeptr->createLongCounter(
+              marshal_as<std::string>(name),
+              marshal_as<std::string>(description),
+              marshal_as<std::string>(units),
+              largerBetter));
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }      
@@ -77,12 +79,13 @@ namespace Apache
 
       StatisticDescriptor^ StatisticsFactory::CreateDoubleCounter( String^ name, String^ description, String^ units, bool largerBetter )
       {
-        ManagedString mg_name( name );
-        ManagedString mg_description( description );
-        ManagedString mg_units( units );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return StatisticDescriptor::Create(m_nativeptr->createDoubleCounter(mg_name.CharPtr, mg_description.CharPtr, mg_units.CharPtr, largerBetter));
+          return StatisticDescriptor::Create(m_nativeptr->createDoubleCounter(
+              marshal_as<std::string>(name),
+              marshal_as<std::string>(description),
+              marshal_as<std::string>(units),
+              largerBetter));
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -95,12 +98,13 @@ namespace Apache
 
       StatisticDescriptor^ StatisticsFactory::CreateIntGauge( String^ name, String^ description, String^ units, bool largerBetter )
       {
-        ManagedString mg_name( name );
-        ManagedString mg_description( description );
-        ManagedString mg_units( units );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return StatisticDescriptor::Create(m_nativeptr->createIntGauge(mg_name.CharPtr, mg_description.CharPtr, mg_units.CharPtr, largerBetter));
+          return StatisticDescriptor::Create(m_nativeptr->createIntGauge(
+              marshal_as<std::string>(name),
+              marshal_as<std::string>(description),
+              marshal_as<std::string>(units),
+              largerBetter));
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */      
       }
@@ -112,12 +116,13 @@ namespace Apache
 
       StatisticDescriptor^ StatisticsFactory::CreateLongGauge( String^ name, String^ description, String^ units, bool largerBetter )
       {
-        ManagedString mg_name( name );
-        ManagedString mg_description( description );
-        ManagedString mg_units( units );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return StatisticDescriptor::Create(m_nativeptr->createLongGauge(mg_name.CharPtr, mg_description.CharPtr, mg_units.CharPtr, largerBetter));
+          return StatisticDescriptor::Create(m_nativeptr->createLongGauge(
+              marshal_as<std::string>(name),
+              marshal_as<std::string>(description),
+              marshal_as<std::string>(units),
+              largerBetter));
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */      
       }
@@ -129,12 +134,13 @@ namespace Apache
 
       StatisticDescriptor^ StatisticsFactory::CreateDoubleGauge( String^ name, String^ description, String^ units, bool largerBetter )
       {
-        ManagedString mg_name( name );
-        ManagedString mg_description( description );
-        ManagedString mg_units( units );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return StatisticDescriptor::Create(m_nativeptr->createDoubleGauge(mg_name.CharPtr, mg_description.CharPtr, mg_units.CharPtr, largerBetter));
+          return StatisticDescriptor::Create(m_nativeptr->createDoubleGauge(
+              marshal_as<std::string>(name),
+              marshal_as<std::string>(description),
+              marshal_as<std::string>(units),
+              largerBetter));
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */      
       }
@@ -142,8 +148,6 @@ namespace Apache
       StatisticsType^ StatisticsFactory::CreateType( String^ name, String^ description,
                                    array<StatisticDescriptor^>^ stats, System::Int32 statsLength)
       {
-        ManagedString mg_name( name );
-        ManagedString mg_description( description );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
                 
           apache::geode::statistics::StatisticDescriptor ** nativedescriptors = new apache::geode::statistics::StatisticDescriptor*[statsLength];
@@ -151,17 +155,20 @@ namespace Apache
           {
             nativedescriptors[index] = stats[index]->GetNative();
           }
-          return StatisticsType::Create(m_nativeptr->createType(mg_name.CharPtr, mg_description.CharPtr, nativedescriptors, statsLength));
+          return StatisticsType::Create(m_nativeptr->createType(
+              marshal_as<std::string>(name),
+              marshal_as<std::string>(description),
+              nativedescriptors,
+              statsLength));
           
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */     
       }
 
       StatisticsType^ StatisticsFactory::FindType(String^ name)
       {
-        ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return StatisticsType::Create(m_nativeptr->findType(mg_name.CharPtr));
+          return StatisticsType::Create(m_nativeptr->findType(marshal_as<std::string>(name)));
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */     
       }
@@ -177,20 +184,18 @@ namespace Apache
 
       Statistics^ StatisticsFactory::CreateStatistics(StatisticsType^ type, String^ textId)
       {
-        ManagedString mg_text( textId );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return Statistics::Create(m_nativeptr->createStatistics(type->GetNative(),(char*)mg_text.CharPtr));
+          return Statistics::Create(m_nativeptr->createStatistics(type->GetNative(), marshal_as<std::string>(textId)));
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       Statistics^ StatisticsFactory::CreateStatistics(StatisticsType^ type, String^ textId, System::Int64 numericId)
       {
-        ManagedString mg_text( textId );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return Statistics::Create(m_nativeptr->createStatistics(type->GetNative(),(char*)mg_text.CharPtr, numericId));
+          return Statistics::Create(m_nativeptr->createStatistics(type->GetNative(), marshal_as<std::string>(textId), numericId));
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -206,20 +211,18 @@ namespace Apache
 
       Statistics^ StatisticsFactory::CreateAtomicStatistics(StatisticsType^ type, String^ textId)
       {
-        ManagedString mg_text( textId );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return Statistics::Create(m_nativeptr->createAtomicStatistics(type->GetNative(),(char*)mg_text.CharPtr));
+          return Statistics::Create(m_nativeptr->createAtomicStatistics(type->GetNative(), marshal_as<std::string>(textId)));
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       Statistics^ StatisticsFactory::CreateAtomicStatistics(StatisticsType^ type, String^ textId, System::Int64 numericId)
       {
-        ManagedString mg_text( textId );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          return Statistics::Create(m_nativeptr->createAtomicStatistics(type->GetNative(),(char*)mg_text.CharPtr, numericId));
+          return Statistics::Create(m_nativeptr->createAtomicStatistics(type->GetNative(), marshal_as<std::string>(textId), numericId));
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
@@ -234,7 +237,7 @@ namespace Apache
 
       String^ StatisticsFactory::Name::get( )
       {
-        return ManagedString::Get( m_nativeptr->getName() );
+        return marshal_as<String^>( m_nativeptr->getName() );
       }
 
       System::Int64 StatisticsFactory::ID::get()

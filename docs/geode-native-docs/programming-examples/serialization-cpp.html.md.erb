@@ -245,7 +245,7 @@ class ExampleObject
   
   bool operator== ( const Serializable& other ) const {
     const ExampleObject& otherEO = static_cast<const ExampleObject&>( other );
-    return ( 0 == strcmp( otherEO.toString()->asChar(), toString()->asChar() ) );
+    return ( 0 == strcmp( otherEO.toString().c_str(), toString().c_str() ) );
   }
   
   uint32_t hashcode( ) const {

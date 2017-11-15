@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_REGIONSHORTCUT_H_
-#define GEODE_REGIONSHORTCUT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_REGIONSHORTCUT_H_
+#define GEODE_REGIONSHORTCUT_H_
+
 #include "geode_globals.hpp"
 
 /**
@@ -34,6 +34,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 enum RegionShortcut {
 
   /**
@@ -72,6 +73,7 @@ enum RegionShortcut {
    */
   LOCAL_ENTRY_LRU
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

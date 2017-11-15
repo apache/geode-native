@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-#pragma once
 
-#include "begin_native.hpp"
+
+
+
+#include "../begin_native.hpp"
 #include <geode/Cache.hpp>
 #include <CacheRegionHelper.hpp>
 #include <CacheImpl.hpp>
 #include <CachePerfStats.hpp>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "PdxInstanceImpl.hpp"
 #include "PdxHelper.hpp"
@@ -33,7 +35,7 @@
 #include "../DataInput.hpp"
 #include "DotNetTypes.hpp"
 #include "PdxType.hpp"
-#include "Cache.hpp"
+#include "../Cache.hpp"
 
 namespace Apache
 {

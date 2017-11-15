@@ -169,8 +169,8 @@ void PositionPdx::fromData(std::shared_ptr<PdxReader> pr) {
   volatility = pr->readLong("volatility");
   pid = pr->readInt("pid");
 }
-std::shared_ptr<CacheableString> PositionPdx::toString() const {
+std::string PositionPdx::toString() const {
   char buf[1024];
   sprintf(buf, "PositionPdx Object:[ id=%d ]", this->pid);
-  return CacheableString::create(buf);
+  return buf;
 }

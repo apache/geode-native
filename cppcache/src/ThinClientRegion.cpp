@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <regex>
 
 #include <geode/SelectResultsIterator.hpp>
 #include <geode/SystemProperties.hpp>
@@ -41,10 +42,15 @@
 #include "PutAllPartialResultServerException.hpp"
 #include "VersionedCacheableObjectPartList.hpp"
 #include "util/bounds.hpp"
+#include "DataInputInternal.hpp"
+#include "util/exception.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+static const std::regex PREDICATE_IS_FULL_QUERY_REGEX(
+    "^\\s*(?:select|import)\\b", std::regex::icase);
 
 void setTSSExceptionMessage(const char* exMsg);
 
@@ -348,9 +354,10 @@ ThinClientRegion::ThinClientRegion(
       m_notificationSema(1),
       m_isMetaDataRefreshed(false) {
   m_transactionEnabled = true;
-  m_isDurableClnt = strlen(cacheImpl->getDistributedSystem()
-                               .getSystemProperties()
-                               .durableClientId()) > 0;
+  m_isDurableClnt = !cacheImpl->getDistributedSystem()
+                         .getSystemProperties()
+                         .durableClientId()
+                         .empty();
 }
 
 void ThinClientRegion::initTCR() {
@@ -380,8 +387,8 @@ void ThinClientRegion::initTCR() {
     m_tcrdm->init();
   } catch (const Exception& ex) {
     GF_SAFE_DELETE(m_tcrdm);
-    LOGERROR("Exception while initializing region: %s: %s", ex.getName(),
-             ex.what());
+    LOGERROR("Exception while initializing region: %s: %s",
+             ex.getName().c_str(), ex.what());
     throw;
   }
 }
@@ -395,7 +402,7 @@ void ThinClientRegion::registerKeys(
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
           "Registering keys is supported "
-          "only if subscription-enabled attribute is true for pool %s",
+          "only if subscription-enabled attribute is true for pool " +
           pool->getName());
       throw UnsupportedOperationException(
           "Registering keys is supported "
@@ -440,7 +447,7 @@ void ThinClientRegion::unregisterKeys(
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
           "Unregister keys is supported "
-          "only if subscription-enabled attribute is true for pool %s",
+          "only if subscription-enabled attribute is true for pool " +
           pool->getName());
       throw UnsupportedOperationException(
           "Unregister keys is supported "
@@ -474,7 +481,7 @@ void ThinClientRegion::registerAllKeys(bool isDurable, bool getInitialValues,
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
           "Register all keys is supported only "
-          "if subscription-enabled attribute is true for pool ",
+          "if subscription-enabled attribute is true for pool " +
           pool->getName());
       throw UnsupportedOperationException(
           "Register all keys is supported only "
@@ -515,7 +522,7 @@ void ThinClientRegion::registerAllKeys(bool isDurable, bool getInitialValues,
   GfErrTypeToException("Region::registerAllKeys", err);
 }
 
-void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
+void ThinClientRegion::registerRegex(const std::string& regex, bool isDurable,
                                      bool getInitialValues,
                                      bool receiveValues) {
   auto pool = m_cacheImpl->getCache()->getPoolManager().find(
@@ -524,7 +531,7 @@ void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
           "Register regex is supported only if "
-          "subscription-enabled attribute is true for pool ",
+          "subscription-enabled attribute is true for pool " +
           pool->getName());
       throw UnsupportedOperationException(
           "Register regex is supported only if "
@@ -537,14 +544,12 @@ void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
         "Durable flag only applicable for durable clients");
   }
 
-  if (regex == nullptr || regex[0] == '\0') {
+  if (regex.empty()) {
     throw IllegalArgumentException(
         "Region::registerRegex: Regex string is empty");
   }
 
-  std::string sregex = regex;
-
-  InterestResultPolicy interestPolicy = InterestResultPolicy::NONE;
+  auto interestPolicy = InterestResultPolicy::NONE;
   if (getInitialValues) {
     interestPolicy = InterestResultPolicy::KEYS_VALUES;
   } else {
@@ -561,7 +566,7 @@ void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
   // get the keys in that call itself using the special GET_ALL message and
   // do not need to get the keys in the initial  register interest  call
   GfErrType err =
-      registerRegexNoThrow(sregex, true, nullptr, isDurable, resultKeys2,
+      registerRegexNoThrow(regex, true, nullptr, isDurable, resultKeys2,
                            interestPolicy, receiveValues);
 
   if (m_tcrdm->isFatalError(err)) {
@@ -571,14 +576,14 @@ void ThinClientRegion::registerRegex(const char* regex, bool isDurable,
   GfErrTypeToException("Region::registerRegex", err);
 }
 
-void ThinClientRegion::unregisterRegex(const char* regex) {
+void ThinClientRegion::unregisterRegex(const std::string& regex) {
   auto pool = m_cacheImpl->getCache()->getPoolManager().find(
       getAttributes()->getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
           "Unregister regex is supported only if "
-          "subscription-enabled attribute is true for pool ",
+          "subscription-enabled attribute is true for pool " +
           pool->getName());
       throw UnsupportedOperationException(
           "Unregister regex is supported only if "
@@ -586,14 +591,12 @@ void ThinClientRegion::unregisterRegex(const char* regex) {
     }
   }
 
-  if (regex == nullptr || regex[0] == '\0') {
+  if (regex.empty()) {
     LOGERROR("Unregister regex string is empty");
     throw IllegalArgumentException("Unregister regex string is empty");
   }
 
-  std::string sregex = regex;
-
-  GfErrType err = unregisterRegexNoThrow(sregex);
+  GfErrType err = unregisterRegexNoThrow(regex);
   GfErrTypeToException("Region::unregisterRegex", err);
 }
 
@@ -604,7 +607,7 @@ void ThinClientRegion::unregisterAllKeys() {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
           "Unregister all keys is supported only if "
-          "subscription-enabled attribute is true for pool ",
+          "subscription-enabled attribute is true for pool " +
           pool->getName());
       throw UnsupportedOperationException(
           "Unregister all keys is supported only if "
@@ -615,48 +618,18 @@ void ThinClientRegion::unregisterAllKeys() {
   GfErrTypeToException("Region::unregisterAllKeys", err);
 }
 std::shared_ptr<SelectResults> ThinClientRegion::query(
-    const char* predicate, std::chrono::milliseconds timeout) {
+    const std::string& predicate, std::chrono::milliseconds timeout) {
   util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
 
   CHECK_DESTROY_PENDING(TryReadGuard, Region::query);
 
-  if (predicate == nullptr || predicate[0] == '\0') {
+  if (predicate.empty()) {
     LOGERROR("Region query predicate string is empty");
     throw IllegalArgumentException("Region query predicate string is empty");
   }
 
-  bool isFullQuery = false;
-
-  size_t predlen = ACE_OS::strlen(predicate);
-
-  if (predlen > 6)  // perhaps it has 'select' or 'import' if its > 6
-  {
-    int skipspace = 0;
-
-    while (ACE_OS::ace_isspace(predicate[skipspace])) {
-      skipspace++;
-    }
-
-    if (predlen - skipspace > 6)  // check remaining length again to avoid
-                                  // reading past predicate char array
-    {
-      char firstWord[7] = {0};
-
-      for (int charpos = 0; charpos < 6; charpos++) {
-        firstWord[charpos] =
-            ACE_OS::ace_tolower(predicate[charpos + skipspace]);
-      }
-
-      if (!ACE_OS::strcmp(firstWord, "select") ||
-          !ACE_OS::strcmp(firstWord, "import")) {
-        isFullQuery = true;
-      }
-    }
-  }
-
   std::string squery;
-
-  if (isFullQuery) {
+  if (std::regex_search(predicate, PREDICATE_IS_FULL_QUERY_REGEX)) {
     squery = predicate;
   } else {
     squery = "select distinct * from ";
@@ -681,7 +654,7 @@ std::shared_ptr<SelectResults> ThinClientRegion::query(
   return queryPtr->execute(timeout, "Region::query", m_tcrdm, nullptr);
 }
 
-bool ThinClientRegion::existsValue(const char* predicate,
+bool ThinClientRegion::existsValue(const std::string& predicate,
                                    std::chrono::milliseconds timeout) {
   util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
 
@@ -746,7 +719,7 @@ GfErrType ThinClientRegion::unregisterKeysBeforeDestroyRegion() {
   return err;
 }
 std::shared_ptr<Serializable> ThinClientRegion::selectValue(
-    const char* predicate, std::chrono::milliseconds timeout) {
+    const std::string& predicate, std::chrono::milliseconds timeout) {
   auto results = query(predicate, timeout);
 
   if (results == nullptr || results->size() == 0) {
@@ -1032,15 +1005,14 @@ GfErrType ThinClientRegion::putNoThrow_remote(
   // do TCR put
   // bool delta = valuePtr->hasDelta();
   bool delta = false;
-  const char* conFlationValue = getCacheImpl()
-                                    ->getDistributedSystem()
-                                    .getSystemProperties()
-                                    .conflateEvents();
-  if (checkDelta && valuePtr != nullptr && conFlationValue != nullptr &&
-      strcmp(conFlationValue, "true") != 0 &&
+  auto&& conFlationValue = getCacheImpl()
+                               ->getDistributedSystem()
+                               .getSystemProperties()
+                               .conflateEvents();
+  if (checkDelta && valuePtr && conFlationValue != "true" &&
       ThinClientBaseDM::isDeltaEnabledOnServer()) {
-    Delta* temp = dynamic_cast<Delta*>(valuePtr.get());
-    delta = (temp && temp->hasDelta());
+    auto&& temp = std::dynamic_pointer_cast<Delta>(valuePtr);
+    delta = temp && temp->hasDelta();
   }
   TcrMessagePut request(m_cache->createDataOutput(), this, keyPtr, valuePtr,
                         aCallbackArgument, delta, m_tcrdm);
@@ -1499,7 +1471,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
             "ERROR:: ThinClientRegion::singleHopPutAllNoThrow_remote value "
             "could not Cast to either VCOPL or "
             "PutAllPartialResultServerException:%s",
-            value->toString()->asChar());
+            value->toString().c_str());
       } else {
         LOGERROR(
             "ERROR:: ThinClientRegion::singleHopPutAllNoThrow_remote value is "
@@ -1856,7 +1828,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
             "ERROR:: ThinClientRegion::singleHopRemoveAllNoThrow_remote value "
             "could not Cast to either VCOPL or "
             "PutAllPartialResultServerException:%s",
-            value->toString()->asChar());
+            value->toString().c_str());
       } else {
         LOGERROR(
             "ERROR:: ThinClientRegion::singleHopRemoveAllNoThrow_remote value "
@@ -2951,7 +2923,7 @@ void ThinClientRegion::registerInterestGetValues(
   for (const auto& iter : *exceptions) {
     LOGWARN("%s Exception for key %s:: %s: %s", method,
             Utils::getCacheableKeyString(iter.first)->asChar(),
-            iter.second->getName(), iter.second->what());
+            iter.second->getName().c_str(), iter.second->what());
   }
 }
 
@@ -3005,7 +2977,7 @@ void ThinClientRegion::releaseGlobals(bool isFailover) {
 }
 
 void ThinClientRegion::executeFunction(
-    const char* func, const std::shared_ptr<Cacheable>& args,
+    const std::string& func, const std::shared_ptr<Cacheable>& args,
     std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
     std::shared_ptr<ResultCollector> rc, int32_t retryAttempts,
     std::chrono::milliseconds timeout) {
@@ -3021,16 +2993,15 @@ void ThinClientRegion::executeFunction(
   bool reExecuteForServ = false;
 
   do {
-    std::string funcName(func);
     TcrMessage* msg;
     if (reExecuteForServ) {
       msg = new TcrMessageExecuteRegionFunction(
-          m_cache->createDataOutput(), funcName, this, args, routingObj,
-          getResult, failedNodes, timeout, m_tcrdm, static_cast<int8_t>(1));
+          m_cache->createDataOutput(), func, this, args, routingObj, getResult,
+          failedNodes, timeout, m_tcrdm, static_cast<int8_t>(1));
     } else {
       msg = new TcrMessageExecuteRegionFunction(
-          m_cache->createDataOutput(), funcName, this, args, routingObj,
-          getResult, failedNodes, timeout, m_tcrdm, static_cast<int8_t>(0));
+          m_cache->createDataOutput(), func, this, args, routingObj, getResult,
+          failedNodes, timeout, m_tcrdm, static_cast<int8_t>(0));
     }
     TcrMessageReply reply(true, m_tcrdm);
     // need to check
@@ -3081,7 +3052,7 @@ void ThinClientRegion::executeFunction(
         LOGINFO(
             "function timeout. Name: %s, timeout: %d, params: %d, "
             "retryAttempts: %d ",
-            funcName.c_str(), timeout.count(), getResult, retryAttempts);
+            func.c_str(), timeout.count(), getResult, retryAttempts);
         GfErrTypeToException("ExecuteOnRegion", GF_TIMOUT);
       } else if (err == GF_CLIENT_WAIT_TIMEOUT ||
                  err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
@@ -3089,7 +3060,7 @@ void ThinClientRegion::executeFunction(
             "function timeout, possibly bucket is not available or bucket "
             "blacklisted. Name: %s, timeout: %d, params: %d, retryAttempts: "
             "%d ",
-            funcName.c_str(), timeout.count(), getResult, retryAttempts);
+            func.c_str(), timeout.count(), getResult, retryAttempts);
         GfErrTypeToException("ExecuteOnRegion", GF_CLIENT_WAIT_TIMEOUT);
       } else {
         LOGDEBUG("executeFunction err = %d ", err);
@@ -3107,7 +3078,7 @@ void ThinClientRegion::executeFunction(
   }
 }
 std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
-    const char* func, const std::shared_ptr<Cacheable>& args,
+    const std::string& func, const std::shared_ptr<Cacheable>& args,
     std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
     std::shared_ptr<ResultCollector> rc, int32_t retryAttempts,
     std::shared_ptr<CacheableHashSet>& failedNodes,
@@ -3122,9 +3093,8 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
 
   do {
     reExecute = false;
-    std::string funcName(func);
-    TcrMessageExecuteRegionFunction msg(m_cache->createDataOutput(), funcName,
-                                        this, args, routingObj, getResult,
+    TcrMessageExecuteRegionFunction msg(m_cache->createDataOutput(), func, this,
+                                        args, routingObj, getResult,
                                         failedNodes, timeout, m_tcrdm,
                                         /*reExecute*/ static_cast<int8_t>(1));
     TcrMessageReply reply(true, m_tcrdm);
@@ -3186,8 +3156,8 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
 }
 
 bool ThinClientRegion::executeFunctionSH(
-    const char* func, const std::shared_ptr<Cacheable>& args, uint8_t getResult,
-    std::shared_ptr<ResultCollector> rc,
+    const std::string& func, const std::shared_ptr<Cacheable>& args,
+    uint8_t getResult, std::shared_ptr<ResultCollector> rc,
     const std::shared_ptr<ClientMetadataService::ServerToKeysMap>& locationMap,
     std::shared_ptr<CacheableHashSet>& failedNodes,
     std::chrono::milliseconds timeout, bool allBuckets) {
@@ -3287,14 +3257,13 @@ bool ThinClientRegion::executeFunctionSH(
   return reExecute;
 }
 
-GfErrType ThinClientRegion::getFuncAttributes(const char* func,
+GfErrType ThinClientRegion::getFuncAttributes(const std::string& func,
                                               std::vector<int8_t>** attr) {
   GfErrType err = GF_NOERR;
 
   // do TCR GET_FUNCTION_ATTRIBUTES
   LOGDEBUG("Tcrmessage request GET_FUNCTION_ATTRIBUTES ");
-  std::string funcName(func);
-  TcrMessageGetFunctionAttributes request(m_cache->createDataOutput(), funcName,
+  TcrMessageGetFunctionAttributes request(m_cache->createDataOutput(), func,
                                           m_tcrdm);
   TcrMessageReply reply(true, m_tcrdm);
   err = m_tcrdm->sendSyncRequest(request, reply);
@@ -3381,7 +3350,7 @@ void ChunkedInterestResponse::handleChunk(const uint8_t* chunk,
                                           const Cache* cache) {
   auto input = cache->createDataInput(chunk, chunkLen);
 
-  input->setPoolName(m_replyMsg.getPoolName());
+  DataInputInternal::setPoolName(*input, m_replyMsg.getPoolName());
 
   uint32_t partLen;
   if (TcrMessageHelper::readChunkPartHeader(
@@ -3413,7 +3382,7 @@ void ChunkedKeySetResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
                                         const Cache* cache) {
   auto input = cache->createDataInput(chunk, chunkLen);
 
-  input->setPoolName(m_replyMsg.getPoolName());
+  DataInputInternal::setPoolName(*input, m_replyMsg.getPoolName());
 
   uint32_t partLen;
   if (TcrMessageHelper::readChunkPartHeader(
@@ -3488,7 +3457,7 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
                                        const Cache* cache) {
   LOGDEBUG("ChunkedQueryResponse::handleChunk..");
   auto input = cache->createDataInput(chunk, chunkLen);
-  input->setPoolName(m_msg.getPoolName());
+  DataInputInternal::setPoolName(*input, m_msg.getPoolName());
   uint32_t partLen;
   TcrMessageHelper::ChunkObjectType objType;
   if ((objType = TcrMessageHelper::readChunkPartHeader(
@@ -3634,7 +3603,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
     const Cache* cache) {
   LOGDEBUG("ChunkedFunctionExecutionResponse::handleChunk");
   auto input = cache->createDataInput(chunk, chunkLen);
-  input->setPoolName(m_msg.getPoolName());
+  DataInputInternal::setPoolName(*input, m_msg.getPoolName());
   uint32_t partLen;
 
   int8_t arrayType;
@@ -3700,9 +3669,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
       // then isObject byte
       input->read();  // ignore iSobject
 
-      startLen =
-          input->getBytesRead();  // reset from here need to look value
-                                  // part + memberid AND -1 for array type
+      startLen = input->getBytesRead();  // reset from here need to look value
+      // part + memberid AND -1 for array type
 
       // Since it is contained as a part of other results, read arrayType which
       // is arrayList = 65.
@@ -3739,8 +3707,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
   if (m_rc != nullptr) {
     std::shared_ptr<Cacheable> result = nullptr;
     if (isExceptionPart) {
-      result =
-          std::make_shared<UserFunctionExecutionException>(value->toString());
+      result = std::make_shared<UserFunctionExecutionException>(
+          CacheableString::create(value->toString().c_str()));
     } else {
       result = std::dynamic_pointer_cast<Cacheable>(value);
     }
@@ -3768,7 +3736,7 @@ void ChunkedGetAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
                                         uint8_t isLastChunkWithSecurity,
                                         const Cache* cache) {
   auto input = cache->createDataInput(chunk, chunkLen);
-  input->setPoolName(m_msg.getPoolName());
+  DataInputInternal::setPoolName(*input, m_msg.getPoolName());
   uint32_t partLen;
   if (TcrMessageHelper::readChunkPartHeader(
           m_msg, *input, GeodeTypeIdsImpl::FixedIDByte,
@@ -3822,7 +3790,7 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
                                         uint8_t isLastChunkWithSecurity,
                                         const Cache* cache) {
   auto input = cache->createDataInput(chunk, chunkLen);
-  input->setPoolName(m_msg.getPoolName());
+  DataInputInternal::setPoolName(*input, m_msg.getPoolName());
   uint32_t partLen;
   int8_t chunkType;
   if ((chunkType = (TcrMessageHelper::ChunkObjectType)
@@ -3861,10 +3829,8 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
       ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.get());
       if ((poolDM != nullptr) &&
           (poolDM->getClientMetaDataService() != nullptr) && (byte0 != 0)) {
-        LOGFINE(
-            "enqueued region %s for metadata refresh for singlehop for PUTALL "
-            "operation.",
-            m_region->getFullPath());
+        LOGFINE("enqueued region " + m_region->getFullPath() +
+                " for metadata refresh for singlehop for PUTALL operation.");
         poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
             m_region->getFullPath(), byte1);
       }
@@ -3884,7 +3850,7 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
                                            uint8_t isLastChunkWithSecurity,
                                            const Cache* cache) {
   auto input = cache->createDataInput(chunk, chunkLen);
-  input->setPoolName(m_msg.getPoolName());
+  DataInputInternal::setPoolName(*input, m_msg.getPoolName());
   uint32_t partLen;
   int8_t chunkType;
   if ((chunkType = (TcrMessageHelper::ChunkObjectType)
@@ -3924,10 +3890,8 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
       ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.get());
       if ((poolDM != nullptr) &&
           (poolDM->getClientMetaDataService() != nullptr) && (byte0 != 0)) {
-        LOGFINE(
-            "enqueued region %s for metadata refresh for singlehop for "
-            "REMOVEALL operation.",
-            m_region->getFullPath());
+        LOGFINE("enqueued region " + m_region->getFullPath() +
+                " for metadata refresh for singlehop for REMOVEALL operation.");
         poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
             m_region->getFullPath(), byte1);
       }
@@ -3947,7 +3911,7 @@ void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
                                                uint8_t isLastChunkWithSecurity,
                                                const Cache* cache) {
   auto input = cache->createDataInput(chunk, chunkLen);
-  input->setPoolName(m_msg.getPoolName());
+  DataInputInternal::setPoolName(*input, m_msg.getPoolName());
 
   // read part length
   uint32_t partLen;

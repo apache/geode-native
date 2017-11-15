@@ -71,28 +71,27 @@ GeodeStatisticsFactory::~GeodeStatisticsFactory() {
   }
 }
 
-const char* GeodeStatisticsFactory::getName() { return m_name; }
+const std::string& GeodeStatisticsFactory::getName() const { return m_name; }
 
-int64_t GeodeStatisticsFactory::getId() { return m_id; }
+int64_t GeodeStatisticsFactory::getId() const { return m_id; }
 
 Statistics* GeodeStatisticsFactory::createStatistics(StatisticsType* type) {
   return createAtomicStatistics(type, nullptr, 0);
 }
 
-Statistics* GeodeStatisticsFactory::createStatistics(StatisticsType* type,
-                                                     const char* textId) {
+Statistics* GeodeStatisticsFactory::createStatistics(
+    StatisticsType* type, const std::string& textId) {
   return createAtomicStatistics(type, textId, 0);
 }
 
 Statistics* GeodeStatisticsFactory::createStatistics(StatisticsType* type,
-                                                     const char* textId,
+                                                     const std::string& textId,
                                                      int64_t numericId) {
   return createAtomicStatistics(type, textId, 0);
 }
 
-Statistics* GeodeStatisticsFactory::createOsStatistics(StatisticsType* type,
-                                                       const char* textId,
-                                                       int64_t numericId) {
+Statistics* GeodeStatisticsFactory::createOsStatistics(
+    StatisticsType* type, const std::string& textId, int64_t numericId) {
   // Validate input
   if (type == nullptr) {
     throw IllegalArgumentException("StatisticsType* is Null");
@@ -116,14 +115,13 @@ Statistics* GeodeStatisticsFactory::createAtomicStatistics(
   return createAtomicStatistics(type, nullptr, 0);
 }
 
-Statistics* GeodeStatisticsFactory::createAtomicStatistics(StatisticsType* type,
-                                                           const char* textId) {
+Statistics* GeodeStatisticsFactory::createAtomicStatistics(
+    StatisticsType* type, const std::string& textId) {
   return createAtomicStatistics(type, textId, 0);
 }
 
-Statistics* GeodeStatisticsFactory::createAtomicStatistics(StatisticsType* type,
-                                                           const char* textId,
-                                                           int64_t numericId) {
+Statistics* GeodeStatisticsFactory::createAtomicStatistics(
+    StatisticsType* type, const std::string& textId, int64_t numericId) {
   // Validate input
   if (type == nullptr) {
     throw IllegalArgumentException("StatisticsType* is Null");
@@ -144,16 +142,16 @@ Statistics* GeodeStatisticsFactory::createAtomicStatistics(StatisticsType* type,
 }
 
 Statistics* GeodeStatisticsFactory::findFirstStatisticsByType(
-    StatisticsType* type) {
+    const StatisticsType* type) const {
   return (m_statMngr->findFirstStatisticsByType(type));
 }
 
 StatisticsTypeImpl* GeodeStatisticsFactory::addType(StatisticsTypeImpl* st) {
-  StatisticsTypeImpl* st1;
-  std::string temp(st->getName());
+  const auto& name = st->getName();
   int status;
   try {
-    status = statsTypeMap.rebind(temp, st, st1);
+    StatisticsTypeImpl* st1;
+    status = statsTypeMap.rebind(name, st, st1);
   } catch (const std::exception& ex) {
     throw IllegalArgumentException(ex.what());
   } catch (...) {
@@ -161,9 +159,8 @@ StatisticsTypeImpl* GeodeStatisticsFactory::addType(StatisticsTypeImpl* st) {
   }
   if (status == 1) {
   } else if (status == -1) {
-    auto message = std::string("GeodeStatisticsFactory::addType: failed ") +
-                   "to add new type " + temp.c_str();
-    throw IllegalArgumentException(message);
+    throw IllegalArgumentException(
+        "GeodeStatisticsFactory::addType: failed to add new type " + name);
   }
   return st;
 }
@@ -171,10 +168,9 @@ StatisticsTypeImpl* GeodeStatisticsFactory::addType(StatisticsTypeImpl* st) {
 /**
  * Creates  a StatisticType for the given shared class.
  */
-StatisticsType* GeodeStatisticsFactory::createType(const char* name,
-                                                   const char* description,
-                                                   StatisticDescriptor** stats,
-                                                   int32_t statsLength) {
+StatisticsType* GeodeStatisticsFactory::createType(
+    const std::string& name, const std::string& description,
+    StatisticDescriptor** stats, int32_t statsLength) {
   StatisticsTypeImpl* st =
       new StatisticsTypeImpl(name, description, stats, statsLength);
 
@@ -187,13 +183,12 @@ StatisticsType* GeodeStatisticsFactory::createType(const char* name,
   return st;
 }
 
-StatisticsType* GeodeStatisticsFactory::findType(const char* name) {
-  std::string statName = name;
+StatisticsType* GeodeStatisticsFactory::findType(
+    const std::string& name) const {
   StatisticsTypeImpl* st = nullptr;
-  int status = statsTypeMap.find(statName, st);
+  int status = statsTypeMap.find(name, st);
   if (status == -1) {
-    std::string temp(name);
-    std::string s = "There is no statistic named \"" + temp + "\"";
+    std::string s = "There is no statistic named \"" + name + "\"";
     // LOGWARN(s.c_str());
     // throw IllegalArgumentException(s.c_str());
     return nullptr;
@@ -203,43 +198,43 @@ StatisticsType* GeodeStatisticsFactory::findType(const char* name) {
 }
 
 StatisticDescriptor* GeodeStatisticsFactory::createIntCounter(
-    const char* name, const char* description, const char* units,
-    bool largerBetter) {
+    const std::string& name, const std::string& description,
+    const std::string& units, bool largerBetter) {
   return StatisticDescriptorImpl::createIntCounter(name, description, units,
                                                    largerBetter);
 }
 
 StatisticDescriptor* GeodeStatisticsFactory::createLongCounter(
-    const char* name, const char* description, const char* units,
-    bool largerBetter) {
+    const std::string& name, const std::string& description,
+    const std::string& units, bool largerBetter) {
   return StatisticDescriptorImpl::createLongCounter(name, description, units,
                                                     largerBetter);
 }
 
 StatisticDescriptor* GeodeStatisticsFactory::createDoubleCounter(
-    const char* name, const char* description, const char* units,
-    bool largerBetter) {
+    const std::string& name, const std::string& description,
+    const std::string& units, bool largerBetter) {
   return StatisticDescriptorImpl::createDoubleCounter(name, description, units,
                                                       largerBetter);
 }
 
 StatisticDescriptor* GeodeStatisticsFactory::createIntGauge(
-    const char* name, const char* description, const char* units,
-    bool largerBetter) {
+    const std::string& name, const std::string& description,
+    const std::string& units, bool largerBetter) {
   return StatisticDescriptorImpl::createIntGauge(name, description, units,
                                                  largerBetter);
 }
 
 StatisticDescriptor* GeodeStatisticsFactory::createLongGauge(
-    const char* name, const char* description, const char* units,
-    bool largerBetter) {
+    const std::string& name, const std::string& description,
+    const std::string& units, bool largerBetter) {
   return StatisticDescriptorImpl::createLongGauge(name, description, units,
                                                   largerBetter);
 }
 
 StatisticDescriptor* GeodeStatisticsFactory::createDoubleGauge(
-    const char* name, const char* description, const char* units,
-    bool largerBetter) {
+    const std::string& name, const std::string& description,
+    const std::string& units, bool largerBetter) {
   return StatisticDescriptorImpl::createDoubleGauge(name, description, units,
                                                     largerBetter);
 }

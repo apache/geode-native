@@ -51,7 +51,8 @@ class UserPasswordAuthInit : public AuthInitialize {
   ~UserPasswordAuthInit() {}
 
   std::shared_ptr<Properties> getCredentials(
-      const std::shared_ptr<Properties>& securityprops, const char* server) {
+      const std::shared_ptr<Properties>& securityprops,
+      const std::string& server) override {
     // LOGDEBUG("UserPasswordAuthInit: inside userPassword::getCredentials");
     std::shared_ptr<Cacheable> userName;
     if (securityprops == nullptr ||
@@ -62,19 +63,19 @@ class UserPasswordAuthInit : public AuthInitialize {
     }
 
     auto credentials = Properties::create();
-    credentials->insert(SECURITY_USERNAME, userName->toString()->asChar());
-   auto passwd = securityprops->find(SECURITY_PASSWORD);
-   // If password is not provided then use empty string as the password.
-   if (passwd == nullptr) {
-     passwd = CacheableString::create("");
+    credentials->insert(SECURITY_USERNAME, userName->toString().c_str());
+    auto passwd = securityprops->find(SECURITY_PASSWORD);
+    // If password is not provided then use empty string as the password.
+    if (passwd == nullptr) {
+      passwd = CacheableString::create("");
    }
    credentials->insert(SECURITY_PASSWORD, passwd->asChar());
    // LOGDEBUG("UserPasswordAuthInit: inserted username:password - %s:%s",
-   //    userName->toString()->asChar(), passwd->toString()->asChar());
+   //    userName->toString().c_str(), passwd->toString().c_str());
    return credentials;
   }
 
-  void close() { return; }
+  void close() override { return; }
 
  private:
 };

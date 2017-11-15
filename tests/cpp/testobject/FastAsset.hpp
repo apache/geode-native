@@ -98,10 +98,10 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
    */
   void setAssetId(int i) { assetId = i; }
 
-  std::shared_ptr<CacheableString> toString() const {
+  std::string toString() const {
     char buf[102500];
     sprintf(buf, "FastAsset:[assetId = %d value = %f]", assetId, value);
-    return CacheableString::create(buf);
+    return buf;
   }
 
   static apache::geode::client::Serializable* createDeserializable() {

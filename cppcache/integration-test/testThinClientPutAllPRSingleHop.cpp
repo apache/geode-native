@@ -175,7 +175,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while putting key %s with
         // hashcode %d", logmsg, (int32_t)keyPtr->hashcode());
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName(), ex.what());
+        LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
         FAIL(ex.what());
       } catch (...) {
         LOGERROR("CPPTEST: Put caused random exception in WarmUpTask");
@@ -238,8 +238,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         FAIL("putAll caused extra hop.");
         throw IllegalStateException("putAll::TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: putAll caused unexpected %s: %s", ex.getName(),
-                 ex.what());
+        LOGERROR("CPPTEST: putAll caused unexpected %s: %s",
+                 ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("putAll caused unexpected exception");
         throw IllegalStateException("putAll::TEST FAIL");
@@ -313,8 +313,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopRemoveAllForIntKeysTask)
         FAIL("removeall caused extra hop.");
         throw IllegalStateException("removeall::TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: removeall caused unexpected %s: %s", ex.getName(),
-                 ex.what());
+        LOGERROR("CPPTEST: removeall caused unexpected %s: %s",
+                 ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("putAll caused unexpected exception");
         throw IllegalStateException("removeall::TEST FAIL");

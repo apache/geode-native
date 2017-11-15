@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_QUERYSERVICE_H_
-#define GEODE_QUERYSERVICE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_QUERYSERVICE_H_
+#define GEODE_QUERYSERVICE_H_
+
+#include <string>
+#include <memory>
 
 #include "geode_globals.hpp"
 #include "ExceptionTypes.hpp"
@@ -52,7 +55,7 @@ class CPPCACHE_EXPORT QueryService {
    * @param querystr The query string with which to create a new Query.
    * @returns A smart pointer to the Query.
    */
-  virtual std::shared_ptr<Query> newQuery(const char* querystr) = 0;
+  virtual std::shared_ptr<Query> newQuery(std::string querystr) = 0;
 
   /**
    * @nativeclient
@@ -88,8 +91,9 @@ class CPPCACHE_EXPORT QueryService {
    * @endnativeclient
    */
   virtual std::shared_ptr<CqQuery> newCq(
-      const char* name, const char* querystr,
+      std::string name, std::string querystr,
       const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable = false) = 0;
+
   /**
    * @nativeclient
    * Constructs a new named continuous query, represented by an instance of
@@ -123,8 +127,9 @@ class CPPCACHE_EXPORT QueryService {
    * @endnativeclient
    */
   virtual std::shared_ptr<CqQuery> newCq(
-      const char* querystr, const std::shared_ptr<CqAttributes>& cqAttr,
+      std::string querystr, const std::shared_ptr<CqAttributes>& cqAttr,
       bool isDurable = false) = 0;
+
   /**
    * @nativeclient
    * Close all CQs, and release resources
@@ -132,38 +137,44 @@ class CPPCACHE_EXPORT QueryService {
    * @endnativeclient
    */
   virtual void closeCqs() = 0;
+
   /**
    * @nativeclient
    * Retrieve  all registered CQs
    * @endnativeclient
    */
-  virtual query_container_type getCqs() = 0;
+  virtual query_container_type getCqs() const = 0;
+
   /**
    * @nativeclient
    * Retrieve a CqQuery by name.
    * @return the CqQuery or nullptr if not found
    * @endnativeclient
    */
-  virtual std::shared_ptr<CqQuery> getCq(const char* name) = 0;
+  virtual std::shared_ptr<CqQuery> getCq(const std::string& name) const = 0;
+
   /**
    * @nativeclient
    * Executes all the cqs on this client.
    * @endnativeclient
    */
   virtual void executeCqs() = 0;
+
   /**
    * @nativeclient
    * Stops all the cqs on this client.
    * @endnativeclient
    */
   virtual void stopCqs() = 0;
+
   /**
    * @nativeclient
    * Get statistics information for all CQs
    * @return the CqServiceStatistics
    * @endnativeclient
    */
-  virtual std::shared_ptr<CqServiceStatistics> getCqServiceStatistics() = 0;
+  virtual std::shared_ptr<CqServiceStatistics> getCqServiceStatistics()
+      const = 0;
 
   /**
    * Gets all the durable CQs registered by this client.
@@ -171,7 +182,8 @@ class CPPCACHE_EXPORT QueryService {
    * @return List of names of registered durable CQs, empty list if no durable
    * cqs.
    */
-  virtual std::shared_ptr<CacheableArrayList> getAllDurableCqsFromServer() = 0;
+  virtual std::shared_ptr<CacheableArrayList> getAllDurableCqsFromServer()
+      const = 0;
 };
 }  // namespace client
 }  // namespace geode

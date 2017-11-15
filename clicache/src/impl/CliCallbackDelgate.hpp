@@ -17,6 +17,7 @@
 
 #pragma once
 
+
 #include "../geode_defs.hpp"
 #include "../Serializable.hpp"
 #include "ManagedCacheableKey.hpp"

@@ -75,11 +75,11 @@ class TESTOBJECT_EXPORT CharTypesWithInvalidUsage : public PdxSerializable {
 
   CharTypesWithInvalidUsage() { init(); }
 
-  std::shared_ptr<CacheableString> toString() const {
+  std::string toString() const override {
     char idbuf[1024];
     sprintf(idbuf, "%c %lc %c %c %lc %lc", m_ch, m_widechar, m_chArray[0],
             m_chArray[1], m_widecharArray[0], m_widecharArray[1]);
-    return CacheableString::create(idbuf);
+    return idbuf;
   }
 
   bool equals(CharTypesWithInvalidUsage& other) const {
@@ -121,21 +121,22 @@ class TESTOBJECT_EXPORT CharTypesWithInvalidUsage : public PdxSerializable {
     return true;
   }
 
-  const char* getClassName() const {
-    return "PdxTests.CharTypesWithInvalidUsage";
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests.CharTypesWithInvalidUsage";
+    return className;
   }
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(std::shared_ptr<PdxWriter> pw) {
+  void toData(std::shared_ptr<PdxWriter> pw) const override {
     pw->writeChar("m_ch", m_ch);
     pw->writeChar("m_widechar", m_widechar);
     pw->writeCharArray("m_chArray", m_chArray, 2);
     pw->writeWideCharArray("m_widecharArray", m_widecharArray, 2);
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) {
+  void fromData(std::shared_ptr<PdxReader> pr) override {
     m_ch = pr->readChar("m_ch");
     m_widechar = pr->readWideChar("m_widechar");
     m_chArray = pr->readCharArray("m_chArray", m_wcharArrayLen);
@@ -156,10 +157,10 @@ class TESTOBJECT_EXPORT AddressWithInvalidAPIUsage : public PdxSerializable {
  public:
   AddressWithInvalidAPIUsage() {}
 
-  std::shared_ptr<CacheableString> toString() const {
+  std::string toString() const override {
     char idbuf[1024];
     sprintf(idbuf, "%d %s %s", _aptNumber, _street, _city);
-    return CacheableString::create(idbuf);
+    return idbuf;
   }
 
   AddressWithInvalidAPIUsage(int32_t aptN, const char* street,
@@ -192,20 +193,21 @@ class TESTOBJECT_EXPORT AddressWithInvalidAPIUsage : public PdxSerializable {
     return true;
   }
 
-  const char* getClassName() const {
-    return "PdxTests.AddressWithInvalidAPIUsage";
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests.AddressWithInvalidAPIUsage";
+    return className;
   }
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(std::shared_ptr<PdxWriter> pw) {
+  void toData(std::shared_ptr<PdxWriter> pw) const override {
     pw->writeInt("_aptNumber", _aptNumber);  // 4
     pw->writeString("_street", _street);
     pw->writeString("_city", _city);
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) {
+  void fromData(std::shared_ptr<PdxReader> pr) override {
     _aptNumber = pr->readInt("_aptNumber");
     _street = pr->readString("_street");
     _city = pr->readString("_city");
@@ -298,7 +300,7 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
   int32_t byteByteArrayLen;
 
   int* lengthArr;
-  int toDataexceptionCounter;
+  mutable int toDataexceptionCounter;
   int fromDataexceptionCounter;
 
  public:
@@ -527,7 +529,7 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
 
   virtual ~InvalidPdxUsage() {}
 
-  virtual uint32_t objectSize() const {
+  virtual uint32_t objectSize() const override {
     uint32_t objectSize = sizeof(InvalidPdxUsage);
     return objectSize;
   }
@@ -641,13 +643,16 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) /*const*/;
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 
-  const char* getClassName() const { return "PdxTests.InvalidPdxUsage"; }
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests.InvalidPdxUsage";
+    return className;
+  }
 
   static PdxSerializable* createDeserializable() {
     return new InvalidPdxUsage();

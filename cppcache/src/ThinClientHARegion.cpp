@@ -41,8 +41,7 @@ ThinClientHARegion::ThinClientHARegion(
 
 void ThinClientHARegion::initTCR() {
   try {
-    bool isPool = m_attribute->getPoolName() != nullptr &&
-                  strlen(m_attribute->getPoolName()) > 0;
+    const bool isPool = !m_attribute->getPoolName().empty();
     if (m_cacheImpl->getDistributedSystem()
             .getSystemProperties()
             .isGridClient()) {
@@ -54,14 +53,7 @@ void ThinClientHARegion::initTCR() {
           isPool);
     }
 
-    if (m_attribute->getPoolName() == nullptr ||
-        strlen(m_attribute->getPoolName()) == 0) {
-      m_poolDM = false;
-      m_tcrdm = new TcrHADistributionManager(
-          this, m_cacheImpl->tcrConnectionManager(),
-          m_cacheImpl->getAttributes());
-      m_tcrdm->init();
-    } else {
+    if (isPool) {
       m_tcrdm = dynamic_cast<ThinClientPoolHADM*>(
           m_cacheImpl->getCache()
               ->getPoolManager()
@@ -79,13 +71,19 @@ void ThinClientHARegion::initTCR() {
       } else {
         throw IllegalStateException("pool not found");
       }
+    } else {
+      m_poolDM = false;
+      m_tcrdm = new TcrHADistributionManager(
+          this, m_cacheImpl->tcrConnectionManager(),
+          m_cacheImpl->getAttributes());
+      m_tcrdm->init();
     }
   } catch (const Exception& ex) {
     GF_SAFE_DELETE(m_tcrdm);
     LOGERROR(
         "ThinClientHARegion: failed to create a DistributionManager "
         "object due to: %s: %s",
-        ex.getName(), ex.what());
+        ex.getName().c_str(), ex.what());
     throw;
   }
 }
@@ -119,7 +117,7 @@ void ThinClientHARegion::handleMarker() {
       m_listener->afterRegionLive(event);
     } catch (const Exception& ex) {
       LOGERROR("Exception in CacheListener::afterRegionLive: %s: %s",
-               ex.getName(), ex.what());
+               ex.getName().c_str(), ex.what());
     } catch (...) {
       LOGERROR("Unknown exception in CacheListener::afterRegionLive");
     }

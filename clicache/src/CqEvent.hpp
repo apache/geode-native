@@ -17,6 +17,7 @@
 
 #pragma once
 
+
 #include "native_shared_ptr.hpp"
 #include "geode_defs.hpp"
 #include "begin_native.hpp"

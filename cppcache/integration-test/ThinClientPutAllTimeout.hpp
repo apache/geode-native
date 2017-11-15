@@ -208,7 +208,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testWithoutTimeoutException)
       logmsg += excp.what();
       LOG(logmsg.c_str());
     } catch (const Exception& ex) {
-      printf("Exception while putALL :: %s : %s\n", ex.getName(),
+      printf("Exception while putALL :: %s : %s\n", ex.getName().c_str(),
              ex.what());
     }
     FAIL("Something is wrong while putAll");
@@ -233,7 +233,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testWithoutTimeoutWithCallBackArgException)
       printf(
           "Exception while putAllWithOneEntryTimeoutWithCallBackArg :: %s : "
           "%s\n",
-          ex.getName(), ex.what());
+          ex.getName().c_str(), ex.what());
     }
     FAIL("Something is wrong while putAllWithOneEntryTimeoutWithCallBackArg");
   }

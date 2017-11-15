@@ -228,7 +228,7 @@ void ThinClientBaseDM::queueChunk(TcrChunkedContext* chunk) {
 int ThinClientBaseDM::processChunks(volatile bool& isRunning) {
   TcrChunkedContext* chunk;
   LOGFINE("Starting chunk process thread for region %s",
-          (m_region != nullptr ? m_region->getFullPath() : "(null)"));
+          (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
   while (isRunning) {
     chunk = m_chunks.getUntil(0, 100000);
     if (chunk) {
@@ -237,7 +237,7 @@ int ThinClientBaseDM::processChunks(volatile bool& isRunning) {
     }
   }
   LOGFINE("Ending chunk process thread for region %s",
-          (m_region != nullptr ? m_region->getFullPath() : "(null)"));
+          (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
   GF_DEV_ASSERT(m_chunks.size() == 0);
   return 0;
 }

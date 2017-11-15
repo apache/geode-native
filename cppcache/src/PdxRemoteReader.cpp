@@ -32,7 +32,7 @@ PdxRemoteReader::~PdxRemoteReader() {
   // TODO Auto-generated destructor stub
 }
 
-wchar_t PdxRemoteReader::readWideChar(const char* fieldName) {
+wchar_t PdxRemoteReader::readWideChar(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -54,7 +54,7 @@ wchar_t PdxRemoteReader::readWideChar(const char* fieldName) {
   }
 }
 
-char PdxRemoteReader::readChar(const char* fieldName) {
+char PdxRemoteReader::readChar(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -76,7 +76,7 @@ char PdxRemoteReader::readChar(const char* fieldName) {
   }
 }
 
-bool PdxRemoteReader::readBoolean(const char* fieldName) {
+bool PdxRemoteReader::readBoolean(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -103,7 +103,7 @@ bool PdxRemoteReader::readBoolean(const char* fieldName) {
   }
 }
 
-int8_t PdxRemoteReader::readByte(const char* fieldName) {
+int8_t PdxRemoteReader::readByte(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -131,7 +131,7 @@ int8_t PdxRemoteReader::readByte(const char* fieldName) {
   }
 }
 
-int16_t PdxRemoteReader::readShort(const char* fieldName) {
+int16_t PdxRemoteReader::readShort(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -159,8 +159,7 @@ int16_t PdxRemoteReader::readShort(const char* fieldName) {
   }
 }
 
-
-int32_t PdxRemoteReader::readInt(const char* fieldName) {
+int32_t PdxRemoteReader::readInt(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -188,7 +187,7 @@ int32_t PdxRemoteReader::readInt(const char* fieldName) {
   }
 }
 
-int64_t PdxRemoteReader::readLong(const char* fieldName) {
+int64_t PdxRemoteReader::readLong(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -216,7 +215,7 @@ int64_t PdxRemoteReader::readLong(const char* fieldName) {
   }
 }
 
-float PdxRemoteReader::readFloat(const char* fieldName) {
+float PdxRemoteReader::readFloat(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -244,7 +243,7 @@ float PdxRemoteReader::readFloat(const char* fieldName) {
   }
 }
 
-double PdxRemoteReader::readDouble(const char* fieldName) {
+double PdxRemoteReader::readDouble(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -272,7 +271,7 @@ double PdxRemoteReader::readDouble(const char* fieldName) {
   }
 }
 
-char* PdxRemoteReader::readString(const char* fieldName) {
+char* PdxRemoteReader::readString(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -301,7 +300,7 @@ char* PdxRemoteReader::readString(const char* fieldName) {
   }
 }
 
-wchar_t* PdxRemoteReader::readWideString(const char* fieldName) {
+wchar_t* PdxRemoteReader::readWideString(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -330,7 +329,7 @@ wchar_t* PdxRemoteReader::readWideString(const char* fieldName) {
   }
 }
 std::shared_ptr<Serializable> PdxRemoteReader::readObject(
-    const char* fieldName) {
+    const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -358,7 +357,8 @@ std::shared_ptr<Serializable> PdxRemoteReader::readObject(
   }
 }
 
-char* PdxRemoteReader::readCharArray(const char* fieldName, int32_t& length) {
+char* PdxRemoteReader::readCharArray(const std::string& fieldName,
+                                     int32_t& length) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -380,7 +380,7 @@ char* PdxRemoteReader::readCharArray(const char* fieldName, int32_t& length) {
   }
 }
 
-wchar_t* PdxRemoteReader::readWideCharArray(const char* fieldName,
+wchar_t* PdxRemoteReader::readWideCharArray(const std::string& fieldName,
                                             int32_t& length) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
@@ -404,7 +404,7 @@ wchar_t* PdxRemoteReader::readWideCharArray(const char* fieldName,
   }
 }
 
-bool* PdxRemoteReader::readBooleanArray(const char* fieldName,
+bool* PdxRemoteReader::readBooleanArray(const std::string& fieldName,
                                         int32_t& length) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
@@ -428,7 +428,8 @@ bool* PdxRemoteReader::readBooleanArray(const char* fieldName,
   }
 }
 
-int8_t* PdxRemoteReader::readByteArray(const char* fieldName, int32_t& length) {
+int8_t* PdxRemoteReader::readByteArray(const std::string& fieldName,
+                                       int32_t& length) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -456,7 +457,7 @@ int8_t* PdxRemoteReader::readByteArray(const char* fieldName, int32_t& length) {
   }
 }
 
-int16_t* PdxRemoteReader::readShortArray(const char* fieldName,
+int16_t* PdxRemoteReader::readShortArray(const std::string& fieldName,
                                          int32_t& length) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
@@ -486,7 +487,8 @@ int16_t* PdxRemoteReader::readShortArray(const char* fieldName,
   }
 }
 
-int32_t* PdxRemoteReader::readIntArray(const char* fieldName, int32_t& length) {
+int32_t* PdxRemoteReader::readIntArray(const std::string& fieldName,
+                                       int32_t& length) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -514,7 +516,7 @@ int32_t* PdxRemoteReader::readIntArray(const char* fieldName, int32_t& length) {
   }
 }
 
-int64_t* PdxRemoteReader::readLongArray(const char* fieldName,
+int64_t* PdxRemoteReader::readLongArray(const std::string& fieldName,
                                         int32_t& length) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
@@ -543,7 +545,8 @@ int64_t* PdxRemoteReader::readLongArray(const char* fieldName,
   }
 }
 
-float* PdxRemoteReader::readFloatArray(const char* fieldName, int32_t& length) {
+float* PdxRemoteReader::readFloatArray(const std::string& fieldName,
+                                       int32_t& length) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -573,7 +576,7 @@ float* PdxRemoteReader::readFloatArray(const char* fieldName, int32_t& length) {
   }
 }
 
-double* PdxRemoteReader::readDoubleArray(const char* fieldName,
+double* PdxRemoteReader::readDoubleArray(const std::string& fieldName,
                                          int32_t& length) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
@@ -604,7 +607,7 @@ double* PdxRemoteReader::readDoubleArray(const char* fieldName,
   }
 }
 
-char** PdxRemoteReader::readStringArray(const char* fieldName,
+char** PdxRemoteReader::readStringArray(const std::string& fieldName,
                                         int32_t& length) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
@@ -634,7 +637,7 @@ char** PdxRemoteReader::readStringArray(const char* fieldName,
   }
 }
 
-wchar_t** PdxRemoteReader::readWideStringArray(const char* fieldName,
+wchar_t** PdxRemoteReader::readWideStringArray(const std::string& fieldName,
                                                int32_t& length) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
@@ -664,7 +667,7 @@ wchar_t** PdxRemoteReader::readWideStringArray(const char* fieldName,
   }
 }
 std::shared_ptr<CacheableObjectArray> PdxRemoteReader::readObjectArray(
-    const char* fieldName) {
+    const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -686,7 +689,7 @@ std::shared_ptr<CacheableObjectArray> PdxRemoteReader::readObjectArray(
   }
 }
 
-int8_t** PdxRemoteReader::readArrayOfByteArrays(const char* fieldName,
+int8_t** PdxRemoteReader::readArrayOfByteArrays(const std::string& fieldName,
                                                 int32_t& arrayLength,
                                                 int32_t** elementLength) {
   int choice = m_localToRemoteMap[m_currentIndex++];
@@ -710,29 +713,31 @@ int8_t** PdxRemoteReader::readArrayOfByteArrays(const char* fieldName,
     }
   }
 }
- std::shared_ptr<CacheableDate> PdxRemoteReader::readDate(const char* fieldName) {
-   int choice = m_localToRemoteMap[m_currentIndex++];
+std::shared_ptr<CacheableDate> PdxRemoteReader::readDate(
+    const std::string& fieldName) {
+  int choice = m_localToRemoteMap[m_currentIndex++];
 
-   switch (choice) {
-     case -2:
-       return PdxLocalReader::readDate(fieldName);  // in same order
-     case -1:
-       return nullptr;
-     default: {
-       // sequence id read field and then update
-       int position = m_pdxType->getFieldPosition(
-           choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
-       PdxLocalReader::resettoPdxHead();
-       m_dataInput->advanceCursor(position);
-       auto retVal = PdxLocalReader::readDate(fieldName);
-       PdxLocalReader::resettoPdxHead();
-       return retVal;
-     }
+  switch (choice) {
+    case -2:
+      return PdxLocalReader::readDate(fieldName);  // in same order
+    case -1:
+      return nullptr;
+    default: {
+      // sequence id read field and then update
+      int position = m_pdxType->getFieldPosition(
+          choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
+      PdxLocalReader::resettoPdxHead();
+      m_dataInput->advanceCursor(position);
+      auto retVal = PdxLocalReader::readDate(fieldName);
+      PdxLocalReader::resettoPdxHead();
+      return retVal;
+    }
   }
 }
 
-void PdxRemoteReader::readCollection(const char* fieldName,
-                                     std::shared_ptr<CacheableArrayList>& collection) {
+void PdxRemoteReader::readCollection(
+    const std::string& fieldName,
+    std::shared_ptr<CacheableArrayList>& collection) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {

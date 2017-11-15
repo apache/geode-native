@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_STATISTICS_H_
-#define GEODE_STATISTICS_STATISTICS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,16 +15,24 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
-#include <geode/statistics/StatisticsType.hpp>
-#include <geode/statistics/StatisticDescriptor.hpp>
+#pragma once
+
+#ifndef GEODE_STATISTICS_STATISTICS_H_
+#define GEODE_STATISTICS_STATISTICS_H_
+
+#include <string>
+
+#include "../geode_globals.hpp"
+#include "StatisticsType.hpp"
+#include "StatisticDescriptor.hpp"
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
 namespace statistics {
+
 /**
  * An instantiation of an existing <code>StatisticsType</code> object with
  * methods for
@@ -59,7 +62,7 @@ class CPPCACHE_EXPORT Statistics {
    *
    * @see StatisticsType#nameToDescriptor
    */
-  virtual int32_t nameToId(const char* name) = 0;
+  virtual int32_t nameToId(const std::string& name) const = 0;
 
   /**
    * Returns the descriptor of the statistic with the given name in this
@@ -72,26 +75,29 @@ class CPPCACHE_EXPORT Statistics {
    *
    * @see StatisticsType#nameToId
    */
-  virtual StatisticDescriptor* nameToDescriptor(const char* name) = 0;
+  virtual StatisticDescriptor* nameToDescriptor(
+      const std::string& name) const = 0;
 
   /**
    * Gets a value that uniquely identifies this statistics.
    */
-  virtual int64_t getUniqueId() = 0;
+  virtual int64_t getUniqueId() const = 0;
 
   /**
    * Gets the {@link StatisticsType} of this instance.
    */
-  virtual StatisticsType* getType() = 0;
+  virtual StatisticsType* getType() const = 0;
+
   /**
    * Gets the text associated with this instance that helps identify it.
    */
-  virtual const char* getTextId() = 0;
+  virtual const std::string& getTextId() const = 0;
+
   /**
    * Gets the number associated with this instance that helps identify it.
    */
+  virtual int64_t getNumericId() const = 0;
 
-  virtual int64_t getNumericId() = 0;
   /**
    * Returns true if modifications are atomic. This means that multiple threads
    * can safely modify this instance without additional synchronization.
@@ -102,23 +108,25 @@ class CPPCACHE_EXPORT Statistics {
    * <P>
    * Note that all instances that are {@link #isShared shared} are also atomic.
    */
-  virtual bool isAtomic() = 0;
+  virtual bool isAtomic() const = 0;
+
   /**
    * Returns true if the data for this instance is stored in shared memory.
    * Returns false if the data is store in local memory.
    * <P>
    * Note that all instances that are {@link #isShared shared} are also atomic.
    */
-  virtual bool isShared() = 0;
+  virtual bool isShared() const = 0;
+
   /**
    * Returns true if the instance has been {@link #close closed}.
    */
-  virtual bool isClosed() = 0;
+  virtual bool isClosed() const = 0;
 
   ////////////////////////  set() Methods  ///////////////////////
 
   /**
-    * Sets the value of a statistic with the given <code>id</code>
+   * Sets the value of a statistic with the given <code>id</code>
    * whose type is <code>int</code>.
    * @param id a statistic id obtained with {@link #nameToId}
    * or {@link StatisticsType#nameToId}.
@@ -139,7 +147,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic with name <code>name</code> is not of
    *         type <code>int</code>.
    */
-  virtual void setInt(char* name, int32_t value) = 0;
+  virtual void setInt(const std::string& name, int32_t value) = 0;
 
   /**
    * Sets the value of a described statistic of type <code>int</code>
@@ -153,7 +161,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>int</code>.
    */
-  virtual void setInt(StatisticDescriptor* descriptor, int32_t value) = 0;
+  virtual void setInt(const StatisticDescriptor* descriptor, int32_t value) = 0;
 
   /**
    * Sets the value of a statistic with the given <code>id</code>
@@ -179,7 +187,8 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>long</code>.
    */
-  virtual void setLong(StatisticDescriptor* descriptor, int64_t value) = 0;
+  virtual void setLong(const StatisticDescriptor* descriptor,
+                       int64_t value) = 0;
 
   /**
    * Sets the value of a named statistic of type <code>long</code>.
@@ -191,7 +200,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic with name <code>name</code> is not of
    *         type <code>long</code>.
    */
-  virtual void setLong(char* name, int64_t value) = 0;
+  virtual void setLong(const std::string& name, int64_t value) = 0;
 
   /**
    * Sets the value of a statistic with the given <code>id</code>
@@ -217,9 +226,9 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>double</code>.
    */
-  virtual void setDouble(
-      apache::geode::statistics::StatisticDescriptor* descriptor,
-      double value) = 0;
+  virtual void setDouble(const StatisticDescriptor* descriptor,
+                         double value) = 0;
+
   /**
    * Sets the value of a named statistic of type <code>double</code>.
    *
@@ -230,7 +239,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic with name <code>name</code> is not of
    *         type <code>double</code>.
    */
-  virtual void setDouble(char* name, double value) = 0;
+  virtual void setDouble(const std::string&, double value) = 0;
 
   ///////////////////////  get() Methods  ///////////////////////
 
@@ -242,7 +251,7 @@ class CPPCACHE_EXPORT Statistics {
    * @throws IllegalArgumentException
    *         If the id is invalid.
    */
-  virtual int32_t getInt(int32_t id) = 0;
+  virtual int32_t getInt(int32_t id) const = 0;
 
   /**
    * Returns the value of the described statistic of type <code>int</code>.
@@ -256,8 +265,8 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>int</code>.
    */
-  virtual int32_t getInt(
-      apache::geode::statistics::StatisticDescriptor* descriptor) = 0;
+  virtual int32_t getInt(const StatisticDescriptor* descriptor) const = 0;
+
   /**
    * Returns the value of the statistic of type <code>int</code> at
    * the given name.
@@ -268,7 +277,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic named <code>name</code> is not of
    *         type <code>int</code>.
    */
-  virtual int32_t getInt(char* name) = 0;
+  virtual int32_t getInt(const std::string& name) const = 0;
 
   /**
    * Returns the value of the identified statistic of type <code>long</code>.
@@ -278,7 +287,7 @@ class CPPCACHE_EXPORT Statistics {
    * @throws IllegalArgumentException
    *         If the id is invalid.
    */
-  virtual int64_t getLong(int32_t id) = 0;
+  virtual int64_t getLong(int32_t id) const = 0;
 
   /**
    * Returns the value of the described statistic of type <code>long</code>.
@@ -292,7 +301,8 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>long</code>.
    */
-  virtual int64_t getLong(StatisticDescriptor* descriptor) = 0;
+  virtual int64_t getLong(const StatisticDescriptor* descriptor) const = 0;
+
   /**
    * Returns the value of the statistic of type <code>long</code> at
    * the given name.
@@ -303,7 +313,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic named <code>name</code> is not of
    *         type <code>long</code>.
    */
-  virtual int64_t getLong(char* name) = 0;
+  virtual int64_t getLong(const std::string& name) const = 0;
 
   /**
    * Returns the value of the identified statistic of type <code>double</code>.
@@ -313,7 +323,7 @@ class CPPCACHE_EXPORT Statistics {
    * @throws IllegalArgumentException
    *         If the id is invalid.
    */
-  virtual double getDouble(int32_t id) = 0;
+  virtual double getDouble(int32_t id) const = 0;
 
   /**
    * Returns the value of the described statistic of type <code>double</code>.
@@ -327,7 +337,8 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>double</code>.
    */
-  virtual double getDouble(StatisticDescriptor* descriptor) = 0;
+  virtual double getDouble(const StatisticDescriptor* descriptor) const = 0;
+
   /**
    * Returns the value of the statistic of type <code>double</code> at
    * the given name.
@@ -338,26 +349,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic named <code>name</code> is not of
    *         type <code>double</code>.
    */
-  virtual double getDouble(char* name) = 0;
-
-  /**
-   * Returns the value of the identified statistic.
-   *
-   * @param descriptor a statistic descriptor obtained with {@link
-   * #nameToDescriptor}
-   * or {@link StatisticsType#nameToDescriptor}.
-   * @throws IllegalArgumentException
-   *         If the described statistic does not exist
-   */
-  //   virtual Number get(StatisticDescriptor* descriptor)=0;
-
-  /**
-   * Returns the value of the named statistic.
-   *
-   * @throws IllegalArgumentException
-   *         If the named statistic does not exist
-   */
-  //   virtual Number get(char* name)=0;
+  virtual double getDouble(const std::string& name) const = 0;
 
   /**
    * Returns the bits that represent the raw value of the described statistic.
@@ -368,15 +360,7 @@ class CPPCACHE_EXPORT Statistics {
    * @throws IllegalArgumentException
    *         If the described statistic does not exist
    */
-  virtual int64_t getRawBits(StatisticDescriptor* descriptor) = 0;
-
-  /**
-   * Returns the bits that represent the raw value of the named statistic.
-   *
-   * @throws IllegalArgumentException
-   *         If the named statistic does not exist
-   */
-  // virtual double getRawBits(char* name)=0;
+  virtual int64_t getRawBits(const StatisticDescriptor* descriptor) const = 0;
 
   ////////////////////////  inc() Methods  ////////////////////////
 
@@ -409,7 +393,8 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>int</code>.
    */
-  virtual int32_t incInt(StatisticDescriptor* descriptor, int32_t delta) = 0;
+  virtual int32_t incInt(const StatisticDescriptor* descriptor,
+                         int32_t delta) = 0;
 
   /**
    * Increments the value of the statistic of type <code>int</code> with
@@ -423,7 +408,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic named <code>name</code> is not of
    *         type <code>int</code>.
    */
-  virtual int32_t incInt(char* name, int32_t delta) = 0;
+  virtual int32_t incInt(const std::string& name, int32_t delta) = 0;
 
   /**
    * Increments the value of the identified statistic of type <code>long</code>
@@ -455,7 +440,8 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>long</code>.
    */
-  virtual int64_t incLong(StatisticDescriptor* descriptor, int64_t delta) = 0;
+  virtual int64_t incLong(const StatisticDescriptor* descriptor,
+                          int64_t delta) = 0;
   /**
    * Increments the value of the statistic of type <code>long</code> with
    * the given name by a given amount.
@@ -469,7 +455,7 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic named <code>name</code> is not of
    *         type <code>long</code>.
    */
-  virtual int64_t incLong(char* name, int64_t delta) = 0;
+  virtual int64_t incLong(const std::string& name, int64_t delta) = 0;
 
   /**
    * Increments the value of the identified statistic of type
@@ -502,7 +488,8 @@ class CPPCACHE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>double</code>.
    */
-  virtual double incDouble(StatisticDescriptor* descriptor, double delta) = 0;
+  virtual double incDouble(const StatisticDescriptor* descriptor,
+                           double delta) = 0;
   /**
    * Increments the value of the statistic of type <code>double</code> with
    * the given name by a given amount.
@@ -516,13 +503,13 @@ class CPPCACHE_EXPORT Statistics {
    *         if the statistic named <code>name</code> is not of
    *         type <code>double</code>.
    */
-  virtual double incDouble(char* name, double delta) = 0;
+  virtual double incDouble(const std::string& name, double delta) = 0;
 
  protected:
   /**
-  *  Destructor is protected to prevent direct deletion. Use close().
-  */
-  virtual ~Statistics() = 0;
+   *  Destructor is protected to prevent direct deletion. Use close().
+   */
+  virtual ~Statistics() = default;
 };  // class
 
 }  // namespace statistics

@@ -103,7 +103,7 @@ void SqLiteImpl::init(const std::shared_ptr<Region>& region,
           m_regionDBFile.c_str());
 #endif
 
-  if (m_sqliteHelper->initDB(region->getName(), maxPageCount, pageSize,
+  if (m_sqliteHelper->initDB(region->getName().c_str(), maxPageCount, pageSize,
                              m_regionDBFile.c_str()) != 0) {
     throw IllegalStateException("Failed to initialize database in SQLITE.");
   }

@@ -14,25 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * Delta.cpp
- *
- *  Created on: Nov 9, 2009
- *      Author: abhaware
- */
 
 #include <geode/Delta.hpp>
 #include <geode/Cache.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 Delta::Delta(Cache* cache) : m_cache(cache) {}
-std::shared_ptr<Delta> Delta::clone() {
+
+std::shared_ptr<Delta> Delta::clone() const {
   auto out = m_cache->createDataOutput();
-  auto ptr = dynamic_cast<Cacheable*>(this);
+  auto ptr = dynamic_cast<const Cacheable*>(this);
   out->writeObject(ptr);
   auto in = m_cache->createDataInput(out->getBuffer(), out->getBufferLength());
   std::shared_ptr<Cacheable> theClonePtr;
   in->readObject(theClonePtr);
   return std::dynamic_pointer_cast<Delta>(theClonePtr);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

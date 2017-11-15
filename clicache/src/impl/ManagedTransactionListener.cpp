@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
+
 #ifdef CSTX_COMMENTED
-//#include "../geode_includes.hpp"
+
 #include "ManagedTransactionListener.hpp"
 //#include "../TransactionEvent.hpp"
 #include "../Log.hpp"
@@ -195,7 +196,7 @@ namespace apache
           Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedTransactionListenerGeneric: Got an exception while "
             "loading managed library: ";
-          ex_str += mg_exStr.CharPtr;
+          ex_str += marshal_as<std::string>(exStr);
           throw apache::geode::client::IllegalArgumentException(ex_str.c_str());
         }
         return NULL;

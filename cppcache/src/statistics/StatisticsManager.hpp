@@ -93,7 +93,7 @@ class StatisticsManager {
   ACE_Recursive_Thread_Mutex& getListMutex();
 
   /** Return the first instance that matches the type, or nullptr */
-  Statistics* findFirstStatisticsByType(StatisticsType* type);
+  Statistics* findFirstStatisticsByType(const StatisticsType* type);
 
   std::vector<Statistics*> findStatisticsByType(StatisticsType* type);
 

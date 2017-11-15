@@ -80,14 +80,14 @@ void ProxyCache::close() {
   }
   throw IllegalStateException("User cache has been closed.");
 }
-std::shared_ptr<Region> ProxyCache::getRegion(const char* path) {
+std::shared_ptr<Region> ProxyCache::getRegion(const std::string& path) const {
   LOGDEBUG("ProxyCache::getRegion:");
 
   if (!m_isProxyCacheClosed) {
     std::shared_ptr<Region> result;
 
     if (m_cacheImpl != nullptr && !m_cacheImpl->isClosed()) {
-      m_cacheImpl->getRegion(path, result);
+      m_cacheImpl->getRegion(path.c_str(), result);
     }
 
     if (result != nullptr) {
@@ -97,7 +97,7 @@ std::shared_ptr<Region> ProxyCache::getRegion(const char* path) {
      if (pool != nullptr && pool.get() == userAttachedPool.get() &&
          !pool->isDestroyed()) {
        return std::make_shared<ProxyRegion>(
-           shared_from_this(),
+           std::const_pointer_cast<ProxyCache>(shared_from_this()),
            std::static_pointer_cast<RegionInternal>(result));
      }
      throw IllegalArgumentException(
@@ -118,18 +118,18 @@ std::shared_ptr<Region> ProxyCache::getRegion(const char* path) {
  * @param regions the region collection object containing the returned set of
  * regions when the function returns
  */
- std::shared_ptr<QueryService> ProxyCache::getQueryService() {
-   if (!m_isProxyCacheClosed) {
-     if (m_remoteQueryService != nullptr) return m_remoteQueryService;
-     auto prqsPtr =
-         std::make_shared<ProxyRemoteQueryService>(this->shared_from_this());
-     m_remoteQueryService = prqsPtr;
-     return prqsPtr;
-   }
-   throw IllegalStateException("User cache has been closed.");
+std::shared_ptr<QueryService> ProxyCache::getQueryService() {
+  if (!m_isProxyCacheClosed) {
+    if (m_remoteQueryService != nullptr) return m_remoteQueryService;
+    auto prqsPtr =
+        std::make_shared<ProxyRemoteQueryService>(this->shared_from_this());
+    m_remoteQueryService = prqsPtr;
+    return prqsPtr;
+  }
+  throw IllegalStateException("User cache has been closed.");
 }
 
-std::vector<std::shared_ptr<Region>> ProxyCache::rootRegions() {
+std::vector<std::shared_ptr<Region>> ProxyCache::rootRegions() const {
   LOGDEBUG("ProxyCache::rootRegions:");
 
   std::vector<std::shared_ptr<Region>> regions;
@@ -143,10 +143,11 @@ std::vector<std::shared_ptr<Region>> ProxyCache::rootRegions() {
     regions.reserve(tmp.size());
 
     for (const auto& reg : tmp) {
-      if (strcmp(m_userAttributes->getPool()->getName(),
-                 reg->getAttributes()->getPoolName()) == 0) {
+      if (m_userAttributes->getPool()->getName() ==
+          reg->getAttributes()->getPoolName()) {
         auto pRegion = std::make_shared<ProxyRegion>(
-            shared_from_this(), std::static_pointer_cast<RegionInternal>(reg));
+            std::const_pointer_cast<ProxyCache>(shared_from_this()),
+            std::static_pointer_cast<RegionInternal>(reg));
         regions.push_back(pRegion);
       }
     }
@@ -164,12 +165,12 @@ ProxyCache::ProxyCache(std::shared_ptr<Properties> credentials,
       m_cacheImpl(cacheImpl) {}
 
 ProxyCache::~ProxyCache() {}
- std::shared_ptr<PdxInstanceFactory> ProxyCache::createPdxInstanceFactory(
-    const char* className) {
-   return std::make_shared<PdxInstanceFactoryImpl>(
-       className, &(m_cacheImpl->getCachePerfStats()),
-       m_cacheImpl->getPdxTypeRegistry(), m_cacheImpl->getCache(),
-       m_cacheImpl->getDistributedSystem()
-           .getSystemProperties()
-           .getEnableTimeStatistics());
+std::shared_ptr<PdxInstanceFactory> ProxyCache::createPdxInstanceFactory(
+    std::string className) const {
+  return std::make_shared<PdxInstanceFactoryImpl>(
+      className.c_str(), &(m_cacheImpl->getCachePerfStats()),
+      m_cacheImpl->getPdxTypeRegistry(), m_cacheImpl->getCache(),
+      m_cacheImpl->getDistributedSystem()
+          .getSystemProperties()
+          .getEnableTimeStatistics());
  }

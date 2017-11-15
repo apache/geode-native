@@ -16,13 +16,14 @@
  */
 #pragma once
 
+
 #include "../IPersistenceManager.hpp"
 #include "SafeConvert.hpp"
 #include "../Region.hpp"
 #include "../Properties.hpp"
-#include "begin_native.hpp"
+#include "../begin_native.hpp"
 #include <memory>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 using namespace System;
 namespace Apache
 {

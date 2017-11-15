@@ -48,6 +48,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class Pool;
 
 static constexpr std::chrono::milliseconds DEFAULT_RESPONSE_TIMEOUT =
@@ -91,13 +92,13 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
  public:
   /** return single name of region. The storage is backed by the region. */
-  virtual const char* getName() const = 0;
+  virtual const std::string& getName() const = 0;
   // virtual uint64_t getUpdateReceived() const { return 0; };
 
   /** return the full path of the region as can be used to lookup the
    * region from Cache::getRegion. The storage is backed by the region.
    */
-  virtual const char* getFullPath() const = 0;
+  virtual const std::string& getFullPath() const = 0;
 
   /** Returns the parent region, or nullptr if a root region.
    * @throws RegionDestroyedException
@@ -238,11 +239,11 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   /** Returns the subregion identified by the path, nullptr if no such subregion
    */
-  virtual std::shared_ptr<Region> getSubregion(const char* path) = 0;
+  virtual std::shared_ptr<Region> getSubregion(const std::string& path) = 0;
 
   /** Creates a subregion with the specified attributes */
   virtual std::shared_ptr<Region> createSubregion(
-      const char* subregionName,
+      const std::string& subregionName,
       const std::shared_ptr<RegionAttributes>& aRegionAttributes) = 0;
 
   /** Populates the passed in std::vector<std::shared_ptr<Region>> with
@@ -1254,7 +1255,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws UnknownException For other exceptions.
    * @throws TimeoutException if operation timed out
    */
-  virtual void registerRegex(const char* regex, bool isDurable = false,
+  virtual void registerRegex(const std::string& regex, bool isDurable = false,
                              bool getInitialValues = false,
                              bool receiveValues = true) = 0;
 
@@ -1285,7 +1286,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws UnknownException For other exceptions.
    * @throws TimeoutException if operation timed out
    */
-  virtual void unregisterRegex(const char* regex) = 0;
+  virtual void unregisterRegex(const std::string& regex) = 0;
 
   /**
    * Gets values for an array of keys from the local cache or server.
@@ -1360,7 +1361,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * ResultSet or a StructSet.
    */
   virtual std::shared_ptr<SelectResults> query(
-      const char* predicate,
+      const std::string& predicate,
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
@@ -1384,7 +1385,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @returns true if the result size is non-zero, false otherwise.
    */
   virtual bool existsValue(
-      const char* predicate,
+      const std::string& predicate,
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
@@ -1410,7 +1411,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * nullptr of no results are available.
    */
   virtual std::shared_ptr<Serializable> selectValue(
-      const char* predicate,
+      const std::string& predicate,
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
@@ -1450,7 +1451,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
   virtual uint32_t size() = 0;
 
-  virtual const std::shared_ptr<Pool>& getPool() = 0;
+  virtual const std::shared_ptr<Pool>& getPool() const = 0;
 
   inline Cache& getCache() { return *m_cache; }
 

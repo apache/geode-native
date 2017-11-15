@@ -66,7 +66,7 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
 
   virtual ~ChildPdx();
 
-  virtual uint32_t objectSize() const {
+  virtual uint32_t objectSize() const override {
     uint32_t objectSize = sizeof(ChildPdx);
     return objectSize;
   }
@@ -78,13 +78,16 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 
-  const char* getClassName() const { return "testobject::ChildPdx"; }
+  const std::string& getClassName() const override {
+    static std::string className = "testobject.ChildPdx";
+    return className;
+  }
 
   static PdxSerializable* createDeserializable() { return new ChildPdx(); }
 
@@ -154,7 +157,7 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
 
   virtual ~ParentPdx();
 
-  virtual uint32_t objectSize() const {
+  virtual uint32_t objectSize() const override {
     uint32_t objectSize = sizeof(ParentPdx);
     return objectSize;
   }
@@ -188,13 +191,16 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 
-  const char* getClassName() const { return "testobject::ParentPdx"; }
+  const std::string& getClassName() const override {
+    static std::string className = "testobject.ParentPdx";
+    return className;
+  }
 
   static PdxSerializable* createDeserializable() { return new ParentPdx(); }
 
@@ -244,22 +250,23 @@ class TESTOBJECT_EXPORT PdxEnumTestClass : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(std::shared_ptr<PdxWriter> pw) {
+  void toData(std::shared_ptr<PdxWriter> pw) const override {
     pw->writeInt("m_id", m_id);
     pw->writeObject("m_enumid", m_enumid);
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) {
+  void fromData(std::shared_ptr<PdxReader> pr) override {
     m_id = pr->readInt("m_id");
     m_enumid =
         std::static_pointer_cast<CacheableEnum>(pr->readObject("m_enumid"));
   }
 
-  std::shared_ptr<CacheableString> toString() const {
-    return CacheableString::create("PdxEnumTestClass");
-  }
+  std::string toString() const override { return "PdxEnumTestClass"; }
 
-  const char* getClassName() const { return "testobject::PdxEnumTestClass"; }
+  const std::string& getClassName() const override {
+    static std::string className = "testobject.PdxEnumTestClass";
+    return className;
+  }
 
   static PdxSerializable* createDeserializable() {
     return new PdxEnumTestClass();
@@ -297,7 +304,7 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(std::shared_ptr<PdxWriter> pw) {
+  void toData(std::shared_ptr<PdxWriter> pw) const override {
     pw->writeInt("i1", i1);
     pw->markIdentityField("i1");
     pw->writeInt("i2", i2);
@@ -306,18 +313,19 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
     pw->writeString("s2", s2);
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) {
+  void fromData(std::shared_ptr<PdxReader> pr) override {
     i1 = pr->readInt("i1");
     i2 = pr->readInt("i2");
     s1 = pr->readString("s1");
     s2 = pr->readString("s2");
   }
 
-  std::shared_ptr<CacheableString> toString() const {
-    return CacheableString::create("SerializePdx");
-  }
+  std::string toString() const override { return "SerializePdx"; }
 
-  const char* getClassName() const { return "SerializePdx"; }
+  const std::string& getClassName() const override {
+    static std::string className = "SerializePdx";
+    return className;
+  }
 
   bool equals(SerializePdx& other, bool isPdxReadSerialized) const {
     SerializePdx* ot = dynamic_cast<SerializePdx*>(&other);

@@ -209,7 +209,7 @@ int main(int argc, char** argv) {
       LOGINFO("Row %d Column 1 is named %s, value is %S", rowCount,
               psi->getFieldName(0).c_str(), (*psi)[0]->toString()->asWChar());
       LOGINFO("Row %d Column 2 is named %s, value is %s", rowCount,
-              psi->getFieldName(1).c_str(), (*psi)[1]->toString()->asChar());
+              psi->getFieldName(1).c_str(), (*psi)[1]->toString().c_str());
     }
 
     // Execute a Region Shortcut Query (convenience method).

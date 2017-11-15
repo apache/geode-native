@@ -33,35 +33,34 @@ namespace apache {
 namespace geode {
 namespace client {
 
-PdxFieldType::PdxFieldType() : Serializable() {
-  // m_fieldName = nullptr;
-  // m_className = nullptr;
-  m_typeId = 0;
-  m_sequenceId = 0;
-  m_isVariableLengthType = false;
-  m_fixedSize = 0;
-  m_varLenFieldIdx = 0;
-  m_isIdentityField = false;
-  m_relativeOffset = 0;
-  m_vlOffsetIndex = 0;
-}
+PdxFieldType::PdxFieldType()
+    : Serializable(),
+      m_fieldName(),
+      m_className(),
+      m_typeId(0),
+      m_sequenceId(0),
+      m_isVariableLengthType(false),
+      m_fixedSize(0),
+      m_varLenFieldIdx(0),
+      m_isIdentityField(false),
+      m_relativeOffset(0),
+      m_vlOffsetIndex(0) {}
 
-PdxFieldType::PdxFieldType(const char* fieldName, const char* className,
+PdxFieldType::PdxFieldType(std::string fieldName, std::string className,
                            uint8_t typeId, int32_t sequenceId,
                            bool isVariableLengthType, int32_t fixedSize,
                            int32_t varLenFieldIdx)
-    : Serializable() {
-  m_fieldName = fieldName;
-  m_className = className;
-  m_typeId = typeId;
-  m_sequenceId = sequenceId;  // start with 0
-  m_isVariableLengthType = isVariableLengthType;
-  m_fixedSize = fixedSize;
-  m_varLenFieldIdx = varLenFieldIdx;  // start with 0
-  m_isIdentityField = false;
-  m_relativeOffset = 0;
-  m_vlOffsetIndex = 0;
-}
+    : Serializable(),
+      m_fieldName(fieldName),
+      m_className(className),
+      m_typeId(typeId),
+      m_sequenceId(sequenceId),
+      m_isVariableLengthType(isVariableLengthType),
+      m_fixedSize(fixedSize),
+      m_varLenFieldIdx(varLenFieldIdx),
+      m_isIdentityField(false),
+      m_relativeOffset(0),
+      m_vlOffsetIndex(0) {}
 
 PdxFieldType::~PdxFieldType() {}
 
@@ -142,24 +141,14 @@ int32_t PdxFieldType::getFixedTypeSize() const {
   }
   return -1;
 }
-std::shared_ptr<CacheableString> PdxFieldType::toString() const {
+std::string PdxFieldType::toString() const {
   char stringBuf[1024];
-  /* adongre  - Coverity II
-   * CID 29208: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-   * "sprintf" can cause a
-   * buffer overflow when done incorrectly. Because sprintf() assumes an
-   * arbitrarily long string,
-   * callers must be careful not to overflow the actual space of the
-   * destination.
-   * Use snprintf() instead, or correct precision specifiers.
-   * Fix : using ACE_OS::snprintf
-   */
   ACE_OS::snprintf(
       stringBuf, 1024,
       " PdxFieldName=%s TypeId=%d VarLenFieldIdx=%d sequenceid=%d\n",
       this->m_fieldName.c_str(), this->m_typeId, this->m_varLenFieldIdx,
       this->m_sequenceId);
-  return CacheableString::create(stringBuf);
+  return std::string(stringBuf);
 }
 }  // namespace client
 }  // namespace geode

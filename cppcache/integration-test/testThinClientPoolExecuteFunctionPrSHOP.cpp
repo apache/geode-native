@@ -178,7 +178,7 @@ bool validateResultTypeAndAllowUserFunctionExecutionException(
       return true;
     } else {
       LOGINFO("Unexpected result type %s for index %d.",
-              result->toString()->asChar(), index);
+              result->toString().c_str(), index);
     }
   }
 
@@ -195,7 +195,7 @@ bool validateResultTypeIsUserFunctionExecutionException(
     return true;
   } else {
     LOGINFO("Unexpected result type %s for index %d.",
-            result->toString()->asChar(), index);
+            result->toString().c_str(), index);
   }
 
   return false;
@@ -252,7 +252,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       auto value = CacheableString::create(buf);
 
       sprintf(buf, "KEY--%d", i);
-      auto key = CacheableKey::create(buf);
+      auto key = CacheableString::create(buf);
       regPtr0->put(key, value);
     }
     SLEEP(10000);  // let the put finish
@@ -615,7 +615,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         auto value = CacheableString::create(buf);
 
         sprintf(buf, "KEY--%d", i);
-        auto key = CacheableKey::create(buf);
+        auto key = CacheableString::create(buf);
         regPtr0->put(key, value);
       }
 
@@ -737,7 +737,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
               "get result[%d]=%s", i,
               std::dynamic_pointer_cast<PdxTypes8>(resultListPdx->operator[](i))
                   ->toString()
-                  ->asChar());
+                  .c_str());
           auto pdxObj2 = std::dynamic_pointer_cast<PdxTypes8>(
               resultListPdx->operator[](i));
           ASSERT(pdxobj->equals(pdxObj2) == true,
@@ -810,7 +810,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                   std::dynamic_pointer_cast<PdxTypes8>(
                       resultListPdxInstance->operator[](i))
                       ->toString()
-                      ->asChar());
+                      .c_str());
           auto pdxObj2 = std::dynamic_pointer_cast<PdxTypes8>(
               resultListPdxInstance->operator[](i));
 
@@ -829,7 +829,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         auto value = CacheableString::create(buf);
 
         sprintf(buf, "KEY--%d", i);
-        auto key = CacheableKey::create(buf);
+        auto key = CacheableString::create(buf);
         regPtr0->put(key, value);
       }
       SLEEP(10000);  // let the put finish

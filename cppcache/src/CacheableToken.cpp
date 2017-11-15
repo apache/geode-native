@@ -69,13 +69,14 @@ CacheableToken::~CacheableToken() {}
  * Display this object as 'string', which depend on the implementation in
  * the subclasses
  * The default implementation renders the classname.
- */ std::shared_ptr<CacheableString> CacheableToken::toString() const {
+ */
+std::string CacheableToken::toString() const {
   static const char* ctstrings[] = {
       "CacheableToken::NOT_USED", "CacheableToken::INVALID",
       "CacheableToken::DESTROYED", "CacheableToken::OVERFLOWED",
       "CacheableToken::TOMBSTONE"};
 
-  return CacheableString::create(ctstrings[m_value]);
+  return ctstrings[m_value];
 }
 
 uint32_t CacheableToken::objectSize() const { return sizeof(m_value); }

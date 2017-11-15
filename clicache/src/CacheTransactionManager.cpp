@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "impl/SafeConvert.hpp"
 #include "impl/ManagedTransactionListener.hpp"
 #include "impl/ManagedTransactionWriter.hpp"

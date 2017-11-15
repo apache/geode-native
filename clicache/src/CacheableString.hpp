@@ -19,12 +19,12 @@
 
 
 
+
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
 #include <geode/CacheableString.hpp>
 #include "end_native.hpp"
 
-#include "impl/ManagedString.hpp"
 #include "CacheableKey.hpp"
 #include "GeodeClassIds.hpp"
 
@@ -194,7 +194,7 @@ namespace Apache
         /// </summary>
         inline static operator String ^ (CacheableString^ str)
         {
-          return (str != nullptr ? CacheableString::GetString(str) : nullptr);
+          return (str != nullptr ? str->ToString() : nullptr);
         }
 
         /// <summary>
@@ -262,27 +262,6 @@ namespace Apache
         static void GetCacheableString(array<Char>^ value,
                                        std::shared_ptr<apache::geode::client::CacheableString>& cStr);
 
-        /// <summary>
-        /// Get the <c>System.String</c> from the given
-        /// <c>apache::geode::client::CacheableString</c>
-        /// </summary>
-        inline static String^ GetString(apache::geode::client::CacheableString * cStr)
-        {
-          if (cStr == NULL) {
-            return nullptr;
-          }
-          else if (cStr->isWideString()) {
-            return ManagedString::Get(cStr->asWChar());
-          }
-          else {
-            return ManagedString::Get(cStr->asChar());
-          }
-        }
-
-        inline static String^ GetString(CacheableString^ cStr)
-        {
-          return cStr->Value;
-        }
 
         CacheableString(System::UInt32 type) : CacheableKey()
         {

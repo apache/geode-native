@@ -92,15 +92,28 @@ BEGIN_TEST.
 
 #include <list>
 #include <string>
-
+#include <sstream>
 #include <cstdio>
 
 #include "TimeBomb.hpp"
 
 #define ASSERT(x, y) \
   if (!(x)) throw TestException(y, __LINE__, __FILE__)
+
+#define ASSERT1(x) ASSERT(x, "Expected: " #x)
+
+#define ASSERT_EQ(x, y) _ASSERT_EQ(x, y, __LINE__, __FILE__)
+
+#define ASSERT_STREQ(x, y)                                            \
+  ASSERT((strcmp(x, y) == 0),                                         \
+         (std::string("Assert: " #x " == " #y ", Expected: \"") + x + \
+          "\", Actual: \"" + y + "\"")                                \
+             .c_str())
+
 #define FAIL(y) throw TestException(y, __LINE__, __FILE__)
+
 #define LOG(y) dunit::log(y, __LINE__, __FILE__, 0)
+
 #define SLEEP(x) dunit::sleep(x)
 
 namespace dunit {
@@ -228,5 +241,15 @@ int main(int argc, char* argv[])
   }                 \
   }                 \
   a_##x;
+
+template <class _Expected, class _Actual>
+void _ASSERT_EQ(const _Expected& expected, const _Actual& actual, int line,
+                const char* file) {
+  if (expected != actual) {
+    std::stringstream ss;
+    ss << "ASSERT_EQ: Expected: " << expected << ", Actual: " << actual;
+    throw TestException(ss.str().c_str(), line, file);
+  }
+}
 
 #endif  // GEODE_INTEGRATION_TEST_FW_HELPER_H_

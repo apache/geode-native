@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-//#include "../geode_includes.hpp"
+
+
 #include "ManagedCacheListener.hpp"
 #include "../ICacheListener.hpp"
 #include "../EntryEvent.hpp"
@@ -207,11 +208,9 @@ namespace apache
         }
         catch (System::Exception^ ex)
         {
-          Apache::Geode::Client::ManagedString mg_exStr(ex->ToString());
           std::string ex_str = "ManagedCacheListenerGeneric: Got an exception while "
-            "loading managed library: ";
-          ex_str += mg_exStr.CharPtr;
-          throw apache::geode::client::IllegalArgumentException(ex_str.c_str());
+            "loading managed library: " + marshal_as<std::string>(ex->ToString());
+          throw apache::geode::client::IllegalArgumentException(ex_str);
         }
         return NULL;
       }

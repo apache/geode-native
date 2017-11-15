@@ -49,12 +49,11 @@ BEGIN_TEST(DEFAULT)
            "expected 1");
     ASSERT(sp->statisticsEnabled() == true, "expected true");
     LOG(sp->statisticsArchiveFile());
-    const char* safname = sp->statisticsArchiveFile();
-    int ret = strcmp(safname, "statArchive.gfs");
-    ASSERT(ret == 0, "expected 0");
-    const char* ll = Log::levelToChars(sp->logLevel());
-    ret = strcmp(ll, "config");
-    ASSERT(ret == 0, "expected 0");
+    auto&& safname = sp->statisticsArchiveFile();
+    ASSERT(safname == "statArchive.gfs",
+           "Expected safname == \"statArchive.gfs\"");
+    auto&& ll = Log::levelToChars(sp->logLevel());
+    ASSERT_STREQ("config", ll);
     delete sp;
   }
 END_TEST(DEFAULT)
@@ -82,9 +81,8 @@ BEGIN_TEST(CONFIG)
     ASSERT(sp->statisticsSampleInterval() == std::chrono::seconds(1),
            "expected 1");
     ASSERT(sp->statisticsEnabled() == true, "expected true");
-    const char* safname = sp->statisticsArchiveFile();
-    int ret = strcmp(safname, "statArchive.gfs");
-    ASSERT(ret == 0, "expected 0");
+    auto&& safname = sp->statisticsArchiveFile();
+    ASSERT_EQ("statArchive.gfs", safname);
     Log::LogLevel ll = sp->logLevel();
     ASSERT(ll == Log::Config, "expected Log::Config");
     delete sp;
@@ -110,24 +108,20 @@ BEGIN_TEST(NEW_CONFIG)
 
     ASSERT(sp->threadPoolSize() == 96, "max-fe-thread should be 96");
 
-    const char* safname = sp->statisticsArchiveFile();
-    int ret = strcmp(safname, "stats.gfs");
-    ASSERT(ret == 0, "expected 0");
+    auto&& safname = sp->statisticsArchiveFile();
+    ASSERT1(safname == "stats.gfs");
 
-    const char* logfname = sp->logFilename();
-    ret = strcmp(logfname, "gfcpp.log");
-    ASSERT(ret == 0, "expected 0");
+    auto&& logfname = sp->logFilename();
+    ASSERT1(logfname == "gfcpp.log");
 
     // Log::LogLevel ll = sp->logLevel();
     // ASSERT( ll == Log::Debug, "expected Log::Debug" );
 
-    const char* name = sp->name();
-    ret = strcmp(name, "system");
-    ASSERT(ret == 0, "expected 0");
+    auto&& name = sp->name();
+    ASSERT1(name == "system");
 
-    const char* cxml = sp->cacheXMLFile();
-    ret = strcmp(cxml, "cache.xml");
-    ASSERT(ret == 0, "expected 0");
+    auto&& cxml = sp->cacheXMLFile();
+    ASSERT1(cxml == "cache.xml");
 
     ASSERT(sp->pingInterval() == std::chrono::seconds(123),
            "expected 123 pingInterval");
@@ -146,9 +140,8 @@ BEGIN_TEST(NEW_CONFIG)
 
     ASSERT(sp->statsFileSizeLimit() == 1024000000, "expected 1024000000");
 
-    const char* durableId = sp->durableClientId();
-    ret = strcmp(durableId, "testDurableId");
-    ASSERT(ret == 0, "expected 0");
+    auto&& durableId = sp->durableClientId();
+    ASSERT1(durableId == "testDurableId");
 
     ASSERT(sp->durableTimeout() == std::chrono::seconds(123),
            "expected 123 durableTimeOut");

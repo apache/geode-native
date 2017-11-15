@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHEATTRIBUTES_H_
-#define GEODE_CACHEATTRIBUTES_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,16 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CACHEATTRIBUTES_H_
+#define GEODE_CACHEATTRIBUTES_H_
+
 /**
  * @file
  */
+
+#include <string>
 
 #include "geode_globals.hpp"
 
@@ -63,9 +65,9 @@ class CPPCACHE_EXPORT CacheAttributes {
   /**
    * Gets cache level endpoints list.
    */
-  char* getEndpoints();
+  const std::string& getEndpoints();
 
-  ~CacheAttributes();
+  ~CacheAttributes() = delete;
 
   bool operator==(const CacheAttributes& other) const;
 
@@ -80,17 +82,16 @@ class CPPCACHE_EXPORT CacheAttributes {
   /** Sets cache level endpoints list.
    *
    */
-  void setEndpoints(char* endpoints);
+  void setEndpoints(const std::string& endpoints);
+  void setEndpoints(std::string&& endpoints);
+
   // will be created by the factory
 
-  CacheAttributes(const CacheAttributes& rhs);
+  CacheAttributes(const CacheAttributes& rhs) = default;
   CacheAttributes();
 
-  int32_t compareStringAttribute(char* attributeA, char* attributeB) const;
-  void copyStringAttribute(char*& lhs, const char* rhs);
-
   int m_redundancyLevel;
-  char* m_endpoints;
+  std::string m_endpoints;
   bool m_cacheMode;
 
   friend class CacheAttributesFactory;

@@ -99,7 +99,7 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
   virtual void toData(std::shared_ptr<PdxWriter> pw);
   virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const;
 };
 
 }  // namespace testobject

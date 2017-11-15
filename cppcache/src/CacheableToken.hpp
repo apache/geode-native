@@ -56,12 +56,12 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const;
+  virtual void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object
    **/
-  virtual void fromData(DataInput& input);
+  virtual void fromData(DataInput& input) override;
 
   /**
    * @brief creation function for strings.
@@ -73,14 +73,14 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int32_t classId() const;
+  virtual int32_t classId() const override;
 
   /**
    *@brief return the typeId byte of the instance being serialized.
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int8_t typeId() const;
+  virtual int8_t typeId() const override;
 
   virtual ~CacheableToken();
 
@@ -99,7 +99,9 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
            (overflowedToken == ptr) || (tombstoneToken == ptr);
   }
 
-  static bool isInvalid(const std::shared_ptr<Cacheable>& ptr) { return invalidToken == ptr; }
+  static bool isInvalid(const std::shared_ptr<Cacheable>& ptr) {
+    return invalidToken == ptr;
+  }
 
   static bool isDestroyed(const std::shared_ptr<Cacheable>& ptr) {
     return destroyedToken == ptr;
@@ -118,9 +120,9 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
    * the subclasses. The default implementation renders the classname.
    * This returns constant strings of the form "CacheableToken::INVALID".
    */
-  virtual std::shared_ptr<CacheableString> toString() const;
+  virtual std::string toString() const override;
 
-  virtual uint32_t objectSize() const;
+  virtual uint32_t objectSize() const override;
 
  protected:
   CacheableToken(TokenType value);

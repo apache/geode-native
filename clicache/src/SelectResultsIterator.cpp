@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "SelectResultsIterator.hpp"
 #include "impl/SafeConvert.hpp"
 

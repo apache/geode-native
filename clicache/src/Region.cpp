@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "begin_native.hpp"
 #include <tuple>
 #include "geode/Region.hpp"
@@ -40,6 +41,7 @@
 #include "impl/CacheResolver.hpp"
 #include "TimeUtils.hpp"
 
+
 namespace Apache
 {
   namespace Geode
@@ -48,6 +50,8 @@ namespace Apache
     {
 
       using namespace System;
+      using namespace msclr::interop;
+
       namespace native = apache::geode::client;
 
       generic<class TKey, class TValue>
@@ -791,7 +795,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get(m_nativeptr->get()->getName());
+          return marshal_as<String^>(m_nativeptr->get()->getName());
         }
         finally
         {
@@ -804,7 +808,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get(m_nativeptr->get()->getFullPath());
+          return marshal_as<String^>(m_nativeptr->get()->getFullPath());
         }
         finally
         {
@@ -889,10 +893,9 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          ManagedString mg_path(path);
           try
           {
-            auto subRegion = m_nativeptr->get()->getSubregion(mg_path.CharPtr);
+            auto subRegion = m_nativeptr->get()->getSubregion(marshal_as<std::string>(path));
             return Region::Create(subRegion);
           }
           finally
@@ -911,9 +914,8 @@ namespace Apache
 
           try
           {
-            ManagedString mg_subregionName(subRegionName);
             auto p_attrs = attributes->GetNative();
-            return Region::Create(m_nativeptr->get()->createSubregion(mg_subregionName.CharPtr, p_attrs));
+            return Region::Create(m_nativeptr->get()->createSubregion(marshal_as<std::string>(subRegionName), p_attrs));
           }
           finally
           {
@@ -1267,7 +1269,7 @@ namespace Apache
         auto strarr = gcnew array<String^>(static_cast<int>(vc.size()));
         for (System::Int32 index = 0; index < strarr->Length; index++)
         {
-          strarr[index] = ManagedString::Get(vc[index]->asChar());
+          strarr[index] = marshal_as<String^>(vc[index]->asChar());
           //collectionlist[ index ] = Serializable::GetManagedValue<TValue>(nativeptr);
         }
         auto collectionlist = (System::Collections::Generic::ICollection<String^>^)strarr;
@@ -1320,8 +1322,7 @@ namespace Apache
 
         try
         {
-          ManagedString mg_regex(regex);
-          m_nativeptr->get()->registerRegex(mg_regex.CharPtr, isDurable,
+          m_nativeptr->get()->registerRegex(marshal_as<std::string>(regex), isDurable,
             getInitialValues, receiveValues);
         }
         finally
@@ -1337,10 +1338,9 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          ManagedString mg_regex(regex);
         try
         {
-          m_nativeptr->get()->unregisterRegex(mg_regex.CharPtr);
+          m_nativeptr->get()->unregisterRegex(marshal_as<std::string>(regex));
         }
         finally
         {
@@ -1362,13 +1362,11 @@ namespace Apache
       generic<class TResult>
       ISelectResults<TResult>^ Region<TKey, TValue>::Query(String^ predicate, TimeSpan timeout)
       {
-        ManagedString mg_predicate(predicate);
-
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
           try
           {
-            auto selectResults = m_nativeptr->get()->query(mg_predicate.CharPtr, TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
+            auto selectResults = m_nativeptr->get()->query(marshal_as<std::string>(predicate), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
             if (auto resultptr = std::dynamic_pointer_cast<native::ResultSet>(selectResults))
             {
               return ResultSet<TResult>::Create(resultptr);
@@ -1396,13 +1394,11 @@ namespace Apache
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::ExistsValue(String^ predicate, TimeSpan timeout)
       {
-        ManagedString mg_predicate(predicate);
-
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
           try
           {
-            return m_nativeptr->get()->existsValue(mg_predicate.CharPtr, TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
+            return m_nativeptr->get()->existsValue(marshal_as<std::string>(predicate), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
           }
           finally
           {
@@ -1410,7 +1406,6 @@ namespace Apache
           }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
-
       }
 
       generic<class TKey, class TValue>
@@ -1422,13 +1417,11 @@ namespace Apache
       generic<class TKey, class TValue>
       Object^ Region<TKey, TValue>::SelectValue(String^ predicate, TimeSpan timeout)
       {
-        ManagedString mg_predicate(predicate);
-
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
         try
         {
-          auto nativeptr = m_nativeptr->get()->selectValue(mg_predicate.CharPtr, TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
+          auto nativeptr = m_nativeptr->get()->selectValue(marshal_as<std::string>(predicate), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
           return Serializable::GetManagedValueGeneric<Object^>(nativeptr);
         }
         finally
@@ -1437,7 +1430,6 @@ namespace Apache
         }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
-
       }
 
       generic<class TKey, class TValue>

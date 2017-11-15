@@ -80,7 +80,7 @@ DUNIT_TASK(CLIENT1, SetupClient1)
       LOG(buf);
       bool found = false;
       for (const auto& k : vkey) {
-        if (!strcmp(key, k->toString()->asChar())) {
+        if (!strcmp(key, k->toString().c_str())) {
           found = true;
           break;
         }

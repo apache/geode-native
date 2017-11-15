@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_STATISTICDESCRIPTOR_H_
-#define GEODE_STATISTICS_STATISTICDESCRIPTOR_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,14 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#pragma once
 
-using namespace apache::geode::client;
+#ifndef GEODE_STATISTICS_STATISTICDESCRIPTOR_H_
+#define GEODE_STATISTICS_STATISTICDESCRIPTOR_H_
+
+#include <string>
+
+#include "../geode_globals.hpp"
 
 /** @file
 */
@@ -30,6 +30,8 @@ using namespace apache::geode::client;
 namespace apache {
 namespace geode {
 namespace statistics {
+
+using namespace apache::geode::client;
 
 /**
  * Describes an individual statistic whose value is updated by an
@@ -51,34 +53,34 @@ class CPPCACHE_EXPORT StatisticDescriptor {
     * }. The id is initialized when its statistics
     * type is created.
     */
-  virtual int32_t getId() = 0;
+  virtual int32_t getId() const = 0;
 
   /**
    * Returns the name of this statistic
    */
-  virtual const char* getName() = 0;
+  virtual const std::string& getName() const = 0;
 
   /**
    * Returns a description of this statistic
    */
-  virtual const char* getDescription() = 0;
+  virtual const std::string& getDescription() const = 0;
 
   /**
    * Returns true if this statistic is a counter; false if its a gauge.
    * Counter statistics have values that always increase.
    * Gauge statistics have unconstrained values.
    */
-  virtual bool isCounter() = 0;
+  virtual bool isCounter() const = 0;
 
   /**
    *  Returns true if a larger statistic value indicates better performance.
    */
-  virtual bool isLargerBetter() = 0;
+  virtual bool isLargerBetter() const = 0;
 
   /**
    *  Returns the unit in which this statistic is measured
    */
-  virtual const char* getUnit() = 0;
+  virtual const std::string& getUnit() const = 0;
 
   /*
    * Destructor

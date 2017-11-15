@@ -17,10 +17,11 @@
 
 #pragma once
 
-#include "begin_native.hpp"
+
+#include "../begin_native.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "../geode_defs.hpp"
 #include "../Serializable.hpp"

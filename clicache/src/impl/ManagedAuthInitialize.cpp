@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-//#include "../geode_includes.hpp"
+
+#include <string>
+
 #include "ManagedAuthInitialize.hpp"
 #include "../IAuthInitialize.hpp"
-#include "ManagedString.hpp"
 #include "../ExceptionTypes.hpp"
-#include "Properties.hpp"
-#include <string>
+#include "../Properties.hpp"
+
 
 using namespace System;
 using namespace System::Text;
@@ -33,15 +34,15 @@ namespace apache
   {
     namespace client
     {
+      using namespace msclr::interop;
 
       std::shared_ptr<Properties> ManagedAuthInitializeGeneric::getCredentials(const std::shared_ptr<Properties>&
-                                                                 securityprops, const char* server)
+                                                                 securityprops, const std::string& server)
       {
         try {
           auto mprops = Apache::Geode::Client::Properties<String^, String^>::Create(securityprops);
-          String^ mg_server = Apache::Geode::Client::ManagedString::Get(server);
 
-          return m_getCredentials->Invoke(mprops, mg_server)->GetNative();
+          return m_getCredentials->Invoke(mprops, marshal_as<String^>(server))->GetNative();
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();

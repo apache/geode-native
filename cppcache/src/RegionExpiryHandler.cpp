@@ -54,7 +54,8 @@ int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
 
     auto elapsed = curr_time - lastTimeForExp;
     LOGDEBUG("Entered region expiry task handler for region [%s]: %d,%d,%d,%d",
-             m_regionPtr->getFullPath(), curr_time.time_since_epoch().count(),
+             m_regionPtr->getFullPath().c_str(),
+             curr_time.time_since_epoch().count(),
              lastTimeForExp.time_since_epoch().count(), m_duration.count(),
              elapsed.count());
     if (elapsed >= m_duration) {
@@ -64,13 +65,13 @@ int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
       // reset the task after
       // (lastAccessTime + entryExpiryDuration - curr_time) in seconds
       LOGDEBUG("Resetting expiry task for region [%s] after %d sec",
-               m_regionPtr->getFullPath(), remaining.count());
+               m_regionPtr->getFullPath().c_str(), remaining.count());
       m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
           m_expiryTaskId, remaining);
       return 0;
     }
     LOGDEBUG("Removing expiry task for region [%s]",
-             m_regionPtr->getFullPath());
+             m_regionPtr->getFullPath().c_str());
     m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
         m_expiryTaskId, std::chrono::seconds::zero());
   } catch (...) {
@@ -94,7 +95,7 @@ void RegionExpiryHandler::DoTheExpirationAction() {
       LOGDEBUG(
           "RegionExpiryHandler::DoTheExpirationAction INVALIDATE "
           "region [%s]",
-          m_regionPtr->getFullPath());
+          m_regionPtr->getFullPath().c_str());
       m_regionPtr->invalidateRegionNoThrow(nullptr,
                                            CacheEventFlags::EXPIRATION);
       break;
@@ -103,7 +104,7 @@ void RegionExpiryHandler::DoTheExpirationAction() {
       LOGDEBUG(
           "RegionExpiryHandler::DoTheExpirationAction LOCAL_INVALIDATE "
           "region [%s]",
-          m_regionPtr->getFullPath());
+          m_regionPtr->getFullPath().c_str());
       m_regionPtr->invalidateRegionNoThrow(
           nullptr, CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL);
       break;
@@ -112,7 +113,7 @@ void RegionExpiryHandler::DoTheExpirationAction() {
       LOGDEBUG(
           "RegionExpiryHandler::DoTheExpirationAction DESTROY "
           "region [%s]",
-          m_regionPtr->getFullPath());
+          m_regionPtr->getFullPath().c_str());
       m_regionPtr->destroyRegionNoThrow(nullptr, true,
                                         CacheEventFlags::EXPIRATION);
       break;
@@ -121,7 +122,7 @@ void RegionExpiryHandler::DoTheExpirationAction() {
       LOGDEBUG(
           "RegionExpiryHandler::DoTheExpirationAction LOCAL_DESTROY "
           "region [%s]",
-          m_regionPtr->getFullPath());
+          m_regionPtr->getFullPath().c_str());
       m_regionPtr->destroyRegionNoThrow(
           nullptr, true, CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL);
       break;
@@ -130,7 +131,7 @@ void RegionExpiryHandler::DoTheExpirationAction() {
       LOGERROR(
           "Unknown expiration action "
           "%d for region [%s]",
-          m_action, m_regionPtr->getFullPath());
+          m_action, m_regionPtr->getFullPath().c_str());
       break;
     }
   }

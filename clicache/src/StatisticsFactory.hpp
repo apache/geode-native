@@ -19,6 +19,7 @@
 
 #pragma once
 
+
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
 #include <geode/statistics/StatisticsFactory.hpp>

@@ -372,9 +372,6 @@ GfErrType LRUEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
 bool LRUEntriesMap::get(const std::shared_ptr<CacheableKey>& key,
                         std::shared_ptr<Cacheable>& returnPtr,
                         std::shared_ptr<MapEntryImpl>& me) {
-  char logkey[2048];
-  key->logString(logkey, 2040);
-  // LOGDEBUG("key = %s", logkey);
   bool doProcessLRU = false;
   MapSegment* segmentRPtr = segmentFor(key);
   bool segmentLocked = false;
@@ -511,7 +508,7 @@ std::shared_ptr<Cacheable> LRUEntriesMap::getFromDisk(
   std::shared_ptr<Cacheable> tmpObj;
   try {
     LOGDEBUG("Reading value from persistence layer for key: %s",
-             key->toString()->asChar());
+             key->toString().c_str());
     tmpObj = m_pmPtr->read(key, persistenceInfo);
   } catch (Exception& ex) {
     LOGERROR("read on the persistence layer failed - %s", ex.what());

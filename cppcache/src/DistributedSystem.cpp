@@ -109,13 +109,13 @@ DistributedSystem::DistributedSystem(
       m_sysProps(std::move(sysProps)),
       m_connected(false) {
   LOGDEBUG("DistributedSystem::DistributedSystem");
-  if (strlen(m_sysProps->securityClientDhAlgo()) > 0) {
+  if (!m_sysProps->securityClientDhAlgo().empty()) {
     DiffieHellman::initOpenSSLFuncPtrs();
   }
 }
 DistributedSystem::~DistributedSystem() {}
 
-void DistributedSystem::logSystemInformation() {
+void DistributedSystem::logSystemInformation() const {
   std::string gfcpp = CppCacheLibrary::getProductDir();
   LOGCONFIG("Using Geode Native Client Product Directory: %s", gfcpp.c_str());
 
@@ -156,8 +156,8 @@ std::unique_ptr<DistributedSystem> DistributedSystem::create(
   // Trigger other library initialization.
   CppCacheLibrary::initLib();
 
-  auto sysProps = std::unique_ptr<SystemProperties>(
-      new SystemProperties(configPtr, nullptr));
+  auto sysProps =
+      std::unique_ptr<SystemProperties>(new SystemProperties(configPtr));
 
   auto name = _name;
   if (name.empty()) {
@@ -165,18 +165,18 @@ std::unique_ptr<DistributedSystem> DistributedSystem::create(
   }
 
   // Set client name via native client API
-  const char* propName = sysProps->name();
-  if (propName != nullptr && strlen(propName) > 0) {
+  auto&& propName = sysProps->name();
+  if (!propName.empty()) {
     name = propName;
   }
 
   // TODO global - keep global but setup once.
-  const char* logFilename = sysProps->logFilename();
-  if (logFilename) {
+  auto&& logFilename = sysProps->logFilename();
+  if (!logFilename.empty()) {
     try {
       Log::close();
-      Log::init(sysProps->logLevel(), logFilename, sysProps->logFileSizeLimit(),
-                sysProps->logDiskSpaceLimit());
+      Log::init(sysProps->logLevel(), logFilename.c_str(),
+                sysProps->logFileSizeLimit(), sysProps->logDiskSpaceLimit());
     } catch (const GeodeIOException&) {
       Log::close();
       sysProps = nullptr;
@@ -219,8 +219,7 @@ void DistributedSystem::connect(Cache* cache) {
   try {
     m_impl->connect();
   } catch (const apache::geode::client::Exception& e) {
-    LOGERROR("Exception caught during client initialization: %s",
-             e.what());
+    LOGERROR("Exception caught during client initialization: %s", e.what());
     std::string msg = "DistributedSystem::connect: caught exception: ";
     msg.append(e.what());
     throw NotConnectedException(msg.c_str());

@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
+
 #include "begin_native.hpp"
-#include "CacheRegionHelper.hpp"
-#include "CacheImpl.hpp"
+#include <CacheRegionHelper.hpp>
+#include <CacheImpl.hpp>
 #include "end_native.hpp"
 
 #include "Cache.hpp"
@@ -29,16 +30,17 @@
 #include "QueryService.hpp"
 #include "CacheFactory.hpp"
 #include "impl/AuthenticatedCache.hpp"
-#include "impl/ManagedString.hpp"
 #include "impl/SafeConvert.hpp"
 #include "impl/PdxTypeRegistry.hpp"
 #include "impl/PdxInstanceFactoryImpl.hpp"
 #include "CacheTransactionManager.hpp"
 #include "PoolManager.hpp"
 
+
 #pragma warning(disable:4091)
 
 using namespace System;
+using namespace msclr::interop;
 
 namespace Apache
 {
@@ -58,7 +60,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getName( ).c_str() );
+          return marshal_as<String^>( m_nativeptr->get()->getName( ) );
         }
         finally
         {
@@ -165,10 +167,9 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          ManagedString mg_path( path );
           try
           {
-            return Client::Region<TKey, TValue>::Create(m_nativeptr->get()->getRegion(mg_path.CharPtr));
+            return Client::Region<TKey, TValue>::Create(m_nativeptr->get()->getRegion(marshal_as<std::string>(path)));
           }
           finally
           {
@@ -221,10 +222,9 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          ManagedString mg_poolName( poolName );
           try
           {
-            return QueryService::Create(m_nativeptr->get()->getQueryService(mg_poolName.CharPtr));
+            return QueryService::Create(m_nativeptr->get()->getQueryService(marshal_as<std::string>(poolName)));
           }
           finally
           {
@@ -279,7 +279,7 @@ namespace Apache
 
           try
           {
-            return AuthenticatedCache::Create((m_nativeptr->get()->createAuthenticatedView(credentials->GetNative())));
+            return AuthenticatedCache::Create((m_nativeptr->get()->createAuthenticatedView(credentials->GetNative(), "")));
           }
           finally
           {
@@ -323,13 +323,12 @@ namespace Apache
 
       IRegionService^ Cache::CreateAuthenticatedView(Properties<String^, Object^>^ credentials, String^ poolName)
       {
-        ManagedString mg_poolName( poolName );
 
         _GF_MG_EXCEPTION_TRY2
 
           try
           {
-            return AuthenticatedCache::Create( (m_nativeptr->get()->createAuthenticatedView(credentials->GetNative(), mg_poolName.CharPtr)));
+            return AuthenticatedCache::Create( (m_nativeptr->get()->createAuthenticatedView(credentials->GetNative(), marshal_as<std::string>(poolName))));
           }
           finally
           {
@@ -341,10 +340,9 @@ namespace Apache
 
 			 void Cache::InitializeDeclarativeCache( String^ cacheXml )
       {
-        ManagedString mg_cacheXml( cacheXml );
         try
         {
-          m_nativeptr->get()->initializeDeclarativeCache( mg_cacheXml.CharPtr );
+          m_nativeptr->get()->initializeDeclarativeCache( marshal_as<std::string>(cacheXml));
         }
         finally
         {

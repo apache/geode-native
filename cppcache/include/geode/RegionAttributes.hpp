@@ -185,7 +185,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   /**
    * Returns the name of the pool attached to the region.
    */
-  const char* getPoolName() const;
+  const std::string& getPoolName() const;
 
   /*destructor
    *
@@ -214,49 +214,49 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
    * This method returns the path of the library from which
    * the factory function will be invoked on a cache server.
    */
-  const char* getCacheLoaderLibrary();
+  const std::string& getCacheLoaderLibrary();
 
   /**
    * This method returns the symbol name of the factory function from which
    * the loader will be created on a cache server.
    */
-  const char* getCacheLoaderFactory();
+  const std::string& getCacheLoaderFactory();
 
   /**
    * This method returns the path of the library from which
    * the factory function will be invoked on a cache server.
    */
-  const char* getCacheListenerLibrary();
+  const std::string& getCacheListenerLibrary();
 
   /**
    * This method returns the symbol name of the factory function from which
    * the loader will be created on a cache server.
    */
-  const char* getCacheListenerFactory();
+  const std::string& getCacheListenerFactory();
 
   /**
    * This method returns the path of the library from which
    * the factory function will be invoked on a cache server.
    */
-  const char* getCacheWriterLibrary();
+  const std::string& getCacheWriterLibrary();
 
   /**
    * This method returns the symbol name of the factory function from which
    * the loader will be created on a cache server.
    */
-  const char* getCacheWriterFactory();
+  const std::string& getCacheWriterFactory();
 
   /**
    * This method returns the path of the library from which
    * the factory function will be invoked on a cache server.
    */
-  const char* getPartitionResolverLibrary();
+  const std::string& getPartitionResolverLibrary();
 
   /**
    * This method returns the symbol name of the factory function from which
    * the loader will be created on a cache server.
    */
-  const char* getPartitionResolverFactory();
+  const std::string& getPartitionResolverFactory();
 
   /** Return true if all the attributes are equal to those of other. */
   bool operator==(const RegionAttributes& other) const;
@@ -274,7 +274,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   /**
    * This method returns the list of servername:portno separated by comma
    */
-  const char* getEndpoints();
+  const std::string& getEndpoints();
 
   /**
    * This method returns the setting of client notification
@@ -285,13 +285,13 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
    * This method returns the path of the library from which
    * the factory function will be invoked on a cache server.
    */
-  const char* getPersistenceLibrary();
+  const std::string& getPersistenceLibrary();
 
   /**
    * This method returns the symbol name of the factory function from which
    * the persistence will be created on a cache server.
    */
-  const char* getPersistenceFactory();
+  const std::string& getPersistenceFactory();
 
   /**
    * This method returns the properties pointer which is set for persistence.
@@ -311,7 +311,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
    * will use to communicate with servers, if any.
    * @return the name of the client-server {@link Pool}
    */
-  const char* getPoolName() { return m_poolName; }
+  const std::string& getPoolName() { return m_poolName; }
   bool getCloningEnabled() { return m_isClonable; }
 
   /**
@@ -323,23 +323,18 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   const RegionAttributes& operator=(const RegionAttributes&) = delete;
 
  private:
-  // Helper function that safely compares two attribute string
-  // taking into consideration the fact the one or the other
-  // might be nullptr
-  static int32_t compareStringAttribute(char* attributeA, char* attributeB);
-
-  // Helper function that safely copies one string attribute to
-  // another.
-  static void copyStringAttribute(char*& lhs, const char* rhs);
-
-  void setCacheListener(const char* libpath, const char* factoryFuncName);
-  void setCacheLoader(const char* libpath, const char* factoryFuncName);
-  void setCacheWriter(const char* libpath, const char* factoryFuncName);
-  void setPartitionResolver(const char* libpath, const char* factoryFuncName);
-  void setPersistenceManager(const char* lib, const char* func,
+  void setCacheListener(const std::string& libpath,
+                        const std::string& factoryFuncName);
+  void setCacheLoader(const std::string& libpath,
+                      const std::string& factoryFuncName);
+  void setCacheWriter(const std::string& libpath,
+                      const std::string& factoryFuncName);
+  void setPartitionResolver(const std::string& libpath,
+                            const std::string& factoryFuncName);
+  void setPersistenceManager(const std::string& lib, const std::string& func,
                              const std::shared_ptr<Properties>& config);
-  void setEndpoints(const char* endpoints);
-  void setPoolName(const char* poolName);
+  void setEndpoints(const std::string& endpoints);
+  void setPoolName(const std::string& poolName);
   void setCloningEnabled(bool isClonable);
   void setCachingEnabled(bool enable);
   void setLruEntriesLimit(int limit);
@@ -378,22 +373,22 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   uint32_t m_initialCapacity;
   float m_loadFactor;
   uint8_t m_concurrencyLevel;
-  char* m_cacheLoaderLibrary;
-  char* m_cacheWriterLibrary;
-  char* m_cacheListenerLibrary;
-  char* m_partitionResolverLibrary;
-  char* m_cacheLoaderFactory;
-  char* m_cacheWriterFactory;
-  char* m_cacheListenerFactory;
-  char* m_partitionResolverFactory;
+  std::string m_cacheLoaderLibrary;
+  std::string m_cacheWriterLibrary;
+  std::string m_cacheListenerLibrary;
+  std::string m_partitionResolverLibrary;
+  std::string m_cacheLoaderFactory;
+  std::string m_cacheWriterFactory;
+  std::string m_cacheListenerFactory;
+  std::string m_partitionResolverFactory;
   DiskPolicyType::PolicyType m_diskPolicy;
-  char* m_endpoints;
+  std::string m_endpoints;
   bool m_clientNotificationEnabled;
-  char* m_persistenceLibrary;
-  char* m_persistenceFactory;
+  std::string m_persistenceLibrary;
+  std::string m_persistenceFactory;
   std::shared_ptr<Properties> m_persistenceProperties;
   std::shared_ptr<PersistenceManager> m_persistenceManager;
-  char* m_poolName;
+  std::string m_poolName;
   bool m_isClonable;
   bool m_isConcurrencyChecksEnabled;
   friend class AttributesFactory;

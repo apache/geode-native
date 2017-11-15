@@ -19,11 +19,13 @@
 
 #ifndef GEODE_CACHEABLEOBJECTARRAY_H_
 #define GEODE_CACHEABLEOBJECTARRAY_H_
+
 #include <vector>
 #include <memory>
 
 #include "geode_globals.hpp"
 #include "Cacheable.hpp"
+
 /** @file
  */
 
@@ -42,12 +44,12 @@ class CPPCACHE_EXPORT CacheableObjectArray
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const;
+  virtual void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object
    **/
-  virtual void fromData(DataInput& input);
+  virtual void fromData(DataInput& input) override;
 
   /**
    * @brief creation function for java Object[]
@@ -61,14 +63,14 @@ class CPPCACHE_EXPORT CacheableObjectArray
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int32_t classId() const;
+  virtual int32_t classId() const override;
 
   /**
    *@brief return the typeId byte of the instance being serialized.
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int8_t typeId() const;
+  virtual int8_t typeId() const override;
 
   /**
    * Factory method for creating the default instance of CacheableObjectArray.
@@ -85,18 +87,19 @@ class CPPCACHE_EXPORT CacheableObjectArray
     return std::make_shared<CacheableObjectArray>(n);
   }
 
-  virtual uint32_t objectSize() const;
+  virtual uint32_t objectSize() const override;
 
  protected:
   /** Constructor, used for deserialization. */
   inline CacheableObjectArray() : std::vector<std::shared_ptr<Cacheable>>() {}
   /** Create a vector with n elements allocated. */
-  inline CacheableObjectArray(int32_t n) : std::vector<std::shared_ptr<Cacheable>>(n) {}
+  inline CacheableObjectArray(int32_t n)
+      : std::vector<std::shared_ptr<Cacheable>>(n) {}
 
  private:
   // never implemented.
-  CacheableObjectArray& operator=(const CacheableObjectArray& other);
-  CacheableObjectArray(const CacheableObjectArray& other);
+  CacheableObjectArray& operator=(const CacheableObjectArray& other) = delete;
+  CacheableObjectArray(const CacheableObjectArray& other) = delete;
 
   FRIEND_STD_SHARED_PTR(CacheableObjectArray)
 };

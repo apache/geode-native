@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_REGIONSERVICE_H_
-#define GEODE_REGIONSERVICE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,15 @@
  * limitations under the License.
  */
 
-#include "geode_globals.hpp"
+#pragma once
+
+#ifndef GEODE_REGIONSERVICE_H_
+#define GEODE_REGIONSERVICE_H_
+
 #include <vector>
 #include <memory>
+
+#include "geode_globals.hpp"
 
 /**
  * @file
@@ -89,7 +90,7 @@ class CPPCACHE_EXPORT RegionService {
    * @param name the region's name, such as <code>root</code>.
    * @returns region, or nullptr if no such region exists.
    */
-  virtual std::shared_ptr<Region> getRegion(const char* name) = 0;
+  virtual std::shared_ptr<Region> getRegion(const std::string& name) const = 0;
 
   /**
    * Gets the QueryService from which a new Query can be obtained.
@@ -105,7 +106,7 @@ class CPPCACHE_EXPORT RegionService {
    * @param regions the returned set of
    * regions
    */
-  virtual std::vector<std::shared_ptr<Region>> rootRegions() = 0;
+  virtual std::vector<std::shared_ptr<Region>> rootRegions() const = 0;
 
   /**
    * Returns a factory that can create a {@link PdxInstance}.
@@ -115,7 +116,7 @@ class CPPCACHE_EXPORT RegionService {
    * @return the factory
    */
   virtual std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
-      const char* className) = 0;
+      std::string className) const = 0;
 };
 }  // namespace client
 }  // namespace geode

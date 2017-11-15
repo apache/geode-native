@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-#include "begin_native.hpp"
+
+#include "../begin_native.hpp"
 #include <GeodeTypeIdsImpl.hpp>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "ManagedCacheableDelta.hpp"
 #include "../DataInput.hpp"
@@ -155,7 +156,7 @@ namespace apache
         return 0;
       }
 
-      bool ManagedCacheableDeltaGeneric::hasDelta()
+      bool ManagedCacheableDeltaGeneric::hasDelta() const
       {
         return m_managedptr->HasDelta();
       }
@@ -197,7 +198,7 @@ namespace apache
         }
       }
 
-      std::shared_ptr<Delta> ManagedCacheableDeltaGeneric::clone()
+      std::shared_ptr<Delta> ManagedCacheableDeltaGeneric::clone() const
       {
         try {
           if (auto cloneable = dynamic_cast<ICloneable^>((
@@ -261,24 +262,6 @@ namespace apache
         throw gcnew System::NotSupportedException;
       }
 
-      size_t ManagedCacheableDeltaGeneric::logString(char* buffer, size_t maxLength) const
-      {
-        try {
-          if (maxLength > 0) {
-            String^ logstr = m_managedptr->GetType()->Name + '(' +
-              m_managedptr->ToString() + ')';
-            Apache::Geode::Client::ManagedString mg_str(logstr);
-            return snprintf(buffer, maxLength, "%s", mg_str.CharPtr);
-          }
-        }
-        catch (Apache::Geode::Client::GeodeException^ ex) {
-          ex->ThrowNative();
-        }
-        catch (System::Exception^ ex) {
-          Apache::Geode::Client::GeodeException::ThrowNative(ex);
-        }
-        return 0;
-      }
     }  // namespace client
   }  // namespace geode
 }  // namespace apache

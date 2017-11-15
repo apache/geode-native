@@ -193,9 +193,13 @@ class TestDataInput {
 
   void setBuffer() { m_dataInput.setBuffer(); }
 
-  const char *getPoolName() { return m_dataInput.getPoolName(); }
+  const std::string &getPoolName() {
+    return DataInputInternal::getPoolName(m_dataInput);
+  }
 
-  void setPoolName(const char *poolName) { m_dataInput.setPoolName(poolName); }
+  void setPoolName(const std::string &poolName) {
+    DataInputInternal::setPoolName(m_dataInput, poolName);
+  }
 
  private:
   ByteArray m_byteArray;
@@ -256,7 +260,8 @@ TEST_F(DataInputTest, CanReadSignedBytesFromInput) {
 
 TEST_F(DataInputTest, CanReadABooleanFromInput) {
   bool boolArray[2] = {true, false};
-  DataInputUnderTest dataInput(reinterpret_cast<uint8_t *>(boolArray), 2, nullptr);
+  DataInputUnderTest dataInput(reinterpret_cast<uint8_t *>(boolArray), 2,
+                               nullptr);
 
   auto aBool = dataInput.readBoolean();
   EXPECT_EQ(aBool, true);
@@ -287,8 +292,8 @@ TEST_F(DataInputTest,
 
 TEST_F(DataInputTest, CanReadIntWithAMaxSizeUnsigned64BitIntInput) {
   uint64_t intArray[1] = {std::numeric_limits<uint64_t>::max()};
-  DataInputUnderTest dataInput(reinterpret_cast<uint8_t *>(intArray), sizeof(intArray),
-                      nullptr);
+  DataInputUnderTest dataInput(reinterpret_cast<uint8_t *>(intArray),
+                               sizeof(intArray), nullptr);
 
   uint64_t aInt = dataInput.readInt64();
   EXPECT_EQ(aInt, std::numeric_limits<uint64_t>::max());
@@ -302,7 +307,7 @@ TEST_F(DataInputTest, CanReadASCIIWithAnASCIIStringInput) {
   stream.writeASCII(expectedString);
 
   DataInputUnderTest dataInput(stream.getBufferCopy(), stream.getBufferLength(),
-                      nullptr);
+                               nullptr);
   dataInput.readASCII(&actualString);
 
   EXPECT_TRUE(std::string(expectedString) == std::string(actualString));
@@ -315,7 +320,7 @@ TEST_F(DataInputTest, ThrowsWhenCallingReadStringWithAnASCIIStringInput) {
   stream.writeASCII(expectedString);
 
   DataInputUnderTest dataInput(stream.getBufferCopy(), stream.getBufferLength(),
-                      nullptr);
+                               nullptr);
 
   // ASCII and non-ASCII: consider matching exception string
   ASSERT_THROW(dataInput.readString(&actualString),
@@ -329,7 +334,7 @@ TEST_F(DataInputTest, CanReadASCIIWithAnUTFStringInput) {
   stream.writeUTF(expectedString);
 
   DataInputUnderTest dataInput(stream.getBufferCopy(), stream.getBufferLength(),
-                      nullptr);
+                               nullptr);
   dataInput.readASCII(&actualString);
 
   EXPECT_TRUE(std::string(expectedString) == std::string(actualString));
@@ -342,7 +347,7 @@ TEST_F(DataInputTest, ThrowsWhenCallingReadStringWithAnUTFStringInput) {
   stream.writeUTF(expectedString);
 
   DataInputUnderTest dataInput(stream.getBufferCopy(), stream.getBufferLength(),
-                      nullptr);
+                               nullptr);
 
   // UTF and non-UTF: consider matching exception string
   ASSERT_THROW(dataInput.readString(&actualString),
@@ -356,7 +361,7 @@ TEST_F(DataInputTest, CanReadUTFWithAnUTFStringInput) {
   stream.writeUTF(expectedString);
 
   DataInputUnderTest dataInput(stream.getBufferCopy(), stream.getBufferLength(),
-                      nullptr);
+                               nullptr);
   dataInput.readUTF(&actualString);
 
   EXPECT_TRUE(std::string(expectedString) == std::string(actualString));
@@ -369,7 +374,7 @@ TEST_F(DataInputTest, CanReadUTFWithAnASCIIStringInput) {
   stream.writeASCII(expectedString);
 
   DataInputUnderTest dataInput(stream.getBufferCopy(), stream.getBufferLength(),
-                      nullptr);
+                               nullptr);
   dataInput.readUTF(&actualString);
 
   EXPECT_TRUE(std::string(expectedString) == std::string(actualString));
@@ -649,8 +654,7 @@ TEST_F(DataInputTest, TestReadObjectSharedPtr) {
       "57001B596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
   std::shared_ptr<CacheableString> objptr;
   dataInput.readObject(objptr);
-  EXPECT_STREQ((const char *)"You had me at meat tornado.",
-               (const char *)objptr->toString())
+  EXPECT_EQ("You had me at meat tornado.", objptr->toString())
       << "Correct const char *";
 }
 
@@ -671,8 +675,7 @@ TEST_F(DataInputTest, TestReadNativeString) {
       "57001B596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
   std::shared_ptr<CacheableString> objptr;
   ASSERT_EQ(true, dataInput.readNativeString(objptr)) << "Successful read";
-  EXPECT_STREQ((const char *)"You had me at meat tornado.",
-               (const char *)objptr->toString())
+  EXPECT_EQ("You had me at meat tornado.", objptr->toString())
       << "Correct const char *";
 }
 
@@ -680,10 +683,8 @@ TEST_F(DataInputTest, TestReadDirectObject) {
   TestDataInput dataInput(
       "57001B596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
   auto objptr = dataInput.readDirectObject();
-  EXPECT_STREQ(
-      (const char *)"You had me at meat tornado.",
-      (const char *)(std::dynamic_pointer_cast<CacheableString>(objptr))
-          ->toString())
+  EXPECT_EQ("You had me at meat tornado.",
+            std::dynamic_pointer_cast<CacheableString>(objptr)->toString())
       << "Correct const char *";
 }
 
@@ -692,10 +693,8 @@ TEST_F(DataInputTest, TestReadObjectSerializablePtr) {
       "57001B596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
   std::shared_ptr<Serializable> objptr;
   dataInput.readObject(objptr);
-  EXPECT_STREQ(
-      (const char *)"You had me at meat tornado.",
-      (const char *)(std::dynamic_pointer_cast<CacheableString>(objptr))
-          ->toString())
+  EXPECT_EQ("You had me at meat tornado.",
+            std::dynamic_pointer_cast<CacheableString>(objptr)->toString())
       << "Correct const char *";
 }
 
@@ -896,15 +895,15 @@ TEST_F(DataInputTest, TestSetBuffer) {
 }
 
 TEST_F(DataInputTest, TestSetPoolName) {
-  static const char *poolName = "Das Schwimmbad";
+  std::string poolName = "Das Schwimmbad";
 
   TestDataInput dataInput("123456789ABCDEF0", nullptr);
-  EXPECT_EQ((const char *)nullptr, dataInput.getPoolName())
-      << "Null pool name before setting";
-  dataInput.setPoolName(poolName);
-  EXPECT_NE((const char *)nullptr, dataInput.getPoolName())
-      << "Non-null pool name after setting";
-  EXPECT_STREQ(poolName, dataInput.getPoolName())
+  EXPECT_TRUE(DataInputInternal::getPoolName(dataInput).empty())
+      << "Empty pool name before setting";
+  DataInputInternal::setPoolName(dataInput, poolName);
+  EXPECT_FALSE(DataInputInternal::getPoolName(dataInput).empty())
+      << " pool name after setting";
+  EXPECT_EQ(poolName, DataInputInternal::getPoolName(dataInput))
       << "Correct pool name after setting";
 }
 

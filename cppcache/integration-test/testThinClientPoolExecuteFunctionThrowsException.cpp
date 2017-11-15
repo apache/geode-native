@@ -204,10 +204,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
     for (int i = 0; i < 34; i++) {
       sprintf(buf, "VALUE--%d", i);
-      std::shared_ptr<Cacheable> value(CacheableString::create(buf));
+      auto value = CacheableString::create(buf);
 
       sprintf(buf, "KEY--%d", i);
-      auto key = CacheableKey::create(buf);
+      auto key = CacheableString::create(buf);
       regPtr0->put(key, value);
     }
     std::this_thread::sleep_for(

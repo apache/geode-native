@@ -33,8 +33,6 @@
 
 using namespace apache::geode::client;
 
-constexpr const char* PoolFactory::DEFAULT_SERVER_GROUP;
-
 const std::chrono::milliseconds PoolFactory::DEFAULT_FREE_CONNECTION_TIMEOUT =
     std::chrono::seconds{10};
 
@@ -62,6 +60,8 @@ const std::chrono::milliseconds
 
 const std::chrono::milliseconds PoolFactory::DEFAULT_SUBSCRIPTION_ACK_INTERVAL =
     std::chrono::seconds{100};
+
+const std::string PoolFactory::DEFAULT_SERVER_GROUP = "";
 
 PoolFactory::PoolFactory(const Cache& cache)
     : m_attrs(std::make_shared<PoolAttributes>()),
@@ -166,19 +166,19 @@ PoolFactory& PoolFactory::setStatisticInterval(
   return *this;
 }
 
-PoolFactory& PoolFactory::setServerGroup(const char* group) {
+PoolFactory& PoolFactory::setServerGroup(std::string group) {
   m_attrs->setServerGroup(group);
   return *this;
 }
 
-PoolFactory& PoolFactory::addLocator(const char* host, int port) {
+PoolFactory& PoolFactory::addLocator(const std::string& host, int port) {
   addCheck(host, port);
   m_attrs->addLocator(host, port);
   m_addedServerOrLocator = true;
   return *this;
 }
 
-PoolFactory& PoolFactory::addServer(const char* host, int port) {
+PoolFactory& PoolFactory::addServer(const std::string& host, int port) {
   addCheck(host, port);
   m_attrs->addServer(host, port);
   m_addedServerOrLocator = true;
@@ -232,7 +232,7 @@ PoolFactory& PoolFactory::setPRSingleHopEnabled(bool enabled) {
   m_attrs->setPRSingleHopEnabled(enabled);
   return *this;
 }
-std::shared_ptr<Pool> PoolFactory::create(const char* name) {
+std::shared_ptr<Pool> PoolFactory::create(std::string name) {
   std::shared_ptr<ThinClientPoolDM> poolDM;
   {
     if (m_cache.getPoolManager().find(name) != nullptr) {
@@ -260,7 +260,7 @@ std::shared_ptr<Pool> PoolFactory::create(const char* name) {
         LOGERROR(
             "When pool [%s] is in multiuser authentication mode then thread "
             "local connections are not supported.",
-            name);
+            name.c_str());
         throw IllegalArgumentException(
             "When pool is in multiuser authentication mode then thread local "
             "connections are not supported.");
@@ -271,24 +271,26 @@ std::shared_ptr<Pool> PoolFactory::create(const char* name) {
       if (copyAttrs
               ->getThreadLocalConnectionSetting() /*&& !copyAttrs->getPRSingleHopEnabled()*/) {
         // TODO: what should we do for sticky connections
-        poolDM =
-            std::make_shared<ThinClientPoolStickyDM>(name, copyAttrs, tccm);
+        poolDM = std::make_shared<ThinClientPoolStickyDM>(name.c_str(),
+                                                          copyAttrs, tccm);
       } else {
         LOGDEBUG("ThinClientPoolDM created ");
-        poolDM = std::make_shared<ThinClientPoolDM>(name, copyAttrs, tccm);
+        poolDM =
+            std::make_shared<ThinClientPoolDM>(name.c_str(), copyAttrs, tccm);
       }
     } else {
       LOGDEBUG("ThinClientPoolHADM created ");
       if (copyAttrs
               ->getThreadLocalConnectionSetting() /*&& !copyAttrs->getPRSingleHopEnabled()*/) {
-        poolDM =
-            std::make_shared<ThinClientPoolStickyHADM>(name, copyAttrs, tccm);
+        poolDM = std::make_shared<ThinClientPoolStickyHADM>(name.c_str(),
+                                                            copyAttrs, tccm);
       } else {
-        poolDM = std::make_shared<ThinClientPoolHADM>(name, copyAttrs, tccm);
+        poolDM =
+            std::make_shared<ThinClientPoolHADM>(name.c_str(), copyAttrs, tccm);
       }
     }
 
-    cacheImpl->getPoolManager().addPool(name,
+    cacheImpl->getPoolManager().addPool(std::move(name),
                                         std::static_pointer_cast<Pool>(poolDM));
   }
 
@@ -303,17 +305,15 @@ std::shared_ptr<Pool> PoolFactory::create(const char* name) {
   return std::static_pointer_cast<Pool>(poolDM);
 }
 
-PoolFactory& PoolFactory::addCheck(const char* host, int port) {
+PoolFactory& PoolFactory::addCheck(const std::string& host, int port) {
   if (port <= 0) {
-    char buff[100];
-    ACE_OS::snprintf(buff, 100, "port must be greater than 0 but was %d", port);
-    throw IllegalArgumentException(buff);
+    throw IllegalArgumentException("port must be greater than 0 but was " +
+                                   std::to_string(port));
   }
-  ACE_INET_Addr addr(port, host);
+
+  ACE_INET_Addr addr(port, host.c_str());
   if (!(addr.get_ip_address())) {
-    char buff[100];
-    ACE_OS::snprintf(buff, 100, "Unknown host %s", host);
-    throw IllegalArgumentException(buff);
+    throw IllegalArgumentException("Unknown host " + host);
   }
   return *this;
 }

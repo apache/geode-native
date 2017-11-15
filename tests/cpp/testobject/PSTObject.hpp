@@ -64,7 +64,7 @@ class TESTOBJECT_EXPORT PSTObject : public TimestampedObject {
   virtual void toData(apache::geode::client::DataOutput& output) const;
   virtual void fromData(apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 0x04; }
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const;
 
   virtual uint32_t objectSize() const {
     uint32_t objectSize = sizeof(PSTObject);

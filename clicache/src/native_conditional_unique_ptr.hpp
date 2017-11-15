@@ -17,6 +17,7 @@
 
 #pragma once
 
+
 #include "begin_native.hpp"
 #include <memory>
 #include "end_native.hpp"

@@ -14,20 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TXCommitMessage.cpp
- *
- *  Created on: 21-Feb-2011
- *      Author: ankurs
- */
 
-#include "TXCommitMessage.hpp"
-#include <geode/DataOutput.hpp>
+#include <vector>
 #include <algorithm>
 
+#include <geode/DataOutput.hpp>
+
+#include "TXCommitMessage.hpp"
 #include "ClientProxyMembershipID.hpp"
 #include "FarSideEntryOp.hpp"
-#include <vector>
+#include "util/exception.hpp"
 
 namespace apache {
 namespace geode {

@@ -144,10 +144,10 @@ class CPPCACHE_EXPORT StatDataOutput {
 class CPPCACHE_EXPORT ResourceType : private NonCopyable,
                                      private NonAssignable {
  public:
-  ResourceType(int32_t id, StatisticsType *type);
-  int32_t getId();
-  StatisticDescriptor **getStats();
-  int32_t getNumOfDescriptors();
+  ResourceType(int32_t id, const StatisticsType *type);
+  int32_t getId() const;
+  StatisticDescriptor **getStats() const;
+  int32_t getNumOfDescriptors() const;
 
  private:
   int32_t id;
@@ -172,11 +172,12 @@ class CPPCACHE_EXPORT ResourceType : private NonCopyable,
 class CPPCACHE_EXPORT ResourceInst : private NonCopyable,
                                      private NonAssignable {
  public:
-  ResourceInst(int32_t id, Statistics *, ResourceType *, StatDataOutput *);
+  ResourceInst(int32_t id, Statistics *, const ResourceType *,
+               StatDataOutput *);
   ~ResourceInst();
   int32_t getId();
   Statistics *getResource();
-  ResourceType *getType();
+  const ResourceType *getType() const;
   int64_t getStatValue(StatisticDescriptor *f);
   void writeSample();
   void writeStatValue(StatisticDescriptor *s, int64_t v);
@@ -186,7 +187,7 @@ class CPPCACHE_EXPORT ResourceInst : private NonCopyable,
  private:
   int32_t id;
   Statistics *resource;
-  ResourceType *type;
+  const ResourceType *type;
   /* This will contain the previous values of the descriptors */
   int64_t *archivedStatValues;
   StatDataOutput *dataOut;
@@ -214,7 +215,7 @@ class CPPCACHE_EXPORT StatArchiveWriter {
   int64_t m_samplesize;
   std::string archiveFile;
   std::map<Statistics *, ResourceInst *> resourceInstMap;
-  std::map<StatisticsType *, ResourceType *> resourceTypeMap;
+  std::map<const StatisticsType *, const ResourceType *> resourceTypeMap;
 
   /* private member functions */
   void allocateResourceInst(Statistics *r);
@@ -223,7 +224,7 @@ class CPPCACHE_EXPORT StatArchiveWriter {
   void writeResourceInst(StatDataOutput *, int32_t);
   void writeTimeStamp(const steady_clock::time_point &timeStamp);
   void writeStatValue(StatisticDescriptor *f, int64_t v, DataOutput dataOut);
-  ResourceType *getResourceType(Statistics *);
+  const ResourceType *getResourceType(const Statistics *);
   bool resourceInstMapHas(Statistics *sp);
 
  public:

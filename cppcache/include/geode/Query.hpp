@@ -95,7 +95,7 @@ class CPPCACHE_EXPORT Query {
    *
    * @returns The query string.
    */
-  virtual const char* getQueryString() const = 0;
+  virtual const std::string& getQueryString() const = 0;
 
   /**
    * Compile the Query - client side query compilation is not supported.

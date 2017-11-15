@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_REMOTEQUERY_H_
-#define GEODE_REMOTEQUERY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,18 +15,24 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
-#include <geode/ExceptionTypes.hpp>
+#pragma once
+
+#ifndef GEODE_REMOTEQUERY_H_
+#define GEODE_REMOTEQUERY_H_
+
+#include <string>
 #include <memory>
 
+#include <geode/geode_globals.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include <geode/Query.hpp>
 #include <geode/SelectResults.hpp>
 #include <geode/ResultSet.hpp>
 #include <geode/StructSet.hpp>
+
 #include "CacheImpl.hpp"
 #include "ThinClientBaseDM.hpp"
 #include "ProxyCache.hpp"
-#include <string>
 
 /**
  * @file
@@ -49,26 +50,24 @@ class CPPCACHE_EXPORT RemoteQuery : public Query {
   std::shared_ptr<ProxyCache> m_proxyCache;
 
  public:
-  RemoteQuery(const char* querystr,
+  RemoteQuery(std::string querystr,
               const std::shared_ptr<RemoteQueryService>& queryService,
               ThinClientBaseDM* tccdmptr,
               std::shared_ptr<ProxyCache> proxyCache = nullptr);
 
-  //@TODO check the return type, is it ok. second option could be to pass
-  // SelectResults by reference as a parameter.
   std::shared_ptr<SelectResults> execute(
       std::chrono::milliseconds timeout =
           DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
-  //@TODO check the return type, is it ok. second option could be to pass
-  // SelectResults by reference as a parameter.
   std::shared_ptr<SelectResults> execute(
       std::shared_ptr<CacheableVector> paramList = nullptr,
       std::chrono::milliseconds timeout =
           DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
-  // executes a query using a given distribution manager
-  // used by Region.query() and Region.getAll()
+  /**
+   * executes a query using a given distribution manager
+   * used by Region.query() and Region.getAll()
+   */
   std::shared_ptr<SelectResults> execute(
       std::chrono::milliseconds timeout, const char* func,
       ThinClientBaseDM* tcdm, std::shared_ptr<CacheableVector> paramList);
@@ -79,7 +78,7 @@ class CPPCACHE_EXPORT RemoteQuery : public Query {
                            ThinClientBaseDM* tcdm,
                            std::shared_ptr<CacheableVector> paramList);
 
-  const char* getQueryString() const override;
+  const std::string& getQueryString() const override;
 
   void compile() override;
 

@@ -78,7 +78,7 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   virtual void toData(apache::geode::client::DataOutput& output) const;
   virtual void fromData(apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 0x02; }
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const;
 
   virtual uint32_t objectSize() const {
     uint32_t objectSize = sizeof(Position);

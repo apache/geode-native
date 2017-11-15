@@ -72,29 +72,29 @@ void RegionInternal::unregisterAllKeys() {
       "unregisterAllKeys only supported by Thin Client Region.");
 }
 
-void RegionInternal::registerRegex(const char* regex, bool isDurable,
+void RegionInternal::registerRegex(const std::string& regex, bool isDurable,
                                    bool getInitialValues, bool receiveValues) {
   throw UnsupportedOperationException(
       "registerRegex only supported by Thin Client Region.");
 }
 
-void RegionInternal::unregisterRegex(const char* regex) {
+void RegionInternal::unregisterRegex(const std::string& regex) {
   throw UnsupportedOperationException(
       "unregisterRegex only supported by Thin Client Region.");
 }
 std::shared_ptr<SelectResults> RegionInternal::query(
-    const char* predicate, std::chrono::milliseconds timeout) {
+    const std::string& predicate, std::chrono::milliseconds timeout) {
   throw UnsupportedOperationException(
       "query only supported by Thin Client Region.");
 }
 
-bool RegionInternal::existsValue(const char* predicate,
+bool RegionInternal::existsValue(const std::string& predicate,
                                  std::chrono::milliseconds timeout) {
   throw UnsupportedOperationException(
       "existsValue only supported by Thin Client Region.");
 }
 std::shared_ptr<Serializable> RegionInternal::selectValue(
-    const char* predicate, std::chrono::milliseconds timeout) {
+    const std::string& predicate, std::chrono::milliseconds timeout) {
   throw UnsupportedOperationException(
       "selectValue only supported by Thin Client Region.");
 }
@@ -173,8 +173,8 @@ void RegionInternal::setCacheListener(const std::shared_ptr<CacheListener>& aLis
   }
 }
 
-void RegionInternal::setCacheListener(const char* libpath,
-                                      const char* factoryFuncName) {
+void RegionInternal::setCacheListener(const std::string& libpath,
+                                      const std::string& factoryFuncName) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->setCacheListener(libpath, factoryFuncName);
   }
@@ -187,8 +187,8 @@ void RegionInternal::setPartitionResolver(
   }
 }
 
-void RegionInternal::setPartitionResolver(const char* libpath,
-                                          const char* factoryFuncName) {
+void RegionInternal::setPartitionResolver(const std::string& libpath,
+                                          const std::string& factoryFuncName) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->setPartitionResolver(libpath, factoryFuncName);
   }
@@ -200,8 +200,8 @@ void RegionInternal::setCacheLoader(const std::shared_ptr<CacheLoader>& aLoader)
   }
 }
 
-void RegionInternal::setCacheLoader(const char* libpath,
-                                    const char* factoryFuncName) {
+void RegionInternal::setCacheLoader(const std::string& libpath,
+                                    const std::string& factoryFuncName) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->setCacheLoader(libpath, factoryFuncName);
   }
@@ -213,14 +213,14 @@ void RegionInternal::setCacheWriter(const std::shared_ptr<CacheWriter>& aWriter)
   }
 }
 
-void RegionInternal::setCacheWriter(const char* libpath,
-                                    const char* factoryFuncName) {
+void RegionInternal::setCacheWriter(const std::string& libpath,
+                                    const std::string& factoryFuncName) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->setCacheWriter(libpath, factoryFuncName);
   }
 }
 
-void RegionInternal::setEndpoints(const char* endpoints) {
+void RegionInternal::setEndpoints(const std::string& endpoints) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->setEndpoints(endpoints);
   }

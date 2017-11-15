@@ -170,7 +170,7 @@ void ClientMetadata::updateBucketServerLocations(
   // WriteGuard guard( m_readWriteLock );
   checkBucketId(bucketId);
 
-  std::string serverGroup = m_tcrdm->getServerGroup();
+  auto&& serverGroup = m_tcrdm->getServerGroup();
 
   // This is for pruning according to server groups, only applicable when client
   // is configured with
@@ -181,40 +181,40 @@ void ClientMetadata::updateBucketServerLocations(
     for (BucketServerLocationsType::iterator iter =
              bucketServerLocations.begin();
          iter != bucketServerLocations.end(); ++iter) {
-     auto groups = (*iter)->getServerGroups();
-     if ((groups != nullptr) && (groups->length() > 0)) {
-       bool added = false;
-       for (int i = 0; i < groups->length(); i++) {
-         auto cs = (*groups)[i];
-         if (cs->length() > 0) {
-           std::string str = cs->toString();
-           if ((ACE_OS::strcmp(str.c_str(), serverGroup.c_str()) == 0)) {
-             added = true;
-             if ((*iter)->isPrimary()) {
-               primaries.push_back(*iter);
-               break;
-             } else {
-               secondaries.push_back(*iter);
-               break;
-             }
-           }
-         } else {
-           added = true;
-           if ((*iter)->isPrimary()) {
-             primaries.push_back(*iter);
-           } else {
-             secondaries.push_back(*iter);
-           }
-         }
-       }
-       if (!added) {
-         (*iter)->setServername(nullptr);
-         if ((*iter)->isPrimary()) {
-           primaries.push_back(*iter);
-         } else {
-           secondaries.push_back(*iter);
-         }
-       }
+      auto groups = (*iter)->getServerGroups();
+      if ((groups != nullptr) && (groups->length() > 0)) {
+        bool added = false;
+        for (int i = 0; i < groups->length(); i++) {
+          auto cs = (*groups)[i];
+          if (cs->length() > 0) {
+            auto&& str = cs->toString();
+            if (str == serverGroup) {
+              added = true;
+              if ((*iter)->isPrimary()) {
+                primaries.push_back(*iter);
+                break;
+              } else {
+                secondaries.push_back(*iter);
+                break;
+              }
+            }
+          } else {
+            added = true;
+            if ((*iter)->isPrimary()) {
+              primaries.push_back(*iter);
+            } else {
+              secondaries.push_back(*iter);
+            }
+          }
+        }
+        if (!added) {
+          (*iter)->setServername(nullptr);
+          if ((*iter)->isPrimary()) {
+            primaries.push_back(*iter);
+          } else {
+            secondaries.push_back(*iter);
+          }
+        }
       }
     }
 
@@ -336,18 +336,18 @@ void ClientMetadata::populateDummyServers(int bucketId,
   m_bucketServerLocationsList[bucketId] = locations;
 }
 
-int ClientMetadata::assignFixedBucketId(const char* partitionName,
-                                        std::shared_ptr<CacheableKey> resolvekey) {
+int ClientMetadata::assignFixedBucketId(
+    const char* partitionName, std::shared_ptr<CacheableKey> resolvekey) {
   LOGDEBUG(
       "FPR assignFixedBucketId partititonname = %s , m_fpaMap.size() = %d ",
       partitionName, m_fpaMap.size());
   FixedMapType::iterator iter = m_fpaMap.find(partitionName);
   if (iter != m_fpaMap.end()) {
-   auto attList =iter->second;
-   int32_t hc = resolvekey->hashcode();
-   int bucketId = std::abs(hc % (attList.at(0)));
-   int partitionBucketID = bucketId + attList.at(1);
-   return partitionBucketID;
+    auto attList = iter->second;
+    int32_t hc = resolvekey->hashcode();
+    int bucketId = std::abs(hc % (attList.at(0)));
+    int partitionBucketID = bucketId + attList.at(1);
+    return partitionBucketID;
   } else {
     return -1;
   }
@@ -371,13 +371,13 @@ ClientMetadata::advisePrimaryServerLocation(int bucketId) {
   }
   return nullptr;
 }
- std::shared_ptr<BucketServerLocation> ClientMetadata::adviseRandomServerLocation() {
+std::shared_ptr<BucketServerLocation>
+ClientMetadata::adviseRandomServerLocation() {
   if (m_bucketServerLocationsList.size() > 0) {
     RandGen randGen;
     size_t random = randGen(m_bucketServerLocationsList.size());
     checkBucketId(random);
-    auto locations =
-        m_bucketServerLocationsList[random];
+    auto locations = m_bucketServerLocationsList[random];
     if (locations.size() == 0) return nullptr;
     return locations.at(0);
   }

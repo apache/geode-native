@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-
-
 #pragma once
+
 
 #include "geode_defs.hpp"
 #include "begin_native.hpp"

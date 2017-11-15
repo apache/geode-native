@@ -127,10 +127,8 @@ bool PdxTests::NonPdxType::equals(PdxTests::NonPdxType& other,
   auto myenum = std::dynamic_pointer_cast<CacheableEnum>(m_pdxEnum);
   auto otenum = std::dynamic_pointer_cast<CacheableEnum>(ot->m_pdxEnum);
   if (myenum->getEnumOrdinal() != otenum->getEnumOrdinal()) return false;
-  if (strcmp(myenum->getEnumClassName(), otenum->getEnumClassName()) != 0) {
-    return false;
-  }
-  if (strcmp(myenum->getEnumName(), otenum->getEnumName()) != 0) return false;
+  if (myenum->getEnumClassName() != otenum->getEnumClassName()) return false;
+  if (myenum->getEnumName() != otenum->getEnumName()) return false;
 
   genericValCompare(ot->m_arraylist->size(), m_arraylist->size());
   for (int k = 0; k < m_arraylist->size(); k++) {

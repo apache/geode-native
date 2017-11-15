@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_REGIONEVENT_H_
-#define GEODE_REGIONEVENT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_REGIONEVENT_H_
+#define GEODE_REGIONEVENT_H_
+
 #include "geode_globals.hpp"
 #include "Region.hpp"
 #include "CacheableKey.hpp"
@@ -30,9 +31,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
-/** Declares region events.
-*/
-
+/**
+ * Declares region events.
+ */
 class CPPCACHE_EXPORT RegionEvent {
  protected:
   const std::shared_ptr<Region> m_region; /**< Region for this event. */

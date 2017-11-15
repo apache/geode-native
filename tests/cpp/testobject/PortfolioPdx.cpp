@@ -94,7 +94,7 @@ PortfolioPdx::~PortfolioPdx() {
   }
 }
 
-void PortfolioPdx::toData(std::shared_ptr<PdxWriter> pw) {
+void PortfolioPdx::toData(std::shared_ptr<PdxWriter> pw) const {
   pw->writeInt("ID", id);
   pw->markIdentityField("ID");
 
@@ -152,7 +152,7 @@ void PortfolioPdx::fromData(std::shared_ptr<PdxReader> pr) {
   int32_t arrayZeroSizeLen = 0;
   arrayZeroSize = pr->readByteArray("arrayZeroSize", arrayZeroSizeLen);
 }
-std::shared_ptr<CacheableString> PortfolioPdx::toString() const {
+std::string PortfolioPdx::toString() const {
   LOGINFO("PortfolioPdx::toString() Start");
   char idbuf[1024];
   sprintf(idbuf, "PortfolioPdxObject: [ id=%d ]", id);
@@ -167,20 +167,20 @@ std::shared_ptr<CacheableString> PortfolioPdx::toString() const {
   }
   char position1buf[2048];
   if (position1 != nullptr) {
-    sprintf(position1buf, "\t\t\t  P1: %s", position1->toString()->asChar());
+    sprintf(position1buf, "\t\t\t  P1: %s", position1->toString().c_str());
   } else {
     sprintf(position1buf, "\t\t\t  P1: %s", "NULL");
   }
   char position2buf[2048];
   if (position2 != nullptr) {
-    sprintf(position2buf, " P2: %s", position2->toString()->asChar());
+    sprintf(position2buf, " P2: %s", position2->toString().c_str());
   } else {
     sprintf(position2buf, " P2: %s ]", "NULL");
   }
   char creationdatebuf[2048];
   if (creationDate != nullptr) {
     sprintf(creationdatebuf, "creation Date %s",
-            creationDate->toString()->asChar());
+            creationDate->toString().c_str());
   } else {
     sprintf(creationdatebuf, "creation Date %s", "NULL");
   }
@@ -188,7 +188,7 @@ std::shared_ptr<CacheableString> PortfolioPdx::toString() const {
   char stringBuf[7000];
   sprintf(stringBuf, "%s%s%s%s%s", idbuf, pkidbuf, creationdatebuf,
           position1buf, position2buf);
-  return CacheableString::create(stringBuf);
+  return stringBuf;
 
-  return CacheableString::create(idbuf);
+  return idbuf;
 }

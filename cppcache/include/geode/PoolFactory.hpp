@@ -37,6 +37,7 @@ namespace client {
 class CacheImpl;
 class PoolAttributes;
 class Pool;
+
 /**
  * This interface provides for the configuration and creation of instances of
  * {@link Pool}.
@@ -170,24 +171,24 @@ class CPPCACHE_EXPORT PoolFactory {
    * The default server group.
    * <p>Current value: <code>""</code>.
    */
-  static constexpr const char* DEFAULT_SERVER_GROUP = "";
+  static const std::string DEFAULT_SERVER_GROUP;
   /**
    * Whether thread local connection is enabled.
    * <p>Current value: <code>"false"</code>.
    */
-  static const bool DEFAULT_THREAD_LOCAL_CONN = false;
+  static constexpr bool DEFAULT_THREAD_LOCAL_CONN = false;
 
   /**
    * Whether client is in multi user secure mode
    * <p>Current value: <code>"false"</code>.
    */
-  static const bool DEFAULT_MULTIUSER_SECURE_MODE = false;
+  static constexpr bool DEFAULT_MULTIUSER_SECURE_MODE = false;
 
   /**
    * The default value for whether to have single hop optimisations enabled.
    * <p>Current value: <code>true</code>.
    */
-  static const bool DEFAULT_PR_SINGLE_HOP_ENABLED = true;
+  static constexpr bool DEFAULT_PR_SINGLE_HOP_ENABLED = true;
 
   /**
    * Sets the free connection timeout for this pool.
@@ -383,7 +384,7 @@ class CPPCACHE_EXPORT PoolFactory {
    * to all servers.
    * @return a reference to <code>this</code>
    */
-  PoolFactory& setServerGroup(const char* group);
+  PoolFactory& setServerGroup(std::string group);
 
   /**
    * Adds a locator, given its host and port, to this factory.
@@ -402,7 +403,7 @@ class CPPCACHE_EXPORT PoolFactory {
    * @throws IllegalStateException if the locator has already been {@link
    * #addServer added} to this factory.
    */
-  PoolFactory& addLocator(const char* host, int port);
+  PoolFactory& addLocator(const std::string& host, int port);
 
   /**
    * Adds a server, given its host and port, to this factory.
@@ -419,7 +420,7 @@ class CPPCACHE_EXPORT PoolFactory {
    * @throws IllegalStateException if the server has already been {@link
    * #addLocator added} to this factory.
    */
-  PoolFactory& addServer(const char* host, int port);
+  PoolFactory& addServer(const std::string& host, int port);
 
   /**
    * If set to <code>true</code> then the created pool will have
@@ -501,7 +502,7 @@ class CPPCACHE_EXPORT PoolFactory {
    * @throws IllegalStateException if a locator or server has not been added.
    * @return the newly created pool.
    */
-  std::shared_ptr<Pool> create(const char* name);
+  std::shared_ptr<Pool> create(std::string name);
 
   /**
    * By default setPRSingleHopEnabled is true<br>
@@ -530,7 +531,7 @@ class CPPCACHE_EXPORT PoolFactory {
  private:
   PoolFactory(const Cache& cache);
   PoolFactory(const PoolFactory&);
-  PoolFactory& addCheck(const char* host, int port);
+  PoolFactory& addCheck(const std::string& host, int port);
   std::shared_ptr<PoolAttributes> m_attrs;
   bool m_isSubscriptionRedundancy;
   bool m_addedServerOrLocator;
@@ -540,6 +541,8 @@ class CPPCACHE_EXPORT PoolFactory {
   friend class PoolManager;
   friend class CacheFactory;
   friend class CacheXmlCreation;
+
+  FRIEND_STD_SHARED_PTR(PoolFactory)
 };
 
 }  // namespace client

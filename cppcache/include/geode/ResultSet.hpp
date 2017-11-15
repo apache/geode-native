@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_RESULTSET_H_
-#define GEODE_RESULTSET_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,11 +15,14 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_RESULTSET_H_
+#define GEODE_RESULTSET_H_
+
 #include "geode_globals.hpp"
 #include "ExceptionTypes.hpp"
-
 #include "SelectResults.hpp"
-
 #include "SelectResultsIterator.hpp"
 
 /**
@@ -47,14 +45,14 @@ class CPPCACHE_EXPORT ResultSet : public SelectResults {
    *
    * @returns false always at this time.
    */
-  virtual bool isModifiable() const = 0;
+  virtual bool isModifiable() const override = 0;
 
   /**
    * Get the size of the ResultSet.
    *
    * @returns the number of items in the ResultSet.
    */
-  virtual int32_t size() const = 0;
+  virtual int32_t size() const override = 0;
 
   /**
    * Index operator to directly access an item in the ResultSet.
@@ -63,7 +61,8 @@ class CPPCACHE_EXPORT ResultSet : public SelectResults {
    * @throws IllegalArgumentException if the index is out of bounds.
    * @returns A smart pointer to the item indexed.
    */
-  virtual const std::shared_ptr<Serializable> operator[](int32_t index) const = 0;
+  virtual const std::shared_ptr<Serializable> operator[](
+      int32_t index) const override = 0;
 
   /**
    * Get a SelectResultsIterator with which to iterate over the items in the
@@ -71,12 +70,12 @@ class CPPCACHE_EXPORT ResultSet : public SelectResults {
    *
    * @returns The SelectResultsIterator with which to iterate.
    */
-  virtual SelectResultsIterator getIterator() = 0;
+  virtual SelectResultsIterator getIterator() override = 0;
 
   /**
    * Destructor
    */
-  virtual ~ResultSet(){};
+  virtual ~ResultSet() = default;
 };
 }  // namespace client
 }  // namespace geode

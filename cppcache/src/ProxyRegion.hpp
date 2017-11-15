@@ -54,9 +54,11 @@ class FunctionService;
  */
 class CPPCACHE_EXPORT ProxyRegion : public Region {
  public:
-  virtual const char* getName() const override { return m_realRegion->getName(); }
+  virtual const std::string& getName() const override {
+    return m_realRegion->getName();
+  }
 
-  virtual const char* getFullPath() const override {
+  virtual const std::string& getFullPath() const override {
     return m_realRegion->getFullPath();
   }
 
@@ -109,7 +111,8 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
     throw UnsupportedOperationException("Region.localDestroyRegion()");
   }
 
-  virtual std::shared_ptr<Region> getSubregion(const char* path) override {
+  virtual std::shared_ptr<Region> getSubregion(
+      const std::string& path) override {
     LOGDEBUG("ProxyRegion getSubregion");
     auto rPtr = std::static_pointer_cast<RegionInternal>(
         m_realRegion->getSubregion(path));
@@ -120,7 +123,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   }
 
   virtual std::shared_ptr<Region> createSubregion(
-      const char* subregionName,
+      const std::string& subregionName,
       const std::shared_ptr<RegionAttributes>& aRegionAttributes) override {
     throw UnsupportedOperationException("createSubregion()");
     return nullptr;
@@ -549,13 +552,13 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
     throw UnsupportedOperationException("Region.unregisterAllKeys()");
   }
 
-  virtual void registerRegex(const char* regex, bool isDurable = false,
+  virtual void registerRegex(const std::string& regex, bool isDurable = false,
                              bool getInitialValues = false,
                              bool receiveValues = true) override {
     throw UnsupportedOperationException("Region.registerRegex()");
   }
 
-  virtual void unregisterRegex(const char* regex) override {
+  virtual void unregisterRegex(const std::string& regex) override {
     throw UnsupportedOperationException("Region.unregisterRegex()");
   }
 
@@ -568,13 +571,14 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   }
 
   virtual std::shared_ptr<SelectResults> query(
-      const char* predicate, std::chrono::milliseconds timeout =
-                                 DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
+      const std::string& predicate,
+      std::chrono::milliseconds timeout =
+          DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->query(predicate, timeout);
   }
 
-  virtual bool existsValue(const char* predicate,
+  virtual bool existsValue(const std::string& predicate,
                            std::chrono::milliseconds timeout =
                                DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
     GuardUserAttribures gua(m_proxyCache);
@@ -582,8 +586,9 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   }
 
   virtual std::shared_ptr<Serializable> selectValue(
-      const char* predicate, std::chrono::milliseconds timeout =
-                                 DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
+      const std::string& predicate,
+      std::chrono::milliseconds timeout =
+          DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
     GuardUserAttribures gua(m_proxyCache);
     return m_realRegion->selectValue(predicate, timeout);
   }
@@ -597,7 +602,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
 
   virtual uint32_t size() override { return m_realRegion->size(); }
 
-  virtual const std::shared_ptr<Pool>& getPool() override {
+  virtual const std::shared_ptr<Pool>& getPool() const override {
     return m_realRegion->getPool();
   }
 

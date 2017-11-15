@@ -22,6 +22,7 @@
 
 #include <memory>
 #include <chrono>
+#include <string>
 
 #include "geode_globals.hpp"
 #include "CacheableBuiltins.hpp"
@@ -84,7 +85,7 @@ class CPPCACHE_EXPORT Execution {
    * #withCollector(ResultCollector)}
    */
   virtual std::shared_ptr<ResultCollector> execute(
-      const char* func,
+      const std::string& func,
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
@@ -105,7 +106,7 @@ class CPPCACHE_EXPORT Execution {
   virtual std::shared_ptr<ResultCollector> execute(
       const std::shared_ptr<CacheableVector>& routingObj,
       const std::shared_ptr<Cacheable>& args,
-      const std::shared_ptr<ResultCollector>& rs, const char* func,
+      const std::shared_ptr<ResultCollector>& rs, const std::string& func,
       std::chrono::milliseconds timeout) = 0;
 };
 

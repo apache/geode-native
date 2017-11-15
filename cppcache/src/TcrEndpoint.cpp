@@ -29,7 +29,7 @@
 #include "CacheImpl.hpp"
 #include "Utils.hpp"
 #include "DistributedSystemImpl.hpp"
-
+#include "util/exception.hpp"
 
 namespace apache {
 namespace geode {
@@ -734,7 +734,7 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
       LOGERROR(
           "Exception while receiving subscription event for endpoint %s:: %s: "
           "%s",
-          m_name.c_str(), ex.getName(), ex.what());
+          m_name.c_str(), ex.getName().c_str(), ex.what());
     } catch (...) {
       GF_SAFE_DELETE(msg);
       LOGERROR(
