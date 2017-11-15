@@ -21,7 +21,7 @@
 #define GEODE_ATTRIBUTESMUTATOR_H_
 
 #include <chrono>
-
+#include <memory>
 #include "geode_globals.hpp"
 #include "ExpirationAction.hpp"
 #include "util/chrono/duration.hpp"

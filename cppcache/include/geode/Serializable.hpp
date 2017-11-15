@@ -26,6 +26,7 @@
 
 #include "geode_globals.hpp"
 #include <functional>
+#include <memory>
 
 namespace apache {
 namespace geode {
