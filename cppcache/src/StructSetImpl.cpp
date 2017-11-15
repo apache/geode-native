@@ -31,9 +31,9 @@ StructSetImpl::StructSetImpl(
 
   for (size_t i = 0; i < numOfFields; i++) {
     LOGDEBUG("StructSetImpl: pushing fieldName = %s with index = %d",
-             fieldNames[i]->asChar(), i);
-    m_fieldNameIndexMap.insert(
-        std::make_pair(fieldNames[i]->asChar(), static_cast<int32_t>(i)));
+             fieldNames[i]->value().c_str(), i);
+    m_fieldNameIndexMap.insert(std::make_pair(fieldNames[i]->value().c_str(),
+                                              static_cast<int32_t>(i)));
   }
 
   int32_t numOfValues = response->size();

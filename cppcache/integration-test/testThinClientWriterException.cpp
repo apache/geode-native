@@ -106,9 +106,10 @@ void initClientAuth() {
   opCodeList rt(tmpRArr, tmpRArr + sizeof tmpRArr / sizeof *tmpRArr);
   credentialGeneratorHandler->getAuthInit(config);
   credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config, nullptr);
-  printf("User is %s Pass is %s ", config->find("security-username")->asChar(),
+  printf("User is %s Pass is %s ",
+         config->find("security-username")->value().c_str(),
          (config->find("security-password") != nullptr
-              ? config->find("security-password")->asChar()
+              ? config->find("security-password")->value().c_str()
               : " not set"));
   try {
     initClient(true, config);

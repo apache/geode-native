@@ -107,7 +107,7 @@ class PoolHelper {
     auto str = dynamic_cast<CacheableStringArray*>(pool->getLocators().get());
     if (pool->getLocators() != nullptr && pool->getLocators()->length() > 0) {
       for (int32_t stri = 0; stri < str->length(); stri++) {
-        sString += str->operator[](stri)->asChar();
+        sString += str->operator[](stri)->value().c_str();
         sString += ",";
       }
     }
@@ -115,7 +115,7 @@ class PoolHelper {
     str = dynamic_cast<CacheableStringArray*>(pool->getServers().get());
     if (pool->getServers() != nullptr && pool->getServers()->length() > 0) {
       for (int32_t stri = 0; stri < str->length(); stri++) {
-        sString += str->operator[](stri)->asChar();
+        sString += str->operator[](stri)->value().c_str();
         sString += ",";
       }
     }

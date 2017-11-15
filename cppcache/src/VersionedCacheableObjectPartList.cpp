@@ -52,7 +52,7 @@ void VersionedCacheableObjectPartList::readObjectPart(
 
     exMsgPtr = input.readNativeString();  ////4.1
     if (m_exceptions != nullptr) {
-      const char* exMsg = exMsgPtr->asChar();
+      const char* exMsg = exMsgPtr->value().c_str();
       if (strstr(exMsg,
                  "org.apache.geode.security."
                  "NotAuthorizedException") != nullptr) {
@@ -280,7 +280,7 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
             LOGDEBUG(
                 "VersionedCacheableObjectPartList::fromData putLocal for key [%s] failed because the cache \
                   already contains an entry with higher version.",
-                Utils::getCacheableKeyString(key)->asChar());
+                Utils::nullSafeToString(key).c_str());
             // replace the value with higher version tag
             (*m_values)[key] = oldValue;
           }

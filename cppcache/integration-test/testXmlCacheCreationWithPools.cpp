@@ -47,7 +47,7 @@ using namespace std;
 
 bool findString(string& item, std::shared_ptr<CacheableStringArray> array) {
   for (int size = 0; size < array->length(); size++) {
-    if (strcmp(item.c_str(), array->operator[](size)->asChar()) == 0) {
+    if (strcmp(item.c_str(), array->operator[](size)->value().c_str()) == 0) {
       return true;
     }
   }

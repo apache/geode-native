@@ -91,8 +91,11 @@ void runWithUserRoot(std::shared_ptr<Cache> cachePtr) {
     LOGINFO(buf);
 
     for (int i = 0; i < resultList->size(); i++) {
-      sprintf(buf, "get result[%d]=%s", i,
-              std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->asChar());
+      sprintf(
+          buf, "get result[%d]=%s", i,
+          std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))
+              ->value()
+              .c_str());
       LOGINFO(buf);
     }
   }

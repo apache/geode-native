@@ -28,8 +28,11 @@ namespace client {
 
 class DataInputInternal : public DataInput {
  public:
-  DataInputInternal(const uint8_t* m_buffer, int32_t len, const Cache* cache)
-      : DataInput(m_buffer, len, cache) {}
+  DataInputInternal(const uint8_t* buffer, int32_t len)
+      : DataInput(buffer, len, nullptr) {}
+
+  DataInputInternal(const uint8_t* buffer, int32_t len, const Cache* cache)
+      : DataInput(buffer, len, cache) {}
 
   virtual const Cache* getCache() override {
     throw FatalInternalException("DataInputInternal does not have a Cache");

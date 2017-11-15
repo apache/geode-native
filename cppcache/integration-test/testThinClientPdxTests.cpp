@@ -2462,7 +2462,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
           ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
           LOGINFO("Done casting to uFEPtr");
           LOGINFO("Read expected uFEPtr exception %s ",
-                  uFEPtr->getMessage()->asChar());
+                  uFEPtr->getMessage()->value().c_str());
         } catch (...) {
           FAIL(
               "exFuncNameSendException casting to string for bool arguement "
@@ -2632,7 +2632,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
           ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
           LOGINFO("Done casting to uFEPtr");
           LOGINFO("Read expected uFEPtr exception %s ",
-                  uFEPtr->getMessage()->asChar());
+                  uFEPtr->getMessage()->value().c_str());
         } catch (...) {
           FAIL(
               "exFuncNameSendException casting to string for bool arguement "
@@ -2744,7 +2744,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, client3GetsV2Object)
           ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
           LOGINFO("Done casting to uFEPtr");
           LOGINFO("Read expected uFEPtr exception %s ",
-                  uFEPtr->getMessage()->asChar());
+                  uFEPtr->getMessage()->value().c_str());
         } catch (...) {
           FAIL(
               "exFuncNameSendException casting to string for bool arguement "
@@ -3253,7 +3253,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, putOperation)
     // auto testReg = getHelper()->getRegion("testregion");
     auto valuePtr1 = regPtr0->get("clientName1");
     const char* clientName1 =
-        (std::dynamic_pointer_cast<CacheableString>(valuePtr1))->asChar();
+        (std::dynamic_pointer_cast<CacheableString>(valuePtr1))
+            ->value()
+            .c_str();
     LOGINFO(" C1.putOperation Got ClientName1 = %s ", clientName1);
     ASSERT(strcmp(clientName1, "Client-1") == 0,
            "ClientName for Client-1 is not set");
@@ -3270,7 +3272,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, getOperation)
     // Verify Client Name for C2
     auto valuePtr2 = regPtr0->get("clientName2");
     const char* clientName2 =
-        (std::dynamic_pointer_cast<CacheableString>(valuePtr2))->asChar();
+        (std::dynamic_pointer_cast<CacheableString>(valuePtr2))
+            ->value()
+            .c_str();
     LOGINFO(" C2.getOperation Got ClientName2 = %s ", clientName2);
     ASSERT(strcmp(clientName2, "Client-2") == 0,
            "ClientName for Client-2 is not set");
@@ -3587,7 +3591,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
       const auto remoteVal =
           std::dynamic_pointer_cast<CacheableString>(iter.second);
       LOGINFO("HashTable Key Val = %d", remoteKey->value());
-      LOGINFO("HashTable Val = %s", remoteVal->asChar());
+      LOGINFO("HashTable Val = %s", remoteVal->value().c_str());
       //(*iter1).first.value();
       // output.writeObject( *iter );
     }

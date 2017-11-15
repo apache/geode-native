@@ -278,10 +278,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyK1C1New2)
     ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
 
     char buf[1024];
-    sprintf(buf, "get returned %s for key %s", checkPtr->asChar(), keys[1]);
+    sprintf(buf, "get returned %s for key %s", checkPtr->value().c_str(),
+            keys[1]);
     LOG(buf);
 
-    if (strcmp(checkPtr->asChar(), nvals[1]) != 0) {
+    if (strcmp(checkPtr->value().c_str(), nvals[1]) != 0) {
       LOG("ServerGroup2 is not available. So poolRegion2 returned old value..");
       return;
     }

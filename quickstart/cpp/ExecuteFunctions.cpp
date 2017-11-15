@@ -100,9 +100,11 @@ int main(int argc, char** argv) {
       sprintf(buf, "get: result count = %d", resultList->size());
       LOGINFO(buf);
       for (int32_t i = 0; i < executeFunctionResult->size(); i++) {
-        sprintf(
-            buf, "get result[%d]=%s", i,
-            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->asChar());
+        sprintf(buf, "get result[%d]=%s", i,
+                std::dynamic_pointer_cast<CacheableString>(
+                    resultList->operator[](i))
+                    ->value()
+                    .c_str());
         LOGINFO(buf);
       }
     }
@@ -130,9 +132,11 @@ int main(int argc, char** argv) {
       sprintf(buf, "get: result count = %d", resultList->size());
       LOGINFO(buf);
       for (int32_t i = 0; i < executeFunctionResult->size(); i++) {
-        sprintf(
-            buf, "get result[%d]=%s", i,
-            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->asChar());
+        sprintf(buf, "get result[%d]=%s", i,
+                std::dynamic_pointer_cast<CacheableString>(
+                    resultList->operator[](i))
+                    ->value()
+                    .c_str());
         LOGINFO(buf);
       }
     }
@@ -165,9 +169,11 @@ int main(int argc, char** argv) {
       LOGINFO(buf);
 
       for (int32_t i = 0; i < resultList->size(); i++) {
-        sprintf(
-            buf, "Execute on Region: result[%d]=%s", i,
-            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->asChar());
+        sprintf(buf, "Execute on Region: result[%d]=%s", i,
+                std::dynamic_pointer_cast<CacheableString>(
+                    resultList->operator[](i))
+                    ->value()
+                    .c_str());
         LOGINFO(buf);
       }
     }

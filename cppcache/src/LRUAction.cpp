@@ -108,7 +108,7 @@ bool LRULocalInvalidateAction::evict(
   //  we should invoke the invalidateNoThrow with appropriate
   // flags to correctly invoke listeners
   LOGDEBUG("LRULocalInvalidate: evicting entry with key [%s]",
-           Utils::getCacheableKeyString(keyPtr)->asChar());
+           Utils::nullSafeToString(keyPtr).c_str());
   GfErrType err = GF_NOERR;
   if (!m_regionPtr->isDestroyed()) {
     err = m_regionPtr->invalidateNoThrow(

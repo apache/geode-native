@@ -14,15 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #pragma once
 
 #ifndef GEODE_DATAINPUT_H_
 #define GEODE_DATAINPUT_H_
 
-#include "geode_globals.hpp"
-#include "ExceptionTypes.hpp"
 #include <cstring>
 #include <string>
+
+#include "geode_globals.hpp"
+#include "ExceptionTypes.hpp"
 #include "Serializable.hpp"
 #include "CacheableString.hpp"
 
@@ -41,8 +43,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-
-extern int gf_sprintf(char* buffer, const char* fmt, ...);
 
 class SerializationRegistry;
 class DataInputInternal;
@@ -63,7 +63,7 @@ class CPPCACHE_EXPORT DataInput {
    */
   inline int8_t read() {
     checkBufferSize(1);
-    return *(m_buf++);
+    return readNoCheck();
   }
 
   /**
@@ -165,9 +165,7 @@ class CPPCACHE_EXPORT DataInput {
    */
   inline int16_t readInt16() {
     checkBufferSize(2);
-    int16_t tmp = *(m_buf++);
-    tmp = static_cast<int16_t>((tmp << 8) | *(m_buf++));
-    return tmp;
+    return readInt16NoCheck();
   }
 
   /**
@@ -341,6 +339,11 @@ class CPPCACHE_EXPORT DataInput {
     str[length] = '\0';
   }
 
+  template <class CharT, class... Tail>
+  inline void readAscii(std::basic_string<CharT, Tail...>& value) {
+    readAscii(value, static_cast<uint16_t>(readInt16()));
+  }
+
   /**
    * Allocates a c string buffer, and reads an ASCII string
    * from <code>DataInput</code> into it.
@@ -365,6 +368,11 @@ class CPPCACHE_EXPORT DataInput {
     *value = str;
     readBytesOnly(reinterpret_cast<int8_t*>(str), length);
     str[length] = '\0';
+  }
+
+  template <class CharT, class... Tail>
+  inline void readAsciiHuge(std::basic_string<CharT, Tail...>& value) {
+    readAscii(value, static_cast<uint32_t>(readInt32()));
   }
 
   /**
@@ -399,6 +407,10 @@ class CPPCACHE_EXPORT DataInput {
     }
     *str = '\0';  // null terminate for c-string.
   }
+
+  void readJavaModifiedUtf8(std::string& value);
+
+  void readJavaModifiedUtf8(std::u16string& value);
 
   /**
    * Reads a java modified UTF-8 encoded string having maximum encoded length
@@ -448,6 +460,17 @@ class CPPCACHE_EXPORT DataInput {
     }
     *str = '\0';  // null terminate for c-string.
   }
+
+  inline void readUtf16Huge(std::u16string& value) {
+    uint32_t length = readInt32();
+    checkBufferSize(length);
+    value.reserve(length);
+    for (size_t i = 0; i < length; i++) {
+      value.push_back(readInt16NoCheck());
+    }
+  }
+
+  void readUtf16Huge(std::string& value);
 
   /**
    * Allocates a wide-character string buffer, and reads a java
@@ -512,6 +535,27 @@ class CPPCACHE_EXPORT DataInput {
       str++;
     }
     *str = L'\0';  // null terminate for c-string.
+  }
+
+  template <class CharT = char, class... Tail>
+  inline std::basic_string<CharT, Tail...> readString() {
+    std::basic_string<CharT, Tail...> value;
+    const uint8_t type = read();
+    switch (type) {
+      case GeodeTypeIds::CacheableString:
+        readJavaModifiedUtf8(value);
+        break;
+      case GeodeTypeIds::CacheableStringHuge:
+        readUtf16Huge(value);
+        break;
+      case GeodeTypeIds::CacheableASCIIString:
+        readAscii(value);
+        break;
+      case GeodeTypeIds::CacheableASCIIStringHuge:
+        readAsciiHuge(value);
+        break;
+    }
+    return value;
   }
 
   /**
@@ -982,6 +1026,27 @@ class CPPCACHE_EXPORT DataInput {
         // 00000000 0xxxxxxx
         *str = (b & 0x7f);
         break;
+    }
+  }
+
+  inline char16_t decodeJavaModifiedUtf8Char();
+
+  inline int8_t readNoCheck() { return *(m_buf++); }
+
+  inline int16_t readInt16NoCheck() {
+    int16_t tmp = *(m_buf++);
+    tmp = static_cast<int16_t>((tmp << 8) | *(m_buf++));
+    return tmp;
+  }
+
+  template <class CharT, class... Tail>
+  inline void readAscii(std::basic_string<CharT, Tail...>& value,
+                        const size_t length) {
+    checkBufferSize(length);
+    value.reserve(length);
+    for (size_t i = 0; i < length; i++) {
+      // blindly assumes ASCII so mask off 7 bits
+      value.push_back(readNoCheck() & 0x7F);
     }
   }
 

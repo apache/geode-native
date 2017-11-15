@@ -121,12 +121,12 @@ DUNIT_TASK(CLIENT1, StepThree)
 
         if (portfolio != nullptr) {
           printf("   query pulled portfolio object ID %d, pkid %s\n",
-                 portfolio->getID(), portfolio->getPkid()->asChar());
+                 portfolio->getID(), portfolio->getPkid()->value().c_str());
         }
 
         else if (position != nullptr) {
           printf("   query  pulled position object secId %s, shares %d\n",
-                 position->getSecId()->asChar(),
+                 position->getSecId()->value().c_str(),
                  position->getSharesOutstanding());
         }
 

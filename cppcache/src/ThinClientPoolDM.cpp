@@ -633,14 +633,14 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
       TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
   for (int i = 0; i < csArray->length(); i++) {
     auto cs = (*csArray)[i];
-    std::string endpointStr(cs->asChar());
+    std::string endpointStr(cs->value().c_str());
     TcrEndpoint* ep = nullptr;
     if (m_endpoints.find(endpointStr, ep)) {
-      ep = addEP(cs->asChar());
+      ep = addEP(cs->value().c_str());
     } else if (!ep->connected()) {
       LOGFINE(
           "ThinClientPoolDM::sendRequestToAllServers server not connected %s ",
-          cs->asChar());
+          cs->value().c_str());
     }
     FunctionExecution* funcExe = &fePtrList[feIndex++];
     funcExe->setParameters(func, getResult, timeout, args, ep, this,

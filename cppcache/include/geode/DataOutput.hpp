@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_DATAOUTPUT_H_
-#define GEODE_DATAOUTPUT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,15 +15,21 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_DATAOUTPUT_H_
+#define GEODE_DATAOUTPUT_H_
+
+#include <cstring>
+#include <string>
+#include <cstdlib>
+#include <algorithm>
+
 #include "geode_globals.hpp"
 #include "ExceptionTypes.hpp"
 #include "util/Log.hpp"
 #include "Serializable.hpp"
 #include "CacheableString.hpp"
-
-#include <cstring>
-#include <string>
-#include <cstdlib>
 
 /**
  * @file
@@ -278,6 +279,18 @@ class CPPCACHE_EXPORT DataOutput {
     writeInt(v.ll);
   }
 
+  template <class CharT, class... Tail>
+  inline void writeString(const std::basic_string<CharT, Tail...>& value) {
+    // without scanning string, making worst case choices.
+    if (value.length() / 3 <= std::numeric_limits<uint16_t>::max()) {
+      write(static_cast<uint8_t>(GeodeTypeIds::CacheableString));
+      writeJavaModifiedUtf8(value);
+    } else {
+      write(static_cast<uint8_t>(GeodeTypeIds::CacheableStringHuge));
+      writeUtf16Huge(value);
+    }
+  }
+
   /**
    * Writes the given ASCII string supporting maximum length of 64K
    * (i.e. unsigned 16-bit integer).
@@ -363,7 +376,7 @@ class CPPCACHE_EXPORT DataOutput {
   }
 
   /**
-   * Writes the given string using java modified UTF-8 encoding.
+   * Writes the given string using UTF-16 encoding.
    * @remarks Use this to write large strings. The other
    *   <code>writeUTF</code> method will truncate strings greater than
    *   64K in size.
@@ -418,7 +431,7 @@ class CPPCACHE_EXPORT DataOutput {
   }
 
   /**
-   * Writes the given string using java modified UTF-8 encoding.
+   * Writes the given string using UTF-16 encoding.
    * @remarks Use this to write large strings. The other
    *   <code>writeUTF</code> method will truncate strings greater than
    *   64K in size.
@@ -445,7 +458,7 @@ class CPPCACHE_EXPORT DataOutput {
   }
 
   /**
-   * Get the length required to represent a given wide-character string in
+   * Get the length required to represent a given ASCII character string in
    * java modified UTF-8 format.
    *
    * @param value The C string.
@@ -599,10 +612,9 @@ class CPPCACHE_EXPORT DataOutput {
   inline uint8_t* getBufferCopy() {
     uint32_t size = static_cast<uint32_t>(m_buf - m_bytes);
     uint8_t* result;
-    result = (uint8_t *) std::malloc(size * sizeof(uint8_t));
+    result = (uint8_t*)std::malloc(size * sizeof(uint8_t));
     if (result == nullptr) {
-      throw OutOfMemoryException(
-          "Out of Memory while resizing buffer");
+      throw OutOfMemoryException("Out of Memory while resizing buffer");
     }
     std::memcpy(result, m_bytes, size);
     return result;
@@ -624,10 +636,9 @@ class CPPCACHE_EXPORT DataOutput {
       // free existing buffer
       std::free(m_bytes);
       // create smaller buffer
-      m_bytes = (uint8_t *) std::malloc(m_lowWaterMark* sizeof(uint8_t));
+      m_bytes = (uint8_t*)std::malloc(m_lowWaterMark * sizeof(uint8_t));
       if (m_bytes == nullptr) {
-        throw OutOfMemoryException(
-            "Out of Memory while resizing buffer");
+        throw OutOfMemoryException("Out of Memory while resizing buffer");
       }
       m_size = m_lowWaterMark;
       // reset the flag
@@ -651,10 +662,9 @@ class CPPCACHE_EXPORT DataOutput {
       }
       m_size = newSize;
 
-      auto tmp = (uint8_t *) std::realloc(m_bytes, m_size * sizeof(uint8_t));
+      auto tmp = (uint8_t*)std::realloc(m_bytes, m_size * sizeof(uint8_t));
       if (tmp == nullptr) {
-        throw OutOfMemoryException(
-            "Out of Memory while resizing buffer");
+        throw OutOfMemoryException("Out of Memory while resizing buffer");
       }
       m_bytes = tmp;
       m_buf = m_bytes + offset;
@@ -702,6 +712,62 @@ class CPPCACHE_EXPORT DataOutput {
   volatile bool m_haveBigBuffer;
   const Cache* m_cache;
   std::reference_wrapper<const std::string> m_poolName;
+
+  inline void writeAscii(const std::string& value) {
+    uint16_t len = static_cast<uint16_t>(
+        std::min<size_t>(value.length(), std::numeric_limits<uint16_t>::max()));
+    writeInt(len);
+    for (size_t i = 0; i < len; i++) {
+      // blindly assumes ascii so mask off only 7 bits
+      write(static_cast<int8_t>(value.data()[i] & 0x7F));
+    }
+  }
+
+  inline void writeAsciiHuge(const std::string& value) {
+    uint32_t len = static_cast<uint32_t>(
+        std::min<size_t>(value.length(), std::numeric_limits<uint32_t>::max()));
+    writeInt(static_cast<uint32_t>(len));
+    for (size_t i = 0; i < len; i++) {
+      // blindly assumes ascii so mask off only 7 bits
+      write(static_cast<int8_t>(value.data()[i] & 0x7F));
+    }
+  }
+
+  void writeJavaModifiedUtf8(const std::u16string& value);
+
+  void writeJavaModifiedUtf8(const std::string& value);
+
+  void writeUtf16Huge(const std::string& value);
+
+  inline void writeUtf16Huge(const std::u16string& value) {
+    uint32_t len = static_cast<uint32_t>(
+        std::min<size_t>(value.length(), std::numeric_limits<uint32_t>::max()));
+    writeInt(len);
+    ensureCapacity(len * 2);
+    for (size_t i = 0; i < len; i++) {
+      writeNoCheck(static_cast<uint8_t>(value.data()[i] >> 8));
+      writeNoCheck(static_cast<uint8_t>(value.data()[i]));
+    }
+  }
+
+  inline static size_t getJavaModifiedUtf8EncodedLength(
+      const std::u16string& value) {
+    size_t encodedLen = 0;
+    for (const auto c : value) {
+      if (c == 0) {
+        // NUL
+        encodedLen += 2;
+      } else if (c < 0x80) {
+        // ASCII
+        encodedLen++;
+      } else if (c < 0x800) {
+        encodedLen += 2;
+      } else {
+        encodedLen += 3;
+      }
+    }
+    return encodedLen;
+  }
 
   inline static void getEncodedLength(const char val, int32_t& encodedLen) {
     if ((val == 0) || (val & 0x80)) {
@@ -756,6 +822,24 @@ class CPPCACHE_EXPORT DataOutput {
     }
   }
 
+  inline void encodeJavaModifiedUtf8(const char16_t c) {
+    if (c == 0) {
+      // NUL
+      *(m_buf++) = 0xc0;
+      *(m_buf++) = 0x80;
+    } else if (c < 0x80) {
+      // ASCII character
+      *(m_buf++) = static_cast<uint8_t>(c);
+    } else if (c < 0x800) {
+      *(m_buf++) = static_cast<uint8_t>(0xC0 | c >> 6);
+      *(m_buf++) = static_cast<uint8_t>(0x80 | (c & 0x3F));
+    } else {
+      *(m_buf++) = static_cast<uint8_t>(0xE0 | c >> 12);
+      *(m_buf++) = static_cast<uint8_t>(0x80 | ((c >> 6) & 0x3F));
+      *(m_buf++) = static_cast<uint8_t>(0x80 | (c & 0x3F));
+    }
+  }
+
   inline void writeNoCheck(uint8_t value) { *(m_buf++) = value; }
 
   inline void writeNoCheck(int8_t value) {
@@ -777,6 +861,7 @@ class CPPCACHE_EXPORT DataOutput {
 
   friend Cache;
   friend DataOutputInternal;
+  friend CacheableString;
 };
 }  // namespace client
 }  // namespace geode

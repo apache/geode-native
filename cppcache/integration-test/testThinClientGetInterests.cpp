@@ -75,7 +75,7 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     for (int32_t i = 0; i < vkey.size(); i++) {
       char buf[1024];
       const char* key =
-          std::dynamic_pointer_cast<CacheableString>(vkey[i])->asChar();
+          std::dynamic_pointer_cast<CacheableString>(vkey[i])->value().c_str();
       sprintf(buf, "key[%d]=%s", i, key);
       LOG(buf);
       bool found = false;
@@ -91,7 +91,7 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     for (int32_t i = 0; i < vreg.size(); i++) {
       char buf[1024];
       auto ptr = vreg[i];
-      const char* reg = ptr->asChar();
+      const char* reg = ptr->value().c_str();
       sprintf(buf, "regex[%d]=%s", i, reg);
       LOG(buf);
       bool found = false;
@@ -109,7 +109,7 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     for (int32_t i = 0; i < vreg1.size(); i++) {
       char buf[1024];
       auto ptr = vreg1[i];
-      sprintf(buf, "regex[%d]=%s", i, ptr->asChar());
+      sprintf(buf, "regex[%d]=%s", i, ptr->value().c_str());
       LOG(buf);
     }
   }

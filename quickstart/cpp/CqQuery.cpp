@@ -66,8 +66,8 @@ class MyCqListener : public CqListener {
         break;
     }
     LOGINFO("MyCqListener::OnEvent called with %s, key[%s], value=(%ld,%s)",
-            opStr, key->asChar(), portfolio->getID(),
-            portfolio->getPkid()->asChar());
+            opStr, key->value().c_str(), portfolio->getID(),
+            portfolio->getPkid()->value().c_str());
   }
 
   void onError(const CqEvent& cqe) { LOGINFO("MyCqListener::OnError called"); }

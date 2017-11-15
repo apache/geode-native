@@ -48,9 +48,9 @@ void RegionCommit::fromData(DataInput& input) {
 
 void RegionCommit::apply(Cache* cache) {
   for (auto& entryOp : m_farSideEntryOps) {
-    auto region = cache->getRegion(m_regionPath->asChar());
+    auto region = cache->getRegion(m_regionPath->value().c_str());
     if (region == nullptr && m_parentRegionPath != nullptr) {
-      region = cache->getRegion(m_parentRegionPath->asChar());
+      region = cache->getRegion(m_parentRegionPath->value().c_str());
     }
     std::static_pointer_cast<FarSideEntryOp>(entryOp)->apply(region);
   }

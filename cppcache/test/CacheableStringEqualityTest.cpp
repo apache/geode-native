@@ -58,6 +58,8 @@ TEST(CacheableStringEqualityTest, CacheableHashSet) {
 
   EXPECT_NE(s1, s2);
   EXPECT_EQ(*s1, *s2);
+  EXPECT_EQ(3387254, s3->hashcode());
+  EXPECT_EQ(3556498, s1->hashcode());
   EXPECT_EQ(s1->hashcode(), s2->hashcode());
 
   std::unordered_set<key_type, dereference_hash<key_type>, dereference_equal_to<key_type>> set = {s1};

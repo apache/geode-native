@@ -147,9 +147,9 @@ void _verifyEntry(const char* name, const char* key, const char* val,
         ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
         char buf[1024];
         sprintf(buf, "In verify loop, get returned %s for key %s",
-                checkPtr->asChar(), key);
+                checkPtr->value().c_str(), key);
         LOG(buf);
-        if (strcmp(checkPtr->asChar(), value) != 0) {
+        if (strcmp(checkPtr->value().c_str(), value) != 0) {
           testValueCnt++;
         } else {
           break;
@@ -318,7 +318,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
     LOG("checkPtr is not null");
     char buf[1024];
     sprintf(buf, "In net search, get returned %s for key %s",
-            checkPtr->asChar(), key);
+            checkPtr->value().c_str(), key);
     LOG(buf);
   } else {
     LOG("checkPtr is nullptr");
@@ -659,7 +659,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThirteen)
     for (int i = 80; i < 82; i++) {
       auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
           regPtr0->get(CacheableInt64::create(i)));
-      ASSERT(strcmp(checkPtr->asChar(), vals[i - 80]) == 0,
+      ASSERT(strcmp(checkPtr->value().c_str(), vals[i - 80]) == 0,
              "putAll entry with long key and string value  Mismatch");
     }
     map0.clear();

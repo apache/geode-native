@@ -28,7 +28,7 @@ bool LRULocalDestroyAction::evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
   //  we should invoke the destroyNoThrow with appropriate
   // flags to correctly invoke listeners
   LOGDEBUG("LRULocalDestroy: evicting entry with key [%s]",
-           Utils::getCacheableKeyString(keyPtr)->asChar());
+           Utils::nullSafeToString(keyPtr).c_str());
   GfErrType err = m_regionPtr->destroyNoThrow(
       keyPtr, nullptr, -1, CacheEventFlags::EVICTION | CacheEventFlags::LOCAL,
       versionTag);

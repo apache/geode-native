@@ -442,7 +442,7 @@ if (exceptionPtr != nullptr && err != GF_NOERR) {
   if (err != GF_NOERR) {
     if (err == GF_CACHESERVER_EXCEPTION) {
       auto message = std::string("Execute: exception at the server side: ") +
-                     exceptionPtr->asChar();
+                     exceptionPtr->value().c_str();
       throw FunctionExecutionException(message);
     } else {
       LOGDEBUG("Execute errorred with server exception: %d", err);
@@ -469,10 +469,11 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
   //   auto cs = csArray[i];
   //    TcrEndpoint *ep = nullptr;
   //    /*
-  //    std::string endpointStr = Utils::convertHostToCanonicalForm(cs->asChar()
+  //    std::string endpointStr =
+  //    Utils::convertHostToCanonicalForm(cs->value().c_str()
   //    );
   //    */
-  //    ep = tcrdm->addEP(cs->asChar());
+  //    ep = tcrdm->addEP(cs->value().c_str());
   //  }
   //}
 

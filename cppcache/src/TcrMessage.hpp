@@ -324,8 +324,8 @@ class CPPCACHE_EXPORT TcrMessage {
   const std::map<std::string, int>* getCqs() const;
   bool getBoolValue() const { return m_boolValue; };
   inline const char* getException() {
-    exceptionMessage = Utils::getCacheableString(m_value);
-    return exceptionMessage->asChar();
+    exceptionMessage = Utils::nullSafeToString(m_value);
+    return exceptionMessage.c_str();
   }
 
   const char* getMsgData() const;
@@ -546,7 +546,7 @@ class CPPCACHE_EXPORT TcrMessage {
   int32_t m_securityHeaderLength;
   bool m_isMetaRegion;
 
-  std::shared_ptr<CacheableString> exceptionMessage;
+  std::string exceptionMessage;
 
   TcrMessage(const TcrMessage&) = delete;
   TcrMessage& operator=(const TcrMessage&) = delete;

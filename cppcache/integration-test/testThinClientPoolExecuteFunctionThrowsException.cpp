@@ -66,15 +66,17 @@ char* FETimeOut = (char*)"FunctionExecutionTimeOut";
     sprintf(buf, "VALUE--%d", j);                                              \
     if (strcmp(buf, dynCast<std::shared_ptr<CacheableString>>(                 \
                         resultList->operator[](i))                             \
-                        ->asChar()) == 0) {                                    \
+                        ->value()                                              \
+                        .c_str()) == 0) {                                      \
       LOGINFO(                                                                 \
           "buf = %s "                                                          \
           "dynCast<std::shared_ptr<CacheableString>>(resultList->operator[]("  \
-          "i))->asChar() "                                                     \
+          "i))->value().c_str() "                                              \
           "= %s ",                                                             \
           buf,                                                                 \
           dynCast<std::shared_ptr<CacheableString>>(resultList->operator[](i)) \
-              ->asChar());                                                     \
+              ->value()                                                        \
+              .c_str());                                                       \
       found = true;                                                            \
       break;                                                                   \
     }                                                                          \
@@ -88,31 +90,33 @@ char* FETimeOut = (char*)"FunctionExecutionTimeOut";
     sprintf(buf, "KEY--%d", j);                                                \
     if (strcmp(buf, dynCast<std::shared_ptr<CacheableString>>(                 \
                         resultList->operator[](i))                             \
-                        ->asChar()) == 0) {                                    \
+                        ->value()                                              \
+                        .c_str()) == 0) {                                      \
       LOGINFO(                                                                 \
           "buf = %s "                                                          \
           "dynCast<std::shared_ptr<CacheableString>>(resultList->operator[]("  \
-          "i))->asChar() "                                                     \
+          "i))->value().c_str() "                                              \
           "= %s ",                                                             \
           buf,                                                                 \
           dynCast<std::shared_ptr<CacheableString>>(resultList->operator[](i)) \
-              ->asChar());                                                     \
+              ->value()                                                        \
+              .c_str());                                                       \
       found = true;                                                            \
       break;                                                                   \
     }                                                                          \
   }                                                                            \
   ASSERT(found, "this returned KEY is invalid");
 
-#define verifyPutResults()                   \
-  bool found = false;                        \
-  for (int j = 0; j < 34; j++) {             \
-    if (j % 2 == 0) continue;                \
-    sprintf(buf, "KEY--%d", j);              \
-    if (strcmp(buf, value->asChar()) == 0) { \
-      found = true;                          \
-      break;                                 \
-    }                                        \
-  }                                          \
+#define verifyPutResults()                          \
+  bool found = false;                               \
+  for (int j = 0; j < 34; j++) {                    \
+    if (j % 2 == 0) continue;                       \
+    sprintf(buf, "KEY--%d", j);                     \
+    if (strcmp(buf, value->value().c_str()) == 0) { \
+      found = true;                                 \
+      break;                                        \
+    }                                               \
+  }                                                 \
   ASSERT(found, "this returned value is invalid");
 
 class MyResultCollector : public DefaultResultCollector {
@@ -261,7 +265,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                     result->operator[](i))) {
           LOGINFO("Done casting to uFEPtr");
           LOGINFO("Read expected uFEPtr exception %s ",
-                  uFEPtr->getMessage()->asChar());
+                  uFEPtr->getMessage()->value().c_str());
         } else {
           FAIL(
               "exFuncNameSendException casting to string for bool argument "

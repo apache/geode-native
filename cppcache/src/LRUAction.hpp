@@ -116,7 +116,7 @@ class CPPCACHE_EXPORT LRUDestroyAction : public virtual LRUAction {
     //  we should invoke the destroyNoThrow with appropriate
     // flags to correctly invoke listeners
     LOGDEBUG("LRUDestroy: evicting entry with key [%s]",
-             Utils::getCacheableKeyString(keyPtr)->asChar());
+             Utils::nullSafeToString(keyPtr).c_str());
     GfErrType err = GF_NOERR;
     if (!m_regionPtr->isDestroyed()) {
       err = m_regionPtr->destroyNoThrow(keyPtr, nullptr, -1,

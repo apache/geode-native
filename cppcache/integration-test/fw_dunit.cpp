@@ -21,6 +21,7 @@
 #define FD_SETSIZE 1024
 #if WINVER == 0x0500
 #undef _WINSOCKAPI_
+#define NOMINMAX
 #include <WinSock2.h>
 #endif
 #endif
@@ -1185,6 +1186,4 @@ void Semaphore::release(int t) {
 
 };  // namespace perf
 
-namespace test {
-
-}  // namespace test
+namespace test {}  // namespace test

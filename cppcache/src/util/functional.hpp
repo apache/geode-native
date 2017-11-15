@@ -24,6 +24,10 @@
 #include <memory>
 #include <type_traits>
 #include <string>
+#include <codecvt>
+#include <locale>
+
+#include "string.hpp"
 
 namespace apache {
 namespace geode {
@@ -86,13 +90,24 @@ struct geode_hash {
  * Hashes like java.lang.String
  */
 template <>
-struct geode_hash<std::string> {
-  int32_t operator()(const std::string& val) {
+struct geode_hash<std::u16string> {
+  inline int32_t operator()(const std::u16string& val) {
     int32_t hash = 0;
     for (auto&& c : val) {
       hash = 31 * hash + c;
     }
     return hash;
+  }
+};
+
+/**
+ * Hashes like java.lang.String
+ */
+template <>
+struct geode_hash<std::string> {
+  inline int32_t operator()(const std::string& val) {
+    // TODO string optimize without conversion to UTF-16
+    return geode_hash<std::u16string>{}(to_utf16(val));
   }
 };
 

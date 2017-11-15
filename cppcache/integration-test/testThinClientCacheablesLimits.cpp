@@ -113,8 +113,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
 
       auto emptyBytesArr = CacheableBytes::create();
       auto bytePtrSent = CacheableBytes::createNoCopy(ptr, keyArr[count]);
-      auto stringPtrSent =
-          CacheableString::createNoCopy(ptrChar, keyArr[count]);
+      auto stringPtrSent = CacheableString::create(ptrChar, keyArr[count]);
 
       verifyReg->put(KEY_BYTE, bytePtrSent);
       verifyReg->put(KEY_STRING, stringPtrSent);
@@ -150,8 +149,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
                                   bytePtrReturn->length()));
       bool isSameString =
           (stringPtrReturn->length() == stringPtrSent->length() &&
-           !memcmp(stringPtrReturn->asChar(), stringPtrSent->asChar(),
-                   stringPtrReturn->length()));
+           !memcmp(stringPtrReturn->value().c_str(),
+                   stringPtrSent->value().c_str(), stringPtrReturn->length()));
       if (isSameBytes && isSameString) {
         char logMSG[100];
         sprintf(logMSG, "Compare %d Passed for length %d", count,

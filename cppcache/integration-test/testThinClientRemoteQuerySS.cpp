@@ -70,14 +70,14 @@ void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
     if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(field)) {
       printf("   pulled %s :- ID %d, pkid %s\n",
              ssptr->getFieldName(fields).c_str(), portfolio->getID(),
-             checkNullString(portfolio->getPkid()->asChar()));
+             checkNullString(portfolio->getPkid()->value().c_str()));
       printf("   pulled %s :- ID %d, pkid %s\n",
              ssptr->getFieldName(fields).c_str(), portfolio->getID(),
-             checkNullString(portfolio->getPkid()->asChar()));
+             checkNullString(portfolio->getPkid()->value().c_str()));
     } else if (auto position = std::dynamic_pointer_cast<Position>(field)) {
       printf("   pulled %s :- secId %s, shares %d\n",
              ssptr->getFieldName(fields).c_str(),
-             checkNullString(position->getSecId()->asChar()),
+             checkNullString(position->getSecId()->value().c_str()),
              position->getSharesOutstanding());
     } else if (auto portfolioPdx =
                    std::dynamic_pointer_cast<PortfolioPdx>(field)) {
@@ -92,13 +92,8 @@ void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
              positionPdx->getSharesOutstanding());
     } else {
       if (auto str = std::dynamic_pointer_cast<CacheableString>(field)) {
-        if (str->isWideString()) {
-          printf("   pulled %s :- %S\n", ssptr->getFieldName(fields).c_str(),
-                 checkNullString(str->asWChar()));
-        } else {
-          printf("   pulled %s :- %s\n", ssptr->getFieldName(fields).c_str(),
-                 checkNullString(str->asChar()));
-        }
+        printf("   pulled %s :- %s\n", ssptr->getFieldName(fields).c_str(),
+               checkNullString(str->value().c_str()));
       } else if (auto boolptr =
                      std::dynamic_pointer_cast<CacheableBoolean>(field)) {
         printf("   pulled %s :- %s\n", ssptr->getFieldName(fields).c_str(),
@@ -111,15 +106,9 @@ void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
                        std::dynamic_pointer_cast<CacheableStringArray>(field)) {
           printf(" string array object printing \n\n");
           for (int stri = 0; stri < strArr->length(); stri++) {
-            if (strArr->operator[](stri)->isWideString()) {
-              printf("   pulled %s(%d) - %S \n",
-                     ssptr->getFieldName(fields).c_str(), stri,
-                     checkNullString(strArr->operator[](stri)->asWChar()));
-            } else {
-              printf("   pulled %s(%d) - %s \n",
-                     ssptr->getFieldName(fields).c_str(), stri,
-                     checkNullString(strArr->operator[](stri)->asChar()));
-            }
+            printf("   pulled %s(%d) - %s \n",
+                   ssptr->getFieldName(fields).c_str(), stri,
+                   checkNullString(strArr->operator[](stri)->value().c_str()));
           }
         } else if (auto map =
                        std::dynamic_pointer_cast<CacheableHashMap>(field)) {

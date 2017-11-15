@@ -47,7 +47,7 @@ class FixedPartitionAttributesImpl : public Serializable {
 
   std::string getPartitionName() {
     if (m_partitionName != nullptr) {
-      return m_partitionName->asChar();
+      return m_partitionName->value();
     }
     return "";
   }
@@ -58,7 +58,7 @@ class FixedPartitionAttributesImpl : public Serializable {
 
   void toData(DataOutput& output) const {
     if (m_partitionName != nullptr) {
-      output.writeNativeString(m_partitionName->asChar());
+      output.writeObject(m_partitionName);
     }
     output.writeBoolean(m_isPrimary);
     output.writeInt(m_numBuckets);

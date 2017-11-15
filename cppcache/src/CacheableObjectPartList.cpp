@@ -62,10 +62,8 @@ void CacheableObjectPartList::fromData(DataInput& input) {
         // input.readObject(exMsgPtr, true);// Changed
         exMsgPtr = input.readNativeString();
         if (m_exceptions != nullptr) {
-          const char* exMsg = exMsgPtr->asChar();
-          if (strstr(exMsg,
-                     "org.apache.geode.security."
-                     "NotAuthorizedException") != nullptr) {
+          auto&& exMsg = exMsgPtr->value();
+          if (exMsg == "org.apache.geode.security.NotAuthorizedException") {
             std::string message("Authorization exception at server:");
             message += exMsg;
             ex = std::make_shared<NotAuthorizedException>(message);
@@ -99,7 +97,7 @@ void CacheableObjectPartList::fromData(DataInput& input) {
             LOGDEBUG(
                 "CacheableObjectPartList::fromData putLocal for key [%s] failed because the cache \
                 already contains an entry with higher version.",
-                Utils::getCacheableKeyString(key)->asChar());
+                Utils::nullSafeToString(key).c_str());
           }
         } else {
           m_region->getEntry(key, oldValue);

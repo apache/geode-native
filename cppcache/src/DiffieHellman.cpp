@@ -93,18 +93,19 @@ void DiffieHellman::initDhKeys(const std::shared_ptr<Properties>& props) {
     return;
   }
 
-  int error = gf_initDhKeys_Ptr(&m_dhCtx, dhAlgo->asChar(),
-                                ksPath != nullptr ? ksPath->asChar() : nullptr);
+  int error =
+      gf_initDhKeys_Ptr(&m_dhCtx, dhAlgo->value().c_str(),
+                        ksPath != nullptr ? ksPath->value().c_str() : nullptr);
 
   if (error == DH_ERR_UNSUPPORTED_ALGO) {  // Unsupported Algorithm
     char msg[64] = {'\0'};
     ACE_OS::snprintf(msg, 64, "Algorithm %s is not supported.",
-                     dhAlgo->asChar());
+                     dhAlgo->value().c_str());
     throw IllegalArgumentException(msg);
   } else if (error == DH_ERR_ILLEGAL_KEYSIZE) {  // Illegal Key size
     char msg[64] = {'\0'};
     ACE_OS::snprintf(msg, 64, "Illegal key size for algorithm %s.",
-                     dhAlgo->asChar());
+                     dhAlgo->value().c_str());
     throw IllegalArgumentException(msg);
   } else if (m_dhCtx == nullptr) {
     throw IllegalStateException(
@@ -163,13 +164,13 @@ bool DiffieHellman::verify(const std::shared_ptr<CacheableString>& subject,
                            const std::shared_ptr<CacheableBytes>& response) {
   int errCode = DH_ERR_NO_ERROR;
   LOGDEBUG("DiffieHellman::verify");
-  bool result = gf_verifyDH_Ptr(m_dhCtx, subject->asChar(), challenge->value(),
-                                challenge->length(), response->value(),
-                                response->length(), &errCode);
+  bool result = gf_verifyDH_Ptr(
+      m_dhCtx, subject->value().c_str(), challenge->value(),
+      challenge->length(), response->value(), response->length(), &errCode);
   LOGDEBUG("DiffieHellman::verify 2");
   if (errCode == DH_ERR_SUBJECT_NOT_FOUND) {
     LOGERROR("Subject name %s not found in imported certificates.",
-             subject->asChar());
+             subject->value().c_str());
   } else if (errCode == DH_ERR_NO_CERTIFICATES) {
     LOGERROR("No imported certificates.");
   } else if (errCode == DH_ERR_INVALID_SIGN) {

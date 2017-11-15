@@ -70,7 +70,7 @@ void Struct::fromData(DataInput& input) {
   m_parent = nullptr;
   for (int32_t i = 0; i < numOfFields; i++) {
     auto fieldName = input.readNativeString();
-    m_fieldNames.emplace(fieldName->asChar(), i);
+    m_fieldNames.emplace(fieldName->value().c_str(), i);
   }
   int32_t lengthForTypes = input.readArrayLen();
   skipClassName(input);

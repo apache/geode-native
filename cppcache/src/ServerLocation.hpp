@@ -66,7 +66,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
 
   std::string getServerName() const {
     if (m_serverName != nullptr) {
-      return m_serverName->asChar();
+      return m_serverName->value();
     }
     return "";
   }
@@ -74,7 +74,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
   int getPort() const { return m_port; }
   void toData(DataOutput& output) const {
     if (m_serverName != nullptr) {
-      output.writeNativeString(m_serverName->asChar());
+      output.writeNativeString(m_serverName->toString().c_str());
     }
     output.writeInt(m_port);
   }
@@ -84,11 +84,11 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
     makeEpString();
   }
   uint32_t objectSize() const {
-    if (m_serverName != nullptr) {
-      return static_cast<uint32_t>(sizeof(int)) +
-             (m_serverName->length()) * static_cast<uint32_t>(sizeof(char));
+    size_t size = sizeof(ServerLocation);
+    if (m_serverName) {
+      size += m_serverName->objectSize();
     }
-    return 0;
+    return size;
   }
   int8_t typeId() const {
     return 0;  // NOt needed infact
@@ -117,8 +117,8 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
   }
 
   bool operator<(const ServerLocation rhs) const {
-    std::string s1 = m_serverName->asChar();
-    std::string s2 = rhs.m_serverName->asChar();
+    auto&& s1 = m_serverName->value();
+    auto&& s2 = rhs.m_serverName->value();
     if (s1 < s2) {
       return true;
     } else if (s1 == s2) {
@@ -129,8 +129,8 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
   }
 
   bool operator==(const ServerLocation& rhs) const {
-    return (!strcmp(m_serverName->asChar(), rhs.getServerName().c_str()) &&
-            (m_port == rhs.getPort()));
+    return (m_serverName->value() == rhs.m_serverName->value()) &&
+           (m_port == rhs.m_port);
   }
 
   inline bool isValid() const {

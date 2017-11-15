@@ -77,6 +77,7 @@ BEGIN_TEST.
 // Must include WinSock2 so winsock.h doesn't get included.
 #if WINVER == 0x0500
 #undef _WINSOCKAPI_
+#define NOMINMAX
 #include <WinSock2.h>
 #endif
 #endif

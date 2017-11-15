@@ -17,6 +17,8 @@
 
 #pragma once
 
+#define NOMINMAX
+
 #include <winsock2.h>
 #include <vcclr.h>
 #include <msclr/marshal_cppstd.h>

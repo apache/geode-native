@@ -14,16 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "util/Log.hpp"
+
+#include <vector>
+
+#include <ace/TSS_T.h>
+#include <ace/Recursive_Thread_Mutex.h>
+
 #include <geode/DataOutput.hpp>
 #include <geode/SystemProperties.hpp>
 #include <SerializationRegistry.hpp>
-#include <ace/TSS_T.h>
 
-#include <ace/Recursive_Thread_Mutex.h>
-#include <vector>
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
+#include "util/Log.hpp"
+#include "util/string.hpp"
 
 namespace apache {
 namespace geode {
@@ -46,10 +50,6 @@ class BufferDesc {
   ~BufferDesc() {}
 
   BufferDesc& operator=(const BufferDesc& other) {
-    /* adongre
-     * CID 28889: Other violation (SELF_ASSIGN)No protection against the object
-     * assigning to itself.
-     */
     if (this != &other) {
       m_buf = other.m_buf;
       m_size = other.m_size;
@@ -79,10 +79,9 @@ class TSSDataOutput {
     } else {
       uint8_t* buf;
       *size = 8192;
-      buf = (uint8_t *) std::malloc(8192 * sizeof(uint8_t));
+      buf = (uint8_t*)std::malloc(8192 * sizeof(uint8_t));
       if (buf == nullptr) {
-        throw OutOfMemoryException(
-            "Out of Memory while resizing buffer");
+        throw OutOfMemoryException("Out of Memory while resizing buffer");
       }
       return buf;
     }
@@ -140,6 +139,41 @@ const SerializationRegistry& DataOutput::getSerializationRegistry() const {
 }
 
 const Cache* DataOutput::getCache() { return m_cache; }
+
+void DataOutput::writeUtf16Huge(const std::string& value) {
+  writeUtf16Huge(to_utf16(value));
+}
+
+void DataOutput::writeJavaModifiedUtf8(const std::string& value) {
+  /*
+   * OPTIMIZE convert from UTF-8 to CESU-8/Java Modified UTF-8 directly
+   * http://www.unicode.org/reports/tr26/
+   */
+  if (value.empty()) {
+    writeInt(static_cast<uint16_t>(0));
+  } else {
+    writeJavaModifiedUtf8(to_utf16(value));
+  }
+}
+
+void DataOutput::writeJavaModifiedUtf8(const std::u16string& value) {
+  if (value.empty()) {
+    writeInt(static_cast<uint16_t>(0));
+  } else {
+    auto encodedLen = static_cast<uint16_t>(
+        std::min<size_t>(getJavaModifiedUtf8EncodedLength(value),
+                         std::numeric_limits<uint16_t>::max()));
+    writeInt(encodedLen);
+    ensureCapacity(encodedLen);
+    const auto end = m_buf + encodedLen;
+    auto data = value.data();
+    while (m_buf < end) {
+      encodeJavaModifiedUtf8(*data++);
+    }
+    if (m_buf > end) m_buf = end;
+  }
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

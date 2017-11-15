@@ -126,17 +126,17 @@ void initClientAuth(char credentialsType, const char* dhAlgo) {
    case CORRECT_CREDENTIALS:
      credentialGeneratorHandler->getValidCredentials(userCreds);
      userCreds->insert("security-password",
-                       userCreds->find("security-username")->asChar());
+                       userCreds->find("security-username")->value().c_str());
      printf("Username is %s and Password is %s ",
-            userCreds->find("security-username")->asChar(),
-            userCreds->find("security-password")->asChar());
+            userCreds->find("security-username")->value().c_str(),
+            userCreds->find("security-password")->value().c_str());
      break;
    case INCORRECT_CREDENTIALS:
      credentialGeneratorHandler->getInvalidCredentials(userCreds);
      userCreds->insert("security-password", "junk");
      printf("Username is %s and Password is %s ",
-            userCreds->find("security-username")->asChar(),
-            userCreds->find("security-password")->asChar());
+            userCreds->find("security-username")->value().c_str(),
+            userCreds->find("security-password")->value().c_str());
      break;
    default:
      insertAuthInit = false;
@@ -226,11 +226,11 @@ void DoNetSearch() {
    auto keyPtr = CacheableKey::create(keys[0]);
    auto checkPtr =
        std::dynamic_pointer_cast<CacheableString>(regionPtr->get(keyPtr));
-   if (checkPtr != nullptr && !strcmp(vals[0], checkPtr->asChar())) {
+   if (checkPtr != nullptr && !strcmp(vals[0], checkPtr->value().c_str())) {
      LOG("checkPtr is not null");
      char buf[1024];
      sprintf(buf, "In net search, get returned %s for key %s",
-             checkPtr->asChar(), keys[0]);
+             checkPtr->value().c_str(), keys[0]);
      LOG(buf);
    } else {
      LOG("checkPtr is nullptr");

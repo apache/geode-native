@@ -694,7 +694,7 @@ void LocalRegion::registerEntryExpiryTask(
     LOGFINEST(
         "entry expiry in region [%s], key [%s], task id = %d, "
         "duration = %d, action = %d",
-        m_fullPath.c_str(), Utils::getCacheableKeyString(key)->asChar(), id,
+        m_fullPath.c_str(), Utils::nullSafeToString(key).c_str(), id,
         duration.count(), getEntryExpirationAction());
   }
   expProps.setExpiryTaskId(id);
@@ -863,8 +863,8 @@ GfErrType LocalRegion::getNoThrow(
       LOGDEBUG(
           "Region::get: added tracking with update counter [%d] for key "
           "[%s] with value [%s]",
-          updateCount, Utils::getCacheableKeyString(keyPtr)->asChar(),
-          Utils::getCacheableString(value)->asChar());
+          updateCount, Utils::nullSafeToString(keyPtr).c_str(),
+          Utils::nullSafeToString(value).c_str());
     }
   }
 
@@ -936,7 +936,7 @@ GfErrType LocalRegion::getNoThrow(
         "Region::get: creating entry with tracking update counter [%d] for "
         "key "
         "[%s]",
-        updateCount, Utils::getCacheableKeyString(keyPtr)->asChar());
+        updateCount, Utils::nullSafeToString(keyPtr).c_str());
     if ((err = putLocal("Region::get", false, keyPtr, value, oldValue,
                         cachingEnabled, updateCount, 0, versionTag)) !=
         GF_NOERR) {
@@ -944,7 +944,7 @@ GfErrType LocalRegion::getNoThrow(
         LOGDEBUG(
             "Region::get: putLocal for key [%s] failed because the cache already contains \
           an entry with higher version.",
-            Utils::getCacheableKeyString(keyPtr)->asChar());
+            Utils::nullSafeToString(keyPtr).c_str());
         if (CacheableToken::isInvalid(value) ||
             CacheableToken::isTombstone(value)) {
           value = nullptr;
@@ -954,12 +954,12 @@ GfErrType LocalRegion::getNoThrow(
       }
 
       LOGDEBUG("Region::get: putLocal for key [%s] failed with error %d",
-               Utils::getCacheableKeyString(keyPtr)->asChar(), err);
+               Utils::nullSafeToString(keyPtr).c_str(), err);
       err = GF_NOERR;
       if (oldValue != nullptr && !CacheableToken::isInvalid(oldValue)) {
         LOGDEBUG("Region::get: returning updated value [%s] for key [%s]",
-                 Utils::getCacheableString(oldValue)->asChar(),
-                 Utils::getCacheableKeyString(keyPtr)->asChar());
+                 Utils::nullSafeToString(oldValue).c_str(),
+                 Utils::nullSafeToString(keyPtr).c_str());
         value = oldValue;
       }
     }
@@ -1091,7 +1091,7 @@ class PutActions {
     bool isUpdate = (oldValue != nullptr);
     LOGFINER("Cache writer vetoed %s for key %s",
              (isUpdate ? "update" : "create"),
-             Utils::getCacheableKeyString(key)->asChar());
+             Utils::nullSafeToString(key).c_str());
   }
 
   inline GfErrType remoteUpdate(
@@ -1169,7 +1169,7 @@ class CreateActions {
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Cacheable>& oldValue) {
     LOGFINER("Cache writer vetoed create for key %s",
-             Utils::getCacheableKeyString(key)->asChar());
+             Utils::nullSafeToString(key).c_str());
   }
 
   inline GfErrType remoteUpdate(
@@ -1233,7 +1233,7 @@ class DestroyActions {
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Cacheable>& oldValue) {
     LOGFINER("Cache writer vetoed destroy for key %s",
-             Utils::getCacheableKeyString(key)->asChar());
+             Utils::nullSafeToString(key).c_str());
   }
 
   inline GfErrType remoteUpdate(
@@ -1260,7 +1260,7 @@ class DestroyActions {
       GfErrType err;
       LOGDEBUG("Region::destroy: region [%s] destroying key [%s]",
                m_region.getFullPath().c_str(),
-               Utils::getCacheableKeyString(key)->asChar());
+               Utils::nullSafeToString(key).c_str());
       if ((err = m_region.m_entries->remove(key, oldValue, entry, updateCount,
                                             versionTag, afterRemote)) !=
           GF_NOERR) {
@@ -1269,8 +1269,8 @@ class DestroyActions {
               "Region::destroy: region [%s] destroy key [%s] for "
               "notification having value [%s] failed with %d",
               m_region.getFullPath().c_str(),
-              Utils::getCacheableKeyString(key)->asChar(),
-              Utils::getCacheableString(oldValue)->asChar(), err);
+              Utils::nullSafeToString(key).c_str(),
+              Utils::nullSafeToString(oldValue).c_str(), err);
           err = GF_NOERR;
         }
         return err;
@@ -1281,8 +1281,8 @@ class DestroyActions {
             "Region::destroy: region [%s] destroyed key [%s] having "
             "value [%s]",
             m_region.getFullPath().c_str(),
-            Utils::getCacheableKeyString(key)->asChar(),
-            Utils::getCacheableString(oldValue)->asChar());
+            Utils::nullSafeToString(key).c_str(),
+            Utils::nullSafeToString(oldValue).c_str());
         // any cleanup required for the entry (e.g. removing from LRU list)
         if (entry != nullptr) {
           entry->cleanup(eventFlags);
@@ -1346,7 +1346,7 @@ class RemoveActions {
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Cacheable>& oldValue) {
     LOGFINER("Cache writer vetoed remove for key %s",
-             Utils::getCacheableKeyString(key)->asChar());
+             Utils::nullSafeToString(key).c_str());
   }
 
   inline GfErrType remoteUpdate(
@@ -1464,7 +1464,7 @@ class RemoveActions {
       GfErrType err;
       LOGDEBUG("Region::remove: region [%s] removing key [%s]",
                m_region.getFullPath().c_str(),
-               Utils::getCacheableKeyString(key)->asChar());
+               Utils::nullSafeToString(key).c_str());
       if ((err = m_region.m_entries->remove(key, oldValue, entry, updateCount,
                                             versionTag, afterRemote)) !=
           GF_NOERR) {
@@ -1473,8 +1473,8 @@ class RemoveActions {
               "Region::remove: region [%s] remove key [%s] for "
               "notification having value [%s] failed with %d",
               m_region.getFullPath().c_str(),
-              Utils::getCacheableKeyString(key)->asChar(),
-              Utils::getCacheableString(oldValue)->asChar(), err);
+              Utils::nullSafeToString(key).c_str(),
+              Utils::nullSafeToString(oldValue).c_str(), err);
           err = GF_NOERR;
         }
         return err;
@@ -1484,8 +1484,8 @@ class RemoveActions {
             "Region::remove: region [%s] removed key [%s] having "
             "value [%s]",
             m_region.getFullPath().c_str(),
-            Utils::getCacheableKeyString(key)->asChar(),
-            Utils::getCacheableString(oldValue)->asChar());
+            Utils::nullSafeToString(key).c_str(),
+            Utils::nullSafeToString(oldValue).c_str());
         // any cleanup required for the entry (e.g. removing from LRU list)
         if (entry != nullptr) {
           entry->cleanup(eventFlags);
@@ -1556,7 +1556,7 @@ class InvalidateActions {
     bool isUpdate = (oldValue != nullptr);
     LOGFINER("Cache writer vetoed %s for key %s",
              (isUpdate ? "update" : "invalidate"),
-             Utils::getCacheableKeyString(key)->asChar());
+             Utils::nullSafeToString(key).c_str());
   }
 
   inline GfErrType remoteUpdate(
@@ -1672,13 +1672,13 @@ GfErrType LocalRegion::updateNoThrow(
       LOGFINEST(
           "%s: did not change local value for key [%s] since it has "
           "been updated by another thread while operation was in progress",
-          TAction::name(), Utils::getCacheableKeyString(key)->asChar());
+          TAction::name(), Utils::nullSafeToString(key).c_str());
       err = GF_NOERR;
     } else if (err == GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION) {
       LOGDEBUG(
           "Region::localUpdate: updateNoThrow<%s> for key [%s] failed because the cache already contains \
         an entry with higher version. The cache listener will not be invoked.",
-          TAction::name(), Utils::getCacheableKeyString(key)->asChar());
+          TAction::name(), Utils::nullSafeToString(key).c_str());
       // Cache listener won't be called in this case
       return GF_NOERR;
     } else if (err == GF_INVALID_DELTA) {
@@ -1686,7 +1686,7 @@ GfErrType LocalRegion::updateNoThrow(
           "Region::localUpdate: updateNoThrow<%s> for key [%s] failed "
           "because "
           "of invalid delta.",
-          TAction::name(), Utils::getCacheableKeyString(key)->asChar());
+          TAction::name(), Utils::nullSafeToString(key).c_str());
       m_cacheImpl->getCachePerfStats().incFailureOnDeltaReceived();
       // Get full object from server.
       std::shared_ptr<Cacheable>& newValue1 = const_cast<std::shared_ptr<Cacheable>&>(value);
@@ -1699,7 +1699,7 @@ GfErrType LocalRegion::updateNoThrow(
           LOGDEBUG(
               "Region::localUpdate: updateNoThrow<%s> for key [%s] failed because the cache already contains \
             an entry with higher version. The cache listener will not be invoked.",
-              TAction::name(), Utils::getCacheableKeyString(key)->asChar());
+              TAction::name(), Utils::nullSafeToString(key).c_str());
           // Cache listener won't be called in this case
           return GF_NOERR;
         } else if (err != GF_NOERR) {
@@ -1751,7 +1751,7 @@ GfErrType LocalRegion::updateNoThrowTX(
       LOGFINEST(
           "%s: did not change local value for key [%s] since it has "
           "been updated by another thread while operation was in progress",
-          TAction::name(), Utils::getCacheableKeyString(key)->asChar());
+          TAction::name(), Utils::nullSafeToString(key).c_str());
       err = GF_NOERR;
     } else if (err == GF_CACHE_ENTRY_NOT_FOUND) {
       // Entry not found. Possibly because the entry was added and removed in
@@ -1761,7 +1761,7 @@ GfErrType LocalRegion::updateNoThrowTX(
           "%s: No entry found. Possibly because the entry was added and "
           "removed in the same transaction. "
           "Ignoring this error. ",
-          TAction::name(), Utils::getCacheableKeyString(key)->asChar());
+          TAction::name(), Utils::nullSafeToString(key).c_str());
       err = GF_NOERR;
     } else if (err != GF_NOERR) {
       return err;
@@ -2000,10 +2000,10 @@ GfErrType LocalRegion::putAllNoThrow(
               "since it has been updated by another thread while operation "
               "was "
               "in progress",
-              Utils::getCacheableKeyString(key)->asChar());
+              Utils::nullSafeToString(key).c_str());
         } else if (localErr == GF_CACHE_LISTENER_EXCEPTION) {
           LOGFINER("Region::putAll: invoke listener error [%d] for key [%s]",
-                   localErr, Utils::getCacheableKeyString(key)->asChar());
+                   localErr, Utils::nullSafeToString(key).c_str());
           err = localErr;
         } else if (localErr != GF_NOERR) {
           return localErr;
@@ -2037,10 +2037,10 @@ GfErrType LocalRegion::putAllNoThrow(
               "since it has been updated by another thread while operation "
               "was "
               "in progress",
-              Utils::getCacheableKeyString(key)->asChar());
+              Utils::nullSafeToString(key).c_str());
         } else if (localErr == GF_CACHE_LISTENER_EXCEPTION) {
           LOGFINER("Region::putAll: invoke listener error [%d] for key [%s]",
-                   localErr, Utils::getCacheableKeyString(key)->asChar());
+                   localErr, Utils::nullSafeToString(key).c_str());
           err = localErr;
         } else if (localErr != GF_NOERR) {
           return localErr;
@@ -2105,7 +2105,7 @@ GfErrType LocalRegion::removeAllNoThrow(
           LOGDEBUG(
               "RemoveAll hits EntryNotFoundException at server side for key "
               "[%s], not to destroy it from local cache.",
-              Utils::getCacheableKeyString(key)->asChar());
+              Utils::nullSafeToString(key).c_str());
           continue;
         }
       }
@@ -2118,14 +2118,14 @@ GfErrType LocalRegion::removeAllNoThrow(
             "Region::removeAll: did not remove local value for key [%s] "
             "since it has been updated by another thread while operation was "
             "in progress",
-            Utils::getCacheableKeyString(key)->asChar());
+            Utils::nullSafeToString(key).c_str());
       } else if (localErr == GF_CACHE_LISTENER_EXCEPTION) {
         LOGFINER("Region::removeAll: invoke listener error [%d] for key [%s]",
-                 localErr, Utils::getCacheableKeyString(key)->asChar());
+                 localErr, Utils::nullSafeToString(key).c_str());
         err = localErr;
       } else if (localErr == GF_CACHE_ENTRY_NOT_FOUND) {
         LOGFINER("Region::removeAll: error [%d] for key [%s]", localErr,
-                 Utils::getCacheableKeyString(key)->asChar());
+                 Utils::nullSafeToString(key).c_str());
       } else if (localErr != GF_NOERR) {
         return localErr;
       }
@@ -2191,8 +2191,8 @@ GfErrType LocalRegion::invalidateLocal(
     if (cachingEnabled) {
       LOGDEBUG("%s: region [%s] invalidating key [%s], value [%s]",
                name.c_str(), getFullPath().c_str(),
-               Utils::getCacheableKeyString(keyPtr)->asChar(),
-               Utils::getCacheableString(value)->asChar());
+               Utils::nullSafeToString(keyPtr).c_str(),
+               Utils::nullSafeToString(value).c_str());
       /* adongre - Coverity II
        * CID 29193: Parse warning (PW.PARAMETER_HIDDEN)
        */
@@ -2203,14 +2203,14 @@ GfErrType LocalRegion::invalidateLocal(
           LOGDEBUG(
               "Region::invalidate: region [%s] invalidate key [%s] "
               "failed with error %d",
-              getFullPath().c_str(),
-              Utils::getCacheableKeyString(keyPtr)->asChar(), err);
+              getFullPath().c_str(), Utils::nullSafeToString(keyPtr).c_str(),
+              err);
         }
         if (err == GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION) {
           LOGDEBUG(
               "Region::invalidateLocal: invalidate for key [%s] failed because the cache already contains \
             an entry with higher version. The cache listener will not be invoked.",
-              Utils::getCacheableKeyString(keyPtr)->asChar());
+              Utils::nullSafeToString(keyPtr).c_str());
           // Cache listener won't be called in this case
           return GF_NOERR;
         }
@@ -2224,7 +2224,7 @@ GfErrType LocalRegion::invalidateLocal(
       } else {
         LOGDEBUG("Region::invalidate: region [%s] invalidated key [%s]",
                  getFullPath().c_str(),
-                 Utils::getCacheableKeyString(keyPtr)->asChar());
+                 Utils::nullSafeToString(keyPtr).c_str());
       }
       // entry/region expiration
       if (!eventFlags.isEvictOrExpire()) {
@@ -2425,8 +2425,8 @@ GfErrType LocalRegion::putLocal(const std::string& name, bool isCreate,
   if (cachingEnabled) {
     std::shared_ptr<MapEntryImpl> entry;
     LOGDEBUG("%s: region [%s] putting key [%s], value [%s]", name.c_str(),
-             getFullPath().c_str(), Utils::getCacheableKeyString(key)->asChar(),
-             Utils::getCacheableString(value)->asChar());
+             getFullPath().c_str(), Utils::nullSafeToString(key).c_str(),
+             Utils::nullSafeToString(value).c_str());
     if (isCreate) {
       err = m_entries->create(key, value, entry, oldValue, updateCount,
                               destroyTracker, versionTag);
@@ -2456,8 +2456,8 @@ GfErrType LocalRegion::putLocal(const std::string& name, bool isCreate,
     }
     LOGDEBUG("%s: region [%s] %s key [%s], value [%s]", name.c_str(),
              getFullPath().c_str(), isUpdate ? "updated" : "created",
-             Utils::getCacheableKeyString(key)->asChar(),
-             Utils::getCacheableString(value)->asChar());
+             Utils::nullSafeToString(key).c_str(),
+             Utils::nullSafeToString(value).c_str());
     // entry/region expiration
     if (entryExpiryEnabled()) {
       if (isUpdate && entry->getExpProperties().getExpiryTaskId() != -1) {
@@ -2685,12 +2685,12 @@ GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
       }
     } catch (const Exception& ex) {
       LOGERROR("Exception in CacheListener for key[%s]::%s: %s: %s",
-               Utils::getCacheableKeyString(key)->asChar(), eventStr,
+               Utils::nullSafeToString(key).c_str(), eventStr,
                ex.getName().c_str(), ex.what());
       err = GF_CACHE_LISTENER_EXCEPTION;
     } catch (...) {
       LOGERROR("Unknown exception in CacheListener for key[%s]::%s",
-               Utils::getCacheableKeyString(key)->asChar(), eventStr);
+               Utils::nullSafeToString(key).c_str(), eventStr);
       err = GF_CACHE_LISTENER_EXCEPTION;
     }
   }
@@ -2765,19 +2765,19 @@ void LocalRegion::updateAccessAndModifiedTimeForEntry(std::shared_ptr<MapEntryIm
   if (ptr != nullptr && entryExpiryEnabled()) {
     ExpEntryProperties& expProps = ptr->getExpProperties();
     auto currTime = std::chrono::system_clock::now();
-    std::shared_ptr<CacheableString> keyStr;
+    std::string keyStr;
     if (Log::debugEnabled()) {
       std::shared_ptr<CacheableKey> key;
       ptr->getKeyI(key);
-      keyStr = Utils::getCacheableKeyString(key);
+      keyStr = Utils::nullSafeToString(key);
     }
     LOGDEBUG("Setting last accessed time for key [%s] in region %s to %d",
-             keyStr->asChar(), getFullPath().c_str(),
+             keyStr.c_str(), getFullPath().c_str(),
              currTime.time_since_epoch().count());
     expProps.updateLastAccessTime(currTime);
     if (modified) {
       LOGDEBUG("Setting last modified time for key [%s] in region %s to %d",
-               keyStr->asChar(), getFullPath().c_str(),
+               keyStr.c_str(), getFullPath().c_str(),
                currTime.time_since_epoch().count());
       expProps.updateLastModifiedTime(currTime);
     }

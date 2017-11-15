@@ -66,7 +66,7 @@ BEGIN_TEST(TestRegionLRULastTen)
     expected += k;
     auto key = std::dynamic_pointer_cast<CacheableString>(vecKeys.back());
     vecKeys.pop_back();
-    total += atoi(key->asChar());
+    total += atoi(key->value().c_str());
   }
   ASSERT(vecKeys.empty(), "expected no more than 10 keys.");
   ASSERT(expected == total, "checksum mismatch.");
@@ -190,9 +190,10 @@ BEGIN_TEST(TestEmptiedMap)
     sprintf(buf, "%d", i);
     auto key = CacheableKey::create(buf);
     regionPtr->destroy(key);
-    std::cout << "removed key "
-              << std::dynamic_pointer_cast<CacheableString>(key)->asChar()
-              << std::endl;
+    std::cout
+        << "removed key "
+        << std::dynamic_pointer_cast<CacheableString>(key)->value().c_str()
+        << std::endl;
   }
   std::vector<std::shared_ptr<CacheableKey>> vecKeys = regionPtr->keys();
   ASSERT(vecKeys.size() == 0, "expected more entries");

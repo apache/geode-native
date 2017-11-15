@@ -52,7 +52,7 @@ class EventListener : public CacheListener {
           std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
 
       sprintf(buf, "%s: %s: Key = %s, NewValue = %s", m_name.c_str(), eventType,
-              keyPtr->asChar(),
+              keyPtr->value().c_str(),
               (valuePtr == nullptr ? "nullptr" : valuePtr->toString().c_str()));
       LOG(buf);
     } catch (const Exception& excp) {

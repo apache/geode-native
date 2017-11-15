@@ -24,7 +24,8 @@ namespace client {
 void ServerLocation::makeEpString() {
   if (m_serverName != nullptr) {
     char epstring[1024] = {0};
-    ACE_OS::snprintf(epstring, 1024, "%s:%d", m_serverName->asChar(), m_port);
+    ACE_OS::snprintf(epstring, 1024, "%s:%d", m_serverName->value().c_str(),
+                     m_port);
     m_epString = epstring;
   }
 }

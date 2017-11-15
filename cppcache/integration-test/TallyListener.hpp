@@ -171,7 +171,7 @@ void TallyListener::afterCreate(const EntryEvent& event) {
   if (!m_quiet) {
     char buf[1024];
     sprintf(buf, "TallyListener create - key = \"%s\", value = \"%s\"",
-            m_lastKey->toString().c_str(), strPtr->asChar());
+            m_lastKey->toString().c_str(), strPtr->value().c_str());
     LOGDEBUG(buf);
   }
   std::string keyString(m_lastKey->toString().c_str());
@@ -191,7 +191,7 @@ void TallyListener::afterUpdate(const EntryEvent& event) {
   if (!m_quiet) {
     char buf[1024];
     sprintf(buf, "TallyListener update - key = \"%s\", value = \"%s\"",
-            m_lastKey->toString().c_str(), strPtr->asChar());
+            m_lastKey->toString().c_str(), strPtr->value().c_str());
     LOG(buf);
   }
   std::string keyString(m_lastKey->toString().c_str());

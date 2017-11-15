@@ -129,8 +129,8 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeDouble(
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return shared_from_this();
 }
-std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeWideString(
-    const std::string& fieldName, const wchar_t* value) {
+std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeString(
+    const std::string& fieldName, const char* value) {
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "string",
                                         PdxFieldTypes::STRING);
@@ -139,11 +139,20 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeWideString(
   return shared_from_this();
 }
 std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeString(
-    const std::string& fieldName, const char* value) {
+    const std::string& fieldName, const std::string& value) {
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "string",
                                         PdxFieldTypes::STRING);
   auto cacheableObject = CacheableString::create(value);
+  m_FieldVsValues.emplace(fieldName, cacheableObject);
+  return shared_from_this();
+}
+std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeString(
+    const std::string& fieldName, std::string&& value) {
+  isFieldAdded(fieldName);
+  m_pdxType->addVariableLengthTypeField(fieldName, "string",
+                                        PdxFieldTypes::STRING);
+  auto cacheableObject = CacheableString::create(std::move(value));
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return shared_from_this();
 }
@@ -270,28 +279,7 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeStringArray(
   }
   return shared_from_this();
 }
-std::shared_ptr<PdxInstanceFactory>
-PdxInstanceFactoryImpl::writeWideStringArray(const std::string& fieldName,
-                                             wchar_t** value, int32_t length) {
-  isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "string[]",
-                                        PdxFieldTypes::STRING_ARRAY);
-  std::shared_ptr<CacheableString>* ptrArr = nullptr;
-  if (length > 0) {
-    ptrArr = new std::shared_ptr<CacheableString>[length];
-    for (int32_t i = 0; i < length; i++) {
-      ptrArr[i] = CacheableString::create(value[i]);
-    }
-  }
-  if (length > 0) {
-    auto cacheableObject = CacheableStringArray::create(ptrArr, length);
-    m_FieldVsValues.emplace(fieldName, cacheableObject);
-  }
-  if (ptrArr) {
-    delete[] ptrArr;
-  }
-  return shared_from_this();
-}
+
 std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeDate(
     const std::string& fieldName, std::shared_ptr<CacheableDate> value) {
   isFieldAdded(fieldName);

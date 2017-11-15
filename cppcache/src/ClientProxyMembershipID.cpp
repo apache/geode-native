@@ -248,16 +248,17 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
   readVersion(splitbrain, input);
 
   if (vmKind != ClientProxyMembershipID::LONER_DM_TYPE) {
-    vmViewId = atoi(uniqueTag.get()->asChar());
-    initObjectVars(hostname->asChar(), hostAddr, len, true, hostPort,
-                   durableClientId->asChar(), durableClntTimeOut, dcport, vPID,
-                   vmKind, splitbrain, dsName->asChar(), nullptr, vmViewId);
+    vmViewId = std::stoi(uniqueTag.get()->value());
+    initObjectVars(hostname->value().c_str(), hostAddr, len, true, hostPort,
+                   durableClientId->value().c_str(), durableClntTimeOut, dcport,
+                   vPID, vmKind, splitbrain, dsName->value().c_str(), nullptr,
+                   vmViewId);
   } else {
     // initialize the object
-    initObjectVars(hostname->asChar(), hostAddr, len, true, hostPort,
-                   durableClientId->asChar(), durableClntTimeOut, dcport, vPID,
-                   vmKind, splitbrain, dsName->asChar(), uniqueTag->asChar(),
-                   0);
+    initObjectVars(hostname->value().c_str(), hostAddr, len, true, hostPort,
+                   durableClientId->value().c_str(), durableClntTimeOut, dcport,
+                   vPID, vmKind, splitbrain, dsName->value().c_str(),
+                   uniqueTag->value().c_str(), 0);
   }
 
   readAdditionalData(input);
@@ -289,7 +290,7 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
     uniqueTag = input.readObject<CacheableString>();  // unique tag
   } else {
     vmViewIdstr = input.readObject<CacheableString>();
-    vmViewId = atoi(vmViewIdstr.get()->asChar());
+    vmViewId = atoi(vmViewIdstr.get()->value().c_str());
   }
 
   dsName = input.readObject<CacheableString>();  // name
@@ -298,12 +299,13 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
     // initialize the object with the values read and some dummy values
     initObjectVars("", hostAddr, len, true, hostPort, "",
                    std::chrono::seconds::zero(), DCPORT, 0, vmKind, 0,
-                   dsName->asChar(), nullptr, vmViewId);
+                   dsName->value().c_str(), nullptr, vmViewId);
   } else {
     // initialize the object with the values read and some dummy values
     initObjectVars("", hostAddr, len, true, hostPort, "",
                    std::chrono::seconds::zero(), DCPORT, 0, vmKind, 0,
-                   dsName->asChar(), uniqueTag->asChar(), vmViewId);
+                   dsName->value().c_str(), uniqueTag->value().c_str(),
+                   vmViewId);
   }
 
   readAdditionalData(input);

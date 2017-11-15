@@ -1481,7 +1481,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
 
     wpiPtr = pIPtr->createWriter();
     try {
-      wpiPtr->setField("m_int16Array", setCharArray);
+      wpiPtr->setField("m_int16Array", setCharArray, 4);
       FAIL(
           "setField on m_int16Array with setCharArray value should throw "
           "expected IllegalStateException");
@@ -1590,19 +1590,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       LOG("setField on m_doubleArray with setFloatArray value caught expected "
           "IllegalStateException");
     }
-
-    const wchar_t* setWideString = L"change the string";
-    wpiPtr->setField("m_string", setWideString);
-    rptr->put(keyport, wpiPtr);
-    newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
-    ASSERT(pIPtr->hasField("m_string") == true, "m_string = true expected");
-    wchar_t* wideStringVal = nullptr;
-    ASSERT(newPiPtr->hasField("m_string") == true, "m_string = true expected");
-    newPiPtr->getField("m_string", &wideStringVal);
-    ASSERT(wcscmp(wideStringVal, setWideString) == 0,
-           "wide stringVal should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1849,51 +1836,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-    wchar_t** setWideStringArray = new wchar_t*[3];
-    const wchar_t* wstr1 = L"test1";
-    const wchar_t* wstr2 = L"test2";
-    const wchar_t* wstr3 = L"test3";
-    size_t size = wcslen(wstr1);
-    for (int i = 0; i < 3; i++) {
-      setWideStringArray[i] = new wchar_t[size];
-    }
-    setWideStringArray[0] = const_cast<wchar_t*>(wstr1);
-    setWideStringArray[1] = const_cast<wchar_t*>(wstr2);
-    setWideStringArray[2] = const_cast<wchar_t*>(wstr3);
-    wchar_t** getWideStringArray = nullptr;
-    wpiPtr->setField("m_stringArray", setWideStringArray, 3);
-    rptr->put(keyport, wpiPtr);
-    newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
-    ASSERT(pIPtr->hasField("m_stringArray") == true,
-           "m_stringArray = true expected");
-    newPiPtr->getField("m_stringArray", &getWideStringArray, arrayLen);
-    ASSERT(arrayLen == 3, "Arraylength == 3 expected");
-    for (int i = 0; i < arrayLen; i++) {
-      LOGINFO("set string is %ls ", setWideStringArray[i]);
-      LOGINFO("get string is %ls ", getWideStringArray[i]);
-      ASSERT(wcscmp(setWideStringArray[i], getWideStringArray[i]) == 0,
-             "All stringVals should be equal");
-    }
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
-
-    wpiPtr = pIPtr->createWriter();
-    try {
-      wpiPtr->setField("m_stringArray", setbyteByteArray);
-      FAIL(
-          "setField on m_stringArray with setbyteByteArray value should throw "
-          "expected IllegalStateException");
-    } catch (IllegalStateException&) {
-      LOG("setField on m_stringArray with setbyteByteArray value caught "
-          "expected "
-          "IllegalStateException");
-    }
-
     char** setStringArray = new char*[3];
     const char* str1 = "test1";
     const char* str2 = "test2";
     const char* str3 = "test3";
-    size = strlen(const_cast<char*>(str1));
+    auto size = strlen(const_cast<char*>(str1));
     for (int i = 0; i < 3; i++) {
       setStringArray[i] = new char[size];
     }
@@ -2256,20 +2203,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
-    const wchar_t* str = L"change the string";
-    wpiPtr->setField("m_string", str);
-    rptr->put(keyport, wpiPtr);
-    newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
-    ASSERT(pIPtr->hasField("m_string") == true, "m_string = true expected");
-    wchar_t* stringVal = nullptr;
-    LOG("modifyPdxInstanceAndCheckLocally get string complete.");
-    newPiPtr->getField("m_string", &stringVal);
-    LOGINFO("modifyPdxInstanceAndCheckLocally stringVal = %ls , str = %ls ",
-            stringVal, str);
-    ASSERT(wcscmp(stringVal, str) == 0, "stringVal should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
-
     const char* str1 = "change the string";
     wpiPtr->setField("m_string", str1);
     rptr->put(keyport, wpiPtr);
@@ -2300,34 +2233,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
-    // wchar_t* setStringArray[] = {L"one", L"two", L"eeeee"};
-    wchar_t** setWideStringArray = new wchar_t*[3];
-    const wchar_t* wstr1 = L"test1";
-    const wchar_t* wstr2 = L"test2";
-    const wchar_t* wstr3 = L"test3";
-    size_t size = wcslen(wstr1);
-    for (int i = 0; i < 3; i++) {
-      setWideStringArray[i] = new wchar_t[size];
-    }
-    setWideStringArray[0] = const_cast<wchar_t*>(wstr1);
-    setWideStringArray[1] = const_cast<wchar_t*>(wstr2);
-    setWideStringArray[2] = const_cast<wchar_t*>(wstr3);
-    wchar_t** getWideStringArray = nullptr;
-    wpiPtr->setField("m_stringArray", setWideStringArray, 3);
-    rptr->put(keyport, wpiPtr);
-    newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
-    ASSERT(pIPtr->hasField("m_stringArray") == true,
-           "m_stringArray = true expected");
-    newPiPtr->getField("m_stringArray", &getWideStringArray, arrayLen);
-    ASSERT(arrayLen == 3, "Arraylength == 3 expected");
-    for (int i = 0; i < arrayLen; i++) {
-      LOGINFO("set string is %ls ", setWideStringArray[i]);
-      LOGINFO("get string is %ls ", getWideStringArray[i]);
-      ASSERT(wcscmp(setWideStringArray[i], getWideStringArray[i]) == 0,
-             "All stringVals should be equal");
-    }
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
 
     LOG("modifyPdxInstanceAndCheckLocally complete.");
   }
@@ -2583,9 +2488,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     if2->writeInt("m_parentId", pp->getParentId());
     if2->writeObject("m_enum", pp->getEnum());
     if2->writeString("m_parentName", pp->getParentName());
-    if2->writeWideString("m_wideparentName", pp->getWideParentName());
-    if2->writeWideStringArray("m_wideparentArrayName",
-                              pp->getWideParentArrayName(), 3);
     if2->writeObject("m_childPdx", pp->getChildPdx());
     if2->writeChar("m_char", pp->getChar());
     if2->writeChar("m_wideChar", pp->getChar());

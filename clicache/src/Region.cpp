@@ -1269,7 +1269,7 @@ namespace Apache
         auto strarr = gcnew array<String^>(static_cast<int>(vc.size()));
         for (System::Int32 index = 0; index < strarr->Length; index++)
         {
-          strarr[index] = marshal_as<String^>(vc[index]->asChar());
+          strarr[index] = marshal_as<String^>(vc[index]->value());
           //collectionlist[ index ] = Serializable::GetManagedValue<TValue>(nativeptr);
         }
         auto collectionlist = (System::Collections::Generic::ICollection<String^>^)strarr;

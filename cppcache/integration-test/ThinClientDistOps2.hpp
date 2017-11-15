@@ -179,8 +179,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
       ASSERT(values.size() == 2, "Expected 2 values");
       auto val0 = std::dynamic_pointer_cast<CacheableString>(values[key0]);
       auto val1 = std::dynamic_pointer_cast<CacheableString>(values[key1]);
-      ASSERT(strcmp(_nvals[0], val0->asChar()) == 0, "Got unexpected value");
-      ASSERT(strcmp(_nvals[1], val1->asChar()) == 0, "Got unexpected value");
+      ASSERT(strcmp(_nvals[0], val0->value().c_str()) == 0,
+             "Got unexpected value");
+      ASSERT(strcmp(_nvals[1], val1->value().c_str()) == 0,
+             "Got unexpected value");
     }
 
     // for second region invalidate only one key to have a partial get
@@ -198,8 +200,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
       ASSERT(values.size() == 2, "Expected 2 values");
       auto val2 = std::dynamic_pointer_cast<CacheableString>(values[key2]);
       auto val3 = std::dynamic_pointer_cast<CacheableString>(values[key3]);
-      ASSERT(strcmp(_nvals[2], val2->asChar()) == 0, "Got unexpected value");
-      ASSERT(strcmp(_vals[3], val3->asChar()) == 0, "Got unexpected value");
+      ASSERT(strcmp(_nvals[2], val2->value().c_str()) == 0,
+             "Got unexpected value");
+      ASSERT(strcmp(_vals[3], val3->value().c_str()) == 0,
+             "Got unexpected value");
     }
 
     // also check that the region is properly populated
@@ -253,8 +257,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll_Pool)
       ASSERT(values.size() == 2, "Expected 2 values");
       auto val0 = std::dynamic_pointer_cast<CacheableString>(values[key0]);
       auto val1 = std::dynamic_pointer_cast<CacheableString>(values[key1]);
-      ASSERT(strcmp(_nvals[0], val0->asChar()) == 0, "Got unexpected value");
-      ASSERT(strcmp(_nvals[1], val1->asChar()) == 0, "Got unexpected value");
+      ASSERT(strcmp(_nvals[0], val0->value().c_str()) == 0,
+             "Got unexpected value");
+      ASSERT(strcmp(_nvals[1], val1->value().c_str()) == 0,
+             "Got unexpected value");
     }
 
     {
@@ -273,8 +279,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll_Pool)
       ASSERT(values.size() == 2, "Expected 2 values");
       auto val2 = std::dynamic_pointer_cast<CacheableString>(values[key2]);
       auto val3 = std::dynamic_pointer_cast<CacheableString>(values[key3]);
-      ASSERT(strcmp(_nvals[2], val2->asChar()) == 0, "Got unexpected value");
-      ASSERT(strcmp(_vals[3], val3->asChar()) == 0, "Got unexpected value");
+      ASSERT(strcmp(_nvals[2], val2->value().c_str()) == 0,
+             "Got unexpected value");
+      ASSERT(strcmp(_vals[3], val3->value().c_str()) == 0,
+             "Got unexpected value");
 
       // also check that the region is properly populated
       ASSERT(reg1->size() == 2, "Expected 2 entries in the region");

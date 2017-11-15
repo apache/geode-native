@@ -100,7 +100,9 @@ class MyCqListener : public CqListener {
     printf(" in cqEvent.getQueryOperation() %d id = %d\n",
            cqEvent.getQueryOperation(), m_id);
     printf(" in update key = %s \n",
-           (dynamic_cast<CacheableString*>(cqEvent.getKey().get()))->asChar());
+           (dynamic_cast<CacheableString*>(cqEvent.getKey().get()))
+               ->value()
+               .c_str());
     m_numEvents++;
     switch (cqEvent.getQueryOperation()) {
       case CqOperation::OP_TYPE_CREATE:

@@ -290,7 +290,7 @@ std::shared_ptr<Pool> PoolFactory::create(std::string name) {
       }
     }
 
-    cacheImpl->getPoolManager().addPool(name,
+    cacheImpl->getPoolManager().addPool(std::move(name),
                                         std::static_pointer_cast<Pool>(poolDM));
   }
 

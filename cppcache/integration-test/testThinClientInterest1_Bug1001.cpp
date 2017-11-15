@@ -32,16 +32,14 @@ std::shared_ptr<CacheableString> getUString(int index) {
   wchar_t indexStr[15];
   swprintf(indexStr, 14, L"%10d", index);
   baseStr.append(indexStr);
-  return CacheableString::create(baseStr.data(),
-                                 static_cast<int32_t>(baseStr.length()));
+  return CacheableString::create(baseStr);
 }
  std::shared_ptr<CacheableString> getUAString(int index) {
    std::wstring baseStr(40, L'A');
    wchar_t indexStr[15];
    swprintf(indexStr, 14, L"%10d", index);
    baseStr.append(indexStr);
-   return CacheableString::create(baseStr.data(),
-                                  static_cast<int32_t>(baseStr.length()));
+   return CacheableString::create(baseStr);
  }
 
  DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1)
@@ -108,7 +106,7 @@ std::shared_ptr<CacheableString> getUString(int index) {
        ASSERT(regPtr->containsKey(keyPtr), buf);
        auto val = std::dynamic_pointer_cast<CacheableString>(
            regPtr->getEntry(keyPtr)->getValue());
-       ASSERT(strcmp(val->asChar(), nvals[index]) == 0,
+       ASSERT(strcmp(val->value().c_str(), nvals[index]) == 0,
               "Incorrect value for key");
      }
    }
@@ -193,9 +191,7 @@ std::shared_ptr<CacheableString> getUString(int index) {
        auto val = std::dynamic_pointer_cast<CacheableString>(reg0->get(key));
        auto expectedVal = getUString(index + 20);
        ASSERT(val != nullptr, "expected non-null value in get");
-       ASSERT(wcscmp(val->asWChar(), expectedVal->asWChar()) == 0,
-              "unexpected value in get");
-       ASSERT(*val.get() == *expectedVal.get(), "unexpected value in get");
+       ASSERT(val->value() == expectedVal->value(), "values aren't equal");
      }
      std::vector<std::shared_ptr<CacheableKey>> vec;
      for (int index = 0; index < 5; ++index) {
@@ -238,19 +234,20 @@ std::shared_ptr<CacheableString> getUString(int index) {
    {
      try {
        const wchar_t* str = L"Pivotal";
-       auto lCStringP = CacheableString::create(
-           str, static_cast<int32_t>(wcslen(str) + 1) * sizeof(wchar_t));
-       const wchar_t* lRtnCd ATTR_UNUSED = lCStringP->asWChar();
+       auto lCStringP = CacheableString::create(str);
+       auto&& lRtnCd ATTR_UNUSED = lCStringP->value();
      } catch (const Exception& geodeExcp) {
        printf("%s: %s", geodeExcp.getName().c_str(), geodeExcp.what());
        FAIL("Should not have got exception.");
      }
 
      try {
-       const wchar_t* str = L"Pivotal?17?";
-       auto lCStringP = CacheableString::create(
-           str, static_cast<int32_t>(wcslen(str) + 1) * sizeof(wchar_t));
-       const wchar_t* lRtnCd ATTR_UNUSED = lCStringP->asWChar();
+       const wchar_t* str =
+           L"Pivotal\\u7b2c"
+           "17"
+           "\\u53f7";
+       auto lCStringP = CacheableString::create(str);
+       auto&& lRtnCd ATTR_UNUSED = lCStringP->value();
      } catch (const Exception& geodeExcp) {
        printf("%s: %s", geodeExcp.getName().c_str(), geodeExcp.what());
        FAIL("Should not have got exception.");

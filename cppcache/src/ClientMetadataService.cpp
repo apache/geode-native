@@ -167,14 +167,14 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
       LOGINFO("Updated client meta data");
     }
   } else {
-    newCptr = SendClientPRMetadata(colocatedWith->asChar(), cptr);
+    newCptr = SendClientPRMetadata(colocatedWith->value().c_str(), cptr);
 
     if (newCptr) {
       cptr->setPreviousone(nullptr);
       newCptr->setPreviousone(cptr);
       // now we will get new instance so assign it again
       WriteGuard guard(m_regionMetadataLock);
-      m_regionMetaDataMap[colocatedWith->asChar()] = newCptr;
+      m_regionMetaDataMap[colocatedWith->value().c_str()] = newCptr;
       m_regionMetaDataMap[path] = newCptr;
       LOGINFO("Updated client meta data");
     }

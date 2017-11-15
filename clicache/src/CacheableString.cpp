@@ -72,10 +72,8 @@ namespace Apache
       inline void CacheableString::GetCacheableString(String^ value,
                                                       std::shared_ptr<apache::geode::client::CacheableString>& cStr)
       {
-        size_t len;
-        if (value != nullptr && (len = value->Length) > 0) {
-          pin_ptr<const wchar_t> pin_value = PtrToStringChars(value);
-          cStr = apache::geode::client::CacheableString::create(pin_value, (System::Int32)len);
+        if (value) {
+          cStr = apache::geode::client::CacheableString::create(marshal_as<std::string>(value));
         }
         else {
           cStr.reset(

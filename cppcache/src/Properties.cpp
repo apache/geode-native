@@ -265,14 +265,14 @@ void Properties::toData(DataOutput& output) const {
     if (csPtr == nullptr) {
       output.writeObject((*iter).ext_id_);  // changed
     } else {
-      output.writeNativeString(csPtr->asChar());
+      output.writeNativeString(csPtr->value().c_str());
     }
 
     csPtr = dynamic_cast<CacheableString*>(((*iter).int_id_).get());
     if (csPtr == nullptr) {
       output.writeObject((*iter).int_id_);  // changed
     } else {
-      output.writeNativeString(csPtr->asChar());
+      output.writeNativeString(csPtr->value().c_str());
     }
     ++iter;
   }

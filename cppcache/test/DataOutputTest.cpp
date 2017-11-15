@@ -21,8 +21,11 @@
 
 #include <gtest/gtest.h>
 
+#include <boost/endian/conversion.hpp>
+
 #include <geode/DataOutput.hpp>
 #include <geode/CacheFactory.hpp>
+
 #include "ByteArrayFixture.hpp"
 #include "DataOutputInternal.hpp"
 #include "SerializationRegistry.hpp"
@@ -34,7 +37,9 @@ using namespace apache::geode::client;
 class TestDataOutput : public DataOutputInternal {
  public:
   TestDataOutput(Cache* cache)
-      : DataOutputInternal(cache), m_byteArray(nullptr), m_serializationRegistry() {
+      : DataOutputInternal(cache),
+        m_byteArray(nullptr),
+        m_serializationRegistry() {
     // NOP
   }
 
@@ -273,6 +278,30 @@ TEST_F(DataOutputTest, TestWriteUTFHugeWide) {
       dataOutput.getByteArray());
 }
 
+TEST_F(DataOutputTest, TestWriteStringFromUtf8String) {
+  TestDataOutput dataOutput(nullptr);
+  auto str = std::string(u8"You had me at");
+  str.push_back('\u0000');
+  str.append(u8"meat tornad\u00F6!\U000F0000");
+  dataOutput.writeString(str);
+  EXPECT_BYTEARRAY_EQ(
+      "2A0023596F7520686164206D65206174C0806D65617420746F726E6164C3B621EDAE80ED"
+      "B080",
+      dataOutput.getByteArray());
+}
+
+TEST_F(DataOutputTest, TestWriteStringFromUtf16String) {
+  TestDataOutput dataOutput(nullptr);
+  auto str = std::u16string(u"You had me at");
+  str.push_back('\u0000');
+  str.append(u"meat tornad\u00F6!\U000F0000");
+  dataOutput.writeString(str);
+  EXPECT_BYTEARRAY_EQ(
+      "2A0023596F7520686164206D65206174C0806D65617420746F726E6164C3B621EDAE80ED"
+      "B080",
+      dataOutput.getByteArray());
+}
+
 TEST_F(DataOutputTest, TestEncodedLength) {
   TestDataOutput dataOutput(nullptr);
   EXPECT_EQ(27, dataOutput.getEncodedLength("You had me at meat tornado!"));
@@ -284,15 +313,6 @@ TEST_F(DataOutputTest, TestEncodedLengthWide) {
 }
 
 TEST_F(DataOutputTest, TestWriteObjectSharedPtr) {
-  TestDataOutput dataOutput(nullptr);
-  auto objptr = CacheableString::create("You had me at meat tornado.");
-  dataOutput.writeObject(objptr);
-  EXPECT_BYTEARRAY_EQ(
-      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E",
-      dataOutput.getByteArray());
-}
-
-TEST_F(DataOutputTest, TestWriteObjectCacheableString) {
   TestDataOutput dataOutput(nullptr);
   auto objptr = CacheableString::create("You had me at meat tornado.");
   dataOutput.writeObject(objptr);

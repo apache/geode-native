@@ -25,6 +25,7 @@ target_link_libraries(${UNITTEST}
   apache-geode-static
   gtest
   gtest_main
+  boost
   c++11
 )
 

@@ -50,15 +50,15 @@ class DataInputUnderTest : public DataInputInternal {
 
 class TestDataInput {
  public:
-  explicit TestDataInput(const char *str, Cache *cache)
+  explicit TestDataInput(const char *str)
       : m_byteArray(ByteArray::fromString(str)),
-        m_dataInput(m_byteArray.get(), m_byteArray.size(), cache) {
+        m_dataInput(m_byteArray.get(), m_byteArray.size()) {
     // NOP
   }
 
-  explicit TestDataInput(const wchar_t *str, Cache *cache)
+  explicit TestDataInput(const wchar_t *str)
       : m_byteArray(ByteArray::fromString(str)),
-        m_dataInput(m_byteArray.get(), m_byteArray.size(), cache) {
+        m_dataInput(m_byteArray.get(), m_byteArray.size()) {
     // NOP
   }
 
@@ -201,6 +201,11 @@ class TestDataInput {
     DataInputInternal::setPoolName(m_dataInput, poolName);
   }
 
+  template <class CharT = char, class... Tail>
+  inline std::basic_string<CharT, Tail...> readString() {
+    return m_dataInput.readString<CharT, Tail...>();
+  }
+
  private:
   ByteArray m_byteArray;
 
@@ -215,7 +220,7 @@ class DataInputTest : public ::testing::Test, protected ByteArrayFixture {
 };
 
 TEST_F(DataInputTest, ThrowsWhenReadingInputWithSizeZero) {
-  TestDataInput dataInput("", nullptr);
+  TestDataInput dataInput("");
 
   uint8_t aByte = 0U;
   ASSERT_THROW(dataInput.read(&aByte),
@@ -223,7 +228,7 @@ TEST_F(DataInputTest, ThrowsWhenReadingInputWithSizeZero) {
 }
 
 TEST_F(DataInputTest, ThrowsWhenReadingMoreBytesThanSizePassedToConstructor) {
-  TestDataInput dataInput("01", nullptr);
+  TestDataInput dataInput("01");
 
   uint8_t aByte = 0U;
   dataInput.read(&aByte);
@@ -235,7 +240,7 @@ TEST_F(DataInputTest, ThrowsWhenReadingMoreBytesThanSizePassedToConstructor) {
 }
 
 TEST_F(DataInputTest, CanReadUnsignedBytesFromInput) {
-  TestDataInput dataInput("FF00", nullptr);
+  TestDataInput dataInput("FF00");
 
   uint8_t aByte = 0U;
   dataInput.read(&aByte);
@@ -247,7 +252,7 @@ TEST_F(DataInputTest, CanReadUnsignedBytesFromInput) {
 }
 
 TEST_F(DataInputTest, CanReadSignedBytesFromInput) {
-  TestDataInput dataInput("807F", nullptr);
+  TestDataInput dataInput("807F");
 
   int8_t aByte = 0U;
   dataInput.read(&aByte);
@@ -260,8 +265,7 @@ TEST_F(DataInputTest, CanReadSignedBytesFromInput) {
 
 TEST_F(DataInputTest, CanReadABooleanFromInput) {
   bool boolArray[2] = {true, false};
-  DataInputUnderTest dataInput(reinterpret_cast<uint8_t *>(boolArray), 2,
-                               nullptr);
+  DataInputUnderTest dataInput(reinterpret_cast<uint8_t *>(boolArray), 2);
 
   auto aBool = dataInput.readBoolean();
   EXPECT_EQ(aBool, true);
@@ -271,7 +275,7 @@ TEST_F(DataInputTest, CanReadABooleanFromInput) {
 }
 
 TEST_F(DataInputTest, CanReadAnArrayOfBytesFromInput) {
-  TestDataInput dataInput("010203", nullptr);
+  TestDataInput dataInput("010203");
 
   uint8_t byteArrayCopy[4];
   dataInput.readBytesOnly(byteArrayCopy, 3);
@@ -282,7 +286,7 @@ TEST_F(DataInputTest, CanReadAnArrayOfBytesFromInput) {
 
 TEST_F(DataInputTest,
        ThrowsWhenReadingMoreContinuousBytesThanSizePassedToConstructor) {
-  TestDataInput dataInput("010203", nullptr);
+  TestDataInput dataInput("010203");
 
   // fails to read 4 bytes from 3 byte buffer
   uint8_t byteArrayCopy[4];
@@ -293,7 +297,7 @@ TEST_F(DataInputTest,
 TEST_F(DataInputTest, CanReadIntWithAMaxSizeUnsigned64BitIntInput) {
   uint64_t intArray[1] = {std::numeric_limits<uint64_t>::max()};
   DataInputUnderTest dataInput(reinterpret_cast<uint8_t *>(intArray),
-                               sizeof(intArray), nullptr);
+                               sizeof(intArray));
 
   uint64_t aInt = dataInput.readInt64();
   EXPECT_EQ(aInt, std::numeric_limits<uint64_t>::max());
@@ -306,8 +310,8 @@ TEST_F(DataInputTest, CanReadASCIIWithAnASCIIStringInput) {
 
   stream.writeASCII(expectedString);
 
-  DataInputUnderTest dataInput(stream.getBufferCopy(), stream.getBufferLength(),
-                               nullptr);
+  DataInputUnderTest dataInput(stream.getBufferCopy(),
+                               stream.getBufferLength());
   dataInput.readASCII(&actualString);
 
   EXPECT_TRUE(std::string(expectedString) == std::string(actualString));
@@ -319,8 +323,8 @@ TEST_F(DataInputTest, ThrowsWhenCallingReadStringWithAnASCIIStringInput) {
   DataOutputInternal stream;
   stream.writeASCII(expectedString);
 
-  DataInputUnderTest dataInput(stream.getBufferCopy(), stream.getBufferLength(),
-                               nullptr);
+  DataInputUnderTest dataInput(stream.getBufferCopy(),
+                               stream.getBufferLength());
 
   // ASCII and non-ASCII: consider matching exception string
   ASSERT_THROW(dataInput.readString(&actualString),
@@ -333,8 +337,8 @@ TEST_F(DataInputTest, CanReadASCIIWithAnUTFStringInput) {
   DataOutputInternal stream;
   stream.writeUTF(expectedString);
 
-  DataInputUnderTest dataInput(stream.getBufferCopy(), stream.getBufferLength(),
-                               nullptr);
+  DataInputUnderTest dataInput(stream.getBufferCopy(),
+                               stream.getBufferLength());
   dataInput.readASCII(&actualString);
 
   EXPECT_TRUE(std::string(expectedString) == std::string(actualString));
@@ -346,8 +350,8 @@ TEST_F(DataInputTest, ThrowsWhenCallingReadStringWithAnUTFStringInput) {
   DataOutputInternal stream;
   stream.writeUTF(expectedString);
 
-  DataInputUnderTest dataInput(stream.getBufferCopy(), stream.getBufferLength(),
-                               nullptr);
+  DataInputUnderTest dataInput(stream.getBufferCopy(),
+                               stream.getBufferLength());
 
   // UTF and non-UTF: consider matching exception string
   ASSERT_THROW(dataInput.readString(&actualString),
@@ -360,8 +364,8 @@ TEST_F(DataInputTest, CanReadUTFWithAnUTFStringInput) {
   DataOutputInternal stream;
   stream.writeUTF(expectedString);
 
-  DataInputUnderTest dataInput(stream.getBufferCopy(), stream.getBufferLength(),
-                               nullptr);
+  DataInputUnderTest dataInput(stream.getBufferCopy(),
+                               stream.getBufferLength());
   dataInput.readUTF(&actualString);
 
   EXPECT_TRUE(std::string(expectedString) == std::string(actualString));
@@ -373,15 +377,15 @@ TEST_F(DataInputTest, CanReadUTFWithAnASCIIStringInput) {
   DataOutputInternal stream;
   stream.writeASCII(expectedString);
 
-  DataInputUnderTest dataInput(stream.getBufferCopy(), stream.getBufferLength(),
-                               nullptr);
+  DataInputUnderTest dataInput(stream.getBufferCopy(),
+                               stream.getBufferLength());
   dataInput.readUTF(&actualString);
 
   EXPECT_TRUE(std::string(expectedString) == std::string(actualString));
 }
 
 TEST_F(DataInputTest, InputResetCausesPristineRead) {
-  TestDataInput dataInput("010203", nullptr);
+  TestDataInput dataInput("010203");
 
   // 1) read byte off buffer
   // 2) then reset buffer back
@@ -396,7 +400,7 @@ TEST_F(DataInputTest, InputResetCausesPristineRead) {
 }
 
 TEST_F(DataInputTest, InputRewindCausesReplayedRead) {
-  TestDataInput dataInput("010203", nullptr);
+  TestDataInput dataInput("010203");
 
   uint8_t aByte = 0U;
   dataInput.read(&aByte);
@@ -410,28 +414,28 @@ TEST_F(DataInputTest, InputRewindCausesReplayedRead) {
 }
 
 TEST_F(DataInputTest, TestReadUint8) {
-  TestDataInput dataInput("37", nullptr);
+  TestDataInput dataInput("37");
   uint8_t value = 0U;
   dataInput.read(&value);
   EXPECT_EQ((uint8_t)55U, value) << "Correct uint8_t";
 }
 
 TEST_F(DataInputTest, TestReadInt8) {
-  TestDataInput dataInput("37", nullptr);
+  TestDataInput dataInput("37");
   int8_t value = 0;
   dataInput.read(&value);
   EXPECT_EQ((int8_t)55, value) << "Correct int8_t";
 }
 
 TEST_F(DataInputTest, TestReadBoolean) {
-  TestDataInput dataInput("01", nullptr);
+  TestDataInput dataInput("01");
   bool value = false;
   dataInput.readBoolean(&value);
   EXPECT_EQ(true, value) << "Correct bool";
 }
 
 TEST_F(DataInputTest, TestReadUint8_tBytesOnly) {
-  TestDataInput dataInput("BABEFACE", nullptr);
+  TestDataInput dataInput("BABEFACE");
   uint8_t buffer[4];
   ::memset(buffer, 0U, 4 * sizeof(uint8_t));
   dataInput.readBytesOnly(buffer, 4);
@@ -442,7 +446,7 @@ TEST_F(DataInputTest, TestReadUint8_tBytesOnly) {
 }
 
 TEST_F(DataInputTest, TestReadInt8_tBytesOnly) {
-  TestDataInput dataInput("DEADBEEF", nullptr);
+  TestDataInput dataInput("DEADBEEF");
   int8_t buffer[4];
   ::memset(buffer, 0, 4 * sizeof(int8_t));
   dataInput.readBytesOnly(buffer, 4);
@@ -453,7 +457,7 @@ TEST_F(DataInputTest, TestReadInt8_tBytesOnly) {
 }
 
 TEST_F(DataInputTest, TestReadUint8_tBytes) {
-  TestDataInput dataInput("04BABEFACE", nullptr);
+  TestDataInput dataInput("04BABEFACE");
   uint8_t *buffer = nullptr;
   int32_t len = 0;
   dataInput.readBytes(&buffer, &len);
@@ -467,7 +471,7 @@ TEST_F(DataInputTest, TestReadUint8_tBytes) {
 }
 
 TEST_F(DataInputTest, TestReadInt8_tBytes) {
-  TestDataInput dataInput("04DEADBEEF", nullptr);
+  TestDataInput dataInput("04DEADBEEF");
   int8_t *buffer = nullptr;
   int32_t len = 0;
   dataInput.readBytes(&buffer, &len);
@@ -481,38 +485,38 @@ TEST_F(DataInputTest, TestReadInt8_tBytes) {
 }
 
 TEST_F(DataInputTest, TestReadIntUint16) {
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   uint16_t value = dataInput.readInt16();
   EXPECT_EQ((uint16_t)4660U, value) << "Correct uint16_t";
 }
 
 TEST_F(DataInputTest, TestReadIntInt16) {
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   int16_t value = dataInput.readInt16();
   EXPECT_EQ((int16_t)4660, value) << "Correct int16_t";
 }
 
 TEST_F(DataInputTest, TestReadIntUint32) {
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   uint32_t value = dataInput.readInt32();
   EXPECT_EQ((uint32_t)305419896U, value) << "Correct uint32_t";
 }
 
 TEST_F(DataInputTest, TestReadIntInt32) {
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   int32_t value = dataInput.readInt32();
   EXPECT_EQ((int32_t)305419896, value) << "Correct int32_t";
 }
 
 TEST_F(DataInputTest, TestReadIntUint64) {
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   uint64_t value = 0U;
   dataInput.readInt(&value);
   EXPECT_EQ((uint64_t)1311768467463790320U, value) << "Correct uint64_t";
 }
 
 TEST_F(DataInputTest, TestReadIntInt64) {
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   int64_t value = dataInput.readInt64();
   EXPECT_EQ((int64_t)1311768467463790320, value) << "Correct int64_t";
 }
@@ -520,19 +524,19 @@ TEST_F(DataInputTest, TestReadIntInt64) {
 TEST_F(DataInputTest, TestReadArrayLen) {
   int32_t len = 0;
 
-  TestDataInput dataInput0("FF12345678", nullptr);
+  TestDataInput dataInput0("FF12345678");
   len = dataInput0.readArrayLen();
   EXPECT_EQ(-1, len) << "Correct length for 0xFF";
 
-  TestDataInput dataInput1("FE12345678", nullptr);
+  TestDataInput dataInput1("FE12345678");
   len = dataInput1.readArrayLen();
   EXPECT_EQ(4660, len) << "Correct length for 0xFE";
 
-  TestDataInput dataInput2("FD12345678", nullptr);
+  TestDataInput dataInput2("FD12345678");
   len = dataInput2.readArrayLen();
   EXPECT_EQ(305419896, len) << "Correct length for 0xFD";
 
-  TestDataInput dataInput3("FC12345678", nullptr);
+  TestDataInput dataInput3("FC12345678");
   len = dataInput3.readArrayLen();
   EXPECT_EQ(252, len) << "Correct length for 0xFC";
 }
@@ -551,19 +555,19 @@ TEST_F(DataInputTest, TestReadUnsignedVL) {
   // 00    12       1A       15       4F       09       55       73       3D 70
   // 00    92       9A       95       CF       89       D5       F3       BD F0
 
-  TestDataInput dataInput("F0BDF3D589CF959A9200", nullptr);
+  TestDataInput dataInput("F0BDF3D589CF959A9200");
   int64_t value = dataInput.readUnsignedVL();
   EXPECT_EQ((int64_t)1311768467463790320, value) << "Correct int64_t";
 }
 
 TEST_F(DataInputTest, TestReadFloat) {
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   float value = dataInput.readFloat();
   EXPECT_FLOAT_EQ(5.6904566e-28F, value) << "Correct float";
 }
 
 TEST_F(DataInputTest, TestReadDouble) {
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   double value = 0.;
   value = dataInput.readDouble();
   EXPECT_DOUBLE_EQ(5.626349274901198e-221, value) << "Correct double";
@@ -571,7 +575,7 @@ TEST_F(DataInputTest, TestReadDouble) {
 
 TEST_F(DataInputTest, TestReadASCII) {
   TestDataInput dataInput(
-      "001B596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
+      "001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   char *value = nullptr;
   uint16_t len = 0U;
   dataInput.readASCII(&value, &len);
@@ -582,8 +586,7 @@ TEST_F(DataInputTest, TestReadASCII) {
 
 TEST_F(DataInputTest, TestReadASCIIHuge) {
   TestDataInput dataInput(
-      "0000001B596F7520686164206D65206174206D65617420746F726E61646F2E",
-      nullptr);
+      "0000001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   char *value = nullptr;
   uint32_t len = 0U;
   dataInput.readASCIIHuge(&value, &len);
@@ -594,7 +597,7 @@ TEST_F(DataInputTest, TestReadASCIIHuge) {
 
 TEST_F(DataInputTest, TestReadUTFNarrow) {
   TestDataInput dataInput(
-      "001B596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
+      "001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   char *value = nullptr;
   uint16_t len = 0U;
   dataInput.readUTF(&value, &len);
@@ -606,8 +609,7 @@ TEST_F(DataInputTest, TestReadUTFNarrow) {
 TEST_F(DataInputTest, TestReadUTFHugeNarrow) {
   TestDataInput dataInput(
       "0000001B0059006F007500200068006100640020006D00650020006100740020006D0065"
-      "0061007400200074006F0072006E00610064006F002E",
-      nullptr);
+      "0061007400200074006F0072006E00610064006F002E");
   char *value = nullptr;
   uint32_t len = 0U;
   dataInput.readUTFHuge(&value, &len);
@@ -618,7 +620,7 @@ TEST_F(DataInputTest, TestReadUTFHugeNarrow) {
 
 TEST_F(DataInputTest, TestReadUTFNoLen) {
   TestDataInput dataInput(
-      "596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
+      "596F7520686164206D65206174206D65617420746F726E61646F2E");
   wchar_t *value = nullptr;
   dataInput.readUTFNoLen(&value, static_cast<uint16_t>(27U));
   EXPECT_STREQ(L"You had me at meat tornado.", value) << "Correct wchar_t *";
@@ -627,7 +629,7 @@ TEST_F(DataInputTest, TestReadUTFNoLen) {
 
 TEST_F(DataInputTest, TestReadUTFWide) {
   TestDataInput dataInput(
-      "001B596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
+      "001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   wchar_t *value = nullptr;
   uint16_t len = 0U;
   dataInput.readUTF(&value, &len);
@@ -639,8 +641,7 @@ TEST_F(DataInputTest, TestReadUTFWide) {
 TEST_F(DataInputTest, TestReadUTFHugeWide) {
   TestDataInput dataInput(
       "0000001B0059006F007500200068006100640020006D00650020006100740020006D0065"
-      "0061007400200074006F0072006E00610064006F002E",
-      nullptr);
+      "0061007400200074006F0072006E00610064006F002E");
   wchar_t *value = nullptr;
   uint32_t len = 0U;
   dataInput.readUTFHuge(&value, &len);
@@ -651,28 +652,28 @@ TEST_F(DataInputTest, TestReadUTFHugeWide) {
 
 TEST_F(DataInputTest, TestReadObjectSharedPtr) {
   TestDataInput dataInput(
-      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
+      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   std::shared_ptr<CacheableString> objptr;
   dataInput.readObject(objptr);
-  EXPECT_EQ("You had me at meat tornado.", objptr->toString())
+  EXPECT_EQ("You had me at meat tornado.", objptr->value())
       << "Correct const char *";
 }
 
 TEST_F(DataInputTest, TestReadNativeBool) {
-  TestDataInput dataInput("0001", nullptr);
+  TestDataInput dataInput("0001");
   const bool value = dataInput.readNativeBool();
   EXPECT_EQ(true, value) << "Correct bool";
 }
 
 TEST_F(DataInputTest, TestReadNativeInt32) {
-  TestDataInput dataInput("0012345678", nullptr);
+  TestDataInput dataInput("0012345678");
   const int32_t value = dataInput.readNativeInt32();
   EXPECT_EQ((int32_t)305419896, value) << "Correct int32_t";
 }
 
 TEST_F(DataInputTest, TestReadNativeString) {
   TestDataInput dataInput(
-      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
+      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   std::shared_ptr<CacheableString> objptr;
   ASSERT_EQ(true, dataInput.readNativeString(objptr)) << "Successful read";
   EXPECT_EQ("You had me at meat tornado.", objptr->toString())
@@ -681,7 +682,7 @@ TEST_F(DataInputTest, TestReadNativeString) {
 
 TEST_F(DataInputTest, TestReadDirectObject) {
   TestDataInput dataInput(
-      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
+      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   auto objptr = dataInput.readDirectObject();
   EXPECT_EQ("You had me at meat tornado.",
             std::dynamic_pointer_cast<CacheableString>(objptr)->toString())
@@ -690,7 +691,7 @@ TEST_F(DataInputTest, TestReadDirectObject) {
 
 TEST_F(DataInputTest, TestReadObjectSerializablePtr) {
   TestDataInput dataInput(
-      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
+      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   std::shared_ptr<Serializable> objptr;
   dataInput.readObject(objptr);
   EXPECT_EQ("You had me at meat tornado.",
@@ -701,8 +702,7 @@ TEST_F(DataInputTest, TestReadObjectSerializablePtr) {
 TEST_F(DataInputTest, TestReadCharArray) {
   TestDataInput dataInput(
       "1C0059006F007500200068006100640020006D00650020006100740020006D0065006100"
-      "7400200074006F0072006E00610064006F002E0000",
-      nullptr);
+      "7400200074006F0072006E00610064006F002E0000");
   char *value = nullptr;
   int32_t length = 0;
   dataInput.readCharArray(&value, length);
@@ -713,7 +713,7 @@ TEST_F(DataInputTest, TestReadCharArray) {
 
 TEST_F(DataInputTest, TestReadString) {
   TestDataInput dataInput(
-      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
+      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   char *value = nullptr;
   dataInput.readString(&value);
   EXPECT_STREQ("You had me at meat tornado.", value) << "Correct char *";
@@ -722,17 +722,42 @@ TEST_F(DataInputTest, TestReadString) {
 
 TEST_F(DataInputTest, TestReadWideString) {
   TestDataInput dataInput(
-      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E", nullptr);
+      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   wchar_t *value = nullptr;
   dataInput.readWideString(&value);
   EXPECT_STREQ(L"You had me at meat tornado.", value) << "Correct wchar_t *";
   DataInput::freeUTFMemory(value);
 }
 
+TEST_F(DataInputTest, TestReadStringToUtf8String) {
+  auto expected = std::string(u8"You had me at");
+  expected.push_back('\u0000');
+  expected.append(u8"meat tornad\u00F6!\U000F0000");
+
+  TestDataInput dataInput(
+      "2A0023596F7520686164206D65206174C0806D65617420746F726E6164C3B621EDAE80ED"
+      "B080");
+  auto str = dataInput.readString();
+
+  EXPECT_EQ(expected, str);
+}
+
+TEST_F(DataInputTest, TestReadStringToUtf16String) {
+  auto expected = std::u16string(u"You had me at");
+  expected.push_back('\u0000');
+  expected.append(u"meat tornad\u00F6!\U000F0000");
+
+  TestDataInput dataInput(
+      "2A0023596F7520686164206D65206174C0806D65617420746F726E6164C3B621EDAE80ED"
+      "B080");
+  auto str = dataInput.readString<char16_t>();
+
+  EXPECT_EQ(expected, str);
+}
+
 TEST_F(DataInputTest, TestReadStringArray) {
   TestDataInput dataInput(
-      "0157001B596F7520686164206D65206174206D65617420746F726E61646F2E",
-      nullptr);
+      "0157001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   char **value = nullptr;
   int32_t length = 0;
   dataInput.readStringArray(&value, length);
@@ -744,8 +769,7 @@ TEST_F(DataInputTest, TestReadStringArray) {
 
 TEST_F(DataInputTest, TestReadWideStringArray) {
   TestDataInput dataInput(
-      "0157001B596F7520686164206D65206174206D65617420746F726E61646F2E",
-      nullptr);
+      "0157001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   wchar_t **value = nullptr;
   int32_t length = 0;
   dataInput.readWideStringArray(&value, length);
@@ -756,7 +780,7 @@ TEST_F(DataInputTest, TestReadWideStringArray) {
 }
 
 TEST_F(DataInputTest, TestReadArrayOfByteArrays) {
-  TestDataInput dataInput("0104DEADBEEF", nullptr);
+  TestDataInput dataInput("0104DEADBEEF");
   int8_t **arrayOfByteArrays = nullptr;
   int32_t arrayLength = 0;
   int32_t *elementLength = nullptr;
@@ -777,7 +801,7 @@ TEST_F(DataInputTest, TestReadArrayOfByteArrays) {
 }
 
 TEST_F(DataInputTest, TestGetBytesRead) {
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   EXPECT_EQ((int32_t)0, dataInput.getBytesRead())
       << "Correct bytes read before any reads";
   uint8_t value = 0U;
@@ -796,7 +820,7 @@ TEST_F(DataInputTest, TestGetBytesRead) {
 }
 
 TEST_F(DataInputTest, TestGetBytesRemaining) {
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   EXPECT_EQ((int32_t)8, dataInput.getBytesRemaining())
       << "Correct bytes remaining before any reads";
   uint8_t value = 0U;
@@ -815,7 +839,7 @@ TEST_F(DataInputTest, TestGetBytesRemaining) {
 }
 
 TEST_F(DataInputTest, TestAdvanceCursor) {
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   EXPECT_EQ((int32_t)0, dataInput.getBytesRead())
       << "Correct bytes read before any advancement";
   EXPECT_EQ((int32_t)8, dataInput.getBytesRemaining())
@@ -833,7 +857,7 @@ TEST_F(DataInputTest, TestAdvanceCursor) {
 }
 
 TEST_F(DataInputTest, TestRewindCursor) {
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   EXPECT_EQ((int32_t)0, dataInput.getBytesRead())
       << "Correct bytes read before any rewinding";
   EXPECT_EQ((int32_t)8, dataInput.getBytesRemaining())
@@ -851,7 +875,7 @@ TEST_F(DataInputTest, TestRewindCursor) {
 }
 
 TEST_F(DataInputTest, TestReset) {
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   EXPECT_EQ((int32_t)0, dataInput.getBytesRead())
       << "Correct bytes read before any reads";
   EXPECT_EQ((int32_t)8, dataInput.getBytesRemaining())
@@ -873,7 +897,7 @@ TEST_F(DataInputTest, TestReset) {
 }
 
 TEST_F(DataInputTest, TestSetBuffer) {
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   EXPECT_EQ((int32_t)0, dataInput.getBytesRead())
       << "Correct bytes read before any reads";
   EXPECT_EQ((int32_t)8, dataInput.getBytesRemaining())
@@ -897,7 +921,7 @@ TEST_F(DataInputTest, TestSetBuffer) {
 TEST_F(DataInputTest, TestSetPoolName) {
   std::string poolName = "Das Schwimmbad";
 
-  TestDataInput dataInput("123456789ABCDEF0", nullptr);
+  TestDataInput dataInput("123456789ABCDEF0");
   EXPECT_TRUE(DataInputInternal::getPoolName(dataInput).empty())
       << "Empty pool name before setting";
   DataInputInternal::setPoolName(dataInput, poolName);

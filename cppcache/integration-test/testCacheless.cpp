@@ -62,7 +62,7 @@ class RegionWrapper {
       valPtr =
           std::dynamic_pointer_cast<CacheableString>(m_regionPtr->get(keyPtr));
       ASSERT(valPtr != nullptr, "value should not be null.");
-      val = atoi(valPtr->asChar());
+      val = atoi(valPtr->value().c_str());
       SLEEP(100);
       tries++;
     } while ((val != expected) && (tries < 100));
@@ -92,7 +92,7 @@ class RegionWrapper {
       int val = waitForValue(keyPtr, value, valPtr);
       char ebuf[1024];
       sprintf(ebuf, "unexpected value: \"%s\", expected \"%d\" from line %d",
-              valPtr->asChar(), value, line);
+              valPtr->value().c_str(), value, line);
       ASSERT(val == value, ebuf);
     }
   }
