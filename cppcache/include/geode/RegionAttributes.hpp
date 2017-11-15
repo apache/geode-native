@@ -27,7 +27,6 @@
 #include <chrono>
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include "CacheLoader.hpp"
 #include "ExpirationAttributes.hpp"
 #include "CacheWriter.hpp"

@@ -21,7 +21,6 @@
 #define GEODE_CQQUERYIMPL_H_
 
 #include <geode/geode_globals.hpp>
-#include <geode/geode_types.hpp>
 
 #include <geode/CqResults.hpp>
 #include <geode/CqQuery.hpp>

@@ -20,7 +20,6 @@
 #ifndef GEODE_CLIENTHEALTHSTATS_H_
 #define GEODE_CLIENTHEALTHSTATS_H_
 
-#include <geode/geode_types.hpp>
 #include <geode/Serializable.hpp>
 #include "util/Log.hpp"
 #include <geode/CacheableDate.hpp>

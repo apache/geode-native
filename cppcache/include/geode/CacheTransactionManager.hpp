@@ -23,8 +23,8 @@
 //#### Warning: DO NOT directly include Region.hpp, include Cache.hpp instead.
 
 #include <chrono>
+#include <memory>
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 
 namespace apache {
 namespace geode {

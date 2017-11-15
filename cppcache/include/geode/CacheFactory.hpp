@@ -23,7 +23,6 @@
 #include <chrono>
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include "util/chrono/duration.hpp"
 #include "DistributedSystem.hpp"
 #include "Cache.hpp"

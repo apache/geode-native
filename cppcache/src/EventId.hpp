@@ -21,7 +21,6 @@
 #define GEODE_EVENTID_H_
 
 #include <geode/geode_globals.hpp>
-#include <geode/geode_types.hpp>
 #include <geode/Cacheable.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include <geode/DataOutput.hpp>

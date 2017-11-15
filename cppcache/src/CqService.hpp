@@ -21,7 +21,6 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/geode_types.hpp>
 #include "TcrMessage.hpp"
 #include "Queue.hpp"
 #include <ace/ACE.h>

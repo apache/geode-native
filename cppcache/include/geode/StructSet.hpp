@@ -21,7 +21,6 @@
  */
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 
 #include "CqResults.hpp"
 #include "Struct.hpp"

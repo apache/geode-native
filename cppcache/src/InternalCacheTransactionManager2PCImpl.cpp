@@ -21,7 +21,6 @@
  *      Author: sshcherbakov
  */
 
-#include <geode/geode_types.hpp>
 #include "InternalCacheTransactionManager2PCImpl.hpp"
 #include "CacheTransactionManagerImpl.hpp"
 #include <geode/TransactionId.hpp>

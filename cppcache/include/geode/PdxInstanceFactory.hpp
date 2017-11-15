@@ -22,7 +22,6 @@
 
 #include "PdxInstance.hpp"
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include "CacheableBuiltins.hpp"
 #include "CacheableDate.hpp"
 #include "CacheableObjectArray.hpp"

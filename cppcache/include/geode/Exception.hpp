@@ -21,9 +21,9 @@
 #define GEODE_EXCEPTION_H_
 
 #include <string>
-
+#include <unordered_map>
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
+#include "util/functional.hpp"
 
 /**
  * @file
@@ -125,6 +125,15 @@ class CPPCACHE_EXPORT Exception {
 
   friend class DistributedSystem;
 };
+
+class CacheableKey;
+typedef std::unordered_map<std::shared_ptr<CacheableKey>,
+                           std::shared_ptr<Exception>,
+                           dereference_hash<std::shared_ptr<CacheableKey>>,
+dereference_equal_to<std::shared_ptr<CacheableKey>>>
+HashMapOfException;
+
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

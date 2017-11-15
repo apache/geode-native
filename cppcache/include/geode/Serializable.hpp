@@ -25,7 +25,6 @@
  */
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include <functional>
 
 namespace apache {

@@ -21,7 +21,6 @@
  */
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include "ExceptionTypes.hpp"
 
 #include "SelectResults.hpp"

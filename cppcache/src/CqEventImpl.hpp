@@ -21,7 +21,6 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/geode_types.hpp>
 #include <geode/CqEvent.hpp>
 #include <geode/CqOperation.hpp>
 #include <geode/CqQuery.hpp>

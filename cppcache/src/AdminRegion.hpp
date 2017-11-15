@@ -25,7 +25,6 @@
 
 #include <geode/Serializable.hpp>
 #include <geode/Cacheable.hpp>
-#include <geode/geode_types.hpp>
 
 #include "ReadWriteLock.hpp"
 #include "NonCopyable.hpp"

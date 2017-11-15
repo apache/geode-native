@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TXENTRYSTATE_H_
-#define GEODE_TXENTRYSTATE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,17 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TXEntryState.hpp
- *
- *  Created on: 16-Feb-2011
- *      Author: ankurs
- */
 
-#include <geode/geode_types.hpp>
+#pragma once
 
-using namespace apache::geode::client;
-
+#ifndef GEODE_TXENTRYSTATE_H_
+#define GEODE_TXENTRYSTATE_H_
+#include "geode/geode_globals.hpp"
 namespace apache {
 namespace geode {
 namespace client {

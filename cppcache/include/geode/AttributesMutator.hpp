@@ -23,7 +23,6 @@
 #include <chrono>
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include "ExpirationAction.hpp"
 #include "util/chrono/duration.hpp"
 

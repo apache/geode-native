@@ -21,7 +21,6 @@
  */
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include "Exception.hpp"
 #include "CqOperation.hpp"
 #include "Cacheable.hpp"

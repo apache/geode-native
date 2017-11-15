@@ -26,7 +26,6 @@
 #include <condition_variable>
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 
 #include "CacheableBuiltins.hpp"
 #include "ResultCollector.hpp"

@@ -21,7 +21,6 @@
 #define GEODE_TXCOMMITMESSAGE_H_
 
 #include <geode/geode_globals.hpp>
-#include <geode/geode_types.hpp>
 #include <geode/DataInput.hpp>
 #include "RegionCommit.hpp"
 
