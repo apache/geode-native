@@ -87,7 +87,7 @@ namespace Apache
       }
 
       generic<class TResult>
-      ISelectResults<TResult>^ Query<TResult>::WrapResults(const apache::geode::client::SelectResultsPtr& selectResults)
+      ISelectResults<TResult>^ Query<TResult>::WrapResults(const std::shared_ptr<apache::geode::client::SelectResults>& selectResults)
       {
         if ( __nullptr == selectResults ) return nullptr;
 

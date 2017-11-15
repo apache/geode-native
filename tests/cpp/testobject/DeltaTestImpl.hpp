@@ -27,6 +27,7 @@
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Time_Value.h>
 #include "TestObject1.hpp"
+#include <geode/Delta.hpp>
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
@@ -42,9 +43,6 @@ using namespace apache::geode::client;
 
 namespace testobject {
 
-class DeltaTestImpl;
-typedef std::shared_ptr<DeltaTestImpl> DeltaTestImplPtr;
-
 class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
  private:
   static uint8_t INT_MASK;
@@ -55,10 +53,10 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
   static uint8_t COMPLETE_MASK;
 
   int32_t intVar;             // 0000 0001
-  CacheableStringPtr str;     // 0000 0010
-  double doubleVar;           // 0000 0100
-  CacheableBytesPtr byteArr;  // 0000 1000
-  TestObject1Ptr testObj;     // 0001 0000
+  std::shared_ptr<CacheableString> str;     // 0000 0010
+  double doubleVar;                         // 0000 0100
+  std::shared_ptr<CacheableBytes> byteArr;  // 0000 1000
+  std::shared_ptr<TestObject1> testObj;     // 0001 0000
 
   bool m_hasDelta;
   uint8_t deltaBits;
@@ -68,8 +66,8 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
 
  public:
   DeltaTestImpl();
-  DeltaTestImpl(int intValue, CacheableStringPtr strptr);
-  DeltaTestImpl(DeltaTestImplPtr rhs);
+  DeltaTestImpl(int intValue, std::shared_ptr<CacheableString> strptr);
+  DeltaTestImpl(std::shared_ptr<DeltaTestImpl> rhs);
   void fromData(DataInput& input);
   void toData(DataOutput& output) const;
 
@@ -81,18 +79,18 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
 
   uint32_t objectSize() const { return 0; }
 
-  DeltaPtr clone() {
-    return DeltaPtr(
+  std::shared_ptr<Delta> clone() {
+    return std::shared_ptr<Delta>(
         std::dynamic_pointer_cast<DeltaTestImpl>(shared_from_this()));
   }
 
   static Serializable* create() { return new DeltaTestImpl(); }
 
   int32_t getIntVar() { return intVar; }
-  CacheableStringPtr getStr() { return str; }
+  std::shared_ptr<CacheableString> getStr() { return str; }
   double getDoubleVar() { return doubleVar; }
-  CacheableBytesPtr getByteArr() { return byteArr; }
-  TestObject1Ptr getTestObj() { return testObj; }
+  std::shared_ptr<CacheableBytes> getByteArr() { return byteArr; }
+  std::shared_ptr<TestObject1> getTestObj() { return testObj; }
 
   int64_t getFromDeltaCounter() { return fromDeltaCounter; }
   int64_t getToDeltaCounter() { return toDeltaCounter; }
@@ -104,8 +102,8 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
   }
   void setStr(char* str1) { str = CacheableString::create(str1); }
   void setDoubleVar(double value) { doubleVar = value; }
-  void setByteArr(CacheableBytesPtr value) { byteArr = value; }
-  void setTestObj(TestObject1Ptr value) { testObj = value; }
+  void setByteArr(std::shared_ptr<CacheableBytes> value) { byteArr = value; }
+  void setTestObj(std::shared_ptr<TestObject1> value) { testObj = value; }
 
   void setDelta(bool value) { m_hasDelta = value; }
 
@@ -114,7 +112,7 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
   void setDoubleVarFlag() { deltaBits = deltaBits | DOUBLE_MASK; }
   void setByteArrFlag() { deltaBits = deltaBits | BYTE_ARR_MASK; }
   void setTestObjFlag() { deltaBits = deltaBits | TEST_OBJ_MASK; }
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 };
 
 }  // namespace testobject

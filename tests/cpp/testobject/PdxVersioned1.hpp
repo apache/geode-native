@@ -27,7 +27,7 @@
  */
 
 #include <geode/PdxSerializable.hpp>
-#include <geode/GeodeCppCache.hpp>
+#include <geode/CacheableEnum.hpp>
 #include <geode/PdxWriter.hpp>
 #include <geode/PdxReader.hpp>
 #include "fwklib/FwkExport.hpp"
@@ -69,7 +69,7 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
 
   wchar_t* m_charArray;
 
-  CacheableDatePtr m_date;
+  std::shared_ptr<CacheableDate> m_date;
 
   int16_t* m_int16Array;
   int16_t* m_uint16Array;
@@ -86,15 +86,15 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
   int8_t** m_byteByteArray;
 
   char** m_stringArray;
-  CacheableArrayListPtr m_arraylist;
-  CacheableHashMapPtr m_map;
+  std::shared_ptr<CacheableArrayList> m_arraylist;
+  std::shared_ptr<CacheableHashMap> m_map;
 
   int8_t* m_byte252;
   int8_t* m_byte253;
   int8_t* m_byte65535;
   int8_t* m_byte65536;
   enum pdxEnumTest { pdx1, pdx2, pdx3, pdx4 };
-  CacheablePtr m_pdxEnum;
+  std::shared_ptr<Cacheable> m_pdxEnum;
 
   int32_t boolArrayLen;
   int32_t charArrayLen;
@@ -141,7 +141,7 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
 
   bool getBool() { return m_bool; }
 
-  CacheableHashMapPtr getHashMap() { return m_map; }
+  std::shared_ptr<CacheableHashMap> getHashMap() { return m_map; }
 
   int8_t getSByte() { return m_sbyte; }
 
@@ -169,7 +169,7 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
 
   int8_t* getSByteArray() { return m_sbyteArray; }
 
-  CacheableArrayListPtr getArrayList() { return m_arraylist; }
+  std::shared_ptr<CacheableArrayList> getArrayList() { return m_arraylist; }
 
   int8_t getByte() { return m_byte; }
 
@@ -203,9 +203,9 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
 
   char** getStringArray() { return m_stringArray; }
 
-  CacheableDatePtr getDate() { return m_date; }
+  std::shared_ptr<CacheableDate> getDate() { return m_date; }
 
-  CacheableEnumPtr getEnum() {
+  std::shared_ptr<CacheableEnum> getEnum() {
     return std::static_pointer_cast<CacheableEnum>(m_pdxEnum);
   }
 
@@ -232,11 +232,11 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void toData(PdxWriterPtr pw) /*const*/;
+  virtual void toData(std::shared_ptr<PdxWriter> pw) /*const*/;
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   const char* getClassName() const { return "PdxTests.PdxVersioned"; }
 
@@ -254,7 +254,7 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
   bool generic2DCompare(T1** value1, T2** value2, int length,
                         int* arrLengths) const;
 };
-typedef std::shared_ptr<PdxTests::PdxVersioned1> PdxVersioned1Ptr;
+
 }  // namespace PdxTests
 
 #endif  // GEODE_TESTOBJECT_PDXVERSIONED1_H_

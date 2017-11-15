@@ -197,14 +197,14 @@ namespace apache
         }
       }
 
-      DeltaPtr ManagedCacheableDeltaGeneric::clone()
+      std::shared_ptr<Delta> ManagedCacheableDeltaGeneric::clone()
       {
         try {
           if (auto cloneable = dynamic_cast<ICloneable^>((
             Apache::Geode::Client::IGeodeDelta^) m_managedptr)) {
             auto Mclone = 
               dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(cloneable->Clone());
-            return DeltaPtr(static_cast<ManagedCacheableDeltaGeneric*>(
+            return std::shared_ptr<Delta>(static_cast<ManagedCacheableDeltaGeneric*>(
               SafeMSerializableConvertGeneric(Mclone)));
           }
           else {

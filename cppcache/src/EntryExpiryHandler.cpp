@@ -30,8 +30,8 @@
 
 using namespace apache::geode::client;
 
-EntryExpiryHandler::EntryExpiryHandler(RegionInternalPtr& rptr,
-                                       MapEntryImplPtr& entryPtr,
+EntryExpiryHandler::EntryExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
+                                       std::shared_ptr<MapEntryImpl>& entryPtr,
                                        ExpirationAction::Action action,
                                        uint32_t duration)
     : m_regionPtr(rptr),
@@ -41,7 +41,7 @@ EntryExpiryHandler::EntryExpiryHandler(RegionInternalPtr& rptr,
 
 int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
                                        const void* arg) {
-  CacheableKeyPtr key;
+  std::shared_ptr<CacheableKey> key;
   m_entryPtr->getKeyI(key);
   ExpEntryProperties& expProps = m_entryPtr->getExpProperties();
   try {
@@ -94,9 +94,9 @@ int EntryExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
 }
 
 inline void EntryExpiryHandler::DoTheExpirationAction(
-    const CacheableKeyPtr& key) {
+    const std::shared_ptr<CacheableKey>& key) {
   // Pass a blank version tag.
-  VersionTagPtr versionTag;
+  std::shared_ptr<VersionTag> versionTag;
   switch (m_action) {
     case ExpirationAction::INVALIDATE: {
       LOGDEBUG(

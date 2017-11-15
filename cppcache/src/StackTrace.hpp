@@ -32,7 +32,6 @@ namespace geode {
 namespace client {
 
 class StackTrace;
-typedef std::shared_ptr<StackTrace> StackTracePtr;
 #ifdef _WINDOWS
 class StackTrace {
  public:

@@ -78,7 +78,7 @@ class CPPCACHE_EXPORT LRUAction {
 
   virtual ~LRUAction() {}
 
-  virtual bool evict(const MapEntryImplPtr& mePtr) = 0;
+  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) = 0;
 
   virtual LRUAction::Action getType() = 0;
 
@@ -109,10 +109,10 @@ class CPPCACHE_EXPORT LRUDestroyAction : public virtual LRUAction {
  public:
   virtual ~LRUDestroyAction() {}
 
-  virtual bool evict(const MapEntryImplPtr& mePtr) {
-    CacheableKeyPtr keyPtr;
+  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
+    std::shared_ptr<CacheableKey> keyPtr;
     mePtr->getKeyI(keyPtr);
-    VersionTagPtr versionTag;
+    std::shared_ptr<VersionTag> versionTag;
     //  we should invoke the destroyNoThrow with appropriate
     // flags to correctly invoke listeners
     LOGDEBUG("LRUDestroy: evicting entry with key [%s]",
@@ -148,7 +148,7 @@ class CPPCACHE_EXPORT LRULocalInvalidateAction : public virtual LRUAction {
  public:
   virtual ~LRULocalInvalidateAction() {}
 
-  virtual bool evict(const MapEntryImplPtr& mePtr);
+  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr);
 
   virtual LRUAction::Action getType() { return LRUAction::LOCAL_INVALIDATE; }
 
@@ -172,7 +172,7 @@ class CPPCACHE_EXPORT LRUOverFlowToDiskAction : public virtual LRUAction {
  public:
   virtual ~LRUOverFlowToDiskAction() {}
 
-  virtual bool evict(const MapEntryImplPtr& mePtr);
+  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr);
 
   virtual LRUAction::Action getType() { return LRUAction::OVERFLOW_TO_DISK; }
 

@@ -18,7 +18,6 @@
 #define ROOT_NAME "testSystemProperties"
 
 #include "fw_helper.hpp"
-#include "geode/GeodeCppCache.hpp"
 #include "geode/SystemProperties.hpp"
 #include "geode/Properties.hpp"
 
@@ -28,13 +27,14 @@
 
 using namespace apache::geode::client;
 
-const bool checkSecurityProperties(PropertiesPtr securityProperties,
-                                   const char* key, const char* value) {
+const bool checkSecurityProperties(
+    std::shared_ptr<Properties> securityProperties, const char* key,
+    const char* value) {
   bool flag;
   if (key == nullptr || value == nullptr) {
     return false;
   }
-  CacheableStringPtr tempValue = securityProperties->find(key);
+  auto tempValue = securityProperties->find(key);
   if (tempValue == nullptr) {
     return (false);
   }
@@ -156,7 +156,7 @@ BEGIN_TEST(NEW_CONFIG)
     ASSERT(sp->connectTimeout() == std::chrono::milliseconds(345),
            "expected 345 for connect timeout");
 
-    PropertiesPtr securityProperties = sp->getSecurityProperties();
+    auto securityProperties = sp->getSecurityProperties();
     ASSERT(checkSecurityProperties(securityProperties, "security-username",
                                    "username") == true,
            "SecurityProperties Not Stored");

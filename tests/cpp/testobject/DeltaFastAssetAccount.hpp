@@ -23,13 +23,16 @@
 /*
  * @brief User class for testing the query functionality.
  */
-
-#include <geode/GeodeCppCache.hpp>
 #include <string>
-#include "fwklib/FrameworkTest.hpp"
+
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Time_Value.h>
+
+#include <geode/Delta.hpp>
+
+#include "fwklib/FrameworkTest.hpp"
+
 #include "FastAsset.hpp"
 
 #ifdef _WIN32
@@ -45,19 +48,18 @@
 using namespace apache::geode::client;
 using namespace testframework;
 namespace testobject {
-class DeltaFastAssetAccount;
-typedef std::shared_ptr<DeltaFastAssetAccount> DeltaFastAssetAccountPtr;
+
 class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
  private:
   bool encodeTimestamp;
   int32_t acctId;
-  CacheableStringPtr customerName;
+  std::shared_ptr<CacheableString> customerName;
   double netWorth;
-  CacheableHashMapPtr assets;
+  std::shared_ptr<CacheableHashMap> assets;
   uint64_t timestamp;
   bool getBeforeUpdate;
 
-  inline uint32_t getObjectSize(const SerializablePtr& obj) const {
+  inline uint32_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -80,7 +82,7 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
   void toDelta(apache::geode::client::DataOutput& output) const;
   void fromDelta(apache::geode::client::DataInput& input);
 
-  CacheableStringPtr toString() const {
+  std::shared_ptr<CacheableString> toString() const {
     char buf[102500];
     sprintf(buf,
             "DeltaFastAssetAccount:[acctId = %d customerName = %s netWorth = "
@@ -91,13 +93,13 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
 
   int getAcctId() { return acctId; }
 
-  CacheableStringPtr getCustomerName() { return customerName; }
+  std::shared_ptr<CacheableString> getCustomerName() { return customerName; }
 
   double getNetWorth() { return netWorth; }
 
   void incrementNetWorth() { ++netWorth; }
 
-  CacheableHashMapPtr getAssets() { return assets; }
+  std::shared_ptr<CacheableHashMap> getAssets() { return assets; }
   int getIndex() { return acctId; }
   uint64_t getTimestamp() {
     if (encodeTimestamp) {
@@ -132,7 +134,7 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
     return objectSize;
   }
 
-  virtual DeltaPtr clone() {
+  virtual std::shared_ptr<Delta> clone() {
     auto clonePtr = std::make_shared<DeltaFastAssetAccount>();
     clonePtr->assets = CacheableHashMap::create();
     for (const auto& item : *(this->assets)) {

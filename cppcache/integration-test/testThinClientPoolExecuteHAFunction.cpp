@@ -72,12 +72,13 @@ class MyResultCollector : public DefaultResultCollector {
       : m_endResultCount(0), m_addResultCount(0), m_getResultCount(0) {}
   ~MyResultCollector() {}
 
-  CacheableVectorPtr getResult(std::chrono::milliseconds timeout) override {
+  std::shared_ptr<CacheableVector> getResult(
+      std::chrono::milliseconds timeout) override {
     m_getResultCount++;
     return DefaultResultCollector::getResult(timeout);
   }
 
-  void addResult(const CacheablePtr& resultItem) override {
+  void addResult(const std::shared_ptr<Cacheable>& resultItem) override {
     m_addResultCount++;
     if (resultItem == nullptr) {
       return;
@@ -153,8 +154,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
     // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
     // createRegionAndAttachPool(poolRegNames[0],USE_ACK, poolName);
 
-    RegionPtr regPtr0 =
-        createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
+    auto regPtr0 = createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
     regPtr0->registerAllKeys();
 
@@ -168,7 +168,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartC11)
     createPool(poolName, locHostPort, serverGroup, 0, true);
     createRegionAndAttachPool(poolRegNames[0], USE_ACK, poolName);
 
-    RegionPtr regPtr0 = getHelper()->getRegion(poolRegNames[0]);
+    auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     regPtr0->registerAllKeys();
 
     LOG("Clnt1Init complete.");
@@ -194,7 +194,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
         sprintf(buf, "KEY--%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         routingObj->push_back(key);
       }
       // UNUSED bool getResult = true;

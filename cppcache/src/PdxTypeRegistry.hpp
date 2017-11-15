@@ -42,19 +42,23 @@ namespace geode {
 namespace client {
 
 struct PdxTypeLessThan {
-  bool operator()(PdxTypePtr const& n1, PdxTypePtr const& n2) const {
+  bool operator()(std::shared_ptr<PdxType> const& n1,
+                  std::shared_ptr<PdxType> const& n2) const {
     // call to PdxType::operator <()
     return *n1 < *n2;
   }
 };
 
-typedef std::map<int32_t, PdxTypePtr> TypeIdVsPdxType;
-typedef std::map</*char**/ std::string, PdxTypePtr> TypeNameVsPdxType;
-typedef std::unordered_map<PdxSerializablePtr, PdxRemotePreservedDataPtr,
-                           dereference_hash<CacheableKeyPtr>,
-                           dereference_equal_to<CacheableKeyPtr>>
+typedef std::map<int32_t, std::shared_ptr<PdxType>> TypeIdVsPdxType;
+typedef std::map</*char**/ std::string, std::shared_ptr<PdxType>>
+    TypeNameVsPdxType;
+typedef std::unordered_map<std::shared_ptr<PdxSerializable>,
+                           std::shared_ptr<PdxRemotePreservedData>,
+                           dereference_hash<std::shared_ptr<CacheableKey>>,
+                           dereference_equal_to<std::shared_ptr<CacheableKey>>>
     PreservedHashMap;
-typedef std::map<PdxTypePtr, int32_t, PdxTypeLessThan> PdxTypeToTypeIdMap;
+typedef std::map<std::shared_ptr<PdxType>, int32_t, PdxTypeLessThan>
+    PdxTypeToTypeIdMap;
 
 class CPPCACHE_EXPORT PdxTypeRegistry
     : public std::enable_shared_from_this<PdxTypeRegistry> {
@@ -80,9 +84,9 @@ class CPPCACHE_EXPORT PdxTypeRegistry
 
   bool pdxReadSerialized;
 
-  CacheableHashMapPtr enumToInt;
+  std::shared_ptr<CacheableHashMap> enumToInt;
 
-  CacheableHashMapPtr intToEnum;
+  std::shared_ptr<CacheableHashMap> intToEnum;
 
  public:
   PdxTypeRegistry(Cache* cache);
@@ -93,29 +97,30 @@ class CPPCACHE_EXPORT PdxTypeRegistry
   // test hook
   size_t testNumberOfPreservedData() const;
 
-  void addPdxType(int32_t typeId, PdxTypePtr pdxType);
+  void addPdxType(int32_t typeId, std::shared_ptr<PdxType> pdxType);
 
-  PdxTypePtr getPdxType(int32_t typeId);
+  std::shared_ptr<PdxType> getPdxType(int32_t typeId);
 
-  void addLocalPdxType(const char* localType, PdxTypePtr pdxType);
+  void addLocalPdxType(const char* localType, std::shared_ptr<PdxType> pdxType);
 
   // newly added
-  PdxTypePtr getLocalPdxType(const char* localType);
+  std::shared_ptr<PdxType> getLocalPdxType(const char* localType);
 
-  void setMergedType(int32_t remoteTypeId, PdxTypePtr mergedType);
+  void setMergedType(int32_t remoteTypeId, std::shared_ptr<PdxType> mergedType);
 
-  PdxTypePtr getMergedType(int32_t remoteTypeId);
+  std::shared_ptr<PdxType> getMergedType(int32_t remoteTypeId);
 
-  void setPreserveData(PdxSerializablePtr obj,
-                       PdxRemotePreservedDataPtr preserveDataPtr,
+  void setPreserveData(std::shared_ptr<PdxSerializable> obj,
+                       std::shared_ptr<PdxRemotePreservedData> preserveDataPtr,
                        ExpiryTaskManager& expiryTaskManager);
 
-  PdxRemotePreservedDataPtr getPreserveData(PdxSerializablePtr obj);
+  std::shared_ptr<PdxRemotePreservedData> getPreserveData(
+      std::shared_ptr<PdxSerializable> obj);
 
   void clear();
 
   int32_t getPDXIdForType(const char* type, const char* poolname,
-                          PdxTypePtr nType, bool checkIfThere);
+                          std::shared_ptr<PdxType> nType, bool checkIfThere);
 
   bool getPdxIgnoreUnreadFields() const { return pdxIgnoreUnreadFields; }
 
@@ -127,16 +132,14 @@ class CPPCACHE_EXPORT PdxTypeRegistry
 
   inline PreservedHashMap& getPreserveDataMap() { return preserveData; };
 
-  int32_t getEnumValue(EnumInfoPtr ei);
+  int32_t getEnumValue(std::shared_ptr<EnumInfo> ei);
 
-  EnumInfoPtr getEnum(int32_t enumVal);
+  std::shared_ptr<EnumInfo> getEnum(int32_t enumVal);
 
-  int32_t getPDXIdForType(PdxTypePtr nType, const char* poolname);
+  int32_t getPDXIdForType(std::shared_ptr<PdxType> nType, const char* poolname);
 
   ACE_RW_Thread_Mutex& getPreservedDataLock() { return g_preservedDataLock; }
 };
-
-typedef std::shared_ptr<PdxTypeRegistry> PdxTypeRegistryPtr;
 
 }  // namespace client
 }  // namespace geode

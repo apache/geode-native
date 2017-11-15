@@ -68,7 +68,6 @@ typedef std::vector<std::string> VectorOfString;
 class EvictionController;
 class EvictionThread;
 class CacheImpl;
-typedef std::shared_ptr<EvictionController> EvictionControllerPtr;
 
 class CPPCACHE_EXPORT EvictionController : public ACE_Task_Base {
  public:

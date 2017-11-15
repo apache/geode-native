@@ -24,7 +24,6 @@
  */
 
 // Include the Geode library.
-#include <geode/GeodeCppCache.hpp>
 #include <geode/CacheListener.hpp>
 
 // Use the "geode" namespace.

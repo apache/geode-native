@@ -21,12 +21,14 @@
 #include "TcrMessage.hpp"
 
 using namespace apache::geode::client;
-CqEventImpl::CqEventImpl(CqQueryPtr& cQuery,
+CqEventImpl::CqEventImpl(std::shared_ptr<CqQuery>& cQuery,
                          CqOperation::CqOperationType baseOp,
                          CqOperation::CqOperationType cqOp,
-                         CacheableKeyPtr& key, CacheablePtr& value,
-                         ThinClientBaseDM* tcrdm, CacheableBytesPtr deltaBytes,
-                         EventIdPtr eventId)
+                         std::shared_ptr<CacheableKey>& key,
+                         std::shared_ptr<Cacheable>& value,
+                         ThinClientBaseDM* tcrdm,
+                         std::shared_ptr<CacheableBytes> deltaBytes,
+                         std::shared_ptr<EventId> eventId)
     : m_error(false) {
   m_cQuery = cQuery;
   m_queryOp = cqOp;
@@ -38,8 +40,7 @@ CqEventImpl::CqEventImpl(CqQueryPtr& cQuery,
   m_deltaValue = deltaBytes;
   m_eventId = eventId;
 }
-
-CqQueryPtr CqEventImpl::getCq() const { return m_cQuery; }
+std::shared_ptr<CqQuery> CqEventImpl::getCq() const { return m_cQuery; }
 
 CqOperation::CqOperationType CqEventImpl::getBaseOperation() const {
   return m_baseOp;
@@ -56,14 +57,16 @@ CqOperation::CqOperationType CqEventImpl::getQueryOperation() const {
 /**
  * Get the key relating to the event.
  * @return Object key.
- */
-CacheableKeyPtr CqEventImpl::getKey() const { return m_key; }
+ */ std::shared_ptr<CacheableKey>
+CqEventImpl::getKey() const {
+  return m_key;
+}
 /**
  * Get the new value of the modification.
  *  If there is no new value because this is a delete, then
  *  return null.
- */
-CacheablePtr CqEventImpl::getNewValue() const {
+ */ std::shared_ptr<Cacheable>
+CqEventImpl::getNewValue() const {
   if (m_deltaValue == nullptr) {
     return m_newValue;
   } else {
@@ -82,7 +85,7 @@ CacheablePtr CqEventImpl::getNewValue() const {
       err = static_cast<ThinClientCacheDistributionManager*>(m_tcrdm)
                 ->sendRequestToPrimary(fullObjectMsg, reply);
     }
-    CacheablePtr fullObject = nullptr;
+    std::shared_ptr<Cacheable> fullObject = nullptr;
     if (err == GF_NOERR) {
       fullObject = reply.getValue();
     }
@@ -101,5 +104,6 @@ std::string CqEventImpl::toString() {
       m_newValue->toString()->asChar());
   return buffer;
 }
-
-CacheableBytesPtr CqEventImpl::getDeltaValue() const { return m_deltaValue; }
+std::shared_ptr<CacheableBytes> CqEventImpl::getDeltaValue() const {
+  return m_deltaValue;
+}

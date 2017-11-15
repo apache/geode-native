@@ -48,15 +48,16 @@ LRUAction* LRUAction::newLRUAction(const LRUAction::Action& actionType,
   return result;
 }
 
-bool LRUOverFlowToDiskAction::evict(const MapEntryImplPtr& mePtr) {
+bool LRUOverFlowToDiskAction::evict(
+    const std::shared_ptr<MapEntryImpl>& mePtr) {
   if (m_regionPtr->isDestroyed()) {
     LOGERROR(
         "[internal error] :: OverflowAction: region is being destroyed, so not "
         "evicting entries");
     return false;
   }
-  CacheableKeyPtr keyPtr;
-  CacheablePtr valuePtr;
+  std::shared_ptr<CacheableKey> keyPtr;
+  std::shared_ptr<Cacheable> valuePtr;
   mePtr->getKeyI(keyPtr);
   mePtr->getValueI(valuePtr);
   if (valuePtr == nullptr) {
@@ -73,7 +74,7 @@ bool LRUOverFlowToDiskAction::evict(const MapEntryImplPtr& mePtr) {
   if (persistenceInfo == nullptr) {
     setInfo = true;
   }
-  PersistenceManagerPtr pmPtr = m_regionPtr->getPersistenceManager();
+  auto pmPtr = m_regionPtr->getPersistenceManager();
   try {
     pmPtr->write(keyPtr, valuePtr, persistenceInfo);
   } catch (DiskFailureException& ex) {
@@ -99,9 +100,10 @@ bool LRUOverFlowToDiskAction::evict(const MapEntryImplPtr& mePtr) {
   return true;
 }
 
-bool LRULocalInvalidateAction::evict(const MapEntryImplPtr& mePtr) {
-  VersionTagPtr versionTag;
-  CacheableKeyPtr keyPtr;
+bool LRULocalInvalidateAction::evict(
+    const std::shared_ptr<MapEntryImpl>& mePtr) {
+  std::shared_ptr<VersionTag> versionTag;
+  std::shared_ptr<CacheableKey> keyPtr;
   mePtr->getKeyI(keyPtr);
   //  we should invoke the invalidateNoThrow with appropriate
   // flags to correctly invoke listeners

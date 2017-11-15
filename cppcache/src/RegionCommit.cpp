@@ -33,7 +33,7 @@ void RegionCommit::fromData(DataInput& input) {
   int32_t size = input.readInt32();
   if (size > 0) {
     const auto largeModCount = input.readBoolean();
-    DSMemberForVersionStampPtr dsMember;
+    std::shared_ptr<DSMemberForVersionStamp> dsMember;
     dsMember = input.readObject<DSMemberForVersionStamp>();
 
     auto memId = m_memberListForVersionStamp.add(dsMember);
@@ -56,8 +56,8 @@ void RegionCommit::apply(Cache* cache) {
   }
 }
 
-void RegionCommit::fillEvents(Cache* cache,
-                              std::vector<FarSideEntryOpPtr>& ops) {
+void RegionCommit::fillEvents(
+    Cache* cache, std::vector<std::shared_ptr<FarSideEntryOp>>& ops) {
   for (auto& entryOp : m_farSideEntryOps) {
     ops.push_back(std::static_pointer_cast<FarSideEntryOp>(entryOp));
   }

@@ -48,8 +48,7 @@ void PdxSerializable::fromData(DataInput& input) {
   throw UnsupportedOperationException(
       "operation PdxSerializable::fromData() is not supported ");
 }
-
-CacheableStringPtr PdxSerializable::toString() const {
+std::shared_ptr<CacheableString> PdxSerializable::toString() const {
   return CacheableString::create("PdxSerializable");
 }
 

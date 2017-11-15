@@ -34,7 +34,6 @@
  */
 
 // Include the Geode library.
-#include <geode/GeodeCppCache.hpp>
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
@@ -44,27 +43,26 @@ int main(int argc, char** argv) {
   try {
     // Create CacheFactory using the settings from the geode.properties file by
     // default.
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+    auto cacheFactory = CacheFactory::createCacheFactory();
 
     LOGINFO("Created CacheFactory");
 
     // Create a Geode Cache.
-    CachePtr cachePtr = cacheFactory->setSubscriptionEnabled(true)->create();
+    auto cachePtr = cacheFactory->setSubscriptionEnabled(true)->create();
 
     LOGINFO("Created the Geode Cache");
 
     // Create Poolfactory with endpoint and then create pool using poolfactory.
-    PoolFactoryPtr pfact = cachePtr->getPoolManager().createFactory();
+    auto pfact = cachePtr->getPoolManager().createFactory();
     pfact->addServer("localhost", 40404);
-    PoolPtr pptr = pfact->create("examplePool");
+    auto pptr = pfact->create("examplePool");
 
-    RegionFactoryPtr regionFactory =
-        cachePtr->createRegionFactory(CACHING_PROXY);
+    auto regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
 
     LOGINFO("Created the RegionFactory");
 
     // Create the example Region programmatically.
-    RegionPtr regionPtr =
+    auto regionPtr =
         regionFactory->setPoolName("examplePool")->create("exampleRegion");
 
     LOGINFO("Created the Region Programmatically");
@@ -76,18 +74,18 @@ int main(int argc, char** argv) {
     LOGINFO("Put the first Entry into the Region");
 
     // Put an Entry into the Region by manually creating a Key and a Value pair.
-    CacheableKeyPtr keyPtr = CacheableInt32::create(123);
-    CacheablePtr valuePtr = CacheableString::create("123");
+    auto keyPtr = CacheableInt32::create(123);
+    auto valuePtr = CacheableString::create("123");
     regionPtr->put(keyPtr, valuePtr);
 
     LOGINFO("Put the second Entry into the Region");
 
     // Get Entries back out of the Region.
-    CacheablePtr result1Ptr = regionPtr->get("Key1");
+    auto result1Ptr = regionPtr->get("Key1");
 
     LOGINFO("Obtained the first Entry from the Region");
 
-    CacheablePtr result2Ptr = regionPtr->get(keyPtr);
+    auto result2Ptr = regionPtr->get(keyPtr);
 
     LOGINFO("Obtained the second Entry from the Region");
 

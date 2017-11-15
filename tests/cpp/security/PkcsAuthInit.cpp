@@ -25,8 +25,9 @@
 namespace apache {
 namespace geode {
 namespace client {
-CacheableStringPtr convertBytesToString(const uint8_t* bytes, int32_t length,
-                                        size_t maxLength) {
+std::shared_ptr<CacheableString> convertBytesToString(const uint8_t* bytes,
+                                                      int32_t length,
+                                                      size_t maxLength) {
   if (bytes != NULL) {
     std::string str;
     size_t totalBytes = 0;
@@ -110,9 +111,8 @@ bool openSSLInit() {
 static bool s_initDone = openSSLInit();
 }
 // end of extern "C"
-
-PropertiesPtr PKCSAuthInitInternal::getCredentials(
-    const PropertiesPtr& securityprops, const char* server) {
+std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
+    const std::shared_ptr<Properties>& securityprops, const char* server) {
   if (!s_initDone) {
     throw AuthenticationFailedException(
         "PKCSAuthInit::getCredentials: "
@@ -124,7 +124,7 @@ PropertiesPtr PKCSAuthInitInternal::getCredentials(
         "No security-* properties are set.");
   }
 
-  CacheableStringPtr keyStoreptr = securityprops->find(KEYSTORE_FILE_PATH1);
+  auto keyStoreptr = securityprops->find(KEYSTORE_FILE_PATH1);
 
   const char* keyStorePath = keyStoreptr->asChar();
 
@@ -134,7 +134,7 @@ PropertiesPtr PKCSAuthInitInternal::getCredentials(
         "key-store file path property KEYSTORE_FILE_PATH not set.");
   }
 
-  CacheableStringPtr aliasptr = securityprops->find(KEYSTORE_ALIAS1);
+  auto aliasptr = securityprops->find(KEYSTORE_ALIAS1);
 
   const char* alias = aliasptr->asChar();
 
@@ -144,7 +144,7 @@ PropertiesPtr PKCSAuthInitInternal::getCredentials(
         "key-store alias property KEYSTORE_ALIAS not set.");
   }
 
-  CacheableStringPtr keyStorePassptr = securityprops->find(KEYSTORE_PASSWORD1);
+  auto keyStorePassptr = securityprops->find(KEYSTORE_PASSWORD1);
 
   const char* keyStorePass = keyStorePassptr->asChar();
 
@@ -189,7 +189,7 @@ PropertiesPtr PKCSAuthInitInternal::getCredentials(
         "PKCSAuthInit::getCredentials: "
         "Unable to create signature");
   }
-  CacheablePtr signatureValPtr;
+  std::shared_ptr<Cacheable> signatureValPtr;
   if (m_stringCredentials) {
     // convert signature bytes to base64
     signatureValPtr =
@@ -202,7 +202,7 @@ PropertiesPtr PKCSAuthInitInternal::getCredentials(
     LOGINFO(" Converting CREDS to BYTES: %s",
             signatureValPtr->toString()->asChar());
   }
-  PropertiesPtr credentials = Properties::create();
+  auto credentials = Properties::create();
   credentials->insert(KEYSTORE_ALIAS1, alias);
   credentials->insert(CacheableString::create(SIGNATURE_DATA1),
                       signatureValPtr);

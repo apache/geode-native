@@ -28,7 +28,6 @@
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
 
-#include "VectorT.hpp"
 #include "CacheableBuiltins.hpp"
 #include "ResultCollector.hpp"
 
@@ -45,18 +44,18 @@ class CPPCACHE_EXPORT DefaultResultCollector : public ResultCollector {
   DefaultResultCollector();
   virtual ~DefaultResultCollector() noexcept;
 
-  virtual CacheableVectorPtr getResult(
+  virtual std::shared_ptr<CacheableVector> getResult(
       std::chrono::milliseconds timeout =
           DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
-  virtual void addResult(const CacheablePtr& resultOfSingleExecution) override;
+  virtual void addResult(const std::shared_ptr<Cacheable>& resultOfSingleExecution) override;
 
   virtual void endResults() override;
 
   virtual void clearResults() override;
 
  private:
-  CacheableVectorPtr resultList;
+  std::shared_ptr<CacheableVector> resultList;
   bool ready;
   std::condition_variable readyCondition;
   std::mutex readyMutex;

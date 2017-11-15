@@ -34,70 +34,67 @@
  *
  */
 
-#include <geode/GeodeCppCache.hpp>
-
 #include "deltaobjects/DeltaExample.hpp"
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
 
 // The Delta QuickStart example.
-typedef std::shared_ptr<DeltaExample> DeltaExamplePtr;
 int main(int argc, char** argv) {
   try {
     // Create a Geode Cache.
-    PropertiesPtr prptr = Properties::create();
-    prptr->insert("cache-xml-file", "XMLs/clientDelta.xml");
+   auto prptr = Properties::create();
+   prptr->insert("cache-xml-file", "XMLs/clientDelta.xml");
 
-    CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory(prptr);
+   auto cacheFactory = CacheFactory::createCacheFactory(prptr);
 
-    CachePtr cachePtr = cacheFactory->create();
+   auto cachePtr = cacheFactory->create();
 
-    LOGINFO("Created the Geode Cache");
+   LOGINFO("Created the Geode Cache");
 
-    // get the example Region.
-    RegionPtr regPtr = cachePtr->getRegion("exampleRegion");
+   // get the example Region.
+   auto regPtr = cachePtr->getRegion("exampleRegion");
 
-    LOGINFO("Obtained the Region from the Cache");
+   LOGINFO("Obtained the Region from the Cache");
 
-    // Register our Serializable/Cacheable Delta objects, DeltaExample.
-    serializationRegistry->addType(DeltaExample::create);
+   // Register our Serializable/Cacheable Delta objects, DeltaExample.
+   serializationRegistry->addType(DeltaExample::create);
 
-    // Creating Delta Object.
-    DeltaExample* ptr = new DeltaExample(10, 15, 20);
-    CacheablePtr valPtr(ptr);
-    // Put the delta object. This will send the complete object to the server.
-    regPtr->put("Key1", valPtr);
-    LOGINFO("Completed put for a delta object");
+   // Creating Delta Object.
+   DeltaExample* ptr = new DeltaExample(10, 15, 20);
+   std::shared_ptr<Cacheable> valPtr(ptr);
+   // Put the delta object. This will send the complete object to the server.
+   regPtr->put("Key1", valPtr);
+   LOGINFO("Completed put for a delta object");
 
-    // Changing state of delta object.
-    ptr->setField1(9);
+   // Changing state of delta object.
+   ptr->setField1(9);
 
-    // Put delta object again. Since delta flag is set true it will calculate
-    // Delta and send only Delta to the server.
-    regPtr->put("Key1", valPtr);
-    LOGINFO("Completed put with delta");
+   // Put delta object again. Since delta flag is set true it will calculate
+   // Delta and send only Delta to the server.
+   regPtr->put("Key1", valPtr);
+   LOGINFO("Completed put with delta");
 
-    // Locally invalidating the key.
-    regPtr->localInvalidate("Key1");
+   // Locally invalidating the key.
+   regPtr->localInvalidate("Key1");
 
-    // Fetching the value from server.
-    auto retVal = std::dynamic_pointer_cast<DeltaExample>(regPtr->get("Key1"));
+   // Fetching the value from server.
+   auto retVal = std::dynamic_pointer_cast<DeltaExample>(regPtr->get("Key1"));
 
-    // Verification
-    if (retVal->getField1() != 9)
-      throw Exception("First field should have been 9");
-    if (retVal->getField2() != 15)
-      throw Exception("Second field should have been 15");
-    if (retVal->getField3() != 20)
-      throw Exception("Third field should have been 20");
-    LOGINFO("Delta has been successfully applied at server");
+   // Verification
+   if (retVal->getField1() != 9)
+     throw Exception("First field should have been 9");
+   if (retVal->getField2() != 15)
+     throw Exception("Second field should have been 15");
+   if (retVal->getField3() != 20)
+     throw Exception("Third field should have been 20");
+   LOGINFO("Delta has been successfully applied at server");
 
-    cachePtr->close();
+   cachePtr->close();
 
-    LOGINFO("Closed the Geode Cache");
+   LOGINFO("Closed the Geode Cache");
 
-    return 0;
+   return 0;
   }
   // An exception should not occur
 

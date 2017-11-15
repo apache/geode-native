@@ -21,12 +21,11 @@
 namespace apache {
 namespace geode {
 namespace client {
-
-MapEntryPtr MapEntry::MapEntry_NullPointer(nullptr);
+std::shared_ptr<MapEntry> MapEntry::MapEntry_NullPointer(nullptr);
 
 void EntryFactory::newMapEntry(ExpiryTaskManager* expiryTaskManager,
-                               const CacheableKeyPtr& key,
-                               MapEntryImplPtr& result) const {
+                               const std::shared_ptr<CacheableKey>& key,
+                               std::shared_ptr<MapEntryImpl>& result) const {
   if (m_concurrencyChecksEnabled) {
     result = MapEntryT<VersionedMapEntryImpl, 0, 0>::create(key);
   } else {

@@ -16,7 +16,6 @@
  */
 
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include "testobject/NestedPdxObject.hpp"
 #include "ThinClientHelper.hpp"
 #include "QueryStrings.hpp"
@@ -84,7 +83,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putPdxWithEnum)
     auto pdxobj2 = std::make_shared<PdxEnumTestClass>(1);
     auto pdxobj3 = std::make_shared<PdxEnumTestClass>(2);
 
-    RegionPtr rptr = getHelper()->getRegion("DistRegionAck");
+    auto rptr = getHelper()->getRegion("DistRegionAck");
 
     // PUT Operations
     rptr->put(CacheableInt32::create(0), pdxobj1);
@@ -105,15 +104,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxEnumQuery)
     LOG("pdxEnumQuery started ");
 
     try {
-      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addPdxType(PdxEnumTestClass::createDeserializable);
       LOG("PdxEnumTestClass Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("PdxEnumTestClass IllegalStateException");
     }
 
-    RegionPtr rptr = getHelper()->getRegion("DistRegionAck");
-    SelectResultsPtr results = rptr->query("m_enumid.name = 'id2'");
+    auto rptr = getHelper()->getRegion("DistRegionAck");
+    auto results = rptr->query("m_enumid.name = 'id2'");
     ASSERT(results->size() == 1, "query result should have one item");
     auto rsptr = std::dynamic_pointer_cast<ResultSet>(results);
     SelectResultsIterator iter = rsptr->getIterator();
@@ -123,10 +124,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxEnumQuery)
     }
 
     QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
-    QueryServicePtr qs = nullptr;
-    PoolPtr pool1 = findPool("__TEST_POOL1__");
+    std::shared_ptr<QueryService> qs = nullptr;
+    auto pool1 = findPool("__TEST_POOL1__");
     qs = pool1->getQueryService();
-    QueryPtr qry = qs->newQuery(
+    auto qry = qs->newQuery(
         "select distinct * from /DistRegionAck this where m_enumid.name = "
         "'id3'");
     results = qry->execute();

@@ -44,7 +44,7 @@ class TXEntryState {
   // UNUSED int32_t m_modSerialNum;
 
   int8_t m_op;
-  //	TXRegionStatePtr m_txRegionState;
+  // std::shared_ptr<TXRegionState> m_txRegionState;
   // UNUSED bool m_bulkOp;
 
   // ORDER of the following is important to the implementation!
@@ -82,7 +82,6 @@ class TXEntryState {
   static const int8_t OP_NLOAD_PUT = 26;
 };
 
-_GF_PTR_DEF_(TXEntryState, TXEntryStatePtr);
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

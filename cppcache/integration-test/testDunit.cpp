@@ -20,7 +20,6 @@
 #include <iostream>
 
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 
 int getSlaveTest() {
   return dunit::globals()->getIntValue("test_alive_slaves");

@@ -26,9 +26,9 @@
 #include "CacheImpl.hpp"
 
 using namespace apache::geode::client;
-
-ExecutionPtr FunctionService::onRegion(const RegionPtr& region) {
-  LOGDEBUG("FunctionService::onRegion(RegionPtr region)");
+std::shared_ptr<Execution> FunctionService::onRegion(
+    const std::shared_ptr<Region>& region) {
+  LOGDEBUG("FunctionService::onRegion(std::shared_ptr<Region> region)");
   if (region == nullptr) {
     throw NullPointerException("FunctionService::onRegion: region is null");
   }
@@ -39,11 +39,13 @@ ExecutionPtr FunctionService::onRegion(const RegionPtr& region) {
   if (pool == nullptr) {
     throw IllegalArgumentException("Pool attached with region is closed.");
   }
-  ProxyCachePtr proxyCache = nullptr;
+  std::shared_ptr<ProxyCache> proxyCache = nullptr;
 
   if (pool->getMultiuserAuthentication()) {
     if (auto pr = std::dynamic_pointer_cast<ProxyRegion>(realRegion)) {
-      LOGDEBUG("FunctionService::onRegion(RegionPtr region) proxy cache");
+      LOGDEBUG(
+          "FunctionService::onRegion(std::shared_ptr<Region> region) proxy "
+          "cache");
       // it is in multiuser mode
       proxyCache = pr->m_proxyCache;
       auto userAttachedPool = proxyCache->m_userAttributes->getPool();
@@ -73,8 +75,8 @@ ExecutionPtr FunctionService::onRegion(const RegionPtr& region) {
 
   return std::make_shared<ExecutionImpl>(realRegion, proxyCache, pool);
 }
-
-ExecutionPtr FunctionService::onServerWithPool(const PoolPtr& pool) {
+std::shared_ptr<Execution> FunctionService::onServerWithPool(
+    const std::shared_ptr<Pool>& pool) {
   if (pool == nullptr) {
     throw NullPointerException("FunctionService::onServer: pool is null");
   }
@@ -85,10 +87,9 @@ ExecutionPtr FunctionService::onServerWithPool(const PoolPtr& pool) {
   }
   return std::make_shared<ExecutionImpl>(pool);
 }
-
-ExecutionPtr FunctionService::onServersWithPool(const PoolPtr& pool) {
-  if (pool == nullptr) {
-    throw NullPointerException("FunctionService::onServers: pool is null");
+ std::shared_ptr<Execution> FunctionService::onServersWithPool(const std::shared_ptr<Pool>& pool) {
+   if (pool == nullptr) {
+     throw NullPointerException("FunctionService::onServers: pool is null");
   }
   if (pool->getMultiuserAuthentication()) {
     throw UnsupportedOperationException(
@@ -98,8 +99,7 @@ ExecutionPtr FunctionService::onServersWithPool(const PoolPtr& pool) {
 
   return std::make_shared<ExecutionImpl>(pool, true);
 }
-
-ExecutionPtr FunctionService::onServerWithCache(const RegionServicePtr& cache) {
+ std::shared_ptr<Execution> FunctionService::onServerWithCache(const std::shared_ptr<RegionService>& cache) {
   if (cache->isClosed()) {
     throw IllegalStateException("Cache has been closed");
   }
@@ -108,41 +108,40 @@ ExecutionPtr FunctionService::onServerWithCache(const RegionServicePtr& cache) {
 
   LOGDEBUG("FunctionService::onServer:");
   if (pc != nullptr) {
-    PoolPtr userAttachedPool = pc->m_userAttributes->getPool();
-    PoolPtr pool =
+   auto userAttachedPool = pc->m_userAttributes->getPool();
+   auto pool =
         pc->m_cacheImpl->getPoolManager().find(userAttachedPool->getName());
-    if (pool != nullptr && pool.get() == userAttachedPool.get() &&
-        !pool->isDestroyed()) {
-      return std::make_shared<ExecutionImpl>(pool, false, pc);
-    }
-    throw IllegalStateException(
-        "Pool has been close to execute function on server");
+   if (pool != nullptr && pool.get() == userAttachedPool.get() &&
+       !pool->isDestroyed()) {
+     return std::make_shared<ExecutionImpl>(pool, false, pc);
+   }
+   throw IllegalStateException(
+       "Pool has been close to execute function on server");
   } else {
-    CachePtr realcache = std::static_pointer_cast<Cache>(cache);
+   auto realcache = std::static_pointer_cast<Cache>(cache);
     return FunctionService::onServer(
         realcache->m_cacheImpl->getPoolManager().getDefaultPool());
   }
-}
+ }
+ std::shared_ptr<Execution> FunctionService::onServersWithCache(
+    const std::shared_ptr<RegionService>& cache) {
+   if (cache->isClosed()) {
+     throw IllegalStateException("Cache has been closed");
+   }
 
-ExecutionPtr FunctionService::onServersWithCache(
-    const RegionServicePtr& cache) {
-  if (cache->isClosed()) {
-    throw IllegalStateException("Cache has been closed");
-  }
+   auto pc = std::dynamic_pointer_cast<ProxyCache>(cache);
 
-  auto pc = std::dynamic_pointer_cast<ProxyCache>(cache);
-
-  LOGDEBUG("FunctionService::onServers:");
-  if (pc != nullptr && !cache->isClosed()) {
-    auto userAttachedPool = pc->m_userAttributes->getPool();
-    auto pool = pc->m_cacheImpl->getCache()->getPoolManager().find(
-        userAttachedPool->getName());
-    if (pool != nullptr && pool.get() == userAttachedPool.get() &&
-        !pool->isDestroyed()) {
-      return std::make_shared<ExecutionImpl>(pool, true, pc);
-    }
-    throw IllegalStateException(
-        "Pool has been close to execute function on server");
+   LOGDEBUG("FunctionService::onServers:");
+   if (pc != nullptr && !cache->isClosed()) {
+     auto userAttachedPool = pc->m_userAttributes->getPool();
+     auto pool = pc->m_cacheImpl->getCache()->getPoolManager().find(
+         userAttachedPool->getName());
+     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
+         !pool->isDestroyed()) {
+       return std::make_shared<ExecutionImpl>(pool, true, pc);
+     }
+     throw IllegalStateException(
+         "Pool has been close to execute function on server");
   } else {
     auto realcache = std::static_pointer_cast<Cache>(cache);
     return FunctionService::onServers(

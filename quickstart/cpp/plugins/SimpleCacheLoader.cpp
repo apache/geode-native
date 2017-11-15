@@ -16,18 +16,18 @@
  */
 
 #include "SimpleCacheLoader.hpp"
-
-CacheablePtr SimpleCacheLoader::load(const RegionPtr& region,
-                                     const CacheableKeyPtr& key,
-                                     const SerializablePtr& aCallbackArgument) {
+std::shared_ptr<Cacheable> SimpleCacheLoader::load(
+    const std::shared_ptr<Region>& region,
+    const std::shared_ptr<CacheableKey>& key,
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   LOGINFO("SimpleCacheLoader: Got a load event.");
 
-  CacheablePtr value = CacheableString::create("LoaderValue");
+  auto value = CacheableString::create("LoaderValue");
 
   return value;
 }
 
-void SimpleCacheLoader::close(const RegionPtr& region) {
+void SimpleCacheLoader::close(const std::shared_ptr<Region>& region) {
   LOGINFO("SimpleCacheLoader: Got a close event.");
 }
 

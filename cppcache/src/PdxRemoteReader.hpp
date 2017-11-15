@@ -31,8 +31,9 @@ class PdxRemoteReader : public PdxLocalReader {
   int32_t m_currentIndex;
 
  public:
-  PdxRemoteReader(DataInput& dataInput, PdxTypePtr remoteType, int32_t pdxLen,
-                  PdxTypeRegistryPtr pdxTypeRegistry)
+  PdxRemoteReader(DataInput& dataInput, std::shared_ptr<PdxType> remoteType,
+                  int32_t pdxLen,
+                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
       : PdxLocalReader(dataInput, remoteType, pdxLen, pdxTypeRegistry) {
     m_currentIndex = 0;
   }
@@ -132,7 +133,7 @@ class PdxRemoteReader : public PdxLocalReader {
    * @param fieldName name of the field which needs to serialize
    * @param value value of the field which needs to serialize
    */
-  virtual SerializablePtr readObject(const char* fieldName);
+  virtual std::shared_ptr<Serializable> readObject(const char* fieldName);
 
   virtual char* readCharArray(const char* fieldName, int32_t& length);
 
@@ -191,13 +192,14 @@ class PdxRemoteReader : public PdxLocalReader {
 
   virtual wchar_t** readWideStringArray(const char* fieldName, int32_t& length);
 
-  virtual CacheableObjectArrayPtr readObjectArray(const char* fieldName);
+  virtual std::shared_ptr<CacheableObjectArray> readObjectArray(
+      const char* fieldName);
 
   virtual int8_t** readArrayOfByteArrays(const char* fieldName,
                                          int32_t& arrayLength,
                                          int32_t** elementLength);
 
-  virtual CacheableDatePtr readDate(const char* fieldName);
+  virtual std::shared_ptr<CacheableDate> readDate(const char* fieldName);
 
   /*virtual void readBytes(const char* fieldName, uint8_t*& bytes,
     int32_t& len);
@@ -208,9 +210,8 @@ class PdxRemoteReader : public PdxLocalReader {
   virtual void readASCIIChar(const char* fieldName, wchar_t& value);*/
 
   virtual void readCollection(const char* fieldName,
-                              CacheableArrayListPtr& collection);
+                              std::shared_ptr<CacheableArrayList>& collection);
 };
-typedef std::shared_ptr<PdxRemoteReader> PdxRemoteReaderPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -103,9 +103,9 @@ class CPPCACHE_EXPORT EventId : public Cacheable {
   virtual int8_t DSFID() const { return GeodeTypeIdsImpl::FixedIDByte; };
 
   /** Returns a pointer to a new eventid value. */
-  static EventIdPtr create(char* memId, uint32_t memIdLen, int64_t thr,
-                           int64_t seq) {
-    return EventIdPtr(new EventId(memId, memIdLen, thr, seq));
+  static std::shared_ptr<EventId> create(char* memId, uint32_t memIdLen,
+                                         int64_t thr, int64_t seq) {
+    return std::shared_ptr<EventId>(new EventId(memId, memIdLen, thr, seq));
   }
 
   /** Destructor. */

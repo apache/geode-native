@@ -50,32 +50,36 @@ class CPPCACHE_EXPORT RegionFactory {
    * this cache
    * @throws CacheClosedException if the cache is closed
    */
-  RegionPtr create(const char* name);
+  std::shared_ptr<Region> create(const char* name);
 
   /** Sets the cache loader for the next <code>RegionAttributes</code> created.
    * @param cacheLoader the cache loader or nullptr if no loader
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setCacheLoader(const CacheLoaderPtr& cacheLoader);
+  RegionFactory& setCacheLoader(
+      const std::shared_ptr<CacheLoader>& cacheLoader);
 
   /** Sets the cache writer for the next <code>RegionAttributes</code> created.
    * @param cacheWriter the cache writer or nullptr if no cache writer
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setCacheWriter(const CacheWriterPtr& cacheWriter);
+  RegionFactory& setCacheWriter(
+      const std::shared_ptr<CacheWriter>& cacheWriter);
 
   /** Sets the CacheListener for the next <code>RegionAttributes</code> created.
    * @param aListener a user defined CacheListener, nullptr if no listener
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setCacheListener(const CacheListenerPtr& aListener);
+  RegionFactory& setCacheListener(
+      const std::shared_ptr<CacheListener>& aListener);
 
   /** Sets the PartitionResolver for the next <code>RegionAttributes</code>
    * created.
    * @param aResolver a user defined PartitionResolver, nullptr if no resolver
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setPartitionResolver(const PartitionResolverPtr& aResolver);
+  RegionFactory& setPartitionResolver(
+      const std::shared_ptr<PartitionResolver>& aResolver);
 
   /**
    * Sets the library path for the library that will be invoked for the loader
@@ -156,9 +160,9 @@ class CPPCACHE_EXPORT RegionFactory {
    * this must be used to set the PersistenceManager.
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setPersistenceManager(const char* libpath,
-                                       const char* factoryFuncName,
-                                       const PropertiesPtr& config = nullptr);
+  RegionFactory& setPersistenceManager(
+      const char* libpath, const char* factoryFuncName,
+      const std::shared_ptr<Properties>& config = nullptr);
 
   /** Sets the PersistenceManager for the next <code>RegionAttributes</code>
    * created.
@@ -167,8 +171,8 @@ class CPPCACHE_EXPORT RegionFactory {
    * @return a reference to <code>this</code>
    */
   RegionFactory& setPersistenceManager(
-      const PersistenceManagerPtr& persistenceManager,
-      const PropertiesPtr& config = nullptr);
+      const std::shared_ptr<PersistenceManager>& persistenceManager,
+      const std::shared_ptr<Properties>& config = nullptr);
 
   // MAP ATTRIBUTES
   /** Sets the entry initial capacity for the next <code>RegionAttributes</code>
@@ -261,7 +265,7 @@ class CPPCACHE_EXPORT RegionFactory {
 
   RegionShortcut m_preDefinedRegion;
 
-  AttributesFactoryPtr m_attributeFactory;
+  std::shared_ptr<AttributesFactory> m_attributeFactory;
 
   CacheImpl* m_cacheImpl;
 

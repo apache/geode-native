@@ -18,7 +18,7 @@
 #define ROOT_NAME "testLogger"
 
 #include "fw_helper.hpp"
-#include <geode/GeodeCppCache.hpp>
+#include <geode/ExceptionTypes.hpp>
 
 #ifndef WIN32
 #include <unistd.h>

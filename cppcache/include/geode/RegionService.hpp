@@ -22,7 +22,7 @@
 
 #include "geode_globals.hpp"
 #include "geode_types.hpp"
-#include "VectorT.hpp"
+#include <vector>
 
 /**
  * @file
@@ -34,7 +34,7 @@ namespace client {
 
 class Region;
 class QueryService;
-
+class PdxInstanceFactory;
 /**
  * A RegionService provides access to existing {@link Region regions} that exist
  * in a {@link GeodeCache Geode cache}.
@@ -89,13 +89,13 @@ class CPPCACHE_EXPORT RegionService {
    * @param name the region's name, such as <code>root</code>.
    * @returns region, or nullptr if no such region exists.
    */
-  virtual RegionPtr getRegion(const char* name) = 0;
+  virtual std::shared_ptr<Region> getRegion(const char* name) = 0;
 
   /**
   * Gets the QueryService from which a new Query can be obtained.
   * @returns A smart pointer to the QueryService.
   */
-  virtual QueryServicePtr getQueryService() = 0;
+  virtual std::shared_ptr<QueryService> getQueryService() = 0;
 
   /**
    * Returns a set of root regions in the cache. This set is a snapshot and
@@ -105,7 +105,7 @@ class CPPCACHE_EXPORT RegionService {
    * @param regions the returned set of
    * regions
    */
-  virtual VectorOfRegion rootRegions() = 0;
+  virtual std::vector<std::shared_ptr<Region>> rootRegions() = 0;
 
   /**
   * Returns a factory that can create a {@link PdxInstance}.
@@ -114,7 +114,7 @@ class CPPCACHE_EXPORT RegionService {
   * when it is fully deserialized.
   * @return the factory
   */
-  virtual PdxInstanceFactoryPtr createPdxInstanceFactory(
+  virtual std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
       const char* className) = 0;
 };
 }  // namespace client

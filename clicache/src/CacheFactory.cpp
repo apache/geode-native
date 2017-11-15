@@ -60,7 +60,7 @@ namespace Apache
 				bool pdxIgnoreUnreadFields = false;
         bool pdxReadSerialized = false;
 				bool appDomainEnable = false; 
-        native::CachePtr nativeCache = nullptr;
+        std::shared_ptr<native::Cache> nativeCache = nullptr;
         _GF_MG_EXCEPTION_TRY2
           //msclr::lock lockInstance(m_singletonSync);
           DistributedSystem::acquireDisconnectLock();

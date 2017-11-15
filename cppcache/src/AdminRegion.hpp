@@ -44,6 +44,8 @@ namespace client {
 class CacheImpl;
 class ThinClientBaseDM;
 class TcrConnectionManager;
+class CacheableKey;
+
 
 class AdminRegion : private NonCopyable,
                     private NonAssignable,
@@ -55,8 +57,8 @@ class AdminRegion : private NonCopyable,
   ACE_RW_Thread_Mutex m_rwLock;
   bool m_destroyPending;
 
-  GfErrType putNoThrow(const CacheableKeyPtr& keyPtr,
-                       const CacheablePtr& valuePtr);
+  GfErrType putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
+                       const std::shared_ptr<Cacheable>& valuePtr);
   TcrConnectionManager* getConnectionManager();
 
   AdminRegion()
@@ -76,11 +78,10 @@ class AdminRegion : private NonCopyable,
   const bool& isDestroyed();
   void close();
   void init();
-  void put(const CacheableKeyPtr& keyPtr, const CacheablePtr& valuePtr);
+  void put(const std::shared_ptr<CacheableKey>& keyPtr, const std::shared_ptr<Cacheable>& valuePtr);
   friend class apache::geode::statistics::HostStatSampler;
 };
 
-typedef std::shared_ptr<AdminRegion> AdminRegionPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

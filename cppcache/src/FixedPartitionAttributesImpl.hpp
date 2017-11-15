@@ -30,11 +30,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
-_GF_PTR_DEF_(FixedPartitionAttributesImpl, FixedPartitionAttributesImplPtr)
-
 class FixedPartitionAttributesImpl : public Serializable {
  private:
-  CacheableStringPtr m_partitionName;
+  std::shared_ptr<CacheableString> m_partitionName;
   bool m_isPrimary;
   int m_numBuckets;
   int m_startingBucketId;

@@ -20,14 +20,10 @@
  * limitations under the License.
  */
 
-#include <geode/GeodeCppCache.hpp>
-
 using namespace apache::geode::client;
 using namespace test;
 
 class TallyLoader;
-
-typedef std::shared_ptr<TallyLoader> TallyLoaderPtr;
 
 class TallyLoader : virtual public CacheLoader {
  private:
@@ -41,8 +37,10 @@ class TallyLoader : virtual public CacheLoader {
   {}
   virtual ~TallyLoader() {}
 
-  CacheablePtr load(const RegionPtr& rp, const CacheableKeyPtr& key,
-                    const SerializablePtr& aCallbackArgument) {
+  std::shared_ptr<Cacheable> load(
+      const std::shared_ptr<Region>& rp,
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Serializable>& aCallbackArgument) {
     LOGDEBUG("TallyLoader::load invoked for %d.", m_loads);
     char buf[1024];
     sprintf(buf, "TallyLoader state: (loads = %d)", m_loads);
@@ -50,7 +48,7 @@ class TallyLoader : virtual public CacheLoader {
     return CacheableInt32::create(m_loads++);
   }
 
-  virtual void close(const RegionPtr& region) { LOG("TallyLoader::close"); }
+  virtual void close(const std::shared_ptr<Region>& region) { LOG("TallyLoader::close"); }
 
   int expectLoads(int expected) {
     int tries = 0;

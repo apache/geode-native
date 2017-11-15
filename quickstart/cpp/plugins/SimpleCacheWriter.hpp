@@ -24,7 +24,6 @@
  */
 
 // Include the Geode library.
-#include <geode/GeodeCppCache.hpp>
 #include <geode/CacheWriter.hpp>
 
 // Use the "geode" namespace.
@@ -40,5 +39,5 @@ class SimpleCacheWriter : public CacheWriter {
   virtual bool beforeDestroy(const EntryEvent& event);
   virtual void beforeRegionInvalidate(const RegionEvent& event);
   virtual bool beforeRegionDestroy(const RegionEvent& event);
-  virtual void close(const RegionPtr& region);
+  virtual void close(const std::shared_ptr<Region>& region);
 };

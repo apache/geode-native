@@ -115,11 +115,11 @@ void PoolStatsSampler::putStatsInAdminRegion() {
         cpuTime = HostStatHelper::getCpuTime();
       }
       static int numCPU = ACE_OS::num_processors();
-      ClientHealthStatsPtr obj = ClientHealthStats::create(
-          gets, puts, misses, numListeners, numThreads, cpuTime, numCPU);
+      auto obj = ClientHealthStats::create(gets, puts, misses, numListeners,
+                                           numThreads, cpuTime, numCPU);
       ClientProxyMembershipID* memId = m_distMan->getMembershipId();
       clientId = memId->getDSMemberIdForThinClientUse();
-      CacheableKeyPtr keyPtr = CacheableString::create(clientId.c_str());
+      auto keyPtr = CacheableString::create(clientId.c_str());
       m_adminRegion->put(keyPtr, obj);
     }
   } catch (const AllConnectionsInUseException&) {

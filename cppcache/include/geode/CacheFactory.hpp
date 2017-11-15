@@ -39,6 +39,7 @@ namespace geode {
 namespace client {
 
 class CppCacheLibrary;
+class AuthInitialize;
 /**
  * @class CacheFactory CacheFactory.hpp
  * Top level class for configuring and using Geode on a client.This should be
@@ -55,13 +56,13 @@ class CPPCACHE_EXPORT CacheFactory
    * @param dsProps
    *        Properties which are applicable at client level.
    */
-  static CacheFactoryPtr createCacheFactory(
-      const PropertiesPtr& dsProps = nullptr);
+  static std::shared_ptr<CacheFactory> createCacheFactory(
+      const std::shared_ptr<Properties>& dsProps = nullptr);
 
   /**
    * To create the instance of {@link Cache}.
    */
-  CachePtr create();
+  std::shared_ptr<Cache> create();
 
   /** Returns the version of the cache implementation.
    * For the 1.0 release of Geode, the string returned is <code>1.0</code>.
@@ -94,7 +95,7 @@ class CPPCACHE_EXPORT CacheFactory
    * @return this CacheFactory
    * @since 3.6
    */
-  CacheFactoryPtr setPdxIgnoreUnreadFields(bool ignore);
+  std::shared_ptr<CacheFactory> setPdxIgnoreUnreadFields(bool ignore);
 
   /**
    * Sets the AuthInitializer defined by the user.
@@ -102,7 +103,7 @@ class CPPCACHE_EXPORT CacheFactory
    * @param authInitialize
    * @return this ClientCacheFactory
    */
-  CacheFactoryPtr setAuthInitialize(const AuthInitializePtr& authInitialize);
+  std::shared_ptr<CacheFactory> setAuthInitialize(const std::shared_ptr<AuthInitialize>& authInitialize);
 
   /** Sets the object preference to PdxInstance type.
    * When a cached object that was serialized as a PDX is read
@@ -122,7 +123,7 @@ class CPPCACHE_EXPORT CacheFactory
    *  @param pdxReadSerialized true to prefer PdxInstance
    *  @return this ClientCacheFactory
    */
-  CacheFactoryPtr setPdxReadSerialized(bool pdxReadSerialized);
+  std::shared_ptr<CacheFactory> setPdxReadSerialized(bool pdxReadSerialized);
 
   /**
    * Sets a geode property that will be used when creating the {link @Cache}.
@@ -131,24 +132,24 @@ class CPPCACHE_EXPORT CacheFactory
    * @return a reference to <code>this</code>
    * @since 3.5
    */
-  CacheFactoryPtr set(const char* name, const char* value);
+  std::shared_ptr<CacheFactory> set(const char* name, const char* value);
 
  private:
-  PropertiesPtr dsProp;
+  std::shared_ptr<Properties> dsProp;
   bool ignorePdxUnreadFields;
   bool pdxReadSerialized;
-  AuthInitializePtr authInitialize;
+  std::shared_ptr<AuthInitialize> authInitialize;
 
-  CachePtr create(const char* name,
-                  const CacheAttributesPtr& attrs = nullptr);
+  std::shared_ptr<Cache> create(
+      const char* name,
+      const std::shared_ptr<CacheAttributes>& attrs = nullptr);
 
   void create_(const char* name, const char* id_data,
-               CachePtr& cptr,
-               bool readPdxSerialized);
+               std::shared_ptr<Cache>& cptr, bool readPdxSerialized);
 
   // no instances allowed
   CacheFactory();
-  CacheFactory(const PropertiesPtr dsProps);
+  CacheFactory(const std::shared_ptr<Properties> dsProps);
 
  private:
   ~CacheFactory();

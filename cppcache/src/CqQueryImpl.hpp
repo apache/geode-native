@@ -59,18 +59,18 @@ class CqQueryImpl : public CqQuery,
  protected:
   std::string m_cqName;
   std::string m_queryString;
-  SelectResultsPtr m_cqResults;
+  std::shared_ptr<SelectResults> m_cqResults;
 
  private:
-  QueryPtr m_query;
-  CqAttributesPtr m_cqAttributes;
-  CqAttributesMutatorPtr m_cqAttributesMutator;
-  CqServicePtr m_cqService;
+  std::shared_ptr<Query> m_query;
+  std::shared_ptr<CqAttributes> m_cqAttributes;
+  std::shared_ptr<CqAttributesMutator> m_cqAttributesMutator;
+  std::shared_ptr<CqService> m_cqService;
   std::string m_serverCqName;
   bool m_isDurable;
 
   // Stats counters
-  CqStatisticsPtr m_stats;
+  std::shared_ptr<CqStatistics> m_stats;
   CqState::StateType m_cqState;
   CqOperation::CqOperationType m_cqOperation;
 
@@ -92,12 +92,12 @@ class CqQueryImpl : public CqQuery,
    * Constructor.
    */
  public:
-  CqQueryImpl(const CqServicePtr& cqService, const std::string& cqName,
-              const std::string& queryString,
-              const CqAttributesPtr& cqAttributes,
-              statistics::StatisticsFactory* factory,
-              const bool isDurable = false,
-              const UserAttributesPtr& userAttributesPtr = nullptr);
+  CqQueryImpl(
+      const std::shared_ptr<CqService>& cqService, const std::string& cqName,
+      const std::string& queryString,
+      const std::shared_ptr<CqAttributes>& cqAttributes,
+      statistics::StatisticsFactory* factory, const bool isDurable = false,
+      const std::shared_ptr<UserAttributes>& userAttributesPtr = nullptr);
 
   virtual ~CqQueryImpl();
 
@@ -155,20 +155,20 @@ class CqQueryImpl : public CqQuery,
    * Return the query after replacing region names with parameters
    * @return the Query for the query string
    */
-  QueryPtr getQuery() const override;
+  std::shared_ptr<Query> getQuery() const override;
 
   /**
    * @see org.apache.geode.cache.query.CqQuery#getStatistics()
    */
-  const CqStatisticsPtr getStatistics() const override;
+  const std::shared_ptr<CqStatistics> getStatistics() const override;
 
   CqQueryVsdStats& getVsdStats() {
     return *dynamic_cast<CqQueryVsdStats*>(m_stats.get());
   }
 
-  const CqAttributesPtr getCqAttributes() const override;
+  const std::shared_ptr<CqAttributes> getCqAttributes() const override;
 
-  RegionPtr getCqBaseRegion();
+  std::shared_ptr<Region> getCqBaseRegion();
 
   /**
    * Clears the resource used by CQ.
@@ -179,7 +179,7 @@ class CqQueryImpl : public CqQuery,
   /**
    * @return Returns the cqListeners.
    */
-  void getCqListeners(std::vector<CqListenerPtr>& cqListener);
+  void getCqListeners(std::vector<std::shared_ptr<CqListener>>& cqListener);
 
   /**
    * Start or resume executing the query.
@@ -197,7 +197,8 @@ class CqQueryImpl : public CqQuery,
    * Start or resume executing the query.
    * Gets or updates the CQ results and returns them.
    */
-  CqResultsPtr executeWithInitialResults(std::chrono::milliseconds timeout) override;
+  std::shared_ptr<CqResults> executeWithInitialResults(
+      std::chrono::milliseconds timeout) override;
 
   /**
    * This is called when the new server comes-up.
@@ -223,7 +224,8 @@ class CqQueryImpl : public CqQuery,
    */
   void setCqState(CqState::StateType state);
 
-  const CqAttributesMutatorPtr getCqAttributesMutator() const override;
+  const std::shared_ptr<CqAttributesMutator> getCqAttributesMutator()
+      const override;
 
   /**
    * @return Returns the cqOperation.
@@ -272,7 +274,7 @@ class CqQueryImpl : public CqQuery,
   ACE_Recursive_Thread_Mutex m_mutex;
   void sendStopOrClose(TcrMessage::MsgType requestType);
   ThinClientBaseDM* m_tccdm;
-  ProxyCachePtr m_proxyCache;
+  std::shared_ptr<ProxyCache> m_proxyCache;
 
   FRIEND_STD_SHARED_PTR(CqQueryImpl)
 };

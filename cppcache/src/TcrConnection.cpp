@@ -181,8 +181,8 @@ bool TcrConnection::InitTcrConnection(
 
   bool isDhOn = false;
   bool requireServerAuth = false;
-  PropertiesPtr credentials;
-  CacheableBytesPtr serverChallenge;
+  std::shared_ptr<Properties> credentials;
+  std::shared_ptr<CacheableBytes> serverChallenge;
 
   // Write overrides (just conflation for now)
   handShakeMsg->write(getOverrides(&sysProp));
@@ -192,7 +192,7 @@ bool TcrConnection::InitTcrConnection(
 
   if (m_endpointObj) {
     tmpIsSecurityOn = tmpIsSecurityOn || this->m_endpointObj->isMultiUserMode();
-    CacheableStringPtr dhalgo =
+    auto dhalgo =
         sysProp.getSecurityProperties()->find("security-client-dhalgo");
 
     LOGDEBUG("TcrConnection this->m_endpointObj->isMultiUserMode() = %d ",
@@ -250,8 +250,7 @@ bool TcrConnection::InitTcrConnection(
       }
 
       if (isDhOn) {
-        CacheableStringPtr ksPath =
-            tmpSecurityProperties->find("security-client-kspath");
+        auto ksPath = tmpSecurityProperties->find("security-client-kspath");
         requireServerAuth = (ksPath != nullptr && ksPath->length() > 0);
         handShakeMsg->writeBoolean(requireServerAuth);
         LOGFINE(
@@ -263,7 +262,7 @@ bool TcrConnection::InitTcrConnection(
         handShakeMsg->writeASCII(sysProp.securityClientDhAlgo());
 
         // Send the client's DH public key to the server
-        CacheableBytesPtr dhPubKey = m_dh->getPublicKey();
+        auto dhPubKey = m_dh->getPublicKey();
         LOGDEBUG("DH pubkey send len is %d", dhPubKey->length());
         dhPubKey->toData(*handShakeMsg);
 
@@ -306,7 +305,7 @@ bool TcrConnection::InitTcrConnection(
   ConnErrType error = sendData(data, msgLengh, connectTimeout, false);
 
   if (error == CONN_NOERR) {
-    CacheableBytesPtr acceptanceCode = readHandshakeData(1, connectTimeout);
+    auto acceptanceCode = readHandshakeData(1, connectTimeout);
 
     LOGDEBUG(" Handshake: Got Accept Code %d", (*acceptanceCode)[0]);
     /* adongre */
@@ -321,7 +320,7 @@ bool TcrConnection::InitTcrConnection(
     // if diffie-hellman based credential encryption is enabled
     if (isDhOn && (*acceptanceCode)[0] == REPLY_OK) {
       // read the server's DH public key
-      CacheableBytesPtr pubKeyBytes = readHandshakeByteArray(connectTimeout);
+      auto pubKeyBytes = readHandshakeByteArray(connectTimeout);
       LOGDEBUG(" Handshake: Got pubKeySize %d", pubKeyBytes->length());
 
       // set the server's public key on client's DH side
@@ -334,11 +333,10 @@ bool TcrConnection::InitTcrConnection(
 
       if (requireServerAuth) {
         // Read Subject Name
-        CacheableStringPtr subjectName = readHandshakeString(connectTimeout);
+        auto subjectName = readHandshakeString(connectTimeout);
         LOGDEBUG("Got subject %s", subjectName->asChar());
         // read the server's signature bytes
-        CacheableBytesPtr responseBytes =
-            readHandshakeByteArray(connectTimeout);
+        auto responseBytes = readHandshakeByteArray(connectTimeout);
         LOGDEBUG("Handshake: Got response size %d", responseBytes->length());
         LOGDEBUG("Handshake: Got serverChallenge size %d",
                  serverChallenge->length());
@@ -350,7 +348,7 @@ bool TcrConnection::InitTcrConnection(
       }
 
       // read the challenge bytes from the server
-      CacheableBytesPtr challengeBytes = readHandshakeByteArray(connectTimeout);
+      auto challengeBytes = readHandshakeByteArray(connectTimeout);
       LOGDEBUG("Handshake: Got challengeSize %d", challengeBytes->length());
 
       // encrypt the credentials and challenge bytes
@@ -359,7 +357,7 @@ bool TcrConnection::InitTcrConnection(
         credentials->toData(*cleartext);
       }
       challengeBytes->toData(*cleartext);
-      CacheableBytesPtr ciphertext =
+      auto ciphertext =
           m_dh->encrypt(cleartext->getBuffer(), cleartext->getBufferLength());
 
       auto sendCreds = cacheImpl->getCache()->createDataOutput();
@@ -390,7 +388,7 @@ bool TcrConnection::InitTcrConnection(
       }
     }
 
-    CacheableBytesPtr serverQueueStatus = readHandshakeData(1, connectTimeout);
+    auto serverQueueStatus = readHandshakeData(1, connectTimeout);
 
     //  TESTING: Durable clients - set server queue status.
     // 0 - Non-Redundant , 1- Redundant , 2- Primary
@@ -401,7 +399,7 @@ bool TcrConnection::InitTcrConnection(
     } else {
       m_hasServerQueue = NON_REDUNDANT_SERVER;
     }
-    CacheableBytesPtr queueSizeMsg = readHandshakeData(4, connectTimeout);
+    auto queueSizeMsg = readHandshakeData(4, connectTimeout);
     auto dI = cacheImpl->getCache()->createDataInput(queueSizeMsg->value(),
                                                      queueSizeMsg->length());
     int32_t queueSize = 0;
@@ -428,19 +426,17 @@ bool TcrConnection::InitTcrConnection(
 
     if (!isClientNotification) {
       // Read and ignore the DistributedMember object
-      CacheableBytesPtr arrayLenHeader = readHandshakeData(1, connectTimeout);
+      auto arrayLenHeader = readHandshakeData(1, connectTimeout);
       int32_t recvMsgLen = static_cast<int32_t>((*arrayLenHeader)[0]);
       // now check for array length headers - since GFE 5.7
       if (static_cast<int8_t>((*arrayLenHeader)[0]) == -2) {
-        CacheableBytesPtr recvMsgLenBytes =
-            readHandshakeData(2, connectTimeout);
+        auto recvMsgLenBytes = readHandshakeData(2, connectTimeout);
         auto dI2 =
             m_connectionManager->getCacheImpl()->getCache()->createDataInput(
                 recvMsgLenBytes->value(), recvMsgLenBytes->length());
         recvMsgLen = dI2->readInt16();
       } else if (static_cast<int8_t>((*arrayLenHeader)[0]) == -3) {
-        CacheableBytesPtr recvMsgLenBytes =
-            readHandshakeData(4, connectTimeout);
+        auto recvMsgLenBytes = readHandshakeData(4, connectTimeout);
         auto dI2 =
             m_connectionManager->getCacheImpl()->getCache()->createDataInput(
                 recvMsgLenBytes->value(), recvMsgLenBytes->length());
@@ -452,7 +448,7 @@ bool TcrConnection::InitTcrConnection(
         LOGDEBUG("Deserializing distributed member Id");
         auto diForClient = cacheImpl->getCache()->createDataInput(
             recvMessage->value(), recvMessage->length());
-        ClientProxyMembershipIDPtr member;
+        std::shared_ptr<ClientProxyMembershipID> member;
         member = diForClient->readObject<ClientProxyMembershipID>();
         auto memId = cacheImpl->getMemberListForVersionStamp()->add(member);
         getEndpointObject()->setDistributedMemberID(memId);
@@ -460,15 +456,14 @@ bool TcrConnection::InitTcrConnection(
       }
     }
 
-    CacheableBytesPtr recvMsgLenBytes = readHandshakeData(2, connectTimeout);
+    auto recvMsgLenBytes = readHandshakeData(2, connectTimeout);
     auto dI3 = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
         recvMsgLenBytes->value(), recvMsgLenBytes->length());
     uint16_t recvMsgLen2 = dI3->readInt16();
-    CacheableBytesPtr recvMessage =
-        readHandshakeData(recvMsgLen2, connectTimeout);
+    auto recvMessage = readHandshakeData(recvMsgLen2, connectTimeout);
 
     if (!isClientNotification) {
-      CacheableBytesPtr deltaEnabledMsg = readHandshakeData(1, connectTimeout);
+      auto deltaEnabledMsg = readHandshakeData(1, connectTimeout);
       auto di =
           m_connectionManager->getCacheImpl()->getCache()->createDataInput(
               deltaEnabledMsg->value(), 1);
@@ -1130,15 +1125,7 @@ void TcrConnection::close() {
   }
 }
 
-/* adongre
- * CID 28738: Unsigned compared against 0 (NO_EFFECT)
- * This less-than-zero comparison of an unsigned value is never true. "msgLength
- * < 0U".
- * Changing the unint32_t to int32_t
- */
-// CacheableBytesPtr TcrConnection::readHandshakeData(uint32_t msgLength,
-// uint32_t connectTimeout )
-CacheableBytesPtr TcrConnection::readHandshakeData(
+std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeData(
     int32_t msgLength, std::chrono::microseconds connectTimeout) {
   ConnErrType error = CONN_NOERR;
   if (msgLength < 0) {
@@ -1173,13 +1160,7 @@ CacheableBytesPtr TcrConnection::readHandshakeData(
   return nullptr;
 }
 
-// read just the bytes without the trailing null terminator
-/* adongre
- * CID 28739: Unsigned compared against 0 (NO_EFFECT)
- * change the input parameter from unint32_t to int32_t
- * as the comparasion case is valid
- */
-CacheableBytesPtr TcrConnection::readHandshakeRawData(
+std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeRawData(
     int32_t msgLength, std::chrono::microseconds connectTimeout) {
   ConnErrType error = CONN_NOERR;
   if (msgLength < 0) {
@@ -1213,8 +1194,7 @@ CacheableBytesPtr TcrConnection::readHandshakeRawData(
   }
 }
 
-// read a byte array
-CacheableBytesPtr TcrConnection::readHandshakeByteArray(
+std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeByteArray(
     std::chrono::microseconds connectTimeout) {
   uint32_t arraySize = readHandshakeArraySize(connectTimeout);
   return readHandshakeRawData(arraySize, connectTimeout);
@@ -1223,7 +1203,7 @@ CacheableBytesPtr TcrConnection::readHandshakeByteArray(
 // read a byte array
 uint32_t TcrConnection::readHandshakeArraySize(
     std::chrono::microseconds connectTimeout) {
-  CacheableBytesPtr codeBytes = readHandshakeData(1, connectTimeout);
+ auto codeBytes = readHandshakeData(1, connectTimeout);
   auto codeDI =
       m_connectionManager->getCacheImpl()->getCache()->createDataInput(
           codeBytes->value(), codeBytes->length());
@@ -1235,19 +1215,19 @@ uint32_t TcrConnection::readHandshakeArraySize(
     int32_t tempLen = code;
     if (tempLen > 252) {  // 252 is java's ((byte)-4 && 0xFF)
       if (code == 0xFE) {
-        CacheableBytesPtr lenBytes = readHandshakeData(2, connectTimeout);
+        auto lenBytes = readHandshakeData(2, connectTimeout);
         auto lenDI =
             m_connectionManager->getCacheImpl()->getCache()->createDataInput(
                 lenBytes->value(), lenBytes->length());
         uint16_t val = lenDI->readInt16();
         tempLen = val;
       } else if (code == 0xFD) {
-        CacheableBytesPtr lenBytes = readHandshakeData(4, connectTimeout);
-        auto lenDI =
-            m_connectionManager->getCacheImpl()->getCache()->createDataInput(
-                lenBytes->value(), lenBytes->length());
-        uint32_t val = lenDI->readInt32();
-        tempLen = val;
+       auto lenBytes = readHandshakeData(4, connectTimeout);
+       auto lenDI =
+           m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+               lenBytes->value(), lenBytes->length());
+       uint32_t val = lenDI->readInt32();
+       tempLen = val;
       } else {
         GF_SAFE_DELETE_CON(m_conn);
         throwException(IllegalStateException("unexpected array length code"));
@@ -1345,7 +1325,8 @@ int32_t TcrConnection::readHandShakeInt(
 
   return val;
 }
-CacheableStringPtr TcrConnection::readHandshakeString(
+
+std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
     std::chrono::microseconds connectTimeout) {
   ConnErrType error = CONN_NOERR;
 
@@ -1374,7 +1355,7 @@ CacheableStringPtr TcrConnection::readHandshakeString(
       break;
     }
     case GF_STRING: {
-      CacheableBytesPtr lenBytes = readHandshakeData(2, connectTimeout);
+     auto lenBytes = readHandshakeData(2, connectTimeout);
       auto lenDI =
           m_connectionManager->getCacheImpl()->getCache()->createDataInput(
               lenBytes->value(), lenBytes->length());
@@ -1421,7 +1402,7 @@ CacheableStringPtr TcrConnection::readHandshakeString(
     return nullptr;
   } else {
     LOGDEBUG(" Received string data [%s]", recvMessage);
-    CacheableStringPtr retval =
+   auto retval =
         CacheableString::createNoCopy(recvMessage, length);
     return retval;
   }

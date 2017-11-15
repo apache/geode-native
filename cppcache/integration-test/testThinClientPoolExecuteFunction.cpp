@@ -17,13 +17,15 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "testobject/VariousPdxTypes.hpp"
+
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
-
 #include <ace/ACE.h>
 
+#include <geode/PdxInstanceFactory.hpp>
+#include <geode/UserFunctionExecutionException.hpp>
+#include <geode/FunctionService.hpp>
 #include <geode/DefaultResultCollector.hpp>
-
 using namespace PdxTests;
 /* This is to test
 1- funtion execution on pool
@@ -122,12 +124,13 @@ class MyResultCollector : public DefaultResultCollector {
         m_getResultCount(0) {}
   ~MyResultCollector() {}
 
-  CacheableVectorPtr getResult(std::chrono::milliseconds timeout) override {
+  std::shared_ptr<CacheableVector> getResult(
+      std::chrono::milliseconds timeout) override {
     m_getResultCount++;
     return DefaultResultCollector::getResult(timeout);
   }
 
-  void addResult(const CacheablePtr& resultItem) override {
+  void addResult(const std::shared_ptr<Cacheable>& resultItem) override {
     m_addResultCount++;
     if (resultItem == nullptr) {
       return;
@@ -156,11 +159,10 @@ class MyResultCollector : public DefaultResultCollector {
   uint32_t m_addResultCount;
   uint32_t m_getResultCount;
 };
-_GF_PTR_DEF_(MyResultCollector, MyResultCollectorPtr)
 
 template <class _T>
 bool validateResultTypeAndAllowUserFunctionExecutionException(
-    const int32_t index, const CacheablePtr& result) {
+    const int32_t index, const std::shared_ptr<Cacheable>& result) {
   if (auto intValue = std::dynamic_pointer_cast<_T>(result)) {
     LOGINFO("%s is %d ", typeid(_T).name(), intValue->value());
     return true;
@@ -181,7 +183,7 @@ bool validateResultTypeAndAllowUserFunctionExecutionException(
 }
 
 bool validateResultTypeIsUserFunctionExecutionException(
-    const int32_t index, const CacheablePtr& result) {
+    const int32_t index, const std::shared_ptr<Cacheable>& result) {
   if (auto uFEPtr =
           std::dynamic_pointer_cast<UserFunctionExecutionException>(result)) {
     LOGINFO("Done casting to uFEPtr");
@@ -197,7 +199,7 @@ bool validateResultTypeIsUserFunctionExecutionException(
 }
 
 template <class _T>
-bool validateResultType(const int32_t index, const CacheablePtr& result) {
+bool validateResultType(const int32_t index, const std::shared_ptr<Cacheable>& result) {
   return false;
 }
 
@@ -261,7 +263,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     }
     SLEEP(10000);  // let the put finish
     try {
-      CacheablePtr args = CacheableBoolean::create(1);
+      std::shared_ptr<Cacheable> args = CacheableBoolean::create(1);
       auto routingObj = CacheableVector::create();
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
@@ -275,7 +277,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       auto exc = FunctionService::onRegion(regPtr0);
       ASSERT(exc != nullptr, "onRegion Returned nullptr");
       args = CacheableKey::create("echoString");
-      CacheablePtr args1 = CacheableKey::create("echoBoolean");
+      std::shared_ptr<Cacheable> args1 = CacheableKey::create("echoBoolean");
       auto exe1 = exc->withArgs(args);
       auto exe2 = exe1->withArgs(args1);
 
@@ -343,16 +345,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                                   ->withArgs(args)
                                   ->execute(getFuncName)
                                   ->getResult();
-      /****
-       **decomposed from above long expression:
-      exc =  exc->withFilter(routingObj);
-      ASSERT(exc!=nullptr, "withFilter Returned nullptr");
-      exc = exc->withArgs(args);
-      ASSERT(exc!=nullptr, "withArgs Returned nullptr");
-      ResultCollectorPtr rc = exc->execute(getFuncName, getResult);
-      ASSERT(rc!=nullptr, "execute Returned nullptr");
-      CacheableVectorPtr executeFunctionResult = rc->getResult();
-      */
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "region get: executeFunctionResult is nullptr");
       } else {
@@ -382,7 +374,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
             LOG(buf);
             verifyGetResults()
           } else {
-            CacheablePtr tmp = resultList->operator[](i);
+            std::shared_ptr<Cacheable> tmp = resultList->operator[](i);
             if (tmp != nullptr) {
               printf(" in typeid = %d  \n", tmp->typeId());
 
@@ -441,7 +433,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
         sprintf(buf, "KEY--%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+       auto key = CacheableKey::create(buf);
         auto value =
             std::dynamic_pointer_cast<CacheableString>(regPtr0->get(key));
         sprintf(buf, "Region put: result[%d]=%s", i, value->asChar());
@@ -626,8 +618,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       // test data independant function
       //     test get function with result
       args = routingObj;
-      // ExecutionPtr exc=nullptr;
-      // CacheableVectorPtr executeFunctionResult = nullptr;
+
       // test data independant function on one server
       LOG("test data independant get function on one server");
       exc = FunctionService::onServer(getHelper()->cachePtr);
@@ -684,7 +675,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       // onServers-------------------------------//
 
       try {
-        SerializationRegistryPtr serializationRegistry =
+       auto serializationRegistry =
             CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
                 ->getSerializationRegistry();
         serializationRegistry->addPdxType(
@@ -766,7 +757,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       for (int i = 0; i < 34; i++) {
         sprintf(buf, "KEY--pdx%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+       auto key = CacheableKey::create(buf);
         regPtr0->put(key, pdxobj);
       }
       LOGINFO("put on pdxObject done");
@@ -775,7 +766,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       for (int i = 0; i < 34; i++) {
         if (i % 2 == 0) continue;
         sprintf(buf, "KEY--pdx%d", i);
-        CacheableKeyPtr key = CacheableKey::create(buf);
+        auto key = CacheableKey::create(buf);
         pdxInstanceRoutingObj->push_back(key);
       }
 
@@ -1128,7 +1119,7 @@ END_TASK_DEFINITION
 
 class putThread : public ACE_Task_Base {
  private:
-  RegionPtr regPtr;
+  std::shared_ptr<Region> regPtr;
   int m_min;
   int m_max;
   int m_failureCount;
@@ -1136,7 +1127,7 @@ class putThread : public ACE_Task_Base {
   volatile bool m_stop;
 
  public:
-  putThread(RegionPtr rp, int min, int max, bool isWarmUpTask)
+  putThread(std::shared_ptr<Region> rp, int min, int max, bool isWarmUpTask)
       : regPtr(rp),
         m_min(min),
         m_max(max),
@@ -1150,8 +1141,8 @@ class putThread : public ACE_Task_Base {
 
   int svc(void) {
     bool networkhop ATTR_UNUSED = false;
-    CacheablePtr args = nullptr;
-    ResultCollectorPtr rPtr = nullptr;
+  std::shared_ptr<Cacheable> args = nullptr;
+  std::shared_ptr<ResultCollector> rPtr = nullptr;
     auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     while (!m_stop) {
       for (int i = m_min; i < m_max; i++) {
@@ -1188,8 +1179,8 @@ class putThread : public ACE_Task_Base {
 void executeFunction() {
   auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
   TestUtils::getCacheImpl(getHelper()->cachePtr)->getAndResetNetworkHopFlag();
-  CacheablePtr args = nullptr;
-  ResultCollectorPtr rPtr = nullptr;
+std::shared_ptr<Cacheable> args = nullptr;
+std::shared_ptr<ResultCollector> rPtr = nullptr;
   int failureCount = 0;
   LOGINFO("executeFunction started");
   for (int i = 0; i < 300; i++) {

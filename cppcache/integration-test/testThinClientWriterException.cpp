@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include "ThinClientHelper.hpp"
 #include "ace/Process.h"
 #include "TallyListener.hpp"
@@ -33,52 +32,50 @@
 */
 using namespace apache::geode::client::testframework::security;
 using namespace apache::geode::client;
-
-TallyListenerPtr regListener;
-TallyWriterPtr regWriter;
+std::shared_ptr<TallyListener> regListener;
+std::shared_ptr<TallyWriter> regWriter;
 
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 const char* regionNamesAuth[] = {"DistRegionAck"};
+ std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
-CredentialGeneratorPtr credentialGeneratorHandler;
+ std::string getXmlPath() {
+   char xmlPath[1000] = {'\0'};
+   const char* path = ACE_OS::getenv("TESTSRC");
+   ASSERT(path != nullptr,
+          "Environment variable TESTSRC for test source directory is not set.");
+   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
+   strcat(xmlPath, "xml/Security/");
+   return std::string(xmlPath);
+ }
 
-std::string getXmlPath() {
-  char xmlPath[1000] = {'\0'};
-  const char* path = ACE_OS::getenv("TESTSRC");
-  ASSERT(path != nullptr,
-         "Environment variable TESTSRC for test source directory is not set.");
-  strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
-  strcat(xmlPath, "xml/Security/");
-  return std::string(xmlPath);
-}
+ void initCredentialGenerator() {
+   static int loopNum = 1;
 
-void initCredentialGenerator() {
-  static int loopNum = 1;
+   switch (loopNum) {
+     case 1: {
+       credentialGeneratorHandler = CredentialGenerator::create("DUMMY");
+       break;
+     }
+     case 2: {
+       credentialGeneratorHandler = CredentialGenerator::create("LDAP");
+       break;
+     }
+     default:
+     case 3: {
+       credentialGeneratorHandler = CredentialGenerator::create("PKCS");
+       break;
+     }
+   }
 
-  switch (loopNum) {
-    case 1: {
-      credentialGeneratorHandler = CredentialGenerator::create("DUMMY");
-      break;
-    }
-    case 2: {
-      credentialGeneratorHandler = CredentialGenerator::create("LDAP");
-      break;
-    }
-    default:
-    case 3: {
-      credentialGeneratorHandler = CredentialGenerator::create("PKCS");
-      break;
-    }
-  }
+   if (credentialGeneratorHandler == nullptr) {
+     FAIL("credentialGeneratorHandler is nullptr");
+   }
 
-  if (credentialGeneratorHandler == nullptr) {
-    FAIL("credentialGeneratorHandler is nullptr");
-  }
-
-  loopNum++;
-  if (loopNum > 2) loopNum = 1;
+   loopNum++;
+   if (loopNum > 2) loopNum = 1;
 }
 
 opCodeList::value_type tmpRArr[] = {OP_GET, OP_REGISTER_INTEREST,
@@ -105,7 +102,7 @@ opCodeList::value_type tmpRArr[] = {OP_GET, OP_REGISTER_INTEREST,
 #define READER_CLIENT s2p1
 
 void initClientAuth() {
-  PropertiesPtr config = Properties::create();
+ auto config = Properties::create();
   opCodeList rt(tmpRArr, tmpRArr + sizeof tmpRArr / sizeof *tmpRArr);
   credentialGeneratorHandler->getAuthInit(config);
   credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config, nullptr);
@@ -120,10 +117,10 @@ void initClientAuth() {
   }
 }
 
-void setCacheWriter(const char* regName, TallyWriterPtr regWriter) {
-  RegionPtr reg = getHelper()->getRegion(regName);
-  AttributesMutatorPtr attrMutator = reg->getAttributesMutator();
-  attrMutator->setCacheWriter(regWriter);
+void setCacheWriter(const char* regName, std::shared_ptr<TallyWriter> regWriter) {
+ auto reg = getHelper()->getRegion(regName);
+ auto attrMutator = reg->getAttributesMutator();
+ attrMutator->setCacheWriter(regWriter);
 }
 
 DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StartServer1)
@@ -155,7 +152,7 @@ END_TASK_DEFINITION
 void startClient() {
   initCredentialGenerator();
   initClientAuth();
-  RegionPtr rptr;
+  std::shared_ptr<Region> rptr;
   char buf[100];
   int i = 102;
   LOG("Creating region in READER_CLIENT , no-ack, no-cache, with-listener and "
@@ -167,9 +164,9 @@ void startClient() {
   rptr = getHelper()->getRegion(regionNamesAuth[0]);
   rptr->registerAllKeys();
   sprintf(buf, "%s: %d", rptr->getName(), i);
-  CacheableKeyPtr key = createKey(buf);
+ auto key = createKey(buf);
   sprintf(buf, "testUpdate::%s: value of %d", rptr->getName(), i);
-  CacheableStringPtr valuePtr = CacheableString::create(buf);
+  auto valuePtr = CacheableString::create(buf);
   try {
     LOG("Trying put Operation");
     rptr->put(key, valuePtr);

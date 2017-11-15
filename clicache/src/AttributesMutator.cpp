@@ -167,7 +167,7 @@ namespace Apache
       generic<class TKey, class TValue>
       void AttributesMutator<TKey, TValue>::SetCacheListener( ICacheListener<TKey, TValue>^ cacheListener )
       {
-        native::CacheListenerPtr listenerptr;
+        std::shared_ptr<native::CacheListener> listenerptr;
         if (cacheListener != nullptr)
         {
           auto clg = gcnew CacheListenerGeneric<TKey, TValue>();
@@ -195,7 +195,7 @@ namespace Apache
       generic<class TKey, class TValue>
       void AttributesMutator<TKey, TValue>::SetCacheLoader( ICacheLoader<TKey, TValue>^ cacheLoader )
       {
-        native::CacheLoaderPtr loaderptr;
+        std::shared_ptr<native::CacheLoader> loaderptr;
         if (cacheLoader != nullptr)
         {
           auto clg = gcnew CacheLoaderGeneric<TKey, TValue>();
@@ -223,7 +223,7 @@ namespace Apache
       generic<class TKey, class TValue>
       void AttributesMutator<TKey, TValue>::SetCacheWriter( ICacheWriter<TKey, TValue>^ cacheWriter )
       {
-        native::CacheWriterPtr writerptr;
+        std::shared_ptr<native::CacheWriter> writerptr;
         if (cacheWriter != nullptr)
         {
           auto cwg = gcnew CacheWriterGeneric<TKey, TValue>();

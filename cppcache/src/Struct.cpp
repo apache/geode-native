@@ -27,7 +27,8 @@ namespace client {
 
 Struct::Struct() : m_parent(nullptr), m_lastAccessIndex(0) {}
 
-Struct::Struct(StructSet* ssPtr, std::vector<SerializablePtr>& fieldValues) {
+Struct::Struct(StructSet* ssPtr,
+               std::vector<std::shared_ptr<Serializable>>& fieldValues) {
   m_parent = ssPtr;
   m_fieldValues.insert(m_fieldValues.end(), fieldValues.begin(),
                        fieldValues.end());
@@ -68,7 +69,7 @@ void Struct::fromData(DataInput& input) {
 
   m_parent = nullptr;
   for (int32_t i = 0; i < numOfFields; i++) {
-    CacheableStringPtr fieldName = input.readNativeString();
+    auto fieldName = input.readNativeString();
     m_fieldNames.emplace(fieldName->asChar(), i);
   }
   int32_t lengthForTypes = input.readArrayLen();
@@ -80,7 +81,7 @@ void Struct::fromData(DataInput& input) {
   int32_t numOfSerializedValues = input.readArrayLen();
   skipClassName(input);
   for (int i = 0; i < numOfSerializedValues; i++) {
-    SerializablePtr val;
+    std::shared_ptr<Serializable> val;
     input.readObject(val);  // need to look
     m_fieldValues.push_back(val);
   }
@@ -98,7 +99,7 @@ const std::string& Struct::getFieldName(const int32_t index) const {
   throw OutOfRangeException("Struct: fieldName not found.");
 }
 
-const SerializablePtr Struct::operator[](int32_t index) const {
+const std::shared_ptr<Serializable> Struct::operator[](int32_t index) const {
   if (index >= m_fieldValues.size()) {
     return nullptr;
   }
@@ -106,7 +107,8 @@ const SerializablePtr Struct::operator[](int32_t index) const {
   return m_fieldValues[index];
 }
 
-const SerializablePtr Struct::operator[](const std::string& fieldName) const {
+const std::shared_ptr<Serializable> Struct::operator[](
+    const std::string& fieldName) const {
   int32_t index;
   if (m_parent == nullptr) {
     const auto& iter = m_fieldNames.find(fieldName);
@@ -120,8 +122,8 @@ const SerializablePtr Struct::operator[](const std::string& fieldName) const {
   return m_fieldValues[index];
 }
 
-const StructSetPtr Struct::getStructSet() const {
-  return StructSetPtr(m_parent);
+const std::shared_ptr<StructSet> Struct::getStructSet() const {
+  return std::shared_ptr<StructSet>(m_parent);
 }
 
 bool Struct::hasNext() const {
@@ -131,7 +133,7 @@ bool Struct::hasNext() const {
   return false;
 }
 
-const SerializablePtr Struct::next() {
+const std::shared_ptr<Serializable> Struct::next() {
   m_lastAccessIndex++;
   return m_fieldValues[m_lastAccessIndex - 1];
 }

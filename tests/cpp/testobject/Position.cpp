@@ -17,6 +17,8 @@
 #include "Position.hpp"
 #include <cwchar>
 #include <wchar.h>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
 
 using namespace apache::geode::client;
 using namespace testobject;
@@ -117,8 +119,7 @@ void Position::fromData(apache::geode::client::DataInput& input) {
   volatility = input.readInt64();
   pid = input.readInt32();
 }
-
-CacheableStringPtr Position::toString() const {
+std::shared_ptr<CacheableString> Position::toString() const {
   char buf[2048];
   sprintf(buf,
           "Position Object:[ secId=%s type=%ls sharesOutstanding=%d id=%d ]",

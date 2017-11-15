@@ -33,23 +33,26 @@ class Region;
 AttributesFactory::AttributesFactory() : m_regionAttributes() {}
 
 AttributesFactory::AttributesFactory(
-    const RegionAttributesPtr& regionAttributes)
+    const std::shared_ptr<RegionAttributes>& regionAttributes)
     : m_regionAttributes(*regionAttributes) {}
 
 AttributesFactory::~AttributesFactory() {}
 
-void AttributesFactory::setCacheLoader(const CacheLoaderPtr& cacheLoader) {
+void AttributesFactory::setCacheLoader(
+    const std::shared_ptr<CacheLoader>& cacheLoader) {
   m_regionAttributes.m_cacheLoader = cacheLoader;
 }
 
-void AttributesFactory::setCacheWriter(const CacheWriterPtr& cacheWriter) {
+void AttributesFactory::setCacheWriter(
+    const std::shared_ptr<CacheWriter>& cacheWriter) {
   m_regionAttributes.m_cacheWriter = cacheWriter;
 }
-void AttributesFactory::setCacheListener(const CacheListenerPtr& aListener) {
+void AttributesFactory::setCacheListener(
+    const std::shared_ptr<CacheListener>& aListener) {
   m_regionAttributes.m_cacheListener = aListener;
 }
 void AttributesFactory::setPartitionResolver(
-    const PartitionResolverPtr& aResolver) {
+    const std::shared_ptr<PartitionResolver>& aResolver) {
   m_regionAttributes.m_partitionResolver = aResolver;
 }
 
@@ -114,7 +117,7 @@ void AttributesFactory::setStatisticsEnabled( bool statisticsEnabled)
 */
 
 std::unique_ptr<RegionAttributes> AttributesFactory::createRegionAttributes() {
-  RegionAttributesPtr res;
+  std::shared_ptr<RegionAttributes> res;
   validateAttributes(m_regionAttributes);
   return std::unique_ptr<RegionAttributes>(
       new RegionAttributes(m_regionAttributes));
@@ -178,14 +181,15 @@ void AttributesFactory::setCachingEnabled(bool cachingEnabled) {
 }
 
 void AttributesFactory::setPersistenceManager(
-    const PersistenceManagerPtr& persistenceManager,
-    const PropertiesPtr& props) {
+    const std::shared_ptr<PersistenceManager>& persistenceManager,
+    const std::shared_ptr<Properties>& props) {
   m_regionAttributes.m_persistenceManager = persistenceManager;
   m_regionAttributes.m_persistenceProperties = props;
 }
 
-void AttributesFactory::setPersistenceManager(const char* lib, const char* func,
-                                              const PropertiesPtr& config) {
+void AttributesFactory::setPersistenceManager(
+    const char* lib, const char* func,
+    const std::shared_ptr<Properties>& config) {
   m_regionAttributes.setPersistenceManager(lib, func, config);
 }
 

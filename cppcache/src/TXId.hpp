@@ -35,8 +35,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-_GF_PTR_DEF_(TXId, TXIdPtr);
-
 class TXId : public apache::geode::client::TransactionId {
  public:
   TXId();

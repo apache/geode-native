@@ -33,7 +33,7 @@ namespace client {
 class PdxLocalReader : public PdxReader {
  protected:
   DataInput* m_dataInput;
-  PdxTypePtr m_pdxType;
+  std::shared_ptr<PdxType> m_pdxType;
   uint8_t* m_startBuffer;
   int32_t m_startPosition;
   int32_t m_serializedLength;
@@ -41,7 +41,7 @@ class PdxLocalReader : public PdxReader {
   int32_t m_offsetSize;
   uint8_t* m_offsetsBuffer;
   bool m_isDataNeedToPreserve;
-  PdxRemotePreservedDataPtr m_pdxRemotePreserveData;
+  std::shared_ptr<PdxRemotePreservedData> m_pdxRemotePreserveData;
   int32_t* m_localToRemoteMap;
   int32_t* m_remoteToLocalMap;
   int32_t m_remoteToLocalMapSize;
@@ -51,17 +51,19 @@ class PdxLocalReader : public PdxReader {
   void checkEmptyFieldName(const char* fieldName);
 
  public:
-  PdxLocalReader(PdxTypeRegistryPtr pdxTypeRegistry);
+  PdxLocalReader(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
-  PdxLocalReader(DataInput& input, PdxTypePtr remoteType, int32_t pdxLen,
-                 PdxTypeRegistryPtr pdxTypeRegistry);
+  PdxLocalReader(DataInput& input, std::shared_ptr<PdxType> remoteType,
+                 int32_t pdxLen,
+                 std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
   virtual ~PdxLocalReader();
 
   void MoveStream();
 
-  virtual PdxRemotePreservedDataPtr getPreservedData(
-      PdxTypePtr mergedVersion, PdxSerializablePtr pdxObject);
+  virtual std::shared_ptr<PdxRemotePreservedData> getPreservedData(
+      std::shared_ptr<PdxType> mergedVersion,
+      std::shared_ptr<PdxSerializable> pdxObject);
 
   /**
    * Read a char value from the <code>PdxReader</code>.
@@ -137,9 +139,9 @@ class PdxLocalReader : public PdxReader {
   /**
    * Read a object from the <code>PdxReader</code>.
    * @param fieldName name of the field which needs to serialize
-   * Returns SerializablePtr
+   * Returns std::shared_ptr<Serializable>
    */
-  virtual SerializablePtr readObject(const char* fieldName);
+  virtual std::shared_ptr<Serializable> readObject(const char* fieldName);
 
   virtual char* readCharArray(const char* fieldName, int32_t& length);
 
@@ -198,28 +200,27 @@ class PdxLocalReader : public PdxReader {
 
   virtual wchar_t** readWideStringArray(const char* fieldName, int32_t& length);
 
-  virtual CacheableObjectArrayPtr readObjectArray(const char* fieldName);
+  virtual std::shared_ptr<CacheableObjectArray> readObjectArray(
+      const char* fieldName);
 
   virtual int8_t** readArrayOfByteArrays(const char* fieldName,
                                          int32_t& arrayLength,
                                          int32_t** elementLength);
 
-  virtual CacheableDatePtr readDate(const char* fieldName);
+  virtual std::shared_ptr<CacheableDate> readDate(const char* fieldName);
 
   virtual bool hasField(const char* fieldName);
 
   virtual bool isIdentityField(const char* fieldName);
 
   virtual void readCollection(const char* fieldName,
-                              CacheableArrayListPtr& collection);
+                              std::shared_ptr<CacheableArrayList>& collection);
 
-  virtual PdxUnreadFieldsPtr readUnreadFields();
+  virtual std::shared_ptr<PdxUnreadFields> readUnreadFields();
 
  protected:
-
-  PdxTypeRegistryPtr m_pdxTypeRegistry;
+  std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
 };
-typedef std::shared_ptr<PdxLocalReader> PdxLocalReaderPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

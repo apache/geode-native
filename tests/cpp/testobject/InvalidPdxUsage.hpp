@@ -27,7 +27,8 @@
  */
 
 #include <geode/PdxSerializable.hpp>
-#include <geode/GeodeCppCache.hpp>
+#include <geode/CacheableEnum.hpp>
+#include <geode/CacheableObjectArray.hpp>
 #include <geode/PdxWriter.hpp>
 #include <geode/PdxReader.hpp>
 
@@ -74,7 +75,7 @@ class TESTOBJECT_EXPORT CharTypesWithInvalidUsage : public PdxSerializable {
 
   CharTypesWithInvalidUsage() { init(); }
 
-  CacheableStringPtr toString() const {
+  std::shared_ptr<CacheableString> toString() const {
     char idbuf[1024];
     sprintf(idbuf, "%c %lc %c %c %lc %lc", m_ch, m_widechar, m_chArray[0],
             m_chArray[1], m_widecharArray[0], m_widecharArray[1]);
@@ -127,14 +128,14 @@ class TESTOBJECT_EXPORT CharTypesWithInvalidUsage : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(PdxWriterPtr pw) {
+  void toData(std::shared_ptr<PdxWriter> pw) {
     pw->writeChar("m_ch", m_ch);
     pw->writeChar("m_widechar", m_widechar);
     pw->writeCharArray("m_chArray", m_chArray, 2);
     pw->writeWideCharArray("m_widecharArray", m_widecharArray, 2);
   }
 
-  void fromData(PdxReaderPtr pr) {
+  void fromData(std::shared_ptr<PdxReader> pr) {
     m_ch = pr->readChar("m_ch");
     m_widechar = pr->readWideChar("m_widechar");
     m_chArray = pr->readCharArray("m_chArray", m_wcharArrayLen);
@@ -145,7 +146,6 @@ class TESTOBJECT_EXPORT CharTypesWithInvalidUsage : public PdxSerializable {
     return new CharTypesWithInvalidUsage();
   }
 };
-typedef std::shared_ptr<CharTypesWithInvalidUsage> CharTypesWithInvalidUsagePtr;
 
 class TESTOBJECT_EXPORT AddressWithInvalidAPIUsage : public PdxSerializable {
  private:
@@ -156,7 +156,7 @@ class TESTOBJECT_EXPORT AddressWithInvalidAPIUsage : public PdxSerializable {
  public:
   AddressWithInvalidAPIUsage() {}
 
-  CacheableStringPtr toString() const {
+  std::shared_ptr<CacheableString> toString() const {
     char idbuf[1024];
     sprintf(idbuf, "%d %s %s", _aptNumber, _street, _city);
     return CacheableString::create(idbuf);
@@ -199,13 +199,13 @@ class TESTOBJECT_EXPORT AddressWithInvalidAPIUsage : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(PdxWriterPtr pw) {
+  void toData(std::shared_ptr<PdxWriter> pw) {
     pw->writeInt("_aptNumber", _aptNumber);  // 4
     pw->writeString("_street", _street);
     pw->writeString("_city", _city);
   }
 
-  void fromData(PdxReaderPtr pr) {
+  void fromData(std::shared_ptr<PdxReader> pr) {
     _aptNumber = pr->readInt("_aptNumber");
     _street = pr->readString("_street");
     _city = pr->readString("_city");
@@ -221,8 +221,6 @@ class TESTOBJECT_EXPORT AddressWithInvalidAPIUsage : public PdxSerializable {
 
   const char* getCity() { return _city; }
 };
-typedef std::shared_ptr<AddressWithInvalidAPIUsage>
-    AddressWithInvalidAPIUsagePtr;
 
 enum pdxEnumTestWithInvalidAPIUsage { mypdx1, mypdx2, mypdx3 };
 
@@ -249,7 +247,7 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
 
   wchar_t* m_charArray;
 
-  CacheableDatePtr m_date;
+  std::shared_ptr<CacheableDate> m_date;
 
   int16_t* m_int16Array;
   int16_t* m_uint16Array;
@@ -266,23 +264,23 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
   int8_t** m_byteByteArray;
 
   char** m_stringArray;
-  SerializablePtr m_address;
+  std::shared_ptr<Serializable> m_address;
   AddressWithInvalidAPIUsage* m_add[10];
 
-  CacheableArrayListPtr m_arraylist;
-  CacheableHashMapPtr m_map;
-  CacheableHashTablePtr m_hashtable;
-  CacheableVectorPtr m_vector;
+  std::shared_ptr<CacheableArrayList> m_arraylist;
+  std::shared_ptr<CacheableHashMap> m_map;
+  std::shared_ptr<CacheableHashTable> m_hashtable;
+  std::shared_ptr<CacheableVector> m_vector;
 
-  CacheableHashSetPtr m_chs;
-  CacheableLinkedHashSetPtr m_clhs;
+  std::shared_ptr<CacheableHashSet> m_chs;
+  std::shared_ptr<CacheableLinkedHashSet> m_clhs;
 
   int8_t* m_byte252;
   int8_t* m_byte253;
   int8_t* m_byte65535;
   int8_t* m_byte65536;
-  CacheableEnumPtr m_pdxEnum;
-  CacheableObjectArrayPtr m_objectArray;
+  std::shared_ptr<CacheableEnum> m_pdxEnum;
+  std::shared_ptr<CacheableObjectArray> m_objectArray;
 
   int32_t boolArrayLen;
   int32_t charArrayLen;
@@ -430,7 +428,7 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
     m_pdxEnum = CacheableEnum::create("PdxTests.pdxEnumTestWithInvalidAPIUsage",
                                       "mypdx2", mypdx2);
 
-    // AddressWithInvalidAPIUsagePtr* addPtr = NULL;
+    // std::shared_ptr<AddressWithInvalidAPIUsage>* addPtr = NULL;
     // m_add = new AddressWithInvalidAPIUsage[10];
     // addPtr[i] = AddressWithInvalidAPIUsage::create();
 
@@ -445,50 +443,28 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
     m_add[8] = new AddressWithInvalidAPIUsage(9, "street8", "city8");
     m_add[9] = new AddressWithInvalidAPIUsage(10, "street9", "city9");
 
-    // m_address =  SerializablePtr(m_add);
-    // CacheablePtr cacheableObject =
-    // CacheableObject::create()create(ptrArr,length);
-    /*char key[2048];
-    VectorOfCacheableKey keys;
-    for (int32_t item = 0; item < 3; item++) {
-      sprintf(key, "key-%d", item);
-      keys.push_back(CacheableKey::create(key));
-    }*/
-
     m_objectArray = nullptr;
-    /*AddressWithInvalidAPIUsagePtr objectArray[3];
-    objectArray[0] = new AddressWithInvalidAPIUsage(1, "strt-1", "city-1");
-    objectArray[1] = new AddressWithInvalidAPIUsage(2, "strt-2", "city-2");
-    objectArray[2] = new AddressWithInvalidAPIUsage(3, "strt-3", "city-3");*/
-
-    /*
-    auto addObj1 = std::make_shared<AddressWithInvalidAPIUsage>(1,
-    "abc", "ABC");
-    auto addObj2 = std::make_shared<AddressWithInvalidAPIUsage>(2,
-    "def", "DEF");
-    auto addObj3 = std::make_shared<AddressWithInvalidAPIUsage>(3,
-    "ghi", "GHI");*/
 
     m_objectArray = CacheableObjectArray::create();
-    m_objectArray->push_back(AddressWithInvalidAPIUsagePtr(
+    m_objectArray->push_back(std::shared_ptr<AddressWithInvalidAPIUsage>(
         new AddressWithInvalidAPIUsage(1, "street0", "city0")));
-    m_objectArray->push_back(AddressWithInvalidAPIUsagePtr(
+    m_objectArray->push_back(std::shared_ptr<AddressWithInvalidAPIUsage>(
         new AddressWithInvalidAPIUsage(2, "street1", "city1")));
-    m_objectArray->push_back(AddressWithInvalidAPIUsagePtr(
+    m_objectArray->push_back(std::shared_ptr<AddressWithInvalidAPIUsage>(
         new AddressWithInvalidAPIUsage(3, "street2", "city2")));
-    m_objectArray->push_back(AddressWithInvalidAPIUsagePtr(
+    m_objectArray->push_back(std::shared_ptr<AddressWithInvalidAPIUsage>(
         new AddressWithInvalidAPIUsage(4, "street3", "city3")));
-    m_objectArray->push_back(AddressWithInvalidAPIUsagePtr(
+    m_objectArray->push_back(std::shared_ptr<AddressWithInvalidAPIUsage>(
         new AddressWithInvalidAPIUsage(5, "street4", "city4")));
-    m_objectArray->push_back(AddressWithInvalidAPIUsagePtr(
+    m_objectArray->push_back(std::shared_ptr<AddressWithInvalidAPIUsage>(
         new AddressWithInvalidAPIUsage(6, "street5", "city5")));
-    m_objectArray->push_back(AddressWithInvalidAPIUsagePtr(
+    m_objectArray->push_back(std::shared_ptr<AddressWithInvalidAPIUsage>(
         new AddressWithInvalidAPIUsage(7, "street6", "city6")));
-    m_objectArray->push_back(AddressWithInvalidAPIUsagePtr(
+    m_objectArray->push_back(std::shared_ptr<AddressWithInvalidAPIUsage>(
         new AddressWithInvalidAPIUsage(8, "street7", "city7")));
-    m_objectArray->push_back(AddressWithInvalidAPIUsagePtr(
+    m_objectArray->push_back(std::shared_ptr<AddressWithInvalidAPIUsage>(
         new AddressWithInvalidAPIUsage(9, "street8", "city8")));
-    m_objectArray->push_back(AddressWithInvalidAPIUsagePtr(
+    m_objectArray->push_back(std::shared_ptr<AddressWithInvalidAPIUsage>(
         new AddressWithInvalidAPIUsage(10, "street9", "city9")));
 
     m_byte252 = new int8_t[252];
@@ -568,7 +544,7 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
 
   bool getBool() { return m_bool; }
 
-  CacheableHashMapPtr getHashMap() { return m_map; }
+  std::shared_ptr<CacheableHashMap> getHashMap() { return m_map; }
 
   int8_t getSByte() { return m_sbyte; }
 
@@ -594,15 +570,15 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
 
   int8_t* getSByteArray() { return m_sbyteArray; }
 
-  CacheableHashSetPtr getHashSet() { return m_chs; }
+  std::shared_ptr<CacheableHashSet> getHashSet() { return m_chs; }
 
-  CacheableLinkedHashSetPtr getLinkedHashSet() { return m_clhs; }
+  std::shared_ptr<CacheableLinkedHashSet> getLinkedHashSet() { return m_clhs; }
 
-  CacheableArrayListPtr getArrayList() { return m_arraylist; }
+  std::shared_ptr<CacheableArrayList> getArrayList() { return m_arraylist; }
 
-  CacheableHashTablePtr getHashTable() { return m_hashtable; }
+  std::shared_ptr<CacheableHashTable> getHashTable() { return m_hashtable; }
 
-  CacheableVectorPtr getVector() { return m_vector; }
+  std::shared_ptr<CacheableVector> getVector() { return m_vector; }
 
   int8_t getByte() { return m_byte; }
 
@@ -634,11 +610,13 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
 
   char** getStringArray() { return m_stringArray; }
 
-  CacheableDatePtr getDate() { return m_date; }
+  std::shared_ptr<CacheableDate> getDate() { return m_date; }
 
-  CacheableObjectArrayPtr getCacheableObjectArray() { return m_objectArray; }
+  std::shared_ptr<CacheableObjectArray> getCacheableObjectArray() {
+    return m_objectArray;
+  }
 
-  CacheableEnumPtr getEnum() { return m_pdxEnum; }
+  std::shared_ptr<CacheableEnum> getEnum() { return m_pdxEnum; }
 
   int32_t getByteArrayLength() { return byteArrayLen; }
 
@@ -663,11 +641,11 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void toData(PdxWriterPtr pw) /*const*/;
+  virtual void toData(std::shared_ptr<PdxWriter> pw) /*const*/;
 
-  virtual void fromData(PdxReaderPtr pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   const char* getClassName() const { return "PdxTests.InvalidPdxUsage"; }
 
@@ -687,7 +665,6 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
   bool generic2DCompare(T1** value1, T2** value2, int length,
                         int* arrLengths) const;
 };
-typedef std::shared_ptr<PdxTests::InvalidPdxUsage> InvalidPdxUsagePtr;
 }  // namespace PdxTests
 
 #endif  // GEODE_TESTOBJECT_INVALIDPDXUSAGE_H_

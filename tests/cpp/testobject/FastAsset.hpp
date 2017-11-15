@@ -24,7 +24,6 @@
  * @brief User class for testing the query functionality.
  */
 
-#include <geode/GeodeCppCache.hpp>
 #include <string>
 #include "fwklib/Timer.hpp"
 #include "fwklib/FrameworkTest.hpp"
@@ -46,15 +45,13 @@
 using namespace apache::geode::client;
 using namespace testframework;
 namespace testobject {
-class FastAsset;
-typedef std::shared_ptr<FastAsset> FastAssetPtr;
 
 class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
  private:
   int32_t assetId;
   double value;
 
-  inline uint32_t getObjectSize(const SerializablePtr& obj) const {
+  inline uint32_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -90,7 +87,7 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
   /**
    * Makes a copy of this asset.
    */
-  FastAssetPtr copy() {
+  std::shared_ptr<FastAsset> copy() {
     auto asset = std::make_shared<FastAsset>();
     asset->setAssetId(getAssetId());
     asset->setValue(getValue());
@@ -101,7 +98,7 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
    */
   void setAssetId(int i) { assetId = i; }
 
-  CacheableStringPtr toString() const {
+  std::shared_ptr<CacheableString> toString() const {
     char buf[102500];
     sprintf(buf, "FastAsset:[assetId = %d value = %f]", assetId, value);
     return CacheableString::create(buf);
@@ -112,7 +109,6 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
   }
 };
 
-// typedef std::shared_ptr<FastAsset> FastAssetPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_FASTASSET_H_

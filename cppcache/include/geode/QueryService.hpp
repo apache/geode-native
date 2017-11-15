@@ -45,7 +45,7 @@ namespace client {
  */
 class CPPCACHE_EXPORT QueryService {
  public:
-  typedef std::vector<CqQueryPtr> query_container_type;
+  typedef std::vector<std::shared_ptr<CqQuery>> query_container_type;
 
   /**
    * Get a new Query with the specified query string.
@@ -53,7 +53,7 @@ class CPPCACHE_EXPORT QueryService {
    * @param querystr The query string with which to create a new Query.
    * @returns A smart pointer to the Query.
    */
-  virtual QueryPtr newQuery(const char* querystr) = 0;
+  virtual std::shared_ptr<Query> newQuery(const char* querystr) = 0;
 
   /**
    * @nativeclient
@@ -88,9 +88,9 @@ class CPPCACHE_EXPORT QueryService {
    *
    * @endnativeclient
    */
-  virtual CqQueryPtr newCq(const char* name, const char* querystr,
-                           const CqAttributesPtr& cqAttr,
-                           bool isDurable = false) = 0;
+  virtual std::shared_ptr<CqQuery> newCq(
+      const char* name, const char* querystr,
+      const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable = false) = 0;
   /**
    * @nativeclient
    * Constructs a new named continuous query, represented by an instance of
@@ -123,8 +123,9 @@ class CPPCACHE_EXPORT QueryService {
    *
    * @endnativeclient
    */
-  virtual CqQueryPtr newCq(const char* querystr, const CqAttributesPtr& cqAttr,
-                           bool isDurable = false) = 0;
+  virtual std::shared_ptr<CqQuery> newCq(
+      const char* querystr, const std::shared_ptr<CqAttributes>& cqAttr,
+      bool isDurable = false) = 0;
   /**
    * @nativeclient
    * Close all CQs, and release resources
@@ -144,7 +145,7 @@ class CPPCACHE_EXPORT QueryService {
    * @return the CqQuery or nullptr if not found
    * @endnativeclient
    */
-  virtual CqQueryPtr getCq(const char* name) = 0;
+  virtual std::shared_ptr<CqQuery> getCq(const char* name) = 0;
   /**
    * @nativeclient
    * Executes all the cqs on this client.
@@ -163,7 +164,7 @@ class CPPCACHE_EXPORT QueryService {
    * @return the CqServiceStatistics
    * @endnativeclient
    */
-  virtual CqServiceStatisticsPtr getCqServiceStatistics() = 0;
+  virtual std::shared_ptr<CqServiceStatistics> getCqServiceStatistics() = 0;
 
   /**
    * Gets all the durable CQs registered by this client.
@@ -171,7 +172,7 @@ class CPPCACHE_EXPORT QueryService {
    * @return List of names of registered durable CQs, empty list if no durable
    * cqs.
    */
-  virtual CacheableArrayListPtr getAllDurableCqsFromServer() = 0;
+  virtual std::shared_ptr<CacheableArrayList> getAllDurableCqsFromServer() = 0;
 };
 }  // namespace client
 }  // namespace geode

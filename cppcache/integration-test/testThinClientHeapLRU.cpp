@@ -14,17 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#define ROOT_NAME "TestThinClientHeapLRU"
+#define ROOT_SCOPE DISTRIBUTED_ACK
+
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include "BuiltinCacheableWrappers.hpp"
 
 #include <string>
-
-#define ROOT_NAME "TestThinClientHeapLRU"
-#define ROOT_SCOPE DISTRIBUTED_ACK
-
 #include "ThinClientHelper.hpp"
 
 using namespace apache::geode::client;
@@ -41,7 +40,7 @@ const char* _regionNames[] = {"DistRegionAck"};
 
 void createOnekEntries() {
   CacheableHelper::registerBuiltins();
-  RegionPtr dataReg = getHelper()->getRegion(_regionNames[0]);
+  auto dataReg = getHelper()->getRegion(_regionNames[0]);
   for (int i = 0; i < 2048; i++) {
     CacheableWrapper* tmpkey =
         CacheableWrapperFactory::createInstance(GeodeTypeIds::CacheableInt32);
@@ -71,7 +70,7 @@ void createOnekEntries() {
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
   {
-    PropertiesPtr pp = Properties::create();
+    auto pp = Properties::create();
     pp->insert("heap-lru-limit", 1);
     pp->insert("heap-lru-delta", 10);
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, pp, 0, true);
@@ -83,7 +82,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo)
   {
-    PropertiesPtr pp = Properties::create();
+    auto pp = Properties::create();
     pp->insert("heap-lru-limit", 1);
     pp->insert("heap-lru-delta", 10);
     initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, pp, 0, true);

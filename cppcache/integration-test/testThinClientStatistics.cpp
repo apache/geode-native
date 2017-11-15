@@ -120,7 +120,7 @@ static int selector(const dirent* d) {
 
 /* Common Functions */
 void initClientWithStats() {
-  PropertiesPtr pp = Properties::create();
+  auto pp = Properties::create();
   pp->insert("statistic-sampling-enabled", "true");
   pp->insert("statistic-sample-rate", std::chrono::seconds(1));
   pp->insert("statistic-archive-file", "./statArchive.gfs");
@@ -132,7 +132,7 @@ void initClientWithStats() {
 }
 
 void initClientWithStatsDisabled() {
-  PropertiesPtr pp = Properties::create();
+  auto pp = Properties::create();
   pp->insert("statistic-sampling-enabled", "false");
   // pp->insert("statistic-sample-rate", 1);
   // pp->insert("statistic-archive-file", "./statArchive.gfs");
@@ -143,21 +143,21 @@ void initClientWithStatsDisabled() {
 }
 
 void DoRegionOpsAndVerify() {
-  RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+  auto regPtr0 = getHelper()->getRegion(regionNames[0]);
 
   for (int index = 0; index < 5; index++) {
     char key[100] = {0};
     char value[100] = {0};
     ACE_OS::sprintf(key, "Key-%d", index);
     ACE_OS::sprintf(value, "Value-%d", index);
-    CacheableKeyPtr keyptr = CacheableKey::create(key);
-    CacheablePtr valuePtr = CacheableString::create(value);
+    auto keyptr = CacheableKey::create(key);
+    auto valuePtr = CacheableString::create(value);
     regPtr0->put(keyptr, valuePtr);
   }
 
-  CacheableKeyPtr keyptr = CacheableKey::create("Key-0");
+  auto keyptr = CacheableKey::create("Key-0");
 
-  RegionEntryPtr regEntry = regPtr0->getEntry(keyptr);
+  auto regEntry = regPtr0->getEntry(keyptr);
 
   LOGINFO("regEntry->isDestroyed() = %d ", regEntry->isDestroyed());
   ASSERT(
@@ -166,7 +166,7 @@ void DoRegionOpsAndVerify() {
 
   bool flag ATTR_UNUSED = regPtr0->remove(keyptr);
 
-  RegionEntryPtr remRegEntry = regPtr0->getEntry(keyptr);
+  auto remRegEntry = regPtr0->getEntry(keyptr);
   ASSERT(remRegEntry == nullptr,
          "regionEntry pointer to removed entry must be nullptr");
 
@@ -180,7 +180,7 @@ void DoRegionOpsAndVerify() {
   }
 
   auto cacheStatptr = std::make_shared<CacheStatistics>();
-  // CacheStatisticsPtr cacheStatptr;
+  // std::shared_ptr<CacheStatistics> cacheStatptr;
   try {
     auto cache = std::dynamic_pointer_cast<Cache>(
         regPtr0->getRegionService());  // This depends on LocalCache
@@ -189,7 +189,7 @@ void DoRegionOpsAndVerify() {
         cache->getDistributedSystem().getSystemProperties().statisticsEnabled();
     LOGINFO("statisticsEnabled = %d ", flag);
     cacheStatptr = regEntry->getStatistics();
-  } catch (StatisticsDisabledException& ex) {
+  } catch (StatisticsDisabledException&) {
     LOGINFO("Exception Caught:: StatisticsDisabledException");
   } catch (GeodeConfigException& e) {
     LOGINFO("Exception Caught:: %s", e.getMessage());
@@ -204,7 +204,7 @@ void DoRegionOpsAndVerify() {
 }
 
 void initClientWithStatsAndLog(const char* str, int fileLimit, int diskLimit) {
-  PropertiesPtr pp = Properties::create();
+  auto pp = Properties::create();
   pp->insert("log-file", str);
   pp->insert("log-level", "fine");
   pp->insert("log-file-size-limit", fileLimit);

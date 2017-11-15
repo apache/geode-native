@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-#include <geode/GeodeCppCache.hpp>
 #include <atomic>
 #include "fwklib/PerfFwk.hpp"
 #include "fwklib/FwkObjects.hpp"

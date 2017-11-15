@@ -91,7 +91,8 @@ class CPPCACHE_EXPORT Utils {
     str.append(typeIdName);
   }
 
-  inline static CacheableStringPtr demangleTypeName(const char* typeIdName) {
+  inline static std::shared_ptr<CacheableString> demangleTypeName(
+      const char* typeIdName) {
 #ifdef __GNUC__
     size_t len;
     char* demangledName = _gnuDemangledName(typeIdName, len);
@@ -107,9 +108,9 @@ class CPPCACHE_EXPORT Utils {
   /**
    * The only operations that is well defined on the result is "asChar".
    */
-  inline static CacheableStringPtr getCacheableKeyString(
-      const CacheableKeyPtr& key) {
-    CacheableStringPtr result;
+  inline static std::shared_ptr<CacheableString> getCacheableKeyString(
+      const std::shared_ptr<CacheableKey>& key) {
+    std::shared_ptr<CacheableString> result;
     if (key != nullptr) {
       char* buf;
       GF_NEW(buf, char[_GF_MSG_LIMIT + 1]);
@@ -125,12 +126,13 @@ class CPPCACHE_EXPORT Utils {
     return result;
   }
 
-  static CacheableStringPtr getCacheableString(const CacheablePtr& val) {
+  static std::shared_ptr<CacheableString> getCacheableString(
+      const std::shared_ptr<Cacheable>& val) {
     if (val != nullptr) {
       if (const auto key = std::dynamic_pointer_cast<CacheableKey>(val)) {
         return getCacheableKeyString(key);
       } else {
-        const CacheableStringPtr& cStr = val->toString();
+        const std::shared_ptr<CacheableString>& cStr = val->toString();
         if (cStr != nullptr) {
           if (cStr->isCString()) {
             return cStr;
@@ -150,7 +152,8 @@ class CPPCACHE_EXPORT Utils {
 
   // Check objectSize() implementation return value and log a warning at most
   // once.
-  inline static uint32_t checkAndGetObjectSize(const CacheablePtr& theObject) {
+  inline static uint32_t checkAndGetObjectSize(
+      const std::shared_ptr<Cacheable>& theObject) {
     uint32_t objectSize = theObject->objectSize();
     static bool youHaveBeenWarned = false;
     if ((objectSize == 0 || objectSize == (static_cast<uint32_t>(-1))) &&
@@ -186,14 +189,14 @@ class CPPCACHE_EXPORT Utils {
    * Convert the byte array to a string as "%d %d ...".
    * <code>maxLength</code> as zero implies no limit.
    */
-  static CacheableStringPtr convertBytesToString(
+  static std::shared_ptr<CacheableString> convertBytesToString(
       const uint8_t* bytes, int32_t length, size_t maxLength = _GF_MSG_LIMIT);
 
   /**
    * Convert the byte array to a string as "%d %d ...".
    * <code>maxLength</code> as zero implies no limit.
    */
-  inline static CacheableStringPtr convertBytesToString(
+  inline static std::shared_ptr<CacheableString> convertBytesToString(
       const char* bytes, int32_t length, size_t maxLength = _GF_MSG_LIMIT) {
     return convertBytesToString(reinterpret_cast<const uint8_t*>(bytes),
                                 length);

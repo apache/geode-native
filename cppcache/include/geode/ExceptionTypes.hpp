@@ -25,16 +25,17 @@
  */
 
 #include "geode_globals.hpp"
-#include "Exception.hpp"
-
+#include "geode/Exception.hpp"
+#include <memory>
 namespace apache {
 namespace geode {
 namespace client {
+class StackTrace;
+class CacheableString;
 
 #define _GF_EXCEPTION_DEF(x)                                            \
   const char _exception_name_##x[] = "apache::geode::client::" #x;      \
   class x;                                                              \
-  typedef std::shared_ptr<x> x##Ptr;                                    \
   class CPPCACHE_EXPORT x : public apache::geode::client::Exception {   \
    public:                                                              \
     using Exception::Exception;                                         \
@@ -43,11 +44,12 @@ namespace client {
     }                                                                   \
     virtual ~x() {}                                                     \
     virtual const char* getName() const { return _exception_name_##x; } \
-    virtual void raise() { throw *this; }                               \
+    virtual void raise() { throw * this; }                              \
                                                                         \
    protected:                                                           \
-    x(const CacheableStringPtr& message, const StackTracePtr& stack,    \
-      const ExceptionPtr& cause)                                        \
+    x(const std::shared_ptr<CacheableString>& message,                  \
+      const std::shared_ptr<StackTrace>& stack,                         \
+      const std::shared_ptr<Exception>& cause)                          \
         : Exception(message, stack, cause) {}                           \
                                                                         \
    private:                                                             \

@@ -45,12 +45,12 @@ namespace apache {
         virtual ~ManagedPersistenceManagerGeneric() { }
 
 
-        virtual void write(const CacheableKeyPtr&  key, const CacheablePtr&  value, void *& PersistenceInfo);
+        virtual void write(const std::shared_ptr<CacheableKey>&  key, const std::shared_ptr<Cacheable>&  value, void *& PersistenceInfo);
         virtual bool writeAll();
-        virtual void init(const RegionPtr& region, const PropertiesPtr& diskProperties);
-        virtual CacheablePtr read(const CacheableKeyPtr& key, void *& PersistenceInfo);
+        virtual void init(const std::shared_ptr<Region>& region, const std::shared_ptr<Properties>& diskProperties);
+        virtual std::shared_ptr<Cacheable> read(const std::shared_ptr<CacheableKey>& key, void *& PersistenceInfo);
         virtual bool readAll();
-        virtual void destroy(const CacheableKeyPtr& key, void *& PersistenceInfo);
+        virtual void destroy(const std::shared_ptr<CacheableKey>& key, void *& PersistenceInfo);
         virtual void close();
 
         inline void setptr(Apache::Geode::Client::IPersistenceManagerProxy^ managedptr)

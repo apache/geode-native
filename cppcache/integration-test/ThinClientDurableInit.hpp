@@ -41,7 +41,7 @@ void initClientAndRegion(
     std::chrono::seconds redundancyMonitorInterval =
         std::chrono::seconds::zero(),
     std::chrono::seconds durableClientTimeout = std::chrono::seconds(60)) {
-  PropertiesPtr pp = Properties::create();
+  auto pp = Properties::create();
   if (ClientIdx < 2) {
     pp->insert("durable-client-id", durableIds[ClientIdx]);
     pp->insert("durable-timeout", durableClientTimeout);
@@ -59,7 +59,7 @@ void initClientAndTwoRegions(int ClientIdx, int redundancy,
                              std::chrono::seconds durableClientTimeout,
                              const char* conflation = nullptr,
                              const char* rNames[] = regionNames) {
-  PropertiesPtr pp = Properties::create();
+  auto pp = Properties::create();
   pp->insert("durable-client-id", durableIds[ClientIdx]);
   pp->insert("durable-timeout", durableClientTimeout);
   if (conflation) {
@@ -75,7 +75,7 @@ void initClientAndTwoRegions(int ClientIdx, int redundancy,
 void initClientAndTwoRegionsAndTwoPools(
     int ClientIdx, int redundancy, std::chrono::seconds durableClientTimeout,
     const char* conflation = nullptr, const char* rNames[] = regionNames) {
-  PropertiesPtr pp = Properties::create();
+  auto pp = Properties::create();
   pp->insert("durable-client-id", durableIds[ClientIdx]);
   pp->insert("durable-timeout", durableClientTimeout);
   if (conflation) {
@@ -95,12 +95,12 @@ void initClientAndTwoRegionsAndTwoPools(
     LOG("Exception occured while sending readyForEvents");
   }*/
 
-  RegionPtr regPtr1 = getHelper()->getRegion(rNames[1]);
+  auto regPtr1 = getHelper()->getRegion(rNames[1]);
   regPtr1->registerAllKeys(true);
   getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true,
                                       redundancy, std::chrono::seconds(1));
   createRegionAndAttachPool(rNames[0], USE_ACK, "__TESTPOOL1_", true);
-  RegionPtr regPtr0 = getHelper()->getRegion(rNames[0]);
+  auto regPtr0 = getHelper()->getRegion(rNames[0]);
   regPtr0->registerAllKeys(true);
 
   LOG("Calling readyForEvents:");

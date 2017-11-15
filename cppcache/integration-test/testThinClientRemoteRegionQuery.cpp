@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include <string>
@@ -87,7 +86,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOnePoolLocator)
   {
     initClient(true);
     try {
-      SerializationRegistryPtr serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addType(Position::createDeserializable);
       serializationRegistry->addType(Portfolio::createDeserializable);
 
@@ -105,9 +106,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOnePoolLocator)
     createPool(poolNames[1], locHostPort, nullptr, 0, true);
     createRegionAndAttachPool(qRegionNames[3], USE_ACK, poolNames[1]);
 
-    RegionPtr regptr = getHelper()->getRegion(qRegionNames[0]);
-    RegionAttributesPtr lattribPtr = regptr->getAttributes();
-    RegionPtr subregPtr = regptr->createSubregion(qRegionNames[1], lattribPtr);
+    auto regptr = getHelper()->getRegion(qRegionNames[0]);
+    std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
+    auto subregPtr = regptr->createSubregion(qRegionNames[1], lattribPtr);
 
     LOG("StepOne complete.");
   }
@@ -115,12 +116,12 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
   {
-    RegionPtr regPtr0 = getHelper()->getRegion(qRegionNames[0]);
-    RegionPtr subregPtr0 = regPtr0->getSubregion(qRegionNames[1]);
-    RegionPtr regPtr1 = getHelper()->getRegion(qRegionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(qRegionNames[0]);
+    auto subregPtr0 = regPtr0->getSubregion(qRegionNames[1]);
+    auto regPtr1 = getHelper()->getRegion(qRegionNames[1]);
 
-    RegionPtr regPtr2 = getHelper()->getRegion(qRegionNames[2]);
-    RegionPtr regPtr3 = getHelper()->getRegion(qRegionNames[3]);
+    auto regPtr2 = getHelper()->getRegion(qRegionNames[2]);
+    auto regPtr3 = getHelper()->getRegion(qRegionNames[3]);
 
     QueryHelper* qh = &QueryHelper::getHelper();
 
@@ -162,7 +163,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
     bool doAnyErrorOccured = false;
 
-    RegionPtr region = getHelper()->getRegion(qRegionNames[0]);
+    auto region = getHelper()->getRegion(qRegionNames[0]);
 
     for (int i = 0; i < QueryStrings::RQsize(); i++) {
       if (m_isPdx) {
@@ -178,8 +179,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
         continue;
       }
 
-      SelectResultsPtr results =
-          region->query(const_cast<char*>(regionQueries[i].query()));
+      auto results = region->query(const_cast<char*>(regionQueries[i].query()));
 
       if (results->size() != regionQueryRowCounts[i]) {
         char failmsg[100] = {0};
@@ -194,7 +194,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     }
 
     try {
-      SelectResultsPtr results = region->query("");
+      auto results = region->query("");
       FAIL("Expected IllegalArgumentException exception for empty predicate");
     } catch (apache::geode::client::IllegalArgumentException ex) {
       LOG("got expected IllegalArgumentException exception for empty "
@@ -203,9 +203,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     }
 
     try {
-      SelectResultsPtr results =
-          region->query(const_cast<char*>(regionQueries[0].query()),
-                        std::chrono::seconds(2200000));
+      auto results = region->query(const_cast<char*>(regionQueries[0].query()),
+                                   std::chrono::seconds(2200000));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
     } catch (apache::geode::client::IllegalArgumentException ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
@@ -214,8 +213,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     }
 
     try {
-      SelectResultsPtr results =
-          region->query(const_cast<char*>(regionQueries[0].query()), std::chrono::seconds(-1));
+      auto results = region->query(const_cast<char*>(regionQueries[0].query()),
+                                   std::chrono::seconds(-1));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
     } catch (apache::geode::client::IllegalArgumentException ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
@@ -223,7 +222,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       LOG(ex.getMessage());
     }
     try {
-      SelectResultsPtr results = region->query("bad predicate");
+      auto results = region->query("bad predicate");
       FAIL("Expected QueryException exception for wrong predicate");
     } catch (QueryException ex) {
       LOG("got expected QueryException exception for wrong predicate:");
@@ -245,7 +244,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
     bool doAnyErrorOccured = false;
 
-    RegionPtr region = getHelper()->getRegion(qRegionNames[0]);
+    auto region = getHelper()->getRegion(qRegionNames[0]);
 
     for (int i = 0; i < QueryStrings::RQsize(); i++) {
       if (regionQueries[i].category == unsupported) {
@@ -322,7 +321,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
     bool doAnyErrorOccured = false;
 
-    RegionPtr region = getHelper()->getRegion(qRegionNames[0]);
+    auto region = getHelper()->getRegion(qRegionNames[0]);
 
     for (int i = 0; i < QueryStrings::RQsize(); i++) {
       if (regionQueries[i].category == unsupported) {
@@ -330,7 +329,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       }
 
       try {
-        SerializablePtr result =
+        auto result =
             region->selectValue(const_cast<char*>(regionQueries[i].query()));
 
         /*
@@ -427,7 +426,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, QueryError)
   {
-    RegionPtr region = getHelper()->getRegion(qRegionNames[0]);
+    auto region = getHelper()->getRegion(qRegionNames[0]);
 
     for (int i = 0; i < QueryStrings::RQsize(); i++) {
       if ((regionQueries[i].category != unsupported) ||
@@ -437,7 +436,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryError)
       }
 
       try {
-        SelectResultsPtr results =
+        auto results =
             region->query(const_cast<char*>(regionQueries[i].query()));
 
         char failmsg[100] = {0};

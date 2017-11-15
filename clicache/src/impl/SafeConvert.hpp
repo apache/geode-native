@@ -60,7 +60,7 @@ namespace Apache
       /// to managed <see cref="IGeodeSerializable" /> object.
       /// </summary>
       inline static Apache::Geode::Client::IGeodeSerializable^
-        SafeUMSerializableConvertGeneric(native::SerializablePtr obj)
+        SafeUMSerializableConvertGeneric(std::shared_ptr<native::Serializable> obj)
       {
         if (obj == nullptr) return nullptr;
 
@@ -138,7 +138,7 @@ namespace Apache
       }
 
       generic<class TValue>
-      inline static TValue SafeGenericUMSerializableConvert( native::SerializablePtr obj )
+      inline static TValue SafeGenericUMSerializableConvert( std::shared_ptr<native::Serializable> obj )
       {
 
         if (obj == nullptr) return TValue();
@@ -220,7 +220,7 @@ namespace Apache
         return SafeGenericM2UMConvert<TValue>( mg_obj );
       }
 
-			inline static IPdxSerializable^ SafeUMSerializablePDXConvert( native::SerializablePtr obj )
+      inline static IPdxSerializable^ SafeUMSerializablePDXConvert( std::shared_ptr<native::Serializable> obj )
       {
          if(auto mg_obj = std::dynamic_pointer_cast<native::PdxManagedCacheableKey>( obj ))
            return mg_obj->ptr();
@@ -233,7 +233,7 @@ namespace Apache
       /// to managed <see cref="ICacheableKey" /> object.
       /// </summary>
       generic<class TKey>
-      inline static Client::ICacheableKey^ SafeGenericUMKeyConvert( native::CacheableKeyPtr obj )
+      inline static Client::ICacheableKey^ SafeGenericUMKeyConvert( std::shared_ptr<native::CacheableKey> obj )
       {
         //All cacheables will be ManagedCacheableKey only
         if (obj == nullptr) return nullptr;

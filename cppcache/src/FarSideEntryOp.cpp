@@ -74,7 +74,7 @@ void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
   skipFilterRoutingInfo(input);
   m_versionTag =
       TcrMessage::readVersionTagPart(input, memId, m_memberListForVersionStamp);
-  // SerializablePtr sPtr;
+  // std::shared_ptr<Serializable> sPtr;
   // input.readObject(sPtr);
   m_eventOffset = input.readInt32();
   if (!isDestroy(m_op)) {
@@ -111,11 +111,11 @@ void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
   }
 }
 
-void FarSideEntryOp::apply(RegionPtr& region) {
+void FarSideEntryOp::apply(std::shared_ptr<Region>& region) {
   // LocalRegion* localRegion = static_cast<LocalRegion*>(region.get());
   // localRegion->acquireReadLock();
 
-  RegionInternalPtr ri = std::static_pointer_cast<RegionInternal>(region);
+  auto ri = std::static_pointer_cast<RegionInternal>(region);
   if (isDestroy(m_op)) {
     ri->txDestroy(m_key, m_callbackArg, m_versionTag);
   } else if (isInvalidate(m_op)) {
@@ -126,7 +126,7 @@ void FarSideEntryOp::apply(RegionPtr& region) {
 }
 
 void FarSideEntryOp::skipFilterRoutingInfo(DataInput& input) {
-  CacheablePtr tmp;
+  std::shared_ptr<Cacheable> tmp;
   auto structType = input.read();  // this is DataSerializable (45)
 
   if (structType == GeodeTypeIds::NullObj) {
@@ -187,10 +187,9 @@ void FarSideEntryOp::skipFilterRoutingInfo(DataInput& input) {
         GF_CACHE_ILLEGAL_STATE_EXCEPTION);
   }
 }
-/*
-EntryEventPtr FarSideEntryOp::getEntryEvent(Cache* cache)
+/* std::shared_ptr<EntryEvent> FarSideEntryOp::getEntryEvent(Cache* cache)
 {
-        return EntryEventPtr(new EntryEvent(
+        return std::shared_ptr<EntryEvent>(new EntryEvent(
                         m_region->getRegion(cache),
                         m_key,
                         nullptr,

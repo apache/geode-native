@@ -24,7 +24,6 @@
 #ifndef __POSITION_HPP__
 #define __POSITION_HPP__
 
-#include <geode/GeodeCppCache.hpp>
 #include <string>
 
 #ifdef _WIN32
@@ -44,20 +43,20 @@ namespace testobject {
 class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
  private:
   int64_t avg20DaysVol;
-  CacheableStringPtr bondRating;
+  std::shared_ptr<CacheableString> bondRating;
   double convRatio;
-  CacheableStringPtr country;
+  std::shared_ptr<CacheableString> country;
   double delta;
   int64_t industry;
   int64_t issuer;
   double mktValue;
   double qty;
-  CacheableStringPtr secId;
-  CacheableStringPtr secLinks;
+  std::shared_ptr<CacheableString> secId;
+  std::shared_ptr<CacheableString> secLinks;
   // wchar_t* secType;
   wchar_t* secType;
   int32_t sharesOutstanding;
-  CacheableStringPtr underlyer;
+  std::shared_ptr<CacheableString> underlyer;
   int64_t volatility;
   int32_t pid;
 
@@ -70,7 +69,7 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   virtual void toData(apache::geode::client::DataOutput& output) const;
   virtual void fromData(apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 0x02; }
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   virtual uint32_t objectSize() const {
     uint32_t objectSize = sizeof(Position);
@@ -84,7 +83,7 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   }
 
   static void resetCounter() { cnt = 0; }
-  CacheableStringPtr getSecId() { return secId; }
+  std::shared_ptr<CacheableString> getSecId() { return secId; }
   int32_t getId() { return pid; }
   int32_t getSharesOutstanding() { return sharesOutstanding; }
   static apache::geode::client::Serializable* createDeserializable() {
@@ -95,6 +94,5 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   void init();
 };
 
-typedef std::shared_ptr<Position> PositionPtr;
 }  // namespace testobject
 #endif

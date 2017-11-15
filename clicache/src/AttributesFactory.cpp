@@ -65,7 +65,7 @@ namespace Apache
       generic<class TKey, class TValue>
       void AttributesFactory<TKey, TValue>::SetCacheLoader( ICacheLoader<TKey, TValue>^ cacheLoader )
       {
-        native::CacheLoaderPtr loaderptr;
+        std::shared_ptr<native::CacheLoader> loaderptr;
         if ( cacheLoader != nullptr ) {
           CacheLoaderGeneric<TKey, TValue>^ clg = gcnew CacheLoaderGeneric<TKey, TValue>();
           clg->SetCacheLoader(cacheLoader);
@@ -85,7 +85,7 @@ namespace Apache
       generic<class TKey, class TValue>
       void AttributesFactory<TKey, TValue>::SetCacheWriter( ICacheWriter<TKey, TValue>^ cacheWriter )
       {
-        native::CacheWriterPtr writerptr;
+        std::shared_ptr<native::CacheWriter> writerptr;
         if ( cacheWriter != nullptr ) {
           CacheWriterGeneric<TKey, TValue>^ cwg = gcnew CacheWriterGeneric<TKey, TValue>();
           cwg->SetCacheWriter(cacheWriter);
@@ -105,7 +105,7 @@ namespace Apache
       generic<class TKey, class TValue>
       void AttributesFactory<TKey, TValue>::SetCacheListener( ICacheListener<TKey, TValue>^ cacheListener )
       {
-        native::CacheListenerPtr listenerptr;
+        std::shared_ptr<native::CacheListener> listenerptr;
         if ( cacheListener != nullptr ) {
           CacheListenerGeneric<TKey, TValue>^ clg = gcnew CacheListenerGeneric<TKey, TValue>();
           clg->SetCacheListener(cacheListener);
@@ -125,7 +125,7 @@ namespace Apache
       generic<class TKey, class TValue>
       void AttributesFactory<TKey, TValue>::SetPartitionResolver( IPartitionResolver<TKey, TValue>^ partitionresolver )
       {
-        native::PartitionResolverPtr resolverptr;
+        std::shared_ptr<native::PartitionResolver> resolverptr;
         if ( partitionresolver != nullptr ) {
           Client::IFixedPartitionResolver<TKey, TValue>^ resolver = 
             dynamic_cast<Client::IFixedPartitionResolver<TKey, TValue>^>(partitionresolver);
@@ -278,7 +278,7 @@ namespace Apache
       generic<class TKey, class TValue>
       void AttributesFactory<TKey, TValue>::SetPersistenceManager(IPersistenceManager<TKey, TValue>^ persistenceManager, Properties<String^, String^>^ config )
       {
-        native::PersistenceManagerPtr persistenceManagerptr;
+        std::shared_ptr<native::PersistenceManager> persistenceManagerptr;
         if ( persistenceManager != nullptr ) {
           PersistenceManagerGeneric<TKey, TValue>^ clg = gcnew PersistenceManagerGeneric<TKey, TValue>();
           clg->SetPersistenceManager(persistenceManager);
@@ -469,7 +469,7 @@ namespace Apache
 
           try
           {
-            native::RegionAttributesPtr nativeptr = m_nativeptr->get()->createRegionAttributes();
+            std::shared_ptr<native::RegionAttributes> nativeptr = m_nativeptr->get()->createRegionAttributes();
             return Apache::Geode::Client::RegionAttributes<TKey, TValue>::Create(nativeptr);
           }
           finally

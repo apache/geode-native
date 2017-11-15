@@ -18,7 +18,6 @@
 #define ROOT_NAME "testAttributesMutator"
 
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 
@@ -28,8 +27,8 @@ using namespace apache::geode::client;
 
 class TestData {
  public:
-  RegionPtr m_region;
-  CachePtr m_cache;
+  std::shared_ptr<Region> m_region;
+  std::shared_ptr<Cache> m_cache;
 
 } Test;
 
@@ -38,13 +37,13 @@ class TestData {
 /* setup recipient */
 DUNIT_TASK(A, Init)
   {
-    CacheFactoryPtr cacheFactoryPtr = CacheFactory::createCacheFactory();
+    auto cacheFactoryPtr = CacheFactory::createCacheFactory();
     Test.m_cache = cacheFactoryPtr->create();
 
     AttributesFactory af;
     af.setEntryTimeToLive(ExpirationAction::LOCAL_INVALIDATE,
                           std::chrono::seconds(5));
-    RegionAttributesPtr attrs = af.createRegionAttributes();
+    std::shared_ptr<RegionAttributes> attrs = af.createRegionAttributes();
 
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(Test.m_cache.get());
     cacheImpl->createRegion("Local_ETTL_LI", attrs, Test.m_region);
@@ -53,7 +52,7 @@ ENDTASK
 
 DUNIT_TASK(A, CreateAndVerifyExpiry)
   {
-    CacheableInt32Ptr value = CacheableInt32::create(1);
+    auto value = CacheableInt32::create(1);
     LOGDEBUG("### About to put of :one:1: ###");
     Test.m_region->put("one", value);
     LOGDEBUG("### Finished put of :one:1: ###");

@@ -43,14 +43,16 @@ DeltaTestImpl::DeltaTestImpl() : Delta(nullptr) {
   toDeltaCounter = 0;
   fromDeltaCounter = 0;
 }
-DeltaTestImpl::DeltaTestImpl(int intValue, CacheableStringPtr strptr)
+DeltaTestImpl::DeltaTestImpl(int intValue,
+                             std::shared_ptr<CacheableString> strptr)
     : Delta(nullptr),
       intVar(intValue),
       str(strptr),
       doubleVar(0),
       toDeltaCounter(0),
       fromDeltaCounter(0) {}
-DeltaTestImpl::DeltaTestImpl(DeltaTestImplPtr rhs) : Delta(nullptr) {
+DeltaTestImpl::DeltaTestImpl(std::shared_ptr<DeltaTestImpl> rhs)
+    : Delta(nullptr) {
   intVar = rhs->intVar;
   str = CacheableString::create(rhs->str->asChar());
   doubleVar = rhs->doubleVar;
@@ -58,9 +60,10 @@ DeltaTestImpl::DeltaTestImpl(DeltaTestImplPtr rhs) : Delta(nullptr) {
                  ? nullptr
                  : CacheableBytes::create(rhs->byteArr->value(),
                                           rhs->byteArr->length()));
-  testObj = (rhs->testObj == nullptr
-                 ? nullptr
-                 : TestObject1Ptr(new TestObject1(*(rhs->testObj.get()))));
+  testObj =
+      (rhs->testObj == nullptr ? nullptr
+                               : std::shared_ptr<TestObject1>(
+                                     new TestObject1(*(rhs->testObj.get()))));
   toDeltaCounter = rhs->getToDeltaCounter();
   fromDeltaCounter = rhs->getFromDeltaCounter();
 }
@@ -135,7 +138,7 @@ void DeltaTestImpl::fromDelta(DataInput& input) {
     testObj = input.readObject<TestObject1>();
   }
 }
-CacheableStringPtr DeltaTestImpl::toString() const {
+std::shared_ptr<CacheableString> DeltaTestImpl::toString() const {
   char buf[102500];
   sprintf(buf, "DeltaTestImpl[hasDelta=%d int=%d double=%f str=%s \n",
           m_hasDelta, intVar, doubleVar, str->toString());

@@ -20,7 +20,6 @@
 #include <string>
 #include <iostream>
 
-#include <geode/GeodeCppCache.hpp>
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 #include "fw_helper.hpp"
@@ -35,16 +34,16 @@ BEGIN_TEST(CacheFunction)
   char* subRegionName1 = (char*)"TESTCACHE_SUB_REGION1";
   char* subRegionName2 = (char*)"TESTCACHE_SUB_REGION2";
   char* subRegionName21 = (char*)"TESTCACHE_SUB_REGION21";
-  CachePtr cptr;
+  std::shared_ptr<Cache> cptr;
   if (cptr != nullptr) {
     std::cout << "cptr is not null" << std::endl;
   }
   std::cout << "create Cache with name=" << host_name
             << " and unitialized system" << std::endl;
-  CacheFactoryPtr cacheFactoryPtr = CacheFactory::createCacheFactory();
+  auto cacheFactoryPtr = CacheFactory::createCacheFactory();
   cptr = cacheFactoryPtr->create();
   AttributesFactory attrFac;
-  RegionAttributesPtr rAttr;
+  std::shared_ptr<RegionAttributes> rAttr;
   std::cout << "create RegionAttributes" << std::endl;
   try {
     rAttr = attrFac.createRegionAttributes();
@@ -55,7 +54,7 @@ BEGIN_TEST(CacheFunction)
   if (rAttr == nullptr) {
     std::cout << "Warnning! : AttributesFactory returned nullptr" << std::endl;
   }
-  RegionPtr rptr;
+  std::shared_ptr<Region> rptr;
   if (rptr != nullptr) {
     std::cout << "rptr is not null" << std::endl;
   }
@@ -68,7 +67,7 @@ BEGIN_TEST(CacheFunction)
     ASSERT(false, (char*)"attribute create failed");
   }
   std::cout << "create Sub Region with name=" << subRegionName1 << std::endl;
-  RegionPtr subRptr1;
+  std::shared_ptr<Region> subRptr1;
   try {
     subRptr1 = rptr->createSubregion(subRegionName1, rAttr);
   } catch (Exception& ex) {
@@ -76,7 +75,7 @@ BEGIN_TEST(CacheFunction)
     ASSERT(false, (char*)"subregion create failed");
   }
   std::cout << "create Sub Region with name=" << subRegionName2 << std::endl;
-  RegionPtr subRptr2;
+  std::shared_ptr<Region> subRptr2;
   try {
     subRptr2 = rptr->createSubregion(subRegionName2, rAttr);
   } catch (Exception& ex) {
@@ -85,14 +84,14 @@ BEGIN_TEST(CacheFunction)
   }
   std::cout << "create Sub Region with name=" << subRegionName21
             << "inside region=" << subRegionName2 << std::endl;
-  RegionPtr subRptr21;
+  std::shared_ptr<Region> subRptr21;
   try {
     subRptr21 = subRptr2->createSubregion(subRegionName21, rAttr);
   } catch (Exception& ex) {
     std::cout << ex.getMessage() << std::endl;
     ASSERT(false, (char*)"subregion create failed");
   }
-  VectorOfRegion vr = rptr->subregions(true);
+  std::vector<std::shared_ptr<Region>> vr = rptr->subregions(true);
   std::cout << "  vr.size=" << vr.size() << std::endl;
   ASSERT(vr.size() == totalSubRegions, "Number of Subregions does not match");
   std::cout << "sub regions:" << std::endl;
@@ -120,7 +119,7 @@ BEGIN_TEST(CacheFunction)
   std::cout << "subRegion1=" << subRegion1.c_str() << std::endl;
   subRegion21 = subRegion2 + sptor + subRegion21;
   std::cout << "subRegion21=" << subRegion21.c_str() << std::endl;
-  RegionPtr region;
+  std::shared_ptr<Region> region;
   std::cout << "find region:" << regionName << std::endl;
   try {
     region = cptr->getRegion(root.c_str());

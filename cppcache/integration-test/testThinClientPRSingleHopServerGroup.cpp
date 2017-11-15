@@ -14,21 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#define ROOT_NAME "testThinClientPRSingleHopServerGroup"
+#define ROOT_SCOPE DISTRIBUTED_ACK
+
 #include <string>
 
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 #include <ace/ACE.h>
 
-#include <geode/GeodeCppCache.hpp>
 #include <geode/statistics/StatisticsFactory.hpp>
 
 #include "fw_dunit.hpp"
 #include "BuiltinCacheableWrappers.hpp"
 #include "Utils.hpp"
-
-#define ROOT_NAME "testThinClientPRSingleHopServerGroup"
-#define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "CacheHelper.hpp"
 
@@ -98,7 +98,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
     int failureCount = 0;
     int metadatarefreshCount = 0;
 
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
 
     for (int i = 0; i < 1000; i++) {
       auto keyPtr =
@@ -189,7 +189,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT1 get completed.");
 
     for (int i = 1000; i < 2000; i++) {
-      VectorOfCacheableKey keys;
+      std::vector<std::shared_ptr<CacheableKey>> keys;
       for (int j = i; j < i + 5; j++) {
         keys.push_back(CacheableInt32::create(j));
       }
@@ -272,7 +272,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
     int failureCount = 0;
     int metadatarefreshCount = 0;
 
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
 
     for (int i = 0; i < 1000; i++) {
       auto keyPtr =
@@ -359,7 +359,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT2 get completed.");
 
     for (int i = 1000; i < 2000; i++) {
-      VectorOfCacheableKey keys;
+      std::vector<std::shared_ptr<CacheableKey>> keys;
       for (int j = i; j < i + 5; j++) {
         keys.push_back(CacheableInt32::create(j));
       }
@@ -435,7 +435,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
     int failureCount = 0;
     int metadatarefreshCount = 0;
 
-    RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
 
     for (int i = 0; i < 1000; i++) {
       auto keyPtr =
@@ -522,7 +522,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT3 get completed.");
 
     for (int i = 1000; i < 2000; i++) {
-      VectorOfCacheableKey keys;
+      std::vector<std::shared_ptr<CacheableKey>> keys;
       for (int j = i; j < i + 5; j++) {
         keys.push_back(CacheableInt32::create(j));
       }

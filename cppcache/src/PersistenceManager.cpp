@@ -20,7 +20,7 @@
 
 using namespace apache::geode::client;
 
-PersistenceManager::PersistenceManager(const RegionPtr& regionPtr)
+PersistenceManager::PersistenceManager(const std::shared_ptr<Region>& regionPtr)
     : m_regionPtr(regionPtr) {
   // printf("Base constructor PersistenceManager \n");
 }

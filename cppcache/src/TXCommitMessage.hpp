@@ -29,8 +29,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-_GF_PTR_DEF_(TXCommitMessage, TXCommitMessagePtr);
-
 class TXCommitMessage : public apache::geode::client::Cacheable {
  public:
   TXCommitMessage(MemberListForVersionStamp& memberListForVersionStamp);
@@ -50,7 +48,7 @@ class TXCommitMessage : public apache::geode::client::Cacheable {
   // UNUSED int32_t m_processorId;
   bool isAckRequired();
   MemberListForVersionStamp& m_memberListForVersionStamp;
-  std::vector<RegionCommitPtr> m_regions;
+  std::vector<std::shared_ptr<RegionCommit>> m_regions;
 };
 
 }  // namespace client

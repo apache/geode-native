@@ -26,14 +26,13 @@
 using namespace apache::geode::client;
 
 //---- statics
-
-CacheableTokenPtr CacheableToken::invalidToken =
+std::shared_ptr<CacheableToken> CacheableToken::invalidToken =
     std::make_shared<CacheableToken>(CacheableToken::INVALID);
-CacheableTokenPtr CacheableToken::destroyedToken =
+std::shared_ptr<CacheableToken> CacheableToken::destroyedToken =
     std::make_shared<CacheableToken>(CacheableToken::DESTROYED);
-CacheableTokenPtr CacheableToken::overflowedToken =
+std::shared_ptr<CacheableToken> CacheableToken::overflowedToken =
     std::make_shared<CacheableToken>(CacheableToken::OVERFLOWED);
-CacheableTokenPtr CacheableToken::tombstoneToken =
+std::shared_ptr<CacheableToken> CacheableToken::tombstoneToken =
     std::make_shared<CacheableToken>(CacheableToken::TOMBSTONE);
 
 //----- serialization
@@ -70,8 +69,7 @@ CacheableToken::~CacheableToken() {}
  * Display this object as 'string', which depend on the implementation in
  * the subclasses
  * The default implementation renders the classname.
- */
-CacheableStringPtr CacheableToken::toString() const {
+ */ std::shared_ptr<CacheableString> CacheableToken::toString() const {
   static const char* ctstrings[] = {
       "CacheableToken::NOT_USED", "CacheableToken::INVALID",
       "CacheableToken::DESTROYED", "CacheableToken::OVERFLOWED",

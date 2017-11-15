@@ -27,7 +27,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-void VersionStamp::setVersions(VersionTagPtr versionTag) {
+void VersionStamp::setVersions(std::shared_ptr<VersionTag> versionTag) {
   int32_t eVersion = versionTag->getEntryVersion();
   m_entryVersionLowBytes = static_cast<uint16_t>(eVersion & 0xffff);
   m_entryVersionHighByte = static_cast<uint8_t>((eVersion & 0xff0000) >> 16);
@@ -60,10 +60,9 @@ uint16_t VersionStamp::getMemberId() const { return m_memberID; }
 // This is based on the basicprocessVersionTag function of
 // AbstractRegionEntry.java
 // Any change to the java function should be reflected here as well.
-GfErrType VersionStamp::processVersionTag(const RegionInternal* region,
-                                          const CacheableKeyPtr& keyPtr,
-                                          const VersionTagPtr& tag,
-                                          const bool deltaCheck) const {
+GfErrType VersionStamp::processVersionTag(
+    const RegionInternal* region, const std::shared_ptr<CacheableKey>& keyPtr,
+    const std::shared_ptr<VersionTag>& tag, const bool deltaCheck) const {
   char key[256];
   int16_t keyLen = keyPtr->logString(key, 256);
   std::string keystr(key, keyLen);
@@ -78,7 +77,7 @@ GfErrType VersionStamp::processVersionTag(const RegionInternal* region,
 
 GfErrType VersionStamp::checkForConflict(const RegionInternal* region,
                                          const std::string& keystr,
-                                         const VersionTagPtr& tag,
+                                         const std::shared_ptr<VersionTag>& tag,
                                          const bool deltaCheck) const {
   if (getEntryVersion() == 0 && getRegionVersion() == 0 && getMemberId() == 0) {
     LOGDEBUG(
@@ -174,11 +173,10 @@ GfErrType VersionStamp::checkForConflict(const RegionInternal* region,
   return GF_NOERR;
 }
 
-GfErrType VersionStamp::checkForDeltaConflict(const RegionInternal* region,
-                                              const std::string& keystr,
-                                              const int64_t stampVersion,
-                                              const int64_t tagVersion,
-                                              const VersionTagPtr& tag) const {
+GfErrType VersionStamp::checkForDeltaConflict(
+    const RegionInternal* region, const std::string& keystr,
+    const int64_t stampVersion, const int64_t tagVersion,
+    const std::shared_ptr<VersionTag>& tag) const {
   auto memberList = region->getCacheImpl()->getMemberListForVersionStamp();
   auto tcRegion = dynamic_cast<const ThinClientRegion*>(region);
   ThinClientPoolDM* poolDM = nullptr;

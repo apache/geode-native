@@ -32,13 +32,13 @@ END_TEST(NotOnWindows)
 //#define BUILD_CPPCACHE
 
 #include <LRUList.cpp>
-#include <geode/GeodeCppCache.hpp>
+#include <geode/CacheableKey.hpp>
 
 using namespace apache::geode::client;
 
 class MyNode : public LRUEntryProperties {
  public:
-  static MyNode* create(const CacheableKeyPtr& key = nullptr) {
+  static MyNode* create(const std::shared_ptr<CacheableKey>& key = nullptr) {
     return new MyNode();
   }
   virtual ~MyNode() {}
@@ -52,8 +52,6 @@ class MyNode : public LRUEntryProperties {
   int m_value;
 };
 
-typedef std::shared_ptr<MyNode> MyNodePtr;
-
 /**
  * @brief Test the LRU-ness of the LRUList.
  */
@@ -61,7 +59,7 @@ BEGIN_TEST(LRUListTest)
   {
     LRUList<MyNode, MyNode> lruList;
     // Create 10 Nodes to keep track of.
-    MyNodePtr* tenNodes = new MyNodePtr[10];
+    std::shared_ptr<MyNode>* tenNodes = new std::shared_ptr<MyNode>[10];
 
     for (int i = 0; i < 10; i++) {
       tenNodes[i] = std::shared_ptr<MyNode>(MyNode::create());
@@ -77,7 +75,7 @@ BEGIN_TEST(LRUListTest)
       tenNodes[j]->setRecentlyUsed();
     }
 
-    MyNodePtr aNode;
+    std::shared_ptr<MyNode> aNode;
     char msgbuf[100];
     // check that we get the unmarked entries first. 0,2,4,6,8
     for (int k = 0; k < 10; k += 2) {
@@ -101,7 +99,7 @@ BEGIN_TEST(TestEndOfList)
     LRUList<MyNode, MyNode> lruList;
     // add ten entries.
     for (int i = 0; i < 10; i++) {
-      MyNodePtr tmp(MyNode::create());
+      std::shared_ptr<MyNode> tmp(MyNode::create());
       tmp->setValue(i);
       lruList.appendEntry(tmp);
     }
@@ -109,7 +107,7 @@ BEGIN_TEST(TestEndOfList)
     int k = 0;
     char msgbuf[100];
     while (k < 10) {
-      MyNodePtr nodePtr;
+      std::shared_ptr<MyNode> nodePtr;
       lruList.getLRUEntry(nodePtr);
       sprintf(msgbuf, "expected node %d", k);
       ASSERT(std::dynamic_pointer_cast<MyNode>(nodePtr)->getValue() == k,
@@ -117,7 +115,7 @@ BEGIN_TEST(TestEndOfList)
       k++;
     }
     // now list should be empty...
-    MyNodePtr emptyPtr;
+    std::shared_ptr<MyNode> emptyPtr;
     lruList.getLRUEntry(emptyPtr);
     ASSERT(emptyPtr == nullptr, "expected nullptr");
     // do it again...
@@ -127,11 +125,11 @@ BEGIN_TEST(TestEndOfList)
     ASSERT(emptyPtr == nullptr, "expected nullptr");
     // now add something to the list... and retest...
     {
-      MyNodePtr tmp(MyNode::create());
+      std::shared_ptr<MyNode> tmp(MyNode::create());
       tmp->setValue(100);
       lruList.appendEntry(tmp);
     }
-    MyNodePtr hundredPtr;
+    std::shared_ptr<MyNode> hundredPtr;
     lruList.getLRUEntry(hundredPtr);
     ASSERT(hundredPtr != nullptr, "expected to not be nullptr");
     ASSERT(std::dynamic_pointer_cast<MyNode>(hundredPtr)->getValue() == 100,
@@ -146,7 +144,7 @@ END_TEST(TestEndOfList)
  */
 BEGIN_TEST(LRUListEntryTest)
   {
-    MyNodePtr node(MyNode::create());
+    std::shared_ptr<MyNode> node(MyNode::create());
     node->setValue(20);
     // test initial state.
     ASSERT(node->testRecentlyUsed() == false, "should not be marked used.");

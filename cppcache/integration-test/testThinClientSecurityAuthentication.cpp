@@ -16,7 +16,6 @@
  */
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 
@@ -32,7 +31,7 @@ using namespace test;
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 const char* regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
-CredentialGeneratorPtr credentialGeneratorHandler;
+std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
@@ -72,31 +71,31 @@ void initCredentialGenerator() {
 }
 
 void initClientAuth(char credentialsType) {
-  PropertiesPtr config = Properties::create();
-  if (credentialGeneratorHandler == nullptr) {
-    FAIL("credentialGeneratorHandler is nullptr");
-  }
-  bool insertAuthInit = true;
-  switch (credentialsType) {
-    case 'C':
-      credentialGeneratorHandler->getValidCredentials(config);
-      config->insert("security-password",
-                     config->find("security-username")->asChar());
-      printf("Username is %s and Password is %s ",
-             config->find("security-username")->asChar(),
-             config->find("security-password")->asChar());
-      break;
-    case 'I':
-      credentialGeneratorHandler->getInvalidCredentials(config);
-      config->insert("security-password", "junk");
-      printf("Username is %s and Password is %s ",
-             config->find("security-username")->asChar(),
-             config->find("security-password")->asChar());
-      break;
-    case 'N':
-    default:
-      insertAuthInit = false;
-      break;
+ auto config = Properties::create();
+ if (credentialGeneratorHandler == nullptr) {
+   FAIL("credentialGeneratorHandler is nullptr");
+ }
+ bool insertAuthInit = true;
+ switch (credentialsType) {
+   case 'C':
+     credentialGeneratorHandler->getValidCredentials(config);
+     config->insert("security-password",
+                    config->find("security-username")->asChar());
+     printf("Username is %s and Password is %s ",
+            config->find("security-username")->asChar(),
+            config->find("security-password")->asChar());
+     break;
+   case 'I':
+     credentialGeneratorHandler->getInvalidCredentials(config);
+     config->insert("security-password", "junk");
+     printf("Username is %s and Password is %s ",
+            config->find("security-username")->asChar(),
+            config->find("security-password")->asChar());
+     break;
+   case 'N':
+   default:
+     insertAuthInit = false;
+     break;
   }
   if (insertAuthInit) {
     // config->insert(
@@ -196,9 +195,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
       createEntry(regionNamesAuth[0], keys[0], vals[0]);
       updateEntry(regionNamesAuth[0], keys[0], nvals[0]);
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-      regPtr0->containsKeyOnServer(
-          apache::geode::client::CacheableKey::create(keys[0]));
+     auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+     regPtr0->containsKeyOnServer(
+         apache::geode::client::CacheableKey::create(keys[0]));
     } catch (const apache::geode::client::Exception& other) {
       other.printStackTrace();
       FAIL(other.getMessage());
@@ -255,18 +254,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFive)
     SLEEP(80);
     try {
       createRegionForSecurity(regionNamesAuth[1], USE_ACK, true);
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-      CacheableKeyPtr keyPtr = CacheableKey::create(keys[0]);
-      auto checkPtr =
-          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
-      if (checkPtr != nullptr && !strcmp(nvals[0], checkPtr->asChar())) {
-        LOG("checkPtr is not null");
-        char buf[1024];
-        sprintf(buf, "In net search, get returned %s for key %s",
-                checkPtr->asChar(), keys[0]);
-        LOG(buf);
-      } else {
-        LOG("checkPtr is nullptr");
+     auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+     auto keyPtr = CacheableKey::create(keys[0]);
+     auto checkPtr =
+         std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
+     if (checkPtr != nullptr && !strcmp(nvals[0], checkPtr->asChar())) {
+       LOG("checkPtr is not null");
+       char buf[1024];
+       sprintf(buf, "In net search, get returned %s for key %s",
+               checkPtr->asChar(), keys[0]);
+       LOG(buf);
+     } else {
+       LOG("checkPtr is nullptr");
       }
     } catch (const apache::geode::client::Exception& other) {
       other.printStackTrace();
@@ -328,23 +327,23 @@ void createEntryTx(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+ auto keyPtr = createKey(key);
+ auto valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != nullptr, "Region not found.");
+ auto regPtr = getHelper()->getRegion(name);
+ ASSERT(regPtr != nullptr, "Region not found.");
 
-  // ASSERT( !regPtr->containsKey( keyPtr ), "Key should not have been found in
-  // region." );
-  // ASSERT( !regPtr->containsValueForKey( keyPtr ), "Value should not have been
-  // found in region." );
+ // ASSERT( !regPtr->containsKey( keyPtr ), "Key should not have been found in
+ // region." );
+ // ASSERT( !regPtr->containsValueForKey( keyPtr ), "Value should not have been
+ // found in region." );
 
-  // regPtr->create( keyPtr, valPtr );
-  regPtr->put(keyPtr, valPtr);
-  LOG("Created entry.");
+ // regPtr->create( keyPtr, valPtr );
+ regPtr->put(keyPtr, valPtr);
+ LOG("Created entry.");
 
-  // verifyEntry( name, key, value );
-  LOG("Entry created.");
+ // verifyEntry( name, key, value );
+ LOG("Entry created.");
 }
 
 void updateEntryTx(const char* name, const char* key, const char* value) {
@@ -353,21 +352,21 @@ void updateEntryTx(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Update entry, verify entry is correct
-  CacheableKeyPtr keyPtr = createKey(key);
-  CacheableStringPtr valPtr = CacheableString::create(value);
+ auto keyPtr = createKey(key);
+ auto valPtr = CacheableString::create(value);
 
-  RegionPtr regPtr = getHelper()->getRegion(name);
-  ASSERT(regPtr != nullptr, "Region not found.");
+ auto regPtr = getHelper()->getRegion(name);
+ ASSERT(regPtr != nullptr, "Region not found.");
 
-  ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
-  ASSERT(regPtr->containsValueForKey(keyPtr),
-         "Value should have been found in region.");
+ ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
+ ASSERT(regPtr->containsValueForKey(keyPtr),
+        "Value should have been found in region.");
 
-  regPtr->put(keyPtr, valPtr);
-  LOG("Put entry.");
+ regPtr->put(keyPtr, valPtr);
+ LOG("Put entry.");
 
-  verifyEntry(name, key, value);
-  LOG("Entry updated.");
+ verifyEntry(name, key, value);
+ LOG("Entry updated.");
 }
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
@@ -375,31 +374,30 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
     initClientAuth(CORRECT_CREDENTIALS);
     try {
       createRegionForSecurity(regionNamesAuth[1], USE_ACK, true);
-      RegionPtr regPtr0 = getHelper()->getRegion(regionNamesAuth[1]);
-      CacheTransactionManagerPtr txManager =
-          getHelper()->getCache()->getCacheTransactionManager();
-      LOG("txManager got");
-      txManager->begin();
-      LOG("txManager begin done");
-      createEntryTx(regionNamesAuth[1], "TxKey", "TxValue");
-      LOG("createEntryTx done");
-      txManager->commit();
-      LOG("txManager commit done");
+     auto regPtr0 = getHelper()->getRegion(regionNamesAuth[1]);
+     auto txManager = getHelper()->getCache()->getCacheTransactionManager();
+     LOG("txManager got");
+     txManager->begin();
+     LOG("txManager begin done");
+     createEntryTx(regionNamesAuth[1], "TxKey", "TxValue");
+     LOG("createEntryTx done");
+     txManager->commit();
+     LOG("txManager commit done");
 
-      CacheableKeyPtr keyPtr = CacheableKey::create("TxKey");
-      auto checkPtr =
-          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
-      ASSERT(checkPtr != nullptr, "Value not found.");
-      LOGINFO("checkPtr->asChar() = %s ", checkPtr->asChar());
-      ASSERT(strcmp("TxValue", checkPtr->asChar()) == 0, "Value not correct.");
-      if (checkPtr != nullptr && !strcmp("TxValue", checkPtr->asChar())) {
-        LOG("checkPtr is not null");
-        char buf[1024];
-        sprintf(buf, "In net search, get returned %s for key %s",
-                checkPtr->asChar(), "TxKey");
-        LOG(buf);
-      } else {
-        LOG("checkPtr is nullptr");
+     auto keyPtr = CacheableKey::create("TxKey");
+     auto checkPtr =
+         std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
+     ASSERT(checkPtr != nullptr, "Value not found.");
+     LOGINFO("checkPtr->asChar() = %s ", checkPtr->asChar());
+     ASSERT(strcmp("TxValue", checkPtr->asChar()) == 0, "Value not correct.");
+     if (checkPtr != nullptr && !strcmp("TxValue", checkPtr->asChar())) {
+       LOG("checkPtr is not null");
+       char buf[1024];
+       sprintf(buf, "In net search, get returned %s for key %s",
+               checkPtr->asChar(), "TxKey");
+       LOG(buf);
+     } else {
+       LOG("checkPtr is nullptr");
       }
 
       txManager->begin();

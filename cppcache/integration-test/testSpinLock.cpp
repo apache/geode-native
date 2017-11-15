@@ -18,7 +18,6 @@
 #define ROOT_NAME "testSpinLock"
 
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 
 #include <mutex>
 #include <util/concurrent/spinlock_mutex.hpp>

@@ -242,7 +242,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register wrapper
         /// </summary>
-        static IGeodeSerializable^ Create(apache::geode::client::SerializablePtr obj)
+        static IGeodeSerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj)
         {
           return (obj != nullptr ?
                   gcnew CacheableString(obj) : nullptr);
@@ -253,14 +253,14 @@ namespace Apache
         /// from the given managed string.
         /// </summary>
         static void GetCacheableString(String^ value,
-                                       apache::geode::client::CacheableStringPtr& cStr);
+                                       std::shared_ptr<apache::geode::client::CacheableString>& cStr);
 
         /// <summary>
         /// Internal function to create a <c>apache::geode::client::CacheableString</c>
         /// from the given managed array of characters.
         /// </summary>
         static void GetCacheableString(array<Char>^ value,
-                                       apache::geode::client::CacheableStringPtr& cStr);
+                                       std::shared_ptr<apache::geode::client::CacheableString>& cStr);
 
         /// <summary>
         /// Get the <c>System.String</c> from the given
@@ -316,7 +316,7 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheableString(apache::geode::client::SerializablePtr nativeptr)
+        inline CacheableString(std::shared_ptr<apache::geode::client::Serializable> nativeptr)
           : CacheableKey(nativeptr) { }
       };
     }  // namespace Client

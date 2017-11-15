@@ -152,7 +152,7 @@ namespace apache
         /// </remarks>
         /// <seealso cref="Apache.Geode.Client.Cache.Close" />
         /// <seealso cref="Apache.Geode.Client.Region.DestroyRegion" />
-        void close(const RegionPtr& rp);
+        void close(const std::shared_ptr<Region>& rp);
 
         /// <summary>
         /// Returns the wrapped managed object reference.

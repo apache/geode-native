@@ -117,7 +117,7 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Apache::Geode::Client::Struct/*<TResult>*/( apache::geode::client::SerializablePtr nativeptr )
+        inline Apache::Geode::Client::Struct/*<TResult>*/( std::shared_ptr<apache::geode::client::Serializable> nativeptr )
           : Apache::Geode::Client::Serializable( nativeptr ) { }
 
         inline Apache::Geode::Client::Struct/*<TResult>*/(  )
@@ -128,7 +128,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register wrapper
         /// </summary>
-        inline static Apache::Geode::Client::IGeodeSerializable^ /*Struct^*/ /*<TResult>*/ Create( ::apache::geode::client::SerializablePtr obj )
+        inline static Apache::Geode::Client::IGeodeSerializable^ /*Struct^*/ /*<TResult>*/ Create( ::std::shared_ptr<apache::geode::client::Serializable> obj )
         {
           return ( obj != nullptr ?
             gcnew Apache::Geode::Client::Struct/*<TResult>*/( obj ) : nullptr );

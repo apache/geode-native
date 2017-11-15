@@ -70,14 +70,14 @@ class CPPCACHE_EXPORT CqAttributesFactory  {
    *          the <code>CqAttributes</code> used to initialize this
    *          AttributesFactory
    */
-  CqAttributesFactory(const CqAttributesPtr& cqAttributes);
+  CqAttributesFactory(const std::shared_ptr<CqAttributes>& cqAttributes);
 
   /**
    * Adds a CQ listener to the end of the list of cq listeners on this factory.
    * @param cqListener the CqListener to add to the factory.
    * @throws IllegalArgumentException if <code>cqListener</code> is nullptr
    */
-  void addCqListener(const CqListenerPtr& cqListener);
+  void addCqListener(const std::shared_ptr<CqListener>& cqListener);
 
   /**
    * Removes all Cq listeners and then adds each listener in the specified
@@ -88,16 +88,17 @@ class CPPCACHE_EXPORT CqAttributesFactory  {
    * a
    * nullptr element
    */
-  void initCqListeners(const std::vector<CqListenerPtr>& cqListeners);
+  void initCqListeners(
+      const std::vector<std::shared_ptr<CqListener>>& cqListeners);
 
   /**
    * Creates a <code>CqAttributes</code> with the current settings.
    * @return the newly created <code>CqAttributes</code>
    */
-  CqAttributesPtr create();
+  std::shared_ptr<CqAttributes> create();
 
  private:
-  CqAttributesPtr m_cqAttributes;
+  std::shared_ptr<CqAttributes> m_cqAttributes;
 };
 }  // namespace client
 }  // namespace geode

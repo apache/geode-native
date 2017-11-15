@@ -285,8 +285,7 @@ TEST_F(DataOutputTest, TestEncodedLengthWide) {
 
 TEST_F(DataOutputTest, TestWriteObjectSharedPtr) {
   TestDataOutput dataOutput(nullptr);
-  std::shared_ptr<CacheableString> objptr =
-      CacheableString::create("You had me at meat tornado.");
+  auto objptr = CacheableString::create("You had me at meat tornado.");
   dataOutput.writeObject(objptr);
   EXPECT_BYTEARRAY_EQ(
       "57001B596F7520686164206D65206174206D65617420746F726E61646F2E",
@@ -295,8 +294,7 @@ TEST_F(DataOutputTest, TestWriteObjectSharedPtr) {
 
 TEST_F(DataOutputTest, TestWriteObjectCacheableString) {
   TestDataOutput dataOutput(nullptr);
-  CacheableStringPtr objptr =
-      CacheableString::create("You had me at meat tornado.");
+  auto objptr = CacheableString::create("You had me at meat tornado.");
   dataOutput.writeObject(objptr);
   EXPECT_BYTEARRAY_EQ(
       "57001B596F7520686164206D65206174206D65617420746F726E61646F2E",

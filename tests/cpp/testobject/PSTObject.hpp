@@ -24,7 +24,6 @@
  * @brief User class for testing the put functionality for object.
  */
 
-#include <geode/GeodeCppCache.hpp>
 #include <string>
 #include "fwklib/Timer.hpp"
 #include "fwklib/FrameworkTest.hpp"
@@ -51,9 +50,10 @@ class TESTOBJECT_EXPORT PSTObject : public TimestampedObject {
   uint64_t timestamp;
   int32_t field1;
   int8_t field2;
-  CacheableBytesPtr valueData;
+  std::shared_ptr<CacheableBytes> valueData;
 
-  inline uint32_t getObjectSize(const SerializablePtr& obj) const {
+  inline uint32_t getObjectSize(
+      const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -64,7 +64,7 @@ class TESTOBJECT_EXPORT PSTObject : public TimestampedObject {
   virtual void toData(apache::geode::client::DataOutput& output) const;
   virtual void fromData(apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 0x04; }
-  CacheableStringPtr toString() const;
+  std::shared_ptr<CacheableString> toString() const;
 
   virtual uint32_t objectSize() const {
     uint32_t objectSize = sizeof(PSTObject);
@@ -86,7 +86,6 @@ class TESTOBJECT_EXPORT PSTObject : public TimestampedObject {
   }
 };
 
-typedef std::shared_ptr<PSTObject> PSTObjectPtr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_PSTOBJECT_H_

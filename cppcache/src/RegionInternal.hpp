@@ -129,10 +129,8 @@ class CacheEventFlags {
 };
 
 class TombstoneList;
-typedef std::shared_ptr<TombstoneList> TombstoneListPtr;
 class VersionTag;
-typedef std::shared_ptr<VersionTag> VersionTagPtr;
-_GF_PTR_DEF_(MapEntryImpl, MapEntryImplPtr);
+class MapEntryImpl;
 /**
  * @class RegionInternal RegionInternal.hpp
  *
@@ -146,11 +144,12 @@ class RegionInternal : public Region {
   virtual ~RegionInternal();
   /** @brief Default implementation of Public Methods from Region
    */
-  virtual void registerKeys(const VectorOfCacheableKey& keys,
-                            bool isDurable = false,
-                            bool getInitialValues = false,
-                            bool receiveValues = true) override;
-  virtual void unregisterKeys(const VectorOfCacheableKey& keys) override;
+  virtual void registerKeys(
+      const std::vector<std::shared_ptr<CacheableKey>>& keys,
+      bool isDurable = false, bool getInitialValues = false,
+      bool receiveValues = true) override;
+  virtual void unregisterKeys(
+      const std::vector<std::shared_ptr<CacheableKey>>& keys) override;
   virtual void registerAllKeys(bool isDurable = false,
                                bool getInitialValues = false,
                                bool receiveValues = true) override;
@@ -161,72 +160,75 @@ class RegionInternal : public Region {
                              bool receiveValues = true) override;
   virtual void unregisterRegex(const char* regex) override;
 
-  virtual SelectResultsPtr query(const char* predicate,
-                                 std::chrono::milliseconds timeout =
-                                     DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+  virtual std::shared_ptr<SelectResults> query(
+      const char* predicate, std::chrono::milliseconds timeout =
+                                 DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
   virtual bool existsValue(const char* predicate,
                            std::chrono::milliseconds timeout =
                                DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
-  virtual SerializablePtr selectValue(
-      const char* predicate,
-      std::chrono::milliseconds timeout =
-          DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+  virtual std::shared_ptr<Serializable> selectValue(
+      const char* predicate, std::chrono::milliseconds timeout =
+                                 DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
   /** @brief Public Methods
    */
-  virtual PersistenceManagerPtr getPersistenceManager() = 0;
-  virtual void setPersistenceManager(PersistenceManagerPtr& pmPtr) = 0;
+  virtual std::shared_ptr<PersistenceManager> getPersistenceManager() = 0;
+  virtual void setPersistenceManager(std::shared_ptr<PersistenceManager>& pmPtr) = 0;
 
-  virtual GfErrType getNoThrow(const CacheableKeyPtr& key, CacheablePtr& value,
-                               const SerializablePtr& aCallbackArgument) = 0;
+  virtual GfErrType getNoThrow(
+      const std::shared_ptr<CacheableKey>& key,
+      std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Serializable>& aCallbackArgument) = 0;
 
   virtual HashMapOfCacheable getAll_internal(
-      const VectorOfCacheableKey& keys,
-      const SerializablePtr& aCallbackArgument, bool addToLocalCache) = 0;
+      const std::vector<std::shared_ptr<CacheableKey>>& keys,
+      const std::shared_ptr<Serializable>& aCallbackArgument,
+      bool addToLocalCache) = 0;
 
-  virtual GfErrType getAllNoThrow(const VectorOfCacheableKey& keys,
-                                  const HashMapOfCacheablePtr& values,
-                                  const HashMapOfExceptionPtr& exceptions,
-                                  const bool addToLocalCache,
-                                  const SerializablePtr& aCallbackArgument) = 0;
-  virtual GfErrType putNoThrow(const CacheableKeyPtr& key,
-                               const CacheablePtr& value,
-                               const SerializablePtr& aCallbackArgument,
-                               CacheablePtr& oldValue, int updateCount,
-                               const CacheEventFlags eventFlags,
-                               VersionTagPtr versionTag,
-                               DataInput* delta = nullptr,
-                               EventIdPtr eventId = nullptr) = 0;
-  virtual GfErrType createNoThrow(const CacheableKeyPtr& key,
-                                  const CacheablePtr& value,
-                                  const SerializablePtr& aCallbackArgument,
-                                  int updateCount,
-                                  const CacheEventFlags eventFlags,
-                                  VersionTagPtr versionTag) = 0;
-  virtual GfErrType destroyNoThrow(const CacheableKeyPtr& key,
-                                   const SerializablePtr& aCallbackArgument,
-                                   int updateCount,
-                                   const CacheEventFlags eventFlags,
-                                   VersionTagPtr versionTag) = 0;
-  virtual GfErrType removeNoThrow(const CacheableKeyPtr& key,
-                                  const CacheablePtr& value,
-                                  const SerializablePtr& aCallbackArgument,
-                                  int updateCount,
-                                  const CacheEventFlags eventFlags,
-                                  VersionTagPtr versionTag) = 0;
-  virtual GfErrType invalidateNoThrow(const CacheableKeyPtr& keyPtr,
-                                      const SerializablePtr& aCallbackArgument,
-                                      int updateCount,
-                                      const CacheEventFlags eventFlags,
-                                      VersionTagPtr versionTag) = 0;
+  virtual GfErrType getAllNoThrow(
+      const std::vector<std::shared_ptr<CacheableKey>>& keys,
+      const std::shared_ptr<HashMapOfCacheable>& values,
+      const std::shared_ptr<HashMapOfException>& exceptions,
+      const bool addToLocalCache,
+      const std::shared_ptr<Serializable>& aCallbackArgument) = 0;
+  virtual GfErrType putNoThrow(
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Serializable>& aCallbackArgument,
+      std::shared_ptr<Cacheable>& oldValue, int updateCount,
+      const CacheEventFlags eventFlags, std::shared_ptr<VersionTag> versionTag,
+      DataInput* delta = nullptr,
+      std::shared_ptr<EventId> eventId = nullptr) = 0;
+  virtual GfErrType createNoThrow(
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Serializable>& aCallbackArgument, int updateCount,
+      const CacheEventFlags eventFlags,
+      std::shared_ptr<VersionTag> versionTag) = 0;
+  virtual GfErrType destroyNoThrow(
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Serializable>& aCallbackArgument, int updateCount,
+      const CacheEventFlags eventFlags,
+      std::shared_ptr<VersionTag> versionTag) = 0;
+  virtual GfErrType removeNoThrow(
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Serializable>& aCallbackArgument, int updateCount,
+      const CacheEventFlags eventFlags,
+      std::shared_ptr<VersionTag> versionTag) = 0;
+  virtual GfErrType invalidateNoThrow(
+      const std::shared_ptr<CacheableKey>& keyPtr,
+      const std::shared_ptr<Serializable>& aCallbackArgument, int updateCount,
+      const CacheEventFlags eventFlags,
+      std::shared_ptr<VersionTag> versionTag) = 0;
   virtual GfErrType invalidateRegionNoThrow(
-      const SerializablePtr& aCallbackArgument,
+      const std::shared_ptr<Serializable>& aCallbackArgument,
       const CacheEventFlags eventFlags) = 0;
   virtual GfErrType destroyRegionNoThrow(
-      const SerializablePtr& aCallbackArgument, bool removeFromParent,
-      const CacheEventFlags eventFlags) = 0;
+      const std::shared_ptr<Serializable>& aCallbackArgument,
+      bool removeFromParent, const CacheEventFlags eventFlags) = 0;
 
   virtual void setRegionExpiryTask() = 0;
   virtual void acquireReadLock() = 0;
@@ -241,13 +243,13 @@ class RegionInternal : public Region {
       const std::chrono::seconds& duration) = 0;
   virtual std::chrono::seconds adjustEntryExpiryDuration(
       const std::chrono::seconds& duration) = 0;
-  virtual void adjustCacheListener(const CacheListenerPtr& aListener) = 0;
+  virtual void adjustCacheListener(const std::shared_ptr<CacheListener>& aListener) = 0;
   virtual void adjustCacheListener(const char* libpath,
                                    const char* factoryFuncName) = 0;
-  virtual void adjustCacheLoader(const CacheLoaderPtr& aLoader) = 0;
+  virtual void adjustCacheLoader(const std::shared_ptr<CacheLoader>& aLoader) = 0;
   virtual void adjustCacheLoader(const char* libpath,
                                  const char* factoryFuncName) = 0;
-  virtual void adjustCacheWriter(const CacheWriterPtr& aWriter) = 0;
+  virtual void adjustCacheWriter(const std::shared_ptr<CacheWriter>& aWriter) = 0;
   virtual void adjustCacheWriter(const char* libpath,
                                  const char* factoryFuncName) = 0;
 
@@ -256,33 +258,37 @@ class RegionInternal : public Region {
   virtual bool isDestroyed() const override = 0;
   virtual void evict(int32_t percentage) = 0;
   virtual CacheImpl* getCacheImpl() const = 0;
-  virtual TombstoneListPtr getTombstoneList();
+  virtual std::shared_ptr<TombstoneList> getTombstoneList();
 
   // KN: added now.
   virtual void updateAccessAndModifiedTime(bool modified) = 0;
-  virtual void updateAccessAndModifiedTimeForEntry(MapEntryImplPtr& ptr,
-                                                   bool modified) = 0;
-  RegionEntryPtr createRegionEntry(const CacheableKeyPtr& key,
-                                   const CacheablePtr& value);
+  virtual void updateAccessAndModifiedTimeForEntry(
+      std::shared_ptr<MapEntryImpl>& ptr, bool modified) = 0;
+  std::shared_ptr<RegionEntry> createRegionEntry(
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Cacheable>& value);
   virtual void addDisMessToQueue(){};
 
-  virtual void txDestroy(const CacheableKeyPtr& key,
-                         const SerializablePtr& callBack, VersionTagPtr versionTag);
-  virtual void txInvalidate(const CacheableKeyPtr& key,
-                            const SerializablePtr& callBack,
-                            VersionTagPtr versionTag);
-  virtual void txPut(const CacheableKeyPtr& key, const CacheablePtr& value,
-                     const SerializablePtr& callBack, VersionTagPtr versionTag);
+  virtual void txDestroy(const std::shared_ptr<CacheableKey>& key,
+                         const std::shared_ptr<Serializable>& callBack,
+                         std::shared_ptr<VersionTag> versionTag);
+  virtual void txInvalidate(const std::shared_ptr<CacheableKey>& key,
+                            const std::shared_ptr<Serializable>& callBack,
+                            std::shared_ptr<VersionTag> versionTag);
+  virtual void txPut(const std::shared_ptr<CacheableKey>& key,
+                     const std::shared_ptr<Cacheable>& value,
+                     const std::shared_ptr<Serializable>& callBack,
+                     std::shared_ptr<VersionTag> versionTag);
   inline bool isConcurrencyCheckEnabled() const {
     return m_regionAttributes->getConcurrencyChecksEnabled();
   }
-  virtual const PoolPtr& getPool() override = 0;
+  virtual const std::shared_ptr<Pool>& getPool() override = 0;
 
  protected:
   /**
    * @brief constructor
    */
-  RegionInternal(const CachePtr& cache, const RegionAttributesPtr& attributes);
+  RegionInternal(const std::shared_ptr<Cache>& cache, const std::shared_ptr<RegionAttributes>& attributes);
 
   void setLruEntriesLimit(uint32_t limit);
   void setRegionTimeToLiveExpirationAction(ExpirationAction::Action action);
@@ -293,18 +299,19 @@ class RegionInternal : public Region {
   void setRegionIdleTimeout(const std::chrono::seconds& duration);
   void setEntryTimeToLive(const std::chrono::seconds& duration);
   void setEntryIdleTimeout(const std::chrono::seconds& duration);
-  void setCacheListener(const CacheListenerPtr& aListener);
+  void setCacheListener(const std::shared_ptr<CacheListener>& aListener);
   void setCacheListener(const char* libpath, const char* factoryFuncName);
-  void setPartitionResolver(const PartitionResolverPtr& aListener);
+  void setPartitionResolver(
+      const std::shared_ptr<PartitionResolver>& aListener);
   void setPartitionResolver(const char* libpath, const char* factoryFuncName);
-  void setCacheLoader(const CacheLoaderPtr& aLoader);
+  void setCacheLoader(const std::shared_ptr<CacheLoader>& aLoader);
   void setCacheLoader(const char* libpath, const char* factoryFuncName);
-  void setCacheWriter(const CacheWriterPtr& aWriter);
+  void setCacheWriter(const std::shared_ptr<CacheWriter>& aWriter);
   void setCacheWriter(const char* libpath, const char* factoryFuncName);
   void setEndpoints(const char* endpoints);
   void setClientNotificationEnabled(bool clientNotificationEnabled);
 
-  RegionAttributesPtr m_regionAttributes;
+  std::shared_ptr<RegionAttributes> m_regionAttributes;
 
   inline bool entryExpiryEnabled() const {
     return m_regionAttributes->getEntryExpiryEnabled();
@@ -318,7 +325,6 @@ class RegionInternal : public Region {
   RegionInternal& operator=(const RegionInternal&) = delete;
 };
 
-typedef std::shared_ptr<RegionInternal> RegionInternalPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

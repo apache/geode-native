@@ -64,7 +64,7 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
   LRUAction* m_action;
   LRUList<MapEntryImpl, MapEntryT<LRUMapEntry, 0, 0> > m_lruList;
   uint32_t m_limit;
-  PersistenceManagerPtr m_pmPtr;
+  std::shared_ptr<PersistenceManager> m_pmPtr;
   EvictionController* m_evictionControllerPtr;
   int64_t m_currentMapSize;
   spinlock_mutex m_mapInfoLock;
@@ -81,37 +81,47 @@ class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
 
   virtual ~LRUEntriesMap();
 
-  virtual GfErrType put(const CacheableKeyPtr& key,
-                        const CacheablePtr& newValue, MapEntryImplPtr& me,
-                        CacheablePtr& oldValue, int updateCount,
-                        int destroyTracker, VersionTagPtr versionTag,
+  virtual GfErrType put(const std::shared_ptr<CacheableKey>& key,
+                        const std::shared_ptr<Cacheable>& newValue,
+                        std::shared_ptr<MapEntryImpl>& me,
+                        std::shared_ptr<Cacheable>& oldValue, int updateCount,
+                        int destroyTracker,
+                        std::shared_ptr<VersionTag> versionTag,
                         bool& isUpdate = EntriesMap::boolVal,
                         DataInput* delta = nullptr);
-  virtual GfErrType invalidate(const CacheableKeyPtr& key, MapEntryImplPtr& me,
-                               CacheablePtr& oldValue,
-                               VersionTagPtr versionTag);
-  virtual GfErrType create(const CacheableKeyPtr& key,
-                           const CacheablePtr& newValue, MapEntryImplPtr& me,
-                           CacheablePtr& oldValue, int updateCount,
-                           int destroyTracker, VersionTagPtr versionTag);
-  virtual bool get(const CacheableKeyPtr& key, CacheablePtr& returnPtr,
-                   MapEntryImplPtr& me);
-  virtual CacheablePtr getFromDisk(const CacheableKeyPtr& key,
-                                   MapEntryImplPtr& me) const;
+  virtual GfErrType invalidate(const std::shared_ptr<CacheableKey>& key,
+                               std::shared_ptr<MapEntryImpl>& me,
+                               std::shared_ptr<Cacheable>& oldValue,
+                               std::shared_ptr<VersionTag> versionTag);
+  virtual GfErrType create(const std::shared_ptr<CacheableKey>& key,
+                           const std::shared_ptr<Cacheable>& newValue,
+                           std::shared_ptr<MapEntryImpl>& me,
+                           std::shared_ptr<Cacheable>& oldValue,
+                           int updateCount, int destroyTracker,
+                           std::shared_ptr<VersionTag> versionTag);
+  virtual bool get(const std::shared_ptr<CacheableKey>& key,
+                   std::shared_ptr<Cacheable>& returnPtr,
+                   std::shared_ptr<MapEntryImpl>& me);
+  virtual std::shared_ptr<Cacheable> getFromDisk(
+      const std::shared_ptr<CacheableKey>& key,
+      std::shared_ptr<MapEntryImpl>& me) const;
   GfErrType processLRU();
   void processLRU(int32_t numEntriesToEvict);
   GfErrType evictionHelper();
   void updateMapSize(int64_t size);
-  inline void setPersistenceManager(PersistenceManagerPtr& pmPtr) {
+  inline void setPersistenceManager(
+      std::shared_ptr<PersistenceManager>& pmPtr) {
     m_pmPtr = pmPtr;
   }
 
   /**
    * @brief remove an entry, marking it evicted for LRUList maintainance.
    */
-  virtual GfErrType remove(const CacheableKeyPtr& key, CacheablePtr& result,
-                           MapEntryImplPtr& me, int updateCount,
-                           VersionTagPtr versionTag, bool afterRemote);
+  virtual GfErrType remove(const std::shared_ptr<CacheableKey>& key,
+                           std::shared_ptr<Cacheable>& result,
+                           std::shared_ptr<MapEntryImpl>& me, int updateCount,
+                           std::shared_ptr<VersionTag> versionTag,
+                           bool afterRemote);
 
   virtual void close();
 

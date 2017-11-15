@@ -20,7 +20,7 @@
 #ifndef GEODE_TESTOBJECT_TESTOBJECT1_H_
 #define GEODE_TESTOBJECT_TESTOBJECT1_H_
 
-#include <geode/GeodeCppCache.hpp>
+#include <geode/CacheableBuiltins.hpp>
 #include <string>
 
 #ifdef _WIN32
@@ -35,10 +35,11 @@
 
 using namespace apache::geode::client;
 namespace testobject {
+
 class TESTOBJECT_EXPORT TestObject1 : public Cacheable {
  private:
-  CacheableStringPtr name;
-  CacheableBytesPtr arr;
+  std::shared_ptr<CacheableString> name;
+  std::shared_ptr<CacheableBytes> arr;
   int32_t identifier;
 
  public:
@@ -59,7 +60,6 @@ class TESTOBJECT_EXPORT TestObject1 : public Cacheable {
   static Serializable* create();
 };
 
-typedef std::shared_ptr<TestObject1> TestObject1Ptr;
 }  // namespace testobject
 
 #endif  // GEODE_TESTOBJECT_TESTOBJECT1_H_

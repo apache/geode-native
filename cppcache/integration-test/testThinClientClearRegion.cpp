@@ -71,8 +71,8 @@ DUNIT_TASK(CLIENT1, SetupClient1)
                        true);
     getHelper()->createPooledRegion(regionNames[0], false, locHostPort,
                                     "__TEST_POOL1__", true, true);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    AttributesMutatorPtr mtor = regPtr->getAttributesMutator();
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
+    auto mtor = regPtr->getAttributesMutator();
     auto lster = std::make_shared<MyCacheListener>();
     auto wter = std::make_shared<MyCacheWriter>();
     mtor->setCacheListener(lster);
@@ -87,10 +87,10 @@ DUNIT_TASK(CLIENT2, SetupClient2)
                        true);
     getHelper()->createPooledRegion(regionNames[0], false, locHostPort,
                                     "__TEST_POOL1__", true, true);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->registerAllKeys();
-    CacheableKeyPtr keyPtr = CacheableKey::create((const char*)"key01");
-    CacheableBytesPtr valPtr =
+    auto keyPtr = CacheableKey::create((const char*)"key01");
+    auto valPtr =
         CacheableBytes::create(reinterpret_cast<const uint8_t*>("value01"), 7);
     regPtr->put(keyPtr, valPtr);
     ASSERT(regPtr->size() == 1, "size incorrect");
@@ -99,7 +99,7 @@ END_TASK(SetupClient2)
 
 DUNIT_TASK(CLIENT1, clear)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     ASSERT(regPtr->size() == 1, "size incorrect");
     regPtr->clear();
     ASSERT(regPtr->size() == 0, "size incorrect");
@@ -108,10 +108,10 @@ END_TASK(clear)
 
 DUNIT_TASK(CLIENT2, VerifyClear)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     ASSERT(regPtr->size() == 0, "size incorrect");
-    CacheableKeyPtr keyPtr = CacheableKey::create((const char*)"key02");
-    CacheableBytesPtr valPtr =
+    auto keyPtr = CacheableKey::create((const char*)"key02");
+    auto valPtr =
         CacheableBytes::create(reinterpret_cast<const uint8_t*>("value02"), 7);
     regPtr->put(keyPtr, valPtr);
     ASSERT(regPtr->size() == 1, "size incorrect");
@@ -123,20 +123,20 @@ END_TASK(VerifyClear)
 
 DUNIT_TASK(CLIENT1, VerifyClear1)
   {
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     ASSERT(regPtr->size() == 1, "size incorrect");
     regPtr->localClear();
     ASSERT(regPtr->size() == 0, "size incorrect");
-    CacheableKeyPtr keyPtr = CacheableKey::create((const char*)"key02");
+    auto keyPtr = CacheableKey::create((const char*)"key02");
     ASSERT(regPtr->containsKeyOnServer(keyPtr), "key should be there");
-    RegionAttributesPtr attr = regPtr->getAttributes();
-    CacheListenerPtr clp = attr->getCacheListener();
+    std::shared_ptr<RegionAttributes> attr = regPtr->getAttributes();
+    auto clp = attr->getCacheListener();
     MyCacheListener* mcl = dynamic_cast<MyCacheListener*>(clp.get());
     char buf[1024];
     sprintf(buf, "listener clear count=%d", mcl->getClearCnt());
     LOG(buf);
     ASSERT(mcl->getClearCnt() == 2, buf);
-    CacheWriterPtr cwp = attr->getCacheWriter();
+    auto cwp = attr->getCacheWriter();
     MyCacheWriter* mcw = dynamic_cast<MyCacheWriter*>(cwp.get());
     sprintf(buf, "writer clear count=%d", mcw->getClearCnt());
     LOG(buf);

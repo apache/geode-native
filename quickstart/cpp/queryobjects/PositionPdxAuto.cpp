@@ -100,8 +100,7 @@ void PositionPdxAuto::init() {
   volatility = 0;
   pid = 0;
 }
-
-CacheableStringPtr PositionPdxAuto::toString() const {
+std::shared_ptr<CacheableString> PositionPdxAuto::toString() const {
   char buf[1024];
   sprintf(buf, "PositionPdx Object:[ id=%d ]", this->pid);
   return CacheableString::create(buf);

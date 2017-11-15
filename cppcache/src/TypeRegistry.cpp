@@ -37,7 +37,8 @@ void TypeRegistry::registerPdxType(TypeFactoryMethodPdx creationFunction) {
       ->addPdxType(creationFunction);
 }
 
-void TypeRegistry::registerPdxSerializer(PdxSerializerPtr pdxSerializer) {
+void TypeRegistry::registerPdxSerializer(
+    std::shared_ptr<PdxSerializer> pdxSerializer) {
   CacheRegionHelper::getCacheImpl(&m_cache)
       ->getSerializationRegistry()
       ->setPdxSerializer(pdxSerializer);

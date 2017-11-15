@@ -23,7 +23,6 @@
 
 #include "sqlite3.h"
 #include <geode/PersistenceManager.hpp>
-#include <geode/GeodeCppCache.hpp>
 #include <sys/types.h>
 #ifndef WIN32
 #include <unistd.h>

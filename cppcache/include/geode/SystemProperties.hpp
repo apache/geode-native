@@ -52,7 +52,7 @@ class CPPCACHE_EXPORT SystemProperties {
    * If useMemType is true, use the given member type; if false, always set
    * member type to SERVER.
    */
-  SystemProperties(const PropertiesPtr& propertiesPtr,
+  SystemProperties(const std::shared_ptr<Properties>& propertiesPtr,
                    const char* configFile = nullptr);
 
   /**
@@ -312,9 +312,9 @@ class CPPCACHE_EXPORT SystemProperties {
   }
 
   /** Returns securityPropertiesPtr.
-   * @return  PropertiesPtr value.
+   * @return  std::shared_ptr<Properties> value.
    */
-  PropertiesPtr getSecurityProperties() const {
+  std::shared_ptr<Properties> getSecurityProperties() const {
     return m_securityPropertiesPtr;
   }
 
@@ -426,10 +426,10 @@ class CPPCACHE_EXPORT SystemProperties {
   std::chrono::milliseconds m_notifyAckInterval;
   std::chrono::milliseconds m_notifyDupCheckLife;
 
-  PropertiesPtr m_securityPropertiesPtr;
+  std::shared_ptr<Properties> m_securityPropertiesPtr;
 
-  CacheableStringPtr m_securityClientDhAlgo;
-  CacheableStringPtr m_securityClientKsPath;
+  std::shared_ptr<CacheableString> m_securityClientDhAlgo;
+  std::shared_ptr<CacheableString> m_securityClientKsPath;
 
   char* m_durableClientId;
   std::chrono::seconds m_durableTimeout;

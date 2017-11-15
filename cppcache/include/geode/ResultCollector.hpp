@@ -50,14 +50,14 @@ namespace client {
  *  Example:
  *  <br>
  *  <pre>
- *  ResultCollectorPtr rc = FunctionService::onRegion(region)
+ * auto rc = FunctionService::onRegion(region)
  *                                      ->withArgs(args)
  *                                      ->withFilter(keySet)
  *                                      ->withCollector(new
  * MyCustomResultCollector())
  *                                      .execute(Function);
  *  //Application can do something else here before retrieving the result
- *  CacheableVectorPtr functionResult = rc.getResult();
+ * auto functionResult = rc.getResult();
  * </pre>
  *
  * @see FunctionService
@@ -84,7 +84,7 @@ class CPPCACHE_EXPORT ResultCollector {
    * @throws FunctionException if result retrieval fails
    * @see UserFunctionExecutionException
    */
-  virtual CacheableVectorPtr getResult(
+  virtual std::shared_ptr<CacheableVector> getResult(
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
@@ -93,7 +93,8 @@ class CPPCACHE_EXPORT ResultCollector {
    * @param resultOfSingleExecution
    * @since 5.8LA
    */
-  virtual void addResult(const CacheablePtr& resultOfSingleExecution) = 0;
+  virtual void addResult(
+      const std::shared_ptr<Cacheable>& resultOfSingleExecution) = 0;
 
   /**
    * Geode will invoke this method when function execution has completed

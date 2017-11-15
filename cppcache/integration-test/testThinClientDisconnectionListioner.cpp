@@ -34,7 +34,7 @@ const char* locatorsG =
 using namespace apache::geode::client;
 using namespace test;
 class DisconnectCacheListioner : public CacheListener {
-  void afterRegionDisconnected(const RegionPtr& region) {
+  void afterRegionDisconnected(const std::shared_ptr<Region>& region) {
     LOG("After Region Disconnected event received");
     isDisconnected = true;
   }
@@ -60,9 +60,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, populateServer)
   {
     SLEEP(10000);
-    RegionPtr regPtr = getHelper()->getRegion(regionNames[0]);
-    CacheableKeyPtr keyPtr = createKey("PXR");
-    CacheableStringPtr valPtr = CacheableString::create("PXR1");
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
+    auto keyPtr = createKey("PXR");
+    auto valPtr = CacheableString::create("PXR1");
     regPtr->create(keyPtr, valPtr);
   }
 END_TASK_DEFINITION

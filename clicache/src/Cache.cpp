@@ -48,7 +48,7 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
-      Cache::Cache(native::CachePtr nativeptr)
+      Cache::Cache(std::shared_ptr<native::Cache> nativeptr)
       {
         m_nativeptr = gcnew native_shared_ptr<native::Cache>(nativeptr);
         m_pdxTypeRegistry = gcnew Apache::Geode::Client::Internal::PdxTypeRegistry(this);
@@ -181,7 +181,7 @@ namespace Apache
       generic<class TKey, class TValue>
       array<Client::IRegion<TKey, TValue>^>^ Cache::RootRegions( )
       {
-        apache::geode::client::VectorOfRegion vrr;
+        std::vector<std::shared_ptr<apache::geode::client::Region>> vrr;
         try
         {
 			vrr = m_nativeptr->get()->rootRegions( );
@@ -195,7 +195,7 @@ namespace Apache
 
         for( System::Int32 index = 0; index < vrr.size( ); index++ )
         {
-          apache::geode::client::RegionPtr& nativeptr( vrr[ index ] );
+          std::shared_ptr<apache::geode::client::Region>& nativeptr( vrr[ index ] );
           rootRegions[ index ] = Client::Region<TKey, TValue>::Create( nativeptr );
         }
         return rootRegions;

@@ -18,7 +18,6 @@
 #define ROOT_NAME "testAttributesFactory"
 
 #include "fw_helper.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include <CacheRegionHelper.hpp>
 
 using namespace apache::geode::client;

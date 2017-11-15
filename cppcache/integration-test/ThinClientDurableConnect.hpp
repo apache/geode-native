@@ -165,7 +165,7 @@ DUNIT_TASK_DEFINITION(CLIENT, ClntUp)
     initClientAndRegion(1, 0);
     getHelper()->cachePtr->readyForEvents();
 
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->registerAllKeys(true);
 
     LOG("Clnt1Init complete.");
@@ -177,7 +177,7 @@ DUNIT_TASK_DEFINITION(CLIENT, ClntUpNonHA)
     initClientAndRegion(0, 0);
     getHelper()->cachePtr->readyForEvents();
 
-    RegionPtr regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->registerAllKeys(true);
 
     LOG("Clnt1Init complete.");

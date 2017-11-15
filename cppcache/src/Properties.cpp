@@ -29,18 +29,20 @@
 ACE_BEGIN_VERSIONED_NAMESPACE_DECL
 
 template <>
-class ACE_Hash<apache::geode::client::CacheableKeyPtr> {
+class ACE_Hash<std::shared_ptr<apache::geode::client::CacheableKey>> {
  public:
-  u_long operator()(const apache::geode::client::CacheableKeyPtr& key) {
+  u_long operator()(
+      const std::shared_ptr<apache::geode::client::CacheableKey>& key) {
     return key->hashcode();
   }
 };
 
 template <>
-class ACE_Equal_To<apache::geode::client::CacheableKeyPtr> {
+class ACE_Equal_To<std::shared_ptr<apache::geode::client::CacheableKey>> {
  public:
-  int operator()(const apache::geode::client::CacheableKeyPtr& lhs,
-                 const apache::geode::client::CacheableKeyPtr& rhs) const {
+  int operator()(
+      const std::shared_ptr<apache::geode::client::CacheableKey>& lhs,
+      const std::shared_ptr<apache::geode::client::CacheableKey>& rhs) const {
     return (*lhs.get() == *rhs.get());
   }
 };
@@ -51,8 +53,9 @@ namespace geode {
 namespace client {
 
 typedef ACE_Hash_Map_Manager_Ex<
-    CacheableKeyPtr, CacheablePtr, ACE_Hash<CacheableKeyPtr>,
-    ACE_Equal_To<CacheableKeyPtr>, ACE_Recursive_Thread_Mutex>
+    std::shared_ptr<CacheableKey>, std::shared_ptr<Cacheable>,
+    ACE_Hash<std::shared_ptr<CacheableKey>>,
+    ACE_Equal_To<std::shared_ptr<CacheableKey>>, ACE_Recursive_Thread_Mutex>
     CacheableKeyCacheableMap;
 
 typedef ACE_Guard<ACE_Recursive_Thread_Mutex> CacheableKeyCacheableMapGuard;
@@ -70,8 +73,9 @@ class PropertiesFile {
   void readFile(const std::string& fileName);
   char* nextBufferLine(char** cursor, char* bufbegin, size_t totalLen);
 };
-
-PropertiesPtr Properties::create() { return PropertiesPtr(new Properties()); }
+std::shared_ptr<Properties> Properties::create() {
+  return std::shared_ptr<Properties>(new Properties());
+}
 
 Properties::Properties() : Serializable() {
   m_map = (void*)new CacheableKeyCacheableMap();
@@ -84,14 +88,14 @@ Properties::~Properties() {
   }
 }
 
-/** this return value must be stored in a CacheableStringPtr. */
-CacheableStringPtr Properties::find(const char* key) {
+/** this return value must be stored in a std::shared_ptr<CacheableString>. */
+std::shared_ptr<CacheableString> Properties::find(const char* key) {
   if (key == nullptr) {
     throw NullPointerException("Properties::find: Null key given.");
   }
-  CacheableStringPtr keyptr = CacheableString::create(key);
+  auto keyptr = CacheableString::create(key);
   CacheableKeyCacheableMapGuard guard(MAP->mutex());
-  CacheablePtr value;
+  std::shared_ptr<Cacheable> value;
   int status = MAP->find(keyptr, value);
   if (status != 0) {
     return nullptr;
@@ -101,13 +105,13 @@ CacheableStringPtr Properties::find(const char* key) {
   }
   return value->toString();
 }
-
-CacheablePtr Properties::find(const CacheableKeyPtr& key) {
+std::shared_ptr<Cacheable> Properties::find(
+    const std::shared_ptr<CacheableKey>& key) {
   if (key == nullptr) {
     throw NullPointerException("Properties::find: Null key given.");
   }
   CacheableKeyCacheableMapGuard guard(MAP->mutex());
-  CacheablePtr value;
+  std::shared_ptr<Cacheable> value;
   int status = MAP->find(key, value);
   if (status != 0) {
     return nullptr;
@@ -119,10 +123,9 @@ void Properties::insert(const char* key, const char* value) {
   if (key == nullptr) {
     throw NullPointerException("Properties::insert: Null key given.");
   }
-  CacheableStringPtr keyptr = CacheableString::create(key);
-  CacheableStringPtr valptr =
-      (value == nullptr ? CacheableString::create("")
-                        : CacheableString::create(value));
+  auto keyptr = CacheableString::create(key);
+  auto valptr = (value == nullptr ? CacheableString::create("")
+                                  : CacheableString::create(value));
   MAP->rebind(keyptr, valptr);
 }
 
@@ -130,13 +133,12 @@ void Properties::insert(const char* key, const int value) {
   if (key == nullptr) {
     throw NullPointerException("Properties::insert: Null key given.");
   }
-  CacheableStringPtr keyptr = CacheableString::create(key);
-  CacheableStringPtr valptr =
-      CacheableString::create(std::to_string(value).c_str());
+  auto keyptr = CacheableString::create(key);
+  auto valptr = CacheableString::create(std::to_string(value).c_str());
   MAP->rebind(keyptr, valptr);
 }
 
-void Properties::insert(const CacheableKeyPtr& key, const CacheablePtr& value) {
+void Properties::insert(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value) {
   if (key == nullptr) {
     throw NullPointerException("Properties::insert: Null key given.");
   }
@@ -147,11 +149,11 @@ void Properties::remove(const char* key) {
   if (key == nullptr) {
     throw NullPointerException("Properties::remove: Null key given.");
   }
-  CacheableStringPtr keyptr = CacheableString::create(key);
+  auto keyptr = CacheableString::create(key);
   MAP->unbind(keyptr);
 }
 
-void Properties::remove(const CacheableKeyPtr& key) {
+void Properties::remove(const std::shared_ptr<CacheableKey>& key) {
   if (key == nullptr) {
     throw NullPointerException("Properties::remove: Null key given.");
   }
@@ -166,14 +168,14 @@ void Properties::foreach (Visitor& visitor) const {
   CacheableKeyCacheableMapGuard guard(MAP->mutex());
   CacheableKeyCacheableMap::iterator iter = MAP->begin();
   while (iter != MAP->end()) {
-    CacheableKeyPtr key = (*iter).ext_id_;
-    CacheablePtr val = (*iter).int_id_;
+    auto key = (*iter).ext_id_;
+    auto val = (*iter).int_id_;
     visitor.visit(key, val);
     ++iter;
   }
 }
 
-void Properties::addAll(const PropertiesPtr& other) {
+void Properties::addAll(const std::shared_ptr<Properties>& other) {
   if (other == nullptr) return;
 
   class Copier : public Visitor {
@@ -181,7 +183,7 @@ void Properties::addAll(const PropertiesPtr& other) {
 
    public:
     explicit Copier(Properties& lhs) : m_lhs(lhs) {}
-    void visit(const CacheableKeyPtr& key, const CacheablePtr& value) {
+    void visit(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value) {
       m_lhs.insert(key, value);
     }
   } aCopier(*this);
@@ -309,20 +311,20 @@ void Properties::toData(DataOutput& output) const {
 void Properties::fromData(DataInput& input) {
   int32_t mapSize = input.readArrayLen();
   for (int i = 0; i < mapSize; i++) {
-    CacheableStringPtr key;
-    CacheableStringPtr val;
+    std::shared_ptr<CacheableString> key;
+    std::shared_ptr<CacheableString> val;
     // TODO: need to look just look typeid if string then convert otherwise
     // continue with readobject
 
     if (!(key = input.readNativeString())) {
-      CacheableKeyPtr keyPtr;
-      CacheablePtr valPtr;
+      std::shared_ptr<CacheableKey> keyPtr;
+      std::shared_ptr<Cacheable> valPtr;
       keyPtr = input.readObject<CacheableKey>(true);
       input.readObject(valPtr);
       MAP->rebind(keyPtr, valPtr);
     } else {
       if (!(val = input.readNativeString())) {
-        CacheablePtr valPtr;
+        std::shared_ptr<Cacheable> valPtr;
         input.readObject(valPtr);
         MAP->rebind(key, valPtr);
       } else {

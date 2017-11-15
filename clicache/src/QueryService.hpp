@@ -136,7 +136,7 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static QueryService<TKey, TResult>^ Create(native::QueryServicePtr nativeptr )
+        inline static QueryService<TKey, TResult>^ Create(std::shared_ptr<native::QueryService> nativeptr )
         {
           return __nullptr == nativeptr ? nullptr :
             gcnew QueryService<TKey, TResult>( nativeptr );
@@ -149,7 +149,7 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline QueryService(native::QueryServicePtr nativeptr)
+        inline QueryService(std::shared_ptr<native::QueryService> nativeptr)
         {
            m_nativeptr = gcnew native_shared_ptr<native::QueryService>(nativeptr);
         }

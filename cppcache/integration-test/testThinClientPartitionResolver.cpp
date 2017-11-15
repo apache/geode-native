@@ -14,8 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#define ROOT_NAME "testThinClientPartitionResolver"
+#define ROOT_SCOPE DISTRIBUTED_ACK
+
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 #include "BuiltinCacheableWrappers.hpp"
 #include <Utils.hpp>
 #include <geode/PartitionResolver.hpp>
@@ -23,9 +26,6 @@
 #include <ace/High_Res_Timer.h>
 
 #include <string>
-
-#define ROOT_NAME "testThinClientPartitionResolver"
-#define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "CacheHelper.hpp"
 
@@ -48,7 +48,7 @@ class CustomPartitionResolver : public PartitionResolver {
     return "CustomPartitionResolver";
   }
 
-  CacheableKeyPtr getRoutingObject(const EntryEvent &opDetails) {
+  std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent &opDetails) {
     called = true;
     LOG("CustomPartitionResolver::getRoutingObject()");
     int32_t key = atoi(opDetails.getKey()->toString()->asChar());
@@ -57,7 +57,7 @@ class CustomPartitionResolver : public PartitionResolver {
   }
 };
 CustomPartitionResolver *cpr = new CustomPartitionResolver();
-PartitionResolverPtr cptr(cpr);
+std::shared_ptr<PartitionResolver> cptr(cpr);
 
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
@@ -119,8 +119,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutThroughPartitionResolver)
     LOG("PutThroughPartitionResolver started.");
 
     for (int i = 0; i < 100; i++) {
-      // RegionPtr dataReg = getHelper()->getRegion("LocalRegion");
-      RegionPtr dataReg = getHelper()->getRegion(regionNames[0]);
+      //auto dataReg = getHelper()->getRegion("LocalRegion");
+      auto dataReg = getHelper()->getRegion(regionNames[0]);
       auto keyPtr =
           std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
       dataReg->put(keyPtr, keyPtr->hashcode());

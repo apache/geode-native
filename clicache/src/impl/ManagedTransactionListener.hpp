@@ -51,11 +51,11 @@ namespace apache {
 
         virtual ~ManagedTransactionListenerGeneric( ) { }
 
-        virtual void afterCommit(apache::geode::client::TransactionEventPtr& te);
+        virtual void afterCommit(std::shared_ptr<apache::geode::client::TransactionEvent>& te);
 
-        virtual void afterFailedCommit(apache::geode::client::TransactionEventPtr& te);
+        virtual void afterFailedCommit(std::shared_ptr<apache::geode::client::TransactionEvent>& te);
 
-        virtual void afterRollback(apache::geode::client::TransactionEventPtr& te);
+        virtual void afterRollback(std::shared_ptr<apache::geode::client::TransactionEvent>& te);
 
         virtual void close();
 

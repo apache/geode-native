@@ -16,7 +16,6 @@
  */
 
 #include "fw_dunit.hpp"
-#include <geode/GeodeCppCache.hpp>
 
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
@@ -24,14 +23,13 @@
 #include "TallyListener.hpp"
 
 using namespace apache::geode::client;
-
-CacheListenerPtr nullListenerPtr;
+std::shared_ptr<CacheListener> nullListenerPtr;
 
 class RegionWrapper {
  public:
   explicit RegionWrapper(const char* name)
       : m_regionPtr(cacheHelper->getRegion(name)) {
-    RegionAttributesPtr attrs;
+    std::shared_ptr<RegionAttributes> attrs;
     attrs = m_regionPtr->getAttributes();
     m_noack = true;
   }
@@ -41,11 +39,11 @@ class RegionWrapper {
     char valbuf[100];
     sprintf(keybuf, "key%d", key);
     sprintf(valbuf, "%d", value);
-    CacheableStringPtr valPtr = CacheableString::create(valbuf);
-    m_regionPtr->put(keybuf, valPtr);
+   auto valPtr = CacheableString::create(valbuf);
+   m_regionPtr->put(keybuf, valPtr);
   }
 
-  void waitForKey(CacheableKeyPtr& keyPtr) {
+  void waitForKey(std::shared_ptr<CacheableKey>& keyPtr) {
     if (m_noack) {
       // might have to wait for a moment.
       int tries = 0;
@@ -56,8 +54,8 @@ class RegionWrapper {
     }
   }
 
-  int waitForValue(CacheableKeyPtr& keyPtr, int expected,
-                   CacheableStringPtr& valPtr) {
+  int waitForValue(std::shared_ptr<CacheableKey>& keyPtr, int expected,
+                   std::shared_ptr<CacheableString>& valPtr) {
     int tries = 0;
     int val = 0;
     do {
@@ -76,12 +74,12 @@ class RegionWrapper {
   void test(int key, int value, int line) {
     char keybuf[100];
     sprintf(keybuf, "key%d", key);
-    CacheableKeyPtr keyPtr = createKey(keybuf);
+   auto keyPtr = createKey(keybuf);
 
-    if (value == -1) {
-      char ebuf[1024];
-      sprintf(ebuf, "unexpected key found at %d", line);
-      ASSERT(!m_regionPtr->containsKey(keyPtr), ebuf);
+   if (value == -1) {
+     char ebuf[1024];
+     sprintf(ebuf, "unexpected key found at %d", line);
+     ASSERT(!m_regionPtr->containsKey(keyPtr), ebuf);
     } else if (value == 0) {
       waitForKey(keyPtr);
       ASSERT(m_regionPtr->containsKey(keyPtr), "missing key.");
@@ -90,7 +88,7 @@ class RegionWrapper {
     } else {
       waitForKey(keyPtr);
       ASSERT(m_regionPtr->containsKey(keyPtr), "missing key.");
-      CacheableStringPtr valPtr;
+      std::shared_ptr<CacheableString> valPtr;
       int val = waitForValue(keyPtr, value, valPtr);
       char ebuf[1024];
       sprintf(ebuf, "unexpected value: \"%s\", expected \"%d\" from line %d",
@@ -99,7 +97,7 @@ class RegionWrapper {
     }
   }
 
-  RegionPtr m_regionPtr;
+  std::shared_ptr<Region> m_regionPtr;
   bool m_noack;
 };
 
@@ -108,7 +106,7 @@ bool isLocalServer = true;
 bool isLocator = true;
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
-TallyListenerPtr listener;
+std::shared_ptr<TallyListener> listener;
 
 #define REGIONNAME "DistRegionAck"
 DUNIT_TASK_DEFINITION(s1p1, Setup)

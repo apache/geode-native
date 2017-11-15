@@ -25,6 +25,8 @@
 namespace apache {
 namespace geode {
 namespace client {
+class PdxWriter;
+class PdxReader;
 
 class CPPCACHE_EXPORT PdxSerializable : public CacheableKey {
  public:
@@ -36,8 +38,8 @@ class CPPCACHE_EXPORT PdxSerializable : public CacheableKey {
   // Solaris compiler gives "hides the virtual function" warnings when
   // compiling child classes while other compilers silently
   // accept but will cause problems with overloaded calls (in this case
-  //   no implicit conversion from PdxWriterPtr to DataOutput etc exists
-  //   so no imminent danger)
+  //   no implicit conversion from std::shared_ptr<PdxWriter> to DataOutput etc
+  //   exists so no imminent danger)
   // see
   // http://www.oracle.com/technetwork/server-storage/solarisstudio/documentation/cplusplus-faq-355066.html#Coding1
   // using Serializable::toData;
@@ -47,13 +49,13 @@ class CPPCACHE_EXPORT PdxSerializable : public CacheableKey {
    *@brief serialize this object in geode PDX format
    *@param PdxWriter to serialize the PDX object
    **/
-  virtual void toData(PdxWriterPtr output) /*const*/ = 0;
+  virtual void toData(std::shared_ptr<PdxWriter> output) /*const*/ = 0;
 
   /**
    *@brief Deserialize this object
    *@param PdxReader to Deserialize the PDX object
    **/
-  virtual void fromData(PdxReaderPtr input) = 0;
+  virtual void fromData(std::shared_ptr<PdxReader> input) = 0;
 
   /**
    *@brief return the typeId byte of the instance being serialized.
@@ -94,7 +96,7 @@ class CPPCACHE_EXPORT PdxSerializable : public CacheableKey {
    * the subclasses.
    * The default implementation renders the classname.
    */
-  virtual CacheableStringPtr toString() const;
+  virtual std::shared_ptr<CacheableString> toString() const;
 
   /**
    * Get the Type for the Object. Equivalent to the C# Type->GetType() API.

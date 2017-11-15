@@ -27,7 +27,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-PdxLocalReader::PdxLocalReader(PdxTypeRegistryPtr pdxTypeRegistry)
+PdxLocalReader::PdxLocalReader(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
     : m_dataInput(nullptr),
       m_startBuffer(nullptr),
       m_startPosition(0),
@@ -41,9 +41,10 @@ PdxLocalReader::PdxLocalReader(PdxTypeRegistryPtr pdxTypeRegistry)
       m_remoteToLocalMapSize(0),
       m_pdxTypeRegistry(pdxTypeRegistry) {}
 
-PdxLocalReader::PdxLocalReader(DataInput& input, PdxTypePtr remoteType,
+PdxLocalReader::PdxLocalReader(DataInput& input,
+                               std::shared_ptr<PdxType> remoteType,
                                int32_t pdxLen,
-                               PdxTypeRegistryPtr pdxTypeRegistry)
+                               std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
     : m_dataInput(&input),
       m_pdxType(remoteType),
       m_serializedLengthWithOffsets(pdxLen),
@@ -158,10 +159,10 @@ wchar_t* PdxLocalReader::readWideString(const char* fieldName) {
   m_dataInput->readWideString(&str);
   return str;
 }
-
-SerializablePtr PdxLocalReader::readObject(const char* fieldName) {
+std::shared_ptr<Serializable> PdxLocalReader::readObject(
+    const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  SerializablePtr ptr;
+  std::shared_ptr<Serializable> ptr;
   m_dataInput->readObject(ptr);
   if (ptr != nullptr) {
     return ptr;
@@ -254,10 +255,10 @@ wchar_t** PdxLocalReader::readWideStringArray(const char* fieldName,
   m_dataInput->readWideStringArray(&stringArray, length);
   return stringArray;
 }
-
-CacheableObjectArrayPtr PdxLocalReader::readObjectArray(const char* fieldName) {
+std::shared_ptr<CacheableObjectArray> PdxLocalReader::readObjectArray(
+    const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  CacheableObjectArrayPtr coa = CacheableObjectArray::create();
+  auto coa = CacheableObjectArray::create();
   coa->fromData(*m_dataInput);
   LOGDEBUG("PdxLocalReader::readObjectArray coa->size() = %d", coa->size());
   if (coa->size() <= 0) {
@@ -274,72 +275,71 @@ int8_t** PdxLocalReader::readArrayOfByteArrays(const char* fieldName,
   m_dataInput->readArrayOfByteArrays(&arrofBytearr, arrayLength, elementLength);
   return arrofBytearr;
 }
-
-CacheableDatePtr PdxLocalReader::readDate(const char* fieldName) {
+std::shared_ptr<CacheableDate> PdxLocalReader::readDate(const char* fieldName) {
   checkEmptyFieldName(fieldName);
-  CacheableDatePtr cd = CacheableDate::create();
+  auto cd = CacheableDate::create();
   cd->fromData(*m_dataInput);
   return cd;
-}
+ }
+ std::shared_ptr<PdxRemotePreservedData> PdxLocalReader::getPreservedData(
+     std::shared_ptr<PdxType> mergedVersion,
+     std::shared_ptr<PdxSerializable> pdxObject) {
+   int nFieldExtra = m_pdxType->getNumberOfExtraFields();
+   LOGDEBUG(
+       "PdxLocalReader::getPreservedData::nFieldExtra = %d AND "
+       "PdxTypeRegistry::getPdxIgnoreUnreadFields = %d ",
+       nFieldExtra, m_pdxTypeRegistry->getPdxIgnoreUnreadFields());
+   if (nFieldExtra > 0 &&
+       m_pdxTypeRegistry->getPdxIgnoreUnreadFields() == false) {
+     m_pdxRemotePreserveData->initialize(
+         m_pdxType != nullptr ? m_pdxType->getTypeId() : 0,
+         mergedVersion->getTypeId(), nFieldExtra, pdxObject);
+     LOGDEBUG("PdxLocalReader::getPreservedData - 1");
 
-PdxRemotePreservedDataPtr PdxLocalReader::getPreservedData(
-    PdxTypePtr mergedVersion, PdxSerializablePtr pdxObject) {
-  int nFieldExtra = m_pdxType->getNumberOfExtraFields();
-  LOGDEBUG(
-      "PdxLocalReader::getPreservedData::nFieldExtra = %d AND "
-      "PdxTypeRegistry::getPdxIgnoreUnreadFields = %d ",
-      nFieldExtra, m_pdxTypeRegistry->getPdxIgnoreUnreadFields());
-  if (nFieldExtra > 0 &&
-      m_pdxTypeRegistry->getPdxIgnoreUnreadFields() == false) {
-    m_pdxRemotePreserveData->initialize(
-        m_pdxType != nullptr ? m_pdxType->getTypeId() : 0,
-        mergedVersion->getTypeId(), nFieldExtra, pdxObject);
-    LOGDEBUG("PdxLocalReader::getPreservedData - 1");
+     m_localToRemoteMap = m_pdxType->getLocalToRemoteMap();
+     m_remoteToLocalMap = m_pdxType->getRemoteToLocalMap();
 
-    m_localToRemoteMap = m_pdxType->getLocalToRemoteMap();
-    m_remoteToLocalMap = m_pdxType->getRemoteToLocalMap();
+     int currentIdx = 0;
+     std::vector<int8_t> pdVector;
+     for (int i = 0; i < m_remoteToLocalMapSize; i++) {
+       if (m_remoteToLocalMap[i] == -1 ||
+           m_remoteToLocalMap[i] == -2)  // this field needs to preserve
+       {
+         int pos = m_pdxType->getFieldPosition(i, m_offsetsBuffer, m_offsetSize,
+                                               m_serializedLength);
+         int nFieldPos = 0;
 
-    int currentIdx = 0;
-    std::vector<int8_t> pdVector;
-    for (int i = 0; i < m_remoteToLocalMapSize; i++) {
-      if (m_remoteToLocalMap[i] == -1 ||
-          m_remoteToLocalMap[i] == -2)  // this field needs to preserve
-      {
-        int pos = m_pdxType->getFieldPosition(i, m_offsetsBuffer, m_offsetSize,
-                                              m_serializedLength);
-        int nFieldPos = 0;
+         if (i == m_remoteToLocalMapSize - 1) {
+           nFieldPos = m_serializedLength;
+         } else {
+           nFieldPos = m_pdxType->getFieldPosition(
+               i + 1, m_offsetsBuffer, m_offsetSize, m_serializedLength);
+         }
 
-        if (i == m_remoteToLocalMapSize - 1) {
-          nFieldPos = m_serializedLength;
-        } else {
-          nFieldPos = m_pdxType->getFieldPosition(
-              i + 1, m_offsetsBuffer, m_offsetSize, m_serializedLength);
-        }
+         resettoPdxHead();
+         m_dataInput->advanceCursor(pos);
 
-        resettoPdxHead();
-        m_dataInput->advanceCursor(pos);
+         for (int i = 0; i < (nFieldPos - pos); i++) {
+           pdVector.push_back(m_dataInput->read());
+         }
+         resettoPdxHead();
 
-        for (int i = 0; i < (nFieldPos - pos); i++) {
-          pdVector.push_back(m_dataInput->read());
-        }
-        resettoPdxHead();
+         m_pdxRemotePreserveData->setPreservedData(pdVector);
+         currentIdx++;
+         pdVector.erase(pdVector.begin(), pdVector.end());
+       } else {
+         LOGDEBUG("PdxLocalReader::getPreservedData No need to preserve");
+       }
+     }
 
-        m_pdxRemotePreserveData->setPreservedData(pdVector);
-        currentIdx++;
-        pdVector.erase(pdVector.begin(), pdVector.end());
-      } else {
-        LOGDEBUG("PdxLocalReader::getPreservedData No need to preserve");
-      }
-    }
-
-    if (m_isDataNeedToPreserve) {
-      return m_pdxRemotePreserveData;
-    } else {
-      LOGDEBUG(
-          "PdxLocalReader::GetPreservedData m_isDataNeedToPreserve is false");
-    }
-  }
-  return nullptr;
+     if (m_isDataNeedToPreserve) {
+       return m_pdxRemotePreserveData;
+     } else {
+       LOGDEBUG(
+           "PdxLocalReader::GetPreservedData m_isDataNeedToPreserve is false");
+     }
+   }
+   return nullptr;
 }
 
 bool PdxLocalReader::hasField(const char* fieldName) {
@@ -347,16 +347,15 @@ bool PdxLocalReader::hasField(const char* fieldName) {
 }
 
 bool PdxLocalReader::isIdentityField(const char* fieldName) {
-  PdxFieldTypePtr pft = m_pdxType->getPdxField(fieldName);
+ auto pft = m_pdxType->getPdxField(fieldName);
   return (pft != nullptr) && (pft->getIdentityField());
 }
 
-void PdxLocalReader::readCollection(const char* fieldName,
-                                    CacheableArrayListPtr& collection) {
+void PdxLocalReader::readCollection(
+    const char* fieldName, std::shared_ptr<CacheableArrayList>& collection) {
   collection = m_dataInput->readObject<CacheableArrayList>();
 }
-
-PdxUnreadFieldsPtr PdxLocalReader::readUnreadFields() {
+std::shared_ptr<PdxUnreadFields> PdxLocalReader::readUnreadFields() {
   LOGDEBUG("readUnreadFields:: %d ignore property %d", m_isDataNeedToPreserve,
            m_pdxTypeRegistry->getPdxIgnoreUnreadFields());
   if (m_pdxTypeRegistry->getPdxIgnoreUnreadFields() == true) return nullptr;

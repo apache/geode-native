@@ -93,7 +93,7 @@ namespace Apache
         if (auto lister = dynamic_cast<Client::ICqStatusListener<TKey, TResult>^>(cqListener)) {
           auto cqlg = gcnew CqStatusListenerGeneric<TKey, TResult>();
           cqlg->AddCqListener(cqListener);
-          native::CqStatusListenerPtr lptr = std::shared_ptr<native::ManagedCqStatusListenerGeneric>(
+          std::shared_ptr<native::CqStatusListener> lptr = std::shared_ptr<native::ManagedCqStatusListenerGeneric>(
             new native::ManagedCqStatusListenerGeneric(lister));
           ((native::ManagedCqStatusListenerGeneric*)lptr.get())->setptr(cqlg);
           try {
@@ -116,7 +116,7 @@ namespace Apache
         else {
           auto cqlg = gcnew CqListenerGeneric<TKey, TResult>();
           cqlg->AddCqListener(cqListener);
-          native::CqListenerPtr lptr = std::shared_ptr<native::ManagedCqListenerGeneric>(
+          std::shared_ptr<native::CqListener> lptr = std::shared_ptr<native::ManagedCqListenerGeneric>(
             new native::ManagedCqListenerGeneric(cqListener));
           ((native::ManagedCqListenerGeneric*)lptr.get())->setptr(cqlg);
           try {

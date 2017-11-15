@@ -29,7 +29,6 @@
 #include "geode_globals.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
-#include "VectorT.hpp"
 #include "HashMapT.hpp"
 #include "HashSetT.hpp"
 #include "GeodeTypeIds.hpp"
@@ -303,14 +302,14 @@ inline void writeObject(apache::geode::client::DataOutput& output,
   }
 }
 
-inline uint32_t objectSize(const VectorOfCacheable& value) {
+inline uint32_t objectSize(const std::vector<std::shared_ptr<Cacheable>>& value) {
   size_t objectSize = 0;
   for (const auto& iter : value) {
     if (iter) {
       objectSize += iter->objectSize();
     }
   }
-  objectSize += sizeof(CacheablePtr) * value.size();
+  objectSize += sizeof(std::shared_ptr<Cacheable>) * value.size();
   return static_cast<uint32_t>(objectSize);
 }
 
@@ -347,7 +346,7 @@ inline uint32_t objectSize(const HashMapOfCacheable& value) {
     }
   }
   objectSize += static_cast<uint32_t>(
-      (sizeof(CacheableKeyPtr) + sizeof(CacheablePtr)) * value.size());
+      (sizeof(std::shared_ptr<CacheableKey>) + sizeof(std::shared_ptr<Cacheable>)) * value.size());
   return objectSize;
 }
 
@@ -381,7 +380,7 @@ inline uint32_t objectSize(const HashSetOfCacheableKey& value) {
       objectSize += iter->objectSize();
     }
   }
-  objectSize += static_cast<uint32_t>(sizeof(CacheableKeyPtr) * value.size());
+  objectSize += static_cast<uint32_t>(sizeof(std::shared_ptr<CacheableKey>) * value.size());
   return objectSize;
 }
 

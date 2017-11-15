@@ -76,7 +76,7 @@ class CPPCACHE_EXPORT CacheableUndefined : public Cacheable {
   /**
    * Factory method for creating the default instance of CacheableUndefined.
    */
-  inline static CacheableUndefinedPtr create() {
+  inline static std::shared_ptr<CacheableUndefined> create() {
     return std::make_shared<CacheableUndefined>();
   }
 

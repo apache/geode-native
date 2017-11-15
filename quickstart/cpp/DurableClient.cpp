@@ -30,7 +30,6 @@
  */
 
 // Include the Geode library.
-#include <geode/GeodeCppCache.hpp>
 #include <chrono>
 #include <thread>
 
@@ -42,29 +41,29 @@ using namespace apache::geode::client;
 
 void RunDurableClient() {
   // Create durable client's properties using api.
-  PropertiesPtr pp = Properties::create();
+  auto pp = Properties::create();
   pp->insert("durable-client-id", "DurableClientId");
   pp->insert("durable-timeout", std::chrono::seconds(300));
 
   // Create a Geode Cache Programmatically.
-  CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory(pp);
-  CachePtr cachePtr = cacheFactory->setSubscriptionEnabled(true)->create();
+  auto cacheFactory = CacheFactory::createCacheFactory(pp);
+  auto cachePtr = cacheFactory->setSubscriptionEnabled(true)->create();
 
   LOGINFO("Created the Geode Cache Programmatically");
 
-  RegionFactoryPtr regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
+  auto regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
 
   // Create the Region Programmatically.
-  RegionPtr regionPtr = regionFactory->create("exampleRegion");
+  auto regionPtr = regionFactory->create("exampleRegion");
 
   LOGINFO("Created the Region Programmatically");
 
   // Plugin the CacheListener with afterRegionLive. "afterRegionLive()"  will be
   // called
   // after all the queued events are recieved by client
-  AttributesMutatorPtr attrMutatorPtr = regionPtr->getAttributesMutator();
+  auto attrMutatorPtr = regionPtr->getAttributesMutator();
   attrMutatorPtr->setCacheListener(
-      CacheListenerPtr(new DurableCacheListener()));
+      std::shared_ptr<CacheListener>(new DurableCacheListener()));
 
   LOGINFO("DurableCacheListener set to region.");
 
@@ -72,7 +71,7 @@ void RunDurableClient() {
   // default ),
   // Unregister Interest APIs remain same.
 
-  VectorOfCacheableKey keys;
+  std::vector<std::shared_ptr<CacheableKey>> keys;
   keys.push_back(CacheableString::create("Key-1"));
   regionPtr->registerKeys(keys, true);
 
@@ -97,19 +96,19 @@ void RunDurableClient() {
   LOGINFO("Closed the Geode Cache with keepalive as true");
 }
 void RunFeeder() {
-  CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+  auto cacheFactory = CacheFactory::createCacheFactory();
   LOGINFO("Feeder connected to the Geode Distributed System");
 
-  CachePtr cachePtr = cacheFactory->create();
+  auto cachePtr = cacheFactory->create();
 
   LOGINFO("Created the Geode Cache");
 
-  RegionFactoryPtr regionFactory = cachePtr->createRegionFactory(PROXY);
+  auto regionFactory = cachePtr->createRegionFactory(PROXY);
 
   LOGINFO("Created the RegionFactory");
 
   // Create the Region Programmatically.
-  RegionPtr regionPtr = regionFactory->create("exampleRegion");
+  auto regionPtr = regionFactory->create("exampleRegion");
 
   LOGINFO("Created the Region Programmatically.");
 
@@ -118,8 +117,8 @@ void RunFeeder() {
   const char* vals[] = {"Value-1", "Value-2"};
 
   for (int i = 0; i < 2; i++) {
-    CacheableKeyPtr keyPtr = createKey(keys[i]);
-    CacheableStringPtr valPtr = CacheableString::create(vals[i]);
+    auto keyPtr = createKey(keys[i]);
+    auto valPtr = CacheableString::create(vals[i]);
 
     regionPtr->create(keyPtr, valPtr);
   }

@@ -48,7 +48,7 @@ class CPPCACHE_EXPORT VersionStamp {
         m_regionVersionLowBytes(rhs.m_regionVersionLowBytes) {}
 
   virtual ~VersionStamp() {}
-  void setVersions(VersionTagPtr versionTag);
+  void setVersions(std::shared_ptr<VersionTag> versionTag);
   void setVersions(VersionStamp& versionStamp);
   int32_t getEntryVersion() const;
   int64_t getRegionVersion() const;
@@ -64,8 +64,8 @@ class CPPCACHE_EXPORT VersionStamp {
     return *this;
   }
   GfErrType processVersionTag(const RegionInternal* region,
-                              const CacheableKeyPtr& keyPtr,
-                              const VersionTagPtr& tag,
+                              const std::shared_ptr<CacheableKey>& keyPtr,
+                              const std::shared_ptr<VersionTag>& tag,
                               const bool deltaCheck) const;
 
  private:
@@ -76,15 +76,14 @@ class CPPCACHE_EXPORT VersionStamp {
   uint32_t m_regionVersionLowBytes;
   GfErrType checkForConflict(const RegionInternal* region,
                              const std::string& keystr,
-                             const VersionTagPtr& tag,
+                             const std::shared_ptr<VersionTag>& tag,
                              const bool deltaCheck) const;
   GfErrType checkForDeltaConflict(const RegionInternal* region,
                                   const std::string& keystr,
                                   const int64_t stampVersion,
                                   const int64_t tagVersion,
-                                  const VersionTagPtr& tag) const;
+                                  const std::shared_ptr<VersionTag>& tag) const;
 };
-typedef std::shared_ptr<VersionStamp> VersionStampPtr;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

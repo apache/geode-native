@@ -113,8 +113,7 @@ void CacheTransactionManagerImpl::commit() {
     }
   }
 
-  TXCommitMessagePtr commit =
-      std::static_pointer_cast<TXCommitMessage>(reply.getValue());
+  auto commit = std::static_pointer_cast<TXCommitMessage>(reply.getValue());
   txCleaner.clean();
   commit->apply(m_cache);
 
@@ -123,9 +122,9 @@ void CacheTransactionManagerImpl::commit() {
           {
                   try
                   {
-                          TransactionEventPtr event(new
-     TransactionEvent(txState->getTransactionId(), CachePtr(m_cache),
-     commit->getEvents(m_cache)));
+                          std::shared_ptr<TransactionEvent> event(new
+     TransactionEvent(txState->getTransactionId(),
+     std::shared_ptr<Cache>(m_cache), commit->getEvents(m_cache)));
                           m_writer->beforeCommit(event);
                   } catch(const TransactionWriterException& ex)
                   {
@@ -307,7 +306,7 @@ GfErrType CacheTransactionManagerImpl::rollback(TXState* txState,
 
   /*	if(err == GF_NOERR && callListener)
           {
-  //		TXCommitMessagePtr commit =
+  //	auto commit =
   std::static_pointer_cast<TXCommitMessage>(reply.getValue());
                   noteRollbackSuccess(txState, nullptr);
           }
@@ -328,8 +327,7 @@ ThinClientPoolDM* CacheTransactionManagerImpl::getDM() {
 }
 
 Cache* CacheTransactionManagerImpl::getCache() { return m_cache; }
-
-TransactionIdPtr CacheTransactionManagerImpl::suspend() {
+std::shared_ptr<TransactionId> CacheTransactionManagerImpl::suspend() {
   // get the current state of the thread
   TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
   if (txState == nullptr) {
@@ -382,7 +380,7 @@ TransactionIdPtr CacheTransactionManagerImpl::suspend() {
   return txState->getTransactionId();
 }
 
-void CacheTransactionManagerImpl::resume(TransactionIdPtr transactionId) {
+void CacheTransactionManagerImpl::resume(std::shared_ptr<TransactionId> transactionId) {
   // get the current state of the thread
   if (TSSTXStateWrapper::s_geodeTSSTXState->getTXState() != nullptr) {
     GfErrTypeThrowException("A transaction is already in progress",
@@ -401,15 +399,15 @@ void CacheTransactionManagerImpl::resume(TransactionIdPtr transactionId) {
   resumeTxUsingTxState(txState);
 }
 
-bool CacheTransactionManagerImpl::isSuspended(TransactionIdPtr transactionId) {
+bool CacheTransactionManagerImpl::isSuspended(std::shared_ptr<TransactionId> transactionId) {
   return isSuspendedTx(
       (std::static_pointer_cast<TXId>(transactionId))->getId());
 }
-bool CacheTransactionManagerImpl::tryResume(TransactionIdPtr transactionId) {
+bool CacheTransactionManagerImpl::tryResume(std::shared_ptr<TransactionId> transactionId) {
   return tryResume(transactionId, true);
 }
-bool CacheTransactionManagerImpl::tryResume(TransactionIdPtr transactionId,
-                                            bool cancelExpiryTask) {
+bool CacheTransactionManagerImpl::tryResume(
+    std::shared_ptr<TransactionId> transactionId, bool cancelExpiryTask) {
   // get the current state of the thread
   if (TSSTXStateWrapper::s_geodeTSSTXState->getTXState() != nullptr) {
     LOGFINE("A transaction is already in progress. Cannot resume transaction.");
@@ -426,7 +424,7 @@ bool CacheTransactionManagerImpl::tryResume(TransactionIdPtr transactionId,
 }
 
 bool CacheTransactionManagerImpl::tryResume(
-    TransactionIdPtr transactionId, std::chrono::milliseconds waitTime) {
+    std::shared_ptr<TransactionId> transactionId, std::chrono::milliseconds waitTime) {
   // get the current state of the thread
   if (TSSTXStateWrapper::s_geodeTSSTXState->getTXState() != nullptr) {
     LOGFINE("A transaction is already in progress. Cannot resume transaction.");
@@ -484,7 +482,7 @@ void CacheTransactionManagerImpl::resumeTxUsingTxState(TXState* txState,
   }
 }
 
-bool CacheTransactionManagerImpl::exists(TransactionIdPtr transactionId) {
+bool CacheTransactionManagerImpl::exists(std::shared_ptr<TransactionId> transactionId) {
   return findTx((std::static_pointer_cast<TXId>(transactionId))->getId());
 }
 
@@ -571,8 +569,7 @@ bool CacheTransactionManagerImpl::isSuspendedTx(int32_t txId) {
   } else {
     return true;
   }
-}
-TransactionIdPtr CacheTransactionManagerImpl::getTransactionId() {
+} std::shared_ptr<TransactionId> CacheTransactionManagerImpl::getTransactionId() {
   TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
   if (txState == nullptr) {
     return nullptr;
@@ -581,18 +578,20 @@ TransactionIdPtr CacheTransactionManagerImpl::getTransactionId() {
   }
 }
 /*
-void CacheTransactionManagerImpl::setWriter(TransactionWriterPtr writer)
+void CacheTransactionManagerImpl::setWriter(std::shared_ptr<TransactionWriter>
+writer)
 {
         m_writer = writer;
 }
-
-TransactionWriterPtr CacheTransactionManagerImpl::getWriter()
+ std::shared_ptr<TransactionWriter> CacheTransactionManagerImpl::getWriter()
 {
         return m_writer;
 }
 
 
-void CacheTransactionManagerImpl::addListener(TransactionListenerPtr aListener)
+void
+CacheTransactionManagerImpl::addListener(std::shared_ptr<TransactionListener>
+aListener)
 {
         if(aListener == nullptr)
         {
@@ -605,7 +604,8 @@ GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION);
         }
 }
 
-void CacheTransactionManagerImpl::removeListener(TransactionListenerPtr
+void
+CacheTransactionManagerImpl::removeListener(std::shared_ptr<TransactionListener>
 aListener)
 {
         if(aListener == nullptr)
@@ -620,60 +620,63 @@ GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION);
 }
 
 void CacheTransactionManagerImpl::noteCommitFailure(TXState* txState, const
-TXCommitMessagePtr& commitMessage)
+std::shared_ptr<TXCommitMessage>& commitMessage)
 {
         VectorOfEntryEvent events;
         if(commitMessage!= nullptr)
         {
                 events = commitMessage->getEvents(m_cache);
         }
-        TransactionEventPtr event(new
-TransactionEvent(txState->getTransactionId(), CachePtr(m_cache), events));
+        std::shared_ptr<TransactionEvent> event(new
+TransactionEvent(txState->getTransactionId(), std::shared_ptr<Cache>(m_cache),
+events));
 
         for(HashSetOfSharedBase::Iterator iter = m_listeners.begin();
 m_listeners.end() != iter; iter++)
         {
-                TransactionListenerPtr listener =
+               auto listener =
 std::static_pointer_cast<TransactionListener>(*iter);
                 listener->afterFailedCommit(event);
         }
 }
 
 void CacheTransactionManagerImpl::noteCommitSuccess(TXState* txState, const
-TXCommitMessagePtr& commitMessage)
+std::shared_ptr<TXCommitMessage>& commitMessage)
 {
         VectorOfEntryEvent events;
                 if(commitMessage!= nullptr)
                 {
                         events = commitMessage->getEvents(m_cache);
                 }
-                TransactionEventPtr event(new
-TransactionEvent(txState->getTransactionId(), CachePtr(m_cache), events));
+                std::shared_ptr<TransactionEvent> event(new
+TransactionEvent(txState->getTransactionId(), std::shared_ptr<Cache>(m_cache),
+events));
 
         for(HashSetOfSharedBase::Iterator iter = m_listeners.begin();
 m_listeners.end() != iter; iter++)
         {
-                TransactionListenerPtr listener =
-std::static_pointer_cast<TransactionListenerPtr>(*iter);
+               auto listener =
+std::static_pointer_cast<std::shared_ptr<TransactionListener>>(*iter);
                 listener->afterCommit(event);
         }
 }
 
 void CacheTransactionManagerImpl::noteRollbackSuccess(TXState* txState, const
-TXCommitMessagePtr& commitMessage)
+std::shared_ptr<TXCommitMessage>& commitMessage)
 {
         VectorOfEntryEvent events;
         if(commitMessage!= nullptr)
         {
                 events = commitMessage->getEvents(m_cache);
         }
-        TransactionEventPtr event(new
-TransactionEvent(txState->getTransactionId(), CachePtr(m_cache), events));
+        std::shared_ptr<TransactionEvent> event(new
+TransactionEvent(txState->getTransactionId(), std::shared_ptr<Cache>(m_cache),
+events));
 
         for(HashSetOfSharedBase::Iterator iter = m_listeners.begin();
 m_listeners.end() != iter; iter++)
         {
-                TransactionListenerPtr listener =
+               auto listener =
 std::static_pointer_cast<TransactionListener>(*iter);
                 listener->afterRollback(event);
         }

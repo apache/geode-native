@@ -88,7 +88,7 @@ namespace Apache
       Execution<TResult>^ Execution<TResult>::WithCollector(Client::IResultCollector<TResult>^ rc)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          native::ResultCollectorPtr rcptr;
+          std::shared_ptr<native::ResultCollector> rcptr;
         if ( rc != nullptr ) {
           auto rcg = gcnew ResultCollectorGeneric<TResult>();
           rcg->SetResultCollector(rc); 
