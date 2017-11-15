@@ -24,6 +24,9 @@
  * @file
  */
 #include <memory>
+#include <unordered_map>
+#include <unordered_set>
+#include "util/functional.hpp"
 
 #include "geode_globals.hpp"
 #include "Serializable.hpp"
@@ -39,6 +42,19 @@ inline std::shared_ptr<Cacheable> createValue(
     const std::shared_ptr<TVALUE>& value) {
   return std::dynamic_pointer_cast<Cacheable>(value);
 }
+
+class CacheableKey;
+typedef std::unordered_map<std::shared_ptr<CacheableKey>,
+                           std::shared_ptr<Cacheable>,
+                           dereference_hash<std::shared_ptr<CacheableKey>>,
+dereference_equal_to<std::shared_ptr<CacheableKey>>>
+HashMapOfCacheable;
+
+typedef std::unordered_set<std::shared_ptr<CacheableKey>,
+                           dereference_hash<std::shared_ptr<CacheableKey>>,
+dereference_equal_to<std::shared_ptr<CacheableKey>>>
+HashSetOfCacheableKey;
+
 
 }  // namespace client
 }  // namespace geode

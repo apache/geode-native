@@ -21,7 +21,6 @@
  *      Author: ankurs
  */
 
-#include <geode/geode_types.hpp>
 #include "CacheTransactionManagerImpl.hpp"
 #include <geode/TransactionId.hpp>
 #include <geode/ExceptionTypes.hpp>

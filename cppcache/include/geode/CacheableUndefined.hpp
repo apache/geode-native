@@ -21,7 +21,6 @@
 #define GEODE_CACHEABLEUNDEFINED_H_
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include "Cacheable.hpp"
 
 /** @file

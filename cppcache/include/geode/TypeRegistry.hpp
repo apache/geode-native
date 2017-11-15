@@ -22,7 +22,6 @@
  */
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include "Serializable.hpp"
 namespace apache {
 namespace geode {

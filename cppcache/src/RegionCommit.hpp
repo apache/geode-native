@@ -26,7 +26,6 @@
  *      Author: ankurs
  */
 
-#include <geode/geode_types.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/Cache.hpp>

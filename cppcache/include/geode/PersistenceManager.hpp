@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include "DistributedSystem.hpp"
 #include "ExceptionTypes.hpp"
 #include "CacheableKey.hpp"

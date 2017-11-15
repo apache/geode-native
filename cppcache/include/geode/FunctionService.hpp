@@ -21,7 +21,6 @@
 #define GEODE_FUNCTIONSERVICE_H_
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include "Execution.hpp"
 
 /**

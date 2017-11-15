@@ -21,7 +21,6 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/geode_types.hpp>
 
 #include <geode/StructSet.hpp>
 #include <geode/Struct.hpp>

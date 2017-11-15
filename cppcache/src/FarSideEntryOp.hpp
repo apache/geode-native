@@ -27,7 +27,6 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/geode_types.hpp>
 #include <geode/Cacheable.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>

@@ -23,7 +23,6 @@
 #include <chrono>
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 
 #include "CqResults.hpp"
 #include "CqStatistics.hpp"

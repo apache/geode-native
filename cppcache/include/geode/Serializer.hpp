@@ -29,8 +29,6 @@
 #include "geode_globals.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
-#include "HashMapT.hpp"
-#include "HashSetT.hpp"
 #include "GeodeTypeIds.hpp"
 
 namespace apache {
