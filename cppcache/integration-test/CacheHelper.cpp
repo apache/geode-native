@@ -243,7 +243,8 @@ CacheHelper::CacheHelper(const bool isthinClient, const char* poolName,
     poolFactory->setSubscriptionEnabled(clientNotification);
     poolFactory->setMultiuserAuthentication(isMultiuserMode);
     if (loadConditioningInterval > 0) {
-      poolFactory->setLoadConditioningInterval(std::chrono::milliseconds(loadConditioningInterval));
+      poolFactory->setLoadConditioningInterval(
+          std::chrono::milliseconds(loadConditioningInterval));
     }
     printf("Setting connections to %d ", connections);
     if (connections >= 0) {
@@ -251,7 +252,8 @@ CacheHelper::CacheHelper(const bool isthinClient, const char* poolName,
       poolFactory->setMaxConnections(connections);
     }
     if (subscriptionAckInterval != -1) {
-      poolFactory->setSubscriptionAckInterval(std::chrono::milliseconds(subscriptionAckInterval));
+      poolFactory->setSubscriptionAckInterval(
+          std::chrono::milliseconds(subscriptionAckInterval));
     }
 
     poolFactory->create(poolName);
@@ -447,7 +449,8 @@ std::shared_ptr<Pool> CacheHelper::createPool(
   poolFacPtr->setMultiuserAuthentication(isMultiuserMode);
   // poolFacPtr->setStatisticInterval(1000);
   if (loadConditioningInterval > 0) {
-    poolFacPtr->setLoadConditioningInterval(std::chrono::milliseconds(loadConditioningInterval));
+    poolFacPtr->setLoadConditioningInterval(
+        std::chrono::milliseconds(loadConditioningInterval));
   }
 
   if (connections >= 0) {
@@ -487,7 +490,8 @@ std::shared_ptr<Pool> CacheHelper::createPool2(
     poolFacPtr->setMaxConnections(connections);
   }
   if (subscriptionAckInterval != -1) {
-    poolFacPtr->setSubscriptionAckInterval(std::chrono::milliseconds(subscriptionAckInterval));
+    poolFacPtr->setSubscriptionAckInterval(
+        std::chrono::milliseconds(subscriptionAckInterval));
   }
 
   return poolFacPtr->create(poolName);
@@ -500,23 +504,23 @@ void CacheHelper::logPoolAttributes(std::shared_ptr<Pool>& pool) {
           pool->getName());
   LOGINFO("getFreeConnectionTimeout: %s",
           to_string(pool->getFreeConnectionTimeout()).c_str());
-  LOGINFO("getLoadConditioningInterval: %d",
+  LOGINFO("getLoadConditioningInterval: %s",
           to_string(pool->getLoadConditioningInterval()).c_str());
   LOGINFO("getSocketBufferSize: %d", pool->getSocketBufferSize());
-  LOGINFO("getReadTimeout: %d", to_string(pool->getReadTimeout()).c_str());
+  LOGINFO("getReadTimeout: %s", to_string(pool->getReadTimeout()).c_str());
   LOGINFO("getMinConnections: %d", pool->getMinConnections());
   LOGINFO("getMaxConnections: %d", pool->getMaxConnections());
-  LOGINFO("getIdleTimeout: %d", to_string(pool->getIdleTimeout()).c_str());
-  LOGINFO("getPingInterval: %d", to_string(pool->getPingInterval()).c_str());
-  LOGINFO("getStatisticInterval: %d",
+  LOGINFO("getIdleTimeout: %s", to_string(pool->getIdleTimeout()).c_str());
+  LOGINFO("getPingInterval: %s", to_string(pool->getPingInterval()).c_str());
+  LOGINFO("getStatisticInterval: %s",
           to_string(pool->getStatisticInterval()).c_str());
   LOGINFO("getRetryAttempts: %d", pool->getRetryAttempts());
   LOGINFO("getSubscriptionEnabled: %s",
           pool->getSubscriptionEnabled() ? "true" : "false");
   LOGINFO("getSubscriptionRedundancy: %d", pool->getSubscriptionRedundancy());
-  LOGINFO("getSubscriptionMessageTrackingTimeout: %d",
+  LOGINFO("getSubscriptionMessageTrackingTimeout: %s",
           to_string(pool->getSubscriptionMessageTrackingTimeout()).c_str());
-  LOGINFO("getSubscriptionAckInterval: %d",
+  LOGINFO("getSubscriptionAckInterval: %s",
           to_string(pool->getSubscriptionAckInterval()).c_str());
   LOGINFO("getServerGroup: %s", pool->getServerGroup());
   LOGINFO("getThreadLocalConnections: %s",
@@ -586,7 +590,8 @@ std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool2(
   return regionFactory.create(name);
 }
 
-void CacheHelper::addServerLocatorEPs(const char* epList, std::shared_ptr<PoolFactory> pfPtr,
+void CacheHelper::addServerLocatorEPs(const char* epList,
+                                      std::shared_ptr<PoolFactory> pfPtr,
                                       bool poolLocators) {
   std::unordered_set<std::string> endpointNames;
   Utils::parseEndpointNamesString(epList, endpointNames);
@@ -792,25 +797,26 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
   }
   return regionFactory.create(name);
 }
- std::shared_ptr<Region> CacheHelper::createPooledRegionSticky(
+std::shared_ptr<Region> CacheHelper::createPooledRegionSticky(
     const char* name, bool ack, const char* locators, const char* poolName,
     bool caching, bool clientNotificationEnabled,
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
-    const std::shared_ptr<CacheListener>& cacheListener, ExpirationAction::Action action) {
- auto poolFacPtr = getCache()->getPoolManager().createFactory();
- poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
- poolFacPtr->setThreadLocalConnections(true);
- poolFacPtr->setPRSingleHopEnabled(false);
+    const std::shared_ptr<CacheListener>& cacheListener,
+    ExpirationAction::Action action) {
+  auto poolFacPtr = getCache()->getPoolManager().createFactory();
+  poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
+  poolFacPtr->setThreadLocalConnections(true);
+  poolFacPtr->setPRSingleHopEnabled(false);
 
- LOG("adding pool locators");
- addServerLocatorEPs(locators, poolFacPtr);
+  LOG("adding pool locators");
+  addServerLocatorEPs(locators, poolFacPtr);
 
- if ((getCache()->getPoolManager().find(poolName)) ==
-     nullptr) {  // Pool does not exist with the same name.
-   auto pptr = poolFacPtr->create(poolName);
-   LOG("createPooledRegionSticky logPoolAttributes");
-   logPoolAttributes(pptr);
+  if ((getCache()->getPoolManager().find(poolName)) ==
+      nullptr) {  // Pool does not exist with the same name.
+    auto pptr = poolFacPtr->create(poolName);
+    LOG("createPooledRegionSticky logPoolAttributes");
+    logPoolAttributes(pptr);
   }
 
   RegionShortcut preDefRA = PROXY;
@@ -832,12 +838,13 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
   }
   return regionFactory.create(name);
 }
- std::shared_ptr<Region> CacheHelper::createPooledRegionStickySingleHop(
+std::shared_ptr<Region> CacheHelper::createPooledRegionStickySingleHop(
     const char* name, bool ack, const char* locators, const char* poolName,
     bool caching, bool clientNotificationEnabled,
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
-    const std::shared_ptr<CacheListener>& cacheListener, ExpirationAction::Action action) {
+    const std::shared_ptr<CacheListener>& cacheListener,
+    ExpirationAction::Action action) {
   LOG("createPooledRegionStickySingleHop");
  auto poolFacPtr = getCache()->getPoolManager().createFactory();
  poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
@@ -872,9 +879,9 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
   }
   return regionFactory.create(name);
 }
- std::shared_ptr<Region> CacheHelper::createSubregion(std::shared_ptr<Region>& parent, const char* name,
-                                       bool ack, bool caching,
-                                       const std::shared_ptr<CacheListener>& listener) {
+std::shared_ptr<Region> CacheHelper::createSubregion(
+    std::shared_ptr<Region>& parent, const char* name, bool ack, bool caching,
+    const std::shared_ptr<CacheListener>& listener) {
   AttributesFactory af;
   af.setCachingEnabled(caching);
   if (listener != nullptr) {
