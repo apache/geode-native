@@ -37,7 +37,7 @@ namespace Apache
             void write(const std::shared_ptr<native::CacheableKey>&  key, const std::shared_ptr<native::Cacheable>&  value/*, void *& PersistenceInfo*/);
             bool writeAll();
             void init(const std::shared_ptr<native::Region>& region, const std::shared_ptr<native::Properties>& diskProperties);
-           std::shared_ptr<native::Cacheable> read(const std::shared_ptr<native::CacheableKey>& key/*, void *& PersistenceInfo*/);
+            std::shared_ptr<native::Cacheable> read(const std::shared_ptr<native::CacheableKey>& key/*, void *& PersistenceInfo*/);
             bool readAll();
             void destroy(const std::shared_ptr<native::CacheableKey>& key/*, void *& PersistenceInfo*/);
             void close();

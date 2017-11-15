@@ -260,7 +260,7 @@ namespace Apache
 
       IGeodeSerializable^ Serializable::GetPDXTypeById(const char* poolName, System::Int32 typeId, Cache^ cache)
       {        
-       std::shared_ptr<apache::geode::client::Serializable> sPtr = CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetPDXTypeById(cache->GetNative()->getPoolManager().find(poolName), typeId);
+        std::shared_ptr<apache::geode::client::Serializable> sPtr = CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetPDXTypeById(cache->GetNative()->getPoolManager().find(poolName), typeId);
         return SafeUMSerializableConvertGeneric(sPtr);
       }
 
@@ -272,7 +272,7 @@ namespace Apache
 
       Internal::EnumInfo^ Serializable::GetEnum(int val, Cache^ cache)
       {
-       std::shared_ptr<apache::geode::client::Serializable> sPtr = CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetEnum(cache->GetNative()->getPoolManager().getAll().begin()->second, val);
+        std::shared_ptr<apache::geode::client::Serializable> sPtr = CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetEnum(cache->GetNative()->getPoolManager().getAll().begin()->second, val);
         return (Internal::EnumInfo^)SafeUMSerializableConvertGeneric(sPtr);
       }
 

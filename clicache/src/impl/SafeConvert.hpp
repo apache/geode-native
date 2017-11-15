@@ -220,7 +220,7 @@ namespace Apache
         return SafeGenericM2UMConvert<TValue>( mg_obj );
       }
 
-			inline static IPdxSerializable^ SafeUMSerializablePDXConvert( std::shared_ptr<native::Serializable> obj )
+      inline static IPdxSerializable^ SafeUMSerializablePDXConvert( std::shared_ptr<native::Serializable> obj )
       {
          if(auto mg_obj = std::dynamic_pointer_cast<native::PdxManagedCacheableKey>( obj ))
            return mg_obj->ptr();
