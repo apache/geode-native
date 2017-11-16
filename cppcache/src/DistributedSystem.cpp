@@ -159,9 +159,6 @@ std::unique_ptr<DistributedSystem> DistributedSystem::create(
   auto sysProps = std::unique_ptr<SystemProperties>(
       new SystemProperties(configPtr, nullptr));
 
-  // TODO global - Refactor this to some process helper
-  Exception::setStackTraces(sysProps->debugStackTraceEnabled());
-
   auto name = _name;
   if (name.empty()) {
     name = "NativeDS";

@@ -52,9 +52,9 @@ class CPPCACHE_EXPORT Exception : public std::exception {
   /** Creates an exception.
    * @param  msg1 message pointer, this is copied into the exception.
    **/
-  Exception(const char* msg1);
+  explicit Exception(const char* msg1);
 
-  Exception(const std::string& msg1);
+  explicit Exception(const std::string& msg1);
 
   /** Creates an exception as a copy of the given other exception.
    * @param  other the original exception.
@@ -75,14 +75,9 @@ class CPPCACHE_EXPORT Exception : public std::exception {
   /** Return the name of this exception type. */
   virtual const char* getName() const;
 
-  virtual const char *what() const noexcept;
-
- protected:
-  static bool s_exceptionStackTraceEnabled;
+  virtual const char *what() const noexcept override;
 
  private:
-  static void setStackTraces(bool stackTraceEnabled);
-
   std::shared_ptr<StackTrace> m_stack;
 
   std::string message;

@@ -16,23 +16,17 @@
  */
 
 #include <cstdlib>
-#include <ace/OS.h>
 
+#include <ace/OS.h>
 #include <geode/Exception.hpp>
 #include <geode/CacheableString.hpp>
 #include <StackTrace.hpp>
 #include <ace/TSS_T.h>
+#include <boost/core/demangle.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
-
-// globals can only be trusted to initialize to ZERO.
-bool Exception::s_exceptionStackTraceEnabled = false;
-
-void Exception::setStackTraces(bool stackTraceEnabled) {
-  s_exceptionStackTraceEnabled = stackTraceEnabled;
-}
 
 Exception::Exception(const std::string& msg)
   : Exception(msg.c_str()) {
@@ -40,9 +34,7 @@ Exception::Exception(const std::string& msg)
 
 Exception::Exception(const char* msg1)
   : message(msg1) {
-  if (s_exceptionStackTraceEnabled/* || forceTrace*/) {
-    m_stack = std::unique_ptr<StackTrace>();
-  }
+  m_stack = std::unique_ptr<StackTrace>();
 }
 
 const char *Exception::what() const noexcept {
@@ -51,9 +43,9 @@ const char *Exception::what() const noexcept {
 
 Exception::~Exception() noexcept {}
 
-const char _exception_name_Exception[] = "apache::geode::client::Exception";
-
-const char* Exception::getName() const { return _exception_name_Exception; }
+const char* Exception::getName() const {
+  return boost::core::demangle(typeid(*this).name()).c_str();
+}
 
 std::string Exception::getStackTrace() const {
   return m_stack ? m_stack->getString() : "  No stack available.\n";

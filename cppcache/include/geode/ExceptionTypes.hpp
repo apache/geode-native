@@ -26,28 +26,9 @@
 
 #include "geode_globals.hpp"
 #include "geode/Exception.hpp"
-#include <memory>
 namespace apache {
 namespace geode {
 namespace client {
-class StackTrace;
-class CacheableString;
-
-#define _GF_EXCEPTION_DEF(x)                                                 \
-  const char _exception_name_##x[] = "apache::geode::client::" #x;           \
-  class x;                                                                   \
-  class CPPCACHE_EXPORT x : public apache::geode::client::Exception {        \
-   public:                                                                   \
-    x(const char* msg1)                                                      \
-        : Exception(msg1) {}                                                 \
-    x(const std::string& msg1)                                               \
-        : Exception(msg1) {}                                                 \
-    virtual ~x() noexcept {}                                                 \
-    virtual const char* getName() const { return _exception_name_##x; }      \
-                                                                             \
-   private:                                                                  \
-    const x& operator=(const x&);                                            \
-  }
 
 /*
  *
@@ -59,265 +40,369 @@ class CacheableString;
 /**
  *@brief A geode assertion exception.
  **/
-_GF_EXCEPTION_DEF(AssertionException);
+class AssertionException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when an argument to a method is illegal.
  **/
-_GF_EXCEPTION_DEF(IllegalArgumentException);
+class IllegalArgumentException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when the state of cache is manipulated to be illegal.
  **/
-_GF_EXCEPTION_DEF(IllegalStateException);
+class IllegalStateException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when an attempt is made to create an existing cache.
  **/
-_GF_EXCEPTION_DEF(CacheExistsException);
+class CacheExistsException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when the cache xml is incorrect.
  **/
-_GF_EXCEPTION_DEF(CacheXmlException);
+class CacheXmlException : public Exception {
+  using Exception::Exception;
+};
 /**
  *@brief Thrown when a timout occurs.
  **/
-_GF_EXCEPTION_DEF(TimeoutException);
+class TimeoutException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when the cache writer aborts the operation.
  **/
-_GF_EXCEPTION_DEF(CacheWriterException);
+class CacheWriterException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when an attempt is made to create an existing region.
  **/
-_GF_EXCEPTION_DEF(RegionExistsException);
+class RegionExistsException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when an operation is attempted on a closed cache.
  **/
-_GF_EXCEPTION_DEF(CacheClosedException);
+class CacheClosedException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when lease of cache proxy has expired.
  **/
-_GF_EXCEPTION_DEF(LeaseExpiredException);
+class LeaseExpiredException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when the cache loader aborts the operation.
  **/
-_GF_EXCEPTION_DEF(CacheLoaderException);
+class CacheLoaderException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when an operation is attempted on a destroyed region.
  **/
-_GF_EXCEPTION_DEF(RegionDestroyedException);
+class RegionDestroyedException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when an operation is attempted on a destroyed entry.
  **/
-_GF_EXCEPTION_DEF(EntryDestroyedException);
+class EntryDestroyedException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when the connecting target is not running.
  **/
-_GF_EXCEPTION_DEF(NoSystemException);
+class NoSystemException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when an attempt is made to connect to
  *       DistributedSystem second time.
  **/
-_GF_EXCEPTION_DEF(AlreadyConnectedException);
+class AlreadyConnectedException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when a non-existing file is accessed.
  **/
-_GF_EXCEPTION_DEF(FileNotFoundException);
+class FileNotFoundException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when an operation is interrupted.
  **/
-_GF_EXCEPTION_DEF(InterruptedException);
+class InterruptedException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when an operation unsupported by the
  *       current configuration is attempted.
  **/
-_GF_EXCEPTION_DEF(UnsupportedOperationException);
+class UnsupportedOperationException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when statistics are invoked for a region where
  *       they are disabled.
  **/
-_GF_EXCEPTION_DEF(StatisticsDisabledException);
+class StatisticsDisabledException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when a concurrent operation fails.
  **/
-_GF_EXCEPTION_DEF(ConcurrentModificationException);
+class ConcurrentModificationException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief An unknown exception occurred.
  **/
-_GF_EXCEPTION_DEF(UnknownException);
+class UnknownException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when a cast operation fails.
  **/
-_GF_EXCEPTION_DEF(ClassCastException);
+class ClassCastException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when an operation is attempted on a non-existent entry.
  **/
-_GF_EXCEPTION_DEF(EntryNotFoundException);
+class EntryNotFoundException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when there is an input/output error.
  **/
-_GF_EXCEPTION_DEF(GeodeIOException);
+class GeodeIOException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when geode configuration file is incorrect.
  **/
-_GF_EXCEPTION_DEF(GeodeConfigException);
+class GeodeConfigException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when a null argument is provided to a method
  *       where it is expected to be non-null.
  **/
-_GF_EXCEPTION_DEF(NullPointerException);
+class NullPointerException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when attempt is made to create an existing entry.
  **/
-_GF_EXCEPTION_DEF(EntryExistsException);
+class EntryExistsException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when an operation is attempted before connecting
  *       to the distributed system.
  **/
-_GF_EXCEPTION_DEF(NotConnectedException);
+class NotConnectedException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when there is an error in the cache proxy.
  **/
-_GF_EXCEPTION_DEF(CacheProxyException);
+class CacheProxyException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when the system cannot allocate any more memory.
  **/
-_GF_EXCEPTION_DEF(OutOfMemoryException);
+class OutOfMemoryException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when an attempt is made to release a lock not
  *       owned by the thread.
  **/
-_GF_EXCEPTION_DEF(NotOwnerException);
+class NotOwnerException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when a region is created in an incorrect scope.
  **/
-_GF_EXCEPTION_DEF(WrongRegionScopeException);
+class WrongRegionScopeException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when the internal buffer size is exceeded.
  **/
-_GF_EXCEPTION_DEF(BufferSizeExceededException);
+class BufferSizeExceededException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when a region creation operation fails.
  **/
-_GF_EXCEPTION_DEF(RegionCreationFailedException);
+class RegionCreationFailedException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when there is a fatal internal exception in geode.
  */
-_GF_EXCEPTION_DEF(FatalInternalException);
+class FatalInternalException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown by the persistence manager when a write
  *       fails due to disk failure.
  **/
-_GF_EXCEPTION_DEF(DiskFailureException);
+class DiskFailureException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown by the persistence manager when the data
  *@brief to be read from disk is corrupt.
  **/
-_GF_EXCEPTION_DEF(DiskCorruptException);
+class DiskCorruptException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when persistence manager fails to initialize.
  **/
-_GF_EXCEPTION_DEF(InitFailedException);
+class InitFailedException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when persistence manager fails to close properly.
  **/
-_GF_EXCEPTION_DEF(ShutdownFailedException);
+class ShutdownFailedException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when an exception occurs on the cache server.
  **/
-_GF_EXCEPTION_DEF(CacheServerException);
+class CacheServerException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when bound of array/vector etc. is exceeded.
  **/
-_GF_EXCEPTION_DEF(OutOfRangeException);
+class OutOfRangeException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when query exception occurs at the server.
  **/
-_GF_EXCEPTION_DEF(QueryException);
+class QueryException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when an unknown message is received from the server.
  **/
-_GF_EXCEPTION_DEF(MessageException);
+class MessageException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when a non authorized operation is done.
  **/
-_GF_EXCEPTION_DEF(NotAuthorizedException);
+class NotAuthorizedException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when authentication fails.
  **/
-_GF_EXCEPTION_DEF(AuthenticationFailedException);
+class AuthenticationFailedException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when no credentials are provided by client when server expects.
  **/
-_GF_EXCEPTION_DEF(AuthenticationRequiredException);
+class AuthenticationRequiredException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when two durable connect with same Id.
  **/
-_GF_EXCEPTION_DEF(DuplicateDurableClientException);
+class DuplicateDurableClientException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when the cache listener throws an exception.
  **/
-_GF_EXCEPTION_DEF(CacheListenerException);
+class CacheListenerException : public Exception {
+  using Exception::Exception;
+};
 /**
  *@brief Thrown during continuous query execution time.
  **/
-_GF_EXCEPTION_DEF(CqException);
+class CqException : public Exception {
+  using Exception::Exception;
+};
 /**
  *@brief Thrown if the Cq on which the operaion performed is closed
  **/
-_GF_EXCEPTION_DEF(CqClosedException);
+class CqClosedException : public Exception {
+  using Exception::Exception;
+};
 /**
  *@brief Thrown if the Cq Query failed
  **/
-_GF_EXCEPTION_DEF(CqQueryException);
+class CqQueryException : public Exception {
+  using Exception::Exception;
+};
 /**
  *@brief Thrown if a Cq by this name already exists on this client
  **/
-_GF_EXCEPTION_DEF(CqExistsException);
+class CqExistsException : public Exception {
+  using Exception::Exception;
+};
 /**
  *@brief  Thrown if the query doesnot meet the CQ constraints.
  * E.g.:Query string should refer only one region, join not supported.
@@ -328,61 +413,85 @@ _GF_EXCEPTION_DEF(CqExistsException);
  *region path.
  *      Bind parameters in the query are not supported for the initial release.
  **/
-_GF_EXCEPTION_DEF(CqInvalidException);
+class CqInvalidException : public Exception {
+  using Exception::Exception;
+};
 /**
  *@brief Thrown if function execution failed
  **/
-_GF_EXCEPTION_DEF(FunctionExecutionException);
+class FunctionExecutionException : public Exception {
+  using Exception::Exception;
+};
 /**
  *@brief Thrown if the No locators are active to reply for new connection.
  **/
-_GF_EXCEPTION_DEF(NoAvailableLocatorsException);
+class NoAvailableLocatorsException : public Exception {
+  using Exception::Exception;
+};
 /**
  *@brief Thrown if all connections in the pool are in use.
  **/
-_GF_EXCEPTION_DEF(AllConnectionsInUseException);
+class AllConnectionsInUseException : public Exception {
+  using Exception::Exception;
+};
 /**
  *@brief Thrown if Delta could not be applied.
  **/
-_GF_EXCEPTION_DEF(InvalidDeltaException);
+class InvalidDeltaException : public Exception {
+  using Exception::Exception;
+};
 /**
  *@brief Thrown if a Key is not present in the region.
  **/
-_GF_EXCEPTION_DEF(KeyNotFoundException);
+class KeyNotFoundException : public Exception {
+  using Exception::Exception;
+};
 /**
  * @brief This is for all Exceptions that may be thrown
  * by a Geode transaction.
  **/
-_GF_EXCEPTION_DEF(TransactionException);
+class TransactionException : public Exception {
+  using Exception::Exception;
+};
 /**
  * @brief The RollbackException exception indicates that either the transaction
  * has been rolled back or an operation cannot complete because the
  * transaction is marked for rollback only.
  **/
-_GF_EXCEPTION_DEF(RollbackException);
+class RollbackException : public Exception {
+  using Exception::Exception;
+};
 /**
  * @brief Thrown when a commit fails due to a write conflict.
  * @see CacheTransactionManager#commit
  **/
-_GF_EXCEPTION_DEF(CommitConflictException);
+class CommitConflictException : public Exception {
+  using Exception::Exception;
+};
 /**
  * @brief Thrown when the transactional data host has shutdown or no longer has
  *the data
  * being modified by the transaction.
  * This can be thrown while doing transactional operations or during commit.
  **/
-_GF_EXCEPTION_DEF(TransactionDataNodeHasDepartedException);
+class TransactionDataNodeHasDepartedException : public Exception {
+  using Exception::Exception;
+};
 /**
  * @brief Thrown when a {@link RebalanceOperation} occurs concurrently with a
  *transaction.
  * This can be thrown while doing transactional operations or during commit.
  **/
-_GF_EXCEPTION_DEF(TransactionDataRebalancedException);
+class TransactionDataRebalancedException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  * @brief Thrown if putAll operation with single hop succeeded partially.
  **/
-_GF_EXCEPTION_DEF(PutAllPartialResultException);
+class PutAllPartialResultException : public Exception {
+  using Exception::Exception;
+};
 
 /**
  *@brief Thrown when a version on which delta is based is different than the

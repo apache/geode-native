@@ -112,6 +112,12 @@ namespace Apache
       System::Exception^ GeodeException::Get(const apache::geode::client::Exception& nativeEx)
       {
         Exception^ innerException = nullptr;
+        try
+        {
+          std::rethrow_if_nested(nativeEx);
+        } catch (const apache::geode::client::Exception& ex) {
+          innerException = GeodeException::Get(ex);
+        }
         String^ exName = gcnew String( nativeEx.getName( ) );
         CreateException2^ exDelegate;
         if (Native2ManagedExMap->TryGetValue(exName, exDelegate)) {

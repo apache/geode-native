@@ -548,11 +548,14 @@ namespace Apache.Geode.Client.UnitTests
       }
       catch (NotConnectedException excp)
       {
-        Util.Log("Got expected NotConnectedException");
-      }
-      catch
-      {
-        Assert.Fail("Did not get expected NotConnectedException");
+        if (excp.InnerException is NoAvailableLocatorsException)
+        {
+          Util.Log("Got expected NoAvailableLocatorsException with cause NoAvailableLocatorsException");
+        }
+        else
+        {
+          Assert.Fail("Did not get expected NotConnectedException with cause NoAvailableLocatorsException");
+        }
       }
     }
 

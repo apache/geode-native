@@ -124,10 +124,16 @@ void PoolStatsSampler::putStatsInAdminRegion() {
     }
   } catch (const AllConnectionsInUseException&) {
     LOGDEBUG("All connection are in use, trying again.");
-  } catch (const NoAvailableLocatorsException& ex) {
-    LOGDEBUG("No locators available, trying again.");
   } catch (const NotConnectedException& ex) {
-    LOGDEBUG("Not connected to geode, trying again.");
+    try
+    {
+      std::rethrow_if_nested(ex);
+    } catch (const NoAvailableLocatorsException& ex) {
+      LOGDEBUG("No locators available, trying again.");
+    }
+    catch (...) {
+      LOGDEBUG("Not connected to geode, trying again.");
+    }
   } catch (...) {
     LOGDEBUG("Exception occurred, trying again.");
   }
