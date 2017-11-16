@@ -26,7 +26,6 @@
 
 #include <geode/geode_globals.hpp>
 #include <memory>
-#include <geode/geode_types.hpp>
 #include "ace/Recursive_Thread_Mutex.h"
 #include "ace/Guard_T.h"
 #include "ace/OS.h"

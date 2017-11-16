@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 #include <geode/geode_globals.hpp>
-#include <geode/geode_types.hpp>
 #include <geode/Region.hpp>
 #include <geode/DistributedSystem.hpp>
 #include <geode/QueryService.hpp>

@@ -24,7 +24,6 @@
 #include <vector>
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include "CacheableBuiltins.hpp"
 #include "StructSet.hpp"
 #include "SelectResults.hpp"

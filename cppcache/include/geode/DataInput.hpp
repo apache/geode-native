@@ -23,7 +23,6 @@
 #include "ExceptionTypes.hpp"
 #include <cstring>
 #include <string>
-#include "geode_types.hpp"
 #include "Serializable.hpp"
 #include "CacheableString.hpp"
 

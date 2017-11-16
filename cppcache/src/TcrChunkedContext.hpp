@@ -29,7 +29,6 @@
 
 #include <ace/Semaphore.h>
 #include <string>
-#include <geode/geode_types.hpp>
 #include "Utils.hpp"
 #include "AppDomainContext.hpp"
 

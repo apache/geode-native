@@ -21,11 +21,9 @@
 #define GEODE_CACHEABLEOBJECTPARTLIST_H_
 
 #include <geode/geode_globals.hpp>
-#include <geode/geode_types.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/Cacheable.hpp>
-#include <geode/HashMapT.hpp>
 #include "MapWithLock.hpp"
 
 #include <vector>

@@ -23,9 +23,7 @@
 #include <string>
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include "GeodeCache.hpp"
-#include "geode_types.hpp"
 #include "Region.hpp"
 #include "DistributedSystem.hpp"
 #include "QueryService.hpp"

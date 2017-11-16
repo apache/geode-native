@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHEWRITER_H_
-#define GEODE_CACHEWRITER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,13 +15,14 @@
  * limitations under the License.
  */
 
-#include "geode_globals.hpp"
-#include "geode_types.hpp"
+#pragma once
 
-/**
- * @file
- *
- */
+#ifndef GEODE_CACHEWRITER_H_
+#define GEODE_CACHEWRITER_H_
+
+#include <memory>
+
+#include "geode_globals.hpp"
 
 namespace apache {
 namespace geode {
@@ -88,7 +84,7 @@ class Region;
  * @see RegionAttributes::getCacheWriter
  * @see AttributesMutator::setCacheWriter
  */
-class CPPCACHE_EXPORT CacheWriter  {
+class CPPCACHE_EXPORT CacheWriter {
  public:
   /**
    * Called before an entry is updated. The entry update is initiated by a

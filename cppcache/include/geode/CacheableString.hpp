@@ -21,7 +21,6 @@
 #define GEODE_CACHEABLESTRING_H_
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include "CacheableKey.hpp"
 #include "GeodeTypeIds.hpp"
 #include "ExceptionTypes.hpp"

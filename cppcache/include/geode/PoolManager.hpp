@@ -24,7 +24,6 @@
 #include <string>
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 
 #include "Cache.hpp"
 #include "Pool.hpp"

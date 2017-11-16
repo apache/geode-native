@@ -21,8 +21,8 @@
  */
 
 #include "geode_globals.hpp"
-#include "geode_types.hpp"
 #include <vector>
+#include <memory>
 /**
  * @file
  */
@@ -56,7 +56,8 @@ class CPPCACHE_EXPORT CqAttributesMutator {
    * @param aListener the CQ listener to remove from the CqQuery.
    * @throws IllegalArgumentException if <code>aListener</code> is nullptr
    */
-  virtual void removeCqListener(const std::shared_ptr<CqListener>& aListener) = 0;
+  virtual void removeCqListener(
+      const std::shared_ptr<CqListener>& aListener) = 0;
 
   /**
    * Adds the given set CqListner on this CQ. If the CQ already has CqListeners,

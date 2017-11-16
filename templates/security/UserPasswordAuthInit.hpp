@@ -17,6 +17,8 @@
 
 #ifndef __USERPASSWORDAUTHINIT__
 #define __USERPASSWORDAUTHINIT__
+#include <memory>
+
 #include "geode/AuthInitialize.hpp"
 
 /**
