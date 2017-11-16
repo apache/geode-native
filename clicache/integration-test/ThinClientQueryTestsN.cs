@@ -94,8 +94,8 @@ namespace Apache.Geode.Client.UnitTests
       try
       {
 				var poolFail = CacheHelper.DCache.GetPoolManager().CreateFactory().Create("_TESTFAILPOOL_", CacheHelper.DCache);
-				var qsFail = poolFail.GetQueryService<object, object>();
-        var qryFail = qsFail.NewQuery("select distinct * from /" + QERegionName);
+				var qsFail = poolFail.GetQueryService();
+        var qryFail = qsFail.NewQuery<object>("select distinct * from /" + QERegionName);
         var resultsFail = qryFail.Execute();
         Assert.Fail("Since no endpoints defined, so exception expected");
       }
@@ -136,10 +136,10 @@ namespace Apache.Geode.Client.UnitTests
         region["4"] = p4;
       }
 
-      QueryService<object, object> qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      QueryService qs = null;
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
-      Query<object> qry = qs.NewQuery("select distinct * from /" + QERegionName);
+      Query<object> qry = qs.NewQuery<object>("select distinct * from /" + QERegionName);
       ISelectResults<object> results = qry.Execute();
       Int32 count = results.Size;
       Assert.AreEqual(4, count, "Expected 4 as number of portfolio objects.");
@@ -150,10 +150,10 @@ namespace Apache.Geode.Client.UnitTests
 
     public void StepTwoQE()
     {
-      QueryService<object, object> qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      QueryService qs = null;
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
       Util.Log("Going to execute the query");
-      Query<object> qry = qs.NewQuery("select distinct * from /" + QERegionName);
+      Query<object> qry = qs.NewQuery<object>("select distinct * from /" + QERegionName);
       ISelectResults<object> results = qry.Execute();
       Int32 count = results.Size;
       Assert.AreEqual(4, count, "Expected 4 as number of portfolio objects.");
@@ -242,9 +242,9 @@ namespace Apache.Geode.Client.UnitTests
 
       QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
-      QueryService<object, object> qs = null;
+      QueryService qs = null;
 
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       int qryIdx = 0;
 
@@ -269,7 +269,7 @@ namespace Apache.Geode.Client.UnitTests
 
         Util.Log("Evaluating query index {0}. Query string {1}", qryIdx, qrystr.Query);
 
-        Query<object> query = qs.NewQuery(qrystr.Query);
+        Query<object> query = qs.NewQuery<object>(qrystr.Query);
 
         ISelectResults<object> results = query.Execute();
 
@@ -358,9 +358,9 @@ namespace Apache.Geode.Client.UnitTests
 
       QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
-      QueryService<object, object> qs = null;
+      QueryService qs = null;
 
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       int qryIdx = 0;
 
@@ -375,7 +375,7 @@ namespace Apache.Geode.Client.UnitTests
 
         Util.Log("Evaluating query index {0}. {1}", qryIdx, paramqrystr.Query);
 
-        Query<object> query = qs.NewQuery(paramqrystr.Query);
+        Query<object> query = qs.NewQuery<object>(paramqrystr.Query);
 
         //Populate the parameter list (paramList) for the query.
         object[] paramList = new object[QueryStatics.NoOfQueryParam[qryIdx]];
@@ -486,9 +486,9 @@ namespace Apache.Geode.Client.UnitTests
 
       QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
-      QueryService<object, object> qs = null;
+      QueryService qs = null;
 
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       int qryIdx = 0;
 
@@ -502,7 +502,7 @@ namespace Apache.Geode.Client.UnitTests
 
         Util.Log("Evaluating unsupported query index {0}.", qryIdx);
 
-        Query<object> query = qs.NewQuery(qrystr.Query);
+        Query<object> query = qs.NewQuery<object>(qrystr.Query);
 
         try
         {
@@ -534,9 +534,9 @@ namespace Apache.Geode.Client.UnitTests
 
       QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
-      QueryService<object, object> qs = null;
+      QueryService qs = null;
 
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       int qryIdx = 0;
 
@@ -550,7 +550,7 @@ namespace Apache.Geode.Client.UnitTests
 
         Util.Log("Evaluating unsupported query index {0}.", qryIdx);
 
-        Query<object> query = qs.NewQuery(qrystr.Query);
+        Query<object> query = qs.NewQuery<object>(qrystr.Query);
 
         object[] paramList = new object[QueryStatics.NoOfQueryParam[qryIdx]];
 
@@ -603,9 +603,9 @@ namespace Apache.Geode.Client.UnitTests
 
       QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
-      QueryService<object, object> qs = null;
+      QueryService qs = null;
 
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       int qryIdx = 0;
 
@@ -630,7 +630,7 @@ namespace Apache.Geode.Client.UnitTests
 
         Util.Log("Evaluating query index {0}. {1}", qryIdx, qrystr.Query);
 
-        Query<object> query = qs.NewQuery(qrystr.Query);
+        Query<object> query = qs.NewQuery<object>(qrystr.Query);
 
         ISelectResults<object> results = query.Execute();
 
@@ -675,9 +675,9 @@ namespace Apache.Geode.Client.UnitTests
 
       QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
-      QueryService<object, object> qs = null;
+      QueryService qs = null;
 
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       int qryIdx = 0;
 
@@ -702,7 +702,7 @@ namespace Apache.Geode.Client.UnitTests
           }
         }
 
-        Query<object> query = qs.NewQuery(qrystr.Query);
+        Query<object> query = qs.NewQuery<object>(qrystr.Query);
 
         //Populate the param list, paramList for parameterized query 
         object[] paramList = new object[QueryStatics.NoOfQueryParamSS[qryIdx]];
@@ -769,9 +769,9 @@ namespace Apache.Geode.Client.UnitTests
 
       QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
-      QueryService<object, object> qs = null;
+      QueryService qs = null;
 
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       int qryIdx = 0;
 
@@ -785,7 +785,7 @@ namespace Apache.Geode.Client.UnitTests
 
         Util.Log("Evaluating unsupported query index {0}.", qryIdx);
 
-        Query<object> query = qs.NewQuery(qrystr.Query);
+        Query<object> query = qs.NewQuery<object>(qrystr.Query);
 
         try
         {
@@ -817,9 +817,9 @@ namespace Apache.Geode.Client.UnitTests
 
       QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
-      QueryService<object, object> qs = null;
+      QueryService qs = null;
 
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       int qryIdx = 0;
 
@@ -833,7 +833,7 @@ namespace Apache.Geode.Client.UnitTests
 
         Util.Log("Evaluating unsupported query index {0}.", qryIdx);
 
-        Query<object> query = qs.NewQuery(qrystr.Query);
+        Query<object> query = qs.NewQuery<object>(qrystr.Query);
 
         //Populate the param list
         object[] paramList = new object[QueryStatics.NoOfQueryParamSS[qryIdx]];
@@ -940,13 +940,13 @@ namespace Apache.Geode.Client.UnitTests
       IAsyncResult killRes = null;
       KillServerDelegate ksd = new KillServerDelegate(KillServer);
 
-      QueryService<object, object> qs = null;
+      QueryService qs = null;
 
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       for (int i = 0; i < 10000; i++)
       {
-        Query<object> qry = qs.NewQuery("select distinct * from /" + QueryRegionNames[0]);
+        Query<object> qry = qs.NewQuery<object>("select distinct * from /" + QueryRegionNames[0]);
 
         ISelectResults<object> results = qry.Execute();
 
@@ -977,13 +977,13 @@ namespace Apache.Geode.Client.UnitTests
       IAsyncResult killRes = null;
       KillServerDelegate ksd = new KillServerDelegate(KillServer);
 
-      QueryService<object, object> qs = null;
+      QueryService qs = null;
 
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       for (int i = 0; i < 10000; i++)
       {
-        Query<object> qry = qs.NewQuery("select distinct * from /" + QueryRegionNames[0] + " where ID > $1");
+        Query<object> qry = qs.NewQuery<object>("select distinct * from /" + QueryRegionNames[0] + " where ID > $1");
 
         //Populate the param list
         object[] paramList = new object[1];
@@ -1013,10 +1013,10 @@ namespace Apache.Geode.Client.UnitTests
     public void StepThreeQT()
     {
       QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
-      QueryService<object, object> qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      QueryService qs = null;
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
       Util.Log("query " + QueryStatics.ResultSetQueries[34].Query);
-      Query<object> query = qs.NewQuery(QueryStatics.ResultSetQueries[34].Query);
+      Query<object> query = qs.NewQuery<object>(QueryStatics.ResultSetQueries[34].Query);
 
       try
       {
@@ -1035,10 +1035,10 @@ namespace Apache.Geode.Client.UnitTests
     public void StepFourQT()
     {
       QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
-      QueryService<object, object> qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      QueryService qs = null;
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
-      Query<object> query = qs.NewQuery(QueryStatics.ResultSetQueries[35].Query);
+      Query<object> query = qs.NewQuery<object>(QueryStatics.ResultSetQueries[35].Query);
 
       try
       {
@@ -1056,10 +1056,10 @@ namespace Apache.Geode.Client.UnitTests
     public void StepFiveQT()
     {
       QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
-      QueryService<object, object> qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      QueryService qs = null;
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
-      Query<object> query = qs.NewQuery(QueryStatics.StructSetQueries[17].Query);
+      Query<object> query = qs.NewQuery<object>(QueryStatics.StructSetQueries[17].Query);
 
       try
       {
@@ -1078,9 +1078,9 @@ namespace Apache.Geode.Client.UnitTests
     public void StepSixQT()
     {
       QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
-      QueryService<object, object> qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
-      Query<object> query = qs.NewQuery(QueryStatics.StructSetQueries[17].Query);
+      QueryService qs = null;
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
+      Query<object> query = qs.NewQuery<object>(QueryStatics.StructSetQueries[17].Query);
 
       try
       {
@@ -1098,10 +1098,10 @@ namespace Apache.Geode.Client.UnitTests
     public void StepThreePQT()
     {
       QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
-      QueryService<object, object> qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      QueryService qs = null;
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
-      Query<object> query = qs.NewQuery(QueryStatics.StructSetParamQueries[5].Query);
+      Query<object> query = qs.NewQuery<object>(QueryStatics.StructSetParamQueries[5].Query);
 
 
       try
@@ -1141,10 +1141,10 @@ namespace Apache.Geode.Client.UnitTests
     public void StepFourPQT()
     {
       QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
-      QueryService<object, object> qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      QueryService qs = null;
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
-      Query<object> query = qs.NewQuery(QueryStatics.StructSetParamQueries[5].Query);
+      Query<object> query = qs.NewQuery<object>(QueryStatics.StructSetParamQueries[5].Query);
 
       try
       {

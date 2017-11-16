@@ -2673,9 +2673,9 @@ namespace Apache.Geode.Client.UnitTests
        //private Address _address;
      //private Hashtable _hashTable;
 
-       //QueryService<object, object> qs = PoolManager/*<object, object>*/.Find("__TESTPOOL1_").GetQueryService<object, object>();
+       //QueryService qs = PoolManager/*<object, object>*/.Find("__TESTPOOL1_").GetQueryService();
 
-       //Query<object> qry = qs.NewQuery("select _addressArray from /" + m_regionNames[0] + " where arrayCount = 10");
+       //Query<object> qry = qs.NewQuery<object>("select _addressArray from /" + m_regionNames[0] + " where arrayCount = 10");
        //ISelectResults<object> results = qry.Execute();
        //Assert.Greater(results.Size, 5, "query should have result");
        //IEnumerator<object> ie = results.GetEnumerator();

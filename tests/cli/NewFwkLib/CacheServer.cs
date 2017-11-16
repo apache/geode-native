@@ -1050,14 +1050,14 @@ namespace Apache.Geode.Client.FwkLib
       DateTime startTime;
       DateTime endTime;
       TimeSpan elapsedTime;
-      QueryService<TKey, object> qs = CheckQueryService();
+      QueryService qs = CheckQueryService();
       if (AllowQuery(currentQuery.Category, currentQuery.IsLargeResultset,
             isLargeSetQuery, isUnsupportedPRQuery))
         {
           string query = currentQuery.Query;
           FwkInfo("CacheServer.RunQuery: ResultSet Query Category [{0}], " +
             "String [{1}].", currentQuery.Category, query);
-          Query<object> qry = qs.NewQuery(query);
+          Query<object> qry = qs.NewQuery<object>(query);
           object[] paramList = null;
           if (isparam)
           {
@@ -2818,15 +2818,15 @@ namespace Apache.Geode.Client.FwkLib
             }
             else if (opCode == "query")
             {
-              QueryService<TKey, object> qs = CheckQueryService();
-              Query<object> qry = qs.NewQuery("select distinct * from /Portfolios where FALSE");
+              QueryService qs = CheckQueryService();
+              Query<object> qry = qs.NewQuery<object>("select distinct * from /Portfolios where FALSE");
               ISelectResults<object> result = qry.Execute(TimeSpan.FromSeconds(600));
               query++;
             }
             else if (opCode == "cq")
             {
               string cqName = String.Format("cq-{0}-{1}", Util.ClientId ,cnt++);
-              QueryService<TKey, object> qs = CheckQueryService();
+              QueryService qs = CheckQueryService();
               CqAttributesFactory<TKey, object> cqFac = new CqAttributesFactory<TKey, object>();
               ICqListener<TKey, object> cqLstner = new MyCqListener<TKey, object>();
               cqFac.AddCqListener(cqLstner);
@@ -3513,12 +3513,12 @@ public void DoVerifyQueryResult()
   FwkInfo("localInvalidate size is {0}", localInvalidate);
   while (query != null && query.Length > 0)
   {
-      QueryService<TKey, object> qs = CheckQueryService();
+      QueryService qs = CheckQueryService();
       DateTime startTime;
       TimeSpan elapsedTime;
       ISelectResults<object> results;
       string CqName = String.Format("_default{0}", query);
-      CqQuery<TKey, object> cq = qs.GetCq(CqName);
+      CqQuery<TKey, object> cq = qs.GetCq<TKey, object>(CqName);
       try
       {
         if (cq.IsRunning())
@@ -4494,7 +4494,7 @@ private void checkUpdatedValue(TKey key, TVal value)
       {
         string userName = (String)userList[i];
         string cqName = String.Format("cq-{0}", userName);
-        QueryService<TKey, object> qs = authCache.GetQueryService<TKey, object>();
+        QueryService qs = authCache.GetQueryService();
         CqAttributesFactory<TKey, object> cqFac = new CqAttributesFactory<TKey, object>();
         ICqListener<TKey, object> cqLstner = new MyCqListener<TKey, object>();
         cqFac.AddCqListener(cqLstner);
@@ -4572,13 +4572,13 @@ private void checkUpdatedValue(TKey key, TVal value)
         string uName = (String)userList[0];
         IRegion<TKey, TVal> region = proxyRegionMap[uName];
         IRegionService authCache = authCacheMap[uName];
-        QueryService<TKey, object> qs = authCache.GetQueryService<TKey, object>();
+        QueryService qs = authCache.GetQueryService();
         ICqListener<TKey, object> cqLstner = new MyCqListener<TKey, object>();
         for (Int32 i = 0; i < userList.Count; i++)
         {
           string userName = (String)userList[i];
           string cqName = String.Format("cq-{0}", userName);
-          CqQuery<TKey, object> cq = qs.GetCq(cqName);
+          CqQuery<TKey, object> cq = qs.GetCq<TKey, object>(cqName);
           CqStatistics cqStats = cq.GetStatistics();
           CqAttributes<TKey, object> cqAttr = cq.GetCqAttributes();
           ICqListener<TKey, object>[] vl = cqAttr.getCqListeners();
@@ -4689,14 +4689,14 @@ private void checkUpdatedValue(TKey key, TVal value)
              
             else if (opCode == "query")
             {
-              QueryService<TKey, object> qs = authCache.GetQueryService<TKey, object>();
-              Query<object> qry = qs.NewQuery("select distinct * from /Portfolios where FALSE");
+              QueryService qs = authCache.GetQueryService();
+              Query<object> qry = qs.NewQuery<object>("select distinct * from /Portfolios where FALSE");
               ISelectResults<object> result = qry.Execute(TimeSpan.FromSeconds(600));
             }
             else if (opCode == "cq")
             {
               string cqName = String.Format("cq-{0}",userName);
-              QueryService<TKey, object> qs = authCache.GetQueryService<TKey, object>();
+              QueryService qs = authCache.GetQueryService();
               CqAttributesFactory<TKey, object> cqFac = new CqAttributesFactory<TKey, object>();
               ICqListener<TKey, object> cqLstner = new MyCqListener<TKey, object>();
               cqFac.AddCqListener(cqLstner);

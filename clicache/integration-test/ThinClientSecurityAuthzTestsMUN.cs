@@ -219,7 +219,7 @@ namespace Apache.Geode.Client.UnitTests
     }
 
     protected const string RegionName_CQ = "Portfolios";
-    static QueryService<object, object> gQueryService = null;
+    static QueryService gQueryService = null;
 
     static string [] QueryStrings = {
                         "select * from /Portfolios p where p.ID < 1",
@@ -249,7 +249,7 @@ namespace Apache.Geode.Client.UnitTests
       }
 
       // VJR: TODO fix cache.GetQueryService to also be generic
-      gQueryService = CacheHelper.getMultiuserCache(credentials).GetQueryService<object, object>();
+      gQueryService = CacheHelper.getMultiuserCache(credentials).GetQueryService();
 
       for (int i = 0; i < QueryStrings.Length; i++)
       {
@@ -317,7 +317,7 @@ namespace Apache.Geode.Client.UnitTests
       Util.Log("verifyCQEvents " + gQueryService);
       Assert.IsNotNull(gQueryService);
 
-      CqQuery<object, object> cq = gQueryService.GetCq("cq_" + 3);
+      CqQuery<object, object> cq = gQueryService.GetCq<object, object>("cq_" + 3);
       ICqListener<object, object>[] cqL = cq.GetCqAttributes().getCqListeners();
       MyCqListener2<object, object> mcqL = (MyCqListener2<object, object>)cqL[0];
 
@@ -338,7 +338,7 @@ namespace Apache.Geode.Client.UnitTests
           Assert.AreEqual(0, mcqL.Updates, "CQ listener 3 should not get any update event ");
       }
 
-      cq = gQueryService.GetCq("cq_" + 4);
+      cq = gQueryService.GetCq<object, object>("cq_" + 4);
       cqL = cq.GetCqAttributes().getCqListeners();
       mcqL = (MyCqListener2<object, object>)cqL[0];
 
@@ -359,7 +359,7 @@ namespace Apache.Geode.Client.UnitTests
           Assert.AreEqual(0, mcqL.Updates, "CQ listener 4 should not get any update event ");
       }
 
-      cq = gQueryService.GetCq("cq_" + 0);
+      cq = gQueryService.GetCq<object, object>("cq_" + 0);
       cqL = cq.GetCqAttributes().getCqListeners();
       mcqL = (MyCqListener2<object, object>)cqL[0];
 

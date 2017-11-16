@@ -311,7 +311,7 @@ namespace Apache.Geode.Client.UnitTests
               }
               else
               {
-                queryResults = CacheHelper.getMultiuserCache(creds).GetQueryService<object, object>().NewQuery("SELECT DISTINCT * FROM " + region.FullPath).Execute();
+                queryResults = CacheHelper.getMultiuserCache(creds).GetQueryService().NewQuery<object>("SELECT DISTINCT * FROM " + region.FullPath).Execute();
               }
               Assert.IsNotNull(queryResults);
               if (!CheckFlags(flags, OpFlags.CheckFail))
@@ -407,14 +407,14 @@ namespace Apache.Geode.Client.UnitTests
               break;
             case OperationCode.ExecuteCQ:
               Pool/*<object, object>*/ pool = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_");
-              QueryService<object, object> qs;
+              QueryService qs;
               if (pool != null)
               {
-                qs = pool.GetQueryService<object, object>();
+                qs = pool.GetQueryService();
               }
               else
               {
-                //qs = CacheHelper.DCache.GetQueryService<object, object>();
+                //qs = CacheHelper.DCache.GetQueryService();
                 qs = null;
 
               }
