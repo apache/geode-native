@@ -233,7 +233,7 @@ namespace Apache.Geode.Client.FwkLib
       }
       int numSet = numOfKeys / setSize;
 
-      QueryService<TKey, object> qs = CheckQueryService(); 
+      QueryService<object> qs = CheckQueryService(); 
 
       ResetKey(CategoryType);
       int category;
@@ -414,7 +414,7 @@ namespace Apache.Geode.Client.FwkLib
       }
       int numSet = numOfKeys / setSize;
 
-      QueryService<TKey, object> qs = CheckQueryService();
+      QueryService<object> qs = CheckQueryService();
 
       DateTime startTime;
       DateTime endTime;
@@ -568,14 +568,14 @@ namespace Apache.Geode.Client.FwkLib
           FwkSevere("ReadQueryString: ResultSize is not defined in xml.");
           return false;
         }
-        QueryService<TKey, object> qs = CheckQueryService();
+        QueryService<object> qs = CheckQueryService();
         DateTime startTime;
         TimeSpan elapsedTime;
         ISelectResults<object> results;
         if (isCq)
         {
           string CqName = String.Format("_default{0}",query);
-          CqQuery<TKey, object> cq = qs.GetCq(CqName);
+          CqQuery<TKey, object> cq = qs.GetCq<TKey>(CqName);
           startTime = DateTime.Now;
           results = cq.ExecuteWithInitialResults(QueryResponseTimeout);
           elapsedTime = DateTime.Now - startTime;
@@ -737,7 +737,7 @@ namespace Apache.Geode.Client.FwkLib
         string key = "CQLISTENER_" + clientId;
         while (qryStr != null)
         {
-          QueryService<TKey, object> qs = CheckQueryService();
+          QueryService<object> qs = CheckQueryService();
           CqAttributesFactory<TKey, object> cqFac = new CqAttributesFactory<TKey, object>();
           ICqListener<TKey, object> cqLstner = new MyCq1Listener<TKey, object>();
           cqFac.AddCqListener(cqLstner);
@@ -767,7 +767,7 @@ namespace Apache.Geode.Client.FwkLib
         bool isdurable = GetBoolValue("isDurableC");
         while (qryStr != null)
         {
-          QueryService<TKey, object> qs = CheckQueryService();
+          QueryService<object> qs = CheckQueryService();
           CqAttributesFactory<TKey, object> cqFac = new CqAttributesFactory<TKey, object>();
           ICqListener<TKey, object> cqLstner = new MyCq1Listener<TKey, object>();
           cqFac.AddCqListener(cqLstner);
@@ -799,7 +799,7 @@ namespace Apache.Geode.Client.FwkLib
         FwkInfo("In QueryTest.DoValidateCq()");
         try
         {
-          QueryService<TKey, object> qs = CheckQueryService();
+          QueryService<object> qs = CheckQueryService();
           ResetKey("isDurableC");
           bool isdurable = GetBoolValue("isDurableC");
           ResetKey("NoCqs");
@@ -843,9 +843,9 @@ namespace Apache.Geode.Client.FwkLib
       FwkInfo("In QueryTest.DoVerifyCQListenerInvoked()");
       try
       {
-        QueryService<TKey, object> qs = CheckQueryService();
+        QueryService<object> qs = CheckQueryService();
         ICqListener<TKey, object> cqLstner = new MyCq1Listener<TKey, object>();
-        CqQuery<TKey, object>[] vcq = qs.GetCqs();
+        CqQuery<TKey, object>[] vcq = qs.GetCqs<TKey>();
         System.Collections.Generic.List<string> durableCqList = qs.GetAllDurableCqsFromServer();
         FwkInfo("Durable Cq count is {0} and all cq count is {1}", durableCqList.Count, vcq.Length);
         //Validate Cq by name
@@ -968,8 +968,8 @@ namespace Apache.Geode.Client.FwkLib
       FwkInfo("In QueryTest.DoVerifyCQDestroy()");
       try
       {
-        QueryService<TKey, object> qs = CheckQueryService();
-        CqQuery<TKey, object>[] vcq = qs.GetCqs();
+        QueryService<object> qs = CheckQueryService();
+        CqQuery<TKey, object>[] vcq = qs.GetCqs<TKey>();
         if (vcq.Length != 0)
         {
           FwkException("cqs should have been removed after close");
@@ -988,8 +988,8 @@ namespace Apache.Geode.Client.FwkLib
       try
       {
         opcode = GetStringValue(CqState);
-        QueryService<TKey, object> qs = CheckQueryService();
-        CqQuery<TKey, object>[] vcq = qs.GetCqs();
+        QueryService<object> qs = CheckQueryService();
+        CqQuery<TKey, object>[] vcq = qs.GetCqs<TKey>();
         FwkInfo("QueryTest.DoCQState - number of cqs is {0} ", vcq.Length); 
         for (int i = 0; i < vcq.Length; i++)
         {
@@ -1029,13 +1029,13 @@ namespace Apache.Geode.Client.FwkLib
       Int32 getCQAttributes = 0, getCQName = 0, getQuery = 0, getQueryString = 0, getStatistics = 0, stopCq = 0, closeCq = 0, executeCq = 0, executeCqWithIR = 0;
       FwkInfo("Operation will work for : {0}" ,secondsToRun);
       PaceMeter pm = new PaceMeter(opsSec);
-      QueryService<TKey, object> qs = CheckQueryService();
+      QueryService<object> qs = CheckQueryService();
       while (now < end)
       {
         try 
         {
           opCode=GetStringValue("cqOps");
-          CqQuery<TKey, object>[] vcq = qs.GetCqs();
+          CqQuery<TKey, object>[] vcq = qs.GetCqs<TKey>();
           CqQuery<TKey, object> cqs = (CqQuery<TKey, object>)vcq.GetValue(Util.Rand(vcq.Length));
           FwkInfo("Performing {0} on cq named {1}",opCode,cqs.Name);
           if (opCode == null || opCode.Length == 0)
@@ -1251,7 +1251,7 @@ namespace Apache.Geode.Client.FwkLib
         ICqListener<TKey, object> cqLstner = new MyCq1Listener<TKey, object>();
         cqFac.AddCqListener(cqLstner);
         CqAttributes<TKey, object> cqAttr = cqFac.Create();
-        QueryService<TKey, object> qs = CheckQueryService();
+        QueryService<object> qs = CheckQueryService();
         qs.NewCq(query, cqAttr,false);
       }
       catch (Exception ex)
@@ -1352,7 +1352,7 @@ namespace Apache.Geode.Client.FwkLib
       }
     }
 
-    public ISelectResults<object> RemoteQuery(QueryService<TKey, object> qs, string queryStr)
+    public ISelectResults<object> RemoteQuery(QueryService<object> qs, string queryStr)
     {
       DateTime startTime;
       DateTime endTime;
@@ -1367,7 +1367,7 @@ namespace Apache.Geode.Client.FwkLib
       return results;
     }
 
-    public ISelectResults<object> ContinuousQuery(QueryService<TKey, object> qs, string queryStr, int cqNum)
+    public ISelectResults<object> ContinuousQuery(QueryService<object> qs, string queryStr, int cqNum)
     {
       DateTime startTime ,endTime;
       TimeSpan elapsedTime;

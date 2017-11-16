@@ -1099,7 +1099,7 @@ namespace Apache.Geode.Client.FwkLib
             DateTime startTime;
             DateTime endTime;
             TimeSpan elapsedTime;
-            QueryService<TKey, object> qs = CheckQueryService();
+            QueryService<object> qs = CheckQueryService();
             if (AllowQuery(currentQuery.Category, currentQuery.IsLargeResultset,
                   isLargeSetQuery, isUnsupportedPRQuery))
             {
@@ -3539,14 +3539,14 @@ namespace Apache.Geode.Client.FwkLib
                         }
                         else if (opCode == "query")
                         {
-                            QueryService<TKey, object> qs = CheckQueryService();
+                            QueryService<object> qs = CheckQueryService();
                             Query<object> qry = qs.NewQuery("select distinct * from /Portfolios where FALSE");
                             ISelectResults<object> result = qry.Execute(TimeSpan.FromSeconds(600));
                         }
                         else if (opCode == "cq")
                         {
                             string cqName = String.Format("cq-{0}-{1}", Util.ClientId, cnt++);
-                            QueryService<TKey, object> qs = CheckQueryService();
+                            QueryService<object> qs = CheckQueryService();
                             CqAttributesFactory<TKey, object> cqFac = new CqAttributesFactory<TKey, object>();
                             ICqListener<TKey, object> cqLstner = new MyCqListener<TKey, object>();
                             cqFac.AddCqListener(cqLstner);

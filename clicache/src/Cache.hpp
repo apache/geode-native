@@ -35,7 +35,7 @@ namespace Apache
 
       namespace native = apache::geode::client;
 
-      generic<class TKey, class TResult>
+      generic<class TResult>
       ref class QueryService;
 
       ref class RegionFactory;
@@ -205,8 +205,8 @@ namespace Apache
         /// at least some endpoints must have been defined in some regions
         /// before actually firing a query.
         /// </remarks>
-        generic<class TKey, class TResult>
-        virtual Client::QueryService<TKey, TResult>^ GetQueryService();
+        generic<class TResult>
+        virtual Client::QueryService<TResult>^ GetQueryService();
 
         /// <summary>
         /// Get a query service object to be able to query the cache.
@@ -217,8 +217,8 @@ namespace Apache
         /// at least some endpoints must have been defined in some regions
         /// before actually firing a query.
         /// </remarks>
-        generic<class TKey, class TResult>
-        virtual Client::QueryService<TKey, TResult>^ GetQueryService(String^ poolName);
+        generic<class TResult>
+        virtual Client::QueryService<TResult>^ GetQueryService(String^ poolName);
 
         /// <summary>
         /// Returns the instance of <see cref="RegionFactory" /> to create the region

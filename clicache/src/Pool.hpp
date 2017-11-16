@@ -34,7 +34,7 @@ namespace Apache
 
       namespace native = apache::geode::client;
 
-      generic<class TKey, class TResult>
+      generic<class TResult>
       ref class QueryService;
 
       ref class Cache;
@@ -270,8 +270,8 @@ namespace Apache
         /// To perform Query operation on the local cache obtain the QueryService
         /// instance from the Cache.
         /// </remarks>
-        generic<class TKey, class TResult>
-        QueryService<TKey, TResult>^ GetQueryService();
+        generic<class TResult>
+        QueryService<TResult>^ GetQueryService();
 
         void ReleaseThreadLocalConnection();
 

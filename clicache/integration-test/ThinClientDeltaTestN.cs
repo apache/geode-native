@@ -636,8 +636,8 @@ namespace Apache.Geode.Client.UnitTests
     void registerCq()
     {
       Pool thePool = CacheHelper.DCache.GetPoolManager().Find("__TEST_POOL1__");
-      QueryService<object, DeltaTestImpl> cqService = null;
-      cqService = thePool.GetQueryService<object, DeltaTestImpl>();
+      QueryService<DeltaTestImpl> cqService = null;
+      cqService = thePool.GetQueryService<DeltaTestImpl>();
       CqAttributesFactory<object, DeltaTestImpl> attrFac = new CqAttributesFactory<object, DeltaTestImpl>();
       myCqListener = new CqDeltaListener<object, DeltaTestImpl>();
       attrFac.AddCqListener(myCqListener);

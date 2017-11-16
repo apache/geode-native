@@ -148,8 +148,8 @@ namespace Apache.Geode.Client.UnitTests
       region["3"] = p3;
       region["4"] = p4;
 
-      QueryService<object, object> qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      QueryService<object> qs = null;
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object>();
       CqAttributesFactory<object, object> cqFac = new CqAttributesFactory<object, object>();
       ICqListener<object, object> cqLstner = new MyCqListener<object, object>();
       cqFac.AddCqListener(cqLstner);
@@ -207,7 +207,7 @@ namespace Apache.Geode.Client.UnitTests
           }
         }
       }
-      qry = qs.GetCq(CqName);
+      qry = qs.GetCq<object>(CqName);
       qry.Stop();
       qry.Close();
       // Bring down the region

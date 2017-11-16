@@ -806,7 +806,7 @@ namespace Apache.Geode.Client.UnitTests
       IRegion<object, object> region = regionFactory.Create<object, object>("DistRegionAck");
       Util.Log("Created the DistRegionAck Region Programmatically");
 
-      QueryService<object, object> qService = cache.GetQueryService<object, object>();
+      QueryService<object> qService = cache.GetQueryService<object>();
       CqAttributesFactory<object, object> cqFac = new CqAttributesFactory<object, object>();
 
       ICqListener<object, object> cqLstner = new MyCqListener1<object, object>();

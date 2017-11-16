@@ -22,6 +22,15 @@
 #include "begin_native.hpp"
 #include <geode/QueryService.hpp>
 #include "end_native.hpp"
+#include "Query.hpp"
+#include "Log.hpp"
+#include "CqAttributes.hpp"
+#include "CqQuery.hpp"
+#include "CqServiceStatistics.hpp"
+#include "impl/ManagedString.hpp"
+#include "ExceptionTypes.hpp"
+#include "impl/SafeConvert.hpp"
+
 
 
 
@@ -51,7 +60,7 @@ namespace Apache
       /// <summary>
       /// Provides a query service.
       /// </summary>
-      generic<class TKey, class TResult>
+      generic<class TResult>
       public ref class QueryService sealed
       {
       public:
@@ -66,65 +75,66 @@ namespace Apache
         /// Get a <c>CqQuery</c> object to enable continuous querying.
         /// </summary>
         /// @endnativeclient
-        //generic<class TKey, class TResult>
-        CqQuery<TKey, TResult>^ NewCq( String^ query, CqAttributes<TKey, TResult>^ cqAttr, bool isDurable );
+        generic<class TKey>
+          CqQuery<TKey, TResult>^ NewCq(String^ query, CqAttributes<TKey, TResult>^ cqAttr, bool isDurable);
+  
         /// @nativeclient
         /// <summary>
         /// Get a <c>CqQuery</c> object to enable continuous querying.
         /// </summary>
         /// @endnativeclient
-        //generic<class TKey, class TResult>
+        generic<class TKey>
         CqQuery<TKey, TResult>^ NewCq( String^ name, String^ query, CqAttributes<TKey, TResult>^ cqAttr, bool isDurable );
         /// @nativeclient
         /// <summary>
         /// Close all  <c>CqQuery</c> on this client.
         /// </summary>
         /// @endnativeclient
-	void CloseCqs();
+	      void CloseCqs();
 
         /// @nativeclient
         /// <summary>
         /// Get all  <c>CqQuery</c> on this client.
         /// </summary>
         /// @endnativeclient
-  //generic<class TKey, class TResult>
-	array<CqQuery<TKey, TResult>^>^ GetCqs();
+        generic<class TKey>
+	      array<CqQuery<TKey, TResult>^>^ GetCqs();
 
         /// @nativeclient
         /// <summary>
         /// Get the  <c>CqQuery</c> with the given name on this client.
         /// </summary>
         /// @endnativeclient
-  //generic<class TKey, class TResult>
-	CqQuery<TKey, TResult>^ GetCq(String^ name);
+        generic<class TKey>
+	      CqQuery<TKey, TResult>^ GetCq(String^ name);
 
         /// @nativeclient
         /// <summary>
         /// Get the  <c>CqQuery</c> with the given name on this client.
         /// </summary>
         /// @endnativeclient
-	void ExecuteCqs();
+	      void ExecuteCqs();
 
         /// @nativeclient
         /// <summary>
         /// Stop all  <c>CqQuery</c>  on this client.
         /// </summary>
         /// @endnativeclient
-	void StopCqs();
+	      void StopCqs();
 
         /// @nativeclient
         /// <summary>
         /// Get <c>CqServiceStatistics</c>  on this client.
         /// </summary>
         /// @endnativeclient
-	CqServiceStatistics^ GetCqStatistics();
+	      CqServiceStatistics^ GetCqStatistics();
 
         /// @nativeclient
         /// <summary>
         /// Get all durableCq nanes from server for this client.
         /// </summary>
         /// @endnativeclient
-  System::Collections::Generic::List<String^>^ GetAllDurableCqsFromServer();
+        System::Collections::Generic::List<String^>^ GetAllDurableCqsFromServer();
 
       internal:
 
@@ -136,10 +146,10 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static QueryService<TKey, TResult>^ Create(std::shared_ptr<native::QueryService> nativeptr )
+        inline static QueryService<TResult>^ Create(std::shared_ptr<native::QueryService> nativeptr )
         {
           return __nullptr == nativeptr ? nullptr :
-            gcnew QueryService<TKey, TResult>( nativeptr );
+            gcnew QueryService<TResult>( nativeptr );
         }
 
 

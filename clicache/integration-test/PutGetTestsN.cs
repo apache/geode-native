@@ -318,8 +318,8 @@ namespace Apache.Geode.Client.UnitTests
       }
       else
       {
-        QueryService<object, object> qs = null;
-        qs = CacheHelper.DCache.GetPoolManager().Find(m_region.Attributes.PoolName).GetQueryService<object, object>();
+        QueryService<object> qs = null;
+        qs = CacheHelper.DCache.GetPoolManager().Find(m_region.Attributes.PoolName).GetQueryService<object>();
         Query<object> qry = qs.NewQuery("SELECT * FROM " + m_region.FullPath);
         ISelectResults<object> results = qry.Execute();
         // not really interested in results but loop through them neverthless

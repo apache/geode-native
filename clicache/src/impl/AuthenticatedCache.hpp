@@ -110,8 +110,8 @@ namespace Apache
         /// at least some endpoints must have been defined in some regions
         /// before actually firing a query.
         /// </remarks>
-        generic<class TKey, class TResult>
-        virtual QueryService<TKey, TResult>^ GetQueryService();
+        generic<class TResult>
+        virtual QueryService<TResult>^ GetQueryService();
 
         /// <summary>
         /// Returns an array of root regions in the cache. This set is a
