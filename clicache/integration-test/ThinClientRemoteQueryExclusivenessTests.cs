@@ -90,8 +90,8 @@ namespace Apache.Geode.Client.UnitTests
       try
       {
 				var poolFail = CacheHelper.DCache.GetPoolManager().CreateFactory().Create("_TESTFAILPOOL_", CacheHelper.DCache);
-				var qsFail = poolFail.GetQueryService<object, object>();
-        var qryFail = qsFail.NewQuery("select distinct * from /" + QERegionName);
+				var qsFail = poolFail.GetQueryService();
+        var qryFail = qsFail.NewQuery<object>("select distinct * from /" + QERegionName);
         var resultsFail = qryFail.Execute();
         Assert.Fail("Since no endpoints defined, so exception expected");
       }
@@ -132,10 +132,10 @@ namespace Apache.Geode.Client.UnitTests
         region["4"] = p4;
       }
 
-      QueryService<object, object> qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      QueryService qs = null;
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
-      Query<object> qry = qs.NewQuery("select distinct * from /" + QERegionName);
+      Query<object> qry = qs.NewQuery<object>("select distinct * from /" + QERegionName);
       ISelectResults<object> results = qry.Execute();
       Int32 count = results.Size;
       Assert.AreEqual(4, count, "Expected 4 as number of portfolio objects.");
@@ -146,10 +146,10 @@ namespace Apache.Geode.Client.UnitTests
 
     public void StepTwoQE()
     {
-      QueryService<object, object> qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      QueryService qs = null;
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
       Util.Log("Going to execute the query");
-      Query<object> qry = qs.NewQuery("select distinct * from /" + QERegionName);
+      Query<object> qry = qs.NewQuery<object>("select distinct * from /" + QERegionName);
       ISelectResults<object> results = qry.Execute();
       Int32 count = results.Size;
       Assert.AreEqual(4, count, "Expected 4 as number of portfolio objects.");

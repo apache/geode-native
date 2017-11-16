@@ -1503,11 +1503,11 @@ namespace Apache.Geode.Client.FwkLib
       PopTaskName();
     }
 
-    public QueryService<TKey, object> CheckQueryService()
+    public QueryService CheckQueryService()
     {
       string mode = Util.GetEnvironmentVariable("POOLOPT");
       Pool/*<TKey, TVal>*/ pool = CacheHelper<TKey, TVal>.DCache.GetPoolManager().Find("_Test_Pool");
-      return pool.GetQueryService<TKey, object>();
+      return pool.GetQueryService();
     }
 
     #endregion

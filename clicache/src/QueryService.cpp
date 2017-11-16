@@ -35,9 +35,8 @@ namespace Apache
     namespace Client
     {
 
-      generic<class TKey, class TResult>
-      //generic<class TResult>
-      Query<TResult>^ QueryService<TKey, TResult>::NewQuery(String^ query)
+      generic<class TResult>
+      Query<TResult>^ QueryService::NewQuery(String^ query)
       {
         ManagedString mg_queryStr(query);
         try
@@ -56,26 +55,27 @@ namespace Apache
       }
 
       generic<class TKey, class TResult>
-      CqQuery<TKey, TResult>^ QueryService<TKey, TResult>::NewCq(String^ query, CqAttributes<TKey, TResult>^ cqAttr, bool isDurable)
-      {
-        ManagedString mg_queryStr(query);
-        try
+        CqQuery<TKey, TResult>^ QueryService::NewCq(String^ query, CqAttributes<TKey, TResult>^ cqAttr, bool isDurable)
         {
-          return CqQuery<TKey, TResult>::Create(m_nativeptr->get()->newCq(
-            mg_queryStr.CharPtr, cqAttr->GetNative(), isDurable));
+          ManagedString mg_queryStr(query);
+          try
+          {
+            return CqQuery<TKey, TResult>::Create(m_nativeptr->get()->newCq(
+              mg_queryStr.CharPtr, cqAttr->GetNative(), isDurable));
+          }
+          catch (const apache::geode::client::Exception& ex)
+          {
+            throw GeodeException::Get(ex);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
-        catch (const apache::geode::client::Exception& ex)
-        {
-          throw GeodeException::Get(ex);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-      }
 
+    
       generic<class TKey, class TResult>
-      CqQuery<TKey, TResult>^ QueryService<TKey, TResult>::NewCq(String^ name, String^ query, CqAttributes<TKey, TResult>^ cqAttr, bool isDurable)
+      CqQuery<TKey, TResult>^ QueryService::NewCq(String^ name, String^ query, CqAttributes<TKey, TResult>^ cqAttr, bool isDurable)
       {
         ManagedString mg_queryStr(query);
         ManagedString mg_nameStr(name);
@@ -94,8 +94,7 @@ namespace Apache
         }
       }
 
-      generic<class TKey, class TResult>
-      void QueryService<TKey, TResult>::CloseCqs()
+      void QueryService::CloseCqs()
       {
         try
         {
@@ -112,7 +111,7 @@ namespace Apache
       }
 
       generic<class TKey, class TResult>
-      array<CqQuery<TKey, TResult>^>^ QueryService<TKey, TResult>::GetCqs()
+      array<CqQuery<TKey, TResult>^>^ QueryService::GetCqs()
       {
         try
         {
@@ -137,7 +136,7 @@ namespace Apache
       }
 
       generic<class TKey, class TResult>
-      CqQuery<TKey, TResult>^ QueryService<TKey, TResult>::GetCq(String^ name)
+      CqQuery<TKey, TResult>^ QueryService::GetCq(String^ name)
       {
         ManagedString mg_queryStr(name);
         try
@@ -155,8 +154,7 @@ namespace Apache
         }
       }
 
-      generic<class TKey, class TResult>
-      void QueryService<TKey, TResult>::ExecuteCqs()
+      void QueryService::ExecuteCqs()
       {
         try
         {
@@ -172,8 +170,7 @@ namespace Apache
         }
       }
 
-      generic<class TKey, class TResult>
-      void QueryService<TKey, TResult>::StopCqs()
+      void QueryService::StopCqs()
       {
         try
         {
@@ -189,8 +186,7 @@ namespace Apache
         }
       }
 
-      generic<class TKey, class TResult>
-      CqServiceStatistics^ QueryService<TKey, TResult>::GetCqStatistics()
+      CqServiceStatistics^ QueryService::GetCqStatistics()
       {
         try
         {
@@ -206,8 +202,7 @@ namespace Apache
         }
       }
 
-      generic<class TKey, class TResult>
-      System::Collections::Generic::List<String^>^ QueryService<TKey, TResult>::GetAllDurableCqsFromServer()
+      System::Collections::Generic::List<String^>^ QueryService::GetAllDurableCqsFromServer()
       {
         try
         {

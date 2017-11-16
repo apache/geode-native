@@ -422,14 +422,13 @@ namespace Apache
 
       }
 
-      generic<class TKey, class TResult>
-      QueryService<TKey, TResult>^ Pool::GetQueryService()
+      QueryService^ Pool::GetQueryService()
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
           try
           {
-            return QueryService<TKey, TResult>::Create(m_nativeptr->get()->getQueryService());
+            return QueryService::Create(m_nativeptr->get()->getQueryService());
           }
           finally
           {
