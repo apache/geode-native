@@ -131,11 +131,8 @@ namespace Apache
         inline static String^ GetStackTrace(
           const apache::geode::client::Exception& nativeEx )
         {
-          char nativeExStack[2048] = { '\0' };
-#ifndef _WIN64
-          nativeEx.getStackTrace(nativeExStack, 2047);
-#endif
-          return ManagedString::Get(nativeExStack);
+          std::string nativeExStack = nativeEx.getStackTrace();
+          return ManagedString::Get(nativeExStack.c_str());
         }
 
         /// <summary>
