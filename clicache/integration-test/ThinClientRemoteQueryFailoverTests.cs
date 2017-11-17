@@ -145,9 +145,7 @@ namespace Apache.Geode.Client.UnitTests
       IAsyncResult killRes = null;
       KillServerDelegate ksd = new KillServerDelegate(KillServer);
 
-      QueryService qs = null;
-
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
+      var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       for (int i = 0; i < 10000; i++)
       {

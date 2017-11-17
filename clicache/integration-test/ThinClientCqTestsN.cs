@@ -393,9 +393,7 @@ namespace Apache.Geode.Client.UnitTests
       region["3"] = p3;
       region["4"] = p4;
 
-      QueryService qs = null;
-
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
+      var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
       CqAttributesFactory<object, object> cqFac = new CqAttributesFactory<object, object>();
       ICqListener<object, object> cqLstner = new MyCqListener<object, object>();
       cqFac.AddCqListener(cqLstner);
@@ -454,9 +452,7 @@ namespace Apache.Geode.Client.UnitTests
       region["3"] = p3;
       region["4"] = p4;
 
-      QueryService qs = null;
-
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
+      var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
       CqAttributesFactory<object, object> cqFac = new CqAttributesFactory<object, object>();
       ICqListener<object, object> cqLstner = new MyCqListener<object, object>();
       cqFac.AddCqListener(cqLstner);
@@ -616,9 +612,7 @@ namespace Apache.Geode.Client.UnitTests
       region["3"] = p3;
       region["4"] = p4;
 
-      QueryService qs = null;
-
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
+      var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
       
       CqAttributesFactory<object, object> cqFac = new CqAttributesFactory<object, object>();
       ICqListener<object, object> cqLstner = new MyCqListener<object, object>();
