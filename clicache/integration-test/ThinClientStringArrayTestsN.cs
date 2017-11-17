@@ -151,9 +151,9 @@ namespace Apache.Geode.Client.UnitTests
       region["3"] = p3;
       region["4"] = p4;
 
-      QueryService<object, object> qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
-      Query<object> qry = qs.NewQuery("select * from /" + QERegionName + "  p where p.ID!=3");
+      QueryService qs = null;
+      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
+      Query<object> qry = qs.NewQuery<object>("select * from /" + QERegionName + "  p where p.ID!=3");
       ISelectResults<object> results = qry.Execute();
       Util.Log("Results size {0}.", results.Size);
 

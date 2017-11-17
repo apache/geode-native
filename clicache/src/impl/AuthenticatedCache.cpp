@@ -88,14 +88,13 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
       
-      generic<class TKey, class TResult>
-      Client::QueryService<TKey, TResult>^ AuthenticatedCache::GetQueryService( )
+      Client::QueryService^ AuthenticatedCache::GetQueryService( )
       {
         _GF_MG_EXCEPTION_TRY2
 
           try
           {
-            return Client::QueryService<TKey, TResult>::Create(m_nativeptr->get()->getQueryService( ));
+            return Client::QueryService::Create(m_nativeptr->get()->getQueryService( ));
           }
           finally
           {

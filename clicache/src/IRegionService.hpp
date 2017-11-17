@@ -32,7 +32,6 @@ namespace Apache
       generic<class TKey, class TValue>
 			interface class IRegion;
 
-      generic<class TKey, class TResult>
       ref class QueryService;
 
       interface class IPdxInstanceFactory;
@@ -103,8 +102,7 @@ namespace Apache
         /// at least some endpoints must have been defined in some regions
         /// before actually firing a query.
         /// </remarks>
-        generic<class TKey, class TResult>
-        Client::QueryService<TKey, TResult>^ GetQueryService();
+        Client::QueryService^ GetQueryService();
         /// <summary>
         /// Returns an array of root regions in the cache. This set is a
         /// snapshot and is not backed by the cache.

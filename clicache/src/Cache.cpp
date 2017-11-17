@@ -201,14 +201,13 @@ namespace Apache
         return rootRegions;
       }
 
-      generic<class TKey, class TResult>
-      Client::QueryService<TKey, TResult>^ Cache::GetQueryService( )
+      Client::QueryService^ Cache::GetQueryService( )
       {
         _GF_MG_EXCEPTION_TRY2
 
           try
           {
-            return Client::QueryService<TKey, TResult>::Create(m_nativeptr->get()->getQueryService());
+            return Client::QueryService::Create(m_nativeptr->get()->getQueryService());
           }
           finally
           {
@@ -218,15 +217,14 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
-      generic<class TKey, class TResult>
-      Client::QueryService<TKey, TResult>^ Cache::GetQueryService(String^ poolName )
+      Client::QueryService^ Cache::GetQueryService(String^ poolName )
       {
         _GF_MG_EXCEPTION_TRY2
 
           ManagedString mg_poolName( poolName );
           try
           {
-            return QueryService<TKey, TResult>::Create(m_nativeptr->get()->getQueryService(mg_poolName.CharPtr));
+            return QueryService::Create(m_nativeptr->get()->getQueryService(mg_poolName.CharPtr));
           }
           finally
           {

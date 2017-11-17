@@ -145,13 +145,11 @@ namespace Apache.Geode.Client.UnitTests
       IAsyncResult killRes = null;
       KillServerDelegate ksd = new KillServerDelegate(KillServer);
 
-      QueryService<object, object> qs = null;
-
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService<object, object>();
+      var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       for (int i = 0; i < 10000; i++)
       {
-        Query<object> qry = qs.NewQuery("select distinct * from /" + QueryRegionNames[0]);
+        Query<object> qry = qs.NewQuery<object>("select distinct * from /" + QueryRegionNames[0]);
 
         ISelectResults<object> results = qry.Execute();
 
