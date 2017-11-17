@@ -75,7 +75,7 @@ namespace Apache
         /// </summary>
         /// @endnativeclient
         generic<class TKey, class TResult>
-          CqQuery<TKey, TResult>^ NewCq(String^ query, CqAttributes<TKey, TResult>^ cqAttr, bool isDurable);
+        CqQuery<TKey, TResult>^ NewCq(String^ query, CqAttributes<TKey, TResult>^ cqAttr, bool isDurable);
   
         /// @nativeclient
         /// <summary>
@@ -89,7 +89,7 @@ namespace Apache
         /// Close all  <c>CqQuery</c> on this client.
         /// </summary>
         /// @endnativeclient
-	      void CloseCqs();
+        void CloseCqs();
 
         /// @nativeclient
         /// <summary>
@@ -97,7 +97,7 @@ namespace Apache
         /// </summary>
         /// @endnativeclient
         generic<class TKey, class TResult>
-	      array<CqQuery<TKey, TResult>^>^ GetCqs();
+        array<CqQuery<TKey, TResult>^>^ GetCqs();
 
         /// @nativeclient
         /// <summary>
@@ -105,28 +105,28 @@ namespace Apache
         /// </summary>
         /// @endnativeclient
         generic<class TKey, class TResult>
-	      CqQuery<TKey, TResult>^ GetCq(String^ name);
+        CqQuery<TKey, TResult>^ GetCq(String^ name);
 
         /// @nativeclient
         /// <summary>
         /// Get the  <c>CqQuery</c> with the given name on this client.
         /// </summary>
         /// @endnativeclient
-	      void ExecuteCqs();
+        void ExecuteCqs();
 
         /// @nativeclient
         /// <summary>
         /// Stop all  <c>CqQuery</c>  on this client.
         /// </summary>
         /// @endnativeclient
-	      void StopCqs();
+        void StopCqs();
 
         /// @nativeclient
         /// <summary>
         /// Get <c>CqServiceStatistics</c>  on this client.
         /// </summary>
         /// @endnativeclient
-	      CqServiceStatistics^ GetCqStatistics();
+        CqServiceStatistics^ GetCqStatistics();
 
         /// @nativeclient
         /// <summary>

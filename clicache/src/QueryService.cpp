@@ -15,16 +15,7 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
 #include "QueryService.hpp"
-#include "Query.hpp"
-#include "Log.hpp"
-#include "CqAttributes.hpp"
-#include "CqQuery.hpp"
-#include "CqServiceStatistics.hpp"
-#include "impl/ManagedString.hpp"
-#include "ExceptionTypes.hpp"
-#include "impl/SafeConvert.hpp"
 
 using namespace System;
 
