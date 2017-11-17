@@ -108,8 +108,7 @@ BEGIN_TEST(REINIT)
       Log::init(Log::Debug, "logfile1");
     } catch (IllegalStateException& ex) {
       printf("Got Illegal state exception while calling init again\n");
-      ex.showMessage();
-      printf("Exception mesage = %s\n", ex.getMessage());
+      printf("Exception mesage = %s\n", ex.what());
       exceptiongot = 1;
     }
     ASSERT(exceptiongot == 1, "expected exceptiongot to be 1");

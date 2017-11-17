@@ -83,7 +83,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClient1_Pool)
     try {
       initClient();
     } catch (Exception& excp) {
-      LOG(excp.getMessage());
+      LOG(excp.what());
     }
   }
 END_TASK_DEFINITION
@@ -93,7 +93,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitClient2_Pool)
     try {
       initClient();
     } catch (Exception& excp) {
-      LOG(excp.getMessage());
+      LOG(excp.what());
     }
   }
 END_TASK_DEFINITION
@@ -124,7 +124,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_EndPoint)
         regPtr1->put(keys[2], vals[2]);
       }
     } catch (Exception& excp) {
-      LOG(excp.getMessage());
+      LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
   }
@@ -157,7 +157,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_EndPoint)
         regPtr1->put(keys[3], vals[3]);
       }
     } catch (Exception& excp) {
-      LOG(excp.getMessage());
+      LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
 
@@ -176,7 +176,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_1)
           std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[0]));
       ASSERT(checkPtr1 != nullptr, "checkPtr1 should not be null");
     } catch (Exception& excp) {
-      LOG(excp.getMessage());
+      LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
   }
@@ -198,7 +198,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_2)
       }
 
     } catch (Exception& excp) {
-      LOG(excp.getMessage());
+      LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
   }
@@ -294,7 +294,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_SecureEndPoint)
         regPtr1->put(keys[2], vals[2]);
       }
     } catch (Exception& excp) {
-      LOG(excp.getMessage());
+      LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
     LOG("StepOne_Pool_SecureEndPoint complete.");
@@ -328,7 +328,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_SecureEndPoint)
         regPtr1->put(keys[3], vals[3]);
       }
     } catch (Exception& excp) {
-      LOG(excp.getMessage());
+      LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
 
@@ -347,7 +347,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_secureclient1)
           std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[0]));
       ASSERT(checkPtr1 != nullptr, "checkPtr1 should not be null");
     } catch (Exception& excp) {
-      LOG(excp.getMessage());
+      LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
     LOG("StepOne_secureclient1 complete.");
@@ -364,7 +364,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_secureclient2)
       }
 
     } catch (Exception& excp) {
-      LOG(excp.getMessage());
+      LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
     LOG("StepOne_secureclient2 complete.");

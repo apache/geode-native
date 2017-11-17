@@ -90,7 +90,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeArrayOfByteArrays():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -99,7 +99,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeWideChar():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -108,7 +108,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeBoolean():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -117,7 +117,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeBooleanArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -125,7 +125,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
     pw->markIdentityField("m_byte");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOGINFO("writeByte():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("writeByte():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -134,7 +134,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeByteArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -143,7 +143,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeWideCharArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -152,7 +152,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeObject() for ArrayList:: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -161,7 +161,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeObject() for Map:: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -170,7 +170,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeObject() for HashTable:: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -179,7 +179,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeObject() for Vector:: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -189,7 +189,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
     toDataexceptionCounter++;
     LOGINFO(
         "writeObject() for CacheableHashSet:: Got expected Exception :: %s ",
-        excpt.getMessage());
+        excpt.what());
   }
 
   try {
@@ -200,7 +200,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
     LOGINFO(
         "writeObject() for CacheableLinkedHashSet:: Got expected Exception :: "
         "%s ",
-        excpt.getMessage());
+        excpt.what());
   }
 
   try {
@@ -209,7 +209,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeString():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -217,7 +217,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
     pw->markIdentityField("m_dateTime");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOGINFO("writeDate():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("writeDate():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -226,7 +226,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeDouble():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -235,7 +235,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeDoubleArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -243,7 +243,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
     pw->markIdentityField("m_float");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOGINFO("writeFloat():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("writeFloat():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -252,7 +252,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeFloatArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -260,7 +260,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
     pw->markIdentityField("m_int16");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOGINFO("writeShort():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("writeShort():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -268,7 +268,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
     pw->markIdentityField("m_int32");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOGINFO("writeInt():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("writeInt():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -276,7 +276,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
     pw->markIdentityField("m_long");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOGINFO("writeLong():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("writeLong():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -285,7 +285,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeIntArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -294,7 +294,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeLongArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -303,7 +303,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeShortArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -311,7 +311,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
     pw->markIdentityField("m_sbyte");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOGINFO("writeByte():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("writeByte():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -320,7 +320,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeByteArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -329,7 +329,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeStringArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -337,7 +337,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
     pw->markIdentityField("m_uint16");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOGINFO("writeShort():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("writeShort():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -345,7 +345,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
     pw->markIdentityField("m_uint32");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOGINFO("writeInt():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("writeInt():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -353,7 +353,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
     pw->markIdentityField("m_ulong");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOGINFO("writeLong():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("writeLong():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -362,7 +362,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeIntArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -371,7 +371,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeLongArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -380,7 +380,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeShortArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -389,7 +389,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeByteArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -398,7 +398,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeByteArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -407,7 +407,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeByteArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -416,7 +416,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeByteArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -425,7 +425,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeObject() for Enum:: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -435,7 +435,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
     LOGINFO(
         "writeObject() for Custom Object Address:: Got expected Exception :: "
         "%s ",
-        excpt.getMessage());
+        excpt.what());
   }
 
   try {
@@ -443,14 +443,14 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeObjectArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
     pw->writeInt("toDataexceptionCounter", toDataexceptionCounter);
     pw->writeInt("fromDataexceptionCounter", fromDataexceptionCounter);
   } catch (IllegalStateException& excpt) {
-    LOGINFO("writeInt():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("writeInt():: Got expected Exception :: %s ", excpt.what());
   }
 
   LOGDEBUG("PdxObject::toData() Done......");
@@ -472,7 +472,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readArrayOfByteArrays():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -480,7 +480,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readWideChar():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -488,7 +488,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readBoolean():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -496,14 +496,14 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readBooleanArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
     m_byte = pr->readByte("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readByte():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readByte():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -511,7 +511,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readByteArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -519,7 +519,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readWideCharArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -527,14 +527,14 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
         std::dynamic_pointer_cast<CacheableArrayList>(pr->readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_map = std::dynamic_pointer_cast<CacheableHashMap>(pr->readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -542,21 +542,21 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
         std::dynamic_pointer_cast<CacheableHashTable>(pr->readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_vector = std::dynamic_pointer_cast<CacheableVector>(pr->readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_chs = std::dynamic_pointer_cast<CacheableHashSet>(pr->readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -564,28 +564,28 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
         std::dynamic_pointer_cast<CacheableLinkedHashSet>(pr->readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_string = pr->readString("");  // GenericValCompare
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readString():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readString():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_date = std::dynamic_pointer_cast<CacheableDate>(pr->readDate(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readDate():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readDate():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_double = pr->readDouble("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readDouble():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readDouble():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -593,14 +593,14 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readDoubleArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
     m_float = pr->readFloat("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readFloat():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readFloat():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -608,28 +608,28 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readFloatArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
     m_int16 = pr->readShort("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readShort():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readShort():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_int32 = pr->readInt("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readInt():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readInt():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_long = pr->readLong("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readLong():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readLong():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -637,7 +637,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readIntArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -645,7 +645,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readLongArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -653,21 +653,21 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readShortArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
     m_sbyte = pr->readByte("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readByte():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readByte():: Got expected Exception :: %s ", excpt.what());
   }
   try {
     m_sbyteArray = pr->readByteArray("", byteArrayLen);
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readByteArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -675,28 +675,28 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readStringArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
     m_uint16 = pr->readShort("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readShort():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readShort():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_uint32 = pr->readInt("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readInt():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readInt():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_ulong = pr->readLong("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readLong():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readLong():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -704,7 +704,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readIntArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -712,7 +712,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readLongArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -720,7 +720,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readShortArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -728,14 +728,14 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readByteArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
   try {
     m_byte253 = pr->readByteArray("", m_byte253Len);
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readByteArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -743,7 +743,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readByteArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -751,21 +751,21 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readByteArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
     m_pdxEnum = std::static_pointer_cast<CacheableEnum>(pr->readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_address = pr->readObject("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.getMessage());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -773,7 +773,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readObjectArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   try {
@@ -782,7 +782,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readObjectArray():: Got expected Exception :: %s ",
-            excpt.getMessage());
+            excpt.what());
   }
 
   this->fromDataexceptionCounter = exceptionCounter;

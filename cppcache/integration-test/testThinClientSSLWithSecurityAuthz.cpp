@@ -92,8 +92,8 @@ opCodeList::value_type tmpAArr[] = {OP_CREATE,       OP_UPDATE,
   }                                                              \
   catch (const apache::geode::client::Exception& other) {        \
     LOG("Got apache::geode::client::Exception& other ");         \
-    other.printStackTrace();                                     \
-    FAIL(other.getMessage());                                    \
+    LOG(other.getStackTrace().c_str());                          \
+    FAIL(other.what());                                          \
   }
 
 #define HANDLE_NOT_AUTHORIZED_EXCEPTION                          \
@@ -102,8 +102,8 @@ opCodeList::value_type tmpAArr[] = {OP_CREATE,       OP_UPDATE,
     LOG("Success");                                              \
   }                                                              \
   catch (const apache::geode::client::Exception& other) {        \
-    other.printStackTrace();                                     \
-    FAIL(other.getMessage());                                    \
+    LOG(other.getStackTrace().c_str());                          \
+    FAIL(other.what());                                          \
   }
 
 #define ADMIN_CLIENT s1p1

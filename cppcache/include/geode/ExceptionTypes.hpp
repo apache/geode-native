@@ -20,41 +20,12 @@
 #ifndef GEODE_EXCEPTIONTYPES_H_
 #define GEODE_EXCEPTIONTYPES_H_
 
-/**
- * @file
- */
 
 #include "geode_globals.hpp"
 #include "geode/Exception.hpp"
-#include <memory>
 namespace apache {
 namespace geode {
 namespace client {
-class StackTrace;
-class CacheableString;
-
-#define _GF_EXCEPTION_DEF(x)                                            \
-  const char _exception_name_##x[] = "apache::geode::client::" #x;      \
-  class x;                                                              \
-  class CPPCACHE_EXPORT x : public apache::geode::client::Exception {   \
-   public:                                                              \
-    using Exception::Exception;                                         \
-    virtual Exception* clone() const {                                  \
-      return new x(m_message, m_stack, m_cause);                        \
-    }                                                                   \
-    virtual ~x() {}                                                     \
-    virtual const char* getName() const { return _exception_name_##x; } \
-    virtual void raise() { throw * this; }                              \
-                                                                        \
-   protected:                                                           \
-    x(const std::shared_ptr<CacheableString>& message,                  \
-      const std::shared_ptr<StackTrace>& stack,                         \
-      const std::shared_ptr<Exception>& cause)                          \
-        : Exception(message, stack, cause) {}                           \
-                                                                        \
-   private:                                                             \
-    const x& operator=(const x&);                                       \
-  }
 
 /*
  *
@@ -66,265 +37,525 @@ class CacheableString;
 /**
  *@brief A geode assertion exception.
  **/
-_GF_EXCEPTION_DEF(AssertionException);
+class  CPPCACHE_EXPORT AssertionException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~AssertionException() {}
+  virtual const char* getName() const override { return "apache::geode::client::AssertionException"; }
+};
 
 /**
  *@brief Thrown when an argument to a method is illegal.
  **/
-_GF_EXCEPTION_DEF(IllegalArgumentException);
+class  CPPCACHE_EXPORT IllegalArgumentException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~IllegalArgumentException() {}
+  virtual const char* getName() const override { return "apache::geode::client::IllegalArgumentException"; }
+};
 
 /**
  *@brief Thrown when the state of cache is manipulated to be illegal.
  **/
-_GF_EXCEPTION_DEF(IllegalStateException);
+class  CPPCACHE_EXPORT IllegalStateException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~IllegalStateException() {}
+  virtual const char* getName() const override { return "apache::geode::client::IllegalStateException"; }
+};
 
 /**
  *@brief Thrown when an attempt is made to create an existing cache.
  **/
-_GF_EXCEPTION_DEF(CacheExistsException);
+class  CPPCACHE_EXPORT CacheExistsException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~CacheExistsException() {}
+  virtual const char* getName() const override { return "apache::geode::client::CacheExistsException"; }
+};
 
 /**
  *@brief Thrown when the cache xml is incorrect.
  **/
-_GF_EXCEPTION_DEF(CacheXmlException);
+class  CPPCACHE_EXPORT CacheXmlException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~CacheXmlException() {}
+  virtual const char* getName() const override { return "apache::geode::client::CacheXmlException"; }
+};
 /**
  *@brief Thrown when a timout occurs.
  **/
-_GF_EXCEPTION_DEF(TimeoutException);
+class  CPPCACHE_EXPORT TimeoutException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~TimeoutException() {}
+  virtual const char* getName() const override { return "apache::geode::client::TimeoutException"; }
+};
 
 /**
  *@brief Thrown when the cache writer aborts the operation.
  **/
-_GF_EXCEPTION_DEF(CacheWriterException);
+class  CPPCACHE_EXPORT CacheWriterException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~CacheWriterException() {}
+  virtual const char* getName() const override { return "apache::geode::client::CacheWriterException"; }
+};
 
 /**
  *@brief Thrown when an attempt is made to create an existing region.
  **/
-_GF_EXCEPTION_DEF(RegionExistsException);
+class  CPPCACHE_EXPORT RegionExistsException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~RegionExistsException() {}
+  virtual const char* getName() const override { return "apache::geode::client::RegionExistsException"; }
+};
 
 /**
  *@brief Thrown when an operation is attempted on a closed cache.
  **/
-_GF_EXCEPTION_DEF(CacheClosedException);
+class  CPPCACHE_EXPORT CacheClosedException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~CacheClosedException() {}
+  virtual const char* getName() const override { return "apache::geode::client::CacheClosedException"; }
+};
 
 /**
  *@brief Thrown when lease of cache proxy has expired.
  **/
-_GF_EXCEPTION_DEF(LeaseExpiredException);
+class  CPPCACHE_EXPORT LeaseExpiredException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~LeaseExpiredException() {}
+  virtual const char* getName() const override { return "apache::geode::client::LeaseExpiredException"; }
+};
 
 /**
  *@brief Thrown when the cache loader aborts the operation.
  **/
-_GF_EXCEPTION_DEF(CacheLoaderException);
+class  CPPCACHE_EXPORT CacheLoaderException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~CacheLoaderException() {}
+  virtual const char* getName() const override { return "apache::geode::client::CacheLoaderException"; }
+};
 
 /**
  *@brief Thrown when an operation is attempted on a destroyed region.
  **/
-_GF_EXCEPTION_DEF(RegionDestroyedException);
+class  CPPCACHE_EXPORT RegionDestroyedException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~RegionDestroyedException() {}
+  virtual const char* getName() const override { return "apache::geode::client::RegionDestroyedException"; }
+};
 
 /**
  *@brief Thrown when an operation is attempted on a destroyed entry.
  **/
-_GF_EXCEPTION_DEF(EntryDestroyedException);
+class  CPPCACHE_EXPORT EntryDestroyedException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~EntryDestroyedException() {}
+  virtual const char* getName() const override { return "apache::geode::client::EntryDestroyedException"; }
+};
 
 /**
  *@brief Thrown when the connecting target is not running.
  **/
-_GF_EXCEPTION_DEF(NoSystemException);
+class  CPPCACHE_EXPORT NoSystemException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~NoSystemException() {}
+  virtual const char* getName() const override { return "apache::geode::client::NoSystemException"; }
+};
 
 /**
  *@brief Thrown when an attempt is made to connect to
  *       DistributedSystem second time.
  **/
-_GF_EXCEPTION_DEF(AlreadyConnectedException);
+class  CPPCACHE_EXPORT AlreadyConnectedException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~AlreadyConnectedException() {}
+  virtual const char* getName() const override { return "apache::geode::client::AlreadyConnectedException"; }
+};
 
 /**
  *@brief Thrown when a non-existing file is accessed.
  **/
-_GF_EXCEPTION_DEF(FileNotFoundException);
+class  CPPCACHE_EXPORT FileNotFoundException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~FileNotFoundException() {}
+  virtual const char* getName() const override { return "apache::geode::client::FileNotFoundException"; }
+};
 
 /**
  *@brief Thrown when an operation is interrupted.
  **/
-_GF_EXCEPTION_DEF(InterruptedException);
+class  CPPCACHE_EXPORT InterruptedException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~InterruptedException() {}
+  virtual const char* getName() const override { return "apache::geode::client::InterruptedException"; }
+};
 
 /**
  *@brief Thrown when an operation unsupported by the
  *       current configuration is attempted.
  **/
-_GF_EXCEPTION_DEF(UnsupportedOperationException);
+class  CPPCACHE_EXPORT UnsupportedOperationException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~UnsupportedOperationException() {}
+  virtual const char* getName() const override { return "apache::geode::client::UnsupportedOperationException"; }
+};
 
 /**
  *@brief Thrown when statistics are invoked for a region where
  *       they are disabled.
  **/
-_GF_EXCEPTION_DEF(StatisticsDisabledException);
+class  CPPCACHE_EXPORT StatisticsDisabledException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~StatisticsDisabledException() {}
+  virtual const char* getName() const override { return "apache::geode::client::StatisticsDisabledException"; }
+};
 
 /**
  *@brief Thrown when a concurrent operation fails.
  **/
-_GF_EXCEPTION_DEF(ConcurrentModificationException);
+class  CPPCACHE_EXPORT ConcurrentModificationException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~ConcurrentModificationException() {}
+  virtual const char* getName() const override { return "apache::geode::client::ConcurrentModificationException"; }
+};
 
 /**
  *@brief An unknown exception occurred.
  **/
-_GF_EXCEPTION_DEF(UnknownException);
+class  CPPCACHE_EXPORT UnknownException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~UnknownException() {}
+  virtual const char* getName() const override { return "apache::geode::client::UnknownException"; }
+};
 
 /**
  *@brief Thrown when a cast operation fails.
  **/
-_GF_EXCEPTION_DEF(ClassCastException);
+class  CPPCACHE_EXPORT ClassCastException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~ClassCastException() {}
+  virtual const char* getName() const override { return "apache::geode::client::ClassCastException"; }
+};
 
 /**
  *@brief Thrown when an operation is attempted on a non-existent entry.
  **/
-_GF_EXCEPTION_DEF(EntryNotFoundException);
+class  CPPCACHE_EXPORT EntryNotFoundException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~EntryNotFoundException() {}
+  virtual const char* getName() const override { return "apache::geode::client::EntryNotFoundException"; }
+};
 
 /**
  *@brief Thrown when there is an input/output error.
  **/
-_GF_EXCEPTION_DEF(GeodeIOException);
+class  CPPCACHE_EXPORT GeodeIOException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~GeodeIOException() {}
+  virtual const char* getName() const override { return "apache::geode::client::GeodeIOException"; }
+};
 
 /**
  *@brief Thrown when geode configuration file is incorrect.
  **/
-_GF_EXCEPTION_DEF(GeodeConfigException);
+class  CPPCACHE_EXPORT GeodeConfigException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~GeodeConfigException() {}
+  virtual const char* getName() const override { return "apache::geode::client::GeodeConfigException"; }
+};
 
 /**
  *@brief Thrown when a null argument is provided to a method
  *       where it is expected to be non-null.
  **/
-_GF_EXCEPTION_DEF(NullPointerException);
+class  CPPCACHE_EXPORT NullPointerException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~NullPointerException() {}
+  virtual const char* getName() const override { return "apache::geode::client::NullPointerException"; }
+};
 
 /**
  *@brief Thrown when attempt is made to create an existing entry.
  **/
-_GF_EXCEPTION_DEF(EntryExistsException);
+class  CPPCACHE_EXPORT EntryExistsException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~EntryExistsException() {}
+  virtual const char* getName() const override { return "apache::geode::client::EntryExistsException"; }
+};
 
 /**
  *@brief Thrown when an operation is attempted before connecting
  *       to the distributed system.
  **/
-_GF_EXCEPTION_DEF(NotConnectedException);
+class  CPPCACHE_EXPORT NotConnectedException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~NotConnectedException() {}
+  virtual const char* getName() const override { return "apache::geode::client::NotConnectedException"; }
+};
 
 /**
  *@brief Thrown when there is an error in the cache proxy.
  **/
-_GF_EXCEPTION_DEF(CacheProxyException);
+class  CPPCACHE_EXPORT CacheProxyException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~CacheProxyException() {}
+  virtual const char* getName() const override { return "apache::geode::client::CacheProxyException"; }
+};
 
 /**
  *@brief Thrown when the system cannot allocate any more memory.
  **/
-_GF_EXCEPTION_DEF(OutOfMemoryException);
+class  CPPCACHE_EXPORT OutOfMemoryException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~OutOfMemoryException() {}
+  virtual const char* getName() const override { return "apache::geode::client::OutOfMemoryException"; }
+};
 
 /**
  *@brief Thrown when an attempt is made to release a lock not
  *       owned by the thread.
  **/
-_GF_EXCEPTION_DEF(NotOwnerException);
+class  CPPCACHE_EXPORT NotOwnerException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~NotOwnerException() {}
+  virtual const char* getName() const override { return "apache::geode::client::NotOwnerException"; }
+};
 
 /**
  *@brief Thrown when a region is created in an incorrect scope.
  **/
-_GF_EXCEPTION_DEF(WrongRegionScopeException);
+class  CPPCACHE_EXPORT WrongRegionScopeException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~WrongRegionScopeException() {}
+  virtual const char* getName() const override { return "apache::geode::client::WrongRegionScopeException"; }
+};
 
 /**
  *@brief Thrown when the internal buffer size is exceeded.
  **/
-_GF_EXCEPTION_DEF(BufferSizeExceededException);
+class  CPPCACHE_EXPORT BufferSizeExceededException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~BufferSizeExceededException() {}
+  virtual const char* getName() const override { return "apache::geode::client::BufferSizeExceededException"; }
+};
 
 /**
  *@brief Thrown when a region creation operation fails.
  **/
-_GF_EXCEPTION_DEF(RegionCreationFailedException);
+class  CPPCACHE_EXPORT RegionCreationFailedException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~RegionCreationFailedException() {}
+  virtual const char* getName() const override { return "apache::geode::client::RegionCreationFailedException"; }
+};
 
 /**
  *@brief Thrown when there is a fatal internal exception in geode.
  */
-_GF_EXCEPTION_DEF(FatalInternalException);
+class  CPPCACHE_EXPORT FatalInternalException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~FatalInternalException() {}
+  virtual const char* getName() const override { return "apache::geode::client::FatalInternalException"; }
+};
 
 /**
  *@brief Thrown by the persistence manager when a write
  *       fails due to disk failure.
  **/
-_GF_EXCEPTION_DEF(DiskFailureException);
+class  CPPCACHE_EXPORT DiskFailureException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~DiskFailureException() {}
+  virtual const char* getName() const override { return "apache::geode::client::DiskFailureException"; }
+};
 
 /**
  *@brief Thrown by the persistence manager when the data
  *@brief to be read from disk is corrupt.
  **/
-_GF_EXCEPTION_DEF(DiskCorruptException);
+class  CPPCACHE_EXPORT DiskCorruptException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~DiskCorruptException() {}
+  virtual const char* getName() const override { return "apache::geode::client::DiskCorruptException"; }
+};
 
 /**
  *@brief Thrown when persistence manager fails to initialize.
  **/
-_GF_EXCEPTION_DEF(InitFailedException);
+class  CPPCACHE_EXPORT InitFailedException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~InitFailedException() {}
+  virtual const char* getName() const override { return "apache::geode::client::InitFailedException"; }
+};
 
 /**
  *@brief Thrown when persistence manager fails to close properly.
  **/
-_GF_EXCEPTION_DEF(ShutdownFailedException);
+class  CPPCACHE_EXPORT ShutdownFailedException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~ShutdownFailedException() {}
+  virtual const char* getName() const override { return "apache::geode::client::ShutdownFailedException"; }
+};
 
 /**
  *@brief Thrown when an exception occurs on the cache server.
  **/
-_GF_EXCEPTION_DEF(CacheServerException);
+ class  CPPCACHE_EXPORT CacheServerException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~CacheServerException() {}
+  virtual const char* getName() const override { return "apache::geode::client::CacheServerException"; }
+};
 
 /**
  *@brief Thrown when bound of array/vector etc. is exceeded.
  **/
-_GF_EXCEPTION_DEF(OutOfRangeException);
+class  CPPCACHE_EXPORT OutOfRangeException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~OutOfRangeException() {}
+  virtual const char* getName() const override { return "apache::geode::client::OutOfRangeException"; }
+};
 
 /**
  *@brief Thrown when query exception occurs at the server.
  **/
-_GF_EXCEPTION_DEF(QueryException);
+class  CPPCACHE_EXPORT QueryException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~QueryException() {}
+  virtual const char* getName() const override { return "apache::geode::client::QueryException"; }
+};
 
 /**
  *@brief Thrown when an unknown message is received from the server.
  **/
-_GF_EXCEPTION_DEF(MessageException);
+class  CPPCACHE_EXPORT MessageException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~MessageException() {}
+  virtual const char* getName() const override { return "apache::geode::client::MessageException"; }
+};
 
 /**
  *@brief Thrown when a non authorized operation is done.
  **/
-_GF_EXCEPTION_DEF(NotAuthorizedException);
+class  CPPCACHE_EXPORT NotAuthorizedException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~NotAuthorizedException() {}
+  virtual const char* getName() const override { return "apache::geode::client::NotAuthorizedException"; }
+};
 
 /**
  *@brief Thrown when authentication fails.
  **/
-_GF_EXCEPTION_DEF(AuthenticationFailedException);
+class  CPPCACHE_EXPORT AuthenticationFailedException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~AuthenticationFailedException() {}
+  virtual const char* getName() const override { return "apache::geode::client::AuthenticationFailedException"; }
+};
 
 /**
  *@brief Thrown when no credentials are provided by client when server expects.
  **/
-_GF_EXCEPTION_DEF(AuthenticationRequiredException);
+class  CPPCACHE_EXPORT AuthenticationRequiredException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~AuthenticationRequiredException() {}
+  virtual const char* getName() const override { return "apache::geode::client::AuthenticationRequiredException"; }
+};
 
 /**
  *@brief Thrown when two durable connect with same Id.
  **/
-_GF_EXCEPTION_DEF(DuplicateDurableClientException);
+class  CPPCACHE_EXPORT DuplicateDurableClientException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~DuplicateDurableClientException() {}
+  virtual const char* getName() const override { return "apache::geode::client::DuplicateDurableClientException"; }
+};
 
 /**
  *@brief Thrown when the cache listener throws an exception.
  **/
-_GF_EXCEPTION_DEF(CacheListenerException);
+class  CPPCACHE_EXPORT CacheListenerException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~CacheListenerException() {}
+  virtual const char* getName() const override { return "apache::geode::client::CacheListenerException"; }
+};
 /**
  *@brief Thrown during continuous query execution time.
  **/
-_GF_EXCEPTION_DEF(CqException);
+class  CPPCACHE_EXPORT CqException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~CqException() {}
+  virtual const char* getName() const override { return "apache::geode::client::CqException"; }
+};
 /**
  *@brief Thrown if the Cq on which the operaion performed is closed
  **/
-_GF_EXCEPTION_DEF(CqClosedException);
+class  CPPCACHE_EXPORT CqClosedException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~CqClosedException() {}
+  virtual const char* getName() const override { return "apache::geode::client::CqClosedException"; }
+};
 /**
  *@brief Thrown if the Cq Query failed
  **/
-_GF_EXCEPTION_DEF(CqQueryException);
+class  CPPCACHE_EXPORT CqQueryException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~CqQueryException() {}
+  virtual const char* getName() const override { return "apache::geode::client::CqQueryException"; }
+};
 /**
  *@brief Thrown if a Cq by this name already exists on this client
  **/
-_GF_EXCEPTION_DEF(CqExistsException);
+class  CPPCACHE_EXPORT CqExistsException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~CqExistsException() {}
+  virtual const char* getName() const override { return "apache::geode::client::CqExistsException"; }
+};
 /**
  *@brief  Thrown if the query doesnot meet the CQ constraints.
  * E.g.:Query string should refer only one region, join not supported.
@@ -335,61 +566,121 @@ _GF_EXCEPTION_DEF(CqExistsException);
  *region path.
  *      Bind parameters in the query are not supported for the initial release.
  **/
-_GF_EXCEPTION_DEF(CqInvalidException);
+class  CPPCACHE_EXPORT CqInvalidException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~CqInvalidException() {}
+  virtual const char* getName() const override { return "apache::geode::client::CqInvalidException"; }
+};
 /**
  *@brief Thrown if function execution failed
  **/
-_GF_EXCEPTION_DEF(FunctionExecutionException);
+class  CPPCACHE_EXPORT FunctionExecutionException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~FunctionExecutionException() {}
+  virtual const char* getName() const override { return "apache::geode::client::FunctionExecutionException"; }
+};
 /**
  *@brief Thrown if the No locators are active to reply for new connection.
  **/
-_GF_EXCEPTION_DEF(NoAvailableLocatorsException);
+class  CPPCACHE_EXPORT NoAvailableLocatorsException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~NoAvailableLocatorsException() {}
+  virtual const char* getName() const override { return "apache::geode::client::NoAvailableLocatorsException"; }
+};
 /**
  *@brief Thrown if all connections in the pool are in use.
  **/
-_GF_EXCEPTION_DEF(AllConnectionsInUseException);
+class  CPPCACHE_EXPORT AllConnectionsInUseException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~AllConnectionsInUseException() {}
+  virtual const char* getName() const override { return "apache::geode::client::AllConnectionsInUseException"; }
+};
 /**
  *@brief Thrown if Delta could not be applied.
  **/
-_GF_EXCEPTION_DEF(InvalidDeltaException);
+class  CPPCACHE_EXPORT InvalidDeltaException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~InvalidDeltaException() {}
+  virtual const char* getName() const override { return "apache::geode::client::InvalidDeltaException"; }
+};
 /**
  *@brief Thrown if a Key is not present in the region.
  **/
-_GF_EXCEPTION_DEF(KeyNotFoundException);
+class  CPPCACHE_EXPORT KeyNotFoundException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~KeyNotFoundException() {}
+  virtual const char* getName() const override { return "apache::geode::client::KeyNotFoundException"; }
+};
 /**
  * @brief This is for all Exceptions that may be thrown
  * by a Geode transaction.
  **/
-_GF_EXCEPTION_DEF(TransactionException);
+class  CPPCACHE_EXPORT TransactionException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~TransactionException() {}
+  virtual const char* getName() const override { return "apache::geode::client::TransactionException"; }
+};
 /**
  * @brief The RollbackException exception indicates that either the transaction
  * has been rolled back or an operation cannot complete because the
  * transaction is marked for rollback only.
  **/
-_GF_EXCEPTION_DEF(RollbackException);
+class  CPPCACHE_EXPORT RollbackException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~RollbackException() {}
+  virtual const char* getName() const override { return "apache::geode::client::RollbackException"; }
+};
 /**
  * @brief Thrown when a commit fails due to a write conflict.
  * @see CacheTransactionManager#commit
  **/
-_GF_EXCEPTION_DEF(CommitConflictException);
+class  CPPCACHE_EXPORT CommitConflictException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~CommitConflictException() {}
+  virtual const char* getName() const override { return "apache::geode::client::CommitConflictException"; }
+};
 /**
  * @brief Thrown when the transactional data host has shutdown or no longer has
  *the data
  * being modified by the transaction.
  * This can be thrown while doing transactional operations or during commit.
  **/
-_GF_EXCEPTION_DEF(TransactionDataNodeHasDepartedException);
+class  CPPCACHE_EXPORT TransactionDataNodeHasDepartedException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~TransactionDataNodeHasDepartedException() {}
+  virtual const char* getName() const override { return "apache::geode::client::TransactionDataNodeHasDepartedException"; }
+};
 /**
  * @brief Thrown when a {@link RebalanceOperation} occurs concurrently with a
  *transaction.
  * This can be thrown while doing transactional operations or during commit.
  **/
-_GF_EXCEPTION_DEF(TransactionDataRebalancedException);
+class  CPPCACHE_EXPORT TransactionDataRebalancedException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~TransactionDataRebalancedException() {}
+  virtual const char* getName() const override { return "apache::geode::client::TransactionDataRebalancedException"; }
+};
 
 /**
  * @brief Thrown if putAll operation with single hop succeeded partially.
  **/
-_GF_EXCEPTION_DEF(PutAllPartialResultException);
+class  CPPCACHE_EXPORT PutAllPartialResultException : public Exception {
+public:
+  using Exception::Exception;
+  virtual ~PutAllPartialResultException() {}
+  virtual const char* getName() const override { return "apache::geode::client::PutAllPartialResultException"; }
+};
 
 /**
  *@brief Thrown when a version on which delta is based is different than the

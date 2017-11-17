@@ -160,7 +160,7 @@ class BBProcessor : public ServiceTask {
         if (msg != NULL) {
           // Construct the FwkBBMessage
           FwkBBMessage message;
-          message.fromMessageStream(msg->getMessage());
+          message.fromMessageStream(msg->what());
           // Construct the reply
           FwkBBMessage reply(BB_SET_ACK_COMMAND);
           reply.setId(message.getId());
@@ -208,7 +208,7 @@ class BBProcessor : public ServiceTask {
         }
       } catch (FwkException& ex) {
         FWKSEVERE(
-            "BBProcessor::doTask() caught exception: " << ex.getMessage());
+            "BBProcessor::doTask() caught exception: " << ex.what());
       } catch (...) {
         FWKSEVERE("BBProcessor::doTask() caught unknown exception");
       }

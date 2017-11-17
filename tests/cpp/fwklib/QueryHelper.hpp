@@ -920,7 +920,7 @@ void QueryHelper::destroyPortfolioOrPositionData(std::shared_ptr<Region>& rptr,
     }
   } catch (Exception& e) {
     FWKSEVERE("QueryHelper::destroyPortfolioOrPositionData Caught Exception: "
-              << e.getMessage());
+              << e.what());
   }
   FWKINFO("destroy done \n");
 }
@@ -945,7 +945,7 @@ void QueryHelper::invalidatePortfolioOrPositionData(
   } catch (Exception& e) {
     FWKSEVERE(
         "QueryHelper::invalidatePortfolioOrPositionData Caught Exception: "
-        << e.getMessage());
+        << e.what());
   }
   FWKINFO("Invalidation done \n");
 }

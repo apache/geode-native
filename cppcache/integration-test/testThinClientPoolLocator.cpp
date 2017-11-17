@@ -36,12 +36,10 @@ DUNIT_TASK(CLIENT1, SetupClient1_NoLocators_At_Init)
 
     try {
       createEntry(regionNames[0], keys[0], vals[0]);
-    } catch (NotConnectedException& ex) {
-      ASSERT(
-          std::dynamic_pointer_cast<NoAvailableLocatorsException>(
-              ex.getCause()),
-          "NotconnectedException with cause NoAvailableLocatorsException was "
-          "not thrown.");
+    } catch (NoAvailableLocatorsException& ex) {
+      LOG("Caught expected exception.");
+    } catch (...) {
+      FAIL("NoAvailableLocatorsException was not thrown.");
     }
     LOG("SetupClient1 complete.");
   }
@@ -163,7 +161,7 @@ DUNIT_TASK(CLIENT1, AgainFailoverC1)
           "got");
     } catch (const Exception& excp) {
       LOG(excp.getName());
-      LOG(excp.getMessage());
+      LOG(excp.what());
       FAIL(
           "Unexpected expection - only "
           "NotConnectedException expected");
@@ -194,18 +192,15 @@ DUNIT_TASK(CLIENT2, AgainFailoverC2)
       updateEntry(regionNames[0], keys[1], vals[1]);
       FAIL("Client Failover Should Fail");
     } catch (const NotConnectedException& ex) {
-      if (!std::dynamic_pointer_cast<NoAvailableLocatorsException>(
-              ex.getCause())) {
-        LOG(ex.getName());
-        LOG(ex.getMessage());
-        FAIL(
-            "Unexpected expection - only "
-            "NoAvailableLocatorsException "
-            "expected");
-      }
+      LOG(ex.getName());
+      LOG(ex.what());
+      FAIL(
+          "Unexpected expection - only "
+          "NoAvailableLocatorsException "
+          "expected");
     } catch (const Exception& excp) {
       LOG(excp.getName());
-      LOG(excp.getMessage());
+      LOG(excp.what());
       FAIL(
           "Unexpected expection - only "
           "NoAvailableLocatorsException "

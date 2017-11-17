@@ -140,7 +140,7 @@ void HostStatHelperSolaris::refreshProcess(ProcessStats* processStats) {
     }
   } catch (NullPointerException npe) {
     if (m_logStatErrorCountDown-- > 0) {
-      LOGERROR(npe.getMessage());
+      LOGERROR(npe.what());
     }
   }
   // thread count

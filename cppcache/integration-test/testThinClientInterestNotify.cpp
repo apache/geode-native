@@ -58,7 +58,7 @@ class EventListener : public CacheListener {
       LOG(buf);
     } catch (const Exception& excp) {
       sprintf(buf, "%s: %s: %s: %s", m_name.c_str(), eventType, excp.getName(),
-              excp.getMessage());
+              excp.what());
       LOG(buf);
     } catch (...) {
       sprintf(buf, "%s: %s: unknown exception", m_name.c_str(), eventType);

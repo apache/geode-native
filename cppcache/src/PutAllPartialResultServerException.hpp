@@ -63,7 +63,7 @@ class CPPCACHE_EXPORT PutAllPartialResultServerException : public Serializable {
 
   std::shared_ptr<CacheableKey> getFirstFailedKey();
 
-  std::shared_ptr<CacheableString> getMessage();
+  std::shared_ptr<CacheableString> what();
 
   /**
    * @brief destructor

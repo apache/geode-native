@@ -56,11 +56,11 @@ void VersionedCacheableObjectPartList::readObjectPart(
       if (strstr(exMsg,
                  "org.apache.geode.security."
                  "NotAuthorizedException") != nullptr) {
-        ex = std::make_shared<NotAuthorizedException>(
-            "Authorization exception at server:", exMsg);
+        auto message = std::string("Authorization exception at server:") + exMsg;
+        ex = std::make_shared<NotAuthorizedException>(message);
       } else {
-        ex = std::make_shared<CacheServerException>(
-            "Exception at remote server:", exMsg);
+        auto message = std::string("Exception at remote server:") + exMsg;
+        ex = std::make_shared<CacheServerException>(message);
       }
       m_exceptions->emplace(keyPtr, ex);
     }

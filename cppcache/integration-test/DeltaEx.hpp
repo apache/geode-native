@@ -60,7 +60,7 @@ class DeltaEx : public Cacheable, public Delta {
     if (fromDeltaCount == 1) {
       fromDeltaCount++;
       LOG("Invalid Delta expetion thrown");
-      throw InvalidDeltaException("aaa", "nnn");
+      throw InvalidDeltaException("aaannn");
     }
     counter += val;
     fromDeltaCount++;
@@ -115,7 +115,7 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
     if (m_fromDeltaCount == 1) {
       m_fromDeltaCount++;
       LOG("Invalid Delta expetion thrown");
-      throw InvalidDeltaException("aaa", "nnn");
+      throw InvalidDeltaException("aaannn");
     }
     m_counter += val;
     m_fromDeltaCount++;

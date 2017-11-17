@@ -37,7 +37,7 @@ namespace client {
 
 #define throwException(ex)                              \
   {                                                     \
-    LOGFINEST("%s: %s", ex.getName(), ex.getMessage()); \
+    LOGFINEST("%s: %s", ex.getName(), ex.what()); \
     throw ex;                                           \
   }
 /*
@@ -257,28 +257,28 @@ GfErrType TcrEndpoint::createNewConnection(
       std::this_thread::sleep_for(std::chrono::milliseconds(50));
     } catch (const GeodeIOException& ex) {
       LOGINFO("IO error[%d] in handshake with endpoint[%s]: %s",
-              ACE_OS::last_error(), m_name.c_str(), ex.getMessage());
+              ACE_OS::last_error(), m_name.c_str(), ex.what());
       err = GF_IOERR;
       m_needToConnectInLock = true;  // while creating the connection
       break;
     } catch (const AuthenticationFailedException& ex) {
       LOGWARN("Authentication failed in handshake with endpoint[%s]: %s",
-              m_name.c_str(), ex.getMessage());
+              m_name.c_str(), ex.what());
       err = GF_AUTHENTICATION_FAILED_EXCEPTION;
       break;
     } catch (const AuthenticationRequiredException& ex) {
       LOGWARN("Authentication required in handshake with endpoint[%s]: %s",
-              m_name.c_str(), ex.getMessage());
+              m_name.c_str(), ex.what());
       err = GF_AUTHENTICATION_REQUIRED_EXCEPTION;
       break;
     } catch (const CacheServerException& ex) {
       LOGWARN("Exception in handshake on server[%s]: %s", m_name.c_str(),
-              ex.getMessage());
+              ex.what());
       err = GF_CACHESERVER_EXCEPTION;
       break;
     } catch (const Exception& ex) {
       LOGWARN("Failed in handshake with endpoint[%s]: %s", m_name.c_str(),
-              ex.getMessage());
+              ex.what());
       err = GF_MSG;
       break;
     } catch (std::exception& ex) {
@@ -718,7 +718,7 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
       // Endpoint is disconnected, this exception is expected
       LOGFINER(
           "IO exception while receiving subscription event for endpoint %s: %s",
-          m_name.c_str(), e.getMessage());
+          m_name.c_str(), e.what());
       if (m_connected) {
         setConnectionStatus(false);
         // close notification channel
@@ -734,7 +734,7 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
       LOGERROR(
           "Exception while receiving subscription event for endpoint %s:: %s: "
           "%s",
-          m_name.c_str(), ex.getName(), ex.getMessage());
+          m_name.c_str(), ex.getName(), ex.what());
     } catch (...) {
       GF_SAFE_DELETE(msg);
       LOGERROR(
@@ -1024,7 +1024,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
         error = GF_IOERR;
         epFailure = true;
         failReason = "IO error for endpoint";
-        if (!handleIOException(ex.getMessage(), conn,
+        if (!handleIOException(ex.what(), conn,
                                isBgThread)) {  // change here
           break;
         }
@@ -1032,18 +1032,14 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
       } catch (const Exception& ex) {
         failReason = ex.getName();
         failReason.append(": ");
-        failReason.append(ex.getMessage());
+        failReason.append(ex.what());
         LOGWARN("Error during send for endpoint %s due to %s", m_name.c_str(),
                 failReason.c_str());
         if (compareTransactionIds(reqTransId, reply.getTransId(), failReason,
                                   conn)) {
-#ifndef _SOLARIS
           if (Log::warningEnabled()) {
-            char trace[2048];
-            ex.getStackTrace(trace, 2047);
-            LOGWARN("Stack trace: %s", trace);
+            LOGWARN("Stack trace: %s", ex.getStackTrace().c_str());
           }
-#endif
           error = GF_MSG;
           if (useEPPool) {
             m_opConnections.put(conn, false);

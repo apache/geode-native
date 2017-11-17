@@ -584,7 +584,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, DoQuerySSError)
           FAIL(failmsg);
         } catch (apache::geode::client::QueryException& ex) {
           // ok, expecting an exception, do nothing
-          fprintf(stdout, "Got expected exception: %s", ex.getMessage());
+          fprintf(stdout, "Got expected exception: %s", ex.what());
         } catch (...) {
           ASSERT(false, "Got unexpected exception");
         }

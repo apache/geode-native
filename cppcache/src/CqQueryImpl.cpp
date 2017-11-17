@@ -160,7 +160,7 @@ void CqQueryImpl::close(bool sendRequestToServer) {
           LOGWARN(
               "Exception occoured in the CqListener of the CQ, CqName : "
               "%sError : %s",
-              m_cqName.c_str(), ex.getMessage());
+              m_cqName.c_str(), ex.what());
         }
       }
     }
@@ -185,7 +185,7 @@ void CqQueryImpl::addToCqMap() {
   } catch (Exception& ex) {
     std::string errMsg =
         "Failed to store Continuous Query in the repository. CqName: " +
-        m_cqName + ex.getMessage();
+        m_cqName + ex.what();
     LOGERROR(errMsg.c_str());
     throw CqException(errMsg.c_str());
   }
@@ -202,7 +202,7 @@ void CqQueryImpl::removeFromCqMap() {
   } catch (Exception& ex) {
     std::string errMsg =
         "Failed to remove Continuous Query From the repository. CqName: " +
-        m_cqName + " Error : " + ex.getMessage();
+        m_cqName + " Error : " + ex.what();
     LOGERROR(errMsg.c_str());
     throw CqException(errMsg.c_str());
   }
@@ -349,7 +349,7 @@ bool CqQueryImpl::executeCq(TcrMessage::MsgType requestType) {
                                                   reply.getException());
     if (err == GF_CACHESERVER_EXCEPTION) {
       throw CqQueryException(
-          "CqQuery::executeCq: exception at the server side: ",
+          std::string("CqQuery::executeCq: exception at the server side: ") +
           reply.getException());
     } else {
       GfErrTypeToException("CqQuery::executeCq", err);
@@ -407,8 +407,8 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
         "CqQuery::executeCqWithInitialResults", reply.getException());
     if (err == GF_CACHESERVER_EXCEPTION) {
       throw CqQueryException(
-          "CqQuery::executeWithInitialResults: exception "
-          "at the server side: ",
+          std::string("CqQuery::executeWithInitialResults: exception ") +
+          "at the server side: " +
           reply.getException());
     } else {
       GfErrTypeToException("CqQuery::executeWithInitialResults", err);
@@ -503,7 +503,7 @@ void CqQueryImpl::sendStopOrClose(TcrMessage::MsgType requestType) {
                                                   reply.getException());
     if (err == GF_CACHESERVER_EXCEPTION) {
       throw CqQueryException(
-          "CqQuery::stop/close: exception at the server side: ",
+          std::string("CqQuery::stop/close: exception at the server side: ") +
           reply.getException());
     } else {
       GfErrTypeToException("CqQuery::stop/close", err);

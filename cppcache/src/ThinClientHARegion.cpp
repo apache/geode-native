@@ -85,7 +85,7 @@ void ThinClientHARegion::initTCR() {
     LOGERROR(
         "ThinClientHARegion: failed to create a DistributionManager "
         "object due to: %s: %s",
-        ex.getName(), ex.getMessage());
+        ex.getName(), ex.what());
     throw;
   }
 }
@@ -119,7 +119,7 @@ void ThinClientHARegion::handleMarker() {
       m_listener->afterRegionLive(event);
     } catch (const Exception& ex) {
       LOGERROR("Exception in CacheListener::afterRegionLive: %s: %s",
-               ex.getName(), ex.getMessage());
+               ex.getName(), ex.what());
     } catch (...) {
       LOGERROR("Unknown exception in CacheListener::afterRegionLive");
     }

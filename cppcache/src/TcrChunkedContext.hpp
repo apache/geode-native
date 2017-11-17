@@ -120,7 +120,9 @@ class TcrChunkedResult {
 
   inline bool exceptionOccurred() const { return (m_ex != nullptr); }
 
-  inline void setException(Exception& ex) { m_ex.reset(ex.clone()); }
+  inline void setException(std::shared_ptr<Exception> ex) {
+    m_ex = ex;
+  }
 
   inline std::shared_ptr<Exception>& getException() { return m_ex; }
 };
@@ -162,14 +164,14 @@ class TcrChunkedContext {
         m_result->fireHandleChunk(m_bytes, m_len, m_isLastChunkWithSecurity,
                                   m_cache);
       } catch (Exception& ex) {
-        LOGERROR("HandleChunk error message %s, name = %s", ex.getMessage(),
+        LOGERROR("HandleChunk error message %s, name = %s", ex.what(),
                  ex.getName());
-        m_result->setException(ex);
+        m_result->setException(std::make_shared<Exception>(ex));
       } catch (std::exception& stdEx) {
         std::string exMsg("HandleChunk exception:: ");
         exMsg += stdEx.what();
         LOGERROR("HandleChunk exception: %s", stdEx.what());
-        UnknownException ex(exMsg.c_str());
+        auto ex = std::make_shared<UnknownException>(exMsg.c_str());
         m_result->setException(ex);
       } catch (...) {
         std::string exMsg("Unknown exception in ");
@@ -178,7 +180,7 @@ class TcrChunkedContext {
             "::handleChunk while processing response, possible serialization "
             "mismatch";
         LOGERROR(exMsg.c_str());
-        UnknownException ex(exMsg.c_str());
+        auto ex = std::make_shared<UnknownException>(exMsg.c_str());
         m_result->setException(ex);
       }
     }

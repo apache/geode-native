@@ -177,8 +177,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
       LOG(" 3");
     } catch (
         const apache::geode::client::AuthenticationFailedException& other) {
-      other.printStackTrace();
-      LOG(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      LOG(other.what());
     }
 
     try {
@@ -201,11 +201,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
       FAIL("Should have thrown AuthenticationFailedException.");
     } catch (
         const apache::geode::client::AuthenticationFailedException& other) {
-      other.printStackTrace();
-      LOG(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      LOG(other.what());
     } catch (const apache::geode::client::Exception& other) {
-      other.printStackTrace();
-      LOG(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      LOG(other.what());
       FAIL("Only AuthenticationFailedException is expected");
     }
     LOG("StepOne Completed");
@@ -233,8 +233,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
         LOG("Pool is nullptr");
       }
     } catch (const apache::geode::client::Exception& other) {
-      other.printStackTrace();
-      FAIL(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      FAIL(other.what());
     }
     LOG("Handshake  and  Authentication successfully completed");
     LOG("StepTwo Completed");
@@ -257,8 +257,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepThree)
         LOG("Pool is nullptr");
       }
     } catch (const apache::geode::client::Exception& other) {
-      other.printStackTrace();
-      FAIL(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      FAIL(other.what());
     }
     LOG("Handshake  and  Authentication successfully completed");
   }
@@ -272,8 +272,8 @@ DUNIT_TASK_DEFINITION(CLIENT3, StepFour)
       initClientAuth(NOT_PROVIDED_CREDENTIALS);
     } catch (
         const apache::geode::client::AuthenticationRequiredException& other) {
-      other.printStackTrace();
-      FAIL(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      FAIL(other.what());
     }
 
     try {
@@ -290,15 +290,15 @@ DUNIT_TASK_DEFINITION(CLIENT3, StepFour)
       FAIL("Should have thrown AuthenticationRequiredException.");
     } catch (
         const apache::geode::client::AuthenticationRequiredException& other) {
-      other.printStackTrace();
-      LOG(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      LOG(other.what());
     } catch (
         const apache::geode::client::AuthenticationFailedException& other) {
-      other.printStackTrace();
-      LOG(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      LOG(other.what());
     } catch (const apache::geode::client::Exception& other) {
-      other.printStackTrace();
-      LOG(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      LOG(other.what());
       FAIL("Only AuthenticationRequiredException is expected");
     }
     LOG("StepFour Completed");
@@ -335,8 +335,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFive)
         LOG("checkPtr is nullptr");
       }
     } catch (const apache::geode::client::Exception& other) {
-      other.printStackTrace();
-      FAIL(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      FAIL(other.what());
     }
     LOG("Handshake  and  Authentication successfully completed after FailOver");
     LOG("StepFive Completed");
@@ -362,8 +362,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
         LOG("Pool is nullptr");
       }
     } catch (const apache::geode::client::Exception& other) {
-      other.printStackTrace();
-      FAIL(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      FAIL(other.what());
     }
     LOG("Handshake  and  Authentication successfully completed");
     LOG("StepSix Completed");
@@ -376,8 +376,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSeven)
       initClientAuth(INCORRECT_CREDENTIALS);
     } catch (
         const apache::geode::client::AuthenticationFailedException& other) {
-      other.printStackTrace();
-      LOG(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      LOG(other.what());
     }
     LOG("Setting JavaConnectionPoolSize to 0 ");
     CacheHelper::setJavaConnectionPoolSize(0);
@@ -400,11 +400,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSeven)
       FAIL("Should have thrown AuthenticationFailedException.");
     } catch (
         const apache::geode::client::AuthenticationFailedException& other) {
-      other.printStackTrace();
-      LOG(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      LOG(other.what());
     } catch (const apache::geode::client::Exception& other) {
-      other.printStackTrace();
-      LOG(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      LOG(other.what());
       FAIL("Only AuthenticationFailedException is expected");
     }
     LOG("StepSeven Completed");
@@ -474,8 +474,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
         LOG("checkPtr is nullptr");
       }
     } catch (const apache::geode::client::Exception& other) {
-      other.printStackTrace();
-      FAIL(other.getMessage());
+      LOG(other.getStackTrace().c_str());
+      FAIL(other.what());
     }
     LOG("StepEight Completed");
   }

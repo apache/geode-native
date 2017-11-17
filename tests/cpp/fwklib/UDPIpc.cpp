@@ -180,7 +180,7 @@ UDPMessageClient::UDPMessageClient(std::string server)
         msg.setCmd(ADDR_REQUEST);
         if (msg.sendTo(m_io, m_server)) {
           if (msg.receiveFrom(m_io, &timeout)) {
-            std::string newConn = msg.getMessage();
+            std::string newConn = msg.what();
             ACE_INET_Addr conn(newConn.c_str());
             if (msg.ping(m_io, conn)) {  // We have a working addr
               m_server = conn;
@@ -243,7 +243,7 @@ int32_t Receiver::doTask() {
       }
     }
   } catch (FwkException& ex) {
-    FWKSEVERE("Receiver::doTask() caught exception: " << ex.getMessage());
+    FWKSEVERE("Receiver::doTask() caught exception: " << ex.what());
   } catch (...) {
     FWKSEVERE("Receiver::doTask() caught unknown exception");
   }
@@ -305,7 +305,7 @@ int32_t STReceiver::doTask() {
       }
     }
   } catch (FwkException& ex) {
-    FWKSEVERE("STReceiver::doTask() caught exception: " << ex.getMessage());
+    FWKSEVERE("STReceiver::doTask() caught exception: " << ex.what());
   } catch (...) {
     FWKSEVERE("STReceiver::doTask() caught unknown exception");
   }
@@ -345,7 +345,7 @@ int32_t Responder::doTask() {
       }
     }
   } catch (FwkException& ex) {
-    FWKSEVERE("Responder::doTask() caught exception: " << ex.getMessage());
+    FWKSEVERE("Responder::doTask() caught exception: " << ex.what());
   } catch (...) {
     FWKSEVERE("Responder::doTask() caught unknown exception");
   }

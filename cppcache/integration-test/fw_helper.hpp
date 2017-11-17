@@ -148,7 +148,7 @@ class TestOp {
       e.print();
       failed.push_back(m_name);
     } catch (apache::geode::client::Exception ge) {
-      ge.printStackTrace();
+      fprintf(stdout, "%s\n", ge.getStackTrace().c_str());
       failed.push_back(m_name);
     }
   }

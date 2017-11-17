@@ -88,8 +88,8 @@ opCodeList::value_type tmpRArr[] = {OP_GET, OP_REGISTER_INTEREST,
     LOG("Success");                                              \
   }                                                              \
   catch (const apache::geode::client::Exception& other) {        \
-    other.printStackTrace();                                     \
-    FAIL(other.getMessage());                                    \
+    LOG(other.getStackTrace());                                  \
+    FAIL(other.what());                                          \
   }
 
 #define HANDLE_CACHEWRITER_EXCEPTION                           \

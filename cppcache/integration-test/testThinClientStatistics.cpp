@@ -192,9 +192,9 @@ void DoRegionOpsAndVerify() {
   } catch (StatisticsDisabledException&) {
     LOGINFO("Exception Caught:: StatisticsDisabledException");
   } catch (GeodeConfigException& e) {
-    LOGINFO("Exception Caught:: %s", e.getMessage());
+    LOGINFO("Exception Caught:: %s", e.what());
   } catch (Exception& ex) {
-    LOGINFO("Exception Caught:: %s", ex.getMessage());
+    LOGINFO("Exception Caught:: %s", ex.what());
   }
   if (cacheStatptr != nullptr) {
     LOGINFO("LastAccessedTime = %d ", cacheStatptr->getLastAccessedTime());

@@ -117,11 +117,11 @@ void ProxyRemoteQueryService::closeCqs(bool keepAlive) {
       }
     } catch (QueryException& qe) {
       Log::fine(("Failed to close the CQ, CqName : " + cqName +
-                 " Error : " + qe.getMessage())
+                 " Error : " + qe.what())
                     .c_str());
     } catch (CqClosedException& cce) {
       Log::fine(("Failed to close the CQ, CqName : " + cqName +
-                 " Error : " + cce.getMessage())
+                 " Error : " + cce.what())
                     .c_str());
     }
   }
@@ -158,11 +158,11 @@ void ProxyRemoteQueryService::executeCqs() {
       q->execute();
     } catch (QueryException& qe) {
       Log::fine(("Failed to excecue the CQ, CqName : " + cqName +
-                 " Error : " + qe.getMessage())
+                 " Error : " + qe.what())
                     .c_str());
     } catch (CqClosedException& cce) {
       Log::fine(("Failed to excecue the CQ, CqName : " + cqName +
-                 " Error : " + cce.getMessage())
+                 " Error : " + cce.what())
                     .c_str());
     }
   }
@@ -177,11 +177,11 @@ void ProxyRemoteQueryService::stopCqs() {
       q->stop();
     } catch (QueryException& qe) {
       Log::fine(("Failed to stop the CQ, CqName : " + cqName +
-                 " Error : " + qe.getMessage())
+                 " Error : " + qe.what())
                     .c_str());
     } catch (CqClosedException& cce) {
       Log::fine(("Failed to stop the CQ, CqName : " + cqName +
-                 " Error : " + cce.getMessage())
+                 " Error : " + cce.what())
                     .c_str());
     }
   }

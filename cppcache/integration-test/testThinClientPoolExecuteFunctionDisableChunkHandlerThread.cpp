@@ -228,7 +228,7 @@ class putThread : public ACE_Task_Base {
                        std::chrono::seconds(300))
               ->getResult();
         } catch (const TimeoutException& te) {
-          LOGINFO("Timeout exception occurred %s", te.getMessage());
+          LOGINFO("Timeout exception occurred %s", te.what());
           m_timeoutCount++;
         } catch (const Exception&) {
           LOG("Exception occurred");

@@ -20,47 +20,25 @@
  * limitations under the License.
  */
 
-#define GF_TRACE_LEN 25
-
-#include "StackFrame.hpp"
 #include <memory>
 #include <string>
-#include <list>
+
+#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+#include <boost/stacktrace.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class StackTrace;
-#ifdef _WINDOWS
 class StackTrace {
  public:
   StackTrace();
   virtual ~StackTrace();
-  void print() const;
-  void getString(std::string& tracestring) const;
-
-  size_t m_size;
-  void addFrame(std::list<std::string>& frames);
+  std::string getString() const;
 
  private:
-  std::list<std::string> m_frames;
+  boost::stacktrace::stacktrace stacktrace;
 };
-#else
-class StackTrace {
-  StackFrame m_frames[GF_TRACE_LEN];
-  int m_size;
-
- public:
-  StackTrace();
-  virtual ~StackTrace();
-  void print() const;
-#ifndef _SOLARIS
-  void getString(std::string& tracestring) const;
-#endif
-  void addFrame(const char* line, int i);
-};
-#endif
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -66,14 +66,14 @@ void FwkBBClient::sendToServer(FwkBBMessage& message) {
         nrCnt++;
         FWKEXCEPTION("No Reply from server in FwkBBClient::sendToServer");
       }
-      message.fromMessageStream(udpMsg.getMessage());
+      message.fromMessageStream(udpMsg.what());
       m_result.clear();
       m_result = message.getResult();
       done = true;
     } catch (FwkException& /* ex */) {
       eCnt++;
       // FWKSEVERE( "Caught exception in FwkBBClient::sendToServer: " <<
-      // ex.getMessage() << ", tried to send: " << msg.substr( 0, 50 ) );
+      // ex.what() << ", tried to send: " << msg.substr( 0, 50 ) );
     }
   }
   if (!done) {
@@ -90,7 +90,7 @@ std::string FwkBBClient::dump() {
   try {
     sendToServer(message);
   } catch (FwkException& ex) {
-    ex.getMessage();
+    ex.what();
   }
   return m_result;
 }
@@ -103,7 +103,7 @@ std::string FwkBBClient::dump(const std::string& BBName) {
   try {
     sendToServer(message);
   } catch (FwkException& ex) {
-    ex.getMessage();
+    ex.what();
   }
   return m_result;
 }
@@ -116,7 +116,7 @@ void FwkBBClient::clear(const std::string& BBName) {
   try {
     sendToServer(message);
   } catch (FwkException& ex) {
-    ex.getMessage();
+    ex.what();
   }
 }
 
@@ -131,7 +131,7 @@ std::string FwkBBClient::getString(const std::string& BBName,
   try {
     sendToServer(message);
   } catch (FwkException& ex) {
-    ex.getMessage();
+    ex.what();
   }
   return m_result;
 }
@@ -146,7 +146,7 @@ int64_t FwkBBClient::get(const std::string& BBName, const std::string& Key) {
   try {
     sendToServer(message);
   } catch (FwkException& ex) {
-    ex.getMessage();
+    ex.what();
   }
   return FwkStrCvt::toInt64(m_result.c_str());
 }
@@ -163,7 +163,7 @@ void FwkBBClient::set(const std::string& BBName, const std::string& Key,
   try {
     sendToServer(message);
   } catch (FwkException& ex) {
-    ex.getMessage();
+    ex.what();
   }
 }
 
@@ -179,7 +179,7 @@ void FwkBBClient::set(const std::string& BBName, const std::string& Key,
   try {
     sendToServer(message);
   } catch (FwkException& ex) {
-    ex.getMessage();
+    ex.what();
   }
 }
 
@@ -194,7 +194,7 @@ int64_t FwkBBClient::add(const std::string& BBName, const std::string& Key,
   try {
     sendToServer(message);
   } catch (FwkException& ex) {
-    ex.getMessage();
+    ex.what();
   }
   return FwkStrCvt::toInt64(m_result.c_str());
 }
@@ -210,7 +210,7 @@ int64_t FwkBBClient::subtract(const std::string& BBName, const std::string& Key,
   try {
     sendToServer(message);
   } catch (FwkException& ex) {
-    ex.getMessage();
+    ex.what();
   }
   return FwkStrCvt::toInt64(m_result.c_str());
 }
@@ -225,7 +225,7 @@ int64_t FwkBBClient::increment(const std::string& BBName,
   try {
     sendToServer(message);
   } catch (FwkException& ex) {
-    ex.getMessage();
+    ex.what();
   }
   return FwkStrCvt::toInt64(m_result.c_str());
 }
@@ -240,7 +240,7 @@ int64_t FwkBBClient::decrement(const std::string& BBName,
   try {
     sendToServer(message);
   } catch (FwkException& ex) {
-    ex.getMessage();
+    ex.what();
   }
   return FwkStrCvt::toInt64(m_result.c_str());
 }
@@ -254,7 +254,7 @@ void FwkBBClient::zero(const std::string& BBName, const std::string& Key) {
   try {
     sendToServer(message);
   } catch (FwkException& ex) {
-    ex.getMessage();
+    ex.what();
   }
 }
 
@@ -269,7 +269,7 @@ int64_t FwkBBClient::setIfGreater(const std::string& BBName,
   try {
     sendToServer(message);
   } catch (FwkException& ex) {
-    ex.getMessage();
+    ex.what();
   }
   return FwkStrCvt::toInt64(m_result.c_str());
 }
@@ -285,7 +285,7 @@ int64_t FwkBBClient::setIfLess(const std::string& BBName,
   try {
     sendToServer(message);
   } catch (FwkException& ex) {
-    ex.getMessage();
+    ex.what();
   }
   return FwkStrCvt::toInt64(m_result.c_str());
 }

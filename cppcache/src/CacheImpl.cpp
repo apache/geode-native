@@ -407,7 +407,7 @@ std::shared_ptr<RegionInternal> rpImpl = nullptr;
       throw;
     } catch (const Exception&) {
       //      LOGERROR( "Cache::createRegion: region creation failed, caught
-      //      exception: %s", ex.getMessage() );
+      //      exception: %s", ex.what() );
       //      ex.printStackTrace();
       throw;
     } catch (std::exception& ex) {
@@ -666,7 +666,7 @@ void CacheImpl::readyForEvents() {
       }
     } catch (Exception& ex) {
       LOGWARN("readyForEvents( ) failed for pool %s with exception: %s",
-              currPool->getName(), ex.getMessage());
+              currPool->getName(), ex.what());
     }
   }
 }

@@ -188,7 +188,7 @@ bool ThinClientCacheDistributionManager::postFailoverAction(
     rqsService->executeAllCqs(true);
   } catch (const Exception& excp) {
     LOGWARN("Failed to recover CQs during failover attempt to endpoint[%s]: %s",
-            endpoint->name().c_str(), excp.getMessage());
+            endpoint->name().c_str(), excp.what());
     return false;
   } catch (...) {
     LOGWARN("Failed to recover CQs during failover attempt to endpoint[%s]",

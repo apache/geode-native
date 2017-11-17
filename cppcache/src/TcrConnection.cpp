@@ -48,7 +48,7 @@ const int64_t INITIAL_CONNECTION_ID = 26739;
 
 #define throwException(ex)                              \
   {                                                     \
-    LOGFINEST("%s: %s", ex.getName(), ex.getMessage()); \
+    LOGFINEST("%s: %s", ex.getName(), ex.what()); \
     throw ex;                                           \
   }
 bool TcrConnection::InitTcrConnection(
@@ -289,11 +289,11 @@ bool TcrConnection::InitTcrConnection(
       throw;
     } catch (const Exception& ex) {
       LOGWARN("TcrConnection: failed to acquire handle to authLoader: [%s] %s",
-              ex.getName(), ex.getMessage());
+              ex.getName(), ex.what());
+      auto message = std::string("TcrConnection: failed to load authInit library: ")
+                     + ex.what();
       throwException(
-          AuthenticationFailedException("TcrConnection: failed "
-                                        "to load authInit library: ",
-                                        ex.getMessage()));
+          AuthenticationFailedException(message));
     }
   }
 
@@ -503,10 +503,10 @@ bool TcrConnection::InitTcrConnection(
       case UNSUCCESSFUL_SERVER_TO_CLIENT: {
         LOGERROR("Handshake rejected by server[%s]: %s",
                  m_endpointObj->name().c_str(), (char*)recvMessage->value());
-        CacheServerException ex(
-            "TcrConnection::TcrConnection: "
-            "Handshake rejected by server: ",
-            (char*)recvMessage->value());
+        auto message = std::string("TcrConnection::TcrConnection: ") +
+                                   "Handshake rejected by server: " +
+                                   (char*)recvMessage->value();
+        CacheServerException ex(message);
         GF_SAFE_DELETE_CON(m_conn);
         throw ex;
       }
@@ -516,10 +516,10 @@ bool TcrConnection::InitTcrConnection(
             "%s",
             (*acceptanceCode)[0], m_endpointObj->name().c_str(),
             recvMessage->value());
-        MessageException ex(
-            "TcrConnection::TcrConnection: Unknown error"
-            " received from server in handshake: ",
-            (char*)recvMessage->value());
+        auto message = std::string("TcrConnection::TcrConnection: Unknown error") +
+                                   " received from server in handshake: " +
+                                   (char*)recvMessage->value();
+        MessageException ex(message);
         GF_SAFE_DELETE_CON(m_conn);
         throw ex;
       }
@@ -1119,7 +1119,7 @@ void TcrConnection::close() {
            std::chrono::seconds(2), false);
     }
   } catch (Exception& e) {
-    LOGINFO("Close connection message failed with msg: %s", e.getMessage());
+    LOGINFO("Close connection message failed with msg: %s", e.what());
   } catch (...) {
     LOGINFO("Close connection message failed");
   }

@@ -213,14 +213,14 @@ DUNIT_TASK(CLIENT1, AgainAgainFailoverC1_All)
       FAIL(
           "No locator exception should "
           "have been raised");
-    } catch (const NotConnectedException& ex) {
-      ASSERT(std::dynamic_pointer_cast<NoAvailableLocatorsException>(
-                 ex.getCause()),
-             "NotConnectedException "
-             "with cause "
-             "NoAvailableLocatorsExcepti"
-             "on should have been "
-             "raised");
+    } catch (const NoAvailableLocatorsException& ex) {
+      LOG("Caught expected NoAvailableLocatorsException.");
+    } catch (...) {
+      FAIL("NotConnectedException "
+           "with cause "
+           "NoAvailableLocatorsExcepti"
+            "on should have been "
+            "raised");
     }
   }
 END_TASK(AgainAgainFailoverC1_All)

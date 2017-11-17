@@ -44,7 +44,7 @@ int32_t Service::svc() {
         task->doTask();
         task->finalize();
       } catch (FwkException& ex) {
-        FWKERROR("Service: Caught exception in svc: " << ex.getMessage());
+        FWKERROR("Service: Caught exception in svc: " << ex.what());
       } catch (...) {
         FWKERROR("Service: Caught exception in svc.");
       }

@@ -165,8 +165,9 @@ namespace Apache
                 cause = GeodeException::GetNative(ex->InnerException);
               }
               ManagedString mg_exStr(MgSysExPrefix + ex->ToString());
+              auto message = std::string(mg_exStr.CharPtr) + cause->what();
               return std::make_shared<apache::geode::client::Exception>(
-                  mg_exStr.CharPtr, __nullptr, false, cause);
+                  message);
             }
           }
           return nullptr;
@@ -184,8 +185,8 @@ namespace Apache
           if (this->InnerException != nullptr) {
             cause = GeodeException::GetNative(this->InnerException);
           }
-          return std::make_shared<apache::geode::client::Exception>(mg_msg.CharPtr,
-              __nullptr, false, cause);
+          auto message = std::string(mg_msg.CharPtr) + cause->what();
+          return std::make_shared<apache::geode::client::Exception>(message);
         }
 
         /// <summary>
@@ -210,7 +211,8 @@ namespace Apache
               cause = GeodeException::GetNative(ex->InnerException);
             }
             ManagedString mg_exStr(MgSysExPrefix + ex->ToString());
-            throw apache::geode::client::Exception(mg_exStr.CharPtr, NULL, false, cause);
+            auto message = std::string(mg_exStr.CharPtr) + cause->what();
+            throw apache::geode::client::Exception(message);
           }
         }
 
@@ -220,7 +222,7 @@ namespace Apache
         /// </summary>
         inline void ThrowNative()
         {
-          GetNative()->raise();
+          throw GetNative();
         }
 
 
@@ -328,12 +330,12 @@ namespace Apache
       \
       internal: \
         x(const apache::geode::client::y& nativeEx) \
-          : GeodeException(ManagedString::Get(nativeEx.getMessage()), \
+          : GeodeException(ManagedString::Get(nativeEx.what()), \
               gcnew GeodeException(GeodeException::GetStackTrace( \
                 nativeEx))) { } \
         \
         x(const apache::geode::client::y& nativeEx, Exception^ innerException) \
-          : GeodeException(ManagedString::Get(nativeEx.getMessage()), \
+          : GeodeException(ManagedString::Get(nativeEx.what()), \
               innerException) { } \
         \
         static GeodeException^ Create(const apache::geode::client::Exception& ex, \
@@ -358,8 +360,8 @@ namespace Apache
           if (this->InnerException != nullptr) { \
             cause = GeodeException::GetNative(this->InnerException); \
           } \
-          return std::make_shared<apache::geode::client::y>(mg_msg.CharPtr, \
-              __nullptr, false, cause); \
+          auto message = std::string(mg_msg.CharPtr) + cause->what(); \
+          return std::make_shared<apache::geode::client::y>(message); \
         } \
       }
 

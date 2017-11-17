@@ -92,6 +92,7 @@ endif()
 
 target_link_libraries(_apache-geode INTERFACE
   ACE
+  boost
   libxml2
 )
 target_compile_definitions(_apache-geode INTERFACE

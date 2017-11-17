@@ -158,8 +158,8 @@ END_TASK(validate)
 #define END_TASK(y)                               \
   }                                               \
   catch (apache::geode::client::Exception & ex) { \
-    ex.printStackTrace();                         \
-    FAIL(ex.getMessage());                        \
+    LOG(ex.getStackTrace().c_str());              \
+    FAIL(ex.what());                              \
   }                                               \
   catch (std::exception & ex) {                   \
     FAIL(ex.what());                              \
@@ -176,8 +176,8 @@ END_TASK(validate)
 #define ENDTASK                                   \
   }                                               \
   catch (apache::geode::client::Exception & ex) { \
-    ex.printStackTrace();                         \
-    FAIL(ex.getMessage());                        \
+    LOG(ex.getStackTrace().c_str());              \
+    FAIL(ex.what());                              \
   }                                               \
   catch (std::exception & ex) {                   \
     FAIL(ex.what());                              \
@@ -204,8 +204,8 @@ END_TASK(validate)
 #define END_TASK_DEFINITION                       \
   }                                               \
   catch (apache::geode::client::Exception & ex) { \
-    ex.printStackTrace();                         \
-    FAIL(ex.getMessage());                        \
+    LOG(ex.getStackTrace().c_str());              \
+    FAIL(ex.what());                              \
   }                                               \
   catch (std::exception & ex) {                   \
     FAIL(ex.what());                              \
@@ -230,8 +230,8 @@ END_TASK(validate)
 #define END_MAIN                                  \
   }                                               \
   catch (apache::geode::client::Exception & ex) { \
-    ex.printStackTrace();                         \
-    FAIL(ex.getMessage());                        \
+    LOG(ex.getStackTrace().c_str());              \
+    FAIL(ex.what());                              \
   }                                               \
   catch (std::exception & ex) {                   \
     FAIL(ex.what());                              \

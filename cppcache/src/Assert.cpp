@@ -14,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <sstream>
+
+#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+#include <boost/stacktrace.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include "Assert.hpp"
 #include "util/Log.hpp"
@@ -24,10 +29,11 @@ namespace client {
 
 void Assert::throwAssertion(const char* expressionText, const char* file,
                             int line) {
+  AssertionException ae(expressionText);
   LOGERROR("AssertionException: ( %s ) at %s:%d", expressionText, file, line);
-
-  AssertionException ae(expressionText, nullptr, true);
-  ae.printStackTrace();
+  std::stringstream ss;
+  ss << boost::stacktrace::stacktrace();
+  LOGERROR(ss.str().c_str());
   throw ae;
 }
 }  // namespace client

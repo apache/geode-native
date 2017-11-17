@@ -349,7 +349,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RegisterMalformedRegex)
 
       FAIL("Did not get expected exception!");
     } catch (Exception& excp) {
-      LOG(excp.getMessage());
+      LOG(excp.what());
     }
 
     LOG("RegisterMalformedRegex complete.");
@@ -366,7 +366,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, RegisterEmptyNullAndNonExistentRegex)
       regPtr0->registerRegex("");
       FAIL("Did not get expected exception!");
     } catch (Exception& excp) {
-      LOG(excp.getMessage());
+      LOG(excp.what());
     }
 
     try {
@@ -374,7 +374,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, RegisterEmptyNullAndNonExistentRegex)
       regPtr1->registerRegex(nullptr);
       FAIL("Did not get expected exception!");
     } catch (Exception& excp) {
-      LOG(excp.getMessage());
+      LOG(excp.what());
     }
 
     try {
@@ -382,7 +382,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, RegisterEmptyNullAndNonExistentRegex)
       regPtr1->unregisterRegex("Non*Existent*Regex");
       FAIL("Did not get expected exception!");
     } catch (Exception& excp) {
-      LOG(excp.getMessage());
+      LOG(excp.what());
     }
 
     LOG("RegisterEmptyNullAndNonExistentRegex complete.");

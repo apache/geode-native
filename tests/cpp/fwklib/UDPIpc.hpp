@@ -85,7 +85,7 @@ class UDPMessage : public IPCMessage {
 
   UDPMessage(std::string content) : IPCMessage(content) { clearHdr(); }
 
-  UDPMessage(UDPMessage& msg) : IPCMessage(msg.getMessage()) {
+  UDPMessage(UDPMessage& msg) : IPCMessage(msg.what()) {
     clearHdr();
     setCmd(msg.getCmd());
   }

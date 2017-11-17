@@ -752,7 +752,7 @@ int32_t HostStatSampler::svc(void) {
       } catch (Exception& e) {
         // log the exception and let the thread exit.
         LOGERROR("Exception in statistics sampler thread: %s: %s", e.getName(),
-                 e.getMessage());
+                 e.what());
         // now close current archiver and see if we can start new one
         gotexception = true;
       } catch (...) {
@@ -768,7 +768,7 @@ int32_t HostStatSampler::svc(void) {
   } catch (Exception& e) {
     // log the exception and let the thread exit.
     LOGERROR("Exception in statistics sampler thread: %s: %s", e.getName(),
-             e.getMessage());
+             e.what());
     closeSpecialStats();
   } /* catch (...) {
        // log the exception and let the thread exit.

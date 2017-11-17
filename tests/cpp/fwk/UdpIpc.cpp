@@ -55,7 +55,7 @@ TESTTASK initialize(const char *initArgs) {
     try {
       g_test = new UdpIpc(initArgs);
     } catch (const FwkException &ex) {
-      FWKSEVERE("initialize: caught exception: " << ex.getMessage());
+      FWKSEVERE("initialize: caught exception: " << ex.what());
       result = FWK_SEVERE;
     }
   }
@@ -195,7 +195,7 @@ void UdpIpc::doService() {
     FWKINFO("Time to stop.");
     farm.stopThreads();
   } catch (FwkException &ex) {
-    FWKSEVERE("Caught exception " << ex.getMessage());
+    FWKSEVERE("Caught exception " << ex.what());
   }
 
   FWKINFO("Server stopped.");
@@ -248,7 +248,7 @@ void UdpIpc::doClient() {
         if (msg.length() == 0) {
           FWKINFO("NULL response.");
         } else {
-          std::string reply = msg.getMessage();
+          std::string reply = msg.what();
           if (reply == "A result for you.") {
             // nevermind
           } else {
@@ -259,7 +259,7 @@ void UdpIpc::doClient() {
       now = ACE_OS::gettimeofday();
     }
   } catch (FwkException &ex) {
-    FWKSEVERE("Caught exception " << ex.getMessage());
+    FWKSEVERE("Caught exception " << ex.what());
   }
   FWKINFO("Stop");
   FWKINFO("Client sent " << msgCnt << " messages");

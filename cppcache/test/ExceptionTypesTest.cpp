@@ -14,30 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <ace/OS.h>
-#include <geode/geode_globals.hpp>
-#include "StackFrame.hpp"
-#include <geode/geode_base.hpp>
 
-namespace apache {
-namespace geode {
-namespace client {
-char* StackFrame::asString() {
-  if (m_string[0] == 0) {
-    char* tmp_module = m_module;
-    int32_t modlen = static_cast<int32_t>(strlen(tmp_module));
-    while (modlen > 0) {
-      if ((tmp_module[modlen] == '\\') || (tmp_module[modlen] == '/')) {
-        modlen++;
-        break;
-      }
-      modlen--;
-    }
-    ACE_OS::snprintf(m_string, 1024, "%s at %s in %s", m_symbol, m_offset,
-                     tmp_module + modlen);
-  }
-  return m_string;
+#include <gtest/gtest.h>
+
+#include <geode/ExceptionTypes.hpp>
+
+using namespace apache::geode::client;
+
+TEST(ExceptionTypesTest, testExceptionGetName) {
+  AssertionException e("an exception message");
+  EXPECT_EQ("apache::geode::client::AssertionException",
+            std::string(e.getName()));
 }
-}  // namespace client
-}  // namespace geode
-}  // namespace apache

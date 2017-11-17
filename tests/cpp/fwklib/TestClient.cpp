@@ -89,11 +89,11 @@ int32_t TestClient::runTask(ClientTask* task, ACE_thread_t id) {
   } catch (FwkException& ex) {
     cleanup = true;
     FWKSEVERE(
-        "FwkException caught in TestClient::runTask: " << ex.getMessage());
+        "FwkException caught in TestClient::runTask: " << ex.what());
     fwkResult = FWK_SEVERE;
   } catch (Exception& ex) {
     cleanup = true;
-    FWKSEVERE("Exception caught in TestClient::runTask: " << ex.getMessage());
+    FWKSEVERE("Exception caught in TestClient::runTask: " << ex.what());
     fwkResult = FWK_SEVERE;
   } catch (std::exception& ex) {
     cleanup = true;

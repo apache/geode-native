@@ -380,7 +380,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
           "Got expected TransactionDataNodeHasDepartedException when "
           "transaction "
           "delegate has gone away: %s\n",
-          ex.getMessage());
+          ex.what());
     }
 
     LOG("StepSix complete.");

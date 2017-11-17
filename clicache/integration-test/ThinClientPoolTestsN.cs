@@ -544,13 +544,13 @@ namespace Apache.Geode.Client.UnitTests
       {
         InvalidateEntry(RegionName, m_keys[0]);
         UpdateEntry(RegionName, m_keys[1], m_vals[1], false);
-        Assert.Fail("Did not get expected NotConnectedException with cause NoAvailableLocatorsException");
+        Assert.Fail("Did not get expected NotConnectedException");
       }
       catch (NotConnectedException excp)
       {
         if (excp.InnerException is NoAvailableLocatorsException)
         {
-          Util.Log("Got expected NoAvailableLocatorsException");
+          Util.Log("Got expected NoAvailableLocatorsException with cause NoAvailableLocatorsException");
         }
         else
         {

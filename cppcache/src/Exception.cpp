@@ -16,110 +16,39 @@
  */
 
 #include <cstdlib>
-#include <ace/OS.h>
 
+#include <ace/OS.h>
 #include <geode/Exception.hpp>
 #include <geode/CacheableString.hpp>
 #include <StackTrace.hpp>
 #include <ace/TSS_T.h>
-
-#include <string>
+#include <boost/core/demangle.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-// globals can only be trusted to initialize to ZERO.
-bool Exception::s_exceptionStackTraceEnabled = false;
-
-void Exception::setStackTraces(bool stackTraceEnabled) {
-  s_exceptionStackTraceEnabled = stackTraceEnabled;
+Exception::Exception(const std::string& msg)
+  : Exception(msg.c_str()) {
 }
 
-Exception::Exception(const char* msg1, const char* msg2, bool forceTrace,
-                     const std::shared_ptr<Exception>& cause)
-    : m_stack(), m_cause(cause) {
-  size_t len1 = 0;
-  if (msg1) {
-    len1 = strlen(msg1);
-  }
-  size_t len2 = 0;
-  if (msg2) {
-    len2 = strlen(msg2);
-  }
-  size_t len = len1 + len2;
-  char* msg;
-  GF_NEW(msg, char[len + 1]);
-  if (msg1) {
-    ACE_OS::memcpy(msg, msg1, len1);
-  }
-  if (msg2) {
-    ACE_OS::memcpy(msg + len1, msg2, len2);
-  }
-  msg[len] = '\0';
-
-  if (s_exceptionStackTraceEnabled || forceTrace) {
-    m_stack = std::make_shared<StackTrace>();
-  }
-  m_message = CacheableString::createNoCopy(msg, static_cast<int32_t>(len));
+Exception::Exception(const char* msg1)
+  : message(msg1) {
+  m_stack = std::unique_ptr<StackTrace>();
 }
 
-Exception::Exception(const std::string& msg1) : Exception(msg1.c_str()) {}
-
-Exception::~Exception() {}
-
-const char _exception_name_Exception[] = "apache::geode::client::Exception";
-
-const char* Exception::getName() const { return _exception_name_Exception; }
-
-const char* Exception::getMessage() const { return m_message->asChar(); }
-
-void Exception::showMessage() const {
-  printf("%s: msg = %s\n", this->getName(), m_message->asChar());
+const char *Exception::what() const noexcept {
+  return message.c_str();
 }
 
-void Exception::printStackTrace() const {
-  showMessage();
-  if (m_stack == nullptr) {
-    fprintf(stdout, "  No stack available.\n");
-  } else {
-    m_stack->print();
-  }
-  if (m_cause != nullptr) {
-    fprintf(stdout, "Cause by exception: ");
-    m_cause->printStackTrace();
-  }
+Exception::~Exception() noexcept {}
+
+const char* Exception::getName() const {
+  return boost::core::demangle(typeid(*this).name()).c_str();
 }
 
-#ifndef _SOLARIS
-
-size_t Exception::getStackTrace(char* buffer, size_t maxLength) const {
-  size_t len = 0;
-  if (maxLength > 0) {
-    std::string traceString;
-    if (m_stack == nullptr) {
-      traceString = "  No stack available.\n";
-    } else {
-      m_stack->getString(traceString);
-    }
-    if (m_cause != nullptr) {
-      traceString += "Cause by exception: ";
-      m_cause->m_stack->getString(traceString);
-    }
-    len = ACE_OS::snprintf(buffer, maxLength, "%s", traceString.c_str());
-  }
-  return len;
-}
-
-#endif
-
-Exception::Exception(const std::shared_ptr<CacheableString>& message,
-                     const std::shared_ptr<StackTrace>& stack,
-                     const std::shared_ptr<Exception>& cause)
-    : m_message(message), m_stack(stack), m_cause(cause) {}
-
-Exception* Exception::clone() const {
-  return new Exception(m_message, m_stack, m_cause);
+std::string Exception::getStackTrace() const {
+  return m_stack ? m_stack->getString() : "  No stack available.\n";
 }
 
 // class to store/clear last server exception in TSS area

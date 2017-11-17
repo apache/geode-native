@@ -66,11 +66,13 @@ void CacheableObjectPartList::fromData(DataInput& input) {
           if (strstr(exMsg,
                      "org.apache.geode.security."
                      "NotAuthorizedException") != nullptr) {
-            ex = std::make_shared<NotAuthorizedException>(
-                "Authorization exception at server:", exMsg);
+            std::string message("Authorization exception at server:");
+            message += exMsg;
+            ex = std::make_shared<NotAuthorizedException>(message);
           } else {
-            ex = std::make_shared<CacheServerException>(
-                "Exception at remote server:", exMsg);
+            std::string message("Exception at remote server:");
+            message += exMsg;
+            ex = std::make_shared<CacheServerException>(message);
           }
           m_exceptions->emplace(key, ex);
         }

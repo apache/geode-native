@@ -240,7 +240,7 @@ DUNIT_TASK(CLIENT2, StartC2)
             "MultiUser secure mode should be true for Pool");
    } catch (const Exception& excp) {
      LOG("Exception during client 2 XML creation");
-     LOG(excp.getMessage());
+     LOG(excp.what());
     }
     doAttrTesting(poolName1);
   }

@@ -257,7 +257,7 @@ void FrameworkTest::cacheInitialize(
     }
   } catch (Exception& e) {
     FWKEXCEPTION(
-        "DistributedSystem::connect encountered Exception: " << e.getMessage());
+        "DistributedSystem::connect encountered Exception: " << e.what());
   }
 
   try {
@@ -270,7 +270,7 @@ void FrameworkTest::cacheInitialize(
     m_cache = nullptr;
   } catch (Exception& e) {
     FWKEXCEPTION(
-        "CacheFactory::create encountered Exception: " << e.getMessage());
+        "CacheFactory::create encountered Exception: " << e.what());
   }
 
   if (m_cache == nullptr) {
@@ -288,7 +288,7 @@ void FrameworkTest::cacheFinalize() {
     } catch (CacheClosedException& ignore) {
     } catch (Exception& e) {
       FWKSEVERE("Caught an unexpected Exception during cache close: "
-                << e.getMessage());
+                << e.what());
     } catch (...) {
       FWKSEVERE("Caught an unexpected unknown exception during cache close.");
     }
@@ -328,11 +328,11 @@ void FrameworkTest::localDestroyRegion(std::shared_ptr<Region>& region) {
   try {
     region->localDestroyRegion();
   } catch (RegionDestroyedException& ignore) {
-    ignore.getMessage();
+    ignore.what();
     // the region could be already destroyed.
   } catch (Exception& ex) {
     FWKEXCEPTION("Caught unexpected exception during region local destroy: "
-                 << ex.getMessage());
+                 << ex.what());
   }
 }
 

@@ -146,7 +146,7 @@ class IPCMessage {
 
   virtual ~IPCMessage() {}
 
-  std::string& getMessage() { return m_msg; }
+  std::string& what() { return m_msg; }
 
   uint32_t length() { return static_cast<uint32_t>(m_msg.size()); }
 

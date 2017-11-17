@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+#include <sstream>
 #include <vector>
 
 #include <geode/SystemProperties.hpp>
@@ -912,7 +913,7 @@ GfErrType LocalRegion::getNoThrow(
       m_regionStats->incLoaderCallsCompleted();
     } catch (const Exception& ex) {
       LOGERROR("Error in CacheLoader::load: %s: %s", ex.getName(),
-               ex.getMessage());
+               ex.what());
       err = GF_CACHE_LOADER_EXCEPTION;
     } catch (...) {
       LOGERROR("Error in CacheLoader::load, unknown");
@@ -2559,7 +2560,7 @@ bool LocalRegion::invokeCacheWriterForEntryEvent(
 
     } catch (const Exception& ex) {
       LOGERROR("Exception in CacheWriter::%s: %s: %s", eventStr, ex.getName(),
-               ex.getMessage());
+               ex.what());
       bCacheWriterReturn = false;
     } catch (...) {
       LOGERROR("Unknown exception in CacheWriter::%s", eventStr);
@@ -2606,7 +2607,7 @@ bool LocalRegion::invokeCacheWriterForRegionEvent(
       }
     } catch (const Exception& ex) {
       LOGERROR("Exception in CacheWriter::%s: %s", eventStr, ex.getName(),
-               ex.getMessage());
+               ex.what());
       bCacheWriterReturn = false;
     } catch (...) {
       LOGERROR("Unknown exception in CacheWriter::%s", eventStr);
@@ -2678,7 +2679,7 @@ GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
     } catch (const Exception& ex) {
       LOGERROR("Exception in CacheListener for key[%s]::%s: %s: %s",
                Utils::getCacheableKeyString(key)->asChar(), eventStr,
-               ex.getName(), ex.getMessage());
+               ex.getName(), ex.what());
       err = GF_CACHE_LISTENER_EXCEPTION;
     } catch (...) {
       LOGERROR("Unknown exception in CacheListener for key[%s]::%s",
@@ -2739,7 +2740,7 @@ GfErrType LocalRegion::invokeCacheListenerForRegionEvent(
       }
     } catch (const Exception& ex) {
       LOGERROR("Exception in CacheListener::%s: %s: %s", eventStr, ex.getName(),
-               ex.getMessage());
+               ex.what());
       err = GF_CACHE_LISTENER_EXCEPTION;
     } catch (...) {
       LOGERROR("Unknown exception in CacheListener::%s", eventStr);
@@ -3101,7 +3102,7 @@ void LocalRegion::invokeAfterAllEndPointDisconnected() {
       m_listener->afterRegionDisconnected(shared_from_this());
     } catch (const Exception& ex) {
       LOGERROR("Exception in CacheListener::afterRegionDisconnected: %s: %s",
-               ex.getName(), ex.getMessage());
+               ex.getName(), ex.what());
     } catch (...) {
       LOGERROR("Unknown exception in CacheListener::afterRegionDisconnected");
     }

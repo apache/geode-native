@@ -279,9 +279,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       std::string logmsg = "";
       logmsg += excp.getName();
       logmsg += ": ";
-      logmsg += excp.getMessage();
+      logmsg += excp.what();
       LOG(logmsg.c_str());
-      excp.printStackTrace();
+      LOG(excp.getStackTrace());
       ASSERT(false, logmsg.c_str());
     }
 

@@ -539,7 +539,7 @@ int ThinClientPoolDM::manageConnectionsInternal(volatile bool& isRunning) {
 
     getStats().setCurPoolConnections(m_poolSize);
   } catch (const Exception& e) {
-    LOGERROR(e.getMessage());
+    LOGERROR(e.what());
   } catch (const std::exception& e) {
     LOGERROR(e.what());
   } catch (...) {
