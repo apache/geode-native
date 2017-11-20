@@ -193,10 +193,10 @@ void RunDurableCqClient() {
   auto cacheFactory = CacheFactory::createCacheFactory(pp);
   auto cachePtr = cacheFactory->create();
   auto poolFactory = cachePtr->getPoolManager().createFactory();
-  poolFactory->setSubscriptionEnabled(true);
-  poolFactory->setSubscriptionAckInterval(std::chrono::milliseconds(5000));
-  poolFactory->setSubscriptionMessageTrackingTimeout(std::chrono::milliseconds(50000));
-  poolFactory->create("");
+  poolFactory->setSubscriptionEnabled(true)
+      .setSubscriptionAckInterval(std::chrono::milliseconds(5000))
+      .setSubscriptionMessageTrackingTimeout(std::chrono::milliseconds(50000))
+      .create("");
 
   LOGINFO("Created the Geode Cache Programmatically");
 
@@ -461,9 +461,7 @@ void client1Up() {
   LOG("Client1Up complete.");
   QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
 
-  std::shared_ptr<QueryService> qs;
-
-  qs = getHelper()
+  std::shared_ptr<QueryService> qs = getHelper()
            ->getCache()
            ->getPoolManager()
            .find(regionNamesCq[0])

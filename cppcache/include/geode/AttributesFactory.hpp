@@ -186,6 +186,7 @@ class CPPCACHE_EXPORT AttributesFactory {
   /**
    * Sets the cache loader for the next <code>RegionAttributes</code> created.
    * @param cacheLoader the cache loader or nullptr if no loader
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setCacheLoader(
       const std::shared_ptr<CacheLoader>& cacheLoader);
@@ -193,6 +194,7 @@ class CPPCACHE_EXPORT AttributesFactory {
   /**
    * Sets the cache writer for the next <code>RegionAttributes</code> created.
    * @param cacheWriter the cache writer or nullptr if no cache writer
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setCacheWriter(
       const std::shared_ptr<CacheWriter>& cacheWriter);
@@ -200,6 +202,7 @@ class CPPCACHE_EXPORT AttributesFactory {
   /**
    * Sets the CacheListener for the next <code>RegionAttributes</code> created.
    * @param aListener a user defined CacheListener, nullptr if no listener
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setCacheListener(
       const std::shared_ptr<CacheListener>& aListener);
@@ -208,6 +211,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * Sets the PartitionResolver for the next <code>RegionAttributes</code>
    * created.
    * @param aResolver a user defined PartitionResolver, nullptr if no resolver
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setPartitionResolver(
       const std::shared_ptr<PartitionResolver>& aResolver);
@@ -215,6 +219,7 @@ class CPPCACHE_EXPORT AttributesFactory {
   /**
    * Sets the library path for the library that will be invoked for the loader
    * of the region.
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setCacheLoader(const char* libpath,
                                     const char* factoryFuncName);
@@ -222,6 +227,7 @@ class CPPCACHE_EXPORT AttributesFactory {
   /**
    * Sets the library path for the library that will be invoked for the writer
    * of the region.
+   * @return a reference to <code>this</code>
    */
 
   AttributesFactory& setCacheWriter(const char* libpath,
@@ -230,6 +236,7 @@ class CPPCACHE_EXPORT AttributesFactory {
   /**
    * Sets the library path for the library that will be invoked for the listener
    * of the region.
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setCacheListener(const char* libpath,
                                       const char* factoryFuncName);
@@ -237,6 +244,7 @@ class CPPCACHE_EXPORT AttributesFactory {
   /**
    * Sets the library path for the library that will be invoked for the
    * partition resolver of the region.
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setPartitionResolver(const char* libpath,
                                           const char* factoryFuncName);
@@ -251,6 +259,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    *
    * @param action the expiration action for entries in this region.
    * @param idleTimeout the idleTimeout for entries in this region.
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setEntryIdleTimeout(ExpirationAction::Action action,
                                          std::chrono::seconds idleTimeout);
@@ -263,6 +272,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    *
    * @param action the expiration action for entries in this region.
    * @param timeToLive the timeToLive for entries in this region.
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setEntryTimeToLive(ExpirationAction::Action action,
                                         std::chrono::seconds timeToLive);
@@ -275,6 +285,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    *
    * @param action the expiration action for entries in this region.
    * @param idleTimeout the idleTimeout for the region as a whole.
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setRegionIdleTimeout(ExpirationAction::Action action,
                                           std::chrono::seconds idleTimeout);
@@ -287,6 +298,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    *
    * @param action the expiration action for entries in this region.
    * @param timeToLive the timeToLive for the region as a whole.
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setRegionTimeToLive(ExpirationAction::Action action,
                                          std::chrono::seconds timeToLive);
@@ -298,6 +310,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * If the region is being created from a client on a server, or on a server
    * directly, then
    * this must be used to set the PersistenceManager.
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setPersistenceManager(
       const char* libpath, const char* factoryFuncName,
@@ -307,6 +320,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * created.
    * @param persistenceManager a user defined PersistenceManager, nullptr if no
    * resolver
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setPersistenceManager(
       const std::shared_ptr<PersistenceManager>& persistenceManager,
@@ -318,6 +332,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * created. This value
    * is used in initializing the map that holds the entries.
    * @param initialCapacity the initial capacity of the entry map
+   * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if initialCapacity is negative.
    */
   AttributesFactory& setInitialCapacity(int initialCapacity);
@@ -327,6 +342,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * created. This value is
    * used in initializing the map that holds the entries.
    * @param loadFactor the load factor of the entry map
+   * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if loadFactor is nonpositive
    */
   AttributesFactory& setLoadFactor(float loadFactor);
@@ -335,6 +351,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * Sets the concurrency level tof the next <code>RegionAttributes</code>
    * created. This value is used in initializing the map that holds the entries.
    * @param concurrencyLevel the concurrency level of the entry map
+   * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if concurrencyLevel is nonpositive
    */
   AttributesFactory& setConcurrencyLevel(uint8_t concurrencyLevel);
@@ -344,6 +361,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * If a new entry is added while at the limit, the cache will evict the
    * least recently used entry. Defaults to 0, meaning no LRU actions will
    * used.
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setLruEntriesLimit(const uint32_t entriesLimit);
 
@@ -351,6 +369,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * Sets the Disk policy type for the next <code>RegionAttributes</code>
    * created.
    * @param diskPolicy the type of disk policy to use for the region
+   * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if diskPolicyType is Invalid
    */
   AttributesFactory& setDiskPolicy(const DiskPolicyType::PolicyType diskPolicy);
@@ -363,6 +382,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * The default if not set is 'true'.
    * This also requires that interestLists are turned off for the region.
    * @param cachingEnabled if true, cache data for this region in this process.
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setCachingEnabled(bool cachingEnabled);
 
@@ -379,6 +399,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * attributes are used to create a region. See {@link
    * PoolManager#createFactory}
    * for how to create a connection pool.
+   * @return a reference to <code>this</code>
    * @param name the name of the connection pool to use; if <code>null</code>
    * or <code>""</code> then the connection pool is disabled for regions
    * using these attributes.
@@ -388,6 +409,7 @@ class CPPCACHE_EXPORT AttributesFactory {
   /**
    * Sets cloning on region
    * @param isClonable
+   * @return a reference to <code>this</code>
    * @see RegionAttributes#getCloningEnabled()
    */
   AttributesFactory& setCloningEnabled(bool isClonable);
@@ -397,6 +419,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * @since 7.0
    * @param concurrencyChecksEnabled whether to perform concurrency checks on
    * operations
+   * @return a reference to <code>this</code>
    */
   AttributesFactory& setConcurrencyChecksEnabled(bool concurrencyChecksEnabled);
 
@@ -407,6 +430,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * @return the newly created <code>RegionAttributes</code>
    * @throws IllegalStateException if the current settings violate the
    * compatibility rules
+   * @return a reference to <code>this</code>
    */
   std::unique_ptr<RegionAttributes> createRegionAttributes();
 
