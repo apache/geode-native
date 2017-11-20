@@ -42,7 +42,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-/** Creates instances of {@link RegionAttributes}. An
+/**
+ * Creates instances of {@link RegionAttributes}. An
  * <code>AttributesFactory</code>
  * instance maintains state for creating <code>RegionAttributes</code>
  * instances.
@@ -160,12 +161,14 @@ class CPPCACHE_EXPORT AttributesFactory {
    *@brief constructor
    */
 
-  /** Creates a new instance of AttributesFactory ready to create a
+  /**
+   * Creates a new instance of AttributesFactory ready to create a
    *       <code>RegionAttributes</code> with default settings.
    */
   AttributesFactory();
 
-  /** Creates a new instance of AttributesFactory ready to create a
+  /**
+   * Creates a new instance of AttributesFactory ready to create a
    *  <code>RegionAttributes</code> with the same settings as those in the
    *  specified <code>RegionAttributes</code>.
    * @param regionAttributes the <code>RegionAttributes</code> used to
@@ -180,56 +183,68 @@ class CPPCACHE_EXPORT AttributesFactory {
 
   // CALLBACKS
 
-  /** Sets the cache loader for the next <code>RegionAttributes</code> created.
+  /**
+   * Sets the cache loader for the next <code>RegionAttributes</code> created.
    * @param cacheLoader the cache loader or nullptr if no loader
    */
-  void setCacheLoader(const std::shared_ptr<CacheLoader>& cacheLoader);
+  AttributesFactory& setCacheLoader(
+      const std::shared_ptr<CacheLoader>& cacheLoader);
 
-  /** Sets the cache writer for the next <code>RegionAttributes</code> created.
+  /**
+   * Sets the cache writer for the next <code>RegionAttributes</code> created.
    * @param cacheWriter the cache writer or nullptr if no cache writer
    */
-  void setCacheWriter(const std::shared_ptr<CacheWriter>& cacheWriter);
+  AttributesFactory& setCacheWriter(
+      const std::shared_ptr<CacheWriter>& cacheWriter);
 
-  /** Sets the CacheListener for the next <code>RegionAttributes</code> created.
+  /**
+   * Sets the CacheListener for the next <code>RegionAttributes</code> created.
    * @param aListener a user defined CacheListener, nullptr if no listener
    */
-  void setCacheListener(const std::shared_ptr<CacheListener>& aListener);
+  AttributesFactory& setCacheListener(
+      const std::shared_ptr<CacheListener>& aListener);
 
-  /** Sets the PartitionResolver for the next <code>RegionAttributes</code>
+  /**
+   * Sets the PartitionResolver for the next <code>RegionAttributes</code>
    * created.
    * @param aResolver a user defined PartitionResolver, nullptr if no resolver
    */
-  void setPartitionResolver(
+  AttributesFactory& setPartitionResolver(
       const std::shared_ptr<PartitionResolver>& aResolver);
 
   /**
    * Sets the library path for the library that will be invoked for the loader
    * of the region.
    */
-  void setCacheLoader(const char* libpath, const char* factoryFuncName);
+  AttributesFactory& setCacheLoader(const char* libpath,
+                                    const char* factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the writer
    * of the region.
    */
 
-  void setCacheWriter(const char* libpath, const char* factoryFuncName);
+  AttributesFactory& setCacheWriter(const char* libpath,
+                                    const char* factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the listener
    * of the region.
    */
-  void setCacheListener(const char* libpath, const char* factoryFuncName);
+  AttributesFactory& setCacheListener(const char* libpath,
+                                      const char* factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the
    * partition resolver of the region.
    */
-  void setPartitionResolver(const char* libpath, const char* factoryFuncName);
+  AttributesFactory& setPartitionResolver(const char* libpath,
+                                          const char* factoryFuncName);
 
   // EXPIRATION ATTRIBUTES
 
-  /** Sets the idleTimeout expiration attributes for region entries for the next
+  /**
+   * Sets the idleTimeout expiration attributes for region entries for the next
    * <code>RegionAttributes</code> created. Will expire in no less than
    * <code>idleTimeout</code>. Actual time may be longer depending on clock
    * resolution.
@@ -237,10 +252,11 @@ class CPPCACHE_EXPORT AttributesFactory {
    * @param action the expiration action for entries in this region.
    * @param idleTimeout the idleTimeout for entries in this region.
    */
-  void setEntryIdleTimeout(ExpirationAction::Action action,
-                           std::chrono::seconds idleTimeout);
+  AttributesFactory& setEntryIdleTimeout(ExpirationAction::Action action,
+                                         std::chrono::seconds idleTimeout);
 
-  /** Sets the timeToLive expiration attributes for region entries for the next
+  /**
+   * Sets the timeToLive expiration attributes for region entries for the next
    * <code>RegionAttributes</code> created. Will expire in no less than
    * <code>timeToLive</code>, actual time may be longer depending on clock
    * resolution.
@@ -248,10 +264,11 @@ class CPPCACHE_EXPORT AttributesFactory {
    * @param action the expiration action for entries in this region.
    * @param timeToLive the timeToLive for entries in this region.
    */
-  void setEntryTimeToLive(ExpirationAction::Action action,
-                          std::chrono::seconds timeToLive);
+  AttributesFactory& setEntryTimeToLive(ExpirationAction::Action action,
+                                        std::chrono::seconds timeToLive);
 
-  /** Sets the idleTimeout expiration attributes for the region itself for the
+  /**
+   * Sets the idleTimeout expiration attributes for the region itself for the
    * next <code>RegionAttributes</code> created. Will expire in no less than
    * <code>idleTimeout</code>, actual time may be longer depending on clock
    * resolution.
@@ -259,10 +276,11 @@ class CPPCACHE_EXPORT AttributesFactory {
    * @param action the expiration action for entries in this region.
    * @param idleTimeout the idleTimeout for the region as a whole.
    */
-  void setRegionIdleTimeout(ExpirationAction::Action action,
-                            std::chrono::seconds idleTimeout);
+  AttributesFactory& setRegionIdleTimeout(ExpirationAction::Action action,
+                                          std::chrono::seconds idleTimeout);
 
-  /** Sets the timeToLive expiration attributes for the region itself for the
+  /**
+   * Sets the timeToLive expiration attributes for the region itself for the
    * next <code>RegionAttributes</code> created. Will expire in no less than
    * <code>timeToLive</code>, actual time may be longer depending on clock
    * resolution.
@@ -270,8 +288,8 @@ class CPPCACHE_EXPORT AttributesFactory {
    * @param action the expiration action for entries in this region.
    * @param timeToLive the timeToLive for the region as a whole.
    */
-  void setRegionTimeToLive(ExpirationAction::Action action,
-                           std::chrono::seconds timeToLive);
+  AttributesFactory& setRegionTimeToLive(ExpirationAction::Action action,
+                                         std::chrono::seconds timeToLive);
 
   // PERSISTENCE
   /**
@@ -281,7 +299,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * directly, then
    * this must be used to set the PersistenceManager.
    */
-  void setPersistenceManager(
+  AttributesFactory& setPersistenceManager(
       const char* libpath, const char* factoryFuncName,
       const std::shared_ptr<Properties>& config = nullptr);
 
@@ -290,36 +308,36 @@ class CPPCACHE_EXPORT AttributesFactory {
    * @param persistenceManager a user defined PersistenceManager, nullptr if no
    * resolver
    */
-  void setPersistenceManager(
+  AttributesFactory& setPersistenceManager(
       const std::shared_ptr<PersistenceManager>& persistenceManager,
       const std::shared_ptr<Properties>& config = nullptr);
 
- public:
-  // DISTRIBUTION ATTRIBUTES
-
   // MAP ATTRIBUTES
-  /** Sets the entry initial capacity for the next <code>RegionAttributes</code>
+  /**
+   * Sets the entry initial capacity for the next <code>RegionAttributes</code>
    * created. This value
    * is used in initializing the map that holds the entries.
    * @param initialCapacity the initial capacity of the entry map
    * @throws IllegalArgumentException if initialCapacity is negative.
    */
-  void setInitialCapacity(int initialCapacity);
+  AttributesFactory& setInitialCapacity(int initialCapacity);
 
-  /** Sets the entry load factor for the next <code>RegionAttributes</code>
+  /** 
+   * Sets the entry load factor for the next <code>RegionAttributes</code>
    * created. This value is
    * used in initializing the map that holds the entries.
    * @param loadFactor the load factor of the entry map
    * @throws IllegalArgumentException if loadFactor is nonpositive
    */
-  void setLoadFactor(float loadFactor);
+  AttributesFactory& setLoadFactor(float loadFactor);
 
-  /** Sets the concurrency level tof the next <code>RegionAttributes</code>
+  /** 
+   * Sets the concurrency level tof the next <code>RegionAttributes</code>
    * created. This value is used in initializing the map that holds the entries.
    * @param concurrencyLevel the concurrency level of the entry map
    * @throws IllegalArgumentException if concurrencyLevel is nonpositive
    */
-  void setConcurrencyLevel(uint8_t concurrencyLevel);
+  AttributesFactory& setConcurrencyLevel(uint8_t concurrencyLevel);
 
   /**
    * Sets a limit on the number of entries that will be held in the cache.
@@ -327,14 +345,15 @@ class CPPCACHE_EXPORT AttributesFactory {
    * least recently used entry. Defaults to 0, meaning no LRU actions will
    * used.
    */
-  void setLruEntriesLimit(const uint32_t entriesLimit);
+  AttributesFactory& setLruEntriesLimit(const uint32_t entriesLimit);
 
-  /** Sets the Disk policy type for the next <code>RegionAttributes</code>
+  /**
+   * Sets the Disk policy type for the next <code>RegionAttributes</code>
    * created.
    * @param diskPolicy the type of disk policy to use for the region
    * @throws IllegalArgumentException if diskPolicyType is Invalid
    */
-  void setDiskPolicy(const DiskPolicyType::PolicyType diskPolicy);
+  AttributesFactory& setDiskPolicy(const DiskPolicyType::PolicyType diskPolicy);
 
   /**
    * Set caching enabled flag for this region. If set to false, then no data is
@@ -345,7 +364,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * This also requires that interestLists are turned off for the region.
    * @param cachingEnabled if true, cache data for this region in this process.
    */
-  void setCachingEnabled(bool cachingEnabled);
+  AttributesFactory& setCachingEnabled(bool cachingEnabled);
 
   /**
    * Sets the pool name attribute.
@@ -364,14 +383,14 @@ class CPPCACHE_EXPORT AttributesFactory {
    * or <code>""</code> then the connection pool is disabled for regions
    * using these attributes.
    */
-  void setPoolName(const char* name);
+  AttributesFactory& setPoolName(const char* name);
 
   /**
    * Sets cloning on region
    * @param isClonable
    * @see RegionAttributes#getCloningEnabled()
    */
-  void setCloningEnabled(bool isClonable);
+  AttributesFactory& setCloningEnabled(bool isClonable);
 
   /**
    * Enables or disables concurrent modification checks
@@ -379,11 +398,12 @@ class CPPCACHE_EXPORT AttributesFactory {
    * @param concurrencyChecksEnabled whether to perform concurrency checks on
    * operations
    */
-  void setConcurrencyChecksEnabled(bool concurrencyChecksEnabled);
+  AttributesFactory& setConcurrencyChecksEnabled(bool concurrencyChecksEnabled);
 
   // FACTORY METHOD
 
-  /** Creates a <code>RegionAttributes</code> with the current settings.
+  /**
+   * Creates a <code>RegionAttributes</code> with the current settings.
    * @return the newly created <code>RegionAttributes</code>
    * @throws IllegalStateException if the current settings violate the
    * compatibility rules
