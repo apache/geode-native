@@ -57,7 +57,7 @@ CacheImpl::CacheImpl(Cache* c, const std::string& name,
       m_closed(false),
       m_initialized(false),
       m_distributedSystem(std::move(sys)),
-      m_implementee(c),
+      m_cache(c),
       m_cond(m_mutex),
       m_attributes(nullptr),
       m_evictionControllerPtr(nullptr),
@@ -69,7 +69,7 @@ CacheImpl::CacheImpl(Cache* c, const std::string& name,
       m_memberListForVersionStamp(
           *(std::make_shared<MemberListForVersionStamp>())),
       m_serializationRegistry(std::make_shared<SerializationRegistry>()),
-      m_pdxTypeRegistry(std::make_shared<PdxTypeRegistry>(c)),
+      m_pdxTypeRegistry(nullptr),
       m_expiryTaskManager(
           std::unique_ptr<ExpiryTaskManager>(new ExpiryTaskManager())),
       m_clientProxyMembershipIDFactory(m_distributedSystem->getName()),
@@ -77,7 +77,7 @@ CacheImpl::CacheImpl(Cache* c, const std::string& name,
           m_distributedSystem->getSystemProperties().threadPoolSize())),
       m_authInitialize(authInitialize) {
   m_cacheTXManager = std::shared_ptr<InternalCacheTransactionManager2PC>(
-      new InternalCacheTransactionManager2PCImpl(c));
+      new InternalCacheTransactionManager2PCImpl(this));
 
   m_regions = new MapOfRegionWithLock();
   auto& prop = m_distributedSystem->getSystemProperties();
@@ -88,14 +88,11 @@ CacheImpl::CacheImpl(Cache* c, const std::string& name,
     LOGINFO("Heap LRU eviction controller thread started");
   }
 
-  m_cacheStats = new CachePerfStats(m_distributedSystem.get()
-                                        ->getStatisticsManager()
-                                        ->getStatisticsFactory());
   m_expiryTaskManager->begin();
 
   m_initialized = true;
-
-  m_poolManager = std::unique_ptr<PoolManager>(new PoolManager(*m_implementee));
+  m_pdxTypeRegistry = std::make_shared<PdxTypeRegistry>(this);
+  m_poolManager = std::unique_ptr<PoolManager>(new PoolManager(this));
 }
 
 void CacheImpl::initServices() {
@@ -381,7 +378,7 @@ void CacheImpl::createRegion(const char* name,
   }
 
   validateRegionAttributes(name, aRegionAttributes);
-std::shared_ptr<RegionInternal> rpImpl = nullptr;
+  std::shared_ptr<RegionInternal> rpImpl = nullptr;
   {
     // For multi threading and the operations between bind and find seems to be
     // hard to be atomic since a regionImpl needs to be valid before it can be
@@ -546,7 +543,7 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
         "RegionAttributes is null");
   }
 
-std::shared_ptr<RegionInternal> rptr = nullptr;
+  std::shared_ptr<RegionInternal> rptr = nullptr;
   RegionKind regionKind = getRegionKind(attrs);
   const char* poolName = attrs->getPoolName();
   const char* regionEndpoints = attrs->getEndpoints();
@@ -609,8 +606,7 @@ std::shared_ptr<RegionInternal> rptr = nullptr;
     rptr = tmp;
   } else {
     LOGINFO("Creating local region %s", name.c_str());
-    rptr = std::make_shared<LocalRegion>(name, this, rootRegion, attrs, csptr,
-                                         shared);
+    rptr.reset(new LocalRegion(name, this, rootRegion, attrs, csptr, shared));
   }
   return rptr;
 }
@@ -796,4 +792,8 @@ CacheImpl::getCacheTransactionManager() {
       new std::shared_ptr<MemberListForVersionStamp>(
           new MemberListForVersionStamp());
   return *versionStampMemIdList;
+}
+
+void CacheImpl::setCache(Cache* cache) {
+  m_cache = cache;
 }

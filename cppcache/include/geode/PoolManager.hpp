@@ -36,6 +36,7 @@ namespace client {
 
 class ThinClientPoolDM;
 class FunctionService;
+class CacheImpl;
 
 typedef std::unordered_map<std::string, std::shared_ptr<Pool>> HashMapOfPools;
 
@@ -52,7 +53,6 @@ typedef std::unordered_map<std::string, std::shared_ptr<Pool>> HashMapOfPools;
  */
 class CPPCACHE_EXPORT PoolManager {
  public:
-  PoolManager(const Cache& cache);
 
   /**
    * Creates a new {@link PoolFactory pool factory},
@@ -109,6 +109,8 @@ class CPPCACHE_EXPORT PoolManager {
 
   class Impl;
   std::unique_ptr<Impl, void (*)(Impl*)> m_pimpl;
+
+  PoolManager(CacheImpl* cache);
 
   friend Cache;
   friend CacheImpl;

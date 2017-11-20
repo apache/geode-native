@@ -83,7 +83,7 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
    */
   HostStatSampler(const char* filePath,
                   std::chrono::milliseconds sampleIntervalMs,
-                  StatisticsManager* statMngr, Cache* cache,
+                  StatisticsManager* statMngr, CacheImpl* cache,
                   const char* durableClientId,
                   const std::chrono::seconds durableTimeout,
                   int64_t statFileLimit = 0, int64_t statDiskSpaceLimit = 0);
@@ -218,7 +218,7 @@ class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
   int64_t m_archiveDiskSpaceLimit;
   std::chrono::milliseconds m_sampleRate;
   StatisticsManager* m_statMngr;
-  Cache* m_cache;
+  CacheImpl* m_cache;
 
   int64_t m_pid;
   system_clock::time_point m_startTime;

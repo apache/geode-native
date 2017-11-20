@@ -26,6 +26,7 @@
 
 #include "StatArchiveWriter.hpp"
 #include "GeodeStatisticsFactory.hpp"
+#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {
@@ -39,14 +40,18 @@ using std::chrono::nanoseconds;
 
 // Constructor and Member functions of StatDataOutput class
 
-StatDataOutput::StatDataOutput(std::string filename, Cache *cache) {
+StatDataOutput::StatDataOutput(CacheImpl* cache) : bytesWritten(0), m_fp(nullptr), closed(false) {
+  dataBuffer = cache->getCache()->createDataOutput();
+}
+
+StatDataOutput::StatDataOutput(std::string filename, CacheImpl* cache) {
   if (filename.length() == 0) {
     std::string s("undefined archive file name");
     throw IllegalArgumentException(s.c_str());
   }
 
   SerializationRegistry serializationRegistry;
-  dataBuffer = cache->createDataOutput();
+  dataBuffer = cache->getCache()->createDataOutput();
   outFile = filename;
   closed = false;
   bytesWritten = 0;
@@ -314,7 +319,7 @@ void ResourceInst::writeResourceInst(StatDataOutput *dataOutArg,
 
 // Constructor and Member functions of StatArchiveWriter class
 StatArchiveWriter::StatArchiveWriter(std::string outfile,
-                                     HostStatSampler *samplerArg, Cache *cache)
+                                     HostStatSampler *samplerArg, CacheImpl* cache)
     : cache(cache) {
   resourceTypeId = 0;
   resourceInstId = 0;

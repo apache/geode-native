@@ -51,7 +51,8 @@ int testXmlCacheCreationWithOverflow() {
 
   try {
     std::string filePath = directory + "/resources/non-existent.xml";
-    cptr = cacheFactory->set("cache-xml-file", filePath.c_str())->create();
+    cptr.reset(new Cache(
+      cacheFactory->set("cache-xml-file", filePath.c_str())->create()));
     return -1;
   } catch (CacheXmlException& ex) {
     std::cout << "CacheXmlException: msg = " << ex.what() << std::endl;
@@ -65,7 +66,8 @@ int testXmlCacheCreationWithOverflow() {
   try {
     std::string filePath = directory + "/resources/valid_overflowAttr.xml";
     std::cout << "getPdxIgnoreUnreadFields should return true.1" << std::endl;
-    cptr = cacheFactory->set("cache-xml-file", filePath.c_str())->create();
+    cptr.reset(new Cache(
+      cacheFactory->set("cache-xml-file", filePath.c_str())->create()));
     if (cptr->getPdxIgnoreUnreadFields() != false) {
       std::cout << "getPdxIgnoreUnreadFields should return true." << std::endl;
       return -1;
@@ -246,7 +248,8 @@ int testXmlCacheCreationWithOverflow() {
 
   try {
     std::string filePath = directory + "/invalid_overflowAttr1.xml";
-    cptr = cacheFactory->set("cache-xml-file", filePath.c_str())->create();
+    cptr.reset(new Cache(
+      cacheFactory->set("cache-xml-file", filePath.c_str())->create()));
     return -1;
   } catch (Exception& ex) {
     std::cout << std::endl;
@@ -265,7 +268,8 @@ int testXmlCacheCreationWithOverflow() {
 
   try {
     std::string filePath = directory + "/invalid_overflowAttr2.xml";
-    cptr = cacheFactory->set("cache-xml-file", filePath.c_str())->create();
+    cptr.reset(new Cache(
+      cacheFactory->set("cache-xml-file", filePath.c_str())->create()));
     return -1;
   } catch (CacheXmlException& ex) {
     std::cout << std::endl;
@@ -285,7 +289,8 @@ int testXmlCacheCreationWithOverflow() {
 
   try {
     std::string filePath = directory + "/invalid_overflowAttr3.xml";
-    cptr = cacheFactory->set("cache-xml-file", filePath.c_str())->create();
+    cptr.reset(new Cache(
+      cacheFactory->set("cache-xml-file", filePath.c_str())->create()));
     return -1;
   } catch (Exception& ex) {
     std::cout << std::endl;

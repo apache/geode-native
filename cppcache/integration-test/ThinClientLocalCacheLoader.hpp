@@ -104,7 +104,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient)
     clientXml += clientXmlFile;
     auto cacheFactoryPtr = CacheFactory::createCacheFactory()->set(
         "cache-xml-file", clientXml.c_str());
-    cachePtr = cacheFactoryPtr->create();
+    cachePtr.reset(new Cache(cacheFactoryPtr->create()));
     LOGINFO("Created the Geode Cache");
 
     // Get the example Region from the Cache which is declared in the Cache XML

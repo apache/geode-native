@@ -39,7 +39,7 @@ using namespace apache::geode::statistics;
 
 StatisticsManager::StatisticsManager(
     const char* filePath, const std::chrono::milliseconds sampleInterval,
-    bool enabled, Cache* cache, const char* durableClientId,
+    bool enabled, CacheImpl* cache, const char* durableClientId,
     const std::chrono::seconds durableTimeout, int64_t statFileLimit,
     int64_t statDiskSpaceLimit)
     : m_sampleIntervalMs(sampleInterval),

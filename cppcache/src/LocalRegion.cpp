@@ -45,7 +45,7 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cache,
                          const std::shared_ptr<RegionAttributes>& attributes,
                          const std::shared_ptr<CacheStatistics>& stats,
                          bool shared, bool enableTimeStatistics)
-    : RegionInternal(cache->getCache()->shared_from_this(), attributes),
+    : RegionInternal(cache->getCache(), attributes),
       m_name(name),
       m_parentRegion(rPtr),
       m_cacheImpl(cache),

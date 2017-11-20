@@ -251,7 +251,7 @@ void QueryHelper::populatePositionPdxData(std::shared_ptr<Region>& rptr,
 void QueryHelper::populatePDXObject(std::shared_ptr<Region>& rptr) {
   // Register PdxType Object
 
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(rptr->getCache().get());
+  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(&rptr->getCache());
   cacheImpl->getSerializationRegistry()->addPdxType(PdxTests::PdxType::createDeserializable);
   LOG("PdxObject Registered Successfully....");
 

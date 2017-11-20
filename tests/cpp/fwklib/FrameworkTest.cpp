@@ -261,7 +261,7 @@ void FrameworkTest::cacheInitialize(
   }
 
   try {
-    m_cache = cacheFactory->create();
+    m_cache.reset(new Cache(cacheFactory->create()));
     bool m_istransaction = getBoolValue("useTransactions");
     if (m_istransaction) {
       txManager = m_cache->getCacheTransactionManager();

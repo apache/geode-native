@@ -603,7 +603,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
 
   ProxyRegion(const std::shared_ptr<ProxyCache>& proxyCache,
               const std::shared_ptr<RegionInternal>& realRegion)
-      : Region(realRegion->getCache()) {
+      : Region(&realRegion->getCache()) {
     m_proxyCache = proxyCache;
     m_realRegion = realRegion;
   }

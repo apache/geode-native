@@ -140,9 +140,9 @@ namespace Apache
 
         // this we are calling after all .NET initialization required in
         // each AppDomain
-        auto nativeptr = native::DistributedSystem::create(mg_name.CharPtr, cache->GetNative().get(),
+        auto nativeptr = native::DistributedSystem::create(mg_name.CharPtr,
                                                             config->GetNative());
-        nativeptr->connect();
+        nativeptr->connect(cache->GetNative().get());
 
         ManagedPostConnect(cache);
 

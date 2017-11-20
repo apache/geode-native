@@ -50,7 +50,8 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
 
   try {
     std::string filePath = directory + fileName;
-    cptr = cacheFactory->set("cache-xml-file", filePath.c_str())->create();
+    cptr.reset(new Cache(
+      cacheFactory->set("cache-xml-file", filePath.c_str())->create()));
     if (cptr->getPdxIgnoreUnreadFields() != false) {
       std::cout << "getPdxIgnoreUnreadFields should return false." << std::endl;
       return -1;

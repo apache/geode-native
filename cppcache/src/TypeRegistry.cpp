@@ -23,23 +23,20 @@
   TypeRegistry is the public facing wrapper for the serialization registry.
 **/
 
-TypeRegistry::TypeRegistry(const Cache &cache) : m_cache(cache) {}
+TypeRegistry::TypeRegistry(CacheImpl* cache) : m_cache(cache) {}
 
 void TypeRegistry::registerType(TypeFactoryMethod creationFunction) {
-  CacheRegionHelper::getCacheImpl(&m_cache)
-      ->getSerializationRegistry()
-      ->addType(creationFunction);
+  m_cache->getSerializationRegistry()
+         ->addType(creationFunction);
 }
 
 void TypeRegistry::registerPdxType(TypeFactoryMethodPdx creationFunction) {
-  CacheRegionHelper::getCacheImpl(&m_cache)
-      ->getSerializationRegistry()
-      ->addPdxType(creationFunction);
+  m_cache->getSerializationRegistry()
+         ->addPdxType(creationFunction);
 }
 
 void TypeRegistry::registerPdxSerializer(
     std::shared_ptr<PdxSerializer> pdxSerializer) {
-  CacheRegionHelper::getCacheImpl(&m_cache)
-      ->getSerializationRegistry()
-      ->setPdxSerializer(pdxSerializer);
+  m_cache->getSerializationRegistry()
+         ->setPdxSerializer(pdxSerializer);
 }

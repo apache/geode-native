@@ -1452,16 +1452,16 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   virtual const std::shared_ptr<Pool>& getPool() = 0;
 
-  inline std::shared_ptr<Cache>& getCache() { return m_cache; }
+  inline Cache& getCache() { return *m_cache; }
 
   Region(const Region&) = delete;
   Region& operator=(const Region&) = delete;
 
  protected:
-  Region(const std::shared_ptr<Cache>& cache);
+  Region(Cache* cache);
   virtual ~Region();
 
-  mutable std::shared_ptr<Cache> m_cache;
+  mutable Cache* m_cache;
 
   FRIEND_STD_SHARED_PTR(Region)
 };

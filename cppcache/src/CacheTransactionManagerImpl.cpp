@@ -39,7 +39,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-CacheTransactionManagerImpl::CacheTransactionManagerImpl(Cache* cache)
+CacheTransactionManagerImpl::CacheTransactionManagerImpl(CacheImpl* cache)
     : m_cache(cache), m_txCond(m_suspendedTxLock) {}
 
 CacheTransactionManagerImpl::~CacheTransactionManagerImpl() {}
@@ -49,7 +49,7 @@ void CacheTransactionManagerImpl::begin() {
     GfErrTypeThrowException("Transaction already in progress",
                             GF_CACHE_ILLEGAL_STATE_EXCEPTION);
   }
-  TXState* txState = new TXState(m_cache);
+  TXState* txState = new TXState(m_cache->getCache());
   TSSTXStateWrapper::s_geodeTSSTXState->setTXState(txState);
   addTx(txState->getTransactionId()->getId());
 }
@@ -64,7 +64,7 @@ void CacheTransactionManagerImpl::commit() {
         GF_CACHE_ILLEGAL_STATE_EXCEPTION);
   }
 
-  TcrMessageCommit request(m_cache->createDataOutput());
+  TcrMessageCommit request(m_cache->getCache()->createDataOutput());
   TcrMessageReply reply(true, nullptr);
 
   ThinClientPoolDM* tcr_dm = getDM();
@@ -114,7 +114,7 @@ void CacheTransactionManagerImpl::commit() {
 
   auto commit = std::static_pointer_cast<TXCommitMessage>(reply.getValue());
   txCleaner.clean();
-  commit->apply(m_cache);
+  commit->apply(m_cache->getCache());
 
   /*
           if(m_writer != nullptr)
@@ -276,7 +276,7 @@ void CacheTransactionManagerImpl::rollback() {
 
 GfErrType CacheTransactionManagerImpl::rollback(TXState* txState,
                                                 bool callListener) {
-  TcrMessageRollback request(m_cache->createDataOutput());
+  TcrMessageRollback request(m_cache->getCache()->createDataOutput());
   TcrMessageReply reply(true, nullptr);
   GfErrType err = GF_NOERR;
   ThinClientPoolDM* tcr_dm = getDM();
@@ -325,7 +325,7 @@ ThinClientPoolDM* CacheTransactionManagerImpl::getDM() {
   return nullptr;
 }
 
-Cache* CacheTransactionManagerImpl::getCache() { return m_cache; }
+Cache* CacheTransactionManagerImpl::getCache() { return m_cache->getCache(); }
 std::shared_ptr<TransactionId> CacheTransactionManagerImpl::suspend() {
   // get the current state of the thread
   TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
@@ -363,9 +363,8 @@ std::shared_ptr<TransactionId> CacheTransactionManagerImpl::suspend() {
                                 .suspendedTxTimeout();
   auto handler = new SuspendedTxExpiryHandler(this, txState->getTransactionId(),
                                               suspendedTxTimeout);
-  long id = CacheRegionHelper::getCacheImpl(m_cache)
-                ->getExpiryTaskManager()
-                .scheduleExpiryTask(handler, suspendedTxTimeout,
+  long id = m_cache->getExpiryTaskManager()
+                   .scheduleExpiryTask(handler, suspendedTxTimeout,
                                     std::chrono::seconds::zero(), false);
   txState->setSuspendedExpiryTaskId(id);
 
@@ -452,10 +451,10 @@ void CacheTransactionManagerImpl::resumeTxUsingTxState(TXState* txState,
 
   if (cancelExpiryTask) {
     // cancel the expiry task for the transaction
-    CacheRegionHelper::getCacheImpl(m_cache)->getExpiryTaskManager().cancelTask(
+    m_cache->getExpiryTaskManager().cancelTask(
         txState->getSuspendedExpiryTaskId());
   } else {
-    CacheRegionHelper::getCacheImpl(m_cache)->getExpiryTaskManager().resetTask(
+    m_cache->getExpiryTaskManager().resetTask(
         txState->getSuspendedExpiryTaskId(), std::chrono::seconds(0));
   }
 

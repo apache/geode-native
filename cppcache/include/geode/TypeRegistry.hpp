@@ -26,11 +26,13 @@
 namespace apache {
 namespace geode {
 namespace client {
+
+class CacheImpl;
 class PdxSerializer;
 
 class TypeRegistry {
  public:
-  TypeRegistry(const Cache& cache);
+  TypeRegistry(CacheImpl* cache);
 
   /**
    * @brief register an instance factory method for a given type.
@@ -57,9 +59,9 @@ class TypeRegistry {
    */
   void registerPdxSerializer(std::shared_ptr<PdxSerializer> pdxSerializer);
 
- protected:
  private:
-  const Cache& m_cache;
+
+  CacheImpl* m_cache;
 };
 }  // namespace client
 }  // namespace geode

@@ -55,20 +55,6 @@ std::shared_ptr<CacheFactory> CacheFactory::createCacheFactory(
   return std::make_shared<CacheFactory>(configPtr);
 }
 
-void CacheFactory::create_(const char* name, const char* id_data,
-                           std::shared_ptr<Cache>& cptr, bool readPdxSerialized) {
-  cptr = nullptr;
-  if (name == nullptr) {
-    throw IllegalArgumentException("CacheFactory::create: name is nullptr");
-  }
-  if (name[0] == '\0') {
-    name = "NativeCache";
-  }
-
-  cptr = std::make_shared<Cache>(name, dsProp, ignorePdxUnreadFields,
-                                 readPdxSerialized, authInitialize);
-}  // namespace client
-
 const char* CacheFactory::getVersion() { return PRODUCT_VERSION; }
 
 const char* CacheFactory::getProductDescription() {
@@ -87,76 +73,83 @@ CacheFactory::CacheFactory(const std::shared_ptr<Properties> dsProps) {
   pdxReadSerialized = false;
   this->dsProp = dsProps;
 }
- std::shared_ptr<Cache> CacheFactory::create() {
-   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
 
-   LOGFINE("CacheFactory called DistributedSystem::connect");
-   auto cache = create(DEFAULT_CACHE_NAME, nullptr);
+Cache CacheFactory::create() {
+  ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
 
-   auto& cacheImpl = cache->m_cacheImpl;
-   const auto& serializationRegistry = cacheImpl->getSerializationRegistry();
-   const auto& pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
-   const auto& memberListForVersionStamp =
-       std::ref(*(cacheImpl->getMemberListForVersionStamp()));
+  LOGFINE("CacheFactory called DistributedSystem::connect");
+  auto cache = create(DEFAULT_CACHE_NAME, nullptr);
 
-   serializationRegistry->addType2(
-       std::bind(TXCommitMessage::create, memberListForVersionStamp));
+  auto& cacheImpl = cache.m_cacheImpl;
+  const auto& serializationRegistry = cacheImpl->getSerializationRegistry();
+  const auto& pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
+  const auto& memberListForVersionStamp =
+      std::ref(*(cacheImpl->getMemberListForVersionStamp()));
 
-   serializationRegistry->addType(
-       GeodeTypeIds::PdxType,
-       std::bind(PdxType::CreateDeserializable, pdxTypeRegistry));
+  serializationRegistry->addType2(
+      std::bind(TXCommitMessage::create, memberListForVersionStamp));
 
-   serializationRegistry->addType(
-       std::bind(VersionTag::createDeserializable, memberListForVersionStamp));
+  serializationRegistry->addType(
+      GeodeTypeIds::PdxType,
+      std::bind(PdxType::CreateDeserializable, pdxTypeRegistry));
 
-   serializationRegistry->addType2(
-       GeodeTypeIdsImpl::DiskVersionTag,
-       std::bind(DiskVersionTag::createDeserializable,
-                 memberListForVersionStamp));
+  serializationRegistry->addType(
+      std::bind(VersionTag::createDeserializable, memberListForVersionStamp));
 
-   serializationRegistry->setPdxTypeHandler([](DataInput& dataInput) {
-     return PdxHelper::deserializePdx(dataInput, false);
-   });
+  serializationRegistry->addType2(
+      GeodeTypeIdsImpl::DiskVersionTag,
+      std::bind(DiskVersionTag::createDeserializable,
+                memberListForVersionStamp));
 
-   pdxTypeRegistry->setPdxIgnoreUnreadFields(cache->getPdxIgnoreUnreadFields());
-   pdxTypeRegistry->setPdxReadSerialized(cache->getPdxReadSerialized());
+  serializationRegistry->setPdxTypeHandler([](DataInput& dataInput) {
+    return PdxHelper::deserializePdx(dataInput, false);
+  });
 
-   return cache;
+  pdxTypeRegistry->setPdxIgnoreUnreadFields(cache.getPdxIgnoreUnreadFields());
+  pdxTypeRegistry->setPdxReadSerialized(cache.getPdxReadSerialized());
+
+  return cache;
 }
-std::shared_ptr<Cache> CacheFactory::create(
+
+Cache CacheFactory::create(
     const char* name,
     const std::shared_ptr<CacheAttributes>& attrs /*= nullptr*/) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
 
-  std::shared_ptr<Cache> cptr;
-  create_(name, "", cptr, pdxReadSerialized);
-  cptr->m_cacheImpl->setAttributes(attrs);
+  if (name == nullptr) {
+    throw IllegalArgumentException("CacheFactory::create: name is nullptr");
+  }
+  if (name[0] == '\0') {
+    name = "NativeCache";
+  }
+
+  Cache cache = Cache(name, dsProp, ignorePdxUnreadFields,
+                    pdxReadSerialized, authInitialize);
+  cache.m_cacheImpl->setAttributes(attrs);
   try {
     const char* cacheXml =
-        cptr->getDistributedSystem().getSystemProperties().cacheXMLFile();
+        cache.getDistributedSystem().getSystemProperties().cacheXMLFile();
     if (cacheXml != 0 && strlen(cacheXml) > 0) {
-      cptr->initializeDeclarativeCache(cacheXml);
+      cache.initializeDeclarativeCache(cacheXml);
     } else {
-      cptr->m_cacheImpl->initServices();
+      cache.m_cacheImpl->initServices();
     }
   } catch (const apache::geode::client::RegionExistsException&) {
     LOGWARN("Attempt to create existing regions declaratively");
   } catch (const apache::geode::client::Exception&) {
-    if (!cptr->isClosed()) {
-      cptr->close();
-      cptr = nullptr;
+    if (!cache.isClosed()) {
+      cache.close();
     }
     throw;
   } catch (...) {
-    if (!cptr->isClosed()) {
-      cptr->close();
-      cptr = nullptr;
+    if (!cache.isClosed()) {
+      cache.close();
     }
     throw apache::geode::client::UnknownException(
         "Exception thrown in CacheFactory::create");
   }
 
-  return cptr;
+  return cache;
 }
 
 CacheFactory::~CacheFactory() {}
