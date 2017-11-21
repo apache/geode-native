@@ -183,7 +183,7 @@ namespace Apache
         /// a user-defined cache loader, or null for no cache loader
         /// </param>
         //generic<class TKey, class TValue>
-        void SetCacheLoader( ICacheLoader<TKey, TValue>^ cacheLoader );
+        AttributesFactory<TKey, TValue>^ SetCacheLoader( ICacheLoader<TKey, TValue>^ cacheLoader );
 
         /// <summary>
         /// Sets the cache writer for the <c>RegionAttributes</c> being created.
@@ -192,7 +192,7 @@ namespace Apache
         /// user-defined cache writer, or null for no cache writer
         /// </param>
         //generic<class TKey, class TValue>
-        void SetCacheWriter( ICacheWriter<TKey, TValue>^ cacheWriter );
+        AttributesFactory<TKey, TValue>^ SetCacheWriter( ICacheWriter<TKey, TValue>^ cacheWriter );
 
         /// <summary>
         /// Sets the CacheListener for the <c>RegionAttributes</c> being created.
@@ -201,7 +201,7 @@ namespace Apache
         /// user-defined cache listener, or null for no cache listener
         /// </param>
         //generic<class TKey, class TValue>
-        void SetCacheListener( ICacheListener<TKey, TValue>^ cacheListener );
+        AttributesFactory<TKey, TValue>^ SetCacheListener( ICacheListener<TKey, TValue>^ cacheListener );
 
         /// <summary>
         /// Sets the PartitionResolver for the <c>RegionAttributes</c> being created.
@@ -210,7 +210,7 @@ namespace Apache
         /// user-defined partition resolver, or null for no partition resolver
         /// </param>
         //generic<class TKey, class TValue>
-        void SetPartitionResolver( IPartitionResolver<TKey, TValue>^ partitionresolver );
+        AttributesFactory<TKey, TValue>^ SetPartitionResolver( IPartitionResolver<TKey, TValue>^ partitionresolver );
 
         /// <summary>
         /// Sets the library path for the library that will be invoked for the loader of the region.
@@ -225,7 +225,7 @@ namespace Apache
         /// <c>ICacheLoader</c> for a managed library.
         /// </param>
         //generic<class TKey, class TValue>
-        void SetCacheLoader( String^ libPath, String^ factoryFunctionName );
+        AttributesFactory<TKey, TValue>^ SetCacheLoader( String^ libPath, String^ factoryFunctionName );
 
         /// <summary>
         /// Sets the library path for the library that will be invoked for the writer of the region.
@@ -240,7 +240,7 @@ namespace Apache
         /// <c>ICacheWriter</c> for a managed library.
         /// </param>
         //generic<class TKey, class TValue>
-        void SetCacheWriter( String^ libPath, String^ factoryFunctionName );
+        AttributesFactory<TKey, TValue>^ SetCacheWriter( String^ libPath, String^ factoryFunctionName );
 
         /// <summary>
         /// Sets the library path for the library that will be invoked for the listener of the region.
@@ -255,7 +255,7 @@ namespace Apache
         /// <c>ICacheListener</c> for a managed library.
         /// </param>
         //generic<class TKey, class TValue>
-        void SetCacheListener( String^ libPath, String^ factoryFunctionName );
+        AttributesFactory<TKey, TValue>^ SetCacheListener( String^ libPath, String^ factoryFunctionName );
 
 
         /// <summary>
@@ -271,7 +271,7 @@ namespace Apache
         /// <c>IPartitionResolver</c> for a managed library.
         /// </param>
         //generic<class TKey, class TValue>
-        void SetPartitionResolver( String^ libPath, String^ factoryFunctionName );
+        AttributesFactory<TKey, TValue>^ SetPartitionResolver( String^ libPath, String^ factoryFunctionName );
 
 
         // EXPIRATION ATTRIBUTES
@@ -286,7 +286,7 @@ namespace Apache
         /// <param name="idleTimeout">
         /// the idleTimeout in seconds for entries in this region.
         /// </param>
-        void SetEntryIdleTimeout( ExpirationAction action, TimeSpan idleTimeout );
+        AttributesFactory<TKey, TValue>^ SetEntryIdleTimeout( ExpirationAction action, TimeSpan idleTimeout );
 
         /// <summary>
         /// Sets the timeToLive expiration attributes for region entries for the next
@@ -298,7 +298,7 @@ namespace Apache
         /// <param name="timeToLive">
         /// the timeToLive in seconds for entries in this region.
         /// </param>
-        void SetEntryTimeToLive( ExpirationAction action, TimeSpan timeToLive );
+        AttributesFactory<TKey, TValue>^ SetEntryTimeToLive( ExpirationAction action, TimeSpan timeToLive );
 
         /// <summary>
         /// Sets the idleTimeout expiration attributes for the region itself for the
@@ -310,7 +310,7 @@ namespace Apache
         /// <param name="idleTimeout">
         /// the idleTimeout in seconds for the region as a whole.
         /// </param>
-        void SetRegionIdleTimeout( ExpirationAction action, TimeSpan idleTimeout );
+        AttributesFactory<TKey, TValue>^ SetRegionIdleTimeout( ExpirationAction action, TimeSpan idleTimeout );
 
         /// <summary>
         /// Sets the timeToLive expiration attributes for the region itself for the
@@ -322,7 +322,7 @@ namespace Apache
         /// <param name="timeToLive">
         /// the timeToLive in seconds for the region as a whole.
         /// </param>
-        void SetRegionTimeToLive( ExpirationAction action, TimeSpan timeToLive );
+        AttributesFactory<TKey, TValue>^ SetRegionTimeToLive( ExpirationAction action, TimeSpan timeToLive );
 
 
         // PERSISTENCE
@@ -334,7 +334,7 @@ namespace Apache
         /// Persistence Manager object
         /// </param>
         //generic<class TKey, class TValue>
-        void SetPersistenceManager(IPersistenceManager<TKey, TValue>^ persistenceManager);
+        AttributesFactory<TKey, TValue>^ SetPersistenceManager(IPersistenceManager<TKey, TValue>^ persistenceManager);
 
         /// <summary>
         /// Sets the PersistenceManager object that will be invoked for the persistence of the region.
@@ -346,7 +346,7 @@ namespace Apache
         /// The configuration properties to use for the PersistenceManager.
         /// </param>
         //generic<class TKey, class TValue>
-        void SetPersistenceManager(IPersistenceManager<TKey, TValue>^ persistenceManager, Properties<String^, String^>^ config);
+        AttributesFactory<TKey, TValue>^ SetPersistenceManager(IPersistenceManager<TKey, TValue>^ persistenceManager, Properties<String^, String^>^ config);
         
 
         /// <summary>
@@ -358,7 +358,7 @@ namespace Apache
         /// <param name="factoryFunctionName">
         /// The name of the factory function to create an instance of PersistenceManager object.
         /// </param>
-        void SetPersistenceManager( String^ libPath, String^ factoryFunctionName );
+        AttributesFactory<TKey, TValue>^ SetPersistenceManager( String^ libPath, String^ factoryFunctionName );
 
         /// <summary>
         /// Sets the library path for the library that will be invoked for the persistence of the region.
@@ -372,7 +372,7 @@ namespace Apache
         /// <param name="config">
         /// The configuration properties to use for the PersistenceManager.
         /// </param>
-        void SetPersistenceManager( String^ libPath, String^ factoryFunctionName,
+        AttributesFactory<TKey, TValue>^ SetPersistenceManager( String^ libPath, String^ factoryFunctionName,
           /*Dictionary<Object^, Object^>*/Properties<String^, String^>^ config );
 
 
@@ -387,7 +387,7 @@ namespace Apache
         /// <param name="poolName">
         /// The name of the pool to attach to this region.
         /// </param>
-        void SetPoolName( String^ poolName );
+        AttributesFactory<TKey, TValue>^ SetPoolName( String^ poolName );
 
         // MAP ATTRIBUTES
 
@@ -400,7 +400,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if initialCapacity is nonpositive
         /// </exception>
-        void SetInitialCapacity( System::Int32 initialCapacity );
+        AttributesFactory<TKey, TValue>^ SetInitialCapacity( System::Int32 initialCapacity );
 
         /// <summary>
         /// Sets the entry load factor for the next <c>RegionAttributes</c>
@@ -411,7 +411,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if loadFactor is nonpositive
         /// </exception>
-        void SetLoadFactor( Single loadFactor );
+        AttributesFactory<TKey, TValue>^ SetLoadFactor( Single loadFactor );
 
         /// <summary>
         /// Sets the concurrency level of the next <c>RegionAttributes</c>
@@ -423,7 +423,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if concurrencyLevel is nonpositive
         /// </exception>
-        void SetConcurrencyLevel( System::Int32 concurrencyLevel );
+        AttributesFactory<TKey, TValue>^ SetConcurrencyLevel( System::Int32 concurrencyLevel );
 
         /// <summary>
         /// Sets a limit on the number of entries that will be held in the cache.
@@ -434,7 +434,7 @@ namespace Apache
         /// The limit of the number of entries before eviction starts.
         /// Defaults to 0, meaning no LRU actions will used.
         /// </param>
-        void SetLruEntriesLimit( System::UInt32 entriesLimit );
+        AttributesFactory<TKey, TValue>^ SetLruEntriesLimit( System::UInt32 entriesLimit );
 
         /// <summary>
         /// Sets the disk policy type for the next <c>RegionAttributes</c> created.
@@ -442,7 +442,7 @@ namespace Apache
         /// <param name="diskPolicy">
         /// the disk policy to use for the region
         /// </param>
-        void SetDiskPolicy( DiskPolicyType diskPolicy );
+        AttributesFactory<TKey, TValue>^ SetDiskPolicy( DiskPolicyType diskPolicy );
 
         /// <summary>
         /// Set caching enabled flag for this region.
@@ -460,7 +460,7 @@ namespace Apache
         /// <param name="cachingEnabled">
         /// if true, cache data for this region in this process.
         /// </param>
-        void SetCachingEnabled( bool cachingEnabled );
+        AttributesFactory<TKey, TValue>^ SetCachingEnabled( bool cachingEnabled );
         /// <summary>
         /// Set cloning enabled flag for this region.
         /// </summary>
@@ -476,7 +476,7 @@ namespace Apache
         /// <param name="cloningEnabled">
         /// if true, clone old value before applying delta so that in-place change would not occour..
         /// </param>
-        void SetCloningEnabled( bool cloningEnabled );
+        AttributesFactory<TKey, TValue>^ SetCloningEnabled( bool cloningEnabled );
 
         /// <summary>
         /// Sets concurrency checks enabled flag for this region.
@@ -491,7 +491,7 @@ namespace Apache
         /// <param name="concurrencyChecksEnabled">
         /// if true, version checks for region entries will occur.
         /// </param>
-        void SetConcurrencyChecksEnabled( bool concurrencyChecksEnabled );
+        AttributesFactory<TKey, TValue>^ SetConcurrencyChecksEnabled( bool concurrencyChecksEnabled );
         // FACTORY METHOD
 
         /// <summary>

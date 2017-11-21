@@ -19,6 +19,7 @@
 
 #ifndef GEODE_EXCEPTION_H_
 #define GEODE_EXCEPTION_H_
+#pragma warning(disable : 4275)
 
 #include <string>
 #include <stdexcept>
@@ -75,7 +76,7 @@ class CPPCACHE_EXPORT Exception : public std::exception {
   /** Return the name of this exception type. */
   virtual const char* getName() const;
 
-  virtual const char *what() const noexcept override;
+  virtual const char* what() const noexcept override;
 
  private:
   std::shared_ptr<StackTrace> m_stack;
@@ -89,9 +90,8 @@ class CacheableKey;
 typedef std::unordered_map<std::shared_ptr<CacheableKey>,
                            std::shared_ptr<Exception>,
                            dereference_hash<std::shared_ptr<CacheableKey>>,
-dereference_equal_to<std::shared_ptr<CacheableKey>>>
-HashMapOfException;
-
+                           dereference_equal_to<std::shared_ptr<CacheableKey>>>
+    HashMapOfException;
 
 }  // namespace client
 }  // namespace geode

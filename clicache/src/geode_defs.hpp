@@ -33,6 +33,11 @@
 // Disable native code generation warning
 #pragma warning(disable: 4793)
 
+// Disable Native Conditional Unique warning
+#pragma warning(disable: 4383)
+
+// C4103alignment changed after including header, may be due to missing #pragma pack(pop)
+#pragma warning(disable: 4103)
 // These provide Doxygen with namespace and file descriptions.
 
 /// @namespace Apache::Geode
