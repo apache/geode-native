@@ -539,7 +539,7 @@ namespace Apache.Geode.Client.UnitTests
 
       IRegion<object, object> region = CacheHelper.GetVerifyRegion<object, object>(QueryRegionNames[0]);
 
-      QueryService qs = CacheHelper.DCache.GetQueryService();
+      var qs = CacheHelper.DCache.GetQueryService();
       CqAttributesFactory cqFac = new CqAttributesFactory();
       ICqListener cqLstner = new MyCqListener();
       cqFac.AddCqListener(cqLstner);
@@ -726,8 +726,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void CreateAndExecuteCQ_StatusListener(string poolName, string cqName, string cqQuery, int id)
     {
-      QueryService qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find(poolName).GetQueryService();
+      var qs = CacheHelper.DCache.GetPoolManager().Find(poolName).GetQueryService();
       CqAttributesFactory<object, object> cqFac = new CqAttributesFactory<object, object>();
       cqFac.AddCqListener(new MyCqStatusListener<object, object>(id));
       CqAttributes<object, object> cqAttr = cqFac.Create();
@@ -738,8 +737,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void CreateAndExecuteCQ_Listener(string poolName, string cqName, string cqQuery, int id)
     {
-      QueryService qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find(poolName).GetQueryService();
+      var qs = CacheHelper.DCache.GetPoolManager().Find(poolName).GetQueryService();
       CqAttributesFactory<object, object> cqFac = new CqAttributesFactory<object, object>();
       cqFac.AddCqListener(new MyCqListener<object, object>(/*id*/));
       CqAttributes<object, object> cqAttr = cqFac.Create();
@@ -750,8 +748,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void CheckCQStatusOnConnect(string poolName, string cqName, int onCqStatusConnect)
     {      
-      QueryService qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find(poolName).GetQueryService();
+      var qs = CacheHelper.DCache.GetPoolManager().Find(poolName).GetQueryService();
       CqQuery<object, object> query = qs.GetCq<object, object>(cqName);
       CqAttributes<object, object> cqAttr = query.GetCqAttributes();
       ICqListener<object, object>[] vl = cqAttr.getCqListeners();
@@ -762,8 +759,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void CheckCQStatusOnDisConnect(string poolName, string cqName, int onCqStatusDisConnect)
     {
-      QueryService qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find(poolName).GetQueryService();
+      var qs = CacheHelper.DCache.GetPoolManager().Find(poolName).GetQueryService();
       CqQuery<object, object> query = qs.GetCq<object, object>(cqName);
       CqAttributes<object, object> cqAttr = query.GetCqAttributes();
       ICqListener<object, object>[] vl = cqAttr.getCqListeners();
@@ -783,8 +779,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void CheckCQStatusOnPutEvent(string poolName, string cqName, int onCreateCount)
     {
-      QueryService qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find(poolName).GetQueryService();
+      var qs = CacheHelper.DCache.GetPoolManager().Find(poolName).GetQueryService();
       CqQuery<object, object> query = qs.GetCq<object, object>(cqName);
       CqAttributes<object, object> cqAttr = query.GetCqAttributes();
       ICqListener<object, object>[] vl = cqAttr.getCqListeners();

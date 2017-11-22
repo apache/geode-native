@@ -2673,7 +2673,7 @@ namespace Apache.Geode.Client.UnitTests
        //private Address _address;
      //private Hashtable _hashTable;
 
-       //QueryService qs = PoolManager/*<object, object>*/.Find("__TESTPOOL1_").GetQueryService();
+       //var qs = PoolManager/*<object, object>*/.Find("__TESTPOOL1_").GetQueryService();
 
        //Query<object> qry = qs.NewQuery<object>("select _addressArray from /" + m_regionNames[0] + " where arrayCount = 10");
        //ISelectResults<object> results = qry.Execute();

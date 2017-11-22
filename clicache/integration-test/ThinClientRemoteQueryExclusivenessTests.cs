@@ -132,8 +132,7 @@ namespace Apache.Geode.Client.UnitTests
         region["4"] = p4;
       }
 
-      QueryService qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
+      var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       Query<object> qry = qs.NewQuery<object>("select distinct * from /" + QERegionName);
       ISelectResults<object> results = qry.Execute();
@@ -146,8 +145,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void StepTwoQE()
     {
-      QueryService qs = null;
-      qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
+      var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
       Util.Log("Going to execute the query");
       Query<object> qry = qs.NewQuery<object>("select distinct * from /" + QERegionName);
       ISelectResults<object> results = qry.Execute();
