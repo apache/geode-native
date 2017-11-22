@@ -22,18 +22,6 @@
 #include "begin_native.hpp"
 #include <geode/QueryService.hpp>
 #include "end_native.hpp"
-#include "Query.hpp"
-#include "Log.hpp"
-#include "CqAttributes.hpp"
-#include "CqQuery.hpp"
-#include "CqServiceStatistics.hpp"
-#include "impl/ManagedString.hpp"
-#include "ExceptionTypes.hpp"
-#include "impl/SafeConvert.hpp"
-
-
-
-
 
 using namespace System;
 

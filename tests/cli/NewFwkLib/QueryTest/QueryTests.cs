@@ -233,7 +233,7 @@ namespace Apache.Geode.Client.FwkLib
       }
       int numSet = numOfKeys / setSize;
 
-      QueryService qs = CheckQueryService(); 
+      var qs = CheckQueryService();
 
       ResetKey(CategoryType);
       int category;
@@ -414,7 +414,7 @@ namespace Apache.Geode.Client.FwkLib
       }
       int numSet = numOfKeys / setSize;
 
-      QueryService qs = CheckQueryService();
+      var qs = CheckQueryService();
 
       DateTime startTime;
       DateTime endTime;
@@ -568,7 +568,7 @@ namespace Apache.Geode.Client.FwkLib
           FwkSevere("ReadQueryString: ResultSize is not defined in xml.");
           return false;
         }
-        QueryService qs = CheckQueryService();
+        var qs = CheckQueryService();
         DateTime startTime;
         TimeSpan elapsedTime;
         ISelectResults<object> results;
@@ -737,7 +737,7 @@ namespace Apache.Geode.Client.FwkLib
         string key = "CQLISTENER_" + clientId;
         while (qryStr != null)
         {
-          QueryService qs = CheckQueryService();
+          var qs = CheckQueryService();
           CqAttributesFactory<TKey, object> cqFac = new CqAttributesFactory<TKey, object>();
           ICqListener<TKey, object> cqLstner = new MyCq1Listener<TKey, object>();
           cqFac.AddCqListener(cqLstner);
@@ -767,7 +767,7 @@ namespace Apache.Geode.Client.FwkLib
         bool isdurable = GetBoolValue("isDurableC");
         while (qryStr != null)
         {
-          QueryService qs = CheckQueryService();
+          var qs = CheckQueryService();
           CqAttributesFactory<TKey, object> cqFac = new CqAttributesFactory<TKey, object>();
           ICqListener<TKey, object> cqLstner = new MyCq1Listener<TKey, object>();
           cqFac.AddCqListener(cqLstner);
@@ -799,7 +799,7 @@ namespace Apache.Geode.Client.FwkLib
         FwkInfo("In QueryTest.DoValidateCq()");
         try
         {
-          QueryService qs = CheckQueryService();
+          var qs = CheckQueryService();
           ResetKey("isDurableC");
           bool isdurable = GetBoolValue("isDurableC");
           ResetKey("NoCqs");
@@ -843,7 +843,7 @@ namespace Apache.Geode.Client.FwkLib
       FwkInfo("In QueryTest.DoVerifyCQListenerInvoked()");
       try
       {
-        QueryService qs = CheckQueryService();
+        var qs = CheckQueryService();
         ICqListener<TKey, object> cqLstner = new MyCq1Listener<TKey, object>();
         CqQuery<TKey, object>[] vcq = qs.GetCqs<TKey, object>();
         System.Collections.Generic.List<string> durableCqList = qs.GetAllDurableCqsFromServer();
@@ -968,7 +968,7 @@ namespace Apache.Geode.Client.FwkLib
       FwkInfo("In QueryTest.DoVerifyCQDestroy()");
       try
       {
-        QueryService qs = CheckQueryService();
+        var qs = CheckQueryService();
         CqQuery<TKey, object>[] vcq = qs.GetCqs<TKey, object>();
         if (vcq.Length != 0)
         {
@@ -988,7 +988,7 @@ namespace Apache.Geode.Client.FwkLib
       try
       {
         opcode = GetStringValue(CqState);
-        QueryService qs = CheckQueryService();
+        var qs = CheckQueryService();
         CqQuery<TKey, object>[] vcq = qs.GetCqs<TKey, object>();
         FwkInfo("QueryTest.DoCQState - number of cqs is {0} ", vcq.Length); 
         for (int i = 0; i < vcq.Length; i++)
@@ -1029,7 +1029,7 @@ namespace Apache.Geode.Client.FwkLib
       Int32 getCQAttributes = 0, getCQName = 0, getQuery = 0, getQueryString = 0, getStatistics = 0, stopCq = 0, closeCq = 0, executeCq = 0, executeCqWithIR = 0;
       FwkInfo("Operation will work for : {0}" ,secondsToRun);
       PaceMeter pm = new PaceMeter(opsSec);
-      QueryService qs = CheckQueryService();
+      var qs = CheckQueryService();
       while (now < end)
       {
         try 
@@ -1251,7 +1251,7 @@ namespace Apache.Geode.Client.FwkLib
         ICqListener<TKey, object> cqLstner = new MyCq1Listener<TKey, object>();
         cqFac.AddCqListener(cqLstner);
         CqAttributes<TKey, object> cqAttr = cqFac.Create();
-        QueryService qs = CheckQueryService();
+        var qs = CheckQueryService();
         qs.NewCq(query, cqAttr,false);
       }
       catch (Exception ex)
