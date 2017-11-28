@@ -19,6 +19,12 @@
 
 #ifndef GEODE_EXCEPTION_H_
 #define GEODE_EXCEPTION_H_
+
+/*
+warning C4275:
+non dll-interface class 'std::exception' used as base for dll-interface
+class 'apache::geode::client::Exception'
+*/
 #pragma warning(disable : 4275)
 
 #include <string>

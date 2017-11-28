@@ -24,7 +24,8 @@ namespace Apache.Geode.Client.UnitTests
 {
   using NUnit.Framework;
   using Apache.Geode.DUnitFramework;
-  using Apache.Geode.Client;
+  
+ 
 
   [TestFixture]
   [Category("group1")]
@@ -32,12 +33,26 @@ namespace Apache.Geode.Client.UnitTests
   [Category("generics")]
   public class AttributesFactoryTests : UnitTests
   {
+
+    private UnitProcess m_client1, m_client2;
+
+    protected override ClientBase[] GetClients()
+    {
+      m_client1 = new UnitProcess();
+      m_client2 = new UnitProcess();
+
+      return new ClientBase[] { m_client1, m_client2 };
+    }
+
+
     [Test]
     public void fluentModeltest()
     {
-      AttributesFactory<TKey, TValue> af = new AttributesFactory<TKey, TValue>();
-      Apache.Geode.Client.RegionAttributes<TKey, TValue> rattrs = af.SetLruEntriesLimit(0).SetInitialCapacity(5).CreateRegionAttributes();
+      AttributesFactory<string, string> af = new AttributesFactory<string, string>();
+      Apache.Geode.Client.RegionAttributes<string, string> rattrs = af.SetLruEntriesLimit(0).SetInitialCapacity(5).CreateRegionAttributes();
       Assert.IsNotNull(rattrs);
+      Assert.True(rattrs.LruEntriesLimit == 2);
+      Assert.True(rattrs.InitialCapacity == 5);
     }
   }
 }

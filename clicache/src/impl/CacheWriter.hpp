@@ -76,7 +76,7 @@ namespace Apache
             RegionEvent<TKey, TValue> gevent(ev->GetNative());
             return m_writer->BeforeRegionDestroy(%gevent);
           }
-          virtual void Close(Apache::Geode::Client::Region<Object^, Object^>^ region)
+          virtual void Close(Apache::Geode::Client::Region<Object^, Object^>^ region) override
           {
             m_writer->Close((IRegion<TKey, TValue>^) region);
           }
