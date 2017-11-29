@@ -297,7 +297,7 @@ namespace apache
       void ManagedCacheWriterGeneric::close(const std::shared_ptr<Region>& rp)
       {
         try {
-          auto mregion = Apache::Geode::Client::Region<Object^, Object^>::Create(rp);
+          IRegion<Object^, Object^>^ mregion = Apache::Geode::Client::Region<Object^, Object^>::Create(rp);
           m_managedptr->Close(mregion);
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {

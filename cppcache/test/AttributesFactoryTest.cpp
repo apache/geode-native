@@ -60,3 +60,21 @@ TEST(AttributesFactoryTest, setRegionTimeToLiveSeconds) {
           .createRegionAttributes();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes->getRegionTimeToLive());
 }
+
+TEST(AttributesFactoryTest, setInitialCapacity) {
+  AttributesFactory* af = new AttributesFactory();
+  EXPECT_NE(af, nullptr);
+  std::unique_ptr<RegionAttributes> rattrs =
+      af->setLruEntriesLimit(2).setInitialCapacity(5).createRegionAttributes();
+  EXPECT_NE(rattrs, nullptr);
+  EXPECT_EQ(rattrs->getInitialCapacity(), 5);
+}
+
+TEST(AttributesFactoryTest, setLruEntriesLimit) {
+  AttributesFactory* af = new AttributesFactory();
+  EXPECT_NE(af, nullptr);
+  std::unique_ptr<RegionAttributes> rattrs =
+      af->setLruEntriesLimit(2).setInitialCapacity(5).createRegionAttributes();
+  EXPECT_NE(rattrs, nullptr);
+  EXPECT_EQ(rattrs->getLruEntriesLimit(), 2);
+}

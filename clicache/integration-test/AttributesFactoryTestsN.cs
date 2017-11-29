@@ -38,10 +38,7 @@ namespace Apache.Geode.Client.UnitTests
 
     protected override ClientBase[] GetClients()
     {
-      m_client1 = new UnitProcess();
-      m_client2 = new UnitProcess();
-
-      return new ClientBase[] { m_client1, m_client2 };
+      return new ClientBase[] {};
     }
 
 

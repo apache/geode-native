@@ -20,13 +20,6 @@
 #ifndef GEODE_EXCEPTION_H_
 #define GEODE_EXCEPTION_H_
 
-/*
-warning C4275:
-non dll-interface class 'std::exception' used as base for dll-interface
-class 'apache::geode::client::Exception'
-*/
-#pragma warning(disable : 4275)
-
 #include <string>
 #include <stdexcept>
 #include <unordered_map>
@@ -47,6 +40,16 @@ namespace client {
 class DistributedSystem;
 class CacheableString;
 class StackTrace;
+#pragma warning( push )
+/*
+warning C4275:
+non dll-interface class 'std::exception' used as base for dll-interface
+class 'apache::geode::client::Exception' 
+
+Ok to ignore because it is ok if the class is a std class.
+*/
+#pragma warning(disable : 4275)
+
 /**
  * @class Exception Exception.hpp
  * A description of an exception that occurred during a cache operation.
@@ -91,6 +94,9 @@ class CPPCACHE_EXPORT Exception : public std::exception {
 
   friend class DistributedSystem;
 };
+
+#pragma warning( pop )
+
 
 class CacheableKey;
 typedef std::unordered_map<std::shared_ptr<CacheableKey>,
