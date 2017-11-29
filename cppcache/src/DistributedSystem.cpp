@@ -235,7 +235,7 @@ void DistributedSystem::connect(Cache* cache) {
         "DistributedSystem::connect: caught unknown exception");
   }
 
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache);
+  auto* cacheImpl = CacheRegionHelper::getCacheImpl(cache);
   try {
     m_statisticsManager = std::unique_ptr<StatisticsManager>(new StatisticsManager(
         m_sysProps->statisticsArchiveFile(), m_sysProps->statisticsSampleInterval(),

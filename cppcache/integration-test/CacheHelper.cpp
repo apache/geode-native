@@ -87,7 +87,7 @@ CacheHelper::CacheHelper(const char* member_id,
   }
 
   auto cacheFactory = CacheFactory::createCacheFactory(pp);
-  cachePtr.reset(new Cache(cacheFactory->create()));
+  cachePtr = std::make_shared<Cache>(cacheFactory->create());
 
   m_doDisconnect = false;
 
@@ -117,7 +117,7 @@ CacheHelper::CacheHelper(const char* member_id, const char* cachexml,
     pp->insert("cache-xml-file", newFile.c_str());
   }
   auto cacheFactory = CacheFactory::createCacheFactory(pp);
-  cachePtr.reset(new Cache(cacheFactory->create()));
+  cachePtr = std::make_shared<Cache>(cacheFactory->create());
 
   m_doDisconnect = false;
 }
@@ -130,7 +130,7 @@ CacheHelper::CacheHelper(const std::shared_ptr<Properties>& configPtr,
   }
 
   auto cacheFactory = CacheFactory::createCacheFactory(pp);
-  cachePtr.reset(new Cache(cacheFactory->create()));
+  cachePtr = std::make_shared<Cache>(cacheFactory->create());
 
   auto poolFactory = cachePtr->getPoolManager().createFactory();
   addServerLocatorEPs("localhost:40404", poolFactory);
@@ -161,7 +161,7 @@ CacheHelper::CacheHelper(const bool isThinclient,
     LOG(" in cachehelper before createCacheFactory");
     auto cacheFactory = CacheFactory::createCacheFactory(pp)
                         ->setAuthInitialize(authInitialize);
-    cachePtr.reset(new Cache(cacheFactory->create()));
+    cachePtr = std::make_shared<Cache>(cacheFactory->create());
     m_doDisconnect = false;
   } catch (const Exception& excp) {
     LOG("Geode exception while creating cache, logged in following line");
@@ -181,7 +181,7 @@ CacheHelper::CacheHelper(const bool isThinclient,
   try {
     LOG(" in cachehelper before createCacheFactory");
     auto cacheFactory = CacheFactory::createCacheFactory(pp);
-    cachePtr.reset(new Cache(cacheFactory->create()));
+    cachePtr = std::make_shared<Cache>(cacheFactory->create());
     m_doDisconnect = false;
   } catch (const Exception& excp) {
     LOG("Geode exception while creating cache, logged in following line");
@@ -205,7 +205,7 @@ CacheHelper::CacheHelper(const bool isThinclient, bool pdxIgnoreUnreadFields,
     LOGINFO("pdxIgnoreUnreadFields = %d ", pdxIgnoreUnreadFields);
     cfPtr->setPdxReadSerialized(pdxReadSerialized);
     cfPtr->setPdxIgnoreUnreadFields(pdxIgnoreUnreadFields);
-    cachePtr.reset(new Cache(cfPtr->create()));
+    cachePtr = std::make_shared<Cache>(cfPtr->create());
     m_doDisconnect = false;
   } catch (const Exception& excp) {
     LOG("Geode exception while creating cache, logged in following line");
@@ -229,7 +229,7 @@ CacheHelper::CacheHelper(const bool isthinClient, const char* poolName,
 
   try {
     auto cacheFac = CacheFactory::createCacheFactory(pp);
-    cachePtr.reset(new Cache(cacheFac->create()));
+    cachePtr = std::make_shared<Cache>(cacheFac->create());
 
     auto poolFactory = cachePtr->getPoolManager().createFactory();
 
@@ -278,7 +278,7 @@ CacheHelper::CacheHelper(const int redundancyLevel,
   }
 
   auto cacheFac = CacheFactory::createCacheFactory(pp);
-  cachePtr.reset(new Cache(cacheFac->create()));
+  cachePtr = std::make_shared<Cache>(cacheFac->create());
   m_doDisconnect = false;
 }
 

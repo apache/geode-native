@@ -606,7 +606,8 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
     rptr = tmp;
   } else {
     LOGINFO("Creating local region %s", name.c_str());
-    rptr.reset(new LocalRegion(name, this, rootRegion, attrs, csptr, shared));
+    rptr = std::make_shared<LocalRegion>(name, this, rootRegion, attrs, csptr,
+                                         shared);
   }
   return rptr;
 }

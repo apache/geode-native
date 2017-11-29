@@ -123,11 +123,11 @@ Cache CacheFactory::create(
     name = "NativeCache";
   }
 
-  Cache cache = Cache(name, dsProp, ignorePdxUnreadFields,
+  auto cache = Cache(name, dsProp, ignorePdxUnreadFields,
                     pdxReadSerialized, authInitialize);
   cache.m_cacheImpl->setAttributes(attrs);
   try {
-    const char* cacheXml =
+    const auto* cacheXml =
         cache.getDistributedSystem().getSystemProperties().cacheXMLFile();
     if (cacheXml != 0 && strlen(cacheXml) > 0) {
       cache.initializeDeclarativeCache(cacheXml);
