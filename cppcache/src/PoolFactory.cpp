@@ -71,7 +71,7 @@ PoolFactory::PoolFactory(const Cache& cache)
 
 PoolFactory::~PoolFactory() {}
 
-void PoolFactory::setFreeConnectionTimeout(
+PoolFactory& PoolFactory::setFreeConnectionTimeout(
     std::chrono::milliseconds connectionTimeout) {
   // TODO GEODE-3136 - Is this true?
   if (connectionTimeout <= std::chrono::milliseconds::zero()) {
@@ -79,9 +79,10 @@ void PoolFactory::setFreeConnectionTimeout(
   }
 
   m_attrs->setFreeConnectionTimeout(connectionTimeout);
+  return *this;
 }
 
-void PoolFactory::setLoadConditioningInterval(
+PoolFactory& PoolFactory::setLoadConditioningInterval(
     std::chrono::milliseconds loadConditioningInterval) {
   // TODO GEODE-3136 - Is this true?
   if (loadConditioningInterval <= std::chrono::milliseconds::zero()) {
@@ -90,51 +91,60 @@ void PoolFactory::setLoadConditioningInterval(
   }
 
   m_attrs->setLoadConditioningInterval(loadConditioningInterval);
+  return *this;
 }
 
-void PoolFactory::setSocketBufferSize(int bufferSize) {
+PoolFactory& PoolFactory::setSocketBufferSize(int bufferSize) {
   m_attrs->setSocketBufferSize(bufferSize);
+  return *this;
 }
 
-void PoolFactory::setThreadLocalConnections(bool threadLocalConnections) {
+PoolFactory& PoolFactory::setThreadLocalConnections(bool threadLocalConnections) {
   m_attrs->setThreadLocalConnectionSetting(threadLocalConnections);
+  return *this;
 }
 
-void PoolFactory::setReadTimeout(std::chrono::milliseconds timeout) {
+PoolFactory& PoolFactory::setReadTimeout(std::chrono::milliseconds timeout) {
   // TODO GEODE-3136 - Is this true?
   if (timeout <= std::chrono::milliseconds::zero()) {
     throw std::invalid_argument("timeout must greater than 0.");
   }
 
   m_attrs->setReadTimeout(timeout);
+  return *this;
 }
 
-void PoolFactory::setMinConnections(int minConnections) {
+PoolFactory& PoolFactory::setMinConnections(int minConnections) {
   m_attrs->setMinConnections(minConnections);
+  return *this;
 }
 
-void PoolFactory::setMaxConnections(int maxConnections) {
+PoolFactory& PoolFactory::setMaxConnections(int maxConnections) {
   m_attrs->setMaxConnections(maxConnections);
+  return *this;
 }
 
-void PoolFactory::setIdleTimeout(std::chrono::milliseconds idleTimeout) {
+PoolFactory& PoolFactory::setIdleTimeout(std::chrono::milliseconds idleTimeout) {
   m_attrs->setIdleTimeout(idleTimeout);
+  return *this;
 }
 
-void PoolFactory::setRetryAttempts(int retryAttempts) {
+PoolFactory& PoolFactory::setRetryAttempts(int retryAttempts) {
   m_attrs->setRetryAttempts(retryAttempts);
+  return *this;
 }
 
-void PoolFactory::setPingInterval(std::chrono::milliseconds pingInterval) {
+PoolFactory& PoolFactory::setPingInterval(std::chrono::milliseconds pingInterval) {
   // TODO GEODE-3136 - Is this true?
   if (pingInterval <= std::chrono::milliseconds::zero()) {
     throw std::invalid_argument("timeout must greater than 0.");
   }
 
   m_attrs->setPingInterval(pingInterval);
+  return *this;
 }
 
-void PoolFactory::setUpdateLocatorListInterval(
+PoolFactory& PoolFactory::setUpdateLocatorListInterval(
     const std::chrono::milliseconds updateLocatorListInterval) {
   // TODO GEODE-3136 - Is this true?
   if (updateLocatorListInterval < std::chrono::milliseconds::zero()) {
@@ -142,9 +152,10 @@ void PoolFactory::setUpdateLocatorListInterval(
   }
 
   m_attrs->setUpdateLocatorListInterval(updateLocatorListInterval);
+  return *this;
 }
 
-void PoolFactory::setStatisticInterval(
+PoolFactory& PoolFactory::setStatisticInterval(
     std::chrono::milliseconds statisticInterval) {
   // TODO GEODE-3136 - Consider 0 to disable
   if (statisticInterval.count() <= -1) {
@@ -152,34 +163,40 @@ void PoolFactory::setStatisticInterval(
   }
 
   m_attrs->setStatisticInterval(statisticInterval);
+  return *this;
 }
 
-void PoolFactory::setServerGroup(const char* group) {
+PoolFactory& PoolFactory::setServerGroup(const char* group) {
   m_attrs->setServerGroup(group);
+  return *this;
 }
 
-void PoolFactory::addLocator(const char* host, int port) {
+PoolFactory& PoolFactory::addLocator(const char* host, int port) {
   addCheck(host, port);
   m_attrs->addLocator(host, port);
   m_addedServerOrLocator = true;
+  return *this;
 }
 
-void PoolFactory::addServer(const char* host, int port) {
+PoolFactory& PoolFactory::addServer(const char* host, int port) {
   addCheck(host, port);
   m_attrs->addServer(host, port);
   m_addedServerOrLocator = true;
+  return *this;
 }
 
-void PoolFactory::setSubscriptionEnabled(bool enabled) {
+PoolFactory& PoolFactory::setSubscriptionEnabled(bool enabled) {
   m_attrs->setSubscriptionEnabled(enabled);
+  return *this;
 }
 
-void PoolFactory::setSubscriptionRedundancy(int redundancy) {
+PoolFactory& PoolFactory::setSubscriptionRedundancy(int redundancy) {
   m_isSubscriptionRedundancy = true;
   m_attrs->setSubscriptionRedundancy(redundancy);
+  return *this;
 }
 
-void PoolFactory::setSubscriptionMessageTrackingTimeout(
+PoolFactory& PoolFactory::setSubscriptionMessageTrackingTimeout(
     std::chrono::milliseconds messageTrackingTimeout) {
   // TODO GEODE-3136 - Is this true?
   if (messageTrackingTimeout <= std::chrono::milliseconds::zero()) {
@@ -187,9 +204,10 @@ void PoolFactory::setSubscriptionMessageTrackingTimeout(
   }
 
   m_attrs->setSubscriptionMessageTrackingTimeout(messageTrackingTimeout);
+  return *this;
 }
 
-void PoolFactory::setSubscriptionAckInterval(
+PoolFactory& PoolFactory::setSubscriptionAckInterval(
     std::chrono::milliseconds ackInterval) {
   // TODO GEODE-3136 - Is this true?
   if (ackInterval <= std::chrono::milliseconds::zero()) {
@@ -197,18 +215,22 @@ void PoolFactory::setSubscriptionAckInterval(
   }
 
   m_attrs->setSubscriptionAckInterval(ackInterval);
+  return *this;
 }
 
-void PoolFactory::setMultiuserAuthentication(bool multiuserAuthentication) {
+PoolFactory& PoolFactory::setMultiuserAuthentication(bool multiuserAuthentication) {
   m_attrs->setMultiuserSecureModeEnabled(multiuserAuthentication);
+  return *this;
 }
 
-void PoolFactory::reset() {
+PoolFactory& PoolFactory::reset() {
   m_attrs = std::shared_ptr<PoolAttributes>(new PoolAttributes);
+  return *this;
 }
 
-void PoolFactory::setPRSingleHopEnabled(bool enabled) {
+PoolFactory& PoolFactory::setPRSingleHopEnabled(bool enabled) {
   m_attrs->setPRSingleHopEnabled(enabled);
+  return *this;
 }
 std::shared_ptr<Pool> PoolFactory::create(const char* name) {
   std::shared_ptr<ThinClientPoolDM> poolDM;
@@ -281,7 +303,7 @@ std::shared_ptr<Pool> PoolFactory::create(const char* name) {
   return std::static_pointer_cast<Pool>(poolDM);
 }
 
-void PoolFactory::addCheck(const char* host, int port) {
+PoolFactory& PoolFactory::addCheck(const char* host, int port) {
   if (port <= 0) {
     char buff[100];
     ACE_OS::snprintf(buff, 100, "port must be greater than 0 but was %d", port);
@@ -293,4 +315,5 @@ void PoolFactory::addCheck(const char* host, int port) {
     ACE_OS::snprintf(buff, 100, "Unknown host %s", host);
     throw IllegalArgumentException(buff);
   }
+  return *this;
 }

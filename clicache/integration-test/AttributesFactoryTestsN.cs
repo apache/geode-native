@@ -15,94 +15,41 @@
  * limitations under the License.
  */
 
-//using System;
-//using System.Reflection;
+using System;
+using System.Reflection;
 
-//#pragma warning disable 618
+#pragma warning disable 618
 
-//namespace Apache.Geode.Client.UnitTests
-//{
-//  using NUnit.Framework;
-//  using Apache.Geode.DUnitFramework;
-// // using Apache.Geode.Client; 
-//  using Apache.Geode.Client;
-//  //using Region = Apache.Geode.Client.IRegion<Object, Object>;
+namespace Apache.Geode.Client.UnitTests
+{
+  using NUnit.Framework;
+  using Apache.Geode.DUnitFramework;
+  
+ 
 
-//  [TestFixture]
-//  [Category("group1")]
-//  [Category("unicast_only")]
-//  [Category("generics")]
-//  public class AttributesFactoryTests : UnitTests
-//  {
-//    protected override ClientBase[] GetClients()
-//    {
-//      return null;
-//    }
+  [TestFixture]
+  [Category("group1")]
+  [Category("unicast_only")]
+  [Category("generics")]
+  public class AttributesFactoryTests : UnitTests
+  {
 
-//    [Test]
-//    public void InvalidTCRegionAttributes()
-//    {
-//      Properties<string, string> config = new Properties<string, string>();
-//      CacheHelper.InitConfig(config);
-//      IRegion<object, object> region;
-//      RegionAttributes<object, object> attrs;
-//      AttributesFactory<object, object> af = new AttributesFactory<object, object>();
-//      af.SetScope(ScopeType.Local);
-//      af.SetEndpoints("bass:1234");
-//      attrs = af.CreateRegionAttributes();
-//      region = CacheHelper.CreateRegion<object, object>("region1", attrs);
-//      try
-//      {
-//       IRegion<Object, Object> localRegion = region.GetLocalView();
-//        Assert.Fail(
-//          "LOCAL scope is incompatible with a native client region");
-//      }
-//      catch (UnsupportedOperationException)
-//      {
-//        Util.Log("Got expected UnsupportedOperationException for " +
-//          "LOCAL scope for native client region");
-//      }
+    private UnitProcess m_client1, m_client2;
 
-//      af.SetScope(ScopeType.Local);
-//      af.SetClientNotificationEnabled(true);
-//      attrs = af.CreateRegionAttributes();
-//      try
-//      {
-//        region = CacheHelper.CreateRegion<object, object>("region2", attrs);
-//        Assert.Fail(
-//          "LOCAL scope is incompatible with clientNotificationEnabled");
-//      }
-//      catch (UnsupportedOperationException)
-//      {
-//        Util.Log("Got expected UnsupportedOperationException for " +
-//          "clientNotificationEnabled for non native client region");
-//      }
+    protected override ClientBase[] GetClients()
+    {
+      return new ClientBase[] {};
+    }
 
-//      // Checks for HA regions
 
-//      CacheHelper.CloseCache();
-//      af.SetScope(ScopeType.Local);
-//      af.SetEndpoints("bass:3434");
-//      af.SetClientNotificationEnabled(false);
-//      attrs = af.CreateRegionAttributes();
-//      try
-//      {
-//        region = CacheHelper.CreateRegion<object, object>("region2", attrs);
-//        Assert.Fail(
-//          "LOCAL scope is incompatible with a native client HA region");
-//      }
-//      catch (UnsupportedOperationException)
-//      {
-//        Util.Log("Got expected UnsupportedOperationException for " +
-//          "LOCAL scope for native client region");
-//      }
-
-//      af.SetScope(ScopeType.Local);
-//      af.SetEndpoints("none");
-//      af.SetClientNotificationEnabled(false);
-//      attrs = af.CreateRegionAttributes();
-//      region = CacheHelper.CreateRegion<object, object>("region1", attrs);
-//      Util.Log("C++ local region created with HA cache specification.");
-//    }
-//  }
-//}
+    [Test]
+    public void fluentModeltest()
+    {
+      AttributesFactory<string, string> af = new AttributesFactory<string, string>();
+      Apache.Geode.Client.RegionAttributes<string, string> rattrs = af.SetLruEntriesLimit(2).SetInitialCapacity(5).CreateRegionAttributes();
+      Assert.IsNotNull(rattrs);
+      Assert.True(rattrs.LruEntriesLimit == 2);
+      Assert.True(rattrs.InitialCapacity == 5);
+    }
+  }
+}

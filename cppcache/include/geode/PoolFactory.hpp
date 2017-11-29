@@ -202,10 +202,11 @@ class CPPCACHE_EXPORT PoolFactory {
    *
    * @param connectionTimeout is the connection timeout
    *
+   * @return a reference to <code>this</code>
    * @throws std::invalid_argument if <code>connectionTimeout</code>
    * is less than or equal to <code>0</code>.
    */
-  void setFreeConnectionTimeout(std::chrono::milliseconds connectionTimeout);
+  PoolFactory& setFreeConnectionTimeout(std::chrono::milliseconds connectionTimeout);
 
   /**
    * Sets the load conditioning interval for this pool.
@@ -216,10 +217,11 @@ class CPPCACHE_EXPORT PoolFactory {
    *
    * @param loadConditioningInterval is the connection lifetime
    *
+   * @return a reference to <code>this</code>
    * @throws std::invalid_argument if <code>connectionLifetime</code>
    * is less than <code>-1</code>.
    */
-  void setLoadConditioningInterval(
+  PoolFactory& setLoadConditioningInterval(
       std::chrono::milliseconds loadConditioningInterval);
 
   /**
@@ -231,10 +233,11 @@ class CPPCACHE_EXPORT PoolFactory {
    * @param bufferSize is the size of the socket buffers used for reading and
    * writing on each connection in this pool.
    *
+   * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if <code>bufferSize</code>
    * is less than or equal to <code>0</code>.
    */
-  void setSocketBufferSize(int bufferSize);
+  PoolFactory& setSocketBufferSize(int bufferSize);
 
   /**
    * Sets the thread local connections policy for this pool.
@@ -252,8 +255,9 @@ class CPPCACHE_EXPORT PoolFactory {
    *
    * @param threadLocalConnections if <code>true</code> then enable thread local
    * connections.
+   * @return a reference to <code>this</code>
    */
-  void setThreadLocalConnections(bool threadLocalConnections);
+  PoolFactory& setThreadLocalConnections(bool threadLocalConnections);
 
   /**
    * Sets the duration to wait for a response from a server before timing out
@@ -261,11 +265,11 @@ class CPPCACHE_EXPORT PoolFactory {
    *
    * @param timeout duration to wait for a response from a
    * server
-   *
+   * @return a reference to <code>this</code>
    * @throws std::invalid_argument if <code>timeout</code>
    * is less than or equal to <code>0</code>.
    */
-  void setReadTimeout(std::chrono::milliseconds timeout);
+  PoolFactory& setReadTimeout(std::chrono::milliseconds timeout);
 
   /**
    * Sets the minimum number of connections to keep available at all times.
@@ -276,11 +280,11 @@ class CPPCACHE_EXPORT PoolFactory {
    *
    * @param minConnections is the initial number of connections
    * this pool will create.
-   *
+   * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if <code>minConnections</code>
    * is less than <code>0</code>.
    */
-  void setMinConnections(int minConnections);
+  PoolFactory& setMinConnections(int minConnections);
 
   /**
    * Sets the max number of client to server connections that the pool will
@@ -294,10 +298,11 @@ class CPPCACHE_EXPORT PoolFactory {
    * @param maxConnections is the maximum number of connections in the pool.
    * <code>-1</code> indicates that there is no maximum number of connections
    *
+   * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if <code>maxConnections</code>
    * is less than <code>minConnections</code>.
    */
-  void setMaxConnections(int maxConnections);
+  PoolFactory& setMaxConnections(int maxConnections);
 
   /**
    * Sets the amount of time a connection can be idle before expiring the
@@ -309,8 +314,9 @@ class CPPCACHE_EXPORT PoolFactory {
    * should live no less than before expiring, actual time may be longer
    * depending on clock resolution. A duration less than 0 indicates
    * that connections should never expire.
+   * @return a reference to <code>this</code>
    */
-  void setIdleTimeout(std::chrono::milliseconds);
+  PoolFactory& setIdleTimeout(std::chrono::milliseconds);
 
   /**
    * Set the number of times to retry a request after timeout/exception.
@@ -321,7 +327,7 @@ class CPPCACHE_EXPORT PoolFactory {
    * @throws IllegalArgumentException if <code>idleTimout</code>
    * is less than <code>0</code>.
    */
-  void setRetryAttempts(int retryAttempts);
+  PoolFactory& setRetryAttempts(int retryAttempts);
 
   /**
    * The frequency with which servers must be pinged to verify that they are
@@ -335,13 +341,13 @@ class CPPCACHE_EXPORT PoolFactory {
    * maximum time between pings allowed by the bridge server.
    *
    * @param pingInterval is the amount of time  between pings.
-   *
+   * @return a reference to <code>this</code>
    * @throws std::invalid_argument if <code>pingInterval</code>
    * is less than <code>0</code>.
    *
    * @see CacheServer#setMaximumTimeBetweenPings(int)
    */
-  void setPingInterval(std::chrono::milliseconds pingInterval);
+  PoolFactory& setPingInterval(std::chrono::milliseconds pingInterval);
 
   /**
    * The frequency with which client updates the locator list. To disable this
@@ -349,8 +355,9 @@ class CPPCACHE_EXPORT PoolFactory {
    *
    * @param updateLocatorListInterval is the amount of time
    * between checking locator list at locator.
+   * @return a reference to <code>this</code>
    */
-  void setUpdateLocatorListInterval(
+  PoolFactory& setUpdateLocatorListInterval(
       std::chrono::milliseconds updateLocatorListInterval);
 
   /**
@@ -362,10 +369,11 @@ class CPPCACHE_EXPORT PoolFactory {
    * @param statisticInterval is the amount of time between
    * sends of client statistics to the server.
    *
+   * @return a reference to <code>this</code>
    * @throws std::invalid_argument if <code>statisticInterval</code>
    * is less than <code>-1</code>.
    */
-  void setStatisticInterval(std::chrono::milliseconds statisticInterval);
+  PoolFactory& setStatisticInterval(std::chrono::milliseconds statisticInterval);
 
   /**
    * Configures the group which contains all the servers that this pool connects
@@ -375,7 +383,7 @@ class CPPCACHE_EXPORT PoolFactory {
    * to all servers.
    * @return a reference to <code>this</code>
    */
-  void setServerGroup(const char* group);
+  PoolFactory& setServerGroup(const char* group);
 
   /**
    * Adds a locator, given its host and port, to this factory.
@@ -394,7 +402,7 @@ class CPPCACHE_EXPORT PoolFactory {
    * @throws IllegalStateException if the locator has already been {@link
    * #addServer added} to this factory.
    */
-  void addLocator(const char* host, int port);
+  PoolFactory& addLocator(const char* host, int port);
 
   /**
    * Adds a server, given its host and port, to this factory.
@@ -411,7 +419,7 @@ class CPPCACHE_EXPORT PoolFactory {
    * @throws IllegalStateException if the server has already been {@link
    * #addLocator added} to this factory.
    */
-  void addServer(const char* host, int port);
+  PoolFactory& addServer(const char* host, int port);
 
   /**
    * If set to <code>true</code> then the created pool will have
@@ -421,7 +429,7 @@ class CPPCACHE_EXPORT PoolFactory {
    * are ignored at the time of creation.
    * @return a reference to <code>this</code>
    */
-  void setSubscriptionEnabled(bool enabled);
+  PoolFactory& setSubscriptionEnabled(bool enabled);
 
   /**
    * Sets the redundancy level for this pools server-to-client subscriptions.
@@ -436,7 +444,7 @@ class CPPCACHE_EXPORT PoolFactory {
    * @throws IllegalArgumentException if <code>redundancyLevel</code>
    * is less than <code>-1</code>.
    */
-  void setSubscriptionRedundancy(int redundancy);
+  PoolFactory& setSubscriptionRedundancy(int redundancy);
 
   /**
    * Sets the messageTrackingTimeout attribute which is the time-to-live period
@@ -445,11 +453,13 @@ class CPPCACHE_EXPORT PoolFactory {
    * amount of time  are expired from the list.
    *
    * @param messageTrackingTimeout is the duration to set the timeout to.
+   * @return a reference to <code>this</code>
    *
    * @throws std::invalid_argument if <code>messageTrackingTimeout</code>
    * is less than or equal to <code>0</code>.
+
    */
-  void setSubscriptionMessageTrackingTimeout(
+  PoolFactory& setSubscriptionMessageTrackingTimeout(
       std::chrono::milliseconds messageTrackingTimeout);
 
   /**
@@ -461,22 +471,24 @@ class CPPCACHE_EXPORT PoolFactory {
    *
    * @throws std::invalid_argument if <code>ackInterval</code>
    * is less than or equal to <code>0</code>.
+   * @return a reference to <code>this</code>
    */
-  void setSubscriptionAckInterval(std::chrono::milliseconds ackInterval);
+  PoolFactory& setSubscriptionAckInterval(std::chrono::milliseconds ackInterval);
 
   /**
    * Sets whether Pool is in multi user secure mode.
    * If its in multiuser mode then app needs to get RegionService instance of
    * Cache.
    * Deafult value is false.
+   * @return a reference to <code>this</code>
    */
-  void setMultiuserAuthentication(bool multiuserAuthentication);
+  PoolFactory& setMultiuserAuthentication(bool multiuserAuthentication);
 
   /**
    * Resets the configuration of this factory to its defaults.
    * @return a reference to <code>this</code>
    */
-  void reset();
+  PoolFactory& reset();
 
   /**
    * Creates a new Pool for connecting a client to a set of Geode Cache
@@ -511,14 +523,14 @@ class CPPCACHE_EXPORT PoolFactory {
    * not.
    * @return a reference to <code>this</code>
    */
-  void setPRSingleHopEnabled(bool enabled);
+  PoolFactory& setPRSingleHopEnabled(bool enabled);
 
   ~PoolFactory();
 
  private:
   PoolFactory(const Cache& cache);
   PoolFactory(const PoolFactory&);
-  void addCheck(const char* host, int port);
+  PoolFactory& addCheck(const char* host, int port);
   std::shared_ptr<PoolAttributes> m_attrs;
   bool m_isSubscriptionRedundancy;
   bool m_addedServerOrLocator;

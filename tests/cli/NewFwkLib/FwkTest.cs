@@ -741,11 +741,10 @@ namespace Apache.Geode.Client.FwkLib
             string regionName;
             if (xmlNode.FirstChild.FirstChild.Name == "region")
             {
-              //Util.Log("rjk reading region xml data attri name in fwktest");
               XmlAttribute nameattr = xmlNode.FirstChild.FirstChild.Attributes["name"];
               regionName = nameattr.Value;
               XmlNode attrnode = xmlNode.FirstChild.FirstChild.FirstChild;
-              //AttributesFactory af = new AttributesFactory();
+
               if (attrnode.Name == "region-attributes")
               {
                 XmlAttributeCollection attrcoll = attrnode.Attributes;
@@ -753,7 +752,6 @@ namespace Apache.Geode.Client.FwkLib
                 {
                   foreach (XmlAttribute eachattr in attrcoll)
                   {
-                    //Util.Log("rjk fwktest region attri xml data attri name = {0} , attri value = {1}", eachattr.Name, eachattr.Value);
                     SetThisAttribute(eachattr.Name, eachattr, af, ref poolname);
                    }
                 }
@@ -761,7 +759,6 @@ namespace Apache.Geode.Client.FwkLib
                 {
                   foreach (XmlNode tmpnode in attrnode.ChildNodes)
                   {
-                    //Util.Log("rjk fwktest region attri tmpnode xml data attri name = {0} , attri value = {1}", tmpnode.Name, tmpnode.Value);
                     SetThisAttribute(tmpnode.Name, tmpnode, af, ref poolname);
                   }
                 }
@@ -782,7 +779,6 @@ namespace Apache.Geode.Client.FwkLib
               {
                 foreach (XmlAttribute eachattr in attrcoll)
                 {
-                  //Util.Log("rjk fwktest xml data attri name = {0} , attri value = {1}", eachattr.Name, eachattr.Value);
                   SetThisPoolAttributes(pf, eachattr.Name, eachattr.Value);
                 }
               }

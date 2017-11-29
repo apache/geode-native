@@ -178,7 +178,7 @@ class CPPCACHE_EXPORT TcrMessage {
 
   } MsgType;
 
-  static bool isKeepAlive() { return *m_keepalive; }
+  static bool isKeepAlive() { return *m_keepalive > 0; }
   static bool isUserInitiativeOps(const TcrMessage& msg) {
     int32_t msgType = msg.getMessageType();
 
@@ -231,13 +231,16 @@ class CPPCACHE_EXPORT TcrMessage {
   //  = false, bool receiveValues = true, ThinClientBaseDM *connectionDM =
   //  nullptr);
 
-  void InitializeGetallMsg(const std::shared_ptr<Serializable>& aCallbackArgument);
+  void InitializeGetallMsg(
+      const std::shared_ptr<Serializable>& aCallbackArgument);
   // for multiuser cache close
 
   // Updates the early ack byte of the message to reflect that it is a retry op
   void updateHeaderForRetry();
 
-  inline const std::vector<std::shared_ptr<CacheableKey>> * getKeys() const { return m_keyList; }
+  inline const std::vector<std::shared_ptr<CacheableKey>>* getKeys() const {
+    return m_keyList;
+  }
 
   inline const std::string& getRegex() const { return m_regex; }
 
@@ -372,7 +375,8 @@ class CPPCACHE_EXPORT TcrMessage {
     m_versionObjPartListptr = versionObjPartListptr;
   }
 
-  std::shared_ptr<VersionedCacheableObjectPartList> getVersionedObjectPartList() {
+  std::shared_ptr<VersionedCacheableObjectPartList>
+  getVersionedObjectPartList() {
     return m_versionObjPartListptr;
   }
 
@@ -416,17 +420,22 @@ class CPPCACHE_EXPORT TcrMessage {
 
   int32_t getNumBuckets() const { return m_bucketCount; }
 
-  std::shared_ptr<CacheableString> getColocatedWith() const { return m_colocatedWith; }
+  std::shared_ptr<CacheableString> getColocatedWith() const {
+    return m_colocatedWith;
+  }
 
   std::shared_ptr<CacheableString> getPartitionResolver() const {
     return m_partitionResolverName;
   }
 
-  std::vector<std::vector<std::shared_ptr<BucketServerLocation>> >* getMetadata() {
+  std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>*
+  getMetadata() {
     return m_metadata;
   }
 
-  std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* getFpaSet() { return m_fpaSet; }
+  std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* getFpaSet() {
+    return m_fpaSet;
+  }
 
   std::shared_ptr<CacheableHashSet> getFailedNode() { return m_failedNode; }
 
@@ -436,16 +445,21 @@ class CPPCACHE_EXPORT TcrMessage {
     m_isCallBackArguement = aCallBackArguement;
   }
 
-  void setBucketServerLocation(std::shared_ptr<BucketServerLocation> serverLocation) {
+  void setBucketServerLocation(
+      std::shared_ptr<BucketServerLocation> serverLocation) {
     m_bucketServerLocation = serverLocation;
   }
-  void setVersionTag(std::shared_ptr<VersionTag> versionTag) { m_versionTag = versionTag; }
+  void setVersionTag(std::shared_ptr<VersionTag> versionTag) {
+    m_versionTag = versionTag;
+  }
   std::shared_ptr<VersionTag> getVersionTag() { return m_versionTag; }
   uint8_t hasResult() const { return m_hasResult; }
   std::shared_ptr<CacheableHashMap> getTombstoneVersions() const {
     return m_tombstoneVersions;
   }
-  std::shared_ptr<CacheableHashSet> getTombstoneKeys() const { return m_tombstoneKeys; }
+  std::shared_ptr<CacheableHashSet> getTombstoneKeys() const {
+    return m_tombstoneKeys;
+  }
 
   bool isFEAnotherHop();
 
