@@ -49,7 +49,10 @@ target_link_libraries(${PROJECT_NAME}
 
 string(REPLACE "/EHsc" "/EHa" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /clr /bigobj /wd4947 /wd4251 /wd4635 /doc /we4488")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /clr /wd4947 /wd4251 /wd4635 /doc /we4488")
+# C1128 - large number of templates causes too many section.
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SHARED_LINKER_FLAGS_STRONG_KEY}")
 
 include_directories(${CMAKE_SOURCE_DIR}/cppcache/src)

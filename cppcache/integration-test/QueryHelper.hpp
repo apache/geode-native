@@ -219,9 +219,8 @@ void QueryHelper::populatePortfolioPdxData(std::shared_ptr<Region>& rptr,
       auto keyport = CacheableKey::create(portname);
 
       rptr->put(keyport, port);
-      // LOGINFO("populatePortfolioPdxData:: Put for iteration current = %d
-      // done",
-      //        current);
+      LOGDEBUG("populatePortfolioPdxData:: Put for iteration current = %d done",
+               current);
     }
   }
   // portfolioSetSize = setSize; portfolioNumSets = numSets; objectSize =
