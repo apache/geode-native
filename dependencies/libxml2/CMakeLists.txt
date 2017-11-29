@@ -15,8 +15,8 @@
 
 project( libxml2 )
 
-set( ${PROJECT_NAME}_VERSION 2.9.6 )
-set( ${PROJECT_NAME}_SHA265 8b9038cca7240e881d462ea391882092dfdc6d4f483f72683e817be08df5ebbc )
+set( ${PROJECT_NAME}_VERSION 2.9.7 )
+set( ${PROJECT_NAME}_SHA265 f63c5e7d30362ed28b38bfa1ac6313f9a80230720b7fb6c80575eeab3ff5900c )
 set( ${PROJECT_NAME}_URL "http://xmlsoft.org/sources/libxml2-${${PROJECT_NAME}_VERSION}.tar.gz" )
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 
