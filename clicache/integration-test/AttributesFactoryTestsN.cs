@@ -46,7 +46,7 @@ namespace Apache.Geode.Client.UnitTests
     public void fluentModeltest()
     {
       AttributesFactory<string, string> af = new AttributesFactory<string, string>();
-      Apache.Geode.Client.RegionAttributes<string, string> rattrs = af.SetLruEntriesLimit(0).SetInitialCapacity(5).CreateRegionAttributes();
+      Apache.Geode.Client.RegionAttributes<string, string> rattrs = af.SetLruEntriesLimit(2).SetInitialCapacity(5).CreateRegionAttributes();
       Assert.IsNotNull(rattrs);
       Assert.True(rattrs.LruEntriesLimit == 2);
       Assert.True(rattrs.InitialCapacity == 5);
