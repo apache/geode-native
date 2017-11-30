@@ -127,7 +127,7 @@ Cache CacheFactory::create(
                     pdxReadSerialized, authInitialize);
   cache.m_cacheImpl->setAttributes(attrs);
   try {
-    const auto* cacheXml =
+    const auto cacheXml =
         cache.getDistributedSystem().getSystemProperties().cacheXMLFile();
     if (cacheXml != 0 && strlen(cacheXml) > 0) {
       cache.initializeDeclarativeCache(cacheXml);

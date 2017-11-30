@@ -276,8 +276,8 @@ int testXmlCacheCreationWithPools() {
     std::string filePath = "valid_cache_pool.xml";
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
-    cptr.reset(new Cache(
-      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create()));
+    cptr = std::make_shared<Cache>(
+      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create());
     if (cptr->getPdxIgnoreUnreadFields() != true) {
       std::cout << "getPdxIgnoreUnreadFields should return true." << std::endl;
       return -1;
@@ -416,8 +416,8 @@ int testXmlCacheCreationWithPools() {
     std::string filePath = "invalid_cache_pool.xml";
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
-    cptr.reset(new Cache(
-      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create()));
+    cptr = std::make_shared<Cache>(
+      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create());
     return -1;
   } catch (Exception& ex) {
     std::cout << "EXPECTED EXCEPTION" << std::endl;
@@ -430,8 +430,8 @@ int testXmlCacheCreationWithPools() {
     std::string filePath = "invalid_cache_pool2.xml";
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
-    cptr.reset(new Cache(
-      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create()));
+    cptr = std::make_shared<Cache>(
+      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create());
     return -1;
   } catch (Exception& ex) {
     std::cout << "EXPECTED EXCEPTION" << std::endl;
@@ -444,8 +444,8 @@ int testXmlCacheCreationWithPools() {
     std::string filePath = "invalid_cache_pool3.xml";
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
-    cptr.reset(new Cache(
-      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create()));
+    cptr = std::make_shared<Cache>(
+      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create());
     return -1;
   } catch (Exception& ex) {
     std::cout << "EXPECTED EXCEPTION" << std::endl;
@@ -458,8 +458,8 @@ int testXmlCacheCreationWithPools() {
     std::string filePath = "invalid_cache_pool4.xml";
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
-    cptr.reset(new Cache(
-      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create()));
+    cptr = std::make_shared<Cache>(
+      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create());
     return -1;
   } catch (Exception& ex) {
     std::cout << "EXPECTED EXCEPTION" << std::endl;
@@ -500,8 +500,8 @@ int testXmlDeclarativeCacheCreation() {
   try {
     std::string filePath =
         directory + "/resources/valid_declarative_cache_creation.xml";
-    cptr.reset(new Cache(
-      cacheFactory->set("cache-xml-file", filePath.c_str())->create()));
+    cptr = std::make_shared<Cache>(
+      cacheFactory->set("cache-xml-file", filePath.c_str())->create());
 
   } catch (Exception& ex) {
     std::cout << "Exception: msg = " << ex.what() << std::endl;

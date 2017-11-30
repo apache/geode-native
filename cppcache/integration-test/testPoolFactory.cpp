@@ -29,9 +29,8 @@ BEGIN_TEST(POOLFACTORY)
 {
   auto cacheFactory = CacheFactory::createCacheFactory();
   ASSERT(cacheFactory != nullptr, "CacheFactory was a nullptr");
-  auto cachePtr = cacheFactory->create();
-  ASSERT(cachePtr != nullptr, "CachePtr was a nullptr");
-  auto poolFactory = cachePtr->getPoolManager().createFactory();
+  auto cache = cacheFactory->create();
+  auto poolFactory = cache.getPoolManager().createFactory();
   ASSERT(poolFactory != nullptr, "poolFactory was a nullptr");
   auto& testPoolFactory = poolFactory->setSubscriptionEnabled(true);
   bool test = poolFactory.get() == std::addressof<PoolFactory>(testPoolFactory);

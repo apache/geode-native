@@ -67,7 +67,7 @@ class DISABLED_PdxLocalReaderTest : public ::testing::Test {
  public:
   void SetUp() {
     auto factory = CacheFactory::createCacheFactory();
-    cache.reset(new Cache(factory->create()));
+    cache = std::make_shared<Cache>(factory->create());
   }
 
  protected:
