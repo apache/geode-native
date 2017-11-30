@@ -201,8 +201,8 @@ namespace Apache
           {
             return false;
           }
-          std::unique_ptr<apache::geode::client::DataOutput> out1 = m_nativeptr->get_shared_ptr()->getCache()->createDataOutput();
-          std::unique_ptr<apache::geode::client::DataOutput> out2 = m_nativeptr->get_shared_ptr()->getCache()->createDataOutput();
+          auto out1 = m_nativeptr->get_shared_ptr()->getCache().createDataOutput();
+          auto out2 = m_nativeptr->get_shared_ptr()->getCache().createDataOutput();
           val1->toData(*out1);
           val2->toData(*out2);
           if ( out1->getBufferLength() != out2->getBufferLength() )
@@ -823,7 +823,7 @@ namespace Apache
       generic<class TKey, class TValue>
       IRegionService^ LocalRegion<TKey, TValue>::RegionService::get()
       {        
-        return CacheResolver::Lookup(m_nativeptr->get()->getCache().get());
+        return CacheResolver::Lookup(&m_nativeptr->get()->getCache());
       }
 
       generic<class TKey, class TValue>

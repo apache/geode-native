@@ -64,14 +64,13 @@ class CPPCACHE_EXPORT DistributedSystem {
    *   product installation directory cannot be determined
    **/
   static std::unique_ptr<DistributedSystem> create(
-      const std::string& name, Cache* cache,
-      const std::shared_ptr<Properties>& configPtr = nullptr);
+      const std::string& name, const std::shared_ptr<Properties>& configPtr = nullptr);
 
   /**
    * @brief connects from the distributed system
    * @throws AlreadyConnectedException if this call has succeeded once before
    */
-  void connect();
+  void connect(Cache* cache);
 
   /**
    * @brief disconnect from the distributed system
@@ -104,7 +103,6 @@ class CPPCACHE_EXPORT DistributedSystem {
    * @brief constructors
    */
   DistributedSystem(const std::string& name,
-                    std::unique_ptr<statistics::StatisticsManager> statMngr,
                     std::unique_ptr<SystemProperties> sysProps);
 
  private:

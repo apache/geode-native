@@ -102,7 +102,7 @@ namespace Apache
           auto rAttributes = this->Attributes;
           auto poolName = rAttributes->PoolName;
           if (poolName != nullptr) {
-            auto poolManager = gcnew PoolManager(m_nativeptr->get()->getCache()->getPoolManager());
+            auto poolManager = gcnew PoolManager(m_nativeptr->get()->getCache().getPoolManager());
             auto pool = poolManager->Find(poolName);
             if (pool != nullptr && !pool->Destroyed) {
               return pool->MultiuserAuthentication;
@@ -244,8 +244,8 @@ namespace Apache
           {
             return false;
           }
-          std::unique_ptr<native::DataOutput> out1 = m_nativeptr->get_shared_ptr()->getCache()->createDataOutput();
-          std::unique_ptr<native::DataOutput> out2 = m_nativeptr->get_shared_ptr()->getCache()->createDataOutput();
+          auto out1 = m_nativeptr->get_shared_ptr()->getCache().createDataOutput();
+          auto out2 = m_nativeptr->get_shared_ptr()->getCache().createDataOutput();
           val1->toData(*out1);
           val2->toData(*out2);
 
@@ -726,7 +726,7 @@ namespace Apache
           if (values != nullptr) {
             valuesPtr = std::make_shared<native::HashMapOfCacheable>();
           }
-         std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg, m_nativeptr->get()->getCache().get());
+         auto callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg, &m_nativeptr->get()->getCache());
          native::HashMapOfCacheable native_value;
           try
           {
@@ -1003,7 +1003,7 @@ namespace Apache
       generic<class TKey, class TValue>
       IRegionService^ Region<TKey, TValue>::RegionService::get()
       {
-        return CacheResolver::Lookup(m_nativeptr->get()->getCache().get());
+        return CacheResolver::Lookup(&m_nativeptr->get()->getCache());
       }
 
       generic<class TKey, class TValue>

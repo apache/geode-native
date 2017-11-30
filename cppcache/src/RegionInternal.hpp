@@ -288,7 +288,7 @@ class RegionInternal : public Region {
   /**
    * @brief constructor
    */
-  RegionInternal(const std::shared_ptr<Cache>& cache, const std::shared_ptr<RegionAttributes>& attributes);
+  RegionInternal(Cache* cache, const std::shared_ptr<RegionAttributes>& attributes);
 
   void setLruEntriesLimit(uint32_t limit);
   void setRegionTimeToLiveExpirationAction(ExpirationAction::Action action);

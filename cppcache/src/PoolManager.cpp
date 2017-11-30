@@ -18,11 +18,14 @@
 
 #include <geode/PoolManager.hpp>
 
+#include "CacheRegionHelper.hpp"
+#include "CacheImpl.hpp"
+
 using namespace apache::geode::client;
 
 class PoolManager::Impl {
  public:
-  Impl(const Cache& cache) : m_cache(cache) {}
+  Impl(CacheImpl* cache) : m_cache(cache) {}
   void removePool(const char* name);
 
   std::shared_ptr<PoolFactory> createFactory();
@@ -43,15 +46,16 @@ class PoolManager::Impl {
   HashMapOfPools m_connectionPools;
   std::recursive_mutex m_connectionPoolsLock;
   std::shared_ptr<Pool> m_defaultPool;
-  const Cache& m_cache;
+  CacheImpl* m_cache;
 };
 
 void PoolManager::Impl::removePool(const char* name) {
   std::lock_guard<std::recursive_mutex> guard(m_connectionPoolsLock);
   m_connectionPools.erase(name);
 }
+
 std::shared_ptr<PoolFactory> PoolManager::Impl::createFactory() {
-  return std::shared_ptr<PoolFactory>(new PoolFactory(m_cache));
+  return std::shared_ptr<PoolFactory>(new PoolFactory(*m_cache->getCache()));
 }
 
 void PoolManager::Impl::close(bool keepAlive) {
@@ -106,7 +110,7 @@ std::shared_ptr<Pool> PoolManager::Impl::getDefaultPool() {
   return m_defaultPool;
 }
 
-PoolManager::PoolManager(const Cache& cache)
+PoolManager::PoolManager(CacheImpl* cache)
     : m_pimpl(new Impl(cache), [](Impl* impl) { delete impl; }) {}
 
 void PoolManager::removePool(const char* name) { m_pimpl->removePool(name); }

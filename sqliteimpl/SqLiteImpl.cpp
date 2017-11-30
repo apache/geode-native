@@ -113,9 +113,9 @@ void SqLiteImpl::write(const std::shared_ptr<CacheableKey>& key,
                        const std::shared_ptr<Cacheable>& value,
                        void*& dbHandle) {
   // Serialize key and value.
-  auto* cache = m_regionPtr->getCache().get();
-  auto keyDataBuffer = cache->createDataOutput();
-  auto valueDataBuffer = cache->createDataOutput();
+  auto& cache = m_regionPtr->getCache();
+  auto keyDataBuffer = cache.createDataOutput();
+  auto valueDataBuffer = cache.createDataOutput();
   uint32_t keyBufferSize, valueBufferSize;
 
   keyDataBuffer->writeObject(key);
@@ -134,7 +134,7 @@ bool SqLiteImpl::writeAll() { return true; }
 std::shared_ptr<Cacheable> SqLiteImpl::read(
     const std::shared_ptr<CacheableKey>& key, void*& dbHandle) {
   // Serialize key.
-  auto keyDataBuffer = m_regionPtr->getCache()->createDataOutput();
+  auto keyDataBuffer = m_regionPtr->getCache().createDataOutput();
   uint32_t keyBufferSize;
   keyDataBuffer->writeObject(key);
   void* keyData = const_cast<uint8_t*>(keyDataBuffer->getBuffer(&keyBufferSize));
@@ -147,7 +147,7 @@ std::shared_ptr<Cacheable> SqLiteImpl::read(
   }
 
   // Deserialize object and return value.
-  auto valueDataBuffer = m_regionPtr->getCache()->createDataInput(
+  auto valueDataBuffer = m_regionPtr->getCache().createDataInput(
       reinterpret_cast<uint8_t*>(valueData), valueBufferSize);
   std::shared_ptr<Cacheable> retValue;
   valueDataBuffer->readObject(retValue);
@@ -177,7 +177,7 @@ void SqLiteImpl::destroyRegion() {
 
 void SqLiteImpl::destroy(const std::shared_ptr<CacheableKey>& key, void*& dbHandle) {
   // Serialize key and value.
-  auto keyDataBuffer = m_regionPtr->getCache()->createDataOutput();
+  auto keyDataBuffer = m_regionPtr->getCache().createDataOutput();
   uint32_t keyBufferSize;
   keyDataBuffer->writeObject(key);
   void* keyData = const_cast<uint8_t*>(keyDataBuffer->getBuffer(&keyBufferSize));

@@ -31,7 +31,7 @@ class InternalCacheTransactionManager2PCImpl
     : public apache::geode::client::CacheTransactionManagerImpl,
       public apache::geode::client::InternalCacheTransactionManager2PC {
  public:
-  InternalCacheTransactionManager2PCImpl(Cache* cache);
+  InternalCacheTransactionManager2PCImpl(CacheImpl* cache);
   virtual ~InternalCacheTransactionManager2PCImpl();
 
   virtual void prepare() override;

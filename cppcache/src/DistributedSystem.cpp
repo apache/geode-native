@@ -27,17 +27,18 @@
 #include <geode/CacheFactory.hpp>
 #include <ace/OS.h>
 
-#include <ExpiryTaskManager.hpp>
-#include <CacheImpl.hpp>
 #include <ace/Guard_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
-#include <geode/DataOutput.hpp>
-#include <TcrMessage.hpp>
-#include <DistributedSystemImpl.hpp>
-#include <RegionStats.hpp>
-#include <PoolStatistics.hpp>
 
-#include <DiffieHellman.hpp>
+#include "ExpiryTaskManager.hpp"
+#include "CacheImpl.hpp"
+#include "geode/DataOutput.hpp"
+#include "TcrMessage.hpp"
+#include "DistributedSystemImpl.hpp"
+#include "RegionStats.hpp"
+#include "PoolStatistics.hpp"
+#include "CacheRegionHelper.hpp"
+#include "DiffieHellman.hpp"
 
 #include "version.h"
 
@@ -101,10 +102,10 @@ void setLFH() {
 }  // namespace apache
 
 DistributedSystem::DistributedSystem(
-    const std::string& name, std::unique_ptr<StatisticsManager> statMngr,
+    const std::string& name,
     std::unique_ptr<SystemProperties> sysProps)
     : m_name(name),
-      m_statisticsManager(std::move(statMngr)),
+      m_statisticsManager(nullptr),
       m_sysProps(std::move(sysProps)),
       m_connected(false) {
   LOGDEBUG("DistributedSystem::DistributedSystem");
@@ -150,8 +151,7 @@ void DistributedSystem::logSystemInformation() {
 }
 
 std::unique_ptr<DistributedSystem> DistributedSystem::create(
-    const std::string& _name, Cache* cache,
-    const std::shared_ptr<Properties>& configPtr) {
+    const std::string& _name, const std::shared_ptr<Properties>& configPtr) {
   // TODO global - Refactory out the static initialization
   // Trigger other library initialization.
   CppCacheLibrary::initLib();
@@ -195,21 +195,8 @@ std::unique_ptr<DistributedSystem> DistributedSystem::create(
     throw;
   }
 
-  std::unique_ptr<StatisticsManager> statMngr;
-  try {
-    statMngr = std::unique_ptr<StatisticsManager>(new StatisticsManager(
-        sysProps->statisticsArchiveFile(), sysProps->statisticsSampleInterval(),
-        sysProps->statisticsEnabled(), cache, sysProps->durableClientId(),
-        sysProps->durableTimeout(), sysProps->statsFileSizeLimit(),
-        sysProps->statsDiskSpaceLimit()));
-  } catch (const NullPointerException&) {
-    Log::close();
-    throw;
-  }
-  GF_D_ASSERT(m_statisticsManager != nullptr);
-
   auto distributedSystem = std::unique_ptr<DistributedSystem>(
-      new DistributedSystem(name, std::move(statMngr), std::move(sysProps)));
+      new DistributedSystem(name,  std::move(sysProps)));
   if (!distributedSystem) {
     throw NullPointerException("DistributedSystem::connect: new failed");
   }
@@ -221,7 +208,7 @@ std::unique_ptr<DistributedSystem> DistributedSystem::create(
   return distributedSystem;
 }
 
-void DistributedSystem::connect() {
+void DistributedSystem::connect(Cache* cache) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
   if (m_connected == true) {
     throw AlreadyConnectedException(
@@ -246,6 +233,20 @@ void DistributedSystem::connect() {
     LOGERROR("Unknown exception caught during client initialization");
     throw NotConnectedException(
         "DistributedSystem::connect: caught unknown exception");
+  }
+
+  auto cacheImpl = CacheRegionHelper::getCacheImpl(cache);
+  try {
+    m_statisticsManager = std::unique_ptr<StatisticsManager>(new StatisticsManager(
+        m_sysProps->statisticsArchiveFile(), m_sysProps->statisticsSampleInterval(),
+        m_sysProps->statisticsEnabled(), cacheImpl,
+        m_sysProps->durableClientId(), m_sysProps->durableTimeout(),
+        m_sysProps->statsFileSizeLimit(), m_sysProps->statsDiskSpaceLimit()));
+    cacheImpl->m_cacheStats = new CachePerfStats(getStatisticsManager()->getStatisticsFactory());
+  }
+  catch (const NullPointerException&) {
+    Log::close();
+    throw;
   }
 
   m_connected = true;

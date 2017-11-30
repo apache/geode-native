@@ -91,7 +91,7 @@ class PutAllWork : public PooledWork<GfErrType>,
         m_isPapeReceived(false)
   // UNUSED , m_aCallbackArgument(aCallbackArgument)
   {
-    m_request = new TcrMessagePutAll(m_region->getCache()->createDataOutput(),
+    m_request = new TcrMessagePutAll(m_region->getCache().createDataOutput(),
                                      m_region.get(), *m_map.get(), m_timeout,
                                      m_poolDM, aCallbackArgument);
     m_reply = new TcrMessageReply(true, m_poolDM);
@@ -236,7 +236,7 @@ class RemoveAllWork : public PooledWork<GfErrType>,
         m_papException(nullptr),
         m_isPapeReceived(false) {
     m_request = new TcrMessageRemoveAll(
-        m_region->getCache()->createDataOutput(), m_region.get(), *keys,
+        m_region->getCache().createDataOutput(), m_region.get(), *keys,
         m_aCallbackArgument, m_poolDM);
     m_reply = new TcrMessageReply(true, m_poolDM);
     // create new instanceof VCOPL
@@ -1366,7 +1366,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
    */
   std::vector<PutAllWork*> putAllWorkers;
   auto threadPool =
-      CacheRegionHelper::getCacheImpl(getCache().get())->getThreadPool();
+      CacheRegionHelper::getCacheImpl(&getCache())->getThreadPool();
   int locationMapIndex = 0;
   for (const auto& locationIter : *locationMap) {
     const auto& serverLocation = locationIter.first;
@@ -1746,7 +1746,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
    */
   std::vector<RemoveAllWork*> removeAllWorkers;
   auto* threadPool =
-      CacheRegionHelper::getCacheImpl(getCache().get())->getThreadPool();
+      CacheRegionHelper::getCacheImpl(&getCache())->getThreadPool();
   int locationMapIndex = 0;
   for (const auto& locationIter : *locationMap) {
     const auto& serverLocation = locationIter.first;
@@ -3197,7 +3197,7 @@ bool ThinClientRegion::executeFunctionSH(
       TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
   std::vector<std::shared_ptr<OnRegionFunctionExecution>> feWorkers;
   auto* threadPool =
-      CacheRegionHelper::getCacheImpl(getCache().get())->getThreadPool();
+      CacheRegionHelper::getCacheImpl(&getCache())->getThreadPool();
 
   for (const auto& locationIter : *locationMap) {
     const auto& serverLocation = locationIter.first;

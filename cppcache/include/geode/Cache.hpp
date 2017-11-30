@@ -241,6 +241,8 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
    */
   virtual ~Cache();
 
+  Cache(Cache&& other) noexcept;
+
  private:
   /**
    * @brief constructors

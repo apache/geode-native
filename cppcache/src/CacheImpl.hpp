@@ -226,7 +226,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
     return m_clientProxyMembershipIDFactory;
   }
 
-  Cache* getCache() const { return m_implementee; }
+  Cache* getCache() const { return m_cache; }
   TcrConnectionManager& tcrConnectionManager() {
     return *m_tcrConnectionManager;
   }
@@ -321,6 +321,9 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
       srm.bind((*p).ext_id_, (*p).int_id_);
     }
   }
+
+  void setCache(Cache* cache);
+
   std::string m_name;
   bool m_closed;
   bool m_initialized;
@@ -328,7 +331,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   std::unique_ptr<DistributedSystem> m_distributedSystem;
   ClientProxyMembershipIDFactory m_clientProxyMembershipIDFactory;
   MapOfRegionWithLock* m_regions;
-  Cache* m_implementee;
+  Cache* m_cache;
   ACE_Recursive_Thread_Mutex m_mutex;
   Condition m_cond;
   std::shared_ptr<CacheAttributes> m_attributes;
@@ -350,6 +353,7 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
 
   friend class CacheFactory;
   friend class Cache;
+  friend class DistributedSystem;
 };
 }  // namespace client
 }  // namespace geode

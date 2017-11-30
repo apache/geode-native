@@ -28,7 +28,7 @@ using namespace apache::geode::client;
 BEGIN_TEST(REGION_FACTORY)
   {
     auto cf = CacheFactory::createCacheFactory();
-    auto cache = cf->create();
+    auto cache = std::make_shared<Cache>(cf->create());
 
     auto rf = cache->createRegionFactory(LOCAL);
     /*see bug no #865 */
@@ -55,7 +55,7 @@ BEGIN_TEST(REGION_FACTORY)
     region = nullptr;
 
     auto cf1 = CacheFactory::createCacheFactory();
-    auto cache1 = cf1->create();
+    auto cache1 = std::make_shared<Cache>(cf1->create());
 
     auto rf1 = cache1->createRegionFactory(LOCAL);
     /*see bug no #865 */

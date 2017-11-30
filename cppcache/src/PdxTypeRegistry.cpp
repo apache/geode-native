@@ -20,12 +20,13 @@
 #include "PdxTypeRegistry.hpp"
 #include "CacheRegionHelper.hpp"
 #include "ThinClientPoolDM.hpp"
+#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-PdxTypeRegistry::PdxTypeRegistry(Cache* cache)
+PdxTypeRegistry::PdxTypeRegistry(CacheImpl* cache)
     : cache(cache),
       typeIdToPdxType(),
       remoteTypeIdToMergedPdxType(),
@@ -54,10 +55,8 @@ int32_t PdxTypeRegistry::getPDXIdForType(const char* type, const char* poolname,
     }
   }
 
-  int typeId =
-      CacheRegionHelper::getCacheImpl(cache)
-          ->getSerializationRegistry()
-          ->GetPDXIdForType(cache->getPoolManager().find(poolname), nType);
+  int typeId = cache->getSerializationRegistry()
+                    ->GetPDXIdForType(cache->getPoolManager().find(poolname), nType);
   nType->setTypeId(typeId);
 
   PdxTypeRegistry::addPdxType(typeId, nType);
@@ -88,9 +87,8 @@ int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
     }
   }
 
-  typeId = CacheRegionHelper::getCacheImpl(cache)
-               ->getSerializationRegistry()
-               ->GetPDXIdForType(cache->getPoolManager().find(poolname), nType);
+  typeId = cache->getSerializationRegistry()
+                ->GetPDXIdForType(cache->getPoolManager().find(poolname), nType);
   nType->setTypeId(typeId);
   pdxTypeToTypeIdMap.insert(std::make_pair(nType, typeId));
   addPdxType(typeId, nType);
@@ -273,7 +271,7 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
   ret = std::static_pointer_cast<EnumInfo>(
       static_cast<ThinClientPoolDM*>(
           cache->getPoolManager().getAll().begin()->second.get())
-          ->GetEnum(enumVal));
+               ->GetEnum(enumVal));
   tmp = intToEnum;
   (*tmp)[enumValPtr] = ret;
   intToEnum = tmp;

@@ -83,7 +83,7 @@ class GetAllWork : public PooledWork<GfErrType>,
         m_keys(keys),
         m_region(region),
         m_aCallbackArgument(aCallbackArgument) {
-    m_request = new TcrMessageGetAll(region->getCache()->createDataOutput(),
+    m_request = new TcrMessageGetAll(region->getCache().createDataOutput(),
                                      region.get(), m_keys.get(), m_poolDM,
                                      m_aCallbackArgument);
     m_reply = new TcrMessageReply(true, m_poolDM);

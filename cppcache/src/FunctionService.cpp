@@ -49,7 +49,7 @@ std::shared_ptr<Execution> FunctionService::onRegion(
       // it is in multiuser mode
       proxyCache = pr->m_proxyCache;
       auto userAttachedPool = proxyCache->m_userAttributes->getPool();
-      auto pool = realRegion->getCache()->getPoolManager().find(
+      auto pool = realRegion->getCache().getPoolManager().find(
           userAttachedPool->getName());
       if (!(pool != nullptr && pool.get() == userAttachedPool.get() &&
             !pool->isDestroyed())) {
@@ -57,8 +57,8 @@ std::shared_ptr<Execution> FunctionService::onRegion(
             "Pool has been closed with attached Logical Cache.");
       }
       // getting real region to execute function on region
-      if (!realRegion->getCache()->isClosed()) {
-        realRegion->getCache()->m_cacheImpl->getRegion(realRegion->getName(),
+      if (!realRegion->getCache().isClosed()) {
+        realRegion->getCache().m_cacheImpl->getRegion(realRegion->getName(),
                                                        realRegion);
       } else {
         throw IllegalStateException("Cache has been closed");

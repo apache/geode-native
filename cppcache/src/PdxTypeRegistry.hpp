@@ -63,7 +63,7 @@ typedef std::map<std::shared_ptr<PdxType>, int32_t, PdxTypeLessThan>
 class CPPCACHE_EXPORT PdxTypeRegistry
     : public std::enable_shared_from_this<PdxTypeRegistry> {
  private:
-  Cache* cache;
+  CacheImpl* cache;
 
   TypeIdVsPdxType typeIdToPdxType;
 
@@ -89,7 +89,7 @@ class CPPCACHE_EXPORT PdxTypeRegistry
   std::shared_ptr<CacheableHashMap> intToEnum;
 
  public:
-  PdxTypeRegistry(Cache* cache);
+  PdxTypeRegistry(CacheImpl* cache);
   PdxTypeRegistry(const PdxTypeRegistry& other) = delete;
 
   virtual ~PdxTypeRegistry();

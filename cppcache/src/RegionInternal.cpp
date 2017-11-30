@@ -39,7 +39,7 @@ const CacheEventFlags CacheEventFlags::NOCACHEWRITER(
     CacheEventFlags::GF_NOCACHEWRITER);
 
 RegionInternal::RegionInternal(
-    const std::shared_ptr<Cache>& cache,
+    Cache* cache,
     const std::shared_ptr<RegionAttributes>& attributes)
     : Region(cache), m_regionAttributes(attributes) {}
 
