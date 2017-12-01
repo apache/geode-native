@@ -19,6 +19,7 @@
 #include <geode/PoolFactory.hpp>
 
 #include "PoolManagerImpl.hpp"
+#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {
@@ -29,7 +30,7 @@ void PoolManagerImpl::removePool(const std::string& name) {
   m_connectionPools.erase(name);
 }
 std::shared_ptr<PoolFactory> PoolManagerImpl::createFactory() const {
-  return std::make_shared<PoolFactory>(m_cache);
+  return std::make_shared<PoolFactory>(*m_cache->getCache());
 }
 
 void PoolManagerImpl::close(bool keepAlive) {

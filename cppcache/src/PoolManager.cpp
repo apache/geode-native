@@ -23,8 +23,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-PoolManager::PoolManager(CacheImpl* cache cache)
-    : m_pimpl(cache) {}
+PoolManager::PoolManager(CacheImpl* cache)
+    : m_pimpl(std::make_shared<PoolManagerImpl>(cache)) {}
 
 void PoolManager::removePool(const std::string& name) {
   m_pimpl->removePool(name);

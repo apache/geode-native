@@ -34,7 +34,7 @@ typedef std::unordered_map<std::string, std::shared_ptr<Pool>> HashMapOfPools;
 
 class PoolManagerImpl {
  public:
-  explicit PoolManagerImpl(const Cache& cache) : m_cache(cache) {}
+  explicit PoolManagerImpl(CacheImpl* cache) : m_cache(cache) {}
   PoolManagerImpl(const PoolManagerImpl& copy) = default;
   ~PoolManagerImpl() = default;
 
@@ -58,7 +58,7 @@ class PoolManagerImpl {
   HashMapOfPools m_connectionPools;
   mutable std::recursive_mutex m_connectionPoolsLock;
   std::shared_ptr<Pool> m_defaultPool;
-  const Cache& m_cache;
+  CacheImpl* m_cache;
 };
 
 }  // namespace client

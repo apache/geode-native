@@ -83,7 +83,7 @@ Cache CacheFactory::create() const {
   LOGFINE("CacheFactory called DistributedSystem::connect");
   auto cache = create(DEFAULT_CACHE_NAME, nullptr);
 
-  auto& cacheImpl = cache->m_cacheImpl;
+  auto& cacheImpl = cache.m_cacheImpl;
   const auto& serializationRegistry = cacheImpl->getSerializationRegistry();
   const auto& pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
   const auto& memberListForVersionStamp =
@@ -108,8 +108,8 @@ Cache CacheFactory::create() const {
     return PdxHelper::deserializePdx(dataInput, false);
   });
 
-  pdxTypeRegistry->setPdxIgnoreUnreadFields(cache->getPdxIgnoreUnreadFields());
-  pdxTypeRegistry->setPdxReadSerialized(cache->getPdxReadSerialized());
+  pdxTypeRegistry->setPdxIgnoreUnreadFields(cache.getPdxIgnoreUnreadFields());
+  pdxTypeRegistry->setPdxReadSerialized(cache.getPdxReadSerialized());
 
   return cache;
 }
@@ -119,16 +119,15 @@ Cache CacheFactory::create(
     const std::shared_ptr<CacheAttributes>& attrs /*= nullptr*/) const {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
 
-  auto cptr =
-      std::make_shared<Cache>(std::move(name), dsProp, ignorePdxUnreadFields,
-                              pdxReadSerialized, authInitialize);
-  cptr->m_cacheImpl->setAttributes(attrs);
+  auto cache = Cache(std::move(name), dsProp, ignorePdxUnreadFields,
+                     pdxReadSerialized, authInitialize);
+  cache.m_cacheImpl->setAttributes(attrs);
 
   try {
     auto&& cacheXml =
-        cptr->getDistributedSystem().getSystemProperties().cacheXMLFile();
+        cache.getDistributedSystem().getSystemProperties().cacheXMLFile();
     if (!cacheXml.empty()) {
-      cptr->initializeDeclarativeCache(cacheXml);
+      cache.initializeDeclarativeCache(cacheXml);
     } else {
       cache.m_cacheImpl->initServices();
     }
