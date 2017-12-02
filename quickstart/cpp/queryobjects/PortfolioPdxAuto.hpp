@@ -103,7 +103,7 @@ class PortfolioPdxAuto : public apache::geode::client::PdxSerializable {
 
   static PdxSerializable* createDeserializable();
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const;
 };
 }
 #endif

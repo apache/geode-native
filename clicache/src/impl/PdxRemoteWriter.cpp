@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "PdxRemoteWriter.hpp"
 #include "PdxTypeRegistry.hpp"
 using namespace System;

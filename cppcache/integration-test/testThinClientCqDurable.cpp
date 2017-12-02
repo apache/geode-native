@@ -110,7 +110,7 @@ class MyCqListener1 : public CqListener {
         break;
     }
     LOGINFO("MyCqListener1::OnEvent called with %s, key[%s], value=(%s)", opStr,
-            key->toString()->asChar(), value->toString()->asChar());
+            key->toString().c_str(), value->toString().c_str());
   }
 
   void onError(const CqEvent& cqe) { LOGINFO("MyCqListener1::OnError called"); }
@@ -801,12 +801,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyCqs1)
 
     ASSERT(durableCqListPtr != nullptr, "Durable CQ List should not be null");
     ASSERT(durableCqListPtr->size() == 2, "Durable CQ List lenght should be 2");
-    ASSERT(isDurableCQName(durableCqListPtr->at(0)->toString()->asChar(), 1,
-                           false),
-           "Durable CQ name should be in the durable cq list");
-    ASSERT(isDurableCQName(durableCqListPtr->at(1)->toString()->asChar(), 1,
-                           false),
-           "Durable CQ name should be in the durable cq list");
+    ASSERT(
+        isDurableCQName(durableCqListPtr->at(0)->toString().c_str(), 1, false),
+        "Durable CQ name should be in the durable cq list");
+    ASSERT(
+        isDurableCQName(durableCqListPtr->at(1)->toString().c_str(), 1, false),
+        "Durable CQ name should be in the durable cq list");
   }
 END_TASK_DEFINITION
 
@@ -825,16 +825,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyCqsAfterClientup1)
     ASSERT(durableCqListPtr != nullptr, "Durable CQ List should not be null");
     ASSERT(durableCqListPtr->size() == 4, "Durable CQ List length should be 4");
     ASSERT(
-        isDurableCQName(durableCqListPtr->at(0)->toString()->asChar(), 1, true),
+        isDurableCQName(durableCqListPtr->at(0)->toString().c_str(), 1, true),
         "Durable CQ name should be in the durable cq list");
     ASSERT(
-        isDurableCQName(durableCqListPtr->at(1)->toString()->asChar(), 1, true),
+        isDurableCQName(durableCqListPtr->at(1)->toString().c_str(), 1, true),
         "Durable CQ name should be in the durable cq list");
     ASSERT(
-        isDurableCQName(durableCqListPtr->at(2)->toString()->asChar(), 1, true),
+        isDurableCQName(durableCqListPtr->at(2)->toString().c_str(), 1, true),
         "Durable CQ name should be in the durable cq list");
     ASSERT(
-        isDurableCQName(durableCqListPtr->at(3)->toString()->asChar(), 1, true),
+        isDurableCQName(durableCqListPtr->at(3)->toString().c_str(), 1, true),
         "Durable CQ name should be in the durable cq list");
   }
 END_TASK_DEFINITION
@@ -852,18 +852,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyCqs2)
     auto durableCqListPtr = qs->getAllDurableCqsFromServer();
     ASSERT(durableCqListPtr != nullptr, "Durable CQ List should not be null");
     ASSERT(durableCqListPtr->size() == 4, "Durable CQ List lenght should be 4");
-    ASSERT(isDurableCQName(durableCqListPtr->at(0)->toString()->asChar(), 2,
-                           false),
-           "Durable CQ name should be in the durable cq list");
-    ASSERT(isDurableCQName(durableCqListPtr->at(1)->toString()->asChar(), 2,
-                           false),
-           "Durable CQ name should be in the durable cq list");
-    ASSERT(isDurableCQName(durableCqListPtr->at(2)->toString()->asChar(), 2,
-                           false),
-           "Durable CQ name should be in the durable cq list");
-    ASSERT(isDurableCQName(durableCqListPtr->at(3)->toString()->asChar(), 2,
-                           false),
-           "Durable CQ name should be in the durable cq list");
+    ASSERT(
+        isDurableCQName(durableCqListPtr->at(0)->toString().c_str(), 2, false),
+        "Durable CQ name should be in the durable cq list");
+    ASSERT(
+        isDurableCQName(durableCqListPtr->at(1)->toString().c_str(), 2, false),
+        "Durable CQ name should be in the durable cq list");
+    ASSERT(
+        isDurableCQName(durableCqListPtr->at(2)->toString().c_str(), 2, false),
+        "Durable CQ name should be in the durable cq list");
+    ASSERT(
+        isDurableCQName(durableCqListPtr->at(3)->toString().c_str(), 2, false),
+        "Durable CQ name should be in the durable cq list");
   }
 END_TASK_DEFINITION
 
@@ -881,28 +881,28 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyCqsAfterClientup2)
     ASSERT(durableCqListPtr != nullptr, "Durable CQ List should not be null");
     ASSERT(durableCqListPtr->size() == 8, "Durable CQ List lenght should be 8");
     ASSERT(
-        isDurableCQName(durableCqListPtr->at(0)->toString()->asChar(), 2, true),
+        isDurableCQName(durableCqListPtr->at(0)->toString().c_str(), 2, true),
         "Durable CQ name should be in the durable cq list");
     ASSERT(
-        isDurableCQName(durableCqListPtr->at(1)->toString()->asChar(), 2, true),
+        isDurableCQName(durableCqListPtr->at(1)->toString().c_str(), 2, true),
         "Durable CQ name should be in the durable cq list");
     ASSERT(
-        isDurableCQName(durableCqListPtr->at(2)->toString()->asChar(), 2, true),
+        isDurableCQName(durableCqListPtr->at(2)->toString().c_str(), 2, true),
         "Durable CQ name should be in the durable cq list");
     ASSERT(
-        isDurableCQName(durableCqListPtr->at(3)->toString()->asChar(), 2, true),
+        isDurableCQName(durableCqListPtr->at(3)->toString().c_str(), 2, true),
         "Durable CQ name should be in the durable cq list");
     ASSERT(
-        isDurableCQName(durableCqListPtr->at(4)->toString()->asChar(), 2, true),
+        isDurableCQName(durableCqListPtr->at(4)->toString().c_str(), 2, true),
         "Durable CQ name should be in the durable cq list");
     ASSERT(
-        isDurableCQName(durableCqListPtr->at(5)->toString()->asChar(), 2, true),
+        isDurableCQName(durableCqListPtr->at(5)->toString().c_str(), 2, true),
         "Durable CQ name should be in the durable cq list");
     ASSERT(
-        isDurableCQName(durableCqListPtr->at(6)->toString()->asChar(), 2, true),
+        isDurableCQName(durableCqListPtr->at(6)->toString().c_str(), 2, true),
         "Durable CQ name should be in the durable cq list");
     ASSERT(
-        isDurableCQName(durableCqListPtr->at(7)->toString()->asChar(), 2, true),
+        isDurableCQName(durableCqListPtr->at(7)->toString().c_str(), 2, true),
         "Durable CQ name should be in the durable cq list");
   }
 END_TASK_DEFINITION

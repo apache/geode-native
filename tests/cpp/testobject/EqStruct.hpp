@@ -107,12 +107,12 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
   EqStruct() {}
   EqStruct(int index);
   virtual ~EqStruct();
-  virtual void toData(apache::geode::client::DataOutput& output) const;
-  virtual void fromData(apache::geode::client::DataInput& input);
-  virtual int32_t classId() const { return 101; }
-  std::shared_ptr<CacheableString> toString() const;
+  virtual void toData(apache::geode::client::DataOutput& output) const override;
+  virtual void fromData(apache::geode::client::DataInput& input) override;
+  virtual int32_t classId() const override { return 101; }
+  std::string toString() const override;
 
-  virtual uint32_t objectSize() const {
+  virtual uint32_t objectSize() const override {
     uint32_t objectSize = sizeof(EqStruct);
     return objectSize;
   }
@@ -134,8 +134,8 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
     resetTimestamp();
   }
 
-  uint64_t getTimestamp() { return timestamp; }
-  void resetTimestamp() {
+  uint64_t getTimestamp() override { return timestamp; }
+  void resetTimestamp() override {
     ACE_Time_Value startTime;
     startTime = ACE_OS::gettimeofday();
     ACE_UINT64 tusec;

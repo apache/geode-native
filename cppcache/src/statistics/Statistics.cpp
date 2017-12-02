@@ -16,94 +16,86 @@
  */
 
 #include <geode/statistics/Statistics.hpp>
-using namespace apache::geode::statistics;
+
+namespace apache {
+namespace geode {
+namespace statistics {
 
 void Statistics::close() {}
 
 ////////////////////////  accessor Methods  ///////////////////////
 
-int32_t Statistics::nameToId(const char* name) { return 0; }
+int32_t Statistics::nameToId(const std::string& name) const { return 0; }
 
-StatisticDescriptor* Statistics::nameToDescriptor(const char* name) {
+StatisticDescriptor* Statistics::nameToDescriptor(
+    const std::string& name) const {
   return nullptr;
 }
 
-int64_t Statistics::getUniqueId() { return 0; }
+int64_t Statistics::getUniqueId() const { return 0; }
 
-StatisticsType* Statistics::getType() { return nullptr; }
+StatisticsType* Statistics::getType() const { return nullptr; }
 
-const char* Statistics::getTextId() { return ""; }
+const std::string& Statistics::getTextId() const {
+  static std::string empty;
+  return empty;
+}
 
-int64_t Statistics::getNumericId() { return 0; }
+int64_t Statistics::getNumericId() const { return 0; }
 
-bool Statistics::isAtomic() { return 0; }
+bool Statistics::isAtomic() const { return 0; }
 
-bool Statistics::isShared() { return 0; }
+bool Statistics::isShared() const { return 0; }
 
-bool Statistics::isClosed() { return 0; }
+bool Statistics::isClosed() const { return 0; }
 
 ////////////////////////  set() Methods  ///////////////////////
 
 void Statistics::setInt(int32_t id, int32_t value) {}
 
-void Statistics::setInt(char* name, int32_t value) {}
+void Statistics::setInt(const std::string& name, int32_t value) {}
 
-void Statistics::setInt(StatisticDescriptor* descriptor, int32_t value) {}
+void Statistics::setInt(const StatisticDescriptor* descriptor, int32_t value) {}
 
 void Statistics::setLong(int32_t id, int64_t value) {}
 
-void Statistics::setLong(StatisticDescriptor* descriptor, int64_t value) {}
+void Statistics::setLong(const StatisticDescriptor* descriptor, int64_t value) {
+}
 
-void Statistics::setLong(char* name, int64_t value) {}
+void Statistics::setLong(const std::string& name, int64_t value) {}
 
 void Statistics::setDouble(int32_t id, double value) {}
 
-void Statistics::setDouble(StatisticDescriptor* descriptor, double value) {}
+void Statistics::setDouble(const StatisticDescriptor* descriptor,
+                           double value) {}
 
-void setDouble(char* name, double value) {}
+void setDouble(const std::string& name, double value) {}
 
 ///////////////////////  get() Methods  ///////////////////////
 
-int32_t Statistics::getInt(int32_t id) { return 0; }
+int32_t Statistics::getInt(int32_t id) const { return 0; }
 
-int32_t Statistics::getInt(StatisticDescriptor* descriptor) { return 0; }
+int32_t Statistics::getInt(const StatisticDescriptor* descriptor) const {
+  return 0;
+}
 
-int32_t Statistics::getInt(char* name) { return 0; }
+int32_t Statistics::getInt(const std::string& name) const { return 0; }
 
-int64_t Statistics::getLong(int32_t id) { return 0; }
+int64_t Statistics::getLong(int32_t id) const { return 0; }
 
-int64_t Statistics::getLong(StatisticDescriptor* descriptor) { return 0; }
+int64_t Statistics::getLong(const StatisticDescriptor* descriptor) const {
+  return 0;
+}
 
-int64_t Statistics::getLong(char* name) { return 0; }
+int64_t Statistics::getLong(const std::string& name) const { return 0; }
 
-double Statistics::getDouble(int32_t id) { return 0; }
+double Statistics::getDouble(int32_t id) const { return 0; }
 
-double Statistics::getDouble(StatisticDescriptor* descriptor) { return 0; }
+double Statistics::getDouble(const StatisticDescriptor* descriptor) const {
+  return 0;
+}
 
-double Statistics::getDouble(char* name) { return 0; }
-
-// Number Statistics::get(StatisticDescriptor* descriptor){ return }
-
-// Number Statistics::get(char* name){ return }
-
-/**
- * Returns the bits that represent the raw value of the described statistic.
- *
- * @param descriptor a statistic descriptor obtained with {@link
- * #nameToDescriptor}
- * or {@link StatisticsType#nameToDescriptor}.
- * @throws IllegalArgumentException
- *         If the described statistic does not exist
- */
-//  int64_t Statistics::getRawBits(StatisticDescriptor* descriptor){ return }
-
-/**
- * Returns the bits that represent the raw value of the named statistic.
- *
- * @throws IllegalArgumentException
- *         If the named statistic does not exist
- //  int64_t  Statistics::getRawBits(char* name){ return }
- */
+double Statistics::getDouble(const std::string& name) const { return 0; }
 
 ////////////////////////  inc() Methods  ////////////////////////
 
@@ -121,26 +113,35 @@ double Statistics::getDouble(char* name) { return 0; }
  */
 int32_t Statistics::incInt(int32_t id, int32_t delta) { return 0; }
 
-int32_t Statistics::incInt(StatisticDescriptor* descriptor, int32_t delta) {
+int32_t Statistics::incInt(const StatisticDescriptor* descriptor,
+                           int32_t delta) {
   return 0;
 }
 
-int32_t Statistics::incInt(char* name, int32_t delta) { return 0; }
+int32_t Statistics::incInt(const std::string& name, int32_t delta) { return 0; }
 
 int64_t Statistics::incLong(int32_t id, int64_t delta) { return 0; }
 
-int64_t Statistics::incLong(StatisticDescriptor* descriptor, int64_t delta) {
+int64_t Statistics::incLong(const StatisticDescriptor* descriptor,
+                            int64_t delta) {
   return 0;
 }
 
-int64_t Statistics::incLong(char* name, int64_t delta) { return 0; }
+int64_t Statistics::incLong(const std::string& name, int64_t delta) {
+  return 0;
+}
 
 double Statistics::incDouble(int32_t id, double delta) { return 0; }
 
-double Statistics::incDouble(StatisticDescriptor* descriptor, double delta) {
+double Statistics::incDouble(const StatisticDescriptor* descriptor,
+                             double delta) {
   return 0;
 }
 
-double Statistics::incDouble(char* name, double delta) { return 0; }
+double Statistics::incDouble(const std::string& name, double delta) {
+  return 0;
+}
 
-Statistics::~Statistics() {}
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

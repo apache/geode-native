@@ -94,15 +94,18 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
 
   static PdxSerializable* createDeserializable() { return new PortfolioPdx(); }
 
-  const char* getClassName() const { return "testobject.PortfolioPdx"; }
+  const std::string& getClassName() const override {
+    static std::string className = "testobject.PortfolioPdx";
+    return className;
+  }
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw);
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 };
 
 }  // namespace testobject

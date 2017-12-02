@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-#include "begin_native.hpp"
-#include <geode/Cache.hpp>
-#include "end_native.hpp"
 
-#include "Cache.hpp"
+#include "../begin_native.hpp"
+#include <geode/Cache.hpp>
+#include "../end_native.hpp"
+
+#include "../Cache.hpp"
 
 #include "CacheResolver.hpp"
 

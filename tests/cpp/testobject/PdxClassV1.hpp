@@ -69,16 +69,20 @@ class TESTOBJECT_EXPORT PdxType1V1 : public PdxSerializable {
 
   bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 
   using PdxSerializable::toData;
+
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
 
-  const char* getClassName() const { return "PdxTests::PdxTypes1V"; }
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests::PdxTypes1V";
+    return className;
+  }
 
   static PdxSerializable* createDeserializable() { return new PdxType1V1(); }
 };
@@ -107,16 +111,19 @@ class TESTOBJECT_EXPORT PdxType2V1 : public PdxSerializable {
 
   bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
 
-  const char* getClassName() const { return "PdxTests::PdxTypes2V"; }
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests::PdxTypes2V";
+    return className;
+  }
 
   static PdxSerializable* createDeserializable() { return new PdxType2V1(); }
 };
@@ -144,7 +151,7 @@ class TESTOBJECT_EXPORT PdxType3V1 : public PdxSerializable {
 
   virtual ~PdxType3V1();
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 
   static void reset(bool useWeakHashMap);
 
@@ -155,11 +162,14 @@ class TESTOBJECT_EXPORT PdxType3V1 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
 
-  const char* getClassName() const { return "PdxTests::PdxTypes3V"; }
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests::PdxTypes3V";
+    return className;
+  }
 
   static PdxSerializable* createDeserializable() { return new PdxType3V1(); }
 };
@@ -182,7 +192,7 @@ class TESTOBJECT_EXPORT PdxTypesV1R1 : public PdxSerializable {
 
   virtual ~PdxTypesV1R1();
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 
   static void reset(bool useWeakHashMap);
 
@@ -193,11 +203,14 @@ class TESTOBJECT_EXPORT PdxTypesV1R1 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
 
-  const char* getClassName() const { return "PdxTests::PdxTypesR1"; }
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests::PdxTypesR1";
+    return className;
+  }
 
   static PdxSerializable* createDeserializable() { return new PdxTypesV1R1(); }
 };
@@ -226,16 +239,19 @@ class TESTOBJECT_EXPORT PdxTypesV1R2 : public PdxSerializable {
 
   bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
 
-  const char* getClassName() const { return "PdxTests::PdxTypesR2"; }
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests::PdxTypesR2";
+    return className;
+  }
 
   static PdxSerializable* createDeserializable() { return new PdxTypesV1R2(); }
 };
@@ -258,7 +274,7 @@ class TESTOBJECT_EXPORT PdxTypesIgnoreUnreadFieldsV1 : public PdxSerializable {
 
   virtual ~PdxTypesIgnoreUnreadFieldsV1();
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 
   static void reset(bool useWeakHashMap);
 
@@ -269,12 +285,13 @@ class TESTOBJECT_EXPORT PdxTypesIgnoreUnreadFieldsV1 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
 
-  const char* getClassName() const {
-    return "PdxTests::PdxTypesIgnoreUnreadFields";
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTypesIgnoreUnreadFields";
+    return className;
   }
 
   static PdxSerializable* createDeserializable() {
@@ -327,16 +344,19 @@ class TESTOBJECT_EXPORT PdxVersionedV1 : public PdxSerializable {
 
   void init(int32_t size);
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
 
-  const char* getClassName() const { return "PdxTests::PdxVersioned"; }
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests::PdxVersioned";
+    return className;
+  }
 
   static PdxSerializable* createDeserializable() {
     return new PdxVersionedV1();
@@ -382,15 +402,15 @@ static const char* V1CLASSNAME2 = "PdxTests.TestDiffTypePdxS";
 
 class TestPdxSerializerForV1 : public PdxSerializer {
  public:
-  static void deallocate(void* testObject, const char* className) {
+  static void deallocate(void* testObject, const std::string& className) {
     // ASSERT(strcmp(className, V1CLASSNAME1) == 0 || strcmp(className,
     // V1CLASSNAME2) == 0 , "Unexpected classname in deallocate()");
     LOGINFO("TestPdxSerializer::deallocate called");
-    if (strcmp(className, V1CLASSNAME1) == 0) {
+    if (className == V1CLASSNAME1) {
       PdxTests::TestKeyV1* tkv1 =
           reinterpret_cast<PdxTests::TestKeyV1*>(testObject);
       delete tkv1;
-    } else if (strcmp(className, V1CLASSNAME2) == 0) {
+    } else if (className == V1CLASSNAME2) {
       PdxTests::TestDiffTypePdxSV1* dtpv1 =
           reinterpret_cast<PdxTests::TestDiffTypePdxSV1*>(testObject);
       delete dtpv1;
@@ -399,20 +419,20 @@ class TestPdxSerializerForV1 : public PdxSerializer {
     }
   }
 
-  static uint32_t objectSize(void* testObject, const char* className) {
+  static uint32_t objectSize(void* testObject, const std::string& className) {
     // ASSERT(strcmp(className, V1CLASSNAME1) == 0 || strcmp(className,
     // V1CLASSNAME2) == 0, "Unexpected classname in objectSize()");
     LOGINFO("TestPdxSerializer::objectSize called");
     return 12345;  // dummy value
   }
 
-  UserDeallocator getDeallocator(const char* className) {
+  UserDeallocator getDeallocator(const std::string& className) override {
     // ASSERT(strcmp(className, V1CLASSNAME1) == 0 || strcmp(className,
     // V1CLASSNAME2) == 0, "Unexpected classname in getDeallocator");
     return deallocate;
   }
 
-  UserObjectSizer getObjectSizer(const char* className) {
+  UserObjectSizer getObjectSizer(const std::string& className) override {
     // ASSERT(strcmp(className, V1CLASSNAME1) == 0 || strcmp(className,
     // V1CLASSNAME2) == 0, "Unexpected classname in getObjectSizer");
     return objectSize;
@@ -464,14 +484,15 @@ class TestPdxSerializerForV1 : public PdxSerializer {
     }
   }
 
-  void* fromData(const char* className, std::shared_ptr<PdxReader> pr) {
+  virtual void* fromData(const std::string& className,
+                         std::shared_ptr<PdxReader> pr) override {
     // ASSERT(strcmp(className, V1CLASSNAME1) == 0 || strcmp(className,
     // V1CLASSNAME2) == 0, "Unexpected classname in fromData");
 
-    if (strcmp(className, V1CLASSNAME2) == 0) {
+    if (className == V1CLASSNAME2) {
       return fromDataForTestDiffTypePdxSV1(pr);
 
-    } else if (strcmp(className, V1CLASSNAME1) == 0) {
+    } else if (className == V1CLASSNAME1) {
       return fromDataForTestKeyV1(pr);
 
     } else {
@@ -480,14 +501,15 @@ class TestPdxSerializerForV1 : public PdxSerializer {
     }
   }
 
-  bool toData(void* testObject, const char* className, std::shared_ptr<PdxWriter> pw) {
+  virtual bool toData(void* testObject, const std::string& className,
+                      std::shared_ptr<PdxWriter> pw) override {
     // ASSERT(strcmp(className, V1CLASSNAME1) == 0 || strcmp(className,
     // V1CLASSNAME2) == 0, "Unexpected classname in toData");
 
-    if (strcmp(className, V1CLASSNAME2) == 0) {
+    if (className == V1CLASSNAME2) {
       return toDataForTestDiffTypePdxSV1(testObject, pw);
 
-    } else if (strcmp(className, V1CLASSNAME1) == 0) {
+    } else if (className == V1CLASSNAME1) {
       return toDataForTestKeyV1(testObject, pw);
 
     } else {
@@ -510,16 +532,19 @@ class TESTOBJECT_EXPORT TestEqualsV1 : public PdxSerializable {
  public:
   TestEqualsV1();
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw);
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
 
-  const char* getClassName() const { return "PdxTests::TestEquals"; }
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests::TestEquals";
+    return className;
+  }
 
   static PdxSerializable* createDeserializable() { return new TestEqualsV1(); }
 };

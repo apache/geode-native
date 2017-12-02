@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STRUCTSET_H_
-#define GEODE_STRUCTSET_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,11 +15,14 @@
  * limitations under the License.
  */
 
-#include "geode_globals.hpp"
+#pragma once
 
+#ifndef GEODE_STRUCTSET_H_
+#define GEODE_STRUCTSET_H_
+
+#include "geode_globals.hpp"
 #include "CqResults.hpp"
 #include "Struct.hpp"
-
 #include "SelectResultsIterator.hpp"
 
 /**
@@ -34,6 +32,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 /**
  * @class StructSet StructSet.hpp
  *
@@ -97,7 +96,7 @@ class CPPCACHE_EXPORT StructSet : public CqResults {
   /**
    * Destructor
    */
-  virtual ~StructSet(){};
+  virtual ~StructSet() = default;
 };
 }  // namespace client
 }  // namespace geode

@@ -71,11 +71,12 @@ class OperMonitor : public CacheListener {
     char buff[128] = {'\0'};
     auto keyPtr = std::dynamic_pointer_cast<CacheableString>(key);
     if (value != nullptr) {
-      sprintf(buff, "Event [%s, %d] called for %s:%s", keyPtr->toString(),
-              value->value(), m_clientName.c_str(), m_regionName.c_str());
+      sprintf(buff, "Event [%s, %d] called for %s:%s",
+              keyPtr->toString().c_str(), value->value(), m_clientName.c_str(),
+              m_regionName.c_str());
       m_map[key] = value;
     } else {
-      sprintf(buff, "Event Key=%s called for %s:%s", keyPtr->toString(),
+      sprintf(buff, "Event Key=%s called for %s:%s", keyPtr->toString().c_str(),
               m_clientName.c_str(), m_regionName.c_str());
     }
     LOG(buff);
@@ -106,7 +107,8 @@ class OperMonitor : public CacheListener {
       const auto valuePtr =
           std::dynamic_pointer_cast<CacheableInt32>(item.second);
 
-      if (strchr(keyPtr->toString(), 'D') == nullptr) { /*Non Durable Key */
+      if (keyPtr->toString().find('D') ==
+          std::string::npos) { /*Non Durable Key */
         sprintf(buf,
                 "Expected final value for nonDurable Keys = %d, Actual = %d",
                 nonDurableValue, valuePtr->value());
@@ -138,11 +140,16 @@ class OperMonitor : public CacheListener {
   virtual void afterRegionDestroy(const RegionEvent& event){};
 };
 
-void setCacheListener(const char* regName, std::shared_ptr<OperMonitor> monitor) {
+void setCacheListener(const char* regName,
+                      std::shared_ptr<OperMonitor> monitor) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(monitor);
-}std::shared_ptr<OperMonitor> mon1C1 = nullptr;std::shared_ptr<OperMonitor> mon2C1=nullptr;std::shared_ptr<OperMonitor> mon1C2 = nullptr;std::shared_ptr<OperMonitor> mon2C2=nullptr;
+}
+std::shared_ptr<OperMonitor> mon1C1 = nullptr;
+std::shared_ptr<OperMonitor> mon2C1 = nullptr;
+std::shared_ptr<OperMonitor> mon1C2 = nullptr;
+std::shared_ptr<OperMonitor> mon2C2 = nullptr;
 
 /* Total 10 Keys , alternate durable and non-durable */
 const char* mixKeys[] = {"Key-1", "D-Key-1", "L-Key", "LD-Key"};
@@ -152,8 +159,10 @@ const char* testRegex[] = {"D-Key-.*", "Key-.*"};
 #include "ThinClientTasks_C2S2.hpp"
 
 void initClientCache(int durableIdx, int redundancy,
-                     std::chrono::seconds durableTimeout, std::shared_ptr<OperMonitor>& mon1,
-                     std::shared_ptr<OperMonitor>& mon2, int sleepDuration = 0) {
+                     std::chrono::seconds durableTimeout,
+                     std::shared_ptr<OperMonitor>& mon1,
+                     std::shared_ptr<OperMonitor>& mon2,
+                     int sleepDuration = 0) {
   // Sleep before starting , Used for Timeout testing.
   if (sleepDuration) SLEEP(sleepDuration);
 
@@ -164,8 +173,8 @@ void initClientCache(int durableIdx, int redundancy,
 
   getHelper()->cachePtr->readyForEvents();
 
- auto regPtr0 = getHelper()->getRegion(regionNames[0]);
- auto regPtr1 = getHelper()->getRegion(regionNames[1]);
+  auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+  auto regPtr1 = getHelper()->getRegion(regionNames[1]);
 
   // Register Regex in both region.
   regPtr0->registerRegex(testRegex[0], true);
@@ -174,18 +183,18 @@ void initClientCache(int durableIdx, int redundancy,
   regPtr1->registerRegex(testRegex[1], false);
 
   // Register List in both regions
-  std::vector<std::shared_ptr<CacheableKey>>  v;
- auto ldkey = CacheableKey::create(mixKeys[3]);
+  std::vector<std::shared_ptr<CacheableKey>> v;
+  auto ldkey = CacheableKey::create(mixKeys[3]);
   v.push_back(ldkey);
   regPtr0->registerKeys(v, true);
   regPtr1->registerKeys(v, true);
   v.clear();
- auto lkey = CacheableKey::create(mixKeys[2]);
- v.push_back(lkey);
- regPtr0->registerKeys(v);
- regPtr1->registerKeys(v);
+  auto lkey = CacheableKey::create(mixKeys[2]);
+  v.push_back(lkey);
+  regPtr0->registerKeys(v);
+  regPtr1->registerKeys(v);
 
- LOG("Clnt1Init complete.");
+  LOG("Clnt1Init complete.");
 }
 
 void feederUpdate(int value, int ignoreR2 = false) {

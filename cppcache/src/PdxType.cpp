@@ -40,15 +40,14 @@ PdxType::~PdxType() {
   GF_SAFE_DELETE(m_pdxFieldTypes);
   GF_SAFE_DELETE_ARRAY(m_remoteToLocalFieldMap);
   GF_SAFE_DELETE_ARRAY(m_localToRemoteFieldMap);
-  GF_SAFE_DELETE_ARRAY(m_className);
 }
 
 // PdxType::PdxType() : PdxType(nullptr, false) {}
 
 PdxType::PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr,
-                 const char* pdxDomainClassName, bool isLocal)
+                 std::string pdxDomainClassName, bool isLocal)
     : Serializable(),
-      m_className(Utils::copyString(pdxDomainClassName)),
+      m_className(pdxDomainClassName),
       m_isLocal(isLocal),
       m_numberOfVarLenFields(0),
       m_varLenFieldIdx(0),
@@ -69,7 +68,7 @@ void PdxType::toData(DataOutput& output) const {
 
   // m_className
   output.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
-  output.writeUTF(m_className);
+  output.writeUTF(m_className.c_str());
 
   // m_noJavaClass
   output.writeBoolean(m_noJavaClass);
@@ -99,7 +98,11 @@ void PdxType::fromData(DataInput& input) {
   input.readUTF(const_cast<char**>(&m_javaPdxClass));
 
   input.read();  // ignore int8_t classtypeId;2
-  input.readUTF(&m_className);
+
+  char* tmp;
+  input.readUTF(&tmp);
+  m_className = std::string(tmp);
+  delete (tmp);
 
   m_noJavaClass = input.readBoolean();
 
@@ -130,30 +133,12 @@ void PdxType::fromData(DataInput& input) {
   InitializeType();
 }
 
-void PdxType::addFixedLengthTypeField(const char* fieldName,
-                                      const char* className, int8_t typeId,
-                                      int32_t size) {
-  if (fieldName == nullptr /*|| *fieldName == '\0'*/ ||
-      m_fieldNameVsPdxType.find(fieldName) !=
-          m_fieldNameVsPdxType
-              .end()) {  // COVERITY ---> 30289 Same on both sides
-    char excpStr[256] = {0};
-    /* adongre
-     * Coverity - II
-     * CID 29269: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "Field: %s is either already added into PdxWriter or it is null ",
-        fieldName);
-    throw IllegalStateException(excpStr);
+void PdxType::addFixedLengthTypeField(const std::string& fieldName,
+                                      const std::string& className,
+                                      int8_t typeId, int32_t size) {
+  if (m_fieldNameVsPdxType.find(fieldName) != m_fieldNameVsPdxType.end()) {
+    throw IllegalStateException("Field: " + fieldName +
+                                " is already added to PdxWriter");
   }
   auto pfxPtr = std::make_shared<PdxFieldType>(
       fieldName, className, typeId,
@@ -162,18 +147,12 @@ void PdxType::addFixedLengthTypeField(const char* fieldName,
   m_fieldNameVsPdxType[fieldName] = pfxPtr;
 }
 
-void PdxType::addVariableLengthTypeField(const char* fieldName,
-                                         const char* className, int8_t typeId) {
-  if (fieldName == nullptr /*|| *fieldName == '\0'*/ ||
-      m_fieldNameVsPdxType.find(fieldName) !=
-          m_fieldNameVsPdxType
-              .end()) {  // COVERITY ---> 30289 Same on both sides
-    char excpStr[256] = {0};
-    ACE_OS::snprintf(
-        excpStr, 256,
-        "Field: %s is either already added into PdxWriter or it is null ",
-        fieldName);
-    throw IllegalStateException(excpStr);
+void PdxType::addVariableLengthTypeField(const std::string& fieldName,
+                                         const std::string& className,
+                                         int8_t typeId) {
+  if (m_fieldNameVsPdxType.find(fieldName) != m_fieldNameVsPdxType.end()) {
+    throw IllegalStateException("Field: " + fieldName +
+                                " is already added to PdxWriter");
   }
 
   if (m_isVarLenFieldAdded) {
@@ -325,7 +304,7 @@ void PdxType::InitializeType() {
   generatePositionMap();
 }
 
-int32_t PdxType::getFieldPosition(const char* fieldName,
+int32_t PdxType::getFieldPosition(const std::string& fieldName,
                                   uint8_t* offsetPosition, int32_t offsetSize,
                                   int32_t pdxStreamlen) {
   auto pft = this->getPdxField(fieldName);
@@ -587,7 +566,7 @@ bool PdxType::Equals(std::shared_ptr<PdxType> otherObj) {
 }
 
 bool PdxType::operator<(const PdxType& other) const {
-  return ACE_OS::strcmp(this->m_className, other.m_className) < 0;
+  return this->m_className < other.m_className;
 }
 
 }  // namespace client

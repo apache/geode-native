@@ -17,13 +17,13 @@
 
 #include "StatisticDescriptorImpl.hpp"
 
-#include <ace/OS.h>
+namespace apache {
+namespace geode {
+namespace statistics {
 
-using namespace apache::geode::statistics;
-
-const char* StatisticDescriptorImpl::IntTypeName = "int_t";
-const char* StatisticDescriptorImpl::LongTypeName = "Long";
-const char* StatisticDescriptorImpl::DoubleTypeName = "Float";
+const std::string StatisticDescriptorImpl::IntTypeName = "int_t";
+const std::string StatisticDescriptorImpl::LongTypeName = "Long";
+const std::string StatisticDescriptorImpl::DoubleTypeName = "Float";
 
 /**
  * Describes an individual statistic whose value is updated by an
@@ -37,36 +37,25 @@ const char* StatisticDescriptorImpl::DoubleTypeName = "Float";
  *
  */
 
-StatisticDescriptorImpl::StatisticDescriptorImpl(const char* statName,
-                                                 FieldType statDescriptorType,
-                                                 const char* statDescription,
-                                                 const char* statUnit,
-                                                 bool statIsStatCounter,
-                                                 bool statIsStatLargerBetter) {
-  name = statName;
-  descriptorType = statDescriptorType;
-  if (strcmp(statDescription, "") == 0) {
-    description = "";
-  } else {
-    description = statDescription;
-  }
-  if (strcmp(statUnit, "") == 0) {
-    unit = "";
-  } else {
-    unit = statUnit;
-  }
-  isStatCounter = statIsStatCounter;
-  isStatLargerBetter = statIsStatLargerBetter;
-  id = -1;
-}
+StatisticDescriptorImpl::StatisticDescriptorImpl(
+    const std::string& statName, FieldType statDescriptorType,
+    const std::string& statDescription, const std::string& statUnit,
+    bool statIsStatCounter, bool statIsStatLargerBetter)
+    : name(statName),
+      descriptorType(statDescriptorType),
+      description(statDescription),
+      unit(statUnit),
+      isStatCounter(statIsStatCounter),
+      isStatLargerBetter(statIsStatLargerBetter),
+      id(-1) {}
 
 StatisticDescriptorImpl::~StatisticDescriptorImpl() {}
 
 /////////////////////// Create functions ///////////////////////////////////
 
 StatisticDescriptor* StatisticDescriptorImpl::createIntCounter(
-    const char* statName, const char* description, const char* units,
-    bool isLargerBetter) {
+    const std::string& statName, const std::string& description,
+    const std::string& units, bool isLargerBetter) {
   FieldType fieldType = INT_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       statName, fieldType, description, units, true, isLargerBetter);
@@ -78,8 +67,8 @@ StatisticDescriptor* StatisticDescriptorImpl::createIntCounter(
 }
 
 StatisticDescriptor* StatisticDescriptorImpl::createLongCounter(
-    const char* name, const char* description, const char* units,
-    bool isLargerBetter) {
+    const std::string& name, const std::string& description,
+    const std::string& units, bool isLargerBetter) {
   FieldType fieldType = LONG_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, true, isLargerBetter);
@@ -91,8 +80,8 @@ StatisticDescriptor* StatisticDescriptorImpl::createLongCounter(
 }
 
 StatisticDescriptor* StatisticDescriptorImpl::createDoubleCounter(
-    const char* name, const char* description, const char* units,
-    bool isLargerBetter) {
+    const std::string& name, const std::string& description,
+    const std::string& units, bool isLargerBetter) {
   FieldType fieldType = DOUBLE_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, true, isLargerBetter);
@@ -104,8 +93,8 @@ StatisticDescriptor* StatisticDescriptorImpl::createDoubleCounter(
 }
 
 StatisticDescriptor* StatisticDescriptorImpl::createIntGauge(
-    const char* name, const char* description, const char* units,
-    bool isLargerBetter) {
+    const std::string& name, const std::string& description,
+    const std::string& units, bool isLargerBetter) {
   FieldType fieldType = INT_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, false, isLargerBetter);
@@ -117,8 +106,8 @@ StatisticDescriptor* StatisticDescriptorImpl::createIntGauge(
 }
 
 StatisticDescriptor* StatisticDescriptorImpl::createLongGauge(
-    const char* name, const char* description, const char* units,
-    bool isLargerBetter) {
+    const std::string& name, const std::string& description,
+    const std::string& units, bool isLargerBetter) {
   FieldType fieldType = LONG_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, false, isLargerBetter);
@@ -131,8 +120,8 @@ StatisticDescriptor* StatisticDescriptorImpl::createLongGauge(
 }
 
 StatisticDescriptor* StatisticDescriptorImpl::createDoubleGauge(
-    const char* name, const char* description, const char* units,
-    bool isLargerBetter) {
+    const std::string& name, const std::string& description,
+    const std::string& units, bool isLargerBetter) {
   FieldType fieldType = DOUBLE_TYPE;
   StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
       name, fieldType, description, units, false, isLargerBetter);
@@ -146,17 +135,17 @@ StatisticDescriptor* StatisticDescriptorImpl::createDoubleGauge(
 /////////////////////// StatisticDescriptor(Base class)
 /// Methods///////////////////////////
 
-const char* StatisticDescriptorImpl::getName() { return name.c_str(); }
+const std::string& StatisticDescriptorImpl::getName() const { return name; }
 
-const char* StatisticDescriptorImpl::getDescription() {
-  return description.c_str();
+const std::string& StatisticDescriptorImpl::getDescription() const {
+  return description;
 }
 
 int32_t StatisticDescriptorImpl::getStorageBits() {
   return getTypeCodeBits(descriptorType);
 }
 
-const char* StatisticDescriptorImpl::getTypeCodeName(FieldType code) {
+const std::string& StatisticDescriptorImpl::getTypeCodeName(FieldType code) {
   switch (code) {
     case INT_TYPE:
       return IntTypeName;
@@ -165,10 +154,7 @@ const char* StatisticDescriptorImpl::getTypeCodeName(FieldType code) {
     case DOUBLE_TYPE:
       return DoubleTypeName;
     default: {
-      char buf[20];
-      ACE_OS::snprintf(buf, 20, "%d", code);
-      std::string temp(buf);
-      std::string s = "Unknown type code:" + temp;
+      std::string s = "Unknown type code:" + std::to_string(code);
       throw IllegalArgumentException(s.c_str());
     }
   }
@@ -194,21 +180,15 @@ int32_t StatisticDescriptorImpl::getTypeCodeBits(FieldType code) {
   }
 }
 
-bool StatisticDescriptorImpl::isCounter() { return isStatCounter; }
+bool StatisticDescriptorImpl::isCounter() const { return isStatCounter; }
 
-bool StatisticDescriptorImpl::isLargerBetter() { return isStatLargerBetter; }
+bool StatisticDescriptorImpl::isLargerBetter() const {
+  return isStatLargerBetter;
+}
 
-const char* StatisticDescriptorImpl::getUnit() { return unit.c_str(); }
+const std::string& StatisticDescriptorImpl::getUnit() const { return unit; }
 
-/* adongre
- * CID 28912: Uncaught exception (UNCAUGHT_EXCEPT)An exception of type
- * "apache::geode::client::IllegalStateException *"
- * is thrown but the throw list "throw
- * (apache::geode::client::IllegalArgumentException)"
- * doesn't allow it to be thrown.
- * This will cause a call to unexpected() which usually calls terminate().
- */
-int32_t StatisticDescriptorImpl::getId() {
+int32_t StatisticDescriptorImpl::getId() const {
   if (id == -1) {
     std::string s = "The id has not been initialized yet.";
     throw IllegalStateException(s.c_str());
@@ -218,11 +198,13 @@ int32_t StatisticDescriptorImpl::getId() {
 
 ///////////////////////// Instance Methods///////////////// ////////////////////
 
-FieldType StatisticDescriptorImpl::getTypeCode() { return descriptorType; }
+FieldType StatisticDescriptorImpl::getTypeCode() const {
+  return descriptorType;
+}
 
 void StatisticDescriptorImpl::setId(int32_t statId) { id = statId; }
 
-int32_t StatisticDescriptorImpl::checkInt() {
+int32_t StatisticDescriptorImpl::checkInt() const {
   if (descriptorType != INT_TYPE) {
     std::string sb;
     std::string typeCode(getTypeCodeName(getTypeCode()));
@@ -233,7 +215,7 @@ int32_t StatisticDescriptorImpl::checkInt() {
   }
   return id;
 }
-int32_t StatisticDescriptorImpl::checkLong() {
+int32_t StatisticDescriptorImpl::checkLong() const {
   if (descriptorType != LONG_TYPE) {
     std::string sb;
     std::string typeCode(getTypeCodeName(getTypeCode()));
@@ -245,7 +227,7 @@ int32_t StatisticDescriptorImpl::checkLong() {
   return id;
 }
 
-int32_t StatisticDescriptorImpl::checkDouble() {
+int32_t StatisticDescriptorImpl::checkDouble() const {
   if (descriptorType != DOUBLE_TYPE) {
     std::string sb;
     std::string typeCode(getTypeCodeName(getTypeCode()));
@@ -257,3 +239,7 @@ int32_t StatisticDescriptorImpl::checkDouble() {
   }
   return id;
 }
+
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

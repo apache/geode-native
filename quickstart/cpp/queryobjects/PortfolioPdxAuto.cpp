@@ -97,7 +97,7 @@ PortfolioPdxAuto::~PortfolioPdxAuto() {
     newVal = NULL;
   }
 }
-std::shared_ptr<CacheableString> PortfolioPdxAuto::toString() const {
+std::string PortfolioPdxAuto::toString() const {
   LOGINFO("PortfolioPdxAuto::toString() Start");
   char idbuf[1024];
   sprintf(idbuf, "PortfolioPdxObject: [ id=%d ]", id);
@@ -112,20 +112,20 @@ std::shared_ptr<CacheableString> PortfolioPdxAuto::toString() const {
   }
   char position1buf[2048];
   if (position1 != nullptr) {
-    sprintf(position1buf, "\t\t\t  P1: %s", position1->toString()->asChar());
+    sprintf(position1buf, "\t\t\t  P1: %s", position1->toString().c_str());
   } else {
     sprintf(position1buf, "\t\t\t  P1: %s", "NULL");
   }
   char position2buf[2048];
   if (position2 != nullptr) {
-    sprintf(position2buf, " P2: %s", position2->toString()->asChar());
+    sprintf(position2buf, " P2: %s", position2->toString().c_str());
   } else {
     sprintf(position2buf, " P2: %s ]", "NULL");
   }
   char creationdatebuf[2048];
   if (creationDate != nullptr) {
     sprintf(creationdatebuf, "creation Date %s",
-            creationDate->toString()->asChar());
+            creationDate->toString().c_str());
   } else {
     sprintf(creationdatebuf, "creation Date %s", "NULL");
   }
@@ -135,5 +135,5 @@ std::shared_ptr<CacheableString> PortfolioPdxAuto::toString() const {
           position1buf, position2buf);
   return CacheableString::create(stringBuf);
 
-  return CacheableString::create(idbuf);
+  return idbuf;
 }

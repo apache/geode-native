@@ -35,6 +35,7 @@
 #include "VersionTag.hpp"
 #include "util/bounds.hpp"
 #include "util/Log.hpp"
+#include "util/exception.hpp"
 
 namespace apache {
 namespace geode {
@@ -98,9 +99,10 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cache,
   setPool(p);
 }
 
-const char* LocalRegion::getName() const { return m_name.c_str(); }
+const std::string& LocalRegion::getName() const { return m_name; }
 
-const char* LocalRegion::getFullPath() const { return m_fullPath.c_str(); }
+const std::string& LocalRegion::getFullPath() const { return m_fullPath; }
+
 std::shared_ptr<Region> LocalRegion::getParentRegion() const {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getParentRegion);
   return m_parentRegion;
@@ -110,12 +112,12 @@ void LocalRegion::updateAccessAndModifiedTime(bool modified) {
   // locking not required since setters use atomic operations
   if (regionExpiryEnabled()) {
     auto now = std::chrono::system_clock::now();
-    LOGDEBUG("Setting last accessed time for region %s to %d", getFullPath(),
-             now.time_since_epoch().count());
+    LOGDEBUG("Setting last accessed time for region %s to %d",
+             getFullPath().c_str(), now.time_since_epoch().count());
     m_cacheStatistics->setLastAccessedTime(now);
     if (modified) {
-      LOGDEBUG("Setting last modified time for region %s to %d", getFullPath(),
-               now.time_since_epoch().count());
+      LOGDEBUG("Setting last modified time for region %s to %d",
+               getFullPath().c_str(), now.time_since_epoch().count());
       m_cacheStatistics->setLastModifiedTime(now);
     }
     // TODO:  should we really touch the parent region??
@@ -183,7 +185,7 @@ void LocalRegion::tombstoneOperationNoThrow(
       } else {
         LOGERROR(
             "tombstone_operation contains incorrect gc versions in the "
-            "message. Region %s",
+            "message. Region " +
             getFullPath());
         continue;
       }
@@ -192,25 +194,22 @@ void LocalRegion::tombstoneOperationNoThrow(
   } else {
     m_entries->reapTombstones(tombstoneKeys);
   }
-} std::shared_ptr<Region> LocalRegion::getSubregion(const char* path) {
-  if (path == nullptr) {
-    throw IllegalArgumentException("LocalRegion::getSubregion: path is null");
-  }
-
+}
+std::shared_ptr<Region> LocalRegion::getSubregion(const std::string& path) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getSubregion);
-  std::string pathstr(path);
-  std::string slash("/");
-  if ((pathstr == slash) || (pathstr.length() < 1)) {
-    LOGERROR("Get subregion path [%s] is not valid.", pathstr.c_str());
-    throw IllegalArgumentException("Get subegion path is null or a /");
+
+  static const std::string slash("/");
+  if (path == slash || path.empty()) {
+    LOGERROR("Get subregion path [" + path + "] is not valid.");
+    throw IllegalArgumentException("Get subegion path is empty or a /");
   }
-  std::string fullname = pathstr;
+  auto fullname = path;
   if (fullname.substr(0, 1) == slash) {
-    fullname = pathstr.substr(1);
+    fullname = path.substr(1);
   }
   // find second separator
   size_t idx = fullname.find('/');
-  std::string stepname = fullname.substr(0, idx);
+  auto stepname = fullname.substr(0, idx);
 
   std::shared_ptr<Region> region, rptr;
   if (0 == m_subRegions.find(stepname, region)) {
@@ -224,8 +223,9 @@ void LocalRegion::tombstoneOperationNoThrow(
   }
   return rptr;
 }
- std::shared_ptr<Region> LocalRegion::createSubregion(
-    const char* subregionName, const std::shared_ptr<RegionAttributes>& aRegionAttributes) {
+std::shared_ptr<Region> LocalRegion::createSubregion(
+    const std::string& subregionName,
+    const std::shared_ptr<RegionAttributes>& aRegionAttributes) {
   CHECK_DESTROY_PENDING(TryWriteGuard, LocalRegion::createSubregion);
   {
     std::string namestr = subregionName;
@@ -912,7 +912,7 @@ GfErrType LocalRegion::getNoThrow(
                        m_regionStats->getLoaderCallTimeId(), sampleStartNanos);
       m_regionStats->incLoaderCallsCompleted();
     } catch (const Exception& ex) {
-      LOGERROR("Error in CacheLoader::load: %s: %s", ex.getName(),
+      LOGERROR("Error in CacheLoader::load: %s: %s", ex.getName().c_str(),
                ex.what());
       err = GF_CACHE_LOADER_EXCEPTION;
     } catch (...) {
@@ -1259,7 +1259,7 @@ class DestroyActions {
       // not exist locally
       GfErrType err;
       LOGDEBUG("Region::destroy: region [%s] destroying key [%s]",
-               m_region.getFullPath(),
+               m_region.getFullPath().c_str(),
                Utils::getCacheableKeyString(key)->asChar());
       if ((err = m_region.m_entries->remove(key, oldValue, entry, updateCount,
                                             versionTag, afterRemote)) !=
@@ -1268,7 +1268,7 @@ class DestroyActions {
           LOGDEBUG(
               "Region::destroy: region [%s] destroy key [%s] for "
               "notification having value [%s] failed with %d",
-              m_region.getFullPath(),
+              m_region.getFullPath().c_str(),
               Utils::getCacheableKeyString(key)->asChar(),
               Utils::getCacheableString(oldValue)->asChar(), err);
           err = GF_NOERR;
@@ -1280,7 +1280,8 @@ class DestroyActions {
         LOGDEBUG(
             "Region::destroy: region [%s] destroyed key [%s] having "
             "value [%s]",
-            m_region.getFullPath(), Utils::getCacheableKeyString(key)->asChar(),
+            m_region.getFullPath().c_str(),
+            Utils::getCacheableKeyString(key)->asChar(),
             Utils::getCacheableString(oldValue)->asChar());
         // any cleanup required for the entry (e.g. removing from LRU list)
         if (entry != nullptr) {
@@ -1462,7 +1463,7 @@ class RemoveActions {
       // not exist locally
       GfErrType err;
       LOGDEBUG("Region::remove: region [%s] removing key [%s]",
-               m_region.getFullPath(),
+               m_region.getFullPath().c_str(),
                Utils::getCacheableKeyString(key)->asChar());
       if ((err = m_region.m_entries->remove(key, oldValue, entry, updateCount,
                                             versionTag, afterRemote)) !=
@@ -1471,7 +1472,7 @@ class RemoveActions {
           LOGDEBUG(
               "Region::remove: region [%s] remove key [%s] for "
               "notification having value [%s] failed with %d",
-              m_region.getFullPath(),
+              m_region.getFullPath().c_str(),
               Utils::getCacheableKeyString(key)->asChar(),
               Utils::getCacheableString(oldValue)->asChar(), err);
           err = GF_NOERR;
@@ -1482,7 +1483,8 @@ class RemoveActions {
         LOGDEBUG(
             "Region::remove: region [%s] removed key [%s] having "
             "value [%s]",
-            m_region.getFullPath(), Utils::getCacheableKeyString(key)->asChar(),
+            m_region.getFullPath().c_str(),
+            Utils::getCacheableKeyString(key)->asChar(),
             Utils::getCacheableString(oldValue)->asChar());
         // any cleanup required for the entry (e.g. removing from LRU list)
         if (entry != nullptr) {
@@ -2171,7 +2173,7 @@ GfErrType LocalRegion::localClearNoThrow(
 }
 
 GfErrType LocalRegion::invalidateLocal(
-    const char* name, const std::shared_ptr<CacheableKey>& keyPtr,
+    const std::string& name, const std::shared_ptr<CacheableKey>& keyPtr,
     const std::shared_ptr<Cacheable>& value, const CacheEventFlags eventFlags,
     std::shared_ptr<VersionTag> versionTag) {
   if (keyPtr == nullptr) {
@@ -2187,8 +2189,9 @@ GfErrType LocalRegion::invalidateLocal(
 
   if (!eventFlags.isNotification() || getProcessedMarker()) {
     if (cachingEnabled) {
-      LOGDEBUG("%s: region [%s] invalidating key [%s], value [%s]", name,
-               getFullPath(), Utils::getCacheableKeyString(keyPtr)->asChar(),
+      LOGDEBUG("%s: region [%s] invalidating key [%s], value [%s]",
+               name.c_str(), getFullPath().c_str(),
+               Utils::getCacheableKeyString(keyPtr)->asChar(),
                Utils::getCacheableString(value)->asChar());
       /* adongre - Coverity II
        * CID 29193: Parse warning (PW.PARAMETER_HIDDEN)
@@ -2200,8 +2203,8 @@ GfErrType LocalRegion::invalidateLocal(
           LOGDEBUG(
               "Region::invalidate: region [%s] invalidate key [%s] "
               "failed with error %d",
-              getFullPath(), Utils::getCacheableKeyString(keyPtr)->asChar(),
-              err);
+              getFullPath().c_str(),
+              Utils::getCacheableKeyString(keyPtr)->asChar(), err);
         }
         if (err == GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION) {
           LOGDEBUG(
@@ -2220,7 +2223,8 @@ GfErrType LocalRegion::invalidateLocal(
         }
       } else {
         LOGDEBUG("Region::invalidate: region [%s] invalidated key [%s]",
-                 getFullPath(), Utils::getCacheableKeyString(keyPtr)->asChar());
+                 getFullPath().c_str(),
+                 Utils::getCacheableKeyString(keyPtr)->asChar());
       }
       // entry/region expiration
       if (!eventFlags.isEvictOrExpire()) {
@@ -2405,20 +2409,23 @@ GfErrType LocalRegion::destroyRegionNoThrow(
   return err;
 }
 
-GfErrType LocalRegion::putLocal(
-    const char* name, bool isCreate, const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
-    std::shared_ptr<Cacheable>& oldValue, bool cachingEnabled, int updateCount,
-    int destroyTracker, std::shared_ptr<VersionTag> versionTag,
-    DataInput* delta, std::shared_ptr<EventId> eventId) {
+GfErrType LocalRegion::putLocal(const std::string& name, bool isCreate,
+                                const std::shared_ptr<CacheableKey>& key,
+                                const std::shared_ptr<Cacheable>& value,
+                                std::shared_ptr<Cacheable>& oldValue,
+                                bool cachingEnabled, int updateCount,
+                                int destroyTracker,
+                                std::shared_ptr<VersionTag> versionTag,
+                                DataInput* delta,
+                                std::shared_ptr<EventId> eventId) {
   GfErrType err = GF_NOERR;
   bool isUpdate = !isCreate;
   auto& cachePerfStats = m_cacheImpl->getCachePerfStats();
 
   if (cachingEnabled) {
     std::shared_ptr<MapEntryImpl> entry;
-    LOGDEBUG("%s: region [%s] putting key [%s], value [%s]", name,
-             getFullPath(), Utils::getCacheableKeyString(key)->asChar(),
+    LOGDEBUG("%s: region [%s] putting key [%s], value [%s]", name.c_str(),
+             getFullPath().c_str(), Utils::getCacheableKeyString(key)->asChar(),
              Utils::getCacheableString(value)->asChar());
     if (isCreate) {
       err = m_entries->create(key, value, entry, oldValue, updateCount,
@@ -2447,8 +2454,8 @@ GfErrType LocalRegion::putLocal(
     if (err != GF_NOERR) {
       return err;
     }
-    LOGDEBUG("%s: region [%s] %s key [%s], value [%s]", name, getFullPath(),
-             isUpdate ? "updated" : "created",
+    LOGDEBUG("%s: region [%s] %s key [%s], value [%s]", name.c_str(),
+             getFullPath().c_str(), isUpdate ? "updated" : "created",
              Utils::getCacheableKeyString(key)->asChar(),
              Utils::getCacheableString(value)->asChar());
     // entry/region expiration
@@ -2559,8 +2566,8 @@ bool LocalRegion::invokeCacheWriterForEntryEvent(
       }
 
     } catch (const Exception& ex) {
-      LOGERROR("Exception in CacheWriter::%s: %s: %s", eventStr, ex.getName(),
-               ex.what());
+      LOGERROR(std::string("Exception in CacheWriter::") + eventStr + ": " +
+               ex.getName() + ": " + ex.getMessage());
       bCacheWriterReturn = false;
     } catch (...) {
       LOGERROR("Unknown exception in CacheWriter::%s", eventStr);
@@ -2606,8 +2613,8 @@ bool LocalRegion::invokeCacheWriterForRegionEvent(
         m_regionStats->incWriterCallsCompleted();
       }
     } catch (const Exception& ex) {
-      LOGERROR("Exception in CacheWriter::%s: %s", eventStr, ex.getName(),
-               ex.what());
+      LOGERROR(std::string("Exception in CacheWriter::") + eventStr + ": " +
+               ex.getName() + ": " + ex.getMessage());
       bCacheWriterReturn = false;
     } catch (...) {
       LOGERROR("Unknown exception in CacheWriter::%s", eventStr);
@@ -2679,7 +2686,7 @@ GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
     } catch (const Exception& ex) {
       LOGERROR("Exception in CacheListener for key[%s]::%s: %s: %s",
                Utils::getCacheableKeyString(key)->asChar(), eventStr,
-               ex.getName(), ex.what());
+               ex.getName().c_str(), ex.what());
       err = GF_CACHE_LISTENER_EXCEPTION;
     } catch (...) {
       LOGERROR("Unknown exception in CacheListener for key[%s]::%s",
@@ -2739,8 +2746,8 @@ GfErrType LocalRegion::invokeCacheListenerForRegionEvent(
         m_regionStats->incListenerCallsCompleted();
       }
     } catch (const Exception& ex) {
-      LOGERROR("Exception in CacheListener::%s: %s: %s", eventStr, ex.getName(),
-               ex.what());
+      LOGERROR("Exception in CacheListener::%s: %s: %s", eventStr,
+               ex.getName().c_str(), ex.what());
       err = GF_CACHE_LISTENER_EXCEPTION;
     } catch (...) {
       LOGERROR("Unknown exception in CacheListener::%s", eventStr);
@@ -2765,12 +2772,12 @@ void LocalRegion::updateAccessAndModifiedTimeForEntry(std::shared_ptr<MapEntryIm
       keyStr = Utils::getCacheableKeyString(key);
     }
     LOGDEBUG("Setting last accessed time for key [%s] in region %s to %d",
-             keyStr->asChar(), getFullPath(),
+             keyStr->asChar(), getFullPath().c_str(),
              currTime.time_since_epoch().count());
     expProps.updateLastAccessTime(currTime);
     if (modified) {
       LOGDEBUG("Setting last modified time for key [%s] in region %s to %d",
-               keyStr->asChar(), getFullPath(),
+               keyStr->asChar(), getFullPath().c_str(),
                currTime.time_since_epoch().count());
       expProps.updateLastModifiedTime(currTime);
     }
@@ -3051,7 +3058,8 @@ void LocalRegion::adjustCacheListener(
   m_listener = aListener;
 }
 
-void LocalRegion::adjustCacheListener(const char* lib, const char* func) {
+void LocalRegion::adjustCacheListener(const std::string& lib,
+                                      const std::string& func) {
   WriteGuard guard(m_rwLock);
   setCacheListener(lib, func);
   m_listener = m_regionAttributes->getCacheListener();
@@ -3064,7 +3072,8 @@ void LocalRegion::adjustCacheLoader(
   m_loader = aLoader;
 }
 
-void LocalRegion::adjustCacheLoader(const char* lib, const char* func) {
+void LocalRegion::adjustCacheLoader(const std::string& lib,
+                                    const std::string& func) {
   WriteGuard guard(m_rwLock);
   setCacheLoader(lib, func);
   m_loader = m_regionAttributes->getCacheLoader();
@@ -3076,7 +3085,8 @@ void LocalRegion::adjustCacheWriter(const std::shared_ptr<CacheWriter>& aWriter)
   m_writer = aWriter;
 }
 
-void LocalRegion::adjustCacheWriter(const char* lib, const char* func) {
+void LocalRegion::adjustCacheWriter(const std::string& lib,
+                                    const std::string& func) {
   WriteGuard guard(m_rwLock);
   setCacheWriter(lib, func);
   m_writer = m_regionAttributes->getCacheWriter();
@@ -3102,7 +3112,7 @@ void LocalRegion::invokeAfterAllEndPointDisconnected() {
       m_listener->afterRegionDisconnected(shared_from_this());
     } catch (const Exception& ex) {
       LOGERROR("Exception in CacheListener::afterRegionDisconnected: %s: %s",
-               ex.getName(), ex.what());
+               ex.getName().c_str(), ex.what());
     } catch (...) {
       LOGERROR("Unknown exception in CacheListener::afterRegionDisconnected");
     }

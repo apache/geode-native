@@ -67,33 +67,32 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
  public:
   DeltaTestImpl();
   DeltaTestImpl(int intValue, std::shared_ptr<CacheableString> strptr);
-  DeltaTestImpl(std::shared_ptr<DeltaTestImpl> rhs);
-  void fromData(DataInput& input);
-  void toData(DataOutput& output) const;
+  DeltaTestImpl(const DeltaTestImpl& rhs);
+  void fromData(DataInput& input) override;
+  void toData(DataOutput& output) const override;
 
-  void fromDelta(DataInput& input);
-  void toDelta(DataOutput& output) const;
-  bool hasDelta() { return m_hasDelta; }
+  void fromDelta(DataInput& input) override;
+  void toDelta(DataOutput& output) const override;
+  bool hasDelta() const override { return m_hasDelta; }
 
-  int32_t classId() const { return 30; }
+  int32_t classId() const override { return 30; }
 
-  uint32_t objectSize() const { return 0; }
+  uint32_t objectSize() const override { return 0; }
 
-  std::shared_ptr<Delta> clone() {
-    return std::shared_ptr<Delta>(
-        std::dynamic_pointer_cast<DeltaTestImpl>(shared_from_this()));
+  std::shared_ptr<Delta> clone() const override {
+    return std::make_shared<DeltaTestImpl>(*this);
   }
 
   static Serializable* create() { return new DeltaTestImpl(); }
 
-  int32_t getIntVar() { return intVar; }
-  std::shared_ptr<CacheableString> getStr() { return str; }
-  double getDoubleVar() { return doubleVar; }
-  std::shared_ptr<CacheableBytes> getByteArr() { return byteArr; }
-  std::shared_ptr<TestObject1> getTestObj() { return testObj; }
+  int32_t getIntVar() const { return intVar; }
+  std::shared_ptr<CacheableString> getStr() const { return str; }
+  double getDoubleVar() const { return doubleVar; }
+  std::shared_ptr<CacheableBytes> getByteArr() const { return byteArr; }
+  std::shared_ptr<TestObject1> getTestObj() const { return testObj; }
 
-  int64_t getFromDeltaCounter() { return fromDeltaCounter; }
-  int64_t getToDeltaCounter() { return toDeltaCounter; }
+  int64_t getFromDeltaCounter() const { return fromDeltaCounter; }
+  int64_t getToDeltaCounter() const { return toDeltaCounter; }
 
   void setIntVar(int32_t value) {
     intVar = value;
@@ -112,7 +111,7 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
   void setDoubleVarFlag() { deltaBits = deltaBits | DOUBLE_MASK; }
   void setByteArrFlag() { deltaBits = deltaBits | BYTE_ARR_MASK; }
   void setTestObjFlag() { deltaBits = deltaBits | TEST_OBJ_MASK; }
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 };
 
 }  // namespace testobject

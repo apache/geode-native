@@ -53,7 +53,7 @@ class PdxType : public Serializable,
 
   std::list<std::shared_ptr<PdxType>> m_otherVersions;
 
-  char* m_className;
+  std::string m_className;
 
   int32_t m_geodeTypeId;
 
@@ -86,20 +86,23 @@ class PdxType : public Serializable,
                                       uint8_t* offsetPosition,
                                       int32_t offsetSize, int32_t pdxStreamlen);
 
-  std::shared_ptr<PdxType> isContains(std::shared_ptr<PdxType> first, std::shared_ptr<PdxType> second);
+  std::shared_ptr<PdxType> isContains(std::shared_ptr<PdxType> first,
+                                      std::shared_ptr<PdxType> second);
   std::shared_ptr<PdxType> clone();
   void generatePositionMap();
 
-  std::shared_ptr<PdxType> isLocalTypeContains(std::shared_ptr<PdxType> otherType);
-  std::shared_ptr<PdxType> isRemoteTypeContains(std::shared_ptr<PdxType> localType);
+  std::shared_ptr<PdxType> isLocalTypeContains(
+      std::shared_ptr<PdxType> otherType);
+  std::shared_ptr<PdxType> isRemoteTypeContains(
+      std::shared_ptr<PdxType> localType);
 
   std::shared_ptr<PdxType> shared_from_this() {
     return std::static_pointer_cast<PdxType>(Serializable::shared_from_this());
   }
 
  public:
-  PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr, const char* pdxDomainClassName,
-          bool isLocal);
+  PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr,
+          std::string pdxDomainClassName, bool isLocal);
 
   virtual ~PdxType();
 
@@ -111,7 +114,7 @@ class PdxType : public Serializable,
 
   static Serializable* CreateDeserializable(
       std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr) {
-    return new PdxType(pdxTypeRegistryPtr, nullptr, false);
+    return new PdxType(pdxTypeRegistryPtr, "", false);
   }
 
   virtual uint32_t objectSize() const {
@@ -121,7 +124,7 @@ class PdxType : public Serializable,
         size += m_pdxFieldTypes->at(i)->objectSize();
       }
     }
-    size += static_cast<uint32_t>(strlen(m_className));
+    size += static_cast<uint32_t>(m_className.length());
     for (NameVsPdxType::const_iterator iter = m_fieldNameVsPdxType.begin();
          iter != m_fieldNameVsPdxType.end(); ++iter) {
       size += static_cast<uint32_t>(iter->first.length());
@@ -156,9 +159,9 @@ class PdxType : public Serializable,
     return static_cast<int32_t>(m_pdxFieldTypes->size());
   }
 
-  char* getPdxClassName() const { return m_className; }
+  const std::string& getPdxClassName() const { return m_className; }
 
-  void setPdxClassName(char* className) { m_className = className; }
+  void setPdxClassName(std::string className) { m_className = className; }
 
   int32_t getNumberOfExtraFields() const { return m_numberOfFieldsExtra; }
 
@@ -166,10 +169,10 @@ class PdxType : public Serializable,
 
   int32_t getVarLenFieldIdx() const { return m_varLenFieldIdx; }
 
-  std::shared_ptr<PdxFieldType> getPdxField(const char* fieldName) {
-    NameVsPdxType::iterator iter = m_fieldNameVsPdxType.find(fieldName);
+  std::shared_ptr<PdxFieldType> getPdxField(const std::string& fieldName) {
+    auto&& iter = m_fieldNameVsPdxType.find(fieldName);
     if (iter != m_fieldNameVsPdxType.end()) {
-      return (*iter).second;
+      return iter->second;
     }
     return nullptr;
   }
@@ -182,14 +185,16 @@ class PdxType : public Serializable,
     return m_pdxFieldTypes;
   }
 
-  void addFixedLengthTypeField(const char* fieldName, const char* className,
-                               int8_t typeId, int32_t size);
-  void addVariableLengthTypeField(const char* fieldName, const char* className,
-                                  int8_t typeId);
+  void addFixedLengthTypeField(const std::string& fieldName,
+                               const std::string& className, int8_t typeId,
+                               int32_t size);
+  void addVariableLengthTypeField(const std::string& fieldName,
+                                  const std::string& className, int8_t typeId);
   void InitializeType();
   std::shared_ptr<PdxType> mergeVersion(std::shared_ptr<PdxType> otherVersion);
-  int32_t getFieldPosition(const char* fieldName, uint8_t* offsetPosition,
-                           int32_t offsetSize, int32_t pdxStreamlen);
+  int32_t getFieldPosition(const std::string& fieldName,
+                           uint8_t* offsetPosition, int32_t offsetSize,
+                           int32_t pdxStreamlen);
   int32_t getFieldPosition(int32_t fieldIdx, uint8_t* offsetPosition,
                            int32_t offsetSize, int32_t pdxStreamlen);
   int32_t* getLocalToRemoteMap();

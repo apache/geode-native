@@ -102,13 +102,11 @@ void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
       } else if (auto boolptr =
                      std::dynamic_pointer_cast<CacheableBoolean>(field)) {
         printf("   pulled %s :- %s\n", ssptr->getFieldName(fields).c_str(),
-               boolptr->toString()->asChar());
+               boolptr->toString().c_str());
       } else {
         if (auto ptr = std::dynamic_pointer_cast<CacheableKey>(field)) {
-          char buff[1024] = {'\0'};
-          ptr->logString(&buff[0], 1024);
           printf("   pulled %s :- %s \n", ssptr->getFieldName(fields).c_str(),
-                 buff);
+                 ptr->toString().c_str());
         } else if (auto strArr =
                        std::dynamic_pointer_cast<CacheableStringArray>(field)) {
           printf(" string array object printing \n\n");

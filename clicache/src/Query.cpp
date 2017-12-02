@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "Query.hpp"
 #include "ISelectResults.hpp"
 #include "ResultSet.hpp"
@@ -22,6 +23,7 @@
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
 #include "TimeUtils.hpp"
+
 
 namespace Apache
 {
@@ -31,6 +33,8 @@ namespace Apache
     {
 
       using namespace System;
+      using namespace msclr::interop;
+
       namespace native = apache::geode::client;
 
       generic<class TResult>
@@ -108,7 +112,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getQueryString( ) );
+          return marshal_as<String^>(m_nativeptr->get()->getQueryString());
         }
         finally
         {

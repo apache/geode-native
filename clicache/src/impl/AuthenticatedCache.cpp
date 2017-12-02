@@ -16,10 +16,11 @@
  */
 
 
-#include "begin_native.hpp"
+
+#include "../begin_native.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "../Cache.hpp"
 #include "../DistributedSystem.hpp"
@@ -76,8 +77,7 @@ namespace Apache
 
           try
           {
-            ManagedString mg_path( path );
-            auto nativeptr = m_nativeptr->get()->getRegion( mg_path.CharPtr );
+            auto nativeptr = m_nativeptr->get()->getRegion( marshal_as<std::string>(path) );
             return Client::Region<TKey, TValue>::Create( nativeptr );
           }
           finally

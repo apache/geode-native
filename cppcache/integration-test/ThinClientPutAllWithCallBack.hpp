@@ -301,7 +301,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   auto keyPtr = CacheableKey::create(key);
 
   auto regPtr = getHelper()->getRegion(name);
-  fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
+  fprintf(stdout, "netsearch  region %s\n", regPtr->getName().c_str());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
 
@@ -751,7 +751,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyPutAllWithObjectKey)
     regPtr0->putAll(map0, std::chrono::seconds(15),
                     CacheableInt32::create(1000));
     auto checkPtr1 = regPtr0->get(keyObject6);
-    ASSERT(strcmp(checkPtr1->toString()->asChar(), "testString") == 0,
+    ASSERT(strcmp(checkPtr1->toString().c_str(), "testString") == 0,
            "strVal should be testString.");
     map0.clear();
 

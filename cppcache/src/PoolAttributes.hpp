@@ -123,9 +123,9 @@ class PoolAttributes {
     m_statsInterval = statisticInterval;
   }
 
-  const char* getServerGroup() const { return m_serverGrp.c_str(); }
+  const std::string& getServerGroup() const { return m_serverGrp; }
 
-  void setServerGroup(const char* group) { m_serverGrp = group; }
+  void setServerGroup(std::string group) { m_serverGrp = group; }
 
   bool getSubscriptionEnabled() const { return m_subsEnabled; }
 
@@ -164,9 +164,9 @@ class PoolAttributes {
     m_multiuserSecurityMode = multiuserSecureMode;
   }
 
-  void addLocator(const char* host, int port);
+  void addLocator(const std::string& host, int port);
 
-  void addServer(const char* host, int port);
+  void addServer(const std::string& host, int port);
 
   std::shared_ptr<PoolAttributes> clone();
 
@@ -199,8 +199,6 @@ class PoolAttributes {
   std::vector<std::string> m_initLocList;
   std::vector<std::string> m_initServList;
 
-  static int32_t compareStringAttribute(const char* attributeA,
-                                        const char* attributeB);
   static bool compareVectorOfStrings(
       const std::vector<std::string>& thisVector,
       const std::vector<std::string>& otherVector);

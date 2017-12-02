@@ -51,7 +51,7 @@ bool ThinClientStickyManager::getStickyConnection(
 void ThinClientStickyManager::getSingleHopStickyConnection(
     TcrEndpoint* theEP, TcrConnection*& conn) {
   conn = (*TssConnectionWrapper::s_geodeTSSConn)
-             ->getSHConnection(theEP, m_dm->getName());
+             ->getSHConnection(theEP, m_dm->getName().c_str());
 }
 
 void ThinClientStickyManager::addStickyConnection(TcrConnection* conn) {
@@ -214,5 +214,5 @@ bool ThinClientStickyManager::isNULL(TcrConnection** conn) {
 
 void ThinClientStickyManager::getAnyConnection(TcrConnection*& conn) {
   conn = (*TssConnectionWrapper::s_geodeTSSConn)
-             ->getAnyConnection(m_dm->getName());
+             ->getAnyConnection(m_dm->getName().c_str());
 }

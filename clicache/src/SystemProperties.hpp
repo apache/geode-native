@@ -17,6 +17,7 @@
 
 #pragma once
 
+
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
 #include <geode/SystemProperties.hpp>
@@ -174,31 +175,6 @@ namespace Apache
         property TimeSpan NotifyDupCheckLife
         {
           TimeSpan get();
-        }
-
-        /// <summary>
-        /// True if the stack trace is enabled.
-        /// </summary>
-        /// <returns>true if enabled</returns>
-        property bool DebugStackTraceEnabled
-        {
-          bool get();
-        }
-
-        /// <summary>
-        /// True if the crash dump generation for unhandled fatal exceptions
-        /// is enabled. If "log-file" property has been specified then they are
-        /// created in the same directory as the log file, and having the same
-        /// prefix as log file. By default crash dumps are created in the
-        /// current working directory and have the "geode_cpp" prefix.
-        ///
-        /// The actual dump file will have timestamp and process ID
-        /// in the full name.
-        /// </summary>
-        /// <returns>true if enabled</returns>
-        property bool CrashDumpEnabled
-        {
-          bool get();
         }
 
         /// <summary>

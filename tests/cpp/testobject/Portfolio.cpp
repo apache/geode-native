@@ -98,33 +98,33 @@ void Portfolio::fromData(DataInput& input) {
   input.readBytes(&arrayNull, &tmp);
   input.readBytes(&arrayZeroSize, &tmp);
 }
-std::shared_ptr<CacheableString> Portfolio::toString() const {
+std::string Portfolio::toString() const {
   char idbuf[1024];
   sprintf(idbuf, "PortfolioObject: [ ID=%d", ID);
   char pkidbuf[1024];
   if (pkid != nullptr) {
     sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status,
-            this->type->toString(), this->pkid->asChar());
+            this->type->toString().c_str(), this->pkid->asChar());
   } else {
     sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status,
-            this->type->toString(), this->pkid->asChar());
+            this->type->toString().c_str(), this->pkid->asChar());
   }
   char position1buf[2048];
   if (position1 != nullptr) {
-    sprintf(position1buf, "\t\t\t  P1: %s", position1->toString()->asChar());
+    sprintf(position1buf, "\t\t\t  P1: %s", position1->toString().c_str());
   } else {
     sprintf(position1buf, "\t\t\t  P1: %s", "NULL");
   }
   char position2buf[2048];
   if (position2 != nullptr) {
-    sprintf(position2buf, " P2: %s", position2->toString()->asChar());
+    sprintf(position2buf, " P2: %s", position2->toString().c_str());
   } else {
     sprintf(position2buf, " P2: %s ]", "NULL");
   }
   char creationdatebuf[2048];
   if (creationDate != nullptr) {
     sprintf(creationdatebuf, "creation Date %s",
-            creationDate->toString()->asChar());
+            creationDate->toString().c_str());
   } else {
     sprintf(creationdatebuf, "creation Date %s", "NULL");
   }
@@ -132,5 +132,5 @@ std::shared_ptr<CacheableString> Portfolio::toString() const {
   char stringBuf[7000];
   sprintf(stringBuf, "%s%s%s%s%s", idbuf, pkidbuf, creationdatebuf,
           position1buf, position2buf);
-  return CacheableString::create(stringBuf);
+  return stringBuf;
 }

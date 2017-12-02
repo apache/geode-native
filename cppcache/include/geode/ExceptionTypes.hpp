@@ -20,9 +20,9 @@
 #ifndef GEODE_EXCEPTIONTYPES_H_
 #define GEODE_EXCEPTIONTYPES_H_
 
-
 #include "geode_globals.hpp"
 #include "geode/Exception.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -41,7 +41,9 @@ class  CPPCACHE_EXPORT AssertionException : public Exception {
 public:
   using Exception::Exception;
   virtual ~AssertionException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::AssertionException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::AssertionException";
+  }
 };
 
 /**
@@ -51,7 +53,9 @@ class  CPPCACHE_EXPORT IllegalArgumentException : public Exception {
 public:
   using Exception::Exception;
   virtual ~IllegalArgumentException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::IllegalArgumentException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::IllegalArgumentException";
+  }
 };
 
 /**
@@ -61,7 +65,9 @@ class  CPPCACHE_EXPORT IllegalStateException : public Exception {
 public:
   using Exception::Exception;
   virtual ~IllegalStateException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::IllegalStateException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::IllegalStateException";
+  }
 };
 
 /**
@@ -71,7 +77,9 @@ class  CPPCACHE_EXPORT CacheExistsException : public Exception {
 public:
   using Exception::Exception;
   virtual ~CacheExistsException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::CacheExistsException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::CacheExistsException";
+  }
 };
 
 /**
@@ -81,7 +89,9 @@ class  CPPCACHE_EXPORT CacheXmlException : public Exception {
 public:
   using Exception::Exception;
   virtual ~CacheXmlException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::CacheXmlException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::CacheXmlException";
+  }
 };
 /**
  *@brief Thrown when a timout occurs.
@@ -90,7 +100,9 @@ class  CPPCACHE_EXPORT TimeoutException : public Exception {
 public:
   using Exception::Exception;
   virtual ~TimeoutException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::TimeoutException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::TimeoutException";
+  }
 };
 
 /**
@@ -100,7 +112,9 @@ class  CPPCACHE_EXPORT CacheWriterException : public Exception {
 public:
   using Exception::Exception;
   virtual ~CacheWriterException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::CacheWriterException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::CacheWriterException";
+  }
 };
 
 /**
@@ -110,7 +124,9 @@ class  CPPCACHE_EXPORT RegionExistsException : public Exception {
 public:
   using Exception::Exception;
   virtual ~RegionExistsException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::RegionExistsException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::RegionExistsException";
+  }
 };
 
 /**
@@ -120,7 +136,9 @@ class  CPPCACHE_EXPORT CacheClosedException : public Exception {
 public:
   using Exception::Exception;
   virtual ~CacheClosedException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::CacheClosedException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::CacheClosedException";
+  }
 };
 
 /**
@@ -130,7 +148,9 @@ class  CPPCACHE_EXPORT LeaseExpiredException : public Exception {
 public:
   using Exception::Exception;
   virtual ~LeaseExpiredException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::LeaseExpiredException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::LeaseExpiredException";
+  }
 };
 
 /**
@@ -140,7 +160,9 @@ class  CPPCACHE_EXPORT CacheLoaderException : public Exception {
 public:
   using Exception::Exception;
   virtual ~CacheLoaderException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::CacheLoaderException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::CacheLoaderException";
+  }
 };
 
 /**
@@ -150,7 +172,9 @@ class  CPPCACHE_EXPORT RegionDestroyedException : public Exception {
 public:
   using Exception::Exception;
   virtual ~RegionDestroyedException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::RegionDestroyedException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::RegionDestroyedException";
+  }
 };
 
 /**
@@ -160,7 +184,9 @@ class  CPPCACHE_EXPORT EntryDestroyedException : public Exception {
 public:
   using Exception::Exception;
   virtual ~EntryDestroyedException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::EntryDestroyedException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::EntryDestroyedException";
+  }
 };
 
 /**
@@ -170,7 +196,9 @@ class  CPPCACHE_EXPORT NoSystemException : public Exception {
 public:
   using Exception::Exception;
   virtual ~NoSystemException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::NoSystemException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::NoSystemException";
+  }
 };
 
 /**
@@ -181,7 +209,9 @@ class  CPPCACHE_EXPORT AlreadyConnectedException : public Exception {
 public:
   using Exception::Exception;
   virtual ~AlreadyConnectedException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::AlreadyConnectedException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::AlreadyConnectedException";
+  }
 };
 
 /**
@@ -191,7 +221,9 @@ class  CPPCACHE_EXPORT FileNotFoundException : public Exception {
 public:
   using Exception::Exception;
   virtual ~FileNotFoundException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::FileNotFoundException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::FileNotFoundException";
+  }
 };
 
 /**
@@ -201,7 +233,9 @@ class  CPPCACHE_EXPORT InterruptedException : public Exception {
 public:
   using Exception::Exception;
   virtual ~InterruptedException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::InterruptedException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::InterruptedException";
+  }
 };
 
 /**
@@ -212,7 +246,9 @@ class  CPPCACHE_EXPORT UnsupportedOperationException : public Exception {
 public:
   using Exception::Exception;
   virtual ~UnsupportedOperationException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::UnsupportedOperationException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::UnsupportedOperationException";
+  }
 };
 
 /**
@@ -223,7 +259,9 @@ class  CPPCACHE_EXPORT StatisticsDisabledException : public Exception {
 public:
   using Exception::Exception;
   virtual ~StatisticsDisabledException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::StatisticsDisabledException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::StatisticsDisabledException";
+  }
 };
 
 /**
@@ -233,7 +271,9 @@ class  CPPCACHE_EXPORT ConcurrentModificationException : public Exception {
 public:
   using Exception::Exception;
   virtual ~ConcurrentModificationException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::ConcurrentModificationException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::ConcurrentModificationException";
+  }
 };
 
 /**
@@ -243,7 +283,9 @@ class  CPPCACHE_EXPORT UnknownException : public Exception {
 public:
   using Exception::Exception;
   virtual ~UnknownException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::UnknownException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::UnknownException";
+  }
 };
 
 /**
@@ -253,7 +295,9 @@ class  CPPCACHE_EXPORT ClassCastException : public Exception {
 public:
   using Exception::Exception;
   virtual ~ClassCastException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::ClassCastException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::ClassCastException";
+  }
 };
 
 /**
@@ -263,7 +307,9 @@ class  CPPCACHE_EXPORT EntryNotFoundException : public Exception {
 public:
   using Exception::Exception;
   virtual ~EntryNotFoundException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::EntryNotFoundException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::EntryNotFoundException";
+  }
 };
 
 /**
@@ -273,7 +319,9 @@ class  CPPCACHE_EXPORT GeodeIOException : public Exception {
 public:
   using Exception::Exception;
   virtual ~GeodeIOException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::GeodeIOException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::GeodeIOException";
+  }
 };
 
 /**
@@ -283,7 +331,9 @@ class  CPPCACHE_EXPORT GeodeConfigException : public Exception {
 public:
   using Exception::Exception;
   virtual ~GeodeConfigException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::GeodeConfigException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::GeodeConfigException";
+  }
 };
 
 /**
@@ -294,7 +344,9 @@ class  CPPCACHE_EXPORT NullPointerException : public Exception {
 public:
   using Exception::Exception;
   virtual ~NullPointerException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::NullPointerException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::NullPointerException";
+  }
 };
 
 /**
@@ -304,7 +356,9 @@ class  CPPCACHE_EXPORT EntryExistsException : public Exception {
 public:
   using Exception::Exception;
   virtual ~EntryExistsException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::EntryExistsException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::EntryExistsException";
+  }
 };
 
 /**
@@ -315,7 +369,9 @@ class  CPPCACHE_EXPORT NotConnectedException : public Exception {
 public:
   using Exception::Exception;
   virtual ~NotConnectedException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::NotConnectedException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::NotConnectedException";
+  }
 };
 
 /**
@@ -325,7 +381,9 @@ class  CPPCACHE_EXPORT CacheProxyException : public Exception {
 public:
   using Exception::Exception;
   virtual ~CacheProxyException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::CacheProxyException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::CacheProxyException";
+  }
 };
 
 /**
@@ -335,7 +393,9 @@ class  CPPCACHE_EXPORT OutOfMemoryException : public Exception {
 public:
   using Exception::Exception;
   virtual ~OutOfMemoryException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::OutOfMemoryException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::OutOfMemoryException";
+  }
 };
 
 /**
@@ -346,7 +406,9 @@ class  CPPCACHE_EXPORT NotOwnerException : public Exception {
 public:
   using Exception::Exception;
   virtual ~NotOwnerException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::NotOwnerException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::NotOwnerException";
+  }
 };
 
 /**
@@ -356,7 +418,9 @@ class  CPPCACHE_EXPORT WrongRegionScopeException : public Exception {
 public:
   using Exception::Exception;
   virtual ~WrongRegionScopeException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::WrongRegionScopeException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::WrongRegionScopeException";
+  }
 };
 
 /**
@@ -366,7 +430,9 @@ class  CPPCACHE_EXPORT BufferSizeExceededException : public Exception {
 public:
   using Exception::Exception;
   virtual ~BufferSizeExceededException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::BufferSizeExceededException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::BufferSizeExceededException";
+  }
 };
 
 /**
@@ -376,7 +442,9 @@ class  CPPCACHE_EXPORT RegionCreationFailedException : public Exception {
 public:
   using Exception::Exception;
   virtual ~RegionCreationFailedException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::RegionCreationFailedException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::RegionCreationFailedException";
+  }
 };
 
 /**
@@ -386,7 +454,9 @@ class  CPPCACHE_EXPORT FatalInternalException : public Exception {
 public:
   using Exception::Exception;
   virtual ~FatalInternalException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::FatalInternalException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::FatalInternalException";
+  }
 };
 
 /**
@@ -397,7 +467,9 @@ class  CPPCACHE_EXPORT DiskFailureException : public Exception {
 public:
   using Exception::Exception;
   virtual ~DiskFailureException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::DiskFailureException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::DiskFailureException";
+  }
 };
 
 /**
@@ -408,7 +480,9 @@ class  CPPCACHE_EXPORT DiskCorruptException : public Exception {
 public:
   using Exception::Exception;
   virtual ~DiskCorruptException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::DiskCorruptException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::DiskCorruptException";
+  }
 };
 
 /**
@@ -418,7 +492,9 @@ class  CPPCACHE_EXPORT InitFailedException : public Exception {
 public:
   using Exception::Exception;
   virtual ~InitFailedException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::InitFailedException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::InitFailedException";
+  }
 };
 
 /**
@@ -428,7 +504,9 @@ class  CPPCACHE_EXPORT ShutdownFailedException : public Exception {
 public:
   using Exception::Exception;
   virtual ~ShutdownFailedException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::ShutdownFailedException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::ShutdownFailedException";
+  }
 };
 
 /**
@@ -438,7 +516,9 @@ public:
 public:
   using Exception::Exception;
   virtual ~CacheServerException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::CacheServerException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::CacheServerException";
+  }
 };
 
 /**
@@ -448,7 +528,9 @@ class  CPPCACHE_EXPORT OutOfRangeException : public Exception {
 public:
   using Exception::Exception;
   virtual ~OutOfRangeException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::OutOfRangeException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::OutOfRangeException";
+  }
 };
 
 /**
@@ -458,7 +540,9 @@ class  CPPCACHE_EXPORT QueryException : public Exception {
 public:
   using Exception::Exception;
   virtual ~QueryException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::QueryException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::QueryException";
+  }
 };
 
 /**
@@ -468,7 +552,9 @@ class  CPPCACHE_EXPORT MessageException : public Exception {
 public:
   using Exception::Exception;
   virtual ~MessageException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::MessageException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::MessageException";
+  }
 };
 
 /**
@@ -478,7 +564,9 @@ class  CPPCACHE_EXPORT NotAuthorizedException : public Exception {
 public:
   using Exception::Exception;
   virtual ~NotAuthorizedException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::NotAuthorizedException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::NotAuthorizedException";
+  }
 };
 
 /**
@@ -488,7 +576,9 @@ class  CPPCACHE_EXPORT AuthenticationFailedException : public Exception {
 public:
   using Exception::Exception;
   virtual ~AuthenticationFailedException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::AuthenticationFailedException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::AuthenticationFailedException";
+  }
 };
 
 /**
@@ -498,7 +588,9 @@ class  CPPCACHE_EXPORT AuthenticationRequiredException : public Exception {
 public:
   using Exception::Exception;
   virtual ~AuthenticationRequiredException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::AuthenticationRequiredException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::AuthenticationRequiredException";
+  }
 };
 
 /**
@@ -508,7 +600,9 @@ class  CPPCACHE_EXPORT DuplicateDurableClientException : public Exception {
 public:
   using Exception::Exception;
   virtual ~DuplicateDurableClientException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::DuplicateDurableClientException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::DuplicateDurableClientException";
+  }
 };
 
 /**
@@ -518,7 +612,9 @@ class  CPPCACHE_EXPORT CacheListenerException : public Exception {
 public:
   using Exception::Exception;
   virtual ~CacheListenerException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::CacheListenerException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::CacheListenerException";
+  }
 };
 /**
  *@brief Thrown during continuous query execution time.
@@ -527,7 +623,9 @@ class  CPPCACHE_EXPORT CqException : public Exception {
 public:
   using Exception::Exception;
   virtual ~CqException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::CqException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::CqException";
+  }
 };
 /**
  *@brief Thrown if the Cq on which the operaion performed is closed
@@ -536,7 +634,9 @@ class  CPPCACHE_EXPORT CqClosedException : public Exception {
 public:
   using Exception::Exception;
   virtual ~CqClosedException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::CqClosedException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::CqClosedException";
+  }
 };
 /**
  *@brief Thrown if the Cq Query failed
@@ -545,7 +645,9 @@ class  CPPCACHE_EXPORT CqQueryException : public Exception {
 public:
   using Exception::Exception;
   virtual ~CqQueryException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::CqQueryException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::CqQueryException";
+  }
 };
 /**
  *@brief Thrown if a Cq by this name already exists on this client
@@ -554,7 +656,9 @@ class  CPPCACHE_EXPORT CqExistsException : public Exception {
 public:
   using Exception::Exception;
   virtual ~CqExistsException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::CqExistsException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::CqExistsException";
+  }
 };
 /**
  *@brief  Thrown if the query doesnot meet the CQ constraints.
@@ -570,7 +674,9 @@ class  CPPCACHE_EXPORT CqInvalidException : public Exception {
 public:
   using Exception::Exception;
   virtual ~CqInvalidException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::CqInvalidException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::CqInvalidException";
+  }
 };
 /**
  *@brief Thrown if function execution failed
@@ -579,7 +685,9 @@ class  CPPCACHE_EXPORT FunctionExecutionException : public Exception {
 public:
   using Exception::Exception;
   virtual ~FunctionExecutionException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::FunctionExecutionException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::FunctionExecutionException";
+  }
 };
 /**
  *@brief Thrown if the No locators are active to reply for new connection.
@@ -588,7 +696,9 @@ class  CPPCACHE_EXPORT NoAvailableLocatorsException : public Exception {
 public:
   using Exception::Exception;
   virtual ~NoAvailableLocatorsException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::NoAvailableLocatorsException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::NoAvailableLocatorsException";
+  }
 };
 /**
  *@brief Thrown if all connections in the pool are in use.
@@ -597,7 +707,9 @@ class  CPPCACHE_EXPORT AllConnectionsInUseException : public Exception {
 public:
   using Exception::Exception;
   virtual ~AllConnectionsInUseException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::AllConnectionsInUseException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::AllConnectionsInUseException";
+  }
 };
 /**
  *@brief Thrown if Delta could not be applied.
@@ -606,7 +718,9 @@ class  CPPCACHE_EXPORT InvalidDeltaException : public Exception {
 public:
   using Exception::Exception;
   virtual ~InvalidDeltaException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::InvalidDeltaException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::InvalidDeltaException";
+  }
 };
 /**
  *@brief Thrown if a Key is not present in the region.
@@ -615,7 +729,9 @@ class  CPPCACHE_EXPORT KeyNotFoundException : public Exception {
 public:
   using Exception::Exception;
   virtual ~KeyNotFoundException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::KeyNotFoundException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::KeyNotFoundException";
+  }
 };
 /**
  * @brief This is for all Exceptions that may be thrown
@@ -625,7 +741,9 @@ class  CPPCACHE_EXPORT TransactionException : public Exception {
 public:
   using Exception::Exception;
   virtual ~TransactionException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::TransactionException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::TransactionException";
+  }
 };
 /**
  * @brief The RollbackException exception indicates that either the transaction
@@ -636,7 +754,9 @@ class  CPPCACHE_EXPORT RollbackException : public Exception {
 public:
   using Exception::Exception;
   virtual ~RollbackException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::RollbackException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::RollbackException";
+  }
 };
 /**
  * @brief Thrown when a commit fails due to a write conflict.
@@ -646,7 +766,9 @@ class  CPPCACHE_EXPORT CommitConflictException : public Exception {
 public:
   using Exception::Exception;
   virtual ~CommitConflictException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::CommitConflictException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::CommitConflictException";
+  }
 };
 /**
  * @brief Thrown when the transactional data host has shutdown or no longer has
@@ -658,7 +780,9 @@ class  CPPCACHE_EXPORT TransactionDataNodeHasDepartedException : public Exceptio
 public:
   using Exception::Exception;
   virtual ~TransactionDataNodeHasDepartedException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::TransactionDataNodeHasDepartedException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::TransactionDataNodeHasDepartedException";
+  }
 };
 /**
  * @brief Thrown when a {@link RebalanceOperation} occurs concurrently with a
@@ -669,7 +793,9 @@ class  CPPCACHE_EXPORT TransactionDataRebalancedException : public Exception {
 public:
   using Exception::Exception;
   virtual ~TransactionDataRebalancedException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::TransactionDataRebalancedException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::TransactionDataRebalancedException";
+  }
 };
 
 /**
@@ -679,23 +805,11 @@ class  CPPCACHE_EXPORT PutAllPartialResultException : public Exception {
 public:
   using Exception::Exception;
   virtual ~PutAllPartialResultException() noexcept {}
-  virtual const char* getName() const override { return "apache::geode::client::PutAllPartialResultException"; }
+  virtual std::string getName() const override {
+    return "apache::geode::client::PutAllPartialResultException";
+  }
 };
 
-/**
- *@brief Thrown when a version on which delta is based is different than the
- *current version
- **/
-
-extern void CPPCACHE_EXPORT GfErrTypeThrowException(const char* str,
-                                                    GfErrType err);
-
-#define GfErrTypeToException(str, err)   \
-  {                                      \
-    if (err != GF_NOERR) {               \
-      GfErrTypeThrowException(str, err); \
-    }                                    \
-  }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

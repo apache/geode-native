@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 #ifdef CSTX_COMMENTED
-#pragma once 
+#pragma once
 
 
-//#include "../geode_includes.hpp"
+
 #include "../TransactionWriterAdapter.hpp"
 #include "../ITransactionWriter.hpp"
 #include "SafeConvert.hpp"

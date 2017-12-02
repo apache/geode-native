@@ -25,12 +25,11 @@ static const char *CLASSNAME2 = "PdxTests.Address";
 
 class TestPdxSerializer : public PdxSerializer {
  public:
-  static void deallocate(void *testObject, const char *className) {
-    ASSERT(strcmp(className, CLASSNAME1) == 0 ||
-               strcmp(className, CLASSNAME2) == 0,
+  static void deallocate(void *testObject, const std::string &className) {
+    ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in deallocate()");
     LOG("TestPdxSerializer::deallocate called");
-    if (strcmp(className, CLASSNAME1) == 0) {
+    if (className == CLASSNAME1) {
       PdxTests::NonPdxType *npt =
           reinterpret_cast<PdxTests::NonPdxType *>(testObject);
       delete npt;
@@ -41,24 +40,21 @@ class TestPdxSerializer : public PdxSerializer {
     }
   }
 
-  static uint32_t objectSize(void *testObject, const char *className) {
-    ASSERT(strcmp(className, CLASSNAME1) == 0 ||
-               strcmp(className, CLASSNAME2) == 0,
+  static uint32_t objectSize(void *testObject, const std::string &className) {
+    ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in objectSize()");
     LOG("TestPdxSerializer::objectSize called");
     return 12345;  // dummy value
   }
 
-  UserDeallocator getDeallocator(const char *className) {
-    ASSERT(strcmp(className, CLASSNAME1) == 0 ||
-               strcmp(className, CLASSNAME2) == 0,
+  UserDeallocator getDeallocator(const std::string &className) override {
+    ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in getDeallocator");
     return deallocate;
   }
 
-  UserObjectSizer getObjectSizer(const char *className) {
-    ASSERT(strcmp(className, CLASSNAME1) == 0 ||
-               strcmp(className, CLASSNAME2) == 0,
+  UserObjectSizer getObjectSizer(const std::string &className) override {
+    ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in getObjectSizer");
     return objectSize;
   }
@@ -75,12 +71,12 @@ class TestPdxSerializer : public PdxSerializer {
     }
   }
 
-  void *fromData(const char *className, std::shared_ptr<PdxReader> pr) {
-    ASSERT(strcmp(className, CLASSNAME1) == 0 ||
-               strcmp(className, CLASSNAME2) == 0,
+  void *fromData(const std::string &className,
+                 std::shared_ptr<PdxReader> pr) override {
+    ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in fromData");
 
-    if (strcmp(className, CLASSNAME2) == 0) {
+    if (className == CLASSNAME2) {
       return fromDataForAddress(pr);
     }
 
@@ -193,13 +189,12 @@ class TestPdxSerializer : public PdxSerializer {
     }
   }
 
-  bool toData(void *testObject, const char *className,
-              std::shared_ptr<PdxWriter> pw) {
-    ASSERT(strcmp(className, CLASSNAME1) == 0 ||
-               strcmp(className, CLASSNAME2) == 0,
+  bool toData(void *testObject, const std::string &className,
+              std::shared_ptr<PdxWriter> pw) override {
+    ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in toData");
 
-    if (strcmp(className, CLASSNAME2) == 0) {
+    if (className == CLASSNAME2) {
       return toDataForAddress(testObject, pw);
     }
 

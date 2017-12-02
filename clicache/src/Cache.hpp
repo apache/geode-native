@@ -17,6 +17,7 @@
 
 #pragma once
 
+
 #include "geode_defs.hpp"
 #include "IGeodeCache.hpp"
 #include "native_shared_ptr.hpp"

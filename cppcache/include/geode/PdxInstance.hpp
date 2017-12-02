@@ -73,7 +73,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * @return <code>true</code> if the named field exists; otherwise
    * <code>false</code>
    */
-  virtual bool hasField(const char* fieldname) = 0;
+  virtual bool hasField(const std::string& fieldname) = 0;
 
   /**
    * Reads the named field and set its value in std::shared_ptr<Cacheable> type
@@ -89,7 +89,8 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * @see serializationRegistry->addPdxType
    * @see PdxInstance#hasField
    */
-  virtual std::shared_ptr<Cacheable> getCacheableField(const char* fieldname) const = 0;
+  virtual std::shared_ptr<Cacheable> getCacheableField(
+      const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in bool type out param.
@@ -100,7 +101,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual bool getBooleanField(const char* fieldname) const = 0;
+  virtual bool getBooleanField(const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in signed char type out param.
@@ -111,7 +112,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual int8_t getByteField(const char* fieldname) const = 0;
+  virtual int8_t getByteField(const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in int16_t type out param.
@@ -122,7 +123,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual int16_t getShortField(const char* fieldname) const = 0;
+  virtual int16_t getShortField(const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in int32_t type out param.
@@ -131,7 +132,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * @param value value of the field to be set with int32_t type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    */
-  virtual int32_t getIntField(const char* fieldname) const = 0;
+  virtual int32_t getIntField(const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in int64_t type out param.
@@ -142,7 +143,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual int64_t getLongField(const char* fieldname) const = 0;
+  virtual int64_t getLongField(const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in float type out param.
@@ -153,7 +154,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual float getFloatField(const char* fieldname) const = 0;
+  virtual float getFloatField(const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in double type out param.
@@ -164,7 +165,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual double getDoubleField(const char* fieldname) const = 0;
+  virtual double getDoubleField(const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in char type out param.
@@ -175,7 +176,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual char16_t getCharField(const char* fieldName) const = 0;
+  virtual char16_t getCharField(const std::string& fieldName) const = 0;
 
   /**
    * Reads the named field and set its value in bool array type out param.
@@ -187,7 +188,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, bool** value,
+  virtual void getField(const std::string& fieldname, bool** value,
                         int32_t& length) const = 0;
 
   /**
@@ -200,7 +201,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, signed char** value,
+  virtual void getField(const std::string& fieldname, signed char** value,
                         int32_t& length) const = 0;
 
   /**
@@ -218,7 +219,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, unsigned char** value,
+  virtual void getField(const std::string& fieldname, unsigned char** value,
                         int32_t& length) const = 0;
 
   /**
@@ -231,7 +232,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, int16_t** value,
+  virtual void getField(const std::string& fieldname, int16_t** value,
                         int32_t& length) const = 0;
 
   /**
@@ -244,7 +245,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, int32_t** value,
+  virtual void getField(const std::string& fieldname, int32_t** value,
                         int32_t& length) const = 0;
 
   /**
@@ -257,7 +258,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, int64_t** value,
+  virtual void getField(const std::string& fieldname, int64_t** value,
                         int32_t& length) const = 0;
 
   /**
@@ -270,7 +271,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, float** value,
+  virtual void getField(const std::string& fieldname, float** value,
                         int32_t& length) const = 0;
 
   /**
@@ -283,7 +284,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, double** value,
+  virtual void getField(const std::string& fieldname, double** value,
                         int32_t& length) const = 0;
 
   // charArray
@@ -297,7 +298,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldName, wchar_t** value,
+  virtual void getField(const std::string& fieldName, wchar_t** value,
                         int32_t& length) const = 0;
 
   /**
@@ -310,7 +311,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldName, char** value,
+  virtual void getField(const std::string& fieldName, char** value,
                         int32_t& length) const = 0;
 
   // String
@@ -323,7 +324,8 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, wchar_t** value) const = 0;
+  virtual void getField(const std::string& fieldname,
+                        wchar_t** value) const = 0;
 
   /**
    * Reads the named field and set its value in char* type out param.
@@ -334,7 +336,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, char** value) const = 0;
+  virtual void getField(const std::string& fieldname, char** value) const = 0;
 
   // StringArray
   /**
@@ -347,7 +349,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, wchar_t*** value,
+  virtual void getField(const std::string& fieldname, wchar_t*** value,
                         int32_t& length) const = 0;
 
   /**
@@ -360,7 +362,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldname, char*** value,
+  virtual void getField(const std::string& fieldname, char*** value,
                         int32_t& length) const = 0;
 
   /**
@@ -375,7 +377,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * @see PdxInstance#hasField
    */
   virtual std::shared_ptr<CacheableDate> getCacheableDateField(
-      const char* fieldname) const = 0;
+      const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in array of byte arrays type out
@@ -389,7 +391,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const char* fieldName, int8_t*** value,
+  virtual void getField(const std::string& fieldName, int8_t*** value,
                         int32_t& arrayLength,
                         int32_t*& elementLength) const = 0;
 
@@ -408,7 +410,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * @see PdxInstance#hasField
    */
   virtual std::shared_ptr<CacheableObjectArray> getCacheableObjectArrayField(
-      const char* fieldname) const = 0;
+      const std::string& fieldname) const = 0;
 
   /**
    * Checks if the named field was {@link PdxWriter#markIdentityField}marked as
@@ -421,7 +423,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * @return <code>true</code> if the named field exists and was marked as an
    * identify field; otherwise <code>false</code>
    */
-  virtual bool isIdentityField(const char* fieldname) = 0;
+  virtual bool isIdentityField(const std::string& fieldname) = 0;
 
   /**
    * Creates and returns a {@link WritablePdxInstance} whose initial
@@ -450,7 +452,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see serializationRegistry->addPdxType
    */
-  virtual int32_t hashcode() const = 0;
+  virtual int32_t hashcode() const override = 0;
 
   /**
    * Prints out all of the identity fields of this PdxInstance.
@@ -463,12 +465,12 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see serializationRegistry->addPdxType
    */
-  virtual std::shared_ptr<CacheableString> toString() const = 0;
+  virtual std::string toString() const override = 0;
 
   /**
    * @brief serialize this object. This is an internal method.
    */
-  virtual void toData(DataOutput& output) const {
+  virtual void toData(DataOutput& output) const override {
     PdxSerializable::toData(output);
   }
 
@@ -476,7 +478,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * @brief deserialize this object, typical implementation should return
    * the 'this' pointer. This is an internal method.
    */
-  virtual void fromData(DataInput& input) {
+  virtual void fromData(DataInput& input) override {
     return PdxSerializable::fromData(input);
   }
 
@@ -522,13 +524,13 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see serializationRegistry->addPdxType
    */
-  virtual bool operator==(const CacheableKey& other) const = 0;
+  virtual bool operator==(const CacheableKey& other) const override = 0;
 
   /** @return the size of the object in bytes
    * This is an internal method.
    * It is used in case of heap LRU property is set.
    */
-  virtual uint32_t objectSize() const = 0;
+  virtual uint32_t objectSize() const override = 0;
 
   /**
    * Return an unmodifiable list of the field names on this PdxInstance.
@@ -542,13 +544,13 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * method.
    * @param PdxWriter to serialize the PDX object
    */
-  virtual void toData(std::shared_ptr<PdxWriter> output) = 0;
+  virtual void toData(std::shared_ptr<PdxWriter> output) const override = 0;
 
   /**
    * @brief Deserialize this object. This is an internal method.
    * @param PdxReader to Deserialize the PDX object
    */
-  virtual void fromData(std::shared_ptr<PdxReader> input) = 0;
+  virtual void fromData(std::shared_ptr<PdxReader> input) override = 0;
 
   /**
    * Return the full name of the class that this pdx instance represents.
@@ -557,7 +559,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * to get classname
    * or if PdxType is not defined for PdxInstance.
    */
-  virtual const char* getClassName() const = 0;
+  virtual const std::string& getClassName() const override = 0;
 
   /**
    * Return the type @see PdxInstance::PdxFieldTypes of the field in the pdx
@@ -568,7 +570,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * to get classname or if PdxType is not defined for PdxInstance.
    */
   virtual PdxFieldTypes::PdxFieldType getFieldType(
-      const char* fieldname) const = 0;
+      const std::string& fieldname) const = 0;
 
  protected:
   /**

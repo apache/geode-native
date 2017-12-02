@@ -39,26 +39,38 @@ class ThinClientPoolDM;
 class CPPCACHE_EXPORT ProxyRemoteQueryService : public QueryService {
  public:
   ProxyRemoteQueryService(std::shared_ptr<ProxyCache> cptr);
+  virtual ~ProxyRemoteQueryService() = default;
 
-  std::shared_ptr<Query> newQuery(const char* querystring);
+  std::shared_ptr<Query> newQuery(std::string querystring) override;
 
-  ~ProxyRemoteQueryService() {}
   virtual std::shared_ptr<CqQuery> newCq(
-      const char* querystr, const std::shared_ptr<CqAttributes>& cqAttr,
-      bool isDurable = false);
+      std::string querystr, const std::shared_ptr<CqAttributes>& cqAttr,
+      bool isDurable = false) override;
+
   virtual std::shared_ptr<CqQuery> newCq(
-      const char* name, const char* querystr,
-      const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable = false);
-  virtual void closeCqs();
-  virtual QueryService::query_container_type getCqs();
-  virtual std::shared_ptr<CqQuery> getCq(const char* name);
-  virtual void executeCqs();
-  virtual void stopCqs();
-  virtual std::shared_ptr<CqServiceStatistics> getCqServiceStatistics();
-  virtual std::shared_ptr<CacheableArrayList> getAllDurableCqsFromServer();
+      std::string name, std::string querystr,
+      const std::shared_ptr<CqAttributes>& cqAttr,
+      bool isDurable = false) override;
+
+  virtual void closeCqs() override;
+
+  virtual QueryService::query_container_type getCqs() const override;
+
+  virtual std::shared_ptr<CqQuery> getCq(
+      const std::string& name) const override;
+
+  virtual void executeCqs() override;
+
+  virtual void stopCqs() override;
+
+  virtual std::shared_ptr<CqServiceStatistics> getCqServiceStatistics()
+      const override;
+
+  virtual std::shared_ptr<CacheableArrayList> getAllDurableCqsFromServer()
+      const override;
 
  private:
-  void unSupportedException(const char* operationName);
+  static void unSupportedException(const std::string& operationName);
   void addCqQuery(const std::shared_ptr<CqQuery>& cqQuery);
   void closeCqs(bool keepAlive);
 
@@ -66,7 +78,8 @@ class CPPCACHE_EXPORT ProxyRemoteQueryService : public QueryService {
   std::shared_ptr<ProxyCache> m_proxyCache;
   query_container_type m_cqQueries;
   // lock for cqQuery list;
-  ACE_Recursive_Thread_Mutex m_cqQueryListLock;
+  mutable ACE_Recursive_Thread_Mutex m_cqQueryListLock;
+
   friend class ProxyCache;
 };
 

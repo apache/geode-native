@@ -33,8 +33,8 @@
 #include "DistributedSystemImpl.hpp"
 #include "UserAttributes.hpp"
 #include "ThinClientStickyManager.hpp"
-
 #include "NonCopyable.hpp"
+#include "util/exception.hpp"
 
 using namespace apache::geode::client;
 using namespace apache::geode::statistics;
@@ -174,15 +174,12 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
   ACE_INET_Addr driver(hostName);
   uint32_t hostAddr = driver.get_ip_address();
   uint16_t hostPort = 0;
-  const char* durableId = sysProp.durableClientId();
+  auto&& durableId = sysProp.durableClientId();
 
-  std::string poolSeparator = "_gem_";
-  std::string clientDurableId =
-      (durableId == nullptr || strlen(durableId) == 0)
-          ? durableId
-          : durableId + (m_poolName.c_str() != nullptr
-                             ? (poolSeparator + m_poolName)
-                             : "");
+  std::string clientDurableId = durableId;
+  if (!m_poolName.empty()) {
+    clientDurableId += "_gem_" + m_poolName;
+  }
 
   const auto durableTimeOut = sysProp.durableTimeout();
   m_memId = cacheImpl->getClientProxyMembershipIDFactory().create(
@@ -192,7 +189,7 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
       m_attrs->m_initServList.size() == 0) {
     std::string msg = "No locators or servers provided for pool named ";
     msg += name;
-    throw IllegalStateException(msg.c_str());
+    throw IllegalStateException(msg);
   }
   reset();
   m_locHelper = new ThinClientLocatorHelper(m_attrs->m_initLocList, this);
@@ -365,8 +362,9 @@ void ThinClientPoolDM::startBackgroundThreads() {
       "ThinClientPoolDM::startBackgroundThreads: Starting pool stat sampler");
   if (m_PoolStatsSampler == nullptr && getStatisticInterval().count() > -1 &&
       props.statisticsEnabled()) {
-    m_PoolStatsSampler = new PoolStatsSampler(
-        getStatisticInterval().count() / 1000 + 1, m_connManager.getCacheImpl(), this);
+    m_PoolStatsSampler =
+        new PoolStatsSampler(getStatisticInterval().count() / 1000 + 1,
+                             m_connManager.getCacheImpl(), this);
     m_PoolStatsSampler->start();
   }
 
@@ -560,11 +558,10 @@ std::string ThinClientPoolDM::selectEndpoint(
     // Update Locator Request Stats
     getStats().incLoctorRequests();
 
-    if (GF_NOERR !=
-        ((ThinClientLocatorHelper*)m_locHelper)
-            ->getEndpointForNewFwdConn(outEndpoint, additionalLoc,
-                                       excludeServers, m_attrs->m_serverGrp,
-                                       currentServer)) {
+    if (GF_NOERR != ((ThinClientLocatorHelper*)m_locHelper)
+                        ->getEndpointForNewFwdConn(
+                            outEndpoint, additionalLoc, excludeServers,
+                            m_attrs->m_serverGrp, currentServer)) {
       throw IllegalStateException("Locator query failed");
     }
     // Update Locator stats
@@ -884,9 +881,9 @@ std::shared_ptr<QueryService> ThinClientPoolDM::getQueryService() {
 
   return getQueryServiceWithoutCheck();
 }
- std::shared_ptr<QueryService> ThinClientPoolDM::getQueryServiceWithoutCheck() {
-   if (!(m_remoteQueryServicePtr == nullptr)) {
-     return m_remoteQueryServicePtr;
+std::shared_ptr<QueryService> ThinClientPoolDM::getQueryServiceWithoutCheck() {
+  if (!(m_remoteQueryServicePtr == nullptr)) {
+    return m_remoteQueryServicePtr;
   }
   auto& props = m_connManager.getCacheImpl()
                     ->getDistributedSystem()
@@ -906,29 +903,29 @@ std::shared_ptr<QueryService> ThinClientPoolDM::getQueryService() {
 }
 void ThinClientPoolDM::sendUserCacheCloseMessage(bool keepAlive) {
   LOGDEBUG("ThinClientPoolDM::sendUserCacheCloseMessage");
- auto userAttribute =
+  auto userAttribute =
       TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
 
- std::map<std::string, UserConnectionAttributes*>& uca =
-     userAttribute->getUserConnectionServers();
+  std::map<std::string, UserConnectionAttributes*>& uca =
+      userAttribute->getUserConnectionServers();
 
- std::map<std::string, UserConnectionAttributes*>::iterator it;
+  std::map<std::string, UserConnectionAttributes*>::iterator it;
 
- for (it = uca.begin(); it != uca.end(); it++) {
-   UserConnectionAttributes* uca = (*it).second;
-   if (uca->isAuthenticated() && uca->getEndpoint()->connected()) {
-     TcrMessageRemoveUserAuth request(
-         m_connManager.getCacheImpl()->getCache()->createDataOutput(),
-         keepAlive, this);
-     TcrMessageReply reply(true, this);
+  for (it = uca.begin(); it != uca.end(); it++) {
+    UserConnectionAttributes* uca = (*it).second;
+    if (uca->isAuthenticated() && uca->getEndpoint()->connected()) {
+      TcrMessageRemoveUserAuth request(
+          m_connManager.getCacheImpl()->getCache()->createDataOutput(),
+          keepAlive, this);
+      TcrMessageReply reply(true, this);
 
-     sendRequestToEP(request, reply, uca->getEndpoint());
+      sendRequestToEP(request, reply, uca->getEndpoint());
 
-     uca->setUnAuthenticated();
-   } else {
-     uca->setUnAuthenticated();
-   }
- }
+      uca->setUnAuthenticated();
+    } else {
+      uca->setUnAuthenticated();
+    }
+  }
 }
 
 TcrConnection* ThinClientPoolDM::getConnectionInMultiuserMode(
@@ -946,7 +943,8 @@ TcrConnection* ThinClientPoolDM::getConnectionInMultiuserMode(
   }
 }
 
-int32_t ThinClientPoolDM::GetPDXIdForType(std::shared_ptr<Serializable> pdxType) {
+int32_t ThinClientPoolDM::GetPDXIdForType(
+    std::shared_ptr<Serializable> pdxType) {
   LOGDEBUG("ThinClientPoolDM::GetPDXIdForType:");
 
   GfErrType err = GF_NOERR;
@@ -986,7 +984,8 @@ int32_t ThinClientPoolDM::GetPDXIdForType(std::shared_ptr<Serializable> pdxType)
   return pdxTypeId;
 }
 
-void ThinClientPoolDM::AddPdxType(std::shared_ptr<Serializable> pdxType, int32_t pdxTypeId) {
+void ThinClientPoolDM::AddPdxType(std::shared_ptr<Serializable> pdxType,
+                                  int32_t pdxTypeId) {
   LOGDEBUG("ThinClientPoolDM::GetPDXIdForType:");
 
   GfErrType err = GF_NOERR;
@@ -1007,7 +1006,7 @@ void ThinClientPoolDM::AddPdxType(std::shared_ptr<Serializable> pdxType, int32_t
     throw IllegalStateException("Failed to register PdxSerializable Type");
   }
 }
- std::shared_ptr<Serializable> ThinClientPoolDM::GetPDXTypeById(int32_t typeId) {
+std::shared_ptr<Serializable> ThinClientPoolDM::GetPDXTypeById(int32_t typeId) {
   LOGDEBUG("ThinClientPoolDM::GetPDXTypeById:");
 
   GfErrType err = GF_NOERR;
@@ -1071,7 +1070,7 @@ int32_t ThinClientPoolDM::GetEnumValue(std::shared_ptr<Serializable> enumInfo) {
 
   return enumVal;
 }
- std::shared_ptr<Serializable> ThinClientPoolDM::GetEnum(int32_t val) {
+std::shared_ptr<Serializable> ThinClientPoolDM::GetEnum(int32_t val) {
   LOGDEBUG("ThinClientPoolDM::GetEnum:");
 
   GfErrType err = GF_NOERR;
@@ -1094,7 +1093,8 @@ int32_t ThinClientPoolDM::GetEnumValue(std::shared_ptr<Serializable> enumInfo) {
   return reply.getValue();
 }
 
-void ThinClientPoolDM::AddEnum(std::shared_ptr<Serializable> enumInfo, int enumVal) {
+void ThinClientPoolDM::AddEnum(std::shared_ptr<Serializable> enumInfo,
+                               int enumVal) {
   LOGDEBUG("ThinClientPoolDM::AddEnum:");
 
   GfErrType err = GF_NOERR;
@@ -1116,10 +1116,9 @@ void ThinClientPoolDM::AddEnum(std::shared_ptr<Serializable> enumInfo, int enumV
   }
 }
 
-GfErrType ThinClientPoolDM::sendUserCredentials(std::shared_ptr<Properties> credentials,
-                                                TcrConnection*& conn,
-                                                bool isBGThread,
-                                                bool& isServerException) {
+GfErrType ThinClientPoolDM::sendUserCredentials(
+    std::shared_ptr<Properties> credentials, TcrConnection*& conn,
+    bool isBGThread, bool& isServerException) {
   LOGDEBUG("ThinClientPoolDM::sendUserCredentials:");
 
   GfErrType err = GF_NOERR;
@@ -1205,8 +1204,8 @@ TcrEndpoint* ThinClientPoolDM::getSingleHopServer(
 }
 
 TcrEndpoint* ThinClientPoolDM::getEndPoint(
-    const std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version,
-    std::set<ServerLocation>& excludeServers) {
+    const std::shared_ptr<BucketServerLocation>& serverLocation,
+    int8_t& version, std::set<ServerLocation>& excludeServers) {
   TcrEndpoint* ep = nullptr;
   if (serverLocation->isValid()) {
     if (excludeServer(serverLocation->getEpString(), excludeServers)) {
@@ -1236,19 +1235,19 @@ TcrEndpoint* ThinClientPoolDM::getEndPoint(
     // if servergroup is there, then verify otherwise you may reach to another
     // group
     if (m_attrs->m_initLocList.size()) {
-      std::string servGrp = this->getServerGroup();
+      auto&& servGrp = this->getServerGroup();
       if (servGrp.length() > 0) {
-       auto groups = serverLocation->getServerGroups();
+        auto groups = serverLocation->getServerGroups();
         if ((groups != nullptr) && (groups->length() > 0)) {
           for (int i = 0; i < groups->length(); i++) {
-           auto cs = (*groups)[i];
-           if (cs->length() > 0) {
-             std::string str = cs->toString();
-             if ((ACE_OS::strcmp(str.c_str(), servGrp.c_str()) == 0)) {
-               ep = addEP(
-                   *(serverLocation.get()));  // see if this is new endpoint
-               break;
-             }
+            auto cs = (*groups)[i];
+            if (cs->length() > 0) {
+              auto&& str = cs->toString();
+              if (str == servGrp) {
+                // see if this is new endpoint
+                ep = addEP(*serverLocation);
+                break;
+              }
             }
           }
         }
@@ -1344,7 +1343,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
 
 GfErrType ThinClientPoolDM::sendSyncRequest(
     TcrMessage& request, TcrMessageReply& reply, bool attemptFailover,
-    bool isBGThread, const std::shared_ptr<BucketServerLocation>& serverLocation) {
+    bool isBGThread,
+    const std::shared_ptr<BucketServerLocation>& serverLocation) {
   LOGDEBUG("ThinClientPoolDM::sendSyncRequest: ....%d %s",
            request.getMessageType(), m_poolName.c_str());
   // Increment clientOps
@@ -1352,7 +1352,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
 
   GfErrType error = GF_NOTCON;
 
-std::shared_ptr<UserAttributes> userAttr = nullptr;
+  std::shared_ptr<UserAttributes> userAttr = nullptr;
   reply.setDM(this);
 
   int32_t type = request.getMessageType();
@@ -1978,43 +1978,44 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
     }
 
     reply.setDM(this);
-  std::shared_ptr<UserAttributes> ua = nullptr;
+    std::shared_ptr<UserAttributes> ua = nullptr;
     // in multi user mode need to chk whether user is authenticated or not
     // and then follow usual process which we did in send syncrequest.
     // need to user initiative ops
-  LOGDEBUG("ThinClientPoolDM::sendRequestToEP: this->m_isMultiUserMode = %d",
-           this->m_isMultiUserMode);
-  bool isServerException = false;
-  if (TcrMessage::isUserInitiativeOps((request)) &&
-      (this->m_isSecurityOn || this->m_isMultiUserMode)) {
-    if (!this->m_isMultiUserMode && !currentEndpoint->isAuthenticated()) {
-      // first authenticate him on this endpoint
-      error = this->sendUserCredentials(this->getCredentials(currentEndpoint),
-                                        conn, false, isServerException);
-    } else if (this->m_isMultiUserMode) {
-      ua = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
-               ->getUserAttributes();
-      if (ua == nullptr) {
-        LOGWARN("Attempted operation type %d without credentials",
-                request.getMessageType());
-        if (conn != nullptr) putInQueue(conn, false, request.forTransaction());
-        return GF_NOT_AUTHORIZED_EXCEPTION;
-      } else {
-        UserConnectionAttributes* uca =
-            ua->getConnectionAttribute(currentEndpoint);
+    LOGDEBUG("ThinClientPoolDM::sendRequestToEP: this->m_isMultiUserMode = %d",
+             this->m_isMultiUserMode);
+    bool isServerException = false;
+    if (TcrMessage::isUserInitiativeOps((request)) &&
+        (this->m_isSecurityOn || this->m_isMultiUserMode)) {
+      if (!this->m_isMultiUserMode && !currentEndpoint->isAuthenticated()) {
+        // first authenticate him on this endpoint
+        error = this->sendUserCredentials(this->getCredentials(currentEndpoint),
+                                          conn, false, isServerException);
+      } else if (this->m_isMultiUserMode) {
+        ua = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
+                 ->getUserAttributes();
+        if (ua == nullptr) {
+          LOGWARN("Attempted operation type %d without credentials",
+                  request.getMessageType());
+          if (conn != nullptr)
+            putInQueue(conn, false, request.forTransaction());
+          return GF_NOT_AUTHORIZED_EXCEPTION;
+        } else {
+          UserConnectionAttributes* uca =
+              ua->getConnectionAttribute(currentEndpoint);
 
-        if (uca == nullptr) {
-          error = this->sendUserCredentials(ua->getCredentials(), conn, false,
-                                            isServerException);
+          if (uca == nullptr) {
+            error = this->sendUserCredentials(ua->getCredentials(), conn, false,
+                                              isServerException);
+          }
         }
       }
     }
-  }
 
-  LOGDEBUG("ThinClientPoolDM::sendRequestToEP after getting creds");
-  if (error == GF_NOERR && conn != nullptr) {
-    error =
-        currentEndpoint->sendRequestConnWithRetry(request, reply, conn, true);
+    LOGDEBUG("ThinClientPoolDM::sendRequestToEP after getting creds");
+    if (error == GF_NOERR && conn != nullptr) {
+      error =
+          currentEndpoint->sendRequestConnWithRetry(request, reply, conn, true);
     }
 
     if (isServerException) return error;

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PERSISTENCEMANAGER_H_
-#define GEODE_PERSISTENCEMANAGER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_PERSISTENCEMANAGER_H_
+#define GEODE_PERSISTENCEMANAGER_H_
+
 #include "geode_globals.hpp"
 #include "DistributedSystem.hpp"
 #include "ExceptionTypes.hpp"
@@ -36,8 +37,10 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class PersistenceManager;
 class Region;
+
 typedef std::shared_ptr<PersistenceManager> (*getPersistenceManagerInstance)(
     const std::shared_ptr<Region>&);
 
@@ -124,6 +127,7 @@ class CPPCACHE_EXPORT PersistenceManager {
 
   PersistenceManager(const std::shared_ptr<Region>& regionPtr);
   PersistenceManager();
+
   /**
     * @brief destructor
     */

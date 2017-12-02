@@ -52,7 +52,7 @@ char buf[128];
 bool getResult = true;
  
 sprintf(buf, "VALUE--%d", 10);
-CacheablePtr value(CacheableString::create(buf));
+CacheablePtr value(buf);
  
 sprintf(buf, "KEY--%d", 100);
 CacheableKeyPtr key = CacheableKey::create(buf);
@@ -76,7 +76,7 @@ CacheableVectorPtr routingObj = CacheableVector::create();
 char buf[128];
 bool getResult = true;
 sprintf(buf, "VALUE--%d", 10);
-CacheablePtr value(CacheableString::create(buf));
+CacheablePtr value(buf);
  
 sprintf(buf, "KEY--%d", 100);
 CacheableKeyPtr key = CacheableKey::create(buf);

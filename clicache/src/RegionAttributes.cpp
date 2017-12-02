@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "RegionAttributes.hpp"
 #include "impl/ManagedCacheLoader.hpp"
 #include "impl/ManagedCacheWriter.hpp"
@@ -35,6 +36,7 @@
 #include "impl/SafeConvert.hpp"
 #include "TimeUtils.hpp"
 
+
 namespace Apache
 {
   namespace Geode
@@ -42,6 +44,7 @@ namespace Apache
     namespace Client
     {
       using namespace System;
+      using namespace msclr::interop;
 
       namespace native = apache::geode::client;
 
@@ -372,7 +375,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getCacheLoaderLibrary( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getCacheLoaderLibrary( ) );
         }
         finally
         {
@@ -385,7 +388,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getCacheLoaderFactory( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getCacheLoaderFactory( ) );
         }
         finally
         {
@@ -398,7 +401,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getCacheListenerLibrary( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getCacheListenerLibrary( ) );
         }
         finally
         {
@@ -411,7 +414,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getPartitionResolverLibrary( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getPartitionResolverLibrary( ) );
         }
         finally
         {
@@ -424,7 +427,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getPartitionResolverFactory( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getPartitionResolverFactory( ) );
         }
         finally
         {
@@ -437,7 +440,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getCacheListenerFactory( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getCacheListenerFactory( ) );
         }
         finally
         {
@@ -450,7 +453,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getCacheWriterLibrary( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getCacheWriterLibrary( ) );
         }
         finally
         {
@@ -463,7 +466,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getCacheWriterFactory( ) );
+          return marshal_as<System::String^>(m_nativeptr->get()->getCacheWriterFactory());
         }
         finally
         {
@@ -512,7 +515,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getEndpoints( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getEndpoints( ) );
         }
         finally
         {
@@ -525,7 +528,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getPoolName( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getPoolName( ) );
         }
         finally
         {
@@ -551,7 +554,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getPersistenceLibrary( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getPersistenceLibrary( ) );
         }
         finally
         {
@@ -564,7 +567,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getPersistenceFactory( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getPersistenceFactory( ) );
         }
         finally
         {

@@ -42,7 +42,7 @@ int8_t Serializable::DSFID() const {
 }
 
 uint32_t Serializable::objectSize() const { return 0; }
-std::shared_ptr<CacheableString> Serializable::toString() const {
+std::string Serializable::toString() const {
   return Utils::demangleTypeName(typeid(*this).name());
 }
 }  // namespace client

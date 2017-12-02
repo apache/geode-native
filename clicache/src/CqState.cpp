@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-//#include "geode_includes.hpp"
-#include "CqState.hpp"
-#include <vcclr.h>
 
-#include "impl/ManagedString.hpp"
+
+#include "CqState.hpp"
+
 using namespace System;
-using namespace System::Runtime::InteropServices;
+using namespace msclr::interop;
 
 namespace Apache
 {
@@ -32,7 +31,7 @@ namespace Apache
 
       String^ CqState::ToString()
       {
-		  return ManagedString::Get(m_nativeptr->toString());
+		  return marshal_as<String^>(m_nativeptr->toString());
       }
 
       bool CqState::IsRunning()
@@ -85,8 +84,7 @@ namespace Apache
 		    else
 			    state = CqStateType::INVALID;
 		    return state;
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

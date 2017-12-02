@@ -56,7 +56,8 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
     LOGDEBUG(
         "Entered entry expiry task handler for key [%s] of region [%s]: "
         "%d,%d,%d,%d",
-        Utils::getCacheableKeyString(key)->asChar(), m_regionPtr->getFullPath(),
+        Utils::getCacheableKeyString(key)->asChar(),
+        m_regionPtr->getFullPath().c_str(),
         curr_time.time_since_epoch().count(),
         lastTimeForExp.time_since_epoch().count(), m_duration.count(),
         elapsed.count());
@@ -69,7 +70,7 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
       LOGDEBUG(
           "Resetting expiry task %d secs later for key [%s] of region [%s]",
           remaining.count(), Utils::getCacheableKeyString(key)->asChar(),
-          m_regionPtr->getFullPath());
+          m_regionPtr->getFullPath().c_str());
       m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
           expProps.getExpiryTaskId(), remaining);
       return 0;
@@ -79,7 +80,7 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
   }
   LOGDEBUG("Removing expiry task for key [%s] of region [%s]",
            Utils::getCacheableKeyString(key)->asChar(),
-           m_regionPtr->getFullPath());
+           m_regionPtr->getFullPath().c_str());
   m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
       expProps.getExpiryTaskId(), std::chrono::seconds::zero());
   //  we now delete the handler in GF_Timer_Heap_ImmediateReset_T
@@ -104,7 +105,7 @@ inline void EntryExpiryHandler::DoTheExpirationAction(
       LOGDEBUG(
           "EntryExpiryHandler::DoTheExpirationAction INVALIDATE "
           "for region %s entry with key %s",
-          m_regionPtr->getFullPath(),
+          m_regionPtr->getFullPath().c_str(),
           Utils::getCacheableKeyString(key)->asChar());
       m_regionPtr->invalidateNoThrow(key, nullptr, -1,
                                      CacheEventFlags::EXPIRATION, versionTag);
@@ -114,7 +115,7 @@ inline void EntryExpiryHandler::DoTheExpirationAction(
       LOGDEBUG(
           "EntryExpiryHandler::DoTheExpirationAction LOCAL_INVALIDATE "
           "for region %s entry with key %s",
-          m_regionPtr->getFullPath(),
+          m_regionPtr->getFullPath().c_str(),
           Utils::getCacheableKeyString(key)->asChar());
       m_regionPtr->invalidateNoThrow(
           key, nullptr, -1,
@@ -125,7 +126,7 @@ inline void EntryExpiryHandler::DoTheExpirationAction(
       LOGDEBUG(
           "EntryExpiryHandler::DoTheExpirationAction DESTROY "
           "for region %s entry with key %s",
-          m_regionPtr->getFullPath(),
+          m_regionPtr->getFullPath().c_str(),
           Utils::getCacheableKeyString(key)->asChar());
       m_regionPtr->destroyNoThrow(key, nullptr, -1, CacheEventFlags::EXPIRATION,
                                   versionTag);
@@ -135,7 +136,7 @@ inline void EntryExpiryHandler::DoTheExpirationAction(
       LOGDEBUG(
           "EntryExpiryHandler::DoTheExpirationAction LOCAL_DESTROY "
           "for region %s entry with key %s",
-          m_regionPtr->getFullPath(),
+          m_regionPtr->getFullPath().c_str(),
           Utils::getCacheableKeyString(key)->asChar());
       m_regionPtr->destroyNoThrow(
           key, nullptr, -1,
@@ -146,7 +147,7 @@ inline void EntryExpiryHandler::DoTheExpirationAction(
       LOGERROR(
           "Unknown expiration action "
           "%d for region %s for key %s",
-          m_action, m_regionPtr->getFullPath(),
+          m_action, m_regionPtr->getFullPath().c_str(),
           Utils::getCacheableKeyString(key)->asChar());
       break;
     }

@@ -16,6 +16,7 @@
  */
 
 #pragma once
+
 #include "../IGeodeSerializable.hpp"
 #include "../GeodeClassIds.hpp"
 using namespace System;

@@ -14,19 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TransactionalOperation.cpp
- *
- *  Created on: 10-May-2011
- *      Author: ankurs
- */
 
-#include "TransactionalOperation.hpp"
 #include <geode/CacheableString.hpp>
 #include <geode/Cache.hpp>
 #include <geode/FunctionService.hpp>
 
+#include "TransactionalOperation.hpp"
 #include "RegionInternal.hpp"
+#include "util/exception.hpp"
 
 namespace apache {
 namespace geode {
@@ -75,7 +70,7 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(Cache* cache) {
                   std::static_pointer_cast<CacheableVector>(m_arguments->at(1)))
               ->withCollector(std::dynamic_pointer_cast<ResultCollector>(
                   m_arguments->at(2)))
-              ->execute(m_arguments->at(3)->toString()->asChar(),
+              ->execute(m_arguments->at(3)->toString().c_str(),
                         std::chrono::milliseconds(
                             std::static_pointer_cast<CacheableInt32>(
                                 m_arguments->at(4))

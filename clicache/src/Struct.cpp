@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
- //#include "geode_includes.hpp"
+ 
+
 #include "begin_native.hpp"
 #include <geode/Struct.hpp>
 #include "end_native.hpp"
@@ -50,11 +51,10 @@ namespace Apache
 
       Object^ Struct::default::get(String^ fieldName)
       {
-        ManagedString mg_fieldName(fieldName);
         try
         {
           return (Serializable::GetManagedValueGeneric<Object^>(
-            static_cast<native::Struct*>(m_nativeptr->get())->operator[](mg_fieldName.CharPtr)));
+            static_cast<native::Struct*>(m_nativeptr->get())->operator[](marshal_as<std::string>(fieldName))));
         }
         finally
         {

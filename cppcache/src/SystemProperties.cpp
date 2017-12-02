@@ -36,7 +36,6 @@
 #include <dlfcn.h>
 #endif
 
-
 namespace {
 
 const char StatisticsSampleInterval[] = "statistic-sample-rate";
@@ -48,9 +47,6 @@ const char LogLevel[] = "log-level";
 
 const char Name[] = "name";
 const char JavaConnectionPoolSize[] = "connection-pool-size";
-const char DebugStackTraceEnabled[] = "stacktrace-enabled";
-// crash dump related properties
-const char CrashDumpEnabled[] = "crash-dump-enabled";
 
 const char LicenseFilename[] = "license-file";
 const char LicenseType[] = "license-type";
@@ -109,7 +105,6 @@ const apache::geode::client::Log::LogLevel DefaultLogLevel =
     apache::geode::client::Log::Config;
 
 const int DefaultJavaConnectionPoolSize = 5;
-const bool DefaultDebugStackTraceEnabled = false;  // or true
 
 // defaults for crash dump related properties
 const bool DefaultCrashDumpEnabled = true;
@@ -161,19 +156,18 @@ void* getFactoryFunc(const char* lib, const char* funcName);
 }  // namespace impl
 
 SystemProperties::SystemProperties(
-    const std::shared_ptr<Properties>& propertiesPtr, const char* configFile)
+    const std::shared_ptr<Properties>& propertiesPtr,
+    const std::string& configFile)
     : m_statisticsSampleInterval(DefaultSamplingInterval),
       m_statisticsEnabled(DefaultSamplingEnabled),
       m_appDomainEnabled(DefaultAppDomainEnabled),
-      m_statisticsArchiveFile(nullptr),
-      m_logFilename(nullptr),
+      m_statisticsArchiveFile(DefaultStatArchive),
+      m_logFilename(DefaultLogFilename),
       m_logLevel(DefaultLogLevel),
       m_sessions(0 /* setup  later in processProperty */),
-      m_name(nullptr),
-      m_debugStackTraceEnabled(DefaultDebugStackTraceEnabled),
-      m_crashDumpEnabled(DefaultCrashDumpEnabled),
+      m_name(DefaultName),
       m_disableShufflingEndpoint(false),
-      m_cacheXMLFile(nullptr),
+      m_cacheXMLFile(DefaultCacheXMLFile),
       m_logFileSizeLimit(DefaultLogFileSizeLimit),
       m_logDiskSpaceLimit(DefaultLogDiskSpaceLimit),
       m_statsFileSizeLimit(DefaultStatsFileSizeLimit),
@@ -187,9 +181,9 @@ SystemProperties::SystemProperties(
       m_redundancyMonitorInterval(DefaultRedundancyMonitorInterval),
       m_notifyAckInterval(DefaultNotifyAckInterval),
       m_notifyDupCheckLife(DefaultNotifyDupCheckLife),
-      m_securityClientDhAlgo(nullptr),
-      m_securityClientKsPath(nullptr),
-      m_durableClientId(nullptr),
+      m_securityClientDhAlgo(),
+      m_securityClientKsPath(),
+      m_durableClientId(DefaultDurableClientId),
       m_durableTimeout(DefaultDurableTimeout),
       m_connectTimeout(DefaultConnectTimeout),
       m_connectWaitTimeout(DefaultConnectWaitTimeout),
@@ -198,31 +192,16 @@ SystemProperties::SystemProperties(
       m_autoReadyForEvents(DefaultAutoReadyForEvents),
       m_sslEnabled(DefaultSslEnabled),
       m_timestatisticsEnabled(DefaultTimeStatisticsEnabled),
-      m_sslKeyStore(nullptr),
-      m_sslTrustStore(nullptr),
-      m_sslKeystorePassword(nullptr),  // adongre: Added for Ticket #758
-      m_conflateEvents(nullptr),
+      m_sslKeyStore(DefaultSslKeyStore),
+      m_sslTrustStore(DefaultSslTrustStore),
+      m_sslKeystorePassword(DefaultSslKeystorePassword),
+      m_conflateEvents(DefaultConflateEvents),
       m_threadPoolSize(DefaultThreadPoolSize),
       m_suspendedTxTimeout(DefaultSuspendedTxTimeout),
       m_tombstoneTimeout(DefaultTombstoneTimeout),
       m_disableChunkHandlerThread(DefaultDisableChunkHandlerThread),
       m_onClientDisconnectClearPdxTypeIds(
           DefaultOnClientDisconnectClearPdxTypeIds) {
-  processProperty(ConflateEvents, DefaultConflateEvents);
-
-  processProperty(DurableClientId, DefaultDurableClientId);
-
-  processProperty(SslKeyStore, DefaultSslKeyStore);
-  processProperty(SslTrustStore, DefaultSslTrustStore);
-  // adongre: Added for Ticket #758
-  processProperty(SslKeystorePassword, DefaultSslKeystorePassword);
-
-  processProperty(StatisticsArchiveFile, DefaultStatArchive);
-
-  processProperty(LogFilename, DefaultLogFilename);
-  processProperty(CacheXMLFile, DefaultCacheXMLFile);
-  processProperty(Name, DefaultName);
-
   // now that defaults are set, consume files and override the defaults.
   class ProcessPropsVisitor : public Properties::Visitor {
     SystemProperties* m_sysProps;
@@ -232,12 +211,12 @@ SystemProperties::SystemProperties(
         : m_sysProps(sysProps) {}
     void visit(const std::shared_ptr<CacheableKey>& key,
                const std::shared_ptr<Cacheable>& value) {
-      auto prop = key->toString();
-      std::shared_ptr<CacheableString> val;
+      auto property = key->toString();
+      std::string val;
       if (value != nullptr) {
         val = value->toString();
       }
-      m_sysProps->processProperty(prop->asChar(), val->asChar());
+      m_sysProps->processProperty(property, val);
     }
   } processPropsVisitor(this);
 
@@ -256,7 +235,7 @@ SystemProperties::SystemProperties(
   }
 
   // Load the file from current directory.
-  if (configFile == nullptr) {
+  if (configFile.empty()) {
     givenConfigPtr->load("./geode.properties");
   } else {
     givenConfigPtr->load(configFile);
@@ -268,28 +247,25 @@ SystemProperties::SystemProperties(
   if (propertiesPtr != nullptr) {
     propertiesPtr->foreach (processPropsVisitor);
   }
-
-  m_securityClientDhAlgo = m_securityPropertiesPtr->find(SecurityClientDhAlgo);
-  m_securityClientKsPath = m_securityPropertiesPtr->find(SecurityClientKsPath);
-
 }
 
-SystemProperties::~SystemProperties() {
-  GF_SAFE_DELETE_ARRAY(m_statisticsArchiveFile);
-  GF_SAFE_DELETE_ARRAY(m_logFilename);
-  GF_SAFE_DELETE_ARRAY(m_name);
-  GF_SAFE_DELETE_ARRAY(m_cacheXMLFile);
-  GF_SAFE_DELETE_ARRAY(m_durableClientId);
-  GF_SAFE_DELETE_ARRAY(m_sslKeyStore);
-  GF_SAFE_DELETE_ARRAY(m_sslTrustStore);
-  // adongre: Added for Ticket #758
-  GF_SAFE_DELETE_ARRAY(m_sslKeystorePassword);
-  GF_SAFE_DELETE_ARRAY(m_conflateEvents);
-}
+SystemProperties::~SystemProperties() {}
 
-void SystemProperties::throwError(const char* msg) {
+void SystemProperties::throwError(const std::string& msg) {
   LOGERROR(msg);
   throw GeodeConfigException(msg);
+}
+
+bool SystemProperties::parseBooleanProperty(const std::string& property,
+                                            const std::string& value) {
+  if (value == "false") {
+    return false;
+  } else if (value == "true") {
+    return true;
+  }
+
+  throwError("SystemProperties: non-boolean " + property + "=" + value);
+  return false;
 }
 
 template <class _Rep, class _Period>
@@ -300,355 +276,115 @@ void SystemProperties::parseDurationProperty(
     duration = util::chrono::duration::from_string<
         std::chrono::duration<_Rep, _Period>>(value);
   } catch (std::invalid_argument&) {
-    throwError(
-        ("SystemProperties: non-duration " + property + "=" + value).c_str());
+    throwError(("SystemProperties: non-duration " + property + "=" + value));
   }
 }
 
-void SystemProperties::processProperty(const char* property,
-                                       const char* value) {
-  std::string prop = property;
-  if (prop == ThreadPoolSize) {
-    char* end;
-    uint32_t si = strtoul(value, &end, 10);
-    if (!*end) {
-      m_threadPoolSize = si;
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
-  } else if (prop == MaxSocketBufferSize) {
-    char* end;
-    long si = strtol(value, &end, 10);
-    if (!*end) {
-      m_maxSocketBufferSize = si;
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
+void SystemProperties::processProperty(const std::string& property,
+                                       const std::string& value) {
+  if (property.compare(0, sizeof(DefaultSecurityPrefix) - 1,
+                       DefaultSecurityPrefix) == 0) {
+    m_securityPropertiesPtr->insert(property, value);
+
+    if (property == SecurityClientDhAlgo) {
+      m_securityClientDhAlgo = value;
+    } else if (property == SecurityClientKsPath) {
+      m_securityClientKsPath = value;
     }
 
-  } else if (prop == PingInterval) {
-    try {
-      m_pingInterval =
-          util::chrono::duration::from_string<decltype(m_pingInterval)>(
-              std::string(value));
-    } catch (std::invalid_argument&) {
-      throwError(
-          ("SystemProperties: non-duration " + prop + "=" + value).c_str());
-    }
-  } else if (prop == RedundancyMonitorInterval) {
-    try {
-      m_redundancyMonitorInterval =
-          util::chrono::duration::from_string<decltype(
-              m_redundancyMonitorInterval)>(std::string(value));
-    } catch (std::invalid_argument&) {
-      throwError(
-          ("SystemProperties: non-duration " + prop + "=" + value).c_str());
-    }
-  } else if (prop == NotifyAckInterval) {
-    try {
-      m_notifyAckInterval =
-          util::chrono::duration::from_string<decltype(m_notifyAckInterval)>(
-              std::string(value));
-    } catch (std::invalid_argument&) {
-      throwError(
-          ("SystemProperties: non-duration " + prop + "=" + value).c_str());
-    }
-  } else if (prop == NotifyDupCheckLife) {
-    parseDurationProperty(prop, std::string(value), m_notifyDupCheckLife);
-  } else if (prop == StatisticsSampleInterval) {
-    parseDurationProperty(prop, std::string(value), m_statisticsSampleInterval);
-  } else if (prop == DurableTimeout) {
-    parseDurationProperty(prop, std::string(value), m_durableTimeout);
-  } else if (prop == ConnectTimeout) {
-    parseDurationProperty(prop, std::string(value), m_connectTimeout);
-  } else if (prop == ConnectWaitTimeout) {
-    parseDurationProperty(prop, std::string(value), m_connectWaitTimeout);
-  } else if (prop == BucketWaitTimeout) {
-    parseDurationProperty(prop, std::string(value), m_bucketWaitTimeout);
-  } else if (prop == DisableShufflingEndpoint) {
-    std::string val = value;
-    if (val == "false") {
-      m_disableShufflingEndpoint = false;
-    } else if (val == "true") {
-      m_disableShufflingEndpoint = true;
-    }
-  } else if (prop == AppDomainEnabled) {
-    std::string val = value;
-    if (val == "false") {
-      m_appDomainEnabled = false;
-    } else if (val == "true") {
-      m_appDomainEnabled = true;
-    }
-  } else if (prop == DebugStackTraceEnabled) {
-    std::string val = value;
-    if (val == "false") {
-      m_debugStackTraceEnabled = false;
-    } else if (val == "true") {
-      m_debugStackTraceEnabled = true;
-    } else {
-      throwError(("SystemProperties: non-boolean " + prop + "=" + val).c_str());
-    }
+    return;
+  }
 
-  } else if (prop == GridClient) {
-    std::string val = value;
-    if (val == "false") {
-      m_gridClient = false;
-    } else if (val == "true") {
-      m_gridClient = true;
-    } else {
-      throwError(("SystemProperties: non-boolean " + prop + "=" + val).c_str());
-    }
-  } else if (prop == AutoReadyForEvents) {
-    std::string val = value;
-    if (val == "false") {
-      m_autoReadyForEvents = false;
-    } else if (val == "true") {
-      m_autoReadyForEvents = true;
-    } else {
-      throwError(("SystemProperties: non-boolean " + prop + "=" + val).c_str());
-    }
-  } else if (prop == SslEnabled) {
-    std::string val = value;
-    if (val == "false") {
-      m_sslEnabled = false;
-    } else if (val == "true") {
-      m_sslEnabled = true;
-    } else {
-      throwError(("SystemProperties: non-boolean " + prop + "=" + val).c_str());
-    }
-
-  } else if (prop == TimeStatisticsEnabled) {
-    std::string val = value;
-    if (val == "false") {
-      m_timestatisticsEnabled = false;
-    } else if (val == "true") {
-      m_timestatisticsEnabled = true;
-    } else {
-      throwError(("SystemProperties: non-boolean " + prop + "=" + val).c_str());
-    }
-
-  } else if (prop == CrashDumpEnabled) {
-    std::string val = value;
-    if (val == "false") {
-      m_crashDumpEnabled = false;
-    } else if (val == "true") {
-      m_crashDumpEnabled = true;
-    } else {
-      throwError(("SystemProperties: non-boolean " + prop + "=" + val).c_str());
-    }
-  } else if (prop == StatisticsEnabled) {
-    std::string val = value;
-    if (val == "false") {
-      m_statisticsEnabled = false;
-    } else if (val == "true") {
-      m_statisticsEnabled = true;
-    } else {
-      throwError(("SystemProperties: non-boolean " + prop + "=" + val).c_str());
-    }
-
-  } else if (prop == StatisticsArchiveFile) {
-    if (m_statisticsArchiveFile != nullptr) {
-      delete[] m_statisticsArchiveFile;
-    }
-    size_t len = strlen(value) + 1;
-    m_statisticsArchiveFile = new char[len];
-    ACE_OS::strncpy(m_statisticsArchiveFile, value, len);
-
-  } else if (prop == LogFilename) {
-    if (m_logFilename != nullptr) {
-      delete[] m_logFilename;
-    }
-    if (value != nullptr) {
-      size_t len = strlen(value) + 1;
-      m_logFilename = new char[len];
-      ACE_OS::strncpy(m_logFilename, value, len);
-    }
-  } else if (prop == LogLevel) {
+  if (property == ThreadPoolSize) {
+    m_threadPoolSize = std::stoul(value);
+  } else if (property == MaxSocketBufferSize) {
+    m_maxSocketBufferSize = std::stol(value);
+  } else if (property == PingInterval) {
+    parseDurationProperty(property, std::string(value), m_pingInterval);
+  } else if (property == RedundancyMonitorInterval) {
+    parseDurationProperty(property, std::string(value),
+                          m_redundancyMonitorInterval);
+  } else if (property == NotifyAckInterval) {
+    parseDurationProperty(property, std::string(value), m_notifyAckInterval);
+  } else if (property == NotifyDupCheckLife) {
+    parseDurationProperty(property, std::string(value), m_notifyDupCheckLife);
+  } else if (property == StatisticsSampleInterval) {
+    parseDurationProperty(property, std::string(value),
+                          m_statisticsSampleInterval);
+  } else if (property == DurableTimeout) {
+    parseDurationProperty(property, std::string(value), m_durableTimeout);
+  } else if (property == ConnectTimeout) {
+    parseDurationProperty(property, std::string(value), m_connectTimeout);
+  } else if (property == ConnectWaitTimeout) {
+    parseDurationProperty(property, std::string(value), m_connectWaitTimeout);
+  } else if (property == BucketWaitTimeout) {
+    parseDurationProperty(property, std::string(value), m_bucketWaitTimeout);
+  } else if (property == DisableShufflingEndpoint) {
+    m_disableShufflingEndpoint = parseBooleanProperty(property, value);
+  } else if (property == AppDomainEnabled) {
+    m_appDomainEnabled = parseBooleanProperty(property, value);
+  } else if (property == GridClient) {
+    m_gridClient = parseBooleanProperty(property, value);
+  } else if (property == AutoReadyForEvents) {
+    m_autoReadyForEvents = parseBooleanProperty(property, value);
+  } else if (property == SslEnabled) {
+    m_sslEnabled = parseBooleanProperty(property, value);
+  } else if (property == TimeStatisticsEnabled) {
+    m_timestatisticsEnabled = parseBooleanProperty(property, value);
+  } else if (property == StatisticsEnabled) {
+    m_statisticsEnabled = parseBooleanProperty(property, value);
+  } else if (property == StatisticsArchiveFile) {
+    m_statisticsArchiveFile = value;
+  } else if (property == LogFilename) {
+    m_logFilename = value;
+  } else if (property == LogLevel) {
     try {
       Log::LogLevel level = Log::charsToLevel(value);
       m_logLevel = level;
 
     } catch (IllegalArgumentException&) {
-      throwError(("SystemProperties: unknown log level " + prop + "=" + value)
-                     .c_str());
-    }
-
-  } else if (prop == JavaConnectionPoolSize) {
-    char* end;
-    long si = strtol(value, &end, 10);
-    if (!*end) {
-      m_javaConnectionPoolSize = si;
-    } else {
       throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
+          ("SystemProperties: unknown log level " + property + "=" + value)
+              .c_str());
     }
-
-  } else if (prop == Name) {
-    if (m_name != nullptr) {
-      delete[] m_name;
-    }
-    if (value != nullptr) {
-      size_t len = strlen(value) + 1;
-      m_name = new char[len];
-      ACE_OS::strncpy(m_name, value, len);
-    }
-  } else if (prop == DurableClientId) {
-    if (m_durableClientId != nullptr) {
-      delete[] m_durableClientId;
-      m_durableClientId = nullptr;
-    }
-    if (value != nullptr) {
-      size_t len = strlen(value) + 1;
-      m_durableClientId = new char[len];
-      ACE_OS::strncpy(m_durableClientId, value, len);
-    }
-  } else if (prop == SslKeyStore) {
-    if (m_sslKeyStore != nullptr) {
-      delete[] m_sslKeyStore;
-      m_sslKeyStore = nullptr;
-    }
-    if (value != nullptr) {
-      size_t len = strlen(value) + 1;
-      m_sslKeyStore = new char[len];
-      ACE_OS::strncpy(m_sslKeyStore, value, len);
-    }
-  } else if (prop == SslTrustStore) {
-    if (m_sslTrustStore != nullptr) {
-      delete[] m_sslTrustStore;
-      m_sslTrustStore = nullptr;
-    }
-    if (value != nullptr) {
-      size_t len = strlen(value) + 1;
-      m_sslTrustStore = new char[len];
-      ACE_OS::strncpy(m_sslTrustStore, value, len);
-    }
-    // adongre: Added for Ticket #758
-  } else if (prop == SslKeystorePassword) {
-    if (m_sslKeystorePassword != nullptr) {
-      delete[] m_sslKeystorePassword;
-      m_sslKeystorePassword = nullptr;
-    }
-    if (value != nullptr) {
-      size_t len = strlen(value) + 1;
-      m_sslKeystorePassword = new char[len];
-      ACE_OS::strncpy(m_sslKeystorePassword, value, len);
-    }
-  } else if (prop == ConflateEvents) {
-    if (m_conflateEvents != nullptr) {
-      delete[] m_conflateEvents;
-      m_conflateEvents = nullptr;
-    }
-    if (value != nullptr) {
-      size_t len = strlen(value) + 1;
-      m_conflateEvents = new char[len];
-      ACE_OS::strncpy(m_conflateEvents, value, len);
-    }
-  } else if (prop == LicenseFilename) {
-    // ignore license-file
-  } else if (prop == LicenseType) {
-    // ignore license-type
-  } else if (prop == CacheXMLFile) {
-    if (m_cacheXMLFile != nullptr) {
-      delete[] m_cacheXMLFile;
-    }
-    if (value != nullptr) {
-      size_t len = strlen(value) + 1;
-      m_cacheXMLFile = new char[len];
-      ACE_OS::strncpy(m_cacheXMLFile, value, len);
-    }
-
-  } else if (prop == LogFileSizeLimit) {
-    char* end;
-    long si = strtol(value, &end, 10);
-    if (!*end) {
-      m_logFileSizeLimit = si;
-
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
-  } else if (prop == LogDiskSpaceLimit) {
-    char* end;
-    long si = strtol(value, &end, 10);
-    if (!*end) {
-      m_logDiskSpaceLimit = si;
-
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
-  } else if (prop == StatsFileSizeLimit) {
-    char* end;
-    long si = strtol(value, &end, 10);
-    if (!*end) {
-      m_statsFileSizeLimit = si;
-
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
-
-  } else if (prop == StatsDiskSpaceLimit) {
-    char* end;
-    long si = strtol(value, &end, 10);
-    if (!*end) {
-      m_statsDiskSpaceLimit = si;
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
-
-  } else if (prop == HeapLRULimit) {
-    char* end;
-    long si = strtol(value, &end, 10);
-    if (!*end) {
-      m_heapLRULimit = si;
-
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
-  } else if (prop == HeapLRUDelta) {
-    char* end;
-    long si = strtol(value, &end, 10);
-    if (!*end) {
-      m_heapLRUDelta = si;
-
-    } else {
-      throwError(
-          ("SystemProperties: non-integer " + prop + "=" + value).c_str());
-    }
-  } else if (prop == SuspendedTxTimeout) {
-    parseDurationProperty(prop, std::string(value), m_suspendedTxTimeout);
-  } else if (prop == TombstoneTimeoutInMSec) {
-    parseDurationProperty(prop, std::string(value), m_tombstoneTimeout);
-  } else if (strncmp(property, DefaultSecurityPrefix,
-                     sizeof(DefaultSecurityPrefix) - 1) == 0) {
-    m_securityPropertiesPtr->insert(property, value);
-  } else if (prop == DisableChunkHandlerThread) {
-    std::string val = value;
-    if (val == "false") {
-      m_disableChunkHandlerThread = false;
-    } else if (val == "true") {
-      m_disableChunkHandlerThread = true;
-    } else {
-      throwError(("SystemProperties: non-boolean " + prop + "=" + val).c_str());
-    }
-  } else if (prop == OnClientDisconnectClearPdxTypeIds) {
-    std::string val = value;
-    if (val == "false") {
-      m_onClientDisconnectClearPdxTypeIds = false;
-    } else if (val == "true") {
-      m_onClientDisconnectClearPdxTypeIds = true;
-    } else {
-      throwError(("SystemProperties: non-boolean " + prop + "=" + val).c_str());
-    }
+  } else if (property == JavaConnectionPoolSize) {
+    m_javaConnectionPoolSize = std::stol(value);
+  } else if (property == Name) {
+    m_name = value;
+  } else if (property == DurableClientId) {
+    m_durableClientId = value;
+  } else if (property == SslKeyStore) {
+    m_sslKeyStore = value;
+  } else if (property == SslTrustStore) {
+    m_sslTrustStore = value;
+  } else if (property == SslKeystorePassword) {
+    m_sslKeystorePassword = value;
+  } else if (property == ConflateEvents) {
+    m_conflateEvents = value;
+  } else if (property == CacheXMLFile) {
+    m_cacheXMLFile = value;
+  } else if (property == LogFileSizeLimit) {
+    m_logFileSizeLimit = std::stol(value);
+  } else if (property == LogDiskSpaceLimit) {
+    m_logDiskSpaceLimit = std::stol(value);
+  } else if (property == StatsFileSizeLimit) {
+    m_statsFileSizeLimit = std::stol(value);
+  } else if (property == StatsDiskSpaceLimit) {
+    m_statsDiskSpaceLimit = std::stol(value);
+  } else if (property == HeapLRULimit) {
+    m_heapLRULimit = std::stol(value);
+  } else if (property == HeapLRUDelta) {
+    m_heapLRUDelta = std::stol(value);
+  } else if (property == SuspendedTxTimeout) {
+    parseDurationProperty(property, std::string(value), m_suspendedTxTimeout);
+  } else if (property == TombstoneTimeoutInMSec) {
+    parseDurationProperty(property, std::string(value), m_tombstoneTimeout);
+  } else if (property == DisableChunkHandlerThread) {
+    m_disableChunkHandlerThread = parseBooleanProperty(property, value);
+  } else if (property == OnClientDisconnectClearPdxTypeIds) {
+    m_onClientDisconnectClearPdxTypeIds = parseBooleanProperty(property, value);
   } else {
-    char msg[1000];
-    ACE_OS::snprintf(msg, 1000, "SystemProperties: unknown property: %s = %s",
-                     property, value);
-    throwError(msg);
+    throwError("SystemProperties: unknown property: " + property + "=" + value);
   }
 }
 
@@ -687,9 +423,6 @@ void SystemProperties::logSettings() {
   settings += "\n  connect-wait-timeout = ";
   settings += util::chrono::duration::to_string(connectWaitTimeout());
 
-  settings += "\n  crash-dump-enabled = ";
-  settings += crashDumpEnabled() ? "true" : "false";
-
   settings += "\n  disable-chunk-handler-thread = ";
   settings += disableChunkHandlerThread() ? "true" : "false";
 
@@ -712,17 +445,9 @@ void SystemProperties::logSettings() {
 
   settings += "\n  heap-lru-delta = ";
   settings += std::to_string(heapLRUDelta());
-  /* adongre  - Coverity II
-   * CID 29195: Printf arg type mismatch (PW.PRINTF_ARG_MISMATCH)
-   */
+
   settings += "\n  heap-lru-limit = ";
   settings += std::to_string(heapLRULimit());
-
-  // settings += "\n  license-file = ";
-  // settings += licenseFilename();
-
-  // settings += "\n  license-type = ";
-  // settings += licenseType();
 
   settings += "\n  log-disk-space-limit = ";
   settings += std::to_string(logDiskSpaceLimit());
@@ -773,12 +498,6 @@ void SystemProperties::logSettings() {
 
   settings += "\n  ssl-truststore = ";
   settings += sslTrustStore();
-
-  // settings += "\n ssl-keystore-password = ";
-  // settings += sslKeystorePassword();
-
-  settings += "\n  stacktrace-enabled = ";
-  settings += debugStackTraceEnabled() ? "true" : "false";
 
   settings += "\n  statistic-archive-file = ";
   settings += statisticsArchiveFile();

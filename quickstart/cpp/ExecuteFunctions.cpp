@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     auto resultList = CacheableVector::create();
     for (int i = 0; i < 34; i++) {
       sprintf(buf, "VALUE--%d", i);
-      std::shared_ptr<Cacheable> value(CacheableString::create(buf));
+      std::shared_ptr<Cacheable> value(buf);
 
       sprintf(buf, "KEY--%d", i);
       auto key = CacheableKey::create(buf);

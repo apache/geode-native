@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+
+
 #include "QueryService.hpp"
 #include "Query.hpp"
 #include "Log.hpp"
@@ -37,11 +39,10 @@ namespace Apache
       generic<class TResult>
       Query<TResult>^ QueryService::NewQuery(String^ query)
       {
-        ManagedString mg_queryStr(query);
         try
         {
           return Query<TResult>::Create(m_nativeptr->get()->newQuery(
-            mg_queryStr.CharPtr));
+            marshal_as<std::string>(query)));
         }
         catch (const apache::geode::client::Exception& ex)
         {
@@ -56,11 +57,10 @@ namespace Apache
       generic<class TKey, class TResult>
         CqQuery<TKey, TResult>^ QueryService::NewCq(String^ query, CqAttributes<TKey, TResult>^ cqAttr, bool isDurable)
         {
-          ManagedString mg_queryStr(query);
           try
           {
             return CqQuery<TKey, TResult>::Create(m_nativeptr->get()->newCq(
-              mg_queryStr.CharPtr, cqAttr->GetNative(), isDurable));
+              marshal_as<std::string>(query), cqAttr->GetNative(), isDurable));
           }
           catch (const apache::geode::client::Exception& ex)
           {
@@ -76,12 +76,10 @@ namespace Apache
       generic<class TKey, class TResult>
       CqQuery<TKey, TResult>^ QueryService::NewCq(String^ name, String^ query, CqAttributes<TKey, TResult>^ cqAttr, bool isDurable)
       {
-        ManagedString mg_queryStr(query);
-        ManagedString mg_nameStr(name);
         try
         {
           return CqQuery<TKey, TResult>::Create(m_nativeptr->get()->newCq(
-            mg_nameStr.CharPtr, mg_queryStr.CharPtr, cqAttr->GetNative(), isDurable));
+            marshal_as<std::string>(name), marshal_as<std::string>(query), cqAttr->GetNative(), isDurable));
         }
         catch (const apache::geode::client::Exception& ex)
         {
@@ -137,11 +135,10 @@ namespace Apache
       generic<class TKey, class TResult>
       CqQuery<TKey, TResult>^ QueryService::GetCq(String^ name)
       {
-        ManagedString mg_queryStr(name);
         try
         {
           return CqQuery<TKey, TResult>::Create(m_nativeptr->get()->getCq(
-            mg_queryStr.CharPtr));
+            marshal_as<std::string>(name)));
         }
         catch (const apache::geode::client::Exception& ex)
         {
@@ -209,7 +206,7 @@ namespace Apache
           auto durableCqsList = gcnew System::Collections::Generic::List<String^>();
           for (const auto& d : *durableCqsArrayListPtr)
           {
-            durableCqsList->Add(CacheableString::GetString(std::static_pointer_cast<apache::geode::client::CacheableString>(d)));
+            durableCqsList->Add(marshal_as<String^>(std::static_pointer_cast<apache::geode::client::CacheableString>(d)->toString()));
           }
           return durableCqsList;
         }

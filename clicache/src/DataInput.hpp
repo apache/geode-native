@@ -17,6 +17,7 @@
 
 #pragma once
 
+
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
 #include <geode/DataInput.hpp>
@@ -26,15 +27,14 @@
 #include "Log.hpp"
 #include "ExceptionTypes.hpp"
 
-using namespace System;
-using namespace System::Collections::Generic;
-
 namespace Apache
 {
   namespace Geode
   {
     namespace Client
     {
+      using namespace System;
+      using namespace System::Collections::Generic;
 
       namespace native = apache::geode::client;
 
@@ -308,16 +308,7 @@ namespace Apache
 
 				String^ ReadString();
 
-        const char * GetPoolName()
-        {
-          try
-          {
-            return m_nativeptr->get()->getPoolName();
-          }
-          finally {
-            GC::KeepAlive(m_nativeptr);
-          }
-        }
+        String^ GetPoolName();
 
         Object^ ReadDotNetTypes(int8_t typeId);
 

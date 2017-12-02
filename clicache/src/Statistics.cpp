@@ -17,12 +17,12 @@
 
 
 
-//#include "geode_includes.hpp"
+
+
 #include "Statistics.hpp"
 #include "StatisticDescriptor.hpp"
 #include "StatisticsType.hpp"
 
-#include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
 
@@ -33,6 +33,7 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace msclr::interop;
 
       void Statistics::Close()
       {
@@ -43,17 +44,15 @@ namespace Apache
 
       System::Int32 Statistics::NameToId(String^ name)
       {
-        ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return m_nativeptr->nameToId(mg_name.CharPtr);
+          return m_nativeptr->nameToId(marshal_as<std::string>(name));
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
       }
 
       StatisticDescriptor^ Statistics::NameToDescriptor(String^ name)
       {
-        ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return StatisticDescriptor::Create(m_nativeptr->nameToDescriptor(mg_name.CharPtr));
+          return StatisticDescriptor::Create(m_nativeptr->nameToDescriptor(marshal_as<std::string>(name)));
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
       }
 
@@ -69,7 +68,7 @@ namespace Apache
 
       String^ Statistics::TextId::get()
       {
-        return ManagedString::Get(m_nativeptr->getTextId());
+        return marshal_as<String^>(m_nativeptr->getTextId());
       }
 
       System::Int64 Statistics::NumericId::get()
@@ -98,9 +97,8 @@ namespace Apache
 
       void Statistics::SetInt(String^ name, System::Int32 value)
       {
-        ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          m_nativeptr->setInt((char*)mg_name.CharPtr, value);
+          m_nativeptr->setInt(marshal_as<std::string>(name), value);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
       }
 
@@ -127,9 +125,8 @@ namespace Apache
 
       void Statistics::SetLong(String^ name, System::Int64 value)
       {
-        ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          m_nativeptr->setLong((char*)mg_name.CharPtr, value);
+          m_nativeptr->setLong(marshal_as<std::string>(name), value);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */ 
       }
 
@@ -142,9 +139,8 @@ namespace Apache
 
       void Statistics::SetDouble(String^ name, double value)
       {
-        ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          m_nativeptr->setDouble((char*)mg_name.CharPtr, value);
+          m_nativeptr->setDouble(marshal_as<std::string>(name), value);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -171,9 +167,8 @@ namespace Apache
 
       System::Int32 Statistics::GetInt(String^ name)
       {
-        ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return m_nativeptr->getInt((char*)mg_name.CharPtr);
+          return m_nativeptr->getInt(marshal_as<std::string>(name));
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -192,9 +187,8 @@ namespace Apache
 
       System::Int64 Statistics::GetLong(String^ name)
       {
-        ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-         return m_nativeptr->getLong((char*)mg_name.CharPtr);
+         return m_nativeptr->getLong(marshal_as<std::string>(name));
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -214,9 +208,8 @@ namespace Apache
 
       double Statistics::GetDouble(String^ name)
       {
-        ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return m_nativeptr->getDouble((char*)mg_name.CharPtr);
+          return m_nativeptr->getDouble(marshal_as<std::string>(name));
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -243,9 +236,8 @@ namespace Apache
 
       System::Int32 Statistics::IncInt(String^ name, System::Int32 delta)
       {
-         ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return m_nativeptr->incInt((char*)mg_name.CharPtr,delta);
+          return m_nativeptr->incInt(marshal_as<std::string>(name),delta);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -265,9 +257,8 @@ namespace Apache
 
       System::Int64 Statistics::IncLong(String^ name, System::Int64 delta)
       {
-         ManagedString mg_name( name );
          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-           return m_nativeptr->incLong((char*)mg_name.CharPtr,delta);
+           return m_nativeptr->incLong(marshal_as<std::string>(name),delta);
          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -287,9 +278,8 @@ namespace Apache
 
       double Statistics::IncDouble(String^ name, double delta)
       {
-        ManagedString mg_name( name );
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          return m_nativeptr->incDouble((char*)mg_name.CharPtr,delta);
+          return m_nativeptr->incDouble(marshal_as<std::string>(name),delta);
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
     }  // namespace Client
   }  // namespace Geode

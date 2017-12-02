@@ -83,7 +83,7 @@ class ThinClientPoolDM
 
   virtual void init();
 
-  const char* getName() const { return m_poolName.c_str(); }
+  const std::string& getName() const { return m_poolName; }
 
   virtual GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
                                     bool attemptFailover = true,
@@ -551,7 +551,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
   TcrMessageReply* m_reply;
   bool m_isBGThread;
   ThinClientPoolDM* m_poolDM;
-  const char* m_func;
+  std::string m_func;
   uint8_t m_getResult;
   std::chrono::milliseconds m_timeout;
   std::shared_ptr<Cacheable> m_args;
@@ -565,7 +565,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
 
  public:
   OnRegionFunctionExecution(
-      const char* func, const Region* region, std::shared_ptr<Cacheable> args,
+      std::string func, const Region* region, std::shared_ptr<Cacheable> args,
       std::shared_ptr<CacheableHashSet> routingObj, uint8_t getResult,
       std::chrono::milliseconds timeout, ThinClientPoolDM* poolDM,
       const std::shared_ptr<ACE_Recursive_Thread_Mutex>& rCL,
@@ -586,14 +586,12 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
         m_userAttr(userAttr),
         m_region(region),
         m_allBuckets(allBuckets) {
-    std::string funcName(m_func);
-
     m_request = new TcrMessageExecuteRegionFunctionSingleHop(
         m_poolDM->getConnectionManager()
             .getCacheImpl()
             ->getCache()
             ->createDataOutput(),
-        funcName, m_region, m_args, m_routingObj, m_getResult, nullptr,
+        m_func, m_region, m_args, m_routingObj, m_getResult, nullptr,
         m_allBuckets, timeout, m_poolDM);
     m_reply = new TcrMessageReply(true, m_poolDM);
     m_resultCollector = new ChunkedFunctionExecutionResponse(

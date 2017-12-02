@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-#include "VersionStamp.hpp"
 #include <string>
+
+#include "VersionStamp.hpp"
 #include "MemberListForVersionStamp.hpp"
 #include "CacheImpl.hpp"
 #include "RegionInternal.hpp"
@@ -63,16 +64,12 @@ uint16_t VersionStamp::getMemberId() const { return m_memberID; }
 GfErrType VersionStamp::processVersionTag(
     const RegionInternal* region, const std::shared_ptr<CacheableKey>& keyPtr,
     const std::shared_ptr<VersionTag>& tag, const bool deltaCheck) const {
-  char key[256];
-  int16_t keyLen = keyPtr->logString(key, 256);
-  std::string keystr(key, keyLen);
-
   if (nullptr == tag) {
     LOGERROR("Cannot process version tag as it is nullptr.");
     return GF_CACHE_ILLEGAL_STATE_EXCEPTION;
   }
 
-  return checkForConflict(region, keystr, tag, deltaCheck);
+  return checkForConflict(region, keyPtr->toString().c_str(), tag, deltaCheck);
 }
 
 GfErrType VersionStamp::checkForConflict(const RegionInternal* region,

@@ -32,14 +32,14 @@
 #include "StatisticsTypeImpl.hpp"
 #include "StatisticsManager.hpp"
 
-using namespace apache::geode::client;
-
 /** @file
  */
 
 namespace apache {
 namespace geode {
 namespace statistics {
+
+using namespace apache::geode::client;
 
 class StatisticsManager;
 
@@ -49,7 +49,7 @@ class StatisticsManager;
  */
 class GeodeStatisticsFactory : public StatisticsFactory {
  private:
-  const char* m_name;
+  std::string m_name;
 
   int64_t m_id;
 
@@ -70,58 +70,69 @@ class GeodeStatisticsFactory : public StatisticsFactory {
   GeodeStatisticsFactory(StatisticsManager* statMngr);
   ~GeodeStatisticsFactory();
 
-  const char* getName();
+  const std::string& getName() const override;
 
-  int64_t getId();
+  int64_t getId() const override;
 
-  Statistics* createStatistics(StatisticsType* type);
+  Statistics* createStatistics(StatisticsType* type) override;
 
-  Statistics* createStatistics(StatisticsType* type, const char* textId);
+  Statistics* createStatistics(StatisticsType* type,
+                               const std::string& textId) override;
 
-  Statistics* createStatistics(StatisticsType* type, const char* textId,
-                               int64_t numericId);
+  Statistics* createStatistics(StatisticsType* type, const std::string& textId,
+                               int64_t numericId) override;
 
-  Statistics* createOsStatistics(StatisticsType* type, const char* textId,
-                                 int64_t numericId);
+  Statistics* createOsStatistics(StatisticsType* type,
+                                 const std::string& textId, int64_t numericId);
 
-  Statistics* createAtomicStatistics(StatisticsType* type);
+  Statistics* createAtomicStatistics(StatisticsType* type) override;
 
-  Statistics* createAtomicStatistics(StatisticsType* type, const char* textId);
+  Statistics* createAtomicStatistics(StatisticsType* type,
+                                     const std::string& textId) override;
 
-  Statistics* createAtomicStatistics(StatisticsType* type, const char* textId,
-                                     int64_t numericId);
+  Statistics* createAtomicStatistics(StatisticsType* type,
+                                     const std::string& textId,
+                                     int64_t numericId) override;
 
-  StatisticsType* createType(const char* name, const char* description,
-                             StatisticDescriptor** stats, int32_t statsLength);
+  StatisticsType* createType(const std::string& name,
+                             const std::string& description,
+                             StatisticDescriptor** stats,
+                             int32_t statsLength) override;
 
-  StatisticsType* findType(const char* name);
+  StatisticsType* findType(const std::string& name) const override;
 
-  StatisticDescriptor* createIntCounter(const char* name,
-                                        const char* description,
-                                        const char* units, bool largerBetter);
+  StatisticDescriptor* createIntCounter(const std::string& name,
+                                        const std::string& description,
+                                        const std::string& units,
+                                        bool largerBetter) override;
 
-  StatisticDescriptor* createLongCounter(const char* name,
-                                         const char* description,
-                                         const char* units, bool largerBetter);
+  StatisticDescriptor* createLongCounter(const std::string& name,
+                                         const std::string& description,
+                                         const std::string& units,
+                                         bool largerBetter) override;
 
-  StatisticDescriptor* createDoubleCounter(const char* name,
-                                           const char* description,
-                                           const char* units,
-                                           bool largerBetter);
+  StatisticDescriptor* createDoubleCounter(const std::string& name,
+                                           const std::string& description,
+                                           const std::string& units,
+                                           bool largerBetter) override;
 
-  StatisticDescriptor* createIntGauge(const char* name, const char* description,
-                                      const char* units, bool largerBetter);
+  StatisticDescriptor* createIntGauge(const std::string& name,
+                                      const std::string& description,
+                                      const std::string& units,
+                                      bool largerBetter) override;
 
-  StatisticDescriptor* createLongGauge(const char* name,
-                                       const char* description,
-                                       const char* units, bool largerBetter);
+  StatisticDescriptor* createLongGauge(const std::string& name,
+                                       const std::string& description,
+                                       const std::string& units,
+                                       bool largerBetter) override;
 
-  StatisticDescriptor* createDoubleGauge(const char* name,
-                                         const char* description,
-                                         const char* units, bool largerBetter);
+  StatisticDescriptor* createDoubleGauge(const std::string& name,
+                                         const std::string& description,
+                                         const std::string& units,
+                                         bool largerBetter) override;
 
-  /** Return the first instance that matches the type, or nullptr */
-  Statistics* findFirstStatisticsByType(StatisticsType* type);
+  Statistics* findFirstStatisticsByType(
+      const StatisticsType* type) const override;
 };
 
 }  // namespace statistics

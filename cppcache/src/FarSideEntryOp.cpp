@@ -14,17 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * FarSideEntryOp.cpp
- *
- *  Created on: 22-Feb-2011
- *      Author: ankurs
- */
 
 #include "FarSideEntryOp.hpp"
 #include "RegionCommit.hpp"
 #include "ClientProxyMembershipID.hpp"
 #include "DiskVersionTag.hpp"
+#include "util/exception.hpp"
 
 namespace apache {
 namespace geode {

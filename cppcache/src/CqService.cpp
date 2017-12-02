@@ -17,17 +17,22 @@
 
 #include <sstream>
 
-#include "CqService.hpp"
-#include "ReadWriteLock.hpp"
+#include <geode/CqStatusListener.hpp>
+#include <geode/CqServiceStatistics.hpp>
 #include <geode/DistributedSystem.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/ExceptionTypes.hpp>
+
+#include "CqService.hpp"
+#include "ReadWriteLock.hpp"
 #include "CqQueryImpl.hpp"
 #include "CqEventImpl.hpp"
-#include <geode/CqServiceStatistics.hpp>
 #include "ThinClientPoolDM.hpp"
-#include <geode/CqStatusListener.hpp>
-using namespace apache::geode::client;
+#include "util/exception.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
 
 CqService::CqService(ThinClientBaseDM* tccdm,
                      StatisticsFactory* statisticsFactory)
@@ -103,12 +108,12 @@ std::shared_ptr<CqQuery> CqService::newCq(
 
   // check for durable client
   if (isDurable) {
-    const auto durableID = m_tccdm->getConnectionManager()
-                               .getCacheImpl()
-                               ->getDistributedSystem()
-                               .getSystemProperties()
-                               .durableClientId();
-    if (durableID == nullptr || strlen(durableID) == 0) {
+    auto&& durableID = m_tccdm->getConnectionManager()
+                           .getCacheImpl()
+                           ->getDistributedSystem()
+                           .getSystemProperties()
+                           .durableClientId();
+    if (durableID.empty()) {
       LOGERROR("Cannot create durable CQ because client is not durable.");
       throw IllegalStateException(
           "Cannot create durable CQ because client is not durable.");
@@ -598,3 +603,7 @@ CqOperation::CqOperationType CqService::getOperation(int eventType) {
   delete resultCollector;
   return tmpRes;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

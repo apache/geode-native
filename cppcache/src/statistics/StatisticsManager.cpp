@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -16,22 +15,27 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <string>
 
 #include <ace/OS.h>
 #include <ace/Thread_Mutex.h>
 #include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
+
+#include <geode/geode_globals.hpp>
 #include <geode/Exception.hpp>
+
 #include "StatisticsManager.hpp"
 #include "util/Log.hpp"
 #include "GeodeStatisticsFactory.hpp"
-#include <string>
 #include "AtomicStatisticsImpl.hpp"
 #include "OsStatisticsImpl.hpp"
 
+namespace apache {
+namespace geode {
+namespace statistics {
+
 using namespace apache::geode::client;
-using namespace apache::geode::statistics;
 
 /**
  * static member initialization
@@ -148,7 +152,8 @@ std::vector<Statistics*>& StatisticsManager::getNewlyAddedStatsList() {
   return this->m_newlyAddedStatsList;
 }
 
-Statistics* StatisticsManager::findFirstStatisticsByType(StatisticsType* type) {
+Statistics* StatisticsManager::findFirstStatisticsByType(
+    const StatisticsType* type) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListLock);
   std::vector<Statistics*>::iterator start = m_statsList.begin();
   while (start != m_statsList.end()) {
@@ -232,3 +237,7 @@ void StatisticsManager::deleteStatistics(Statistics*& stat) {
   }
   stat = nullptr;
 }
+
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

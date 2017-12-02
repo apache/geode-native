@@ -16,6 +16,7 @@
  */
 #pragma once
 
+
 #include "../ICqStatusListener.hpp"
 #include "SafeConvert.hpp"
 

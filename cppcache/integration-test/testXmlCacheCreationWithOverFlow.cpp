@@ -120,18 +120,13 @@ int testXmlCacheCreationWithOverflow() {
   }
 
   std::cout << "Test if the nesting of regions is correct" << std::endl;
-  const char* parentName;
-  const char* childName;
   auto regPtr2 = vrp.at(1);
-  std::vector<std::shared_ptr<Region>> vsr = regPtr2->subregions(true);
-  for (uint32_t i = 0; i < static_cast<uint32_t>(vsr.size()); i++) {
-    Region* regPtr = vsr.at(i).get();
-    childName = regPtr->getName();
-
-    auto x = regPtr->getParentRegion();
-    parentName = (x.get())->getName();
-    if (strcmp(childName, "SubSubRegion221") == 0) {
-      if (strcmp(parentName, "SubRegion22") != 0) {
+  auto&& vsr = regPtr2->subregions(true);
+  for (auto&& regPtr : vsr) {
+    auto&& childName = regPtr->getName();
+    auto&& parentName = regPtr->getParentRegion()->getName();
+    if (childName == "SubSubRegion221") {
+      if (parentName != "SubRegion22") {
         std::cout << "Incorrect parent: tree structure not formed correctly" << std::endl;
         return -1;
       }
@@ -187,10 +182,6 @@ int testXmlCacheCreationWithOverflow() {
     return -1;
   }
 
-  const char* lib = regAttr->getPersistenceLibrary();
-  const char* libFun = regAttr->getPersistenceFactory();
-  printf(" persistence library1 = %s\n", lib);
-  printf(" persistence function1 = %s\n", libFun);
   std::cout << "persistence library = " << regAttr->getPersistenceLibrary() << std::endl;
   std::cout << "persistence function = " << regAttr->getPersistenceFactory() << std::endl;
   auto pconfig = regAttr->getPersistenceProperties();
@@ -205,10 +196,6 @@ int testXmlCacheCreationWithOverflow() {
   std::cout << "****Attributes of Root1 are correctly set****" << std::endl;
 
   std::shared_ptr<RegionAttributes> raPtr2 = regPtr2->getAttributes();
-  const char* lib2 = raPtr2->getPersistenceLibrary();
-  const char* libFun2 = raPtr2->getPersistenceFactory();
-  printf(" persistence library2 = %s\n", lib2);
-  printf(" persistence function2 = %s\n", libFun2);
   std::cout << "persistence library = " << raPtr2->getPersistenceLibrary() << std::endl;
   std::cout << "persistence function = " << raPtr2->getPersistenceFactory() << std::endl;
   auto pconfig2 = raPtr2->getPersistenceProperties();

@@ -20,9 +20,12 @@
 #ifndef GEODE_REMOTEQUERYSERVICE_H_
 #define GEODE_REMOTEQUERYSERVICE_H_
 
-#include <ace/Recursive_Thread_Mutex.h>
-#include <geode/geode_globals.hpp>
+#include <string>
 #include <memory>
+
+#include <ace/Recursive_Thread_Mutex.h>
+
+#include <geode/geode_globals.hpp>
 #include <geode/QueryService.hpp>
 
 #include "CqService.hpp"
@@ -41,31 +44,46 @@ class CPPCACHE_EXPORT RemoteQueryService
       public std::enable_shared_from_this<RemoteQueryService> {
  public:
   RemoteQueryService(CacheImpl* cptr, ThinClientPoolDM* poolDM = nullptr);
+  virtual ~RemoteQueryService() = default;
 
   void init();
 
-  std::shared_ptr<Query> newQuery(const char* querystring);
-
   inline ACE_RW_Thread_Mutex& getLock() { return m_rwLock; }
+
   inline const volatile bool& invalid() { return m_invalid; }
 
   void close();
 
-  ~RemoteQueryService() {}
+  std::shared_ptr<Query> newQuery(std::string querystring) override;
+
   virtual std::shared_ptr<CqQuery> newCq(
-      const char* querystr, const std::shared_ptr<CqAttributes>& cqAttr,
-      bool isDurable = false);
+      std::string querystr, const std::shared_ptr<CqAttributes>& cqAttr,
+      bool isDurable = false) override;
+
   virtual std::shared_ptr<CqQuery> newCq(
-      const char* name, const char* querystr,
-      const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable = false);
-  virtual void closeCqs();
-  virtual QueryService::query_container_type getCqs();
-  virtual std::shared_ptr<CqQuery> getCq(const char* name);
-  virtual void executeCqs();
-  virtual void stopCqs();
-  virtual std::shared_ptr<CqServiceStatistics> getCqServiceStatistics();
+      std::string name, std::string querystr,
+      const std::shared_ptr<CqAttributes>& cqAttr,
+      bool isDurable = false) override;
+
+  virtual void closeCqs() override;
+
+  virtual QueryService::query_container_type getCqs() const override;
+
+  virtual std::shared_ptr<CqQuery> getCq(
+      const std::string& name) const override;
+
+  virtual void executeCqs() override;
+
+  virtual void stopCqs() override;
+
+  virtual std::shared_ptr<CqServiceStatistics> getCqServiceStatistics()
+      const override;
+
   void executeAllCqs(bool failover);
-  virtual std::shared_ptr<CacheableArrayList> getAllDurableCqsFromServer();
+
+  virtual std::shared_ptr<CacheableArrayList> getAllDurableCqsFromServer()
+      const override;
+
   /**
    * execute all cqs on the endpoint after failover
    */

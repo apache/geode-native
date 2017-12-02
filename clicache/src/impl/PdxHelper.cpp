@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-#pragma once
 
-#include "begin_native.hpp"
+
+
+
+#include "../begin_native.hpp"
 #include <CacheImpl.hpp>
 #include <CacheRegionHelper.hpp>
 #include <geode/Cache.hpp>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "PdxHelper.hpp"
 #include "PdxTypeRegistry.hpp"
@@ -33,7 +35,7 @@
 #include "PdxWrapper.hpp"
 #include "../Log.hpp"
 #include "PdxInstanceImpl.hpp"
-#include "Cache.hpp"
+#include "../Cache.hpp"
 
 using namespace System;
 

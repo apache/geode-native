@@ -97,7 +97,8 @@ CacheImpl::CacheImpl(Cache* c, const std::string& name,
 
 void CacheImpl::initServices() {
   m_tcrConnectionManager = new TcrConnectionManager(this);
-  if (!m_initDone && m_attributes != nullptr && m_attributes->getEndpoints()) {
+  if (!m_initDone && m_attributes != nullptr &&
+      !m_attributes->getEndpoints().empty()) {
     if (getCache()->getPoolManager().getAll().size() > 0 && getCacheMode()) {
       LOGWARN(
           "At least one pool has been created so ignoring cache level "
@@ -131,24 +132,24 @@ void CacheImpl::revive() { m_tcrConnectionManager->revive(); }
 CacheImpl::RegionKind CacheImpl::getRegionKind(
     const std::shared_ptr<RegionAttributes>& rattrs) const {
   RegionKind regionKind = CPP_REGION;
-  const char* endpoints = nullptr;
+  std::string endpoints;
 
   if (m_attributes != nullptr &&
-      (endpoints = m_attributes->getEndpoints()) != nullptr &&
+      !(endpoints = m_attributes->getEndpoints()).empty() &&
       (m_attributes->getRedundancyLevel() > 0 ||
        m_tcrConnectionManager->isDurable())) {
     regionKind = THINCLIENT_HA_REGION;
-  } else if (endpoints != nullptr && rattrs->getEndpoints() == nullptr) {
+  } else if (!endpoints.empty() && rattrs->getEndpoints().empty()) {
     rattrs->setEndpoints(endpoints);
   }
 
-  if ((endpoints = rattrs->getEndpoints()) != nullptr) {
-    if (strcmp(endpoints, "none") == 0) {
+  if (!(endpoints = rattrs->getEndpoints()).empty()) {
+    if ("none" == endpoints) {
       regionKind = CPP_REGION;
     } else if (regionKind != THINCLIENT_HA_REGION) {
       regionKind = THINCLIENT_REGION;
     }
-  } else if (rattrs->getPoolName()) {
+  } else if (!rattrs->getPoolName().empty()) {
     auto pPtr = getCache()->getPoolManager().find(rattrs->getPoolName());
     if ((pPtr != nullptr && (pPtr->getSubscriptionRedundancy() > 0 ||
                              pPtr->getSubscriptionEnabled())) ||
@@ -329,29 +330,27 @@ void CacheImpl::close(bool keepalive) {
 bool CacheImpl::isCacheDestroyPending() const { return m_destroyPending; }
 
 void CacheImpl::validateRegionAttributes(
-    const char* name, const std::shared_ptr<RegionAttributes>& attrs) const {
-  RegionKind kind = getRegionKind(attrs);
-  std::string buffer = "Cache::createRegion: \"";
-  buffer += name;
-  buffer += "\" ";
-
+    const std::string& name,
+    const std::shared_ptr<RegionAttributes>& attrs) const {
+  auto&& kind = getRegionKind(attrs);
   if (attrs->m_clientNotificationEnabled && kind == CPP_REGION) {
-    buffer +=
-        "Client notification can be enabled only for native client region";
-    throw UnsupportedOperationException(buffer.c_str());
+    throw UnsupportedOperationException(
+        "Cache::createRegion: \"" + name +
+        "\" Client notification can be enabled only for native client region");
   }
 }
 
 // We'll pass a nullptr loader function pointer and let the region.get method to
 // do a load using a real C++ loader, instead of passing a member function
 // pointer here
-void CacheImpl::createRegion(const char* name,
-                             const std::shared_ptr<RegionAttributes>& aRegionAttributes,
-                             std::shared_ptr<Region>& regionPtr) {
+void CacheImpl::createRegion(
+    std::string name,
+    const std::shared_ptr<RegionAttributes>& aRegionAttributes,
+    std::shared_ptr<Region>& regionPtr) {
   {
     ACE_Guard<ACE_Thread_Mutex> _guard(m_initDoneLock);
     if (!m_initDone) {
-      if (!(aRegionAttributes->getPoolName())) {
+      if (aRegionAttributes->getPoolName().empty()) {
         m_tcrConnectionManager->init();
         m_remoteQueryServicePtr = std::make_shared<RemoteQueryService>(this);
         auto& prop = m_distributedSystem->getSystemProperties();
@@ -370,9 +369,8 @@ void CacheImpl::createRegion(const char* name,
     throw IllegalArgumentException(
         "Cache::createRegion: RegionAttributes is null");
   }
-  std::string namestr(name);
 
-  if (namestr.find('/') != std::string::npos) {
+  if (name.find('/') != std::string::npos) {
     throw IllegalArgumentException(
         "Malformed name string, contains region path seperator '/'");
   }
@@ -385,49 +383,32 @@ void CacheImpl::createRegion(const char* name,
     // bound
     MapOfRegionGuard guard1(m_regions->mutex());
     std::shared_ptr<Region> tmp;
-    if (0 == m_regions->find(namestr, tmp)) {
-      char buffer[256];
-      ACE_OS::snprintf(
-          buffer, 256,
-          "Cache::createRegion: \"%s\" region exists in local cache",
-          namestr.c_str());
-      throw RegionExistsException(buffer);
+    if (0 == m_regions->find(name, tmp)) {
+      throw RegionExistsException("Cache::createRegion: \"" + name +
+                                  "\" region exists in local cache");
     }
 
     auto csptr = std::make_shared<CacheStatistics>();
     try {
-      rpImpl = createRegion_internal(namestr.c_str(), nullptr,
-                                     aRegionAttributes, csptr, false);
+      rpImpl = createRegion_internal(name.c_str(), nullptr, aRegionAttributes,
+                                     csptr, false);
     } catch (const AuthenticationFailedException&) {
       throw;
     } catch (const AuthenticationRequiredException&) {
       throw;
     } catch (const Exception&) {
-      //      LOGERROR( "Cache::createRegion: region creation failed, caught
-      //      exception: %s", ex.what() );
-      //      ex.printStackTrace();
       throw;
     } catch (std::exception& ex) {
-      char buffer[512];
-      ACE_OS::snprintf(buffer, 512,
-                       "Cache::createRegion: Failed to create Region \"%s\" "
-                       "due to unknown exception: %s",
-                       namestr.c_str(), ex.what());
-      throw UnknownException(buffer);
+      throw UnknownException("Cache::createRegion: Failed to create Region \"" +
+                             name +
+                             "\" due to unknown exception: " + ex.what());
     } catch (...) {
-      char buffer[256];
-      ACE_OS::snprintf(buffer, 256,
-                       "Cache::createRegion: Failed to create Region \"%s\" "
-                       "due to unknown exception.",
-                       namestr.c_str());
-      throw UnknownException(buffer);
+      throw UnknownException("Cache::createRegion: Failed to create Region \"" +
+                             name + "\" due to unknown exception.");
     }
     if (rpImpl == nullptr) {
-      char buffer[256];
-      ACE_OS::snprintf(buffer, 256,
-                       "Cache::createRegion: Failed to create Region \"%s\"",
-                       namestr.c_str());
-      throw RegionCreationFailedException(buffer);
+      throw RegionCreationFailedException(
+          "Cache::createRegion: Failed to create Region \"" + name + "\"");
     }
     regionPtr = rpImpl;
     rpImpl->addDisMessToQueue();
@@ -451,22 +432,21 @@ void CacheImpl::createRegion(const char* name,
     // metadata for single hop.
     auto& props = m_distributedSystem->getSystemProperties();
     if (!props.isGridClient()) {
-      const char* poolName = aRegionAttributes->getPoolName();
-      if (poolName != nullptr) {
-       auto pool = getCache()->getPoolManager().find(poolName);
-       if (pool != nullptr && !pool->isDestroyed() &&
-           pool->getPRSingleHopEnabled()) {
-         ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.get());
-         if ((poolDM != nullptr) &&
-             (poolDM->getClientMetaDataService() != nullptr)) {
-           LOGFINE(
-               "enqueued region %s for initial metadata refresh for "
-               "singlehop ",
-               name);
-           poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
-               regionPtr->getFullPath(), 0);
-         }
-       }
+      const auto& poolName = aRegionAttributes->getPoolName();
+      if (!poolName.empty()) {
+        auto pool = getCache()->getPoolManager().find(poolName);
+        if (pool != nullptr && !pool->isDestroyed() &&
+            pool->getPRSingleHopEnabled()) {
+          ThinClientPoolDM* poolDM =
+              dynamic_cast<ThinClientPoolDM*>(pool.get());
+          if ((poolDM != nullptr) &&
+              (poolDM->getClientMetaDataService() != nullptr)) {
+            LOGFINE("enqueued region " + name +
+                    " for initial metadata refresh for singlehop ");
+            poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
+                regionPtr->getFullPath(), 0);
+          }
+        }
       }
     }
   }
@@ -490,32 +470,28 @@ void CacheImpl::createRegion(const char* name,
  * @throws IllegalArgumentException if path is null, the empty string, or "/"
  */
 
-void CacheImpl::getRegion(const char* path, std::shared_ptr<Region>& rptr) {
+void CacheImpl::getRegion(const std::string& path,
+                          std::shared_ptr<Region>& rptr) {
   TryReadGuard guardCacheDestroy(m_destroyCacheMutex, m_destroyPending);
+  rptr = nullptr;
+
   if (m_destroyPending) {
-    rptr = nullptr;
     return;
   }
 
   MapOfRegionGuard guard(m_regions->mutex());
-  std::string pathstr;
-  if (path != nullptr) {
-    pathstr = path;
+  static const std::string slash("/");
+  if (path == slash || path.length() < 1) {
+    LOGERROR("Cache::getRegion: path [" + path + "] is not valid.");
+    throw IllegalArgumentException("Cache::getRegion: path is empty or a /");
   }
-  rptr = nullptr;
-  std::string slash("/");
-  if ((path == (void*)nullptr) || (pathstr == slash) ||
-      (pathstr.length() < 1)) {
-    LOGERROR("Cache::getRegion: path [%s] is not valid.", pathstr.c_str());
-    throw IllegalArgumentException("Cache::getRegion: path is null or a /");
-  }
-  std::string fullname = pathstr;
+  auto fullname = path;
   if (fullname.substr(0, 1) == slash) {
-    fullname = pathstr.substr(1);
+    fullname = path.substr(1);
   }
   // find second separator
   uint32_t idx = static_cast<uint32_t>(fullname.find('/'));
-  std::string stepname = fullname.substr(0, idx);
+  auto stepname = fullname.substr(0, idx);
   std::shared_ptr<Region> region;
   if (0 == m_regions->find(stepname, region)) {
     if (stepname == fullname) {
@@ -523,7 +499,7 @@ void CacheImpl::getRegion(const char* path, std::shared_ptr<Region>& rptr) {
       rptr = region;
       return;
     }
-    std::string remainder = fullname.substr(stepname.length() + 1);
+    auto remainder = fullname.substr(stepname.length() + 1);
     if (region != nullptr) {
       rptr = region->getSubregion(remainder.c_str());
     } else {
@@ -545,10 +521,10 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
 
   std::shared_ptr<RegionInternal> rptr = nullptr;
   RegionKind regionKind = getRegionKind(attrs);
-  const char* poolName = attrs->getPoolName();
-  const char* regionEndpoints = attrs->getEndpoints();
-  const char* cacheEndpoints =
-      m_attributes == nullptr ? nullptr : m_attributes->getEndpoints();
+  const auto& poolName = attrs->getPoolName();
+  const auto& regionEndpoints = attrs->getEndpoints();
+  const std::string cacheEndpoints =
+      m_attributes ? m_attributes->getEndpoints() : "";
 
   /*if(m_defaultPool != nullptr && (poolName == nullptr || strlen(poolName) ==
   0))
@@ -556,15 +532,15 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
     attrs->setPoolName(m_defaultPool->getName());
   }*/
 
-  if (poolName != nullptr) {
-   auto pool = getCache()->getPoolManager().find(poolName);
+  if (!poolName.empty()) {
+    auto pool = getCache()->getPoolManager().find(poolName);
     if (pool != nullptr && !pool->isDestroyed()) {
       bool isMultiUserSecureMode = pool->getMultiuserAuthentication();
       if (isMultiUserSecureMode && (attrs->getCachingEnabled())) {
         LOGERROR(
             "Pool [%s] is in multiuser authentication mode so region local "
             "caching is not supported.",
-            poolName);
+            poolName.c_str());
         throw IllegalStateException(
             "Pool is in multiuser authentication so region local caching is "
             "not supported.");
@@ -572,9 +548,8 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
     }
   }
 
-  if (poolName && strlen(poolName) &&
-      ((regionEndpoints && strlen(regionEndpoints)) ||
-       (cacheEndpoints && strlen(cacheEndpoints)))) {
+  if (!poolName.empty() &&
+      (!regionEndpoints.empty() || !cacheEndpoints.empty())) {
     LOGERROR(
         "Cache or region endpoints cannot be specified when pool name is "
         "specified for region %s",
@@ -585,27 +560,27 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
   }
 
   if (regionKind == THINCLIENT_REGION) {
-    LOGINFO("Creating region %s with region endpoints %s", name.c_str(),
-            attrs->getEndpoints());
+    LOGINFO("Creating region " + name + " with region endpoints " +
+            attrs->getEndpoints().c_str());
     auto tmp = std::make_shared<ThinClientRegion>(name, this, rootRegion, attrs,
                                                   csptr, shared);
     tmp->initTCR();
     rptr = tmp;
   } else if (regionKind == THINCLIENT_HA_REGION) {
-    LOGINFO("Creating region %s with subscriptions enabled", name.c_str());
+    LOGINFO("Creating region " + name + " with subscriptions enabled");
     auto tmp = std::make_shared<ThinClientHARegion>(name, this, rootRegion,
                                                     attrs, csptr, shared);
     tmp->initTCR();
     rptr = tmp;
   } else if (regionKind == THINCLIENT_POOL_REGION) {
-    LOGINFO("Creating region %s attached to pool %s", name.c_str(),
+    LOGINFO("Creating region " + name + " attached to pool " +
             attrs->getPoolName());
     auto tmp = std::make_shared<ThinClientPoolRegion>(name, this, rootRegion,
                                                       attrs, csptr, shared);
     tmp->initTCR();
     rptr = tmp;
   } else {
-    LOGINFO("Creating local region %s", name.c_str());
+    LOGINFO("Creating local region " + name);
     rptr = std::make_shared<LocalRegion>(name, this, rootRegion, attrs, csptr,
                                          shared);
   }
@@ -655,15 +630,15 @@ void CacheImpl::readyForEvents() {
   if (pools.empty()) throw IllegalStateException("No pools found.");
   for (const auto& itr : pools) {
     const auto& currPool = itr.second;
-    LOGDEBUG("Sending readyForEvents( ) with pool %s", currPool->getName());
+    LOGDEBUG("Sending readyForEvents( ) with pool " + currPool->getName());
     try {
       if (const auto& poolHADM =
               std::dynamic_pointer_cast<ThinClientPoolHADM>(currPool)) {
         poolHADM->readyForEvents();
       }
     } catch (Exception& ex) {
-      LOGWARN("readyForEvents( ) failed for pool %s with exception: %s",
-              currPool->getName(), ex.what());
+      LOGWARN("readyForEvents( ) failed for pool " + currPool->getName() +
+              " with exception: " + ex.getMessage());
     }
   }
 }

@@ -165,7 +165,7 @@ class TcrChunkedContext {
                                   m_cache);
       } catch (Exception& ex) {
         LOGERROR("HandleChunk error message %s, name = %s", ex.what(),
-                 ex.getName());
+                 ex.getName().c_str());
         m_result->setException(std::make_shared<Exception>(ex));
       } catch (std::exception& stdEx) {
         std::string exMsg("HandleChunk exception:: ");
@@ -175,7 +175,7 @@ class TcrChunkedContext {
         m_result->setException(ex);
       } catch (...) {
         std::string exMsg("Unknown exception in ");
-        exMsg += Utils::demangleTypeName(typeid(*m_result).name())->asChar();
+        exMsg += Utils::demangleTypeName(typeid(*m_result).name());
         exMsg +=
             "::handleChunk while processing response, possible serialization "
             "mismatch";

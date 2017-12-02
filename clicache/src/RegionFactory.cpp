@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-#pragma once
+
+
+
 
 #include "RegionFactory.hpp"
 #include "RegionAttributes.hpp"
@@ -50,12 +52,11 @@ namespace Apache
       RegionFactory^ RegionFactory::SetCacheLoader( String^ libPath, String^ factoryFunctionName )
       {
         throw gcnew System::NotSupportedException;
-        ManagedString mg_libpath( libPath );
-        ManagedString mg_factoryFunctionName( factoryFunctionName );
 
         try
         {
-          m_nativeptr->get()->setCacheLoader( mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr );
+          m_nativeptr->get()->setCacheLoader( marshal_as<std::string>(libPath),
+            marshal_as<std::string>(factoryFunctionName) );
         }
         finally
         {
@@ -67,12 +68,11 @@ namespace Apache
       RegionFactory^ RegionFactory::SetCacheWriter( String^ libPath, String^ factoryFunctionName )
       {
         throw gcnew System::NotSupportedException;
-        ManagedString mg_libpath( libPath );
-        ManagedString mg_factoryFunctionName( factoryFunctionName );
 
         try
         {
-          m_nativeptr->get()->setCacheWriter( mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr );
+          m_nativeptr->get()->setCacheWriter( marshal_as<std::string>(libPath),
+            marshal_as<std::string>(factoryFunctionName) );
         }
         finally
         {
@@ -84,12 +84,11 @@ namespace Apache
       RegionFactory^ RegionFactory::SetCacheListener( String^ libPath, String^ factoryFunctionName )
       {
         throw gcnew System::NotSupportedException;
-        ManagedString mg_libpath( libPath );
-        ManagedString mg_factoryFunctionName( factoryFunctionName );
 
         try
         {
-          m_nativeptr->get()->setCacheListener( mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr );
+          m_nativeptr->get()->setCacheListener( marshal_as<std::string>(libPath),
+            marshal_as<std::string>(factoryFunctionName) );
         }
         finally
         {
@@ -101,12 +100,11 @@ namespace Apache
       RegionFactory^ RegionFactory::SetPartitionResolver( String^ libPath, String^ factoryFunctionName )
       {
         throw gcnew System::NotSupportedException;
-        ManagedString mg_libpath( libPath );
-        ManagedString mg_factoryFunctionName( factoryFunctionName );
 
         try
         {
-          m_nativeptr->get()->setPartitionResolver( mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr );
+          m_nativeptr->get()->setPartitionResolver( marshal_as<std::string>(libPath),
+            marshal_as<std::string>(factoryFunctionName) );
         }
         finally
         {
@@ -209,12 +207,10 @@ namespace Apache
       RegionFactory^ RegionFactory::SetPersistenceManager( String^ libPath,
         String^ factoryFunctionName, /*Dictionary<Object^, Object^>*/Properties<String^, String^>^ config )
       {        
-        ManagedString mg_libpath( libPath );
-        ManagedString mg_factoryFunctionName( factoryFunctionName );
-
         try
         {
-          m_nativeptr->get()->setPersistenceManager( mg_libpath.CharPtr, mg_factoryFunctionName.CharPtr, config->GetNative() );
+          m_nativeptr->get()->setPersistenceManager( marshal_as<std::string>(libPath),
+            marshal_as<std::string>(factoryFunctionName), config->GetNative() );
         }
         finally
         {
@@ -225,11 +221,10 @@ namespace Apache
 
       RegionFactory^ RegionFactory::SetPoolName( String^ poolName )
       {
-        ManagedString mg_poolName( poolName );
 
         try
         {
-          m_nativeptr->get()->setPoolName( mg_poolName.CharPtr );
+          m_nativeptr->get()->setPoolName( marshal_as<std::string>(poolName) );
         }
         finally
         {
@@ -364,8 +359,7 @@ namespace Apache
 
           try
           {
-            ManagedString mg_name( regionName );
-            auto nativeptr = m_nativeptr->get()->create( mg_name.CharPtr );
+            auto nativeptr = m_nativeptr->get()->create( marshal_as<std::string>(regionName) );
             return Client::Region<TKey,TValue>::Create( nativeptr );
           }
           finally

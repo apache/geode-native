@@ -17,10 +17,11 @@
 
 #pragma once
 
+
 #include "../geode_defs.hpp"
-#include "begin_native.hpp"
+#include "../begin_native.hpp"
 #include <geode/AuthInitialize.hpp>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include <vcclr.h>
 #include "../IAuthInitialize.hpp"
@@ -58,26 +59,6 @@ namespace apache
         }
 
         /// <summary>
-        /// Static function to create a <c>ManagedAuthInitialize</c> using given
-        /// managed assembly path and given factory function.
-        /// </summary>
-        /// <param name="assemblyPath">
-        /// The path of the managed assembly that contains the <c>IAuthInitialize</c>
-        /// factory function.
-        /// </param>
-        /// <param name="factoryFunctionName">
-        /// The name of the factory function of the managed class for creating
-        /// an object that implements <c>IAuthInitialize</c>.
-        /// This should be a static function of the format
-        /// {Namespace}.{Class Name}.{Method Name}.
-        /// </param>
-        /// <exception cref="IllegalArgumentException">
-        /// If the managed library cannot be loaded or the factory function fails.
-        /// </exception>
-        static AuthInitialize* create(const char* assemblyPath,
-          const char* factoryFunctionName);
-
-        /// <summary>
         /// Called when the cache is going down
         /// </summary>
         /// <remarks>
@@ -101,7 +82,7 @@ namespace apache
         /// </param>
         /// <param name="server">It is the ID of the endpoint
         /// </param>
-        virtual std::shared_ptr<Properties> getCredentials(const std::shared_ptr<Properties>& securityprops, const char* server);
+        virtual std::shared_ptr<Properties> getCredentials(const std::shared_ptr<Properties>& securityprops, const std::string& server);
 
         virtual ~ManagedAuthInitializeGeneric() { }
 

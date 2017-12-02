@@ -1,9 +1,3 @@
-
-#pragma once
-
-#ifndef GEODE_TYPEREGISTRY_H_
-#define GEODE_TYPEREGISTRY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -21,8 +15,14 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_TYPEREGISTRY_H_
+#define GEODE_TYPEREGISTRY_H_
+
 #include "geode_globals.hpp"
 #include "Serializable.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -63,9 +63,9 @@ class TypeRegistry {
 
   CacheImpl* m_cache;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
 #endif //GEODE_TYPEREGISTRY_H_
-

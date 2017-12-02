@@ -504,29 +504,28 @@ std::shared_ptr<Pool> CacheHelper::createPool2(
 void CacheHelper::logPoolAttributes(std::shared_ptr<Pool>& pool) {
   using namespace apache::geode::util::chrono::duration;
   LOG("logPoolAttributes() entered");
-  LOGINFO("CPPTEST: Pool attribtes for pool %s are as follows:",
+  LOGINFO("CPPTEST: Pool attributes for pool %s are as follows" +
           pool->getName());
-  LOGINFO("getFreeConnectionTimeout: %s",
-          to_string(pool->getFreeConnectionTimeout()).c_str());
-  LOGINFO("getLoadConditioningInterval: %s",
-          to_string(pool->getLoadConditioningInterval()).c_str());
+  LOGINFO("getFreeConnectionTimeout: " +
+          to_string(pool->getFreeConnectionTimeout()));
+  LOGINFO("getLoadConditioningInterval: " +
+          to_string(pool->getLoadConditioningInterval()));
   LOGINFO("getSocketBufferSize: %d", pool->getSocketBufferSize());
-  LOGINFO("getReadTimeout: %s", to_string(pool->getReadTimeout()).c_str());
+  LOGINFO("getReadTimeout: " + to_string(pool->getReadTimeout()));
   LOGINFO("getMinConnections: %d", pool->getMinConnections());
   LOGINFO("getMaxConnections: %d", pool->getMaxConnections());
-  LOGINFO("getIdleTimeout: %s", to_string(pool->getIdleTimeout()).c_str());
-  LOGINFO("getPingInterval: %s", to_string(pool->getPingInterval()).c_str());
-  LOGINFO("getStatisticInterval: %s",
-          to_string(pool->getStatisticInterval()).c_str());
+  LOGINFO("getIdleTimeout: " + to_string(pool->getIdleTimeout()));
+  LOGINFO("getPingInterval: " + to_string(pool->getPingInterval()));
+  LOGINFO("getStatisticInterval: " + to_string(pool->getStatisticInterval()));
   LOGINFO("getRetryAttempts: %d", pool->getRetryAttempts());
   LOGINFO("getSubscriptionEnabled: %s",
           pool->getSubscriptionEnabled() ? "true" : "false");
   LOGINFO("getSubscriptionRedundancy: %d", pool->getSubscriptionRedundancy());
-  LOGINFO("getSubscriptionMessageTrackingTimeout: %s",
-          to_string(pool->getSubscriptionMessageTrackingTimeout()).c_str());
-  LOGINFO("getSubscriptionAckInterval: %s",
-          to_string(pool->getSubscriptionAckInterval()).c_str());
-  LOGINFO("getServerGroup: %s", pool->getServerGroup());
+  LOGINFO("getSubscriptionMessageTrackingTimeout: " +
+          to_string(pool->getSubscriptionMessageTrackingTimeout()));
+  LOGINFO("getSubscriptionAckInterval: " +
+          to_string(pool->getSubscriptionAckInterval()));
+  LOGINFO("getServerGroup: " + pool->getServerGroup());
   LOGINFO("getThreadLocalConnections: %s",
           pool->getThreadLocalConnections() ? "true" : "false");
   LOGINFO("getPRSingleHopEnabled: %s",
@@ -714,7 +713,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionConcurrencyCheckDisabled(
   }
   return regionFactory.create(name);
 }
- std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
+std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
     const char* name, bool caching, bool clientNotificationEnabled,
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
@@ -729,7 +728,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionConcurrencyCheckDisabled(
   af.setCloningEnabled(true);
   if (lel > 0) {
     af.setDiskPolicy(DiskPolicyType::OVERFLOWS);
-   auto sqLiteProps = Properties::create();
+    auto sqLiteProps = Properties::create();
     sqLiteProps->insert("PageSize", "65536");
     sqLiteProps->insert("MaxPageCount", "1073741823");
     std::string sqlite_dir =
@@ -850,18 +849,18 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionStickySingleHop(
     const std::shared_ptr<CacheListener>& cacheListener,
     ExpirationAction::Action action) {
   LOG("createPooledRegionStickySingleHop");
- auto poolFacPtr = getCache()->getPoolManager().createFactory();
- poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
- poolFacPtr->setThreadLocalConnections(true);
- poolFacPtr->setPRSingleHopEnabled(true);
- LOG("adding pool locators");
- addServerLocatorEPs(locators, poolFacPtr);
+  auto poolFacPtr = getCache()->getPoolManager().createFactory();
+  poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
+  poolFacPtr->setThreadLocalConnections(true);
+  poolFacPtr->setPRSingleHopEnabled(true);
+  LOG("adding pool locators");
+  addServerLocatorEPs(locators, poolFacPtr);
 
- if ((getCache()->getPoolManager().find(poolName)) ==
-     nullptr) {  // Pool does not exist with the same name.
-   auto pptr = poolFacPtr->create(poolName);
-   LOG("createPooledRegionStickySingleHop logPoolAttributes");
-   logPoolAttributes(pptr);
+  if ((getCache()->getPoolManager().find(poolName)) ==
+      nullptr) {  // Pool does not exist with the same name.
+    auto pptr = poolFacPtr->create(poolName);
+    LOG("createPooledRegionStickySingleHop logPoolAttributes");
+    logPoolAttributes(pptr);
   }
 
   RegionShortcut preDefRA = PROXY;
@@ -891,44 +890,39 @@ std::shared_ptr<Region> CacheHelper::createSubregion(
   if (listener != nullptr) {
     af.setCacheListener(listener);
   }
- std::shared_ptr<RegionAttributes> rattrsPtr = af.createRegionAttributes();
+  std::shared_ptr<RegionAttributes> rattrsPtr = af.createRegionAttributes();
 
- return parent->createSubregion(name, rattrsPtr);
+  return parent->createSubregion(name, rattrsPtr);
 }
 std::shared_ptr<CacheableString> CacheHelper::createCacheable(
     const char* value) {
   return CacheableString::create(value);
- }
-
- void CacheHelper::showKeys(
-     std::vector<std::shared_ptr<CacheableKey>>& vecKeys) {
-   fprintf(stdout, "vecKeys.size() = %zd\n", vecKeys.size());
-   for (uint32_t i = 0; i < static_cast<uint32_t>(vecKeys.size()); i++) {
-     char msg[1024];
-     size_t wrote = vecKeys.at(i)->logString(msg, 1023);
-     msg[wrote] = '\0';  // just in case...
-     fprintf(stdout, "key[%d] - %s\n", i, msg);
-   }
-   fflush(stdout);
- }
-
- void CacheHelper::showRegionAttributes(RegionAttributes& attributes) {
-   printf("caching=%s\n", attributes.getCachingEnabled() ? "true" : "false");
-   printf("Entry Time To Live = %s\n",
-          to_string(attributes.getEntryTimeToLive()).c_str());
-   printf("Entry Idle Timeout = %s\n",
-          to_string(attributes.getEntryIdleTimeout()).c_str());
-   printf("Region Time To Live = %s\n",
-          to_string(attributes.getRegionTimeToLive()).c_str());
-   printf("Region Idle Timeout = %s\n",
-          to_string(attributes.getRegionIdleTimeout()).c_str());
-   printf("Initial Capacity = %d\n", attributes.getInitialCapacity());
-   printf("Load Factor = %f\n", attributes.getLoadFactor());
-   printf("End Points = %s\n",
-          (attributes.getEndpoints() != nullptr ? attributes.getEndpoints()
-                                                : "(null)"));
 }
- std::shared_ptr<QueryService> CacheHelper::getQueryService() {
+
+void CacheHelper::showKeys(
+    std::vector<std::shared_ptr<CacheableKey>>& vecKeys) {
+  fprintf(stdout, "vecKeys.size() = %zd\n", vecKeys.size());
+  for (size_t i = 0; i < vecKeys.size(); i++) {
+    fprintf(stdout, "key[%zd] - %s\n", i, vecKeys.at(i)->toString().c_str());
+  }
+  fflush(stdout);
+}
+
+void CacheHelper::showRegionAttributes(RegionAttributes& attributes) {
+  printf("caching=%s\n", attributes.getCachingEnabled() ? "true" : "false");
+  printf("Entry Time To Live = %s\n",
+         to_string(attributes.getEntryTimeToLive()).c_str());
+  printf("Entry Idle Timeout = %s\n",
+         to_string(attributes.getEntryIdleTimeout()).c_str());
+  printf("Region Time To Live = %s\n",
+         to_string(attributes.getRegionTimeToLive()).c_str());
+  printf("Region Idle Timeout = %s\n",
+         to_string(attributes.getRegionIdleTimeout()).c_str());
+  printf("Initial Capacity = %d\n", attributes.getInitialCapacity());
+  printf("Load Factor = %f\n", attributes.getLoadFactor());
+  printf("End Points = %s\n", attributes.getEndpoints().c_str());
+}
+std::shared_ptr<QueryService> CacheHelper::getQueryService() {
   return cachePtr->getQueryService();
 }
 
@@ -1645,8 +1639,8 @@ void CacheHelper::terminate_process_file(
             std::chrono::system_clock::now() - start);
         LOG("CacheHelper::terminate_process_file: process exited. "
             "pidFileName=" +
-            pidFileName + ", pid=" + pid + ", elapsed=" +
-            std::to_string(elapsed.count()) + "ms");
+            pidFileName + ", pid=" + pid +
+            ", elapsed=" + std::to_string(elapsed.count()) + "ms");
         return;
       }
       std::this_thread::yield();
@@ -1765,7 +1759,7 @@ void CacheHelper::initLocator(int instance, bool ssl, bool multiDS, int dsId,
 
   sprintf(cmd,
           "%s/bin/%s start locator --name=%s --port=%d --dir=%s "
-          "--properties-file=%s ",
+          "--properties-file=%s --http-service-port=0",
           gfjavaenv, GFSH, locDirname.c_str(), portnum, currDir.c_str(),
           geodeFile.c_str());
 
@@ -1775,11 +1769,11 @@ void CacheHelper::initLocator(int instance, bool ssl, bool multiDS, int dsId,
 }
 
 void CacheHelper::clearSecProp() {
- auto tmpSecProp = CacheHelper::getHelper()
-                                 .getCache()
-                                 ->getDistributedSystem()
-                                 .getSystemProperties()
-                                 .getSecurityProperties();
+  auto tmpSecProp = CacheHelper::getHelper()
+                        .getCache()
+                        ->getDistributedSystem()
+                        .getSystemProperties()
+                        .getSecurityProperties();
   tmpSecProp->remove("security-username");
   tmpSecProp->remove("security-password");
 }

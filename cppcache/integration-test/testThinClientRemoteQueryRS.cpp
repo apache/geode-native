@@ -63,8 +63,7 @@ void stepOne() {
     serializationRegistry->addType(Portfolio::createDeserializable);
     serializationRegistry->addPdxType(PositionPdx::createDeserializable);
     serializationRegistry->addPdxType(PortfolioPdx::createDeserializable);
-  }
-  catch (const IllegalStateException&) {
+  } catch (const IllegalStateException&) {
     // ignore exception
   }
   isPoolConfig = true;
@@ -184,8 +183,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       qs = getHelper()->cachePtr->getQueryService();
     }
     for (int i = 0; i < QueryStrings::RSOPLsize(); i++) {
-      auto qry =
-          qs->newQuery(const_cast<char*>(resultsetQueriesOPL[i].query()));
+      auto qry = qs->newQuery(resultsetQueriesOPL[i].query());
       auto results = qry->execute();
       if (!qh->verifyRS(results, resultsetRowCountsOPL[i])) {
         char failmsg[100] = {0};
@@ -219,7 +217,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
           } else {
             if (ser != nullptr) {
               printf(" query idx %d pulled object %s \n", i,
-                     ser->toString()->asChar());
+                     ser->toString().c_str());
             } else {
               printf("   query idx %d pulled bad object \n", i);
               FAIL("Unexpected object received in query");
@@ -243,13 +241,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
                 positionpdx->getSharesOutstanding());
           } else {
             if (pdxser != nullptr) {
-              if (pdxser->toString()->isWideString()) {
-                printf(" query idx %d pulled object %S  :: \n", i,
-                       pdxser->toString()->asWChar());
-              } else {
-                printf(" query idx %d pulled object %s  :: \n", i,
-                       pdxser->toString()->asChar());
-              }
+              printf(" query idx %d pulled object %s  :: \n", i,
+                     pdxser->toString().c_str());
             } else {
               printf("   query idx %d pulled bad object  :: \n", i);
               FAIL("Unexpected object received in query");
@@ -293,7 +286,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       }
 
       if (resultsetQueries[i].category != unsupported) {
-        auto qry = qs->newQuery(const_cast<char*>(resultsetQueries[i].query()));
+        auto qry = qs->newQuery(resultsetQueries[i].query());
         auto results = qry->execute();
         if (!qh->verifyRS(results, (qh->isExpectedRowsConstantRS(i)
                                         ? resultsetRowCounts[i]
@@ -331,7 +324,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
             } else {
               if (ser != nullptr) {
                 printf(" query idx %d pulled object %s \n", i,
-                       ser->toString()->asChar());
+                       ser->toString().c_str());
               } else {
                 printf("   query idx %d pulled bad object \n", i);
                 FAIL("Unexpected object received in query");
@@ -357,13 +350,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
                   positionpdx->getSharesOutstanding());
             } else {
               if (pdxser != nullptr) {
-                if (pdxser->toString()->isWideString()) {
-                  printf(" query idx %d pulled object %S  :: \n", i,
-                         pdxser->toString()->asWChar());
-                } else {
-                  printf(" query idx %d pulled object %s  :: \n", i,
-                         pdxser->toString()->asChar());
-                }
+                printf(" query idx %d pulled object %s  :: \n", i,
+                       pdxser->toString().c_str());
               } else {
                 printf("   query idx %d pulled bad object  :: \n", i);
                 FAIL("Unexpected object received in query");
@@ -400,8 +388,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
 
     for (int i = 0; i < QueryStrings::RSPsize(); i++) {
       if (resultsetparamQueries[i].category != unsupported) {
-        auto qry =
-            qs->newQuery(const_cast<char*>(resultsetparamQueries[i].query()));
+        auto qry = qs->newQuery(resultsetparamQueries[i].query());
         // LOGINFO("NIL::229:Retrieved QueryString = %s",
         // qry->getQueryString());
 
@@ -453,7 +440,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
             } else {
               if (ser != nullptr) {
                 printf(" query idx %d pulled object %s  : \n", i,
-                       ser->toString()->asChar());
+                       ser->toString().c_str());
               } else {
                 printf("   query idx %d pulled bad object  \n", i);
                 FAIL("Unexpected object received in query");
@@ -479,7 +466,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
             } else {
               if (ser != nullptr) {
                 printf(" query idx %d pulled object %s : \n", i,
-                       ser->toString()->asChar());
+                       ser->toString().c_str());
               } else {
                 printf("   query idx %d pulled bad object\n", i);
                 FAIL("Unexpected object received in query");
@@ -512,7 +499,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, DoQueryRSError)
 
     for (int i = 0; i < QueryStrings::RSsize(); i++) {
       if (resultsetQueries[i].category == unsupported) {
-        auto qry = qs->newQuery(const_cast<char*>(resultsetQueries[i].query()));
+        auto qry = qs->newQuery(resultsetQueries[i].query());
 
         try {
           auto results = qry->execute();

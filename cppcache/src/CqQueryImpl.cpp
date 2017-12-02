@@ -27,6 +27,7 @@
 #include "ThinClientRegion.hpp"
 #include "util/bounds.hpp"
 #include "util/Log.hpp"
+#include "util/exception.hpp"
 
 using namespace apache::geode::client;
 
@@ -63,12 +64,12 @@ CqQueryImpl::~CqQueryImpl() {}
  */
 void CqQueryImpl::updateStats() { m_cqService->updateStats(); }
 
-const char* CqQueryImpl::getName() const { return m_cqName.c_str(); }
+const std::string& CqQueryImpl::getName() const { return m_cqName; }
 
 /**
  * sets the CqName.
  */
-void CqQueryImpl::setName(std::string& cqName) {
+void CqQueryImpl::setName(std::string cqName) {
   m_cqName = m_serverCqName = cqName;
 }
 
@@ -212,9 +213,7 @@ void CqQueryImpl::removeFromCqMap() {
 /**
  * Returns the QueryString of this CQ.
  */
-const char* CqQueryImpl::getQueryString() const {
-  return m_queryString.c_str();
-}
+const std::string& CqQueryImpl::getQueryString() const { return m_queryString; }
 
 /**
  * Return the query
@@ -225,10 +224,12 @@ const char* CqQueryImpl::getQueryString() const {
 /**
  * @see org.apache.geode.cache.query.CqQuery#getStatistics()
  */
-const std::shared_ptr<CqStatistics> CqQueryImpl::getStatistics() const { return m_stats; }
+ std::shared_ptr<CqStatistics> CqQueryImpl::getStatistics() const {
+   return m_stats;
+ }
 
-const std::shared_ptr<CqAttributes> CqQueryImpl::getCqAttributes() const {
-  return m_cqAttributes;
+ std::shared_ptr<CqAttributes> CqQueryImpl::getCqAttributes() const {
+   return m_cqAttributes;
 }
 
 /**
@@ -529,13 +530,14 @@ void CqQueryImpl::setCqState(CqState::StateType state) {
   m_cqState = state;
 }
 
-const std::shared_ptr<CqAttributesMutator> CqQueryImpl::getCqAttributesMutator() const {
+std::shared_ptr<CqAttributesMutator> CqQueryImpl::getCqAttributesMutator()
+    const {
   return m_cqAttributesMutator;
 }
 /**
  * @return Returns the cqOperation.
  */
-CqOperation::CqOperationType CqQueryImpl::getCqOperation() {
+CqOperation::CqOperationType CqQueryImpl::getCqOperation() const {
   return m_cqOperation;
 }
 
@@ -572,7 +574,7 @@ void CqQueryImpl::updateStats(CqEvent& cqEvent) {
  * Return true if the CQ is in running state
  * @return true if running, false otherwise
  */
-bool CqQueryImpl::isRunning() {
+bool CqQueryImpl::isRunning() const {
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
   return m_cqState == CqState::RUNNING;
 }
@@ -581,7 +583,7 @@ bool CqQueryImpl::isRunning() {
  * Return true if the CQ is in Sstopped state
  * @return true if stopped, false otherwise
  */
-bool CqQueryImpl::isStopped() {
+bool CqQueryImpl::isStopped() const {
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
   return m_cqState == CqState::STOPPED ||
          (m_proxyCache && m_proxyCache->isClosed());
@@ -591,7 +593,7 @@ bool CqQueryImpl::isStopped() {
  * Return true if the CQ is closed
  * @return true if closed, false otherwise
  */
-bool CqQueryImpl::isClosed() {
+bool CqQueryImpl::isClosed() const {
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
   return m_cqState == CqState::CLOSED ||
          (m_proxyCache && m_proxyCache->isClosed());
@@ -601,4 +603,4 @@ bool CqQueryImpl::isClosed() {
  * Return true if the CQ is durable
  * @return true if durable, false otherwise
  */
-bool CqQueryImpl::isDurable() { return m_isDurable; }
+bool CqQueryImpl::isDurable() const { return m_isDurable; }

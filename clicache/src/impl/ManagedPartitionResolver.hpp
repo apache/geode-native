@@ -17,11 +17,12 @@
 
 #pragma once
 
+
 #include "../geode_defs.hpp"
 #include <vcclr.h>
-#include "begin_native.hpp"
+#include "../begin_native.hpp"
 #include <geode/PartitionResolver.hpp>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 
 #include "PartitionResolver.hpp"
@@ -85,7 +86,7 @@ namespace apache {
         /// key the detail of the entry event.
         /// </param>
 
-        virtual std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent& key);
+        virtual std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent& key) override;
 
         /// <summary>
         /// Returns the name of the PartitionResolver.
@@ -98,7 +99,7 @@ namespace apache {
         /// the name of the PartitionResolver
         /// </returns>
         /// </remarks>
-        virtual const char* getName();
+        virtual const std::string& getName() override;
 
 
         /// <summary>

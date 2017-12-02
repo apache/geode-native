@@ -16,7 +16,8 @@
  */
 
 
-//#include "geode_includes.hpp"
+
+
 #include "Execution.hpp"
 #include "begin_native.hpp"
 #include <geode/Execution.hpp>
@@ -24,7 +25,6 @@
 
 #include "ResultCollector.hpp"
 #include "impl/ManagedResultCollector.hpp"
-#include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
 #include "TimeUtils.hpp"
@@ -111,8 +111,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
         try
         {
-          ManagedString mg_function(func);
-          auto rc = m_nativeptr->get()->execute(mg_function.CharPtr, TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
+          auto rc = m_nativeptr->get()->execute(marshal_as<std::string>(func), TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
           if (m_rc == nullptr)
             return gcnew ResultCollector<TResult>(rc);
           else

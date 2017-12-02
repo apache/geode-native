@@ -68,7 +68,7 @@ class StatisticsManager {
  public:
   StatisticsManager(const char* filePath,
                     std::chrono::milliseconds sampleIntervalMs, bool enabled,
-                    apache::geode::client::CacheImpl* cache, const char* durableClientId,
+                    CacheImpl* cache, const char* durableClientId,
                     const std::chrono::seconds durableTimeout,
                     int64_t statFileLimit = 0, int64_t statDiskSpaceLimit = 0);
 
@@ -93,7 +93,7 @@ class StatisticsManager {
   ACE_Recursive_Thread_Mutex& getListMutex();
 
   /** Return the first instance that matches the type, or nullptr */
-  Statistics* findFirstStatisticsByType(StatisticsType* type);
+  Statistics* findFirstStatisticsByType(const StatisticsType* type);
 
   std::vector<Statistics*> findStatisticsByType(StatisticsType* type);
 

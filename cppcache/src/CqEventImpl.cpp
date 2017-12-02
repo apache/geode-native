@@ -100,8 +100,8 @@ std::string CqEventImpl::toString() {
   ACE_OS::snprintf(
       buffer, 1024,
       "CqEvent CqName=%s; base operation=%d; cq operation= %d;key=%s;value=%s",
-      m_cQuery->getName(), m_baseOp, m_queryOp, m_key->toString()->asChar(),
-      m_newValue->toString()->asChar());
+      m_cQuery->getName().c_str(), m_baseOp, m_queryOp,
+      m_key->toString().c_str(), m_newValue->toString().c_str());
   return buffer;
 }
 std::shared_ptr<CacheableBytes> CqEventImpl::getDeltaValue() const {

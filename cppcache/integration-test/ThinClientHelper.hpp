@@ -558,15 +558,15 @@ void doNetsearch(const char* name, const char* key, const char* value,
  auto keyPtr = CacheableKey::create(key);
 
  auto regPtr = getHelper()->getRegion(name);
-  fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
-  fflush(stdout);
-  ASSERT(regPtr != nullptr, "Region not found.");
+ fprintf(stdout, "netsearch  region %s\n", regPtr->getName().c_str());
+ fflush(stdout);
+ ASSERT(regPtr != nullptr, "Region not found.");
 
-  // ASSERT( !regPtr->containsKey( keyPtr ), "Key should not have been found in
-  // region." );
-  if (checkVal) {
-    ASSERT(!regPtr->containsValueForKey(keyPtr),
-           "Value should not have been found in region.");
+ // ASSERT( !regPtr->containsKey( keyPtr ), "Key should not have been found in
+ // region." );
+ if (checkVal) {
+   ASSERT(!regPtr->containsValueForKey(keyPtr),
+          "Value should not have been found in region.");
   }
 
   auto checkPtr = std::dynamic_pointer_cast<CacheableString>(

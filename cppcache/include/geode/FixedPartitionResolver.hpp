@@ -87,7 +87,7 @@ class CPPCACHE_EXPORT FixedPartitionResolver : public PartitionResolver {
   * @return partition-name associated with node which allows mapping of given
   *         data to user defined partition
   */
-  virtual const char* getPartitionName(const EntryEvent& opDetails) = 0;
+  virtual const std::string& getPartitionName(const EntryEvent& opDetails) = 0;
 };
 }  // namespace client
 }  // namespace geode

@@ -46,10 +46,10 @@ const int MAXBUFSIZE ATTR_UNUSED = 65536;
 const int BODYLENPOS ATTR_UNUSED = 4;
 const int64_t INITIAL_CONNECTION_ID = 26739;
 
-#define throwException(ex)                              \
-  {                                                     \
-    LOGFINEST("%s: %s", ex.getName(), ex.what()); \
-    throw ex;                                           \
+#define throwException(ex)                            \
+  {                                                   \
+    LOGFINEST(ex.getName() + ": " + ex.getMessage()); \
+    throw ex;                                         \
   }
 bool TcrConnection::InitTcrConnection(
     TcrEndpoint* endpointObj, const char* endpoint, Set<uint16_t>& ports,
@@ -167,13 +167,13 @@ bool TcrConnection::InitTcrConnection(
 
     // Add 3 durable Subcription properties to ClientProxyMembershipID
 
-    const char* durableId = sysProp.durableClientId();
-    const auto durableTimeOut = sysProp.durableTimeout();
+    auto&& durableId = sysProp.durableClientId();
+    auto&& durableTimeOut = sysProp.durableTimeout();
 
     // Write ClientProxyMembershipID serialized object.
     uint32_t memIdBufferLength;
     const auto memId = cacheImpl->getClientProxyMembershipIDFactory().create(
-        hostName, hostAddr, hostPort, durableId, durableTimeOut);
+        hostName, hostAddr, hostPort, durableId.c_str(), durableTimeOut);
     const auto memIdBuffer = memId->getDSMemberId(memIdBufferLength);
     handShakeMsg->writeBytes((int8_t*)memIdBuffer, memIdBufferLength);
   }
@@ -205,7 +205,7 @@ bool TcrConnection::InitTcrConnection(
   LOGDEBUG(
       "TcrConnection algo name %s tmpIsSecurityOn = %d isDhOn = %d "
       "isNotificationChannel = %d ",
-      sysProp.securityClientDhAlgo(), tmpIsSecurityOn, isDhOn,
+      sysProp.securityClientDhAlgo().c_str(), tmpIsSecurityOn, isDhOn,
       isNotificationChannel);
   bool doIneedToSendCreds = true;
   if (isNotificationChannel && m_endpointObj &&
@@ -259,7 +259,7 @@ bool TcrConnection::InitTcrConnection(
 
         // Send the symmetric key algorithm name string
         handShakeMsg->write(static_cast<int8_t>(GeodeTypeIds::CacheableString));
-        handShakeMsg->writeASCII(sysProp.securityClientDhAlgo());
+        handShakeMsg->writeASCII(sysProp.securityClientDhAlgo().c_str());
 
         // Send the client's DH public key to the server
         auto dhPubKey = m_dh->getPublicKey();
@@ -289,7 +289,7 @@ bool TcrConnection::InitTcrConnection(
       throw;
     } catch (const Exception& ex) {
       LOGWARN("TcrConnection: failed to acquire handle to authLoader: [%s] %s",
-              ex.getName(), ex.what());
+              ex.getName().c_str(), ex.what());
       auto message = std::string("TcrConnection: failed to load authInit library: ")
                      + ex.what();
       throwException(
@@ -565,9 +565,9 @@ Connector* TcrConnection::createConnection(
                                .getSystemProperties();
   if (systemProperties.sslEnabled()) {
     socket = new TcpSslConn(endpoint, connectTimeout, maxBuffSizePool,
-                            systemProperties.sslKeystorePassword(),
-                            systemProperties.sslTrustStore(),
-                            systemProperties.sslKeyStore());
+                            systemProperties.sslKeystorePassword().c_str(),
+                            systemProperties.sslTrustStore().c_str(),
+                            systemProperties.sslKeyStore().c_str());
   } else {
     socket = new TcpConn(endpoint, connectTimeout, maxBuffSizePool);
   }
@@ -1440,14 +1440,13 @@ void TcrConnection::touch() { m_lastAccessed = ACE_OS::gettimeofday(); }
 ACE_Time_Value TcrConnection::getLastAccessed() { return m_lastAccessed; }
 
 uint8_t TcrConnection::getOverrides(const SystemProperties* props) {
-  const char* conflate = props->conflateEvents();
   uint8_t conflateByte = 0;
-  if (conflate != nullptr) {
-    if (ACE_OS::strcasecmp(conflate, "true") == 0) {
-      conflateByte = 1;
-    } else if (ACE_OS::strcasecmp(conflate, "false") == 0) {
-      conflateByte = 2;
-    }
+
+  auto&& conflate = props->conflateEvents();
+  if (conflate == "true") {
+    conflateByte = 1;
+  } else if (conflate == "false") {
+    conflateByte = 2;
   }
 
   return conflateByte;

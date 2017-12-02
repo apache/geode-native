@@ -59,7 +59,8 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
   uint64_t timestamp;
   bool getBeforeUpdate;
 
-  inline uint32_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
+  inline uint32_t getObjectSize(
+      const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -77,18 +78,18 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
                         int asstSize = 0, bool getbfrUpdate = false);
 
   virtual ~DeltaFastAssetAccount() {}
-  void toData(apache::geode::client::DataOutput& output) const;
-  void fromData(apache::geode::client::DataInput& input);
-  void toDelta(apache::geode::client::DataOutput& output) const;
-  void fromDelta(apache::geode::client::DataInput& input);
+  void toData(apache::geode::client::DataOutput& output) const override;
+  void fromData(apache::geode::client::DataInput& input) override;
+  void toDelta(apache::geode::client::DataOutput& output) const override;
+  void fromDelta(apache::geode::client::DataInput& input) override;
 
-  std::shared_ptr<CacheableString> toString() const {
+  std::string toString() const override {
     char buf[102500];
     sprintf(buf,
             "DeltaFastAssetAccount:[acctId = %d customerName = %s netWorth = "
             "%f timestamp = %lld]",
-            acctId, customerName->toString(), netWorth, timestamp);
-    return CacheableString::create(buf);
+            acctId, customerName->toString().c_str(), netWorth, timestamp);
+    return buf;
   }
 
   int getAcctId() { return acctId; }
@@ -120,21 +121,24 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
       timestamp = 0;
     }
   }
+
   void update() {
     incrementNetWorth();
     if (encodeTimestamp) {
       resetTimestamp();
     }
   }
-  int32_t classId() const { return 41; }
-  bool hasDelta() { return true; }
 
-  uint32_t objectSize() const {
+  int32_t classId() const override { return 41; }
+
+  bool hasDelta() const override { return true; }
+
+  uint32_t objectSize() const override {
     uint32_t objectSize = sizeof(DeltaFastAssetAccount);
     return objectSize;
   }
 
-  virtual std::shared_ptr<Delta> clone() {
+  virtual std::shared_ptr<Delta> clone() const override {
     auto clonePtr = std::make_shared<DeltaFastAssetAccount>();
     clonePtr->assets = CacheableHashMap::create();
     for (const auto& item : *(this->assets)) {

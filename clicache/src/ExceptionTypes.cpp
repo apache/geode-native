@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+
+
 #include "ExceptionTypes.hpp"
 #include <cstdlib>
 
@@ -29,6 +31,7 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace msclr::interop;
 
       Dictionary<String^, CreateException2^>^ GeodeException::Init( )
       {
@@ -118,12 +121,12 @@ namespace Apache
         } catch (const apache::geode::client::Exception& ex) {
           innerException = GeodeException::Get(ex);
         }
-        String^ exName = gcnew String( nativeEx.getName( ) );
+        String^ exName = marshal_as<String^>(nativeEx.getName());
         CreateException2^ exDelegate;
         if (Native2ManagedExMap->TryGetValue(exName, exDelegate)) {
           return exDelegate(nativeEx, innerException);
         }
-        String^ exMsg = ManagedString::Get( nativeEx.what( ) );
+        String^ exMsg = marshal_as<String^>( nativeEx.getMessage( ) );
         if ( exMsg->StartsWith( GeodeException::MgSysExPrefix ) ) {
           // Get the exception type
           String^ mgExStr = exMsg->Substring(

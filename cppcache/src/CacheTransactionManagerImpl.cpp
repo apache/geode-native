@@ -14,12 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * CacheTransactionManagerImpl.cpp
- *
- *  Created on: 04-Feb-2011
- *      Author: ankurs
- */
 
 #include "CacheTransactionManagerImpl.hpp"
 #include <geode/TransactionId.hpp>
@@ -34,6 +28,7 @@
 #include "CacheImpl.hpp"
 #include "TssConnectionWrapper.hpp"
 #include "TXCleaner.hpp"
+#include "util/exception.hpp"
 
 namespace apache {
 namespace geode {

@@ -71,7 +71,7 @@ bool PdxType1V1::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 
-void PdxType1V1::toData(std::shared_ptr<PdxWriter> pw) {
+void PdxType1V1::toData(std::shared_ptr<PdxWriter> pw) const {
   if (!m_useWeakHashMap) pw->writeUnreadFields(m_pdxUreadFields);
 
   pw->writeInt("i1", m_i1 + 1);
@@ -149,7 +149,7 @@ void PdxType1V1::fromData(std::shared_ptr<PdxReader> pr) {
   */
   LOGDEBUG("PdxObject::fromData() End...");
 }
-std::shared_ptr<CacheableString> PdxType1V1::toString() const {
+std::string PdxType1V1::toString() const {
   char idbuf[4096];
   // sprintf(idbuf,"PdxObject: [ m_bool=%d ] [m_byte=%d] [m_int16=%d]
   // [m_int32=%d] [m_long=%lld] [m_float=%f] [ m_string=%s ]",m_bool, m_byte,
@@ -162,7 +162,7 @@ std::shared_ptr<CacheableString> PdxType1V1::toString() const {
   // m_int16, m_int32, m_float, m_double, m_string);
   sprintf(idbuf, "PdxType1V1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ]",
           m_i1, m_i2, m_i3, m_i4);
-  return CacheableString::create(idbuf);
+  return idbuf;
 }
 
 /************************************************************
@@ -211,7 +211,7 @@ bool PdxType2V1::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 
-void PdxType2V1::toData(std::shared_ptr<PdxWriter> pw) {
+void PdxType2V1::toData(std::shared_ptr<PdxWriter> pw) const {
   if (!m_useWeakHashMap) pw->writeUnreadFields(m_unreadFields);
 
   pw->writeInt("i1", m_i1 + 1);
@@ -230,29 +230,29 @@ void PdxType2V1::fromData(std::shared_ptr<PdxReader> pr) {
   m_i3 = pr->readInt("i3");
   m_i4 = pr->readInt("i4");
 }
- std::shared_ptr<CacheableString> PdxType2V1::toString() const {
-   char idbuf[4096];
-   sprintf(idbuf, "PdxType2V1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ]",
-           m_i1, m_i2, m_i3, m_i4);
-   return CacheableString::create(idbuf);
- }
+std::string PdxType2V1::toString() const {
+  char idbuf[4096];
+  sprintf(idbuf, "PdxType2V1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ]",
+          m_i1, m_i2, m_i3, m_i4);
+  return idbuf;
+}
 
- /************************************************************
-  *  PdxType3V1
-  * *********************************************************/
+/************************************************************
+ *  PdxType3V1
+ * *********************************************************/
 
- int PdxType3V1::m_diffInSameFields = 0;
- int PdxType3V1::m_diffInExtraFields = 0;
- bool PdxType3V1::m_useWeakHashMap = false;
+int PdxType3V1::m_diffInSameFields = 0;
+int PdxType3V1::m_diffInExtraFields = 0;
+bool PdxType3V1::m_useWeakHashMap = false;
 
- PdxType3V1::PdxType3V1() {
-   m_i1 = 1;
-   m_i2 = 21;
-   m_str1 = (char *)"common";
-   m_i3 = 31;
-   m_i4 = 41;
-   m_i5 = 0;
-   m_str2 = (char *)"0";
+PdxType3V1::PdxType3V1() {
+  m_i1 = 1;
+  m_i2 = 21;
+  m_str1 = (char *)"common";
+  m_i3 = 31;
+  m_i4 = 41;
+  m_i5 = 0;
+  m_str2 = (char *)"0";
 }
 
 PdxType3V1::~PdxType3V1() {
@@ -290,7 +290,7 @@ bool PdxType3V1::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 
-void PdxType3V1::toData(std::shared_ptr<PdxWriter> pw) {
+void PdxType3V1::toData(std::shared_ptr<PdxWriter> pw) const {
   if (!m_useWeakHashMap) pw->writeUnreadFields(m_unreadFields);
 
   pw->writeInt("i1", m_i1 + 1);
@@ -334,13 +334,14 @@ void PdxType3V1::fromData(std::shared_ptr<PdxReader> pr) {
     memcpy(m_str2, extraFieldsStr, strSize);
   }
 }
- std::shared_ptr<CacheableString> PdxType3V1::toString() const {
+
+std::string PdxType3V1::toString() const {
   char idbuf[4096];
   sprintf(idbuf,
           "PdxType2V1:[ m_i1=%d ] [ m_i2=%d ] [m_str1=%s] [ m_i3=%d ] [ "
           "m_i4=%d ] [ m_i5=%d ] [m_str2=%s]",
           m_i1, m_i2, m_str1, m_i3, m_i4, m_i5, m_str2);
-  return CacheableString::create(idbuf);
+  return idbuf;
 }
 
 /************************************************************
@@ -387,7 +388,7 @@ bool PdxTypesV1R1::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 
-void PdxTypesV1R1::toData(std::shared_ptr<PdxWriter> pw) {
+void PdxTypesV1R1::toData(std::shared_ptr<PdxWriter> pw) const {
   if (!m_useWeakHashMap) pw->writeUnreadFields(m_pdxUreadFields);
 
   pw->writeInt("i1", m_i1 + 1);
@@ -406,11 +407,11 @@ void PdxTypesV1R1::fromData(std::shared_ptr<PdxReader> pr) {
   m_i3 = pr->readInt("i3");
   m_i4 = pr->readInt("i4");
 }
- std::shared_ptr<CacheableString> PdxTypesV1R1::toString() const {
+std::string PdxTypesV1R1::toString() const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypesV1R1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ]",
           m_i1, m_i2, m_i3, m_i4);
-  return CacheableString::create(idbuf);
+  return idbuf;
 }
 
 /************************************************************
@@ -457,7 +458,7 @@ bool PdxTypesV1R2::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 
-void PdxTypesV1R2::toData(std::shared_ptr<PdxWriter> pw) {
+void PdxTypesV1R2::toData(std::shared_ptr<PdxWriter> pw) const {
   if (!m_useWeakHashMap) pw->writeUnreadFields(m_pdxUreadFields);
 
   pw->writeInt("i1", m_i1 + 1);
@@ -475,11 +476,11 @@ void PdxTypesV1R2::fromData(std::shared_ptr<PdxReader> pr) {
   m_i3 = pr->readInt("i3");
   m_i4 = pr->readInt("i4");
 }
- std::shared_ptr<CacheableString> PdxTypesV1R2::toString() const {
+std::string PdxTypesV1R2::toString() const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypesV1R1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ]",
           m_i1, m_i2, m_i3, m_i4);
-  return CacheableString::create(idbuf);
+  return idbuf;
  }
 
  /************************************************************
@@ -526,7 +527,7 @@ bool PdxTypesIgnoreUnreadFieldsV1::equals(std::shared_ptr<PdxSerializable> obj) 
   return false;
 }
 
-void PdxTypesIgnoreUnreadFieldsV1::toData(std::shared_ptr<PdxWriter> pw) {
+void PdxTypesIgnoreUnreadFieldsV1::toData(std::shared_ptr<PdxWriter> pw) const {
   if (!m_useWeakHashMap) pw->writeUnreadFields(m_unreadFields);
 
   pw->writeInt("i1", m_i1 + 1);
@@ -554,11 +555,11 @@ void PdxTypesIgnoreUnreadFieldsV1::fromData(std::shared_ptr<PdxReader> pr) {
   hasField = pr->hasField("i4");
   if (!hasField) throw Exception("i4 is an valid field");
 }
- std::shared_ptr<CacheableString> PdxTypesIgnoreUnreadFieldsV1::toString() const {
+std::string PdxTypesIgnoreUnreadFieldsV1::toString() const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypesV1R1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ]",
           m_i1, m_i2, m_i3, m_i4);
-  return CacheableString::create(idbuf);
+  return idbuf;
  }
 
  /************************************************************
@@ -624,7 +625,7 @@ void PdxTypesIgnoreUnreadFieldsV1::fromData(std::shared_ptr<PdxReader> pr) {
    // TODO Auto-generated destructor stub
 }
 
-void PdxVersionedV1::toData(std::shared_ptr<PdxWriter> pw) {
+void PdxVersionedV1::toData(std::shared_ptr<PdxWriter> pw) const {
   // pw->writeChar("m_char", m_char);
   pw->writeBoolean("m_bool", m_bool);
   pw->writeByte("m_byte", m_byte);
@@ -663,11 +664,11 @@ void PdxVersionedV1::fromData(std::shared_ptr<PdxReader> pr) {
   m_floatArray = pr->readFloatArray("m_floatArray", floatArrayLen);
   m_doubleArray = pr->readDoubleArray("m_doubleArray", doubleArrayLen);
 }
- std::shared_ptr<CacheableString> PdxVersionedV1::toString() const {
+std::string PdxVersionedV1::toString() const {
   char idbuf[4096];
   // sprintf(idbuf,"PdxTypesV1R1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d
   // ]", m_i1, m_i2, m_i3, m_i4 );
-  return CacheableString::create(idbuf);
+  return idbuf;
 }
 
 /************************************************************
@@ -721,7 +722,7 @@ TestEqualsV1::TestEqualsV1() {
   // intArr = ;
 }
 
-void TestEqualsV1::toData(std::shared_ptr<PdxWriter> pw) {
+void TestEqualsV1::toData(std::shared_ptr<PdxWriter> pw) const {
   pw->writeInt("i1", i1);
   pw->writeInt("i2", i2);
   pw->writeString("s1", s1);
@@ -740,8 +741,8 @@ void TestEqualsV1::fromData(std::shared_ptr<PdxReader> pr) {
   // intArr = (int[]) reader.ReadObject("intArrObject");
   // sArr = (string[]) reader.ReadObject("sArrObject");
 }
- std::shared_ptr<CacheableString> TestEqualsV1::toString() const {
+std::string TestEqualsV1::toString() const {
   char idbuf[1024];
   sprintf(idbuf, "TestEqualsV1:[i1=%d ] [i2=%d] ", i1, i2);
-  return CacheableString::create(idbuf);
+  return idbuf;
  }

@@ -37,6 +37,7 @@ namespace client {
 class ThinClientPoolDM;
 class FunctionService;
 class CacheImpl;
+class PoolManagerImpl;
 
 typedef std::unordered_map<std::string, std::shared_ptr<Pool>> HashMapOfPools;
 
@@ -59,7 +60,7 @@ class CPPCACHE_EXPORT PoolManager {
    * which is used to configure and create new {@link Pool}s.
    * @return the new pool factory
    */
-  std::shared_ptr<PoolFactory> createFactory();
+  std::shared_ptr<PoolFactory> createFactory() const;
 
   /**
    * Returns a map containing all the pools in this manager.
@@ -71,7 +72,7 @@ class CPPCACHE_EXPORT PoolManager {
    * @return a Map that is a snapshot of all the pools currently known to this
    * manager.
    */
-  const HashMapOfPools& getAll();
+  const HashMapOfPools& getAll() const;
 
   /**
    * Find by name an existing connection pool returning
@@ -80,7 +81,7 @@ class CPPCACHE_EXPORT PoolManager {
    * @return the existing connection pool or <code>nullptr</code> if it does not
    * exist.
    */
-  std::shared_ptr<Pool> find(const char* name);
+  std::shared_ptr<Pool> find(const std::string& name) const;
 
   /**
    * Find the pool used by the given region.
@@ -89,7 +90,7 @@ class CPPCACHE_EXPORT PoolManager {
    * region does
    * not have a pool.
    */
-  std::shared_ptr<Pool> find(std::shared_ptr<Region> region);
+  std::shared_ptr<Pool> find(std::shared_ptr<Region> region) const;
 
   /**
    * Unconditionally destroys all created pools that are in this manager.
@@ -101,14 +102,13 @@ class CPPCACHE_EXPORT PoolManager {
   void close(bool keepAlive = false);
 
  private:
-  void removePool(const char* name);
+  void removePool(const std::string& name);
 
-  void addPool(const char* name, const std::shared_ptr<Pool>& pool);
+  void addPool(std::string name, const std::shared_ptr<Pool>& pool);
 
-  std::shared_ptr<Pool> getDefaultPool();
+  std::shared_ptr<Pool> getDefaultPool() const;
 
-  class Impl;
-  std::unique_ptr<Impl, void (*)(Impl*)> m_pimpl;
+  std::shared_ptr<PoolManagerImpl> m_pimpl;
 
   PoolManager(CacheImpl* cache);
 

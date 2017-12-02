@@ -112,7 +112,8 @@ static bool s_initDone = openSSLInit();
 }
 // end of extern "C"
 std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
-    const std::shared_ptr<Properties>& securityprops, const char* server) {
+    const std::shared_ptr<Properties>& securityprops,
+    const std::string& server) {
   if (!s_initDone) {
     throw AuthenticationFailedException(
         "PKCSAuthInit::getCredentials: "
@@ -195,12 +196,12 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
     signatureValPtr =
         convertBytesToString(signatureData, lengthEncryptedData, 2048);
     LOGINFO(" Converting CREDS to STRING: %s",
-            signatureValPtr->toString()->asChar());
+            signatureValPtr->toString().c_str());
   } else {
     signatureValPtr =
         CacheableBytes::createNoCopy(signatureData, lengthEncryptedData);
     LOGINFO(" Converting CREDS to BYTES: %s",
-            signatureValPtr->toString()->asChar());
+            signatureValPtr->toString().c_str());
   }
   auto credentials = Properties::create();
   credentials->insert(KEYSTORE_ALIAS1, alias);

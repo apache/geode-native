@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-#include "TcrMessage.hpp"
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/DistributedSystem.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/CacheableObjectArray.hpp>
+
+#include "TcrMessage.hpp"
 #include "Assert.hpp"
 #include "TcrConnection.hpp"
 #include "AutoDelete.hpp"
@@ -34,7 +35,8 @@
 #include "DiskStoreId.hpp"
 #include "DiskVersionTag.hpp"
 #include "CacheRegionHelper.hpp"
-#include <boost/stacktrace.hpp>
+#include "DataInputInternal.hpp"
+#include "DataOutputInternal.hpp"
 
 using namespace apache::geode::client;
 static const uint32_t REGULAR_EXPRESSION =
@@ -612,7 +614,7 @@ void TcrMessage::writeBytesOnly(const std::shared_ptr<Serializable>& se) {
 }
 
 void TcrMessage::writeHeader(uint32_t msgType, uint32_t numOfParts) {
-  m_request->setPoolName(getPoolName());
+  DataOutputInternal::setPoolName(*m_request, getPoolName());
 
   int8_t earlyAck = 0x0;
   LOGDEBUG("TcrMessage::writeHeader m_isMetaRegion = %d", m_isMetaRegion);
@@ -925,22 +927,13 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
   }
 }
 
-const char* TcrMessage::getPoolName() {
-  if (m_region != nullptr) {
-    const std::shared_ptr<Pool>& p = (const_cast<Region*>(m_region))->getPool();
-    if (p != nullptr) {
+const std::string& TcrMessage::getPoolName() const {
+  if (m_region) {
+    if (const auto& p = m_region->getPool()) {
       return p->getName();
-    } else {
-      return nullptr;
     }
   }
-  return nullptr;
-  /*ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(m_tcdm);
-
-  if(pool == nullptr)
-    return nullptr;
-
-  return pool->getName();*/
+  return EMPTY_STRING;
 }
 
 void TcrMessage::chunkSecurityHeader(int skipPart, const uint8_t* bytes,
@@ -964,7 +957,7 @@ void TcrMessage::handleByteArrayResponse(
   // TODO:: this need to make sure that pool is there
   //  if(m_tcdm == nullptr)
   //  throw IllegalArgumentException("Pool is nullptr in TcrMessage");
-  input->setPoolName(getPoolName());
+  DataInputInternal::setPoolName(*input, getPoolName());
   m_msgType = input->readInt32();
   int32_t msglen;
   msglen = input->readInt32();

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CQRESULTS_H_
-#define GEODE_CQRESULTS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CQRESULTS_H_
+#define GEODE_CQRESULTS_H_
+
 /**
  * @file
  */
@@ -29,6 +29,7 @@
 #include "Serializable.hpp"
 #include "CacheableBuiltins.hpp"
 #include "SelectResults.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -40,6 +41,7 @@ namespace client {
  * This will be a StructSet.
  */
 class CPPCACHE_EXPORT CqResults : public SelectResults {};
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

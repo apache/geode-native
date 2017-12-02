@@ -43,10 +43,10 @@ namespace client {
 
 class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
  private:
-  std::shared_ptr<CacheableString> m_enumClassName;
-  std::shared_ptr<CacheableString> m_enumName;
+  std::string m_enumClassName;
+  std::string m_enumName;
   int32_t m_ordinal;
-  mutable int32_t m_hashcode;
+  int32_t m_hashcode;
 
  public:
   /** Destructor */
@@ -59,20 +59,19 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
   /**
    * @brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const;
+  virtual void toData(DataOutput& output) const override;
 
   /**
    * @brief deserialize this object
    **/
-  virtual void fromData(DataInput& input);
+  virtual void fromData(DataInput& input) override;
 
   /** @return the size of the object in bytes */
-  virtual uint32_t objectSize() const {
-    uint32_t size = sizeof(CacheableEnum);
-    size += static_cast<uint32_t>(sizeof(int32_t));
-    size += m_enumClassName->objectSize();
-    size += m_enumName->objectSize();
-    return size;
+  virtual uint32_t objectSize() const override {
+    auto size = sizeof(CacheableEnum);
+    size += m_enumClassName.length();
+    size += m_enumName.length();
+    return static_cast<uint32_t>(size);
   }
 
   /**
@@ -80,14 +79,14 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int32_t classId() const { return 0; }
+  virtual int32_t classId() const override { return 0; }
 
   /**
    * @brief return the typeId byte of the instance being serialized.
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int8_t typeId() const {
+  virtual int8_t typeId() const override {
     // return 0;
     return static_cast<int8_t>(GeodeTypeIds::CacheableEnum);
   }
@@ -95,9 +94,7 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
   /**
    * Display this object as c string.
    */
-  virtual std::shared_ptr<CacheableString> toString() const {
-    return CacheableString::create("CacheableEnum");
-  }
+  virtual std::string toString() const override { return "CacheableEnum"; }
 
   /**
    * Factory method for creating an instance of CacheableEnum.
@@ -109,31 +106,32 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
    * enum type.
    * @return a {@link CacheableEnum} representing C++ enum.
    */
-  static std::shared_ptr<CacheableEnum> create(const char* enumClassName,
-                                               const char* enumName,
+  static std::shared_ptr<CacheableEnum> create(std::string enumClassName,
+                                               std::string enumName,
                                                int32_t ordinal) {
     return std::make_shared<CacheableEnum>(enumClassName, enumName, ordinal);
   }
 
   /**@return enum class name. */
-  const char* getEnumClassName() const { return m_enumClassName->asChar(); }
+  const std::string& getEnumClassName() const { return m_enumClassName; }
 
   /**@return enum name. */
-  const char* getEnumName() const { return m_enumName->asChar(); }
+  const std::string& getEnumName() const { return m_enumName; }
 
   /**@return enum ordinal. */
   int32_t getEnumOrdinal() const { return m_ordinal; }
 
   /** @return the hashcode for this key. */
-  virtual int32_t hashcode() const;
+  virtual int32_t hashcode() const override { return m_hashcode; }
 
   /** @return true if this key matches other. */
-  virtual bool operator==(const CacheableKey& other) const;
+  virtual bool operator==(const CacheableKey& other) const override;
 
  protected:
   CacheableEnum();
-  CacheableEnum(const char* enumClassName, const char* enumName,
+  CacheableEnum(std::string enumClassName, std::string enumName,
                 int32_t ordinal);
+  void calculateHashcode();
 
  private:
   // never implemented.

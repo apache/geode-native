@@ -40,12 +40,6 @@ namespace client {
 template <typename Target, int8_t TYPEID>
 class CacheableArrayType;
 
-/** sprintf implementation. */
-extern int gf_sprintf(char* buffer, const char* fmt, ...);
-
-/** snprintf implementation. */
-extern int gf_snprintf(char* buffer, int32_t maxLength, const char* fmt, ...);
-
 /** Template CacheableKey class for primitive types. */
 template <typename TObj, int8_t TYPEID, const char* TYPENAME,
           const char* SPRINTFSYM, int32_t STRSIZE>
@@ -65,12 +59,12 @@ class CacheableKeyType : public CacheableKey {
   // Cacheable methods
 
   /** Serialize this object to given <code>DataOutput</code>. */
-  virtual void toData(DataOutput& output) const {
+  virtual void toData(DataOutput& output) const override {
     apache::geode::client::serializer::writeObject(output, m_value);
   }
 
   /** Deserialize this object from given <code>DataInput</code>. */
-  virtual void fromData(DataInput& input) {
+  virtual void fromData(DataInput& input) override {
     apache::geode::client::serializer::readObject(input, m_value);
   }
 
@@ -80,7 +74,7 @@ class CacheableKeyType : public CacheableKey {
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int32_t classId() const { return 0; }
+  virtual int32_t classId() const override { return 0; }
 
   /**
    * Return the typeId byte of the instance being serialized.
@@ -88,46 +82,35 @@ class CacheableKeyType : public CacheableKey {
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int8_t typeId() const { return TYPEID; }
+  virtual int8_t typeId() const override { return TYPEID; }
 
   /** Return a string representation of the object. */
-  virtual std::shared_ptr<CacheableString> toString() const {
+  virtual std::string toString() const override {
     char buffer[STRSIZE + 1];
-    gf_sprintf(buffer, SPRINTFSYM, m_value);
-    return CacheableString::create(buffer);
+    std::sprintf(buffer, SPRINTFSYM, m_value);
+    return std::string(buffer);
   }
 
   // CacheableKey methods
 
   /** Return the hashcode for this key. */
-  virtual int32_t hashcode() const {
-    return apache::geode::client::serializer::hashcode(m_value);
+  virtual int32_t hashcode() const override {
+    return serializer::hashcode(m_value);
   }
 
   /** Return true if this key matches other. */
-  virtual bool operator==(const CacheableKey& other) const {
+  virtual bool operator==(const CacheableKey& other) const override {
     if (other.typeId() != TYPEID) {
       return false;
     }
     const CacheableKeyType& otherValue =
         static_cast<const CacheableKeyType&>(other);
-    return apache::geode::client::serializer::equals(m_value,
-                                                     otherValue.m_value);
+    return serializer::equals(m_value, otherValue.m_value);
   }
 
   /** Return true if this key matches other key value. */
   inline bool operator==(const TObj other) const {
-    return apache::geode::client::serializer::equals(m_value, other);
-  }
-
-  /**
-   * Copy the string form of the object into a char* buffer for
-   * logging purposes.
-   */
-  virtual int32_t logString(char* buffer, int32_t maxLength) const {
-    char fmt[64];
-    gf_sprintf(fmt, "%s( %s )", TYPENAME, SPRINTFSYM);
-    return gf_snprintf(buffer, maxLength, fmt, m_value);
+    return serializer::equals(m_value, other);
   }
 
   /**
@@ -138,7 +121,9 @@ class CacheableKeyType : public CacheableKey {
    * return zero if the user does not require the ability to control
    * cache memory utilization.
    */
-  virtual uint32_t objectSize() const { return sizeof(CacheableKeyType); }
+  virtual uint32_t objectSize() const override {
+    return sizeof(CacheableKeyType);
+  }
 };
 
 /** Function to copy an array from source to destination. */
@@ -232,12 +217,12 @@ class CacheableArrayType : public Cacheable {
   // Cacheable methods
 
   /** Serialize this object to the given <code>DataOutput</code>. */
-  virtual void toData(DataOutput& output) const {
+  virtual void toData(DataOutput& output) const override {
     apache::geode::client::serializer::writeObject(output, m_value, m_length);
   }
 
   /** Deserialize this object from the given <code>DataInput</code>. */
-  virtual void fromData(DataInput& input) {
+  virtual void fromData(DataInput& input) override {
     GF_SAFE_DELETE_ARRAY(m_value);
     apache::geode::client::serializer::readObject(input, m_value, m_length);
   }
@@ -248,7 +233,7 @@ class CacheableArrayType : public Cacheable {
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int32_t classId() const { return 0; }
+  virtual int32_t classId() const override { return 0; }
 
   /**
    * Return the typeId byte of the instance being serialized.
@@ -256,7 +241,7 @@ class CacheableArrayType : public Cacheable {
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int8_t typeId() const { return TYPEID; }
+  virtual int8_t typeId() const override { return TYPEID; }
 
   /**
    * Return the size in bytes of the instance being serialized.
@@ -266,7 +251,7 @@ class CacheableArrayType : public Cacheable {
    * return zero if the user does not require the ability to control
    * cache memory utilization.
    */
-  virtual uint32_t objectSize() const {
+  virtual uint32_t objectSize() const override {
     return static_cast<uint32_t>(
         sizeof(CacheableArrayType) +
         apache::geode::client::serializer::objectSize(m_value, m_length));
@@ -285,12 +270,12 @@ class CacheableContainerType : public Cacheable, public TBase {
   // Cacheable methods
 
   /** Serialize this object to the given <code>DataOutput</code>. */
-  virtual void toData(DataOutput& output) const {
+  virtual void toData(DataOutput& output) const override {
     apache::geode::client::serializer::writeObject(output, *this);
   }
 
   /** Deserialize this object from the given <code>DataInput</code>. */
-  virtual void fromData(DataInput& input) {
+  virtual void fromData(DataInput& input) override {
     apache::geode::client::serializer::readObject(input, *this);
   }
 
@@ -300,7 +285,7 @@ class CacheableContainerType : public Cacheable, public TBase {
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int32_t classId() const { return 0; }
+  virtual int32_t classId() const override { return 0; }
 
   /**
    * Return the typeId byte of the instance being serialized.
@@ -308,7 +293,7 @@ class CacheableContainerType : public Cacheable, public TBase {
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int8_t typeId() const { return TYPEID; }
+  virtual int8_t typeId() const override { return TYPEID; }
 
   /**
    * Return the size in bytes of the instance being serialized.
@@ -318,7 +303,7 @@ class CacheableContainerType : public Cacheable, public TBase {
    * return zero if the user does not require the ability to control
    * cache memory utilization.
    */
-  virtual uint32_t objectSize() const {
+  virtual uint32_t objectSize() const override {
     return static_cast<uint32_t>(
         sizeof(CacheableContainerType) +
         apache::geode::client::serializer::objectSize(*this));

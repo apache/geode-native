@@ -80,25 +80,27 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
                                bool getInitialValues = false,
                                bool receiveValues = true) override;
   virtual void unregisterAllKeys() override;
-  virtual void registerRegex(const char* regex, bool isDurable = false,
+  virtual void registerRegex(const std::string& regex, bool isDurable = false,
                              bool getInitialValues = false,
                              bool receiveValues = true) override;
-  virtual void unregisterRegex(const char* regex) override;
+  virtual void unregisterRegex(const std::string& regex) override;
   virtual std::vector<std::shared_ptr<CacheableKey>> serverKeys() override;
   virtual void clear(const std::shared_ptr<Serializable>& aCallbackArgument =
                          nullptr) override;
 
   virtual std::shared_ptr<SelectResults> query(
-      const char* predicate, std::chrono::milliseconds timeout =
-                                 DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+      const std::string& predicate,
+      std::chrono::milliseconds timeout =
+          DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
-  virtual bool existsValue(const char* predicate,
+  virtual bool existsValue(const std::string& predicate,
                            std::chrono::milliseconds timeout =
                                DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
   virtual std::shared_ptr<Serializable> selectValue(
-      const char* predicate, std::chrono::milliseconds timeout =
-                                 DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+      const std::string& predicate,
+      std::chrono::milliseconds timeout =
+          DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
   /** @brief Public Methods from RegionInternal
    *  These are all virtual methods
@@ -152,14 +154,14 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
   inline ThinClientBaseDM* getDistMgr() const { return m_tcrdm; }
 
   std::shared_ptr<CacheableVector> reExecuteFunction(
-      const char* func, const std::shared_ptr<Cacheable>& args,
+      const std::string& func, const std::shared_ptr<Cacheable>& args,
       std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
       std::shared_ptr<ResultCollector> rc, int32_t retryAttempts,
       std::shared_ptr<CacheableHashSet>& failedNodes,
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   bool executeFunctionSH(
-      const char* func, const std::shared_ptr<Cacheable>& args,
+      const std::string& func, const std::shared_ptr<Cacheable>& args,
       uint8_t getResult, std::shared_ptr<ResultCollector> rc,
       const std::shared_ptr<ClientMetadataService::ServerToKeysMap>&
           locationMap,
@@ -168,12 +170,13 @@ class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
       bool allBuckets = false);
 
   void executeFunction(
-      const char* func, const std::shared_ptr<Cacheable>& args,
+      const std::string&, const std::shared_ptr<Cacheable>& args,
       std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
       std::shared_ptr<ResultCollector> rc, int32_t retryAttempts,
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
-  GfErrType getFuncAttributes(const char* func, std::vector<int8_t>** attr);
+  GfErrType getFuncAttributes(const std::string& func,
+                              std::vector<int8_t>** attr);
 
   ACE_RW_Thread_Mutex& getMataDataMutex() { return m_RegionMutex; }
 

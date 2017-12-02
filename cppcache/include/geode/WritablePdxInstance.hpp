@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_WRITABLEPDXINSTANCE_H_
-#define GEODE_WRITABLEPDXINSTANCE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,15 +15,22 @@
  * limitations under the License.
  */
 
-#include <memory>
-#include "Cacheable.hpp"
+#pragma once
 
+#ifndef GEODE_WRITABLEPDXINSTANCE_H_
+#define GEODE_WRITABLEPDXINSTANCE_H_
+
+#include <memory>
+
+#include "Cacheable.hpp"
 #include "PdxInstance.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 class CacheableObjectArray;
+
 /**
  * WritablePdxInstance is a {@link PdxInstance} that also supports field
  * modification
@@ -36,15 +38,11 @@ class CacheableObjectArray;
  * To get a WritablePdxInstance call {@link PdxInstance#createWriter}.
  */
 class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
-  /**
-   * @brief public methods
-   */
-
  public:
   /**
    * @brief destructor
    */
-  virtual ~WritablePdxInstance() {}
+  virtual ~WritablePdxInstance() = default;
 
   /**
    * Set the existing named field to the given value.
@@ -60,7 +58,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName,
+  virtual void setField(const std::string& fieldName,
                         std::shared_ptr<Cacheable> value) = 0;
 
   /**
@@ -76,7 +74,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, bool value) = 0;
+  virtual void setField(const std::string& fieldName, bool value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -95,7 +93,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, signed char value) = 0;
+  virtual void setField(const std::string& fieldName, signed char value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -114,7 +112,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, unsigned char value) = 0;
+  virtual void setField(const std::string& fieldName, unsigned char value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -129,7 +127,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, int16_t value) = 0;
+  virtual void setField(const std::string& fieldName, int16_t value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -144,7 +142,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, int32_t value) = 0;
+  virtual void setField(const std::string& fieldName, int32_t value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -159,7 +157,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, int64_t value) = 0;
+  virtual void setField(const std::string& fieldName, int64_t value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -174,7 +172,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, float value) = 0;
+  virtual void setField(const std::string& fieldName, float value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -189,7 +187,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, double value) = 0;
+  virtual void setField(const std::string& fieldName, double value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -204,7 +202,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, char16_t value) = 0;
+  virtual void setField(const std::string& fieldName, char16_t value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -221,7 +219,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName,
+  virtual void setField(const std::string& fieldName,
                         std::shared_ptr<CacheableDate> value) = 0;
 
   /**
@@ -239,7 +237,8 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, bool* value, int32_t length) = 0;
+  virtual void setField(const std::string& fieldName, bool* value,
+                        int32_t length) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -260,7 +259,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, signed char* value,
+  virtual void setField(const std::string& fieldName, signed char* value,
                         int32_t length) = 0;
 
   /**
@@ -282,7 +281,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, unsigned char* value,
+  virtual void setField(const std::string& fieldName, unsigned char* value,
                         int32_t length) = 0;
 
   /**
@@ -300,7 +299,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, int16_t* value,
+  virtual void setField(const std::string& fieldName, int16_t* value,
                         int32_t length) = 0;
 
   /**
@@ -318,7 +317,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, int32_t* value,
+  virtual void setField(const std::string& fieldName, int32_t* value,
                         int32_t length) = 0;
 
   /**
@@ -336,7 +335,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, int64_t* value,
+  virtual void setField(const std::string& fieldName, int64_t* value,
                         int32_t length) = 0;
 
   /**
@@ -354,7 +353,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, float* value,
+  virtual void setField(const std::string& fieldName, float* value,
                         int32_t length) = 0;
 
   /**
@@ -372,7 +371,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, double* value,
+  virtual void setField(const std::string& fieldName, double* value,
                         int32_t length) = 0;
 
   /**
@@ -388,7 +387,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, const wchar_t* value) = 0;
+  virtual void setField(const std::string& fieldName, const wchar_t* value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -403,7 +402,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, const char* value) = 0;
+  virtual void setField(const std::string& fieldName, const char* value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -420,7 +419,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, wchar_t* value,
+  virtual void setField(const std::string& fieldName, wchar_t* value,
                         int32_t length) = 0;
 
   /**
@@ -438,7 +437,8 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, char* value, int32_t length) = 0;
+  virtual void setField(const std::string& fieldName, char* value,
+                        int32_t length) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -455,7 +455,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, wchar_t** value,
+  virtual void setField(const std::string& fieldName, wchar_t** value,
                         int32_t length) = 0;
 
   /**
@@ -473,7 +473,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, char** value,
+  virtual void setField(const std::string& fieldName, char** value,
                         int32_t length) = 0;
 
   /**
@@ -493,7 +493,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName, int8_t** value,
+  virtual void setField(const std::string& fieldName, int8_t** value,
                         int32_t arrayLength, int32_t* elementLength) = 0;
 
   /**
@@ -511,19 +511,18 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const char* fieldName,
+  virtual void setField(const std::string& fieldName,
                         std::shared_ptr<CacheableObjectArray> value) = 0;
 
  protected:
   /**
    * @brief constructors
    */
-  WritablePdxInstance(){};
+  WritablePdxInstance() = default;
 
  private:
-  // never implemented.
-  WritablePdxInstance(const WritablePdxInstance& other);
-  void operator=(const WritablePdxInstance& other);
+  WritablePdxInstance(const WritablePdxInstance& other) = delete;
+  void operator=(const WritablePdxInstance& other) = delete;
 };
 }  // namespace client
 }  // namespace geode

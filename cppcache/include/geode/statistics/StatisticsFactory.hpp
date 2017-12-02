@@ -14,16 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #pragma once
 
 #ifndef GEODE_STATISTICS_STATISTICSFACTORY_H_
 #define GEODE_STATISTICS_STATISTICSFACTORY_H_
 
-#include <geode/geode_globals.hpp>
-#include <geode/statistics/StatisticDescriptor.hpp>
-#include <geode/statistics/StatisticsType.hpp>
+#include "../geode_globals.hpp"
+#include "StatisticDescriptor.hpp"
+#include "StatisticsType.hpp"
+#include "Statistics.hpp"
 #include "../ExceptionTypes.hpp"
-#include <geode/statistics/Statistics.hpp>
 
 /** @file
  */
@@ -65,9 +66,9 @@ class CPPCACHE_EXPORT StatisticsFactory {
    * <code>units</code>,and with larger values indicating better performance.
    */
 
-  virtual StatisticDescriptor* createIntCounter(const char* name,
-                                                const char* description,
-                                                const char* units,
+  virtual StatisticDescriptor* createIntCounter(const std::string& name,
+                                                const std::string& description,
+                                                const std::string& units,
                                                 bool largerBetter = true) = 0;
 
   /**
@@ -76,9 +77,9 @@ class CPPCACHE_EXPORT StatisticsFactory {
    *<code>units</code>, and with larger values indicating better performance.
    */
 
-  virtual StatisticDescriptor* createLongCounter(const char* name,
-                                                 const char* description,
-                                                 const char* units,
+  virtual StatisticDescriptor* createLongCounter(const std::string& name,
+                                                 const std::string& description,
+                                                 const std::string& units,
                                                  bool largerBetter = true) = 0;
 
   /**
@@ -89,17 +90,17 @@ class CPPCACHE_EXPORT StatisticsFactory {
    */
 
   virtual StatisticDescriptor* createDoubleCounter(
-      const char* name, const char* description, const char* units,
-      bool largerBetter = true) = 0;
+      const std::string& name, const std::string& description,
+      const std::string& units, bool largerBetter = true) = 0;
 
   /**
    * Creates and returns an int gauge {@link StatisticDescriptor}
    * with the given <code>name</code>, <code>description</code>,
    * <code>units</code>,  and with smaller values indicating better performance.
    */
-  virtual StatisticDescriptor* createIntGauge(const char* name,
-                                              const char* description,
-                                              const char* units,
+  virtual StatisticDescriptor* createIntGauge(const std::string& name,
+                                              const std::string& description,
+                                              const std::string& units,
                                               bool largerBetter = false) = 0;
 
   /**
@@ -107,9 +108,9 @@ class CPPCACHE_EXPORT StatisticsFactory {
    * with the given <code>name</code>, <code>description</code>,
    * <code>units</code>,  and with smaller values indicating better performance.
    */
-  virtual StatisticDescriptor* createLongGauge(const char* name,
-                                               const char* description,
-                                               const char* units,
+  virtual StatisticDescriptor* createLongGauge(const std::string& name,
+                                               const std::string& description,
+                                               const std::string& units,
                                                bool largerBetter = false) = 0;
 
   /**
@@ -117,9 +118,9 @@ class CPPCACHE_EXPORT StatisticsFactory {
    * with the given <code>name</code>, <code>description</code>,
    * <code>units</code>,  and with smaller values indicating better performance.
    */
-  virtual StatisticDescriptor* createDoubleGauge(const char* name,
-                                                 const char* description,
-                                                 const char* units,
+  virtual StatisticDescriptor* createDoubleGauge(const std::string& name,
+                                                 const std::string& description,
+                                                 const std::string& units,
                                                  bool largerBetter = false) = 0;
 
   /**
@@ -129,7 +130,8 @@ class CPPCACHE_EXPORT StatisticsFactory {
    * @throws IllegalArgumentException
    * if a type with the given <code>name</code> already exists.
    */
-  virtual StatisticsType* createType(const char* name, const char* description,
+  virtual StatisticsType* createType(const std::string& name,
+                                     const std::string& description,
                                      StatisticDescriptor** stats,
                                      int32_t statsLength) = 0;
 
@@ -138,7 +140,7 @@ class CPPCACHE_EXPORT StatisticsFactory {
    * with the given <code>name</code>.
    * Returns <code>null</code> if the type does not exist.
    */
-  virtual StatisticsType* findType(const char* name) = 0;
+  virtual StatisticsType* findType(const std::string& name) const = 0;
 
   /**
    * Creates and returns a {@link Statistics} instance of the given {@link
@@ -155,7 +157,7 @@ class CPPCACHE_EXPORT StatisticsFactory {
    * The created instance may not be {@link Statistics#isAtomic atomic}.
    */
   virtual Statistics* createStatistics(StatisticsType* type,
-                                       const char* textId) = 0;
+                                       const std::string& textId) = 0;
 
   /**
    * Creates and returns a {@link Statistics} instance of the given {@link
@@ -163,7 +165,8 @@ class CPPCACHE_EXPORT StatisticsFactory {
    * <p>
    * The created instance may not be {@link Statistics#isAtomic atomic}.
    */
-  virtual Statistics* createStatistics(StatisticsType* type, const char* textId,
+  virtual Statistics* createStatistics(StatisticsType* type,
+                                       const std::string& textId,
                                        int64_t numericId) = 0;
 
   /**
@@ -181,7 +184,7 @@ class CPPCACHE_EXPORT StatisticsFactory {
    * The created instance will be {@link Statistics#isAtomic atomic}.
    */
   virtual Statistics* createAtomicStatistics(StatisticsType* type,
-                                             const char* textId) = 0;
+                                             const std::string& textId) = 0;
 
   /**
    * Creates and returns a {@link Statistics} instance of the given {@link
@@ -190,21 +193,22 @@ class CPPCACHE_EXPORT StatisticsFactory {
    * The created instance will be {@link Statistics#isAtomic atomic}.
    */
   virtual Statistics* createAtomicStatistics(StatisticsType* type,
-                                             const char* textId,
+                                             const std::string& textId,
                                              int64_t numericId) = 0;
 
   /** Return the first instance that matches the type, or nullptr */
-  virtual Statistics* findFirstStatisticsByType(StatisticsType* type) = 0;
+  virtual Statistics* findFirstStatisticsByType(
+      const StatisticsType* type) const = 0;
 
   /**
    * Returns a name that can be used to identify the manager
    */
-  virtual const char* getName() = 0;
+  virtual const std::string& getName() const = 0;
 
   /**
    * Returns a numeric id that can be used to identify the manager
    */
-  virtual int64_t getId() = 0;
+  virtual int64_t getId() const = 0;
 
  private:
   const StatisticsFactory& operator=(const StatisticsFactory&);

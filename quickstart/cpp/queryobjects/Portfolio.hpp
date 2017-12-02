@@ -122,7 +122,7 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
   virtual void toData(DataOutput& output) const;
   virtual Serializable* fromData(DataInput& input);
   virtual int32_t classId() const { return 0x03; }
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const;
 };
 
 }  // namespace testobject

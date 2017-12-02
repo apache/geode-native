@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_SELECTRESULTS_H_
-#define GEODE_SELECTRESULTS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_SELECTRESULTS_H_
+#define GEODE_SELECTRESULTS_H_
+
 /**
  * @file
  */
@@ -28,6 +28,7 @@
 #include "ExceptionTypes.hpp"
 #include "Serializable.hpp"
 #include "CacheableBuiltins.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {

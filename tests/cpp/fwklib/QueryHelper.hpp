@@ -73,14 +73,11 @@ enum queryCategory {
 
 class QueryStrings {
  public:
-  QueryStrings(queryCategory pcategory, const char* pquery,
-               bool pisLargeResultset = false) {
-    int32_t querylen = static_cast<int32_t>(strlen(pquery));
-    if (querylen < MAX_QRY_LENGTH) memcpy(_query, pquery, querylen);
-    memset(&_query[querylen], '\0', 1);
-    category = pcategory;
-    haveLargeResultset = pisLargeResultset;
-  }
+  QueryStrings(queryCategory pcategory, std::string pquery,
+               bool pisLargeResultset = false)
+      : category(pcategory),
+        _query(std::move(pquery)),
+        haveLargeResultset(pisLargeResultset) {}
 
   static int RSsize() { return RS_ARRAY_SIZE; };
   static int SSsize() { return SS_ARRAY_SIZE; };
@@ -88,11 +85,11 @@ class QueryStrings {
   static int RSPsize() { return RSP_ARRAY_SIZE; };
   static int SSPsize() { return SSP_ARRAY_SIZE; };
 
-  const char* query() const { return _query; };
+  const std::string& query() const { return _query; };
 
  public:
-  char _query[MAX_QRY_LENGTH];
   queryCategory category;
+  std::string _query;
   bool haveLargeResultset;
 
  private:
@@ -938,7 +935,7 @@ void QueryHelper::invalidatePortfolioOrPositionData(
           ACE_OS::sprintf(portname, "pos%d-%d", set, current);
         }
 
-       auto keyport = CacheableKey::create(portname);
+        auto keyport = CacheableKey::create(portname);
         rptr->invalidate(keyport);
       }
     }
@@ -998,8 +995,8 @@ void QueryHelper::populatePortfolioPdxData(std::shared_ptr<Region>& rptr,
   printf("all puts done \n");
 }
 
-void QueryHelper::populatePositionPdxData(std::shared_ptr<Region>& rptr, int setSize,
-                                          int numSets) {
+void QueryHelper::populatePositionPdxData(std::shared_ptr<Region>& rptr,
+                                          int setSize, int numSets) {
   int numSecIds = sizeof(secIds) / sizeof(char*);
 
   for (int set = 1; set <= numSets; set++) {
@@ -1010,7 +1007,7 @@ void QueryHelper::populatePositionPdxData(std::shared_ptr<Region>& rptr, int set
       char posname[100] = {0};
       ACE_OS::sprintf(posname, "pos%d-%d", set, current);
 
-     auto keypos = CacheableKey::create(posname);
+      auto keypos = CacheableKey::create(posname);
       rptr->put(keypos, pos);
       LOGINFO("populatePositionPdxData:: Put for iteration current = %d done",
               current);
@@ -1018,30 +1015,31 @@ void QueryHelper::populatePositionPdxData(std::shared_ptr<Region>& rptr, int set
   }
   // positionSetSize = setSize; positionNumSets = numSets;
 }
-bool QueryHelper::verifyRS(std::shared_ptr<SelectResults>& resultSet, int expectedRows) {
+bool QueryHelper::verifyRS(std::shared_ptr<SelectResults>& resultSet,
+                           int expectedRows) {
   if (!std::dynamic_pointer_cast<ResultSet>(resultSet)) {
     return false;
   }
 
- auto rsptr = std::static_pointer_cast<ResultSet>(resultSet);
+  auto rsptr = std::static_pointer_cast<ResultSet>(resultSet);
 
- int foundRows = 0;
+  int foundRows = 0;
 
- SelectResultsIterator iter = rsptr->getIterator();
+  SelectResultsIterator iter = rsptr->getIterator();
 
- for (int32_t rows = 0; rows < rsptr->size(); rows++) {
-   auto ser = (*rsptr)[rows];  // iter.next();
-   foundRows++;
- }
+  for (int32_t rows = 0; rows < rsptr->size(); rows++) {
+    auto ser = (*rsptr)[rows];  // iter.next();
+    foundRows++;
+  }
 
- FWKINFO("found rows " << foundRows << " expected " << expectedRows);
- if (foundRows == expectedRows) return true;
+  FWKINFO("found rows " << foundRows << " expected " << expectedRows);
+  if (foundRows == expectedRows) return true;
 
- return false;
+  return false;
 }
 
-bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet, int expectedRows,
-                           int expectedFields) {
+bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
+                           int expectedRows, int expectedFields) {
   FWKINFO("QueryHelper::verifySS : expectedRows = "
           << expectedRows << " ,expectedFields = " << expectedFields);
 
@@ -1053,14 +1051,14 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet, int expect
     return false;
   }
 
- auto ssptr = std::static_pointer_cast<StructSet>(structSet);
+  auto ssptr = std::static_pointer_cast<StructSet>(structSet);
 
- int foundRows = 0;
+  int foundRows = 0;
 
- SelectResultsIterator iter = ssptr->getIterator();
+  SelectResultsIterator iter = ssptr->getIterator();
 
- for (int32_t rows = 0; rows < ssptr->size(); rows++) {
-   auto ser = (*ssptr)[rows];  // iter.next();
+  for (int32_t rows = 0; rows < ssptr->size(); rows++) {
+    auto ser = (*ssptr)[rows];  // iter.next();
     foundRows++;
 
     Struct* siptr = dynamic_cast<Struct*>(ser.get());
@@ -1073,7 +1071,7 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet, int expect
     int foundFields = 0;
 
     for (int32_t cols = 0; cols < siptr->length(); cols++) {
-     auto field = (*siptr)[cols];  // siptr->next();
+      auto field = (*siptr)[cols];  // siptr->next();
       foundFields++;
     }
 

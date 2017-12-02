@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#pragma once
+
 #ifndef __USERPASSWORDAUTHINIT__
 #define __USERPASSWORDAUTHINIT__
 #include <memory>
@@ -68,12 +70,13 @@ class UserPasswordAuthInit : public AuthInitialize {
    * example it may invoke external agents or even interact with the user.
    */
   std::shared_ptr<Properties> getCredentials(
-      const std::shared_ptr<Properties>& securityprops, const char* server);
+      const std::shared_ptr<Properties>& securityprops,
+      const std::string& server) override;
 
   /**
    * @brief Invoked before the cache goes down.
    */
-  void close() { return; }
+  void close() override { return; }
 
   /**
    * @brief private members

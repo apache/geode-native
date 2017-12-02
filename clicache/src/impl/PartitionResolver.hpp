@@ -14,16 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #pragma once
 
-//#include "../geode_includes.hpp"
-//#include "../../../IPartitionResolver.hpp"
+
 #include "../IPartitionResolver.hpp"
 #include "../Region.hpp"
 #include "SafeConvert.hpp"
-#include "ManagedString.hpp"
-//#include "../../../Region.hpp"
-//#include "../../../Cache.hpp"
 
 using namespace System;
 
@@ -38,7 +35,7 @@ namespace Apache
       {
       public:
         std::shared_ptr<apache::geode::client::CacheableKey> getRoutingObject(const apache::geode::client::EntryEvent& ev);
-        const char * getName();
+        const std::string& getName();
       };
 
       generic<class TKey, class TValue>
@@ -62,10 +59,10 @@ namespace Apache
             return Serializable::GetUnmanagedValueGeneric<Object^>(groutingobject);
           }
 
-          virtual const char * getName()
+          virtual const std::string& getName()
           {
-            ManagedString mg_name(m_resolver->GetName());
-            return mg_name.CharPtr;
+            static const std::string name = marshal_as<std::string>(m_resolver->GetName());
+            return name;
           }
       };
     }  // namespace Client

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "begin_native.hpp"
 #include <geode/Cache.hpp>
 #include <geode/PoolManager.hpp>
@@ -63,6 +64,7 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace msclr::interop;
       namespace native = apache::geode::client;
 
       void Apache::Geode::Client::Serializable::ToData(
@@ -143,13 +145,7 @@ namespace Apache
       {
         try
         {
-          auto cStr = m_nativeptr->get()->toString();
-          if (cStr->isWideString()) {
-            return ManagedString::Get(cStr->asWChar());
-          }
-          else {
-            return ManagedString::Get(cStr->asChar());
-          }
+          return marshal_as<String^>(m_nativeptr->get()->toString());
         }
         finally
         {
@@ -252,15 +248,16 @@ namespace Apache
         return (Apache::Geode::Client::Serializable^)CacheableStringArray::Create(value);
       }
 
-      System::Int32 Serializable::GetPDXIdForType(const char* poolName, IGeodeSerializable^ pdxType, Cache^ cache)
+      System::Int32 Serializable::GetPDXIdForType(String^ poolName, IGeodeSerializable^ pdxType, Cache^ cache)
       {
         std::shared_ptr<native::Cacheable> kPtr(SafeMSerializableConvertGeneric(pdxType));
-        return CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetPDXIdForType(cache->GetNative()->getPoolManager().find(poolName), kPtr);
+        return CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetPDXIdForType(cache->GetNative()->getPoolManager().find(marshal_as<std::string>(poolName)), kPtr);
       }
 
-      IGeodeSerializable^ Serializable::GetPDXTypeById(const char* poolName, System::Int32 typeId, Cache^ cache)
+      IGeodeSerializable^ Serializable::GetPDXTypeById(String^ poolName, System::Int32 typeId, Cache^ cache)
       {        
-        std::shared_ptr<apache::geode::client::Serializable> sPtr = CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetPDXTypeById(cache->GetNative()->getPoolManager().find(poolName), typeId);
+        std::shared_ptr<apache::geode::client::Serializable> sPtr = 
+            CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetPDXTypeById(cache->GetNative()->getPoolManager().find(marshal_as<std::string>(poolName)), typeId);
         return SafeUMSerializableConvertGeneric(sPtr);
       }
 
@@ -1216,19 +1213,6 @@ namespace Apache
         }
       } //
 
-      String^ Serializable::GetString(std::shared_ptr<native::CacheableString> cStr)//native::CacheableString*
-      {
-        if (cStr == nullptr) {
-          return nullptr;
-        }
-        else if (cStr->isWideString()) {
-          return ManagedString::Get(cStr->asWChar());
-        }
-        else {
-          return ManagedString::Get(cStr->asChar());
-        }
-      }
-
       // These are the new static methods to get/put data from c++
 
       //byte
@@ -1330,7 +1314,7 @@ namespace Apache
       //cacheable ascii string
       String^ Serializable::getASCIIString(std::shared_ptr<native::Serializable> nativeptr)
       {
-        return GetString(nativeptr->toString());
+        return marshal_as<String^>(nativeptr->toString());
       }
 
       std::shared_ptr<native::CacheableKey> Serializable::getCacheableASCIIString(String^ val)
@@ -1346,7 +1330,7 @@ namespace Apache
       //cacheable ascii string huge
       String^ Serializable::getASCIIStringHuge(std::shared_ptr<native::Serializable> nativeptr)
       {
-        return GetString(nativeptr->toString());
+        return marshal_as<String^>(nativeptr->toString());
       }
 
       std::shared_ptr<native::CacheableKey> Serializable::getCacheableASCIIStringHuge(String^ val)
@@ -1357,7 +1341,7 @@ namespace Apache
       //cacheable string
       String^ Serializable::getUTFString(std::shared_ptr<native::Serializable> nativeptr)
       {
-        return GetString(nativeptr->toString());
+        return marshal_as<String^>(nativeptr->toString());
       }
 
       std::shared_ptr<native::CacheableKey> Serializable::getCacheableUTFString(String^ val)
@@ -1368,7 +1352,7 @@ namespace Apache
       //cacheable string huge
       String^ Serializable::getUTFStringHuge(std::shared_ptr<native::Serializable> nativeptr)
       {
-        return GetString(nativeptr->toString());
+        return marshal_as<String^>(nativeptr->toString());
       }
 
       std::shared_ptr<native::CacheableKey> Serializable::getCacheableUTFStringHuge(String^ val)

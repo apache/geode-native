@@ -14,16 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "PoolStatsSampler.hpp"
+
 #include <string>
-#include <ReadWriteLock.hpp>
-#include <CacheImpl.hpp>
-#include <ThinClientPoolDM.hpp>
-#include "GeodeStatisticsFactory.hpp"
-#include <ClientHealthStats.hpp>
-#include "HostStatHelper.hpp"
 #include <chrono>
 #include <thread>
+
+#include "PoolStatsSampler.hpp"
+#include "ReadWriteLock.hpp"
+#include "CacheImpl.hpp"
+#include "ThinClientPoolDM.hpp"
+#include "GeodeStatisticsFactory.hpp"
+#include "ClientHealthStats.hpp"
+#include "HostStatHelper.hpp"
 
 namespace apache {
 namespace geode {
@@ -96,18 +98,17 @@ void PoolStatsSampler::putStatsInAdminRegion() {
           creates = 0;
       int64_t cpuTime = 0;
       if (m_statisticsFactory) {
-        StatisticsType* cacheStatType =
-            m_statisticsFactory->findType("CachePerfStats");
-        if (cacheStatType) {
-          Statistics* cachePerfStats =
-              m_statisticsFactory->findFirstStatisticsByType(cacheStatType);
-          if (cachePerfStats) {
-            puts = cachePerfStats->getInt((char*)"puts");
-            gets = cachePerfStats->getInt((char*)"gets");
-            misses = cachePerfStats->getInt((char*)"misses");
-            creates = cachePerfStats->getInt((char*)"creates");
+        if (const auto cacheStatType =
+                m_statisticsFactory->findType("CachePerfStats")) {
+          if (const auto cachePerfStats =
+                  m_statisticsFactory->findFirstStatisticsByType(
+                      cacheStatType)) {
+            puts = cachePerfStats->getInt("puts");
+            gets = cachePerfStats->getInt("gets");
+            misses = cachePerfStats->getInt("misses");
+            creates = cachePerfStats->getInt("creates");
             numListeners =
-                cachePerfStats->getInt((char*)"cacheListenerCallsCompleted");
+                cachePerfStats->getInt("cacheListenerCallsCompleted");
             puts += creates;
           }
         }
@@ -117,7 +118,7 @@ void PoolStatsSampler::putStatsInAdminRegion() {
       static int numCPU = ACE_OS::num_processors();
       auto obj = ClientHealthStats::create(gets, puts, misses, numListeners,
                                            numThreads, cpuTime, numCPU);
-      ClientProxyMembershipID* memId = m_distMan->getMembershipId();
+      const auto memId = m_distMan->getMembershipId();
       clientId = memId->getDSMemberIdForThinClientUse();
       auto keyPtr = CacheableString::create(clientId.c_str());
       m_adminRegion->put(keyPtr, obj);

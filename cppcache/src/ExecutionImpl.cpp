@@ -16,6 +16,7 @@
  */
 
 #include <sstream>
+
 #include <geode/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/DefaultResultCollector.hpp>
@@ -25,6 +26,11 @@
 #include "ThinClientPoolDM.hpp"
 #include "NoResult.hpp"
 #include "UserAttributes.hpp"
+#include "util/exception.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
 
 FunctionToFunctionAttributes ExecutionImpl::m_func_attrs;
 ACE_Recursive_Thread_Mutex ExecutionImpl::m_func_attrs_lock;
@@ -65,9 +71,9 @@ std::shared_ptr<Execution> ExecutionImpl::withCollector(
                                          m_allServer, m_pool, m_proxyCache);
 }
 
-std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(const char* func) {
-  std::map<std::string, std::vector<int8_t>*>::iterator itr =
-      m_func_attrs.find(func);
+std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(
+    const std::string& func) {
+  auto&& itr = m_func_attrs.find(func);
   if (itr != m_func_attrs.end()) {
     return itr->second;
   }
@@ -76,7 +82,7 @@ std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(const char* func) {
 std::shared_ptr<ResultCollector> ExecutionImpl::execute(
     const std::shared_ptr<CacheableVector>& routingObj,
     const std::shared_ptr<Cacheable>& args,
-    const std::shared_ptr<ResultCollector>& rs, const char* func,
+    const std::shared_ptr<ResultCollector>& rs, const std::string& func,
     std::chrono::milliseconds timeout) {
   m_routingObj = routingObj;
   m_args = args;
@@ -84,8 +90,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   return execute(func, timeout);
 }
 std::shared_ptr<ResultCollector> ExecutionImpl::execute(
-    const char* fn, std::chrono::milliseconds timeout) {
-  std::string func = fn;
+    const std::string& func, std::chrono::milliseconds timeout) {
   LOGDEBUG("ExecutionImpl::execute: ");
   GuardUserAttribures gua;
   if (m_proxyCache != nullptr) {
@@ -96,24 +101,24 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   bool serverIsHA = false;
   bool serverOptimizeForWrite = false;
 
-  std::vector<int8_t>* attr = getFunctionAttributes(fn);
+  auto&& attr = getFunctionAttributes(func);
   {
     if (attr == nullptr) {
       ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_func_attrs_lock);
       GfErrType err = GF_NOERR;
-      attr = getFunctionAttributes(fn);
+      attr = getFunctionAttributes(func);
       if (attr == nullptr) {
         if (m_region != nullptr) {
           err = dynamic_cast<ThinClientRegion*>(m_region.get())
-                    ->getFuncAttributes(fn, &attr);
+                    ->getFuncAttributes(func, &attr);
         } else if (m_pool != nullptr) {
-          err = getFuncAttributes(fn, &attr);
+          err = getFuncAttributes(func, &attr);
         }
         if (err != GF_NOERR) {
           GfErrTypeToException("Execute::GET_FUNCTION_ATTRIBUTES", err);
         }
         if (!attr->empty() && err == GF_NOERR) {
-          m_func_attrs[fn] = attr;
+          m_func_attrs[func] = attr;
         }
       }
     }
@@ -184,8 +189,8 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
               "is also empty so use old FE onRegion");
           std::dynamic_pointer_cast<ThinClientRegion>(m_region)
               ->executeFunction(
-                  fn, m_args, m_routingObj, isHAHasResultOptimizeForWrite, m_rc,
-                  (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
+                  func, m_args, m_routingObj, isHAHasResultOptimizeForWrite,
+                  m_rc, (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
                   timeout);
           cms->enqueueForMetadataRefresh(m_region->getFullPath(), 0);
         } else {
@@ -207,7 +212,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
               "empty");
           bool reExecute = std::dynamic_pointer_cast<ThinClientRegion>(m_region)
                                ->executeFunctionSH(
-                                   fn, m_args, isHAHasResultOptimizeForWrite,
+                                   func, m_args, isHAHasResultOptimizeForWrite,
                                    m_rc, serverToKeysMap, failedNodes, timeout,
                                    /*allBuckets*/ true);
           if (reExecute) {  // Fallback to old FE onREgion
@@ -215,7 +220,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
               m_rc->clearResults();
               auto rs =
                   std::dynamic_pointer_cast<ThinClientRegion>(m_region)
-                      ->reExecuteFunction(fn, m_args, m_routingObj,
+                      ->reExecuteFunction(func, m_args, m_routingObj,
                                           isHAHasResultOptimizeForWrite, m_rc,
                                           (isHAHasResultOptimizeForWrite & 1)
                                               ? retryAttempts
@@ -225,7 +230,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
               m_rc->clearResults();
               dynamic_cast<ThinClientRegion*>(m_region.get())
                   ->executeFunction(
-                      fn, m_args, m_routingObj, isHAHasResultOptimizeForWrite,
+                      func, m_args, m_routingObj, isHAHasResultOptimizeForWrite,
                       m_rc,
                       (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
                       timeout);
@@ -236,7 +241,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
         LOGDEBUG("executeFunction onRegion WithFilter size equal to 1 ");
         dynamic_cast<ThinClientRegion*>(m_region.get())
             ->executeFunction(
-                fn, m_args, m_routingObj, isHAHasResultOptimizeForWrite, m_rc,
+                func, m_args, m_routingObj, isHAHasResultOptimizeForWrite, m_rc,
                 (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
                 timeout);
       } else {
@@ -250,7 +255,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
                 "so use old FE onRegion");
             dynamic_cast<ThinClientRegion*>(m_region.get())
                 ->executeFunction(
-                    fn, m_args, m_routingObj, isHAHasResultOptimizeForWrite,
+                    func, m_args, m_routingObj, isHAHasResultOptimizeForWrite,
                     m_rc,
                     (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
                     timeout);
@@ -261,7 +266,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
                 "empty");
             bool reExecute =
                 dynamic_cast<ThinClientRegion*>(m_region.get())
-                    ->executeFunctionSH(fn, m_args,
+                    ->executeFunctionSH(func, m_args,
                                         isHAHasResultOptimizeForWrite, m_rc,
                                         serverToKeysMap, failedNodes, timeout,
                                         /*allBuckets*/ false);
@@ -270,7 +275,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
                 m_rc->clearResults();
                 auto rs =
                     dynamic_cast<ThinClientRegion*>(m_region.get())
-                        ->reExecuteFunction(fn, m_args, m_routingObj,
+                        ->reExecuteFunction(func, m_args, m_routingObj,
                                             isHAHasResultOptimizeForWrite, m_rc,
                                             (isHAHasResultOptimizeForWrite & 1)
                                                 ? retryAttempts
@@ -280,8 +285,8 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
                 m_rc->clearResults();
                 dynamic_cast<ThinClientRegion*>(m_region.get())
                     ->executeFunction(
-                        fn, m_args, m_routingObj, isHAHasResultOptimizeForWrite,
-                        m_rc,
+                        func, m_args, m_routingObj,
+                        isHAHasResultOptimizeForWrite, m_rc,
                         (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
                         timeout);
               }
@@ -290,15 +295,15 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
         } else {  // For transactions use old way
           dynamic_cast<ThinClientRegion*>(m_region.get())
               ->executeFunction(
-                  fn, m_args, m_routingObj, isHAHasResultOptimizeForWrite, m_rc,
-                  (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
+                  func, m_args, m_routingObj, isHAHasResultOptimizeForWrite,
+                  m_rc, (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
                   timeout);
         }
       }
     } else {  // w/o single hop, Fallback to old FE onREgion
       dynamic_cast<ThinClientRegion*>(m_region.get())
           ->executeFunction(
-              fn, m_args, m_routingObj, isHAHasResultOptimizeForWrite, m_rc,
+              func, m_args, m_routingObj, isHAHasResultOptimizeForWrite, m_rc,
               (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0, timeout);
     }
     /*    } catch (TransactionDataNodeHasDepartedException e) {
@@ -351,7 +356,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   return m_rc;
 }
 
-GfErrType ExecutionImpl::getFuncAttributes(const char* func,
+GfErrType ExecutionImpl::getFuncAttributes(const std::string& func,
                                            std::vector<int8_t>** attr) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.get());
   if (tcrdm == nullptr) {
@@ -363,12 +368,11 @@ GfErrType ExecutionImpl::getFuncAttributes(const char* func,
 
   // do TCR GET_FUNCTION_ATTRIBUTES
   LOGDEBUG("Tcrmessage request GET_FUNCTION_ATTRIBUTES ");
-  std::string funcName(func);
   TcrMessageGetFunctionAttributes request(tcrdm->getConnectionManager()
                                               .getCacheImpl()
                                               ->getCache()
                                               ->createDataOutput(),
-                                          funcName, tcrdm);
+                                          func, tcrdm);
   TcrMessageReply reply(true, tcrdm);
   err = tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) {
@@ -405,7 +409,9 @@ void ExecutionImpl::addResults(std::shared_ptr<ResultCollector>& collector,
     collector->addResult(result);
   }
 }
-void ExecutionImpl::executeOnAllServers(std::string& func, uint8_t getResult,
+
+void ExecutionImpl::executeOnAllServers(const std::string& func,
+                                        uint8_t getResult,
                                         std::chrono::milliseconds timeout) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.get());
   if (tcrdm == nullptr) {
@@ -446,7 +452,7 @@ if (exceptionPtr != nullptr && err != GF_NOERR) {
   }
 }
 std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
-    std::string& func, uint8_t getResult, int32_t retryAttempts,
+    const std::string& func, uint8_t getResult, int32_t retryAttempts,
     std::chrono::milliseconds timeout) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.get());
   if (tcrdm == nullptr) {
@@ -548,3 +554,7 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
   }
   return nullptr;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -61,7 +61,7 @@ ClientMetadataService::ClientMetadataService(Pool* pool)
 
 int ClientMetadataService::svc() {
   DistributedSystemImpl::setThreadName(NC_CMDSvcThread);
-  LOGINFO("ClientMetadataService started for pool %s", m_pool->getName());
+  LOGINFO("ClientMetadataService started for pool " + m_pool->getName());
   while (m_run) {
     m_regionQueueSema.acquire();
     ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
@@ -101,7 +101,7 @@ int ClientMetadataService::svc() {
     }
     // while(m_regionQueueSema.tryacquire( ) != -1); // release all
   }
-  LOGINFO("ClientMetadataService stopped for pool %s", m_pool->getName());
+  LOGINFO("ClientMetadataService stopped for pool " + m_pool->getName());
   return 0;
 }
 
@@ -196,34 +196,34 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
   // send this message to server and get metadata from server.
   LOGFINE("Now sending GET_CLIENT_PR_METADATA for getting from server: %s",
           regionPath);
-std::shared_ptr<Region> region = nullptr;
-GfErrType err = tcrdm->sendSyncRequest(request, reply);
-if (err == GF_NOERR &&
-    reply.getMessageType() == TcrMessage::RESPONSE_CLIENT_PR_METADATA) {
-  tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionPath, region);
-  if (region != nullptr) {
-    LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.get());
-    lregion->getRegionStats()->incMetaDataRefreshCount();
-  }
-  std::vector<BucketServerLocationsType>* metadata = reply.getMetadata();
-  if (metadata == nullptr) return nullptr;
-  if (metadata->empty()) {
-    delete metadata;
-    return nullptr;
-  }
-  auto newCptr = std::make_shared<ClientMetadata>(*cptr);
-  for (std::vector<BucketServerLocationsType>::iterator iter =
-           metadata->begin();
-       iter != metadata->end(); ++iter) {
-    if (!(*iter).empty()) {
-      newCptr->updateBucketServerLocations((*iter).at(0)->getBucketId(),
-                                           (*iter));
+  std::shared_ptr<Region> region = nullptr;
+  GfErrType err = tcrdm->sendSyncRequest(request, reply);
+  if (err == GF_NOERR &&
+      reply.getMessageType() == TcrMessage::RESPONSE_CLIENT_PR_METADATA) {
+    tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionPath, region);
+    if (region != nullptr) {
+      LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.get());
+      lregion->getRegionStats()->incMetaDataRefreshCount();
     }
+    std::vector<BucketServerLocationsType>* metadata = reply.getMetadata();
+    if (metadata == nullptr) return nullptr;
+    if (metadata->empty()) {
+      delete metadata;
+      return nullptr;
+    }
+    auto newCptr = std::make_shared<ClientMetadata>(*cptr);
+    for (std::vector<BucketServerLocationsType>::iterator iter =
+             metadata->begin();
+         iter != metadata->end(); ++iter) {
+      if (!(*iter).empty()) {
+        newCptr->updateBucketServerLocations((*iter).at(0)->getBucketId(),
+                                             (*iter));
+      }
+    }
+    delete metadata;
+    return newCptr;
   }
-  delete metadata;
-  return newCptr;
-}
-return nullptr;
+  return nullptr;
 }
 
 void ClientMetadataService::getBucketServerLocation(
@@ -262,17 +262,12 @@ void ClientMetadataService::getBucketServerLocation(
             "The RoutingObject returned by PartitionResolver is null.");
       }
     }
-    if (const auto fpResolver =
+    if (auto&& fpResolver =
             std::dynamic_pointer_cast<FixedPartitionResolver>(resolver)) {
-      const auto partition = fpResolver->getPartitionName(event);
-      if (partition == nullptr) {
-        throw IllegalStateException(
-            "partition name returned by Partition resolver is null.");
-      } else {
-        bucketId = cptr->assignFixedBucketId(partition, resolvekey);
-        if (bucketId == -1) {
-          return;
-        }
+      auto&& partition = fpResolver->getPartitionName(event);
+      bucketId = cptr->assignFixedBucketId(partition.c_str(), resolvekey);
+      if (bucketId == -1) {
+        return;
       }
     } else {
       if (cptr->getTotalNumBuckets() > 0) {
@@ -298,7 +293,7 @@ void ClientMetadataService::removeBucketServerLocation(
   }
 }
 std::shared_ptr<ClientMetadata> ClientMetadataService::getClientMetadata(
-    const char* regionFullPath) {
+    const std::string& regionFullPath) {
   ReadGuard guard(m_regionMetadataLock);
   RegionMetadataMapType::iterator regionMetadataIter =
       m_regionMetaDataMap.find(regionFullPath);
@@ -315,7 +310,7 @@ void ClientMetadataService::populateDummyServers(
 }
 
 void ClientMetadataService::enqueueForMetadataRefresh(
-    const char* regionFullPath, int8_t serverGroupFlag) {
+    const std::string& regionFullPath, int8_t serverGroupFlag) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
   if (tcrdm == nullptr) {
     throw IllegalArgumentException(
@@ -378,11 +373,11 @@ ClientMetadataService::getServerToFilterMap(
 
   auto serverToFilterMap = std::make_shared<ServerToFilterMap>();
 
-  std::vector<std::shared_ptr<CacheableKey>>  keysWhichLeft;
+  std::vector<std::shared_ptr<CacheableKey>> keysWhichLeft;
   std::map<int, std::shared_ptr<BucketServerLocation>> buckets;
 
   for (const auto& key : keys) {
-    LOGDEBUG("cmds = %s", key->toString()->toString());
+    LOGDEBUG("cmds = %s", key->toString().c_str());
     const auto resolver = region->getAttributes()->getPartitionResolver();
     std::shared_ptr<CacheableKey> resolveKey;
 
@@ -397,18 +392,19 @@ ClientMetadataService::getServerToFilterMap(
 
     int bucketId =
         std::abs(resolveKey->hashcode() % clientMetadata->getTotalNumBuckets());
-  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>> > keyList = nullptr;
+    std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> keyList =
+        nullptr;
 
     const auto& bucketsIter = buckets.find(bucketId);
     if (bucketsIter == buckets.end()) {
       int8_t version = -1;
       // auto serverLocation = std::make_shared<BucketServerLocation>();
-    std::shared_ptr<BucketServerLocation> serverLocation = nullptr;
-    clientMetadata->getServerLocation(bucketId, isPrimary, serverLocation,
-                                      version);
-    if (!(serverLocation && serverLocation->isValid())) {
-      keysWhichLeft.push_back(key);
-      continue;
+      std::shared_ptr<BucketServerLocation> serverLocation = nullptr;
+      clientMetadata->getServerLocation(bucketId, isPrimary, serverLocation,
+                                        version);
+      if (!(serverLocation && serverLocation->isValid())) {
+        keysWhichLeft.push_back(key);
+        continue;
       }
 
       buckets[bucketId] = serverLocation;
@@ -416,7 +412,8 @@ ClientMetadataService::getServerToFilterMap(
       const auto& itrRes = serverToFilterMap->find(serverLocation);
 
       if (itrRes == serverToFilterMap->end()) {
-        keyList = std::make_shared<std::vector<std::shared_ptr<CacheableKey>> >();
+        keyList =
+            std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>();
         serverToFilterMap->emplace(serverLocation, keyList);
       } else {
         keyList = itrRes->second;
@@ -508,17 +505,12 @@ ClientMetadataService::groupByBucketOnClientSide(
       resolvekey = key;
     }
 
-    if (const auto fpResolver =
+    if (auto&& fpResolver =
             std::dynamic_pointer_cast<FixedPartitionResolver>(resolver)) {
-      const auto partition = fpResolver->getPartitionName(event);
-      if (partition) {
-        bucketId = metadata->assignFixedBucketId(partition, resolvekey);
-        if (bucketId == -1) {
-          this->enqueueForMetadataRefresh(region->getFullPath(), 0);
-        }
-      } else {
-        throw IllegalStateException(
-            "partition name returned by Partition resolver is null.");
+      auto&& partition = fpResolver->getPartitionName(event);
+      bucketId = metadata->assignFixedBucketId(partition.c_str(), resolvekey);
+      if (bucketId == -1) {
+        this->enqueueForMetadataRefresh(region->getFullPath(), 0);
       }
     } else {
       if (metadata->getTotalNumBuckets() > 0) {
@@ -829,19 +821,19 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
   getBucketServerLocation(region, key, value, aCallbackArgument, true,
                           serverLocation, version);
 
-std::shared_ptr<ClientMetadata> cptr = nullptr;
-{
-  ReadGuard guard(m_regionMetadataLock);
-  RegionMetadataMapType::iterator cptrIter =
-      m_regionMetaDataMap.find(region->getFullPath());
+  std::shared_ptr<ClientMetadata> cptr = nullptr;
+  {
+    ReadGuard guard(m_regionMetadataLock);
+    RegionMetadataMapType::iterator cptrIter =
+        m_regionMetaDataMap.find(region->getFullPath());
 
-  if (cptrIter != m_regionMetaDataMap.end()) {
-    cptr = cptrIter->second;
-  }
+    if (cptrIter != m_regionMetaDataMap.end()) {
+      cptr = cptrIter->second;
+    }
 
-  if (cptr == nullptr) {
-    return;
-  }
+    if (cptr == nullptr) {
+      return;
+    }
   }
 
   LOGFINE("Setting in markPrimaryBucketForTimeoutButLookSecondaryBucket");

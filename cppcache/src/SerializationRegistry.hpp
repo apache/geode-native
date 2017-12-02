@@ -106,22 +106,29 @@ class TheTypeMap : private NonCopyable {
   void clear();
 
   void find(int64_t id, TypeFactoryMethod& func) const;
+
   void find2(int64_t id, TypeFactoryMethod& func) const;
 
   void bind(TypeFactoryMethod func);
 
   inline void rebind(int64_t compId, TypeFactoryMethod func);
+
   inline void unbind(int64_t compId);
+
   inline void bind2(TypeFactoryMethod func);
 
   inline void rebind2(int64_t compId, TypeFactoryMethod func);
 
   inline void unbind2(int64_t compId);
-  inline void bindPdxType(TypeFactoryMethodPdx func);
-  inline void findPdxType(char* objFullName, TypeFactoryMethodPdx& func);
-  inline void unbindPdxType(char* objFullName);
 
-  void rebindPdxType(char* objFullName, TypeFactoryMethodPdx func);
+  inline void bindPdxType(TypeFactoryMethodPdx func);
+
+  inline void findPdxType(const std::string& objFullName,
+                          TypeFactoryMethodPdx& func) const;
+
+  inline void unbindPdxType(const std::string& objFullName);
+
+  void rebindPdxType(std::string objFullName, TypeFactoryMethodPdx func);
 };
 
 class Pool;
@@ -217,7 +224,8 @@ class CPPCACHE_EXPORT SerializationRegistry {
   std::shared_ptr<Serializable> GetEnum(std::shared_ptr<Pool> pool,
                                         int32_t val) const;
 
-  std::shared_ptr<PdxSerializable> getPdxType(char* className);
+  std::shared_ptr<PdxSerializable> getPdxType(
+      const std::string& className) const;
 
   typedef std::function<std::shared_ptr<Serializable>(DataInput&)>
       PdxTypeHandler;

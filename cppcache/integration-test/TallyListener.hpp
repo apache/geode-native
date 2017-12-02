@@ -122,8 +122,8 @@ class TallyListener : public CacheListener {
     if (m_callbackArg != nullptr) {
       auto callbkArg =
           std::dynamic_pointer_cast<CacheableKey>(event.getCallbackArgument());
-      if (strcmp(m_callbackArg->toString()->asChar(),
-                 callbkArg->toString()->asChar()) == 0) {
+      if (strcmp(m_callbackArg->toString().c_str(),
+                 callbkArg->toString().c_str()) == 0) {
         isCallbackCalled = true;
       }
     }
@@ -168,15 +168,13 @@ void TallyListener::afterCreate(const EntryEvent& event) {
   checkcallbackArg(event);
 
   auto strPtr = std::dynamic_pointer_cast<CacheableString>(event.getNewValue());
-  char keytext[100];
-  m_lastKey->logString(keytext, 100);
   if (!m_quiet) {
     char buf[1024];
-    sprintf(buf, "TallyListener create - key = \"%s\", value = \"%s\"", keytext,
-            strPtr->asChar());
+    sprintf(buf, "TallyListener create - key = \"%s\", value = \"%s\"",
+            m_lastKey->toString().c_str(), strPtr->asChar());
     LOGDEBUG(buf);
   }
-  std::string keyString(keytext);
+  std::string keyString(m_lastKey->toString().c_str());
   if ((!m_ignoreTimeout) && (keyString.find("timeout") != std::string::npos)) {
     LOG("TallyListener: Sleeping 10 seconds to force a timeout.");
     SLEEP(10000);  // this should give the client cause to timeout...
@@ -190,15 +188,13 @@ void TallyListener::afterUpdate(const EntryEvent& event) {
   m_lastValue = event.getNewValue();
   checkcallbackArg(event);
   auto strPtr = std::dynamic_pointer_cast<CacheableString>(event.getNewValue());
-  char keytext[100];
-  m_lastKey->logString(keytext, 100);
   if (!m_quiet) {
     char buf[1024];
-    sprintf(buf, "TallyListener update - key = \"%s\", value = \"%s\"", keytext,
-            strPtr->asChar());
+    sprintf(buf, "TallyListener update - key = \"%s\", value = \"%s\"",
+            m_lastKey->toString().c_str(), strPtr->asChar());
     LOG(buf);
   }
-  std::string keyString(keytext);
+  std::string keyString(m_lastKey->toString().c_str());
   if ((!m_ignoreTimeout) && (keyString.find("timeout") != std::string::npos)) {
     LOG("TallyListener: Sleeping 10 seconds to force a timeout.");
     SLEEP(10000);  // this should give the client cause to timeout...

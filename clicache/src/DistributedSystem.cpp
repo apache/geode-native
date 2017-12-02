@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "begin_native.hpp"
 #include <version.h>
 #include <geode/CacheLoader.hpp>
@@ -26,7 +27,6 @@
 #include <CacheImpl.hpp>
 #include <CacheXmlParser.hpp>
 #include <DistributedSystemImpl.hpp>
-#include <ace/Process.h> // Added to get rid of unresolved token warning
 #include "end_native.hpp"
 
 #include "Cache.hpp"
@@ -136,11 +136,9 @@ namespace Apache
 
         _GF_MG_EXCEPTION_TRY2
 
-        ManagedString mg_name(name);
-
         // this we are calling after all .NET initialization required in
         // each AppDomain
-        auto nativeptr = native::DistributedSystem::create(mg_name.CharPtr,
+        auto nativeptr = native::DistributedSystem::create(marshal_as<std::string>(name)
                                                             config->GetNative());
         nativeptr->connect(cache->GetNative().get());
 
@@ -322,7 +320,7 @@ namespace Apache
         // native connect since it can be invoked only once
 
         // Register other built-in types
-      
+
         // End register other built-in types
 
         // Register other built-in types for generics
@@ -383,7 +381,7 @@ namespace Apache
           gcnew TypeFactoryMethodGeneric(CacheableArrayList::CreateDeserializable),
           nullptr, cache);
 
-        //c# generic stack 
+        //c# generic stack
         Serializable::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableStack,
           gcnew TypeFactoryMethodGeneric(CacheableStack::CreateDeserializable),
@@ -420,7 +418,7 @@ namespace Apache
       void DistributedSystem::AppDomainInstancePostInitialization()
       {
         // TODO global - Is this necessary?
-        //to create .net memory pressure handler 
+        //to create .net memory pressure handler
         //Create(native::DistributedSystem::getInstance());
       }
 
@@ -484,14 +482,14 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get(m_nativeptr->get()->getName().c_str());
+          return marshal_as<String^>(m_nativeptr->get()->getName().c_str());
         }
         finally
         {
           GC::KeepAlive(m_nativeptr);
         }
       }
-  
+
       void DistributedSystem::HandleMemoryPressure(System::Object^ state)
       {
         // TODO global - Need single memory pressue event running?
@@ -505,7 +503,7 @@ namespace Apache
         auto instance = gcnew DistributedSystem(nativeptr);
         return instance;
       }
-      
+
       DistributedSystem::DistributedSystem(std::unique_ptr<native::DistributedSystem> nativeptr)
       {
         m_nativeptr = gcnew native_conditional_unique_ptr<native::DistributedSystem>(std::move(nativeptr));

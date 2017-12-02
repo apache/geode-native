@@ -40,28 +40,28 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const;
+  virtual void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object
    * Throw IllegalArgumentException if the packed CacheableString is not less
    * than 64K bytes.
    **/
-  virtual void fromData(DataInput& input);
+  virtual void fromData(DataInput& input) override;
 
   /**
    *@brief Return the classId of the instance being serialized.
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int32_t classId() const;
+  virtual int32_t classId() const override;
 
   /**
    *@brief return the typeId byte of the instance being serialized.
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int8_t typeId() const;
+  virtual int8_t typeId() const override;
 
   /**
    * @brief creation function for filenames.
@@ -98,11 +98,8 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
     return str;
   }
 
-  /** get the name of the class of this object for logging purpose */
-  virtual const char* className() const { return "CacheableFileName"; }
-
   /** return the hashcode for this key. */
-  virtual int32_t hashcode() const;
+  virtual int32_t hashcode() const override;
 
  protected:
   FRIEND_STD_SHARED_PTR(CacheableFileName)
@@ -112,8 +109,8 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
 
  private:
   // never implemented.
-  void operator=(const CacheableFileName& other);
-  CacheableFileName(const CacheableFileName& other);
+  void operator=(const CacheableFileName& other) = delete;
+  CacheableFileName(const CacheableFileName& other) = delete;
 
  private:
   mutable int m_hashcode;

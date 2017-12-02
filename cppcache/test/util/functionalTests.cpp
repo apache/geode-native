@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <string>
 
-#include <geode/CacheableKey.hpp>
+#include <gtest/gtest.h>
 
-#include <ace/OS.h>
-#include <typeinfo>
+#include "util/functional.hpp"
 
-namespace apache {
-namespace geode {
-namespace client {
+using namespace apache::geode::client;
 
-int32_t CacheableKey::logString(char* buffer, int32_t maxLength) const {
-  return ACE_OS::snprintf(buffer, maxLength, "%s( @%p )", typeid(*this).name(),
-                          this);
+TEST(string, ceil) {
+  auto&& hash = geode_hash<std::string>{};
+
+  EXPECT_EQ(0, hash(""));
+  EXPECT_EQ(97, hash("a"));
+  EXPECT_EQ(122, hash("z"));
+  EXPECT_EQ(48, hash("0"));
+  EXPECT_EQ(57, hash("9"));
+  EXPECT_EQ(1077910243, hash("supercalifragilisticexpialidocious"));
 }
-}  // namespace client
-}  // namespace geode
-}  // namespace apache

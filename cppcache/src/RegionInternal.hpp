@@ -131,6 +131,7 @@ class CacheEventFlags {
 class TombstoneList;
 class VersionTag;
 class MapEntryImpl;
+
 /**
  * @class RegionInternal RegionInternal.hpp
  *
@@ -155,22 +156,24 @@ class RegionInternal : public Region {
                                bool receiveValues = true) override;
   virtual void unregisterAllKeys() override;
 
-  virtual void registerRegex(const char* regex, bool isDurable = false,
+  virtual void registerRegex(const std::string& regex, bool isDurable = false,
                              bool getInitialValues = false,
                              bool receiveValues = true) override;
-  virtual void unregisterRegex(const char* regex) override;
+  virtual void unregisterRegex(const std::string& regex) override;
 
   virtual std::shared_ptr<SelectResults> query(
-      const char* predicate, std::chrono::milliseconds timeout =
-                                 DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+      const std::string& predicate,
+      std::chrono::milliseconds timeout =
+          DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
-  virtual bool existsValue(const char* predicate,
+  virtual bool existsValue(const std::string& predicate,
                            std::chrono::milliseconds timeout =
                                DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
   virtual std::shared_ptr<Serializable> selectValue(
-      const char* predicate, std::chrono::milliseconds timeout =
-                                 DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+      const std::string& predicate,
+      std::chrono::milliseconds timeout =
+          DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
   /** @brief Public Methods
    */
@@ -244,14 +247,14 @@ class RegionInternal : public Region {
   virtual std::chrono::seconds adjustEntryExpiryDuration(
       const std::chrono::seconds& duration) = 0;
   virtual void adjustCacheListener(const std::shared_ptr<CacheListener>& aListener) = 0;
-  virtual void adjustCacheListener(const char* libpath,
-                                   const char* factoryFuncName) = 0;
+  virtual void adjustCacheListener(const std::string& libpath,
+                                   const std::string& factoryFuncName) = 0;
   virtual void adjustCacheLoader(const std::shared_ptr<CacheLoader>& aLoader) = 0;
-  virtual void adjustCacheLoader(const char* libpath,
-                                 const char* factoryFuncName) = 0;
+  virtual void adjustCacheLoader(const std::string& libpath,
+                                 const std::string& factoryFuncName) = 0;
   virtual void adjustCacheWriter(const std::shared_ptr<CacheWriter>& aWriter) = 0;
-  virtual void adjustCacheWriter(const char* libpath,
-                                 const char* factoryFuncName) = 0;
+  virtual void adjustCacheWriter(const std::string& libpath,
+                                 const std::string& factoryFuncName) = 0;
 
   virtual RegionStats* getRegionStats() = 0;
   virtual bool cacheEnabled() = 0;
@@ -282,7 +285,7 @@ class RegionInternal : public Region {
   inline bool isConcurrencyCheckEnabled() const {
     return m_regionAttributes->getConcurrencyChecksEnabled();
   }
-  virtual const std::shared_ptr<Pool>& getPool() override = 0;
+  virtual const std::shared_ptr<Pool>& getPool() const override = 0;
 
  protected:
   /**
@@ -300,15 +303,19 @@ class RegionInternal : public Region {
   void setEntryTimeToLive(const std::chrono::seconds& duration);
   void setEntryIdleTimeout(const std::chrono::seconds& duration);
   void setCacheListener(const std::shared_ptr<CacheListener>& aListener);
-  void setCacheListener(const char* libpath, const char* factoryFuncName);
+  void setCacheListener(const std::string& libpath,
+                        const std::string& factoryFuncName);
   void setPartitionResolver(
       const std::shared_ptr<PartitionResolver>& aListener);
-  void setPartitionResolver(const char* libpath, const char* factoryFuncName);
+  void setPartitionResolver(const std::string& libpath,
+                            const std::string& factoryFuncName);
   void setCacheLoader(const std::shared_ptr<CacheLoader>& aLoader);
-  void setCacheLoader(const char* libpath, const char* factoryFuncName);
+  void setCacheLoader(const std::string& libpath,
+                      const std::string& factoryFuncName);
   void setCacheWriter(const std::shared_ptr<CacheWriter>& aWriter);
-  void setCacheWriter(const char* libpath, const char* factoryFuncName);
-  void setEndpoints(const char* endpoints);
+  void setCacheWriter(const std::string& libpath,
+                      const std::string& factoryFuncName);
+  void setEndpoints(const std::string& endpoints);
   void setClientNotificationEnabled(bool clientNotificationEnabled);
 
   std::shared_ptr<RegionAttributes> m_regionAttributes;

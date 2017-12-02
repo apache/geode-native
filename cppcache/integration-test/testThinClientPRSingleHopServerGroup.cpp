@@ -134,7 +134,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         FAIL("Put caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName(),
+        LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("Put caused unexpected exception");
@@ -174,7 +174,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         FAIL("get caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName(),
+        LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("get caused unexpected exception");
@@ -214,8 +214,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         FAIL("getAll caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: getALL caused unexpected %s: %s", ex.getName(),
-                 ex.what());
+        LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
+                 ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
         throw IllegalStateException("TEST FAIL");
@@ -250,8 +250,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         FAIL("destroy caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: destroy caused unexpected %s: %s", ex.getName(),
-                 ex.what());
+        LOGERROR("CPPTEST: destroy caused unexpected %s: %s",
+                 ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("destroy caused unexpected exception");
         throw IllegalStateException("TEST FAIL");
@@ -308,7 +308,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         FAIL("Put caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName(),
+        LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("Put caused unexpected exception");
@@ -344,7 +344,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         FAIL("get caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName(),
+        LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("get caused unexpected exception");
@@ -380,8 +380,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         FAIL("getAll caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: getALL caused unexpected %s: %s", ex.getName(),
-                 ex.what());
+        LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
+                 ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
         throw IllegalStateException("TEST FAIL");
@@ -413,8 +413,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         FAIL("destroy caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: destroy caused unexpected %s: %s", ex.getName(),
-                 ex.what());
+        LOGERROR("CPPTEST: destroy caused unexpected %s: %s",
+                 ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("destroy caused unexpected exception");
         throw IllegalStateException("TEST FAIL");
@@ -471,7 +471,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         FAIL("Put caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName(),
+        LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("Put caused unexpected exception");
@@ -507,7 +507,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         FAIL("get caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName(),
+        LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("get caused unexpected exception");
@@ -542,8 +542,8 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         FAIL("getAll caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: getALL caused unexpected %s: %s", ex.getName(),
-                 ex.what());
+        LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
+                 ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
         throw IllegalStateException("TEST FAIL");
@@ -575,8 +575,8 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         FAIL("destroy caused extra hop.");
         throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
-        LOGERROR("CPPTEST: destroy caused unexpected %s: %s", ex.getName(),
-                 ex.what());
+        LOGERROR("CPPTEST: destroy caused unexpected %s: %s",
+                 ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("destroy caused unexpected exception");
         throw IllegalStateException("TEST FAIL");

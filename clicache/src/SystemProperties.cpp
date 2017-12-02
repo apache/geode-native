@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
+
 #include "SystemProperties.hpp"
 #include "impl/SafeConvert.hpp"
 #include "TimeUtils.hpp"
+
 
 namespace Apache
 {
@@ -26,6 +28,7 @@ namespace Apache
     namespace Client
     {
       using namespace System;
+      using namespace msclr::interop;
 
       namespace native = apache::geode::client;
 
@@ -46,12 +49,12 @@ namespace Apache
 
       String^ SystemProperties::StatisticsArchiveFile::get( )
       {
-        return ManagedString::Get( m_nativeptr->statisticsArchiveFile( ) );
+        return marshal_as<String^>( m_nativeptr->statisticsArchiveFile( ) );
       }
 
       String^ SystemProperties::LogFileName::get( )
       {
-        return ManagedString::Get( m_nativeptr->logFilename( ) );
+        return marshal_as<String^>( m_nativeptr->logFilename( ) );
       }
 
       LogLevel SystemProperties::GFLogLevel::get( )
@@ -99,16 +102,6 @@ namespace Apache
         return TimeUtils::DurationToTimeSpan(m_nativeptr->notifyDupCheckLife( ));
       }
       
-      bool SystemProperties::DebugStackTraceEnabled::get( )
-      {
-        return m_nativeptr->debugStackTraceEnabled( );
-      }
-
-      bool SystemProperties::CrashDumpEnabled::get( )
-      {
-        return m_nativeptr->crashDumpEnabled();
-      }
-
       bool SystemProperties::AppDomainEnabled::get( )
       {
         return m_nativeptr->isAppDomainEnabled();
@@ -116,12 +109,12 @@ namespace Apache
 
       String^ SystemProperties::Name::get( )
       {
-        return ManagedString::Get( m_nativeptr->name( ) );
+        return marshal_as<String^>( m_nativeptr->name( ) );
       }
 
       String^ SystemProperties::CacheXmlFile::get( )
       {
-        return ManagedString::Get( m_nativeptr->cacheXMLFile( ) );
+        return marshal_as<String^>( m_nativeptr->cacheXMLFile( ) );
       }
 
       System::Int32 SystemProperties::LogFileSizeLimit::get( )
@@ -156,18 +149,18 @@ namespace Apache
 
       String^ SystemProperties::SSLKeyStore::get()
       {
-        return ManagedString::Get(m_nativeptr->sslKeyStore());
+        return marshal_as<String^>(m_nativeptr->sslKeyStore());
       }
 
       String^ SystemProperties::SSLTrustStore::get()
       {
-        return ManagedString::Get(m_nativeptr->sslTrustStore());
+        return marshal_as<String^>(m_nativeptr->sslTrustStore());
       }
       
       // adongre
       String^ SystemProperties::SSLKeystorePassword::get()
       {
-        return ManagedString::Get(m_nativeptr->sslKeystorePassword());
+        return marshal_as<String^>(m_nativeptr->sslKeystorePassword());
       }
 
 
@@ -178,7 +171,7 @@ namespace Apache
 
       String^ SystemProperties::DurableClientId::get( )
       {
-        return ManagedString::Get( m_nativeptr->durableClientId( ) );
+        return marshal_as<String^>( m_nativeptr->durableClientId( ) );
       }
 
       TimeSpan SystemProperties::DurableTimeout::get( )
@@ -193,7 +186,7 @@ namespace Apache
 
       String^ SystemProperties::ConflateEvents::get( )
       {
-        return ManagedString::Get( m_nativeptr->conflateEvents( ) );
+        return marshal_as<String^>( m_nativeptr->conflateEvents( ) );
       }
 
       TimeSpan SystemProperties::SuspendedTxTimeout::get( )

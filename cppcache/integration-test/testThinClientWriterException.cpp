@@ -163,10 +163,10 @@ void startClient() {
   setCacheWriter(regionNamesAuth[0], regWriter);
   rptr = getHelper()->getRegion(regionNamesAuth[0]);
   rptr->registerAllKeys();
-  sprintf(buf, "%s: %d", rptr->getName(), i);
- auto key = createKey(buf);
-  sprintf(buf, "testUpdate::%s: value of %d", rptr->getName(), i);
-  auto valuePtr = CacheableString::create(buf);
+  sprintf(buf, "%s: %d", rptr->getName().c_str(), i);
+  auto key = createKey(buf);
+  sprintf(buf, "testUpdate::%s: value of %d", rptr->getName().c_str(), i);
+  auto valuePtr = buf;
   try {
     LOG("Trying put Operation");
     rptr->put(key, valuePtr);

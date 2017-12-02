@@ -48,13 +48,15 @@ class DeltaEx : public Cacheable, public Delta {
   static int cloneCount;
   DeltaEx() : Delta(nullptr), counter(1), isDelta(false) {}
   DeltaEx(int count) : Delta(nullptr), counter(0), isDelta(false) {}
-  virtual bool hasDelta() { return isDelta; }
-  virtual void toDelta(DataOutput& out) const {
+  DeltaEx(const DeltaEx& rhs) = default;
+
+  virtual bool hasDelta() const override { return isDelta; }
+  virtual void toDelta(DataOutput& out) const override {
     out.writeInt(counter);
     toDeltaCount++;
   }
 
-  virtual void fromDelta(DataInput& in) {
+  virtual void fromDelta(DataInput& in) override {
     LOG("From delta gets called");
     int32_t val = in.readInt32();
     if (fromDeltaCount == 1) {
@@ -65,19 +67,19 @@ class DeltaEx : public Cacheable, public Delta {
     counter += val;
     fromDeltaCount++;
   }
-  virtual void toData(DataOutput& output) const {
+  virtual void toData(DataOutput& output) const override {
     output.writeInt(counter);
     toDataCount++;
   }
-  virtual void fromData(DataInput& input) {
+  virtual void fromData(DataInput& input) override {
     counter = input.readInt32();
     fromDataCount++;
   }
-  virtual int32_t classId() const { return 1; }
-  virtual uint32_t objectSize() const { return 0; }
-  std::shared_ptr<Delta> clone() {
+  virtual int32_t classId() const override { return 1; }
+  virtual uint32_t objectSize() const override { return 0; }
+  std::shared_ptr<Delta> clone() const override {
     cloneCount++;
-    return shared_from_this();
+    return std::make_shared<DeltaEx>(*this);
   }
   virtual ~DeltaEx() {}
   void setDelta(bool delta) { this->isDelta = delta; }
@@ -103,13 +105,15 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
   static int m_cloneCount;
   PdxDeltaEx() : Delta(nullptr), m_counter(1), m_isDelta(false) {}
   PdxDeltaEx(int count) : Delta(nullptr), m_counter(0), m_isDelta(false) {}
-  virtual bool hasDelta() { return m_isDelta; }
-  virtual void toDelta(DataOutput& out) const {
+  PdxDeltaEx(const PdxDeltaEx& rhs)
+      : Delta(nullptr), m_counter(rhs.m_counter), m_isDelta(rhs.m_isDelta) {}
+  virtual bool hasDelta() const override { return m_isDelta; }
+  virtual void toDelta(DataOutput& out) const override {
     out.writeInt(m_counter);
     m_toDeltaCount++;
   }
 
-  virtual void fromDelta(DataInput& in) {
+  virtual void fromDelta(DataInput& in) override {
     LOG("From delta gets called");
     int32_t val = in.readInt32();
     if (m_fromDeltaCount == 1) {
@@ -121,34 +125,37 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
     m_fromDeltaCount++;
   }
 
-  const char* getClassName() const { return "PdxTests.PdxDeltaEx"; }
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests.PdxDeltaEx";
+    return className;
+  }
 
-  void toData(std::shared_ptr<PdxWriter> pw) {
+  void toData(std::shared_ptr<PdxWriter> pw) const override {
     pw->writeInt("counter", m_counter);
     m_toDataCount++;
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) {
+  void fromData(std::shared_ptr<PdxReader> pr) override {
     m_counter = pr->readInt("counter");
     m_fromDataCount++;
   }
 
   static PdxSerializable* createDeserializable() { return new PdxDeltaEx(); }
 
-  std::shared_ptr<Delta> clone() {
+  std::shared_ptr<Delta> clone() const override {
     m_cloneCount++;
-    return shared_from_this();
+    return std::make_shared<PdxDeltaEx>(*this);
   }
 
   virtual ~PdxDeltaEx() {}
 
   void setDelta(bool delta) { this->m_isDelta = delta; }
 
-  std::shared_ptr<CacheableString> toString() const {
+  std::string toString() const override {
     char idbuf[1024];
     sprintf(idbuf, "PdxDeltaEx :: [counter=%d]  [isDelta=%d]", m_counter,
             m_isDelta);
-    return CacheableString::create(idbuf);
+    return idbuf;
   }
 };
 

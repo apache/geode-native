@@ -54,7 +54,7 @@ class CPPCACHE_EXPORT Delta {
    * returns false, the object is serialized by invoking
    * <code>Cacheable::toData( DataOutput& )</code>.
    */
-  virtual bool hasDelta() = 0;
+  virtual bool hasDelta() const = 0;
 
   /**
    * Writes out delta information to out in a user-defined format. This is
@@ -88,7 +88,7 @@ class CPPCACHE_EXPORT Delta {
    * a buffer, then deserializing from the buffer thus creating a clone of the
    * original.
    */
-  virtual std::shared_ptr<Delta> clone();
+  virtual std::shared_ptr<Delta> clone() const;
 
   virtual ~Delta() {}
 

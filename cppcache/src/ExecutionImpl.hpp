@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_EXECUTIONIMPL_H_
-#define GEODE_EXECUTIONIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,14 +15,22 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_EXECUTIONIMPL_H_
+#define GEODE_EXECUTIONIMPL_H_
+
+#include <map>
+
+#include <ace/Condition_Recursive_Thread_Mutex.h>
+#include <ace/Guard_T.h>
+
 #include <geode/Execution.hpp>
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/ResultCollector.hpp>
 #include <geode/Region.hpp>
+
 #include "ProxyCache.hpp"
-#include <ace/Condition_Recursive_Thread_Mutex.h>
-#include <ace/Guard_T.h>
-#include <map>
 
 namespace apache {
 namespace geode {
@@ -67,12 +70,12 @@ class ExecutionImpl : public Execution {
   virtual std::shared_ptr<ResultCollector> execute(
       const std::shared_ptr<CacheableVector>& routingObj,
       const std::shared_ptr<Cacheable>& args,
-      const std::shared_ptr<ResultCollector>& rs, const char* func,
+      const std::shared_ptr<ResultCollector>& rs, const std::string& func,
       std::chrono::milliseconds timeout) override;
 
   virtual std::shared_ptr<ResultCollector> execute(
-      const char* func, std::chrono::milliseconds timeout =
-                            DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+      const std::string& func, std::chrono::milliseconds timeout =
+                                   DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
   static void addResults(std::shared_ptr<ResultCollector>& collector,
                          const std::shared_ptr<CacheableVector>& results);
@@ -112,15 +115,16 @@ class ExecutionImpl : public Execution {
   //  std::vector<int8_t> m_attributes;
 
   std::shared_ptr<CacheableVector> executeOnPool(
-      std::string& func, uint8_t getResult, int32_t retryAttempts,
+      const std::string& func, uint8_t getResult, int32_t retryAttempts,
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   void executeOnAllServers(
-      std::string& func, uint8_t getResult,
+      const std::string& func, uint8_t getResult,
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
-  std::vector<int8_t>* getFunctionAttributes(const char* func);
-  GfErrType getFuncAttributes(const char* func, std::vector<int8_t>** attr);
+  std::vector<int8_t>* getFunctionAttributes(const std::string& func);
+  GfErrType getFuncAttributes(const std::string& func,
+                              std::vector<int8_t>** attr);
 
   FRIEND_STD_SHARED_PTR(ExecutionImpl)
 };

@@ -52,7 +52,8 @@ class OperMonitor : public CacheListener {
     if (valuePtr != nullptr) {
       m_value = valuePtr->value();
     }
-    sprintf(buf, "Key = %s, Value = %d", keyPtr->toString(), valuePtr->value());
+    sprintf(buf, "Key = %s, Value = %d", keyPtr->toString().c_str(),
+            valuePtr->value());
     LOG(buf);
   }
 
@@ -81,11 +82,16 @@ class OperMonitor : public CacheListener {
   }
 };
 
-void setCacheListener(const char* regName, std::shared_ptr<OperMonitor> monitor) {
+void setCacheListener(const char* regName,
+                      std::shared_ptr<OperMonitor> monitor) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(monitor);
-}std::shared_ptr<OperMonitor> mon1C1 = nullptr;std::shared_ptr<OperMonitor> mon2C1=nullptr;std::shared_ptr<OperMonitor> mon1C2=nullptr;std::shared_ptr<OperMonitor> mon2C2=nullptr;
+}
+std::shared_ptr<OperMonitor> mon1C1 = nullptr;
+std::shared_ptr<OperMonitor> mon2C1 = nullptr;
+std::shared_ptr<OperMonitor> mon1C2 = nullptr;
+std::shared_ptr<OperMonitor> mon2C2 = nullptr;
 
 const char* regions[] = {"ConflatedRegion", "NonConflatedRegion"};
 
@@ -93,7 +99,8 @@ const char* regions[] = {"ConflatedRegion", "NonConflatedRegion"};
 #include "ThinClientTasks_C2S2.hpp"
 #include "LocatorHelper.hpp"
 
-void initClientCache(std::shared_ptr<OperMonitor>& mon1, std::shared_ptr<OperMonitor>& mon2, int durableIdx,
+void initClientCache(std::shared_ptr<OperMonitor>& mon1,
+                     std::shared_ptr<OperMonitor>& mon2, int durableIdx,
                      const char* conflation) {
   initClientAndTwoRegions(durableIdx, 0, std::chrono::seconds(300), conflation,
                           regions);
@@ -104,8 +111,8 @@ void initClientCache(std::shared_ptr<OperMonitor>& mon1, std::shared_ptr<OperMon
 
   setCacheListener(regions[0], mon1);
   setCacheListener(regions[1], mon2);
- auto regPtr0 = getHelper()->getRegion(regions[0]);
- auto regPtr1 = getHelper()->getRegion(regions[1]);
+  auto regPtr0 = getHelper()->getRegion(regions[0]);
+  auto regPtr1 = getHelper()->getRegion(regions[1]);
 
   regPtr0->registerAllKeys(true);
   regPtr1->registerAllKeys(true);

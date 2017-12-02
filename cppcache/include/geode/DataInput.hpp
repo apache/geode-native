@@ -870,16 +870,6 @@ class CPPCACHE_EXPORT DataInput {
     return result;
   }
 
-  /*
-   * This is for internal use
-   */
-  const char* getPoolName() { return m_poolName; }
-
-  /*
-   * This is for internal use
-   */
-  void setPoolName(const char* poolName) { m_poolName = poolName; }
-
   virtual const Cache* getCache();
 
  protected:
@@ -888,7 +878,7 @@ class CPPCACHE_EXPORT DataInput {
       : m_buf(m_buffer),
         m_bufHead(m_buffer),
         m_bufLength(len),
-        m_poolName(nullptr),
+        m_poolName(EMPTY_STRING),
         m_cache(cache) {}
 
   virtual const SerializationRegistry& getSerializationRegistry() const;
@@ -897,7 +887,7 @@ class CPPCACHE_EXPORT DataInput {
   const uint8_t* m_buf;
   const uint8_t* m_bufHead;
   int32_t m_bufLength;
-  const char* m_poolName;
+  std::reference_wrapper<const std::string> m_poolName;
   const Cache* m_cache;
 
   std::shared_ptr<Serializable> readObjectInternal(int8_t typeId = -1);
@@ -923,12 +913,11 @@ class CPPCACHE_EXPORT DataInput {
 
   inline void _checkBufferSize(int32_t size, int32_t line) {
     if ((m_bufLength - (m_buf - m_bufHead)) < size) {
-      char exMsg[128];
-      gf_sprintf(exMsg,
-                 "DataInput: attempt to read beyond buffer at line %d: "
-                 "available buffer size %d, attempted read of size %d ",
-                 line, m_bufLength - (m_buf - m_bufHead), size);
-      throw OutOfRangeException(exMsg);
+      throw OutOfRangeException(
+          "DataInput: attempt to read beyond buffer at line " +
+          std::to_string(line) + ": available buffer size " +
+          std::to_string(m_bufLength - (m_buf - m_bufHead)) +
+          ", attempted read of size " + std::to_string(size));
     }
   }
 
@@ -994,6 +983,12 @@ class CPPCACHE_EXPORT DataInput {
         *str = (b & 0x7f);
         break;
     }
+  }
+
+  const std::string& getPoolName() const { return m_poolName; }
+
+  void setPoolName(const std::string& poolName) {
+    m_poolName = std::ref(poolName);
   }
 
   // disable other constructors and assignment

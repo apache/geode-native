@@ -24,9 +24,10 @@
  * @file
  */
 
-#include "geode_globals.hpp"
 #include <functional>
 #include <memory>
+
+#include "geode_globals.hpp"
 
 namespace apache {
 namespace geode {
@@ -38,6 +39,7 @@ class Cache;
 class PdxSerializable;
 class Serializable;
 class CacheableString;
+
 typedef void (*CliCallbackMethod)(Cache &cache);
 
 /** @brief signature of functions passed to registerType. Such functions
@@ -112,7 +114,7 @@ class CPPCACHE_EXPORT Serializable
    * the subclasses.
    * The default implementation renders the classname.
    */
-  virtual std::shared_ptr<CacheableString> toString() const;
+  virtual std::string toString() const;
 
   /** Factory method that creates the Serializable object that matches the type
    * of value.
@@ -127,18 +129,12 @@ class CPPCACHE_EXPORT Serializable
   /**
    * @brief destructor
    */
-  virtual ~Serializable() {}
+  virtual ~Serializable() = default;
 
  protected:
-  /**
-   * @brief constructors
-   */
-  Serializable() {}
-
- private:
-  // Never defined.
-  Serializable(const Serializable &other);
-  void operator=(const Serializable &other);
+  Serializable() = default;
+  Serializable(const Serializable &other) = default;
+  Serializable &operator=(const Serializable &other) = default;
 };
 
 }  // namespace client

@@ -18,23 +18,29 @@
 #include <geode/DiskPolicyType.hpp>
 #include "ace/OS.h"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
-const char* DiskPolicyType::names[] = {"none", "overflows", "persist", nullptr};
+const std::string DiskPolicyType::names[] = {"none", "overflows", "persist"};
 
-const char* DiskPolicyType::fromOrdinal(const uint8_t ordinal) {
-  if (ordinal > DiskPolicyType::PERSIST) return names[DiskPolicyType::NONE];
-  return names[ordinal];
-}
-
-DiskPolicyType::PolicyType DiskPolicyType::fromName(const char* name) {
-  uint32_t i = 0;
-  while ((names[i] != nullptr) ||
-         (i <= static_cast<uint32_t>(DiskPolicyType::PERSIST))) {
-    if (name && names[i] && ACE_OS::strcasecmp(names[i], name) == 0) {
-      return static_cast<DiskPolicyType::PolicyType>(i);
+DiskPolicyType::PolicyType DiskPolicyType::fromName(const std::string& name) {
+  for (int i = NONE; i <= PERSIST; i++) {
+    if (names[i] == name) {
+      return static_cast<PolicyType>(i);
     }
-    ++i;
   }
   return DiskPolicyType::NONE;
 }
+
+const std::string& DiskPolicyType::fromOrdinal(const uint8_t ordinal) {
+  if (NONE <= ordinal && ordinal <= PERSIST) {
+    return names[ordinal];
+  }
+
+  return names[NONE];
+}
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

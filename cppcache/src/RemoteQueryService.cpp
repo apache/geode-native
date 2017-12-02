@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "RemoteQueryService.hpp"
 #include "CacheImpl.hpp"
 #include "RemoteQuery.hpp"
@@ -23,7 +24,9 @@
 #include "UserAttributes.hpp"
 #include "statistics/StatisticsManager.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 RemoteQueryService::RemoteQueryService(CacheImpl* cache,
                                        ThinClientPoolDM* poolDM)
@@ -53,7 +56,8 @@ void RemoteQueryService::init() {
     LOGFINEST("RemoteQueryService::init: done initialization");
   }
 }
-std::shared_ptr<Query> RemoteQueryService::newQuery(const char* querystring) {
+
+std::shared_ptr<Query> RemoteQueryService::newQuery(std::string querystring) {
   LOGDEBUG("RemoteQueryService::newQuery: multiuserMode = %d ",
            m_tccdm->isMultiUserMode());
   if (!m_tccdm->isMultiUserMode()) {
@@ -63,7 +67,7 @@ std::shared_ptr<Query> RemoteQueryService::newQuery(const char* querystring) {
       throw CacheClosedException(
           "QueryService::newQuery: Cache has been closed.");
     }
-    LOGDEBUG("RemoteQueryService: creating a new query: %s", querystring);
+    LOGDEBUG("RemoteQueryService: creating a new query: " + querystring);
     return std::shared_ptr<Query>(new RemoteQuery(querystring, shared_from_this(), m_tccdm));
   } else {
     auto ua =
@@ -74,7 +78,7 @@ std::shared_ptr<Query> RemoteQueryService::newQuery(const char* querystring) {
       throw CacheClosedException(
           "QueryService::newQuery: Cache has been closed.");
     }
-    LOGDEBUG("RemoteQueryService: creating a new query: %s", querystring);
+    LOGDEBUG("RemoteQueryService: creating a new query: " + querystring);
     return std::shared_ptr<Query>(new RemoteQuery(
         querystring, shared_from_this(), m_tccdm, ua->getProxyCache()));
   }
@@ -115,14 +119,12 @@ GfErrType RemoteQueryService::executeAllCqs(TcrEndpoint* endpoint) {
   }
 
   if (m_cqService == nullptr) {
-    LOGFINE(
-        "RemoteQueryService: no cq to execute after failover to endpoint[%s]",
-        endpoint->name().c_str());
+    LOGFINE("RemoteQueryService: no cq to execute after failover to endpoint[" +
+            endpoint->name() + "]");
     return GF_NOERR;
   } else {
-    LOGFINE(
-        "RemoteQueryService: execute all cqs after failover to endpoint[%s]",
-        endpoint->name().c_str());
+    LOGFINE("RemoteQueryService: execute all cqs after failover to endpoint[" +
+            endpoint->name() + "]");
     return m_cqService->executeAllClientCqs(endpoint);
   }
 }
@@ -142,8 +144,9 @@ void RemoteQueryService::executeAllCqs(bool failover) {
     LOGFINE("RemoteQueryService: no cq to execute after failover");
   }
 }
+
 std::shared_ptr<CqQuery> RemoteQueryService::newCq(
-    const char* querystr, const std::shared_ptr<CqAttributes>& cqAttr,
+    std::string querystr, const std::shared_ptr<CqAttributes>& cqAttr,
     bool isDurable) {
   TryReadGuard guard(m_rwLock, m_invalid);
 
@@ -151,14 +154,13 @@ std::shared_ptr<CqQuery> RemoteQueryService::newCq(
     throw CacheClosedException("QueryService::newCq: Cache has been closed.");
   }
   initCqService();
-  std::string qs(querystr);
   // use query string as name for now
   std::string name("_default");
   name += querystr;
-  return m_cqService->newCq(name, qs, cqAttr, isDurable);
+  return m_cqService->newCq(name, querystr, cqAttr, isDurable);
 }
 std::shared_ptr<CqQuery> RemoteQueryService::newCq(
-    const char* name, const char* querystr,
+    std::string name, std::string querystr,
     const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable) {
   TryReadGuard guard(m_rwLock, m_invalid);
 
@@ -166,9 +168,7 @@ std::shared_ptr<CqQuery> RemoteQueryService::newCq(
     throw CacheClosedException("QueryService::newCq: Cache has been closed.");
   }
   initCqService();
-  std::string qs(querystr);
-  std::string nm(name);
-  return m_cqService->newCq(nm, qs, cqAttr, isDurable);
+  return m_cqService->newCq(name, querystr, cqAttr, isDurable);
 }
 
 void RemoteQueryService::closeCqs() {
@@ -184,30 +184,34 @@ void RemoteQueryService::closeCqs() {
   }
 }
 
-CqService::query_container_type RemoteQueryService::getCqs() {
+CqService::query_container_type RemoteQueryService::getCqs() const {
   TryReadGuard guard(m_rwLock, m_invalid);
 
-  CqService::query_container_type vec;
   if (m_invalid) {
     throw CacheClosedException("QueryService::getCqs: Cache has been closed.");
   }
+
   // If cqService has not started, then no cq exists
-  if (m_cqService != nullptr) {
+  CqService::query_container_type vec;
+  if (m_cqService) {
     vec = m_cqService->getAllCqs();
   }
+
   return vec;
 }
- std::shared_ptr<CqQuery> RemoteQueryService::getCq(const char* name) {
+std::shared_ptr<CqQuery> RemoteQueryService::getCq(
+    const std::string& name) const {
   TryReadGuard guard(m_rwLock, m_invalid);
 
   if (m_invalid) {
     throw CacheClosedException("QueryService::getCq: Cache has been closed.");
   }
+
   // If cqService has not started, then no cq exists
-  if (m_cqService != nullptr) {
-    std::string nm(name);
-    return m_cqService->getCq(nm);
+  if (m_cqService) {
+    return m_cqService->getCq(name);
   }
+
   return nullptr;
 }
 
@@ -236,31 +240,37 @@ void RemoteQueryService::stopCqs() {
     m_cqService->stopAllClientCqs();
   }
 }
- std::shared_ptr<CqServiceStatistics> RemoteQueryService::getCqServiceStatistics() {
+
+std::shared_ptr<CqServiceStatistics>
+RemoteQueryService::getCqServiceStatistics() const {
   TryReadGuard guard(m_rwLock, m_invalid);
 
   if (m_invalid) {
     throw CacheClosedException(
         "QueryService::getCqServiceStatistics: Cache has been closed.");
   }
+
   // If cqService has not started, then no cq exists
   if (m_cqService) {
     return m_cqService->getCqServiceStatistics();
   }
+
   return nullptr;
 }
 
 void RemoteQueryService::receiveNotification(TcrMessage* msg) {
   {
     TryReadGuard guard(m_rwLock, m_invalid);
+
     if (m_invalid) {
       //  do we need this check?
       return;
     }
     /*if cq has not been started, then  no cq exists */
-    if (m_cqService == nullptr) {
+    if (!m_cqService) {
       return;
     }
+
     if (!m_cqService->checkAndAcquireLock()) {
       return;
     }
@@ -268,25 +278,30 @@ void RemoteQueryService::receiveNotification(TcrMessage* msg) {
 
   m_cqService->receiveNotification(msg);
 }
- std::shared_ptr<CacheableArrayList> RemoteQueryService::getAllDurableCqsFromServer() {
+
+std::shared_ptr<CacheableArrayList>
+RemoteQueryService::getAllDurableCqsFromServer() const {
   TryReadGuard guard(m_rwLock, m_invalid);
+
   if (m_invalid) {
     throw CacheClosedException(
         "QueryService::getAllDurableCqsFromServer: Cache has been closed.");
   }
+
   // If cqService has not started, then no cq exists
-  if (m_cqService != nullptr) {
+  if (m_cqService) {
     return m_cqService->getAllDurableCqsFromServer();
-  } else {
-    return nullptr;
   }
+
+  return nullptr;
 }
 
 void RemoteQueryService::invokeCqConnectedListeners(ThinClientPoolDM* pool,
                                                     bool connected) {
-  if (m_cqService == nullptr) {
+  if (!m_cqService) {
     return;
   }
+
   std::string poolName;
   pool = dynamic_cast<ThinClientPoolDM*>(m_tccdm);
   if (pool != nullptr) {
@@ -302,3 +317,7 @@ void RemoteQueryService::invokeCqConnectedListeners(ThinClientPoolDM* pool,
   }
   m_cqService->invokeCqConnectedListeners(poolName, connected);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

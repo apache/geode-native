@@ -51,14 +51,13 @@ class EventListener : public CacheListener {
       auto valuePtr =
           std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
 
-      sprintf(
-          buf, "%s: %s: Key = %s, NewValue = %s", m_name.c_str(), eventType,
-          keyPtr->asChar(),
-          (valuePtr == nullptr ? "nullptr" : valuePtr->toString()->asChar()));
+      sprintf(buf, "%s: %s: Key = %s, NewValue = %s", m_name.c_str(), eventType,
+              keyPtr->asChar(),
+              (valuePtr == nullptr ? "nullptr" : valuePtr->toString().c_str()));
       LOG(buf);
     } catch (const Exception& excp) {
-      sprintf(buf, "%s: %s: %s: %s", m_name.c_str(), eventType, excp.getName(),
-              excp.what());
+      sprintf(buf, "%s: %s: %s: %s", m_name.c_str(), eventType,
+              excp.getName().c_str(), excp.what());
       LOG(buf);
     } catch (...) {
       sprintf(buf, "%s: %s: unknown exception", m_name.c_str(), eventType);

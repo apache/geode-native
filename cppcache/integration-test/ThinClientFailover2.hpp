@@ -254,7 +254,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   auto keyPtr = CacheableKey::create(key);
 
   auto regPtr = getHelper()->getRegion(name);
-  fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
+  fprintf(stdout, "netsearch  region %s\n", regPtr->getName().c_str());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
 
@@ -427,9 +427,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     ASSERT(vec1.size() == 2, "Should have 2 keys in second region.");
 
     std::string key0, key1, key2;
-    key0 = vec0[0]->toString()->asChar();
-    key1 = vec0[1]->toString()->asChar();
-    key2 = vec0[2]->toString()->asChar();
+    key0 = vec0[0]->toString().c_str();
+    key1 = vec0[1]->toString().c_str();
+    key2 = vec0[2]->toString().c_str();
     ASSERT(key0 != key1, "The two keys should be different in first region.");
     ASSERT(key0 != key2, "The two keys should be different in first region.");
     ASSERT(key1 != key2, "The two keys should be different in first region.");
@@ -440,8 +440,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     ASSERT(key2 == keys[0] || key2 == keys[1] || key2 == keys[4],
            "Unexpected key in first region.");
 
-    key0 = vec1[0]->toString()->asChar();
-    key1 = vec1[1]->toString()->asChar();
+    key0 = vec1[0]->toString().c_str();
+    key1 = vec1[1]->toString().c_str();
     ASSERT(key0 != key1, "The two keys should be different in second region.");
     ASSERT(key0 == keys[2] || key0 == keys[3],
            "Unexpected key in second region.");

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "AppDomainContext.hpp"
 
 namespace Apache
@@ -26,8 +27,9 @@ namespace Apache
 
 apache::geode::client::AppDomainContext* createAppDomainContext() {
   return new AppDomainContext();
+}
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
 
-}

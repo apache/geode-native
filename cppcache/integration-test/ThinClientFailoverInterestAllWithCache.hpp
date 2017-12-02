@@ -246,7 +246,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   auto keyPtr = CacheableKey::create(key);
 
   auto regPtr = getHelper()->getRegion(name);
-  LOGINFO("netsearch  region %s", regPtr->getName());
+  LOGINFO("netsearch  region %s", regPtr->getName().c_str());
   ASSERT(regPtr != nullptr, "Region not found.");
 
   // ASSERT(!regPtr->containsKey(keyPtr),

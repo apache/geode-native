@@ -14,12 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <geode/CacheableEnum.hpp>
-#include <Utils.hpp>
-#include <PdxHelper.hpp>
-#include <GeodeTypeIdsImpl.hpp>
-#include <EnumInfo.hpp>
+
+#include "Utils.hpp"
+#include "PdxHelper.hpp"
+#include "GeodeTypeIdsImpl.hpp"
+#include "EnumInfo.hpp"
 #include "CacheRegionHelper.hpp"
+#include "util/functional.hpp"
 
 namespace apache {
 namespace geode {
@@ -33,16 +36,16 @@ CacheableEnum::CacheableEnum()
       m_ordinal(-1),
       m_hashcode(0) {}
 
-CacheableEnum::CacheableEnum(const char* enumClassName, const char* enumName,
+CacheableEnum::CacheableEnum(std::string enumClassName, std::string enumName,
                              int32_t ordinal)
-    : m_ordinal(ordinal), m_hashcode(0) {
-  m_enumClassName = CacheableString::create(enumClassName);
-  m_enumName = CacheableString::create(enumName);
-}
+    : m_enumClassName(std::move(enumClassName)),
+      m_enumName(std::move(enumName)),
+      m_ordinal(ordinal),
+      m_hashcode(0) {}
 
 void CacheableEnum::toData(apache::geode::client::DataOutput& output) const {
   int enumVal = PdxHelper::getEnumValue(
-      m_enumClassName->asChar(), m_enumName->asChar(), m_ordinal,
+      m_enumClassName.c_str(), m_enumName.c_str(), m_ordinal,
       CacheRegionHelper::getCacheImpl(output.getCache())->getPdxTypeRegistry());
   output.write(static_cast<int8_t>(GeodeTypeIds::CacheableEnum));
   output.write(int8_t(enumVal >> 24));
@@ -57,48 +60,35 @@ void CacheableEnum::fromData(apache::geode::client::DataInput& input) {
       enumId,
       CacheRegionHelper::getCacheImpl(input.getCache())->getPdxTypeRegistry());
 
-  m_enumClassName = enumVal->getEnumClassName();
-  m_enumName = enumVal->getEnumName();
+  m_enumClassName = enumVal->getEnumClassName()->toString();
+  m_enumName = enumVal->getEnumName()->toString();
   m_ordinal = enumVal->getEnumOrdinal();
+
+  calculateHashcode();
 }
 
-int32_t CacheableEnum::hashcode() const {
-  int localHash = 1;
-  if (m_hashcode == 0) {
-    int prime = 31;
-    localHash =
-        prime * localHash +
-        ((m_enumClassName != nullptr ? m_enumClassName->hashcode() : 0));
-    localHash = prime * localHash +
-                ((m_enumName != nullptr ? m_enumName->hashcode() : 0));
-    m_hashcode = localHash;
-  }
-  return m_hashcode;
+void CacheableEnum::calculateHashcode() {
+  m_hashcode = 1;
+  const int32_t prime = 31;
+  m_hashcode = prime * m_hashcode + geode_hash<std::string>{}(m_enumClassName);
+  m_hashcode = prime * m_hashcode + geode_hash<std::string>{}(m_enumName);
 }
 
 bool CacheableEnum::operator==(const CacheableKey& other) const {
   if (other.typeId() != typeId()) {
     return false;
   }
-  CacheableKey& temp = const_cast<CacheableKey&>(other);
-  CacheableEnum* otherEnum = static_cast<CacheableEnum*>(&temp);
+  auto&& otherEnum = dynamic_cast<const CacheableEnum*>(&other);
   if (otherEnum == nullptr) {
     return false;
   }
   if (m_ordinal != otherEnum->m_ordinal) {
     return false;
   }
-  if (m_enumClassName == nullptr) {
-    return (otherEnum->m_enumClassName == nullptr);
-  }
-  if (m_enumName == nullptr) {
-    return (otherEnum->m_enumName == nullptr);
-  }
-  if (strcmp(m_enumClassName->asChar(), otherEnum->m_enumClassName->asChar()) !=
-      0) {
+  if (m_enumClassName != otherEnum->m_enumClassName) {
     return false;
   }
-  if (strcmp(m_enumName->asChar(), otherEnum->m_enumName->asChar()) != 0) {
+  if (m_enumName != otherEnum->m_enumName) {
     return false;
   }
   return true;

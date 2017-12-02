@@ -1888,7 +1888,7 @@ namespace Apache.Geode.Client.UnitTests
           extraLocatorArgs += sslArgs;
         }
 
-        string locatorArgs = LocatorStartArgs + " --name=" + serverName + startDir + extraLocatorArgs;
+        string locatorArgs = LocatorStartArgs + " --name=" + serverName + startDir + extraLocatorArgs + " --http-service-port=0";
 
         if (!Util.StartProcess(locatorPath, locatorArgs, false, null, true,
           false, false, true, out javaProc))

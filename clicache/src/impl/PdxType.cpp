@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-#pragma once
+
+
+
 
 #include "PdxType.hpp"
 #include "PdxHelper.hpp"
@@ -23,7 +25,7 @@
 #include "../Log.hpp"
 #include <msclr/lock.h>
 #include "PdxWrapper.hpp"
-#include "Cache.hpp"
+#include "../Cache.hpp"
 using namespace System;
 
 namespace Apache

@@ -35,19 +35,10 @@ namespace apache {
 namespace geode {
 namespace client {
 
-#define GF_EX_MSG_LIMIT 2048
-
-class DistributedSystem;
-class CacheableString;
 class StackTrace;
-#pragma warning( push )
-/*
-warning C4275:
-non dll-interface class 'std::exception' used as base for dll-interface
-class 'apache::geode::client::Exception' 
 
-Ok to ignore because it is ok if the class is a std class.
-*/
+// Ignore C4275 - This class extends std C++ class
+#pragma warning(push)
 #pragma warning(disable : 4275)
 
 /**
@@ -59,12 +50,9 @@ class CPPCACHE_EXPORT Exception : public std::exception {
    * @brief public methods
    */
  public:
-  /** Creates an exception.
-   * @param  msg1 message pointer, this is copied into the exception.
-   **/
-  explicit Exception(const char* msg1);
-
-  explicit Exception(const std::string& msg1);
+  explicit Exception(const std::string& message);
+  Exception(std::string&& message);
+  Exception(const char* message);
 
   /** Creates an exception as a copy of the given other exception.
    * @param  other the original exception.
@@ -83,20 +71,18 @@ class CPPCACHE_EXPORT Exception : public std::exception {
   virtual std::string getStackTrace() const;
 
   /** Return the name of this exception type. */
-  virtual const char* getName() const;
+  virtual std::string getName() const;
+
+  virtual const std::string& getMessage() const noexcept;
 
   virtual const char* what() const noexcept override;
 
  private:
-  std::shared_ptr<StackTrace> m_stack;
-
   std::string message;
-
-  friend class DistributedSystem;
+  std::shared_ptr<StackTrace> m_stack;
 };
 
-#pragma warning( pop )
-
+#pragma warning(pop)
 
 class CacheableKey;
 typedef std::unordered_map<std::shared_ptr<CacheableKey>,

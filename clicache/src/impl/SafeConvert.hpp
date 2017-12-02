@@ -17,11 +17,12 @@
 
 #pragma once
 
+
 #include "../geode_defs.hpp"
 
-#include "begin_native.hpp"
+#include "../begin_native.hpp"
 #include "CacheImpl.hpp"
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "ManagedCacheableKey.hpp"
 #include "ManagedCacheableDelta.hpp"

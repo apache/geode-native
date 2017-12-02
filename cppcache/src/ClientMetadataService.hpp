@@ -123,12 +123,13 @@ class ClientMetadataService : public ACE_Task_Base,
 
   void removeBucketServerLocation(BucketServerLocation serverLocation);
 
-  std::shared_ptr<ClientMetadata> getClientMetadata(const char* regionFullPath);
+  std::shared_ptr<ClientMetadata> getClientMetadata(
+      const std::string& regionFullPath);
 
   void populateDummyServers(const char* regionName,
                             std::shared_ptr<ClientMetadata> clientmetadata);
 
-  void enqueueForMetadataRefresh(const char* regionFullPath,
+  void enqueueForMetadataRefresh(const std::string& regionFullPath,
                                  int8_t serverGroupFlag);
 
   typedef std::unordered_map<

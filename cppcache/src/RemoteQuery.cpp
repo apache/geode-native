@@ -27,18 +27,21 @@
 #include "EventId.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "util/bounds.hpp"
+#include "util/exception.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 RemoteQuery::RemoteQuery(
-    const char* querystr,
+    std::string querystr,
     const std::shared_ptr<RemoteQueryService>& queryService,
-    ThinClientBaseDM* tccdmptr, std::shared_ptr<ProxyCache> proxyCache) {
-  m_queryString = querystr;
-  m_queryService = queryService;
-  m_tccdm = tccdmptr;
-  m_proxyCache = proxyCache;
-  LOGFINEST("RemoteQuery: created a new query: %s", querystr);
+    ThinClientBaseDM* tccdmptr, std::shared_ptr<ProxyCache> proxyCache)
+    : m_queryString(querystr),
+      m_queryService(queryService),
+      m_tccdm(tccdmptr),
+      m_proxyCache(proxyCache) {
+  LOGFINEST("RemoteQuery: created a new query: " + querystr);
 }
 std::shared_ptr<SelectResults> RemoteQuery::execute(
     std::chrono::milliseconds timeout) {
@@ -184,9 +187,7 @@ GfErrType RemoteQuery::executeNoThrow(
   }
 }
 
-const char* RemoteQuery::getQueryString() const {
-  return m_queryString.c_str();
-}
+const std::string& RemoteQuery::getQueryString() const { return m_queryString; }
 
 void RemoteQuery::compile() {
   throw UnsupportedOperationException("Not supported in native clients");
@@ -195,3 +196,7 @@ void RemoteQuery::compile() {
 bool RemoteQuery::isCompiled() {
   throw UnsupportedOperationException("Not supported in native clients");
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

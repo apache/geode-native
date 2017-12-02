@@ -47,12 +47,12 @@ using namespace apache::geode::statistics;
  *         <code>null</code>.
  */
 
-StatisticsTypeImpl::StatisticsTypeImpl(const char* nameArg,
-                                       const char* descriptionArg,
+StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
+                                       std::string descriptionArg,
                                        StatisticDescriptor** statsArg,
                                        int32_t statsLengthArg) {
-  if (strcmp(nameArg, "") == 0) {
-    const char* s = "Cannot have a null statistics type name";
+  if (nameArg.empty()) {
+    const char* s = "Cannot have an empty statistics type name";
     throw NullPointerException(s);
   }
   if (statsArg == nullptr) {
@@ -140,27 +140,30 @@ StatisticsTypeImpl::~StatisticsTypeImpl() {
 
 //////////////////////  StatisticsType Methods  //////////////////////
 
-const char* StatisticsTypeImpl::getName() { return name.c_str(); }
+const std::string& StatisticsTypeImpl::getName() const { return name; }
 
-const char* StatisticsTypeImpl::getDescription() { return description.c_str(); }
+const std::string& StatisticsTypeImpl::getDescription() const {
+  return description;
+}
 
-StatisticDescriptor** StatisticsTypeImpl::getStatistics() { return stats; }
+StatisticDescriptor** StatisticsTypeImpl::getStatistics() const {
+  return stats;
+}
 
-int32_t StatisticsTypeImpl::nameToId(const char* nameArg) {
+int32_t StatisticsTypeImpl::nameToId(const std::string& nameArg) const {
   return nameToDescriptor(nameArg)->getId();
 }
 
-StatisticDescriptor* StatisticsTypeImpl::nameToDescriptor(const char* nameArg) {
-  std::string str(nameArg);
-  StatisticsDescMap::iterator iterFind = statsDescMap.find(str);
+StatisticDescriptor* StatisticsTypeImpl::nameToDescriptor(
+    const std::string& nameArg) const {
+  const auto iterFind = statsDescMap.find(nameArg);
   if (iterFind == statsDescMap.end()) {
-    std::string statName(nameArg);
-    std::string s = "There is no statistic named " + statName +
+    std::string s = "There is no statistic named " + nameArg +
                     " in this statistics instance ";
     LOGWARN("StatisticsTypeImpl::nameToDescriptor %s", s.c_str());
     throw IllegalArgumentException(s.c_str());
   } else {
-    return (*iterFind).second;
+    return iterFind->second;
   }
 }
 //////////////////////  Instance Methods  //////////////////////
@@ -168,19 +171,21 @@ StatisticDescriptor* StatisticsTypeImpl::nameToDescriptor(const char* nameArg) {
 /**
  * Gets the number of statistics in this type that are ints.
  */
-int32_t StatisticsTypeImpl::getIntStatCount() { return intStatCount; }
+int32_t StatisticsTypeImpl::getIntStatCount() const { return intStatCount; }
 
 /**
  * Gets the number of statistics in this type that are longs.
  */
-int32_t StatisticsTypeImpl::getLongStatCount() { return longStatCount; }
+int32_t StatisticsTypeImpl::getLongStatCount() const { return longStatCount; }
 
 /**
  * Gets the number of statistics that are doubles.
  */
-int32_t StatisticsTypeImpl::getDoubleStatCount() { return doubleStatCount; }
+int32_t StatisticsTypeImpl::getDoubleStatCount() const {
+  return doubleStatCount;
+}
 
 /**
  * Gets the total number of statistic descriptors.
  */
-int32_t StatisticsTypeImpl::getDescriptorsCount() { return statsLength; }
+int32_t StatisticsTypeImpl::getDescriptorsCount() const { return statsLength; }

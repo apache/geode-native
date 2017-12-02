@@ -199,9 +199,9 @@ void EqStruct::fromData(apache::geode::client::DataInput &in) {
   pegDifference = in.readDouble();
   discretionOffset = in.readDouble();
 }
-std::shared_ptr<CacheableString> EqStruct::toString() const {
+std::string EqStruct::toString() const {
   char buf[102500];
   sprintf(buf, "EqStruct:[timestamp = %lld myIndex = %d cxlQty = %d ]",
           timestamp, myIndex, cxlQty);
-  return CacheableString::create(buf);
+  return buf;
 }

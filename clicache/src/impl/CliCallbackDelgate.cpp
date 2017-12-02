@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
+
 #include "CliCallbackDelgate.hpp"
 
-#include "begin_native.hpp"
+#include "../begin_native.hpp"
 #include "CacheRegionHelper.hpp"
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "../Cache.hpp"
 using namespace System;

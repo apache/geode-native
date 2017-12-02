@@ -199,7 +199,7 @@ for (int32_t row=0; row < ss->size(); row++)
           for (unsigned arrlen=0; arrlen < (uint32_t)coa->length(); arrlen++)
           {
               printf("\n Data for %s is %s ",siptr->getFieldName(field),
-                  coa->operator[](arrlen)->toString()->asChar());
+                  coa->operator[](arrlen)->toString().c_str());
           }
        }
     } //end of columns

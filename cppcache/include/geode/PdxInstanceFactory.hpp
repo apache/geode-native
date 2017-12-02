@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PDXINSTANCEFACTORY_H_
-#define GEODE_PDXINSTANCEFACTORY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_PDXINSTANCEFACTORY_H_
+#define GEODE_PDXINSTANCEFACTORY_H_
 
 #include "PdxInstance.hpp"
 #include "geode_globals.hpp"
@@ -79,8 +79,8 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeChar(const char* fieldName,
-                                                        char16_t value) = 0;
+  virtual std::shared_ptr<PdxInstanceFactory> writeChar(
+      const std::string& fieldName, char16_t value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -92,8 +92,8 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeChar(const char* fieldName,
-                                                        char value) = 0;
+  virtual std::shared_ptr<PdxInstanceFactory> writeChar(
+      const std::string& fieldName, char value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -106,7 +106,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeBoolean(
-      const char* fieldName, bool value) = 0;
+      const std::string& fieldName, bool value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -118,8 +118,8 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeByte(const char* fieldName,
-                                                        int8_t value) = 0;
+  virtual std::shared_ptr<PdxInstanceFactory> writeByte(
+      const std::string& fieldName, int8_t value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -131,8 +131,8 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeShort(const char* fieldName,
-                                                         int16_t value) = 0;
+  virtual std::shared_ptr<PdxInstanceFactory> writeShort(
+      const std::string& fieldName, int16_t value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -144,8 +144,8 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeInt(const char* fieldName,
-                                                       int32_t value) = 0;
+  virtual std::shared_ptr<PdxInstanceFactory> writeInt(
+      const std::string& fieldName, int32_t value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -157,8 +157,8 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeLong(const char* fieldName,
-                                                        int64_t value) = 0;
+  virtual std::shared_ptr<PdxInstanceFactory> writeLong(
+      const std::string& fieldName, int64_t value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -170,8 +170,8 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeFloat(const char* fieldName,
-                                                         float value) = 0;
+  virtual std::shared_ptr<PdxInstanceFactory> writeFloat(
+      const std::string& fieldName, float value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -183,8 +183,8 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeDouble(const char* fieldName,
-                                                          double value) = 0;
+  virtual std::shared_ptr<PdxInstanceFactory> writeDouble(
+      const std::string& fieldName, double value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -197,7 +197,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeDate(
-      const char* fieldName, std::shared_ptr<CacheableDate> value) = 0;
+      const std::string& fieldName, std::shared_ptr<CacheableDate> value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -210,7 +210,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeWideString(
-      const char* fieldName, const wchar_t* value) = 0;
+      const std::string& fieldName, const wchar_t* value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -223,7 +223,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeString(
-      const char* fieldName, const char* value) = 0;
+      const std::string& fieldName, const char* value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -243,7 +243,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeObject(
-      const char* fieldName, std::shared_ptr<Cacheable> value) = 0;
+      const std::string& fieldName, std::shared_ptr<Cacheable> value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -257,7 +257,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeBooleanArray(
-      const char* fieldName, bool* value, int32_t length) = 0;
+      const std::string& fieldName, bool* value, int32_t length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -271,7 +271,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeWideCharArray(
-      const char* fieldName, wchar_t* value, int32_t length) = 0;
+      const std::string& fieldName, wchar_t* value, int32_t length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -285,7 +285,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeCharArray(
-      const char* fieldName, char* value, int32_t length) = 0;
+      const std::string& fieldName, char* value, int32_t length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -299,7 +299,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeByteArray(
-      const char* fieldName, int8_t* value, int32_t length) = 0;
+      const std::string& fieldName, int8_t* value, int32_t length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -313,7 +313,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeShortArray(
-      const char* fieldName, int16_t* value, int32_t length) = 0;
+      const std::string& fieldName, int16_t* value, int32_t length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -327,7 +327,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeIntArray(
-      const char* fieldName, int32_t* value, int32_t length) = 0;
+      const std::string& fieldName, int32_t* value, int32_t length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -341,7 +341,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeLongArray(
-      const char* fieldName, int64_t* value, int32_t length) = 0;
+      const std::string& fieldName, int64_t* value, int32_t length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -355,7 +355,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeFloatArray(
-      const char* fieldName, float* value, int32_t length) = 0;
+      const std::string& fieldName, float* value, int32_t length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -369,7 +369,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeDoubleArray(
-      const char* fieldName, double* value, int32_t length) = 0;
+      const std::string& fieldName, double* value, int32_t length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -383,7 +383,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeStringArray(
-      const char* fieldName, char** value, int32_t length) = 0;
+      const std::string& fieldName, char** value, int32_t length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -397,7 +397,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeWideStringArray(
-      const char* fieldName, wchar_t** value, int32_t length) = 0;
+      const std::string& fieldName, wchar_t** value, int32_t length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -414,7 +414,8 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeObjectArray(
-      const char* fieldName, std::shared_ptr<CacheableObjectArray> value) = 0;
+      const std::string& fieldName,
+      std::shared_ptr<CacheableObjectArray> value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -430,7 +431,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeArrayOfByteArrays(
-      const char* fieldName, int8_t** value, int32_t arrayLength,
+      const std::string& fieldName, int8_t** value, int32_t arrayLength,
       int32_t* elementLength) = 0;
 
   /**
@@ -457,7 +458,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field does not exist.
    */
   virtual std::shared_ptr<PdxInstanceFactory> markIdentityField(
-      const char* fieldName) = 0;
+      const std::string& fieldName) = 0;
 };
 }  // namespace client
 }  // namespace geode

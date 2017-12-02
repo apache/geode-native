@@ -108,6 +108,6 @@ while (iter.hasNext()) {
     Struct * si = (Struct *) iter.next().ptr();
     SerializablePtr id = si->operator[]("ID");
     SerializablePtr status = si->operator[]("status");
-    printf("\nID=%s, status=%s", id->toString()->asChar(), status->toString()->asChar());
+    printf("\nID=%s, status=%s", id->toString().c_str(), status->toString().c_str());
 }
 ```

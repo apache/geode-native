@@ -141,8 +141,8 @@ class TallyWriter : virtual public CacheWriter {
     if (m_callbackArg != nullptr) {
       auto callbkArg =
           std::dynamic_pointer_cast<CacheableKey>(event.getCallbackArgument());
-      if (strcmp(m_callbackArg->toString()->asChar(),
-                 callbkArg->toString()->asChar()) == 0) {
+      if (strcmp(m_callbackArg->toString().c_str(),
+                 callbkArg->toString().c_str()) == 0) {
         isCallbackCalled = true;
       }
     }

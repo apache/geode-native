@@ -74,12 +74,14 @@ class TESTOBJECT_EXPORT PositionPdx
   // This constructor is just for some internal data validation test
   PositionPdx(int32_t iForExactVal);
   virtual ~PositionPdx();
-  virtual void toData(std::shared_ptr<PdxWriter> pw);
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  std::shared_ptr<CacheableString> toString() const;
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
 
-  virtual uint32_t objectSize() const {
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+
+  std::string toString() const override;
+
+  virtual uint32_t objectSize() const override {
     uint32_t objectSize = sizeof(PositionPdx);
     return objectSize;
   }
@@ -94,7 +96,10 @@ class TESTOBJECT_EXPORT PositionPdx
 
   static PdxSerializable* createDeserializable() { return new PositionPdx(); }
 
-  const char* getClassName() const { return "testobject.PositionPdx"; }
+  const std::string& getClassName() const override {
+    static std::string className = "testobject.PositionPdx";
+    return className;
+  }
 
  private:
   void init();

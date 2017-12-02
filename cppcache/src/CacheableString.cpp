@@ -14,21 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <codecvt>
+#include <locale>
+#include <cwchar>
+#include <cstdlib>
+
+#include <ace/ACE.h>
+#include <ace/OS.h>
+
 #include <geode/CacheableString.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/GeodeTypeIds.hpp>
-#include <Utils.hpp>
 
-#include <cwchar>
-#include <cstdlib>
-#include <ace/ACE.h>
-#include <ace/OS.h>
 #include "DataOutputInternal.hpp"
 #include "SerializationRegistry.hpp"
+#include "Utils.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 void CacheableString::toData(DataOutput& output) const {
   if (m_type == GF_STRING) {
@@ -298,32 +305,6 @@ CacheableString::~CacheableString() {
   }
 }
 
-int32_t CacheableString::logString(char* buffer, int32_t maxLength) const {
-  if (isCString()) {
-    return ACE_OS::snprintf(
-        buffer, maxLength, "%s( %s )", className(),
-        (m_str != nullptr ? reinterpret_cast<const char*>(m_str) : "null"));
-  } else {
-    GF_DEV_ASSERT(isWideString());
-    int32_t numChars = ACE_OS::snprintf(buffer, maxLength, "%s( ", className());
-    if (numChars >= (int)maxLength || numChars <= 0) {
-      return numChars;
-    }
-    const char* bufStart = buffer;
-    buffer += numChars;
-    maxLength -= numChars;
-    numChars = Utils::logWideString(buffer, maxLength,
-                                    reinterpret_cast<const wchar_t*>(m_str));
-    if (numChars >= (int)maxLength || numChars <= 0) {
-      return numChars + static_cast<int32_t>(buffer - bufStart);
-    }
-    buffer += numChars;
-    maxLength -= numChars;
-    numChars = ACE_OS::snprintf(buffer, maxLength, " )");
-    return numChars + static_cast<int32_t>(buffer - bufStart);
-  }
-}
-
 uint32_t CacheableString::objectSize() const {
   uint32_t size = sizeof(CacheableString);
   if (isCString()) {
@@ -334,3 +315,16 @@ uint32_t CacheableString::objectSize() const {
   }
   return size;
 }
+
+std::string CacheableString::toString() const {
+  if (this->isCString()) {
+    return this->asChar();
+  } else {
+    return std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+        .to_bytes(this->asWChar());
+  }
+}
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

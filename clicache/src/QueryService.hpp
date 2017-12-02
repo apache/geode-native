@@ -17,6 +17,7 @@
 
 #pragma once
 
+
 #include "geode_defs.hpp"
 #include "native_shared_ptr.hpp"
 #include "begin_native.hpp"
@@ -64,7 +65,7 @@ namespace Apache
         /// @endnativeclient
         generic<class TKey, class TResult>
         CqQuery<TKey, TResult>^ NewCq(String^ query, CqAttributes<TKey, TResult>^ cqAttr, bool isDurable);
-  
+
         /// @nativeclient
         /// <summary>
         /// Get a <c>CqQuery</c> object to enable continuous querying.
@@ -156,4 +157,3 @@ namespace Apache
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-

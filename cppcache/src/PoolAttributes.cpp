@@ -68,12 +68,7 @@ bool PoolAttributes::operator==(const PoolAttributes& other) const {
   if (m_subsEnabled != other.m_subsEnabled) return false;
   if (m_multiuserSecurityMode != other.m_multiuserSecurityMode) return false;
   if (m_isPRSingleHopEnabled != other.m_isPRSingleHopEnabled) return false;
-
-  if (0 !=
-      compareStringAttribute(const_cast<char*>(m_serverGrp.c_str()),
-                             const_cast<char*>(other.m_serverGrp.c_str()))) {
-    return false;
-  }
+  if (m_serverGrp != other.m_serverGrp) return false;
 
   if (m_initLocList.size() != other.m_initLocList.size()) return false;
   if (m_initServList.size() != other.m_initServList.size()) return false;
@@ -87,61 +82,34 @@ bool PoolAttributes::operator==(const PoolAttributes& other) const {
 }
 
 bool PoolAttributes::compareVectorOfStrings(
-    const std::vector<std::string>& thisVector1,
-    const std::vector<std::string>& otherVector1) {
-  std::vector<std::string>& thisVector =
-      *(const_cast<std::vector<std::string>*>(&thisVector1));
-  std::vector<std::string>& otherVector =
-      *(const_cast<std::vector<std::string>*>(&otherVector1));
-  std::vector<std::string>::iterator it;
-  std::vector<std::string>::iterator itOther;
-
-  for (it = thisVector.begin(); it < thisVector.end(); it++) {
-    bool matched = false;
-    std::string thisOne = *it;
-    for (itOther = otherVector.begin(); itOther < otherVector.end();
-         itOther++) {
-      std::string otherOne = *itOther;
-
-      if (0 == compareStringAttribute(thisOne.c_str(), otherOne.c_str())) {
-        matched = true;
+    const std::vector<std::string>& thisVector,
+    const std::vector<std::string>& otherVector) {
+  for (auto&& it : thisVector) {
+    bool found = false;
+    for (auto&& itOther : otherVector) {
+      if (it == itOther) {
+        found = true;
         break;
       }
     }
 
-    if (!matched) return false;
+    if (!found) return false;
   }
   return true;
 }
 
-int32_t PoolAttributes::compareStringAttribute(const char* attributeA,
-                                               const char* attributeB) {
-  if (attributeA == nullptr && attributeB == nullptr) {
-    return 0;
-  } else if (attributeA == nullptr && attributeB != nullptr) {
-    return -1;
-  } else if (attributeA != nullptr && attributeB == nullptr) {
-    return -1;
-  }
-  return (strcmp(attributeA, attributeB));
-}
-
-void PoolAttributes::addLocator(const char* host, int port) {
-  if (m_initServList.size()) {
+void PoolAttributes::addLocator(const std::string& host, int port) {
+  if (!m_initServList.empty()) {
     throw IllegalArgumentException(
         "Cannot add both locators and servers to a pool");
   }
-  char buff[128] = {'\0'};
-  ACE_OS::snprintf(buff, 128, "%s:%d", host, port);
-  m_initLocList.push_back(buff);
+  m_initLocList.push_back(host + ":" + std::to_string(port));
 }
 
-void PoolAttributes::addServer(const char* host, int port) {
-  if (m_initLocList.size()) {
+void PoolAttributes::addServer(const std::string& host, int port) {
+  if (!m_initLocList.empty()) {
     throw IllegalArgumentException(
         "Cannot add both locators and servers to a pool");
   }
-  char buff[128] = {'\0'};
-  ACE_OS::snprintf(buff, 128, "%s:%d", host, port);
-  m_initServList.push_back(buff);
+  m_initServList.push_back(host + ":" + std::to_string(port));
 }

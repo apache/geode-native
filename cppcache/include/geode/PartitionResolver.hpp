@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PARTITIONRESOLVER_H_
-#define GEODE_PARTITIONRESOLVER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,15 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_PARTITIONRESOLVER_H_
+#define GEODE_PARTITIONRESOLVER_H_
+
 #include <memory>
-#include "Cacheable.hpp"
 #include <string>
+
+#include "Cacheable.hpp"
 
 namespace apache {
 namespace geode {
@@ -30,6 +31,7 @@ namespace client {
 
 class EntryEvent;
 class CacheableKey;
+
 /**
  * Implementers of interface <code>PartitionResolver</code> enable custom
  * partitioning on the <code>PartitionedRegion</code>.
@@ -81,7 +83,7 @@ class CPPCACHE_EXPORT PartitionResolver {
    * Returns the name of the PartitionResolver
    * @return String name
    */
-  virtual const char* getName();
+  virtual const std::string& getName();
 
   /**
    * @param opDetails the detail of the entry event
@@ -100,9 +102,8 @@ class CPPCACHE_EXPORT PartitionResolver {
   PartitionResolver();
 
  private:
-  // never implemented.
-  PartitionResolver(const PartitionResolver& other);
-  void operator=(const PartitionResolver& other);
+  PartitionResolver(const PartitionResolver& other) = delete;
+  void operator=(const PartitionResolver& other) = delete;
 };
 }  // namespace client
 }  // namespace geode

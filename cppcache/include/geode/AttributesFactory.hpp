@@ -21,6 +21,7 @@
 #define GEODE_ATTRIBUTESFACTORY_H_
 
 #include <chrono>
+#include <string>
 
 #include "geode_globals.hpp"
 #include "ExceptionTypes.hpp"
@@ -221,8 +222,8 @@ class CPPCACHE_EXPORT AttributesFactory {
    * of the region.
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setCacheLoader(const char* libpath,
-                                    const char* factoryFuncName);
+  AttributesFactory& setCacheLoader(const std::string& libpath,
+                                    const std::string& factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the writer
@@ -230,24 +231,24 @@ class CPPCACHE_EXPORT AttributesFactory {
    * @return a reference to <code>this</code>
    */
 
-  AttributesFactory& setCacheWriter(const char* libpath,
-                                    const char* factoryFuncName);
+  AttributesFactory& setCacheWriter(const std::string& libpath,
+                                    const std::string& factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the listener
    * of the region.
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setCacheListener(const char* libpath,
-                                      const char* factoryFuncName);
+  AttributesFactory& setCacheListener(const std::string& libpath,
+                                      const std::string& factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the
    * partition resolver of the region.
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setPartitionResolver(const char* libpath,
-                                          const char* factoryFuncName);
+  AttributesFactory& setPartitionResolver(const std::string& libpath,
+                                          const std::string& factoryFuncName);
 
   // EXPIRATION ATTRIBUTES
 
@@ -313,7 +314,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * @return a reference to <code>this</code>
    */
   AttributesFactory& setPersistenceManager(
-      const char* libpath, const char* factoryFuncName,
+      const std::string& libpath, const std::string& factoryFuncName,
       const std::shared_ptr<Properties>& config = nullptr);
 
   /** Sets the PersistenceManager for the next <code>RegionAttributes</code>
@@ -337,7 +338,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    */
   AttributesFactory& setInitialCapacity(int initialCapacity);
 
-  /** 
+  /**
    * Sets the entry load factor for the next <code>RegionAttributes</code>
    * created. This value is
    * used in initializing the map that holds the entries.
@@ -347,7 +348,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    */
   AttributesFactory& setLoadFactor(float loadFactor);
 
-  /** 
+  /**
    * Sets the concurrency level tof the next <code>RegionAttributes</code>
    * created. This value is used in initializing the map that holds the entries.
    * @param concurrencyLevel the concurrency level of the entry map
@@ -404,7 +405,7 @@ class CPPCACHE_EXPORT AttributesFactory {
    * or <code>""</code> then the connection pool is disabled for regions
    * using these attributes.
    */
-  AttributesFactory& setPoolName(const char* name);
+  AttributesFactory& setPoolName(const std::string& name);
 
   /**
    * Sets cloning on region

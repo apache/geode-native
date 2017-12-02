@@ -14,22 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * CacheTransactionManager2PCImpl.cpp
- *
- *  Created on: 13-Nov-2015
- *      Author: sshcherbakov
- */
+
+#include <geode/TransactionId.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/PoolManager.hpp>
 
 #include "InternalCacheTransactionManager2PCImpl.hpp"
 #include "CacheTransactionManagerImpl.hpp"
-#include <geode/TransactionId.hpp>
-#include <geode/ExceptionTypes.hpp>
 #include "TcrMessage.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "CacheRegionHelper.hpp"
-#include <geode/PoolManager.hpp>
 #include "TXCleaner.hpp"
+#include "util/exception.hpp"
 
 namespace apache {
 namespace geode {

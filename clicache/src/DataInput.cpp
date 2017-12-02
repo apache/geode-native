@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
+
 #include "begin_native.hpp"
 #include <geode/Cache.hpp>
 #include <GeodeTypeIdsImpl.hpp>
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
+#include "DataInputInternal.hpp"
 #include "end_native.hpp"
 
-#include <vcclr.h>
 
 #include "DataInput.hpp"
 #include "Cache.hpp"
@@ -49,6 +50,7 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace msclr::interop;
       namespace native = apache::geode::client;
 
       DataInput::DataInput(System::Byte* buffer, int size, Apache::Geode::Client::Cache^ cache)
@@ -1159,9 +1161,21 @@ namespace Apache
         else
         {
           return ReadUTFHuge();
-        }  // namespace Client
-      }  // namespace Geode
-    }  // namespace Apache
+        }
+      }
 
-  }
-}
+      String^ DataInput::GetPoolName()
+      {
+        try
+        {
+          return marshal_as<String^>(native::DataInputInternal::getPoolName(*m_nativeptr));
+        }
+        finally {
+          GC::KeepAlive(m_nativeptr);
+        }
+      }
+
+    }  // namespace Client
+  }  // namespace Geode
+}  // namespace Apache
+

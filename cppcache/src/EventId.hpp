@@ -110,9 +110,6 @@ class CPPCACHE_EXPORT EventId : public Cacheable {
   /** Destructor. */
   virtual ~EventId();
 
-  /** used to render as a string for logging. */
-  virtual size_t logString(char* buffer, size_t maxLength) const;
-
   int64_t getEventIdData(DataInput& input, char numberCode);
 
   inline void writeIdsData(DataOutput& output) {

@@ -254,7 +254,7 @@ class CPPCACHE_EXPORT TcrMessage {
     }
   }
 
-  const char* getPoolName();
+  const std::string& getPoolName() const;
 
   /**
    * Whether the request is meant to be

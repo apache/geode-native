@@ -85,7 +85,7 @@ CacheableDate::CacheableDate(const CacheableDate::duration& value) {
 }
 
 CacheableDate::~CacheableDate() {}
-std::shared_ptr<CacheableString> CacheableDate::toString() const {
+std::string CacheableDate::toString() const {
   char buffer[25];
   struct tm date = {0};
   time_t sec = m_timevalue / 1000;
@@ -93,16 +93,7 @@ std::shared_ptr<CacheableString> CacheableDate::toString() const {
   ACE_OS::snprintf(buffer, 24, "%d/%d/%d %d:%d:%d", date.tm_mon + 1,
                    date.tm_mday, date.tm_year + 1900, date.tm_hour, date.tm_min,
                    date.tm_sec);
-  return CacheableString::create(buffer);
-}
-
-int32_t CacheableDate::logString(char* buffer, int32_t maxLength) const {
-  struct tm date = {0};
-  time_t sec = m_timevalue / 1000;
-  ACE_OS::localtime_r(&sec, &date);
-  return ACE_OS::snprintf(buffer, maxLength,
-                          "CacheableDate (mm/dd/yyyy) ( %d/%d/%d )",
-                          date.tm_mon + 1, date.tm_mday, date.tm_year + 1900);
+  return std::string(buffer);
 }
 
 }  // namespace client

@@ -55,13 +55,21 @@ class CPPCACHE_EXPORT GeodeCache : public RegionService {
    */
   virtual const std::string& getName() const = 0;
 
-  /**
-   * Initializes the cache from an xml file
-   *
-   * @param cacheXml
-   *        Valid cache.xml file
+  /** Initialize the cache by the contents of an xml file
+   * @param  cacheXml
+   *         The xml file
+   * @throws OutOfMemoryException
+   * @throws CacheXmlException
+   *         Something went wrong while parsing the XML
+   * @throws IllegalStateException
+   *         If xml file is well-flrmed but not valid
+   * @throws RegionExistsException if a region is already in
+   *         this cache
+   * @throws CacheClosedException if the cache is closed
+   *         at the time of region creation
+   * @throws UnknownException otherwise
    */
-  virtual void initializeDeclarativeCache(const char* cacheXml) = 0;
+  virtual void initializeDeclarativeCache(const std::string& cacheXml) = 0;
 
   /**
    * Returns the distributed system that this cache was
@@ -72,13 +80,13 @@ class CPPCACHE_EXPORT GeodeCache : public RegionService {
   /**
    * Returns whether Cache saves unread fields for Pdx types.
    */
-  virtual bool getPdxIgnoreUnreadFields() = 0;
+  virtual bool getPdxIgnoreUnreadFields() const = 0;
 
   /**
    * Returns whether { @link PdxInstance} is preferred for PDX types instead of
    * C++ object.
    */
-  virtual bool getPdxReadSerialized() = 0;
+  virtual bool getPdxReadSerialized() const = 0;
 };
 }  // namespace client
 }  // namespace geode

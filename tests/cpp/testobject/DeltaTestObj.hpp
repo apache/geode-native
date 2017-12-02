@@ -73,13 +73,13 @@ class TESTOBJECT_EXPORT DeltaTestObj : public DeltaTestImpl {
   }
   void setFromDeltaCounter(int counter) { fromDeltaCounter = counter; }
   void setToDeltaCounter(int counter) { toDeltaCounter = counter; }
-  std::shared_ptr<CacheableString> toString() const {
+  std::string toString() const {
     char buf[102500];
     sprintf(buf,
             "DeltaTestObj: toDeltaCounter = %lld fromDeltaCounter = %lld\n",
             toDeltaCounter, fromDeltaCounter);
     // DeltaTestImpl::toString();
-    return CacheableString::create(buf);
+    return buf;
   }
   static Serializable* create() { return new DeltaTestObj(); }
   int32_t classId() const { return 32; }

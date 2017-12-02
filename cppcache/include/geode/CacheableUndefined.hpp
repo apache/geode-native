@@ -38,12 +38,12 @@ class CPPCACHE_EXPORT CacheableUndefined : public Cacheable {
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const;
+  virtual void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object
    **/
-  virtual void fromData(DataInput& input);
+  virtual void fromData(DataInput& input) override;
 
   /**
    * @brief creation function for undefined query result
@@ -57,20 +57,20 @@ class CPPCACHE_EXPORT CacheableUndefined : public Cacheable {
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int32_t classId() const;
+  virtual int32_t classId() const override;
 
   /**
    *@brief return the typeId byte of the instance being serialized.
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int8_t typeId() const;
+  virtual int8_t typeId() const override;
 
   /**
    * @brief Return the data serialization fixed ID size type for internal use.
    * @since GFE 5.7
    */
-  virtual int8_t DSFID() const;
+  virtual int8_t DSFID() const override;
 
   /**
    * Factory method for creating the default instance of CacheableUndefined.
@@ -79,16 +79,16 @@ class CPPCACHE_EXPORT CacheableUndefined : public Cacheable {
     return std::make_shared<CacheableUndefined>();
   }
 
-  virtual uint32_t objectSize() const;
+  virtual uint32_t objectSize() const override;
 
  protected:
   /** Constructor, used for deserialization. */
-  inline CacheableUndefined() {}
+  inline CacheableUndefined() = default;
 
  private:
   // never implemented.
-  CacheableUndefined& operator=(const CacheableUndefined& other);
-  CacheableUndefined(const CacheableUndefined& other);
+  CacheableUndefined& operator=(const CacheableUndefined& other) = delete;
+  CacheableUndefined(const CacheableUndefined& other) = delete;
 
   FRIEND_STD_SHARED_PTR(CacheableUndefined)
 };

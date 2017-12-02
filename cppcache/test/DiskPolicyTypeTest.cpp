@@ -22,24 +22,24 @@
 using namespace apache::geode::client;
 
 TEST(DiskPolicyTypeTest, VerifyOrdinalAndNameSymmetryForNone) {
-  const char* name = DiskPolicyType::fromOrdinal(0);
-  EXPECT_STREQ("none", name) << "Correct name for none";
-  const DiskPolicyType::PolicyType policyType = DiskPolicyType::fromName(name);
+  auto&& name = DiskPolicyType::fromOrdinal(0);
+  EXPECT_EQ("none", name) << "Correct name for none";
+  auto&& policyType = DiskPolicyType::fromName(name);
   EXPECT_EQ(DiskPolicyType::NONE, policyType) << "Correct policy type for none";
 }
 
 TEST(DiskPolicyTypeTest, VerifyOrdinalAndNameSymmetryForOverflows) {
-  const char* name = DiskPolicyType::fromOrdinal(1);
-  EXPECT_STREQ("overflows", name) << "Correct name for overflows";
-  const DiskPolicyType::PolicyType policyType = DiskPolicyType::fromName(name);
+  auto&& name = DiskPolicyType::fromOrdinal(1);
+  EXPECT_EQ("overflows", name) << "Correct name for overflows";
+  auto&& policyType = DiskPolicyType::fromName(name);
   EXPECT_EQ(DiskPolicyType::OVERFLOWS, policyType)
       << "Correct policy type for overflows";
 }
 
 TEST(DiskPolicyTypeTest, VerifyOrdinalAndNameSymmetryForPersist) {
-  const char* name = DiskPolicyType::fromOrdinal(2);
-  EXPECT_STREQ("persist", name) << "Correct name for persist";
-  const DiskPolicyType::PolicyType policyType = DiskPolicyType::fromName(name);
+  auto&& name = DiskPolicyType::fromOrdinal(2);
+  EXPECT_EQ("persist", name) << "Correct name for persist";
+  auto&& policyType = DiskPolicyType::fromName(name);
   EXPECT_EQ(DiskPolicyType::PERSIST, policyType)
       << "Correct policy type for persist";
 }

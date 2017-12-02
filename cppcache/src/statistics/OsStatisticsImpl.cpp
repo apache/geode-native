@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
+#include "ace/OS.h"
+
 #include "OsStatisticsImpl.hpp"
 #include "StatisticsTypeImpl.hpp"
 #include "StatisticDescriptorImpl.hpp"
 
-#include "ace/OS.h"
-
-using namespace apache::geode::statistics;
+namespace apache {
+namespace geode {
+namespace statistics {
 
 /**
  * An implementation of {@link Statistics} that stores its statistics
@@ -42,9 +44,9 @@ int64_t OsStatisticsImpl::calcNumericId(StatisticsFactory* system,
   return result;
 }
 
-const char* OsStatisticsImpl::calcTextId(StatisticsFactory* system,
-                                         const char* userValue) {
-  if (userValue != nullptr && strcmp(userValue, "") != 0) {
+std::string OsStatisticsImpl::calcTextId(StatisticsFactory* system,
+                                         const std::string& userValue) {
+  if (!userValue.empty()) {
     return userValue;
   } else {
     if (system != nullptr) {
@@ -73,16 +75,17 @@ const char* OsStatisticsImpl::calcTextId(StatisticsFactory* system,
  *        statistics are stored (and collected) in local memory
  */
 OsStatisticsImpl::OsStatisticsImpl(StatisticsType* typeArg,
-                                   const char* textIdArg, int64_t numericIdArg,
-                                   int64_t uniqueIdArg,
+                                   const std::string& textIdArg,
+                                   int64_t numericIdArg, int64_t uniqueIdArg,
                                    StatisticsFactory* system)
+    : textId(calcTextId(system, textIdArg)),
+      statsType(dynamic_cast<StatisticsTypeImpl*>(typeArg))
 
 {
-  this->textId = calcTextId(system, textIdArg);
   this->numericId = calcNumericId(system, numericIdArg);
   this->uniqueId = uniqueIdArg;
   this->closed = false;
-  statsType = dynamic_cast<StatisticsTypeImpl*>(typeArg);
+  ;
   /* adongre
    * CID 28981: Uninitialized pointer field (UNINIT_CTOR)
    */
@@ -143,9 +146,9 @@ OsStatisticsImpl::~OsStatisticsImpl() {
 
 //////////////////////  Instance Methods  //////////////////////
 
-bool OsStatisticsImpl::isShared() { return false; }
+bool OsStatisticsImpl::isShared() const { return false; }
 
-bool OsStatisticsImpl::isAtomic() {
+bool OsStatisticsImpl::isAtomic() const {
   return false;  // will always be false for this class
 }
 
@@ -205,7 +208,7 @@ void OsStatisticsImpl::_setDouble(int32_t offset, double value) {
 
 ///////////////////////  get() Methods  ///////////////////////
 
-int32_t OsStatisticsImpl::_getInt(int32_t offset) {
+int32_t OsStatisticsImpl::_getInt(int32_t offset) const {
   if (offset >= statsType->getIntStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -217,7 +220,7 @@ int32_t OsStatisticsImpl::_getInt(int32_t offset) {
   return intStorage[offset];
 }
 
-int64_t OsStatisticsImpl::_getLong(int32_t offset) {
+int64_t OsStatisticsImpl::_getLong(int32_t offset) const {
   if (offset >= statsType->getLongStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -229,7 +232,7 @@ int64_t OsStatisticsImpl::_getLong(int32_t offset) {
   return longStorage[offset];
 }
 
-double OsStatisticsImpl::_getDouble(int32_t offset) {
+double OsStatisticsImpl::_getDouble(int32_t offset) const {
   if (offset >= statsType->getDoubleStatCount()) {
     char s[128] = {'\0'};
     ACE_OS::snprintf(
@@ -242,9 +245,9 @@ double OsStatisticsImpl::_getDouble(int32_t offset) {
   return doubleStorage[offset];
 }
 
-int64_t OsStatisticsImpl::_getRawBits(StatisticDescriptor* statDscp) {
-  StatisticDescriptorImpl* stat =
-      dynamic_cast<StatisticDescriptorImpl*>(statDscp);
+int64_t OsStatisticsImpl::_getRawBits(
+    const StatisticDescriptor* statDscp) const {
+  const auto stat = dynamic_cast<const StatisticDescriptorImpl*>(statDscp);
   // dynamic cast is giving problems , so a normal cast was used
   // StatisticDescriptorImpl* stat  = (StatisticDescriptorImpl*)statDscp;
   switch (stat->getTypeCode()) {
@@ -320,37 +323,39 @@ double OsStatisticsImpl::_incDouble(int32_t offset, double delta) {
 
 //////////////////////  Instance Methods  //////////////////////
 
-int32_t OsStatisticsImpl::nameToId(const char* name) {
+int32_t OsStatisticsImpl::nameToId(const std::string& name) const {
   return statsType->nameToId(name);
 }
 
-StatisticDescriptor* OsStatisticsImpl::nameToDescriptor(const char* name) {
+StatisticDescriptor* OsStatisticsImpl::nameToDescriptor(
+    const std::string& name) const {
   return statsType->nameToDescriptor(name);
 }
 
-bool OsStatisticsImpl::isClosed() { return closed; }
+bool OsStatisticsImpl::isClosed() const { return closed; }
 
-bool OsStatisticsImpl::isOpen() { return !closed; }
+bool OsStatisticsImpl::isOpen() const { return !closed; }
 
 ////////////////////////  attribute Methods  ///////////////////////
 
-StatisticsType* OsStatisticsImpl::getType() { return statsType; }
+StatisticsType* OsStatisticsImpl::getType() const { return statsType; }
 
-const char* OsStatisticsImpl::getTextId() { return textId; }
+const std::string& OsStatisticsImpl::getTextId() const { return textId; }
 
-int64_t OsStatisticsImpl::getNumericId() { return numericId; }
+int64_t OsStatisticsImpl::getNumericId() const { return numericId; }
 
 /**
  * Gets the unique id for this resource
  */
-int64_t OsStatisticsImpl::getUniqueId() { return uniqueId; }
+int64_t OsStatisticsImpl::getUniqueId() const { return uniqueId; }
 ////////////////////////  set() Methods  ///////////////////////
 
-void OsStatisticsImpl::setInt(char* name, int32_t value) {
+void OsStatisticsImpl::setInt(const std::string& name, int32_t value) {
   setInt(nameToDescriptor(name), value);
 }
 
-void OsStatisticsImpl::setInt(StatisticDescriptor* descriptor, int32_t value) {
+void OsStatisticsImpl::setInt(const StatisticDescriptor* descriptor,
+                              int32_t value) {
   setInt(getIntId(descriptor), value);
 }
 
@@ -361,11 +366,12 @@ void OsStatisticsImpl::setInt(int32_t id, int32_t value) {
 }
 ////////////////////////////////LONG METHODS/////////////////////////////
 
-void OsStatisticsImpl::setLong(char* name, int64_t value) {
+void OsStatisticsImpl::setLong(const std::string& name, int64_t value) {
   setLong(nameToDescriptor(name), value);
 }
 
-void OsStatisticsImpl::setLong(StatisticDescriptor* descriptor, int64_t value) {
+void OsStatisticsImpl::setLong(const StatisticDescriptor* descriptor,
+                               int64_t value) {
   setLong(getLongId(descriptor), value);
 }
 
@@ -376,11 +382,11 @@ void OsStatisticsImpl::setLong(int32_t id, int64_t value) {
 }
 ////////////////////////////////////////DOUBLE METHODS////////////////////
 
-void OsStatisticsImpl::setDouble(char* name, double value) {
+void OsStatisticsImpl::setDouble(const std::string& name, double value) {
   setDouble(nameToDescriptor(name), value);
 }
 
-void OsStatisticsImpl::setDouble(StatisticDescriptor* descriptor,
+void OsStatisticsImpl::setDouble(const StatisticDescriptor* descriptor,
                                  double value) {
   setDouble(getDoubleId(descriptor), value);
 }
@@ -391,15 +397,15 @@ void OsStatisticsImpl::setDouble(int32_t id, double value) {
   }
 }
 //////////////////////////Get INT Methods/////////////////////////////////////
-int32_t OsStatisticsImpl::getInt(char* name) {
+int32_t OsStatisticsImpl::getInt(const std::string& name) const {
   return getInt(nameToDescriptor(name));
 }
 
-int32_t OsStatisticsImpl::getInt(StatisticDescriptor* descriptor) {
+int32_t OsStatisticsImpl::getInt(const StatisticDescriptor* descriptor) const {
   return getInt(getIntId(descriptor));
 }
 
-int32_t OsStatisticsImpl::getInt(int32_t id) {
+int32_t OsStatisticsImpl::getInt(int32_t id) const {
   if (isOpen()) {
     return _getInt(id);
   } else {
@@ -411,15 +417,15 @@ int32_t OsStatisticsImpl::getInt(int32_t id) {
 /////////////////////////////////////////Get Long
 /// Methods///////////////////////////////
 
-int64_t OsStatisticsImpl::getLong(char* name) {
+int64_t OsStatisticsImpl::getLong(const std::string& name) const {
   return getLong(nameToDescriptor(name));
 }
 
-int64_t OsStatisticsImpl::getLong(StatisticDescriptor* descriptor) {
+int64_t OsStatisticsImpl::getLong(const StatisticDescriptor* descriptor) const {
   return getLong(getLongId(descriptor));
 }
 
-int64_t OsStatisticsImpl::getLong(int32_t id) {
+int64_t OsStatisticsImpl::getLong(int32_t id) const {
   if (isOpen()) {
     return _getLong(id);
   } else {
@@ -428,15 +434,16 @@ int64_t OsStatisticsImpl::getLong(int32_t id) {
 }
 /////////////////////////////////Get DOUBLE Methods
 /////////////////////////////////
-double OsStatisticsImpl::getDouble(char* name) {
+double OsStatisticsImpl::getDouble(const std::string& name) const {
   return getDouble(nameToDescriptor(name));
 }
 
-double OsStatisticsImpl::getDouble(StatisticDescriptor* descriptor) {
+double OsStatisticsImpl::getDouble(
+    const StatisticDescriptor* descriptor) const {
   return getDouble(getDoubleId(descriptor));
 }
 
-double OsStatisticsImpl::getDouble(int32_t id) {
+double OsStatisticsImpl::getDouble(int32_t id) const {
   if (isOpen()) {
     return _getDouble(id);
   } else {
@@ -446,7 +453,8 @@ double OsStatisticsImpl::getDouble(int32_t id) {
 //////////////////////////////Get RAW BIT
 /// methods////////////////////////////////
 
-int64_t OsStatisticsImpl::getRawBits(StatisticDescriptor* descriptor) {
+int64_t OsStatisticsImpl::getRawBits(
+    const StatisticDescriptor* descriptor) const {
   if (isOpen()) {
     return _getRawBits(descriptor);
   } else {
@@ -454,16 +462,12 @@ int64_t OsStatisticsImpl::getRawBits(StatisticDescriptor* descriptor) {
   }
 }
 
-int64_t OsStatisticsImpl::getRawBits(char* name) {
-  return getRawBits(nameToDescriptor(name));
-}
-
 ///////////////////////// INC INT //////////////////////////////////////////////
-int32_t OsStatisticsImpl::incInt(char* name, int32_t delta) {
+int32_t OsStatisticsImpl::incInt(const std::string& name, int32_t delta) {
   return incInt(nameToDescriptor(name), delta);
 }
 
-int32_t OsStatisticsImpl::incInt(StatisticDescriptor* descriptor,
+int32_t OsStatisticsImpl::incInt(const StatisticDescriptor* descriptor,
                                  int32_t delta) {
   return incInt(getIntId(descriptor), delta);
 }
@@ -478,11 +482,11 @@ int32_t OsStatisticsImpl::incInt(int32_t id, int32_t delta) {
 
 //// //////////////// INC LONG ///////////////////////////////////
 
-int64_t OsStatisticsImpl::incLong(char* name, int64_t delta) {
+int64_t OsStatisticsImpl::incLong(const std::string& name, int64_t delta) {
   return incLong(nameToDescriptor(name), delta);
 }
 
-int64_t OsStatisticsImpl::incLong(StatisticDescriptor* descriptor,
+int64_t OsStatisticsImpl::incLong(const StatisticDescriptor* descriptor,
                                   int64_t delta) {
   return incLong(getLongId(descriptor), delta);
 }
@@ -496,11 +500,11 @@ int64_t OsStatisticsImpl::incLong(int32_t id, int64_t delta) {
 }
 ////////////////////////////  INC DOUBLE //////////////////////////////////////
 
-double OsStatisticsImpl::incDouble(char* name, double delta) {
+double OsStatisticsImpl::incDouble(const std::string& name, double delta) {
   return incDouble(nameToDescriptor(name), delta);
 }
 
-double OsStatisticsImpl::incDouble(StatisticDescriptor* descriptor,
+double OsStatisticsImpl::incDouble(const StatisticDescriptor* descriptor,
                                    double delta) {
   return incDouble(getDoubleId(descriptor), delta);
 }
@@ -514,20 +518,27 @@ double OsStatisticsImpl::incDouble(int32_t id, double delta) {
 }
 /////////////////////////// GET ID /////////////////////////////////////////
 
-int32_t OsStatisticsImpl::getIntId(StatisticDescriptor* descriptor) {
-  StatisticDescriptorImpl* realDescriptor =
-      dynamic_cast<StatisticDescriptorImpl*>(descriptor);
+int32_t OsStatisticsImpl::getIntId(
+    const StatisticDescriptor* descriptor) const {
+  const auto realDescriptor =
+      dynamic_cast<const StatisticDescriptorImpl*>(descriptor);
   return realDescriptor->checkInt();
 }
 
-int32_t OsStatisticsImpl::getLongId(StatisticDescriptor* descriptor) {
-  StatisticDescriptorImpl* realDescriptor =
-      dynamic_cast<StatisticDescriptorImpl*>(descriptor);
+int32_t OsStatisticsImpl::getLongId(
+    const StatisticDescriptor* descriptor) const {
+  const auto realDescriptor =
+      dynamic_cast<const StatisticDescriptorImpl*>(descriptor);
   return realDescriptor->checkLong();
 }
 
-int32_t OsStatisticsImpl::getDoubleId(StatisticDescriptor* descriptor) {
-  StatisticDescriptorImpl* realDescriptor =
-      dynamic_cast<StatisticDescriptorImpl*>(descriptor);
+int32_t OsStatisticsImpl::getDoubleId(
+    const StatisticDescriptor* descriptor) const {
+  const auto realDescriptor =
+      dynamic_cast<const StatisticDescriptorImpl*>(descriptor);
   return realDescriptor->checkDouble();
 }
+
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

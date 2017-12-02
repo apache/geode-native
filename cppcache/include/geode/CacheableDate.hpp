@@ -57,12 +57,12 @@ class CPPCACHE_EXPORT CacheableDate : public CacheableKey {
   /**
    * @brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const;
+  virtual void toData(DataOutput& output) const override;
 
   /**
    * @brief deserialize this object
    **/
-  virtual void fromData(DataInput& input);
+  virtual void fromData(DataInput& input) override;
 
   /**
    * @brief creation function for dates.
@@ -74,20 +74,20 @@ class CPPCACHE_EXPORT CacheableDate : public CacheableKey {
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int32_t classId() const;
+  virtual int32_t classId() const override;
 
   /**
    *@brief return the typeId byte of the instance being serialized.
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int8_t typeId() const;
+  virtual int8_t typeId() const override;
 
   /** @return the size of the object in bytes */
-  virtual uint32_t objectSize() const { return sizeof(CacheableDate); }
+  virtual uint32_t objectSize() const override { return sizeof(CacheableDate); }
 
   /** @return true if this key matches other. */
-  virtual bool operator==(const CacheableKey& other) const;
+  virtual bool operator==(const CacheableKey& other) const override;
 
   /** @return milliseconds elapsed since January 1, 1970, 00:00:00 GMT. */
   virtual int64_t milliseconds() const;
@@ -98,7 +98,7 @@ class CPPCACHE_EXPORT CacheableDate : public CacheableKey {
    * milliseconds() method.
    *
    * @return the hashcode for this object. */
-  virtual int32_t hashcode() const;
+  virtual int32_t hashcode() const override;
 
   operator time_t() const { return m_timevalue / 1000; }
   operator time_point() const {
@@ -125,13 +125,10 @@ class CPPCACHE_EXPORT CacheableDate : public CacheableKey {
     return std::make_shared<CacheableDate>(value);
   }
 
-  virtual std::shared_ptr<CacheableString> toString() const;
+  virtual std::string toString() const override;
 
   /** Destructor */
   virtual ~CacheableDate();
-
-  /** used to render as a string for logging. */
-  virtual int32_t logString(char* buffer, int32_t maxLength) const;
 
  protected:
   /** Constructor, used for deserialization. */

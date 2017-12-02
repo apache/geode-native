@@ -26,7 +26,7 @@ using namespace testobject;
 
 ChildPdx::~ChildPdx() {}
 
-void ChildPdx::toData(std::shared_ptr<PdxWriter> pw) {
+void ChildPdx::toData(std::shared_ptr<PdxWriter> pw) const {
   LOGDEBUG("ChildPdx::toData() Started......");
 
   pw->writeInt("m_childId", m_childId);
@@ -47,11 +47,11 @@ void ChildPdx::fromData(std::shared_ptr<PdxReader> pr) {
 
   LOGINFO("ChildPdx::fromData() end...");
 }
-std::shared_ptr<CacheableString> ChildPdx::toString() const {
+std::string ChildPdx::toString() const {
   char idbuf[1024];
   sprintf(idbuf, "ChildPdx: [m_childId=%d] [ m_childName=%s ]", m_childId,
           m_childName);
-  return CacheableString::create(idbuf);
+  return idbuf;
 }
 
 bool ChildPdx::equals(ChildPdx& other) const {
@@ -65,9 +65,8 @@ bool ChildPdx::equals(ChildPdx& other) const {
   if ((strcmp(m_childName, other.m_childName) == 0) &&
       (m_childId == other.m_childId) &&
       (m_enum->getEnumOrdinal() == other.m_enum->getEnumOrdinal()) &&
-      (strcmp(m_enum->getEnumClassName(), other.m_enum->getEnumClassName()) ==
-       0) &&
-      (strcmp(m_enum->getEnumName(), other.m_enum->getEnumName()) == 0)) {
+      (m_enum->getEnumClassName() == other.m_enum->getEnumClassName()) &&
+      (m_enum->getEnumName() == other.m_enum->getEnumName())) {
     LOGINFO("ChildPdx::equals2");
     return true;
   }
@@ -76,7 +75,7 @@ bool ChildPdx::equals(ChildPdx& other) const {
 
 ParentPdx::~ParentPdx() {}
 
-void ParentPdx::toData(std::shared_ptr<PdxWriter> pw) {
+void ParentPdx::toData(std::shared_ptr<PdxWriter> pw) const {
   LOGDEBUG("ParentPdx::toData() Started......");
 
   pw->writeInt("m_parentId", m_parentId);
@@ -130,69 +129,69 @@ void ParentPdx::fromData(std::shared_ptr<PdxReader> pr) {
 
   LOGINFO("ParentPdx::fromData() end...");
 }
- std::shared_ptr<CacheableString> ParentPdx::toString() const {
-   char idbuf[1024];
-   sprintf(idbuf,
-           "ParentPdx: [m_parentId=%d] [ m_parentName=%s ] [ "
-           "m_wideparentName=%ls ] [m_childPdx = %s ] ",
-           m_parentId, m_parentName, m_wideparentName,
-           m_childPdx->toString()->asChar());
-   return CacheableString::create(idbuf);
- }
 
- bool ParentPdx::equals(ParentPdx& other, bool isPdxReadSerialized) const {
-   LOGINFO("ParentPdx::equals");
-   ParentPdx* ot = dynamic_cast<ParentPdx*>(&other);
-   if (ot == NULL) {
-     LOGINFO("ParentPdx::equals1");
-     return false;
-   }
-   if ((strcmp(m_parentName, other.m_parentName) == 0) &&
-       (wcscmp(m_wideparentName, other.m_wideparentName) == 0) &&
-       (m_parentId == other.m_parentId) &&
-       (m_enum->getEnumOrdinal() == other.m_enum->getEnumOrdinal()) &&
-       (strcmp(m_enum->getEnumClassName(), other.m_enum->getEnumClassName()) ==
-        0) &&
-       (strcmp(m_enum->getEnumName(), other.m_enum->getEnumName()) == 0) &&
-       m_arrLength == other.m_arrLength &&
-       m_charArrayLen == other.m_charArrayLen &&
-       m_wcharArrayLen == other.m_wcharArrayLen && m_char == other.m_char &&
-       m_wideChar == other.m_wideChar) {
-     LOGINFO("ParentPdx::equals2");
+std::string ParentPdx::toString() const {
+  char idbuf[1024];
+  sprintf(idbuf,
+          "ParentPdx: [m_parentId=%d] [ m_parentName=%s ] [ "
+          "m_wideparentName=%ls ] [m_childPdx = %s ] ",
+          m_parentId, m_parentName, m_wideparentName,
+          m_childPdx->toString().c_str());
+  return idbuf;
+}
 
-     for (int i = 0; i < m_arrLength; i++) {
-       if ((wcscmp(m_wideparentArrayName[i], other.m_wideparentArrayName[i]) !=
-            0)) {
-         LOGINFO("ParentPdx::equals2 not wcscmp");
-         return false;
-       }
-     }
+bool ParentPdx::equals(ParentPdx& other, bool isPdxReadSerialized) const {
+  LOGINFO("ParentPdx::equals");
+  ParentPdx* ot = dynamic_cast<ParentPdx*>(&other);
+  if (ot == NULL) {
+    LOGINFO("ParentPdx::equals1");
+    return false;
+  }
+  if ((strcmp(m_parentName, other.m_parentName) == 0) &&
+      (wcscmp(m_wideparentName, other.m_wideparentName) == 0) &&
+      (m_parentId == other.m_parentId) &&
+      (m_enum->getEnumOrdinal() == other.m_enum->getEnumOrdinal()) &&
+      (m_enum->getEnumClassName() == other.m_enum->getEnumClassName()) &&
+      (m_enum->getEnumName() == other.m_enum->getEnumName()) &&
+      m_arrLength == other.m_arrLength &&
+      m_charArrayLen == other.m_charArrayLen &&
+      m_wcharArrayLen == other.m_wcharArrayLen && m_char == other.m_char &&
+      m_wideChar == other.m_wideChar) {
+    LOGINFO("ParentPdx::equals2");
 
-     for (int j = 0; j < m_charArrayLen; j++) {
-       if (m_charArray[j] != other.m_charArray[j]) {
-         LOGINFO("ParentPdx::equals not char array ");
-         return false;
-       }
-     }
+    for (int i = 0; i < m_arrLength; i++) {
+      if ((wcscmp(m_wideparentArrayName[i], other.m_wideparentArrayName[i]) !=
+           0)) {
+        LOGINFO("ParentPdx::equals2 not wcscmp");
+        return false;
+      }
+    }
 
-     for (int k = 0; k < m_wcharArrayLen; k++) {
-       if (m_wideCharArray[k] != other.m_wideCharArray[k]) {
-         LOGINFO("ParentPdx::equals not wide char array ");
-         return false;
-       }
-     }
+    for (int j = 0; j < m_charArrayLen; j++) {
+      if (m_charArray[j] != other.m_charArray[j]) {
+        LOGINFO("ParentPdx::equals not char array ");
+        return false;
+      }
+    }
 
-     if (!isPdxReadSerialized) {
-       ChildPdx* ch1 = dynamic_cast<ChildPdx*>(m_childPdx.get());
-       ChildPdx* ch2 = dynamic_cast<ChildPdx*>(other.m_childPdx.get());
+    for (int k = 0; k < m_wcharArrayLen; k++) {
+      if (m_wideCharArray[k] != other.m_wideCharArray[k]) {
+        LOGINFO("ParentPdx::equals not wide char array ");
+        return false;
+      }
+    }
 
-       if (ch1->equals(*ch2)) {
-         LOGINFO("ParentPdx::equals3");
-         return true;
-       }
-     }
-     return true;
-   }
-   LOGINFO("ParentPdx:: not equals");
-   return false;
+    if (!isPdxReadSerialized) {
+      ChildPdx* ch1 = dynamic_cast<ChildPdx*>(m_childPdx.get());
+      ChildPdx* ch2 = dynamic_cast<ChildPdx*>(other.m_childPdx.get());
+
+      if (ch1->equals(*ch2)) {
+        LOGINFO("ParentPdx::equals3");
+        return true;
+      }
+    }
+    return true;
+  }
+  LOGINFO("ParentPdx:: not equals");
+  return false;
 }

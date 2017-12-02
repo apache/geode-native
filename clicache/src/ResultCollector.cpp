@@ -16,8 +16,8 @@
  */
 
 
+
 #include "ResultCollector.hpp"
-#include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
 #include "TimeUtils.hpp"

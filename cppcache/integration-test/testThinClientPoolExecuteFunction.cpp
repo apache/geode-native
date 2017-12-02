@@ -175,7 +175,7 @@ bool validateResultTypeAndAllowUserFunctionExecutionException(
       return true;
     } else {
       LOGINFO("Unexpected result type %s for index %d.",
-              result->toString()->asChar(), index);
+              result->toString().c_str(), index);
     }
   }
 
@@ -192,7 +192,7 @@ bool validateResultTypeIsUserFunctionExecutionException(
     return true;
   } else {
     LOGINFO("Unexpected result type %s for index %d.",
-            result->toString()->asChar(), index);
+            result->toString().c_str(), index);
   }
 
   return false;
@@ -258,7 +258,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       auto value = CacheableString::create(buf);
 
       sprintf(buf, "KEY--%d", i);
-      auto key = CacheableKey::create(buf);
+      auto key = CacheableString::create(buf);
       regPtr0->put(key, value);
     }
     SLEEP(10000);  // let the put finish
@@ -611,7 +611,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         auto value = CacheableString::create(buf);
 
         sprintf(buf, "KEY--%d", i);
-        auto key = CacheableKey::create(buf);
+        auto key = CacheableString::create(buf);
         regPtr0->put(key, value);
       }
 
@@ -732,7 +732,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
               "get result[%d]=%s", i,
               std::dynamic_pointer_cast<PdxTypes8>(resultListPdx->operator[](i))
                   ->toString()
-                  ->asChar());
+                  .c_str());
           auto pdxObj2 = std::dynamic_pointer_cast<PdxTypes8>(
               resultListPdx->operator[](i));
           ASSERT(pdxobj->equals(pdxObj2) == true,
@@ -805,7 +805,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                   std::dynamic_pointer_cast<PdxTypes8>(
                       resultListPdxInstance->operator[](i))
                       ->toString()
-                      ->asChar());
+                      .c_str());
           auto pdxObj2 = std::dynamic_pointer_cast<PdxTypes8>(
               resultListPdxInstance->operator[](i));
 
@@ -824,7 +824,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         auto value = CacheableString::create(buf);
 
         sprintf(buf, "KEY--%d", i);
-        auto key = CacheableKey::create(buf);
+        auto key = CacheableString::create(buf);
         regPtr0->put(key, value);
       }
       SLEEP(10000);  // let the put finish
@@ -849,14 +849,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
         resultList->clear();
-        for (unsigned item = 0;
-             item < static_cast<uint32_t>(executeFunctionResult->size());
-             item++) {
-          auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
-              executeFunctionResult->operator[](item));
-          for (unsigned pos = 0; pos < static_cast<uint32_t>(arrayList->size());
-               pos++) {
-            resultList->push_back(arrayList->operator[](pos));
+        for (auto&& result : *executeFunctionResult) {
+          for (auto&& entry :
+               *std::dynamic_pointer_cast<CacheableArrayList>(result)) {
+            resultList->push_back(entry);
           }
         }
         sprintf(buf, "get result count = %zd", resultList->size());
@@ -864,10 +860,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         printf("resultlist size: %zd", resultList->size());
         ASSERT(resultList->size() == 51,
                "get executeFunctionResult on all servers count is not 51");
-        for (int32_t i = 0; i < resultList->size(); i++) {
-          sprintf(buf, "result[%d] is null\n", i);
+        for (size_t i = 0; i < resultList->size(); i++) {
+          sprintf(buf, "result[%zd] is null\n", i);
           ASSERT(resultList->operator[](i) != nullptr, buf);
-          sprintf(buf, "get result[%d]=%s", i,
+          sprintf(buf, "get result[%zd]=%s", i,
                   std::dynamic_pointer_cast<CacheableString>(
                       resultList->operator[](i))
                       ->asChar());

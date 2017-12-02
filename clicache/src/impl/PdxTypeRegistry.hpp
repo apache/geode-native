@@ -16,9 +16,10 @@
  */
 
 #pragma once
-#include "begin_native.hpp"
+
+#include "../begin_native.hpp"
 #include "SerializationRegistry.hpp"
-#include "end_native.hpp"
+#include "../end_native.hpp"
 #include "PdxType.hpp"
 #include "PdxRemotePreservedData.hpp"
 #include "../IPdxSerializable.hpp"
@@ -67,9 +68,9 @@ namespace Apache
 
            void clear();
 
-            Int32 GetPDXIdForType(Type^ type, const char* poolname, PdxType^ nType, bool checkIfThere);
+            Int32 GetPDXIdForType(Type^ type, String^ poolname, PdxType^ nType, bool checkIfThere);
 
-            Int32 GetPDXIdForType(PdxType^ type, const char* poolname);
+            Int32 GetPDXIdForType(PdxType^ type, String^ poolname);
 
             Int32 GetEnumValue(EnumInfo^ ei);
 

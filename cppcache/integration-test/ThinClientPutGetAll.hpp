@@ -79,11 +79,11 @@ void verifyGetAll(std::shared_ptr<Region> region, bool addToLocalCache,
     char buf[2048];
     for (const auto& iter : valuesMap) {
       const auto key = std::dynamic_pointer_cast<CacheableKey>(iter.first);
-      const auto actualKey = key->toString()->asChar();
+      const auto actualKey = key->toString().c_str();
       const auto& mVal = iter.second;
       if (mVal != nullptr) {
         const auto expectedVal = expected[actualKey].c_str();
-        const auto actualVal = mVal->toString()->asChar();
+        const auto actualVal = mVal->toString().c_str();
         sprintf(buf, "value from map %s , expected value %s ", actualVal,
                 expectedVal);
         LOG(buf);

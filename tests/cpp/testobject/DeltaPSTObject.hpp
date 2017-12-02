@@ -61,15 +61,15 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
   DeltaPSTObject() : Delta(nullptr), timestamp(0), valueData(nullptr) {}
   DeltaPSTObject(int size, bool encodeKey, bool encodeTimestamp);
   virtual ~DeltaPSTObject() {}
-  void toData(apache::geode::client::DataOutput& output) const;
-  void fromData(apache::geode::client::DataInput& input);
-  void fromDelta(DataInput& input);
-  void toDelta(DataOutput& output) const;
-  std::shared_ptr<CacheableString> toString() const;
-  bool hasDelta() { return true; }
-  int32_t classId() const { return 42; }
+  void toData(apache::geode::client::DataOutput& output) const override;
+  void fromData(apache::geode::client::DataInput& input) override;
+  void fromDelta(DataInput& input) override;
+  void toDelta(DataOutput& output) const override;
+  std::string toString() const override;
+  bool hasDelta() const override { return true; }
+  int32_t classId() const override { return 42; }
 
-  uint32_t objectSize() const {
+  uint32_t objectSize() const override {
     uint32_t objectSize = sizeof(DeltaPSTObject);
     return objectSize;
   }
@@ -87,10 +87,11 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
     startTime.to_usec(tusec);
     timestamp = tusec * 1000;
   }
-  std::shared_ptr<Delta> clone() {
-    // TODO shared_ptr - this isn't actually cloning.
-    return shared_from_this();
-  }
+
+  //  std::shared_ptr<Delta> clone() const override {
+  //    // TODO shared_ptr - this isn't actually cloning.
+  //    return shared_from_this();
+  //  }
 
   static Serializable* createDeserializable() { return new DeltaPSTObject(); }
 };

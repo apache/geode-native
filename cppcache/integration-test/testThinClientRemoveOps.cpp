@@ -311,7 +311,7 @@ void doGetAgain(const char* name, const char* key, const char* value) {
   auto keyPtr = CacheableKey::create(key);
 
   auto regPtr = getHelper()->getRegion(name);
-  fprintf(stdout, "get  region name%s\n", regPtr->getName());
+  fprintf(stdout, "get  region name%s\n", regPtr->getName().c_str());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
 
@@ -343,7 +343,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   auto keyPtr = CacheableKey::create(key);
 
   auto regPtr = getHelper()->getRegion(name);
-  fprintf(stdout, "netsearch  region %s\n", regPtr->getName());
+  fprintf(stdout, "netsearch  region %s\n", regPtr->getName().c_str());
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
 
@@ -1393,7 +1393,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
     regPtr0->localCreate(keyObject3, "testString");
     if (regPtr0->containsKey(keyObject3)) {
       auto strVal1 = regPtr0->get(keyObject3);
-      ASSERT(strcmp(strVal1->toString()->asChar(), "testString") == 0,
+      ASSERT(strcmp(strVal1->toString().c_str(), "testString") == 0,
              "strVal should be testString.");
     }
     try {

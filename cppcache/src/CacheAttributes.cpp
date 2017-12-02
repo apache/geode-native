@@ -15,46 +15,31 @@
  * limitations under the License.
  */
 
-#include <Utils.hpp>
 #include <string>
 #include <cstdlib>
+
 #include <geode/GeodeTypeIds.hpp>
 #include <geode/CacheAttributes.hpp>
 
-using namespace apache::geode::client;
+#include "Utils.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
+
 CacheAttributes::CacheAttributes()
     : m_redundancyLevel(0), m_endpoints(nullptr), m_cacheMode(false) {}
 
-CacheAttributes::CacheAttributes(const CacheAttributes& rhs)
-    : m_redundancyLevel(rhs.m_redundancyLevel) {
-  copyStringAttribute(m_endpoints, rhs.m_endpoints);
-  m_cacheMode = rhs.m_cacheMode;
-}
-
-CacheAttributes::~CacheAttributes() { GF_SAFE_DELETE_ARRAY(m_endpoints); }
-
 int CacheAttributes::getRedundancyLevel() { return m_redundancyLevel; }
 
-char* CacheAttributes::getEndpoints() { return m_endpoints; }
+const std::string& CacheAttributes::getEndpoints() { return m_endpoints; }
 
 /** Return true if all the attributes are equal to those of other. */
 bool CacheAttributes::operator==(const CacheAttributes& other) const {
   if (m_redundancyLevel != other.m_redundancyLevel) return false;
-  if (0 != compareStringAttribute(m_endpoints, other.m_endpoints)) return false;
+  if (m_endpoints != other.m_endpoints) return false;
 
   return true;
-}
-
-int32_t CacheAttributes::compareStringAttribute(char* attributeA,
-                                                char* attributeB) const {
-  if (attributeA == nullptr && attributeB == nullptr) {
-    return 0;
-  } else if (attributeA == nullptr && attributeB != nullptr) {
-    return -1;
-  } else if (attributeA != nullptr && attributeB == nullptr) {
-    return -1;
-  }
-  return (strcmp(attributeA, attributeB));
 }
 
 /** Return true if any of the attributes are not equal to those of other. */
@@ -62,15 +47,6 @@ bool CacheAttributes::operator!=(const CacheAttributes& other) const {
   return !(*this == other);
 }
 
-void CacheAttributes::copyStringAttribute(char*& lhs, const char* rhs) {
-  if (lhs != nullptr) {
-    delete[] lhs;
-  }
-  if (rhs == nullptr) {
-    lhs = nullptr;
-  } else {
-    size_t len = strlen(rhs) + 1;
-    lhs = new char[len];
-    memcpy(lhs, rhs, len);
-  }
-}
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

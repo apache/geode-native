@@ -96,7 +96,7 @@ void PositionPdx::init() {
   pid = 0;
 }
 
-void PositionPdx::toData(std::shared_ptr<PdxWriter> pw) {
+void PositionPdx::toData(std::shared_ptr<PdxWriter> pw) const {
   pw->writeLong("avg20DaysVol", avg20DaysVol);
   pw->markIdentityField("avg20DaysVol");
 
@@ -164,8 +164,8 @@ void PositionPdx::fromData(std::shared_ptr<PdxReader> pr) {
   volatility = pr->readLong("volatility");
   pid = pr->readInt("pid");
 }
-std::shared_ptr<CacheableString> PositionPdx::toString() const {
+std::string PositionPdx::toString() const {
   char buf[1024];
   sprintf(buf, "PositionPdx Object:[ id=%d ]", this->pid);
-  return CacheableString::create(buf);
+  return buf;
 }

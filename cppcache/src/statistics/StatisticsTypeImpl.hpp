@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_STATISTICSTYPEIMPL_H_
-#define GEODE_STATISTICS_STATISTICSTYPEIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,15 +15,22 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_STATISTICS_STATISTICSTYPEIMPL_H_
+#define GEODE_STATISTICS_STATISTICSTYPEIMPL_H_
+
 #include <map>
 #include <string>
+
 #include <geode/statistics/StatisticsType.hpp>
 #include <geode/statistics/StatisticsFactory.hpp>
 #include <geode/ExceptionTypes.hpp>
+
 #include "StatsDef.hpp"
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -44,55 +46,54 @@ typedef std::map<std::string, StatisticDescriptor*> StatisticsDescMap;
 
 class StatisticsTypeImpl : public StatisticsType {
  private:
-  int32_t statsLength;            // Total number of descriptors in the type
-  std::string name;             // The name of this statistics type
-  std::string description;      // The description of this statistics type
-  StatisticDescriptor** stats;  // The array of stat descriptors id order
+  int32_t statsLength;
+  std::string name;
+  std::string description;
+  StatisticDescriptor** stats;
   StatisticsDescMap statsDescMap;
-  int32_t intStatCount;  // Contains the number of 32-bit statistics in this type.
-  int32_t longStatCount;  // Contains the number of long statistics in this type.
-  int32_t
-      doubleStatCount;  // Contains the number of double statistics in this type
+  int32_t intStatCount;
+  int32_t longStatCount;
+  int32_t doubleStatCount;
 
  public:
-  StatisticsTypeImpl(const char* name, const char* description,
+  StatisticsTypeImpl(std::string name, std::string description,
                      StatisticDescriptor** stats, int32_t statsLength);
 
   ~StatisticsTypeImpl();
 
   ////////////////  StatisticsType(Base class) Methods ///////////////////
 
-  const char* getName();
+  const std::string& getName() const override;
 
-  const char* getDescription();
+  const std::string& getDescription() const override;
 
-  StatisticDescriptor** getStatistics();
+  StatisticDescriptor** getStatistics() const override;
 
-  int32_t nameToId(const char* name);
+  int32_t nameToId(const std::string& name) const override;
 
-  StatisticDescriptor* nameToDescriptor(const char* name);
+  StatisticDescriptor* nameToDescriptor(const std::string& name) const override;
 
   //////////////////////  Instance Methods  //////////////////////
 
   /**
    *  Gets the number of statistics in this type that are ints.
    */
-  int32_t getIntStatCount();
+  int32_t getIntStatCount() const;
 
   /*
    * Gets the number of statistics in this type that are longs.
    */
-  int32_t getLongStatCount();
+  int32_t getLongStatCount() const;
 
   /*
    * Gets the number of statistics that are doubles.
    */
-  int32_t getDoubleStatCount();
+  int32_t getDoubleStatCount() const;
 
   /*
    * Gets the total number of statistic descriptors in the Type
    */
-  int32_t getDescriptorsCount();
+  int32_t getDescriptorsCount() const override;
 
   // static StatisticsType[] fromXml(Reader reader,
   //                                      StatisticsTypeFactory factory);

@@ -135,8 +135,8 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
               bool shared = false, bool enableTimeStatistics = true);
   virtual ~LocalRegion();
 
-  const char* getName() const override;
-  const char* getFullPath() const override;
+  const std::string& getName() const override;
+  const std::string& getFullPath() const override;
   std::shared_ptr<Region> getParentRegion() const override;
   std::shared_ptr<RegionAttributes> getAttributes() const override {
     return m_regionAttributes;
@@ -163,9 +163,9 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                          nullptr) override;
   void localDestroyRegion(const std::shared_ptr<Serializable>&
                               aCallbackArgument = nullptr) override;
-  std::shared_ptr<Region> getSubregion(const char* path) override;
+  std::shared_ptr<Region> getSubregion(const std::string& path) override;
   std::shared_ptr<Region> createSubregion(
-      const char* subregionName,
+      const std::string& subregionName,
       const std::shared_ptr<RegionAttributes>& aRegionAttributes) override;
   std::vector<std::shared_ptr<Region>> subregions(
       const bool recursive) override;
@@ -344,7 +344,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   //  moved putLocal to public since this is used by a few other
   // classes like CacheableObjectPartList now
   /** put an entry in local cache without invoking any callbacks */
-  GfErrType putLocal(const char* name, bool isCreate,
+  GfErrType putLocal(const std::string& name, bool isCreate,
                      const std::shared_ptr<CacheableKey>& keyPtr,
                      const std::shared_ptr<Cacheable>& valuePtr,
                      std::shared_ptr<Cacheable>& oldValue, bool cachingEnabled,
@@ -352,7 +352,7 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
                      std::shared_ptr<VersionTag> versionTag,
                      DataInput* delta = nullptr,
                      std::shared_ptr<EventId> eventId = nullptr);
-  GfErrType invalidateLocal(const char* name,
+  GfErrType invalidateLocal(const std::string& name,
                             const std::shared_ptr<CacheableKey>& keyPtr,
                             const std::shared_ptr<Cacheable>& value,
                             const CacheEventFlags eventFlags,
@@ -385,16 +385,16 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   /* above public methods are inherited from RegionInternal */
 
   virtual void adjustCacheListener(const std::shared_ptr<CacheListener>& aListener) override;
-  virtual void adjustCacheListener(const char* libpath,
-                                   const char* factoryFuncName) override;
+  virtual void adjustCacheListener(const std::string& libpath,
+                                   const std::string& factoryFuncName) override;
   virtual void adjustCacheLoader(
       const std::shared_ptr<CacheLoader>& aLoader) override;
-  virtual void adjustCacheLoader(const char* libpath,
-                                 const char* factoryFuncName) override;
+  virtual void adjustCacheLoader(const std::string& libpath,
+                                 const std::string& factoryFuncName) override;
   virtual void adjustCacheWriter(
       const std::shared_ptr<CacheWriter>& aWriter) override;
-  virtual void adjustCacheWriter(const char* libpath,
-                                 const char* factoryFuncName) override;
+  virtual void adjustCacheWriter(const std::string& libpath,
+                                 const std::string& factoryFuncName) override;
   virtual CacheImpl* getCacheImpl() const override;
   virtual void evict(int32_t percentage) override;
 
@@ -462,7 +462,9 @@ class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
   virtual GfErrType destroyRegionNoThrow_remote(
       const std::shared_ptr<Serializable>& aCallbackArgument);
   virtual GfErrType unregisterKeysBeforeDestroyRegion();
-  virtual const std::shared_ptr<Pool>& getPool() override { return m_attachedPool; }
+  virtual const std::shared_ptr<Pool>& getPool() const override {
+    return m_attachedPool;
+  }
 
   void setPool(const std::shared_ptr<Pool>& p) { m_attachedPool = p; }
 

@@ -16,24 +16,25 @@
  * limitations under the License.
  */
 
-#pragma once
 
-#include "begin_native.hpp"
+
+#include "../begin_native.hpp"
 #include <GeodeTypeIdsImpl.hpp>
 #include "CacheRegionHelper.hpp"
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "PdxManagedCacheableKey.hpp"
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
 #include "../CacheableString.hpp"
 #include "../ExceptionTypes.hpp"
-#include "ManagedString.hpp"
 #include "PdxHelper.hpp"
 #include "SafeConvert.hpp"
 #include "CacheResolver.hpp"
 
+
 using namespace System;
+using namespace msclr::interop;
 
 namespace apache
 {
@@ -147,13 +148,10 @@ namespace apache
         return 0;
       }
 
-      std::shared_ptr<apache::geode::client::CacheableString> PdxManagedCacheableKey::toString() const
+      std::string PdxManagedCacheableKey::toString() const
       {
         try {
-          std::shared_ptr<apache::geode::client::CacheableString> cStr;
-          Apache::Geode::Client::CacheableString::GetCacheableString(
-            m_managedptr->ToString(), cStr);
-          return cStr;
+          return marshal_as<std::string>(m_managedptr->ToString());
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();
@@ -161,7 +159,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return nullptr;
+        return "";
       }
 
       bool PdxManagedCacheableKey::operator ==(const apache::geode::client::CacheableKey& other) const
@@ -225,8 +223,7 @@ namespace apache
           if (maxLength > 0) {
             String^ logstr = m_managedptr->GetType()->Name + '(' +
               m_managedptr->ToString() + ')';
-            Apache::Geode::Client::ManagedString mg_str(logstr);
-            return snprintf(buffer, maxLength, "%s", mg_str.CharPtr);
+            return snprintf(buffer, maxLength, "%s", marshal_as<std::string>(logstr).c_str());
           }
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
@@ -238,7 +235,7 @@ namespace apache
         return 0;
       }
 
-      bool PdxManagedCacheableKey::hasDelta()
+      bool PdxManagedCacheableKey::hasDelta() const
       {
         if (m_managedDeltaptr)
         {
@@ -284,7 +281,7 @@ namespace apache
         }
       }
 
-      std::shared_ptr<Delta> PdxManagedCacheableKey::clone()
+      std::shared_ptr<Delta> PdxManagedCacheableKey::clone() const
       {
         try {
           if (auto cloneable = dynamic_cast<ICloneable^>((Apache::Geode::Client::IGeodeDelta^) m_managedDeltaptr)) {

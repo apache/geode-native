@@ -51,7 +51,7 @@ class CPPCACHE_EXPORT PdxFieldType : public Serializable {
   int32_t getFixedTypeSize() const;
 
  public:
-  PdxFieldType(const char* fieldName, const char* className, uint8_t typeId,
+  PdxFieldType(std::string fieldName, std::string className, uint8_t typeId,
                int32_t sequenceId, bool isVariableLengthType, int32_t fixedSize,
                int32_t varLenFieldIdx);
 
@@ -82,20 +82,20 @@ class CPPCACHE_EXPORT PdxFieldType : public Serializable {
 
   // TODO:add more getters for the remaining members.
 
-  virtual void toData(DataOutput& output) const;
+  virtual void toData(DataOutput& output) const override;
 
-  virtual void fromData(DataInput& input);
+  virtual void fromData(DataInput& input) override;
 
-  virtual int32_t classId() const { return m_typeId; }
+  virtual int32_t classId() const override { return m_typeId; }
 
-  virtual uint32_t objectSize() const {
+  virtual uint32_t objectSize() const override {
     uint32_t size = sizeof(PdxFieldType);
     size += static_cast<uint32_t>(m_className.length());
     size += static_cast<uint32_t>(m_fieldName.length());
     return size;
   }
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 
   virtual ~PdxFieldType();
 

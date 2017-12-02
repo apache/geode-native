@@ -21,10 +21,11 @@
 #define GEODE_ATTRIBUTESMUTATOR_H_
 
 #include <chrono>
+#include <string>
 #include <memory>
+
 #include "geode_globals.hpp"
 #include "ExpirationAction.hpp"
-#include "util/chrono/duration.hpp"
 
 /**
  * @file
@@ -38,6 +39,7 @@ class CacheListener;
 class CacheLoader;
 class CacheWriter;
 class Region;
+
 /**
  * @class AttributesMutator AttributesMutator.hpp
  *
@@ -155,7 +157,8 @@ class CPPCACHE_EXPORT AttributesMutator {
    * function.
    * @param factoryFuncName factory function for creating cache listener.
    */
-  void setCacheListener(const char* libpath, const char* factoryFuncName);
+  void setCacheListener(const std::string& libpath,
+                        const std::string& factoryFuncName);
 
   /** Sets cache loader for region. The previous cache loader will be replaced
    * with
@@ -171,7 +174,8 @@ class CPPCACHE_EXPORT AttributesMutator {
    * function.
    * @param factoryFuncName factory function for creating cache loader.
    */
-  void setCacheLoader(const char* libpath, const char* factoryFuncName);
+  void setCacheLoader(const std::string& libpath,
+                      const std::string& factoryFuncName);
 
   /** Sets cache writer for region. The previous cache writer will be replaced
    * with
@@ -187,7 +191,8 @@ class CPPCACHE_EXPORT AttributesMutator {
    * function.
    * @param factoryFuncName factory function for creating cache writer.
    */
-  void setCacheWriter(const char* libpath, const char* factoryFuncName);
+  void setCacheWriter(const std::string& libpath,
+                      const std::string& factoryFuncName);
 };
 
 }  // namespace client

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_SELECTRESULTSITERATOR_H_
-#define GEODE_SELECTRESULTSITERATOR_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_SELECTRESULTSITERATOR_H_
+#define GEODE_SELECTRESULTSITERATOR_H_
+
 /**
  * @file
  */
@@ -27,7 +27,6 @@
 #include "geode_globals.hpp"
 #include "ExceptionTypes.hpp"
 #include "Serializable.hpp"
-
 #include "SelectResults.hpp"
 #include "CacheableBuiltins.hpp"
 

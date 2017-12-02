@@ -17,6 +17,7 @@
 
 #pragma once
 
+
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
 #include <geode/DataOutput.hpp>
@@ -408,17 +409,7 @@ namespace Apache
           return m_cursor;
         }
 
-        const char * GetPoolName()
-        {
-          try
-          {
-            return m_nativeptr->get()->getPoolName();
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
-        }
+        String^ GetPoolName();
 
         void WriteStringArray(array<String^>^ strArray);
 

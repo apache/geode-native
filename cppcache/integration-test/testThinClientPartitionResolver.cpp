@@ -43,15 +43,17 @@ class CustomPartitionResolver : public PartitionResolver {
 
   CustomPartitionResolver() : called(false) {}
   ~CustomPartitionResolver() {}
-  const char *getName() {
+  const std::string &getName() override {
+    static std::string name = "CustomPartitionResolver";
     LOG("CustomPartitionResolver::getName()");
-    return "CustomPartitionResolver";
+    return name;
   }
 
-  std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent &opDetails) {
+  std::shared_ptr<CacheableKey> getRoutingObject(
+      const EntryEvent &opDetails) override {
     called = true;
     LOG("CustomPartitionResolver::getRoutingObject()");
-    int32_t key = atoi(opDetails.getKey()->toString()->asChar());
+    int32_t key = atoi(opDetails.getKey()->toString().c_str());
     int32_t newKey = key + 5;
     return CacheableKey::create(newKey);
   }

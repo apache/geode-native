@@ -46,10 +46,11 @@ class CPPCACHE_EXPORT CqState {
     CLOSING = 3,
     INVALID
   } StateType;
+
   /**
    * Returns the state in string form.
    */
-  const char* toString() const;
+  const std::string& toString() const;
 
   /**
    * Returns true if the CQ is in Running state.
@@ -70,11 +71,19 @@ class CPPCACHE_EXPORT CqState {
    * Returns true if the CQ is in Closing state.
    */
   bool isClosing() const;
+
   void setState(CqState::StateType state);
-  CqState::StateType getState();
+
+  CqState::StateType getState() const;
 
  private:
   StateType m_state;
+
+  static const std::string STOPPED_STRING;
+  static const std::string RUNNING_STRING;
+  static const std::string CLOSED_STRING;
+  static const std::string CLOSING_STRING;
+  static const std::string INVALID_STRING;
 };
 }  // namespace client
 }  // namespace geode

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_UTILS_H_
-#define GEODE_UTILS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,15 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_UTIL_FUNCTIONAL_H_
+#define GEODE_UTIL_FUNCTIONAL_H_
+
 #include <functional>
 #include <memory>
 #include <type_traits>
+#include <string>
 
 namespace apache {
 namespace geode {
@@ -70,8 +71,33 @@ struct dereference_equal_to<_T*> : std::equal_to<_T*> {
   }
 };
 
+/**
+ * Hashes based on the same algorithm used in the Geode server.
+ *
+ * @tparam _T class type to hash.
+ */
+template <class _T>
+struct geode_hash {
+  typedef _T* argument_type;
+  int32_t operator()(const argument_type& val);
+};
+
+/**
+ * Hashes like java.lang.String
+ */
+template <>
+struct geode_hash<std::string> {
+  int32_t operator()(const std::string& val) {
+    int32_t hash = 0;
+    for (auto&& c : val) {
+      hash = 31 * hash + c;
+    }
+    return hash;
+  }
+};
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_UTILS_H_
+#endif  // GEODE_UTIL_FUNCTIONAL_H_

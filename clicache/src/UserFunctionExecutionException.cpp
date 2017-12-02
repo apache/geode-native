@@ -16,6 +16,7 @@
  */
 
 
+
 #include "UserFunctionExecutionException.hpp"
 #include "CacheableString.hpp"
 
@@ -63,7 +64,7 @@ namespace Apache
         try
         {
           auto value = m_nativeptr->get()->getMessage();
-          return CacheableString::GetString(value.get());
+          return marshal_as<String^>(value->toString());
         }
         finally
         {
@@ -80,7 +81,7 @@ namespace Apache
         try
         {
           auto value = m_nativeptr->get()->getName();
-          return CacheableString::GetString(value.get());
+          return marshal_as<String^>(value->toString());
         }
         finally
         {

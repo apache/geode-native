@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PDXINSTANCEFACTORYIMPL_H_
-#define GEODE_PDXINSTANCEFACTORYIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,16 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_PDXINSTANCEFACTORYIMPL_H_
+#define GEODE_PDXINSTANCEFACTORYIMPL_H_
+
+#include <map>
+
 #include <geode/PdxInstanceFactory.hpp>
 #include <geode/CacheableBuiltins.hpp>
-#include <map>
+
 #include "PdxType.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "CachePerfStats.hpp"
@@ -60,7 +62,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * @return the created Pdxinstance
    * @throws IllegalStateException if called more than once
    */
-  virtual std::unique_ptr<PdxInstance> create();
+  virtual std::unique_ptr<PdxInstance> create() override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -72,8 +74,8 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeChar(const char* fieldName,
-                                                        char16_t value);
+  virtual std::shared_ptr<PdxInstanceFactory> writeChar(
+      const std::string& fieldName, char16_t value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -85,8 +87,8 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeChar(const char* fieldName,
-                                                        char value);
+  virtual std::shared_ptr<PdxInstanceFactory> writeChar(
+      const std::string& fieldName, char value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -99,7 +101,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeBoolean(
-      const char* fieldName, bool value);
+      const std::string& fieldName, bool value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -111,8 +113,8 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeByte(const char* fieldName,
-                                                        int8_t value);
+  virtual std::shared_ptr<PdxInstanceFactory> writeByte(
+      const std::string& fieldName, int8_t value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -124,8 +126,8 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeShort(const char* fieldName,
-                                                         int16_t value);
+  virtual std::shared_ptr<PdxInstanceFactory> writeShort(
+      const std::string& fieldName, int16_t value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -137,8 +139,8 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeInt(const char* fieldName,
-                                                       int32_t value);
+  virtual std::shared_ptr<PdxInstanceFactory> writeInt(
+      const std::string& fieldName, int32_t value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -150,8 +152,8 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeLong(const char* fieldName,
-                                                        int64_t value);
+  virtual std::shared_ptr<PdxInstanceFactory> writeLong(
+      const std::string& fieldName, int64_t value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -163,8 +165,8 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeFloat(const char* fieldName,
-                                                         float value);
+  virtual std::shared_ptr<PdxInstanceFactory> writeFloat(
+      const std::string& fieldName, float value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -176,8 +178,8 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeDouble(const char* fieldName,
-                                                          double value);
+  virtual std::shared_ptr<PdxInstanceFactory> writeDouble(
+      const std::string& fieldName, double value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -190,7 +192,8 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeDate(
-      const char* fieldName, std::shared_ptr<CacheableDate> value);
+      const std::string& fieldName,
+      std::shared_ptr<CacheableDate> value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -203,7 +206,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeWideString(
-      const char* fieldName, const wchar_t* value);
+      const std::string& fieldName, const wchar_t* value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -215,8 +218,8 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeString(const char* fieldName,
-                                                          const char* value);
+  virtual std::shared_ptr<PdxInstanceFactory> writeString(
+      const std::string& fieldName, const char* value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -236,7 +239,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeObject(
-      const char* fieldName, std::shared_ptr<Cacheable> value);
+      const std::string& fieldName, std::shared_ptr<Cacheable> value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -250,7 +253,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeBooleanArray(
-      const char* fieldName, bool* value, int32_t length);
+      const std::string& fieldName, bool* value, int32_t length) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -264,7 +267,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeWideCharArray(
-      const char* fieldName, wchar_t* value, int32_t length);
+      const std::string& fieldName, wchar_t* value, int32_t length) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -278,7 +281,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeCharArray(
-      const char* fieldName, char* value, int32_t length);
+      const std::string& fieldName, char* value, int32_t length) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -292,7 +295,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeByteArray(
-      const char* fieldName, int8_t* value, int32_t length);
+      const std::string& fieldName, int8_t* value, int32_t length) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -306,7 +309,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeShortArray(
-      const char* fieldName, int16_t* value, int32_t length);
+      const std::string& fieldName, int16_t* value, int32_t length) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -320,7 +323,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeIntArray(
-      const char* fieldName, int32_t* value, int32_t length);
+      const std::string& fieldName, int32_t* value, int32_t length) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -334,7 +337,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeLongArray(
-      const char* fieldName, int64_t* value, int32_t length);
+      const std::string& fieldName, int64_t* value, int32_t length) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -348,7 +351,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeFloatArray(
-      const char* fieldName, float* value, int32_t length);
+      const std::string& fieldName, float* value, int32_t length) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -362,7 +365,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeDoubleArray(
-      const char* fieldName, double* value, int32_t length);
+      const std::string& fieldName, double* value, int32_t length) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -376,7 +379,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeStringArray(
-      const char* fieldName, char** value, int32_t length);
+      const std::string& fieldName, char** value, int32_t length) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -390,7 +393,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeWideStringArray(
-      const char* fieldName, wchar_t** value, int32_t length);
+      const std::string& fieldName, wchar_t** value, int32_t length) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -407,7 +410,8 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeObjectArray(
-      const char* fieldName, std::shared_ptr<CacheableObjectArray> value);
+      const std::string& fieldName,
+      std::shared_ptr<CacheableObjectArray> value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -423,8 +427,8 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeArrayOfByteArrays(
-      const char* fieldName, int8_t** value, int32_t arrayLength,
-      int32_t* elementLength);
+      const std::string& fieldName, int8_t** value, int32_t arrayLength,
+      int32_t* elementLength) override;
 
   /**
    * Indicate that the named field should be included in hashCode and equals
@@ -450,9 +454,9 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    * @throws IllegalStateException if the named field does not exist.
    */
   virtual std::shared_ptr<PdxInstanceFactory> markIdentityField(
-      const char* fieldName);
+      const std::string& fieldName) override;
 
-  PdxInstanceFactoryImpl(const char* className, CachePerfStats* cachePerfStats,
+  PdxInstanceFactoryImpl(std::string className, CachePerfStats* cachePerfStats,
                          std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry,
                          const Cache* cache, bool enableTimeStatistics);
 
@@ -464,7 +468,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
   const Cache* m_cache;
   bool m_enableTimeStatistics;
-  void isFieldAdded(const char* fieldName);
+  void isFieldAdded(const std::string& fieldName);
 };
 }  // namespace client
 }  // namespace geode

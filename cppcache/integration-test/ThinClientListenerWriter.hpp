@@ -61,45 +61,45 @@ class SimpleCacheListener : public CacheListener {
 
 void SimpleCacheListener::afterCreate(const EntryEvent& event) {
   LOGINFO("SimpleCacheListener: Got an afterCreate event for %s region .",
-          event.getRegion()->getName());
+          event.getRegion()->getName().c_str());
   m_creates++;
 }
 
 void SimpleCacheListener::afterUpdate(const EntryEvent& event) {
   LOGINFO("SimpleCacheListener: Got an afterUpdate event for %s region .",
-          event.getRegion()->getName());
+          event.getRegion()->getName().c_str());
 }
 
 void SimpleCacheListener::afterInvalidate(const EntryEvent& event) {
   LOGINFO("SimpleCacheListener: Got an afterInvalidate event for %s region .",
-          event.getRegion()->getName());
+          event.getRegion()->getName().c_str());
 }
 
 void SimpleCacheListener::afterDestroy(const EntryEvent& event) {
   LOGINFO("SimpleCacheListener: Got an afterDestroy event for %s region .",
-          event.getRegion()->getName());
+          event.getRegion()->getName().c_str());
 }
 
 void SimpleCacheListener::afterRegionInvalidate(const RegionEvent& event) {
   LOGINFO(
       "SimpleCacheListener: Got an afterRegionInvalidate event for %s region .",
-      event.getRegion()->getName());
+      event.getRegion()->getName().c_str());
 }
 
 void SimpleCacheListener::afterRegionDestroy(const RegionEvent& event) {
   LOGINFO(
       "SimpleCacheListener: Got an afterRegionDestroy event for %s region .",
-      event.getRegion()->getName());
+      event.getRegion()->getName().c_str());
 }
 
 void SimpleCacheListener::close(const std::shared_ptr<Region>& region) {
   LOGINFO("SimpleCacheListener: Got an close event for %s region .",
-          region.get()->getName());
+          region.get()->getName().c_str());
 }
 
 void SimpleCacheListener::afterRegionClear(const RegionEvent& event) {
   LOGINFO("SimpleCacheListener: Got an afterRegionClear event for %s region .",
-          event.getRegion()->getName());
+          event.getRegion()->getName().c_str());
   m_clears++;
 }
 

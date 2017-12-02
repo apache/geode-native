@@ -96,17 +96,17 @@ class RegionHelper {
     sString += "\ncaching: ";
     sString += attr->getCachingEnabled() ? "Enabled" : "Disabled";
     sString += "\nendpoints: ";
-    sString += FwkStrCvt(attr->getEndpoints()).toString();
+    sString += attr->getEndpoints();
     sString += "\nclientNotification: ";
     sString += attr->getClientNotificationEnabled() ? "Enabled" : "Disabled";
     sString += "\ninitialCapacity: ";
-    sString += FwkStrCvt(attr->getInitialCapacity()).toString();
+    sString += std::to_string(attr->getInitialCapacity());
     sString += "\nloadFactor: ";
-    sString += FwkStrCvt(attr->getLoadFactor()).toString();
+    sString += std::to_string(attr->getLoadFactor());
     sString += "\nconcurrencyLevel: ";
-    sString += FwkStrCvt(attr->getConcurrencyLevel()).toString();
+    sString += std::to_string(attr->getConcurrencyLevel());
     sString += "\nlruEntriesLimit: ";
-    sString += FwkStrCvt(attr->getLruEntriesLimit()).toString();
+    sString += std::to_string(attr->getLruEntriesLimit());
     sString += "\nlruEvictionAction: ";
     sString += ExpirationAction::fromOrdinal(attr->getLruEvictionAction());
     sString += "\nentryTimeToLive: ";
@@ -127,22 +127,22 @@ class RegionHelper {
     sString +=
         ExpirationAction::fromOrdinal(attr->getRegionIdleTimeoutAction());
     sString += "\npoolName: ";
-    sString += FwkStrCvt(attr->getPoolName()).toString();
+    sString += attr->getPoolName();
     sString += "\nCacheLoader: ";
-    sString += (attr->getCacheLoaderLibrary() != NULL &&
-                attr->getCacheLoaderFactory() != NULL)
-                   ? "Enabled"
-                   : "Disabled";
+    sString += (attr->getCacheLoaderLibrary().empty() ||
+                attr->getCacheLoaderFactory().empty())
+                   ? "Disabled"
+                   : "Enabled";
     sString += "\nCacheWriter: ";
-    sString += (attr->getCacheWriterLibrary() != NULL &&
-                attr->getCacheWriterFactory() != NULL)
-                   ? "Enabled"
-                   : "Disabled";
+    sString += (attr->getCacheWriterLibrary().empty() ||
+                attr->getCacheWriterFactory().empty())
+                   ? "Disabled"
+                   : "Enabled";
     sString += "\nCacheListener: ";
-    sString += (attr->getCacheListenerLibrary() != NULL &&
-                attr->getCacheListenerFactory() != NULL)
-                   ? "Enabled"
-                   : "Disabled";
+    sString += (attr->getCacheListenerLibrary().empty() ||
+                attr->getCacheListenerFactory().empty())
+                   ? "Disabled"
+                   : "Enabled";
     sString += "\nConcurrencyChecksEnabled: ";
     sString += attr->getConcurrencyChecksEnabled() ? "Enabled" : "Disabled";
     sString += "\n";
@@ -152,18 +152,18 @@ class RegionHelper {
   void setRegionAttributes(RegionFactory& regionFac) {
     auto atts = m_region->getAttributesPtr();
     regionFac.setCachingEnabled(atts->getCachingEnabled());
-    if (atts->getCacheListenerLibrary() != NULL &&
-        atts->getCacheListenerFactory() != NULL) {
+    if (!(atts->getCacheListenerLibrary().empty() ||
+          atts->getCacheListenerFactory().empty())) {
       regionFac.setCacheListener(atts->getCacheListenerLibrary(),
                                  atts->getCacheListenerFactory());
     }
-    if (atts->getCacheLoaderLibrary() != NULL &&
-        atts->getCacheLoaderFactory() != NULL) {
+    if (!(atts->getCacheLoaderLibrary().empty() ||
+          atts->getCacheLoaderFactory().empty())) {
       regionFac.setCacheLoader(atts->getCacheLoaderLibrary(),
                                atts->getCacheLoaderFactory());
     }
-    if (atts->getCacheWriterLibrary() != NULL &&
-        atts->getCacheWriterFactory() != NULL) {
+    if (!(atts->getCacheWriterLibrary().empty() ||
+          atts->getCacheWriterFactory().empty())) {
       regionFac.setCacheWriter(atts->getCacheWriterLibrary(),
                                atts->getCacheWriterFactory());
     }
@@ -183,13 +183,13 @@ class RegionHelper {
       regionFac.setRegionTimeToLive(atts->getRegionTimeToLiveAction(),
                                     atts->getRegionTimeToLive());
     }
-    if (atts->getPartitionResolverLibrary() != NULL &&
-        atts->getPartitionResolverFactory() != NULL) {
+    if (!(atts->getPartitionResolverLibrary().empty() ||
+          atts->getPartitionResolverFactory().empty())) {
       regionFac.setPartitionResolver(atts->getPartitionResolverLibrary(),
                                      atts->getPartitionResolverFactory());
     }
-    if (atts->getPersistenceLibrary() != NULL &&
-        atts->getPersistenceFactory() != NULL) {
+    if (!(atts->getPersistenceLibrary().empty() ||
+          atts->getPersistenceFactory().empty())) {
       regionFac.setPersistenceManager(atts->getPersistenceLibrary(),
                                       atts->getPersistenceFactory(),
                                       atts->getPersistenceProperties());
@@ -225,13 +225,7 @@ class RegionHelper {
     auto regionFac = cachePtr->createRegionFactory(CACHING_PROXY);
     setRegionAttributes(regionFac);
     auto atts = m_region->getAttributesPtr();
-    bool withPool = (NULL != atts->getPoolName()) ? true : false;
-    std::string poolName;
-    if (withPool) {
-      poolName = atts->getPoolName();
-    } else {
-      poolName = "";
-    }
+    const auto& poolName = atts->getPoolName();
     auto region = regionFac.create(regionName.c_str());
     FWKINFO("Region created with name = " << regionName + " and pool name= "
                                           << poolName);

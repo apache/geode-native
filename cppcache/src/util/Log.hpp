@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_LOG_H_
-#define GEODE_LOG_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,15 +15,16 @@
  * limitations under the License.
  */
 
-/**
- * The interface of the Log class
- *
- *
- */
+#pragma once
 
-#include <geode/geode_globals.hpp>
+#ifndef GEODE_LOG_H_
+#define GEODE_LOG_H_
+
 #include <cstdio>
 #include <cstdarg>
+#include <string>
+
+#include <geode/geode_globals.hpp>
 
 /******************************************************************************/
 
@@ -220,7 +216,7 @@ class CPPCACHE_EXPORT Log {
    * IllegalArgumentException.  Allowed values are identical to the
    * enum declaration above for LogLevel, but with character case ignored.
    */
-  static LogLevel charsToLevel(const char* chars);
+  static LogLevel charsToLevel(const std::string& chars);
 
   /**
    * Fills the provided buffer with formatted log-line given the level
@@ -560,6 +556,8 @@ class CPPCACHE_EXPORT Log {
 
   /******/
  public:
+  static void put(LogLevel level, const std::string& msg);
+
   static void put(LogLevel level, const char* msg);
 
   static void putThrow(LogLevel level, const char* msg, const Exception& ex);
@@ -606,6 +604,38 @@ class CPPCACHE_EXPORT LogVarargs {
   static void fine(const char* fmt, ...);
   static void finer(const char* fmt, ...);
   static void finest(const char* fmt, ...);
+
+  inline static void debug(const std::string& message) {
+    Log::put(Log::Debug, message.c_str());
+  }
+
+  inline static void error(const std::string& message) {
+    Log::put(Log::Error, message.c_str());
+  }
+
+  inline static void warn(const std::string& message) {
+    Log::put(Log::Warning, message.c_str());
+  }
+
+  inline static void info(const std::string& message) {
+    Log::put(Log::Info, message.c_str());
+  }
+
+  inline static void config(const std::string& message) {
+    Log::put(Log::Config, message.c_str());
+  }
+
+  inline static void fine(const std::string& message) {
+    Log::put(Log::Fine, message.c_str());
+  }
+
+  inline static void finer(const std::string& message) {
+    Log::put(Log::Finer, message.c_str());
+  }
+
+  inline static void finest(const std::string& message) {
+    Log::put(Log::Finest, message.c_str());
+  }
 };
 }  // namespace client
 }  // namespace geode

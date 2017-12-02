@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "begin_native.hpp"
 #include "geode/Region.hpp"
 #include "geode/Cache.hpp"
@@ -29,6 +30,7 @@
 #include "impl/SafeConvert.hpp"
 #include "impl/CacheResolver.hpp"
 
+
 using namespace System;
 
 namespace Apache
@@ -37,6 +39,7 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace msclr::interop;
 
       generic<class TKey, class TValue>
       TValue LocalRegion<TKey, TValue>::Get(TKey key, Object^ callbackArg)
@@ -608,7 +611,7 @@ namespace Apache
       { 
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getName( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getName( ) );
         }
         finally
         {
@@ -621,7 +624,7 @@ namespace Apache
       { 
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getFullPath( ) );
+          return marshal_as<String^>( m_nativeptr->get()->getFullPath( ) );
         }
         finally
         {
@@ -708,8 +711,7 @@ namespace Apache
 
           try
           {
-            ManagedString mg_path(path);
-            auto nativeptr = m_nativeptr->get()->getSubregion(mg_path.CharPtr);
+            auto nativeptr = m_nativeptr->get()->getSubregion(marshal_as<std::string>(path));
             auto region = Region<TKey, TValue>::Create(nativeptr);
             if (region == nullptr) {
               return nullptr;
@@ -732,9 +734,8 @@ namespace Apache
 
           try
           {
-            ManagedString mg_subregionName(subRegionName);
             return Region<TKey, TValue>::Create(m_nativeptr->get()->createSubregion(
-              mg_subregionName.CharPtr, __nullptr))->GetLocalView();
+              marshal_as<std::string>(subRegionName), __nullptr))->GetLocalView();
           }
           finally
           {

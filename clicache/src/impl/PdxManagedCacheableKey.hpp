@@ -17,11 +17,12 @@
 
 #pragma once
 
-#include "begin_native.hpp"
+
+#include "../begin_native.hpp"
 #include <geode/CacheableKey.hpp>
 #include <geode/Delta.hpp>
 #include <GeodeTypeIdsImpl.hpp>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "../geode_defs.hpp"
 #include <vcclr.h>
@@ -91,40 +92,40 @@ namespace apache
         /// <summary>
         /// serialize this object
         /// </summary>
-        virtual void toData(apache::geode::client::DataOutput& output) const;
+        virtual void toData(apache::geode::client::DataOutput& output) const override;
 
         /// <summary>
         /// deserialize this object, typical implementation should return
         /// the 'this' pointer.
         /// </summary>
-        virtual void fromData(apache::geode::client::DataInput& input);
+        virtual void fromData(apache::geode::client::DataInput& input) override;
 
-        virtual void toDelta(apache::geode::client::DataOutput& output) const;
+        virtual void toDelta(apache::geode::client::DataOutput& output) const override;
 
-        virtual void fromDelta(apache::geode::client::DataInput& input);
+        virtual void fromDelta(apache::geode::client::DataInput& input) override;
 
-        virtual bool hasDelta();
+        virtual bool hasDelta() const override;
 
-        virtual std::shared_ptr<apache::geode::client::Delta> clone();
+        virtual std::shared_ptr<apache::geode::client::Delta> clone() const override;
 
         /// <summary>
         /// return the size of this object in bytes
         /// </summary>
-        virtual System::UInt32 objectSize() const;
+        virtual System::UInt32 objectSize() const override;
 
         /// <summary>
         /// return the classId of the instance being serialized.
         /// This is used by deserialization to determine what instance
         /// type to create and deserialize into.
         /// </summary>
-        virtual System::Int32 classId() const;
+        virtual System::Int32 classId() const override;
 
         /// <summary>
         /// return the typeId of the instance being serialized.
         /// This is used by deserialization to determine what instance
         /// type to create and deserialize into.
         /// </summary>
-        virtual int8_t typeId() const;
+        virtual int8_t typeId() const override;
 
         /// <summary>
         /// return the Data Serialization Fixed ID type.
@@ -134,13 +135,13 @@ namespace apache
         /// Note that this should not be overridden by custom implementations
         /// and is reserved only for builtin types.
         /// </summary>
-        virtual int8_t DSFID() const;
+        virtual int8_t DSFID() const override;
 
         /// <summary>
         /// Display this object as 'string', which depends on the implementation in
         /// the managed class
         /// </summary>
-        virtual std::shared_ptr<apache::geode::client::CacheableString> toString() const;
+        virtual std::string toString() const override;
 
         /// <summary>
         /// return true if this key matches other CacheableKey

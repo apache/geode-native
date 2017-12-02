@@ -71,7 +71,7 @@ bool InvalidPdxUsage::generic2DCompare(T1** value1, T2** value2, int length,
 // InvalidPdxUsage::~PdxObject() {
 //}
 
-void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) /*const*/ {
+void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) const {
   // TODO:delete it later
   LOGINFO(" NILKANTH InvalidPdxUsage::toData() Start exceptionCounter = %d ",
           toDataexceptionCounter);
@@ -792,13 +792,13 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
       "and exceptionCounter=%d ",
       fromDataexceptionCounter, exceptionCounter);
 }
-std::shared_ptr<CacheableString> InvalidPdxUsage::toString() const {
+std::string InvalidPdxUsage::toString() const {
   char idbuf[1024];
   // sprintf(idbuf,"PdxObject: [ m_bool=%d ] [m_byte=%d] [m_int16=%d]
   // [m_int32=%d] [m_float=%f] [m_double=%lf] [ m_string=%s ]",m_bool, m_byte,
   // m_int16, m_int32, m_float, m_double, m_string);
   sprintf(idbuf, "PdxObject:[m_int32=%d]", m_int32);
-  return CacheableString::create(idbuf);
+  return idbuf;
 }
 
 bool InvalidPdxUsage::equals(PdxTests::InvalidPdxUsage& other,
@@ -854,10 +854,8 @@ bool InvalidPdxUsage::equals(PdxTests::InvalidPdxUsage& other,
   auto myenum = m_pdxEnum;
   auto otenum = ot->m_pdxEnum;
   if (myenum->getEnumOrdinal() != otenum->getEnumOrdinal()) return false;
-  if (strcmp(myenum->getEnumClassName(), otenum->getEnumClassName()) != 0) {
-    return false;
-  }
-  if (strcmp(myenum->getEnumName(), otenum->getEnumName()) != 0) return false;
+  if (myenum->getEnumClassName() != otenum->getEnumClassName()) return false;
+  if (myenum->getEnumName() != otenum->getEnumName()) return false;
 
   genericValCompare(ot->m_arraylist->size(), m_arraylist->size());
   for (int k = 0; k < m_arraylist->size(); k++) {

@@ -17,6 +17,7 @@
 
 #pragma once
 
+
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
 #include <geode/PoolManager.hpp>
@@ -85,10 +86,6 @@ namespace Apache
           return m_nativeref;
         }
 
-        /// <summary>
-        /// Private constructor to wrap a native object pointer
-        /// </summary>
-        /// <param name="nativeptr">The native object pointer</param>
         inline PoolManager(native::PoolManager& nativeref)
           : m_nativeref(nativeref)
         {

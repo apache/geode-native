@@ -19,6 +19,7 @@
 
 
 
+
 #include "../geode_defs.hpp"
 
 #ifdef _WIN32
@@ -36,7 +37,7 @@ namespace Apache
     namespace Client
     {
 
-    ref class ManagedString sealed
+    private ref class ManagedString sealed
     {
     private:
 

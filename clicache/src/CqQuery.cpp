@@ -16,6 +16,7 @@
  */
 
 
+
 #include "CqQuery.hpp"
 #include "Query.hpp"
 #include "CqAttributes.hpp"
@@ -33,6 +34,7 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace msclr::interop;
       using namespace System;
 
       namespace native = apache::geode::client;
@@ -87,7 +89,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getQueryString( ) );
+          return marshal_as<String^>(m_nativeptr->get()->getQueryString());
         }
         finally
         {
@@ -100,7 +102,7 @@ namespace Apache
       {
         try
         {
-          return ManagedString::Get( m_nativeptr->get()->getName( ) );
+          return marshal_as<String^>(m_nativeptr->get()->getName());
         }
         finally
         {

@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 #pragma once
+
+#include <msclr/marshal_cppstd.h>
+
 #include "../IFixedPartitionResolver.hpp"
 #include "../Region.hpp"
-#include "ManagedString.hpp"
 #include "SafeConvert.hpp"
+#include "ManagedString.hpp"
 
 using namespace System;
 using namespace System::Collections::Generic;
@@ -30,13 +33,14 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace msclr::interop;
 
       public interface class IFixedPartitionResolverProxy
       {
       public:
         std::shared_ptr<apache::geode::client::CacheableKey> getRoutingObject(const apache::geode::client::EntryEvent& ev);
-        const char * getName();
-        const char* getPartitionName(const apache::geode::client::EntryEvent& opDetails);       
+        const std::string& getName();
+        const std::string& getPartitionName(const apache::geode::client::EntryEvent& opDetails);       
       };
 
       generic<class TKey, class TValue>
@@ -63,13 +67,13 @@ namespace Apache
             return Serializable::GetUnmanagedValueGeneric<Object^>(groutingobject);
           }
 
-          virtual const char * getName()
+          virtual const std::string& getName()
           {
-            ManagedString mg_name(m_resolver->GetName());
-            return mg_name.CharPtr;
+            static const std::string name = marshal_as<std::string>(m_resolver->GetName());
+            return name;
           }
 
-          virtual const char* getPartitionName(const apache::geode::client::EntryEvent& opDetails)
+          virtual const std::string& getPartitionName(const apache::geode::client::EntryEvent& opDetails)
           {
             if (m_fixedResolver == nullptr)
             {

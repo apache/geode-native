@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_STATISTICSTYPE_H_
-#define GEODE_STATISTICS_STATISTICSTYPE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,17 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/geode_globals.hpp>
-#include <geode/statistics/StatisticDescriptor.hpp>
 
-using namespace apache::geode::client;
+#pragma once
+
+#ifndef GEODE_STATISTICS_STATISTICSTYPE_H_
+#define GEODE_STATISTICS_STATISTICSTYPE_H_
+
+#include "../geode_globals.hpp"
+#include "StatisticDescriptor.hpp"
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
 namespace statistics {
+
+using namespace apache::geode::client;
 
 /**
  * Used to describe a logical collection of StatisticDescriptors. These
@@ -47,18 +48,18 @@ class CPPCACHE_EXPORT StatisticsType {
   /**
    * Returns the name of this statistics type.
    */
-  virtual const char* getName() = 0;
+  virtual const std::string& getName() const = 0;
 
   /**
    * Returns a description of this statistics type.
    */
-  virtual const char* getDescription() = 0;
+  virtual const std::string& getDescription() const = 0;
 
   /**
    * Returns descriptions of the statistics that this statistics type
    * gathers together.
    */
-  virtual StatisticDescriptor** getStatistics() = 0;
+  virtual StatisticDescriptor** getStatistics() const = 0;
 
   /**
    * Returns the id of the statistic with the given name in this
@@ -68,7 +69,7 @@ class CPPCACHE_EXPORT StatisticsType {
    *         No statistic named <code>name</code> exists in this
    *         statistics instance.
    */
-  virtual int32_t nameToId(const char* name) = 0;
+  virtual int32_t nameToId(const std::string& name) const = 0;
   /**
    * Returns the descriptor of the statistic with the given name in this
    * statistics instance.
@@ -77,12 +78,13 @@ class CPPCACHE_EXPORT StatisticsType {
    *         No statistic named <code>name</code> exists in this
    *         statistics instance.
    */
-  virtual StatisticDescriptor* nameToDescriptor(const char* name) = 0;
+  virtual StatisticDescriptor* nameToDescriptor(
+      const std::string& name) const = 0;
 
   /**
    * Returns the total number of statistics descriptors in the type.
    */
-  virtual int32_t getDescriptorsCount() = 0;
+  virtual int32_t getDescriptorsCount() const = 0;
 
   // protected:
   /**

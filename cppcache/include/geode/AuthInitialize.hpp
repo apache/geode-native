@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_AUTHINITIALIZE_H_
-#define GEODE_AUTHINITIALIZE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,16 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_AUTHINITIALIZE_H_
+#define GEODE_AUTHINITIALIZE_H_
+
 /**
  * @file
  */
+
+#include <string>
 
 #include "geode_globals.hpp"
 #include <memory>
@@ -30,7 +32,9 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class Properties;
+
 /**
  * @class AuthInitialize AuthInitialize.hpp
  * Specifies the mechanism to obtain credentials for a client.
@@ -55,11 +59,13 @@ class CPPCACHE_EXPORT AuthInitialize {
    * example it may invoke external agents or even interact with the user.
    */
   virtual std::shared_ptr<Properties> getCredentials(
-      const std::shared_ptr<Properties>& securityprops, const char* server) = 0;
+      const std::shared_ptr<Properties>& securityprops,
+      const std::string& server) = 0;
 
   /**@brief Invoked before the cache goes down. */
   virtual void close() = 0;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

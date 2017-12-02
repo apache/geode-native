@@ -82,7 +82,9 @@ std::chrono::milliseconds Pool::getSubscriptionAckInterval() const {
   return m_attrs->getSubscriptionAckInterval();
 }
 
-const char* Pool::getServerGroup() const { return m_attrs->getServerGroup(); }
+const std::string& Pool::getServerGroup() const {
+  return m_attrs->getServerGroup();
+}
 
 bool Pool::getThreadLocalConnections() const {
   return m_attrs->getThreadLocalConnectionSetting();

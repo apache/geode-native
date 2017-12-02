@@ -86,12 +86,13 @@ class PKCSAuthInit : public AuthInitialize {
    * @returns the credentials to be used for the given <code>server</code>
    */
   std::shared_ptr<Properties> getCredentials(
-      const std::shared_ptr<Properties>& securityprops, const char* server);
+      const std::shared_ptr<Properties>& securityprops,
+      const std::string& server) override;
 
   /**
    * @brief Invoked before the cache goes down.
    */
-  void close() { return; }
+  void close() override { return; }
 
   /**
    * @brief private members

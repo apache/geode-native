@@ -23,6 +23,7 @@
 #include "ThinClientDistributionManager.hpp"
 #include "ThinClientRegion.hpp"
 #include "DistributedSystemImpl.hpp"
+#include "util/exception.hpp"
 
 using namespace apache::geode::client;
 ThinClientDistributionManager::ThinClientDistributionManager(
@@ -69,7 +70,7 @@ void ThinClientDistributionManager::destroy(bool keepAlive) {
     m_endpoints[m_activeEndpoint]->unregisterDM(m_clientNotification, this);
   }
   LOGFINEST("ThinClientDistributionManager:: starting destroy for region %s",
-            (m_region != nullptr ? m_region->getFullPath() : "(null)"));
+            (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
   destroyAction();
   // stop the chunk processing thread
   stopChunkProcessor();
@@ -87,7 +88,7 @@ void ThinClientDistributionManager::destroy(bool keepAlive) {
   }
   m_connManager.disconnect(this, m_endpoints, keepAlive);
   LOGFINEST("ThinClientDistributionManager: completed destroy for region %s",
-            (m_region != nullptr ? m_region->getFullPath() : "(null)"));
+            (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
   m_initDone = false;
 }
 
@@ -208,7 +209,7 @@ void ThinClientDistributionManager::failover() {
   std::vector<int> randIndex;
   bool doRand = true;
   LOGFINEST("DM: invoked select endpoint via failover thread for region %s",
-            (m_region != nullptr ? m_region->getFullPath() : "(null)"));
+            (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
   selectEndpoint(randIndex, doRand);
 }
 

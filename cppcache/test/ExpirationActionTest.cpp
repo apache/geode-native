@@ -22,32 +22,32 @@
 using namespace apache::geode::client;
 
 TEST(ExpirationActionTest, VerifyOrdinalAndNameSymmetryForInvalidate) {
-  const char* name = ExpirationAction::fromOrdinal(0);
-  EXPECT_STREQ("INVALIDATE", name) << "Correct name for invalidate";
-  const ExpirationAction::Action action = ExpirationAction::fromName(name);
+  auto&& name = ExpirationAction::fromOrdinal(0);
+  EXPECT_EQ("INVALIDATE", name) << "Correct name for invalidate";
+  auto&& action = ExpirationAction::fromName(name);
   EXPECT_EQ(ExpirationAction::INVALIDATE, action)
       << "Correct action for invalidate";
 }
 
 TEST(ExpirationActionTest, VerifyOrdinalAndNameSymmetryForLocalInvalidate) {
-  const char* name = ExpirationAction::fromOrdinal(1);
-  EXPECT_STREQ("LOCAL_INVALIDATE", name) << "Correct name for local invalidate";
-  const ExpirationAction::Action action = ExpirationAction::fromName(name);
+  auto&& name = ExpirationAction::fromOrdinal(1);
+  EXPECT_EQ("LOCAL_INVALIDATE", name) << "Correct name for local invalidate";
+  auto&& action = ExpirationAction::fromName(name);
   EXPECT_EQ(ExpirationAction::LOCAL_INVALIDATE, action)
       << "Correct action for local invalidate";
 }
 
 TEST(ExpirationActionTest, VerifyOrdinalAndNameSymmetryForDestroy) {
-  const char* name = ExpirationAction::fromOrdinal(2);
-  EXPECT_STREQ("DESTROY", name) << "Correct name for destroy";
-  const ExpirationAction::Action action = ExpirationAction::fromName(name);
+  auto&& name = ExpirationAction::fromOrdinal(2);
+  EXPECT_EQ("DESTROY", name) << "Correct name for destroy";
+  auto&& action = ExpirationAction::fromName(name);
   EXPECT_EQ(ExpirationAction::DESTROY, action) << "Correct action for destroy";
 }
 
 TEST(ExpirationActionTest, VerifyOrdinalAndNameSymmetryForLocalDestroy) {
-  const char* name = ExpirationAction::fromOrdinal(3);
-  EXPECT_STREQ("LOCAL_DESTROY", name) << "Correct name for local destroy";
-  const ExpirationAction::Action action = ExpirationAction::fromName(name);
+  auto&& name = ExpirationAction::fromOrdinal(3);
+  EXPECT_EQ("LOCAL_DESTROY", name) << "Correct name for local destroy";
+  auto&& action = ExpirationAction::fromName(name);
   EXPECT_EQ(ExpirationAction::LOCAL_DESTROY, action)
       << "Correct action for local destroy";
 }

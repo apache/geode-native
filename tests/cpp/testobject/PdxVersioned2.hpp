@@ -132,7 +132,7 @@ class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
 
   virtual ~PdxVersioned2() {}
 
-  virtual uint32_t objectSize() const {
+  virtual uint32_t objectSize() const override {
     uint32_t objectSize = sizeof(PdxVersioned2);
     return objectSize;
   }
@@ -232,13 +232,17 @@ class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) /*const*/;
+  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const override;
 
-  const char* getClassName() const { return "PdxTests.PdxVersioned"; }
+  const std::string& getClassName() const override {
+    static std::string className = "PdxTests::PdxVersioned";
+    return className;
+  }
+
   /*PdxVersioned2(){
    LOGINFO("rjk:inside testpdxobject default pdxType");
    init();

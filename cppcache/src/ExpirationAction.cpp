@@ -17,33 +17,30 @@
 
 #include <geode/ExpirationAction.hpp>
 
-#include <string>
-#include <ace/OS.h>
+namespace apache {
+namespace geode {
+namespace client {
 
-using namespace apache::geode::client;
+const std::string ExpirationAction::names[] = {"INVALIDATE", "LOCAL_INVALIDATE",
+                                               "DESTROY", "LOCAL_DESTROY",
+                                               "INVALID_ACTION"};
 
-char* ExpirationAction::names[] = {(char*)"INVALIDATE",
-                                   (char*)"LOCAL_INVALIDATE", (char*)"DESTROY",
-                                   (char*)"LOCAL_DESTROY", (char*)nullptr};
-
-ExpirationAction::Action ExpirationAction::fromName(const char* name) {
-  uint32_t i = 0;
-  while ((names[i] != nullptr) || (i <= static_cast<uint32_t>(LOCAL_DESTROY))) {
-    if (name && names[i] && ACE_OS::strcasecmp(names[i], name) == 0) {
+ExpirationAction::Action ExpirationAction::fromName(const std::string& name) {
+  for (int i = INVALIDATE; i <= INVALID_ACTION; i++) {
+    if (names[i] == name) {
       return static_cast<Action>(i);
     }
-    ++i;
   }
   return INVALID_ACTION;
 }
 
-const char* ExpirationAction::fromOrdinal(const int ordinal) {
+const std::string& ExpirationAction::fromOrdinal(const int ordinal) {
   if (INVALIDATE <= ordinal && ordinal <= LOCAL_DESTROY) {
     return names[ordinal];
   }
-  return nullptr;
+  return names[INVALID_ACTION];
 }
 
-ExpirationAction::ExpirationAction() {}
-
-ExpirationAction::~ExpirationAction() {}
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

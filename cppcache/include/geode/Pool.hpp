@@ -27,6 +27,7 @@
 #include "CacheableBuiltins.hpp"
 #include "Cache.hpp"
 #include "CacheFactory.hpp"
+
 /**
  * @file
  */
@@ -60,7 +61,7 @@ class CPPCACHE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
    * @return the name of the pool
    * @see PoolFactory#create
    */
-  virtual const char* getName() const = 0;
+  virtual const std::string& getName() const = 0;
 
   /**
    * Returns the connection timeout of this pool.
@@ -157,7 +158,7 @@ class CPPCACHE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
    * Returns the server group of this pool.
    * @see PoolFactory#setServerGroup
    */
-  const char* getServerGroup() const;
+  const std::string& getServerGroup() const;
 
   /**
    * Returns <code>true</code> if thread local connections are enabled on this

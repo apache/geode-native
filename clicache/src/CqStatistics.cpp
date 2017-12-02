@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 #include "CqStatistics.hpp"
 
 namespace Apache

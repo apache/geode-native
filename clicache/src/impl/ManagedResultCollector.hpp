@@ -16,12 +16,13 @@
  */
 
 #pragma once
+
 #include "../geode_defs.hpp"
 #include <vcclr.h>
-#include "begin_native.hpp"
+#include "../begin_native.hpp"
 #include <chrono>
 #include <geode/ResultCollector.hpp>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 #include "ResultCollectorProxy.hpp"
 #include "SafeConvert.hpp"

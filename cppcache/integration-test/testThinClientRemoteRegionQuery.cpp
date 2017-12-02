@@ -179,7 +179,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
         continue;
       }
 
-      auto results = region->query(const_cast<char*>(regionQueries[i].query()));
+      auto results = region->query((regionQueries[i].query()));
 
       if (results->size() != regionQueryRowCounts[i]) {
         char failmsg[100] = {0};
@@ -203,7 +203,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     }
 
     try {
-      auto results = region->query(const_cast<char*>(regionQueries[0].query()),
+      auto results = region->query((regionQueries[0].query()),
                                    std::chrono::seconds(2200000));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
     } catch (apache::geode::client::IllegalArgumentException ex) {
@@ -213,8 +213,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     }
 
     try {
-      auto results = region->query(const_cast<char*>(regionQueries[0].query()),
-                                   std::chrono::seconds(-1));
+      auto results =
+          region->query((regionQueries[0].query()), std::chrono::seconds(-1));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
     } catch (apache::geode::client::IllegalArgumentException ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
@@ -251,8 +251,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         continue;
       }
 
-      bool existsValue =
-          region->existsValue(const_cast<char*>(regionQueries[i].query()));
+      bool existsValue = region->existsValue((regionQueries[i].query()));
 
       bool expectedResult = regionQueryRowCounts[i] > 0 ? true : false;
 
@@ -278,9 +277,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     }
 
     try {
-      bool existsValue ATTR_UNUSED =
-          region->existsValue(const_cast<char*>(regionQueries[0].query()),
-                              std::chrono::seconds(2200000));
+      bool existsValue ATTR_UNUSED = region->existsValue(
+          (regionQueries[0].query()), std::chrono::seconds(2200000));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
     } catch (apache::geode::client::IllegalArgumentException ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
@@ -289,9 +287,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     }
 
     try {
-      bool existsValue ATTR_UNUSED =
-          region->existsValue(const_cast<char*>(regionQueries[0].query()),
-                              std::chrono::seconds(-1));
+      bool existsValue ATTR_UNUSED = region->existsValue(
+          (regionQueries[0].query()), std::chrono::seconds(-1));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
     } catch (apache::geode::client::IllegalArgumentException ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
@@ -329,8 +326,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       }
 
       try {
-        auto result =
-            region->selectValue(const_cast<char*>(regionQueries[i].query()));
+        auto result = region->selectValue((regionQueries[i].query()));
 
         /*
               if (result == nullptr)
@@ -385,9 +381,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     }
 
     try {
-      auto results = std::dynamic_pointer_cast<SelectResults>(
-          region->selectValue(const_cast<char*>(regionQueries[0].query()),
-                              std::chrono::seconds(2200000)));
+      auto results =
+          std::dynamic_pointer_cast<SelectResults>(region->selectValue(
+              (regionQueries[0].query()), std::chrono::seconds(2200000)));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
     } catch (apache::geode::client::IllegalArgumentException ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
@@ -396,9 +392,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     }
 
     try {
-      auto results = std::dynamic_pointer_cast<SelectResults>(
-          region->selectValue(const_cast<char*>(regionQueries[0].query()),
-                              std::chrono::seconds(-1)));
+      auto results =
+          std::dynamic_pointer_cast<SelectResults>(region->selectValue(
+              (regionQueries[0].query()), std::chrono::seconds(-1)));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
     } catch (apache::geode::client::IllegalArgumentException ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
@@ -436,8 +432,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryError)
       }
 
       try {
-        auto results =
-            region->query(const_cast<char*>(regionQueries[i].query()));
+        auto results = region->query((regionQueries[i].query()));
 
         char failmsg[100] = {0};
         ACE_OS::sprintf(failmsg, "Query exception didnt occur for index %d", i);

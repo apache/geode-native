@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <utility>
+#include <vector>
+#include <chrono>
+#include <thread>
 
 #include <ace/ACE.h>
 #include <ace/Thread_Mutex.h>
@@ -25,28 +28,25 @@
 #include <ace/Dirent.h>
 #include <ace/Dirent_Selector.h>
 #include <ace/OS_NS_sys_stat.h>
-#include <utility>
-#include <vector>
-#include <chrono>
-#include <thread>
+
+#include <geode/geode_globals.hpp>
+#include <geode/DistributedSystem.hpp>
+#include <geode/SystemProperties.hpp>
 
 #include "HostStatSampler.hpp"
 #include "HostStatHelper.hpp"
 #include "StatArchiveWriter.hpp"
-#include <geode/DistributedSystem.hpp>
-#include <geode/SystemProperties.hpp>
 #include "util/Log.hpp"
 #include "GeodeStatisticsFactory.hpp"
-#include <ClientHealthStats.hpp>
-#include <ClientProxyMembershipID.hpp>
+#include "ClientHealthStats.hpp"
+#include "ClientProxyMembershipID.hpp"
 #include "CacheImpl.hpp"
-using namespace apache::geode::statistics;
-using namespace apache::geode::client;
 
 namespace apache {
 namespace geode {
 namespace statistics {
 namespace globals {
+
 std::string g_statFile;
 std::string g_statFileWithExt;
 int64_t g_spaceUsed = 0;
@@ -56,6 +56,7 @@ int64_t g_previoussamplesizeLastFile = 0;
 std::pair<std::string, size_t> g_fileInfoPair;
 // Vector to hold the fileInformation
 typedef std::vector<std::pair<std::string, int64_t> > g_fileInfo;
+
 }  // namespace globals
 }  // namespace statistics
 }  // namespace geode
@@ -563,7 +564,7 @@ void HostStatSampler::putStatsInAdminRegion() {
         int64_t cpuTime = 0;
         auto gf = m_statMngr->getStatisticsFactory();
         if (gf) {
-          StatisticsType* cacheStatType = gf->findType("CachePerfStats");
+          const auto cacheStatType = gf->findType("CachePerfStats");
           if (cacheStatType) {
             Statistics* cachePerfStats =
                 gf->findFirstStatisticsByType(cacheStatType);
@@ -751,8 +752,8 @@ int32_t HostStatSampler::svc(void) {
         }
       } catch (Exception& e) {
         // log the exception and let the thread exit.
-        LOGERROR("Exception in statistics sampler thread: %s: %s", e.getName(),
-                 e.what());
+        LOGERROR("Exception in statistics sampler thread: %s: %s",
+                 e.getName().c_str(), e.what());
         // now close current archiver and see if we can start new one
         gotexception = true;
       } catch (...) {
@@ -767,8 +768,8 @@ int32_t HostStatSampler::svc(void) {
     }
   } catch (Exception& e) {
     // log the exception and let the thread exit.
-    LOGERROR("Exception in statistics sampler thread: %s: %s", e.getName(),
-             e.what());
+    LOGERROR("Exception in statistics sampler thread: %s: %s",
+             e.getName().c_str(), e.what());
     closeSpecialStats();
   } /* catch (...) {
        // log the exception and let the thread exit.

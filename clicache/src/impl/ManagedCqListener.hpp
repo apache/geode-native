@@ -16,11 +16,12 @@
  */
 
 #pragma once
+
 #include "../geode_defs.hpp"
 #include <vcclr.h>
-#include "begin_native.hpp"
+#include "../begin_native.hpp"
 #include <geode/CqListener.hpp>
-#include "end_native.hpp"
+#include "../end_native.hpp"
 
 //#include "../ICqListener.hpp"
 #include "../ICqListener.hpp"

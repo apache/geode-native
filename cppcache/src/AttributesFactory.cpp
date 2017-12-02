@@ -60,26 +60,26 @@ AttributesFactory& AttributesFactory::setPartitionResolver(
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setCacheLoader(const char* lib,
-                                                     const char* func) {
+AttributesFactory& AttributesFactory::setCacheLoader(const std::string& lib,
+                                                     const std::string& func) {
   m_regionAttributes.setCacheLoader(lib, func);
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setCacheWriter(const char* lib,
-                                                     const char* func) {
+AttributesFactory& AttributesFactory::setCacheWriter(const std::string& lib,
+                                                     const std::string& func) {
   m_regionAttributes.setCacheWriter(lib, func);
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setCacheListener(const char* lib,
-                                                       const char* func) {
+AttributesFactory& AttributesFactory::setCacheListener(
+    const std::string& lib, const std::string& func) {
   m_regionAttributes.setCacheListener(lib, func);
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setPartitionResolver(const char* lib,
-                                                           const char* func) {
+AttributesFactory& AttributesFactory::setPartitionResolver(
+    const std::string& lib, const std::string& func) {
   m_regionAttributes.setPartitionResolver(lib, func);
   return *this;
 }
@@ -162,8 +162,8 @@ void AttributesFactory::validateAttributes(RegionAttributes& attrs) {
 
   if (attrs.m_diskPolicy != DiskPolicyType::NONE) {
     if (attrs.m_persistenceManager == nullptr &&
-        (attrs.m_persistenceLibrary == nullptr ||
-         attrs.m_persistenceFactory == nullptr)) {
+        (attrs.m_persistenceLibrary.empty() ||
+         attrs.m_persistenceFactory.empty())) {
       throw IllegalStateException(
           "Persistence Manager must be set if DiskPolicy is OVERFLOWS");
     }
@@ -205,13 +205,13 @@ AttributesFactory& AttributesFactory::setPersistenceManager(
 }
 
 AttributesFactory& AttributesFactory::setPersistenceManager(
-    const char* lib, const char* func,
+    const std::string& lib, const std::string& func,
     const std::shared_ptr<Properties>& config) {
   m_regionAttributes.setPersistenceManager(lib, func, config);
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setPoolName(const char* name) {
+AttributesFactory& AttributesFactory::setPoolName(const std::string& name) {
   m_regionAttributes.setPoolName(name);
   return *this;
 }

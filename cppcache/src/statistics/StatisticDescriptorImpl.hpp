@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_STATISTICDESCRIPTORIMPL_H_
-#define GEODE_STATISTICS_STATISTICDESCRIPTORIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,7 +15,13 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_STATISTICS_STATISTICDESCRIPTORIMPL_H_
+#define GEODE_STATISTICS_STATISTICDESCRIPTORIMPL_H_
+
 #include <string>
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/statistics/StatisticDescriptor.hpp>
 
@@ -93,9 +94,11 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    *        True if larger values indicate better performance.
    *
    */
-  StatisticDescriptorImpl(const char* statName, FieldType statDescriptorType,
-                          const char* statDescription, const char* statUnit,
-                          bool statIsCounter, bool statIsLargerBetter);
+  StatisticDescriptorImpl(const std::string& statName,
+                          FieldType statDescriptorType,
+                          const std::string& statDescription,
+                          const std::string& statUnit, bool statIsCounter,
+                          bool statIsLargerBetter);
 
  public:
   /** GfFieldType defined in geode.h.
@@ -117,7 +120,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    * @throws IllegalArgumentException
    * <code>code</code> is an unknown type
    */
-  static const char* getTypeCodeName(FieldType code);
+  static const std::string& getTypeCodeName(FieldType code);
 
   /**
    * Returns the number of bits needed to represent a value of the given type
@@ -135,9 +138,9 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    * whose value behaves like a counter
    * @throws OutOfMemoryException
    */
-  static StatisticDescriptor* createIntCounter(const char* name,
-                                               const char* description,
-                                               const char* units,
+  static StatisticDescriptor* createIntCounter(const std::string& name,
+                                               const std::string& description,
+                                               const std::string& units,
                                                bool isLargerBetter);
   /**
    * Creates a descriptor of Long type
@@ -145,9 +148,9 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    * @throws OutOfMemoryException
    */
 
-  static StatisticDescriptor* createLongCounter(const char* name,
-                                                const char* description,
-                                                const char* units,
+  static StatisticDescriptor* createLongCounter(const std::string& name,
+                                                const std::string& description,
+                                                const std::string& units,
                                                 bool isLargerBetter);
 
   /**
@@ -155,19 +158,18 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    * whose value behaves like a counter
    * @throws OutOfMemoryException
    */
-  static StatisticDescriptor* createDoubleCounter(const char* name,
-                                                  const char* description,
-                                                  const char* units,
-                                                  bool isLargerBetter);
+  static StatisticDescriptor* createDoubleCounter(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool isLargerBetter);
 
   /**
    * Creates a descriptor of Integer type
    * whose value behaves like a gauge
    * @throws OutOfMemoryException
    */
-  static StatisticDescriptor* createIntGauge(const char* name,
-                                             const char* description,
-                                             const char* units,
+  static StatisticDescriptor* createIntGauge(const std::string& name,
+                                             const std::string& description,
+                                             const std::string& units,
                                              bool isLargerBetter);
 
   /**
@@ -175,9 +177,9 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    * whose value behaves like a gauge
    * @throws OutOfMemoryException
    */
-  static StatisticDescriptor* createLongGauge(const char* name,
-                                              const char* description,
-                                              const char* units,
+  static StatisticDescriptor* createLongGauge(const std::string& name,
+                                              const std::string& description,
+                                              const std::string& units,
                                               bool isLargerBetter);
 
   /**
@@ -185,27 +187,27 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    * whose value behaves like a gauge
    * @throws OutOfMemoryException
    */
-  static StatisticDescriptor* createDoubleGauge(const char* name,
-                                                const char* description,
-                                                const char* units,
+  static StatisticDescriptor* createDoubleGauge(const std::string& name,
+                                                const std::string& description,
+                                                const std::string& units,
                                                 bool isLargerBetter);
 
   /////////////////  StatisticDescriptor(Base class) Methods
   ///////////////////////
 
-  const char* getName();
+  const std::string& getName() const override;
 
-  const char* getDescription();
+  const std::string& getDescription() const override;
 
   int32_t getStorageBits();
 
-  bool isCounter();
+  bool isCounter() const override;
 
-  bool isLargerBetter();
+  bool isLargerBetter() const override;
 
-  const char* getUnit();
+  const std::string& getUnit() const override;
 
-  int32_t getId();
+  int32_t getId() const override;
 
   ///////////////////////////// Instance Methods  ////////////////////////////
 
@@ -216,7 +218,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    * GF_FIELDTYPE_LONG
    * GF_FIELDTYPE_DOUBLE
    */
-  FieldType getTypeCode();
+  FieldType getTypeCode() const;
 
   /**
    * Sets the id of this descriptor
@@ -229,25 +231,25 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    *  Checks whether the descriptor is of type int and returns the id if it is
    *  @throws IllegalArgumentException
    */
-  int32_t checkInt();
+  int32_t checkInt() const;
 
   /**
    *  Checks whether the descriptor is of type long and returns the id if it is
    *  @throws IllegalArgumentException
    */
-  int32_t checkLong();
+  int32_t checkLong() const;
 
   /**
    *  Checks whether the descriptor is of type double and returns the id if it i
 s
    *  @throws IllegalArgumentException
    */
-  int32_t checkDouble();
+  int32_t checkDouble() const;
 
  private:
-  static const char* IntTypeName;
-  static const char* LongTypeName;
-  static const char* DoubleTypeName;
+  static const std::string IntTypeName;
+  static const std::string LongTypeName;
+  static const std::string DoubleTypeName;
 
 };  // class
 

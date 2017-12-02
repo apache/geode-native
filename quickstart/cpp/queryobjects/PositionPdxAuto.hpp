@@ -76,7 +76,7 @@ class PositionPdxAuto : public apache::geode::client::PdxSerializable {
   virtual void toData(std::shared_ptr<PdxWriter> pw);
   virtual void fromData(std::shared_ptr<PdxReader> pr);
 
-  std::shared_ptr<CacheableString> toString() const;
+  std::string toString() const;
 
   virtual uint32_t objectSize() const {
     uint32_t objectSize = sizeof(PositionPdxAuto);
