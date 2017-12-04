@@ -248,8 +248,8 @@ namespace Apache
           {
             return false;
           }
-          auto out1 = m_nativeptr->get_shared_ptr()->getCache().createDataOutput();
-          auto out2 = m_nativeptr->get_shared_ptr()->getCache().createDataOutput();
+          auto out1 = m_nativeptr->get_conditional_shared_ptr()->getCache().createDataOutput();
+          auto out2 = m_nativeptr->get_conditional_shared_ptr()->getCache().createDataOutput();
           val1->toData(*out1);
           val2->toData(*out2);
 

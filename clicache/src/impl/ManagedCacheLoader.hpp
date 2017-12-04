@@ -97,7 +97,7 @@ namespace apache
         /// will return null.
         /// </returns>
         /// <seealso cref="Apache.Geode.Client.Region.Get" />
-        virtual std::shared_ptr<Cacheable> load(const std::shared_ptr<Region>& region,
+        virtual std::shared_ptr<Cacheable> load(Region& region,
           const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Serializable>& aCallbackArgument);
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace apache
         /// <param name="region">the region pointer</param>
         /// <seealso cref="Apache.Geode.Client.Cache.Close" />
         /// <seealso cref="Apache.Geode.Client.Region.DestroyRegion" />
-        virtual void close(const std::shared_ptr<Region>& region);
+        virtual void close(Region& region);
 
         /*
         /// <summary>

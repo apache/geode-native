@@ -55,7 +55,7 @@ class ThinClientTallyLoader : public TallyLoader {
   virtual ~ThinClientTallyLoader() {}
 
   std::shared_ptr<Cacheable> load(
-      const std::shared_ptr<Region>& rp,
+      Region& rp,
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Serializable>& aCallbackArgument) {
     int32_t loadValue = std::dynamic_pointer_cast<CacheableInt32>(
@@ -64,11 +64,11 @@ class ThinClientTallyLoader : public TallyLoader {
     char lstrvalue[32];
     sprintf(lstrvalue, "%i", loadValue);
     auto lreturnValue = CacheableString::create(lstrvalue);
-    if (key && (!rp->getAttributes()->getEndpoints().empty() ||
-                !rp->getAttributes()->getPoolName().empty())) {
+    if (key && (!rp.getAttributes()->getEndpoints().empty() ||
+                !rp.getAttributes()->getPoolName().empty())) {
       LOGDEBUG("Putting the value (%s) for local region clients only ",
                lstrvalue);
-      rp->put(key, lreturnValue);
+      rp.put(key, lreturnValue);
     }
     return lreturnValue;
   }

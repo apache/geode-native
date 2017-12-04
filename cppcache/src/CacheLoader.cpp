@@ -26,4 +26,4 @@ CacheLoader::CacheLoader() {}
 
 CacheLoader::~CacheLoader() {}
 
-void CacheLoader::close(const std::shared_ptr<Region>& rp) {}
+void CacheLoader::close(Region& rp) {}

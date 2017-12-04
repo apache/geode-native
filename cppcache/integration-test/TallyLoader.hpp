@@ -38,7 +38,7 @@ class TallyLoader : virtual public CacheLoader {
   virtual ~TallyLoader() {}
 
   std::shared_ptr<Cacheable> load(
-      const std::shared_ptr<Region>& rp,
+      Region& rp,
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Serializable>& aCallbackArgument) {
     LOGDEBUG("TallyLoader::load invoked for %d.", m_loads);
@@ -48,7 +48,7 @@ class TallyLoader : virtual public CacheLoader {
     return CacheableInt32::create(m_loads++);
   }
 
-  virtual void close(const std::shared_ptr<Region>& region) { LOG("TallyLoader::close"); }
+  virtual void close(Region& region) { LOG("TallyLoader::close"); }
 
   int expectLoads(int expected) {
     int tries = 0;

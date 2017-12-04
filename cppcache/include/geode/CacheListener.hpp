@@ -183,7 +183,7 @@ class CPPCACHE_EXPORT CacheListener {
    * @see Region::destroyRegion
    */
 
-  virtual void close(const std::shared_ptr<Region>& region);
+  virtual void close(Region& region);
   /**
    * Called when all the endpoints assosiated with region are down.
    * This will be called when all the endpoints are down for the first time.
@@ -192,7 +192,7 @@ class CPPCACHE_EXPORT CacheListener {
    * to the pool.
    * @param region std::shared_ptr<Region> denotes the assosiated region.
    */
-  virtual void afterRegionDisconnected(const std::shared_ptr<Region>& region);
+  virtual void afterRegionDisconnected(Region& region);
 
  protected:
   /**

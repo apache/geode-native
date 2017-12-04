@@ -166,7 +166,7 @@ class CPPCACHE_EXPORT CacheWriter {
    * @see Cache::close
    * @see Region::destroyRegion
    */
-  virtual void close(const std::shared_ptr<Region>& rp);
+  virtual void close(Region& rp);
 
   virtual ~CacheWriter();
 
