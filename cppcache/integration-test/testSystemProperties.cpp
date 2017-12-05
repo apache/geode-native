@@ -59,38 +59,6 @@ BEGIN_TEST(DEFAULT)
   }
 END_TEST(DEFAULT)
 
-/*
- * Commenting the last two tests because I need to know where to put
- * the file which will be passed to the constructor. These two tests works.
- * But for others it might fail so commenting them as of now.
- */
-BEGIN_TEST(CONFIG)
-  {
-    // create a file for alternate properties...
-    //  FILE* propFile = ACE_OS::fopen( "./test.properties", "a+" );
-    //  ACE_OS::fprintf( propFile, "gf.transport.config=./gfconfig\n" );
-    ///  ACE_OS::fprintf( propFile, "statistics.sample.interval=2000\n" );
-    //  ACE_OS::fprintf( propFile, "statistics.enabled=false\n" );
-    //  ACE_OS::fprintf( propFile, "statistics.archive.file=./stats.gfs\n" );
-    //  ACE_OS::fprintf( propFile, "log.level=error\n" );
-    //  ACE_OS::fclose( propFile );
-
-    // Make sure product can at least log to stdout.
-    Log::init(Log::Config, nullptr, 0);
-
-    SystemProperties* sp = new SystemProperties(nullptr, "test.properties");
-    ASSERT(sp->statisticsSampleInterval() == std::chrono::seconds(1),
-           "expected 1");
-    ASSERT(sp->statisticsEnabled() == true, "expected true");
-    const char* safname = sp->statisticsArchiveFile();
-    int ret = strcmp(safname, "statArchive.gfs");
-    ASSERT(ret == 0, "expected 0");
-    Log::LogLevel ll = sp->logLevel();
-    ASSERT(ll == Log::Config, "expected Log::Config");
-    delete sp;
-  }
-END_TEST(CONFIG)
-
 BEGIN_TEST(NEW_CONFIG)
   {
     // When the tests are run from the build script the environment variable
