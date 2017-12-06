@@ -29,9 +29,9 @@ The recommended generator on Mac OS X is `Xcode`:
 	$ cmake -G "Xcode" ../src
 
 ### Windows Generator
-The recommended generator on Windows is `Visual Studio 12 2013 Win64`:
+The recommended generator on Windows is `Visual Studio 14 2015 Win64`:
 
-	$ cmake -G "Visual Studio 12 2013 Win64" ../src
+	$ cmake -G "Visual Studio 14 2015 Win64" ../src
 
 ## Finding Geode
 Building requires access to an installation of Geode. By default the value of `GEODE_ROOT` or `GEODE` is used during CMake configuration if either of those shell variables is exported. To explicitly specify the location in which Geode is installed, add `-DGEODE_ROOT=/path/to/geode` to the _initial_ `cmake` execution command before `../src`.
@@ -82,7 +82,7 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 ### Required Tools
 * [Visual Studio 2015](https://www.visualstudio.com) or newer
 * .NET 4.5.2 or later
-* patch.exe (available as part of GnuWin or Cygwin)
+* patch.exe (available as part of GnuWin)
 
 ## Linux
 * RHEL/CentOS 6
@@ -91,7 +91,7 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 * SLES 12
 
 ### Required Tools
-* [GCC 4.9](https://gcc.gnu.org) or newer
+* [GCC 5](https://gcc.gnu.org) or newer
 
 ### Optional Tools
 * [Eclipse CDT 8.8](https://eclipse.org/cdt/) or newer
@@ -101,6 +101,6 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 * Solaris 11 x86
 
 ### Required Tools
-* [Solaris Studio 12.5](http://www.oracle.com/technetwork/server-storage/solarisstudio/downloads/index-jsp-141149.html) or newer
+* [Solaris Studio 12.6](http://www.oracle.com/technetwork/server-storage/developerstudio/downloads/index.html) or newer
 
 	
