@@ -1187,7 +1187,7 @@ void CacheHelper::cleanupServerInstances() {
 void CacheHelper::initServer(int instance, const char* xml,
                              const char* locHostport, const char* authParam,
                              bool ssl, bool enableDelta, bool multiDS,
-                             bool testServerGC, bool untrustedCert) {
+                             bool testServerGC, bool untrustedCert, bool useSecurityManager) {
   if (!isServerCleanupCallbackRegistered &&
       gClientCleanup.registerCallback(&CacheHelper::cleanupServerInstances)) {
     isServerCleanupCallbackRegistered = true;
@@ -1341,17 +1341,18 @@ void CacheHelper::initServer(int instance, const char* xml,
 
   if (locHostport != nullptr) {  // check number of locator host port.
     std::string geodeProperties =
-        generateGeodeProperties(currDir, ssl, -1, 0, untrustedCert);
+        generateGeodeProperties(currDir, ssl, -1, 0, untrustedCert, useSecurityManager);
 
     sprintf(
         cmd,
         "%s/bin/%s start server --classpath=%s --name=%s "
-        "--cache-xml-file=%s --dir=%s --server-port=%d --log-level=%s "
+        "--cache-xml-file=%s %s --dir=%s --server-port=%d --log-level=%s "
         "--properties-file=%s %s %s "
         "--J=-Dgemfire.tombstone-timeout=%ld "
         "--J=-Dgemfire.tombstone-gc-hreshold=%ld "
         "--J=-Dgemfire.security-log-level=%s --J=-Xmx1024m --J=-Xms128m 2>&1",
         gfjavaenv, GFSH, classpath, sname.c_str(), xmlFile.c_str(),
+        useSecurityManager ?  "--user=root --password=root-password" : "",
         currDir.c_str(), portNum, gfLogLevel, geodeProperties.c_str(),
         authParam, deltaProperty.c_str(),
         testServerGC ? userTombstone_timeout : defaultTombstone_timeout,
@@ -1362,11 +1363,12 @@ void CacheHelper::initServer(int instance, const char* xml,
     sprintf(
         cmd,
         "%s/bin/%s start server --classpath=%s --name=%s "
-        "--cache-xml-file=%s --dir=%s --server-port=%d --log-level=%s %s %s "
+        "--cache-xml-file=%s %s --dir=%s --server-port=%d --log-level=%s %s %s "
         "--J=-Dgemfire.tombstone-timeout=%ld "
         "--J=-Dgemfire.tombstone-gc-hreshold=%ld "
         "--J=-Dgemfire.security-log-level=%s --J=-Xmx1024m --J=-Xms128m 2>&1",
         gfjavaenv, GFSH, classpath, sname.c_str(), xmlFile.c_str(),
+        useSecurityManager ? "--user=root --password=root-password" : "",
         currDir.c_str(), portNum, gfLogLevel, authParam, deltaProperty.c_str(),
         testServerGC ? userTombstone_timeout : defaultTombstone_timeout,
         testServerGC ? userTombstone_gc_threshold
@@ -1694,7 +1696,7 @@ void CacheHelper::cleanupLocatorInstances() {
 
 // starting locator
 void CacheHelper::initLocator(int instance, bool ssl, bool multiDS, int dsId,
-                              int remoteLocator, bool untrustedCert) {
+                              int remoteLocator, bool untrustedCert, bool useSecurityManager) {
   if (!isLocatorCleanupCallbackRegistered &&
       gClientCleanup.registerCallback(&CacheHelper::cleanupLocatorInstances)) {
     isLocatorCleanupCallbackRegistered = true;
@@ -1749,7 +1751,7 @@ void CacheHelper::initLocator(int instance, bool ssl, bool multiDS, int dsId,
   ACE_OS::mkdir(locDirname.c_str());
 
   std::string geodeFile =
-      generateGeodeProperties(currDir, ssl, dsId, remoteLocator, untrustedCert);
+      generateGeodeProperties(currDir, ssl, dsId, remoteLocator, untrustedCert, useSecurityManager);
 
   sprintf(cmd, "%s/bin/%s stop locator --dir=%s --properties-file=%s ",
           gfjavaenv, GFSH, currDir.c_str(), geodeFile.c_str());
@@ -1757,11 +1759,15 @@ void CacheHelper::initLocator(int instance, bool ssl, bool multiDS, int dsId,
   LOG(cmd);
   ACE_OS::system(cmd);
 
+  static char* classpath = ACE_OS::getenv("GF_CLASSPATH");
+  std::string propertiesFile = useSecurityManager ?
+    std::string("--security-properties-file=") + geodeFile :
+    std::string("--properties-file=") + geodeFile;
   sprintf(cmd,
           "%s/bin/%s start locator --name=%s --port=%d --dir=%s "
-          "--properties-file=%s --http-service-port=0",
+          "%s --http-service-port=0 --classpath=%s",
           gfjavaenv, GFSH, locDirname.c_str(), portnum, currDir.c_str(),
-          geodeFile.c_str());
+          propertiesFile.c_str(), classpath);
 
   LOG(cmd);
   ACE_OS::system(cmd);
@@ -1872,7 +1878,8 @@ int CacheHelper::getNumLocatorListUpdates(const char* s) {
 std::string CacheHelper::generateGeodeProperties(const std::string& path,
                                                  const bool ssl, const int dsId,
                                                  const int remoteLocator,
-                                                 const bool untrustedCert) {
+                                                 const bool untrustedCert,
+                                                 const bool useSecurityManager) {
   char cmd[2048];
   std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
 
@@ -1894,6 +1901,9 @@ std::string CacheHelper::generateGeodeProperties(const std::string& path,
   msg += "log-level=config\n";
   msg += "mcast-port=0\n";
   msg += "enable-network-partition-detection=false\n";
+  if (useSecurityManager) {
+    msg += "security-manager=javaobject.SimpleSecurityManager\n";
+  }
 
   std::string serverKeystore;
   std::string serverTruststore;
