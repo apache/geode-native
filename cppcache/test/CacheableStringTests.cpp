@@ -37,6 +37,13 @@ using namespace apache::geode::client;
 
 class TestDataOutput : public DataOutputInternal {
  public:
+  TestDataOutput()
+      : DataOutputInternal(),
+        m_byteArray(nullptr),
+        m_serializationRegistry() {
+    // NOP
+  }
+
   TestDataOutput(Cache* cache)
       : DataOutputInternal(cache),
         m_byteArray(nullptr),
@@ -155,7 +162,7 @@ TEST_F(CacheableStringTests, TestToDataAsciiHuge) {
   originalLen++;
 
   auto origStr = CacheableString::create(utf8.c_str());
-  DataOutputInternal out;
+  TestDataOutput out;
   origStr->toData(out);
 
   auto&& bufLen = originalLen + 4;  // strLen (unit32_t)
@@ -163,7 +170,8 @@ TEST_F(CacheableStringTests, TestToDataAsciiHuge) {
 
   // 0x00010000 - length
   // 0x61 - first 'a'
-  EXPECT_MATCH("0001000061.*61", to_hex(out));
+  //EXPECT_MATCH("0001000061.*61", to_hex(out));
+  EXPECT_BYTEARRAY_EQ("0001000061\\h{131068}61", out.getByteArray());
 }
 
 TEST_F(CacheableStringTests, TestFromDataAsciiHuge) {
@@ -190,7 +198,7 @@ TEST_F(CacheableStringTests, TestToDataNonAsciiHuge) {
           .from_bytes(utf8);
 
   auto origStr = CacheableString::create(utf8.c_str());
-  DataOutputInternal out;
+  TestDataOutput out;
   origStr->toData(out);
 
   // utf-16 units length (unit32_t) + utf-16 units (uint16_t*)
@@ -200,7 +208,8 @@ TEST_F(CacheableStringTests, TestToDataNonAsciiHuge) {
   // 0x00010000 - length
   // 0x0061 - first 'a'
   // 0x006100E4 - last 'a\u00e4'
-  EXPECT_MATCH("000100000061.*006100e4", to_hex(out));
+  //EXPECT_MATCH("000100000061.*006100e4", to_hex(out));
+  EXPECT_BYTEARRAY_EQ("000100000061\\h{262132}006100E4", out.getByteArray());
 }
 
 TEST_F(CacheableStringTests, TestFromDataNonAsciiHuge) {
