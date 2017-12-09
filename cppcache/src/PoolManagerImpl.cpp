@@ -44,6 +44,7 @@ void PoolManagerImpl::close(bool keepAlive) {
 
   for (const auto& iter : poolsList) {
     iter->destroy(keepAlive);
+    m_connectionPools.erase(iter->getName().c_str());
   }
 }
 
