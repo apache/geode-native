@@ -850,6 +850,9 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
       GF_SAFE_DELETE(m_clientMetadataService);
     }
 
+    m_connManager.getCacheImpl()->getPoolManager().removePool(
+        m_poolName.c_str());
+
     stopChunkProcessor();
     m_manager->closeAllStickyConnections();
     m_isDestroyed = true;
