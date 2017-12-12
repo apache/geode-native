@@ -300,7 +300,8 @@ inline void writeObject(apache::geode::client::DataOutput& output,
   }
 }
 
-inline uint32_t objectSize(const std::vector<std::shared_ptr<Cacheable>>& value) {
+inline uint32_t objectSize(
+    const std::vector<std::shared_ptr<Cacheable>>& value) {
   size_t objectSize = 0;
   for (const auto& iter : value) {
     if (iter) {
@@ -324,7 +325,8 @@ inline void readObject(apache::geode::client::DataInput& input,
   }
 }
 
-template <typename TKey, typename TValue, typename Hash, typename KeyEqual, typename Allocator>
+template <typename TKey, typename TValue, typename Hash, typename KeyEqual,
+          typename Allocator>
 inline void writeObject(
     apache::geode::client::DataOutput& output,
     const std::unordered_map<TKey, TValue, Hash, KeyEqual, Allocator>& value) {
@@ -335,22 +337,24 @@ inline void writeObject(
   }
 }
 
-inline uint32_t objectSize(const HashMapOfCacheable& value) {
-  uint32_t objectSize = 0;
+inline size_t objectSize(const HashMapOfCacheable& value) {
+  auto objectSize = (sizeof(std::shared_ptr<CacheableKey>) +
+                     sizeof(std::shared_ptr<Cacheable>)) *
+                    value.size();
   for (const auto& iter : value) {
     objectSize += iter.first->objectSize();
     if (iter.second) {
       objectSize += iter.second->objectSize();
     }
   }
-  objectSize += static_cast<uint32_t>(
-      (sizeof(std::shared_ptr<CacheableKey>) + sizeof(std::shared_ptr<Cacheable>)) * value.size());
   return objectSize;
 }
 
-template <typename TKey, typename TValue, typename Hash, typename KeyEqual, typename Allocator>
-inline void readObject(apache::geode::client::DataInput& input,
-                       std::unordered_map<TKey, TValue, Hash, KeyEqual, Allocator>& value) {
+template <typename TKey, typename TValue, typename Hash, typename KeyEqual,
+          typename Allocator>
+inline void readObject(
+    apache::geode::client::DataInput& input,
+    std::unordered_map<TKey, TValue, Hash, KeyEqual, Allocator>& value) {
   int32_t len = input.readArrayLen();
   value.reserve(len);
   TKey key;
@@ -363,28 +367,29 @@ inline void readObject(apache::geode::client::DataInput& input,
 }
 
 template <typename TKey, typename Hash, typename KeyEqual, typename Allocator>
-inline void writeObject(apache::geode::client::DataOutput& output,
-                        const std::unordered_set<TKey, Hash, KeyEqual, Allocator>& value) {
+inline void writeObject(
+    apache::geode::client::DataOutput& output,
+    const std::unordered_set<TKey, Hash, KeyEqual, Allocator>& value) {
   output.writeArrayLen(static_cast<int32_t>(value.size()));
   for (const auto& iter : value) {
     writeObject(output, iter);
   }
 }
 
-inline uint32_t objectSize(const HashSetOfCacheableKey& value) {
-  uint32_t objectSize = 0;
+inline size_t objectSize(const HashSetOfCacheableKey& value) {
+  auto objectSize = sizeof(std::shared_ptr<CacheableKey>) * value.size();
   for (const auto& iter : value) {
     if (iter) {
       objectSize += iter->objectSize();
     }
   }
-  objectSize += static_cast<uint32_t>(sizeof(std::shared_ptr<CacheableKey>) * value.size());
   return objectSize;
 }
 
 template <typename TKey, typename Hash, typename KeyEqual, typename Allocator>
-inline void readObject(apache::geode::client::DataInput& input,
-                       std::unordered_set<TKey, Hash, KeyEqual, Allocator>& value) {
+inline void readObject(
+    apache::geode::client::DataInput& input,
+    std::unordered_set<TKey, Hash, KeyEqual, Allocator>& value) {
   int32_t len = input.readArrayLen();
   if (len > 0) {
     TKey key;

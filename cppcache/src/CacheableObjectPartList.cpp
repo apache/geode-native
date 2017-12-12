@@ -128,7 +128,7 @@ int8_t CacheableObjectPartList::DSFID() const {
   return GeodeTypeIdsImpl::FixedIDByte;
 }
 
-uint32_t CacheableObjectPartList::objectSize() const { return 0; }
+size_t CacheableObjectPartList::objectSize() const { return 0; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -77,7 +77,7 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
 
   int32_t classId() const override { return 30; }
 
-  uint32_t objectSize() const override { return 0; }
+  size_t objectSize() const override { return 0; }
 
   std::shared_ptr<Delta> clone() const override {
     return std::make_shared<DeltaTestImpl>(*this);

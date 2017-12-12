@@ -157,7 +157,7 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
   /** Destructor */
   virtual ~CacheableString();
 
-  virtual uint32_t objectSize() const override;
+  virtual size_t objectSize() const override;
 
  protected:
   /**

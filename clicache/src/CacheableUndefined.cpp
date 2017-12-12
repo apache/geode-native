@@ -43,9 +43,9 @@ namespace Apache
       {
       }
 
-      System::UInt32 CacheableUndefined::ObjectSize::get()
+      System::UInt64 CacheableUndefined::ObjectSize::get()
       {
-        return static_cast<System::UInt32> (sizeof(CacheableUndefined^));
+        return sizeof(CacheableUndefined^);
       }
 
     }  // namespace Client

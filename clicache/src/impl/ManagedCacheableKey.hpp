@@ -58,7 +58,7 @@ namespace apache
       private:
         int m_hashcode;
         int m_classId;
-        int m_objectSize;
+        size_t m_objectSize;
       public:
 
         inline ManagedCacheableKeyGeneric(
@@ -96,7 +96,7 @@ namespace apache
         /// <summary>
         /// return the size of this object in bytes
         /// </summary>
-        virtual System::UInt32 objectSize() const override;
+        virtual size_t objectSize() const override;
 
         /// <summary>
         /// return the classId of the instance being serialized.

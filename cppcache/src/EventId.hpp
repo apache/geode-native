@@ -66,8 +66,8 @@ class CPPCACHE_EXPORT EventId : public Cacheable {
    **/
   virtual void fromData(DataInput& input);
 
-  virtual uint32_t objectSize() const {
-    uint32_t objectSize = 0;
+  virtual size_t objectSize() const {
+    size_t objectSize = 0;
     objectSize += sizeof(uint8_t);
     objectSize += sizeof(int64_t);
     objectSize += sizeof(uint8_t);

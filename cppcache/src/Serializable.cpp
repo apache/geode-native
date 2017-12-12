@@ -41,7 +41,7 @@ int8_t Serializable::DSFID() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDDefault);
 }
 
-uint32_t Serializable::objectSize() const { return 0; }
+size_t Serializable::objectSize() const { return 0; }
 std::string Serializable::toString() const {
   return Utils::demangleTypeName(typeid(*this).name());
 }

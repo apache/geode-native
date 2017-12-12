@@ -122,7 +122,7 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
    */
   virtual std::string toString() const override;
 
-  virtual uint32_t objectSize() const override;
+  virtual size_t objectSize() const override;
 
  protected:
   CacheableToken(TokenType value);

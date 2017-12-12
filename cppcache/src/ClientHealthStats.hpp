@@ -61,7 +61,7 @@ class ClientHealthStats : public Serializable {
 
   virtual int8_t DSFID() const;
   /** @return the size of the object in bytes */
-  virtual uint32_t objectSize() const { return sizeof(ClientHealthStats); }
+  virtual size_t objectSize() const { return sizeof(ClientHealthStats); }
   /**
    * Factory method for creating an instance of ClientHealthStats
    */

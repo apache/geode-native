@@ -89,9 +89,9 @@ namespace Apache
         /// <summary>
         /// return the size of this object in bytes
         /// </summary>
-        virtual property System::UInt32 ObjectSize
+        virtual property System::UInt64 ObjectSize
         {
-          virtual System::UInt32 get();
+          virtual System::UInt64 get();
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace Apache
 
       private:
         Object^ m_obj;
-        System::UInt32 m_objectSize;
+        System::UInt64 m_objectSize;
       };
     }  // namespace Client
   }  // namespace Geode

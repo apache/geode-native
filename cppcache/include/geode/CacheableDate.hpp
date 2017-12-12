@@ -84,7 +84,7 @@ class CPPCACHE_EXPORT CacheableDate : public CacheableKey {
   virtual int8_t typeId() const override;
 
   /** @return the size of the object in bytes */
-  virtual uint32_t objectSize() const override { return sizeof(CacheableDate); }
+  virtual size_t objectSize() const override { return sizeof(CacheableDate); }
 
   /** @return true if this key matches other. */
   virtual bool operator==(const CacheableKey& other) const override;

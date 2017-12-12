@@ -69,8 +69,8 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
   bool hasDelta() const override { return true; }
   int32_t classId() const override { return 42; }
 
-  uint32_t objectSize() const override {
-    uint32_t objectSize = sizeof(DeltaPSTObject);
+  size_t objectSize() const override {
+    auto objectSize = sizeof(DeltaPSTObject);
     return objectSize;
   }
   void incrementField1() { ++field1; }

@@ -208,7 +208,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   virtual int8_t typeId() const;
 
   // return zero deliberately
-  virtual uint32_t objectSize() const { return 0; }
+  virtual size_t objectSize() const { return 0; }
 
   /**
    * This method returns the path of the library from which

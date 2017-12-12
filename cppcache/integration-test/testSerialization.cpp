@@ -81,7 +81,7 @@ class OtherType : public Serializable {
     output.writeInt(m_classIdToReturn);
   }
 
-  virtual uint32_t objectSize() const { return sizeof(CData); }
+  virtual size_t objectSize() const { return sizeof(CData); }
 
   virtual void fromData(DataInput& input) {
     int32_t size = input.readArrayLen();

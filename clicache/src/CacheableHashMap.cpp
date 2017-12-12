@@ -44,11 +44,10 @@ namespace Apache
         m_dictionary = input->ReadDictionary();
       }
 
-      System::UInt32 Client::CacheableHashMap::ObjectSize::get()
+      System::UInt64 Client::CacheableHashMap::ObjectSize::get()
       {
         return ((System::Collections::IDictionary^)m_dictionary)->Count;
+      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
- } //namespace 

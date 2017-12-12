@@ -212,7 +212,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public uint ObjectSize
+    public UInt64 ObjectSize
     {
       get { return 100; }//need to implement
     }

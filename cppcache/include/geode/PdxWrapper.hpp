@@ -100,7 +100,7 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
    * cache memory utilization.
    * Note that you must implement this only if you use the HeapLRU feature.
    */
-  virtual uint32_t objectSize() const override;
+  virtual size_t objectSize() const override;
   /**
    * Display this object as 'string', which depends on the implementation in
    * the subclasses.

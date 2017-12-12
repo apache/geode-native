@@ -51,7 +51,7 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
   int32_t assetId;
   double value;
 
-  inline uint32_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
+  inline size_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -63,8 +63,8 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
   virtual void fromData(apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 24; }
 
-  virtual uint32_t objectSize() const {
-    uint32_t objectSize = sizeof(FastAsset);
+  virtual size_t objectSize() const {
+    auto objectSize = sizeof(FastAsset);
     return objectSize;
   }
 

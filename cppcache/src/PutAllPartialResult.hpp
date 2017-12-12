@@ -124,7 +124,7 @@ class PutAllPartialResult : public Serializable {
     return 0;
   }
 
-  uint32_t objectSize() const override {
+  size_t objectSize() const override {
     throw IllegalStateException(
         "PutAllPartialResult::objectSize is not intended for use.");
     return 0;

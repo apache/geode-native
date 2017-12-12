@@ -78,8 +78,8 @@ class PositionPdxAuto : public apache::geode::client::PdxSerializable {
 
   std::string toString() const;
 
-  virtual uint32_t objectSize() const {
-    uint32_t objectSize = sizeof(PositionPdxAuto);
+  virtual size_t objectSize() const {
+    auto objectSize = sizeof(PositionPdxAuto);
     return objectSize;
   }
 

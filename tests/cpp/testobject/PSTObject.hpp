@@ -52,8 +52,7 @@ class TESTOBJECT_EXPORT PSTObject : public TimestampedObject {
   int8_t field2;
   std::shared_ptr<CacheableBytes> valueData;
 
-  inline uint32_t getObjectSize(
-      const std::shared_ptr<Serializable>& obj) const {
+  inline size_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -66,8 +65,8 @@ class TESTOBJECT_EXPORT PSTObject : public TimestampedObject {
   virtual int32_t classId() const { return 0x04; }
   std::string toString() const;
 
-  virtual uint32_t objectSize() const {
-    uint32_t objectSize = sizeof(PSTObject);
+  virtual size_t objectSize() const {
+    auto objectSize = sizeof(PSTObject);
     objectSize += getObjectSize(valueData);
     return objectSize;
   }

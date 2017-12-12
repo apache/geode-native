@@ -60,7 +60,7 @@ namespace Apache
         }
       }
 
-      System::UInt32 CacheableVector::ObjectSize::get()
+      System::UInt64 CacheableVector::ObjectSize::get()
       { 
         //TODO::
         /*System::UInt32 size = static_cast<System::UInt32> (sizeof(CacheableVector^));

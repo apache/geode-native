@@ -41,7 +41,7 @@ namespace Apache
         throw gcnew IllegalStateException("UserFunctionExecutionException::FromData is not intended for use.");
       }
 
-      System::UInt32 UserFunctionExecutionException::ObjectSize::get()
+      System::UInt64 UserFunctionExecutionException::ObjectSize::get()
       {
         _GF_MG_EXCEPTION_TRY2
           throw gcnew IllegalStateException("UserFunctionExecutionException::ObjectSize is not intended for use.");

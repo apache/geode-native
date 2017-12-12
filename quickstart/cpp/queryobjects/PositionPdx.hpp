@@ -77,8 +77,8 @@ class TESTOBJECT_EXPORT PositionPdx
 
   std::string toString() const;
 
-  virtual uint32_t objectSize() const {
-    uint32_t objectSize = sizeof(PositionPdx);
+  virtual size_t objectSize() const {
+    auto objectSize = sizeof(PositionPdx);
     return objectSize;
   }
 

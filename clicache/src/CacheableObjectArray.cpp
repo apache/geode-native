@@ -67,7 +67,7 @@ namespace Apache
         }
       }
 
-      System::UInt32 CacheableObjectArray::ObjectSize::get()
+      System::UInt64 CacheableObjectArray::ObjectSize::get()
       { 
         return Count;
       }

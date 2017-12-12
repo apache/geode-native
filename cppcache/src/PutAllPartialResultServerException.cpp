@@ -87,7 +87,7 @@ int32_t PutAllPartialResultServerException::classId() const {
   return 0;
 }
 
-uint32_t PutAllPartialResultServerException::objectSize() const {
+size_t PutAllPartialResultServerException::objectSize() const {
   throw IllegalStateException(
       "PutAllPartialResultServerException::objectSize is not intended for "
       "use.");

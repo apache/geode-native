@@ -82,12 +82,11 @@ namespace Apache.Geode.Client.Tests
             }
         }
 
-        public UInt32 ObjectSize
+        public UInt64 ObjectSize
         {
             get
             {
-                UInt32 objectSize = 0;
-                return objectSize;
+                return 0;
             }
         }
         public void SetDelta(bool isDelta)

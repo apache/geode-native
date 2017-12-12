@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
- #pragma once
+#pragma once
 
- #ifndef GEODE_TESTOBJECT_BATCHOBJECT_H_
- #define GEODE_TESTOBJECT_BATCHOBJECT_H_
+#ifndef GEODE_TESTOBJECT_BATCHOBJECT_H_
+#define GEODE_TESTOBJECT_BATCHOBJECT_H_
 
 /*
  * @brief User class for testing the cq functionality.
@@ -52,8 +52,7 @@ class TESTOBJECT_EXPORT BatchObject : public TimestampedObject {
   int32_t batch;
   std::shared_ptr<CacheableBytes> byteArray;
 
-  inline uint32_t getObjectSize(
-      const std::shared_ptr<Serializable>& obj) const {
+  inline size_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -61,20 +60,20 @@ class TESTOBJECT_EXPORT BatchObject : public TimestampedObject {
   BatchObject() : index(0), timestamp(0), batch(0), byteArray(nullptr) {}
   BatchObject(int32_t anIndex, int32_t batchSize, int32_t size);
   virtual ~BatchObject();
-  virtual void toData(apache::geode::client::DataOutput& output) const;
-  virtual void fromData(apache::geode::client::DataInput& input);
-  virtual int32_t classId() const { return 25; }
-  std::string toString() const;
+  virtual void toData(apache::geode::client::DataOutput& output) const override;
+  virtual void fromData(apache::geode::client::DataInput& input) override;
+  virtual int32_t classId() const override { return 25; }
+  std::string toString() const override;
 
-  virtual uint32_t objectSize() const {
-    uint32_t objectSize = sizeof(BatchObject);
+  virtual size_t objectSize() const override {
+    auto objectSize = sizeof(BatchObject);
     return objectSize;
   }
 
-  uint64_t getTimestamp() { return timestamp; }
+  uint64_t getTimestamp() override { return timestamp; }
   int getIndex() { return index; }
   int getBatch() { return batch; }
-  void resetTimestamp() {
+  void resetTimestamp() override {
     ACE_Time_Value startTime;
     startTime = ACE_OS::gettimeofday();
     ACE_UINT64 tusec;

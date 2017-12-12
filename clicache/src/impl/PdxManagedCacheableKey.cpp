@@ -87,7 +87,7 @@ namespace apache
         }
       }
 
-      System::UInt32 PdxManagedCacheableKey::objectSize() const
+      size_t PdxManagedCacheableKey::objectSize() const
       {
         try {
           return m_objectSize;

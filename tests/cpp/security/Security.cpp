@@ -755,7 +755,7 @@ std::shared_ptr<Region> Security::getRegionPtr(const char *reg) {
   try {
     if (name.empty()) {  // just get a random root region
       auto rootRegionVector = m_cache->rootRegions();
-      int32_t size = rootRegionVector.size();
+      int32_t size = static_cast<int32_t>(rootRegionVector.size());
 
       if (size == 0) {
         FWKEXCEPTION("In Security::getRegionPtr()  No regions exist.");
@@ -1009,9 +1009,10 @@ int32_t Security::doEntryOperations() {
             int32_t *val =
                 (int32_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
                                 ->value());
-            *val = (*val == keyVal) ? keyVal + 1
-                                    : keyVal;  // alternate the value so that it
-                                               // can be validated later.
+            *val =
+                (*val == keyVal) ? keyVal + 1 : keyVal;  // alternate the value
+                                                         // so that it can be
+                                                         // validated later.
             int64_t *adjNow =
                 (int64_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
                                 ->value() +

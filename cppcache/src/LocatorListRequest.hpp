@@ -40,7 +40,7 @@ class LocatorListRequest : public ServerLocationRequest {
   virtual void toData(DataOutput& output) const;
   virtual void fromData(DataInput& input);
   virtual int8_t typeId() const;
-  virtual uint32_t objectSize() const;
+  virtual size_t objectSize() const;
 };
 
 }  // namespace client

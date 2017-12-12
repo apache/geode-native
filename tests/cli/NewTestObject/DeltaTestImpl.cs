@@ -80,7 +80,7 @@ namespace Apache.Geode.Client.Tests
       this.testobj = testObject;
     }
 
-    public UInt32 ObjectSize
+    public UInt64 ObjectSize
     {
       get
       {

@@ -108,7 +108,7 @@ namespace Apache
         }
       }
 
-      System::UInt32 Apache::Geode::Client::Serializable::ObjectSize::get()
+      System::UInt64 Apache::Geode::Client::Serializable::ObjectSize::get()
       {
         try
         {

@@ -44,7 +44,7 @@ class LocatorListResponse : public ServerLocationResponse {
         m_isBalanced(false) {}  // Default constru needed for de-serialization
   virtual void fromData(DataInput& input);
   virtual int8_t typeId() const;
-  virtual uint32_t objectSize() const;
+  virtual size_t objectSize() const;
   const std::vector<ServerLocation>& getLocators() const;
   bool isBalanced() const;
   virtual ~LocatorListResponse() {}  // Virtual destructor

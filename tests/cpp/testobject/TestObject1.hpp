@@ -55,7 +55,7 @@ class TESTOBJECT_EXPORT TestObject1 : public Cacheable {
 
   int32_t classId() const { return 31; }
 
-  uint32_t objectSize() const { return 0; }
+  size_t objectSize() const { return 0; }
 
   static Serializable* create();
 };

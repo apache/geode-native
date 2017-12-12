@@ -79,4 +79,4 @@ std::string CacheableToken::toString() const {
   return ctstrings[m_value];
 }
 
-uint32_t CacheableToken::objectSize() const { return sizeof(m_value); }
+size_t CacheableToken::objectSize() const { return sizeof(m_value); }

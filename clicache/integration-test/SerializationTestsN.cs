@@ -494,7 +494,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ObjectSize
+    public UInt64 ObjectSize
     {
       get
       {
@@ -641,7 +641,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ObjectSize
+    public UInt64 ObjectSize
     {
       get
       {
@@ -789,7 +789,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ObjectSize
+    public UInt64 ObjectSize
     {
       get
       {
@@ -936,7 +936,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ObjectSize
+    public UInt64 ObjectSize
     {
       get
       {
@@ -1084,7 +1084,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ObjectSize
+    public UInt64 ObjectSize
     {
       get
       {
@@ -1232,7 +1232,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ObjectSize
+    public UInt64 ObjectSize
     {
       get
       {

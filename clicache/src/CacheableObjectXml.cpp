@@ -90,7 +90,7 @@ namespace Apache
         }
       }
 
-      System::UInt32 CacheableObjectXml::ObjectSize::get()
+      System::UInt64 CacheableObjectXml::ObjectSize::get()
       { 
         if (m_objectSize == 0) {
           if (m_obj != nullptr) {
@@ -99,7 +99,7 @@ namespace Apache
             GeodeNullStream ns;
             xs.Serialize(%ns, m_obj);
 
-            m_objectSize = (System::UInt32)sizeof(CacheableObjectXml^) + (System::UInt32)ns.Length;
+            m_objectSize = sizeof(CacheableObjectXml^) + ns.Length;
           }
         }
         return m_objectSize;

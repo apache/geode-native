@@ -33,7 +33,7 @@ class ClientConnectionResponse : public ServerLocationResponse {
   ClientConnectionResponse() : ServerLocationResponse(), m_serverFound(false) {}
   virtual void fromData(DataInput& input);
   virtual int8_t typeId() const;
-  virtual uint32_t objectSize() const;
+  virtual size_t objectSize() const;
   virtual ServerLocation getServerLocation() const;
   void printInfo() { m_server.printInfo(); }
   static Serializable* create() { return new ClientConnectionResponse(); }

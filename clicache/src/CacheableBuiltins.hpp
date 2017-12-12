@@ -217,11 +217,11 @@ namespace Apache
           input->ReadObject(m_value);
         }
 
-        virtual property System::UInt32 ObjectSize
+        virtual property System::UInt64 ObjectSize
         {
-          virtual System::UInt32 get() override
+          virtual System::UInt64 get() override
           {
-            return (System::UInt32)(m_value->Length) * sizeof(TManaged);
+            return m_value->Length * sizeof(TManaged);
           }
         }
         /// <summary>

@@ -272,7 +272,7 @@ namespace Apache
       }
 
       generic<class TPropKey, class TPropValue>
-      System::UInt32 Properties<TPropKey, TPropValue>::ObjectSize::get( )
+      System::UInt64 Properties<TPropKey, TPropValue>::ObjectSize::get( )
       {
         //TODO::
         _GF_MG_EXCEPTION_TRY2

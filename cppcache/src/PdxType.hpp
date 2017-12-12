@@ -117,29 +117,26 @@ class PdxType : public Serializable,
     return new PdxType(pdxTypeRegistryPtr, "", false);
   }
 
-  virtual uint32_t objectSize() const {
-    uint32_t size = sizeof(PdxType);
+  virtual size_t objectSize() const {
+    auto size = sizeof(PdxType);
     if (m_pdxFieldTypes != nullptr) {
       for (size_t i = 0; i < m_pdxFieldTypes->size(); i++) {
         size += m_pdxFieldTypes->at(i)->objectSize();
       }
     }
     size += static_cast<uint32_t>(m_className.length());
-    for (NameVsPdxType::const_iterator iter = m_fieldNameVsPdxType.begin();
-         iter != m_fieldNameVsPdxType.end(); ++iter) {
-      size += static_cast<uint32_t>(iter->first.length());
-      size += iter->second->objectSize();
+    for (auto&& iter : m_fieldNameVsPdxType) {
+      size += iter.first.length();
+      size += iter.second->objectSize();
     }
     if (m_remoteToLocalFieldMap != nullptr) {
       if (m_pdxFieldTypes != nullptr) {
-        size +=
-            static_cast<uint32_t>(sizeof(int32_t) * m_pdxFieldTypes->size());
+        size += sizeof(int32_t) * m_pdxFieldTypes->size();
       }
     }
     if (m_localToRemoteFieldMap != nullptr) {
       if (m_pdxFieldTypes != nullptr) {
-        size +=
-            static_cast<uint32_t>(sizeof(int32_t) * m_pdxFieldTypes->size());
+        size += sizeof(int32_t) * m_pdxFieldTypes->size();
       }
     }
     return size;

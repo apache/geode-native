@@ -43,7 +43,7 @@ int8_t QueueConnectionRequest::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::QueueConnectionRequest);
 }
 
-uint32_t QueueConnectionRequest::objectSize() const {
+size_t QueueConnectionRequest::objectSize() const {
   return 0;  // will implement later.
 }
 

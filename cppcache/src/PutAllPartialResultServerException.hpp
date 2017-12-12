@@ -108,7 +108,7 @@ class CPPCACHE_EXPORT PutAllPartialResultServerException : public Serializable {
    * Note that you must implement this only if you use the HeapLRU feature.
    * @throws IllegalStateException If this api is called from User code.
    */
-  virtual uint32_t objectSize() const;
+  virtual size_t objectSize() const;
 
   /**
    *@brief return the typeId byte of the instance being serialized.

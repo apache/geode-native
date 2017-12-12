@@ -76,7 +76,7 @@ class DeltaEx : public Cacheable, public Delta {
     fromDataCount++;
   }
   virtual int32_t classId() const override { return 1; }
-  virtual uint32_t objectSize() const override { return 0; }
+  virtual size_t objectSize() const override { return 0; }
   std::shared_ptr<Delta> clone() const override {
     cloneCount++;
     return std::make_shared<DeltaEx>(*this);

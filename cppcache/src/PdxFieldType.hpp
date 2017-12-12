@@ -88,10 +88,10 @@ class CPPCACHE_EXPORT PdxFieldType : public Serializable {
 
   virtual int32_t classId() const override { return m_typeId; }
 
-  virtual uint32_t objectSize() const override {
-    uint32_t size = sizeof(PdxFieldType);
-    size += static_cast<uint32_t>(m_className.length());
-    size += static_cast<uint32_t>(m_fieldName.length());
+  virtual size_t objectSize() const override {
+    auto size = sizeof(PdxFieldType);
+    size += m_className.length();
+    size += m_fieldName.length();
     return size;
   }
 

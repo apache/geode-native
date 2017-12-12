@@ -72,12 +72,10 @@ class FixedPartitionAttributesImpl : public Serializable {
     m_startingBucketId = input.readInt32();
   }
 
-  uint32_t objectSize() const {
+  size_t objectSize() const {
     if (m_partitionName != nullptr) {
-      return static_cast<uint32_t>(sizeof(int)) +
-             static_cast<uint32_t>(sizeof(int)) +
-             static_cast<uint32_t>(sizeof(bool)) +
-             (m_partitionName->length()) * static_cast<uint32_t>(sizeof(char));
+      return sizeof(int) + sizeof(int) + sizeof(bool) +
+             (m_partitionName->length() * sizeof(char));
     }
     return 0;
   }

@@ -311,7 +311,7 @@ int8_t VersionedCacheableObjectPartList::DSFID() const {
   return GeodeTypeIdsImpl::FixedIDByte;
 }
 
-uint32_t VersionedCacheableObjectPartList::objectSize() const { return 0; }
+size_t VersionedCacheableObjectPartList::objectSize() const { return 0; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

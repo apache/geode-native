@@ -62,14 +62,14 @@ namespace Apache
         m_objectSize = dis.BytesRead - checkpoint;
       }
 
-      System::UInt32 CacheableObject::ObjectSize::get()
+      System::UInt64 CacheableObject::ObjectSize::get()
       { 
         if (m_objectSize == 0) {
           GeodeNullStream ns;
           BinaryFormatter bf;
           bf.Serialize(%ns, m_obj);
 
-          m_objectSize = (System::UInt32)sizeof(CacheableObject^) + (System::UInt32)ns.Length;
+          m_objectSize = sizeof(CacheableObject^) + ns.Length;
         }
         return m_objectSize;
     }  // namespace Client

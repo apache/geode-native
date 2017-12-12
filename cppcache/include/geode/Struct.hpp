@@ -143,7 +143,7 @@ class CPPCACHE_EXPORT Struct : public Serializable {
   /**
    * always returns 0
    */
-  virtual uint32_t objectSize() const {
+  virtual size_t objectSize() const {
     return 0;  // does not get cached, so no need to account for it
   }
 

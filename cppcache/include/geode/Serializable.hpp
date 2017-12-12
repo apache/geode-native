@@ -107,7 +107,7 @@ class CPPCACHE_EXPORT Serializable
    * cache memory utilization.
    * Note that you must implement this only if you use the HeapLRU feature.
    */
-  virtual uint32_t objectSize() const;
+  virtual size_t objectSize() const;
 
   /**
    * Display this object as 'string', which depends on the implementation in

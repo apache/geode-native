@@ -34,4 +34,4 @@ int8_t LocatorListRequest::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::LocatorListRequest);
 }
 
-uint32_t LocatorListRequest::objectSize() const { return 0; }
+size_t LocatorListRequest::objectSize() const { return 0; }

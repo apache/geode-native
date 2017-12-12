@@ -529,8 +529,8 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
 
   virtual ~InvalidPdxUsage() {}
 
-  virtual uint32_t objectSize() const override {
-    uint32_t objectSize = sizeof(InvalidPdxUsage);
+  virtual size_t objectSize() const override {
+    auto objectSize = sizeof(InvalidPdxUsage);
     return objectSize;
   }
 

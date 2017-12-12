@@ -38,7 +38,7 @@ class ServerLocationResponse : public Serializable {
   virtual int8_t DSFID() const {
     return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
   }
-  virtual uint32_t objectSize()
+  virtual size_t objectSize()
       const = 0;  // Has to be implemented by concrete class
   virtual ~ServerLocationResponse() {}  // Virtual destructor
 };

@@ -285,7 +285,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
    */
   virtual int8_t DSFID() const;
 
-  virtual uint32_t objectSize() const;
+  virtual size_t objectSize() const;
 };
 
 }  // namespace client

@@ -869,7 +869,7 @@ namespace PdxTests
       m_i4 = input.ReadInt32();
     }
 
-    public uint ObjectSize
+    public UInt64 ObjectSize
     {
       get { return 0; }
     }

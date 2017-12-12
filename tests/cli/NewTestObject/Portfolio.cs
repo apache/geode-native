@@ -45,7 +45,7 @@ namespace Apache.Geode.Client.Tests
     private static string[] m_secIds = { "SUN", "IBM", "YHOO", "GOOG", "MSFT",
       "AOL", "APPL", "ORCL", "SAP", "DELL" };
 
-    private UInt32 GetObjectSize(IGeodeSerializable obj)
+    private UInt64 GetObjectSize(IGeodeSerializable obj)
     {
       return (obj == null ? 0 : obj.ObjectSize);
     }
@@ -269,22 +269,22 @@ namespace Apache.Geode.Client.Tests
       output.WriteBytes(m_arrayZeroSize);
     }
     
-  public UInt32 ObjectSize
+  public UInt64 ObjectSize
     {
       get
       {
-        UInt32 objectSize = 0;
-        objectSize += (UInt32)sizeof(Int32);
-        objectSize += (UInt32)(m_pkid.Length * sizeof(char));
+        UInt64 objectSize = 0;
+        objectSize += (UInt64)sizeof(Int32);
+        objectSize += (UInt64)(m_pkid.Length * sizeof(char));
         objectSize += GetObjectSize(m_position1);
         objectSize += GetObjectSize(m_position2);
-        objectSize += (UInt32)(m_type.Length * sizeof(char));
-        objectSize += (UInt32)(m_status == null ? 0 : sizeof(char) * m_status.Length);
+        objectSize += (UInt64)(m_type.Length * sizeof(char));
+        objectSize += (UInt64)(m_status == null ? 0 : sizeof(char) * m_status.Length);
         objectSize += (uint)m_names.Length;//TODO:need to calculate properly
-        objectSize += (UInt32)(m_newVal == null ? 0 : sizeof(byte) * m_newVal.Length);
+        objectSize += (UInt64)(m_newVal == null ? 0 : sizeof(byte) * m_newVal.Length);
         objectSize += 8; //TODO:need to calculate properly for m_creationDate.;
-        objectSize += (UInt32)(m_arrayZeroSize == null ? 0 : sizeof(byte) * m_arrayZeroSize.Length);
-        objectSize += (UInt32)(m_arrayNull == null ? 0 : sizeof(byte) * m_arrayNull.Length);
+        objectSize += (UInt64)(m_arrayZeroSize == null ? 0 : sizeof(byte) * m_arrayZeroSize.Length);
+        objectSize += (UInt64)(m_arrayNull == null ? 0 : sizeof(byte) * m_arrayNull.Length);
         return objectSize;
       }
     }

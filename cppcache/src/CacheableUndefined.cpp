@@ -38,7 +38,7 @@ int8_t CacheableUndefined::DSFID() const {
   return GeodeTypeIdsImpl::FixedIDByte;
 }
 
-uint32_t CacheableUndefined::objectSize() const { return 0; }
+size_t CacheableUndefined::objectSize() const { return 0; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

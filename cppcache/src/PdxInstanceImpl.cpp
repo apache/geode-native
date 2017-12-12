@@ -2121,13 +2121,13 @@ void PdxInstanceImpl::setOffsetForObject(DataInput& dataInput,
   dataInput.advanceCursor(pos);
 }
 
-uint32_t PdxInstanceImpl::objectSize() const {
-  uint32_t size = sizeof(PdxInstanceImpl);
+size_t PdxInstanceImpl::objectSize() const {
+  auto size = sizeof(PdxInstanceImpl);
   size += m_bufferLength;
   size += m_pdxType->objectSize();
   for (FieldVsValues::const_iterator iter = m_updatedFields.begin();
        iter != m_updatedFields.end(); ++iter) {
-    size += static_cast<int32_t>(iter->first.length());
+    size += iter->first.length();
     size += iter->second->objectSize();
   }
   return size;
