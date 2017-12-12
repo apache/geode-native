@@ -82,7 +82,7 @@ struct dereference_equal_to<_T*> : std::equal_to<_T*> {
  */
 template <class _T>
 struct geode_hash {
-  typedef _T* argument_type;
+  typedef _T argument_type;
   int32_t operator()(const argument_type& val);
 };
 
