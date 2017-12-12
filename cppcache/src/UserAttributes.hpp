@@ -74,11 +74,12 @@ class CPPCACHE_EXPORT UserAttributes {
  public:
   ~UserAttributes();
   UserAttributes(std::shared_ptr<Properties> credentials,
-                 std::shared_ptr<Pool> pool, ProxyCache* proxyCache);
+                 std::shared_ptr<Pool> pool,
+                 ProxyCache* proxyCache);
 
   bool isCacheClosed();
 
-  std::shared_ptr<ProxyCache> getProxyCache();
+  ProxyCache* getProxyCache();
 
   std::shared_ptr<Pool> getPool();
 
@@ -111,7 +112,7 @@ class CPPCACHE_EXPORT UserAttributes {
   // ThinClientPoolDM m_pool;
   ACE_Recursive_Thread_Mutex m_listLock;
   bool m_isUserAuthenticated;
-  std::shared_ptr<ProxyCache> m_proxyCache;
+  ProxyCache* m_proxyCache;
   std::shared_ptr<Pool> m_pool;
 
   // Disallow copy constructor and assignment operator.
@@ -139,14 +140,14 @@ class GuardUserAttribures {
  public:
   GuardUserAttribures();
 
-  GuardUserAttribures(std::shared_ptr<ProxyCache> proxyCache);
+  GuardUserAttribures(ProxyCache* proxyCache);
 
-  void setProxyCache(std::shared_ptr<ProxyCache> proxyCache);
+  void setProxyCache(ProxyCache* proxyCache);
 
   ~GuardUserAttribures();
 
  private:
-  std::shared_ptr<ProxyCache> m_proxyCache;
+  ProxyCache* m_proxyCache;
 };
 }  // namespace client
 }  // namespace geode

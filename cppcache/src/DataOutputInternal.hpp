@@ -26,11 +26,13 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class CacheImpl;
+
 class DataOutputInternal : public DataOutput {
  public:
   DataOutputInternal() : DataOutput() {}
 
-  DataOutputInternal(Cache* cache) : DataOutput(cache) {}
+  DataOutputInternal(CacheImpl* cache) : DataOutput(cache) {}
 
   virtual const Cache* getCache() override {
     throw FatalInternalException("DataOutputInternal does not have a Cache");

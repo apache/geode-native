@@ -25,8 +25,7 @@ UserAttributes::UserAttributes(std::shared_ptr<Properties> credentials,
     : m_isUserAuthenticated(false), m_pool(pool) {
   m_credentials = credentials;
 
-  std::shared_ptr<ProxyCache> pcp(proxyCache);
-  m_proxyCache = pcp;
+  m_proxyCache = proxyCache;
 }
 
 bool UserAttributes::isCacheClosed() { return m_proxyCache->isClosed(); }
@@ -124,18 +123,18 @@ std::shared_ptr<Properties> UserAttributes::getCredentials() {
   }
   return m_credentials;
 }
- std::shared_ptr<ProxyCache> UserAttributes::getProxyCache() { return m_proxyCache; }
+ProxyCache* UserAttributes::getProxyCache() { return m_proxyCache; }
 
  ACE_TSS<TSSUserAttributesWrapper>
      TSSUserAttributesWrapper::s_geodeTSSUserAttributes;
 
  GuardUserAttribures::GuardUserAttribures(
-     std::shared_ptr<ProxyCache> proxyCache) {
+     ProxyCache* proxyCache) {
    setProxyCache(proxyCache);
  }
 
  void GuardUserAttribures::setProxyCache(
-     std::shared_ptr<ProxyCache> proxyCache) {
+     ProxyCache* proxyCache) {
    m_proxyCache = proxyCache;
    LOGDEBUG("GuardUserAttribures::GuardUserAttribures:");
    if (m_proxyCache != nullptr && !proxyCache->isClosed()) {

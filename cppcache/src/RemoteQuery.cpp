@@ -36,7 +36,7 @@ namespace client {
 RemoteQuery::RemoteQuery(
     std::string querystr,
     const std::shared_ptr<RemoteQueryService>& queryService,
-    ThinClientBaseDM* tccdmptr, std::shared_ptr<ProxyCache> proxyCache)
+    ThinClientBaseDM* tccdmptr, ProxyCache* proxyCache)
     : m_queryString(querystr),
       m_queryService(queryService),
       m_tccdm(tccdmptr),

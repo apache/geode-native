@@ -866,7 +866,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
                  ? 5
                  : attempts;  // at least 5 attempts if ep lists are small.
 
-  std::shared_ptr<ProxyCache> proxyCache = nullptr;
+  ProxyCache* proxyCache = nullptr;
 
   while (attempts--) {
     if (err != GF_NOERR || m_redundantEndpoints.empty()) {

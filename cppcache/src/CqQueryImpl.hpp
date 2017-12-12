@@ -272,7 +272,7 @@ class CqQueryImpl : public CqQuery,
   mutable ACE_Recursive_Thread_Mutex m_mutex;
   void sendStopOrClose(TcrMessage::MsgType requestType);
   ThinClientBaseDM* m_tccdm;
-  std::shared_ptr<ProxyCache> m_proxyCache;
+  ProxyCache* m_proxyCache;
 
   FRIEND_STD_SHARED_PTR(CqQueryImpl)
 };

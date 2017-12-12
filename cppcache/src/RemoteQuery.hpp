@@ -47,13 +47,13 @@ class CPPCACHE_EXPORT RemoteQuery : public Query {
 
   std::shared_ptr<RemoteQueryService> m_queryService;
   ThinClientBaseDM* m_tccdm;
-  std::shared_ptr<ProxyCache> m_proxyCache;
+  ProxyCache* m_proxyCache;
 
  public:
   RemoteQuery(std::string querystr,
               const std::shared_ptr<RemoteQueryService>& queryService,
               ThinClientBaseDM* tccdmptr,
-              std::shared_ptr<ProxyCache> proxyCache = nullptr);
+              ProxyCache* proxyCache = nullptr);
 
   std::shared_ptr<SelectResults> execute(
       std::chrono::milliseconds timeout =
