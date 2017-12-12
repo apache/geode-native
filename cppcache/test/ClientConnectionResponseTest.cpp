@@ -34,7 +34,7 @@ TEST(ClientConnectionResponseTest, testReadServerFound) {
   dataOutputInternal.writeBoolean(true);
 
   // The following are necessary to meet subsequent calls
-  dataOutputInternal.writeNativeString("hello");
+  dataOutputInternal.writeString("hello");
   dataOutputInternal.writeInt(static_cast<int64_t>(103334));
 
   // Put it into a datainput so it can be read.

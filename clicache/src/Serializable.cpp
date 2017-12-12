@@ -1071,12 +1071,8 @@ namespace Apache
           return Serializable::getCacheableWideChar((Char)key);
         case native::GeodeTypeIds::CacheableDouble:
           return Serializable::getCacheableDouble((double)key);
-        case native::GeodeTypeIds::CacheableASCIIString: {
-          if (isAsciiChar)
-            return Serializable::getCacheableASCIIString2((String^)key);
-          else
-            return Serializable::getCacheableASCIIString((String^)key);
-        }
+        case native::GeodeTypeIds::CacheableASCIIString:
+          return Serializable::GetCacheableString((String^)key);
         case native::GeodeTypeIds::CacheableFloat:
           return Serializable::getCacheableFloat((float)key);
         case native::GeodeTypeIds::CacheableInt16: {
@@ -1320,11 +1316,6 @@ namespace Apache
         return GetCacheableString(val);
       }
 
-      std::shared_ptr<native::CacheableKey> Serializable::getCacheableASCIIString2(String^ val)
-      {
-        return GetCacheableString2(val);
-      }
-
       //cacheable ascii string huge
       String^ Serializable::getASCIIStringHuge(std::shared_ptr<native::Serializable> nativeptr)
       {
@@ -1361,37 +1352,12 @@ namespace Apache
       std::shared_ptr<native::CacheableString> Serializable::GetCacheableString(String^ value)
       {
         std::shared_ptr<native::CacheableString> cStr;
-        size_t len = 0;
         if (value) {
           cStr = native::CacheableString::create(marshal_as<std::string>(value));
         }
         else {
           cStr.reset(static_cast<native::CacheableString *>(
-            native::CacheableString::createDeserializable()));
-        }
-
-        return cStr;
-      }
-
-      std::shared_ptr<native::CacheableString> Serializable::GetCacheableString2(String^ value)
-      {
-        std::shared_ptr<native::CacheableString> cStr;
-        size_t len = 0;
-        if (value != nullptr) {
-          len = value->Length;
-          const char* chars = (const char*)(Marshal::StringToHGlobalAnsi(value)).ToPointer();
-          try
-          {
-            cStr = native::CacheableString::create(chars, Convert::ToInt32(len));
-          }
-          finally
-          {
-            Marshal::FreeHGlobal(IntPtr((void*)chars));
-          }
-        }
-        else {
-          cStr.reset(static_cast<native::CacheableString*>(
-            native::CacheableString::createDeserializable()));
+              native::CacheableString::createDeserializable()));
         }
 
         return cStr;

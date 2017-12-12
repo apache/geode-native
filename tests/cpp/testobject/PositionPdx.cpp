@@ -29,14 +29,12 @@ PositionPdx::PositionPdx(const char* id, int32_t out) {
   init();
 
   size_t strSize = strlen(id) + 1;
-  secId = new char[strSize];
-  memcpy(secId, id, strSize);
+  secId = std::string(id);
 
   qty = out * (cnt % 2 == 0 ? 10.0 : 100.0);
   mktValue = qty * 1.2345998;
   sharesOutstanding = out;
-  secType = new char[(strlen("a") + 1)];
-  strcpy(secType, "a");
+  secType = "a";
 
   pid = cnt++;
 }
@@ -45,53 +43,32 @@ PositionPdx::PositionPdx(const char* id, int32_t out) {
 PositionPdx::PositionPdx(int32_t iForExactVal) {
   init();
 
-  char* id = new char[iForExactVal + 2];
-  for (int i = 0; i <= iForExactVal; i++) {
-    id[i] = 'a';
-  }
-  id[iForExactVal + 1] = '\0';
-  size_t strSize = strlen(id) + 1;
-  secId = new char[strSize];
-  memcpy(secId, id, strSize);
+  secId = std::string('a', iForExactVal + 1);
 
-  delete[] id;
   qty = (iForExactVal % 2 == 0 ? 1000 : 100);
   mktValue = qty * 2;
   sharesOutstanding = iForExactVal;
-  secType = new char[(strlen("a") + 1)];
-  strcpy(secType, "a");
+  secType = "a";
   pid = iForExactVal;
 }
 
-PositionPdx::~PositionPdx() {
-  if (secType != NULL) {
-    // free(secType);
-    delete[] secType;
-    secType = NULL;
-  }
-
-  if (secId != NULL) {
-    // free(secId);
-    delete[] secId;
-    secId = NULL;
-  }
-}
+PositionPdx::~PositionPdx() {}
 
 void PositionPdx::init() {
   avg20DaysVol = 0;
-  bondRating = NULL;
+  bondRating = "";
   convRatio = 0.0;
-  country = NULL;
+  country = "";
   delta = 0.0;
   industry = 0;
   issuer = 0;
   mktValue = 0.0;
   qty = 0.0;
-  secId = NULL;
-  secLinks = NULL;
-  secType = NULL;
+  secId = "";
+  secLinks = "";
+  secType = "";
   sharesOutstanding = 0;
-  underlyer = NULL;
+  underlyer = "";
   volatility = 0;
   pid = 0;
 }

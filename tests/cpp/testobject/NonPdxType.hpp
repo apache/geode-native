@@ -49,8 +49,8 @@ namespace PdxTests {
 class TESTOBJECT_EXPORT NonPdxAddress {
  public:
   int32_t _aptNumber;
-  const char* _street;
-  const char* _city;
+  std::string _street;
+  std::string _city;
 
  public:
   NonPdxAddress() {}
@@ -73,10 +73,10 @@ class TESTOBJECT_EXPORT NonPdxAddress {
     if (ot->_aptNumber != _aptNumber) {
       return false;
     }
-    if (strcmp(ot->_street, _street) != 0) {
+    if (ot->_street != _street) {
       return false;
     }
-    if (strcmp(ot->_city, _city) != 0) {
+    if (ot->_city != _city) {
       return false;
     }
 
@@ -101,13 +101,13 @@ class TESTOBJECT_EXPORT NonPdxType {
   float m_float;
   double m_double;
 
-  const char* m_string;
+  std::string m_string;
 
   bool* m_boolArray;
   int8_t* m_byteArray;
   int8_t* m_sbyteArray;  ///
 
-  char* m_charArray;
+  char16_t *m_charArray;
 
   std::shared_ptr<CacheableDate> m_date;
 
@@ -125,7 +125,7 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   int8_t** m_byteByteArray;
 
-  char** m_stringArray;
+  std::vector<std::string> m_stringArray;
 
   std::shared_ptr<Serializable> m_address;
 
@@ -199,7 +199,7 @@ class TESTOBJECT_EXPORT NonPdxType {
     m_sbyteArray[0] = 0x34;
     m_sbyteArray[1] = 0x64;
 
-    m_charArray = new char[2];
+    m_charArray = new char16_t[2];
     m_charArray[0] = 'c';
     m_charArray[1] = 'v';
 
@@ -252,16 +252,7 @@ class TESTOBJECT_EXPORT NonPdxType {
     m_byteByteArray[1][0] = 0x34;
     m_byteByteArray[1][1] = 0x55;
 
-    m_stringArray = new char*[2];
-    const char* str1 = "one";
-    const char* str2 = "two";
-
-    int size = static_cast<int>(strlen(str1));
-    for (int i = 0; i < 2; i++) {
-      m_stringArray[i] = new char[size];
-    }
-    m_stringArray[0] = const_cast<char*>(str1);
-    m_stringArray[1] = const_cast<char*>(str2);
+    m_stringArray = {"one", "two"};
 
     m_arraylist = CacheableArrayList::create();
     m_arraylist->push_back(CacheableInt32::create(1));
@@ -383,9 +374,9 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   virtual ~NonPdxType() {}
 
-  char getChar() { return m_char; }
+  char16_t getChar() { return m_char; }
 
-  char* getCharArray() { return m_charArray; }
+  char16_t *getCharArray() { return m_charArray; }
 
   int8_t** getArrayOfByteArrays() { return m_byteByteArray; }
 
@@ -439,7 +430,7 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   double getDouble() { return m_double; }
 
-  const char* getString() { return m_string; }
+  const std::string& getString() { return m_string; }
 
   bool* getBoolArray() { return m_boolArray; }
 
@@ -455,7 +446,7 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   float* getFloatArray() { return m_floatArray; }
 
-  char** getStringArray() { return m_stringArray; }
+  const std::vector<std::string>& getStringArray() { return m_stringArray; }
 
   std::shared_ptr<CacheableDate> getDate() { return m_date; }
 

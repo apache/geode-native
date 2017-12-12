@@ -56,7 +56,7 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   std::shared_ptr<CacheableString> secId;
   std::shared_ptr<CacheableString> secLinks;
   // wchar_t* secType;
-  wchar_t* secType;
+  std::wstring secType;
   int32_t sharesOutstanding;
   std::shared_ptr<CacheableString> underlyer;
   int64_t volatility;
@@ -85,10 +85,7 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
     objectSize += getObjectSize(country);
     objectSize += getObjectSize(secId);
     objectSize += getObjectSize(secLinks);
-    objectSize +=
-        (secType == NULL
-             ? 0
-             : sizeof(wchar_t) * static_cast<uint32_t>(wcslen(secType)));
+    objectSize += secType.size() * sizeof(decltype(secType)::value_type);
     objectSize += getObjectSize(underlyer);
     return objectSize;
   }

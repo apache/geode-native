@@ -24,7 +24,7 @@ using namespace apache::geode::client;
 
 TEST(StructSetTest, Basic) {
   auto values = CacheableVector::create();
-  std::vector<std::shared_ptr<CacheableString>> fieldNames;
+  std::vector<std::string> fieldNames;
 
   size_t numOfFields = 10;
   
@@ -33,8 +33,8 @@ TEST(StructSetTest, Basic) {
     value += std::to_string(i);
     std::string field = "field";
     field += std::to_string(i);
-    values->push_back(CacheableString::create(value.c_str()));
-    fieldNames.push_back(CacheableString::create(field.c_str()));
+    values->push_back(CacheableString::create(value));
+    fieldNames.push_back(field);
   }
 
   auto ss = StructSetImpl(values, fieldNames);
@@ -44,7 +44,7 @@ TEST(StructSetTest, Basic) {
 
 TEST(StructSetTest, MissingFieldIndex) {
   auto values = CacheableVector::create();
-  std::vector<std::shared_ptr<CacheableString>> fieldNames;
+  std::vector<std::string> fieldNames;
 
   size_t numOfFields = 10;
   
@@ -54,7 +54,7 @@ TEST(StructSetTest, MissingFieldIndex) {
     std::string field = "field";
     field += std::to_string(i);
     values->push_back(CacheableString::create(value.c_str()));
-    fieldNames.push_back(CacheableString::create(field.c_str()));
+    fieldNames.push_back(field);
   }
 
   auto ss = StructSetImpl(values, fieldNames);
@@ -64,7 +64,7 @@ TEST(StructSetTest, MissingFieldIndex) {
 
 TEST(StructSetTest, MissingFieldName) {
   auto values = CacheableVector::create();
-  std::vector<std::shared_ptr<CacheableString>> fieldNames;
+  std::vector<std::string> fieldNames;
 
   size_t numOfFields = 10;
   
@@ -74,7 +74,7 @@ TEST(StructSetTest, MissingFieldName) {
     std::string field = "field";
     field += std::to_string(i);
     values->push_back(CacheableString::create(value.c_str()));
-    fieldNames.push_back(CacheableString::create(field.c_str()));
+    fieldNames.push_back(field);
   }
 
   auto ss = StructSetImpl(values, fieldNames);

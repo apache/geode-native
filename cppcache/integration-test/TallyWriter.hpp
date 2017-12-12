@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_TALLYWRITER_H_
-#define GEODE_INTEGRATION_TEST_TALLYWRITER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,10 +15,15 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_TALLYWRITER_H_
+#define GEODE_INTEGRATION_TEST_TALLYWRITER_H_
+
+#include <geode/CacheWriter.hpp>
+
 using namespace apache::geode::client;
 using namespace test;
-
-class TallyWriter;
 
 class TallyWriter : virtual public CacheWriter {
  private:
@@ -56,14 +56,14 @@ class TallyWriter : virtual public CacheWriter {
 
   virtual ~TallyWriter() {}
 
-  virtual bool beforeCreate(const EntryEvent& event) {
+  virtual bool beforeCreate(const EntryEvent& event) override {
     m_creates++;
     checkcallbackArg(event);
     LOG("TallyWriter::beforeCreate");
     return !isWriterfailed;
   }
 
-  virtual bool beforeUpdate(const EntryEvent& event) {
+  virtual bool beforeUpdate(const EntryEvent& event) override {
     m_updates++;
     checkcallbackArg(event);
     LOG("TallyWriter::beforeUpdate");
@@ -77,19 +77,19 @@ class TallyWriter : virtual public CacheWriter {
     return !isWriterfailed;
   }
 
-  virtual bool beforeDestroy(const EntryEvent& event) {
+  virtual bool beforeDestroy(const EntryEvent& event) override {
     m_destroys++;
     checkcallbackArg(event);
     LOG("TallyWriter::beforeDestroy");
     return !isWriterfailed;
   }
 
-  virtual bool beforeRegionDestroy(const RegionEvent& event) {
+  virtual bool beforeRegionDestroy(const RegionEvent& event) override {
     LOG("TallyWriter::beforeRegionDestroy");
     return !isWriterfailed;
   }
 
-  virtual void close(const std::shared_ptr<Region>& region) { LOG("TallyWriter::close"); }
+  virtual void close(Region& region) override { LOG("TallyWriter::close"); }
 
   int expectCreates(int expected) {
     int tries = 0;

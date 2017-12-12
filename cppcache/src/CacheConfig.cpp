@@ -19,14 +19,12 @@
  * @file
  */
 
-// CacheConfig.cpp: implementation of the CacheConfig class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "CacheConfig.hpp"
+#include <string.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+
+#include "CacheConfig.hpp"
 
 namespace apache {
 namespace geode {

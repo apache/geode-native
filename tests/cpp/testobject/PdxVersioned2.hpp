@@ -61,13 +61,13 @@ class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
   float m_float;
   double m_double;
 
-  char* m_string;
+  std::string m_string;
 
   bool* m_boolArray;
   int8_t* m_byteArray;
   int8_t* m_sbyteArray;  ///
 
-  wchar_t* m_charArray;
+  char16_t *m_charArray;
 
   std::shared_ptr<CacheableDate> m_date;
 
@@ -85,7 +85,7 @@ class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
 
   int8_t** m_byteByteArray;
 
-  char** m_stringArray;
+  std::vector<std::string> m_stringArray;
   std::shared_ptr<CacheableArrayList> m_arraylist;
   std::shared_ptr<CacheableHashMap> m_map;
 
@@ -137,9 +137,9 @@ class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
     return objectSize;
   }
   // void checkNullAndDelete(void *data);
-  wchar_t getChar() { return m_char; }
+  char16_t getChar() { return m_char; }
 
-  wchar_t* getCharArray() { return m_charArray; }
+  char16_t *getCharArray() { return m_charArray; }
 
   int8_t** getArrayOfByteArrays() { return m_byteByteArray; }
 
@@ -185,7 +185,7 @@ class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
 
   double getDouble() { return m_double; }
 
-  const char* getString() { return m_string; }
+  const std::string& getString() { return m_string; }
 
   bool* getBoolArray() { return m_boolArray; }
 
@@ -201,7 +201,7 @@ class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
 
   float* getFloatArray() { return m_floatArray; }
 
-  char** getStringArray() { return m_stringArray; }
+  const std::vector<std::string>& getStringArray() { return m_stringArray; }
 
   std::shared_ptr<CacheableDate> getDate() { return m_date; }
 

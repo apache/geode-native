@@ -32,7 +32,7 @@ namespace client {
 
 class FixedPartitionAttributesImpl : public Serializable {
  private:
-  std::shared_ptr<CacheableString> m_partitionName;
+  std::string m_partitionName;
   bool m_isPrimary;
   int m_numBuckets;
   int m_startingBucketId;
@@ -45,39 +45,30 @@ class FixedPartitionAttributesImpl : public Serializable {
         m_numBuckets(1),
         m_startingBucketId(-1) {}
 
-  std::string getPartitionName() {
-    if (m_partitionName != nullptr) {
-      return m_partitionName->value();
-    }
-    return "";
-  }
+  const std::string& getPartitionName() { return m_partitionName; }
 
   int getNumBuckets() const { return m_numBuckets; }
 
   int isPrimary() const { return m_isPrimary; }
 
   void toData(DataOutput& output) const {
-    if (m_partitionName != nullptr) {
-      output.writeObject(m_partitionName);
-    }
+    output.writeString(m_partitionName);
     output.writeBoolean(m_isPrimary);
     output.writeInt(m_numBuckets);
     output.writeInt(m_startingBucketId);
   }
 
   void fromData(DataInput& input) {
-    m_partitionName = input.readNativeString();
+    m_partitionName = input.readString();
     m_isPrimary = input.readBoolean();
     m_numBuckets = input.readInt32();
     m_startingBucketId = input.readInt32();
   }
 
   size_t objectSize() const {
-    if (m_partitionName != nullptr) {
-      return sizeof(int) + sizeof(int) + sizeof(bool) +
-             (m_partitionName->length() * sizeof(char));
-    }
-    return 0;
+    return sizeof(int) + sizeof(int) + sizeof(bool) +
+           (m_partitionName.length() *
+            sizeof(decltype(m_partitionName)::value_type));
   }
 
   int8_t typeId() const {

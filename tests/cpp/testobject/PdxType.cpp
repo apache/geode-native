@@ -89,7 +89,7 @@ void PdxTests::PdxType::toData(std::shared_ptr<PdxWriter> pw) const {
   pw->markIdentityField("m_byte");
   pw->writeByteArray("m_byteArray", m_byteArray, 2);
   pw->markIdentityField("m_byteArray");
-  pw->writeWideCharArray("m_charArray", m_charArray, 2);
+  pw->writeCharArray("m_charArray", m_charArray, 2);
   pw->markIdentityField("m_charArray");
   pw->writeObject("m_arraylist", m_arraylist);
   pw->writeObject("m_linkedlist", m_linkedlist);
@@ -137,7 +137,7 @@ void PdxTests::PdxType::toData(std::shared_ptr<PdxWriter> pw) const {
 
   // strlengthArr[0] = 5;
   // strlengthArr[1] = 5;
-  pw->writeStringArray("m_stringArray", m_stringArray, 2);
+  pw->writeStringArray("m_stringArray", m_stringArray);
   pw->markIdentityField("m_stringArray");
   pw->writeShort("m_uint16", m_uint16);
   pw->markIdentityField("m_uint16");
@@ -185,7 +185,7 @@ void PdxTests::PdxType::fromData(std::shared_ptr<PdxReader> pr) {
   // TODO::need to write compareByteByteArray() and check for m_byteByteArray
   // elements
 
-  m_char = pr->readWideChar("m_char");
+  m_char = pr->readChar("m_char");
   // GenericValCompare
 
   m_bool = pr->readBoolean("m_bool");
@@ -194,7 +194,7 @@ void PdxTests::PdxType::fromData(std::shared_ptr<PdxReader> pr) {
 
   m_byte = pr->readByte("m_byte");
   m_byteArray = pr->readByteArray("m_byteArray", byteArrayLen);
-  m_charArray = pr->readWideCharArray("m_charArray", charArrayLen);
+  m_charArray = pr->readCharArray("m_charArray", charArrayLen);
 
   m_arraylist = std::static_pointer_cast<CacheableArrayList>(
       pr->readObject("m_arraylist"));
@@ -234,7 +234,7 @@ void PdxTests::PdxType::fromData(std::shared_ptr<PdxReader> pr) {
   m_int16Array = pr->readShortArray("m_int16Array", shortArrayLen);
   m_sbyte = pr->readByte("m_sbyte");
   m_sbyteArray = pr->readByteArray("m_sbyteArray", byteArrayLen);
-  m_stringArray = pr->readStringArray("m_stringArray", strLenArray);
+  m_stringArray = pr->readStringArray("m_stringArray");
   m_uint16 = pr->readShort("m_uint16");
   m_uint32 = pr->readInt("m_uint32");
   m_ulong = pr->readLong("m_ulong");
@@ -293,7 +293,7 @@ bool PdxTests::PdxType::equals(PdxTests::PdxType& other,
   genericValCompare(ot->m_uint32, m_uint32);
   genericValCompare(ot->m_ulong, m_ulong);
   genericValCompare(ot->m_char, m_char);
-  if (strcmp(ot->m_string, m_string) != 0) {
+  if (ot->m_string != m_string) {
     return false;
   }
   genericCompare(ot->m_byteArray, m_byteArray, byteArrayLen);

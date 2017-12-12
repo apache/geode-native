@@ -447,8 +447,8 @@ int32_t Security::initValues(int32_t numKeys, int32_t siz, bool useDefault) {
   int32_t rsiz = (siz <= 20) ? siz : 20;
   for (int32_t i = 0; i < m_MaxValues; i++) {
     GsRandom::getAlphanumericString(rsiz, buf);
-    m_CValue[i] = CacheableBytes::create(
-        reinterpret_cast<const unsigned char *>(buf), siz);
+    m_CValue[i] =
+        CacheableBytes::create(reinterpret_cast<const int8_t *>(buf), siz);
   }
   return siz;
 }
@@ -991,7 +991,7 @@ int32_t Security::doEntryOperations() {
           tmpValue = getUserObject(objectType);
         } else {
           tmpValue = CacheableBytes::create(
-              reinterpret_cast<const unsigned char *>(valBuf),
+              reinterpret_cast<const int8_t *>(valBuf),
               static_cast<int32_t>(strlen(valBuf)));
         }
         regionPtr->create(keyPtr, tmpValue);
@@ -1004,7 +1004,7 @@ int32_t Security::doEntryOperations() {
           } else {
             int32_t keyVal = std::stoi(keyPtr->toString());
             tmpValue = CacheableBytes::create(
-                reinterpret_cast<const unsigned char *>(valBuf),
+                reinterpret_cast<const int8_t *>(valBuf),
                 static_cast<int32_t>(strlen(valBuf)));
             int32_t *val =
                 (int32_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)

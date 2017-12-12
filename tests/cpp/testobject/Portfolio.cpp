@@ -29,10 +29,7 @@ Portfolio::Portfolio(int32_t i, uint32_t size,
   char pkidbuf[1024];
   sprintf(pkidbuf, "%d", i);
   pkid = CacheableString::create(pkidbuf);
-  const char* statusStr = (i % 2 == 0) ? "active" : "inactive";
-  int32_t statusSize = static_cast<int32_t>(strlen(statusStr)) + 1;
-  status = new char[statusSize];
-  memcpy(status, statusStr, statusSize);
+  status = (i % 2 == 0) ? "active" : "inactive";
   char buf[100];
   sprintf(buf, "type%d", (i % 3));
   type = CacheableString::create(buf);
@@ -62,10 +59,6 @@ Portfolio::~Portfolio() {
     delete[] newVal;
     newVal = NULL;
   }
-  if (status != NULL) {
-    delete[] status;
-    status = NULL;
-  }
 }
 
 void Portfolio::toData(DataOutput& output) const {
@@ -90,7 +83,7 @@ void Portfolio::fromData(DataInput& input) {
   position2 = input.readObject<Position>();
   positions = input.readObject<CacheableHashMap>();
   type = input.readObject<CacheableString>();
-  input.readUTF(&status);
+  status = input.readUTF();
   names = input.readObject<CacheableStringArray>();
   input.readBytes(&newVal, &newValSize);
   creationDate = input.readObject<CacheableDate>();
@@ -103,10 +96,10 @@ std::string Portfolio::toString() const {
   sprintf(idbuf, "PortfolioObject: [ ID=%d", ID);
   char pkidbuf[1024];
   if (pkid != nullptr) {
-    sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status,
+    sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status.c_str(),
             this->type->toString().c_str(), this->pkid->value().c_str());
   } else {
-    sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status,
+    sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status.c_str(),
             this->type->toString().c_str(), this->pkid->value().c_str());
   }
   char position1buf[2048];

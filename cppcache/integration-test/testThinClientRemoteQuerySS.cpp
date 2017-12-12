@@ -83,12 +83,12 @@ void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
                    std::dynamic_pointer_cast<PortfolioPdx>(field)) {
       printf("   pulled %s :- ID %d, pkid %s\n",
              ssptr->getFieldName(fields).c_str(), portfolioPdx->getID(),
-             checkNullString(portfolioPdx->getPkid()));
+             portfolioPdx->getPkid().c_str());
     } else if (auto positionPdx =
                    std::dynamic_pointer_cast<PositionPdx>(field)) {
       printf("   pulled %s :- secId %s, shares %d\n",
              ssptr->getFieldName(fields).c_str(),
-             checkNullString(positionPdx->getSecId()),
+             positionPdx->getSecId().c_str(),
              positionPdx->getSharesOutstanding());
     } else {
       if (auto str = std::dynamic_pointer_cast<CacheableString>(field)) {
@@ -108,7 +108,7 @@ void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
           for (int stri = 0; stri < strArr->length(); stri++) {
             printf("   pulled %s(%d) - %s \n",
                    ssptr->getFieldName(fields).c_str(), stri,
-                   checkNullString(strArr->operator[](stri)->value().c_str()));
+                   strArr->operator[](stri)->value().c_str());
           }
         } else if (auto map =
                        std::dynamic_pointer_cast<CacheableHashMap>(field)) {
@@ -192,7 +192,7 @@ void compareMaps(HashMapOfCacheable& map, HashMapOfCacheable& expectedMap) {
           std::dynamic_pointer_cast<PositionPdx>(val);
       const std::shared_ptr<PositionPdx>& expectedPosVal =
           std::static_pointer_cast<PositionPdx>(expectedVal);
-      ASSERT(*expectedPosVal->getSecId() == *posVal->getSecId(),
+      ASSERT(expectedPosVal->getSecId() == posVal->getSecId(),
              "Expected the secIDs to be equal in PositionPdx");
       ASSERT(expectedPosVal->getSharesOutstanding() ==
                  posVal->getSharesOutstanding(),

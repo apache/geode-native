@@ -245,43 +245,17 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * The setField method has copy-on-write semantics.
    * So for the modifications to be stored in the cache the WritablePdxInstance
    * must be put into a region after setField has been called one or more times.
-   * signed char* type is corresponding to java byte[] type.
-   * For C++ on Windows and Linux, signed char* type is corresponding to int8_t*
-   * type.
-   * However C++ users on Solaris should always use this api after casting
-   * int8_t* to signed char*.
+   * int8_t* type is corresponding to java byte[] type.
    * @param fieldName
    *          name of the field whose value will be set
    * @param value
-   *          value that will be set to the field of type signed char array
+   *          value that will be set to the field of type int8_t array
    * @param length
-   *          The number of elements in signed char array type.
+   *          The number of elements in int8_t array type.
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const std::string& fieldName, signed char* value,
-                        int32_t length) = 0;
-
-  /**
-   * Set the existing named field to the given value.
-   * The setField method has copy-on-write semantics.
-   * So for the modifications to be stored in the cache the WritablePdxInstance
-   * must be put into a region after setField has been called one or more times.
-   * unsigned char* type is corresponding to java byte[] type.
-   * For C++ on Windows and Linux, unsigned char* type is corresponding to
-   * int8_t* type.
-   * However C++ users on Solaris should always use this api after casting
-   * int8_t* to unsigned char*.
-   * @param fieldName
-   *          name of the field whose value will be set
-   * @param value
-   *          value that will be set to the field of type unsigned char array
-   * @param length
-   *          The number of elements in unsigned char array type.
-   * @throws IllegalStateException if the named field does not exist
-   * or if the type of the value is not compatible with the field.
-   */
-  virtual void setField(const std::string& fieldName, unsigned char* value,
+  virtual void setField(const std::string& fieldName, int8_t* value,
                         int32_t length) = 0;
 
   /**
@@ -387,42 +361,25 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const std::string& fieldName, const char* value) = 0;
+  virtual void setField(const std::string& fieldName,
+                        const std::string& value) = 0;
 
   /**
    * Set the existing named field to the given value.
    * The setField method has copy-on-write semantics.
    * So for the modifications to be stored in the cache the WritablePdxInstance
    * must be put into a region after setField has been called one or more times.
-   * wchar_t* type is corresponding to java char[] type.
+   * char16_t* type is corresponding to java char[] type.
    * @param fieldName
    *          name of the field whose value will be set
    * @param value
-   *          value that will be set to the field of type wchar_t array
+   *          value that will be set to the field of type char16_t array
    * @param length
-   *          The number of elements in wchar_t array type.
+   *          The number of elements in char16_t array type.
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const std::string& fieldName, wchar_t* value,
-                        int32_t length) = 0;
-
-  /**
-   * Set the existing named field to the given value.
-   * The setField method has copy-on-write semantics.
-   * So for the modifications to be stored in the cache the WritablePdxInstance
-   * must be put into a region after setField has been called one or more times.
-   * char* type is corresponding to java char[] type.
-   * @param fieldName
-   *          name of the field whose value will be set
-   * @param value
-   *          value that will be set to the field of type char array
-   * @param length
-   *          The number of elements in char array type.
-   * @throws IllegalStateException if the named field does not exist
-   * or if the type of the value is not compatible with the field.
-   */
-  virtual void setField(const std::string& fieldName, char* value,
+  virtual void setField(const std::string &fieldName, char16_t *value,
                         int32_t length) = 0;
 
   /**
@@ -440,7 +397,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const std::string& fieldName, char** value,
+  virtual void setField(const std::string& fieldName, std::string* value,
                         int32_t length) = 0;
 
   /**

@@ -279,10 +279,21 @@ class CPPCACHE_EXPORT DataOutput {
     writeInt(v.ll);
   }
 
-  template <class CharT, class... Tail>
-  inline void writeString(const std::basic_string<CharT, Tail...>& value) {
+  template <class _CharT>
+  inline void writeString(const _CharT* value) {
+    // TODO string should we convert to empty string?
+    if (nullptr == value) {
+      write(static_cast<uint8_t>(GeodeTypeIds::CacheableNullString));
+    } else {
+      writeString(std::basic_string<_CharT>(value));
+    }
+  }
+
+  template <class _CharT, class... _Tail>
+  inline void writeString(const std::basic_string<_CharT, _Tail...>& value) {
     // without scanning string, making worst case choices.
-    if (value.length() / 3 <= std::numeric_limits<uint16_t>::max()) {
+    // TODO constexp for each string type to jmutf8 length conversion
+    if (value.length() * 3 <= std::numeric_limits<uint16_t>::max()) {
       write(static_cast<uint8_t>(GeodeTypeIds::CacheableString));
       writeJavaModifiedUtf8(value);
     } else {
@@ -291,241 +302,48 @@ class CPPCACHE_EXPORT DataOutput {
     }
   }
 
-  /**
-   * Writes the given ASCII string supporting maximum length of 64K
-   * (i.e. unsigned 16-bit integer).
-   * @remarks The string will be truncated if greater than the maximum
-   *   permissible length of 64K. Use <code>writeBytes</code> or
-   *   <code>writeASCIIHuge</code> to write ASCII strings of length larger
-   *   than this.
-   *
-   * @param value the C string to be written
-   * @param length the number of characters from start of string to be
-   *   written; the default value of 0 implies the complete string
-   */
-  inline void writeASCII(const char* value, uint32_t length = 0) {
-    if (value != nullptr) {
-      if (length == 0) {
-        length = static_cast<uint32_t>(strlen(value));
-      }
-      uint16_t len = static_cast<uint16_t>(length > 0xFFFF ? 0xFFFF : length);
-      writeInt(len);
-      writeBytesOnly((int8_t*)value, len);  // K64
-    } else {
-      writeInt(static_cast<uint16_t>(0));
+  template <class _CharT>
+  inline void writeUTF(const _CharT* value) {
+    if (nullptr == value) {
+      throw NullPointerException("Parameter value must not be null.");
     }
+    writeUTF(std::basic_string<_CharT>(value));
   }
 
-  inline void writeNativeString(const char* value) {
-    // create cacheable string
-    // write typeid id.
-    // call todata
-    auto csPtr = CacheableString::create(value);
-    write(csPtr->typeId());
-    csPtr->toData(*this);
+  template <class _CharT, class... Tail>
+  inline void writeUTF(const std::basic_string<_CharT, Tail...>& value) {
+    writeJavaModifiedUtf8(value);
   }
 
   /**
-   * Writes the given ASCII string supporting upto maximum 32-bit
-   * integer value.
-   * @remarks Use this to write large ASCII strings. The other
-   *   <code>writeASCII</code> method will truncate strings greater than
-   *   64K in size.
+   * Writes a sequence of UTF-16 code units representing the given string value.
+   * The output does not contain any length of termination charactes.
    *
-   * @param value the wide-character string to be written
-   * @param length the number of characters from start of string to be
-   *   written; the default value of 0 implies the complete string
+   * @tparam _CharT matches character type of std::basic_string.
+   * @tparam _Tail matches all remaining template parameters for
+   * std::basic_string.
+   * @param value string to write as UTF-16 units
    */
-  inline void writeASCIIHuge(const char* value, uint32_t length = 0) {
-    if (value != nullptr) {
-      if (length == 0) {
-        length = static_cast<uint32_t>(strlen(value));
-      }
-      writeInt(length);
-      writeBytesOnly((int8_t*)value, length);
-    } else {
-      writeInt(static_cast<uint32_t>(0));
-    }
+  template <class _CharT, class... _Tail>
+  inline void writeChars(const std::basic_string<_CharT, _Tail...>& value) {
+    writeUtf16(value);
   }
 
   /**
-   * Writes the given given string using java modified UTF-8 encoding
-   * supporting maximum encoded length of 64K (i.e. unsigned 16-bit integer).
-   * @remarks The string will be truncated if greater than the maximum
-   *   permissible length of 64K. Use <code>writeUTFHuge</code> to write
-   *   strings of length larger than this.
+   * Writes a sequence of UTF-16 code units representing the given string value.
+   * The output does not contain any length of termination charactes.
    *
-   * @param value the C string to be written
-   * @param length the number of characters from start of string to be
-   *   written; the default value of 0 implies the complete string
-   */
-  inline void writeUTF(const char* value, uint32_t length = 0) {
-    if (value != nullptr) {
-      int32_t len = getEncodedLength(value, length);
-      uint16_t encodedLen = static_cast<uint16_t>(len > 0xFFFF ? 0xFFFF : len);
-      writeInt(encodedLen);
-      ensureCapacity(encodedLen);
-      uint8_t* end = m_buf + encodedLen;
-      while (m_buf < end) {
-        encodeChar(*value++);
-      }
-      if (m_buf > end) m_buf = end;
-    } else {
-      writeInt(static_cast<uint16_t>(0));
-    }
-  }
-
-  /**
-   * Writes the given string using UTF-16 encoding.
-   * @remarks Use this to write large strings. The other
-   *   <code>writeUTF</code> method will truncate strings greater than
-   *   64K in size.
+   * Equivalent to:
+   * @code
+   * writeChars(std::basic_string<_CharT>(value));
+   * @endcode
    *
-   * @param value the C string to be written
-   * @param length the number of characters from start of string to be
-   *   written; the default value of 0 implies the complete string
-   *   assuming a null terminated string; do not use this unless sure
-   *   that the UTF string does not contain any null characters
+   * @tparam _CharT matches character type used for std::basic_string.
+   * @param value NULL (\u0000) terminated string to write as UTF-16 units
    */
-  inline void writeUTFHuge(const char* value, uint32_t length = 0) {
-    if (value != nullptr) {
-      if (length == 0) {
-        length = static_cast<uint32_t>(strlen(value));
-      }
-      writeInt(length);
-      ensureCapacity(length * 2);
-      for (uint32_t pos = 0; pos < length; pos++) {
-        writeNoCheck(static_cast<int8_t>(0));
-        writeNoCheck(static_cast<int8_t>(value[pos]));
-      }
-    } else {
-      writeInt(static_cast<uint32_t>(0));
-    }
-  }
-
-  /**
-   * Writes the given given string using java modified UTF-8 encoding
-   * supporting maximum encoded length of 64K (i.e. unsigned 16-bit integer).
-   * @remarks The string will be truncated if greater than the maximum
-   *   permissible length of 64K. Use <code>writeUTFHuge</code> to write
-   *   strings of length larger than this.
-   *
-   * @param value the wide-character string to be written
-   * @param length the number of characters from start of string to be
-   *   written; the default value of 0 implies the complete string
-   */
-  inline void writeUTF(const wchar_t* value, uint32_t length = 0) {
-    if (value != nullptr) {
-      int32_t len = getEncodedLength(value, length);
-      uint16_t encodedLen = static_cast<uint16_t>(len > 0xFFFF ? 0xFFFF : len);
-      writeInt(encodedLen);
-      ensureCapacity(encodedLen);
-      uint8_t* end = m_buf + encodedLen;
-      while (m_buf < end) {
-        encodeChar(*value++);
-      }
-      if (m_buf > end) m_buf = end;
-    } else {
-      writeInt(static_cast<uint16_t>(0));
-    }
-  }
-
-  /**
-   * Writes the given string using UTF-16 encoding.
-   * @remarks Use this to write large strings. The other
-   *   <code>writeUTF</code> method will truncate strings greater than
-   *   64K in size.
-   *
-   * @param value the wide-character string to be written
-   * @param length the number of characters from start of string to be
-   *   written; the default value of 0 implies the complete string
-   */
-  inline void writeUTFHuge(const wchar_t* value, uint32_t length = 0) {
-    if (value != nullptr) {
-      if (length == 0) {
-        length = static_cast<uint32_t>(wcslen(value));
-      }
-      writeInt(length);
-      ensureCapacity(length * 2);
-      for (uint32_t pos = 0; pos < length; pos++) {
-        uint16_t item = static_cast<uint16_t>(value[pos]);
-        writeNoCheck(static_cast<uint8_t>((item & 0xFF00) >> 8));
-        writeNoCheck(static_cast<uint8_t>(item & 0xFF));
-      }
-    } else {
-      writeInt(static_cast<uint32_t>(0));
-    }
-  }
-
-  /**
-   * Get the length required to represent a given ASCII character string in
-   * java modified UTF-8 format.
-   *
-   * @param value The C string.
-   * @param length The length of the string; or zero to use the full string.
-   * @return The length required for representation in java modified
-   *         UTF-8 format.
-   * @see DataInput::getDecodedLength
-   */
-  inline static int32_t getEncodedLength(const char* value, int32_t length = 0,
-                                         uint32_t* valLength = nullptr) {
-    if (value == nullptr) return 0;
-    char currentChar;
-    int32_t encodedLen = 0;
-    const char* start = value;
-    if (length == 0) {
-      while ((currentChar = *value) != '\0') {
-        getEncodedLength(currentChar, encodedLen);
-        value++;
-      }
-    } else {
-      const char* end = value + length;
-      while (value < end) {
-        currentChar = *value;
-        getEncodedLength(currentChar, encodedLen);
-        value++;
-      }
-    }
-    if (valLength != nullptr) {
-      *valLength = static_cast<uint32_t>(value - start);
-    }
-    return encodedLen;
-  }
-
-  /**
-   * Get the length required to represent a given wide-character string in
-   * java modified UTF-8 format.
-   *
-   * @param value The wide-character string.
-   * @param length The length of the string.
-   * @return The length required for representation in java modified
-   *         UTF-8 format.
-   * @see DataInput::getDecodedLength
-   */
-  inline static int32_t getEncodedLength(const wchar_t* value,
-                                         int32_t length = 0,
-                                         uint32_t* valLength = nullptr) {
-    if (value == nullptr) return 0;
-    wchar_t currentChar;
-    int32_t encodedLen = 0;
-    const wchar_t* start = value;
-    if (length == 0) {
-      while ((currentChar = *value) != 0) {
-        getEncodedLength(currentChar, encodedLen);
-        value++;
-      }
-    } else {
-      const wchar_t* end = value + length;
-      while (value < end) {
-        currentChar = *value;
-        getEncodedLength(currentChar, encodedLen);
-        value++;
-      }
-    }
-    if (valLength != nullptr) {
-      *valLength = static_cast<uint32_t>(value - start);
-    }
-    return encodedLen;
+  template <class _CharT>
+  inline void writeChars(const _CharT* value) {
+    writeChars(std::basic_string<_CharT>(value));
   }
 
   /**
@@ -733,41 +551,119 @@ class CPPCACHE_EXPORT DataOutput {
     }
   }
 
-  void writeJavaModifiedUtf8(const std::u16string& value);
+  template <class _CharT, class _Traits, class _Allocator>
+  void writeJavaModifiedUtf8(
+      const std::basic_string<_CharT, _Traits, _Allocator>& value) {
+    writeJavaModifiedUtf8(value.data(), value.length());
+  };
 
-  void writeJavaModifiedUtf8(const std::string& value);
+  template <class _Traits, class _Allocator>
+  void writeJavaModifiedUtf8(
+      const std::basic_string<char, _Traits, _Allocator>& value);
 
-  void writeUtf16Huge(const std::string& value);
+  template <class _Traits, class _Allocator>
+  void writeJavaModifiedUtf8(
+      const std::basic_string<char32_t, _Traits, _Allocator>& value);
 
-  inline void writeUtf16Huge(const std::u16string& value) {
-    uint32_t len = static_cast<uint32_t>(
-        std::min<size_t>(value.length(), std::numeric_limits<uint32_t>::max()));
-    writeInt(len);
-    ensureCapacity(len * 2);
-    for (size_t i = 0; i < len; i++) {
-      writeNoCheck(static_cast<uint8_t>(value.data()[i] >> 8));
-      writeNoCheck(static_cast<uint8_t>(value.data()[i]));
-    }
+  template <class _Traits, class _Allocator>
+  inline void writeJavaModifiedUtf8(
+      const std::basic_string<wchar_t, _Traits, _Allocator>& value) {
+    typedef std::conditional<
+        sizeof(wchar_t) == sizeof(char16_t), char16_t,
+        std::conditional<sizeof(wchar_t) == sizeof(char32_t), char32_t,
+                         char>::type>::type _Convert;
+    writeJavaModifiedUtf8(reinterpret_cast<const _Convert*>(value.data()),
+                          value.length());
   }
 
-  inline static size_t getJavaModifiedUtf8EncodedLength(
-      const std::u16string& value) {
-    size_t encodedLen = 0;
-    for (const auto c : value) {
-      if (c == 0) {
-        // NUL
-        encodedLen += 2;
-      } else if (c < 0x80) {
-        // ASCII
-        encodedLen++;
-      } else if (c < 0x800) {
-        encodedLen += 2;
-      } else {
-        encodedLen += 3;
+  inline void writeJavaModifiedUtf8(const char16_t* data, size_t len) {
+    if (0 == len) {
+      writeInt(static_cast<uint16_t>(0));
+    } else {
+      auto encodedLen = static_cast<uint16_t>(
+          std::min<size_t>(getJavaModifiedUtf8EncodedLength(data, len),
+                           std::numeric_limits<uint16_t>::max()));
+      writeInt(encodedLen);
+      ensureCapacity(encodedLen);
+      const auto end = m_buf + encodedLen;
+      while (m_buf < end) {
+        encodeJavaModifiedUtf8(*data++);
       }
+      if (m_buf > end) m_buf = end;
     }
-    return encodedLen;
   }
+
+  void writeJavaModifiedUtf8(const char32_t* data, size_t len);
+
+  template <class _CharT, class _Traits, class _Allocator>
+  inline void writeUtf16Huge(
+      const std::basic_string<_CharT, _Traits, _Allocator>& value) {
+    writeUtf16Huge(value.data(), value.length());
+  }
+
+  template <class _Traits, class _Allocator>
+  void writeUtf16Huge(
+      const std::basic_string<char, _Traits, _Allocator>& value);
+
+  template <class _Traits, class _Allocator>
+  void writeUtf16Huge(
+      const std::basic_string<char32_t, _Traits, _Allocator>& value);
+
+  template <class _Traits, class _Allocator>
+  inline void writeUtf16Huge(
+      const std::basic_string<wchar_t, _Traits, _Allocator>& value) {
+    typedef std::conditional<
+        sizeof(wchar_t) == sizeof(char16_t), char16_t,
+        std::conditional<sizeof(wchar_t) == sizeof(char32_t), char32_t,
+                         char>::type>::type _Convert;
+    writeUtf16Huge(reinterpret_cast<const _Convert*>(value.data()),
+                   value.length());
+  }
+
+  inline void writeUtf16Huge(const char16_t* data, size_t length) {
+    uint32_t len = static_cast<uint32_t>(
+        std::min<size_t>(length, std::numeric_limits<uint32_t>::max()));
+    writeInt(len);
+    writeUtf16(data, length);
+  }
+
+  void writeUtf16Huge(const char32_t* data, size_t len);
+
+  template <class _CharT, class _Traits, class _Allocator>
+  inline void writeUtf16(
+      const std::basic_string<_CharT, _Traits, _Allocator>& value) {
+    writeUtf16(value.data(), value.length());
+  }
+
+  template <class _Traits, class _Allocator>
+  void writeUtf16(const std::basic_string<char, _Traits, _Allocator>& value);
+
+  template <class _Traits, class _Allocator>
+  void writeUtf16(
+      const std::basic_string<char32_t, _Traits, _Allocator>& value);
+
+  template <class _Traits, class _Allocator>
+  inline void writeUtf16(
+      const std::basic_string<wchar_t, _Traits, _Allocator>& value) {
+    typedef std::conditional<
+        sizeof(wchar_t) == sizeof(char16_t), char16_t,
+        std::conditional<sizeof(wchar_t) == sizeof(char32_t), char32_t,
+                         char>::type>::type _Convert;
+    writeUtf16(reinterpret_cast<const _Convert*>(value.data()), value.length());
+  }
+
+  inline void writeUtf16(const char16_t* data, size_t length) {
+    ensureCapacity(static_cast<uint32_t>(length) * 2);
+    for (; length > 0; length--, data++) {
+      writeNoCheck(static_cast<uint8_t>(*data >> 8));
+      writeNoCheck(static_cast<uint8_t>(*data));
+    }
+  }
+
+  void writeUtf16(const char32_t* data, size_t len);
+
+  static size_t getJavaModifiedUtf8EncodedLength(const char16_t* data,
+                                                 size_t length);
 
   inline static void getEncodedLength(const char val, int32_t& encodedLen) {
     if ((val == 0) || (val & 0x80)) {
@@ -864,6 +760,11 @@ class CPPCACHE_EXPORT DataOutput {
   friend DataOutputInternal;
   friend CacheableString;
 };
+
+template void DataOutput::writeJavaModifiedUtf8(const std::u16string&);
+// template void DataOutput::writeJavaModifiedUtf8(const std::u32string&);
+template void DataOutput::writeJavaModifiedUtf8(const std::wstring&);
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

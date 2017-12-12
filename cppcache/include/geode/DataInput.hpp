@@ -24,25 +24,12 @@
 #include <iosfwd>
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "CacheableString.hpp"
-#include "ExceptionTypes.hpp"
-#include "Serializable.hpp"
-#include "GeodeTypeIds.hpp"
-#include "geode_base.hpp"
-#include "ExceptionTypes.hpp"
 #include "geode_globals.hpp"
-
-namespace apache {
-namespace geode {
-namespace client {
-class Cache;
-class CacheableString;
-class DataInput;
-class Serializable;
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
+#include "ExceptionTypes.hpp"
+#include "GeodeTypeIds.hpp"
+#include "ExceptionTypes.hpp"
 
 /**
  * @file
@@ -54,12 +41,16 @@ class Serializable;
 #define DINP_THROWONERROR_DEFAULT false
 #endif
 
-#define checkBufferSize(x) _checkBufferSize(x, __LINE__)
+#define GEODE_CHECK_BUFFER_SIZE(x) _checkBufferSize(x, __LINE__)
 
 namespace apache {
 namespace geode {
 namespace client {
 
+class Cache;
+class CacheableString;
+class DataInput;
+class Serializable;
 class SerializationRegistry;
 class DataInputInternal;
 class CacheImpl;
@@ -80,7 +71,7 @@ class CPPCACHE_EXPORT DataInput {
    * @@return signed byte read from stream
    */
   inline int8_t read() {
-    checkBufferSize(1);
+    GEODE_CHECK_BUFFER_SIZE(1);
     return readNoCheck();
   }
 
@@ -90,7 +81,7 @@ class CPPCACHE_EXPORT DataInput {
    * @param value output parameter to hold the boolean read from stream
    */
   inline bool readBoolean() {
-    checkBufferSize(1);
+    GEODE_CHECK_BUFFER_SIZE(1);
     return *(m_buf++) == 1 ? true : false;
   }
 
@@ -106,7 +97,7 @@ class CPPCACHE_EXPORT DataInput {
    */
   inline void readBytesOnly(uint8_t* buffer, uint32_t len) {
     if (len > 0) {
-      checkBufferSize(len);
+      GEODE_CHECK_BUFFER_SIZE(len);
       std::memcpy(buffer, m_buf, len);
       m_buf += len;
     }
@@ -124,7 +115,7 @@ class CPPCACHE_EXPORT DataInput {
    */
   inline void readBytesOnly(int8_t* buffer, uint32_t len) {
     if (len > 0) {
-      checkBufferSize(len);
+      GEODE_CHECK_BUFFER_SIZE(len);
       std::memcpy(buffer, m_buf, len);
       m_buf += len;
     }
@@ -145,7 +136,7 @@ class CPPCACHE_EXPORT DataInput {
     *len = length;
     uint8_t* buffer = nullptr;
     if (length > 0) {
-      checkBufferSize(length);
+      GEODE_CHECK_BUFFER_SIZE(length);
       GF_NEW(buffer, uint8_t[length]);
       std::memcpy(buffer, m_buf, length);
       m_buf += length;
@@ -168,7 +159,7 @@ class CPPCACHE_EXPORT DataInput {
     *len = length;
     int8_t* buffer = nullptr;
     if (length > 0) {
-      checkBufferSize(length);
+      GEODE_CHECK_BUFFER_SIZE(length);
       GF_NEW(buffer, int8_t[length]);
       std::memcpy(buffer, m_buf, length);
       m_buf += length;
@@ -182,7 +173,7 @@ class CPPCACHE_EXPORT DataInput {
    * @return 16-bit signed integer read from stream
    */
   inline int16_t readInt16() {
-    checkBufferSize(2);
+    GEODE_CHECK_BUFFER_SIZE(2);
     return readInt16NoCheck();
   }
 
@@ -193,7 +184,7 @@ class CPPCACHE_EXPORT DataInput {
    *   read from stream
    */
   inline int32_t readInt32() {
-    checkBufferSize(4);
+    GEODE_CHECK_BUFFER_SIZE(4);
     int32_t tmp = *(m_buf++);
     tmp = (tmp << 8) | *(m_buf++);
     tmp = (tmp << 8) | *(m_buf++);
@@ -208,7 +199,7 @@ class CPPCACHE_EXPORT DataInput {
    *   read from stream
    */
   inline int64_t readInt64() {
-    checkBufferSize(8);
+    GEODE_CHECK_BUFFER_SIZE(8);
     int64_t tmp;
     if (sizeof(long) == 8) {
       tmp = *(m_buf++);
@@ -290,7 +281,7 @@ class CPPCACHE_EXPORT DataInput {
    * @param value output parameter to hold the float read from stream
    */
   inline float readFloat() {
-    checkBufferSize(4);
+    GEODE_CHECK_BUFFER_SIZE(4);
     union float_uint32_t {
       float f;
       uint32_t u;
@@ -306,7 +297,7 @@ class CPPCACHE_EXPORT DataInput {
    *   read from stream
    */
   inline double readDouble() {
-    checkBufferSize(8);
+    GEODE_CHECK_BUFFER_SIZE(8);
     union double_uint64_t {
       double d;
       uint64_t ll;
@@ -315,244 +306,11 @@ class CPPCACHE_EXPORT DataInput {
     return v.d;
   }
 
-  /**
-   * free the C string allocated by <code>readASCII</code>,
-   * <code>readASCIIHuge</code>, <code>readUTF</code>,
-   * <code>readUTFHuge</code> methods
-   */
-  static inline void freeUTFMemory(char* value) { delete[] value; }
-
-  /**
-   * free the wide-characted string allocated by <code>readASCII</code>,
-   * <code>readASCIIHuge</code>, <code>readUTF</code>,
-   * <code>readUTFHuge</code> methods
-   */
-  static inline void freeUTFMemory(wchar_t* value) { delete[] value; }
-
-  /**
-   * Allocates a c string buffer, and reads an ASCII string
-   * having maximum length of 64K from <code>DataInput</code> into it.
-   * @remarks Sets integer at length to hold the strlen of the string. Value
-   *   is modified to point to the new allocation. The chars are allocated as
-   *   an array, so the caller must use <code>freeUTFMemory</code> when done.
-   *   Like <code>DataOutput::writeASCII</code> the maximum length supported by
-   *   this method is 64K; use <code>readASCIIHuge</code> or
-   *   <code>readBytes</code> to read strings of length larger than this.
-   *
-   * @param value output C string to hold the read characters; it is allocated
-   *   by this method
-   * @param len output parameter to hold the number of characters read from
-   *   stream; not set if nullptr
-   */
-  inline void readASCII(char** value, uint16_t* len = nullptr) {
-    uint16_t length = readInt16();
-    checkBufferSize(length);
-    if (len != nullptr) {
-      *len = length;
-    }
-    char* str;
-    GF_NEW(str, char[length + 1]);
-    *value = str;
-    readBytesOnly(reinterpret_cast<int8_t*>(str), length);
-    str[length] = '\0';
-  }
-
-  template <class CharT, class... Tail>
-  inline void readAscii(std::basic_string<CharT, Tail...>& value) {
-    readAscii(value, static_cast<uint16_t>(readInt16()));
-  }
-
-  /**
-   * Allocates a c string buffer, and reads an ASCII string
-   * from <code>DataInput</code> into it.
-   * @remarks Sets integer at length to hold the strlen of the string. Value
-   *   is modified to point to the new allocation. The chars are allocated as
-   *   an array, so the caller must use <code>freeUTFMemory</code> when done.
-   *   Use this instead of <code>readUTF</code> when reading a string of length
-   *   greater than 64K.
-   *
-   * @param value output C string to hold the read characters; it is allocated
-   *   by this method
-   * @param len output parameter to hold the number of characters read from
-   *   stream; not set if nullptr
-   */
-  inline void readASCIIHuge(char** value, uint32_t* len = nullptr) {
-    uint32_t length = readInt32();
-    if (len != nullptr) {
-      *len = length;
-    }
-    char* str;
-    GF_NEW(str, char[length + 1]);
-    *value = str;
-    readBytesOnly(reinterpret_cast<int8_t*>(str), length);
-    str[length] = '\0';
-  }
-
-  template <class CharT, class... Tail>
-  inline void readAsciiHuge(std::basic_string<CharT, Tail...>& value) {
-    readAscii(value, static_cast<uint32_t>(readInt32()));
-  }
-
-  /**
-   * Allocates a c string buffer, and reads a java modified UTF-8
-   * encoded string having maximum encoded length of 64K from
-   * <code>DataInput</code> into it.
-   * @remarks Sets integer at length to hold the strlen of the string. Value
-   *   is modified to point to the new allocation. The chars are allocated as
-   *   an array, so the caller must use <code>freeUTFMemory</code> when done.
-   *   Like <code>DataOutput::writeUTF</code> the maximum length supported by
-   *   this method is 64K; use <code>readAUTFHuge</code> to read strings of
-   *   length larger than this.
-   *
-   * @param value output C string to hold the read characters; it is allocated
-   *   by this method
-   * @param len output parameter to hold the number of characters read from
-   *   stream; not set if nullptr
-   */
-  inline void readUTF(char** value, uint16_t* len = nullptr) {
-    uint16_t length = readInt16();
-    checkBufferSize(length);
-    uint16_t decodedLen =
-        static_cast<uint16_t>(getDecodedLength(m_buf, length));
-    if (len != nullptr) {
-      *len = decodedLen;
-    }
-    char* str;
-    GF_NEW(str, char[decodedLen + 1]);
-    *value = str;
-    for (uint16_t i = 0; i < decodedLen; i++) {
-      decodeChar(str++);
-    }
-    *str = '\0';  // null terminate for c-string.
-  }
-
-  void readJavaModifiedUtf8(std::string& value);
-
-  void readJavaModifiedUtf8(std::u16string& value);
-
-  /**
-   * Reads a java modified UTF-8 encoded string having maximum encoded length
-   * of 64K without reading the length which must be passed as a parameter.
-   * Allocates a c string buffer, and deserializes into it. Sets integer at
-   * length to hold the length of the string. Value is modified to point to the
-   * new allocation. The chars are allocated as an array, so the caller must
-   * use freeUTFMemory when done.
-   * If len == nullptr, then the decoded string length is not set.
-   */
-  inline void readUTFNoLen(wchar_t** value, uint16_t decodedLen) {
-    wchar_t* str;
-    GF_NEW(str, wchar_t[decodedLen + 1]);
-    *value = str;
-    for (uint16_t i = 0; i < decodedLen; i++) {
-      decodeChar(str++);
-    }
-    *str = L'\0';  // null terminate for c-string.
-  }
-
-  /**
-   * Allocates a c string buffer, and reads a java modified UTF-8
-   * encoded string from <code>DataInput</code> into it.
-   * @remarks Sets integer at length to hold the strlen of the string. Value
-   *   is modified to point to the new allocation. The chars are allocated as
-   *   an array, so the caller must use <code>freeUTFMemory</code> when done.
-   *   Use this instead of <code>readUTF</code> when reading a string of length
-   *   greater than 64K.
-   *
-   * @param value output C string to hold the read characters; it is allocated
-   *   by this method
-   * @param len output parameter to hold the number of characters read from
-   *   stream; not set if nullptr
-   */
-  inline void readUTFHuge(char** value, uint32_t* len = nullptr) {
-    uint32_t length = readInt32();
-    if (len != nullptr) {
-      *len = length;
-    }
-    char* str;
-    GF_NEW(str, char[length + 1]);
-    *value = str;
-    for (uint32_t i = 0; i < length; i++) {
-      read();  // ignore this - should be higher order zero byte
-      *str = read();
-      str++;
-    }
-    *str = '\0';  // null terminate for c-string.
-  }
-
-  inline void readUtf16Huge(std::u16string& value) {
-    uint32_t length = readInt32();
-    checkBufferSize(length);
-    value.reserve(length);
-    for (size_t i = 0; i < length; i++) {
-      value.push_back(readInt16NoCheck());
-    }
-  }
-
-  void readUtf16Huge(std::string& value);
-
-  /**
-   * Allocates a wide-character string buffer, and reads a java
-   * modified UTF-8 encoded string having maximum encoded length of 64K from
-   * <code>DataInput</code> into it.
-   * @remarks Sets integer at length to hold the strlen of the string. Value
-   *   is modified to point to the new allocation. The chars are allocated as
-   *   an array, so the caller must use <code>freeUTFMemory</code> when done.
-   *   Like <code>DataOutput::writeUTF</code> the maximum length supported by
-   *   this method is 64K; use <code>readAUTFHuge</code> to read strings of
-   *   length larger than this.
-   *
-   * @param value output wide-character string to hold the read characters;
-   *   it is allocated by this method
-   * @param len output parameter to hold the number of characters read from
-   *   stream; not set if nullptr
-   */
-  inline void readUTF(wchar_t** value, uint16_t* len = nullptr) {
-    uint16_t length = readInt16();
-    checkBufferSize(length);
-    uint16_t decodedLen =
-        static_cast<uint16_t>(getDecodedLength(m_buf, length));
-    if (len != nullptr) {
-      *len = decodedLen;
-    }
-    wchar_t* str;
-    GF_NEW(str, wchar_t[decodedLen + 1]);
-    *value = str;
-    for (uint16_t i = 0; i < decodedLen; i++) {
-      decodeChar(str++);
-    }
-    *str = L'\0';  // null terminate for c-string.
-  }
-
-  /**
-   * Allocates a wide-character string buffer, and reads a java
-   * modified UTF-8 encoded string from <code>DataInput</code> into it.
-   * @remarks Sets integer at length to hold the strlen of the string. Value
-   *   is modified to point to the new allocation. The chars are allocated as
-   *   an array, so the caller must use <code>freeUTFMemory</code> when done.
-   *   Use this instead of <code>readUTF</code> when reading a string of length
-   *   greater than 64K.
-   *
-   * @param value output wide-character string to hold the read characters;
-   *   it is allocated by this method
-   * @param len output parameter to hold the number of characters read from
-   *   stream; not set if nullptr
-   */
-  inline void readUTFHuge(wchar_t** value, uint32_t* len = nullptr) {
-    uint32_t length = readInt32();
-    if (len != nullptr) {
-      *len = length;
-    }
-    wchar_t* str;
-    GF_NEW(str, wchar_t[length + 1]);
-    *value = str;
-    for (uint32_t i = 0; i < length; i++) {
-      const auto hibyte = read();
-      const auto lobyte = read();
-      *str = ((static_cast<uint16_t>(hibyte)) << 8) |
-             static_cast<uint16_t>(lobyte);
-      str++;
-    }
-    *str = L'\0';  // null terminate for c-string.
+  template <class CharT = char, class... Tail>
+  inline std::basic_string<CharT, Tail...> readUTF() {
+    std::basic_string<CharT, Tail...> value;
+    readJavaModifiedUtf8(value);
+    return value;
   }
 
   template <class CharT = char, class... Tail>
@@ -571,6 +329,9 @@ class CPPCACHE_EXPORT DataInput {
         break;
       case GeodeTypeIds::CacheableASCIIStringHuge:
         readAsciiHuge(value);
+        break;
+      case GeodeTypeIds::CacheableNullString:
+        // empty string
         break;
     }
     return value;
@@ -617,40 +378,6 @@ class CPPCACHE_EXPORT DataInput {
     return readInt32();
   }
 
-  inline std::shared_ptr<CacheableString> readNativeString() {
-    std::shared_ptr<CacheableString> csPtr;
-    const int64_t compId = read();
-    if (compId == GeodeTypeIds::NullObj) {
-      csPtr = nullptr;
-    } else if (compId == GeodeTypeIds::CacheableNullString) {
-      csPtr = std::shared_ptr<CacheableString>(dynamic_cast<CacheableString*>(
-          CacheableString::createDeserializable()));
-    } else if (compId ==
-               apache::geode::client::GeodeTypeIds::CacheableASCIIString) {
-      csPtr = std::shared_ptr<CacheableString>(dynamic_cast<CacheableString*>(
-          CacheableString::createDeserializable()));
-      csPtr->fromData(*this);
-    } else if (compId ==
-               apache::geode::client::GeodeTypeIds::CacheableASCIIStringHuge) {
-      csPtr = std::shared_ptr<CacheableString>(dynamic_cast<CacheableString*>(
-          CacheableString::createDeserializableHuge()));
-      csPtr->fromData(*this);
-    } else if (compId == apache::geode::client::GeodeTypeIds::CacheableString) {
-      csPtr = std::shared_ptr<CacheableString>(dynamic_cast<CacheableString*>(
-          CacheableString::createUTFDeserializable()));
-      csPtr->fromData(*this);
-    } else if (compId ==
-               apache::geode::client::GeodeTypeIds::CacheableStringHuge) {
-      csPtr = std::shared_ptr<CacheableString>(dynamic_cast<CacheableString*>(
-          CacheableString::createUTFDeserializableHuge()));
-      csPtr->fromData(*this);
-    } else {
-      rewindCursor(1);
-      csPtr = nullptr;
-    }
-    return csPtr;
-  }
-
   inline std::shared_ptr<Serializable> readDirectObject(int8_t typeId = -1) {
     return readObjectInternal(typeId);
   }
@@ -663,10 +390,7 @@ class CPPCACHE_EXPORT DataInput {
     ptr = readObjectInternal();
   }
 
-  inline void readObject(wchar_t* value) {
-    uint16_t temp = readInt16();
-    *value = static_cast<wchar_t>(temp);
-  }
+  inline void readObject(char16_t *value) { *value = readInt16(); }
 
   inline void readObject(bool* value) { *value = readBoolean(); }
 
@@ -682,22 +406,7 @@ class CPPCACHE_EXPORT DataInput {
 
   inline void readObject(double* value) { *value = readDouble(); }
 
-  inline void readCharArray(char** value, int32_t& length) {
-    int arrayLen = readArrayLen();
-    length = arrayLen;
-    char* objArray = nullptr;
-    if (arrayLen > 0) {
-      objArray = new char[arrayLen];
-      int i = 0;
-      for (i = 0; i < arrayLen; i++) {
-        char tmp = readPdxChar();
-        objArray[i] = tmp;
-      }
-      *value = objArray;
-    }
-  }
-
-  inline void readWideCharArray(wchar_t** value, int32_t& length) {
+  inline void readCharArray(char16_t **value, int32_t &length) {
     readObject(value, length);
   }
 
@@ -729,92 +438,18 @@ class CPPCACHE_EXPORT DataInput {
     readObject(value, length);
   }
 
-  inline void readString(char** value) {
-    const auto typeId = read();
+  inline std::vector<std::string> readStringArray() {
+    std::vector<std::string> value;
 
-    // Check for nullptr String
-    if (typeId == GeodeTypeIds::CacheableNullString) {
-      *value = nullptr;
-      return;
-    }
-    /*
-    if (typeId == GeodeTypeIds::CacheableString) {
-      readUTF(value);
-    } else {
-      readUTFHuge(value);
-    }
-    */
-    if (typeId == static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString) ||
-        typeId == static_cast<int8_t>(GeodeTypeIds::CacheableString)) {
-      // readUTF( value);
-      readASCII(value);
-      // m_len = shortLen;
-    } else if (typeId == static_cast<int8_t>(
-                             GeodeTypeIds::CacheableASCIIStringHuge) ||
-               typeId ==
-                   static_cast<int8_t>(GeodeTypeIds::CacheableStringHuge)) {
-      // readUTFHuge( value);
-      readASCIIHuge(value);
-    } else {
-      throw IllegalArgumentException(
-          "DI readString error:: String type not supported ");
-    }
-  }
-
-  inline void readWideString(wchar_t** value) {
-    const auto typeId = read();
-
-    // Check for nullptr String
-    if (typeId == GeodeTypeIds::CacheableNullString) {
-      *value = nullptr;
-      return;
-    }
-
-    if (typeId == static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString) ||
-        typeId == static_cast<int8_t>(GeodeTypeIds::CacheableString)) {
-      readUTF(value);
-    } else if (typeId == static_cast<int8_t>(
-                             GeodeTypeIds::CacheableASCIIStringHuge) ||
-               typeId ==
-                   static_cast<int8_t>(GeodeTypeIds::CacheableStringHuge)) {
-      readUTFHuge(value);
-    } else {
-      throw IllegalArgumentException(
-          "DI readWideString error:: WideString type provided is not "
-          "supported ");
-    }
-  }
-
-  inline void readStringArray(char*** strArray, int32_t& length) {
     int32_t arrLen = readArrayLen();
-    length = arrLen;
-    if (arrLen == -1) {
-      *strArray = nullptr;
-      return;
-    } else {
-      char** tmpArray;
-      GF_NEW(tmpArray, char * [arrLen]);
+    if (arrLen > 0) {
+      value.reserve(arrLen);
       for (int i = 0; i < arrLen; i++) {
-        readString(&tmpArray[i]);
+        value.push_back(readString());
       }
-      *strArray = tmpArray;
     }
-  }
 
-  inline void readWideStringArray(wchar_t*** strArray, int32_t& length) {
-    int32_t arrLen = readArrayLen();
-    length = arrLen;
-    if (arrLen == -1) {
-      *strArray = nullptr;
-      return;
-    } else {
-      wchar_t** tmpArray;
-      GF_NEW(tmpArray, wchar_t * [arrLen]);
-      for (int i = 0; i < arrLen; i++) {
-        readWideString(&tmpArray[i]);
-      }
-      *strArray = tmpArray;
-    }
+    return value;
   }
 
   inline void readArrayOfByteArrays(int8_t*** arrayofBytearr,
@@ -982,25 +617,8 @@ class CPPCACHE_EXPORT DataInput {
     }
   }
 
-  inline void decodeChar(char* str) {
-    uint8_t bt = *(m_buf++);
-    if (bt & 0x80) {
-      if (bt & 0x20) {
-        // three bytes.
-        *str =
-            static_cast<char>(((bt & 0x0f) << 12) | (((*m_buf++) & 0x3f) << 6));
-        *str |= static_cast<char>((*m_buf++) & 0x3f);
-      } else {
-        // two bytes.
-        *str = static_cast<char>(((bt & 0x1f) << 6) | ((*m_buf++) & 0x3f));
-      }
-    } else {
-      // single byte...
-      *str = bt;
-    }
-  }
-
-  inline void decodeChar(wchar_t* str) {
+  inline char16_t decodeJavaModifiedUtf8Char() {
+    char16_t c;
     // get next byte unsigned
     int32_t b = *m_buf++ & 0xff;
     int32_t k = b >> 5;
@@ -1015,14 +633,12 @@ class CPPCACHE_EXPORT DataInput {
         // It should have high order bits 10, which we don't check.
         int32_t x = *m_buf++ & 0x3f;
         // 00000yyy yyxxxxxx
-        *str = (y << 6 | x);
+        c = (y << 6 | x);
         break;
       }
       case 7: {
         // three byte encoding
         // 1110zzzz 10yyyyyy 10xxxxxx
-        // assert ( b & 0x10 )
-        //     == 0 : "UTF8Decoder does not handle 32-bit characters";
         // use low order 4 bits
         int32_t z = b & 0x0f;
         // use low order 6 bits of the next byte
@@ -1032,8 +648,7 @@ class CPPCACHE_EXPORT DataInput {
         // It should have high order bits 10, which we don't check.
         int32_t x = *m_buf++ & 0x3f;
         // zzzzyyyy yyxxxxxx
-        int32_t asint = (z << 12 | y << 6 | x);
-        *str = asint;
+        c = (z << 12 | y << 6 | x);
         break;
       }
       default:
@@ -1041,12 +656,11 @@ class CPPCACHE_EXPORT DataInput {
         // 0xxxxxxx
         // use just low order 7 bits
         // 00000000 0xxxxxxx
-        *str = (b & 0x7f);
+        c = (b & 0x7f);
         break;
     }
+    return c;
   }
-
-  inline char16_t decodeJavaModifiedUtf8Char();
 
   inline int8_t readNoCheck() { return *(m_buf++); }
 
@@ -1058,13 +672,95 @@ class CPPCACHE_EXPORT DataInput {
 
   template <class CharT, class... Tail>
   inline void readAscii(std::basic_string<CharT, Tail...>& value,
-                        const size_t length) {
-    checkBufferSize(length);
+                        size_t length) {
+    GEODE_CHECK_BUFFER_SIZE(static_cast<int32_t>(length));
     value.reserve(length);
-    for (size_t i = 0; i < length; i++) {
+    while (length-- > 0) {
       // blindly assumes ASCII so mask off 7 bits
-      value.push_back(readNoCheck() & 0x7F);
+      value += readNoCheck() & 0x7F;
     }
+  }
+
+  template <class CharT, class... Tail>
+  inline void readAscii(std::basic_string<CharT, Tail...>& value) {
+    readAscii(value, static_cast<uint16_t>(readInt16()));
+  }
+
+  template <class CharT, class... Tail>
+  inline void readAsciiHuge(std::basic_string<CharT, Tail...>& value) {
+    readAscii(value, static_cast<uint32_t>(readInt32()));
+  }
+
+  template <class _CharT, class _Traits, class _Allocator>
+  void readJavaModifiedUtf8(
+      std::basic_string<_CharT, _Traits, _Allocator>& value);
+
+  template <class _Traits, class _Allocator>
+  inline void readJavaModifiedUtf8(
+      std::basic_string<char16_t, _Traits, _Allocator>& value) {
+    uint16_t length = readInt16();
+    GEODE_CHECK_BUFFER_SIZE(length);
+    value.reserve(length);
+    const auto end = m_buf + length;
+    while (m_buf < end) {
+      value += decodeJavaModifiedUtf8Char();
+    }
+  }
+
+  template <class _Traits, class _Allocator>
+  void readJavaModifiedUtf8(
+      std::basic_string<char, _Traits, _Allocator>& value);
+
+  template <class _Traits, class _Allocator>
+  void readJavaModifiedUtf8(
+      std::basic_string<char32_t, _Traits, _Allocator>& value);
+
+  template <class _Traits, class _Allocator>
+  inline void readJavaModifiedUtf8(
+      std::basic_string<wchar_t, _Traits, _Allocator>& value) {
+    // TODO string optimize
+    typedef std::conditional<
+        sizeof(wchar_t) == sizeof(char16_t), char16_t,
+        std::conditional<sizeof(wchar_t) == sizeof(char32_t), char32_t,
+                         char>::type>::type _WcharT;
+
+    auto tmp = std::basic_string<_WcharT>();
+    readJavaModifiedUtf8(tmp);
+    value.assign(reinterpret_cast<const wchar_t*>(tmp.data()), tmp.length());
+  }
+
+  template <class _CharT, class _Traits, class _Allocator>
+  void readUtf16Huge(std::basic_string<_CharT, _Traits, _Allocator>& value);
+
+  template <class _Traits, class _Allocator>
+  inline void readUtf16Huge(
+      std::basic_string<char16_t, _Traits, _Allocator>& value) {
+    uint32_t length = readInt32();
+    GEODE_CHECK_BUFFER_SIZE(length);
+    value.reserve(length);
+    while (length-- > 0) {
+      value += readInt16NoCheck();
+    }
+  }
+
+  template <class _Traits, class _Allocator>
+  void readUtf16Huge(std::basic_string<char, _Traits, _Allocator>& value);
+
+  template <class _Traits, class _Allocator>
+  void readUtf16Huge(std::basic_string<char32_t, _Traits, _Allocator>& value);
+
+  template <class _Traits, class _Allocator>
+  inline void readUtf16Huge(
+      std::basic_string<wchar_t, _Traits, _Allocator>& value) {
+    // TODO string optimize
+    typedef std::conditional<
+        sizeof(wchar_t) == sizeof(char16_t), char16_t,
+        std::conditional<sizeof(wchar_t) == sizeof(char32_t), char32_t,
+                         char>::type>::type _WcharT;
+
+    auto tmp = std::basic_string<_WcharT>();
+    readUtf16Huge(tmp);
+    value.assign(reinterpret_cast<const wchar_t*>(tmp.data()), tmp.length());
   }
 
   const std::string& getPoolName() const { return m_poolName; }
@@ -1081,6 +777,7 @@ class CPPCACHE_EXPORT DataInput {
   friend Cache;
   friend CacheImpl;
   friend DataInputInternal;
+  friend CacheableString;
 };
 }  // namespace client
 }  // namespace geode

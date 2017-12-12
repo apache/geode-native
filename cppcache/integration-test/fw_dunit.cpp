@@ -985,18 +985,14 @@ Record& Record::operator=(const Record& other) {
 }
 
 void Record::write(apache::geode::client::DataOutput& output) {
-  output.writeASCII(m_testName.c_str(),
-                    static_cast<uint32_t>(m_testName.length()));
+  output.writeString(m_testName);
   output.writeInt(m_operations);
   output.writeInt(m_startTime.msec());
   output.writeInt(m_stopTime.msec());
 }
 
 void Record::read(apache::geode::client::DataInput& input) {
-  char* buf = nullptr;
-  input.readASCII(&buf);
-  m_testName = buf;
-  delete[] buf;
+  m_testName = input.readString();
   m_operations = input.readInt64();
   m_startTime.msec(input.readInt64());
   m_stopTime.msec(input.readInt64());

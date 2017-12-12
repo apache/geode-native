@@ -159,11 +159,7 @@ int32_t PdxLocalWriter::calculateLenWithOffsets() {
 }
 
 bool PdxLocalWriter::isFieldWritingStarted() { return true; }
-std::shared_ptr<PdxWriter> PdxLocalWriter::writeChar(
-    const std::string& fieldName, char value) {
-  m_dataOutput->writeChar(static_cast<uint16_t>(value));
-  return shared_from_this();
-}
+
 std::shared_ptr<PdxWriter> PdxLocalWriter::writeChar(
     const std::string& fieldName, char16_t value) {
   m_dataOutput->writeChar(value);
@@ -214,110 +210,24 @@ std::shared_ptr<PdxWriter> PdxLocalWriter::writeInt(
    }
    return shared_from_this();
 }
+
 std::shared_ptr<PdxWriter> PdxLocalWriter::writeString(
-    const std::string& fieldName, const char* value) {
+    const std::string& fieldName, const std::string& value) {
   addOffset();
-  if (value == nullptr) {
-    m_dataOutput->write(static_cast<int8_t>(GeodeTypeIds::CacheableNullString));
-  } else {
-    int32_t len = DataOutput::getEncodedLength(value);
-    if (len > 0xffff) {
-      // write HugUTF
-      m_dataOutput->write(
-          static_cast<int8_t>(GeodeTypeIds::CacheableStringHuge));
-      m_dataOutput->writeUTFHuge(value);
-    } else {
-      // Write normal UTF
-      m_dataOutput->write(static_cast<int8_t>(GeodeTypeIds::CacheableString));
-      m_dataOutput->writeUTF(value);
-    }
-  }
+  m_dataOutput->writeString(value);
   return shared_from_this();
 }
-std::shared_ptr<PdxWriter> PdxLocalWriter::writeWideString(
-    const std::string& fieldName, const wchar_t* value) {
-  addOffset();
-  if (value == nullptr) {
-    m_dataOutput->write(static_cast<int8_t>(GeodeTypeIds::CacheableNullString));
-  } else {
-    int32_t len = DataOutput::getEncodedLength(value);
-    if (len > 0xffff) {
-      // write HugUTF
-      m_dataOutput->write(
-          static_cast<int8_t>(GeodeTypeIds::CacheableStringHuge));
-      m_dataOutput->writeUTFHuge(value);
-    } else {
-      // Write normal UTF
-      m_dataOutput->write(static_cast<int8_t>(GeodeTypeIds::CacheableString));
-      m_dataOutput->writeUTF(value);
-    }
-  }
-  return shared_from_this();
-}
- std::shared_ptr<PdxWriter> PdxLocalWriter::writeStringwithoutOffset(const char* value) {
-  if (value == nullptr) {
-    m_dataOutput->write(static_cast<int8_t>(GeodeTypeIds::CacheableNullString));
-  } else {
-    int32_t len = DataOutput::getEncodedLength(value);
-    if (len > 0xffff) {
-      // write HugUTF
-      m_dataOutput->write(
-          static_cast<int8_t>(GeodeTypeIds::CacheableStringHuge));
-      m_dataOutput->writeUTFHuge(value);
-    } else {
-      // Write normal UTF
-      m_dataOutput->write(static_cast<int8_t>(GeodeTypeIds::CacheableString));
-      m_dataOutput->writeUTF(value);
-    }
-  }
-  return shared_from_this();
-}
- std::shared_ptr<PdxWriter> PdxLocalWriter::writeWideStringwithoutOffset(
-    const wchar_t* value) {
-  if (value == nullptr) {
-    m_dataOutput->write(static_cast<int8_t>(GeodeTypeIds::CacheableNullString));
-  } else {
-    int32_t len = DataOutput::getEncodedLength(value);
-    if (len > 0xffff) {
-      // write HugUTF
-      m_dataOutput->write(
-          static_cast<int8_t>(GeodeTypeIds::CacheableStringHuge));
-      m_dataOutput->writeUTFHuge(value);
-    } else {
-      // Write normal UTF
-      m_dataOutput->write(static_cast<int8_t>(GeodeTypeIds::CacheableString));
-      m_dataOutput->writeUTF(value);
-    }
-  }
-  return shared_from_this();
-}
+
 std::shared_ptr<PdxWriter> PdxLocalWriter::writeStringArray(
-    const std::string& fieldName, char** array, int length) {
+    const std::string& fieldName, const std::vector<std::string>& array) {
   addOffset();
-  if (array == nullptr) {
-    m_dataOutput->write(static_cast<int8_t>(-1));
-    // WriteByte(-1);
-  } else {
-    m_dataOutput->writeArrayLen(length);
-    for (int i = 0; i < length; i++) {
-      writeStringwithoutOffset(array[i]);
-    }
+  m_dataOutput->writeArrayLen(array.size());
+  for (auto&& entry : array) {
+    m_dataOutput->writeString(entry);
   }
   return shared_from_this();
 }
-std::shared_ptr<PdxWriter> PdxLocalWriter::writeWideStringArray(
-    const std::string& fieldName, wchar_t** array, int length) {
-  addOffset();
-  if (array == nullptr) {
-    m_dataOutput->write(static_cast<int8_t>(-1));
-  } else {
-    m_dataOutput->writeArrayLen(length);
-    for (int i = 0; i < length; i++) {
-      writeWideStringwithoutOffset(array[i]);
-    }
-  }
-  return shared_from_this();
-}
+
 std::shared_ptr<PdxWriter> PdxLocalWriter::writeObject(
     const std::string& fieldName, std::shared_ptr<Serializable> value) {
   addOffset();
@@ -352,9 +262,7 @@ std::shared_ptr<PdxWriter> PdxLocalWriter::writeObject(
       const auto actualObjPtr =
           std::dynamic_pointer_cast<PdxSerializable>(*iter);
 
-      m_dataOutput->write(
-          static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
-      m_dataOutput->writeASCII(actualObjPtr->getClassName().c_str());
+      m_dataOutput->writeString(actualObjPtr->getClassName());
 
       for (; iter != objArrPtr->end(); ++iter) {
         m_dataOutput->writeObject(*iter);
@@ -371,18 +279,14 @@ std::shared_ptr<PdxWriter> PdxLocalWriter::writeBooleanArray(
   writeObject(array, length);
   return shared_from_this();
 }
+
 std::shared_ptr<PdxWriter> PdxLocalWriter::writeCharArray(
-    const std::string& fieldName, char* array, int length) {
-  addOffset();
-  writePdxCharArray(array, length);
-  return shared_from_this();
-}
-std::shared_ptr<PdxWriter> PdxLocalWriter::writeWideCharArray(
-    const std::string& fieldName, wchar_t* array, int length) {
+    const std::string &fieldName, char16_t *array, int length) {
   addOffset();
   writeObject(array, length);
   return shared_from_this();
 }
+
 std::shared_ptr<PdxWriter> PdxLocalWriter::writeByteArray(
     const std::string& fieldName, int8_t* array, int length) {
   addOffset();
@@ -431,8 +335,8 @@ std::shared_ptr<PdxWriter> PdxLocalWriter::writeLongArray(
    return shared_from_this();
 }
 std::shared_ptr<PdxWriter> PdxLocalWriter::writeArrayOfByteArrays(
-    const std::string& fieldName, int8_t** byteArrays, int arrayLength,
-    int* elementLength) {
+    const std::string& fieldName, int8_t* const* const byteArrays,
+    int arrayLength, const int* elementLength) {
   addOffset();
   if (byteArrays != nullptr) {
     m_dataOutput->writeArrayLen(arrayLength);

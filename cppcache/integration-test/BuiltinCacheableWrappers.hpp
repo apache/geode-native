@@ -154,6 +154,10 @@ inline uint32_t crc32(const uint8_t* buffer, size_t bufLen) {
   return ~crc;
 }
 
+inline uint32_t crc32(const int8_t* buffer, size_t bufLen) {
+  return crc32(reinterpret_cast<const uint8_t*>(buffer), bufLen);
+}
+
 template <typename TPRIM>
 inline uint32_t crc32(TPRIM value) {
   auto output = CacheHelper::getHelper().getCache()->createDataOutput();
@@ -338,8 +342,7 @@ class CacheableFileNameWrapper : public CacheableWrapper {
 #else
     baseStr[0] = L'/';
 #endif
-    m_cacheableObject = CacheableFileName::create(
-        baseStr.data(), static_cast<int32_t>(baseStr.size()));
+    m_cacheableObject = CacheableFileName::create(baseStr);
   }
 
   virtual void initRandomValue(int32_t maxSize) {
@@ -349,16 +352,14 @@ class CacheableFileNameWrapper : public CacheableWrapper {
     // make first caharacter as a '/' so java does not change the path
     // taking it to be a relative path
     randStr[0] = '/';
-    m_cacheableObject = CacheableFileName::create(
-        randStr.data(), static_cast<int32_t>(randStr.size()));
+    m_cacheableObject = CacheableFileName::create(randStr);
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
-    const CacheableFileName* obj =
-        dynamic_cast<const CacheableFileName*>(object.get());
-    return (obj != nullptr ? CacheableHelper::crc32(
-                                 (uint8_t*)obj->value().c_str(), obj->length())
-                           : 0);
+    auto&& obj = std::dynamic_pointer_cast<CacheableFileName>(object);
+    return (obj ? CacheableHelper::crc32((uint8_t*)obj->value().c_str(),
+                                         obj->length())
+                : 0);
   }
 };
 
@@ -500,16 +501,14 @@ class CacheableStringWrapper : public CacheableWrapper {
     char indexStr[15];
     sprintf(indexStr, "%10d", keyIndex);
     baseStr.append(indexStr);
-    m_cacheableObject = CacheableString::create(
-        baseStr.data(), static_cast<int32_t>(baseStr.length()));
+    m_cacheableObject = CacheableString::create(baseStr);
   }
 
   virtual void initRandomValue(int32_t maxSize) {
     maxSize %= (0xFFFF + 1);
     std::string randStr;
     CacheableHelper::randomString(maxSize, randStr);
-    m_cacheableObject = CacheableString::create(
-        randStr.data(), static_cast<int32_t>(randStr.length()));
+    m_cacheableObject = CacheableString::create(randStr);
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
@@ -542,8 +541,7 @@ class CacheableHugeStringWrapper : public CacheableWrapper {
     char indexStr[15];
     sprintf(indexStr, "%10d", keyIndex);
     baseStr.append(indexStr);
-    m_cacheableObject = CacheableString::create(
-        baseStr.data(), static_cast<int32_t>(baseStr.length()));
+    m_cacheableObject = CacheableString::create(baseStr);
   }
 
   virtual void initRandomValue(int32_t maxSize) {
@@ -553,8 +551,7 @@ class CacheableHugeStringWrapper : public CacheableWrapper {
     }
     std::string randStr;
     CacheableHelper::randomString(maxSize, randStr);
-    m_cacheableObject = CacheableString::create(
-        randStr.data(), static_cast<int32_t>(randStr.length()));
+    m_cacheableObject = CacheableString::create(randStr);
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
@@ -842,7 +839,8 @@ class CacheableBytesWrapper : public CacheableWrapper {
   virtual void initRandomValue(int32_t maxSize) {
     uint8_t* randArr =
         CacheableHelper::randomArray<uint8_t>(maxSize, UCHAR_MAX);
-    m_cacheableObject = CacheableBytes::create(randArr, maxSize);
+    m_cacheableObject = CacheableBytes::create(
+        reinterpret_cast<const int8_t*>(randArr), maxSize);
     delete[] randArr;
   }
 

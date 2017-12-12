@@ -20,12 +20,16 @@
 #ifndef GEODE_CLIENTPROXYMEMBERSHIPID_H_
 #define GEODE_CLIENTPROXYMEMBERSHIPID_H_
 
+#include <string>
+
+#include <ace/OS.h>
+
 #include <geode/geode_globals.hpp>
 #include <geode/DataOutput.hpp>
+#include <geode/util/functional.hpp>
+
 #include "GeodeTypeIdsImpl.hpp"
 #include "DSMemberForVersionStamp.hpp"
-#include <ace/OS.h>
-#include <string>
 
 namespace apache {
 namespace geode {
@@ -93,10 +97,9 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
       offset += ACE_OS::snprintf(hostInfo + offset, 255 - offset, ":%x",
                                  m_hostAddr[i]);
     }
-   auto tempHashCode = CacheableString::create(hostInfo, offset);
-   result = result + tempHashCode->hashcode();
-   result = result + m_hostPort;
-   return result;
+    result += geode_hash<std::string>{}(std::string(hostInfo, offset));
+    result += m_hostPort;
+    return result;
   }
 
   virtual bool operator==(const CacheableKey& other) const {

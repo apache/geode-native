@@ -47,7 +47,7 @@ enum Gender { male, female, other };
 class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
  private:
   int m_childId;
-  char* m_childName;
+  std::string m_childName;
   std::shared_ptr<CacheableEnum> m_enum;
 
  public:
@@ -55,13 +55,7 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
 
   ChildPdx(int id) {
     m_childId = id;
-    char buf[64] = {0};
-    sprintf(buf, "name-%d ", id);
-    LOGDEBUG("childPdx buf is %s ", buf);
-    size_t strSize = strlen(buf) + 1;
-    m_childName = new char[strSize];
-    memcpy(m_childName, buf, strSize);
-    LOGDEBUG("childPdx again buf is %s ", buf);
+    m_childName = "name-" + std::to_string(id);
     m_enum = CacheableEnum::create("Gender", "female", 5);
   }
 
@@ -74,7 +68,7 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
 
   int32_t getChildId() { return m_childId; }
 
-  char* getChildName() { return m_childName; }
+  const std::string& getChildName() { return m_childName; }
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
@@ -98,62 +92,30 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
 class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
  private:
   int m_parentId;
-  char* m_parentName;
-  const wchar_t* m_wideparentName;
-  wchar_t** m_wideparentArrayName;
+  std::string m_parentName;
   std::shared_ptr<Cacheable> m_childPdx;
   std::shared_ptr<CacheableEnum> m_enum;
-  int m_arrLength;
-  char m_char;
-  char16_t m_wideChar;
-  char* m_charArray;
-  wchar_t* m_wideCharArray;
+  char16_t m_char;
+  char16_t *m_charArray;
 
   int32_t m_charArrayLen;
-  int32_t m_wcharArrayLen;
 
  public:
   ParentPdx() {}
 
   ParentPdx(int id) {
     m_parentId = id;
-    char buf[64] = {0};
-    sprintf(buf, "name-%d ", id);
-    LOGDEBUG("buf is %s ", buf);
-    size_t strSize = strlen(buf) + 1;
-    m_parentName = new char[strSize];
-    memcpy(m_parentName, buf, strSize);
+    m_parentName = "name-" + std::to_string(id);
     m_childPdx = std::make_shared<ChildPdx>(id /** 1393*/);
-    LOGDEBUG("parentPdx buf is %s ", buf);
     m_enum = CacheableEnum::create("Gender", "male", 6);
-    m_wideparentName = L"Wide Parent name";
-    LOGINFO("parentPdx m_wideparentName is %ls ", m_wideparentName);
-    m_wideparentArrayName = new wchar_t*[3];
-    const wchar_t* wstr1 = L"test1";
-    const wchar_t* wstr2 = L"test2";
-    const wchar_t* wstr3 = L"test3";
-    size_t size = wcslen(wstr1);
-    for (size_t i = 0; i < 3; i++) {
-      m_wideparentArrayName[i] = new wchar_t[size];
-    }
-    m_wideparentArrayName[0] = const_cast<wchar_t*>(wstr1);
-    m_wideparentArrayName[1] = const_cast<wchar_t*>(wstr2);
-    m_wideparentArrayName[2] = const_cast<wchar_t*>(wstr3);
-    m_arrLength = 3;
 
     m_char = 'C';
-    m_wideChar = L'a';
 
-    m_charArray = new char[2];
+    m_charArray = new char16_t[2];
     m_charArray[0] = 'X';
     m_charArray[1] = 'Y';
 
-    m_wideCharArray = new wchar_t[2];
-    m_wideCharArray[0] = L'x';
-    m_wideCharArray[1] = L'y';
-
     m_charArrayLen = 2;
-    m_wcharArrayLen = 2;
   }
 
   virtual ~ParentPdx();
@@ -165,11 +127,7 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
 
   int32_t getParentId() { return m_parentId; }
 
-  const char* getParentName() { return m_parentName; }
-
-  const wchar_t* getWideParentName() { return m_wideparentName; }
-
-  wchar_t** getWideParentArrayName() { return m_wideparentArrayName; }
+  const std::string& getParentName() { return m_parentName; }
 
   std::shared_ptr<ChildPdx> getChildPdx() {
     return std::static_pointer_cast<ChildPdx>(m_childPdx);
@@ -177,17 +135,11 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
 
   std::shared_ptr<CacheableEnum> getEnum() { return m_enum; }
 
-  char getChar() { return m_char; }
+  char16_t getChar() { return m_char; }
 
-  wchar_t getWideChar() { return m_wideChar; }
-
-  char* getCharArray() { return m_charArray; }
-
-  wchar_t* getWideCharArray() { return m_wideCharArray; }
+  char16_t *getCharArray() { return m_charArray; }
 
   int32_t getCharArrayLength() { return m_charArrayLen; }
-
-  int32_t getWideCharArrayLength() { return m_wcharArrayLen; }
 
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
@@ -278,8 +230,8 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
  private:
   int i1;
   int i2;
-  const char* s1;
-  const char* s2;
+  std::string s1;
+  std::string s2;
 
  public:
   SerializePdx() {}
@@ -293,8 +245,8 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
     } else {
       i1 = 0;
       i2 = 0;
-      s1 = NULL;
-      s2 = NULL;
+      s1 = "";
+      s2 = "";
     }
   }
 
@@ -335,8 +287,7 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
       return false;
     }
 
-    if (ot->i1 != i1 && ot->i2 != i2 && strcmp(ot->s1, s1) != 0 &&
-        strcmp(ot->s2, s2) != 0) {
+    if (ot->i1 != i1 && ot->i2 != i2 && ot->s1 != s1 && ot->s2 != s2) {
       LOGINFO("SerializePdx::equals2");
       return false;
     }

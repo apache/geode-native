@@ -25,23 +25,21 @@ namespace apache {
 namespace geode {
 namespace client {
 
-StructSetImpl::StructSetImpl(
-    const std::shared_ptr<CacheableVector>& response,
-    const std::vector<std::shared_ptr<CacheableString>>& fieldNames) {
+StructSetImpl::StructSetImpl(const std::shared_ptr<CacheableVector>& response,
+                             const std::vector<std::string>& fieldNames) {
   m_nextIndex = 0;
 
-  size_t numOfFields = fieldNames.size();
-
-  for (size_t i = 0; i < numOfFields; i++) {
-    LOGDEBUG("StructSetImpl: pushing fieldName = %s with index = %d",
-             fieldNames[i]->value().c_str(), i);
-    m_fieldNameIndexMap.insert(std::make_pair(fieldNames[i]->value().c_str(),
-                                              static_cast<int32_t>(i)));
+  size_t i = 0;
+  for (auto&& fieldName : fieldNames) {
+    LOGDEBUG("StructSetImpl: pushing fieldName = %s with index = %zd",
+             fieldName.c_str(), i);
+    m_fieldNameIndexMap.emplace(fieldName, i++);
   }
 
   int32_t numOfValues = response->size();
   int32_t valStoredCnt = 0;
 
+  const auto numOfFields = fieldNames.size();
   m_structVector = CacheableVector::create();
   while (valStoredCnt < numOfValues) {
     std::vector<std::shared_ptr<Serializable>> tmpVec;

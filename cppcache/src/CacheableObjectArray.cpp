@@ -29,8 +29,7 @@ void CacheableObjectArray::toData(DataOutput& output) const {
   int32_t len = static_cast<int32_t>(size());
   output.writeArrayLen(len);
   output.write(static_cast<int8_t>(GeodeTypeIdsImpl::Class));
-  output.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
-  output.writeASCII("java.lang.Object");
+  output.writeString("java.lang.Object");
   for (const auto& iter : *this) {
     output.writeObject(iter);
   }
@@ -39,10 +38,8 @@ void CacheableObjectArray::toData(DataOutput& output) const {
 void CacheableObjectArray::fromData(DataInput& input) {
   int32_t len = input.readArrayLen();
   if (len >= 0) {
-    input.read();  // ignore CLASS typeid
-    input.read();  // ignore string typeid
-    uint16_t classLen = input.readInt16();
-    input.advanceCursor(classLen);
+    input.read();        // ignore CLASS typeid
+    input.readString();  // ignore class name
     std::shared_ptr<Cacheable> obj;
     for (int32_t index = 0; index < len; index++) {
       input.readObject(obj);

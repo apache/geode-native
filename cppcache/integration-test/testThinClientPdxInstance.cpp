@@ -889,28 +889,23 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_double") == PdxFieldTypes::DOUBLE,
            "Type Value DOUBLE Mismatch");
 
-    char* stringVal = nullptr;
-    pIPtr->getField("m_string", &stringVal);
-    ASSERT(strcmp(stringVal, pdxobjPtr->getString()) == 0,
-           "stringVal should be equal");
+    auto stringVal = pIPtr->getStringField("m_string");
+    ASSERT(stringVal == pdxobjPtr->getString(), "stringVal should be equal");
     ASSERT(pIPtr->getFieldType("m_string") == PdxFieldTypes::STRING,
            "Type Value STRING Mismatch");
 
-    char** stringArrayVal = nullptr;
-    int32_t stringArrayLen = 0;
-    pIPtr->getField("m_stringArray", &stringArrayVal, stringArrayLen);
-    ASSERT(genericValCompare(pdxobjPtr->getStringArrayLength(),
-                             stringArrayLen) == true,
+    auto stringArrayVal = pIPtr->getStringArrayField("m_stringArray");
+    ASSERT(pdxobjPtr->getStringArrayLength() == stringArrayVal.size(),
            "stringArrayLen should be equal");
     ASSERT(pIPtr->getFieldType("m_stringArray") == PdxFieldTypes::STRING_ARRAY,
            "Type Value STRING_ARRAY Mismatch");
-    char** strArray = pdxobjPtr->getStringArray();
-    for (int i = 0; i < stringArrayLen; i++) {
-      ASSERT(strcmp(strArray[i], stringArrayVal[i]) == 0,
+    auto strArray = pdxobjPtr->getStringArray();
+    for (int i = 0; i < stringArrayVal.size(); i++) {
+      ASSERT(strArray[i] == stringArrayVal[i],
              "All stringVals should be equal");
     }
 
-    signed char* byteArray = nullptr;
+    int8_t* byteArray = nullptr;
     int32_t byteArrayLength = 0;
     pIPtr->getField("m_byteArray", &byteArray, byteArrayLength);
     ASSERT(genericValCompare(pdxobjPtr->getByteArrayLength(),
@@ -922,7 +917,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_byteArray") == PdxFieldTypes::BYTE_ARRAY,
            "Type Value BYTE_ARRAY Mismatch");
 
-    wchar_t* charArray = nullptr;
+    char16_t *charArray = nullptr;
     int32_t charArrayLength = 0;
     pIPtr->getField("m_charArray", &charArray, charArrayLength);
     ASSERT(genericValCompare(pdxobjPtr->getCharArrayLength(),
@@ -1415,8 +1410,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-    signed char setByteArray[] = {0x34, 0x64, 0x34, 0x64};
-    signed char* getByteArray = nullptr;
+    int8_t setByteArray[] = {0x34, 0x64, 0x34, 0x64};
+    int8_t* getByteArray = nullptr;
     wpiPtr->setField("m_byteArray", setByteArray, 4);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1440,8 +1435,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-    wchar_t setCharArray[] = {'c', 'v', 'c', 'v'};
-    wchar_t* getCharArray = nullptr;
+    char16_t setCharArray[] = {'c', 'v', 'c', 'v'};
+    char16_t *getCharArray = nullptr;
     wpiPtr->setField("m_charArray", setCharArray, 4);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1602,15 +1597,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-    const char* setString = "change the string";
+    std::string setString = "change the string";
     wpiPtr->setField("m_string", setString);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_string") == true, "m_string = true expected");
-    char* stringVal = nullptr;
     ASSERT(newPiPtr->hasField("m_string") == true, "m_string = true expected");
-    newPiPtr->getField("m_string", &stringVal);
-    ASSERT(strcmp(stringVal, setString) == 0, "stringVal should be equal");
+    auto stringVal = newPiPtr->getStringField("m_string");
+    ASSERT(stringVal == setString, "stringVal should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
@@ -1836,27 +1830,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-    char** setStringArray = new char*[3];
-    const char* str1 = "test1";
-    const char* str2 = "test2";
-    const char* str3 = "test3";
-    auto size = strlen(const_cast<char*>(str1));
-    for (int i = 0; i < 3; i++) {
-      setStringArray[i] = new char[size];
-    }
-    setStringArray[0] = const_cast<char*>(str1);
-    setStringArray[1] = const_cast<char*>(str2);
-    setStringArray[2] = const_cast<char*>(str3);
-    char** getStringArray = nullptr;
+    auto setStringArray = new std::string[3]{"test1", "test2", "test3"};
     wpiPtr->setField("m_stringArray", setStringArray, 3);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
-    newPiPtr->getField("m_stringArray", &getStringArray, arrayLen);
+    auto getStringArray = newPiPtr->getStringArrayField("m_stringArray");
     ASSERT(arrayLen == 3, "Arraylength == 3 expected");
     for (int i = 0; i < arrayLen; i++) {
-      LOGINFO("set string is %s ", setStringArray[i]);
-      LOGINFO("get string is %s ", getStringArray[i]);
-      ASSERT(strcmp(setStringArray[i], getStringArray[i]) == 0,
+      LOGINFO("set string is %s ", setStringArray[i].c_str());
+      LOGINFO("get string is %s ", getStringArray[i].c_str());
+      ASSERT(setStringArray[i] == getStringArray[i],
              "All stringVals should be equal");
     }
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
@@ -1893,7 +1876,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT((cpo.get()->equals(*childpdxobjPtr.get())) == true,
            "child pdx should be equal");
 
-    char parentCharSetVal = 'Z';
+    char16_t parentCharSetVal = 'Z';
     wpiPtr = pIPtr->createWriter();
     wpiPtr->setField("m_char", parentCharSetVal);
     rptr->put(keyport1, wpiPtr);
@@ -1902,21 +1885,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     auto parentCharVal = newPiPtr->getCharField("m_char");
     ASSERT(parentCharVal == parentCharSetVal, "char is not equal");
 
-    wchar_t setParentWideCharArray[] = {L'c', L'v', L'c', L'v'};
-    wchar_t* getParentWideCharArray = nullptr;
-    wpiPtr->setField("m_wideCharArray", setParentWideCharArray, 4);
-    rptr->put(keyport1, wpiPtr);
-    newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport1));
-    ASSERT(newPiPtr->hasField("m_wideCharArray") == true,
-           "m_wideCharArray = true expected");
-    newPiPtr->getField("m_wideCharArray", &getParentWideCharArray, arrayLen);
-    ASSERT(arrayLen == 4, "Arraylength == 4 expected");
-    ASSERT(genericCompare(setParentWideCharArray, getParentWideCharArray,
-                          arrayLen) == true,
-           "m_wideCharArray should be equal");
-
-    wchar_t setParentCharArray[] = {'c', 'v', 'c', 'v'};
-    wchar_t* getParentCharArray = nullptr;
+    char16_t setParentCharArray[] = {'c', 'v', 'c', 'v'};
+    char16_t *getParentCharArray = nullptr;
     wpiPtr->setField("m_charArray", setParentCharArray, 4);
     rptr->put(keyport1, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport1));
@@ -2009,8 +1979,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
-    signed char setByteArray[] = {0x34, 0x64, 0x34, 0x64};
-    signed char* getByteArray = nullptr;
+    int8_t setByteArray[] = {0x34, 0x64, 0x34, 0x64};
+    int8_t* getByteArray = nullptr;
     wpiPtr->setField("m_byteArray", setByteArray, 4);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -2203,17 +2173,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
-    const char* str1 = "change the string";
+    std::string str1 = "change the string";
     wpiPtr->setField("m_string", str1);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_string") == true, "m_string = true expected");
-    char* getstringVal = nullptr;
     LOG("modifyPdxInstanceAndCheckLocally get string complete.");
-    newPiPtr->getField("m_string", &getstringVal);
+    auto getstringVal = newPiPtr->getStringField("m_string");
     LOGINFO("modifyPdxInstanceAndCheckLocally getstringVal = %s , str1 = %s ",
-            getstringVal, str1);
-    ASSERT(strcmp(getstringVal, str1) == 0, "getstringVal should be equal");
+            getstringVal.c_str(), str1.c_str());
+    ASSERT(getstringVal == str1, "getstringVal should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
@@ -2325,7 +2294,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     pifPtr->markIdentityField("m_doubleArray");
     pifPtr->writeObject("m_map", pdxobj->getHashMap());
     pifPtr->markIdentityField("m_map");
-    pifPtr->writeStringArray("m_stringArray", pdxobj->getStringArray(), 2);
+    pifPtr->writeStringArray("m_stringArray", pdxobj->getStringArray());
     pifPtr->markIdentityField("m_stringArray");
     pifPtr->writeObjectArray("m_objectArray",
                              pdxobj->getCacheableObjectArray());
@@ -2344,7 +2313,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     pifPtr->markIdentityField("m_byteByteArray");
     pifPtr->writeChar("m_char", pdxobj->getChar());
     pifPtr->markIdentityField("m_char");
-    pifPtr->writeWideCharArray("m_charArray", pdxobj->getCharArray(), 2);
+    pifPtr->writeCharArray("m_charArray", pdxobj->getCharArray(), 2);
     pifPtr->markIdentityField("m_charArray");
     pifPtr->writeObject("m_chs", pdxobj->getHashSet());
     pifPtr->markIdentityField("m_chs");
@@ -2492,7 +2461,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     if2->writeChar("m_char", pp->getChar());
     if2->writeChar("m_wideChar", pp->getChar());
     if2->writeCharArray("m_charArray", pp->getCharArray(), 2);
-    if2->writeWideCharArray("m_wideCharArray", pp->getWideCharArray(), 2);
 
     LOG("write set done....");
     std::shared_ptr<PdxInstance> ip2 = if2->create();

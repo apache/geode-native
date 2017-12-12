@@ -39,8 +39,6 @@ void VersionedCacheableObjectPartList::toData(DataOutput& output) const {
 
 void VersionedCacheableObjectPartList::readObjectPart(
     int32_t index, DataInput& input, std::shared_ptr<CacheableKey> keyPtr) {
-  std::shared_ptr<CacheableString> exMsgPtr;
-  std::shared_ptr<Exception> ex;
   auto objType = input.read();
   std::shared_ptr<Cacheable> value;
   m_byteArray[index] = objType;
@@ -49,28 +47,24 @@ void VersionedCacheableObjectPartList::readObjectPart(
   if (isException) {  // Exception case
     // Skip the exception that is in java serialized format, we cant read it.
     input.advanceCursor(input.readArrayLen());
+    const auto exMsg = input.readString();  ////4.1
 
-    exMsgPtr = input.readNativeString();  ////4.1
-    if (m_exceptions != nullptr) {
-      const char* exMsg = exMsgPtr->value().c_str();
-      if (strstr(exMsg,
-                 "org.apache.geode.security."
-                 "NotAuthorizedException") != nullptr) {
-        auto message = std::string("Authorization exception at server:") + exMsg;
-        ex = std::make_shared<NotAuthorizedException>(message);
-      } else {
-        auto message = std::string("Exception at remote server:") + exMsg;
-        ex = std::make_shared<CacheServerException>(message);
-      }
-      m_exceptions->emplace(keyPtr, ex);
+    std::shared_ptr<Exception> ex;
+    if (exMsg == "org.apache.geode.security.NotAuthorizedException") {
+      auto message = "Authorization exception at server: " + exMsg;
+      ex = std::make_shared<NotAuthorizedException>(message);
+    } else {
+      auto message = "Exception at remote server: " + exMsg;
+      ex = std::make_shared<CacheServerException>(message);
     }
+    m_exceptions->emplace(keyPtr, ex);
   } else if (m_serializeValues) {
     // read length
     int32_t skipLen = input.readArrayLen();
-    uint8_t* bytes = nullptr;
+    int8_t* bytes = nullptr;
     if (skipLen > 0) {
       // readObject
-      bytes = new uint8_t[skipLen];
+      bytes = new int8_t[skipLen];
       input.readBytesOnly(bytes, skipLen);
     }
     m_values->emplace(keyPtr, CacheableBytes::create(bytes, skipLen));

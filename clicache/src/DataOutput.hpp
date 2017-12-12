@@ -214,27 +214,7 @@ namespace Apache
         /// <param name="value">The UTF encoded string to write.</param>
         void WriteUTF( String^ value );
 
-        /// <summary>
-        /// Write a string using java-modified UTF-8 encoding to
-        /// <c>DataOutput</c>.
-        /// Length should be more than 2^16 -1. 
-        /// </summary>
-        /// <param name="value">The UTF encoded string to write.</param>
-        void WriteUTFHuge( String^ value );
-
-        /// <summary>
-        /// Write a string(only ASCII char) to
-        /// <c>DataOutput</c>.
-        /// Length should be more than 2^16 -1.
-        /// </summary>
-        /// <param name="value">The UTF encoded string to write.</param>
-        void WriteASCIIHuge( String^ value );
-
-        /// <summary>
-        /// Write an <c>IGeodeSerializable</c> object to the <c>DataOutput</c>.
-        /// </summary>
-        /// <param name="obj">The object to write.</param>
-       // void WriteObject( IGeodeSerializable^ obj );
+        void WriteString(String^ value);
 
         /// <summary>
         /// Write a <c>Serializable</c> object to the <c>DataOutput</c>.
@@ -389,6 +369,22 @@ namespace Apache
         /// <param name="value">The unsigned 64-bit integer to write.</param>
         void WriteUInt64( System::UInt64 value );
 
+        /// <summary>
+        /// Write a string using java-modified UTF-8 encoding to
+        /// <c>DataOutput</c>.
+        /// Length should be more than 2^16 -1. 
+        /// </summary>
+        /// <param name="value">The UTF encoded string to write.</param>
+        void WriteUTFHuge( String^ value );
+
+        /// <summary>
+        /// Write a string(only ASCII char) to
+        /// <c>DataOutput</c>.
+        /// Length should be more than 2^16 -1.
+        /// </summary>
+        /// <param name="value">The UTF encoded string to write.</param>
+        void WriteASCIIHuge( String^ value );
+
 
 			  System::Int32 GetBufferLengthPdx()
         {
@@ -401,8 +397,6 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
         }
-
-        void WriteString(String^ value);
 
         System::Int32 GetCursorPdx()
         {

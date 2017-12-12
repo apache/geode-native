@@ -130,10 +130,7 @@ void PdxVersioned1::init(const char* key) {
   m_ulong = 238749898;
   m_float = 23324.324f;
   m_double = 3243298498.00;
-  size_t len = strlen("PdxVersioned ") + strlen(key) + 1;
-  m_string = new char[len];
-  strcpy(m_string, "PdxVersioned ");
-  strcat(m_string, key);
+  m_string = std::string("PdxVersioned ") + key;
   m_boolArray = new bool[3];
   m_boolArray[0] = true;
   m_boolArray[1] = false;
@@ -150,7 +147,7 @@ void PdxVersioned1::init(const char* key) {
   m_sbyteArray[0] = 0x34;
   m_sbyteArray[1] = 0x64;
 
-  m_charArray = new wchar_t[2];
+  m_charArray = new char16_t[2];
   m_charArray[0] = L'c';
   m_charArray[1] = L'v';
 
@@ -203,16 +200,7 @@ void PdxVersioned1::init(const char* key) {
   m_byteByteArray[1][0] = 0x34;
   m_byteByteArray[1][1] = 0x55;
 
-  m_stringArray = new char*[2];
-  const char* str1 = "one";
-  const char* str2 = "two";
-
-  int size = static_cast<int>(strlen(str1));
-  for (int i = 0; i < 2; i++) {
-    m_stringArray[i] = new char[size];
-  }
-  m_stringArray[0] = const_cast<char*>(str1);
-  m_stringArray[1] = const_cast<char*>(str2);
+  m_stringArray = {"one", "two"};
 
   m_arraylist = CacheableArrayList::create();
   m_arraylist->push_back(CacheableInt32::create(1));
@@ -283,7 +271,7 @@ void PdxTests::PdxVersioned1::toData(std::shared_ptr<PdxWriter> pw) const {
   pw->writeBooleanArray("m_boolArray", m_boolArray, 3);
   pw->writeByte("m_byte", m_byte);
   pw->writeByteArray("m_byteArray", m_byteArray, 2);
-  pw->writeWideCharArray("m_charArray", m_charArray, 2);
+  pw->writeCharArray("m_charArray", m_charArray, 2);
   pw->writeObject("m_arraylist", m_arraylist);
   pw->writeObject("m_map", m_map);
   pw->writeString("m_string", m_string);
@@ -304,7 +292,7 @@ void PdxTests::PdxVersioned1::toData(std::shared_ptr<PdxWriter> pw) const {
 
   // strlengthArr[0] = 5;
   // strlengthArr[1] = 5;
-  pw->writeStringArray("m_stringArray", m_stringArray, 2);
+  pw->writeStringArray("m_stringArray", m_stringArray);
   pw->writeShort("m_uint16", m_uint16);
   // pw->writeInt("m_uint32", m_uint32);
   pw->writeLong("m_ulong", m_ulong);
@@ -330,14 +318,14 @@ void PdxTests::PdxVersioned1::fromData(std::shared_ptr<PdxReader> pr) {
       pr->readArrayOfByteArrays("m_byteByteArray", arrLen, &Lengtharr);
   // TODO::need to write compareByteByteArray() and check for m_byteByteArray
   // elements
-  m_char = pr->readWideChar("m_char");
+  m_char = pr->readChar("m_char");
   // GenericValCompare
   m_bool = pr->readBoolean("m_bool");
   // GenericValCompare
   m_boolArray = pr->readBooleanArray("m_boolArray", boolArrayLen);
   m_byte = pr->readByte("m_byte");
   m_byteArray = pr->readByteArray("m_byteArray", byteArrayLen);
-  m_charArray = pr->readWideCharArray("m_charArray", charArrayLen);
+  m_charArray = pr->readCharArray("m_charArray", charArrayLen);
   m_arraylist = std::static_pointer_cast<CacheableArrayList>(
       pr->readObject("m_arraylist"));
   m_map = std::static_pointer_cast<CacheableHashMap>(pr->readObject("m_map"));
@@ -356,7 +344,7 @@ void PdxTests::PdxVersioned1::fromData(std::shared_ptr<PdxReader> pr) {
   m_int16Array = pr->readShortArray("m_int16Array", shortArrayLen);
   m_sbyte = pr->readByte("m_sbyte");
   m_sbyteArray = pr->readByteArray("m_sbyteArray", byteArrayLen);
-  m_stringArray = pr->readStringArray("m_stringArray", strLenArray);
+  m_stringArray = pr->readStringArray("m_stringArray");
   m_uint16 = pr->readShort("m_uint16");
   // m_uint32 = pr->readInt("m_uint32");
   m_ulong = pr->readLong("m_ulong");
@@ -372,15 +360,9 @@ void PdxTests::PdxVersioned1::fromData(std::shared_ptr<PdxReader> pr) {
   // TODO:Check for size
   m_pdxEnum = pr->readObject("m_pdxEnum");
 }
+
 std::string PdxTests::PdxVersioned1::toString() const {
-  char idbuf[1024];
-  // sprintf(idbuf,"PdxObject: [ m_bool=%d ] [m_byte=%d] [m_int16=%d]
-  // [m_int32=%d] [m_float=%f] [m_double=%lf] [ m_string=%s ]",m_bool, m_byte,
-  // m_int16, m_int32, m_float, m_double, m_string);
-  // sprintf(idbuf,"PdxObject testObject:[m_int32=%d] string = %s",
-  // m_int32,m_string);
-  sprintf(idbuf, "PdxVersioned 1 : %s", m_string);
-  return idbuf;
+  return "PdxVersioned 1 : " + m_string;
 }
 
 bool PdxTests::PdxVersioned1::equals(PdxTests::PdxVersioned1& other,
@@ -404,7 +386,7 @@ bool PdxTests::PdxVersioned1::equals(PdxTests::PdxVersioned1& other,
   // genericValCompare(ot->m_uint32, m_uint32);
   genericValCompare(ot->m_ulong, m_ulong);
   genericValCompare(ot->m_char, m_char);
-  if (strcmp(ot->m_string, m_string) != 0) {
+  if (ot->m_string != m_string) {
     return false;
   }
   genericCompare(ot->m_byteArray, m_byteArray, byteArrayLen);

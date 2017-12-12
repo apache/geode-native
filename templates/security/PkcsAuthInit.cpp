@@ -163,7 +163,7 @@ std::shared_ptr<Properties> PKCSAuthInit::getCredentials(
 
   unsigned int lengthEncryptedData = 0;
 
-  uint8_t* signatureData = createSignature(
+  auto signatureData = createSignature(
       privateKey, cert, reinterpret_cast<const unsigned char*>(alias), strlen(alias),
       &lengthEncryptedData);
   EVP_PKEY_free(privateKey);
@@ -173,8 +173,8 @@ std::shared_ptr<Properties> PKCSAuthInit::getCredentials(
         "PKCSAuthInit::getCredentials: "
         "Unable to create signature");
   }
-  auto signatureValPtr =
-      CacheableBytes::createNoCopy(signatureData, lengthEncryptedData);
+  auto signatureValPtr = CacheableBytes::createNoCopy(
+      reinterpret_cast<int8_t*>(signatureData), lengthEncryptedData);
 
   auto credentials = Properties::create();
   credentials->insert(KEYSTORE_ALIAS, alias);

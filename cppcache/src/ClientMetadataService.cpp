@@ -152,11 +152,10 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
   if (cptr == nullptr) {
     return;
   }
-  std::shared_ptr<CacheableString> colocatedWith;
-  if (cptr != nullptr) {
-    colocatedWith = cptr->getColocatedWith();
-  }
-  if (colocatedWith == nullptr) {
+
+  auto&& colocatedWith = cptr->getColocatedWith();
+
+  if (colocatedWith.empty()) {
     newCptr = SendClientPRMetadata(regionFullPath, cptr);
     // now we will get new instance so assign it again
     if (newCptr != nullptr) {
@@ -167,14 +166,14 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
       LOGINFO("Updated client meta data");
     }
   } else {
-    newCptr = SendClientPRMetadata(colocatedWith->value().c_str(), cptr);
+    newCptr = SendClientPRMetadata(colocatedWith.c_str(), cptr);
 
     if (newCptr) {
       cptr->setPreviousone(nullptr);
       newCptr->setPreviousone(cptr);
       // now we will get new instance so assign it again
       WriteGuard guard(m_regionMetadataLock);
-      m_regionMetaDataMap[colocatedWith->value().c_str()] = newCptr;
+      m_regionMetaDataMap[colocatedWith.c_str()] = newCptr;
       m_regionMetaDataMap[path] = newCptr;
       LOGINFO("Updated client meta data");
     }

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_SECURITY_XMLAUTHZCREDENTIALGENERATOR_H_
-#define GEODE_SECURITY_XMLAUTHZCREDENTIALGENERATOR_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,13 +15,19 @@
  * limitations under the License.
  */
 
-#include <geode/Properties.hpp>
+#pragma once
 
-#include "typedefs.hpp"
+#ifndef GEODE_SECURITY_XMLAUTHZCREDENTIALGENERATOR_H_
+#define GEODE_SECURITY_XMLAUTHZCREDENTIALGENERATOR_H_
 
 #include <algorithm>
 #include <ctime>
 #include <cstdlib>
+
+#include <geode/Properties.hpp>
+#include <geode/CacheableString.hpp>
+
+#include "typedefs.hpp"
 
 namespace apache {
 namespace geode {

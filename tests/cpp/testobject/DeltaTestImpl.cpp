@@ -36,7 +36,7 @@ DeltaTestImpl::DeltaTestImpl() : Delta(nullptr) {
   str = CacheableString::create("test");
   doubleVar = 1.1;
   uint8_t byte = 'A';
-  byteArr = CacheableBytes::create(&byte, 1);
+  byteArr = CacheableBytes::create(reinterpret_cast<const int8_t*>(&byte), 1);
   testObj = nullptr;
   m_hasDelta = false;
   deltaBits = 0;

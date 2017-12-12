@@ -25,19 +25,21 @@
  */
 
 #include <string>
+#include <memory>
 
 #include "geode_globals.hpp"
 #include "Serializable.hpp"
-#include "DataInput.hpp"
-#include "DataOutput.hpp"
 #include "Cacheable.hpp"
-#include "CacheableKey.hpp"
-#include "CacheableString.hpp"
 #include "util/chrono/duration.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+class DataInput;
+class DataOutput;
+class CacheableKey;
+class CacheableString;
 
 /**
  * @class Properties Properties.hpp
@@ -61,6 +63,7 @@ class CPPCACHE_EXPORT Properties : public Serializable {
    * @throws NullPointerException if the key is null
    */
   std::shared_ptr<CacheableString> find(const std::string& key);
+
   /**
    * Return the value for the given <code>CacheableKey</code>,
    * or nullptr if not found.

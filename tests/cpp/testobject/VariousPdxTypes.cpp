@@ -120,7 +120,7 @@ bool PdxTypes2::equals(std::shared_ptr<PdxSerializable> obj) {
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
-      m_i4 == pap->m_i4 && (strcmp(m_s1, pap->m_s1) == 0)) {
+      m_i4 == pap->m_i4 && m_s1 == pap->m_s1) {
     return true;
   }
 
@@ -129,7 +129,7 @@ bool PdxTypes2::equals(std::shared_ptr<PdxSerializable> obj) {
 std::string PdxTypes2::toString() const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypes2:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s]",
-          m_i1, m_i2, m_i3, m_i4, m_s1);
+          m_i1, m_i2, m_i3, m_i4, m_s1.c_str());
   return idbuf;
  }
 
@@ -176,7 +176,7 @@ bool PdxTypes3::equals(std::shared_ptr<PdxSerializable> obj) {
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
-      m_i4 == pap->m_i4 && (strcmp(m_s1, pap->m_s1) == 0)) {
+      m_i4 == pap->m_i4 && m_s1 == pap->m_s1) {
     return true;
   }
 
@@ -185,7 +185,7 @@ bool PdxTypes3::equals(std::shared_ptr<PdxSerializable> obj) {
 std::string PdxTypes3::toString() const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypes3:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s]",
-          m_i1, m_i2, m_i3, m_i4, m_s1);
+          m_i1, m_i2, m_i3, m_i4, m_s1.c_str());
   return idbuf;
 }
 
@@ -232,7 +232,7 @@ bool PdxTypes4::equals(std::shared_ptr<PdxSerializable> obj) {
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
-      m_i4 == pap->m_i4 && (strcmp(m_s1, pap->m_s1) == 0)) {
+      m_i4 == pap->m_i4 && m_s1 == pap->m_s1) {
     return true;
   }
 
@@ -241,7 +241,7 @@ bool PdxTypes4::equals(std::shared_ptr<PdxSerializable> obj) {
 std::string PdxTypes4::toString() const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypes4:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s]",
-          m_i1, m_i2, m_i3, m_i4, m_s1);
+          m_i1, m_i2, m_i3, m_i4, m_s1.c_str());
   return idbuf;
 }
 
@@ -265,8 +265,8 @@ void PdxTypes4::fromData(std::shared_ptr<PdxReader> pr) {
  *  PdxTypes5
  * *********************************************************/
 PdxTypes5::PdxTypes5() {
-  m_s1 = (char *)"one";
-  m_s2 = (char *)"two";
+  m_s1 = "one";
+  m_s2 = "two";
   m_i1 = 34324;
   m_i2 = 2144;
   m_i3 = 4645734;
@@ -289,8 +289,7 @@ bool PdxTypes5::equals(std::shared_ptr<PdxSerializable> obj) {
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
-      m_i4 == pap->m_i4 && (strcmp(m_s1, pap->m_s1) == 0) &&
-      (strcmp(m_s2, pap->m_s2) == 0)) {
+      m_i4 == pap->m_i4 && m_s1 == pap->m_s1 && m_s2 == pap->m_s2) {
     return true;
   }
 
@@ -301,7 +300,7 @@ std::string PdxTypes5::toString() const {
   sprintf(
       idbuf,
       "PdxTypes4:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s] [m_s2=%s]",
-      m_i1, m_i2, m_i3, m_i4, m_s1, m_s2);
+      m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
   return idbuf;
 }
 
@@ -327,8 +326,8 @@ void PdxTypes5::fromData(std::shared_ptr<PdxReader> pr) {
  *  PdxTypes6
  * *********************************************************/
 PdxTypes6::PdxTypes6() {
-  m_s1 = (char *)"one";
-  m_s2 = (char *)"two";
+  m_s1 = "one";
+  m_s2 = "two";
   bytes128 = new int8_t[2];
   bytes128[0] = 0x34;
   ;
@@ -357,21 +356,20 @@ bool PdxTypes6::equals(std::shared_ptr<PdxSerializable> obj) {
   LOGDEBUG("PdxTypes6::equals -4 m_i2 = %d", m_i2);
   LOGDEBUG("PdxTypes6::equals -5 m_i3 = %d", m_i3);
   LOGDEBUG("PdxTypes6::equals -6 m_i4 = %d", m_i4);
-  LOGDEBUG("PdxTypes6::equals -7 m_s1 = %s", m_s1);
-  LOGDEBUG("PdxTypes6::equals -8 m_s2 = %s", m_s2);
+  LOGDEBUG("PdxTypes6::equals -7 m_s1 = %s", m_s1.c_str());
+  LOGDEBUG("PdxTypes6::equals -8 m_s2 = %s", m_s2.c_str());
 
   LOGDEBUG("PdxTypes6::equals -9 pap->m_i1 = %d", pap->m_i1);
   LOGDEBUG("PdxTypes6::equals -10 pap->m_i2 = %d", pap->m_i2);
   LOGDEBUG("PdxTypes6::equals -11 pap->m_i3 = %d", pap->m_i3);
   LOGDEBUG("PdxTypes6::equals -12 pap->m_i4 = %d", pap->m_i4);
-  LOGDEBUG("PdxTypes6::equals -13 pap->m_s1 = %s", pap->m_s1);
-  LOGDEBUG("PdxTypes6::equals -14 pap->m_s2 = %s", pap->m_s2);
+  LOGDEBUG("PdxTypes6::equals -13 pap->m_s1 = %s", pap->m_s1.c_str());
+  LOGDEBUG("PdxTypes6::equals -14 pap->m_s2 = %s", pap->m_s2.c_str());
   // if (pap.get() == this)
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
-      m_i4 == pap->m_i4 && (strcmp(m_s1, pap->m_s1) == 0) &&
-      (strcmp(m_s2, pap->m_s2) == 0)) {
+      m_i4 == pap->m_i4 && m_s1 == pap->m_s1 && m_s2 == pap->m_s2) {
     // Check byte[] length.
     // if(bytes128.Length == pap.bytes128.Length)
     return true;
@@ -384,7 +382,7 @@ std::string PdxTypes6::toString() const {
   sprintf(
       idbuf,
       "PdxTypes4:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s] [m_s2=%s]",
-      m_i1, m_i2, m_i3, m_i4, m_s1, m_s2);
+      m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
   return idbuf;
 }
 
@@ -423,8 +421,8 @@ void PdxTypes6::fromData(std::shared_ptr<PdxReader> pr) {
  *  PdxTypes7
  * *********************************************************/
 PdxTypes7::PdxTypes7() {
-  m_s1 = (char *)"one";
-  m_s2 = (char *)"two";
+  m_s1 = "one";
+  m_s2 = "two";
   m_i1 = 34324;
   bytes38000 = new int8_t[38000];
   m_i2 = 2144;
@@ -448,8 +446,7 @@ bool PdxTypes7::equals(std::shared_ptr<PdxSerializable> obj) {
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
-      m_i4 == pap->m_i4 && (strcmp(m_s1, pap->m_s1) == 0) &&
-      (strcmp(m_s2, pap->m_s2) == 0)) {
+      m_i4 == pap->m_i4 && m_s1 == pap->m_s1 && m_s2 == pap->m_s2) {
     // Check byte[] length.
     // if(bytes38000.Length == pap.bytes38000.Length)
     return true;
@@ -462,7 +459,7 @@ std::string PdxTypes7::toString() const {
   sprintf(
       idbuf,
       "PdxTypes7:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s] [m_s2=%s]",
-      m_i1, m_i2, m_i3, m_i4, m_s1, m_s2);
+      m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
   return idbuf;
  }
 
@@ -492,8 +489,8 @@ std::string PdxTypes7::toString() const {
  * *********************************************************/
 PdxTypes8::PdxTypes8() {
   enum pdxEnumTest { pdx1, pdx2, pdx3 };
-  m_s1 = (char *)"one";
-  m_s2 = (char *)"two";
+  m_s1 = "one";
+  m_s2 = "two";
   m_i1 = 34324;
   bytes300 = new int8_t[300];
   _enum = CacheableEnum::create("PdxTests.pdxEnumTest", "pdx2", pdx2);
@@ -516,8 +513,7 @@ bool PdxTypes8::equals(std::shared_ptr<PdxSerializable> obj) {
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
-      m_i4 == pap->m_i4 && (strcmp(m_s1, pap->m_s1) == 0) &&
-      (strcmp(m_s2, pap->m_s2) == 0)) {
+      m_i4 == pap->m_i4 && m_s1 == pap->m_s1 && m_s2 == pap->m_s2) {
     // Check byte[] length.
     // if(bytes300.Length == pap.bytes300.Length)
     return true;
@@ -530,7 +526,7 @@ std::string PdxTypes8::toString() const {
   sprintf(
       idbuf,
       "PdxTypes8:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s] [m_s2=%s]",
-      m_i1, m_i2, m_i3, m_i4, m_s1, m_s2);
+      m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
   return idbuf;
  }
 
@@ -561,12 +557,12 @@ std::string PdxTypes8::toString() const {
  *  PdxTypes9
  * *********************************************************/
 PdxTypes9::PdxTypes9() {
-  m_s1 = (char *)"one";
-  m_s2 = (char *)"two";
-  m_s3 = (char *)"three";
+  m_s1 = "one";
+  m_s2 = "two";
+  m_s3 = "three";
   m_bytes66000 = new int8_t[66000];
-  m_s4 = (char *)"four";
-  m_s5 = (char *)"five";
+  m_s4 = "four";
+  m_s5 = "five";
 }
 
 PdxTypes9::~PdxTypes9() { delete[] m_bytes66000; }
@@ -582,9 +578,8 @@ bool PdxTypes9::equals(std::shared_ptr<PdxSerializable> obj) {
   // if (pap.get() == this)
   //	return true;
 
-  if ((strcmp(m_s1, pap->m_s1) == 0) && (strcmp(m_s2, pap->m_s2) == 0) &&
-      (strcmp(m_s3, pap->m_s3) == 0) && (strcmp(m_s4, pap->m_s4) == 0) &&
-      (strcmp(m_s5, pap->m_s5) == 0)) {
+  if (m_s1 == pap->m_s1 && m_s2 == pap->m_s2 && m_s3 == pap->m_s3 &&
+      m_s4 == pap->m_s4 && m_s5 == pap->m_s5) {
     // Check byte[] length.
     // if(m_bytes66000.Length == pap.m_bytes66000.Length)
     return true;
@@ -595,7 +590,7 @@ bool PdxTypes9::equals(std::shared_ptr<PdxSerializable> obj) {
 std::string PdxTypes9::toString() const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypes9:[m_s1=%s] [m_s2=%s] [m_s3=%s] [m_s4=%s] [m_s5=%s] ",
-          m_s1, m_s2, m_s3, m_s4, m_s5);
+          m_s1.c_str(), m_s2.c_str(), m_s3.c_str(), m_s4.c_str(), m_s5.c_str());
   return idbuf;
 }
 
@@ -622,12 +617,12 @@ void PdxTypes9::fromData(std::shared_ptr<PdxReader> pr) {
  *  PdxTypes10
  * *********************************************************/
 PdxTypes10::PdxTypes10() {
-  m_s1 = (char *)"one";
-  m_s2 = (char *)"two";
-  m_s3 = (char *)"three";
+  m_s1 = "one";
+  m_s2 = "two";
+  m_s3 = "three";
   m_bytes66000 = new int8_t[66000];
-  m_s4 = (char *)"four";
-  m_s5 = (char *)"five";
+  m_s4 = "four";
+  m_s5 = "five";
 }
 
 PdxTypes10::~PdxTypes10() { delete[] m_bytes66000; }
@@ -643,9 +638,8 @@ bool PdxTypes10::equals(std::shared_ptr<PdxSerializable> obj) {
   // if (pap.get() == this)
   //	return true;
 
-  if ((strcmp(m_s1, pap->m_s1) == 0) && (strcmp(m_s2, pap->m_s2) == 0) &&
-      (strcmp(m_s3, pap->m_s3) == 0) && (strcmp(m_s4, pap->m_s4) == 0) &&
-      (strcmp(m_s5, pap->m_s5) == 0)) {
+  if (m_s1 == pap->m_s1 && m_s2 == pap->m_s2 && m_s3 == pap->m_s3 &&
+      m_s4 == pap->m_s4 && m_s5 == pap->m_s5) {
     // Check byte[] length.
     // if(m_bytes66000.Length == pap.m_bytes66000.Length)
     return true;
@@ -656,7 +650,7 @@ bool PdxTypes10::equals(std::shared_ptr<PdxSerializable> obj) {
 std::string PdxTypes10::toString() const {
   char idbuf[4096];
   sprintf(idbuf, "PdxTypes9:[m_s1=%s] [m_s2=%s] [m_s3=%s] [m_s4=%s] [m_s5=%s] ",
-          m_s1, m_s2, m_s3, m_s4, m_s5);
+          m_s1.c_str(), m_s2.c_str(), m_s3.c_str(), m_s4.c_str(), m_s5.c_str());
   return idbuf;
 }
 
@@ -686,8 +680,8 @@ void PdxTypes10::fromData(std::shared_ptr<PdxReader> pr) {
 NestedPdx::NestedPdx() {
   m_pd1 = std::make_shared<PdxTypes1>();
   m_pd2 = std::make_shared<PdxTypes2>();
-  m_s1 = (char *)"one";
-  m_s2 = (char *)"two";
+  m_s1 = "one";
+  m_s2 = "two";
   m_i1 = 34324;
   m_i2 = 2144;
   m_i3 = 4645734;
@@ -697,11 +691,8 @@ NestedPdx::NestedPdx() {
 NestedPdx::NestedPdx(char *key) {
   m_pd1 = std::make_shared<PdxTypes1>();
   m_pd2 = std::make_shared<PdxTypes2>();
-  size_t len = strlen("NestedPdx ") + strlen(key) + 1;
-  m_s1 = new char[len];
-  strcpy(m_s1, "NestedPdx ");
-  strcat(m_s1, key);
-  m_s2 = (char *)"two";
+  m_s1 = std::string("NestedPdx ") + key;
+  m_s2 = "two";
   m_i1 = 34324;
   m_i2 = 2144;
   m_i3 = 4645734;
@@ -723,9 +714,8 @@ bool NestedPdx::equals(std::shared_ptr<PdxSerializable> obj) {
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
-      m_i4 == pap->m_i4 && (strcmp(m_s1, pap->m_s1) == 0) &&
-      (strcmp(m_s2, pap->m_s2) == 0) && (m_pd1->equals(pap->m_pd1) == true) &&
-      (m_pd2->equals(pap->m_pd2) == true)) {
+      m_i4 == pap->m_i4 && m_s1 == pap->m_s1 && m_s2 == pap->m_s2 &&
+      m_pd1->equals(pap->m_pd1) && m_pd2->equals(pap->m_pd2)) {
     return true;
   }
 
@@ -736,7 +726,7 @@ std::string NestedPdx::toString() const {
   sprintf(
       idbuf,
       "NestedPdx:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s] [m_s2=%s]",
-      m_i1, m_i2, m_i3, m_i4, m_s1, m_s2);
+      m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
   return idbuf;
 }
 
@@ -769,9 +759,9 @@ void NestedPdx::fromData(std::shared_ptr<PdxReader> pr) {
 MixedVersionNestedPdx::MixedVersionNestedPdx() {
   m_pd1 = std::make_shared<PdxTypes1>();
   m_pd2 = std::make_shared<PdxTypes2>();
-  m_s1 = (char *)"one";
-  m_s2 = (char *)"two";
-  m_s3 = (char *)"three";
+  m_s1 = "one";
+  m_s2 = "two";
+  m_s3 = "three";
   m_i1 = 34324;
   m_i2 = 2144;
   m_i3 = 4645734;
@@ -781,12 +771,9 @@ MixedVersionNestedPdx::MixedVersionNestedPdx() {
 MixedVersionNestedPdx::MixedVersionNestedPdx(char *key) {
   m_pd1 = std::make_shared<PdxTypes1>();
   m_pd2 = std::make_shared<PdxTypes2>();
-  size_t len = strlen("MixedVersionNestedPdx ") + strlen(key) + 1;
-  m_s1 = new char[len];
-  strcpy(m_s1, "MixedVersionNestedPdx ");
-  strcat(m_s1, key);
-  m_s2 = (char *)"two";
-  m_s3 = (char *)"three";
+  m_s1 = std::string("MixedVersionNestedPdx ") + key;
+  m_s2 = "two";
+  m_s3 = "three";
   m_i1 = 34324;
   m_i2 = 2144;
   m_i3 = 4645734;
@@ -808,9 +795,8 @@ bool MixedVersionNestedPdx::equals(std::shared_ptr<PdxSerializable> obj) {
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
-      m_i4 == pap->m_i4 && (strcmp(m_s1, pap->m_s1) == 0) &&
-      (strcmp(m_s2, pap->m_s2) == 0) && (m_pd1->equals(pap->m_pd1) == true) &&
-      (m_pd2->equals(pap->m_pd2) == true)) {
+      m_i4 == pap->m_i4 && m_s1 == pap->m_s1 && m_s2 == pap->m_s2 &&
+      m_pd1->equals(pap->m_pd1) && m_pd2->equals(pap->m_pd2)) {
     return true;
   }
 
@@ -821,7 +807,7 @@ std::string MixedVersionNestedPdx::toString() const {
   sprintf(idbuf,
           "MixedVersionNestedPdx:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] "
           "[m_s1=%s] [m_s2=%s]",
-          m_i1, m_i2, m_i3, m_i4, m_s1, m_s2);
+          m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
   return idbuf;
 }
 
@@ -855,8 +841,8 @@ void MixedVersionNestedPdx::fromData(std::shared_ptr<PdxReader> pr) {
 PdxInsideIGeodeSerializable::PdxInsideIGeodeSerializable() {
   m_npdx = std::make_shared<NestedPdx>();
   m_pdx3 = std::make_shared<PdxTypes3>();
-  m_s1 = (char *)"one";
-  m_s2 = (char *)"two";
+  m_s1 = "one";
+  m_s2 = "two";
   m_i1 = 34324;
   m_i2 = 2144;
   m_i3 = 4645734;
@@ -879,8 +865,8 @@ bool PdxInsideIGeodeSerializable::equals(std::shared_ptr<Serializable> obj) {
   //	return true;
 
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
-      (strcmp(m_s1, pap->m_s1) == 0) && (strcmp(m_s2, pap->m_s2) == 0) &&
-      m_npdx->equals(pap->m_npdx) && m_pdx3->equals(pap->m_pdx3)) {
+      m_s1 == pap->m_s1 && m_s2 == pap->m_s2 && m_npdx->equals(pap->m_npdx) &&
+      m_pdx3->equals(pap->m_pdx3)) {
     return true;
   }
 
@@ -891,7 +877,7 @@ std::string PdxInsideIGeodeSerializable::toString() const {
   sprintf(idbuf,
           "PdxInsideIGeodeSerializable:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] "
           "[m_s1=%s] [m_s2=%s]",
-          m_i1, m_i2, m_i3, m_i4, m_s1, m_s2);
+          m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
   return idbuf;
 }
 
@@ -899,8 +885,8 @@ void PdxInsideIGeodeSerializable::toData(DataOutput &output) const {
   output.writeInt(m_i1);
   output.writeObject(m_npdx);
   output.writeInt(m_i2);
-  output.writeUTF(m_s1);
-  output.writeUTF(m_s2);
+  output.writeString(m_s1);
+  output.writeString(m_s2);
   output.writeObject(m_pdx3);
   output.writeInt(m_i3);
   output.writeInt(m_i4);
@@ -910,8 +896,8 @@ void PdxInsideIGeodeSerializable::fromData(DataInput &input) {
   m_i1 = input.readInt32();
   m_npdx = input.readObject<NestedPdx>();
   m_i2 = input.readInt32();
-  input.readUTF(&m_s1);
-  input.readUTF(&m_s2);
+  m_s1 = input.readString();
+  m_s2 = input.readString();
   m_pdx3 = input.readObject<PdxTypes3>();
   m_i3 = input.readInt32();
   m_i4 = input.readInt32();

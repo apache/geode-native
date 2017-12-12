@@ -128,25 +128,6 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
             .to_bytes(std::move(value)));
   }
 
-  /**
-   * Factory method for creating an instance of CacheableString from
-   * a null terminated C string optionally giving the length.
-   *
-   * This should be used only for ASCII strings.
-   */
-  template <class _Char>
-  inline static std::shared_ptr<CacheableString> create(const _Char* value,
-                                                        size_t len = 0) {
-    std::shared_ptr<CacheableString> str;
-
-    if (value) {
-      return create(len > 0 ? std::basic_string<_Char>(value, len)
-                            : std::basic_string<_Char>(value));
-    }
-
-    return str;
-  }
-
   /** Return the length of the contained string. */
   inline std::string::size_type length() const { return m_str.length(); }
 
@@ -160,24 +141,6 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
   virtual size_t objectSize() const override;
 
  protected:
-  /**
-   * initialize the string, given a value and length. Assumes UTF-8.
-   */
-  void initString(const char* value, int32_t len);
-
-  void initString(std::string&& value);
-
-  /**
-   * initialize the string, given a wide-char string and length. Assumes
-   * UTF-16.
-   */
-  void initString(const wchar_t* value, int32_t len);
-
-  /**
-   * Initialize the string without making a copy, given a wide-char string
-   * and length. Assumes UTF-16.
-   */
-  void initStringNoCopy(wchar_t* value, int32_t len);
 
   /** Default constructor. */
   inline CacheableString(int8_t type = GeodeTypeIds::CacheableASCIIString)
@@ -198,17 +161,11 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
   }
 
  private:
-  // never implemented.
   void operator=(const CacheableString& other) = delete;
   CacheableString(const CacheableString& other) = delete;
 
   static bool isAscii(const std::string& str);
 };
-
-/** overload of apache::geode::client::createKeyArr to pass char* */
-inline std::shared_ptr<CacheableKey> createKeyArr(const char* value) {
-  return CacheableString::create(value);
-}
 
 inline std::shared_ptr<CacheableKey> createKeyArr(const std::string& value) {
   return CacheableString::create(value);
@@ -218,9 +175,12 @@ inline std::shared_ptr<CacheableKey> createKeyArr(std::string&& value) {
   return CacheableString::create(std::move(value));
 }
 
-/** overload of apache::geode::client::createValueArr to pass char* */
-inline std::shared_ptr<Cacheable> createValueArr(const char* value) {
+inline std::shared_ptr<Cacheable> createValueArr(const std::string& value) {
   return CacheableString::create(value);
+}
+
+inline std::shared_ptr<Cacheable> createValueArr(std::string&& value) {
+  return CacheableString::create(std::move(value));
 }
 
 template <typename TVALUE>

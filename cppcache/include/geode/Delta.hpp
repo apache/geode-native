@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_DELTA_H_
-#define GEODE_DELTA_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,15 +15,18 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_DELTA_H_
+#define GEODE_DELTA_H_
+
 /**
  * @file
  */
 
 #include <memory>
 
-#include "Cacheable.hpp"
-#include "DataInput.hpp"
-#include "DataOutput.hpp"
+#include "geode_globals.hpp"
 
 namespace apache {
 namespace geode {

@@ -179,6 +179,17 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
   virtual char16_t getCharField(const std::string& fieldName) const = 0;
 
   /**
+   * Reads the named field and set its value in std::string type out param.
+   * std::string type is corresponding to java String type.
+   * @param fieldname name of the field to read
+   * @return string value for field.
+   * @throws IllegalStateException if PdxInstance doesn't has the named field.
+   *
+   * @see PdxInstance#hasField
+   */
+  virtual std::string getStringField(const std::string& fieldname) const = 0;
+
+  /**
    * Reads the named field and set its value in bool array type out param.
    * bool* type is corresponding to java boolean[] type.
    * @param fieldname name of the field to read
@@ -193,33 +204,15 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
 
   /**
    * Reads the named field and set its value in signed char array type out
-   * param. signed char* type is corresponding to java byte[] type.
+   * param. int8_t* type is corresponding to java byte[] type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with signed char array type.
-   * @param length length is set with number of signed char elements.
+   * @param value value of the field to be set with int8_t array type.
+   * @param length length is set with number of int8_t elements.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const std::string& fieldname, signed char** value,
-                        int32_t& length) const = 0;
-
-  /**
-   * Reads the named field and set its value in unsigned char array type out
-   * param.
-   * unsigned char* type is corresponding to java byte[] type.
-   * For C++ on Windows and Linux, unsigned char* type is corresponding to
-   * int8_t* type.
-   * However C++ users on Solaris should always use this api after casting
-   * int8_t* to unsigned char*.
-   * @param fieldname name of the field to read
-   * @param value value of the field to be set with unsigned char array type.
-   * @param length length is set with number of unsigned char elements.
-   * @throws IllegalStateException if PdxInstance doesn't has the named field.
-   *
-   * @see PdxInstance#hasField
-   */
-  virtual void getField(const std::string& fieldname, unsigned char** value,
+  virtual void getField(const std::string& fieldname, int8_t** value,
                         int32_t& length) const = 0;
 
   /**
@@ -289,56 +282,28 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
 
   // charArray
   /**
-   * Reads the named field and set its value in wchar_t array type out param.
-   * wchar_t* type is corresponding to java String type.
-   * @param fieldname name of the field to read
-   * @param value value of the field to be set with wchar_t array type.
-   * @param length length is set with number of wchar_t* elements.
-   * @throws IllegalStateException if PdxInstance doesn't has the named field.
-   *
-   * @see PdxInstance#hasField
-   */
-  virtual void getField(const std::string& fieldName, wchar_t** value,
-                        int32_t& length) const = 0;
-
-  /**
    * Reads the named field and set its value in char array type out param.
-   * char* type is corresponding to java String type.
+   * char16_t* type is corresponding to java char[] type.
    * @param fieldname name of the field to read
    * @param value value of the field to be set with char array type.
-   * @param length length is set with number of char* elements.
+   * @param length length is set with number of char16_t* elements.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const std::string& fieldName, char** value,
+  virtual void getField(const std::string &fieldName, char16_t **value,
                         int32_t& length) const = 0;
 
-  // String
   /**
-   * Reads the named field and set its value in char* type out param.
-   * char* type is corresponding to java String type.
+   * Reads the named field as a string array.
+   * std::vector<std::string> type is corresponding to java String[] type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with char* type.
    * @throws IllegalStateException if PdxInstance doesn't has the named field.
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const std::string& fieldname, char** value) const = 0;
-
-  // StringArray
-  /**
-   * Reads the named field and set its value in char* array type out param.
-   * char** type is corresponding to java String[] type.
-   * @param fieldname name of the field to read
-   * @param value value of the field to be set with char* array type.
-   * @param length length is set with number of char** elements.
-   * @throws IllegalStateException if PdxInstance doesn't has the named field.
-   *
-   * @see PdxInstance#hasField
-   */
-  virtual void getField(const std::string& fieldname, char*** value,
-                        int32_t& length) const = 0;
+  virtual std::vector<std::string> getStringArrayField(
+      const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in std::shared_ptr<CacheableDate>

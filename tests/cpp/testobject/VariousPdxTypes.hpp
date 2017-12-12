@@ -80,7 +80,7 @@ class TESTOBJECT_EXPORT PdxTypes1 : public PdxSerializable {
 
 class TESTOBJECT_EXPORT PdxTypes2 : public PdxSerializable {
  private:
-  char* m_s1;  //"one"
+  std::string m_s1;  //"one"
   int32_t m_i1;
   int32_t m_i2;
   int32_t m_i3;
@@ -118,7 +118,7 @@ class TESTOBJECT_EXPORT PdxTypes2 : public PdxSerializable {
 
 class TESTOBJECT_EXPORT PdxTypes3 : public PdxSerializable {
  private:
-  char* m_s1;  //"one"
+  std::string m_s1;  //"one"
   int32_t m_i1;
   int32_t m_i2;
   int32_t m_i3;
@@ -155,7 +155,7 @@ class TESTOBJECT_EXPORT PdxTypes3 : public PdxSerializable {
  * *********************************************************/
 class TESTOBJECT_EXPORT PdxTypes4 : public PdxSerializable {
  private:
-  char* m_s1;  //"one"
+  std::string m_s1;  //"one"
   int32_t m_i1;
   int32_t m_i2;
   int32_t m_i3;
@@ -192,8 +192,8 @@ class TESTOBJECT_EXPORT PdxTypes4 : public PdxSerializable {
  * *********************************************************/
 class TESTOBJECT_EXPORT PdxTypes5 : public PdxSerializable {
  private:
-  char* m_s1;  //"one"
-  char* m_s2;
+  std::string m_s1;  //"one"
+  std::string m_s2;
   int32_t m_i1;
   int32_t m_i2;
   int32_t m_i3;
@@ -230,8 +230,8 @@ class TESTOBJECT_EXPORT PdxTypes5 : public PdxSerializable {
  * *********************************************************/
 class TESTOBJECT_EXPORT PdxTypes6 : public PdxSerializable {
  private:
-  char* m_s1;  //"one"
-  char* m_s2;
+  std::string m_s1;  //"one"
+  std::string m_s2;
   int8_t* bytes128;
   int32_t m_i1;
   int32_t m_i2;
@@ -269,8 +269,8 @@ class TESTOBJECT_EXPORT PdxTypes6 : public PdxSerializable {
  * *********************************************************/
 class TESTOBJECT_EXPORT PdxTypes7 : public PdxSerializable {
  private:
-  char* m_s1;  //"one"
-  char* m_s2;
+  std::string m_s1;  //"one"
+  std::string m_s2;
   int32_t m_i1;
   int8_t* bytes38000;
   int32_t m_i2;
@@ -309,8 +309,8 @@ class TESTOBJECT_EXPORT PdxTypes7 : public PdxSerializable {
 
 class TESTOBJECT_EXPORT PdxTypes8 : public PdxSerializable {
  private:
-  char* m_s1;  //"one"
-  char* m_s2;
+  std::string m_s1;  //"one"
+  std::string m_s2;
   int32_t m_i1;
   int8_t* bytes300;
   std::shared_ptr<Cacheable> _enum;
@@ -349,12 +349,12 @@ class TESTOBJECT_EXPORT PdxTypes8 : public PdxSerializable {
  * *********************************************************/
 class TESTOBJECT_EXPORT PdxTypes9 : public PdxSerializable {
  private:
-  char* m_s1;  //"one"
-  char* m_s2;
-  char* m_s3;
+  std::string m_s1;  //"one"
+  std::string m_s2;
+  std::string m_s3;
   int8_t* m_bytes66000;
-  char* m_s4;
-  char* m_s5;
+  std::string m_s4;
+  std::string m_s5;
 
  public:
   PdxTypes9();
@@ -388,12 +388,12 @@ class TESTOBJECT_EXPORT PdxTypes9 : public PdxSerializable {
 
 class TESTOBJECT_EXPORT PdxTypes10 : public PdxSerializable {
  private:
-  char* m_s1;  //"one"
-  char* m_s2;
-  char* m_s3;
+  std::string m_s1;  //"one"
+  std::string m_s2;
+  std::string m_s3;
   int8_t* m_bytes66000;
-  char* m_s4;
-  char* m_s5;
+  std::string m_s4;
+  std::string m_s5;
 
  public:
   PdxTypes10();
@@ -429,8 +429,8 @@ class TESTOBJECT_EXPORT NestedPdx : public PdxSerializable {
  private:
   std::shared_ptr<PdxTypes1> m_pd1;
   std::shared_ptr<PdxTypes2> m_pd2;
-  char* m_s1;  //"one"
-  char* m_s2;
+  std::string m_s1;  //"one"
+  std::string m_s2;
   int32_t m_i1;
   int32_t m_i2;
   int32_t m_i3;
@@ -460,7 +460,7 @@ class TESTOBJECT_EXPORT NestedPdx : public PdxSerializable {
     return className;
   }
 
-  const char* getString() { return m_s1; }
+  const std::string& getString() { return m_s1; }
 
   static PdxSerializable* createDeserializable() { return new NestedPdx(); }
 };
@@ -473,9 +473,9 @@ class TESTOBJECT_EXPORT MixedVersionNestedPdx : public PdxSerializable {
  private:
   std::shared_ptr<PdxTypes1> m_pd1;
   std::shared_ptr<PdxTypes2> m_pd2;
-  char* m_s1;  //"one"
-  char* m_s2;
-  char* m_s3;
+  std::string m_s1;  //"one"
+  std::string m_s2;
+  std::string m_s3;
   int32_t m_i1;
   int32_t m_i2;
   int32_t m_i3;
@@ -505,7 +505,7 @@ class TESTOBJECT_EXPORT MixedVersionNestedPdx : public PdxSerializable {
     return className;
   }
 
-  const char* getString() { return m_s1; }
+  const std::string& getString() { return m_s1; }
 
   static PdxSerializable* createDeserializable() {
     return new MixedVersionNestedPdx();
@@ -521,8 +521,8 @@ class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public Serializable {
   std::shared_ptr<NestedPdx> m_npdx;
   std::shared_ptr<PdxTypes3> m_pdx3;
 
-  char* m_s1;  //"one"
-  char* m_s2;
+  std::string m_s1;  //"one"
+  std::string m_s2;
   int32_t m_i1;
   int32_t m_i2;
   int32_t m_i3;

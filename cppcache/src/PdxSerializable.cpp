@@ -14,12 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * PdxSerializable.cpp
- *
- *  Created on: Sep 29, 2011
- *      Author: npatel
- */
 
 #include <geode/PdxSerializable.hpp>
 #include <geode/CacheableString.hpp>
@@ -31,6 +25,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 PdxSerializable::PdxSerializable() {}
 
 PdxSerializable::~PdxSerializable() {}
@@ -60,6 +55,7 @@ int32_t PdxSerializable::hashcode() const {
   uint64_t hash = static_cast<uint64_t>((intptr_t)this);
   return apache::geode::client::serializer::hashcode(hash);
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

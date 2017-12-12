@@ -47,7 +47,7 @@ using namespace testframework;
 namespace testobject {
 class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
   int myIndex;
-  char* state;
+  std::string state;
   uint64_t timestamp;
   double executedPriceSum;
   int cxlQty;
@@ -55,48 +55,48 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
   int64_t availQty;
   double positionQty;
   int isRestricted;
-  char* demandInd;
-  char* side;
+  std::string demandInd;
+  std::string side;
   int orderQty;
   double price;
-  char* ordType;
+  std::string ordType;
   double stopPx;
-  char* senderCompID;
-  char* tarCompID;
-  char* tarSubID;
-  char* handlInst;
-  char* orderID;
-  char* timeInForce;
-  char* clOrdID;
-  char* orderCapacity;
+  std::string senderCompID;
+  std::string tarCompID;
+  std::string tarSubID;
+  std::string handlInst;
+  std::string orderID;
+  std::string timeInForce;
+  std::string clOrdID;
+  std::string orderCapacity;
   int cumQty;
-  char* symbol;
-  char* symbolSfx;
-  char* execInst;
-  char* oldClOrdID;
+  std::string symbol;
+  std::string symbolSfx;
+  std::string execInst;
+  std::string oldClOrdID;
   double pegDifference;
-  char* discretionInst;
+  std::string discretionInst;
   double discretionOffset;
-  char* financeInd;
-  char* securityID;
-  char* targetCompID;
-  char* targetSubID;
+  std::string financeInd;
+  std::string securityID;
+  std::string targetCompID;
+  std::string targetSubID;
   int isDoneForDay;
   int revisionSeqNum;
   int replaceQty;
   int64_t usedClientAvailability;
-  char* clientAvailabilityKey;
+  std::string clientAvailabilityKey;
   int isIrregularSettlmnt;
 
-  char* var1;
-  char* var2;
-  char* var3;
-  char* var4;
-  char* var5;
-  char* var6;
-  char* var7;
-  char* var8;
-  char* var9;
+  std::string var1;
+  std::string var2;
+  std::string var3;
+  std::string var4;
+  std::string var5;
+  std::string var6;
+  std::string var7;
+  std::string var8;
+  std::string var9;
 
   inline size_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
@@ -126,7 +126,7 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
     }
   }
   void update() {
-    var1 = (char*)"abcdefghi";
+    var1 = "abcdefghi";
     cumQty = 39;
     usedClientAvailability = 1310447848683LL;
     discretionOffset = 12.3456789;

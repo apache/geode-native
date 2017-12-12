@@ -173,49 +173,14 @@ inline void readObject(apache::geode::client::DataInput& input,
   value = input.readInt16();
 }
 
-inline void writeObject(apache::geode::client::DataOutput& output,
-                        const char* value, uint32_t length) {
-  output.writeASCII(value, length);
-}
-
-template <typename TLen>
-inline void readObject(apache::geode::client::DataInput& input, char*& value,
-                       TLen& length) {
-  uint16_t len;
-  input.readASCII(&value, &len);
-  length = len;
-}
-
-inline void writeObject(apache::geode::client::DataOutput& output,
-                        const char* value) {
-  output.writeASCII(value);
-}
-
-inline void readObject(apache::geode::client::DataInput& input, char*& value) {
-  input.readASCII(&value);
-}
-
-inline void writeObject(apache::geode::client::DataOutput& output,
-                        const wchar_t* value, uint32_t length) {
-  output.writeUTF(value, length);
-}
-
-template <typename TLen>
-inline void readObject(apache::geode::client::DataInput& input, wchar_t*& value,
-                       TLen& length) {
-  uint16_t len;
-  input.readUTF(&value, &len);
-  length = len;
-}
-
-inline void writeObject(apache::geode::client::DataOutput& output,
-                        const wchar_t* value) {
-  output.writeUTF(value);
-}
-
 inline void readObject(apache::geode::client::DataInput& input,
-                       wchar_t*& value) {
-  input.readUTF(&value);
+                       std::string& value) {
+  value = input.readString();
+}
+
+inline void writeObject(apache::geode::client::DataOutput& output,
+                        const std::string& value) {
+  output.writeString(value);
 }
 
 template <typename TObj,

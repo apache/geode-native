@@ -48,7 +48,7 @@ void putSize(std::shared_ptr<Region>& rptr, const char* buf, int size) {
       base++;
     }
   }
-  auto valPtr = CacheableBytes::create(valbuf, size);
+  auto valPtr = CacheableBytes::create(reinterpret_cast<const int8_t*>(valbuf), size);
   // auto valPtr = CacheableString::create( valbuf);
   sprintf(msg, "about to put key: %s, with value size: %d", buf, size);
   LOG(msg);
@@ -71,16 +71,17 @@ void verify(std::shared_ptr<CacheableBytes>& valuePtr, int size) {
     SLEEP(100);
   }
 
+  printf("check size[%d]\n", size);
   ASSERT(valSize == size, msg);
 
+  auto&& bytes = reinterpret_cast<const uint8_t*>(valuePtr->value());
   uint8_t base = 0;
-  printf("check size[%d]\n", size);
   for (int i = 0; i < size; i++) {
-    if (valuePtr->value()[i] != base) {
+    if (bytes[i] != base) {
       sprintf(msg, "verifying buf[%d] == %d for size %d, found %d instead", i,
               base, size, valuePtr->value()[i]);
     }
-    ASSERT(valuePtr->value()[i] == base, msg);
+    ASSERT(bytes[i] == base, msg);
     if (base == 255) {
       base = 0;
     } else {

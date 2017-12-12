@@ -47,21 +47,21 @@ class TESTOBJECT_EXPORT PositionPdx
     : public apache::geode::client::PdxSerializable {
  private:
   int64_t avg20DaysVol;
-  char* bondRating;
+  std::string bondRating;
   double convRatio;
-  char* country;
+  std::string country;
   double delta;
   int64_t industry;
   int64_t issuer;
   double mktValue;
   double qty;
-  char* secId;
-  char* secLinks;
+  std::string secId;
+  std::string secLinks;
   // wchar_t* secType;
   // wchar_t* secType;
-  char* secType;
+  std::string secType;
   int32_t sharesOutstanding;
-  char* underlyer;
+  std::string underlyer;
   int64_t volatility;
 
   int32_t pid;
@@ -88,7 +88,7 @@ class TESTOBJECT_EXPORT PositionPdx
 
   static void resetCounter() { cnt = 0; }
 
-  char* getSecId() { return secId; }
+  std::string getSecId() { return secId; }
 
   int32_t getId() { return pid; }
 

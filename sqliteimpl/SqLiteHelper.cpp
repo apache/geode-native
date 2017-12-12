@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#include <string.h>
+
 #include "SqLiteHelper.hpp"
 
 #define QUERY_SIZE 512

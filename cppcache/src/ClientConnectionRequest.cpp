@@ -23,7 +23,7 @@
 using namespace apache::geode::client;
 
 void ClientConnectionRequest::toData(DataOutput& output) const {
-  output.writeNativeString(m_servergroup.c_str());
+  output.writeString(m_servergroup);
   writeSetOfServerLocation(output);
 }
 

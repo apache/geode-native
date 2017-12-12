@@ -49,10 +49,6 @@ class PdxLocalWriter : public PdxWriter,
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
   std::string m_pdxClassName;
 
-  std::shared_ptr<PdxWriter> writeStringwithoutOffset(const char* value);
-
-  std::shared_ptr<PdxWriter> writeWideStringwithoutOffset(const wchar_t* value);
-
  public:
   PdxLocalWriter(DataOutput& output, std::shared_ptr<PdxType> pdxType,
                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
@@ -79,27 +75,8 @@ class PdxLocalWriter : public PdxWriter,
 
   inline void writeObject(bool value) { m_dataOutput->writeBoolean(value); }
 
-  inline void writeObject(wchar_t value) {
+  inline void writeObject(char16_t value) {
     m_dataOutput->writeInt(static_cast<uint16_t>(value));
-  }
-
-  inline void writePdxChar(char value) {
-    m_dataOutput->writeInt(static_cast<uint16_t>(value));
-  }
-
-  inline void writePdxCharArray(char* objArray, int arrayLen) {
-    if (objArray != nullptr) {
-      m_dataOutput->writeArrayLen(arrayLen);
-      if (arrayLen > 0) {
-        char* ptr = objArray;
-        int i = 0;
-        for (i = 0; i < arrayLen; i++) {
-          writePdxChar(*ptr++);
-        }
-      }
-    } else {
-      m_dataOutput->write(static_cast<uint8_t>(0xff));
-    }
   }
 
   inline void writeObject(int8_t value) { m_dataOutput->write(value); }
@@ -131,9 +108,6 @@ class PdxLocalWriter : public PdxWriter,
   }
 
   virtual std::shared_ptr<PdxWriter> writeChar(const std::string& fieldName,
-                                               char value) override;
-
-  virtual std::shared_ptr<PdxWriter> writeChar(const std::string& fieldName,
                                                char16_t value) override;
 
   virtual std::shared_ptr<PdxWriter> writeBoolean(const std::string& fieldName,
@@ -161,11 +135,9 @@ class PdxLocalWriter : public PdxWriter,
       const std::string& fieldName,
       std::shared_ptr<CacheableDate> date) override;
 
-  virtual std::shared_ptr<PdxWriter> writeString(const std::string& fieldName,
-                                                 const char* value) override;
+  virtual std::shared_ptr<PdxWriter> writeString(
+      const std::string& fieldName, const std::string& value) override;
 
-  virtual std::shared_ptr<PdxWriter> writeWideString(
-      const std::string& fieldName, const wchar_t* value) override;
   virtual std::shared_ptr<PdxWriter> writeObject(
       const std::string& fieldName,
       std::shared_ptr<Serializable> value) override;
@@ -174,10 +146,7 @@ class PdxLocalWriter : public PdxWriter,
       const std::string& fieldName, bool* array, int length) override;
 
   virtual std::shared_ptr<PdxWriter> writeCharArray(
-      const std::string& fieldName, char* array, int length) override;
-
-  virtual std::shared_ptr<PdxWriter> writeWideCharArray(
-      const std::string& fieldName, wchar_t* array, int length) override;
+      const std::string &fieldName, char16_t *array, int length) override;
 
   virtual std::shared_ptr<PdxWriter> writeByteArray(
       const std::string& fieldName, int8_t* array, int length) override;
@@ -199,18 +168,16 @@ class PdxLocalWriter : public PdxWriter,
       const std::string& fieldName, double* array, int length) override;
 
   virtual std::shared_ptr<PdxWriter> writeStringArray(
-      const std::string& fieldName, char** array, int length) override;
-
-  virtual std::shared_ptr<PdxWriter> writeWideStringArray(
-      const std::string& fieldName, wchar_t** array, int length) override;
+      const std::string& fieldName,
+      const std::vector<std::string>& array) override;
 
   virtual std::shared_ptr<PdxWriter> writeObjectArray(
       const std::string& fieldName,
       std::shared_ptr<CacheableObjectArray> array) override;
 
   virtual std::shared_ptr<PdxWriter> writeArrayOfByteArrays(
-      const std::string& fieldName, int8_t** array, int arrayLength,
-      int* elementLength) override;
+      const std::string& fieldName, int8_t* const* const array, int arrayLength,
+      const int* elementLength) override;
 
   virtual std::shared_ptr<PdxWriter> markIdentityField(
       const std::string& fieldName) override;

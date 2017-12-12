@@ -124,15 +124,9 @@ void StatDataOutput::writeLong(int64_t v) {
   bytesWritten += 8;
 }
 
-void StatDataOutput::writeString(std::string s) {
+void StatDataOutput::writeUTF(std::string s) {
   size_t len = s.length();
-  dataBuffer->writeASCII(s.data(), static_cast<uint32_t>(len));
-  bytesWritten += len;
-}
-
-void StatDataOutput::writeUTF(std::wstring s) {
-  size_t len = s.length();
-  dataBuffer->writeUTF(s.data(), static_cast<uint32_t>(len));
+  dataBuffer->writeUTF(s);
   bytesWritten += len;
 }
 
@@ -358,13 +352,13 @@ StatArchiveWriter::StatArchiveWriter(std::string outfile,
   char buf[512] = {0};
   ACE_OS::strftime(buf, sizeof(buf), "%Z", tm_val);
   std::string tzId(buf);
-  this->dataBuffer->writeString(tzId);
+  this->dataBuffer->writeUTF(tzId);
 
   std::string sysDirPath = sampler->getSystemDirectoryPath();
-  this->dataBuffer->writeString(sysDirPath);
+  this->dataBuffer->writeUTF(sysDirPath);
   std::string prodDesc = sampler->getProductDescription();
 
-  this->dataBuffer->writeString(prodDesc);
+  this->dataBuffer->writeUTF(prodDesc);
   ACE_utsname u;
   ACE_OS::uname(&u);
   std::string os(u.sysname);
@@ -376,11 +370,11 @@ StatArchiveWriter::StatArchiveWriter(std::string outfile,
    */
   // os += u.version;
 
-  this->dataBuffer->writeString(os);
+  this->dataBuffer->writeUTF(os);
   std::string machineInfo(u.machine);
   machineInfo += " ";
   machineInfo += u.nodename;
-  this->dataBuffer->writeString(machineInfo);
+  this->dataBuffer->writeUTF(machineInfo);
 
   resampleResources();
 }
@@ -555,7 +549,7 @@ void StatArchiveWriter::allocateResourceInst(Statistics *s) {
   resourceInstMap.insert(std::pair<Statistics *, ResourceInst *>(s, ri));
   this->dataBuffer->writeByte(RESOURCE_INSTANCE_CREATE_TOKEN);
   this->dataBuffer->writeInt(resourceInstId);
-  this->dataBuffer->writeString(s->getTextId());
+  this->dataBuffer->writeUTF(s->getTextId());
   this->dataBuffer->writeLong(s->getNumericId());
   this->dataBuffer->writeInt(type->getId());
 
@@ -582,14 +576,14 @@ const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
     // write the type to the archive
     this->dataBuffer->writeByte(RESOURCE_TYPE_TOKEN);
     this->dataBuffer->writeInt(resourceTypeId);
-    this->dataBuffer->writeString(type->getName());
-    this->dataBuffer->writeString(type->getDescription());
+    this->dataBuffer->writeUTF(type->getName());
+    this->dataBuffer->writeUTF(type->getDescription());
     auto stats = rt->getStats();
     auto descCnt = rt->getNumOfDescriptors();
     this->dataBuffer->writeShort(static_cast<int16_t>(descCnt));
     for (int32_t i = 0; i < descCnt; i++) {
       std::string statsName = stats[i]->getName();
-      this->dataBuffer->writeString(statsName);
+      this->dataBuffer->writeUTF(statsName);
       StatisticDescriptorImpl *sdImpl = (StatisticDescriptorImpl *)stats[i];
       if (sdImpl == nullptr) {
         std::string err("could not down cast to StatisticDescriptorImpl");
@@ -598,8 +592,8 @@ const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
       this->dataBuffer->writeByte(static_cast<int8_t>(sdImpl->getTypeCode()));
       this->dataBuffer->writeBoolean(stats[i]->isCounter());
       this->dataBuffer->writeBoolean(stats[i]->isLargerBetter());
-      this->dataBuffer->writeString(stats[i]->getUnit());
-      this->dataBuffer->writeString(stats[i]->getDescription());
+      this->dataBuffer->writeUTF(stats[i]->getUnit());
+      this->dataBuffer->writeUTF(stats[i]->getDescription());
     }
     // increment resourceTypeId
     resourceTypeId++;

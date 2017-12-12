@@ -283,7 +283,7 @@ bool PdxType3V1::equals(std::shared_ptr<PdxSerializable> obj) {
       m_i3 + m_diffInSameFields <= pap->m_i3 &&
       m_i4 + m_diffInSameFields <= pap->m_i4 &&
       m_i5 + m_diffInExtraFields == pap->m_i5) {
-    if (strcmp(m_str1, pap->m_str1) == 0 && strcmp(m_str2, pap->m_str2) <= 0) {
+    if (m_str1 == pap->m_str1 && m_str2 == pap->m_str2) {
       return true;
     }
   }
@@ -316,32 +316,21 @@ void PdxType3V1::fromData(std::shared_ptr<PdxReader> pr) {
   m_i3 = pr->readInt("i3");
   m_i4 = pr->readInt("i4");
   m_i5 = pr->readInt("i5");
-  char *tmp = pr->readString("m_str2");
+  auto tmp = pr->readString("m_str2");
 
-  char extraFieldsStr[20];
-  if (tmp == NULL) {
-    sprintf(extraFieldsStr, "%d", m_diffInExtraFields);
-    size_t strSize = strlen(extraFieldsStr) + 1;
-    m_str2 = new char[strSize];
-    memcpy(m_str2, extraFieldsStr, strSize);
+  if (tmp.empty()) {
+    m_str2 = std::to_string(m_diffInExtraFields);
   } else {
-    sprintf(extraFieldsStr,
-            "%d"
-            "%s",
-            m_diffInExtraFields, m_str2);
-    size_t strSize = strlen(extraFieldsStr) + 1;
-    m_str2 = new char[strSize];
-    memcpy(m_str2, extraFieldsStr, strSize);
+    m_str2 = std::to_string(m_diffInExtraFields) + m_str2;
   }
 }
 
 std::string PdxType3V1::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf,
-          "PdxType2V1:[ m_i1=%d ] [ m_i2=%d ] [m_str1=%s] [ m_i3=%d ] [ "
-          "m_i4=%d ] [ m_i5=%d ] [m_str2=%s]",
-          m_i1, m_i2, m_str1, m_i3, m_i4, m_i5, m_str2);
-  return idbuf;
+  return "PdxType2V1:[ m_i1=" + std::to_string(m_i1) +
+         " ] [ m_i2=" + std::to_string(m_i2) + " ] [m_str1=" + m_str1 +
+         "] [ m_i3=" + std::to_string(m_i3) +
+         " ] [  m_i4=" + std::to_string(m_i4) +
+         " ] [ m_i5=" + std::to_string(m_i5) + " ] [m_str2=" + m_str2 + "]";
 }
 
 /************************************************************
@@ -481,28 +470,28 @@ std::string PdxTypesV1R2::toString() const {
   sprintf(idbuf, "PdxTypesV1R1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ]",
           m_i1, m_i2, m_i3, m_i4);
   return idbuf;
- }
+}
 
- /************************************************************
-  *  PdxTypesIgnoreUnreadFieldsV1
-  * *********************************************************/
- int PdxTypesIgnoreUnreadFieldsV1::m_diffInSameFields = 0;
- bool PdxTypesIgnoreUnreadFieldsV1::m_useWeakHashMap = false;
+/************************************************************
+ *  PdxTypesIgnoreUnreadFieldsV1
+ * *********************************************************/
+int PdxTypesIgnoreUnreadFieldsV1::m_diffInSameFields = 0;
+bool PdxTypesIgnoreUnreadFieldsV1::m_useWeakHashMap = false;
 
- PdxTypesIgnoreUnreadFieldsV1::PdxTypesIgnoreUnreadFieldsV1() {
-   m_i1 = 34324;
-   m_i2 = 2144;
-   m_i3 = 4645734;
-   m_i4 = 73567;
- }
+PdxTypesIgnoreUnreadFieldsV1::PdxTypesIgnoreUnreadFieldsV1() {
+  m_i1 = 34324;
+  m_i2 = 2144;
+  m_i3 = 4645734;
+  m_i4 = 73567;
+}
 
- PdxTypesIgnoreUnreadFieldsV1::~PdxTypesIgnoreUnreadFieldsV1() {
-   // TODO Auto-generated destructor stub
- }
+PdxTypesIgnoreUnreadFieldsV1::~PdxTypesIgnoreUnreadFieldsV1() {
+  // TODO Auto-generated destructor stub
+}
 
- void PdxTypesIgnoreUnreadFieldsV1::reset(bool useWeakHashMap) {
-   PdxTypesIgnoreUnreadFieldsV1::m_diffInSameFields = 0;
-   PdxTypesIgnoreUnreadFieldsV1::m_useWeakHashMap = useWeakHashMap;
+void PdxTypesIgnoreUnreadFieldsV1::reset(bool useWeakHashMap) {
+  PdxTypesIgnoreUnreadFieldsV1::m_diffInSameFields = 0;
+  PdxTypesIgnoreUnreadFieldsV1::m_useWeakHashMap = useWeakHashMap;
 }
 
 int PdxTypesIgnoreUnreadFieldsV1::getHashCode() {
@@ -510,7 +499,8 @@ int PdxTypesIgnoreUnreadFieldsV1::getHashCode() {
   return 1;
 }
 
-bool PdxTypesIgnoreUnreadFieldsV1::equals(std::shared_ptr<PdxSerializable> obj) {
+bool PdxTypesIgnoreUnreadFieldsV1::equals(
+    std::shared_ptr<PdxSerializable> obj) {
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV1>(obj);
@@ -560,69 +550,69 @@ std::string PdxTypesIgnoreUnreadFieldsV1::toString() const {
   sprintf(idbuf, "PdxTypesV1R1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ]",
           m_i1, m_i2, m_i3, m_i4);
   return idbuf;
- }
+}
 
- /************************************************************
-  *  PdxVersionedV1
-  * *********************************************************/
+/************************************************************
+ *  PdxVersionedV1
+ * *********************************************************/
 
- PdxVersionedV1::PdxVersionedV1() {}
+PdxVersionedV1::PdxVersionedV1() {}
 
- void PdxVersionedV1::init(int32_t size) {
-   m_char = 'C';
-   m_bool = true;
-   m_byte = 0x74;
-   m_int16 = 0xab;
-   m_int32 = 0x2345abdc;
-   m_long = 324897980;
-   m_float = 23324.324f;
-   m_double = 3243298498;
+void PdxVersionedV1::init(int32_t size) {
+  m_char = 'C';
+  m_bool = true;
+  m_byte = 0x74;
+  m_int16 = 0xab;
+  m_int32 = 0x2345abdc;
+  m_long = 324897980;
+  m_float = 23324.324f;
+  m_double = 3243298498;
 
-   m_string = (char *)"gfestring";
+  m_string = "gfestring";
 
-   m_boolArray = new bool[3];
-   m_boolArray[0] = true;
-   m_boolArray[1] = false;
-   m_boolArray[2] = true;
+  m_boolArray = new bool[3];
+  m_boolArray[0] = true;
+  m_boolArray[1] = false;
+  m_boolArray[2] = true;
 
-   m_charArray = new char[2];
-   m_charArray[0] = 'c';
-   m_charArray[1] = 'v';
+  m_charArray = new char[2];
+  m_charArray[0] = 'c';
+  m_charArray[1] = 'v';
 
-   m_dateTime = nullptr;
+  m_dateTime = nullptr;
 
-   m_int16Array = new int16_t[size];
-   m_int32Array = new int32_t[size];
-   m_longArray = new int64_t[size];
-   m_floatArray = new float[size];
-   m_doubleArray = new double[size];
+  m_int16Array = new int16_t[size];
+  m_int32Array = new int32_t[size];
+  m_longArray = new int64_t[size];
+  m_floatArray = new float[size];
+  m_doubleArray = new double[size];
 
-   for (int i = 0; i < size; i++) {
-     m_int16Array[i] = 0x2332;
-     m_int32Array[i] = 34343 + i;
-     m_longArray[i] = 324324L + i;
-     m_floatArray[i] = 232.565f + i;
-     m_doubleArray[i] = 23423432 + i;
-     // m_stringArray[i] = String.Format("one{0}", i);
-   }
+  for (int i = 0; i < size; i++) {
+    m_int16Array[i] = 0x2332;
+    m_int32Array[i] = 34343 + i;
+    m_longArray[i] = 324324L + i;
+    m_floatArray[i] = 232.565f + i;
+    m_doubleArray[i] = 23423432 + i;
+    // m_stringArray[i] = String.Format("one{0}", i);
+  }
 
-   boolArrayLen = 0;
-   byteArrayLen = 0;
-   shortArrayLen = 0;
-   intArrayLen = 0;
-   longArrayLen = 0;
-   doubleArrayLen = 0;
-   floatArrayLen = 0;
-   strLenArray = 0;
- }
+  boolArrayLen = 0;
+  byteArrayLen = 0;
+  shortArrayLen = 0;
+  intArrayLen = 0;
+  longArrayLen = 0;
+  doubleArrayLen = 0;
+  floatArrayLen = 0;
+  strLenArray = 0;
+}
 
- PdxVersionedV1::PdxVersionedV1(int32_t size) {
-   init(size);
-   LOGDEBUG("PdxVersioned 1");
- }
+PdxVersionedV1::PdxVersionedV1(int32_t size) {
+  init(size);
+  LOGDEBUG("PdxVersioned 1");
+}
 
- PdxVersionedV1::~PdxVersionedV1() {
-   // TODO Auto-generated destructor stub
+PdxVersionedV1::~PdxVersionedV1() {
+  // TODO Auto-generated destructor stub
 }
 
 void PdxVersionedV1::toData(std::shared_ptr<PdxWriter> pw) const {
@@ -677,11 +667,7 @@ std::string PdxVersionedV1::toString() const {
 
 TestKeyV1::TestKeyV1() {}
 
-TestKeyV1::TestKeyV1(char *id) {
-  size_t strSize = strlen(id) + 1;
-  _id = new char[strSize];
-  memcpy(_id, id, strSize);
-}
+TestKeyV1::TestKeyV1(char *id) { _id = id; }
 
 /************************************************************
  *  TestDiffTypePdxSV1
@@ -702,7 +688,7 @@ bool TestDiffTypePdxSV1::equals(TestDiffTypePdxSV1 *obj) {
   TestDiffTypePdxSV1 *other = dynamic_cast<TestDiffTypePdxSV1 *>(obj);
   if (other == NULL) return false;
 
-  if (strcmp(other->_id, _id) == 0 && strcmp(other->_name, _name) == 0) {
+  if (other->_id == _id && other->_name == _name) {
     return true;
   }
 
@@ -745,4 +731,4 @@ std::string TestEqualsV1::toString() const {
   char idbuf[1024];
   sprintf(idbuf, "TestEqualsV1:[i1=%d ] [i2=%d] ", i1, i2);
   return idbuf;
- }
+}

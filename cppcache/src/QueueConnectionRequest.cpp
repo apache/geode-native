@@ -23,9 +23,7 @@
 using namespace apache::geode::client;
 
 void QueueConnectionRequest::toData(DataOutput& output) const {
-  // auto abe = CacheableString::create(m_serverGp.c_str());
-  // output.writeObject(abe);// changed
-  output.writeNativeString(m_serverGp.c_str());
+  output.writeString(m_serverGp);
   output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte));
   output.write(static_cast<int8_t>(GeodeTypeIdsImpl::ClientProxyMembershipId));
   uint32_t buffLen;

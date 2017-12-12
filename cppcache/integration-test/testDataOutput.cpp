@@ -19,6 +19,7 @@
 
 #include <string>
 #include <iostream>
+#include <iomanip>
 
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
@@ -32,8 +33,8 @@ using namespace apache::geode::client;
 
 void dumpnbytes(const uint8_t* buf, uint32_t length) {
   for (uint32_t i = 0; i < length; i++) {
-    std::cout << "buf[" << i << "] = " << std::hex
-              << static_cast<int16_t>(buf[i]) << std::dec << " "
+    std::cout << "buf[" << i << "] = " << std::setfill('0') << std::setw(2) << std::hex
+              << (static_cast<int16_t>(buf[i]) & 0xff) << std::dec << " "
               << static_cast<char>(buf[i]) << std::endl;
   }
 }
@@ -200,46 +201,6 @@ BEGIN_TEST(Numbers)
   }
 END_TEST(Numbers)
 
-BEGIN_TEST(NarrowStrings)
-  {
-    DataOutputInternal dataOutput;
-
-    const char* strOrig = "This is fun.";
-    dataOutput.writeASCII(strOrig);
-
-    const uint8_t* buffer = dataOutput.getBuffer();
-    std::cout << "Wrote to buffer..." << std::endl;
-    dumpnbytes(buffer, 14);
-
-    ASSERT(buffer[0] == 0x00, "wrong utf encoding.");
-    ASSERT(buffer[1] == 0x0c, "wrong utf encoding.");
-    ASSERT(buffer[2] == 'T', "wrong utf encoding.");
-    ASSERT(buffer[3] == 'h', "wrong utf encoding.");
-    ASSERT(buffer[4] == 'i', "wrong utf encoding.");
-    ASSERT(buffer[5] == 's', "wrong utf encoding.");
-    ASSERT(buffer[6] == ' ', "wrong utf encoding.");
-    ASSERT(buffer[7] == 'i', "wrong utf encoding.");
-    ASSERT(buffer[8] == 's', "wrong utf encoding.");
-    ASSERT(buffer[9] == ' ', "wrong utf encoding.");
-    ASSERT(buffer[10] == 'f', "wrong utf encoding.");
-    ASSERT(buffer[11] == 'u', "wrong utf encoding.");
-    ASSERT(buffer[12] == 'n', "wrong utf encoding.");
-    ASSERT(buffer[13] == '.', "wrong utf encoding.");
-
-    DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
-    char* str = nullptr;
-    uint16_t res_length;
-    dataInput.readASCII(&str, &res_length);
-    std::cout << "Read from buffer..." << std::endl;
-    ASSERT(str != nullptr, "expected non-null str");
-    ASSERT(res_length == 12, "expected length 12.");
-    dumpnbytes(reinterpret_cast<uint8_t*>(str), 12);
-    int res = strncmp(str, strOrig, 12);
-    ASSERT(res == 0, "expected a match.");
-    dataInput.freeUTFMemory(str);
-  }
-END_TEST(NarrowStrings)
-
 BEGIN_TEST(WideStrings)
   {
     DataOutputInternal dataOutput;
@@ -249,14 +210,14 @@ BEGIN_TEST(WideStrings)
     strOrig[1] = 0x7f;
     strOrig[2] = 0x80;
     strOrig[3] = 0x81;
-    strOrig[4] = 0xffff;
+    strOrig[4] = 0xfffd;
 
     dumpnshorts(reinterpret_cast<uint16_t*>(strOrig), 5);
-    dataOutput.writeUTF(strOrig, 5);
+    dataOutput.writeUTF(std::wstring(strOrig, 5));
 
     const uint8_t* buffer = dataOutput.getBuffer();
     std::cout << "Wrote to buffer..." << std::endl;
-    dumpnbytes(buffer, 12);
+    dumpnbytes(buffer, dataOutput.getBufferLength());
 
     ASSERT(buffer[0] == 0x00, "wrong utf encoding.");
     ASSERT(buffer[1] == 0x0a, "wrong utf encoding.");
@@ -269,24 +230,20 @@ BEGIN_TEST(WideStrings)
     ASSERT(buffer[8] == 0x81, "wrong utf encoding.");
     ASSERT(buffer[9] == 0xef, "wrong utf encoding.");
     ASSERT(buffer[10] == 0xbf, "wrong utf encoding.");
-    ASSERT(buffer[11] == 0xbf, "wrong utf encoding.");
+    ASSERT(buffer[11] == 0xbd, "wrong utf encoding.");
     std::cout << "sizeof wchar_t " << sizeof(wchar_t) << std::endl;
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
-    wchar_t* str = nullptr;
-    uint16_t res_length;
-    dataInput.readUTF(&str, &res_length);
-    ASSERT(str != nullptr, "expected non-null str");
-    ASSERT(res_length == 5, "expected length 5.");
+    auto str = dataInput.readUTF<wchar_t>();
+    ASSERT(str.length() == 5, "expected length 5.");
     std::cout << "Read from buffer..." << std::endl;
-    dumpnshorts(reinterpret_cast<uint16_t*>(str), 5);
+    dumpnshorts(reinterpret_cast<const uint16_t*>(str.data()), 5);
 
     ASSERT(str[0] == 0x00, "wrong decoded value");
     ASSERT(str[1] == 0x7f, "wrong decoded value");
     ASSERT(str[2] == 0x80, "wrong decoded value");
     ASSERT(str[3] == 0x81, "wrong decoded value");
-    ASSERT(str[4] == 0xffff, "wrong decoded value");
+    ASSERT(str[4] == 0xfffd, "wrong decoded value");
 
-    dataInput.freeUTFMemory(str);
     delete[] strOrig;
   }
 END_TEST(WideStrings)

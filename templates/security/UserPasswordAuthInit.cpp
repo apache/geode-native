@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
+#include <geode/Properties.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/CacheableString.hpp>
+
 #include "UserPasswordAuthInit.hpp"
-#include "geode/Properties.hpp"
-#include "geode/ExceptionTypes.hpp"
 
 #define SECURITY_USERNAME "security-username"
 #define SECURITY_PASSWORD "security-password"
@@ -43,17 +45,17 @@ std::shared_ptr<Properties> UserPasswordAuthInit::getCredentials(
         "property [" SECURITY_USERNAME "] not set.");
   }
 
- auto credentials = Properties::create();
- credentials->insert(SECURITY_USERNAME, userName->toString());
- std::shared_ptr<Cacheable> passwd = securityprops->find(SECURITY_PASSWORD);
- // If password is not provided then use empty string as the password.
- if (passwd == nullptr) {
-   passwd = CacheableString::create("");
- }
- credentials->insert(SECURITY_PASSWORD, passwd->toString());
- // LOGDEBUG("UserPasswordAuthInit: inserted username:password - %s:%s",
- //    userName->toString().c_str(), passwd->toString().c_str());
- return credentials;
+  auto credentials = Properties::create();
+  credentials->insert(SECURITY_USERNAME, userName->toString());
+  auto passwd = securityprops->find(SECURITY_PASSWORD);
+  // If password is not provided then use empty string as the password.
+  if (passwd == nullptr) {
+    passwd = CacheableString::create("");
+  }
+  credentials->insert(SECURITY_PASSWORD, passwd->toString());
+  // LOGDEBUG("UserPasswordAuthInit: inserted username:password - %s:%s",
+  //    userName->toString().c_str(), passwd->toString().c_str());
+  return credentials;
 }
 }  // namespace client
 }  // namespace geode

@@ -428,7 +428,7 @@ class ChunkedQueryResponse : public TcrChunkedResult {
  private:
   TcrMessage& m_msg;
   std::shared_ptr<CacheableVector> m_queryResults;
-  std::vector<std::shared_ptr<CacheableString>> m_structFieldNames;
+  std::vector<std::string> m_structFieldNames;
 
   void skipClass(DataInput& input);
 
@@ -446,7 +446,7 @@ class ChunkedQueryResponse : public TcrChunkedResult {
     return m_queryResults;
   }
 
-  inline const std::vector<std::shared_ptr<CacheableString>>& getStructFieldNames() const {
+  inline const std::vector<std::string>& getStructFieldNames() const {
     return m_structFieldNames;
   }
 

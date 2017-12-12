@@ -87,7 +87,7 @@ class SimpleCacheListener : public CacheListener {
     }
   }
 
-  virtual void close(const std::shared_ptr<Region>& region) {
+  virtual void close(Region& region) override {
     LOGINFO("SimpleCacheListener: Got a close event.");
   }
 };

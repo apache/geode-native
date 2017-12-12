@@ -91,7 +91,7 @@ bool PdxTests::NonPdxType::equals(PdxTests::NonPdxType& other,
   genericValCompare(ot->m_uint32, m_uint32);
   genericValCompare(ot->m_ulong, m_ulong);
   genericValCompare(ot->m_char, m_char);
-  if (strcmp(ot->m_string, m_string) != 0) {
+  if (ot->m_string != m_string) {
     return false;
   }
   genericCompare(ot->m_byteArray, m_byteArray, byteArrayLen);

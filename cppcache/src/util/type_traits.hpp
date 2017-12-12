@@ -14,24 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "LocatorListRequest.hpp"
-#include <geode/DataInput.hpp>
-#include <geode/DataOutput.hpp>
-#include "GeodeTypeIdsImpl.hpp"
-#include <geode/CacheableString.hpp>
 
-using namespace apache::geode::client;
+#pragma once
 
-LocatorListRequest::LocatorListRequest(const std::string& servergroup)
-    : m_servergroup(servergroup) {}
+#ifndef GEODE_UTIL_TYPE_TRAITS_H_
+#define GEODE_UTIL_TYPE_TRAITS_H_
 
-void LocatorListRequest::toData(DataOutput& output) const {
-  output.writeString(m_servergroup);
-}
-void LocatorListRequest::fromData(DataInput& input) {}
+namespace apache {
+namespace geode {
+namespace client {
 
-int8_t LocatorListRequest::typeId() const {
-  return static_cast<int8_t>(GeodeTypeIdsImpl::LocatorListRequest);
-}
+// basic implementation of std::endian from C++20
+enum class endian {
+#ifdef _WIN32
+  little = 0,
+  big = 1,
+  native = little
+#else
+  little = __ORDER_LITTLE_ENDIAN__,
+  big = __ORDER_BIG_ENDIAN__,
+  native = __BYTE_ORDER__
+#endif
+};
 
-size_t LocatorListRequest::objectSize() const { return 0; }
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
+
+#endif  // GEODE_UTIL_TYPE_TRAITS_H_
+
