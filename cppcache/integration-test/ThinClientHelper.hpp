@@ -344,7 +344,6 @@ void _verifyIntEntry(const char* name, const char* key, const int val,
         sprintf(buf, "In verify loop, get returned %d for key %s",
                 checkPtr->value(), key);
         LOG(buf);
-        // if ( strcmp( checkPtr->value().c_str(), value ) != 0 ){
         if (checkPtr->value() != value) {
           testValueCnt++;
         } else {

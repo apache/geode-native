@@ -210,10 +210,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
           for (int32_t i = 0; i < resultList->size(); i++) {
             sprintf(buf, "result[%d] is null\n", i);
             ASSERT(resultList->operator[](i) != nullptr, buf);
-            // sprintf(buf, "get result[%d]=%s", i,
-            //        std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))
-            //            ->value().c_str());
-            // LOGINFO(buf);
           }
         }
         LOGINFO("getFuncName done");
