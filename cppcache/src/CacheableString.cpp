@@ -38,43 +38,43 @@ namespace geode {
 namespace client {
 
 void CacheableString::toData(DataOutput& output) const {
-  if (m_type == GF_STRING) {
+  if (m_type == GeodeTypeIds::CacheableASCIIString) {
     output.writeAscii(m_str);
-  } else if (m_type == GF_WIDESTRING) {
+  } else if (m_type == GeodeTypeIds::CacheableString) {
     output.writeJavaModifiedUtf8(m_str);
-  } else if (m_type == GF_STRING_HUGE) {
+  } else if (m_type == GeodeTypeIds::CacheableASCIIStringHuge) {
     output.writeAsciiHuge(m_str);
-  } else if (m_type == GF_WIDESTRING_HUGE) {
+  } else if (m_type == GeodeTypeIds::CacheableStringHuge) {
     output.writeUtf16Huge(m_str);
   }
 }
 
 void CacheableString::fromData(DataInput& input) {
-  if (m_type == GF_STRING) {
+  if (m_type == GeodeTypeIds::CacheableASCIIString) {
     input.readAscii(m_str);
-  } else if (m_type == GF_WIDESTRING) {
+  } else if (m_type == GeodeTypeIds::CacheableString) {
     input.readJavaModifiedUtf8(m_str);
-  } else if (m_type == GF_STRING_HUGE) {
+  } else if (m_type == GeodeTypeIds::CacheableASCIIStringHuge) {
     input.readAsciiHuge(m_str);
-  } else if (m_type == GF_WIDESTRING_HUGE) {
+  } else if (m_type == GeodeTypeIds::CacheableStringHuge) {
     input.readUtf16Huge(m_str);
   }
 }
 
 Serializable* CacheableString::createDeserializable() {
-  return new CacheableString(GF_STRING);
+  return new CacheableString(GeodeTypeIds::CacheableASCIIString);
 }
 
 Serializable* CacheableString::createDeserializableHuge() {
-  return new CacheableString(GF_STRING_HUGE);
+  return new CacheableString(GeodeTypeIds::CacheableASCIIStringHuge);
 }
 
 Serializable* CacheableString::createUTFDeserializable() {
-  return new CacheableString(GF_WIDESTRING);
+  return new CacheableString(GeodeTypeIds::CacheableString);
 }
 
 Serializable* CacheableString::createUTFDeserializableHuge() {
-  return new CacheableString(GF_WIDESTRING_HUGE);
+  return new CacheableString(GeodeTypeIds::CacheableStringHuge);
 }
 
 std::shared_ptr<CacheableString> CacheableString::create(
@@ -107,10 +107,14 @@ bool CacheableString::operator==(const CacheableKey& other) const {
   int8_t thisType = typeId();
   int8_t otherType = other.typeId();
   if (thisType != otherType) {
-    if (!(thisType == GF_STRING || thisType == GF_WIDESTRING ||
-          thisType == GF_STRING_HUGE || thisType == GF_WIDESTRING_HUGE) ||
-        !(otherType == GF_STRING || otherType == GF_WIDESTRING ||
-          otherType == GF_STRING_HUGE || otherType == GF_WIDESTRING_HUGE)) {
+    if (!(thisType == GeodeTypeIds::CacheableASCIIString ||
+          thisType == GeodeTypeIds::CacheableString ||
+          thisType == GeodeTypeIds::CacheableASCIIStringHuge ||
+          thisType == GeodeTypeIds::CacheableStringHuge) ||
+        !(otherType == GeodeTypeIds::CacheableASCIIString ||
+          otherType == GeodeTypeIds::CacheableString ||
+          otherType == GeodeTypeIds::CacheableASCIIStringHuge ||
+          otherType == GeodeTypeIds::CacheableStringHuge)) {
       return false;
     }
   }
@@ -138,8 +142,10 @@ void CacheableString::initString(std::string&& value) {
   bool ascii = isAscii(m_str);
 
   m_type = m_str.length() > std::numeric_limits<uint16_t>::max()
-               ? ascii ? GF_STRING_HUGE : GF_WIDESTRING_HUGE
-               : ascii ? GF_STRING : GF_WIDESTRING;
+               ? ascii ? GeodeTypeIds::CacheableASCIIStringHuge
+                       : GeodeTypeIds::CacheableStringHuge
+               : ascii ? GeodeTypeIds::CacheableASCIIString
+                       : GeodeTypeIds::CacheableString;
 }
 
 bool CacheableString::isAscii(const std::string& str) {

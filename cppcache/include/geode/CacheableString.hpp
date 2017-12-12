@@ -31,11 +31,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-#define GF_STRING (int8_t) GeodeTypeIds::CacheableASCIIString
-#define GF_STRING_HUGE (int8_t) GeodeTypeIds::CacheableASCIIStringHuge
-#define GF_WIDESTRING (int8_t) GeodeTypeIds::CacheableString
-#define GF_WIDESTRING_HUGE (int8_t) GeodeTypeIds::CacheableStringHuge
-
 /**
  * Implement a immutable C string wrapper that can serve as a distributable
  * key object for caching as well as being a string value.
@@ -185,7 +180,7 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
   void initStringNoCopy(wchar_t* value, int32_t len);
 
   /** Default constructor. */
-  inline CacheableString(int8_t type = GF_STRING)
+  inline CacheableString(int8_t type = GeodeTypeIds::CacheableASCIIString)
       : m_str(), m_type(type), m_hashcode(0) {}
 
   inline CacheableString(const std::string& value)
@@ -196,8 +191,10 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
     bool ascii = isAscii(m_str);
 
     m_type = m_str.length() > std::numeric_limits<uint16_t>::max()
-                 ? ascii ? GF_STRING_HUGE : GF_WIDESTRING_HUGE
-                 : ascii ? GF_STRING : GF_WIDESTRING;
+                 ? ascii ? GeodeTypeIds::CacheableASCIIStringHuge
+                         : GeodeTypeIds::CacheableStringHuge
+                 : ascii ? GeodeTypeIds::CacheableASCIIString
+                         : GeodeTypeIds::CacheableString;
   }
 
  private:

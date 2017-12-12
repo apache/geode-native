@@ -1356,7 +1356,7 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
       return nullptr;
       break;
     }
-    case GF_STRING: {
+    case GeodeTypeIds::CacheableASCIIString: {
       auto lenBytes = readHandshakeData(2, connectTimeout);
       auto lenDI =
           m_connectionManager->getCacheImpl()->getCache()->createDataInput(
