@@ -281,7 +281,7 @@ TEST_F(DataOutputTest, TestWriteUTFHugeWide) {
 TEST_F(DataOutputTest, TestWriteStringFromUtf8String) {
   TestDataOutput dataOutput(nullptr);
   auto str = std::string(u8"You had me at");
-  str.push_back('\u0000');
+  str.push_back(0);
   str.append(u8"meat tornad\u00F6!\U000F0000");
   dataOutput.writeString(str);
   EXPECT_BYTEARRAY_EQ(
@@ -293,7 +293,7 @@ TEST_F(DataOutputTest, TestWriteStringFromUtf8String) {
 TEST_F(DataOutputTest, TestWriteStringFromUtf16String) {
   TestDataOutput dataOutput(nullptr);
   auto str = std::u16string(u"You had me at");
-  str.push_back('\u0000');
+  str.push_back(0);
   str.append(u"meat tornad\u00F6!\U000F0000");
   dataOutput.writeString(str);
   EXPECT_BYTEARRAY_EQ(

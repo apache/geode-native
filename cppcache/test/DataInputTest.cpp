@@ -731,7 +731,7 @@ TEST_F(DataInputTest, TestReadWideString) {
 
 TEST_F(DataInputTest, TestReadStringToUtf8String) {
   auto expected = std::string(u8"You had me at");
-  expected.push_back('\u0000');
+  expected.push_back(0);
   expected.append(u8"meat tornad\u00F6!\U000F0000");
 
   TestDataInput dataInput(
@@ -744,7 +744,7 @@ TEST_F(DataInputTest, TestReadStringToUtf8String) {
 
 TEST_F(DataInputTest, TestReadStringToUtf16String) {
   auto expected = std::u16string(u"You had me at");
-  expected.push_back('\u0000');
+  expected.push_back(0);
   expected.append(u"meat tornad\u00F6!\U000F0000");
 
   TestDataInput dataInput(
