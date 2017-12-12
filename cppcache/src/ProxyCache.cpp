@@ -63,7 +63,7 @@ void ProxyCache::close() {
       prqs->closeCqs(false);
     }
 
-    GuardUserAttribures gua(shared_from_this());
+    GuardUserAttribures gua(this);
     m_isProxyCacheClosed = true;
     m_userAttributes->unSetCredentials();
     // send message to server

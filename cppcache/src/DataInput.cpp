@@ -31,10 +31,10 @@ std::shared_ptr<Serializable> DataInput::readObjectInternal(int8_t typeId) {
 }
 
 const SerializationRegistry& DataInput::getSerializationRegistry() const {
-  return *CacheRegionHelper::getCacheImpl(m_cache)->getSerializationRegistry();
+  return *m_cache->getSerializationRegistry();
 }
 
-const Cache* DataInput::getCache() { return m_cache; }
+const Cache* DataInput::getCache() { return m_cache->getCache(); }
 
 void DataInput::readJavaModifiedUtf8(std::string& value) {
   // OPTIMIZE transcode Java Modified UTF-8/CESU-8 to standard UTF-8
@@ -104,7 +104,6 @@ void DataInput::readUtf16Huge(std::string& value) {
   readUtf16Huge(utf16);
   value = to_utf8(utf16);
 }
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

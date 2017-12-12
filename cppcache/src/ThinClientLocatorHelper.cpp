@@ -102,7 +102,7 @@ GfErrType ThinClientLocatorHelper::getAllServers(
       createConnection(conn, loc.getServerName().c_str(), loc.getPort(),
                        sysProps.connectTimeout(), buffSize);
       GetAllServersRequest request(serverGrp);
-      auto data = m_poolDM->getConnectionManager().getCacheImpl()->getCache()->createDataOutput();
+      auto data = m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
       data->writeInt((int32_t)1001);  // GOSSIPVERSION
       data->writeObject(&request);
       int sentLength = conn->send(
@@ -122,7 +122,7 @@ GfErrType ThinClientLocatorHelper::getAllServers(
         continue;
       }
 
-      auto di = m_poolDM->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
+      auto di = m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
                    reinterpret_cast<uint8_t*>(buff), receivedLength);
       std::shared_ptr<GetAllServersResponse> response(nullptr);
 
@@ -194,7 +194,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
                        sysProps.connectTimeout(), buffSize);
       QueueConnectionRequest request(memId, exclEndPts, redundancy, false,
                                      serverGrp);
-      auto data = m_poolDM->getConnectionManager().getCacheImpl()->getCache()->createDataOutput();
+      auto data = m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
       data->writeInt((int32_t)1001);  // GOSSIPVERSION
       data->writeObject(&request);
       int sentLength = conn->send(
@@ -213,7 +213,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
       if (receivedLength <= 0) {
         continue;
       }
-      auto di = m_poolDM->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
+      auto di = m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
                    reinterpret_cast<uint8_t*>(buff), receivedLength);
       std::shared_ptr<QueueConnectionResponse> response(nullptr);
 
@@ -284,7 +284,6 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
                        sysProps.connectTimeout(), buffSize);
       auto data = m_poolDM->getConnectionManager()
                       .getCacheImpl()
-                      ->getCache()
                       ->createDataOutput();
       data->writeInt(1001);  // GOSSIPVERSION
       if (currentServer == nullptr) {
@@ -315,7 +314,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
       if (receivedLength <= 0) {
         continue;  // return GF_EUNDEF;
       }
-      auto di = m_poolDM->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
+      auto di = m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
                    reinterpret_cast<uint8_t*>(buff), receivedLength);
       std::shared_ptr<ClientConnectionResponse> response;
 
@@ -383,7 +382,6 @@ GfErrType ThinClientLocatorHelper::updateLocators(
       LocatorListRequest request(serverGrp);
       auto data = m_poolDM->getConnectionManager()
                       .getCacheImpl()
-                      ->getCache()
                       ->createDataOutput();
       data->writeInt((int32_t)1001);  // GOSSIPVERSION
       data->writeObject(&request);
@@ -407,7 +405,6 @@ GfErrType ThinClientLocatorHelper::updateLocators(
       }
       auto di = m_poolDM->getConnectionManager()
                     .getCacheImpl()
-                    ->getCache()
                     ->createDataInput(reinterpret_cast<uint8_t*>(buff),
                                       receivedLength);
       auto response = std::make_shared<LocatorListResponse>();

@@ -100,7 +100,7 @@ bool TcrConnection::InitTcrConnection(
 
   GF_DEV_ASSERT(m_conn != nullptr);
 
-  auto handShakeMsg = cacheImpl->getCache()->createDataOutput();
+  auto handShakeMsg = cacheImpl->createDataOutput();
   bool isNotificationChannel = false;
   // Send byte Acceptor.CLIENT_TO_SERVER = (byte) 100;
   // Send byte Acceptor.SERVER_TO_CLIENT = (byte) 101;
@@ -352,7 +352,7 @@ bool TcrConnection::InitTcrConnection(
       LOGDEBUG("Handshake: Got challengeSize %d", challengeBytes->length());
 
       // encrypt the credentials and challenge bytes
-      auto cleartext = cacheImpl->getCache()->createDataOutput();
+      auto cleartext = cacheImpl->createDataOutput();
       if (isClientNotification) {  //:only for backward connection
         credentials->toData(*cleartext);
       }
@@ -360,7 +360,7 @@ bool TcrConnection::InitTcrConnection(
       auto ciphertext =
           m_dh->encrypt(cleartext->getBuffer(), cleartext->getBufferLength());
 
-      auto sendCreds = cacheImpl->getCache()->createDataOutput();
+      auto sendCreds = cacheImpl->createDataOutput();
       ciphertext->toData(*sendCreds);
       uint32_t credLen;
       char* credData = (char*)sendCreds->getBuffer(&credLen);
@@ -400,7 +400,7 @@ bool TcrConnection::InitTcrConnection(
       m_hasServerQueue = NON_REDUNDANT_SERVER;
     }
     auto queueSizeMsg = readHandshakeData(4, connectTimeout);
-    auto dI = cacheImpl->getCache()->createDataInput(queueSizeMsg->value(),
+    auto dI = cacheImpl->createDataInput(queueSizeMsg->value(),
                                                      queueSizeMsg->length());
     int32_t queueSize = 0;
     queueSize = dI->readInt32();
@@ -432,13 +432,13 @@ bool TcrConnection::InitTcrConnection(
       if (static_cast<int8_t>((*arrayLenHeader)[0]) == -2) {
         auto recvMsgLenBytes = readHandshakeData(2, connectTimeout);
         auto dI2 =
-            m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+            m_connectionManager->getCacheImpl()->createDataInput(
                 recvMsgLenBytes->value(), recvMsgLenBytes->length());
         recvMsgLen = dI2->readInt16();
       } else if (static_cast<int8_t>((*arrayLenHeader)[0]) == -3) {
         auto recvMsgLenBytes = readHandshakeData(4, connectTimeout);
         auto dI2 =
-            m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+            m_connectionManager->getCacheImpl()->createDataInput(
                 recvMsgLenBytes->value(), recvMsgLenBytes->length());
         recvMsgLen = dI2->readInt32();
       }
@@ -446,7 +446,7 @@ bool TcrConnection::InitTcrConnection(
       // If the distributed member has not been set yet, set it.
       if (getEndpointObject()->getDistributedMemberID() == 0) {
         LOGDEBUG("Deserializing distributed member Id");
-        auto diForClient = cacheImpl->getCache()->createDataInput(
+        auto diForClient = cacheImpl->createDataInput(
             recvMessage->value(), recvMessage->length());
         std::shared_ptr<ClientProxyMembershipID> member;
         member = diForClient->readObject<ClientProxyMembershipID>();
@@ -457,7 +457,7 @@ bool TcrConnection::InitTcrConnection(
     }
 
     auto recvMsgLenBytes = readHandshakeData(2, connectTimeout);
-    auto dI3 = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+    auto dI3 = m_connectionManager->getCacheImpl()->createDataInput(
         recvMsgLenBytes->value(), recvMsgLenBytes->length());
     uint16_t recvMsgLen2 = dI3->readInt16();
     auto recvMessage = readHandshakeData(recvMsgLen2, connectTimeout);
@@ -465,7 +465,7 @@ bool TcrConnection::InitTcrConnection(
     if (!isClientNotification) {
       auto deltaEnabledMsg = readHandshakeData(1, connectTimeout);
       auto di =
-          m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+          m_connectionManager->getCacheImpl()->createDataInput(
               deltaEnabledMsg->value(), 1);
       ThinClientBaseDM::setDeltaEnabledOnServer(di->readBoolean());
     }
@@ -883,7 +883,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
       m_endpoint,
       Utils::convertBytesToString(msg_header, HEADER_LENGTH).c_str());
 
-  auto input = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+  auto input = m_connectionManager->getCacheImpl()->createDataInput(
       reinterpret_cast<uint8_t*>(msg_header), HEADER_LENGTH);
   msgType = input->readInt32();
   msgLen = input->readInt32();
@@ -992,7 +992,7 @@ void TcrConnection::readMessageChunked(
       "endpoint %s; bytes: %s",
       m_endpoint, Utils::convertBytesToString(msg_header, HDR_LEN_12).c_str());
 
-  auto input = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+  auto input = m_connectionManager->getCacheImpl()->createDataInput(
       msg_header, HDR_LEN_12);
   int32_t msgType = input->readInt32();
   reply.setMessageType(msgType);
@@ -1058,7 +1058,7 @@ void TcrConnection::readMessageChunked(
             .c_str());
 
     auto input =
-        m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+        m_connectionManager->getCacheImpl()->createDataInput(
             msg_header + HDR_LEN_12, HDR_LEN);
     int32_t chunkLen;
     chunkLen = input->readInt32();
@@ -1207,7 +1207,7 @@ uint32_t TcrConnection::readHandshakeArraySize(
     std::chrono::microseconds connectTimeout) {
   auto codeBytes = readHandshakeData(1, connectTimeout);
   auto codeDI =
-      m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+      m_connectionManager->getCacheImpl()->createDataInput(
           codeBytes->value(), codeBytes->length());
   uint8_t code = codeDI->read();
   uint32_t arraySize = 0;
@@ -1219,14 +1219,14 @@ uint32_t TcrConnection::readHandshakeArraySize(
       if (code == 0xFE) {
         auto lenBytes = readHandshakeData(2, connectTimeout);
         auto lenDI =
-            m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+            m_connectionManager->getCacheImpl()->createDataInput(
                 lenBytes->value(), lenBytes->length());
         uint16_t val = lenDI->readInt16();
         tempLen = val;
       } else if (code == 0xFD) {
         auto lenBytes = readHandshakeData(4, connectTimeout);
         auto lenDI =
-            m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+            m_connectionManager->getCacheImpl()->createDataInput(
                 lenBytes->value(), lenBytes->length());
         uint32_t val = lenDI->readInt32();
         tempLen = val;
@@ -1319,7 +1319,7 @@ int32_t TcrConnection::readHandShakeInt(
     }
   }
 
-  auto di = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+  auto di = m_connectionManager->getCacheImpl()->createDataInput(
       recvMessage, 4);
   int32_t val = di->readInt32();
 
@@ -1359,7 +1359,7 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
     case GeodeTypeIds::CacheableASCIIString: {
       auto lenBytes = readHandshakeData(2, connectTimeout);
       auto lenDI =
-          m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+          m_connectionManager->getCacheImpl()->createDataInput(
               lenBytes->value(), lenBytes->length());
       length = lenDI->readInt16();
 

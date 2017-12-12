@@ -330,7 +330,6 @@ int64_t TcrMessage::getConnectionId(TcrConnection* conn) {
    auto tmp = conn->decryptBytes(m_connectionIDBytes);
    auto di = m_tcdm->getConnectionManager()
                  .getCacheImpl()
-                 ->getCache()
                  ->createDataInput(tmp->value(), tmp->length());
    return di->readInt64();
   } else {
@@ -345,7 +344,7 @@ int64_t TcrMessage::getUniqueId(TcrConnection* conn) {
 
    auto tmp = conn->decryptBytes(encryptBytes);
 
-    auto di = m_tcdm->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
+    auto di = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
               tmp->value(), tmp->length());
     return di->readInt64();
   }
@@ -883,7 +882,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
     case TcrMessage::EXCEPTION: {
       if (bytes != nullptr) {
         DeleteArray<const uint8_t> delChunk(bytes);
-        auto input = m_tcdm->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
+        auto input = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
                   bytes, len);
         readExceptionPart(*input, isLastChunkAndisSecurityHeader);
         readSecureObjectPart(*input, false, true,
@@ -940,7 +939,7 @@ void TcrMessage::chunkSecurityHeader(int skipPart, const uint8_t* bytes,
                                      uint8_t isLastChunkAndSecurityHeader) {
   LOGDEBUG("TcrMessage::chunkSecurityHeader:: skipParts = %d", skipPart);
   if ((isLastChunkAndSecurityHeader & 0x3) == 0x3) {
-    auto di = m_tcdm->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
+    auto di = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
               bytes, len);
     skipParts(*di, skipPart);
     readSecureObjectPart(*di, false, true, isLastChunkAndSecurityHeader);
@@ -951,7 +950,7 @@ void TcrMessage::handleByteArrayResponse(
     const char* bytearray, int32_t len, uint16_t endpointMemId,
     const SerializationRegistry& serializationRegistry,
     MemberListForVersionStamp& memberListForVersionStamp) {
-  auto input = m_tcdm->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
+  auto input = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
                   (uint8_t*)bytearray, len);
   // TODO:: this need to make sure that pool is there
   //  if(m_tcdm == nullptr)
@@ -1205,7 +1204,7 @@ void TcrMessage::handleByteArrayResponse(
         input->advanceCursor(1);  // ignore byte
         m_deltaBytes = new uint8_t[m_deltaBytesLen];
         input->readBytesOnly(m_deltaBytes, m_deltaBytesLen);
-        m_delta = m_tcdm->getConnectionManager().getCacheImpl()->getCache()->createDataInput(
+        m_delta = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
             m_deltaBytes, m_deltaBytesLen);
       } else {
         readObjectPart(*input);
@@ -2590,7 +2589,7 @@ void TcrMessage::createUserCredentialMessage(TcrConnection* conn) {
   m_isSecurityHeaderAdded = false;
   writeHeader(m_msgType, 1);
 
-  auto dOut = m_tcdm->getConnectionManager().getCacheImpl()->getCache()->createDataOutput();
+  auto dOut = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
 
   if (m_creds != nullptr) m_creds->toData(*dOut);
 
@@ -2618,7 +2617,7 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
   }
   m_isSecurityHeaderAdded = true;
   LOGDEBUG("addSecurityPart( , ) ");
-  auto dOutput = m_tcdm->getConnectionManager().getCacheImpl()->getCache()->createDataOutput();
+  auto dOutput = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
 
   dOutput->writeInt(connectionId);
   dOutput->writeInt(unique_id);
@@ -2648,7 +2647,7 @@ void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection* conn) {
   }
   m_isSecurityHeaderAdded = true;
   LOGDEBUG("TcrMessage::addSecurityPart only connid");
-  auto dOutput = m_tcdm->getConnectionManager().getCacheImpl()->getCache()->createDataOutput();
+  auto dOutput = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
 
   dOutput->writeInt(connectionId);
 
@@ -2819,7 +2818,7 @@ void TcrMessage::setData(const char* bytearray, int32_t len, uint16_t memId,
                          const SerializationRegistry& serializationRegistry,
                          MemberListForVersionStamp& memberListForVersionStamp) {
   if (m_request == nullptr) {
-    m_request = m_tcdm->getConnectionManager().getCacheImpl()->getCache()->createDataOutput();
+    m_request = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
   }
   if (bytearray) {
     DeleteArray<const char> delByteArr(bytearray);

@@ -95,7 +95,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   GuardUserAttribures gua;
   if (m_proxyCache != nullptr) {
     LOGDEBUG("ExecutionImpl::execute function on proxy cache");
-    gua.setProxyCache(m_proxyCache);
+    gua.setProxyCache(m_proxyCache.get());
   }
   bool serverHasResult = false;
   bool serverIsHA = false;
@@ -370,7 +370,6 @@ GfErrType ExecutionImpl::getFuncAttributes(const std::string& func,
   LOGDEBUG("Tcrmessage request GET_FUNCTION_ATTRIBUTES ");
   TcrMessageGetFunctionAttributes request(tcrdm->getConnectionManager()
                                               .getCacheImpl()
-                                              ->getCache()
                                               ->createDataOutput(),
                                           func, tcrdm);
   TcrMessageReply reply(true, tcrdm);

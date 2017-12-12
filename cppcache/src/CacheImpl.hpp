@@ -285,6 +285,15 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
     return m_authInitialize;
   }
 
+  virtual std::unique_ptr<DataOutput> createDataOutput() const {
+    return std::unique_ptr<DataOutput>(new DataOutput(this));
+  }
+
+  virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* buffer,
+                                                     int32_t len) const {
+    return std::unique_ptr<DataInput>(new DataInput(buffer, len, this));
+  }
+
  private:
   std::atomic<bool> m_networkhop;
   std::atomic<int> m_blacklistBucketTimeout;

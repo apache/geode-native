@@ -40,6 +40,7 @@ namespace geode {
 namespace client {
 class SerializationRegistry;
 class DataOutputInternal;
+class CacheImpl;
 
 /**
  * Provide operations for writing primitive data values, byte arrays,
@@ -687,7 +688,7 @@ class CPPCACHE_EXPORT DataOutput {
   /**
    * Construct a new DataOutput.
    */
-  DataOutput(const Cache* cache);
+  DataOutput(const CacheImpl* cache);
 
   DataOutput() : DataOutput(nullptr) {}
 
@@ -710,7 +711,7 @@ class CPPCACHE_EXPORT DataOutput {
   static uint32_t m_highWaterMark;
   // flag to indicate we have a big buffer
   volatile bool m_haveBigBuffer;
-  const Cache* m_cache;
+  const CacheImpl* m_cache;
   std::reference_wrapper<const std::string> m_poolName;
 
   inline void writeAscii(const std::string& value) {
@@ -860,6 +861,7 @@ class CPPCACHE_EXPORT DataOutput {
   DataOutput& operator=(const DataOutput&);
 
   friend Cache;
+  friend CacheImpl;
   friend DataOutputInternal;
   friend CacheableString;
 };

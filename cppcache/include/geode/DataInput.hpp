@@ -46,6 +46,7 @@ namespace client {
 
 class SerializationRegistry;
 class DataInputInternal;
+class CacheImpl;
 
 /**
  * Provide operations for reading primitive data values, byte arrays,
@@ -918,7 +919,7 @@ class CPPCACHE_EXPORT DataInput {
 
  protected:
   /** constructor given a pre-allocated byte array with size */
-  DataInput(const uint8_t* m_buffer, int32_t len, const Cache* cache)
+  DataInput(const uint8_t* m_buffer, int32_t len, const CacheImpl* cache)
       : m_buf(m_buffer),
         m_bufHead(m_buffer),
         m_bufLength(len),
@@ -932,7 +933,7 @@ class CPPCACHE_EXPORT DataInput {
   const uint8_t* m_bufHead;
   int32_t m_bufLength;
   std::reference_wrapper<const std::string> m_poolName;
-  const Cache* m_cache;
+  const CacheImpl* m_cache;
 
   std::shared_ptr<Serializable> readObjectInternal(int8_t typeId = -1);
 
@@ -1062,6 +1063,7 @@ class CPPCACHE_EXPORT DataInput {
   DataInput& operator=(const DataInput&) = delete;
 
   friend Cache;
+  friend CacheImpl;
   friend DataInputInternal;
 };
 }  // namespace client
