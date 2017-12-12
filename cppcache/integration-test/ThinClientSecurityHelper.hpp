@@ -119,27 +119,27 @@ void initClientAuth(char UserType) {
      credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config,
                                                              nullptr);
      printf("User is %s Pass is %s ",
-            config->find("security-username")->asChar(),
+            config->find("security-username")->value().c_str(),
             (config->find("security-password") != nullptr
-                 ? config->find("security-password")->asChar()
+                 ? config->find("security-password")->value().c_str()
                  : " not set"));
      break;
    case 'R':
      credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config,
                                                              nullptr);
      printf("User is %s Pass is %s ",
-            config->find("security-username")->asChar(),
+            config->find("security-username")->value().c_str(),
             (config->find("security-password") != nullptr
-                 ? config->find("security-password")->asChar()
+                 ? config->find("security-password")->value().c_str()
                  : " not set"));
      break;
    case 'A':
      credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config,
                                                              nullptr);
      printf("User is %s Pass is %s ",
-            config->find("security-username")->asChar(),
+            config->find("security-username")->value().c_str(),
             (config->find("security-password") != nullptr
-                 ? config->find("security-password")->asChar()
+                 ? config->find("security-password")->value().c_str()
                  : " not set"));
    default:
      break;

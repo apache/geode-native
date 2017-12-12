@@ -197,19 +197,6 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
 
   /**
    * Writes the named field with the given value to the serialized form.
-   * The fields type is <code>wchar_t*</code>.
-   * <p>Java String is mapped to C++ wchar_t*.</p>
-   * @param fieldName the name of the field to write
-   * @param value the value of the field to write
-   * @return this PdxInstanceFactory
-   * @throws IllegalStateException if the named field has already been written
-   * or fieldName is nullptr or empty.
-   */
-  virtual std::shared_ptr<PdxInstanceFactory> writeWideString(
-      const std::string& fieldName, const wchar_t* value) override;
-
-  /**
-   * Writes the named field with the given value to the serialized form.
    * The fields type is <code>char*</code>.
    * <p>Java String is mapped to C++ char*.</p>
    * @param fieldName the name of the field to write
@@ -220,6 +207,12 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeString(
       const std::string& fieldName, const char* value) override;
+
+  virtual std::shared_ptr<PdxInstanceFactory> writeString(
+      const std::string& fieldName, const std::string& value) override;
+
+  virtual std::shared_ptr<PdxInstanceFactory> writeString(
+      const std::string& fieldName, std::string&& value) override;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -380,20 +373,6 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeStringArray(
       const std::string& fieldName, char** value, int32_t length) override;
-
-  /**
-   * Writes the named field with the given value to the serialized form.
-   * The fields type is <code>wchar_t**</code>.
-   * <p>Java String[] is mapped to C++ wchar_t**.</p>
-   * @param fieldName the name of the field to write
-   * @param value the value of the field to write
-   * @param length the length of the array field to write
-   * @return this PdxInstanceFactory
-   * @throws IllegalStateException if the named field has already been written
-   * or fieldName is nullptr or empty.
-   */
-  virtual std::shared_ptr<PdxInstanceFactory> writeWideStringArray(
-      const std::string& fieldName, wchar_t** value, int32_t length) override;
 
   /**
    * Writes the named field with the given value to the serialized form.

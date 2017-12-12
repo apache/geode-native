@@ -316,18 +316,6 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
 
   // String
   /**
-   * Reads the named field and set its value in wchar_t* type out param.
-   * wchar_t* type is corresponding to java String type.
-   * @param fieldname name of the field to read
-   * @param value value of the field to be set with wchar_t type.
-   * @throws IllegalStateException if PdxInstance doesn't has the named field.
-   *
-   * @see PdxInstance#hasField
-   */
-  virtual void getField(const std::string& fieldname,
-                        wchar_t** value) const = 0;
-
-  /**
    * Reads the named field and set its value in char* type out param.
    * char* type is corresponding to java String type.
    * @param fieldname name of the field to read
@@ -339,19 +327,6 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
   virtual void getField(const std::string& fieldname, char** value) const = 0;
 
   // StringArray
-  /**
-   * Reads the named field and set its value in wchar_t* array type out param.
-   * wchar_t** type is corresponding to java String[] type.
-   * @param fieldname name of the field to read
-   * @param value value of the field to be set with wchar_t* array type.
-   * @param length length is set with number of wchar_t** elements.
-   * @throws IllegalStateException if PdxInstance doesn't has the named field.
-   *
-   * @see PdxInstance#hasField
-   */
-  virtual void getField(const std::string& fieldname, wchar_t*** value,
-                        int32_t& length) const = 0;
-
   /**
    * Reads the named field and set its value in char* array type out param.
    * char** type is corresponding to java String[] type.

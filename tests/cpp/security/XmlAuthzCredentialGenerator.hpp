@@ -186,12 +186,13 @@ class XmlAuthzCredentialGenerator {
     (*m_prop)->insert("security-username", userName);
     (*m_prop)->insert("security-password", userName);
 
-    FWKINFO("inserted " << validity << " dummy security-username "
-                        << (*m_prop)->find("security-username")->asChar()
-                        << " password "
-                        << ((*m_prop)->find("security-password") != nullptr
-                                ? (*m_prop)->find("security-password")->asChar()
-                                : "not set"));
+    FWKINFO("inserted "
+            << validity << " dummy security-username "
+            << (*m_prop)->find("security-username")->value().c_str()
+            << " password "
+            << ((*m_prop)->find("security-password") != nullptr
+                    ? (*m_prop)->find("security-password")->value().c_str()
+                    : "not set"));
   }
 
   std::string getAllowedUser(ROLES role) {
@@ -241,9 +242,10 @@ class XmlAuthzCredentialGenerator {
     (*m_prop)->insert("security-password", userName.c_str());
 
     FWKINFO("inserted  ldap security-username "
-            << (*m_prop)->find("security-username")->asChar() << " password "
+            << (*m_prop)->find("security-username")->value().c_str()
+            << " password "
             << ((*m_prop)->find("security-password") != nullptr
-                    ? (*m_prop)->find("security-password")->asChar()
+                    ? (*m_prop)->find("security-password")->value().c_str()
                     : "not set"));
   }
 
@@ -253,9 +255,10 @@ class XmlAuthzCredentialGenerator {
     (*m_prop)->insert("security-keystorepass", "geode");
 
     FWKINFO("inserted  PKCS security-alias"
-            << (*m_prop)->find("security-alias")->asChar() << " password "
+            << (*m_prop)->find("security-alias")->value().c_str()
+            << " password "
             << ((*m_prop)->find("security-keystorepass") != nullptr
-                    ? (*m_prop)->find("security-keystorepass")->asChar()
+                    ? (*m_prop)->find("security-keystorepass")->value().c_str()
                     : "not set"));
   }
 

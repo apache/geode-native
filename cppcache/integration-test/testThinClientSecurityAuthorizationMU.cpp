@@ -153,11 +153,11 @@ void initClientAuth(char UserType) {
   char msgPasswd[100];
 
   sprintf(msgAlias, "PKCS alias is %s",
-          alias == nullptr ? "null" : alias->asChar());
+          alias == nullptr ? "null" : alias->value().c_str());
   sprintf(msgUname, "username is %s",
-          uname == nullptr ? "null" : uname->asChar());
+          uname == nullptr ? "null" : uname->value().c_str());
   sprintf(msgPasswd, "password is %s",
-          passwd == nullptr ? "null" : passwd->asChar());
+          passwd == nullptr ? "null" : passwd->value().c_str());
 
   LOG(msgAlias);
   LOG(msgUname);
@@ -391,7 +391,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
               ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
               LOGINFO("Done casting to uFEPtr");
               LOGINFO("Read expected uFEPtr exception %s ",
-                      uFEPtr->getMessage()->asChar());
+                      uFEPtr->getMessage()->value().c_str());
             }
           } catch (ClassCastException& ex) {
             std::string logmsg = "";
@@ -443,7 +443,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
             ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
             LOGINFO("Done casting to uFEPtr");
             LOGINFO("Read expected uFEPtr exception %s ",
-                    uFEPtr->getMessage()->asChar());
+                    uFEPtr->getMessage()->value().c_str());
           } catch (...) {
             FAIL(
                 "exFuncNameSendException casting to string for bool arguement "
@@ -610,7 +610,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       if (checkPtr != nullptr) {
         char buf[1024];
         sprintf(buf, "In net search, get returned %s for key %s",
-                checkPtr->asChar(), keys[2]);
+                checkPtr->value().c_str(), keys[2]);
         LOG(buf);
         FAIL("Should not get the value");
       } else {
@@ -942,7 +942,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
      if (checkPtr != nullptr) {
        char buf[1024];
        sprintf(buf, "In net search, get returned %s for key %s",
-               checkPtr->asChar(), keys[2]);
+               checkPtr->value().c_str(), keys[2]);
        LOG(buf);
      } else {
        LOG("checkPtr is nullptr");

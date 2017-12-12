@@ -49,7 +49,7 @@ int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
     LOGDEBUG(
         "Entered entry expiry task handler for tombstone of key [%s]: "
         "%lld,%lld,%d,%lld",
-        Utils::getCacheableKeyString(key)->asChar(), curr_time, creationTime,
+        Utils::nullSafeToString(key).c_str(), curr_time, creationTime,
         m_duration.count(), sec);
     if (sec >= 0) {
       DoTheExpirationAction(key);
@@ -59,7 +59,7 @@ int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
       LOGDEBUG(
           "Resetting expiry task %d secs later for key "
           "[%s]",
-          -sec / 1000 + 1, Utils::getCacheableKeyString(key)->asChar());
+          -sec / 1000 + 1, Utils::nullSafeToString(key).c_str());
       m_cacheImpl->getExpiryTaskManager().resetTask(
           static_cast<long>(m_entryPtr->getExpiryTaskId()),
           uint32_t(-sec / 1000 + 1));
@@ -69,7 +69,7 @@ int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
     // Ignore whatever exception comes
   }
   LOGDEBUG("Removing expiry task for key [%s]",
-           Utils::getCacheableKeyString(key)->asChar());
+           Utils::nullSafeToString(key).c_str());
   // we now delete the handler in GF_Timer_Heap_ImmediateReset_T
   // and always return success.
   m_cacheImpl->getExpiryTaskManager().resetTask(static_cast<long>(expiryTaskId),
@@ -87,6 +87,6 @@ inline void TombstoneExpiryHandler::DoTheExpirationAction(
   LOGDEBUG(
       "EntryExpiryHandler::DoTheExpirationAction LOCAL_DESTROY "
       "for region entry with key %s",
-      Utils::getCacheableKeyString(key)->asChar());
+      Utils::nullSafeToString(key).c_str());
   m_tombstoneList->removeEntryFromMapSegment(key);
 }

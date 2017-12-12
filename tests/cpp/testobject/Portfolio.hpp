@@ -92,7 +92,7 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
       return;
     }
     for (int i = 0; i < names->length(); i++) {
-      LOGINFO("names[%d]=%s", i, names->operator[](i)->asChar());
+      LOGINFO("names[%d]=%s", i, names->operator[](i)->value().c_str());
     }
   }
 

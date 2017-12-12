@@ -107,28 +107,30 @@ class CPPCACHE_EXPORT Utils {
   /**
    * The only operations that is well defined on the result is "asChar".
    */
-  inline static std::shared_ptr<CacheableString> getCacheableKeyString(
+  inline static std::string nullSafeToString(
       const std::shared_ptr<CacheableKey>& key) {
-    std::shared_ptr<CacheableString> result;
+    std::string result;
     if (key) {
-      result = CacheableString::create(key->toString().c_str());
+      result = key->toString();
     } else {
-      result = CacheableString::create("(null)");
+      result = "(null)";
     }
     return result;
   }
 
-  static std::shared_ptr<CacheableString> getCacheableString(
-      const std::shared_ptr<Cacheable>& val) {
-    if (val != nullptr) {
+  static std::string nullSafeToString(const std::shared_ptr<Cacheable>& val) {
+    std::string result;
+    if (val) {
       if (const auto key = std::dynamic_pointer_cast<CacheableKey>(val)) {
-        return getCacheableKeyString(key);
+        result = nullSafeToString(key);
       } else {
-        return CacheableString::create(val->toString().c_str());
+        return result = val->toString();
       }
+    } else {
+      result = "(null)";
     }
 
-    return CacheableString::create("(null)");
+    return result;
   }
 
   static int64_t startStatOpTime();
@@ -173,17 +175,17 @@ class CPPCACHE_EXPORT Utils {
    * Convert the byte array to a string as "%d %d ...".
    * <code>maxLength</code> as zero implies no limit.
    */
-  static std::shared_ptr<CacheableString> convertBytesToString(
-      const uint8_t* bytes, int32_t length, size_t maxLength = _GF_MSG_LIMIT);
+  static std::string convertBytesToString(const uint8_t* bytes, size_t length,
+                                          size_t maxLength = _GF_MSG_LIMIT);
 
   /**
    * Convert the byte array to a string as "%d %d ...".
    * <code>maxLength</code> as zero implies no limit.
    */
-  inline static std::shared_ptr<CacheableString> convertBytesToString(
-      const char* bytes, int32_t length, size_t maxLength = _GF_MSG_LIMIT) {
-    return convertBytesToString(reinterpret_cast<const uint8_t*>(bytes),
-                                length);
+  inline static std::string convertBytesToString(
+      const char* bytes, size_t length, size_t maxLength = _GF_MSG_LIMIT) {
+    return convertBytesToString(reinterpret_cast<const uint8_t*>(bytes), length,
+                                maxLength);
   }
 };
 

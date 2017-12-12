@@ -41,8 +41,9 @@ TestObject1::TestObject1(std::string& str, int32_t id) {
 }
 
 TestObject1::TestObject1(TestObject1& rhs) {
-  name = rhs.name == nullptr ? nullptr
-                             : CacheableString::create(rhs.name->asChar());
+  name = rhs.name == nullptr
+             ? nullptr
+             : CacheableString::create(rhs.name->value().c_str());
   identifier = rhs.identifier;
   arr = CacheableBytes::create(rhs.arr->value(), rhs.arr->length());
 }

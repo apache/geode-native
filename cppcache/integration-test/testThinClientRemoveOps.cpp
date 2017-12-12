@@ -142,9 +142,9 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
       char buf[1024];
       sprintf(buf, "In verify loop, get returned %s for key %s",
-              checkPtr->asChar(), key);
+              checkPtr->value().c_str(), key);
       LOG(buf);
-      if (strcmp(checkPtr->asChar(), value) != 0) {
+      if (strcmp(checkPtr->value().c_str(), value) != 0) {
         testValueCnt++;
       } else {
         break;
@@ -322,7 +322,7 @@ void doGetAgain(const char* name, const char* key, const char* value) {
     LOG("checkPtr is not null");
     char buf[1024];
     sprintf(buf, "In doGetAgain, get returned %s for key %s",
-            checkPtr->asChar(), key);
+            checkPtr->value().c_str(), key);
     LOG(buf);
   } else {
     LOG("checkPtr is nullptr");
@@ -361,7 +361,7 @@ void doNetsearch(const char* name, const char* key, const char* value) {
     LOG("checkPtr is not null");
     char buf[1024];
     sprintf(buf, "In net search, get returned %s for key %s",
-            checkPtr->asChar(), key);
+            checkPtr->value().c_str(), key);
     LOG(buf);
   } else {
     LOG("checkPtr is nullptr");
@@ -1196,7 +1196,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
     regPtr0->localCreate(intKey, strVal);
     auto vString =
         std::dynamic_pointer_cast<CacheableString>(regPtr0->get(intKey));
-    ASSERT(strcmp(vString->asChar(), strVal) == 0,
+    ASSERT(strcmp(vString->value().c_str(), strVal) == 0,
            "Int Key and String Value Mismatch");
 
     int key1 = 1;
@@ -1230,14 +1230,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
     regPtr0->localCreate(CacheableInt64::create(longKey), strVal);
     auto vStr = std::dynamic_pointer_cast<CacheableString>(
         regPtr0->get(CacheableInt64::create(longKey)));
-    ASSERT(strcmp(vStr->asChar(), strVal) == 0,
+    ASSERT(strcmp(vStr->value().c_str(), strVal) == 0,
            "Long Key and String Value Mismatch");
 
     strKey = "StringKey1";
     strVal = "StringKeyStringValue";
     regPtr0->localCreate(strKey, strVal);
     auto v = std::dynamic_pointer_cast<CacheableString>(regPtr0->get(strKey));
-    ASSERT(strcmp(v->asChar(), strVal) == 0,
+    ASSERT(strcmp(v->value().c_str(), strVal) == 0,
            "String Key and String Value Mismatch");
 
     int i = 1234;
@@ -1252,7 +1252,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
                          CacheableString::create("abced"));
     auto resultString = std::dynamic_pointer_cast<CacheableString>(
         regPtr0->get(CacheableInt32::create(12345)));
-    ASSERT(strcmp(resultString->asChar(), "abced") == 0,
+    ASSERT(strcmp(resultString->value().c_str(), "abced") == 0,
            "localcreate new with entry cacheableInt key and cacheablestring "
            "value Fail");
 
@@ -1260,7 +1260,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
                          CacheableString::create("Y"));
     auto resultStringY = std::dynamic_pointer_cast<CacheableString>(
         regPtr0->get(CacheableString::create("X")));
-    ASSERT(strcmp(resultStringY->asChar(), "Y") == 0,
+    ASSERT(strcmp(resultStringY->value().c_str(), "Y") == 0,
            "localcreate new with entry cacheablestring key and cacheablestring "
            "value");
 

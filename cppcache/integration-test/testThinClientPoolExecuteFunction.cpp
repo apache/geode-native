@@ -64,16 +64,18 @@ char* FETimeOut = (char*)"FunctionExecutionTimeOut";
     sprintf(buf, "VALUE--%d", j);                                              \
     if (strcmp(buf, std::dynamic_pointer_cast<CacheableString>(                \
                         resultList->operator[](i))                             \
-                        ->asChar()) == 0) {                                    \
+                        ->value()                                              \
+                        .c_str()) == 0) {                                      \
       LOGINFO(                                                                 \
           "buf = %s "                                                          \
           "std::dynamic_pointer_cast<CacheableString>(resultList->operator[](" \
-          "i))->asChar() "                                                     \
+          "i))->value().c_str() "                                              \
           "= %s ",                                                             \
           buf,                                                                 \
           std::dynamic_pointer_cast<CacheableString>(                          \
               resultList->operator[](i))                                       \
-              ->asChar());                                                     \
+              ->value()                                                        \
+              .c_str());                                                       \
       found = true;                                                            \
       break;                                                                   \
     }                                                                          \
@@ -87,32 +89,34 @@ char* FETimeOut = (char*)"FunctionExecutionTimeOut";
     sprintf(buf, "KEY--%d", j);                                                \
     if (strcmp(buf, std::dynamic_pointer_cast<CacheableString>(                \
                         resultList->operator[](i))                             \
-                        ->asChar()) == 0) {                                    \
+                        ->value()                                              \
+                        .c_str()) == 0) {                                      \
       LOGINFO(                                                                 \
           "buf = %s "                                                          \
           "std::dynamic_pointer_cast<CacheableString>(resultList->operator[](" \
-          "i))->asChar() "                                                     \
+          "i))->value().c_str() "                                              \
           "= %s ",                                                             \
           buf,                                                                 \
           std::dynamic_pointer_cast<CacheableString>(                          \
               resultList->operator[](i))                                       \
-              ->asChar());                                                     \
+              ->value()                                                        \
+              .c_str());                                                       \
       found = true;                                                            \
       break;                                                                   \
     }                                                                          \
   }                                                                            \
   ASSERT(found, "this returned KEY is invalid");
 
-#define verifyPutResults()                   \
-  bool found = false;                        \
-  for (int j = 0; j < 34; j++) {             \
-    if (j % 2 == 0) continue;                \
-    sprintf(buf, "KEY--%d", j);              \
-    if (strcmp(buf, value->asChar()) == 0) { \
-      found = true;                          \
-      break;                                 \
-    }                                        \
-  }                                          \
+#define verifyPutResults()                          \
+  bool found = false;                               \
+  for (int j = 0; j < 34; j++) {                    \
+    if (j % 2 == 0) continue;                       \
+    sprintf(buf, "KEY--%d", j);                     \
+    if (strcmp(buf, value->value().c_str()) == 0) { \
+      found = true;                                 \
+      break;                                        \
+    }                                               \
+  }                                                 \
   ASSERT(found, "this returned value is invalid");
 
 class MyResultCollector : public DefaultResultCollector {
@@ -171,7 +175,7 @@ bool validateResultTypeAndAllowUserFunctionExecutionException(
             std::dynamic_pointer_cast<UserFunctionExecutionException>(result)) {
       LOGINFO("Done casting to uFEPtr");
       LOGINFO("Read expected uFEPtr exception %s ",
-              uFEPtr->getMessage()->asChar());
+              uFEPtr->getMessage()->value().c_str());
       return true;
     } else {
       LOGINFO("Unexpected result type %s for index %d.",
@@ -188,7 +192,7 @@ bool validateResultTypeIsUserFunctionExecutionException(
           std::dynamic_pointer_cast<UserFunctionExecutionException>(result)) {
     LOGINFO("Done casting to uFEPtr");
     LOGINFO("Read expected uFEPtr exception %s ",
-            uFEPtr->getMessage()->asChar());
+            uFEPtr->getMessage()->value().c_str());
     return true;
   } else {
     LOGINFO("Unexpected result type %s for index %d.",
@@ -293,7 +297,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         if (auto csp = std::dynamic_pointer_cast<CacheableString>(
                 executeFunctionResult->operator[](0))) {
           sprintf(buf, "echo String : cast successful, echoed string= %s",
-                  csp->asChar());
+                  csp->value().c_str());
           LOG(buf);
         } else {
           FAIL("echo String : wrong argument type");
@@ -318,7 +322,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         LOG(buf);
         const char* str = std::dynamic_pointer_cast<CacheableString>(
                               executeFunctionResult->operator[](0))
-                              ->asChar();
+                              ->value()
+                              .c_str();
         LOG(str);
         ASSERT(strcmp("echoString", str) == 0, "echoString is not eched back");
       }
@@ -370,7 +375,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
             sprintf(buf, "Region get: result[%d]=%s", i,
                     std::dynamic_pointer_cast<CacheableString>(
                         resultList->operator[](i))
-                        ->asChar());
+                        ->value()
+                        .c_str());
             LOG(buf);
             verifyGetResults()
           } else {
@@ -420,7 +426,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
           sprintf(buf, "Region get new collector: result[%d]=%s", i,
                   std::dynamic_pointer_cast<CacheableString>(
                       resultList->operator[](i))
-                      ->asChar());
+                      ->value()
+                      .c_str());
           LOG(buf);
           verifyGetResults()
         }
@@ -436,7 +443,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
        auto key = CacheableKey::create(buf);
         auto value =
             std::dynamic_pointer_cast<CacheableString>(regPtr0->get(key));
-        sprintf(buf, "Region put: result[%d]=%s", i, value->asChar());
+        sprintf(buf, "Region put: result[%d]=%s", i, value->value().c_str());
         LOG(buf);
         verifyPutResults()
       }
@@ -476,7 +483,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
           sprintf(buf, "get result[%d]=%s", i,
                   std::dynamic_pointer_cast<CacheableString>(
                       resultList->operator[](i))
-                      ->asChar());
+                      ->value()
+                      .c_str());
           LOGINFO(buf);
           verifyGetKeyResults()
         }
@@ -648,7 +656,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
           sprintf(buf, "get result[%d]=%s", i,
                   std::dynamic_pointer_cast<CacheableString>(
                       resultList->operator[](i))
-                      ->asChar());
+                      ->value()
+                      .c_str());
           LOG(buf);
           verifyGetResults()
         }
@@ -663,7 +672,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         auto key = CacheableKey::create(buf);
         auto value =
             std::dynamic_pointer_cast<CacheableString>(regPtr0->get(key));
-        sprintf(buf, "put: result[%d]=%s", i, value->asChar());
+        sprintf(buf, "put: result[%d]=%s", i, value->value().c_str());
         LOG(buf);
         verifyPutResults()
       }
@@ -866,7 +875,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
           sprintf(buf, "get result[%zd]=%s", i,
                   std::dynamic_pointer_cast<CacheableString>(
                       resultList->operator[](i))
-                      ->asChar());
+                      ->value()
+                      .c_str());
           LOG(buf);
           verifyGetResults()
         }
@@ -882,7 +892,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         auto key = CacheableKey::create(buf);
         auto value =
             std::dynamic_pointer_cast<CacheableString>(regPtr0->get(key));
-        sprintf(buf, "put: result[%d]=%s", i, value->asChar());
+        sprintf(buf, "put: result[%d]=%s", i, value->value().c_str());
         LOG(buf);
         verifyPutResults()
       }

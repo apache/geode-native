@@ -71,9 +71,7 @@ class BucketServerLocation : public ServerLocation {
     if (size > 0) {
       ptrArr = new std::shared_ptr<CacheableString>[size];
       for (int i = 0; i < size; i++) {
-        ptrArr[i] = CacheableString::create(
-            serverGroups[i].c_str(),
-            static_cast<int32_t>(serverGroups[i].length()));
+        ptrArr[i] = CacheableString::create(serverGroups[i]);
       }
     }
     if (size > 0) {
@@ -102,7 +100,7 @@ class BucketServerLocation : public ServerLocation {
     output.write(static_cast<int8_t>(m_numServerGroups));
     if (m_numServerGroups > 0) {
       for (int i = 0; i < m_numServerGroups; i++) {
-        output.writeNativeString((*m_serverGroups)[i]->asChar());
+        output.writeObject((*m_serverGroups)[i]);
       }
     }
   }

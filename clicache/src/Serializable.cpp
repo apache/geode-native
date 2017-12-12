@@ -1364,10 +1364,8 @@ namespace Apache
       {
         std::shared_ptr<native::CacheableString> cStr;
         size_t len = 0;
-        if (value != nullptr) {
-          len = value->Length;
-          pin_ptr<const wchar_t> pin_value = PtrToStringChars(value);
-          cStr = native::CacheableString::create(pin_value, Convert::ToInt32(len));
+        if (value) {
+          cStr = native::CacheableString::create(marshal_as<std::string>(value));
         }
         else {
           cStr.reset(static_cast<native::CacheableString *>(

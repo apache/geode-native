@@ -1087,8 +1087,7 @@ GfErrType ThinClientRegion::destroyNoThrow_remote(
         err = GF_CACHE_ENTRY_NOT_FOUND;
       } else {
         LOGDEBUG("Remote key [%s] is destroyed successfully in region %s",
-                 Utils::getCacheableKeyString(keyPtr)->asChar(),
-                 m_fullPath.c_str());
+                 Utils::nullSafeToString(keyPtr).c_str(), m_fullPath.c_str());
       }
       versionTag = reply.getVersionTag();
       break;
@@ -1132,8 +1131,7 @@ GfErrType ThinClientRegion::removeNoThrow_remote(
         err = GF_ENOENT;
       } else {
         LOGDEBUG("Remote key [%s] is removed successfully in region %s",
-                 Utils::getCacheableKeyString(keyPtr)->asChar(),
-                 m_fullPath.c_str());
+                 Utils::nullSafeToString(keyPtr).c_str(), m_fullPath.c_str());
       }
       versionTag = reply.getVersionTag();
       break;
@@ -1176,8 +1174,7 @@ GfErrType ThinClientRegion::removeNoThrowEX_remote(
         err = GF_ENOENT;
       } else {
         LOGDEBUG("Remote key [%s] is removed successfully in region %s",
-                 Utils::getCacheableKeyString(keyPtr)->asChar(),
-                 m_fullPath.c_str());
+                 Utils::nullSafeToString(keyPtr).c_str(), m_fullPath.c_str());
       }
       break;
     }
@@ -2922,7 +2919,7 @@ void ThinClientRegion::registerInterestGetValues(
   // log any exceptions here
   for (const auto& iter : *exceptions) {
     LOGWARN("%s Exception for key %s:: %s: %s", method,
-            Utils::getCacheableKeyString(iter.first)->asChar(),
+            Utils::nullSafeToString(iter.first).c_str(),
             iter.second->getName().c_str(), iter.second->what());
   }
 }
@@ -3417,7 +3414,7 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
     if (input.read() == 2 /* for exception*/) {
       input.advanceCursor(input.readArrayLen());  // skipLen
       auto exMsgPtr = input.readNativeString();
-      throw IllegalStateException(exMsgPtr->asChar());
+      throw IllegalStateException(exMsgPtr->value().c_str());
     } else {
       if (isResultSet) {
         std::shared_ptr<Cacheable> value;

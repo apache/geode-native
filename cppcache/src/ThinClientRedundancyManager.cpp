@@ -88,9 +88,9 @@ std::list<ServerLocation> ThinClientRedundancyManager::selectServers(
       if (m_server >= m_servers->length()) {
         m_server = 0;
       }
-      ServerLocation location(
-          Utils::convertHostToCanonicalForm((*m_servers)[m_server++]->asChar())
-              .c_str());
+      ServerLocation location(Utils::convertHostToCanonicalForm(
+                                  (*m_servers)[m_server++]->value().c_str())
+                                  .c_str());
       if (exclEndPts.find(location) != exclEndPts.end()) {
         // exclude this one
         continue;
@@ -674,7 +674,7 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
     if (m_locators->length() > 0) {
       for (int item = 0; item < m_locators->length(); item++) {
         LOGDEBUG("ThinClientRedundancyManager::initialize: adding locator %s",
-                 (*m_locators)[item]->asChar());
+                 (*m_locators)[item]->value().c_str());
       }
     } else if (m_servers->length() > 0) {
       RandGen randgen;

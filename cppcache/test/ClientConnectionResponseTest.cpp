@@ -39,7 +39,7 @@ TEST(ClientConnectionResponseTest, testReadServerFound) {
 
   // Put it into a datainput so it can be read.
   DataInputInternal dataInput(dataOutputInternal.getBuffer(),
-                              dataOutputInternal.getBufferLength(), nullptr);
+                              dataOutputInternal.getBufferLength());
 
   ClientConnectionResponse clientConnectionResponse;
   clientConnectionResponse.fromData(dataInput);

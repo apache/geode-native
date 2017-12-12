@@ -85,16 +85,16 @@ void initClientAuth(char credentialsType) {
       LOG(" in initclientAuth0.00");
       credentialGeneratorHandler->getValidCredentials(userCreds);
       // config->insert("security-password" ,
-      // config->find("security-username")->asChar() );
+      // config->find("security-username")->value().c_str() );
       // printf("Username is %s and Password is %s
-      // ",userCreds->find("security-username")->asChar(),userCreds->find("security-password")->asChar());
+      // ",userCreds->find("security-username")->value().c_str(),userCreds->find("security-password")->value().c_str());
       break;
     case 'I':
       LOG(" in initclientAuth0.0");
       credentialGeneratorHandler->getInvalidCredentials(userCreds);
       // config->insert("security-password" , "junk");
       //   printf("Username is %s and Password is %s
-      //   ",userCreds->find("security-username")->asChar(),userCreds->find("security-password")->asChar());
+      //   ",userCreds->find("security-username")->value().c_str(),userCreds->find("security-password")->value().c_str());
       break;
     case 'N':
     default:
@@ -325,11 +325,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFive)
       LOG("before get");
       auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
           virtualRegion->get(keyPtr));
-      if (checkPtr != nullptr && !strcmp(nvals[0], checkPtr->asChar())) {
+      if (checkPtr != nullptr && !strcmp(nvals[0], checkPtr->value().c_str())) {
         LOG("checkPtr is not null");
         char buf[1024];
         sprintf(buf, "In net search, get returned %s for key %s",
-                checkPtr->asChar(), keys[0]);
+                checkPtr->value().c_str(), keys[0]);
         LOG(buf);
       } else {
         LOG("checkPtr is nullptr");
@@ -441,13 +441,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
          virtualRegion->get("TxKey"));
      ASSERT(checkPtr != nullptr, "Value not found.");
-     LOGINFO("checkPtr->asChar() = %s ", checkPtr->asChar());
-     ASSERT(strcmp("TxValue", checkPtr->asChar()) == 0, "Value not correct.");
-     if (checkPtr != nullptr && !strcmp("TxValue", checkPtr->asChar())) {
+     LOGINFO("checkPtr->value().c_str() = %s ", checkPtr->value().c_str());
+     ASSERT(strcmp("TxValue", checkPtr->value().c_str()) == 0,
+            "Value not correct.");
+     if (checkPtr != nullptr && !strcmp("TxValue", checkPtr->value().c_str())) {
        LOG("checkPtr is not null");
        char buf[1024];
        sprintf(buf, "In net search, get returned %s for key %s",
-               checkPtr->asChar(), "TxKey");
+               checkPtr->value().c_str(), "TxKey");
        LOG(buf);
      } else {
        LOG("checkPtr is nullptr");
@@ -463,12 +464,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       checkPtr = std::dynamic_pointer_cast<CacheableString>(
           virtualRegion->get("TxKey"));
       ASSERT(checkPtr != nullptr, "Value not found.");
-      ASSERT(strcmp("TxValue", checkPtr->asChar()) == 0, "Value not correct.");
-      if (checkPtr != nullptr && !strcmp("TxValue", checkPtr->asChar())) {
+      ASSERT(strcmp("TxValue", checkPtr->value().c_str()) == 0,
+             "Value not correct.");
+      if (checkPtr != nullptr &&
+          !strcmp("TxValue", checkPtr->value().c_str())) {
         LOG("checkPtr is not null");
         char buf[1024];
         sprintf(buf, "In net search, get returned %s for key %s",
-                checkPtr->asChar(), "TxKey");
+                checkPtr->value().c_str(), "TxKey");
         LOG(buf);
       } else {
         LOG("checkPtr is nullptr");

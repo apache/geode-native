@@ -23,7 +23,6 @@
 #include "geode_globals.hpp"
 #include "CacheableKey.hpp"
 #include "GeodeTypeIds.hpp"
-#include "ExceptionTypes.hpp"
 
 /** @file
  */
@@ -32,20 +31,14 @@ namespace apache {
 namespace geode {
 namespace client {
 
-#define GF_STRING (int8_t) GeodeTypeIds::CacheableASCIIString
-#define GF_STRING_HUGE (int8_t) GeodeTypeIds::CacheableASCIIStringHuge
-#define GF_WIDESTRING (int8_t) GeodeTypeIds::CacheableString
-#define GF_WIDESTRING_HUGE (int8_t) GeodeTypeIds::CacheableStringHuge
-
 /**
  * Implement a immutable C string wrapper that can serve as a distributable
  * key object for caching as well as being a string value.
  */
 class CPPCACHE_EXPORT CacheableString : public CacheableKey {
  protected:
-  void* m_str;
+  std::string m_str;
   int8_t m_type;
-  uint32_t m_len;
   mutable int m_hashcode;
 
   FRIEND_STD_SHARED_PTR(CacheableString)
@@ -105,130 +98,59 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
   /** return the hashcode for this key. */
   virtual int32_t hashcode() const override;
 
+  inline static std::shared_ptr<CacheableString> create(
+      const std::string& value) {
+    return std::make_shared<CacheableString>(value);
+  }
+
+  inline static std::shared_ptr<CacheableString> create(std::string&& value) {
+    return std::make_shared<CacheableString>(std::move(value));
+  }
+
+  static std::shared_ptr<CacheableString> create(const std::u16string& value);
+
+  static std::shared_ptr<CacheableString> create(std::u16string&& value);
+
+  static std::shared_ptr<CacheableString> create(const std::u32string& value);
+
+  static std::shared_ptr<CacheableString> create(std::u32string&& value);
+
+  inline static std::shared_ptr<CacheableString> create(
+      const std::wstring& value) {
+    return std::make_shared<CacheableString>(
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+            .to_bytes(value));
+  }
+
+  inline static std::shared_ptr<CacheableString> create(std::wstring&& value) {
+    return std::make_shared<CacheableString>(
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+            .to_bytes(std::move(value)));
+  }
+
   /**
    * Factory method for creating an instance of CacheableString from
    * a null terminated C string optionally giving the length.
    *
    * This should be used only for ASCII strings.
    */
-  static std::shared_ptr<CacheableString> create(const char* value,
-                                                 int32_t len = 0) {
-    if (nullptr == value) {
-      return nullptr;
+  template <class _Char>
+  inline static std::shared_ptr<CacheableString> create(const _Char* value,
+                                                        size_t len = 0) {
+    std::shared_ptr<CacheableString> str;
+
+    if (value) {
+      return create(len > 0 ? std::basic_string<_Char>(value, len)
+                            : std::basic_string<_Char>(value));
     }
 
-    auto str = std::make_shared<CacheableString>();
-    str->initString(value, len);
     return str;
-  }
-
-  /**
-   * Factory method for creating an instance of CacheableString from
-   * a C string of given length by taking ownership of the string without
-   * making a copy. The string should have been allocated using
-   * the standard C++ new operator.
-   *
-   * This should be used only for ASCII strings.
-   *
-   * CAUTION: use this only when you really know what you are doing.
-   */
-  static std::shared_ptr<CacheableString> createNoCopy(char* value,
-                                                       int32_t len = 0) {
-    if (nullptr == value) {
-      return nullptr;
-    }
-
-    auto str = std::make_shared<CacheableString>();
-    str->initStringNoCopy(value, len);
-    return str;
-  }
-
-  /**
-   * Factory method for creating an instance of CacheableString from a
-   * wide-character null terminated C string optionally giving the length.
-   *
-   * This should be used for non-ASCII strings.
-   */
-  static std::shared_ptr<CacheableString> create(const wchar_t* value,
-                                                 int32_t len = 0) {
-    if (nullptr == value) {
-      return nullptr;
-    }
-
-    auto str = std::make_shared<CacheableString>();
-    str->initString(value, len);
-    return str;
-  }
-
-  /**
-   * Factory method for creating an instance of CacheableString from a
-   * wide-character C string of given length by taking ownership of the
-   * string without making a copy. The string should have been allocated
-   * using the standard C++ new operator.
-   *
-   * This should be used for non-ASCII strings.
-   *
-   * CAUTION: use this only when you really know what you are doing.
-   */
-  static std::shared_ptr<CacheableString> createNoCopy(wchar_t* value,
-                                                       int32_t len = 0) {
-    if (nullptr == value) {
-      return nullptr;
-    }
-
-    auto str = std::make_shared<CacheableString>();
-    str->initStringNoCopy(value, len);
-    return str;
-  }
-
-  /** Returns true if the underlying string is a normal C string. */
-  inline bool isCString() const {
-    return (m_type == GF_STRING || m_type == GF_STRING_HUGE);
-  }
-
-  /** Returns true if the underlying string is a wide-character string. */
-  inline bool isWideString() const {
-    return (m_type == GF_WIDESTRING || m_type == GF_WIDESTRING_HUGE);
-  }
-
-  /**
-   * Return the string that backs this CacheableString as a char *. This
-   * shall throw an exception if the underlying string is a wchar_t* --
-   * the caller should use <code>typeId</code> to determine the actual type,
-   * or <code>isWideString</code> to find whether this is a wide-character
-   * string.
-   *
-   * @throws IllegalStateException if the underlying string is a wchar_t *
-   */
-  const char* asChar() const {
-    if (isWideString()) {
-      throw IllegalStateException(
-          "CacheableString::asChar: the string is a "
-          "wide character string; use asWChar() to obtain it.");
-    }
-    return reinterpret_cast<const char*>(m_str);
-  }
-
-  /**
-   * Return the string that backs this CacheableString as a wchar_t *. This
-   * shall throw an exception if the underlying string is a char* --
-   * the caller should use <code>typeId</code> to determine the actual type,
-   * or <code>isWideString</code> to find whether this is indeed a
-   * wide-character string.
-   *
-   * @throws IllegalStateException if the underlying string is a char *
-   */
-  const wchar_t* asWChar() const {
-    if (isCString()) {
-      throw IllegalStateException(
-          "CacheableString::asWChar: the string is "
-          "not a wide character string; use asChar() to obtain it.");
-    }
-    return reinterpret_cast<const wchar_t*>(m_str);
   }
 
   /** Return the length of the contained string. */
-  inline uint32_t length() const { return m_len; }
+  inline std::string::size_type length() const { return m_str.length(); }
+
+  inline const std::string& value() const { return m_str; }
 
   virtual std::string toString() const override;
 
@@ -238,34 +160,49 @@ class CPPCACHE_EXPORT CacheableString : public CacheableKey {
   virtual uint32_t objectSize() const override;
 
  protected:
-  /** Private method to populate the <code>CacheableString</code>. */
-  void copyString(const char* value, int32_t len);
-  /** Private method to populate the <code>CacheableString</code>. */
-  void copyString(const wchar_t* value, int32_t len);
-  /** initialize the string, given a value and length. */
-  void initString(const char* value, int32_t len);
   /**
-   * Initialize the string without making a copy, given a C string
-   * and length.
+   * initialize the string, given a value and length. Assumes UTF-8.
    */
-  void initStringNoCopy(char* value, int32_t len);
-  /** initialize the string, given a wide-char string and length. */
+  void initString(const char* value, int32_t len);
+
+  void initString(std::string&& value);
+
+  /**
+   * initialize the string, given a wide-char string and length. Assumes
+   * UTF-16.
+   */
   void initString(const wchar_t* value, int32_t len);
+
   /**
    * Initialize the string without making a copy, given a wide-char string
-   * and length.
+   * and length. Assumes UTF-16.
    */
   void initStringNoCopy(wchar_t* value, int32_t len);
-  /** Private method to get ASCII string for wide-string if possible. */
-  char* getASCIIString(const wchar_t* value, int32_t& len, int32_t& encodedLen);
+
   /** Default constructor. */
-  inline CacheableString(int8_t type = GF_STRING)
-      : m_str(nullptr), m_type(type), m_len(0), m_hashcode(0) {}
+  inline CacheableString(int8_t type = GeodeTypeIds::CacheableASCIIString)
+      : m_str(), m_type(type), m_hashcode(0) {}
+
+  inline CacheableString(const std::string& value)
+      : CacheableString(std::string(value)) {}
+
+  inline CacheableString(std::string&& value)
+      : m_str(std::move(value)), m_hashcode(0) {
+    bool ascii = isAscii(m_str);
+
+    m_type = m_str.length() > std::numeric_limits<uint16_t>::max()
+                 ? ascii ? GeodeTypeIds::CacheableASCIIStringHuge
+                         : GeodeTypeIds::CacheableStringHuge
+                 : ascii ? GeodeTypeIds::CacheableASCIIString
+                         : GeodeTypeIds::CacheableString;
+  }
 
  private:
   // never implemented.
   void operator=(const CacheableString& other) = delete;
   CacheableString(const CacheableString& other) = delete;
+
+  static bool isAscii(const std::string& str);
 };
 
 /** overload of apache::geode::client::createKeyArr to pass char* */
@@ -273,18 +210,16 @@ inline std::shared_ptr<CacheableKey> createKeyArr(const char* value) {
   return CacheableString::create(value);
 }
 
-/** overload of apache::geode::client::createKeyArr to pass wchar_t* */
-inline std::shared_ptr<CacheableKey> createKeyArr(const wchar_t* value) {
+inline std::shared_ptr<CacheableKey> createKeyArr(const std::string& value) {
   return CacheableString::create(value);
+}
+
+inline std::shared_ptr<CacheableKey> createKeyArr(std::string&& value) {
+  return CacheableString::create(std::move(value));
 }
 
 /** overload of apache::geode::client::createValueArr to pass char* */
 inline std::shared_ptr<Cacheable> createValueArr(const char* value) {
-  return CacheableString::create(value);
-}
-
-/** overload of apache::geode::client::createValueArr to pass wchar_t* */
-inline std::shared_ptr<Cacheable> createValueArr(const wchar_t* value) {
   return CacheableString::create(value);
 }
 

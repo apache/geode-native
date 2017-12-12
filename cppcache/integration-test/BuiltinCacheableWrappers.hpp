@@ -356,9 +356,9 @@ class CacheableFileNameWrapper : public CacheableWrapper {
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
     const CacheableFileName* obj =
         dynamic_cast<const CacheableFileName*>(object.get());
-    return (obj != nullptr
-                ? CacheableHelper::crc32((uint8_t*)obj->asChar(), obj->length())
-                : 0);
+    return (obj != nullptr ? CacheableHelper::crc32(
+                                 (uint8_t*)obj->value().c_str(), obj->length())
+                           : 0);
   }
 };
 
@@ -515,9 +515,9 @@ class CacheableStringWrapper : public CacheableWrapper {
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
     const CacheableString* obj =
         dynamic_cast<const CacheableString*>(object.get());
-    return (obj != nullptr
-                ? CacheableHelper::crc32((uint8_t*)obj->asChar(), obj->length())
-                : 0);
+    return (obj != nullptr ? CacheableHelper::crc32(
+                                 (uint8_t*)obj->value().c_str(), obj->length())
+                           : 0);
   }
 };
 
@@ -561,7 +561,8 @@ class CacheableHugeStringWrapper : public CacheableWrapper {
     const CacheableString* obj =
         dynamic_cast<const CacheableString*>(object.get());
     ASSERT(obj != nullptr, "getCheckSum: null object.");
-    return CacheableHelper::crc32((uint8_t*)obj->asChar(), obj->length());
+    return CacheableHelper::crc32((uint8_t*)obj->value().c_str(),
+                                  obj->length());
   }
 };
 
@@ -588,8 +589,7 @@ class CacheableHugeUnicodeStringWrapper : public CacheableWrapper {
     wchar_t indexStr[15];
     swprintf(indexStr, 14, L"%10d", keyIndex);
     baseStr.append(indexStr);
-    m_cacheableObject = CacheableString::create(
-        baseStr.data(), static_cast<int32_t>(baseStr.length()));
+    m_cacheableObject = CacheableString::create(baseStr);
   }
 
   virtual void initRandomValue(int32_t maxSize) {
@@ -599,16 +599,15 @@ class CacheableHugeUnicodeStringWrapper : public CacheableWrapper {
     }
     std::wstring randStr;
     CacheableHelper::randomString(maxSize, randStr);
-    m_cacheableObject = CacheableString::create(
-        randStr.data(), static_cast<int32_t>(randStr.length()));
+    m_cacheableObject = CacheableString::create(randStr);
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
-    const CacheableString* obj =
-        dynamic_cast<const CacheableString*>(object.get());
+    auto&& obj = std::dynamic_pointer_cast<CacheableString>(object);
     ASSERT(obj != nullptr, "getCheckSum: null object.");
-    return CacheableHelper::crc32((uint8_t*)obj->asWChar(),
-                                  obj->length() * sizeof(wchar_t));
+    return CacheableHelper::crc32(
+        (uint8_t*)obj->value().c_str(),
+        obj->length() * sizeof(std::string::value_type));
   }
 };
 
@@ -635,24 +634,22 @@ class CacheableUnicodeStringWrapper : public CacheableWrapper {
     wchar_t indexStr[15];
     swprintf(indexStr, 14, L"%10d", keyIndex);
     baseStr.append(indexStr);
-    m_cacheableObject = CacheableString::create(
-        baseStr.data(), static_cast<int32_t>(baseStr.length()));
+    m_cacheableObject = CacheableString::create(baseStr);
   }
 
   virtual void initRandomValue(int32_t maxSize) {
     maxSize %= 21800;  // so that encoded length is within 64k
     std::wstring randStr;
     CacheableHelper::randomString(maxSize, randStr);
-    m_cacheableObject = CacheableString::create(
-        randStr.data(), static_cast<int32_t>(randStr.length()));
+    m_cacheableObject = CacheableString::create(randStr);
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
-    const CacheableString* obj =
-        dynamic_cast<const CacheableString*>(object.get());
+    auto&& obj = std::dynamic_pointer_cast<CacheableString>(object);
     ASSERT(obj != nullptr, "getCheckSum: null object.");
-    return CacheableHelper::crc32((uint8_t*)obj->asWChar(),
-                                  obj->length() * sizeof(wchar_t));
+    return CacheableHelper::crc32(
+        (uint8_t*)obj->value().c_str(),
+        obj->length() * sizeof(std::string::value_type));
   }
 };
 
@@ -1031,33 +1028,26 @@ class CacheableStringArrayWrapper : public CacheableWrapper {
       if (arrayIndex % 2 == 0) {
         std::string randStr;
         CacheableHelper::randomString(maxSize, randStr);
-        randArr[arrayIndex] = CacheableString::create(
-            randStr.data(), static_cast<int32_t>(randStr.length()));
+        randArr[arrayIndex] = CacheableString::create(randStr);
       } else {
         std::wstring randStr;
         CacheableHelper::randomString(maxSize, randStr);
-        randArr[arrayIndex] = CacheableString::create(
-            randStr.data(), static_cast<int32_t>(randStr.length()));
+        randArr[arrayIndex] = CacheableString::create(randStr);
       }
     }
     m_cacheableObject = CacheableStringArray::create(randArr, arraySize);
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
-    const CacheableStringArray* obj =
-        dynamic_cast<const CacheableStringArray*>(object.get());
+    auto&& obj = std::dynamic_pointer_cast<CacheableStringArray>(object);
     ASSERT(obj != nullptr, "getCheckSum: null object.");
     uint32_t checkSum = 0;
     std::shared_ptr<CacheableString> str;
     for (int32_t index = 0; index < obj->length(); index++) {
       str = obj->operator[](index);
-      if (str->isWideString()) {
-        checkSum ^= CacheableHelper::crc32((uint8_t*)str->asWChar(),
-                                           str->length() * sizeof(wchar_t));
-      } else {
-        checkSum ^=
-            CacheableHelper::crc32((uint8_t*)str->asChar(), str->length());
-      }
+      checkSum ^= CacheableHelper::crc32(
+          (uint8_t*)str->value().c_str(),
+          str->length() * sizeof(std::string::value_type));
     }
     return checkSum;
   }

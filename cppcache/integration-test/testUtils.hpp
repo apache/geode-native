@@ -112,7 +112,7 @@ class TestUtils {
     do {
       valPtr = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr));
       ASSERT(valPtr != nullptr, "value should not be null.");
-      val = atoi(valPtr->asChar());
+      val = atoi(valPtr->value().c_str());
       SLEEP(msleepTime);
       tries++;
     } while ((val != expected) && (tries < maxTry));
@@ -154,7 +154,7 @@ class TestUtils {
           std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr));
       sprintf(buf, "key[%u] = '%s', value[%u]='%s'\n", i,
               (keyPtr == nullptr) ? "nullptr KEY" : keyPtr->toString().c_str(),
-              i, (valPtr == nullptr) ? "NULL_VALUE" : valPtr->asChar());
+              i, (valPtr == nullptr) ? "NULL_VALUE" : valPtr->value().c_str());
       LOG(buf);
     }
   }
@@ -173,7 +173,7 @@ class TestUtils {
     for (size_t i = 0; i < len; i++) {
       auto value = std::dynamic_pointer_cast<CacheableString>(v[i]);
       sprintf(buf, "value[%zu] = '%s'\n", i,
-              (value == nullptr) ? "nullptr VALUE" : value->asChar());
+              (value == nullptr) ? "nullptr VALUE" : value->value().c_str());
       LOG(buf);
     }
   }

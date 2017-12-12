@@ -17,6 +17,8 @@
 
 #include <cstdio>
 #include <chrono>
+#include <sstream>
+#include <iomanip>
 
 #include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
@@ -163,26 +165,19 @@ char* Utils::copyString(const char* str) {
   }
   return resStr;
 }
-std::shared_ptr<CacheableString> Utils::convertBytesToString(
-    const uint8_t* bytes, int32_t length, size_t maxLength) {
+
+std::string Utils::convertBytesToString(const uint8_t* bytes, size_t length,
+                                        size_t maxLength) {
   if (bytes != nullptr) {
-    std::string str;
-    size_t totalBytes = 0;
-    char byteStr[20];
-    for (int32_t index = 0; index < length; ++index) {
-      int len = ACE_OS::snprintf(byteStr, 20, "%d ", bytes[index]);
-      totalBytes += len;
-      // no use going beyond maxLength since LOG* methods will truncate
-      // in any case
-      if (maxLength > 0 && totalBytes > maxLength) {
-        break;
-      }
-      str.append(byteStr, len);
+    length = std::min(length, maxLength);
+    std::stringstream ss;
+    ss << std::setfill('0') << std::hex;
+    for (int i(0); i < length; ++i) {
+      ss << std::setw(2) << (int)bytes[i];
     }
-    return CacheableString::create(str.data(),
-                                   static_cast<int32_t>(str.size()));
+    return ss.str();
   }
-  return CacheableString::create("");
+  return "";
 }
 
 int32_t Utils::logWideString(char* buf, size_t maxLen, const wchar_t* wStr) {

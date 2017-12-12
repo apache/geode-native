@@ -188,10 +188,12 @@ int testXmlCacheCreationWithOverflow() {
   if (pconfig != nullptr) {
     std::cout << " persistence property is not null" << std::endl;
     std::cout << " persistencedir = "
-         << pconfig->find("PersistenceDirectory")->asChar() << std::endl;
-    std::cout << " pagesize = " << pconfig->find("PageSize")->asChar() << std::endl;
-    std::cout << " maxpagecount = " << pconfig->find("MaxPageCount")->asChar()
-         << std::endl;
+              << pconfig->find("PersistenceDirectory")->value().c_str()
+              << std::endl;
+    std::cout << " pagesize = " << pconfig->find("PageSize")->value().c_str()
+              << std::endl;
+    std::cout << " maxpagecount = "
+              << pconfig->find("MaxPageCount")->value().c_str() << std::endl;
   }
   std::cout << "****Attributes of Root1 are correctly set****" << std::endl;
 
@@ -202,10 +204,12 @@ int testXmlCacheCreationWithOverflow() {
   if (pconfig2 != nullptr) {
     std::cout << " persistence property is not null for Root2" << std::endl;
     std::cout << " persistencedir2 = "
-         << pconfig2->find("PersistenceDirectory")->asChar() << std::endl;
-    std::cout << " pagesize2 = " << pconfig->find("PageSize")->asChar() << std::endl;
-    std::cout << " maxpagecount2 = " << pconfig->find("MaxPageCount")->asChar()
-         << std::endl;
+              << pconfig2->find("PersistenceDirectory")->value().c_str()
+              << std::endl;
+    std::cout << " pagesize2 = " << pconfig->find("PageSize")->value().c_str()
+              << std::endl;
+    std::cout << " maxpagecount2 = "
+              << pconfig->find("MaxPageCount")->value().c_str() << std::endl;
   }
   std::cout << "Destroy region" << std::endl;
   try {

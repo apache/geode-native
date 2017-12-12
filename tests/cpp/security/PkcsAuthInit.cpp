@@ -127,7 +127,7 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
 
   auto keyStoreptr = securityprops->find(KEYSTORE_FILE_PATH1);
 
-  const char* keyStorePath = keyStoreptr->asChar();
+  const char* keyStorePath = keyStoreptr->value().c_str();
 
   if (keyStorePath == NULL) {
     throw AuthenticationFailedException(
@@ -137,7 +137,7 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
 
   auto aliasptr = securityprops->find(KEYSTORE_ALIAS1);
 
-  const char* alias = aliasptr->asChar();
+  const char* alias = aliasptr->value().c_str();
 
   if (alias == NULL) {
     throw AuthenticationFailedException(
@@ -147,7 +147,7 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
 
   auto keyStorePassptr = securityprops->find(KEYSTORE_PASSWORD1);
 
-  const char* keyStorePass = keyStorePassptr->asChar();
+  const char* keyStorePass = keyStorePassptr->value().c_str();
 
   if (keyStorePass == NULL) {
     throw AuthenticationFailedException(

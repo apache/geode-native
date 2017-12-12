@@ -526,7 +526,7 @@ std::string FrameworkTest::poolAttributesToString(std::shared_ptr<Pool>& pool) {
       std::dynamic_pointer_cast<CacheableStringArray>(pool->getLocators());
   if (str != nullptr) {
     for (int32_t stri = 0; stri < str->length(); stri++) {
-      sString += str->operator[](stri)->asChar();
+      sString += str->operator[](stri)->value().c_str();
       sString += ",";
     }
   }
@@ -534,7 +534,7 @@ std::string FrameworkTest::poolAttributesToString(std::shared_ptr<Pool>& pool) {
   str = std::dynamic_pointer_cast<CacheableStringArray>(pool->getServers());
   if (str != nullptr) {
     for (int32_t stri = 0; stri < str->length(); stri++) {
-      sString += str->operator[](stri)->asChar();
+      sString += str->operator[](stri)->value().c_str();
       sString += ",";
     }
   }

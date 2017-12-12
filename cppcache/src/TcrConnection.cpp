@@ -290,10 +290,10 @@ bool TcrConnection::InitTcrConnection(
     } catch (const Exception& ex) {
       LOGWARN("TcrConnection: failed to acquire handle to authLoader: [%s] %s",
               ex.getName().c_str(), ex.what());
-      auto message = std::string("TcrConnection: failed to load authInit library: ")
-                     + ex.what();
-      throwException(
-          AuthenticationFailedException(message));
+      auto message =
+          std::string("TcrConnection: failed to load authInit library: ") +
+          ex.what();
+      throwException(AuthenticationFailedException(message));
     }
   }
 
@@ -334,7 +334,7 @@ bool TcrConnection::InitTcrConnection(
       if (requireServerAuth) {
         // Read Subject Name
         auto subjectName = readHandshakeString(connectTimeout);
-        LOGDEBUG("Got subject %s", subjectName->asChar());
+        LOGDEBUG("Got subject %s", subjectName->value().c_str());
         // read the server's signature bytes
         auto responseBytes = readHandshakeByteArray(connectTimeout);
         LOGDEBUG("Handshake: Got response size %d", responseBytes->length());
@@ -503,9 +503,9 @@ bool TcrConnection::InitTcrConnection(
       case UNSUCCESSFUL_SERVER_TO_CLIENT: {
         LOGERROR("Handshake rejected by server[%s]: %s",
                  m_endpointObj->name().c_str(), (char*)recvMessage->value());
-        auto message = std::string("TcrConnection::TcrConnection: ") +
-                                   "Handshake rejected by server: " +
-                                   (char*)recvMessage->value();
+        auto message =
+            std::string("TcrConnection::TcrConnection: ") +
+            "Handshake rejected by server: " + (char*)recvMessage->value();
         CacheServerException ex(message);
         GF_SAFE_DELETE_CON(m_conn);
         throw ex;
@@ -516,9 +516,10 @@ bool TcrConnection::InitTcrConnection(
             "%s",
             (*acceptanceCode)[0], m_endpointObj->name().c_str(),
             recvMessage->value());
-        auto message = std::string("TcrConnection::TcrConnection: Unknown error") +
-                                   " received from server in handshake: " +
-                                   (char*)recvMessage->value();
+        auto message =
+            std::string("TcrConnection::TcrConnection: Unknown error") +
+            " received from server in handshake: " +
+            (char*)recvMessage->value();
         MessageException ex(message);
         GF_SAFE_DELETE_CON(m_conn);
         throw ex;
@@ -801,7 +802,7 @@ void TcrConnection::send(std::chrono::microseconds& timeSpent,
 
   LOGDEBUG(
       "TcrConnection::send: [%p] sending request to endpoint %s; bytes: %s",
-      this, m_endpoint, Utils::convertBytesToString(buffer, len)->asChar());
+      this, m_endpoint, Utils::convertBytesToString(buffer, len).c_str());
 
   ConnErrType error = sendData(timeSpent, buffer, len, sendTimeoutSec);
 
@@ -880,7 +881,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
       "TcrConnection::readMessage: received header from endpoint %s; "
       "bytes: %s",
       m_endpoint,
-      Utils::convertBytesToString(msg_header, HEADER_LENGTH)->asChar());
+      Utils::convertBytesToString(msg_header, HEADER_LENGTH).c_str());
 
   auto input = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
       reinterpret_cast<uint8_t*>(msg_header), HEADER_LENGTH);
@@ -936,7 +937,8 @@ char* TcrConnection::readMessage(size_t* recvLen,
       "endpoint %s; bytes: %s",
       m_endpoint,
       Utils::convertBytesToString(fullMessage + HEADER_LENGTH, msgLen)
-          ->asChar());
+
+          .c_str());
 
   // This is the test case when msg type is GET_CLIENT_PR_METADATA and msgLen is
   // 0.
@@ -988,8 +990,7 @@ void TcrConnection::readMessageChunked(
   LOGDEBUG(
       "TcrConnection::readMessageChunked: received header from "
       "endpoint %s; bytes: %s",
-      m_endpoint,
-      Utils::convertBytesToString(msg_header, HDR_LEN_12)->asChar());
+      m_endpoint, Utils::convertBytesToString(msg_header, HDR_LEN_12).c_str());
 
   auto input = m_connectionManager->getCacheImpl()->getCache()->createDataInput(
       msg_header, HDR_LEN_12);
@@ -1053,7 +1054,8 @@ void TcrConnection::readMessageChunked(
         "from endpoint %s; bytes: %s",
         chunkNum, m_endpoint,
         Utils::convertBytesToString((msg_header + HDR_LEN_12), HDR_LEN)
-            ->asChar());
+
+            .c_str());
 
     auto input =
         m_connectionManager->getCacheImpl()->getCache()->createDataInput(
@@ -1085,7 +1087,7 @@ void TcrConnection::readMessageChunked(
         "TcrConnection::readMessageChunked: received chunk body %d "
         "from endpoint %s; bytes: %s",
         chunkNum, m_endpoint,
-        Utils::convertBytesToString(chunk_body, chunkLen)->asChar());
+        Utils::convertBytesToString(chunk_body, chunkLen).c_str());
     // Process the chunk; the actual processing is done by a separate thread
     // ThinClientBaseDM::m_chunkProcessor.
 
@@ -1203,7 +1205,7 @@ std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeByteArray(
 // read a byte array
 uint32_t TcrConnection::readHandshakeArraySize(
     std::chrono::microseconds connectTimeout) {
- auto codeBytes = readHandshakeData(1, connectTimeout);
+  auto codeBytes = readHandshakeData(1, connectTimeout);
   auto codeDI =
       m_connectionManager->getCacheImpl()->getCache()->createDataInput(
           codeBytes->value(), codeBytes->length());
@@ -1222,12 +1224,12 @@ uint32_t TcrConnection::readHandshakeArraySize(
         uint16_t val = lenDI->readInt16();
         tempLen = val;
       } else if (code == 0xFD) {
-       auto lenBytes = readHandshakeData(4, connectTimeout);
-       auto lenDI =
-           m_connectionManager->getCacheImpl()->getCache()->createDataInput(
-               lenBytes->value(), lenBytes->length());
-       uint32_t val = lenDI->readInt32();
-       tempLen = val;
+        auto lenBytes = readHandshakeData(4, connectTimeout);
+        auto lenDI =
+            m_connectionManager->getCacheImpl()->getCache()->createDataInput(
+                lenBytes->value(), lenBytes->length());
+        uint32_t val = lenDI->readInt32();
+        tempLen = val;
       } else {
         GF_SAFE_DELETE_CON(m_conn);
         throwException(IllegalStateException("unexpected array length code"));
@@ -1354,8 +1356,8 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
       return nullptr;
       break;
     }
-    case GF_STRING: {
-     auto lenBytes = readHandshakeData(2, connectTimeout);
+    case GeodeTypeIds::CacheableASCIIString: {
+      auto lenBytes = readHandshakeData(2, connectTimeout);
       auto lenDI =
           m_connectionManager->getCacheImpl()->getCache()->createDataInput(
               lenBytes->value(), lenBytes->length());
@@ -1377,21 +1379,18 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
     return nullptr;
   }
 
-  char* recvMessage;
-  GF_NEW(recvMessage, char[length + 1]);
-  recvMessage[length] = '\0';
+  auto recvMessage = std::unique_ptr<char>(new char[length + 1]);
+  recvMessage.get()[length] = '\0';
 
-  if ((error = receiveData(recvMessage, length, connectTimeout, false)) !=
+  if ((error = receiveData(recvMessage.get(), length, connectTimeout, false)) !=
       CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
-      GF_SAFE_DELETE_ARRAY(recvMessage);
       GF_SAFE_DELETE_CON(m_conn);
       LOGFINE("Timeout receiving string data");
       throwException(
           TimeoutException("TcrConnection::TcrConnection: "
                            "Timeout in handshake reading string bytes"));
     } else {
-      GF_SAFE_DELETE_ARRAY(recvMessage);
       GF_SAFE_DELETE_CON(m_conn);
       LOGFINE("IO error receiving string data");
       throwException(
@@ -1401,9 +1400,8 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
     // not expected to be reached
     return nullptr;
   } else {
-    LOGDEBUG(" Received string data [%s]", recvMessage);
-   auto retval =
-        CacheableString::createNoCopy(recvMessage, length);
+    LOGDEBUG(" Received string data [%s]", recvMessage.get());
+    auto retval = CacheableString::create(recvMessage.get(), length);
     return retval;
   }
 }

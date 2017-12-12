@@ -46,9 +46,9 @@ void verifyEntry(const char *value) {
   if (valuePtr == nullptr) {
     FAIL("Value was null.");
   }
-  sprintf(buf1, "value for key-1 is %s", valuePtr->asChar());
+  sprintf(buf1, "value for key-1 is %s", valuePtr->value().c_str());
   LOG(buf1);
-  ASSERT(strcmp(valuePtr->asChar(), value) == 0,
+  ASSERT(strcmp(valuePtr->value().c_str(), value) == 0,
          "Updated value not found in region.");
 }
 DUNIT_TASK_DEFINITION(SERVER, StartServer1)

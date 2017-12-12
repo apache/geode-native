@@ -206,13 +206,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
             auto portfolio = std::static_pointer_cast<Portfolio>(ser);
             printf(
                 "   query idx %d pulled portfolio object ID %d, pkid  :: %s\n",
-                i, portfolio->getID(), portfolio->getPkid()->asChar());
+                i, portfolio->getID(), portfolio->getPkid()->value().c_str());
           } else if (std::dynamic_pointer_cast<Position>(ser)) {
             auto position = std::static_pointer_cast<Position>(ser);
             printf(
                 "   query idx %d pulled position object secId %s, shares  :: "
                 "%d\n",
-                i, position->getSecId()->asChar(),
+                i, position->getSecId()->value().c_str(),
                 position->getSharesOutstanding());
           } else {
             if (ser != nullptr) {
@@ -313,13 +313,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
               printf(
                   "   query idx %d pulled portfolio object ID %d, pkid  :: "
                   "%s\n",
-                  i, portfolio->getID(), portfolio->getPkid()->asChar());
+                  i, portfolio->getID(), portfolio->getPkid()->value().c_str());
             } else if (std::dynamic_pointer_cast<Position>(ser)) {
               auto position = std::static_pointer_cast<Position>(ser);
               printf(
                   "   query idx %d pulled position object secId %s, shares  :: "
                   "%d\n",
-                  i, position->getSecId()->asChar(),
+                  i, position->getSecId()->value().c_str(),
                   position->getSharesOutstanding());
             } else {
               if (ser != nullptr) {
@@ -428,14 +428,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
               auto portfolio = std::static_pointer_cast<Portfolio>(ser);
               printf(
                   "   query idx %d pulled portfolio object ID %d, pkid %s : \n",
-                  i, portfolio->getID(), portfolio->getPkid()->asChar());
+                  i, portfolio->getID(), portfolio->getPkid()->value().c_str());
             } else if (std::dynamic_pointer_cast<Position>(ser)) {
               auto position = std::static_pointer_cast<Position>(ser);
               printf(
                   "   query idx %d pulled position object secId %s, shares %d  "
                   ": "
                   "\n",
-                  i, position->getSecId()->asChar(),
+                  i, position->getSecId()->value().c_str(),
                   position->getSharesOutstanding());
             } else {
               if (ser != nullptr) {

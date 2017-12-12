@@ -53,7 +53,7 @@ DeltaTestImpl::DeltaTestImpl(int intValue,
       fromDeltaCounter(0) {}
 DeltaTestImpl::DeltaTestImpl(const DeltaTestImpl& rhs) : Delta(nullptr) {
   intVar = rhs.intVar;
-  str = CacheableString::create(rhs.str->asChar());
+  str = CacheableString::create(rhs.str->value().c_str());
   doubleVar = rhs.doubleVar;
   byteArr =
       (rhs.byteArr == nullptr ? nullptr

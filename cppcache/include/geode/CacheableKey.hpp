@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHEABLEKEY_H_
-#define GEODE_CACHEABLEKEY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,10 +15,18 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CACHEABLEKEY_H_
+#define GEODE_CACHEABLEKEY_H_
+
 #include <functional>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "geode_globals.hpp"
 #include "Cacheable.hpp"
+#include "util/functional.hpp"
 
 /**
  * @file
@@ -99,6 +102,17 @@ class CPPCACHE_EXPORT CacheableKey : public Cacheable {
   CacheableKey(const CacheableKey& other);
   void operator=(const CacheableKey& other);
 };
+
+typedef std::unordered_map<std::shared_ptr<CacheableKey>,
+                           std::shared_ptr<Cacheable>,
+                           dereference_hash<std::shared_ptr<CacheableKey>>,
+                           dereference_equal_to<std::shared_ptr<CacheableKey>>>
+    HashMapOfCacheable;
+
+typedef std::unordered_set<std::shared_ptr<CacheableKey>,
+                           dereference_hash<std::shared_ptr<CacheableKey>>,
+                           dereference_equal_to<std::shared_ptr<CacheableKey>>>
+    HashSetOfCacheableKey;
 
 }  // namespace client
 }  // namespace geode

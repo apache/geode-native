@@ -499,9 +499,8 @@ void TcrMessage::writeObjectPart(
       if (auto cacheableBytes = std::dynamic_pointer_cast<CacheableBytes>(se)) {
         byteArrLength = cacheableBytes->length();
       } else {
-        std::string classname(Utils::getCacheableKeyString(
-                                  std::static_pointer_cast<CacheableKey>(se))
-                                  ->asChar());
+        auto classname =
+            Utils::nullSafeToString(std::static_pointer_cast<CacheableKey>(se));
         if (classname.find("apache::geode::client::ManagedCacheableKey") !=
             std::string::npos) {
           byteArrLength = se->objectSize();
@@ -2563,7 +2562,7 @@ TcrMessageUserCredential::TcrMessageUserCredential(
   writeMessageLength();
   LOGDEBUG("TcrMessage addsp = %s ",
   Utils::convertBytesToString(m_request->getBuffer(),
-  m_request->getBufferLength())->asChar());*/
+  m_request->getBufferLength())->value().c_str());*/
 }
 
 TcrMessageRemoveUserAuth::TcrMessageRemoveUserAuth(
@@ -2584,7 +2583,7 @@ TcrMessageRemoveUserAuth::TcrMessageRemoveUserAuth(
   LOGDEBUG("TcrMessage REMOVE_USER_AUTH = %s ",
            Utils::convertBytesToString(m_request->getBuffer(),
                                        m_request->getBufferLength())
-               ->asChar());
+               .c_str());
 }
 void TcrMessage::createUserCredentialMessage(TcrConnection* conn) {
   m_request->reset();
@@ -2604,7 +2603,7 @@ void TcrMessage::createUserCredentialMessage(TcrConnection* conn) {
   LOGDEBUG("TcrMessage CUCM() = %s ",
            Utils::convertBytesToString(m_request->getBuffer(),
                                        m_request->getBufferLength())
-               ->asChar());
+               .c_str());
 }
 
 void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
@@ -2635,7 +2634,7 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
   LOGDEBUG("TcrMessage addsp = %s ",
            Utils::convertBytesToString(m_request->getBuffer(),
                                        m_request->getBufferLength())
-               ->asChar());
+               .c_str());
 }
 
 void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection* conn) {
@@ -2664,7 +2663,7 @@ void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection* conn) {
   LOGDEBUG("TcrMessage addspCC = %s ",
            Utils::convertBytesToString(m_request->getBuffer(),
                                        m_request->getBufferLength())
-               ->asChar());
+               .c_str());
 }
 
 TcrMessageRequestEventValue::TcrMessageRequestEventValue(
@@ -2693,7 +2692,7 @@ TcrMessageGetPdxIdForType::TcrMessageGetPdxIdForType(
   LOGDEBUG("TcrMessage GET_PDX_ID_FOR_TYPE = %s ",
            Utils::convertBytesToString(m_request->getBuffer(),
                                        m_request->getBufferLength())
-               ->asChar());
+               .c_str());
 }
 
 TcrMessageAddPdxType::TcrMessageAddPdxType(
@@ -2712,7 +2711,7 @@ TcrMessageAddPdxType::TcrMessageAddPdxType(
   LOGDEBUG("TcrMessage ADD_PDX_TYPE id = %d = %s ", pdxTypeId,
            Utils::convertBytesToString(m_request->getBuffer(),
                                        m_request->getBufferLength())
-               ->asChar());
+               .c_str());
 }
 
 TcrMessageGetPdxIdForEnum::TcrMessageGetPdxIdForEnum(
@@ -2730,7 +2729,7 @@ TcrMessageGetPdxIdForEnum::TcrMessageGetPdxIdForEnum(
   LOGDEBUG("TcrMessage GET_PDX_ID_FOR_ENUM = %s ",
            Utils::convertBytesToString(m_request->getBuffer(),
                                        m_request->getBufferLength())
-               ->asChar());
+               .c_str());
 }
 
 TcrMessageAddPdxEnum::TcrMessageAddPdxEnum(
@@ -2749,7 +2748,7 @@ TcrMessageAddPdxEnum::TcrMessageAddPdxEnum(
   LOGDEBUG("TcrMessage ADD_PDX_ENUM id = %d = %s ", pdxTypeId,
            Utils::convertBytesToString(m_request->getBuffer(),
                                        m_request->getBufferLength())
-               ->asChar());
+               .c_str());
 }
 
 TcrMessageGetPdxTypeById::TcrMessageGetPdxTypeById(
@@ -2768,7 +2767,7 @@ TcrMessageGetPdxTypeById::TcrMessageGetPdxTypeById(
   LOGDEBUG("TcrMessage GET_PDX_TYPE_BY_ID = %s ",
            Utils::convertBytesToString(m_request->getBuffer(),
                                        m_request->getBufferLength())
-               ->asChar());
+               .c_str());
 }
 
 TcrMessageGetPdxEnumById::TcrMessageGetPdxEnumById(
@@ -2787,7 +2786,7 @@ TcrMessageGetPdxEnumById::TcrMessageGetPdxEnumById(
   LOGDEBUG("TcrMessage GET_PDX_ENUM_BY_ID = %s ",
            Utils::convertBytesToString(m_request->getBuffer(),
                                        m_request->getBufferLength())
-               ->asChar());
+               .c_str());
 }
 
 TcrMessageGetFunctionAttributes::TcrMessageGetFunctionAttributes(

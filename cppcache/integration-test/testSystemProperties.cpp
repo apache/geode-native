@@ -38,7 +38,7 @@ const bool checkSecurityProperties(
   if (tempValue == nullptr) {
     return (false);
   }
-  flag = strcmp(tempValue->asChar(), value);
+  flag = strcmp(tempValue->value().c_str(), value);
   return (!flag);
 }
 

@@ -195,23 +195,23 @@ BEGIN_TEST(CheckTemplates)
 
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "put/get:: incorrect charVal value");
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(regPtr->get(stringPtr));
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "put/get:: incorrect charVal value");
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(regPtr->get(int32Ptr));
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "put/get:: incorrect charVal value");
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(regPtr->get(intKey));
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "put/get:: incorrect charVal value");
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(regPtr->get(charKey));
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "put/get:: incorrect charVal value");
 
     // End with charVal
@@ -545,23 +545,23 @@ BEGIN_TEST(CheckTemplates)
 
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "create/get/localDestroy:: incorrect charVal value");
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(regPtr->get(stringPtr));
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "create/get/localDestroy:: incorrect charVal value");
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(regPtr->get(int32Ptr));
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "create/get/localDestroy:: incorrect charVal value");
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(regPtr->get(intKey));
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "create/get/localDestroy:: incorrect charVal value");
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(regPtr->get(charKey));
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "create/get/localDestroy:: incorrect charVal value");
 
     regPtr->localInvalidate(keyPtr);
@@ -1003,27 +1003,27 @@ BEGIN_TEST(CheckTemplates)
     resEntryPtr = regPtr->getEntry(keyPtr);
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "create/getEntry/destroy:: incorrect charVal value");
     resEntryPtr = regPtr->getEntry(stringPtr);
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "create/getEntry/destroy:: incorrect charVal value");
     resEntryPtr = regPtr->getEntry(int32Ptr);
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "create/getEntry/destroy:: incorrect charVal value");
     resEntryPtr = regPtr->getEntry(intKey);
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "create/getEntry/destroy:: incorrect charVal value");
     resEntryPtr = regPtr->getEntry(charKey);
     resStringPtr =
         std::dynamic_pointer_cast<CacheableString>(resEntryPtr->getValue());
-    ASSERT(strcmp(resStringPtr->asChar(), charVal) == 0,
+    ASSERT(strcmp(resStringPtr->value().c_str(), charVal) == 0,
            "create/getEntry/destroy:: incorrect charVal value");
 
     regPtr->invalidate(keyPtr);

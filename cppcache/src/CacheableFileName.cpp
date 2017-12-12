@@ -43,26 +43,16 @@ int8_t CacheableFileName::typeId() const {
 }
 
 int32_t CacheableFileName::hashcode() const {
-#ifndef _WIN32
   if (m_hashcode == 0) {
-    m_hashcode = CacheableString::hashcode() ^ 1234321;
-  }
-  return m_hashcode;
-#endif
-  if (m_hashcode == 0) {
+#ifdef _WIN32
     int localHashcode = 0;
-    if (CacheableString::isCString()) {
-      const char* data = CacheableString::asChar();
-      for (uint32_t i = 0; i < CacheableString::length(); i++) {
-        localHashcode = 31 * localHashcode + ACE_OS::ace_tolower(data[i]);
-      }
-    } else {
-      const wchar_t* data = CacheableString::asWChar();
-      for (uint32_t i = 0; i < CacheableString::length(); i++) {
-        localHashcode = 31 * localHashcode + ACE_OS::ace_tolower(data[i]);
-      }
+    for (auto&& c : CacheableString::value()) {
+      localHashcode = 31 * localHashcode + std::tolower(c, std::locale());
     }
     m_hashcode = localHashcode ^ 1234321;
+#else
+    m_hashcode = CacheableString::hashcode() ^ 1234321;
+#endif
   }
   return m_hashcode;
 }

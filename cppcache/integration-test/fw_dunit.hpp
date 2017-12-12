@@ -110,6 +110,7 @@ END_TASK(validate)
 #ifdef WINVER
 #if WINVER == 0x0500
 #undef _WINSOCKAPI_
+#define NOMINMAX
 #include <WinSock2.h>
 #endif
 #endif
@@ -361,6 +362,5 @@ int ACE_TMAIN(int argc, ACE_TCHAR* argv[]) { return dunit::dmain(argc, argv); }
 
 #include "fw_perf.hpp"
 
-namespace test {
-}  // namespace test
-#endif  // GEODE_INTEGRATION_TEST_FW_DUNIT_H_
+namespace test {}  // namespace test
+#endif             // GEODE_INTEGRATION_TEST_FW_DUNIT_H_

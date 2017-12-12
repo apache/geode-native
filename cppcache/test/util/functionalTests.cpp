@@ -23,7 +23,7 @@
 
 using namespace apache::geode::client;
 
-TEST(string, ceil) {
+TEST(string, geode_hash) {
   auto&& hash = geode_hash<std::string>{};
 
   EXPECT_EQ(0, hash(""));

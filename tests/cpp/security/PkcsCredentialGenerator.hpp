@@ -112,7 +112,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
     sprintf(username, "geode%d", (rand() % 10) + 1);
     setPKCSProperties(p, username);
     FWKINFO("inserted valid security-username "
-            << p->find("security-username")->asChar());
+            << p->find("security-username")->value().c_str());
   }
 
   void getInvalidCredentials(std::shared_ptr<Properties>& p) {
@@ -120,7 +120,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
     sprintf(username, "%dgeode", (rand() % 11) + 1);
     setPKCSProperties(p, username);
     FWKINFO("inserted invalid security-username "
-            << p->find("security-username")->asChar());
+            << p->find("security-username")->value().c_str());
   }
 
   void getAllowedCredentialsForOps(opCodeList& opCodes,
@@ -128,7 +128,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
                                    stringList* regionNames = NULL) {
     XmlAuthzCredentialGenerator authz(id());
     authz.getAllowedCredentials(opCodes, p, regionNames);
-    const char* username = p->find("security-alias")->asChar();
+    const char* username = p->find("security-alias")->value().c_str();
     insertKeyStorePath(p, username);
   }
 
@@ -137,7 +137,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
                                       stringList* regionNames = NULL) {
     XmlAuthzCredentialGenerator authz(id());
     authz.getDisallowedCredentials(opCodes, p, regionNames);
-    const char* username = p->find("security-alias")->asChar();
+    const char* username = p->find("security-alias")->value().c_str();
     insertKeyStorePath(p, username);
   }
 };

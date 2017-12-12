@@ -99,7 +99,7 @@ void checkGets(int maxKeys, int8_t keyTypeId, int8_t valTypeId,
         verifyReg->get(static_cast<int32_t>(keychksum)));
     if (int32val == nullptr) {
       printf("GetsTask::keychksum: %u, key: %s\n", keychksum,
-             Utils::getCacheableKeyString(key)->asChar());
+             Utils::nullSafeToString(key).c_str());
       FAIL("Could not find the checksum for the given key.");
     }
     uint32_t valchksum = static_cast<uint32_t>(int32val->value());

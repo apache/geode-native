@@ -272,8 +272,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyAllPutAllTask)
          dataReg->get(CacheableKey::create(key)));
      ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
      LOGDEBUG("CPPTEST:VerifyAllPutAllTask value is: = %s: ",
-              checkPtr->asChar());
-     ASSERT(atoi(checkPtr->asChar()) == item, "Value did not match.");
+              checkPtr->value().c_str());
+     ASSERT(atoi(checkPtr->value().c_str()) == item, "Value did not match.");
    }
    LOG("VerifyAllPutAllTask completed.");
   }

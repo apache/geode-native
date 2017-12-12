@@ -69,7 +69,7 @@ class UserPasswordAuthInit : public AuthInitialize {
     if (passwd == nullptr) {
       passwd = CacheableString::create("");
    }
-   credentials->insert(SECURITY_PASSWORD, passwd->asChar());
+   credentials->insert(SECURITY_PASSWORD, passwd->value().c_str());
    // LOGDEBUG("UserPasswordAuthInit: inserted username:password - %s:%s",
    //    userName->toString().c_str(), passwd->toString().c_str());
    return credentials;

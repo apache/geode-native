@@ -98,8 +98,8 @@ class CallbackListener : public CacheListener {
        auto fromCallback = callbkArg->getPkid();
        auto mCallback = mCallbkArg->getPkid();
 
-       LOGFINE(" values are %s === %s ", fromCallback->asChar(),
-               mCallback->asChar());
+       LOGFINE(" values are %s === %s ", fromCallback->value().c_str(),
+               mCallback->value().c_str());
 
        if (*(fromCallback.get()) == *(mCallback.get())) {
          LOGFINE("values are same");
@@ -115,8 +115,8 @@ class CallbackListener : public CacheListener {
           auto mCallback =
               std::dynamic_pointer_cast<CacheableString>(m_callbackArg);
 
-          LOGFINE(" values are %s === %s ", fromCallback->asChar(),
-                  mCallback->asChar());
+          LOGFINE(" values are %s === %s ", fromCallback->value().c_str(),
+                  mCallback->value().c_str());
 
           if (*(fromCallback.get()) == *(mCallback.get())) {
             LOGFINE("values are same");

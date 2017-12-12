@@ -104,10 +104,10 @@ std::string Portfolio::toString() const {
   char pkidbuf[1024];
   if (pkid != nullptr) {
     sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status,
-            this->type->toString().c_str(), this->pkid->asChar());
+            this->type->toString().c_str(), this->pkid->value().c_str());
   } else {
     sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status,
-            this->type->toString().c_str(), this->pkid->asChar());
+            this->type->toString().c_str(), this->pkid->value().c_str());
   }
   char position1buf[2048];
   if (position1 != nullptr) {

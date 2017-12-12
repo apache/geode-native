@@ -210,10 +210,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
           for (int32_t i = 0; i < resultList->size(); i++) {
             sprintf(buf, "result[%d] is null\n", i);
             ASSERT(resultList->operator[](i) != nullptr, buf);
-            // sprintf(buf, "get result[%d]=%s", i,
-            //        std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))
-            //            ->asChar());
-            // LOGINFO(buf);
           }
         }
         LOGINFO("getFuncName done");
@@ -254,7 +250,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
             // sprintf(buf, "get result[%d]=%s", i,
             //        std::dynamic_pointer_cast<CacheableString>(
             //            resultList->operator[](i))
-            //            ->asChar());
+            //            ->value().c_str());
             // LOGINFO(buf);
           }
         }
@@ -498,9 +494,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
         auto str = std::dynamic_pointer_cast<CacheableString>(fil->at(i));
         auto val =
             std::dynamic_pointer_cast<CacheableString>(regPtr0->get(str));
-        LOGINFO("Filter Key = %s , get Value = %s ", str->asChar(),
-                val->asChar());
-        if (strcmp(str->asChar(), val->asChar()) != 0) {
+        LOGINFO("Filter Key = %s , get Value = %s ", str->value().c_str(),
+                val->value().c_str());
+        if (strcmp(str->value().c_str(), val->value().c_str()) != 0) {
           ASSERT(false, "Value after function execution is incorrect");
         }
       }
@@ -522,9 +518,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest2)
         auto str = std::dynamic_pointer_cast<CacheableString>(arrList->at(i));
         auto val =
             std::dynamic_pointer_cast<CacheableString>(regPtr0->get(str));
-        LOGINFO("Filter Key = %s ", str->asChar());
-        LOGINFO("get Value = %s ", val->asChar());
-        if (strcmp(str->asChar(), val->asChar()) != 0) {
+        LOGINFO("Filter Key = %s ", str->value().c_str());
+        LOGINFO("get Value = %s ", val->value().c_str());
+        if (strcmp(str->value().c_str(), val->value().c_str()) != 0) {
           ASSERT(false, "Value after function execution is incorrect");
         }
       }

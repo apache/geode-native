@@ -53,11 +53,12 @@ bool EnumInfo::operator==(const CacheableKey &other) const {
   if (m_enumName == nullptr) {
     return (otherEnum.m_enumName == nullptr);
   }
-  if (strcmp(m_enumClassName->asChar(), otherEnum.m_enumClassName->asChar()) !=
-      0) {
+  if (strcmp(m_enumClassName->value().c_str(),
+             otherEnum.m_enumClassName->value().c_str()) != 0) {
     return false;
   }
-  if (strcmp(m_enumName->asChar(), otherEnum.m_enumName->asChar()) != 0) {
+  if (strcmp(m_enumName->value().c_str(),
+             otherEnum.m_enumName->value().c_str()) != 0) {
     return false;
   }
   return true;

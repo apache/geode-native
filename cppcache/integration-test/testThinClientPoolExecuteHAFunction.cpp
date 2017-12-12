@@ -47,23 +47,24 @@ char* RegionOperationsHAFunction = (char*)"RegionOperationsHAFunction";
     sprintf(buf, "VALUE--%d", j);                               \
     if (strcmp(buf, std::dynamic_pointer_cast<CacheableString>( \
                         resultList->operator[](i))              \
-                        ->asChar()) == 0) {                     \
+                        ->value()                               \
+                        .c_str()) == 0) {                       \
       found = true;                                             \
       break;                                                    \
     }                                                           \
   }                                                             \
   ASSERT(found, "this returned value is invalid");
 
-#define verifyPutResults()                   \
-  bool found = false;                        \
-  for (int j = 0; j < 34; j++) {             \
-    if (j % 2 == 0) continue;                \
-    sprintf(buf, "KEY--%d", j);              \
-    if (strcmp(buf, value->asChar()) == 0) { \
-      found = true;                          \
-      break;                                 \
-    }                                        \
-  }                                          \
+#define verifyPutResults()                          \
+  bool found = false;                               \
+  for (int j = 0; j < 34; j++) {                    \
+    if (j % 2 == 0) continue;                       \
+    sprintf(buf, "KEY--%d", j);                     \
+    if (strcmp(buf, value->value().c_str()) == 0) { \
+      found = true;                                 \
+      break;                                        \
+    }                                               \
+  }                                                 \
   ASSERT(found, "this returned value is invalid");
 
 class MyResultCollector : public DefaultResultCollector {
@@ -235,7 +236,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
           sprintf(buf, "get result[%d]=%s", i,
                   std::dynamic_pointer_cast<CacheableString>(
                       resultList->operator[](i))
-                      ->asChar());
+                      ->value()
+                      .c_str());
           LOG(buf);
           verifyGetResults()
         }
@@ -280,7 +282,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
           sprintf(buf, "get result[%d]=%s", i,
                   std::dynamic_pointer_cast<CacheableString>(
                       resultList->operator[](i))
-                      ->asChar());
+                      ->value()
+                      .c_str());
           LOG(buf);
           verifyGetResults()
         }
@@ -364,7 +367,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
           sprintf(buf, "get result[%d]=%s", i,
                   std::dynamic_pointer_cast<CacheableString>(
                       resultList->operator[](i))
-                      ->asChar());
+                      ->value()
+                      .c_str());
           LOG(buf);
           verifyGetResults()
         }
@@ -403,7 +407,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
           sprintf(buf, "get result[%d]=%s", i,
                   std::dynamic_pointer_cast<CacheableString>(
                       resultList->operator[](i))
-                      ->asChar());
+                      ->value()
+                      .c_str());
           LOG(buf);
           verifyGetResults()
         }

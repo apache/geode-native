@@ -109,32 +109,32 @@ std::shared_ptr<Properties> PKCSAuthInit::getCredentials(
 
  auto keyStoreptr = securityprops->find(KEYSTORE_FILE_PATH);
 
-  const char* keyStorePath = keyStoreptr->asChar();
+ const char* keyStorePath = keyStoreptr->value().c_str();
 
-  if (keyStorePath == NULL) {
-    throw AuthenticationFailedException(
-        "PKCSAuthInit::getCredentials: "
-        "key-store file path property KEYSTORE_FILE_PATH not set.");
+ if (keyStorePath == NULL) {
+   throw AuthenticationFailedException(
+       "PKCSAuthInit::getCredentials: "
+       "key-store file path property KEYSTORE_FILE_PATH not set.");
   }
 
  auto aliasptr = securityprops->find(KEYSTORE_ALIAS);
 
-  const char* alias = aliasptr->asChar();
+ const char* alias = aliasptr->value().c_str();
 
-  if (alias == NULL) {
-    throw AuthenticationFailedException(
-        "PKCSAuthInit::getCredentials: "
-        "key-store alias property KEYSTORE_ALIAS not set.");
+ if (alias == NULL) {
+   throw AuthenticationFailedException(
+       "PKCSAuthInit::getCredentials: "
+       "key-store alias property KEYSTORE_ALIAS not set.");
   }
 
  auto keyStorePassptr = securityprops->find(KEYSTORE_PASSWORD);
 
-  const char* keyStorePass = keyStorePassptr->asChar();
+ const char* keyStorePass = keyStorePassptr->value().c_str();
 
-  if (keyStorePass == NULL) {
-    throw AuthenticationFailedException(
-        "PKCSAuthInit::getCredentials: "
-        "key-store password property KEYSTORE_PASSWORD not set.");
+ if (keyStorePass == NULL) {
+   throw AuthenticationFailedException(
+       "PKCSAuthInit::getCredentials: "
+       "key-store password property KEYSTORE_PASSWORD not set.");
   }
 
   FILE* keyStoreFP = fopen(keyStorePath, "r");
