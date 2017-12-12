@@ -26,9 +26,6 @@ using namespace apache::geode::client;
 #define CLIENT1 s1p1
 #define LOCATORSERVER s2p2
 
-std::shared_ptr<RegionService> user1_regionService;
-std::shared_ptr<RegionService> user2_regionService;
-
 DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateLocator)
   {
     CacheHelper::initLocator(1, false, false, -1, 0, false, true);
@@ -38,54 +35,46 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer)
   {
-    std::string args = "--J=-Dsecurity-manager=javaobject.SimpleSecurityManager";
-
     CacheHelper::initServer(
       1, "cacheserver_notify_subscription2.xml",
       CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1),
-      const_cast<char*>(args.c_str()), false, true, false, false, false, true);
+      "--J=-Dsecurity-manager=javaobject.SimpleSecurityManager",
+      false, true, false, false, false, true);
     LOG("Server started");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, PerformSecureOperationsWithUserCredentials)
   {
-    auto cacheFactory = CacheFactory::createCacheFactory();
-    auto cache = std::shared_ptr<Cache>(new Cache(cacheFactory->create()));
-    auto poolFactory = cache->getPoolManager().createFactory();
+    auto cache = CacheFactory::createCacheFactory()->create();
+    auto poolFactory = cache.getPoolManager().createFactory();
     poolFactory->setMultiuserAuthentication(true);
     poolFactory->addLocator("localhost", CacheHelper::staticLocatorHostPort1);
     poolFactory->create("mypool");
 
-    auto regionFactory = cache->createRegionFactory(PROXY);
+    auto regionFactory = cache.createRegionFactory(PROXY);
     regionFactory.setPoolName("mypool");
     regionFactory.create("DistRegionAck");
 
     auto config1 = Properties::create();
     config1->insert("security-username", "root");
     config1->insert("security-password", "root-password");
-    user1_regionService = cache->createAuthenticatedView(config1, "mypool");
 
-    user1_regionService->getRegion("DistRegionAck")->put("akey", "avalue");
+    cache.createAuthenticatedView(config1, "mypool")->getRegion("DistRegionAck")
+                                                    ->put("akey", "avalue");
 
     auto config2 = Properties::create();
     config2->insert("security-username", "reader");
     config2->insert("security-password", "reader-password");
-    user2_regionService = cache->createAuthenticatedView(config2, "mypool");
 
     try {
-      user2_regionService->getRegion("DistRegionAck")->put("akey", "avalue");
+      cache.createAuthenticatedView(config2, "mypool")->getRegion("DistRegionAck")
+                                                      ->put("akey", "avalue");
       FAIL("Didn't throw expected AuthenticationFailedException.");
     } catch (const apache::geode::client::NotAuthorizedException& other) {
       LOG("Caught expected AuthenticationFailedException.");
     }
-
   }
-  LOG("PerformSecureOperations Completed");
-END_TASK_DEFINITION
-
-DUNIT_TASK_DEFINITION(CLIENT1, CloseCache)
-  { cleanProc(); }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(LOCATORSERVER, CloseServer)
@@ -107,7 +96,6 @@ DUNIT_MAIN
   CALL_TASK(CreateLocator);
   CALL_TASK(CreateServer);
   CALL_TASK(PerformSecureOperationsWithUserCredentials);
-  CALL_TASK(CloseCache);
   CALL_TASK(CloseServer);
   CALL_TASK(CloseLocator);
   }
