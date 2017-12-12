@@ -43,7 +43,7 @@ class TestDataOutput : public DataOutputInternal {
   }
 
   TestDataOutput(Cache* cache)
-      : DataOutputInternal(cache),
+      : DataOutputInternal(nullptr),
         m_byteArray(nullptr),
         m_serializationRegistry() {
     // NOP
