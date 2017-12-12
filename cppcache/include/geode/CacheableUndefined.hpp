@@ -79,7 +79,7 @@ class CPPCACHE_EXPORT CacheableUndefined : public Cacheable {
     return std::make_shared<CacheableUndefined>();
   }
 
-  virtual uint32_t objectSize() const override;
+  virtual size_t objectSize() const override;
 
  protected:
   /** Constructor, used for deserialization. */

@@ -140,14 +140,14 @@ inline void randomString(int32_t size, std::wstring& randStr,
   }
 }
 
-inline uint32_t crc32(const uint8_t* buffer, uint32_t bufLen) {
+inline uint32_t crc32(const uint8_t* buffer, size_t bufLen) {
   if (buffer == nullptr || bufLen == 0) {
     return 0;
   }
 
   uint32_t crc = 0xffffffff;
 
-  for (uint32_t index = 0; index < bufLen; index++) {
+  for (size_t index = 0; index < bufLen; index++) {
     crc =
         ((crc >> 8) & 0x00ffffff) ^ m_crc32Table[(crc ^ buffer[index]) & 0xff];
   }

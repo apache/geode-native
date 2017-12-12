@@ -29,7 +29,7 @@ void ClientConnectionRequest::toData(DataOutput& output) const {
 
 void ClientConnectionRequest::fromData(DataInput& input) {}
 
-uint32_t ClientConnectionRequest::objectSize() const { return 0; }
+size_t ClientConnectionRequest::objectSize() const { return 0; }
 
 int8_t ClientConnectionRequest::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::ClientConnectionRequest);

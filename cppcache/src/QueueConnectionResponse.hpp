@@ -34,7 +34,7 @@ class QueueConnectionResponse : public ServerLocationResponse {
       : ServerLocationResponse(), m_durableQueueFound(false) {}
   virtual void fromData(DataInput& input);
   virtual int8_t typeId() const;
-  virtual uint32_t objectSize() const;
+  virtual size_t objectSize() const;
   virtual std::list<ServerLocation> getServers() { return m_list; }
   virtual bool isDurableQueueFound() { return m_durableQueueFound; }
   static Serializable* create() { return new QueueConnectionResponse(); }

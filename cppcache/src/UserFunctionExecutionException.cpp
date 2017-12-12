@@ -38,7 +38,7 @@ int32_t UserFunctionExecutionException::classId() const {
   return 0;
 }
 
-uint32_t UserFunctionExecutionException::objectSize() const {
+size_t UserFunctionExecutionException::objectSize() const {
   throw IllegalStateException(
       "UserFunctionExecutionException::objectSize is not intended for use.");
   return 0;

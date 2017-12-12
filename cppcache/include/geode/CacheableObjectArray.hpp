@@ -87,7 +87,7 @@ class CPPCACHE_EXPORT CacheableObjectArray
     return std::make_shared<CacheableObjectArray>(n);
   }
 
-  virtual uint32_t objectSize() const override;
+  virtual size_t objectSize() const override;
 
  protected:
   /** Constructor, used for deserialization. */

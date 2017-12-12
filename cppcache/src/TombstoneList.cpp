@@ -68,7 +68,7 @@ void TombstoneList::add(const std::shared_ptr<MapEntryImpl>& entry,
   tombstoneEntryPtr->setExpiryTaskId(taskid);
   m_tombstoneMap[key] = tombstoneEntryPtr;
   m_cacheImpl->getCachePerfStats().incTombstoneCount();
-  int32_t tombstonesize = key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD;
+  auto tombstonesize = key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD;
   m_cacheImpl->getCachePerfStats().incTombstoneSize(tombstonesize);
 }
 
@@ -143,7 +143,7 @@ void TombstoneList::eraseEntryFromTombstoneList(
     }
 
     m_cacheImpl->getCachePerfStats().decTombstoneCount();
-    int32_t tombstonesize = key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD;
+    auto tombstonesize = key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD;
     m_cacheImpl->getCachePerfStats().decTombstoneSize(tombstonesize);
     m_tombstoneMap.erase(key);
   }
@@ -159,7 +159,7 @@ long TombstoneList::eraseEntryFromTombstoneListWithoutCancelTask(
     taskid = static_cast<long>(m_tombstoneMap[key]->getExpiryTaskId());
     handler = m_tombstoneMap[key]->getHandler();
     m_cacheImpl->getCachePerfStats().decTombstoneCount();
-    int32_t tombstonesize = key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD;
+    auto tombstonesize = key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD;
     m_cacheImpl->getCachePerfStats().decTombstoneSize(tombstonesize);
     m_tombstoneMap.erase(key);
   }

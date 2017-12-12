@@ -135,7 +135,7 @@ void PdxWrapper::fromData(DataInput &input) {
       "PdxWrapper fromData should not have been called");
 }
 
-uint32_t PdxWrapper::objectSize() const {
+size_t PdxWrapper::objectSize() const {
   if (m_sizer == nullptr || m_userObject == nullptr) {
     return 0;
   } else {

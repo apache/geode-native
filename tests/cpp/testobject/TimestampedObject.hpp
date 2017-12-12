@@ -43,7 +43,7 @@ class TESTOBJECT_EXPORT TimestampedObject
   virtual void fromData(apache::geode::client::DataInput& input) {}
   virtual void toData(apache::geode::client::DataOutput& output) const {}
   virtual int32_t classId() const { return 0; }
-  virtual uint32_t objectSize() const { return 0; }
+  virtual size_t objectSize() const { return 0; }
   virtual ~TimestampedObject() {}
 };
 }  // namespace testobject

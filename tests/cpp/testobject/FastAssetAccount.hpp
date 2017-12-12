@@ -54,8 +54,7 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
   std::shared_ptr<CacheableHashMap> assets;
   uint64_t timestamp;
 
-  inline uint32_t getObjectSize(
-      const std::shared_ptr<Serializable>& obj) const {
+  inline size_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -74,8 +73,8 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
   virtual int32_t classId() const { return 23; }
   std::string toString() const;
 
-  virtual uint32_t objectSize() const {
-    uint32_t objectSize = sizeof(FastAssetAccount);
+  virtual size_t objectSize() const {
+    auto objectSize = sizeof(FastAssetAccount);
     return objectSize;
   }
 

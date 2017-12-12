@@ -152,7 +152,7 @@ class CPPCACHE_EXPORT Properties : public Serializable {
   /** Return type id for serialization. */
   virtual int8_t typeId() const override;
 
-  virtual uint32_t objectSize() const override {
+  virtual size_t objectSize() const override {
     return 0;  // don't care to set the right value
   }
 

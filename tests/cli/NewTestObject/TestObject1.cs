@@ -38,7 +38,7 @@ namespace Apache.Geode.Client.Tests
       //Array.ForEach(arr, 'A');
       identifire = objectIdentifire;
     }
-    public UInt32 ObjectSize
+    public UInt64 ObjectSize
     {
       get
       {

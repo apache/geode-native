@@ -82,10 +82,10 @@ namespace apache
         }
       }
 
-      System::UInt32 ManagedCacheableDeltaGeneric::objectSize() const
+     size_t ManagedCacheableDeltaGeneric::objectSize() const
       {
         try {
-          int ret = m_managedSerializableptr->ObjectSize;
+          auto ret = m_managedSerializableptr->ObjectSize;
           if (ret > m_objectSize)
             return ret;
           else

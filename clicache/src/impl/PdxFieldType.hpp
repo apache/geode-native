@@ -131,9 +131,9 @@ namespace Apache
 
           virtual void ToData(DataOutput^ output);
           virtual void FromData(DataInput^ input);
-          virtual property System::UInt32 ObjectSize
+          virtual property System::UInt64 ObjectSize
           {
-            System::UInt32 get(){ return 0; }
+            System::UInt64 get(){ return 0; }
           }
           virtual property System::UInt32 ClassId
           {

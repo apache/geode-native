@@ -98,8 +98,7 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
   char* var8;
   char* var9;
 
-  inline uint32_t getObjectSize(
-      const std::shared_ptr<Serializable>& obj) const {
+  inline size_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -112,8 +111,8 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
   virtual int32_t classId() const override { return 101; }
   std::string toString() const override;
 
-  virtual uint32_t objectSize() const override {
-    uint32_t objectSize = sizeof(EqStruct);
+  virtual size_t objectSize() const override {
+    auto objectSize = sizeof(EqStruct);
     return objectSize;
   }
 

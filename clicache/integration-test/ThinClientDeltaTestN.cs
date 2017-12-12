@@ -131,7 +131,7 @@ namespace Apache.Geode.Client.UnitTests
       _staticData = input.ReadUTF();
     }
 
-    public uint ObjectSize
+    public UInt64 ObjectSize
     {
       get { return (uint)(4 + _staticData.Length); }
     }

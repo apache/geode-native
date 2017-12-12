@@ -80,10 +80,10 @@ namespace apache
         }
       }
 
-      System::UInt32 ManagedCacheableKeyGeneric::objectSize() const
+      size_t ManagedCacheableKeyGeneric::objectSize() const
       {
         try {
-          int ret = m_managedptr->ObjectSize;
+          auto ret = m_managedptr->ObjectSize;
           if (ret > m_objectSize)
             return ret;
           else

@@ -39,7 +39,7 @@ class ClientConnectionRequest : public ServerLocationRequest {
         m_excludeServergroup_serverLocation(excludeServergroup) {}
   virtual void toData(DataOutput& output) const;
   virtual void fromData(DataInput& input);
-  virtual uint32_t objectSize() const;
+  virtual size_t objectSize() const;
   virtual int8_t typeId() const;
   std::string getServerGroup() const { return m_servergroup; }
   const std::set<ServerLocation>& getExcludedServerGroup() const {

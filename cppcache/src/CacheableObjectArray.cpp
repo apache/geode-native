@@ -57,8 +57,8 @@ int8_t CacheableObjectArray::typeId() const {
   return GeodeTypeIds::CacheableObjectArray;
 }
 
-uint32_t CacheableObjectArray::objectSize() const {
-  uint32_t size = sizeof(CacheableObjectArray);
+size_t CacheableObjectArray::objectSize() const {
+  auto size = sizeof(CacheableObjectArray);
   for (const auto& iter : *this) {
     size += iter->objectSize();
   }

@@ -109,21 +109,9 @@ namespace Apache
           }
         }
 
-        /*System::UInt32 ObjectSize::get()
+        virtual property System::UInt64 ObjectSize
         {
-        //TODO::
-        System::UInt32 size = static_cast<System::UInt32> (sizeof(CacheableVector^));
-        for each (IGeodeSerializable^ val in this) {
-        if (val != nullptr) {
-        size += val->ObjectSize;
-        }
-        }
-        return m_linkedList->Count;
-        }*/
-
-        virtual property System::UInt32 ObjectSize
-        {
-          virtual System::UInt32 get()
+          virtual System::UInt64 get()
           {
             return m_linkedList->Count;
           }

@@ -134,7 +134,7 @@ namespace Apache
         this->SetStringType();
       }
 
-      System::UInt32 CacheableString::ObjectSize::get()
+      System::UInt64 CacheableString::ObjectSize::get()
       {
         return (m_value->Length * sizeof(char));
       }

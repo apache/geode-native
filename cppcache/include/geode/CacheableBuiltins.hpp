@@ -121,7 +121,7 @@ class CacheableKeyType : public CacheableKey {
    * return zero if the user does not require the ability to control
    * cache memory utilization.
    */
-  virtual uint32_t objectSize() const override {
+  virtual size_t objectSize() const override {
     return sizeof(CacheableKeyType);
   }
 };
@@ -251,7 +251,7 @@ class CacheableArrayType : public Cacheable {
    * return zero if the user does not require the ability to control
    * cache memory utilization.
    */
-  virtual uint32_t objectSize() const override {
+  virtual size_t objectSize() const override {
     return static_cast<uint32_t>(
         sizeof(CacheableArrayType) +
         apache::geode::client::serializer::objectSize(m_value, m_length));
@@ -303,7 +303,7 @@ class CacheableContainerType : public Cacheable, public TBase {
    * return zero if the user does not require the ability to control
    * cache memory utilization.
    */
-  virtual uint32_t objectSize() const override {
+  virtual size_t objectSize() const override {
     return static_cast<uint32_t>(
         sizeof(CacheableContainerType) +
         apache::geode::client::serializer::objectSize(*this));

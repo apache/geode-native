@@ -943,7 +943,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * This is an internal method.
    * It is used in case of heap LRU property is set.
    */
-  virtual uint32_t objectSize() const override;
+  virtual size_t objectSize() const override;
 
   /**
    * Return an unmodifiable list of the field names on this PdxInstance.

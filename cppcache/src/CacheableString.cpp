@@ -169,7 +169,7 @@ void CacheableString::initString(const wchar_t* value, int32_t len) {
 
 CacheableString::~CacheableString() {}
 
-uint32_t CacheableString::objectSize() const {
+size_t CacheableString::objectSize() const {
   auto size = sizeof(CacheableString) +
               sizeof(std::string::value_type) * m_str.capacity();
   return size;

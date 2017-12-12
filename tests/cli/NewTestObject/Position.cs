@@ -68,7 +68,7 @@ namespace Apache.Geode.Client.Tests
       m_pid = 0;
     }
 
-    private UInt32 GetObjectSize(IGeodeSerializable obj)
+    private UInt64 GetObjectSize(IGeodeSerializable obj)
     {
       return (obj == null ? 0 : obj.ObjectSize);
     }
@@ -200,27 +200,27 @@ namespace Apache.Geode.Client.Tests
       
     }
 
-    public UInt32 ObjectSize
+    public UInt64 ObjectSize
     {
       get
       {
-        UInt32 objectSize = 0;
-        objectSize += (UInt32)sizeof(long);
-        objectSize += (UInt32) (m_bondRating.Length * sizeof(char));
-        objectSize += (UInt32)sizeof(double);
-        objectSize += (UInt32)(m_country.Length * sizeof(char));
-        objectSize += (UInt32)sizeof(double);
-        objectSize += (UInt32)sizeof(Int64);
-        objectSize += (UInt32)sizeof(Int64);
-        objectSize += (UInt32)sizeof(double);
-        objectSize += (UInt32)sizeof(double);
-        objectSize += (UInt32)(m_secId.Length * sizeof(char));
-        objectSize += (UInt32)(m_secLinks.Length * sizeof(char));
-        objectSize += (UInt32)(m_secType == null ? 0 : sizeof(char) * m_secType.Length);
-        objectSize += (UInt32)sizeof(Int32);
-        objectSize += (UInt32)(m_underlyer.Length * sizeof(char));
-        objectSize += (UInt32)sizeof(Int64);
-        objectSize += (UInt32)sizeof(Int32);
+        UInt64 objectSize = 0;
+        objectSize += (UInt64)sizeof(long);
+        objectSize += (UInt64) (m_bondRating.Length * sizeof(char));
+        objectSize += (UInt64)sizeof(double);
+        objectSize += (UInt64)(m_country.Length * sizeof(char));
+        objectSize += (UInt64)sizeof(double);
+        objectSize += (UInt64)sizeof(Int64);
+        objectSize += (UInt64)sizeof(Int64);
+        objectSize += (UInt64)sizeof(double);
+        objectSize += (UInt64)sizeof(double);
+        objectSize += (UInt64)(m_secId.Length * sizeof(char));
+        objectSize += (UInt64)(m_secLinks.Length * sizeof(char));
+        objectSize += (UInt64)(m_secType == null ? 0 : sizeof(char) * m_secType.Length);
+        objectSize += (UInt64)sizeof(Int32);
+        objectSize += (UInt64)(m_underlyer.Length * sizeof(char));
+        objectSize += (UInt64)sizeof(Int64);
+        objectSize += (UInt64)sizeof(Int32);
         return objectSize;
       }
     }

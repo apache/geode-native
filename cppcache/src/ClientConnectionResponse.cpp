@@ -31,7 +31,7 @@ int8_t ClientConnectionResponse::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::ClientConnectionResponse);
 }
 
-uint32_t ClientConnectionResponse::objectSize() const {
+size_t ClientConnectionResponse::objectSize() const {
   return (m_server.objectSize());
 }
 

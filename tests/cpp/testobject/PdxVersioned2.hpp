@@ -132,8 +132,8 @@ class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
 
   virtual ~PdxVersioned2() {}
 
-  virtual uint32_t objectSize() const override {
-    uint32_t objectSize = sizeof(PdxVersioned2);
+  virtual size_t objectSize() const override {
+    auto objectSize = sizeof(PdxVersioned2);
     return objectSize;
   }
   // void checkNullAndDelete(void *data);

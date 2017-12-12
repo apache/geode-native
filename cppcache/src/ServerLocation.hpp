@@ -83,7 +83,7 @@ class CPPCACHE_EXPORT ServerLocation : public Serializable {
     m_port = input.readInt32();
     makeEpString();
   }
-  uint32_t objectSize() const {
+  size_t objectSize() const {
     size_t size = sizeof(ServerLocation);
     if (m_serverName) {
       size += m_serverName->objectSize();

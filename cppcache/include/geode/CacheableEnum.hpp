@@ -67,11 +67,11 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
   virtual void fromData(DataInput& input) override;
 
   /** @return the size of the object in bytes */
-  virtual uint32_t objectSize() const override {
+  virtual size_t objectSize() const override {
     auto size = sizeof(CacheableEnum);
     size += m_enumClassName.length();
     size += m_enumName.length();
-    return static_cast<uint32_t>(size);
+    return size;
   }
 
   /**

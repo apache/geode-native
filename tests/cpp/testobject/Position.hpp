@@ -62,8 +62,7 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   int64_t volatility;
   int32_t pid;
 
-  inline uint32_t getObjectSize(
-      const std::shared_ptr<Serializable>& obj) const {
+  inline size_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -80,8 +79,8 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   virtual int32_t classId() const { return 0x02; }
   std::string toString() const;
 
-  virtual uint32_t objectSize() const {
-    uint32_t objectSize = sizeof(Position);
+  virtual size_t objectSize() const {
+    auto objectSize = sizeof(Position);
     objectSize += getObjectSize(bondRating);
     objectSize += getObjectSize(country);
     objectSize += getObjectSize(secId);

@@ -49,8 +49,7 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
   uint8_t* arrayNull;
   uint8_t* arrayZeroSize;
 
-  inline uint32_t getObjectSize(
-      const std::shared_ptr<Serializable>& obj) const {
+  inline size_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -68,8 +67,8 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
             std::shared_ptr<CacheableStringArray> nm = nullptr);
   virtual ~Portfolio();
 
-  virtual uint32_t objectSize() const {
-    uint32_t objectSize = sizeof(Portfolio);
+  virtual size_t objectSize() const {
+    auto objectSize = sizeof(Portfolio);
     objectSize += getObjectSize(pkid);
     objectSize += getObjectSize(position1);
     objectSize += getObjectSize(position2);

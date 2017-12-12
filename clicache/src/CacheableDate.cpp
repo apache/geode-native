@@ -64,9 +64,9 @@ namespace Apache
         //Log::Fine("CacheableDate::Fromadata time " + m_dateTime.Ticks);
       }
 
-      System::UInt32 CacheableDate::ObjectSize::get()
+      System::UInt64 CacheableDate::ObjectSize::get()
       {
-        return (System::UInt32)sizeof(DateTime);
+        return sizeof(DateTime);
       }
 
       System::UInt32 CacheableDate::ClassId::get()

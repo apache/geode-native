@@ -72,7 +72,7 @@ namespace Apache
         return GeodeClassIds::CacheableStack;
       }
 
-      System::UInt32 CacheableStack::ObjectSize::get()
+      System::UInt64 CacheableStack::ObjectSize::get()
       {
         //TODO:
         /*System::UInt32 size = static_cast<System::UInt32> (sizeof(CacheableStack^));

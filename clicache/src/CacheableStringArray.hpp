@@ -101,16 +101,16 @@ namespace Apache
         /// <summary>
         /// return the size of this object in bytes
         /// </summary>
-        virtual property System::UInt32 ObjectSize
+        virtual property System::UInt64 ObjectSize
         {
-          virtual System::UInt32 get() override
+          virtual System::UInt64 get() override
           {
-            int size = 0;
+            auto size = sizeof(this);
             for (int i = 0; i < m_value->Length; i++)
             {
               size += m_value[i]->Length;
             }
-            return (System::UInt32)(size + sizeof(this));
+            return size;
           }
 
         }

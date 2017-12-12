@@ -41,8 +41,8 @@ class CPPCACHE_EXPORT EnumInfo : public CacheableKey {
   static Serializable* createDeserializable() { return new EnumInfo(); }
   virtual void toData(DataOutput& output) const override;
   virtual void fromData(DataInput& input) override;
-  virtual uint32_t objectSize() const override {
-    uint32_t size = sizeof(EnumInfo);
+  virtual size_t objectSize() const override {
+    auto size = sizeof(EnumInfo);
     size += sizeof(int32_t);
     size += m_enumClassName->objectSize();
     size += m_enumName->objectSize();

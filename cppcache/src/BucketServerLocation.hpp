@@ -124,7 +124,7 @@ class BucketServerLocation : public ServerLocation {
     }
   }
 
-  uint32_t objectSize() const {
+  size_t objectSize() const {
     return sizeof(int32_t) + sizeof(bool) + sizeof(int8_t);
   }
 

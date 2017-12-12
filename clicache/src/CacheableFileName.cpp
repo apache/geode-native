@@ -57,9 +57,9 @@ namespace Apache
         return GeodeClassIds::CacheableFileName;
       }
 
-      System::UInt32 CacheableFileName::ObjectSize::get()
+      System::UInt64 CacheableFileName::ObjectSize::get()
       {
-        return (System::UInt32)(m_str->Length * sizeof(char));
+        return m_str->Length * sizeof(char);
       }
 
       System::Int32 CacheableFileName::GetHashCode()

@@ -505,7 +505,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * This is an internal method.
    * It is used in case of heap LRU property is set.
    */
-  virtual uint32_t objectSize() const override = 0;
+  virtual size_t objectSize() const override = 0;
 
   /**
    * Return an unmodifiable list of the field names on this PdxInstance.

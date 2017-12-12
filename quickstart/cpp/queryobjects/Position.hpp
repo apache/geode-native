@@ -71,8 +71,8 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   virtual int32_t classId() const { return 0x02; }
   std::string toString() const;
 
-  virtual uint32_t objectSize() const {
-    uint32_t objectSize = sizeof(Position);
+  virtual size_t objectSize() const {
+    auto objectSize = sizeof(Position);
     objectSize += bondRating->objectSize();
     objectSize += country->objectSize();
     objectSize += secId->objectSize();

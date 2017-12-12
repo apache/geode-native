@@ -59,8 +59,7 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
   uint64_t timestamp;
   bool getBeforeUpdate;
 
-  inline uint32_t getObjectSize(
-      const std::shared_ptr<Serializable>& obj) const {
+  inline size_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
     return (obj == nullptr ? 0 : obj->objectSize());
   }
 
@@ -133,8 +132,8 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
 
   bool hasDelta() const override { return true; }
 
-  uint32_t objectSize() const override {
-    uint32_t objectSize = sizeof(DeltaFastAssetAccount);
+  size_t objectSize() const override {
+    auto objectSize = sizeof(DeltaFastAssetAccount);
     return objectSize;
   }
 

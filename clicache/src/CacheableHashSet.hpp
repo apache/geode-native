@@ -78,11 +78,11 @@ namespace Apache
             }
           }
 
-          virtual property System::UInt32 ObjectSize
+          virtual property System::UInt64 ObjectSize
           {
-            virtual System::UInt32 get() override
+            virtual System::UInt64 get() override
             {
-              System::UInt32 size = 0;
+              System::UInt64 size = 0;
               for each (Object^ key in this) {
                 if (key != nullptr)
                   //size += key->ObjectSize; 

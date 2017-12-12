@@ -137,24 +137,21 @@ class CPPCACHE_EXPORT Utils {
 
   // Check objectSize() implementation return value and log a warning at most
   // once.
-  inline static uint32_t checkAndGetObjectSize(
+  inline static size_t checkAndGetObjectSize(
       const std::shared_ptr<Cacheable>& theObject) {
-    uint32_t objectSize = theObject->objectSize();
+    auto objectSize = theObject->objectSize();
     static bool youHaveBeenWarned = false;
-    if ((objectSize == 0 || objectSize == (static_cast<uint32_t>(-1))) &&
-        !youHaveBeenWarned) {
+    if (objectSize == 0 && !youHaveBeenWarned) {
       LOGWARN(
-          "Object size for Heap LRU returned by class ID %d is 0 (zero) or -1 "
-          "(UINT32_MAX). "
+          "Object size for Heap LRU returned by class ID %d is 0 (zero)."
           "Even for empty objects the size returned should be at least one (1 "
-          "byte) and "
-          "should not be -1 or UINT32_MAX.",
+          "byte).",
           theObject->classId());
       youHaveBeenWarned = true;
       LOGFINE("Type ID is %d for the object returning zero HeapLRU size",
               theObject->typeId());
     }
-    GF_DEV_ASSERT(objectSize != 0 && objectSize != ((uint32_t)-1));
+    GF_DEV_ASSERT(objectSize != 0);
     return objectSize;
   }
 

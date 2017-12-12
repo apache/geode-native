@@ -66,8 +66,8 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
 
   virtual ~ChildPdx();
 
-  virtual uint32_t objectSize() const override {
-    uint32_t objectSize = sizeof(ChildPdx);
+  virtual size_t objectSize() const override {
+    auto objectSize = sizeof(ChildPdx);
     return objectSize;
   }
 
@@ -157,8 +157,8 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
 
   virtual ~ParentPdx();
 
-  virtual uint32_t objectSize() const override {
-    uint32_t objectSize = sizeof(ParentPdx);
+  virtual size_t objectSize() const override {
+    auto objectSize = sizeof(ParentPdx);
     return objectSize;
   }
 
