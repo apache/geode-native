@@ -25,6 +25,7 @@
 #include "TcrMessage.hpp"
 #include "ClientMetadataService.hpp"
 #include "ThinClientPoolDM.hpp"
+#include <chrono>
 
 namespace apache {
 namespace geode {
@@ -143,7 +144,13 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
                                               reply.getFpaSet());
       if (m_bucketWaitTimeout > std::chrono::milliseconds::zero() &&
           reply.getNumBuckets() > 0) {
-        WriteGuard guard(m_PRbucketStatusLock);
+        //ReadGuard guard( m_PRbucketStatusLock );
+        std::unique_lock<std::timed_mutex> guard(m_timedBucketStatusLock, std::chrono::milliseconds(1000));
+        if (!guard.owns_lock())
+        {
+            LOGERROR("Buckets statuses container read mutex timeout 1000 milliseconds");
+            return;
+        }
         m_bucketStatus[regionFullPath] = new PRbuckets(reply.getNumBuckets());
       }
       LOGDEBUG("ClientMetadata buckets %d ", reply.getNumBuckets());
@@ -461,7 +468,13 @@ void ClientMetadataService::markPrimaryBucketForTimeout(
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return;
 
-  WriteGuard guard(m_PRbucketStatusLock);
+  //ReadGuard guard( m_PRbucketStatusLock );
+  std::unique_lock<std::timed_mutex> guard(m_timedBucketStatusLock, std::chrono::milliseconds(1000));
+  if (!guard.owns_lock())
+  {
+    LOGERROR("Buckets statuses container read mutex timeout 1000 milliseconds");
+    return;
+  }
 
   getBucketServerLocation(region, key, value, aCallbackArgument,
                           false /*look for secondary host*/, serverLocation,
@@ -806,7 +819,13 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return;
 
-  WriteGuard guard(m_PRbucketStatusLock);
+  //ReadGuard guard( m_PRbucketStatusLock );
+  std::unique_lock<std::timed_mutex> guard(m_timedBucketStatusLock, std::chrono::milliseconds(1000));
+  if (!guard.owns_lock())
+  {
+    LOGERROR("Buckets statuses container read mutex timeout 1000 milliseconds");
+    return;
+  }
 
   std::map<std::string, PRbuckets*>::iterator bs =
       m_bucketStatus.find(region->getFullPath());
