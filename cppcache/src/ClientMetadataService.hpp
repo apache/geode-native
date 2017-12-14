@@ -38,6 +38,7 @@
 #include "DistributedSystemImpl.hpp"
 #include "NonCopyable.hpp"
 #include "util/functional.hpp"
+#include <mutex>
 
 namespace apache {
 namespace geode {
@@ -222,10 +223,11 @@ class ClientMetadataService : public ACE_Task_Base,
   Pool* m_pool;
   Queue<std::string>* m_regionQueue;
 
-  ACE_RW_Thread_Mutex m_PRbucketStatusLock;
+  //ACE_RW_Thread_Mutex m_PRbucketStatusLock;
   std::map<std::string, PRbuckets*> m_bucketStatus;
   std::chrono::milliseconds m_bucketWaitTimeout;
   static const char* NC_CMDSvcThread;
+  std::timed_mutex m_timedBucketStatusLock;
 };
 }  // namespace client
 }  // namespace geode
