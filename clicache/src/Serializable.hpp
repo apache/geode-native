@@ -471,6 +471,8 @@ namespace Apache
         static List<TypeFactoryNativeMethodGeneric^>^ NativeDelegatesGeneric =
           gcnew List<TypeFactoryNativeMethodGeneric^>();
 
+        // TODO AppDomain remove statics
+
         /// <summary>
         /// Static map of <c>TypeFactoryMethod</c> delegates created
         /// from registered managed <c>TypeFactoryMethod</c> delegates.

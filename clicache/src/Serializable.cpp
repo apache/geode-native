@@ -539,8 +539,7 @@ namespace Apache
 
         // register the type in the DelegateMap, this is pure c# for create domain object 
         IGeodeSerializable^ tmp = creationMethod();
-        Log::Fine("Registering serializable class ID " + tmp->ClassId +
-                  ", AppDomain ID " + System::Threading::Thread::GetDomainID());
+        Log::Fine("Registering serializable class ID " + tmp->ClassId);
         DelegateMapGeneric[tmp->ClassId] = creationMethod;
 
         _GF_MG_EXCEPTION_TRY2
@@ -573,8 +572,7 @@ namespace Apache
 
         // register the type in the DelegateMap
         IGeodeSerializable^ tmp = creationMethod();
-        Log::Finer("Registering(,) serializable class ID " + tmp->ClassId +
-                   ", AppDomain ID " + System::Threading::Thread::GetDomainID());
+        Log::Finer("Registering(,) serializable class ID " + tmp->ClassId);
         DelegateMapGeneric[tmp->ClassId] = creationMethod;
 
         try

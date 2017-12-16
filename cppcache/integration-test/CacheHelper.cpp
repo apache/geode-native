@@ -159,8 +159,8 @@ CacheHelper::CacheHelper(const bool isThinclient,
   }
   try {
     LOG(" in cachehelper before createCacheFactory");
-    auto cacheFactory = CacheFactory::createCacheFactory(pp)
-                        ->setAuthInitialize(authInitialize);
+    auto cacheFactory =
+        CacheFactory::createCacheFactory(pp)->setAuthInitialize(authInitialize);
     cachePtr = std::make_shared<Cache>(cacheFactory->create());
     m_doDisconnect = false;
   } catch (const Exception& excp) {
@@ -1187,7 +1187,8 @@ void CacheHelper::cleanupServerInstances() {
 void CacheHelper::initServer(int instance, const char* xml,
                              const char* locHostport, const char* authParam,
                              bool ssl, bool enableDelta, bool multiDS,
-                             bool testServerGC, bool untrustedCert, bool useSecurityManager) {
+                             bool testServerGC, bool untrustedCert,
+                             bool useSecurityManager) {
   if (!isServerCleanupCallbackRegistered &&
       gClientCleanup.registerCallback(&CacheHelper::cleanupServerInstances)) {
     isServerCleanupCallbackRegistered = true;
@@ -1340,8 +1341,8 @@ void CacheHelper::initServer(int instance, const char* xml,
   }
 
   if (locHostport != nullptr) {  // check number of locator host port.
-    std::string geodeProperties =
-        generateGeodeProperties(currDir, ssl, -1, 0, untrustedCert, useSecurityManager);
+    std::string geodeProperties = generateGeodeProperties(
+        currDir, ssl, -1, 0, untrustedCert, useSecurityManager);
 
     sprintf(
         cmd,
@@ -1352,7 +1353,7 @@ void CacheHelper::initServer(int instance, const char* xml,
         "--J=-Dgemfire.tombstone-gc-hreshold=%ld "
         "--J=-Dgemfire.security-log-level=%s --J=-Xmx1024m --J=-Xms128m 2>&1",
         gfjavaenv, GFSH, classpath, sname.c_str(), xmlFile.c_str(),
-        useSecurityManager ?  "--user=root --password=root-password" : "",
+        useSecurityManager ? "--user=root --password=root-password" : "",
         currDir.c_str(), portNum, gfLogLevel, geodeProperties.c_str(),
         authParam, deltaProperty.c_str(),
         testServerGC ? userTombstone_timeout : defaultTombstone_timeout,
@@ -1696,7 +1697,8 @@ void CacheHelper::cleanupLocatorInstances() {
 
 // starting locator
 void CacheHelper::initLocator(int instance, bool ssl, bool multiDS, int dsId,
-                              int remoteLocator, bool untrustedCert, bool useSecurityManager) {
+                              int remoteLocator, bool untrustedCert,
+                              bool useSecurityManager) {
   if (!isLocatorCleanupCallbackRegistered &&
       gClientCleanup.registerCallback(&CacheHelper::cleanupLocatorInstances)) {
     isLocatorCleanupCallbackRegistered = true;
@@ -1750,8 +1752,8 @@ void CacheHelper::initLocator(int instance, bool ssl, bool multiDS, int dsId,
 
   ACE_OS::mkdir(locDirname.c_str());
 
-  std::string geodeFile =
-      generateGeodeProperties(currDir, ssl, dsId, remoteLocator, untrustedCert, useSecurityManager);
+  std::string geodeFile = generateGeodeProperties(
+      currDir, ssl, dsId, remoteLocator, untrustedCert, useSecurityManager);
 
   sprintf(cmd, "%s/bin/%s stop locator --dir=%s --properties-file=%s ",
           gfjavaenv, GFSH, currDir.c_str(), geodeFile.c_str());
@@ -1760,9 +1762,10 @@ void CacheHelper::initLocator(int instance, bool ssl, bool multiDS, int dsId,
   ACE_OS::system(cmd);
 
   static char* classpath = ACE_OS::getenv("GF_CLASSPATH");
-  std::string propertiesFile = useSecurityManager ?
-    std::string("--security-properties-file=") + geodeFile :
-    std::string("--properties-file=") + geodeFile;
+  std::string propertiesFile =
+      useSecurityManager
+          ? std::string("--security-properties-file=") + geodeFile
+          : std::string("--properties-file=") + geodeFile;
   sprintf(cmd,
           "%s/bin/%s start locator --name=%s --port=%d --dir=%s "
           "%s --http-service-port=0 --classpath=%s",
@@ -1848,16 +1851,17 @@ int CacheHelper::getRandomAvailablePort() {
 }
 
 std::string CacheHelper::unitTestOutputFile() {
-  char currWDPath[512];
-  char* wdPath ATTR_UNUSED = ACE_OS::getcwd(currWDPath, 512);
+  char cwd[1024];
+  if (!ACE_OS::getcwd(cwd, sizeof(cwd))) {
+    throw std::exception("Failed to get current working directory.");
+  }
 
-  char* testName = ACE_OS::getenv("TESTNAME");
-  strcat(currWDPath, "/");
-  strcat(currWDPath, testName);
-  strcat(currWDPath, ".log");
+  std::string outputFile(cwd);
+  outputFile += "/";
+  outputFile += ACE_OS::getenv("TESTNAME");
+  outputFile += ".log";
 
-  std::string str(currWDPath);
-  return str;
+  return outputFile;
 }
 
 int CacheHelper::getNumLocatorListUpdates(const char* s) {
@@ -1875,11 +1879,10 @@ int CacheHelper::getNumLocatorListUpdates(const char* s) {
   return numMatched;
 }
 
-std::string CacheHelper::generateGeodeProperties(const std::string& path,
-                                                 const bool ssl, const int dsId,
-                                                 const int remoteLocator,
-                                                 const bool untrustedCert,
-                                                 const bool useSecurityManager) {
+std::string CacheHelper::generateGeodeProperties(
+    const std::string& path, const bool ssl, const int dsId,
+    const int remoteLocator, const bool untrustedCert,
+    const bool useSecurityManager) {
   char cmd[2048];
   std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
 

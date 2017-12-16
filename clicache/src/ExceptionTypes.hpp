@@ -164,7 +164,8 @@ namespace Apache
                 cause = GeodeException::GetNative(ex->InnerException);
               }
               return std::make_shared<apache::geode::client::Exception>(
-                  marshal_as<std::string>(MgSysExPrefix + ex->ToString()) + cause->getMessage());
+                marshal_as<std::string>(MgSysExPrefix + ex->ToString()) 
+                  + (cause ? cause->getMessage() : ""));
             }
           }
           return nullptr;
@@ -181,7 +182,8 @@ namespace Apache
             cause = GeodeException::GetNative(this->InnerException);
           }
           return std::make_shared<apache::geode::client::Exception>(
-            marshal_as<std::string>(this->Message + ": " + this->StackTrace) + cause->getMessage());
+            marshal_as<std::string>(this->Message + ": " + this->StackTrace)
+              + (cause ? cause->getMessage() : ""));
         }
 
         /// <summary>
@@ -206,7 +208,8 @@ namespace Apache
               cause = GeodeException::GetNative(ex->InnerException);
             }
             throw apache::geode::client::Exception(
-              marshal_as<std::string>(MgSysExPrefix + ex->ToString()) + cause->getMessage());
+              marshal_as<std::string>(MgSysExPrefix + ex->ToString())
+                + (cause ? cause->getMessage() : ""));
           }
         }
 

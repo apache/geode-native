@@ -1054,22 +1054,16 @@ namespace Apache.Geode.Client.UnitTests
       ICacheListener<TKey, TValue> listener, string locators, string poolName, bool clientNotification, bool ssl,
       bool cloningEnabled)
     {
+      Properties<string, string> sysProps = new Properties<string, string>();
       if (ssl)
       {
-        Properties<string, string> sysProps = new Properties<string, string>();
         string keystore = Util.GetEnvironmentVariable("CPP_TESTOUT") + "/keystore";
         sysProps.Insert("ssl-enabled", "true");
         sysProps.Insert("ssl-keystore", keystore + "/client_keystore.pem");
         sysProps.Insert("ssl-truststore", keystore + "/client_truststore.pem");
-        InitConfig(sysProps);
       }
-      else
-      {
-        Properties<string, string> sysProps = new Properties<string, string>();
-        sysProps.Insert("appdomain-enabled", "true");
+      InitConfig(sysProps);
 
-        InitConfig(sysProps);
-      }
       IRegion<TKey, TValue> region = GetRegion<TKey, TValue>(name);
       if ((region != null) && !region.IsDestroyed)
       {

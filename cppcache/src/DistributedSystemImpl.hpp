@@ -99,22 +99,6 @@ class CPPCACHE_EXPORT DistributedSystemImpl {
 
   static void releaseDisconnectLock();
 
-  /**
-   * To connect new appdomain instance
-   */
-  static void connectInstance();
-
-  /**
-   * To disconnect appdomain instance
-   */
-  static void disconnectInstance();
-
-  /**
-   * The current number of connection instances created using
-   * connectionOrGetInstance().
-   */
-  static int currentInstances();
-
   static void registerCliCallback(int appdomainId,
                                   CliCallbackMethod clicallback);
 

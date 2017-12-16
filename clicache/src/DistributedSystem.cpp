@@ -132,12 +132,11 @@ namespace Apache
 
       DistributedSystem^ DistributedSystem::Connect(String^ name, Properties<String^, String^>^ config, Cache ^ cache)
       {
+        // TODO AppDomain should we be able to create a DS directly?
         native::DistributedSystemImpl::acquireDisconnectLock();
 
         _GF_MG_EXCEPTION_TRY2
 
-        // this we are calling after all .NET initialization required in
-        // each AppDomain
         auto nativeptr = native::DistributedSystem::create(marshal_as<std::string>(name),
                                                            config->GetNative());
         nativeptr->connect(cache->GetNative().get());
@@ -173,6 +172,9 @@ namespace Apache
       }
 
       void DistributedSystem::AppDomainInstanceInitialization(Cache^ cache)
+
+        // TODO AppDomain move this.
+
       {
         _GF_MG_EXCEPTION_TRY2
 
@@ -401,25 +403,15 @@ namespace Apache
 
         // End register other built-in types
 
-        // TODO: what will happen for following if first appDomain unload ??
-        // Testing shows that there are problems; need to discuss -- maybe
-        // maintain per AppDomainID functions in C++ layer.
-
         // Log the version of the C# layer being used
         Log::Config(".NET layer assembly version: {0}({1})", System::Reflection::
                     Assembly::GetExecutingAssembly()->GetName()->Version->ToString(),
                     System::Reflection::Assembly::GetExecutingAssembly()->ImageRuntimeVersion);
 
         Log::Config(".NET runtime version: {0} ", System::Environment::Version);
-        Log::Config(".NET layer source repository (revision): {0} ({1})",
-                    PRODUCT_SOURCE_REPOSITORY, PRODUCT_SOURCE_REVISION);
-      }
-
-      void DistributedSystem::AppDomainInstancePostInitialization()
-      {
-        // TODO global - Is this necessary?
-        //to create .net memory pressure handler
-        //Create(native::DistributedSystem::getInstance());
+        Log::Config(".NET AppDomain: {0} - {1}",
+          System::AppDomain::CurrentDomain->Id,
+          System::AppDomain::CurrentDomain->FriendlyName);
       }
 
       void DistributedSystem::UnregisterBuiltinManagedTypes(Cache^ cache)
@@ -428,13 +420,7 @@ namespace Apache
 
           native::DistributedSystemImpl::acquireDisconnectLock();
 
-        Serializable::UnregisterNativesGeneric();
-
-        int remainingInstances =
-          native::DistributedSystemImpl::currentInstances();
-
-        if (remainingInstances == 0) { // last instance
-
+          Serializable::UnregisterNativesGeneric();
 
           Serializable::UnregisterTypeGeneric(
             native::GeodeTypeIds::CacheableDate, cache);
@@ -458,8 +444,6 @@ namespace Apache
             GeodeClassIds::CacheableManagedObject - 0x80000000, cache);
           Serializable::UnregisterTypeGeneric(
             GeodeClassIds::CacheableManagedObjectXml - 0x80000000, cache);
-
-        }
 
         _GF_MG_EXCEPTION_CATCH_ALL2
 
@@ -524,19 +508,9 @@ namespace Apache
         native::DistributedSystemImpl::acquireDisconnectLock();
       }
 
-      void DistributedSystem::disconnectInstance()
-      {
-        native::DistributedSystemImpl::disconnectInstance();
-      }
-
       void DistributedSystem::releaseDisconnectLock()
       {
         native::DistributedSystemImpl::releaseDisconnectLock();
-      }
-
-      void DistributedSystem::connectInstance()
-      {
-        native::DistributedSystemImpl::connectInstance();
       }
 
       void DistributedSystem::registerCliCallback()

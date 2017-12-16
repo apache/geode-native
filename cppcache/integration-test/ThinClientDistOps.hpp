@@ -65,17 +65,24 @@ DUNIT_TASK_DEFINITION(CLIENT2, Alter_Client_Grid_Property_2)
   { g_isGridClient = !g_isGridClient; }
 END_TASK_DEFINITION
 
-void initClient(const bool isthinClient) {
+void initClient(const bool isthinClient, const bool redirectLog) {
   if (cacheHelper == nullptr) {
     auto config = Properties::create();
     if (g_isGridClient) {
       config->insert("grid-client", "true");
     }
     config->insert("log-level", "finer");
+
+    if (redirectLog) {
+      config->insert("log-file", CacheHelper::unitTestOutputFile());
+    }
+
     cacheHelper = new CacheHelper(isthinClient, config);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
+
+void initClient(const bool isthinClient) { initClient(isthinClient, false); }
 
 void cleanProc() {
   if (cacheHelper != nullptr) {
@@ -562,7 +569,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolForUpdateLocatorList)
     = -1, int connections = -1, int loadConditioningInterval = - 1, bool
     isMultiuserMode = false, int updateLocatorListInterval = 5000 )
     */
-    initClient(true);
+    initClient(true, true);
     getHelper()->createPool("__TESTPOOL1_", locatorsG, nullptr, 0, false,
                             std::chrono::milliseconds::zero(), -1, -1, false);
     LOG("CreatePoolForUpdateLocatorList complete.");
@@ -578,7 +585,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolForDontUpdateLocatorList)
     = -1, int connections = -1, int loadConditioningInterval = - 1, bool
     isMultiuserMode = false, int updateLocatorListInterval = 5000 )
     */
-    initClient(true);
+    initClient(true, true);
     getHelper()->createPool("__TESTPOOL1_", locatorsG, nullptr, 0, false,
                             std::chrono::milliseconds::zero(), -1, -1, false);
     LOG("CreatePoolForDontUpdateLocatorList complete.");
@@ -591,7 +598,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyUpdateLocatorListThread)
     dunit::sleep(sleepSeconds * 1000);
 
     auto pptr = getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
-    int updateIntervalSeconds = pptr->getUpdateLocatorListInterval().count() / 1000;
+    int updateIntervalSeconds =
+        pptr->getUpdateLocatorListInterval().count() / 1000;
 
     int numLocatorListUpdates =
         CacheHelper::getNumLocatorListUpdates("Querying locator list at:");

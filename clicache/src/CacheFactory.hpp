@@ -182,8 +182,6 @@ namespace Apache
 
         native_shared_ptr<native::CacheFactory>^ m_nativeptr;
 
-      internal:
-        static bool m_connected = false;
       };
     }  // namespace Client
   }  // namespace Geode

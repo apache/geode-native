@@ -102,11 +102,6 @@ namespace Apache
         return TimeUtils::DurationToTimeSpan(m_nativeptr->notifyDupCheckLife( ));
       }
       
-      bool SystemProperties::AppDomainEnabled::get( )
-      {
-        return m_nativeptr->isAppDomainEnabled();
-      }
-
       String^ SystemProperties::Name::get( )
       {
         return marshal_as<String^>( m_nativeptr->name( ) );

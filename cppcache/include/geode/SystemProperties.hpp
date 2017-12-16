@@ -335,13 +335,6 @@ class CPPCACHE_EXPORT SystemProperties {
   inline bool isGridClient() const { return m_gridClient; }
 
   /**
-   * This property checks whether C# client is running in multiple appdoamin or
-   * not.
-   * Default value is "false".
-   */
-  inline bool isAppDomainEnabled() const { return m_appDomainEnabled; }
-
-  /**
    * Whether a non durable client starts to receive and process
    * subscription events automatically.
    * If set to false then a non durable client should call the
@@ -370,8 +363,6 @@ class CPPCACHE_EXPORT SystemProperties {
   std::chrono::milliseconds m_statisticsSampleInterval;
 
   bool m_statisticsEnabled;
-
-  bool m_appDomainEnabled;
 
   std::string m_statisticsArchiveFile;
 

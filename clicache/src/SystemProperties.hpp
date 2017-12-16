@@ -178,16 +178,6 @@ namespace Apache
         }
 
         /// <summary>
-        /// Whether client is running in multiple AppDomain or not.
-        /// Default value is "false".
-        /// </summary>
-        /// <returns>true if enabled</returns>
-        property bool AppDomainEnabled
-        {
-          bool get();
-        }
-
-        /// <summary>
         /// Returns the system name.
         /// </summary>
         /// <returns>the name</returns>
