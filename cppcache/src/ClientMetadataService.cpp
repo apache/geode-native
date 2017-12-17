@@ -880,7 +880,7 @@ bool ClientMetadataService::isBucketMarkedForTimeout(const char* regionFullPath,
     if (!guard.owns_lock())
     {
       LOGERROR("Buckets statuses container read mutex timeout %d milliseconds", DEFAULT_MUTEX_TIMEOUT);
-      return;
+      return false ;
     }
 
   const auto& bs = m_bucketStatus.find(regionFullPath);
