@@ -23,6 +23,9 @@
 #include <unordered_map>
 #include <memory>
 #include <string>
+#include <mutex>
+#include <chrono>
+
 
 #include <ace/Task.h>
 
@@ -38,13 +41,15 @@
 #include "DistributedSystemImpl.hpp"
 #include "NonCopyable.hpp"
 #include "util/functional.hpp"
-#include <mutex>
 
 namespace apache {
 namespace geode {
 namespace client {
 
 class ClienMetadata;
+
+static constexpr std::chrono::milliseconds DEFAULT_MUTEX_TIMEOUT =
+    std::chrono::seconds(1);
 
 typedef std::map<std::string, std::shared_ptr<ClientMetadata>>
     RegionMetadataMapType;
