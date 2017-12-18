@@ -392,7 +392,7 @@ const bool NO_ACK = false;
 
 class SuspendTransactionThread : public ACE_Task_Base {
  private:
-  std::shared_ptr<TransactionId> m_suspendedTransaction;
+  TransactionId* m_suspendedTransaction;
   bool m_sleep;
   ACE_Auto_Event* m_txEvent;
 
@@ -414,14 +414,14 @@ class SuspendTransactionThread : public ACE_Task_Base {
     createEntry(regionNames[0], keys[4], vals[4]);
     createEntry(regionNames[1], keys[5], vals[5]);
 
-    m_suspendedTransaction = txManager->getTransactionId();
+    m_suspendedTransaction = &txManager->getTransactionId();
 
     if (m_sleep) {
       m_txEvent->wait();
       ACE_OS::sleep(5);
     }
 
-    m_suspendedTransaction = txManager->suspend();
+    m_suspendedTransaction = &txManager->suspend();
     sprintf(buf, " Out SuspendTransactionThread");
     LOG(buf);
 
@@ -435,13 +435,13 @@ class SuspendTransactionThread : public ACE_Task_Base {
   }
   void start() { activate(); }
   void stop() { wait(); }
-  std::shared_ptr<TransactionId> getSuspendedTx() {
-    return m_suspendedTransaction;
+  TransactionId& getSuspendedTx() {
+    return *m_suspendedTransaction;
   }
 };
 class ResumeTransactionThread : public ACE_Task_Base {
  private:
-  std::shared_ptr<TransactionId> m_suspendedTransaction;
+  TransactionId& m_suspendedTransaction;
   bool m_commit;
   bool m_tryResumeWithSleep;
   bool m_isFailed;
@@ -449,7 +449,7 @@ class ResumeTransactionThread : public ACE_Task_Base {
   ACE_Auto_Event* m_txEvent;
 
  public:
-  ResumeTransactionThread(std::shared_ptr<TransactionId> suspendedTransaction,
+  ResumeTransactionThread(TransactionId& suspendedTransaction,
                           bool commit, bool tryResumeWithSleep,
                           ACE_Auto_Event* txEvent)
       : m_suspendedTransaction(suspendedTransaction),
@@ -673,8 +673,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeCommit)
     ASSERT(resumeExc,
            "SuspendResumeCommit: Transaction shouldnt have been resumed");
 
-    ASSERT(txManager->suspend() == nullptr,
-           "SuspendResumeCommit: Transaction shouldnt have been suspended");
+    bool threwTransactionException = false;
+    try {
+      txManager->suspend();
+    }
+    catch (const TransactionException) {
+      threwTransactionException = true;
+    }
+    ASSERT(threwTransactionException, "SuspendResumeCommit: Transaction shouldnt have been suspended");
   }
 END_TASK_DEFINITION
 

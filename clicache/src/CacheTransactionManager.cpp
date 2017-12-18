@@ -35,14 +35,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          try
-          {
-            m_nativeptr->get()->begin( );
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+          m_nativeptr->begin( );
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -51,14 +44,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          try
-          {
-            m_nativeptr->get()->prepare( );
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+          m_nativeptr->prepare( );
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -66,28 +52,18 @@ namespace Apache
       void CacheTransactionManager::Commit( )
       {
         _GF_MG_EXCEPTION_TRY2
-          try
-          {
-            m_nativeptr->get()->commit( );
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+
+            m_nativeptr->commit( );
+
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
       void CacheTransactionManager::Rollback( )
       {
         _GF_MG_EXCEPTION_TRY2
-          try
-          {
-            m_nativeptr->get()->rollback( );
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+
+            m_nativeptr->rollback( );
+
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
@@ -95,14 +71,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          try
-          {
-            return m_nativeptr->get()->exists( );
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+        return m_nativeptr->exists( );
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -111,14 +80,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
        
-          try
-          {
-            return Apache::Geode::Client::TransactionId::Create( m_nativeptr->get()->suspend() );
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+          return Apache::Geode::Client::TransactionId::Create(&m_nativeptr->suspend());
        
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -126,29 +88,15 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          try
-          {
-            return Apache::Geode::Client::TransactionId::Create( m_nativeptr->get()->getTransactionId() );
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+          return Apache::Geode::Client::TransactionId::Create(&m_nativeptr->getTransactionId());
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
       void CacheTransactionManager::Resume(Apache::Geode::Client::TransactionId^ transactionId)
       {
         _GF_MG_EXCEPTION_TRY2
-        
-          try
-          {
-            return m_nativeptr->get()->resume(transactionId->GetNative());
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+
+          return m_nativeptr->resume(transactionId->GetNative());
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -156,14 +104,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          try
-          {
-            return m_nativeptr->get()->isSuspended(transactionId->GetNative());
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+          return m_nativeptr->isSuspended(transactionId->GetNative());
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -171,14 +112,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          try
-          {
-            return m_nativeptr->get()->tryResume(transactionId->GetNative());
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+          return m_nativeptr->tryResume(transactionId->GetNative());
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -186,14 +120,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          try
-          {
-            return m_nativeptr->get()->tryResume(transactionId->GetNative(), TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(waitTime));
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+          return m_nativeptr->tryResume(transactionId->GetNative(), TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(waitTime));
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -201,14 +128,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          try
-          {
-            return m_nativeptr->get()->exists(transactionId->GetNative());
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+          return m_nativeptr->exists(transactionId->GetNative());
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -220,7 +140,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
 
           // Conver the unmanaged object to  managed generic object 
-          std::shared_ptr<apache::geode::client::TransactionWriter>& writerPtr( m_nativeptr->getGCKeepAlive()->getWriter( ) );
+          std::shared_ptr<apache::geode::client::TransactionWriter>& writerPtr( m_nativeptr->getWriter( ) );
           apache::geode::client::ManagedTransactionWriterGeneric* twg =
           dynamic_cast<apache::geode::client::ManagedTransactionWriterGeneric*>( writerPtr.get() );
 
@@ -248,7 +168,7 @@ namespace Apache
             writerPtr = new apache::geode::client::ManagedTransactionWriterGeneric( transactionWriter );
             ((apache::geode::client::ManagedTransactionWriterGeneric*)writerPtr.get())->setptr(twg);
           }
-          m_nativeptr->getGCKeepAlive()->setWriter( writerPtr );
+          m_nativeptr->setWriter( writerPtr );
           
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -267,7 +187,7 @@ namespace Apache
             listenerPtr = new apache::geode::client::ManagedTransactionListenerGeneric( transactionListener );
             ((apache::geode::client::ManagedTransactionListenerGeneric*)listenerPtr.get())->setptr(twg);
           }
-          m_nativeptr->getGCKeepAlive()->addListener( listenerPtr );
+          m_nativeptr->addListener( listenerPtr );
           
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -286,7 +206,7 @@ namespace Apache
             listenerPtr = new apache::geode::client::ManagedTransactionListenerGeneric( transactionListener );
             ((apache::geode::client::ManagedTransactionListenerGeneric*)listenerPtr.get())->setptr(twg);
           }
-          m_nativeptr->getGCKeepAlive()->removeListener( listenerPtr );
+          m_nativeptr->removeListener( listenerPtr );
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }

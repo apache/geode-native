@@ -37,14 +37,16 @@ namespace client {
 class TXId : public apache::geode::client::TransactionId {
  public:
   TXId();
+
+  TXId& operator=(const TXId&);
+
   virtual ~TXId();
 
   int32_t getId();
 
  private:
-  const int32_t m_TXId;
+  int32_t m_TXId;
   static std::atomic<int32_t> m_transactionId;
-  TXId& operator=(const TXId&);
   TXId(const TXId&);
 };
 }  // namespace client

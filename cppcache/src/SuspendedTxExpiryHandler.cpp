@@ -28,7 +28,7 @@
 using namespace apache::geode::client;
 
 SuspendedTxExpiryHandler::SuspendedTxExpiryHandler(
-    CacheTransactionManagerImpl* cacheTxMgr, std::shared_ptr<TransactionId> tid,
+    CacheTransactionManagerImpl* cacheTxMgr, TransactionId& tid,
     std::chrono::seconds duration)
     :  // UNUSED m_duration(duration),
       m_cacheTxMgr(cacheTxMgr),

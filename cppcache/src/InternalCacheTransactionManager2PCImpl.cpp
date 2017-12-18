@@ -65,7 +65,7 @@ void InternalCacheTransactionManager2PCImpl::prepare() {
             .getCacheImpl()
             ->getCache()
             ->createDataOutput(),
-        BEFORE_COMMIT, txState->getTransactionId()->getId(), STATUS_COMMITTED);
+        BEFORE_COMMIT, txState->getTransactionId().getId(), STATUS_COMMITTED);
 
     TcrMessageReply replyCommitBefore(true, nullptr);
     GfErrType err =
@@ -164,7 +164,7 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
             .getCacheImpl()
             ->getCache()
             ->createDataOutput(),
-        AFTER_COMMIT, txState->getTransactionId()->getId(), status);
+        AFTER_COMMIT, txState->getTransactionId().getId(), status);
 
     TcrMessageReply replyCommitAfter(true, nullptr);
     GfErrType err =
