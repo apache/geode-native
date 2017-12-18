@@ -729,10 +729,10 @@ void LocalRegion::release(bool invokeCallbacks) {
   if (invokeCallbacks) {
     try {
       if (m_loader != nullptr) {
-        m_loader->close(shared_from_this());
+        m_loader->close(*this);
       }
       if (m_writer != nullptr) {
-        m_writer->close(shared_from_this());
+        m_writer->close(*this);
       }
       // TODO:  shouldn't listener also be here instead of
       // during CacheImpl.close()
@@ -907,7 +907,7 @@ GfErrType LocalRegion::getNoThrow(
       isLoaderInvoked = true;
       /*Update the statistics*/
       int64_t sampleStartNanos = startStatOpTime();
-      value = m_loader->load(shared_from_this(), keyPtr, aCallbackArgument);
+      value = m_loader->load(*this, keyPtr, aCallbackArgument);
       updateStatOpTime(m_regionStats->getStat(),
                        m_regionStats->getLoaderCallTimeId(), sampleStartNanos);
       m_regionStats->incLoaderCallsCompleted();
@@ -2718,7 +2718,7 @@ GfErrType LocalRegion::invokeCacheListenerForRegionEvent(
           m_cacheImpl->getCachePerfStats().incListenerCalls();
           if (eventFlags.isCacheClose()) {
             eventStr = "close";
-            m_listener->close(shared_from_this());
+            m_listener->close(*this);
             m_cacheImpl->getCachePerfStats().incListenerCalls();
           }
           break;
@@ -3109,7 +3109,7 @@ void LocalRegion::invokeAfterAllEndPointDisconnected() {
   if (m_listener != nullptr) {
     int64_t sampleStartNanos = startStatOpTime();
     try {
-      m_listener->afterRegionDisconnected(shared_from_this());
+      m_listener->afterRegionDisconnected(*this);
     } catch (const Exception& ex) {
       LOGERROR("Exception in CacheListener::afterRegionDisconnected: %s: %s",
                ex.getName().c_str(), ex.what());

@@ -213,7 +213,7 @@ namespace apache
         return NULL;
       }
 
-      std::shared_ptr<Cacheable> ManagedCacheLoaderGeneric::load(const std::shared_ptr<Region>& region,
+      std::shared_ptr<Cacheable> ManagedCacheLoaderGeneric::load(Region& region,
                                                    const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Serializable>& aCallbackArgument)
       {
         try {
@@ -228,7 +228,7 @@ namespace apache
         return nullptr;
       }
 
-      void ManagedCacheLoaderGeneric::close(const std::shared_ptr<Region>& region)
+      void ManagedCacheLoaderGeneric::close(Region& region)
       {
         try {
           /*

@@ -26,7 +26,7 @@
 
 #include "IRegion.hpp"
 #include "ISubscriptionService.hpp"
-#include "native_shared_ptr.hpp"
+#include "native_conditional_shared_ptr.hpp"
 
 namespace Apache
 {
@@ -271,9 +271,16 @@ namespace Apache
             gcnew Region<TKey, TValue>( nativeptr );
         }
 
+        inline static IRegion<TKey, TValue>^
+        Create(native::Region* nativeptr)
+        {
+          return __nullptr == nativeptr ? nullptr :
+            gcnew Region<TKey, TValue>(nativeptr);
+        }
+
         std::shared_ptr<native::Region> GetNative()
         {
-          return m_nativeptr->get_shared_ptr();
+          return m_nativeptr->get_conditional_shared_ptr();
         }
 
 
@@ -283,8 +290,13 @@ namespace Apache
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
         inline Region( std::shared_ptr<native::Region> nativeptr )
-				{
-          m_nativeptr = gcnew native_shared_ptr<native::Region>(nativeptr);
+        {
+          m_nativeptr = gcnew native_conditional_shared_ptr<native::Region>(nativeptr);
+        }
+
+        inline Region(native::Region* nativeptr)
+        {
+          m_nativeptr = gcnew native_conditional_shared_ptr<native::Region>(nativeptr);
         }
 
         inline std::shared_ptr<apache::geode::client::Serializable> get(std::shared_ptr<apache::geode::client::CacheableKey>& key, std::shared_ptr<apache::geode::client::Serializable>& callbackArg);
@@ -292,7 +304,7 @@ namespace Apache
         bool AreValuesEqual(std::shared_ptr<apache::geode::client::Cacheable>& val1, std::shared_ptr<apache::geode::client::Cacheable>& val2);
         bool isPoolInMultiuserMode();
         
-        native_shared_ptr<native::Region>^ m_nativeptr;
+        native_conditional_shared_ptr<native::Region>^ m_nativeptr;
 
       };
 

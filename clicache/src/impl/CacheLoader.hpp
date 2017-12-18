@@ -41,10 +41,10 @@ namespace Apache
       public interface class ICacheLoaderProxy
       {
       public:
-        std::shared_ptr<apache::geode::client::Cacheable> load( const std::shared_ptr<apache::geode::client::Region>& region,
+        std::shared_ptr<apache::geode::client::Cacheable> load(apache::geode::client::Region& region,
           const std::shared_ptr<apache::geode::client::CacheableKey>& key, const std::shared_ptr<apache::geode::client::Serializable>& helper );
 
-        void close( const std::shared_ptr<apache::geode::client::Region>& region );
+        void close(apache::geode::client::Region& region );
       };
 
       generic<class TKey, class TValue>
@@ -61,10 +61,10 @@ namespace Apache
             m_loader = loader;
           }
 
-          virtual std::shared_ptr<apache::geode::client::Cacheable> load( const std::shared_ptr<apache::geode::client::Region>& region,
+          virtual std::shared_ptr<apache::geode::client::Cacheable> load( apache::geode::client::Region& region,
             const std::shared_ptr<apache::geode::client::CacheableKey>& key, const std::shared_ptr<apache::geode::client::Serializable>& helper )
           {
-            IRegion<TKey, TValue>^ gregion = Region<TKey, TValue>::Create(region);
+            IRegion<TKey, TValue>^ gregion = Region<TKey, TValue>::Create(&region);
 
             TKey gkey = Serializable::GetManagedValueGeneric<TKey>(key);
 
@@ -73,9 +73,9 @@ namespace Apache
             return Serializable::GetUnmanagedValueGeneric<TValue>(m_loader->Load(gregion, gkey, ghelper));
           }
 
-          virtual void close( const std::shared_ptr<apache::geode::client::Region>& region )
+          virtual void close(apache::geode::client::Region& region )
           {
-            IRegion<TKey, TValue>^ gregion = Region<TKey, TValue>::Create(region);
+            IRegion<TKey, TValue>^ gregion = Region<TKey, TValue>::Create(&region);
             m_loader->Close(gregion);
           }
       };

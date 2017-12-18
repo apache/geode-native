@@ -42,7 +42,7 @@ class ThinClientTallyLoader : public TallyLoader {
   virtual ~ThinClientTallyLoader() {}
 
   std::shared_ptr<Cacheable> load(
-      const std::shared_ptr<Region>& rp,
+      Region& rp,
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Serializable>& aCallbackArgument) {
     int32_t loadValue = std::dynamic_pointer_cast<CacheableInt32>(
@@ -51,33 +51,29 @@ class ThinClientTallyLoader : public TallyLoader {
     char lstrvalue[32];
     sprintf(lstrvalue, "%i", loadValue);
    auto lreturnValue = CacheableString::create(lstrvalue);
-   if (key != nullptr && (!rp->getAttributes()->getEndpoints().empty() ||
-                          !rp->getAttributes()->getPoolName().empty())) {
+   if (key != nullptr && (!rp.getAttributes()->getEndpoints().empty() ||
+                          !rp.getAttributes()->getPoolName().empty())) {
      LOGDEBUG("Putting the value (%s) for local region clients only ",
               lstrvalue);
-     rp->put(key, lreturnValue);
+     rp.put(key, lreturnValue);
     }
     return lreturnValue;
   }
 
-  void close(const std::shared_ptr<Region>& region) {
+  void close(Region& region) {
     LOG(" ThinClientTallyLoader::close() called");
-    if (region != nullptr) {
-      LOGINFO(" Region %s is Destroyed = %d ", region->getName().c_str(),
-              region->isDestroyed());
-      ASSERT(region->isDestroyed() == true,
-             "region.isDestroyed should return true");
-      /*
-      if(region.get() != nullptr && region.get()->getCache() != nullptr){
-        LOGINFO(" Cache Name is Closed = %d ",
-      region.get()->getCache()->isClosed());
-      }else{
-        LOGINFO(" regionPtr or cachePtr is nullptr");
-      }
-      */
-    } else {
-      LOGINFO(" region is nullptr");
+    LOGINFO(" Region %s is Destroyed = %d ", region.getName().c_str(),
+            region.isDestroyed());
+    ASSERT(region.isDestroyed() == true,
+           "region.isDestroyed should return true");
+    /*
+    if(region.get() != nullptr && region.get()->getCache() != nullptr){
+      LOGINFO(" Cache Name is Closed = %d ",
+    region.get()->getCache()->isClosed());
+    }else{
+      LOGINFO(" regionPtr or cachePtr is nullptr");
     }
+    */
   }
 };
 
