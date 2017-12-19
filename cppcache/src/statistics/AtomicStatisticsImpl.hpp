@@ -23,11 +23,11 @@
 #include <geode/geode_globals.hpp>
 
 #include <atomic>
-
-#include <geode/statistics/Statistics.hpp>
-#include "StatisticsTypeImpl.hpp"
-#include <geode/statistics/StatisticsFactory.hpp>
 #include <string>
+
+#include "Statistics.hpp"
+#include "StatisticsTypeImpl.hpp"
+#include "StatisticsFactory.hpp"
 
 #include <NonCopyable.hpp>
 

@@ -21,9 +21,9 @@
 #define GEODE_CACHEPERFSTATS_H_
 
 #include <geode/geode_globals.hpp>
-#include <geode/statistics/Statistics.hpp>
-#include <geode/statistics/StatisticsFactory.hpp>
 
+#include "statistics/Statistics.hpp"
+#include "statistics/StatisticsFactory.hpp"
 #include "statistics/StatisticsManager.hpp"
 
 namespace apache {

@@ -20,7 +20,8 @@
 #ifndef GEODE_STATISTICS_STATISTICSTYPE_H_
 #define GEODE_STATISTICS_STATISTICSTYPE_H_
 
-#include "../geode_globals.hpp"
+#include <geode/geode_globals.hpp>
+
 #include "StatisticDescriptor.hpp"
 
 /** @file

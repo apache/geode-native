@@ -21,10 +21,11 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/statistics/StatisticDescriptor.hpp>
-#include <geode/statistics/StatisticsType.hpp>
-#include <geode/statistics/Statistics.hpp>
-#include <geode/statistics/StatisticsFactory.hpp>
+
+#include "StatisticDescriptor.hpp"
+#include "StatisticsType.hpp"
+#include "Statistics.hpp"
+#include "StatisticsFactory.hpp"
 
 using namespace apache::geode::client;
 

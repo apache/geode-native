@@ -32,7 +32,7 @@
 
 #include "BuiltinCacheableWrappers.hpp"
 #include <Utils.hpp>
-#include <geode/statistics/StatisticsFactory.hpp>
+#include <statistics/StatisticsFactory.hpp>
 
 #include "CacheHelper.hpp"
 

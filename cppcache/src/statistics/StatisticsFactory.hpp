@@ -20,11 +20,12 @@
 #ifndef GEODE_STATISTICS_STATISTICSFACTORY_H_
 #define GEODE_STATISTICS_STATISTICSFACTORY_H_
 
-#include "../geode_globals.hpp"
+#include <geode/geode_globals.hpp>
+#include <geode/ExceptionTypes.hpp>
+
 #include "StatisticDescriptor.hpp"
 #include "StatisticsType.hpp"
 #include "Statistics.hpp"
-#include "../ExceptionTypes.hpp"
 
 /** @file
  */

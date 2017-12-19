@@ -24,9 +24,9 @@
 #include <vector>
 
 #include <geode/geode_globals.hpp>
-#include <geode/statistics/Statistics.hpp>
 #include <geode/ExceptionTypes.hpp>
 
+#include "Statistics.hpp"
 #include "HostStatSampler.hpp"
 #include "StatisticsTypeImpl.hpp"
 #include "AdminRegion.hpp"

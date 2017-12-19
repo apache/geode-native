@@ -20,9 +20,8 @@
 #ifndef GEODE_STATISTICS_OSSTATISTICSIMPL_H_
 #define GEODE_STATISTICS_OSSTATISTICSIMPL_H_
 
-#include <geode/statistics/Statistics.hpp>
-#include <geode/statistics/StatisticsFactory.hpp>
-
+#include "Statistics.hpp"
+#include "StatisticsFactory.hpp"
 #include "StatisticsTypeImpl.hpp"
 #include "NonCopyable.hpp"
 

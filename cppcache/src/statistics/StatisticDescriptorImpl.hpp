@@ -23,7 +23,8 @@
 #include <string>
 
 #include <geode/ExceptionTypes.hpp>
-#include <geode/statistics/StatisticDescriptor.hpp>
+
+#include "StatisticDescriptor.hpp"
 
 /** @file
  */

@@ -21,7 +21,9 @@
  */
 
 #include <geode/geode_globals.hpp>
-#include <geode/statistics/Statistics.hpp>
+
+#include "Statistics.hpp"
+
 using namespace apache::geode::client;
 
 /** @file

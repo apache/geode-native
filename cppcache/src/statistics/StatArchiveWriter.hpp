@@ -22,19 +22,21 @@
 
 #include <map>
 #include <list>
+#include <chrono>
+
 #include <geode/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Cache.hpp>
-#include "StatsDef.hpp"
-#include <geode/statistics/Statistics.hpp>
-#include <geode/statistics/StatisticDescriptor.hpp>
-#include "StatisticDescriptorImpl.hpp"
-#include <geode/statistics/StatisticsType.hpp>
-#include "HostStatSampler.hpp"
-#include "util/Log.hpp"
 #include <geode/DataOutput.hpp>
-#include <NonCopyable.hpp>
-#include <chrono>
+
+#include "StatsDef.hpp"
+#include "Statistics.hpp"
+#include "StatisticDescriptor.hpp"
+#include "StatisticDescriptorImpl.hpp"
+#include "StatisticsType.hpp"
+#include "HostStatSampler.hpp"
+#include "../util/Log.hpp"
+#include "../NonCopyable.hpp"
 #include "SerializationRegistry.hpp"
 
 using namespace apache::geode::client;

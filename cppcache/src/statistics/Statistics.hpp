@@ -22,7 +22,8 @@
 
 #include <string>
 
-#include "../geode_globals.hpp"
+#include <geode/geode_globals.hpp>
+
 #include "StatisticsType.hpp"
 #include "StatisticDescriptor.hpp"
 
