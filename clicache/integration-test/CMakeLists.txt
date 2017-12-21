@@ -110,7 +110,6 @@ set_property(TEST ThinClientSecurityAuthTestsN PROPERTY LABELS OMITTED)
 set_property(TEST ThinClientSecurityAuthTestsMUN PROPERTY LABELS OMITTED)
 set_property(TEST ThinClientSecurityAuthzTestsMUN PROPERTY LABELS OMITTED)
 set_property(TEST ThinClientSecurityAuthzTestsN PROPERTY LABELS OMITTED)
-set_property(TEST ThinClientStatisticTestsN PROPERTY LABELS OMITTED)
 
 add_custom_target(run-stable-clicache-integration-tests
   COMMAND ctest -C $<CONFIGURATION> -L STABLE
