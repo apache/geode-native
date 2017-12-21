@@ -286,7 +286,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
   {
     LOG("WarmUpTask started.");
     int failureCount = 0;
-    int metadatarefreshCount = 0;
     auto dataReg = getHelper()->getRegion(regionNames[0]);
 
     // This is to get MetaDataService going.
@@ -302,19 +301,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
         if (networkhop) {
           failureCount++;
         }
-        auto factory = cacheHelper->getCache()->getStatisticsFactory();
-        auto type = factory->findType("RegionStatistics");
-        if (type) {
-          auto rStats = factory->findFirstStatisticsByType(type);
-          if (rStats) {
-            metadatarefreshCount =
-                rStats->getInt((char*)"metaDataRefreshCount");
-          }
-        }
-        LOGINFO(
-            "WarmUpTask: & metadatarefreshCount is %d "
-            "failureCount = %d",
-            metadatarefreshCount, failureCount);
         LOGINFO("CPPTEST: put success ");
       } catch (CacheServerException&) {
         // This is actually a success situation!
@@ -354,8 +340,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
                        ->getPoolSize("__TEST_POOL1__");
     LOGINFO("poolconn = %d and endpoints size = %d ", poolconn,
             endpointNames.size());
-    ASSERT(metadatarefreshCount < 100,
-           "metadatarefreshCount should be less than 1000");
 
     // SLEEP(20000);
 
@@ -367,7 +351,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask3)
   {
     LOG("WarmUpTask3 started.");
     int failureCount = 0;
-    int metadatarefreshCount = 0;
     auto dataReg = getHelper()->getRegion(regionNames[0]);
 
     // This is to get MetaDataService going.
@@ -383,19 +366,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask3)
         if (networkhop) {
           failureCount++;
         }
-        auto factory = cacheHelper->getCache()->getStatisticsFactory();
-        auto type = factory->findType("RegionStatistics");
-        if (type) {
-          auto rStats = factory->findFirstStatisticsByType(type);
-          if (rStats) {
-            metadatarefreshCount =
-                rStats->getInt((char*)"metaDataRefreshCount");
-          }
-        }
-        LOGINFO(
-            "WarmUpTask3: & metadatarefreshCount is %d "
-            "failureCount = %d",
-            metadatarefreshCount, failureCount);
         LOGINFO("CPPTEST: put success ");
       } catch (CacheServerException&) {
         // This is actually a success situation!
@@ -437,8 +407,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask3)
                        ->getPoolSize("__TEST_POOL1__");
     LOGINFO("poolconn = %d and endpoints size = %d ", poolconn,
             endpointNames.size());
-    ASSERT(metadatarefreshCount < expectedFailCount,
-           "metadatarefreshCount should be less than expectedFailCount");
 
     LOG("WarmUpTask3 completed.");
   }

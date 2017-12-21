@@ -231,8 +231,6 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
   virtual std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
       std::string className) const override;
 
-  virtual statistics::StatisticsFactory* getStatisticsFactory() const;
-
   virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* m_buffer,
                                                      int32_t len) const;
   virtual std::unique_ptr<DataOutput> createDataOutput() const;

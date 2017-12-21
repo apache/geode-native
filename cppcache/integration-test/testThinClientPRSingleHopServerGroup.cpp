@@ -96,7 +96,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
   {
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT1 started.");
     int failureCount = 0;
-    int metadatarefreshCount = 0;
 
     auto dataReg = getHelper()->getRegion(regionNames[0]);
 
@@ -116,15 +115,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
 
-        auto factory = cacheHelper->getCache()->getStatisticsFactory();
-        auto type = factory->findType("RegionStatistics");
-        if (type) {
-          Statistics* rStats = factory->findFirstStatisticsByType(type);
-          if (rStats) {
-            metadatarefreshCount =
-                rStats->getInt((char*)"metaDataRefreshCount");
-          }
-        }
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
@@ -148,8 +138,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
     }
     // relaxed this limit as it takes time
     ASSERT(failureCount < 70, "Count should be less then 70");
-    ASSERT(metadatarefreshCount < 70,
-           "metadatarefreshCount should be less than 70");
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT1 put completed.");
 
     for (int i = 0; i < 1000; i++) {
@@ -270,7 +258,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
   {
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT2 started.");
     int failureCount = 0;
-    int metadatarefreshCount = 0;
 
     auto dataReg = getHelper()->getRegion(regionNames[0]);
 
@@ -290,15 +277,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
 
-        auto factory = cacheHelper->getCache()->getStatisticsFactory();
-        auto type = factory->findType("RegionStatistics");
-        if (type) {
-          Statistics* rStats = factory->findFirstStatisticsByType(type);
-          if (rStats) {
-            metadatarefreshCount =
-                rStats->getInt((char*)"metaDataRefreshCount");
-          }
-        }
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
@@ -321,8 +299,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
       }
     }
     ASSERT(failureCount > 0, "Count should be greater than 1");
-    ASSERT(metadatarefreshCount > 0,
-           "metadatarefreshCount should be greater than 1");
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT2 put completed.");
 
     for (int i = 0; i < 1000; i++) {
@@ -433,7 +409,6 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
   {
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT3 started.");
     int failureCount = 0;
-    int metadatarefreshCount = 0;
 
     auto dataReg = getHelper()->getRegion(regionNames[0]);
 
@@ -453,15 +428,6 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
 
-        auto factory = cacheHelper->getCache()->getStatisticsFactory();
-        auto type = factory->findType("RegionStatistics");
-        if (type) {
-          Statistics* rStats = factory->findFirstStatisticsByType(type);
-          if (rStats) {
-            metadatarefreshCount =
-                rStats->getInt((char*)"metaDataRefreshCount");
-          }
-        }
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
@@ -484,8 +450,6 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
       }
     }
     ASSERT(failureCount > 0, "Count should be greater than 1");
-    ASSERT(metadatarefreshCount > 0,
-           "metadatarefreshCount should be greater than 1");
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT3 put completed.");
 
     for (int i = 0; i < 1000; i++) {

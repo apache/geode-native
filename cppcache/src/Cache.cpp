@@ -228,12 +228,6 @@ std::shared_ptr<PdxInstanceFactory> Cache::createPdxInstanceFactory(
    return nullptr;
 }
 
-StatisticsFactory* Cache::getStatisticsFactory() const {
-  return m_cacheImpl->getDistributedSystem()
-      .getStatisticsManager()
-      ->getStatisticsFactory();
-}
-
 PoolManager& Cache::getPoolManager() const {
   return m_cacheImpl->getPoolManager();
 }

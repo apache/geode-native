@@ -122,7 +122,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
   {
     LOG("WarmUpTask started.");
     int failureCount = 0;
-    int metadatarefreshCount = 0;
     auto dataReg = getHelper()->getRegion(regionNames[0]);
 
     // This is to get MetaDataService going.
@@ -138,19 +137,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
         if (networkhop) {
           failureCount++;
         }
-        auto factory = cacheHelper->getCache()->getStatisticsFactory();
-        auto type = factory->findType("RegionStatistics");
-        if (type) {
-          Statistics* rStats = factory->findFirstStatisticsByType(type);
-          if (rStats) {
-            metadatarefreshCount =
-                rStats->getInt((char*)"metaDataRefreshCount");
-          }
-        }
-        LOGINFO(
-            "WarmUpTask: metadatarefreshCount is %d "
-            "failureCount = %d",
-            metadatarefreshCount, failureCount);
         LOGINFO("CPPTEST: put success ");
       } catch (CacheServerException&) {
         // This is actually a success situation!
@@ -186,8 +172,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
     }
     // it takes time to fetch prmetadata so relaxing this limit
     ASSERT(failureCount < 100, "Count should be less than 100");
-    ASSERT(metadatarefreshCount < 100,
-           "metadatarefreshCount should be less than 100");
 
     SLEEP(20000);
 
