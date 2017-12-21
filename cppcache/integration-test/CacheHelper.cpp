@@ -1853,7 +1853,7 @@ int CacheHelper::getRandomAvailablePort() {
 std::string CacheHelper::unitTestOutputFile() {
   char cwd[1024];
   if (!ACE_OS::getcwd(cwd, sizeof(cwd))) {
-    throw std::exception("Failed to get current working directory.");
+    throw Exception("Failed to get current working directory.");
   }
 
   std::string outputFile(cwd);
