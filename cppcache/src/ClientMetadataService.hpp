@@ -26,7 +26,6 @@
 #include <mutex>
 #include <chrono>
 
-
 #include <ace/Task.h>
 
 #include <memory>
@@ -216,7 +215,8 @@ class ClientMetadataService : public ACE_Task_Base,
   std::shared_ptr<ClientMetadata> SendClientPRMetadata(
       const char* regionPath, std::shared_ptr<ClientMetadata> cptr);
 
-  std::shared_ptr<ClientMetadata> getClientMetadata(const std::shared_ptr<Region>& region);
+  std::shared_ptr<ClientMetadata> getClientMetadata(
+      const std::shared_ptr<Region>& region);
 
  private:
   // ACE_Recursive_Thread_Mutex m_regionMetadataLock;
