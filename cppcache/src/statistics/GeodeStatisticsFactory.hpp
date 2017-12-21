@@ -27,8 +27,8 @@
 
 #include <geode/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
-#include <geode/statistics/StatisticsFactory.hpp>
 
+#include "StatisticsFactory.hpp"
 #include "StatisticsTypeImpl.hpp"
 #include "StatisticsManager.hpp"
 

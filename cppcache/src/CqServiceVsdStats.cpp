@@ -19,9 +19,9 @@
 #include <ace/Singleton.h>
 #include <mutex>
 #include <geode/geode_globals.hpp>
-#include <geode/statistics/StatisticsFactory.hpp>
 
 #include "CqServiceVsdStats.hpp"
+#include "statistics/StatisticsFactory.hpp"
 
 namespace apache {
 namespace geode {

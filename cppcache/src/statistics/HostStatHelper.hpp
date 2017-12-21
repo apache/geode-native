@@ -20,14 +20,16 @@
 #ifndef GEODE_STATISTICS_HOSTSTATHELPER_H_
 #define GEODE_STATISTICS_HOSTSTATHELPER_H_
 
-#include <geode/geode_globals.hpp>
 #include <string>
+
+#include <geode/geode_globals.hpp>
+
 #include "StatisticDescriptorImpl.hpp"
-#include <geode/statistics/StatisticsType.hpp>
-#include <geode/statistics/Statistics.hpp>
-#include <geode/statistics/StatisticDescriptor.hpp>
+#include "StatisticsType.hpp"
+#include "Statistics.hpp"
+#include "StatisticDescriptor.hpp"
 #include "ProcessStats.hpp"
-#include <geode/statistics/StatisticsFactory.hpp>
+#include "StatisticsFactory.hpp"
 #include "OsStatisticsImpl.hpp"
 #include "LinuxProcessStats.hpp"
 #include "SolarisProcessStats.hpp"

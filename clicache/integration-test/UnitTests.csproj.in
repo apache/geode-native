@@ -187,7 +187,6 @@
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientRegionInterestFailoverRegexInterestTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientRegionInterestNotifyTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientSecurityAuthTestsN.cs" />
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientStatisticTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientSecurityAuthTestsMUN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientSecurityAuthzTestBaseN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientSecurityAuthzTestsMUN.cs" />

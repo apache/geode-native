@@ -24,7 +24,7 @@
 #include <ace/High_Res_Timer.h>
 #include <ace/ACE.h>
 
-#include <geode/statistics/StatisticsFactory.hpp>
+#include <statistics/StatisticsFactory.hpp>
 
 #include "fw_dunit.hpp"
 #include "BuiltinCacheableWrappers.hpp"

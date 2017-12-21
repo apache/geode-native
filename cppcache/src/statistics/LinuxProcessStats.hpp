@@ -21,10 +21,10 @@
 #define GEODE_STATISTICS_LINUXPROCESSSTATS_H_
 
 #include <geode/geode_globals.hpp>
-#include <geode/statistics/Statistics.hpp>
-#include <geode/statistics/StatisticsType.hpp>
-#include <geode/statistics/StatisticDescriptor.hpp>
 
+#include "Statistics.hpp"
+#include "StatisticsType.hpp"
+#include "StatisticDescriptor.hpp"
 #include "ProcessStats.hpp"
 #include "HostStatHelper.hpp"
 #include "GeodeStatisticsFactory.hpp"

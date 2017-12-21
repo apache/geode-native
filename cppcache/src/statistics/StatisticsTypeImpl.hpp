@@ -23,10 +23,10 @@
 #include <map>
 #include <string>
 
-#include <geode/statistics/StatisticsType.hpp>
-#include <geode/statistics/StatisticsFactory.hpp>
 #include <geode/ExceptionTypes.hpp>
 
+#include "StatisticsType.hpp"
+#include "StatisticsFactory.hpp"
 #include "StatsDef.hpp"
 
 /** @file

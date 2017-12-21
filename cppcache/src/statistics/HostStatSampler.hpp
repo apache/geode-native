@@ -23,13 +23,16 @@
 #include <string>
 #include <vector>
 #include <chrono>
+
 #include <ace/Task.h>
 #include <ace/Recursive_Thread_Mutex.h>
+
 #include <geode/geode_globals.hpp>
-#include <geode/statistics/Statistics.hpp>
-#include <geode/statistics/StatisticDescriptor.hpp>
+
+#include "Statistics.hpp"
+#include "StatisticDescriptor.hpp"
 #include "StatisticsManager.hpp"
-#include <geode/statistics/StatisticsType.hpp>
+#include "StatisticsType.hpp"
 #include "StatSamplerStats.hpp"
 #include "StatArchiveWriter.hpp"
 #include <geode/ExceptionTypes.hpp>

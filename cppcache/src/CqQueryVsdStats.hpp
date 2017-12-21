@@ -23,10 +23,10 @@
 #include <string>
 
 #include <geode/geode_globals.hpp>
-#include <geode/statistics/Statistics.hpp>
-#include <geode/statistics/StatisticsFactory.hpp>
 #include <geode/CqStatistics.hpp>
 
+#include "statistics/Statistics.hpp"
+#include "statistics/StatisticsFactory.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {

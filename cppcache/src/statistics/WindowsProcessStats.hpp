@@ -21,10 +21,10 @@
 #define GEODE_STATISTICS_WINDOWSPROCESSSTATS_H_
 
 #include <geode/geode_globals.hpp>
-#include <geode/statistics/Statistics.hpp>
-#include <geode/statistics/StatisticsType.hpp>
-#include <geode/statistics/StatisticDescriptor.hpp>
-#include <geode/statistics/StatisticsFactory.hpp>
+#include "statistics/Statistics.hpp"
+#include "statistics/StatisticsType.hpp"
+#include "statistics/StatisticDescriptor.hpp"
+#include "statistics/StatisticsFactory.hpp"
 #include <geode/ExceptionTypes.hpp>
 
 #include "ProcessStats.hpp"

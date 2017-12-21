@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/statistics/StatisticsFactory.hpp>
+#include <statistics/StatisticsFactory.hpp>
 
 #include <ace/ACE.h>
 #include <ace/Guard_T.h>

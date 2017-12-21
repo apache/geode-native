@@ -28,20 +28,21 @@
 #include <string>
 #include <unordered_set>
 #include <memory>
+#include <typeinfo>
+#include <string>
+#include <unordered_set>
+#include <memory>
+#include <chrono>
 
 #include <geode/geode_globals.hpp>
 #include <geode/geode_base.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/statistics/Statistics.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/DistributedSystem.hpp>
-#include <typeinfo>
-#include <string>
-#include <unordered_set>
-#include <memory>
-#include <chrono>
+
+#include "statistics/Statistics.hpp"
 
 #ifdef __GNUC__
 extern "C" {

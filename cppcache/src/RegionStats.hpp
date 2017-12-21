@@ -23,8 +23,9 @@
 #include <string>
 
 #include <geode/geode_globals.hpp>
-#include <geode/statistics/Statistics.hpp>
-#include <geode/statistics/StatisticsFactory.hpp>
+
+#include "statistics/Statistics.hpp"
+#include "statistics/StatisticsFactory.hpp"
 
 namespace apache {
 namespace geode {
