@@ -84,12 +84,7 @@ void SqLiteImpl::init(const std::shared_ptr<Region>& region,
     m_persistanceDir = std::string(currWDPath) + "/" + m_persistanceDir;
   }
 
-  LOGINFO("SqLiteImpl::init absolute path for persistence directory: %s",
-          m_persistanceDir.c_str());
-
   // Create persistence directory
-  LOGFINE("SqLiteImpl::init creating persistence directory: %s",
-          m_persistanceDir.c_str());
   CreateDirectory(m_persistanceDir.c_str(), NULL);
 
   // Create region directory
@@ -97,8 +92,6 @@ void SqLiteImpl::init(const std::shared_ptr<Region>& region,
   CreateDirectory(regionDirectory.c_str(), NULL);
   m_regionDBFile = regionDirectory + "/" + regionName + ".db";
 
-  LOGFINE("SqLiteImpl::init creating persistence region file: %s",
-          m_regionDBFile.c_str());
 #endif
 
   if (m_sqliteHelper->initDB(region->getName().c_str(), maxPageCount, pageSize,

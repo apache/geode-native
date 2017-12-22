@@ -161,7 +161,7 @@ namespace Apache
       ///
       /// </para>
       /// </remarks>
-      public ref class Log STATICCLASS
+      private ref class Log STATICCLASS
       {
       public:
 

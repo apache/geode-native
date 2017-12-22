@@ -37,7 +37,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
 
           ManagedString mg_lfname(logFileName);
-        apache::geode::client::Log::init(static_cast<apache::geode::client::Log::LogLevel>(level),
+        apache::geode::client::Log::init(static_cast<apache::geode::client::LogLevel>(level),
                                          mg_lfname.CharPtr);
 
         _GF_MG_EXCEPTION_CATCH_ALL2
@@ -48,7 +48,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
 
           ManagedString mg_lfname(logFileName);
-        apache::geode::client::Log::init(static_cast<apache::geode::client::Log::LogLevel>(level),
+        apache::geode::client::Log::init(static_cast<apache::geode::client::LogLevel>(level),
                                          mg_lfname.CharPtr, logFileLimit);
 
         _GF_MG_EXCEPTION_CATCH_ALL2
@@ -67,7 +67,7 @@ namespace Apache
       void Log::SetLevel(LogLevel level)
       {
         apache::geode::client::Log::setLogLevel(
-          static_cast<apache::geode::client::Log::LogLevel>(level));
+          static_cast<apache::geode::client::LogLevel>(level));
       }
 
       String^ Log::LogFileName()
@@ -82,7 +82,7 @@ namespace Apache
       bool Log::Enabled(LogLevel level)
       {
         return apache::geode::client::Log::enabled(
-          static_cast<apache::geode::client::Log::LogLevel>(level));
+          static_cast<apache::geode::client::LogLevel>(level));
       }
 
       void Log::Write(LogLevel level, String^ msg)
@@ -90,7 +90,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
 
           ManagedString mg_msg(msg);
-        apache::geode::client::Log::log(static_cast<apache::geode::client::Log::LogLevel>(level),
+        apache::geode::client::Log::log(static_cast<apache::geode::client::LogLevel>(level),
                                         mg_msg.CharPtr);
 
         _GF_MG_EXCEPTION_CATCH_ALL2

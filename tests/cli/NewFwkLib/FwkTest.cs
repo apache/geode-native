@@ -1335,8 +1335,6 @@ namespace Apache.Geode.Client.FwkLib
             FwkInfo("Region attributes for {0}: {1}", rootRegionName,
               CacheHelper<TKey, TVal>.RegionAttributesToString(regAttr));
           }
-          Log.Info("<ExpectedException action=add>NotAuthorizedException" +
-            "</ExpectedException>");
           return region;
         }
       }
