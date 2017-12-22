@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-#include <geode/Cache.hpp>
-#include <geode/CacheableKey.hpp>
+#pragma once
 
-#include "CacheableToken.hpp"
+#ifndef GEODE_UTIL_LOGLEVEL_HPP
+#define GEODE_UTIL_LOGLEVEL_HPP
 
 namespace apache {
 namespace geode {
 namespace client {
 
-RegionEntry::RegionEntry(const std::shared_ptr<Region>& region,
-                         const std::shared_ptr<CacheableKey>& key,
-                         const std::shared_ptr<Cacheable>& value)
-    : m_region(region), m_key(key), m_value(value), m_destroyed(false) {}
-
-RegionEntry::~RegionEntry() {}
-std::shared_ptr<CacheableKey> RegionEntry::getKey() { return m_key; }
-std::shared_ptr<Cacheable> RegionEntry::getValue() {
-  return CacheableToken::isInvalid(m_value) ? nullptr : m_value;
-}
-std::shared_ptr<Region> RegionEntry::getRegion() { return m_region; }
-std::shared_ptr<CacheStatistics> RegionEntry::getStatistics() {
-  return m_statistics;
-}
-
-bool RegionEntry::isDestroyed() const { return m_destroyed; }
+enum class LogLevel {
+  None,
+  Error,
+  Warning,
+  Info,
+  Default,
+  Config,
+  Fine,
+  Finer,
+  Finest,
+  Debug,
+  All
+};
 
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+#endif //GEODE_UTIL_LOGLEVEL_HPP
+

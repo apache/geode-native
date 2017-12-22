@@ -16,10 +16,14 @@
  */
 
 #include <geode/Cache.hpp>
-#include <CacheRegionHelper.hpp>
+
+#include "CacheRegionHelper.hpp"
 #include "RegionXmlCreation.hpp"
 #include "CacheImpl.hpp"
-using namespace apache::geode::client;
+
+namespace apache {
+namespace geode {
+namespace client {
 
 void RegionXmlCreation::addSubregion(
     std::shared_ptr<RegionXmlCreation> regionPtr) {
@@ -70,3 +74,7 @@ std::string RegionXmlCreation::getAttrId() const { return attrId; }
 void RegionXmlCreation::setAttrId(const std::string& pattrId) {
   this->attrId = pattrId;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

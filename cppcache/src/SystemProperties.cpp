@@ -43,7 +43,7 @@ const char StatisticsEnabled[] = "statistic-sampling-enabled";
 const char AppDomainEnabled[] = "appdomain-enabled";
 const char StatisticsArchiveFile[] = "statistic-archive-file";
 const char LogFilename[] = "log-file";
-const char LogLevel[] = "log-level";
+const char LogLevelProperty[] = "log-level";
 
 const char Name[] = "name";
 const char JavaConnectionPoolSize[] = "connection-pool-size";
@@ -101,8 +101,8 @@ const bool DefaultAppDomainEnabled = false;
 const char DefaultStatArchive[] = "statArchive.gfs";
 const char DefaultLogFilename[] = "";  // stdout...
 
-const apache::geode::client::Log::LogLevel DefaultLogLevel =
-    apache::geode::client::Log::Config;
+const apache::geode::client::LogLevel DefaultLogLevel =
+    apache::geode::client::LogLevel::Config;
 
 const int DefaultJavaConnectionPoolSize = 5;
 
@@ -337,11 +337,9 @@ void SystemProperties::processProperty(const std::string& property,
     m_statisticsArchiveFile = value;
   } else if (property == LogFilename) {
     m_logFilename = value;
-  } else if (property == LogLevel) {
+  } else if (property == LogLevelProperty) {
     try {
-      Log::LogLevel level = Log::charsToLevel(value);
-      m_logLevel = level;
-
+      m_logLevel = Log::charsToLevel(value);
     } catch (IllegalArgumentException&) {
       throwError(
           ("SystemProperties: unknown log level " + property + "=" + value)

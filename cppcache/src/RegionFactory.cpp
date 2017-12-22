@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-#include <geode/CacheFactory.hpp>
-#include <geode/RegionFactory.hpp>
-#include <CppCacheLibrary.hpp>
-#include <geode/Cache.hpp>
-#include <CacheImpl.hpp>
-#include <geode/SystemProperties.hpp>
-#include <geode/PoolManager.hpp>
-#include <CacheConfig.hpp>
-#include <CacheRegionHelper.hpp>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Guard_T.h>
 #include <map>
 #include <string>
 
-extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
+#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Guard_T.h>
+
+#include <geode/CacheFactory.hpp>
+#include <geode/RegionFactory.hpp>
+#include <geode/Cache.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/PoolManager.hpp>
+
+#include "CppCacheLibrary.hpp"
+#include "CacheImpl.hpp"
+#include "CacheConfig.hpp"
+#include "CacheRegionHelper.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
 
 RegionFactory::RegionFactory(RegionShortcut preDefinedRegion,
                              CacheImpl* cacheImpl)

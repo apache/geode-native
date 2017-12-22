@@ -27,6 +27,9 @@ target_link_libraries(fwk
     framework
     c++11
 )
+target_include_directories(fwk PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cppcache/src>
+)
 
 #TODO very bad we include root of tests
 include_directories(${CMAKE_SOURCE_DIR}/tests/cpp)

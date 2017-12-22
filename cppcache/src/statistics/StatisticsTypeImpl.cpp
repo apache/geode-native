@@ -15,37 +15,17 @@
  * limitations under the License.
  */
 
+#include <string>
+
+#include <ace/OS.h>
+
 #include "StatisticsTypeImpl.hpp"
 #include "StatisticDescriptorImpl.hpp"
-#include <string>
-#include <ace/OS.h>
-using namespace apache::geode::statistics;
+#include "../util/Log.hpp"
 
-/**
- * Gathers together a number of {@link StatisticDescriptor statistics}
- * into one logical type.
- *
- */
-
-/**
- * Creates a new <code>StatisticsType</code> with the given name,
- * description, and statistics.
- *
- * @param name
- *        The name of this statistics type (for example,
- *        <code>"DatabaseStatistics"</code>)
- * @param description
- *        A description of this statistics type (for example,
- *        "Information about the application's use of the
- *        database").
- * @param stats
- *        Descriptions of the individual statistics grouped together
- *        in this statistics type{@link StatisticDescriptor}.
- *
- * @throws NullPointerException
- *         If either <code>name</code> or <code>stats</code> is
- *         <code>null</code>.
- */
+namespace apache {
+namespace geode {
+namespace statistics {
 
 StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
                                        std::string descriptionArg,
@@ -118,8 +98,6 @@ StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
   this->doubleStatCount = doubleCount;
 }
 
-///////////////////////////////Dtor/////////////////////////
-
 StatisticsTypeImpl::~StatisticsTypeImpl() {
   try {
     // Delete the descriptor pointers from the array
@@ -137,8 +115,6 @@ StatisticsTypeImpl::~StatisticsTypeImpl() {
   } catch (...) {
   }
 }
-
-//////////////////////  StatisticsType Methods  //////////////////////
 
 const std::string& StatisticsTypeImpl::getName() const { return name; }
 
@@ -166,26 +142,17 @@ StatisticDescriptor* StatisticsTypeImpl::nameToDescriptor(
     return iterFind->second;
   }
 }
-//////////////////////  Instance Methods  //////////////////////
 
-/**
- * Gets the number of statistics in this type that are ints.
- */
 int32_t StatisticsTypeImpl::getIntStatCount() const { return intStatCount; }
 
-/**
- * Gets the number of statistics in this type that are longs.
- */
 int32_t StatisticsTypeImpl::getLongStatCount() const { return longStatCount; }
 
-/**
- * Gets the number of statistics that are doubles.
- */
 int32_t StatisticsTypeImpl::getDoubleStatCount() const {
   return doubleStatCount;
 }
 
-/**
- * Gets the total number of statistic descriptors.
- */
 int32_t StatisticsTypeImpl::getDescriptorsCount() const { return statsLength; }
+
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

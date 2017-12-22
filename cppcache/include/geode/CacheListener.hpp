@@ -20,8 +20,9 @@
  * limitations under the License.
  */
 
-#include "geode_globals.hpp"
 #include <memory>
+
+#include "geode_globals.hpp"
 
 /**
  * @file
@@ -32,8 +33,9 @@ namespace geode {
 namespace client {
 
 class EntryEvent;
-class RegionEvent;
 class Region;
+class RegionEvent;
+
 /**
  * @class CacheListener CacheListener.hpp
  * An application plug-in that can be installed on a region.

@@ -15,10 +15,14 @@
  * limitations under the License.
  */
 
-#include "DistributedSystemImpl.hpp"
 #include <geode/SystemProperties.hpp>
 
-using namespace apache::geode::client;
+#include "DistributedSystemImpl.hpp"
+#include "util/Log.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
 
 // guard for connect/disconnect
 extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
@@ -105,3 +109,7 @@ void DistributedSystemImpl::unregisterCliCallback(int appdomainId) {
     LOGFINE("Removing cliCallback %d", appdomainId);
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

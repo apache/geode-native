@@ -37,6 +37,10 @@ namespace client {
  * Implement an immutable Vector of <code>Cacheable</code> objects
  * that can serve as a distributable object for caching.
  */
+class DataInput;
+class DataOutput;
+class Serializable;
+
 class CPPCACHE_EXPORT CacheableObjectArray
     : public Cacheable,
       public std::vector<std::shared_ptr<Cacheable>> {

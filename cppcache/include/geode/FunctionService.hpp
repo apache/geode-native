@@ -20,6 +20,8 @@
 #ifndef GEODE_FUNCTIONSERVICE_H_
 #define GEODE_FUNCTIONSERVICE_H_
 
+#include <memory>
+
 #include "geode_globals.hpp"
 #include "Execution.hpp"
 
@@ -30,9 +32,11 @@
 namespace apache {
 namespace geode {
 namespace client {
-class Region;
 class Pool;
+class Region;
 class RegionService;
+class Execution;
+
 /**
  * @class FunctionService FunctionService.hpp
  * entry point for function execution

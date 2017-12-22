@@ -25,11 +25,12 @@
 #include <string>
 
 #include <geode/geode_globals.hpp>
+#include <geode/util/LogLevel.hpp>
 
 /******************************************************************************/
 
 #ifndef GEODE_HIGHEST_LOG_LEVEL
-#define GEODE_HIGHEST_LOG_LEVEL All
+#define GEODE_HIGHEST_LOG_LEVEL LogLevel::All
 #endif
 
 #ifndef GEODE_MAX_LOG_FILE_LIMIT
@@ -143,31 +144,6 @@ class CPPCACHE_EXPORT Log {
  public:
   /******/
 
-  enum LogLevel {
-
-    // NOTE: if you change this enum declaration at all, be sure to
-    // change levelToChars and charsToLevel functions!
-
-    None,
-
-    Error,
-    Warning,
-    Info,
-
-    Default,
-
-    Config,
-
-    Fine,
-    Finer,
-    Finest,
-
-    Debug,
-
-    All
-
-  };
-
   /******/
 
   /**
@@ -209,7 +185,7 @@ class CPPCACHE_EXPORT Log {
    * lower case. Out of range values will throw
    * IllegalArgumentException.
    */
-  static const char* levelToChars(Log::LogLevel level);
+  static const char* levelToChars(LogLevel level);
 
   /**
    * returns log level specified by "chars", or throws
@@ -240,7 +216,7 @@ class CPPCACHE_EXPORT Log {
    * Returns whether log messages at given level are enabled.
    */
   static bool enabled(LogLevel level) {
-    return (((s_doingDebug && level == Debug) ||
+    return (((s_doingDebug && level == LogLevel::Debug) ||
              GEODE_HIGHEST_LOG_LEVEL >= level) &&
             s_logLevel >= level);
   }
@@ -272,7 +248,8 @@ class CPPCACHE_EXPORT Log {
    * Returns whether "error" log messages are enabled.
    */
   static bool errorEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= Error && s_logLevel >= Error;
+    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Error
+        && s_logLevel >= LogLevel::Error;
   }
 
   /**
@@ -280,7 +257,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "error".
    */
   static void error(const char* msg) {
-    if (errorEnabled()) put(Error, msg);
+    if (errorEnabled()) put(LogLevel::Error, msg);
   }
 
   /**
@@ -288,7 +265,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "error".
    */
   static void errorThrow(const char* msg, const Exception& ex) {
-    if (errorEnabled()) putThrow(Error, msg, ex);
+    if (errorEnabled()) putThrow(LogLevel::Error, msg, ex);
   }
 
   /**
@@ -296,7 +273,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "error".
    */
   static void errorCatch(const char* msg, const Exception& ex) {
-    if (errorEnabled()) putCatch(Error, msg, ex);
+    if (errorEnabled()) putCatch(LogLevel::Error, msg, ex);
   }
 
   /******/
@@ -305,7 +282,8 @@ class CPPCACHE_EXPORT Log {
    * Returns whether "warning" log messages are enabled.
    */
   static bool warningEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= Warning && s_logLevel >= Warning;
+    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Warning
+        && s_logLevel >= LogLevel::Warning;
   }
 
   /**
@@ -313,7 +291,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "warning".
    */
   static void warning(const char* msg) {
-    if (warningEnabled()) put(Warning, msg);
+    if (warningEnabled()) put(LogLevel::Warning, msg);
   }
 
   /**
@@ -321,7 +299,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "warning".
    */
   static void warningThrow(const char* msg, const Exception& ex) {
-    if (warningEnabled()) putThrow(Warning, msg, ex);
+    if (warningEnabled()) putThrow(LogLevel::Warning, msg, ex);
   }
 
   /**
@@ -329,7 +307,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "warning".
    */
   static void warningCatch(const char* msg, const Exception& ex) {
-    if (warningEnabled()) putCatch(Warning, msg, ex);
+    if (warningEnabled()) putCatch(LogLevel::Warning, msg, ex);
   }
 
   /******/
@@ -338,7 +316,8 @@ class CPPCACHE_EXPORT Log {
    * Returns whether "info" log messages are enabled.
    */
   static bool infoEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= Info && s_logLevel >= Info;
+    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Info
+        && s_logLevel >= LogLevel::Info;
   }
 
   /**
@@ -346,7 +325,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "info".
    */
   static void info(const char* msg) {
-    if (infoEnabled()) put(Info, msg);
+    if (infoEnabled()) put(LogLevel::Info, msg);
   }
 
   /**
@@ -354,7 +333,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "info".
    */
   static void infoThrow(const char* msg, const Exception& ex) {
-    if (infoEnabled()) putThrow(Info, msg, ex);
+    if (infoEnabled()) putThrow(LogLevel::Info, msg, ex);
   }
 
   /**
@@ -362,7 +341,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "info".
    */
   static void infoCatch(const char* msg, const Exception& ex) {
-    if (infoEnabled()) putCatch(Info, msg, ex);
+    if (infoEnabled()) putCatch(LogLevel::Info, msg, ex);
   }
 
   /******/
@@ -371,7 +350,8 @@ class CPPCACHE_EXPORT Log {
    * Returns whether "config" log messages are enabled.
    */
   static bool configEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= Config && s_logLevel >= Config;
+    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Config
+        && s_logLevel >= LogLevel::Config;
   }
 
   /**
@@ -379,7 +359,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "config".
    */
   static void config(const char* msg) {
-    if (configEnabled()) put(Config, msg);
+    if (configEnabled()) put(LogLevel::Config, msg);
   }
 
   /**
@@ -387,7 +367,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "config".
    */
   static void configThrow(const char* msg, const Exception& ex) {
-    if (configEnabled()) putThrow(Config, msg, ex);
+    if (configEnabled()) putThrow(LogLevel::Config, msg, ex);
   }
 
   /**
@@ -395,7 +375,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "config".
    */
   static void configCatch(const char* msg, const Exception& ex) {
-    if (configEnabled()) putCatch(Config, msg, ex);
+    if (configEnabled()) putCatch(LogLevel::Config, msg, ex);
   }
 
   /******/
@@ -404,7 +384,8 @@ class CPPCACHE_EXPORT Log {
    * Returns whether "fine" log messages are enabled.
    */
   static bool fineEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= Fine && s_logLevel >= Fine;
+    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Fine
+        && s_logLevel >= LogLevel::Fine;
   }
 
   /**
@@ -412,7 +393,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "fine".
    */
   static void fine(const char* msg) {
-    if (fineEnabled()) put(Fine, msg);
+    if (fineEnabled()) put(LogLevel::Fine, msg);
   }
 
   /**
@@ -420,7 +401,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "fine".
    */
   static void fineThrow(const char* msg, const Exception& ex) {
-    if (fineEnabled()) putThrow(Fine, msg, ex);
+    if (fineEnabled()) putThrow(LogLevel::Fine, msg, ex);
   }
 
   /**
@@ -428,7 +409,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "fine".
    */
   static void fineCatch(const char* msg, const Exception& ex) {
-    if (fineEnabled()) putCatch(Fine, msg, ex);
+    if (fineEnabled()) putCatch(LogLevel::Fine, msg, ex);
   }
 
   /******/
@@ -437,7 +418,8 @@ class CPPCACHE_EXPORT Log {
    * Returns whether "finer" log messages are enabled.
    */
   static bool finerEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= Finer && s_logLevel >= Finer;
+    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finer
+        && s_logLevel >= LogLevel::Finer;
   }
 
   /**
@@ -445,7 +427,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "finer".
    */
   static void finer(const char* msg) {
-    if (finerEnabled()) put(Finer, msg);
+    if (finerEnabled()) put(LogLevel::Finer, msg);
   }
 
   /**
@@ -453,7 +435,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "finer".
    */
   static void finerThrow(const char* msg, const Exception& ex) {
-    if (finerEnabled()) putThrow(Finer, msg, ex);
+    if (finerEnabled()) putThrow(LogLevel::Finer, msg, ex);
   }
 
   /**
@@ -461,7 +443,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "finer".
    */
   static void finerCatch(const char* msg, const Exception& ex) {
-    if (finerEnabled()) putCatch(Finer, msg, ex);
+    if (finerEnabled()) putCatch(LogLevel::Finer, msg, ex);
   }
 
   /******/
@@ -470,7 +452,8 @@ class CPPCACHE_EXPORT Log {
    * Returns whether "finest" log messages are enabled.
    */
   static bool finestEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= Finest && s_logLevel >= Finest;
+    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finest
+        && s_logLevel >= LogLevel::Finest;
   }
 
   /**
@@ -478,7 +461,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "finest".
    */
   static void finest(const char* msg) {
-    if (finestEnabled()) put(Finest, msg);
+    if (finestEnabled()) put(LogLevel::Finest, msg);
   }
 
   /**
@@ -486,7 +469,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "finest".
    */
   static void finestThrow(const char* msg, const Exception& ex) {
-    if (finestEnabled()) putThrow(Finest, msg, ex);
+    if (finestEnabled()) putThrow(LogLevel::Finest, msg, ex);
   }
 
   /**
@@ -494,7 +477,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "finest".
    */
   static void finestCatch(const char* msg, const Exception& ex) {
-    if (finestEnabled()) putCatch(Finest, msg, ex);
+    if (finestEnabled()) putCatch(LogLevel::Finest, msg, ex);
   }
 
   /******/
@@ -503,8 +486,8 @@ class CPPCACHE_EXPORT Log {
    * Returns whether "debug" log messages are enabled.
    */
   static bool debugEnabled() {
-    return (s_doingDebug || GEODE_HIGHEST_LOG_LEVEL >= Debug) &&
-           s_logLevel >= Debug;
+    return (s_doingDebug || GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Debug) &&
+        s_logLevel >= LogLevel::Debug;
   }
 
   /**
@@ -512,7 +495,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "debug".
    */
   static void debug(const char* msg) {
-    if (debugEnabled()) put(Debug, msg);
+    if (debugEnabled()) put(LogLevel::Debug, msg);
   }
 
   /**
@@ -520,7 +503,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "debug".
    */
   static void debugThrow(const char* msg, const Exception& ex) {
-    if (debugEnabled()) putThrow(Debug, msg, ex);
+    if (debugEnabled()) putThrow(LogLevel::Debug, msg, ex);
   }
 
   /**
@@ -528,7 +511,7 @@ class CPPCACHE_EXPORT Log {
    * The message level is "debug".
    */
   static void debugCatch(const char* msg, const Exception& ex) {
-    if (debugEnabled()) putCatch(Debug, msg, ex);
+    if (debugEnabled()) putCatch(LogLevel::Debug, msg, ex);
   }
 
   /******/
@@ -570,10 +553,10 @@ class CPPCACHE_EXPORT Log {
 
 class LogFn {
   const char* m_functionName;
-  Log::LogLevel m_level;
+  LogLevel m_level;
 
  public:
-  LogFn(const char* functionName, Log::LogLevel level = Log::Finest)
+  LogFn(const char *functionName, LogLevel level = LogLevel::Finest)
       : m_functionName(functionName), m_level(level) {
     if (Log::enabled(m_level)) Log::enterFn(m_level, m_functionName);
   }
@@ -606,35 +589,35 @@ class CPPCACHE_EXPORT LogVarargs {
   static void finest(const char* fmt, ...);
 
   inline static void debug(const std::string& message) {
-    Log::put(Log::Debug, message.c_str());
+    Log::put(LogLevel::Debug, message.c_str());
   }
 
   inline static void error(const std::string& message) {
-    Log::put(Log::Error, message.c_str());
+    Log::put(LogLevel::Error, message.c_str());
   }
 
   inline static void warn(const std::string& message) {
-    Log::put(Log::Warning, message.c_str());
+    Log::put(LogLevel::Warning, message.c_str());
   }
 
   inline static void info(const std::string& message) {
-    Log::put(Log::Info, message.c_str());
+    Log::put(LogLevel::Info, message.c_str());
   }
 
   inline static void config(const std::string& message) {
-    Log::put(Log::Config, message.c_str());
+    Log::put(LogLevel::Config, message.c_str());
   }
 
   inline static void fine(const std::string& message) {
-    Log::put(Log::Fine, message.c_str());
+    Log::put(LogLevel::Fine, message.c_str());
   }
 
   inline static void finer(const std::string& message) {
-    Log::put(Log::Finer, message.c_str());
+    Log::put(LogLevel::Finer, message.c_str());
   }
 
   inline static void finest(const std::string& message) {
-    Log::put(Log::Finest, message.c_str());
+    Log::put(LogLevel::Finest, message.c_str());
   }
 };
 }  // namespace client
@@ -644,56 +627,56 @@ class CPPCACHE_EXPORT LogVarargs {
 /************************ LOGDEBUG ***********************************/
 
 #define LOGDEBUG                              \
-  if (apache::geode::client::Log::Debug <=    \
+  if (apache::geode::client::LogLevel::Debug <=    \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::debug
 
 /************************ LOGERROR ***********************************/
 
 #define LOGERROR                              \
-  if (apache::geode::client::Log::Error <=    \
+  if (apache::geode::client::LogLevel::Error <=    \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::error
 
 /************************ LOGWARN ***********************************/
 
 #define LOGWARN                               \
-  if (apache::geode::client::Log::Warning <=  \
+  if (apache::geode::client::LogLevel::Warning <=  \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::warn
 
 /************************ LOGINFO ***********************************/
 
 #define LOGINFO                               \
-  if (apache::geode::client::Log::Info <=     \
+  if (apache::geode::client::LogLevel::Info <=     \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::info
 
 /************************ LOGCONFIG ***********************************/
 
 #define LOGCONFIG                             \
-  if (apache::geode::client::Log::Config <=   \
+  if (apache::geode::client::LogLevel::Config <=   \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::config
 
 /************************ LOGFINE ***********************************/
 
 #define LOGFINE                               \
-  if (apache::geode::client::Log::Fine <=     \
+  if (apache::geode::client::LogLevel::Fine <=     \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::fine
 
 /************************ LOGFINER ***********************************/
 
 #define LOGFINER                              \
-  if (apache::geode::client::Log::Finer <=    \
+  if (apache::geode::client::LogLevel::Finer <=    \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::finer
 
 /************************ LOGFINEST ***********************************/
 
 #define LOGFINEST                             \
-  if (apache::geode::client::Log::Finest <=   \
+  if (apache::geode::client::LogLevel::Finest <=   \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::finest
 

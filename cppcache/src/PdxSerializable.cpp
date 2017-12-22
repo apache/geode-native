@@ -22,10 +22,11 @@
  */
 
 #include <geode/PdxSerializable.hpp>
-#include <GeodeTypeIdsImpl.hpp>
 #include <geode/CacheableString.hpp>
-#include <PdxHelper.hpp>
 #include <geode/CacheableKeys.hpp>
+
+#include "GeodeTypeIdsImpl.hpp"
+#include "PdxHelper.hpp"
 
 namespace apache {
 namespace geode {

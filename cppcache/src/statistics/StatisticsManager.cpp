@@ -26,7 +26,7 @@
 #include <geode/Exception.hpp>
 
 #include "StatisticsManager.hpp"
-#include "util/Log.hpp"
+#include "../util/Log.hpp"
 #include "GeodeStatisticsFactory.hpp"
 #include "AtomicStatisticsImpl.hpp"
 #include "OsStatisticsImpl.hpp"
@@ -36,10 +36,6 @@ namespace geode {
 namespace statistics {
 
 using namespace apache::geode::client;
-
-/**
- * static member initialization
- */
 
 StatisticsManager::StatisticsManager(
     const char* filePath, const std::chrono::milliseconds sampleInterval,
@@ -69,8 +65,6 @@ StatisticsManager::StatisticsManager(
 void StatisticsManager::forceSample() {
   if (m_sampler) m_sampler->forceSample();
 }
-
-/**************************Dtor*******************************************/
 
 StatisticsManager::~StatisticsManager() {
   try {
@@ -126,6 +120,7 @@ void StatisticsManager::closeSampler() {
     m_sampler = nullptr;
   }
 }
+
 void StatisticsManager::addStatisticsToList(Statistics* stat) {
   if (stat) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListLock);

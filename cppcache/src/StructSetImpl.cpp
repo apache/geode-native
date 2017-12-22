@@ -19,8 +19,11 @@
 #include <stdexcept>
 
 #include "StructSetImpl.hpp"
+#include "util/Log.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 StructSetImpl::StructSetImpl(
     const std::shared_ptr<CacheableVector>& response,
@@ -94,3 +97,7 @@ SelectResults::Iterator StructSetImpl::end() const {
 }
 
 StructSetImpl::~StructSetImpl() {}
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

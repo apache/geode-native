@@ -57,7 +57,6 @@ namespace Apache.Geode.Plugins.SQLite
           pageSize = string.IsNullOrEmpty(diskProperties.Find(PageSize)) ? DefaultPageSize : diskProperties.Find(PageSize);
           maxPageCount = string.IsNullOrEmpty(diskProperties.Find(MaxPageCount)) ? DefaultMaxPageCount : diskProperties.Find(MaxPageCount);
         }
-        Log.Debug("InitalizeSqLite called with MaxPageCount:{0} PageSize:{1} PersistenceDir:{2}", maxPageCount, pageSize, persistenceDir);
 
         // create region db file
         m_persistenceDir = Path.Combine(Directory.GetCurrentDirectory(), persistenceDir);
@@ -67,12 +66,10 @@ namespace Apache.Geode.Plugins.SQLite
         //create sqlite connection string
         m_connectionString = string.Format("Data Source={0};Version=3;Page Size={1};Max Page Count={2};",
           Path.Combine(m_regionDir, m_tableName + ".db"), pageSize, maxPageCount);
-        Log.Debug("Created connection string : {0}", m_connectionString);
         SqliteHelper.InitalizeSqLite(m_tableName, m_connectionString);
       }
       catch (Exception ex)
       {
-        Log.Error("Exception in SqLiteImpl.Init: {0}", ex);
         throw;
       }
 
@@ -86,7 +83,6 @@ namespace Apache.Geode.Plugins.SQLite
       }
       catch (Exception ex)
       {
-        Log.Error("Exceptn in SqLiteImpl.Init: {0}", ex);
         throw;
       }
     }
@@ -99,7 +95,6 @@ namespace Apache.Geode.Plugins.SQLite
       }
       catch (Exception ex)
       {
-        Log.Error("Exceptn in SqLiteImpl.Init: {0}", ex);
         throw;
       }
     }
@@ -122,7 +117,6 @@ namespace Apache.Geode.Plugins.SQLite
       }
       catch (Exception ex)
       {
-        Log.Error("Exceptn in SqLiteImpl.Init: {0}", ex);
         throw;
       }
     }
@@ -137,7 +131,6 @@ namespace Apache.Geode.Plugins.SQLite
       }
       catch (Exception ex)
       {
-        Log.Error("Exceptn in SqLiteImpl.Init: {0}", ex);
       }
     }
 
@@ -189,11 +182,9 @@ namespace Apache.Geode.Plugins.SQLite
         conn.Open();
         using (SQLiteCommand command = new SQLiteCommand(query, conn))
         {
-          Log.Debug("Executing query:{0} ", command.CommandText);
           command.ExecuteNonQuery();
         }
       }
-      Log.Debug("Initialization Completed");
     }
 
     public static void ExecutePragma(string pragmaName, string pragmaValue, string connectionString)
@@ -204,7 +195,6 @@ namespace Apache.Geode.Plugins.SQLite
         conn.Open();
         using (SQLiteCommand command = new SQLiteCommand(pragmaQuery, conn))
         {
-          Log.Debug("Executing query:{0} ", command.CommandText);
           command.ExecuteNonQuery();
         }
       }
@@ -221,7 +211,6 @@ namespace Apache.Geode.Plugins.SQLite
         {
           command.Parameters.Add(new SQLiteParameter("@key", key));
           command.Parameters.Add(new SQLiteParameter("@value", GetBytes(value)));
-          Log.Debug("Executing query:{0} ", command.CommandText);
           command.ExecuteNonQuery();
         }
       }
@@ -239,7 +228,6 @@ namespace Apache.Geode.Plugins.SQLite
         {
           // create parameters and execute
           command.Parameters.Add(new SQLiteParameter("@key", key));
-          Log.Debug("Executing query:{0} ", command.CommandText);
           retValue = SqliteHelper.GetObject((byte[])command.ExecuteScalar());
         }
       }
@@ -257,7 +245,6 @@ namespace Apache.Geode.Plugins.SQLite
         {
           // create parameters and execute
           command.Parameters.Add(new SQLiteParameter("@key", key));
-          Log.Debug("Executing query:{0} ", command.CommandText);
           command.ExecuteNonQuery();
         }
       }

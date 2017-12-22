@@ -101,7 +101,6 @@ target_compile_definitions(_apache-geode INTERFACE
 )
 target_include_directories(_apache-geode INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 add_dependencies(_apache-geode version-header)

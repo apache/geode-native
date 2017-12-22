@@ -120,7 +120,7 @@ class SqLiteImpl : public PersistenceManager {
   /**
    * @brief destructor
    */
-  ~SqLiteImpl() { LOGDEBUG("SqLiteImpl::~SqLiteImpl calling  ~SqLiteImpl"); }
+  ~SqLiteImpl() {}
 
   /**
    * @brief constructor

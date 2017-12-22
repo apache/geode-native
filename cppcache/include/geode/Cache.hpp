@@ -30,9 +30,8 @@
 #include "PoolFactory.hpp"
 #include "RegionShortcut.hpp"
 #include "RegionFactory.hpp"
-#include "InternalCacheTransactionManager2PC.hpp"
-#include "statistics/StatisticsFactory.hpp"
-#include "geode/TypeRegistry.hpp"
+#include "TypeRegistry.hpp"
+
 /**
  * @file
  */
@@ -47,6 +46,9 @@ class CacheRegionHelper;
 class Pool;
 class CacheImpl;
 class AuthInitialize;
+class CacheTransactionManager;
+class RegionFactory;
+
 /**
  * @class Cache Cache.hpp
  *

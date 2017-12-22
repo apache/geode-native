@@ -37,7 +37,7 @@
 #include "StatArchiveWriter.hpp"
 #include <geode/ExceptionTypes.hpp>
 
-#include <NonCopyable.hpp>
+#include "../NonCopyable.hpp"
 
 using namespace apache::geode::client;
 

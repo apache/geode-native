@@ -21,9 +21,10 @@
 #define GEODE_STATISTICS_POOLSTATSSAMPLER_H_
 
 #include <ace/Task.h>
+
 #include <geode/geode_globals.hpp>
 
-#include "statistics/GeodeStatisticsFactory.hpp"
+#include "GeodeStatisticsFactory.hpp"
 
 namespace apache {
 namespace geode {

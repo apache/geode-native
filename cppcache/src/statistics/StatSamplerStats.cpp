@@ -16,12 +16,11 @@
  */
 
 #include "StatSamplerStats.hpp"
-#include "statistics/StatisticsManager.hpp"
-using namespace apache::geode::statistics;
+#include "StatisticsManager.hpp"
 
-/**
- * Statistics related to the statistic sampler.
- */
+namespace apache {
+namespace geode {
+namespace statistics {
 
 StatSamplerStats::StatSamplerStats(StatisticsFactory* statFactory) {
   statDescriptorArr = new StatisticDescriptor*[2];
@@ -42,10 +41,6 @@ StatSamplerStats::StatSamplerStats(StatisticsFactory* statFactory) {
                                                      statFactory->getId());
 }
 
-/**
- * The default values of the individual Stats descriptors are zero.
- * This function can be used to set initial values to the descriptors.
- */
 void StatSamplerStats::setInitialValues() {
   if (samplerStats) {
     samplerStats->setInt(sampleCountId, 0);
@@ -53,10 +48,6 @@ void StatSamplerStats::setInitialValues() {
   }
 }
 
-/**
- * This function is called to refresh the values
- * of the individual Stats descriptors.
- */
 void StatSamplerStats::tookSample(int64_t nanosSpentWorking) {
   if (samplerStats) {
     samplerStats->incInt(sampleCountId, 1);
@@ -64,25 +55,12 @@ void StatSamplerStats::tookSample(int64_t nanosSpentWorking) {
   }
 }
 
-/**
- * Calls the destroyStatistics() function of the factory
- * which deletes the Stats object
- * It is mandatory to call this function for proper deletion of stats objects.
- */
 void StatSamplerStats::close() {
   if (samplerStats) {
     samplerStats->close();
   }
 }
 
-/**
- * All objects are created by factory, and the reference is passed to this class
- * Factory takes the responsibility of deleting the objetcs.
- * Hence they can be simply set to nullptr here.
- * But it is mandatory that StatSamplerStats::close() be called
- * before this destructor gets called,
- * otherwise samplerStats will not get deleted and a memory leak will occur.
- */
 StatSamplerStats::~StatSamplerStats() {
   samplerType = nullptr;
   for (int32_t i = 0; i < 2; i++) {
@@ -90,3 +68,7 @@ StatSamplerStats::~StatSamplerStats() {
   }
   samplerStats = nullptr;
 }
+
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

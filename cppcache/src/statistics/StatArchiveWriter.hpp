@@ -37,7 +37,7 @@
 #include "HostStatSampler.hpp"
 #include "../util/Log.hpp"
 #include "../NonCopyable.hpp"
-#include "SerializationRegistry.hpp"
+#include "../SerializationRegistry.hpp"
 
 using namespace apache::geode::client;
 /**

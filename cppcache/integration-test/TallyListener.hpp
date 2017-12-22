@@ -22,6 +22,7 @@
 
 #include <geode/EntryEvent.hpp>
 #include <string>
+#include <util/Log.hpp>
 
 using namespace apache::geode::client;
 

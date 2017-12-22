@@ -16,22 +16,27 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <string>
 
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/OS.h>
 #include <ace/Thread_Mutex.h>
 #include <ace/Guard_T.h>
+
+#include <geode/geode_globals.hpp>
 #include <geode/Exception.hpp>
+
 #include "GeodeStatisticsFactory.hpp"
-#include "util/Log.hpp"
-#include <string>
+#include "../util/Log.hpp"
 #include "AtomicStatisticsImpl.hpp"
 #include "OsStatisticsImpl.hpp"
 #include "HostStatHelper.hpp"
 
+namespace apache {
+namespace geode {
+namespace statistics {
+
 using namespace apache::geode::client;
-using namespace apache::geode::statistics;
 
 GeodeStatisticsFactory::GeodeStatisticsFactory(StatisticsManager* statMngr) {
   m_name = "GeodeStatisticsFactory";
@@ -238,3 +243,7 @@ StatisticDescriptor* GeodeStatisticsFactory::createDoubleGauge(
   return StatisticDescriptorImpl::createDoubleGauge(name, description, units,
                                                     largerBetter);
 }
+
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

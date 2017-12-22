@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
 
 #include <atomic>
 
 #include <ace/OS_NS_stdio.h>
+
+#include <geode/geode_globals.hpp>
+
 #include "AtomicStatisticsImpl.hpp"
 #include "StatisticsTypeImpl.hpp"
 #include "StatisticDescriptorImpl.hpp"
+#include "../Assert.hpp"
 
 namespace apache {
 namespace geode {
 namespace statistics {
-/**
- * An implementation of {@link Statistics} that stores its statistics
- * in local  memory and supports atomic operations.
- *
- */
-//////////////////////  Static Methods  //////////////////////
 
 int64_t AtomicStatisticsImpl::calcNumericId(StatisticsFactory* system,
                                             int64_t userValue) {
@@ -58,23 +55,6 @@ std::string AtomicStatisticsImpl::calcTextId(StatisticsFactory* system,
   }
 }
 
-///////////////////////  Constructors  ///////////////////////
-
-/**
- * Creates a new statistics instance of the given type
- *
- * @param type
- *        A description of the statistics
- * @param textId
- *        Text that identifies this statistic when it is monitored
- * @param numericId
- *        A number that displayed when this statistic is monitored
- * @param uniqueId
- *        A number that uniquely identifies this instance
- * @param system
- *        The distributed system that determines whether or not these
- *        statistics are stored (and collected) in local memory
- */
 AtomicStatisticsImpl::AtomicStatisticsImpl(StatisticsType* typeArg,
                                            const std::string& textIdArg,
                                            int64_t numericIdArg,
@@ -143,8 +123,6 @@ AtomicStatisticsImpl::~AtomicStatisticsImpl() {
   }
 }
 
-//////////////////////  Instance Methods  //////////////////////
-
 bool AtomicStatisticsImpl::isShared() const { return false; }
 
 bool AtomicStatisticsImpl::isAtomic() const {
@@ -156,8 +134,6 @@ void AtomicStatisticsImpl::close() {
   // file.
   closed = true;
 }
-
-////////////////////////  store() Methods  ///////////////////////
 
 void AtomicStatisticsImpl::_setInt(int32_t offset, int32_t value) {
   if (offset >= statsType->getIntStatCount()) {
@@ -195,8 +171,6 @@ void AtomicStatisticsImpl::_setDouble(int32_t offset, double value) {
 
   doubleStorage[offset] = value;
 }
-
-///////////////////////  get() Methods  ///////////////////////
 
 int32_t AtomicStatisticsImpl::_getInt(int32_t offset) const {
   if (offset >= statsType->getIntStatCount()) {
@@ -264,8 +238,6 @@ int64_t AtomicStatisticsImpl::getRawBits(
   }
 }
 
-////////////////////////  inc() Methods  ////////////////////////
-
 int32_t AtomicStatisticsImpl::_incInt(int32_t offset, int32_t delta) {
   if (offset >= statsType->getIntStatCount()) {
     char s[128] = {'\0'};
@@ -322,10 +294,6 @@ double AtomicStatisticsImpl::_incDouble(int32_t offset, double delta) {
   return value;
 }
 
-/**************************Base class methods ********************/
-
-//////////////////////  Instance Methods  //////////////////////
-
 int32_t AtomicStatisticsImpl::nameToId(const std::string& name) const {
   return statsType->nameToId(name);
 }
@@ -339,20 +307,13 @@ bool AtomicStatisticsImpl::isClosed() const { return closed; }
 
 bool AtomicStatisticsImpl::isOpen() const { return !closed; }
 
-////////////////////////  attribute Methods  ///////////////////////
-
 StatisticsType* AtomicStatisticsImpl::getType() const { return statsType; }
 
 const std::string& AtomicStatisticsImpl::getTextId() const { return textIdStr; }
 
 int64_t AtomicStatisticsImpl::getNumericId() const { return numericId; }
 
-/**
- * Gets the unique id for this resource
- */
 int64_t AtomicStatisticsImpl::getUniqueId() const { return uniqueId; }
-
-////////////////////////  set() Methods  ///////////////////////
 
 void AtomicStatisticsImpl::setInt(const std::string& name, int32_t value) {
   int32_t id = getIntId(nameToDescriptor(name));
@@ -370,7 +331,6 @@ void AtomicStatisticsImpl::setInt(int32_t id, int32_t value) {
     _setInt(id, value);
   }
 }
-////////////////////////////////LONG METHODS/////////////////////////////
 
 void AtomicStatisticsImpl::setLong(const std::string& name, int64_t value) {
   setLong(nameToDescriptor(name), value);
@@ -386,7 +346,6 @@ void AtomicStatisticsImpl::setLong(int32_t id, int64_t value) {
     _setLong(id, value);
   }
 }
-////////////////////////////////////////DOUBLE METHODS////////////////////
 
 void AtomicStatisticsImpl::setDouble(const std::string& name, double value) {
   setDouble(nameToDescriptor(name), value);
@@ -456,9 +415,6 @@ double AtomicStatisticsImpl::getDouble(int32_t id) const {
   }
 }
 
-/*
- *Increment the value of the int32_t decriptor by delta
- */
 int32_t AtomicStatisticsImpl::incInt(const std::string& name, int32_t delta) {
   int32_t id = getIntId(nameToDescriptor(name));
   return incInt(id, delta);
@@ -478,10 +434,6 @@ int32_t AtomicStatisticsImpl::incInt(int32_t id, int32_t delta) {
   }
 }
 
-/*
- *Increment the value of the int64_t decriptor by delta
- */
-
 int64_t AtomicStatisticsImpl::incLong(const std::string& name, int64_t delta) {
   return incLong(nameToDescriptor(name), delta);
 }
@@ -498,10 +450,6 @@ int64_t AtomicStatisticsImpl::incLong(int32_t id, int64_t delta) {
     return 0;
   }
 }
-
-/*
- *Increment the value of the double decriptor by delta
- */
 
 double AtomicStatisticsImpl::incDouble(const std::string& name, double delta) {
   return incDouble(nameToDescriptor(name), delta);

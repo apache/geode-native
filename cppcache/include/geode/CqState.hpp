@@ -20,6 +20,8 @@
  * limitations under the License.
  */
 
+#include <iosfwd>
+
 #include "geode_globals.hpp"
 
 /**

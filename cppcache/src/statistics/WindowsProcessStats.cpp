@@ -23,6 +23,7 @@
 #include "WindowsProcessStats.hpp"
 #include "HostStatHelperWin.hpp"
 #include "HostStatHelper.hpp"
+#include "../Assert.hpp"
 
 namespace apache {
 namespace geode {

@@ -20,6 +20,7 @@
 #include "OsStatisticsImpl.hpp"
 #include "StatisticsTypeImpl.hpp"
 #include "StatisticDescriptorImpl.hpp"
+#include "../util/Log.hpp"
 
 namespace apache {
 namespace geode {

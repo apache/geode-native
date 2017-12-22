@@ -49,32 +49,32 @@ int numOfLinesInFile(const char* fname) {
 }
 
 void testLogFnError() {
-  LogFn logFn("TestLogger::testLogFnError", Log::Error);
+  LogFn logFn("TestLogger::testLogFnError", LogLevel::Error);
   Log::error("...");
 }
 
 void testLogFnWarning() {
-  LogFn logFn("TestLogger::testLogFnWarning", Log::Warning);
+  LogFn logFn("TestLogger::testLogFnWarning", LogLevel::Warning);
   Log::warning("...");
 }
 
 void testLogFnInfo() {
-  LogFn logFn("TestLogger::testLogFnInfo", Log::Info);
+  LogFn logFn("TestLogger::testLogFnInfo", LogLevel::Info);
   Log::info("...");
 }
 
 void testLogFnConfig() {
-  LogFn logFn("TestLogger::testLogFnConfig", Log::Config);
+  LogFn logFn("TestLogger::testLogFnConfig", LogLevel::Config);
   Log::config("...");
 }
 
 void testLogFnFine() {
-  LogFn logFn("TestLogger::testLogFnFine", Log::Fine);
+  LogFn logFn("TestLogger::testLogFnFine", LogLevel::Fine);
   Log::fine("...");
 }
 
 void testLogFnFiner() {
-  LogFn logFn("TestLogger::testLogFnFiner", Log::Finer);
+  LogFn logFn("TestLogger::testLogFnFiner", LogLevel::Finer);
   Log::finer("...");
 }
 
@@ -84,16 +84,16 @@ void testLogFnFinest() {
 }
 
 void testLogFnDebug() {
-  LogFn logFn("TestLogger::testLogFnDebug", Log::Debug);
+  LogFn logFn("TestLogger::testLogFnDebug", LogLevel::Debug);
   Log::debug("...");
 }
 
-int expected(int level) {
-  int expected = level;
-  if (level != Log::None) {
+int expected(LogLevel level) {
+  int expected = static_cast<int>(level);
+  if (level != LogLevel::None) {
     expected += LENGTH_OF_BANNER;
   }
-  if (level >= Log::Default) {
+  if (level >= LogLevel::Default) {
     expected--;
   }
   return expected;
@@ -103,9 +103,9 @@ BEGIN_TEST(REINIT)
   {
     LOGINFO("Started logging");
     int exceptiongot = 0;
-    Log::init(Log::Debug, "logfile");
+    Log::init(LogLevel::Debug, "logfile");
     try {
-      Log::init(Log::Debug, "logfile1");
+      Log::init(LogLevel::Debug, "logfile1");
     } catch (IllegalStateException& ex) {
       printf("Got Illegal state exception while calling init again\n");
       printf("Exception mesage = %s\n", ex.what());
@@ -119,8 +119,11 @@ END_TEST(REINIT)
 
 BEGIN_TEST(ALL_LEVEL)
   {
-    for (Log::LogLevel level = Log::Error; level <= Log::Debug;
-         level = Log::LogLevel(level + 1)) {
+    for (LogLevel level : {
+        LogLevel::Error, LogLevel::Warning, LogLevel::Info,
+        LogLevel::Default, LogLevel::Config, LogLevel::Fine,
+        LogLevel::Finer, LogLevel::Finest, LogLevel::Debug,
+    }) {
       Log::init(level, "all_logfile");
 
       Log::error("Error Message");
@@ -146,8 +149,11 @@ END_TEST(ALL_LEVEL)
 
 BEGIN_TEST(ALL_LEVEL_MACRO)
   {
-    for (Log::LogLevel level = Log::Error; level <= Log::Debug;
-         level = Log::LogLevel(level + 1)) {
+    for (LogLevel level : {
+        LogLevel::Error, LogLevel::Warning, LogLevel::Info,
+        LogLevel::Default, LogLevel::Config, LogLevel::Fine,
+        LogLevel::Finer, LogLevel::Finest, LogLevel::Debug,
+    }) {
       Log::init(level, "all_logfile");
 
       LOGERROR("Error Message");
@@ -177,9 +183,12 @@ BEGIN_TEST(FILE_LIMIT)
 #ifdef _WIN32
 // Fail to roll file over to timestamp file on windows.
 #else
-    for (Log::LogLevel level = Log::Error; level <= Log::Debug;
-         level = Log::LogLevel(level + 1)) {
-      if (level == Log::Default) continue;
+      for (LogLevel level : {
+          LogLevel::Error, LogLevel::Warning, LogLevel::Info,
+          LogLevel::Default, LogLevel::Config, LogLevel::Fine,
+          LogLevel::Finer, LogLevel::Finest, LogLevel::Debug,
+      }) {
+        if (level == LogLevel::Default) continue;
       Log::init(level, "logfile", 1);
 
       Log::error("Error Message");
@@ -192,8 +201,8 @@ BEGIN_TEST(FILE_LIMIT)
       Log::debug("Debug Message");
 
       int lines = numOfLinesInFile("logfile.log");
-      int expectedLines =
-          level + LENGTH_OF_BANNER - (level >= Log::Default ? 1 : 0);
+        int expectedLines = static_cast<int>(level) + LENGTH_OF_BANNER -
+            (level >= LogLevel::Default ? 1 : 0);
       printf("lines = %d expectedLines = %d level = %d\n", lines, expectedLines,
              level);
 
@@ -208,7 +217,7 @@ END_TEST(FILE_LIMIT)
 
 BEGIN_TEST(CONFIG_ONWARDS)
   {
-    Log::init(Log::Config, "logfile");
+    Log::init(LogLevel::Config, "logfile");
 
     Log::debug("Debug Message");
     Log::config("Config Message");
@@ -228,7 +237,7 @@ END_TEST(CONFIG_ONWARDS)
 
 BEGIN_TEST(INFO_ONWARDS)
   {
-    Log::init(Log::Info, "logfile");
+    Log::init(LogLevel::Info, "logfile");
 
     Log::debug("Debug Message");
     Log::config("Config Message");
@@ -248,7 +257,7 @@ END_TEST(INFO_ONWARDS)
 
 BEGIN_TEST(WARNING_ONWARDS)
   {
-    Log::init(Log::Warning, "logfile");
+    Log::init(LogLevel::Warning, "logfile");
 
     Log::debug("Debug Message");
     Log::config("Config Message");
@@ -268,7 +277,7 @@ END_TEST(WARNING_ONWARDS)
 
 BEGIN_TEST(ERROR_LEVEL)
   {
-    Log::init(Log::Error, "logfile");
+    Log::init(LogLevel::Error, "logfile");
 
     Log::debug("Debug Message");
     Log::config("Config Message");
@@ -287,7 +296,7 @@ END_TEST(ERROR_LEVEL)
 
 BEGIN_TEST(NO_LOG)
   {
-    Log::init(Log::None, "logfile");
+    Log::init(LogLevel::None, "logfile");
 
     Log::debug("Debug Message");
     Log::config("Config Message");
@@ -307,8 +316,11 @@ END_TEST(NO_LOG)
 
 BEGIN_TEST(LOGFN)
   {
-    for (Log::LogLevel level = Log::Error; level <= Log::Debug;
-         level = Log::LogLevel(level + 1)) {
+    for (LogLevel level : {
+        LogLevel::Error, LogLevel::Warning, LogLevel::Info,
+        LogLevel::Default, LogLevel::Config, LogLevel::Fine,
+        LogLevel::Finer, LogLevel::Finest, LogLevel::Debug,
+    }) {
       Log::init(level, "logfile");
 
       testLogFnError();

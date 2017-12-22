@@ -20,10 +20,13 @@
 #ifndef GEODE_VERSIONEDCACHEABLEOBJECTPARTLIST_H_
 #define GEODE_VERSIONEDCACHEABLEOBJECTPARTLIST_H_
 
+#include <vector>
+
+#include <ace/Task.h>
+
 #include "CacheableObjectPartList.hpp"
 #include "VersionTag.hpp"
-#include <ace/Task.h>
-#include <vector>
+#include "util/Log.hpp"
 
 /** @file
  */

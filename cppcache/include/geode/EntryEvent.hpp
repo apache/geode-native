@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_ENTRYEVENT_H_
-#define GEODE_ENTRYEVENT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,9 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "geode_globals.hpp"
-#include "Region.hpp"
+
+#pragma once
+
+#ifndef GEODE_ENTRYEVENT_H_
+#define GEODE_ENTRYEVENT_H_
+
+#include <memory>
+
 #include "CacheableKey.hpp"
+#include "Region.hpp"
+#include "geode/Cacheable.hpp"
+#include "geode_globals.hpp"
 
 /** @file
 */
@@ -32,6 +36,10 @@ namespace client {
 
 /** Represents an entry event affecting an entry, including its identity and the
  * the circumstances of the event. */
+class CacheableKey;
+class Region;
+class Serializable;
+
 class CPPCACHE_EXPORT EntryEvent {
  protected:
   std::shared_ptr<Region> m_region;      /**< Region */

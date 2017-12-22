@@ -14,11 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "SslSockStream.hpp"
-#include <geode/ExceptionTypes.hpp>
+
 #include <ace/OS_NS_stdio.h>
 
-using namespace apache::geode::client;
+#include <geode/ExceptionTypes.hpp>
+
+#include "SslSockStream.hpp"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {

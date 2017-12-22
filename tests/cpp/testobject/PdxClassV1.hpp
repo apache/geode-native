@@ -30,6 +30,9 @@
 #include <geode/PdxWriter.hpp>
 #include <geode/PdxReader.hpp>
 #include <geode/PdxSerializer.hpp>
+#include <util/Log.hpp>
+#include <util/Log.hpp>
+
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
 #define TESTOBJECT_EXPORT LIBEXP

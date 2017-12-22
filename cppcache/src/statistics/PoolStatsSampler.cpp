@@ -20,12 +20,12 @@
 #include <thread>
 
 #include "PoolStatsSampler.hpp"
-#include "ReadWriteLock.hpp"
-#include "CacheImpl.hpp"
-#include "ThinClientPoolDM.hpp"
 #include "GeodeStatisticsFactory.hpp"
-#include "ClientHealthStats.hpp"
 #include "HostStatHelper.hpp"
+#include "../ReadWriteLock.hpp"
+#include "../CacheImpl.hpp"
+#include "../ThinClientPoolDM.hpp"
+#include "../ClientHealthStats.hpp"
 
 namespace apache {
 namespace geode {

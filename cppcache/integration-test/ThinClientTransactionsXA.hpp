@@ -26,6 +26,8 @@
 #include <ace/High_Res_Timer.h>
 
 #include <string>
+#include <geode/TransactionId.hpp>
+#include <InternalCacheTransactionManager2PC.hpp>
 
 #define ROOT_NAME "ThinClientTransactionsXA"
 #define ROOT_SCOPE DISTRIBUTED_ACK

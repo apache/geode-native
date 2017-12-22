@@ -21,12 +21,28 @@
 #define GEODE_DATAINPUT_H_
 
 #include <cstring>
+#include <iosfwd>
+#include <memory>
 #include <string>
 
-#include "geode_globals.hpp"
+#include "CacheableString.hpp"
 #include "ExceptionTypes.hpp"
 #include "Serializable.hpp"
-#include "CacheableString.hpp"
+#include "GeodeTypeIds.hpp"
+#include "geode_base.hpp"
+#include "ExceptionTypes.hpp"
+#include "geode_globals.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
+class Cache;
+class CacheableString;
+class DataInput;
+class Serializable;
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 /**
  * @file
@@ -47,6 +63,7 @@ namespace client {
 class SerializationRegistry;
 class DataInputInternal;
 class CacheImpl;
+class DataInputInternal;
 
 /**
  * Provide operations for reading primitive data values, byte arrays,
@@ -628,7 +645,6 @@ class CPPCACHE_EXPORT DataInput {
           CacheableString::createUTFDeserializableHuge()));
       csPtr->fromData(*this);
     } else {
-      LOGDEBUG("In readNativeString something is wrong while expecting string");
       rewindCursor(1);
       csPtr = nullptr;
     }

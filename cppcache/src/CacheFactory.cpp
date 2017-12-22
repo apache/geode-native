@@ -33,7 +33,6 @@
 #include "CacheImpl.hpp"
 #include "CppCacheLibrary.hpp"
 #include "PoolAttributes.hpp"
-
 #include "CacheConfig.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "SerializationRegistry.hpp"
@@ -45,11 +44,11 @@
 
 #define DEFAULT_CACHE_NAME "default_GeodeCache"
 
-extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
-
 namespace apache {
 namespace geode {
 namespace client {
+
+extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
 
 std::shared_ptr<CacheFactory> CacheFactory::createCacheFactory(
     const std::shared_ptr<Properties>& configPtr) {

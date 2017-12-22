@@ -20,9 +20,11 @@
  * limitations under the License.
  */
 
-#include "geode_globals.hpp"
+#include <memory>
+
 #include "CqAttributes.hpp"
 #include "CqListener.hpp"
+#include "geode_globals.hpp"
 
 /**
  * @file
@@ -52,6 +54,9 @@ namespace client {
  * @see CqAttributes
  *
  */
+class CqAttributes;
+class CqListener;
+
 class CPPCACHE_EXPORT CqAttributesFactory  {
  public:
   /**

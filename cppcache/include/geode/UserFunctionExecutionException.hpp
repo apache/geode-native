@@ -20,14 +20,21 @@
 #ifndef GEODE_USERFUNCTIONEXECUTIONEXCEPTION_H_
 #define GEODE_USERFUNCTIONEXECUTIONEXCEPTION_H_
 
-#include "Serializable.hpp"
+
+
+#include <memory>
+
 #include "CacheableString.hpp"
+#include "Serializable.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
 class UserFunctionExecutionException;
+class CacheableString;
+class DataInput;
+class DataOutput;
 
 /**
  * @brief UserFunctionExecutionException class is used to encapsulate geode

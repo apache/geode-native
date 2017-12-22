@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-#include <geode/Cache.hpp>
-#include <geode/ExpirationAttributes.hpp>
-#include <Utils.hpp>
-#include <geode/DistributedSystem.hpp>
 #include <cstdlib>
 #include <string>
+
+#include <geode/Cache.hpp>
+#include <geode/ExpirationAttributes.hpp>
+#include <geode/DistributedSystem.hpp>
 #include <geode/Pool.hpp>
 #include <geode/PoolManager.hpp>
+
+#include "Utils.hpp"
 
 namespace apache {
 namespace geode {

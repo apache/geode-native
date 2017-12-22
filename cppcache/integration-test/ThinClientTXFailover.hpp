@@ -25,6 +25,7 @@
 
 #include <ace/OS.h>
 #include <string>
+#include <geode/CacheTransactionManager.hpp>
 
 #define ROOT_NAME "ThinClientTXFailover"
 #define ROOT_SCOPE DISTRIBUTED_ACK

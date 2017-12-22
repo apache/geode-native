@@ -38,6 +38,9 @@ target_link_libraries(testobject
   PRIVATE
     ACE
 )
+target_include_directories(testobject PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cppcache/src>
+)
 
 
 #TODO very bad we include root of tests

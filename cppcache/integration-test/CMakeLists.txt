@@ -28,6 +28,9 @@ target_compile_definitions(${TEST_UTILS_LIB}
   PRIVATE
     $<MAKE_C_IDENTIFIER:${TEST_UTILS_LIB}>_static=1
 )
+target_include_directories(${TEST_UTILS_LIB} PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../src>
+)
 
 add_library(unit_test_callbacks SHARED LibraryCallbacks.cpp)
 target_link_libraries(unit_test_callbacks
@@ -36,6 +39,9 @@ target_link_libraries(unit_test_callbacks
   PUBLIC
     apache-geode
     c++11
+)
+target_include_directories(unit_test_callbacks PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../src>
 )
 
 enable_testing()
@@ -77,7 +83,10 @@ foreach(FILE ${SOURCES})
       fwk
       c++11
   )
-  
+  target_include_directories(${TEST} PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../src>
+  )
+
   # Some tests depend on these library
   add_dependencies(${TEST} securityImpl cryptoImpl DHImpl SqLiteImpl)
   

@@ -29,7 +29,7 @@
 #include "Statistics.hpp"
 #include "HostStatSampler.hpp"
 #include "StatisticsTypeImpl.hpp"
-#include "AdminRegion.hpp"
+#include "../AdminRegion.hpp"
 #include "GeodeStatisticsFactory.hpp"
 
 namespace apache {

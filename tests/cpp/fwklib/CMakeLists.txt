@@ -27,6 +27,9 @@ target_link_libraries(framework
     apache-geode
     xerces-c
 )
+target_include_directories(framework PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cppcache/src>
+)
 
 # Add PIC flags to link later with shared library
 add_definitions(${CMAKE_CXX_COMPILE_OPTIONS_PIC})

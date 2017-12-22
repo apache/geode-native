@@ -24,11 +24,15 @@
  * @file
  */
 
-#include "geode_globals.hpp"
-#include "ExceptionTypes.hpp"
-#include "Serializable.hpp"
-#include "SelectResults.hpp"
+
+#include <memory>
+
 #include "CacheableBuiltins.hpp"
+#include "ExceptionTypes.hpp"
+#include "SelectResults.hpp"
+#include "Serializable.hpp"
+#include "geode_base.hpp"
+#include "geode_globals.hpp"
 
 namespace apache {
 namespace geode {
@@ -36,6 +40,9 @@ namespace client {
 
 class ResultSetImpl;
 class StructSetImpl;
+class CacheableVector;
+class SelectResults;
+class Serializable;
 
 /**
  * @class SelectResultsIterator SelectResultsIterator.hpp
