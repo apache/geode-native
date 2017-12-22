@@ -55,9 +55,7 @@ namespace Apache.Geode.Client.UnitTests
     [TestFixtureSetUp]
     public override void InitTests()
     {
-      Properties<string, string> config = new Properties<string, string>();
-      config.Insert("appdomain-enabled", "true");
-      CacheHelper.InitConfig(config);
+      CacheHelper.Init();
     }
 
 

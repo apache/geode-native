@@ -43,17 +43,9 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
-				interface class IPdxSerializable;
+			interface class IPdxSerializable;
       public ref class SafeConvertClassGeneric
       {
-      public:
-        static bool isAppDomainEnabled = false;
-  
-        static void SetAppDomainEnabled(bool isAppDomainEnable)
-        {
-          Apache::Geode::Client::Log::Fine("AppDomain support enabled: " + isAppDomainEnable);
-          isAppDomainEnabled = isAppDomainEnable;
-        }
       };
 
       /// <summary>

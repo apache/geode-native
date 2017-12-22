@@ -121,9 +121,7 @@ namespace Apache.Geode.Client.UnitTests
     public override void InitTests()
     {
       Util.Log("InitTests: AppDomain: " + AppDomain.CurrentDomain.Id);
-      Properties<string, string> config = new Properties<string, string>();
-      config.Insert("appdomain-enabled", "true");
-      CacheHelper.InitConfig(config);
+      CacheHelper.Init();
     }
 
     [TearDown]

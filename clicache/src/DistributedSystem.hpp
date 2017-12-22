@@ -126,11 +126,7 @@ namespace Apache
 
         static void acquireDisconnectLock();
 
-        static void disconnectInstance();
-
         static void releaseDisconnectLock();
-
-        static void connectInstance();
 
         delegate void cliCallback(apache::geode::client::Cache& cache);
 
@@ -147,12 +143,6 @@ namespace Apache
         /// layer after the first connect.
         /// </summary>
         static void ManagedPostConnect(Cache^ cache);
-
-        /// <summary>
-        /// Stuff that needs to be done for Connect in each AppDomain but
-        /// only after the first Connect has completed.
-        /// </summary>
-        static void AppDomainInstancePostInitialization();
 
         /// <summary>
         /// Unregister the builtin managed types like CacheableObject.

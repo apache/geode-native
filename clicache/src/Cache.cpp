@@ -118,23 +118,8 @@ namespace Apache
 
           Apache::Geode::Client::DistributedSystem::acquireDisconnectLock();
 
-          Apache::Geode::Client::DistributedSystem::disconnectInstance();
-          CacheFactory::m_connected = false;
-
-          try
-          {
-            m_nativeptr->get()->close( keepalive );
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
-
-          // If DS automatically disconnected due to the new bootstrap API, then cleanup the C++/CLI side
-          //if (!apache::geode::client::DistributedSystem::isConnected())
-          {
-            Apache::Geode::Client::DistributedSystem::UnregisterBuiltinManagedTypes(this);
-          }
+          m_nativeptr->get()->close( keepalive );
+          Apache::Geode::Client::DistributedSystem::UnregisterBuiltinManagedTypes(this);
 
         _GF_MG_EXCEPTION_CATCH_ALL2
         finally
@@ -143,6 +128,7 @@ namespace Apache
           Serializable::Clear();
           Apache::Geode::Client::DistributedSystem::releaseDisconnectLock();
           Apache::Geode::Client::DistributedSystem::unregisterCliCallback();
+          GC::KeepAlive(m_nativeptr);
         }
       }
 

@@ -60,7 +60,6 @@ namespace Apache
       {
 				bool pdxIgnoreUnreadFields = false;
         bool pdxReadSerialized = false;
-				bool appDomainEnable = false; 
         _GF_MG_EXCEPTION_TRY2
           //msclr::lock lockInstance(m_singletonSync);
           DistributedSystem::acquireDisconnectLock();
@@ -69,40 +68,19 @@ namespace Apache
           auto cache = Cache::Create( nativeCache );
           CacheResolver::Add(nativeCache.get(), cache);
 
-          if(!m_connected)
-          {
-            DistributedSystem::AppDomainInstanceInitialization(cache);                  
-          }
+          DistributedSystem::AppDomainInstanceInitialization(cache);                  
 
 					pdxIgnoreUnreadFields = nativeCache->getPdxIgnoreUnreadFields();
           pdxReadSerialized = nativeCache->getPdxReadSerialized();
 
-          appDomainEnable = cache->DistributedSystem->SystemProperties->AppDomainEnabled;
           Log::SetLogLevel(static_cast<LogLevel>(native::Log::logLevel( )));
-					//TODO::split
-          SafeConvertClassGeneric::SetAppDomainEnabled(appDomainEnable);
-
-          if (appDomainEnable)
-          {
-            // Register managed AppDomain context with unmanaged.
-            native::createAppDomainContext = &Apache::Geode::Client::createAppDomainContext;
-          }
-
+          native::createAppDomainContext = &Apache::Geode::Client::createAppDomainContext;
           Serializable::RegisterTypeGeneric(
             native::GeodeTypeIds::PdxType,
             gcnew TypeFactoryMethodGeneric(Apache::Geode::Client::Internal::PdxType::CreateDeserializable),
             nullptr, cache);
 
-          if(!m_connected)
-          {
-            //it registers types in unmanage layer, so should be once only 
-            DistributedSystem::ManagedPostConnect(cache);
-            DistributedSystem::AppDomainInstancePostInitialization();
-            DistributedSystem::connectInstance();
-          }
-          
-          m_connected = true;
- 
+          DistributedSystem::ManagedPostConnect(cache);
           DistributedSystem::registerCliCallback();
           Serializable::RegisterPDXManagedCacheableKey(cache);
 

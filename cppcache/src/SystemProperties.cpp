@@ -40,7 +40,6 @@ namespace {
 
 const char StatisticsSampleInterval[] = "statistic-sample-rate";
 const char StatisticsEnabled[] = "statistic-sampling-enabled";
-const char AppDomainEnabled[] = "appdomain-enabled";
 const char StatisticsArchiveFile[] = "statistic-archive-file";
 const char LogFilename[] = "log-file";
 const char LogLevelProperty[] = "log-level";
@@ -96,7 +95,6 @@ constexpr auto DefaultBucketWaitTimeout = std::chrono::seconds(0);
 
 constexpr auto DefaultSamplingInterval = std::chrono::seconds(1);
 const bool DefaultSamplingEnabled = true;
-const bool DefaultAppDomainEnabled = false;
 
 const char DefaultStatArchive[] = "statArchive.gfs";
 const char DefaultLogFilename[] = "";  // stdout...
@@ -160,7 +158,6 @@ SystemProperties::SystemProperties(
     const std::string& configFile)
     : m_statisticsSampleInterval(DefaultSamplingInterval),
       m_statisticsEnabled(DefaultSamplingEnabled),
-      m_appDomainEnabled(DefaultAppDomainEnabled),
       m_statisticsArchiveFile(DefaultStatArchive),
       m_logFilename(DefaultLogFilename),
       m_logLevel(DefaultLogLevel),
@@ -321,8 +318,6 @@ void SystemProperties::processProperty(const std::string& property,
     parseDurationProperty(property, std::string(value), m_bucketWaitTimeout);
   } else if (property == DisableShufflingEndpoint) {
     m_disableShufflingEndpoint = parseBooleanProperty(property, value);
-  } else if (property == AppDomainEnabled) {
-    m_appDomainEnabled = parseBooleanProperty(property, value);
   } else if (property == GridClient) {
     m_gridClient = parseBooleanProperty(property, value);
   } else if (property == AutoReadyForEvents) {
@@ -390,9 +385,6 @@ void SystemProperties::logSettings() {
   // *** PLEASE ADD IN ALPHABETICAL ORDER - USER VISIBLE ***
 
   std::string settings = "Geode Native Client System Properties:";
-
-  settings += "\n  appdomain-enabled = ";
-  settings += isAppDomainEnabled() ? "true" : "false";
 
   settings += "\n  archive-disk-space-limit = ";
   settings += std::to_string(statsDiskSpaceLimit());

@@ -26,8 +26,6 @@ namespace client {
 
 // guard for connect/disconnect
 extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
-// tracks the number of times connectOrGetInstance() was invoked
-int g_numInstances = 0;
 
 volatile bool DistributedSystemImpl::m_isCliCallbackSet = false;
 std::map<int, CliCallbackMethod> DistributedSystemImpl::m_cliCallbackMap;
@@ -36,7 +34,6 @@ ACE_Recursive_Thread_Mutex DistributedSystemImpl::m_cliCallbackLock;
 DistributedSystemImpl::DistributedSystemImpl(const char* name,
                                              DistributedSystem* implementee)
     : m_name(name == 0 ? "" : name), m_implementee(implementee) {
-  g_numInstances = 0;
   if (m_implementee->getSystemProperties().isDhOn()) {
     // m_dh.initDhKeys(m_implementee->getSystemProperties()->getSecurityProperties());
   }
@@ -46,7 +43,6 @@ DistributedSystemImpl::~DistributedSystemImpl() {
   if (m_implementee->getSystemProperties().isDhOn()) {
     // m_dh.clearDhKeys();
   }
-  g_numInstances = 0;
   LOGFINE("Destroyed DistributedSystemImpl");
 }
 
@@ -62,24 +58,6 @@ void DistributedSystemImpl::acquireDisconnectLock() {
 
 void DistributedSystemImpl::releaseDisconnectLock() {
   g_disconnectLock->release();
-}
-
-int DistributedSystemImpl::currentInstances() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
-
-  return g_numInstances;
-}
-
-void DistributedSystemImpl::connectInstance() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
-
-  g_numInstances++;
-}
-
-void DistributedSystemImpl::disconnectInstance() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
-
-  g_numInstances--;
 }
 
 void DistributedSystemImpl::CallCliCallBack(Cache& cache) {

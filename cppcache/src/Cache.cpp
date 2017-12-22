@@ -77,7 +77,6 @@ void Cache::close() { close(false); }
  */
 void Cache::close(bool keepalive) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
-  if (DistributedSystemImpl::currentInstances() > 0) return;
   m_cacheImpl->close(keepalive);
 
   try {
@@ -87,6 +86,7 @@ void Cache::close(bool keepalive) {
   } catch (...) {
   }
 }
+
 std::shared_ptr<Region> Cache::getRegion(const std::string& path) const {
   LOGDEBUG("Cache::getRegion " + path);
   std::shared_ptr<Region> result;
@@ -124,15 +124,15 @@ RegionFactory Cache::createRegionFactory(RegionShortcut preDefinedRegion) {
 }
 
 std::shared_ptr<QueryService> Cache::getQueryService() {
- return m_cacheImpl->getQueryService();
+  return m_cacheImpl->getQueryService();
 }
 std::shared_ptr<QueryService> Cache::getQueryService(
-   const std::string& poolName) const {
- return m_cacheImpl->getQueryService(poolName.c_str());
+    const std::string& poolName) const {
+  return m_cacheImpl->getQueryService(poolName.c_str());
 }
 std::shared_ptr<CacheTransactionManager> Cache::getCacheTransactionManager()
-   const {
- return m_cacheImpl->getCacheTransactionManager();
+    const {
+  return m_cacheImpl->getCacheTransactionManager();
 }
 
 TypeRegistry& Cache::getTypeRegistry() { return *(m_typeRegistry.get()); }
@@ -140,19 +140,17 @@ TypeRegistry& Cache::getTypeRegistry() { return *(m_typeRegistry.get()); }
 Cache::Cache(const std::string& name, std::shared_ptr<Properties> dsProp,
              bool ignorePdxUnreadFields, bool readPdxSerialized,
              const std::shared_ptr<AuthInitialize>& authInitialize) {
-  m_cacheImpl = std::unique_ptr<CacheImpl>(
-      new CacheImpl(this, name,
-                    DistributedSystem::create(DEFAULT_DS_NAME, dsProp),
-                    ignorePdxUnreadFields, readPdxSerialized, authInitialize));
+  m_cacheImpl = std::unique_ptr<CacheImpl>(new CacheImpl(
+      this, name, DistributedSystem::create(DEFAULT_DS_NAME, dsProp),
+      ignorePdxUnreadFields, readPdxSerialized, authInitialize));
   m_cacheImpl->getDistributedSystem().connect(this);
-  m_typeRegistry = std::unique_ptr<TypeRegistry>(
-      new TypeRegistry(m_cacheImpl.get()));
+  m_typeRegistry =
+      std::unique_ptr<TypeRegistry>(new TypeRegistry(m_cacheImpl.get()));
 }
 
-Cache::Cache(Cache&& other) noexcept :
-  m_cacheImpl(std::move(other.m_cacheImpl)),
-  m_typeRegistry(std::move(other.m_typeRegistry)) {
-
+Cache::Cache(Cache&& other) noexcept
+    : m_cacheImpl(std::move(other.m_cacheImpl)),
+      m_typeRegistry(std::move(other.m_typeRegistry)) {
   m_cacheImpl->setCache(this);
 }
 
@@ -196,37 +194,37 @@ std::shared_ptr<PdxInstanceFactory> Cache::createPdxInstanceFactory(
       m_cacheImpl->getDistributedSystem()
           .getSystemProperties()
           .getEnableTimeStatistics());
- }
- std::shared_ptr<RegionService> Cache::createAuthenticatedView(
-     std::shared_ptr<Properties> userSecurityProperties,
-     const std::string& poolName) {
-   if (poolName.empty()) {
-     auto pool = m_cacheImpl->getPoolManager().getDefaultPool();
-     if (!this->isClosed() && pool != nullptr) {
-       return pool->createSecureUserCache(userSecurityProperties,
-                                          m_cacheImpl.get());
-     }
+}
+std::shared_ptr<RegionService> Cache::createAuthenticatedView(
+    std::shared_ptr<Properties> userSecurityProperties,
+    const std::string& poolName) {
+  if (poolName.empty()) {
+    auto pool = m_cacheImpl->getPoolManager().getDefaultPool();
+    if (!this->isClosed() && pool != nullptr) {
+      return pool->createSecureUserCache(userSecurityProperties,
+                                         m_cacheImpl.get());
+    }
 
-     throw IllegalStateException(
-         "Either cache has been closed or there are more than two pool."
-         "Pass poolname to get the secure Cache");
-   } else {
-     if (!this->isClosed()) {
-       if (!poolName.empty()) {
-         auto poolPtr = m_cacheImpl->getPoolManager().find(poolName);
-         if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
-           return poolPtr->createSecureUserCache(userSecurityProperties,
-                                                 m_cacheImpl.get());
-         }
-         throw IllegalStateException(
-             "Either pool not found or it has been destroyed");
-       }
-       throw IllegalArgumentException("poolname is nullptr");
-     }
+    throw IllegalStateException(
+        "Either cache has been closed or there are more than two pool."
+        "Pass poolname to get the secure Cache");
+  } else {
+    if (!this->isClosed()) {
+      if (!poolName.empty()) {
+        auto poolPtr = m_cacheImpl->getPoolManager().find(poolName);
+        if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
+          return poolPtr->createSecureUserCache(userSecurityProperties,
+                                                m_cacheImpl.get());
+        }
+        throw IllegalStateException(
+            "Either pool not found or it has been destroyed");
+      }
+      throw IllegalArgumentException("poolname is nullptr");
+    }
 
-     throw IllegalStateException("Cache has been closed");
-   }
-   return nullptr;
+    throw IllegalStateException("Cache has been closed");
+  }
+  return nullptr;
 }
 
 PoolManager& Cache::getPoolManager() const {
@@ -235,8 +233,8 @@ PoolManager& Cache::getPoolManager() const {
 
 std::unique_ptr<DataInput> Cache::createDataInput(const uint8_t* m_buffer,
                                                   int32_t len) const {
-  return std::unique_ptr<DataInput>(new DataInput(m_buffer, len,
-                                                  m_cacheImpl.get()));
+  return std::unique_ptr<DataInput>(
+      new DataInput(m_buffer, len, m_cacheImpl.get()));
 }
 
 std::unique_ptr<DataOutput> Cache::createDataOutput() const {
