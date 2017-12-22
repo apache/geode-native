@@ -82,19 +82,19 @@ BEGIN_TEST.
 #endif
 #endif
 
-#include <ace/ACE.h>
-#include <ace/OS.h>
-
 #include <typeinfo>
-
-#include <CppCacheLibrary.hpp>
-#include <geode/Exception.hpp>
-#include "util/Log.hpp"
-
 #include <list>
 #include <string>
 #include <sstream>
 #include <cstdio>
+
+#include <ace/ACE.h>
+#include <ace/OS.h>
+
+#include <geode/Exception.hpp>
+
+#include <CppCacheLibrary.hpp>
+#include <util/Log.hpp>
 
 #include "TimeBomb.hpp"
 
@@ -133,7 +133,7 @@ class TestException {
   void print() {
     char buf[256];
     apache::geode::client::Log::formatLogLine(
-        buf, apache::geode::client::Log::Error);
+        buf, apache::geode::client::LogLevel::Error);
     fprintf(stdout, "--->%sTestException: %s in %s at line %d<---\n", buf,
             m_message.c_str(), m_filename, m_lineno);
   }

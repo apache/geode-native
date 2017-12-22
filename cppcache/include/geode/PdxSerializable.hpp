@@ -20,14 +20,21 @@
 #ifndef GEODE_PDXSERIALIZABLE_H_
 #define GEODE_PDXSERIALIZABLE_H_
 
+#include <iosfwd>
+#include <memory>
+#include <string>
+
 #include "CacheableKey.hpp"
+#include "geode_base.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class PdxWriter;
 class PdxReader;
+class PdxWriter;
+class DataInput;
+class DataOutput;
 
 class CPPCACHE_EXPORT PdxSerializable : public CacheableKey {
  public:

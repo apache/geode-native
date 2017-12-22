@@ -16,6 +16,7 @@
  */
 
 #include <geode/Cache.hpp>
+#include <geode/CacheTransactionManager.hpp>
 
 #include "TXState.hpp"
 #include "TransactionalOperation.hpp"

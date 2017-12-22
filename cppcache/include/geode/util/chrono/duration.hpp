@@ -20,10 +20,12 @@
 #ifndef GEODE_UTIL_CHRONO_DURATION_H_
 #define GEODE_UTIL_CHRONO_DURATION_H_
 
-#include <string>
 #include <chrono>
-#include <type_traits>
+#include <iosfwd>
+#include <ratio>
 #include <stdexcept>
+#include <string>
+#include <type_traits>
 
 namespace apache {
 namespace geode {

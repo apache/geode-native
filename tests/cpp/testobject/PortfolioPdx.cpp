@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 #include "PortfolioPdx.hpp"
+#include <util/Log.hpp>
 
 using namespace apache::geode::client;
 using namespace testobject;

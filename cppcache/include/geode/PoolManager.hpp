@@ -20,24 +20,31 @@
 #ifndef GEODE_POOLMANAGER_H_
 #define GEODE_POOLMANAGER_H_
 
-#include <unordered_map>
+#include <iosfwd>
+#include <memory>
 #include <string>
-
-#include "geode_globals.hpp"
+#include <unordered_map>
 
 #include "Cache.hpp"
 #include "Pool.hpp"
 #include "PoolFactory.hpp"
 #include "Region.hpp"
+#include "geode_base.hpp"
+#include "geode_globals.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class ThinClientPoolDM;
-class FunctionService;
 class CacheImpl;
+class FunctionService;
 class PoolManagerImpl;
+class ThinClientPoolDM;
+class Cache;
+class Pool;
+class PoolFactory;
+class Region;
+class RegionFactory;
 
 typedef std::unordered_map<std::string, std::shared_ptr<Pool>> HashMapOfPools;
 

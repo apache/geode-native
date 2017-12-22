@@ -19,9 +19,9 @@
 #include <ace/Singleton.h>
 
 #include <geode/geode_globals.hpp>
-#include <util/concurrent/spinlock_mutex.hpp>
 
 #include "RegionStats.hpp"
+#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {

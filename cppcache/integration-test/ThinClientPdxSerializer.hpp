@@ -32,7 +32,7 @@
 #include <string>
 
 #include "ThinClientHelper.hpp"
-#include <Utils.hpp>
+#include "Utils.hpp"
 #include "testobject/PdxClassV1.hpp"
 #include "testobject/PdxClassV2.hpp"
 #include "testobject/NonPdxType.hpp"

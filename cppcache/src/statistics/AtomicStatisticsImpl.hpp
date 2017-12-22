@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_ATOMICSTATISTICSIMPL_H_
-#define GEODE_STATISTICS_ATOMICSTATISTICSIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,18 +15,21 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#pragma once
+
+#ifndef GEODE_STATISTICS_ATOMICSTATISTICSIMPL_H_
+#define GEODE_STATISTICS_ATOMICSTATISTICSIMPL_H_
 
 #include <atomic>
 #include <string>
+
+#include <geode/geode_globals.hpp>
 
 #include "Statistics.hpp"
 #include "StatisticsTypeImpl.hpp"
 #include "StatisticsFactory.hpp"
 
-#include <NonCopyable.hpp>
-
-using namespace apache::geode::client;
+#include "../NonCopyable.hpp"
 
 /** @file
  */
@@ -40,12 +38,13 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
+using namespace apache::geode::client;
+
 /**
  * An implementation of {@link Statistics} that stores its statistics
  * in local memory and support atomic operations
  *
  */
-
 class AtomicStatisticsImpl : public Statistics, private NonCopyable {
  private:
   /**********varbs originally kept in statisticsimpl class*****************/

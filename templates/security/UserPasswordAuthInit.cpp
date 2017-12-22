@@ -18,7 +18,6 @@
 #include "UserPasswordAuthInit.hpp"
 #include "geode/Properties.hpp"
 #include "geode/ExceptionTypes.hpp"
-#include "util/Log.hpp"
 
 #define SECURITY_USERNAME "security-username"
 #define SECURITY_PASSWORD "security-password"

@@ -18,13 +18,17 @@
 #include <cstdio>
 #include <string>
 #include <sstream>
+
 #include <geode/ExceptionTypes.hpp>
-#include <TXState.hpp>
-#include <TSSTXStateWrapper.hpp>
+
+#include "TXState.hpp"
+#include "TSSTXStateWrapper.hpp"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 void setTSSExceptionMessage(const char* exMsg);
 const char* getTSSExceptionMessage();
 

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_FAIRQUEUE_H_
-#define GEODE_FAIRQUEUE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,13 +15,22 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_FAIRQUEUE_H_
+#define GEODE_FAIRQUEUE_H_
+
 #include <deque>
+
 #include <ace/ACE.h>
 #include <ace/Thread_Mutex.h>
 #include <ace/Token.h>
 #include <ace/Condition_T.h>
 #include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
+
+#include "util/Log.hpp"
+#include "Assert.hpp"
 
 namespace apache {
 namespace geode {

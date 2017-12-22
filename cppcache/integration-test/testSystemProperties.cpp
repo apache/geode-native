@@ -66,7 +66,7 @@ BEGIN_TEST(NEW_CONFIG)
     std::string filePath = testsrc + "/resources/system.properties";
 
     // Make sure product can at least log to stdout.
-    Log::init(Log::Config, nullptr, 0);
+    Log::init(Config, nullptr, 0);
 
     SystemProperties* sp = new SystemProperties(nullptr, filePath.c_str());
 

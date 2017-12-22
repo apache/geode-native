@@ -21,11 +21,13 @@
 #define GEODE_TCPCONN_H_
 
 #include <geode/geode_globals.hpp>
-#include "util/Log.hpp"
-#include "Connector.hpp"
 
 #include <ace/SOCK_Stream.h>
 #include <ace/OS.h>
+
+#include "util/Log.hpp"
+#include "Connector.hpp"
+#include "Assert.hpp"
 
 namespace apache {
 namespace geode {

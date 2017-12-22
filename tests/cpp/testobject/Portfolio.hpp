@@ -27,6 +27,7 @@
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/CacheableDate.hpp>
 #include "Position.hpp"
+#include <util/Log.hpp>
 
 using namespace apache::geode::client;
 

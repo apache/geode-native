@@ -20,8 +20,10 @@
 #ifndef GEODE_TYPEREGISTRY_H_
 #define GEODE_TYPEREGISTRY_H_
 
-#include "geode_globals.hpp"
+#include <memory>
+
 #include "Serializable.hpp"
+#include "geode_globals.hpp"
 
 namespace apache {
 namespace geode {

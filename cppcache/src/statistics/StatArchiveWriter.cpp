@@ -26,7 +26,7 @@
 
 #include "StatArchiveWriter.hpp"
 #include "GeodeStatisticsFactory.hpp"
-#include "CacheImpl.hpp"
+#include "../CacheImpl.hpp"
 
 namespace apache {
 namespace geode {

@@ -23,7 +23,7 @@
 #include "Statistics.hpp"
 #include "StatisticsFactory.hpp"
 #include "StatisticsTypeImpl.hpp"
-#include "NonCopyable.hpp"
+#include "../NonCopyable.hpp"
 
 /** @file
  */
@@ -39,22 +39,6 @@ using namespace apache::geode::client;
  * in local memory and does not support atomic operations.
  *
  */
-
-/* adongre
- * CID 28734: Other violation (MISSING_COPY)
- * Class "apache::geode::statistics::OsStatisticsImpl" owns resources that are
- * managed in its constructor and destructor but has no user-written copy
- * constructor.
- *
- * CID 28720: Other violation (MISSING_ASSIGN)
- * Class "apache::geode::statistics::OsStatisticsImpl" owns resources that are
- * managed
- * in its constructor and destructor but has no user-written assignment
- * operator.
- *
- * FIX : Make the class Non-Copyable
- */
-
 class OsStatisticsImpl : public Statistics,
                          private NonCopyable,
                          private NonAssignable {

@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-#include <geode/Cache.hpp>
-#include <Utils.hpp>
-#include <geode/DataOutput.hpp>
 #include <string>
 #include <cstdlib>
-#include <geode/GeodeTypeIds.hpp>
-#include <CacheXmlParser.hpp>
+
 #include <ace/DLL.h>
 #include <ace/OS.h>
+
+#include <geode/Cache.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/GeodeTypeIds.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/Properties.hpp>
+
+#include "Utils.hpp"
+#include "CacheXmlParser.hpp"
 
 namespace apache {
 namespace geode {

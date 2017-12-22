@@ -20,11 +20,23 @@
 #ifndef GEODE_PERSISTENCEMANAGER_H_
 #define GEODE_PERSISTENCEMANAGER_H_
 
-#include "geode_globals.hpp"
+#include <memory>
+
+#include "Cacheable.hpp"
+#include "CacheableKey.hpp"
 #include "DistributedSystem.hpp"
 #include "ExceptionTypes.hpp"
-#include "CacheableKey.hpp"
-#include "Cacheable.hpp"
+#include "geode_base.hpp"
+#include "geode_globals.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
+class CacheableKey;
+class Properties;
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 /**
  * @file

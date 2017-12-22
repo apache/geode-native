@@ -25,6 +25,7 @@
 #include <string>
 
 #include <geode/geode_globals.hpp>
+#include <geode/util/LogLevel.hpp>
 
 /******************************************************************************/
 
@@ -143,31 +144,6 @@ class CPPCACHE_EXPORT Log {
  public:
   /******/
 
-  enum LogLevel {
-
-    // NOTE: if you change this enum declaration at all, be sure to
-    // change levelToChars and charsToLevel functions!
-
-    None,
-
-    Error,
-    Warning,
-    Info,
-
-    Default,
-
-    Config,
-
-    Fine,
-    Finer,
-    Finest,
-
-    Debug,
-
-    All
-
-  };
-
   /******/
 
   /**
@@ -209,7 +185,7 @@ class CPPCACHE_EXPORT Log {
    * lower case. Out of range values will throw
    * IllegalArgumentException.
    */
-  static const char* levelToChars(Log::LogLevel level);
+  static const char* levelToChars(LogLevel level);
 
   /**
    * returns log level specified by "chars", or throws
@@ -570,10 +546,10 @@ class CPPCACHE_EXPORT Log {
 
 class LogFn {
   const char* m_functionName;
-  Log::LogLevel m_level;
+  LogLevel m_level;
 
  public:
-  LogFn(const char* functionName, Log::LogLevel level = Log::Finest)
+  LogFn(const char* functionName, LogLevel level = Finest)
       : m_functionName(functionName), m_level(level) {
     if (Log::enabled(m_level)) Log::enterFn(m_level, m_functionName);
   }
@@ -606,35 +582,35 @@ class CPPCACHE_EXPORT LogVarargs {
   static void finest(const char* fmt, ...);
 
   inline static void debug(const std::string& message) {
-    Log::put(Log::Debug, message.c_str());
+    Log::put(Debug, message.c_str());
   }
 
   inline static void error(const std::string& message) {
-    Log::put(Log::Error, message.c_str());
+    Log::put(Error, message.c_str());
   }
 
   inline static void warn(const std::string& message) {
-    Log::put(Log::Warning, message.c_str());
+    Log::put(Warning, message.c_str());
   }
 
   inline static void info(const std::string& message) {
-    Log::put(Log::Info, message.c_str());
+    Log::put(Info, message.c_str());
   }
 
   inline static void config(const std::string& message) {
-    Log::put(Log::Config, message.c_str());
+    Log::put(Config, message.c_str());
   }
 
   inline static void fine(const std::string& message) {
-    Log::put(Log::Fine, message.c_str());
+    Log::put(Fine, message.c_str());
   }
 
   inline static void finer(const std::string& message) {
-    Log::put(Log::Finer, message.c_str());
+    Log::put(Finer, message.c_str());
   }
 
   inline static void finest(const std::string& message) {
-    Log::put(Log::Finest, message.c_str());
+    Log::put(Finest, message.c_str());
   }
 };
 }  // namespace client
@@ -644,56 +620,56 @@ class CPPCACHE_EXPORT LogVarargs {
 /************************ LOGDEBUG ***********************************/
 
 #define LOGDEBUG                              \
-  if (apache::geode::client::Log::Debug <=    \
+  if (apache::geode::client::LogLevel::Debug <=    \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::debug
 
 /************************ LOGERROR ***********************************/
 
 #define LOGERROR                              \
-  if (apache::geode::client::Log::Error <=    \
+  if (apache::geode::client::LogLevel::Error <=    \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::error
 
 /************************ LOGWARN ***********************************/
 
 #define LOGWARN                               \
-  if (apache::geode::client::Log::Warning <=  \
+  if (apache::geode::client::LogLevel::Warning <=  \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::warn
 
 /************************ LOGINFO ***********************************/
 
 #define LOGINFO                               \
-  if (apache::geode::client::Log::Info <=     \
+  if (apache::geode::client::LogLevel::Info <=     \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::info
 
 /************************ LOGCONFIG ***********************************/
 
 #define LOGCONFIG                             \
-  if (apache::geode::client::Log::Config <=   \
+  if (apache::geode::client::LogLevel::Config <=   \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::config
 
 /************************ LOGFINE ***********************************/
 
 #define LOGFINE                               \
-  if (apache::geode::client::Log::Fine <=     \
+  if (apache::geode::client::LogLevel::Fine <=     \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::fine
 
 /************************ LOGFINER ***********************************/
 
 #define LOGFINER                              \
-  if (apache::geode::client::Log::Finer <=    \
+  if (apache::geode::client::LogLevel::Finer <=    \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::finer
 
 /************************ LOGFINEST ***********************************/
 
 #define LOGFINEST                             \
-  if (apache::geode::client::Log::Finest <=   \
+  if (apache::geode::client::LogLevel::Finest <=   \
       apache::geode::client::Log::logLevel()) \
   apache::geode::client::LogVarargs::finest
 

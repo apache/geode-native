@@ -21,9 +21,12 @@
 #define GEODE_CACHEABLE_H_
 
 #include <memory>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "geode_globals.hpp"
 #include "Serializable.hpp"
+#include "util/functional.hpp"
 
 namespace apache {
 namespace geode {

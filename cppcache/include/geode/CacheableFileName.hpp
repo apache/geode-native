@@ -20,9 +20,13 @@
 #ifndef GEODE_CACHEABLEFILENAME_H_
 #define GEODE_CACHEABLEFILENAME_H_
 
-#include "geode_globals.hpp"
+
+
+#include <memory>
+
 #include "CacheableKey.hpp"
 #include "CacheableString.hpp"
+#include "geode_globals.hpp"
 
 /** @file
  */
@@ -35,6 +39,10 @@ namespace client {
  * Implement an immutable wrapper for filenames that can serve as a
  * distributable filename object for caching as both key and value.
  */
+class DataInput;
+class DataOutput;
+class Serializable;
+
 class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
  public:
   /**

@@ -31,6 +31,7 @@
 #include <geode/PdxWriter.hpp>
 #include <geode/PdxReader.hpp>
 #include <geode/CacheableObjectArray.hpp>
+#include <util/Log.hpp>
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT

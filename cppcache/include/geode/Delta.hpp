@@ -24,9 +24,12 @@
  * @file
  */
 
+#include <memory>
+
 #include "Cacheable.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -42,6 +45,10 @@ namespace client {
  * apply a serialized delta to an existing object
  * of the class.
  */
+
+class Cache;
+class DataInput;
+class DataOutput;
 
 class CPPCACHE_EXPORT Delta {
  public:

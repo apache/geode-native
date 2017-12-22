@@ -20,12 +20,23 @@
 #ifndef GEODE_PDXWRAPPER_H_
 #define GEODE_PDXWRAPPER_H_
 
-#include "PdxSerializer.hpp"
+#include <iosfwd>
+#include <memory>
+#include <string>
+
 #include "PdxSerializable.hpp"
+#include "PdxSerializer.hpp"
+#include "geode_base.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+class CacheableKey;
+class DataInput;
+class DataOutput;
+class PdxReader;
+class PdxWriter;
 
 class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
   /**

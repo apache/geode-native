@@ -23,6 +23,7 @@
 #define ROOT_NAME "testThinClientVersionedOps"
 
 #include "ThinClientSecurityHelper.hpp"
+#include <geode/CacheTransactionManager.hpp>
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2

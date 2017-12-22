@@ -19,7 +19,7 @@
 #include <geode/DataInput.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/GeodeTypeIds.hpp>
-#include <GeodeTypeIdsImpl.hpp>
+#include "GeodeTypeIdsImpl.hpp"
 
 namespace apache {
 namespace geode {

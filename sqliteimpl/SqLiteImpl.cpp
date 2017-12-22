@@ -14,10 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <geode/Region.hpp>
 #include <geode/Cache.hpp>
 
 #include "SqLiteImpl.hpp"
+
 #ifdef _WIN32
 #include <Windows.h>
 #endif
@@ -64,16 +66,12 @@ void SqLiteImpl::init(const std::shared_ptr<Region>& region,
   }
 
   // Create persistence directory
-  LOGFINE("SqLiteImpl::init creating persistence directory: %s",
-          m_persistanceDir.c_str());
   ::mkdir(m_persistanceDir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
   // Create region directory
   std::string regionDirectory = m_persistanceDir + "/" + regionName;
   ::mkdir(regionDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
   m_regionDBFile = regionDirectory + "/" + regionName + ".db";
-  LOGFINE("SqLiteImpl::init creating persistence region file: %s",
-          m_regionDBFile.c_str());
 
 #else
   char currWDPath[512];

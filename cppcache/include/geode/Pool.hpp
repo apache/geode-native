@@ -21,12 +21,15 @@
 #define GEODE_POOL_H_
 
 #include <chrono>
+#include <iosfwd>
+#include <memory>
 
-#include "geode_globals.hpp"
-#include "util/chrono/duration.hpp"
-#include "CacheableBuiltins.hpp"
 #include "Cache.hpp"
 #include "CacheFactory.hpp"
+#include "CacheableBuiltins.hpp"
+#include "geode_base.hpp"
+#include "geode_globals.hpp"
+#include "util/chrono/duration.hpp"
 
 /**
  * @file
@@ -39,6 +42,11 @@ namespace client {
 class Cache;
 class CacheFactory;
 class PoolAttributes;
+class CacheImpl;
+class CacheableStringArray;
+class Properties;
+class QueryService;
+class RegionService;
 
 /**
  * A pool of connections to connect from a client to a set of Geode Cache

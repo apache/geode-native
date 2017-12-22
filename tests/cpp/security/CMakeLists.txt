@@ -31,5 +31,9 @@ target_link_libraries(security
 
 set_target_properties(security PROPERTIES FOLDER test)
 
+target_include_directories(security PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cppcache/src>
+)
+
 # TODO fix includes
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)

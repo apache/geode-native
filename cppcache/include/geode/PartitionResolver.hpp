@@ -20,17 +20,19 @@
 #ifndef GEODE_PARTITIONRESOLVER_H_
 #define GEODE_PARTITIONRESOLVER_H_
 
+#include <iosfwd>
 #include <memory>
 #include <string>
 
 #include "Cacheable.hpp"
+#include "geode_base.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class EntryEvent;
 class CacheableKey;
+class EntryEvent;
 
 /**
  * Implementers of interface <code>PartitionResolver</code> enable custom

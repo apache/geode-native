@@ -20,6 +20,7 @@
 #ifndef GEODE_EXPIRATIONACTION_H_
 #define GEODE_EXPIRATIONACTION_H_
 
+#include <iosfwd>
 #include <string>
 
 #include "geode_globals.hpp"

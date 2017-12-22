@@ -14,25 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "config.h"
-#include <geode/geode_globals.hpp>
 
-#include <geode/DistributedSystem.hpp>
-#include "statistics/StatisticsManager.hpp"
-#include <geode/SystemProperties.hpp>
-
-#include <CppCacheLibrary.hpp>
-#include <Utils.hpp>
-#include "util/Log.hpp"
-#include <geode/CacheFactory.hpp>
 #include <ace/OS.h>
-
 #include <ace/Guard_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
 
+#include <geode/geode_globals.hpp>
+#include <geode/DistributedSystem.hpp>
+#include <geode/CacheFactory.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/DataOutput.hpp>
+
+#include "config.h"
+#include "version.h"
+
+#include "CppCacheLibrary.hpp"
+#include "Utils.hpp"
+#include "util/Log.hpp"
+#include "statistics/StatisticsManager.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "CacheImpl.hpp"
-#include "geode/DataOutput.hpp"
 #include "TcrMessage.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "RegionStats.hpp"
@@ -40,9 +41,10 @@
 #include "CacheRegionHelper.hpp"
 #include "DiffieHellman.hpp"
 
-#include "version.h"
+namespace apache {
+namespace geode {
+namespace client {
 
-using namespace apache::geode::client;
 using namespace apache::geode::statistics;
 
 ACE_Recursive_Thread_Mutex* g_disconnectLock = new ACE_Recursive_Thread_Mutex();
@@ -231,3 +233,7 @@ SystemProperties& DistributedSystem::getSystemProperties() const {
 }
 
 const std::string& DistributedSystem::getName() const { return m_name; }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

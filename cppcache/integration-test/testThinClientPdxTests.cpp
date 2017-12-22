@@ -49,7 +49,7 @@ END_MAIN*/
 #include "testobject/InvalidPdxUsage.hpp"
 #include "QueryStrings.hpp"
 #include "QueryHelper.hpp"
-#include <Utils.hpp>
+#include "Utils.hpp"
 #include <geode/Query.hpp>
 #include <geode/QueryService.hpp>
 #include "CachePerfStats.hpp"

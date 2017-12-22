@@ -14,11 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <geode/CqAttributesFactory.hpp>
-#include <CqAttributesImpl.hpp>
 #include <geode/ExceptionTypes.hpp>
 
-using namespace apache::geode::client;
+#include "CqAttributesImpl.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
 
 CqAttributesFactory::CqAttributesFactory() {
   m_cqAttributes = std::make_shared<CqAttributesImpl>();
@@ -45,7 +49,12 @@ void CqAttributesFactory::initCqListeners(
   std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
       ->setCqListeners(cqListeners);
 }
+
 std::shared_ptr<CqAttributes> CqAttributesFactory::create() {
   return std::shared_ptr<CqAttributes>(
       std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)->clone());
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -36,6 +36,7 @@ void millisleep(uint32_t x) {
 #include "TallyListener.hpp"
 #include "TallyLoader.hpp"
 #include "TallyWriter.hpp"
+#include <util/Log.hpp>
 
 #ifdef _WIN32
 #define _T_DLL_EXPORT __declspec(dllexport)

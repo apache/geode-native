@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
-#include "config.h"
 #include <ace/OS_NS_sys_utsname.h>
+
+#include <geode/geode_globals.hpp>
+
+#include "config.h"
 #include "HostStatHelper.hpp"
 #include "GeodeStatisticsFactory.hpp"
+#include "../Assert.hpp"
 
-using namespace apache::geode::statistics;
-
-/**
- * Provides native methods which fetch operating system statistics.
- * accessed by calling {@link #getInstance()}.
- *
- */
+namespace apache {
+namespace geode {
+namespace statistics {
 
 int32_t HostStatHelper::PROCESS_STAT_FLAG = 1;
 int32_t HostStatHelper::SYSTEM_STAT_FLAG = 2;
@@ -35,9 +34,6 @@ GFS_OSTYPES HostStatHelper::osCode =
     static_cast<GFS_OSTYPES>(0);  // Default OS is Linux
 ProcessStats* HostStatHelper::processStats = nullptr;
 
-/**
- * Determine the OS and creates Process Statistics Type for that OS
- */
 void HostStatHelper::initOSCode() {
   ACE_utsname u;
   ACE_OS::uname(&u);
@@ -60,9 +56,6 @@ void HostStatHelper::initOSCode() {
   }
 }
 
-/**
- * Refresh statistics of the process through operating system specific calls
- */
 void HostStatHelper::refresh() {
   if (processStats != nullptr) {
 #if defined(_WIN32)
@@ -79,10 +72,6 @@ void HostStatHelper::refresh() {
   }
 }
 
-/**
- * Creates and returns a {@link Statistics} with
- * the given pid and name.
- */
 void HostStatHelper::newProcessStats(GeodeStatisticsFactory* statisticsFactory,
                                      int64_t pid, const char* name) {
   // Init OsCode
@@ -141,9 +130,14 @@ int64_t HostStatHelper::getCpuTime() {
   }
   return 0;
 }
+
 int32_t HostStatHelper::getNumThreads() {
   if (HostStatHelper::processStats != nullptr) {
     return HostStatHelper::processStats->getNumThreads();
   }
   return 0;
 }
+
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

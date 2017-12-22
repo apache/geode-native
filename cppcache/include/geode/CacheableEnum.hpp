@@ -20,8 +20,14 @@
 #ifndef GEODE_CACHEABLEENUM_H_
 #define GEODE_CACHEABLEENUM_H_
 
+#include <iosfwd>
+#include <memory>
+#include <string>
+
 #include "CacheableKey.hpp"
 #include "CacheableString.hpp"
+#include "GeodeTypeIds.hpp"
+#include "geode_base.hpp"
 
 namespace apache {
 namespace geode {
@@ -40,6 +46,10 @@ namespace client {
  * @see PdxWriter#writeObject
  * @see PdxReader#readObject
  */
+
+class DataInput;
+class DataOutput;
+class Serializable;
 
 class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
  private:

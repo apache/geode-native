@@ -28,6 +28,7 @@
 #include <geode/CacheableEnum.hpp>
 #include <geode/PdxWriter.hpp>
 #include <geode/PdxReader.hpp>
+#include <util/Log.hpp>
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT

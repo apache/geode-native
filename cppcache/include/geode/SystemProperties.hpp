@@ -21,7 +21,7 @@
 #define GEODE_SYSTEMPROPERTIES_H_
 
 #include "Properties.hpp"
-#include "util/Log.hpp"
+#include "util/LogLevel.hpp"
 
 /** @file
  */
@@ -127,7 +127,7 @@ class CPPCACHE_EXPORT SystemProperties {
   /**
    * Returns the log level at which logging would be done.
    */
-  Log::LogLevel logLevel() const { return m_logLevel; }
+  LogLevel logLevel() const { return m_logLevel; }
 
   /**
    * Returns  a boolean that specifies if heapLRULimit has been enabled for the
@@ -377,7 +377,7 @@ class CPPCACHE_EXPORT SystemProperties {
 
   std::string m_logFilename;
 
-  Log::LogLevel m_logLevel;
+  LogLevel m_logLevel;
 
   int m_sessions;
 

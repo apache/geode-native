@@ -28,6 +28,9 @@ target_link_libraries(${UNITTEST}
   boost
   c++11
 )
+target_include_directories(${UNITTEST} PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../src>
+)
 
 enable_testing()
 

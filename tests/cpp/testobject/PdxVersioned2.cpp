@@ -22,6 +22,7 @@
  */
 
 #include "PdxVersioned2.hpp"
+#include <util/Log.hpp>
 
 using namespace apache::geode::client;
 using namespace PdxTests;

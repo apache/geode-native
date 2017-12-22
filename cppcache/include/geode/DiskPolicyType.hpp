@@ -20,6 +20,7 @@
 #ifndef GEODE_DISKPOLICYTYPE_H_
 #define GEODE_DISKPOLICYTYPE_H_
 
+#include <iosfwd>
 #include <string>
 
 #include "geode_globals.hpp"

@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "SqLiteHelper.hpp"
+
 #define QUERY_SIZE 512
+
 int SqLiteHelper::initDB(const char *regionName, int maxPageCount, int pageSize,
                          const char *regionDBfile, int busy_timeout_ms) {
-  LOGDEBUG(
-      "SqLiteHelper::initDB Initializing SqLite with region name:%s, max page "
-      "count : %d, page size:%d and region db file :%s",
-      regionName, maxPageCount, pageSize, regionDBfile);
+
   // open the database
   int retCode = sqlite3_open(regionDBfile, &m_dbHandle);
   if (retCode == SQLITE_OK) {
@@ -53,8 +53,6 @@ int SqLiteHelper::createTable() {
            m_tableName);
   sqlite3_stmt *stmt;
 
-  LOGDEBUG("SqLiteHelper::createTable Creating table with query:%s", query);
-
   // prepare statement
   int retCode;
   retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, 0);
@@ -70,9 +68,6 @@ int SqLiteHelper::insertKeyValue(void *keyData, uint32_t keyDataSize,
   // construct query
   char query[QUERY_SIZE];
   SNPRINTF(query, QUERY_SIZE, "REPLACE INTO %s VALUES(?,?);", m_tableName);
-
-  LOGDEBUG("SqLiteHelper::insertKeyValue Inserting key value with query:%s",
-           query);
 
   // prepare statement
   sqlite3_stmt *stmt;
@@ -92,8 +87,6 @@ int SqLiteHelper::removeKey(void *keyData, uint32_t keyDataSize) {
   // construct query
   char query[QUERY_SIZE];
   SNPRINTF(query, QUERY_SIZE, "DELETE FROM %s WHERE key=?;", m_tableName);
-
-  LOGDEBUG("SqLiteHelper::removeKey Removing key with query:%s", query);
 
   // prepare statement
   sqlite3_stmt *stmt;
@@ -115,8 +108,6 @@ int SqLiteHelper::getValue(void *keyData, uint32_t keyDataSize,
   SNPRINTF(query, QUERY_SIZE,
            "SELECT value, length(value) AS valLength FROM %s WHERE key=?;",
            m_tableName);
-
-  LOGDEBUG("SqLiteHelper::getValue Getting value with query:%s", query);
 
   // prepare statement
   sqlite3_stmt *stmt;
@@ -145,7 +136,6 @@ int SqLiteHelper::dropTable() {
   char query[QUERY_SIZE];
   SNPRINTF(query, QUERY_SIZE, "DROP TABLE %s;", m_tableName);
 
-  LOGDEBUG("SqLiteHelper::dropTable Dropping table with query:%s", query);
   // prepare statement
   sqlite3_stmt *stmt;
   int retCode;
@@ -159,8 +149,6 @@ int SqLiteHelper::dropTable() {
 }
 
 int SqLiteHelper::closeDB() {
-  LOGDEBUG("SqLiteHelper::closeDB closing the database for region %s",
-           m_tableName);
   int retCode = dropTable();
   if (retCode == SQLITE_OK) retCode = sqlite3_close(m_dbHandle);
 
@@ -173,8 +161,6 @@ int SqLiteHelper::executePragma(const char *pragmaName, int pragmaValue) {
   char strVal[50];
   SNPRINTF(strVal, 50, "%d", pragmaValue);
   SNPRINTF(query, QUERY_SIZE, "PRAGMA %s = %s;", pragmaName, strVal);
-
-  LOGDEBUG("SqLiteHelper::executePragma Executing pragma query:%s", query);
 
   // prepare statement
   sqlite3_stmt *stmt;

@@ -14,19 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/geode_globals.hpp>
+
 #include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
+
+#include <geode/geode_globals.hpp>
+
 #include "LinuxProcessStats.hpp"
 #include "HostStatHelperLinux.hpp"
+#include "../Assert.hpp"
 
-using namespace apache::geode::statistics;
-
-/**
- * <P>This class provides the interface for statistics about a
- * Linux operating system process that is using a Geode system.
- *
- */
+namespace apache {
+namespace geode {
+namespace statistics {
 
 LinuxProcessStats::LinuxProcessStats(GeodeStatisticsFactory* statFactory,
                                      int64_t pid, const char* name) {
@@ -43,11 +43,6 @@ LinuxProcessStats::LinuxProcessStats(GeodeStatisticsFactory* statFactory,
 #endif  // if defined(_LINUX)
 }
 
-/**
- * Creates the StatisticsType for collecting the Stats of a Linux process
- * This function is called by the class HostStatHelper before objects of
- * LinuxProcessStatistics are created by it.
- */
 void LinuxProcessStats::createType(StatisticsFactory* statFactory) {
   try {
     StatisticDescriptor** statDescriptorArr = new StatisticDescriptor*[6];
@@ -104,8 +99,11 @@ int64_t LinuxProcessStats::getProcessSize() {
 int32_t LinuxProcessStats::getCpuUsage() {
   return stats->getInt(hostCpuUsageINT);
 }
+
 int64_t LinuxProcessStats::getCPUTime() { return stats->getInt(userTimeINT); }
+
 int32_t LinuxProcessStats::getNumThreads() { return stats->getInt(threadsINT); }
+
 int64_t LinuxProcessStats::getAllCpuTime() {
   return ((stats->getInt(userTimeINT)) + (stats->getInt(systemTimeINT)));
 }
@@ -120,3 +118,7 @@ LinuxProcessStats::~LinuxProcessStats() {
   m_statsType = nullptr;
   stats = nullptr;
 }
+
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

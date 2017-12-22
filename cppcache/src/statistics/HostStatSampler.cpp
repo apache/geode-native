@@ -36,11 +36,11 @@
 #include "HostStatSampler.hpp"
 #include "HostStatHelper.hpp"
 #include "StatArchiveWriter.hpp"
-#include "util/Log.hpp"
 #include "GeodeStatisticsFactory.hpp"
-#include "ClientHealthStats.hpp"
-#include "ClientProxyMembershipID.hpp"
-#include "CacheImpl.hpp"
+#include "../util/Log.hpp"
+#include "../ClientHealthStats.hpp"
+#include "../ClientProxyMembershipID.hpp"
+#include "../CacheImpl.hpp"
 
 namespace apache {
 namespace geode {
@@ -61,6 +61,8 @@ typedef std::vector<std::pair<std::string, int64_t> > g_fileInfo;
 }  // namespace statistics
 }  // namespace geode
 }  // namespace apache
+
+namespace {
 
 using namespace apache::geode::statistics::globals;
 
@@ -116,7 +118,8 @@ int comparator(const dirent** d1, const dirent** d2) {
     return 0;
   }
 }
-//}
+
+}
 
 namespace apache {
 namespace geode {

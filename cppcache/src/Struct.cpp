@@ -18,7 +18,7 @@
 #include <string>
 
 #include <geode/Struct.hpp>
-#include <GeodeTypeIdsImpl.hpp>
+#include "GeodeTypeIdsImpl.hpp"
 #include <geode/DataInput.hpp>
 
 namespace apache {

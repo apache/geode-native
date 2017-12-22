@@ -14,17 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * PdxWrapper.cpp
- *
- *  Created on: Apr 17, 2012
- *      Author: vrao
- */
 
 #include <geode/PdxWrapper.hpp>
-#include <Utils.hpp>
-#include <PdxHelper.hpp>
-#include <SerializationRegistry.hpp>
+
+#include "Utils.hpp"
+#include "PdxHelper.hpp"
+#include "SerializationRegistry.hpp"
 
 namespace apache {
 namespace geode {

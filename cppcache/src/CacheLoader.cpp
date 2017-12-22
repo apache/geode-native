@@ -16,9 +16,9 @@
  */
 
 #include <geode/Region.hpp>
-#include <CacheRegionHelper.hpp>
-#include <RegionInternal.hpp>
-#include <MapEntry.hpp>
+#include "CacheRegionHelper.hpp"
+#include "RegionInternal.hpp"
+#include "MapEntry.hpp"
 
 using namespace apache::geode::client;
 

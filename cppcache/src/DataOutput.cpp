@@ -22,8 +22,8 @@
 
 #include <geode/DataOutput.hpp>
 #include <geode/SystemProperties.hpp>
-#include <SerializationRegistry.hpp>
 
+#include "SerializationRegistry.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "util/Log.hpp"

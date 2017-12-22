@@ -20,6 +20,7 @@
 #include <ace/High_Res_Timer.h>
 
 #include "ThinClientSecurity.hpp"
+#include <geode/CacheTransactionManager.hpp>
 
 using namespace apache::geode::client;
 using namespace test;

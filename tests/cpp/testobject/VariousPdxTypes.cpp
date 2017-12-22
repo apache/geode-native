@@ -23,6 +23,8 @@
 
 #include "VariousPdxTypes.hpp"
 #include <geode/CacheableEnum.hpp>
+#include <util/Log.hpp>
+
 namespace PdxTests {
 
 /************************************************************

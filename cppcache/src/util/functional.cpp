@@ -15,31 +15,22 @@
  * limitations under the License.
  */
 
-#include <geode/Cache.hpp>
-#include <geode/CacheableKey.hpp>
+#include <string>
+#include <codecvt>
+#include <locale>
 
-#include "CacheableToken.hpp"
+#include <geode/util/functional.hpp>
+
+#include "string.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-RegionEntry::RegionEntry(const std::shared_ptr<Region>& region,
-                         const std::shared_ptr<CacheableKey>& key,
-                         const std::shared_ptr<Cacheable>& value)
-    : m_region(region), m_key(key), m_value(value), m_destroyed(false) {}
-
-RegionEntry::~RegionEntry() {}
-std::shared_ptr<CacheableKey> RegionEntry::getKey() { return m_key; }
-std::shared_ptr<Cacheable> RegionEntry::getValue() {
-  return CacheableToken::isInvalid(m_value) ? nullptr : m_value;
+int32_t geode_hash<std::string>::operator()(const std::string& val) {
+  // TODO string optimize without conversion to UTF-16
+  return geode_hash<std::u16string>{}(to_utf16(val));
 }
-std::shared_ptr<Region> RegionEntry::getRegion() { return m_region; }
-std::shared_ptr<CacheStatistics> RegionEntry::getStatistics() {
-  return m_statistics;
-}
-
-bool RegionEntry::isDestroyed() const { return m_destroyed; }
 
 }  // namespace client
 }  // namespace geode

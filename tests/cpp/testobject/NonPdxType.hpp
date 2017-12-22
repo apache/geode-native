@@ -30,6 +30,8 @@
 #include <geode/CacheableEnum.hpp>
 #include <geode/CacheableObjectArray.hpp>
 #include <geode/PdxWrapper.hpp>
+#include <util/Log.hpp>
+
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
 #define TESTOBJECT_EXPORT LIBEXP
