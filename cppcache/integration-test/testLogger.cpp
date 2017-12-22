@@ -88,8 +88,8 @@ void testLogFnDebug() {
   Log::debug("...");
 }
 
-int expected(int level) {
-  int expected = level;
+int expected(LogLevel level) {
+  int expected = static_cast<int>(level);
   if (level != LogLevel::None) {
     expected += LENGTH_OF_BANNER;
   }
@@ -119,8 +119,11 @@ END_TEST(REINIT)
 
 BEGIN_TEST(ALL_LEVEL)
   {
-    for (LogLevel level = Error; level <= Debug;
-         level = LogLevel(level + 1)) {
+    for (LogLevel level : {
+        LogLevel::Error, LogLevel::Warning, LogLevel::Info,
+        LogLevel::Default, LogLevel::Config, LogLevel::Fine,
+        LogLevel::Finer, LogLevel::Finest, LogLevel::Debug,
+    }) {
       Log::init(level, "all_logfile");
 
       Log::error("Error Message");
@@ -146,8 +149,11 @@ END_TEST(ALL_LEVEL)
 
 BEGIN_TEST(ALL_LEVEL_MACRO)
   {
-    for (LogLevel level = Error; level <= Debug;
-         level = LogLevel(level + 1)) {
+    for (LogLevel level : {
+        LogLevel::Error, LogLevel::Warning, LogLevel::Info,
+        LogLevel::Default, LogLevel::Config, LogLevel::Fine,
+        LogLevel::Finer, LogLevel::Finest, LogLevel::Debug,
+    }) {
       Log::init(level, "all_logfile");
 
       LOGERROR("Error Message");
@@ -177,9 +183,12 @@ BEGIN_TEST(FILE_LIMIT)
 #ifdef _WIN32
 // Fail to roll file over to timestamp file on windows.
 #else
-    for (LogLevel level = Error; level <= Debug;
-         level = LogLevel(level + 1)) {
-      if (level == Default) continue;
+      for (LogLevel level : {
+          LogLevel::Error, LogLevel::Warning, LogLevel::Info,
+          LogLevel::Default, LogLevel::Config, LogLevel::Fine,
+          LogLevel::Finer, LogLevel::Finest, LogLevel::Debug,
+      }) {
+        if (level == LogLevel::Default) continue;
       Log::init(level, "logfile", 1);
 
       Log::error("Error Message");
@@ -192,8 +201,8 @@ BEGIN_TEST(FILE_LIMIT)
       Log::debug("Debug Message");
 
       int lines = numOfLinesInFile("logfile.log");
-      int expectedLines =
-          level + LENGTH_OF_BANNER - (level >= Default ? 1 : 0);
+        int expectedLines = static_cast<int>(level) + LENGTH_OF_BANNER -
+            (level >= LogLevel::Default ? 1 : 0);
       printf("lines = %d expectedLines = %d level = %d\n", lines, expectedLines,
              level);
 
@@ -307,8 +316,11 @@ END_TEST(NO_LOG)
 
 BEGIN_TEST(LOGFN)
   {
-    for (LogLevel level = Error; level <= Debug;
-         level = LogLevel(level + 1)) {
+    for (LogLevel level : {
+        LogLevel::Error, LogLevel::Warning, LogLevel::Info,
+        LogLevel::Default, LogLevel::Config, LogLevel::Fine,
+        LogLevel::Finer, LogLevel::Finest, LogLevel::Debug,
+    }) {
       Log::init(level, "logfile");
 
       testLogFnError();

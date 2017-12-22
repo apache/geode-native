@@ -153,7 +153,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-LogLevel Log::s_logLevel = Default;
+LogLevel Log::s_logLevel = LogLevel::Default;
 
 using namespace apache::geode::log::globals;
 
@@ -427,7 +427,7 @@ void Log::writeBanner() {
     g_isLogFileOpened = true;
   }
 
-  if (s_logLevel == None) {
+  if (s_logLevel == LogLevel::None) {
     return;
   }
   std::string bannertext = geodeBanner::getBanner();
@@ -458,37 +458,37 @@ void Log::writeBanner() {
 
 const char* Log::levelToChars(LogLevel level) {
   switch (level) {
-    case None:
+    case LogLevel::None:
       return "none";
 
-    case Error:
+    case LogLevel::Error:
       return "error";
 
-    case Warning:
+    case LogLevel::Warning:
       return "warning";
 
-    case Info:
+    case LogLevel::Info:
       return "info";
 
-    case Default:
+    case LogLevel::Default:
       return "default";
 
-    case Config:
+    case LogLevel::Config:
       return "config";
 
-    case Fine:
+    case LogLevel::Fine:
       return "fine";
 
-    case Finer:
+    case LogLevel::Finer:
       return "finer";
 
-    case Finest:
+    case LogLevel::Finest:
       return "finest";
 
-    case Debug:
+    case LogLevel::Debug:
       return "debug";
 
-    case All:
+    case LogLevel::All:
       return "all";
 
     default: {
@@ -502,34 +502,32 @@ const char* Log::levelToChars(LogLevel level) {
 LogLevel Log::charsToLevel(const std::string& chars) {
   std::string level = chars;
 
-  if (level.empty()) return None;
+  if (level.empty()) return LogLevel::None;
 
-  for (uint32_t i = 0; i < level.size(); i++) {
-    if (isupper(level[i])) level[i] = tolower(level[i]);
-  }
+  std::transform(level.begin(), level.end(), level.begin(), ::tolower);
 
   if (level == "none") {
-    return None;
+    return LogLevel::None;
   } else if (level == "error") {
-    return Error;
+    return LogLevel::Error;
   } else if (level == "warning") {
-    return Warning;
+    return LogLevel::Warning;
   } else if (level == "info") {
-    return Info;
+    return LogLevel::Info;
   } else if (level == "default") {
-    return Default;
+    return LogLevel::Default;
   } else if (level == "config") {
-    return Config;
+    return LogLevel::Config;
   } else if (level == "fine") {
-    return Fine;
+    return LogLevel::Fine;
   } else if (level == "finer") {
-    return Finer;
+    return LogLevel::Finer;
   } else if (level == "finest") {
-    return Finest;
+    return LogLevel::Finest;
   } else if (level == "debug") {
-    return Debug;
+    return LogLevel::Debug;
   } else if (level == "all") {
-    return All;
+    return LogLevel::All;
   } else {
     throw IllegalArgumentException(("Unexpected log level: " + level).c_str());
   }
@@ -756,7 +754,7 @@ void LogVarargs::debug(const char* fmt, ...) {
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(Debug, msg);
+  Log::put(LogLevel::Debug, msg);
   va_end(argp);
 }
 
@@ -766,7 +764,7 @@ void LogVarargs::error(const char* fmt, ...) {
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(Error, msg);
+  Log::put(LogLevel::Error, msg);
   va_end(argp);
 }
 
@@ -776,7 +774,7 @@ void LogVarargs::warn(const char* fmt, ...) {
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(Warning, msg);
+  Log::put(LogLevel::Warning, msg);
   va_end(argp);
 }
 
@@ -786,7 +784,7 @@ void LogVarargs::info(const char* fmt, ...) {
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(Info, msg);
+  Log::put(LogLevel::Info, msg);
   va_end(argp);
 }
 
@@ -796,7 +794,7 @@ void LogVarargs::config(const char* fmt, ...) {
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(Config, msg);
+  Log::put(LogLevel::Config, msg);
   va_end(argp);
 }
 
@@ -806,7 +804,7 @@ void LogVarargs::fine(const char* fmt, ...) {
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(Fine, msg);
+  Log::put(LogLevel::Fine, msg);
   va_end(argp);
 }
 
@@ -816,7 +814,7 @@ void LogVarargs::finer(const char* fmt, ...) {
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(Finer, msg);
+  Log::put(LogLevel::Finer, msg);
   va_end(argp);
 }
 
@@ -826,7 +824,7 @@ void LogVarargs::finest(const char* fmt, ...) {
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(Finest, msg);
+  Log::put(LogLevel::Finest, msg);
   va_end(argp);
 }
 

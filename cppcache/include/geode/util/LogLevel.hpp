@@ -24,7 +24,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-enum LogLevel {
+enum class LogLevel {
   None,
   Error,
   Warning,
