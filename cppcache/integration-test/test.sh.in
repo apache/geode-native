@@ -40,7 +40,6 @@ export GF_CLASSPATH=$GF_CLASSPATH:${CMAKE_BINARY_DIR}/tests/javaobject/javaobjec
 export PROFILERCMD=
 export BUG481=
 export TESTNAME=${TEST}
-export LOG=${TEST}.log
 
 rm -rf "${TEST_DIR}"
 mkdir -p "${TEST_DIR}"
@@ -51,7 +50,7 @@ if [ `uname` = "Darwin" ]; then
   export DYLD_LIBRARY_PATH=$LD_LIBRARY_PATH
 fi
 
-$DEBUG $<TARGET_FILE:${TEST}> | tee $LOG
+$DEBUG $<TARGET_FILE:${TEST}>
 
 # hack: This is _not_ ideal. We're potentially also masking real product bugs.
 #       For now, we just want something that produces results. TODO: REMOVE ASAP

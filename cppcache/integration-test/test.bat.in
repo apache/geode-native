@@ -39,7 +39,6 @@ set GF_CLASSPATH=%GF_CLASSPATH%;${CMAKE_BINARY_DIR}/tests/javaobject/javaobject.
 set PROFILERCMD=
 set BUG481=
 set TESTNAME=${TEST}
-set LOG=${TEST}.log
 
 set
 
@@ -49,10 +48,7 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 pushd "$<SHELL_PATH:${TEST_DIR}>"
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-rem In Windows, pipes to tee return tee's exit code instead of executable's
-rem exit code. As a workaround we write exit codes to files.
-("$<SHELL_PATH:$<TARGET_FILE:${TEST}>>" && echo 0 >${TEST}.errorlevel || echo 1 >${TEST}.errorlevel) | tee %LOG%
-set /p errorlevel= <${TEST}.errorlevel
+"$<SHELL_PATH:$<TARGET_FILE:${TEST}>>"
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 popd

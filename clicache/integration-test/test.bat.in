@@ -45,7 +45,6 @@ set GF_CLASSPATH=%GF_CLASSPATH%;$<SHELL_PATH:${CMAKE_BINARY_DIR}>\tests\javaobje
 set PROFILERCMD=
 set BUG481=
 set TESTNAME=${TEST}
-set LOG=${TEST}.log
 
 rmdir /q /s "%TEST_DIR%" 2>nul
 mkdir "%TEST_DIR%"
@@ -53,17 +52,7 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 pushd "%TEST_DIR%"
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-rem In Windows, pipes to tee return tee's exit code instead of executable's
-rem exit code. As a workaround we write exit codes to files.
-
-(${NUNIT_CONSOLE} /labels /run:${NAMESPACE}.${TESTCLASS} ..\..\$<CONFIG>\UnitTests.dll 2>&1 && echo 0 >${TEST}.errorlevel || echo 1 >${TEST}.errorlevel) | tee %LOG%
-
-rem Our testing framework sometimes leaves lingering server/locator processes.
-rem Let's clean up after ourselves so that we do not affect subsequent runs.
-rem Unfortunately this also means that our tests can only run serially.
-taskkill.exe /F /IM java.exe
-
-set /p errorlevel= <${TEST}.errorlevel
+${NUNIT_CONSOLE} /labels /run:${NAMESPACE}.${TESTCLASS} ..\..\$<CONFIG>\UnitTests.dll 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 popd
