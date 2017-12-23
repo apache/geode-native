@@ -47,8 +47,6 @@ namespace client {
 
 using namespace apache::geode::statistics;
 
-ACE_Recursive_Thread_Mutex* g_disconnectLock = new ACE_Recursive_Thread_Mutex();
-
 DistributedSystem::DistributedSystem(
     const std::string& name,
     std::unique_ptr<SystemProperties> sysProps)
@@ -157,7 +155,6 @@ std::unique_ptr<DistributedSystem> DistributedSystem::create(
 }
 
 void DistributedSystem::connect(Cache* cache) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
   if (m_connected == true) {
     throw AlreadyConnectedException(
         "DistributedSystem::connect: already connected, call getInstance to "
@@ -204,8 +201,6 @@ void DistributedSystem::connect(Cache* cache) {
 }
 
 void DistributedSystem::disconnect() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(*g_disconnectLock);
-
   if (!m_connected) {
     throw NotConnectedException(
         "DistributedSystem::disconnect: connect "

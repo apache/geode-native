@@ -133,8 +133,6 @@ namespace Apache
       DistributedSystem^ DistributedSystem::Connect(String^ name, Properties<String^, String^>^ config, Cache ^ cache)
       {
         // TODO AppDomain should we be able to create a DS directly?
-        native::DistributedSystemImpl::acquireDisconnectLock();
-
         _GF_MG_EXCEPTION_TRY2
 
         auto nativeptr = native::DistributedSystem::create(marshal_as<std::string>(name),
@@ -146,16 +144,10 @@ namespace Apache
         return gcnew DistributedSystem(std::move(nativeptr));
 
         _GF_MG_EXCEPTION_CATCH_ALL2
-
-          finally {
-          native::DistributedSystemImpl::releaseDisconnectLock();
-        }
       }
 
       void DistributedSystem::Disconnect(Cache^ cache)
       {
-        native::DistributedSystemImpl::acquireDisconnectLock();
-
         _GF_MG_EXCEPTION_TRY2
 
 
@@ -165,10 +157,6 @@ namespace Apache
         GC::KeepAlive(m_nativeptr);
 
         _GF_MG_EXCEPTION_CATCH_ALL2
-
-          finally {
-          native::DistributedSystemImpl::releaseDisconnectLock();
-        }
       }
 
       void DistributedSystem::AppDomainInstanceInitialization(Cache^ cache)
@@ -418,8 +406,6 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          native::DistributedSystemImpl::acquireDisconnectLock();
-
           Serializable::UnregisterNativesGeneric();
 
           Serializable::UnregisterTypeGeneric(
@@ -446,10 +432,6 @@ namespace Apache
             GeodeClassIds::CacheableManagedObjectXml - 0x80000000, cache);
 
         _GF_MG_EXCEPTION_CATCH_ALL2
-
-          finally {
-          native::DistributedSystemImpl::releaseDisconnectLock();
-        }
       }
 
       Apache::Geode::Client::SystemProperties^ DistributedSystem::SystemProperties::get()
@@ -501,16 +483,6 @@ namespace Apache
       DistributedSystem::~DistributedSystem()
       {
         m_memoryPressureHandler->Dispose(nullptr);
-      }
-
-      void DistributedSystem::acquireDisconnectLock()
-      {
-        native::DistributedSystemImpl::acquireDisconnectLock();
-      }
-
-      void DistributedSystem::releaseDisconnectLock()
-      {
-        native::DistributedSystemImpl::releaseDisconnectLock();
       }
 
       void DistributedSystem::registerCliCallback()
