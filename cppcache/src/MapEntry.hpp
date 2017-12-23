@@ -111,8 +111,6 @@ class CPPCACHE_EXPORT ExpEntryProperties {
  */
 class CPPCACHE_EXPORT MapEntry {
  public:
-  static std::shared_ptr<MapEntry> MapEntry_NullPointer;
-
   virtual ~MapEntry() {}
 
   virtual void getKey(std::shared_ptr<CacheableKey>& result) const = 0;

@@ -21,8 +21,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-std::shared_ptr<MapEntry> MapEntry::MapEntry_NullPointer(nullptr);
-
 void EntryFactory::newMapEntry(ExpiryTaskManager* expiryTaskManager,
                                const std::shared_ptr<CacheableKey>& key,
                                std::shared_ptr<MapEntryImpl>& result) const {
