@@ -1814,6 +1814,11 @@ namespace Apache.Geode.Client.UnitTests
     public void ExecuteFunctionOnRegionMultiFilterKey()
     {
       runExecuteFunctionOnRegionMultiFilterKey(false);
+    }
+
+    [Test]
+    public void ExecuteFunctionOnRegionMultiFilterKeySingleHop()
+    {
       runExecuteFunctionOnRegionMultiFilterKey(true);
     }
 
@@ -1821,6 +1826,11 @@ namespace Apache.Geode.Client.UnitTests
     public void ExecuteFunctionTimeOut()
     {
       runExecuteFunctionTimeOut(false);
+    }
+
+    [Test]
+    public void ExecuteFunctionTimeOutSingleHop()
+    {
       runExecuteFunctionTimeOut(true);
     }
 
@@ -1833,8 +1843,13 @@ namespace Apache.Geode.Client.UnitTests
     [Test]
     public void TestFEOnRegionTransaction()
     {
-      runFEOnRegionTx(true);
       runFEOnRegionTx(false);
+    }
+    
+    [Test]
+    public void TestFEOnRegionTransactionSingleHop()
+    {
+      runFEOnRegionTx(true);
     }
   }
 }
