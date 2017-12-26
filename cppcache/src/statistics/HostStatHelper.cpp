@@ -58,16 +58,12 @@ void HostStatHelper::initOSCode() {
 
 void HostStatHelper::refresh() {
   if (processStats != nullptr) {
-#if defined(_WIN32)
-    HostStatHelperWin::refreshProcess(processStats);
-#elif defined(_SOLARIS)
+#if defined(_SOLARIS)
     HostStatHelperSolaris::refreshProcess(processStats);
 #elif defined(_LINUX)
     HostStatHelperLinux::refreshProcess(processStats);
-#elif defined(_MACOSX)
-    HostStatHelperNull::refreshProcess(processStats);
 #else
-#error missing stats helper
+    HostStatHelperNull::refreshProcess(processStats);
 #endif
   }
 }
@@ -105,9 +101,6 @@ void HostStatHelper::close() {
 }
 
 void HostStatHelper::cleanup() {
-#if defined(_WIN32)
-  HostStatHelperWin::closeHostStatHelperWin();  // close registry structures
-#endif
 #if defined(_SOLARIS)
   HostStatHelperSolaris::closeHostStatHelperSolaris();  // close kstats
 #endif
