@@ -144,9 +144,10 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
       if (m_bucketWaitTimeout > std::chrono::milliseconds::zero() &&
           reply.getNumBuckets() > 0) {
         std::unique_lock<std::timed_mutex> guard(m_timedBucketStatusLock,
-                                                 std::chrono::seconds(60));
+                                                 CLOSE_SERVICE_MUTEX_TIMEOUT);
         if (!guard.owns_lock()) {
-          LOGERROR("Buckets statuses container read mutex timeout 60 seconds");
+          LOGERROR("Buckets statuses container read mutex timeout %lld seconds",
+                   CLOSE_SERVICE_MUTEX_TIMEOUT);
           return;
         }
         m_bucketStatus[regionFullPath] = new PRbuckets(reply.getNumBuckets());
@@ -466,11 +467,10 @@ void ClientMetadataService::markPrimaryBucketForTimeout(
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return;
 
-  std::unique_lock<std::timed_mutex> guard(
-      m_timedBucketStatusLock,
-      std::chrono::milliseconds(DEFAULT_MUTEX_TIMEOUT));
+  std::unique_lock<std::timed_mutex> guard(m_timedBucketStatusLock,
+                                           DEFAULT_MUTEX_TIMEOUT);
   if (!guard.owns_lock()) {
-    LOGERROR("Buckets statuses container write mutex timeout %d milliseconds",
+    LOGERROR("Buckets statuses container write mutex timeout %lld milliseconds",
              DEFAULT_MUTEX_TIMEOUT);
     return;
   }
@@ -818,11 +818,10 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return;
 
-  std::unique_lock<std::timed_mutex> guard(
-      m_timedBucketStatusLock,
-      std::chrono::milliseconds(DEFAULT_MUTEX_TIMEOUT));
+  std::unique_lock<std::timed_mutex> guard(m_timedBucketStatusLock,
+                                           DEFAULT_MUTEX_TIMEOUT);
   if (!guard.owns_lock()) {
-    LOGERROR("Buckets statuses container write mutex timeout %d milliseconds",
+    LOGERROR("Buckets statuses container write mutex timeout %lld milliseconds",
              DEFAULT_MUTEX_TIMEOUT);
     return;
   }
@@ -877,11 +876,10 @@ bool ClientMetadataService::isBucketMarkedForTimeout(const char* regionFullPath,
                                                      int32_t bucketid) {
   if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return false;
 
-  std::unique_lock<std::timed_mutex> guard(
-      m_timedBucketStatusLock,
-      std::chrono::milliseconds(DEFAULT_MUTEX_TIMEOUT));
+  std::unique_lock<std::timed_mutex> guard(m_timedBucketStatusLock,
+                                           DEFAULT_MUTEX_TIMEOUT);
   if (!guard.owns_lock()) {
-    LOGERROR("Buckets statuses container read mutex timeout %d milliseconds",
+    LOGERROR("Buckets statuses container read mutex timeout %lld milliseconds",
              DEFAULT_MUTEX_TIMEOUT);
     return false;
   }
