@@ -50,6 +50,9 @@ class ClienMetadata;
 static constexpr std::chrono::milliseconds DEFAULT_MUTEX_TIMEOUT =
     std::chrono::seconds(1);
 
+static constexpr std::chrono::milliseconds CLOSE_SERVICE_MUTEX_TIMEOUT =
+    std::chrono::seconds(60);
+
 typedef std::map<std::string, std::shared_ptr<ClientMetadata>>
     RegionMetadataMapType;
 
