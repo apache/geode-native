@@ -124,10 +124,6 @@ namespace Apache
 
         DistributedSystem(std::unique_ptr<native::DistributedSystem> nativeptr);
 
-        static void acquireDisconnectLock();
-
-        static void releaseDisconnectLock();
-
         delegate void cliCallback(apache::geode::client::Cache& cache);
 
         static void registerCliCallback();

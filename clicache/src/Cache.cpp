@@ -116,8 +116,6 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          Apache::Geode::Client::DistributedSystem::acquireDisconnectLock();
-
           m_nativeptr->get()->close( keepalive );
           Apache::Geode::Client::DistributedSystem::UnregisterBuiltinManagedTypes(this);
 
@@ -126,7 +124,6 @@ namespace Apache
         {
 					CacheRegionHelper::getCacheImpl(m_nativeptr->get())->getPdxTypeRegistry()->clear();
           Serializable::Clear();
-          Apache::Geode::Client::DistributedSystem::releaseDisconnectLock();
           Apache::Geode::Client::DistributedSystem::unregisterCliCallback();
           GC::KeepAlive(m_nativeptr);
         }

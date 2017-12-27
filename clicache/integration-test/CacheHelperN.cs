@@ -2168,7 +2168,14 @@ namespace Apache.Geode.Client.UnitTests
         outSr.Close();
         if (!started)
         {
-          javaProc.Kill();
+          try
+          {
+            javaProc.Kill();
+          }
+          catch
+          {
+            //ignore
+          }
         }
         Assert.IsTrue(started, "Timed out waiting for " +
           "Java cacheserver to start.{0}Please check the server logs.",
@@ -2224,7 +2231,14 @@ namespace Apache.Geode.Client.UnitTests
           outSr.Close();
           if (!stopped)
           {
-            javaStopProc.Kill();
+            try
+            {
+              javaStopProc.Kill();
+            }
+            catch
+            {
+              //ignore
+            }
           }
           if (ssl)
           {
@@ -2279,7 +2293,14 @@ namespace Apache.Geode.Client.UnitTests
           outSr.Close();
           if (!stopped)
           {
-            javaStopProc.Kill();
+            try
+            {
+              javaStopProc.Kill();
+            }
+            catch
+            {
+              //ignore
+            }
           }
           Assert.IsTrue(stopped, "Timed out waiting for " +
             "Java cacheserver to stop.{0}Please check the server logs.",
@@ -2354,8 +2375,15 @@ namespace Apache.Geode.Client.UnitTests
           {
             Util.Log("Killing geode process with id {0}", processId);
             Process proc = Process.GetProcessById(processId);
-            proc.Kill();
-            proc.WaitForExit();
+            try
+            {
+              proc.Kill();
+            }
+            catch
+            {
+              //ignore
+            }
+            proc.WaitForExit(MaxWaitMillis);
           }
           else
           {

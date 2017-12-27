@@ -24,9 +24,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-// guard for connect/disconnect
-extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
-
 volatile bool DistributedSystemImpl::m_isCliCallbackSet = false;
 std::map<int, CliCallbackMethod> DistributedSystemImpl::m_cliCallbackMap;
 ACE_Recursive_Thread_Mutex DistributedSystemImpl::m_cliCallbackLock;
@@ -50,14 +47,6 @@ void DistributedSystemImpl::connect() {}
 
 void DistributedSystemImpl::disconnect() {
   LOGFINE("DistributedSystemImpl::disconnect done");
-}
-
-void DistributedSystemImpl::acquireDisconnectLock() {
-  g_disconnectLock->acquire();
-}
-
-void DistributedSystemImpl::releaseDisconnectLock() {
-  g_disconnectLock->release();
 }
 
 void DistributedSystemImpl::CallCliCallBack(Cache& cache) {

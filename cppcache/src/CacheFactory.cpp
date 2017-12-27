@@ -48,8 +48,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
-
 std::shared_ptr<CacheFactory> CacheFactory::createCacheFactory(
     const std::shared_ptr<Properties>& configPtr) {
   return std::make_shared<CacheFactory>(configPtr);
@@ -77,8 +75,6 @@ CacheFactory::CacheFactory(const std::shared_ptr<Properties> dsProps) {
 }
 
 Cache CacheFactory::create() const {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
-
   LOGFINE("CacheFactory called DistributedSystem::connect");
   auto cache = create(DEFAULT_CACHE_NAME, nullptr);
 
@@ -116,8 +112,6 @@ Cache CacheFactory::create() const {
 Cache CacheFactory::create(
     std::string name,
     const std::shared_ptr<CacheAttributes>& attrs /*= nullptr*/) const {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
-
   auto cache = Cache(std::move(name), dsProp, ignorePdxUnreadFields,
                      pdxReadSerialized, authInitialize);
   cache.m_cacheImpl->setAttributes(attrs);

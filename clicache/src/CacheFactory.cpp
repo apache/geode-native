@@ -62,7 +62,6 @@ namespace Apache
         bool pdxReadSerialized = false;
         _GF_MG_EXCEPTION_TRY2
           //msclr::lock lockInstance(m_singletonSync);
-          DistributedSystem::acquireDisconnectLock();
           auto nativeCache = std::make_shared<native::Cache>(m_nativeptr->get()->create( ));
 
           auto cache = Cache::Create( nativeCache );
@@ -88,7 +87,6 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2
         finally {
           GC::KeepAlive(m_nativeptr);
-           DistributedSystem::releaseDisconnectLock();
         }
       }
    

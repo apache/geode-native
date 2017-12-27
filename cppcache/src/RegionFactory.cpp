@@ -36,8 +36,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
-
 RegionFactory::RegionFactory(RegionShortcut preDefinedRegion,
                              CacheImpl* cacheImpl)
     : m_preDefinedRegion(preDefinedRegion),

@@ -37,8 +37,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-extern ACE_Recursive_Thread_Mutex* g_disconnectLock;
-
 /** Returns the name of this cache.
  * This method does not throw
  * <code>CacheClosedException</code> if the cache is closed.
@@ -76,7 +74,6 @@ void Cache::close() { close(false); }
  * @throws CacheClosedException,  if the cache is already closed.
  */
 void Cache::close(bool keepalive) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> connectGuard(*g_disconnectLock);
   m_cacheImpl->close(keepalive);
 
   try {

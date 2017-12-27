@@ -95,10 +95,6 @@ class CPPCACHE_EXPORT DistributedSystemImpl {
 
   // acquire/release locks
 
-  static void acquireDisconnectLock();
-
-  static void releaseDisconnectLock();
-
   static void registerCliCallback(int appdomainId,
                                   CliCallbackMethod clicallback);
 
