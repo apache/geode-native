@@ -1,0 +1,109 @@
+#pragma once
+
+#ifndef GEODE_DIFFIEHELLMAN_H_
+#define GEODE_DIFFIEHELLMAN_H_
+
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+#include <ace/DLL.h>
+#include <ace/OS.h>
+#include <string>
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/Properties.hpp>
+#include <ace/Recursive_Thread_Mutex.h>
+
+#define DH_ERR_NO_ERROR 0
+#define DH_ERR_UNSUPPORTED_ALGO 1
+#define DH_ERR_ILLEGAL_KEYSIZE 2
+#define DH_ERR_SUBJECT_NOT_FOUND 3
+#define DH_ERR_NO_CERTIFICATES 4
+#define DH_ERR_INVALID_SIGN 5
+
+const char SecurityClientDhAlgo[] = "security-client-dhalgo";
+const char SecurityClientKsPath[] = "security-client-kspath";
+
+namespace apache {
+namespace geode {
+namespace client {
+
+class DiffieHellman {
+ public:
+  void initDhKeys(const std::shared_ptr<Properties>& props);
+  void clearDhKeys(void);
+  std::shared_ptr<CacheableBytes> getPublicKey(void);
+  void setPublicKeyOther(const std::shared_ptr<CacheableBytes>& pubkey);
+  void computeSharedSecret(void);
+  std::shared_ptr<CacheableBytes> encrypt(
+      const std::shared_ptr<CacheableBytes>& cleartext);
+  std::shared_ptr<CacheableBytes> encrypt(const uint8_t* cleartext, int len);
+  std::shared_ptr<CacheableBytes> decrypt(
+      const std::shared_ptr<CacheableBytes>& cleartext);
+  std::shared_ptr<CacheableBytes> decrypt(const uint8_t* cleartext, int len);
+  bool verify(const std::shared_ptr<CacheableString>& subject,
+              const std::shared_ptr<CacheableBytes>& challenge,
+              const std::shared_ptr<CacheableBytes>& response);
+
+  static void initOpenSSLFuncPtrs();
+
+  DiffieHellman() : m_dhCtx(nullptr) {}
+
+ private:
+  void* m_dhCtx;
+  static void* getOpenSSLFuncPtr(const char* function_name);
+
+  // OpenSSL Func Ptrs: Declare Func Ptr type and a static variable of
+  // std::shared_ptr<Func> type. Convention: <Orig Func Name>_Type and <Orig
+  // Func Name>_Ptr
+  typedef int (*gf_initDhKeys_Type)(void** dhCtx, const char* dhAlgo,
+                                    const char* ksPath);
+  typedef void (*gf_clearDhKeys_Type)(void* dhCtx);
+  typedef unsigned char* (*gf_getPublicKey_Type)(void* dhCtx, int* len);
+  typedef void (*gf_setPublicKeyOther_Type)(void* dhCtx,
+                                            const unsigned char* pubkey,
+                                            int length);
+  typedef void (*gf_computeSharedSecret_Type)(void* dhCtx);
+  typedef unsigned char* (*gf_encryptDH_Type)(void* dhCtx,
+                                              const unsigned char* cleartext,
+                                              int len, int* retLen);
+  typedef unsigned char* (*gf_decryptDH_Type)(void* dhCtx,
+                                              const unsigned char* cleartext,
+                                              int len, int* retLen);
+  typedef bool (*gf_verifyDH_Type)(void* dhCtx, const char* subject,
+                                   const unsigned char* challenge,
+                                   int challengeLen,
+                                   const unsigned char* response,
+                                   int responseLen, int* reason);
+
+#define DECLARE_DH_FUNC_PTR(OrigName) static OrigName##_Type OrigName##_Ptr;
+
+  DECLARE_DH_FUNC_PTR(gf_initDhKeys)
+  DECLARE_DH_FUNC_PTR(gf_clearDhKeys)
+  DECLARE_DH_FUNC_PTR(gf_getPublicKey)
+  DECLARE_DH_FUNC_PTR(gf_setPublicKeyOther)
+  DECLARE_DH_FUNC_PTR(gf_computeSharedSecret)
+  DECLARE_DH_FUNC_PTR(gf_encryptDH)
+  DECLARE_DH_FUNC_PTR(gf_decryptDH)
+  DECLARE_DH_FUNC_PTR(gf_verifyDH)
+
+  static ACE_DLL m_dll;
+
+};  // class DiffieHellman
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
+
+#endif  // GEODE_DIFFIEHELLMAN_H_

@@ -17,18 +17,22 @@
 FROM ubuntu
 LABEL maintainer Apache Geode <dev@geode.apache.org>
 
-ARG GEODE_VERSION
-
-RUN apt-get update
-RUN apt-get install -y build-essential cmake doxygen git openjdk-8-jdk \
-                       wget zlib1g-dev
-
 RUN \
-  wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/1.0.0-incubating/apache-geode-${GEODE_VERSION}.tar.gz" && \
-  tar xzf "closer.cgi?action=download&filename=geode%2F1.0.0-incubating%2Fapache-geode-${GEODE_VERSION}.tar.gz" && \
-  rm "closer.cgi?action=download&filename=geode%2F1.0.0-incubating%2Fapache-geode-${GEODE_VERSION}.tar.gz"
+    apt-get update \
+    && apt-get install -y build-essential cmake doxygen git graphviz openjdk-8-jdk wget zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-ENV GEODE /apache-geode-${GEODE_VERSION}
+ENV GEODE_VERSION 1.1.0
+RUN \
+    wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tar.gz" -O - | tar xzf -
+
+ENV RAT_VERSION 0.12
+RUN \
+    wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=creadur/apache-rat-${RAT_VERSION}/apache-rat-${RAT_VERSION}-bin.tar.gz2" -O - | tar xzf -
+
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+ENV GEODE_HOME /apache-geode-${GEODE_VERSION}
+ENV RAT_HOME /apache-rat-${RAT_VERSION}
+ENV PATH $PATH:$GEODE_HOME/bin
 
 CMD ["bash"]

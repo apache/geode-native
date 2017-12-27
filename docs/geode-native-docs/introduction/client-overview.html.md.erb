@@ -1,0 +1,37 @@
+---
+title:  About the Client
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+The <%=vars.product_name%> client delivers the full set of capabilities supplied by Java clients communicating with a <%=vars.product_name%> server.
+
+The <%=vars.product_name%> client is written entirely in C++, so its initialization process does not involve the creation of a Java virtual machine. The .NET client provides operations for the .NET Framework application developer who writes in .NET languages and needs to access the <%=vars.product_name%> server.
+
+Clients in C++, Java, and .NET languages communicate only with the cache server and do not communicate with each other. The clients interface with the server at the sockets level and implement the same wire protocol to the server. These capabilities produce extremely high performance and system scalability.
+
+C++ and .NET clients provide access to the full region API, including support for application plug-ins, managed connectivity, highly available data, and reliable failover to a specified server list. All of this is transparent to the end user.
+
+You can configure clients to cache data locally, or they can act in a cacheless mode where they retrieve data from a cache server and directly pass it to other system members without incurring the caching overhead. They can be configured as read only caches, or be configured to receive notifications from the server whenever a key of interest to the client changes on the server.
+
+This figure diagrams how .NET and C++ applications access the cache server. <a id="concept_BCE696D352144690ADF786A0E3D2BD98__fig_C19B4B30942D4F1BA59DBDCC6146241A"></a>
+
+
+<img src="../common/images/client-overview.gif" alt="Client Overview" id="concept_BCE696D352144690ADF786A0E3D2BD98__image_A0805B5079C64B0E8F2E9DA2A8A5A7A6" class="image" />
+
+

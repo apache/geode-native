@@ -51,11 +51,6 @@
       "destination":"$Env:ProgramFiles/Amazon/Ec2ConfigService/Scripts/init-ssh.ps1"
     },
     {
-      "type":"file",
-      "source":"windows/sshd-recovery.bat",
-      "destination":"$Env:ProgramFiles/OpenSSH-Win64/sshd-recovery.bat"
-    },
-    {
       "type":"powershell",
       "scripts":[
         "windows/install-ssh.ps1"

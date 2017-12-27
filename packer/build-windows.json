@@ -22,8 +22,10 @@
         "version":"{{user `version`}}",
         "source_ami":"{{user `source_ami`}}"
       },
-      "communicator":"winrm",
-      "winrm_username":"Administrator",
+      "communicator":"ssh",
+      "ssh_username":"Administrator",
+      "ssh_handshake_attempts":100,
+      "ssh_timeout":"15m",
       "launch_block_device_mappings":[
         {
           "device_name":"/dev/sda1",
@@ -36,9 +38,10 @@
   "provisioners":[
     {
       "pause_before":"30s",
-      "type":"file",
-      "source":"{{user `gemfire_archive`}}",
-      "destination":"gemfire.tar.gz"
+      "type":"powershell",
+      "inline":[
+        "Install-WindowsFeature -name NET-Framework-Core"
+      ]
     },
     {
       "type":"powershell",
@@ -46,42 +49,36 @@
         "choco install jdk8 -confirm",
         "choco install cmake.portable -confirm",
         "choco install git.install -confirm",
-        "# broken choco install activeperl -confirm",
+        "choco install activeperl -confirm",
         "choco install doxygen.install --allowEmptyChecksums -confirm",
         "choco install nunit.install --version 2.6.4 -confirm",
         "choco install netfx-4.5.2-devpack --allowEmptyChecksums -confirm",
-        "choco install nsis -confirm"
+        "choco install nsis -confirm",
+        "choco install patch -confirm",
+        "choco install gnuwin32-coreutils.portable -confirm"
       ]
     },
     {
       "type":"file",
-      "source":"windows/Packer.psm1",
-      "destination":"Documents/WindowsPowerShell/Modules/Packer/Packer.psm1"
+      "source":"{{user `gemfire_archive`}}",
+      "destination":"gemfire.tar.gz"
     },
     {
       "type":"powershell",
       "scripts":[
-        "windows/install-perl.ps1",
-        "windows/install-gnuwin.ps1",
         "windows/install-gemfire.ps1"
       ]
     },
     {
       "type":"powershell",
       "scripts":[
-        "windows/add-user-build.ps1",
-        "windows/run-sshd-as-build.ps1"
+        "windows/add-user-build.ps1"
       ]
     },
     {
       "type":"file",
       "source":"windows/init-user-build.ps1",
       "destination":"C:/Users/build/init-user-build.ps1"
-    },
-    {
-      "type":"file",
-      "source":"windows/buildenv.bat",
-      "destination":"C:/Users/build/buildenv.bat"
     },
     {
       "type":"powershell",

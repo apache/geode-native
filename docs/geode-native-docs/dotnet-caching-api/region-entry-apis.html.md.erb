@@ -1,0 +1,35 @@
+---
+title:  Region and Entry APIs
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+This section describes classes for working with regions and region entries.
+
+-   **RegionFactory class**. Creates a `Region` instance based on the provided configuration.
+-   **IRegion class**. Provides functions for managing regions and cached data. The `Region` interface implements the generic .NET `IDictionary` interface. `IRegion` implements `IDictionary` and `Region` inherits `IRegion`, giving you access to the full range of .NET `Generic` collection functions. Use the functions in this class to perform the following actions:
+    -   Retrieve information about the region, such as its parent region and region attribute objects.
+    -   Invalidate or destroy the region.
+    -   Add, update, invalidate, and remove region entries.
+    -   Determine, individually or as entire sets, the region's entry keys, entry values, and `RegionEntry` objects.
+-   **RegionEntry class**. Contains the key and value for the entry, and provides all non-distributed entry operations. The operations of this object are not distributed and do not affect statistics.
+-   **RegionShortcut class**. Holds `enum` definitions for the most common region configurations. Start your region configuration with a shortcut setting in the region attribute, `refid`. Then customize further using the `RegionAttributes`.
+-   **RegionAttributes class**. Holds all attribute values for a region and provides functions for retrieving all attribute settings. This class can only be modified by the `AttributesFactory` class before region creation, and the `AttributesMutator` class after region creation.
+-   **AttributesMutator class**. Allows modification of an existing region's attributes for application plug-ins and expiration actions. Each region has an `AttributesMutator` instance.
+
+
