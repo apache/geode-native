@@ -4,7 +4,7 @@
     $ cd <clone>
     $ mkdir build
     $ cd build
-    $ cmake ../src
+    $ cmake .. -DGEODE_ROOT=<path to Apache Geode binaries>
     $ cmake --build . -- -j 8
 
 ### [Mac OS X System Requirements](#mac-os-x)
@@ -15,7 +15,7 @@
     $ cd <clone>
     $ mkdir build
     $ cd build
-    $ cmake ../src
+    $ cmake .. -DGEODE_ROOT=<path to Apache Geode binaries>
     $ cmake --build . -- /m
 
 ### [Windows System Requirements](#windows)
@@ -26,12 +26,12 @@ CMake uses a "generator" to produce configuration files for use by a variety of 
 ### Mac OS X Generator
 The recommended generator on Mac OS X is `Xcode`:
 
-	$ cmake -G "Xcode" ../src
+	$ cmake -G "Xcode" .. -DGEODE_ROOT=<path to Apache Geode binaries>
 
 ### Windows Generator
 The recommended generator on Windows is `Visual Studio 14 2015 Win64`:
 
-	$ cmake -G "Visual Studio 14 2015 Win64" ../src
+	$ cmake -G "Visual Studio 14 2015 Win64" .. -DGEODE_ROOT=<path to Apache Geode binaries>
 
 ## Finding Geode
 Building requires access to an installation of Geode. By default the value of `GEODE_ROOT` or `GEODE` is used during CMake configuration if either of those shell variables is exported. To explicitly specify the location in which Geode is installed, add `-DGEODE_ROOT=/path/to/geode` to the _initial_ `cmake` execution command before `../src`.
@@ -57,6 +57,7 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 * [CMake 3.8](https://cmake.org/) or newer
 * C++11 compiler *(see platform specific requirements)*
 * [Doxygen 8.11](http://www.stack.nl/~dimitri/doxygen/download.html) *(for building source documentation)*
+* [Apache Geode](http://geode.apache.org/releases/) binaries
 
 ## Mac OS X
 * Mac OS X 10.12 (Sierra) or newer
