@@ -69,7 +69,7 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 * [XCode](https://developer.apple.com/xcode/download/)
 * Xcode command line developer tools
 
-    `$ xcode-select --install` 
+    `$ xcode-select --install`
 
 ### Optional Tools
 * [CMake GUI](https://cmake.org/)
@@ -105,5 +105,3 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 
 ### Required Tools
 * [Solaris Studio 12.6](http://www.oracle.com/technetwork/server-storage/developerstudio/downloads/index.html) or newer
-
-	
