@@ -26,6 +26,8 @@
 #include "ClientMetadataService.hpp"
 #include "ThinClientPoolDM.hpp"
 
+#include "util/chrono/duration.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -146,8 +148,9 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
         std::unique_lock<std::timed_mutex> guard(m_timedBucketStatusLock,
                                                  CLOSE_SERVICE_MUTEX_TIMEOUT);
         if (!guard.owns_lock()) {
-          LOGERROR("Buckets statuses container read mutex timeout %lld seconds",
-                   CLOSE_SERVICE_MUTEX_TIMEOUT);
+          LOGERROR(
+              "Buckets statuses container read mutex timeout " +
+              util::chrono::duration::to_string(CLOSE_SERVICE_MUTEX_TIMEOUT));
           return;
         }
         m_bucketStatus[regionFullPath] = new PRbuckets(reply.getNumBuckets());
@@ -470,8 +473,8 @@ void ClientMetadataService::markPrimaryBucketForTimeout(
   std::unique_lock<std::timed_mutex> guard(m_timedBucketStatusLock,
                                            DEFAULT_MUTEX_TIMEOUT);
   if (!guard.owns_lock()) {
-    LOGERROR("Buckets statuses container write mutex timeout %lld milliseconds",
-             DEFAULT_MUTEX_TIMEOUT);
+    LOGERROR("Buckets statuses container write mutex timeout " +
+             util::chrono::duration::to_string(DEFAULT_MUTEX_TIMEOUT));
     return;
   }
 
@@ -821,8 +824,8 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
   std::unique_lock<std::timed_mutex> guard(m_timedBucketStatusLock,
                                            DEFAULT_MUTEX_TIMEOUT);
   if (!guard.owns_lock()) {
-    LOGERROR("Buckets statuses container write mutex timeout %lld milliseconds",
-             DEFAULT_MUTEX_TIMEOUT);
+    LOGERROR("Buckets statuses container write mutex timeout " +
+             util::chrono::duration::to_string(DEFAULT_MUTEX_TIMEOUT));
     return;
   }
 
@@ -879,8 +882,8 @@ bool ClientMetadataService::isBucketMarkedForTimeout(const char* regionFullPath,
   std::unique_lock<std::timed_mutex> guard(m_timedBucketStatusLock,
                                            DEFAULT_MUTEX_TIMEOUT);
   if (!guard.owns_lock()) {
-    LOGERROR("Buckets statuses container read mutex timeout %lld milliseconds",
-             DEFAULT_MUTEX_TIMEOUT);
+    LOGERROR("Buckets statuses container read mutex timeout " +
+             util::chrono::duration::to_string(DEFAULT_MUTEX_TIMEOUT));
     return false;
   }
 
