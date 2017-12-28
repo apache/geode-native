@@ -21,12 +21,11 @@
 #include <climits>
 
 #include <geode/FixedPartitionResolver.hpp>
+#include <geode/util/chrono/duration.hpp>
 
 #include "TcrMessage.hpp"
 #include "ClientMetadataService.hpp"
 #include "ThinClientPoolDM.hpp"
-
-#include "util/chrono/duration.hpp"
 
 namespace apache {
 namespace geode {
