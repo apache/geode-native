@@ -1,10 +1,11 @@
 # Building
 
+
 ## Building on UNIX
     $ cd <clone>
     $ mkdir build
     $ cd build
-    $ cmake .. -DGEODE_ROOT=<path to Apache Geode binaries>
+    $ cmake ..
     $ cmake --build . -- -j 8
 
 ### [Mac OS X System Requirements](#mac-os-x)
@@ -15,8 +16,21 @@
     $ cd <clone>
     $ mkdir build
     $ cd build
-    $ cmake .. -DGEODE_ROOT=<path to Apache Geode binaries>
+    $ cmake ..
     $ cmake --build . -- /m
+
+## Optional Build Parameters
+
+-DGEODE_ROOT=<path to Apache Geode binaries>
+ This will allow you to specify the path to use for the Apache Geode libraries and binaries
+
+On Windows
+
+ /m Will allow for the parallelization the build and link process
+
+On Linux
+
+ -j <# of parallel processes>  Will allow for the parallelization of the build and link processes
 
 ### [Windows System Requirements](#windows)
 
@@ -26,12 +40,12 @@ CMake uses a "generator" to produce configuration files for use by a variety of 
 ### Mac OS X Generator
 The recommended generator on Mac OS X is `Xcode`:
 
-	$ cmake -G "Xcode" .. -DGEODE_ROOT=<path to Apache Geode binaries>
+	$ cmake -G "Xcode" ..
 
 ### Windows Generator
 The recommended generator on Windows is `Visual Studio 14 2015 Win64`:
 
-	$ cmake -G "Visual Studio 14 2015 Win64" .. -DGEODE_ROOT=<path to Apache Geode binaries>
+	$ cmake -G "Visual Studio 14 2015 Win64" ..
 
 ## Finding Geode
 Building requires access to an installation of Geode. By default the value of `GEODE_ROOT` or `GEODE` is used during CMake configuration if either of those shell variables is exported. To explicitly specify the location in which Geode is installed, add `-DGEODE_ROOT=/path/to/geode` to the _initial_ `cmake` execution command before `../src`.
@@ -57,7 +71,7 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 * [CMake 3.8](https://cmake.org/) or newer
 * C++11 compiler *(see platform specific requirements)*
 * [Doxygen 8.11](http://www.stack.nl/~dimitri/doxygen/download.html) *(for building source documentation)*
-* [Apache Geode](http://geode.apache.org/releases/) binaries
+* [Apache Geode](http://geode.apache.org/releases/) binaries installed or available to link against
 
 ## Mac OS X
 * Mac OS X 10.12 (Sierra) or newer
