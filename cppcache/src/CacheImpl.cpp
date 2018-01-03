@@ -46,12 +46,10 @@
 
 using namespace apache::geode::client;
 
-CacheImpl::CacheImpl(Cache* c, const std::string& name,
-                     std::unique_ptr<DistributedSystem> sys, bool iPUF,
-                     bool readPdxSerialized,
+CacheImpl::CacheImpl(Cache* c, std::unique_ptr<DistributedSystem> sys,
+                     bool iPUF, bool readPdxSerialized,
                      const std::shared_ptr<AuthInitialize>& authInitialize)
-    : m_name(name),
-      m_defaultPool(nullptr),
+    : m_defaultPool(nullptr),
       m_ignorePdxUnreadFields(iPUF),
       m_readPdxSerialized(readPdxSerialized),
       m_closed(false),
@@ -217,10 +215,7 @@ CacheImpl::~CacheImpl() {
 }
 
 const std::string& CacheImpl::getName() const {
-  if (m_closed || m_destroyPending) {
-    throw CacheClosedException("Cache::getName: cache closed");
-  }
-  return m_name;
+  return m_distributedSystem->getName();
 }
 
 bool CacheImpl::isClosed() const { return m_closed; }

@@ -250,8 +250,8 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
   /**
    * @brief constructors
    */
-  Cache(const std::string& name, std::shared_ptr<Properties> dsProp,
-        bool ignorePdxUnreadFields, bool readPdxSerialized,
+  Cache(std::shared_ptr<Properties> dsProp, bool ignorePdxUnreadFields,
+        bool readPdxSerialized,
         const std::shared_ptr<AuthInitialize>& authInitialize);
 
   std::unique_ptr<CacheImpl> m_cacheImpl;

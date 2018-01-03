@@ -134,12 +134,12 @@ std::shared_ptr<CacheTransactionManager> Cache::getCacheTransactionManager()
 
 TypeRegistry& Cache::getTypeRegistry() { return *(m_typeRegistry.get()); }
 
-Cache::Cache(const std::string& name, std::shared_ptr<Properties> dsProp,
-             bool ignorePdxUnreadFields, bool readPdxSerialized,
+Cache::Cache(std::shared_ptr<Properties> dsProp, bool ignorePdxUnreadFields,
+             bool readPdxSerialized,
              const std::shared_ptr<AuthInitialize>& authInitialize) {
-  m_cacheImpl = std::unique_ptr<CacheImpl>(new CacheImpl(
-      this, name, DistributedSystem::create(DEFAULT_DS_NAME, dsProp),
-      ignorePdxUnreadFields, readPdxSerialized, authInitialize));
+  m_cacheImpl = std::unique_ptr<CacheImpl>(
+      new CacheImpl(this, DistributedSystem::create(DEFAULT_DS_NAME, dsProp),
+                    ignorePdxUnreadFields, readPdxSerialized, authInitialize));
   m_cacheImpl->getDistributedSystem().connect(this);
   m_typeRegistry =
       std::unique_ptr<TypeRegistry>(new TypeRegistry(m_cacheImpl.get()));
