@@ -35,7 +35,7 @@
 #include <geode/RegionAttributes.hpp>
 #include <geode/AttributesFactory.hpp>
 #include <geode/PoolManager.hpp>
-#include <geode/util/chrono/duration.hpp>
+#include <geode/internal/chrono/duration.hpp>
 
 #include "fwklib/FwkStrCvt.hpp"
 #include "fwklib/FwkLog.hpp"
@@ -502,12 +502,14 @@ class FwkPool {
 
   void setFreeConnectionTimeout(std::string val) {
     m_poolFactory->setFreeConnectionTimeout(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
+        apache::geode::internal::chrono::duration::from_string<
+            std::chrono::milliseconds>(val));
   }
 
   void setLoadConditioningInterval(std::string val) {
     m_poolFactory->setLoadConditioningInterval(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
+        apache::geode::internal::chrono::duration::from_string<
+            std::chrono::milliseconds>(val));
   }
 
   void setSocketBufferSize(std::string val) {
@@ -516,7 +518,8 @@ class FwkPool {
 
   void setReadTimeout(std::string val) {
     m_poolFactory->setReadTimeout(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
+        apache::geode::internal::chrono::duration::from_string<
+            std::chrono::milliseconds>(val));
   }
 
   void setMinConnections(std::string val) {
@@ -529,7 +532,8 @@ class FwkPool {
 
   void setIdleTimeout(std::string val) {
     m_poolFactory->setIdleTimeout(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
+        apache::geode::internal::chrono::duration::from_string<
+            std::chrono::milliseconds>(val));
   }
 
   void setRetryAttempts(std::string val) {
@@ -538,12 +542,14 @@ class FwkPool {
 
   void setPingInterval(std::string val) {
     m_poolFactory->setPingInterval(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
+        apache::geode::internal::chrono::duration::from_string<
+            std::chrono::milliseconds>(val));
   }
 
   void setStatisticInterval(std::string val) {
     m_poolFactory->setStatisticInterval(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
+        apache::geode::internal::chrono::duration::from_string<
+            std::chrono::milliseconds>(val));
   }
 
   void setServerGroup(std::string val) {
@@ -560,12 +566,14 @@ class FwkPool {
 
   void setSubscriptionMessageTrackingTimeout(std::string val) {
     m_poolFactory->setSubscriptionMessageTrackingTimeout(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
+        apache::geode::internal::chrono::duration::from_string<
+            std::chrono::milliseconds>(val));
   }
 
   void setSubscriptionAckInterval(std::string val) {
     m_poolFactory->setSubscriptionAckInterval(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(val));
+        apache::geode::internal::chrono::duration::from_string<
+            std::chrono::milliseconds>(val));
   }
 
   void setThreadLocalConnections(std::string val) {

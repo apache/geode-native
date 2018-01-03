@@ -25,7 +25,7 @@
 
 #include <geode/DistributedSystem.hpp>
 #include <geode/SystemProperties.hpp>
-#include <geode/util/chrono/duration.hpp>
+#include <geode/internal/chrono/duration.hpp>
 
 #include "TcpConn.hpp"
 #include "CacheImpl.hpp"
@@ -162,6 +162,8 @@ void TcpConn::listen(const char *ipaddr,
 
 void TcpConn::listen(ACE_INET_Addr addr,
                      std::chrono::microseconds waitSeconds) {
+  using namespace apache::geode::internal::chrono::duration;
+
   GF_DEV_ASSERT(m_io != nullptr);
 
   ACE_SOCK_Acceptor listener(addr, 1);
@@ -178,7 +180,7 @@ void TcpConn::listen(ACE_INET_Addr addr,
     if (lastError == ETIME || lastError == ETIMEDOUT) {
       throw TimeoutException(
           "TcpConn::listen Attempt to listen timed out after " +
-          util::chrono::duration::to_string(waitSeconds) + ".");
+          to_string(waitSeconds) + ".");
     }
     ACE_OS::snprintf(msg, 256, "TcpConn::listen failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));
@@ -203,6 +205,8 @@ void TcpConn::connect(const char *ipaddr,
 }
 
 void TcpConn::connect() {
+  using namespace apache::geode::internal::chrono::duration;
+
   GF_DEV_ASSERT(m_io != nullptr);
 
   ACE_INET_Addr ipaddr = m_addr;
@@ -230,7 +234,7 @@ void TcpConn::connect() {
       GF_SAFE_DELETE(m_io);
       throw TimeoutException(
           "TcpConn::connect Attempt to connect timed out after" +
-          util::chrono::duration::to_string(waitMicroSeconds) + ".");
+          to_string(waitMicroSeconds) + ".");
     }
     ACE_OS::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));

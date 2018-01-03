@@ -20,13 +20,15 @@
 #ifndef GEODE_CACHEABLEOBJECTPARTLIST_H_
 #define GEODE_CACHEABLEOBJECTPARTLIST_H_
 
+#include <vector>
+
 #include <geode/geode_globals.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/Cacheable.hpp>
-#include "MapWithLock.hpp"
 
-#include <vector>
+#include "MapWithLock.hpp"
+#include "HashMapOfException.hpp"
 
 /** @file
  */

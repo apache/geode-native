@@ -28,6 +28,7 @@
 
 #include "RegionStats.hpp"
 #include "EventId.hpp"
+#include "HashMapOfException.hpp"
 
 namespace apache {
 namespace geode {

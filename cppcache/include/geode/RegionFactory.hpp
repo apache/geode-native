@@ -24,7 +24,7 @@
 
 #include "geode_globals.hpp"
 #include "AttributesFactory.hpp"
-#include "util/chrono/duration.hpp"
+#include "internal/chrono/duration.hpp"
 
 /**
  * @file

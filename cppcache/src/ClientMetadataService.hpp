@@ -26,10 +26,10 @@
 
 #include <ace/Task.h>
 
-#include <memory>
 #include <geode/CacheableKey.hpp>
 #include <geode/Cacheable.hpp>
 #include <geode/Region.hpp>
+#include <geode/internal/functional.hpp>
 
 #include "ClientMetadata.hpp"
 #include "ServerLocation.hpp"
@@ -37,7 +37,6 @@
 #include "Queue.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "NonCopyable.hpp"
-#include "util/functional.hpp"
 
 namespace apache {
 namespace geode {

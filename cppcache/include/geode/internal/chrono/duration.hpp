@@ -17,8 +17,8 @@
 
 #pragma once
 
-#ifndef GEODE_UTIL_CHRONO_DURATION_H_
-#define GEODE_UTIL_CHRONO_DURATION_H_
+#ifndef GEODE_INTERNAL_CHRONO_DURATION_H_
+#define GEODE_INTERNAL_CHRONO_DURATION_H_
 
 #include <chrono>
 #include <iosfwd>
@@ -29,7 +29,7 @@
 
 namespace apache {
 namespace geode {
-namespace util {
+namespace internal {
 namespace chrono {
 namespace duration {
 
@@ -158,8 +158,8 @@ inline std::string to_string(
 
 }  // namespace duration
 }  // namespace chrono
-}  // namespace util
+}  // namespace internal
 }  // namespace geode
 }  // namespace apache
 
-#endif /* GEODE_UTIL_CHRONO_DURATION_H_ */
+#endif /* GEODE_INTERNAL_CHRONO_DURATION_H_ */

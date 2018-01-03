@@ -15,23 +15,32 @@
  * limitations under the License.
  */
 
-#include <geode/util/chrono/duration.hpp>
+#pragma once
+
+#ifndef GEODE_HASHMAPOFEXCEPTION_H_
+#define GEODE_HASHMAPOFEXCEPTION_H_
+
+#include <unordered_map>
+#include <memory>
+
+#include <geode/internal/functional.hpp>
 
 namespace apache {
 namespace geode {
-namespace util {
-namespace chrono {
-namespace duration {
+namespace client {
 
-constexpr char const* _suffix<std::ratio<3600>>::value;
-constexpr char const* _suffix<std::ratio<60>>::value;
-constexpr char const* _suffix<std::ratio<1>>::value;
-constexpr char const* _suffix<std::milli>::value;
-constexpr char const* _suffix<std::micro>::value;
-constexpr char const* _suffix<std::nano>::value;
+class CacheableKey;
+class Exception;
 
-}  // namespace duration
-}  // namespace chrono
-}  // namespace util
+using namespace apache::geode::client::internal;
+typedef std::unordered_map<std::shared_ptr<CacheableKey>,
+                           std::shared_ptr<Exception>,
+                           dereference_hash<std::shared_ptr<CacheableKey>>,
+                           dereference_equal_to<std::shared_ptr<CacheableKey>>>
+    HashMapOfException;
+
+}  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+#endif  // GEODE_HASHMAPOFEXCEPTION_H_

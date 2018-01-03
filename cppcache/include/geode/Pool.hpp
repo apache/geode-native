@@ -29,7 +29,7 @@
 #include "CacheableBuiltins.hpp"
 #include "geode_base.hpp"
 #include "geode_globals.hpp"
-#include "util/chrono/duration.hpp"
+#include "internal/chrono/duration.hpp"
 
 /**
  * @file

@@ -26,7 +26,7 @@
 
 #include "geode_globals.hpp"
 #include "Cacheable.hpp"
-#include "util/functional.hpp"
+#include "internal/functional.hpp"
 
 /**
  * @file
@@ -103,6 +103,8 @@ class CPPCACHE_EXPORT CacheableKey : public Cacheable {
   void operator=(const CacheableKey& other);
 };
 
+using namespace apache::geode::client::internal;
+
 typedef std::unordered_map<std::shared_ptr<CacheableKey>,
                            std::shared_ptr<Cacheable>,
                            dereference_hash<std::shared_ptr<CacheableKey>>,
@@ -113,6 +115,7 @@ typedef std::unordered_set<std::shared_ptr<CacheableKey>,
                            dereference_hash<std::shared_ptr<CacheableKey>>,
                            dereference_equal_to<std::shared_ptr<CacheableKey>>>
     HashSetOfCacheableKey;
+
 
 }  // namespace client
 }  // namespace geode

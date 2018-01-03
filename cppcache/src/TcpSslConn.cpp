@@ -55,6 +55,8 @@ void TcpSslConn::createSocket(ACE_SOCKET sock) {
 
 void TcpSslConn::listen(ACE_INET_Addr addr,
                         std::chrono::microseconds waitSeconds) {
+  using namespace apache::geode::internal::chrono::duration;
+
   GF_DEV_ASSERT(m_ssl != nullptr);
 
   int32_t retVal = m_ssl->listen(addr, waitSeconds);
@@ -65,7 +67,7 @@ void TcpSslConn::listen(ACE_INET_Addr addr,
     if (lastError == ETIME || lastError == ETIMEDOUT) {
       throw TimeoutException(
           "TcpSslConn::listen Attempt to listen timed out after" +
-          util::chrono::duration::to_string(waitSeconds) + ".");
+          to_string(waitSeconds) + ".");
     }
     // sprintf( msg, "TcpSslConn::listen failed with errno: %d: %s", lastError,
     // ACE_OS::strerror(lastError) );
@@ -76,6 +78,8 @@ void TcpSslConn::listen(ACE_INET_Addr addr,
 }
 
 void TcpSslConn::connect() {
+  using namespace apache::geode::internal::chrono::duration;
+
   GF_DEV_ASSERT(m_ssl != nullptr);
 
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
@@ -97,7 +101,7 @@ void TcpSslConn::connect() {
       GF_SAFE_DELETE(m_ssl);
       throw TimeoutException(
           "TcpSslConn::connect Attempt to connect timed out after " +
-          util::chrono::duration::to_string(waitMicroSeconds) + ".");
+          to_string(waitMicroSeconds) + ".");
     }
     ACE_OS::snprintf(msg, 256, "TcpSslConn::connect failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));

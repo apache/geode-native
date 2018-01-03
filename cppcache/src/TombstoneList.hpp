@@ -30,7 +30,7 @@
 #include <geode/CacheableBuiltins.hpp>
 
 #include "MapEntry.hpp"
-#include "util/functional.hpp"
+#include <geode/internal/functional.hpp>
 
 namespace apache {
 namespace geode {

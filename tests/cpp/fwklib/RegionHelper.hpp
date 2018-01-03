@@ -24,7 +24,7 @@
 #include <string>
 #include <map>
 
-#include <geode/util/chrono/duration.hpp>
+#include <geode/internal/chrono/duration.hpp>
 
 #include "fwklib/FrameworkTest.hpp"
 #include "fwklib/FwkObjects.hpp"
@@ -36,7 +36,7 @@ namespace geode {
 namespace client {
 namespace testframework {
 
-using namespace apache::geode::util::chrono::duration;
+using namespace apache::geode::internal::chrono::duration;
 
 // ----------------------------------------------------------------------------
 
