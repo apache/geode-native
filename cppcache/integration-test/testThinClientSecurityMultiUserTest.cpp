@@ -46,7 +46,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, PerformSecureOperationsWithUserCredentials)
   {
-    auto cache = CacheFactory::createCacheFactory()->create();
+    auto cache = CacheFactory().create();
     auto poolFactory = cache.getPoolManager().createFactory();
     poolFactory->setMultiuserAuthentication(true);
     poolFactory->addLocator("localhost", CacheHelper::staticLocatorHostPort1);

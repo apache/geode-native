@@ -27,9 +27,8 @@ using namespace apache::geode::client;
 
 BEGIN_TEST(POOLFACTORY)
 {
-  auto cacheFactory = CacheFactory::createCacheFactory();
-  ASSERT(cacheFactory != nullptr, "CacheFactory was a nullptr");
-  auto cache = cacheFactory->create();
+  auto cacheFactory = CacheFactory();
+  auto cache = cacheFactory.create();
   auto poolFactory = cache.getPoolManager().createFactory();
   ASSERT(poolFactory != nullptr, "poolFactory was a nullptr");
   auto& testPoolFactory = poolFactory->setSubscriptionEnabled(true);

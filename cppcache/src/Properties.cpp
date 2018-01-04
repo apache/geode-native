@@ -105,15 +105,15 @@ std::shared_ptr<Cacheable> Properties::find(
   return value;
 }
 
-void Properties::insert(const std::string& key, const std::string& value) {
-  auto keyptr = CacheableString::create(key.c_str());
-  auto valptr = CacheableString::create(value.c_str());
+void Properties::insert(std::string key, std::string value) {
+  auto keyptr = CacheableString::create(std::move(key));
+  auto valptr = CacheableString::create(std::move(value));
   MAP->rebind(keyptr, valptr);
 }
 
-void Properties::insert(const std::string& key, const int value) {
-  auto keyptr = CacheableString::create(key.c_str());
-  auto valptr = CacheableString::create(std::to_string(value).c_str());
+void Properties::insert(std::string key, const int value) {
+  auto keyptr = CacheableString::create(std::move(key));
+  auto valptr = CacheableString::create(std::to_string(value));
   MAP->rebind(keyptr, valptr);
 }
 

@@ -38,22 +38,14 @@ namespace Apache
       using namespace msclr::interop;
       namespace native = apache::geode::client;
 
-      CacheFactory^ CacheFactory::CreateCacheFactory()
+      CacheFactory::CacheFactory() :
+          CacheFactory(Properties<String^, String^>::Create())
       {
-        return CacheFactory::CreateCacheFactory(Properties<String^, String^>::Create<String^, String^>());
       }
 
-      CacheFactory^ CacheFactory::CreateCacheFactory(Properties<String^, String^>^ dsProps)
+      CacheFactory::CacheFactory(Properties<String^, String^>^ dsProps) :       
+          CacheFactory(native::CacheFactory(dsProps->GetNative()), dsProps)
       {
-        _GF_MG_EXCEPTION_TRY2
-
-          auto nativeCacheFactory = native::CacheFactory::createCacheFactory(dsProps->GetNative());         
-          if (nativeCacheFactory)
-            return gcnew CacheFactory( nativeCacheFactory, dsProps );
-            
-          return nullptr;
-
-        _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
       Cache^ CacheFactory::Create()

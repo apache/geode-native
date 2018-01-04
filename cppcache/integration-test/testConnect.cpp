@@ -25,8 +25,8 @@ using namespace apache::geode::client;
 const char* host_name = "Suds";
 DUNIT_TASK(s1p1, CreateRegionOne)
   {
-    auto factory = CacheFactory::createCacheFactory();
-    auto cache = std::make_shared<Cache>(factory->create());
+    auto factory = CacheFactory();
+    auto cache = std::make_shared<Cache>(factory.create());
     try {
       cache->getDistributedSystem().connect(cache.get());
       FAIL("Expected an exception.");

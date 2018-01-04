@@ -23,8 +23,7 @@
 #include <geode/CacheFactory.hpp>
 #include "end_native.hpp"
 
-#include "native_shared_ptr.hpp"
-#include "Properties.hpp"
+#include "native_conditional_shared_ptr.hpp"
 #include "IAuthInitialize.hpp"
 
 using namespace System::Collections::Generic;
@@ -56,31 +55,20 @@ namespace Apache
 
         /// <summary>
         /// A factory class that must be used to obtain instance of <see cref="Cache" />.
-        /// This should be called once. Using this one can set default values of <see cref="Pool" />.
         /// </summary>
         /// <param name="dsProps">Properties which are applicable at client level.</param>
-        //	static CacheFactory^ CreateCacheFactory(Dictionary<Object^, Object^>^ dsProps);
-        static CacheFactory^ CreateCacheFactory(Properties<String^, String^>^ dsProps);
+        CacheFactory(Properties<String^, String^>^ dsProps);
 
         /// <summary>
         /// A factory class that must be used to obtain instance of <see cref="Cache" />.
-        /// This should be called once. Using this one can set default values of <see cref="Pool" />.
         /// </summary>       
-        static CacheFactory^ CreateCacheFactory();
+        CacheFactory();
 
         /// <summary>
         /// To create the instance of <see cref="Cache" />.
         /// </summary>
         Cache^ Create();
 
-        /// <summary>
-        /// Set allocators for non default Microsoft CRT versions.
-        /// </summary>
-       /* static void SetNewAndDelete()
-        {
-          native::setNewAndDelete(&operator new, &operator delete);
-        }
-*/
         /// <summary>
         /// Returns the version of the cache implementation.
         /// For the 1.0 release of Geode, the string returned is <c>1.0</c>.
@@ -135,7 +123,7 @@ namespace Apache
         /// <returns>
         /// a instance of <c>CacheFactory</c> 
         /// </returns>
-        CacheFactory^  SetPdxReadSerialized(bool pdxReadSerialized);
+        CacheFactory^ SetPdxReadSerialized(bool pdxReadSerialized);
 
 
         /// <summary>
@@ -170,9 +158,10 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheFactory(std::shared_ptr<native::CacheFactory> nativeptr, Properties<String^, String^>^ dsProps)
+        inline CacheFactory(native::CacheFactory nativeptr, Properties<String^, String^>^ dsProps)
         {
-          m_nativeptr = gcnew native_shared_ptr<native::CacheFactory>(nativeptr);
+          m_nativeptr = gcnew native_conditional_shared_ptr<native::CacheFactory>(
+              std::unique_ptr<native::CacheFactory>(new native::CacheFactory(nativeptr)));
           m_dsProps = dsProps;
         }
 
@@ -180,7 +169,7 @@ namespace Apache
 
         static System::Object^ m_singletonSync = gcnew System::Object();
 
-        native_shared_ptr<native::CacheFactory>^ m_nativeptr;
+        native_conditional_shared_ptr<native::CacheFactory>^ m_nativeptr;
 
       };
     }  // namespace Client

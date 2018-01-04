@@ -603,7 +603,7 @@ namespace Apache.Geode.Client.UnitTests
             config.Insert("heap-lru-delta", m_delta.ToString());
           config.Insert("enable-time-statistics", "true");
 
-          CacheFactory cf = CacheFactory.CreateCacheFactory(config);
+          var cf = new CacheFactory(config);
 
           if (cacheXml != null && cacheXml.Length > 0)
           {
@@ -621,7 +621,7 @@ namespace Apache.Geode.Client.UnitTests
         }
         catch (CacheExistsException)
         {
-          m_cache = CacheFactory.CreateCacheFactory(config).Create();
+          m_cache = new CacheFactory(config).Create();
         }
       }
 
@@ -1313,7 +1313,7 @@ namespace Apache.Geode.Client.UnitTests
         }
       }
 
-      Properties<string, string> sqLiteProps = Properties<string, string>.Create<string, string>();
+      var sqLiteProps = Properties<string, string>.Create();
       sqLiteProps.Insert("PageSize", "65536");
       sqLiteProps.Insert("MaxFileSize", "512000000");
       sqLiteProps.Insert("MaxPageCount", "1073741823");
@@ -1585,8 +1585,8 @@ namespace Apache.Geode.Client.UnitTests
     {
       if (credentials == null)
         return null;
-      Properties<string, object> target = Properties<string, object>.Create<string, object>();
-      PropsStringToObject psto = new PropsStringToObject(target);
+      var target = Properties<string, object>.Create();
+      var psto = new PropsStringToObject(target);
       credentials.ForEach(new PropertyVisitorGeneric<string, string>(psto.Visit));
       return target;
     }

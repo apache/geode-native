@@ -46,7 +46,7 @@ namespace Apache.Geode.Client.Tests
 
     public override Properties<string, string> GetValidCredentials(int index)
     {
-      Properties<string, string> p = Properties<string, string>.Create<string, string>();
+      var p = Properties<string, string>.Create();
       p.Insert("security-username", "user" + index);
       p.Insert("security-password", "user" + index);
 
@@ -55,7 +55,7 @@ namespace Apache.Geode.Client.Tests
 
     public override Properties<string, string> GetValidCredentials(Properties<string, string> principal)
     {
-      Properties<string, string> p = Properties<string, string>.Create<string, string>();
+      var p = Properties<string, string>.Create();
       p.Insert("security-username", "user" + 100);
       p.Insert("security-password", "user" + 100);
 
@@ -64,7 +64,7 @@ namespace Apache.Geode.Client.Tests
 
     public override Properties<string, string> GetInvalidCredentials(int index)
     {
-      Properties<string, string> p = Properties<string, string>.Create<string, string>();
+      var p = Properties<string, string>.Create();
       p.Insert("security-username", "user" + index);
       p.Insert("security-password", "12user" + index);
 

@@ -255,18 +255,10 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
 
 int testXmlCacheCreationWithPools() {
   char* host_name = (char*)"XML_CACHE_CREATION_TEST";
-  std::shared_ptr<CacheFactory> cacheFactory;
+  auto cacheFactory = CacheFactory();
   std::shared_ptr<Cache> cptr;
 
   std::cout << "create DistributedSytem with name=" << host_name << std::endl;
-  try {
-    cacheFactory = CacheFactory::createCacheFactory();
-  } catch (Exception& ex) {
-    std::cout << "Exception: msg = " << ex.what() << std::endl;
-    LOG(ex.getStackTrace());
-    return -1;
-  }
-
   std::cout
       << "Create cache with the configurations provided in valid_cache_pool.xml"
       << std::endl;
@@ -276,7 +268,7 @@ int testXmlCacheCreationWithPools() {
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
     cptr = std::make_shared<Cache>(
-      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create());
+        cacheFactory.set("cache-xml-file", duplicateFile).create());
     if (cptr->getPdxIgnoreUnreadFields() != true) {
       std::cout << "getPdxIgnoreUnreadFields should return true." << std::endl;
       return -1;
@@ -416,7 +408,7 @@ int testXmlCacheCreationWithPools() {
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
     cptr = std::make_shared<Cache>(
-      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create());
+        cacheFactory.set("cache-xml-file", duplicateFile).create());
     return -1;
   } catch (Exception& ex) {
     std::cout << "EXPECTED EXCEPTION" << std::endl;
@@ -430,7 +422,7 @@ int testXmlCacheCreationWithPools() {
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
     cptr = std::make_shared<Cache>(
-      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create());
+        cacheFactory.set("cache-xml-file", duplicateFile).create());
     return -1;
   } catch (Exception& ex) {
     std::cout << "EXPECTED EXCEPTION" << std::endl;
@@ -444,7 +436,7 @@ int testXmlCacheCreationWithPools() {
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
     cptr = std::make_shared<Cache>(
-      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create());
+        cacheFactory.set("cache-xml-file", duplicateFile).create());
     return -1;
   } catch (Exception& ex) {
     std::cout << "EXPECTED EXCEPTION" << std::endl;
@@ -458,7 +450,7 @@ int testXmlCacheCreationWithPools() {
     std::string duplicateFile;
     CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
     cptr = std::make_shared<Cache>(
-      cacheFactory->set("cache-xml-file", duplicateFile.c_str())->create());
+        cacheFactory.set("cache-xml-file", duplicateFile).create());
     return -1;
   } catch (Exception& ex) {
     std::cout << "EXPECTED EXCEPTION" << std::endl;
@@ -482,25 +474,18 @@ int testXmlCacheCreationWithPools() {
 
 int testXmlDeclarativeCacheCreation() {
   char* host_name = (char*)"XML_DECLARATIVE_CACHE_CREATION_TEST";
-  std::shared_ptr<CacheFactory> cacheFactory;
+  auto cacheFactory = CacheFactory();
   std::shared_ptr<Cache> cptr;
 
   std::string directory(ACE_OS::getenv("TESTSRC"));
 
   std::cout << "create DistributedSytem with name=" << host_name << std::endl;
-  try {
-    cacheFactory = CacheFactory::createCacheFactory();
-  } catch (Exception& ex) {
-    std::cout << "Exception: msg = " << ex.what() << std::endl;
-    LOG(ex.getStackTrace());
-    return -1;
-  }
 
   try {
-    std::string filePath =
+    const auto filePath =
         directory + "/resources/valid_declarative_cache_creation.xml";
     cptr = std::make_shared<Cache>(
-      cacheFactory->set("cache-xml-file", filePath.c_str())->create());
+        cacheFactory.set("cache-xml-file", filePath).create());
 
   } catch (Exception& ex) {
     std::cout << "Exception: msg = " << ex.what() << std::endl;

@@ -436,7 +436,7 @@ namespace Apache.Geode.Client.UnitTests
         string locators, string poolName, bool clientNotification, bool ssl, bool cachingEnable)
      {
        //Configure Client "name" for Client-1
-       Properties<string, string> props = Properties<string, string>.Create<string, string>();
+       var props = Properties<string, string>.Create();
        props.Insert("name", "Client-1");
        CacheHelper.InitConfig(props);
 
@@ -452,7 +452,7 @@ namespace Apache.Geode.Client.UnitTests
        string locators, string poolName, bool clientNotification, bool ssl, bool cachingEnable)
      {
        //Configure Client "name" for Client-2
-       Properties<string, string> props = Properties<string, string>.Create<string, string>();
+       var props = Properties<string, string>.Create();
        props.Insert("name", "Client-2");
        CacheHelper.InitConfig(props);
 

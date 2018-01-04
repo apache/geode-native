@@ -29,29 +29,21 @@ using namespace apache::geode::client;
 
 int testXmlCacheCreationWithRefid(const char* fileName) {
   char* host_name = (char*)"XML_CACHE_CREATION_TEST";
-  std::shared_ptr<CacheFactory> cacheFactory;
+  auto cacheFactory = CacheFactory();
   std::shared_ptr<Cache> cptr;
 
   char* path = ACE_OS::getenv("TESTSRC");
   std::string directory(path);
 
   std::cout << "create DistributedSytem with name=" << host_name << std::endl;
-  try {
-    cacheFactory = CacheFactory::createCacheFactory();
-  } catch (Exception& ex) {
-    std::cout << "Exception: msg = " << ex.what() << std::endl;
-    LOG(ex.getStackTrace());
-    return -1;
-  }
-
   std::cout << "Create cache with the configurations provided in "
           "valid_cache_refid.xml"
        << std::endl;
 
   try {
-    std::string filePath = directory + fileName;
+    const auto filePath = directory + fileName;
     cptr = std::make_shared<Cache>(
-      cacheFactory->set("cache-xml-file", filePath.c_str())->create());
+        cacheFactory.set("cache-xml-file", filePath).create());
     if (cptr->getPdxIgnoreUnreadFields() != false) {
       std::cout << "getPdxIgnoreUnreadFields should return false." << std::endl;
       return -1;

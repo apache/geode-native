@@ -190,8 +190,8 @@ namespace Apache.Geode.Client.FwkLib
     {
       if (credentials == null)
         return null;
-      Properties<string, object> target = Properties<string, object>.Create<string, object>();
-      PropsStringToObject psto = new PropsStringToObject(target);
+      var target = Properties<string, object>.Create();
+      var psto = new PropsStringToObject(target);
       credentials.ForEach(new PropertyVisitorGeneric<string, string>(psto.Visit));
       return target;
     }
@@ -199,8 +199,8 @@ namespace Apache.Geode.Client.FwkLib
     {
       if (credentials == null)
         return null;
-      Properties<string, object> target = Properties<string, object>.Create<string, object>();
-      PropsObjectToObject poto = new PropsObjectToObject(target);
+      var target = Properties<string, object>.Create();
+      var poto = new PropsObjectToObject(target);
       credentials.ForEach(new PropertyVisitorGeneric<string, object>(poto.Visit));
       return target;
     }
@@ -246,7 +246,7 @@ namespace Apache.Geode.Client.FwkLib
         {
           CacheHelper<TKey, TVal>.m_doDisconnect = false;
 
-          CacheFactory cf = CacheFactory.CreateCacheFactory(config);
+          CacheFactory cf = new CacheFactory(config);
 
           if (cacheXml != null && cacheXml.Length > 0)
           {
@@ -257,7 +257,7 @@ namespace Apache.Geode.Client.FwkLib
           if (PdxReadSerialized)
           {
             FwkInfo("seting PdxReadSerialized {0}", PdxReadSerialized);
-            cf = CacheFactory.CreateCacheFactory(config)
+            cf = new CacheFactory(config)
                 .SetPdxReadSerialized(PdxReadSerialized);
           }
           
@@ -265,7 +265,7 @@ namespace Apache.Geode.Client.FwkLib
         }
         catch (CacheExistsException)
         {
-          m_cache = CacheFactory.CreateCacheFactory(config).Create();
+          m_cache = new CacheFactory(config).Create();
         }
       }
 

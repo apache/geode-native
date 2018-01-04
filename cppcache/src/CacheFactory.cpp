@@ -48,11 +48,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-std::shared_ptr<CacheFactory> CacheFactory::createCacheFactory(
-    const std::shared_ptr<Properties>& configPtr) {
-  return std::make_shared<CacheFactory>(configPtr);
-}
-
 const std::string& CacheFactory::getVersion() {
   static std::string version{PRODUCT_VERSION};
   return version;
@@ -65,14 +60,14 @@ const std::string& CacheFactory::getProductDescription() {
   return description;
 }
 
-CacheFactory::CacheFactory()
+CacheFactory::CacheFactory() noexcept
     : ignorePdxUnreadFields(false), pdxReadSerialized(false), dsProp(nullptr) {}
 
-CacheFactory::CacheFactory(const std::shared_ptr<Properties> dsProps) {
-  ignorePdxUnreadFields = false;
-  pdxReadSerialized = false;
-  this->dsProp = dsProps;
-}
+CacheFactory::CacheFactory(
+    const std::shared_ptr<Properties>& properties) noexcept
+    : ignorePdxUnreadFields(false),
+      pdxReadSerialized(false),
+      dsProp(properties) {}
 
 Cache CacheFactory::create() const {
   LOGFINE("CacheFactory called DistributedSystem::connect");
@@ -112,8 +107,8 @@ Cache CacheFactory::create() const {
 Cache CacheFactory::create(
     std::string name,
     const std::shared_ptr<CacheAttributes>& attrs /*= nullptr*/) const {
-  auto cache = Cache(std::move(name), dsProp, ignorePdxUnreadFields,
-                     pdxReadSerialized, authInitialize);
+  auto cache = Cache(name, dsProp, ignorePdxUnreadFields, pdxReadSerialized,
+                     authInitialize);
   cache.m_cacheImpl->setAttributes(attrs);
 
   try {
@@ -142,27 +137,28 @@ Cache CacheFactory::create(
   return cache;
 }
 
-std::shared_ptr<CacheFactory> CacheFactory::set(const std::string& name,
-                                                const std::string& value) {
+CacheFactory& CacheFactory::set(std::string name, std::string value) {
   if (this->dsProp == nullptr) {
     this->dsProp = Properties::create();
   }
-  this->dsProp->insert(name, value);
-  return shared_from_this();
+  this->dsProp->insert(std::move(name), std::move(value));
+  return *this;
 }
- std::shared_ptr<CacheFactory> CacheFactory::setAuthInitialize(
+
+CacheFactory& CacheFactory::setAuthInitialize(
     const std::shared_ptr<AuthInitialize>& handler) {
   this->authInitialize = handler;
-  return shared_from_this();
- }
- std::shared_ptr<CacheFactory> CacheFactory::setPdxIgnoreUnreadFields(
-     bool ignore) {
-   ignorePdxUnreadFields = ignore;
-   return shared_from_this();
+  return *this;
 }
-std::shared_ptr<CacheFactory> CacheFactory::setPdxReadSerialized(bool prs) {
+
+CacheFactory& CacheFactory::setPdxIgnoreUnreadFields(bool ignore) {
+  ignorePdxUnreadFields = ignore;
+  return *this;
+}
+
+CacheFactory& CacheFactory::setPdxReadSerialized(bool prs) {
   pdxReadSerialized = prs;
-  return shared_from_this();
+  return *this;
 }
 
 }  // namespace client
