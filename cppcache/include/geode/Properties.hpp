@@ -74,14 +74,14 @@ class CPPCACHE_EXPORT Properties : public Serializable {
    *
    * @throws NullPointerException if the key is null
    */
-  void insert(const std::string& key, const std::string& value);
+  void insert(std::string key, std::string value);
 
   /**
    * Add or update the int value for key.
    *
    * @throws NullPointerException if the key is null
    */
-  void insert(const std::string& key, const int value);
+  void insert(std::string key, const int value);
 
   /**
    * Add or update Cacheable value for CacheableKey
@@ -94,7 +94,7 @@ class CPPCACHE_EXPORT Properties : public Serializable {
   template <class _Rep, class _Period>
   void insert(std::string key,
               const std::chrono::duration<_Rep, _Period>& value) {
-    insert(key, util::chrono::duration::to_string(value).c_str());
+    insert(key, util::chrono::duration::to_string(value));
   }
 
   /**

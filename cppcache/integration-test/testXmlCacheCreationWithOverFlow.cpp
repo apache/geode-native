@@ -28,7 +28,7 @@ using namespace apache::geode::client;
 
 int testXmlCacheCreationWithOverflow() {
   char* host_name = (char*)"XML_CACHE_CREATION_TEST";
-  std::shared_ptr<CacheFactory> cacheFactory;
+  auto cacheFactory = CacheFactory();
   std::shared_ptr<Cache> cptr;
   const uint32_t totalSubRegionsRoot1 = 2;
   const uint32_t totalRootRegions = 2;
@@ -37,14 +37,6 @@ int testXmlCacheCreationWithOverflow() {
   std::string directory(path);
 
   std::cout << "create DistributedSytem with name=" << host_name << std::endl;
-  try {
-    cacheFactory = CacheFactory::createCacheFactory();
-  } catch (Exception& ex) {
-    std::cout << "Exception: msg = " << ex.what() << std::endl;
-    LOG(ex.getStackTrace());
-    return -1;
-  }
-
   std::cout << "Create cache with the configurations provided in "
           "valid_overflowAttr.xml"
        << std::endl;
@@ -52,7 +44,7 @@ int testXmlCacheCreationWithOverflow() {
   try {
     std::string filePath = directory + "/resources/non-existent.xml";
     cptr = std::make_shared<Cache>(
-      cacheFactory->set("cache-xml-file", filePath.c_str())->create());
+        cacheFactory.set("cache-xml-file", filePath.c_str()).create());
     return -1;
   } catch (CacheXmlException& ex) {
     std::cout << "CacheXmlException: msg = " << ex.what() << std::endl;
@@ -67,7 +59,7 @@ int testXmlCacheCreationWithOverflow() {
     std::string filePath = directory + "/resources/valid_overflowAttr.xml";
     std::cout << "getPdxIgnoreUnreadFields should return true.1" << std::endl;
     cptr = std::make_shared<Cache>(
-      cacheFactory->set("cache-xml-file", filePath.c_str())->create());
+        cacheFactory.set("cache-xml-file", filePath.c_str()).create());
     if (cptr->getPdxIgnoreUnreadFields() != false) {
       std::cout << "getPdxIgnoreUnreadFields should return true." << std::endl;
       return -1;
@@ -238,9 +230,9 @@ int testXmlCacheCreationWithOverflow() {
        << std::endl;
 
   try {
-    std::string filePath = directory + "/invalid_overflowAttr1.xml";
+    const auto filePath = directory + "/invalid_overflowAttr1.xml";
     cptr = std::make_shared<Cache>(
-      cacheFactory->set("cache-xml-file", filePath.c_str())->create());
+        cacheFactory.set("cache-xml-file", filePath).create());
     return -1;
   } catch (Exception& ex) {
     std::cout << std::endl;
@@ -258,9 +250,9 @@ int testXmlCacheCreationWithOverflow() {
        << std::endl;
 
   try {
-    std::string filePath = directory + "/invalid_overflowAttr2.xml";
+    const auto filePath = directory + "/invalid_overflowAttr2.xml";
     cptr = std::make_shared<Cache>(
-      cacheFactory->set("cache-xml-file", filePath.c_str())->create());
+        cacheFactory.set("cache-xml-file", filePath).create());
     return -1;
   } catch (CacheXmlException& ex) {
     std::cout << std::endl;
@@ -279,9 +271,9 @@ int testXmlCacheCreationWithOverflow() {
        << std::endl;
 
   try {
-    std::string filePath = directory + "/invalid_overflowAttr3.xml";
+    const auto filePath = directory + "/invalid_overflowAttr3.xml";
     cptr = std::make_shared<Cache>(
-      cacheFactory->set("cache-xml-file", filePath.c_str())->create());
+        cacheFactory.set("cache-xml-file", filePath).create());
     return -1;
   } catch (Exception& ex) {
     std::cout << std::endl;

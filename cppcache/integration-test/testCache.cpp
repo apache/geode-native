@@ -40,8 +40,8 @@ BEGIN_TEST(CacheFunction)
   }
   std::cout << "create Cache with name=" << host_name
             << " and unitialized system" << std::endl;
-  auto cacheFactoryPtr = CacheFactory::createCacheFactory();
-  cptr = std::make_shared<Cache>(cacheFactoryPtr->create());
+  auto cacheFactory = CacheFactory();
+  cptr = std::make_shared<Cache>(cacheFactory.create());
   AttributesFactory attrFac;
   std::shared_ptr<RegionAttributes> rAttr;
   std::cout << "create RegionAttributes" << std::endl;

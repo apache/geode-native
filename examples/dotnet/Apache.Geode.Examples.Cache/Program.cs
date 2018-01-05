@@ -24,7 +24,7 @@ namespace Apache.Geode.Examples.Cache
   {
     static void Main(string[] args)
     {
-      var cacheFactory = CacheFactory.CreateCacheFactory()
+      var cacheFactory = new CacheFactory()
           .Set("log-level", "none");
       var cache = cacheFactory.Create();
 

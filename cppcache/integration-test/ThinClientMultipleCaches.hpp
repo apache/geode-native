@@ -56,11 +56,11 @@ std::shared_ptr<Region> createRegionFromCache(std::shared_ptr<Cache>& cache) {
 
 DUNIT_TASK_DEFINITION(CLIENT1, SetupAndTestMutlipleCaches)
   {
-    auto factory = CacheFactory::createCacheFactory();
-    auto cache1 = std::make_shared<Cache>(factory->create());
+    auto factory = CacheFactory();
+    auto cache1 = std::make_shared<Cache>(factory.create());
     auto region1 = createRegionFromCache(cache1);
 
-    auto cache2 = std::make_shared<Cache>(factory->create());
+    auto cache2 = std::make_shared<Cache>(factory.create());
     auto region2 = createRegionFromCache(cache2);
 
     region1->put("a", "key");

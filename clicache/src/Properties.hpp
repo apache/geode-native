@@ -89,7 +89,6 @@ namespace Apache
         /// Factory method to create an empty collection of properties.
         /// </summary>
         /// <returns>empty collection of properties</returns>
-        generic<class TPropKey, class TPropValue>
         inline static Properties<TPropKey, TPropValue>^ Create()
         {
           return gcnew Properties<TPropKey, TPropValue>();
@@ -228,7 +227,6 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        //generic<class TPropKey, class TPropValue>
         static Properties<TPropKey, TPropValue>^ Create( std::shared_ptr<native::Properties> nativeptr )
         {
           return __nullptr == nativeptr ? nullptr :
@@ -242,7 +240,7 @@ namespace Apache
 
         inline static IGeodeSerializable^ CreateDeserializable()
         {
-          return Create<TPropKey, TPropValue>();
+          return Create();
         }
 
       private:

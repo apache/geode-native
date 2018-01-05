@@ -47,16 +47,21 @@ class AuthInitialize;
  * For the default values for the pool attributes see {@link PoolFactory}.
  * To create additional {@link Pool}s see {@link PoolManager}
  */
-class CPPCACHE_EXPORT CacheFactory
-    : public std::enable_shared_from_this<CacheFactory> {
+class CPPCACHE_EXPORT CacheFactory {
  public:
   /**
    * To create the instance of {@link CacheFactory}
-   * @param dsProps
+   */
+  CacheFactory() noexcept;
+
+  /**
+   * To create the instance of {@link CacheFactory}
+   * @param properties
    *        Properties which are applicable at client level.
    */
-  static std::shared_ptr<CacheFactory> createCacheFactory(
-      const std::shared_ptr<Properties>& dsProps = nullptr);
+  explicit CacheFactory(const std::shared_ptr<Properties>& properties) noexcept;
+
+  ~CacheFactory() = default;
 
   /**
    * To create the instance of {@link Cache}.
@@ -94,7 +99,7 @@ class CPPCACHE_EXPORT CacheFactory
    * @return this CacheFactory
    * @since 3.6
    */
-  std::shared_ptr<CacheFactory> setPdxIgnoreUnreadFields(bool ignore);
+  CacheFactory& setPdxIgnoreUnreadFields(bool ignore);
 
   /**
    * Sets the AuthInitializer defined by the user.
@@ -102,7 +107,7 @@ class CPPCACHE_EXPORT CacheFactory
    * @param authInitialize
    * @return this ClientCacheFactory
    */
-  std::shared_ptr<CacheFactory> setAuthInitialize(
+  CacheFactory& setAuthInitialize(
       const std::shared_ptr<AuthInitialize>& authInitialize);
 
   /** Sets the object preference to PdxInstance type.
@@ -123,7 +128,7 @@ class CPPCACHE_EXPORT CacheFactory
    *  @param pdxReadSerialized true to prefer PdxInstance
    *  @return this ClientCacheFactory
    */
-  std::shared_ptr<CacheFactory> setPdxReadSerialized(bool pdxReadSerialized);
+  CacheFactory& setPdxReadSerialized(bool pdxReadSerialized);
 
   /**
    * Sets a geode property that will be used when creating the {link @Cache}.
@@ -132,8 +137,7 @@ class CPPCACHE_EXPORT CacheFactory
    * @return a reference to <code>this</code>
    * @since 3.5
    */
-  std::shared_ptr<CacheFactory> set(const std::string& name,
-                                    const std::string& value);
+  CacheFactory& set(std::string name, std::string value);
 
  private:
   std::shared_ptr<Properties> dsProp;
@@ -145,17 +149,10 @@ class CPPCACHE_EXPORT CacheFactory
       const std::string name,
       const std::shared_ptr<CacheAttributes>& attrs = nullptr) const;
 
-  // no instances allowed
-  CacheFactory();
-  explicit CacheFactory(const std::shared_ptr<Properties> dsProps);
-  ~CacheFactory() = default;
-
   friend class CppCacheLibrary;
   friend class RegionFactory;
   friend class RegionXmlCreation;
   friend class CacheXmlCreation;
-
-  FRIEND_STD_SHARED_PTR(CacheFactory)
 };
 
 }  // namespace client

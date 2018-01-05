@@ -302,9 +302,8 @@ void verifyGetAll(std::shared_ptr<Region> region, int startIndex) {
 void createRegion(std::shared_ptr<Region>& regionPtr, const char* regionName,
                   std::shared_ptr<Properties>& cacheProps,
                   std::shared_ptr<Properties>& sqLiteProps) {
-  auto cacheFactoryPtr = CacheFactory::createCacheFactory(cacheProps);
-  auto cachePtr = std::make_shared<Cache>(
-    CacheFactory::createCacheFactory()->create());
+  auto cacheFactoryPtr = CacheFactory(cacheProps);
+  auto cachePtr = std::make_shared<Cache>(CacheFactory().create());
   ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
   auto regionFactory = cachePtr->createRegionFactory(LOCAL);
   regionFactory.setCachingEnabled(true);
@@ -466,9 +465,8 @@ END_TEST(OverFlowTest_absPath)
 
 BEGIN_TEST(OverFlowTest_SqLiteFull)
   {
-    auto cacheFactoryPtr = CacheFactory::createCacheFactory();
-    auto cachePtr = std::make_shared<Cache>(
-      CacheFactory::createCacheFactory()->create());
+    auto cacheFactoryPtr = CacheFactory();
+    auto cachePtr = std::make_shared<Cache>(CacheFactory().create());
     ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
     auto regionFactory = cachePtr->createRegionFactory(LOCAL);
     regionFactory.setCachingEnabled(true);
@@ -510,9 +508,8 @@ BEGIN_TEST(OverFlowTest_HeapLRU)
     auto pp = Properties::create();
     pp->insert("heap-lru-limit", 1);
     pp->insert("heap-lru-delta", 10);
-    auto cacheFactoryPtr = CacheFactory::createCacheFactory(pp);
-    auto cachePtr = std::make_shared<Cache>(
-      CacheFactory::createCacheFactory()->create());
+    auto cacheFactoryPtr = CacheFactory(pp);
+    auto cachePtr = std::make_shared<Cache>(CacheFactory().create());
     ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
     auto regionFactory = cachePtr->createRegionFactory(LOCAL);
     regionFactory.setCachingEnabled(true);
@@ -573,8 +570,7 @@ END_TEST(OverFlowTest_HeapLRU)
 BEGIN_TEST(OverFlowTest_MultiThreaded)
   {
     /** Creating a cache to manage regions. */
-    auto cachePtr = std::make_shared<Cache>(
-      CacheFactory::createCacheFactory()->create());
+    auto cachePtr = std::make_shared<Cache>(CacheFactory().create());
     ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
 
     std::shared_ptr<RegionAttributes> attrsPtr;
@@ -615,8 +611,7 @@ END_TEST(OverFlowTest_MultiThreaded)
 BEGIN_TEST(OverFlowTest_PutGetAll)
   {
     /** Creating a cache to manage regions. */
-    auto cachePtr = std::make_shared<Cache>(
-      CacheFactory::createCacheFactory()->create());
+    auto cachePtr = std::make_shared<Cache>(CacheFactory().create());
     ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
 
     std::shared_ptr<RegionAttributes> attrsPtr;

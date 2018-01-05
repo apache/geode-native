@@ -238,7 +238,7 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.createDuplicateXMLFile(xmlLocation, duplicateXMLFile);
       xmlLocation = duplicateXMLFile;
 
-      Cache cache = CacheFactory.CreateCacheFactory()
+      var cache = new CacheFactory()
           .Set("cache-xml-file", xmlLocation)
           .Create();
 
@@ -293,7 +293,7 @@ namespace Apache.Geode.Client.UnitTests
         duplicateXMLFile = Util.Rand(3432898).ToString() + "invalid_cache_pool.xml";
         CacheHelper.createDuplicateXMLFile(xmlLocation, duplicateXMLFile);
         xmlLocation = duplicateXMLFile;
-        cache = CacheFactory.CreateCacheFactory()
+        cache = new CacheFactory()
             .Set("cache-xml-file", xmlLocation)
             .Create();
         Assert.Fail("invalid_cache_pool.xml did not throw exception");
@@ -310,7 +310,7 @@ namespace Apache.Geode.Client.UnitTests
         duplicateXMLFile = Util.Rand(3432898).ToString() + "invalid_cache_pool2.xml";
         CacheHelper.createDuplicateXMLFile(xmlLocation, duplicateXMLFile);
         xmlLocation = duplicateXMLFile;
-        cache = CacheFactory.CreateCacheFactory()
+        cache = new CacheFactory()
             .Set("cache-xml-file", xmlLocation)
             .Create();
         Assert.Fail("invalid_cache_pool2.xml did not throw exception");
@@ -327,7 +327,7 @@ namespace Apache.Geode.Client.UnitTests
         duplicateXMLFile = "invalid_cache_pool3.xml";
         CacheHelper.createDuplicateXMLFile(xmlLocation, duplicateXMLFile);
         xmlLocation = duplicateXMLFile;
-        cache = CacheFactory.CreateCacheFactory()
+        cache = new CacheFactory()
             .Set("cache-xml-file", xmlLocation)
             .Create();
         Assert.Fail("invalid_cache_pool3.xml did not throw exception");
@@ -344,7 +344,7 @@ namespace Apache.Geode.Client.UnitTests
         duplicateXMLFile = Util.Rand(3432898).ToString() + "invalid_cache_pool4.xml";
         CacheHelper.createDuplicateXMLFile(xmlLocation, duplicateXMLFile);
         xmlLocation = duplicateXMLFile;
-        cache = CacheFactory.CreateCacheFactory()
+        cache = new CacheFactory()
             .Set("cache-xml-file", xmlLocation)
             .Create();
         Assert.Fail("invalid_cache_pool4.xml did not throw exception");
@@ -407,7 +407,7 @@ namespace Apache.Geode.Client.UnitTests
       string duplicateXMLFile = Util.Rand(3432898).ToString() + "cacheserver_pool_client.xml";
       CacheHelper.createDuplicateXMLFile(xmlFile, duplicateXMLFile);
       xmlFile = duplicateXMLFile;
-      Properties<string, string> config = Properties<string, string>.Create<string, string>();
+      Properties<string, string> config = Properties<string, string>.Create();
       config.Insert("cache-xml-file", xmlFile);
       CacheHelper.InitConfig(config);
 

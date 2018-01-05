@@ -438,7 +438,7 @@ namespace Apache.Geode.Client.UnitTests
         CacheHelper.CloseCache();
         Util.Log("Creating cache with the configurations provided in valid_overflowAttr.xml");
         string cachePath = CacheHelper.TestDir + Path.DirectorySeparatorChar + "valid_overflowAttr.xml";
-        cache = CacheFactory.CreateCacheFactory().Set("cache-xml-file", cachePath).Create();
+        cache = new CacheFactory().Set("cache-xml-file", cachePath).Create();
         Util.Log("Successfully created the cache.");
         rootRegions = cache.RootRegions<object, object>();
         Assert.IsNotNull(rootRegions);
@@ -593,7 +593,7 @@ namespace Apache.Geode.Client.UnitTests
         try
         {
           cachePath = CacheHelper.TestDir + Path.DirectorySeparatorChar + "non-existent.xml";
-          cache = CacheFactory.CreateCacheFactory().Set("cache-xml-file", cachePath).Create();
+          cache = new CacheFactory().Set("cache-xml-file", cachePath).Create();
           Assert.Fail("Creation of cache with non-existent.xml should fail!");
         }
         catch (CacheXmlException ex)
@@ -606,7 +606,7 @@ namespace Apache.Geode.Client.UnitTests
         try
         {
           cachePath = CacheHelper.TestDir + Path.DirectorySeparatorChar + "invalid_overflowAttr1.xml";
-          cache = CacheFactory.CreateCacheFactory().Set("cache-xml-file", cachePath).Create();
+          cache = new CacheFactory().Set("cache-xml-file", cachePath).Create();
           Assert.Fail("Creation of cache with invalid_overflowAttr1.xml should fail!");
         }
         catch (IllegalStateException ex)
@@ -622,7 +622,7 @@ namespace Apache.Geode.Client.UnitTests
         try
         {
           cachePath = CacheHelper.TestDir + Path.DirectorySeparatorChar + "invalid_overflowAttr2.xml";
-          cache = CacheFactory.CreateCacheFactory().Set("cache-xml-file", cachePath).Create();
+          cache = new CacheFactory().Set("cache-xml-file", cachePath).Create();
           Assert.Fail("Creation of cache with invalid_overflowAttr2.xml should fail!");
         }
         catch (CacheXmlException ex)
@@ -638,7 +638,7 @@ namespace Apache.Geode.Client.UnitTests
         try
         {
           cachePath = CacheHelper.TestDir + Path.DirectorySeparatorChar + "invalid_overflowAttr3.xml";
-          cache = CacheFactory.CreateCacheFactory().Set("cache-xml-file", cachePath).Create();
+          cache = new CacheFactory().Set("cache-xml-file", cachePath).Create();
           Assert.Fail("Creation of cache with invalid_overflowAttr3.xml should fail!");
         }
         catch (CacheXmlException ex)

@@ -98,9 +98,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient)
     std::string clientXml = path;
     clientXml += "/resources/";
     clientXml += clientXmlFile;
-    auto cacheFactoryPtr = CacheFactory::createCacheFactory()->set(
-        "cache-xml-file", clientXml.c_str());
-    cachePtr = std::make_shared<Cache>(cacheFactoryPtr->create());
+    auto cacheFactory = CacheFactory().set("cache-xml-file", clientXml.c_str());
+    cachePtr = std::make_shared<Cache>(cacheFactory.create());
     LOGINFO("Created the Geode Cache");
 
     // Get the example Region from the Cache which is declared in the Cache XML

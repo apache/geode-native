@@ -103,7 +103,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
 
   /**
    * Returns the distributed system that this cache was
-   * {@link CacheFactory::createCacheFactory created} with.
+   * {@link CacheFactory created} with.
    */
   virtual DistributedSystem& getDistributedSystem() const override;
 

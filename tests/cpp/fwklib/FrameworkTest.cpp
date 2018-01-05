@@ -233,7 +233,11 @@ const FwkPool* FrameworkTest::getPoolSnippet(const std::string& name) const {
 void FrameworkTest::cacheInitialize(
     std::shared_ptr<Properties>& props,
     const std::shared_ptr<CacheAttributes>& cAttrs) {
-  std::shared_ptr<CacheFactory> cacheFactory;
+  // failures:
+  // 2. cache exists exception
+  // 3. create encountered exception
+  // 4. overall failure at the end - ownership cruft/?
+
   try {
     std::string name = getStringValue("systemName");
     bool isPdxSerialized = getBoolValue("PdxReadSerialized");
@@ -250,18 +254,13 @@ void FrameworkTest::cacheInitialize(
       props->insert("ssl-keystore", privkey.c_str());
       props->insert("ssl-truststore", pubkey.c_str());
     }
-    cacheFactory = CacheFactory::createCacheFactory(props);
+    auto cacheFactory = CacheFactory(props);
 
     if (isPdxSerialized) {
-      cacheFactory->setPdxReadSerialized(isPdxSerialized);
+      cacheFactory.setPdxReadSerialized(isPdxSerialized);
     }
-  } catch (Exception& e) {
-    FWKEXCEPTION(
-        "DistributedSystem::connect encountered Exception: " << e.what());
-  }
 
-  try {
-    m_cache = std::make_shared<Cache>(cacheFactory->create());
+    m_cache = std::make_shared<Cache>(cacheFactory.create());
     bool m_istransaction = getBoolValue("useTransactions");
     if (m_istransaction) {
       txManager = m_cache->getCacheTransactionManager();

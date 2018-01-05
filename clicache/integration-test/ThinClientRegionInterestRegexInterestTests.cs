@@ -405,7 +405,7 @@ namespace Apache.Geode.Client.UnitTests
     public void CreateRegionsInterestNotify_Pool(string[] regionNames,
       string locators, string poolName, bool notify, string nbs)
     {
-      Properties<string, string> props = Properties<string, string>.Create<string, string>();
+      var props = Properties<string, string>.Create();
       //props.Insert("notify-by-subscription-override", nbs);
       CacheHelper.InitConfig(props);
       CacheHelper.CreateTCRegion_Pool(regionNames[0], true, true,

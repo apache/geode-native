@@ -73,7 +73,7 @@ class CPPCACHE_EXPORT GeodeCache : public RegionService {
 
   /**
    * Returns the distributed system that this cache was
-   * {@link CacheFactory::createCacheFactory created} with.
+   * {@link CacheFactory created} with.
    */
   virtual DistributedSystem& getDistributedSystem() const = 0;
 

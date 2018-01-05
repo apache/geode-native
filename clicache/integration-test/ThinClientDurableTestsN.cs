@@ -791,12 +791,12 @@ namespace Apache.Geode.Client.UnitTests
 
     void RunDurableClient(int expectedPendingQSize)
     {
-      Properties<string, string> pp = Properties<string, string>.Create<string, string>();
+      var pp = Properties<string, string>.Create();
       pp.Insert("durable-client-id", "DurableClientId");
       pp.Insert("durable-timeout", "30s");
 
-      CacheFactory cacheFactory = CacheFactory.CreateCacheFactory(pp);
-      Cache cache = cacheFactory.Create();
+      var cacheFactory = new CacheFactory(pp);
+      var cache = cacheFactory.Create();
       cache.GetPoolFactory().SetSubscriptionEnabled(true);
       cache.GetPoolFactory().SetSubscriptionAckInterval(TimeSpan.FromMilliseconds(5000));
       cache.GetPoolFactory().SetSubscriptionMessageTrackingTimeout(TimeSpan.FromMilliseconds(5000));
@@ -887,7 +887,7 @@ namespace Apache.Geode.Client.UnitTests
 
     void RunFeeder()
     {
-      CacheFactory cacheFactory = CacheFactory.CreateCacheFactory();
+      var cacheFactory = new CacheFactory();
       Util.Log("Feeder connected to the Geode Distributed System");
 
       Cache cache = cacheFactory.Create();
@@ -916,7 +916,7 @@ namespace Apache.Geode.Client.UnitTests
 
     void RunFeeder1()
     {
-      CacheFactory cacheFactory = CacheFactory.CreateCacheFactory();
+      CacheFactory cacheFactory = new CacheFactory();
       Util.Log("Feeder connected to the Geode Distributed System");
 
       Cache cache = cacheFactory.Create();

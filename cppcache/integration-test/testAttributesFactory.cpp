@@ -27,8 +27,8 @@ using namespace apache::geode::client;
 /* testing with exceed boundry condition */ /*see bug no #865 */
 BEGIN_TEST(REGION_FACTORY)
   {
-    auto cf = CacheFactory::createCacheFactory();
-    auto cache = std::make_shared<Cache>(cf->create());
+    auto cf = CacheFactory();
+    auto cache = std::make_shared<Cache>(cf.create());
 
     auto rf = cache->createRegionFactory(LOCAL);
     /*see bug no #865 */
@@ -54,8 +54,8 @@ BEGIN_TEST(REGION_FACTORY)
     cache = nullptr;
     region = nullptr;
 
-    auto cf1 = CacheFactory::createCacheFactory();
-    auto cache1 = std::make_shared<Cache>(cf1->create());
+    auto cf1 = CacheFactory();
+    auto cache1 = std::make_shared<Cache>(cf1.create());
 
     auto rf1 = cache1->createRegionFactory(LOCAL);
     /*see bug no #865 */
