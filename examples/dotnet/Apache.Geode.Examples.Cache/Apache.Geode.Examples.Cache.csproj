@@ -51,7 +51,7 @@ limitations under the License.
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Apache.Geode">
-      <HintPath>Y:\build64\clicache\src\Debug\Apache.Geode.dll</HintPath>
+      <HintPath>..\..\..\..\build\clicache\src\Debug\Apache.Geode.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

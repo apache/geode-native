@@ -7,7 +7,7 @@ namespace Apache.Geode.Examples.AuthInitialize
   {
     static void Main(string[] args)
     {
-      var cacheFactory = CacheFactory.CreateCacheFactory()
+      var cacheFactory = new CacheFactory()
           .Set("log-level", "none")
           .SetAuthInitialize(new ExampleAuthInitialize());
 
