@@ -23,7 +23,7 @@
 #include <chrono>
 #include <string>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "ExceptionTypes.hpp"
 #include "ExpirationAction.hpp"
 #include "CacheLoader.hpp"
@@ -153,7 +153,7 @@ namespace client {
  * @see Region#createSubregion(String, RegionAttributes)
  */
 
-class CPPCACHE_EXPORT AttributesFactory {
+class _GEODE_EXPORT AttributesFactory {
   /**
    * @brief public methods
    */

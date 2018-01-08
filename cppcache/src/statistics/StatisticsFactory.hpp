@@ -20,7 +20,7 @@
 #ifndef GEODE_STATISTICS_STATISTICSFACTORY_H_
 #define GEODE_STATISTICS_STATISTICSFACTORY_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 
 #include "StatisticDescriptor.hpp"
@@ -53,7 +53,7 @@ namespace statistics {
  *
  */
 
-class CPPCACHE_EXPORT StatisticsFactory {
+class _GEODE_EXPORT StatisticsFactory {
  protected:
   StatisticsFactory() {}
   StatisticsFactory(const StatisticsFactory&) = delete;

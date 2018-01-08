@@ -23,7 +23,7 @@
 #include <vector>
 #include <memory>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -58,7 +58,7 @@ class PdxInstanceFactory;
  *
  */
 
-class CPPCACHE_EXPORT RegionService {
+class _GEODE_EXPORT RegionService {
   /**
    * @brief public methods
    */

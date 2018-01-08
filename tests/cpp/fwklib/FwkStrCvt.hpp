@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_FWKLIB_FWKSTRCVT_H_
-#define GEODE_FWKLIB_FWKSTRCVT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,24 +15,22 @@
  * limitations under the License.
  */
 
-/**
-  * @file    FwkStrCvt.hpp
-  * @since   1.0
-  * @version 1.0
-  * @see
-  *
-  */
+#pragma once
 
-// ----------------------------------------------------------------------------
+#ifndef GEODE_FWKLIB_FWKSTRCVT_H_
+#define GEODE_FWKLIB_FWKSTRCVT_H_
 
 #include "config.h"
-#include <geode/geode_globals.hpp>
 
 #if defined(_MACOSX)
 #include <inttypes.h>
 #endif
+
 #include <string>
+
 #include "ace/OS.h"
+
+#include <geode/internal/geode_globals.hpp>
 
 // ----------------------------------------------------------------------------
 

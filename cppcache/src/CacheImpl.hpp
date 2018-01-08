@@ -22,7 +22,7 @@
 
 #include <atomic>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <memory>
 
 #include <geode/Cache.hpp>
@@ -85,7 +85,7 @@ class SerializationRegistry;
  *
  */
 
-class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
+class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   /**
    * @brief public methods
    */

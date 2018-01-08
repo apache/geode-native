@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "ThinClientBaseDM.hpp"
 #include "ThinClientRegion.hpp"
 #include "TcrMessage.hpp"
@@ -209,7 +209,7 @@ void ThinClientBaseDM::queueChunk(TcrChunkedContext* chunk) {
     LOGDEBUG("ThinClientBaseDM::queueChunk2");
     // process in same thread if no chunk processor thread
     chunk->handleChunk(true);
-    GF_SAFE_DELETE(chunk);
+    _GEODE_SAFE_DELETE(chunk);
   } else if (!m_chunks.putUntil(chunk, timeout, 0)) {
     LOGDEBUG("ThinClientBaseDM::queueChunk3");
     // if put in queue fails due to whatever reason then process in same thread
@@ -218,7 +218,7 @@ void ThinClientBaseDM::queueChunk(TcrChunkedContext* chunk) {
         "unbounded size after waiting for %d secs",
         timeout);
     chunk->handleChunk(true);
-    GF_SAFE_DELETE(chunk);
+    _GEODE_SAFE_DELETE(chunk);
   } else {
     LOGDEBUG("Adding message to ThinClientBaseDM::queueChunk");
   }
@@ -233,7 +233,7 @@ int ThinClientBaseDM::processChunks(volatile bool& isRunning) {
     chunk = m_chunks.getUntil(0, 100000);
     if (chunk) {
       chunk->handleChunk(false);
-      GF_SAFE_DELETE(chunk);
+      _GEODE_SAFE_DELETE(chunk);
     }
   }
   LOGFINE("Ending chunk process thread for region %s",
@@ -257,7 +257,7 @@ void ThinClientBaseDM::stopChunkProcessor() {
   if (m_chunkProcessor != nullptr) {
     m_chunkProcessor->stop();
     m_chunks.close();
-    GF_SAFE_DELETE(m_chunkProcessor);
+    _GEODE_SAFE_DELETE(m_chunkProcessor);
   }
 }
 

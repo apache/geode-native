@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-#include <geode/geode_base.hpp>
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+
+#include <memory>
+
+#include <geode/internal/geode_base.hpp>
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
@@ -31,7 +36,6 @@
 #include <CppCacheLibrary.hpp>
 
 #include "CacheHelper.hpp"
-#include <memory>
 
 using namespace apache::geode::client;
 

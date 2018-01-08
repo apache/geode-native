@@ -163,7 +163,7 @@ class FairQueue {
         if (mp && excludeList) {
           if (exclude(mp, excludeList)) {
             mp->close();
-            GF_SAFE_DELETE(mp);
+            _GEODE_SAFE_DELETE(mp);
             deleteAction();
           }
         }

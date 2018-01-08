@@ -19,7 +19,7 @@
 #include <ace/Guard_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/DistributedSystem.hpp>
 #include <geode/CacheFactory.hpp>
 #include <geode/SystemProperties.hpp>

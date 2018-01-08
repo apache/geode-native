@@ -20,7 +20,7 @@
 #ifndef GEODE_LRUEXPMAPENTRY_H_
 #define GEODE_LRUEXPMAPENTRY_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "MapEntry.hpp"
 #include "LRUList.hpp"
 #include "VersionStamp.hpp"
@@ -31,9 +31,9 @@ namespace client {
 /**
  * @brief Hold region mapped entry value and lru information.
  */
-class CPPCACHE_EXPORT LRUExpMapEntry : public MapEntryImpl,
-                                       public LRUEntryProperties,
-                                       public ExpEntryProperties {
+class _GEODE_EXPORT LRUExpMapEntry : public MapEntryImpl,
+                                     public LRUEntryProperties,
+                                     public ExpEntryProperties {
  public:
   virtual ~LRUExpMapEntry() {}
 
@@ -63,8 +63,8 @@ class CPPCACHE_EXPORT LRUExpMapEntry : public MapEntryImpl,
   LRUExpMapEntry& operator=(const LRUExpMapEntry&);
 };
 
-class CPPCACHE_EXPORT VersionedLRUExpMapEntry : public LRUExpMapEntry,
-                                                public VersionStamp {
+class _GEODE_EXPORT VersionedLRUExpMapEntry : public LRUExpMapEntry,
+                                              public VersionStamp {
  public:
   virtual ~VersionedLRUExpMapEntry() {}
 
@@ -83,7 +83,7 @@ class CPPCACHE_EXPORT VersionedLRUExpMapEntry : public LRUExpMapEntry,
   VersionedLRUExpMapEntry& operator=(const VersionedLRUExpMapEntry&);
 };
 
-class CPPCACHE_EXPORT LRUExpEntryFactory : public EntryFactory {
+class _GEODE_EXPORT LRUExpEntryFactory : public EntryFactory {
  public:
   using EntryFactory::EntryFactory;
 

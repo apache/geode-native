@@ -44,7 +44,7 @@ void DataInput::readJavaModifiedUtf8(
   readJavaModifiedUtf8(utf16);
   value = to_utf8(utf16);
 }
-template CPPCACHE_EXPORT void DataInput::readJavaModifiedUtf8(std::string&);
+template _GEODE_EXPORT void DataInput::readJavaModifiedUtf8(std::string&);
 
 template <class _Traits, class _Allocator>
 void DataInput::readJavaModifiedUtf8(
@@ -54,7 +54,7 @@ void DataInput::readJavaModifiedUtf8(
   readJavaModifiedUtf8(utf16);
   value = to_ucs4(utf16);
 }
-template CPPCACHE_EXPORT void DataInput::readJavaModifiedUtf8(std::u32string&);
+template _GEODE_EXPORT void DataInput::readJavaModifiedUtf8(std::u32string&);
 
 template <class _Traits, class _Allocator>
 void DataInput::readUtf16Huge(
@@ -64,7 +64,7 @@ void DataInput::readUtf16Huge(
   readUtf16Huge(utf16);
   value = to_utf8(utf16);
 }
-template CPPCACHE_EXPORT void DataInput::readUtf16Huge(std::string&);
+template _GEODE_EXPORT void DataInput::readUtf16Huge(std::string&);
 
 template <class _Traits, class _Allocator>
 void DataInput::readUtf16Huge(
@@ -74,7 +74,7 @@ void DataInput::readUtf16Huge(
   readUtf16Huge(utf16);
   value = to_ucs4(utf16);
 }
-template CPPCACHE_EXPORT void DataInput::readUtf16Huge(std::u32string&);
+template _GEODE_EXPORT void DataInput::readUtf16Huge(std::u32string&);
 
 }  // namespace client
 }  // namespace geode

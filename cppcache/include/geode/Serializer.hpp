@@ -26,7 +26,7 @@
 #include <memory>
 #include <type_traits>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
 #include "GeodeTypeIds.hpp"
@@ -220,7 +220,7 @@ inline void readObject(apache::geode::client::DataInput& input, TObj*& array,
                        TLen& len) {
   len = input.readArrayLen();
   if (len > 0) {
-    GF_NEW(array, TObj[len]);
+    _GEODE_NEW(array, TObj[len]);
     TObj* startArray = array;
     TObj* endArray = array + len;
     while (startArray < endArray) {

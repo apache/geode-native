@@ -291,7 +291,7 @@ void CacheImpl::close(bool keepalive) {
 
   if (m_evictionControllerPtr != nullptr) {
     m_evictionControllerPtr->stop();
-    GF_SAFE_DELETE(m_evictionControllerPtr);
+    _GEODE_SAFE_DELETE(m_evictionControllerPtr);
   }
 
   // Close CachePef Stats
@@ -306,13 +306,13 @@ void CacheImpl::close(bool keepalive) {
 
   // Close CachePef Stats
   if (m_cacheStats) {
-    GF_SAFE_DELETE(m_cacheStats);
+    _GEODE_SAFE_DELETE(m_cacheStats);
   }
 
   m_regions->unbind_all();
   LOGDEBUG("CacheImpl::close( ): destroyed regions.");
 
-  GF_SAFE_DELETE(m_tcrConnectionManager);
+  _GEODE_SAFE_DELETE(m_tcrConnectionManager);
   m_cacheTXManager = nullptr;
 
   m_expiryTaskManager->stopExpiryTaskManager();

@@ -501,7 +501,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, testPutWithMultilevelInheritance)
     }
 
     auto regPtr0 = getHelper()->getRegion("DistRegionAck");
-    int expectedExceptionCount ATTR_UNUSED = 0;
 
     // Put operation
     auto keyport = CacheableKey::create(1);

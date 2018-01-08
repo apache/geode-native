@@ -780,7 +780,6 @@ class QueryHelper {
   int portfolioNumSets;
   int positionSetSize;
   int positionNumSets;
-  int32_t objectSize ATTR_UNUSED;
 };
 
 QueryHelper* QueryHelper::singleton = NULL;
@@ -989,8 +988,6 @@ void QueryHelper::populatePortfolioPdxData(std::shared_ptr<Region>& rptr,
               current);
     }
   }
-  // portfolioSetSize = setSize; portfolioNumSets = numSets; objectSize =
-  // objSize;
 
   printf("all puts done \n");
 }

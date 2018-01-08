@@ -25,7 +25,7 @@ const char* cqStatsDesc = "Statistics for this cq query";
 #include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "CqQueryVsdStats.hpp"
 

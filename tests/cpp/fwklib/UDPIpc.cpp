@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-#include "UDPIpc.hpp"
-#include "GsRandom.hpp"
-#include "FwkStrCvt.hpp"
 #include <vector>
 #include <string>
 #include <sstream>
+
+#include "UDPIpc.hpp"
+#include "GsRandom.hpp"
+#include "FwkStrCvt.hpp"
+#include "config.h"
 
 using namespace std;
 using namespace apache::geode::client;

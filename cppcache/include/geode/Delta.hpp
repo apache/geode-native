@@ -26,7 +26,7 @@
 
 #include <memory>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {
@@ -48,7 +48,7 @@ class Cache;
 class DataInput;
 class DataOutput;
 
-class CPPCACHE_EXPORT Delta {
+class _GEODE_EXPORT Delta {
  public:
   /**
    * <code>hasDelta( )</code> is invoked by Geode during <code>Region::put(

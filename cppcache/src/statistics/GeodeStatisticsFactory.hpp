@@ -25,7 +25,7 @@
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Map_Manager.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 
 #include "StatisticsFactory.hpp"

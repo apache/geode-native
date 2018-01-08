@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "TcrMessage.hpp"
 #include "Queue.hpp"
 #include <ace/ACE.h>
@@ -58,10 +58,9 @@ namespace client {
  *
  */
 
-class CPPCACHE_EXPORT CqService
-    : private NonCopyable,
-      private NonAssignable,
-      public std::enable_shared_from_this<CqService> {
+class _GEODE_EXPORT CqService : private NonCopyable,
+                                private NonAssignable,
+                                public std::enable_shared_from_this<CqService> {
  private:
   ThinClientBaseDM* m_tccdm;
   statistics::StatisticsFactory* m_statisticsFactory;

@@ -165,7 +165,7 @@ void TcrConnectionManager::close() {
     m_failoverTask->stopNoblock();
     m_failoverSema.release();
     m_failoverTask->wait();
-    GF_SAFE_DELETE(m_failoverTask);
+    _GEODE_SAFE_DELETE(m_failoverTask);
   }
 
   auto cacheAttributes = m_cache->getAttributes();
@@ -180,7 +180,7 @@ void TcrConnectionManager::close() {
       m_redundancyTask->wait();
       // now stop cleanup task
       // stopCleanupTask();
-      GF_SAFE_DELETE(m_redundancyTask);
+      _GEODE_SAFE_DELETE(m_redundancyTask);
     }
 
     m_redundancyManager->close();
@@ -203,7 +203,7 @@ TcrConnectionManager::~TcrConnectionManager() {
     m_cleanupTask->wait();
     // Clean notification lists if something remains in there; see bug #250
     cleanNotificationLists();
-    GF_SAFE_DELETE(m_cleanupTask);
+    _GEODE_SAFE_DELETE(m_cleanupTask);
 
     // sanity cleanup of any remaining endpoints with warning; see bug #298
     //  cleanup of endpoints, when regions are destroyed via notification
@@ -221,7 +221,7 @@ TcrConnectionManager::~TcrConnectionManager() {
         TcrEndpoint *ep = (*iter).int_id_;
         LOGFINE("TCCM: forcing endpoint delete for %d in destructor",
                 ep->name().c_str());
-        GF_SAFE_DELETE(ep);
+        _GEODE_SAFE_DELETE(ep);
       }
     }
   }
@@ -332,7 +332,7 @@ bool TcrConnectionManager::removeRefToEndpoint(TcrEndpoint *ep,
     // this endpoint no longer used
     GF_R_ASSERT(0 == m_endpoints.unbind(ep->name(), ep));
     LOGFINE("delete endpoint %s", ep->name().c_str());
-    GF_SAFE_DELETE(ep);
+    _GEODE_SAFE_DELETE(ep);
     hasRemovedEndpoint = true;
   }
   return hasRemovedEndpoint;
@@ -575,8 +575,8 @@ void TcrConnectionManager::cleanNotificationLists() {
       notifyCleanupSema = m_notifyCleanupSemaList.get();
     }
     notifyReceiver->wait();
-    GF_SAFE_DELETE(notifyReceiver);
-    GF_SAFE_DELETE(notifyConnection);
+    _GEODE_SAFE_DELETE(notifyReceiver);
+    _GEODE_SAFE_DELETE(notifyConnection);
     notifyCleanupSema->release();
   }
 }

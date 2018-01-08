@@ -25,7 +25,7 @@
 #include <string>
 
 #include "Cacheable.hpp"
-#include "geode_base.hpp"
+#include "internal/geode_base.hpp"
 
 namespace apache {
 namespace geode {
@@ -70,7 +70,7 @@ class EntryEvent;
  * In the example above, all trade entries with the same month and year are
  * guaranteed to be colocated.
  */
-class CPPCACHE_EXPORT PartitionResolver {
+class _GEODE_EXPORT PartitionResolver {
   /**
    * @brief public methods
    */

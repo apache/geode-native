@@ -17,7 +17,7 @@
 
 #include <ace/OS_NS_sys_utsname.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "config.h"
 #include "HostStatHelper.hpp"

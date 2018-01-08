@@ -37,7 +37,7 @@ UserAttributes::~UserAttributes() {
   for (it = m_connectionAttr.begin(); it != m_connectionAttr.end(); it++) {
     UserConnectionAttributes* uca = (*it).second;
     if (uca != nullptr) {
-      GF_SAFE_DELETE(uca);
+      _GEODE_SAFE_DELETE(uca);
     }
   }
 }
@@ -72,7 +72,7 @@ void UserAttributes::unAuthenticateEP(TcrEndpoint* endpoint) {
   UserConnectionAttributes* uca = m_connectionAttr[endpoint->name()];
   if (uca != nullptr) {
     m_connectionAttr.erase(endpoint->name());
-    GF_SAFE_DELETE(uca);
+    _GEODE_SAFE_DELETE(uca);
   }
   /*for( it = m_connectionAttr.begin(); it != m_connectionAttr.end(); it++ )
   {

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <string>
 
 namespace apache {
@@ -28,7 +28,7 @@ namespace geode {
 namespace client {
 
 // initialize GEMFIRE runtime if it has not already been initialized.
-class CPPCACHE_EXPORT CppCacheLibrary {
+class _GEODE_EXPORT CppCacheLibrary {
  public:
   // Call to this to trigger initialization.
   static void initLib(void);

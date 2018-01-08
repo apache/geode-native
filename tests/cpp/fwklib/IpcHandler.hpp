@@ -23,7 +23,7 @@
 #include <ace/SOCK_Stream.h>
 #include <ace/OS.h>
 
-#include <geode/geode_base.hpp>
+#include <geode/internal/geode_base.hpp>
 
 #include <cstdint>
 #include <string>

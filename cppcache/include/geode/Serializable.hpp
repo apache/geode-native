@@ -27,7 +27,7 @@
 #include <functional>
 #include <memory>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {
@@ -56,7 +56,7 @@ typedef PdxSerializable *(*TypeFactoryMethodPdx)();
  * in the cache that can be serialized.
  */
 
-class CPPCACHE_EXPORT Serializable
+class _GEODE_EXPORT Serializable
     : public std::enable_shared_from_this<Serializable> {
  public:
   /**

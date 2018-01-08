@@ -25,7 +25,7 @@ namespace geode {
 namespace client {
 
 extern "C" {
-LIBEXP AuthInitialize* createNoopAuthInitInstance() {
+_GEODE_LIBEXP AuthInitialize* createNoopAuthInitInstance() {
   LOGINFO("rjk: calling createNoopAuthInitInstance");
   return new NoopAuthInit();
 }

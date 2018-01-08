@@ -22,7 +22,7 @@
 
 #include <string>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "DistributedSystem.hpp"
 #include "Cache.hpp"
 #include "CacheAttributes.hpp"
@@ -47,7 +47,7 @@ class AuthInitialize;
  * For the default values for the pool attributes see {@link PoolFactory}.
  * To create additional {@link Pool}s see {@link PoolManager}
  */
-class CPPCACHE_EXPORT CacheFactory {
+class _GEODE_EXPORT CacheFactory {
  public:
   /**
    * To create the instance of {@link CacheFactory}

@@ -22,7 +22,7 @@
 
 #include <string>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "StatisticDescriptorImpl.hpp"
 #include "StatisticsType.hpp"
@@ -54,7 +54,7 @@ namespace statistics {
  * accessed by calling {@link #getInstance()}.
  */
 
-class CPPCACHE_EXPORT HostStatHelper {
+class _GEODE_EXPORT HostStatHelper {
  private:
   static int32_t PROCESS_STAT_FLAG;
 

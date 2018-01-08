@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/CqAttributesMutator.hpp>
 #include <geode/CqAttributes.hpp>
 
@@ -41,7 +41,7 @@ namespace client {
  * of certain CQ attributes after the CQ has been created.
  *
  */
-class CPPCACHE_EXPORT CqAttributesMutatorImpl : public CqAttributesMutator {
+class _GEODE_EXPORT CqAttributesMutatorImpl : public CqAttributesMutator {
  public:
   CqAttributesMutatorImpl(const std::shared_ptr<CqAttributes>& impl);
 

@@ -71,7 +71,7 @@ class EntryEvent;
  * @see PartitionResolver
  *
  */
-class CPPCACHE_EXPORT FixedPartitionResolver : public PartitionResolver {
+class _GEODE_EXPORT FixedPartitionResolver : public PartitionResolver {
   /**
   * @brief public methods
   */

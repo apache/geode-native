@@ -31,9 +31,9 @@
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
-#define TESTOBJECT_EXPORT LIBEXP
+#define TESTOBJECT_EXPORT _GEODE_LIBEXP
 #else
-#define TESTOBJECT_EXPORT LIBIMP
+#define TESTOBJECT_EXPORT _GEODE_LIBIMP
 #endif
 #else
 #define TESTOBJECT_EXPORT
@@ -52,7 +52,7 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
   static uint8_t TEST_OBJ_MASK;
   static uint8_t COMPLETE_MASK;
 
-  int32_t intVar;             // 0000 0001
+  int32_t intVar;                           // 0000 0001
   std::shared_ptr<CacheableString> str;     // 0000 0010
   double doubleVar;                         // 0000 0100
   std::shared_ptr<CacheableBytes> byteArr;  // 0000 1000

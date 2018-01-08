@@ -20,47 +20,6 @@
 #ifndef GEODE_GFCPP_GLOBALS_H_
 #define GEODE_GFCPP_GLOBALS_H_
 
-/**
- * @file
- */
-
-#ifdef WIN32
-#ifndef _WIN32
-#define _WIN32
-#endif
-#endif
-#ifdef _WIN32
-#ifndef WIN32
-#define WIN32
-#endif
-#endif
-
-#ifdef __linux
-#ifndef _LINUX
-#define _LINUX 1
-#endif
-#ifndef LINUX_GCC
-#define LINUX_GCC true
-#endif
-#endif
-
-#ifdef __sun
-#ifndef _SOLARIS
-#define _SOLARIS 1
-#if defined(__sparc) || defined(__sparcv9)
-#ifndef _SPARC_SOLARIS
-#define _SPARC_SOLARIS 1
-#endif
-#endif
-
-#if defined(__i386) || defined(__amd64)
-#ifndef _X86_SOLARIS
-#define _X86_SOLARIS 1
-#endif
-#endif
-#endif
-#endif
-
 #ifdef _MSC_VER
 // disable: "C++ Exception Specification ignored"
 // This is because MSVC did not implement all the C++ exception
@@ -72,24 +31,6 @@
 // disable: "<type> needs to have dll-interface to be used by clients'
 // Happens on STL member variables which are not public therefore is ok
 #pragma warning(disable : 4251)
-
-// MSVC does not use __attribute__.
-#define ATTR_UNUSED
-
-#else
-
-#ifdef _SOLARIS
-
-// Solaris does not __attribute__.
-#define ATTR_UNUSED
-
-#else
-
-// gcc and clang use __attribute__.
-#define ATTR_UNUSED __attribute__((unused))
-
-#endif
-
 #endif
 
 #ifndef __has_cpp_attribute
@@ -99,27 +40,20 @@
 #if __cplusplus >= 201402L
 #if __has_cpp_attribute(deprecated)
 // C++14 standard deprecated attribute
-#define __DEPRECATED__(msg) [[deprecated(msg)]]
+#define _GEODE_DEPRECATED_(msg) [[deprecated(msg)]]
 #else
 #error "__has_cpp_attribute(deprecated)"
 #endif
 #elif defined(__GNUC__)
 // GCC style deprecated attribute
-#define __DEPRECATED__(msg) __attribute__((deprecated(msg)))
+#define _GEODE_DEPRECATED_(msg) __attribute__((deprecated(msg)))
 #elif defined(_MSC_VER)
 // Visual C++ style deprecated attribute
-#define __DEPRECATED__(msg) __declspec(deprecated(msg))
+#define _GEODE_DEPRECATED_(msg) __declspec(deprecated(msg))
 #else
-#define __DEPRECATED__(msg)
-#endif
-
-#ifdef _WIN32
-#if WINVER == 0x0500
-#endif
+#define _GEODE_DEPRECATED_(msg)
 #endif
 
 #include "geode_base.hpp"
-
-#include <cstdint>
 
 #endif  // GEODE_GFCPP_GLOBALS_H_

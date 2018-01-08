@@ -126,7 +126,7 @@ class ExecutionImpl : public Execution {
   GfErrType getFuncAttributes(const std::string& func,
                               std::vector<int8_t>** attr);
 
-  FRIEND_STD_SHARED_PTR(ExecutionImpl)
+  _GEODE_FRIEND_STD_SHARED_PTR(ExecutionImpl)
 };
 }  // namespace client
 }  // namespace geode

@@ -18,7 +18,7 @@
 #include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "RegionStats.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 
 #include <geode/ResultSet.hpp>
@@ -35,7 +35,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class CPPCACHE_EXPORT ResultSetImpl
+class _GEODE_EXPORT ResultSetImpl
     : public ResultSet,
       public std::enable_shared_from_this<ResultSetImpl> {
  public:

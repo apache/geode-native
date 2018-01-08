@@ -123,7 +123,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxEnumQuery)
       ASSERT(re->getID() == 1, "query should have return id 1");
     }
 
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    QueryHelper::getHelper();
     std::shared_ptr<QueryService> qs = nullptr;
     auto pool1 = findPool("__TEST_POOL1__");
     qs = pool1->getQueryService();

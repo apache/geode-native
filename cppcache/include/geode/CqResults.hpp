@@ -24,7 +24,7 @@
  * @file
  */
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "ExceptionTypes.hpp"
 #include "Serializable.hpp"
 #include "CacheableBuiltins.hpp"
@@ -40,7 +40,7 @@ namespace client {
  * A CqResults is obtained by executing a Query on the server.
  * This will be a StructSet.
  */
-class CPPCACHE_EXPORT CqResults : public SelectResults {};
+class _GEODE_EXPORT CqResults : public SelectResults {};
 
 }  // namespace client
 }  // namespace geode

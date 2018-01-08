@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Condition_T.h>
@@ -32,7 +32,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class CPPCACHE_EXPORT TimeoutTimer {
+class _GEODE_EXPORT TimeoutTimer {
  private:
   ACE_Recursive_Thread_Mutex m_mutex;
   ACE_Condition<ACE_Recursive_Thread_Mutex> m_cond;

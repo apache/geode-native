@@ -20,7 +20,7 @@
 #ifndef GEODE_CACHEABLESTRING_H_
 #define GEODE_CACHEABLESTRING_H_
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "CacheableKey.hpp"
 #include "GeodeTypeIds.hpp"
 
@@ -35,13 +35,13 @@ namespace client {
  * Implement a immutable C string wrapper that can serve as a distributable
  * key object for caching as well as being a string value.
  */
-class CPPCACHE_EXPORT CacheableString : public CacheableKey {
+class _GEODE_EXPORT CacheableString : public CacheableKey {
  protected:
   std::string m_str;
   int8_t m_type;
   mutable int m_hashcode;
 
-  FRIEND_STD_SHARED_PTR(CacheableString)
+  _GEODE_FRIEND_STD_SHARED_PTR(CacheableString)
 
  public:
   /**

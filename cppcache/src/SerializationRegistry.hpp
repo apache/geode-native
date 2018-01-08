@@ -27,7 +27,7 @@
 #include <ace/Thread_Mutex.h>
 #include <ace/Null_Mutex.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/PdxSerializer.hpp>
 #include <geode/GeodeTypeIds.hpp>
@@ -40,6 +40,7 @@
 #include "NonCopyable.hpp"
 #include "GeodeTypeIdsImpl.hpp"
 #include "MemberListForVersionStamp.hpp"
+#include "config.h"
 
 #if defined(_MACOSX)
 ACE_BEGIN_VERSIONED_NAMESPACE_DECL
@@ -133,7 +134,7 @@ class TheTypeMap : private NonCopyable {
 
 class Pool;
 
-class CPPCACHE_EXPORT SerializationRegistry {
+class _GEODE_EXPORT SerializationRegistry {
  public:
   SerializationRegistry() : theTypeMap() {}
 

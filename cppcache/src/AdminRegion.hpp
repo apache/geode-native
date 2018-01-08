@@ -28,6 +28,7 @@
 
 #include "ReadWriteLock.hpp"
 #include "NonCopyable.hpp"
+#include "ErrType.hpp"
 
 namespace apache {
 namespace geode {
@@ -68,7 +69,7 @@ class AdminRegion : private NonCopyable,
 
   ~AdminRegion();
 
-  FRIEND_STD_SHARED_PTR(AdminRegion)
+  _GEODE_FRIEND_STD_SHARED_PTR(AdminRegion)
 
  public:
   static std::shared_ptr<AdminRegion> create(

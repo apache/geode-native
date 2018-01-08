@@ -46,7 +46,7 @@ typedef std::map<std::string, std::shared_ptr<Cacheable>> FieldVsValues;
  * multiple factories or use {@link PdxInstance#createWriter} to create
  * subsequent instances.
  */
-class CPPCACHE_EXPORT PdxInstanceFactoryImpl
+class _GEODE_EXPORT PdxInstanceFactoryImpl
     : public PdxInstanceFactory,
       public std::enable_shared_from_this<PdxInstanceFactoryImpl> {
  public:

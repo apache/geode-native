@@ -26,7 +26,7 @@
 
 #include <ace/OS.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 
 /**

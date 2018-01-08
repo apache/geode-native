@@ -22,7 +22,7 @@
 
 #include <chrono>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "ExpirationAction.hpp"
 
 /**
@@ -47,7 +47,7 @@ namespace client {
  * @see RegionAttributes
  * @see AttributesMutator
  */
-class CPPCACHE_EXPORT ExpirationAttributes {
+class _GEODE_EXPORT ExpirationAttributes {
   /**
     * @brief public methods
     */

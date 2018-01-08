@@ -20,7 +20,7 @@
 #ifndef GEODE_CACHEABLEDATE_H_
 #define GEODE_CACHEABLEDATE_H_
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "CacheableKey.hpp"
 #include "CacheableString.hpp"
 #include "GeodeTypeIds.hpp"
@@ -41,7 +41,7 @@ namespace client {
  * can serve as a distributable key object for caching as well as being a date
  * value.
  */
-class CPPCACHE_EXPORT CacheableDate : public CacheableKey {
+class _GEODE_EXPORT CacheableDate : public CacheableKey {
  private:
   /**
    * Milliseconds since January 1, 1970, 00:00:00 GMT to be consistent with Java
@@ -149,7 +149,7 @@ class CPPCACHE_EXPORT CacheableDate : public CacheableKey {
   void operator=(const CacheableDate& other);
   CacheableDate(const CacheableDate& other);
 
-  FRIEND_STD_SHARED_PTR(CacheableDate)
+  _GEODE_FRIEND_STD_SHARED_PTR(CacheableDate)
 };
 
 inline std::shared_ptr<CacheableKey> createKey(

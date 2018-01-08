@@ -18,7 +18,7 @@
 #include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
 #include <mutex>
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "CqServiceVsdStats.hpp"
 #include "statistics/StatisticsFactory.hpp"

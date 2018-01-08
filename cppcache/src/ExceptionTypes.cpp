@@ -24,6 +24,7 @@
 #include "TXState.hpp"
 #include "TSSTXStateWrapper.hpp"
 #include "util/Log.hpp"
+#include "ErrType.hpp"
 
 namespace apache {
 namespace geode {

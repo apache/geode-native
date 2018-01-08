@@ -20,7 +20,7 @@
 #ifndef GEODE_TCPCONN_H_
 #define GEODE_TCPCONN_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include <ace/SOCK_Stream.h>
 #include <ace/OS.h>
@@ -46,7 +46,7 @@ namespace client {
 
 #endif
 
-class CPPCACHE_EXPORT TcpConn : public Connector {
+class _GEODE_EXPORT TcpConn : public Connector {
  private:
   ACE_SOCK_Stream* m_io;
 

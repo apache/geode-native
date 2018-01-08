@@ -25,7 +25,7 @@
 
 // ----------------------------------------------------------------------------
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "fwklib/UDPIpc.hpp"
 #include "fwk/UdpIpc.hpp"

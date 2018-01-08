@@ -25,7 +25,7 @@
 #include "CacheableKey.hpp"
 #include "Region.hpp"
 #include "geode/Cacheable.hpp"
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 /** @file
 */
@@ -40,7 +40,7 @@ class CacheableKey;
 class Region;
 class Serializable;
 
-class CPPCACHE_EXPORT EntryEvent {
+class _GEODE_EXPORT EntryEvent {
  protected:
   std::shared_ptr<Region> m_region;      /**< Region */
   std::shared_ptr<CacheableKey> m_key;   /**< Cacheable key */

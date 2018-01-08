@@ -98,7 +98,7 @@ void TcpSslConn::connect() {
     int32_t lastError = ACE_OS::last_error();
     if (lastError == ETIME || lastError == ETIMEDOUT) {
       // this is only called by constructor, so we must delete m_ssl
-      GF_SAFE_DELETE(m_ssl);
+      _GEODE_SAFE_DELETE(m_ssl);
       throw TimeoutException(
           "TcpSslConn::connect Attempt to connect timed out after " +
           to_string(waitMicroSeconds) + ".");
@@ -106,7 +106,7 @@ void TcpSslConn::connect() {
     ACE_OS::snprintf(msg, 256, "TcpSslConn::connect failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));
     // this is only called by constructor, so we must delete m_ssl
-    GF_SAFE_DELETE(m_ssl);
+    _GEODE_SAFE_DELETE(m_ssl);
     throw GeodeIOException(msg);
   }
 }

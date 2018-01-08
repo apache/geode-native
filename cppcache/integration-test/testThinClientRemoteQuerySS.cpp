@@ -547,7 +547,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, DoQuerySSError)
   {
-    auto* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {

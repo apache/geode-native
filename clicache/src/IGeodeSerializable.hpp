@@ -20,7 +20,7 @@
 
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "end_native.hpp"
 
 using namespace System;

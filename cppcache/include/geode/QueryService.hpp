@@ -23,7 +23,7 @@
 #include <string>
 #include <memory>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "ExceptionTypes.hpp"
 #include "CqQuery.hpp"
 #include "CqAttributes.hpp"
@@ -45,7 +45,7 @@ namespace client {
  * A Query is created from a QueryService and executed on the server
  * returning a SelectResults which can be either a ResultSet or a StructSet.
  */
-class CPPCACHE_EXPORT QueryService {
+class _GEODE_EXPORT QueryService {
  public:
   typedef std::vector<std::shared_ptr<CqQuery>> query_container_type;
 

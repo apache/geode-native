@@ -15,15 +15,21 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include "config.h"
+
 #if defined(_LINUX)
+
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+
+#include <glob.h>
 
 #include <ace/OS_NS_sys_utsname.h>
 #include <ace/OS_NS_errno.h>
-#include <glob.h>
+#include <ace/OS.h>
+
 #include "HostStatHelperLinux.hpp"
 #include "LinuxProcessStats.hpp"
-#include <ace/OS.h>
 
 using namespace apache::geode::statistics;
 

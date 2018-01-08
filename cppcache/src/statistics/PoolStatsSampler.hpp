@@ -22,7 +22,7 @@
 
 #include <ace/Task.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "GeodeStatisticsFactory.hpp"
 
@@ -43,7 +43,7 @@ using client::ThinClientPoolDM;
 using client::AdminRegion;
 
 class StatisticsManager;
-class CPPCACHE_EXPORT PoolStatsSampler : public ACE_Task_Base {
+class _GEODE_EXPORT PoolStatsSampler : public ACE_Task_Base {
  public:
   PoolStatsSampler(int64_t sampleRate, CacheImpl* cache,
                    ThinClientPoolDM* distMan);

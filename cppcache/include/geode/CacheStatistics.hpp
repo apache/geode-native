@@ -23,7 +23,7 @@
 #include <atomic>
 #include <chrono>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -45,7 +45,7 @@ class LocalRegion;
  *@see Region::getStatistics
  *@see RegionEntry::getStatistics
  */
-class CPPCACHE_EXPORT CacheStatistics {
+class _GEODE_EXPORT CacheStatistics {
  public:
   typedef std::chrono::system_clock::time_point time_point;
 

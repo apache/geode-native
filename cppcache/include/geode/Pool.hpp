@@ -27,8 +27,8 @@
 #include "Cache.hpp"
 #include "CacheFactory.hpp"
 #include "CacheableBuiltins.hpp"
-#include "geode_base.hpp"
-#include "geode_globals.hpp"
+#include "internal/geode_base.hpp"
+#include "internal/geode_globals.hpp"
 #include "internal/chrono/duration.hpp"
 
 /**
@@ -61,7 +61,7 @@ class RegionService;
  *
  *
  */
-class CPPCACHE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
+class _GEODE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
  public:
   /**
    * Gets the name of the connection pool

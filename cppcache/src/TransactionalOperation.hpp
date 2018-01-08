@@ -26,7 +26,7 @@
  *      Author: ankurs
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Cacheable.hpp>
 #include <vector>
 namespace apache {

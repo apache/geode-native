@@ -23,7 +23,7 @@
 #include <ace/Thread_Mutex.h>
 #include <ace/Guard_T.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Exception.hpp>
 
 #include "GeodeStatisticsFactory.hpp"

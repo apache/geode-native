@@ -35,9 +35,9 @@
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
-#define TESTOBJECT_EXPORT LIBEXP
+#define TESTOBJECT_EXPORT _GEODE_LIBEXP
 #else
-#define TESTOBJECT_EXPORT LIBIMP
+#define TESTOBJECT_EXPORT _GEODE_LIBIMP
 #endif
 #else
 #define TESTOBJECT_EXPORT
@@ -111,8 +111,8 @@ class TESTOBJECT_EXPORT Child : public Parent, public PdxSerializable {
     return className;
   }
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   void toData(PdxWriter& pw) const override {
     pw.writeInt("m_a", m_a);
@@ -212,8 +212,8 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
     return className;
   }
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   void toData(PdxWriter& pw) const override {
     pw.writeChar("m_ch", m_ch);
@@ -275,8 +275,8 @@ class TESTOBJECT_EXPORT Address : public PdxSerializable {
     return className;
   }
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   void toData(PdxWriter& pw) const override {
     pw.writeInt("_aptNumber", _aptNumber);  // 4
@@ -544,7 +544,8 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
         std::shared_ptr<Address>(new Address(8, "street7", "city7")));
     m_objectArray->push_back(
         std::shared_ptr<Address>(new Address(9, "street8", "city8")));
-    m_objectArray->push_back(std::shared_ptr<Address>(new Address(10, "street9", "city9")));
+    m_objectArray->push_back(
+        std::shared_ptr<Address>(new Address(10, "street9", "city9")));
 
     m_objectArrayEmptyPdxFieldName = CacheableObjectArray::create();
     m_objectArrayEmptyPdxFieldName->push_back(
@@ -708,9 +709,12 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
 
   std::shared_ptr<CacheableDate> getDate() { return m_date; }
 
-  std::shared_ptr<CacheableObjectArray> getCacheableObjectArray() { return m_objectArray; }
+  std::shared_ptr<CacheableObjectArray> getCacheableObjectArray() {
+    return m_objectArray;
+  }
 
-  std::shared_ptr<CacheableObjectArray> getCacheableObjectArrayEmptyPdxFieldName() {
+  std::shared_ptr<CacheableObjectArray>
+  getCacheableObjectArrayEmptyPdxFieldName() {
     return m_objectArrayEmptyPdxFieldName;
   }
 
@@ -738,8 +742,8 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
 
   int32_t getCharArrayLength() { return charArrayLen; }
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   virtual void toData(PdxWriter& pw) const override;
 

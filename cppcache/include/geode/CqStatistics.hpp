@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -41,7 +41,7 @@ namespace client {
  * represented by the CqQuery object.
  *
  */
-class CPPCACHE_EXPORT CqStatistics {
+class _GEODE_EXPORT CqStatistics {
  public:
   /**
    * Get number of Insert events qualified by this CQ.

@@ -21,7 +21,7 @@
  */
 
 #include <atomic>
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "LRUAction.hpp"
 #include "RegionInternal.hpp"
 #include "MapEntry.hpp"
@@ -33,7 +33,7 @@ namespace client {
 /**
  * @brief LRUAction for localDestroy.
  */
-class CPPCACHE_EXPORT LRULocalDestroyAction : public virtual LRUAction {
+class _GEODE_EXPORT LRULocalDestroyAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
   LRUEntriesMap* m_entriesMapPtr;

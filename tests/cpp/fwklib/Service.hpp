@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_base.hpp>
+#include <geode/internal/geode_base.hpp>
 #include <atomic>
 #include "fwklib/FwkLog.hpp"
 

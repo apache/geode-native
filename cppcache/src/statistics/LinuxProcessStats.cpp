@@ -18,11 +18,12 @@
 #include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "LinuxProcessStats.hpp"
 #include "HostStatHelperLinux.hpp"
 #include "../Assert.hpp"
+#include "config.h"
 
 namespace apache {
 namespace geode {

@@ -22,7 +22,7 @@
 
 #include <memory>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {
@@ -84,7 +84,7 @@ class Region;
  * @see RegionAttributes::getCacheWriter
  * @see AttributesMutator::setCacheWriter
  */
-class CPPCACHE_EXPORT CacheWriter {
+class _GEODE_EXPORT CacheWriter {
  public:
   /**
    * Called before an entry is updated. The entry update is initiated by a

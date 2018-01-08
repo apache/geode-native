@@ -23,7 +23,6 @@ perf::PerfSuite perfSuite("FwPerf");
 
 class LocalPutTask : public perf::Thread {
  private:
-  int m_iters ATTR_UNUSED;
 
  public:
   LocalPutTask() : Thread() {}

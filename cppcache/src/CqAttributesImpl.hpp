@@ -47,7 +47,7 @@ namespace client {
  *
  * For compatibility rules and default values, see {@link CqAttributesFactory}.
  */
-class CPPCACHE_EXPORT CqAttributesImpl : public CqAttributes {
+class _GEODE_EXPORT CqAttributesImpl : public CqAttributes {
  public:
   listener_container_type getCqListeners() override;
 

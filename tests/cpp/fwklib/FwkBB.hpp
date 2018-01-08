@@ -27,7 +27,7 @@
   * @see
   */
 
-#include <geode/geode_base.hpp>
+#include <geode/internal/geode_base.hpp>
 #include "fwklib/FwkLog.hpp"
 
 #include <vector>

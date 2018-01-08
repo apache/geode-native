@@ -54,7 +54,6 @@ const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 bool isPoolConfig = false;  // To track if pool case is running
-static bool m_useWeakHashMap ATTR_UNUSED = false;
 
 void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields) {
   LOGINFO("initClient: isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
@@ -208,14 +207,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, JavaGet)
     auto keyport1 = CacheableKey::create(1);
     LOGDEBUG("JavaGet-2 Line_314");
     auto obj1 = std::dynamic_pointer_cast<PdxWrapper>(regPtr0->get(keyport1));
-    auto npt1 ATTR_UNUSED =
-        reinterpret_cast<PdxTests::NonPdxType*>(obj1->getObject());
+    auto npt1 = reinterpret_cast<PdxTests::NonPdxType*>(obj1->getObject());
     LOGDEBUG("JavaGet-3 Line_316");
     auto keyport2 = CacheableKey::create("putFromjava");
     LOGDEBUG("JavaGet-4 Line_316");
     auto obj2 = std::dynamic_pointer_cast<PdxWrapper>(regPtr0->get(keyport2));
-    auto npt2 ATTR_UNUSED =
-        reinterpret_cast<PdxTests::NonPdxType*>(obj2->getObject());
+    auto npt2 = reinterpret_cast<PdxTests::NonPdxType*>(obj2->getObject());
     LOGDEBUG("JavaGet-5 Line_320");
   }
 END_TASK_DEFINITION

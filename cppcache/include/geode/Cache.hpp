@@ -22,7 +22,7 @@
 
 #include <string>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "GeodeCache.hpp"
 #include "Region.hpp"
 #include "DistributedSystem.hpp"
@@ -62,8 +62,8 @@ class RegionFactory;
  * <p>A cache can have multiple root regions, each with a different name.
  *
  */
-class CPPCACHE_EXPORT Cache : public GeodeCache,
-                              public std::enable_shared_from_this<Cache> {
+class _GEODE_EXPORT Cache : public GeodeCache,
+                            public std::enable_shared_from_this<Cache> {
   /**
    * @brief public methods
    */
@@ -269,7 +269,7 @@ class CPPCACHE_EXPORT Cache : public GeodeCache,
   friend class CacheXmlCreation;
   friend class RegionXmlCreation;
 
-  FRIEND_STD_SHARED_PTR(Cache)
+  _GEODE_FRIEND_STD_SHARED_PTR(Cache)
 };
 }  // namespace client
 }  // namespace geode

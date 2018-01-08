@@ -26,7 +26,7 @@
 
 #include "PdxSerializable.hpp"
 #include "PdxSerializer.hpp"
-#include "geode_base.hpp"
+#include "internal/geode_base.hpp"
 
 namespace apache {
 namespace geode {
@@ -38,7 +38,7 @@ class DataOutput;
 class PdxReader;
 class PdxWriter;
 
-class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
+class _GEODE_EXPORT PdxWrapper : public PdxSerializable {
   /**
    * The PdxWrapper class allows domain classes to be used in Region operations.
    * A user domain object should be wrapped in an instance of a PdxWrapper with
@@ -126,7 +126,7 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
   PdxWrapper(std::string className,
              std::shared_ptr<PdxSerializer> pdxSerializerPtr);
 
-  FRIEND_STD_SHARED_PTR(PdxWrapper)
+  _GEODE_FRIEND_STD_SHARED_PTR(PdxWrapper)
 
   void* m_userObject;
   std::string m_className;

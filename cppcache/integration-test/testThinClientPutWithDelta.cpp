@@ -96,7 +96,7 @@ const char* keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
 const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 const bool USE_ACK = true;
-const bool NO_ACK ATTR_UNUSED = false;
+const bool NO_ACK = false;
 
 DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1_UsePools)
   {

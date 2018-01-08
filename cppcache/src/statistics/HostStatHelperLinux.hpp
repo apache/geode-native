@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_HOSTSTATHELPERLINUX_H_
-#define GEODE_STATISTICS_HOSTSTATHELPERLINUX_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,14 +15,25 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_STATISTICS_HOSTSTATHELPERLINUX_H_
+#define GEODE_STATISTICS_HOSTSTATHELPERLINUX_H_
+
+#include "config.h"
+
 #if defined(_LINUX)
-#include <geode/geode_globals.hpp>
+
 #include <string>
+
 #include <sys/sysinfo.h>
+
+#include <geode/internal/geode_globals.hpp>
+
 #include "ProcessStats.hpp"
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -46,7 +52,7 @@ class HostStatHelperLinux {
  private:
   static uint8_t m_logStatErrorCountDown;
 };
-}  // namespace client
+}  // namespace statistics
 }  // namespace geode
 }  // namespace apache
 

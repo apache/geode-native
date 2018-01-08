@@ -20,7 +20,7 @@
 #ifndef GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
 #define GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Cache.hpp>
 
 #include "CacheTransactionManagerImpl.hpp"
@@ -42,7 +42,7 @@ class CacheTransactionManagerImpl;
  * when a suspended transaction expires.
  *
  */
-class CPPCACHE_EXPORT SuspendedTxExpiryHandler : public ACE_Event_Handler {
+class _GEODE_EXPORT SuspendedTxExpiryHandler : public ACE_Event_Handler {
  public:
   /**
    * Constructor

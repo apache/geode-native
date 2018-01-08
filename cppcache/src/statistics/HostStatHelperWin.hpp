@@ -22,7 +22,7 @@
 
 #if defined(_WIN32)
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <string>
 #include <Windows.h>
 #include <WinPerf.h>
@@ -33,7 +33,7 @@
 #include "ProcessStats.hpp"
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -261,11 +261,11 @@ class HostStatHelperWin {
   static int32_t getPid(int32_t pidCtrOffset, PPERF_COUNTER_BLOCK PerfCntrBlk);
 
   static uint32_t getInt32Value(PPERF_COUNTER_DEFINITION PerfCntr,
-                              PPERF_COUNTER_BLOCK PerfCntrBlk);
+                                PPERF_COUNTER_BLOCK PerfCntrBlk);
 
   static int64_t getInt64Value(PPERF_COUNTER_DEFINITION PerfCntr,
-                             PPERF_COUNTER_BLOCK PerfCntrBlk,
-                             bool convertMS = true);
+                               PPERF_COUNTER_BLOCK PerfCntrBlk,
+                               bool convertMS = true);
 
   static PPERF_OBJECT_TYPE FirstObject(PPERF_DATA_BLOCK PerfData);
 
@@ -296,7 +296,7 @@ class HostStatHelperWin {
 
 };  // class
 
-}  // namespace client
+}  // namespace statistics
 }  // namespace geode
 }  // namespace apache
 

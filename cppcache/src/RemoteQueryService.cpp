@@ -98,7 +98,7 @@ void RemoteQueryService::close() {
       LOGFINEST("RemoteQueryService::close: destroying DM");
       m_tccdm->destroy();
     }
-    GF_SAFE_DELETE(m_tccdm);
+    _GEODE_SAFE_DELETE(m_tccdm);
     m_invalid = true;
   }
   if (!m_CqPoolsConnected.empty()) {

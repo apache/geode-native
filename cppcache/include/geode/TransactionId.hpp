@@ -22,7 +22,7 @@
 
 #include <memory>
 
-#include "geode_base.hpp"
+#include "internal/geode_base.hpp"
 
 namespace apache {
 namespace geode {
@@ -33,12 +33,12 @@ namespace client {
 * @see Cache#getCacheTransactionManager
 * @see CacheTransactionManager#getTransactionId
 */
-class CPPCACHE_EXPORT TransactionId {
+class _GEODE_EXPORT TransactionId {
  public:
   TransactionId();
   virtual ~TransactionId();
 
-  FRIEND_STD_SHARED_PTR(TransactionId)
+  _GEODE_FRIEND_STD_SHARED_PTR(TransactionId)
 };
 }  // namespace client
 }  // namespace geode

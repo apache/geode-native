@@ -22,7 +22,7 @@
 
 #include <string>
 #include <vector>
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Region.hpp>
 #include "RegionXmlCreation.hpp"
@@ -38,7 +38,7 @@ class Cache;
  *
  * @since 1.0
  */
-class CPPCACHE_EXPORT RegionXmlCreation {
+class _GEODE_EXPORT RegionXmlCreation {
  private:
   /** An <code>AttributesFactory</code> for creating default
    * <code>RegionAttribute</code>s */

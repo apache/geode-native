@@ -23,7 +23,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "CacheableBuiltins.hpp"
 #include "StructSet.hpp"
 #include "SelectResults.hpp"
@@ -45,7 +45,7 @@ class StructSet;
  * returned after executing a Query obtained from a QueryService which in turn
  * is obtained from a Cache.
  */
-class CPPCACHE_EXPORT Struct : public Serializable {
+class _GEODE_EXPORT Struct : public Serializable {
  public:
   /**
    * Constructor - meant only for internal use.

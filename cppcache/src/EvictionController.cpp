@@ -42,7 +42,9 @@ EvictionController::EvictionController(size_t maxHeapSize,
   //  DistributedSystem::getSystemProperties()->gfMessageSize();
 }
 
-EvictionController::~EvictionController() { GF_SAFE_DELETE(evictionThreadPtr); }
+EvictionController::~EvictionController() {
+  _GEODE_SAFE_DELETE(evictionThreadPtr);
+}
 
 void EvictionController::updateRegionHeapInfo(int64_t info) {
   // LOGINFO("updateRegionHeapInfo is %d", info);

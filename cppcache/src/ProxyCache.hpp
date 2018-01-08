@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Region.hpp>
 #include <geode/DistributedSystem.hpp>
 #include <geode/QueryService.hpp>
@@ -51,7 +51,7 @@ class FunctionServiceImpl;
  * <p>A cache can have multiple root regions, each with a different name.
  *
  */
-class CPPCACHE_EXPORT ProxyCache
+class _GEODE_EXPORT ProxyCache
     : public RegionService,
       public std::enable_shared_from_this<ProxyCache> {
   /**

@@ -23,7 +23,7 @@
 #include <memory>
 #include <chrono>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 #include "CacheableBuiltins.hpp"
 
@@ -62,7 +62,7 @@ namespace client {
  * @see FunctionService
  */
 
-class CPPCACHE_EXPORT ResultCollector {
+class _GEODE_EXPORT ResultCollector {
   /**
    * @brief public methods
    */

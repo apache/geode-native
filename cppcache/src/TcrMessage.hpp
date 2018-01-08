@@ -27,7 +27,7 @@
 
 #include <ace/OS.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Cacheable.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/CacheableString.hpp>
@@ -56,7 +56,7 @@ class ThinClientBaseDM;
 class TcrMessageHelper;
 class TcrConnection;
 class TcrMessagePing;
-class CPPCACHE_EXPORT TcrMessage {
+class _GEODE_EXPORT TcrMessage {
  private:
   inline static void writeInt(uint8_t* buffer, uint16_t value);
   inline static void writeInt(uint8_t* buffer, uint32_t value);

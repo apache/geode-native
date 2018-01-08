@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "Statistics.hpp"
 #include "StatisticsType.hpp"
@@ -42,7 +42,7 @@ namespace statistics {
  *
  */
 
-class CPPCACHE_EXPORT NullProcessStats : public ProcessStats {
+class _GEODE_EXPORT NullProcessStats : public ProcessStats {
  public:
   NullProcessStats(int64_t pid, const char* name);
   ~NullProcessStats();

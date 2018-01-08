@@ -20,7 +20,7 @@
 #ifndef GEODE_PDXFIELDTYPE_H_
 #define GEODE_PDXFIELDTYPE_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
@@ -33,7 +33,7 @@ namespace client {
 
 class PdxFieldType;
 
-class CPPCACHE_EXPORT PdxFieldType : public Serializable {
+class _GEODE_EXPORT PdxFieldType : public Serializable {
  private:
   std::string m_fieldName;
   std::string m_className;

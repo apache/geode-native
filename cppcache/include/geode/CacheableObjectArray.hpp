@@ -23,7 +23,7 @@
 #include <vector>
 #include <memory>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "Cacheable.hpp"
 
 /** @file
@@ -41,7 +41,7 @@ class DataInput;
 class DataOutput;
 class Serializable;
 
-class CPPCACHE_EXPORT CacheableObjectArray
+class _GEODE_EXPORT CacheableObjectArray
     : public Cacheable,
       public std::vector<std::shared_ptr<Cacheable>> {
  public:
@@ -105,7 +105,7 @@ class CPPCACHE_EXPORT CacheableObjectArray
   CacheableObjectArray& operator=(const CacheableObjectArray& other) = delete;
   CacheableObjectArray(const CacheableObjectArray& other) = delete;
 
-  FRIEND_STD_SHARED_PTR(CacheableObjectArray)
+  _GEODE_FRIEND_STD_SHARED_PTR(CacheableObjectArray)
 };
 
 }  // namespace client

@@ -24,7 +24,7 @@
  * @file
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/CacheStatistics.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableKey.hpp>
@@ -120,7 +120,7 @@ typedef std::unordered_map<std::shared_ptr<CacheableKey>,
  * starting with the root's subregions.
  */
 
-class CPPCACHE_EXPORT LocalRegion : public RegionInternal {
+class _GEODE_EXPORT LocalRegion : public RegionInternal {
   /**
    * @brief Public Methods for Region
    */

@@ -22,14 +22,15 @@
 
 #include <string>
 
-#include <geode/geode_base.hpp>
+#include <geode/internal/geode_base.hpp>
+#include "../ErrType.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-extern void CPPCACHE_EXPORT GfErrTypeThrowException(const char* str,
-                                                    GfErrType err);
+extern void _GEODE_EXPORT GfErrTypeThrowException(const char* str,
+                                                  GfErrType err);
 
 #define GfErrTypeToException(str, err)   \
   {                                      \

@@ -149,7 +149,7 @@ class TcrChunkedContext {
         m_cache(cache),
         m_result(result) {}
 
-  inline ~TcrChunkedContext() { GF_SAFE_DELETE_ARRAY(m_bytes); }
+  inline ~TcrChunkedContext() { _GEODE_SAFE_DELETE_ARRAY(m_bytes); }
 
   inline const uint8_t* getBytes() const { return m_bytes; }
 

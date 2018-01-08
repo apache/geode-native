@@ -24,7 +24,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "Cacheable.hpp"
 #include "internal/functional.hpp"
 
@@ -37,7 +37,7 @@ namespace geode {
 namespace client {
 
 /** Represents a cacheable key */
-class CPPCACHE_EXPORT CacheableKey : public Cacheable {
+class _GEODE_EXPORT CacheableKey : public Cacheable {
  protected:
   /** Constructor */
   CacheableKey() : Cacheable() {}
@@ -45,7 +45,7 @@ class CPPCACHE_EXPORT CacheableKey : public Cacheable {
   /** Destructor */
   virtual ~CacheableKey() {}
 
-  FRIEND_STD_SHARED_PTR(CacheableKey)
+  _GEODE_FRIEND_STD_SHARED_PTR(CacheableKey)
 
  public:
   /** return true if this key matches other. */

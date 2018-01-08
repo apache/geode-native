@@ -20,7 +20,7 @@
 #ifndef GEODE_STATISTICS_STATISTICSTYPE_H_
 #define GEODE_STATISTICS_STATISTICSTYPE_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "StatisticDescriptor.hpp"
 
@@ -44,7 +44,7 @@ using namespace apache::geode::client;
  *
  */
 
-class CPPCACHE_EXPORT StatisticsType {
+class _GEODE_EXPORT StatisticsType {
  public:
   /**
    * Returns the name of this statistics type.

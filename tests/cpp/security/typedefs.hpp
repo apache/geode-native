@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_SECURITY_TYPEDEFS_H_
-#define GEODE_SECURITY_TYPEDEFS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_SECURITY_TYPEDEFS_H_
+#define GEODE_SECURITY_TYPEDEFS_H_
+
+#include "config.h"
 
 #ifdef _LINUX
 _Pragma("GCC system_header")
@@ -101,7 +103,7 @@ _Pragma("GCC system_header")
                                                  "execute_function",
                                                  "end"};
 
-  static OperationCode ATTR_UNUSED strToOpCode(std::string& opCodeStr) {
+  static OperationCode strToOpCode(std::string& opCodeStr) {
     static opCodeStrs allOpCodes(
         opCodeStrArr,
         opCodeStrArr + sizeof opCodeStrArr / sizeof *opCodeStrArr);

@@ -21,7 +21,7 @@
 #define GEODE_CONCURRENTENTRIESMAP_H_
 #include <atomic>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "EntriesMap.hpp"
 #include "MapSegment.hpp"
 
@@ -36,7 +36,7 @@ class RegionInternal;
 /**
  * @brief Concurrent entries map.
  */
-class CPPCACHE_EXPORT ConcurrentEntriesMap : public EntriesMap {
+class _GEODE_EXPORT ConcurrentEntriesMap : public EntriesMap {
  protected:
   ExpiryTaskManager* m_expiryTaskManager;
   uint8_t m_concurrency;

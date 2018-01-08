@@ -44,6 +44,8 @@
 #include <mutex>
 #include <util/concurrent/spinlock_mutex.hpp>
 
+#include "config.h"
+
 namespace apache {
 namespace geode {
 namespace client {

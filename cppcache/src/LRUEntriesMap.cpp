@@ -29,7 +29,7 @@ namespace client {
 /**
  * @brief LRUAction for testing map outside of a region....
  */
-class CPPCACHE_EXPORT TestMapAction : public virtual LRUAction {
+class _GEODE_EXPORT TestMapAction : public virtual LRUAction {
  private:
   EntriesMap* m_eMap;
 

@@ -39,7 +39,7 @@ namespace client {
 
 class RegionConfig;
 
-class CPPCACHE_EXPORT RegionConfig {
+class _GEODE_EXPORT RegionConfig {
  public:
   RegionConfig(const std::string& s, const std::string& c);
 

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_base.hpp>
+#include <geode/internal/geode_base.hpp>
 #include "ThinClientDistributionManager.hpp"
 #include <geode/CacheAttributes.hpp>
 #include "TcrEndpoint.hpp"
@@ -34,7 +34,7 @@ class ThinClientHARegion;
 /**
  * @brief Distribute data between caches
  */
-class CPPCACHE_EXPORT TcrHADistributionManager
+class _GEODE_EXPORT TcrHADistributionManager
     : public ThinClientDistributionManager {
  public:
   TcrHADistributionManager(ThinClientRegion* theRegion,

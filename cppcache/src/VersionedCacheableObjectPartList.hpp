@@ -75,7 +75,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
         m_regionIsVersioned = false;
         m_serializeValues = false;
         m_endpointMemId = 0;
-        GF_NEW(m_tempKeys, std::vector<std::shared_ptr<CacheableKey>> );
+        _GEODE_NEW(m_tempKeys, std::vector<std::shared_ptr<CacheableKey>> );
   }*/
 
  public:

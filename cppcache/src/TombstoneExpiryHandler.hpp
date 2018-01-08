@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Region.hpp>
 #include <geode/ExpirationAction.hpp>
 #include "RegionInternal.hpp"
@@ -40,7 +40,7 @@ namespace client {
  * when a tombstone expires.
  *
  */
-class CPPCACHE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
+class _GEODE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
  public:
   /**
    * Constructor

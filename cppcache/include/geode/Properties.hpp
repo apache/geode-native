@@ -27,7 +27,7 @@
 #include <string>
 #include <memory>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "Serializable.hpp"
 #include "Cacheable.hpp"
 #include "internal/chrono/duration.hpp"
@@ -49,7 +49,8 @@ class CacheableString;
  * the property; value, the value of the property.
  *
  */
-class CPPCACHE_EXPORT Properties : public Serializable {
+
+class _GEODE_EXPORT Properties : public Serializable {
  public:
   class Visitor {
    public:

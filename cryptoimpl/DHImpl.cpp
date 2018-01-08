@@ -30,7 +30,7 @@
 #include <cstring>
 #include <cctype>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 /*
 static DH * m_dh = NULL;
@@ -264,8 +264,7 @@ void gf_setPublicKeyOther(void *dhCtx, const unsigned char *pubkey,
   DH_PUBKEY_free(dhpubkey);
 
   int codes = 0;
-  int ret ATTR_UNUSED =
-      DH_check_pub_key(dhimpl->m_dh, dhimpl->m_pubKeyOther, &codes);
+  int ret = DH_check_pub_key(dhimpl->m_dh, dhimpl->m_pubKeyOther, &codes);
   LOGDH(" DHInit: DH_check_pub_key ret %d\n", ret);
   LOGDH(" DHInit: DH check_pub_key codes is 0x%04X\n", codes);
 }
@@ -277,8 +276,7 @@ void gf_computeSharedSecret(void *dhCtx) {
         dhimpl->m_pubKeyOther);
 
   LOGDH("DHcomputeKey DHSize is %d", DH_size(dhimpl->m_dh));
-  int ret ATTR_UNUSED =
-      DH_compute_key(dhimpl->m_key, dhimpl->m_pubKeyOther, dhimpl->m_dh);
+  int ret = DH_compute_key(dhimpl->m_key, dhimpl->m_pubKeyOther, dhimpl->m_dh);
   LOGDH("DHcomputeKey ret %d : Compute err(%d): %s", ret, ERR_get_error(),
         ERR_error_string(ERR_get_error(), NULL));
 }

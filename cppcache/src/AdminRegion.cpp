@@ -132,7 +132,7 @@ void AdminRegion::close() {
   ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(m_distMngr);
   if (pool == nullptr) {
     m_distMngr->destroy();
-    GF_SAFE_DELETE(m_distMngr);
+    _GEODE_SAFE_DELETE(m_distMngr);
   }
 }
 

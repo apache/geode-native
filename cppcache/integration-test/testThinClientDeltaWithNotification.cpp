@@ -149,7 +149,7 @@ const char* regionNames[] = {"DistRegionAck", "DistRegionAck1",
                              "DistRegionAck2"};
 
 const bool USE_ACK = true;
-const bool NO_ACK ATTR_UNUSED = false;
+const bool NO_ACK = false;
 
 DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1)
   {

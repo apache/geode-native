@@ -22,7 +22,7 @@
 
 #include <chrono>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 
 namespace apache {

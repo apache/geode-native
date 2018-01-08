@@ -24,7 +24,7 @@
  * @file
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <memory>
 #include "ace/Recursive_Thread_Mutex.h"
 #include "ace/Guard_T.h"
@@ -51,7 +51,7 @@ class SystemProperties;
 
 class DistributedSystemImpl;
 
-class CPPCACHE_EXPORT DistributedSystemImpl {
+class _GEODE_EXPORT DistributedSystemImpl {
   /**
    * @brief public methods
    */

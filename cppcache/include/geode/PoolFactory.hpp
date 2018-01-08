@@ -22,7 +22,7 @@
 
 #include <chrono>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "internal/chrono/duration.hpp"
 #include "Pool.hpp"
 
@@ -65,7 +65,7 @@ class Pool;
  * </ul>
  *
  */
-class CPPCACHE_EXPORT PoolFactory {
+class _GEODE_EXPORT PoolFactory {
  public:
   /**
    * The default amount of time which we will wait for a free connection if max
@@ -542,7 +542,7 @@ class CPPCACHE_EXPORT PoolFactory {
   friend class CacheFactory;
   friend class CacheXmlCreation;
 
-  FRIEND_STD_SHARED_PTR(PoolFactory)
+  _GEODE_FRIEND_STD_SHARED_PTR(PoolFactory)
 };
 
 }  // namespace client

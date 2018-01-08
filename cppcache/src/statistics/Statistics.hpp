@@ -22,7 +22,7 @@
 
 #include <string>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "StatisticsType.hpp"
 #include "StatisticDescriptor.hpp"
@@ -40,7 +40,7 @@ namespace statistics {
  * setting, incrementing and getting individual <code>StatisticDescriptor</code>
  * values.
  */
-class CPPCACHE_EXPORT Statistics {
+class _GEODE_EXPORT Statistics {
  public:
   /**
    * Closes these statistics.  After statistics have been closed, they

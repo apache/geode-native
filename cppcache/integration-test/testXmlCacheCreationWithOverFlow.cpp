@@ -93,7 +93,6 @@ int testXmlCacheCreationWithOverflow() {
   }
   auto regPtr1 = vrp.at(0);
 
-  uint32_t i ATTR_UNUSED = 0;
   std::cout << "Test if the number of sub regions with the root region Root1 are "
           "correct"
        << std::endl;

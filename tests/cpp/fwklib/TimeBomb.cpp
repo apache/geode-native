@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "fwklib/TimeBomb.hpp"
 #include "fwklib/FwkLog.hpp"
 #include "fwklib/PerfFwk.hpp"
+#include "config.h"
 
 using namespace apache::geode::client;
 using namespace apache::geode::client::testframework;

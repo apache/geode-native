@@ -20,18 +20,18 @@
 #ifndef GEODE_CACHEABLETOKEN_H_
 #define GEODE_CACHEABLETOKEN_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Cacheable.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class CPPCACHE_EXPORT CacheableToken;
+class _GEODE_EXPORT CacheableToken;
 
 /** Implement a non-mutable int64_t wrapper that can serve as a distributable
  * key object for cacheing as well as being a 64 bit value. */
-class CPPCACHE_EXPORT CacheableToken : public Cacheable {
+class _GEODE_EXPORT CacheableToken : public Cacheable {
  private:
   enum TokenType { NOT_USED = 0, INVALID, DESTROYED, OVERFLOWED, TOMBSTONE };
 
@@ -84,7 +84,7 @@ class CPPCACHE_EXPORT CacheableToken : public Cacheable {
 
   virtual ~CacheableToken();
 
-  FRIEND_STD_SHARED_PTR(CacheableToken)
+  _GEODE_FRIEND_STD_SHARED_PTR(CacheableToken)
 
   inline bool isInvalid() { return m_value == INVALID; }
 

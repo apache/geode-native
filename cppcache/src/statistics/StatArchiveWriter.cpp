@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include <ace/ACE.h>
 #include <ace/Thread_Mutex.h>
@@ -386,7 +386,7 @@ StatArchiveWriter::~StatArchiveWriter() {
   }
   for (const auto &p : resourceTypeMap) {
     auto rt = p.second;
-    GF_SAFE_DELETE(rt);
+    _GEODE_SAFE_DELETE(rt);
   }
 }
 

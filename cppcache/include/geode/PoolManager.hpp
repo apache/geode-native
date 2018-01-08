@@ -29,8 +29,8 @@
 #include "Pool.hpp"
 #include "PoolFactory.hpp"
 #include "Region.hpp"
-#include "geode_base.hpp"
-#include "geode_globals.hpp"
+#include "internal/geode_base.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {
@@ -59,7 +59,7 @@ typedef std::unordered_map<std::string, std::shared_ptr<Pool>> HashMapOfPools;
  *
  *
  */
-class CPPCACHE_EXPORT PoolManager {
+class _GEODE_EXPORT PoolManager {
  public:
 
   /**

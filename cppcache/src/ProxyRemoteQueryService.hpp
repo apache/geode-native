@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <memory>
 #include "CqService.hpp"
 #include "UserAttributes.hpp"
@@ -36,7 +36,7 @@ namespace client {
 class CacheImpl;
 class ThinClientPoolDM;
 
-class CPPCACHE_EXPORT ProxyRemoteQueryService : public QueryService {
+class _GEODE_EXPORT ProxyRemoteQueryService : public QueryService {
  public:
   ProxyRemoteQueryService(std::shared_ptr<ProxyCache> cptr);
   virtual ~ProxyRemoteQueryService() = default;

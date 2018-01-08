@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
 
 static const char *CLASSNAME1 = "PdxTests.PdxType";
 static const char *CLASSNAME2 = "PdxTests.Address";
@@ -85,8 +85,7 @@ class TestPdxSerializer : public PdxSerializer {
                                      ->getPdxSerializer());
 
     try {
-      int32_t *Lengtharr;
-      GF_NEW(Lengtharr, int32_t[2]);
+      auto Lengtharr = new int32_t[2];
       int32_t arrLen = 0;
       npt->m_byteByteArray =
           pr.readArrayOfByteArrays("m_byteByteArray", arrLen, &Lengtharr);

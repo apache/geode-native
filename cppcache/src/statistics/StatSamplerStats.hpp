@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "StatisticDescriptor.hpp"
 #include "StatisticsType.hpp"
@@ -40,7 +40,7 @@ class StatisticsFactory;
 /**
  * Statistics related to the statistic sampler.
  */
-class CPPCACHE_EXPORT StatSamplerStats {
+class _GEODE_EXPORT StatSamplerStats {
  private:
   StatisticsType* samplerType;
   Statistics* samplerStats;

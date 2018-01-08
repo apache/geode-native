@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -33,7 +33,7 @@ namespace client {
  * @class Operation CqOperation.hpp
  * Enumerated type for Operation actions.
  */
-class CPPCACHE_EXPORT CqOperation {
+class _GEODE_EXPORT CqOperation {
  public:
   // types of operation CORESPONDING TO THE ONES in geode.cache.Operation
 

@@ -35,9 +35,9 @@
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
-#define TESTOBJECT_EXPORT LIBEXP
+#define TESTOBJECT_EXPORT _GEODE_LIBEXP
 #else
-#define TESTOBJECT_EXPORT LIBIMP
+#define TESTOBJECT_EXPORT _GEODE_LIBIMP
 #endif
 #else
 #define TESTOBJECT_EXPORT
@@ -77,8 +77,8 @@ class TESTOBJECT_EXPORT PdxTypes1V2 : public PdxSerializable {
 
   std::string toString() const override;
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   virtual void fromData(PdxReader& pr) override;
 
@@ -122,8 +122,8 @@ class TESTOBJECT_EXPORT PdxTypes2V2 : public PdxSerializable {
 
   std::string toString() const override;
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   virtual void fromData(PdxReader& pr) override;
 
@@ -168,8 +168,8 @@ class TESTOBJECT_EXPORT PdxTypes3V2 : public PdxSerializable {
 
   bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   virtual void fromData(PdxReader& pr) override;
 
@@ -215,8 +215,8 @@ class TESTOBJECT_EXPORT PdxTypesR1V2 : public PdxSerializable {
 
   bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   virtual void fromData(PdxReader& pr) override;
 
@@ -262,8 +262,8 @@ class TESTOBJECT_EXPORT PdxTypesR2V2 : public PdxSerializable {
 
   std::string toString() const override;
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   virtual void fromData(PdxReader& pr) override;
 
@@ -309,8 +309,8 @@ class TESTOBJECT_EXPORT PdxTypesIgnoreUnreadFieldsV2 : public PdxSerializable {
 
   bool equals(std::shared_ptr<PdxSerializable> obj);
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   virtual void fromData(PdxReader& pr) override;
 
@@ -325,7 +325,6 @@ class TESTOBJECT_EXPORT PdxTypesIgnoreUnreadFieldsV2 : public PdxSerializable {
     return new PdxTypesIgnoreUnreadFieldsV2();
   }
 };
-
 
 /************************************************************
  *  PdxVersionedV2
@@ -374,8 +373,8 @@ class TESTOBJECT_EXPORT PdxVersionedV2 : public PdxSerializable {
 
   std::string toString() const override;
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   virtual void fromData(PdxReader& pr) override;
 

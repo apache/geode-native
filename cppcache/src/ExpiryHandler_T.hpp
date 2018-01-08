@@ -37,7 +37,7 @@ namespace client {
  * since GF_Timer_Heap_ImmediateReset_T also deletes handlers that expire
  */
 template <class T>
-class CPPCACHE_EXPORT ExpiryHandler_T : public ACE_Event_Handler {
+class _GEODE_EXPORT ExpiryHandler_T : public ACE_Event_Handler {
  public:
   /// Handle timeout events.
   typedef int (T::*TO_HANDLER)(const ACE_Time_Value &, const void *);

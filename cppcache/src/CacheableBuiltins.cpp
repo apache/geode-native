@@ -14,11 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/geode_globals.hpp>
-#include <geode/CacheableBuiltins.hpp>
+
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
 
 #include <ace/OS.h>
-#include <cstdarg>
+
+#include <geode/internal/geode_globals.hpp>
+#include <geode/CacheableBuiltins.hpp>
 
 namespace apache {
 namespace geode {

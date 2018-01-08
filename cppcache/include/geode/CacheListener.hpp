@@ -22,7 +22,7 @@
 
 #include <memory>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -76,7 +76,7 @@ class RegionEvent;
  * @see RegionAttributes::getCacheListener
  * @see CacheListenerException
  */
-class CPPCACHE_EXPORT CacheListener {
+class _GEODE_EXPORT CacheListener {
   /**
    * @brief public methods
    */

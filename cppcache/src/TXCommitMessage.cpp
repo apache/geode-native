@@ -65,7 +65,7 @@ m_processorId = -1;
   input.readBytes(&m_farsideBaseMembershipId, &m_farsideBaseMembershipIdLen);
 
   if (m_farsideBaseMembershipId != nullptr) {
-    GF_SAFE_DELETE_ARRAY(m_farsideBaseMembershipId);
+    _GEODE_SAFE_DELETE_ARRAY(m_farsideBaseMembershipId);
     m_farsideBaseMembershipId = nullptr;
   }
 

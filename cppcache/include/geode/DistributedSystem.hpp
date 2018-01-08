@@ -25,7 +25,7 @@
  */
 #include <memory>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "ExceptionTypes.hpp"
 #include "Properties.hpp"
 
@@ -51,7 +51,7 @@ class CacheRegionHelper;
 class DiffieHellman;
 class TcrConnection;
 
-class CPPCACHE_EXPORT DistributedSystem {
+class _GEODE_EXPORT DistributedSystem {
   /**
    * @brief public methods
    */

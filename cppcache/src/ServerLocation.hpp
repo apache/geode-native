@@ -35,7 +35,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class CPPCACHE_EXPORT ServerLocation : public Serializable {
+class _GEODE_EXPORT ServerLocation : public Serializable {
  public:
   ServerLocation(std::string serverName, int port)
       : Serializable(), m_serverName(std::move(serverName)), m_port(port) {

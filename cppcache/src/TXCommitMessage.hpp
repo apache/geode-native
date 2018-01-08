@@ -20,7 +20,7 @@
 #ifndef GEODE_TXCOMMITMESSAGE_H_
 #define GEODE_TXCOMMITMESSAGE_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/DataInput.hpp>
 #include "RegionCommit.hpp"
 

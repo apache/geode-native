@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "Task.hpp"
 #include <string>
 #include <ace/Recursive_Thread_Mutex.h>
@@ -51,7 +51,7 @@ class ThinClientRegion;
 /**
  * @brief transport data between caches
  */
-class CPPCACHE_EXPORT TcrConnectionManager {
+class _GEODE_EXPORT TcrConnectionManager {
  public:
   TcrConnectionManager(CacheImpl* cache);
   ~TcrConnectionManager();

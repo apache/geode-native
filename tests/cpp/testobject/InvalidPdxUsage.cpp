@@ -83,7 +83,6 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
 
   // TestCase: writeArrayOfByteArrays with empty field name,
   // IllegalStateException is expected
-  bool excptExpected ATTR_UNUSED = false;
 
   try {
     pw.writeArrayOfByteArrays("", m_byteByteArray, 2, lengthArr);
@@ -464,7 +463,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
       fromDataexceptionCounter);
 
   int32_t* Lengtharr;
-  GF_NEW(Lengtharr, int32_t[2]);
+  _GEODE_NEW(Lengtharr, int32_t[2]);
   int32_t arrLen = 0;
   int exceptionCounter = 0;
   try {

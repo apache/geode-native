@@ -44,7 +44,7 @@ namespace client {
  * FIX : Make the class non copyable
  */
 template <typename T>
-class CPPCACHE_EXPORT Set : private NonAssignable {
+class _GEODE_EXPORT Set : private NonAssignable {
  public:
   // Iterator for a synchronized Set
   class Iterator {

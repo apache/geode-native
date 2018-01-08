@@ -20,7 +20,7 @@
 #ifndef GEODE_RESULTSET_H_
 #define GEODE_RESULTSET_H_
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "ExceptionTypes.hpp"
 #include "SelectResults.hpp"
 #include "SelectResultsIterator.hpp"
@@ -38,7 +38,7 @@ namespace client {
  * A ResultSet may be obtained after executing a Query which is obtained from a
  * QueryService which in turn is obtained from a Cache.
  */
-class CPPCACHE_EXPORT ResultSet : public SelectResults {
+class _GEODE_EXPORT ResultSet : public SelectResults {
  public:
   /**
    * Check whether the ResultSet is modifiable.

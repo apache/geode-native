@@ -27,7 +27,7 @@
 #include <ace/Task.h>
 #include <ace/Recursive_Thread_Mutex.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "Statistics.hpp"
 #include "StatisticDescriptor.hpp"
@@ -77,9 +77,9 @@ class StatisticsManager;
  * FIX : Make the class NonCopyable
  */
 
-class CPPCACHE_EXPORT HostStatSampler : public ACE_Task_Base,
-                                        private NonCopyable,
-                                        private NonAssignable {
+class _GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
+                                      private NonCopyable,
+                                      private NonAssignable {
  public:
   /*
    * Constructor:

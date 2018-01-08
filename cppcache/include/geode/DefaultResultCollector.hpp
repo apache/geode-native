@@ -25,7 +25,7 @@
 #include <mutex>
 #include <condition_variable>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 #include "CacheableBuiltins.hpp"
 #include "ResultCollector.hpp"
@@ -38,7 +38,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class CPPCACHE_EXPORT DefaultResultCollector : public ResultCollector {
+class _GEODE_EXPORT DefaultResultCollector : public ResultCollector {
  public:
   DefaultResultCollector();
   virtual ~DefaultResultCollector() noexcept;

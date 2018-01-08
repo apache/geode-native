@@ -356,7 +356,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     char buf[1024];
 
     uint8_t i = 0;
-    int j ATTR_UNUSED = 0;
     uint32_t inserts[MAX_LISTNER];
     uint32_t updates[MAX_LISTNER];
     uint32_t deletes[MAX_LISTNER];
@@ -419,7 +418,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
     char buf[1024];
 
     uint8_t i = 0;
-    int j ATTR_UNUSED = 0;
     uint32_t inserts[MAX_LISTNER];
     uint32_t updates[MAX_LISTNER];
     uint32_t deletes[MAX_LISTNER];

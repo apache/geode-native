@@ -19,7 +19,7 @@
 #ifndef GEODE_STATISTICS_SOLARISPROCESSSTATS_H_
 #define GEODE_STATISTICS_SOLARISPROCESSSTATS_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "Statistics.hpp"
 #include "StatisticsType.hpp"
@@ -27,8 +27,7 @@
 #include "ProcessStats.hpp"
 #include "HostStatHelper.hpp"
 #include "GeodeStatisticsFactory.hpp"
-
-using namespace apache::geode::client;
+#include "config.h"
 
 /** @file
  */
@@ -36,13 +35,15 @@ using namespace apache::geode::client;
 namespace apache {
 namespace geode {
 namespace statistics {
+
+using namespace apache::geode::client;
+
 /**
  * <P>This class provides the interface for statistics about a
  * Solaris operating system process that is using a Geode system.
  *
  */
-
-class CPPCACHE_EXPORT SolarisProcessStats : public ProcessStats {
+class _GEODE_EXPORT SolarisProcessStats : public ProcessStats {
  private:
   /** The Static Type for Solaris Process Stats */
   StatisticsType* m_statsType;

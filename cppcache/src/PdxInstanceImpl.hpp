@@ -38,7 +38,7 @@ namespace client {
 
 typedef std::map<std::string, std::shared_ptr<Cacheable>> FieldVsValues;
 
-class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
+class _GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
  public:
   /**
    * @brief destructor

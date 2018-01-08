@@ -24,7 +24,7 @@
 #include <stdexcept>
 #include <unordered_map>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "internal/functional.hpp"
 
 /**
@@ -45,7 +45,7 @@ class StackTrace;
  * @class Exception Exception.hpp
  * A description of an exception that occurred during a cache operation.
  */
-class CPPCACHE_EXPORT Exception : public std::exception {
+class _GEODE_EXPORT Exception : public std::exception {
   /**
    * @brief public methods
    */

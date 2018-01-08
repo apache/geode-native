@@ -25,7 +25,7 @@
 
 #include <ace/Semaphore.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableBuiltins.hpp>
 
@@ -84,7 +84,7 @@ class TcrEndpoint;
 class SystemProperties;
 class ThinClientPoolDM;
 class TcrConnectionManager;
-class CPPCACHE_EXPORT TcrConnection {
+class _GEODE_EXPORT TcrConnection {
  public:
   /** Create one connection, endpoint is in format of hostname:portno
    * It will do handshake with j-server. There're 2 types of handshakes:
