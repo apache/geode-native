@@ -71,81 +71,81 @@ bool PdxType1V1::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 
-void PdxType1V1::toData(std::shared_ptr<PdxWriter> pw) const {
-  if (!m_useWeakHashMap) pw->writeUnreadFields(m_pdxUreadFields);
+void PdxType1V1::toData(PdxWriter& pw) const {
+  if (!m_useWeakHashMap) pw.writeUnreadFields(m_pdxUreadFields);
 
-  pw->writeInt("i1", m_i1 + 1);
-  pw->markIdentityField("i1");
-  pw->writeInt("i2", m_i2 + 1);
-  pw->writeInt("i3", m_i3 + 1);
-  pw->writeInt("i4", m_i4 + 1);
+  pw.writeInt("i1", m_i1 + 1);
+  pw.markIdentityField("i1");
+  pw.writeInt("i2", m_i2 + 1);
+  pw.writeInt("i3", m_i3 + 1);
+  pw.writeInt("i4", m_i4 + 1);
 
   m_diffInSameFields++;
 
   /*
-  pw->writeBoolean("m_bool", m_bool);
-  pw->writeByte("m_byte", m_byte);
-  pw->writeShort("m_int16", m_int16);
-  pw->writeInt("m_int32", m_int32);
-  pw->writeLong("m_long", m_long);
-  pw->writeFloat("m_float", m_float);
-  pw->writeDouble("m_double", m_double);
-  pw->writeString("m_string", m_string);
-  pw->writeBooleanArray("m_boolArray", m_boolArray, 3);
-  pw->writeByteArray("m_byteArray",m_byteArray, 2);
-  pw->writeShortArray("m_int16Array", m_int16Array, 2);
-  pw->writeIntArray("m_int32Array", m_int32Array, 4);
-  pw->writeLongArray("m_longArray", m_longArray, 2);
-  pw->writeFloatArray("m_floatArray", m_floatArray, 2);
-  pw->writeDoubleArray("m_doubleArray", m_doubleArray, 2);
+  pw.writeBoolean("m_bool", m_bool);
+  pw.writeByte("m_byte", m_byte);
+  pw.writeShort("m_int16", m_int16);
+  pw.writeInt("m_int32", m_int32);
+  pw.writeLong("m_long", m_long);
+  pw.writeFloat("m_float", m_float);
+  pw.writeDouble("m_double", m_double);
+  pw.writeString("m_string", m_string);
+  pw.writeBooleanArray("m_boolArray", m_boolArray, 3);
+  pw.writeByteArray("m_byteArray",m_byteArray, 2);
+  pw.writeShortArray("m_int16Array", m_int16Array, 2);
+  pw.writeIntArray("m_int32Array", m_int32Array, 4);
+  pw.writeLongArray("m_longArray", m_longArray, 2);
+  pw.writeFloatArray("m_floatArray", m_floatArray, 2);
+  pw.writeDoubleArray("m_doubleArray", m_doubleArray, 2);
 */
   // LOGDEBUG("PdxObject::toData() Done......");
 }
 
-void PdxType1V1::fromData(std::shared_ptr<PdxReader> pr) {
+void PdxType1V1::fromData(PdxReader& pr) {
   // LOGDEBUG("PdxObject::fromData() start...");
 
-  if (!m_useWeakHashMap) m_pdxUreadFields = pr->readUnreadFields();
+  if (!m_useWeakHashMap) m_pdxUreadFields = pr.readUnreadFields();
 
-  m_i1 = pr->readInt("i1");
-  m_i2 = pr->readInt("i2");
-  m_i3 = pr->readInt("i3");
-  m_i4 = pr->readInt("i4");
+  m_i1 = pr.readInt("i1");
+  m_i2 = pr.readInt("i2");
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
 
-  bool hasField = pr->hasField("i7");
+  bool hasField = pr.hasField("i7");
 
   if (hasField) throw Exception("i7 is not an valid field");
 
-  hasField = pr->hasField("i4");
+  hasField = pr.hasField("i4");
 
   if (!hasField) throw Exception("i4 is an valid field");
 
   /*
-  m_bool = pr->readBoolean("m_bool");
+  m_bool = pr.readBoolean("m_bool");
   //LOGDEBUG("PdxObject::fromData() -1 m_bool = %d", m_bool);
-  m_byte = pr->readByte("m_byte");
+  m_byte = pr.readByte("m_byte");
   //LOGDEBUG("PdxObject::fromData() -2 m_byte =%d", m_byte);
-  m_int16 = pr->readShort("m_int16");
+  m_int16 = pr.readShort("m_int16");
   //LOGDEBUG("PdxObject::fromData() -3 m_int16=%d", m_int16);
-  m_int32 = pr->readInt("m_int32");
+  m_int32 = pr.readInt("m_int32");
   //LOGDEBUG("PdxObject::fromData() -4 m_int32=%d", m_int32);
-  m_long = pr->readLong("m_long");
+  m_long = pr.readLong("m_long");
   //LOGDEBUG("PdxObject::fromData() -5 m_long=%lld", m_long);
-  m_float = pr->readFloat("m_float");
+  m_float = pr.readFloat("m_float");
   //LOGDEBUG("PdxObject::fromData() -6 m_float = %f", m_float);
-  m_double = pr->readDouble("m_double");
+  m_double = pr.readDouble("m_double");
   //LOGDEBUG("PdxObject::fromData() -7  m_double=%llf", m_double);
-  m_string = pr->readString("m_string");
+  m_string = pr.readString("m_string");
   //LOGDEBUG("PdxObject::fromData() -8  m_string=%s", m_string);
-  m_boolArray = pr->readBooleanArray("m_boolArray");
-  m_byteArray = pr->readByteArray("m_byteArray");
-  m_int16Array = pr->readShortArray("m_int16Array");
-  m_int32Array = pr->readIntArray("m_int32Array");
-  m_longArray = pr->readLongArray("m_longArray");
-  m_floatArray = pr->readFloatArray("m_floatArray");
-  m_doubleArray = pr->readDoubleArray("m_doubleArray");
+  m_boolArray = pr.readBooleanArray("m_boolArray");
+  m_byteArray = pr.readByteArray("m_byteArray");
+  m_int16Array = pr.readShortArray("m_int16Array");
+  m_int32Array = pr.readIntArray("m_int32Array");
+  m_longArray = pr.readLongArray("m_longArray");
+  m_floatArray = pr.readFloatArray("m_floatArray");
+  m_doubleArray = pr.readDoubleArray("m_doubleArray");
   //LOGDEBUG("PdxObject::fromData() -8  m_boolArray[0]=%d", m_boolArray[0]);
-  //m_int32 = pr->readInt("m_int32");
+  //m_int32 = pr.readInt("m_int32");
   */
   LOGDEBUG("PdxObject::fromData() End...");
 }
@@ -211,24 +211,24 @@ bool PdxType2V1::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 
-void PdxType2V1::toData(std::shared_ptr<PdxWriter> pw) const {
-  if (!m_useWeakHashMap) pw->writeUnreadFields(m_unreadFields);
+void PdxType2V1::toData(PdxWriter& pw) const {
+  if (!m_useWeakHashMap) pw.writeUnreadFields(m_unreadFields);
 
-  pw->writeInt("i1", m_i1 + 1);
-  pw->writeInt("i2", m_i2 + 1);
-  pw->writeInt("i3", m_i3 + 1);
-  pw->writeInt("i4", m_i4 + 1);
+  pw.writeInt("i1", m_i1 + 1);
+  pw.writeInt("i2", m_i2 + 1);
+  pw.writeInt("i3", m_i3 + 1);
+  pw.writeInt("i4", m_i4 + 1);
 }
 
-void PdxType2V1::fromData(std::shared_ptr<PdxReader> pr) {
+void PdxType2V1::fromData(PdxReader& pr) {
   // LOGDEBUG("PdxObject::fromData() start...");
 
-  if (!m_useWeakHashMap) m_unreadFields = pr->readUnreadFields();
+  if (!m_useWeakHashMap) m_unreadFields = pr.readUnreadFields();
 
-  m_i1 = pr->readInt("i1");
-  m_i2 = pr->readInt("i2");
-  m_i3 = pr->readInt("i3");
-  m_i4 = pr->readInt("i4");
+  m_i1 = pr.readInt("i1");
+  m_i2 = pr.readInt("i2");
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
 }
 std::string PdxType2V1::toString() const {
   char idbuf[4096];
@@ -290,33 +290,33 @@ bool PdxType3V1::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 
-void PdxType3V1::toData(std::shared_ptr<PdxWriter> pw) const {
-  if (!m_useWeakHashMap) pw->writeUnreadFields(m_unreadFields);
+void PdxType3V1::toData(PdxWriter& pw) const {
+  if (!m_useWeakHashMap) pw.writeUnreadFields(m_unreadFields);
 
-  pw->writeInt("i1", m_i1 + 1);
-  pw->writeInt("i2", m_i2 + 1);
-  pw->writeString("m_str1", m_str1);
-  pw->writeInt("i3", m_i3 + 1);
-  pw->writeInt("i4", m_i4 + 1);
-  pw->writeInt("i5", m_i5 + 1);
-  pw->writeString("m_str2", m_str2);
+  pw.writeInt("i1", m_i1 + 1);
+  pw.writeInt("i2", m_i2 + 1);
+  pw.writeString("m_str1", m_str1);
+  pw.writeInt("i3", m_i3 + 1);
+  pw.writeInt("i4", m_i4 + 1);
+  pw.writeInt("i5", m_i5 + 1);
+  pw.writeString("m_str2", m_str2);
 
   m_diffInSameFields++;
   m_diffInExtraFields++;
 }
 
-void PdxType3V1::fromData(std::shared_ptr<PdxReader> pr) {
+void PdxType3V1::fromData(PdxReader& pr) {
   // LOGDEBUG("PdxObject::fromData() start...");
 
-  if (!m_useWeakHashMap) m_unreadFields = pr->readUnreadFields();
+  if (!m_useWeakHashMap) m_unreadFields = pr.readUnreadFields();
 
-  m_i1 = pr->readInt("i1");
-  m_i2 = pr->readInt("i2");
-  m_str1 = pr->readString("m_str1");
-  m_i3 = pr->readInt("i3");
-  m_i4 = pr->readInt("i4");
-  m_i5 = pr->readInt("i5");
-  auto tmp = pr->readString("m_str2");
+  m_i1 = pr.readInt("i1");
+  m_i2 = pr.readInt("i2");
+  m_str1 = pr.readString("m_str1");
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
+  m_i5 = pr.readInt("i5");
+  auto tmp = pr.readString("m_str2");
 
   if (tmp.empty()) {
     m_str2 = std::to_string(m_diffInExtraFields);
@@ -377,24 +377,24 @@ bool PdxTypesV1R1::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 
-void PdxTypesV1R1::toData(std::shared_ptr<PdxWriter> pw) const {
-  if (!m_useWeakHashMap) pw->writeUnreadFields(m_pdxUreadFields);
+void PdxTypesV1R1::toData(PdxWriter& pw) const {
+  if (!m_useWeakHashMap) pw.writeUnreadFields(m_pdxUreadFields);
 
-  pw->writeInt("i1", m_i1 + 1);
-  pw->writeInt("i2", m_i2 + 1);
-  pw->writeInt("i3", m_i3 + 1);
-  pw->writeInt("i4", m_i4 + 1);
+  pw.writeInt("i1", m_i1 + 1);
+  pw.writeInt("i2", m_i2 + 1);
+  pw.writeInt("i3", m_i3 + 1);
+  pw.writeInt("i4", m_i4 + 1);
 
   m_diffInSameFields++;
 }
 
-void PdxTypesV1R1::fromData(std::shared_ptr<PdxReader> pr) {
-  if (!m_useWeakHashMap) m_pdxUreadFields = pr->readUnreadFields();
+void PdxTypesV1R1::fromData(PdxReader& pr) {
+  if (!m_useWeakHashMap) m_pdxUreadFields = pr.readUnreadFields();
 
-  m_i1 = pr->readInt("i1");
-  m_i2 = pr->readInt("i2");
-  m_i3 = pr->readInt("i3");
-  m_i4 = pr->readInt("i4");
+  m_i1 = pr.readInt("i1");
+  m_i2 = pr.readInt("i2");
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
 }
 std::string PdxTypesV1R1::toString() const {
   char idbuf[4096];
@@ -447,23 +447,23 @@ bool PdxTypesV1R2::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 
-void PdxTypesV1R2::toData(std::shared_ptr<PdxWriter> pw) const {
-  if (!m_useWeakHashMap) pw->writeUnreadFields(m_pdxUreadFields);
+void PdxTypesV1R2::toData(PdxWriter& pw) const {
+  if (!m_useWeakHashMap) pw.writeUnreadFields(m_pdxUreadFields);
 
-  pw->writeInt("i1", m_i1 + 1);
-  pw->writeInt("i2", m_i2 + 1);
-  pw->writeInt("i3", m_i3 + 1);
-  pw->writeInt("i4", m_i4 + 1);
+  pw.writeInt("i1", m_i1 + 1);
+  pw.writeInt("i2", m_i2 + 1);
+  pw.writeInt("i3", m_i3 + 1);
+  pw.writeInt("i4", m_i4 + 1);
 }
 
-void PdxTypesV1R2::fromData(std::shared_ptr<PdxReader> pr) {
+void PdxTypesV1R2::fromData(PdxReader& pr) {
   // LOGDEBUG("PdxObject::fromData() start...");
-  if (!m_useWeakHashMap) m_pdxUreadFields = pr->readUnreadFields();
+  if (!m_useWeakHashMap) m_pdxUreadFields = pr.readUnreadFields();
 
-  m_i1 = pr->readInt("i1");
-  m_i2 = pr->readInt("i2");
-  m_i3 = pr->readInt("i3");
-  m_i4 = pr->readInt("i4");
+  m_i1 = pr.readInt("i1");
+  m_i2 = pr.readInt("i2");
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
 }
 std::string PdxTypesV1R2::toString() const {
   char idbuf[4096];
@@ -517,32 +517,32 @@ bool PdxTypesIgnoreUnreadFieldsV1::equals(
   return false;
 }
 
-void PdxTypesIgnoreUnreadFieldsV1::toData(std::shared_ptr<PdxWriter> pw) const {
-  if (!m_useWeakHashMap) pw->writeUnreadFields(m_unreadFields);
+void PdxTypesIgnoreUnreadFieldsV1::toData(PdxWriter& pw) const {
+  if (!m_useWeakHashMap) pw.writeUnreadFields(m_unreadFields);
 
-  pw->writeInt("i1", m_i1 + 1);
-  pw->markIdentityField("i1");
-  pw->writeInt("i2", m_i2 + 1);
-  pw->writeInt("i3", m_i3 + 1);
-  pw->writeInt("i4", m_i4 + 1);
+  pw.writeInt("i1", m_i1 + 1);
+  pw.markIdentityField("i1");
+  pw.writeInt("i2", m_i2 + 1);
+  pw.writeInt("i3", m_i3 + 1);
+  pw.writeInt("i4", m_i4 + 1);
 
   m_diffInSameFields++;
 }
 
-void PdxTypesIgnoreUnreadFieldsV1::fromData(std::shared_ptr<PdxReader> pr) {
+void PdxTypesIgnoreUnreadFieldsV1::fromData(PdxReader& pr) {
   // LOGDEBUG("PdxObject::fromData() start...");
 
-  if (!m_useWeakHashMap) m_unreadFields = pr->readUnreadFields();
+  if (!m_useWeakHashMap) m_unreadFields = pr.readUnreadFields();
 
-  m_i1 = pr->readInt("i1");
-  m_i2 = pr->readInt("i2");
-  m_i3 = pr->readInt("i3");
-  m_i4 = pr->readInt("i4");
+  m_i1 = pr.readInt("i1");
+  m_i2 = pr.readInt("i2");
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
 
-  bool hasField = pr->hasField("i7");
+  bool hasField = pr.hasField("i7");
   if (hasField) throw Exception("i7 is not an valid field");
 
-  hasField = pr->hasField("i4");
+  hasField = pr.hasField("i4");
   if (!hasField) throw Exception("i4 is an valid field");
 }
 std::string PdxTypesIgnoreUnreadFieldsV1::toString() const {
@@ -615,44 +615,44 @@ PdxVersionedV1::~PdxVersionedV1() {
   // TODO Auto-generated destructor stub
 }
 
-void PdxVersionedV1::toData(std::shared_ptr<PdxWriter> pw) const {
-  // pw->writeChar("m_char", m_char);
-  pw->writeBoolean("m_bool", m_bool);
-  pw->writeByte("m_byte", m_byte);
-  pw->writeShort("m_int16", m_int16);
-  pw->writeInt("m_int32", m_int32);
-  pw->writeLong("m_long", m_long);
-  pw->writeFloat("m_float", m_float);
-  pw->writeDouble("m_double", m_double);
-  pw->writeString("m_string", m_string);
-  pw->writeBooleanArray("m_boolArray", m_boolArray, 3);
-  // pw->writeCharArray("m_charArray", m_charArray, 2);
-  pw->writeDate("m_dateTime", m_dateTime);
-  pw->writeShortArray("m_int16Array", m_int16Array, 2);
-  pw->writeIntArray("m_int32Array", m_int32Array, 2);
-  pw->writeLongArray("m_longArray", m_longArray, 2);
-  pw->writeFloatArray("m_floatArray", m_floatArray, 2);
-  pw->writeDoubleArray("m_doubleArray", m_doubleArray, 2);
+void PdxVersionedV1::toData(PdxWriter& pw) const {
+  // pw.writeChar("m_char", m_char);
+  pw.writeBoolean("m_bool", m_bool);
+  pw.writeByte("m_byte", m_byte);
+  pw.writeShort("m_int16", m_int16);
+  pw.writeInt("m_int32", m_int32);
+  pw.writeLong("m_long", m_long);
+  pw.writeFloat("m_float", m_float);
+  pw.writeDouble("m_double", m_double);
+  pw.writeString("m_string", m_string);
+  pw.writeBooleanArray("m_boolArray", m_boolArray, 3);
+  // pw.writeCharArray("m_charArray", m_charArray, 2);
+  pw.writeDate("m_dateTime", m_dateTime);
+  pw.writeShortArray("m_int16Array", m_int16Array, 2);
+  pw.writeIntArray("m_int32Array", m_int32Array, 2);
+  pw.writeLongArray("m_longArray", m_longArray, 2);
+  pw.writeFloatArray("m_floatArray", m_floatArray, 2);
+  pw.writeDoubleArray("m_doubleArray", m_doubleArray, 2);
 }
 
-void PdxVersionedV1::fromData(std::shared_ptr<PdxReader> pr) {
-  // m_char = pr->readChar("m_char");
-  m_bool = pr->readBoolean("m_bool");
-  m_byte = pr->readByte("m_byte");
-  m_int16 = pr->readShort("m_int16");
-  m_int32 = pr->readInt("m_int32");
-  m_long = pr->readLong("m_long");
-  m_float = pr->readFloat("m_float");
-  m_double = pr->readDouble("m_double");
-  m_string = pr->readString("m_string");
-  m_boolArray = pr->readBooleanArray("m_boolArray", boolArrayLen);
-  // m_charArray = pr->readCharArray("m_charArray");
-  m_dateTime = pr->readDate("m_dateTime");
-  m_int16Array = pr->readShortArray("m_int16Array", shortArrayLen);
-  m_int32Array = pr->readIntArray("m_int32Array", intArrayLen);
-  m_longArray = pr->readLongArray("m_longArray", longArrayLen);
-  m_floatArray = pr->readFloatArray("m_floatArray", floatArrayLen);
-  m_doubleArray = pr->readDoubleArray("m_doubleArray", doubleArrayLen);
+void PdxVersionedV1::fromData(PdxReader& pr) {
+  // m_char = pr.readChar("m_char");
+  m_bool = pr.readBoolean("m_bool");
+  m_byte = pr.readByte("m_byte");
+  m_int16 = pr.readShort("m_int16");
+  m_int32 = pr.readInt("m_int32");
+  m_long = pr.readLong("m_long");
+  m_float = pr.readFloat("m_float");
+  m_double = pr.readDouble("m_double");
+  m_string = pr.readString("m_string");
+  m_boolArray = pr.readBooleanArray("m_boolArray", boolArrayLen);
+  // m_charArray = pr.readCharArray("m_charArray");
+  m_dateTime = pr.readDate("m_dateTime");
+  m_int16Array = pr.readShortArray("m_int16Array", shortArrayLen);
+  m_int32Array = pr.readIntArray("m_int32Array", intArrayLen);
+  m_longArray = pr.readLongArray("m_longArray", longArrayLen);
+  m_floatArray = pr.readFloatArray("m_floatArray", floatArrayLen);
+  m_doubleArray = pr.readDoubleArray("m_doubleArray", doubleArrayLen);
 }
 std::string PdxVersionedV1::toString() const {
   char idbuf[4096];
@@ -708,22 +708,22 @@ TestEqualsV1::TestEqualsV1() {
   // intArr = ;
 }
 
-void TestEqualsV1::toData(std::shared_ptr<PdxWriter> pw) const {
-  pw->writeInt("i1", i1);
-  pw->writeInt("i2", i2);
-  pw->writeString("s1", s1);
-  // pw->writeStringArray("sArr", sArr, 2);
-  // pw->writeIntArray("intArr", intArr, 2);
-  // pw->writeObject("intArrObject", intArr);
-  // pw->writeObject("sArrObject", sArr);
+void TestEqualsV1::toData(PdxWriter& pw) const {
+  pw.writeInt("i1", i1);
+  pw.writeInt("i2", i2);
+  pw.writeString("s1", s1);
+  // pw.writeStringArray("sArr", sArr, 2);
+  // pw.writeIntArray("intArr", intArr, 2);
+  // pw.writeObject("intArrObject", intArr);
+  // pw.writeObject("sArrObject", sArr);
 }
 
-void TestEqualsV1::fromData(std::shared_ptr<PdxReader> pr) {
-  i1 = pr->readInt("i1");
-  i2 = pr->readInt("i2");
-  s1 = pr->readString("s1");
-  // sArr = pr->readStringArray("sArr");
-  // intArr = pr->readIntArray("intArr");
+void TestEqualsV1::fromData(PdxReader& pr) {
+  i1 = pr.readInt("i1");
+  i2 = pr.readInt("i2");
+  s1 = pr.readString("s1");
+  // sArr = pr.readStringArray("sArr");
+  // intArr = pr.readIntArray("intArr");
   // intArr = (int[]) reader.ReadObject("intArrObject");
   // sArr = (string[]) reader.ReadObject("sArrObject");
 }

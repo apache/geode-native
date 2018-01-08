@@ -62,9 +62,9 @@ class TESTOBJECT_EXPORT PdxTypes1 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
   const std::string& getClassName() const override {
     static std::string className = "PdxTests.PdxTypes1";
@@ -100,9 +100,9 @@ class TESTOBJECT_EXPORT PdxTypes2 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
   const std::string& getClassName() const override {
     static std::string className = "PdxTests.PdxTypes2";
@@ -138,9 +138,9 @@ class TESTOBJECT_EXPORT PdxTypes3 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
   const std::string& getClassName() const override {
     static std::string className = "PdxTests.PdxTypes3";
@@ -175,9 +175,9 @@ class TESTOBJECT_EXPORT PdxTypes4 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
   const std::string& getClassName() const override {
     static std::string className = "PdxTests.PdxTypes4";
@@ -213,9 +213,9 @@ class TESTOBJECT_EXPORT PdxTypes5 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
   const std::string& getClassName() const override {
     static std::string className = "PdxTests.PdxTypes5";
@@ -252,9 +252,9 @@ class TESTOBJECT_EXPORT PdxTypes6 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
   const std::string& getClassName() const override {
     static std::string className = "PdxTests.PdxTypes6";
@@ -291,9 +291,9 @@ class TESTOBJECT_EXPORT PdxTypes7 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
   const std::string& getClassName() const override {
     static std::string className = "PdxTests.PdxTypes7";
@@ -332,9 +332,9 @@ class TESTOBJECT_EXPORT PdxTypes8 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
   const std::string& getClassName() const override {
     static std::string className = "PdxTests.PdxTypes8";
@@ -370,9 +370,9 @@ class TESTOBJECT_EXPORT PdxTypes9 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
   const std::string& getClassName() const override {
     static std::string className = "PdxTests.PdxTypes9";
@@ -409,9 +409,9 @@ class TESTOBJECT_EXPORT PdxTypes10 : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
   const std::string& getClassName() const override {
     static std::string className = "PdxTests.PdxTypes10";
@@ -451,9 +451,9 @@ class TESTOBJECT_EXPORT NestedPdx : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
   const std::string& getClassName() const override {
     static std::string className = "PdxTests.NestedPdx";
@@ -496,9 +496,9 @@ class TESTOBJECT_EXPORT MixedVersionNestedPdx : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
   const std::string& getClassName() const override {
     static std::string className = "PdxTests.MixedVersionNestedPdx";

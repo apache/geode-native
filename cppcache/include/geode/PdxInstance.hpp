@@ -484,13 +484,13 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    * method.
    * @param PdxWriter to serialize the PDX object
    */
-  virtual void toData(std::shared_ptr<PdxWriter> output) const override = 0;
+  virtual void toData(PdxWriter& output) const override = 0;
 
   /**
    * @brief Deserialize this object. This is an internal method.
    * @param PdxReader to Deserialize the PDX object
    */
-  virtual void fromData(std::shared_ptr<PdxReader> input) override = 0;
+  virtual void fromData(PdxReader& input) override = 0;
 
   /**
    * Return the full name of the class that this pdx instance represents.

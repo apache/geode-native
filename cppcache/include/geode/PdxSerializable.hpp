@@ -45,13 +45,13 @@ class CPPCACHE_EXPORT PdxSerializable : public CacheableKey {
    *@brief serialize this object in geode PDX format
    *@param PdxWriter to serialize the PDX object
    **/
-  virtual void toData(std::shared_ptr<PdxWriter> output) const = 0;
+  virtual void toData(PdxWriter& output) const = 0;
 
   /**
    *@brief Deserialize this object
    *@param PdxReader to Deserialize the PDX object
    **/
-  virtual void fromData(std::shared_ptr<PdxReader> input) = 0;
+  virtual void fromData(PdxReader& input) = 0;
 
   /**
    *@brief return the typeId byte of the instance being serialized.

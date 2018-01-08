@@ -129,8 +129,8 @@ Cache CacheFactory::create() const {
 
 Cache CacheFactory::create(
     const std::shared_ptr<CacheAttributes>& attrs) const {
-  auto cache = Cache(dsProp, ignorePdxUnreadFields, pdxReadSerialized,
-                     authInitialize);
+  auto cache =
+      Cache(dsProp, ignorePdxUnreadFields, pdxReadSerialized, authInitialize);
   cache.m_cacheImpl->setAttributes(attrs);
 
   try {

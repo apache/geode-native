@@ -58,7 +58,7 @@ class PdxLocalReader : public PdxReader {
 
   virtual ~PdxLocalReader();
 
-  void MoveStream();
+  void moveStream();
 
   virtual std::shared_ptr<PdxRemotePreservedData> getPreservedData(
       std::shared_ptr<PdxType> mergedVersion,

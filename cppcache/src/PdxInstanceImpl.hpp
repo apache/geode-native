@@ -198,9 +198,9 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   virtual std::shared_ptr<CacheableStringArray> getFieldNames() override;
 
   // From PdxSerializable
-  virtual void toData(std::shared_ptr<PdxWriter> output) const override;
+  virtual void toData(PdxWriter& output) const override;
 
-  virtual void fromData(std::shared_ptr<PdxReader> input) override;
+  virtual void fromData(PdxReader& input) override;
 
   virtual const std::string& getClassName() const override;
 
@@ -276,12 +276,11 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   bool compareDefaultBytes(DataInput& dataInput, int start, int end,
                            int8_t* defaultBytes, int32_t length) const;
 
-  void writeField(std::shared_ptr<PdxWriter> writer,
-                  const std::string& fieldName, int typeId,
+  void writeField(PdxWriter& writer, const std::string& fieldName, int typeId,
                   std::shared_ptr<Cacheable> value);
 
   void writeUnmodifieldField(DataInput& dataInput, int startPos, int endPos,
-                             std::shared_ptr<PdxLocalWriter> localWriter);
+                             PdxLocalWriter& localWriter);
 
   void setOffsetForObject(DataInput& dataInput, std::shared_ptr<PdxType> pt,
                           int sequenceId) const;
@@ -297,7 +296,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
 
   std::shared_ptr<PdxTypeRegistry> getPdxTypeRegistry() const;
 
-  void toDataMutable(std::shared_ptr<PdxWriter> output);
+  void toDataMutable(PdxWriter& output);
 
   static int deepArrayHashCode(std::shared_ptr<Cacheable> obj);
 

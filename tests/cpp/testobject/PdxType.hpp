@@ -114,22 +114,22 @@ class TESTOBJECT_EXPORT Child : public Parent, public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(std::shared_ptr<PdxWriter> pw) const override {
-    pw->writeInt("m_a", m_a);
-    pw->writeInt("m_b", m_b);
-    pw->writeInt("m_c", m_c);
-    pw->writeInt("m_d", m_d);
-    pw->writeInt("m_e", m_e);
-    pw->writeInt("m_f", m_f);
+  void toData(PdxWriter& pw) const override {
+    pw.writeInt("m_a", m_a);
+    pw.writeInt("m_b", m_b);
+    pw.writeInt("m_c", m_c);
+    pw.writeInt("m_d", m_d);
+    pw.writeInt("m_e", m_e);
+    pw.writeInt("m_f", m_f);
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) override {
-    m_a = pr->readInt("m_a");
-    m_b = pr->readInt("m_b");
-    m_c = pr->readInt("m_c");
-    m_d = pr->readInt("m_d");
-    m_e = pr->readInt("m_e");
-    m_f = pr->readInt("m_f");
+  void fromData(PdxReader& pr) override {
+    m_a = pr.readInt("m_a");
+    m_b = pr.readInt("m_b");
+    m_c = pr.readInt("m_c");
+    m_d = pr.readInt("m_d");
+    m_e = pr.readInt("m_e");
+    m_f = pr.readInt("m_f");
   }
 
   static PdxSerializable* createDeserializable() { return new Child(); }
@@ -215,14 +215,14 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(std::shared_ptr<PdxWriter> pw) const override {
-    pw->writeChar("m_ch", m_ch);
-    pw->writeCharArray("m_chArray", m_chArray, 2);
+  void toData(PdxWriter& pw) const override {
+    pw.writeChar("m_ch", m_ch);
+    pw.writeCharArray("m_chArray", m_chArray, 2);
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) override {
-    m_ch = pr->readChar("m_ch");
-    m_chArray = pr->readCharArray("m_chArray", m_charArrayLen);
+  void fromData(PdxReader& pr) override {
+    m_ch = pr.readChar("m_ch");
+    m_chArray = pr.readCharArray("m_chArray", m_charArrayLen);
   }
 
   static PdxSerializable* createDeserializable() { return new CharTypes(); }
@@ -278,16 +278,16 @@ class TESTOBJECT_EXPORT Address : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(std::shared_ptr<PdxWriter> pw) const override {
-    pw->writeInt("_aptNumber", _aptNumber);  // 4
-    pw->writeString("_street", _street);
-    pw->writeString("_city", _city);
+  void toData(PdxWriter& pw) const override {
+    pw.writeInt("_aptNumber", _aptNumber);  // 4
+    pw.writeString("_street", _street);
+    pw.writeString("_city", _city);
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) override {
-    _aptNumber = pr->readInt("_aptNumber");
-    _street = pr->readString("_street");
-    _city = pr->readString("_city");
+  void fromData(PdxReader& pr) override {
+    _aptNumber = pr.readInt("_aptNumber");
+    _street = pr.readString("_street");
+    _city = pr.readString("_city");
   }
 
   static PdxSerializable* createDeserializable() { return new Address(); }
@@ -741,9 +741,9 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
   std::string toString() const override;
 

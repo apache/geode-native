@@ -76,18 +76,18 @@ std::string PdxTypes1::toString() const {
   return idbuf;
 }
 
-void PdxTypes1::toData(std::shared_ptr<PdxWriter> pw) const {
-  pw->writeInt("i1", m_i1);
-  pw->writeInt("i2", m_i2);
-  pw->writeInt("i3", m_i3);
-  pw->writeInt("i4", m_i4);
+void PdxTypes1::toData(PdxWriter &pw) const {
+  pw.writeInt("i1", m_i1);
+  pw.writeInt("i2", m_i2);
+  pw.writeInt("i3", m_i3);
+  pw.writeInt("i4", m_i4);
 }
 
-void PdxTypes1::fromData(std::shared_ptr<PdxReader> pr) {
-  m_i1 = pr->readInt("i1");
-  m_i2 = pr->readInt("i2");
-  m_i3 = pr->readInt("i3");
-  m_i4 = pr->readInt("i4");
+void PdxTypes1::fromData(PdxReader &pr) {
+  m_i1 = pr.readInt("i1");
+  m_i2 = pr.readInt("i2");
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
 }
 
 /************************************************************
@@ -133,20 +133,20 @@ std::string PdxTypes2::toString() const {
   return idbuf;
  }
 
- void PdxTypes2::toData(std::shared_ptr<PdxWriter> pw) const {
-   pw->writeString("s1", m_s1);
-   pw->writeInt("i1", m_i1);
-   pw->writeInt("i2", m_i2);
-   pw->writeInt("i3", m_i3);
-   pw->writeInt("i4", m_i4);
+ void PdxTypes2::toData(PdxWriter &pw) const {
+   pw.writeString("s1", m_s1);
+   pw.writeInt("i1", m_i1);
+   pw.writeInt("i2", m_i2);
+   pw.writeInt("i3", m_i3);
+   pw.writeInt("i4", m_i4);
 }
 
-void PdxTypes2::fromData(std::shared_ptr<PdxReader> pr) {
-  m_s1 = pr->readString("s1");
-  m_i1 = pr->readInt("i1");
-  m_i2 = pr->readInt("i2");
-  m_i3 = pr->readInt("i3");
-  m_i4 = pr->readInt("i4");
+void PdxTypes2::fromData(PdxReader &pr) {
+  m_s1 = pr.readString("s1");
+  m_i1 = pr.readInt("i1");
+  m_i2 = pr.readInt("i2");
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
 }
 
 /************************************************************
@@ -189,20 +189,20 @@ std::string PdxTypes3::toString() const {
   return idbuf;
 }
 
-void PdxTypes3::toData(std::shared_ptr<PdxWriter> pw) const {
-  pw->writeInt("i1", m_i1);
-  pw->writeInt("i2", m_i2);
-  pw->writeInt("i3", m_i3);
-  pw->writeInt("i4", m_i4);
-  pw->writeString("s1", m_s1);
+void PdxTypes3::toData(PdxWriter &pw) const {
+  pw.writeInt("i1", m_i1);
+  pw.writeInt("i2", m_i2);
+  pw.writeInt("i3", m_i3);
+  pw.writeInt("i4", m_i4);
+  pw.writeString("s1", m_s1);
 }
 
-void PdxTypes3::fromData(std::shared_ptr<PdxReader> pr) {
-  m_i1 = pr->readInt("i1");
-  m_i2 = pr->readInt("i2");
-  m_i3 = pr->readInt("i3");
-  m_i4 = pr->readInt("i4");
-  m_s1 = pr->readString("s1");
+void PdxTypes3::fromData(PdxReader &pr) {
+  m_i1 = pr.readInt("i1");
+  m_i2 = pr.readInt("i2");
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
+  m_s1 = pr.readString("s1");
 }
 
 /************************************************************
@@ -245,20 +245,20 @@ std::string PdxTypes4::toString() const {
   return idbuf;
 }
 
-void PdxTypes4::toData(std::shared_ptr<PdxWriter> pw) const {
-  pw->writeInt("i1", m_i1);
-  pw->writeInt("i2", m_i2);
-  pw->writeString("s1", m_s1);
-  pw->writeInt("i3", m_i3);
-  pw->writeInt("i4", m_i4);
+void PdxTypes4::toData(PdxWriter &pw) const {
+  pw.writeInt("i1", m_i1);
+  pw.writeInt("i2", m_i2);
+  pw.writeString("s1", m_s1);
+  pw.writeInt("i3", m_i3);
+  pw.writeInt("i4", m_i4);
 }
 
-void PdxTypes4::fromData(std::shared_ptr<PdxReader> pr) {
-  m_i1 = pr->readInt("i1");
-  m_i2 = pr->readInt("i2");
-  m_s1 = pr->readString("s1");
-  m_i3 = pr->readInt("i3");
-  m_i4 = pr->readInt("i4");
+void PdxTypes4::fromData(PdxReader &pr) {
+  m_i1 = pr.readInt("i1");
+  m_i2 = pr.readInt("i2");
+  m_s1 = pr.readString("s1");
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
 }
 
 /************************************************************
@@ -304,22 +304,22 @@ std::string PdxTypes5::toString() const {
   return idbuf;
 }
 
-void PdxTypes5::toData(std::shared_ptr<PdxWriter> pw) const {
-  pw->writeString("s1", m_s1);
-  pw->writeString("s2", m_s2);
-  pw->writeInt("i1", m_i1);
-  pw->writeInt("i2", m_i2);
-  pw->writeInt("i3", m_i3);
-  pw->writeInt("i4", m_i4);
+void PdxTypes5::toData(PdxWriter &pw) const {
+  pw.writeString("s1", m_s1);
+  pw.writeString("s2", m_s2);
+  pw.writeInt("i1", m_i1);
+  pw.writeInt("i2", m_i2);
+  pw.writeInt("i3", m_i3);
+  pw.writeInt("i4", m_i4);
 }
 
-void PdxTypes5::fromData(std::shared_ptr<PdxReader> pr) {
-  m_s1 = pr->readString("s1");
-  m_s2 = pr->readString("s2");
-  m_i1 = pr->readInt("i1");
-  m_i2 = pr->readInt("i2");
-  m_i3 = pr->readInt("i3");
-  m_i4 = pr->readInt("i4");
+void PdxTypes5::fromData(PdxReader &pr) {
+  m_s1 = pr.readString("s1");
+  m_s2 = pr.readString("s2");
+  m_i1 = pr.readInt("i1");
+  m_i2 = pr.readInt("i2");
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
 }
 
 /************************************************************
@@ -386,34 +386,34 @@ std::string PdxTypes6::toString() const {
   return idbuf;
 }
 
-void PdxTypes6::toData(std::shared_ptr<PdxWriter> pw) const {
-  pw->writeString("s1", m_s1);
-  pw->writeInt("i1", m_i1);
-  pw->writeByteArray("bytes128", bytes128, 2);
-  pw->writeInt("i2", m_i2);
-  pw->writeInt("i3", m_i3);
-  pw->writeInt("i4", m_i4);
-  pw->writeString("s2", m_s2);
+void PdxTypes6::toData(PdxWriter &pw) const {
+  pw.writeString("s1", m_s1);
+  pw.writeInt("i1", m_i1);
+  pw.writeByteArray("bytes128", bytes128, 2);
+  pw.writeInt("i2", m_i2);
+  pw.writeInt("i3", m_i3);
+  pw.writeInt("i4", m_i4);
+  pw.writeString("s2", m_s2);
 }
 
-void PdxTypes6::fromData(std::shared_ptr<PdxReader> pr) {
-  m_s1 = pr->readString("s1");
+void PdxTypes6::fromData(PdxReader &pr) {
+  m_s1 = pr.readString("s1");
   // LOGDEBUG("PdxTypes6::fromData m_s1 = %s", m_s1);
 
-  m_i1 = pr->readInt("i1");
+  m_i1 = pr.readInt("i1");
   // LOGDEBUG("PdxTypes6::fromData m_i1 = %d", m_i1);
   int32_t byteArrLen = 0;
-  bytes128 = pr->readByteArray("bytes128", byteArrLen);
-  m_i2 = pr->readInt("i2");
+  bytes128 = pr.readByteArray("bytes128", byteArrLen);
+  m_i2 = pr.readInt("i2");
   // LOGDEBUG("PdxTypes6::fromData m_i2 = %d", m_i2);
 
-  m_i3 = pr->readInt("i3");
+  m_i3 = pr.readInt("i3");
   // LOGDEBUG("PdxTypes6::fromData m_i3 = %d", m_i3);
 
-  m_i4 = pr->readInt("i4");
+  m_i4 = pr.readInt("i4");
   // LOGDEBUG("PdxTypes6::fromData m_i4 = %d", m_i4);
 
-  m_s2 = pr->readString("s2");
+  m_s2 = pr.readString("s2");
   // LOGDEBUG("PdxTypes6::fromData m_s2 = %s", m_s2);
 }
 
@@ -463,25 +463,25 @@ std::string PdxTypes7::toString() const {
   return idbuf;
  }
 
- void PdxTypes7::toData(std::shared_ptr<PdxWriter> pw) const {
-   pw->writeInt("i1", m_i1);
-   pw->writeInt("i2", m_i2);
-   pw->writeString("s1", m_s1);
-   pw->writeByteArray("bytes38000", bytes38000, 2);
-   pw->writeInt("i3", m_i3);
-   pw->writeInt("i4", m_i4);
-   pw->writeString("s2", m_s2);
+ void PdxTypes7::toData(PdxWriter &pw) const {
+   pw.writeInt("i1", m_i1);
+   pw.writeInt("i2", m_i2);
+   pw.writeString("s1", m_s1);
+   pw.writeByteArray("bytes38000", bytes38000, 2);
+   pw.writeInt("i3", m_i3);
+   pw.writeInt("i4", m_i4);
+   pw.writeString("s2", m_s2);
  }
 
- void PdxTypes7::fromData(std::shared_ptr<PdxReader> pr) {
-   m_i1 = pr->readInt("i1");
-   m_i2 = pr->readInt("i2");
-   m_s1 = pr->readString("s1");
+ void PdxTypes7::fromData(PdxReader &pr) {
+   m_i1 = pr.readInt("i1");
+   m_i2 = pr.readInt("i2");
+   m_s1 = pr.readString("s1");
    int32_t byteArrLen = 0;
-   bytes38000 = pr->readByteArray("bytes38000", byteArrLen);
-   m_i3 = pr->readInt("i3");
-   m_i4 = pr->readInt("i4");
-   m_s2 = pr->readString("s2");
+   bytes38000 = pr.readByteArray("bytes38000", byteArrLen);
+   m_i3 = pr.readInt("i3");
+   m_i4 = pr.readInt("i4");
+   m_s2 = pr.readString("s2");
 }
 
 /************************************************************
@@ -530,27 +530,27 @@ std::string PdxTypes8::toString() const {
   return idbuf;
  }
 
- void PdxTypes8::toData(std::shared_ptr<PdxWriter> pw) const {
-   pw->writeInt("i1", m_i1);
-   pw->writeInt("i2", m_i2);
-   pw->writeString("s1", m_s1);
-   pw->writeByteArray("bytes300", bytes300, 2);
-   pw->writeObject("_enum", _enum);
-   pw->writeString("s2", m_s2);
-   pw->writeInt("i3", m_i3);
-   pw->writeInt("i4", m_i4);
+ void PdxTypes8::toData(PdxWriter &pw) const {
+   pw.writeInt("i1", m_i1);
+   pw.writeInt("i2", m_i2);
+   pw.writeString("s1", m_s1);
+   pw.writeByteArray("bytes300", bytes300, 2);
+   pw.writeObject("_enum", _enum);
+   pw.writeString("s2", m_s2);
+   pw.writeInt("i3", m_i3);
+   pw.writeInt("i4", m_i4);
  }
 
- void PdxTypes8::fromData(std::shared_ptr<PdxReader> pr) {
-   m_i1 = pr->readInt("i1");
-   m_i2 = pr->readInt("i2");
-   m_s1 = pr->readString("s1");
+ void PdxTypes8::fromData(PdxReader &pr) {
+   m_i1 = pr.readInt("i1");
+   m_i2 = pr.readInt("i2");
+   m_s1 = pr.readString("s1");
    int32_t byteArrLen = 0;
-   bytes300 = pr->readByteArray("bytes300", byteArrLen);
-   _enum = pr->readObject("_enum");
-   m_s2 = pr->readString("s2");
-   m_i3 = pr->readInt("i3");
-   m_i4 = pr->readInt("i4");
+   bytes300 = pr.readByteArray("bytes300", byteArrLen);
+   _enum = pr.readObject("_enum");
+   m_s2 = pr.readString("s2");
+   m_i3 = pr.readInt("i3");
+   m_i4 = pr.readInt("i4");
 }
 
 /************************************************************
@@ -594,23 +594,23 @@ std::string PdxTypes9::toString() const {
   return idbuf;
 }
 
-void PdxTypes9::toData(std::shared_ptr<PdxWriter> pw) const {
-  pw->writeString("s1", m_s1);
-  pw->writeString("s2", m_s2);
-  pw->writeByteArray("bytes66000", m_bytes66000, 2);
-  pw->writeString("s3", m_s3);
-  pw->writeString("s4", m_s4);
-  pw->writeString("s5", m_s5);
+void PdxTypes9::toData(PdxWriter &pw) const {
+  pw.writeString("s1", m_s1);
+  pw.writeString("s2", m_s2);
+  pw.writeByteArray("bytes66000", m_bytes66000, 2);
+  pw.writeString("s3", m_s3);
+  pw.writeString("s4", m_s4);
+  pw.writeString("s5", m_s5);
 }
 
-void PdxTypes9::fromData(std::shared_ptr<PdxReader> pr) {
-  m_s1 = pr->readString("s1");
-  m_s2 = pr->readString("s2");
+void PdxTypes9::fromData(PdxReader &pr) {
+  m_s1 = pr.readString("s1");
+  m_s2 = pr.readString("s2");
   int32_t byteArrLen = 0;
-  m_bytes66000 = pr->readByteArray("bytes66000", byteArrLen);
-  m_s3 = pr->readString("s3");
-  m_s4 = pr->readString("s4");
-  m_s5 = pr->readString("s5");
+  m_bytes66000 = pr.readByteArray("bytes66000", byteArrLen);
+  m_s3 = pr.readString("s3");
+  m_s4 = pr.readString("s4");
+  m_s5 = pr.readString("s5");
 }
 
 /************************************************************
@@ -654,23 +654,23 @@ std::string PdxTypes10::toString() const {
   return idbuf;
 }
 
-void PdxTypes10::toData(std::shared_ptr<PdxWriter> pw) const {
-  pw->writeString("s1", m_s1);
-  pw->writeString("s2", m_s2);
-  pw->writeByteArray("bytes66000", m_bytes66000, 2);
-  pw->writeString("s3", m_s3);
-  pw->writeString("s4", m_s4);
-  pw->writeString("s5", m_s5);
+void PdxTypes10::toData(PdxWriter &pw) const {
+  pw.writeString("s1", m_s1);
+  pw.writeString("s2", m_s2);
+  pw.writeByteArray("bytes66000", m_bytes66000, 2);
+  pw.writeString("s3", m_s3);
+  pw.writeString("s4", m_s4);
+  pw.writeString("s5", m_s5);
 }
 
-void PdxTypes10::fromData(std::shared_ptr<PdxReader> pr) {
-  m_s1 = pr->readString("s1");
-  m_s2 = pr->readString("s2");
+void PdxTypes10::fromData(PdxReader &pr) {
+  m_s1 = pr.readString("s1");
+  m_s2 = pr.readString("s2");
   int32_t byteArrLen = 0;
-  m_bytes66000 = pr->readByteArray("bytes66000", byteArrLen);
-  m_s3 = pr->readString("s3");
-  m_s4 = pr->readString("s4");
-  m_s5 = pr->readString("s5");
+  m_bytes66000 = pr.readByteArray("bytes66000", byteArrLen);
+  m_s3 = pr.readString("s3");
+  m_s4 = pr.readString("s4");
+  m_s5 = pr.readString("s5");
 }
 
 /************************************************************
@@ -730,26 +730,26 @@ std::string NestedPdx::toString() const {
   return idbuf;
 }
 
-void NestedPdx::toData(std::shared_ptr<PdxWriter> pw) const {
-  pw->writeInt("i1", m_i1);
-  pw->writeObject("pd1", m_pd1);
-  pw->writeInt("i2", m_i2);
-  pw->writeString("s1", m_s1);
-  pw->writeString("s2", m_s2);
-  pw->writeObject("pd2", m_pd2);
-  pw->writeInt("i3", m_i3);
-  pw->writeInt("i4", m_i4);
+void NestedPdx::toData(PdxWriter &pw) const {
+  pw.writeInt("i1", m_i1);
+  pw.writeObject("pd1", m_pd1);
+  pw.writeInt("i2", m_i2);
+  pw.writeString("s1", m_s1);
+  pw.writeString("s2", m_s2);
+  pw.writeObject("pd2", m_pd2);
+  pw.writeInt("i3", m_i3);
+  pw.writeInt("i4", m_i4);
 }
 
-void NestedPdx::fromData(std::shared_ptr<PdxReader> pr) {
-  m_i1 = pr->readInt("i1");
-  m_pd1 = std::static_pointer_cast<PdxTypes1>(pr->readObject("pd1"));
-  m_i2 = pr->readInt("i2");
-  m_s1 = pr->readString("s1");
-  m_s2 = pr->readString("s2");
-  m_pd2 = std::static_pointer_cast<PdxTypes2>(pr->readObject("pd2"));
-  m_i3 = pr->readInt("i3");
-  m_i4 = pr->readInt("i4");
+void NestedPdx::fromData(PdxReader &pr) {
+  m_i1 = pr.readInt("i1");
+  m_pd1 = std::static_pointer_cast<PdxTypes1>(pr.readObject("pd1"));
+  m_i2 = pr.readInt("i2");
+  m_s1 = pr.readString("s1");
+  m_s2 = pr.readString("s2");
+  m_pd2 = std::static_pointer_cast<PdxTypes2>(pr.readObject("pd2"));
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
 }
 
 /************************************************************
@@ -811,28 +811,28 @@ std::string MixedVersionNestedPdx::toString() const {
   return idbuf;
 }
 
-void MixedVersionNestedPdx::toData(std::shared_ptr<PdxWriter> pw) const {
-  pw->writeInt("i1", m_i1);
-  pw->writeObject("pd1", m_pd1);
-  pw->writeInt("i2", m_i2);
-  pw->writeString("s1", m_s1);
-  pw->writeString("s2", m_s2);
-  pw->writeString("s3", m_s3);
-  pw->writeObject("pd2", m_pd2);
-  pw->writeInt("i3", m_i3);
-  pw->writeInt("i4", m_i4);
+void MixedVersionNestedPdx::toData(PdxWriter &pw) const {
+  pw.writeInt("i1", m_i1);
+  pw.writeObject("pd1", m_pd1);
+  pw.writeInt("i2", m_i2);
+  pw.writeString("s1", m_s1);
+  pw.writeString("s2", m_s2);
+  pw.writeString("s3", m_s3);
+  pw.writeObject("pd2", m_pd2);
+  pw.writeInt("i3", m_i3);
+  pw.writeInt("i4", m_i4);
 }
 
-void MixedVersionNestedPdx::fromData(std::shared_ptr<PdxReader> pr) {
-  m_i1 = pr->readInt("i1");
-  m_pd1 = std::static_pointer_cast<PdxTypes1>(pr->readObject("pd1"));
-  m_i2 = pr->readInt("i2");
-  m_s1 = pr->readString("s1");
-  m_s2 = pr->readString("s2");
-  // Mixed version missing: m_s3=pr->readString("m_s3")
-  m_pd2 = std::static_pointer_cast<PdxTypes2>(pr->readObject("pd2"));
-  m_i3 = pr->readInt("i3");
-  m_i4 = pr->readInt("i4");
+void MixedVersionNestedPdx::fromData(PdxReader &pr) {
+  m_i1 = pr.readInt("i1");
+  m_pd1 = std::static_pointer_cast<PdxTypes1>(pr.readObject("pd1"));
+  m_i2 = pr.readInt("i2");
+  m_s1 = pr.readString("s1");
+  m_s2 = pr.readString("s2");
+  // Mixed version missing: m_s3=pr.readString("m_s3")
+  m_pd2 = std::static_pointer_cast<PdxTypes2>(pr.readObject("pd2"));
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
 }
 
 /************************************************************

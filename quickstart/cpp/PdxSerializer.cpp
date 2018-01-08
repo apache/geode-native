@@ -104,14 +104,14 @@ class PersonPdxSerializer : public PdxSerializer {
     return NULL;
   }
 
-  void* fromData(const char* className, std::shared_ptr<PdxReader> pr) {
+  void* fromData(const char* className, PdxReader& pr) {
     if (strcmp(className, CLASSNAME) == 0) {
       Person* per = new Person();
 
       try {
-        per->setID(pr->readInt("m_id"));
-        per->setAge(pr->readInt("m_age"));
-        per->setName(pr->readString("m_name"));
+        per->setID(pr.readInt("m_id"));
+        per->setAge(pr.readInt("m_age"));
+        per->setName(pr.readString("m_name"));
       } catch (...) {
         return NULL;
       }
@@ -120,15 +120,14 @@ class PersonPdxSerializer : public PdxSerializer {
     return NULL;
   }
 
-  bool toData(void* testObject, const char* className,
-              std::shared_ptr<PdxWriter> pw) {
+  bool toData(void* testObject, const char* className, PdxWriter& pw) {
     if (strcmp(className, CLASSNAME) == 0) {
       Person* per = reinterpret_cast<Person*>(testObject);
 
       try {
-        pw->writeInt("m_id", per->getID());
-        pw->writeInt("m_age", per->getAge());
-        pw->writeString("m_name", per->getName());
+        pw.writeInt("m_id", per->getID());
+        pw.writeInt("m_age", per->getAge());
+        pw.writeString("m_name", per->getName());
       } catch (...) {
         return false;
       }

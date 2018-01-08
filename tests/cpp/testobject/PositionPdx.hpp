@@ -75,9 +75,9 @@ class TESTOBJECT_EXPORT PositionPdx
   PositionPdx(int32_t iForExactVal);
   virtual ~PositionPdx();
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
   std::string toString() const override;
 

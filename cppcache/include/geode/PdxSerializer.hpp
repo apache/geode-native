@@ -61,7 +61,7 @@ class CPPCACHE_EXPORT PdxSerializer {
    * @param pr the PdxReader stream to use for reading the object data
    */
   virtual void* fromData(const std::string& className,
-                         std::shared_ptr<PdxReader> pr) = 0;
+                         PdxReader& pdxReader) = 0;
 
   /**
    * Serializes this object in geode PDX format.
@@ -69,7 +69,7 @@ class CPPCACHE_EXPORT PdxSerializer {
    * @param pw the PdxWriter object to use for serializing the object
    */
   virtual bool toData(void* userObject, const std::string& className,
-                      std::shared_ptr<PdxWriter> pw) = 0;
+                      PdxWriter& pdxWriter) = 0;
 
   /**
    * Get the function pointer to the user deallocator
