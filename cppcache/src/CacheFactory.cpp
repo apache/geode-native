@@ -70,8 +70,31 @@ CacheFactory::CacheFactory(
       dsProp(properties) {}
 
 Cache CacheFactory::create() const {
-  LOGFINE("CacheFactory called DistributedSystem::connect");
-  auto cache = create(DEFAULT_CACHE_NAME, nullptr);
+  auto cache =
+      Cache(dsProp, ignorePdxUnreadFields, pdxReadSerialized, authInitialize);
+
+  try {
+    auto&& cacheXml =
+        cache.getDistributedSystem().getSystemProperties().cacheXMLFile();
+    if (!cacheXml.empty()) {
+      cache.initializeDeclarativeCache(cacheXml);
+    } else {
+      cache.m_cacheImpl->initServices();
+    }
+  } catch (const apache::geode::client::RegionExistsException&) {
+    LOGWARN("Attempt to create existing regions declaratively");
+  } catch (const apache::geode::client::Exception&) {
+    if (!cache.isClosed()) {
+      cache.close();
+    }
+    throw;
+  } catch (...) {
+    if (!cache.isClosed()) {
+      cache.close();
+    }
+    throw apache::geode::client::UnknownException(
+        "Exception thrown in CacheFactory::create");
+  }
 
   auto& cacheImpl = cache.m_cacheImpl;
   const auto& serializationRegistry = cacheImpl->getSerializationRegistry();
@@ -105,9 +128,8 @@ Cache CacheFactory::create() const {
 }
 
 Cache CacheFactory::create(
-    std::string name,
-    const std::shared_ptr<CacheAttributes>& attrs /*= nullptr*/) const {
-  auto cache = Cache(name, dsProp, ignorePdxUnreadFields, pdxReadSerialized,
+    const std::shared_ptr<CacheAttributes>& attrs) const {
+  auto cache = Cache(dsProp, ignorePdxUnreadFields, pdxReadSerialized,
                      authInitialize);
   cache.m_cacheImpl->setAttributes(attrs);
 

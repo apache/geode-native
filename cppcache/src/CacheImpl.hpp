@@ -213,9 +213,9 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   /**
    * @brief constructors
    */
-  CacheImpl(Cache* c, const std::string& name,
-            std::unique_ptr<DistributedSystem> sys, bool ignorePdxUnreadFields,
-            bool readPdxSerialized, const std::shared_ptr<AuthInitialize>& authInitialize);
+  CacheImpl(Cache* c, std::unique_ptr<DistributedSystem> sys,
+            bool ignorePdxUnreadFields, bool readPdxSerialized,
+            const std::shared_ptr<AuthInitialize>& authInitialize);
 
   void initServices();
   EvictionController* getEvictionController();
@@ -334,7 +334,6 @@ class CPPCACHE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
 
   void setCache(Cache* cache);
 
-  std::string m_name;
   bool m_closed;
   bool m_initialized;
 

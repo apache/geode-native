@@ -145,9 +145,7 @@ class CPPCACHE_EXPORT CacheFactory {
   bool pdxReadSerialized;
   std::shared_ptr<AuthInitialize> authInitialize;
 
-  Cache create(
-      const std::string name,
-      const std::shared_ptr<CacheAttributes>& attrs = nullptr) const;
+  Cache create(const std::shared_ptr<CacheAttributes>& attrs) const;
 
   friend class CppCacheLibrary;
   friend class RegionFactory;
