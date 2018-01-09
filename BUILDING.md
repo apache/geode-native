@@ -1,6 +1,5 @@
 # Building
 
-
 ## Building on UNIX
     $ cd <clone>
     $ mkdir build
@@ -11,6 +10,7 @@
 ### [Mac OS X System Requirements](#mac-os-x)
 ### [Linux System Requirements](#linux)
 ### [Solaris System Requirements](#solaris)
+### [Windows System Requirements](#windows)
 
 ## Building on Windows
     $ cd <clone>
@@ -21,18 +21,17 @@
 
 ## Optional Build Parameters
 
--DGEODE_ROOT=<path to Apache Geode binaries>
- This will allow you to specify the path to use for the Apache Geode libraries and binaries
-
 On Windows
 
- /m Will allow for the parallelization the build and link process
+ /m Will allow for the parallelization of the build and link process
 
 On Linux
 
  -j <# of parallel processes>  Will allow for the parallelization of the build and link processes
 
-### [Windows System Requirements](#windows)
+## Optional Config Parameters
+-DGEODE_ROOT=<path to Apache Geode binaries>
+ This will allow you to specify the path to use for the Apache Geode libraries and binaries
 
 ## Generator
 CMake uses a "generator" to produce configuration files for use by a variety of build tools, e.g., UNIX makefiles, Visual Studio projects. By default a system-specific generator is used by CMake during configuration. (Please see [the CMake documentation](https://cmake.org/documentation/) for further information.) However, in many cases there is a better choice.
