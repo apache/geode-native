@@ -54,7 +54,7 @@ void PdxReaderWithTypeCollector::checkType(const std::string& fieldName,
   }
 }
 
-char16_t PdxReaderWithTypeCollector::readChar(const std::string &fieldName) {
+char16_t PdxReaderWithTypeCollector::readChar(const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::CHAR, "char");
   m_newPdxType->addFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,
                                         PdxTypes::CHAR_SIZE);

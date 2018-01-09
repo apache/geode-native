@@ -188,7 +188,7 @@ std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeBooleanArray(
 }
 
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeCharArray(
-    const std::string &fieldName, char16_t *array, int length) {
+    const std::string& fieldName, char16_t* array, int length) {
   m_pdxType->addVariableLengthTypeField(fieldName, "char[]",
                                         PdxFieldTypes::CHAR_ARRAY);
   PdxLocalWriter::writeCharArray(fieldName, array, length);
@@ -247,7 +247,7 @@ std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeStringArray(
 }
 
 std::shared_ptr<PdxWriter> PdxWriterWithTypeCollector::writeObjectArray(
-    const std::string &fieldName, std::shared_ptr<CacheableObjectArray> array) {
+    const std::string& fieldName, std::shared_ptr<CacheableObjectArray> array) {
   m_pdxType->addVariableLengthTypeField(fieldName, "Object[]",
                                         PdxFieldTypes::OBJECT_ARRAY);
   PdxLocalWriter::writeObjectArray(fieldName, array);

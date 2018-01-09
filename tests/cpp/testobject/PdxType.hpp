@@ -154,7 +154,7 @@ class TESTOBJECT_EXPORT Child : public Parent, public PdxSerializable {
 class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
  private:
   char16_t m_ch;
-  char16_t *m_chArray;
+  char16_t* m_chArray;
 
   int32_t m_charArrayLen;
 
@@ -330,7 +330,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
   int8_t* m_byteArray;
   int8_t* m_sbyteArray;  ///
 
-  char16_t *m_charArray;
+  char16_t* m_charArray;
 
   std::shared_ptr<CacheableDate> m_date;
 
@@ -632,7 +632,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
 
   char16_t getChar() { return m_char; }
 
-  char16_t *getCharArray() { return m_charArray; }
+  char16_t* getCharArray() { return m_charArray; }
 
   int8_t** getArrayOfByteArrays() { return m_byteByteArray; }
 

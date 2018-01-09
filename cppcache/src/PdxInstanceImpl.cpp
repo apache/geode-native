@@ -824,8 +824,8 @@ void PdxInstanceImpl::getField(const std::string& fieldname, bool** value,
   dataInput->readBooleanArray(value, length);
 }
 
-void PdxInstanceImpl::getField(const std::string& fieldname,
-                               int8_t** value, int32_t& length) const {
+void PdxInstanceImpl::getField(const std::string& fieldname, int8_t** value,
+                               int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   int8_t* temp = nullptr;
   dataInput->readByteArray(&temp, length);
@@ -862,7 +862,7 @@ void PdxInstanceImpl::getField(const std::string& fieldname, double** value,
   dataInput->readDoubleArray(value, length);
 }
 
-void PdxInstanceImpl::getField(const std::string &fieldname, char16_t **value,
+void PdxInstanceImpl::getField(const std::string& fieldname, char16_t** value,
                                int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   dataInput->readCharArray(value, length);
@@ -977,7 +977,7 @@ std::string PdxInstanceImpl::toString() const {
         break;
       }
       case PdxFieldTypes::CHAR_ARRAY: {
-        char16_t *value = 0;
+        char16_t* value = 0;
         int32_t length;
         getField(identityFields.at(i)->getFieldName(), &value, length);
         if (length > 0) {
@@ -1868,8 +1868,7 @@ void PdxInstanceImpl::setField(const std::string& fieldName, int8_t* value,
                                 " or type of field not matched " +
                                 (pft != nullptr ? pft->toString() : ""));
   }
-  auto cacheableObject =
-      CacheableBytes::create(value, length);
+  auto cacheableObject = CacheableBytes::create(value, length);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
@@ -1943,7 +1942,7 @@ void PdxInstanceImpl::setField(const std::string& fieldName, double* value,
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const std::string &fieldName, char16_t *value,
+void PdxInstanceImpl::setField(const std::string& fieldName, char16_t* value,
                                int32_t length) {
   auto pt = getPdxType();
   auto pft = pt->getPdxField(fieldName.c_str());

@@ -42,4 +42,3 @@ enum class endian {
 }  // namespace apache
 
 #endif  // GEODE_UTIL_TYPE_TRAITS_H_
-

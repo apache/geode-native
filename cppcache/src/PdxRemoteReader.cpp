@@ -32,7 +32,7 @@ PdxRemoteReader::~PdxRemoteReader() {
   // TODO Auto-generated destructor stub
 }
 
-char16_t PdxRemoteReader::readChar(const std::string &fieldName) {
+char16_t PdxRemoteReader::readChar(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   switch (choice) {
@@ -306,7 +306,7 @@ std::shared_ptr<Serializable> PdxRemoteReader::readObject(
   }
 }
 
-char16_t *PdxRemoteReader::readCharArray(const std::string &fieldName,
+char16_t* PdxRemoteReader::readCharArray(const std::string& fieldName,
                                          int32_t& length) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 

@@ -177,7 +177,7 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeBooleanArray(
 }
 
 std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeCharArray(
-    const std::string &fieldName, char16_t *value, int32_t length) {
+    const std::string& fieldName, char16_t* value, int32_t length) {
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "char[]",
                                         PdxFieldTypes::CHAR_ARRAY);
@@ -191,8 +191,7 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeByteArray(
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "byte[]",
                                         PdxFieldTypes::BYTE_ARRAY);
-  auto cacheableObject =
-      CacheableBytes::create(value, length);
+  auto cacheableObject = CacheableBytes::create(value, length);
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return shared_from_this();
 }

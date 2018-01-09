@@ -90,7 +90,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
                         int32_t& length) const override;
 
   // charArray
-  virtual void getField(const std::string &fieldName, char16_t **value,
+  virtual void getField(const std::string& fieldName, char16_t** value,
                         int32_t& length) const override;
 
   virtual std::vector<std::string> getStringArrayField(
@@ -156,7 +156,7 @@ class CPPCACHE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   virtual void setField(const std::string& fieldName,
                         const std::string& value) override;
 
-  virtual void setField(const std::string &fieldName, char16_t *value,
+  virtual void setField(const std::string& fieldName, char16_t* value,
                         int32_t length) override;
 
   virtual void setField(const std::string& fieldName, std::string* value,

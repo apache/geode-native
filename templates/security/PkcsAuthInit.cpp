@@ -164,8 +164,8 @@ std::shared_ptr<Properties> PKCSAuthInit::getCredentials(
   unsigned int lengthEncryptedData = 0;
 
   auto signatureData = createSignature(
-      privateKey, cert, reinterpret_cast<const unsigned char*>(alias), strlen(alias),
-      &lengthEncryptedData);
+      privateKey, cert, reinterpret_cast<const unsigned char*>(alias),
+      strlen(alias), &lengthEncryptedData);
   EVP_PKEY_free(privateKey);
   X509_free(cert);
   if (signatureData == NULL) {

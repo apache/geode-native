@@ -281,7 +281,7 @@ std::shared_ptr<PdxWriter> PdxLocalWriter::writeBooleanArray(
 }
 
 std::shared_ptr<PdxWriter> PdxLocalWriter::writeCharArray(
-    const std::string &fieldName, char16_t *array, int length) {
+    const std::string& fieldName, char16_t* array, int length) {
   addOffset();
   writeObject(array, length);
   return shared_from_this();

@@ -291,7 +291,7 @@ class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const std::string &fieldName, char16_t **value,
+  virtual void getField(const std::string& fieldName, char16_t** value,
                         int32_t& length) const = 0;
 
   /**

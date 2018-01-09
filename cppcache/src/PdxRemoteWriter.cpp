@@ -214,7 +214,7 @@ std::shared_ptr<PdxWriter> PdxRemoteWriter::writeBooleanArray(
 }
 
 std::shared_ptr<PdxWriter> PdxRemoteWriter::writeCharArray(
-    const std::string &fieldName, char16_t *array, int length) {
+    const std::string& fieldName, char16_t* array, int length) {
   writePreserveData();
   PdxLocalWriter::writeCharArray(fieldName, array, length);
   return shared_from_this();

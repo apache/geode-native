@@ -83,7 +83,7 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
    * C string optionally given the length.
    */
   static std::shared_ptr<CacheableFileName> create(const std::string& value) {
-      return std::make_shared<CacheableFileName>(value);
+    return std::make_shared<CacheableFileName>(value);
   }
 
   /** return the hashcode for this key. */

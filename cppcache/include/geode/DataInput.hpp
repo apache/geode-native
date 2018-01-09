@@ -390,7 +390,7 @@ class CPPCACHE_EXPORT DataInput {
     ptr = readObjectInternal();
   }
 
-  inline void readObject(char16_t *value) { *value = readInt16(); }
+  inline void readObject(char16_t* value) { *value = readInt16(); }
 
   inline void readObject(bool* value) { *value = readBoolean(); }
 
@@ -406,7 +406,7 @@ class CPPCACHE_EXPORT DataInput {
 
   inline void readObject(double* value) { *value = readDouble(); }
 
-  inline void readCharArray(char16_t **value, int32_t &length) {
+  inline void readCharArray(char16_t** value, int32_t& length) {
     readObject(value, length);
   }
 

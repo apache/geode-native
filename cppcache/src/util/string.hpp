@@ -38,7 +38,6 @@ constexpr std::codecvt_mode codecvt_mode_native_endian =
                                      : (std::codecvt_mode)0;
 
 inline std::u16string to_utf16(const std::string& utf8) {
-// TODO string replace with boost
 #if _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
@@ -56,7 +55,6 @@ inline std::u16string to_utf16(const std::string& utf8) {
 }
 
 inline std::u16string to_utf16(const std::u32string& ucs4) {
-// TODO string replace with boost
 #if _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
@@ -81,7 +79,6 @@ inline std::u16string to_utf16(const std::u32string& ucs4) {
 }
 
 inline std::u16string to_utf16(const char32_t* ucs4, size_t len) {
-// TODO string replace with boost
 #if _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
@@ -106,7 +103,6 @@ inline std::u16string to_utf16(const char32_t* ucs4, size_t len) {
 }
 
 inline std::u32string to_ucs4(const std::u16string& utf16) {
-// TODO string replace with boost
 #if _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
@@ -130,7 +126,6 @@ inline std::u32string to_ucs4(const std::u16string& utf16) {
 }
 
 inline std::string to_utf8(const std::u16string& utf16) {
-// TODO string replace with boost
 #if _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
@@ -146,7 +141,6 @@ inline std::string to_utf8(const std::u16string& utf16) {
 }
 
 inline std::string to_utf8(const std::u32string& ucs4) {
-// TODO string replace with boost
 #if _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.

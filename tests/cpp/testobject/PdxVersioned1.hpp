@@ -67,7 +67,7 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
   int8_t* m_byteArray;
   int8_t* m_sbyteArray;  ///
 
-  char16_t *m_charArray;
+  char16_t* m_charArray;
 
   std::shared_ptr<CacheableDate> m_date;
 
@@ -135,7 +135,7 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
   // void checkNullAndDelete(void *data);
   char16_t getChar() { return m_char; }
 
-  char16_t *getCharArray() { return m_charArray; }
+  char16_t* getCharArray() { return m_charArray; }
 
   int8_t** getArrayOfByteArrays() { return m_byteByteArray; }
 

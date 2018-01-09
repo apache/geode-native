@@ -261,7 +261,7 @@ class CPPCACHE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeCharArray(
-      const std::string &fieldName, char16_t *value, int32_t length) = 0;
+      const std::string& fieldName, char16_t* value, int32_t length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.

@@ -664,8 +664,6 @@ void TcrMessage::writeRegionPart(const std::string& regionName) {
 }
 
 void TcrMessage::writeStringPart(const std::string& str) {
-  // TODO string does not correctly encode java modified utf-8 from utf-8
-
   if (!str.empty()) {
     auto jmutf8 = internal::JavaModifiedUtf8::fromString(str);
 
@@ -1191,8 +1189,10 @@ void TcrMessage::handleByteArrayResponse(
         input->advanceCursor(1);  // ignore byte
         m_deltaBytes = new int8_t[m_deltaBytesLen];
         input->readBytesOnly(m_deltaBytes, m_deltaBytesLen);
-        m_delta = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-            reinterpret_cast<const uint8_t*>(m_deltaBytes), m_deltaBytesLen);
+        m_delta =
+            m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
+                reinterpret_cast<const uint8_t*>(m_deltaBytes),
+                m_deltaBytesLen);
       } else {
         readObjectPart(*input);
       }

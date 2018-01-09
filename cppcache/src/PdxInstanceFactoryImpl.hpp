@@ -101,7 +101,7 @@ class CPPCACHE_EXPORT PdxInstanceFactoryImpl
       const std::string& fieldName, bool* value, int32_t length) override;
 
   virtual std::shared_ptr<PdxInstanceFactory> writeCharArray(
-      const std::string &fieldName, char16_t *value, int32_t length) override;
+      const std::string& fieldName, char16_t* value, int32_t length) override;
 
   virtual std::shared_ptr<PdxInstanceFactory> writeByteArray(
       const std::string& fieldName, int8_t* value, int32_t length) override;

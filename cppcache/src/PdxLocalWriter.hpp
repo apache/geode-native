@@ -146,7 +146,7 @@ class PdxLocalWriter : public PdxWriter,
       const std::string& fieldName, bool* array, int length) override;
 
   virtual std::shared_ptr<PdxWriter> writeCharArray(
-      const std::string &fieldName, char16_t *array, int length) override;
+      const std::string& fieldName, char16_t* array, int length) override;
 
   virtual std::shared_ptr<PdxWriter> writeByteArray(
       const std::string& fieldName, int8_t* array, int length) override;

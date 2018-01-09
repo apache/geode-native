@@ -917,7 +917,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_byteArray") == PdxFieldTypes::BYTE_ARRAY,
            "Type Value BYTE_ARRAY Mismatch");
 
-    char16_t *charArray = nullptr;
+    char16_t* charArray = nullptr;
     int32_t charArrayLength = 0;
     pIPtr->getField("m_charArray", &charArray, charArrayLength);
     ASSERT(genericValCompare(pdxobjPtr->getCharArrayLength(),
@@ -1436,7 +1436,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     }
 
     char16_t setCharArray[] = {'c', 'v', 'c', 'v'};
-    char16_t *getCharArray = nullptr;
+    char16_t* getCharArray = nullptr;
     wpiPtr->setField("m_charArray", setCharArray, 4);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1886,7 +1886,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(parentCharVal == parentCharSetVal, "char is not equal");
 
     char16_t setParentCharArray[] = {'c', 'v', 'c', 'v'};
-    char16_t *getParentCharArray = nullptr;
+    char16_t* getParentCharArray = nullptr;
     wpiPtr->setField("m_charArray", setParentCharArray, 4);
     rptr->put(keyport1, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport1));

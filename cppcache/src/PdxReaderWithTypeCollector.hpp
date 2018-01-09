@@ -43,7 +43,7 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
 
   std::shared_ptr<PdxType> getLocalType() const { return m_newPdxType; }
 
-  virtual char16_t readChar(const std::string &fieldName) override;
+  virtual char16_t readChar(const std::string& fieldName) override;
 
   virtual bool readBoolean(const std::string& fieldName) override;
 
@@ -64,7 +64,7 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
   virtual std::shared_ptr<Serializable> readObject(
       const std::string& fieldName) override;
 
-  virtual char16_t *readCharArray(const std::string &fieldName,
+  virtual char16_t* readCharArray(const std::string& fieldName,
                                   int32_t& length) override;
 
   virtual bool* readBooleanArray(const std::string& fieldName,

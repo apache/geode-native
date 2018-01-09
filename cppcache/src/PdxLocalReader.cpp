@@ -93,7 +93,7 @@ void PdxLocalReader::MoveStream() {
   m_dataInput->reset(m_startPosition + m_serializedLengthWithOffsets);
 }
 
-char16_t PdxLocalReader::readChar(const std::string &fieldName) {
+char16_t PdxLocalReader::readChar(const std::string& fieldName) {
   char16_t value = m_dataInput->readInt16();
   return value;
 }
@@ -146,7 +146,7 @@ char16_t* PdxLocalReader::readCharArray(
     int32_t& length) {  // TODO:: need to return
   // Length to user for
   // all primitive arrays
-  char16_t *charArray = nullptr;
+  char16_t* charArray = nullptr;
   m_dataInput->readCharArray(&charArray, length);
   return charArray;
 }

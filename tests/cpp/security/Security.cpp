@@ -990,9 +990,9 @@ int32_t Security::doEntryOperations() {
         if (!objectType.empty()) {
           tmpValue = getUserObject(objectType);
         } else {
-          tmpValue = CacheableBytes::create(
-              reinterpret_cast<const int8_t *>(valBuf),
-              static_cast<int32_t>(strlen(valBuf)));
+          tmpValue =
+              CacheableBytes::create(reinterpret_cast<const int8_t *>(valBuf),
+                                     static_cast<int32_t>(strlen(valBuf)));
         }
         regionPtr->create(keyPtr, tmpValue);
         creates++;
@@ -1003,9 +1003,9 @@ int32_t Security::doEntryOperations() {
             tmpValue = getUserObject(objectType);
           } else {
             int32_t keyVal = std::stoi(keyPtr->toString());
-            tmpValue = CacheableBytes::create(
-                reinterpret_cast<const int8_t *>(valBuf),
-                static_cast<int32_t>(strlen(valBuf)));
+            tmpValue =
+                CacheableBytes::create(reinterpret_cast<const int8_t *>(valBuf),
+                                       static_cast<int32_t>(strlen(valBuf)));
             int32_t *val =
                 (int32_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
                                 ->value());

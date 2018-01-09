@@ -696,7 +696,6 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
 
 const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getLocators()
     const {
-  // TODO refactor - why return CacheableStringArray
   auto ptrArr =
       new std::shared_ptr<CacheableString>[m_attrs->m_initLocList.size()];
   int32_t i = 0;
@@ -707,7 +706,6 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getLocators()
 }
 
 const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
-  // TODO refactor - why return CacheableStringArray
   if (!m_attrs->m_initServList.empty()) {
     auto ptrArr =
         new std::shared_ptr<CacheableString>[m_attrs->m_initServList.size()];

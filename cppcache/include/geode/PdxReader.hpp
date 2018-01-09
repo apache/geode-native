@@ -75,7 +75,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual char16_t readChar(const std::string &fieldName) = 0;
+  virtual char16_t readChar(const std::string& fieldName) = 0;
 
   /**
    * Read a bool value from the <code>PdxReader</code>.
@@ -188,7 +188,7 @@ class CPPCACHE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual char16_t *readCharArray(const std::string &fieldName,
+  virtual char16_t* readCharArray(const std::string& fieldName,
                                   int32_t& length) = 0;
 
   /**

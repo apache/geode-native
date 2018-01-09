@@ -224,7 +224,7 @@ class CPPCACHE_EXPORT PdxWriter {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxWriter> writeCharArray(
-      const std::string &fieldName, char16_t *array, int length) = 0;
+      const std::string& fieldName, char16_t* array, int length) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -313,8 +313,8 @@ class CPPCACHE_EXPORT PdxWriter {
 
   /**
    * Writes the named field with the given value to the serialized form.
-   * The fields type is <code>std::string*</code>.
-   * <p>C++ std::string* is mapped to Java String[].</p>
+   * The fields type is <code>std::vector<std::string></code>.
+   * <p>C++ std::vector<std::string> is mapped to Java String[].</p>
    * @param fieldName the name of the field to write
    * @param array the value of the field to write
    * @param length the length of the array field to write
@@ -324,20 +324,6 @@ class CPPCACHE_EXPORT PdxWriter {
    */
   virtual std::shared_ptr<PdxWriter> writeStringArray(
       const std::string& fieldName, const std::vector<std::string>& array) = 0;
-
-  //  /**
-  // * Writes the named field with the given value to the serialized form.
-  // * The fields type is <code>std::string*</code>.
-  // * <p>C++ std::string* is mapped to Java String[].</p>
-  // * @param fieldName the name of the field to write
-  // * @param array the value of the field to write
-  // * @param length the length of the array field to write
-  // * @return this PdxWriter
-  // * @throws IllegalStateException if the named field has already been written
-  // * or fieldName is nullptr or empty.
-  // */
-  //  virtual std::shared_ptr<PdxWriter> writeStringArray(
-  //      const std::string &fieldName, std::vector<std::string> array) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.

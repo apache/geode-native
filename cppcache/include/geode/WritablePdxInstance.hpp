@@ -379,7 +379,7 @@ class CPPCACHE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const std::string &fieldName, char16_t *value,
+  virtual void setField(const std::string& fieldName, char16_t* value,
                         int32_t length) = 0;
 
   /**
