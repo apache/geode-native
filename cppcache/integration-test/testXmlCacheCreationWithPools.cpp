@@ -21,7 +21,7 @@
 
 #include "fw_dunit.hpp"
 
-#include <geode/util/chrono/duration.hpp>
+#include <geode/internal/chrono/duration.hpp>
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -84,7 +84,7 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
                       int subscriptionAckInterval, int subscriptionRedundancy,
                       int statisticInterval, int threadLocalConnections,
                       bool prSingleHopEnabled, int updateLocatorListInterval) {
-  using namespace apache::geode::util::chrono::duration;
+  using namespace apache::geode::internal::chrono::duration;
 
   char logmsg[500] = {0};
 

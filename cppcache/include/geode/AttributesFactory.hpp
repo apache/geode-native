@@ -33,7 +33,7 @@
 #include "RegionAttributes.hpp"
 #include "DiskPolicyType.hpp"
 #include "Pool.hpp"
-#include "util/chrono/duration.hpp"
+#include "internal/chrono/duration.hpp"
 
 /**
  * @file

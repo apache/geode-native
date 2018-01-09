@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-#include <string>
+#include <geode/internal/chrono/duration.hpp>
 
-#include <gtest/gtest.h>
+namespace apache {
+namespace geode {
+namespace internal {
+namespace chrono {
+namespace duration {
 
-#include <geode/internal/functional.hpp>
+constexpr char const* _suffix<std::ratio<3600>>::value;
+constexpr char const* _suffix<std::ratio<60>>::value;
+constexpr char const* _suffix<std::ratio<1>>::value;
+constexpr char const* _suffix<std::milli>::value;
+constexpr char const* _suffix<std::micro>::value;
+constexpr char const* _suffix<std::nano>::value;
 
-using namespace apache::geode::client::internal;
-
-TEST(string, geode_hash) {
-  auto&& hash = geode_hash<std::string>{};
-
-  EXPECT_EQ(0, hash(""));
-  EXPECT_EQ(97, hash("a"));
-  EXPECT_EQ(122, hash("z"));
-  EXPECT_EQ(48, hash("0"));
-  EXPECT_EQ(57, hash("9"));
-  EXPECT_EQ(1077910243, hash("supercalifragilisticexpialidocious"));
-}
+}  // namespace duration
+}  // namespace chrono
+}  // namespace internal
+}  // namespace geode
+}  // namespace apache

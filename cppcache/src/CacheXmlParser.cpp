@@ -17,7 +17,7 @@
 
 #include <chrono>
 
-#include <geode/util/chrono/duration.hpp>
+#include <geode/internal/chrono/duration.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/PoolFactory.hpp>
 
@@ -39,7 +39,6 @@ namespace client {
 namespace impl {
 void* getFactoryFunc(const std::string& lib, const std::string& funcName);
 }  // namespace impl
-
 
 namespace {
 
@@ -636,10 +635,11 @@ void CacheXmlParser::endPool() {
 
 void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
                                  const char* value) {
+  using namespace apache::geode::internal::chrono::duration;
+
   if (strcmp(name, FREE_CONNECTION_TIMEOUT) == 0) {
     factory->setFreeConnectionTimeout(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(
-            std::string(value)));
+        from_string<std::chrono::milliseconds>(std::string(value)));
   } else if (strcmp(name, MULTIUSER_SECURE_MODE) == 0) {
     if (ACE_OS::strcasecmp(value, "true") == 0) {
       factory->setMultiuserAuthentication(true);
@@ -648,28 +648,23 @@ void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
     }
   } else if (strcmp(name, IDLE_TIMEOUT) == 0) {
     factory->setIdleTimeout(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(
-            std::string(value)));
+        from_string<std::chrono::milliseconds>(std::string(value)));
   } else if (strcmp(name, LOAD_CONDITIONING_INTERVAL) == 0) {
     factory->setLoadConditioningInterval(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(
-            std::string(value)));
+        from_string<std::chrono::milliseconds>(std::string(value)));
   } else if (strcmp(name, MAX_CONNECTIONS) == 0) {
     factory->setMaxConnections(atoi(value));
   } else if (strcmp(name, MIN_CONNECTIONS) == 0) {
     factory->setMinConnections(atoi(value));
   } else if (strcmp(name, PING_INTERVAL) == 0) {
     factory->setPingInterval(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(
-            std::string(value)));
+        from_string<std::chrono::milliseconds>(std::string(value)));
   } else if (strcmp(name, UPDATE_LOCATOR_LIST_INTERVAL) == 0) {
     factory->setUpdateLocatorListInterval(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(
-            std::string(value)));
+        from_string<std::chrono::milliseconds>(std::string(value)));
   } else if (strcmp(name, READ_TIMEOUT) == 0) {
     factory->setReadTimeout(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(
-            std::string(value)));
+        from_string<std::chrono::milliseconds>(std::string(value)));
   } else if (strcmp(name, RETRY_ATTEMPTS) == 0) {
     factory->setRetryAttempts(atoi(value));
   } else if (strcmp(name, SERVER_GROUP) == 0) {
@@ -678,12 +673,10 @@ void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
     factory->setSocketBufferSize(atoi(value));
   } else if (strcmp(name, STATISTIC_INTERVAL) == 0) {
     factory->setStatisticInterval(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(
-            std::string(value)));
+        from_string<std::chrono::milliseconds>(std::string(value)));
   } else if (strcmp(name, SUBSCRIPTION_ACK_INTERVAL) == 0) {
     factory->setSubscriptionAckInterval(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(
-            std::string(value)));
+        from_string<std::chrono::milliseconds>(std::string(value)));
   } else if (strcmp(name, SUBSCRIPTION_ENABLED) == 0) {
     if (ACE_OS::strcasecmp(value, "true") == 0) {
       factory->setSubscriptionEnabled(true);
@@ -692,8 +685,7 @@ void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
     }
   } else if (strcmp(name, SUBSCRIPTION_MTT) == 0) {
     factory->setSubscriptionMessageTrackingTimeout(
-        util::chrono::duration::from_string<std::chrono::milliseconds>(
-            std::string(value)));
+        from_string<std::chrono::milliseconds>(std::string(value)));
   } else if (strcmp(name, SUBSCRIPTION_REDUNDANCY) == 0) {
     factory->setSubscriptionRedundancy(atoi(value));
   } else if (strcmp(name, THREAD_LOCAL_CONNECTIONS) == 0) {
@@ -1078,8 +1070,7 @@ void CacheXmlParser::startExpirationAttributes(const xmlChar** atts) {
             "XML:Value for attribute <timeout> needs to be specified";
         throw CacheXmlException(s.c_str());
       }
-      timeOutSeconds =
-          util::chrono::duration::from_string<std::chrono::seconds>(timeOut);
+      timeOutSeconds = from_string<std::chrono::seconds>(timeOut);
     } else if (strcmp(ACTION, (char*)atts[i]) == 0) {
       i++;
       char* action = (char*)atts[i];

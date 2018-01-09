@@ -34,7 +34,7 @@
 #include "TcrChunkedContext.hpp"
 #include "CacheableObjectPartList.hpp"
 #include "ClientMetadataService.hpp"
-#include "util/functional.hpp"
+#include <geode/internal/functional.hpp>
 /**
  * @file
  */

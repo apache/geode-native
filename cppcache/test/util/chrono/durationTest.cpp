@@ -20,10 +20,11 @@
 
 #include <gtest/gtest.h>
 
-#include <geode/util/chrono/duration.hpp>
+#include <geode/internal/chrono/duration.hpp>
 
 #include "util/chrono/duration_bounds.hpp"
 
+using namespace apache::geode::internal::chrono::duration;
 using namespace apache::geode::util::chrono::duration;
 
 TEST(util_chrono_durationTest, ceil) {

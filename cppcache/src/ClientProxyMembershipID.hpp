@@ -26,7 +26,7 @@
 
 #include <geode/geode_globals.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/util/functional.hpp>
+#include <geode/internal/functional.hpp>
 
 #include "GeodeTypeIdsImpl.hpp"
 #include "DSMemberForVersionStamp.hpp"

@@ -36,7 +36,7 @@
 #include "Serializable.hpp"
 #include "DiskPolicyType.hpp"
 #include "PersistenceManager.hpp"
-#include "util/chrono/duration.hpp"
+#include "internal/chrono/duration.hpp"
 
 namespace apache {
 namespace geode {

@@ -27,7 +27,7 @@
 #include <ace/Timer_Heap.h>
 
 #include <geode/geode_globals.hpp>
-#include <geode/util/chrono/duration.hpp>
+#include <geode/internal/chrono/duration.hpp>
 
 #include "ReadWriteLock.hpp"
 #include "util/Log.hpp"
@@ -39,6 +39,9 @@
 namespace apache {
 namespace geode {
 namespace client {
+
+using namespace apache::geode::internal::chrono::duration;
+
 /**
  * @class ExpiryTaskManager ExpiryTaskManager.hpp
  *
@@ -246,8 +249,8 @@ class CPPCACHE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
                           bool cancelExistingTask = false) {
     LOGFINER(
         "ExpiryTaskManager: expTime %s, interval %s, cancelExistingTask %d",
-        util::chrono::duration::to_string(expTime).c_str(),
-        util::chrono::duration::to_string(interval).c_str(),
+        to_string(expTime).c_str(),
+        to_string(interval).c_str(),
         cancelExistingTask);
     if (cancelExistingTask) {
       m_reactor->cancel_timer(handler, 1);

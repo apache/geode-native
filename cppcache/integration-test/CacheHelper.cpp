@@ -26,7 +26,7 @@
 
 #include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
-#include <geode/util/chrono/duration.hpp>
+#include <geode/internal/chrono/duration.hpp>
 
 #include "CacheRegionHelper.hpp"
 #include "DistributedSystemImpl.hpp"
@@ -62,7 +62,7 @@
 #endif
 
 using namespace apache::geode::client;
-using namespace apache::geode::util::chrono::duration;
+using namespace apache::geode::internal::chrono::duration;
 
 extern ClientCleanup gClientCleanup;
 
@@ -501,7 +501,7 @@ std::shared_ptr<Pool> CacheHelper::createPool2(
 }
 
 void CacheHelper::logPoolAttributes(std::shared_ptr<Pool>& pool) {
-  using namespace apache::geode::util::chrono::duration;
+  using namespace apache::geode::internal::chrono::duration;
   LOG("logPoolAttributes() entered");
   LOGINFO("CPPTEST: Pool attributes for pool %s are as follows" +
           pool->getName());

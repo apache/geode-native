@@ -32,6 +32,7 @@ namespace chrono {
 namespace duration {
 
 using namespace apache::geode::client;
+using namespace apache::geode::internal::chrono::duration;
 
 template <class LimitRep, class LimitPeriod,
           LimitRep lower = std::numeric_limits<LimitRep>::lowest(),

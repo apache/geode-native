@@ -30,11 +30,13 @@
 #include "geode_globals.hpp"
 #include "Serializable.hpp"
 #include "Cacheable.hpp"
-#include "util/chrono/duration.hpp"
+#include "internal/chrono/duration.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+using namespace apache::geode::internal::chrono::duration;
 
 class DataInput;
 class DataOutput;
@@ -47,7 +49,6 @@ class CacheableString;
  * the property; value, the value of the property.
  *
  */
-
 class CPPCACHE_EXPORT Properties : public Serializable {
  public:
   class Visitor {
@@ -97,7 +98,7 @@ class CPPCACHE_EXPORT Properties : public Serializable {
   template <class _Rep, class _Period>
   void insert(std::string key,
               const std::chrono::duration<_Rep, _Period>& value) {
-    insert(key, util::chrono::duration::to_string(value));
+    insert(key, to_string(value));
   }
 
   /**

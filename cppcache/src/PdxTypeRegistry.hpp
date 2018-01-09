@@ -28,6 +28,7 @@
 
 #include <geode/PdxSerializable.hpp>
 #include <geode/Cache.hpp>
+#include <geode/internal/functional.hpp>
 
 #include "PdxRemotePreservedData.hpp"
 #include "ReadWriteLock.hpp"
@@ -35,7 +36,6 @@
 #include "EnumInfo.hpp"
 #include "PreservedDataExpiryHandler.hpp"
 #include "ExpiryTaskManager.hpp"
-#include "util/functional.hpp"
 
 namespace apache {
 namespace geode {

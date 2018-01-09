@@ -22,7 +22,7 @@
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 
-#include <geode/util/chrono/duration.hpp>
+#include <geode/internal/chrono/duration.hpp>
 
 #define ROOT_NAME "testThinClientLRUExpiration"
 #define ROOT_SCOPE DISTRIBUTED_ACK
@@ -33,7 +33,7 @@
 
 using namespace apache::geode::client;
 using namespace test;
-using namespace apache::geode::util::chrono::duration;
+using namespace apache::geode::internal::chrono::duration;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2

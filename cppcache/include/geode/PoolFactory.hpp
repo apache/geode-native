@@ -23,7 +23,7 @@
 #include <chrono>
 
 #include "geode_globals.hpp"
-#include "util/chrono/duration.hpp"
+#include "internal/chrono/duration.hpp"
 #include "Pool.hpp"
 
 /**

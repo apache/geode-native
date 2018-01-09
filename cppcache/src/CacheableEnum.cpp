@@ -16,13 +16,13 @@
  */
 
 #include <geode/CacheableEnum.hpp>
+#include <geode/internal/functional.hpp>
 
 #include "Utils.hpp"
 #include "PdxHelper.hpp"
 #include "GeodeTypeIdsImpl.hpp"
 #include "EnumInfo.hpp"
 #include "CacheRegionHelper.hpp"
-#include "util/functional.hpp"
 
 namespace apache {
 namespace geode {

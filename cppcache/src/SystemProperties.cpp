@@ -23,7 +23,7 @@
 #include <ace/DLL.h>
 
 #include <geode/geode_globals.hpp>
-#include <geode/util/chrono/duration.hpp>
+#include <geode/internal/chrono/duration.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableKey.hpp>
@@ -270,9 +270,9 @@ template <class _Rep, class _Period>
 void SystemProperties::parseDurationProperty(
     const std::string& property, const std::string& value,
     std::chrono::duration<_Rep, _Period>& duration) {
+  using namespace apache::geode::internal::chrono::duration;
   try {
-    duration = util::chrono::duration::from_string<
-        std::chrono::duration<_Rep, _Period>>(value);
+    duration = from_string<std::chrono::duration<_Rep, _Period>>(value);
   } catch (std::invalid_argument&) {
     throwError(("SystemProperties: non-duration " + property + "=" + value));
   }
@@ -383,6 +383,8 @@ void SystemProperties::processProperty(const std::string& property,
 }
 
 void SystemProperties::logSettings() {
+  using namespace apache::geode::internal::chrono::duration;
+
   // *** PLEASE ADD IN ALPHABETICAL ORDER - USER VISIBLE ***
 
   std::string settings = "Geode Native Client System Properties:";
@@ -397,7 +399,7 @@ void SystemProperties::logSettings() {
   settings += autoReadyForEvents() ? "true" : "false";
 
   settings += "\n  bucket-wait-timeout = ";
-  settings += util::chrono::duration::to_string(bucketWaitTimeout());
+  settings += to_string(bucketWaitTimeout());
 
   settings += "\n  cache-xml-file = ";
   settings += cacheXMLFile();
@@ -406,13 +408,13 @@ void SystemProperties::logSettings() {
   settings += conflateEvents();
 
   settings += "\n  connect-timeout = ";
-  settings += util::chrono::duration::to_string(connectTimeout());
+  settings += to_string(connectTimeout());
 
   settings += "\n  connection-pool-size = ";
   settings += std::to_string(javaConnectionPoolSize());
 
   settings += "\n  connect-wait-timeout = ";
-  settings += util::chrono::duration::to_string(connectWaitTimeout());
+  settings += to_string(connectWaitTimeout());
 
   settings += "\n  disable-chunk-handler-thread = ";
   settings += disableChunkHandlerThread() ? "true" : "false";
@@ -424,7 +426,7 @@ void SystemProperties::logSettings() {
   settings += durableClientId();
 
   settings += "\n  durable-timeout = ";
-  settings += util::chrono::duration::to_string(durableTimeout());
+  settings += to_string(durableTimeout());
 
   // *** PLEASE ADD IN ALPHABETICAL ORDER - USER VISIBLE ***
 
@@ -459,10 +461,10 @@ void SystemProperties::logSettings() {
   settings += std::to_string(maxSocketBufferSize());
 
   settings += "\n  notify-ack-interval = ";
-  settings += util::chrono::duration::to_string(notifyAckInterval());
+  settings += to_string(notifyAckInterval());
 
   settings += "\n  notify-dupcheck-life = ";
-  settings += util::chrono::duration::to_string(notifyDupCheckLife());
+  settings += to_string(notifyDupCheckLife());
 
   settings += "\n  on-client-disconnect-clear-pdxType-Ids = ";
   settings += onClientDisconnectClearPdxTypeIds() ? "true" : "false";
@@ -470,10 +472,10 @@ void SystemProperties::logSettings() {
   // *** PLEASE ADD IN ALPHABETICAL ORDER - USER VISIBLE ***
 
   settings += "\n  ping-interval = ";
-  settings += util::chrono::duration::to_string(pingInterval());
+  settings += to_string(pingInterval());
 
   settings += "\n  redundancy-monitor-interval = ";
-  settings += util::chrono::duration::to_string(redundancyMonitorInterval());
+  settings += to_string(redundancyMonitorInterval());
 
   settings += "\n  security-client-dhalgo = ";
   settings += securityClientDhAlgo();
@@ -497,13 +499,13 @@ void SystemProperties::logSettings() {
   settings += statisticsEnabled() ? "true" : "false";
 
   settings += "\n  statistic-sample-rate = ";
-  settings += util::chrono::duration::to_string(statisticsSampleInterval());
+  settings += to_string(statisticsSampleInterval());
 
   settings += "\n  suspended-tx-timeout = ";
-  settings += util::chrono::duration::to_string(suspendedTxTimeout());
+  settings += to_string(suspendedTxTimeout());
 
   settings += "\n  tombstone-timeout = ";
-  settings += util::chrono::duration::to_string(tombstoneTimeout());
+  settings += to_string(tombstoneTimeout());
 
   // *** PLEASE ADD IN ALPHABETICAL ORDER - USER VISIBLE ***
 

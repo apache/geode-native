@@ -27,11 +27,10 @@
 #include <codecvt>
 #include <locale>
 
-#include "string.hpp"
-
 namespace apache {
 namespace geode {
 namespace client {
+namespace internal {
 
 template <class _T>
 struct dereference_hash;
@@ -105,12 +104,10 @@ struct geode_hash<std::u16string> {
  */
 template <>
 struct geode_hash<std::string> {
-  inline int32_t operator()(const std::string& val) {
-    // TODO string optimize without conversion to UTF-16
-    return geode_hash<std::u16string>{}(to_utf16(val));
-  }
+  int32_t operator()(const std::string& val);
 };
 
+}  // namespace internal
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

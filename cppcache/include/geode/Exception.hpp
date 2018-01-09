@@ -25,7 +25,7 @@
 #include <unordered_map>
 
 #include "geode_globals.hpp"
-#include "util/functional.hpp"
+#include "internal/functional.hpp"
 
 /**
  * @file
@@ -83,13 +83,6 @@ class CPPCACHE_EXPORT Exception : public std::exception {
 };
 
 #pragma warning(pop)
-
-class CacheableKey;
-typedef std::unordered_map<std::shared_ptr<CacheableKey>,
-                           std::shared_ptr<Exception>,
-                           dereference_hash<std::shared_ptr<CacheableKey>>,
-                           dereference_equal_to<std::shared_ptr<CacheableKey>>>
-    HashMapOfException;
 
 }  // namespace client
 }  // namespace geode

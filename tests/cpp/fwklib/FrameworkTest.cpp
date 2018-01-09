@@ -17,7 +17,7 @@
 
 #include <geode/AttributesFactory.hpp>
 #include <geode/PoolFactory.hpp>
-#include <geode/util/chrono/duration.hpp>
+#include <geode/internal/chrono/duration.hpp>
 
 #include "fwklib/FrameworkTest.hpp"
 #include "fwklib/TestClient.hpp"
@@ -479,7 +479,7 @@ void FrameworkTest::setTestScheme() {
 }
 
 std::string FrameworkTest::poolAttributesToString(std::shared_ptr<Pool>& pool) {
-  using namespace apache::geode::util::chrono::duration;
+  using namespace apache::geode::internal::chrono::duration;
 
   std::string sString;
   sString += "\npoolName: ";
@@ -511,7 +511,8 @@ std::string FrameworkTest::poolAttributesToString(std::shared_ptr<Pool>& pool) {
   sString += "\nServerGroup: ";
   sString += pool->getServerGroup();
   sString += "\nIdleTimeout: ";
-  sString += util::chrono::duration::to_string(pool->getIdleTimeout());
+  sString += apache::geode::internal::chrono::duration::to_string(
+      pool->getIdleTimeout());
   sString += "\nPingInterval: ";
   sString += to_string(pool->getPingInterval());
   sString += "\nThreadLocalConnections: ";
