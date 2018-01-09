@@ -60,7 +60,7 @@ void TestObject1::fromData(DataInput& input) {
   input.readBytes(&bytes, &len);
   arr = CacheableBytes::create(bytes, len);
   delete bytes;
-  name = input.readObject<CacheableString>();
+  name = std::static_pointer_cast<CacheableString>(input.readObject());
   identifier = input.readInt32();
 }
 

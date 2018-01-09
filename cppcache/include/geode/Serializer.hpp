@@ -196,7 +196,7 @@ template <typename TObj,
                                   Serializable>::type* = nullptr>
 inline void readObject(apache::geode::client::DataInput& input,
                        std::shared_ptr<TObj>& value) {
-  value = input.readObject<TObj>(true);
+  value = std::static_pointer_cast<TObj>(input.readObject());
 }
 
 // For arrays

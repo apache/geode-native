@@ -369,7 +369,7 @@ inline void TcrMessage::readKeyPart(DataInput& input) {
   const auto isObj = input.readBoolean();
   if (lenObj > 0) {
     if (isObj) {
-      m_key = input.readObject<CacheableKey>();
+      m_key = std::static_pointer_cast<CacheableKey>(input.readObject());
     } else {
       m_key = std::static_pointer_cast<CacheableKey>(
           readCacheableString(input, lenObj));
@@ -2914,7 +2914,7 @@ void TcrMessage::readEventIdPart(DataInput& input, bool skip, int32_t parts) {
 
   GF_D_ASSERT(isObj != 0);
 
-  m_eventid = input.readObject<EventId>();
+  m_eventid = std::static_pointer_cast<EventId>(input.readObject());
 }
  std::shared_ptr<DSMemberForVersionStamp> TcrMessage::readDSMember(
     apache::geode::client::DataInput& input) {
@@ -2979,7 +2979,8 @@ void TcrMessage::readHashMapForGCVersions(
 }
 
 void TcrMessage::readHashSetForGCVersions(
-    apache::geode::client::DataInput& input, std::shared_ptr<CacheableHashSet>& value) {
+    apache::geode::client::DataInput& input,
+    std::shared_ptr<CacheableHashSet>& value) {
   uint8_t hashsettypeid = input.read();
   if (hashsettypeid != GeodeTypeIds::CacheableHashSet) {
     throw Exception(
@@ -2991,7 +2992,7 @@ void TcrMessage::readHashSetForGCVersions(
     std::shared_ptr<CacheableKey> key;
     std::shared_ptr<Cacheable> val;
     for (int32_t index = 0; index < len; index++) {
-      auto keyPtr = input.readObject<CacheableKey>();
+      auto keyPtr = std::static_pointer_cast<CacheableKey>(input.readObject());
       value->insert(keyPtr);
     }
   }

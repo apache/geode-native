@@ -273,8 +273,8 @@ void Properties::toData(DataOutput& output) const {
 void Properties::fromData(DataInput& input) {
   int32_t mapSize = input.readArrayLen();
   for (int i = 0; i < mapSize; i++) {
-    auto key = input.readObject<CacheableKey>(true);
-    auto val = input.readObject<Cacheable>(true);
+    auto key = std::static_pointer_cast<CacheableKey>(input.readObject());
+    auto val = std::static_pointer_cast<Cacheable>(input.readObject());
     MAP->rebind(key, val);
   }
 }

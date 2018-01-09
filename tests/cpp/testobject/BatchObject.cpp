@@ -44,7 +44,7 @@ void BatchObject::fromData(apache::geode::client::DataInput& input) {
   index = input.readInt32();
   timestamp = input.readInt64();
   batch = input.readInt32();
-  byteArray = input.readObject<CacheableBytes>();
+  byteArray = std::static_pointer_cast<CacheableBytes>(input.readObject());
 }
 std::string BatchObject::toString() const {
   char buf[102500];

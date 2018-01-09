@@ -78,15 +78,15 @@ void Portfolio::toData(DataOutput& output) const {
 
 void Portfolio::fromData(DataInput& input) {
   ID = input.readInt32();
-  pkid = input.readObject<CacheableString>();
-  position1 = input.readObject<Position>();
-  position2 = input.readObject<Position>();
-  positions = input.readObject<CacheableHashMap>();
-  type = input.readObject<CacheableString>();
+  pkid = std::static_pointer_cast<CacheableString>(input.readObject());
+  position1 = std::static_pointer_cast<Position>(input.readObject());
+  position2 = std::static_pointer_cast<Position>(input.readObject());
+  positions = std::static_pointer_cast<CacheableHashMap>(input.readObject());
+  type = std::static_pointer_cast<CacheableString>(input.readObject());
   status = input.readUTF();
-  names = input.readObject<CacheableStringArray>();
+  names = std::static_pointer_cast<CacheableStringArray>(input.readObject());
   input.readBytes(&newVal, &newValSize);
-  creationDate = input.readObject<CacheableDate>();
+  creationDate = std::static_pointer_cast<CacheableDate>(input.readObject());
   int tmp = 0;
   input.readBytes(&arrayNull, &tmp);
   input.readBytes(&arrayZeroSize, &tmp);

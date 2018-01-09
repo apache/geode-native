@@ -229,16 +229,17 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
 
   input.readBytesOnly(hostAddr, len);  // inetaddress
   hostPort = input.readInt32();        // port
-  hostname = input.readObject<CacheableString>();  // hostname
+  hostname = std::static_pointer_cast<CacheableString>(input.readObject());
   splitbrain = input.read();                       // splitbrain
   dcport = input.readInt32();                      // port
   vPID = input.readInt32();                        // pid
   vmKind = input.read();                           // vmkind
   auto aStringArray = CacheableStringArray::create();
   aStringArray->fromData(input);
-  dsName = input.readObject<CacheableString>();           // name
-  uniqueTag = input.readObject<CacheableString>();        // unique tag
-  durableClientId = input.readObject<CacheableString>();  // durable client id
+  dsName = std::static_pointer_cast<CacheableString>(input.readObject());
+  uniqueTag = std::static_pointer_cast<CacheableString>(input.readObject());
+  durableClientId =
+      std::static_pointer_cast<CacheableString>(input.readObject());
   auto durableClntTimeOut = std::chrono::seconds(input.readInt32());  // durable client timeout
   int32_t vmViewId = 0;
   readVersion(splitbrain, input);
@@ -283,13 +284,13 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
   const auto vmKind = input.read();  // vmkind
 
   if (vmKind == ClientProxyMembershipID::LONER_DM_TYPE) {
-    uniqueTag = input.readObject<CacheableString>();  // unique tag
+    uniqueTag = std::static_pointer_cast<CacheableString>(input.readObject());
   } else {
-    vmViewIdstr = input.readObject<CacheableString>();
+    vmViewIdstr = std::static_pointer_cast<CacheableString>(input.readObject());
     vmViewId = atoi(vmViewIdstr.get()->value().c_str());
   }
 
-  dsName = input.readObject<CacheableString>();  // name
+  dsName = std::static_pointer_cast<CacheableString>(input.readObject());
 
   if (vmKind != ClientProxyMembershipID::LONER_DM_TYPE) {
     // initialize the object with the values read and some dummy values

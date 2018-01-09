@@ -74,8 +74,9 @@ void EnumInfo::toData(apache::geode::client::DataOutput &output) const {
 }
 
 void EnumInfo::fromData(apache::geode::client::DataInput &input) {
-  m_enumClassName = input.readObject<CacheableString>();
-  m_enumName = input.readObject<CacheableString>();
+  m_enumClassName =
+      std::static_pointer_cast<CacheableString>(input.readObject());
+  m_enumName = std::static_pointer_cast<CacheableString>(input.readObject());
   m_ordinal = input.readInt32();
 }
 

@@ -331,35 +331,6 @@ class _GEODE_EXPORT DataInput {
     return value;
   }
 
-  /**
-   * Read a <code>Serializable</code> object from the <code>DataInput</code>.
-   * Null objects are handled.
-   * This accepts an argument <code>throwOnError</code> that
-   * specifies whether to check the type dynamically and throw a
-   * <code>ClassCastException</code> when the cast fails.
-   *
-   * @param ptr The object to be read which is output by reference.
-   *            The type of this must match the type of object that
-   *            the application expects.
-   * @param throwOnError Throw a <code>ClassCastException</code> when
-   *                     the type of object does not match <code>ptr</code>.
-   *                     Default is true when <code>GF_DEBUG_ASSERTS</code>
-   *                     macro is set and false in normal case.
-   * @throws ClassCastException When <code>dynCast</code> fails
-   *                            for the given <code>ptr</code>.
-   * @see dynCast
-   * @see staticCast
-   */
-  template <class PTR>
-  inline std::shared_ptr<PTR> readObject(bool throwOnError = false) {
-    auto sPtr = readObjectInternal();
-    if (throwOnError) {
-      return std::dynamic_pointer_cast<PTR>(sPtr);
-    } else {
-      return std::static_pointer_cast<PTR>(sPtr);
-    }
-  }
-
   inline bool readNativeBool() {
     read();  // ignore type id
 
@@ -373,6 +344,15 @@ class _GEODE_EXPORT DataInput {
 
   inline std::shared_ptr<Serializable> readDirectObject(int8_t typeId = -1) {
     return readObjectInternal(typeId);
+  }
+
+  /**
+   * Read a Serializable object from the DataInput.
+   *
+   * @return Serializable object or <code>nullptr</code>.
+   */
+  inline std::shared_ptr<Serializable> readObject() {
+    return readObjectInternal();
   }
 
   /**
