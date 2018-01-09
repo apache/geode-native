@@ -106,7 +106,7 @@ int32_t PdxWrapper::hashcode() const {
   return apache::geode::client::serializer::hashcode(hash);
 }
 
-void PdxWrapper::toData(std::shared_ptr<PdxWriter> output) const {
+void PdxWrapper::toData(PdxWriter &output) const {
   if (m_userObject != nullptr) {
     m_serializer->toData(m_userObject, m_className.c_str(), output);
   } else {
@@ -116,7 +116,7 @@ void PdxWrapper::toData(std::shared_ptr<PdxWriter> output) const {
   }
 }
 
-void PdxWrapper::fromData(std::shared_ptr<PdxReader> input) {
+void PdxWrapper::fromData(PdxReader &input) {
   m_userObject = m_serializer->fromData(m_className.c_str(), input);
 }
 

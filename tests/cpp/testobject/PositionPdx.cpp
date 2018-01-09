@@ -73,73 +73,73 @@ void PositionPdx::init() {
   pid = 0;
 }
 
-void PositionPdx::toData(std::shared_ptr<PdxWriter> pw) const {
-  pw->writeLong("avg20DaysVol", avg20DaysVol);
-  pw->markIdentityField("avg20DaysVol");
+void PositionPdx::toData(PdxWriter& pw) const {
+  pw.writeLong("avg20DaysVol", avg20DaysVol);
+  pw.markIdentityField("avg20DaysVol");
 
-  pw->writeString("bondRating", bondRating);
-  pw->markIdentityField("bondRating");
+  pw.writeString("bondRating", bondRating);
+  pw.markIdentityField("bondRating");
 
-  pw->writeDouble("convRatio", convRatio);
-  pw->markIdentityField("convRatio");
+  pw.writeDouble("convRatio", convRatio);
+  pw.markIdentityField("convRatio");
 
-  pw->writeString("country", country);
-  pw->markIdentityField("country");
+  pw.writeString("country", country);
+  pw.markIdentityField("country");
 
-  pw->writeDouble("delta", delta);
-  pw->markIdentityField("delta");
+  pw.writeDouble("delta", delta);
+  pw.markIdentityField("delta");
 
-  pw->writeLong("industry", industry);
-  pw->markIdentityField("industry");
+  pw.writeLong("industry", industry);
+  pw.markIdentityField("industry");
 
-  pw->writeLong("issuer", issuer);
-  pw->markIdentityField("issuer");
+  pw.writeLong("issuer", issuer);
+  pw.markIdentityField("issuer");
 
-  pw->writeDouble("mktValue", mktValue);
-  pw->markIdentityField("mktValue");
+  pw.writeDouble("mktValue", mktValue);
+  pw.markIdentityField("mktValue");
 
-  pw->writeDouble("qty", qty);
-  pw->markIdentityField("qty");
+  pw.writeDouble("qty", qty);
+  pw.markIdentityField("qty");
 
-  pw->writeString("secId", secId);
-  pw->markIdentityField("secId");
+  pw.writeString("secId", secId);
+  pw.markIdentityField("secId");
 
-  pw->writeString("secLinks", secLinks);
-  pw->markIdentityField("secLinks");
+  pw.writeString("secLinks", secLinks);
+  pw.markIdentityField("secLinks");
 
-  pw->writeString("secType", secType);
-  pw->markIdentityField("secType");
+  pw.writeString("secType", secType);
+  pw.markIdentityField("secType");
 
-  pw->writeInt("sharesOutstanding", sharesOutstanding);
-  pw->markIdentityField("sharesOutstanding");
+  pw.writeInt("sharesOutstanding", sharesOutstanding);
+  pw.markIdentityField("sharesOutstanding");
 
-  pw->writeString("underlyer", underlyer);
-  pw->markIdentityField("underlyer");
+  pw.writeString("underlyer", underlyer);
+  pw.markIdentityField("underlyer");
 
-  pw->writeLong("volatility", volatility);
-  pw->markIdentityField("volatility");
+  pw.writeLong("volatility", volatility);
+  pw.markIdentityField("volatility");
 
-  pw->writeInt("pid", pid);
-  pw->markIdentityField("pid");
+  pw.writeInt("pid", pid);
+  pw.markIdentityField("pid");
 }
 
-void PositionPdx::fromData(std::shared_ptr<PdxReader> pr) {
-  avg20DaysVol = pr->readLong("avg20DaysVol");
-  bondRating = pr->readString("bondRating");
-  convRatio = pr->readDouble("convRatio");
-  country = pr->readString("country");
-  delta = pr->readDouble("delta");
-  industry = pr->readLong("industry");
-  issuer = pr->readLong("issuer");
-  mktValue = pr->readDouble("mktValue");
-  qty = pr->readDouble("qty");
-  secId = pr->readString("secId");
-  secLinks = pr->readString("secLinks");
-  secType = pr->readString("secType");
-  sharesOutstanding = pr->readInt("sharesOutstanding");
-  underlyer = pr->readString("underlyer");
-  volatility = pr->readLong("volatility");
-  pid = pr->readInt("pid");
+void PositionPdx::fromData(PdxReader& pr) {
+  avg20DaysVol = pr.readLong("avg20DaysVol");
+  bondRating = pr.readString("bondRating");
+  convRatio = pr.readDouble("convRatio");
+  country = pr.readString("country");
+  delta = pr.readDouble("delta");
+  industry = pr.readLong("industry");
+  issuer = pr.readLong("issuer");
+  mktValue = pr.readDouble("mktValue");
+  qty = pr.readDouble("qty");
+  secId = pr.readString("secId");
+  secLinks = pr.readString("secLinks");
+  secType = pr.readString("secType");
+  sharesOutstanding = pr.readInt("sharesOutstanding");
+  underlyer = pr.readString("underlyer");
+  volatility = pr.readLong("volatility");
+  pid = pr.readInt("pid");
 }
 std::string PositionPdx::toString() const {
   char buf[1024];

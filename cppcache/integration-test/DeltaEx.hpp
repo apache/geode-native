@@ -130,13 +130,13 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
     return className;
   }
 
-  void toData(std::shared_ptr<PdxWriter> pw) const override {
-    pw->writeInt("counter", m_counter);
+  void toData(PdxWriter& pw) const override {
+    pw.writeInt("counter", m_counter);
     m_toDataCount++;
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) override {
-    m_counter = pr->readInt("counter");
+  void fromData(PdxReader& pr) override {
+    m_counter = pr.readInt("counter");
     m_fromDataCount++;
   }
 

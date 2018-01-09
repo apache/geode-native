@@ -34,8 +34,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class PdxLocalWriter : public PdxWriter,
-                       public std::enable_shared_from_this<PdxLocalWriter> {
+class PdxLocalWriter : public PdxWriter {
  protected:
   DataOutput* m_dataOutput;
   std::shared_ptr<PdxType> m_pdxType;
@@ -49,6 +48,8 @@ class PdxLocalWriter : public PdxWriter,
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
   std::string m_pdxClassName;
 
+  PdxLocalWriter() = default;
+
  public:
   PdxLocalWriter(DataOutput& output, std::shared_ptr<PdxType> pdxType,
                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
@@ -56,6 +57,8 @@ class PdxLocalWriter : public PdxWriter,
   PdxLocalWriter(DataOutput& output, std::shared_ptr<PdxType> pdxType,
                  std::string pdxDomainType,
                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
+
+  PdxLocalWriter(PdxLocalWriter&& move) = default;
 
   virtual ~PdxLocalWriter();
 
@@ -107,82 +110,79 @@ class PdxLocalWriter : public PdxWriter,
     }
   }
 
-  virtual std::shared_ptr<PdxWriter> writeChar(const std::string& fieldName,
+  virtual PdxWriter& writeChar(const std::string& fieldName,
                                                char16_t value) override;
 
-  virtual std::shared_ptr<PdxWriter> writeBoolean(const std::string& fieldName,
-                                                  bool value) override;
+  virtual PdxWriter& writeBoolean(const std::string& fieldName,
+                                  bool value) override;
 
-  virtual std::shared_ptr<PdxWriter> writeByte(const std::string& fieldName,
-                                               int8_t value) override;
+  virtual PdxWriter& writeByte(const std::string& fieldName,
+                               int8_t value) override;
 
-  virtual std::shared_ptr<PdxWriter> writeShort(const std::string& fieldName,
-                                                int16_t value) override;
+  virtual PdxWriter& writeShort(const std::string& fieldName,
+                                int16_t value) override;
 
-  virtual std::shared_ptr<PdxWriter> writeInt(const std::string& fieldName,
-                                              int32_t value) override;
+  virtual PdxWriter& writeInt(const std::string& fieldName,
+                              int32_t value) override;
 
-  virtual std::shared_ptr<PdxWriter> writeLong(const std::string& fieldName,
-                                               int64_t value) override;
+  virtual PdxWriter& writeLong(const std::string& fieldName,
+                               int64_t value) override;
 
-  virtual std::shared_ptr<PdxWriter> writeFloat(const std::string& fieldName,
-                                                float value) override;
+  virtual PdxWriter& writeFloat(const std::string& fieldName,
+                                float value) override;
 
-  virtual std::shared_ptr<PdxWriter> writeDouble(const std::string& fieldName,
-                                                 double value) override;
+  virtual PdxWriter& writeDouble(const std::string& fieldName,
+                                 double value) override;
 
-  virtual std::shared_ptr<PdxWriter> writeDate(
-      const std::string& fieldName,
-      std::shared_ptr<CacheableDate> date) override;
+  virtual PdxWriter& writeDate(const std::string& fieldName,
+                               std::shared_ptr<CacheableDate> date) override;
 
-  virtual std::shared_ptr<PdxWriter> writeString(
+  virtual PdxWriter& writeString(
       const std::string& fieldName, const std::string& value) override;
 
-  virtual std::shared_ptr<PdxWriter> writeObject(
+  virtual PdxWriter& writeObject(
       const std::string& fieldName,
       std::shared_ptr<Serializable> value) override;
 
-  virtual std::shared_ptr<PdxWriter> writeBooleanArray(
-      const std::string& fieldName, bool* array, int length) override;
+  virtual PdxWriter& writeBooleanArray(const std::string& fieldName,
+                                       bool* array, int length) override;
 
-  virtual std::shared_ptr<PdxWriter> writeCharArray(
+  virtual PdxWriter& writeCharArray(
       const std::string& fieldName, char16_t* array, int length) override;
 
-  virtual std::shared_ptr<PdxWriter> writeByteArray(
-      const std::string& fieldName, int8_t* array, int length) override;
+  virtual PdxWriter& writeByteArray(const std::string& fieldName, int8_t* array,
+                                    int length) override;
 
-  virtual std::shared_ptr<PdxWriter> writeShortArray(
-      const std::string& fieldName, int16_t* array, int length) override;
+  virtual PdxWriter& writeShortArray(const std::string& fieldName,
+                                     int16_t* array, int length) override;
 
-  virtual std::shared_ptr<PdxWriter> writeIntArray(const std::string& fieldName,
-                                                   int32_t* array,
-                                                   int length) override;
+  virtual PdxWriter& writeIntArray(const std::string& fieldName, int32_t* array,
+                                   int length) override;
 
-  virtual std::shared_ptr<PdxWriter> writeLongArray(
-      const std::string& fieldName, int64_t* array, int length) override;
+  virtual PdxWriter& writeLongArray(const std::string& fieldName,
+                                    int64_t* array, int length) override;
 
-  virtual std::shared_ptr<PdxWriter> writeFloatArray(
-      const std::string& fieldName, float* array, int length) override;
+  virtual PdxWriter& writeFloatArray(const std::string& fieldName, float* array,
+                                     int length) override;
 
-  virtual std::shared_ptr<PdxWriter> writeDoubleArray(
-      const std::string& fieldName, double* array, int length) override;
+  virtual PdxWriter& writeDoubleArray(const std::string& fieldName,
+                                      double* array, int length) override;
 
-  virtual std::shared_ptr<PdxWriter> writeStringArray(
+  virtual PdxWriter& writeStringArray(
       const std::string& fieldName,
       const std::vector<std::string>& array) override;
 
-  virtual std::shared_ptr<PdxWriter> writeObjectArray(
+  virtual PdxWriter& writeObjectArray(
       const std::string& fieldName,
       std::shared_ptr<CacheableObjectArray> array) override;
 
-  virtual std::shared_ptr<PdxWriter> writeArrayOfByteArrays(
+  virtual PdxWriter& writeArrayOfByteArrays(
       const std::string& fieldName, int8_t* const* const array, int arrayLength,
       const int* elementLength) override;
 
-  virtual std::shared_ptr<PdxWriter> markIdentityField(
-      const std::string& fieldName) override;
+  virtual PdxWriter& markIdentityField(const std::string& fieldName) override;
 
-  virtual std::shared_ptr<PdxWriter> writeUnreadFields(
+  virtual PdxWriter& writeUnreadFields(
       std::shared_ptr<PdxUnreadFields> unread) override;
 
   // this is used to get pdx stream when WriteablePdxStream udpadates the field

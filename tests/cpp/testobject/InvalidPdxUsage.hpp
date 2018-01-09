@@ -113,14 +113,14 @@ class TESTOBJECT_EXPORT CharTypesWithInvalidUsage : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(std::shared_ptr<PdxWriter> pw) const override {
-    pw->writeChar("m_ch", m_ch);
-    pw->writeCharArray("m_chArray", m_chArray, 2);
+  void toData(PdxWriter& pw) const override {
+    pw.writeChar("m_ch", m_ch);
+    pw.writeCharArray("m_chArray", m_chArray, 2);
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) override {
-    m_ch = pr->readChar("m_ch");
-    m_chArray = pr->readCharArray("m_chArray", m_charArrayLen);
+  void fromData(PdxReader& pr) override {
+    m_ch = pr.readChar("m_ch");
+    m_chArray = pr.readCharArray("m_chArray", m_charArrayLen);
   }
 
   static PdxSerializable* createDeserializable() {
@@ -179,16 +179,16 @@ class TESTOBJECT_EXPORT AddressWithInvalidAPIUsage : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(std::shared_ptr<PdxWriter> pw) const override {
-    pw->writeInt("_aptNumber", _aptNumber);  // 4
-    pw->writeString("_street", _street);
-    pw->writeString("_city", _city);
+  void toData(PdxWriter& pw) const override {
+    pw.writeInt("_aptNumber", _aptNumber);  // 4
+    pw.writeString("_street", _street);
+    pw.writeString("_city", _city);
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) override {
-    _aptNumber = pr->readInt("_aptNumber");
-    _street = pr->readString("_street");
-    _city = pr->readString("_city");
+  void fromData(PdxReader& pr) override {
+    _aptNumber = pr.readInt("_aptNumber");
+    _street = pr.readString("_street");
+    _city = pr.readString("_city");
   }
 
   static PdxSerializable* createDeserializable() {
@@ -612,9 +612,9 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
   std::string toString() const override;
 

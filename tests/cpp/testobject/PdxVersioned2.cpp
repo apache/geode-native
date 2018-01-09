@@ -262,52 +262,52 @@ void PdxVersioned2::init(const char* key) {
   lengthArr[1] = 2;
 }
 
-void PdxTests::PdxVersioned2::toData(std::shared_ptr<PdxWriter> pw) const {
+void PdxTests::PdxVersioned2::toData(PdxWriter& pw) const {
   // TODO:delete it later
 
   int* lengthArr = new int[2];
 
   lengthArr[0] = 1;
   lengthArr[1] = 2;
-  pw->writeArrayOfByteArrays("m_byteByteArray", m_byteByteArray, 2, lengthArr);
-  pw->writeChar("m_char", m_char);
-  pw->writeBoolean("m_bool", m_bool);  // 1
-  pw->writeBooleanArray("m_boolArray", m_boolArray, 3);
-  pw->writeByte("m_byte", m_byte);
-  pw->writeByteArray("m_byteArray", m_byteArray, 2);
-  pw->writeCharArray("m_charArray", m_charArray, 2);
-  pw->writeObject("m_arraylist", m_arraylist);
-  pw->writeObject("m_map", m_map);
-  pw->writeString("m_string", m_string);
-  pw->writeDate("m_dateTime", m_date);
-  pw->writeDouble("m_double", m_double);
-  pw->writeDoubleArray("m_doubleArray", m_doubleArray, 2);
-  pw->writeFloat("m_float", m_float);
-  pw->writeFloatArray("m_floatArray", m_floatArray, 2);
-  pw->writeShort("m_int16", m_int16);
-  pw->writeInt("m_int32", m_int32);
-  pw->writeLong("m_long", m_long);
-  pw->writeIntArray("m_int32Array", m_int32Array, 4);
-  pw->writeLongArray("m_longArray", m_longArray, 2);
-  pw->writeShortArray("m_int16Array", m_int16Array, 2);
-  pw->writeByte("m_sbyte", m_sbyte);
-  pw->writeByteArray("m_sbyteArray", m_sbyteArray, 2);
+  pw.writeArrayOfByteArrays("m_byteByteArray", m_byteByteArray, 2, lengthArr);
+  pw.writeChar("m_char", m_char);
+  pw.writeBoolean("m_bool", m_bool);  // 1
+  pw.writeBooleanArray("m_boolArray", m_boolArray, 3);
+  pw.writeByte("m_byte", m_byte);
+  pw.writeByteArray("m_byteArray", m_byteArray, 2);
+  pw.writeCharArray("m_charArray", m_charArray, 2);
+  pw.writeObject("m_arraylist", m_arraylist);
+  pw.writeObject("m_map", m_map);
+  pw.writeString("m_string", m_string);
+  pw.writeDate("m_dateTime", m_date);
+  pw.writeDouble("m_double", m_double);
+  pw.writeDoubleArray("m_doubleArray", m_doubleArray, 2);
+  pw.writeFloat("m_float", m_float);
+  pw.writeFloatArray("m_floatArray", m_floatArray, 2);
+  pw.writeShort("m_int16", m_int16);
+  pw.writeInt("m_int32", m_int32);
+  pw.writeLong("m_long", m_long);
+  pw.writeIntArray("m_int32Array", m_int32Array, 4);
+  pw.writeLongArray("m_longArray", m_longArray, 2);
+  pw.writeShortArray("m_int16Array", m_int16Array, 2);
+  pw.writeByte("m_sbyte", m_sbyte);
+  pw.writeByteArray("m_sbyteArray", m_sbyteArray, 2);
   // int* strlengthArr = new int[2];
 
   // strlengthArr[0] = 5;
   // strlengthArr[1] = 5;
-  pw->writeStringArray("m_stringArray", m_stringArray);
-  pw->writeShort("m_uint16", m_uint16);
-  pw->writeInt("m_uint32", m_uint32);
-  pw->writeLong("m_ulong", m_ulong);
-  pw->writeIntArray("m_uint32Array", m_uint32Array, 4);
-  pw->writeLongArray("m_ulongArray", m_ulongArray, 2);
-  pw->writeShortArray("m_uint16Array", m_uint16Array, 2);
-  pw->writeByteArray("m_byte252", m_byte252, 252);
-  pw->writeByteArray("m_byte253", m_byte253, 253);
-  pw->writeByteArray("m_byte65535", m_byte65535, 65535);
-  pw->writeByteArray("m_byte65536", m_byte65536, 65536);
-  pw->writeObject("m_pdxEnum", m_pdxEnum);
+  pw.writeStringArray("m_stringArray", m_stringArray);
+  pw.writeShort("m_uint16", m_uint16);
+  pw.writeInt("m_uint32", m_uint32);
+  pw.writeLong("m_ulong", m_ulong);
+  pw.writeIntArray("m_uint32Array", m_uint32Array, 4);
+  pw.writeLongArray("m_ulongArray", m_ulongArray, 2);
+  pw.writeShortArray("m_uint16Array", m_uint16Array, 2);
+  pw.writeByteArray("m_byte252", m_byte252, 252);
+  pw.writeByteArray("m_byte253", m_byte253, 253);
+  pw.writeByteArray("m_byte65535", m_byte65535, 65535);
+  pw.writeByteArray("m_byte65536", m_byte65536, 65536);
+  pw.writeObject("m_pdxEnum", m_pdxEnum);
 
   LOGDEBUG("PdxObject::writeObject() for enum Done......");
 
@@ -315,57 +315,57 @@ void PdxTests::PdxVersioned2::toData(std::shared_ptr<PdxWriter> pw) const {
   // TODO:delete it later
 }
 
-void PdxTests::PdxVersioned2::fromData(std::shared_ptr<PdxReader> pr) {
+void PdxTests::PdxVersioned2::fromData(PdxReader& pr) {
   // TODO:temp added, delete later
 
   int32_t* Lengtharr;
   GF_NEW(Lengtharr, int32_t[2]);
   int32_t arrLen = 0;
   m_byteByteArray =
-      pr->readArrayOfByteArrays("m_byteByteArray", arrLen, &Lengtharr);
+      pr.readArrayOfByteArrays("m_byteByteArray", arrLen, &Lengtharr);
   // TODO::need to write compareByteByteArray() and check for m_byteByteArray
   // elements
-  m_char = pr->readChar("m_char");
+  m_char = pr.readChar("m_char");
   // GenericValCompare
-  m_bool = pr->readBoolean("m_bool");
+  m_bool = pr.readBoolean("m_bool");
   // GenericValCompare
-  m_boolArray = pr->readBooleanArray("m_boolArray", boolArrayLen);
-  m_byte = pr->readByte("m_byte");
-  m_byteArray = pr->readByteArray("m_byteArray", byteArrayLen);
-  m_charArray = pr->readCharArray("m_charArray", charArrayLen);
+  m_boolArray = pr.readBooleanArray("m_boolArray", boolArrayLen);
+  m_byte = pr.readByte("m_byte");
+  m_byteArray = pr.readByteArray("m_byteArray", byteArrayLen);
+  m_charArray = pr.readCharArray("m_charArray", charArrayLen);
   m_arraylist = std::static_pointer_cast<CacheableArrayList>(
-      pr->readObject("m_arraylist"));
-  m_map = std::static_pointer_cast<CacheableHashMap>(pr->readObject("m_map"));
+      pr.readObject("m_arraylist"));
+  m_map = std::static_pointer_cast<CacheableHashMap>(pr.readObject("m_map"));
   // TODO:Check for the size
-  m_string = pr->readString("m_string");  // GenericValCompare
-  m_date = pr->readDate("m_dateTime");    // compareData
-  m_double = pr->readDouble("m_double");
-  m_doubleArray = pr->readDoubleArray("m_doubleArray", doubleArrayLen);
-  m_float = pr->readFloat("m_float");
-  m_floatArray = pr->readFloatArray("m_floatArray", floatArrayLen);
-  m_int16 = pr->readShort("m_int16");
-  m_int32 = pr->readInt("m_int32");
-  m_long = pr->readLong("m_long");
-  m_int32Array = pr->readIntArray("m_int32Array", intArrayLen);
-  m_longArray = pr->readLongArray("m_longArray", longArrayLen);
-  m_int16Array = pr->readShortArray("m_int16Array", shortArrayLen);
-  m_sbyte = pr->readByte("m_sbyte");
-  m_sbyteArray = pr->readByteArray("m_sbyteArray", byteArrayLen);
-  m_stringArray = pr->readStringArray("m_stringArray");
-  m_uint16 = pr->readShort("m_uint16");
-  m_uint32 = pr->readInt("m_uint32");
-  m_ulong = pr->readLong("m_ulong");
-  m_uint32Array = pr->readIntArray("m_uint32Array", intArrayLen);
-  m_ulongArray = pr->readLongArray("m_ulongArray", longArrayLen);
-  m_uint16Array = pr->readShortArray("m_uint16Array", shortArrayLen);
+  m_string = pr.readString("m_string");  // GenericValCompare
+  m_date = pr.readDate("m_dateTime");    // compareData
+  m_double = pr.readDouble("m_double");
+  m_doubleArray = pr.readDoubleArray("m_doubleArray", doubleArrayLen);
+  m_float = pr.readFloat("m_float");
+  m_floatArray = pr.readFloatArray("m_floatArray", floatArrayLen);
+  m_int16 = pr.readShort("m_int16");
+  m_int32 = pr.readInt("m_int32");
+  m_long = pr.readLong("m_long");
+  m_int32Array = pr.readIntArray("m_int32Array", intArrayLen);
+  m_longArray = pr.readLongArray("m_longArray", longArrayLen);
+  m_int16Array = pr.readShortArray("m_int16Array", shortArrayLen);
+  m_sbyte = pr.readByte("m_sbyte");
+  m_sbyteArray = pr.readByteArray("m_sbyteArray", byteArrayLen);
+  m_stringArray = pr.readStringArray("m_stringArray");
+  m_uint16 = pr.readShort("m_uint16");
+  m_uint32 = pr.readInt("m_uint32");
+  m_ulong = pr.readLong("m_ulong");
+  m_uint32Array = pr.readIntArray("m_uint32Array", intArrayLen);
+  m_ulongArray = pr.readLongArray("m_ulongArray", longArrayLen);
+  m_uint16Array = pr.readShortArray("m_uint16Array", shortArrayLen);
   // LOGINFO("PdxVersioned2::readInt() start...");
 
-  m_byte252 = pr->readByteArray("m_byte252", m_byte252Len);
-  m_byte253 = pr->readByteArray("m_byte253", m_byte253Len);
-  m_byte65535 = pr->readByteArray("m_byte65535", m_byte65535Len);
-  m_byte65536 = pr->readByteArray("m_byte65536", m_byte65536Len);
+  m_byte252 = pr.readByteArray("m_byte252", m_byte252Len);
+  m_byte253 = pr.readByteArray("m_byte253", m_byte253Len);
+  m_byte65535 = pr.readByteArray("m_byte65535", m_byte65535Len);
+  m_byte65536 = pr.readByteArray("m_byte65536", m_byte65536Len);
   // TODO:Check for size
-  m_pdxEnum = pr->readObject("m_pdxEnum");
+  m_pdxEnum = pr.readObject("m_pdxEnum");
 }
 std::string PdxTests::PdxVersioned2::toString() const {
   return "PdxVersioned 2 : " + m_string;

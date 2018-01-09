@@ -72,8 +72,8 @@ class TESTOBJECT_EXPORT PositionPdx
   // This constructor is just for some internal data validation test
   PositionPdx(int32_t iForExactVal);
   virtual ~PositionPdx();
-  virtual void toData(std::shared_ptr<PdxWriter> pw);
-  virtual void fromData(std::shared_ptr<PdxReader> pr);
+  virtual void toData(PdxWriter& pw);
+  virtual void fromData(PdxReader& pr);
 
   std::string toString() const;
 

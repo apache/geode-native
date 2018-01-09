@@ -73,9 +73,9 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
   std::string toString() const override;
 
@@ -144,9 +144,9 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  virtual void toData(std::shared_ptr<PdxWriter> pw) const override;
+  virtual void toData(PdxWriter& pw) const override;
 
-  virtual void fromData(std::shared_ptr<PdxReader> pr) override;
+  virtual void fromData(PdxReader& pr) override;
 
   std::string toString() const override;
 
@@ -203,15 +203,15 @@ class TESTOBJECT_EXPORT PdxEnumTestClass : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(std::shared_ptr<PdxWriter> pw) const override {
-    pw->writeInt("m_id", m_id);
-    pw->writeObject("m_enumid", m_enumid);
+  void toData(PdxWriter& pw) const override {
+    pw.writeInt("m_id", m_id);
+    pw.writeObject("m_enumid", m_enumid);
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) override {
-    m_id = pr->readInt("m_id");
+  void fromData(PdxReader& pr) override {
+    m_id = pr.readInt("m_id");
     m_enumid =
-        std::static_pointer_cast<CacheableEnum>(pr->readObject("m_enumid"));
+        std::static_pointer_cast<CacheableEnum>(pr.readObject("m_enumid"));
   }
 
   std::string toString() const override { return "PdxEnumTestClass"; }
@@ -257,20 +257,20 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
   using PdxSerializable::toData;
   using PdxSerializable::fromData;
 
-  void toData(std::shared_ptr<PdxWriter> pw) const override {
-    pw->writeInt("i1", i1);
-    pw->markIdentityField("i1");
-    pw->writeInt("i2", i2);
-    pw->writeString("s1", s1);
-    pw->markIdentityField("s1");
-    pw->writeString("s2", s2);
+  void toData(PdxWriter& pw) const override {
+    pw.writeInt("i1", i1);
+    pw.markIdentityField("i1");
+    pw.writeInt("i2", i2);
+    pw.writeString("s1", s1);
+    pw.markIdentityField("s1");
+    pw.writeString("s2", s2);
   }
 
-  void fromData(std::shared_ptr<PdxReader> pr) override {
-    i1 = pr->readInt("i1");
-    i2 = pr->readInt("i2");
-    s1 = pr->readString("s1");
-    s2 = pr->readString("s2");
+  void fromData(PdxReader& pr) override {
+    i1 = pr.readInt("i1");
+    i2 = pr.readInt("i2");
+    s1 = pr.readString("s1");
+    s2 = pr.readString("s2");
   }
 
   std::string toString() const override { return "SerializePdx"; }

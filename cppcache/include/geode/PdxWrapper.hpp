@@ -82,12 +82,12 @@ class CPPCACHE_EXPORT PdxWrapper : public PdxSerializable {
    *@brief serialize this object in geode PDX format
    *@param PdxWriter to serialize the PDX object
    **/
-  virtual void toData(std::shared_ptr<PdxWriter> output) const override;
+  virtual void toData(PdxWriter& output) const override;
   /**
    *@brief Deserialize this object
    *@param PdxReader to Deserialize the PDX object
    **/
-  virtual void fromData(std::shared_ptr<PdxReader> input) override;
+  virtual void fromData(PdxReader& input) override;
   /**
    *@brief serialize this object
    **/

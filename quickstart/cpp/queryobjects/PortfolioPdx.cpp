@@ -94,60 +94,63 @@ PortfolioPdx::~PortfolioPdx() {
   }
 }
 
-void PortfolioPdx::toData(std::shared_ptr<PdxWriter> pw) {
-  pw->writeInt("ID", id);
-  pw->markIdentityField("ID");
+void PortfolioPdx::toData(PdxWriter& pw) {
+  pw.writeInt("ID", id);
+  pw.markIdentityField("ID");
 
-  pw->writeString("pkid", pkid);
-  pw->markIdentityField("pkid");
+  pw.writeString("pkid", pkid);
+  pw.markIdentityField("pkid");
 
-  pw->writeObject("position1", position1);
-  pw->markIdentityField("position1");
+  pw.writeObject("position1", position1);
+  pw.markIdentityField("position1");
 
-  pw->writeObject("position2", position2);
-  pw->markIdentityField("position2");
+  pw.writeObject("position2", position2);
+  pw.markIdentityField("position2");
 
-  pw->writeObject("positions", positions);
-  pw->markIdentityField("positions");
+  pw.writeObject("positions", positions);
+  pw.markIdentityField("positions");
 
-  pw->writeString("type", type);
-  pw->markIdentityField("type");
+  pw.writeString("type", type);
+  pw.markIdentityField("type");
 
-  pw->writeString("status", status);
-  pw->markIdentityField("status");
+  pw.writeString("status", status);
+  pw.markIdentityField("status");
 
-  pw->writeStringArray("names", names, 0);
-  pw->markIdentityField("names");
+  pw.writeStringArray("names", names, 0);
+  pw.markIdentityField("names");
 
-  pw->writeByteArray("newVal", newVal, newValSize);
-  pw->markIdentityField("newVal");
+  pw.writeByteArray("newVal", newVal, newValSize);
+  pw.markIdentityField("newVal");
 
-  pw->writeDate("creationDate", creationDate);
-  pw->markIdentityField("creationDate");
+  pw.writeDate("creationDate", creationDate);
+  pw.markIdentityField("creationDate");
 
-  pw->writeByteArray("arrayNull", arrayNull, 0);
-  pw->writeByteArray("arrayZeroSize", arrayZeroSize, 0);
+  pw.writeByteArray("arrayNull", arrayNull, 0);
+  pw.writeByteArray("arrayZeroSize", arrayZeroSize, 0);
 }
 
-void PortfolioPdx::fromData(std::shared_ptr<PdxReader> pr) {
-  id = pr->readInt("ID");
-  pkid = pr->readString("pkid");
+void PortfolioPdx::fromData(PdxReader& pr) {
+  id = pr.readInt("ID");
+  pkid = pr.readString("pkid");
 
-  position1 = std::dynamic_pointer_cast<PositionPdx>(pr->readObject("position1"));
-  position2 = std::dynamic_pointer_cast<PositionPdx>(pr->readObject("position2"));
-  positions = std::dynamic_pointer_cast<CacheableHashMap>(pr->readObject("positions"));
-  type = pr->readString("type");
-  status = pr->readString("status");
+  position1 =
+      std::dynamic_pointer_cast<PositionPdx>(pr.readObject("position1"));
+  position2 =
+      std::dynamic_pointer_cast<PositionPdx>(pr.readObject("position2"));
+  positions =
+      std::dynamic_pointer_cast<CacheableHashMap>(pr.readObject("positions"));
+  type = pr.readString("type");
+  status = pr.readString("status");
 
   int32_t strLenArray = 0;
-  names = pr->readStringArray("names", strLenArray);
+  names = pr.readStringArray("names", strLenArray);
   int32_t byteArrayLen = 0;
-  newVal = pr->readByteArray("newVal", byteArrayLen);
-  creationDate = pr->readDate("creationDate");
+  newVal = pr.readByteArray("newVal", byteArrayLen);
+  creationDate = pr.readDate("creationDate");
   int32_t arrayNullLen = 0;
-  arrayNull = pr->readByteArray("arrayNull", arrayNullLen);
+  arrayNull = pr.readByteArray("arrayNull", arrayNullLen);
   int32_t arrayZeroSizeLen = 0;
-  arrayZeroSize = pr->readByteArray("arrayZeroSize", arrayZeroSizeLen);
+  arrayZeroSize = pr.readByteArray("arrayZeroSize", arrayZeroSizeLen);
 }
 std::string PortfolioPdx::toString() const {
   LOGINFO("PortfolioPdx::toString() Start");

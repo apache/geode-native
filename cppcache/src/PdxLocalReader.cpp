@@ -88,7 +88,7 @@ void PdxLocalReader::initialize() {
   m_offsetsBuffer = m_startBuffer + m_serializedLength;
 }
 
-void PdxLocalReader::MoveStream() {
+void PdxLocalReader::moveStream() {
   // this will reset unmaged datainput as well
   m_dataInput->reset(m_startPosition + m_serializedLengthWithOffsets);
 }

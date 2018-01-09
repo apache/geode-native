@@ -43,7 +43,7 @@ class CacheableDate;
  *
  * @note Implementations of PdxReader that are internal to the Native
  *       Client library may be returned to clients via instances of
- *       std::shared_ptr<PdxReader>. For those implementations, any
+ *       PdxReader&. For those implementations, any
  *       non-<tt>nullptr</tt>, non-empty strings returned from
  *       PdxReader::readString() or PdxReader::readWideString() must
  *       be freed with DataInput::freeUTFMemory(). Arrays returned

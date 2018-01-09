@@ -90,115 +90,115 @@ PdxInstanceImpl::PdxInstanceImpl(
   m_pdxType->InitializeType();  // to generate static position map
 }
 
-void PdxInstanceImpl::writeField(std::shared_ptr<PdxWriter> writer,
+void PdxInstanceImpl::writeField(PdxWriter& writer,
                                  const std::string& fieldName, int typeId,
                                  std::shared_ptr<Cacheable> value) {
   switch (typeId) {
     case PdxFieldTypes::INT: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableInt32>(value)) {
-        writer->writeInt(fieldName, val->value());
+        writer.writeInt(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::STRING: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableString>(value)) {
-        writer->writeString(fieldName, val->value());
+        writer.writeString(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::BOOLEAN: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableBoolean>(value)) {
-        writer->writeBoolean(fieldName, val->value());
+        writer.writeBoolean(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::FLOAT: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableFloat>(value)) {
-        writer->writeFloat(fieldName, val->value());
+        writer.writeFloat(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::DOUBLE: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableDouble>(value)) {
-        writer->writeDouble(fieldName, val->value());
+        writer.writeDouble(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::CHAR: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableCharacter>(value)) {
-        writer->writeChar(fieldName, val->value());
+        writer.writeChar(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::BYTE: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableByte>(value)) {
-        writer->writeByte(fieldName, val->value());
+        writer.writeByte(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::SHORT: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableInt16>(value)) {
-        writer->writeShort(fieldName, val->value());
+        writer.writeShort(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::LONG: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableInt64>(value)) {
-        writer->writeLong(fieldName, val->value());
+        writer.writeLong(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::BYTE_ARRAY: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableBytes>(value)) {
-        writer->writeByteArray(fieldName, (int8_t*)val->value(), val->length());
+        writer.writeByteArray(fieldName, (int8_t*)val->value(), val->length());
       }
       break;
     }
     case PdxFieldTypes::DOUBLE_ARRAY: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableDoubleArray>(value)) {
-        writer->writeDoubleArray(fieldName, const_cast<double*>(val->value()),
+        writer.writeDoubleArray(fieldName, const_cast<double*>(val->value()),
                                  val->length());
       }
       break;
     }
     case PdxFieldTypes::FLOAT_ARRAY: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableFloatArray>(value)) {
-        writer->writeFloatArray(fieldName, const_cast<float*>(val->value()),
+        writer.writeFloatArray(fieldName, const_cast<float*>(val->value()),
                                 val->length());
       }
       break;
     }
     case PdxFieldTypes::SHORT_ARRAY: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableInt16Array>(value)) {
-        writer->writeShortArray(fieldName, const_cast<int16_t*>(val->value()),
+        writer.writeShortArray(fieldName, const_cast<int16_t*>(val->value()),
                                 val->length());
       }
       break;
     }
     case PdxFieldTypes::INT_ARRAY: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableInt32Array>(value)) {
-        writer->writeIntArray(fieldName, const_cast<int32_t*>(val->value()),
+        writer.writeIntArray(fieldName, const_cast<int32_t*>(val->value()),
                               val->length());
       }
       break;
     }
     case PdxFieldTypes::LONG_ARRAY: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableInt64Array>(value)) {
-        writer->writeLongArray(fieldName, const_cast<int64_t*>(val->value()),
+        writer.writeLongArray(fieldName, const_cast<int64_t*>(val->value()),
                                val->length());
       }
       break;
     }
     case PdxFieldTypes::BOOLEAN_ARRAY: {
       if (auto&& val = std::dynamic_pointer_cast<BooleanArray>(value)) {
-        writer->writeBooleanArray(fieldName, const_cast<bool*>(val->value()),
+        writer.writeBooleanArray(fieldName, const_cast<bool*>(val->value()),
                                   val->length());
       }
       break;
     }
     case PdxFieldTypes::CHAR_ARRAY: {
       if (auto&& val = std::dynamic_pointer_cast<CharArray>(value)) {
-        writer->writeCharArray(fieldName, const_cast<char16_t*>(val->value()),
+        writer.writeCharArray(fieldName, const_cast<char16_t*>(val->value()),
                                val->length());
       }
       break;
@@ -211,13 +211,13 @@ void PdxInstanceImpl::writeField(std::shared_ptr<PdxWriter> writer,
         for (int item = 0; item < size; item++) {
           strings[item] = (*val)[item]->value();
         }
-        writer->writeStringArray(fieldName, strings);
+        writer.writeStringArray(fieldName, strings);
       }
       break;
     }
     case PdxFieldTypes::DATE: {
       if (auto&& date = std::dynamic_pointer_cast<CacheableDate>(value)) {
-        writer->writeDate(fieldName, date);
+        writer.writeDate(fieldName, date);
       }
       break;
     }
@@ -235,8 +235,8 @@ void PdxInstanceImpl::writeField(std::shared_ptr<PdxWriter> writer,
           }
           i++;
         }
-        writer->writeArrayOfByteArrays(fieldName, values,
-                                       static_cast<int>(size), lengths);
+        writer.writeArrayOfByteArrays(fieldName, values, static_cast<int>(size),
+                                      lengths);
         delete[] values;
         delete[] lengths;
       }
@@ -244,11 +244,11 @@ void PdxInstanceImpl::writeField(std::shared_ptr<PdxWriter> writer,
     }
     case PdxFieldTypes::OBJECT_ARRAY: {
       if (auto&& val = std::dynamic_pointer_cast<CacheableObjectArray>(value)) {
-        writer->writeObjectArray(fieldName, val);
+        writer.writeObjectArray(fieldName, val);
       }
       break;
     }
-    default: { writer->writeObject(fieldName, value); }
+    default: { writer.writeObject(fieldName, value); }
   }
 }
 std::shared_ptr<WritablePdxInstance> PdxInstanceImpl::createWriter() {
@@ -1389,20 +1389,20 @@ PdxFieldTypes::PdxFieldType PdxInstanceImpl::getFieldType(
   return static_cast<PdxFieldTypes::PdxFieldType>(pft->getTypeId());
 }
 
-void PdxInstanceImpl::writeUnmodifieldField(
-    DataInput& dataInput, int startPos, int endPos,
-    std::shared_ptr<PdxLocalWriter> localWriter) {
+void PdxInstanceImpl::writeUnmodifieldField(DataInput& dataInput, int startPos,
+                                            int endPos,
+                                            PdxLocalWriter& localWriter) {
   dataInput.reset(startPos);
   for (; startPos < endPos; startPos++) {
-    localWriter->writeByte(dataInput.read());
+    localWriter.writeByte(dataInput.read());
   }
 }
 
-void PdxInstanceImpl::toData(std::shared_ptr<PdxWriter> writer) const {
+void PdxInstanceImpl::toData(PdxWriter& writer) const {
   const_cast<PdxInstanceImpl*>(this)->toDataMutable(writer);
 }
 
-void PdxInstanceImpl::toDataMutable(std::shared_ptr<PdxWriter> writer) {
+void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
   auto pt = getPdxType();
   std::vector<std::shared_ptr<PdxFieldType>>* pdxFieldList =
       pt->getPdxFieldTypes();
@@ -1431,13 +1431,13 @@ void PdxInstanceImpl::toDataMutable(std::shared_ptr<PdxWriter> writer) {
       } else {
         if (currPf->IsVariableLengthType()) {
           // need to add offset
-          (std::static_pointer_cast<PdxLocalWriter>(writer))->addOffset();
+          (static_cast<PdxLocalWriter&>(writer)).addOffset();
         }
         // write raw byte array...
         nextFieldPosition =
             getNextFieldPosition(*dataInput, static_cast<int>(i) + 1, pt);
         writeUnmodifieldField(*dataInput, position, nextFieldPosition,
-                              std::static_pointer_cast<PdxLocalWriter>(writer));
+                              static_cast<PdxLocalWriter&>(writer));
         position = nextFieldPosition;  // mark next field;
       }
     }
@@ -1454,7 +1454,7 @@ void PdxInstanceImpl::toDataMutable(std::shared_ptr<PdxWriter> writer) {
   m_updatedFields.clear();
 }
 
-void PdxInstanceImpl::fromData(std::shared_ptr<PdxReader> input) {
+void PdxInstanceImpl::fromData(PdxReader& input) {
   throw IllegalStateException(
       "PdxInstance::FromData( .. ) shouldn't have called");
 }

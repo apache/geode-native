@@ -123,152 +123,152 @@ bool PdxRemoteWriter::isFieldWritingStarted() {
                                   // this??
 }
 
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeUnreadFields(
+PdxWriter& PdxRemoteWriter::writeUnreadFields(
     std::shared_ptr<PdxUnreadFields> unread) {
   PdxLocalWriter::writeUnreadFields(unread);
   m_remoteTolocalMap = m_pdxType->getRemoteToLocalMap();
   m_remoteTolocalMapLength = m_pdxType->getTotalFields();
-  return shared_from_this();
+  return *this;
 }
 
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeChar(
+PdxWriter& PdxRemoteWriter::writeChar(
     const std::string& fieldName, char16_t value) {
   writePreserveData();
   PdxLocalWriter::writeChar(fieldName, value);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeBoolean(
-    const std::string& fieldName, bool value) {
+PdxWriter& PdxRemoteWriter::writeBoolean(const std::string& fieldName,
+                                         bool value) {
   writePreserveData();
   PdxLocalWriter::writeBoolean(fieldName, value);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeByte(
-    const std::string& fieldName, int8_t value) {
+PdxWriter& PdxRemoteWriter::writeByte(const std::string& fieldName,
+                                      int8_t value) {
   writePreserveData();
   PdxLocalWriter::writeByte(fieldName, value);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeShort(
-    const std::string& fieldName, int16_t value) {
+PdxWriter& PdxRemoteWriter::writeShort(const std::string& fieldName,
+                                       int16_t value) {
   writePreserveData();
   PdxLocalWriter::writeShort(fieldName, value);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeInt(
-    const std::string& fieldName, int32_t value) {
+PdxWriter& PdxRemoteWriter::writeInt(const std::string& fieldName,
+                                     int32_t value) {
   writePreserveData();
   PdxLocalWriter::writeInt(fieldName, value);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeLong(
-    const std::string& fieldName, int64_t value) {
+PdxWriter& PdxRemoteWriter::writeLong(const std::string& fieldName,
+                                      int64_t value) {
   writePreserveData();
   PdxLocalWriter::writeLong(fieldName, value);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeFloat(
-    const std::string& fieldName, float value) {
+PdxWriter& PdxRemoteWriter::writeFloat(const std::string& fieldName,
+                                       float value) {
   writePreserveData();
   PdxLocalWriter::writeFloat(fieldName, value);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeDouble(
-    const std::string& fieldName, double value) {
+PdxWriter& PdxRemoteWriter::writeDouble(const std::string& fieldName,
+                                        double value) {
   writePreserveData();
   PdxLocalWriter::writeDouble(fieldName, value);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeDate(
-    const std::string& fieldName, std::shared_ptr<CacheableDate> date) {
+PdxWriter& PdxRemoteWriter::writeDate(const std::string& fieldName,
+                                      std::shared_ptr<CacheableDate> date) {
   writePreserveData();
   PdxLocalWriter::writeDate(fieldName, date);
-  return shared_from_this();
+  return *this;
 }
 
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeString(
+PdxWriter& PdxRemoteWriter::writeString(
     const std::string& fieldName, const std::string& value) {
   writePreserveData();
   PdxLocalWriter::writeString(fieldName, value);
-  return shared_from_this();
+  return *this;
 }
 
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeStringArray(
+PdxWriter& PdxRemoteWriter::writeStringArray(
     const std::string& fieldName, const std::vector<std::string>& array) {
   writePreserveData();
   PdxLocalWriter::writeStringArray(fieldName, array);
-  return shared_from_this();
+  return *this;
 }
 
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeObject(
+PdxWriter& PdxRemoteWriter::writeObject(
     const std::string& fieldName, std::shared_ptr<Serializable> value) {
   writePreserveData();
   PdxLocalWriter::writeObject(fieldName, value);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeBooleanArray(
-    const std::string& fieldName, bool* array, int length) {
+PdxWriter& PdxRemoteWriter::writeBooleanArray(const std::string& fieldName,
+                                              bool* array, int length) {
   writePreserveData();
   PdxLocalWriter::writeBooleanArray(fieldName, array, length);
-  return shared_from_this();
+  return *this;
 }
 
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeCharArray(
+PdxWriter& PdxRemoteWriter::writeCharArray(
     const std::string& fieldName, char16_t* array, int length) {
   writePreserveData();
   PdxLocalWriter::writeCharArray(fieldName, array, length);
-  return shared_from_this();
+  return *this;
 }
 
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeByteArray(
+PdxWriter& PdxRemoteWriter::writeByteArray(
     const std::string& fieldName, int8_t* array, int length) {
   writePreserveData();
   PdxLocalWriter::writeByteArray(fieldName, array, length);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeShortArray(
-    const std::string& fieldName, int16_t* array, int length) {
+PdxWriter& PdxRemoteWriter::writeShortArray(const std::string& fieldName,
+                                            int16_t* array, int length) {
   writePreserveData();
   PdxLocalWriter::writeShortArray(fieldName, array, length);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeIntArray(
-    const std::string& fieldName, int32_t* array, int length) {
+PdxWriter& PdxRemoteWriter::writeIntArray(const std::string& fieldName,
+                                          int32_t* array, int length) {
   writePreserveData();
   PdxLocalWriter::writeIntArray(fieldName, array, length);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeLongArray(
-    const std::string& fieldName, int64_t* array, int length) {
+PdxWriter& PdxRemoteWriter::writeLongArray(const std::string& fieldName,
+                                           int64_t* array, int length) {
   writePreserveData();
   PdxLocalWriter::writeLongArray(fieldName, array, length);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeFloatArray(
-    const std::string& fieldName, float* array, int length) {
+PdxWriter& PdxRemoteWriter::writeFloatArray(const std::string& fieldName,
+                                            float* array, int length) {
   writePreserveData();
   PdxLocalWriter::writeFloatArray(fieldName, array, length);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeDoubleArray(
-    const std::string& fieldName, double* array, int length) {
+PdxWriter& PdxRemoteWriter::writeDoubleArray(const std::string& fieldName,
+                                             double* array, int length) {
   writePreserveData();
   PdxLocalWriter::writeDoubleArray(fieldName, array, length);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeObjectArray(
+PdxWriter& PdxRemoteWriter::writeObjectArray(
     const std::string& fieldName, std::shared_ptr<CacheableObjectArray> array) {
   writePreserveData();
   PdxLocalWriter::writeObjectArray(fieldName, array);
-  return shared_from_this();
+  return *this;
 }
-std::shared_ptr<PdxWriter> PdxRemoteWriter::writeArrayOfByteArrays(
+PdxWriter& PdxRemoteWriter::writeArrayOfByteArrays(
     const std::string& fieldName, int8_t* const* const byteArrays,
     int arrayLength, const int* elementLength) {
   writePreserveData();
   PdxLocalWriter::writeArrayOfByteArrays(fieldName, byteArrays, arrayLength,
                                          elementLength);
-  return shared_from_this();
+  return *this;
 }
 std::shared_ptr<PdxTypeRegistry> PdxRemoteWriter::getPdxTypeRegistry() const {
   return m_pdxTypeRegistry;
