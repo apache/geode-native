@@ -20,7 +20,7 @@
 
 #include "begin_native.hpp"
 #include <chrono>
-#include <geode/util/chrono/duration.hpp>
+#include <geode/internal/chrono/duration.hpp>
 #include "end_native.hpp"
 
 namespace Apache
@@ -30,7 +30,7 @@ namespace Apache
     namespace Client
     {
       using namespace System;
-      using namespace apache::geode::util::chrono::duration;
+      using namespace apache::geode::internal::chrono::duration;
 
       using ticks = std::chrono::duration<long long, std::ratio<1, 10000000>>;
       
