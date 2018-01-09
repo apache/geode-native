@@ -65,9 +65,7 @@ PdxFieldType::PdxFieldType(std::string fieldName, std::string className,
 PdxFieldType::~PdxFieldType() {}
 
 void PdxFieldType::toData(DataOutput& output) const {
-  // LOGINFO("DEBUG:PdxFieldType::toData:LN_28");
-  output.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
-  output.writeUTF(m_fieldName.c_str());
+  output.writeString(m_fieldName);
   output.writeInt(m_sequenceId);
   output.writeInt(m_varLenFieldIdx);
   output.write(m_typeId);
@@ -78,12 +76,7 @@ void PdxFieldType::toData(DataOutput& output) const {
 }
 
 void PdxFieldType::fromData(DataInput& input) {
-  input.read();  // ignore typeid
-  char* fname = nullptr;
-  input.readUTF(&fname);
-  m_fieldName = fname;
-  input.freeUTFMemory(fname);  // freeing fname
-
+  m_fieldName = input.readString();
   m_sequenceId = input.readInt32();
   m_varLenFieldIdx = input.readInt32();
   m_typeId = input.read();

@@ -500,21 +500,21 @@ _GF_CACHEABLE_KEY_TYPE_DEF_(char16_t, CacheableCharacter, 3);
  */
 _GF_CACHEABLE_KEY_TYPE_(char16_t, CacheableCharacter, 3);
 
-_GF_CACHEABLE_ARRAY_TYPE_DEF_(wchar_t, CharArray);
+_GF_CACHEABLE_ARRAY_TYPE_DEF_(char16_t, CharArray);
 /**
  * An immutable wrapper for array of wide-characters that can serve as
  * a distributable object for caching.
  */
-_GF_CACHEABLE_ARRAY_TYPE_(wchar_t, CharArray);
+_GF_CACHEABLE_ARRAY_TYPE_(char16_t, CharArray);
 
 // Instantiations for array built-in Cacheables
 
-_GF_CACHEABLE_ARRAY_TYPE_DEF_(uint8_t, CacheableBytes);
+_GF_CACHEABLE_ARRAY_TYPE_DEF_(int8_t, CacheableBytes);
 /**
  * An immutable wrapper for byte arrays that can serve as
  * a distributable object for caching.
  */
-_GF_CACHEABLE_ARRAY_TYPE_(uint8_t, CacheableBytes);
+_GF_CACHEABLE_ARRAY_TYPE_(int8_t, CacheableBytes);
 
 _GF_CACHEABLE_ARRAY_TYPE_DEF_(double, CacheableDoubleArray);
 /**

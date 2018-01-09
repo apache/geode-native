@@ -37,6 +37,7 @@
 #include "CacheRegionHelper.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
+#include "util/JavaModifiedUtf8.hpp"
 
 using namespace apache::geode::client;
 static const uint32_t REGULAR_EXPRESSION =
@@ -299,8 +300,9 @@ void TcrMessage::readSecureObjectPart(DataInput& input, bool defaultString,
         // m_connectionIDBytes =
         // CacheableBytes::create(input.currentBufferPosition(), lenObj);
         // m_connectionIDBytes = readCacheableBytes(input, lenObj);
-        m_connectionIDBytes =
-            CacheableBytes::create(input.currentBufferPosition(), lenObj);
+        m_connectionIDBytes = CacheableBytes::create(
+            reinterpret_cast<const int8_t*>(input.currentBufferPosition()),
+            lenObj);
         input.advanceCursor(lenObj);
       }
     }
@@ -320,7 +322,8 @@ void TcrMessage::readUniqueIDObjectPart(DataInput& input) {
   LOGDEBUG("TcrMessage::readUniqueIDObjectPart lenObj = %d isObj = %d", lenObj,
            isObj);
   if (lenObj > 0) {
-    m_value = CacheableBytes::create(input.currentBufferPosition(), lenObj);
+    m_value = CacheableBytes::create(
+        reinterpret_cast<const int8_t*>(input.currentBufferPosition()), lenObj);
     input.advanceCursor(lenObj);
   }
 }
@@ -328,9 +331,8 @@ void TcrMessage::readUniqueIDObjectPart(DataInput& input) {
 int64_t TcrMessage::getConnectionId(TcrConnection* conn) {
   if (m_connectionIDBytes != nullptr) {
    auto tmp = conn->decryptBytes(m_connectionIDBytes);
-   auto di = m_tcdm->getConnectionManager()
-                 .getCacheImpl()
-                 ->createDataInput(tmp->value(), tmp->length());
+   auto di = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
+       reinterpret_cast<const uint8_t*>(tmp->value()), tmp->length());
    return di->readInt64();
   } else {
     LOGWARN("Returning 0 as internal connection ID msgtype = %d ", m_msgType);
@@ -342,10 +344,10 @@ int64_t TcrMessage::getUniqueId(TcrConnection* conn) {
   if (m_value != nullptr) {
     auto encryptBytes = std::static_pointer_cast<CacheableBytes>(m_value);
 
-   auto tmp = conn->decryptBytes(encryptBytes);
+    auto tmp = conn->decryptBytes(encryptBytes);
 
     auto di = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-              tmp->value(), tmp->length());
+        reinterpret_cast<const uint8_t*>(tmp->value()), tmp->length());
     return di->readInt64();
   }
   return 0;
@@ -534,9 +536,7 @@ void TcrMessage::writeObjectPart(
         m_request->write(typeId);
         m_request->writeArrayLen(static_cast<int32_t>(getAllKeyList->size()));
         m_request->write(static_cast<int8_t>(GeodeTypeIdsImpl::Class));
-        m_request->write(
-            static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
-        m_request->writeASCII("java.lang.Object");
+        m_request->writeString("java.lang.Object");
         for (int32_t index = 0; index < getAllKeyList->size(); ++index) {
           m_request->writeObject(getAllKeyList->operator[](index));
         }
@@ -664,30 +664,15 @@ void TcrMessage::writeRegionPart(const std::string& regionName) {
 }
 
 void TcrMessage::writeStringPart(const std::string& str) {
-  const char* value = str.c_str();
-  uint32_t length = 0;
-  if (value != nullptr) {
-    int32_t encodedLen = m_request->getEncodedLength(value, length);
+  if (!str.empty()) {
+    auto jmutf8 = internal::JavaModifiedUtf8::fromString(str);
+
+    auto encodedLen = static_cast<int32_t>(jmutf8.length());
     m_request->writeInt(encodedLen);
     m_request->ensureCapacity(encodedLen);
     m_request->write(static_cast<int8_t>(0));  // isObject = 0 BYTE_CODE
-    const uint8_t* end = m_request->getCursor() + encodedLen;
-
-    while (m_request->getCursor() < end) {
-      uint8_t tmp = static_cast<uint8_t>(*value++);
-      if ((tmp == 0) || (tmp & 0x80)) {
-        // two byte.
-        m_request->write(static_cast<uint8_t>(0xc0 | ((tmp & 0xc0) >> 6)));
-        m_request->write(static_cast<uint8_t>(0x80 | (tmp & 0x3f)));
-      } else {
-        // one byte.
-        m_request->write(tmp);
-      }
-    }
-    if (m_request->getCursor() > end) {
-      uint32_t offset = m_request->getCursor() - end;
-      m_request->rewindCursor(offset);
-    }
+    m_request->writeBytesOnly(reinterpret_cast<const int8_t*>(jmutf8.data()),
+                              encodedLen);
   } else {
     m_request->writeInt(static_cast<uint16_t>(0));
   }
@@ -1202,10 +1187,12 @@ void TcrMessage::handleByteArrayResponse(
         m_deltaBytesLen = input->readInt32();
 
         input->advanceCursor(1);  // ignore byte
-        m_deltaBytes = new uint8_t[m_deltaBytesLen];
+        m_deltaBytes = new int8_t[m_deltaBytesLen];
         input->readBytesOnly(m_deltaBytes, m_deltaBytesLen);
-        m_delta = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-            m_deltaBytes, m_deltaBytesLen);
+        m_delta =
+            m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
+                reinterpret_cast<const uint8_t*>(m_deltaBytes),
+                m_deltaBytesLen);
       } else {
         readObjectPart(*input);
       }
@@ -1304,20 +1291,22 @@ void TcrMessage::handleByteArrayResponse(
       int32_t bits32 = input->readInt32();  // partlen;
       input->read();                        // ignore isObj;
 
-      m_bucketCount = input->readNativeInt32();  // PART1 = bucketCount
+      // PART1 = bucketCount
+      m_bucketCount = input->readNativeInt32();
 
       bits32 = input->readInt32();  // partlen;
       input->read();                // ignore isObj;
       if (bits32 > 0) {
-        m_colocatedWith = input->readNativeString();  // PART2 = colocatedwith
+        // PART2 = colocatedwith
+        m_colocatedWith = input->readString();
       }
 
       if (numparts == 4) {
         bits32 = input->readInt32();  // partlen;
         input->read();                // ignore isObj;
         if (bits32 > 0) {
-          m_partitionResolverName =
-              input->readNativeString();  // PART3 = partitionresolvername
+          // PART3 = partitionresolvername
+          m_partitionResolverName = input->readString();
         }
 
         bits32 = input->readInt32();  // partlen;
@@ -1926,17 +1915,17 @@ TcrMessageRegisterInterestList::TcrMessageRegisterInterestList(
 
   writeObjectPart(cal);
 
-  uint8_t bytes[2];
-std::shared_ptr<CacheableBytes> byteArr = nullptr;
-bytes[0] = receiveValues ? 0 : 1;  // reveive values
-byteArr = CacheableBytes::create(bytes, 1);
-writeObjectPart(byteArr);
-bytes[0] = isCachingEnabled ? 1 : 0;  // region policy
-bytes[1] = 0;                         // serialize values
-byteArr = CacheableBytes::create(bytes, 2);
-writeObjectPart(byteArr);
-writeMessageLength();
-m_interestPolicy = interestPolicy.ordinal;
+  int8_t bytes[2];
+  std::shared_ptr<CacheableBytes> byteArr = nullptr;
+  bytes[0] = receiveValues ? 0 : 1;  // reveive values
+  byteArr = CacheableBytes::create(bytes, 1);
+  writeObjectPart(byteArr);
+  bytes[0] = isCachingEnabled ? 1 : 0;  // region policy
+  bytes[1] = 0;                         // serialize values
+  byteArr = CacheableBytes::create(bytes, 2);
+  writeObjectPart(byteArr);
+  writeMessageLength();
+  m_interestPolicy = interestPolicy.ordinal;
 }
 
 TcrMessageUnregisterInterestList::TcrMessageUnregisterInterestList(
@@ -2019,20 +2008,20 @@ TcrMessageRegisterInterest::TcrMessageRegisterInterest(
   writeBytePart(isDurable ? 1 : 0);
   writeRegionPart(str2);  // regexp string
 
-  uint8_t bytes[2];
-std::shared_ptr<CacheableBytes> byteArr = nullptr;
-bytes[0] = receiveValues ? 0 : 1;
-byteArr = CacheableBytes::create(bytes, 1);
-writeObjectPart(byteArr);
-bytes[0] = isCachingEnabled ? 1 : 0;  // region data policy
-bytes[1] = 0;                         // serializevalues
-byteArr = CacheableBytes::create(bytes, 2);
-writeObjectPart(byteArr);
+  int8_t bytes[2];
+  std::shared_ptr<CacheableBytes> byteArr = nullptr;
+  bytes[0] = receiveValues ? 0 : 1;
+  byteArr = CacheableBytes::create(bytes, 1);
+  writeObjectPart(byteArr);
+  bytes[0] = isCachingEnabled ? 1 : 0;  // region data policy
+  bytes[1] = 0;                         // serializevalues
+  byteArr = CacheableBytes::create(bytes, 2);
+  writeObjectPart(byteArr);
 
-writeMessageLength();
-m_regionName = str1;
-m_regex = str2;
-m_interestPolicy = interestPolicy.ordinal;
+  writeMessageLength();
+  m_regionName = str1;
+  m_regex = str2;
+  m_interestPolicy = interestPolicy.ordinal;
 }
 
 TcrMessageUnregisterInterest::TcrMessageUnregisterInterest(
@@ -2574,7 +2563,7 @@ TcrMessageRemoveUserAuth::TcrMessageRemoveUserAuth(
   LOGDEBUG("Tcrmessage sending REMOVE_USER_AUTH message to server");
   writeHeader(m_msgType, 1);
   // adding dummy part as server has check for numberofparts > 0
-  uint8_t dummy = 0;
+  int8_t dummy = 0;
   if (keepAlive) dummy = 1;
   auto cbp = CacheableBytes::create(&dummy, 1);
   writeObjectPart(cbp, false);
@@ -2584,6 +2573,7 @@ TcrMessageRemoveUserAuth::TcrMessageRemoveUserAuth(
                                        m_request->getBufferLength())
                .c_str());
 }
+
 void TcrMessage::createUserCredentialMessage(TcrConnection* conn) {
   m_request->reset();
   m_isSecurityHeaderAdded = false;
@@ -2594,7 +2584,8 @@ void TcrMessage::createUserCredentialMessage(TcrConnection* conn) {
   if (m_creds != nullptr) m_creds->toData(*dOut);
 
   auto credBytes =
-      CacheableBytes::create(dOut->getBuffer(), dOut->getBufferLength());
+      CacheableBytes::create(reinterpret_cast<const int8_t*>(dOut->getBuffer()),
+                             dOut->getBufferLength());
   auto encryptBytes = conn->encryptBytes(credBytes);
   writeObjectPart(encryptBytes);
 
@@ -2617,13 +2608,15 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
   }
   m_isSecurityHeaderAdded = true;
   LOGDEBUG("addSecurityPart( , ) ");
-  auto dOutput = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
+  auto dOutput =
+      m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
 
   dOutput->writeInt(connectionId);
   dOutput->writeInt(unique_id);
 
-  auto bytes =
-      CacheableBytes::create(dOutput->getBuffer(), dOutput->getBufferLength());
+  auto bytes = CacheableBytes::create(
+      reinterpret_cast<const int8_t*>(dOutput->getBuffer()),
+      dOutput->getBufferLength());
 
   auto encryptBytes = conn->encryptBytes(bytes);
 
@@ -2651,8 +2644,9 @@ void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection* conn) {
 
   dOutput->writeInt(connectionId);
 
-  auto bytes =
-      CacheableBytes::create(dOutput->getBuffer(), dOutput->getBufferLength());
+  auto bytes = CacheableBytes::create(
+      reinterpret_cast<const int8_t*>(dOutput->getBuffer()),
+      dOutput->getBufferLength());
 
   auto encryptBytes = conn->encryptBytes(bytes);
 

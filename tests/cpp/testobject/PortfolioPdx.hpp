@@ -34,14 +34,14 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
  private:
   int32_t id;
 
-  char* pkid;
+  std::string pkid;
 
   std::shared_ptr<PositionPdx> position1;
   std::shared_ptr<PositionPdx> position2;
   std::shared_ptr<CacheableHashMap> positions;
-  char* type;
-  char* status;
-  char** names;
+  std::string type;
+  std::string status;
+  std::vector<std::string> names;
   static const char* secIds[];
   int8_t* newVal;
   int32_t newValSize;
@@ -52,21 +52,21 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
  public:
   PortfolioPdx()
       : id(0),
-        pkid(NULL),
-        type(NULL),
-        status(NULL),
+        pkid(),
+        type(),
+        status(),
         newVal(NULL),
         creationDate(nullptr),
         arrayNull(NULL),
         arrayZeroSize(NULL) {}
 
-  PortfolioPdx(int32_t id, int32_t size = 0, char** nm = NULL);
+  PortfolioPdx(int32_t id, int32_t size = 0, std::vector<std::string> nm = {});
 
   virtual ~PortfolioPdx();
 
   int32_t getID() { return id; }
 
-  char* getPkid() { return pkid; }
+  std::string getPkid() { return pkid; }
 
   std::shared_ptr<PositionPdx> getP1() { return position1; }
 
@@ -76,15 +76,15 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
 
   bool testMethod(bool booleanArg) { return true; }
 
-  char* getStatus() { return status; }
+  const std::string& getStatus() { return status; }
 
-  bool isActive() { return (strcmp(status, "active") == 0) ? true : false; }
+  bool isActive() { return status == "active"; }
 
   int8_t* getNewVal() { return newVal; }
 
   int32_t getNewValSize() { return newValSize; }
 
-  const char* getClassName() { return this->type; }
+  const std::string& getClassName() { return this->type; }
 
   std::shared_ptr<CacheableDate> getCreationDate() { return creationDate; }
 

@@ -17,6 +17,7 @@
 
 #include <geode/Delta.hpp>
 #include <geode/Cache.hpp>
+#include <geode/Cacheable.hpp>
 
 namespace apache {
 namespace geode {

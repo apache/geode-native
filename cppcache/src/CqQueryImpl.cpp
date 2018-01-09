@@ -390,9 +390,9 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
                                 isDurable(), m_tccdm);
 
   TcrMessageReply reply(true, m_tccdm);
-  auto resultCollector = (new ChunkedQueryResponse(reply));
-  reply.setChunkedResultHandler(
-      static_cast<TcrChunkedResult*>(resultCollector));
+  auto resultCollector =
+      std::unique_ptr<ChunkedQueryResponse>(new ChunkedQueryResponse(reply));
+  reply.setChunkedResultHandler(resultCollector.get());
   reply.setTimeout(timeout);
 
   GfErrType err = GF_NOERR;
@@ -418,10 +418,9 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
   m_cqState = CqState::RUNNING;
   updateStats();
   std::shared_ptr<CqResults> sr;
-  auto values = resultCollector->getQueryResults();
-  const std::vector<std::shared_ptr<CacheableString>>& fieldNameVec =
-      resultCollector->getStructFieldNames();
-  int32_t sizeOfFieldNamesVec = static_cast<int32_t>(fieldNameVec.size());
+  auto&& values = resultCollector->getQueryResults();
+  auto&& fieldNameVec = resultCollector->getStructFieldNames();
+  auto sizeOfFieldNamesVec = fieldNameVec.size();
   if (sizeOfFieldNamesVec == 0) {
     LOGFINEST("Query::execute: creating ResultSet for query: %s",
               m_queryString.c_str());
@@ -439,7 +438,6 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
           std::make_shared<StructSetImpl>(values, fieldNameVec));
     }
   }
-  delete resultCollector;
   return sr;
 }
 

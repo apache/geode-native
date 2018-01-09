@@ -3540,10 +3540,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
     // Compare local vs remote CacheableObjectArray elements.
     bool isEqual = true;
     for (int i = 0; i < remoteCObjArray->size(); i++) {
-      Address* rAddr1 = dynamic_cast<Address*>(remoteCObjArray->at(i).get());
-      Address* lAddr1 = dynamic_cast<Address*>(m_localObjectArray->at(i).get());
+      auto rAddr1 = std::dynamic_pointer_cast<Address>(remoteCObjArray->at(i));
+      auto lAddr1 =
+          std::dynamic_pointer_cast<Address>(m_localObjectArray->at(i));
       LOGINFO("Remote Address:: %d th element  AptNum=%d  street=%s  city=%s ",
-              i, rAddr1->getAptNum(), rAddr1->getStreet(), rAddr1->getCity());
+              i, rAddr1->getAptNum(), rAddr1->getStreet().c_str(),
+              rAddr1->getCity().c_str());
       if (!rAddr1->equals(*lAddr1)) {
         isEqual = false;
         break;

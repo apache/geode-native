@@ -14,17 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <algorithm>
+
+#include <geode/PdxFieldTypes.hpp>
+#include <geode/PdxReader.hpp>
+#include <geode/Cache.hpp>
+
 #include "PdxInstanceImpl.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "PdxHelper.hpp"
 #include "PdxTypes.hpp"
-#include <geode/PdxFieldTypes.hpp>
 #include "PdxLocalWriter.hpp"
-#include <geode/PdxReader.hpp>
 #include "CacheRegionHelper.hpp"
-#include <geode/Cache.hpp>
 #include "Utils.hpp"
-#include <algorithm>
+#include "util/string.hpp"
 
 /* adongre  - Coverity II
  * CID 29255: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
@@ -91,170 +95,145 @@ void PdxInstanceImpl::writeField(std::shared_ptr<PdxWriter> writer,
                                  std::shared_ptr<Cacheable> value) {
   switch (typeId) {
     case PdxFieldTypes::INT: {
-      CacheableInt32* val = dynamic_cast<CacheableInt32*>(value.get());
-      if (val != nullptr) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableInt32>(value)) {
         writer->writeInt(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::STRING: {
-      CacheableString* val = dynamic_cast<CacheableString*>(value.get());
-      if (val != nullptr) {
-        writer->writeString(fieldName, val->value().c_str());
+      if (auto&& val = std::dynamic_pointer_cast<CacheableString>(value)) {
+        writer->writeString(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::BOOLEAN: {
-      CacheableBoolean* val = dynamic_cast<CacheableBoolean*>(value.get());
-      if (val != nullptr) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableBoolean>(value)) {
         writer->writeBoolean(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::FLOAT: {
-      CacheableFloat* val = dynamic_cast<CacheableFloat*>(value.get());
-      if (val != nullptr) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableFloat>(value)) {
         writer->writeFloat(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::DOUBLE: {
-      CacheableDouble* val = dynamic_cast<CacheableDouble*>(value.get());
-      if (val != nullptr) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableDouble>(value)) {
         writer->writeDouble(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::CHAR: {
-      if (auto val = std::dynamic_pointer_cast<CacheableCharacter>(value)) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableCharacter>(value)) {
         writer->writeChar(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::BYTE: {
-      CacheableByte* val = dynamic_cast<CacheableByte*>(value.get());
-      if (val != nullptr) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableByte>(value)) {
         writer->writeByte(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::SHORT: {
-      CacheableInt16* val = dynamic_cast<CacheableInt16*>(value.get());
-      if (val != nullptr) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableInt16>(value)) {
         writer->writeShort(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::LONG: {
-      CacheableInt64* val = dynamic_cast<CacheableInt64*>(value.get());
-      if (val != nullptr) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableInt64>(value)) {
         writer->writeLong(fieldName, val->value());
       }
       break;
     }
     case PdxFieldTypes::BYTE_ARRAY: {
-      CacheableBytes* val = dynamic_cast<CacheableBytes*>(value.get());
-      if (val != nullptr) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableBytes>(value)) {
         writer->writeByteArray(fieldName, (int8_t*)val->value(), val->length());
       }
       break;
     }
     case PdxFieldTypes::DOUBLE_ARRAY: {
-      CacheableDoubleArray* val =
-          dynamic_cast<CacheableDoubleArray*>(value.get());
-      if (val != nullptr) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableDoubleArray>(value)) {
         writer->writeDoubleArray(fieldName, const_cast<double*>(val->value()),
                                  val->length());
       }
       break;
     }
     case PdxFieldTypes::FLOAT_ARRAY: {
-      CacheableFloatArray* val =
-          dynamic_cast<CacheableFloatArray*>(value.get());
-      if (val != nullptr) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableFloatArray>(value)) {
         writer->writeFloatArray(fieldName, const_cast<float*>(val->value()),
                                 val->length());
       }
       break;
     }
     case PdxFieldTypes::SHORT_ARRAY: {
-      CacheableInt16Array* val =
-          dynamic_cast<CacheableInt16Array*>(value.get());
-      if (val != nullptr) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableInt16Array>(value)) {
         writer->writeShortArray(fieldName, const_cast<int16_t*>(val->value()),
                                 val->length());
       }
       break;
     }
     case PdxFieldTypes::INT_ARRAY: {
-      CacheableInt32Array* val =
-          dynamic_cast<CacheableInt32Array*>(value.get());
-      if (val != nullptr) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableInt32Array>(value)) {
         writer->writeIntArray(fieldName, const_cast<int32_t*>(val->value()),
                               val->length());
       }
       break;
     }
     case PdxFieldTypes::LONG_ARRAY: {
-      CacheableInt64Array* val =
-          dynamic_cast<CacheableInt64Array*>(value.get());
-      if (val != nullptr) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableInt64Array>(value)) {
         writer->writeLongArray(fieldName, const_cast<int64_t*>(val->value()),
                                val->length());
       }
       break;
     }
     case PdxFieldTypes::BOOLEAN_ARRAY: {
-      BooleanArray* val = dynamic_cast<BooleanArray*>(value.get());
-      if (val != nullptr) {
+      if (auto&& val = std::dynamic_pointer_cast<BooleanArray>(value)) {
         writer->writeBooleanArray(fieldName, const_cast<bool*>(val->value()),
                                   val->length());
       }
       break;
     }
     case PdxFieldTypes::CHAR_ARRAY: {
-      CharArray* val = dynamic_cast<CharArray*>(value.get());
-      if (val != nullptr) {
-        writer->writeWideCharArray(
-            fieldName, const_cast<wchar_t*>(val->value()), val->length());
+      if (auto&& val = std::dynamic_pointer_cast<CharArray>(value)) {
+        writer->writeCharArray(fieldName, const_cast<char16_t*>(val->value()),
+                               val->length());
       }
       break;
     }
     case PdxFieldTypes::STRING_ARRAY: {
-      CacheableStringArray* val =
-          dynamic_cast<CacheableStringArray*>(value.get());
-      if (val != nullptr) {
-        int size = val->length();
-        char** strings = new char*[size];
+      if (auto&& val = std::dynamic_pointer_cast<CacheableStringArray>(value)) {
+        auto size = val->length();
+        std::vector<std::string> strings;
+        strings.reserve(size);
         for (int item = 0; item < size; item++) {
-          strings[item] =
-              const_cast<char*>(val->operator[](item)->value().c_str());
+          strings[item] = (*val)[item]->value();
         }
-        writer->writeStringArray(fieldName, strings, size);
-        delete[] strings;
+        writer->writeStringArray(fieldName, strings);
       }
       break;
     }
     case PdxFieldTypes::DATE: {
-      auto date = std::dynamic_pointer_cast<CacheableDate>(value);
-      if (date != nullptr) {
+      if (auto&& date = std::dynamic_pointer_cast<CacheableDate>(value)) {
         writer->writeDate(fieldName, date);
       }
       break;
     }
     case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS: {
-      auto vector = std::dynamic_pointer_cast<CacheableVector>(value);
-
-      if (vector != nullptr) {
-        auto size = vector->size();
+      if (auto&& vector = std::dynamic_pointer_cast<CacheableVector>(value)) {
+        const auto size = vector->size();
         int8_t** values = new int8_t*[size];
-        int* lengths = new int[size];
-        for (int i = 0; i < size; i++) {
-          auto val = dynamic_cast<CacheableBytes*>(vector->at(i).get());
-          if (val != nullptr) {
-            values[i] = (int8_t*)val->value();
+        auto lengths = new int[size];
+        size_t i = 0;
+        for (auto&& entry : *vector) {
+          if (auto&& val = std::dynamic_pointer_cast<CacheableBytes>(entry)) {
+            values[i] = const_cast<int8_t*>(
+                reinterpret_cast<const int8_t*>(val->value()));
             lengths[i] = val->length();
           }
+          i++;
         }
         writer->writeArrayOfByteArrays(fieldName, values,
                                        static_cast<int>(size), lengths);
@@ -264,9 +243,8 @@ void PdxInstanceImpl::writeField(std::shared_ptr<PdxWriter> writer,
       break;
     }
     case PdxFieldTypes::OBJECT_ARRAY: {
-      auto objArray = std::dynamic_pointer_cast<CacheableObjectArray>(value);
-      if (objArray != nullptr) {
-        writer->writeObjectArray(fieldName, objArray);
+      if (auto&& val = std::dynamic_pointer_cast<CacheableObjectArray>(value)) {
+        writer->writeObjectArray(fieldName, val);
       }
       break;
     }
@@ -834,26 +812,24 @@ char16_t PdxInstanceImpl::getCharField(const std::string& fieldname) const {
   return dataInput->readInt16();
 }
 
+std::string PdxInstanceImpl::getStringField(
+    const std::string& fieldname) const {
+  auto dataInput = getDataInputForField(fieldname);
+  return dataInput->readString();
+}
+
 void PdxInstanceImpl::getField(const std::string& fieldname, bool** value,
                                int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   dataInput->readBooleanArray(value, length);
 }
 
-void PdxInstanceImpl::getField(const std::string& fieldname,
-                               signed char** value, int32_t& length) const {
+void PdxInstanceImpl::getField(const std::string& fieldname, int8_t** value,
+                               int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   int8_t* temp = nullptr;
   dataInput->readByteArray(&temp, length);
-  *value = (signed char*)temp;
-}
-
-void PdxInstanceImpl::getField(const std::string& fieldname,
-                               unsigned char** value, int32_t& length) const {
-  auto dataInput = getDataInputForField(fieldname);
-  int8_t* temp = nullptr;
-  dataInput->readByteArray(&temp, length);
-  *value = reinterpret_cast<unsigned char*>(temp);
+  *value = temp;
 }
 
 void PdxInstanceImpl::getField(const std::string& fieldname, int16_t** value,
@@ -886,31 +862,18 @@ void PdxInstanceImpl::getField(const std::string& fieldname, double** value,
   dataInput->readDoubleArray(value, length);
 }
 
-void PdxInstanceImpl::getField(const std::string& fieldname, wchar_t** value,
-                               int32_t& length) const {
-  auto dataInput = getDataInputForField(fieldname);
-  dataInput->readWideCharArray(value, length);
-}
-
-void PdxInstanceImpl::getField(const std::string& fieldname, char** value,
+void PdxInstanceImpl::getField(const std::string& fieldname, char16_t** value,
                                int32_t& length) const {
   auto dataInput = getDataInputForField(fieldname);
   dataInput->readCharArray(value, length);
 }
 
-void PdxInstanceImpl::getField(const std::string& fieldname,
-                               char** value) const {
+std::vector<std::string> PdxInstanceImpl::getStringArrayField(
+    const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  char* temp = nullptr;
-  dataInput->readString(&temp);
-  *value = temp;
+  return dataInput->readStringArray();
 }
 
-void PdxInstanceImpl::getField(const std::string& fieldname, char*** value,
-                               int32_t& length) const {
-  auto dataInput = getDataInputForField(fieldname);
-  dataInput->readStringArray(value, length);
-}
 std::shared_ptr<CacheableDate> PdxInstanceImpl::getCacheableDateField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
@@ -918,6 +881,7 @@ std::shared_ptr<CacheableDate> PdxInstanceImpl::getCacheableDateField(
   value->fromData(*dataInput);
   return value;
 }
+
 std::shared_ptr<Cacheable> PdxInstanceImpl::getCacheableField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
@@ -1008,38 +972,31 @@ std::string PdxInstanceImpl::toString() const {
         break;
       }
       case PdxFieldTypes::STRING: {
-        char* value = 0;
-        getField(identityFields.at(i)->getFieldName(), &value);
+        auto value = getStringField(identityFields.at(i)->getFieldName());
         toString += value;
         break;
       }
       case PdxFieldTypes::CHAR_ARRAY: {
-        wchar_t* value = 0;
+        char16_t* value = 0;
         int32_t length;
         getField(identityFields.at(i)->getFieldName(), &value, length);
         if (length > 0) {
           for (int i = 0; i < length; i++) {
-            // TODO string fix mismatch from wchar to char16_t
-            toString += static_cast<char>(value[i]);
+            toString += to_utf8(std::u16string(value, length));
           }
           GF_SAFE_DELETE_ARRAY(value);
         }
         break;
       }
       case PdxFieldTypes::STRING_ARRAY: {
-        char** value = 0;
-        int32_t length;
-        getField(identityFields.at(i)->getFieldName(), &value, length);
-        if (length > 0) {
-          for (int i = 0; i < length; i++) {
-            toString += value[i];
-          }
-          GF_SAFE_DELETE_ARRAY(value);
+        auto value = getStringArrayField(identityFields.at(i)->getFieldName());
+        for (auto&& v : value) {
+          toString += v;
         }
         break;
       }
       case PdxFieldTypes::BYTE_ARRAY: {
-        signed char* value = 0;
+        int8_t* value = 0;
         int32_t length;
         getField(identityFields.at(i)->getFieldName(), &value, length);
         if (length > 0) {
@@ -1731,10 +1688,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName, bool value) {
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BOOLEAN) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = CacheableBoolean::create(value);
   m_updatedFields[fieldName] = cacheableObject;
@@ -1746,10 +1702,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName,
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = CacheableByte::create(value);
   m_updatedFields[fieldName] = cacheableObject;
@@ -1761,10 +1716,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName,
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = CacheableByte::create(value);
   m_updatedFields[fieldName] = cacheableObject;
@@ -1775,10 +1729,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName, int16_t value) {
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::SHORT) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = CacheableInt16::create(value);
   m_updatedFields[fieldName] = cacheableObject;
@@ -1790,10 +1743,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName, int32_t value) {
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::INT) {
     char excpStr[256] = {0};
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = CacheableInt32::create(value);
   m_updatedFields[fieldName] = cacheableObject;
@@ -1804,10 +1756,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName, int64_t value) {
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::LONG) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = CacheableInt64::create(value);
   m_updatedFields[fieldName] = cacheableObject;
@@ -1815,7 +1766,7 @@ void PdxInstanceImpl::setField(const std::string& fieldName, int64_t value) {
 
 void PdxInstanceImpl::setField(const std::string& fieldName, float value) {
   auto pt = getPdxType();
-  auto pft = pt->getPdxField(fieldName.c_str());
+  auto pft = pt->getPdxField(fieldName);
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::FLOAT) {
     throw IllegalStateException(
@@ -1832,10 +1783,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName, double value) {
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::DOUBLE) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = CacheableDouble::create(value);
   m_updatedFields[fieldName] = cacheableObject;
@@ -1846,10 +1796,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName, char16_t value) {
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::CHAR) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = CacheableCharacter::create(value);
   m_updatedFields[fieldName] = cacheableObject;
@@ -1861,10 +1810,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName,
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::DATE) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = value;
   m_updatedFields[fieldName] = cacheableObject;
@@ -1876,10 +1824,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName,
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::OBJECT) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   m_updatedFields[fieldName] = value;
 }
@@ -1890,10 +1837,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName,
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::OBJECT_ARRAY) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   m_updatedFields[fieldName] = value;
 }
@@ -1904,43 +1850,25 @@ void PdxInstanceImpl::setField(const std::string& fieldName, bool* value,
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BOOLEAN_ARRAY) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = BooleanArray::create(value, length);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const std::string& fieldName, signed char* value,
+void PdxInstanceImpl::setField(const std::string& fieldName, int8_t* value,
                                int32_t length) {
   auto pt = getPdxType();
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE_ARRAY) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
-  auto cacheableObject =
-      CacheableBytes::create(reinterpret_cast<uint8_t*>(value), length);
-  m_updatedFields[fieldName] = cacheableObject;
-}
-
-void PdxInstanceImpl::setField(const std::string& fieldName,
-                               unsigned char* value, int32_t length) {
-  auto pt = getPdxType();
-  auto pft = pt->getPdxField(fieldName.c_str());
-
-  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::BYTE_ARRAY) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
-  }
-  auto cacheableObject = CacheableBytes::create((uint8_t*)value, length);
+  auto cacheableObject = CacheableBytes::create(value, length);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
@@ -1950,10 +1878,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName, int16_t* value,
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::SHORT_ARRAY) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = CacheableInt16Array::create(value, length);
   m_updatedFields[fieldName] = cacheableObject;
@@ -1965,10 +1892,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName, int32_t* value,
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::INT_ARRAY) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = CacheableInt32Array::create(value, length);
   m_updatedFields[fieldName] = cacheableObject;
@@ -1980,10 +1906,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName, int64_t* value,
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::LONG_ARRAY) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = CacheableInt64Array::create(value, length);
   m_updatedFields[fieldName] = cacheableObject;
@@ -1995,10 +1920,9 @@ void PdxInstanceImpl::setField(const std::string& fieldName, float* value,
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::FLOAT_ARRAY) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = CacheableFloatArray::create(value, length);
   m_updatedFields[fieldName] = cacheableObject;
@@ -2010,59 +1934,37 @@ void PdxInstanceImpl::setField(const std::string& fieldName, double* value,
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::DOUBLE_ARRAY) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = CacheableDoubleArray::create(value, length);
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const std::string& fieldName, wchar_t* value,
+void PdxInstanceImpl::setField(const std::string& fieldName, char16_t* value,
                                int32_t length) {
   auto pt = getPdxType();
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::CHAR_ARRAY) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto ptr = CharArray::create(value, length);
   m_updatedFields[fieldName] = ptr;
 }
 
-void PdxInstanceImpl::setField(const std::string& fieldName, char* value,
-                               int32_t length) {
-  auto pt = getPdxType();
-  auto pft = pt->getPdxField(fieldName.c_str());
-
-  if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::CHAR_ARRAY) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
-  }
-  size_t size = strlen(value) + 1;
-  wchar_t* tempWideCharArray = new wchar_t[size];
-  mbstowcs(tempWideCharArray, value, size);
-  auto ptr = CharArray::create(tempWideCharArray, length);
-  m_updatedFields[fieldName] = ptr;
-  delete[] tempWideCharArray;
-}
-
 void PdxInstanceImpl::setField(const std::string& fieldName,
-                               const char* value) {
+                               const std::string& value) {
   auto pt = getPdxType();
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto ptr = CacheableString::create(value);
   m_updatedFields[fieldName] = ptr;
@@ -2075,30 +1977,27 @@ void PdxInstanceImpl::setField(const std::string& fieldName, int8_t** value,
 
   if (pft != nullptr &&
       pft->getTypeId() != PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject = CacheableVector::create();
   for (int i = 0; i < arrayLength; i++) {
-    auto ptr = CacheableBytes::create(reinterpret_cast<uint8_t*>(value[i]),
-                                      elementLength[i]);
+    auto ptr = CacheableBytes::create(value[i], elementLength[i]);
     cacheableObject->push_back(ptr);
   }
   m_updatedFields[fieldName] = cacheableObject;
 }
 
-void PdxInstanceImpl::setField(const std::string& fieldName, char** value,
+void PdxInstanceImpl::setField(const std::string& fieldName, std::string* value,
                                int32_t length) {
   auto pt = getPdxType();
   auto pft = pt->getPdxField(fieldName.c_str());
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::STRING_ARRAY) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + fieldName +
-        " or type of field not matched " +
-        (pft != nullptr ? pft->toString().c_str() : ""));
+    throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
+                                " or type of field not matched " +
+                                (pft != nullptr ? pft->toString() : ""));
   }
   std::shared_ptr<CacheableString>* ptrArr = nullptr;
   if (length > 0) {

@@ -104,34 +104,6 @@ class TestDataInput {
 
   double readDouble() { return m_dataInput.readDouble(); }
 
-  void readASCII(char **value, uint16_t *len = nullptr) {
-    m_dataInput.readASCII(value, len);
-  }
-
-  void readASCIIHuge(char **value, uint32_t *len = nullptr) {
-    m_dataInput.readASCIIHuge(value, len);
-  }
-
-  void readUTF(char **value, uint16_t *len = nullptr) {
-    m_dataInput.readUTF(value, len);
-  }
-
-  void readUTFHuge(char **value, uint32_t *len = nullptr) {
-    m_dataInput.readUTFHuge(value, len);
-  }
-
-  void readUTFNoLen(wchar_t **value, uint16_t decodedLen) {
-    m_dataInput.readUTFNoLen(value, decodedLen);
-  }
-
-  void readUTF(wchar_t **value, uint16_t *len = nullptr) {
-    m_dataInput.readUTF(value, len);
-  }
-
-  void readUTFHuge(wchar_t **value, uint32_t *len = nullptr) {
-    m_dataInput.readUTFHuge(value, len);
-  }
-
   template <class PTR>
   void readObject(std::shared_ptr<PTR> &ptr,
                   bool throwOnError = DINP_THROWONERROR_DEFAULT) {
@@ -142,11 +114,6 @@ class TestDataInput {
 
   int32_t readNativeInt32() { return m_dataInput.readNativeInt32(); }
 
-  bool readNativeString(std::shared_ptr<CacheableString> &csPtr) {
-    csPtr = m_dataInput.readNativeString();
-    return csPtr != nullptr;
-  }
-
   std::shared_ptr<Serializable> readDirectObject(int8_t typeId = -1) {
     return m_dataInput.readDirectObject(typeId);
   }
@@ -155,20 +122,12 @@ class TestDataInput {
     m_dataInput.readObject(ptr);
   }
 
-  void readCharArray(char **value, int32_t &length) {
+  void readCharArray(char16_t **value, int32_t &length) {
     m_dataInput.readCharArray(value, length);
   }
 
-  void readString(char **value) { m_dataInput.readString(value); }
-
-  void readWideString(wchar_t **value) { m_dataInput.readWideString(value); }
-
-  void readStringArray(char ***strArray, int32_t &length) {
-    m_dataInput.readStringArray(strArray, length);
-  }
-
-  void readWideStringArray(wchar_t ***strArray, int32_t &length) {
-    m_dataInput.readWideStringArray(strArray, length);
+  std::vector<std::string> readStringArray() {
+    return m_dataInput.readStringArray();
   }
 
   void readArrayOfByteArrays(int8_t ***arrayofBytearr, int32_t &arrayLength,
@@ -199,6 +158,11 @@ class TestDataInput {
 
   void setPoolName(const std::string &poolName) {
     DataInputInternal::setPoolName(m_dataInput, poolName);
+  }
+
+  template <class CharT = char, class... Tail>
+  inline std::basic_string<CharT, Tail...> readUTF() {
+    return m_dataInput.readUTF<CharT, Tail...>();
   }
 
   template <class CharT = char, class... Tail>
@@ -303,85 +267,16 @@ TEST_F(DataInputTest, CanReadIntWithAMaxSizeUnsigned64BitIntInput) {
   EXPECT_EQ(aInt, std::numeric_limits<uint64_t>::max());
 }
 
-TEST_F(DataInputTest, CanReadASCIIWithAnASCIIStringInput) {
-  char *actualString;
-  const char *expectedString = "foobar";
-  DataOutputInternal stream;
-
-  stream.writeASCII(expectedString);
-
-  DataInputUnderTest dataInput(stream.getBufferCopy(),
-                               stream.getBufferLength());
-  dataInput.readASCII(&actualString);
-
-  EXPECT_TRUE(std::string(expectedString) == std::string(actualString));
-}
-
-TEST_F(DataInputTest, ThrowsWhenCallingReadStringWithAnASCIIStringInput) {
-  char *actualString;
-  const char *expectedString = "foobar";
-  DataOutputInternal stream;
-  stream.writeASCII(expectedString);
-
-  DataInputUnderTest dataInput(stream.getBufferCopy(),
-                               stream.getBufferLength());
-
-  // ASCII and non-ASCII: consider matching exception string
-  ASSERT_THROW(dataInput.readString(&actualString),
-               apache::geode::client::IllegalArgumentException);
-}
-
-TEST_F(DataInputTest, CanReadASCIIWithAnUTFStringInput) {
-  char *actualString;
-  const char *expectedString = "foobar";
-  DataOutputInternal stream;
-  stream.writeUTF(expectedString);
-
-  DataInputUnderTest dataInput(stream.getBufferCopy(),
-                               stream.getBufferLength());
-  dataInput.readASCII(&actualString);
-
-  EXPECT_TRUE(std::string(expectedString) == std::string(actualString));
-}
-
-TEST_F(DataInputTest, ThrowsWhenCallingReadStringWithAnUTFStringInput) {
-  char *actualString;
-  const char *expectedString = "foobar";
-  DataOutputInternal stream;
-  stream.writeUTF(expectedString);
-
-  DataInputUnderTest dataInput(stream.getBufferCopy(),
-                               stream.getBufferLength());
-
-  // UTF and non-UTF: consider matching exception string
-  ASSERT_THROW(dataInput.readString(&actualString),
-               apache::geode::client::IllegalArgumentException);
-}
-
 TEST_F(DataInputTest, CanReadUTFWithAnUTFStringInput) {
-  char *actualString;
-  const char *expectedString = "foobar";
+  const std::string expectedString = "foobar";
   DataOutputInternal stream;
   stream.writeUTF(expectedString);
 
   DataInputUnderTest dataInput(stream.getBufferCopy(),
                                stream.getBufferLength());
-  dataInput.readUTF(&actualString);
+  auto actualString = dataInput.readUTF();
 
-  EXPECT_TRUE(std::string(expectedString) == std::string(actualString));
-}
-
-TEST_F(DataInputTest, CanReadUTFWithAnASCIIStringInput) {
-  char *actualString;
-  const char *expectedString = "foobar";
-  DataOutputInternal stream;
-  stream.writeASCII(expectedString);
-
-  DataInputUnderTest dataInput(stream.getBufferCopy(),
-                               stream.getBufferLength());
-  dataInput.readUTF(&actualString);
-
-  EXPECT_TRUE(std::string(expectedString) == std::string(actualString));
+  EXPECT_TRUE(expectedString == actualString);
 }
 
 TEST_F(DataInputTest, InputResetCausesPristineRead) {
@@ -573,81 +468,12 @@ TEST_F(DataInputTest, TestReadDouble) {
   EXPECT_DOUBLE_EQ(5.626349274901198e-221, value) << "Correct double";
 }
 
-TEST_F(DataInputTest, TestReadASCII) {
-  TestDataInput dataInput(
-      "001B596F7520686164206D65206174206D65617420746F726E61646F2E");
-  char *value = nullptr;
-  uint16_t len = 0U;
-  dataInput.readASCII(&value, &len);
-  ASSERT_EQ((uint16_t)27U, len) << "Correct length";
-  EXPECT_STREQ("You had me at meat tornado.", value) << "Correct char *";
-  DataInput::freeUTFMemory(value);
-}
-
-TEST_F(DataInputTest, TestReadASCIIHuge) {
-  TestDataInput dataInput(
-      "0000001B596F7520686164206D65206174206D65617420746F726E61646F2E");
-  char *value = nullptr;
-  uint32_t len = 0U;
-  dataInput.readASCIIHuge(&value, &len);
-  ASSERT_EQ((uint32_t)27U, len) << "Correct length";
-  EXPECT_STREQ("You had me at meat tornado.", value) << "Correct char *";
-  DataInput::freeUTFMemory(value);
-}
-
 TEST_F(DataInputTest, TestReadUTFNarrow) {
   TestDataInput dataInput(
       "001B596F7520686164206D65206174206D65617420746F726E61646F2E");
-  char *value = nullptr;
-  uint16_t len = 0U;
-  dataInput.readUTF(&value, &len);
-  ASSERT_EQ((uint16_t)27U, len) << "Correct length";
-  EXPECT_STREQ("You had me at meat tornado.", value) << "Correct char *";
-  DataInput::freeUTFMemory(value);
-}
-
-TEST_F(DataInputTest, TestReadUTFHugeNarrow) {
-  TestDataInput dataInput(
-      "0000001B0059006F007500200068006100640020006D00650020006100740020006D0065"
-      "0061007400200074006F0072006E00610064006F002E");
-  char *value = nullptr;
-  uint32_t len = 0U;
-  dataInput.readUTFHuge(&value, &len);
-  ASSERT_EQ((uint32_t)27U, len) << "Correct length";
-  EXPECT_STREQ("You had me at meat tornado.", value) << "Correct char *";
-  DataInput::freeUTFMemory(value);
-}
-
-TEST_F(DataInputTest, TestReadUTFNoLen) {
-  TestDataInput dataInput(
-      "596F7520686164206D65206174206D65617420746F726E61646F2E");
-  wchar_t *value = nullptr;
-  dataInput.readUTFNoLen(&value, static_cast<uint16_t>(27U));
-  EXPECT_STREQ(L"You had me at meat tornado.", value) << "Correct wchar_t *";
-  DataInput::freeUTFMemory(value);
-}
-
-TEST_F(DataInputTest, TestReadUTFWide) {
-  TestDataInput dataInput(
-      "001B596F7520686164206D65206174206D65617420746F726E61646F2E");
-  wchar_t *value = nullptr;
-  uint16_t len = 0U;
-  dataInput.readUTF(&value, &len);
-  ASSERT_EQ((uint16_t)27U, len) << "Correct length";
-  EXPECT_STREQ(L"You had me at meat tornado.", value) << "Correct wchar_t *";
-  DataInput::freeUTFMemory(value);
-}
-
-TEST_F(DataInputTest, TestReadUTFHugeWide) {
-  TestDataInput dataInput(
-      "0000001B0059006F007500200068006100640020006D00650020006100740020006D0065"
-      "0061007400200074006F0072006E00610064006F002E");
-  wchar_t *value = nullptr;
-  uint32_t len = 0U;
-  dataInput.readUTFHuge(&value, &len);
-  ASSERT_EQ((uint32_t)27U, len) << "Correct length";
-  EXPECT_STREQ(L"You had me at meat tornado.", value) << "Correct wchar_t *";
-  DataInput::freeUTFMemory(value);
+  auto value = dataInput.readUTF();
+  ASSERT_EQ(27, value.length()) << "Correct length";
+  EXPECT_EQ("You had me at meat tornado.", value) << "Correct string";
 }
 
 TEST_F(DataInputTest, TestReadObjectSharedPtr) {
@@ -669,15 +495,6 @@ TEST_F(DataInputTest, TestReadNativeInt32) {
   TestDataInput dataInput("0012345678");
   const int32_t value = dataInput.readNativeInt32();
   EXPECT_EQ((int32_t)305419896, value) << "Correct int32_t";
-}
-
-TEST_F(DataInputTest, TestReadNativeString) {
-  TestDataInput dataInput(
-      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E");
-  std::shared_ptr<CacheableString> objptr;
-  ASSERT_EQ(true, dataInput.readNativeString(objptr)) << "Successful read";
-  EXPECT_EQ("You had me at meat tornado.", objptr->toString())
-      << "Correct const char *";
 }
 
 TEST_F(DataInputTest, TestReadDirectObject) {
@@ -703,30 +520,20 @@ TEST_F(DataInputTest, TestReadCharArray) {
   TestDataInput dataInput(
       "1C0059006F007500200068006100640020006D00650020006100740020006D0065006100"
       "7400200074006F0072006E00610064006F002E0000");
-  char *value = nullptr;
+  char16_t *value = nullptr;
   int32_t length = 0;
   dataInput.readCharArray(&value, length);
   ASSERT_EQ((int32_t)28, length) << "Correct length";
-  EXPECT_STREQ((const char *)"You had me at meat tornado.", value)
+  EXPECT_EQ(std::u16string(u"You had me at meat tornado."),
+            std::u16string(value))
       << "Correct const char *";
 }
 
 TEST_F(DataInputTest, TestReadString) {
   TestDataInput dataInput(
       "57001B596F7520686164206D65206174206D65617420746F726E61646F2E");
-  char *value = nullptr;
-  dataInput.readString(&value);
-  EXPECT_STREQ("You had me at meat tornado.", value) << "Correct char *";
-  DataInput::freeUTFMemory(value);
-}
-
-TEST_F(DataInputTest, TestReadWideString) {
-  TestDataInput dataInput(
-      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E");
-  wchar_t *value = nullptr;
-  dataInput.readWideString(&value);
-  EXPECT_STREQ(L"You had me at meat tornado.", value) << "Correct wchar_t *";
-  DataInput::freeUTFMemory(value);
+  auto value = dataInput.readString();
+  EXPECT_EQ("You had me at meat tornado.", value) << "Correct std::string";
 }
 
 TEST_F(DataInputTest, TestReadStringToUtf8String) {
@@ -755,28 +562,38 @@ TEST_F(DataInputTest, TestReadStringToUtf16String) {
   EXPECT_EQ(expected, str);
 }
 
+TEST_F(DataInputTest, TestReadStringToUcs4String) {
+  auto expected = std::u32string(U"You had me at");
+  expected.push_back(0);
+  expected.append(U"meat tornad\u00F6!\U000F0000");
+
+  TestDataInput dataInput(
+      "2A0023596F7520686164206D65206174C0806D65617420746F726E6164C3B621EDAE80ED"
+      "B080");
+  auto str = dataInput.readString<char32_t>();
+
+  EXPECT_EQ(expected, str);
+}
+
+TEST_F(DataInputTest, TestReadStringToWideString) {
+  auto expected = std::wstring(L"You had me at");
+  expected.push_back(0);
+  expected.append(L"meat tornad\u00F6!\U000F0000");
+
+  TestDataInput dataInput(
+      "2A0023596F7520686164206D65206174C0806D65617420746F726E6164C3B621EDAE80ED"
+      "B080");
+  auto str = dataInput.readString<wchar_t>();
+
+  EXPECT_EQ(expected, str);
+}
+
 TEST_F(DataInputTest, TestReadStringArray) {
   TestDataInput dataInput(
       "0157001B596F7520686164206D65206174206D65617420746F726E61646F2E");
-  char **value = nullptr;
-  int32_t length = 0;
-  dataInput.readStringArray(&value, length);
-  ASSERT_EQ((int32_t)1, length) << "Correct length";
-  EXPECT_STREQ("You had me at meat tornado.", value[0]) << "Correct char *";
-  DataInput::freeUTFMemory(value[0]);
-  GF_SAFE_DELETE_ARRAY(value);
-}
-
-TEST_F(DataInputTest, TestReadWideStringArray) {
-  TestDataInput dataInput(
-      "0157001B596F7520686164206D65206174206D65617420746F726E61646F2E");
-  wchar_t **value = nullptr;
-  int32_t length = 0;
-  dataInput.readWideStringArray(&value, length);
-  ASSERT_EQ((int32_t)1, length) << "Correct length";
-  EXPECT_STREQ(L"You had me at meat tornado.", value[0]) << "Correct wchar_t *";
-  DataInput::freeUTFMemory(value[0]);
-  GF_SAFE_DELETE_ARRAY(value);
+  auto value = dataInput.readStringArray();
+  ASSERT_EQ(1, value.size()) << "Correct length";
+  EXPECT_EQ("You had me at meat tornado.", value[0]) << "Correct char *";
 }
 
 TEST_F(DataInputTest, TestReadArrayOfByteArrays) {

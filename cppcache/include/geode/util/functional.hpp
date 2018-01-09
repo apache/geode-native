@@ -106,10 +106,6 @@ struct geode_hash<std::u16string> {
 template <>
 struct geode_hash<std::string> {
   int32_t operator()(const std::string& val);
-//  {
-//    // TODO string optimize without conversion to UTF-16
-//    return geode_hash<std::u16string>{}(to_utf16(val));
-//  }
 };
 
 }  // namespace client

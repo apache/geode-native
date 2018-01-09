@@ -115,7 +115,7 @@ class BucketServerLocation : public ServerLocation {
     if (m_numServerGroups > 0) {
       serverGroups = new std::shared_ptr<CacheableString>[m_numServerGroups];
       for (int i = 0; i < m_numServerGroups; i++) {
-        serverGroups[i] = input.readNativeString();
+        serverGroups[i] = CacheableString::create(input.readString());
       }
     }
     if (m_numServerGroups > 0) {

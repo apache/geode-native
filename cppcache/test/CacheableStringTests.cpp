@@ -141,7 +141,7 @@ TEST_F(CacheableStringTests, TestToDataNonAscii) {
 
 TEST_F(CacheableStringTests, TestFromDataNonAscii) {
   std::string utf8(u8"You had me at meat tornad\u00F6.");
-  auto origStr = CacheableString::create(utf8.c_str());
+  auto origStr = CacheableString::create(utf8);
   DataOutputInternal out;
   origStr->toData(out);
 

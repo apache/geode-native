@@ -248,21 +248,6 @@ namespace Apache
                   gcnew CacheableString(obj) : nullptr);
         }
 
-        /// <summary>
-        /// Internal function to create a <c>apache::geode::client::CacheableString</c>
-        /// from the given managed string.
-        /// </summary>
-        static void GetCacheableString(String^ value,
-                                       std::shared_ptr<apache::geode::client::CacheableString>& cStr);
-
-        /// <summary>
-        /// Internal function to create a <c>apache::geode::client::CacheableString</c>
-        /// from the given managed array of characters.
-        /// </summary>
-        static void GetCacheableString(array<Char>^ value,
-                                       std::shared_ptr<apache::geode::client::CacheableString>& cStr);
-
-
         CacheableString(System::UInt32 type) : CacheableKey()
         {
           m_type = type;

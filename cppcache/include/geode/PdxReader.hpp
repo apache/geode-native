@@ -67,26 +67,15 @@ class CPPCACHE_EXPORT PdxReader {
   virtual ~PdxReader() {}
 
   /**
-   * Read a char value from the <code>PdxReader</code>.
-   * <p>C++ char is mapped to Java char</p>
-   * @param fieldName name of the field to read.
-   * @return value of type char.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
-   *
-   * @see PdxReader#hasField
-   */
-  virtual char readChar(const std::string& fieldName) = 0;
-
-  /**
    * Read a wide char value from the <code>PdxReader</code>.
-   * <p>C++ wchar_t is mapped to Java char</p>
+   * <p>C++ char16_t is mapped to Java char</p>
    * @param fieldName name of the field to read.
    * @return value of type wchar_t.
    * @throws IllegalStateException if PdxReader doesn't has the named field.
    *
    * @see PdxReader#hasField
    */
-  virtual wchar_t readWideChar(const std::string& fieldName) = 0;
+  virtual char16_t readChar(const std::string& fieldName) = 0;
 
   /**
    * Read a bool value from the <code>PdxReader</code>.
@@ -166,28 +155,16 @@ class CPPCACHE_EXPORT PdxReader {
   virtual double readDouble(const std::string& fieldName) = 0;
 
   /**
-   * Read a char* value from the <code>PdxReader</code>.
-   * <p>C++ char* is mapped to Java String</p>
+   * Read a std::string value from the <code>PdxReader</code>.
+   * <p>C++ std::string is mapped to Java String</p>
    * @param fieldName name of the field to read
-   * @return value of type char*. Refer to the class description for
+   * @return value of type std::string*. Refer to the class description for
    *         how to free the return value.
    * @throws IllegalStateException if PdxReader doesn't has the named field.
    *
    * @see PdxReader#hasField
    */
-  virtual char* readString(const std::string& fieldName) = 0;
-
-  /**
-   * Read a wchar_t* value from the <code>PdxReader</code>.
-   * <p>C++ wchar_t* is mapped to Java String</p>
-   * @param fieldName name of the field to read
-   * @return value of type wchar_t*. Refer to the class description for
-   *         how to free the return value.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
-   *
-   * @see PdxReader#hasField
-   */
-  virtual wchar_t* readWideString(const std::string& fieldName) = 0;
+  virtual std::string readString(const std::string& fieldName) = 0;
 
   /**
    * Read a std::shared_ptr<Cacheable> value from the <code>PdxReader</code>.
@@ -202,31 +179,17 @@ class CPPCACHE_EXPORT PdxReader {
       const std::string& fieldName) = 0;
 
   /**
-   * Read a char* value from the <code>PdxReader</code> and sets array length.
-   * <p>C++ char* is mapped to Java char[].</p>
+   * Read a char16_t* value from the <code>PdxReader</code> and sets array
+   * length. <p>C++ char16_t* is mapped to Java char[].</p>
    * @param fieldName name of the field to read
-   * @param length length is set with number of wchar_t elements.
-   * @return value of type char*.
+   * @param length length is set with number of char16_t elements.
+   * @return value of type char16_t*.
    * @throws IllegalStateException if PdxReader doesn't has the named field.
    *
    * @see PdxReader#hasField
    */
-  virtual char* readCharArray(const std::string& fieldName,
-                              int32_t& length) = 0;
-
-  /**
-   * Read a wchar_t* value from the <code>PdxReader</code> and sets array
-   * length.
-   * <p>C++ wchar_t* is mapped to Java char[].</p>
-   * @param fieldName name of the field to read
-   * @param length length is set with number of wchar_t elements.
-   * @return value of type wchar_t*.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
-   *
-   * @see PdxReader#hasField
-   */
-  virtual wchar_t* readWideCharArray(const std::string& fieldName,
-                                     int32_t& length) = 0;
+  virtual char16_t* readCharArray(const std::string& fieldName,
+                                  int32_t& length) = 0;
 
   /**
    * Read a bool* value from the <code>PdxReader</code> and sets array length.
@@ -322,33 +285,17 @@ class CPPCACHE_EXPORT PdxReader {
                                   int32_t& length) = 0;
 
   /**
-   * Read a char** value from the <code>PdxReader</code> and sets array length.
-   * <p>C++ char** is mapped to Java String[].</p>
+   * Read a array of strings from the <code>PdxReader</code>.
+   * <p>C++ std::vector<std::string> is mapped to Java String[].</p>
    * @param fieldName name of the field to read
-   * @param length length is set with number of char* elements
-   * @return value of type char**. Refer to the class description for
-   *         how to free the return value.
+   * @return value of type std::vector<std::string>. Refer to the class
+   * description for how to free the return value.
    * @throws IllegalStateException if PdxReader doesn't has the named field.
    *
    * @see PdxReader#hasField
    */
-  virtual char** readStringArray(const std::string& fieldName,
-                                 int32_t& length) = 0;
-
-  /**
-   * Read a wchar_t** value from the <code>PdxReader</code> and sets array
-   * length.
-   * <p>C++ wchar_t** is mapped to Java String[].</p>
-   * @param fieldName name of the field to read
-   * @param length length is set with number of wchar_t* elements
-   * @return value of type wchar_t**. Refer to the class description for
-   *         how to free the return value.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
-   *
-   * @see PdxReader#hasField
-   */
-  virtual wchar_t** readWideStringArray(const std::string& fieldName,
-                                        int32_t& length) = 0;
+  virtual std::vector<std::string> readStringArray(
+      const std::string& fieldName) = 0;
 
   /**
    * Read a std::shared_ptr<CacheableObjectArray> value from the

@@ -26,6 +26,7 @@
 #include <geode/util/chrono/duration.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/CacheableKey.hpp>
 
 #include "CppCacheLibrary.hpp"
 #include "util/Log.hpp"

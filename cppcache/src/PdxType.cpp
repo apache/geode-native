@@ -63,12 +63,10 @@ PdxType::PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr,
 void PdxType::toData(DataOutput& output) const {
   output.write(static_cast<int8_t>(GeodeTypeIdsImpl::DataSerializable));  // 45
   output.write(static_cast<int8_t>(GeodeTypeIdsImpl::Class));             // 43
-  output.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
-  output.writeUTF(m_javaPdxClass);
+  output.writeString(m_javaPdxClass);
 
   // m_className
-  output.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
-  output.writeUTF(m_className.c_str());
+  output.writeString(m_className);
 
   // m_noJavaClass
   output.writeBoolean(m_noJavaClass);
@@ -91,18 +89,10 @@ void PdxType::toData(DataOutput& output) const {
 
 void PdxType::fromData(DataInput& input) {
   input.read();  // ignore dsByte
-
   input.read();  // ignore classByte
+  input.readString();  // ignore classtypeId
 
-  input.read();  // ignore classtypeId
-  input.readUTF(const_cast<char**>(&m_javaPdxClass));
-
-  input.read();  // ignore int8_t classtypeId;2
-
-  char* tmp;
-  input.readUTF(&tmp);
-  m_className = std::string(tmp);
-  delete (tmp);
+  m_className = input.readString();
 
   m_noJavaClass = input.readBoolean();
 

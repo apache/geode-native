@@ -37,7 +37,6 @@ void CacheableObjectPartList::fromData(DataInput& input) {
   if (len > 0) {
     std::shared_ptr<CacheableKey> key;
     std::shared_ptr<Cacheable> value;
-    std::shared_ptr<CacheableString> exMsgPtr;
     std::shared_ptr<Exception> ex;
     // bool isException;
     int32_t keysOffset = (m_keysOffset != nullptr ? *m_keysOffset : 0);
@@ -60,20 +59,17 @@ void CacheableObjectPartList::fromData(DataInput& input) {
       if (byte == 2 /* for exception*/) {
         input.advanceCursor(input.readArrayLen());
         // input.readObject(exMsgPtr, true);// Changed
-        exMsgPtr = input.readNativeString();
-        if (m_exceptions != nullptr) {
-          auto&& exMsg = exMsgPtr->value();
-          if (exMsg == "org.apache.geode.security.NotAuthorizedException") {
-            std::string message("Authorization exception at server:");
-            message += exMsg;
-            ex = std::make_shared<NotAuthorizedException>(message);
-          } else {
-            std::string message("Exception at remote server:");
-            message += exMsg;
-            ex = std::make_shared<CacheServerException>(message);
-          }
-          m_exceptions->emplace(key, ex);
+        auto exMsg = input.readString();
+        if (exMsg == "org.apache.geode.security.NotAuthorizedException") {
+          std::string message("Authorization exception at server: ");
+          message += exMsg;
+          ex = std::make_shared<NotAuthorizedException>(message);
+        } else {
+          std::string message("Exception at remote server: ");
+          message += exMsg;
+          ex = std::make_shared<CacheServerException>(message);
         }
+        m_exceptions->emplace(key, ex);
       } else {
         input.readObject(value);
         std::shared_ptr<Cacheable> oldValue;

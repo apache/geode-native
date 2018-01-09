@@ -138,7 +138,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) const {
   }
 
   try {
-    pw->writeWideCharArray("", m_charArray, 2);
+    pw->writeCharArray("", m_charArray, 2);
     pw->markIdentityField("m_charArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -324,7 +324,7 @@ void InvalidPdxUsage::toData(std::shared_ptr<PdxWriter> pw) const {
   }
 
   try {
-    pw->writeStringArray("", m_stringArray, 2);
+    pw->writeStringArray("", m_stringArray);
     pw->markIdentityField("m_stringArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -476,7 +476,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   }
 
   try {
-    m_char = pr->readWideChar("");
+    m_char = pr->readChar("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readWideChar():: Got expected Exception :: %s ",
@@ -515,7 +515,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   }
 
   try {
-    m_charArray = pr->readWideCharArray("", charArrayLen);
+    m_charArray = pr->readCharArray("", charArrayLen);
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readWideCharArray():: Got expected Exception :: %s ",
@@ -671,7 +671,7 @@ void InvalidPdxUsage::fromData(std::shared_ptr<PdxReader> pr) {
   }
 
   try {
-    m_stringArray = pr->readStringArray("", strLenArray);
+    m_stringArray = pr->readStringArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readStringArray():: Got expected Exception :: %s ",
@@ -822,7 +822,7 @@ bool InvalidPdxUsage::equals(PdxTests::InvalidPdxUsage& other,
   genericValCompare(ot->m_uint32, m_uint32);
   genericValCompare(ot->m_ulong, m_ulong);
   genericValCompare(ot->m_char, m_char);
-  if (strcmp(ot->m_string, m_string) != 0) {
+  if (ot->m_string != m_string) {
     return false;
   }
   genericCompare(ot->m_byteArray, m_byteArray, byteArrayLen);

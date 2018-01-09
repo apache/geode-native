@@ -33,8 +33,7 @@ Position::Position(const char* id, int32_t out) {
   qty = out - (cnt % 2 == 0 ? 1000 : 100);
   mktValue = qty * 1.2345998;
   sharesOutstanding = out;
-  secType = new wchar_t[(wcslen(L"a") + 1)];
-  wcscpy(secType, L"a");
+  secType = L"a";
   pid = cnt++;
 }
 
@@ -51,16 +50,11 @@ Position::Position(int32_t iForExactVal) {
   qty = (iForExactVal % 2 == 0 ? 1000 : 100);
   mktValue = qty * 2;
   sharesOutstanding = iForExactVal;
-  secType = new wchar_t[(wcslen(L"a") + 1)];
-  wcscpy(secType, L"a");
+  secType = L"a";
   pid = iForExactVal;
 }
 
 Position::~Position() {
-  if (secType != NULL) {
-    // free(secType);
-    delete[] secType;
-  }
 }
 
 void Position::init() {
@@ -75,7 +69,7 @@ void Position::init() {
   qty = 0.0;
   secId = nullptr;
   secLinks = nullptr;
-  secType = NULL;
+  secType = L"";
   sharesOutstanding = 0;
   underlyer = nullptr;
   volatility = 0;
@@ -113,7 +107,7 @@ void Position::fromData(apache::geode::client::DataInput& input) {
   qty = input.readDouble();
   secId = input.readObject<CacheableString>();
   secLinks = input.readObject<CacheableString>();
-  input.readUTF(&secType);
+  secType = input.readUTF<wchar_t>();
   sharesOutstanding = input.readInt32();
   underlyer = input.readObject<CacheableString>();
   volatility = input.readInt64();
@@ -123,7 +117,7 @@ std::string Position::toString() const {
   char buf[2048];
   sprintf(buf,
           "Position Object:[ secId=%s type=%ls sharesOutstanding=%d id=%d ]",
-          secId->toString().c_str(), this->secType, this->sharesOutstanding,
-          this->pid);
+          secId->toString().c_str(), this->secType.c_str(),
+          this->sharesOutstanding, this->pid);
   return buf;
 }

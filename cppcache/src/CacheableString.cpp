@@ -131,24 +131,6 @@ int32_t CacheableString::hashcode() const {
   return m_hashcode;
 }
 
-void CacheableString::initString(const char* value, int32_t len) {
-  if (value) {
-    initString(len > 0 ? std::string(value, len) : std::string(value));
-  }
-}
-
-void CacheableString::initString(std::string&& value) {
-  m_str = std::move(value);
-
-  bool ascii = isAscii(m_str);
-
-  m_type = m_str.length() > std::numeric_limits<uint16_t>::max()
-               ? ascii ? GeodeTypeIds::CacheableASCIIStringHuge
-                       : GeodeTypeIds::CacheableStringHuge
-               : ascii ? GeodeTypeIds::CacheableASCIIString
-                       : GeodeTypeIds::CacheableString;
-}
-
 bool CacheableString::isAscii(const std::string& str) {
   for (auto&& c : str) {
     if (c & 0x80) {
@@ -158,15 +140,6 @@ bool CacheableString::isAscii(const std::string& str) {
   return true;
 }
 
-void CacheableString::initString(const wchar_t* value, int32_t len) {
-  if (value) {
-    auto&& convert =
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{};
-
-    initString(len > 0 ? convert.to_bytes(value, value + len)
-                       : convert.to_bytes(value));
-  }
-}
 
 CacheableString::~CacheableString() {}
 

@@ -220,27 +220,11 @@ TEST_F(DataOutputTest, TestWriteDouble) {
   EXPECT_BYTEARRAY_EQ("400921FB54442EEA", dataOutput.getByteArray());
 }
 
-TEST_F(DataOutputTest, TestWriteASCII) {
+TEST_F(DataOutputTest, TestWriteString) {
   TestDataOutput dataOutput(nullptr);
-  dataOutput.writeASCII("You had me at meat tornado.");
+  dataOutput.writeString("You had me at meat tornado.");
   EXPECT_BYTEARRAY_EQ(
-      "001B596F7520686164206D65206174206D65617420746F726E61646F2E",
-      dataOutput.getByteArray());
-}
-
-TEST_F(DataOutputTest, TestWriteNativeString) {
-  TestDataOutput dataOutput(nullptr);
-  dataOutput.writeNativeString("You had me at meat tornado.");
-  EXPECT_BYTEARRAY_EQ(
-      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E",
-      dataOutput.getByteArray());
-}
-
-TEST_F(DataOutputTest, TestWriteASCIIHuge) {
-  TestDataOutput dataOutput(nullptr);
-  dataOutput.writeASCIIHuge("You had me at meat tornado.");
-  EXPECT_BYTEARRAY_EQ(
-      "0000001B596F7520686164206D65206174206D65617420746F726E61646F2E",
+      "2A001B596F7520686164206D65206174206D65617420746F726E61646F2E",
       dataOutput.getByteArray());
 }
 
@@ -252,15 +236,6 @@ TEST_F(DataOutputTest, TestWriteUTF) {
       dataOutput.getByteArray());
 }
 
-TEST_F(DataOutputTest, TestWriteUTFHuge) {
-  TestDataOutput dataOutput(nullptr);
-  dataOutput.writeUTFHuge("You had me at meat tornado.");
-  EXPECT_BYTEARRAY_EQ(
-      "0000001B0059006F007500200068006100640020006D00650020006100740020006D0065"
-      "0061007400200074006F0072006E00610064006F002E",
-      dataOutput.getByteArray());
-}
-
 TEST_F(DataOutputTest, TestWriteUTFWide) {
   TestDataOutput dataOutput(nullptr);
   dataOutput.writeUTF(L"You had me at meat tornado!");
@@ -269,12 +244,12 @@ TEST_F(DataOutputTest, TestWriteUTFWide) {
       dataOutput.getByteArray());
 }
 
-TEST_F(DataOutputTest, TestWriteUTFHugeWide) {
+TEST_F(DataOutputTest, TestWriteChars) {
   TestDataOutput dataOutput(nullptr);
-  dataOutput.writeUTFHuge(L"You had me at meat tornado.");
+  dataOutput.writeChars("You had me at meat tornado.");
   EXPECT_BYTEARRAY_EQ(
-      "0000001B0059006F007500200068006100640020006D00650020006100740020006D0065"
-      "0061007400200074006F0072006E00610064006F002E",
+      "0059006F007500200068006100640020006D00650020006100740020006D006500610074"
+      "00200074006F0072006E00610064006F002E",
       dataOutput.getByteArray());
 }
 
@@ -302,14 +277,28 @@ TEST_F(DataOutputTest, TestWriteStringFromUtf16String) {
       dataOutput.getByteArray());
 }
 
-TEST_F(DataOutputTest, TestEncodedLength) {
+TEST_F(DataOutputTest, TestWriteStringFromUcs4String) {
   TestDataOutput dataOutput(nullptr);
-  EXPECT_EQ(27, dataOutput.getEncodedLength("You had me at meat tornado!"));
+  auto str = std::u32string(U"You had me at");
+  str.push_back(0);
+  str.append(U"meat tornad\u00F6!\U000F0000");
+  dataOutput.writeString(str);
+  EXPECT_BYTEARRAY_EQ(
+      "2A0023596F7520686164206D65206174C0806D65617420746F726E6164C3B621EDAE80ED"
+      "B080",
+      dataOutput.getByteArray());
 }
 
-TEST_F(DataOutputTest, TestEncodedLengthWide) {
+TEST_F(DataOutputTest, TestWriteStringFromWideString) {
   TestDataOutput dataOutput(nullptr);
-  EXPECT_EQ(27, dataOutput.getEncodedLength(L"You had me at meat tornado."));
+  auto str = std::wstring(L"You had me at");
+  str.push_back(0);
+  str.append(L"meat tornad\u00F6!\U000F0000");
+  dataOutput.writeString(str);
+  EXPECT_BYTEARRAY_EQ(
+      "2A0023596F7520686164206D65206174C0806D65617420746F726E6164C3B621EDAE80ED"
+      "B080",
+      dataOutput.getByteArray());
 }
 
 TEST_F(DataOutputTest, TestWriteObjectSharedPtr) {

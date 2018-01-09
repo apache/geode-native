@@ -28,10 +28,13 @@
 #include "CacheRegionHelper.hpp"
 #include "util/Log.hpp"
 #include "util/string.hpp"
+#include "util/JavaModifiedUtf8.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+using namespace internal;
 
 ACE_Recursive_Thread_Mutex g_bigBufferLock;
 uint32_t DataOutput::m_highWaterMark = 50 * 1024 * 1024;
@@ -140,11 +143,9 @@ const SerializationRegistry& DataOutput::getSerializationRegistry() const {
 
 const Cache* DataOutput::getCache() { return m_cache->getCache(); }
 
-void DataOutput::writeUtf16Huge(const std::string& value) {
-  writeUtf16Huge(to_utf16(value));
-}
-
-void DataOutput::writeJavaModifiedUtf8(const std::string& value) {
+template <class _Traits, class _Allocator>
+void DataOutput::writeJavaModifiedUtf8(
+    const std::basic_string<char, _Traits, _Allocator>& value) {
   /*
    * OPTIMIZE convert from UTF-8 to CESU-8/Java Modified UTF-8 directly
    * http://www.unicode.org/reports/tr26/
@@ -155,24 +156,99 @@ void DataOutput::writeJavaModifiedUtf8(const std::string& value) {
     writeJavaModifiedUtf8(to_utf16(value));
   }
 }
+template CPPCACHE_EXPORT void DataOutput::writeJavaModifiedUtf8(
+    const std::string&);
 
-void DataOutput::writeJavaModifiedUtf8(const std::u16string& value) {
+template <class _Traits, class _Allocator>
+void DataOutput::writeJavaModifiedUtf8(
+    const std::basic_string<char32_t, _Traits, _Allocator>& value) {
+  /*
+   * OPTIMIZE convert from UCS-4 to CESU-8/Java Modified UTF-8 directly
+   * http://www.unicode.org/reports/tr26/
+   */
   if (value.empty()) {
     writeInt(static_cast<uint16_t>(0));
   } else {
-    auto encodedLen = static_cast<uint16_t>(
-        std::min<size_t>(getJavaModifiedUtf8EncodedLength(value),
-                         std::numeric_limits<uint16_t>::max()));
-    writeInt(encodedLen);
-    ensureCapacity(encodedLen);
-    const auto end = m_buf + encodedLen;
-    auto data = value.data();
-    while (m_buf < end) {
-      encodeJavaModifiedUtf8(*data++);
-    }
-    if (m_buf > end) m_buf = end;
+    writeJavaModifiedUtf8(to_utf16(value));
   }
 }
+template CPPCACHE_EXPORT void DataOutput::writeJavaModifiedUtf8(
+    const std::u32string&);
+
+void DataOutput::writeJavaModifiedUtf8(const char32_t* data, size_t len) {
+  // TODO string optimize from UCS-4 to jmutf8
+  if (0 == len) {
+    writeInt(static_cast<uint16_t>(0));
+  } else {
+    writeJavaModifiedUtf8(to_utf16(data, len));
+  }
+}
+
+size_t DataOutput::getJavaModifiedUtf8EncodedLength(const char16_t* data,
+                                                    size_t length) {
+  return JavaModifiedUtf8::encodedLength(data, length);
+}
+
+template <class _Traits, class _Allocator>
+void DataOutput::writeUtf16Huge(
+    const std::basic_string<char, _Traits, _Allocator>& value) {
+  // TODO string OPTIMIZE convert from UTF-8 to UTF-16 directly
+  if (value.empty()) {
+    writeInt(static_cast<uint16_t>(0));
+  } else {
+    writeUtf16Huge(to_utf16(value));
+  }
+}
+template CPPCACHE_EXPORT void DataOutput::writeUtf16Huge(const std::string&);
+
+template <class _Traits, class _Allocator>
+void DataOutput::writeUtf16Huge(
+    const std::basic_string<char32_t, _Traits, _Allocator>& value) {
+  // TODO string OPTIMIZE convert from UCS-4 to UTF-16 directly
+  if (value.empty()) {
+    writeInt(static_cast<uint16_t>(0));
+  } else {
+    writeUtf16Huge(to_utf16(value));
+  }
+}
+template CPPCACHE_EXPORT void DataOutput::writeUtf16Huge(const std::u32string&);
+
+void DataOutput::writeUtf16Huge(const char32_t* data, size_t len) {
+  // TODO string optimize from UCS-4 to UTF-16
+  if (0 == len) {
+    writeInt(static_cast<uint16_t>(0));
+  } else {
+    writeUtf16Huge(to_utf16(data, len));
+  }
+}
+
+template <class _Traits, class _Allocator>
+void DataOutput::writeUtf16(
+    const std::basic_string<char, _Traits, _Allocator>& value) {
+  // TODO string OPTIMIZE convert from UTF-8 to UTF-16 directly
+  if (!value.empty()) {
+    writeUtf16(to_utf16(value));
+  }
+}
+template CPPCACHE_EXPORT void DataOutput::writeUtf16(const std::string&);
+
+template <class _Traits, class _Allocator>
+void DataOutput::writeUtf16(
+    const std::basic_string<char32_t, _Traits, _Allocator>& value) {
+  // TODO string OPTIMIZE convert from UCS-4 to UTF-16 directly
+  if (!value.empty()) {
+    writeUtf16(to_utf16(value));
+  }
+}
+template CPPCACHE_EXPORT void DataOutput::writeUtf16(const std::u32string&);
+
+void DataOutput::writeUtf16(const char32_t* data, size_t len) {
+  // TODO string optimize from UCS-4 to UTF-16
+  if (len > 0) {
+    writeUtf16(to_utf16(data, len));
+  }
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

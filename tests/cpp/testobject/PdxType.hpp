@@ -153,37 +153,27 @@ class TESTOBJECT_EXPORT Child : public Parent, public PdxSerializable {
 
 class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
  private:
-  char m_ch;
-  char16_t m_widechar;
-  char* m_chArray;
-  wchar_t* m_widecharArray;
+  char16_t m_ch;
+  char16_t* m_chArray;
 
   int32_t m_charArrayLen;
-  int32_t m_wcharArrayLen;
 
  public:
   inline void init() {
     m_ch = 'C';
-    m_widechar = L'a';
 
-    m_chArray = new char[2];
+    m_chArray = new char16_t[2];
     m_chArray[0] = 'X';
     m_chArray[1] = 'Y';
 
-    m_widecharArray = new wchar_t[2];
-    m_widecharArray[0] = L'x';
-    m_widecharArray[1] = L'y';
-
     m_charArrayLen = 0;
-    m_wcharArrayLen = 0;
   }
 
   CharTypes() { init(); }
 
   std::string toString() const override {
     char idbuf[1024];
-    sprintf(idbuf, "%c %lc %c %c %lc %lc", m_ch, m_widechar, m_chArray[0],
-            m_chArray[1], m_widecharArray[0], m_widecharArray[1]);
+    sprintf(idbuf, "%c %c %c", m_ch, m_chArray[0], m_chArray[1]);
     return idbuf;
   }
 
@@ -196,11 +186,8 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
     if (ot == this) {
       return true;
     }
-    LOGINFO(
-        "CharTypes::equals ot->m_ch = %c m_ch = %c AND ot->m_widechar = %lc "
-        "m_widechar = %lc",
-        ot->m_ch, m_ch, ot->m_widechar, m_widechar);
-    if (ot->m_ch != m_ch || ot->m_widechar != m_widechar) {
+    LOGINFO("CharTypes::equals ot->m_ch = %c m_ch = %c", ot->m_ch, m_ch);
+    if (ot->m_ch != m_ch) {
       return false;
     }
 
@@ -210,12 +197,7 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
           "CharTypes::equals Normal char array values ot->m_chArray[%d] = %c "
           "m_chArray[%d] = %c",
           i, ot->m_chArray[i], i, m_chArray[i]);
-      LOGINFO(
-          "CharTypes::equals Wide char array values ot->m_widecharArray[%d] = "
-          "%lc m_widecharArray[%d] = %lc",
-          i, ot->m_widecharArray[i], i, m_widecharArray[i]);
-      if (ot->m_chArray[i] != m_chArray[i] ||
-          ot->m_widecharArray[i] != m_widecharArray[i]) {
+      if (ot->m_chArray[i] != m_chArray[i]) {
         return false;
       } else {
         i++;
@@ -235,16 +217,12 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
 
   void toData(std::shared_ptr<PdxWriter> pw) const override {
     pw->writeChar("m_ch", m_ch);
-    pw->writeChar("m_widechar", m_widechar);
     pw->writeCharArray("m_chArray", m_chArray, 2);
-    pw->writeWideCharArray("m_widecharArray", m_widecharArray, 2);
   }
 
   void fromData(std::shared_ptr<PdxReader> pr) override {
     m_ch = pr->readChar("m_ch");
-    m_widechar = pr->readWideChar("m_widechar");
-    m_chArray = pr->readCharArray("m_chArray", m_wcharArrayLen);
-    m_widecharArray = pr->readWideCharArray("m_widecharArray", m_charArrayLen);
+    m_chArray = pr->readCharArray("m_chArray", m_charArrayLen);
   }
 
   static PdxSerializable* createDeserializable() { return new CharTypes(); }
@@ -254,16 +232,14 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
 class TESTOBJECT_EXPORT Address : public PdxSerializable {
  private:
   int32_t _aptNumber;
-  const char* _street;
-  const char* _city;
+  std::string _street;
+  std::string _city;
 
  public:
   Address() {}
 
   std::string toString() const override {
-    char idbuf[1024];
-    sprintf(idbuf, "%d %s %s", _aptNumber, _street, _city);
-    return idbuf;
+    return std::to_string(_aptNumber) + " " + _street + " " + _city;
   }
 
   Address(int32_t aptN, const char* street, const char* city) {
@@ -284,10 +260,10 @@ class TESTOBJECT_EXPORT Address : public PdxSerializable {
     if (ot->_aptNumber != _aptNumber) {
       return false;
     }
-    if (strcmp(ot->_street, _street) != 0) {
+    if (ot->_street != _street) {
       return false;
     }
-    if (strcmp(ot->_city, _city) != 0) {
+    if (ot->_city != _city) {
       return false;
     }
 
@@ -318,9 +294,9 @@ class TESTOBJECT_EXPORT Address : public PdxSerializable {
 
   int32_t getAptNum() { return _aptNumber; }
 
-  const char* getStreet() { return _street; }
+  const std::string& getStreet() { return _street; }
 
-  const char* getCity() { return _city; }
+  const std::string& getCity() { return _city; }
 
   /*static std::shared_ptr<Address> create(int32_t aptN, char* street, char*
   city)
@@ -348,13 +324,13 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
   float m_float;
   double m_double;
 
-  const char* m_string;
+  std::string m_string;
 
   bool* m_boolArray;
   int8_t* m_byteArray;
   int8_t* m_sbyteArray;  ///
 
-  wchar_t* m_charArray;
+  char16_t* m_charArray;
 
   std::shared_ptr<CacheableDate> m_date;
 
@@ -372,7 +348,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
 
   int8_t** m_byteByteArray;
 
-  char** m_stringArray;
+  std::vector<std::string> m_stringArray;
   std::shared_ptr<Serializable> m_address;
   Address* m_add[10];
 
@@ -443,7 +419,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
     m_sbyteArray[0] = 0x34;
     m_sbyteArray[1] = 0x64;
 
-    m_charArray = new wchar_t[2];
+    m_charArray = new char16_t[2];
     m_charArray[0] = L'c';
     m_charArray[1] = L'v';
 
@@ -496,16 +472,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
     m_byteByteArray[1][0] = 0x34;
     m_byteByteArray[1][1] = 0x55;
 
-    m_stringArray = new char*[2];
-    const char* str1 = "one";
-    const char* str2 = "two";
-
-    int size = static_cast<int>(strlen(str1));
-    for (int i = 0; i < 2; i++) {
-      m_stringArray[i] = new char[size];
-    }
-    m_stringArray[0] = const_cast<char*>(str1);
-    m_stringArray[1] = const_cast<char*>(str2);
+    m_stringArray = {"one", "two"};
 
     m_arraylist = CacheableArrayList::create();
     m_arraylist->push_back(CacheableInt32::create(1));
@@ -665,7 +632,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
 
   char16_t getChar() { return m_char; }
 
-  wchar_t* getCharArray() { return m_charArray; }
+  char16_t* getCharArray() { return m_charArray; }
 
   int8_t** getArrayOfByteArrays() { return m_byteByteArray; }
 
@@ -721,7 +688,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
 
   double getDouble() { return m_double; }
 
-  const char* getString() { return m_string; }
+  const std::string& getString() { return m_string; }
 
   bool* getBoolArray() { return m_boolArray; }
 
@@ -737,7 +704,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
 
   float* getFloatArray() { return m_floatArray; }
 
-  char** getStringArray() { return m_stringArray; }
+  const std::vector<std::string>& getStringArray() { return m_stringArray; }
 
   std::shared_ptr<CacheableDate> getDate() { return m_date; }
 

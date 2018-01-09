@@ -149,11 +149,11 @@ class TESTOBJECT_EXPORT PdxTypes3V2 : public PdxSerializable {
   std::shared_ptr<PdxUnreadFields> m_unreadFields;
   int32_t m_i1;
   int32_t m_i2;
-  char* m_str1;
+  std::string m_str1;
   int32_t m_i4;
   int32_t m_i3;
   int32_t m_i6;
-  char* m_str3;
+  std::string m_str3;
 
  public:
   PdxTypes3V2();
@@ -247,7 +247,7 @@ class TESTOBJECT_EXPORT PdxTypesR2V2 : public PdxSerializable {
   int32_t m_i5;
   int32_t m_i6;
 
-  char* m_str1;
+  std::string m_str1;
 
  public:
   PdxTypesR2V2();
@@ -341,7 +341,7 @@ class TESTOBJECT_EXPORT PdxVersionedV2 : public PdxSerializable {
   int64_t m_long;
   float m_float;
   double m_double;
-  char* m_string;
+  std::string m_string;
   bool* m_boolArray;
   char* m_charArray;
   std::shared_ptr<CacheableDate> m_dateTime;
@@ -397,7 +397,7 @@ class TESTOBJECT_EXPORT PdxVersionedV2 : public PdxSerializable {
 
 class TESTOBJECT_EXPORT TestKeyV2 {
  public:
-  char* _id;
+  std::string _id;
 
  public:
   TestKeyV2();
@@ -412,8 +412,8 @@ class TESTOBJECT_EXPORT TestKeyV2 {
 
 class TESTOBJECT_EXPORT TestDiffTypePdxSV2 {
  public:
-  char* _id;
-  char* _name;
+  std::string _id;
+  std::string _name;
   int _count;
 
  public:

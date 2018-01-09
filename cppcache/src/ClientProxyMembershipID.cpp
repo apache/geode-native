@@ -125,8 +125,7 @@ void ClientProxyMembershipID::initObjectVars(
   m_memID.writeInt(static_cast<int32_t>(temp));
   // m_memID.writeInt((int32_t)hostPort);
   m_memID.writeInt((int32_t)synch_counter);
-  m_memID.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
-  m_memID.writeASCII(hostname);
+  m_memID.writeString(hostname);
   m_memID.write(splitBrainFlag);  // splitbrain flags
 
   m_memID.writeInt(dcPort);
@@ -134,15 +133,12 @@ void ClientProxyMembershipID::initObjectVars(
   m_memID.writeInt(vPID);
   m_memID.write(vmkind);
   m_memID.writeArrayLen(ROLEARRLENGTH);
-  m_memID.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
-  m_memID.writeASCII(dsname);
-  m_memID.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
-  m_memID.writeASCII(uniqueTag);
+  m_memID.writeString(dsname);
+  m_memID.writeString(uniqueTag);
 
   if (durableClientId != nullptr &&
       durableClntTimeOut != std::chrono::seconds::zero()) {
-    m_memID.write(static_cast<int8_t>(GeodeTypeIds::CacheableASCIIString));
-    m_memID.writeASCII(durableClientId);
+    m_memID.writeString(durableClientId);
     const auto int32ptr = CacheableInt32::create(durableClntTimeOut.count());
     int32ptr->toData(m_memID);
   }

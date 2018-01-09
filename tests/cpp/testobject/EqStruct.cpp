@@ -142,37 +142,37 @@ void EqStruct::toData(apache::geode::client::DataOutput &out) const {
 
 void EqStruct::fromData(apache::geode::client::DataInput &in) {
   // Strings
-  in.readUTF(&state);
-  in.readUTF(&demandInd);
-  in.readUTF(&side);
-  in.readUTF(&ordType);
-  in.readUTF(&senderCompID);
-  in.readUTF(&tarCompID);
-  in.readUTF(&tarSubID);
-  in.readUTF(&handlInst);
-  in.readUTF(&orderID);
-  in.readUTF(&timeInForce);
-  in.readUTF(&clOrdID);
-  in.readUTF(&orderCapacity);
-  in.readUTF(&symbol);
-  in.readUTF(&symbolSfx);
-  in.readUTF(&execInst);
-  in.readUTF(&oldClOrdID);
-  in.readUTF(&discretionInst);
-  in.readUTF(&financeInd);
-  in.readUTF(&securityID);
-  in.readUTF(&targetCompID);
-  in.readUTF(&targetSubID);
-  in.readUTF(&clientAvailabilityKey);
-  in.readUTF(&var1);
-  in.readUTF(&var2);
-  in.readUTF(&var3);
-  in.readUTF(&var4);
-  in.readUTF(&var5);
-  in.readUTF(&var6);
-  in.readUTF(&var7);
-  in.readUTF(&var8);
-  in.readUTF(&var9);
+  state = in.readUTF();
+  demandInd = in.readUTF();
+  side = in.readUTF();
+  ordType = in.readUTF();
+  senderCompID = in.readUTF();
+  tarCompID = in.readUTF();
+  tarSubID = in.readUTF();
+  handlInst = in.readUTF();
+  orderID = in.readUTF();
+  timeInForce = in.readUTF();
+  clOrdID = in.readUTF();
+  orderCapacity = in.readUTF();
+  symbol = in.readUTF();
+  symbolSfx = in.readUTF();
+  execInst = in.readUTF();
+  oldClOrdID = in.readUTF();
+  discretionInst = in.readUTF();
+  financeInd = in.readUTF();
+  securityID = in.readUTF();
+  targetCompID = in.readUTF();
+  targetSubID = in.readUTF();
+  clientAvailabilityKey = in.readUTF();
+  var1 = in.readUTF();
+  var2 = in.readUTF();
+  var3 = in.readUTF();
+  var4 = in.readUTF();
+  var5 = in.readUTF();
+  var6 = in.readUTF();
+  var7 = in.readUTF();
+  var8 = in.readUTF();
+  var9 = in.readUTF();
 
   // ints
   myIndex = in.readInt32();

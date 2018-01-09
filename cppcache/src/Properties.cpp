@@ -24,6 +24,11 @@
 
 #include <geode/Properties.hpp>
 #include <geode/GeodeTypeIds.hpp>
+#include <geode/CacheableKey.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
 
 ACE_BEGIN_VERSIONED_NAMESPACE_DECL
 
@@ -259,21 +264,8 @@ void Properties::toData(DataOutput& output) const {
   output.writeArrayLen(mapSize);
   CacheableKeyCacheableMap::iterator iter = MAP->begin();
   while (iter != MAP->end()) {
-    // changed
-    CacheableString* csPtr =
-        dynamic_cast<CacheableString*>(((*iter).ext_id_).get());
-    if (csPtr == nullptr) {
-      output.writeObject((*iter).ext_id_);  // changed
-    } else {
-      output.writeNativeString(csPtr->value().c_str());
-    }
-
-    csPtr = dynamic_cast<CacheableString*>(((*iter).int_id_).get());
-    if (csPtr == nullptr) {
-      output.writeObject((*iter).int_id_);  // changed
-    } else {
-      output.writeNativeString(csPtr->value().c_str());
-    }
+    output.writeObject((*iter).ext_id_);
+    output.writeObject((*iter).int_id_);
     ++iter;
   }
 }
@@ -281,26 +273,9 @@ void Properties::toData(DataOutput& output) const {
 void Properties::fromData(DataInput& input) {
   int32_t mapSize = input.readArrayLen();
   for (int i = 0; i < mapSize; i++) {
-    std::shared_ptr<CacheableString> key;
-    std::shared_ptr<CacheableString> val;
-    // TODO: need to look just look typeid if string then convert otherwise
-    // continue with readobject
-
-    if (!(key = input.readNativeString())) {
-      std::shared_ptr<CacheableKey> keyPtr;
-      std::shared_ptr<Cacheable> valPtr;
-      keyPtr = input.readObject<CacheableKey>(true);
-      input.readObject(valPtr);
-      MAP->rebind(keyPtr, valPtr);
-    } else {
-      if (!(val = input.readNativeString())) {
-        std::shared_ptr<Cacheable> valPtr;
-        input.readObject(valPtr);
-        MAP->rebind(key, valPtr);
-      } else {
-        MAP->rebind(key, val);
-      }
-    }
+    auto key = input.readObject<CacheableKey>(true);
+    auto val = input.readObject<Cacheable>(true);
+    MAP->rebind(key, val);
   }
 }
 

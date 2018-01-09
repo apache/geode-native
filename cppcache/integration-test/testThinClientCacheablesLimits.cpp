@@ -112,8 +112,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
       char* ptrChar = createRandCharArray(keyArr[count]);
 
       auto emptyBytesArr = CacheableBytes::create();
-      auto bytePtrSent = CacheableBytes::createNoCopy(ptr, keyArr[count]);
-      auto stringPtrSent = CacheableString::create(ptrChar, keyArr[count]);
+      auto bytePtrSent = CacheableBytes::createNoCopy(
+          reinterpret_cast<int8_t*>(ptr), keyArr[count]);
+      auto stringPtrSent =
+          CacheableString::create(std::string(ptrChar, keyArr[count]));
 
       verifyReg->put(KEY_BYTE, bytePtrSent);
       verifyReg->put(KEY_STRING, stringPtrSent);

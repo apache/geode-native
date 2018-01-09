@@ -3413,8 +3413,8 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
   for (int32_t index = 0; index < len; ++index) {
     if (input.read() == 2 /* for exception*/) {
       input.advanceCursor(input.readArrayLen());  // skipLen
-      auto exMsgPtr = input.readNativeString();
-      throw IllegalStateException(exMsgPtr->value().c_str());
+      auto exMsgPtr = input.readString();
+      throw IllegalStateException(exMsgPtr);
     } else {
       if (isResultSet) {
         std::shared_ptr<Cacheable> value;
@@ -3478,7 +3478,6 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     return;
   }
 
-  char* isStructTypeImpl = nullptr;
   uint16_t stiLen = 0;
   // soubhik: ignoring parent classes for now
   // we will require to look at it once CQ is to be implemented.
@@ -3494,20 +3493,17 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
 
   input->read();  // this is Fixed ID byte (1)
   input->read();  // this is DataSerializable (45)
-  uint8_t classByte = input->read();
-  uint8_t stringType =
-      input->read();  // ignore string header - assume 64k string
-  input->readUTF(&isStructTypeImpl, &stiLen);
+  input->read();  // this is Class 43
+  const auto isStructTypeImpl = input->readString();
 
-  DeleteArray<char> delSTI(isStructTypeImpl);
-  if (strcmp(isStructTypeImpl, "org.apache.geode.cache.query.Struct") == 0) {
+  if (isStructTypeImpl == "org.apache.geode.cache.query.Struct") {
     int32_t numOfFldNames = input->readArrayLen();
     bool skip = false;
     if (m_structFieldNames.size() != 0) {
       skip = true;
     }
     for (int i = 0; i < numOfFldNames; i++) {
-      auto sptr = input->readNativeString();
+      auto sptr = input->readString();
       if (!skip) {
         m_structFieldNames.push_back(sptr);
       }

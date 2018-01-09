@@ -47,8 +47,7 @@ std::shared_ptr<CacheableString> convertBytesToString(const uint8_t* bytes,
       }
       str.append(byteStr, len);
     }
-    return CacheableString::create(str.data(),
-                                   static_cast<int32_t>(str.size()));
+    return CacheableString::create(str);
   }
   return CacheableString::create("");
 }
@@ -203,8 +202,8 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
     LOGINFO(" Converting CREDS to STRING: %s",
             signatureValPtr->toString().c_str());
   } else {
-    signatureValPtr =
-        CacheableBytes::createNoCopy(signatureData, lengthEncryptedData);
+    signatureValPtr = CacheableBytes::createNoCopy(
+        reinterpret_cast<int8_t*>(signatureData), lengthEncryptedData);
     LOGINFO(" Converting CREDS to BYTES: %s",
             signatureValPtr->toString().c_str());
   }

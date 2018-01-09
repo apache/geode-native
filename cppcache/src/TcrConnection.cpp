@@ -258,8 +258,7 @@ bool TcrConnection::InitTcrConnection(
             requireServerAuth ? "is" : "not");
 
         // Send the symmetric key algorithm name string
-        handShakeMsg->write(static_cast<int8_t>(GeodeTypeIds::CacheableString));
-        handShakeMsg->writeASCII(sysProp.securityClientDhAlgo().c_str());
+        handShakeMsg->writeString(sysProp.securityClientDhAlgo());
 
         // Send the client's DH public key to the server
         auto dhPubKey = m_dh->getPublicKey();
@@ -273,7 +272,7 @@ bool TcrConnection::InitTcrConnection(
             serverChallengeBytes[pos] = getrand(255);
           }
           serverChallenge = CacheableBytes::create(
-              reinterpret_cast<const uint8_t*>(serverChallengeBytes), 64);
+              reinterpret_cast<int8_t*>(serverChallengeBytes), 64);
           serverChallenge->toData(*handShakeMsg);
         }
       } else {                       // if isDhOn
@@ -400,8 +399,9 @@ bool TcrConnection::InitTcrConnection(
       m_hasServerQueue = NON_REDUNDANT_SERVER;
     }
     auto queueSizeMsg = readHandshakeData(4, connectTimeout);
-    auto dI = cacheImpl->createDataInput(queueSizeMsg->value(),
-                                                     queueSizeMsg->length());
+    auto dI = cacheImpl->createDataInput(
+        reinterpret_cast<const uint8_t*>(queueSizeMsg->value()),
+        queueSizeMsg->length());
     int32_t queueSize = 0;
     queueSize = dI->readInt32();
     m_queueSize = queueSize > 0 ? queueSize : 0;
@@ -431,15 +431,15 @@ bool TcrConnection::InitTcrConnection(
       // now check for array length headers - since GFE 5.7
       if (static_cast<int8_t>((*arrayLenHeader)[0]) == -2) {
         auto recvMsgLenBytes = readHandshakeData(2, connectTimeout);
-        auto dI2 =
-            m_connectionManager->getCacheImpl()->createDataInput(
-                recvMsgLenBytes->value(), recvMsgLenBytes->length());
+        auto dI2 = m_connectionManager->getCacheImpl()->createDataInput(
+            reinterpret_cast<const uint8_t*>(recvMsgLenBytes->value()),
+            recvMsgLenBytes->length());
         recvMsgLen = dI2->readInt16();
       } else if (static_cast<int8_t>((*arrayLenHeader)[0]) == -3) {
         auto recvMsgLenBytes = readHandshakeData(4, connectTimeout);
-        auto dI2 =
-            m_connectionManager->getCacheImpl()->createDataInput(
-                recvMsgLenBytes->value(), recvMsgLenBytes->length());
+        auto dI2 = m_connectionManager->getCacheImpl()->createDataInput(
+            reinterpret_cast<const uint8_t*>(recvMsgLenBytes->value()),
+            recvMsgLenBytes->length());
         recvMsgLen = dI2->readInt32();
       }
       auto recvMessage = readHandshakeData(recvMsgLen, connectTimeout);
@@ -447,7 +447,8 @@ bool TcrConnection::InitTcrConnection(
       if (getEndpointObject()->getDistributedMemberID() == 0) {
         LOGDEBUG("Deserializing distributed member Id");
         auto diForClient = cacheImpl->createDataInput(
-            recvMessage->value(), recvMessage->length());
+            reinterpret_cast<const uint8_t*>(recvMessage->value()),
+            recvMessage->length());
         std::shared_ptr<ClientProxyMembershipID> member;
         member = diForClient->readObject<ClientProxyMembershipID>();
         auto memId = cacheImpl->getMemberListForVersionStamp()->add(member);
@@ -458,15 +459,15 @@ bool TcrConnection::InitTcrConnection(
 
     auto recvMsgLenBytes = readHandshakeData(2, connectTimeout);
     auto dI3 = m_connectionManager->getCacheImpl()->createDataInput(
-        recvMsgLenBytes->value(), recvMsgLenBytes->length());
+        reinterpret_cast<const uint8_t*>(recvMsgLenBytes->value()),
+        recvMsgLenBytes->length());
     uint16_t recvMsgLen2 = dI3->readInt16();
     auto recvMessage = readHandshakeData(recvMsgLen2, connectTimeout);
 
     if (!isClientNotification) {
       auto deltaEnabledMsg = readHandshakeData(1, connectTimeout);
-      auto di =
-          m_connectionManager->getCacheImpl()->createDataInput(
-              deltaEnabledMsg->value(), 1);
+      auto di = m_connectionManager->getCacheImpl()->createDataInput(
+          reinterpret_cast<const uint8_t*>(deltaEnabledMsg->value()), 1);
       ThinClientBaseDM::setDeltaEnabledOnServer(di->readBoolean());
     }
 
@@ -1137,7 +1138,7 @@ std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeData(
   GF_NEW(recvMessage, char[msgLength + 1]);
   recvMessage[msgLength] = '\0';
   if (msgLength == 0) {
-    return CacheableBytes::createNoCopy(reinterpret_cast<uint8_t*>(recvMessage),
+    return CacheableBytes::createNoCopy(reinterpret_cast<int8_t*>(recvMessage),
                                         1);
   }
   if ((error = receiveData(recvMessage, msgLength, connectTimeout, false)) !=
@@ -1156,7 +1157,7 @@ std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeData(
                            "Handshake failure"));
     }
   } else {
-    return CacheableBytes::createNoCopy(reinterpret_cast<uint8_t*>(recvMessage),
+    return CacheableBytes::createNoCopy(reinterpret_cast<int8_t*>(recvMessage),
                                         msgLength + 1);
   }
   return nullptr;
@@ -1191,7 +1192,7 @@ std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeRawData(
     // not expected to be reached
     return nullptr;
   } else {
-    return CacheableBytes::createNoCopy(reinterpret_cast<uint8_t*>(recvMessage),
+    return CacheableBytes::createNoCopy(reinterpret_cast<int8_t*>(recvMessage),
                                         msgLength);
   }
 }
@@ -1206,9 +1207,9 @@ std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeByteArray(
 uint32_t TcrConnection::readHandshakeArraySize(
     std::chrono::microseconds connectTimeout) {
   auto codeBytes = readHandshakeData(1, connectTimeout);
-  auto codeDI =
-      m_connectionManager->getCacheImpl()->createDataInput(
-          codeBytes->value(), codeBytes->length());
+  auto codeDI = m_connectionManager->getCacheImpl()->createDataInput(
+      reinterpret_cast<const uint8_t*>(codeBytes->value()),
+      codeBytes->length());
   uint8_t code = codeDI->read();
   uint32_t arraySize = 0;
   if (code == 0xFF) {
@@ -1218,16 +1219,16 @@ uint32_t TcrConnection::readHandshakeArraySize(
     if (tempLen > 252) {  // 252 is java's ((byte)-4 && 0xFF)
       if (code == 0xFE) {
         auto lenBytes = readHandshakeData(2, connectTimeout);
-        auto lenDI =
-            m_connectionManager->getCacheImpl()->createDataInput(
-                lenBytes->value(), lenBytes->length());
+        auto lenDI = m_connectionManager->getCacheImpl()->createDataInput(
+            reinterpret_cast<const uint8_t*>(lenBytes->value()),
+            lenBytes->length());
         uint16_t val = lenDI->readInt16();
         tempLen = val;
       } else if (code == 0xFD) {
         auto lenBytes = readHandshakeData(4, connectTimeout);
-        auto lenDI =
-            m_connectionManager->getCacheImpl()->createDataInput(
-                lenBytes->value(), lenBytes->length());
+        auto lenDI = m_connectionManager->getCacheImpl()->createDataInput(
+            reinterpret_cast<const uint8_t*>(lenBytes->value()),
+            lenBytes->length());
         uint32_t val = lenDI->readInt32();
         tempLen = val;
       } else {
@@ -1358,9 +1359,9 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
     }
     case GeodeTypeIds::CacheableASCIIString: {
       auto lenBytes = readHandshakeData(2, connectTimeout);
-      auto lenDI =
-          m_connectionManager->getCacheImpl()->createDataInput(
-              lenBytes->value(), lenBytes->length());
+      auto lenDI = m_connectionManager->getCacheImpl()->createDataInput(
+          reinterpret_cast<const uint8_t*>(lenBytes->value()),
+          lenBytes->length());
       length = lenDI->readInt16();
 
       break;
@@ -1401,7 +1402,8 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
     return nullptr;
   } else {
     LOGDEBUG(" Received string data [%s]", recvMessage.get());
-    auto retval = CacheableString::create(recvMessage.get(), length);
+    auto retval =
+        CacheableString::create(std::string(recvMessage.get(), length));
     return retval;
   }
 }

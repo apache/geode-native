@@ -57,7 +57,7 @@ DUNIT_TASK(CLIENT2, SetupClient2)
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
     auto regPtr = getHelper()->getRegion(regionNames[0]);
-    auto key = CacheableKey::create((const char*)"key01");
+    auto key = CacheableKey::create("key01");
     ASSERT(!regPtr->containsKeyOnServer(key), "key should not be there");
   }
 END_TASK(SetupClient2)
@@ -65,9 +65,9 @@ END_TASK(SetupClient2)
 DUNIT_TASK(CLIENT1, puts)
   {
     auto regPtr = getHelper()->getRegion(regionNames[0]);
-    auto keyPtr = CacheableKey::create((const char*)"key01");
+    auto keyPtr = CacheableKey::create("key01");
     auto valPtr =
-        CacheableBytes::create(reinterpret_cast<const uint8_t*>("value01"), 7);
+        CacheableBytes::create(reinterpret_cast<const int8_t*>("value01"), 7);
     regPtr->put(keyPtr, valPtr);
     ASSERT(regPtr->containsKeyOnServer(keyPtr), "key should be there");
   }
@@ -76,7 +76,7 @@ END_TASK(puts)
 DUNIT_TASK(CLIENT2, VerifyPuts)
   {
     auto regPtr = getHelper()->getRegion(regionNames[0]);
-    auto keyPtr = CacheableKey::create((const char*)"key01");
+    auto keyPtr = CacheableKey::create("key01");
     ASSERT(regPtr->containsKeyOnServer(keyPtr), "key should be there");
   }
 END_TASK(VerifyPuts)

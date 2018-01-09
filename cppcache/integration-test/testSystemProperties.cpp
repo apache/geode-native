@@ -18,8 +18,9 @@
 #define ROOT_NAME "testSystemProperties"
 
 #include "fw_helper.hpp"
-#include "geode/SystemProperties.hpp"
-#include "geode/Properties.hpp"
+#include <geode/SystemProperties.hpp>
+#include <geode/Properties.hpp>
+#include <geode/CacheableString.hpp>
 
 #ifndef WIN32
 #include <unistd.h>

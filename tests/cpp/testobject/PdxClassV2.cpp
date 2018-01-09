@@ -204,24 +204,24 @@ std::string PdxTypes2V2::toString() const {
           "m_i5=%d ] [ m_i6=%d ]",
           m_i1, m_i2, m_i3, m_i4, m_i5, m_i6);
   return idbuf;
- }
+}
 
- /************************************************************
-  *  PdxTypes3V2
-  * *********************************************************/
+/************************************************************
+ *  PdxTypes3V2
+ * *********************************************************/
 
- int PdxTypes3V2::m_diffInSameFields = 0;
- int PdxTypes3V2::m_diffInExtraFields = 0;
- bool PdxTypes3V2::m_useWeakHashMap = false;
+int PdxTypes3V2::m_diffInSameFields = 0;
+int PdxTypes3V2::m_diffInExtraFields = 0;
+bool PdxTypes3V2::m_useWeakHashMap = false;
 
- PdxTypes3V2::PdxTypes3V2() {
-   m_i1 = 1;
-   m_i2 = 21;
-   m_str1 = (char *)"common";
-   m_i4 = 41;
-   m_i3 = 31;
-   m_i6 = 0;
-   m_str3 = (char *)"0";
+PdxTypes3V2::PdxTypes3V2() {
+  m_i1 = 1;
+  m_i2 = 21;
+  m_str1 = (char *)"common";
+  m_i4 = 41;
+  m_i3 = 31;
+  m_i6 = 0;
+  m_str3 = (char *)"0";
 }
 
 PdxTypes3V2::~PdxTypes3V2() {
@@ -252,7 +252,7 @@ bool PdxTypes3V2::equals(std::shared_ptr<PdxSerializable> obj) {
       m_i3 + m_diffInSameFields <= pap->m_i3 &&
       m_i4 + m_diffInSameFields <= pap->m_i4 &&
       m_i6 + m_diffInExtraFields == pap->m_i6) {
-    if (strcmp(m_str1, pap->m_str1) == 0 && strcmp(m_str3, pap->m_str3) <= 0) {
+    if (m_str1 == pap->m_str1 && m_str3 <= pap->m_str3) {
       return true;
     }
   }
@@ -286,31 +286,21 @@ void PdxTypes3V2::fromData(std::shared_ptr<PdxReader> pr) {
   m_i4 = pr->readInt("i4");
   m_i3 = pr->readInt("i3");
   m_i6 = pr->readInt("i6");
-  char *tmp = pr->readString("m_str3");
+  auto tmp = pr->readString("m_str3");
 
   char extraFieldsStr[20];
-  if (tmp == NULL) {
-    sprintf(extraFieldsStr, "%d", m_diffInExtraFields);
-    size_t strSize = strlen(extraFieldsStr) + 1;
-    m_str3 = new char[strSize];
-    memcpy(m_str3, extraFieldsStr, strSize);
+  if (tmp.empty()) {
+    m_str3 = std::to_string(m_diffInExtraFields);
   } else {
-    sprintf(extraFieldsStr,
-            "%d"
-            "%s",
-            m_diffInExtraFields, m_str3);
-    size_t strSize = strlen(extraFieldsStr) + 1;
-    m_str3 = new char[strSize];
-    memcpy(m_str3, extraFieldsStr, strSize);
+    m_str3 = std::to_string(m_diffInExtraFields) + m_str3;
   }
 }
+
 std::string PdxTypes3V2::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf,
-          "PdxTypes3V2:[ m_i1=%d ] [ m_i2=%d ] [m_str1=%s] [ m_i3=%d ] [ "
-          "m_i4=%d ] [ m_i6=%d ] [m_str3=%s]",
-          m_i1, m_i2, m_str1, m_i3, m_i4, m_i6, m_str3);
-  return idbuf;
+  return "PdxTypes3V2:[ m_i1=" + std::to_string(m_i1) +
+         " ] [ m_i2=" + std::to_string(m_i2) + " ] [m_str1=" + m_str1 +
+         "] [ m_i3=" + std::to_string(m_i3) +
+         " ] [  m_i4=" + std::to_string(m_i4) + " ] [m_str3=" + m_str3 + "]";
 }
 
 /************************************************************
@@ -449,9 +439,7 @@ bool PdxTypesR2V2::equals(std::shared_ptr<PdxSerializable> obj) {
       m_i2 + m_diffInSameFields <= pap->m_i2 &&
       m_i3 + m_diffInSameFields <= pap->m_i3 &&
       m_i4 + m_diffInSameFields <= pap->m_i4) {
-    char tmp[20] = {0};
-    sprintf(tmp, "%d", m_diffInExtraFields);
-    if (strcmp(pap->m_str1, tmp) == 0) {
+    if (pap->m_str1 == std::to_string(m_diffInExtraFields)) {
       if (m_i5 + m_diffInExtraFields == pap->m_i5 &&
           m_i6 + m_diffInExtraFields == pap->m_i6) {
         return true;
@@ -493,12 +481,12 @@ void PdxTypesR2V2::fromData(std::shared_ptr<PdxReader> pr) {
   m_str1 = pr->readString("m_str1");
 }
 std::string PdxTypesR2V2::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf,
-          "PdxTypesR2V2:[ m_i1=%d ] [m_i2=%d] [ m_i3=%d ] [ m_i4=%d ] "
-          "[m_i5=%d] [m_i6=%d] [m_str1=%s]",
-          m_i1, m_i2, m_i3, m_i4, m_i5, m_i6, m_str1);
-  return idbuf;
+  return "PdxTypesR2V2:[ m_i1=" + std::to_string(m_i1) +
+         " ] [ m_i2=" + std::to_string(m_i2) +
+         " ] [ m_i3=" + std::to_string(m_i3) +
+         " ] [ m_i4=" + std::to_string(m_i4) +
+         " ] [ m_i4=" + std::to_string(m_i5) +
+         " ] [ m_i4=" + std::to_string(m_i6) + " ] [ m_str1=" + m_str1 + " ]";
 }
 
 /************************************************************
@@ -533,7 +521,8 @@ int PdxTypesIgnoreUnreadFieldsV2::getHashCode() {
   return 1;
 }
 
-bool PdxTypesIgnoreUnreadFieldsV2::equals(std::shared_ptr<PdxSerializable> obj) {
+bool PdxTypesIgnoreUnreadFieldsV2::equals(
+    std::shared_ptr<PdxSerializable> obj) {
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<PdxTypesIgnoreUnreadFieldsV2>(obj);
@@ -627,7 +616,7 @@ void PdxVersionedV2::init(int32_t size) {
   m_float = 23324.324f;
   m_double = 3243298498;
 
-  m_string = (char *)"gfestring";
+  m_string = "gfestring";
 
   m_boolArray = new bool[3];
   m_boolArray[0] = true;
@@ -735,8 +724,8 @@ TestDiffTypePdxSV2::TestDiffTypePdxSV2() {}
 
 TestDiffTypePdxSV2::TestDiffTypePdxSV2(bool init) {
   if (init) {
-    _id = (char *)"id:100";
-    _name = (char *)"HK";
+    _id = "id:100";
+    _name = "HK";
     _count = 100;
   }
 }
@@ -749,12 +738,12 @@ bool TestDiffTypePdxSV2::equals(TestDiffTypePdxSV2 *obj) {
 
   LOGINFO("TestDiffTypePdxSV2 other->_coun = %d and _count = %d ",
           other->_count, _count);
-  LOGINFO("TestDiffTypePdxSV2 other->_id = %s and _id = %s ", other->_id, _id);
-  LOGINFO("TestDiffTypePdxSV2 other->_name = %s and _name = %s ", other->_name,
-          _name);
+  LOGINFO("TestDiffTypePdxSV2 other->_id = %s and _id = %s ",
+          other->_id.c_str(), _id.c_str());
+  LOGINFO("TestDiffTypePdxSV2 other->_name = %s and _name = %s ",
+          other->_name.c_str(), _name.c_str());
 
-  if (other->_count == _count && strcmp(other->_id, _id) == 0 &&
-      strcmp(other->_name, _name) == 0) {
+  if (other->_count == _count && other->_id == _id && other->_name == _name) {
     return true;
   }
 

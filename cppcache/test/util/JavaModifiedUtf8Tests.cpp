@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-#include "ServerLocation.hpp"
-#include <ace/OS_NS_stdio.h>
+#include <string>
 
-namespace apache {
-namespace geode {
-namespace client {
-void ServerLocation::makeEpString() {
-  if (m_serverName != nullptr) {
-    char epstring[1024] = {0};
-    ACE_OS::snprintf(epstring, 1024, "%s:%d", m_serverName->value().c_str(),
-                     m_port);
-    m_epString = epstring;
-  }
+#include <gtest/gtest.h>
+
+#include <util/JavaModifiedUtf8.hpp>
+
+using namespace apache::geode::client::internal;
+
+TEST(JavaModifiedUtf8Tests, EncodedLengthFromUtf8) {
+  EXPECT_EQ(27, JavaModifiedUtf8::encodedLength("You had me at meat tornado!"));
 }
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
+
+TEST(JavaModifiedUtf8Tests, EncodedLengthUtf16) {
+  EXPECT_EQ(27,
+            JavaModifiedUtf8::encodedLength(u"You had me at meat tornado."));
+}

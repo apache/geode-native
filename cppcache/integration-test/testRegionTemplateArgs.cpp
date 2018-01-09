@@ -55,10 +55,10 @@ BEGIN_TEST(CheckTemplates)
     auto stringPtr = CacheableString::create(stringKey);
     auto int32Ptr = CacheableInt32::create(int32Key);
     auto bytesPtr = CacheableBytes::create(
-        reinterpret_cast<const uint8_t*>(stringVal), sizeof(stringVal));
+        reinterpret_cast<const int8_t*>(stringVal), sizeof(stringVal));
     auto keyPtr = CacheableString::create(baseKey);
     auto valPtr = CacheableBytes::create(
-        reinterpret_cast<const uint8_t*>(baseVal), sizeof(baseVal));
+        reinterpret_cast<const int8_t*>(baseVal), sizeof(baseVal));
 
     std::shared_ptr<CacheableBytes> resValPtr;
     std::shared_ptr<CacheableString> resStringPtr;

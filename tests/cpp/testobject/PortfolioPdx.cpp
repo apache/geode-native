@@ -23,25 +23,15 @@ using namespace testobject;
 const char* PortfolioPdx::secIds[] = {"SUN", "IBM",  "YHOO", "GOOG", "MSFT",
                                       "AOL", "APPL", "ORCL", "SAP",  "DELL"};
 
-PortfolioPdx::PortfolioPdx(int32_t i, int32_t size, char** nm) : names(nm) {
+PortfolioPdx::PortfolioPdx(int32_t i, int32_t size, std::vector<std::string> nm)
+    : names(nm) {
   id = i;
 
-  char pkidbuf[256];
-  sprintf(pkidbuf, "%d", i);
-  size_t strSize = strlen(pkidbuf) + 1;
-  pkid = new char[strSize];
-  memcpy(pkid, pkidbuf, strSize);
+  pkid = std::to_string(i);
 
-  const char* statusStr = (i % 2 == 0) ? "active" : "inactive";
-  int32_t statusSize = static_cast<int32_t>(strlen(statusStr)) + 1;
-  status = new char[statusSize];
-  memcpy(status, statusStr, statusSize);
+  status = (i % 2 == 0) ? "active" : "inactive";
 
-  char buf[100];
-  sprintf(buf, "type%d", (i % 3));
-  size_t strSize2 = strlen(buf) + 1;
-  type = new char[strSize2];
-  memcpy(type, buf, strSize2);
+  type = "type" + std::to_string(i % 3);
 
   int numSecIds = sizeof(secIds) / sizeof(char*);
   position1 = std::make_shared<PositionPdx>(
@@ -75,24 +65,6 @@ PortfolioPdx::~PortfolioPdx() {
     delete[] newVal;
     newVal = NULL;
   }
-  if (status != NULL) {
-    delete[] status;
-    status = NULL;
-  }
-  if (pkid != NULL) {
-    delete[] pkid;
-    pkid = NULL;
-  }
-
-  if (type != NULL) {
-    delete[] type;
-    type = NULL;
-  }
-
-  if (newVal != NULL) {
-    delete[] newVal;
-    newVal = NULL;
-  }
 }
 
 void PortfolioPdx::toData(std::shared_ptr<PdxWriter> pw) const {
@@ -117,7 +89,7 @@ void PortfolioPdx::toData(std::shared_ptr<PdxWriter> pw) const {
   pw->writeString("status", status);
   pw->markIdentityField("status");
 
-  pw->writeStringArray("names", names, 0);
+  pw->writeStringArray("names", names);
   pw->markIdentityField("names");
 
   pw->writeByteArray("newVal", newVal, newValSize);
@@ -144,7 +116,7 @@ void PortfolioPdx::fromData(std::shared_ptr<PdxReader> pr) {
   status = pr->readString("status");
 
   int32_t strLenArray = 0;
-  names = pr->readStringArray("names", strLenArray);
+  names = pr->readStringArray("names");
   int32_t byteArrayLen = 0;
   newVal = pr->readByteArray("newVal", byteArrayLen);
   creationDate = pr->readDate("creationDate");
@@ -159,13 +131,9 @@ std::string PortfolioPdx::toString() const {
   sprintf(idbuf, "PortfolioPdxObject: [ id=%d ]", id);
 
   char pkidbuf[1024];
-  if (pkid != NULL) {
-    sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status, this->type,
-            this->pkid);
-  } else {
-    sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status, this->type,
-            this->pkid);
-  }
+  sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status.c_str(),
+          this->type.c_str(), this->pkid.c_str());
+
   char position1buf[2048];
   if (position1 != nullptr) {
     sprintf(position1buf, "\t\t\t  P1: %s", position1->toString().c_str());

@@ -121,11 +121,7 @@ class CPPCACHE_EXPORT StatDataOutput {
   /**
    * Writes string value in the buffer.
    */
-  void writeString(std::string v);
-  /**
-   * Writes wstring value in the buffer.
-   */
-  void writeUTF(std::wstring v);
+  void writeUTF(std::string v);
   /**
    * This method is for the unit tests only for this class.
    */

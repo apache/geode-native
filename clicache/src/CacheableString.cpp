@@ -68,34 +68,6 @@ namespace Apache
         }
       }
 
-
-      inline void CacheableString::GetCacheableString(String^ value,
-                                                      std::shared_ptr<apache::geode::client::CacheableString>& cStr)
-      {
-        if (value) {
-          cStr = apache::geode::client::CacheableString::create(marshal_as<std::string>(value));
-        }
-        else {
-          cStr.reset(
-            static_cast<apache::geode::client::CacheableString*>(apache::geode::client::CacheableString::createDeserializable()));
-        }
-      }
-
-      inline void CacheableString::GetCacheableString(array<Char>^ value,
-                                                      std::shared_ptr<apache::geode::client::CacheableString>& cStr)
-      {
-        size_t len;
-        if (value != nullptr && (len = value->Length) > 0) {
-          pin_ptr<const Char> pin_value = &value[0];
-          cStr = apache::geode::client::CacheableString::create(
-            (const wchar_t*)pin_value, (System::Int32)len);
-        }
-        else {
-          cStr.reset(
-            static_cast<apache::geode::client::CacheableString*>(apache::geode::client::CacheableString::createDeserializable()));
-        }
-      }
-
       CacheableString::CacheableString(String^ value)
         : CacheableKey()
       {

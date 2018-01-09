@@ -147,8 +147,7 @@ class TestPdxSerializer : public PdxSerializer {
           pr->readShortArray("m_int16Array", npt->shortArrayLen);
       npt->m_sbyte = pr->readByte("m_sbyte");
       npt->m_sbyteArray = pr->readByteArray("m_sbyteArray", npt->byteArrayLen);
-      npt->m_stringArray =
-          pr->readStringArray("m_stringArray", npt->strLenArray);
+      npt->m_stringArray = pr->readStringArray("m_stringArray");
       npt->m_uint16 = pr->readShort("m_uint16");
       npt->m_uint32 = pr->readInt("m_uint32");
       npt->m_ulong = pr->readLong("m_ulong");
@@ -265,7 +264,7 @@ class TestPdxSerializer : public PdxSerializer {
 
       strlengthArr[0] = 5;
       strlengthArr[1] = 5;
-      pw->writeStringArray("m_stringArray", npt->m_stringArray, 2);
+      pw->writeStringArray("m_stringArray", npt->m_stringArray);
       pw->markIdentityField("m_stringArray");
       pw->writeShort("m_uint16", npt->m_uint16);
       pw->markIdentityField("m_uint16");

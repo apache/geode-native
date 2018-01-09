@@ -93,14 +93,9 @@ void PdxLocalReader::MoveStream() {
   m_dataInput->reset(m_startPosition + m_serializedLengthWithOffsets);
 }
 
-char PdxLocalReader::readChar(const std::string& fieldName) {
-  uint16_t value = m_dataInput->readInt16();
-  return (static_cast<char>(value));
-}
-
-wchar_t PdxLocalReader::readWideChar(const std::string& fieldName) {
-  uint16_t value = m_dataInput->readInt16();
-  return static_cast<wchar_t>(value);
+char16_t PdxLocalReader::readChar(const std::string& fieldName) {
+  char16_t value = m_dataInput->readInt16();
+  return value;
 }
 
 bool PdxLocalReader::readBoolean(const std::string& fieldName) {
@@ -131,17 +126,10 @@ double PdxLocalReader::readDouble(const std::string& fieldName) {
   return m_dataInput->readDouble();
 }
 
-char* PdxLocalReader::readString(const std::string& fieldName) {
-  char* str;
-  m_dataInput->readString(&str);
-  return str;
+std::string PdxLocalReader::readString(const std::string& fieldName) {
+  return m_dataInput->readString();
 }
 
-wchar_t* PdxLocalReader::readWideString(const std::string& fieldName) {
-  wchar_t* str;
-  m_dataInput->readWideString(&str);
-  return str;
-}
 std::shared_ptr<Serializable> PdxLocalReader::readObject(
     const std::string& fieldName) {
   std::shared_ptr<Serializable> ptr;
@@ -153,23 +141,16 @@ std::shared_ptr<Serializable> PdxLocalReader::readObject(
   }
 }
 
-char* PdxLocalReader::readCharArray(const std::string& fieldName,
-                                    int32_t& length) {  // TODO:: need to return
-                                                        // Length to user for
-                                                        // all primitive arrays
-  char* charArray = nullptr;
+char16_t* PdxLocalReader::readCharArray(
+    const std::string& fieldName,
+    int32_t& length) {  // TODO:: need to return
+  // Length to user for
+  // all primitive arrays
+  char16_t* charArray = nullptr;
   m_dataInput->readCharArray(&charArray, length);
   return charArray;
 }
 
-wchar_t* PdxLocalReader::readWideCharArray(
-    const std::string& fieldName,
-    int32_t& length) {  // TODO:: need to return Length to user for all
-                        // primitive arrays
-  wchar_t* charArray = nullptr;
-  m_dataInput->readWideCharArray(&charArray, length);
-  return charArray;
-}
 bool* PdxLocalReader::readBooleanArray(const std::string& fieldName,
                                        int32_t& length) {
   bool* boolArray = nullptr;
@@ -219,19 +200,11 @@ double* PdxLocalReader::readDoubleArray(const std::string& fieldName,
   return doubleArray;
 }
 
-char** PdxLocalReader::readStringArray(const std::string& fieldName,
-                                       int32_t& length) {
-  char** stringArray = nullptr;
-  m_dataInput->readStringArray(&stringArray, length);
-  return stringArray;
+std::vector<std::string> PdxLocalReader::readStringArray(
+    const std::string& fieldName) {
+  return m_dataInput->readStringArray();
 }
 
-wchar_t** PdxLocalReader::readWideStringArray(const std::string& fieldName,
-                                              int32_t& length) {
-  wchar_t** stringArray = nullptr;
-  m_dataInput->readWideStringArray(&stringArray, length);
-  return stringArray;
-}
 std::shared_ptr<CacheableObjectArray> PdxLocalReader::readObjectArray(
     const std::string& fieldName) {
   auto coa = CacheableObjectArray::create();

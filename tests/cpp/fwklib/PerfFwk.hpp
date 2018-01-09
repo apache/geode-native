@@ -91,9 +91,9 @@ class Semaphore {
 
 class Record {
  private:
-  char* m_testName;
-  char* m_action;
-  char* m_runDate;
+  std::string m_testName;
+  std::string m_action;
+  std::string m_runDate;
   uint32_t m_numKeys;
   uint32_t m_numClients;
   uint32_t m_valueSize;
@@ -117,9 +117,9 @@ class Record {
   //    }
 
   inline Record()
-      : m_testName(NULL),
-        m_action(NULL),
-        m_runDate(NULL),
+      : m_testName(),
+        m_action(),
+        m_runDate(),
         m_numKeys(0),
         m_numClients(0),
         m_valueSize(0),
@@ -135,48 +135,21 @@ class Record {
   //    }
 
   inline ~Record() {
-    if (m_testName != NULL) free(m_testName);
-    if (m_action != NULL) free(m_action);
-    if (m_runDate != NULL) free(m_runDate);
-    m_testName = NULL;
-    m_action = NULL;
-    m_runDate = NULL;
   }
 
-  void setName(const char* name) {
-    if (m_testName != NULL) free(m_testName);
-    if (name != NULL) {
-      m_testName = strdup(name);
-    } else {
-      m_testName = NULL;
-    }
-  }
+  void setName(std::string name) { m_testName = name; }
 
-  void setAction(const char* action) {
-    if (m_action != NULL) free(m_action);
-    if (action != NULL) {
-      m_action = strdup(action);
-    } else {
-      m_action = NULL;
-    }
-  }
+  void setAction(std::string action) { m_action = action; }
 
-  void setDate(const char* date) {
-    if (m_runDate != NULL) free(m_runDate);
-    if (date != NULL) {
-      m_runDate = strdup(date);
-    } else {
-      m_runDate = NULL;
-    }
-  }
+  void setDate(std::string date) { m_runDate = date; }
 
   void setDate() {
-    if (m_runDate == NULL) m_runDate = reinterpret_cast<char*>(malloc(32));
-
     time_t esecs = time(0);
     struct tm* now = localtime(&esecs);
-    sprintf(m_runDate, "%d/%d/%d %d:%d:%d", now->tm_mon + 1, now->tm_mday,
+    char tmp[32];
+    sprintf(tmp, "%d/%d/%d %d:%d:%d", now->tm_mon + 1, now->tm_mday,
             now->tm_year + 1900, now->tm_hour, now->tm_min, now->tm_sec);
+    setDate(tmp);
   }
 
   void setNumKeys(uint32_t num) { m_numKeys = num; }
@@ -195,13 +168,13 @@ class Record {
   //    }
   //
   inline void write(apache::geode::client::DataOutput& output) {
-    output.writeASCII(m_testName);
+    output.writeString(m_testName);
     output.writeInt(static_cast<int32_t>(m_operations));
     output.writeInt(static_cast<int32_t>(m_micros));
   }
 
   inline void read(apache::geode::client::DataInput& input) {
-    input.readASCII(&m_testName);
+    m_testName = input.readString();
     m_operations = input.readInt32();
     m_micros = input.readInt32();
   }

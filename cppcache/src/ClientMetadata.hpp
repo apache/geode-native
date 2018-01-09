@@ -56,7 +56,7 @@ class CPPCACHE_EXPORT ClientMetadata : public NonAssignable {
   std::shared_ptr<ClientMetadata> m_previousOne;
   int m_totalNumBuckets;
   // std::shared_ptr<PartitionResolver> m_partitionResolver;
-  std::shared_ptr<CacheableString> m_colocatedWith;
+  std::string m_colocatedWith;
   // ACE_RW_Thread_Mutex m_readWriteLock;
   ThinClientPoolDM* m_tcrdm;
   FixedMapType m_fpaMap;
@@ -75,9 +75,9 @@ class CPPCACHE_EXPORT ClientMetadata : public NonAssignable {
   ~ClientMetadata();
   ClientMetadata();
   ClientMetadata(
-      int totalNumBuckets, std::shared_ptr<CacheableString> colocatedWith,
-      ThinClientPoolDM* tcrdm,
+      int totalNumBuckets, std::string colocatedWith, ThinClientPoolDM* tcrdm,
       std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* fpaSet);
+
   void getServerLocation(int bucketId, bool tryPrimary,
                          std::shared_ptr<BucketServerLocation>& serverLocation,
                          int8_t& version);
@@ -87,7 +87,7 @@ class CPPCACHE_EXPORT ClientMetadata : public NonAssignable {
   void removeBucketServerLocation(BucketServerLocation serverLocation);
   int getTotalNumBuckets();
   // std::shared_ptr<PartitionResolver> getPartitionResolver();
-  std::shared_ptr<CacheableString> getColocatedWith();
+  const std::string& getColocatedWith();
   void populateDummyServers(int bucketId, BucketServerLocationsType serverlist);
   int assignFixedBucketId(const char* partitionName,
                           std::shared_ptr<CacheableKey> resolvekey);

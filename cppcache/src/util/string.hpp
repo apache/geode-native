@@ -24,12 +24,20 @@
 #include <locale>
 #include <string>
 
+#include "type_traits.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
 
+/**
+ * Native codecvt_mode endianess
+ */
+constexpr std::codecvt_mode codecvt_mode_native_endian =
+    endian::native == endian::little ? std::little_endian
+                                     : (std::codecvt_mode)0;
+
 inline std::u16string to_utf16(const std::string& utf8) {
-// TODO string replace with boost
 #if _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
@@ -46,8 +54,78 @@ inline std::u16string to_utf16(const std::string& utf8) {
 #endif
 }
 
+inline std::u16string to_utf16(const std::u32string& ucs4) {
+#if _MSC_VER >= 1900
+  /*
+   * Workaround for missing std:codecvt identifier.
+   * https://connect.microsoft.com/VisualStudio/feedback/details/1403302
+   */
+  auto data = reinterpret_cast<const int32_t*>(ucs4.data());
+  auto bytes =
+      std::wstring_convert<
+          std::codecvt_utf16<int32_t, 0x10ffff, codecvt_mode_native_endian>,
+          int32_t>{}
+          .to_bytes(data, data + ucs4.size());
+#else
+  auto bytes =
+      std::wstring_convert<
+          std::codecvt_utf16<char32_t, 0x10ffff, codecvt_mode_native_endian>,
+          char32_t>{}
+          .to_bytes(ucs4);
+#endif
+
+  return std::u16string(reinterpret_cast<const char16_t*>(bytes.c_str()),
+                        bytes.length() / sizeof(char16_t));
+}
+
+inline std::u16string to_utf16(const char32_t* ucs4, size_t len) {
+#if _MSC_VER >= 1900
+  /*
+   * Workaround for missing std:codecvt identifier.
+   * https://connect.microsoft.com/VisualStudio/feedback/details/1403302
+   */
+  auto data = reinterpret_cast<const int32_t*>(ucs4);
+  auto bytes =
+      std::wstring_convert<
+          std::codecvt_utf16<int32_t, 0x10ffff, codecvt_mode_native_endian>,
+          int32_t>{}
+          .to_bytes(data, data + len);
+#else
+  auto bytes =
+      std::wstring_convert<
+          std::codecvt_utf16<char32_t, 0x10ffff, codecvt_mode_native_endian>,
+          char32_t>{}
+          .to_bytes(ucs4, ucs4 + len);
+#endif
+
+  return std::u16string(reinterpret_cast<const char16_t*>(bytes.c_str()),
+                        bytes.length() / sizeof(char16_t));
+}
+
+inline std::u32string to_ucs4(const std::u16string& utf16) {
+#if _MSC_VER >= 1900
+  /*
+   * Workaround for missing std:codecvt identifier.
+   * https://connect.microsoft.com/VisualStudio/feedback/details/1403302
+   */
+  auto data = reinterpret_cast<const char*>(utf16.data());
+  auto tmp =
+      std::wstring_convert<
+          std::codecvt_utf16<int32_t, 0x10ffff, codecvt_mode_native_endian>,
+          int32_t>{}
+          .from_bytes(data, data + (utf16.length() * sizeof(char16_t)));
+  return std::u32string(reinterpret_cast<const char32_t*>(tmp.data()),
+                        tmp.length());
+#else
+  auto data = reinterpret_cast<const char*>(utf16.data());
+  return std::wstring_convert<
+             std::codecvt_utf16<char32_t, 0x10ffff, codecvt_mode_native_endian>,
+             char32_t>{}
+      .from_bytes(data, data + (utf16.length() * sizeof(char16_t)));
+#endif
+}
+
 inline std::string to_utf8(const std::u16string& utf16) {
-// TODO string replace with boost
 #if _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
@@ -63,7 +141,6 @@ inline std::string to_utf8(const std::u16string& utf16) {
 }
 
 inline std::string to_utf8(const std::u32string& ucs4) {
-// TODO string replace with boost
 #if _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.

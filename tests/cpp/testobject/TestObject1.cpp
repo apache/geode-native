@@ -30,8 +30,8 @@ TestObject1::TestObject1()
 TestObject1::TestObject1(std::string& str, int32_t id) {
   name = CacheableString::create(str.c_str());
   identifier = id;
-  uint8_t* bytes;
-  GF_NEW(bytes, uint8_t[1024 * 4]);
+  int8_t* bytes;
+  GF_NEW(bytes, int8_t[1024 * 4]);
   bytes[0] = 'A';
   for (int i = 1; i <= 1024 * 2; i = i * 2) {
     memcpy(bytes + i, bytes, i);
@@ -55,7 +55,7 @@ void TestObject1::toData(DataOutput& output) const {
 }
 
 void TestObject1::fromData(DataInput& input) {
-  uint8_t* bytes;
+  int8_t* bytes;
   int32_t len;
   input.readBytes(&bytes, &len);
   arr = CacheableBytes::create(bytes, len);

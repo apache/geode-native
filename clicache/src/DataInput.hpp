@@ -164,15 +164,7 @@ namespace Apache
         /// </summary>
         String^ ReadUTF( );
 
-        /// <summary>
-        /// Read a string after java-modified UTF-8 decoding from the stream.
-        /// </summary>
-        String^ ReadUTFHuge( );
-
-        /// <summary>
-        /// Read a ASCII string from the stream. Where size is more than 2^16-1 
-        /// </summary>
-        String^ ReadASCIIHuge( );
+        String^ ReadString();
 
         /// <summary>
         /// Read a serializable object from the data. Null objects are handled.
@@ -306,7 +298,15 @@ namespace Apache
         Object^ readDotNetObjectArray();
         System::Collections::Generic::IDictionary<Object^, Object^>^ ReadDictionary();
 
-				String^ ReadString();
+        /// <summary>
+        /// Read a string after java-modified UTF-8 decoding from the stream.
+        /// </summary>
+        String^ ReadUTFHuge( );
+
+        /// <summary>
+        /// Read a ASCII string from the stream. Where size is more than 2^16-1 
+        /// </summary>
+        String^ ReadASCIIHuge( );
 
         String^ GetPoolName();
 

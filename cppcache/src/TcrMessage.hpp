@@ -420,11 +420,9 @@ class CPPCACHE_EXPORT TcrMessage {
 
   int32_t getNumBuckets() const { return m_bucketCount; }
 
-  std::shared_ptr<CacheableString> getColocatedWith() const {
-    return m_colocatedWith;
-  }
+  const std::string& getColocatedWith() const { return m_colocatedWith; }
 
-  std::shared_ptr<CacheableString> getPartitionResolver() const {
+  const std::string& getPartitionResolver() const {
     return m_partitionResolverName;
   }
 
@@ -636,8 +634,8 @@ class CPPCACHE_EXPORT TcrMessage {
   std::vector<std::shared_ptr<BucketServerLocation>> m_bucketServerLocations;
   std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>* m_metadata;
   int32_t m_bucketCount;
-  std::shared_ptr<CacheableString> m_colocatedWith;
-  std::shared_ptr<CacheableString> m_partitionResolverName;
+  std::string m_colocatedWith;
+  std::string m_partitionResolverName;
   std::shared_ptr<CacheableVector> m_vectorPtr;
   uint32_t m_numCqPart;
   uint32_t m_msgTypeForCq;  // new part since 7.0 for cq event message type.
@@ -645,7 +643,7 @@ class CPPCACHE_EXPORT TcrMessage {
   std::chrono::milliseconds m_messageResponseTimeout;
   bool m_boolValue;
   std::unique_ptr<DataInput> m_delta;
-  uint8_t* m_deltaBytes;
+  int8_t* m_deltaBytes;
   int32_t m_deltaBytesLen;
   bool m_isCallBackArguement;
   std::shared_ptr<BucketServerLocation> m_bucketServerLocation;

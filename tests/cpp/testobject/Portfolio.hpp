@@ -41,7 +41,7 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
   std::shared_ptr<Position> position2;
   std::shared_ptr<CacheableHashMap> positions;
   std::shared_ptr<CacheableString> type;
-  char* status;
+  std::string status;
   std::shared_ptr<CacheableStringArray> names;
   static const char* secIds[];
   uint8_t* newVal;
@@ -59,7 +59,7 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
       : ID(0),
         pkid(nullptr),
         type(nullptr),
-        status(NULL),
+        status(),
         newVal(NULL),
         creationDate(nullptr),
         arrayNull(NULL),
@@ -75,9 +75,7 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
     objectSize += getObjectSize(position2);
     objectSize += getObjectSize(positions);
     objectSize += getObjectSize(type);
-    objectSize +=
-        (status == NULL ? 0
-                        : sizeof(char) * static_cast<uint32_t>(strlen(status)));
+    objectSize += sizeof(decltype(status)::value_type) * status.length();
     objectSize += getObjectSize(names);
     objectSize += sizeof(uint8_t) * newValSize;
     objectSize += getObjectSize(creationDate);
@@ -96,31 +94,33 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
     }
   }
 
-  std::shared_ptr<CacheableString> getPkid() { return pkid; }
+  std::shared_ptr<CacheableString> getPkid() const { return pkid; }
 
-  std::shared_ptr<Position> getP1() { return position1; }
+  std::shared_ptr<Position> getP1() const { return position1; }
 
-  std::shared_ptr<Position> getP2() { return position2; }
+  std::shared_ptr<Position> getP2() const { return position2; }
 
-  std::shared_ptr<CacheableHashMap> getPositions() { return positions; }
+  std::shared_ptr<CacheableHashMap> getPositions() const { return positions; }
 
-  bool testMethod(bool booleanArg) { return true; }
+  bool testMethod(bool booleanArg) const { return true; }
 
-  char* getStatus() { return status; }
+  const std::string& getStatus() const { return status; }
 
-  bool isActive() { return (strcmp(status, "active") == 0) ? true : false; }
+  bool isActive() const { return status == "active"; }
 
-  uint8_t* getNewVal() { return newVal; }
+  uint8_t* getNewVal() const { return newVal; }
 
-  int32_t getNewValSize() { return newValSize; }
+  int32_t getNewValSize() const { return newValSize; }
 
-  std::shared_ptr<CacheableString> getType() { return this->type; }
+  std::shared_ptr<CacheableString> getType() const { return this->type; }
 
-  std::shared_ptr<CacheableDate> getCreationDate() { return creationDate; }
+  std::shared_ptr<CacheableDate> getCreationDate() const {
+    return creationDate;
+  }
 
-  uint8_t* getArrayNull() { return arrayNull; }
+  uint8_t* getArrayNull() const { return arrayNull; }
 
-  uint8_t* getArrayZeroSize() { return arrayZeroSize; }
+  uint8_t* getArrayZeroSize() const { return arrayZeroSize; }
 
   static Serializable* createDeserializable() { return new Portfolio(); }
 

@@ -80,16 +80,10 @@ DUNIT_TASK(CLIENT1, StepOne)
     std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
     auto subregPtr = regptr->createSubregion(_regionNames[1], lattribPtr);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    auto&& qh = &QueryHelper::getHelper();
     std::shared_ptr<CacheableString> cstr[4] = {
-        std::shared_ptr<CacheableString>(
-            CacheableString::create((const char*)"Taaa", 4)),
-        std::shared_ptr<CacheableString>(
-            CacheableString::create((const char*)"Tbbb", 4)),
-        std::shared_ptr<CacheableString>(
-            CacheableString::create((const char*)"Tccc", 4)),
-        std::shared_ptr<CacheableString>(
-            CacheableString::create((const char*)"Tddd", 4))};
+        CacheableString::create("Taaa"), CacheableString::create("Tbbb"),
+        CacheableString::create("Tccc"), CacheableString::create("Tddd")};
     auto nm = CacheableStringArray::create(cstr, 4);
     qh->populatePortfolioData(regptr, 4, 3, 2, nm);
     qh->populatePositionData(subregPtr, 4, 3);

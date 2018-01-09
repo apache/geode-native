@@ -696,57 +696,41 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
 
 const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getLocators()
     const {
-  int32_t size = static_cast<int32_t>(m_attrs->m_initLocList.size());
-  std::shared_ptr<CacheableString>* ptrArr =
-      new std::shared_ptr<CacheableString>[size];
-
-  for (int i = 0; i < size; ++i) {
-    ptrArr[i] = CacheableString::create(
-        m_attrs->m_initLocList[i].c_str(),
-        static_cast<int32_t>(m_attrs->m_initLocList[i].length()));
+  auto ptrArr =
+      new std::shared_ptr<CacheableString>[m_attrs->m_initLocList.size()];
+  int32_t i = 0;
+  for (auto&& locator : m_attrs->m_initLocList) {
+    ptrArr[i++] = CacheableString::create(locator);
   }
-  return CacheableStringArray::createNoCopy(ptrArr, size);
+  return CacheableStringArray::createNoCopy(ptrArr, i);
 }
 
 const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
-  int32_t size = static_cast<int32_t>(m_attrs->m_initServList.size());
-  std::shared_ptr<CacheableString>* ptrArr = nullptr;
-
-  if (size > 0) {
-    ptrArr = new std::shared_ptr<CacheableString>[size];
-    for (int32_t i = 0; i < size; ++i) {
-      ptrArr[i] = CacheableString::create(
-          m_attrs->m_initServList[i].c_str(),
-          static_cast<int32_t>(m_attrs->m_initServList[i].length()));
+  if (!m_attrs->m_initServList.empty()) {
+    auto ptrArr =
+        new std::shared_ptr<CacheableString>[m_attrs->m_initServList.size()];
+    int32_t i = 0;
+    for (auto&& server : m_attrs->m_initServList) {
+      ptrArr[i++] = CacheableString::create(server);
     }
-  }
-
-  if (size > 0) return CacheableStringArray::createNoCopy(ptrArr, size);
-
-  size = static_cast<int32_t>(m_attrs->m_initLocList.size());
-
-  // get dynamic added servers using locators
-  if (size > 0) {
+    return CacheableStringArray::createNoCopy(ptrArr, i);
+  } else if (!m_attrs->m_initLocList.empty()) {
     std::vector<ServerLocation> vec;
-    ((ThinClientLocatorHelper*)m_locHelper)
+    // TODO thread - why is this member volatile?
+    const_cast<ThinClientLocatorHelper*>(
+        reinterpret_cast<volatile ThinClientLocatorHelper*>(m_locHelper))
         ->getAllServers(vec, m_attrs->m_serverGrp);
 
-    ptrArr = new std::shared_ptr<CacheableString>[vec.size()];
-    std::vector<ServerLocation>::iterator it;
-
-    size = static_cast<int32_t>(vec.size());
-
-    char buffer[256] = {'\0'};
-    int i = 0;
-    for (it = vec.begin(); it < vec.end(); it++) {
-      ServerLocation serLoc = *it;
-      ACE_OS::snprintf(buffer, 256, "%s:%d", serLoc.getServerName().c_str(),
-                       serLoc.getPort());
-      ptrArr[i++] = CacheableString::create(buffer);
+    auto ptrArr = new std::shared_ptr<CacheableString>[vec.size()];
+    int32_t i = 0;
+    for (auto&& serLoc : vec) {
+      ptrArr[i++] = CacheableString::create(serLoc.getServerName() + ":" +
+                                            std::to_string(serLoc.getPort()));
     }
+    return CacheableStringArray::createNoCopy(ptrArr, i);
+  } else {
+    return CacheableStringArray::createNoCopy(nullptr, 0);
   }
-
-  return CacheableStringArray::createNoCopy(ptrArr, size);
 }
 
 void ThinClientPoolDM::stopPingThread() {

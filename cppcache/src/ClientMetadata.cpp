@@ -26,13 +26,12 @@ namespace geode {
 namespace client {
 
 ClientMetadata::ClientMetadata(
-    int totalNumBuckets, std::shared_ptr<CacheableString> colocatedWith,
-    ThinClientPoolDM* tcrdm,
+    int totalNumBuckets, std::string colocatedWith, ThinClientPoolDM* tcrdm,
     std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* fpaSet)
     : m_partitionNames(nullptr),
       m_previousOne(nullptr),
       m_totalNumBuckets(totalNumBuckets),
-      m_colocatedWith(colocatedWith),
+      m_colocatedWith(std::move(colocatedWith)),
       m_tcrdm(tcrdm) {
   LOGFINE("Creating metadata with %d buckets", totalNumBuckets);
   for (int item = 0; item < totalNumBuckets; item++) {
@@ -107,7 +106,7 @@ int ClientMetadata::getTotalNumBuckets() {
   LOGFINE("Inside getPartitionResolver");
   return m_partitionResolver;
 }*/
-std::shared_ptr<CacheableString> ClientMetadata::getColocatedWith() {
+const std::string& ClientMetadata::getColocatedWith() {
   // ReadGuard guard (m_readWriteLock);
   return m_colocatedWith;
 }
@@ -208,7 +207,6 @@ void ClientMetadata::updateBucketServerLocations(
           }
         }
         if (!added) {
-          (*iter)->setServername(nullptr);
           if ((*iter)->isPrimary()) {
             primaries.push_back(*iter);
           } else {

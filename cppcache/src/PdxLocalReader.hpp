@@ -64,163 +64,72 @@ class PdxLocalReader : public PdxReader {
       std::shared_ptr<PdxType> mergedVersion,
       std::shared_ptr<PdxSerializable> pdxObject);
 
-  /**
-   * Read a char value from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns char value
-   */
-  virtual char readChar(const std::string& fieldName);
+  virtual char16_t readChar(const std::string &fieldName) override;
 
-  /**
-   * Read a wide char value from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns wide char value
-   */
-  virtual wchar_t readWideChar(const std::string& fieldName);
+  virtual bool readBoolean(const std::string &fieldName) override;
 
-  /**
-   * Read a boolean value from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns bool value
-   */
-  virtual bool readBoolean(const std::string& fieldName);
+  virtual int8_t readByte(const std::string &fieldName) override;
 
-  /**
-   * Read a byte value from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns byte value
-   */
-  virtual int8_t readByte(const std::string& fieldName);
+  virtual int16_t readShort(const std::string &fieldName) override;
 
-  /**
-   * Read a 16-bit integer value from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns short value
-   */
-  virtual int16_t readShort(const std::string& fieldName);
+  virtual int32_t readInt(const std::string &fieldName) override;
 
-  /**
-   * Read a 32-bit integer value from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns Int value
-   */
-  virtual int32_t readInt(const std::string& fieldName);
+  virtual int64_t readLong(const std::string &fieldName) override;
 
-  /**
-   * Read a 64-bit long value from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns Long value
-   */
-  virtual int64_t readLong(const std::string& fieldName);
+  virtual float readFloat(const std::string &fieldName) override;
 
-  /**
-   * Read a float value from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns Float value
-   */
-  virtual float readFloat(const std::string& fieldName);
+  virtual double readDouble(const std::string &fieldName) override;
 
-  /**
-   * Read a double value from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns double value
-   */
-  virtual double readDouble(const std::string& fieldName);
+  virtual std::string readString(const std::string &fieldName) override;
 
-  /**
-   * Read a string from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns string value
-   */
-  virtual char* readString(const std::string& fieldName);
-
-  virtual wchar_t* readWideString(const std::string& fieldName);
-  /**
-   * Read a object from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns std::shared_ptr<Serializable>
-   */
   virtual std::shared_ptr<Serializable> readObject(
-      const std::string& fieldName);
+      const std::string &fieldName) override;
 
-  virtual char* readCharArray(const std::string& fieldName, int32_t& length);
+  virtual char16_t *readCharArray(const std::string &fieldName,
+                                  int32_t &length) override;
 
-  virtual wchar_t* readWideCharArray(const std::string& fieldName,
-                                     int32_t& length);
+  virtual bool *readBooleanArray(const std::string &fieldName,
+                                 int32_t &length) override;
 
-  virtual bool* readBooleanArray(const std::string& fieldName, int32_t& length);
+  virtual int8_t *readByteArray(const std::string &fieldName,
+                                int32_t &length) override;
 
-  /**
-   * Read a 8bit-Integer Array from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns Byte Array
-   */
-  virtual int8_t* readByteArray(const std::string& fieldName, int32_t& length);
+  virtual int16_t *readShortArray(const std::string &fieldName,
+                                  int32_t &length) override;
 
-  /**
-   * Read a 16bit-Integer Array from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns Short Array
-   */
-  virtual int16_t* readShortArray(const std::string& fieldName,
-                                  int32_t& length);
+  virtual int32_t *readIntArray(const std::string &fieldName,
+                                int32_t &length) override;
 
-  /**
-   * Read a 32bit-Integer Array from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns Int Array
-   */
-  virtual int32_t* readIntArray(const std::string& fieldName, int32_t& length);
+  virtual int64_t *readLongArray(const std::string &fieldName,
+                                 int32_t &length) override;
 
-  /**
-   * Read a Long integer Array from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns Long Array
-   */
-  virtual int64_t* readLongArray(const std::string& fieldName, int32_t& length);
+  virtual float *readFloatArray(const std::string &fieldName,
+                                int32_t &length) override;
 
-  /**
-   * Read a Float Array from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns Float Array
-   */
-  virtual float* readFloatArray(const std::string& fieldName, int32_t& length);
+  virtual double *readDoubleArray(const std::string &fieldName,
+                                  int32_t &length) override;
 
-  /**
-   * Read a Double Array from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns double Array
-   */
-  virtual double* readDoubleArray(const std::string& fieldName,
-                                  int32_t& length);
-
-  /**
-   * Read a String Array from the <code>PdxReader</code>.
-   * @param fieldName name of the field which needs to serialize
-   * Returns String Array
-   */
-  virtual char** readStringArray(const std::string& fieldName, int32_t& length);
-
-  virtual wchar_t** readWideStringArray(const std::string& fieldName,
-                                        int32_t& length);
+  virtual std::vector<std::string> readStringArray(
+      const std::string &fieldName) override;
 
   virtual std::shared_ptr<CacheableObjectArray> readObjectArray(
-      const std::string& fieldName);
+      const std::string &fieldName) override;
 
-  virtual int8_t** readArrayOfByteArrays(const std::string& fieldName,
-                                         int32_t& arrayLength,
-                                         int32_t** elementLength);
+  virtual int8_t **readArrayOfByteArrays(const std::string &fieldName,
+                                         int32_t &arrayLength,
+                                         int32_t **elementLength) override;
 
-  virtual std::shared_ptr<CacheableDate> readDate(const std::string& fieldName);
+  virtual std::shared_ptr<CacheableDate> readDate(
+      const std::string &fieldName) override;
 
-  virtual bool hasField(const std::string& fieldName);
+  virtual bool hasField(const std::string &fieldName) override;
 
-  virtual bool isIdentityField(const std::string& fieldName);
+  virtual bool isIdentityField(const std::string &fieldName) override;
 
-  virtual void readCollection(const std::string& fieldName,
-                              std::shared_ptr<CacheableArrayList>& collection);
+  virtual void readCollection(const std::string &fieldName,
+                              std::shared_ptr<CacheableArrayList> &collection);
 
-  virtual std::shared_ptr<PdxUnreadFields> readUnreadFields();
+  virtual std::shared_ptr<PdxUnreadFields> readUnreadFields() override;
 
  protected:
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;

@@ -87,9 +87,8 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
   std::shared_ptr<SelectResults> sr;
 
   LOGFINEST("%s: reading reply for query: %s", func, m_queryString.c_str());
-  auto values = resultCollector->getQueryResults();
-  const std::vector<std::shared_ptr<CacheableString>>& fieldNameVec =
-      resultCollector->getStructFieldNames();
+  auto&& values = resultCollector->getQueryResults();
+  auto&& fieldNameVec = resultCollector->getStructFieldNames();
   size_t sizeOfFieldNamesVec = fieldNameVec.size();
   if (sizeOfFieldNamesVec == 0) {
     LOGFINEST("%s: creating ResultSet for query: %s", func,
