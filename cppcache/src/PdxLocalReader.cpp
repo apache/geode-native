@@ -302,7 +302,8 @@ bool PdxLocalReader::isIdentityField(const std::string& fieldName) {
 void PdxLocalReader::readCollection(
     const std::string& fieldName,
     std::shared_ptr<CacheableArrayList>& collection) {
-  collection = m_dataInput->readObject<CacheableArrayList>();
+  collection =
+      std::static_pointer_cast<CacheableArrayList>(m_dataInput->readObject());
 }
 std::shared_ptr<PdxUnreadFields> PdxLocalReader::readUnreadFields() {
   LOGDEBUG("readUnreadFields:: %d ignore property %d", m_isDataNeedToPreserve,

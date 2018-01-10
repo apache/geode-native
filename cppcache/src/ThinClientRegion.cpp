@@ -3469,7 +3469,7 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     // special case for scalar result
     partLen = input->readInt32();
     input->read();
-    auto intVal = input->readObject<CacheableInt32>(true);
+    auto intVal = std::static_pointer_cast<CacheableInt32>(input->readObject());
     m_queryResults->push_back(intVal);
 
     // TODO:
@@ -3925,7 +3925,8 @@ void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
                       // is one byte
 
   for (int i = 0; i < stringParts; i++) {
-    m_resultList->push_back(input->readObject<CacheableString>());
+    m_resultList->push_back(
+        std::static_pointer_cast<CacheableString>(input->readObject()));
   }
 }
 

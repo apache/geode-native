@@ -104,17 +104,16 @@ class TestDataInput {
 
   double readDouble() { return m_dataInput.readDouble(); }
 
-  template <class PTR>
-  void readObject(std::shared_ptr<PTR> &ptr, bool throwOnError = false) {
-    ptr = m_dataInput.readObject<PTR>(throwOnError);
-  }
-
   bool readNativeBool() { return m_dataInput.readNativeBool(); }
 
   int32_t readNativeInt32() { return m_dataInput.readNativeInt32(); }
 
   std::shared_ptr<Serializable> readDirectObject(int8_t typeId = -1) {
     return m_dataInput.readDirectObject(typeId);
+  }
+
+  std::shared_ptr<Serializable> readObject() {
+    return m_dataInput.readObject();
   }
 
   void readObject(std::shared_ptr<Serializable> &ptr) {
@@ -478,8 +477,8 @@ TEST_F(DataInputTest, TestReadUTFNarrow) {
 TEST_F(DataInputTest, TestReadObjectSharedPtr) {
   TestDataInput dataInput(
       "57001B596F7520686164206D65206174206D65617420746F726E61646F2E");
-  std::shared_ptr<CacheableString> objptr;
-  dataInput.readObject(objptr);
+  auto objptr =
+      std::static_pointer_cast<CacheableString>(dataInput.readObject());
   EXPECT_EQ("You had me at meat tornado.", objptr->value())
       << "Correct const char *";
 }

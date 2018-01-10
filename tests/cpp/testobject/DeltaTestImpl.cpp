@@ -68,10 +68,10 @@ DeltaTestImpl::DeltaTestImpl(const DeltaTestImpl& rhs) : Delta(nullptr) {
 
 void DeltaTestImpl::fromData(DataInput& input) {
   intVar = input.readInt32();
-  str = input.readObject<CacheableString>();
+  str = std::static_pointer_cast<CacheableString>(input.readObject());
   doubleVar = input.readDouble();
-  byteArr = input.readObject<CacheableBytes>();
-  testObj = input.readObject<TestObject1>();
+  byteArr = std::static_pointer_cast<CacheableBytes>(input.readObject());
+  testObj = std::static_pointer_cast<TestObject1>(input.readObject());
 }
 
 void DeltaTestImpl::toData(DataOutput& output) const {
@@ -117,13 +117,13 @@ void DeltaTestImpl::fromDelta(DataInput& input) {
     intVar = input.readInt32();
   }
   if ((deltaBits & STR_MASK) == STR_MASK) {
-    str = input.readObject<CacheableString>();
+    str = std::static_pointer_cast<CacheableString>(input.readObject());
   }
   if ((deltaBits & DOUBLE_MASK) == DOUBLE_MASK) {
     doubleVar = input.readDouble();
   }
   if ((deltaBits & BYTE_ARR_MASK) == BYTE_ARR_MASK) {
-    byteArr = input.readObject<CacheableBytes>();
+    byteArr = std::static_pointer_cast<CacheableBytes>(input.readObject());
     /*
         uint8_t* bytes;
         int32_t len;
@@ -133,7 +133,7 @@ void DeltaTestImpl::fromDelta(DataInput& input) {
     */
   }
   if ((deltaBits & TEST_OBJ_MASK) == TEST_OBJ_MASK) {
-    testObj = input.readObject<TestObject1>();
+    testObj = std::static_pointer_cast<TestObject1>(input.readObject());
   }
 }
 

@@ -375,7 +375,8 @@ void RegionAttributes::fromData(DataInput& in) {
   apache::geode::client::impl::readString(in, m_endpoints);
   apache::geode::client::impl::readString(in, m_persistenceLibrary);
   apache::geode::client::impl::readString(in, m_persistenceFactory);
-  m_persistenceProperties = in.readObject<Properties>(true);
+  m_persistenceProperties =
+      std::static_pointer_cast<Properties>(in.readObject());
   apache::geode::client::impl::readString(in, m_poolName);
   apache::geode::client::impl::readBool(in, &m_isConcurrencyChecksEnabled);
 }

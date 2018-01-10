@@ -52,7 +52,7 @@ void PSTObject::fromData(apache::geode::client::DataInput& input) {
   timestamp = input.readInt64();
   field1 = input.readInt32();
   field2 = input.read();
-  valueData = input.readObject<CacheableBytes>();
+  valueData = std::static_pointer_cast<CacheableBytes>(input.readObject());
 }
 std::string PSTObject::toString() const {
   char buf[102500];

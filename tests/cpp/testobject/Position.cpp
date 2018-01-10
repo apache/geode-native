@@ -97,19 +97,19 @@ void Position::toData(apache::geode::client::DataOutput& output) const {
 
 void Position::fromData(apache::geode::client::DataInput& input) {
   avg20DaysVol = input.readInt64();
-  bondRating = input.readObject<CacheableString>();
+  bondRating = std::static_pointer_cast<CacheableString>(input.readObject());
   convRatio = input.readDouble();
-  country = input.readObject<CacheableString>();
+  country = std::static_pointer_cast<CacheableString>(input.readObject());
   delta = input.readDouble();
   industry = input.readInt64();
   issuer = input.readInt64();
   mktValue = input.readDouble();
   qty = input.readDouble();
-  secId = input.readObject<CacheableString>();
-  secLinks = input.readObject<CacheableString>();
+  secId = std::static_pointer_cast<CacheableString>(input.readObject());
+  secLinks = std::static_pointer_cast<CacheableString>(input.readObject());
   secType = input.readUTF<wchar_t>();
   sharesOutstanding = input.readInt32();
-  underlyer = input.readObject<CacheableString>();
+  underlyer = std::static_pointer_cast<CacheableString>(input.readObject());
   volatility = input.readInt64();
   pid = input.readInt32();
 }

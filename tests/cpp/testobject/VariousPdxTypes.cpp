@@ -894,11 +894,11 @@ void PdxInsideIGeodeSerializable::toData(DataOutput &output) const {
 
 void PdxInsideIGeodeSerializable::fromData(DataInput &input) {
   m_i1 = input.readInt32();
-  m_npdx = input.readObject<NestedPdx>();
+  m_npdx = std::static_pointer_cast<NestedPdx>(input.readObject());
   m_i2 = input.readInt32();
   m_s1 = input.readString();
   m_s2 = input.readString();
-  m_pdx3 = input.readObject<PdxTypes3>();
+  m_pdx3 = std::static_pointer_cast<PdxTypes3>(input.readObject());
   m_i3 = input.readInt32();
   m_i4 = input.readInt32();
 }

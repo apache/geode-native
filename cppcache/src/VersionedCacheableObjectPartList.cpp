@@ -118,7 +118,7 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
     len = static_cast<int32_t>(input.readUnsignedVL());
 
     for (int32_t index = 0; index < len; ++index) {
-      auto key = input.readObject<CacheableKey>(true);
+      auto key = std::static_pointer_cast<CacheableKey>(input.readObject());
       if (m_resultKeys != nullptr) {
         m_resultKeys->push_back(key);
       }

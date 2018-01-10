@@ -59,9 +59,9 @@ void FastAssetAccount::toData(apache::geode::client::DataOutput& output) const {
 
 void FastAssetAccount::fromData(apache::geode::client::DataInput& input) {
   acctId = input.readInt32();
-  customerName = input.readObject<CacheableString>();
+  customerName = std::static_pointer_cast<CacheableString>(input.readObject());
   netWorth = input.readDouble();
-  assets = input.readObject<CacheableHashMap>();
+  assets = std::static_pointer_cast<CacheableHashMap>(input.readObject());
   timestamp = input.readInt64();
 }
 
