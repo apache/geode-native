@@ -141,7 +141,6 @@ class _GEODE_EXPORT CacheableString : public CacheableKey {
   virtual size_t objectSize() const override;
 
  protected:
-
   /** Default constructor. */
   inline CacheableString(int8_t type = GeodeTypeIds::CacheableASCIIString)
       : m_str(), m_type(type), m_hashcode(0) {}
@@ -166,48 +165,6 @@ class _GEODE_EXPORT CacheableString : public CacheableKey {
 
   static bool isAscii(const std::string& str);
 };
-
-inline std::shared_ptr<CacheableKey> createKeyArr(const std::string& value) {
-  return CacheableString::create(value);
-}
-
-inline std::shared_ptr<CacheableKey> createKeyArr(std::string&& value) {
-  return CacheableString::create(std::move(value));
-}
-
-inline std::shared_ptr<Cacheable> createValueArr(const std::string& value) {
-  return CacheableString::create(value);
-}
-
-inline std::shared_ptr<Cacheable> createValueArr(std::string&& value) {
-  return CacheableString::create(std::move(value));
-}
-
-template <typename TVALUE>
-inline std::shared_ptr<Cacheable> createValue(const TVALUE* value) {
-  return CacheableString::create(value);
-}
-
-template <class TKEY>
-inline std::shared_ptr<CacheableKey> createKey(
-    const std::shared_ptr<TKEY>& value) {
-  return std::shared_ptr<CacheableKey>(value);
-}
-
-template <typename TKEY>
-inline std::shared_ptr<CacheableKey> createKey(const TKEY* value) {
-  return createKeyArr(value);
-}
-
-template <class PRIM>
-inline std::shared_ptr<CacheableKey> CacheableKey::create(const PRIM value) {
-  return createKey(value);
-}
-
-template <class PRIM>
-inline std::shared_ptr<Serializable> Serializable::create(const PRIM value) {
-  return createKey(value);
-}
 
 }  // namespace client
 }  // namespace geode

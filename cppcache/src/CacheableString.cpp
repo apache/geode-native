@@ -151,6 +151,44 @@ size_t CacheableString::objectSize() const {
 
 std::string CacheableString::toString() const { return m_str; }
 
+template <>
+std::shared_ptr<CacheableKey> createKeyArr(const char* value) {
+  return CacheableString::create(value);
+}
+
+template <>
+std::shared_ptr<Cacheable> createValueArr(const char* value) {
+  return CacheableString::create(value);
+}
+
+template <>
+std::shared_ptr<CacheableKey> createKeyArr(const char16_t* value) {
+  return CacheableString::create(value);
+}
+
+template <>
+std::shared_ptr<Cacheable> createValueArr(const char16_t* value) {
+  return CacheableString::create(value);
+}
+
+template <>
+std::shared_ptr<CacheableKey> createKeyArr(const char32_t* value) {
+  return CacheableString::create(value);
+}
+
+template <>
+std::shared_ptr<Cacheable> createValueArr(const char32_t* value) {
+  return CacheableString::create(value);
+}
+template <>
+std::shared_ptr<CacheableKey> createKeyArr(const wchar_t* value) {
+  return CacheableString::create(value);
+}
+
+template <>
+std::shared_ptr<Cacheable> createValueArr(const wchar_t* value) {
+  return CacheableString::create(value);
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

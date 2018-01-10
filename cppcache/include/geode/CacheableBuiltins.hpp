@@ -53,6 +53,8 @@ class CacheableKeyType : public CacheableKey {
   inline CacheableKeyType(const TObj value) : m_value(value) {}
 
  public:
+  typedef TObj value_type;
+
   /** Gets the contained value. */
   inline TObj value() const { return m_value; }
 
@@ -199,6 +201,8 @@ class CacheableArrayType : public Cacheable {
   }
 
  public:
+  typedef TObj value_type;
+
   /** Get the underlying array. */
   inline const TObj* value() const { return m_value; }
 
@@ -631,16 +635,6 @@ _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey,
  * iteration semantics of java <code>LinkedHashSet</code>.
  */
 _GEODE_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableLinkedHashSet);
-
-template <>
-inline std::shared_ptr<CacheableKey> CacheableKey::create(int32_t value) {
-  return CacheableInt32::create(value);
-}
-
-template <>
-inline std::shared_ptr<Serializable> Serializable::create(int32_t value) {
-  return CacheableInt32::create(value);
-}
 
 }  // namespace client
 }  // namespace geode

@@ -36,6 +36,19 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class CacheableKey;
+
+template <class TKEY>
+std::shared_ptr<CacheableKey> createKeyArr(const TKEY* value);
+
+template <class TKEY>
+std::shared_ptr<CacheableKey> createKey(TKEY value);
+
+template <typename TKEY>
+inline std::shared_ptr<CacheableKey> createKey(const TKEY* value) {
+  return createKeyArr(value);
+}
+
 /** Represents a cacheable key */
 class _GEODE_EXPORT CacheableKey : public Cacheable {
  protected:
@@ -63,7 +76,9 @@ class _GEODE_EXPORT CacheableKey : public Cacheable {
    * the method apache::geode::client::createKeyArr may be overloaded.
    */
   template <class PRIM>
-  inline static std::shared_ptr<CacheableKey> create(const PRIM value);
+  inline static std::shared_ptr<CacheableKey> create(const PRIM value) {
+    return createKey(value);
+  }
 
   struct hash {
     inline std::size_t operator()(const CacheableKey& s) const {
