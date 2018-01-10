@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CQEVENTIMPL_H_
-#define GEODE_CQEVENTIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,13 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CQEVENTIMPL_H_
+#define GEODE_CQEVENTIMPL_H_
+
+#include <string>
+
 #include <geode/internal/geode_globals.hpp>
 #include <geode/CqEvent.hpp>
 #include <geode/CqOperation.hpp>
@@ -27,20 +29,12 @@
 #include <geode/CacheableKey.hpp>
 #include <geode/Cacheable.hpp>
 #include <geode/Exception.hpp>
-#include <string>
-
-/**
- * @file
- */
 
 namespace apache {
 namespace geode {
 namespace client {
 
 /**
- * @cacheserver
- * Querying is only supported for native clients.
- * @endcacheserver
  * @class CqEventImpl EventImpl.hpp
  *
  * Interface for CqEvent. Offers methods to get information from

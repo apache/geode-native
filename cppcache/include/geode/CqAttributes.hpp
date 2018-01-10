@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CQATTRIBUTES_H_
-#define GEODE_CQATTRIBUTES_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,22 +15,21 @@
  * limitations under the License.
  */
 
-#include "internal/geode_globals.hpp"
+#pragma once
+
+#ifndef GEODE_CQATTRIBUTES_H_
+#define GEODE_CQATTRIBUTES_H_
+
 #include <vector>
 
+#include "internal/geode_globals.hpp"
 #include "CqListener.hpp"
-/**
- * @file
- */
 
 namespace apache {
 namespace geode {
 namespace client {
 
 /**
- * @cacheserver
- * Querying is only supported for native clients.
- * @endcacheserver
  * @class CqAttributes CqAttributes.hpp
  *
  * This interface holds all attribute values for a CQ and provides methods for

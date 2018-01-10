@@ -58,7 +58,6 @@ class _GEODE_EXPORT QueryService {
   virtual std::shared_ptr<Query> newQuery(std::string querystr) = 0;
 
   /**
-   * @nativeclient
    * Constructs a new named continuous query, represented by an instance of
    * CqQuery. The CqQuery is not executed, however, until the execute method
    * is invoked on the CqQuery. The name of the query will be used
@@ -87,8 +86,6 @@ class _GEODE_EXPORT QueryService {
    * region path.
    *         Bind parameters in the query are not supported for the initial
    * release.
-   *
-   * @endnativeclient
    */
   virtual std::shared_ptr<CqQuery> newCq(
       std::string name, std::string querystr,
@@ -131,10 +128,8 @@ class _GEODE_EXPORT QueryService {
       bool isDurable = false) = 0;
 
   /**
-   * @nativeclient
    * Close all CQs, and release resources
    * associated with executing CQs.
-   * @endnativeclient
    */
   virtual void closeCqs() = 0;
 
@@ -146,10 +141,8 @@ class _GEODE_EXPORT QueryService {
   virtual query_container_type getCqs() const = 0;
 
   /**
-   * @nativeclient
    * Retrieve a CqQuery by name.
    * @return the CqQuery or nullptr if not found
-   * @endnativeclient
    */
   virtual std::shared_ptr<CqQuery> getCq(const std::string& name) const = 0;
 
@@ -161,9 +154,7 @@ class _GEODE_EXPORT QueryService {
   virtual void executeCqs() = 0;
 
   /**
-   * @nativeclient
    * Stops all the cqs on this client.
-   * @endnativeclient
    */
   virtual void stopCqs() = 0;
 

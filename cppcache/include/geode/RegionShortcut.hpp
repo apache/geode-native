@@ -22,6 +22,10 @@
 
 #include "internal/geode_globals.hpp"
 
+namespace apache {
+namespace geode {
+namespace client {
+
 /**
  * Each enum represents a predefined {@link RegionAttributes} in a {@link
  * Cache}.
@@ -31,10 +35,6 @@
  * the refid attribute on a region element or region-attributes element to the
  * string of each value.
  */
-namespace apache {
-namespace geode {
-namespace client {
-
 enum RegionShortcut {
 
   /**

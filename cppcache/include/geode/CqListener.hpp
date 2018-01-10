@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CQLISTENER_H_
-#define GEODE_CQLISTENER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CQLISTENER_H_
+#define GEODE_CQLISTENER_H_
+
 #include "internal/geode_globals.hpp"
 #include "CqEvent.hpp"
 
@@ -32,9 +32,6 @@ namespace geode {
 namespace client {
 class CacheListener;
 /**
- * @cacheserver
- * Querying is only supported for native clients.
- * @endcacheserver
  * @class CqListener CqListener.hpp
  *
  * Application plug-in interface for handling continuous query events after
