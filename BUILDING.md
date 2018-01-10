@@ -29,9 +29,6 @@ On Linux
 
  -j <# of parallel processes>  Will allow for the parallelization of the build and link processes
 
-## Optional Config Parameters
--DGEODE_ROOT=\<path to Apache Geode binaries> Will allow for Apache Geode libraries and binaries to be specified
-
 ## Generator
 CMake uses a "generator" to produce configuration files for use by a variety of build tools, e.g., UNIX makefiles, Visual Studio projects. By default a system-specific generator is used by CMake during configuration. (Please see [the CMake documentation](https://cmake.org/documentation/) for further information.) However, in many cases there is a better choice.
 	
