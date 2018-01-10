@@ -70,7 +70,7 @@ bool sortFunc(std::shared_ptr<PdxFieldType> field1,
   }
 }
 
-PdxInstanceImpl::~PdxInstanceImpl() { GF_SAFE_DELETE_ARRAY(m_buffer); }
+PdxInstanceImpl::~PdxInstanceImpl() { _GEODE_SAFE_DELETE_ARRAY(m_buffer); }
 
 PdxInstanceImpl::PdxInstanceImpl(
     apache::geode::client::FieldVsValues fieldVsValue,
@@ -984,7 +984,7 @@ std::string PdxInstanceImpl::toString() const {
           for (int i = 0; i < length; i++) {
             toString += to_utf8(std::u16string(value, length));
           }
-          GF_SAFE_DELETE_ARRAY(value);
+          _GEODE_SAFE_DELETE_ARRAY(value);
         }
         break;
       }
@@ -1003,7 +1003,7 @@ std::string PdxInstanceImpl::toString() const {
           for (int i = 0; i < length; i++) {
             toString += std::to_string(value[i]);
           }
-          GF_SAFE_DELETE_ARRAY(value);
+          _GEODE_SAFE_DELETE_ARRAY(value);
         }
         break;
       }
@@ -1015,7 +1015,7 @@ std::string PdxInstanceImpl::toString() const {
           for (int i = 0; i < length; i++) {
             toString += std::to_string(value[i]);
           }
-          GF_SAFE_DELETE_ARRAY(value);
+          _GEODE_SAFE_DELETE_ARRAY(value);
         }
         break;
       }
@@ -1027,7 +1027,7 @@ std::string PdxInstanceImpl::toString() const {
           for (int i = 0; i < length; i++) {
             toString += std::to_string(value[i]);
           }
-          GF_SAFE_DELETE_ARRAY(value);
+          _GEODE_SAFE_DELETE_ARRAY(value);
         }
         break;
       }
@@ -1050,7 +1050,7 @@ std::string PdxInstanceImpl::toString() const {
           for (int i = 0; i < length; i++) {
             toString += std::to_string(value[i]);
           }
-          GF_SAFE_DELETE_ARRAY(value);
+          _GEODE_SAFE_DELETE_ARRAY(value);
         }
         break;
       }
@@ -1081,7 +1081,7 @@ std::string PdxInstanceImpl::toString() const {
           for (int i = 0; i < length; i++) {
             toString += value[i] ? "true" : "false";
           }
-          GF_SAFE_DELETE_ARRAY(value);
+          _GEODE_SAFE_DELETE_ARRAY(value);
         }
         break;
       }
@@ -1441,7 +1441,7 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
         position = nextFieldPosition;  // mark next field;
       }
     }
-    GF_SAFE_DELETE_ARRAY(copy);
+    _GEODE_SAFE_DELETE_ARRAY(copy);
   } else {
     for (size_t i = 0; i < pdxFieldList->size(); i++) {
       auto currPf = pdxFieldList->at(i);

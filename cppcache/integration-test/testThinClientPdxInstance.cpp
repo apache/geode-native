@@ -50,7 +50,7 @@ CacheHelper* cacheHelper = nullptr;
 #define SERVER2 s2p2
 static bool isLocator = false;
 const bool USE_ACK = true;
-const bool NO_ACK ATTR_UNUSED = false;
+const bool NO_ACK = false;
 
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);

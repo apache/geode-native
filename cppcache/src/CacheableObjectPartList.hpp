@@ -22,7 +22,7 @@
 
 #include <vector>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/Cacheable.hpp>

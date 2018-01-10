@@ -34,7 +34,7 @@ namespace client {
 * @since 7.0
 */
 
-class CPPCACHE_EXPORT CqStatusListener : public CqListener {
+class _GEODE_EXPORT CqStatusListener : public CqListener {
  public:
   /**
   * Called when the cq loses connection with all servers

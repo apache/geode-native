@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_VERSIONSTAMP_H_
-#define GEODE_VERSIONSTAMP_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,10 +15,18 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#pragma once
+
+#ifndef GEODE_VERSIONSTAMP_H_
+#define GEODE_VERSIONSTAMP_H_
+
 #include <memory>
+
+#include <geode/internal/geode_globals.hpp>
+
 #include "ClientProxyMembershipID.hpp"
 #include "VersionTag.hpp"
+#include "ErrType.hpp"
 
 namespace apache {
 namespace geode {
@@ -31,7 +34,7 @@ namespace client {
 /**
  * @brief This class encapsulates Version Stamp for map entries.
  */
-class CPPCACHE_EXPORT VersionStamp {
+class _GEODE_EXPORT VersionStamp {
  public:
   VersionStamp()
       : m_memberID(0),

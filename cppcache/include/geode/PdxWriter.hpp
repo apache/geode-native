@@ -20,7 +20,7 @@
 #ifndef GEODE_PDXWRITER_H_
 #define GEODE_PDXWRITER_H_
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "CacheableBuiltins.hpp"
 #include "CacheableDate.hpp"
 
@@ -36,7 +36,7 @@ class PdxUnreadFields;
  * member
  * fields using this abstract class. This class is implemented by Native Client.
  */
-class CPPCACHE_EXPORT PdxWriter {
+class _GEODE_EXPORT PdxWriter {
  public:
   /**
    * @brief constructors

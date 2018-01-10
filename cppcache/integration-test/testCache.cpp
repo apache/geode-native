@@ -28,7 +28,6 @@ using namespace apache::geode::client;
 
 BEGIN_TEST(CacheFunction)
   char* host_name = (char*)"TESTCACHE";
-  uint16_t port ATTR_UNUSED = 0;
   const uint32_t totalSubRegions = 3;
   char* regionName = (char*)"TESTCACHE_ROOT_REGION";
   char* subRegionName1 = (char*)"TESTCACHE_SUB_REGION1";

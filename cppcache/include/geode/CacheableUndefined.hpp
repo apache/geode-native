@@ -22,7 +22,7 @@
 
 #include <memory>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "Cacheable.hpp"
 
 /** @file
@@ -39,7 +39,7 @@ class DataInput;
 class DataOutput;
 class Serializable;
 
-class CPPCACHE_EXPORT CacheableUndefined : public Cacheable {
+class _GEODE_EXPORT CacheableUndefined : public Cacheable {
  public:
   /**
    *@brief serialize this object
@@ -96,7 +96,7 @@ class CPPCACHE_EXPORT CacheableUndefined : public Cacheable {
   CacheableUndefined& operator=(const CacheableUndefined& other) = delete;
   CacheableUndefined(const CacheableUndefined& other) = delete;
 
-  FRIEND_STD_SHARED_PTR(CacheableUndefined)
+  _GEODE_FRIEND_STD_SHARED_PTR(CacheableUndefined)
 };
 
 }  // namespace client

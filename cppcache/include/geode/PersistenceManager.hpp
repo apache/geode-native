@@ -22,34 +22,19 @@
 
 #include <memory>
 
+#include "internal/geode_globals.hpp"
 #include "Cacheable.hpp"
-#include "CacheableKey.hpp"
-#include "DistributedSystem.hpp"
-#include "ExceptionTypes.hpp"
-#include "geode_base.hpp"
-#include "geode_globals.hpp"
-
-namespace apache {
-namespace geode {
-namespace client {
-class CacheableKey;
-class Properties;
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
 
 /**
  * @file
  */
 
-#define MAX_PAGE_COUNT "MaxPageCount"
-#define PAGE_SIZE "PageSize"
-#define PERSISTENCE_DIR "PersistenceDirectory"
-
 namespace apache {
 namespace geode {
 namespace client {
 
+class CacheableKey;
+class Properties;
 class PersistenceManager;
 class Region;
 
@@ -64,11 +49,12 @@ typedef std::shared_ptr<PersistenceManager> (*getPersistenceManagerInstance)(
  * A specific disk storage implementation will implement all the methods
  * described here.
  */
-class CPPCACHE_EXPORT PersistenceManager {
-  /**
-   * @brief public methods
-   */
+class _GEODE_EXPORT PersistenceManager {
  public:
+  static constexpr char const* MAX_PAGE_COUNT = "MaxPageCount";
+  static constexpr char const* PAGE_SIZE = "PageSize";
+  static constexpr char const* PERSISTENCE_DIR = "PersistenceDirectory";
+
   /**
    * Returns the current persistence manager.
    * @return persistence manager
@@ -137,13 +123,12 @@ class CPPCACHE_EXPORT PersistenceManager {
    */
   virtual void close() = 0;
 
-  PersistenceManager(const std::shared_ptr<Region>& regionPtr);
-  PersistenceManager();
+  PersistenceManager(const std::shared_ptr<Region>& regionPtr)
+      : m_regionPtr(regionPtr) {}
 
-  /**
-    * @brief destructor
-    */
-  virtual ~PersistenceManager() = 0;
+  PersistenceManager() = default;
+
+  virtual ~PersistenceManager() = default;
 
  protected:
   /** Region for this persistence manager.

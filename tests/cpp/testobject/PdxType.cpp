@@ -178,7 +178,7 @@ void PdxTests::PdxType::fromData(PdxReader& pr) {
   // TODO:temp added, delete later
 
   int32_t* Lengtharr;
-  GF_NEW(Lengtharr, int32_t[2]);
+  _GEODE_NEW(Lengtharr, int32_t[2]);
   int32_t arrLen = 0;
   m_byteByteArray =
       pr.readArrayOfByteArrays("m_byteByteArray", arrLen, &Lengtharr);

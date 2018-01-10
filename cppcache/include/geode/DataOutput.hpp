@@ -25,7 +25,7 @@
 #include <cstdlib>
 #include <algorithm>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "ExceptionTypes.hpp"
 #include "Serializable.hpp"
 #include "CacheableString.hpp"
@@ -46,7 +46,7 @@ class CacheImpl;
  * strings, <code>Serializable</code> objects to a byte stream.
  * This class is intentionally not thread safe.
  */
-class CPPCACHE_EXPORT DataOutput {
+class _GEODE_EXPORT DataOutput {
  public:
   /**
    * Write an unsigned byte to the <code>DataOutput</code>.
@@ -491,13 +491,13 @@ class CPPCACHE_EXPORT DataOutput {
 
   uint8_t* getBufferCopyFrom(const uint8_t* from, uint32_t length) {
     uint8_t* result;
-    GF_NEW(result, uint8_t[length]);
+    _GEODE_NEW(result, uint8_t[length]);
     std::memcpy(result, from, length);
 
     return result;
   }
 
-  static void safeDelete(uint8_t* src) { GF_SAFE_DELETE(src); }
+  static void safeDelete(uint8_t* src) { _GEODE_SAFE_DELETE(src); }
 
   virtual const Cache* getCache();
 

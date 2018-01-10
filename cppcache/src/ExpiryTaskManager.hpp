@@ -26,7 +26,7 @@
 #include <ace/Task.h>
 #include <ace/Timer_Heap.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/internal/chrono/duration.hpp>
 
 #include "ReadWriteLock.hpp"
@@ -48,7 +48,7 @@ using namespace apache::geode::internal::chrono::duration;
  * This class starts a reactor's event loop for taking care of expiry
  * tasks. The scheduling of event also happens through this manager.
  */
-class CPPCACHE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
+class _GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
  public:
   typedef long id_type;
   /**

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 class PdxTypes {
  public:

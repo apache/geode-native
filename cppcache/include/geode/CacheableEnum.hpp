@@ -27,7 +27,7 @@
 #include "CacheableKey.hpp"
 #include "CacheableString.hpp"
 #include "GeodeTypeIds.hpp"
-#include "geode_base.hpp"
+#include "internal/geode_base.hpp"
 
 namespace apache {
 namespace geode {
@@ -51,7 +51,7 @@ class DataInput;
 class DataOutput;
 class Serializable;
 
-class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
+class _GEODE_EXPORT CacheableEnum : public CacheableKey {
  private:
   std::string m_enumClassName;
   std::string m_enumName;
@@ -148,7 +148,7 @@ class CPPCACHE_EXPORT CacheableEnum : public CacheableKey {
   void operator=(const CacheableEnum& other);
   CacheableEnum(const CacheableEnum& other);
 
-  FRIEND_STD_SHARED_PTR(CacheableEnum)
+  _GEODE_FRIEND_STD_SHARED_PTR(CacheableEnum)
 };
 
 }  // namespace client

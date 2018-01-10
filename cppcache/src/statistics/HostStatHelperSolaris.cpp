@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include "config.h"
 
 #if defined(_SOLARIS)
-#include <ace/OS_NS_sys_utsname.h>
-#include <ace/OS_NS_errno.h>
-#include "HostStatHelperSolaris.hpp"
+
 #include <procfs.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -30,9 +28,16 @@
 #include <sys/proc.h>
 #include <sys/kstat.h>
 #include <glob.h>
-#include <geode/ExceptionTypes.hpp>
-#include "SolarisProcessStats.hpp"
+
+#include <ace/OS_NS_sys_utsname.h>
+#include <ace/OS_NS_errno.h>
 #include <ace/OS.h>
+
+#include <geode/internal/geode_globals.hpp>
+#include <geode/ExceptionTypes.hpp>
+
+#include "HostStatHelperSolaris.hpp"
+#include "SolarisProcessStats.hpp"
 
 using namespace apache::geode::statistics;
 

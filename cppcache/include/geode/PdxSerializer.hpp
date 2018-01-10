@@ -48,7 +48,7 @@ typedef uint32_t (*UserObjectSizer)(void*, const std::string&);
  * Serializable::registerPdxSerializer} to create new
  * instance of type for de-serilization.
  */
-class CPPCACHE_EXPORT PdxSerializer {
+class _GEODE_EXPORT PdxSerializer {
  public:
   PdxSerializer() {}
 

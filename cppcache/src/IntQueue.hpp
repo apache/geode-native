@@ -33,7 +33,7 @@ namespace client {
 
 template <class T>
 
-class CPPCACHE_EXPORT IntQueue {
+class _GEODE_EXPORT IntQueue {
  public:
   IntQueue() : m_cond(m_mutex) {}
 

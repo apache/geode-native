@@ -1146,7 +1146,6 @@ class putThread : public ACE_Task_Base {
   int getTimeoutCount() { return m_timeoutCount; }
 
   int svc(void) {
-    bool networkhop ATTR_UNUSED = false;
   std::shared_ptr<Cacheable> args = nullptr;
   std::shared_ptr<ResultCollector> rPtr = nullptr;
     auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);

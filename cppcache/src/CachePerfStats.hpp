@@ -20,7 +20,7 @@
 #ifndef GEODE_CACHEPERFSTATS_H_
 #define GEODE_CACHEPERFSTATS_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "statistics/Statistics.hpp"
 #include "statistics/StatisticsFactory.hpp"
@@ -34,7 +34,7 @@ namespace client {
 using namespace apache::geode::statistics;
 
 /** hold statistics for cache.. */
-class CPPCACHE_EXPORT CachePerfStats {
+class _GEODE_EXPORT CachePerfStats {
  public:
   CachePerfStats(StatisticsFactory* factory) {
     auto statsType = factory->findType("CachePerfStats");

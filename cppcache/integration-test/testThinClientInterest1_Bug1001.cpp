@@ -235,7 +235,7 @@ std::shared_ptr<CacheableString> getUString(int index) {
      try {
        const wchar_t* str = L"Pivotal";
        auto lCStringP = CacheableString::create(str);
-       auto&& lRtnCd ATTR_UNUSED = lCStringP->value();
+       lCStringP->value();
      } catch (const Exception& geodeExcp) {
        printf("%s: %s", geodeExcp.getName().c_str(), geodeExcp.what());
        FAIL("Should not have got exception.");
@@ -247,7 +247,7 @@ std::shared_ptr<CacheableString> getUString(int index) {
            "17"
            "\\u53f7";
        auto lCStringP = CacheableString::create(str);
-       auto&& lRtnCd ATTR_UNUSED = lCStringP->value();
+       lCStringP->value();
      } catch (const Exception& geodeExcp) {
        printf("%s: %s", geodeExcp.getName().c_str(), geodeExcp.what());
        FAIL("Should not have got exception.");

@@ -25,7 +25,7 @@
 
 #include <ace/Recursive_Thread_Mutex.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/QueryService.hpp>
 
 #include "CqService.hpp"
@@ -39,7 +39,7 @@ namespace client {
 class CacheImpl;
 class ThinClientPoolDM;
 typedef std::map<std::string, bool> CqPoolsConnected;
-class CPPCACHE_EXPORT RemoteQueryService
+class _GEODE_EXPORT RemoteQueryService
     : public QueryService,
       public std::enable_shared_from_this<RemoteQueryService> {
  public:

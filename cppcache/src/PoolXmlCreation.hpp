@@ -22,7 +22,7 @@
 
 #include <string>
 #include <vector>
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Pool.hpp>
 #include "PoolXmlCreation.hpp"
@@ -38,7 +38,7 @@ class Cache;
  *
  * @since 3.0
  */
-class CPPCACHE_EXPORT PoolXmlCreation {
+class _GEODE_EXPORT PoolXmlCreation {
  private:
   /** An <code>AttributesFactory</code> for creating default
    * <code>PoolAttribute</code>s */

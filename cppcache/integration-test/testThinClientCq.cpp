@@ -381,7 +381,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
     uint8_t i = 0;
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    QueryHelper::getHelper();
 
     auto pool =
         getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
@@ -484,7 +484,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    QueryHelper::getHelper();
 
     auto pool =
         getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);

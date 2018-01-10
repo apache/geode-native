@@ -156,7 +156,7 @@ void DataOutput::writeJavaModifiedUtf8(
     writeJavaModifiedUtf8(to_utf16(value));
   }
 }
-template CPPCACHE_EXPORT void DataOutput::writeJavaModifiedUtf8(
+template _GEODE_EXPORT void DataOutput::writeJavaModifiedUtf8(
     const std::string&);
 
 template <class _Traits, class _Allocator>
@@ -172,7 +172,7 @@ void DataOutput::writeJavaModifiedUtf8(
     writeJavaModifiedUtf8(to_utf16(value));
   }
 }
-template CPPCACHE_EXPORT void DataOutput::writeJavaModifiedUtf8(
+template _GEODE_EXPORT void DataOutput::writeJavaModifiedUtf8(
     const std::u32string&);
 
 void DataOutput::writeJavaModifiedUtf8(const char32_t* data, size_t len) {
@@ -199,7 +199,7 @@ void DataOutput::writeUtf16Huge(
     writeUtf16Huge(to_utf16(value));
   }
 }
-template CPPCACHE_EXPORT void DataOutput::writeUtf16Huge(const std::string&);
+template _GEODE_EXPORT void DataOutput::writeUtf16Huge(const std::string&);
 
 template <class _Traits, class _Allocator>
 void DataOutput::writeUtf16Huge(
@@ -211,7 +211,7 @@ void DataOutput::writeUtf16Huge(
     writeUtf16Huge(to_utf16(value));
   }
 }
-template CPPCACHE_EXPORT void DataOutput::writeUtf16Huge(const std::u32string&);
+template _GEODE_EXPORT void DataOutput::writeUtf16Huge(const std::u32string&);
 
 void DataOutput::writeUtf16Huge(const char32_t* data, size_t len) {
   // TODO string optimize from UCS-4 to UTF-16
@@ -230,7 +230,7 @@ void DataOutput::writeUtf16(
     writeUtf16(to_utf16(value));
   }
 }
-template CPPCACHE_EXPORT void DataOutput::writeUtf16(const std::string&);
+template _GEODE_EXPORT void DataOutput::writeUtf16(const std::string&);
 
 template <class _Traits, class _Allocator>
 void DataOutput::writeUtf16(
@@ -240,7 +240,7 @@ void DataOutput::writeUtf16(
     writeUtf16(to_utf16(value));
   }
 }
-template CPPCACHE_EXPORT void DataOutput::writeUtf16(const std::u32string&);
+template _GEODE_EXPORT void DataOutput::writeUtf16(const std::u32string&);
 
 void DataOutput::writeUtf16(const char32_t* data, size_t len) {
   // TODO string optimize from UCS-4 to UTF-16

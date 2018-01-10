@@ -57,7 +57,7 @@ typedef ACE_Guard<ACE_Recursive_Thread_Mutex> MapGuard;
  * provides the operations for duplicate checking and
  * expiry of idle event IDs from notifications.
  */
-class CPPCACHE_EXPORT EventIdMap {
+class _GEODE_EXPORT EventIdMap {
  private:
   typedef std::unordered_map<std::shared_ptr<EventSource>,
                              std::shared_ptr<EventSequence>,
@@ -132,7 +132,7 @@ class CPPCACHE_EXPORT EventIdMap {
  * EventSequence is the combination of SequenceNum from EventId, a timestamp and
  * a flag indicating whether or not it is ACKed
  */
-class CPPCACHE_EXPORT EventSequence {
+class _GEODE_EXPORT EventSequence {
   int64_t m_seqNum;
   bool m_acked;
   ACE_Time_Value m_deadline;  // current time plus the expiration delay (age)

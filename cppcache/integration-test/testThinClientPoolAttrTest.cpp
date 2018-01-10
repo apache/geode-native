@@ -253,7 +253,6 @@ DUNIT_TASK(CLIENT1, ClientOp)
     // min.
     SLEEP(5000);
     // Check current # connections they should be == min
-    char number[20] ATTR_UNUSED = {0};
     std::string poolName =
         getHelper()->getRegion(poolRegNames[0])->getAttributes()->getPoolName();
     int level = TestUtils::getCacheImpl(getHelper()->cachePtr)

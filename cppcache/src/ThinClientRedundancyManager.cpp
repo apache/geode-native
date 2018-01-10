@@ -721,7 +721,7 @@ void ThinClientRedundancyManager::close() {
     m_periodicAckTask->stopNoblock();
     m_periodicAckSema.release();
     m_periodicAckTask->wait();
-    GF_SAFE_DELETE(m_periodicAckTask);
+    _GEODE_SAFE_DELETE(m_periodicAckTask);
   }
 
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);

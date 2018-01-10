@@ -22,7 +22,7 @@
 
 #include <string>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "statistics/Statistics.hpp"
 #include "statistics/StatisticsFactory.hpp"
@@ -35,7 +35,7 @@ using statistics::StatisticDescriptor;
 using statistics::StatisticsType;
 using statistics::Statistics;
 
-class CPPCACHE_EXPORT RegionStats {
+class _GEODE_EXPORT RegionStats {
  public:
   /** hold statistics for a region.. */
   RegionStats(statistics::StatisticsFactory* factory, const std::string& regionName);

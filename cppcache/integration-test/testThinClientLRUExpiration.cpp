@@ -50,7 +50,7 @@ const char* regionNames[] = {"DistRegionAck1", "DistRegionAck2",
                              "DistRegionAck3", "DistRegionAck4",
                              "DistRegionAck5", "DistRegionAck"};
 const bool USE_ACK = true;
-const bool NO_ACK ATTR_UNUSED = false;
+const bool NO_ACK = false;
 std::shared_ptr<TallyListener> regListener;
 std::shared_ptr<TallyWriter> regWriter;
 bool registerKey = true;

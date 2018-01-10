@@ -29,7 +29,7 @@ namespace geode {
 namespace client {
 
 extern "C" {
-LIBEXP AuthInitialize* createUserPasswordAuthInitInstance() {
+_GEODE_LIBEXP AuthInitialize* createUserPasswordAuthInitInstance() {
   return new UserPasswordAuthInit();
 }
 }

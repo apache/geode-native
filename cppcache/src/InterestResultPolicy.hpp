@@ -23,7 +23,7 @@
 /**
  * @file
  */
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {
@@ -32,7 +32,7 @@ namespace client {
  * @class InterestResultPolicy InterestResultPolicy.hpp
  * Policy class for interest result.
  */
-class CPPCACHE_EXPORT InterestResultPolicy {
+class _GEODE_EXPORT InterestResultPolicy {
   // public static methods
  public:
   static char nextOrdinal;

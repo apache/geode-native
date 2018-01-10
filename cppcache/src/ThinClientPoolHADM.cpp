@@ -196,7 +196,7 @@ void ThinClientPoolHADM::sendNotificationCloseMsgs() {
     m_redundancyTask->stopNoblock();
     m_redundancySema.release();
     m_redundancyTask->wait();
-    GF_SAFE_DELETE(m_redundancyTask);
+    _GEODE_SAFE_DELETE(m_redundancyTask);
     m_redundancyManager->sendNotificationCloseMsgs();
   }
 }

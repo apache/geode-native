@@ -30,6 +30,7 @@
 #include "TcpConn.hpp"
 #include "CacheImpl.hpp"
 #include "util/Log.hpp"
+#include "config.h"
 
 namespace apache {
 namespace geode {
@@ -231,7 +232,7 @@ void TcpConn::connect() {
     int32_t lastError = ACE_OS::last_error();
     if (lastError == ETIME || lastError == ETIMEDOUT) {
       //  this is only called by constructor, so we must delete m_io
-      GF_SAFE_DELETE(m_io);
+      _GEODE_SAFE_DELETE(m_io);
       throw TimeoutException(
           "TcpConn::connect Attempt to connect timed out after" +
           to_string(waitMicroSeconds) + ".");
@@ -256,7 +257,7 @@ void TcpConn::connect() {
 void TcpConn::close() {
   if (m_io != nullptr) {
     m_io->close();
-    GF_SAFE_DELETE(m_io);
+    _GEODE_SAFE_DELETE(m_io);
   }
 }
 

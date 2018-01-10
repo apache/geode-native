@@ -21,7 +21,7 @@
  */
 
 #include <string>
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "TcrEndpoint.hpp"
 #include "ServerLocation.hpp"
 #include <set>

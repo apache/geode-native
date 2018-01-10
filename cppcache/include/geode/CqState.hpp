@@ -22,7 +22,7 @@
 
 #include <iosfwd>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -38,7 +38,7 @@ namespace client {
  * This interface gives information on the state of a CqQuery.
  * It is provided by the getState method of the CqQuery instance.
  */
-class CPPCACHE_EXPORT CqState {
+class _GEODE_EXPORT CqState {
  public:
   // corresponding to geode.cache.query.internal.CqStateImpl
   typedef enum {

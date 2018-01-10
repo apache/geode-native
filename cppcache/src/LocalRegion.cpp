@@ -709,8 +709,8 @@ LocalRegion::~LocalRegion() {
   m_writer = nullptr;
   m_loader = nullptr;
 
-  GF_SAFE_DELETE(m_entries);
-  GF_SAFE_DELETE(m_regionStats);
+  _GEODE_SAFE_DELETE(m_entries);
+  _GEODE_SAFE_DELETE(m_regionStats);
 }
 
 /**
@@ -2389,7 +2389,7 @@ GfErrType LocalRegion::destroyRegionNoThrow(
 
   release(true);
   if (m_regionAttributes->getCachingEnabled()) {
-    GF_SAFE_DELETE(m_entries);
+    _GEODE_SAFE_DELETE(m_entries);
   }
   GF_D_ASSERT(m_destroyPending);
 

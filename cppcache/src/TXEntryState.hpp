@@ -19,7 +19,7 @@
 
 #ifndef GEODE_TXENTRYSTATE_H_
 #define GEODE_TXENTRYSTATE_H_
-#include "geode/geode_globals.hpp"
+#include "geode/internal/geode_globals.hpp"
 namespace apache {
 namespace geode {
 namespace client {

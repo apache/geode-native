@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <memory>
 #include "ThinClientDistributionManager.hpp"
 
@@ -33,7 +33,7 @@ namespace client {
 class TcrMessage;
 class TcrConnection;
 
-class CPPCACHE_EXPORT ThinClientCacheDistributionManager
+class _GEODE_EXPORT ThinClientCacheDistributionManager
     : public ThinClientDistributionManager {
  public:
   ThinClientCacheDistributionManager(TcrConnectionManager& connManager);

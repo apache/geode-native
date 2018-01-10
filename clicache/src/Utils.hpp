@@ -18,7 +18,7 @@
 #pragma once
 
 
-#include <geode/geode_base.hpp>
+#include <geode/internal/geode_base.hpp>
 #include "geode_defs.hpp"
 //#include "SystemProperties.hpp"
 //#include "../../impl/NativeWrapper.hpp"

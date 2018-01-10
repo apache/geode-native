@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "RegionService.hpp"
 
 /**
@@ -45,7 +45,7 @@ class DistributedSystem;
  *
  */
 
-class CPPCACHE_EXPORT GeodeCache : public RegionService {
+class _GEODE_EXPORT GeodeCache : public RegionService {
   /**
    * @brief public methods
    */

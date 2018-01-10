@@ -34,9 +34,9 @@
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
-#define TESTOBJECT_EXPORT LIBEXP
+#define TESTOBJECT_EXPORT _GEODE_LIBEXP
 #else
-#define TESTOBJECT_EXPORT LIBIMP
+#define TESTOBJECT_EXPORT _GEODE_LIBIMP
 #endif
 #else
 #define TESTOBJECT_EXPORT
@@ -229,8 +229,8 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
 
   int32_t getCharArrayLength() { return charArrayLen; }
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   virtual void toData(PdxWriter& pw) const override;
 

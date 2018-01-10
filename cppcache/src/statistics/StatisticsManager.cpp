@@ -22,7 +22,7 @@
 #include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Exception.hpp>
 
 #include "StatisticsManager.hpp"

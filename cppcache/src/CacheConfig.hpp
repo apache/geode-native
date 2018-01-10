@@ -31,7 +31,7 @@
 #pragma warning(disable : 4786)
 #endif  // _MSC_VER > 1000
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <string>
 #include <map>
 #include "RegionConfig.hpp"
@@ -53,7 +53,7 @@ namespace client {
 
 typedef std::map<std::string, std::shared_ptr<RegionConfig>> RegionConfigMapT;
 
-class CPPCACHE_EXPORT CacheConfig {
+class _GEODE_EXPORT CacheConfig {
  public:
   CacheConfig(const char* xmlFileName);
 

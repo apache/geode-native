@@ -53,7 +53,7 @@ std::shared_ptr<CacheableString> convertBytesToString(const uint8_t* bytes,
 }
 
 extern "C" {
-LIBEXP AuthInitialize* createPKCSAuthInitInstance() {
+_GEODE_LIBEXP AuthInitialize* createPKCSAuthInitInstance() {
   return new PKCSAuthInitInternal();
 }
 

@@ -22,7 +22,7 @@
 
 #include <ace/Time_Value_T.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Region.hpp>
 #include <geode/ExpirationAction.hpp>
 #include "RegionInternal.hpp"
@@ -44,7 +44,7 @@ namespace client {
  * manager when region is destroyed
  *
  */
-class CPPCACHE_EXPORT RegionExpiryHandler : public ACE_Event_Handler {
+class _GEODE_EXPORT RegionExpiryHandler : public ACE_Event_Handler {
  public:
   /**
    * Constructor

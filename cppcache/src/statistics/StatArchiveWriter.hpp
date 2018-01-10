@@ -24,7 +24,7 @@
 #include <list>
 #include <chrono>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Cache.hpp>
 #include <geode/DataOutput.hpp>
@@ -79,7 +79,7 @@ using std::chrono::steady_clock;
  *                 // descriptors in the previous sample run.
  */
 
-class CPPCACHE_EXPORT StatDataOutput {
+class _GEODE_EXPORT StatDataOutput {
  public:
   StatDataOutput(CacheImpl* cache);
   StatDataOutput(std::string, CacheImpl* cache);
@@ -139,8 +139,7 @@ class CPPCACHE_EXPORT StatDataOutput {
   friend class StatArchiveWriter;
 };
 
-class CPPCACHE_EXPORT ResourceType : private NonCopyable,
-                                     private NonAssignable {
+class _GEODE_EXPORT ResourceType : private NonCopyable, private NonAssignable {
  public:
   ResourceType(int32_t id, const StatisticsType *type);
   int32_t getId() const;
@@ -167,8 +166,7 @@ class CPPCACHE_EXPORT ResourceType : private NonCopyable,
  * FIX : Make the class NonCopyable
  */
 
-class CPPCACHE_EXPORT ResourceInst : private NonCopyable,
-                                     private NonAssignable {
+class _GEODE_EXPORT ResourceInst : private NonCopyable, private NonAssignable {
  public:
   ResourceInst(int32_t id, Statistics *, const ResourceType *,
                StatDataOutput *);
@@ -200,7 +198,7 @@ class HostStatSampler;
  * @class StatArchiveWriter
  */
 
-class CPPCACHE_EXPORT StatArchiveWriter {
+class _GEODE_EXPORT StatArchiveWriter {
  private:
   HostStatSampler *sampler;
   StatDataOutput *dataBuffer;

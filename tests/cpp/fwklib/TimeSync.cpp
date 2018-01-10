@@ -26,6 +26,9 @@
 #include <memory.h>
 #include <errno.h>
 #include <sys/types.h>
+
+#include "config.h"
+
 #ifndef WIN32
 #include <unistd.h>
 #include <fcntl.h>

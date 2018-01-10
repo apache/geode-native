@@ -393,7 +393,7 @@ void CacheXmlParser::handleParserErrors(int res) {
  */
 CacheXmlParser* CacheXmlParser::parse(const char* cacheXml, Cache* cache) {
   CacheXmlParser* handler;
-  GF_NEW(handler, CacheXmlParser(cache));
+  _GEODE_NEW(handler, CacheXmlParser(cache));
   // use RAII to delete the handler object in case of exceptions
   DeleteObject<CacheXmlParser> delHandler(handler);
 
@@ -466,7 +466,7 @@ void CacheXmlParser::startCache(void* ctx, const xmlChar** attrs) {
       }
     }
   }
-  GF_NEW(m_cacheCreation, CacheXmlCreation());
+  _GEODE_NEW(m_cacheCreation, CacheXmlCreation());
 }
 
 void CacheXmlParser::startPdx(const xmlChar** atts) {
@@ -1695,7 +1695,7 @@ void CacheXmlParser::endPersistenceManager() {
   }
 }
 
-CacheXmlParser::~CacheXmlParser() { GF_SAFE_DELETE(m_cacheCreation); }
+CacheXmlParser::~CacheXmlParser() { _GEODE_SAFE_DELETE(m_cacheCreation); }
 
 void CacheXmlParser::setError(const std::string& err) { m_error = err; }
 

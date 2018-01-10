@@ -386,7 +386,7 @@ void ThinClientRegion::initTCR() {
         new TcrDistributionManager(this, m_cacheImpl->tcrConnectionManager());
     m_tcrdm->init();
   } catch (const Exception& ex) {
-    GF_SAFE_DELETE(m_tcrdm);
+    _GEODE_SAFE_DELETE(m_tcrdm);
     LOGERROR("Exception while initializing region: %s: %s",
              ex.getName().c_str(), ex.what());
     throw;
@@ -2818,7 +2818,7 @@ void ThinClientRegion::receiveNotification(TcrMessage* msg) {
     TryReadGuard guard(m_rwLock, m_destroyPending);
     if (m_destroyPending) {
       if (msg != TcrMessage::getAllEPDisMess()) {
-        GF_SAFE_DELETE(msg);
+        _GEODE_SAFE_DELETE(msg);
       }
       return;
     }
@@ -2832,7 +2832,7 @@ void ThinClientRegion::receiveNotification(TcrMessage* msg) {
   }
 
   m_notificationSema.release();
-  if (TcrMessage::getAllEPDisMess() != msg) GF_SAFE_DELETE(msg);
+  if (TcrMessage::getAllEPDisMess() != msg) _GEODE_SAFE_DELETE(msg);
 }
 
 void ThinClientRegion::localInvalidateRegion_internal() {
@@ -2958,7 +2958,7 @@ ThinClientRegion::~ThinClientRegion() {
   if (!m_destroyPending) {
     release(false);
   }
-  GF_SAFE_DELETE(m_tcrdm);
+  _GEODE_SAFE_DELETE(m_tcrdm);
 }
 
 void ThinClientRegion::acquireGlobals(bool isFailover) {

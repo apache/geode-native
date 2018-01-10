@@ -24,7 +24,7 @@
 #include <iosfwd>
 #include <memory>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "CacheStatistics.hpp"
 #include "CacheableBuiltins.hpp"
 #include "CacheableKey.hpp"
@@ -94,7 +94,7 @@ static constexpr std::chrono::milliseconds DEFAULT_RESPONSE_TIMEOUT =
 *
 * @see RegionAttributes
 */
-class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
+class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /** @brief Public Methods
    */
  public:
@@ -1471,7 +1471,7 @@ class CPPCACHE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   mutable Cache* m_cache;
 
-  FRIEND_STD_SHARED_PTR(Region)
+  _GEODE_FRIEND_STD_SHARED_PTR(Region)
 };
 
 }  // namespace client

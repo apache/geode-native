@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <algorithm>
 
 namespace {
@@ -49,7 +49,7 @@ namespace client {
  *  A sampling of primes are used from 0 to 1 million. Not every prime is
  *  necessary, as the map scales, little steps are usually uninteresting.
  */
-class CPPCACHE_EXPORT TableOfPrimes {
+class _GEODE_EXPORT TableOfPrimes {
  public:
   inline static uint32_t getPrimeLength() { return g_primeLen; }
 

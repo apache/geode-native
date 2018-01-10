@@ -26,7 +26,7 @@
 
 #include <string>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {
@@ -52,7 +52,7 @@ namespace client {
  */
 class CacheAttributesFactory;
 
-class CPPCACHE_EXPORT CacheAttributes {
+class _GEODE_EXPORT CacheAttributes {
   /**
    * @brief public static methods
    */

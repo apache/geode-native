@@ -22,7 +22,7 @@
 
 #include <string>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 /** @file
 */
@@ -46,7 +46,7 @@ using namespace apache::geode::client;
  *
  */
 
-class CPPCACHE_EXPORT StatisticDescriptor {
+class _GEODE_EXPORT StatisticDescriptor {
  public:
   /**
     * Returns the id of this statistic in a {@link StatisticsType

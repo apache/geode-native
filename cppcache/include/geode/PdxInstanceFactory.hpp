@@ -21,7 +21,7 @@
 #define GEODE_PDXINSTANCEFACTORY_H_
 
 #include "PdxInstance.hpp"
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "CacheableBuiltins.hpp"
 #include "CacheableDate.hpp"
 #include "CacheableObjectArray.hpp"
@@ -41,7 +41,7 @@ namespace client {
  * multiple factories or use {@link PdxInstance#createWriter} to create
  * subsequent instances.
  */
-class CPPCACHE_EXPORT PdxInstanceFactory {
+class _GEODE_EXPORT PdxInstanceFactory {
  public:
   /**
    * @brief destructor

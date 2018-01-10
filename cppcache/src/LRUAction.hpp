@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Cache.hpp>
 #include <geode/PersistenceManager.hpp>
 #include "MapEntry.hpp"
@@ -36,7 +36,7 @@ namespace client {
  * @brief abstract behavior for different eviction actions.
  */
 class LRUEntriesMap;
-class CPPCACHE_EXPORT LRUAction {
+class _GEODE_EXPORT LRUAction {
  protected:
   bool m_invalidates;
   bool m_destroys;
@@ -94,7 +94,7 @@ class CPPCACHE_EXPORT LRUAction {
 /**
  * @brief LRUAction for destroy (distributed)
  */
-class CPPCACHE_EXPORT LRUDestroyAction : public virtual LRUAction {
+class _GEODE_EXPORT LRUDestroyAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
   // UNUSED LRUEntriesMap* m_entriesMapPtr;
@@ -133,7 +133,7 @@ class CPPCACHE_EXPORT LRUDestroyAction : public virtual LRUAction {
 /**
  * @brief LRUAction for invalidate.
  */
-class CPPCACHE_EXPORT LRULocalInvalidateAction : public virtual LRUAction {
+class _GEODE_EXPORT LRULocalInvalidateAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
   // UNUSED LRUEntriesMap* m_entriesMapPtr;
@@ -158,7 +158,7 @@ class CPPCACHE_EXPORT LRULocalInvalidateAction : public virtual LRUAction {
 /**
  * @brief LRUAction for invalidate.
  */
-class CPPCACHE_EXPORT LRUOverFlowToDiskAction : public virtual LRUAction {
+class _GEODE_EXPORT LRUOverFlowToDiskAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
   LRUEntriesMap* m_entriesMapPtr;

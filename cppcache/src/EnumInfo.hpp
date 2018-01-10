@@ -28,7 +28,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class CPPCACHE_EXPORT EnumInfo : public CacheableKey {
+class _GEODE_EXPORT EnumInfo : public CacheableKey {
  private:
   std::shared_ptr<CacheableString> m_enumClassName;
   std::shared_ptr<CacheableString> m_enumName;

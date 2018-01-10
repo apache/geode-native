@@ -20,7 +20,7 @@
 #ifndef GEODE_ASSERT_H_
 #define GEODE_ASSERT_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 /**
  * @file
@@ -37,7 +37,7 @@ namespace client {
  *
  * Declares debugging assertion reporting functions.
  */
-class CPPCACHE_EXPORT Assert {
+class _GEODE_EXPORT Assert {
  public:
   /** If the given expression is true, does nothing, otherwise calls
   * @ref throwAssertion .

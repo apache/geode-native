@@ -24,7 +24,7 @@
 
 #include "CqAttributes.hpp"
 #include "CqListener.hpp"
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -57,7 +57,7 @@ namespace client {
 class CqAttributes;
 class CqListener;
 
-class CPPCACHE_EXPORT CqAttributesFactory  {
+class _GEODE_EXPORT CqAttributesFactory {
  public:
   /**
    * Creates a new instance of AttributesFactory ready to create a

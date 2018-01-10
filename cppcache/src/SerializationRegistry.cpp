@@ -21,7 +21,7 @@
 #include <ace/Singleton.h>
 #include <ace/Thread_Mutex.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/CacheableObjectArray.hpp>
 #include <geode/CacheableDate.hpp>

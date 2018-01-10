@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_FWKLIB_TIMER_H_
-#define GEODE_FWKLIB_TIMER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,13 +15,20 @@
  * limitations under the License.
  */
 
-#include <geode/geode_base.hpp>
-#include "fwklib/FwkLog.hpp"
+#pragma once
+
+#ifndef GEODE_FWKLIB_TIMER_H_
+#define GEODE_FWKLIB_TIMER_H_
 
 #include <ctime>
 #include <cstdio>
 #include <ace/Time_Value.h>
 #include <ace/High_Res_Timer.h>
+
+#include <geode/internal/geode_base.hpp>
+
+#include "fwklib/FwkLog.hpp"
+#include "config.h"
 
 #ifdef _WIN32
 

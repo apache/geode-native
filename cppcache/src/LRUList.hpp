@@ -22,7 +22,7 @@
 
 #include <atomic>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <memory>
 
 #include "util/concurrent/spinlock_mutex.hpp"
@@ -39,7 +39,7 @@ namespace client {
 /**
  * @brief This class encapsulates LRU specific properties for a LRUList node.
  */
-class CPPCACHE_EXPORT LRUEntryProperties {
+class _GEODE_EXPORT LRUEntryProperties {
  public:
   inline LRUEntryProperties() : m_bits(0), m_persistenceInfo(nullptr) {}
 

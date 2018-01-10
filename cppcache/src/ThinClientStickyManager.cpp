@@ -143,7 +143,7 @@ void ThinClientStickyManager::cleanStaleStickyConnection() {
         *conn = nullptr;
         m_dm->put(temp, false);
         temp1->close();
-        GF_SAFE_DELETE(temp1);
+        _GEODE_SAFE_DELETE(temp1);
         m_dm->removeEPConnections(1, false);
         LOGDEBUG("Replaced a sticky connection");
       } else {
@@ -162,7 +162,7 @@ void ThinClientStickyManager::closeAllStickyConnections() {
     TcrConnection** tempConn = *it;
     if (*tempConn) {
       (*tempConn)->close();
-      GF_SAFE_DELETE(*tempConn);
+      _GEODE_SAFE_DELETE(*tempConn);
       m_dm->removeEPConnections(1, false);
     }
   }

@@ -22,7 +22,7 @@
 #include <ace/OS.h>
 #include <ace/DLL.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/internal/chrono/duration.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/ExceptionTypes.hpp>
@@ -133,8 +133,6 @@ constexpr auto DefaultRedundancyMonitorInterval = std::chrono::seconds(10);
 constexpr auto DefaultNotifyAckInterval = std::chrono::seconds(1);
 constexpr auto DefaultNotifyDupCheckLife = std::chrono::seconds(300);
 const char DefaultSecurityPrefix[] = "security-";
-const char DefaultSecurityClientDhAlgo[] ATTR_UNUSED = "";
-const char DefaultSecurityClientKsPath[] ATTR_UNUSED = "";
 const uint32_t DefaultThreadPoolSize = ACE_OS::num_processors() * 2;
 constexpr auto DefaultSuspendedTxTimeout = std::chrono::seconds(30);
 constexpr auto DefaultTombstoneTimeout = std::chrono::seconds(480);

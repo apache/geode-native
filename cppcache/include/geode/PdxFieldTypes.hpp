@@ -20,13 +20,13 @@
 #ifndef GEODE_PDXFIELDTYPES_H_
 #define GEODE_PDXFIELDTYPES_H_
 
-#include "geode_base.hpp"
+#include "internal/geode_base.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class CPPCACHE_EXPORT PdxFieldTypes {
+class _GEODE_EXPORT PdxFieldTypes {
  public:
   enum PdxFieldType {
     BOOLEAN,

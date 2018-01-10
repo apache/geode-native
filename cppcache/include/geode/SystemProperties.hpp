@@ -41,7 +41,7 @@ namespace client {
  * set from DistributedSystem::connect.
  *
  */
-class CPPCACHE_EXPORT SystemProperties {
+class _GEODE_EXPORT SystemProperties {
  public:
   /**
    * Constructor. Will set the default values first, and then overwrite with

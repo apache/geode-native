@@ -26,7 +26,7 @@
  *      Author: npatel
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Cache.hpp>
 #include <geode/PdxSerializable.hpp>
 #include "CacheImpl.hpp"
@@ -48,7 +48,7 @@ namespace client {
  * when a preserved data expires.
  *
  */
-class CPPCACHE_EXPORT PreservedDataExpiryHandler : public ACE_Event_Handler {
+class _GEODE_EXPORT PreservedDataExpiryHandler : public ACE_Event_Handler {
  public:
   /**
    * Constructor

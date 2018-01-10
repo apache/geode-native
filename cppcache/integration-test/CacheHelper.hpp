@@ -34,6 +34,7 @@
 #include "TimeBomb.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "Utils.hpp"
+#include "config.h"
 
 #ifndef ROOT_NAME
 #define ROOT_NAME "Root"

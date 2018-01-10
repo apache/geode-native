@@ -842,7 +842,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
                  TcrMessage::GET_ALL_DATA_ERROR == m_msgType) {
         if (bytes != nullptr) {
           chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
-          GF_SAFE_DELETE_ARRAY(bytes);
+          _GEODE_SAFE_DELETE_ARRAY(bytes);
         }
       }
       break;
@@ -860,7 +860,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
         // readSecureObjectPart(input, false, true,
         // isLastChunkAndisSecurityHeader );
         chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
-        GF_SAFE_DELETE_ARRAY(bytes);
+        _GEODE_SAFE_DELETE_ARRAY(bytes);
       }
       break;
     }
@@ -887,7 +887,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
     case TcrMessage::GET_ALL_DATA_ERROR: {
       chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
       if (bytes != nullptr) {
-        GF_SAFE_DELETE_ARRAY(bytes);
+        _GEODE_SAFE_DELETE_ARRAY(bytes);
       }
       // nothing else to done since this will be taken care of at higher level
       break;
@@ -895,7 +895,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
     default: {
       // TODO: how many parts what should we do here
       if (bytes != nullptr) {
-        GF_SAFE_DELETE_ARRAY(bytes);
+        _GEODE_SAFE_DELETE_ARRAY(bytes);
       } else {
         LOGWARN(
             "Got unhandled message type %d while processing response, possible "
@@ -1212,7 +1212,7 @@ void TcrMessage::handleByteArrayResponse(
 
       // read eventid part
       readEventIdPart(*input, false);
-      GF_SAFE_DELETE_ARRAY(regname);  // COVERITY ---> 30299 Resource leak
+      _GEODE_SAFE_DELETE_ARRAY(regname);  // COVERITY ---> 30299 Resource leak
 
       break;
     }
@@ -2822,13 +2822,13 @@ void TcrMessage::setData(const char* bytearray, int32_t len, uint16_t memId,
 }
 
 TcrMessage::~TcrMessage() {
-  GF_SAFE_DELETE(m_cqs);
+  _GEODE_SAFE_DELETE(m_cqs);
   /* adongre
    * CID 29167: Non-array delete for scalars (DELETE_ARRAY)
    * Coverity - II
    */
-  // GF_SAFE_DELETE( m_deltaBytes );
-  GF_SAFE_DELETE_ARRAY(m_deltaBytes);
+  // _GEODE_SAFE_DELETE( m_deltaBytes );
+  _GEODE_SAFE_DELETE_ARRAY(m_deltaBytes);
 }
 
 const std::string& TcrMessage::getRegionName() const { return m_regionName; }

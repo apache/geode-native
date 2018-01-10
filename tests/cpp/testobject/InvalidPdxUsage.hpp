@@ -35,9 +35,9 @@
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
-#define TESTOBJECT_EXPORT LIBEXP
+#define TESTOBJECT_EXPORT _GEODE_LIBEXP
 #else
-#define TESTOBJECT_EXPORT LIBIMP
+#define TESTOBJECT_EXPORT _GEODE_LIBIMP
 #endif
 #else
 #define TESTOBJECT_EXPORT
@@ -110,8 +110,8 @@ class TESTOBJECT_EXPORT CharTypesWithInvalidUsage : public PdxSerializable {
     return className;
   }
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   void toData(PdxWriter& pw) const override {
     pw.writeChar("m_ch", m_ch);
@@ -176,8 +176,8 @@ class TESTOBJECT_EXPORT AddressWithInvalidAPIUsage : public PdxSerializable {
     return className;
   }
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   void toData(PdxWriter& pw) const override {
     pw.writeInt("_aptNumber", _aptNumber);  // 4
@@ -609,8 +609,8 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
 
   int32_t getCharArrayLength() { return charArrayLen; }
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   virtual void toData(PdxWriter& pw) const override;
 

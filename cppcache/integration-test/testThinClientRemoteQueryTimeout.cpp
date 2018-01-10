@@ -139,7 +139,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -182,7 +182,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -221,7 +221,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -264,7 +264,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
   {
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -303,7 +303,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
   {
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -355,7 +355,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
   {
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -404,7 +404,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, verifyNegativeValueTimeout)
   {
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -449,7 +449,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, verifyLargeValueTimeout)
   {
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {

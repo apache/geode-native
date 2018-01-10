@@ -135,7 +135,7 @@ void createRegion(const char* name, bool ackMode,
 const char* regionNames[] = {"Portfolios", "Positions"};
 
 const bool USE_ACK = true;
-const bool NO_ACK ATTR_UNUSED = false;
+const bool NO_ACK = false;
 
 KillServerThread* kst = nullptr;
 

@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "ExceptionTypes.hpp"
 #include "GeodeTypeIds.hpp"
 #include "ExceptionTypes.hpp"
@@ -35,13 +35,7 @@
  * @file
  */
 
-#if GF_DEBUG_ASSERTS == 1
-#define DINP_THROWONERROR_DEFAULT true
-#else
-#define DINP_THROWONERROR_DEFAULT false
-#endif
-
-#define GEODE_CHECK_BUFFER_SIZE(x) _checkBufferSize(x, __LINE__)
+#define _GEODE_CHECK_BUFFER_SIZE(x) _checkBufferSize(x, __LINE__)
 
 namespace apache {
 namespace geode {
@@ -63,7 +57,7 @@ class DataInputInternal;
  * @remarks None of the output parameters in the methods below can be nullptr
  *   unless otherwise noted.
  */
-class CPPCACHE_EXPORT DataInput {
+class _GEODE_EXPORT DataInput {
  public:
   /**
    * Read a signed byte from the <code>DataInput</code>.
@@ -71,7 +65,7 @@ class CPPCACHE_EXPORT DataInput {
    * @@return signed byte read from stream
    */
   inline int8_t read() {
-    GEODE_CHECK_BUFFER_SIZE(1);
+    _GEODE_CHECK_BUFFER_SIZE(1);
     return readNoCheck();
   }
 
@@ -81,7 +75,7 @@ class CPPCACHE_EXPORT DataInput {
    * @param value output parameter to hold the boolean read from stream
    */
   inline bool readBoolean() {
-    GEODE_CHECK_BUFFER_SIZE(1);
+    _GEODE_CHECK_BUFFER_SIZE(1);
     return *(m_buf++) == 1 ? true : false;
   }
 
@@ -97,7 +91,7 @@ class CPPCACHE_EXPORT DataInput {
    */
   inline void readBytesOnly(uint8_t* buffer, uint32_t len) {
     if (len > 0) {
-      GEODE_CHECK_BUFFER_SIZE(len);
+      _GEODE_CHECK_BUFFER_SIZE(len);
       std::memcpy(buffer, m_buf, len);
       m_buf += len;
     }
@@ -115,7 +109,7 @@ class CPPCACHE_EXPORT DataInput {
    */
   inline void readBytesOnly(int8_t* buffer, uint32_t len) {
     if (len > 0) {
-      GEODE_CHECK_BUFFER_SIZE(len);
+      _GEODE_CHECK_BUFFER_SIZE(len);
       std::memcpy(buffer, m_buf, len);
       m_buf += len;
     }
@@ -136,8 +130,8 @@ class CPPCACHE_EXPORT DataInput {
     *len = length;
     uint8_t* buffer = nullptr;
     if (length > 0) {
-      GEODE_CHECK_BUFFER_SIZE(length);
-      GF_NEW(buffer, uint8_t[length]);
+      _GEODE_CHECK_BUFFER_SIZE(length);
+      _GEODE_NEW(buffer, uint8_t[length]);
       std::memcpy(buffer, m_buf, length);
       m_buf += length;
     }
@@ -159,8 +153,8 @@ class CPPCACHE_EXPORT DataInput {
     *len = length;
     int8_t* buffer = nullptr;
     if (length > 0) {
-      GEODE_CHECK_BUFFER_SIZE(length);
-      GF_NEW(buffer, int8_t[length]);
+      _GEODE_CHECK_BUFFER_SIZE(length);
+      _GEODE_NEW(buffer, int8_t[length]);
       std::memcpy(buffer, m_buf, length);
       m_buf += length;
     }
@@ -173,7 +167,7 @@ class CPPCACHE_EXPORT DataInput {
    * @return 16-bit signed integer read from stream
    */
   inline int16_t readInt16() {
-    GEODE_CHECK_BUFFER_SIZE(2);
+    _GEODE_CHECK_BUFFER_SIZE(2);
     return readInt16NoCheck();
   }
 
@@ -184,7 +178,7 @@ class CPPCACHE_EXPORT DataInput {
    *   read from stream
    */
   inline int32_t readInt32() {
-    GEODE_CHECK_BUFFER_SIZE(4);
+    _GEODE_CHECK_BUFFER_SIZE(4);
     int32_t tmp = *(m_buf++);
     tmp = (tmp << 8) | *(m_buf++);
     tmp = (tmp << 8) | *(m_buf++);
@@ -199,7 +193,7 @@ class CPPCACHE_EXPORT DataInput {
    *   read from stream
    */
   inline int64_t readInt64() {
-    GEODE_CHECK_BUFFER_SIZE(8);
+    _GEODE_CHECK_BUFFER_SIZE(8);
     int64_t tmp;
     if (sizeof(long) == 8) {
       tmp = *(m_buf++);
@@ -281,7 +275,7 @@ class CPPCACHE_EXPORT DataInput {
    * @param value output parameter to hold the float read from stream
    */
   inline float readFloat() {
-    GEODE_CHECK_BUFFER_SIZE(4);
+    _GEODE_CHECK_BUFFER_SIZE(4);
     union float_uint32_t {
       float f;
       uint32_t u;
@@ -297,7 +291,7 @@ class CPPCACHE_EXPORT DataInput {
    *   read from stream
    */
   inline double readDouble() {
-    GEODE_CHECK_BUFFER_SIZE(8);
+    _GEODE_CHECK_BUFFER_SIZE(8);
     union double_uint64_t {
       double d;
       uint64_t ll;
@@ -357,8 +351,7 @@ class CPPCACHE_EXPORT DataInput {
    * @see staticCast
    */
   template <class PTR>
-  inline std::shared_ptr<PTR> readObject(
-      bool throwOnError = DINP_THROWONERROR_DEFAULT) {
+  inline std::shared_ptr<PTR> readObject(bool throwOnError = false) {
     auto sPtr = readObjectInternal();
     if (throwOnError) {
       return std::dynamic_pointer_cast<PTR>(sPtr);
@@ -464,8 +457,8 @@ class CPPCACHE_EXPORT DataInput {
     } else {
       int8_t** tmpArray;
       int32_t* tmpLengtharr;
-      GF_NEW(tmpArray, int8_t * [arrLen]);
-      GF_NEW(tmpLengtharr, int32_t[arrLen]);
+      _GEODE_NEW(tmpArray, int8_t * [arrLen]);
+      _GEODE_NEW(tmpLengtharr, int32_t[arrLen]);
       for (int i = 0; i < arrLen; i++) {
         readBytes(&tmpArray[i], &tmpLengtharr[i]);
       }
@@ -550,7 +543,7 @@ class CPPCACHE_EXPORT DataInput {
 
   static uint8_t* getBufferCopy(const uint8_t* from, uint32_t length) {
     uint8_t* result;
-    GF_NEW(result, uint8_t[length]);
+    _GEODE_NEW(result, uint8_t[length]);
     std::memcpy(result, from, length);
 
     return result;
@@ -560,7 +553,7 @@ class CPPCACHE_EXPORT DataInput {
 
   uint8_t* getBufferCopyFrom(const uint8_t* from, uint32_t length) {
     uint8_t* result;
-    GF_NEW(result, uint8_t[length]);
+    _GEODE_NEW(result, uint8_t[length]);
     std::memcpy(result, from, length);
 
     return result;
@@ -673,7 +666,7 @@ class CPPCACHE_EXPORT DataInput {
   template <class CharT, class... Tail>
   inline void readAscii(std::basic_string<CharT, Tail...>& value,
                         size_t length) {
-    GEODE_CHECK_BUFFER_SIZE(static_cast<int32_t>(length));
+    _GEODE_CHECK_BUFFER_SIZE(static_cast<int32_t>(length));
     value.reserve(length);
     while (length-- > 0) {
       // blindly assumes ASCII so mask off 7 bits
@@ -699,7 +692,7 @@ class CPPCACHE_EXPORT DataInput {
   inline void readJavaModifiedUtf8(
       std::basic_string<char16_t, _Traits, _Allocator>& value) {
     uint16_t length = readInt16();
-    GEODE_CHECK_BUFFER_SIZE(length);
+    _GEODE_CHECK_BUFFER_SIZE(length);
     value.reserve(length);
     const auto end = m_buf + length;
     while (m_buf < end) {
@@ -736,7 +729,7 @@ class CPPCACHE_EXPORT DataInput {
   inline void readUtf16Huge(
       std::basic_string<char16_t, _Traits, _Allocator>& value) {
     uint32_t length = readInt32();
-    GEODE_CHECK_BUFFER_SIZE(length);
+    _GEODE_CHECK_BUFFER_SIZE(length);
     value.reserve(length);
     while (length-- > 0) {
       value += readInt16NoCheck();

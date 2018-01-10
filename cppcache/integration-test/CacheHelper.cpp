@@ -33,6 +33,7 @@
 #include "TimeBomb.hpp"
 #include "Utils.hpp"
 #include "CacheImpl.hpp"
+#include "config.h"
 
 #include "CacheHelper.hpp"
 #define __DUNIT_NO_MAIN__

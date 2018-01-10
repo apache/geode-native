@@ -20,13 +20,13 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class CPPCACHE_EXPORT ConnectCounter {
+class _GEODE_EXPORT ConnectCounter {
  public:
   ConnectCounter();
 

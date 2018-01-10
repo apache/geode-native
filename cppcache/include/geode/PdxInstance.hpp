@@ -48,7 +48,7 @@ class CacheableObjectArray;
  * a PDX is done it will deserialize into a PdxInstance. PdxInstance are
  * immutable. If you want to change one call {@link #createWriter}.
  */
-class CPPCACHE_EXPORT PdxInstance : public PdxSerializable {
+class _GEODE_EXPORT PdxInstance : public PdxSerializable {
  public:
   /**
    * @brief destructor

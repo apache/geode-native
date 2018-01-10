@@ -22,7 +22,7 @@
 
 #include <algorithm>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/CacheStatistics.hpp>
@@ -52,7 +52,7 @@ class FunctionService;
  * @class ProxyRegion ProxyRegion.hpp
  * This class wrapper around real region
  */
-class CPPCACHE_EXPORT ProxyRegion : public Region {
+class _GEODE_EXPORT ProxyRegion : public Region {
  public:
   virtual const std::string& getName() const override {
     return m_realRegion->getName();
@@ -623,7 +623,7 @@ class CPPCACHE_EXPORT ProxyRegion : public Region {
   std::shared_ptr<RegionInternal> m_realRegion;
   friend class FunctionService;
 
-  FRIEND_STD_SHARED_PTR(ProxyRegion)
+  _GEODE_FRIEND_STD_SHARED_PTR(ProxyRegion)
 };
 
 }  // namespace client

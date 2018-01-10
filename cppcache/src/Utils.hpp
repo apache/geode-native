@@ -34,8 +34,8 @@
 #include <memory>
 #include <chrono>
 
-#include <geode/geode_globals.hpp>
-#include <geode/geode_base.hpp>
+#include <geode/internal/geode_globals.hpp>
+#include <geode/internal/geode_base.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/DataOutput.hpp>
@@ -55,7 +55,7 @@ extern "C" {
 namespace apache {
 namespace geode {
 namespace client {
-class CPPCACHE_EXPORT Utils {
+class _GEODE_EXPORT Utils {
   /**
    * utilities
    *

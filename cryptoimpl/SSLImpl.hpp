@@ -30,7 +30,7 @@
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Time_Value.h>
 
-#include <geode/geode_base.hpp>
+#include <geode/internal/geode_base.hpp>
 
 #include "Ssl.hpp"
 
@@ -59,10 +59,10 @@ class SSLImpl : public apache::geode::client::Ssl {
 };
 
 extern "C" {
-CPPCACHE_EXPORT void* gf_create_SslImpl(ACE_SOCKET sock, const char* pubkeyfile,
-                                        const char* privkeyfile,
-                                        const char* pemPassword);
-CPPCACHE_EXPORT void gf_destroy_SslImpl(void* impl);
+_GEODE_EXPORT void* gf_create_SslImpl(ACE_SOCKET sock, const char* pubkeyfile,
+                                      const char* privkeyfile,
+                                      const char* pemPassword);
+_GEODE_EXPORT void gf_destroy_SslImpl(void* impl);
 }
 
 }  // namespace client

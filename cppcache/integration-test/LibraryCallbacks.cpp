@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include <ace/Time_Value.h>
 #include <ace/OS.h>

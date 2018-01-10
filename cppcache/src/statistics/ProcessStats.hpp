@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "Statistics.hpp"
 
@@ -38,7 +38,7 @@ namespace statistics {
  * This is necessary for monitoring the health of Geode components.
  *
  */
-class CPPCACHE_EXPORT ProcessStats {
+class _GEODE_EXPORT ProcessStats {
  public:
   /**
    * Creates a new <code>ProcessStats</code> that wraps the given

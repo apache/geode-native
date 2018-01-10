@@ -23,7 +23,7 @@
 #include <iosfwd>
 #include <string>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -38,7 +38,7 @@ namespace client {
  * @see RegionAttributes::getDiskPolicy
  * @see AttributesFactory::setDiskPolicy
  */
-class CPPCACHE_EXPORT DiskPolicyType {
+class _GEODE_EXPORT DiskPolicyType {
   // public static methods
  public:
   /**

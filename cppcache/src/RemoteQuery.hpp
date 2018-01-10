@@ -23,7 +23,7 @@
 #include <string>
 #include <memory>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Query.hpp>
 #include <geode/SelectResults.hpp>
@@ -42,7 +42,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class CPPCACHE_EXPORT RemoteQuery : public Query {
+class _GEODE_EXPORT RemoteQuery : public Query {
   std::string m_queryString;
 
   std::shared_ptr<RemoteQueryService> m_queryService;

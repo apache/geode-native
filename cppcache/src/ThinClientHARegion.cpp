@@ -79,7 +79,7 @@ void ThinClientHARegion::initTCR() {
       m_tcrdm->init();
     }
   } catch (const Exception& ex) {
-    GF_SAFE_DELETE(m_tcrdm);
+    _GEODE_SAFE_DELETE(m_tcrdm);
     LOGERROR(
         "ThinClientHARegion: failed to create a DistributionManager "
         "object due to: %s: %s",

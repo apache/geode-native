@@ -739,7 +739,7 @@ void ThinClientPoolDM::stopPingThread() {
     m_pingTask->stopNoblock();
     m_pingSema.release();
     m_pingTask->wait();
-    GF_SAFE_DELETE(m_pingTask);
+    _GEODE_SAFE_DELETE(m_pingTask);
     if (m_pingTaskId >= 0) {
       m_connManager.getCacheImpl()->getExpiryTaskManager().cancelTask(
           m_pingTaskId);
@@ -753,7 +753,7 @@ void ThinClientPoolDM::stopUpdateLocatorListThread() {
     m_updateLocatorListTask->stopNoblock();
     m_updateLocatorListSema.release();
     m_updateLocatorListTask->wait();
-    GF_SAFE_DELETE(m_updateLocatorListTask);
+    _GEODE_SAFE_DELETE(m_updateLocatorListTask);
     if (m_updateLocatorListTaskId >= 0) {
       m_connManager.getCacheImpl()->getExpiryTaskManager().cancelTask(
           m_updateLocatorListTaskId);
@@ -767,7 +767,7 @@ void ThinClientPoolDM::stopCliCallbackThread() {
     m_cliCallbackTask->stopNoblock();
     m_cliCallbackSema.release();
     m_cliCallbackTask->wait();
-    GF_SAFE_DELETE(m_cliCallbackTask);
+    _GEODE_SAFE_DELETE(m_cliCallbackTask);
   }
 }
 
@@ -784,7 +784,7 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
     LOGDEBUG("Closing PoolStatsSampler thread.");
     if (m_PoolStatsSampler != nullptr) {
       m_PoolStatsSampler->stop();
-      GF_SAFE_DELETE(m_PoolStatsSampler);
+      _GEODE_SAFE_DELETE(m_PoolStatsSampler);
     }
     LOGDEBUG("PoolStatsSampler thread closed .");
     stopCliCallbackThread();
@@ -793,7 +793,7 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
       m_connManageTask->stopNoblock();
       m_connSema.release();
       m_connManageTask->wait();
-      GF_SAFE_DELETE(m_connManageTask);
+      _GEODE_SAFE_DELETE(m_connManageTask);
       if (m_connManageTaskId >= 0) {
         m_connManager.getCacheImpl()->getExpiryTaskManager().cancelTask(
             m_connManageTaskId);
@@ -820,7 +820,7 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
       TcrEndpoint* ep = (*iter).int_id_;
       LOGFINE("ThinClientPoolDM: forcing endpoint delete for %d in destructor",
               ep->name().c_str());
-      GF_SAFE_DELETE(ep);
+      _GEODE_SAFE_DELETE(ep);
     }
 
     // Close Stats
@@ -831,7 +831,7 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
         ->forceSample();
 
     if (m_clientMetadataService != nullptr) {
-      GF_SAFE_DELETE(m_clientMetadataService);
+      _GEODE_SAFE_DELETE(m_clientMetadataService);
     }
 
     m_connManager.getCacheImpl()->getPoolManager().removePool(
@@ -1700,7 +1700,7 @@ GfErrType ThinClientPoolDM::getConnectionToAnEndPoint(std::string epNameStr,
     LOGFINE(
         "ThinClientPoolDM::getConnectionToAEndPoint( ):Failed to connect to %s",
         theEP->name().c_str());
-    if (conn != nullptr) GF_SAFE_DELETE(conn);
+    if (conn != nullptr) _GEODE_SAFE_DELETE(conn);
   }
 
   return error;
@@ -1749,7 +1749,7 @@ GfErrType ThinClientPoolDM::createPoolConnectionToAEndPoint(
                                      false, true, appThreadrequest);
   if (conn == nullptr || error != GF_NOERR) {
     LOGFINE("2Failed to connect to %s", theEP->name().c_str());
-    if (conn != nullptr) GF_SAFE_DELETE(conn);
+    if (conn != nullptr) _GEODE_SAFE_DELETE(conn);
   } else {
     theEP->setConnected();
     ++m_poolSize;
@@ -1837,7 +1837,7 @@ GfErrType ThinClientPoolDM::createPoolConnection(
       LOGFINE("1Failed to connect to %s", epNameStr.c_str());
       excludeServers.insert(ServerLocation(ep->name()));
       if (conn != nullptr) {
-        GF_SAFE_DELETE(conn);
+        _GEODE_SAFE_DELETE(conn);
       }
       if (ThinClientBaseDM::isFatalError(error)) {
         // save this error for later to override the
@@ -1937,7 +1937,7 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
     if (conn == nullptr || error != GF_NOERR) {
       LOGFINE("3Failed to connect to %s", currentEndpoint->name().c_str());
       if (conn != nullptr) {
-        GF_SAFE_DELETE(conn);
+        _GEODE_SAFE_DELETE(conn);
       }
       if (putConnInPool) {
         ACE_Guard<ACE_Recursive_Thread_Mutex> guard(getPoolLock());
@@ -2018,7 +2018,7 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
       } else {
         if (isTmpConnectedStatus) currentEndpoint->setConnectionStatus(false);
         conn->close();
-        GF_SAFE_DELETE(conn);
+        _GEODE_SAFE_DELETE(conn);
       }
     } else if (error != GF_NOERR) {
       currentEndpoint->setConnectionStatus(false);
@@ -2264,7 +2264,7 @@ void ThinClientPoolDM::removeEPConnections(TcrEndpoint* theEP) {
       m_queue.push_front(curConn);
     } else {
       curConn->close();
-      GF_SAFE_DELETE(curConn);
+      _GEODE_SAFE_DELETE(curConn);
       numConn++;
     }
   }
@@ -2284,7 +2284,7 @@ TcrConnection* ThinClientPoolDM::getNoGetLock(
       if (returnT) {
         if (excludeConnection(returnT, excludeServers)) {
           returnT->close();
-          GF_SAFE_DELETE(returnT);
+          _GEODE_SAFE_DELETE(returnT);
           removeEPConnections(1, false);
         } else {
           break;

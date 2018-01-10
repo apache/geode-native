@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {
@@ -40,7 +40,7 @@ class DeleteObject {
 
   ~DeleteObject() {
     if (m_cond) {
-      GF_SAFE_DELETE(m_p);
+      _GEODE_SAFE_DELETE(m_p);
     }
   }
 };
@@ -62,7 +62,7 @@ class DeleteArray {
 
   ~DeleteArray() {
     if (m_cond) {
-      GF_SAFE_DELETE_ARRAY(m_p);
+      _GEODE_SAFE_DELETE_ARRAY(m_p);
     }
   }
 };

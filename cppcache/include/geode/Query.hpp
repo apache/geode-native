@@ -22,7 +22,7 @@
 
 #include <chrono>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 #include "SelectResults.hpp"
 
@@ -46,7 +46,7 @@ namespace client {
  * operate on the same <code>Query</code> object concurrently rather should
  * have their own <code>Query</code> objects.
  */
-class CPPCACHE_EXPORT Query {
+class _GEODE_EXPORT Query {
  public:
   /**
    * Executes the OQL Query on the cache server and returns the results.

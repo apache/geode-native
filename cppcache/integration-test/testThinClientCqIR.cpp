@@ -156,7 +156,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
   {
-    auto& qh ATTR_UNUSED = QueryHelper::getHelper();
+    QueryHelper::getHelper();
 
     // using region name as pool name
     auto pool =

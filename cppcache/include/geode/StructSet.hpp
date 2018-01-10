@@ -20,7 +20,7 @@
 #ifndef GEODE_STRUCTSET_H_
 #define GEODE_STRUCTSET_H_
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "CqResults.hpp"
 #include "Struct.hpp"
 #include "SelectResultsIterator.hpp"
@@ -40,7 +40,7 @@ namespace client {
  * QueryService which in turn is obtained from a Cache.
  * It is the parent of a Struct which contains the field values.
  */
-class CPPCACHE_EXPORT StructSet : public CqResults {
+class _GEODE_EXPORT StructSet : public CqResults {
  public:
   /**
    * Check whether the StructSet is modifiable.

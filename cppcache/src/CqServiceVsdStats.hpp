@@ -22,7 +22,7 @@
 
 #include <string>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/CqServiceStatistics.hpp>
 
 #include "statistics/Statistics.hpp"
@@ -38,7 +38,7 @@ using statistics::StatisticsType;
 using statistics::Statistics;
 using util::concurrent::spinlock_mutex;
 
-class CPPCACHE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
+class _GEODE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
  public:
   /** hold statistics for a cq. */
   CqServiceVsdStats(statistics::StatisticsFactory* factory,

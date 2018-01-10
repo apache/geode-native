@@ -25,7 +25,7 @@
 #include <memory>
 #include <string>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "ExpirationAction.hpp"
 
 /**
@@ -58,7 +58,7 @@ class Region;
  * @see RegionAttributes
  * @see AttributesFactory
  */
-class CPPCACHE_EXPORT AttributesMutator {
+class _GEODE_EXPORT AttributesMutator {
  private:
   std::shared_ptr<Region> m_region;
 

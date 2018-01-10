@@ -25,7 +25,7 @@
 #include <string>
 
 #include "CacheableKey.hpp"
-#include "geode_base.hpp"
+#include "internal/geode_base.hpp"
 
 namespace apache {
 namespace geode {
@@ -36,7 +36,7 @@ class PdxWriter;
 class DataInput;
 class DataOutput;
 
-class CPPCACHE_EXPORT PdxSerializable : public CacheableKey {
+class _GEODE_EXPORT PdxSerializable : public CacheableKey {
  public:
   PdxSerializable();
   virtual ~PdxSerializable();

@@ -20,7 +20,7 @@
 #ifndef GEODE_STATISTICS_LINUXPROCESSSTATS_H_
 #define GEODE_STATISTICS_LINUXPROCESSSTATS_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "Statistics.hpp"
 #include "StatisticsType.hpp"
@@ -28,6 +28,7 @@
 #include "ProcessStats.hpp"
 #include "HostStatHelper.hpp"
 #include "GeodeStatisticsFactory.hpp"
+#include "config.h"
 
 using namespace apache::geode::client;
 
@@ -43,7 +44,7 @@ namespace statistics {
  *
  */
 
-class CPPCACHE_EXPORT LinuxProcessStats : public ProcessStats {
+class _GEODE_EXPORT LinuxProcessStats : public ProcessStats {
  private:
   /** The Static Type for Linux Process Stats */
   StatisticsType* m_statsType;

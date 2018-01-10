@@ -24,7 +24,7 @@
 #include <memory>
 #include <utility>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Cacheable.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/ExceptionTypes.hpp>
@@ -38,17 +38,17 @@
 namespace apache {
 namespace geode {
 namespace client {
-class CPPCACHE_EXPORT MapEntry;
-class CPPCACHE_EXPORT MapEntryImpl;
+class _GEODE_EXPORT MapEntry;
+class _GEODE_EXPORT MapEntryImpl;
 
-class CPPCACHE_EXPORT LRUEntryProperties;
+class _GEODE_EXPORT LRUEntryProperties;
 class CacheImpl;
 
 /**
  * @brief This class encapsulates expiration specific properties for
  *   a MapEntry.
  */
-class CPPCACHE_EXPORT ExpEntryProperties {
+class _GEODE_EXPORT ExpEntryProperties {
  public:
   typedef std::chrono::system_clock::time_point time_point;
 
@@ -109,7 +109,7 @@ class CPPCACHE_EXPORT ExpEntryProperties {
 /**
  * @brief Interface class for region mapped entry value.
  */
-class CPPCACHE_EXPORT MapEntry {
+class _GEODE_EXPORT MapEntry {
  public:
   virtual ~MapEntry() {}
 
@@ -257,8 +257,8 @@ class MapEntryImpl : public MapEntry,
   MapEntryImpl& operator=(const MapEntryImpl&);
 };
 
-class CPPCACHE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
-                                              public VersionStamp {
+class _GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
+                                            public VersionStamp {
  public:
   virtual ~VersionedMapEntryImpl() {}
 
@@ -276,8 +276,7 @@ class CPPCACHE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
   VersionedMapEntryImpl& operator=(const VersionedMapEntryImpl&);
 };
 
-
-class CPPCACHE_EXPORT EntryFactory {
+class _GEODE_EXPORT EntryFactory {
  public:
   EntryFactory(const bool concurrencyChecksEnabled)
       : m_concurrencyChecksEnabled(concurrencyChecksEnabled) {}

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "EntriesMap.hpp"
 #include <geode/RegionAttributes.hpp>
 
@@ -28,7 +28,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class CPPCACHE_EXPORT EntriesMapFactory {
+class _GEODE_EXPORT EntriesMapFactory {
  public:
   /** @brief used internally by Region implementation to create the appropriate
    * type of entries map.

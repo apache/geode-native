@@ -105,8 +105,7 @@ class TestDataInput {
   double readDouble() { return m_dataInput.readDouble(); }
 
   template <class PTR>
-  void readObject(std::shared_ptr<PTR> &ptr,
-                  bool throwOnError = DINP_THROWONERROR_DEFAULT) {
+  void readObject(std::shared_ptr<PTR> &ptr, bool throwOnError = false) {
     ptr = m_dataInput.readObject<PTR>(throwOnError);
   }
 
@@ -362,7 +361,7 @@ TEST_F(DataInputTest, TestReadUint8_tBytes) {
   EXPECT_EQ((uint8_t)190U, buffer[1]) << "Correct first uint8_t";
   EXPECT_EQ((uint8_t)250U, buffer[2]) << "Correct second uint8_t";
   EXPECT_EQ((uint8_t)206U, buffer[3]) << "Correct third uint8_t";
-  GF_SAFE_DELETE_ARRAY(buffer);
+  _GEODE_SAFE_DELETE_ARRAY(buffer);
 }
 
 TEST_F(DataInputTest, TestReadInt8_tBytes) {
@@ -376,7 +375,7 @@ TEST_F(DataInputTest, TestReadInt8_tBytes) {
   EXPECT_EQ((int8_t)-83, buffer[1]) << "Correct first int8_t";
   EXPECT_EQ((int8_t)-66, buffer[2]) << "Correct second int8_t";
   EXPECT_EQ((int8_t)-17, buffer[3]) << "Correct third int8_t";
-  GF_SAFE_DELETE_ARRAY(buffer);
+  _GEODE_SAFE_DELETE_ARRAY(buffer);
 }
 
 TEST_F(DataInputTest, TestReadIntUint16) {
@@ -613,8 +612,8 @@ TEST_F(DataInputTest, TestReadArrayOfByteArrays) {
   EXPECT_EQ((int8_t)-83, arrayOfByteArrays[0][1]) << "Correct first int8_t";
   EXPECT_EQ((int8_t)-66, arrayOfByteArrays[0][2]) << "Correct second int8_t";
   EXPECT_EQ((int8_t)-17, arrayOfByteArrays[0][3]) << "Correct third int8_t";
-  GF_SAFE_DELETE_ARRAY(elementLength);
-  GF_SAFE_DELETE_ARRAY(arrayOfByteArrays);
+  _GEODE_SAFE_DELETE_ARRAY(elementLength);
+  _GEODE_SAFE_DELETE_ARRAY(arrayOfByteArrays);
 }
 
 TEST_F(DataInputTest, TestGetBytesRead) {

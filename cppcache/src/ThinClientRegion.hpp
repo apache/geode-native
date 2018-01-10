@@ -53,7 +53,7 @@ class ThinClientBaseDM;
  *
  */
 
-class CPPCACHE_EXPORT ThinClientRegion : public LocalRegion {
+class _GEODE_EXPORT ThinClientRegion : public LocalRegion {
  public:
   /**
    * @brief constructor/initializer/destructor

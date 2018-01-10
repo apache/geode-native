@@ -93,7 +93,7 @@ namespace Apache
           _GF_MG_EXCEPTION_TRY2
 
             System::Int32 len = buffer->Length;
-          GF_NEW(m_buffer, System::Byte[len]);
+          _GEODE_NEW(m_buffer, System::Byte[len]);
           pin_ptr<const Byte> pin_buffer = &buffer[0];
           memcpy(m_buffer, (void*)pin_buffer, len);
           m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(m_cache->GetNative()->createDataInput(m_buffer, len));
@@ -135,7 +135,7 @@ namespace Apache
           //System::Array::Copy(buffer, 0, m_bytes, 0, len);
           _GF_MG_EXCEPTION_TRY2
 
-            GF_NEW(m_buffer, System::Byte[len]);
+            _GEODE_NEW(m_buffer, System::Byte[len]);
           pin_ptr<const Byte> pin_buffer = &buffer[0];
           memcpy(m_buffer, (void*)pin_buffer, len);
           m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(m_cache->GetNative()->createDataInput(m_buffer, len));

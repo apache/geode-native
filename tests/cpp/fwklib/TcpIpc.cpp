@@ -28,6 +28,8 @@
 #include <ace/SOCK_Acceptor.h>
 #include <ace/OS.h>
 
+#include "config.h"
+
 using namespace apache::geode::client;
 using namespace apache::geode::client::testframework;
 

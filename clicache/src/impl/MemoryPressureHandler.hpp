@@ -19,7 +19,7 @@
 
 
 #include "../begin_native.hpp"
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <ExpiryTaskManager.hpp>
 #include "../end_native.hpp"
 

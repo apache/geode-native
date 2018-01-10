@@ -26,7 +26,7 @@
 
 #include <string>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include <memory>
 
 namespace apache {
@@ -46,7 +46,7 @@ class Properties;
  * AuthInitialize object) as the <code>security-client-auth-factory</code>
  * system property.
  */
-class CPPCACHE_EXPORT AuthInitialize {
+class _GEODE_EXPORT AuthInitialize {
  public:
   /**@brief initialize with the given set of security properties
    * and return the credentials for the client as properties.

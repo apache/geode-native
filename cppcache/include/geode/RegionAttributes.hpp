@@ -26,7 +26,7 @@
 
 #include <chrono>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "CacheLoader.hpp"
 #include "ExpirationAttributes.hpp"
 #include "CacheWriter.hpp"
@@ -72,7 +72,7 @@ class AttributesMutator;
 class Cache;
 class Region;
 
-class CPPCACHE_EXPORT RegionAttributes : public Serializable {
+class _GEODE_EXPORT RegionAttributes : public Serializable {
   /**
    * @brief public static methods
    */
@@ -400,7 +400,7 @@ class CPPCACHE_EXPORT RegionAttributes : public Serializable {
   friend class RegionXmlCreation;
 
  private:
-  FRIEND_STD_SHARED_PTR(RegionAttributes)
+  _GEODE_FRIEND_STD_SHARED_PTR(RegionAttributes)
 };
 
 }  // namespace client

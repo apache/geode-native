@@ -23,7 +23,7 @@
 #include <iosfwd>
 #include <string>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -39,7 +39,7 @@ namespace client {
  *
  * @see ExpirationAttributes
  */
-class CPPCACHE_EXPORT ExpirationAction {
+class _GEODE_EXPORT ExpirationAction {
  public:
   typedef enum {
     /** When the region or cached object expires, it is invalidated. */

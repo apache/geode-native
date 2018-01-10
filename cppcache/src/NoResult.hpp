@@ -20,7 +20,7 @@
 #ifndef GEODE_NORESULT_H_
 #define GEODE_NORESULT_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/ResultCollector.hpp>
 
@@ -40,7 +40,7 @@ namespace client {
  *
  *
  */
-class CPPCACHE_EXPORT NoResult : public ResultCollector {
+class _GEODE_EXPORT NoResult : public ResultCollector {
  public:
   NoResult() = default;
   virtual ~NoResult() override = default;

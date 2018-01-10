@@ -24,7 +24,7 @@
 #include <cstdarg>
 #include <string>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/util/LogLevel.hpp>
 
 /******************************************************************************/
@@ -140,7 +140,7 @@ class Exception;
   *
   */
 
-class CPPCACHE_EXPORT Log {
+class _GEODE_EXPORT Log {
  public:
   /******/
 
@@ -577,7 +577,7 @@ class LogFn {
  * These functions are added to facilitate logging in printf format.
  */
 
-class CPPCACHE_EXPORT LogVarargs {
+class _GEODE_EXPORT LogVarargs {
  public:
   static void debug(const char* fmt, ...);
   static void error(const char* fmt, ...);

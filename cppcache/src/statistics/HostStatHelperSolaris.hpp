@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_HOSTSTATHELPERSOLARIS_H_
-#define GEODE_STATISTICS_HOSTSTATHELPERSOLARIS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,25 +15,35 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_STATISTICS_HOSTSTATHELPERSOLARIS_H_
+#define GEODE_STATISTICS_HOSTSTATHELPERSOLARIS_H_
+
+#include "config.h"
+
 #if defined(_SOLARIS)
-#include <geode/geode_globals.hpp>
+
 #include <string>
 #include <sys/sysinfo.h>
-#include "ProcessStats.hpp"
 #include <kstat.h>
 
+#include <geode/internal/geode_globals.hpp>
+
+#include "ProcessStats.hpp"
+
 /*
-  * CPU_USAGE_STAT_THRESHOLD sets how much time must pass between samples
-  * before a new cpu utilization is calculated.
-  * Units are in 100ths of a second.
-  * if set too low you will get divide by zero overflows or scewed data
-  * due to rounding errors.
-  * This is likely unnecesary with our stat sampling interval being 1 second.
-*/
+ * CPU_USAGE_STAT_THRESHOLD sets how much time must pass between samples
+ * before a new cpu utilization is calculated.
+ * Units are in 100ths of a second.
+ * if set too low you will get divide by zero overflows or scewed data
+ * due to rounding errors.
+ * This is likely unnecesary with our stat sampling interval being 1 second.
+ */
 #define CPU_USAGE_STAT_THRESHOLD 10
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -62,7 +67,7 @@ class HostStatHelperSolaris {
   static bool m_initialized;
   static void getKernelStats(uint32_t*);
 };
-}  // namespace client
+}  // namespace statistics
 }  // namespace geode
 }  // namespace apache
 

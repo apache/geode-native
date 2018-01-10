@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Properties.hpp>
 #include "TcrEndpoint.hpp"
 #include <ace/TSS_T.h>
@@ -68,7 +68,7 @@ class UserConnectionAttributes {
   // UserConnectionAttributes & operator =(const UserConnectionAttributes &);
 };
 
-class CPPCACHE_EXPORT UserAttributes {
+class _GEODE_EXPORT UserAttributes {
   // TODO: need to add lock here so that user should not be authenticated at two
   // servers
  public:

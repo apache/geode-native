@@ -20,7 +20,7 @@
 #ifndef GEODE_STATISTICS_WINDOWSPROCESSSTATS_H_
 #define GEODE_STATISTICS_WINDOWSPROCESSSTATS_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 
 #include "Statistics.hpp"
@@ -43,7 +43,7 @@ using namespace apache::geode::client;
  * <P>This class provides the interface for statistics about a
  * Windows operating system process that is using a Geode system.
  */
-class CPPCACHE_EXPORT WindowsProcessStats : public ProcessStats {
+class _GEODE_EXPORT WindowsProcessStats : public ProcessStats {
  private:
   /** The Static Type for Windows Process Stats */
   StatisticsType* m_statsType;

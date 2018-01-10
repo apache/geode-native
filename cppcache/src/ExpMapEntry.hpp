@@ -20,7 +20,7 @@
 #ifndef GEODE_EXPMAPENTRY_H_
 #define GEODE_EXPMAPENTRY_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "MapEntry.hpp"
 #include "VersionStamp.hpp"
 
@@ -31,8 +31,8 @@ namespace client {
  * @brief Hold region mapped entry value.
  * This subclass adds expiration times.
  */
-class CPPCACHE_EXPORT ExpMapEntry : public MapEntryImpl,
-                                    public ExpEntryProperties {
+class _GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
+                                  public ExpEntryProperties {
  public:
   virtual ~ExpMapEntry() {}
 
@@ -59,8 +59,8 @@ class CPPCACHE_EXPORT ExpMapEntry : public MapEntryImpl,
   ExpMapEntry& operator=(const ExpMapEntry&);
 };
 
-class CPPCACHE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
-                                             public VersionStamp {
+class _GEODE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
+                                           public VersionStamp {
  public:
   virtual ~VersionedExpMapEntry() {}
 
@@ -79,7 +79,7 @@ class CPPCACHE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
   VersionedExpMapEntry& operator=(const VersionedExpMapEntry&);
 };
 
-class CPPCACHE_EXPORT ExpEntryFactory : public EntryFactory {
+class _GEODE_EXPORT ExpEntryFactory : public EntryFactory {
  public:
   using EntryFactory::EntryFactory;
 

@@ -24,7 +24,7 @@
  * @file
  */
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "ExceptionTypes.hpp"
 #include "Serializable.hpp"
 #include "CacheableBuiltins.hpp"
@@ -41,7 +41,7 @@ class SelectResultsIterator;
  * A SelectResults is obtained by executing a Query on the server.
  * This can either be a ResultSet or a StructSet.
  */
-class CPPCACHE_EXPORT SelectResults {
+class _GEODE_EXPORT SelectResults {
  public:
   /**
    * Check whether the SelectResults is modifiable.

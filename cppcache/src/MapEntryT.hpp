@@ -20,7 +20,7 @@
 #ifndef GEODE_MAPENTRYT_H_
 #define GEODE_MAPENTRYT_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "MapEntry.hpp"
 #include "TrackedMapEntry.hpp"
 
@@ -134,7 +134,7 @@ class MapEntryT : public TBase {
   MapEntryT(const MapEntryT&);
   MapEntryT& operator=(const MapEntryT&);
 
-  FRIEND_STD_SHARED_PTR(MapEntryT)
+  _GEODE_FRIEND_STD_SHARED_PTR(MapEntryT)
 };
 
 // specialization of MapEntryT to terminate the recursive template definition

@@ -42,7 +42,7 @@ class TimedTryWriteGuard {
   Condition cond_;
 };
 
-class CPPCACHE_EXPORT ReadGuard {
+class _GEODE_EXPORT ReadGuard {
  public:
   ReadGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) { lock_.acquire_read(); }
 

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/CacheableKey.hpp>
 #include "MapEntry.hpp"
 #include "LRUList.hpp"
@@ -59,8 +59,8 @@ namespace client {
  *
  *
  */
-class CPPCACHE_EXPORT LRUMapEntry : public MapEntryImpl,
-                                    public LRUEntryProperties {
+class _GEODE_EXPORT LRUMapEntry : public MapEntryImpl,
+                                  public LRUEntryProperties {
  public:
   virtual ~LRUMapEntry() {}
 
@@ -87,8 +87,8 @@ class CPPCACHE_EXPORT LRUMapEntry : public MapEntryImpl,
   LRUMapEntry& operator=(const LRUMapEntry&);
 };
 
-class CPPCACHE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
-                                             public VersionStamp {
+class _GEODE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
+                                           public VersionStamp {
  public:
   virtual ~VersionedLRUMapEntry() {}
 
@@ -105,7 +105,7 @@ class CPPCACHE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
   VersionedLRUMapEntry& operator=(const VersionedLRUMapEntry&);
 };
 
-class CPPCACHE_EXPORT LRUEntryFactory : public EntryFactory {
+class _GEODE_EXPORT LRUEntryFactory : public EntryFactory {
  public:
   using EntryFactory::EntryFactory;
 

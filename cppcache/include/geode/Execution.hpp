@@ -24,7 +24,7 @@
 #include <chrono>
 #include <string>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "CacheableBuiltins.hpp"
 #include "ResultCollector.hpp"
 
@@ -41,8 +41,7 @@ namespace client {
  * @see FunctionService
  */
 
-class CPPCACHE_EXPORT Execution {
-
+class _GEODE_EXPORT Execution {
  public:
   /**
    * Specifies a data filter of routing objects for selecting the Geode

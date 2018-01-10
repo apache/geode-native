@@ -26,7 +26,7 @@
 
 #include "CacheableKey.hpp"
 #include "CacheableString.hpp"
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 /** @file
  */
@@ -43,7 +43,7 @@ class DataInput;
 class DataOutput;
 class Serializable;
 
-class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
+class _GEODE_EXPORT CacheableFileName : public CacheableString {
  public:
   /**
    *@brief serialize this object
@@ -90,7 +90,7 @@ class CPPCACHE_EXPORT CacheableFileName : public CacheableString {
   virtual int32_t hashcode() const override;
 
  protected:
-  FRIEND_STD_SHARED_PTR(CacheableFileName)
+  _GEODE_FRIEND_STD_SHARED_PTR(CacheableFileName)
 
   /** Default constructor. */
   inline CacheableFileName() : CacheableString(), m_hashcode(0) {}

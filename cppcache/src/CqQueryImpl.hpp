@@ -20,7 +20,7 @@
 #ifndef GEODE_CQQUERYIMPL_H_
 #define GEODE_CQQUERYIMPL_H_
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include <geode/CqResults.hpp>
 #include <geode/CqQuery.hpp>
@@ -274,7 +274,7 @@ class CqQueryImpl : public CqQuery,
   ThinClientBaseDM* m_tccdm;
   ProxyCache* m_proxyCache;
 
-  FRIEND_STD_SHARED_PTR(CqQueryImpl)
+  _GEODE_FRIEND_STD_SHARED_PTR(CqQueryImpl)
 };
 
 }  // namespace client

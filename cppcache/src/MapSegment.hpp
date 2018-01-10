@@ -23,7 +23,7 @@
 #include <vector>
 #include <memory>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include <geode/CacheableKey.hpp>
 #include "MapEntry.hpp"
@@ -77,7 +77,7 @@ typedef ::ACE_Hash_Map_Manager_Ex<
     CacheableKeyHashMap;
 
 /** @brief type wrapper around the ACE map implementation. */
-class CPPCACHE_EXPORT MapSegment {
+class _GEODE_EXPORT MapSegment {
  private:
   // contain
   CacheableKeyHashMap* m_map;

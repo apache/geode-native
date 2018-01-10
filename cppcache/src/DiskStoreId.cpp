@@ -15,8 +15,12 @@
  * limitations under the License.
  */
 
-#include "DiskStoreId.hpp"
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+
 #include <ace/OS.h>
+
+#include "DiskStoreId.hpp"
 
 namespace apache {
 namespace geode {

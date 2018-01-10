@@ -23,7 +23,7 @@
 #include <memory>
 #include <vector>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 
 #include "Statistics.hpp"

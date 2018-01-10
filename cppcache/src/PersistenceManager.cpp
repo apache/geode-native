@@ -16,14 +16,15 @@
  */
 
 #include <geode/PersistenceManager.hpp>
-#include <geode/Region.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
-PersistenceManager::PersistenceManager(const std::shared_ptr<Region>& regionPtr)
-    : m_regionPtr(regionPtr) {
-  // printf("Base constructor PersistenceManager \n");
-}
+constexpr char const* PersistenceManager::MAX_PAGE_COUNT;
+constexpr char const* PersistenceManager::PAGE_SIZE;
+constexpr char const* PersistenceManager::PERSISTENCE_DIR;
 
-PersistenceManager::~PersistenceManager() {}
-PersistenceManager::PersistenceManager() {}
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -22,7 +22,7 @@
 
 #include <memory>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "Execution.hpp"
 
 /**
@@ -42,7 +42,7 @@ class Execution;
  * entry point for function execution
  * @see Execution
  */
-class CPPCACHE_EXPORT FunctionService {
+class _GEODE_EXPORT FunctionService {
  public:
   /**
    * Returns a {@link Execution} object that can be used to execute a data

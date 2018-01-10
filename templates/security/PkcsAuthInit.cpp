@@ -27,7 +27,7 @@ namespace geode {
 namespace client {
 
 extern "C" {
-LIBEXP AuthInitialize* createPKCSAuthInitInstance() {
+_GEODE_LIBEXP AuthInitialize* createPKCSAuthInitInstance() {
   return new PKCSAuthInit();
 }
 

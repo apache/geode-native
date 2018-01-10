@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+
 #include "FastAssetAccount.hpp"
 #include "FastAsset.hpp"
 

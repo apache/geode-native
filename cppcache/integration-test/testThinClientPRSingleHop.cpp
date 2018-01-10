@@ -113,7 +113,6 @@ class putThread : public ACE_Task_Base {
   int getFailureCount() { return m_failureCount; }
 
   int svc(void) {
-    bool networkhop ATTR_UNUSED = false;
     std::shared_ptr<CacheableKey> keyPtr;
     int rand;
     for (int i = m_min; i < m_max; i++) {
@@ -1246,7 +1245,7 @@ DUNIT_MAIN
       CALL_TASK(CheckPrSingleHopForIntKeysTask);
       size_t totKeyTypes =
           CacheableWrapperFactory::getRegisteredKeyTypes().size();
-      size_t totValTypes ATTR_UNUSED =
+      size_t totValTypes =
           CacheableWrapperFactory::getRegisteredValueTypes().size();
 
       CALL_TASK(CheckPrSingleHopForIntKeysTask);

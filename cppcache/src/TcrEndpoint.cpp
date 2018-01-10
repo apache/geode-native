@@ -293,7 +293,7 @@ GfErrType TcrEndpoint::createNewConnection(
     }
   }
   if (err != GF_NOERR && newConn != nullptr) {
-    GF_SAFE_DELETE(newConn);
+    _GEODE_SAFE_DELETE(newConn);
   }
   return err;
 }
@@ -632,7 +632,7 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
         LOGDEBUG("receive notification %d", msg->getMessageType());
 
         if (!isRunning) {
-          GF_SAFE_DELETE(msg);
+          _GEODE_SAFE_DELETE(msg);
           break;
         }
 
@@ -642,7 +642,7 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
 
         // ignore some message types like REGISTER_INSTANTIATORS
         if (msg->shouldIgnore()) {
-          GF_SAFE_DELETE(msg);
+          _GEODE_SAFE_DELETE(msg);
           continue;
         }
 
@@ -660,7 +660,7 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
               // checking
               LOGFINER("Endpoint %s dropping event for region %s",
                        m_name.c_str(), regionFullPath1.c_str());
-              GF_SAFE_DELETE(msg);
+              _GEODE_SAFE_DELETE(msg);
               continue;
             }
           }
@@ -671,7 +671,7 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
           if (m_dupCount % 100 == 1) {
             LOGFINE("Dropped %dst duplicate notification message", m_dupCount);
           }
-          GF_SAFE_DELETE(msg);
+          _GEODE_SAFE_DELETE(msg);
           continue;
         }
 
@@ -679,7 +679,7 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
           LOGFINE("Got a marker message on endpont %s", m_name.c_str());
           m_cacheImpl->processMarker();
           processMarker();
-          GF_SAFE_DELETE(msg);
+          _GEODE_SAFE_DELETE(msg);
         } else {
           if (!msg->hasCqPart())  // || msg->isInterestListPassed())
           {
@@ -730,13 +730,13 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
       }
       break;
     } catch (const Exception& ex) {
-      GF_SAFE_DELETE(msg);
+      _GEODE_SAFE_DELETE(msg);
       LOGERROR(
           "Exception while receiving subscription event for endpoint %s:: %s: "
           "%s",
           m_name.c_str(), ex.getName().c_str(), ex.what());
     } catch (...) {
-      GF_SAFE_DELETE(msg);
+      _GEODE_SAFE_DELETE(msg);
       LOGERROR(
           "Unexpected exception while "
           "receiving subscription event from endpoint %s",
@@ -770,7 +770,7 @@ inline bool TcrEndpoint::handleIOException(const std::string& message,
                                            bool isBgThread) {
   int32_t lastError = ACE_OS::last_error();
   if (lastError == ECONNRESET || lastError == EPIPE) {
-    GF_SAFE_DELETE(conn);
+    _GEODE_SAFE_DELETE(conn);
   } else {
     closeConnection(conn);
   }
@@ -1226,7 +1226,7 @@ void TcrEndpoint::triggerRedundancyThread() {
 void TcrEndpoint::closeConnection(TcrConnection*& conn) {
   conn->close();
   m_ports.erase(conn->getPort());
-  GF_SAFE_DELETE(conn);
+  _GEODE_SAFE_DELETE(conn);
 }
 
 void TcrEndpoint::closeConnections() {
@@ -1289,8 +1289,8 @@ void TcrEndpoint::stopNotifyReceiverAndCleanup() {
     }
 
     if (!found) {
-      GF_SAFE_DELETE(m_notifyReceiver);
-      GF_SAFE_DELETE(m_notifyConnection);
+      _GEODE_SAFE_DELETE(m_notifyReceiver);
+      _GEODE_SAFE_DELETE(m_notifyConnection);
     }
   }
 
@@ -1305,7 +1305,7 @@ void TcrEndpoint::stopNotifyReceiverAndCleanup() {
       LOGFINER(
           "TcrEndpoint::stopNotifyReceiverAndCleanup: deleting old notify "
           "recievers.");
-      GF_SAFE_DELETE(*it);
+      _GEODE_SAFE_DELETE(*it);
     }
   }
 
@@ -1318,7 +1318,7 @@ void TcrEndpoint::stopNotifyReceiverAndCleanup() {
       LOGFINER(
           "TcrEndpoint::stopNotifyReceiverAndCleanup: deleting old notify "
           "connections.");
-      GF_SAFE_DELETE(*it);
+      _GEODE_SAFE_DELETE(*it);
     }
   }
 }

@@ -20,7 +20,7 @@
 #ifndef GEODE_PDXUNREADFIELDS_H_
 #define GEODE_PDXUNREADFIELDS_H_
 
-#include "geode_base.hpp"
+#include "internal/geode_base.hpp"
 
 namespace apache {
 namespace geode {
@@ -40,7 +40,7 @@ namespace client {
  * This should only happen when a domain class has changed by adding or removing
  *one or more fields.
  **/
-class CPPCACHE_EXPORT PdxUnreadFields {
+class _GEODE_EXPORT PdxUnreadFields {
  public:
   PdxUnreadFields() {}
   virtual ~PdxUnreadFields() {}

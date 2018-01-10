@@ -24,7 +24,7 @@
 
 #include <memory>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "MapEntry.hpp"
 #include <geode/CacheableKey.hpp>
 #include "MapSegment.hpp"
@@ -40,7 +40,7 @@ namespace client {
 /**
  * @brief Concurrent entries map. Not designed for subclassing...
  */
-class CPPCACHE_EXPORT EntriesMap {
+class _GEODE_EXPORT EntriesMap {
  public:
   EntriesMap(std::unique_ptr<EntryFactory> entryFactory) : m_entryFactory(std::move(entryFactory)) {}
   virtual ~EntriesMap() {}

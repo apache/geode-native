@@ -370,7 +370,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    QueryHelper::getHelper();
 
     auto pool =
         getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
@@ -459,7 +459,7 @@ void client1Up() {
   createRegionForCQ(regionNamesCq[0], USE_ACK, true);
 
   LOG("Client1Up complete.");
-  QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+  QueryHelper::getHelper();
 
   std::shared_ptr<QueryService> qs = getHelper()
            ->getCache()
@@ -501,7 +501,7 @@ void client1UpDurableCQList() {
   createRegionForCQ(regionNamesCq[0], USE_ACK, true);
 
   LOG("Client1Up complete.");
-  QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+  QueryHelper::getHelper();
 }
 
 void client2UpDurableCQList() {
@@ -509,7 +509,7 @@ void client2UpDurableCQList() {
   initClientWithId(1, true);
   createRegionForCQ(regionNamesCq[0], USE_ACK, true);
   LOG("Client2Up complete.");
-  QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+  QueryHelper::getHelper();
 }
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client1Up_Pool)
@@ -526,7 +526,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
-    QueryHelper* qh ATTR_UNUSED = &QueryHelper::getHelper();
+    QueryHelper::getHelper();
 
     auto pool =
         getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);

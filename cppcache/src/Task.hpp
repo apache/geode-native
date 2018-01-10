@@ -33,7 +33,7 @@ namespace geode {
 namespace client {
 const char NC_thread[] = "NC thread";
 template <class T>
-class CPPCACHE_EXPORT Task : public ACE_Task_Base {
+class _GEODE_EXPORT Task : public ACE_Task_Base {
  public:
   /// Handle timeout events.
   typedef int (T::*OPERATION)(volatile bool& isRunning);

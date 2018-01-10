@@ -23,7 +23,7 @@
 #include <atomic>
 #include <string>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "Statistics.hpp"
 #include "StatisticsTypeImpl.hpp"

@@ -32,9 +32,9 @@
 
 #ifdef _WIN32
 #ifdef BUILD_TESTOBJECT
-#define TESTOBJECT_EXPORT LIBEXP
+#define TESTOBJECT_EXPORT _GEODE_LIBEXP
 #else
-#define TESTOBJECT_EXPORT LIBIMP
+#define TESTOBJECT_EXPORT _GEODE_LIBIMP
 #endif
 #else
 #define TESTOBJECT_EXPORT
@@ -70,8 +70,8 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
 
   const std::string& getChildName() { return m_childName; }
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   virtual void toData(PdxWriter& pw) const override;
 
@@ -141,8 +141,8 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
 
   int32_t getCharArrayLength() { return m_charArrayLen; }
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   virtual void toData(PdxWriter& pw) const override;
 
@@ -200,8 +200,8 @@ class TESTOBJECT_EXPORT PdxEnumTestClass : public PdxSerializable {
 
   PdxEnumTestClass() {}
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   void toData(PdxWriter& pw) const override {
     pw.writeInt("m_id", m_id);
@@ -254,8 +254,8 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
     return new SerializePdx(false);
   }
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   void toData(PdxWriter& pw) const override {
     pw.writeInt("i1", i1);

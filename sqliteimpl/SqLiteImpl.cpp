@@ -180,7 +180,6 @@ void SqLiteImpl::destroy(const std::shared_ptr<CacheableKey>& key, void*& dbHand
 SqLiteImpl::SqLiteImpl() { m_sqliteHelper = new SqLiteHelper(); }
 
 void SqLiteImpl::close() {
-  int lastError ATTR_UNUSED = 0;
   m_sqliteHelper->closeDB();
 
 #ifndef _WIN32
@@ -196,5 +195,7 @@ void SqLiteImpl::close() {
 
 extern "C" {
 
-LIBEXP PersistenceManager* createSqLiteInstance() { return new SqLiteImpl; }
+_GEODE_LIBEXP PersistenceManager* createSqLiteInstance() {
+  return new SqLiteImpl;
+}
 }

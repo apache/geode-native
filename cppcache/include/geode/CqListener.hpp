@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "CqEvent.hpp"
 
 /**
@@ -42,7 +42,7 @@ class CacheListener;
  * is an event satisfied by the CQ and the other called when there is an
  * error during CQ processing.
  */
-class CPPCACHE_EXPORT CqListener  {
+class _GEODE_EXPORT CqListener {
  public:
   /**
    * This method is invoked when an event is occurred on the region

@@ -237,7 +237,7 @@ int main(int argc, char* argv[])
                                            \
    public:                                 \
     virtual void doTest() {                \
-      const char* fwtest_Name ATTR_UNUSED = #x;
+      static const char* fwtest_Name = #x;
 #define END_TEST(x) \
   }                 \
   }                 \

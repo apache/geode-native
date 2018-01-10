@@ -62,7 +62,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call,
   return TRUE;
 }
 
-LIBEXP void DllMainGetPath(char *result, int maxLen) {
+_GEODE_LIBEXP void DllMainGetPath(char *result, int maxLen) {
   if (!initgflibDone) {
     result[0] = '\0';
     return;

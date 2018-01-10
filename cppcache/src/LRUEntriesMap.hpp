@@ -21,7 +21,7 @@
 #define GEODE_LRUENTRIESMAP_H_
 
 #include <atomic>
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/Cache.hpp>
 #include "ConcurrentEntriesMap.hpp"
 #include "LRUAction.hpp"
@@ -57,9 +57,9 @@ class EvictionController;
  * its constructor and destructor but has no user-written assignment operator.
  * Fix : Make the class Non Assinable
  */
-class CPPCACHE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
-                                      private NonCopyable,
-                                      private NonAssignable {
+class _GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
+                                    private NonCopyable,
+                                    private NonAssignable {
  protected:
   LRUAction* m_action;
   LRUList<MapEntryImpl, MapEntryT<LRUMapEntry, 0, 0> > m_lruList;

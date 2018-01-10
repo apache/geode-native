@@ -120,10 +120,10 @@ class ThinClientPoolDM
 
   virtual ~ThinClientPoolDM() {
     destroy();
-    GF_SAFE_DELETE(m_locHelper);
-    GF_SAFE_DELETE(m_stats);
-    GF_SAFE_DELETE(m_clientMetadataService);
-    GF_SAFE_DELETE(m_manager);
+    _GEODE_SAFE_DELETE(m_locHelper);
+    _GEODE_SAFE_DELETE(m_stats);
+    _GEODE_SAFE_DELETE(m_clientMetadataService);
+    _GEODE_SAFE_DELETE(m_manager);
   }
   // void updateQueue(const char* regionPath) ;
   ClientProxyMembershipID* getMembershipId() { return m_memId.get(); }

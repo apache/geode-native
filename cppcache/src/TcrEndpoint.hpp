@@ -27,13 +27,14 @@
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
 
-#include <geode/geode_globals.hpp>
-#include <geode/geode_base.hpp>
+#include <geode/internal/geode_globals.hpp>
+#include <geode/internal/geode_base.hpp>
 
 #include "FairQueue.hpp"
 #include "Set.hpp"
 #include "TcrConnection.hpp"
 #include "Task.hpp"
+#include "ErrType.hpp"
 
 namespace apache {
 namespace geode {
@@ -47,7 +48,7 @@ class ThinClientPoolHADM;
 class ThinClientPoolDM;
 class QueryService;
 
-class CPPCACHE_EXPORT TcrEndpoint {
+class _GEODE_EXPORT TcrEndpoint {
  public:
   TcrEndpoint(
       const std::string& name, CacheImpl* cacheImpl,

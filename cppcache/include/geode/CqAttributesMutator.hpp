@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include <vector>
 #include <memory>
 /**
@@ -39,7 +39,7 @@ class CqListener;
  * of certain CQ attributes after the CQ has been created.
  *
  */
-class CPPCACHE_EXPORT CqAttributesMutator {
+class _GEODE_EXPORT CqAttributesMutator {
  public:
   /**
    * Adds a CQ listener to the end of the list of CQ listeners on this CqQuery.

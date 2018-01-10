@@ -20,7 +20,7 @@
 #ifndef GEODE_REGIONSHORTCUT_H_
 #define GEODE_REGIONSHORTCUT_H_
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * Each enum represents a predefined {@link RegionAttributes} in a {@link

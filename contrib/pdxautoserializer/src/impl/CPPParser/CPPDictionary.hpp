@@ -52,7 +52,7 @@
 #ifndef CPPDictionary_hpp
 #define CPPDictionary_hpp
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "Dictionary.hpp"
 
 class CPPDictionary : public Dictionary {
@@ -62,7 +62,7 @@ class CPPDictionary : public Dictionary {
 
  protected:
   void dumpSymbol(FILE *f, DictEntry *de) {
-    CPPSymbol *cs ATTR_UNUSED = (CPPSymbol *)de;
+    CPPSymbol *cs = (CPPSymbol *)de;
 
 #ifdef DIAG_MSGES
     if (!(cs->getType() == CPPSymbol::otTypedef ||

@@ -51,7 +51,7 @@ PoolStatsSampler::PoolStatsSampler(int64_t sampleRate, CacheImpl* cache,
 }
 
 PoolStatsSampler::~PoolStatsSampler() {
-  // GF_SAFE_DELETE(m_adminRegion);
+  // _GEODE_SAFE_DELETE(m_adminRegion);
 }
 
 int32_t PoolStatsSampler::svc() {

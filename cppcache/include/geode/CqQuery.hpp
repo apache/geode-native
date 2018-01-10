@@ -22,7 +22,7 @@
 
 #include <chrono>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 
 #include "CqResults.hpp"
 #include "CqStatistics.hpp"
@@ -52,7 +52,7 @@ class Query;
  * operate on the same <code>CqQuery</code> object concurrently rather should
  * have their own <code>CqQuery</code> objects.
  */
-class CPPCACHE_EXPORT CqQuery  {
+class _GEODE_EXPORT CqQuery {
  public:
   /**
    * Get the query string provided when a new Query was created from a

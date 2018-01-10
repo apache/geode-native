@@ -69,7 +69,7 @@ class EvictionController;
 class EvictionThread;
 class CacheImpl;
 
-class CPPCACHE_EXPORT EvictionController : public ACE_Task_Base {
+class _GEODE_EXPORT EvictionController : public ACE_Task_Base {
  public:
   EvictionController(size_t maxHeapSize, int32_t heapSizeDelta,
                      CacheImpl* cache);

@@ -20,7 +20,7 @@
 #ifndef GEODE_REGIONENTRY_H_
 #define GEODE_REGIONENTRY_H_
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "CacheableKey.hpp"
 #include "CacheStatistics.hpp"
 
@@ -47,7 +47,7 @@ class Region;
  * invocation, or an <code>EntryDestroyedException</code> if the entry has been
  * destroyed.
  */
-class CPPCACHE_EXPORT RegionEntry {
+class _GEODE_EXPORT RegionEntry {
  public:
   /** Returns the key for this entry.
    *
@@ -105,7 +105,7 @@ class CPPCACHE_EXPORT RegionEntry {
   bool m_destroyed;
   friend class RegionInternal;
 
-  FRIEND_STD_SHARED_PTR(RegionEntry)
+  _GEODE_FRIEND_STD_SHARED_PTR(RegionEntry)
 };
 }  // namespace client
 }  // namespace geode

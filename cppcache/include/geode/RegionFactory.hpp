@@ -22,7 +22,7 @@
 
 #include <chrono>
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "AttributesFactory.hpp"
 #include "internal/chrono/duration.hpp"
 
@@ -34,7 +34,7 @@ namespace apache {
 namespace geode {
 namespace client {
 class CacheImpl;
-class CPPCACHE_EXPORT RegionFactory {
+class _GEODE_EXPORT RegionFactory {
  public:
   RegionFactory() = delete;
   ~RegionFactory() = default;

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "ProxyCache.hpp"
 #include <geode/FunctionService.hpp>
 /**
@@ -36,7 +36,7 @@ namespace client {
  * @see Execution
  */
 
-class CPPCACHE_EXPORT FunctionServiceImpl : public FunctionService {
+class _GEODE_EXPORT FunctionServiceImpl : public FunctionService {
  public:
   /**
    * This function is used in multiuser mode to execute function on server.
@@ -62,7 +62,7 @@ class CPPCACHE_EXPORT FunctionServiceImpl : public FunctionService {
   std::shared_ptr<ProxyCache> m_proxyCache;
   friend class ProxyCache;
 
-  FRIEND_STD_SHARED_PTR(FunctionServiceImpl)
+  _GEODE_FRIEND_STD_SHARED_PTR(FunctionServiceImpl)
 };
 }  // namespace client
 }  // namespace geode

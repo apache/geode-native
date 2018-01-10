@@ -20,7 +20,7 @@
 
 #include <ace/OS_NS_stdio.h>
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "AtomicStatisticsImpl.hpp"
 #include "StatisticsTypeImpl.hpp"

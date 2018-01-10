@@ -37,7 +37,7 @@ namespace client {
 class EvictionController;
 typedef IntQueue<int64_t> HeapSizeInfoQueue;
 
-class CPPCACHE_EXPORT EvictionThread : public ACE_Task_Base {
+class _GEODE_EXPORT EvictionThread : public ACE_Task_Base {
  public:
   EvictionThread(EvictionController* parent);
 

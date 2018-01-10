@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include "RegionXmlCreation.hpp"
 #include "PoolXmlCreation.hpp"
@@ -37,7 +37,7 @@ class Cache;
  * @since 1.0
  */
 
-class CPPCACHE_EXPORT CacheXmlCreation {
+class _GEODE_EXPORT CacheXmlCreation {
  public:
   /**
    * Creates a new <code>CacheXmlCreation</code> with no root region

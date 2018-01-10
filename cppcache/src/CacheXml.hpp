@@ -20,13 +20,13 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class CPPCACHE_EXPORT CacheXml {
+class _GEODE_EXPORT CacheXml {
  public:
   /** The name of the <code>cache</code> element */
   const char* CACHE;

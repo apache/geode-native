@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "Exception.hpp"
 #include "CqOperation.hpp"
 #include "Cacheable.hpp"
@@ -50,7 +50,7 @@ class CqQuery;
  * event.
  * The CqEvent is not an extension of CacheEvent.
  */
-class CPPCACHE_EXPORT CqEvent {
+class _GEODE_EXPORT CqEvent {
  public:
   CqEvent() {}
 

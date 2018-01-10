@@ -31,8 +31,8 @@
 #include "ExceptionTypes.hpp"
 #include "SelectResults.hpp"
 #include "Serializable.hpp"
-#include "geode_base.hpp"
-#include "geode_globals.hpp"
+#include "internal/geode_base.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {
@@ -49,7 +49,7 @@ class Serializable;
  * A SelectResultsIterator is obtained from a ResultSet or StructSet and
  * is used to iterate over the items available in them.
  */
-class CPPCACHE_EXPORT SelectResultsIterator {
+class _GEODE_EXPORT SelectResultsIterator {
  public:
   /**
    * Check whether the SelectResultsIterator has another item to get.

@@ -145,14 +145,14 @@ END_TASK(validate)
 
 // Create a test task instance, x is the process tag identifying which process
 //   to run in. y is a unique task identifier used in generating a class name.
-#define DUNIT_TASK(x, y)                                            \
-  class DCLASSNAME(y) : virtual public dunit::Task {                \
-   public:                                                          \
-    DCLASSNAME(y)() { init(x); }                                    \
-                                                                    \
-   public:                                                          \
-    virtual void doTask() {                                         \
-      const char* fwtest_Name ATTR_UNUSED = DTASKDESC(y, __LINE__); \
+#define DUNIT_TASK(x, y)                                       \
+  class DCLASSNAME(y) : virtual public dunit::Task {           \
+   public:                                                     \
+    DCLASSNAME(y)() { init(x); }                               \
+                                                               \
+   public:                                                     \
+    virtual void doTask() {                                    \
+      static const char* fwtest_Name = DTASKDESC(y, __LINE__); \
       try {
 // Close the class definition produced by DUNIT_TASK macro.
 // y is a unique identifier used to generate an instance variable name.
@@ -193,14 +193,14 @@ END_TASK(validate)
   }                                               \
   SYMJOIN(a_, __LINE__);
 
-#define DUNIT_TASK_DEFINITION(x, y)                                 \
-  class DCLASSDEF(y) : virtual public dunit::Task {                 \
-   public:                                                          \
-    DCLASSDEF(y)() { init(x); }                                     \
-                                                                    \
-   public:                                                          \
-    virtual void doTask() {                                         \
-      const char* fwtest_Name ATTR_UNUSED = DTASKDESC(y, __LINE__); \
+#define DUNIT_TASK_DEFINITION(x, y)                            \
+  class DCLASSDEF(y) : virtual public dunit::Task {            \
+   public:                                                     \
+    DCLASSDEF(y)() { init(x); }                                \
+                                                               \
+   public:                                                     \
+    virtual void doTask() {                                    \
+      static const char* fwtest_Name = DTASKDESC(y, __LINE__); \
       try {
 #define END_TASK_DEFINITION                       \
   }                                               \
@@ -220,8 +220,7 @@ END_TASK(validate)
   }                                               \
   }                                               \
   ;
-#define CALL_TASK(y) \
-  DCLASSDEF(y) * DVARNAME(y) ATTR_UNUSED = new DCLASSDEF(y)();
+#define CALL_TASK(y) DCLASSDEF(y) * DVARNAME(y) = new DCLASSDEF(y)();
 
 #define DUNIT_MAIN         \
   class DCLASSNAME(Main) { \

@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CONFIG_H_
+#define GEODE_CONFIG_H_
+
 #cmakedefine HAVE_SYS_MOUNT_H
 
 #cmakedefine HAVE_SIGSTKFLT
 #cmakedefine HAVE_ACE_Select_Reactor
 
 // TODO replace with better CMake checks
-//TODO already defined #cmakedefine _LINUX
+#cmakedefine _LINUX
 #cmakedefine _MACOSX
 //TODO already defined #cmakedefine _WIN32
-//TODO already defined #cmakedefine _SOLARIS
+#cmakedefine _SOLARIS
 
 #define PRODUCT_VENDOR "@PRODUCT_VENDOR@"
 #define PRODUCT_VENDOR_NAME "@PRODUCT_VENDOR_NAME@"
@@ -35,3 +40,5 @@
 
 // TODO relace with CMake checks
 #define WITH_ACE_Select_Reactor 1
+
+#endif  // GEODE_CONFIG_H_

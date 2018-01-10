@@ -24,7 +24,7 @@
  * @file
  */
 
-#include "geode_globals.hpp"
+#include "internal/geode_globals.hpp"
 #include "CacheableKey.hpp"
 #include "Cacheable.hpp"
 
@@ -52,7 +52,7 @@ class Region;
  * @see AttributesFactory::setCacheLoader
  * @see RegionAttributes::getCacheLoader
  */
-class CPPCACHE_EXPORT CacheLoader  {
+class _GEODE_EXPORT CacheLoader {
  public:
   /**Loads a value. Application writers should implement this
    * method to customize the loading of a value. This method is called

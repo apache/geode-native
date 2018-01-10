@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <geode/geode_globals.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include "ThinClientDistributionManager.hpp"
 
 namespace apache {
@@ -31,7 +31,7 @@ class ThinClientRegion;
 /**
  * @brief Distribute data between caches
  */
-class CPPCACHE_EXPORT TcrDistributionManager
+class _GEODE_EXPORT TcrDistributionManager
     : public ThinClientDistributionManager {
  public:
   TcrDistributionManager(ThinClientRegion* region,

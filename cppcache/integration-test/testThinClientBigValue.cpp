@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-#include <geode/geode_base.hpp>
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+
+#include <geode/internal/geode_base.hpp>
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
@@ -148,8 +151,7 @@ DUNIT_TASK(CLIENT2, VerifyPuts)
   {
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     // region should already have n entries...
-    int entriesExpected ATTR_UNUSED =
-        dunit::globals()->getIntValue("entriesToExpect");
+    int entriesExpected = dunit::globals()->getIntValue("entriesToExpect");
 
     for (int i = 0; i <= MAX_PAYLOAD; grow(&i)) {
       char keybuf[100];
