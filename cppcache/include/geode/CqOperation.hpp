@@ -30,7 +30,6 @@ namespace apache {
 namespace geode {
 namespace client {
 /**
- * @class Operation CqOperation.hpp
  * Enumerated type for Operation actions.
  */
 class _GEODE_EXPORT CqOperation {

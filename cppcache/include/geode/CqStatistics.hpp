@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CQSTATISTICS_H_
-#define GEODE_CQSTATISTICS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CQSTATISTICS_H_
+#define GEODE_CQSTATISTICS_H_
+
 #include "internal/geode_globals.hpp"
 
 /**
@@ -31,9 +31,6 @@ namespace geode {
 namespace client {
 
 /**
- * @cacheserver
- * Querying is only supported for native clients.
- * @endcacheserver
  * @class CqStatistics CqStatistics.hpp
  *
  * This class provides methods to get statistical information about a registered

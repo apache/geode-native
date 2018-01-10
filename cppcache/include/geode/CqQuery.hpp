@@ -115,8 +115,6 @@ class _GEODE_EXPORT CqQuery {
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
 
   /**
-   * @notsupported_cacheserver
-   * @nativeclient
    * Executes the OQL Query on the cache server and returns the results.
    *
    * @throws RegionNotFoundException if the specified region in the
@@ -129,7 +127,6 @@ class _GEODE_EXPORT CqQuery {
    * configured with locators, if no locators are available, the cause of
    * NotConnectedException
    * is set to NoAvailableLocatorsException.
-   * @endnativeclient
    */
   virtual void execute() = 0;
 
