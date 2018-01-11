@@ -1,12 +1,14 @@
 # Building
 
-## System Requirements (All Platforms)
+## Prerequisites (All Platforms)
 * [CMake 3.8](https://cmake.org/) or newer
 * C++11 compiler *(see platform specific requirements)*
 * [Doxygen 8.11](http://www.stack.nl/~dimitri/doxygen/download.html) *(for building source documentation)*
 * [Apache Geode](http://geode.apache.org/releases/) binaries installed or available to link against
 
-## Additional Platform-specific Requirements
+   Building requires access to an installation of Geode. By default the value of `GEODE_ROOT` or `GEODE` is used during CMake configuration if either of those shell variables is exported. To explicitly specify the location in which Geode is installed, add `-DGEODE_ROOT=/path/to/geode` to the _initial_ `cmake` execution command.
+
+### Platform-Specific Prerequisites
 * [Mac OS X](#mac-os-x)
 * [Linux](#linux)
 * [Solaris](#solaris)
@@ -18,15 +20,15 @@
     $ mkdir build
     $ cd build
     $ cmake ..
-    $ cmake --build . --
+    $ cmake --build . -- <optional parallelism parameters>
 
-**For faster builds, add parallelism to the last step:**
+**For faster builds, use optional parallelism parameters in the last step:**
 
-Unix
+**Unix**
 
 	$ cmake --build . -- -j <# of jobs>
 
-Windows
+**Windows**
 
 	$ cmake --build . -- /m
 
@@ -43,9 +45,6 @@ The recommended generator on Windows is `Visual Studio 14 2015 Win64`:
 
 	$ cmake -G "Visual Studio 14 2015 Win64" ..
 
-## Finding Geode
-Building requires access to an installation of Geode. By default the value of `GEODE_ROOT` or `GEODE` is used during CMake configuration if either of those shell variables is exported. To explicitly specify the location in which Geode is installed, add `-DGEODE_ROOT=/path/to/geode` to the _initial_ `cmake` execution command.
-
 ## Installing
 By default a system-specific location is used by CMake as the destination of the `install` target, e.g., `/usr/local` on UNIX system. To explicitly specify the location in which the Native Client will be installed, add `-DCMAKE_INSTALL_PREFIX=/path/to/installation/destination` to the _initial_ `cmake` execution command.
 
@@ -59,7 +58,7 @@ Due to limitations in CMake, the documentation must be built as a separate step 
     $ cmake --build . --target docs
     $ cmake --build . --target install
 
-# Platform-Specific System Requirements
+# Platform-Specific Prerequisites
 
 ## Mac OS X
 * Mac OS X 10.12 (Sierra) or newer
