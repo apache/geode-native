@@ -47,9 +47,21 @@ typedef void (*CliCallbackMethod)(Cache &cache);
  * will typically be initialized immediately after creation by a call to
  * fromData().
  */
-using TypeFactoryMethod = std::function<Serializable *()>;
+using TypeFactoryMethod = std::function<Serializable*()>;
 
-typedef PdxSerializable *(*TypeFactoryMethodPdx)();
+typedef PdxSerializable* (*TypeFactoryMethodPdx)();
+
+template <class TVAL>
+std::shared_ptr<Serializable> createValueArr(const TVAL* value);
+
+template <class TVAL>
+std::shared_ptr<Serializable> createValue(const TVAL value);
+
+template <typename TVAL>
+inline std::shared_ptr<Serializable> createValue(const TVAL* value) {
+  return createValueArr(value);
+}
+
 /**
  * @class Serializable Serializable.hpp
  * This abstract base class is the superclass of all user objects
@@ -62,12 +74,12 @@ class _GEODE_EXPORT Serializable
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput &output) const = 0;
+  virtual void toData(DataOutput& output) const = 0;
 
   /**
    *@brief deserialize this object.
    **/
-  virtual void fromData(DataInput &input) = 0;
+  virtual void fromData(DataInput& input) = 0;
 
   /**
    *@brief Return the classId of the instance being serialized.
@@ -124,7 +136,9 @@ class _GEODE_EXPORT Serializable
    * apache::geode::client::createValueArr may be overloaded.
    */
   template <class PRIM>
-  inline static std::shared_ptr<Serializable> create(const PRIM value);
+  inline static std::shared_ptr<Serializable> create(PRIM value) {
+    return createValue(value);
+  }
 
   /**
    * @brief destructor
@@ -133,8 +147,8 @@ class _GEODE_EXPORT Serializable
 
  protected:
   Serializable() = default;
-  Serializable(const Serializable &other) = default;
-  Serializable &operator=(const Serializable &other) = default;
+  Serializable(const Serializable& other) = default;
+  Serializable& operator=(const Serializable& other) = default;
 };
 
 }  // namespace client
