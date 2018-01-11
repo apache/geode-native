@@ -1,43 +1,53 @@
 # Building
 
-## Building on UNIX
+## System Requirements (All Platforms)
+* [CMake 3.8](https://cmake.org/) or newer
+* C++11 compiler *(see platform specific requirements)*
+* [Doxygen 8.11](http://www.stack.nl/~dimitri/doxygen/download.html) *(for building source documentation)*
+* [Apache Geode](http://geode.apache.org/releases/) binaries installed or available to link against
+
+## Additional Platform-specific Requirements
+* [Mac OS X](#mac-os-x)
+* [Linux](#linux)
+* [Solaris](#solaris)
+* [Windows](#windows)
+
+## Steps to build
+
     $ cd <clone>
     $ mkdir build
     $ cd build
-    $ cmake ../src
-    $ cmake --build . -- -j 8
+    $ cmake ..
+    $ cmake --build . --
 
-### [Mac OS X System Requirements](#mac-os-x)
-### [Linux System Requirements](#linux)
-### [Solaris System Requirements](#solaris)
+**For faster builds, add parallelism to the last step:**
 
-## Building on Windows
-    $ cd <clone>
-    $ mkdir build
-    $ cd build
-    $ cmake ../src
-    $ cmake --build . -- /m
+Unix
 
-### [Windows System Requirements](#windows)
+	$ cmake --build . -- -j <# of jobs>
+
+Windows
+
+	$ cmake --build . -- /m
 
 ## Generator
 CMake uses a "generator" to produce configuration files for use by a variety of build tools, e.g., UNIX makefiles, Visual Studio projects. By default a system-specific generator is used by CMake during configuration. (Please see [the CMake documentation](https://cmake.org/documentation/) for further information.) However, in many cases there is a better choice.
-	
+
 ### Mac OS X Generator
 The recommended generator on Mac OS X is `Xcode`:
 
-	$ cmake -G "Xcode" ../src
+	$ cmake -G "Xcode" ..
 
 ### Windows Generator
 The recommended generator on Windows is `Visual Studio 14 2015 Win64`:
 
-	$ cmake -G "Visual Studio 14 2015 Win64" ../src
+	$ cmake -G "Visual Studio 14 2015 Win64" ..
 
 ## Finding Geode
-Building requires access to an installation of Geode. By default the value of `GEODE_ROOT` or `GEODE` is used during CMake configuration if either of those shell variables is exported. To explicitly specify the location in which Geode is installed, add `-DGEODE_ROOT=/path/to/geode` to the _initial_ `cmake` execution command before `../src`.
+Building requires access to an installation of Geode. By default the value of `GEODE_ROOT` or `GEODE` is used during CMake configuration if either of those shell variables is exported. To explicitly specify the location in which Geode is installed, add `-DGEODE_ROOT=/path/to/geode` to the _initial_ `cmake` execution command.
 
 ## Installing
-By default a system-specific location is used by CMake as the destination of the `install` target, e.g., `/usr/local` on UNIX system. To explicitly specify the location in which the Native Client will be installed, add `-DCMAKE_INSTALL_PREFIX=/path/to/installation/destination` to the _initial_ `cmake` execution command before `../src`.
+By default a system-specific location is used by CMake as the destination of the `install` target, e.g., `/usr/local` on UNIX system. To explicitly specify the location in which the Native Client will be installed, add `-DCMAKE_INSTALL_PREFIX=/path/to/installation/destination` to the _initial_ `cmake` execution command.
 
 **Note:** For consistent results, avoid using the "~" (tilde) abbreviation when specifying paths on the CMake command line.
 Interpretation of the symbol varies depending on the option being specified, and on the system or command shell in use.
@@ -49,14 +59,7 @@ Due to limitations in CMake, the documentation must be built as a separate step 
     $ cmake --build . --target docs
     $ cmake --build . --target install
 
-# System Requirements
-
-## All Platforms
-
-### Required Tools
-* [CMake 3.8](https://cmake.org/) or newer
-* C++11 compiler *(see platform specific requirements)*
-* [Doxygen 8.11](http://www.stack.nl/~dimitri/doxygen/download.html) *(for building source documentation)*
+# Platform-Specific System Requirements
 
 ## Mac OS X
 * Mac OS X 10.12 (Sierra) or newer
