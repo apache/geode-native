@@ -25,11 +25,11 @@
 #include <chrono>
 #include <memory>
 #include "internal/geode_globals.hpp"
+#include "TransactionId.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
-class TransactionId;
 
 class _GEODE_EXPORT CacheTransactionManager {
  public:
@@ -91,7 +91,7 @@ class _GEODE_EXPORT CacheTransactionManager {
    *         the thread was not associated with a transaction
    * @since 3.6.2
    */
-  virtual std::shared_ptr<TransactionId> suspend() = 0;
+  virtual TransactionId& suspend() = 0;
 
   /**
    * On the current thread, resumes a transaction that was previously suspended
@@ -105,7 +105,7 @@ class _GEODE_EXPORT CacheTransactionManager {
    *           given transactionId
    * @since 3.6.2
    */
-  virtual void resume(std::shared_ptr<TransactionId> transactionId) = 0;
+  virtual void resume(TransactionId& transactionId) = 0;
 
   /**
    * This method can be used to determine if a transaction with the given
@@ -117,7 +117,7 @@ class _GEODE_EXPORT CacheTransactionManager {
    * @since 3.6.2
    * @see #exists(TransactionId)
    */
-  virtual bool isSuspended(std::shared_ptr<TransactionId> transactionId) = 0;
+  virtual bool isSuspended(TransactionId& transactionId) = 0;
 
   /**
    * On the current thread, resumes a transaction that was previously suspended
@@ -136,7 +136,7 @@ class _GEODE_EXPORT CacheTransactionManager {
    * @return true if the transaction was resumed, false otherwise
    * @since 3.6.2
    */
-  virtual bool tryResume(std::shared_ptr<TransactionId> transactionId) = 0;
+  virtual bool tryResume(TransactionId& transactionId) = 0;
 
   /**
    * On the current thread, resumes a transaction that was previously suspended
@@ -159,7 +159,7 @@ class _GEODE_EXPORT CacheTransactionManager {
    * @since 3.6.2
    * @see #tryResume(TransactionId)
    */
-  virtual bool tryResume(std::shared_ptr<TransactionId> transactionId,
+  virtual bool tryResume(TransactionId& transactionId,
                          std::chrono::milliseconds waitTime) = 0;
 
   /**
@@ -173,7 +173,7 @@ class _GEODE_EXPORT CacheTransactionManager {
    * @since 3.6.2
    * @see #isSuspended(TransactionId)
    */
-  virtual bool exists(std::shared_ptr<TransactionId> transactionId) = 0;
+  virtual bool exists(TransactionId& transactionId) = 0;
 
   /** Returns the transaction identifier for the current thread
    *
@@ -181,7 +181,7 @@ class _GEODE_EXPORT CacheTransactionManager {
    *
    * @since 3.6.2
    */
-  virtual std::shared_ptr<TransactionId> getTransactionId() = 0;
+  virtual TransactionId& getTransactionId() = 0;
 
   /** Reports the existence of a Transaction for this thread
    *

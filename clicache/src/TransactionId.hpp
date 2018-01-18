@@ -42,15 +42,15 @@ namespace Apache
         {
         internal:
 
-          inline static TransactionId^ Create(std::shared_ptr<native::TransactionId> nativeptr )
+          inline static TransactionId^ Create(native::TransactionId* nativeptr )
           {
           return __nullptr == nativeptr ? nullptr :
             gcnew TransactionId( nativeptr );
           }
 
-          std::shared_ptr<native::TransactionId> GetNative()
+          native::TransactionId& GetNative()
           {
-            return m_nativeptr->get_shared_ptr();
+            return *m_nativeptr;
           }
 
         private:
@@ -59,12 +59,12 @@ namespace Apache
           /// Private constructor to wrap a native object pointer
           /// </summary>
           /// <param name="nativeptr">The native object pointer</param>
-          inline TransactionId( std::shared_ptr<native::TransactionId> nativeptr )
+          inline TransactionId(native::TransactionId* nativeptr)
+            : m_nativeptr(nativeptr)
           {
-            m_nativeptr = gcnew native_shared_ptr<native::TransactionId>(nativeptr);
           }
 
-          native_shared_ptr<native::TransactionId>^ m_nativeptr;   
+          native::TransactionId* m_nativeptr;
         };
     }  // namespace Client
   }  // namespace Geode

@@ -40,7 +40,7 @@ class TXState {
   TXState(Cache* cache);
   virtual ~TXState();
 
-  std::shared_ptr<TXId> getTransactionId();
+  TXId& getTransactionId();
   bool isDirty() { return m_dirty; }
   void setDirty() { m_dirty = true; }
   bool isReplay() { return m_replay; }
@@ -66,7 +66,7 @@ class TXState {
   void endReplay() { m_replay = false; };
 
  private:
-  std::shared_ptr<TXId> m_txId;
+  TXId m_txId;
   /**
    * Used to hand out modification serial numbers used to preserve
    * the order of operation done by this transaction.

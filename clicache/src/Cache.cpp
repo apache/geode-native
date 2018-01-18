@@ -99,7 +99,7 @@ namespace Apache
         {
           auto nativeptr = std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
             m_nativeptr->get()->getCacheTransactionManager());
-          return Apache::Geode::Client::CacheTransactionManager::Create(nativeptr);
+          return Apache::Geode::Client::CacheTransactionManager::Create(nativeptr.get());
         }
         finally
         {

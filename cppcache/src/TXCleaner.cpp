@@ -42,8 +42,8 @@ TXCleaner::~TXCleaner() {
   }
 }
 void TXCleaner::clean() {
-  if (m_txState != nullptr && m_txState->getTransactionId().get() != nullptr) {
-    m_cacheTxMgr->removeTx(m_txState->getTransactionId()->getId());
+  if (m_txState != nullptr) {
+    m_cacheTxMgr->removeTx(m_txState->getTransactionId().getId());
   }
   if (m_txStateWrapper != nullptr && m_txState != nullptr) {
     m_txStateWrapper->setTXState(nullptr);

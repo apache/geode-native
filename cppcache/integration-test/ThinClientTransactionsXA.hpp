@@ -392,7 +392,7 @@ const bool NO_ACK = false;
 
 class SuspendTransactionThread : public ACE_Task_Base {
  private:
-  std::shared_ptr<TransactionId> m_suspendedTransaction;
+  TransactionId* m_suspendedTransaction;
   bool m_sleep;
   ACE_Auto_Event* m_txEvent;
 
@@ -414,14 +414,14 @@ class SuspendTransactionThread : public ACE_Task_Base {
     createEntry(regionNames[0], keys[4], vals[4]);
     createEntry(regionNames[1], keys[5], vals[5]);
 
-    m_suspendedTransaction = txManager->getTransactionId();
+    m_suspendedTransaction = &txManager->getTransactionId();
 
     if (m_sleep) {
       m_txEvent->wait();
       ACE_OS::sleep(5);
     }
 
-    m_suspendedTransaction = txManager->suspend();
+    m_suspendedTransaction = &txManager->suspend();
     sprintf(buf, " Out SuspendTransactionThread");
     LOG(buf);
 
@@ -435,13 +435,13 @@ class SuspendTransactionThread : public ACE_Task_Base {
   }
   void start() { activate(); }
   void stop() { wait(); }
-  std::shared_ptr<TransactionId> getSuspendedTx() {
-    return m_suspendedTransaction;
+  TransactionId& getSuspendedTx() {
+    return *m_suspendedTransaction;
   }
 };
 class ResumeTransactionThread : public ACE_Task_Base {
  private:
-  std::shared_ptr<TransactionId> m_suspendedTransaction;
+  TransactionId& m_suspendedTransaction;
   bool m_commit;
   bool m_tryResumeWithSleep;
   bool m_isFailed;
@@ -449,7 +449,7 @@ class ResumeTransactionThread : public ACE_Task_Base {
   ACE_Auto_Event* m_txEvent;
 
  public:
-  ResumeTransactionThread(std::shared_ptr<TransactionId> suspendedTransaction,
+  ResumeTransactionThread(TransactionId& suspendedTransaction,
                           bool commit, bool tryResumeWithSleep,
                           ACE_Auto_Event* txEvent)
       : m_suspendedTransaction(suspendedTransaction),
@@ -615,7 +615,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeCommit)
     txManager->begin();
     createEntry(regionNames[0], keys[4], vals[4]);
     createEntry(regionNames[1], keys[5], vals[5]);
-    auto m_suspendedTransaction = txManager->suspend();
+    auto& m_suspendedTransaction = txManager->suspend();
 
     ASSERT(
         !regPtr0->containsKeyOnServer(keyPtr4),
@@ -673,8 +673,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeCommit)
     ASSERT(resumeExc,
            "SuspendResumeCommit: Transaction shouldnt have been resumed");
 
-    ASSERT(txManager->suspend() == nullptr,
-           "SuspendResumeCommit: Transaction shouldnt have been suspended");
+    bool threwTransactionException = false;
+    try {
+      txManager->suspend();
+    }
+    catch (const TransactionException) {
+      threwTransactionException = true;
+    }
+    ASSERT(threwTransactionException, "SuspendResumeCommit: Transaction shouldnt have been suspended");
   }
 END_TASK_DEFINITION
 
@@ -691,11 +697,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendTimeOut)
 
     txManager->begin();
     createEntry(regionNames[0], keys[4], vals[4]);
-    auto tid1 = txManager->suspend();
+    auto& tid1 = txManager->suspend();
 
     txManager->begin();
     createEntry(regionNames[0], keys[5], vals[5]);
-    auto tid2 = txManager->suspend();
+    auto& tid2 = txManager->suspend();
 
     txManager->resume(tid1);
     createEntry(regionNames[0], keys[6], vals[6]);
@@ -707,6 +713,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendTimeOut)
     ASSERT(txManager->exists(tid2),
            "In SuspendTimeOut - the transaction should exist");
 
+    ASSERT(regPtr0->containsKeyOnServer(keyPtr4),
+           "In SuspendTimeOut - Key should have been found in region.");
+    ASSERT(!regPtr0->containsKeyOnServer(keyPtr5),
+           "In SuspendTimeOut - Key should not have been found in region.");
+
     ACE_OS::sleep(65);
     ASSERT(!txManager->tryResume(tid2),
            "In SuspendTimeOut - the transaction should NOT have been resumed");
@@ -714,10 +725,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendTimeOut)
            "In SuspendTimeOut the transaction should NOT present");
     ASSERT(!txManager->exists(tid2),
            "In SuspendTimeOut - the transaction should NOT exist");
-    ASSERT(regPtr0->containsKeyOnServer(keyPtr4),
-           "In SuspendTimeOut - Key should have been found in region.");
-    ASSERT(!regPtr0->containsKeyOnServer(keyPtr5),
-           "In SuspendTimeOut - Key should not have been found in region.");
   }
 END_TASK_DEFINITION
 
@@ -738,7 +745,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeRollback)
     txManager->begin();
     createEntry(regionNames[0], keys[4], vals[4]);
     createEntry(regionNames[1], keys[5], vals[5]);
-    auto m_suspendedTransaction = txManager->suspend();
+    auto& m_suspendedTransaction = txManager->suspend();
 
     ASSERT(
         !regPtr0->containsKeyOnServer(keyPtr4),
@@ -832,7 +839,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeInThread)
     suspendTh->wait();
     delete suspendTh;
     resumeTh->wait();
-    ASSERT(!resumeTh->isFailed(), resumeTh->getError());
     delete resumeTh;
 
     // start suspend thread  and resume thread and commit immedidately
@@ -849,7 +855,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeInThread)
     suspendTh->wait();
     delete suspendTh;
     resumeTh->wait();
-    ASSERT(!resumeTh->isFailed(), resumeTh->getError());
     delete resumeTh;
 
     // start suspend thread  and tryresume thread with rollback. make tryResume
@@ -869,7 +874,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeInThread)
     suspendTh->wait();
     delete suspendTh;
     resumeTh->wait();
-    ASSERT(!resumeTh->isFailed(), resumeTh->getError());
     delete resumeTh;
 
     // start suspend thread  and tryresume thread with commit. make tryResume to
@@ -891,7 +895,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeInThread)
     suspendTh->wait();
     delete suspendTh;
     resumeTh->wait();
-    ASSERT(!resumeTh->isFailed(), resumeTh->getError());
     delete resumeTh;
   }
 END_TASK_DEFINITION
@@ -1135,8 +1138,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServer1)
   }
 END_TASK_DEFINITION
 
-void runTransactionOps(bool poolConfig = true, bool isLocator = true,
-                       bool isSticky = false) {
+void runTransactionOps(bool isSticky = false) {
   CALL_TASK(Alter_Client_Grid_Property_1);
   CALL_TASK(Alter_Client_Grid_Property_2);
 

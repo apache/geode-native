@@ -48,7 +48,7 @@ class _GEODE_EXPORT SuspendedTxExpiryHandler : public ACE_Event_Handler {
    * Constructor
    */
   SuspendedTxExpiryHandler(CacheTransactionManagerImpl* cacheTxMgr,
-                           std::shared_ptr<TransactionId> txid,
+                           TransactionId& txid,
                            std::chrono::seconds duration);
 
   /** This task object will be registered with the Timer Queue.
@@ -66,7 +66,7 @@ class _GEODE_EXPORT SuspendedTxExpiryHandler : public ACE_Event_Handler {
   // modification.
   // UNUSED uint32_t m_duration;
   CacheTransactionManagerImpl* m_cacheTxMgr;
-  std::shared_ptr<TransactionId> m_txid;
+  TransactionId& m_txid;
 };
 }  // namespace client
 }  // namespace geode

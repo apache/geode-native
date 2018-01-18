@@ -29,7 +29,7 @@ namespace geode {
 namespace client {
 
 TXState::TXState(Cache* cache) {
-  m_txId = std::shared_ptr<TXId>(new TXId());
+  m_txId = TXId();
   m_closed = false;
   m_modSerialNum = 0;
   m_dirty = false;
@@ -45,7 +45,7 @@ TXState::TXState(Cache* cache) {
 }
 
 TXState::~TXState() {}
-std::shared_ptr<TXId> TXState::getTransactionId() { return m_txId; }
+TXId& TXState::getTransactionId() { return m_txId; }
 
 int32_t TXState::nextModSerialNum() {
   m_modSerialNum += 1;
@@ -73,7 +73,7 @@ std::shared_ptr<Cacheable> TXState::replay(bool isRollback) {
             ex.what());
       }
     }
-    m_txId = std::shared_ptr<TXId>(new TXId());
+    m_txId = TXId();
     // LOGFINE("retrying transaction after loss of state in server.  Attempt #"
     // + (i+1));
     try {

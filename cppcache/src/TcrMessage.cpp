@@ -635,7 +635,7 @@ void TcrMessage::writeHeader(uint32_t msgType, uint32_t numOfParts) {
   if (txState == nullptr) {
     m_txId = -1;
   } else {
-    m_txId = txState->getTransactionId()->getId();
+    m_txId = txState->getTransactionId().getId();
   }
   m_request->writeInt(m_txId);
 
