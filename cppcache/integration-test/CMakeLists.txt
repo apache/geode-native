@@ -183,6 +183,7 @@ set_property(TEST testThinClientPutAllPRSingleHop PROPERTY LABELS FLAKY)
 set_property(TEST testThinClientPutAllWithCallBackArgWithoutConcurrency PROPERTY LABELS FLAKY)
 set_property(TEST testThinClientSecurityCQAuthorizationMU PROPERTY LABELS FLAKY)
 set_property(TEST testThinClientTXFailover PROPERTY LABELS FLAKY)
+set_property(TEST testThinClientTransactionsXA PROPERTY LABELS FLAKY)
 set_property(TEST testTimedSemaphore PROPERTY LABELS FLAKY)
 
 set_property(TEST testFwPerf PROPERTY LABELS OMITTED)
