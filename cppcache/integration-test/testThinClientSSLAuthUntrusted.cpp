@@ -84,7 +84,7 @@ void createEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
-  auto keyPtr = createKey(key);
+  auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
 
   auto regPtr = getHelper()->getRegion(name);

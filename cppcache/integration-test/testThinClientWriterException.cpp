@@ -165,7 +165,7 @@ void startClient() {
   rptr = getHelper()->getRegion(regionNamesAuth[0]);
   rptr->registerAllKeys();
   sprintf(buf, "%s: %d", rptr->getName().c_str(), i);
-  auto key = createKey(buf);
+  auto key = CacheableKey::create(buf);
   sprintf(buf, "testUpdate::%s: value of %d", rptr->getName().c_str(), i);
   auto valuePtr = buf;
   try {

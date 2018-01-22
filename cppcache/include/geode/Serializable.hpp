@@ -26,6 +26,7 @@
 
 #include <functional>
 #include <memory>
+#include <string>
 
 #include "internal/geode_globals.hpp"
 
@@ -38,7 +39,6 @@ class DataInput;
 class Cache;
 class PdxSerializable;
 class Serializable;
-class CacheableString;
 
 typedef void (*CliCallbackMethod)(Cache &cache);
 
@@ -47,27 +47,27 @@ typedef void (*CliCallbackMethod)(Cache &cache);
  * will typically be initialized immediately after creation by a call to
  * fromData().
  */
-using TypeFactoryMethod = std::function<Serializable *()>;
+using TypeFactoryMethod = std::function<Serializable*()>;
 
-typedef PdxSerializable *(*TypeFactoryMethodPdx)();
+typedef PdxSerializable* (*TypeFactoryMethodPdx)();
+
 /**
  * @class Serializable Serializable.hpp
  * This abstract base class is the superclass of all user objects
  * in the cache that can be serialized.
  */
-
 class _GEODE_EXPORT Serializable
     : public std::enable_shared_from_this<Serializable> {
  public:
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput &output) const = 0;
+  virtual void toData(DataOutput& output) const = 0;
 
   /**
    *@brief deserialize this object.
    **/
-  virtual void fromData(DataInput &input) = 0;
+  virtual void fromData(DataInput& input) = 0;
 
   /**
    *@brief Return the classId of the instance being serialized.
@@ -118,13 +118,17 @@ class _GEODE_EXPORT Serializable
 
   /** Factory method that creates the Serializable object that matches the type
    * of value.
-   * For customer defined derivations of Serializable, the method
-   * apache::geode::client::createValue
-   * may be overloaded. For pointer types (e.g. char*) the method
-   * apache::geode::client::createValueArr may be overloaded.
+   * For user defined derivations of Serializable, the method
+   * apache::geode::client::Serializable::create may be overloaded.
    */
-  template <class PRIM>
-  inline static std::shared_ptr<Serializable> create(const PRIM value);
+  template <class _T>
+  static std::shared_ptr<Serializable> create(_T value);
+
+  template <class _T>
+  inline static std::shared_ptr<Serializable> create(
+      const std::shared_ptr<_T>& value) {
+    return value;
+  }
 
   /**
    * @brief destructor
@@ -133,8 +137,8 @@ class _GEODE_EXPORT Serializable
 
  protected:
   Serializable() = default;
-  Serializable(const Serializable &other) = default;
-  Serializable &operator=(const Serializable &other) = default;
+  Serializable(const Serializable& other) = default;
+  Serializable& operator=(const Serializable& other) = default;
 };
 
 }  // namespace client

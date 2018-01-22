@@ -74,12 +74,12 @@ class RegionWrapper {
   void test(int key, int value, int line) {
     char keybuf[100];
     sprintf(keybuf, "key%d", key);
-   auto keyPtr = createKey(keybuf);
+    auto keyPtr = CacheableKey::create(keybuf);
 
-   if (value == -1) {
-     char ebuf[1024];
-     sprintf(ebuf, "unexpected key found at %d", line);
-     ASSERT(!m_regionPtr->containsKey(keyPtr), ebuf);
+    if (value == -1) {
+      char ebuf[1024];
+      sprintf(ebuf, "unexpected key found at %d", line);
+      ASSERT(!m_regionPtr->containsKey(keyPtr), ebuf);
     } else if (value == 0) {
       waitForKey(keyPtr);
       ASSERT(m_regionPtr->containsKey(keyPtr), "missing key.");

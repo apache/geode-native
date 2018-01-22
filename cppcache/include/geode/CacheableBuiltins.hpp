@@ -342,10 +342,12 @@ class CacheableContainerType : public Cacheable, public TBase {
       return std::make_shared<k>(value);                                \
     }                                                                   \
   };                                                                    \
-  inline std::shared_ptr<CacheableKey> createKey(const p value) {       \
+  template <>                                                           \
+  inline std::shared_ptr<CacheableKey> CacheableKey::create(p value) {  \
     return k::create(value);                                            \
   }                                                                     \
-  inline std::shared_ptr<Cacheable> createValue(const p value) {        \
+  template <>                                                           \
+  inline std::shared_ptr<Cacheable> Serializable::create(p value) {     \
     return k::create(value);                                            \
   }
 
@@ -631,16 +633,6 @@ _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey,
  * iteration semantics of java <code>LinkedHashSet</code>.
  */
 _GEODE_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableLinkedHashSet);
-
-template <>
-inline std::shared_ptr<CacheableKey> CacheableKey::create(int32_t value) {
-  return CacheableInt32::create(value);
-}
-
-template <>
-inline std::shared_ptr<Serializable> Serializable::create(int32_t value) {
-  return CacheableInt32::create(value);
-}
 
 }  // namespace client
 }  // namespace geode

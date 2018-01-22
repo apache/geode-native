@@ -234,7 +234,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client1_Put)
   {
-    auto keyPtr = createKey(keys[0]);
+    auto keyPtr = CacheableKey::create(keys[0]);
     DeltaEx* ptr = new DeltaEx();
     auto pdxobj = std::make_shared<PdxDeltaEx>();
     std::shared_ptr<Cacheable> valPtr(ptr);
@@ -247,7 +247,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1_Put)
 
     DeltaEx* ptr1 = new DeltaEx();
     std::shared_ptr<Cacheable> valPtr1(ptr1);
-    auto keyPtr1 = createKey(keys[1]);
+    auto keyPtr1 = CacheableKey::create(keys[1]);
     regPtr->put(keyPtr1, valPtr1);
     // Client 2: fromDataCount = 2, fromDeltaCount = 1;
     ptr1->setDelta(true);
@@ -263,10 +263,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1_Put)
 
     // For LRU with notification and disc overflow.
     LOG("LRU with notification");
-    auto keyPtr2 = createKey(keys[2]);
-    auto keyPtr3 = createKey(keys[3]);
-    auto keyPtr4 = createKey("LRUKEY4");
-    auto keyPtr5 = createKey("LRUKEY5");
+    auto keyPtr2 = CacheableKey::create(keys[2]);
+    auto keyPtr3 = CacheableKey::create(keys[3]);
+    auto keyPtr4 = CacheableKey::create("LRUKEY4");
+    auto keyPtr5 = CacheableKey::create("LRUKEY5");
     auto regPtr1 = getHelper()->getRegion(regionNames[1]);
 
     regPtr1->put(keyPtr2, valPtr1);

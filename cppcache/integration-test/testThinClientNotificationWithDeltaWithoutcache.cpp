@@ -174,7 +174,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, Client2_RegisterInterest)
   {
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     std::vector<std::shared_ptr<CacheableKey>> vec;
-    auto keyPtr = createKey(keys[0]);
+    auto keyPtr = CacheableKey::create(keys[0]);
     vec.push_back(keyPtr);
     regPtr->registerKeys(vec);
   }
@@ -182,7 +182,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client1_Put)
   {
-    auto keyPtr = createKey(keys[0]);
+    auto keyPtr = CacheableKey::create(keys[0]);
     DeltaEx* ptr = new DeltaEx();
     std::shared_ptr<Cacheable> valPtr(ptr);
 

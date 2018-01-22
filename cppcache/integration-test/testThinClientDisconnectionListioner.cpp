@@ -61,7 +61,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, populateServer)
   {
     SLEEP(10000);
     auto regPtr = getHelper()->getRegion(regionNames[0]);
-    auto keyPtr = createKey("PXR");
+    auto keyPtr = CacheableKey::create("PXR");
     auto valPtr = CacheableString::create("PXR1");
     regPtr->create(keyPtr, valPtr);
   }

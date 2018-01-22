@@ -270,7 +270,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyK1C1New2)
   {
     auto regPtr = getHelper()->getRegion(poolRegNames[2]);
 
-    auto keyPtr = createKey(keys[1]);
+    auto keyPtr = CacheableKey::create(keys[1]);
 
     auto checkPtr =
         std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
