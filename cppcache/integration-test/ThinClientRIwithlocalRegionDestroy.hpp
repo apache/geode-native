@@ -55,32 +55,32 @@ class SimpleCacheListener : public CacheListener {
 
  public:
   // The Cache Listener callbacks.
-  virtual void afterCreate(const EntryEvent& event) {
+  virtual void afterCreate(const EntryEvent& event) override {
     LOGINFO("SimpleCacheListener: Got an afterCreate event.");
     m_totalEvents++;
   }
 
-  virtual void afterUpdate(const EntryEvent& event) {
+  virtual void afterUpdate(const EntryEvent& event) override {
     LOGINFO("SimpleCacheListener: Got an afterUpdate event.");
     m_totalEvents++;
   }
 
-  virtual void afterInvalidate(const EntryEvent& event) {
+  virtual void afterInvalidate(const EntryEvent& event) override {
     LOGINFO("SimpleCacheListener: Got an afterInvalidate event.");
     m_totalEvents++;
   }
 
-  virtual void afterDestroy(const EntryEvent& event) {
+  virtual void afterDestroy(const EntryEvent& event) override {
     LOGINFO("SimpleCacheListener: Got an afterDestroy event.");
     m_totalEvents++;
   }
 
-  virtual void afterRegionInvalidate(const RegionEvent& event) {
+  virtual void afterRegionInvalidate(const RegionEvent& event) override {
     LOGINFO("SimpleCacheListener: Got an afterRegionInvalidate event.");
     m_totalEvents++;
   }
 
-  virtual void afterRegionDestroy(const RegionEvent& event) {
+  virtual void afterRegionDestroy(const RegionEvent& event) override {
     LOGINFO("SimpleCacheListener: Got an afterRegionDestroy event.");
     if (event.remoteOrigin()) {
       m_totalEvents++;
@@ -146,24 +146,25 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_Locator)
     createPooledRegion(regionNames[2], NO_ACK, locatorsG, "__TESTPOOL1_", true);
 
     // create subregion
-   auto regptr = getHelper()->getRegion(regionNames[2]);
-   std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
-   auto subregPtr1 = regptr->createSubregion(regionNames[3], lattribPtr);
-   auto subregPtr2 = regptr->createSubregion(regionNames[4], lattribPtr);
+    auto regptr = getHelper()->getRegion(regionNames[2]);
+    std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
+    auto subregPtr1 = regptr->createSubregion(regionNames[3], lattribPtr);
+    auto subregPtr2 = regptr->createSubregion(regionNames[4], lattribPtr);
 
-   LOGINFO("NIL: CLIENT1 StepOne_Pool_Locator subregions created successfully");
+    LOGINFO(
+        "NIL: CLIENT1 StepOne_Pool_Locator subregions created successfully");
 
-   // Attache Listener
-   auto regionPtr0 = getHelper()->getRegion(regionNames[0]);
-   auto attrMutatorPtr = regionPtr0->getAttributesMutator();
-   eventListener1 = std::make_shared<SimpleCacheListener>();
-   attrMutatorPtr->setCacheListener(eventListener1);
+    // Attache Listener
+    auto regionPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto attrMutatorPtr = regionPtr0->getAttributesMutator();
+    eventListener1 = std::make_shared<SimpleCacheListener>();
+    attrMutatorPtr->setCacheListener(eventListener1);
 
-   auto subregAttrMutatorPtr = subregPtr1->getAttributesMutator();
-   eventListener2 = std::make_shared<SimpleCacheListener>();
-   subregAttrMutatorPtr->setCacheListener(eventListener2);
+    auto subregAttrMutatorPtr = subregPtr1->getAttributesMutator();
+    eventListener2 = std::make_shared<SimpleCacheListener>();
+    subregAttrMutatorPtr->setCacheListener(eventListener2);
 
-   LOG("StepOne_Pool complete.");
+    LOG("StepOne_Pool complete.");
   }
 END_TASK_DEFINITION
 
@@ -176,48 +177,48 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_Locator)
     createPooledRegion(regionNames[2], NO_ACK, locatorsG, "__TESTPOOL1_", true);
 
     // create subregion
-   auto regptr = getHelper()->getRegion(regionNames[2]);
-   std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
-   auto subregPtr1 = regptr->createSubregion(regionNames[3], lattribPtr);
-   auto subregPtr2 = regptr->createSubregion(regionNames[4], lattribPtr);
+    auto regptr = getHelper()->getRegion(regionNames[2]);
+    std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
+    auto subregPtr1 = regptr->createSubregion(regionNames[3], lattribPtr);
+    auto subregPtr2 = regptr->createSubregion(regionNames[4], lattribPtr);
 
-   LOGINFO(
-       "NIL: CLIENT2 StepTwo_Pool_Locator:: subregions created successfully");
-   LOG("StepTwo_Pool complete.");
+    LOGINFO(
+        "NIL: CLIENT2 StepTwo_Pool_Locator:: subregions created successfully");
+    LOG("StepTwo_Pool complete.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, registerKeysOnRegion)
   {
-   auto regPtr0 = getHelper()->getRegion(regionNames[0]);
-    //auto regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    // auto regPtr1 = getHelper()->getRegion(regionNames[1]);
     /*regPtr0->registerRegex(testregex[0]);
     regPtr1->registerRegex(testregex[1]);*/
 
-   // NIL
-   std::vector<std::shared_ptr<CacheableKey>> keys;
-   keys.push_back(CacheableString::create("Key-1"));
-   keys.push_back(CacheableString::create("Key-2"));
-   regPtr0->registerKeys(keys, false);
-   LOGINFO("NIL CLIENT-1 registerAllKeys() done ");
+    // NIL
+    std::vector<std::shared_ptr<CacheableKey>> keys;
+    keys.push_back(CacheableString::create("Key-1"));
+    keys.push_back(CacheableString::create("Key-2"));
+    regPtr0->registerKeys(keys, false);
+    LOGINFO("NIL CLIENT-1 registerAllKeys() done ");
 
-   regPtr0->localDestroyRegion();
-   LOGINFO("NIL CLIENT-1 localDestroyRegion() done");
-   LOG("StepThree complete.");
+    regPtr0->localDestroyRegion();
+    LOGINFO("NIL CLIENT-1 localDestroyRegion() done");
+    LOG("StepThree complete.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, putOps)
   {
-   auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
 
     for (int index = 0; index < 5; index++) {
       char key[100] = {0};
       char value[100] = {0};
       ACE_OS::sprintf(key, "Key-%d", index);
       ACE_OS::sprintf(value, "Value-%d", index);
-     auto keyptr = CacheableKey::create(key);
-     auto valuePtr = CacheableString::create(value);
+      auto keyptr = CacheableKey::create(key);
+      auto valuePtr = CacheableString::create(value);
       regPtr0->put(keyptr, valuePtr);
     }
     LOG("StepFour complete.");
@@ -226,7 +227,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
-   auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
 
     regPtr0->registerAllKeys();
     LOGINFO("NIL CLIENT-1 registerAllKeys() done ");
@@ -239,15 +240,15 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
   {
-   auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
 
     for (int index = 0; index < 5; index++) {
       char key[100] = {0};
       char value[100] = {0};
       ACE_OS::sprintf(key, "Key-%d", index);
       ACE_OS::sprintf(value, "Value-%d", index);
-     auto keyptr = CacheableKey::create(key);
-     auto valuePtr = CacheableString::create(value);
+      auto keyptr = CacheableKey::create(key);
+      auto valuePtr = CacheableString::create(value);
       regPtr0->put(keyptr, valuePtr);
     }
     LOG("StepFour complete.");
@@ -274,8 +275,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
-   auto regPtr0 = getHelper()->getRegion(regionNames[0]);
-   auto regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
     regPtr0->registerRegex(testregex[0]);
     regPtr1->registerRegex(testregex[1]);
     LOGINFO("NIL CLIENT-1 registerRegex() done ");
@@ -288,16 +289,16 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
   {
-   auto regPtr0 = getHelper()->getRegion(regionNames[0]);
-   auto regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
 
     for (int index = 0; index < 5; index++) {
       char key[100] = {0};
       char value[100] = {0};
       ACE_OS::sprintf(key, "Key-%d", index);
       ACE_OS::sprintf(value, "Value-%d", index);
-     auto keyptr = CacheableKey::create(key);
-     auto valuePtr = CacheableString::create(value);
+      auto keyptr = CacheableKey::create(key);
+      auto valuePtr = CacheableString::create(value);
       regPtr0->put(keyptr, valuePtr);
       regPtr1->put(keyptr, valuePtr);
     }
@@ -308,88 +309,88 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, VerifyOps)
   {
     // regPtr0 is destroyed
-    //auto regPtr0 = getHelper()->getRegion(regionNames[0]);
-   auto regPtr1 = getHelper()->getRegion(regionNames[1]);
+    // auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
 
-   auto keyptr = CacheableKey::create("Key-2");
+    auto keyptr = CacheableKey::create("Key-2");
 
-   // regPtr0 is destroyed
-   // ASSERT( !regPtr0->containsKey( keyptr ), "Key must not found in region0."
-   // );
+    // regPtr0 is destroyed
+    // ASSERT( !regPtr0->containsKey( keyptr ), "Key must not found in region0."
+    // );
 
-   ASSERT(regPtr1->containsKey(keyptr), "Key must found in region1.");
+    ASSERT(regPtr1->containsKey(keyptr), "Key must found in region1.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
   {
-   auto regPtr0 = getHelper()->getRegion(regionNames[0]);
-   auto regPtr1 = getHelper()->getRegion(regionNames[1]);
-   auto regPtr2 = getHelper()->getRegion(regionNames[2]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr2 = getHelper()->getRegion(regionNames[2]);
 
-   auto subregPtr0 = regPtr2->getSubregion(regionNames[3]);
-   auto subregPtr1 = regPtr2->getSubregion(regionNames[4]);
+    auto subregPtr0 = regPtr2->getSubregion(regionNames[3]);
+    auto subregPtr1 = regPtr2->getSubregion(regionNames[4]);
 
-   // 1. registerAllKeys on parent and both subregions
-   regPtr2->registerAllKeys();
-   subregPtr0->registerAllKeys();
-   subregPtr1->registerAllKeys();
+    // 1. registerAllKeys on parent and both subregions
+    regPtr2->registerAllKeys();
+    subregPtr0->registerAllKeys();
+    subregPtr1->registerAllKeys();
 
-   LOGINFO("NIL CLIENT-1 StepSeven ::  registerAllKeys() done ");
+    LOGINFO("NIL CLIENT-1 StepSeven ::  registerAllKeys() done ");
 
-   // 2. Now locally destroy SubRegion1
-   subregPtr0->localDestroyRegion();
-   LOGINFO("NIL CLIENT-1 SubRegion1 locally destroyed successfully");
+    // 2. Now locally destroy SubRegion1
+    subregPtr0->localDestroyRegion();
+    LOGINFO("NIL CLIENT-1 SubRegion1 locally destroyed successfully");
 
-   LOG("NIL: Client-1 StepSeven complete.");
+    LOG("NIL: Client-1 StepSeven complete.");
 
-   /*
-   regPtr0->registerRegex(testregex[0]);
-   regPtr1->registerRegex(testregex[1]);
-   LOGINFO("NIL CLIENT-1 registerRegex() done ");
-   */
+    /*
+    regPtr0->registerRegex(testregex[0]);
+    regPtr1->registerRegex(testregex[1]);
+    LOGINFO("NIL CLIENT-1 registerRegex() done ");
+    */
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepEight)
   {
-   auto regPtr0 = getHelper()->getRegion(regionNames[0]);
-   auto regPtr1 = getHelper()->getRegion(regionNames[1]);
-   auto regPtr2 = getHelper()->getRegion(regionNames[2]);
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr2 = getHelper()->getRegion(regionNames[2]);
 
-   auto subregPtr0 = regPtr2->getSubregion(regionNames[3]);
-   auto subregPtr1 = regPtr2->getSubregion(regionNames[4]);
-
-   for (int index = 0; index < 5; index++) {
-     char key[100] = {0};
-     char value[100] = {0};
-     ACE_OS::sprintf(key, "Key-%d", index);
-     ACE_OS::sprintf(value, "Value-%d", index);
-     auto keyptr = CacheableKey::create(key);
-     auto valuePtr = CacheableString::create(value);
-     regPtr2->put(keyptr, valuePtr);
-     subregPtr0->put(keyptr, valuePtr);
-     subregPtr1->put(keyptr, valuePtr);
-   }
-
-   LOG("NIL : Client-2 StepSix complete.");
-  }
-END_TASK_DEFINITION
-
-DUNIT_TASK_DEFINITION(CLIENT1, VerifySubRegionOps)
-  {
-   auto regPtr2 = getHelper()->getRegion(regionNames[2]);
-    // locally destroyed
-    //auto subregPtr0 = regPtr2->getSubregion( regionNames[3] );
-   auto subregPtr1 = regPtr2->getSubregion(regionNames[4]);
+    auto subregPtr0 = regPtr2->getSubregion(regionNames[3]);
+    auto subregPtr1 = regPtr2->getSubregion(regionNames[4]);
 
     for (int index = 0; index < 5; index++) {
       char key[100] = {0};
       char value[100] = {0};
       ACE_OS::sprintf(key, "Key-%d", index);
       ACE_OS::sprintf(value, "Value-%d", index);
-     auto keyptr = CacheableKey::create(key);
-     auto valuePtr = CacheableString::create(value);
+      auto keyptr = CacheableKey::create(key);
+      auto valuePtr = CacheableString::create(value);
+      regPtr2->put(keyptr, valuePtr);
+      subregPtr0->put(keyptr, valuePtr);
+      subregPtr1->put(keyptr, valuePtr);
+    }
+
+    LOG("NIL : Client-2 StepSix complete.");
+  }
+END_TASK_DEFINITION
+
+DUNIT_TASK_DEFINITION(CLIENT1, VerifySubRegionOps)
+  {
+    auto regPtr2 = getHelper()->getRegion(regionNames[2]);
+    // locally destroyed
+    // auto subregPtr0 = regPtr2->getSubregion( regionNames[3] );
+    auto subregPtr1 = regPtr2->getSubregion(regionNames[4]);
+
+    for (int index = 0; index < 5; index++) {
+      char key[100] = {0};
+      char value[100] = {0};
+      ACE_OS::sprintf(key, "Key-%d", index);
+      ACE_OS::sprintf(value, "Value-%d", index);
+      auto keyptr = CacheableKey::create(key);
+      auto valuePtr = CacheableString::create(value);
 
       ASSERT(regPtr2->containsKey(keyptr), "Key must found in region1.");
       ASSERT(subregPtr1->containsKey(keyptr), "Key must found in region1.");
