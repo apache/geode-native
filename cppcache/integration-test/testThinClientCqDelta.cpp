@@ -237,7 +237,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, Client1_Put)
   {
-    auto keyPtr = createKey(keys[0]);
+    auto keyPtr = CacheableKey::create(keys[0]);
     auto dptr = std::make_shared<DeltaTestImpl>();
     std::shared_ptr<Cacheable> valPtr(dptr);
     auto regPtr = getHelper()->getRegion(regionNames[0]);

@@ -92,7 +92,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  auto keyPtr = createKey(key);
+  auto keyPtr = CacheableKey::create(key);
 
   // if the region is no ack, then we may need to wait...
   if (!isCreated) {
@@ -197,7 +197,7 @@ void createEntry(const char* name, const char* key, const char* value) {
   LOGINFO("Creating entry -- key: %s  value: %s in region %s", key, value,
           name);
   // Create entry, verify entry is correct
-  auto keyPtr = createKey(key);
+  auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
 
   auto regPtr = getHelper()->getRegion(name);
@@ -221,7 +221,7 @@ void updateEntry(const char* name, const char* key, const char* value) {
   LOGINFO("Updating entry -- key: %s  value: %s in region %s", key, value,
           name);
   // Update entry, verify entry is correct
-  auto keyPtr = createKey(key);
+  auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
 
   auto regPtr = getHelper()->getRegion(name);

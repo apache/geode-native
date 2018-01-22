@@ -152,13 +152,15 @@ class _GEODE_EXPORT CacheableDate : public CacheableKey {
   _GEODE_FRIEND_STD_SHARED_PTR(CacheableDate)
 };
 
-inline std::shared_ptr<CacheableKey> createKey(
-    const CacheableDate::time_point& value) {
+template <>
+inline std::shared_ptr<CacheableKey> CacheableKey::create(
+    CacheableDate::time_point value) {
   return CacheableDate::create(value);
 }
 
-inline std::shared_ptr<Cacheable> createValue(
-    const CacheableDate::time_point& value) {
+template <>
+inline std::shared_ptr<Serializable> Serializable::create(
+    CacheableDate::time_point value) {
   return CacheableDate::create(value);
 }
 

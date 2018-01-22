@@ -328,23 +328,23 @@ void createEntryTx(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
- auto keyPtr = createKey(key);
- auto valPtr = CacheableString::create(value);
+  auto keyPtr = CacheableKey::create(key);
+  auto valPtr = CacheableString::create(value);
 
- auto regPtr = getHelper()->getRegion(name);
- ASSERT(regPtr != nullptr, "Region not found.");
+  auto regPtr = getHelper()->getRegion(name);
+  ASSERT(regPtr != nullptr, "Region not found.");
 
- // ASSERT( !regPtr->containsKey( keyPtr ), "Key should not have been found in
- // region." );
- // ASSERT( !regPtr->containsValueForKey( keyPtr ), "Value should not have been
- // found in region." );
+  // ASSERT( !regPtr->containsKey( keyPtr ), "Key should not have been found in
+  // region." );
+  // ASSERT( !regPtr->containsValueForKey( keyPtr ), "Value should not have been
+  // found in region." );
 
- // regPtr->create( keyPtr, valPtr );
- regPtr->put(keyPtr, valPtr);
- LOG("Created entry.");
+  // regPtr->create( keyPtr, valPtr );
+  regPtr->put(keyPtr, valPtr);
+  LOG("Created entry.");
 
- // verifyEntry( name, key, value );
- LOG("Entry created.");
+  // verifyEntry( name, key, value );
+  LOG("Entry created.");
 }
 
 void updateEntryTx(const char* name, const char* key, const char* value) {
@@ -353,21 +353,21 @@ void updateEntryTx(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Update entry, verify entry is correct
- auto keyPtr = createKey(key);
- auto valPtr = CacheableString::create(value);
+  auto keyPtr = CacheableKey::create(key);
+  auto valPtr = CacheableString::create(value);
 
- auto regPtr = getHelper()->getRegion(name);
- ASSERT(regPtr != nullptr, "Region not found.");
+  auto regPtr = getHelper()->getRegion(name);
+  ASSERT(regPtr != nullptr, "Region not found.");
 
- ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
- ASSERT(regPtr->containsValueForKey(keyPtr),
-        "Value should have been found in region.");
+  ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
+  ASSERT(regPtr->containsValueForKey(keyPtr),
+         "Value should have been found in region.");
 
- regPtr->put(keyPtr, valPtr);
- LOG("Put entry.");
+  regPtr->put(keyPtr, valPtr);
+  LOG("Put entry.");
 
- verifyEntry(name, key, value);
- LOG("Entry updated.");
+  verifyEntry(name, key, value);
+  LOG("Entry updated.");
 }
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepEight)

@@ -100,7 +100,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  auto keyPtr = createKey(key);
+  auto keyPtr = CacheableKey::create(key);
 
   // if the region is no ack, then we may need to wait...
   if (noKey == false) {  // need to find the key!
@@ -218,7 +218,7 @@ void putEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Put entry, verify entry is correct
-  auto keyPtr = createKey(key);
+  auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
 
   auto regPtr = getHelper()->getRegion(name);
@@ -242,7 +242,7 @@ void localPutEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Put entry, verify entry is correct
-  auto keyPtr = createKey(key);
+  auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
 
   auto regPtr = getHelper()->getRegion(name);
@@ -261,7 +261,7 @@ void createEntryTwice(const char* name, const char* key, const char* value) {
   sprintf(message, "Creating entry -- key: %s  value: %s in region %s\n", key,
           value, name);
   LOG(message);
-  auto keyPtr = createKey(key);
+  auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
   auto regPtr = getHelper()->getRegion(name);
   regPtr->create(keyPtr, valPtr);
@@ -284,7 +284,7 @@ void updateEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Update entry, verify entry is correct
-  auto keyPtr = createKey(key);
+  auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
 
   auto regPtr = getHelper()->getRegion(name);

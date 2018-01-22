@@ -57,13 +57,17 @@ class _GEODE_EXPORT CacheableKey : public Cacheable {
   /**
    * Factory method that creates the key type that matches the type of value.
    *
-   * For customer defined derivations of CacheableKey, the method
-   * apache::geode::client::createKey may be overloaded. For pointer types (e.g.
-   * char*)
-   * the method apache::geode::client::createKeyArr may be overloaded.
+   * For user defined derivations of CacheableKey, the method
+   * apache::geode::client::CacheableKey::create may be overloaded.
    */
-  template <class PRIM>
-  inline static std::shared_ptr<CacheableKey> create(const PRIM value);
+  template <class _T>
+  static std::shared_ptr<CacheableKey> create(_T value);
+
+  template <class _T>
+  inline static std::shared_ptr<CacheableKey> create(
+      const std::shared_ptr<_T>& value) {
+    return value;
+  }
 
   struct hash {
     inline std::size_t operator()(const CacheableKey& s) const {

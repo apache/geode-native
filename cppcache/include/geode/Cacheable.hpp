@@ -34,12 +34,6 @@ namespace client {
 
 typedef Serializable Cacheable;
 
-template <typename TVALUE>
-inline std::shared_ptr<Cacheable> createValue(
-    const std::shared_ptr<TVALUE>& value) {
-  return std::dynamic_pointer_cast<Cacheable>(value);
-}
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

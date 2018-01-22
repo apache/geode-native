@@ -457,7 +457,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
 
     rptr = getHelper()->getRegion(regionNamesAuth[0]);
     sprintf(buf, "%s: %d", rptr->getName().c_str(), i);
-    auto key = createKey(buf);
+    auto key = CacheableKey::create(buf);
     sprintf(buf, "testUpdate::%s: value of %d", rptr->getName().c_str(), i);
     auto valuePtr = buf;
     try {

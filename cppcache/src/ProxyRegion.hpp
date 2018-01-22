@@ -156,7 +156,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline std::shared_ptr<RegionEntry> getEntry(const KEYTYPE& key) {
-    return getEntry(createKey(key));
+    return getEntry(CacheableKey::create(key));
   }
 
   virtual std::shared_ptr<Cacheable> get(
@@ -172,7 +172,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   inline std::shared_ptr<Cacheable> get(
       const KEYTYPE& key,
       const std::shared_ptr<Serializable>& callbackArg = nullptr) {
-    return get(createKey(key), callbackArg);
+    return get(CacheableKey::create(key), callbackArg);
   }
 
   virtual void put(const std::shared_ptr<CacheableKey>& key,
@@ -187,14 +187,14 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   template <class KEYTYPE, class VALUETYPE>
   inline void put(const KEYTYPE& key, const VALUETYPE& value,
                   const std::shared_ptr<Serializable>& arg = nullptr) {
-    put(createKey(key), createValue(value), arg);
+    put(CacheableKey::create(key), Serializable::create(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void put(const KEYTYPE& key, const std::shared_ptr<Cacheable>& value,
                   const std::shared_ptr<Serializable>& arg = nullptr) {
-    put(createKey(key), value, arg);
+    put(CacheableKey::create(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
@@ -202,7 +202,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   inline void put(const std::shared_ptr<CacheableKey>& key,
                   const VALUETYPE& value,
                   const std::shared_ptr<Serializable>& arg = nullptr) {
-    put(key, createValue(value), arg);
+    put(key, Serializable::create(value), arg);
   }
 
   virtual void putAll(
@@ -225,7 +225,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   template <class KEYTYPE, class VALUETYPE>
   inline void localPut(const KEYTYPE& key, const VALUETYPE& value,
                        const std::shared_ptr<Serializable>& arg = nullptr) {
-    localPut(createKey(key), createValue(value), arg);
+    localPut(CacheableKey::create(key), Serializable::create(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
@@ -233,7 +233,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   inline void localPut(const KEYTYPE& key,
                        const std::shared_ptr<Cacheable>& value,
                        const std::shared_ptr<Serializable>& arg = nullptr) {
-    localPut(createKey(key), value, arg);
+    localPut(CacheableKey::create(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
@@ -241,7 +241,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   inline void localPut(const std::shared_ptr<CacheableKey>& key,
                        const VALUETYPE& value,
                        const std::shared_ptr<Serializable>& arg = nullptr) {
-    localPut(key, createValue(value), arg);
+    localPut(key, Serializable::create(value), arg);
   }
 
   virtual void create(const std::shared_ptr<CacheableKey>& key,
@@ -256,7 +256,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   template <class KEYTYPE, class VALUETYPE>
   inline void create(const KEYTYPE& key, const VALUETYPE& value,
                      const std::shared_ptr<Serializable>& arg = nullptr) {
-    create(createKey(key), createValue(value), arg);
+    create(CacheableKey::create(key), Serializable::create(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
@@ -264,7 +264,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   inline void create(const KEYTYPE& key,
                      const std::shared_ptr<Cacheable>& value,
                      const std::shared_ptr<Serializable>& arg = nullptr) {
-    create(createKey(key), value, arg);
+    create(CacheableKey::create(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
@@ -272,7 +272,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   inline void create(const std::shared_ptr<CacheableKey>& key,
                      const VALUETYPE& value,
                      const std::shared_ptr<Serializable>& arg = nullptr) {
-    create(key, createValue(value), arg);
+    create(key, Serializable::create(value), arg);
   }
 
   virtual void localCreate(const std::shared_ptr<CacheableKey>& key,
@@ -286,7 +286,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   template <class KEYTYPE, class VALUETYPE>
   inline void localCreate(const KEYTYPE& key, const VALUETYPE& value,
                           const std::shared_ptr<Serializable>& arg = nullptr) {
-    localCreate(createKey(key), createValue(value), arg);
+    localCreate(CacheableKey::create(key), Serializable::create(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
@@ -294,7 +294,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   inline void localCreate(const KEYTYPE& key,
                           const std::shared_ptr<Cacheable>& value,
                           const std::shared_ptr<Serializable>& arg = nullptr) {
-    localCreate(createKey(key), value, arg);
+    localCreate(CacheableKey::create(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
@@ -302,7 +302,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   inline void localCreate(const std::shared_ptr<CacheableKey>& key,
                           const VALUETYPE& value,
                           const std::shared_ptr<Serializable>& arg = nullptr) {
-    localCreate(key, createValue(value), arg);
+    localCreate(key, Serializable::create(value), arg);
   }
 
   virtual void invalidate(const std::shared_ptr<CacheableKey>& key,
@@ -316,7 +316,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   template <class KEYTYPE>
   inline void invalidate(const KEYTYPE& key,
                          const std::shared_ptr<Serializable>& arg = nullptr) {
-    invalidate(createKey(key), arg);
+    invalidate(CacheableKey::create(key), arg);
   }
 
   virtual void localInvalidate(const std::shared_ptr<CacheableKey>& key,
@@ -329,7 +329,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   template <class KEYTYPE>
   inline void localInvalidate(
       const KEYTYPE& key, const std::shared_ptr<Serializable>& arg = nullptr) {
-    localInvalidate(createKey(key), arg);
+    localInvalidate(CacheableKey::create(key), arg);
   }
 
   virtual void destroy(const std::shared_ptr<CacheableKey>& key,
@@ -343,7 +343,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   template <class KEYTYPE>
   inline void destroy(const KEYTYPE& key,
                       const std::shared_ptr<Serializable>& arg = nullptr) {
-    destroy(createKey(key), arg);
+    destroy(CacheableKey::create(key), arg);
   }
 
   virtual void localDestroy(const std::shared_ptr<CacheableKey>& key,
@@ -356,7 +356,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   template <class KEYTYPE>
   inline void localDestroy(const KEYTYPE& key,
                            const std::shared_ptr<Serializable>& arg = nullptr) {
-    localDestroy(createKey(key), arg);
+    localDestroy(CacheableKey::create(key), arg);
   }
 
   virtual bool remove(const std::shared_ptr<CacheableKey>& key,
@@ -371,7 +371,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   template <class KEYTYPE, class VALUETYPE>
   inline bool remove(const KEYTYPE& key, const VALUETYPE& value,
                      const std::shared_ptr<Serializable>& arg = nullptr) {
-    return remove(createKey(key), createValue(value), arg);
+    return remove(CacheableKey::create(key), Serializable::create(value), arg);
   }
 
   /** Convenience method allowing key to be a const char* */
@@ -379,7 +379,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   inline bool remove(const KEYTYPE& key,
                      const std::shared_ptr<Cacheable>& value,
                      const std::shared_ptr<Serializable>& arg = nullptr) {
-    return remove(createKey(key), value, arg);
+    return remove(CacheableKey::create(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
@@ -387,7 +387,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   inline bool remove(const std::shared_ptr<CacheableKey>& key,
                      const VALUETYPE& value,
                      const std::shared_ptr<Serializable>& arg = nullptr) {
-    return remove(key, createValue(value), arg);
+    return remove(key, Serializable::create(value), arg);
   }
 
   virtual bool removeEx(const std::shared_ptr<CacheableKey>& key,
@@ -401,7 +401,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   template <class KEYTYPE>
   inline bool removeEx(const KEYTYPE& key,
                        const std::shared_ptr<Serializable>& arg = nullptr) {
-    return removeEx(createKey(key), arg);
+    return removeEx(CacheableKey::create(key), arg);
   }
 
   virtual bool localRemove(const std::shared_ptr<CacheableKey>& key,
@@ -416,7 +416,8 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   template <class KEYTYPE, class VALUETYPE>
   inline bool localRemove(const KEYTYPE& key, const VALUETYPE& value,
                           const std::shared_ptr<Serializable>& arg = nullptr) {
-    return localRemove(createKey(key), createValue(value), arg);
+    return localRemove(CacheableKey::create(key), Serializable::create(value),
+                       arg);
   }
 
   /** Convenience method allowing key to be a const char* */
@@ -424,7 +425,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   inline bool localRemove(const KEYTYPE& key,
                           const std::shared_ptr<Cacheable>& value,
                           const std::shared_ptr<Serializable>& arg = nullptr) {
-    return localRemove(createKey(key), value, arg);
+    return localRemove(CacheableKey::create(key), value, arg);
   }
 
   /** Convenience method allowing value to be a const char* */
@@ -432,7 +433,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   inline bool localRemove(const std::shared_ptr<CacheableKey>& key,
                           const VALUETYPE& value,
                           const std::shared_ptr<Serializable>& arg = nullptr) {
-    return localRemove(key, createValue(value), arg);
+    return localRemove(key, Serializable::create(value), arg);
   }
 
   virtual bool localRemoveEx(const std::shared_ptr<CacheableKey>& key,
@@ -446,7 +447,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   template <class KEYTYPE>
   inline bool localRemoveEx(
       const KEYTYPE& key, const std::shared_ptr<Serializable>& arg = nullptr) {
-    return localRemoveEx(createKey(key), arg);
+    return localRemoveEx(CacheableKey::create(key), arg);
   }
 
   /**
@@ -494,7 +495,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
    */
   template <class KEYTYPE>
   inline bool containsValueForKey(const KEYTYPE& key) const {
-    return containsValueForKey(createKey(key));
+    return containsValueForKey(CacheableKey::create(key));
   }
 
   virtual bool containsKey(
@@ -527,7 +528,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
    */
   template <class KEYTYPE>
   inline bool containsKey(const KEYTYPE& key) const {
-    return containsKey(createKey(key));
+    return containsKey(CacheableKey::create(key));
   }
 
   virtual void registerKeys(

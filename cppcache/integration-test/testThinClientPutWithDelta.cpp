@@ -121,7 +121,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
     DeltaEx::toDeltaCount = 0;
     DeltaEx::toDataCount = 0;
 
-    auto keyPtr = createKey(keys[0]);
+    auto keyPtr = CacheableKey::create(keys[0]);
     auto valPtr = std::make_shared<DeltaEx>();
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->put(keyPtr, valPtr);
@@ -157,7 +157,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_DisableDelta)
     } catch (IllegalStateException&) {
       //  Ignore the exception caused by re-registration of DeltaEx.
     }
-    auto keyPtr = createKey(keys[0]);
+    auto keyPtr = CacheableKey::create(keys[0]);
     auto valPtr = std::make_shared<DeltaEx>();
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->put(keyPtr, valPtr);

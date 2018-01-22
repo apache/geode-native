@@ -181,7 +181,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  auto keyPtr = createKey(key);
+  auto keyPtr = CacheableKey::create(key);
 
   if (noKey == false) {  // need to find the key!
     ASSERT(regPtr->containsKey(keyPtr), "Key not found in region.");
@@ -288,7 +288,7 @@ void _verifyIntEntry(const char* name, const char* key, const int val,
   auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
 
-  auto keyPtr = createKey(key);
+  auto keyPtr = CacheableKey::create(key);
 
   // if the region is no ack, then we may need to wait...
   if (!isCreated) {
@@ -498,23 +498,23 @@ void createEntry(const char* name, const char* key, const char* value) {
           value, name);
   fflush(stdout);
   // Create entry, verify entry is correct
- auto keyPtr = createKey(key);
- auto valPtr = CacheableString::create(value);
+  auto keyPtr = CacheableKey::create(key);
+  auto valPtr = CacheableString::create(value);
 
- auto regPtr = getHelper()->getRegion(name);
- ASSERT(regPtr != nullptr, "Region not found.");
+  auto regPtr = getHelper()->getRegion(name);
+  ASSERT(regPtr != nullptr, "Region not found.");
 
- ASSERT(!regPtr->containsKey(keyPtr),
-        "Key should not have been found in region.");
- ASSERT(!regPtr->containsValueForKey(keyPtr),
-        "Value should not have been found in region.");
+  ASSERT(!regPtr->containsKey(keyPtr),
+         "Key should not have been found in region.");
+  ASSERT(!regPtr->containsValueForKey(keyPtr),
+         "Value should not have been found in region.");
 
- // regPtr->create( keyPtr, valPtr );
- regPtr->put(keyPtr, valPtr);
- LOG("Created entry.");
+  // regPtr->create( keyPtr, valPtr );
+  regPtr->put(keyPtr, valPtr);
+  LOG("Created entry.");
 
- verifyEntry(name, key, value);
- LOG("Entry created.");
+  verifyEntry(name, key, value);
+  LOG("Entry created.");
 }
 
 void updateEntry(const char* name, const char* key, const char* value,
@@ -524,14 +524,15 @@ void updateEntry(const char* name, const char* key, const char* value,
           value, name);
   fflush(stdout);
   // Update entry, verify entry is correct
- auto keyPtr = createKey(key);
- auto valPtr = CacheableString::create(value);
+  auto keyPtr = CacheableKey::create(key);
+  auto valPtr = CacheableString::create(value);
 
- auto regPtr = getHelper()->getRegion(name);
- ASSERT(regPtr != nullptr, "Region not found.");
+  auto regPtr = getHelper()->getRegion(name);
+  ASSERT(regPtr != nullptr, "Region not found.");
 
- if (checkKey) {
-   ASSERT(regPtr->containsKey(keyPtr), "Key should have been found in region.");
+  if (checkKey) {
+    ASSERT(regPtr->containsKey(keyPtr),
+           "Key should have been found in region.");
   }
   if (checkVal) {
     ASSERT(regPtr->containsValueForKey(keyPtr),
@@ -592,17 +593,17 @@ void createIntEntry(const char* name, const char* key, const int value,
   fflush(stdout);
 
   // Create entry, verify entry is correct
- auto keyPtr = createKey(key);
- auto valPtr = CacheableInt32::create(value);
+  auto keyPtr = CacheableKey::create(key);
+  auto valPtr = CacheableInt32::create(value);
 
- auto regPtr = getHelper()->getRegion(name);
- ASSERT(regPtr != nullptr, "Region not found.");
+  auto regPtr = getHelper()->getRegion(name);
+  ASSERT(regPtr != nullptr, "Region not found.");
 
- if (onlyCreate) {
-   ASSERT(!regPtr->containsKey(keyPtr),
-          "Key should not have been found in region.");
-   ASSERT(!regPtr->containsValueForKey(keyPtr),
-          "Value should not have been found in region.");
+  if (onlyCreate) {
+    ASSERT(!regPtr->containsKey(keyPtr),
+           "Key should not have been found in region.");
+    ASSERT(!regPtr->containsValueForKey(keyPtr),
+           "Value should not have been found in region.");
   }
 
   regPtr->put(keyPtr, valPtr);
