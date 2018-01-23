@@ -56,8 +56,7 @@ typedef PdxSerializable* (*TypeFactoryMethodPdx)();
  * This abstract base class is the superclass of all user objects
  * in the cache that can be serialized.
  */
-class _GEODE_EXPORT Serializable
-    : public std::enable_shared_from_this<Serializable> {
+class _GEODE_EXPORT Serializable {
  public:
   /**
    *@brief serialize this object

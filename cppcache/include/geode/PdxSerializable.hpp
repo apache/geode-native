@@ -36,7 +36,9 @@ class PdxWriter;
 class DataInput;
 class DataOutput;
 
-class _GEODE_EXPORT PdxSerializable : public CacheableKey {
+class _GEODE_EXPORT PdxSerializable
+    : public CacheableKey,
+      public std::enable_shared_from_this<PdxSerializable> {
  public:
   PdxSerializable();
   virtual ~PdxSerializable();

@@ -52,10 +52,6 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
   int32_t field1;
   int8_t field2;
   std::shared_ptr<CacheableBytes> valueData;
-  std::shared_ptr<DeltaPSTObject> shared_from_this() {
-    return std::static_pointer_cast<DeltaPSTObject>(
-        Serializable::shared_from_this());
-  }
 
  public:
   DeltaPSTObject() : Delta(nullptr), timestamp(0), valueData(nullptr) {}
