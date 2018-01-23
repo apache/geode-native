@@ -328,14 +328,13 @@ void ThinClientPoolDM::startBackgroundThreads() {
   auto idle = getIdleTimeout();
   auto load = getLoadConditioningInterval();
 
-  // TODO GEODE-3136 - consider using 0 rather than -1.
-  if (load.count() >= 0) {
-    if (load < idle || idle.count() < 0) {
+  if (load > std::chrono::milliseconds::zero()) {
+    if (load < idle || idle <= std::chrono::milliseconds::zero()) {
       idle = load;
     }
   }
 
-  if (idle.count() != -1) {
+  if (idle > std::chrono::milliseconds::zero()) {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Starting manageConnections "
         "task");
@@ -360,11 +359,11 @@ void ThinClientPoolDM::startBackgroundThreads() {
 
   LOGDEBUG(
       "ThinClientPoolDM::startBackgroundThreads: Starting pool stat sampler");
-  if (m_PoolStatsSampler == nullptr && getStatisticInterval().count() > -1 &&
+  if (m_PoolStatsSampler == nullptr &&
+      getStatisticInterval() > std::chrono::milliseconds::zero() &&
       props.statisticsEnabled()) {
-    m_PoolStatsSampler =
-        new PoolStatsSampler(getStatisticInterval().count() / 1000 + 1,
-                             m_connManager.getCacheImpl(), this);
+    m_PoolStatsSampler = new PoolStatsSampler(
+        getStatisticInterval(), m_connManager.getCacheImpl(), this);
     m_PoolStatsSampler->start();
   }
 
@@ -2176,9 +2175,8 @@ void ThinClientPoolDM::setThreadLocalConnection(TcrConnection* conn) {
   m_manager->addStickyConnection(conn);
 }
 
-bool ThinClientPoolDM::hasExpired(TcrConnection* conn) {
-  const auto& load = getLoadConditioningInterval();
-  return conn->hasExpired(load);
+inline bool ThinClientPoolDM::hasExpired(TcrConnection* conn) {
+  return conn->hasExpired(getLoadConditioningInterval());
 }
 
 bool ThinClientPoolDM::canItBeDeleted(TcrConnection* conn) {
@@ -2186,9 +2184,8 @@ bool ThinClientPoolDM::canItBeDeleted(TcrConnection* conn) {
   auto idle = getIdleTimeout();
   int min = getMinConnections();
 
-  // TODO GEODE-3136 reconsider use of -1
-  if (load.count() >= 0) {
-    if (load < idle || idle.count() < 0) {
+  if (load > std::chrono::milliseconds::zero()) {
+    if (load < idle || idle <= std::chrono::milliseconds::zero()) {
       idle = load;
     }
   }

@@ -2811,11 +2811,11 @@ ExpirationAction::Action LocalRegion::adjustRegionExpiryAction(
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustRegionExpiryAction);
 
  auto attrs = m_regionAttributes;
-  bool hadExpiry = (getRegionExpiryDuration().count() != 0);
-  if (!hadExpiry) {
-    throw IllegalStateException(
-        "Cannot change region ExpirationAction for region created without "
-        "region expiry.");
+ bool hadExpiry = (getRegionExpiryDuration() > std::chrono::seconds::zero());
+ if (!hadExpiry) {
+   throw IllegalStateException(
+       "Cannot change region ExpirationAction for region created without "
+       "region expiry.");
   }
   ExpirationAction::Action oldValue = getRegionExpiryAction();
 
@@ -2831,12 +2831,12 @@ ExpirationAction::Action LocalRegion::adjustEntryExpiryAction(
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustEntryExpiryAction);
 
  auto attrs = m_regionAttributes;
-  bool hadExpiry = (getEntryExpiryDuration().count() != 0);
-  if (!hadExpiry) {
-    throw IllegalStateException(
-        "Cannot change entry ExpirationAction for region created without "
-        "entry "
-        "expiry.");
+ bool hadExpiry = (getEntryExpiryDuration() > std::chrono::seconds::zero());
+ if (!hadExpiry) {
+   throw IllegalStateException(
+       "Cannot change entry ExpirationAction for region created without "
+       "entry "
+       "expiry.");
   }
   ExpirationAction::Action oldValue = getEntryExpirationAction();
 
@@ -2850,7 +2850,7 @@ std::chrono::seconds LocalRegion::adjustRegionExpiryDuration(
     const std::chrono::seconds& duration) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustRegionExpiryDuration);
 
-  bool hadExpiry = (getEntryExpiryDuration().count() != 0);
+  bool hadExpiry = (getEntryExpiryDuration() > std::chrono::seconds::zero());
   if (!hadExpiry) {
     throw IllegalStateException(
         "Cannot change region  expiration duration for region created "
@@ -2869,7 +2869,7 @@ std::chrono::seconds LocalRegion::adjustEntryExpiryDuration(
     const std::chrono::seconds& duration) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustEntryExpiryDuration);
 
-  bool hadExpiry = (getEntryExpiryDuration().count() != 0);
+  bool hadExpiry = (getEntryExpiryDuration() > std::chrono::seconds::zero());
   if (!hadExpiry) {
     throw IllegalStateException(
         "Cannot change entry expiration duration for region created without "
@@ -2922,7 +2922,7 @@ bool LocalRegion::isEntryIdletimeEnabled() {
 }
 
 ExpirationAction::Action LocalRegion::getEntryExpirationAction() const {
-  if (m_regionAttributes->getEntryTimeToLive().count() > 0) {
+  if (m_regionAttributes->getEntryTimeToLive() > std::chrono::seconds::zero()) {
     return m_regionAttributes->getEntryTimeToLiveAction();
   } else {
     return m_regionAttributes->getEntryIdleTimeoutAction();

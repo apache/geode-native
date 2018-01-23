@@ -52,7 +52,7 @@ const std::chrono::milliseconds
     PoolFactory::DEFAULT_UPDATE_LOCATOR_LIST_INTERVAL = std::chrono::seconds{5};
 
 const std::chrono::milliseconds PoolFactory::DEFAULT_STATISTIC_INTERVAL =
-    std::chrono::milliseconds{-1};
+    std::chrono::milliseconds::zero();
 
 const std::chrono::milliseconds
     PoolFactory::DEFAULT_SUBSCRIPTION_MESSAGE_TRACKING_TIMEOUT =
@@ -73,9 +73,8 @@ PoolFactory::~PoolFactory() {}
 
 PoolFactory& PoolFactory::setFreeConnectionTimeout(
     std::chrono::milliseconds connectionTimeout) {
-  // TODO GEODE-3136 - Is this true?
   if (connectionTimeout <= std::chrono::milliseconds::zero()) {
-    throw std::invalid_argument("connectionTimeout must greater than 0.");
+    throw IllegalArgumentException("connectionTimeout must greater than 0.");
   }
 
   m_attrs->setFreeConnectionTimeout(connectionTimeout);
@@ -84,10 +83,9 @@ PoolFactory& PoolFactory::setFreeConnectionTimeout(
 
 PoolFactory& PoolFactory::setLoadConditioningInterval(
     std::chrono::milliseconds loadConditioningInterval) {
-  // TODO GEODE-3136 - Is this true?
-  if (loadConditioningInterval <= std::chrono::milliseconds::zero()) {
-    throw std::invalid_argument(
-        "loadConditioningInterval must greater than 0.");
+  if (loadConditioningInterval < std::chrono::milliseconds::zero()) {
+    throw IllegalArgumentException(
+        "loadConditioningInterval must greater than or equlal to 0.");
   }
 
   m_attrs->setLoadConditioningInterval(loadConditioningInterval);
@@ -99,15 +97,15 @@ PoolFactory& PoolFactory::setSocketBufferSize(int bufferSize) {
   return *this;
 }
 
-PoolFactory& PoolFactory::setThreadLocalConnections(bool threadLocalConnections) {
+PoolFactory& PoolFactory::setThreadLocalConnections(
+    bool threadLocalConnections) {
   m_attrs->setThreadLocalConnectionSetting(threadLocalConnections);
   return *this;
 }
 
 PoolFactory& PoolFactory::setReadTimeout(std::chrono::milliseconds timeout) {
-  // TODO GEODE-3136 - Is this true?
   if (timeout <= std::chrono::milliseconds::zero()) {
-    throw std::invalid_argument("timeout must greater than 0.");
+    throw IllegalArgumentException("timeout must greater than 0.");
   }
 
   m_attrs->setReadTimeout(timeout);
@@ -124,7 +122,13 @@ PoolFactory& PoolFactory::setMaxConnections(int maxConnections) {
   return *this;
 }
 
-PoolFactory& PoolFactory::setIdleTimeout(std::chrono::milliseconds idleTimeout) {
+PoolFactory& PoolFactory::setIdleTimeout(
+    std::chrono::milliseconds idleTimeout) {
+  if (idleTimeout < std::chrono::milliseconds::zero()) {
+    throw IllegalArgumentException(
+        "idleTimeout must greater than or equlal to 0.");
+  }
+
   m_attrs->setIdleTimeout(idleTimeout);
   return *this;
 }
@@ -134,10 +138,10 @@ PoolFactory& PoolFactory::setRetryAttempts(int retryAttempts) {
   return *this;
 }
 
-PoolFactory& PoolFactory::setPingInterval(std::chrono::milliseconds pingInterval) {
-  // TODO GEODE-3136 - Is this true?
+PoolFactory& PoolFactory::setPingInterval(
+    std::chrono::milliseconds pingInterval) {
   if (pingInterval <= std::chrono::milliseconds::zero()) {
-    throw std::invalid_argument("timeout must greater than 0.");
+    throw IllegalArgumentException("timeout must greater than 0.");
   }
 
   m_attrs->setPingInterval(pingInterval);
@@ -146,9 +150,8 @@ PoolFactory& PoolFactory::setPingInterval(std::chrono::milliseconds pingInterval
 
 PoolFactory& PoolFactory::setUpdateLocatorListInterval(
     const std::chrono::milliseconds updateLocatorListInterval) {
-  // TODO GEODE-3136 - Is this true?
   if (updateLocatorListInterval < std::chrono::milliseconds::zero()) {
-    throw std::invalid_argument("timeout must be positive.");
+    throw IllegalArgumentException("timeout must be positive.");
   }
 
   m_attrs->setUpdateLocatorListInterval(updateLocatorListInterval);
@@ -157,9 +160,8 @@ PoolFactory& PoolFactory::setUpdateLocatorListInterval(
 
 PoolFactory& PoolFactory::setStatisticInterval(
     std::chrono::milliseconds statisticInterval) {
-  // TODO GEODE-3136 - Consider 0 to disable
-  if (statisticInterval.count() <= -1) {
-    throw std::invalid_argument("timeout must greater than -1.");
+  if (statisticInterval < std::chrono::milliseconds::zero()) {
+    throw IllegalArgumentException("timeout must greater than or equal to 0.");
   }
 
   m_attrs->setStatisticInterval(statisticInterval);
@@ -198,9 +200,8 @@ PoolFactory& PoolFactory::setSubscriptionRedundancy(int redundancy) {
 
 PoolFactory& PoolFactory::setSubscriptionMessageTrackingTimeout(
     std::chrono::milliseconds messageTrackingTimeout) {
-  // TODO GEODE-3136 - Is this true?
   if (messageTrackingTimeout <= std::chrono::milliseconds::zero()) {
-    throw std::invalid_argument("timeout must greater than 0.");
+    throw IllegalArgumentException("timeout must greater than 0.");
   }
 
   m_attrs->setSubscriptionMessageTrackingTimeout(messageTrackingTimeout);
@@ -209,16 +210,16 @@ PoolFactory& PoolFactory::setSubscriptionMessageTrackingTimeout(
 
 PoolFactory& PoolFactory::setSubscriptionAckInterval(
     std::chrono::milliseconds ackInterval) {
-  // TODO GEODE-3136 - Is this true?
   if (ackInterval <= std::chrono::milliseconds::zero()) {
-    throw std::invalid_argument("timeout must greater than 0.");
+    throw IllegalArgumentException("timeout must greater than 0.");
   }
 
   m_attrs->setSubscriptionAckInterval(ackInterval);
   return *this;
 }
 
-PoolFactory& PoolFactory::setMultiuserAuthentication(bool multiuserAuthentication) {
+PoolFactory& PoolFactory::setMultiuserAuthentication(
+    bool multiuserAuthentication) {
   m_attrs->setMultiuserSecureModeEnabled(multiuserAuthentication);
   return *this;
 }
@@ -241,7 +242,7 @@ std::shared_ptr<Pool> PoolFactory::create(std::string name) {
     // Create a clone of Attr;
     auto copyAttrs = m_attrs->clone();
 
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(&m_cache);
+    auto cacheImpl = CacheRegionHelper::getCacheImpl(&m_cache);
 
     if (m_cache.isClosed()) {
       throw CacheClosedException("Cache is closed");
@@ -268,8 +269,7 @@ std::shared_ptr<Pool> PoolFactory::create(std::string name) {
     }
     if (!copyAttrs->getSubscriptionEnabled() &&
         copyAttrs->getSubscriptionRedundancy() == 0 && !tccm.isDurable()) {
-      if (copyAttrs
-              ->getThreadLocalConnectionSetting() /*&& !copyAttrs->getPRSingleHopEnabled()*/) {
+      if (copyAttrs->getThreadLocalConnectionSetting()) {
         // TODO: what should we do for sticky connections
         poolDM = std::make_shared<ThinClientPoolStickyDM>(name.c_str(),
                                                           copyAttrs, tccm);
@@ -280,8 +280,7 @@ std::shared_ptr<Pool> PoolFactory::create(std::string name) {
       }
     } else {
       LOGDEBUG("ThinClientPoolHADM created ");
-      if (copyAttrs
-              ->getThreadLocalConnectionSetting() /*&& !copyAttrs->getPRSingleHopEnabled()*/) {
+      if (copyAttrs->getThreadLocalConnectionSetting()) {
         poolDM = std::make_shared<ThinClientPoolStickyHADM>(name.c_str(),
                                                             copyAttrs, tccm);
       } else {

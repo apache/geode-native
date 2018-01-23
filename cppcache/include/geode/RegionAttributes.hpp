@@ -342,12 +342,13 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
   void setConcurrencyChecksEnabled(bool enable);
 
   inline bool getEntryExpiryEnabled() const {
-    return (m_entryTimeToLive.count() != 0 || m_entryIdleTimeout.count() != 0);
+    return (m_entryTimeToLive > std::chrono::seconds::zero() ||
+            m_entryIdleTimeout > std::chrono::seconds::zero());
   }
 
   inline bool getRegionExpiryEnabled() const {
-    return (m_regionTimeToLive.count() != 0 ||
-            m_regionIdleTimeout.count() != 0);
+    return (m_regionTimeToLive > std::chrono::seconds::zero() ||
+            m_regionIdleTimeout > std::chrono::seconds::zero());
   }
 
   // will be created by the factory

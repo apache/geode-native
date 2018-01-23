@@ -45,7 +45,7 @@ using client::AdminRegion;
 class StatisticsManager;
 class _GEODE_EXPORT PoolStatsSampler : public ACE_Task_Base {
  public:
-  PoolStatsSampler(int64_t sampleRate, CacheImpl* cache,
+  PoolStatsSampler(std::chrono::milliseconds sampleRate, CacheImpl* cache,
                    ThinClientPoolDM* distMan);
   void start();
   void stop();
@@ -60,7 +60,7 @@ class _GEODE_EXPORT PoolStatsSampler : public ACE_Task_Base {
   void putStatsInAdminRegion();
   volatile bool m_running;
   volatile bool m_stopRequested;
-  int64_t m_sampleRate;
+  std::chrono::milliseconds m_sampleRate;
   std::shared_ptr<AdminRegion> m_adminRegion;
   ThinClientPoolDM* m_distMan;
   ACE_Recursive_Thread_Mutex m_lock;

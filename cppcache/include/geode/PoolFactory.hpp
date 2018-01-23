@@ -134,7 +134,8 @@ class _GEODE_EXPORT PoolFactory {
 
   /**
    * The default frequency that client statistics are sent to the server.
-   * <p>Current value: <code>-1</code> (disabled).
+   * <p>Current value: <code>std::chrono::milliseconds::zero()</code>
+   * (disabled).
    */
   static const std::chrono::milliseconds DEFAULT_STATISTIC_INTERVAL;
 
@@ -204,23 +205,25 @@ class _GEODE_EXPORT PoolFactory {
    * @param connectionTimeout is the connection timeout
    *
    * @return a reference to <code>this</code>
-   * @throws std::invalid_argument if <code>connectionTimeout</code>
-   * is less than or equal to <code>0</code>.
+   * @throws IllegalArgumentException if <code>connectionTimeout</code>
+   * is less than or equal to <code>std::chrono::milliseconds::zero()</code>.
    */
-  PoolFactory& setFreeConnectionTimeout(std::chrono::milliseconds connectionTimeout);
+  PoolFactory& setFreeConnectionTimeout(
+      std::chrono::milliseconds connectionTimeout);
 
   /**
    * Sets the load conditioning interval for this pool.
    * This interval controls how frequently the pool will check to see if
    * a connection to a given server should be moved to a different
    * server to improve the load balance.
-   * <p>A value of <code>-1</code> disables load conditioning
+   * <p>A value of <code>std::chrono::milliseconds::zero()</code> disables load
+   * conditioning.
    *
    * @param loadConditioningInterval is the connection lifetime
    *
    * @return a reference to <code>this</code>
-   * @throws std::invalid_argument if <code>connectionLifetime</code>
-   * is less than <code>-1</code>.
+   * @throws IllegalArgumentException if <code>connectionLifetime</code>
+   * is less than <code>std::chrono::milliseconds::zero()</code>.
    */
   PoolFactory& setLoadConditioningInterval(
       std::chrono::milliseconds loadConditioningInterval);
@@ -267,8 +270,8 @@ class _GEODE_EXPORT PoolFactory {
    * @param timeout duration to wait for a response from a
    * server
    * @return a reference to <code>this</code>
-   * @throws std::invalid_argument if <code>timeout</code>
-   * is less than or equal to <code>0</code>.
+   * @throws IllegalArgumentException if <code>timeout</code>
+   * is less than or equal to <code>std::chrono::milliseconds::zero()</code>.
    */
   PoolFactory& setReadTimeout(std::chrono::milliseconds timeout);
 
@@ -313,8 +316,8 @@ class _GEODE_EXPORT PoolFactory {
    *
    * @param idleTimeout is the duration that an idle connection
    * should live no less than before expiring, actual time may be longer
-   * depending on clock resolution. A duration less than 0 indicates
-   * that connections should never expire.
+   * depending on clock resolution. A duration std::chrono::milliseconds::zero()
+   * indicates that connections should never expire.
    * @return a reference to <code>this</code>
    */
   PoolFactory& setIdleTimeout(std::chrono::milliseconds);
@@ -343,7 +346,7 @@ class _GEODE_EXPORT PoolFactory {
    *
    * @param pingInterval is the amount of time  between pings.
    * @return a reference to <code>this</code>
-   * @throws std::invalid_argument if <code>pingInterval</code>
+   * @throws IllegalArgumentException if <code>pingInterval</code>
    * is less than <code>0</code>.
    *
    * @see CacheServer#setMaximumTimeBetweenPings(int)
@@ -352,7 +355,7 @@ class _GEODE_EXPORT PoolFactory {
 
   /**
    * The frequency with which client updates the locator list. To disable this
-   * set its value to 0.
+   * set its value to std::chrono::milliseconds::zero().
    *
    * @param updateLocatorListInterval is the amount of time
    * between checking locator list at locator.
@@ -364,17 +367,18 @@ class _GEODE_EXPORT PoolFactory {
   /**
    * The frequency with which the client statistics must be sent to the server.
    * Doing this allows <code>GFMon</code> to monitor clients.
-   * <p>A value of <code>-1</code> disables the sending of client statistics
-   * to the server.
+   * <p>A value of <code>std::chrono::milliseconds::zero()</code> disables the
+   * sending of client statistics to the server.
    *
    * @param statisticInterval is the amount of time between
    * sends of client statistics to the server.
    *
    * @return a reference to <code>this</code>
-   * @throws std::invalid_argument if <code>statisticInterval</code>
-   * is less than <code>-1</code>.
+   * @throws IllegalArgumentException if <code>statisticInterval</code>
+   * is less than <code>std::chrono::milliseconds::zero()</code>.
    */
-  PoolFactory& setStatisticInterval(std::chrono::milliseconds statisticInterval);
+  PoolFactory& setStatisticInterval(
+      std::chrono::milliseconds statisticInterval);
 
   /**
    * Configures the group which contains all the servers that this pool connects
@@ -456,7 +460,7 @@ class _GEODE_EXPORT PoolFactory {
    * @param messageTrackingTimeout is the duration to set the timeout to.
    * @return a reference to <code>this</code>
    *
-   * @throws std::invalid_argument if <code>messageTrackingTimeout</code>
+   * @throws IllegalArgumentException if <code>messageTrackingTimeout</code>
    * is less than or equal to <code>0</code>.
 
    */
@@ -470,11 +474,12 @@ class _GEODE_EXPORT PoolFactory {
    * @param ackInterval is the duration to wait before sending  event
    * acknowledgements.
    *
-   * @throws std::invalid_argument if <code>ackInterval</code>
+   * @throws IllegalArgumentException if <code>ackInterval</code>
    * is less than or equal to <code>0</code>.
    * @return a reference to <code>this</code>
    */
-  PoolFactory& setSubscriptionAckInterval(std::chrono::milliseconds ackInterval);
+  PoolFactory& setSubscriptionAckInterval(
+      std::chrono::milliseconds ackInterval);
 
   /**
    * Sets whether Pool is in multi user secure mode.

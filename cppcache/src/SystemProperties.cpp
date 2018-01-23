@@ -91,8 +91,8 @@ const char DefaultDurableClientId[] = "";
 constexpr auto DefaultDurableTimeout = std::chrono::seconds(300);
 
 constexpr auto DefaultConnectTimeout = std::chrono::seconds(59);
-constexpr auto DefaultConnectWaitTimeout = std::chrono::seconds(0);
-constexpr auto DefaultBucketWaitTimeout = std::chrono::seconds(0);
+constexpr auto DefaultConnectWaitTimeout = std::chrono::seconds::zero();
+constexpr auto DefaultBucketWaitTimeout = std::chrono::seconds::zero();
 
 constexpr auto DefaultSamplingInterval = std::chrono::seconds(1);
 const bool DefaultSamplingEnabled = true;
