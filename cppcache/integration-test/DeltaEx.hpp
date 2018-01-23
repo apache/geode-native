@@ -31,11 +31,6 @@
 #include "CacheHelper.hpp"
 
 class DeltaEx : public Cacheable, public Delta {
- private:
-  std::shared_ptr<DeltaEx> shared_from_this() {
-    return std::static_pointer_cast<DeltaEx>(Serializable::shared_from_this());
-  }
-
  public:
   int counter;
   bool isDelta;
@@ -87,12 +82,6 @@ class DeltaEx : public Cacheable, public Delta {
 };
 
 class PdxDeltaEx : public PdxSerializable, public Delta {
- private:
-  std::shared_ptr<PdxDeltaEx> shared_from_this() {
-    return std::static_pointer_cast<PdxDeltaEx>(
-        Serializable::shared_from_this());
-  }
-
  public:
   int m_counter;
   bool m_isDelta;

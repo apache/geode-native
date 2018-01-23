@@ -20,17 +20,19 @@
 #ifndef GEODE_PDXTYPE_H_
 #define GEODE_PDXTYPE_H_
 
-#include <geode/Serializable.hpp>
-#include "PdxFieldType.hpp"
-#include <geode/CacheableBuiltins.hpp>
 #include <map>
 #include <vector>
 #include <list>
 #include <string>
+
 #include <ace/ACE.h>
 #include <ace/Recursive_Thread_Mutex.h>
-#include "ReadWriteLock.hpp"
 
+#include <geode/Serializable.hpp>
+#include <geode/CacheableBuiltins.hpp>
+
+#include "PdxFieldType.hpp"
+#include "ReadWriteLock.hpp"
 #include "NonCopyable.hpp"
 
 namespace apache {
@@ -42,6 +44,7 @@ class PdxType;
 class PdxTypeRegistry;
 
 class PdxType : public Serializable,
+                public std::enable_shared_from_this<PdxType>,
                 private NonCopyable,
                 private NonAssignable {
  private:
@@ -95,10 +98,6 @@ class PdxType : public Serializable,
       std::shared_ptr<PdxType> otherType);
   std::shared_ptr<PdxType> isRemoteTypeContains(
       std::shared_ptr<PdxType> localType);
-
-  std::shared_ptr<PdxType> shared_from_this() {
-    return std::static_pointer_cast<PdxType>(Serializable::shared_from_this());
-  }
 
  public:
   PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr,

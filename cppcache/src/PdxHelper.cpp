@@ -14,12 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * PdxHelper.cpp
- *
- *  Created on: Dec 13, 2011
- *      Author: npatel
- */
 
 #include <geode/Cache.hpp>
 #include <geode/DataInput.hpp>
@@ -53,10 +47,8 @@ PdxHelper::~PdxHelper() {}
 
 void PdxHelper::serializePdx(DataOutput& output,
                              const PdxSerializable& pdxObject) {
-  serializePdx(
-      output,
-      std::static_pointer_cast<PdxSerializable>(
-          std::const_pointer_cast<Serializable>(pdxObject.shared_from_this())));
+  serializePdx(output, std::const_pointer_cast<PdxSerializable>(
+                           pdxObject.shared_from_this()));
 }
 
 void PdxHelper::serializePdx(

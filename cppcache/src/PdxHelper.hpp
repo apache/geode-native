@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PDXHELPER_H_
-#define GEODE_PDXHELPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * PdxHelper.hpp
- *
- *  Created on: Dec 13, 2011
- *      Author: npatel
- */
+
+#pragma once
+
+#ifndef GEODE_PDXHELPER_H_
+#define GEODE_PDXHELPER_H_
 
 #include <geode/DataOutput.hpp>
+
 #include "EnumInfo.hpp"
 #include "PdxType.hpp"
 #include "CacheImpl.hpp"
