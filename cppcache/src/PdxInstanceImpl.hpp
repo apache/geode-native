@@ -68,30 +68,30 @@ class _GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   virtual std::string getStringField(
       const std::string& fieldName) const override;
 
-  virtual void getField(const std::string& fieldname, bool** value,
-                        int32_t& length) const override;
+  virtual std::vector<bool> getBooleanArrayField(
+      const std::string& fieldname) const override;
 
-  virtual void getField(const std::string& fieldname, int8_t** value,
-                        int32_t& length) const override;
+  virtual std::vector<int8_t> getByteArrayField(
+      const std::string& fieldname) const override;
 
-  virtual void getField(const std::string& fieldname, int16_t** value,
-                        int32_t& length) const override;
+  virtual std::vector<int16_t> getShortArrayField(
+      const std::string& fieldname) const override;
 
-  virtual void getField(const std::string& fieldname, int32_t** value,
-                        int32_t& length) const override;
+  virtual std::vector<int32_t> getIntArrayField(
+      const std::string& fieldname) const override;
 
-  virtual void getField(const std::string& fieldname, int64_t** value,
-                        int32_t& length) const override;
+  virtual std::vector<int64_t> getLongArrayField(
+      const std::string& fieldname) const override;
 
-  virtual void getField(const std::string& fieldname, float** value,
-                        int32_t& length) const override;
+  virtual std::vector<float> getFloatArrayField(
+      const std::string& fieldname) const override;
 
-  virtual void getField(const std::string& fieldname, double** value,
-                        int32_t& length) const override;
+  virtual std::vector<double> getDoubleArrayField(
+      const std::string& fieldname) const override;
 
   // charArray
-  virtual void getField(const std::string& fieldName, char16_t** value,
-                        int32_t& length) const override;
+  virtual std::vector<char16_t> getCharArrayField(
+      const std::string& fieldName) const override;
 
   virtual std::vector<std::string> getStringArrayField(
       const std::string& fieldname) const override;
@@ -132,32 +132,32 @@ class _GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   virtual void setField(const std::string& fieldName,
                         std::shared_ptr<CacheableDate> value) override;
 
-  virtual void setField(const std::string& fieldName, bool* value,
-                        int32_t length) override;
+  virtual void setField(const std::string& fieldName,
+                        const std::vector<bool>& value) override;
 
-  virtual void setField(const std::string& fieldName, int8_t* value,
-                        int32_t length) override;
+  virtual void setField(const std::string& fieldName,
+                        std::vector<int8_t> value) override;
 
-  virtual void setField(const std::string& fieldName, int16_t* value,
-                        int32_t length) override;
+  virtual void setField(const std::string& fieldName,
+                        const std::vector<int16_t>& value) override;
 
-  virtual void setField(const std::string& fieldName, int32_t* value,
-                        int32_t length) override;
+  virtual void setField(const std::string& fieldName,
+                        const std::vector<int32_t>& value) override;
 
-  virtual void setField(const std::string& fieldName, int64_t* value,
-                        int32_t length) override;
+  virtual void setField(const std::string& fieldName,
+                        const std::vector<int64_t>& value) override;
 
-  virtual void setField(const std::string& fieldName, float* value,
-                        int32_t length) override;
+  virtual void setField(const std::string& fieldName,
+                        const std::vector<float>& value) override;
 
-  virtual void setField(const std::string& fieldName, double* value,
-                        int32_t length) override;
+  virtual void setField(const std::string& fieldName,
+                        const std::vector<double>& value) override;
 
   virtual void setField(const std::string& fieldName,
                         const std::string& value) override;
 
-  virtual void setField(const std::string& fieldName, char16_t* value,
-                        int32_t length) override;
+  virtual void setField(const std::string& fieldName,
+                        const std::vector<char16_t>& value) override;
 
   virtual void setField(const std::string& fieldName, std::string* value,
                         int32_t length) override;

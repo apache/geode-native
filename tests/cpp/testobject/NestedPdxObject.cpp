@@ -88,7 +88,7 @@ void ParentPdx::toData(PdxWriter& pw) const {
   pw.markIdentityField("m_childPdx");
 
   pw.writeChar("m_char", m_char);
-  pw.writeCharArray("m_charArray", m_charArray, 2);
+  pw.writeCharArray("m_charArray", m_charArray);
 
   LOGDEBUG("ParentPdx::toData() Done......");
 }
@@ -106,7 +106,7 @@ void ParentPdx::fromData(PdxReader& pr) {
   LOGINFO("ParentPdx::fromData() start3...");
 
   m_char = pr.readChar("m_char");
-  m_charArray = pr.readCharArray("m_charArray", m_charArrayLen);
+  m_charArray = pr.readCharArray("m_charArray");
 
   LOGINFO("ParentPdx::fromData() end...");
 }

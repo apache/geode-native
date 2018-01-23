@@ -98,28 +98,28 @@ class _GEODE_EXPORT PdxInstanceFactoryImpl
       const std::string& fieldName, std::shared_ptr<Cacheable> value) override;
 
   virtual std::shared_ptr<PdxInstanceFactory> writeBooleanArray(
-      const std::string& fieldName, bool* value, int32_t length) override;
+      const std::string& fieldName, const std::vector<bool>& value) override;
 
   virtual std::shared_ptr<PdxInstanceFactory> writeCharArray(
-      const std::string& fieldName, char16_t* value, int32_t length) override;
+      const std::string& fieldName, const std::vector<char16_t>& value) override;
 
   virtual std::shared_ptr<PdxInstanceFactory> writeByteArray(
-      const std::string& fieldName, int8_t* value, int32_t length) override;
+      const std::string& fieldName, const std::vector<int8_t>& value) override;
 
   virtual std::shared_ptr<PdxInstanceFactory> writeShortArray(
-      const std::string& fieldName, int16_t* value, int32_t length) override;
+      const std::string& fieldName, const std::vector<int16_t>& value) override;
 
   virtual std::shared_ptr<PdxInstanceFactory> writeIntArray(
-      const std::string& fieldName, int32_t* value, int32_t length) override;
+      const std::string& fieldName, const std::vector<int32_t>& value) override;
 
   virtual std::shared_ptr<PdxInstanceFactory> writeLongArray(
-      const std::string& fieldName, int64_t* value, int32_t length) override;
+      const std::string& fieldName, const std::vector<int64_t>& value) override;
 
   virtual std::shared_ptr<PdxInstanceFactory> writeFloatArray(
-      const std::string& fieldName, float* value, int32_t length) override;
+      const std::string& fieldName, const std::vector<float>& value) override;
 
   virtual std::shared_ptr<PdxInstanceFactory> writeDoubleArray(
-      const std::string& fieldName, double* value, int32_t length) override;
+      const std::string& fieldName, const std::vector<double>& value) override;
 
   virtual std::shared_ptr<PdxInstanceFactory> writeStringArray(
       const std::string& fieldName,

@@ -135,7 +135,7 @@ void PdxVersioned2::init(const char* key) {
   m_float = 23324.324f;
   m_double = 3243298498.00;
   m_string = std::string("PdxVersioned ") + key;
-  m_boolArray = new bool[3];
+  m_boolArray = std::vector<bool>(3);
   m_boolArray[0] = true;
   m_boolArray[1] = false;
   m_boolArray[2] = true;
@@ -143,54 +143,54 @@ void PdxVersioned2::init(const char* key) {
     m_boolArray[i] = true;
   };*/
 
-  m_byteArray = new int8_t[2];
+  m_byteArray = std::vector<int8_t>(2);
   m_byteArray[0] = 0x34;
   m_byteArray[1] = 0x64;
 
-  m_sbyteArray = new int8_t[2];
+  m_sbyteArray = std::vector<int8_t>(2);
   m_sbyteArray[0] = 0x34;
   m_sbyteArray[1] = 0x64;
 
-  m_charArray = new char16_t[2];
+  m_charArray = std::vector<char16_t>(2);
   m_charArray[0] = L'c';
   m_charArray[1] = L'v';
 
   int64_t d = 1310447869154L;
   m_date = CacheableDate::create(CacheableDate::duration(d));
 
-  m_int16Array = new int16_t[2];
+  m_int16Array = std::vector<int16_t>(2);
   m_int16Array[0] = 0x2332;
   m_int16Array[1] = 0x4545;
 
-  m_uint16Array = new int16_t[2];
+  m_uint16Array = std::vector<int16_t>(2);
   m_uint16Array[0] = 0x3243;
   m_uint16Array[1] = 0x3232;
 
-  m_int32Array = new int32_t[4];
+  m_int32Array = std::vector<int32_t>(4);
   m_int32Array[0] = 23;
   m_int32Array[1] = 676868;
   m_int32Array[2] = 34343;
   m_int32Array[3] = 2323;
 
-  m_uint32Array = new int32_t[4];
+  m_uint32Array = std::vector<int32_t>(4);
   m_uint32Array[0] = 435;
   m_uint32Array[1] = 234324;
   m_uint32Array[2] = 324324;
   m_uint32Array[3] = 23432432;
 
-  m_longArray = new int64_t[2];
+  m_longArray = std::vector<int64_t>(2);
   m_longArray[0] = 324324L;
   m_longArray[1] = 23434545L;
 
-  m_ulongArray = new int64_t[2];
+  m_ulongArray = std::vector<int64_t>(2);
   m_ulongArray[0] = 3245435;
   m_ulongArray[1] = 3425435;
 
-  m_floatArray = new float[2];
+  m_floatArray = std::vector<float>(2);
   m_floatArray[0] = 232.565f;
   m_floatArray[1] = 2343254.67f;
 
-  m_doubleArray = new double[2];
+  m_doubleArray = std::vector<double>(2);
   m_doubleArray[0] = 23423432;
   m_doubleArray[1] = 4324235435.00;
 
@@ -214,22 +214,22 @@ void PdxVersioned2::init(const char* key) {
   m_map->emplace(CacheableInt32::create(1), CacheableInt32::create(1));
   m_map->emplace(CacheableInt32::create(2), CacheableInt32::create(2));
   m_pdxEnum = CacheableEnum::create("pdxEnumTest1", "pdx2", pdx2);
-  m_byte252 = new int8_t[252];
+  m_byte252 = std::vector<int8_t>(252);
   for (int i = 0; i < 252; i++) {
     m_byte252[i] = 0;
   }
 
-  m_byte253 = new int8_t[253];
+  m_byte253 = std::vector<int8_t>(253);
   for (int i = 0; i < 253; i++) {
     m_byte253[i] = 0;
   }
 
-  m_byte65535 = new int8_t[65535];
+  m_byte65535 = std::vector<int8_t>(65535);
   for (int i = 0; i < 65535; i++) {
     m_byte65535[i] = 0;
   }
 
-  m_byte65536 = new int8_t[65536];
+  m_byte65536 = std::vector<int8_t>(65536);
   for (int i = 0; i < 65536; i++) {
     m_byte65536[i] = 0;
   }
@@ -272,26 +272,26 @@ void PdxTests::PdxVersioned2::toData(PdxWriter& pw) const {
   pw.writeArrayOfByteArrays("m_byteByteArray", m_byteByteArray, 2, lengthArr);
   pw.writeChar("m_char", m_char);
   pw.writeBoolean("m_bool", m_bool);  // 1
-  pw.writeBooleanArray("m_boolArray", m_boolArray, 3);
+  pw.writeBooleanArray("m_boolArray", m_boolArray);
   pw.writeByte("m_byte", m_byte);
-  pw.writeByteArray("m_byteArray", m_byteArray, 2);
-  pw.writeCharArray("m_charArray", m_charArray, 2);
+  pw.writeByteArray("m_byteArray", m_byteArray);
+  pw.writeCharArray("m_charArray", m_charArray);
   pw.writeObject("m_arraylist", m_arraylist);
   pw.writeObject("m_map", m_map);
   pw.writeString("m_string", m_string);
   pw.writeDate("m_dateTime", m_date);
   pw.writeDouble("m_double", m_double);
-  pw.writeDoubleArray("m_doubleArray", m_doubleArray, 2);
+  pw.writeDoubleArray("m_doubleArray", m_doubleArray);
   pw.writeFloat("m_float", m_float);
-  pw.writeFloatArray("m_floatArray", m_floatArray, 2);
+  pw.writeFloatArray("m_floatArray", m_floatArray);
   pw.writeShort("m_int16", m_int16);
   pw.writeInt("m_int32", m_int32);
   pw.writeLong("m_long", m_long);
-  pw.writeIntArray("m_int32Array", m_int32Array, 4);
-  pw.writeLongArray("m_longArray", m_longArray, 2);
-  pw.writeShortArray("m_int16Array", m_int16Array, 2);
+  pw.writeIntArray("m_int32Array", m_int32Array);
+  pw.writeLongArray("m_longArray", m_longArray);
+  pw.writeShortArray("m_int16Array", m_int16Array);
   pw.writeByte("m_sbyte", m_sbyte);
-  pw.writeByteArray("m_sbyteArray", m_sbyteArray, 2);
+  pw.writeByteArray("m_sbyteArray", m_sbyteArray);
   // int* strlengthArr = new int[2];
 
   // strlengthArr[0] = 5;
@@ -300,13 +300,13 @@ void PdxTests::PdxVersioned2::toData(PdxWriter& pw) const {
   pw.writeShort("m_uint16", m_uint16);
   pw.writeInt("m_uint32", m_uint32);
   pw.writeLong("m_ulong", m_ulong);
-  pw.writeIntArray("m_uint32Array", m_uint32Array, 4);
-  pw.writeLongArray("m_ulongArray", m_ulongArray, 2);
-  pw.writeShortArray("m_uint16Array", m_uint16Array, 2);
-  pw.writeByteArray("m_byte252", m_byte252, 252);
-  pw.writeByteArray("m_byte253", m_byte253, 253);
-  pw.writeByteArray("m_byte65535", m_byte65535, 65535);
-  pw.writeByteArray("m_byte65536", m_byte65536, 65536);
+  pw.writeIntArray("m_uint32Array", m_uint32Array);
+  pw.writeLongArray("m_ulongArray", m_ulongArray);
+  pw.writeShortArray("m_uint16Array", m_uint16Array);
+  pw.writeByteArray("m_byte252", m_byte252);
+  pw.writeByteArray("m_byte253", m_byte253);
+  pw.writeByteArray("m_byte65535", m_byte65535);
+  pw.writeByteArray("m_byte65536", m_byte65536);
   pw.writeObject("m_pdxEnum", m_pdxEnum);
 
   LOGDEBUG("PdxObject::writeObject() for enum Done......");
@@ -329,10 +329,10 @@ void PdxTests::PdxVersioned2::fromData(PdxReader& pr) {
   // GenericValCompare
   m_bool = pr.readBoolean("m_bool");
   // GenericValCompare
-  m_boolArray = pr.readBooleanArray("m_boolArray", boolArrayLen);
+  m_boolArray = pr.readBooleanArray("m_boolArray");
   m_byte = pr.readByte("m_byte");
-  m_byteArray = pr.readByteArray("m_byteArray", byteArrayLen);
-  m_charArray = pr.readCharArray("m_charArray", charArrayLen);
+  m_byteArray = pr.readByteArray("m_byteArray");
+  m_charArray = pr.readCharArray("m_charArray");
   m_arraylist = std::static_pointer_cast<CacheableArrayList>(
       pr.readObject("m_arraylist"));
   m_map = std::static_pointer_cast<CacheableHashMap>(pr.readObject("m_map"));
@@ -340,30 +340,30 @@ void PdxTests::PdxVersioned2::fromData(PdxReader& pr) {
   m_string = pr.readString("m_string");  // GenericValCompare
   m_date = pr.readDate("m_dateTime");    // compareData
   m_double = pr.readDouble("m_double");
-  m_doubleArray = pr.readDoubleArray("m_doubleArray", doubleArrayLen);
+  m_doubleArray = pr.readDoubleArray("m_doubleArray");
   m_float = pr.readFloat("m_float");
-  m_floatArray = pr.readFloatArray("m_floatArray", floatArrayLen);
+  m_floatArray = pr.readFloatArray("m_floatArray");
   m_int16 = pr.readShort("m_int16");
   m_int32 = pr.readInt("m_int32");
   m_long = pr.readLong("m_long");
-  m_int32Array = pr.readIntArray("m_int32Array", intArrayLen);
-  m_longArray = pr.readLongArray("m_longArray", longArrayLen);
-  m_int16Array = pr.readShortArray("m_int16Array", shortArrayLen);
+  m_int32Array = pr.readIntArray("m_int32Array");
+  m_longArray = pr.readLongArray("m_longArray");
+  m_int16Array = pr.readShortArray("m_int16Array");
   m_sbyte = pr.readByte("m_sbyte");
-  m_sbyteArray = pr.readByteArray("m_sbyteArray", byteArrayLen);
+  m_sbyteArray = pr.readByteArray("m_sbyteArray");
   m_stringArray = pr.readStringArray("m_stringArray");
   m_uint16 = pr.readShort("m_uint16");
   m_uint32 = pr.readInt("m_uint32");
   m_ulong = pr.readLong("m_ulong");
-  m_uint32Array = pr.readIntArray("m_uint32Array", intArrayLen);
-  m_ulongArray = pr.readLongArray("m_ulongArray", longArrayLen);
-  m_uint16Array = pr.readShortArray("m_uint16Array", shortArrayLen);
+  m_uint32Array = pr.readIntArray("m_uint32Array");
+  m_ulongArray = pr.readLongArray("m_ulongArray");
+  m_uint16Array = pr.readShortArray("m_uint16Array");
   // LOGINFO("PdxVersioned2::readInt() start...");
 
-  m_byte252 = pr.readByteArray("m_byte252", m_byte252Len);
-  m_byte253 = pr.readByteArray("m_byte253", m_byte253Len);
-  m_byte65535 = pr.readByteArray("m_byte65535", m_byte65535Len);
-  m_byte65536 = pr.readByteArray("m_byte65536", m_byte65536Len);
+  m_byte252 = pr.readByteArray("m_byte252");
+  m_byte253 = pr.readByteArray("m_byte253");
+  m_byte65535 = pr.readByteArray("m_byte65535");
+  m_byte65536 = pr.readByteArray("m_byte65536");
   // TODO:Check for size
   m_pdxEnum = pr.readObject("m_pdxEnum");
 }
@@ -395,17 +395,15 @@ bool PdxTests::PdxVersioned2::equals(PdxTests::PdxVersioned2& other,
   if (ot->m_string != m_string) {
     return false;
   }
-  genericCompare(ot->m_byteArray, m_byteArray, byteArrayLen);
-  genericCompare(ot->m_int16Array, m_int16Array, shortArrayLen);
-  genericCompare(ot->m_int32Array, m_int32Array, intArrayLen);
-  genericCompare(ot->m_longArray, m_longArray, longArrayLen);
-  genericCompare(ot->m_doubleArray, m_doubleArray, doubleArrayLen);
-  genericCompare(ot->m_floatArray, m_floatArray, floatArrayLen);
-  genericCompare(ot->m_uint32Array, m_uint32Array, intArrayLen);
-  genericCompare(ot->m_ulongArray, m_ulongArray, longArrayLen);
-  genericCompare(ot->m_uint16Array, m_uint16Array, shortArrayLen);
-  genericCompare(ot->m_sbyteArray, m_sbyteArray, shortArrayLen);
-  genericCompare(ot->m_charArray, m_charArray, charArrayLen);
+  genericCompare(ot->m_byteArray.data(), m_byteArray.data(), m_byteArray.size());
+  genericCompare(ot->m_int16Array.data(), m_int16Array.data(), m_int16Array.size());
+  genericCompare(ot->m_int32Array.data(), m_int32Array.data(), m_int32Array.size());
+  genericCompare(ot->m_longArray.data(), m_longArray.data(), m_longArray.size());
+  genericCompare(ot->m_uint32Array.data(), m_uint32Array.data(), m_uint32Array.size());
+  genericCompare(ot->m_ulongArray.data(), m_ulongArray.data(), m_ulongArray.size());
+  genericCompare(ot->m_uint16Array.data(), m_uint16Array.data(), m_uint16Array.size());
+  genericCompare(ot->m_sbyteArray.data(), m_sbyteArray.data(), m_sbyteArray.size());
+  genericCompare(ot->m_charArray.data(), m_charArray.data(), m_charArray.size());
   // generic2DCompare(ot->m_byteByteArray, m_byteByteArray, byteByteArrayLen,
   // lengthArr);
 

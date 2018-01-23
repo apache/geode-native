@@ -120,8 +120,8 @@ class TestDataInput {
     m_dataInput.readObject(ptr);
   }
 
-  void readCharArray(char16_t **value, int32_t &length) {
-    m_dataInput.readCharArray(value, length);
+  std::vector<char16_t> readCharArray() {
+    return m_dataInput.readCharArray();
   }
 
   std::vector<std::string> readStringArray() {
@@ -518,12 +518,10 @@ TEST_F(DataInputTest, TestReadCharArray) {
   TestDataInput dataInput(
       "1C0059006F007500200068006100640020006D00650020006100740020006D0065006100"
       "7400200074006F0072006E00610064006F002E0000");
-  char16_t *value = nullptr;
-  int32_t length = 0;
-  dataInput.readCharArray(&value, length);
-  ASSERT_EQ((int32_t)28, length) << "Correct length";
+  auto value = dataInput.readCharArray();
+  ASSERT_EQ((int32_t)28, value.size()) << "Correct length";
   EXPECT_EQ(std::u16string(u"You had me at meat tornado."),
-            std::u16string(value))
+            std::u16string(value.data()))
       << "Correct const char *";
 }
 

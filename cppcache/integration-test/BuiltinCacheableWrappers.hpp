@@ -97,9 +97,9 @@ inline TPRIM random(TPRIM maxValue) {
 // This returns an array allocated on heap
 // which should be freed by the user.
 template <typename TPRIM>
-inline TPRIM* randomArray(int32_t size, TPRIM maxValue) {
+inline std::vector<TPRIM> randomArray(int32_t size, TPRIM maxValue) {
   ASSERT(size > 0, "The size of the array should be greater than zero.");
-  TPRIM* array = new TPRIM[size];
+  std::vector<TPRIM> array(size);
 
   for (int32_t index = 0; index < size; index++) {
     array[index] = random(maxValue);
@@ -166,10 +166,10 @@ inline uint32_t crc32(TPRIM value) {
 }
 
 template <typename TPRIM>
-inline uint32_t crc32Array(const TPRIM* arr, uint32_t len) {
+inline uint32_t crc32Array(const std::vector<TPRIM> arr) {
   auto output = CacheHelper::getHelper().getCache()->createDataOutput();
-  for (uint32_t index = 0; index < len; index++) {
-    apache::geode::client::serializer::writeObject(*output, arr[index]);
+  for (auto obj : arr) {
+    apache::geode::client::serializer::writeObject(*output, obj);
   }
   return crc32(output->getBuffer(), output->getBufferLength());
 }
@@ -837,11 +837,10 @@ class CacheableBytesWrapper : public CacheableWrapper {
   // CacheableWrapper members
 
   virtual void initRandomValue(int32_t maxSize) {
-    uint8_t* randArr =
+    auto randArr =
         CacheableHelper::randomArray<uint8_t>(maxSize, UCHAR_MAX);
     m_cacheableObject = CacheableBytes::create(
-        reinterpret_cast<const int8_t*>(randArr), maxSize);
-    delete[] randArr;
+        reinterpret_cast<const int8_t*>(randArr.data()), maxSize);
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
@@ -866,17 +865,16 @@ class CacheableDoubleArrayWrapper : public CacheableWrapper {
 
   virtual void initRandomValue(int32_t maxSize) {
     maxSize = maxSize / sizeof(double) + 1;
-    double* randArr =
+    auto randArr =
         CacheableHelper::randomArray(maxSize, static_cast<double>(INT_MAX));
-    m_cacheableObject = CacheableDoubleArray::create(randArr, maxSize);
-    delete[] randArr;
+    m_cacheableObject = CacheableArray<double>::create(randArr);
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
-    const CacheableDoubleArray* obj =
-        dynamic_cast<const CacheableDoubleArray*>(object.get());
+    const CacheableArray<double>* obj =
+        dynamic_cast<const CacheableArray<double>*>(object.get());
     ASSERT(obj != nullptr, "getCheckSum: null object.");
-    return CacheableHelper::crc32Array(obj->value(), obj->length());
+    return CacheableHelper::crc32Array(obj->value());
   }
 };
 
@@ -892,17 +890,16 @@ class CacheableFloatArrayWrapper : public CacheableWrapper {
 
   virtual void initRandomValue(int32_t maxSize) {
     maxSize = maxSize / sizeof(float) + 1;
-    float* randArr =
+    auto randArr =
         CacheableHelper::randomArray(maxSize, static_cast<float>(INT_MAX));
-    m_cacheableObject = CacheableFloatArray::create(randArr, maxSize);
-    delete[] randArr;
+    m_cacheableObject = CacheableArray<float>::create(randArr);
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
-    const CacheableFloatArray* obj =
-        dynamic_cast<const CacheableFloatArray*>(object.get());
+    const CacheableArray<float>* obj =
+        dynamic_cast<const CacheableArray<float>*>(object.get());
     ASSERT(obj != nullptr, "getCheckSum: null object.");
-    return CacheableHelper::crc32Array(obj->value(), obj->length());
+    return CacheableHelper::crc32Array(obj->value());
   }
 };
 
@@ -918,16 +915,15 @@ class CacheableInt16ArrayWrapper : public CacheableWrapper {
 
   virtual void initRandomValue(int32_t maxSize) {
     maxSize = maxSize / sizeof(int16_t) + 1;
-    int16_t* randArr = CacheableHelper::randomArray<int16_t>(maxSize, SHRT_MAX);
-    m_cacheableObject = CacheableInt16Array::create(randArr, maxSize);
-    delete[] randArr;
+    auto randArr = CacheableHelper::randomArray<int16_t>(maxSize, SHRT_MAX);
+    m_cacheableObject = CacheableArray<int16_t>::create(randArr);
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
-    const CacheableInt16Array* obj =
-        dynamic_cast<const CacheableInt16Array*>(object.get());
+    const CacheableArray<int16_t>* obj =
+        dynamic_cast<const CacheableArray<int16_t>*>(object.get());
     ASSERT(obj != nullptr, "getCheckSum: null object.");
-    return CacheableHelper::crc32Array(obj->value(), obj->length());
+    return CacheableHelper::crc32Array(obj->value());
   }
 };
 
@@ -943,16 +939,15 @@ class CacheableInt32ArrayWrapper : public CacheableWrapper {
 
   virtual void initRandomValue(int32_t maxSize) {
     maxSize = maxSize / sizeof(int32_t) + 1;
-    int32_t* randArr = CacheableHelper::randomArray<int32_t>(maxSize, INT_MAX);
-    m_cacheableObject = CacheableInt32Array::create(randArr, maxSize);
-    delete[] randArr;
+    auto randArr = CacheableHelper::randomArray<int32_t>(maxSize, INT_MAX);
+    m_cacheableObject = CacheableArray<int32_t>::create(randArr);
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
-    const CacheableInt32Array* obj =
-        dynamic_cast<const CacheableInt32Array*>(object.get());
+    const CacheableArray<int32_t>* obj =
+        dynamic_cast<const CacheableArray<int32_t>*>(object.get());
     ASSERT(obj != nullptr, "getCheckSum: null object.");
-    return CacheableHelper::crc32Array(obj->value(), obj->length());
+    return CacheableHelper::crc32Array(obj->value());
   }
 };
 
@@ -968,16 +963,15 @@ class CacheableInt64ArrayWrapper : public CacheableWrapper {
 
   virtual void initRandomValue(int32_t maxSize) {
     maxSize = maxSize / sizeof(int64_t) + 1;
-    int64_t* randArr = CacheableHelper::randomArray<int64_t>(maxSize, INT_MAX);
-    m_cacheableObject = CacheableInt64Array::create(randArr, maxSize);
-    delete[] randArr;
+    auto randArr = CacheableHelper::randomArray<int64_t>(maxSize, INT_MAX);
+    m_cacheableObject = CacheableArray<int64_t>::create(randArr);
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
-    const CacheableInt64Array* obj =
-        dynamic_cast<const CacheableInt64Array*>(object.get());
+    const CacheableArray<int64_t>* obj =
+        dynamic_cast<const CacheableArray<int64_t>*>(object.get());
     ASSERT(obj != nullptr, "getCheckSum: null object.");
-    return CacheableHelper::crc32Array(obj->value(), obj->length());
+    return CacheableHelper::crc32Array(obj->value());
   }
 };
 

@@ -237,8 +237,8 @@ class _GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const std::string& fieldName, bool* value,
-                        int32_t length) = 0;
+  virtual void setField(const std::string& fieldName,
+                        const std::vector<bool>& value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -255,8 +255,8 @@ class _GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const std::string& fieldName, int8_t* value,
-                        int32_t length) = 0;
+  virtual void setField(const std::string& fieldName,
+                        std::vector<int8_t> value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -273,8 +273,8 @@ class _GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const std::string& fieldName, int16_t* value,
-                        int32_t length) = 0;
+  virtual void setField(const std::string& fieldName,
+                        const std::vector<int16_t>& value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -291,8 +291,8 @@ class _GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const std::string& fieldName, int32_t* value,
-                        int32_t length) = 0;
+  virtual void setField(const std::string& fieldName,
+                        const std::vector<int32_t>& value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -309,8 +309,8 @@ class _GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const std::string& fieldName, int64_t* value,
-                        int32_t length) = 0;
+  virtual void setField(const std::string& fieldName,
+                        const std::vector<int64_t>& value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -327,8 +327,8 @@ class _GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const std::string& fieldName, float* value,
-                        int32_t length) = 0;
+  virtual void setField(const std::string& fieldName,
+                        const std::vector<float>& value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -345,8 +345,8 @@ class _GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const std::string& fieldName, double* value,
-                        int32_t length) = 0;
+  virtual void setField(const std::string& fieldName,
+                        const std::vector<double>& value) = 0;
 
   /**
    * Set the existing named field to the given value.
@@ -379,8 +379,8 @@ class _GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
-  virtual void setField(const std::string& fieldName, char16_t* value,
-                        int32_t length) = 0;
+  virtual void setField(const std::string& fieldName,
+                        const std::vector<char16_t>& value) = 0;
 
   /**
    * Set the existing named field to the given value.

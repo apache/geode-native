@@ -618,7 +618,7 @@ void PdxVersionedV2::init(int32_t size) {
 
   m_string = "gfestring";
 
-  m_boolArray = new bool[3];
+  m_boolArray = std::vector<bool>(3);
   m_boolArray[0] = true;
   m_boolArray[1] = false;
   m_boolArray[2] = true;
@@ -629,11 +629,11 @@ void PdxVersionedV2::init(int32_t size) {
 
   m_dateTime = nullptr;
 
-  m_int16Array = new int16_t[size];
-  m_int32Array = new int32_t[size];
-  m_longArray = new int64_t[size];
-  m_floatArray = new float[size];
-  m_doubleArray = new double[size];
+  m_int16Array = std::vector<int16_t>(size);
+  m_int32Array = std::vector<int32_t>(size);
+  m_longArray = std::vector<int64_t>(size);
+  m_floatArray = std::vector<float>(size);
+  m_doubleArray = std::vector<double>(size);
 
   for (int i = 0; i < size; i++) {
     m_int16Array[i] = 0x2332;
@@ -648,7 +648,6 @@ void PdxVersionedV2::init(int32_t size) {
   shortArrayLen = 0;
   intArrayLen = 0;
   longArrayLen = 0;
-  doubleArrayLen = 0;
   floatArrayLen = 0;
   strLenArray = 0;
 }
@@ -672,14 +671,14 @@ void PdxVersionedV2::toData(PdxWriter& pw) const {
   pw.writeFloat("m_float", m_float);
   pw.writeDouble("m_double", m_double);
   pw.writeString("m_string", m_string);
-  pw.writeBooleanArray("m_boolArray", m_boolArray, 3);
+  pw.writeBooleanArray("m_boolArray", m_boolArray);
   // pw.writeCharArray("m_charArray", m_charArray, 2);
   pw.writeDate("m_dateTime", m_dateTime);
-  pw.writeShortArray("m_int16Array", m_int16Array, 2);
-  pw.writeIntArray("m_int32Array", m_int32Array, 2);
-  pw.writeLongArray("m_longArray", m_longArray, 2);
-  pw.writeFloatArray("m_floatArray", m_floatArray, 2);
-  pw.writeDoubleArray("m_doubleArray", m_doubleArray, 2);
+  pw.writeShortArray("m_int16Array", m_int16Array);
+  pw.writeIntArray("m_int32Array", m_int32Array);
+  pw.writeLongArray("m_longArray", m_longArray);
+  pw.writeFloatArray("m_floatArray", m_floatArray);
+  pw.writeDoubleArray("m_doubleArray", m_doubleArray);
 }
 
 void PdxVersionedV2::fromData(PdxReader& pr) {
@@ -692,14 +691,14 @@ void PdxVersionedV2::fromData(PdxReader& pr) {
   m_float = pr.readFloat("m_float");
   m_double = pr.readDouble("m_double");
   m_string = pr.readString("m_string");
-  m_boolArray = pr.readBooleanArray("m_boolArray", boolArrayLen);
+  m_boolArray = pr.readBooleanArray("m_boolArray");
   // m_charArray = pr.readCharArray("m_charArray");
   m_dateTime = pr.readDate("m_dateTime");
-  m_int16Array = pr.readShortArray("m_int16Array", shortArrayLen);
-  m_int32Array = pr.readIntArray("m_int32Array", intArrayLen);
-  m_longArray = pr.readLongArray("m_longArray", longArrayLen);
-  m_floatArray = pr.readFloatArray("m_floatArray", floatArrayLen);
-  m_doubleArray = pr.readDoubleArray("m_doubleArray", doubleArrayLen);
+  m_int16Array = pr.readShortArray("m_int16Array");
+  m_int32Array = pr.readIntArray("m_int32Array");
+  m_longArray = pr.readLongArray("m_longArray");
+  m_floatArray = pr.readFloatArray("m_floatArray");
+  m_doubleArray = pr.readDoubleArray("m_doubleArray");
 }
 std::string PdxVersionedV2::toString() const {
   char idbuf[4096];

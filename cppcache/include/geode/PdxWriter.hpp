@@ -207,7 +207,7 @@ class _GEODE_EXPORT PdxWriter {
    * or fieldName is nullptr or empty.
    */
   virtual PdxWriter& writeBooleanArray(const std::string& fieldName,
-                                       bool* array, int length) = 0;
+                                       std::vector<bool> array) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -221,7 +221,7 @@ class _GEODE_EXPORT PdxWriter {
    * or fieldName is nullptr or empty.
    */
   virtual PdxWriter& writeCharArray(
-      const std::string& fieldName, char16_t* array, int length) = 0;
+      const std::string& fieldName, std::vector<char16_t> array) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -234,8 +234,8 @@ class _GEODE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxWriter& writeByteArray(const std::string& fieldName, int8_t* array,
-                                    int length) = 0;
+  virtual PdxWriter& writeByteArray(const std::string& fieldName,
+                                    std::vector<int8_t> array) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -249,7 +249,7 @@ class _GEODE_EXPORT PdxWriter {
    * or fieldName is nullptr or empty.
    */
   virtual PdxWriter& writeShortArray(const std::string& fieldName,
-                                     int16_t* array, int length) = 0;
+                                     std::vector<int16_t> array) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -262,8 +262,8 @@ class _GEODE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxWriter& writeIntArray(const std::string& fieldName, int32_t* array,
-                                   int length) = 0;
+  virtual PdxWriter& writeIntArray(const std::string& fieldName,
+                                   std::vector<int32_t> array) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -277,7 +277,7 @@ class _GEODE_EXPORT PdxWriter {
    * or fieldName is nullptr or empty.
    */
   virtual PdxWriter& writeLongArray(const std::string& fieldName,
-                                    int64_t* array, int length) = 0;
+                                    std::vector<int64_t> array) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -290,8 +290,8 @@ class _GEODE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxWriter& writeFloatArray(const std::string& fieldName, float* array,
-                                     int length) = 0;
+  virtual PdxWriter& writeFloatArray(const std::string& fieldName,
+                                     std::vector<float> array) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -305,7 +305,7 @@ class _GEODE_EXPORT PdxWriter {
    * or fieldName is nullptr or empty.
    */
   virtual PdxWriter& writeDoubleArray(const std::string& fieldName,
-                                      double* array, int length) = 0;
+                                      std::vector<double> array) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.

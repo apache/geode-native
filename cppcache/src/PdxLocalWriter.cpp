@@ -274,53 +274,53 @@ PdxWriter& PdxLocalWriter::writeObject(
   return *this;
 }
 PdxWriter& PdxLocalWriter::writeBooleanArray(const std::string& fieldName,
-                                             bool* array, int length) {
+                                             std::vector<bool> array) {
   addOffset();
-  writeObject(array, length);
+  writeArrayObject(array);
   return *this;
 }
 
 PdxWriter& PdxLocalWriter::writeCharArray(
-    const std::string& fieldName, char16_t* array, int length) {
+    const std::string& fieldName, std::vector<char16_t> array) {
   addOffset();
-  writeObject(array, length);
+  writeArrayObject(array);
   return *this;
 }
 
 PdxWriter& PdxLocalWriter::writeByteArray(
-    const std::string& fieldName, int8_t* array, int length) {
+    const std::string& fieldName, std::vector<int8_t> array) {
   addOffset();
-  writeObject(array, length);
+  writeArrayObject(array);
   return *this;
 }
 PdxWriter& PdxLocalWriter::writeShortArray(const std::string& fieldName,
-                                           int16_t* array, int length) {
+                                           std::vector<int16_t> array) {
   addOffset();
-  writeObject(array, length);
+  writeArrayObject(array);
   return *this;
 }
 PdxWriter& PdxLocalWriter::writeIntArray(const std::string& fieldName,
-                                         int32_t* array, int length) {
+                                         std::vector<int32_t> array) {
   addOffset();
-  writeObject(array, length);
+  writeArrayObject(array);
   return *this;
 }
 PdxWriter& PdxLocalWriter::writeLongArray(const std::string& fieldName,
-                                          int64_t* array, int length) {
+                                          std::vector<int64_t> array) {
   addOffset();
-  writeObject(array, length);
+  writeArrayObject(array);
   return *this;
  }
  PdxWriter& PdxLocalWriter::writeFloatArray(const std::string& fieldName,
-                                            float* array, int length) {
+                                            std::vector<float> array) {
    addOffset();
-   writeObject(array, length);
+   writeArrayObject(array);
    return *this;
  }
  PdxWriter& PdxLocalWriter::writeDoubleArray(const std::string& fieldName,
-                                             double* array, int length) {
+                                             std::vector<double> array) {
    addOffset();
-   writeObject(array, length);
+   writeArrayObject(array);
    return *this;
  }
  PdxWriter& PdxLocalWriter::writeObjectArray(

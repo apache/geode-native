@@ -145,6 +145,11 @@ inline void readObject(apache::geode::client::DataInput& input, bool& value) {
   value = input.readBoolean();
 }
 
+inline void readObject(apache::geode::client::DataInput& input,
+                       std::vector<bool>::reference value) {
+  value = input.readBoolean();
+}
+
 inline void writeObject(apache::geode::client::DataOutput& output,
                         double value) {
   output.writeDouble(value);
@@ -215,6 +220,28 @@ inline void writeObject(apache::geode::client::DataOutput& output,
   }
 }
 
+template <typename TObj>
+inline void writeArrayObject(apache::geode::client::DataOutput& output,
+                             const std::vector<TObj> array) {
+  output.writeArrayLen(array.size());
+  for (int i = 0; i < array.size(); i++) {
+    writeObject(output, array[i]);
+  }
+}
+
+template <typename TObj>
+inline std::vector<TObj> readArrayObject(apache::geode::client::DataInput& input) {
+  int len = input.readArrayLen();
+  if (len < 0) {
+    return std::vector<TObj>{};
+  }
+  std::vector<TObj> array(len);
+  for (int i = 0; i < len; i++) {
+    readObject(input, array[i]);
+  }
+  return array;
+}
+
 template <typename TObj, typename TLen>
 inline void readObject(apache::geode::client::DataInput& input, TObj*& array,
                        TLen& len) {
@@ -229,6 +256,25 @@ inline void readObject(apache::geode::client::DataInput& input, TObj*& array,
   } else {
     array = nullptr;
   }
+}
+
+template <typename TObj,
+          typename std::enable_if<!std::is_base_of<Serializable, TObj>::value,
+                                  Serializable>::type* = nullptr>
+inline uint32_t objectArraySize(const std::vector<TObj> array) {
+  return (uint32_t)(sizeof(TObj) * array.size());
+}
+
+template <typename TObj,
+          typename std::enable_if<std::is_base_of<Serializable, TObj>::value,
+                                  Serializable>::type* = nullptr>
+inline uint32_t objectArraySize(const std::vector<TObj> array) {
+  uint32_t size = 0;
+  for (auto obj : array) {
+    size += obj.objectArraySize();
+  }
+  size += (uint32_t)(sizeof(TObj) * array.size());
+  return size;
 }
 
 template <typename TObj, typename TLen,

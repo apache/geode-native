@@ -64,29 +64,29 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
   virtual std::shared_ptr<Serializable> readObject(
       const std::string& fieldName) override;
 
-  virtual char16_t* readCharArray(const std::string& fieldName,
-                                  int32_t& length) override;
+  virtual std::vector<char16_t> readCharArray(
+      const std::string& fieldName) override;
 
-  virtual bool* readBooleanArray(const std::string& fieldName,
-                                 int32_t& length) override;
+  virtual std::vector<bool> readBooleanArray(
+      const std::string& fieldName) override;
 
-  virtual int8_t* readByteArray(const std::string& fieldName,
-                                int32_t& length) override;
+  virtual std::vector<int8_t> readByteArray(
+      const std::string& fieldName) override;
 
-  virtual int16_t* readShortArray(const std::string& fieldName,
-                                  int32_t& length) override;
+  virtual std::vector<int16_t> readShortArray(
+      const std::string& fieldName) override;
 
-  virtual int32_t* readIntArray(const std::string& fieldName,
-                                int32_t& length) override;
+  virtual std::vector<int32_t> readIntArray(
+      const std::string& fieldName) override;
 
-  virtual int64_t* readLongArray(const std::string& fieldName,
-                                 int32_t& length) override;
+  virtual std::vector<int64_t> readLongArray(
+      const std::string& fieldName) override;
 
-  virtual float* readFloatArray(const std::string& fieldName,
-                                int32_t& length) override;
+  virtual std::vector<float> readFloatArray(
+      const std::string& fieldName) override;
 
-  virtual double* readDoubleArray(const std::string& fieldName,
-                                  int32_t& length) override;
+  virtual std::vector<double> readDoubleArray(
+      const std::string& fieldName) override;
 
   virtual std::vector<std::string> readStringArray(
       const std::string& fieldName) override;

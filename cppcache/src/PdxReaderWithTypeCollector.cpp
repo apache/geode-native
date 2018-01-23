@@ -243,8 +243,8 @@ std::shared_ptr<Serializable> PdxReaderWithTypeCollector::readObject(
   }
 }
 
-char16_t* PdxReaderWithTypeCollector::readCharArray(
-    const std::string& fieldName, int32_t& length) {
+std::vector<char16_t> PdxReaderWithTypeCollector::readCharArray(
+    const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::CHAR_ARRAY, "char[]");
   m_newPdxType->addVariableLengthTypeField(fieldName, "char[]",
                                            PdxFieldTypes::CHAR_ARRAY);
@@ -255,19 +255,19 @@ char16_t* PdxReaderWithTypeCollector::readCharArray(
   if (position != -1) {
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
-    auto retVal = PdxLocalReader::readCharArray(fieldName, length);
+    auto retVal = PdxLocalReader::readCharArray(fieldName);
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
     return retVal;
   } else {
-    return nullptr;
+    return std::vector<char16_t>{};
   }
 }
 
-bool* PdxReaderWithTypeCollector::readBooleanArray(const std::string& fieldName,
-                                                   int32_t& length) {
+std::vector<bool> PdxReaderWithTypeCollector::readBooleanArray(
+    const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::BOOLEAN_ARRAY, "boolean[]");
   m_newPdxType->addVariableLengthTypeField(fieldName, "boolean[]",
                                            PdxFieldTypes::BOOLEAN_ARRAY);
@@ -281,18 +281,18 @@ bool* PdxReaderWithTypeCollector::readBooleanArray(const std::string& fieldName,
   if (position != -1) {
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
-    bool* retVal = PdxLocalReader::readBooleanArray(fieldName, length);
+    std::vector<bool> retVal = PdxLocalReader::readBooleanArray(fieldName);
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
     return retVal;
   }
-  return nullptr;
+  return std::vector<bool>{};
 }
 
-int8_t* PdxReaderWithTypeCollector::readByteArray(const std::string& fieldName,
-                                                  int32_t& length) {
+std::vector<int8_t> PdxReaderWithTypeCollector::readByteArray(
+    const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::BYTE_ARRAY, "byte[]");
   m_newPdxType->addVariableLengthTypeField(fieldName, "byte[]",
                                            PdxFieldTypes::BYTE_ARRAY);
@@ -301,22 +301,22 @@ int8_t* PdxReaderWithTypeCollector::readByteArray(const std::string& fieldName,
   LOGDEBUG("PdxReaderWithTypeCollector::readByteArray(): position = %d",
            position);
   if (position != -1) {
-    int8_t* byteArrptr;
+    std::vector<int8_t> byteArrptr;
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
-    byteArrptr = PdxLocalReader::readByteArray(fieldName, length);
+    byteArrptr = PdxLocalReader::readByteArray(fieldName);
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
     return byteArrptr;
   } else {
-    return nullptr;
+    return std::vector<int8_t>{};
   }
 }
 
-int16_t* PdxReaderWithTypeCollector::readShortArray(
-    const std::string& fieldName, int32_t& length) {
+std::vector<int16_t> PdxReaderWithTypeCollector::readShortArray(
+    const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::SHORT_ARRAY, "short[]");
   m_newPdxType->addVariableLengthTypeField(fieldName, "short[]",
                                            PdxFieldTypes::SHORT_ARRAY);
@@ -325,22 +325,22 @@ int16_t* PdxReaderWithTypeCollector::readShortArray(
   LOGDEBUG("PdxReaderWithTypeCollector::readShortArray():position = %d",
            position);
   if (position != -1) {
-    int16_t* shortArrptr;
+    std::vector<int16_t> shortArrptr;
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
-    shortArrptr = PdxLocalReader::readShortArray(fieldName, length);
+    shortArrptr = PdxLocalReader::readShortArray(fieldName);
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
     return shortArrptr;
   } else {
-    return nullptr;
+    return std::vector<int16_t>{};
   }
 }
 
-int32_t* PdxReaderWithTypeCollector::readIntArray(const std::string& fieldName,
-                                                  int32_t& length) {
+std::vector<int32_t> PdxReaderWithTypeCollector::readIntArray(
+    const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::INT_ARRAY, "int[]");
   m_newPdxType->addVariableLengthTypeField(fieldName, "int[]",
                                            PdxFieldTypes::INT_ARRAY);
@@ -349,22 +349,22 @@ int32_t* PdxReaderWithTypeCollector::readIntArray(const std::string& fieldName,
   LOGDEBUG("PdxReaderWithTypeCollector::readIntArray():position = %d",
            position);
   if (position != -1) {
-    int32_t* intArrayptr;
+    std::vector<int32_t> intArrayptr;
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
-    intArrayptr = PdxLocalReader::readIntArray(fieldName, length);
+    intArrayptr = PdxLocalReader::readIntArray(fieldName);
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
     return intArrayptr;
   } else {
-    return nullptr;
+    return std::vector<int32_t>{};
   }
 }
 
-int64_t* PdxReaderWithTypeCollector::readLongArray(const std::string& fieldName,
-                                                   int32_t& length) {
+std::vector<int64_t> PdxReaderWithTypeCollector::readLongArray(
+    const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::LONG_ARRAY, "long[]");
   m_newPdxType->addVariableLengthTypeField(fieldName, "long[]",
                                            PdxFieldTypes::LONG_ARRAY);
@@ -373,22 +373,22 @@ int64_t* PdxReaderWithTypeCollector::readLongArray(const std::string& fieldName,
   LOGDEBUG("PdxReaderWithTypeCollector::readLongArray():position = %d",
            position);
   if (position != -1) {
-    int64_t* longArrptr;
+    std::vector<int64_t> longArrptr;
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
-    longArrptr = PdxLocalReader::readLongArray(fieldName, length);
+    longArrptr = PdxLocalReader::readLongArray(fieldName);
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
     return longArrptr;
   } else {
-    return nullptr;
+    return std::vector<int64_t>{};
   }
 }
 
-float* PdxReaderWithTypeCollector::readFloatArray(const std::string& fieldName,
-                                                  int32_t& length) {
+std::vector<float> PdxReaderWithTypeCollector::readFloatArray(
+    const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::FLOAT_ARRAY, "float[]");
   m_newPdxType->addVariableLengthTypeField(fieldName, "float[]",
                                            PdxFieldTypes::FLOAT_ARRAY);
@@ -397,22 +397,22 @@ float* PdxReaderWithTypeCollector::readFloatArray(const std::string& fieldName,
   LOGDEBUG("PdxReaderWithTypeCollector::readFloatArray(): position = %d",
            position);
   if (position != -1) {
-    float* floatArrptr;
+    std::vector<float> floatArrptr;
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
-    floatArrptr = PdxLocalReader::readFloatArray(fieldName, length);
+    floatArrptr = PdxLocalReader::readFloatArray(fieldName);
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
     return floatArrptr;
   } else {
-    return nullptr;
+     return std::vector<float>{};
   }
 }
 
-double* PdxReaderWithTypeCollector::readDoubleArray(
-    const std::string& fieldName, int32_t& length) {
+std::vector<double> PdxReaderWithTypeCollector::readDoubleArray(
+    const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::DOUBLE_ARRAY, "double[]");
   m_newPdxType->addVariableLengthTypeField(fieldName, "double[]",
                                            PdxFieldTypes::DOUBLE_ARRAY);
@@ -421,17 +421,17 @@ double* PdxReaderWithTypeCollector::readDoubleArray(
   LOGDEBUG("PdxReaderWithTypeCollector::readDoubleArray():position = %d",
            position);
   if (position != -1) {
-    double* doubleArrptr;
+    std::vector<double> doubleArrptr;
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
-    doubleArrptr = PdxLocalReader::readDoubleArray(fieldName, length);
+    doubleArrptr = PdxLocalReader::readDoubleArray(fieldName);
     int32_t strSize =
         static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
     return doubleArrptr;
   } else {
-    return nullptr;
+    return std::vector<double>{};
   }
 }
 

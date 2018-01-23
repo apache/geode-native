@@ -433,13 +433,6 @@ _GEODE_CACHEABLE_KEY_TYPE_DEF_(bool, CacheableBoolean, 3);
  */
 _GEODE_CACHEABLE_KEY_TYPE_(bool, CacheableBoolean, 3);
 
-_GEODE_CACHEABLE_ARRAY_TYPE_DEF_(bool, BooleanArray);
-/**
- * An immutable wrapper for array of booleans that can serve as
- * a distributable object for caching.
- */
-_GEODE_CACHEABLE_ARRAY_TYPE_(bool, BooleanArray);
-
 _GEODE_CACHEABLE_KEY_TYPE_DEF_(uint8_t, CacheableByte, 15);
 /**
  * An immutable wrapper for bytes that can serve as
@@ -489,13 +482,6 @@ _GEODE_CACHEABLE_KEY_TYPE_DEF_(char16_t, CacheableCharacter, 3);
  */
 _GEODE_CACHEABLE_KEY_TYPE_(char16_t, CacheableCharacter, 3);
 
-_GEODE_CACHEABLE_ARRAY_TYPE_DEF_(char16_t, CharArray);
-/**
- * An immutable wrapper for array of wide-characters that can serve as
- * a distributable object for caching.
- */
-_GEODE_CACHEABLE_ARRAY_TYPE_(char16_t, CharArray);
-
 // Instantiations for array built-in Cacheables
 
 _GEODE_CACHEABLE_ARRAY_TYPE_DEF_(int8_t, CacheableBytes);
@@ -505,40 +491,76 @@ _GEODE_CACHEABLE_ARRAY_TYPE_DEF_(int8_t, CacheableBytes);
  */
 _GEODE_CACHEABLE_ARRAY_TYPE_(int8_t, CacheableBytes);
 
-_GEODE_CACHEABLE_ARRAY_TYPE_DEF_(double, CacheableDoubleArray);
-/**
- * An immutable wrapper for array of doubles that can serve as
- * a distributable object for caching.
- */
-_GEODE_CACHEABLE_ARRAY_TYPE_(double, CacheableDoubleArray);
+template <typename T>
+class _GEODE_EXPORT CacheableArray : public Cacheable {
+ protected:
 
-_GEODE_CACHEABLE_ARRAY_TYPE_DEF_(float, CacheableFloatArray);
-/**
- * An immutable wrapper for array of floats that can serve as
- * a distributable object for caching.
- */
-_GEODE_CACHEABLE_ARRAY_TYPE_(float, CacheableFloatArray);
+  inline double operator[](uint32_t index) const {
+    if (static_cast<int32_t>(index) >= m_value.size()) {
+      throw OutOfRangeException(
+          "CacheableArray::operator[]: Index out of range.");
+    }
+    return m_value[index];
+  }
 
-_GEODE_CACHEABLE_ARRAY_TYPE_DEF_(int16_t, CacheableInt16Array);
-/**
- * An immutable wrapper for array of 16-bit integers that can serve as
- * a distributable object for caching.
- */
-_GEODE_CACHEABLE_ARRAY_TYPE_(int16_t, CacheableInt16Array);
+  virtual void toData(DataOutput& output) const override {
+    apache::geode::client::serializer::writeArrayObject(output, m_value);
+  }
 
-_GEODE_CACHEABLE_ARRAY_TYPE_DEF_(int32_t, CacheableInt32Array);
-/**
- * An immutable wrapper for array of 32-bit integers that can serve as
- * a distributable object for caching.
- */
-_GEODE_CACHEABLE_ARRAY_TYPE_(int32_t, CacheableInt32Array);
+  virtual void fromData(DataInput& input) override {
+    m_value = apache::geode::client::serializer::readArrayObject<T>(input);
+  }
 
-_GEODE_CACHEABLE_ARRAY_TYPE_DEF_(int64_t, CacheableInt64Array);
-/**
- * An immutable wrapper for array of 64-bit integers that can serve as
- * a distributable object for caching.
- */
-_GEODE_CACHEABLE_ARRAY_TYPE_(int64_t, CacheableInt64Array);
+  virtual int32_t classId() const override { return 0; }
+
+  virtual int8_t typeId() const override {
+    if (std::is_same<T, double>::value) {
+      return GeodeTypeIds::CacheableDoubleArray;
+    } else if (std::is_same<T, float>::value) {
+      return GeodeTypeIds::CacheableFloatArray;
+    } else if (std::is_same<T, int64_t>::value) {
+      return GeodeTypeIds::CacheableInt64Array;
+    } else if (std::is_same<T, int32_t>::value) {
+      return GeodeTypeIds::CacheableInt32Array;
+    } else if (std::is_same<T, int16_t>::value) {
+      return GeodeTypeIds::CacheableInt16Array;
+    } else if (std::is_same<T, char16_t>::value) {
+      return GeodeTypeIds::CharArray;
+    } else if (std::is_same<T, bool>::value) {
+      return GeodeTypeIds::BooleanArray;
+    }
+
+    return GeodeTypeIds::NullObj;
+  }
+
+  virtual size_t objectSize() const override {
+    return static_cast<uint32_t>(
+        apache::geode::client::serializer::objectArraySize(m_value));
+  }
+
+ private:
+  CacheableArray(const CacheableArray& other) = delete;
+  CacheableArray& operator=(const CacheableArray& other) = delete;
+  std::vector<T> m_value;
+
+ public:
+  inline CacheableArray() {}
+  inline CacheableArray(int32_t length) : m_value(length) {}
+  inline CacheableArray(std::vector<T> value) : m_value(value) {}
+
+  inline const std::vector<T> value() const { return m_value; }
+  inline int32_t length() const { return m_value.size(); }
+  static Serializable* createDeserializable() { return new CacheableArray<T>(); }
+  inline static std::shared_ptr<CacheableArray<T>> create() {
+    return std::make_shared<CacheableArray<T>>();
+  }
+  inline static std::shared_ptr<CacheableArray<T>> create(int32_t length) {
+    return std::make_shared<CacheableArray<T>>(length);
+  }
+  inline static std::shared_ptr<CacheableArray<T>> create(const std::vector<T> value) {
+    return std::make_shared<CacheableArray<T>>(value);
+  }
+};
 
 _GEODE_CACHEABLE_ARRAY_TYPE_DEF_(std::shared_ptr<CacheableString>,
                                  CacheableStringArray);

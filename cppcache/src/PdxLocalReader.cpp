@@ -141,63 +141,44 @@ std::shared_ptr<Serializable> PdxLocalReader::readObject(
   }
 }
 
-char16_t* PdxLocalReader::readCharArray(
-    const std::string& fieldName,
-    int32_t& length) {  // TODO:: need to return
-  // Length to user for
-  // all primitive arrays
-  char16_t* charArray = nullptr;
-  m_dataInput->readCharArray(&charArray, length);
-  return charArray;
+std::vector<char16_t> PdxLocalReader::readCharArray(
+    const std::string& fieldName) {
+  return m_dataInput->readCharArray();
 }
 
-bool* PdxLocalReader::readBooleanArray(const std::string& fieldName,
-                                       int32_t& length) {
-  bool* boolArray = nullptr;
-  m_dataInput->readBooleanArray(&boolArray, length);
-  return boolArray;
+std::vector<bool> PdxLocalReader::readBooleanArray(
+   const std::string& fieldName) {
+  return m_dataInput->readBooleanArray();
 }
 
-int8_t* PdxLocalReader::readByteArray(const std::string& fieldName,
-                                      int32_t& length) {
-  int8_t* byteArray = nullptr;
-  m_dataInput->readByteArray(&byteArray, length);
-  return byteArray;
+std::vector<int8_t> PdxLocalReader::readByteArray(
+    const std::string& fieldName) {
+  return m_dataInput->readByteArray();
 }
 
-int16_t* PdxLocalReader::readShortArray(const std::string& fieldName,
-                                        int32_t& length) {
-  int16_t* shortArray = nullptr;
-  m_dataInput->readShortArray(&shortArray, length);
-  return shortArray;
+std::vector<int16_t> PdxLocalReader::readShortArray(
+    const std::string& fieldName) {
+  return m_dataInput->readShortArray();
 }
 
-int32_t* PdxLocalReader::readIntArray(const std::string& fieldName,
-                                      int32_t& length) {
-  int32_t* intArray = nullptr;
-  m_dataInput->readIntArray(&intArray, length);
-  return intArray;
+std::vector<int32_t> PdxLocalReader::readIntArray(
+    const std::string& fieldName) {
+  return m_dataInput->readIntArray();
 }
 
-int64_t* PdxLocalReader::readLongArray(const std::string& fieldName,
-                                       int32_t& length) {
-  int64_t* longArray = nullptr;
-  m_dataInput->readLongArray(&longArray, length);
-  return longArray;
+std::vector<int64_t> PdxLocalReader::readLongArray(
+    const std::string& fieldName) {
+  return m_dataInput->readLongArray();
 }
 
-float* PdxLocalReader::readFloatArray(const std::string& fieldName,
-                                      int32_t& length) {
-  float* floatArray = nullptr;
-  m_dataInput->readFloatArray(&floatArray, length);
-  return floatArray;
+std::vector<float> PdxLocalReader::readFloatArray(
+    const std::string& fieldName) {
+  return m_dataInput->readFloatArray();
 }
 
-double* PdxLocalReader::readDoubleArray(const std::string& fieldName,
-                                        int32_t& length) {
-  double* doubleArray = nullptr;
-  m_dataInput->readDoubleArray(&doubleArray, length);
-  return doubleArray;
+std::vector<double> PdxLocalReader::readDoubleArray(
+    const std::string& fieldName) {
+  return m_dataInput->readDoubleArray();
 }
 
 std::vector<std::string> PdxLocalReader::readStringArray(
