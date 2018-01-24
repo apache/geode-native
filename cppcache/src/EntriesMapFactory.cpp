@@ -60,7 +60,8 @@ EntriesMap* EntriesMapFactory::createMap(
     } else {
       return nullptr;
     }
-    if (ttl.count() != 0 || idle.count() != 0) {
+    if (ttl > std::chrono::seconds::zero() ||
+        idle > std::chrono::seconds::zero()) {
       result = new LRUEntriesMap(
           &expiryTaskmanager,
           std::unique_ptr<LRUExpEntryFactory>(
@@ -75,7 +76,8 @@ EntriesMap* EntriesMapFactory::createMap(
           region, lruEvictionAction, lruLimit, concurrencyChecksEnabled,
           concurrency, heapLRUEnabled);
     }
-  } else if (ttl.count() > 0 || idle.count() > 0) {
+  } else if (ttl > std::chrono::seconds::zero() ||
+             idle > std::chrono::seconds::zero()) {
     // create entries with a ExpEntryFactory.
     result = new ConcurrentEntriesMap(
         &expiryTaskmanager,

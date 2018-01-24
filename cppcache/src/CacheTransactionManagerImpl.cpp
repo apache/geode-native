@@ -450,7 +450,7 @@ void CacheTransactionManagerImpl::resumeTxUsingTxState(TXState* txState,
         txState->getSuspendedExpiryTaskId());
   } else {
     m_cache->getExpiryTaskManager().resetTask(
-        txState->getSuspendedExpiryTaskId(), std::chrono::seconds(0));
+        txState->getSuspendedExpiryTaskId(), std::chrono::seconds::zero());
   }
 
   // set the current state as the state of the suspended transaction

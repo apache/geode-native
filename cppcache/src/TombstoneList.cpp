@@ -48,7 +48,7 @@ long TombstoneList::getExpiryTask(TombstoneExpiryHandler** handler) {
                                         m_cacheImpl);
   tombstoneEntryPtr->setHandler(*handler);
   long id = m_cacheImpl->getExpiryTaskManager().scheduleExpiryTask(
-      *handler, duration, std::chrono::seconds(0));
+      *handler, duration, std::chrono::seconds::zero());
   return id;
 }
 

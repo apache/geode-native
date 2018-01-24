@@ -38,7 +38,7 @@ using std::chrono::nanoseconds;
 
 const char* PoolStatsSampler::NC_PSS_Thread = "NC PSS Thread";
 
-PoolStatsSampler::PoolStatsSampler(int64_t sampleRate, CacheImpl* cache,
+PoolStatsSampler::PoolStatsSampler(milliseconds sampleRate, CacheImpl* cache,
                                    ThinClientPoolDM* distMan)
     : m_sampleRate(sampleRate),
       m_distMan(distMan),
@@ -57,14 +57,13 @@ PoolStatsSampler::~PoolStatsSampler() {
 int32_t PoolStatsSampler::svc() {
   DistributedSystemImpl::setThreadName(NC_PSS_Thread);
   auto msSpentWorking = milliseconds::zero();
-  auto samplingRate = milliseconds(m_sampleRate);
   // ACE_Guard < ACE_Recursive_Thread_Mutex > _guard( m_lock );
   while (!m_stopRequested) {
     auto sampleStart = high_resolution_clock::now();
     putStatsInAdminRegion();
     nanoseconds spentWorking = high_resolution_clock::now() - sampleStart;
     auto sleepDuration =
-        samplingRate - duration_cast<milliseconds>(spentWorking);
+        m_sampleRate - duration_cast<milliseconds>(spentWorking);
     static const auto wakeInterval = milliseconds(100);
     while (!m_stopRequested && sleepDuration > milliseconds::zero()) {
       std::this_thread::sleep_for(sleepDuration > wakeInterval ? wakeInterval

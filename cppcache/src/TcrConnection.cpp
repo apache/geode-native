@@ -1407,7 +1407,7 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
   }
 }
 bool TcrConnection::hasExpired(const std::chrono::milliseconds& expiryTime) {
-  if (expiryTime.count() < 0) {
+  if (expiryTime <= std::chrono::milliseconds::zero()) {
     return false;
   }
 
@@ -1421,7 +1421,7 @@ bool TcrConnection::hasExpired(const std::chrono::milliseconds& expiryTime) {
 }
 
 bool TcrConnection::isIdle(const std::chrono::milliseconds& idleTime) {
-  if (idleTime.count() < 0) {
+  if (idleTime <= std::chrono::milliseconds::zero()) {
     return false;
   }
 

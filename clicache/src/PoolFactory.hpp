@@ -75,11 +75,11 @@ namespace Apache
         /// </remarks>
         /// <param>
         /// loadConditioningInterval the connection lifetime
-        /// A value of -1 disables load conditioning.
+        /// A value of 0 disables load conditioning.
         /// </param>
         /// <exception>
         /// throws IllegalArgumentException if connectionLifetime
-        /// is less than -1.
+        /// is less than 0.
         /// </exception>
         PoolFactory^ SetLoadConditioningInterval(TimeSpan loadConditioningInterval);
 
@@ -156,7 +156,7 @@ namespace Apache
         /// </remarks>
         /// <param>
         /// idleTimeout The amount of time that an idle connection
-        /// should live before expiring. -1 indicates that connections should never expire.
+        /// should live before expiring. 0 indicates that connections should never expire.
         /// </param>
         /// <exception>
         /// throws IllegalArgumentException if idleTimout is less than 0.
@@ -213,7 +213,7 @@ namespace Apache
         /// </summary>
         /// <remarks>
         /// Doing this allows gfmon to monitor clients.
-        /// A value of -1 disables the sending of client statistics
+        /// A value of 0 disables the sending of client statistics
         /// to the server.
         /// </remarks>
         /// <param>
@@ -222,7 +222,7 @@ namespace Apache
         /// </param>
         /// <exception>
         /// throws IllegalArgumentException if statisticInterval
-        /// is less than -1.
+        /// is less than 0.
         /// </exception>
         PoolFactory^ SetStatisticInterval(TimeSpan statisticInterval);
 
