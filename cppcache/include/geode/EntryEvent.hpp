@@ -24,7 +24,7 @@
 
 #include "CacheableKey.hpp"
 #include "Region.hpp"
-#include "geode/Cacheable.hpp"
+#include "geode/Serializable.hpp"
 #include "internal/geode_globals.hpp"
 
 /** @file

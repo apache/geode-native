@@ -25,7 +25,7 @@
 #include <utility>
 
 #include <geode/internal/geode_globals.hpp>
-#include <geode/Cacheable.hpp>
+#include <geode/Serializable.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/ExceptionTypes.hpp>
 

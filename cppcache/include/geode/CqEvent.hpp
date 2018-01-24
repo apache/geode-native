@@ -23,7 +23,7 @@
 #include "internal/geode_globals.hpp"
 #include "Exception.hpp"
 #include "CqOperation.hpp"
-#include "Cacheable.hpp"
+#include "Serializable.hpp"
 #include "CacheableKey.hpp"
 #include "CacheableBuiltins.hpp"
 

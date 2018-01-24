@@ -20,7 +20,7 @@
 #ifndef GEODE_VERSIONTAG_H_
 #define GEODE_VERSIONTAG_H_
 
-#include <geode/Cacheable.hpp>
+#include <geode/Serializable.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 #include "MemberListForVersionStamp.hpp"
 

@@ -27,7 +27,7 @@
  */
 
 #include <geode/internal/geode_globals.hpp>
-#include <geode/Cacheable.hpp>
+#include <geode/Serializable.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include "LocalRegion.hpp"

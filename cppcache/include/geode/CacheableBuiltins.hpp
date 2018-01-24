@@ -27,7 +27,7 @@
 
 #include <cstring>
 
-#include "Cacheable.hpp"
+#include "Serializable.hpp"
 #include "CacheableKey.hpp"
 #include "Serializer.hpp"
 #include "CacheableKeys.hpp"

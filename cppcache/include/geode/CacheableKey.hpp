@@ -25,7 +25,7 @@
 #include <unordered_set>
 
 #include "internal/geode_globals.hpp"
-#include "Cacheable.hpp"
+#include "Serializable.hpp"
 #include "internal/functional.hpp"
 
 /**

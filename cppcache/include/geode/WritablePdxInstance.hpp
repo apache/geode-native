@@ -22,7 +22,7 @@
 
 #include <memory>
 
-#include "Cacheable.hpp"
+#include "Serializable.hpp"
 #include "PdxInstance.hpp"
 
 namespace apache {

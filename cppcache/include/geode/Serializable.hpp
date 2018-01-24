@@ -140,6 +140,8 @@ class _GEODE_EXPORT Serializable {
   Serializable& operator=(const Serializable& other) = default;
 };
 
+typedef Serializable Cacheable;
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -23,7 +23,7 @@
 #include <memory>
 
 #include "internal/geode_globals.hpp"
-#include "Cacheable.hpp"
+#include "Serializable.hpp"
 
 /**
  * @file

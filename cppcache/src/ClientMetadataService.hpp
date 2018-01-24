@@ -27,7 +27,7 @@
 #include <ace/Task.h>
 
 #include <geode/CacheableKey.hpp>
-#include <geode/Cacheable.hpp>
+#include <geode/Serializable.hpp>
 #include <geode/Region.hpp>
 #include <geode/internal/functional.hpp>
 
