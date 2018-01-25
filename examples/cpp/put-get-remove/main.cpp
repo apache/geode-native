@@ -41,15 +41,15 @@ int main(int argc, char** argv) {
 
 
   std::cout << "Storing orders in the region" << std::endl;
-  region->put("a123","1983");
-  region->put("a124","1982");
+  region->put("a123",5);
+  region->put("a124",7);
 
 
   std::cout << "Getting the orders from the region" << std::endl;
   auto a123 = region->get("a123");
   auto a124 = region->get("a124");
-  std::cout << "a123 = " << a123->toString() << std::endl;
-  std::cout << "a124 = " << a124->toString() << std::endl;
+  std::cout << "a123 = " << std::dynamic_pointer_cast<CacheableInt32>(a123)->value() << std::endl;
+  std::cout << "a124 = " << std::dynamic_pointer_cast<CacheableInt32>(a124)->value() << std::endl;
 
 
   std::cout << "Removing order a123's info from the region" << std::endl;
