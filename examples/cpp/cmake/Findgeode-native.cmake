@@ -61,6 +61,12 @@ set(_GEODE_NATIVE_PATHS)
 
 if(_GEODE_NATIVE_ROOT)
     set(_GEODE_NATIVE_HINTS ${_GEODE_NATIVE_ROOT})
+else()
+    set(_GEODE_NATIVE_PATHS (
+        "/opt/local"
+        "/usr/local"
+        "../../../../"
+        "C:/program files" ))
 endif()
 
 set(_GEODE_NATIVE_NAMES apache-geode)
