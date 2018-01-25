@@ -549,6 +549,89 @@ namespace Apache
 
       // Built-in Cacheable array types
 
+      template <typename NativeArray, typename ManagedType, System::UInt32 GeodeClassId>
+      ref class CacheableArray : public CacheableBuiltinArray<
+          NativeArray, NativeArray, ManagedType, GeodeClassId> {
+      public:
+          /** <summary>
+          *  Static function to create a new instance copying
+          *  from the given array.
+          *  </summary>
+          *  <remarks>
+          *  Providing a null or zero size array will return a null object.
+          *  </remarks>
+          *  <param name="value">the array to create the new instance</param>
+          */
+          inline static CacheableArray^ Create(array<ManagedType>^ value)
+          {
+              return (value != nullptr /*&& value->Length > 0*/ ?
+                  gcnew CacheableArray(value) : nullptr);
+          }
+          /** <summary>
+          *  Static function to create a new instance copying
+          *  from the given array.
+          *  </summary>
+          *  <remarks>
+          *  Providing a null or zero size array will return a null object.
+          *  </remarks>
+          *  <param name="value">the array to create the new instance</param>
+          */
+          inline static CacheableArray^ Create(array<ManagedType>^ value, System::Int32 length)
+          {
+              return (value != nullptr && value->Length > 0 ?
+                  gcnew CacheableArray(value, length) : nullptr);
+          }
+          /** <summary>
+          * Explicit conversion operator to contained array type.
+          * </summary>
+          */
+          inline static explicit operator array<ManagedType> ^ (CacheableArray^ value)
+          {
+              return (value != nullptr ? value->Value : nullptr);
+          }
+          /** <summary>
+          * Factory function to register this class.
+          * </summary>
+          */
+          static IGeodeSerializable^ CreateDeserializable()
+          {
+              return gcnew CacheableArray();
+          }
+        internal:
+          static IGeodeSerializable^ Create(std::shared_ptr<native::Serializable> obj)
+          {
+              return (obj != nullptr ? gcnew CacheableArray(obj) : nullptr);
+          }
+        private:
+          /** <summary>
+          * Allocates a new instance
+          *  </summary>
+          */
+          inline CacheableArray() : CacheableBuiltinArray() { }
+          /** <summary>
+          * Allocates a new instance copying from the given array.
+          *  </summary>
+          *  <remarks>
+          *  Providing a null or zero size array will return a null object.
+          *  </remarks>
+          *  <param name="value">the array to create the new instance</param>
+          */
+          inline CacheableArray(array<ManagedType>^ value) : CacheableBuiltinArray(value) { }
+          /** <summary>
+          * Allocates a new instance copying given length from the
+          * start of given array.
+          *  </summary>
+          *  <remarks>
+          *  Providing a null or zero size array will return a null object.
+          *  </remarks>
+          *  <param name="value">the array to create the new instance</param>
+          */
+          inline CacheableArray(array<ManagedType>^ value, System::Int32 length)
+            : CacheableBuiltinArray(value, length) { }
+          inline CacheableArray(std::shared_ptr<native::Serializable> nativeptr)
+            : CacheableBuiltinArray(nativeptr) { }
+      };
+
       /// <summary>
       /// An immutable wrapper for byte arrays that can serve
       /// as a distributable object for caching.
@@ -559,43 +642,43 @@ namespace Apache
       /// An immutable wrapper for array of doubles that can serve
       /// as a distributable object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_ARRAY_DEF_NEW(CacheableDoubleArray, Double);
+      using CacheableDoubleArray = CacheableArray<native::CacheableArray<double>, Double, GeodeClassIds::CacheableDoubleArray>;
 
       /// <summary>
       /// An immutable wrapper for array of floats that can serve
       /// as a distributable object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_ARRAY_DEF_NEW(CacheableFloatArray, Single);
+      using CacheableFloatArray = CacheableArray<native::CacheableArray<float>, Single, GeodeClassIds::CacheableFloatArray>;
 
       /// <summary>
       /// An immutable wrapper for array of 16-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_ARRAY_DEF_NEW(CacheableInt16Array, System::Int16);
+      using CacheableInt16Array = CacheableArray<native::CacheableArray<int16_t>, System::Int16, GeodeClassIds::CacheableInt16Array>;
 
       /// <summary>
       /// An immutable wrapper for array of 32-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_ARRAY_DEF_NEW(CacheableInt32Array, System::Int32);
+      using CacheableInt32Array = CacheableArray<native::CacheableArray<int32_t>, System::Int32, GeodeClassIds::CacheableInt32Array>;
 
       /// <summary>
       /// An immutable wrapper for array of 64-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_ARRAY_DEF_NEW(CacheableInt64Array, System::Int64);
+      using CacheableInt64Array = CacheableArray<native::CacheableArray<int64_t>, System::Int64, GeodeClassIds::CacheableInt64Array>;
 
       /// <summary>
       /// An immutable wrapper for array of booleans that can serve
       /// as a distributable object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_ARRAY_DEF_NEW(BooleanArray, bool);
+      using BooleanArray = CacheableArray<native::CacheableArray<bool>, bool, GeodeClassIds::BooleanArray>;
 
       /// <summary>
       /// An immutable wrapper for array of 16-bit characters that can serve
       /// as a distributable object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_ARRAY_DEF_NEW(CharArray, Char);
+      using CharArray = CacheableArray<native::CacheableArray<char16_t>, Char, GeodeClassIds::CharArray>;
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
