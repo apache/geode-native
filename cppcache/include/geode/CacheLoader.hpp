@@ -26,7 +26,7 @@
 
 #include "internal/geode_globals.hpp"
 #include "CacheableKey.hpp"
-#include "Cacheable.hpp"
+#include "Serializable.hpp"
 
 namespace apache {
 namespace geode {

@@ -24,7 +24,7 @@
 #include <memory>
 #include <string>
 
-#include "Cacheable.hpp"
+#include "Serializable.hpp"
 #include "internal/geode_base.hpp"
 
 namespace apache {

@@ -28,7 +28,7 @@
 #include <geode/CacheStatistics.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableKey.hpp>
-#include <geode/Cacheable.hpp>
+#include <geode/Serializable.hpp>
 #include <geode/Cache.hpp>
 #include <geode/EntryEvent.hpp>
 #include <geode/RegionEvent.hpp>

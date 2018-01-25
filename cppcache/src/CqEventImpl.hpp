@@ -27,7 +27,7 @@
 #include <geode/CqOperation.hpp>
 #include <geode/CqQuery.hpp>
 #include <geode/CacheableKey.hpp>
-#include <geode/Cacheable.hpp>
+#include <geode/Serializable.hpp>
 #include <geode/Exception.hpp>
 
 namespace apache {

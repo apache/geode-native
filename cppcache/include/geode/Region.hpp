@@ -31,7 +31,7 @@
 #include "CacheableString.hpp"
 #include "CacheableString.hpp"
 #include "ExceptionTypes.hpp"
-#include "Cacheable.hpp"
+#include "Serializable.hpp"
 #include "AttributesFactory.hpp"
 #include "AttributesMutator.hpp"
 #include "CacheListener.hpp"

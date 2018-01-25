@@ -25,7 +25,7 @@
 #include <geode/internal/geode_globals.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
-#include <geode/Cacheable.hpp>
+#include <geode/Serializable.hpp>
 
 #include "MapWithLock.hpp"
 #include "HashMapOfException.hpp"

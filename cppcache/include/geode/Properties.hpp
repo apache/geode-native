@@ -29,7 +29,7 @@
 
 #include "internal/geode_globals.hpp"
 #include "Serializable.hpp"
-#include "Cacheable.hpp"
+#include "Serializable.hpp"
 #include "internal/chrono/duration.hpp"
 
 namespace apache {

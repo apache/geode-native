@@ -28,7 +28,7 @@
 #include <ace/OS.h>
 
 #include <geode/internal/geode_globals.hpp>
-#include <geode/Cacheable.hpp>
+#include <geode/Serializable.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/DataOutput.hpp>
