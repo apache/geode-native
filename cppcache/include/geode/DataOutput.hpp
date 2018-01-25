@@ -112,7 +112,7 @@ class _GEODE_EXPORT DataOutput {
    * @param value the array of unsigned bytes to be written
    * @param len the number of bytes from the start of array to be written
    */
-  inline void writeBytesOnly(const uint8_t* bytes, uint32_t len) {
+  inline void writeBytesOnly(const uint8_t* bytes, size_t len) {
     ensureCapacity(len);
     std::memcpy(m_buf, bytes, len);
     m_buf += len;
@@ -129,7 +129,7 @@ class _GEODE_EXPORT DataOutput {
    * @param value the array of signed bytes to be written
    * @param len the number of bytes from the start of array to be written
    */
-  inline void writeBytesOnly(const int8_t* bytes, uint32_t len) {
+  inline void writeBytesOnly(const int8_t* bytes, size_t len) {
     writeBytesOnly(reinterpret_cast<const uint8_t*>(bytes), len);
   }
 
@@ -376,7 +376,7 @@ class _GEODE_EXPORT DataOutput {
    *
    * @param offset the offset by which to advance the cursor
    */
-  void advanceCursor(uint32_t offset) {
+  void advanceCursor(size_t offset) {
     ensureCapacity(offset);
     m_buf += offset;
   }
@@ -386,13 +386,13 @@ class _GEODE_EXPORT DataOutput {
    *
    * @param offset the offset by which to rewind the cursor
    */
-  void rewindCursor(uint32_t offset) { m_buf -= offset; }
+  void rewindCursor(size_t offset) { m_buf -= offset; }
 
-  void updateValueAtPos(uint32_t offset, uint8_t value) {
+  void updateValueAtPos(size_t offset, uint8_t value) {
     m_bytes[offset] = value;
   }
 
-  uint8_t getValueAtPos(uint32_t offset) { return m_bytes[offset]; }
+  uint8_t getValueAtPos(size_t offset) { return m_bytes[offset]; }
   /** Destruct a DataOutput, including releasing the created buffer. */
   ~DataOutput() {
     reset();
@@ -410,7 +410,7 @@ class _GEODE_EXPORT DataOutput {
   /**
    * Get a pointer to the internal buffer of <code>DataOutput</code>.
    */
-  inline uint32_t getRemainingBufferLength() const {
+  inline size_t getRemainingBufferLength() const {
     // GF_R_ASSERT(!((uint32_t)(m_bytes) % 4));
     return m_size - getBufferLength();
   }
@@ -421,14 +421,14 @@ class _GEODE_EXPORT DataOutput {
    * @param rsize the size of buffer is filled in this output parameter;
    *   should not be nullptr
    */
-  inline const uint8_t* getBuffer(uint32_t* rsize) const {
-    *rsize = static_cast<uint32_t>(m_buf - m_bytes);
+  inline const uint8_t* getBuffer(size_t* rsize) const {
+    *rsize = m_buf - m_bytes;
     // GF_R_ASSERT(!((uint32_t)(m_bytes) % 4));
     return m_bytes;
   }
 
   inline uint8_t* getBufferCopy() {
-    uint32_t size = static_cast<uint32_t>(m_buf - m_bytes);
+    size_t size = m_buf - m_bytes;
     uint8_t* result;
     result = (uint8_t*)std::malloc(size * sizeof(uint8_t));
     if (result == nullptr) {
@@ -442,9 +442,7 @@ class _GEODE_EXPORT DataOutput {
    * Get the length of current data in the internal buffer of
    * <code>DataOutput</code>.
    */
-  inline uint32_t getBufferLength() const {
-    return static_cast<uint32_t>(m_buf - m_bytes);
-  }
+  inline size_t getBufferLength() const { return m_buf - m_bytes; }
 
   /**
    * Reset the internal cursor to the start of the buffer.
@@ -468,10 +466,10 @@ class _GEODE_EXPORT DataOutput {
   }
 
   // make sure there is room left for the requested size item.
-  inline void ensureCapacity(uint32_t size) {
-    uint32_t offset = static_cast<uint32_t>(m_buf - m_bytes);
+  inline void ensureCapacity(size_t size) {
+    size_t offset = m_buf - m_bytes;
     if ((m_size - offset) < size) {
-      uint32_t newSize = m_size * 2 + (8192 * (size / 8192));
+      size_t newSize = m_size * 2 + (8192 * (size / 8192));
       if (newSize >= m_highWaterMark && !m_haveBigBuffer) {
         // acquire the lock
         acquireLock();
@@ -489,7 +487,7 @@ class _GEODE_EXPORT DataOutput {
     }
   }
 
-  uint8_t* getBufferCopyFrom(const uint8_t* from, uint32_t length) {
+  uint8_t* getBufferCopyFrom(const uint8_t* from, size_t length) {
     uint8_t* result;
     _GEODE_NEW(result, uint8_t[length]);
     std::memcpy(result, from, length);
@@ -522,10 +520,10 @@ class _GEODE_EXPORT DataOutput {
   // cursor.
   uint8_t* m_buf;
   // size of m_bytes.
-  uint32_t m_size;
+  size_t m_size;
   // high and low water marks for buffer size
-  static uint32_t m_lowWaterMark;
-  static uint32_t m_highWaterMark;
+  static size_t m_lowWaterMark;
+  static size_t m_highWaterMark;
   // flag to indicate we have a big buffer
   volatile bool m_haveBigBuffer;
   const CacheImpl* m_cache;
@@ -653,7 +651,7 @@ class _GEODE_EXPORT DataOutput {
   }
 
   inline void writeUtf16(const char16_t* data, size_t length) {
-    ensureCapacity(static_cast<uint32_t>(length) * 2);
+    ensureCapacity(length * 2);
     for (; length > 0; length--, data++) {
       writeNoCheck(static_cast<uint8_t>(*data >> 8));
       writeNoCheck(static_cast<uint8_t>(*data));
@@ -748,8 +746,8 @@ class _GEODE_EXPORT DataOutput {
     m_poolName = std::ref(poolName);
   }
 
-  static uint8_t* checkoutBuffer(uint32_t* size);
-  static void checkinBuffer(uint8_t* buffer, uint32_t size);
+  static uint8_t* checkoutBuffer(size_t* size);
+  static void checkinBuffer(uint8_t* buffer, size_t size);
 
   // disable copy constructor and assignment
   DataOutput(const DataOutput&);

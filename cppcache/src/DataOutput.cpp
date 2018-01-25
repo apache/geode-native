@@ -37,16 +37,16 @@ namespace client {
 using namespace internal;
 
 ACE_Recursive_Thread_Mutex g_bigBufferLock;
-uint32_t DataOutput::m_highWaterMark = 50 * 1024 * 1024;
-uint32_t DataOutput::m_lowWaterMark = 8192;
+size_t DataOutput::m_highWaterMark = 50 * 1024 * 1024;
+size_t DataOutput::m_lowWaterMark = 8192;
 
 /** This represents a allocation in this thread local pool. */
 class BufferDesc {
  public:
   uint8_t* m_buf;
-  uint32_t m_size;
+  size_t m_size;
 
-  BufferDesc(uint8_t* buf, uint32_t size) : m_buf(buf), m_size(size) {}
+  BufferDesc(uint8_t* buf, size_t size) : m_buf(buf), m_size(size) {}
 
   BufferDesc() : m_buf(nullptr), m_size(0) {}
 
@@ -73,7 +73,7 @@ class TSSDataOutput {
   TSSDataOutput();
   ~TSSDataOutput();
 
-  uint8_t* getBuffer(uint32_t* size) {
+  uint8_t* getBuffer(size_t* size) {
     if (!m_buffers.empty()) {
       BufferDesc desc = m_buffers.back();
       m_buffers.pop_back();
@@ -90,7 +90,7 @@ class TSSDataOutput {
     }
   }
 
-  void poolBuffer(uint8_t* buf, uint32_t size) {
+  void poolBuffer(uint8_t* buf, size_t size) {
     BufferDesc desc(buf, size);
     m_buffers.push_back(desc);
   }
@@ -121,11 +121,11 @@ DataOutput::DataOutput(const CacheImpl* cache)
   m_buf = m_bytes = DataOutput::checkoutBuffer(&m_size);
 }
 
-uint8_t* DataOutput::checkoutBuffer(uint32_t* size) {
+uint8_t* DataOutput::checkoutBuffer(size_t* size) {
   return TSSDataOutput::s_tssDataOutput->getBuffer(size);
 }
 
-void DataOutput::checkinBuffer(uint8_t* buffer, uint32_t size) {
+void DataOutput::checkinBuffer(uint8_t* buffer, size_t size) {
   TSSDataOutput::s_tssDataOutput->poolBuffer(buffer, size);
 }
 

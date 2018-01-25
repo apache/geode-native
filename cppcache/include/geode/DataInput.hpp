@@ -89,7 +89,7 @@ class _GEODE_EXPORT DataInput {
    * @param buffer array to hold the bytes read from stream
    * @param len number of unsigned bytes to be read
    */
-  inline void readBytesOnly(uint8_t* buffer, uint32_t len) {
+  inline void readBytesOnly(uint8_t* buffer, size_t len) {
     if (len > 0) {
       _GEODE_CHECK_BUFFER_SIZE(len);
       std::memcpy(buffer, m_buf, len);
@@ -107,7 +107,7 @@ class _GEODE_EXPORT DataInput {
    * @param buffer array to hold the bytes read from stream
    * @param len number of signed bytes to be read
    */
-  inline void readBytesOnly(int8_t* buffer, uint32_t len) {
+  inline void readBytesOnly(int8_t* buffer, size_t len) {
     if (len > 0) {
       _GEODE_CHECK_BUFFER_SIZE(len);
       std::memcpy(buffer, m_buf, len);
@@ -494,20 +494,18 @@ class _GEODE_EXPORT DataInput {
   inline const uint8_t* currentBufferPosition() const { return m_buf; }
 
   /** get the number of bytes read in the buffer */
-  inline int32_t getBytesRead() const {
-    return static_cast<int32_t>(m_buf - m_bufHead);
-  }
+  inline size_t getBytesRead() const { return m_buf - m_bufHead; }
 
   /** get the number of bytes remaining to be read in the buffer */
-  inline int32_t getBytesRemaining() const {
+  inline size_t getBytesRemaining() const {
     return (m_bufLength - getBytesRead());
   }
 
   /** advance the cursor by given offset */
-  inline void advanceCursor(int32_t offset) { m_buf += offset; }
+  inline void advanceCursor(size_t offset) { m_buf += offset; }
 
   /** rewind the cursor by given offset */
-  inline void rewindCursor(int32_t offset) { m_buf -= offset; }
+  inline void rewindCursor(size_t offset) { m_buf -= offset; }
 
   /** reset the cursor to the start of buffer */
   inline void reset() { m_buf = m_bufHead; }
@@ -517,11 +515,11 @@ class _GEODE_EXPORT DataInput {
     m_bufLength = getBytesRemaining();
   }
 
-  inline void resetPdx(int32_t offset) { m_buf = m_bufHead + offset; }
+  inline void resetPdx(size_t offset) { m_buf = m_bufHead + offset; }
 
   inline int32_t getPdxBytes() const { return m_bufLength; }
 
-  static uint8_t* getBufferCopy(const uint8_t* from, uint32_t length) {
+  static uint8_t* getBufferCopy(const uint8_t* from, size_t length) {
     uint8_t* result;
     _GEODE_NEW(result, uint8_t[length]);
     std::memcpy(result, from, length);
@@ -529,9 +527,9 @@ class _GEODE_EXPORT DataInput {
     return result;
   }
 
-  inline void reset(int32_t offset) { m_buf = m_bufHead + offset; }
+  inline void reset(size_t offset) { m_buf = m_bufHead + offset; }
 
-  uint8_t* getBufferCopyFrom(const uint8_t* from, uint32_t length) {
+  uint8_t* getBufferCopyFrom(const uint8_t* from, size_t length) {
     uint8_t* result;
     _GEODE_NEW(result, uint8_t[length]);
     std::memcpy(result, from, length);
@@ -543,7 +541,7 @@ class _GEODE_EXPORT DataInput {
 
  protected:
   /** constructor given a pre-allocated byte array with size */
-  DataInput(const uint8_t* m_buffer, int32_t len, const CacheImpl* cache)
+  DataInput(const uint8_t* m_buffer, size_t len, const CacheImpl* cache)
       : m_buf(m_buffer),
         m_bufHead(m_buffer),
         m_bufLength(len),
@@ -555,7 +553,7 @@ class _GEODE_EXPORT DataInput {
  private:
   const uint8_t* m_buf;
   const uint8_t* m_bufHead;
-  int32_t m_bufLength;
+  size_t m_bufLength;
   std::reference_wrapper<const std::string> m_poolName;
   const CacheImpl* m_cache;
 
@@ -580,7 +578,7 @@ class _GEODE_EXPORT DataInput {
 
   inline char readPdxChar() { return static_cast<char>(readInt16()); }
 
-  inline void _checkBufferSize(int32_t size, int32_t line) {
+  inline void _checkBufferSize(size_t size, int32_t line) {
     if ((m_bufLength - (m_buf - m_bufHead)) < size) {
       throw OutOfRangeException(
           "DataInput: attempt to read beyond buffer at line " +
@@ -646,7 +644,7 @@ class _GEODE_EXPORT DataInput {
   template <class CharT, class... Tail>
   inline void readAscii(std::basic_string<CharT, Tail...>& value,
                         size_t length) {
-    _GEODE_CHECK_BUFFER_SIZE(static_cast<int32_t>(length));
+    _GEODE_CHECK_BUFFER_SIZE(length);
     value.reserve(length);
     while (length-- > 0) {
       // blindly assumes ASCII so mask off 7 bits

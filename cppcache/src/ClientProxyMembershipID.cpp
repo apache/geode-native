@@ -143,7 +143,7 @@ void ClientProxyMembershipID::initObjectVars(
     int32ptr->toData(m_memID);
   }
   writeVersion(Version::getOrdinal(), m_memID);
-  uint32_t len;
+  size_t len;
   char* buf = (char*)m_memID.getBuffer(&len);
   m_memIDStr.append(buf, len);
 
