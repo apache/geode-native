@@ -32,13 +32,13 @@ namespace client {
  * Function pointer type which takes a void pointer to an instance of a user
  * object to delete and class name.
  */
-typedef void (*UserDeallocator)(void*, const std::string&);
+using UserDeallocator = std::function<void(void*, const std::string&)>;
 
 /**
  * Function pointer type which takes a void pointer to an instance of a user
  * object and class name to return the size of the user object.
  */
-typedef uint32_t (*UserObjectSizer)(void*, const std::string&);
+using UserObjectSizer = std::function<size_t(const void*, const std::string&)>;
 
 /**
  * The PdxSerializer class allows domain classes to be
