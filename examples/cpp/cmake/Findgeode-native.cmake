@@ -61,13 +61,6 @@ set(_GEODE_NATIVE_PATHS)
 
 if(_GEODE_NATIVE_ROOT)
     set(_GEODE_NATIVE_HINTS ${_GEODE_NATIVE_ROOT})
-else()
-    set(_GEODE_NATIVE_PATHS
-        "/usr/local/geode-native"
-        "/usr/local"
-        "/opt/local/geode-native"
-        "/opt/local"
-        )
 endif()
 
 set(_GEODE_NATIVE_NAMES apache-geode)
@@ -76,7 +69,7 @@ find_library(GEODE_NATIVE_LIBRARY
     NAMES ${_GEODE_NATIVE_NAMES}
     HINTS ${_GEODE_NATIVE_HINTS}
     PATHS ${_GEODE_NATIVE_PATHS}
-    PATH_SUFFIXES lib
+    PATH_SUFFIXES geode-native/lib
 )
 
 
@@ -85,7 +78,7 @@ find_library(GEODE_NATIVE_LIBRARY
 find_path(GEODE_NATIVE_INCLUDE_DIR NAMES geode/CacheFactory.hpp
     HINTS ${_GEODE_NATIVE_HINTS}
     PATHS ${_GEODE_NATIVE_PATHS}
-    PATH_SUFFIXES include
+    PATH_SUFFIXES geode-native/include
 )
 
 # TODO find version
