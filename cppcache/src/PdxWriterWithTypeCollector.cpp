@@ -180,7 +180,7 @@ PdxWriter& PdxWriterWithTypeCollector::writeObject(
   return *this;
 }
 PdxWriter& PdxWriterWithTypeCollector::writeBooleanArray(
-    const std::string& fieldName, std::vector<bool> array) {
+    const std::string& fieldName, const std::vector<bool>& array) {
   m_pdxType->addVariableLengthTypeField(fieldName, "bool[]",
                                         PdxFieldTypes::BOOLEAN_ARRAY);
   PdxLocalWriter::writeBooleanArray(fieldName, array);
@@ -188,7 +188,7 @@ PdxWriter& PdxWriterWithTypeCollector::writeBooleanArray(
 }
 
 PdxWriter& PdxWriterWithTypeCollector::writeCharArray(
-    const std::string& fieldName, std::vector<char16_t> array) {
+    const std::string& fieldName, const std::vector<char16_t>& array) {
   m_pdxType->addVariableLengthTypeField(fieldName, "char[]",
                                         PdxFieldTypes::CHAR_ARRAY);
   PdxLocalWriter::writeCharArray(fieldName, array);
@@ -196,42 +196,42 @@ PdxWriter& PdxWriterWithTypeCollector::writeCharArray(
 }
 
 PdxWriter& PdxWriterWithTypeCollector::writeByteArray(
-    const std::string& fieldName, std::vector<int8_t> array) {
+    const std::string& fieldName, const std::vector<int8_t>& array) {
   m_pdxType->addVariableLengthTypeField(fieldName, "byte[]",
                                         PdxFieldTypes::BYTE_ARRAY);
   PdxLocalWriter::writeByteArray(fieldName, array);
   return *this;
 }
 PdxWriter& PdxWriterWithTypeCollector::writeShortArray(
-    const std::string& fieldName, std::vector<int16_t> array) {
+    const std::string& fieldName, const std::vector<int16_t>& array) {
   m_pdxType->addVariableLengthTypeField(fieldName, "short[]",
                                         PdxFieldTypes::SHORT_ARRAY);
   PdxLocalWriter::writeShortArray(fieldName, array);
   return *this;
 }
 PdxWriter& PdxWriterWithTypeCollector::writeIntArray(
-    const std::string& fieldName, std::vector<int32_t> array) {
+    const std::string& fieldName, const std::vector<int32_t>& array) {
   m_pdxType->addVariableLengthTypeField(fieldName, "int[]",
                                         PdxFieldTypes::INT_ARRAY);
   PdxLocalWriter::writeIntArray(fieldName, array);
   return *this;
 }
 PdxWriter& PdxWriterWithTypeCollector::writeLongArray(
-    const std::string& fieldName, std::vector<int64_t> array) {
+    const std::string& fieldName, const std::vector<int64_t>& array) {
   m_pdxType->addVariableLengthTypeField(fieldName, "long[]",
                                         PdxFieldTypes::LONG_ARRAY);
   PdxLocalWriter::writeLongArray(fieldName, array);
   return *this;
 }
 PdxWriter& PdxWriterWithTypeCollector::writeFloatArray(
-    const std::string& fieldName, std::vector<float> array) {
+    const std::string& fieldName, const std::vector<float>& array) {
   m_pdxType->addVariableLengthTypeField(fieldName, "float[]",
                                         PdxFieldTypes::FLOAT_ARRAY);
   PdxLocalWriter::writeFloatArray(fieldName, array);
   return *this;
 }
 PdxWriter& PdxWriterWithTypeCollector::writeDoubleArray(
-    const std::string& fieldName, std::vector<double> array) {
+    const std::string& fieldName, const std::vector<double>& array) {
   m_pdxType->addVariableLengthTypeField(fieldName, "double[]",
                                         PdxFieldTypes::DOUBLE_ARRAY);
   PdxLocalWriter::writeDoubleArray(fieldName, array);

@@ -114,9 +114,8 @@ class PdxLocalWriter : public PdxWriter {
   void writeArrayObject(std::vector<mType> array) {
     m_dataOutput->writeArrayLen(array.size());
     if (array.size() > 0) {
-      int i = 0;
-      for (i = 0; i < array.size(); i++) {
-        writeObject(array[i]);
+      for (auto&& obj : array) {
+        writeObject(obj);
       }
     }
   }
@@ -155,29 +154,37 @@ class PdxLocalWriter : public PdxWriter {
       const std::string& fieldName,
       std::shared_ptr<Serializable> value) override;
 
-  virtual PdxWriter& writeBooleanArray(const std::string& fieldName,
-                                       std::vector<bool> array) override;
+  virtual PdxWriter& writeBooleanArray(
+      const std::string& fieldName,
+      const std::vector<bool>& array) override;
 
   virtual PdxWriter& writeCharArray(
-      const std::string& fieldName, std::vector<char16_t> array) override;
+      const std::string& fieldName,
+      const std::vector<char16_t>& array) override;
 
-  virtual PdxWriter& writeByteArray(const std::string& fieldName,
-                                    std::vector<int8_t> array) override;
+  virtual PdxWriter& writeByteArray(
+      const std::string& fieldName,
+      const std::vector<int8_t>& array) override;
 
-  virtual PdxWriter& writeShortArray(const std::string& fieldName,
-                                     std::vector<int16_t> array) override;
+  virtual PdxWriter& writeShortArray(
+      const std::string& fieldName,
+      const std::vector<int16_t>& array) override;
 
-  virtual PdxWriter& writeIntArray(const std::string& fieldName,
-                                   std::vector<int32_t> array) override;
+  virtual PdxWriter& writeIntArray(
+      const std::string& fieldName,
+      const std::vector<int32_t>& array) override;
 
-  virtual PdxWriter& writeLongArray(const std::string& fieldName,
-                                    std::vector<int64_t> array) override;
+  virtual PdxWriter& writeLongArray(
+      const std::string& fieldName,
+      const std::vector<int64_t>& array) override;
 
-  virtual PdxWriter& writeFloatArray(const std::string& fieldName,
-                                     std::vector<float> array) override;
+  virtual PdxWriter& writeFloatArray(
+      const std::string& fieldName,
+      const std::vector<float>& array) override;
 
-  virtual PdxWriter& writeDoubleArray(const std::string& fieldName,
-                                      std::vector<double> array) override;
+  virtual PdxWriter& writeDoubleArray(
+      const std::string& fieldName,
+      const std::vector<double>& array) override;
 
   virtual PdxWriter& writeStringArray(
       const std::string& fieldName,

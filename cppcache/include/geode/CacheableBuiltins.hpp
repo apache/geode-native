@@ -562,6 +562,14 @@ class _GEODE_EXPORT CacheableArray : public Cacheable {
   }
 };
 
+using BooleanArray = CacheableArray<bool>;
+using CharArray = CacheableArray<char16_t>;
+using CacheableDoubleArray = CacheableArray<double>;
+using CacheableFloatArray = CacheableArray<float>;
+using CacheableInt16Array = CacheableArray<int16_t>;
+using CacheableInt32Array = CacheableArray<int32_t>;
+using CacheableInt64Array = CacheableArray<int64_t>;
+
 _GEODE_CACHEABLE_ARRAY_TYPE_DEF_(std::shared_ptr<CacheableString>,
                                  CacheableStringArray);
 /**

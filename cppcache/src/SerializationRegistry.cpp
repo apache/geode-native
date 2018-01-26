@@ -69,12 +69,12 @@ void TheTypeMap::setup() {
 
   bind(CacheableByte::createDeserializable);
   bind(CacheableBoolean::createDeserializable);
-  bind(CacheableArray<bool>::createDeserializable);
+  bind(BooleanArray::createDeserializable);
   bind(CacheableBytes::createDeserializable);
   bind(CacheableFloat::createDeserializable);
-  bind(CacheableArray<float>::createDeserializable);
+  bind(CacheableFloatArray::createDeserializable);
   bind(CacheableDouble::createDeserializable);
-  bind(CacheableArray<double>::createDeserializable);
+  bind(CacheableDoubleArray::createDeserializable);
   bind(CacheableDate::createDeserializable);
   bind(CacheableFileName::createDeserializable);
   bind(CacheableHashMap::createDeserializable);
@@ -83,11 +83,11 @@ void TheTypeMap::setup() {
   bind(CacheableIdentityHashMap::createDeserializable);
   bind(CacheableLinkedHashSet::createDeserializable);
   bind(CacheableInt16::createDeserializable);
-  bind(CacheableArray<int16_t>::createDeserializable);
+  bind(CacheableInt16Array::createDeserializable);
   bind(CacheableInt32::createDeserializable);
-  bind(CacheableArray<int32_t>::createDeserializable);
+  bind(CacheableInt32Array::createDeserializable);
   bind(CacheableInt64::createDeserializable);
-  bind(CacheableArray<int64_t>::createDeserializable);
+  bind(CacheableInt64Array::createDeserializable);
   bind(CacheableObjectArray::createDeserializable);
   bind(CacheableString::createDeserializable);
   bind(CacheableString::createDeserializableHuge);
@@ -99,7 +99,7 @@ void TheTypeMap::setup() {
   bind(CacheableLinkedList::createDeserializable);
   bind(CacheableStack::createDeserializable);
   bind(CacheableCharacter::createDeserializable);
-  bind(CacheableArray<char16_t>::createDeserializable);
+  bind(CharArray::createDeserializable);
   bind(CacheableToken::createDeserializable);
   bind(RegionAttributes::createDeserializable);
   bind(Properties::createDeserializable);

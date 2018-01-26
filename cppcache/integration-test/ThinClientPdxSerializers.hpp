@@ -152,8 +152,7 @@ class TestPdxSerializer : public PdxSerializer {
       npt->m_ulong = pr.readLong("m_ulong");
       npt->m_uint32Array = pr.readIntArray("m_uint32Array");
       npt->m_ulongArray = pr.readLongArray("m_ulongArray");
-      npt->m_uint16Array =
-          pr.readShortArray("m_uint16Array");
+      npt->m_uint16Array = pr.readShortArray("m_uint16Array");
       // LOGINFO("PdxType::readInt() start...");
 
       npt->m_byte252 = pr.readByteArray("m_byte252");

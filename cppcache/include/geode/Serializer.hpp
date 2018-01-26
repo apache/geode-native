@@ -222,22 +222,22 @@ inline void writeObject(apache::geode::client::DataOutput& output,
 
 template <typename TObj>
 inline void writeArrayObject(apache::geode::client::DataOutput& output,
-                             const std::vector<TObj> array) {
+                             const std::vector<TObj>& array) {
   output.writeArrayLen(array.size());
-  for (int i = 0; i < array.size(); i++) {
-    writeObject(output, array[i]);
+  for (auto&& obj : array) {
+    writeObject(output, obj);
   }
 }
 
 template <typename TObj>
 inline std::vector<TObj> readArrayObject(apache::geode::client::DataInput& input) {
+  std::vector<TObj> array;
   int len = input.readArrayLen();
-  if (len < 0) {
-    return std::vector<TObj>{};
-  }
-  std::vector<TObj> array(len);
-  for (int i = 0; i < len; i++) {
-    readObject(input, array[i]);
+  if (len >= 0) {
+    array.reserve(len);
+    for (auto&& obj : array) {
+      readObject(input, obj);
+    }
   }
   return array;
 }
@@ -261,14 +261,14 @@ inline void readObject(apache::geode::client::DataInput& input, TObj*& array,
 template <typename TObj,
           typename std::enable_if<!std::is_base_of<Serializable, TObj>::value,
                                   Serializable>::type* = nullptr>
-inline uint32_t objectArraySize(const std::vector<TObj> array) {
+inline uint32_t objectArraySize(const std::vector<TObj>& array) {
   return (uint32_t)(sizeof(TObj) * array.size());
 }
 
 template <typename TObj,
           typename std::enable_if<std::is_base_of<Serializable, TObj>::value,
                                   Serializable>::type* = nullptr>
-inline uint32_t objectArraySize(const std::vector<TObj> array) {
+inline uint32_t objectArraySize(const std::vector<TObj>& array) {
   uint32_t size = 0;
   for (auto obj : array) {
     size += obj.objectArraySize();

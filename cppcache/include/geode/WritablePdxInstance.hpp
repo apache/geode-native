@@ -256,7 +256,7 @@ class _GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    * or if the type of the value is not compatible with the field.
    */
   virtual void setField(const std::string& fieldName,
-                        std::vector<int8_t> value) = 0;
+                        const std::vector<int8_t>& value) = 0;
 
   /**
    * Set the existing named field to the given value.

@@ -171,7 +171,7 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeBooleanArray(
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "bool[]",
                                         PdxFieldTypes::BOOLEAN_ARRAY);
-  auto cacheableObject = CacheableArray<bool>::create(value);
+  auto cacheableObject = BooleanArray::create(value);
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return shared_from_this();
 }
@@ -181,7 +181,7 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeCharArray(
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "char[]",
                                         PdxFieldTypes::CHAR_ARRAY);
-  auto cacheableObject = CacheableArray<char16_t>::create(value);
+  auto cacheableObject = CharArray::create(value);
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return shared_from_this();
 }
@@ -200,7 +200,7 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeShortArray(
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "short[]",
                                         PdxFieldTypes::SHORT_ARRAY);
-  auto cacheableObject = CacheableArray<int16_t>::create(value);
+  auto cacheableObject = CacheableInt16Array::create(value);
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return shared_from_this();
 }
@@ -209,7 +209,7 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeIntArray(
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "int32[]",
                                         PdxFieldTypes::INT_ARRAY);
-  auto cacheableObject = CacheableArray<int32_t>::create(value);
+  auto cacheableObject = CacheableInt32Array::create(value);
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return shared_from_this();
 }
@@ -218,7 +218,7 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeLongArray(
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "int64[]",
                                         PdxFieldTypes::LONG_ARRAY);
-  auto cacheableObject = CacheableArray<int64_t>::create(value);
+  auto cacheableObject = CacheableInt64Array::create(value);
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return shared_from_this();
 }
@@ -227,7 +227,7 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeFloatArray(
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "float[]",
                                         PdxFieldTypes::FLOAT_ARRAY);
-  auto cacheableObject = CacheableArray<float>::create(value);
+  auto cacheableObject = CacheableFloatArray::create(value);
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return shared_from_this();
 }
@@ -236,7 +236,7 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeDoubleArray(
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "double[]",
                                         PdxFieldTypes::DOUBLE_ARRAY);
-  auto cacheableObject = CacheableArray<double>::create(value);
+  auto cacheableObject = CacheableDoubleArray::create(value);
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return shared_from_this();
 }

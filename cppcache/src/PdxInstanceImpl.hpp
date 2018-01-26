@@ -136,7 +136,7 @@ class _GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
                         const std::vector<bool>& value) override;
 
   virtual void setField(const std::string& fieldName,
-                        std::vector<int8_t> value) override;
+                        const std::vector<int8_t>& value) override;
 
   virtual void setField(const std::string& fieldName,
                         const std::vector<int16_t>& value) override;

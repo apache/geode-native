@@ -207,51 +207,51 @@ PdxWriter& PdxRemoteWriter::writeObject(
   return *this;
 }
 PdxWriter& PdxRemoteWriter::writeBooleanArray(const std::string& fieldName,
-                                              std::vector<bool> array) {
+                                              const std::vector<bool>& array) {
   writePreserveData();
   PdxLocalWriter::writeBooleanArray(fieldName, array);
   return *this;
 }
 
 PdxWriter& PdxRemoteWriter::writeCharArray(
-    const std::string& fieldName, std::vector<char16_t> array) {
+    const std::string& fieldName, const std::vector<char16_t>& array) {
   writePreserveData();
   PdxLocalWriter::writeCharArray(fieldName, array);
   return *this;
 }
 
 PdxWriter& PdxRemoteWriter::writeByteArray(
-    const std::string& fieldName, std::vector<int8_t> array) {
+    const std::string& fieldName, const std::vector<int8_t>& array) {
   writePreserveData();
   PdxLocalWriter::writeByteArray(fieldName, array);
   return *this;
 }
 PdxWriter& PdxRemoteWriter::writeShortArray(const std::string& fieldName,
-                                            std::vector<int16_t> array) {
+                                            const std::vector<int16_t>& array) {
   writePreserveData();
   PdxLocalWriter::writeShortArray(fieldName, array);
   return *this;
 }
 PdxWriter& PdxRemoteWriter::writeIntArray(const std::string& fieldName,
-                                          std::vector<int32_t> array) {
+                                          const std::vector<int32_t>& array) {
   writePreserveData();
   PdxLocalWriter::writeIntArray(fieldName, array);
   return *this;
 }
 PdxWriter& PdxRemoteWriter::writeLongArray(const std::string& fieldName,
-                                           std::vector<int64_t> array) {
+                                           const std::vector<int64_t>& array) {
   writePreserveData();
   PdxLocalWriter::writeLongArray(fieldName, array);
   return *this;
 }
 PdxWriter& PdxRemoteWriter::writeFloatArray(const std::string& fieldName,
-                                            std::vector<float> array) {
+                                            const std::vector<float>& array) {
   writePreserveData();
   PdxLocalWriter::writeFloatArray(fieldName, array);
   return *this;
 }
 PdxWriter& PdxRemoteWriter::writeDoubleArray(const std::string& fieldName,
-                                             std::vector<double> array) {
+                                             const std::vector<double>& array) {
   writePreserveData();
   PdxLocalWriter::writeDoubleArray(fieldName, array);
   return *this;
