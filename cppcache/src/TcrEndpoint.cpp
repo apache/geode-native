@@ -55,7 +55,7 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
       m_connectLockCond(m_connectLock),
       m_maxConnections(cacheImpl->getDistributedSystem()
                            .getSystemProperties()
-                           .javaConnectionPoolSize()),
+                           .connectionPoolSize()),
       m_notifyConnection(0),
       m_notifyReceiver(0),
       m_numRegionListener(0),
@@ -1234,7 +1234,7 @@ void TcrEndpoint::closeConnections() {
   m_ports.clear();
   m_maxConnections = m_cacheImpl->getDistributedSystem()
                          .getSystemProperties()
-                         .javaConnectionPoolSize();
+                         .connectionPoolSize();
 }
 
 /*
