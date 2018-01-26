@@ -123,7 +123,6 @@ const uint32_t DefaultLogDiskSpaceLimit = 0;    // = unlimited
 const uint32_t DefaultStatsFileSizeLimit = 0;   // = unlimited
 const uint32_t DefaultStatsDiskSpaceLimit = 0;  // = unlimited
 
-const uint32_t DefaultMaxQueueSize = 80000;
 const uint32_t DefaultHeapLRULimit = 0;  // = unlimited, disabled when it is 0
 const int32_t DefaultHeapLRUDelta = 10;  // = unlimited, disabled when it is 0
 
@@ -168,7 +167,6 @@ SystemProperties::SystemProperties(
       m_logDiskSpaceLimit(DefaultLogDiskSpaceLimit),
       m_statsFileSizeLimit(DefaultStatsFileSizeLimit),
       m_statsDiskSpaceLimit(DefaultStatsDiskSpaceLimit),
-      m_maxQueueSize(DefaultMaxQueueSize),
       m_javaConnectionPoolSize(DefaultJavaConnectionPoolSize),
       m_heapLRULimit(DefaultHeapLRULimit),
       m_heapLRUDelta(DefaultHeapLRUDelta),
