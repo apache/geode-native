@@ -123,7 +123,7 @@ class _GEODE_EXPORT Properties : public Serializable {
   void foreach (Visitor& visitor) const;
 
   /** Return the number of entries in the collection. */
-  uint32_t getSize() const;
+  size_t getSize() const;
 
   /** Add the contents of other to this instance, replacing any existing
    * values with those from other.
