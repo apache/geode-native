@@ -128,7 +128,7 @@ class CacheableKeyType : public CacheableKey {
 
 /** Function to copy an array from source to destination. */
 template <typename TObj>
-inline void copyArray(TObj* dest, const TObj* src, int32_t length) {
+inline void copyArray(TObj* dest, const TObj* src, size_t length) {
   std::memcpy(dest, src, length * sizeof(TObj));
 }
 
@@ -138,8 +138,8 @@ inline void copyArray(TObj* dest, const TObj* src, int32_t length) {
  */
 template <typename TObj>
 inline void copyArray(std::shared_ptr<TObj>* dest,
-                      const std::shared_ptr<TObj>* src, int32_t length) {
-  for (int32_t index = 0; index < length; index++) {
+                      const std::shared_ptr<TObj>* src, size_t length) {
+  for (size_t index = 0; index < length; index++) {
     dest[index] = src[index];
   }
 }
@@ -153,8 +153,8 @@ template <typename TObj, int8_t TYPEID>
 inline void copyArray(
     std::shared_ptr<CacheableArrayType<TObj, TYPEID>>* dest,
     const std::shared_ptr<CacheableArrayType<TObj, TYPEID>>* src,
-    int32_t length) {
-  for (int32_t index = 0; index < length; index++) {
+    size_t length) {
+  for (size_t index = 0; index < length; index++) {
     dest[index] = src[index];
   }
 }

@@ -517,7 +517,7 @@ class _GEODE_EXPORT DataInput {
 
   inline void resetPdx(size_t offset) { m_buf = m_bufHead + offset; }
 
-  inline int32_t getPdxBytes() const { return m_bufLength; }
+  inline size_t getPdxBytes() const { return m_bufLength; }
 
   static uint8_t* getBufferCopy(const uint8_t* from, size_t length) {
     uint8_t* result;
