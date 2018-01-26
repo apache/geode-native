@@ -579,9 +579,9 @@ class _GEODE_EXPORT DataInput {
   template <typename T>
   std::vector<T> readArray() {
     int arrayLen = readArrayLen();
-    std::vector<T> objArray(0);
+    std::vector<T> objArray;
     if (arrayLen >= 0) {
-      objArray.reserve(arrayLen);
+      objArray.resize(arrayLen);
       int i = 0;
       for (i = 0; i < arrayLen; i++) {
         T tmp = 0;
