@@ -206,8 +206,8 @@ class CacheableArrayType : public Cacheable {
   inline int32_t length() const { return m_length; }
 
   /** Get the element at given index. */
-  inline TObj operator[](uint32_t index) const {
-    if (static_cast<int32_t>(index) >= m_length) {
+  inline TObj operator[](size_t index) const {
+    if (index >= m_length) {
       throw OutOfRangeException(
           "CacheableArray::operator[]: Index out of range.");
     }
@@ -252,9 +252,8 @@ class CacheableArrayType : public Cacheable {
    * cache memory utilization.
    */
   virtual size_t objectSize() const override {
-    return static_cast<uint32_t>(
-        sizeof(CacheableArrayType) +
-        apache::geode::client::serializer::objectSize(m_value, m_length));
+    return sizeof(CacheableArrayType) +
+           serializer::objectSize(m_value, m_length);
   }
 };
 
@@ -304,9 +303,7 @@ class CacheableContainerType : public Cacheable, public TBase {
    * cache memory utilization.
    */
   virtual size_t objectSize() const override {
-    return static_cast<uint32_t>(
-        sizeof(CacheableContainerType) +
-        apache::geode::client::serializer::objectSize(*this));
+    return sizeof(CacheableContainerType) + serializer::objectSize(*this);
   }
 };
 

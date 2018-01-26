@@ -234,15 +234,15 @@ inline void readObject(apache::geode::client::DataInput& input, TObj*& array,
 template <typename TObj, typename TLen,
           typename std::enable_if<!std::is_base_of<Serializable, TObj>::value,
                                   Serializable>::type* = nullptr>
-inline uint32_t objectSize(const TObj* array, TLen len) {
-  return (uint32_t)(sizeof(TObj) * len);
+inline size_t objectSize(const TObj* array, TLen len) {
+  return sizeof(TObj) * len;
 }
 
 template <typename TObj, typename TLen,
           typename std::enable_if<std::is_base_of<Serializable, TObj>::value,
                                   Serializable>::type* = nullptr>
-inline uint32_t objectSize(const TObj* array, TLen len) {
-  uint32_t size = 0;
+inline size_t objectSize(const TObj* array, TLen len) {
+  size_t size = 0;
   const TObj* endArray = array + len;
   while (array < endArray) {
     if (*array != nullptr) {
@@ -250,7 +250,7 @@ inline uint32_t objectSize(const TObj* array, TLen len) {
     }
     array++;
   }
-  size += (uint32_t)(sizeof(TObj) * len);
+  size += sizeof(TObj) * len;
   return size;
 }
 
@@ -265,8 +265,7 @@ inline void writeObject(apache::geode::client::DataOutput& output,
   }
 }
 
-inline uint32_t objectSize(
-    const std::vector<std::shared_ptr<Cacheable>>& value) {
+inline size_t objectSize(const std::vector<std::shared_ptr<Cacheable>>& value) {
   size_t objectSize = 0;
   for (const auto& iter : value) {
     if (iter) {
@@ -274,7 +273,7 @@ inline uint32_t objectSize(
     }
   }
   objectSize += sizeof(std::shared_ptr<Cacheable>) * value.size();
-  return static_cast<uint32_t>(objectSize);
+  return objectSize;
 }
 
 template <typename TObj, typename _tail>
