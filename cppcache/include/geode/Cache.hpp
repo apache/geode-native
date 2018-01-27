@@ -234,7 +234,7 @@ class _GEODE_EXPORT Cache : public GeodeCache,
       std::string className) const override;
 
   virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* m_buffer,
-                                                     int32_t len) const;
+                                                     size_t len) const;
   virtual std::unique_ptr<DataOutput> createDataOutput() const;
 
   virtual PoolManager& getPoolManager() const;

@@ -41,19 +41,20 @@ class _GEODE_EXPORT ResultSetImpl
  public:
   ResultSetImpl(const std::shared_ptr<CacheableVector>& response);
 
-  bool isModifiable() const;
+  bool isModifiable() const override;
 
-  int32_t size() const;
+  int32_t size() const override;
 
-  const std::shared_ptr<Serializable> operator[](int32_t index) const;
+  const std::shared_ptr<Serializable> operator[](
+      size_t index) const override;
 
-  SelectResultsIterator getIterator();
+  SelectResultsIterator getIterator() override;
 
   /** Get an iterator pointing to the start of vector. */
-  virtual SelectResults::Iterator begin() const;
+  virtual SelectResults::Iterator begin() const override;
 
   /** Get an iterator pointing to the end of vector. */
-  virtual SelectResults::Iterator end() const;
+  virtual SelectResults::Iterator end() const override;
 
   ~ResultSetImpl();
 

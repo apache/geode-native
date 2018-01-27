@@ -229,7 +229,7 @@ PoolManager& Cache::getPoolManager() const {
 }
 
 std::unique_ptr<DataInput> Cache::createDataInput(const uint8_t* m_buffer,
-                                                  int32_t len) const {
+                                                  size_t len) const {
   return std::unique_ptr<DataInput>(
       new DataInput(m_buffer, len, m_cacheImpl.get()));
 }
