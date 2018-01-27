@@ -132,11 +132,6 @@ namespace Apache
 		  return m_nativeptr->statsDiskSpaceLimit( );
       }
 
-      System::UInt32 SystemProperties::MaxQueueSize::get( )
-      {
-        return m_nativeptr->maxQueueSize( );
-      }
-
       bool SystemProperties::SSLEnabled::get( )
       {
         return m_nativeptr->sslEnabled();

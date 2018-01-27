@@ -232,15 +232,6 @@ namespace Apache
         }
 
         /// <summary>
-        /// Returns the max queue size for notification messages
-        /// </summary>
-        /// <returns>the max queue size</returns>
-        property System::UInt32 MaxQueueSize
-        {
-          System::UInt32 get();
-        }
-
-        /// <summary>
         /// True if ssl connection support is enabled.
         /// </summary>
         /// <returns>true if enabled</returns>
