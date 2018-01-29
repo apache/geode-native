@@ -155,6 +155,7 @@ class _GEODE_EXPORT SystemProperties {
    * it has exceeded the HeapLRULimit. Defaults to 10%
    */
   const int32_t heapLRUDelta() const { return m_heapLRUDelta; }
+
   /**
    * Returns  the maximum socket buffer size to use
    */
@@ -248,13 +249,11 @@ class _GEODE_EXPORT SystemProperties {
    */
   const uint32_t statsDiskSpaceLimit() const { return m_statsDiskSpaceLimit; }
 
-  const uint32_t maxQueueSize() { return m_maxQueueSize; }
-
-  const uint32_t javaConnectionPoolSize() const {
-    return m_javaConnectionPoolSize;
+  const uint32_t connectionPoolSize() const {
+    return m_connectionPoolSize;
   }
   void setjavaConnectionPoolSize(uint32_t size) {
-    m_javaConnectionPoolSize = size;
+    m_connectionPoolSize = size;
   }
 
   /**
@@ -384,8 +383,7 @@ class _GEODE_EXPORT SystemProperties {
   uint32_t m_statsFileSizeLimit;
   uint32_t m_statsDiskSpaceLimit;
 
-  uint32_t m_maxQueueSize;
-  uint32_t m_javaConnectionPoolSize;
+  uint32_t m_connectionPoolSize;
 
   int32_t m_heapLRULimit;
   int32_t m_heapLRUDelta;

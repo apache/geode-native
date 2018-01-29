@@ -128,7 +128,7 @@ class CacheableKeyType : public CacheableKey {
 
 /** Function to copy an array from source to destination. */
 template <typename TObj>
-inline void copyArray(TObj* dest, const TObj* src, int32_t length) {
+inline void copyArray(TObj* dest, const TObj* src, size_t length) {
   std::memcpy(dest, src, length * sizeof(TObj));
 }
 
@@ -138,8 +138,8 @@ inline void copyArray(TObj* dest, const TObj* src, int32_t length) {
  */
 template <typename TObj>
 inline void copyArray(std::shared_ptr<TObj>* dest,
-                      const std::shared_ptr<TObj>* src, int32_t length) {
-  for (int32_t index = 0; index < length; index++) {
+                      const std::shared_ptr<TObj>* src, size_t length) {
+  for (size_t index = 0; index < length; index++) {
     dest[index] = src[index];
   }
 }
@@ -153,8 +153,8 @@ template <typename TObj, int8_t TYPEID>
 inline void copyArray(
     std::shared_ptr<CacheableArrayType<TObj, TYPEID>>* dest,
     const std::shared_ptr<CacheableArrayType<TObj, TYPEID>>* src,
-    int32_t length) {
-  for (int32_t index = 0; index < length; index++) {
+    size_t length) {
+  for (size_t index = 0; index < length; index++) {
     dest[index] = src[index];
   }
 }
@@ -206,8 +206,8 @@ class CacheableArrayType : public Cacheable {
   inline int32_t length() const { return m_length; }
 
   /** Get the element at given index. */
-  inline TObj operator[](uint32_t index) const {
-    if (static_cast<int32_t>(index) >= m_length) {
+  inline TObj operator[](size_t index) const {
+    if (index >= m_length) {
       throw OutOfRangeException(
           "CacheableArray::operator[]: Index out of range.");
     }
@@ -252,9 +252,8 @@ class CacheableArrayType : public Cacheable {
    * cache memory utilization.
    */
   virtual size_t objectSize() const override {
-    return static_cast<uint32_t>(
-        sizeof(CacheableArrayType) +
-        apache::geode::client::serializer::objectSize(m_value, m_length));
+    return sizeof(CacheableArrayType) +
+           serializer::objectSize(m_value, m_length);
   }
 };
 
@@ -304,9 +303,7 @@ class CacheableContainerType : public Cacheable, public TBase {
    * cache memory utilization.
    */
   virtual size_t objectSize() const override {
-    return static_cast<uint32_t>(
-        sizeof(CacheableContainerType) +
-        apache::geode::client::serializer::objectSize(*this));
+    return sizeof(CacheableContainerType) + serializer::objectSize(*this);
   }
 };
 

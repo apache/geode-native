@@ -46,7 +46,7 @@ const char LogFilename[] = "log-file";
 const char LogLevelProperty[] = "log-level";
 
 const char Name[] = "name";
-const char JavaConnectionPoolSize[] = "connection-pool-size";
+const char ConnectionPoolSize[] = "connection-pool-size";
 
 const char LicenseFilename[] = "license-file";
 const char LicenseType[] = "license-type";
@@ -103,7 +103,7 @@ const char DefaultLogFilename[] = "";  // stdout...
 const apache::geode::client::LogLevel DefaultLogLevel =
     apache::geode::client::LogLevel::Config;
 
-const int DefaultJavaConnectionPoolSize = 5;
+const int DefaultConnectionPoolSize = 5;
 
 // defaults for crash dump related properties
 const bool DefaultCrashDumpEnabled = true;
@@ -123,8 +123,7 @@ const uint32_t DefaultLogDiskSpaceLimit = 0;    // = unlimited
 const uint32_t DefaultStatsFileSizeLimit = 0;   // = unlimited
 const uint32_t DefaultStatsDiskSpaceLimit = 0;  // = unlimited
 
-const uint32_t DefaultMaxQueueSize = 80000;
-const uint32_t DefaultHeapLRULimit = 0;  // = unlimited, disabled when it is 0
+const size_t DefaultHeapLRULimit = 0;  // = unlimited, disabled when it is 0
 const int32_t DefaultHeapLRUDelta = 10;  // = unlimited, disabled when it is 0
 
 const int32_t DefaultMaxSocketBufferSize = 65 * 1024;
@@ -168,8 +167,7 @@ SystemProperties::SystemProperties(
       m_logDiskSpaceLimit(DefaultLogDiskSpaceLimit),
       m_statsFileSizeLimit(DefaultStatsFileSizeLimit),
       m_statsDiskSpaceLimit(DefaultStatsDiskSpaceLimit),
-      m_maxQueueSize(DefaultMaxQueueSize),
-      m_javaConnectionPoolSize(DefaultJavaConnectionPoolSize),
+      m_connectionPoolSize(DefaultConnectionPoolSize),
       m_heapLRULimit(DefaultHeapLRULimit),
       m_heapLRUDelta(DefaultHeapLRUDelta),
       m_maxSocketBufferSize(DefaultMaxSocketBufferSize),
@@ -339,8 +337,8 @@ void SystemProperties::processProperty(const std::string& property,
           ("SystemProperties: unknown log level " + property + "=" + value)
               .c_str());
     }
-  } else if (property == JavaConnectionPoolSize) {
-    m_javaConnectionPoolSize = std::stol(value);
+  } else if (property == ConnectionPoolSize) {
+    m_connectionPoolSize = std::stol(value);
   } else if (property == Name) {
     m_name = value;
   } else if (property == DurableClientId) {
@@ -409,7 +407,7 @@ void SystemProperties::logSettings() {
   settings += to_string(connectTimeout());
 
   settings += "\n  connection-pool-size = ";
-  settings += std::to_string(javaConnectionPoolSize());
+  settings += std::to_string(connectionPoolSize());
 
   settings += "\n  connect-wait-timeout = ";
   settings += to_string(connectWaitTimeout());

@@ -74,7 +74,7 @@ PdxWrapper::PdxWrapper(std::string className,
   }
 
   /* m_sizer can be nullptr - required only if heap LRU is enabled */
-  m_sizer = m_serializer->getObjectSizer(className.c_str());
+  m_sizer = m_serializer->getObjectSizer(className);
 
   /* adongre   - Coverity II
    * CID 29277: Uninitialized pointer field (UNINIT_CTOR)

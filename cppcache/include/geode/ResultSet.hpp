@@ -62,7 +62,7 @@ class _GEODE_EXPORT ResultSet : public SelectResults {
    * @returns A smart pointer to the item indexed.
    */
   virtual const std::shared_ptr<Serializable> operator[](
-      int32_t index) const override = 0;
+      size_t index) const override = 0;
 
   /**
    * Get a SelectResultsIterator with which to iterate over the items in the

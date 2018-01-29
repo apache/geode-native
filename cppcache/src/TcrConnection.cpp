@@ -295,7 +295,7 @@ bool TcrConnection::InitTcrConnection(
     }
   }
 
-  uint32_t msgLengh;
+  size_t msgLengh;
   char* data = (char*)handShakeMsg->getBuffer(&msgLengh);
   LOGFINE("Attempting handshake with endpoint %s for %s%s connection", endpoint,
           isClientNotification ? (isSecondary ? "secondary " : "primary ") : "",
@@ -360,7 +360,7 @@ bool TcrConnection::InitTcrConnection(
 
       auto sendCreds = cacheImpl->createDataOutput();
       ciphertext->toData(*sendCreds);
-      uint32_t credLen;
+      size_t credLen;
       char* credData = (char*)sendCreds->getBuffer(&credLen);
       // send the encrypted bytes and check the response
       error = sendData(credData, credLen, connectTimeout, false);

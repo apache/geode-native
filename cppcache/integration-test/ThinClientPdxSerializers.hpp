@@ -40,7 +40,8 @@ class TestPdxSerializer : public PdxSerializer {
     }
   }
 
-  static uint32_t objectSize(void *testObject, const std::string &className) {
+  static size_t objectSize(const void *testObject,
+                           const std::string &className) {
     ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in objectSize()");
     LOG("TestPdxSerializer::objectSize called");

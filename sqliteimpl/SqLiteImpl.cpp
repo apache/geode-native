@@ -107,7 +107,7 @@ void SqLiteImpl::write(const std::shared_ptr<CacheableKey>& key,
   auto& cache = m_regionPtr->getCache();
   auto keyDataBuffer = cache.createDataOutput();
   auto valueDataBuffer = cache.createDataOutput();
-  uint32_t keyBufferSize, valueBufferSize;
+  size_t keyBufferSize, valueBufferSize;
 
   keyDataBuffer->writeObject(key);
   valueDataBuffer->writeObject(value);
@@ -126,7 +126,7 @@ std::shared_ptr<Cacheable> SqLiteImpl::read(
     const std::shared_ptr<CacheableKey>& key, void*& dbHandle) {
   // Serialize key.
   auto keyDataBuffer = m_regionPtr->getCache().createDataOutput();
-  uint32_t keyBufferSize;
+  size_t keyBufferSize;
   keyDataBuffer->writeObject(key);
   void* keyData = const_cast<uint8_t*>(keyDataBuffer->getBuffer(&keyBufferSize));
   void* valueData;
@@ -169,7 +169,7 @@ void SqLiteImpl::destroyRegion() {
 void SqLiteImpl::destroy(const std::shared_ptr<CacheableKey>& key, void*& dbHandle) {
   // Serialize key and value.
   auto keyDataBuffer = m_regionPtr->getCache().createDataOutput();
-  uint32_t keyBufferSize;
+  size_t keyBufferSize;
   keyDataBuffer->writeObject(key);
   void* keyData = const_cast<uint8_t*>(keyDataBuffer->getBuffer(&keyBufferSize));
   if (m_sqliteHelper->removeKey(keyData, keyBufferSize) != 0) {

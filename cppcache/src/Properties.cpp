@@ -139,9 +139,7 @@ void Properties::remove(const std::shared_ptr<CacheableKey>& key) {
   MAP->unbind(key);
 }
 
-uint32_t Properties::getSize() const {
-  return static_cast<uint32_t>(MAP->current_size());
-}
+size_t Properties::getSize() const { return MAP->current_size(); }
 
 void Properties::foreach (Visitor& visitor) const {
   CacheableKeyCacheableMapGuard guard(MAP->mutex());
