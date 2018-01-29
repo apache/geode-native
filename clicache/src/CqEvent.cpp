@@ -39,15 +39,15 @@ namespace Apache
       }
 
       generic<class TKey, class TResult>
-      CqOperationType CqEvent<TKey, TResult>::getBaseOperation( )
+      CqOperation CqEvent<TKey, TResult>::getBaseOperation( )
       {
-		  return CqOperation::ConvertFromNative(m_nativeptr->getBaseOperation());
+		  return CqOperation(m_nativeptr->getBaseOperation());
       }
 
       generic<class TKey, class TResult>
-      CqOperationType CqEvent<TKey, TResult>::getQueryOperation( )
+      CqOperation CqEvent<TKey, TResult>::getQueryOperation( )
       {
-        return CqOperation::ConvertFromNative(m_nativeptr->getQueryOperation());
+        return CqOperation(m_nativeptr->getQueryOperation());
       }
 
       generic<class TKey, class TResult>

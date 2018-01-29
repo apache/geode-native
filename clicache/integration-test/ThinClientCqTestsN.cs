@@ -76,16 +76,16 @@ namespace Apache.Geode.Client.UnitTests
       /*ICacheableKey*/
       TKey key = ev.getKey();
 
-      CqOperationType opType = ev.getQueryOperation();
+      CqOperation opType = ev.getQueryOperation();
       //CacheableString keyS = key as CacheableString;
       string keyS = key.ToString(); //as string;
       Portfolio pval = val as Portfolio;
       PortfolioPdx pPdxVal = val as PortfolioPdx;
       Assert.IsTrue((pPdxVal != null) || (pval != null));
       //string opStr = "DESTROY";
-      /*if (opType == CqOperationType.OP_TYPE_CREATE)
+      /*if (opType == CqOperation.OP_TYPE_CREATE)
         opStr = "CREATE";
-      else if (opType == CqOperationType.OP_TYPE_UPDATE)
+      else if (opType == CqOperation.OP_TYPE_UPDATE)
         opStr = "UPDATE";*/
 
       //Util.Log("key {0}, value ({1},{2}), op {3}.", keyS,
@@ -125,11 +125,11 @@ namespace Apache.Geode.Client.UnitTests
       Object pkey = (Object)ev.getKey();
       int value = (int)val;
       int key = (int)pkey;
-      CqOperationType opType = ev.getQueryOperation();
+      CqOperation opType = ev.getQueryOperation();
       String opStr = "Default";
-      if (opType == CqOperationType.OP_TYPE_CREATE)
+      if (opType == CqOperation.OP_TYPE_CREATE)
         opStr = "CREATE";
-      else if (opType == CqOperationType.OP_TYPE_UPDATE)
+      else if (opType == CqOperation.OP_TYPE_UPDATE)
         opStr = "UPDATE";
 
       Util.Log("MyCqListener1::OnEvent called with {0} , key = {1}, value = {2} ",
@@ -207,7 +207,7 @@ namespace Apache.Geode.Client.UnitTests
       TResult val = (TResult)ev.getNewValue();      
       TKey key = ev.getKey();
 
-      CqOperationType opType = ev.getQueryOperation();      
+      CqOperation opType = ev.getQueryOperation();      
       string keyS = key.ToString(); //as string;      
     }
     public virtual void OnError(CqEvent<TKey, TResult> ev)

@@ -72,18 +72,18 @@ namespace Apache.Geode.Client.FwkLib
     public virtual void UpdateCount(CqEvent<TKey, TResult> ev)
     {
       m_eventCnt++;
-      CqOperationType opType = ev.getQueryOperation();
-      if (opType == CqOperationType.OP_TYPE_CREATE)
+      CqOperation opType = ev.getQueryOperation();
+      if (opType == CqOperation.OP_TYPE_CREATE)
       {
           Util.Log("ML:INSERT invoked");
         m_createCnt++;
       }
-      else if (opType == CqOperationType.OP_TYPE_UPDATE)
+      else if (opType == CqOperation.OP_TYPE_UPDATE)
       {
           Util.Log("ML:UPDATE invoked");
         m_updateCnt++;
       }
-      else if (opType == CqOperationType.OP_TYPE_DESTROY)
+      else if (opType == CqOperation.OP_TYPE_DESTROY)
       {
           Util.Log("ML:DESTROY invoked");
         m_destroyCnt++;
