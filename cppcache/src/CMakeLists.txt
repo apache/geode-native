@@ -132,8 +132,10 @@ install(TARGETS apache-geode
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
-  PUBLIC_HEADER DESTINATION include/geode
 )
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../include/ DESTINATION include/)
+
 
 # For Visual Studio organization
 source_group("Header Files" REGULAR_EXPRESSION "\.(hpp|inl)$")

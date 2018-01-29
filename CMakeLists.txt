@@ -97,7 +97,6 @@ set(CPACK_SYSTEM_NAME "${PRODUCT_SYSTEM_NAME}-${PRODUCT_BITS}")
 set(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${PRODUCT_VERSION}-${CPACK_SYSTEM_NAME})
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
 set(CPACK_PACKAGING_INSTALL_PREFIX "/${CPACK_PACKAGE_NAME}")
-#set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/dist/LICENSE")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
 set(CPACK_GENERATOR TGZ;ZIP)
@@ -243,8 +242,7 @@ if (${BUILD_CLI})
   add_subdirectory(plugins/SQLiteCLI)
 endif()
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/quickstart/ DESTINATION SampleCode/quickstart USE_SOURCE_PERMISSIONS)
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cppcache/integration-test/keystore/ DESTINATION SampleCode/quickstart/keystore)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/examples/ DESTINATION examples)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/xsds/ DESTINATION xsds)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/defaultSystem/ DESTINATION defaultSystem)
 
@@ -254,5 +252,3 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates/ DESTINATION templates
   PATTERN "templates/security/CMakeLists.txt" EXCLUDE
   PATTERN "templates/security/CMakeLists.txt.forInstall" EXCLUDE)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/templates/security/CMakeLists.txt.forInstall RENAME CMakeLists.txt DESTINATION templates/security)
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tests/javaobject/javaobject.jar DESTINATION SampleCode/quickstart/lib)
