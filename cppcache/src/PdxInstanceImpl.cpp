@@ -202,7 +202,7 @@ void PdxInstanceImpl::writeField(PdxWriter& writer,
         std::vector<std::string> strings;
         strings.reserve(size);
         for (int item = 0; item < size; item++) {
-          strings[item] = (*val)[item]->value();
+          strings.push_back((*val)[item]->value());
         }
         writer.writeStringArray(fieldName, strings);
       }

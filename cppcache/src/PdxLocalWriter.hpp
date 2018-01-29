@@ -113,10 +113,8 @@ class PdxLocalWriter : public PdxWriter {
   template <typename mType>
   void writeArrayObject(std::vector<mType> array) {
     m_dataOutput->writeArrayLen(array.size());
-    if (array.size() > 0) {
-      for (auto&& obj : array) {
-        writeObject(obj);
-      }
+    for (auto&& obj : array) {
+      writeObject(obj);
     }
   }
 

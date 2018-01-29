@@ -234,7 +234,7 @@ inline std::vector<TObj> readArrayObject(apache::geode::client::DataInput& input
   std::vector<TObj> array;
   int len = input.readArrayLen();
   if (len >= 0) {
-    array.reserve(len);
+    array.resize(len);
     for (auto&& obj : array) {
       readObject(input, obj);
     }

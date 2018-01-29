@@ -581,12 +581,12 @@ class _GEODE_EXPORT DataInput {
     int arrayLen = readArrayLen();
     std::vector<T> objArray;
     if (arrayLen >= 0) {
-      objArray.resize(arrayLen);
+      objArray.reserve(arrayLen);
       int i = 0;
       for (i = 0; i < arrayLen; i++) {
         T tmp = 0;
         readObject(&tmp);
-        objArray[i] = tmp;
+        objArray.push_back(tmp);
       }
     }
     return objArray;

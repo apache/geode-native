@@ -128,6 +128,10 @@ class TestDataInput {
     return m_dataInput.readStringArray();
   }
 
+  std::vector<bool> readBooleanArray() {
+    return m_dataInput.readBooleanArray();
+  }
+
   void readArrayOfByteArrays(int8_t ***arrayofBytearr, int32_t &arrayLength,
                              int32_t **elementLength) {
     m_dataInput.readArrayOfByteArrays(arrayofBytearr, arrayLength,
@@ -742,6 +746,12 @@ TEST_F(DataInputTest, TestSetPoolName) {
       << " pool name after setting";
   EXPECT_EQ(poolName, DataInputInternal::getPoolName(dataInput))
       << "Correct pool name after setting";
+}
+
+TEST_F(DataInputTest, TestReadNullArray) {
+  TestDataInput dataInput("FF12345678");
+
+  EXPECT_EQ(0, dataInput.readBooleanArray().size());
 }
 
 }  // namespace
