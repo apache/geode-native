@@ -528,8 +528,8 @@ void CqService::invokeCqConnectedListeners(const std::string& poolName,
  * @param eventType
  * @return Operation
  */
-CqOperation::CqOperationType CqService::getOperation(int eventType) {
-  CqOperation::CqOperationType op = CqOperation::OP_TYPE_INVALID;
+CqOperation CqService::getOperation(int eventType) {
+  CqOperation op = CqOperation::OP_TYPE_INVALID;
   switch (eventType) {
     case TcrMessage::LOCAL_CREATE:
       op = CqOperation::OP_TYPE_CREATE;

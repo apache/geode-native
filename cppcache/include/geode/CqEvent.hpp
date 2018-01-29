@@ -66,14 +66,14 @@ class _GEODE_EXPORT CqEvent {
    * Get the operation on the base region that triggered this event.
    * @return Operation operation on the base region (on which CQ is created).
    */
-  virtual CqOperation::CqOperationType getBaseOperation() const = 0;
+  virtual CqOperation getBaseOperation() const = 0;
 
   /**
    * Get the operation on the query results. Supported operations
    * include update, create, destroy, region clear and region invalidate.
    * @return Operation operation with respect to CQ.
    */
-  virtual CqOperation::CqOperationType getQueryOperation() const = 0;
+  virtual CqOperation getQueryOperation() const = 0;
 
   /**
    * Get the key relating to the event.

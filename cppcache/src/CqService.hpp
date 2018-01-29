@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CQSERVICE_H_
-#define GEODE_CQSERVICE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_CQSERVICE_H_
+#define GEODE_CQSERVICE_H_
 
 #include <geode/internal/geode_globals.hpp>
 #include "TcrMessage.hpp"
@@ -219,6 +219,7 @@ class _GEODE_EXPORT CqService : private NonCopyable,
    * @return true if exists else false.
    */
   bool isCqExists(const std::string& cqName);
+
   /**
    * Invokes the CqListeners for the given CQs.
    * @param cqs list of cqs with the cq operation from the Server.
@@ -237,7 +238,7 @@ class _GEODE_EXPORT CqService : private NonCopyable,
    * @param eventType
    * @return Operation
    */
-  CqOperation::CqOperationType getOperation(int eventType);
+  CqOperation getOperation(int eventType);
 
   void closeCqs(query_container_type& cqs);
 

@@ -46,8 +46,8 @@ class EventId;
 class CqEventImpl : public CqEvent {
  public:
   CqEventImpl(std::shared_ptr<CqQuery>& cQuery,
-              CqOperation::CqOperationType baseOp,
-              CqOperation::CqOperationType cqOp,
+              CqOperation baseOp,
+              CqOperation cqOp,
               std::shared_ptr<CacheableKey>& key,
               std::shared_ptr<Cacheable>& value, ThinClientBaseDM* tcrdm,
               std::shared_ptr<CacheableBytes> deltaBytes,
@@ -58,13 +58,13 @@ class CqEventImpl : public CqEvent {
   /**
    * Get the operation on the base region that triggered this event.
    */
-  CqOperation::CqOperationType getBaseOperation() const;
+  CqOperation getBaseOperation() const;
 
   /**
    * Get the the operation on the query results. Supported operations include
    * update, create, and destroy.
    */
-  CqOperation::CqOperationType getQueryOperation() const;
+  CqOperation getQueryOperation() const;
 
   /**
    * Get the key relating to the event.
@@ -88,8 +88,8 @@ class CqEventImpl : public CqEvent {
  private:
   CqEventImpl();
   std::shared_ptr<CqQuery> m_cQuery;
-  CqOperation::CqOperationType m_baseOp;
-  CqOperation::CqOperationType m_queryOp;
+  CqOperation m_baseOp;
+  CqOperation m_queryOp;
   std::shared_ptr<CacheableKey> m_key;
   std::shared_ptr<Cacheable> m_newValue;
   bool m_error;

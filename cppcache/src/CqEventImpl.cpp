@@ -22,8 +22,8 @@
 
 using namespace apache::geode::client;
 CqEventImpl::CqEventImpl(std::shared_ptr<CqQuery>& cQuery,
-                         CqOperation::CqOperationType baseOp,
-                         CqOperation::CqOperationType cqOp,
+                         CqOperation baseOp,
+                         CqOperation cqOp,
                          std::shared_ptr<CacheableKey>& key,
                          std::shared_ptr<Cacheable>& value,
                          ThinClientBaseDM* tcrdm,
@@ -42,7 +42,7 @@ CqEventImpl::CqEventImpl(std::shared_ptr<CqQuery>& cQuery,
 }
 std::shared_ptr<CqQuery> CqEventImpl::getCq() const { return m_cQuery; }
 
-CqOperation::CqOperationType CqEventImpl::getBaseOperation() const {
+CqOperation CqEventImpl::getBaseOperation() const {
   return m_baseOp;
 }
 
@@ -50,7 +50,7 @@ CqOperation::CqOperationType CqEventImpl::getBaseOperation() const {
  * Get the the operation on the query results. Supported operations include
  * update, create, and destroy.
  */
-CqOperation::CqOperationType CqEventImpl::getQueryOperation() const {
+CqOperation CqEventImpl::getQueryOperation() const {
   return m_queryOp;
 }
 
