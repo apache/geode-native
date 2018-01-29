@@ -39,10 +39,10 @@ int main(int argc, char** argv) {
   region->put("scharles", "Sylvia Charles");
 
   std::cout << "Getting the orders from the region" << std::endl;
-  auto a123 = region->get("rtimmons");
-  auto a124 = region->get("scharles");
-  std::cout << "rtimmons = " << std::dynamic_pointer_cast<CacheableInt32>(a123)->value() << std::endl;
-  std::cout << "scharles = " << std::dynamic_pointer_cast<CacheableInt32>(a124)->value() << std::endl;
+  auto user1 = region->get("rtimmons");
+  auto user2 = region->get("scharles");
+  std::cout << "rtimmons = " << std::dynamic_pointer_cast<CacheableInt32>(user1)->value() << std::endl;
+  std::cout << "scharles = " << std::dynamic_pointer_cast<CacheableInt32>(user2)->value() << std::endl;
 
   std::cout << "Removing rtimmons info from the region" << std::endl;
   region->remove("rtimmons");
