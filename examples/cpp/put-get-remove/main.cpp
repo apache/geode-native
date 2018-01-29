@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
   region->put("rtimmons", "Robert Timmons");
   region->put("scharles", "Sylvia Charles");
 
-  std::cout << "Getting the orders from the region" << std::endl;
+  std::cout << "Getting the user info from the region" << std::endl;
   auto user1 = region->get("rtimmons");
   auto user2 = region->get("scharles");
   std::cout << "  rtimmons = " << std::dynamic_pointer_cast<CacheableString>(user1)->value() << std::endl;
