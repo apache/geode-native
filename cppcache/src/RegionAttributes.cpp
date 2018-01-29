@@ -265,7 +265,7 @@ uint32_t RegionAttributes::getLruEntriesLimit() const {
   return m_lruEntriesLimit;
 }
 
-DiskPolicyType::PolicyType RegionAttributes::getDiskPolicy() const {
+DiskPolicyType RegionAttributes::getDiskPolicy() const {
   return m_diskPolicy;
 }
 const std::string& RegionAttributes::getPoolName() const { return m_poolName; }
@@ -371,7 +371,7 @@ void RegionAttributes::fromData(DataInput& in) {
   apache::geode::client::impl::readString(in, m_cacheListenerFactory);
   apache::geode::client::impl::readString(in, m_partitionResolverLibrary);
   apache::geode::client::impl::readString(in, m_partitionResolverFactory);
-  m_diskPolicy = static_cast<DiskPolicyType::PolicyType>(in.readInt32());
+  m_diskPolicy = static_cast<DiskPolicyType>(in.readInt32());
   apache::geode::client::impl::readString(in, m_endpoints);
   apache::geode::client::impl::readString(in, m_persistenceLibrary);
   apache::geode::client::impl::readString(in, m_persistenceFactory);
@@ -537,7 +537,7 @@ void RegionAttributes::setCachingEnabled(bool enable) { m_caching = enable; }
 void RegionAttributes::setLruEntriesLimit(int limit) {
   m_lruEntriesLimit = limit;
 }
-void RegionAttributes::setDiskPolicy(DiskPolicyType::PolicyType diskPolicy) {
+void RegionAttributes::setDiskPolicy(DiskPolicyType diskPolicy) {
   m_diskPolicy = diskPolicy;
 }
 

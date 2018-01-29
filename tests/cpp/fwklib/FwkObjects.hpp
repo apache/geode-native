@@ -390,9 +390,6 @@ class Attributes {
     m_factory.setInitialCapacity(FwkStrCvt::toInt32(val));
   }
 
-  void setDiskPolicy(std::string val) {
-    m_factory.setDiskPolicy(DiskPolicyType::fromName(val.c_str()));
-  }
   void setCloningEnabled(std::string val) {
     m_factory.setCloningEnabled(FwkStrCvt::toBool(val));
   }

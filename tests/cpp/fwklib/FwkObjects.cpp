@@ -528,11 +528,6 @@ Attributes::Attributes(const DOMNode* node)
       setInitialCapacity(XMLChToStr(nameNode->getNodeValue()));
     }
 
-    nameNode = map->getNamedItem(StrToXMLCh("disk-policy"));
-    if (nameNode != NULL) {
-      setDiskPolicy(XMLChToStr(nameNode->getNodeValue()));
-    }
-
     nameNode = map->getNamedItem(StrToXMLCh("pool-name"));
     if (nameNode != NULL) {
       setPoolName(XMLChToStr(nameNode->getNodeValue()));

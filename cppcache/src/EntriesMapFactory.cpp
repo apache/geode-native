@@ -50,7 +50,7 @@ EntriesMap* EntriesMapFactory::createMap(
 
   if ((lruLimit != 0) || (prop.heapLRULimitEnabled())) {  // create LRU map...
     LRUAction::Action lruEvictionAction;
-    DiskPolicyType::PolicyType dpType = attrs->getDiskPolicy();
+    DiskPolicyType dpType = attrs->getDiskPolicy();
     if (dpType == DiskPolicyType::OVERFLOWS) {
       lruEvictionAction = LRUAction::OVERFLOW_TO_DISK;
     } else if ((dpType == DiskPolicyType::NONE) ||

@@ -171,10 +171,10 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
 
   /** Returns the disk policy type of the region.
    *
-   * @return the <code>DiskPolicyType::PolicyType</code>, default is
+   * @return the <code>DiskPolicyType</code>, default is
    * DiskPolicyType::NONE.
    */
-  DiskPolicyType::PolicyType getDiskPolicy() const;
+  DiskPolicyType getDiskPolicy() const;
 
   /**
    * Returns the ExpirationAction used for LRU Eviction, default is
@@ -338,7 +338,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
   void setCloningEnabled(bool isClonable);
   void setCachingEnabled(bool enable);
   void setLruEntriesLimit(int limit);
-  void setDiskPolicy(DiskPolicyType::PolicyType diskPolicy);
+  void setDiskPolicy(DiskPolicyType diskPolicy);
   void setConcurrencyChecksEnabled(bool enable);
 
   inline bool getEntryExpiryEnabled() const {
@@ -382,7 +382,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
   std::string m_cacheWriterFactory;
   std::string m_cacheListenerFactory;
   std::string m_partitionResolverFactory;
-  DiskPolicyType::PolicyType m_diskPolicy;
+  DiskPolicyType m_diskPolicy;
   std::string m_endpoints;
   bool m_clientNotificationEnabled;
   std::string m_persistenceLibrary;
