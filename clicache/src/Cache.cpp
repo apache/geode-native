@@ -221,26 +221,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          apache::geode::client::RegionShortcut preDefineRegionAttr = apache::geode::client::CACHING_PROXY;
-
-          switch(preDefinedRegionAttributes)
-          {
-          case RegionShortcut::PROXY:
-              preDefineRegionAttr = apache::geode::client::PROXY;
-              break;
-          case RegionShortcut::CACHING_PROXY:
-              preDefineRegionAttr = apache::geode::client::CACHING_PROXY;
-              break;
-          case RegionShortcut::CACHING_PROXY_ENTRY_LRU:
-              preDefineRegionAttr = apache::geode::client::CACHING_PROXY_ENTRY_LRU;
-              break;
-          case RegionShortcut::LOCAL:
-              preDefineRegionAttr = apache::geode::client::LOCAL;
-              break;
-          case RegionShortcut::LOCAL_ENTRY_LRU:
-              preDefineRegionAttr = apache::geode::client::LOCAL_ENTRY_LRU;
-              break;          
-          }
+          auto preDefineRegionAttr = apache::geode::client::RegionShortcut(preDefinedRegionAttributes);
 
           try
           {
