@@ -7,26 +7,16 @@
 
    Running requires access to an installation of Geode. By default the value of `GEODE_HOME` is used as the path for the startserver.sh script, if gfsh is not in the path.
 
-### Platform-Specific Prerequisites
-* [Mac OS X](#mac-os-x)
-* [Linux](#linux)
-* [Solaris](#solaris)
-* [Windows](#windows)
+## Prequisites (Windows)
+
+* Visual Studio 2015
 
 ## Steps to build
 
-**Mac OS X / \*nix**
+**Mac OS X / \*nix / Windows**
 
     $ cd <example>
     $ mkdir build
-    $ cd build
-    $ cmake ..
-    $ cmake --build . -- <optional parallelism parameters>
-
-**Windows**
-
-    $ cd <example>
-    $ md build
     $ cd build
     $ cmake ..
     $ cmake --build . -- <optional parallelism parameters>
@@ -47,10 +37,10 @@
 ## Generator
 CMake uses a "generator" to produce configuration files for use by a variety of build tools, e.g., UNIX makefiles, Visual Studio projects. By default a system-specific generator is used by CMake during configuration. (Please see [the CMake documentation](https://cmake.org/documentation/) for further information.) However, in many cases there is a better choice.
 
-### Mac OS X Generator
-The recommended generator on Mac OS X is `Xcode`:
+### Mac OS X / *nix Generator
+The default generator:
 
-    $ cmake -G "Xcode" ..
+    $ cmake ..
 
 ### Windows Generator
 The recommended generator on Windows is `Visual Studio 14 2015 Win64`:

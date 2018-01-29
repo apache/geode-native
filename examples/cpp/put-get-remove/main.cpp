@@ -17,48 +17,41 @@
 
 #include <iostream>
 
-// Include the Geode libraries.
 #include <geode/CacheFactory.hpp>
 #include <geode/PoolManager.hpp>
 
-// Use the "geode" namespace.
 using namespace apache::geode::client;
-
 
 int main(int argc, char** argv) {
 
   auto cacheFactory = CacheFactory();
   cacheFactory.set("log-level", "none");
   auto cache = cacheFactory.create();
-
   auto poolFactory = cache.getPoolManager().createFactory();
+
   poolFactory->addLocator("localhost", 10334);
   auto pool = poolFactory->create("pool");
-
   auto regionFactory = cache.createRegionFactory(PROXY);
+  auto region = regionFactory.setPoolName("pool").create("example_userinfo");
 
-  auto region = regionFactory.setPoolName("pool").create("orders");
-
-
-  std::cout << "Storing orders in the region" << std::endl;
-  region->put("a123",5);
-  region->put("a124",7);
-
+  std::cout << "Storing id and username in the region" << std::endl;
+  region->put("rtimmons", "Robert Timmons");
+  region->put("scharles", "Sylvia Charles");
 
   std::cout << "Getting the orders from the region" << std::endl;
-  auto a123 = region->get("a123");
-  auto a124 = region->get("a124");
-  std::cout << "a123 = " << std::dynamic_pointer_cast<CacheableInt32>(a123)->value() << std::endl;
-  std::cout << "a124 = " << std::dynamic_pointer_cast<CacheableInt32>(a124)->value() << std::endl;
+  auto a123 = region->get("rtimmons");
+  auto a124 = region->get("scharles");
+  std::cout << "rtimmons = " << std::dynamic_pointer_cast<CacheableInt32>(a123)->value() << std::endl;
+  std::cout << "scharles = " << std::dynamic_pointer_cast<CacheableInt32>(a124)->value() << std::endl;
 
+  std::cout << "Removing rtimmons info from the region" << std::endl;
+  region->remove("rtimmons");
 
-  std::cout << "Removing order a123's info from the region" << std::endl;
-  region->remove("a123");
-  if(region->existsValue("a123")) {
-    std::cout << "a123's info not deleted" << std::endl;
+  if(region->existsValue("rtimmons")) {
+    std::cout << "rtimmons's info not deleted" << std::endl;
   }
   else {
-    std::cout << "a123's info successfully deleted" << std::endl;
+    std::cout << "rtimmons's info successfully deleted" << std::endl;
   }
 
   cache.close();
