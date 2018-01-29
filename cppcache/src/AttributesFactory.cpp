@@ -185,7 +185,7 @@ AttributesFactory& AttributesFactory::setLruEntriesLimit(
 }
 
 AttributesFactory& AttributesFactory::setDiskPolicy(
-    const DiskPolicyType::PolicyType diskPolicy) {
+    const DiskPolicyType diskPolicy) {
   if (diskPolicy == DiskPolicyType::PERSIST) {
     throw IllegalStateException("Persistence feature is not supported");
   }

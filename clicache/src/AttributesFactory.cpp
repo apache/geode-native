@@ -430,7 +430,7 @@ namespace Apache
       {
         try
         {
-          m_nativeptr->get()->setDiskPolicy(static_cast<native::DiskPolicyType::PolicyType>( diskPolicy ) );
+          m_nativeptr->get()->setDiskPolicy(static_cast<native::DiskPolicyType>( diskPolicy ) );
         }
         finally
         {

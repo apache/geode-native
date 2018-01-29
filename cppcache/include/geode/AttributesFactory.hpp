@@ -373,7 +373,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if diskPolicyType is Invalid
    */
-  AttributesFactory& setDiskPolicy(const DiskPolicyType::PolicyType diskPolicy);
+  AttributesFactory& setDiskPolicy(const DiskPolicyType diskPolicy);
 
   /**
    * Set caching enabled flag for this region. If set to false, then no data is

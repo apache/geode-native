@@ -179,7 +179,7 @@ RegionFactory& RegionFactory::setLruEntriesLimit(const uint32_t entriesLimit) {
 }
 
 RegionFactory& RegionFactory::setDiskPolicy(
-    const DiskPolicyType::PolicyType diskPolicy) {
+    const DiskPolicyType diskPolicy) {
   m_attributeFactory->setDiskPolicy(diskPolicy);
   return *this;
 }

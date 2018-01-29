@@ -77,7 +77,7 @@ void validateAttribute(std::shared_ptr<Region>& regionPtr) {
   std::shared_ptr<RegionAttributes> regAttr = regionPtr->getAttributes();
   int initialCapacity = regAttr->getInitialCapacity();
   ASSERT(initialCapacity == 1000, "Expected initial capacity to be 1000");
-  const DiskPolicyType::PolicyType type = regAttr->getDiskPolicy();
+  const DiskPolicyType type = regAttr->getDiskPolicy();
   ASSERT(type == DiskPolicyType::OVERFLOWS,
          "Expected Action should overflow to disk");
 }

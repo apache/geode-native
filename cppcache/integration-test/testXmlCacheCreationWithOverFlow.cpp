@@ -166,7 +166,7 @@ int testXmlCacheCreationWithOverflow() {
   if (action1 != ExpirationAction::DESTROY) {
     return -1;
   }
-  const DiskPolicyType::PolicyType type = regAttr->getDiskPolicy();
+  const DiskPolicyType type = regAttr->getDiskPolicy();
   std::cout << "DiskPolicy : overflows" << std::endl;
   if (type != DiskPolicyType::OVERFLOWS) {
     std::cout << " diskpolicy is not overflows " << std::endl;

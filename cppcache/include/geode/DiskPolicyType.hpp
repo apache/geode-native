@@ -32,50 +32,15 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 /**
  * @class DiskPolicyType DiskPolicyType.hpp
  * Enumerated type for disk policy.
  * @see RegionAttributes::getDiskPolicy
  * @see AttributesFactory::setDiskPolicy
  */
-class _GEODE_EXPORT DiskPolicyType {
-  // public static methods
- public:
-  /**
-   * Values for setting PolicyType.
-   */
-  typedef enum { NONE = 0, OVERFLOWS, PERSIST } PolicyType;
+enum class DiskPolicyType { NONE = 0, OVERFLOWS, PERSIST };
 
-  /** Returns the Name of the Lru action represented by specified ordinal. */
-  static const std::string& fromOrdinal(const uint8_t ordinal);
-
-  static const std::string& fromEnum(const PolicyType policyType);
-
-  /** Returns the type of the Lru action represented by name. */
-  static PolicyType fromName(const std::string& name);
-
-  /** Returns whether this is one of the overflow to disk type.
-   * @return true if this is any action other than NONE
-   */
-  inline static bool isOverflow(const PolicyType type) {
-    return (type == DiskPolicyType::OVERFLOWS);
-  }
-
-  /** Return whether this is <code>NONE</code>. */
-  inline static bool isNone(const PolicyType type) {
-    return (type == DiskPolicyType::NONE);
-  }
-
-  /** Return whether this is <code>persist</code>. */
-  inline static bool isPersist(const PolicyType type) {
-    return (type == DiskPolicyType::PERSIST);
-  }
-
- private:
-  /** No instance allowed. */
-  DiskPolicyType() = delete;
-  static const std::string names[];
-};
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
