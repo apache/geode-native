@@ -137,7 +137,7 @@ namespace Apache
         /// <summary>
         /// get the state of this cq query
         /// </summary>
-        CqStateType GetState();
+        CqState GetState();
 
         /// <summary>
         /// Is this Cq in running state?

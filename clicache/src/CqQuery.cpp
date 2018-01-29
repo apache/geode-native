@@ -163,36 +163,11 @@ namespace Apache
       }
 
       generic<class TKey, class TResult>
-      CqStateType CqQuery<TKey, TResult>::GetState( )
+      CqState CqQuery<TKey, TResult>::GetState( )
       {
         try
         {
-          auto st = m_nativeptr->get()->getState();
-          CqStateType state;
-          switch (st)
-          {
-          case native::CqState::STOPPED: {
-            state = CqStateType::STOPPED;
-            break;
-          }
-          case native::CqState::RUNNING: {
-            state = CqStateType::RUNNING;
-            break;
-          }
-          case native::CqState::CLOSED: {
-            state = CqStateType::CLOSED;
-            break;
-          }
-          case native::CqState::CLOSING: {
-            state = CqStateType::CLOSING;
-            break;
-          }
-          default: {
-            state = CqStateType::INVALID;
-            break;
-          }
-          }
-          return state;
+          return CqState(m_nativeptr->get()->getState());
         }
         finally
         {
