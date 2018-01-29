@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CQSTATE_H_
-#define GEODE_CQSTATE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,10 @@
  * limitations under the License.
  */
 
-#include <iosfwd>
+#pragma once
 
-#include "internal/geode_globals.hpp"
+#ifndef GEODE_CQSTATE_H_
+#define GEODE_CQSTATE_H_
 
 /**
  * @file
@@ -38,54 +34,12 @@ namespace client {
  * This interface gives information on the state of a CqQuery.
  * It is provided by the getState method of the CqQuery instance.
  */
-class _GEODE_EXPORT CqState {
- public:
-  // corresponding to geode.cache.query.internal.CqStateImpl
-  typedef enum {
-    STOPPED = 0,
-    RUNNING = 1,
-    CLOSED = 2,
-    CLOSING = 3,
-    INVALID
-  } StateType;
-
-  /**
-   * Returns the state in string form.
-   */
-  const std::string& toString() const;
-
-  /**
-   * Returns true if the CQ is in Running state.
-   */
-  bool isRunning() const;
-
-  /**
-   * Returns true if the CQ is in Stopped state.
-   */
-  bool isStopped() const;
-
-  /**
-   * Returns true if the CQ is in Closed state.
-   */
-  bool isClosed() const;
-
-  /**
-   * Returns true if the CQ is in Closing state.
-   */
-  bool isClosing() const;
-
-  void setState(CqState::StateType state);
-
-  CqState::StateType getState() const;
-
- private:
-  StateType m_state;
-
-  static const std::string STOPPED_STRING;
-  static const std::string RUNNING_STRING;
-  static const std::string CLOSED_STRING;
-  static const std::string CLOSING_STRING;
-  static const std::string INVALID_STRING;
+enum class CqState {
+  STOPPED = 0,
+  RUNNING = 1,
+  CLOSED = 2,
+  CLOSING = 3,
+  INVALID
 };
 }  // namespace client
 }  // namespace geode

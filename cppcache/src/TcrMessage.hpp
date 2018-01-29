@@ -50,12 +50,15 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class TcrMessage;
 class ThinClientRegion;
 class ThinClientBaseDM;
 class TcrMessageHelper;
 class TcrConnection;
 class TcrMessagePing;
+enum class CqState;
+
 class _GEODE_EXPORT TcrMessage {
  private:
   inline static void writeInt(uint8_t* buffer, uint16_t value);
@@ -967,7 +970,7 @@ class TcrMessageExecuteCq : public TcrMessage {
  public:
   TcrMessageExecuteCq(std::unique_ptr<DataOutput> dataOutput,
                       const std::string& str1, const std::string& str2,
-                      int state, bool isDurable,
+                      CqState state, bool isDurable,
                       ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageExecuteCq() {}
@@ -979,7 +982,7 @@ class TcrMessageExecuteCqWithIr : public TcrMessage {
  public:
   TcrMessageExecuteCqWithIr(std::unique_ptr<DataOutput> dataOutput,
                             const std::string& str1, const std::string& str2,
-                            int state, bool isDurable,
+                            CqState state, bool isDurable,
                             ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageExecuteCqWithIr() {}

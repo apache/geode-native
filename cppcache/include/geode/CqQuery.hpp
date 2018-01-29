@@ -146,7 +146,7 @@ class _GEODE_EXPORT CqQuery {
    * @see CqState
    * @return CqState state object of the CQ.
    */
-  virtual CqState::StateType getState() = 0;
+  virtual CqState getState() = 0;
 
   /**
    * Close the CQ and stop execution.

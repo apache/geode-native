@@ -70,7 +70,7 @@ class CqQueryImpl : public CqQuery,
 
   // Stats counters
   std::shared_ptr<CqStatistics> m_stats;
-  CqState::StateType m_cqState;
+  CqState m_cqState;
   CqOperation m_cqOperation;
 
   /* CQ Request Type - Start */
@@ -215,13 +215,13 @@ class CqQueryImpl : public CqQuery,
    * Return the state of this query.
    * @return STOPPED RUNNING or CLOSED
    */
-  CqState::StateType getState() override;
+  CqState getState() override;
 
   /**
    * Sets the state of the cq.
    * Server side method. Called during cq registration time.
    */
-  void setCqState(CqState::StateType state);
+  void setCqState(CqState state);
 
   std::shared_ptr<CqAttributesMutator> getCqAttributesMutator() const override;
 

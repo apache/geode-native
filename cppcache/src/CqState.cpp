@@ -21,38 +21,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-const std::string CqState::STOPPED_STRING = "STOPPED";
-const std::string CqState::RUNNING_STRING = "RUNNING";
-const std::string CqState::CLOSED_STRING = "CLOSED";
-const std::string CqState::CLOSING_STRING = "CLOSING";
-const std::string CqState::INVALID_STRING = "INVALID";
-
-bool CqState::isRunning() const { return (m_state == RUNNING); }
-
-bool CqState::isStopped() const { return (m_state == STOPPED); }
-
-bool CqState::isClosed() const { return (m_state == CLOSED); }
-
-bool CqState::isClosing() const { return (m_state == CLOSING); }
-
-void CqState::setState(CqState::StateType state) { m_state = state; }
-
-CqState::StateType CqState::getState() const { return m_state; }
-
-const std::string& CqState::toString() const {
-  switch (m_state) {
-    case STOPPED:
-      return STOPPED_STRING;
-    case RUNNING:
-      return RUNNING_STRING;
-    case CLOSED:
-      return CLOSED_STRING;
-    case CLOSING:
-      return CLOSING_STRING;
-    default:
-      return INVALID_STRING;
-  }
-}
 
 }  // namespace client
 }  // namespace geode
