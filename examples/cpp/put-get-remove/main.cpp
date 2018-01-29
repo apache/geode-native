@@ -41,8 +41,8 @@ int main(int argc, char** argv) {
   std::cout << "Getting the orders from the region" << std::endl;
   auto user1 = region->get("rtimmons");
   auto user2 = region->get("scharles");
-  std::cout << "rtimmons = " << std::dynamic_pointer_cast<CacheableInt32>(user1)->value() << std::endl;
-  std::cout << "scharles = " << std::dynamic_pointer_cast<CacheableInt32>(user2)->value() << std::endl;
+  std::cout << "  rtimmons = " << std::dynamic_pointer_cast<CacheableString>(user1)->value() << std::endl;
+  std::cout << "  scharles = " << std::dynamic_pointer_cast<CacheableString>(user2)->value() << std::endl;
 
   std::cout << "Removing rtimmons info from the region" << std::endl;
   region->remove("rtimmons");
