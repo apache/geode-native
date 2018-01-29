@@ -222,7 +222,8 @@ class RegionHelper {
         FWKEXCEPTION("Region name not specified.");
       }
     }
-    auto regionFac = cachePtr->createRegionFactory(CACHING_PROXY);
+    auto regionFac =
+        cachePtr->createRegionFactory(RegionShortcut::CACHING_PROXY);
     setRegionAttributes(regionFac);
     auto atts = m_region->getAttributesPtr();
     const auto& poolName = atts->getPoolName();

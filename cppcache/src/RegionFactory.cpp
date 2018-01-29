@@ -47,7 +47,8 @@ std::shared_ptr<Region> RegionFactory::create(std::string name) {
   std::shared_ptr<Region> retRegionPtr = nullptr;
   std::shared_ptr<RegionAttributes> regAttr =
       m_attributeFactory->createRegionAttributes();
-  if (m_preDefinedRegion != LOCAL && regAttr->getPoolName().empty()) {
+  if (m_preDefinedRegion != RegionShortcut::LOCAL &&
+      regAttr->getPoolName().empty()) {
     auto pool = m_cacheImpl->getPoolManager().getDefaultPool();
     if (!pool) {
       throw IllegalStateException("No pool for non-local region.");
@@ -62,19 +63,19 @@ std::shared_ptr<Region> RegionFactory::create(std::string name) {
 
 void RegionFactory::setRegionShortcut() {
   switch (m_preDefinedRegion) {
-    case PROXY: {
+    case RegionShortcut::PROXY: {
       m_attributeFactory->setCachingEnabled(false);
     } break;
-    case CACHING_PROXY: {
+    case RegionShortcut::CACHING_PROXY: {
       m_attributeFactory->setCachingEnabled(true);
     } break;
-    case CACHING_PROXY_ENTRY_LRU: {
+    case RegionShortcut::CACHING_PROXY_ENTRY_LRU: {
       m_attributeFactory->setCachingEnabled(true);
       m_attributeFactory->setLruEntriesLimit(DEFAULT_LRU_MAXIMUM_ENTRIES);
     } break;
-    case LOCAL: {
+    case RegionShortcut::LOCAL: {
     } break;
-    case LOCAL_ENTRY_LRU: {
+    case RegionShortcut::LOCAL_ENTRY_LRU: {
       m_attributeFactory->setLruEntriesLimit(DEFAULT_LRU_MAXIMUM_ENTRIES);
     } break;
   }

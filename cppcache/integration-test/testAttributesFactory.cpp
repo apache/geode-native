@@ -30,7 +30,7 @@ BEGIN_TEST(REGION_FACTORY)
     auto cf = CacheFactory();
     auto cache = std::make_shared<Cache>(cf.create());
 
-    auto rf = cache->createRegionFactory(LOCAL);
+    auto rf = cache->createRegionFactory(RegionShortcut::LOCAL);
     /*see bug no #865 */
     try {
       rf.setInitialCapacity(-1);
@@ -57,7 +57,7 @@ BEGIN_TEST(REGION_FACTORY)
     auto cf1 = CacheFactory();
     auto cache1 = std::make_shared<Cache>(cf1.create());
 
-    auto rf1 = cache1->createRegionFactory(LOCAL);
+    auto rf1 = cache1->createRegionFactory(RegionShortcut::LOCAL);
     /*see bug no #865 */
     try {
       rf1.setInitialCapacity(2147483648U);

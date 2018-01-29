@@ -305,7 +305,7 @@ void createRegion(std::shared_ptr<Region>& regionPtr, const char* regionName,
   auto cacheFactoryPtr = CacheFactory(cacheProps);
   auto cachePtr = std::make_shared<Cache>(CacheFactory().create());
   ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
-  auto regionFactory = cachePtr->createRegionFactory(LOCAL);
+  auto regionFactory = cachePtr->createRegionFactory(RegionShortcut::LOCAL);
   regionFactory.setCachingEnabled(true);
   regionFactory.setLruEntriesLimit(10);
   regionFactory.setInitialCapacity(1000);
@@ -468,7 +468,7 @@ BEGIN_TEST(OverFlowTest_SqLiteFull)
     auto cacheFactoryPtr = CacheFactory();
     auto cachePtr = std::make_shared<Cache>(CacheFactory().create());
     ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
-    auto regionFactory = cachePtr->createRegionFactory(LOCAL);
+    auto regionFactory = cachePtr->createRegionFactory(RegionShortcut::LOCAL);
     regionFactory.setCachingEnabled(true);
     regionFactory.setLruEntriesLimit(1);
     regionFactory.setInitialCapacity(1000);
@@ -511,7 +511,7 @@ BEGIN_TEST(OverFlowTest_HeapLRU)
     auto cacheFactoryPtr = CacheFactory(pp);
     auto cachePtr = std::make_shared<Cache>(CacheFactory().create());
     ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
-    auto regionFactory = cachePtr->createRegionFactory(LOCAL);
+    auto regionFactory = cachePtr->createRegionFactory(RegionShortcut::LOCAL);
     regionFactory.setCachingEnabled(true);
     regionFactory.setLruEntriesLimit(1024 * 10);
     regionFactory.setInitialCapacity(1000);
