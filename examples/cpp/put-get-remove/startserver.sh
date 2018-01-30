@@ -18,7 +18,7 @@
 GFSH_PATH=""
 which gfsh 2> /dev/null
 
-if [ $? -gt 0 ]; then
+if [ $? -eq 0 ]; then
     GFSH_PATH="gfsh"
 else
     if [ "$GEODE_HOME" == "" ]; then

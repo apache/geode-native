@@ -17,13 +17,10 @@
 GFSH_PATH=""
 which gfsh 2> /dev/null
 
-if [ $? -gt 0 ]; then
-    GFSH_PATH=`which gfsh 2> /dev/null`
-fi
-
-
-if [ "$GFSH_PATH" == "" ]; then
-    if [ "$GEODE_HOME" == "" ]; then
+if [ $? -eq 0 ]; then
+    GFSH_PATH="gfsh"
+else    
+if [ "$GEODE_HOME" == "" ]; then
         echo "Could not find gfsh. Please set the GEODE_HOME path."
         echo "e.g. export GEODE_HOME=<path to Geode>"
     else
@@ -31,4 +28,4 @@ if [ "$GFSH_PATH" == "" ]; then
     fi
 fi
 
-$GFSH_PATH -e "start locator --name=locator" -e "start server --name=server" -e "create region --name=orders --type=PARTITION"
+$GFSH_PATH -e "start locator --name=locator" -e "start server --name=server" -e "create region --name=custom_orders --type=PARTITION"

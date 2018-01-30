@@ -17,12 +17,9 @@
 GFSH_PATH=""
 which gfsh 2> /dev/null
 
-if [ $? -gt 0 ]; then
-    GFSH_PATH=`which gfsh 2> /dev/null`
-fi
-
-
-if [ "$GFSH_PATH" == "" ]; then
+if [ $? -eq 0 ]; then
+    GFSH_PATH="gfsh"
+else    
     if [ "$GEODE_HOME" == "" ]; then
         echo "Could not find gfsh. Please set the GEODE_HOME path."
         echo "e.g. export GEODE_HOME=<path to Geode>"

@@ -44,7 +44,7 @@ class Order {
     return size;
   }
   void print() {
-    std::cout << " OrderID: " << orderID << std::endl << " Product Name: " << name << std::endl << " Quantity: " << quantity << std::endl;
+    std::cout << " OrderID: " << orderID << std::endl << " Product Name: " << name << std::endl << " Quantity: " << quantity << std::endl << " Object Size: " << getSize() << std::endl;
   }
 
  private:
@@ -118,6 +118,7 @@ class OrderSerializer : public PdxSerializer {
   }
 
   UserObjectSizer getObjectSizer(const std::string& className) {
+
     if (className == CLASSNAME) {
       return objectSize;
     }
@@ -135,7 +136,7 @@ int main(int argc, char** argv) {
   poolFactory->addLocator("localhost", 10334);
   auto pool = poolFactory->create("pool");
   auto regionFactory = cache.createRegionFactory(PROXY);
-  auto region = regionFactory.setPoolName("pool").create("orders");
+  auto region = regionFactory.setPoolName("pool").create("custom_orders");
 
   std::shared_ptr<PdxSerializer> orderSer =
       std::shared_ptr<PdxSerializer>(new OrderSerializer());
