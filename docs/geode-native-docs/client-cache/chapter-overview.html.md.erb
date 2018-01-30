@@ -1,0 +1,54 @@
+---
+title:  Configuring the Native Client Cache
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+This section describes the client cache functionality, initialization file, and APIs. It provides information about creating and working with caches, cache regions, and region entries.
+
+The client cache provides a framework for clients to store, manage, and distribute application data.
+
+-   **[Caches](caches.html)**
+
+    The cache is the entry point to data caching in <%=vars.product_name%>. Through the cache, clients gain access to the <%=vars.product_name%> caching framework for data loading, distribution, and maintenance.
+
+-   **[Cache Initialization File (cache.xml)](../cache-init-file/chapter-overview.html)**
+
+    To ease the task of managing the structure of the cache, you can define the default <%=vars.product_name%> cache structure in an XML-based initialization file.
+
+-   **[Regions](regions.html)**
+
+    You create cache regions either programmatically or through declarative statements in the `cache.xml` file. Generally, a cache is organized and populated through a combination of the two approaches.
+
+-   **[Region Entries](entries.html)**
+
+    Region entries hold cached application data. Entries are automatically managed according to region attribute settings.
+
+-   **[Region Consistency](consistency-checking-in-regions.html)**
+
+    <%=vars.product_name%> ensures that all copies of a region eventually reach a consistent state on all members and clients that host the region.
+
+-   **[Region Attributes](region-attributes.html)**
+
+    Region attributes govern the automated management of a region and its entries.
+
+-   **[Cache Management](cache-management.html)**
+
+    This section covers cache management.
+
+

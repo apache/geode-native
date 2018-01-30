@@ -1,0 +1,25 @@
+diff -ru a/boost/stacktrace/detail/frame_unwind.ipp b/boost/stacktrace/detail/frame_unwind.ipp
+--- a/boost/stacktrace/detail/frame_unwind.ipp	Sat Aug 19 16:49:49 2017
++++ b/boost/stacktrace/detail/frame_unwind.ipp	Fri Sep 15 20:12:08 2017
+@@ -84,7 +84,7 @@
+ std::string frame::name() const {
+ #if !defined(BOOST_WINDOWS) && !defined(__CYGWIN__)
+     ::Dl_info dli;
+-    const bool dl_ok = !!::dladdr(addr_, &dli);
++    const bool dl_ok = !!::dladdr(const_cast<void *>(addr_), &dli);
+     if (dl_ok && dli.dli_sname) {
+         return boost::core::demangle(dli.dli_sname);
+     }
+diff -ru a/boost/stacktrace/detail/location_from_symbol.hpp b/boost/stacktrace/detail/location_from_symbol.hpp
+--- a/boost/stacktrace/detail/location_from_symbol.hpp	Sat Aug 19 16:49:49 2017
++++ b/boost/stacktrace/detail/location_from_symbol.hpp	Fri Sep 15 20:12:51 2017
+@@ -28,7 +28,7 @@
+     explicit location_from_symbol(const void* addr) BOOST_NOEXCEPT
+         : dli_()
+     {
+-        if (!::dladdr(addr, &dli_)) {
++        if (!::dladdr(const_cast<void *>(addr), &dli_)) {
+             dli_.dli_fname = 0;
+         }
+     }
+

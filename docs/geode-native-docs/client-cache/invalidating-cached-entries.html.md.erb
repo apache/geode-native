@@ -1,0 +1,33 @@
+---
+title:  Invalidating or Destroying Cached Entries
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<a id="invalidating-cached-entries__section_9244FABA5204452A8D25D1184310B7EE"></a>
+Invalidating an entry sets the entry's value to `NULL`. Destroying it removes the entry from the region altogether. These operations can be carried out in the local cache in the following ways:
+
+-   Through direct API calls from the client.
+-   Through expiration activities based on the entry's statistics and the region's attribute settings.
+
+**Note:**
+A user-defined cache writer is called before an operation is completed, and can abort an entry destroy operation.
+
+Whether carried out explicitly or through expiration activities, invalidation and destruction cause event notification: The `CacheEvent` object has an `isExpiration` flag that is set to true for events resulting from expiration activities, and set to `false` for all other events.
+
+

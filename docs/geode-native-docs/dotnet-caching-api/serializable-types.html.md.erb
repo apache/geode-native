@@ -1,0 +1,36 @@
+---
+title:  Generic and Custom Serializable Types
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+All built-in generics are automatically registered at initialization. You have a couple of options for complex key types.
+
+If your application uses more complex key types that you want to make more accessible or easier to handle, you can derive a new class from `IGeodeSerializable`. Another option is for the application to do its own object serialization using `Byte[]` or a custom type.
+
+## <a id="concept_5D520C87F65B48AFA4240615190B0150__section_DA3BCFFFCB974C65BEE953DF3FAA8442" class="no-quick-link"></a>Blobs
+
+If you have data that is best handled as a blob, such as structs that do not contain pointers, use a `Byte[]` or, if you need something more complex than `Byte[]`, implement a custom type using either `IPdxSerializable` or `IGeodeSerializable`.
+
+## <a id="concept_5D520C87F65B48AFA4240615190B0150__section_D49865F1CF5F467A9FFAD244D990F3F5" class="no-quick-link"></a>Object Graphs
+
+If you have a graph of objects in which each node can be serializable, the parent node calls `DataOutput.WriteObject` to delegate the serialization responsibility to its child nodes. Similarly, your application calls `DataInput.ReadObject` to deserialize the object graph.
+
+**Note:**
+The <%=vars.product_name%> `IGeodeSerializable` interface does not support object graphs with multiple references to the same object. If your application uses these types of circular graphs, you must address this design concern explicitly.
+

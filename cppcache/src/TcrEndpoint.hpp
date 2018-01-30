@@ -1,0 +1,274 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#pragma once
+
+#ifndef GEODE_TCRENDPOINT_H_
+#define GEODE_TCRENDPOINT_H_
+
+#include <string>
+#include <list>
+#include <atomic>
+
+#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Semaphore.h>
+
+#include <geode/internal/geode_globals.hpp>
+#include <geode/internal/geode_base.hpp>
+
+#include "FairQueue.hpp"
+#include "Set.hpp"
+#include "TcrConnection.hpp"
+#include "Task.hpp"
+#include "ErrType.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
+
+class ThinClientRegion;
+class TcrMessage;
+class ThinClientBaseDM;
+class CacheImpl;
+class ThinClientPoolHADM;
+class ThinClientPoolDM;
+class QueryService;
+
+class _GEODE_EXPORT TcrEndpoint {
+ public:
+  TcrEndpoint(
+      const std::string& name, CacheImpl* cacheImpl,
+      ACE_Semaphore& failoverSema, ACE_Semaphore& cleanupSema,
+      ACE_Semaphore& redundancySema, ThinClientBaseDM* dm = nullptr,
+      bool isMultiUserMode = false);  // TODO: need to look for endpoint case
+
+  /* adongre
+   * CID 29000: Non-virtual destructor (VIRTUAL_DTOR)
+   */
+  virtual ~TcrEndpoint();
+
+  virtual GfErrType registerDM(bool clientNotification,
+                               bool isSecondary = false,
+                               bool isActiveEndpoint = false,
+                               ThinClientBaseDM* distMgr = nullptr);
+  // GfErrType registerPoolDM( bool isSecondary, ThinClientPoolHADM* poolDM );
+
+  virtual void unregisterDM(bool clientNotification,
+                            ThinClientBaseDM* distMgr = nullptr,
+                            bool checkQueueHosted = false);
+  // void unregisterPoolDM(  );
+
+  void pingServer(ThinClientPoolDM* poolDM = nullptr);
+  int receiveNotification(volatile bool& isRunning);
+  GfErrType send(const TcrMessage& request, TcrMessageReply& reply);
+  GfErrType sendRequestConn(const TcrMessage& request, TcrMessageReply& reply,
+                            TcrConnection* conn, std::string& failReason);
+  GfErrType sendRequestWithRetry(const TcrMessage& request,
+                                 TcrMessageReply& reply, TcrConnection*& conn,
+                                 bool& epFailure, std::string& failReason,
+                                 int maxSendRetries, bool useEPPool,
+                                 std::chrono::microseconds requestedTimeout,
+                                 bool isBgThread = false);
+  GfErrType sendRequestConnWithRetry(const TcrMessage& request,
+                                     TcrMessageReply& reply,
+                                     TcrConnection*& conn,
+                                     bool isBgThread = false);
+
+  void stopNotifyReceiverAndCleanup();
+  void stopNoBlock();
+
+  bool inline connected() const { return m_connected; }
+
+  int inline numRegions() const { return m_numRegions; }
+
+  void inline setNumRegions(int numRegions) { m_numRegions = numRegions; }
+
+  inline const std::string& name() const { return m_name; }
+
+  //  setConnectionStatus is now a public method, as it is used by
+  //  TcrDistributionManager.
+  void setConnectionStatus(bool status);
+
+  inline const int getNumRegionListeners() const { return m_numRegionListener; }
+
+  // TODO: for single user mode only
+  void setUniqueId(int64_t uniqueId) {
+    LOGDEBUG("tcrEndpoint:setUniqueId:: %d ", uniqueId);
+    m_isAuthenticated = true;
+    m_uniqueId = uniqueId;
+  }
+
+  int64_t getUniqueId() {
+    LOGDEBUG("tcrEndpoint:getUniqueId:: %d ", m_uniqueId);
+    return m_uniqueId;
+  }
+
+  bool isAuthenticated() { return m_isAuthenticated; }
+
+  void setAuthenticated(bool flag) { m_isAuthenticated = false; }
+
+  virtual bool isMultiUserMode();
+  /*{
+    if(m_baseDM != nullptr)
+      return this->m_baseDM->isMultiUserMode();
+    else
+      return false;
+  }*/
+
+  void authenticateEndpoint(TcrConnection*& conn);
+
+  ServerQueueStatus getFreshServerQueueStatus(int32_t& queueSize,
+                                              bool addToQueue,
+                                              TcrConnection*& statusConn);
+
+  //  TESTING: return true or false
+  bool inline getServerQueueStatusTEST() {
+    return (m_serverQueueStatus == REDUNDANT_SERVER ||
+            m_serverQueueStatus == PRIMARY_SERVER);
+  }
+
+  // Get cached server queue props.
+  int32_t inline getServerQueueSize() { return m_queueSize; }
+  ServerQueueStatus getServerQueueStatus() { return m_serverQueueStatus; }
+
+  // Set server queue props.
+  void setServerQueueStatus(ServerQueueStatus queueStatus, int32_t queueSize);
+
+  GfErrType createNewConnection(
+      TcrConnection*& newConn, bool isClientNotification = false,
+      bool isSecondary = false,
+      std::chrono::microseconds connectTimeout = DEFAULT_CONNECT_TIMEOUT,
+      int32_t timeoutRetries = 1, bool sendUpdateNotification = true,
+      bool appThreadRequest = false);
+
+  bool needtoTakeConnectLock();
+  volatile bool m_needToConnectInLock;
+  ACE_Recursive_Thread_Mutex m_connectLock;
+  ACE_Condition<ACE_Recursive_Thread_Mutex> m_connectLockCond;
+
+  GfErrType createNewConnectionWL(TcrConnection*& newConn,
+                                  bool isClientNotification, bool isSecondary,
+                                  std::chrono::microseconds connectTimeout);
+
+  void setConnected(volatile bool connected = true) { m_connected = connected; }
+  virtual ThinClientPoolDM* getPoolHADM() { return nullptr; }
+  bool isQueueHosted();
+  ACE_Recursive_Thread_Mutex& getQueueHostedMutex() {
+    return m_notifyReceiverLock;
+  }
+  /*
+  void sendNotificationCloseMsg();
+  */
+
+  void setDM(ThinClientBaseDM* dm) {
+    LOGDEBUG("tcrendpoint setDM");
+    this->m_baseDM = dm;
+  }
+
+  int32_t numberOfTimesFailed() { return m_numberOfTimesFailed; }
+
+  void addConnRefCounter(int count) { m_noOfConnRefs += count; }
+
+  int getConnRefCounter() { return m_noOfConnRefs; }
+  virtual uint16_t getDistributedMemberID() { return m_distributedMemId; }
+  virtual void setDistributedMemberID(uint16_t memId) {
+    m_distributedMemId = memId;
+  }
+
+ protected:
+  std::shared_ptr<Properties> getCredentials();
+  volatile int m_maxConnections;
+  FairQueue<TcrConnection> m_opConnections;
+  virtual bool checkDupAndAdd(std::shared_ptr<EventId> eventid);
+  virtual void processMarker();
+  virtual void triggerRedundancyThread();
+  virtual std::shared_ptr<QueryService> getQueryService();
+  virtual void sendRequestForChunkedResponse(const TcrMessage& request,
+                                             TcrMessageReply& reply,
+                                             TcrConnection* conn);
+  virtual void closeFailedConnection(TcrConnection*& conn);
+  void closeConnection(TcrConnection*& conn);
+  virtual void handleNotificationStats(int64_t byteLength){};
+  virtual void closeNotification();
+  std::list<Task<TcrEndpoint>*> m_notifyReceiverList;
+  std::list<TcrConnection*> m_notifyConnectionList;
+  TcrConnection* m_notifyConnection;
+  Task<TcrEndpoint>* m_notifyReceiver;
+  int m_numRegionListener;
+  bool m_isQueueHosted;
+  ACE_Recursive_Thread_Mutex m_notifyReceiverLock;
+  virtual bool handleIOException(const std::string& message,
+                                 TcrConnection*& conn, bool isBgThread = false);
+  CacheImpl* m_cacheImpl;
+
+ private:
+  int64_t m_uniqueId;
+  bool m_isAuthenticated;
+  ACE_Recursive_Thread_Mutex m_endpointAuthenticationLock;
+  volatile bool m_msgSent;
+  volatile bool m_pingSent;
+  int32_t m_numberOfTimesFailed;
+  bool m_isMultiUserMode;
+
+  bool compareTransactionIds(int32_t reqTransId, int32_t replyTransId,
+                             std::string& failReason, TcrConnection* conn);
+  void closeConnections();
+  void setRetry(const TcrMessage& request, int& maxSendRetries);
+
+  std::string m_name;
+  ACE_Recursive_Thread_Mutex m_connectionLock;
+  volatile bool m_connected;
+  bool m_isActiveEndpoint;
+  int m_numRegions;
+  Set<uint16_t> m_ports;
+  int m_pingTimeouts;
+
+  int m_notifyCount;
+
+  ACE_Semaphore& m_failoverSema;
+  ACE_Semaphore& m_cleanupSema;
+  ACE_Semaphore m_notificationCleanupSema;
+  ACE_Semaphore& m_redundancySema;
+
+  std::list<ThinClientBaseDM*> m_distMgrs;
+  ACE_Recursive_Thread_Mutex m_distMgrsLock;
+
+  uint32_t m_dupCount;
+
+  //  TESTING: Durable clients - flag that indicates whether endpoint made
+  //  connection to server that has HA queue.
+  ServerQueueStatus m_serverQueueStatus;
+  bool m_isServerQueueStatusSet;
+  int32_t m_queueSize;
+  // ThinClientPoolDM* m_poolHADM;
+  ThinClientBaseDM* m_baseDM;
+
+  // Disallow copy constructor and assignment operator.
+  TcrEndpoint(const TcrEndpoint&);
+  TcrEndpoint& operator=(const TcrEndpoint&);
+  // number of connections to this endpoint
+  std::atomic<int32_t> m_noOfConnRefs;
+  uint16_t m_distributedMemId;
+
+ protected:
+  static const char* NC_Notification;
+};
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
+
+#endif  // GEODE_TCRENDPOINT_H_

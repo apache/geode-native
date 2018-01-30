@@ -1,0 +1,245 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include "StatisticDescriptorImpl.hpp"
+
+namespace apache {
+namespace geode {
+namespace statistics {
+
+const std::string StatisticDescriptorImpl::IntTypeName = "int_t";
+const std::string StatisticDescriptorImpl::LongTypeName = "Long";
+const std::string StatisticDescriptorImpl::DoubleTypeName = "Float";
+
+/**
+ * Describes an individual statistic whose value is updated by an
+ * application and may be archived by Geode.  These descriptions are
+ * gathered together in a {@link StatisticsType}.
+ * <P>
+ * To get an instance of this interface use an instance of
+ * {@link StatisticsFactory}.
+ * <P>
+ * StatisticDescriptors are naturally ordered by their name.
+ *
+ */
+
+StatisticDescriptorImpl::StatisticDescriptorImpl(
+    const std::string& statName, FieldType statDescriptorType,
+    const std::string& statDescription, const std::string& statUnit,
+    bool statIsStatCounter, bool statIsStatLargerBetter)
+    : name(statName),
+      descriptorType(statDescriptorType),
+      description(statDescription),
+      unit(statUnit),
+      isStatCounter(statIsStatCounter),
+      isStatLargerBetter(statIsStatLargerBetter),
+      id(-1) {}
+
+StatisticDescriptorImpl::~StatisticDescriptorImpl() {}
+
+/////////////////////// Create functions ///////////////////////////////////
+
+StatisticDescriptor* StatisticDescriptorImpl::createIntCounter(
+    const std::string& statName, const std::string& description,
+    const std::string& units, bool isLargerBetter) {
+  FieldType fieldType = INT_TYPE;
+  StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
+      statName, fieldType, description, units, true, isLargerBetter);
+  if (sdi == nullptr) {
+    throw OutOfMemoryException(
+        "StatisticDescriptorImpl::createIntCounter: out of memory");
+  }
+  return sdi;
+}
+
+StatisticDescriptor* StatisticDescriptorImpl::createLongCounter(
+    const std::string& name, const std::string& description,
+    const std::string& units, bool isLargerBetter) {
+  FieldType fieldType = LONG_TYPE;
+  StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
+      name, fieldType, description, units, true, isLargerBetter);
+  if (sdi == nullptr) {
+    throw OutOfMemoryException(
+        "StatisticDescriptorImpl::createLongCounter: out of memory");
+  }
+  return sdi;
+}
+
+StatisticDescriptor* StatisticDescriptorImpl::createDoubleCounter(
+    const std::string& name, const std::string& description,
+    const std::string& units, bool isLargerBetter) {
+  FieldType fieldType = DOUBLE_TYPE;
+  StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
+      name, fieldType, description, units, true, isLargerBetter);
+  if (sdi == nullptr) {
+    throw OutOfMemoryException(
+        "StatisticDescriptorImpl::createDoubleCounter: out of memory");
+  }
+  return sdi;
+}
+
+StatisticDescriptor* StatisticDescriptorImpl::createIntGauge(
+    const std::string& name, const std::string& description,
+    const std::string& units, bool isLargerBetter) {
+  FieldType fieldType = INT_TYPE;
+  StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
+      name, fieldType, description, units, false, isLargerBetter);
+  if (sdi == nullptr) {
+    throw OutOfMemoryException(
+        "StatisticDescriptorImpl::createIntGauge: out of memory");
+  }
+  return sdi;
+}
+
+StatisticDescriptor* StatisticDescriptorImpl::createLongGauge(
+    const std::string& name, const std::string& description,
+    const std::string& units, bool isLargerBetter) {
+  FieldType fieldType = LONG_TYPE;
+  StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
+      name, fieldType, description, units, false, isLargerBetter);
+
+  if (sdi == nullptr) {
+    throw OutOfMemoryException(
+        "StatisticDescriptorImpl::createLongGauge: out of memory");
+  }
+  return sdi;
+}
+
+StatisticDescriptor* StatisticDescriptorImpl::createDoubleGauge(
+    const std::string& name, const std::string& description,
+    const std::string& units, bool isLargerBetter) {
+  FieldType fieldType = DOUBLE_TYPE;
+  StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
+      name, fieldType, description, units, false, isLargerBetter);
+  if (sdi == nullptr) {
+    throw OutOfMemoryException(
+        "StatisticDescriptorImpl::createDoubleGauge: out of memory");
+  }
+  return sdi;
+}
+
+/////////////////////// StatisticDescriptor(Base class)
+/// Methods///////////////////////////
+
+const std::string& StatisticDescriptorImpl::getName() const { return name; }
+
+const std::string& StatisticDescriptorImpl::getDescription() const {
+  return description;
+}
+
+int32_t StatisticDescriptorImpl::getStorageBits() {
+  return getTypeCodeBits(descriptorType);
+}
+
+const std::string& StatisticDescriptorImpl::getTypeCodeName(FieldType code) {
+  switch (code) {
+    case INT_TYPE:
+      return IntTypeName;
+    case LONG_TYPE:
+      return LongTypeName;
+    case DOUBLE_TYPE:
+      return DoubleTypeName;
+    default: {
+      std::string s = "Unknown type code:" + std::to_string(code);
+      throw IllegalArgumentException(s.c_str());
+    }
+  }
+}
+
+/**
+ * Returns the number of bits needed to represent a value of the given type
+ * @throws IllegalArgumentException/
+ *         <code>code</code> is an unknown type
+ */
+int32_t StatisticDescriptorImpl::getTypeCodeBits(FieldType code) {
+  switch (code) {
+    case INT_TYPE:
+      return 32;
+    case LONG_TYPE:
+      return 64;
+    case DOUBLE_TYPE:
+      return 64;
+    default:
+      std::string temp(getTypeCodeName(code));
+      std::string s = "Unknown type code: " + temp;
+      throw IllegalArgumentException(s.c_str());
+  }
+}
+
+bool StatisticDescriptorImpl::isCounter() const { return isStatCounter; }
+
+bool StatisticDescriptorImpl::isLargerBetter() const {
+  return isStatLargerBetter;
+}
+
+const std::string& StatisticDescriptorImpl::getUnit() const { return unit; }
+
+int32_t StatisticDescriptorImpl::getId() const {
+  if (id == -1) {
+    std::string s = "The id has not been initialized yet.";
+    throw IllegalStateException(s.c_str());
+  }
+  return id;
+}
+
+///////////////////////// Instance Methods///////////////// ////////////////////
+
+FieldType StatisticDescriptorImpl::getTypeCode() const {
+  return descriptorType;
+}
+
+void StatisticDescriptorImpl::setId(int32_t statId) { id = statId; }
+
+int32_t StatisticDescriptorImpl::checkInt() const {
+  if (descriptorType != INT_TYPE) {
+    std::string sb;
+    std::string typeCode(getTypeCodeName(getTypeCode()));
+    sb = "The statistic " + name;
+    sb += " is of type " + typeCode;
+    sb += " and it was expected to be an int";
+    throw IllegalArgumentException(sb.c_str());
+  }
+  return id;
+}
+int32_t StatisticDescriptorImpl::checkLong() const {
+  if (descriptorType != LONG_TYPE) {
+    std::string sb;
+    std::string typeCode(getTypeCodeName(getTypeCode()));
+    sb = "The statistic " + name;
+    sb += " is of type " + typeCode;
+    sb += " and it was expected to be an long";
+    throw IllegalArgumentException(sb.c_str());
+  }
+  return id;
+}
+
+int32_t StatisticDescriptorImpl::checkDouble() const {
+  if (descriptorType != DOUBLE_TYPE) {
+    std::string sb;
+    std::string typeCode(getTypeCodeName(getTypeCode()));
+
+    sb = "The statistic " + name;
+    sb += " is of type " + typeCode;
+    sb += " and it was expected to be an long";
+    throw IllegalArgumentException(sb.c_str());
+  }
+  return id;
+}
+
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

@@ -1,0 +1,72 @@
+---
+title:  Solaris Installation
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+This topic describes how to install the SQLite Persistence Manager on Solaris.
+
+The *`product-dir`* directory refers to the path to the directory
+that contains the built library.
+
+The following libraries must be present in the runtime linking path:
+
+-   `libSqLiteImpl.so` is provided in <code><i>product-dir</i>/lib</code>, so it is already present in the runtime linking path.
+-   `libsqlite3.so` is the SQLite Library. You need to create this library and make available in the runtime linking path, or copied to <code><i>product-dir</i>/lib</code>, as described below.
+
+The library has been tested with SQLite v3.7.14.1.
+
+## <a id="concept_613BCAD15D9C4B3C94BBA3C1A26B6166__section_FAB703D706D54311963399A714D466F9" class="no-quick-link"></a>Downloading, Building, and Installing the Library
+
+Create the SQLite database library by downloading the latest .zip file and compiling the source code.
+
+1.  Download the source code `sqlite-autoconf-NNNNNNN.tar.gz` file (where *NNNNNNN* corresponds to the version) for SQLite v3.7.14.1 or later from [http://www.sqlite.org/download.html](http://www.sqlite.org/download.html).
+2.  Update your PATH environment variable to include the location of the Solaris `ar` command.
+
+    ``` pre
+    export PATH=/usr/css/bin:$PATH
+    ```
+
+3.  Extract the source code from the .tar.gz file. First unzip:
+
+    ``` pre
+    gzip -d sqlite-autoconf-3071401.tar.gz
+    ```
+
+    Then untar the file:
+
+    ``` pre
+    tar -xvf sqlite-autoconf-3071401.tar
+    ```
+
+4.  Change directories to the extracted source files, and follow the install instructions located in the "INSTALL" file.
+    1.  Run the `configure` command for 32-bit or 64-bit Solaris systems with the following options, all entered on a single command line. Change the` --prefix` directory specification to the location where you want the libraries:
+        -   **32-bit:**
+
+            <code>
+            CC=cc CFLAGS="-xarch=v8plus -code=pic32" ./configure --prefix=/_desired-binary-location_/sqlite-binaries
+            </code>
+        -   **64-bit:**
+
+            <code>
+            CC=cc CFLAGS="-xarch=v9 -code=pic32" ./configure --prefix=/_desired-binary-location_/sqlite-binaries CFLAGS="-m64"
+            </code>
+
+    2.  Run `gmake install`. The libraries will be available in the `sqlite-binaries` directory specified.
+
+5.  Copy <code>/_desired-binary-location_/sqlite-binaries/lib/libsqlite3.so</code> file to <code><i>product-dir</i>/lib</code>.
