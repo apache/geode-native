@@ -17,13 +17,11 @@
 
 #include <iostream>
 
-// Include the Geode libraries.
 #include <geode/CacheFactory.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/PdxSerializer.hpp>
 #include <geode/PdxWrapper.hpp>
 
-// Use the "geode" namespace.
 using namespace apache::geode::client;
 
 static const std::string CLASSNAME = "com.example.Order";
@@ -44,7 +42,9 @@ class Order {
     return size;
   }
   void print() {
-    std::cout << " OrderID: " << orderID << std::endl << " Product Name: " << name << std::endl << " Quantity: " << quantity << std::endl << " Object Size: " << getSize() << std::endl;
+    std::cout << " OrderID: " << orderID << std::endl
+              << " Product Name: " << name << std::endl
+              << " Quantity: " << quantity << std::endl;
   }
 
  private:
@@ -65,9 +65,9 @@ class OrderSerializer : public PdxSerializer {
     }
 
     try {
-      auto myOrder = new Order((unsigned long)pdxReader.readLong("objectid"),
-                               pdxReader.readString("name"),
-                               (unsigned int)pdxReader.readInt("quantity"));
+      auto myOrder = new Order((unsigned long)pdxReader.readLong(orderid_key),
+                               pdxReader.readString(name_key),
+                               (unsigned int)pdxReader.readInt(quantity_key));
       return myOrder;
     } catch (std::exception& e) {
       std::cout << "Caught exception: " << e.what() << std::endl;
@@ -86,7 +86,7 @@ class OrderSerializer : public PdxSerializer {
                            const std::string& className) {
     size_t size = 0;
     if (className == CLASSNAME) {
-      const Order* order = reinterpret_cast<const Order*>(testObject);
+      auto order = reinterpret_cast<const Order*>(testObject);
       size = order->getSize();
     }
     return size;
@@ -100,9 +100,9 @@ class OrderSerializer : public PdxSerializer {
 
     try {
       auto myOrder = static_cast<Order*>(userObject);
-      pdxWriter.writeLong("orderid", myOrder->getOrderID());
-      pdxWriter.writeString("name", myOrder->getName());
-      pdxWriter.writeInt("quantity", myOrder->getQuantity());
+      pdxWriter.writeLong(orderid_key, myOrder->getOrderID());
+      pdxWriter.writeString(name_key, myOrder->getName());
+      pdxWriter.writeInt(quantity_key, myOrder->getQuantity());
     } catch (std::exception& e) {
       std::cout << "Caught exception: " << e.what() << std::endl;
       return false;
@@ -118,16 +118,19 @@ class OrderSerializer : public PdxSerializer {
   }
 
   UserObjectSizer getObjectSizer(const std::string& className) {
-
     if (className == CLASSNAME) {
       return objectSize;
     }
-    return NULL;
+    return nullptr;
   }
+
+ private:
+  const std::string orderid_key = "orderid";
+  const std::string name_key = "name";
+  const std::string quantity_key = "quantity";
 };
 
 int main(int argc, char** argv) {
-
   auto cacheFactory = CacheFactory();
   cacheFactory.set("log-level", "none");
   auto cache = cacheFactory.create();
@@ -156,7 +159,7 @@ int main(int argc, char** argv) {
   std::cout << "Getting the orders from the region" << std::endl;
   auto wrappedOrder =
       std::dynamic_pointer_cast<PdxWrapper>(region->get("Customer1"));
-  auto* customer1Order = reinterpret_cast<Order*>(wrappedOrder->getObject());
+  auto customer1Order = reinterpret_cast<Order*>(wrappedOrder->getObject());
 
   customer1Order->print();
 
