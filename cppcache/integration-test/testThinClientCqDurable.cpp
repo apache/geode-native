@@ -200,7 +200,7 @@ void RunDurableCqClient() {
 
   LOGINFO("Created the Geode Cache Programmatically");
 
-  auto regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
+  auto regionFactory = cachePtr->createRegionFactory(RegionShortcut::CACHING_PROXY);
 
   // Create the Region Programmatically.
   auto regionPtr = regionFactory.create("DistRegionAck");
@@ -257,7 +257,7 @@ void RunFeederClient() {
 
   LOGINFO("Created the Geode Cache");
 
-  auto regionFactory = cachePtr->createRegionFactory(PROXY);
+  auto regionFactory = cachePtr->createRegionFactory(RegionShortcut::PROXY);
 
   LOGINFO("Created the RegionFactory");
 
@@ -289,7 +289,7 @@ void RunFeederClient1() {
 
   LOGINFO("Created the Geode Cache");
 
-  auto regionFactory = cachePtr->createRegionFactory(PROXY);
+  auto regionFactory = cachePtr->createRegionFactory(RegionShortcut::PROXY);
 
   LOGINFO("Created the RegionFactory");
 

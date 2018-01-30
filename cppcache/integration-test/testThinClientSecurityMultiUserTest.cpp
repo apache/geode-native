@@ -52,7 +52,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PerformSecureOperationsWithUserCredentials)
     poolFactory->addLocator("localhost", CacheHelper::staticLocatorHostPort1);
     poolFactory->create("mypool");
 
-    auto regionFactory = cache.createRegionFactory(PROXY);
+    auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
     regionFactory.setPoolName("mypool");
     regionFactory.create("DistRegionAck");
 

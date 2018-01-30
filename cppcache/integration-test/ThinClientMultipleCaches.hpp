@@ -51,7 +51,8 @@ std::shared_ptr<Region> createRegionFromCache(std::shared_ptr<Cache>& cache) {
   auto poolFactory = cache->getPoolManager().createFactory();
   CacheHelper::getHelper().addServerLocatorEPs(locatorsG, poolFactory, true);
   poolFactory->create("DistRegionAck");
-  return cache->createRegionFactory(PROXY).create("DistRegionAck");
+  return cache->createRegionFactory(RegionShortcut::PROXY)
+      .create("DistRegionAck");
 }
 
 DUNIT_TASK_DEFINITION(CLIENT1, SetupAndTestMutlipleCaches)

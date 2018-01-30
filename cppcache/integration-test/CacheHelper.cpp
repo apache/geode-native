@@ -95,7 +95,8 @@ CacheHelper::CacheHelper(const char* member_id,
   if (noRootRegion) return;
 
   try {
-    auto regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
+    auto regionFactory =
+        cachePtr->createRegionFactory(RegionShortcut::CACHING_PROXY);
     rootRegionPtr = regionFactory.create(ROOT_NAME);
   } catch (const RegionExistsException&) {
     rootRegionPtr = cachePtr->getRegion(ROOT_NAME);
@@ -142,7 +143,8 @@ CacheHelper::CacheHelper(const std::shared_ptr<Properties>& configPtr,
   if (noRootRegion) return;
 
   try {
-    auto regionFactory = cachePtr->createRegionFactory(CACHING_PROXY);
+    auto regionFactory =
+        cachePtr->createRegionFactory(RegionShortcut::CACHING_PROXY);
     rootRegionPtr = regionFactory.create(ROOT_NAME);
   } catch (const RegionExistsException&) {
     rootRegionPtr = cachePtr->getRegion(ROOT_NAME);
@@ -551,12 +553,12 @@ std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool(
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
     ExpirationAction::Action action) {
-  RegionShortcut preDefRA = PROXY;
+  RegionShortcut preDefRA = RegionShortcut::PROXY;
   if (caching) {
-    preDefRA = CACHING_PROXY;
+    preDefRA = RegionShortcut::CACHING_PROXY;
   }
   if (lel > 0) {
-    preDefRA = CACHING_PROXY_ENTRY_LRU;
+    preDefRA = RegionShortcut::CACHING_PROXY_ENTRY_LRU;
   }
   auto regionFactory = cachePtr->createRegionFactory(preDefRA);
   regionFactory.setLruEntriesLimit(lel);
@@ -575,12 +577,12 @@ std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool2(
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
     ExpirationAction::Action action) {
-  RegionShortcut preDefRA = PROXY;
+  RegionShortcut preDefRA = RegionShortcut::PROXY;
   if (caching) {
-    preDefRA = CACHING_PROXY;
+    preDefRA = RegionShortcut::CACHING_PROXY;
   }
   if (lel > 0) {
-    preDefRA = CACHING_PROXY_ENTRY_LRU;
+    preDefRA = RegionShortcut::CACHING_PROXY_ENTRY_LRU;
   }
   auto regionFactory = cachePtr->createRegionFactory(preDefRA);
   regionFactory.setLruEntriesLimit(lel);
@@ -656,12 +658,12 @@ std::shared_ptr<Region> CacheHelper::createPooledRegion(
     auto pptr = poolFacPtr->create(poolName);
   }
 
-  RegionShortcut preDefRA = PROXY;
+  RegionShortcut preDefRA = RegionShortcut::PROXY;
   if (caching) {
-    preDefRA = CACHING_PROXY;
+    preDefRA = RegionShortcut::CACHING_PROXY;
   }
   if (lel > 0) {
-    preDefRA = CACHING_PROXY_ENTRY_LRU;
+    preDefRA = RegionShortcut::CACHING_PROXY_ENTRY_LRU;
   }
   auto regionFactory = cachePtr->createRegionFactory(preDefRA);
   regionFactory.setLruEntriesLimit(lel);
@@ -693,12 +695,12 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionConcurrencyCheckDisabled(
     auto pptr = poolFacPtr->create(poolName);
   }
 
-  RegionShortcut preDefRA = PROXY;
+  RegionShortcut preDefRA = RegionShortcut::PROXY;
   if (caching) {
-    preDefRA = CACHING_PROXY;
+    preDefRA = RegionShortcut::CACHING_PROXY;
   }
   if (lel > 0) {
-    preDefRA = CACHING_PROXY_ENTRY_LRU;
+    preDefRA = RegionShortcut::CACHING_PROXY_ENTRY_LRU;
   }
   auto regionFactory = cachePtr->createRegionFactory(preDefRA);
   regionFactory.setLruEntriesLimit(lel);
@@ -771,9 +773,9 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
         "createPooledRegionDiscOverFlow: setting caching=false does not make "
         "sense");
   }
-  RegionShortcut preDefRA = CACHING_PROXY;
+  RegionShortcut preDefRA = RegionShortcut::CACHING_PROXY;
   if (lel > 0) {
-    preDefRA = CACHING_PROXY_ENTRY_LRU;
+    preDefRA = RegionShortcut::CACHING_PROXY_ENTRY_LRU;
   }
   auto regionFactory = cachePtr->createRegionFactory(preDefRA);
   regionFactory.setLruEntriesLimit(lel);
@@ -822,12 +824,12 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionSticky(
     logPoolAttributes(pptr);
   }
 
-  RegionShortcut preDefRA = PROXY;
+  RegionShortcut preDefRA = RegionShortcut::PROXY;
   if (caching) {
-    preDefRA = CACHING_PROXY;
+    preDefRA = RegionShortcut::CACHING_PROXY;
   }
   if (lel > 0) {
-    preDefRA = CACHING_PROXY_ENTRY_LRU;
+    preDefRA = RegionShortcut::CACHING_PROXY_ENTRY_LRU;
   }
   auto regionFactory = cachePtr->createRegionFactory(preDefRA);
   regionFactory.setLruEntriesLimit(lel);
@@ -863,12 +865,12 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionStickySingleHop(
     logPoolAttributes(pptr);
   }
 
-  RegionShortcut preDefRA = PROXY;
+  RegionShortcut preDefRA = RegionShortcut::PROXY;
   if (caching) {
-    preDefRA = CACHING_PROXY;
+    preDefRA = RegionShortcut::CACHING_PROXY;
   }
   if (lel > 0) {
-    preDefRA = CACHING_PROXY_ENTRY_LRU;
+    preDefRA = RegionShortcut::CACHING_PROXY_ENTRY_LRU;
   }
   auto regionFactory = cachePtr->createRegionFactory(preDefRA);
   regionFactory.setLruEntriesLimit(lel);

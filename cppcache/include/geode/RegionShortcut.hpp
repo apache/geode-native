@@ -20,8 +20,6 @@
 #ifndef GEODE_REGIONSHORTCUT_H_
 #define GEODE_REGIONSHORTCUT_H_
 
-#include "internal/geode_globals.hpp"
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -35,7 +33,7 @@ namespace client {
  * the refid attribute on a region element or region-attributes element to the
  * string of each value.
  */
-enum RegionShortcut {
+enum class RegionShortcut {
 
   /**
    * A PROXY region has no local state and forwards all operations to a server.
