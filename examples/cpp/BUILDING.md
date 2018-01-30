@@ -26,6 +26,7 @@
 **Mac OS X / \*nix**
 
     $ cd <example>
+    $ export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:<install path>/geode-native/lib
     $ sh ./startserver.sh
     $ build/<example name>
     $ sh ./stopserver.sh
