@@ -57,7 +57,7 @@ namespace Apache
         {
           return static_cast<ExpirationAction>(
             m_nativeptr->get()->setEntryIdleTimeoutAction(
-              static_cast<native::ExpirationAction::Action>(action)));
+              static_cast<native::ExpirationAction>(action)));
         }
         finally
         {
@@ -86,7 +86,7 @@ namespace Apache
         {
           return static_cast<ExpirationAction>(
             m_nativeptr->get()->setEntryTimeToLiveAction(
-              static_cast<native::ExpirationAction::Action>(action)));
+              static_cast<native::ExpirationAction>(action)));
         }
         finally
         {
@@ -115,7 +115,7 @@ namespace Apache
         {
           return static_cast<ExpirationAction>(
             m_nativeptr->get()->setRegionIdleTimeoutAction(
-              static_cast<native::ExpirationAction::Action>(action)));
+              static_cast<native::ExpirationAction>(action)));
         }
         finally
         {
@@ -144,7 +144,7 @@ namespace Apache
         {
           return static_cast<ExpirationAction>(
             m_nativeptr->get()->setRegionTimeToLiveAction(
-              static_cast<native::ExpirationAction::Action>(action)));
+              static_cast<native::ExpirationAction>(action)));
         }
         finally
         {

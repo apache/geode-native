@@ -230,7 +230,7 @@ namespace Apache
       {
         try
         {
-          m_nativeptr->get()->setEntryIdleTimeout(static_cast<native::ExpirationAction::Action>( action ), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(idleTimeout) );
+          m_nativeptr->get()->setEntryIdleTimeout(static_cast<native::ExpirationAction>( action ), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(idleTimeout) );
         }
         finally
         {
@@ -244,7 +244,7 @@ namespace Apache
       {
         try
         {
-          m_nativeptr->get()->setEntryTimeToLive( static_cast<native::ExpirationAction::Action>( action ), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeToLive) );
+          m_nativeptr->get()->setEntryTimeToLive( static_cast<native::ExpirationAction>( action ), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeToLive) );
         }
         finally
         {
@@ -258,7 +258,7 @@ namespace Apache
       {
         try
         {
-          m_nativeptr->get()->setRegionIdleTimeout( static_cast<native::ExpirationAction::Action>( action ), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(idleTimeout) );
+          m_nativeptr->get()->setRegionIdleTimeout( static_cast<native::ExpirationAction>( action ), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(idleTimeout) );
         }
         finally
         {
@@ -272,7 +272,7 @@ namespace Apache
       {
         try
         {
-          m_nativeptr->get()->setRegionTimeToLive( static_cast<native::ExpirationAction::Action>( action ), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeToLive) );
+          m_nativeptr->get()->setRegionTimeToLive( static_cast<native::ExpirationAction>( action ), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeToLive) );
         }
         finally
         {
