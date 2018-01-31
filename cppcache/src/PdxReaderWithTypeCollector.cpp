@@ -209,8 +209,7 @@ std::string PdxReaderWithTypeCollector::readString(
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
     auto str = PdxLocalReader::readString(fieldName);
-    int32_t strSize =
-        static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
+    auto strSize = m_dataInput->currentBufferPosition() - startLoc;
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
     return str;
@@ -233,8 +232,7 @@ std::shared_ptr<Serializable> PdxReaderWithTypeCollector::readObject(
     ptr = PdxLocalReader::readObject(fieldName);
     m_newPdxType->addVariableLengthTypeField(fieldName, "Serializable",
                                              PdxFieldTypes::OBJECT);
-    int32_t strSize =
-        static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
+    auto strSize = m_dataInput->currentBufferPosition() - startLoc;
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
     return ptr;
@@ -257,8 +255,7 @@ std::vector<char16_t> PdxReaderWithTypeCollector::readCharArray(
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
     array = PdxLocalReader::readCharArray(fieldName);
-    int32_t strSize =
-        static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
+    auto strSize = m_dataInput->currentBufferPosition() - startLoc;
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
   }
@@ -282,8 +279,7 @@ std::vector<bool> PdxReaderWithTypeCollector::readBooleanArray(
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
     array = PdxLocalReader::readBooleanArray(fieldName);
-    int32_t strSize =
-        static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
+    auto strSize = m_dataInput->currentBufferPosition() - startLoc;
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
   }
@@ -304,8 +300,7 @@ std::vector<int8_t> PdxReaderWithTypeCollector::readByteArray(
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
     array = PdxLocalReader::readByteArray(fieldName);
-    int32_t strSize =
-        static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
+    auto strSize = m_dataInput->currentBufferPosition() - startLoc;
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
   }
@@ -326,8 +321,7 @@ std::vector<int16_t> PdxReaderWithTypeCollector::readShortArray(
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
     shortArrptr = PdxLocalReader::readShortArray(fieldName);
-    int32_t strSize =
-        static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
+    auto strSize = m_dataInput->currentBufferPosition() - startLoc;
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
   }
@@ -348,8 +342,7 @@ std::vector<int32_t> PdxReaderWithTypeCollector::readIntArray(
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
     intArrayptr = PdxLocalReader::readIntArray(fieldName);
-    int32_t strSize =
-        static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
+    auto strSize =m_dataInput->currentBufferPosition() - startLoc;
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
   }
@@ -370,8 +363,7 @@ std::vector<int64_t> PdxReaderWithTypeCollector::readLongArray(
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
     longArrptr = PdxLocalReader::readLongArray(fieldName);
-    int32_t strSize =
-        static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
+    auto strSize = m_dataInput->currentBufferPosition() - startLoc;
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
   }
@@ -392,8 +384,7 @@ std::vector<float> PdxReaderWithTypeCollector::readFloatArray(
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
     floatArrptr = PdxLocalReader::readFloatArray(fieldName);
-    int32_t strSize =
-        static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
+    auto strSize = m_dataInput->currentBufferPosition() - startLoc;
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
   }
@@ -414,8 +405,7 @@ std::vector<double> PdxReaderWithTypeCollector::readDoubleArray(
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
     doubleArrptr = PdxLocalReader::readDoubleArray(fieldName);
-    int32_t strSize =
-        static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
+    auto strSize =m_dataInput->currentBufferPosition() - startLoc;
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
   }
@@ -458,8 +448,7 @@ PdxReaderWithTypeCollector::readObjectArray(const std::string& fieldName) {
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
    auto retVal = PdxLocalReader::readObjectArray(fieldName);
-   int32_t strSize =
-       static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
+   auto strSize = m_dataInput->currentBufferPosition() - startLoc;
    m_dataInput->rewindCursor(strSize + position);
    startLoc = nullptr;
    return retVal;
@@ -483,8 +472,7 @@ int8_t** PdxReaderWithTypeCollector::readArrayOfByteArrays(
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
     int8_t** retVal = PdxLocalReader::readArrayOfByteArrays(
         fieldName, arrayLength, elementLength);
-    int32_t strSize =
-        static_cast<int32_t>(m_dataInput->currentBufferPosition() - startLoc);
+    auto strSize = m_dataInput->currentBufferPosition() - startLoc;
     m_dataInput->rewindCursor(strSize + position);
     startLoc = nullptr;
     return retVal;

@@ -103,7 +103,7 @@ inline std::vector<TPRIM> randomArray(int32_t size, TPRIM maxValue) {
   array.reserve(size);
 
   for (int32_t index = 0; index < size; index++) {
-    array[index] = random(maxValue);
+    array.push_back(random(maxValue));
   }
   return array;
 }

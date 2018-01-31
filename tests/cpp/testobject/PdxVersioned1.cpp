@@ -143,52 +143,28 @@ void PdxVersioned1::init(const char* key) {
   m_byteArray[0] = 0x34;
   m_byteArray[1] = 0x64;
 
-  m_sbyteArray = std::vector<int8_t>(2);
-  m_sbyteArray[0] = 0x34;
-  m_sbyteArray[1] = 0x64;
+  m_sbyteArray = std::vector<int8_t>{0x34, 0x64};
 
-  m_charArray = std::vector<char16_t>(2);
-  m_charArray[0] = L'c';
-  m_charArray[1] = L'v';
+  m_charArray = std::vector<char16_t>{u'c', u'v'};
 
   int64_t d = 1310447869154L;
   m_date = CacheableDate::create(CacheableDate::duration(d));
 
-  m_int16Array = std::vector<int16_t>(2);
-  m_int16Array[0] = 0x2332;
-  m_int16Array[1] = 0x4545;
+  m_int16Array = std::vector<int16_t>{0x2332, 0x4545};
 
-  m_uint16Array = std::vector<int16_t>(2);
-  m_uint16Array[0] = 0x3243;
-  m_uint16Array[1] = 0x3232;
+  m_uint16Array = std::vector<int16_t>{0x3243, 0x3232};
 
-  m_int32Array = std::vector<int32_t>(4);
-  m_int32Array[0] = 23;
-  m_int32Array[1] = 676868;
-  m_int32Array[2] = 34343;
-  m_int32Array[3] = 2323;
+  m_int32Array = std::vector<int32_t>{23, 676868, 34343, 2323};
 
-  m_uint32Array = std::vector<int32_t>(4);
-  m_uint32Array[0] = 435;
-  m_uint32Array[1] = 234324;
-  m_uint32Array[2] = 324324;
-  m_uint32Array[3] = 23432432;
+  m_uint32Array = std::vector<int32_t>{435, 234324, 324324, 23432432};
 
-  m_longArray = std::vector<int64_t>(2);
-  m_longArray[0] = 324324L;
-  m_longArray[1] = 23434545L;
+  m_longArray = std::vector<int64_t>{324324L, 23434545L};
 
-  m_ulongArray = std::vector<int64_t>(2);
-  m_ulongArray[0] = 3245435;
-  m_ulongArray[1] = 3425435;
+  m_ulongArray = std::vector<int64_t>{3245435, 3425435};
 
-  m_floatArray = std::vector<float>(2);
-  m_floatArray[0] = 232.565f;
-  m_floatArray[1] = 2343254.67f;
+  m_floatArray = std::vector<float>{232.565f, 2343254.67f};
 
-  m_doubleArray = std::vector<double>(2);
-  m_doubleArray[0] = 23423432;
-  m_doubleArray[1] = 4324235435.00;
+  m_doubleArray = std::vector<double>{23423432, 4324235435.00};
 
   m_byteByteArray = new int8_t*[2];
   // for(int i=0; i<2; i++){

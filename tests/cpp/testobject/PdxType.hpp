@@ -569,25 +569,13 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
     m_objectArrayEmptyPdxFieldName->push_back(
         std::shared_ptr<Address>(new Address(10, "street9", "city9")));
 
-    m_byte252 = std::vector<int8_t>(252);
-    for (int i = 0; i < 252; i++) {
-      m_byte252[i] = 0;
-    }
+    m_byte252 = std::vector<int8_t>(252, 0);
 
-    m_byte253 = std::vector<int8_t>(253);
-    for (int i = 0; i < 253; i++) {
-      m_byte253[i] = 0;
-    }
+    m_byte253 = std::vector<int8_t>(253, 0);
 
-    m_byte65535 = std::vector<int8_t>(65535);
-    for (int i = 0; i < 65535; i++) {
-      m_byte65535[i] = 0;
-    }
+    m_byte65535 = std::vector<int8_t>(65535, 0);
 
-    m_byte65536 = std::vector<int8_t>(65536);
-    for (int i = 0; i < 65536; i++) {
-      m_byte65536[i] = 0;
-    }
+    m_byte65536 = std::vector<int8_t>(65536, 0);
 
     /*for (int32_t index = 0; index <3; ++index) {
       m_objectArray->push_back(objectArray[index]);
