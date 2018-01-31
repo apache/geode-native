@@ -50,8 +50,7 @@ class _GEODE_EXPORT RegionExpiryHandler : public ACE_Event_Handler {
    * Constructor
    */
   RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
-                      ExpirationAction::Action action,
-                      std::chrono::seconds duration);
+                      ExpirationAction action, std::chrono::seconds duration);
 
   /** This handler object will be registered with the Timer Queue.
    *  When the timer expires the handle_timeout is invoked.
@@ -65,7 +64,7 @@ class _GEODE_EXPORT RegionExpiryHandler : public ACE_Event_Handler {
 
  private:
   std::shared_ptr<RegionInternal> m_regionPtr;
-  ExpirationAction::Action m_action;
+  ExpirationAction m_action;
   std::chrono::seconds m_duration;
   long m_expiryTaskId;
   // perform the actual expiration action

@@ -32,7 +32,7 @@ using namespace apache::geode::client;
 
 EntryExpiryHandler::EntryExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
                                        std::shared_ptr<MapEntryImpl>& entryPtr,
-                                       ExpirationAction::Action action,
+                                       ExpirationAction action,
                                        std::chrono::seconds duration)
     : m_regionPtr(rptr),
       m_entryPtr(entryPtr),

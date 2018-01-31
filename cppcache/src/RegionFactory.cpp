@@ -128,25 +128,25 @@ RegionFactory& RegionFactory::setPartitionResolver(const std::string& lib,
 }
 
 RegionFactory& RegionFactory::setEntryIdleTimeout(
-    ExpirationAction::Action action, std::chrono::seconds idleTimeout) {
+    ExpirationAction action, std::chrono::seconds idleTimeout) {
   m_attributeFactory->setEntryIdleTimeout(action, idleTimeout);
   return *this;
 }
 
 RegionFactory& RegionFactory::setEntryTimeToLive(
-    ExpirationAction::Action action, std::chrono::seconds timeToLive) {
+    ExpirationAction action, std::chrono::seconds timeToLive) {
   m_attributeFactory->setEntryTimeToLive(action, timeToLive);
   return *this;
 }
 
 RegionFactory& RegionFactory::setRegionIdleTimeout(
-    ExpirationAction::Action action, std::chrono::seconds idleTimeout) {
+    ExpirationAction action, std::chrono::seconds idleTimeout) {
   m_attributeFactory->setRegionIdleTimeout(action, idleTimeout);
   return *this;
 }
 
 RegionFactory& RegionFactory::setRegionTimeToLive(
-    ExpirationAction::Action action, std::chrono::seconds timeToLive) {
+    ExpirationAction action, std::chrono::seconds timeToLive) {
   m_attributeFactory->setRegionTimeToLive(action, timeToLive);
   return *this;
 }

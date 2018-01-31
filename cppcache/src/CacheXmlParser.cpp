@@ -1060,7 +1060,7 @@ void CacheXmlParser::startExpirationAttributes(const xmlChar** atts) {
   }
   std::string timeOut;
   std::chrono::seconds timeOutSeconds;
-  ExpirationAction::Action expire = ExpirationAction::INVALID_ACTION;
+  ExpirationAction expire = ExpirationAction::INVALID_ACTION;
   for (int i = 0; (atts[i] != nullptr); i++) {
     if (strcmp(TIMEOUT, (char*)atts[i]) == 0) {
       i++;

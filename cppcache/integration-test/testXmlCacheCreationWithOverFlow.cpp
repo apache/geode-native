@@ -161,7 +161,7 @@ int testXmlCacheCreationWithOverflow() {
     return -1;
   }
 
-  ExpirationAction::Action action1 = regAttr->getRegionIdleTimeoutAction();
+  ExpirationAction action1 = regAttr->getRegionIdleTimeoutAction();
   std::cout << "RegionIdleTimeoutAction : Destroy" << std::endl;
   if (action1 != ExpirationAction::DESTROY) {
     return -1;

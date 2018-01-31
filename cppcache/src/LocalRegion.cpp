@@ -2806,8 +2806,8 @@ uint32_t LocalRegion::adjustLruEntriesLimit(uint32_t limit) {
   return oldValue;
 }
 
-ExpirationAction::Action LocalRegion::adjustRegionExpiryAction(
-    ExpirationAction::Action action) {
+ExpirationAction LocalRegion::adjustRegionExpiryAction(
+    ExpirationAction action) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustRegionExpiryAction);
 
  auto attrs = m_regionAttributes;
@@ -2817,7 +2817,7 @@ ExpirationAction::Action LocalRegion::adjustRegionExpiryAction(
        "Cannot change region ExpirationAction for region created without "
        "region expiry.");
   }
-  ExpirationAction::Action oldValue = getRegionExpiryAction();
+  ExpirationAction oldValue = getRegionExpiryAction();
 
   setRegionTimeToLiveExpirationAction(action);
   setRegionIdleTimeoutExpirationAction(action);
@@ -2826,8 +2826,7 @@ ExpirationAction::Action LocalRegion::adjustRegionExpiryAction(
   return oldValue;
 }
 
-ExpirationAction::Action LocalRegion::adjustEntryExpiryAction(
-    ExpirationAction::Action action) {
+ExpirationAction LocalRegion::adjustEntryExpiryAction(ExpirationAction action) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustEntryExpiryAction);
 
  auto attrs = m_regionAttributes;
@@ -2838,7 +2837,7 @@ ExpirationAction::Action LocalRegion::adjustEntryExpiryAction(
        "entry "
        "expiry.");
   }
-  ExpirationAction::Action oldValue = getEntryExpirationAction();
+  ExpirationAction oldValue = getEntryExpirationAction();
 
   setEntryTimeToLiveExpirationAction(action);
   setEntryIdleTimeoutExpirationAction(action);
@@ -2921,7 +2920,7 @@ bool LocalRegion::isEntryIdletimeEnabled() {
   }
 }
 
-ExpirationAction::Action LocalRegion::getEntryExpirationAction() const {
+ExpirationAction LocalRegion::getEntryExpirationAction() const {
   if (m_regionAttributes->getEntryTimeToLive() > std::chrono::seconds::zero()) {
     return m_regionAttributes->getEntryTimeToLiveAction();
   } else {
@@ -2929,7 +2928,7 @@ ExpirationAction::Action LocalRegion::getEntryExpirationAction() const {
   }
 }
 
-ExpirationAction::Action LocalRegion::getRegionExpiryAction() const {
+ExpirationAction LocalRegion::getRegionExpiryAction() const {
   const auto& region_ttl = m_regionAttributes->getRegionTimeToLive();
   if (region_ttl > std::chrono::seconds::zero()) {
     return m_regionAttributes->getRegionTimeToLiveAction();

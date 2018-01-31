@@ -36,15 +36,13 @@ namespace geode {
 namespace client {
 namespace testframework {
 
-using namespace apache::geode::internal::chrono::duration;
-
 // ----------------------------------------------------------------------------
 
 /** @class RegionHelper
-  * @brief Class used to define a valid combination of attributes and
-  * specifications for a region. Since some combinations are illegal,
-  * this gives a test an easier way to consider all valid combinations.
-  */
+ * @brief Class used to define a valid combination of attributes and
+ * specifications for a region. Since some combinations are illegal,
+ * this gives a test an easier way to consider all valid combinations.
+ */
 class RegionHelper {
   const FwkRegion* m_region;
   std::string m_spec;
@@ -85,10 +83,25 @@ class RegionHelper {
     return sString;
   }
 
+  static std::string to_string(ExpirationAction expirationAction) {
+    switch (expirationAction) {
+      case ExpirationAction::DESTROY:
+        return "DESTROY";
+      case ExpirationAction::INVALIDATE:
+        return "INVALIDATE";
+      case ExpirationAction::LOCAL_INVALIDATE:
+        return "LOCAL_INVALIDATE";
+      case ExpirationAction::LOCAL_DESTROY:
+        return "LOCAL_DESTROY";
+      case ExpirationAction::INVALID_ACTION:
+        return "INVALID_ACTION";
+    }
+  }
+
   /** @brief Given RegionAttributes, return a string logging its configuration.
-    *  @param attr Return a string describing this region.
-    *  @retval A String representing aRegion.
-    */
+   *  @param attr Return a string describing this region.
+   *  @retval A String representing aRegion.
+   */
   static std::string regionAttributesToString(
       std::shared_ptr<RegionAttributes>& attr) {
     std::string sString;
@@ -108,24 +121,28 @@ class RegionHelper {
     sString += "\nlruEntriesLimit: ";
     sString += std::to_string(attr->getLruEntriesLimit());
     sString += "\nlruEvictionAction: ";
-    sString += ExpirationAction::fromOrdinal(attr->getLruEvictionAction());
+    sString += to_string(attr->getLruEvictionAction());
     sString += "\nentryTimeToLive: ";
-    sString += to_string(attr->getEntryTimeToLive());
+    sString += apache::geode::internal::chrono::duration::to_string(
+        attr->getEntryTimeToLive());
     sString += "\nentryTimeToLiveAction: ";
-    sString += ExpirationAction::fromOrdinal(attr->getEntryTimeToLiveAction());
+    sString += to_string(attr->getEntryTimeToLiveAction());
     sString += "\nentryIdleTimeout: ";
-    sString += to_string(attr->getEntryIdleTimeout());
+    sString += apache::geode::internal::chrono::duration::to_string(
+        attr->getEntryIdleTimeout());
     sString += "\nentryIdleTimeoutAction: ";
-    sString += ExpirationAction::fromOrdinal(attr->getEntryIdleTimeoutAction());
+    sString += to_string(attr->getEntryIdleTimeoutAction());
     sString += "\nregionTimeToLive: ";
-    sString += to_string(attr->getRegionTimeToLive());
+    sString += apache::geode::internal::chrono::duration::to_string(
+        attr->getRegionTimeToLive());
     sString += "\nregionTimeToLiveAction: ";
-    sString += ExpirationAction::fromOrdinal(attr->getRegionTimeToLiveAction());
+    sString += to_string(attr->getRegionTimeToLiveAction());
     sString += "\nregionIdleTimeout: ";
-    sString += to_string(attr->getRegionIdleTimeout());
+    sString += apache::geode::internal::chrono::duration::to_string(
+        attr->getRegionIdleTimeout());
     sString += "\nregionIdleTimeoutAction: ";
     sString +=
-        ExpirationAction::fromOrdinal(attr->getRegionIdleTimeoutAction());
+        to_string(attr->getRegionIdleTimeoutAction());
     sString += "\npoolName: ";
     sString += attr->getPoolName();
     sString += "\nCacheLoader: ";

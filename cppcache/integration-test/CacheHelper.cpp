@@ -420,7 +420,7 @@ std::shared_ptr<Region> CacheHelper::createRegion(
 std::shared_ptr<Region> CacheHelper::createRegion(
     const char* name, bool ack, bool caching, const std::chrono::seconds& ettl,
     const std::chrono::seconds& eit, const std::chrono::seconds& rttl,
-    const std::chrono::seconds& rit, int lel, ExpirationAction::Action action,
+    const std::chrono::seconds& rit, int lel, ExpirationAction action,
     const char* endpoints, bool clientNotificationEnabled) {
   AttributesFactory af;
   af.setCachingEnabled(caching);
@@ -552,7 +552,7 @@ std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool(
     const char* name, bool ack, const char* poolName, bool caching,
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
-    ExpirationAction::Action action) {
+    ExpirationAction action) {
   RegionShortcut preDefRA = RegionShortcut::PROXY;
   if (caching) {
     preDefRA = RegionShortcut::CACHING_PROXY;
@@ -576,7 +576,7 @@ std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool2(
     const std::shared_ptr<PartitionResolver>& aResolver, bool caching,
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
-    ExpirationAction::Action action) {
+    ExpirationAction action) {
   RegionShortcut preDefRA = RegionShortcut::PROXY;
   if (caching) {
     preDefRA = RegionShortcut::CACHING_PROXY;
@@ -644,7 +644,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegion(
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
     const std::shared_ptr<CacheListener>& cacheListener,
-    ExpirationAction::Action action) {
+    ExpirationAction action) {
   auto poolFacPtr = getCache()->getPoolManager().createFactory();
   poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
 
@@ -683,7 +683,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionConcurrencyCheckDisabled(
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
     const std::shared_ptr<CacheListener>& cacheListener,
-    ExpirationAction::Action action) {
+    ExpirationAction action) {
   auto poolFacPtr = getCache()->getPoolManager().createFactory();
   poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
 
@@ -719,7 +719,7 @@ std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
     const char* name, bool caching, bool clientNotificationEnabled,
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
-    ExpirationAction::Action action) {
+    ExpirationAction action) {
   AttributesFactory af;
   af.setCachingEnabled(caching);
   af.setLruEntriesLimit(lel);
@@ -752,7 +752,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
     const std::shared_ptr<CacheListener>& cacheListener,
-    ExpirationAction::Action action) {
+    ExpirationAction action) {
   auto poolFacPtr = getCache()->getPoolManager().createFactory();
   poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
 
@@ -808,7 +808,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionSticky(
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
     const std::shared_ptr<CacheListener>& cacheListener,
-    ExpirationAction::Action action) {
+    ExpirationAction action) {
   auto poolFacPtr = getCache()->getPoolManager().createFactory();
   poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
   poolFacPtr->setThreadLocalConnections(true);
@@ -849,7 +849,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionStickySingleHop(
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
     const std::shared_ptr<CacheListener>& cacheListener,
-    ExpirationAction::Action action) {
+    ExpirationAction action) {
   LOG("createPooledRegionStickySingleHop");
   auto poolFacPtr = getCache()->getPoolManager().createFactory();
   poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);

@@ -364,10 +364,8 @@ class _GEODE_EXPORT LocalRegion : public RegionInternal {
 
   // behaviors for attributes mutator
   uint32_t adjustLruEntriesLimit(uint32_t limit) override;
-  ExpirationAction::Action adjustRegionExpiryAction(
-      ExpirationAction::Action action) override;
-  ExpirationAction::Action adjustEntryExpiryAction(
-      ExpirationAction::Action action) override;
+  ExpirationAction adjustRegionExpiryAction(ExpirationAction action) override;
+  ExpirationAction adjustEntryExpiryAction(ExpirationAction action) override;
   std::chrono::seconds adjustRegionExpiryDuration(
       const std::chrono::seconds& duration) override;
   std::chrono::seconds adjustEntryExpiryDuration(
@@ -561,8 +559,8 @@ class _GEODE_EXPORT LocalRegion : public RegionInternal {
   bool useModifiedTimeForRegionExpiry();
   bool useModifiedTimeForEntryExpiry();
   bool isEntryIdletimeEnabled();
-  ExpirationAction::Action getEntryExpirationAction() const;
-  ExpirationAction::Action getRegionExpiryAction() const;
+  ExpirationAction getEntryExpirationAction() const;
+  ExpirationAction getRegionExpiryAction() const;
   std::chrono::seconds getRegionExpiryDuration() const;
   std::chrono::seconds getEntryExpiryDuration() const;
   void invokeAfterAllEndPointDisconnected();

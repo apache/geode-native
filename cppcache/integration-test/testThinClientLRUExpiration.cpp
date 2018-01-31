@@ -141,7 +141,7 @@ void createRegion(const char* name, bool ackMode,
                   const std::chrono::seconds& rttl,
                   const std::chrono::seconds& rit, int lel,
                   bool clientNotificationEnabled = false,
-                  ExpirationAction::Action action = ExpirationAction::DESTROY) {
+                  ExpirationAction action = ExpirationAction::DESTROY) {
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   auto
@@ -235,7 +235,7 @@ void createThinClientRegion(
     const std::chrono::seconds& eit, const std::chrono::seconds& rttl,
     const std::chrono::seconds& rit, int lel, int noOfEntry = 0, int rgnOpt = 0,
     bool destroyRgn = true, bool clientNotificationEnabled = true,
-    ExpirationAction::Action action = ExpirationAction::DESTROY) {
+    ExpirationAction action = ExpirationAction::DESTROY) {
   if (destroyRgn) {
     try {
       doRgnOperations(regionName, noOfEntry, rgnOpt);
@@ -264,7 +264,7 @@ DUNIT_TASK(CLIENT1, StepOneCase1)
     initClient(true);
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation
     // - [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     getHelper()->createPoolWithLocators("LRUPool", locatorsG, true);
     createThinClientRegion(regionNames[0], std::chrono::seconds(4),
                            std::chrono::seconds(2), std::chrono::seconds(0),
@@ -278,7 +278,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase1)
     // regionName, ettl, eit , rttl,
     // rit,lel,endpoints,noOfEntry,rgnOpetation - [put-0/get-5/destroy-3]
     // ,destroyRgn - [true/false] ,clientNotificationEnabled - [true/false]
-    // ,ExpirationAction::Action
+    // ,ExpirationAction
     getHelper()->createPoolWithLocators("LRUPool", locatorsG, true);
     createThinClientRegion(regionNames[0], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(0),
@@ -328,7 +328,7 @@ DUNIT_TASK(CLIENT1, StepOneCase2)
     // rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
     // ,clientNotificationEnabled - [true/false]
-    // ,ExpirationAction::Action
+    // ,ExpirationAction
     createThinClientRegion(regionNames[0], std::chrono::seconds(4),
                            std::chrono::seconds(2), std::chrono::seconds(0),
                            std::chrono::seconds(0), 0, 100, 3, true, true,
@@ -343,7 +343,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase2)
     // rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
     // ,clientNotificationEnabled - [true/false]
-    // ,ExpirationAction::Action
+    // ,ExpirationAction
     createThinClientRegion(regionNames[0], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 0, 100, 3);
@@ -395,7 +395,7 @@ DUNIT_TASK(CLIENT1, StepOneCase3)
     // rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn -
     // [true/false] ,clientNotificationEnabled -
-    // [true/false] ,ExpirationAction::Action
+    // [true/false] ,ExpirationAction
     createThinClientRegion(regionNames[0], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 5, 10, 3);
@@ -408,7 +408,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase3)
     // rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn -
     // [true/false] ,clientNotificationEnabled -
-    // [true/false] ,ExpirationAction::Action
+    // [true/false] ,ExpirationAction
     createThinClientRegion(regionNames[0], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 0, 10, 3);
@@ -458,7 +458,7 @@ DUNIT_TASK(CLIENT1, StepOneCase4)
     // ,destroyRgn - [true/false]
     // ,clientNotificationEnabled -
     // [true/false]
-    // ,ExpirationAction::Action
+    // ,ExpirationAction
     createThinClientRegion(regionNames[0], std::chrono::seconds(5),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 5, 10, 3, true, true,
@@ -474,7 +474,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase4)
     // ,destroyRgn - [true/false]
     // ,clientNotificationEnabled -
     // [true/false]
-    // ,ExpirationAction::Action
+    // ,ExpirationAction
     createThinClientRegion(regionNames[0], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 0, 10, 3);
@@ -533,7 +533,7 @@ DUNIT_TASK(CLIENT1, StepOneCase5)
     // [true/false]
     // ,clientNotificationEnabled
     // - [true/false]
-    // ,ExpirationAction::Action
+    // ,ExpirationAction
     createThinClientRegion(regionNames[0], std::chrono::seconds(5),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 5, 10, 3);
@@ -551,7 +551,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase5)
     // [true/false]
     // ,clientNotificationEnabled
     // - [true/false]
-    // ,ExpirationAction::Action
+    // ,ExpirationAction
     createThinClientRegion(regionNames[0], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 0, 10, 3);
@@ -639,7 +639,7 @@ DUNIT_TASK(CLIENT1, StepOneCase6)
     // ,clientNotificationEnabled
     // -
     // [true/false]
-    // ,ExpirationAction::Action
+    // ,ExpirationAction
     createThinClientRegion(regionNames[0], std::chrono::seconds(0),
                            std::chrono::seconds(5), std::chrono::seconds(0),
                            std::chrono::seconds(0), 5, 10, 3, true, true,
@@ -661,7 +661,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase6)
     // ,clientNotificationEnabled
     // -
     // [true/false]
-    // ,ExpirationAction::Action
+    // ,ExpirationAction
     createThinClientRegion(regionNames[0], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 0, 10, 3);
@@ -722,7 +722,7 @@ DUNIT_TASK(CLIENT1, StepOneCase7)
   {
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     createThinClientRegion(regionNames[0], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(10),
                            std::chrono::seconds(0), 0, 10, 3);
@@ -733,7 +733,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase7)
   {
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     createThinClientRegion(regionNames[0], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 0, 10, 3);
@@ -774,7 +774,7 @@ DUNIT_TASK(CLIENT1, StepOneCase8)
     ACE_OS::sleep(10);
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     createThinClientRegion(regionNames[1], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(8),
                            std::chrono::seconds(0), 0, 0, 6, false);
@@ -785,7 +785,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase8)
   {
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     createThinClientRegion(regionNames[1], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 0, 0, 6, false);
@@ -828,7 +828,7 @@ DUNIT_TASK(CLIENT1, StepOneCase9)
   {
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     createThinClientRegion(regionNames[2], std::chrono::seconds(4),
                            std::chrono::seconds(0), std::chrono::seconds(8),
                            std::chrono::seconds(0), 5, 0, 6, false);
@@ -839,7 +839,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase9)
   {
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     createThinClientRegion(regionNames[2], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 0, 0, 6, false);
@@ -883,7 +883,7 @@ DUNIT_TASK(CLIENT1, StepOneCase10)
   {
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     createThinClientRegion(regionNames[3], std::chrono::seconds(4),
                            std::chrono::seconds(0), std::chrono::seconds(8),
                            std::chrono::seconds(0), 5, 0, 6, false);
@@ -894,7 +894,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase10)
   {
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     createThinClientRegion(regionNames[3], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 0, 0, 6, false);
@@ -939,7 +939,7 @@ DUNIT_TASK(CLIENT1, StepOneCase11)
   {
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     createThinClientRegion(regionNames[4], std::chrono::seconds(4),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 5, 0, 6, false);
@@ -954,7 +954,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase11)
   {
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     createThinClientRegion(regionNames[4], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 0, 0, 6, false);
@@ -1078,7 +1078,7 @@ DUNIT_TASK(CLIENT1, StepOneCase12)
   {
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     createThinClientRegion(regionNames[5], std::chrono::seconds(4),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 5, 0, 6, false);
@@ -1093,7 +1093,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase12)
   {
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     createThinClientRegion(regionNames[5], std::chrono::seconds(0),
                            std::chrono::seconds(0), std::chrono::seconds(0),
                            std::chrono::seconds(0), 0, 0, 6, false);
@@ -1176,7 +1176,7 @@ DUNIT_TASK(CLIENT1, StepOneCase13)
   {
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     initClient(true);
     getHelper()->createPoolWithLocators("LRUPool", locatorsG, true);
     createThinClientRegion(regionNames[5], std::chrono::seconds(4),
@@ -1193,7 +1193,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase13)
   {
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
-    // ,clientNotificationEnabled - [true/false] ,ExpirationAction::Action
+    // ,clientNotificationEnabled - [true/false] ,ExpirationAction
     initClient(true);
     getHelper()->createPoolWithLocators("LRUPool", locatorsG, true);
     createThinClientRegion(regionNames[5], std::chrono::seconds(0),

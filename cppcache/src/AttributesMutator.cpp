@@ -34,8 +34,8 @@ std::chrono::seconds AttributesMutator::setEntryIdleTimeout(
       ->adjustEntryExpiryDuration(idleTimeout);
 }
 
-ExpirationAction::Action AttributesMutator::setEntryIdleTimeoutAction(
-    ExpirationAction::Action action) {
+ExpirationAction AttributesMutator::setEntryIdleTimeoutAction(
+    ExpirationAction action) {
   auto rImpl = std::static_pointer_cast<RegionInternal>(m_region);
   return rImpl->adjustEntryExpiryAction(action);
 }
@@ -46,8 +46,8 @@ std::chrono::seconds AttributesMutator::setEntryTimeToLive(
   return rImpl->adjustEntryExpiryDuration(timeToLive);
 }
 
-ExpirationAction::Action AttributesMutator::setEntryTimeToLiveAction(
-    ExpirationAction::Action action) {
+ExpirationAction AttributesMutator::setEntryTimeToLiveAction(
+    ExpirationAction action) {
   auto rImpl = std::static_pointer_cast<RegionInternal>(m_region);
   return rImpl->adjustEntryExpiryAction(action);
 }
@@ -58,8 +58,8 @@ std::chrono::seconds AttributesMutator::setRegionIdleTimeout(
   return rImpl->adjustRegionExpiryDuration(idleTimeout);
 }
 
-ExpirationAction::Action AttributesMutator::setRegionIdleTimeoutAction(
-    ExpirationAction::Action action) {
+ExpirationAction AttributesMutator::setRegionIdleTimeoutAction(
+    ExpirationAction action) {
   auto rImpl = std::static_pointer_cast<RegionInternal>(m_region);
   return rImpl->adjustRegionExpiryAction(action);
 }
@@ -70,8 +70,8 @@ std::chrono::seconds AttributesMutator::setRegionTimeToLive(
   return rImpl->adjustRegionExpiryDuration(timeToLive);
 }
 
-ExpirationAction::Action AttributesMutator::setRegionTimeToLiveAction(
-    ExpirationAction::Action action) {
+ExpirationAction AttributesMutator::setRegionTimeToLiveAction(
+    ExpirationAction action) {
   auto rImpl = std::static_pointer_cast<RegionInternal>(m_region);
   return rImpl->adjustRegionExpiryAction(action);
 }

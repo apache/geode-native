@@ -240,10 +240,9 @@ class RegionInternal : public Region {
   virtual void releaseReadLock() = 0;
   // behaviors for attributes mutator
   virtual uint32_t adjustLruEntriesLimit(uint32_t limit) = 0;
-  virtual ExpirationAction::Action adjustRegionExpiryAction(
-      ExpirationAction::Action action) = 0;
-  virtual ExpirationAction::Action adjustEntryExpiryAction(
-      ExpirationAction::Action action) = 0;
+  virtual ExpirationAction adjustRegionExpiryAction(
+      ExpirationAction action) = 0;
+  virtual ExpirationAction adjustEntryExpiryAction(ExpirationAction action) = 0;
   virtual std::chrono::seconds adjustRegionExpiryDuration(
       const std::chrono::seconds& duration) = 0;
   virtual std::chrono::seconds adjustEntryExpiryDuration(
@@ -296,10 +295,10 @@ class RegionInternal : public Region {
   RegionInternal(Cache* cache, const std::shared_ptr<RegionAttributes>& attributes);
 
   void setLruEntriesLimit(uint32_t limit);
-  void setRegionTimeToLiveExpirationAction(ExpirationAction::Action action);
-  void setRegionIdleTimeoutExpirationAction(ExpirationAction::Action action);
-  void setEntryTimeToLiveExpirationAction(ExpirationAction::Action action);
-  void setEntryIdleTimeoutExpirationAction(ExpirationAction::Action action);
+  void setRegionTimeToLiveExpirationAction(ExpirationAction action);
+  void setRegionIdleTimeoutExpirationAction(ExpirationAction action);
+  void setEntryTimeToLiveExpirationAction(ExpirationAction action);
+  void setEntryIdleTimeoutExpirationAction(ExpirationAction action);
   void setRegionTimeToLive(const std::chrono::seconds& duration);
   void setRegionIdleTimeout(const std::chrono::seconds& duration);
   void setEntryTimeToLive(const std::chrono::seconds& duration);

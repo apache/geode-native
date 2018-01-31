@@ -313,7 +313,7 @@ class ActionPair {
 
 class ExpiryAttributes {
   std::chrono::seconds m_timeout;
-  ExpirationAction::Action m_action;
+  ExpirationAction m_action;
 
   // TODO GEODE-3136: Consider parser
   void setTimeout(std::string str) {
@@ -335,7 +335,7 @@ class ExpiryAttributes {
  public:
   ExpiryAttributes(const DOMNode* node);
 
-  ExpirationAction::Action getAction() { return m_action; }
+  ExpirationAction getAction() { return m_action; }
   std::chrono::seconds getTimeout() { return m_timeout; }
 };
 

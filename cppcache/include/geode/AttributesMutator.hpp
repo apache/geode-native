@@ -79,12 +79,11 @@ class _GEODE_EXPORT AttributesMutator {
   std::chrono::seconds setEntryIdleTimeout(std::chrono::seconds idleTimeout);
 
   /** Set the idleTimeout Action for region entries.
-   * @param action the idleTimeout ExpirationAction::Action for entries in this
+   * @param action the idleTimeout ExpirationAction for entries in this
    * region.
    * @return the previous value.
    */
-  ExpirationAction::Action setEntryIdleTimeoutAction(
-      ExpirationAction::Action action);
+  ExpirationAction setEntryIdleTimeoutAction(ExpirationAction action);
 
   /** Sets the timeToLive duration for region entries.
    * @param timeToLive the timeToLive for entries in this region.
@@ -96,12 +95,11 @@ class _GEODE_EXPORT AttributesMutator {
   std::chrono::seconds setEntryTimeToLive(std::chrono::seconds timeToLive);
 
   /** Set the timeToLive Action for region entries.
-   * @param action the timeToLive ExpirationAction::Action for entries in this
+   * @param action the timeToLive ExpirationAction for entries in this
    * region.
    * @return the previous value.
    */
-  ExpirationAction::Action setEntryTimeToLiveAction(
-      ExpirationAction::Action action);
+  ExpirationAction setEntryTimeToLiveAction(ExpirationAction action);
 
   /** Sets the idleTimeout duration for the region itself.
    * @param idleTimeout the ExpirationAttributes for this region idleTimeout
@@ -113,11 +111,10 @@ class _GEODE_EXPORT AttributesMutator {
   std::chrono::seconds setRegionIdleTimeout(std::chrono::seconds idleTimeout);
 
   /** Set the idleTimeout Action for the region itself.
-   * @param action the idleTimeout ExpirationAction::Action for this region.
+   * @param action the idleTimeout ExpirationAction for this region.
    * @return the previous value.
    */
-  ExpirationAction::Action setRegionIdleTimeoutAction(
-      ExpirationAction::Action action);
+  ExpirationAction setRegionIdleTimeoutAction(ExpirationAction action);
 
   /** Sets the timeToLive duration for the region itself.
    * @param timeToLive the ExpirationAttributes for this region timeToLive
@@ -129,11 +126,10 @@ class _GEODE_EXPORT AttributesMutator {
   std::chrono::seconds setRegionTimeToLive(std::chrono::seconds timeToLive);
 
   /** Set the timeToLive Action for the region itself.
-   * @param action the timeToLive ExpirationAction::Action for this region.
+   * @param action the timeToLive ExpirationAction for this region.
    * @return the previous value.
    */
-  ExpirationAction::Action setRegionTimeToLiveAction(
-      ExpirationAction::Action action);
+  ExpirationAction setRegionTimeToLiveAction(ExpirationAction action);
 
   /** Sets the Maximum entry count in the region before LRU eviction.
    * @param entriesLimit the number of entries to allow.
