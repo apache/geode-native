@@ -103,25 +103,25 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   std::string m_string;
 
-  bool* m_boolArray;
-  int8_t* m_byteArray;
-  int8_t* m_sbyteArray;  ///
+  std::vector<bool> m_boolArray;
+  std::vector<int8_t> m_byteArray;
+  std::vector<int8_t> m_sbyteArray;  ///
 
-  char16_t* m_charArray;
+  std::vector<char16_t> m_charArray;
 
   std::shared_ptr<CacheableDate> m_date;
 
-  int16_t* m_int16Array;
-  int16_t* m_uint16Array;
+  std::vector<int16_t> m_int16Array;
+  std::vector<int16_t> m_uint16Array;
 
-  int32_t* m_int32Array;
-  int32_t* m_uint32Array;
+  std::vector<int32_t> m_int32Array;
+  std::vector<int32_t> m_uint32Array;
 
-  int64_t* m_longArray;
-  int64_t* m_ulongArray;
+  std::vector<int64_t> m_longArray;
+  std::vector<int64_t> m_ulongArray;
 
-  float* m_floatArray;
-  double* m_doubleArray;
+  std::vector<float> m_floatArray;
+  std::vector<double> m_doubleArray;
 
   int8_t** m_byteByteArray;
 
@@ -139,10 +139,10 @@ class TESTOBJECT_EXPORT NonPdxType {
   std::shared_ptr<CacheableHashSet> m_chs;
   std::shared_ptr<CacheableLinkedHashSet> m_clhs;
 
-  int8_t* m_byte252;
-  int8_t* m_byte253;
-  int8_t* m_byte65535;
-  int8_t* m_byte65536;
+  std::vector<int8_t> m_byte252;
+  std::vector<int8_t> m_byte253;
+  std::vector<int8_t> m_byte65535;
+  std::vector<int8_t> m_byte65536;
   std::shared_ptr<Cacheable> m_pdxEnum;
 
   std::shared_ptr<CacheableObjectArray> m_objectArray;
@@ -183,7 +183,7 @@ class TESTOBJECT_EXPORT NonPdxType {
 
     m_string = "gfestring";
 
-    m_boolArray = new bool[3];
+    m_boolArray = std::vector<bool>(3);
     m_boolArray[0] = true;
     m_boolArray[1] = false;
     m_boolArray[2] = true;
@@ -191,54 +191,54 @@ class TESTOBJECT_EXPORT NonPdxType {
       m_boolArray[i] = true;
     };*/
 
-    m_byteArray = new int8_t[2];
+    m_byteArray = std::vector<int8_t>(2);
     m_byteArray[0] = 0x34;
     m_byteArray[1] = 0x64;
 
-    m_sbyteArray = new int8_t[2];
+    m_sbyteArray = std::vector<int8_t>(2);
     m_sbyteArray[0] = 0x34;
     m_sbyteArray[1] = 0x64;
 
-    m_charArray = new char16_t[2];
+    m_charArray = std::vector<char16_t>(2);
     m_charArray[0] = 'c';
     m_charArray[1] = 'v';
 
     int64_t d = 1310447869154L;
     m_date = CacheableDate::create(CacheableDate::duration(d));
 
-    m_int16Array = new int16_t[2];
+    m_int16Array = std::vector<int16_t>(2);
     m_int16Array[0] = 0x2332;
     m_int16Array[1] = 0x4545;
 
-    m_uint16Array = new int16_t[2];
+    m_uint16Array = std::vector<int16_t>(2);
     m_uint16Array[0] = 0x3243;
     m_uint16Array[1] = 0x3232;
 
-    m_int32Array = new int32_t[4];
+    m_int32Array = std::vector<int32_t>(4);
     m_int32Array[0] = 23;
     m_int32Array[1] = 676868;
     m_int32Array[2] = 34343;
     m_int32Array[3] = 2323;
 
-    m_uint32Array = new int32_t[4];
+    m_uint32Array = std::vector<int32_t>(4);
     m_uint32Array[0] = 435;
     m_uint32Array[1] = 234324;
     m_uint32Array[2] = 324324;
     m_uint32Array[3] = 23432432;
 
-    m_longArray = new int64_t[2];
+    m_longArray = std::vector<int64_t>(2);
     m_longArray[0] = 324324L;
     m_longArray[1] = 23434545L;
 
-    m_ulongArray = new int64_t[2];
+    m_ulongArray = std::vector<int64_t>(2);
     m_ulongArray[0] = 3245435;
     m_ulongArray[1] = 3425435;
 
-    m_floatArray = new float[2];
+    m_floatArray = std::vector<float>(2);
     m_floatArray[0] = 232.565f;
     m_floatArray[1] = 2343254.67f;
 
-    m_doubleArray = new double[2];
+    m_doubleArray = std::vector<double>(2);
     m_doubleArray[0] = 23423432;
     m_doubleArray[1] = 4324235435.00;
 
@@ -326,22 +326,22 @@ class TESTOBJECT_EXPORT NonPdxType {
         new PdxWrapper(new NonPdxAddress(10, "street9", "city9"),
                        "PdxTests.Address", pdxSerializer)));
 
-    m_byte252 = new int8_t[252];
+    m_byte252 = std::vector<int8_t>(252);
     for (int i = 0; i < 252; i++) {
       m_byte252[i] = 0;
     }
 
-    m_byte253 = new int8_t[253];
+    m_byte253 = std::vector<int8_t>(253);
     for (int i = 0; i < 253; i++) {
       m_byte253[i] = 0;
     }
 
-    m_byte65535 = new int8_t[65535];
+    m_byte65535 = std::vector<int8_t>(65535);
     for (int i = 0; i < 65535; i++) {
       m_byte65535[i] = 0;
     }
 
-    m_byte65536 = new int8_t[65536];
+    m_byte65536 = std::vector<int8_t>(65536);
     for (int i = 0; i < 65536; i++) {
       m_byte65536[i] = 0;
     }
@@ -376,7 +376,7 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   char16_t getChar() { return m_char; }
 
-  char16_t* getCharArray() { return m_charArray; }
+  std::vector<char16_t> getCharArray() { return m_charArray; }
 
   int8_t** getArrayOfByteArrays() { return m_byteByteArray; }
 
@@ -392,21 +392,21 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   int64_t getULong() { return m_ulong; }
 
-  int16_t* getUInt16Array() { return m_uint16Array; }
+  std::vector<int16_t> getUInt16Array() { return m_uint16Array; }
 
-  int32_t* getUIntArray() { return m_uint32Array; }
+  std::vector<int32_t> getUIntArray() { return m_uint32Array; }
 
-  int64_t* getULongArray() { return m_ulongArray; }
+  std::vector<int64_t> getULongArray() { return m_ulongArray; }
 
-  int8_t* getByte252() { return m_byte252; }
+  std::vector<int8_t> getByte252() { return m_byte252; }
 
-  int8_t* getByte253() { return m_byte253; }
+  std::vector<int8_t> getByte253() { return m_byte253; }
 
-  int8_t* getByte65535() { return m_byte65535; }
+  std::vector<int8_t> getByte65535() { return m_byte65535; }
 
-  int8_t* getByte65536() { return m_byte65536; }
+  std::vector<int8_t> getByte65536() { return m_byte65536; }
 
-  int8_t* getSByteArray() { return m_sbyteArray; }
+  std::vector<int8_t> getSByteArray() { return m_sbyteArray; }
 
   std::shared_ptr<CacheableHashSet> getHashSet() { return m_chs; }
 
@@ -432,19 +432,19 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   const std::string& getString() { return m_string; }
 
-  bool* getBoolArray() { return m_boolArray; }
+  std::vector<bool> getBoolArray() { return m_boolArray; }
 
-  int8_t* getByteArray() { return m_byteArray; }
+  std::vector<int8_t> getByteArray() { return m_byteArray; }
 
-  int16_t* getShortArray() { return m_int16Array; }
+  std::vector<int16_t> getShortArray() { return m_int16Array; }
 
-  int32_t* getIntArray() { return m_int32Array; }
+  std::vector<int32_t> getIntArray() { return m_int32Array; }
 
-  int64_t* getLongArray() { return m_longArray; }
+  std::vector<int64_t> getLongArray() { return m_longArray; }
 
-  double* getDoubleArray() { return m_doubleArray; }
+  std::vector<double> getDoubleArray() { return m_doubleArray; }
 
-  float* getFloatArray() { return m_floatArray; }
+  std::vector<float> getFloatArray() { return m_floatArray; }
 
   const std::vector<std::string>& getStringArray() { return m_stringArray; }
 

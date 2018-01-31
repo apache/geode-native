@@ -96,7 +96,7 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
   std::shared_ptr<Cacheable> m_childPdx;
   std::shared_ptr<CacheableEnum> m_enum;
   char16_t m_char;
-  char16_t* m_charArray;
+  std::vector<char16_t> m_charArray;
 
   int32_t m_charArrayLen;
 
@@ -111,7 +111,7 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
 
     m_char = 'C';
 
-    m_charArray = new char16_t[2];
+    m_charArray = std::vector<char16_t>(2);
     m_charArray[0] = 'X';
     m_charArray[1] = 'Y';
 
@@ -137,7 +137,7 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
 
   char16_t getChar() { return m_char; }
 
-  char16_t* getCharArray() { return m_charArray; }
+  std::vector<char16_t> getCharArray() { return m_charArray; }
 
   int32_t getCharArrayLength() { return m_charArrayLen; }
 

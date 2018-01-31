@@ -341,14 +341,14 @@ class TESTOBJECT_EXPORT PdxVersionedV2 : public PdxSerializable {
   float m_float;
   double m_double;
   std::string m_string;
-  bool* m_boolArray;
+  std::vector<bool> m_boolArray;
   char* m_charArray;
   std::shared_ptr<CacheableDate> m_dateTime;
-  int16_t* m_int16Array;
-  int32_t* m_int32Array;
-  int64_t* m_longArray;
-  float* m_floatArray;
-  double* m_doubleArray;
+  std::vector<int16_t> m_int16Array;
+  std::vector<int32_t> m_int32Array;
+  std::vector<int64_t> m_longArray;
+  std::vector<float> m_floatArray;
+  std::vector<double> m_doubleArray;
 
   // IDictionary<object, object> m_map;
   // List<object> m_list;

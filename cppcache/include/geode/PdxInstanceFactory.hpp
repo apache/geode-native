@@ -247,7 +247,7 @@ class _GEODE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeBooleanArray(
-      const std::string& fieldName, bool* value, int32_t length) = 0;
+      const std::string& fieldName, const std::vector<bool>& value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -261,7 +261,7 @@ class _GEODE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeCharArray(
-      const std::string& fieldName, char16_t* value, int32_t length) = 0;
+      const std::string& fieldName, const std::vector<char16_t>& value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -275,7 +275,7 @@ class _GEODE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeByteArray(
-      const std::string& fieldName, int8_t* value, int32_t length) = 0;
+      const std::string& fieldName, const std::vector<int8_t>& value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -289,7 +289,7 @@ class _GEODE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeShortArray(
-      const std::string& fieldName, int16_t* value, int32_t length) = 0;
+      const std::string& fieldName, const std::vector<int16_t>& value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -303,7 +303,7 @@ class _GEODE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeIntArray(
-      const std::string& fieldName, int32_t* value, int32_t length) = 0;
+      const std::string& fieldName, const std::vector<int32_t>& value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -317,7 +317,7 @@ class _GEODE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeLongArray(
-      const std::string& fieldName, int64_t* value, int32_t length) = 0;
+      const std::string& fieldName, const std::vector<int64_t>& value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -331,7 +331,7 @@ class _GEODE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeFloatArray(
-      const std::string& fieldName, float* value, int32_t length) = 0;
+      const std::string& fieldName, const std::vector<float>& value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -345,7 +345,7 @@ class _GEODE_EXPORT PdxInstanceFactory {
    * or fieldName is nullptr or empty.
    */
   virtual std::shared_ptr<PdxInstanceFactory> writeDoubleArray(
-      const std::string& fieldName, double* value, int32_t length) = 0;
+      const std::string& fieldName, const std::vector<double>& value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.

@@ -94,17 +94,17 @@ bool PdxTests::NonPdxType::equals(PdxTests::NonPdxType& other,
   if (ot->m_string != m_string) {
     return false;
   }
-  genericCompare(ot->m_byteArray, m_byteArray, byteArrayLen);
-  genericCompare(ot->m_int16Array, m_int16Array, shortArrayLen);
-  genericCompare(ot->m_int32Array, m_int32Array, intArrayLen);
-  genericCompare(ot->m_longArray, m_longArray, longArrayLen);
-  genericCompare(ot->m_doubleArray, m_doubleArray, doubleArrayLen);
-  genericCompare(ot->m_floatArray, m_floatArray, floatArrayLen);
-  genericCompare(ot->m_uint32Array, m_uint32Array, intArrayLen);
-  genericCompare(ot->m_ulongArray, m_ulongArray, longArrayLen);
-  genericCompare(ot->m_uint16Array, m_uint16Array, shortArrayLen);
-  genericCompare(ot->m_sbyteArray, m_sbyteArray, shortArrayLen);
-  genericCompare(ot->m_charArray, m_charArray, charArrayLen);
+  genericCompare(ot->m_byteArray.data(), m_byteArray.data(), m_byteArray.size());
+  genericCompare(ot->m_int16Array.data(), m_int16Array.data(), m_int16Array.size());
+  genericCompare(ot->m_int32Array.data(), m_int32Array.data(), m_int32Array.size());
+  genericCompare(ot->m_longArray.data(), m_longArray.data(), m_longArray.size());
+  genericCompare(ot->m_floatArray.data(), m_floatArray.data(), m_floatArray.size());
+  genericCompare(ot->m_doubleArray.data(), m_doubleArray.data(), m_doubleArray.size());
+  genericCompare(ot->m_uint32Array.data(), m_uint32Array.data(), m_uint32Array.size());
+  genericCompare(ot->m_ulongArray.data(), m_ulongArray.data(), m_ulongArray.size());
+  genericCompare(ot->m_uint16Array.data(), m_uint16Array.data(), m_uint16Array.size());
+  genericCompare(ot->m_sbyteArray.data(), m_sbyteArray.data(), m_sbyteArray.size());
+  genericCompare(ot->m_charArray.data(), m_charArray.data(), m_charArray.size());
   // generic2DCompare(ot->m_byteByteArray, m_byteByteArray, byteByteArrayLen,
   // lengthArr);
 

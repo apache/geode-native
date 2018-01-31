@@ -63,25 +63,25 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
 
   std::string m_string;
 
-  bool* m_boolArray;
-  int8_t* m_byteArray;
-  int8_t* m_sbyteArray;  ///
+  std::vector<bool> m_boolArray;
+  std::vector<int8_t> m_byteArray;
+  std::vector<int8_t> m_sbyteArray;  ///
 
-  char16_t* m_charArray;
+  std::vector<char16_t> m_charArray;
 
   std::shared_ptr<CacheableDate> m_date;
 
-  int16_t* m_int16Array;
-  int16_t* m_uint16Array;
+  std::vector<int16_t> m_int16Array;
+  std::vector<int16_t> m_uint16Array;
 
-  int32_t* m_int32Array;
-  int32_t* m_uint32Array;
+  std::vector<int32_t> m_int32Array;
+  std::vector<int32_t> m_uint32Array;
 
-  int64_t* m_longArray;
-  int64_t* m_ulongArray;
+  std::vector<int64_t> m_longArray;
+  std::vector<int64_t> m_ulongArray;
 
-  float* m_floatArray;
-  double* m_doubleArray;
+  std::vector<float> m_floatArray;
+  std::vector<double> m_doubleArray;
 
   int8_t** m_byteByteArray;
 
@@ -89,10 +89,10 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
   std::shared_ptr<CacheableArrayList> m_arraylist;
   std::shared_ptr<CacheableHashMap> m_map;
 
-  int8_t* m_byte252;
-  int8_t* m_byte253;
-  int8_t* m_byte65535;
-  int8_t* m_byte65536;
+  std::vector<int8_t> m_byte252;
+  std::vector<int8_t> m_byte253;
+  std::vector<int8_t> m_byte65535;
+  std::vector<int8_t> m_byte65536;
   enum pdxEnumTest { pdx1, pdx2, pdx3, pdx4 };
   std::shared_ptr<Cacheable> m_pdxEnum;
 
@@ -135,7 +135,7 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
   // void checkNullAndDelete(void *data);
   char16_t getChar() { return m_char; }
 
-  char16_t* getCharArray() { return m_charArray; }
+  std::vector<char16_t> getCharArray() { return m_charArray; }
 
   int8_t** getArrayOfByteArrays() { return m_byteByteArray; }
 
@@ -153,21 +153,21 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
 
   int64_t getULong() { return m_ulong; }
 
-  int16_t* getUInt16Array() { return m_uint16Array; }
+  std::vector<int16_t> getUInt16Array() { return m_uint16Array; }
 
-  int32_t* getUIntArray() { return m_uint32Array; }
+  std::vector<int32_t> getUIntArray() { return m_uint32Array; }
 
-  int64_t* getULongArray() { return m_ulongArray; }
+  std::vector<int64_t> getULongArray() { return m_ulongArray; }
 
-  int8_t* getByte252() { return m_byte252; }
+  std::vector<int8_t> getByte252() { return m_byte252; }
 
-  int8_t* getByte253() { return m_byte253; }
+  std::vector<int8_t> getByte253() { return m_byte253; }
 
-  int8_t* getByte65535() { return m_byte65535; }
+  std::vector<int8_t> getByte65535() { return m_byte65535; }
 
-  int8_t* getByte65536() { return m_byte65536; }
+  std::vector<int8_t> getByte65536() { return m_byte65536; }
 
-  int8_t* getSByteArray() { return m_sbyteArray; }
+  std::vector<int8_t> getSByteArray() { return m_sbyteArray; }
 
   std::shared_ptr<CacheableArrayList> getArrayList() { return m_arraylist; }
 
@@ -187,19 +187,19 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
 
   const std::string& getString() { return m_string; }
 
-  bool* getBoolArray() { return m_boolArray; }
+  std::vector<bool> getBoolArray() { return m_boolArray; }
 
-  int8_t* getByteArray() { return m_byteArray; }
+  std::vector<int8_t> getByteArray() { return m_byteArray; }
 
-  int16_t* getShortArray() { return m_int16Array; }
+  std::vector<int16_t> getShortArray() { return m_int16Array; }
 
-  int32_t* getIntArray() { return m_int32Array; }
+  std::vector<int32_t> getIntArray() { return m_int32Array; }
 
-  int64_t* getLongArray() { return m_longArray; }
+  std::vector<int64_t> getLongArray() { return m_longArray; }
 
-  double* getDoubleArray() { return m_doubleArray; }
+  std::vector<double> getDoubleArray() { return m_doubleArray; }
 
-  float* getFloatArray() { return m_floatArray; }
+  std::vector<float> getFloatArray() { return m_floatArray; }
 
   const std::vector<std::string>& getStringArray() { return m_stringArray; }
 

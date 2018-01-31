@@ -306,230 +306,187 @@ std::shared_ptr<Serializable> PdxRemoteReader::readObject(
   }
 }
 
-char16_t* PdxRemoteReader::readCharArray(const std::string& fieldName,
-                                         int32_t& length) {
+std::vector<char16_t> PdxRemoteReader::readCharArray(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
+  std::vector<char16_t> array;
   switch (choice) {
     case -2:
-      return PdxLocalReader::readCharArray(fieldName, length);  // in same order
-    case -1: {
-      return nullptr;  // null value
-    }
+      array = PdxLocalReader::readCharArray(fieldName);  // in same order
     default: {
       // sequence id read field and then update
       int position = m_pdxType->getFieldPosition(
           choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
       PdxLocalReader::resettoPdxHead();
       m_dataInput->advanceCursor(position);
-      auto retVal = PdxLocalReader::readCharArray(fieldName, length);
+      array = PdxLocalReader::readCharArray(fieldName);
       PdxLocalReader::resettoPdxHead();
-      return retVal;
     }
   }
+  return array;
 }
 
-bool* PdxRemoteReader::readBooleanArray(const std::string& fieldName,
-                                        int32_t& length) {
+std::vector<bool> PdxRemoteReader::readBooleanArray(
+    const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
+  std::vector<bool> array;
   switch (choice) {
     case -2:
-      return PdxLocalReader::readBooleanArray(fieldName,
-                                              length);  // in same order
-    case -1: {
-      return nullptr;  // null value
-    }
+      array = PdxLocalReader::readBooleanArray(fieldName);  // in same order
     default: {
       // sequence id read field and then update
       int position = m_pdxType->getFieldPosition(
           choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
       PdxLocalReader::resettoPdxHead();
       m_dataInput->advanceCursor(position);
-      bool* retVal = PdxLocalReader::readBooleanArray(fieldName, length);
+      array = PdxLocalReader::readBooleanArray(fieldName);
       PdxLocalReader::resettoPdxHead();
-      return retVal;
     }
   }
+  return array;
 }
 
-int8_t* PdxRemoteReader::readByteArray(const std::string& fieldName,
-                                       int32_t& length) {
+std::vector<int8_t> PdxRemoteReader::readByteArray(
+    const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
+  std::vector<int8_t> array;
   switch (choice) {
     case -2: {
-      return PdxLocalReader::readByteArray(fieldName, length);  // in same order
-    }
-    case -1: {
-      return nullptr;
+      array = PdxLocalReader::readByteArray(fieldName);  // in same order
     }
     default: {
       // sequence id read field and then update
       int position = m_pdxType->getFieldPosition(
           choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
       if (position != -1) {
-        int8_t* byteArrptr;
         PdxLocalReader::resettoPdxHead();
         m_dataInput->advanceCursor(position);
-        byteArrptr = PdxLocalReader::readByteArray(fieldName, length);
+        array = PdxLocalReader::readByteArray(fieldName);
         PdxLocalReader::resettoPdxHead();
-        return byteArrptr;
-      } else {
-        return nullptr;
       }
     }
   }
+  return array;
 }
 
-int16_t* PdxRemoteReader::readShortArray(const std::string& fieldName,
-                                         int32_t& length) {
+std::vector<int16_t> PdxRemoteReader::readShortArray(
+    const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
+  std::vector<int16_t> array;
   switch (choice) {
     case -2: {
-      return PdxLocalReader::readShortArray(fieldName, length);  // in same
-                                                                 // order
-    }
-    case -1: {
-      return nullptr;
+      array = PdxLocalReader::readShortArray(fieldName);  // in same order
     }
     default: {
       // sequence id read field and then update
       int position = m_pdxType->getFieldPosition(
           choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
       if (position != -1) {
-        int16_t* shortArrptr;
         PdxLocalReader::resettoPdxHead();
         m_dataInput->advanceCursor(position);
-        shortArrptr = PdxLocalReader::readShortArray(fieldName, length);
+        array = PdxLocalReader::readShortArray(fieldName);
         PdxLocalReader::resettoPdxHead();
-        return shortArrptr;
-      } else {
-        return nullptr;
       }
     }
   }
+  return array;
 }
 
-int32_t* PdxRemoteReader::readIntArray(const std::string& fieldName,
-                                       int32_t& length) {
+std::vector<int32_t> PdxRemoteReader::readIntArray(
+    const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
+  std::vector<int32_t> array;
   switch (choice) {
     case -2: {
-      return PdxLocalReader::readIntArray(fieldName, length);  // in same order
-    }
-    case -1: {
-      return nullptr;
+      array = PdxLocalReader::readIntArray(fieldName);  // in same order
     }
     default: {
       // sequence id read field and then update
       int position = m_pdxType->getFieldPosition(
           choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
       if (position != -1) {
-        int32_t* intArrptr;
         PdxLocalReader::resettoPdxHead();
         m_dataInput->advanceCursor(position);
-        intArrptr = PdxLocalReader::readIntArray(fieldName, length);
+        array = PdxLocalReader::readIntArray(fieldName);
         PdxLocalReader::resettoPdxHead();
-        return intArrptr;
-      } else {
-        return nullptr;
       }
     }
   }
+  return array;
 }
 
-int64_t* PdxRemoteReader::readLongArray(const std::string& fieldName,
-                                        int32_t& length) {
+std::vector<int64_t> PdxRemoteReader::readLongArray(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
+  std::vector<int64_t> array;
   switch (choice) {
     case -2: {
-      return PdxLocalReader::readLongArray(fieldName, length);  // in same order
-    }
-    case -1: {
-      return nullptr;
+      array = PdxLocalReader::readLongArray(fieldName);  // in same order
     }
     default: {
       // sequence id read field and then update
       int position = m_pdxType->getFieldPosition(
           choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
       if (position != -1) {
-        int64_t* longArrptr;
         PdxLocalReader::resettoPdxHead();
         m_dataInput->advanceCursor(position);
-        longArrptr = PdxLocalReader::readLongArray(fieldName, length);
+        array = PdxLocalReader::readLongArray(fieldName);
         PdxLocalReader::resettoPdxHead();
-        return longArrptr;
-      } else {
-        return nullptr;
       }
     }
   }
+  return array;
 }
 
-float* PdxRemoteReader::readFloatArray(const std::string& fieldName,
-                                       int32_t& length) {
+std::vector<float> PdxRemoteReader::readFloatArray(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
+  std::vector<float> array;
   switch (choice) {
     case -2: {
-      return PdxLocalReader::readFloatArray(fieldName, length);  // in same
-                                                                 // order
-    }
-    case -1: {
-      return nullptr;
+      array = PdxLocalReader::readFloatArray(fieldName);  // in same order
     }
     default: {
       // sequence id read field and then update
       int position = m_pdxType->getFieldPosition(
           choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
       if (position != -1) {
-        float* floatArrptr;
         PdxLocalReader::resettoPdxHead();
         m_dataInput->advanceCursor(position);
-        floatArrptr =
-            PdxLocalReader::readFloatArray(fieldName, length);  // in same order
+        array = PdxLocalReader::readFloatArray(fieldName);  // in same order
         PdxLocalReader::resettoPdxHead();
-        return floatArrptr;
-      } else {
-        return nullptr;
       }
     }
   }
+  return array;
 }
 
-double* PdxRemoteReader::readDoubleArray(const std::string& fieldName,
-                                         int32_t& length) {
+std::vector<double> PdxRemoteReader::readDoubleArray(const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
+  std::vector<double> array;
   switch (choice) {
     case -2: {
-      return PdxLocalReader::readDoubleArray(fieldName,
-                                             length);  // in same order
-    }
-    case -1: {
-      return nullptr;
+      array = PdxLocalReader::readDoubleArray(fieldName);  // in same order
     }
     default: {
       // sequence id read field and then update
       int position = m_pdxType->getFieldPosition(
           choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
       if (position != -1) {
-        double* doubleArrptr;
         PdxLocalReader::resettoPdxHead();
         m_dataInput->advanceCursor(position);
-        doubleArrptr = PdxLocalReader::readDoubleArray(
-            fieldName, length);  // in same order
+        array = PdxLocalReader::readDoubleArray(
+            fieldName);  // in same order
         PdxLocalReader::resettoPdxHead();
-        return doubleArrptr;
-      } else {
-        return nullptr;
       }
     }
   }
+  return array;
 }
 
 std::vector<std::string> PdxRemoteReader::readStringArray(

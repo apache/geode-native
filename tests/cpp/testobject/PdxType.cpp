@@ -83,13 +83,13 @@ void PdxTests::PdxType::toData(PdxWriter& pw) const {
   pw.markIdentityField("m_char");
   pw.writeBoolean("m_bool", m_bool);  // 1
   pw.markIdentityField("m_bool");
-  pw.writeBooleanArray("m_boolArray", m_boolArray, 3);
+  pw.writeBooleanArray("m_boolArray", m_boolArray);
   pw.markIdentityField("m_boolArray");
   pw.writeByte("m_byte", m_byte);
   pw.markIdentityField("m_byte");
-  pw.writeByteArray("m_byteArray", m_byteArray, 2);
+  pw.writeByteArray("m_byteArray", m_byteArray);
   pw.markIdentityField("m_byteArray");
-  pw.writeCharArray("m_charArray", m_charArray, 2);
+  pw.writeCharArray("m_charArray", m_charArray);
   pw.markIdentityField("m_charArray");
   pw.writeObject("m_arraylist", m_arraylist);
   pw.writeObject("m_linkedlist", m_linkedlist);
@@ -110,11 +110,11 @@ void PdxTests::PdxType::toData(PdxWriter& pw) const {
   pw.markIdentityField("m_dateTime");
   pw.writeDouble("m_double", m_double);
   pw.markIdentityField("m_double");
-  pw.writeDoubleArray("m_doubleArray", m_doubleArray, 2);
+  pw.writeDoubleArray("m_doubleArray", m_doubleArray);
   pw.markIdentityField("m_doubleArray");
   pw.writeFloat("m_float", m_float);
   pw.markIdentityField("m_float");
-  pw.writeFloatArray("m_floatArray", m_floatArray, 2);
+  pw.writeFloatArray("m_floatArray", m_floatArray);
   pw.markIdentityField("m_floatArray");
   pw.writeShort("m_int16", m_int16);
   pw.markIdentityField("m_int16");
@@ -122,15 +122,15 @@ void PdxTests::PdxType::toData(PdxWriter& pw) const {
   pw.markIdentityField("m_int32");
   pw.writeLong("m_long", m_long);
   pw.markIdentityField("m_long");
-  pw.writeIntArray("m_int32Array", m_int32Array, 4);
+  pw.writeIntArray("m_int32Array", m_int32Array);
   pw.markIdentityField("m_int32Array");
-  pw.writeLongArray("m_longArray", m_longArray, 2);
+  pw.writeLongArray("m_longArray", m_longArray);
   pw.markIdentityField("m_longArray");
-  pw.writeShortArray("m_int16Array", m_int16Array, 2);
+  pw.writeShortArray("m_int16Array", m_int16Array);
   pw.markIdentityField("m_int16Array");
   pw.writeByte("m_sbyte", m_sbyte);
   pw.markIdentityField("m_sbyte");
-  pw.writeByteArray("m_sbyteArray", m_sbyteArray, 2);
+  pw.writeByteArray("m_sbyteArray", m_sbyteArray);
   pw.markIdentityField("m_sbyteArray");
 
   // int* strlengthArr = new int[2];
@@ -145,20 +145,20 @@ void PdxTests::PdxType::toData(PdxWriter& pw) const {
   pw.markIdentityField("m_uint32");
   pw.writeLong("m_ulong", m_ulong);
   pw.markIdentityField("m_ulong");
-  pw.writeIntArray("m_uint32Array", m_uint32Array, 4);
+  pw.writeIntArray("m_uint32Array", m_uint32Array);
   pw.markIdentityField("m_uint32Array");
-  pw.writeLongArray("m_ulongArray", m_ulongArray, 2);
+  pw.writeLongArray("m_ulongArray", m_ulongArray);
   pw.markIdentityField("m_ulongArray");
-  pw.writeShortArray("m_uint16Array", m_uint16Array, 2);
+  pw.writeShortArray("m_uint16Array", m_uint16Array);
   pw.markIdentityField("m_uint16Array");
 
-  pw.writeByteArray("m_byte252", m_byte252, 252);
+  pw.writeByteArray("m_byte252", m_byte252);
   pw.markIdentityField("m_byte252");
-  pw.writeByteArray("m_byte253", m_byte253, 253);
+  pw.writeByteArray("m_byte253", m_byte253);
   pw.markIdentityField("m_byte253");
-  pw.writeByteArray("m_byte65535", m_byte65535, 65535);
+  pw.writeByteArray("m_byte65535", m_byte65535);
   pw.markIdentityField("m_byte65535");
-  pw.writeByteArray("m_byte65536", m_byte65536, 65536);
+  pw.writeByteArray("m_byte65536", m_byte65536);
   pw.markIdentityField("m_byte65536");
 
   pw.writeObject("m_pdxEnum", m_pdxEnum);
@@ -190,11 +190,11 @@ void PdxTests::PdxType::fromData(PdxReader& pr) {
 
   m_bool = pr.readBoolean("m_bool");
   // GenericValCompare
-  m_boolArray = pr.readBooleanArray("m_boolArray", boolArrayLen);
+  m_boolArray = pr.readBooleanArray("m_boolArray");
 
   m_byte = pr.readByte("m_byte");
-  m_byteArray = pr.readByteArray("m_byteArray", byteArrayLen);
-  m_charArray = pr.readCharArray("m_charArray", charArrayLen);
+  m_byteArray = pr.readByteArray("m_byteArray");
+  m_charArray = pr.readCharArray("m_charArray");
 
   m_arraylist = std::static_pointer_cast<CacheableArrayList>(
       pr.readObject("m_arraylist"));
@@ -223,30 +223,30 @@ void PdxTests::PdxType::fromData(PdxReader& pr) {
 
   m_double = pr.readDouble("m_double");
 
-  m_doubleArray = pr.readDoubleArray("m_doubleArray", doubleArrayLen);
+  m_doubleArray = pr.readDoubleArray("m_doubleArray");
   m_float = pr.readFloat("m_float");
-  m_floatArray = pr.readFloatArray("m_floatArray", floatArrayLen);
+  m_floatArray = pr.readFloatArray("m_floatArray");
   m_int16 = pr.readShort("m_int16");
   m_int32 = pr.readInt("m_int32");
   m_long = pr.readLong("m_long");
-  m_int32Array = pr.readIntArray("m_int32Array", intArrayLen);
-  m_longArray = pr.readLongArray("m_longArray", longArrayLen);
-  m_int16Array = pr.readShortArray("m_int16Array", shortArrayLen);
+  m_int32Array = pr.readIntArray("m_int32Array");
+  m_longArray = pr.readLongArray("m_longArray");
+  m_int16Array = pr.readShortArray("m_int16Array");
   m_sbyte = pr.readByte("m_sbyte");
-  m_sbyteArray = pr.readByteArray("m_sbyteArray", byteArrayLen);
+  m_sbyteArray = pr.readByteArray("m_sbyteArray");
   m_stringArray = pr.readStringArray("m_stringArray");
   m_uint16 = pr.readShort("m_uint16");
   m_uint32 = pr.readInt("m_uint32");
   m_ulong = pr.readLong("m_ulong");
-  m_uint32Array = pr.readIntArray("m_uint32Array", intArrayLen);
-  m_ulongArray = pr.readLongArray("m_ulongArray", longArrayLen);
-  m_uint16Array = pr.readShortArray("m_uint16Array", shortArrayLen);
+  m_uint32Array = pr.readIntArray("m_uint32Array");
+  m_ulongArray = pr.readLongArray("m_ulongArray");
+  m_uint16Array = pr.readShortArray("m_uint16Array");
   // LOGINFO("PdxType::readInt() start...");
 
-  m_byte252 = pr.readByteArray("m_byte252", m_byte252Len);
-  m_byte253 = pr.readByteArray("m_byte253", m_byte253Len);
-  m_byte65535 = pr.readByteArray("m_byte65535", m_byte65535Len);
-  m_byte65536 = pr.readByteArray("m_byte65536", m_byte65536Len);
+  m_byte252 = pr.readByteArray("m_byte252");
+  m_byte253 = pr.readByteArray("m_byte253");
+  m_byte65535 = pr.readByteArray("m_byte65535");
+  m_byte65536 = pr.readByteArray("m_byte65536");
   // TODO:Check for size
 
   m_pdxEnum = pr.readObject("m_pdxEnum");
@@ -296,17 +296,15 @@ bool PdxTests::PdxType::equals(PdxTests::PdxType& other,
   if (ot->m_string != m_string) {
     return false;
   }
-  genericCompare(ot->m_byteArray, m_byteArray, byteArrayLen);
-  genericCompare(ot->m_int16Array, m_int16Array, shortArrayLen);
-  genericCompare(ot->m_int32Array, m_int32Array, intArrayLen);
-  genericCompare(ot->m_longArray, m_longArray, longArrayLen);
-  genericCompare(ot->m_doubleArray, m_doubleArray, doubleArrayLen);
-  genericCompare(ot->m_floatArray, m_floatArray, floatArrayLen);
-  genericCompare(ot->m_uint32Array, m_uint32Array, intArrayLen);
-  genericCompare(ot->m_ulongArray, m_ulongArray, longArrayLen);
-  genericCompare(ot->m_uint16Array, m_uint16Array, shortArrayLen);
-  genericCompare(ot->m_sbyteArray, m_sbyteArray, shortArrayLen);
-  genericCompare(ot->m_charArray, m_charArray, charArrayLen);
+  genericCompare(ot->m_byteArray.data(), m_byteArray.data(), m_byteArray.size());
+  genericCompare(ot->m_int16Array.data(), m_int16Array.data(), m_int16Array.size());
+  genericCompare(ot->m_int32Array.data(), m_int32Array.data(), m_int32Array.size());
+  genericCompare(ot->m_longArray.data(), m_longArray.data(), m_longArray.size());
+  genericCompare(ot->m_uint32Array.data(), m_uint32Array.data(), m_uint32Array.size());
+  genericCompare(ot->m_ulongArray.data(), m_ulongArray.data(), m_ulongArray.size());
+  genericCompare(ot->m_uint16Array.data(), m_uint16Array.data(), m_uint16Array.size());
+  genericCompare(ot->m_sbyteArray.data(), m_sbyteArray.data(), m_sbyteArray.size());
+  genericCompare(ot->m_charArray.data(), m_charArray.data(), m_charArray.size());
   // generic2DCompare(ot->m_byteByteArray, m_byteByteArray, byteByteArrayLen,
   // lengthArr);
 

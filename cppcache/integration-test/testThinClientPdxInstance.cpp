@@ -65,7 +65,7 @@ bool genericValCompare(T1 value1, T2 value2) /*const*/
 }
 
 template <typename T1, typename T2>
-bool genericCompare(T1* value1, T2* value2, int length) /*const*/
+bool genericCompare(std::vector<T1> value1, std::vector<T2> value2, int length) /*const*/
 {
   int i = 0;
   while (i < length) {
@@ -905,43 +905,38 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
              "All stringVals should be equal");
     }
 
-    int8_t* byteArray = nullptr;
-    int32_t byteArrayLength = 0;
-    pIPtr->getField("m_byteArray", &byteArray, byteArrayLength);
+    auto byteArray = pIPtr->getByteArrayField("m_byteArray");
     ASSERT(genericValCompare(pdxobjPtr->getByteArrayLength(),
-                             byteArrayLength) == true,
+                             byteArray.size()) == true,
            "byteArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getByteArray(), byteArray,
-                          byteArrayLength) == true,
+                          byteArray.size()) == true,
            "byteArray should be equal");
     ASSERT(pIPtr->getFieldType("m_byteArray") == PdxFieldTypes::BYTE_ARRAY,
            "Type Value BYTE_ARRAY Mismatch");
 
-    char16_t* charArray = nullptr;
-    int32_t charArrayLength = 0;
-    pIPtr->getField("m_charArray", &charArray, charArrayLength);
+    auto charArray = pIPtr->getCharArrayField("m_charArray");
     ASSERT(genericValCompare(pdxobjPtr->getCharArrayLength(),
-                             charArrayLength) == true,
+                             charArray.size()) == true,
            "charArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getCharArray(), charArray,
-                          charArrayLength) == true,
+                          charArray.size()) == true,
            "charArray should be equal");
     ASSERT(pIPtr->getFieldType("m_charArray") == PdxFieldTypes::CHAR_ARRAY,
            "Type Value CHAR_ARRAY Mismatch");
 
-    pIPtr->getField("m_sbyteArray", &byteArray, byteArrayLength);
+    byteArray = pIPtr->getByteArrayField("m_sbyteArray");
     ASSERT(genericValCompare(pdxobjPtr->getByteArrayLength(),
-                             byteArrayLength) == true,
+                             byteArray.size()) == true,
            "sbyteArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getSByteArray(), byteArray,
-                          byteArrayLength) == true,
+                          byteArray.size()) == true,
            "m_sbyteArray should be equal");
     ASSERT(pIPtr->getFieldType("m_sbyteArray") == PdxFieldTypes::BYTE_ARRAY,
            "Type Value BYTE_ARRAY Mismatch");
 
-    bool* boolArray = nullptr;
-    int32_t boolArrayLength = 0;
-    pIPtr->getField("m_boolArray", &boolArray, boolArrayLength);
+    auto boolArray = pIPtr->getBooleanArrayField("m_boolArray");
+    int32_t boolArrayLength = boolArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getBoolArrayLength(),
                              boolArrayLength) == true,
            "boolArrayLength should be equal");
@@ -951,9 +946,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_boolArray") == PdxFieldTypes::BOOLEAN_ARRAY,
            "Type Value BOOLEAN_ARRAY Mismatch");
 
-    int16_t* shortArray = nullptr;
-    int32_t shortArrayLength = 0;
-    pIPtr->getField("m_int16Array", &shortArray, shortArrayLength);
+    auto shortArray = pIPtr->getShortArrayField("m_int16Array");
+    int32_t shortArrayLength = shortArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getShortArrayLength(),
                              shortArrayLength) == true,
            "shortArrayLength should be equal");
@@ -963,7 +957,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_int16Array") == PdxFieldTypes::SHORT_ARRAY,
            "Type Value SHORT_ARRAY Mismatch");
 
-    pIPtr->getField("m_uint16Array", &shortArray, shortArrayLength);
+    shortArray = pIPtr->getShortArrayField("m_uint16Array");
+    shortArrayLength = shortArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getShortArrayLength(),
                              shortArrayLength) == true,
            "shortArrayLength should be equal");
@@ -973,9 +968,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_uint16Array") == PdxFieldTypes::SHORT_ARRAY,
            "Type Value SHORT_ARRAY Mismatch");
 
-    int32_t* intArray = nullptr;
-    int32_t intArrayLength = 0;
-    pIPtr->getField("m_int32Array", &intArray, intArrayLength);
+    auto intArray = pIPtr->getIntArrayField("m_int32Array");
+    int32_t intArrayLength = intArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getIntArrayLength(), intArrayLength) ==
                true,
            "intArrayLength should be equal");
@@ -985,7 +979,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_int32Array") == PdxFieldTypes::INT_ARRAY,
            "Type Value INT_ARRAY Mismatch");
 
-    pIPtr->getField("m_uint32Array", &intArray, intArrayLength);
+    intArray = pIPtr->getIntArrayField("m_uint32Array");
     ASSERT(genericValCompare(pdxobjPtr->getIntArrayLength(), intArrayLength) ==
                true,
            "intArrayLength should be equal");
@@ -995,9 +989,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_uint32Array") == PdxFieldTypes::INT_ARRAY,
            "Type Value INT_ARRAY Mismatch");
 
-    int64_t* longArray = nullptr;
-    int32_t longArrayLength = 0;
-    pIPtr->getField("m_longArray", &longArray, longArrayLength);
+    auto longArray = pIPtr->getLongArrayField("m_longArray");
+    int32_t longArrayLength = longArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getLongArrayLength(),
                              longArrayLength) == true,
            "longArrayLength should be equal");
@@ -1007,7 +1000,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_longArray") == PdxFieldTypes::LONG_ARRAY,
            "Type Value LONG_ARRAY Mismatch");
 
-    pIPtr->getField("m_ulongArray", &longArray, longArrayLength);
+    longArray = pIPtr->getLongArrayField("m_ulongArray");
+    longArrayLength = longArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getLongArrayLength(),
                              longArrayLength) == true,
            "longArrayLength should be equal");
@@ -1017,9 +1011,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_ulongArray") == PdxFieldTypes::LONG_ARRAY,
            "Type Value LONG_ARRAY Mismatch");
 
-    double* doubleArray = nullptr;
-    int32_t doubleArrayLength = 0;
-    pIPtr->getField("m_doubleArray", &doubleArray, doubleArrayLength);
+    auto doubleArray = pIPtr->getDoubleArrayField("m_doubleArray");
+    int32_t doubleArrayLength = doubleArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getDoubleArrayLength(),
                              doubleArrayLength) == true,
            "doubleArrayLength should be equal");
@@ -1029,9 +1022,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_doubleArray") == PdxFieldTypes::DOUBLE_ARRAY,
            "Type Value DOUBLE_ARRAY Mismatch");
 
-    float* floatArray = nullptr;
-    int32_t floatArrayLength = 0;
-    pIPtr->getField("m_floatArray", &floatArray, floatArrayLength);
+    auto floatArray = pIPtr->getFloatArrayField("m_floatArray");
+    int32_t floatArrayLength = floatArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getFloatArrayLength(),
                              floatArrayLength) == true,
            "floatArrayLength should be equal");
@@ -1383,16 +1375,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-    int arrayLen = 0;
 
-    bool setBoolArray[] = {true, false, true, false, true, true, false, true};
-    bool* getBoolArray = nullptr;
-    wpiPtr->setField("m_boolArray", setBoolArray, 8);
+    std::vector<bool> setBoolArray{true, false, true, false, true, true, false, true};
+    int arrayLen = setBoolArray.size();
+    wpiPtr->setField("m_boolArray", setBoolArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_boolArray") == true,
            "m_boolArray = true expected");
-    newPiPtr->getField("m_boolArray", &getBoolArray, arrayLen);
+    auto getBoolArray = newPiPtr->getBooleanArrayField("m_boolArray");
+    arrayLen = getBoolArray.size();
     ASSERT(arrayLen == 8, "Arraylength == 8 expected");
     ASSERT(genericCompare(setBoolArray, getBoolArray, arrayLen) == true,
            "boolArray should be equal");
@@ -1410,14 +1402,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-    int8_t setByteArray[] = {0x34, 0x64, 0x34, 0x64};
-    int8_t* getByteArray = nullptr;
-    wpiPtr->setField("m_byteArray", setByteArray, 4);
+    std::vector<int8_t> setByteArray{0x34, 0x64, 0x34, 0x64};
+    wpiPtr->setField("m_byteArray", setByteArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_byteArray") == true,
            "m_byteArray = true expected");
-    newPiPtr->getField("m_byteArray", &getByteArray, arrayLen);
+    auto getByteArray = newPiPtr->getByteArrayField("m_byteArray");
+    arrayLen = getByteArray.size();
     ASSERT(arrayLen == 4, "Arraylength == 4 expected");
     ASSERT(genericCompare(setByteArray, getByteArray, arrayLen) == true,
            "byteArray should be equal");
@@ -1435,14 +1427,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-    char16_t setCharArray[] = {'c', 'v', 'c', 'v'};
-    char16_t* getCharArray = nullptr;
-    wpiPtr->setField("m_charArray", setCharArray, 4);
+    std::vector<char16_t> setCharArray{'c', 'v', 'c', 'v'};
+    wpiPtr->setField("m_charArray", setCharArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_charArray") == true,
            "m_charArray = true expected");
-    newPiPtr->getField("m_charArray", &getCharArray, arrayLen);
+    auto getCharArray = newPiPtr->getCharArrayField("m_charArray");
+    arrayLen = getCharArray.size();
     ASSERT(arrayLen == 4, "Arraylength == 4 expected");
     ASSERT(genericCompare(setCharArray, getCharArray, arrayLen) == true,
            "charArray should be equal");
@@ -1460,14 +1452,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-    int16_t setShortArray[] = {0x2332, 0x4545, 0x88, 0x898};
-    int16_t* getShortArray = nullptr;
-    wpiPtr->setField("m_int16Array", setShortArray, 4);
+    std::vector<int16_t> setShortArray{0x2332, 0x4545, 0x88, 0x898};
+    wpiPtr->setField("m_int16Array", setShortArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_int16Array") == true,
            "m_int16Array = true expected");
-    newPiPtr->getField("m_int16Array", &getShortArray, arrayLen);
+    auto getShortArray = newPiPtr->getShortArrayField("m_int16Array");
+    arrayLen = getShortArray.size();
     ASSERT(arrayLen == 4, "Arraylength == 4 expected");
     ASSERT(genericCompare(setShortArray, getShortArray, arrayLen) == true,
            "shortArray should be equal");
@@ -1476,7 +1468,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
 
     wpiPtr = pIPtr->createWriter();
     try {
-      wpiPtr->setField("m_int16Array", setCharArray, 4);
+      wpiPtr->setField("m_int16Array", setCharArray);
       FAIL(
           "setField on m_int16Array with setCharArray value should throw "
           "expected IllegalStateException");
@@ -1485,14 +1477,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-    int32_t setIntArray[3] = {23, 676868, 34343};
-    int32_t* newValArray = nullptr;
-    wpiPtr->setField("m_int32Array", setIntArray, 3);
+    std::vector<int32_t> setIntArray{23, 676868, 34343};
+    wpiPtr->setField("m_int32Array", setIntArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_int32Array") == true,
            "m_int32Array = true expected");
-    newPiPtr->getField("m_int32Array", &newValArray, arrayLen);
+    auto newValArray = newPiPtr->getIntArrayField("m_int32Array");
+    arrayLen = newValArray.size();
     ASSERT(arrayLen == 3, "Arraylength == 3 expected");
     ASSERT(genericCompare(setIntArray, newValArray, arrayLen) == true,
            "intArray should be equal");
@@ -1501,7 +1493,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
 
     wpiPtr = pIPtr->createWriter();
     try {
-      wpiPtr->setField("m_int32Array", setShortArray, 3);
+      wpiPtr->setField("m_int32Array", setShortArray);
       FAIL(
           "setField on m_int32Array with setShortArray value should throw "
           "expected IllegalStateException");
@@ -1510,14 +1502,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-    int64_t setLongArray[] = {3245435, 3425435};
-    int64_t* getLongArray = nullptr;
-    wpiPtr->setField("m_longArray", setLongArray, 2);
+    std::vector<int64_t> setLongArray{3245435, 3425435};
+    wpiPtr->setField("m_longArray", setLongArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_longArray") == true,
            "m_longArray = true expected");
-    newPiPtr->getField("m_longArray", &getLongArray, arrayLen);
+    auto getLongArray = newPiPtr->getLongArrayField("m_longArray");
+    arrayLen = getLongArray.size();
     ASSERT(arrayLen == 2, "Arraylength == 2 expected");
     ASSERT(genericCompare(setLongArray, getLongArray, arrayLen) == true,
            "longArray should be equal");
@@ -1526,7 +1518,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
 
     wpiPtr = pIPtr->createWriter();
     try {
-      wpiPtr->setField("m_longArray", setIntArray, 3);
+      wpiPtr->setField("m_longArray", setIntArray);
       FAIL(
           "setField on m_longArray with setIntArray value should throw "
           "expected "
@@ -1536,14 +1528,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-    float setFloatArray[] = {232.565f, 234323354.67f};
-    float* getFloatArray = nullptr;
-    wpiPtr->setField("m_floatArray", setFloatArray, 2);
+    std::vector<float> setFloatArray{232.565f, 234323354.67f};
+    wpiPtr->setField("m_floatArray", setFloatArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_floatArray") == true,
            "m_floatArray = true expected");
-    newPiPtr->getField("m_floatArray", &getFloatArray, arrayLen);
+    auto getFloatArray = newPiPtr->getFloatArrayField("m_floatArray");
+    arrayLen = getFloatArray.size();
     ASSERT(arrayLen == 2, "Arraylength == 2 expected");
     ASSERT(genericCompare(setFloatArray, getFloatArray, arrayLen) == true,
            "floatArray should be equal");
@@ -1552,7 +1544,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
 
     wpiPtr = pIPtr->createWriter();
     try {
-      wpiPtr->setField("m_floatArray", setLongArray, 2);
+      wpiPtr->setField("m_floatArray", setLongArray);
       FAIL(
           "setField on m_floatArray with setLongArray value should throw "
           "expected IllegalStateException");
@@ -1561,14 +1553,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-    double setDoubleArray[] = {23423432.00, 43242354315.00};
-    double* getDoubleArray = nullptr;
-    wpiPtr->setField("m_doubleArray", setDoubleArray, 2);
+    std::vector<double> setDoubleArray{23423432.00, 43242354315.00};
+    wpiPtr->setField("m_doubleArray", setDoubleArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_doubleArray") == true,
            "m_doubleArray = true expected");
-    newPiPtr->getField("m_doubleArray", &getDoubleArray, arrayLen);
+    auto getDoubleArray = newPiPtr->getDoubleArrayField("m_doubleArray");
+    arrayLen = getDoubleArray.size();
     ASSERT(arrayLen == 2, "Arraylength == 2 expected");
     ASSERT(genericCompare(setDoubleArray, getDoubleArray, arrayLen) == true,
            "doubleArray should be equal");
@@ -1577,7 +1569,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
 
     wpiPtr = pIPtr->createWriter();
     try {
-      wpiPtr->setField("m_doubleArray", setFloatArray, 2);
+      wpiPtr->setField("m_doubleArray", setFloatArray);
       FAIL(
           "setField on m_doubleArray with setFloatArray value should throw "
           "expected IllegalStateException");
@@ -1588,7 +1580,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
 
     wpiPtr = pIPtr->createWriter();
     try {
-      wpiPtr->setField("m_string", setFloatArray, 2);
+      wpiPtr->setField("m_string", setFloatArray);
       FAIL(
           "setField on m_string with setFloatArray value should throw expected "
           "IllegalStateException");
@@ -1688,7 +1680,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
 
     wpiPtr = pIPtr->createWriter();
     try {
-      wpiPtr->setField("m_arraylist", setFloatArray, 2);
+      wpiPtr->setField("m_arraylist", setFloatArray);
       FAIL(
           "setField on m_arraylist with setFloatArray value should throw "
           "expected IllegalStateException");
@@ -1885,14 +1877,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     auto parentCharVal = newPiPtr->getCharField("m_char");
     ASSERT(parentCharVal == parentCharSetVal, "char is not equal");
 
-    char16_t setParentCharArray[] = {'c', 'v', 'c', 'v'};
-    char16_t* getParentCharArray = nullptr;
-    wpiPtr->setField("m_charArray", setParentCharArray, 4);
+    std::vector<char16_t> setParentCharArray{'c', 'v', 'c', 'v'};
+    wpiPtr->setField("m_charArray", setParentCharArray);
     rptr->put(keyport1, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport1));
     ASSERT(newPiPtr->hasField("m_charArray") == true,
            "m_charArray = true expected");
-    newPiPtr->getField("m_charArray", &getParentCharArray, arrayLen);
+    auto getParentCharArray = newPiPtr->getCharArrayField("m_charArray");
+    arrayLen = getParentCharArray.size();
     ASSERT(arrayLen == 4, "Arraylength == 4 expected");
     ASSERT(genericCompare(setParentCharArray, getParentCharArray, arrayLen) ==
                true,
@@ -1963,100 +1955,100 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     ASSERT(val + 1 == newVal, "val + 1 == newVal expected");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
-    int arrayLen = 0;
 
-    bool setBoolArray[] = {true, false, true, false, true, true, false, true};
-    bool* getBoolArray = nullptr;
-    wpiPtr->setField("m_boolArray", setBoolArray, 8);
+    std::vector<bool> setBoolArray{true, false, true, false, true, true, false, true};
+    int arrayLen = setBoolArray.size();
+    wpiPtr->setField("m_boolArray", setBoolArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_boolArray") == true,
            "m_boolArray = true expected");
-    newPiPtr->getField("m_boolArray", &getBoolArray, arrayLen);
+    auto getBoolArray = newPiPtr->getBooleanArrayField("m_boolArray");
+    arrayLen = getBoolArray.size();
     ASSERT(arrayLen == 8, "Arraylength == 8 expected");
     ASSERT(genericCompare(setBoolArray, getBoolArray, arrayLen) == true,
            "boolArray should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
-    int8_t setByteArray[] = {0x34, 0x64, 0x34, 0x64};
-    int8_t* getByteArray = nullptr;
-    wpiPtr->setField("m_byteArray", setByteArray, 4);
+    std::vector<int8_t> setByteArray{0x34, 0x64, 0x34, 0x64};
+    wpiPtr->setField("m_byteArray", setByteArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_byteArray") == true,
            "m_byteArray = true expected");
-    newPiPtr->getField("m_byteArray", &getByteArray, arrayLen);
+    auto getByteArray = newPiPtr->getByteArrayField("m_byteArray");
+    arrayLen = getByteArray.size();
     ASSERT(arrayLen == 4, "Arraylength == 4 expected");
     ASSERT(genericCompare(setByteArray, getByteArray, arrayLen) == true,
            "byteArray should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
-    int16_t setShortArray[] = {0x2332, 0x4545, 0x88, 0x898};
-    int16_t* getShortArray = nullptr;
-    wpiPtr->setField("m_int16Array", setShortArray, 4);
+    std::vector<int16_t> setShortArray{0x2332, 0x4545, 0x88, 0x898};
+    wpiPtr->setField("m_int16Array", setShortArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_int16Array") == true,
            "m_int16Array = true expected");
-    newPiPtr->getField("m_int16Array", &getShortArray, arrayLen);
+    auto getShortArray = newPiPtr->getShortArrayField("m_int16Array");
+    arrayLen = getShortArray.size();
     ASSERT(arrayLen == 4, "Arraylength == 4 expected");
     ASSERT(genericCompare(setShortArray, getShortArray, arrayLen) == true,
            "shortArray should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
-    int32_t setIntArray[3] = {23, 676868, 34343};
-    int32_t* newValArray = nullptr;
-    wpiPtr->setField("m_int32Array", setIntArray, 3);
+    std::vector<int32_t> setIntArray{23, 676868, 34343};
+    wpiPtr->setField("m_int32Array", setIntArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_int32Array") == true,
            "m_int32Array = true expected");
-    newPiPtr->getField("m_int32Array", &newValArray, arrayLen);
+    auto newValArray = newPiPtr->getIntArrayField("m_int32Array");
+    arrayLen = newValArray.size();
     ASSERT(arrayLen == 3, "Arraylength == 3 expected");
     ASSERT(genericCompare(setIntArray, newValArray, arrayLen) == true,
            "intArray should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
-    int64_t setLongArray[] = {3245435, 3425435};
-    int64_t* getLongArray = nullptr;
-    wpiPtr->setField("m_longArray", setLongArray, 2);
+    std::vector<int64_t> setLongArray{3245435, 3425435};
+    wpiPtr->setField("m_longArray", setLongArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_longArray") == true,
            "m_longArray = true expected");
-    newPiPtr->getField("m_longArray", &getLongArray, arrayLen);
+    auto getLongArray = newPiPtr->getLongArrayField("m_longArray");
+    arrayLen = getLongArray.size();
     ASSERT(arrayLen == 2, "Arraylength == 2 expected");
     ASSERT(genericCompare(setLongArray, getLongArray, arrayLen) == true,
            "longArray should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
-    float setFloatArray[] = {232.565f, 234323354.67f};
-    float* getFloatArray = nullptr;
-    wpiPtr->setField("m_floatArray", setFloatArray, 2);
+    std::vector<float> setFloatArray{232.565f, 234323354.67f};
+    wpiPtr->setField("m_floatArray", setFloatArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_floatArray") == true,
            "m_floatArray = true expected");
-    newPiPtr->getField("m_floatArray", &getFloatArray, arrayLen);
+    auto getFloatArray = newPiPtr->getFloatArrayField("m_floatArray");
+    arrayLen = getFloatArray.size();
     ASSERT(arrayLen == 2, "Arraylength == 2 expected");
     ASSERT(genericCompare(setFloatArray, getFloatArray, arrayLen) == true,
            "floatArray should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
-    double setDoubleArray[] = {23423432.00, 43242354315.00};
-    double* getDoubleArray = nullptr;
-    wpiPtr->setField("m_doubleArray", setDoubleArray, 2);
+    std::vector<double> setDoubleArray{23423432.00, 43242354315.00};
+    wpiPtr->setField("m_doubleArray", setDoubleArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_doubleArray") == true,
            "m_doubleArray = true expected");
-    newPiPtr->getField("m_doubleArray", &getDoubleArray, arrayLen);
+    auto getDoubleArray = newPiPtr->getDoubleArrayField("m_doubleArray");
+    arrayLen = getDoubleArray.size();
     ASSERT(arrayLen == 2, "Arraylength == 2 expected");
     ASSERT(genericCompare(setDoubleArray, getDoubleArray, arrayLen) == true,
            "doubleArray should be equal");
@@ -2278,19 +2270,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     pifPtr->markIdentityField("m_string");
     pifPtr->writeDate("m_dateTime", pdxobj->getDate());
     pifPtr->markIdentityField("m_dateTime");
-    pifPtr->writeBooleanArray("m_boolArray", pdxobj->getBoolArray(), 3);
+    pifPtr->writeBooleanArray("m_boolArray", pdxobj->getBoolArray());
     pifPtr->markIdentityField("m_boolArray");
-    pifPtr->writeByteArray("m_byteArray", pdxobj->getByteArray(), 2);
+    pifPtr->writeByteArray("m_byteArray", pdxobj->getByteArray());
     pifPtr->markIdentityField("m_byteArray");
-    pifPtr->writeShortArray("m_int16Array", pdxobj->getShortArray(), 2);
+    pifPtr->writeShortArray("m_int16Array", pdxobj->getShortArray());
     pifPtr->markIdentityField("m_int16Array");
-    pifPtr->writeIntArray("m_int32Array", pdxobj->getIntArray(), 4);
+    pifPtr->writeIntArray("m_int32Array", pdxobj->getIntArray());
     pifPtr->markIdentityField("m_int32Array");
-    pifPtr->writeLongArray("m_longArray", pdxobj->getLongArray(), 2);
+    pifPtr->writeLongArray("m_longArray", pdxobj->getLongArray());
     pifPtr->markIdentityField("m_longArray");
-    pifPtr->writeFloatArray("m_floatArray", pdxobj->getFloatArray(), 2);
+    pifPtr->writeFloatArray("m_floatArray", pdxobj->getFloatArray());
     pifPtr->markIdentityField("m_floatArray");
-    pifPtr->writeDoubleArray("m_doubleArray", pdxobj->getDoubleArray(), 2);
+    pifPtr->writeDoubleArray("m_doubleArray", pdxobj->getDoubleArray());
     pifPtr->markIdentityField("m_doubleArray");
     pifPtr->writeObject("m_map", pdxobj->getHashMap());
     pifPtr->markIdentityField("m_map");
@@ -2313,7 +2305,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     pifPtr->markIdentityField("m_byteByteArray");
     pifPtr->writeChar("m_char", pdxobj->getChar());
     pifPtr->markIdentityField("m_char");
-    pifPtr->writeCharArray("m_charArray", pdxobj->getCharArray(), 2);
+    pifPtr->writeCharArray("m_charArray", pdxobj->getCharArray());
     pifPtr->markIdentityField("m_charArray");
     pifPtr->writeObject("m_chs", pdxobj->getHashSet());
     pifPtr->markIdentityField("m_chs");
@@ -2321,7 +2313,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     pifPtr->markIdentityField("m_clhs");
     pifPtr->writeByte("m_sbyte", pdxobj->getSByte());
     pifPtr->markIdentityField("m_sbyte");
-    pifPtr->writeByteArray("m_sbyteArray", pdxobj->getSByteArray(), 2);
+    pifPtr->writeByteArray("m_sbyteArray", pdxobj->getSByteArray());
     pifPtr->markIdentityField("m_sbyteArray");
     pifPtr->writeShort("m_uint16", pdxobj->getUint16());
     pifPtr->markIdentityField("m_uint16");
@@ -2329,20 +2321,20 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     pifPtr->markIdentityField("m_uint32");
     pifPtr->writeLong("m_ulong", pdxobj->getULong());
     pifPtr->markIdentityField("m_ulong");
-    pifPtr->writeShortArray("m_uint16Array", pdxobj->getUInt16Array(), 2);
+    pifPtr->writeShortArray("m_uint16Array", pdxobj->getUInt16Array());
     pifPtr->markIdentityField("m_uint16Array");
-    pifPtr->writeIntArray("m_uint32Array", pdxobj->getUIntArray(), 4);
+    pifPtr->writeIntArray("m_uint32Array", pdxobj->getUIntArray());
     pifPtr->markIdentityField("m_uint32Array");
-    pifPtr->writeLongArray("m_ulongArray", pdxobj->getULongArray(), 2);
+    pifPtr->writeLongArray("m_ulongArray", pdxobj->getULongArray());
     pifPtr->markIdentityField("m_ulongArray");
 
-    pifPtr->writeByteArray("m_byte252", pdxobj->getByte252(), 252);
+    pifPtr->writeByteArray("m_byte252", pdxobj->getByte252());
     pifPtr->markIdentityField("m_byte252");
-    pifPtr->writeByteArray("m_byte253", pdxobj->getByte253(), 253);
+    pifPtr->writeByteArray("m_byte253", pdxobj->getByte253());
     pifPtr->markIdentityField("m_byte253");
-    pifPtr->writeByteArray("m_byte65535", pdxobj->getByte65535(), 65535);
+    pifPtr->writeByteArray("m_byte65535", pdxobj->getByte65535());
     pifPtr->markIdentityField("m_byte65535");
-    pifPtr->writeByteArray("m_byte65536", pdxobj->getByte65536(), 65536);
+    pifPtr->writeByteArray("m_byte65536", pdxobj->getByte65536());
     pifPtr->markIdentityField("m_byte65536");
     pifPtr->writeObject("m_address", pdxobj->getCacheableObjectArray());
 
@@ -2460,7 +2452,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     if2->writeObject("m_childPdx", pp->getChildPdx());
     if2->writeChar("m_char", pp->getChar());
     if2->writeChar("m_wideChar", pp->getChar());
-    if2->writeCharArray("m_charArray", pp->getCharArray(), 2);
+    if2->writeCharArray("m_charArray", pp->getCharArray());
 
     LOG("write set done....");
     std::shared_ptr<PdxInstance> ip2 = if2->create();

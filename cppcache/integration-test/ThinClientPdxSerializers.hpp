@@ -98,11 +98,11 @@ class TestPdxSerializer : public PdxSerializer {
 
       npt->m_bool = pr.readBoolean("m_bool");
       // GenericValCompare
-      npt->m_boolArray = pr.readBooleanArray("m_boolArray", npt->boolArrayLen);
+      npt->m_boolArray = pr.readBooleanArray("m_boolArray");
 
       npt->m_byte = pr.readByte("m_byte");
-      npt->m_byteArray = pr.readByteArray("m_byteArray", npt->byteArrayLen);
-      npt->m_charArray = pr.readCharArray("m_charArray", npt->charArrayLen);
+      npt->m_byteArray = pr.readByteArray("m_byteArray");
+      npt->m_charArray = pr.readCharArray("m_charArray");
 
       npt->m_arraylist = std::dynamic_pointer_cast<CacheableArrayList>(
           pr.readObject("m_arraylist"));
@@ -133,33 +133,32 @@ class TestPdxSerializer : public PdxSerializer {
       npt->m_double = pr.readDouble("m_double");
 
       npt->m_doubleArray =
-          pr.readDoubleArray("m_doubleArray", npt->doubleArrayLen);
+          pr.readDoubleArray("m_doubleArray");
       npt->m_float = pr.readFloat("m_float");
       npt->m_floatArray =
-          pr.readFloatArray("m_floatArray", npt->floatArrayLen);
+          pr.readFloatArray("m_floatArray");
       npt->m_int16 = pr.readShort("m_int16");
       npt->m_int32 = pr.readInt("m_int32");
       npt->m_long = pr.readLong("m_long");
-      npt->m_int32Array = pr.readIntArray("m_int32Array", npt->intArrayLen);
-      npt->m_longArray = pr.readLongArray("m_longArray", npt->longArrayLen);
+      npt->m_int32Array = pr.readIntArray("m_int32Array");
+      npt->m_longArray = pr.readLongArray("m_longArray");
       npt->m_int16Array =
-          pr.readShortArray("m_int16Array", npt->shortArrayLen);
+          pr.readShortArray("m_int16Array");
       npt->m_sbyte = pr.readByte("m_sbyte");
-      npt->m_sbyteArray = pr.readByteArray("m_sbyteArray", npt->byteArrayLen);
+      npt->m_sbyteArray = pr.readByteArray("m_sbyteArray");
       npt->m_stringArray = pr.readStringArray("m_stringArray");
       npt->m_uint16 = pr.readShort("m_uint16");
       npt->m_uint32 = pr.readInt("m_uint32");
       npt->m_ulong = pr.readLong("m_ulong");
-      npt->m_uint32Array = pr.readIntArray("m_uint32Array", npt->intArrayLen);
-      npt->m_ulongArray = pr.readLongArray("m_ulongArray", npt->longArrayLen);
-      npt->m_uint16Array =
-          pr.readShortArray("m_uint16Array", npt->shortArrayLen);
+      npt->m_uint32Array = pr.readIntArray("m_uint32Array");
+      npt->m_ulongArray = pr.readLongArray("m_ulongArray");
+      npt->m_uint16Array = pr.readShortArray("m_uint16Array");
       // LOGINFO("PdxType::readInt() start...");
 
-      npt->m_byte252 = pr.readByteArray("m_byte252", npt->m_byte252Len);
-      npt->m_byte253 = pr.readByteArray("m_byte253", npt->m_byte253Len);
-      npt->m_byte65535 = pr.readByteArray("m_byte65535", npt->m_byte65535Len);
-      npt->m_byte65536 = pr.readByteArray("m_byte65536", npt->m_byte65536Len);
+      npt->m_byte252 = pr.readByteArray("m_byte252");
+      npt->m_byte253 = pr.readByteArray("m_byte253");
+      npt->m_byte65535 = pr.readByteArray("m_byte65535");
+      npt->m_byte65536 = pr.readByteArray("m_byte65536");
 
       npt->m_pdxEnum = pr.readObject("m_pdxEnum");
 
@@ -210,13 +209,13 @@ class TestPdxSerializer : public PdxSerializer {
       pw.markIdentityField("m_char");
       pw.writeBoolean("m_bool", npt->m_bool);  // 1
       pw.markIdentityField("m_bool");
-      pw.writeBooleanArray("m_boolArray", npt->m_boolArray, 3);
+      pw.writeBooleanArray("m_boolArray", npt->m_boolArray);
       pw.markIdentityField("m_boolArray");
       pw.writeByte("m_byte", npt->m_byte);
       pw.markIdentityField("m_byte");
-      pw.writeByteArray("m_byteArray", npt->m_byteArray, 2);
+      pw.writeByteArray("m_byteArray", npt->m_byteArray);
       pw.markIdentityField("m_byteArray");
-      pw.writeCharArray("m_charArray", npt->m_charArray, 2);
+      pw.writeCharArray("m_charArray", npt->m_charArray);
       pw.markIdentityField("m_charArray");
       pw.writeObject("m_arraylist", npt->m_arraylist);
       pw.markIdentityField("m_arraylist");
@@ -236,11 +235,11 @@ class TestPdxSerializer : public PdxSerializer {
       pw.markIdentityField("m_dateTime");
       pw.writeDouble("m_double", npt->m_double);
       pw.markIdentityField("m_double");
-      pw.writeDoubleArray("m_doubleArray", npt->m_doubleArray, 2);
+      pw.writeDoubleArray("m_doubleArray", npt->m_doubleArray);
       pw.markIdentityField("m_doubleArray");
       pw.writeFloat("m_float", npt->m_float);
       pw.markIdentityField("m_float");
-      pw.writeFloatArray("m_floatArray", npt->m_floatArray, 2);
+      pw.writeFloatArray("m_floatArray", npt->m_floatArray);
       pw.markIdentityField("m_floatArray");
       pw.writeShort("m_int16", npt->m_int16);
       pw.markIdentityField("m_int16");
@@ -248,15 +247,15 @@ class TestPdxSerializer : public PdxSerializer {
       pw.markIdentityField("m_int32");
       pw.writeLong("m_long", npt->m_long);
       pw.markIdentityField("m_long");
-      pw.writeIntArray("m_int32Array", npt->m_int32Array, 4);
+      pw.writeIntArray("m_int32Array", npt->m_int32Array);
       pw.markIdentityField("m_int32Array");
-      pw.writeLongArray("m_longArray", npt->m_longArray, 2);
+      pw.writeLongArray("m_longArray", npt->m_longArray);
       pw.markIdentityField("m_longArray");
-      pw.writeShortArray("m_int16Array", npt->m_int16Array, 2);
+      pw.writeShortArray("m_int16Array", npt->m_int16Array);
       pw.markIdentityField("m_int16Array");
       pw.writeByte("m_sbyte", npt->m_sbyte);
       pw.markIdentityField("m_sbyte");
-      pw.writeByteArray("m_sbyteArray", npt->m_sbyteArray, 2);
+      pw.writeByteArray("m_sbyteArray", npt->m_sbyteArray);
       pw.markIdentityField("m_sbyteArray");
 
       int *strlengthArr = new int[2];
@@ -271,20 +270,20 @@ class TestPdxSerializer : public PdxSerializer {
       pw.markIdentityField("m_uint32");
       pw.writeLong("m_ulong", npt->m_ulong);
       pw.markIdentityField("m_ulong");
-      pw.writeIntArray("m_uint32Array", npt->m_uint32Array, 4);
+      pw.writeIntArray("m_uint32Array", npt->m_uint32Array);
       pw.markIdentityField("m_uint32Array");
-      pw.writeLongArray("m_ulongArray", npt->m_ulongArray, 2);
+      pw.writeLongArray("m_ulongArray", npt->m_ulongArray);
       pw.markIdentityField("m_ulongArray");
-      pw.writeShortArray("m_uint16Array", npt->m_uint16Array, 2);
+      pw.writeShortArray("m_uint16Array", npt->m_uint16Array);
       pw.markIdentityField("m_uint16Array");
 
-      pw.writeByteArray("m_byte252", npt->m_byte252, 252);
+      pw.writeByteArray("m_byte252", npt->m_byte252);
       pw.markIdentityField("m_byte252");
-      pw.writeByteArray("m_byte253", npt->m_byte253, 253);
+      pw.writeByteArray("m_byte253", npt->m_byte253);
       pw.markIdentityField("m_byte253");
-      pw.writeByteArray("m_byte65535", npt->m_byte65535, 65535);
+      pw.writeByteArray("m_byte65535", npt->m_byte65535);
       pw.markIdentityField("m_byte65535");
-      pw.writeByteArray("m_byte65536", npt->m_byte65536, 65536);
+      pw.writeByteArray("m_byte65536", npt->m_byte65536);
       pw.markIdentityField("m_byte65536");
 
       pw.writeObject("m_pdxEnum", npt->m_pdxEnum);

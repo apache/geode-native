@@ -232,7 +232,7 @@ class TESTOBJECT_EXPORT PdxTypes6 : public PdxSerializable {
  private:
   std::string m_s1;  //"one"
   std::string m_s2;
-  int8_t* bytes128;
+  std::vector<int8_t> bytes128;
   int32_t m_i1;
   int32_t m_i2;
   int32_t m_i3;
@@ -272,7 +272,7 @@ class TESTOBJECT_EXPORT PdxTypes7 : public PdxSerializable {
   std::string m_s1;  //"one"
   std::string m_s2;
   int32_t m_i1;
-  int8_t* bytes38000;
+  std::vector<int8_t> bytes38000;
   int32_t m_i2;
   int32_t m_i3;
   int32_t m_i4;
@@ -312,7 +312,7 @@ class TESTOBJECT_EXPORT PdxTypes8 : public PdxSerializable {
   std::string m_s1;  //"one"
   std::string m_s2;
   int32_t m_i1;
-  int8_t* bytes300;
+  std::vector<int8_t> bytes300;
   std::shared_ptr<Cacheable> _enum;
   int32_t m_i2;
   int32_t m_i3;
@@ -320,8 +320,6 @@ class TESTOBJECT_EXPORT PdxTypes8 : public PdxSerializable {
 
  public:
   PdxTypes8();
-
-  virtual ~PdxTypes8();
 
   int32_t getHashCode();
 
@@ -352,14 +350,12 @@ class TESTOBJECT_EXPORT PdxTypes9 : public PdxSerializable {
   std::string m_s1;  //"one"
   std::string m_s2;
   std::string m_s3;
-  int8_t* m_bytes66000;
+  std::vector<int8_t> m_bytes66000;
   std::string m_s4;
   std::string m_s5;
 
  public:
   PdxTypes9();
-
-  virtual ~PdxTypes9();
 
   int32_t getHashCode();
 
@@ -391,14 +387,12 @@ class TESTOBJECT_EXPORT PdxTypes10 : public PdxSerializable {
   std::string m_s1;  //"one"
   std::string m_s2;
   std::string m_s3;
-  int8_t* m_bytes66000;
+  std::vector<int8_t> m_bytes66000;
   std::string m_s4;
   std::string m_s5;
 
  public:
   PdxTypes10();
-
-  virtual ~PdxTypes10();
 
   int32_t getHashCode();
 

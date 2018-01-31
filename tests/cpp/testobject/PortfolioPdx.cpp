@@ -47,7 +47,7 @@ PortfolioPdx::PortfolioPdx(int32_t i, int32_t size, std::vector<std::string> nm)
       CacheableString::create(secIds[PositionPdx::cnt % numSecIds]), position1);
 
   if (size > 0) {
-    newVal = new int8_t[size];
+    newVal = std::vector<int8_t>(size);
     for (int index = 0; index < size; index++) {
       newVal[index] = static_cast<int8_t>('B');
     }
@@ -56,15 +56,7 @@ PortfolioPdx::PortfolioPdx(int32_t i, int32_t size, std::vector<std::string> nm)
 
   time_t timeVal = 1310447869;
   creationDate = CacheableDate::create(timeVal);
-  arrayNull = NULL;
-  arrayZeroSize = new int8_t[0];
-}
-
-PortfolioPdx::~PortfolioPdx() {
-  if (newVal != NULL) {
-    delete[] newVal;
-    newVal = NULL;
-  }
+  arrayZeroSize = std::vector<int8_t>(0);
 }
 
 void PortfolioPdx::toData(PdxWriter& pw) const {
@@ -92,14 +84,14 @@ void PortfolioPdx::toData(PdxWriter& pw) const {
   pw.writeStringArray("names", names);
   pw.markIdentityField("names");
 
-  pw.writeByteArray("newVal", newVal, newValSize);
+  pw.writeByteArray("newVal", newVal);
   pw.markIdentityField("newVal");
 
   pw.writeDate("creationDate", creationDate);
   pw.markIdentityField("creationDate");
 
-  pw.writeByteArray("arrayNull", arrayNull, 0);
-  pw.writeByteArray("arrayZeroSize", arrayZeroSize, 0);
+  pw.writeByteArray("arrayNull", arrayNull);
+  pw.writeByteArray("arrayZeroSize", arrayZeroSize);
 }
 
 void PortfolioPdx::fromData(PdxReader& pr) {
@@ -116,12 +108,12 @@ void PortfolioPdx::fromData(PdxReader& pr) {
   int32_t strLenArray = 0;
   names = pr.readStringArray("names");
   int32_t byteArrayLen = 0;
-  newVal = pr.readByteArray("newVal", byteArrayLen);
+  newVal = pr.readByteArray("newVal");
   creationDate = pr.readDate("creationDate");
   int32_t arrayNullLen = 0;
-  arrayNull = pr.readByteArray("arrayNull", arrayNullLen);
+  arrayNull = pr.readByteArray("arrayNull");
   int32_t arrayZeroSizeLen = 0;
-  arrayZeroSize = pr.readByteArray("arrayZeroSize", arrayZeroSizeLen);
+  arrayZeroSize = pr.readByteArray("arrayZeroSize");
 }
 std::string PortfolioPdx::toString() const {
   LOGINFO("PortfolioPdx::toString() Start");

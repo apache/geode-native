@@ -111,7 +111,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeBooleanArray("", m_boolArray, 3);
+    pw.writeBooleanArray("", m_boolArray);
     pw.markIdentityField("m_boolArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -128,7 +128,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeByteArray("", m_byteArray, 2);
+    pw.writeByteArray("", m_byteArray);
     pw.markIdentityField("m_byteArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -137,7 +137,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeCharArray("", m_charArray, 2);
+    pw.writeCharArray("", m_charArray);
     pw.markIdentityField("m_charArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -229,7 +229,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeDoubleArray("", m_doubleArray, 2);
+    pw.writeDoubleArray("", m_doubleArray);
     pw.markIdentityField("m_doubleArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -246,7 +246,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeFloatArray("", m_floatArray, 2);
+    pw.writeFloatArray("", m_floatArray);
     pw.markIdentityField("m_floatArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -279,7 +279,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeIntArray("", m_int32Array, 4);
+    pw.writeIntArray("", m_int32Array);
     pw.markIdentityField("m_int32Array");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -288,7 +288,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeLongArray("", m_longArray, 2);
+    pw.writeLongArray("", m_longArray);
     pw.markIdentityField("m_longArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -297,7 +297,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeShortArray("", m_int16Array, 2);
+    pw.writeShortArray("", m_int16Array);
     pw.markIdentityField("m_int16Array");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -314,7 +314,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeByteArray("", m_sbyteArray, 2);
+    pw.writeByteArray("", m_sbyteArray);
     pw.markIdentityField("m_sbyteArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -356,7 +356,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeIntArray("", m_uint32Array, 4);
+    pw.writeIntArray("", m_uint32Array);
     pw.markIdentityField("m_uint32Array");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -365,7 +365,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeLongArray("", m_ulongArray, 2);
+    pw.writeLongArray("", m_ulongArray);
     pw.markIdentityField("m_ulongArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -374,7 +374,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeShortArray("", m_uint16Array, 2);
+    pw.writeShortArray("", m_uint16Array);
     pw.markIdentityField("m_uint16Array");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -383,7 +383,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeByteArray("", m_byte252, 252);
+    pw.writeByteArray("", m_byte252);
     pw.markIdentityField("m_byte252");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -392,7 +392,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeByteArray("", m_byte253, 253);
+    pw.writeByteArray("", m_byte253);
     pw.markIdentityField("m_byte253");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -401,7 +401,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeByteArray("", m_byte65535, 65535);
+    pw.writeByteArray("", m_byte65535);
     pw.markIdentityField("m_byte65535");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -410,7 +410,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   }
 
   try {
-    pw.writeByteArray("", m_byte65536, 65536);
+    pw.writeByteArray("", m_byte65536);
     pw.markIdentityField("m_byte65536");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
@@ -491,7 +491,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
   }
 
   try {
-    m_boolArray = pr.readBooleanArray("", boolArrayLen);
+    m_boolArray = pr.readBooleanArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readBooleanArray():: Got expected Exception :: %s ",
@@ -506,7 +506,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
   }
 
   try {
-    m_byteArray = pr.readByteArray("", byteArrayLen);
+    m_byteArray = pr.readByteArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readByteArray():: Got expected Exception :: %s ",
@@ -514,7 +514,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
   }
 
   try {
-    m_charArray = pr.readCharArray("", charArrayLen);
+    m_charArray = pr.readCharArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readWideCharArray():: Got expected Exception :: %s ",
@@ -588,7 +588,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
   }
 
   try {
-    m_doubleArray = pr.readDoubleArray("", doubleArrayLen);
+    m_doubleArray = pr.readDoubleArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readDoubleArray():: Got expected Exception :: %s ",
@@ -603,7 +603,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
   }
 
   try {
-    m_floatArray = pr.readFloatArray("", floatArrayLen);
+    m_floatArray = pr.readFloatArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readFloatArray():: Got expected Exception :: %s ",
@@ -632,7 +632,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
   }
 
   try {
-    m_int32Array = pr.readIntArray("", intArrayLen);
+    m_int32Array = pr.readIntArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readIntArray():: Got expected Exception :: %s ",
@@ -640,7 +640,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
   }
 
   try {
-    m_longArray = pr.readLongArray("", longArrayLen);
+    m_longArray = pr.readLongArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readLongArray():: Got expected Exception :: %s ",
@@ -648,7 +648,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
   }
 
   try {
-    m_int16Array = pr.readShortArray("", shortArrayLen);
+    m_int16Array = pr.readShortArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readShortArray():: Got expected Exception :: %s ",
@@ -662,7 +662,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
     LOGINFO("readByte():: Got expected Exception :: %s ", excpt.what());
   }
   try {
-    m_sbyteArray = pr.readByteArray("", byteArrayLen);
+    m_sbyteArray = pr.readByteArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readByteArray():: Got expected Exception :: %s ",
@@ -699,7 +699,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
   }
 
   try {
-    m_uint32Array = pr.readIntArray("", intArrayLen);
+    m_uint32Array = pr.readIntArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readIntArray():: Got expected Exception :: %s ",
@@ -707,7 +707,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
   }
 
   try {
-    m_ulongArray = pr.readLongArray("", longArrayLen);
+    m_ulongArray = pr.readLongArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readLongArray():: Got expected Exception :: %s ",
@@ -715,7 +715,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
   }
 
   try {
-    m_uint16Array = pr.readShortArray("", shortArrayLen);
+    m_uint16Array = pr.readShortArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readShortArray():: Got expected Exception :: %s ",
@@ -723,22 +723,14 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
   }
 
   try {
-    m_byte252 = pr.readByteArray("", m_byte252Len);
+    m_byte252 = pr.readByteArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readByteArray():: Got expected Exception :: %s ",
             excpt.what());
   }
   try {
-    m_byte253 = pr.readByteArray("", m_byte253Len);
-  } catch (IllegalStateException& excpt) {
-    exceptionCounter++;
-    LOGINFO("readByteArray():: Got expected Exception :: %s ",
-            excpt.what());
-  }
-
-  try {
-    m_byte65535 = pr.readByteArray("", m_byte65535Len);
+    m_byte253 = pr.readByteArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readByteArray():: Got expected Exception :: %s ",
@@ -746,7 +738,15 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
   }
 
   try {
-    m_byte65536 = pr.readByteArray("", m_byte65536Len);
+    m_byte65535 = pr.readByteArray("");
+  } catch (IllegalStateException& excpt) {
+    exceptionCounter++;
+    LOGINFO("readByteArray():: Got expected Exception :: %s ",
+            excpt.what());
+  }
+
+  try {
+    m_byte65536 = pr.readByteArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readByteArray():: Got expected Exception :: %s ",
@@ -824,17 +824,15 @@ bool InvalidPdxUsage::equals(PdxTests::InvalidPdxUsage& other,
   if (ot->m_string != m_string) {
     return false;
   }
-  genericCompare(ot->m_byteArray, m_byteArray, byteArrayLen);
-  genericCompare(ot->m_int16Array, m_int16Array, shortArrayLen);
-  genericCompare(ot->m_int32Array, m_int32Array, intArrayLen);
-  genericCompare(ot->m_longArray, m_longArray, longArrayLen);
-  genericCompare(ot->m_doubleArray, m_doubleArray, doubleArrayLen);
-  genericCompare(ot->m_floatArray, m_floatArray, floatArrayLen);
-  genericCompare(ot->m_uint32Array, m_uint32Array, intArrayLen);
-  genericCompare(ot->m_ulongArray, m_ulongArray, longArrayLen);
-  genericCompare(ot->m_uint16Array, m_uint16Array, shortArrayLen);
-  genericCompare(ot->m_sbyteArray, m_sbyteArray, shortArrayLen);
-  genericCompare(ot->m_charArray, m_charArray, charArrayLen);
+  genericCompare(ot->m_byteArray.data(), m_byteArray.data(), m_byteArray.size());
+  genericCompare(ot->m_int16Array.data(), m_int16Array.data(), m_int16Array.size());
+  genericCompare(ot->m_int32Array.data(), m_int32Array.data(), m_int32Array.size());
+  genericCompare(ot->m_longArray.data(), m_longArray.data(), m_longArray.size());
+  genericCompare(ot->m_uint32Array.data(), m_uint32Array.data(), m_uint32Array.size());
+  genericCompare(ot->m_ulongArray.data(), m_ulongArray.data(), m_ulongArray.size());
+  genericCompare(ot->m_uint16Array.data(), m_uint16Array.data(), m_uint16Array.size());
+  genericCompare(ot->m_sbyteArray.data(), m_sbyteArray.data(), m_sbyteArray.size());
+  genericCompare(ot->m_charArray.data(), m_charArray.data(), m_charArray.size());
   // generic2DCompare(ot->m_byteByteArray, m_byteByteArray, byteByteArrayLen,
   // lengthArr);
 

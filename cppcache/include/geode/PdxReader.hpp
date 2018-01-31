@@ -188,8 +188,7 @@ class _GEODE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual char16_t* readCharArray(const std::string& fieldName,
-                                  int32_t& length) = 0;
+  virtual std::vector<char16_t> readCharArray(const std::string& fieldName) = 0;
 
   /**
    * Read a bool* value from the <code>PdxReader</code> and sets array length.
@@ -200,8 +199,7 @@ class _GEODE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual bool* readBooleanArray(const std::string& fieldName,
-                                 int32_t& length) = 0;
+  virtual std::vector<bool> readBooleanArray(const std::string& fieldName) = 0;
 
   /**
    * Read a int8_t* value from the <code>PdxReader</code> and sets array length.
@@ -213,8 +211,7 @@ class _GEODE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual int8_t* readByteArray(const std::string& fieldName,
-                                int32_t& length) = 0;
+  virtual std::vector<int8_t> readByteArray(const std::string& fieldName) = 0;
 
   /**
    * Read a int16_t* value from the <code>PdxReader</code> and sets array
@@ -227,8 +224,7 @@ class _GEODE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual int16_t* readShortArray(const std::string& fieldName,
-                                  int32_t& length) = 0;
+  virtual std::vector<int16_t> readShortArray(const std::string& fieldName) = 0;
 
   /**
    * Read a int32_t* value from the <code>PdxReader</code> and sets array
@@ -241,8 +237,7 @@ class _GEODE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual int32_t* readIntArray(const std::string& fieldName,
-                                int32_t& length) = 0;
+  virtual std::vector<int32_t> readIntArray(const std::string& fieldName) = 0;
 
   /**
    * Read a int64_t* value from the <code>PdxReader</code> and sets array
@@ -255,8 +250,7 @@ class _GEODE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual int64_t* readLongArray(const std::string& fieldName,
-                                 int32_t& length) = 0;
+  virtual std::vector<int64_t> readLongArray(const std::string& fieldName) = 0;
 
   /**
    * Read a float* value from the <code>PdxReader</code> and sets array length.
@@ -268,8 +262,7 @@ class _GEODE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual float* readFloatArray(const std::string& fieldName,
-                                int32_t& length) = 0;
+  virtual std::vector<float> readFloatArray(const std::string& fieldName) = 0;
 
   /**
    * Read a double* value from the <code>PdxReader</code> and sets array length.
@@ -281,8 +274,7 @@ class _GEODE_EXPORT PdxReader {
    *
    * @see PdxReader#hasField
    */
-  virtual double* readDoubleArray(const std::string& fieldName,
-                                  int32_t& length) = 0;
+  virtual std::vector<double> readDoubleArray(const std::string& fieldName) = 0;
 
   /**
    * Read a array of strings from the <code>PdxReader</code>.

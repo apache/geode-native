@@ -43,11 +43,11 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
   std::string status;
   std::vector<std::string> names;
   static const char* secIds[];
-  int8_t* newVal;
+  std::vector<int8_t> newVal;
   int32_t newValSize;
   std::shared_ptr<CacheableDate> creationDate;
-  int8_t* arrayNull;
-  int8_t* arrayZeroSize;
+  std::vector<int8_t> arrayNull;
+  std::vector<int8_t> arrayZeroSize;
 
  public:
   PortfolioPdx()
@@ -55,14 +55,12 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
         pkid(),
         type(),
         status(),
-        newVal(NULL),
+        newVal(),
         creationDate(nullptr),
-        arrayNull(NULL),
-        arrayZeroSize(NULL) {}
+        arrayNull(),
+        arrayZeroSize() {}
 
   PortfolioPdx(int32_t id, int32_t size = 0, std::vector<std::string> nm = {});
-
-  virtual ~PortfolioPdx();
 
   int32_t getID() { return id; }
 
@@ -80,7 +78,7 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
 
   bool isActive() { return status == "active"; }
 
-  int8_t* getNewVal() { return newVal; }
+  std::vector<int8_t> getNewVal() { return newVal; }
 
   int32_t getNewValSize() { return newValSize; }
 
@@ -88,9 +86,9 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
 
   std::shared_ptr<CacheableDate> getCreationDate() { return creationDate; }
 
-  int8_t* getArrayNull() { return arrayNull; }
+  std::vector<int8_t> getArrayNull() { return arrayNull; }
 
-  int8_t* getArrayZeroSize() { return arrayZeroSize; }
+  std::vector<int8_t> getArrayZeroSize() { return arrayZeroSize; }
 
   static PdxSerializable* createDeserializable() { return new PortfolioPdx(); }
 

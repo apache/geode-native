@@ -199,8 +199,8 @@ class _GEODE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const std::string& fieldname, bool** value,
-                        int32_t& length) const = 0;
+  virtual std::vector<bool> getBooleanArrayField(
+      const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in signed char array type out
@@ -212,8 +212,8 @@ class _GEODE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const std::string& fieldname, int8_t** value,
-                        int32_t& length) const = 0;
+  virtual std::vector<int8_t> getByteArrayField(
+      const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in int16_t array type out param.
@@ -225,8 +225,8 @@ class _GEODE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const std::string& fieldname, int16_t** value,
-                        int32_t& length) const = 0;
+  virtual std::vector<int16_t> getShortArrayField(
+      const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in int32_t array type out param.
@@ -238,8 +238,8 @@ class _GEODE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const std::string& fieldname, int32_t** value,
-                        int32_t& length) const = 0;
+  virtual std::vector<int32_t> getIntArrayField(
+      const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in int64_t array type out param.
@@ -251,8 +251,8 @@ class _GEODE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const std::string& fieldname, int64_t** value,
-                        int32_t& length) const = 0;
+  virtual std::vector<int64_t> getLongArrayField(
+      const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in float array type out param.
@@ -264,8 +264,8 @@ class _GEODE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const std::string& fieldname, float** value,
-                        int32_t& length) const = 0;
+  virtual std::vector<float> getFloatArrayField(
+      const std::string& fieldname) const = 0;
 
   /**
    * Reads the named field and set its value in double array type out param.
@@ -277,8 +277,8 @@ class _GEODE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const std::string& fieldname, double** value,
-                        int32_t& length) const = 0;
+  virtual std::vector<double> getDoubleArrayField(
+      const std::string& fieldname) const = 0;
 
   // charArray
   /**
@@ -291,8 +291,8 @@ class _GEODE_EXPORT PdxInstance : public PdxSerializable {
    *
    * @see PdxInstance#hasField
    */
-  virtual void getField(const std::string& fieldName, char16_t** value,
-                        int32_t& length) const = 0;
+  virtual std::vector<char16_t> getCharArrayField(
+      const std::string& fieldName) const = 0;
 
   /**
    * Reads the named field as a string array.

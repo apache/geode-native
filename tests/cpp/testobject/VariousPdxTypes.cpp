@@ -328,7 +328,7 @@ void PdxTypes5::fromData(PdxReader &pr) {
 PdxTypes6::PdxTypes6() {
   m_s1 = "one";
   m_s2 = "two";
-  bytes128 = new int8_t[2];
+  bytes128 = std::vector<int8_t>(2);
   bytes128[0] = 0x34;
   ;
   bytes128[1] = 0x64;
@@ -389,7 +389,7 @@ std::string PdxTypes6::toString() const {
 void PdxTypes6::toData(PdxWriter &pw) const {
   pw.writeString("s1", m_s1);
   pw.writeInt("i1", m_i1);
-  pw.writeByteArray("bytes128", bytes128, 2);
+  pw.writeByteArray("bytes128", bytes128);
   pw.writeInt("i2", m_i2);
   pw.writeInt("i3", m_i3);
   pw.writeInt("i4", m_i4);
@@ -403,7 +403,7 @@ void PdxTypes6::fromData(PdxReader &pr) {
   m_i1 = pr.readInt("i1");
   // LOGDEBUG("PdxTypes6::fromData m_i1 = %d", m_i1);
   int32_t byteArrLen = 0;
-  bytes128 = pr.readByteArray("bytes128", byteArrLen);
+  bytes128 = pr.readByteArray("bytes128");
   m_i2 = pr.readInt("i2");
   // LOGDEBUG("PdxTypes6::fromData m_i2 = %d", m_i2);
 
@@ -424,7 +424,7 @@ PdxTypes7::PdxTypes7() {
   m_s1 = "one";
   m_s2 = "two";
   m_i1 = 34324;
-  bytes38000 = new int8_t[38000];
+  bytes38000 = std::vector<int8_t>(38000);
   m_i2 = 2144;
   m_i3 = 4645734;
   m_i4 = 73567;
@@ -467,7 +467,7 @@ std::string PdxTypes7::toString() const {
    pw.writeInt("i1", m_i1);
    pw.writeInt("i2", m_i2);
    pw.writeString("s1", m_s1);
-   pw.writeByteArray("bytes38000", bytes38000, 2);
+   pw.writeByteArray("bytes38000", bytes38000);
    pw.writeInt("i3", m_i3);
    pw.writeInt("i4", m_i4);
    pw.writeString("s2", m_s2);
@@ -478,7 +478,7 @@ std::string PdxTypes7::toString() const {
    m_i2 = pr.readInt("i2");
    m_s1 = pr.readString("s1");
    int32_t byteArrLen = 0;
-   bytes38000 = pr.readByteArray("bytes38000", byteArrLen);
+   bytes38000 = pr.readByteArray("bytes38000");
    m_i3 = pr.readInt("i3");
    m_i4 = pr.readInt("i4");
    m_s2 = pr.readString("s2");
@@ -492,14 +492,12 @@ PdxTypes8::PdxTypes8() {
   m_s1 = "one";
   m_s2 = "two";
   m_i1 = 34324;
-  bytes300 = new int8_t[300];
+  bytes300 = std::vector<int8_t>(300);
   _enum = CacheableEnum::create("PdxTests.pdxEnumTest", "pdx2", pdx2);
   m_i2 = 2144;
   m_i3 = 4645734;
   m_i4 = 73567;
 }
-
-PdxTypes8::~PdxTypes8() { delete[] bytes300; }
 
 int32_t PdxTypes8::getHashCode() { return 1; }
 
@@ -534,7 +532,7 @@ std::string PdxTypes8::toString() const {
    pw.writeInt("i1", m_i1);
    pw.writeInt("i2", m_i2);
    pw.writeString("s1", m_s1);
-   pw.writeByteArray("bytes300", bytes300, 2);
+   pw.writeByteArray("bytes300", bytes300);
    pw.writeObject("_enum", _enum);
    pw.writeString("s2", m_s2);
    pw.writeInt("i3", m_i3);
@@ -546,7 +544,7 @@ std::string PdxTypes8::toString() const {
    m_i2 = pr.readInt("i2");
    m_s1 = pr.readString("s1");
    int32_t byteArrLen = 0;
-   bytes300 = pr.readByteArray("bytes300", byteArrLen);
+   bytes300 = pr.readByteArray("bytes300");
    _enum = pr.readObject("_enum");
    m_s2 = pr.readString("s2");
    m_i3 = pr.readInt("i3");
@@ -560,12 +558,10 @@ PdxTypes9::PdxTypes9() {
   m_s1 = "one";
   m_s2 = "two";
   m_s3 = "three";
-  m_bytes66000 = new int8_t[66000];
+  m_bytes66000 = std::vector<int8_t>(66000);
   m_s4 = "four";
   m_s5 = "five";
 }
-
-PdxTypes9::~PdxTypes9() { delete[] m_bytes66000; }
 
 int32_t PdxTypes9::getHashCode() { return 1; }
 
@@ -597,7 +593,7 @@ std::string PdxTypes9::toString() const {
 void PdxTypes9::toData(PdxWriter &pw) const {
   pw.writeString("s1", m_s1);
   pw.writeString("s2", m_s2);
-  pw.writeByteArray("bytes66000", m_bytes66000, 2);
+  pw.writeByteArray("bytes66000", m_bytes66000);
   pw.writeString("s3", m_s3);
   pw.writeString("s4", m_s4);
   pw.writeString("s5", m_s5);
@@ -607,7 +603,7 @@ void PdxTypes9::fromData(PdxReader &pr) {
   m_s1 = pr.readString("s1");
   m_s2 = pr.readString("s2");
   int32_t byteArrLen = 0;
-  m_bytes66000 = pr.readByteArray("bytes66000", byteArrLen);
+  m_bytes66000 = pr.readByteArray("bytes66000");
   m_s3 = pr.readString("s3");
   m_s4 = pr.readString("s4");
   m_s5 = pr.readString("s5");
@@ -620,12 +616,10 @@ PdxTypes10::PdxTypes10() {
   m_s1 = "one";
   m_s2 = "two";
   m_s3 = "three";
-  m_bytes66000 = new int8_t[66000];
+  m_bytes66000 = std::vector<int8_t>(66000);
   m_s4 = "four";
   m_s5 = "five";
 }
-
-PdxTypes10::~PdxTypes10() { delete[] m_bytes66000; }
 
 int32_t PdxTypes10::getHashCode() { return 1; }
 
@@ -657,7 +651,7 @@ std::string PdxTypes10::toString() const {
 void PdxTypes10::toData(PdxWriter &pw) const {
   pw.writeString("s1", m_s1);
   pw.writeString("s2", m_s2);
-  pw.writeByteArray("bytes66000", m_bytes66000, 2);
+  pw.writeByteArray("bytes66000", m_bytes66000);
   pw.writeString("s3", m_s3);
   pw.writeString("s4", m_s4);
   pw.writeString("s5", m_s5);
@@ -667,7 +661,7 @@ void PdxTypes10::fromData(PdxReader &pr) {
   m_s1 = pr.readString("s1");
   m_s2 = pr.readString("s2");
   int32_t byteArrLen = 0;
-  m_bytes66000 = pr.readByteArray("bytes66000", byteArrLen);
+  m_bytes66000 = pr.readByteArray("bytes66000");
   m_s3 = pr.readString("s3");
   m_s4 = pr.readString("s4");
   m_s5 = pr.readString("s5");

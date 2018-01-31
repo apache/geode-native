@@ -379,36 +379,36 @@ class _GEODE_EXPORT DataInput {
 
   inline void readObject(double* value) { *value = readDouble(); }
 
-  inline void readCharArray(char16_t** value, int32_t& length) {
-    readObject(value, length);
+  inline std::vector<char16_t> readCharArray() {
+    return readArray<char16_t>();
   }
 
-  inline void readBooleanArray(bool** value, int32_t& length) {
-    readObject(value, length);
+  inline std::vector<bool> readBooleanArray() {
+    return readArray<bool>();
   }
 
-  inline void readByteArray(int8_t** value, int32_t& length) {
-    readObject(value, length);
+  inline std::vector<int8_t> readByteArray() {
+    return readArray<int8_t>();
   }
 
-  inline void readShortArray(int16_t** value, int32_t& length) {
-    readObject(value, length);
+  inline std::vector<int16_t> readShortArray() {
+    return readArray<int16_t>();
   }
 
-  inline void readIntArray(int32_t** value, int32_t& length) {
-    readObject(value, length);
+  inline std::vector<int32_t> readIntArray() {
+    return readArray<int32_t>();
   }
 
-  inline void readLongArray(int64_t** value, int32_t& length) {
-    readObject(value, length);
+  inline std::vector<int64_t> readLongArray() {
+    return readArray<int64_t>();
   }
 
-  inline void readFloatArray(float** value, int32_t& length) {
-    readObject(value, length);
+  inline std::vector<float> readFloatArray() {
+    return readArray<float>();
   }
 
-  inline void readDoubleArray(double** value, int32_t& length) {
-    readObject(value, length);
+  inline std::vector<double> readDoubleArray() {
+    return readArray<double>();
   }
 
   inline std::vector<std::string> readStringArray() {
@@ -574,6 +574,22 @@ class _GEODE_EXPORT DataInput {
       }
       *value = objArray;
     }
+  }
+
+  template <typename T>
+  std::vector<T> readArray() {
+    int arrayLen = readArrayLen();
+    std::vector<T> objArray;
+    if (arrayLen >= 0) {
+      objArray.reserve(arrayLen);
+      int i = 0;
+      for (i = 0; i < arrayLen; i++) {
+        T tmp = 0;
+        readObject(&tmp);
+        objArray.push_back(tmp);
+      }
+    }
+    return objArray;
   }
 
   inline char readPdxChar() { return static_cast<char>(readInt16()); }
