@@ -31,11 +31,11 @@ class Order : public PdxSerializable {
     quantity = (unsigned int)0;
     name = "";
   };
+
   Order(unsigned long inOrderID, const std::string& inName,
         unsigned int inQuantity)
-      : orderID(inOrderID), name(inName), quantity(inQuantity) {
+      : orderID(inOrderID), name(inName), quantity(inQuantity){};
 
-  };
   virtual ~Order(){};
 
   unsigned long getOrderID() { return orderID; }
@@ -101,45 +101,33 @@ class Order : public PdxSerializable {
 };
 
 int main(int argc, char** argv) {
-  try {
-    auto cacheFactory = CacheFactory();
-    cacheFactory.set("log-level", "none");
-    auto cache = cacheFactory.create();
-    auto poolFactory = cache.getPoolManager().createFactory();
 
-    poolFactory->addLocator("localhost", 10334);
-    auto pool = poolFactory->create("pool");
-    auto regionFactory = cache.createRegionFactory(PROXY);
-    auto region = regionFactory.setPoolName("pool").create("custom_orders");
+  auto cacheFactory = CacheFactory();
+  cacheFactory.set("log-level", "none");
+  auto cache = cacheFactory.create();
 
-    try {
-      auto order1 = std::shared_ptr<Order>(new Order(1, "product x", 23));
-      auto order2 = std::shared_ptr<Order>(new Order(2, "product y", 37));
-      cache.getTypeRegistry().registerPdxType(Order::createDeserializable);
-      std::cout << "Storing orders in the region" << std::endl;
-      auto keyptr = CacheableKey::create("Customer1");
-      region->put(keyptr, order1);
-      region->put("Customer2", order2);
-    } catch (std::exception& e) {
-      std::cout << "put failed " << e.what() << std::endl;
-      return 0;
-    }
+  auto poolFactory = cache.getPoolManager().createFactory();
+  poolFactory->addLocator("localhost", 10334);
+  auto pool = poolFactory->create("pool");
+  auto regionFactory = cache.createRegionFactory(PROXY);
+  auto region = regionFactory.setPoolName("pool").create("custom_orders");
 
-    try {
-      std::cout << "Getting the orders from the region" << std::endl;
-      auto keyptr = CacheableKey::create("Customer1");
-      auto order = region->get(keyptr);
+  cache.getTypeRegistry().registerPdxType(Order::createDeserializable);
 
-      std::cout << order->toString() << std::endl;
+  std::cout << "Create orders" << std::endl;
+  auto order1 = std::shared_ptr<Order>(new Order(1, "product x", 23));
+  auto order2 = std::shared_ptr<Order>(new Order(2, "product y", 37));
 
-    } catch (std::exception& e) {
-      std::cout << "get failed " << e.what() << std::endl;
-      return 0;
-    }
+  std::cout << "Storing orders in the region" << std::endl;
+  auto keyptr = CacheableKey::create("Customer1");
+  region->put(keyptr, order1);
+  region->put("Customer2", order2);
 
-    cache.close();
-  } catch (std::exception& e) {
-    std::cout << "Config failed " << e.what() << std::endl;
-    return 0;
-  }
+  std::cout << "Getting the orders from the region" << std::endl;
+  auto keyptr = CacheableKey::create("Customer1");
+  auto order = region->get(keyptr);
+
+  std::cout << order->toString() << std::endl;
+
+  cache.close();
 }
