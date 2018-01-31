@@ -149,7 +149,8 @@ void PdxInstanceImpl::writeField(PdxWriter& writer,
       break;
     }
     case PdxFieldTypes::BYTE_ARRAY: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableArray<int8_t>>(value)) {
+      if (auto&& val = std::dynamic_pointer_cast<
+          CacheableArray<int8_t, GeodeTypeIds::CacheableBytes>>(value)) {
         writer.writeByteArray(fieldName, val->value());
       }
       break;
@@ -1837,7 +1838,7 @@ void PdxInstanceImpl::setField(const std::string& fieldName,
                                 " or type of field not matched " +
                                 (pft != nullptr ? pft->toString() : ""));
   }
-  auto cacheableObject = CacheableArray<int8_t>::create(value);
+  auto cacheableObject = CacheableArray<int8_t, GeodeTypeIds::CacheableBytes>::create(value);
   m_updatedFields[fieldName] = cacheableObject;
 }
 

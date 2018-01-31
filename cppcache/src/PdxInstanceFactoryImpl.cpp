@@ -191,7 +191,9 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeByteArray(
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "byte[]",
                                         PdxFieldTypes::BYTE_ARRAY);
-  auto cacheableObject = CacheableArray<int8_t>::create(value);
+  auto cacheableObject = CacheableArray<int8_t,
+                                        GeodeTypeIds::CacheableBytes>::create(
+                                            value);
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return shared_from_this();
 }

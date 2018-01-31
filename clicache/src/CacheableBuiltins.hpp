@@ -642,43 +642,43 @@ namespace Apache
       /// An immutable wrapper for array of doubles that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableDoubleArray = CacheableArray<native::CacheableArray<double>, Double, GeodeClassIds::CacheableDoubleArray>;
+      using CacheableDoubleArray = CacheableArray<native::CacheableArray<double, native::GeodeTypeIds::CacheableDoubleArray>, Double, GeodeClassIds::CacheableDoubleArray>;
 
       /// <summary>
       /// An immutable wrapper for array of floats that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableFloatArray = CacheableArray<native::CacheableArray<float>, Single, GeodeClassIds::CacheableFloatArray>;
+      using CacheableFloatArray = CacheableArray<native::CacheableArray<float, native::GeodeTypeIds::CacheableFloatArray>, Single, GeodeClassIds::CacheableFloatArray>;
 
       /// <summary>
       /// An immutable wrapper for array of 16-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableInt16Array = CacheableArray<native::CacheableArray<int16_t>, System::Int16, GeodeClassIds::CacheableInt16Array>;
+      using CacheableInt16Array = CacheableArray<native::CacheableArray<int16_t, native::GeodeTypeIds::CacheableInt16Array>, System::Int16, GeodeClassIds::CacheableInt16Array>;
 
       /// <summary>
       /// An immutable wrapper for array of 32-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableInt32Array = CacheableArray<native::CacheableArray<int32_t>, System::Int32, GeodeClassIds::CacheableInt32Array>;
+      using CacheableInt32Array = CacheableArray<native::CacheableArray<int32_t, native::GeodeTypeIds::CacheableInt32Array>, System::Int32, GeodeClassIds::CacheableInt32Array>;
 
       /// <summary>
       /// An immutable wrapper for array of 64-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableInt64Array = CacheableArray<native::CacheableArray<int64_t>, System::Int64, GeodeClassIds::CacheableInt64Array>;
+      using CacheableInt64Array = CacheableArray<native::CacheableArray<int64_t, native::GeodeTypeIds::CacheableInt64Array>, System::Int64, GeodeClassIds::CacheableInt64Array>;
 
       /// <summary>
       /// An immutable wrapper for array of booleans that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using BooleanArray = CacheableArray<native::CacheableArray<bool>, bool, GeodeClassIds::BooleanArray>;
+      using BooleanArray = CacheableArray<native::CacheableArray<bool, native::GeodeTypeIds::BooleanArray>, bool, GeodeClassIds::BooleanArray>;
 
       /// <summary>
       /// An immutable wrapper for array of 16-bit characters that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CharArray = CacheableArray<native::CacheableArray<char16_t>, Char, GeodeClassIds::CharArray>;
+      using CharArray = CacheableArray<native::CacheableArray<char16_t, native::GeodeTypeIds::CharArray>, Char, GeodeClassIds::CharArray>;
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
