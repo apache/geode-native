@@ -51,11 +51,11 @@ namespace Apache.Geode.Client.QuickStart
     {
       Portfolio val = ev.getNewValue() as  Portfolio;
       TKey key = ev.getKey();
-      CqOperationType opType = ev.getQueryOperation();
+      CqOperation opType = ev.getQueryOperation();
       string opStr = "DESTROY";
-      if(opType == CqOperationType.OP_TYPE_CREATE)
+      if(opType == CqOperation.OP_TYPE_CREATE)
          opStr = "CREATE";
-      else if(opType == CqOperationType.OP_TYPE_UPDATE)
+      else if(opType == CqOperation.OP_TYPE_UPDATE)
          opStr = "UPDATE";
       Console.WriteLine("MyCqListener::OnEvent called with key {0}, value ({1},{2}), op {3}.", key, val.ID, val.Pkid,opStr);
     }

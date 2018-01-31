@@ -535,14 +535,14 @@ std::shared_ptr<CqAttributesMutator> CqQueryImpl::getCqAttributesMutator()
 /**
  * @return Returns the cqOperation.
  */
-CqOperation::CqOperationType CqQueryImpl::getCqOperation() const {
+CqOperation CqQueryImpl::getCqOperation() const {
   return m_cqOperation;
 }
 
 /**
  * @param cqOperation The cqOperation to set.
  */
-void CqQueryImpl::setCqOperation(CqOperation::CqOperationType cqOperation) {
+void CqQueryImpl::setCqOperation(CqOperation cqOperation) {
   m_cqOperation = cqOperation;
 }
 

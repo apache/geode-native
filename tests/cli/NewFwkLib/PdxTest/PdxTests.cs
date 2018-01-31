@@ -98,16 +98,16 @@ namespace Apache.Geode.Client.FwkLib
         public virtual void UpdateCount(CqEvent<TKey, TResult> ev)
         {
             m_eventCnt++;
-            CqOperationType opType = ev.getQueryOperation();
-            if (opType == CqOperationType.OP_TYPE_CREATE)
+            CqOperation opType = ev.getQueryOperation();
+            if (opType == CqOperation.OP_TYPE_CREATE)
             {
                 m_createCnt++;
             }
-            else if (opType == CqOperationType.OP_TYPE_UPDATE)
+            else if (opType == CqOperation.OP_TYPE_UPDATE)
             {
                 m_updateCnt++;
             }
-            else if (opType == CqOperationType.OP_TYPE_DESTROY)
+            else if (opType == CqOperation.OP_TYPE_DESTROY)
             {
                 m_destroyCnt++;
             }

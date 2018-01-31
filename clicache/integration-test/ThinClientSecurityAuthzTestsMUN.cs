@@ -62,9 +62,9 @@ namespace Apache.Geode.Client.UnitTests
     void ICqListener<TKey, TResult>.OnEvent(CqEvent<TKey, TResult> ev)
     {
       Util.Log("CqListener OnEvent ops = " + ev.getBaseOperation());
-      if (ev.getBaseOperation() == CqOperationType.OP_TYPE_CREATE)
+      if (ev.getBaseOperation() == CqOperation.OP_TYPE_CREATE)
         m_create++;
-      else if (ev.getBaseOperation() == CqOperationType.OP_TYPE_UPDATE)
+      else if (ev.getBaseOperation() == CqOperation.OP_TYPE_UPDATE)
         m_update++;
     }
 
@@ -312,7 +312,7 @@ namespace Apache.Geode.Client.UnitTests
       Util.Log("doCQPut Done.");
     }
 
-    public void verifyCQEvents(bool whetherResult, CqOperationType opType )
+    public void verifyCQEvents(bool whetherResult, CqOperation opType )
     {
       Util.Log("verifyCQEvents " + gQueryService);
       Assert.IsNotNull(gQueryService);
@@ -323,14 +323,14 @@ namespace Apache.Geode.Client.UnitTests
 
       Util.Log("got result for cq listener3 " + cq.Name + " : " + mcqL.Creates);
 
-      if (opType == CqOperationType.OP_TYPE_CREATE)
+      if (opType == CqOperation.OP_TYPE_CREATE)
       {
         if (whetherResult)
           Assert.AreEqual(1, mcqL.Creates, "CQ listener 3 should get one create event ");
         else
           Assert.AreEqual(0, mcqL.Creates, "CQ listener 3 should not get any create event ");
       }
-      else if (opType == CqOperationType.OP_TYPE_UPDATE)
+      else if (opType == CqOperation.OP_TYPE_UPDATE)
       {
         if (whetherResult)
           Assert.AreEqual(1, mcqL.Updates, "CQ listener 3 should get one update event ");
@@ -344,14 +344,14 @@ namespace Apache.Geode.Client.UnitTests
 
       Util.Log("got result for cq listener4 " + cq.Name + " : " + mcqL.Creates);
 
-      if (opType == CqOperationType.OP_TYPE_CREATE)
+      if (opType == CqOperation.OP_TYPE_CREATE)
       {
         if (whetherResult)
           Assert.AreEqual(1, mcqL.Creates, "CQ listener 4 should get one create event ");
         else
           Assert.AreEqual(0, mcqL.Creates, "CQ listener 4 should not get any create event ");
       }
-      else if (opType == CqOperationType.OP_TYPE_UPDATE)
+      else if (opType == CqOperation.OP_TYPE_UPDATE)
       {
         if (whetherResult)
           Assert.AreEqual(1, mcqL.Updates, "CQ listener 4 should get one update event ");
@@ -417,7 +417,7 @@ namespace Apache.Geode.Client.UnitTests
         // Verify that the gets succeed
         m_client2.Call(doCQPut, createCredentials);
 
-        m_client1.Call(verifyCQEvents, true, CqOperationType.OP_TYPE_CREATE);
+        m_client1.Call(verifyCQEvents, true, CqOperation.OP_TYPE_CREATE);
 
         m_client1.Call(CloseUserCache, false);
         m_client1.Call(Close);
@@ -494,7 +494,7 @@ namespace Apache.Geode.Client.UnitTests
       m_client2.Call(doCQPut, createCredentials2);
 
       //close cache client-1
-      m_client1.Call(verifyCQEvents, true, CqOperationType.OP_TYPE_CREATE);
+      m_client1.Call(verifyCQEvents, true, CqOperation.OP_TYPE_CREATE);
 
       Thread.Sleep(10000);
 
@@ -515,7 +515,7 @@ namespace Apache.Geode.Client.UnitTests
 
       m_client1.Call(ReadyForEvents2);
       Thread.Sleep(20000);
-      m_client1.Call(verifyCQEvents, whetherResult, CqOperationType.OP_TYPE_UPDATE);
+      m_client1.Call(verifyCQEvents, whetherResult, CqOperation.OP_TYPE_UPDATE);
 
 
       m_client1.Call(Close);

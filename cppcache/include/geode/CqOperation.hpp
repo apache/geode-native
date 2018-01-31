@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CQOPERATION_H_
-#define GEODE_CQOPERATION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CQOPERATION_H_
+#define GEODE_CQOPERATION_H_
+
 #include "internal/geode_globals.hpp"
 
 /**
@@ -29,23 +29,20 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 /**
  * Enumerated type for Operation actions.
  */
-class _GEODE_EXPORT CqOperation {
- public:
-  // types of operation CORESPONDING TO THE ONES in geode.cache.Operation
-
-  typedef enum {
-    OP_TYPE_INVALID = -1,
-    OP_TYPE_CREATE = 1,
-    OP_TYPE_UPDATE = 2,
-    OP_TYPE_INVALIDATE = 4,
-    OP_TYPE_REGION_CLEAR = 8,
-    OP_TYPE_DESTROY = 16,
-    OP_TYPE_MARKER = 32
-  } CqOperationType;
+enum class CqOperation {
+  OP_TYPE_INVALID = -1,
+  OP_TYPE_CREATE = 1,
+  OP_TYPE_UPDATE = 2,
+  OP_TYPE_INVALIDATE = 4,
+  OP_TYPE_REGION_CLEAR = 8,
+  OP_TYPE_DESTROY = 16,
+  OP_TYPE_MARKER = 32
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

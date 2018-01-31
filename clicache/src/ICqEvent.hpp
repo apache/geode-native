@@ -92,9 +92,9 @@ namespace Apache
         /// but its previous value may have been null.
         /// </remarks>
         /// <seealso cref="Region.Put" />
-        CqOperationType getBaseOperation();
+        CqOperation getBaseOperation();
 
-        CqOperationType getQueryOperation();
+        CqOperation getQueryOperation();
 
         /// <summary>
         /// Called when the region containing this callback is destroyed, when

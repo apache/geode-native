@@ -59,12 +59,12 @@ namespace Apache
         /// <summary>
         /// Get the operation on the base operation that triggered this event.
         /// </summary>
-       CqOperationType getBaseOperation();
+       CqOperation getBaseOperation();
 
         /// <summary>
         /// Get the operation on the query operation that triggered this event.
         /// </summary>
-       CqOperationType getQueryOperation();
+       CqOperation getQueryOperation();
 
         /// <summary>
         /// Get the key relating to the event.

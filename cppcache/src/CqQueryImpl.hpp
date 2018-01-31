@@ -71,7 +71,7 @@ class CqQueryImpl : public CqQuery,
   // Stats counters
   std::shared_ptr<CqStatistics> m_stats;
   CqState::StateType m_cqState;
-  CqOperation::CqOperationType m_cqOperation;
+  CqOperation m_cqOperation;
 
   /* CQ Request Type - Start */
   //  unused
@@ -228,12 +228,12 @@ class CqQueryImpl : public CqQuery,
   /**
    * @return Returns the cqOperation.
    */
-  CqOperation::CqOperationType getCqOperation() const;
+  CqOperation getCqOperation() const;
 
   /**
    * @param cqOperation The cqOperation to set.
    */
-  void setCqOperation(CqOperation::CqOperationType cqOperation);
+  void setCqOperation(CqOperation cqOperation);
 
   /**
    * Update CQ stats
