@@ -31,7 +31,7 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
  private:
   std::shared_ptr<PdxType> m_newPdxType;
 
-  void checkType(const std::string& fieldName, int8_t typeId,
+  void checkType(const std::string& fieldName, PdxFieldTypes typeId,
                  const std::string& fieldType);
 
  public:
@@ -101,9 +101,6 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
   virtual std::shared_ptr<CacheableDate> readDate(
       const std::string& fieldName) override;
 
-  virtual void readCollection(
-      const std::string& fieldName,
-      std::shared_ptr<CacheableArrayList>& collection) override;
 };
 
 }  // namespace client

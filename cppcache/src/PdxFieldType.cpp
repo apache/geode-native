@@ -37,7 +37,7 @@ PdxFieldType::PdxFieldType()
     : Serializable(),
       m_fieldName(),
       m_className(),
-      m_typeId(0),
+      m_typeId(PdxFieldTypes::UNKNOWN),
       m_sequenceId(0),
       m_isVariableLengthType(false),
       m_fixedSize(0),
@@ -47,7 +47,7 @@ PdxFieldType::PdxFieldType()
       m_vlOffsetIndex(0) {}
 
 PdxFieldType::PdxFieldType(std::string fieldName, std::string className,
-                           uint8_t typeId, int32_t sequenceId,
+                           PdxFieldTypes typeId, int32_t sequenceId,
                            bool isVariableLengthType, int32_t fixedSize,
                            int32_t varLenFieldIdx)
     : Serializable(),
@@ -68,7 +68,7 @@ void PdxFieldType::toData(DataOutput& output) const {
   output.writeString(m_fieldName);
   output.writeInt(m_sequenceId);
   output.writeInt(m_varLenFieldIdx);
-  output.write(m_typeId);
+  output.write(static_cast<int8_t>(m_typeId));
 
   output.writeInt(m_relativeOffset);
   output.writeInt(m_vlOffsetIndex);
@@ -79,7 +79,7 @@ void PdxFieldType::fromData(DataInput& input) {
   m_fieldName = input.readString();
   m_sequenceId = input.readInt32();
   m_varLenFieldIdx = input.readInt32();
-  m_typeId = input.read();
+  m_typeId = PdxFieldTypes(input.read());
   m_relativeOffset = input.readInt32();
   m_vlOffsetIndex = input.readInt32();
   m_isIdentityField = input.readBoolean();
@@ -138,7 +138,7 @@ std::string PdxFieldType::toString() const {
   char stringBuf[1024];
   ACE_OS::snprintf(
       stringBuf, 1024,
-      " PdxFieldName=%s TypeId=%d VarLenFieldIdx=%d sequenceid=%d\n",
+      " PdxFieldName=%s TypeId=%hhd VarLenFieldIdx=%d sequenceid=%d\n",
       this->m_fieldName.c_str(), this->m_typeId, this->m_varLenFieldIdx,
       this->m_sequenceId);
   return std::string(stringBuf);

@@ -30,6 +30,7 @@
 
 #include <geode/Serializable.hpp>
 #include <geode/CacheableBuiltins.hpp>
+#include <geode/PdxFieldTypes.hpp>
 
 #include "PdxFieldType.hpp"
 #include "ReadWriteLock.hpp"
@@ -182,10 +183,11 @@ class PdxType : public Serializable,
   }
 
   void addFixedLengthTypeField(const std::string& fieldName,
-                               const std::string& className, int8_t typeId,
-                               int32_t size);
+                               const std::string& className,
+                               PdxFieldTypes typeId, int32_t size);
   void addVariableLengthTypeField(const std::string& fieldName,
-                                  const std::string& className, int8_t typeId);
+                                  const std::string& className,
+                                  PdxFieldTypes typeId);
   void InitializeType();
   std::shared_ptr<PdxType> mergeVersion(std::shared_ptr<PdxType> otherVersion);
   int32_t getFieldPosition(const std::string& fieldName,

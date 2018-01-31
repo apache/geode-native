@@ -125,7 +125,7 @@ void PdxType::fromData(DataInput& input) {
 
 void PdxType::addFixedLengthTypeField(const std::string& fieldName,
                                       const std::string& className,
-                                      int8_t typeId, int32_t size) {
+                                      PdxFieldTypes typeId, int32_t size) {
   if (m_fieldNameVsPdxType.find(fieldName) != m_fieldNameVsPdxType.end()) {
     throw IllegalStateException("Field: " + fieldName +
                                 " is already added to PdxWriter");
@@ -139,7 +139,7 @@ void PdxType::addFixedLengthTypeField(const std::string& fieldName,
 
 void PdxType::addVariableLengthTypeField(const std::string& fieldName,
                                          const std::string& className,
-                                         int8_t typeId) {
+                                         PdxFieldTypes typeId) {
   if (m_fieldNameVsPdxType.find(fieldName) != m_fieldNameVsPdxType.end()) {
     throw IllegalStateException("Field: " + fieldName +
                                 " is already added to PdxWriter");

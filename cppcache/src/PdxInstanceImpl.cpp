@@ -57,7 +57,7 @@ int8_t PdxInstanceImpl::m_ObjectDefaultBytes[] = {
     apache::geode::client::GeodeTypeIds::NullObj};
 int8_t PdxInstanceImpl::m_NULLARRAYDefaultBytes[] = {-1};
 std::shared_ptr<PdxFieldType> PdxInstanceImpl::m_DefaultPdxFieldType(
-    new PdxFieldType("default", "default", static_cast<uint8_t>(-1),
+    new PdxFieldType("default", "default", PdxFieldTypes::UNKNOWN,
                      -1 /*field index*/, false, 1, -1 /*var len field idx*/));
 
 bool sortFunc(std::shared_ptr<PdxFieldType> field1,
@@ -91,7 +91,8 @@ PdxInstanceImpl::PdxInstanceImpl(
 }
 
 void PdxInstanceImpl::writeField(PdxWriter& writer,
-                                 const std::string& fieldName, int typeId,
+                                 const std::string& fieldName,
+                                 PdxFieldTypes typeId,
                                  std::shared_ptr<Cacheable> value) {
   switch (typeId) {
     case PdxFieldTypes::INT: {
@@ -733,7 +734,7 @@ int32_t PdxInstanceImpl::hashcode() const {
          * Use snprintf() instead, or correct precision specifiers.
          * Fix : using ACE_OS::snprintf
          */
-        ACE_OS::snprintf(excpStr, 256, "PdxInstance not found typeid %d ",
+        ACE_OS::snprintf(excpStr, 256, "PdxInstance not found typeid %hhd ",
                          pField->getTypeId());
         throw IllegalStateException(excpStr);
       }
@@ -1203,7 +1204,7 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
   auto otherDataInput =
       m_cache->createDataInput(otherPdx->m_buffer, otherPdx->m_bufferLength);
 
-  int fieldTypeId = -1;
+  PdxFieldTypes fieldTypeId;
   for (size_t i = 0; i < myPdxIdentityFieldList.size(); i++) {
     auto myPFT = myPdxIdentityFieldList.at(i);
     auto otherPFT = otherPdxIdentityFieldList.at(i);
@@ -1300,7 +1301,7 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
          * Use snprintf() instead, or correct precision specifiers.
          * Fix : using ACE_OS::snprintf
          */
-        ACE_OS::snprintf(excpStr, 256, "PdxInstance not found typeid  %d ",
+        ACE_OS::snprintf(excpStr, 256, "PdxInstance not found typeid  %hhd ",
                          myPFT->getTypeId());
         throw IllegalStateException(excpStr);
       }
@@ -1377,7 +1378,7 @@ std::shared_ptr<CacheableStringArray> PdxInstanceImpl::getFieldNames() {
   return nullptr;
 }
 
-PdxFieldTypes::PdxFieldType PdxInstanceImpl::getFieldType(
+PdxFieldTypes PdxInstanceImpl::getFieldType(
     const std::string& fieldname) const {
   auto pt = getPdxType();
   auto pft = pt->getPdxField(fieldname.c_str());
@@ -1386,7 +1387,7 @@ PdxFieldTypes::PdxFieldType PdxInstanceImpl::getFieldType(
     throw IllegalStateException("PdxInstance doesn't have field " + fieldname);
   }
 
-  return static_cast<PdxFieldTypes::PdxFieldType>(pft->getTypeId());
+  return pft->getTypeId();
 }
 
 void PdxInstanceImpl::writeUnmodifieldField(DataInput& dataInput, int startPos,

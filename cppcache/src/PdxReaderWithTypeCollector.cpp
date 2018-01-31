@@ -42,7 +42,7 @@ PdxReaderWithTypeCollector::PdxReaderWithTypeCollector(
 PdxReaderWithTypeCollector::~PdxReaderWithTypeCollector() {}
 
 void PdxReaderWithTypeCollector::checkType(const std::string& fieldName,
-                                           int8_t typeId,
+                                           PdxFieldTypes typeId,
                                            const std::string& fieldType) {
   auto pft = m_pdxType->getPdxField(fieldName);
   if (pft != nullptr) {
@@ -505,6 +505,7 @@ int8_t** PdxReaderWithTypeCollector::readArrayOfByteArrays(
     return nullptr;
   }
 }
+
 std::shared_ptr<CacheableDate> PdxReaderWithTypeCollector::readDate(
     const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::DATE, "Date");
@@ -523,26 +524,6 @@ std::shared_ptr<CacheableDate> PdxReaderWithTypeCollector::readDate(
   }
 }
 
-void PdxReaderWithTypeCollector::readCollection(
-    const std::string& fieldName,
-    std::shared_ptr<CacheableArrayList>& collection) {
-  checkType(fieldName, apache::geode::client::GeodeTypeIds::CacheableArrayList,
-            "Collection");
-  m_newPdxType->addVariableLengthTypeField(
-      fieldName, "Collection",
-      apache::geode::client::GeodeTypeIds::CacheableArrayList);
-  int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
-                                             m_offsetSize, m_serializedLength);
-  LOGDEBUG("PdxReaderWithTypeCollector::readCollection() position = %d",
-           position);
-  if (position != -1) {
-    m_dataInput->advanceCursor(position);
-    PdxLocalReader::readCollection(fieldName, collection);
-    m_dataInput->rewindCursor(position);
-  } else {
-    collection = nullptr;
-  }
-}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

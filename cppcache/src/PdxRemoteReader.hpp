@@ -98,9 +98,6 @@ class PdxRemoteReader : public PdxLocalReader {
   virtual std::shared_ptr<CacheableDate> readDate(
       const std::string& fieldName) override;
 
-  virtual void readCollection(
-      const std::string& fieldName,
-      std::shared_ptr<CacheableArrayList>& collection) override;
 };
 }  // namespace client
 }  // namespace geode
