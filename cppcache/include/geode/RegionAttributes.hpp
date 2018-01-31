@@ -112,7 +112,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
    */
   std::chrono::seconds getRegionTimeToLive() const;
 
-  ExpirationAction::Action getRegionTimeToLiveAction() const;
+  ExpirationAction getRegionTimeToLiveAction() const;
 
   /** Gets the idleTimeout expiration attributes for the region as a whole.
    *
@@ -120,7 +120,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
    */
   std::chrono::seconds getRegionIdleTimeout() const;
 
-  ExpirationAction::Action getRegionIdleTimeoutAction() const;
+  ExpirationAction getRegionIdleTimeoutAction() const;
 
   /** Gets the <code>timeToLive</code> expiration attributes for entries in this
    * region.
@@ -128,7 +128,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
    */
   std::chrono::seconds getEntryTimeToLive() const;
 
-  ExpirationAction::Action getEntryTimeToLiveAction() const;
+  ExpirationAction getEntryTimeToLiveAction() const;
 
   /** Gets the <code>idleTimeout</code> expiration attributes for entries in
    * this region.
@@ -137,7 +137,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
    */
   std::chrono::seconds getEntryIdleTimeout() const;
 
-  ExpirationAction::Action getEntryIdleTimeoutAction() const;
+  ExpirationAction getEntryIdleTimeoutAction() const;
 
   /**
    * If true, this region will store data in the current process.
@@ -180,7 +180,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
    * Returns the ExpirationAction used for LRU Eviction, default is
    * LOCAL_DESTROY.
    */
-  const ExpirationAction::Action getLruEvictionAction() const;
+  const ExpirationAction getLruEvictionAction() const;
 
   /**
    * Returns the name of the pool attached to the region.
@@ -355,11 +355,11 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
   RegionAttributes(const RegionAttributes& rhs);
   RegionAttributes();
 
-  ExpirationAction::Action m_regionTimeToLiveExpirationAction;
-  ExpirationAction::Action m_regionIdleTimeoutExpirationAction;
-  ExpirationAction::Action m_entryTimeToLiveExpirationAction;
-  ExpirationAction::Action m_entryIdleTimeoutExpirationAction;
-  ExpirationAction::Action m_lruEvictionAction;
+  ExpirationAction m_regionTimeToLiveExpirationAction;
+  ExpirationAction m_regionIdleTimeoutExpirationAction;
+  ExpirationAction m_entryTimeToLiveExpirationAction;
+  ExpirationAction m_entryIdleTimeoutExpirationAction;
+  ExpirationAction m_lruEvictionAction;
   std::shared_ptr<CacheWriter> m_cacheWriter;
   std::shared_ptr<CacheLoader> m_cacheLoader;
   std::shared_ptr<CacheListener> m_cacheListener;

@@ -23,7 +23,7 @@
 
 using namespace apache::geode::client;
 
-ExpirationAction::Action action = ExpirationAction::DESTROY;
+ExpirationAction action = ExpirationAction::DESTROY;
 
 // This test is for serially running the tests.
 

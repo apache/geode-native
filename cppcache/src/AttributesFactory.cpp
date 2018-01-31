@@ -87,28 +87,28 @@ AttributesFactory& AttributesFactory::setPartitionResolver(
 }
 
 AttributesFactory& AttributesFactory::setEntryIdleTimeout(
-    ExpirationAction::Action action, std::chrono::seconds idleTimeout) {
+    ExpirationAction action, std::chrono::seconds idleTimeout) {
   m_regionAttributes.m_entryIdleTimeout = idleTimeout;
   m_regionAttributes.m_entryIdleTimeoutExpirationAction = action;
   return *this;
 }
 
 AttributesFactory& AttributesFactory::setEntryTimeToLive(
-    ExpirationAction::Action action, std::chrono::seconds timeToLive) {
+    ExpirationAction action, std::chrono::seconds timeToLive) {
   m_regionAttributes.m_entryTimeToLive = timeToLive;
   m_regionAttributes.m_entryTimeToLiveExpirationAction = action;
   return *this;
 }
 
 AttributesFactory& AttributesFactory::setRegionIdleTimeout(
-    ExpirationAction::Action action, std::chrono::seconds idleTimeout) {
+    ExpirationAction action, std::chrono::seconds idleTimeout) {
   m_regionAttributes.m_regionIdleTimeout = idleTimeout;
   m_regionAttributes.m_regionIdleTimeoutExpirationAction = action;
   return *this;
 }
 
 AttributesFactory& AttributesFactory::setRegionTimeToLive(
-    ExpirationAction::Action action, std::chrono::seconds timeToLive) {
+    ExpirationAction action, std::chrono::seconds timeToLive) {
   m_regionAttributes.m_regionTimeToLive = timeToLive;
   m_regionAttributes.m_regionTimeToLiveExpirationAction = action;
   return *this;

@@ -134,7 +134,7 @@ class CacheHelper {
       const std::chrono::seconds& eit = std::chrono::seconds::zero(),
       const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
       const std::chrono::seconds& rit = std::chrono::seconds::zero(),
-      int lel = 0, ExpirationAction::Action action = ExpirationAction::DESTROY,
+      int lel = 0, ExpirationAction action = ExpirationAction::DESTROY,
       const char* endpoints = 0, bool clientNotificationEnabled = false);
 
   std::shared_ptr<Pool> createPool(
@@ -171,7 +171,7 @@ class CacheHelper {
       const std::chrono::seconds& eit = std::chrono::seconds::zero(),
       const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
       const std::chrono::seconds& rit = std::chrono::seconds::zero(),
-      int lel = 0, ExpirationAction::Action action = ExpirationAction::DESTROY);
+      int lel = 0, ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createRegionAndAttachPool2(
       const char* name, bool ack, const char* poolName,
@@ -181,7 +181,7 @@ class CacheHelper {
       const std::chrono::seconds& eit = std::chrono::seconds::zero(),
       const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
       const std::chrono::seconds& rit = std::chrono::seconds::zero(),
-      int lel = 0, ExpirationAction::Action action = ExpirationAction::DESTROY);
+      int lel = 0, ExpirationAction action = ExpirationAction::DESTROY);
 
   void addServerLocatorEPs(const char* epList,
                            std::shared_ptr<PoolFactory> pfPtr,
@@ -201,7 +201,7 @@ class CacheHelper {
       const std::chrono::seconds& rit = std::chrono::seconds::zero(),
       int lel = 0,
       const std::shared_ptr<CacheListener>& cacheListener = nullptr,
-      ExpirationAction::Action action = ExpirationAction::DESTROY);
+      ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createPooledRegionConcurrencyCheckDisabled(
       const char* name, bool ack, const char* locators = 0,
@@ -214,7 +214,7 @@ class CacheHelper {
       const std::chrono::seconds& rit = std::chrono::seconds::zero(),
       int lel = 0,
       const std::shared_ptr<CacheListener>& cacheListener = nullptr,
-      ExpirationAction::Action action = ExpirationAction::DESTROY);
+      ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createRegionDiscOverFlow(
       const char* name, bool caching = true,
@@ -223,7 +223,7 @@ class CacheHelper {
       const std::chrono::seconds& eit = std::chrono::seconds::zero(),
       const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
       const std::chrono::seconds& rit = std::chrono::seconds::zero(),
-      int lel = 0, ExpirationAction::Action action = ExpirationAction::DESTROY);
+      int lel = 0, ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createPooledRegionDiscOverFlow(
       const char* name, bool ack, const char* locators = 0,
@@ -235,7 +235,7 @@ class CacheHelper {
       const std::chrono::seconds& rit = std::chrono::seconds::zero(),
       int lel = 0,
       const std::shared_ptr<CacheListener>& cacheListener = nullptr,
-      ExpirationAction::Action action = ExpirationAction::DESTROY);
+      ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createPooledRegionSticky(
       const char* name, bool ack, const char* locators = 0,
@@ -247,7 +247,7 @@ class CacheHelper {
       const std::chrono::seconds& rit = std::chrono::seconds::zero(),
       int lel = 0,
       const std::shared_ptr<CacheListener>& cacheListener = nullptr,
-      ExpirationAction::Action action = ExpirationAction::DESTROY);
+      ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createPooledRegionStickySingleHop(
       const char* name, bool ack, const char* locators = 0,
@@ -259,7 +259,7 @@ class CacheHelper {
       const std::chrono::seconds& rit = std::chrono::seconds::zero(),
       int lel = 0,
       const std::shared_ptr<CacheListener>& cacheListener = nullptr,
-      ExpirationAction::Action action = ExpirationAction::DESTROY);
+      ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createSubregion(
       std::shared_ptr<Region>& parent, const char* name, bool ack, bool caching,

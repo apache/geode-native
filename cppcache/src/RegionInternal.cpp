@@ -115,28 +115,28 @@ void RegionInternal::setLruEntriesLimit(uint32_t limit) {
 }
 
 void RegionInternal::setRegionTimeToLiveExpirationAction(
-    ExpirationAction::Action action) {
+    ExpirationAction action) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->m_regionTimeToLiveExpirationAction = action;
   }
 }
 
 void RegionInternal::setRegionIdleTimeoutExpirationAction(
-    ExpirationAction::Action action) {
+    ExpirationAction action) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->m_regionIdleTimeoutExpirationAction = action;
   }
 }
 
 void RegionInternal::setEntryTimeToLiveExpirationAction(
-    ExpirationAction::Action action) {
+    ExpirationAction action) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->m_entryTimeToLiveExpirationAction = action;
   }
 }
 
 void RegionInternal::setEntryIdleTimeoutExpirationAction(
-    ExpirationAction::Action action) {
+    ExpirationAction action) {
   if (m_regionAttributes != nullptr) {
     m_regionAttributes->m_entryIdleTimeoutExpirationAction = action;
   }

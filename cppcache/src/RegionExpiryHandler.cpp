@@ -31,7 +31,7 @@
 using namespace apache::geode::client;
 
 RegionExpiryHandler::RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
-                                         ExpirationAction::Action action,
+                                         ExpirationAction action,
                                          std::chrono::seconds duration)
     : m_regionPtr(rptr),
       m_action(action),

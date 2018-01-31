@@ -69,9 +69,9 @@ class _GEODE_EXPORT ExpirationAttributes {
    * @param expirationAction the action to take when the value expires
    * @throws IllegalArgumentException if expirationTime is nonpositive
    */
-  ExpirationAttributes(const std::chrono::seconds& expirationTime,
-                       const ExpirationAction::Action expirationAction =
-                           ExpirationAction::INVALIDATE);
+  ExpirationAttributes(
+      const std::chrono::seconds& expirationTime,
+      const ExpirationAction expirationAction = ExpirationAction::INVALIDATE);
 
   /** Returns the duration before a region or value expires.
    *
@@ -86,11 +86,11 @@ class _GEODE_EXPORT ExpirationAttributes {
    *
    * @return the action to take when expiring
    */
-  ExpirationAction::Action getAction() const;
-  void setAction(const ExpirationAction::Action& action);
+  ExpirationAction getAction() const;
+  void setAction(const ExpirationAction& action);
 
  private:
-  ExpirationAction::Action m_action;
+  ExpirationAction m_action;
   std::chrono::seconds m_timeout;
 };
 

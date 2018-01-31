@@ -50,8 +50,7 @@ class _GEODE_EXPORT EntryExpiryHandler : public ACE_Event_Handler {
    */
   EntryExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
                      std::shared_ptr<MapEntryImpl>& entryPtr,
-                     ExpirationAction::Action action,
-                     std::chrono::seconds duration);
+                     ExpirationAction action, std::chrono::seconds duration);
 
   /** This task object will be registered with the Timer Queue.
    *  When the timer expires the handle_timeout is invoked.
@@ -68,7 +67,7 @@ class _GEODE_EXPORT EntryExpiryHandler : public ACE_Event_Handler {
   // The ExpMapEntry contained in the ConcurrentMap against the key.
   std::shared_ptr<MapEntryImpl> m_entryPtr;
   // Action to be taken on expiry
-  ExpirationAction::Action m_action;
+  ExpirationAction m_action;
   // Duration after which the task should be reset in case of
   // modification.
   std::chrono::seconds m_duration;

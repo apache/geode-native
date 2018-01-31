@@ -221,7 +221,7 @@ std::chrono::seconds RegionAttributes::getRegionTimeToLive() const {
   return m_regionTimeToLive;
 }
 
-ExpirationAction::Action RegionAttributes::getRegionTimeToLiveAction() const {
+ExpirationAction RegionAttributes::getRegionTimeToLiveAction() const {
   return m_regionTimeToLiveExpirationAction;
 }
 
@@ -229,7 +229,7 @@ std::chrono::seconds RegionAttributes::getRegionIdleTimeout() const {
   return m_regionIdleTimeout;
 }
 
-ExpirationAction::Action RegionAttributes::getRegionIdleTimeoutAction() const {
+ExpirationAction RegionAttributes::getRegionIdleTimeoutAction() const {
   return m_regionIdleTimeoutExpirationAction;
 }
 
@@ -237,7 +237,7 @@ std::chrono::seconds RegionAttributes::getEntryTimeToLive() const {
   return m_entryTimeToLive;
 }
 
-ExpirationAction::Action RegionAttributes::getEntryTimeToLiveAction() const {
+ExpirationAction RegionAttributes::getEntryTimeToLiveAction() const {
   return m_entryTimeToLiveExpirationAction;
 }
 
@@ -245,7 +245,7 @@ std::chrono::seconds RegionAttributes::getEntryIdleTimeout() const {
   return m_entryIdleTimeout;
 }
 
-ExpirationAction::Action RegionAttributes::getEntryIdleTimeoutAction() const {
+ExpirationAction RegionAttributes::getEntryIdleTimeoutAction() const {
   return m_entryIdleTimeoutExpirationAction;
 }
 
@@ -257,7 +257,7 @@ uint8_t RegionAttributes::getConcurrencyLevel() const {
   return m_concurrencyLevel;
 }
 
-const ExpirationAction::Action RegionAttributes::getLruEvictionAction() const {
+const ExpirationAction RegionAttributes::getLruEvictionAction() const {
   return m_lruEvictionAction;
 }
 
@@ -343,22 +343,22 @@ void RegionAttributes::toData(DataOutput& out) const {
 void RegionAttributes::fromData(DataInput& in) {
   m_regionTimeToLive = std::chrono::seconds(in.readInt32());
   m_regionTimeToLiveExpirationAction =
-      static_cast<ExpirationAction::Action>(in.readInt32());
+      static_cast<ExpirationAction>(in.readInt32());
   m_regionIdleTimeout = std::chrono::seconds(in.readInt32());
   m_regionIdleTimeoutExpirationAction =
-      static_cast<ExpirationAction::Action>(in.readInt32());
+      static_cast<ExpirationAction>(in.readInt32());
   m_entryTimeToLive = std::chrono::seconds(in.readInt32());
   m_entryTimeToLiveExpirationAction =
-      static_cast<ExpirationAction::Action>(in.readInt32());
+      static_cast<ExpirationAction>(in.readInt32());
   m_entryIdleTimeout = std::chrono::seconds(in.readInt32());
   m_entryIdleTimeoutExpirationAction =
-      static_cast<ExpirationAction::Action>(in.readInt32());
+      static_cast<ExpirationAction>(in.readInt32());
   m_initialCapacity = in.readInt32();
   m_loadFactor = in.readFloat();
   m_maxValueDistLimit = in.readInt32();
   m_concurrencyLevel = in.readInt32();
   m_lruEntriesLimit = in.readInt32();
-  m_lruEvictionAction = static_cast<ExpirationAction::Action>(in.readInt32());
+  m_lruEvictionAction = static_cast<ExpirationAction>(in.readInt32());
 
   apache::geode::client::impl::readBool(in, &m_caching);
   apache::geode::client::impl::readBool(in, &m_clientNotificationEnabled);

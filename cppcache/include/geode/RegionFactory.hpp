@@ -120,7 +120,7 @@ class _GEODE_EXPORT RegionFactory {
    * @param idleTimeout the idleTimeout for entries in this region.
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setEntryIdleTimeout(ExpirationAction::Action action,
+  RegionFactory& setEntryIdleTimeout(ExpirationAction action,
                                      std::chrono::seconds idleTimeout);
 
   /** Sets the timeToLive expiration attributes for region entries for the next
@@ -129,7 +129,7 @@ class _GEODE_EXPORT RegionFactory {
    * @param timeToLive the timeToLive for entries in this region.
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setEntryTimeToLive(ExpirationAction::Action action,
+  RegionFactory& setEntryTimeToLive(ExpirationAction action,
                                     std::chrono::seconds timeToLive);
 
   /** Sets the idleTimeout expiration attributes for the region itself for the
@@ -138,7 +138,7 @@ class _GEODE_EXPORT RegionFactory {
    * @param idleTimeout the idleTimeout for the region as a whole.
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setRegionIdleTimeout(ExpirationAction::Action action,
+  RegionFactory& setRegionIdleTimeout(ExpirationAction action,
                                       std::chrono::seconds idleTimeout);
 
   /** Sets the timeToLive expiration attributes for the region itself for the
@@ -147,7 +147,7 @@ class _GEODE_EXPORT RegionFactory {
    * @param timeToLive the timeToLive for the region as a whole.
    * @return a reference to <code>this</code>
    */
-  RegionFactory& setRegionTimeToLive(ExpirationAction::Action action,
+  RegionFactory& setRegionTimeToLive(ExpirationAction action,
                                      std::chrono::seconds timeToLive);
 
   // PERSISTENCE
