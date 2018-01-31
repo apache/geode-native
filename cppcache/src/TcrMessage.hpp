@@ -35,6 +35,7 @@
 #include <geode/DataInput.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableBuiltins.hpp>
+#include <geode/CqState.hpp>
 
 #include "InterestResultPolicy.hpp"
 #include "EventId.hpp"
@@ -57,7 +58,6 @@ class ThinClientBaseDM;
 class TcrMessageHelper;
 class TcrConnection;
 class TcrMessagePing;
-enum class CqState;
 
 class _GEODE_EXPORT TcrMessage {
  private:
