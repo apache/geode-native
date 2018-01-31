@@ -141,8 +141,7 @@ class RegionHelper {
     sString += apache::geode::internal::chrono::duration::to_string(
         attr->getRegionIdleTimeout());
     sString += "\nregionIdleTimeoutAction: ";
-    sString +=
-        to_string(attr->getRegionIdleTimeoutAction());
+    sString += to_string(attr->getRegionIdleTimeoutAction());
     sString += "\npoolName: ";
     sString += attr->getPoolName();
     sString += "\nCacheLoader: ";
