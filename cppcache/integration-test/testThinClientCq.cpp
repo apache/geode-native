@@ -632,7 +632,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
    for(i=0; i < MAX_LISTNER; i++)
    {
    auto cqy = qs->getCq(cqNames[i]);
-    CqState::StateType state = cqy->getState();
+    CqState state = cqy->getState();
     CqState cqState;
     cqState.setState(state);
     sprintf(buf, "cq[%s] is in state[%s]", cqNames[i], cqState.toString());

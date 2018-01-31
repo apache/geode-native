@@ -514,13 +514,13 @@ void CqQueryImpl::sendStopOrClose(TcrMessage::MsgType requestType) {
  * Return the state of this query.
  * @return STOPPED RUNNING or CLOSED
  */
-CqState::StateType CqQueryImpl::getState() { return m_cqState; }
+CqState CqQueryImpl::getState() { return m_cqState; }
 
 /**
  * Sets the state of the cq.
  * Server side method. Called during cq registration time.
  */
-void CqQueryImpl::setCqState(CqState::StateType state) {
+void CqQueryImpl::setCqState(CqState state) {
   if (isClosed()) {
     throw CqClosedException(("CQ is closed, CqName : " + m_cqName).c_str());
   }

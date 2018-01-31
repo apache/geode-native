@@ -2318,7 +2318,7 @@ void TcrMessage::InitializeGetallMsg(const std::shared_ptr<Serializable>& aCallb
 
 TcrMessageExecuteCq::TcrMessageExecuteCq(std::unique_ptr<DataOutput> dataOutput,
                                          const std::string& str1,
-                                         const std::string& str2, int state,
+                                         const std::string& str2, CqState state,
                                          bool isDurable,
                                          ThinClientBaseDM* connectionDM) {
   m_request = std::move(dataOutput);
@@ -2332,7 +2332,7 @@ TcrMessageExecuteCq::TcrMessageExecuteCq(std::unique_ptr<DataOutput> dataOutput,
   writeStringPart(str1);  // cqName
   writeStringPart(str2);  // query string
 
-  writeIntPart(state);  // cq state
+  writeIntPart(static_cast<int32_t>(state));  // cq state
   writeBytePart(isDurable ? 1 : 0);
   //  hard-coding region data policy to 1
   // This Part will be removed when server-side changes are made to remove
@@ -2346,7 +2346,7 @@ TcrMessageExecuteCq::TcrMessageExecuteCq(std::unique_ptr<DataOutput> dataOutput,
 
 TcrMessageExecuteCqWithIr::TcrMessageExecuteCqWithIr(
     std::unique_ptr<DataOutput> dataOutput, const std::string& str1,
-    const std::string& str2, int state, bool isDurable,
+    const std::string& str2, CqState state, bool isDurable,
     ThinClientBaseDM* connectionDM) {
   m_request = std::move(dataOutput);
 
@@ -2359,7 +2359,7 @@ TcrMessageExecuteCqWithIr::TcrMessageExecuteCqWithIr(
   writeStringPart(str1);  // cqName
   writeStringPart(str2);  // query string
 
-  writeIntPart(state);  // cq state
+  writeIntPart(static_cast<int32_t>(state));  // cq state
   writeBytePart(isDurable ? 1 : 0);
   //  hard-coding region data policy to 1
   // This Part will be removed when server-side changes are made to remove

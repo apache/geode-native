@@ -33,72 +33,15 @@ namespace Apache
   {
     namespace Client
     {
-      namespace native = apache::geode::client;
 
-      /// <summary>
-      /// Enumerated type for cq state
-      /// @nativeclient
-      /// For Native Clients:
-      /// @endnativeclient      
-      /// </summary>
-      public enum class CqStateType
-      {
+      public enum class CqState {
         STOPPED = 0,
-        RUNNING,
-        CLOSED,
-        CLOSING,
+        RUNNING = 1,
+        CLOSED = 2,
+        CLOSING = 3,
         INVALID
       };
 
-
-      /// <summary>
-      /// Static class containing convenience methods for <c>CqState</c>.
-      /// </summary>
-      public ref class CqState sealed
-      {
-      public:
-
-        /// <summary>
-        /// Returns the state in string form.
-        /// </summary>
-        virtual String^ ToString( ) override;
-
-        /// <summary>
-        /// Returns true if the CQ is in Running state.
-        /// </summary>
-        bool IsRunning(); 
-
-        /// <summary>
-        /// Returns true if the CQ is in Stopped state.
-	      /// </summary>
-        bool IsStopped();
-
-        /// <summary>
-        /// Returns true if the CQ is in Closed state.
-        /// </summary>
-        bool IsClosed(); 
-
-        /// <summary>
-        /// Returns true if the CQ is in Closing state.
-	      /// </summary>
-        bool IsClosing();
-	      void SetState(CqStateType state);
-	      CqStateType GetState();
-  
-      internal:
-
-        /// <summary>
-        /// Internal constructor to wrap a native object pointer
-        /// </summary>
-        /// <param name="nativeptr">The native object pointer</param>
-        inline CqState( native::CqState* nativeptr )
-          : m_nativeptr(nativeptr)
-        {
-        }
-              
-      private:
-        native::CqState* m_nativeptr;
-      };
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
