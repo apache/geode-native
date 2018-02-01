@@ -25,8 +25,8 @@ namespace geode {
 namespace client {
 
 enum class PdxFieldTypes : int8_t {
-  UNKNOWN = 0,
-  BOOLEAN,
+  UNKNOWN = -1,
+  BOOLEAN = 0,
   BYTE,
   CHAR,
   SHORT,
