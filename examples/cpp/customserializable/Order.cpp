@@ -46,8 +46,6 @@ void Order::toData(PdxWriter &pdxWriter) const {
   pdxWriter.markIdentityField(QUANTITY_KEY_);
 }
 
-PdxSerializable *Order::createDeserializable() { return new Order(); }
-
 std::string Order::toString() const {
   return "OrderID: " + std::to_string(order_id_) + " Product Name: " + name_ +
          " Quantity: " + std::to_string(quantity_);
@@ -64,8 +62,10 @@ const std::string &Order::getClassName() const {
   return class_name;
 }
 
+PdxSerializable *Order::createDeserializable() { return new Order(); }
+
 const std::string Order::ORDER_ID_KEY_ = "order_id";
 const std::string Order::NAME_KEY_ = "name";
 const std::string Order::QUANTITY_KEY_ = "quantity";
 
-} // namespace customserializable
+}  // namespace customserializable

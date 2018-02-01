@@ -29,7 +29,7 @@ namespace customserializable {
 using namespace apache::geode::client;
 
 class Order : public PdxSerializable {
-public:
+ public:
   Order();
 
   Order(uint32_t order_id, std::string &&name, uint16_t quantity);
@@ -54,7 +54,7 @@ public:
 
   static PdxSerializable *createDeserializable();
 
-private:
+ private:
   static const std::string ORDER_ID_KEY_;
   static const std::string NAME_KEY_;
   static const std::string QUANTITY_KEY_;
@@ -64,6 +64,6 @@ private:
   uint16_t quantity_;
 };
 
-} // namespace customserializable
+}  // namespace customserializable
 
-#endif // CUSTOMSERIALIZABLE_ORDER_H
+#endif  // CUSTOMSERIALIZABLE_ORDER_H
