@@ -564,6 +564,7 @@ int8_t** PdxRemoteReader::readArrayOfByteArrays(const std::string& fieldName,
     }
   }
 }
+
 std::shared_ptr<CacheableDate> PdxRemoteReader::readDate(
     const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
@@ -586,36 +587,6 @@ std::shared_ptr<CacheableDate> PdxRemoteReader::readDate(
   }
 }
 
-void PdxRemoteReader::readCollection(
-    const std::string& fieldName,
-    std::shared_ptr<CacheableArrayList>& collection) {
-  int choice = m_localToRemoteMap[m_currentIndex++];
-
-  switch (choice) {
-    case -2: {
-      PdxLocalReader::readCollection(fieldName, collection);  // in same order
-      break;
-    }
-    case -1: {
-      collection = nullptr;
-      break;  // null value
-    }
-    default: {
-      // sequence id read field and then update
-      int position = m_pdxType->getFieldPosition(
-          choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
-      if (position != -1) {
-        PdxLocalReader::resettoPdxHead();
-        m_dataInput->advanceCursor(position);
-        PdxLocalReader::readCollection(fieldName, collection);
-        PdxLocalReader::resettoPdxHead();
-      } else {
-        collection = nullptr;
-      }
-      break;
-    }
-  }
-}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

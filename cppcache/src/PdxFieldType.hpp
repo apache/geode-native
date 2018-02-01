@@ -20,24 +20,24 @@
 #ifndef GEODE_PDXFIELDTYPE_H_
 #define GEODE_PDXFIELDTYPE_H_
 
+#include <string>
+
 #include <geode/internal/geode_globals.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <string>
+#include <geode/PdxFieldTypes.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class PdxFieldType;
-
 class _GEODE_EXPORT PdxFieldType : public Serializable {
  private:
   std::string m_fieldName;
   std::string m_className;
-  uint8_t m_typeId;
+  PdxFieldTypes m_typeId;
   uint32_t m_sequenceId;
 
   bool m_isVariableLengthType;
@@ -51,7 +51,7 @@ class _GEODE_EXPORT PdxFieldType : public Serializable {
   int32_t getFixedTypeSize() const;
 
  public:
-  PdxFieldType(std::string fieldName, std::string className, uint8_t typeId,
+  PdxFieldType(std::string fieldName, std::string className, PdxFieldTypes typeId,
                int32_t sequenceId, bool isVariableLengthType, int32_t fixedSize,
                int32_t varLenFieldIdx);
 
@@ -61,7 +61,7 @@ class _GEODE_EXPORT PdxFieldType : public Serializable {
 
   inline const char* getClassName() { return m_className.c_str(); }
 
-  inline uint8_t getTypeId() { return m_typeId; }
+  inline PdxFieldTypes getTypeId() { return m_typeId; }
 
   inline uint8_t getSequenceId() { return m_sequenceId; }
 
@@ -86,7 +86,7 @@ class _GEODE_EXPORT PdxFieldType : public Serializable {
 
   virtual void fromData(DataInput& input) override;
 
-  virtual int32_t classId() const override { return m_typeId; }
+  virtual int32_t classId() const override { return static_cast<int32_t>(m_typeId); }
 
   virtual size_t objectSize() const override {
     auto size = sizeof(PdxFieldType);

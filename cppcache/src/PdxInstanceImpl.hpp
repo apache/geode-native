@@ -204,7 +204,7 @@ class _GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
 
   virtual const std::string& getClassName() const override;
 
-  virtual PdxFieldTypes::PdxFieldType getFieldType(
+  virtual PdxFieldTypes getFieldType(
       const std::string& fieldname) const override;
 
   void setPdxId(int32_t typeId);
@@ -276,8 +276,8 @@ class _GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   bool compareDefaultBytes(DataInput& dataInput, int start, int end,
                            int8_t* defaultBytes, int32_t length) const;
 
-  void writeField(PdxWriter& writer, const std::string& fieldName, int typeId,
-                  std::shared_ptr<Cacheable> value);
+  void writeField(PdxWriter& writer, const std::string& fieldName,
+                  PdxFieldTypes typeId, std::shared_ptr<Cacheable> value);
 
   void writeUnmodifieldField(DataInput& dataInput, int startPos, int endPos,
                              PdxLocalWriter& localWriter);

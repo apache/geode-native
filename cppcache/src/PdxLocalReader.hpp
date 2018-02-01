@@ -126,9 +126,6 @@ class PdxLocalReader : public PdxReader {
 
   virtual bool isIdentityField(const std::string &fieldName) override;
 
-  virtual void readCollection(const std::string &fieldName,
-                              std::shared_ptr<CacheableArrayList> &collection);
-
   virtual std::shared_ptr<PdxUnreadFields> readUnreadFields() override;
 
  protected:
