@@ -27,7 +27,7 @@
 using namespace apache::geode::client;
 using namespace customserializable;
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   auto cacheFactory = CacheFactory();
   cacheFactory.set("log-level", "none");
   auto cache = cacheFactory.create();
@@ -42,19 +42,29 @@ int main(int argc, char **argv) {
   cache.getTypeRegistry().registerPdxType(Order::createDeserializable);
 
   std::cout << "Create orders" << std::endl;
-  auto order1 = std::shared_ptr<Order>(new Order(1, "product x", 23));
-  auto order2 = std::shared_ptr<Order>(new Order(2, "product y", 37));
+  auto order1 = std::make_shared<Order>(1, "product x", 23);
+  auto order2 = std::make_shared<Order>(2, "product y", 37);
 
   std::cout << "Storing orders in the region" << std::endl;
   region->put("Customer1", order1);
   region->put("Customer2", order2);
 
   std::cout << "Getting the orders from the region" << std::endl;
-  auto order1retrieved = region->get("Customer1");
-  auto order2retrieved = region->get("Customer2");
 
-  std::cout << order1retrieved->toString() << std::endl;
-  std::cout << order2retrieved->toString() << std::endl;
+  if (auto order1retrieved =
+          std::dynamic_pointer_cast<Order>(region->get("Customer1"))) {
+    std::cout << "OrderID: " << order1retrieved->getOrderId() << std::endl;
+    std::cout << "Product Name: " << order1retrieved->getName() << std::endl;
+    std::cout << "Quantity: " << order1retrieved->getQuantity() << std::endl;
+  } else {
+    std::cout << "Order 1 not found." << std::endl;
+  }
+
+  if (auto order2retrieved = region->get("Customer2")) {
+    std::cout << order2retrieved->toString() << std::endl;
+  } else {
+    std::cout << "Order 2 not found." << std::endl;
+  }
 
   cache.close();
 }

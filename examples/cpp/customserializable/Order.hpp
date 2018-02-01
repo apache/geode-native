@@ -30,29 +30,30 @@ using namespace apache::geode::client;
 
 class Order : public PdxSerializable {
  public:
-  Order();
+  inline Order() : Order(0, "", 0) {}
 
-  Order(uint32_t order_id, std::string &&name, uint16_t quantity);
+  inline Order(uint32_t order_id, std::string name, uint16_t quantity)
+      : order_id_(order_id), name_(std::move(name)), quantity_(quantity) {}
 
-  ~Order() override;
+  ~Order() override = default;
 
   inline uint32_t getOrderId() const { return order_id_; }
 
-  inline const std::string &getName() const { return name_; }
+  inline const std::string& getName() const { return name_; }
 
   inline uint16_t getQuantity() const { return quantity_; }
 
-  void fromData(PdxReader &pdxReader) override;
+  void fromData(PdxReader& pdxReader) override;
 
-  void toData(PdxWriter &pdxWriter) const override;
+  void toData(PdxWriter& pdxWriter) const override;
 
   std::string toString() const override;
 
   size_t objectSize() const override;
 
-  const std::string &getClassName() const override;
+  const std::string& getClassName() const override;
 
-  static PdxSerializable *createDeserializable();
+  static PdxSerializable* createDeserializable();
 
  private:
   static const std::string ORDER_ID_KEY_;
