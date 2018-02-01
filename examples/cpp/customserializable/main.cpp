@@ -26,78 +26,55 @@ using namespace apache::geode::client;
 
 class Order : public PdxSerializable {
  public:
-  Order() {
-    orderID = (unsigned long)0;
-    quantity = (unsigned int)0;
-    name = "";
-  };
+  Order() : order_id_(0), name_(), quantity_(0) {};
 
-  Order(unsigned long inOrderID, const std::string& inName,
-        unsigned int inQuantity)
-      : orderID(inOrderID), name(inName), quantity(inQuantity){};
+  Order(uint32_t order_id, std::string&& name, uint16_t quantity)
+      : order_id_(order_id), name_(std::move(name)), quantity_(quantity) {}
 
-  virtual ~Order(){};
-
-  unsigned long getOrderID() { return orderID; }
-  const std::string& getName() const { return name; }
-  unsigned int getQuantity() { return quantity; }
+  ~Order(){};
 
   virtual void fromData(PdxReader& pdxReader) override {
-    try {
-      orderID = (unsigned long)pdxReader.readLong(orderid_key);
-      name = pdxReader.readString(name_key);
-      quantity = (unsigned int)pdxReader.readInt(quantity_key);
-    } catch (std::exception& e) {
-      std::cout << "Caught exception: " << e.what() << std::endl;
-      return;
-    }
+      order_id_ = static_cast<uint32_t>(pdxReader.readLong(ORDER_ID_KEY_));
+      name_ = pdxReader.readString(NAME_KEY_);
+      quantity_ = static_cast<uint16_t>(pdxReader.readInt(QUANTITY_KEY_));
   }
 
   virtual void toData(PdxWriter& pdxWriter) const override {
-    try {
-      pdxWriter.writeLong(orderid_key, orderID);
-      pdxWriter.markIdentityField(orderid_key);
+      pdxWriter.writeLong(ORDER_ID_KEY_, order_id_);
+      pdxWriter.markIdentityField(ORDER_ID_KEY_);
 
-      pdxWriter.writeString(name_key, name);
-      pdxWriter.markIdentityField(name_key);
+      pdxWriter.writeString(NAME_KEY_, name_);
+      pdxWriter.markIdentityField(NAME_KEY_);
 
-      pdxWriter.writeInt(quantity_key, quantity);
-      pdxWriter.markIdentityField(quantity_key);
-
-    } catch (std::exception& e) {
-      std::cout << "Caught exception: " << e.what() << std::endl;
-      return;
-    }
-    return;
+      pdxWriter.writeInt(QUANTITY_KEY_, quantity_);
+      pdxWriter.markIdentityField(QUANTITY_KEY_);
   }
 
   static PdxSerializable* createDeserializable() { return new Order(); }
 
   virtual std::string toString() const override {
-    std::stringstream ss("");
-    ss << " OrderID: " << orderID << " Product Name: " << name
-       << " Quantity: " << quantity;
-    return ss.str();
+    return "OrderID: " + std::to_string(order_id_) + " Product Name: " + name_ + " Quantity: " + std::to_string(quantity_);
   }
 
   virtual size_t objectSize() const override {
     auto objectSize = sizeof(Order);
+    objectSize += name_.capacity();
     return objectSize;
   }
 
   const std::string& getClassName() const override {
-    static std::string className = "com.example.Order";
-    return className;
+    static const std::string class_name = "com.example.Order";
+    return class_name;
   }
 
  private:
-  unsigned long orderID;
-  std::string name;
-  unsigned int quantity;
+  uint32_t order_id_;
+  std::string name_;
+  uint16_t quantity_;
 
-  const std::string orderid_key = "orderid";
-  const std::string name_key = "name";
-  const std::string quantity_key = "quantity";
+  const std::string ORDER_ID_KEY_ = "order_id";
+  const std::string NAME_KEY_ = "name";
+  const std::string QUANTITY_KEY_ = "quantity";
 };
 
 int main(int argc, char** argv) {
@@ -109,6 +86,7 @@ int main(int argc, char** argv) {
   auto poolFactory = cache.getPoolManager().createFactory();
   poolFactory->addLocator("localhost", 10334);
   auto pool = poolFactory->create("pool");
+
   auto regionFactory = cache.createRegionFactory(PROXY);
   auto region = regionFactory.setPoolName("pool").create("custom_orders");
 
@@ -119,15 +97,15 @@ int main(int argc, char** argv) {
   auto order2 = std::shared_ptr<Order>(new Order(2, "product y", 37));
 
   std::cout << "Storing orders in the region" << std::endl;
-  auto keyptr = CacheableKey::create("Customer1");
-  region->put(keyptr, order1);
+  region->put("Customer1", order1);
   region->put("Customer2", order2);
 
   std::cout << "Getting the orders from the region" << std::endl;
-  auto keyptr = CacheableKey::create("Customer1");
-  auto order = region->get(keyptr);
+  auto order1retrieved = region->get("Customer1");
+  auto order2retrieved = region->get("Customer2");
 
-  std::cout << order->toString() << std::endl;
+  std::cout << order1retrieved->toString() << std::endl;
+  std::cout << order2retrieved->toString() << std::endl;
 
   cache.close();
 }
