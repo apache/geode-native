@@ -65,7 +65,7 @@ else()
     set(_GEODE_NATIVE_PATHS (
         "/opt/local"
         "/usr/local"
-        "../../../../"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../../../"
         "C:/program files" ))
 endif()
 

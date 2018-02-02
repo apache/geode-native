@@ -26,17 +26,10 @@
 **Mac OS X / \*nix**
 
     $ cd <example>
+    $ export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:<install path>/geode-native/lib
     $ sh ./startserver.sh
     $ build/<example name>
     $ sh ./stopserver.sh
-
-**Windows**
-
-    $ cd <example>
-    $ PATH=%PATH%;C:\Program Files\geode-native\bin (or wherever you installed the geode-native client dll)
-    $ gfsh -e "start locator --name=locator" -e "start server --name=server"  -e "create region --name=example_userinfo --type=PARTITION"
-    $ build\Debug\put-get-remove.exe
-    $ gfsh -e "connect" -e "stop server --name=server" -e "stop locator --name=locator"
 
 ## Generator
 CMake uses a "generator" to produce configuration files for use by a variety of build tools, e.g., UNIX makefiles, Visual Studio projects. By default a system-specific generator is used by CMake during configuration. (Please see [the CMake documentation](https://cmake.org/documentation/) for further information.) However, in many cases there is a better choice.
@@ -45,12 +38,6 @@ CMake uses a "generator" to produce configuration files for use by a variety of 
 The default generator:
 
     $ cmake ..
-
-### Windows Generator
-The recommended generator on Windows is `Visual Studio 14 2015 Win64`:
-
-    $ cmake -G "Visual Studio 14 2015 Win64" ..
-
 
 ### Building requirements
 Please see the documentation for building Geode Native.

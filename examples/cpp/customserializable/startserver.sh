@@ -1,5 +1,3 @@
-#!/bin/env bash
-
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -15,13 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#!/bin/env bash
 GFSH_PATH=""
 which gfsh 2> /dev/null
 
 if [ $? -eq 0 ]; then
     GFSH_PATH="gfsh"
-else
-    if [ "$GEODE_HOME" == "" ]; then
+else    
+if [ "$GEODE_HOME" == "" ]; then
         echo "Could not find gfsh. Please set the GEODE_HOME path."
         echo "e.g. export GEODE_HOME=<path to Geode>"
     else
@@ -29,4 +28,4 @@ else
     fi
 fi
 
-$GFSH_PATH  -e "start locator --name=locator" -e "start server --name=server"  -e "create region --name=example_userinfo --type=PARTITION"
+$GFSH_PATH -e "start locator --name=locator" -e "start server --name=server" -e "create region --name=custom_orders --type=PARTITION"

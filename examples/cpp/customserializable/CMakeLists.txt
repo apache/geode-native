@@ -1,5 +1,3 @@
-#!/bin/env bash
-
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -15,18 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-GFSH_PATH=""
-which gfsh 2> /dev/null
+cmake_minimum_required(VERSION 3.5)
 
-if [ $? -eq 0 ]; then
-    GFSH_PATH="gfsh"
-else
-    if [ "$GEODE_HOME" == "" ]; then
-        echo "Could not find gfsh. Please set the GEODE_HOME path."
-        echo "e.g. export GEODE_HOME=<path to Geode>"
-    else
-        GFSH_PATH=$GEODE_HOME/bin/gfsh
-    fi
-fi
+project(customserializer)
 
-$GFSH_PATH  -e "start locator --name=locator" -e "start server --name=server"  -e "create region --name=example_userinfo --type=PARTITION"
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake)
+set(CMAKE_CXX_STANDARD 11)
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
+    add_compile_options(-m64)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -m64")
+endif()
+
+find_package(geode-native REQUIRED)
+
+add_executable(${PROJECT_NAME}
+    main.cpp
+    Order.cpp)
+
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC
+    apache.geode::cpp
+)
