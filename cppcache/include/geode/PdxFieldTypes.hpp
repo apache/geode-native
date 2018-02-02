@@ -24,7 +24,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-enum class PdxFieldTypes : int8_t {
+enum class PdxFieldTypes {
   UNKNOWN = -1,
   BOOLEAN = 0,
   BYTE,
