@@ -21,6 +21,7 @@
 #include <geode/PdxWriter.hpp>
 
 namespace customserializable {
+
 void Order::fromData(PdxReader& pdxReader) {
   order_id_ = static_cast<uint32_t>(pdxReader.readLong(ORDER_ID_KEY_));
   name_ = pdxReader.readString(NAME_KEY_);
