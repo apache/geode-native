@@ -338,7 +338,7 @@ void FrameworkTest::localDestroyRegion(std::shared_ptr<Region>& region) {
 void FrameworkTest::parseEndPoints(int32_t ep, std::string label,
                                    bool isServer) {
   std::string poolName = "_Test_Pool";
-  auto pfPtr = m_cache->getPoolManager().createFactory();
+  auto pfPtr = std::make_shared<PoolFactory>(m_cache->getPoolManager().createFactory());
   std::string tag = getStringValue("TAG");
   std::string bb("GFE_BB");
 

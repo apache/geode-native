@@ -597,7 +597,7 @@ void CacheXmlParser::startPool(const xmlChar** atts) {
         "A pool cannot be created without a name";
     throw CacheXmlException(s.c_str());
   }
-  auto factory = m_cache->getPoolManager().createFactory();
+  auto factory = std::make_shared<PoolFactory>(m_cache->getPoolManager().createFactory());
 
   const char* poolName = nullptr;
 

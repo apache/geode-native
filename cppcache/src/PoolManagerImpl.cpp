@@ -29,8 +29,8 @@ void PoolManagerImpl::removePool(const std::string& name) {
   std::lock_guard<std::recursive_mutex> guard(m_connectionPoolsLock);
   m_connectionPools.erase(name);
 }
-std::shared_ptr<PoolFactory> PoolManagerImpl::createFactory() const {
-  return std::make_shared<PoolFactory>(*m_cache->getCache());
+PoolFactory PoolManagerImpl::createFactory() const {
+  return PoolFactory(*m_cache->getCache());
 }
 
 void PoolManagerImpl::close(bool keepAlive) {

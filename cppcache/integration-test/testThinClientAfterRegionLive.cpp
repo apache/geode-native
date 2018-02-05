@@ -59,7 +59,7 @@ auto cptr4 = std::make_shared<DisconnectCacheListioner>(3);
 
 void createPooledRegionMine(bool callReadyForEventsAPI = false) {
   auto& poolManager = getHelper()->getCache()->getPoolManager();
-  auto poolFacPtr = poolManager.createFactory();
+  auto poolFacPtr = std::make_shared<PoolFactory>(poolManager.createFactory());
   poolFacPtr->setSubscriptionEnabled(true);
   getHelper()->addServerLocatorEPs(locatorsG, poolFacPtr);
   if ((poolManager.find("__TEST_POOL1__")) ==

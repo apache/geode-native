@@ -69,6 +69,12 @@ PoolFactory::PoolFactory(const Cache& cache)
       m_addedServerOrLocator(false),
       m_cache(cache) {}
 
+PoolFactory::PoolFactory(const PoolFactory& factory)
+    : m_attrs(factory.m_attrs),
+      m_isSubscriptionRedundancy(factory.m_isSubscriptionRedundancy),
+      m_addedServerOrLocator(factory.m_addedServerOrLocator),
+      m_cache(factory.m_cache) {}
+
 PoolFactory::~PoolFactory() {}
 
 PoolFactory& PoolFactory::setFreeConnectionTimeout(
