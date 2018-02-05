@@ -339,7 +339,8 @@ namespace Apache
 
         PoolFactory^ Cache::GetPoolFactory()
         {
-          return PoolFactory::Create(m_nativeptr->get_shared_ptr()->getPoolManager().createFactory());
+          return PoolFactory::Create(std::make_shared<native::PoolFactory>(
+            m_nativeptr->get_shared_ptr()->getPoolManager().createFactory()));
         }
 
         PoolManager^ Cache::GetPoolManager()
