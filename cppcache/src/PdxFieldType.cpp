@@ -138,7 +138,7 @@ std::string PdxFieldType::toString() const {
   char stringBuf[1024];
   ACE_OS::snprintf(
       stringBuf, 1024,
-      " PdxFieldName=%s TypeId=%hhd VarLenFieldIdx=%d sequenceid=%d\n",
+      " PdxFieldName=%s TypeId=%d VarLenFieldIdx=%d sequenceid=%d\n",
       this->m_fieldName.c_str(), this->m_typeId, this->m_varLenFieldIdx,
       this->m_sequenceId);
   return std::string(stringBuf);
