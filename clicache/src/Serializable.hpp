@@ -56,7 +56,7 @@ namespace Apache
       /// after creation by a call to native
       /// <c>native::Serializable::fromData</c>.
       /// </summary>
-      delegate native::Serializable* TypeFactoryNativeMethodGeneric();
+      delegate std::shared_ptr<native::Serializable> TypeFactoryNativeMethodGeneric();
 
       /// <summary>
       /// Signature of function delegates passed to

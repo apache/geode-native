@@ -80,16 +80,18 @@ namespace Apache
         /// Native <c>apache::geode::client::Serializable</c> object after invoking the managed
         /// delegate and wrapping inside a <c>ManagedCacheableKey</c> object.
         /// </returns>
-        apache::geode::client::Serializable* NativeDelegateGeneric( )
+        std::shared_ptr<apache::geode::client::Serializable> NativeDelegateGeneric( )
         {
           auto tempObj = m_delegate( );
           if(auto tempDelta = dynamic_cast<IGeodeDelta^>(tempObj))
           {
-            return new apache::geode::client::ManagedCacheableDeltaGeneric(tempDelta);
+            return std::shared_ptr<apache::geode::client::ManagedCacheableDeltaGeneric>(
+              new apache::geode::client::ManagedCacheableDeltaGeneric(tempDelta));
           }
           else
           {
-            return new apache::geode::client::ManagedCacheableKeyGeneric(tempObj);
+            return std::shared_ptr<apache::geode::client::ManagedCacheableKeyGeneric>(
+              new apache::geode::client::ManagedCacheableKeyGeneric(tempObj));
           }
         }
 

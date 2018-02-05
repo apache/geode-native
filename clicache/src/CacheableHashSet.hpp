@@ -589,7 +589,7 @@ namespace Apache
           /// Allocates a new empty instance.
           /// </summary>
           inline CacheableHashSetType<TYPEID, HSTYPE>()
-            : Serializable(std::shared_ptr<HSTYPE>(static_cast<HSTYPE*>(HSTYPE::createDeserializable())))
+            : Serializable(HSTYPE::createDeserializable())
           { }
 
           /// <summary>
