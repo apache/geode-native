@@ -124,9 +124,9 @@ int8_t TXCommitMessage::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::TXCommitMessage);
 }
 
-Serializable* TXCommitMessage::create(
+std::shared_ptr<Serializable> TXCommitMessage::create(
     MemberListForVersionStamp& memberListForVersionStamp) {
-  return new TXCommitMessage(memberListForVersionStamp);
+  return std::make_shared<TXCommitMessage>(memberListForVersionStamp);
 }
 
 void TXCommitMessage::apply(Cache* cache) {

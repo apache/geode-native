@@ -59,8 +59,8 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   ClientProxyMembershipID();
   ~ClientProxyMembershipID();
   static void increaseSynchCounter();
-  static Serializable* createDeserializable() {
-    return new ClientProxyMembershipID();
+  static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<ClientProxyMembershipID>();
   }
   // Do an empty check on the returned value. Only use after handshake is done.
   const std::string& getDSMemberIdForThinClientUse();

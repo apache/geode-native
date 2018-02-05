@@ -44,8 +44,8 @@ void CacheableDate::fromData(DataInput& input) {
   m_timevalue = input.readInt64();
 }
 
-Serializable* CacheableDate::createDeserializable() {
-  return new CacheableDate();
+std::shared_ptr<Serializable> CacheableDate::createDeserializable() {
+  return std::make_shared<CacheableDate>();
 }
 
 int32_t CacheableDate::classId() const { return 0; }

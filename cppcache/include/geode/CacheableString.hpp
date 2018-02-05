@@ -57,16 +57,16 @@ class _GEODE_EXPORT CacheableString : public CacheableKey {
   virtual void fromData(DataInput& input) override;
 
   /** creation function for strings */
-  static Serializable* createDeserializable();
+  static std::shared_ptr<Serializable> createDeserializable();
 
   /** creation function for strings > 64K length */
-  static Serializable* createDeserializableHuge();
+  static std::shared_ptr<Serializable> createDeserializableHuge();
 
   /** creation function for wide strings */
-  static Serializable* createUTFDeserializable();
+  static std::shared_ptr<Serializable> createUTFDeserializable();
 
   /** creation function for wide strings > 64K length in UTF8 encoding */
-  static Serializable* createUTFDeserializableHuge();
+  static std::shared_ptr<Serializable> createUTFDeserializableHuge();
 
   /**
    *@brief Return the classId of the instance being serialized.

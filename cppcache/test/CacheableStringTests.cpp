@@ -122,7 +122,7 @@ TEST_F(CacheableStringTests, TestFromDataAscii) {
   DataOutputInternal out;
   origStr->toData(out);
 
-  auto str = dynamic_cast<CacheableString*>(
+  auto str = std::dynamic_pointer_cast<CacheableString>(
       CacheableString::createUTFDeserializable());
   DataInputInternal in(out.getBuffer(), out.getBufferLength());
   str->fromData(in);
@@ -145,7 +145,7 @@ TEST_F(CacheableStringTests, TestFromDataNonAscii) {
   DataOutputInternal out;
   origStr->toData(out);
 
-  auto str = dynamic_cast<CacheableString*>(
+  auto str = std::dynamic_pointer_cast<CacheableString>(
       CacheableString::createUTFDeserializable());
   DataInputInternal in(out.getBuffer(), out.getBufferLength());
   str->fromData(in);
@@ -180,7 +180,7 @@ TEST_F(CacheableStringTests, TestFromDataAsciiHuge) {
   DataOutputInternal out;
   origStr->toData(out);
 
-  auto str = dynamic_cast<CacheableString*>(
+  auto str = std::dynamic_pointer_cast<CacheableString>(
       CacheableString::createDeserializableHuge());
   DataInputInternal in(out.getBuffer(), out.getBufferLength());
   str->fromData(in);
@@ -221,7 +221,7 @@ TEST_F(CacheableStringTests, TestFromDataNonAsciiHuge) {
   DataOutputInternal out;
   origStr->toData(out);
 
-  auto str = dynamic_cast<CacheableString*>(
+  auto str = std::dynamic_pointer_cast<CacheableString>(
       CacheableString::createUTFDeserializableHuge());
   DataInputInternal in(out.getBuffer(), out.getBufferLength());
   str->fromData(in);

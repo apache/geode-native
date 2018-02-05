@@ -93,16 +93,16 @@ class OtherType : public Serializable {
     m_classIdToReturn = input.readInt32();
   }
 
-  static Serializable* createDeserializable() {
-    return new OtherType(g_classIdToReturn);
+  static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<OtherType>(g_classIdToReturn);
   }
 
-  static Serializable* createDeserializable2() {
-    return new OtherType(g_classIdToReturn2);
+  static std::shared_ptr<Serializable> createDeserializable2() {
+    return std::make_shared<OtherType>(g_classIdToReturn2);
   }
 
-  static Serializable* createDeserializable4() {
-    return new OtherType(g_classIdToReturn4);
+  static std::shared_ptr<Serializable> createDeserializable4() {
+    return std::make_shared<OtherType>(g_classIdToReturn4);
   }
 
   virtual int32_t classId() const { return m_classIdToReturn; }
@@ -111,7 +111,7 @@ class OtherType : public Serializable {
 
   static std::shared_ptr<Cacheable> uniqueCT(
       int32_t i, int32_t classIdToReturn = g_classIdToReturn) {
-    OtherType* ot = new OtherType(classIdToReturn);
+    auto ot = std::make_shared<OtherType>(classIdToReturn);
     ot->m_struct.a = (int)i;
     ot->m_struct.b = (i % 2 == 0) ? true : false;
     ot->m_struct.c = static_cast<char>(65) + i;
@@ -122,7 +122,7 @@ class OtherType : public Serializable {
 
     printf("double hex 0x%016" PRIX64 "\n", ot->m_struct.e);
 
-    return std::shared_ptr<Cacheable>(ot);
+    return ot;
   }
 
   static void validateCT(int32_t i, const std::shared_ptr<Cacheable> otPtr) {
@@ -130,7 +130,7 @@ class OtherType : public Serializable {
     sprintf(logmsg, "validateCT for %d", i);
     LOG(logmsg);
     XASSERT(otPtr != nullptr);
-    OtherType* ot = static_cast<OtherType*>(otPtr.get());
+    auto ot = std::static_pointer_cast<OtherType>(otPtr);
     XASSERT(ot != nullptr);
 
     printf("Validating OtherType: %d, %s, %c, %e\n", ot->m_struct.a,

@@ -83,7 +83,9 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
     return std::make_shared<DeltaTestImpl>(*this);
   }
 
-  static Serializable* create() { return new DeltaTestImpl(); }
+  static std::shared_ptr<Serializable> create() {
+    return std::make_shared<DeltaTestImpl>();
+  }
 
   int32_t getIntVar() const { return intVar; }
   std::shared_ptr<CacheableString> getStr() const { return str; }

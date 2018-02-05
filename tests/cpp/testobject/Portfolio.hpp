@@ -122,7 +122,9 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
 
   uint8_t* getArrayZeroSize() const { return arrayZeroSize; }
 
-  static Serializable* createDeserializable() { return new Portfolio(); }
+  static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<Portfolio>();
+  }
 
   virtual void toData(DataOutput& output) const;
   virtual void fromData(DataInput& input);

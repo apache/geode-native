@@ -123,8 +123,8 @@ class TESTOBJECT_EXPORT CharTypesWithInvalidUsage : public PdxSerializable {
     m_chArray = pr.readCharArray("m_chArray");
   }
 
-  static PdxSerializable* createDeserializable() {
-    return new CharTypesWithInvalidUsage();
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<CharTypesWithInvalidUsage>();
   }
 };
 
@@ -191,8 +191,8 @@ class TESTOBJECT_EXPORT AddressWithInvalidAPIUsage : public PdxSerializable {
     _city = pr.readString("_city");
   }
 
-  static PdxSerializable* createDeserializable() {
-    return new AddressWithInvalidAPIUsage();
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<AddressWithInvalidAPIUsage>();
   }
 
   int32_t getAptNum() { return _aptNumber; }
@@ -623,8 +623,8 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() {
-    return new InvalidPdxUsage();
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<InvalidPdxUsage>();
   }
 
   bool equals(PdxTests::InvalidPdxUsage& other, bool isPdxReadSerialized) const;

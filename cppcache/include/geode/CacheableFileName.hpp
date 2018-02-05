@@ -74,8 +74,8 @@ class _GEODE_EXPORT CacheableFileName : public CacheableString {
   /**
    * @brief creation function for filenames.
    */
-  static Serializable* createDeserializable() {
-    return new CacheableFileName();
+  static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<CacheableFileName>();
   }
 
   /**

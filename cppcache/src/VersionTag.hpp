@@ -66,7 +66,7 @@ class VersionTag : public Cacheable {
 
   virtual void fromData(DataInput& input);
 
-  static Serializable* createDeserializable(
+  static std::shared_ptr<Serializable> createDeserializable(
       MemberListForVersionStamp& memberListForVersionStamp);
 
   int32_t getEntryVersion() const { return m_entryVersion; }

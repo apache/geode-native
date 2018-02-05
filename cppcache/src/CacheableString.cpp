@@ -62,20 +62,21 @@ void CacheableString::fromData(DataInput& input) {
   }
 }
 
-Serializable* CacheableString::createDeserializable() {
-  return new CacheableString(GeodeTypeIds::CacheableASCIIString);
+std::shared_ptr<Serializable> CacheableString::createDeserializable() {
+  return std::make_shared<CacheableString>(GeodeTypeIds::CacheableASCIIString);
 }
 
-Serializable* CacheableString::createDeserializableHuge() {
-  return new CacheableString(GeodeTypeIds::CacheableASCIIStringHuge);
+std::shared_ptr<Serializable> CacheableString::createDeserializableHuge() {
+  return std::make_shared<CacheableString>(
+      GeodeTypeIds::CacheableASCIIStringHuge);
 }
 
-Serializable* CacheableString::createUTFDeserializable() {
-  return new CacheableString(GeodeTypeIds::CacheableString);
+std::shared_ptr<Serializable> CacheableString::createUTFDeserializable() {
+  return std::make_shared<CacheableString>(GeodeTypeIds::CacheableString);
 }
 
-Serializable* CacheableString::createUTFDeserializableHuge() {
-  return new CacheableString(GeodeTypeIds::CacheableStringHuge);
+std::shared_ptr<Serializable> CacheableString::createUTFDeserializableHuge() {
+  return std::make_shared<CacheableString>(GeodeTypeIds::CacheableStringHuge);
 }
 
 std::shared_ptr<CacheableString> CacheableString::create(

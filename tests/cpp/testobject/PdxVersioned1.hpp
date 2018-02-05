@@ -243,7 +243,9 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxVersioned1(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxVersioned1>();
+  }
 
   bool equals(PdxTests::PdxVersioned1& other, bool isPdxReadSerialized) const;
 

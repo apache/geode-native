@@ -90,7 +90,9 @@ class TESTOBJECT_EXPORT PositionPdx
 
   int32_t getSharesOutstanding() { return sharesOutstanding; }
 
-  static PdxSerializable* createDeserializable() { return new PositionPdx(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return new PositionPdx();
+  }
 
   const char* getClassName() const { return "testobject.PositionPdx"; }
 

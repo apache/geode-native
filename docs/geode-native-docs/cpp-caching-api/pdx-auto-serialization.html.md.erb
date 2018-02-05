@@ -61,7 +61,7 @@ For each domain class you provide, all fields are considered for serialization e
     const char* getClassName() const;
     virtual void toData(apache::geode::client::PdxWriterPtr pw);
     virtual void fromData(apache::geode::client::PdxReaderPtr pr);
-    static PdxSerializable* createDeserializable();
+    static std::shared_ptr<PdxSerializable> createDeserializable();
     ```
 
 3.  In your pre-build environment (for example in your **makefiles**), call `pdxautoserializer` as follows:

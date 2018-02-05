@@ -84,7 +84,9 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new ChildPdx(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<ChildPdx>();
+  }
 
   bool equals(ChildPdx& other) const;
 };
@@ -155,7 +157,9 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new ParentPdx(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<ParentPdx>();
+  }
 
   bool equals(ParentPdx& other, bool isPdxReadSerialized) const;
 };
@@ -221,8 +225,8 @@ class TESTOBJECT_EXPORT PdxEnumTestClass : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() {
-    return new PdxEnumTestClass();
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxEnumTestClass>();
   }
 };
 
@@ -250,8 +254,8 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
     }
   }
 
-  static PdxSerializable* createDeserializable() {
-    return new SerializePdx(false);
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<SerializePdx>(false);
   }
 
   using PdxSerializable::fromData;

@@ -65,7 +65,9 @@ class _GEODE_EXPORT CacheableEnum : public CacheableKey {
   /**
    * @brief creation function for enum.
    */
-  static Serializable* createDeserializable() { return new CacheableEnum(); }
+  static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<CacheableEnum>();
+  }
   /**
    * @brief serialize this object
    **/

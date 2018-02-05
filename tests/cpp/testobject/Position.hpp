@@ -94,8 +94,9 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   std::shared_ptr<CacheableString> getSecId() { return secId; }
   int32_t getId() { return pid; }
   int32_t getSharesOutstanding() { return sharesOutstanding; }
-  static apache::geode::client::Serializable* createDeserializable() {
-    return new Position();
+  static std::shared_ptr<apache::geode::client::Serializable>
+  createDeserializable() {
+    return std::make_shared<Position>();
   }
 
  private:

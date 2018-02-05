@@ -47,9 +47,9 @@ typedef void (*CliCallbackMethod)(Cache &cache);
  * will typically be initialized immediately after creation by a call to
  * fromData().
  */
-using TypeFactoryMethod = std::function<Serializable*()>;
+using TypeFactoryMethod = std::function<std::shared_ptr<Serializable>()>;
 
-typedef PdxSerializable* (*TypeFactoryMethodPdx)();
+using TypeFactoryMethodPdx = std::function<std::shared_ptr<PdxSerializable>()>;
 
 /**
  * @class Serializable Serializable.hpp

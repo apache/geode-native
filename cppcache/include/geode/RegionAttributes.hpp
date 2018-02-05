@@ -199,7 +199,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
   virtual void fromData(DataInput& in);
 
   /** Return an empty instance for deserialization. */
-  static Serializable* createDeserializable();
+  static std::shared_ptr<Serializable> createDeserializable();
 
   /** Return class id for serialization. */
   virtual int32_t classId() const;

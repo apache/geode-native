@@ -80,7 +80,7 @@ class _GEODE_EXPORT EventId : public Cacheable {
   /**
    * @brief creation function for strings.
    */
-  static Serializable* createDeserializable();
+  static std::shared_ptr<Serializable> createDeserializable();
 
   /**
    *@brief return the classId of the instance being serialized.

@@ -36,7 +36,9 @@ class ClientConnectionResponse : public ServerLocationResponse {
   virtual size_t objectSize() const;
   virtual ServerLocation getServerLocation() const;
   void printInfo() { m_server.printInfo(); }
-  static Serializable* create() { return new ClientConnectionResponse(); }
+  static std::shared_ptr<Serializable> create() {
+    return std::make_shared<ClientConnectionResponse>();
+  }
   virtual ~ClientConnectionResponse() {}
   bool serverFound() { return m_serverFound; }
 

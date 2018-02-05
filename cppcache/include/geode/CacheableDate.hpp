@@ -67,7 +67,7 @@ class _GEODE_EXPORT CacheableDate : public CacheableKey {
   /**
    * @brief creation function for dates.
    */
-  static Serializable* createDeserializable();
+  static std::shared_ptr<Serializable> createDeserializable();
 
   /**
    * @brief Return the classId of the instance being serialized.

@@ -90,7 +90,9 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
 
   std::vector<int8_t> getArrayZeroSize() { return arrayZeroSize; }
 
-  static PdxSerializable* createDeserializable() { return new PortfolioPdx(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PortfolioPdx>();
+  }
 
   const std::string& getClassName() const override {
     static std::string className = "testobject.PortfolioPdx";

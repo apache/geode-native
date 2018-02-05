@@ -37,7 +37,7 @@ class TXCommitMessage : public apache::geode::client::Cacheable {
   virtual void toData(DataOutput& output) const;
   virtual int32_t classId() const;
   int8_t typeId() const;
-  static Serializable* create(
+  static std::shared_ptr<Serializable> create(
       MemberListForVersionStamp& memberListForVersionStamp);
   //	VectorOfEntryEvent getEvents(Cache* cache);
 

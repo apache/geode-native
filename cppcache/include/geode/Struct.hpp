@@ -56,7 +56,7 @@ class _GEODE_EXPORT Struct : public Serializable {
   /**
    * Factory function for registration of <code>Struct</code>.
    */
-  static Serializable* createDeserializable();
+  static std::shared_ptr<Serializable> createDeserializable();
 
   /**
    * Get the field value for the given index number.
@@ -159,6 +159,8 @@ class _GEODE_EXPORT Struct : public Serializable {
   StructSet* m_parent;
 
   int32_t m_lastAccessIndex;
+
+  _GEODE_FRIEND_STD_SHARED_PTR(Struct);
 };
 }  // namespace client
 }  // namespace geode

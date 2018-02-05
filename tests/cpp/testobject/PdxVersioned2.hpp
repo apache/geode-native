@@ -247,7 +247,9 @@ class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
    LOGINFO("rjk:inside testpdxobject default pdxType");
    init();
   }*/
-  static PdxSerializable* createDeserializable() { return new PdxVersioned2(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxVersioned2>();
+  }
 
   bool equals(PdxTests::PdxVersioned2& other, bool isPdxReadSerialized) const;
 

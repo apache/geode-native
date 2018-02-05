@@ -253,7 +253,7 @@ std::shared_ptr<PdxSerializable> SerializationRegistry::getPdxType(
           "Unregistered class or serializer in PDX deserialization");
     }
   } else {
-    pdxObj.reset(objectType());
+    pdxObj = objectType();
   }
   return pdxObj;
 }
@@ -320,7 +320,7 @@ void TheTypeMap::find2(int64_t id, TypeFactoryMethod& func) const {
 }
 
 void TheTypeMap::bind(TypeFactoryMethod func) {
-  Serializable* obj = func();
+  auto obj = func();
   std::lock_guard<util::concurrent::spinlock_mutex> guard(m_mapLock);
   int64_t compId = static_cast<int64_t>(obj->typeId());
   if (compId == GeodeTypeIdsImpl::CacheableUserData ||
@@ -328,24 +328,13 @@ void TheTypeMap::bind(TypeFactoryMethod func) {
       compId == GeodeTypeIdsImpl::CacheableUserData4) {
     compId |= ((static_cast<int64_t>(obj->classId())) << 32);
   }
-  delete obj;
   int bindRes = m_map->bind(compId, func);
   if (bindRes == 1) {
-    LOGERROR(
-        "A class with "
-        "ID %d is already registered.",
-        compId);
-    throw IllegalStateException(
-        "A class with "
-        "given ID is already registered.");
+    LOGERROR("A class with ID %d is already registered.", compId);
+    throw IllegalStateException("A class with given ID is already registered.");
   } else if (bindRes == -1) {
-    LOGERROR(
-        "Unknown error "
-        "while adding class ID %d to map.",
-        compId);
-    throw IllegalStateException(
-        "Unknown error "
-        "while adding type to map.");
+    LOGERROR("Unknown error while adding class ID %d to map.", compId);
+    throw IllegalStateException("Unknown error while adding type to map.");
   }
 }
 
@@ -369,7 +358,7 @@ void TheTypeMap::unbind(int64_t compId) {
 }
 
 void TheTypeMap::bind2(TypeFactoryMethod func) {
-  Serializable* obj = func();
+  auto obj = func();
   std::lock_guard<util::concurrent::spinlock_mutex> guard(m_map2Lock);
   int8_t dsfid = obj->DSFID();
 
@@ -379,7 +368,6 @@ void TheTypeMap::bind2(TypeFactoryMethod func) {
   } else {
     compId = static_cast<int64_t>(obj->typeId());
   }
-  delete obj;
   int bindRes = m_map2->bind(compId, func);
   if (bindRes == 1) {
     LOGERROR(
@@ -411,26 +399,21 @@ void TheTypeMap::unbind2(int64_t compId) {
 }
 
 void TheTypeMap::bindPdxType(TypeFactoryMethodPdx func) {
-  PdxSerializable* obj = func();
+  auto obj = func();
   std::lock_guard<util::concurrent::spinlock_mutex> guard(m_pdxTypemapLock);
   auto&& objFullName = obj->getClassName();
 
   int bindRes = m_pdxTypemap->bind(objFullName, func);
 
-  delete obj;
-
   if (bindRes == 1) {
     LOGERROR("A object with FullName " + objFullName +
              " is already registered.");
     throw IllegalStateException(
-        "A Object with "
-        "given FullName is already registered.");
+        "A Object with given FullName is already registered.");
   } else if (bindRes == -1) {
     LOGERROR("Unknown error while adding Pdx Object named " + objFullName +
              " to map.");
-    throw IllegalStateException(
-        "Unknown error "
-        "while adding type to map.");
+    throw IllegalStateException("Unknown error while adding type to map.");
   }
 }
 

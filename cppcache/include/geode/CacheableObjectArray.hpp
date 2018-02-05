@@ -58,8 +58,8 @@ class _GEODE_EXPORT CacheableObjectArray
   /**
    * @brief creation function for java Object[]
    */
-  inline static Serializable* createDeserializable() {
-    return new CacheableObjectArray();
+  inline static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<CacheableObjectArray>();
   }
 
   /**

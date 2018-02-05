@@ -112,9 +112,9 @@ class PdxType : public Serializable,
 
   virtual int32_t classId() const { return GeodeTypeIds::PdxType; }
 
-  static Serializable* CreateDeserializable(
+  static std::shared_ptr<Serializable> CreateDeserializable(
       std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr) {
-    return new PdxType(pdxTypeRegistryPtr, "", false);
+    return std::make_shared<PdxType>(pdxTypeRegistryPtr, "", false);
   }
 
   virtual size_t objectSize() const {

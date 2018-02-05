@@ -124,7 +124,7 @@ class CacheableObjectPartList : public Cacheable {
   /**
    * @brief creation function for java Object[]
    */
-  /*inline static Serializable* createDeserializable()
+  /*inline static std::shared_ptr<Serializable> createDeserializable()
   {
     return new CacheableObjectPartList();
   }*/

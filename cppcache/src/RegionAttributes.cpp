@@ -269,8 +269,8 @@ DiskPolicyType RegionAttributes::getDiskPolicy() const {
   return m_diskPolicy;
 }
 const std::string& RegionAttributes::getPoolName() const { return m_poolName; }
-Serializable* RegionAttributes::createDeserializable() {
-  return new RegionAttributes();
+std::shared_ptr<Serializable> RegionAttributes::createDeserializable() {
+  return std::make_shared<RegionAttributes>();
 }
 
 int32_t RegionAttributes::classId() const { return 0; }
