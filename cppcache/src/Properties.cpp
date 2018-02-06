@@ -250,7 +250,9 @@ void PropertiesFile::parseLine(const std::string& line) {
   m_props.insert(key, value);
 }
 
-Serializable* Properties::createDeserializable() { return new Properties(); }
+std::shared_ptr<Serializable> Properties::createDeserializable() {
+  return std::make_shared<Properties>();
+}
 
 int32_t Properties::classId() const { return 0; }
 

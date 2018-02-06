@@ -544,7 +544,7 @@ namespace Apache
 
         _GF_MG_EXCEPTION_TRY2
           CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
-          cacheImpl->getSerializationRegistry()->addType((native::Serializable*(*)())System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
+          cacheImpl->getSerializationRegistry()->addType((std::shared_ptr<native::Serializable>(*)())System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -581,14 +581,14 @@ namespace Apache
           if (tmp->ClassId < 0xa0000000)
           {
             cacheImpl->getSerializationRegistry()->addType(typeId,
-                                                                  (native::Serializable*(*)())System::Runtime::InteropServices::
+                                                                  (std::shared_ptr<native::Serializable>(*)())System::Runtime::InteropServices::
                                                                   Marshal::GetFunctionPointerForDelegate(
                                                                   nativeDelegate).ToPointer());
           }
           else
           {//special case for CacheableUndefined type
             cacheImpl->getSerializationRegistry()->addType2(typeId,
-                                                                   (native::Serializable*(*)())System::Runtime::InteropServices::
+                                                                   (std::shared_ptr<native::Serializable>(*)())System::Runtime::InteropServices::
                                                                    Marshal::GetFunctionPointerForDelegate(
                                                                    nativeDelegate).ToPointer());
           }
@@ -1356,8 +1356,7 @@ namespace Apache
           cStr = native::CacheableString::create(marshal_as<std::string>(value));
         }
         else {
-          cStr.reset(static_cast<native::CacheableString *>(
-              native::CacheableString::createDeserializable()));
+          cStr = std::static_pointer_cast<native::CacheableString>(native::CacheableString::createDeserializable());
         }
 
         return cStr;

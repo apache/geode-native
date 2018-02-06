@@ -37,7 +37,9 @@ class QueueConnectionResponse : public ServerLocationResponse {
   virtual size_t objectSize() const;
   virtual std::list<ServerLocation> getServers() { return m_list; }
   virtual bool isDurableQueueFound() { return m_durableQueueFound; }
-  static Serializable* create() { return new QueueConnectionResponse(); }
+  static std::shared_ptr<Serializable> create() {
+    return std::make_shared<QueueConnectionResponse>();
+  }
   virtual ~QueueConnectionResponse(){};
 
  private:

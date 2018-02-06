@@ -66,7 +66,7 @@ class _GEODE_EXPORT CacheableToken : public Cacheable {
   /**
    * @brief creation function for strings.
    */
-  static Serializable* createDeserializable();
+  static std::shared_ptr<Serializable> createDeserializable();
 
   /**
    *@brief Return the classId of the instance being serialized.

@@ -43,8 +43,8 @@ void ClientHealthStats::fromData(DataInput& input) {
   m_updateTime->fromData(input);
 }
 
-Serializable* ClientHealthStats::createDeserializable() {
-  return new ClientHealthStats();
+std::shared_ptr<Serializable> ClientHealthStats::createDeserializable() {
+  return std::make_shared<ClientHealthStats>();
 }
 
 int32_t ClientHealthStats::classId() const { return 0; }

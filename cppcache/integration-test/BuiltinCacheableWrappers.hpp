@@ -789,26 +789,25 @@ class CacheableHashSetTypeWrapper : public CacheableWrapper {
   // CacheableWrapper members
 
   virtual void initRandomValue(int32_t maxSize) {
-    Serializable* ser = HSETTYPE::createDeserializable();
-    HSETTYPE* set = (HSETTYPE*)ser;
+    auto set =
+        std::static_pointer_cast<HSETTYPE>(HSETTYPE::createDeserializable());
     auto keyTypeIds = CacheableWrapperFactory::getRegisteredKeyTypes();
     size_t sizeOfTheVector = keyTypeIds.size();
     maxSize = maxSize / static_cast<int32_t>(sizeOfTheVector) + 1;
     for (size_t i = 0; i < sizeOfTheVector; i++) {
       int8_t keyTypeId = keyTypeIds[i];
-      CacheableWrapper* wrapper =
-          CacheableWrapperFactory::createInstance(keyTypeId);
+      auto wrapper = CacheableWrapperFactory::createInstance(keyTypeId);
       wrapper->initRandomValue(maxSize);
       auto cptr = wrapper->getCacheable();
       set->insert(
           std::dynamic_pointer_cast<CacheableKey>(wrapper->getCacheable()));
       delete wrapper;
     }
-    m_cacheableObject = std::shared_ptr<Serializable>(set);
+    m_cacheableObject = set;
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
-    const HSETTYPE* obj = dynamic_cast<const HSETTYPE*>(object.get());
+    auto&& obj = std::dynamic_pointer_cast<HSETTYPE>(object);
     ASSERT(obj != nullptr, "getCheckSum: null object.");
     uint32_t checkSum = 0;
 
@@ -1080,26 +1079,25 @@ class CacheableVectorTypeWrapper : public CacheableWrapper {
   // CacheableWrapper members
 
   virtual void initRandomValue(int32_t maxSize) {
-    Serializable* ser = VECTTYPE::createDeserializable();
-    VECTTYPE* vec = (VECTTYPE*)ser;
+    auto vec =
+        std::static_pointer_cast<VECTTYPE>(VECTTYPE::createDeserializable());
     auto valueTypeIds = CacheableWrapperFactory::getRegisteredValueTypes();
     size_t sizeOfTheVector = valueTypeIds.size();
     maxSize = maxSize / static_cast<int32_t>(sizeOfTheVector) + 1;
     for (size_t i = 0; i < sizeOfTheVector; i++) {
       int8_t valueTypeId = valueTypeIds[i];
       if (!CacheableHelper::isContainerTypeId(valueTypeId)) {
-        CacheableWrapper* wrapper =
-            CacheableWrapperFactory::createInstance(valueTypeId);
+        auto wrapper = CacheableWrapperFactory::createInstance(valueTypeId);
         wrapper->initRandomValue(maxSize);
         vec->push_back(wrapper->getCacheable());
         delete wrapper;
       }
     }
-    m_cacheableObject = std::shared_ptr<Serializable>(vec);
+    m_cacheableObject = vec;
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
-    const VECTTYPE* vec = dynamic_cast<const VECTTYPE*>(object.get());
+    auto&& vec = std::dynamic_pointer_cast<VECTTYPE>(object);
     ASSERT(vec != nullptr, "getCheckSum: null object.");
     uint32_t checkSum = 0;
     for (uint32_t index = 0; index < (uint32_t)vec->size(); ++index) {
@@ -1108,8 +1106,7 @@ class CacheableVectorTypeWrapper : public CacheableWrapper {
         continue;
       }
       int8_t typeId = obj->typeId();
-      CacheableWrapper* wrapper =
-          CacheableWrapperFactory::createInstance(typeId);
+      auto wrapper = CacheableWrapperFactory::createInstance(typeId);
       checkSum ^= wrapper->getCheckSum(obj);
       delete wrapper;
     }
@@ -1140,27 +1137,25 @@ class CacheableObjectArrayWrapper : public CacheableWrapper {
   // CacheableWrapper members
 
   virtual void initRandomValue(int32_t maxSize) {
-    Serializable* ser = CacheableObjectArray::createDeserializable();
-    CacheableObjectArray* arr = (CacheableObjectArray*)ser;
+    auto arr = std::static_pointer_cast<CacheableObjectArray>(
+        CacheableObjectArray::createDeserializable());
     auto valueTypeIds = CacheableWrapperFactory::getRegisteredValueTypes();
     size_t sizeOfTheVector = valueTypeIds.size();
     maxSize = maxSize / static_cast<int32_t>(sizeOfTheVector) + 1;
     for (size_t i = 0; i < sizeOfTheVector; i++) {
       int8_t valueTypeId = valueTypeIds[i];
       if (!CacheableHelper::isContainerTypeId(valueTypeId)) {
-        CacheableWrapper* wrapper =
-            CacheableWrapperFactory::createInstance(valueTypeId);
+        auto wrapper = CacheableWrapperFactory::createInstance(valueTypeId);
         wrapper->initRandomValue(maxSize);
         arr->push_back(wrapper->getCacheable());
         delete wrapper;
       }
     }
-    m_cacheableObject = std::shared_ptr<Serializable>(arr);
+    m_cacheableObject = arr;
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
-    const CacheableObjectArray* arr =
-        dynamic_cast<const CacheableObjectArray*>(object.get());
+    auto&& arr = std::dynamic_pointer_cast<CacheableObjectArray>(object);
     ASSERT(arr != nullptr, "getCheckSum: null object.");
     uint32_t checkSum = 0;
     for (uint32_t index = 0; index < static_cast<uint32_t>(arr->size());
@@ -1170,8 +1165,7 @@ class CacheableObjectArrayWrapper : public CacheableWrapper {
         continue;
       }
       int8_t typeId = obj->typeId();
-      CacheableWrapper* wrapper =
-          CacheableWrapperFactory::createInstance(typeId);
+      auto wrapper = CacheableWrapperFactory::createInstance(typeId);
       checkSum ^= wrapper->getCheckSum(obj);
       delete wrapper;
     }

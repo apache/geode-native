@@ -69,9 +69,9 @@ void VersionTag::fromData(DataInput& input) {
   readMembers(flags, input);
 }
 
-Serializable* VersionTag::createDeserializable(
+std::shared_ptr<Serializable> VersionTag::createDeserializable(
     MemberListForVersionStamp& memberListForVersionStamp) {
-  return new VersionTag(memberListForVersionStamp);
+  return std::make_shared<VersionTag>(memberListForVersionStamp);
 }
 
 void VersionTag::replaceNullMemberId(uint16_t memId) {

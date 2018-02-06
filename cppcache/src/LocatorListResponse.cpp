@@ -47,6 +47,6 @@ const std::vector<ServerLocation>& LocatorListResponse::getLocators() const {
 
 bool LocatorListResponse::isBalanced() const { return m_isBalanced; }
 
-Serializable* LocatorListResponse::create() {
-  return new LocatorListResponse();
+std::shared_ptr<Serializable> LocatorListResponse::create() {
+  return std::make_shared<LocatorListResponse>();
 }

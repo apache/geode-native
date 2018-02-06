@@ -91,7 +91,7 @@ class PositionPdxAuto : public apache::geode::client::PdxSerializable {
 
   int32_t getSharesOutstanding() { return sharesOutstanding; }
 
-  static PdxSerializable* createDeserializable();
+  static std::shared_ptr<PdxSerializable> createDeserializable();
 
   const char* getClassName() const;
 

@@ -79,7 +79,7 @@ enum enumQuerytest { id1, id2, id3 };
       return "com.example.PdxEnumTestClass";
     }
 
-    static PdxSerializable* createDeserializable() {
+    static std::shared_ptr<PdxSerializable> createDeserializable() {
       return new PdxEnumTestClass();
     }
   };

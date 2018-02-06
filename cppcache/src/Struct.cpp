@@ -137,7 +137,9 @@ const std::shared_ptr<Serializable> Struct::next() {
   return m_fieldValues[m_lastAccessIndex - 1];
 }
 
-Serializable* Struct::createDeserializable() { return new Struct(); }
+std::shared_ptr<Serializable> Struct::createDeserializable() {
+  return std::make_shared<Struct>();
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

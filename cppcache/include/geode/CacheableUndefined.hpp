@@ -54,8 +54,8 @@ class _GEODE_EXPORT CacheableUndefined : public Cacheable {
   /**
    * @brief creation function for undefined query result
    */
-  inline static Serializable* createDeserializable() {
-    return new CacheableUndefined();
+  inline static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<CacheableUndefined>();
   }
 
   /**

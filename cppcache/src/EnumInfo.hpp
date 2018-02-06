@@ -38,7 +38,9 @@ class _GEODE_EXPORT EnumInfo : public CacheableKey {
   ~EnumInfo();
   EnumInfo();
   EnumInfo(const char* enumClassName, const char* enumName, int32_t m_ordinal);
-  static Serializable* createDeserializable() { return new EnumInfo(); }
+  static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<EnumInfo>();
+  }
   virtual void toData(DataOutput& output) const override;
   virtual void fromData(DataInput& input) override;
   virtual size_t objectSize() const override {

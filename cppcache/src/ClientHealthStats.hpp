@@ -43,7 +43,7 @@ class ClientHealthStats : public Serializable {
   /**
    * @brief creation function for dates.
    */
-  static Serializable* createDeserializable();
+  static std::shared_ptr<Serializable> createDeserializable();
 
   /**
    *@brief Return the classId of the instance being serialized.
@@ -88,6 +88,8 @@ class ClientHealthStats : public Serializable {
   int64_t m_processCpuTime;     //
   int m_cpus;
   std::shared_ptr<CacheableDate> m_updateTime;  // Last updateTime
+
+  _GEODE_FRIEND_STD_SHARED_PTR(ClientHealthStats);
 };
 
 }  // namespace client

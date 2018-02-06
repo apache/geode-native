@@ -48,7 +48,7 @@ class LocatorListResponse : public ServerLocationResponse {
   const std::vector<ServerLocation>& getLocators() const;
   bool isBalanced() const;
   virtual ~LocatorListResponse() {}  // Virtual destructor
-  static Serializable* create();
+  static std::shared_ptr<Serializable> create();
 };
 
 }  // namespace client

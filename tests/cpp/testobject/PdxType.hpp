@@ -132,7 +132,9 @@ class TESTOBJECT_EXPORT Child : public Parent, public PdxSerializable {
     m_f = pr.readInt("m_f");
   }
 
-  static PdxSerializable* createDeserializable() { return new Child(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<Child>();
+  }
 
   bool equals(std::shared_ptr<PdxSerializable> obj) {
     if (obj == nullptr) return false;
@@ -225,7 +227,9 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
     m_chArray = pr.readCharArray("m_chArray");
   }
 
-  static PdxSerializable* createDeserializable() { return new CharTypes(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<CharTypes>();
+  }
 };
 
 /**********/
@@ -290,7 +294,9 @@ class TESTOBJECT_EXPORT Address : public PdxSerializable {
     _city = pr.readString("_city");
   }
 
-  static PdxSerializable* createDeserializable() { return new Address(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<Address>();
+  }
 
   int32_t getAptNum() { return _aptNumber; }
 
@@ -744,7 +750,9 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxType(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxType>();
+  }
 
   bool equals(PdxTests::PdxType& other, bool isPdxReadSerialized) const;
 

@@ -78,7 +78,9 @@ class DeltaEx : public Cacheable, public Delta {
   }
   virtual ~DeltaEx() {}
   void setDelta(bool delta) { this->isDelta = delta; }
-  static Serializable* create() { return new DeltaEx(); }
+  static std::shared_ptr<Serializable> create() {
+    return std::make_shared<DeltaEx>();
+  }
 };
 
 class PdxDeltaEx : public PdxSerializable, public Delta {
@@ -129,7 +131,9 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
     m_fromDataCount++;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxDeltaEx(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxDeltaEx>();
+  }
 
   std::shared_ptr<Delta> clone() const override {
     m_cloneCount++;

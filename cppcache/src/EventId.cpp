@@ -111,9 +111,10 @@ int64_t EventId::getEventIdData(DataInput& input, char numberCode) {
   return retVal;
 }
 
-Serializable* EventId::createDeserializable() {
-  return new EventId(false);  // use false since we dont want to inc sequence
-                              // (for de-serialization)
+std::shared_ptr<Serializable> EventId::createDeserializable() {
+  return std::make_shared<EventId>(false);
+  // use false since we dont want to inc sequence
+  // (for de-serialization)
 }
 
 int32_t EventId::classId() const { return 0; }

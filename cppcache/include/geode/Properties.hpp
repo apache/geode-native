@@ -149,7 +149,7 @@ class _GEODE_EXPORT Properties : public Serializable {
   virtual void fromData(DataInput& input) override;
 
   /** Return an empty instance for deserialization. */
-  static Serializable* createDeserializable();
+  static std::shared_ptr<Serializable> createDeserializable();
 
   /** Return class id for serialization. */
   virtual int32_t classId() const override;
@@ -172,6 +172,8 @@ class _GEODE_EXPORT Properties : public Serializable {
  private:
   Properties(const Properties&);
   const Properties& operator=(const Properties&);
+
+  _GEODE_FRIEND_STD_SHARED_PTR(Properties);
 };
 
 }  // namespace client

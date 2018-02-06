@@ -87,7 +87,9 @@ class TESTOBJECT_EXPORT PdxType1V1 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxType1V1(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxType1V1>();
+  }
 };
 
 /************************************************************
@@ -128,7 +130,9 @@ class TESTOBJECT_EXPORT PdxType2V1 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxType2V1(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxType2V1>();
+  }
 };
 
 /************************************************************
@@ -174,7 +178,9 @@ class TESTOBJECT_EXPORT PdxType3V1 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxType3V1(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxType3V1>();
+  }
 };
 
 /************************************************************
@@ -215,7 +221,9 @@ class TESTOBJECT_EXPORT PdxTypesV1R1 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxTypesV1R1(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxTypesV1R1>();
+  }
 };
 
 /************************************************************
@@ -256,7 +264,9 @@ class TESTOBJECT_EXPORT PdxTypesV1R2 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxTypesV1R2(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxTypesV1R2>();
+  }
 };
 
 /************************************************************
@@ -297,8 +307,8 @@ class TESTOBJECT_EXPORT PdxTypesIgnoreUnreadFieldsV1 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() {
-    return new PdxTypesIgnoreUnreadFieldsV1();
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxTypesIgnoreUnreadFieldsV1>();
   }
 };
 
@@ -360,8 +370,8 @@ class TESTOBJECT_EXPORT PdxVersionedV1 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() {
-    return new PdxVersionedV1();
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxVersionedV1>();
   }
 };
 
@@ -547,7 +557,9 @@ class TESTOBJECT_EXPORT TestEqualsV1 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new TestEqualsV1(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<TestEqualsV1>();
+  }
 };
 
 } /* namespace PdxTests */

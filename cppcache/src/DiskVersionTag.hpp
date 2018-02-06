@@ -61,9 +61,9 @@ class DiskVersionTag : public VersionTag {
     return static_cast<int8_t>(GeodeTypeIdsImpl::DiskVersionTag);
   }
 
-  static Serializable* createDeserializable(
+  static std::shared_ptr<Serializable> createDeserializable(
       MemberListForVersionStamp& memberListForVersionStamp) {
-    return new DiskVersionTag(memberListForVersionStamp);
+    return std::make_shared<DiskVersionTag>(memberListForVersionStamp);
   }
 
   /**

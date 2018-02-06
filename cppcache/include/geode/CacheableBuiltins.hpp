@@ -329,7 +329,9 @@ class CacheableContainerType : public Cacheable, public TBase {
                                                                         \
    public:                                                              \
     /** Factory function registered with serialization registry. */     \
-    static Serializable* createDeserializable() { return new k(); }     \
+    static std::shared_ptr<Serializable> createDeserializable() {       \
+      return std::make_shared<k>();                                     \
+    }                                                                   \
     /** Factory function to create a new default instance. */           \
     inline static std::shared_ptr<k> create() {                         \
       return std::make_shared<k>();                                     \
@@ -371,7 +373,9 @@ class CacheableContainerType : public Cacheable, public TBase {
                                                                               \
    public:                                                                    \
     /** Factory function registered with serialization registry. */           \
-    static Serializable* createDeserializable() { return new c(); }           \
+    static std::shared_ptr<Serializable> createDeserializable() {             \
+      return std::make_shared<c>();                                           \
+    }                                                                         \
     /** Factory function to create a new default instance. */                 \
     inline static std::shared_ptr<c> create() {                               \
       return std::make_shared<c>();                                           \
@@ -413,7 +417,9 @@ class CacheableContainerType : public Cacheable, public TBase {
                                                                        \
    public:                                                             \
     /** Factory function registered with serialization registry. */    \
-    static Serializable* createDeserializable() { return new c(); }    \
+    static std::shared_ptr<Serializable> createDeserializable() {      \
+      return std::make_shared<c>();                                    \
+    }                                                                  \
     /** Factory function to create a default instance. */              \
     inline static std::shared_ptr<c> create() {                        \
       return std::make_shared<c>();                                    \
@@ -534,8 +540,8 @@ class _GEODE_EXPORT CacheableArray : public Cacheable {
 
   inline const std::vector<T> value() const { return m_value; }
   inline int32_t length() const { return m_value.size(); }
-  static Serializable* createDeserializable() {
-    return new CacheableArray<T, GeodeTypeId>();
+  static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<CacheableArray<T, GeodeTypeId>>();
   }
   inline static std::shared_ptr<CacheableArray<T, GeodeTypeId>> create() {
     return std::make_shared<CacheableArray<T, GeodeTypeId>>();

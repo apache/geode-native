@@ -77,7 +77,9 @@ class DiskStoreId : public DSMemberForVersionStamp {
       return 0;
     }
   }
-  static Serializable* createDeserializable() { return new DiskStoreId(); }
+  static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<DiskStoreId>();
+  }
   std::string getHashKey();
 
   virtual int32_t hashcode() const {

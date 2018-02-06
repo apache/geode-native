@@ -34,7 +34,9 @@ class GetAllServersResponse : public Serializable {
   std::vector<ServerLocation> m_servers;
 
  public:
-  static Serializable* create() { return new GetAllServersResponse(); }
+  static std::shared_ptr<Serializable> create() {
+    return std::make_shared<GetAllServersResponse>();
+  }
   GetAllServersResponse() : Serializable() {}
   virtual void toData(DataOutput& output) const;
   virtual void fromData(DataInput& input);

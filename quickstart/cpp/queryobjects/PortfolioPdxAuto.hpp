@@ -101,7 +101,7 @@ class PortfolioPdxAuto : public apache::geode::client::PdxSerializable {
   virtual void toData(PdxWriter& pw);
   virtual void fromData(PdxReader& pr);
 
-  static PdxSerializable* createDeserializable();
+  static std::shared_ptr<PdxSerializable> createDeserializable();
 
   std::string toString() const;
 };

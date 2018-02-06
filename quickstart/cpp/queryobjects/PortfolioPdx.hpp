@@ -90,7 +90,9 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
 
   int8_t* getArrayZeroSize() { return arrayZeroSize; }
 
-  static PdxSerializable* createDeserializable() { return new PortfolioPdx(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return new PortfolioPdx();
+  }
 
   const char* getClassName() const { return "testobject.PortfolioPdx"; }
 

@@ -37,8 +37,8 @@ std::shared_ptr<CacheableToken> CacheableToken::tombstoneToken =
 
 //----- serialization
 
-Serializable* CacheableToken::createDeserializable() {
-  return new CacheableToken();
+std::shared_ptr<Serializable> CacheableToken::createDeserializable() {
+  return std::make_shared<CacheableToken>();
 }
 
 void CacheableToken::toData(DataOutput& output) const {

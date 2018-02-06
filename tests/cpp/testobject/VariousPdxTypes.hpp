@@ -71,7 +71,9 @@ class TESTOBJECT_EXPORT PdxTypes1 : public PdxSerializable {
     return className;
   }
   int32_t getm_i1() { return m_i1; }
-  static PdxSerializable* createDeserializable() { return new PdxTypes1(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxTypes1>();
+  }
 };
 
 /************************************************************
@@ -109,7 +111,9 @@ class TESTOBJECT_EXPORT PdxTypes2 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxTypes2(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxTypes2>();
+  }
 };
 
 /************************************************************
@@ -147,7 +151,9 @@ class TESTOBJECT_EXPORT PdxTypes3 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxTypes3(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxTypes3>();
+  }
 };
 
 /************************************************************
@@ -184,7 +190,9 @@ class TESTOBJECT_EXPORT PdxTypes4 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxTypes4(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxTypes4>();
+  }
 };
 
 /************************************************************
@@ -222,7 +230,9 @@ class TESTOBJECT_EXPORT PdxTypes5 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxTypes5(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxTypes5>();
+  }
 };
 
 /************************************************************
@@ -261,7 +271,9 @@ class TESTOBJECT_EXPORT PdxTypes6 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxTypes6(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxTypes6>();
+  }
 };
 
 /************************************************************
@@ -300,7 +312,9 @@ class TESTOBJECT_EXPORT PdxTypes7 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxTypes7(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxTypes7>();
+  }
 };
 
 /************************************************************
@@ -339,7 +353,9 @@ class TESTOBJECT_EXPORT PdxTypes8 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxTypes8(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxTypes8>();
+  }
 };
 
 /************************************************************
@@ -375,7 +391,9 @@ class TESTOBJECT_EXPORT PdxTypes9 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxTypes9(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxTypes9>();
+  }
 };
 
 /************************************************************
@@ -412,7 +430,9 @@ class TESTOBJECT_EXPORT PdxTypes10 : public PdxSerializable {
     return className;
   }
 
-  static PdxSerializable* createDeserializable() { return new PdxTypes10(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<PdxTypes10>();
+  }
 };
 
 /************************************************************
@@ -456,7 +476,9 @@ class TESTOBJECT_EXPORT NestedPdx : public PdxSerializable {
 
   const std::string& getString() { return m_s1; }
 
-  static PdxSerializable* createDeserializable() { return new NestedPdx(); }
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<NestedPdx>();
+  }
 };
 
 /************************************************************
@@ -501,8 +523,8 @@ class TESTOBJECT_EXPORT MixedVersionNestedPdx : public PdxSerializable {
 
   const std::string& getString() { return m_s1; }
 
-  static PdxSerializable* createDeserializable() {
-    return new MixedVersionNestedPdx();
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<MixedVersionNestedPdx>();
   }
 };
 
@@ -544,8 +566,8 @@ class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public Serializable {
   //    return className;
   //  }
 
-  static Serializable* createDeserializable() {
-    return new PdxInsideIGeodeSerializable();
+  static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<PdxInsideIGeodeSerializable>();
   }
 };
 
