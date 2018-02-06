@@ -26,23 +26,17 @@ namespace customserializer {
 
 class OrderSerializer : public PdxSerializer {
  public:
+  static const std::string CLASS_NAME_;
+
   OrderSerializer() = default;
 
   ~OrderSerializer() override = default;
 
-  void *fromData(const std::string &className, PdxReader &pdxReader) override;
+  std::shared_ptr<void> fromData(const std::string& className,
+                                 PdxReader& pdxReader) override;
 
-  bool toData(void *userObject, const std::string &className,
-              PdxWriter &pdxWriter) override;
-
-  UserDeallocator getDeallocator(const std::string &className) override;
-
-  UserObjectSizer getObjectSizer(const std::string &className) override;
-
-  static void deallocate(void *testObject, const std::string &className);
-
-  static size_t objectSize(const void *testObject,
-                           const std::string &className);
+  bool toData(const std::shared_ptr<const void>& userObject,
+              const std::string& className, PdxWriter& pdxWriter) override;
 
  private:
   static const std::string ORDER_ID_KEY_;

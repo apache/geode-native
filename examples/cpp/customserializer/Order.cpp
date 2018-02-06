@@ -19,15 +19,6 @@
 
 namespace customserializer {
 
-const std::string Order::CLASS_NAME_ = "com.example.Order";
-
-size_t Order::getSize() const {
-  size_t size = name_.length();
-  size += sizeof(order_id_);
-  size += sizeof(quantity_);
-  return size;
-}
-
 void Order::print() {
   std::cout << " OrderID: " << order_id_ << std::endl
             << " Product Name: " << name_ << std::endl

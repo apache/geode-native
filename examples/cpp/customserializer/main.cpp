@@ -38,16 +38,15 @@ int main(int argc, char **argv) {
   auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
   auto region = regionFactory.setPoolName("pool").create("custom_orders");
 
-  std::shared_ptr<PdxSerializer> orderSer =
-      std::shared_ptr<PdxSerializer>(new OrderSerializer());
+  auto orderSer = std::make_shared<OrderSerializer>();
   cache.getTypeRegistry().registerPdxSerializer(orderSer);
 
-  auto order1 = new Order(1, "product x", 42);
-  std::shared_ptr<PdxWrapper> pdxobj1(
-      new PdxWrapper(order1, Order::CLASS_NAME_, orderSer));
-  auto order2 = new Order(2, "product y", 37);
-  std::shared_ptr<PdxWrapper> pdxobj2(
-      new PdxWrapper(order2, Order::CLASS_NAME_, orderSer));
+  auto order1 = std::make_shared<Order>(1, "product x", 42);
+  auto pdxobj1 = std::make_shared<PdxWrapper>(
+      order1, OrderSerializer::CLASS_NAME_, orderSer);
+  auto order2 = std::make_shared<Order>(2, "product y", 37);
+  auto pdxobj2 = std::make_shared<PdxWrapper>(
+      order2, OrderSerializer::CLASS_NAME_, orderSer);
 
   std::cout << "Storing orders in the region" << std::endl;
   region->put("Customer1", pdxobj1);
@@ -56,7 +55,8 @@ int main(int argc, char **argv) {
   std::cout << "Getting the orders from the region" << std::endl;
   auto wrappedOrder =
       std::dynamic_pointer_cast<PdxWrapper>(region->get("Customer1"));
-  auto customer1Order = reinterpret_cast<Order *>(wrappedOrder->getObject());
+  auto customer1Order =
+      std::static_pointer_cast<Order>(wrappedOrder->getObject());
 
   customer1Order->print();
 

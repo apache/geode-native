@@ -25,20 +25,16 @@ namespace customserializer {
 
 class Order {
  public:
-  static const std::string CLASS_NAME_;
-
   inline Order(uint32_t order_id, std::string name, uint16_t quantity)
       : order_id_(order_id), name_(std::move(name)), quantity_(quantity){};
 
   ~Order() = default;
 
-  inline uint32_t getOrderID() { return order_id_; }
+  inline uint32_t getOrderID() const { return order_id_; }
 
   inline const std::string &getName() const { return name_; }
 
-  inline uint16_t getQuantity() { return quantity_; }
-
-  size_t getSize() const;
+  inline uint16_t getQuantity() const { return quantity_; }
 
   void print();
 
