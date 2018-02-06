@@ -67,7 +67,6 @@ class _GEODE_EXPORT PoolManager {
    * which is used to configure and create new {@link Pool}s.
    * @return the new pool factory
    */
-  //std::shared_ptr<PoolFactory> createFactory() const;
   PoolFactory createFactory() const;
 
   /**
