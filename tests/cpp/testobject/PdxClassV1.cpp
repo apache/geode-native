@@ -681,13 +681,8 @@ TestDiffTypePdxSV1::TestDiffTypePdxSV1(bool init) {
   }
 }
 
-bool TestDiffTypePdxSV1::equals(TestDiffTypePdxSV1 *obj) {
-  if (obj == NULL) return false;
-
-  TestDiffTypePdxSV1 *other = dynamic_cast<TestDiffTypePdxSV1 *>(obj);
-  if (other == NULL) return false;
-
-  if (other->_id == _id && other->_name == _name) {
+bool TestDiffTypePdxSV1::equals(const TestDiffTypePdxSV1& obj) {
+  if (obj._id == _id && obj._name == _name) {
     return true;
   }
 

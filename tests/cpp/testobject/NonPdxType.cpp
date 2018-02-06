@@ -114,12 +114,12 @@ bool PdxTests::NonPdxType::equals(PdxTests::NonPdxType& other,
     for (int i = 0; i < m_objectArray->size(); i++) {
       auto wrapper1 =
           std::dynamic_pointer_cast<PdxWrapper>(ot->m_objectArray->at(i));
-      NonPdxAddress* otherAddr1 =
-          reinterpret_cast<NonPdxAddress*>(wrapper1->getObject());
+      auto otherAddr1 =
+          std::static_pointer_cast<NonPdxAddress>(wrapper1->getObject());
       auto wrapper2 =
           std::dynamic_pointer_cast<PdxWrapper>(m_objectArray->at(i));
-      NonPdxAddress* myAddr1 =
-          reinterpret_cast<NonPdxAddress*>(wrapper2->getObject());
+      auto myAddr1 =
+          std::static_pointer_cast<NonPdxAddress>(wrapper2->getObject());
       if (!otherAddr1->equals(*myAddr1)) return false;
     }
   }

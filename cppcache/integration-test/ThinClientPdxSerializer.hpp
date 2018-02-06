@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZER_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,18 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * testThinClientPdxSerializer.cpp
- *
- *  Created on: Apr 19, 2012
- *      Author: vrao
- */
 
-#include "fw_dunit.hpp"
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZER_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZER_H_
+
 #include <string>
 
+#include <ace/OS.h>
+#include <ace/High_Res_Timer.h>
+
+#include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "Utils.hpp"
 #include "testobject/PdxClassV1.hpp"
@@ -38,6 +33,7 @@
 #include "testobject/NonPdxType.hpp"
 #include "ThinClientPdxSerializers.hpp"
 #include "CacheRegionHelper.hpp"
+
 using namespace apache::geode::client;
 using namespace test;
 using namespace PdxTests;
@@ -165,20 +161,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
     auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
-    serializationRegistry->setPdxSerializer(std::make_shared<TestPdxSerializer>());
+    serializationRegistry->setPdxSerializer(
+        std::make_shared<TestPdxSerializer>());
+
+    auto pdxSerializer =
+        CacheRegionHelper::getCacheImpl(getHelper()->getCache().get())
+            ->getSerializationRegistry()
+            ->getPdxSerializer();
 
     auto regPtr0 = getHelper()->getRegion("DistRegionAck");
     auto keyport = CacheableKey::create(1);
 
-    auto npt1 = new PdxTests::NonPdxType(
-        CacheRegionHelper::getCacheImpl(getHelper()->getCache().get())
-            ->getSerializationRegistry()
-            ->getPdxSerializer());
-    auto pdxobj = std::make_shared<PdxWrapper>(
-        npt1, CLASSNAME1,
-        CacheRegionHelper::getCacheImpl(getHelper()->getCache().get())
-            ->getSerializationRegistry()
-            ->getPdxSerializer());
+    auto npt1 = std::make_shared<PdxTests::NonPdxType>(pdxSerializer);
+    auto pdxobj = std::make_shared<PdxWrapper>(npt1, CLASSNAME1, pdxSerializer);
     regPtr0->put(keyport, pdxobj);
 
     auto obj2 = std::dynamic_pointer_cast<PdxWrapper>(regPtr0->get(keyport));
@@ -189,7 +184,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
     ASSERT(isEqual == true,
            "Task JavaPutGet:Objects of type NonPdxType should be equal");
 
-    auto npt2 = reinterpret_cast<PdxTests::NonPdxType*>(obj2->getObject());
+    auto npt2 =
+        std::static_pointer_cast<PdxTests::NonPdxType>(obj2->getObject());
     ASSERT(npt1->equals(*npt2, false), "NonPdxType compare");
   }
 END_TASK_DEFINITION
@@ -199,7 +195,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, JavaGet)
     auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
-    serializationRegistry->setPdxSerializer(std::make_shared<TestPdxSerializer>());
+    serializationRegistry->setPdxSerializer(
+        std::make_shared<TestPdxSerializer>());
 
     LOGDEBUG("JavaGet-1 Line_309");
     auto regPtr0 = getHelper()->getRegion("DistRegionAck");
@@ -207,12 +204,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, JavaGet)
     auto keyport1 = CacheableKey::create(1);
     LOGDEBUG("JavaGet-2 Line_314");
     auto obj1 = std::dynamic_pointer_cast<PdxWrapper>(regPtr0->get(keyport1));
-    auto npt1 = reinterpret_cast<PdxTests::NonPdxType*>(obj1->getObject());
+    auto npt1 =
+        std::static_pointer_cast<PdxTests::NonPdxType>(obj1->getObject());
     LOGDEBUG("JavaGet-3 Line_316");
     auto keyport2 = CacheableKey::create("putFromjava");
     LOGDEBUG("JavaGet-4 Line_316");
     auto obj2 = std::dynamic_pointer_cast<PdxWrapper>(regPtr0->get(keyport2));
-    auto npt2 = reinterpret_cast<PdxTests::NonPdxType*>(obj2->getObject());
+    auto npt2 =
+        std::static_pointer_cast<PdxTests::NonPdxType>(obj2->getObject());
     LOGDEBUG("JavaGet-5 Line_320");
   }
 END_TASK_DEFINITION
@@ -225,26 +224,29 @@ DUNIT_TASK_DEFINITION(CLIENT1, putFromVersion1_PS)
     auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
-    serializationRegistry->setPdxSerializer(std::make_shared<TestPdxSerializerForV1>());
+    serializationRegistry->setPdxSerializer(
+        std::make_shared<TestPdxSerializerForV1>());
 
-    // Create New object and wrap it in PdxWrapper (owner)
-    auto npt1 = new PdxTests::TestDiffTypePdxSV1(true);
-    auto pdxobj = std::make_shared<PdxWrapper>(
-        npt1, V1CLASSNAME2,
+    auto pdxSerializer =
         CacheRegionHelper::getCacheImpl(getHelper()->getCache().get())
             ->getSerializationRegistry()
-            ->getPdxSerializer());
+            ->getPdxSerializer();
+
+    // Create New object and wrap it in PdxWrapper (owner)
+    auto npt1 = std::make_shared<PdxTests::TestDiffTypePdxSV1>(true);
+    auto pdxobj =
+        std::make_shared<PdxWrapper>(npt1, V1CLASSNAME2, pdxSerializer);
 
     // PUT
     regPtr0->put(key, pdxobj);
 
     // GET
     auto obj2 = std::dynamic_pointer_cast<PdxWrapper>(regPtr0->get(key));
-    auto npt2 =
-        reinterpret_cast<PdxTests::TestDiffTypePdxSV1*>(obj2->getObject());
+    auto npt2 = std::static_pointer_cast<PdxTests::TestDiffTypePdxSV1>(
+        obj2->getObject());
 
     // Equal check
-    bool isEqual = npt1->equals(npt2);
+    bool isEqual = npt1->equals(*npt2);
     LOGDEBUG("putFromVersion1_PS isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Task putFromVersion1_PS:Objects of type TestPdxSerializerForV1 "
@@ -263,24 +265,26 @@ DUNIT_TASK_DEFINITION(CLIENT2, putFromVersion2_PS)
     serializationRegistry->setPdxSerializer(
         std::shared_ptr<PdxSerializer>(new TestPdxSerializerForV2));
 
-    // Create New object and wrap it in PdxWrapper (owner)
-    auto npt1 = new PdxTests::TestDiffTypePdxSV2(true);
-    auto pdxobj = std::make_shared<PdxWrapper>(
-        npt1, V2CLASSNAME4,
+    auto pdxSerializer =
         CacheRegionHelper::getCacheImpl(getHelper()->getCache().get())
             ->getSerializationRegistry()
-            ->getPdxSerializer());
+            ->getPdxSerializer();
+
+    // Create New object and wrap it in PdxWrapper (owner)
+    auto npt1 = std::make_shared<PdxTests::TestDiffTypePdxSV2>(true);
+    auto pdxobj =
+        std::make_shared<PdxWrapper>(npt1, V2CLASSNAME4, pdxSerializer);
 
     // PUT
     regPtr0->put(key, pdxobj);
 
     // GET
     auto obj2 = std::dynamic_pointer_cast<PdxWrapper>(regPtr0->get(key));
-    auto npt2 =
-        reinterpret_cast<PdxTests::TestDiffTypePdxSV2*>(obj2->getObject());
+    auto npt2 = std::static_pointer_cast<PdxTests::TestDiffTypePdxSV2>(
+        obj2->getObject());
 
     // Equal check
-    bool isEqual = npt1->equals(npt2);
+    bool isEqual = npt1->equals(*npt2);
     LOGDEBUG("putFromVersion2_PS isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Task putFromVersion2_PS:Objects of type TestPdxSerializerForV2 "
@@ -298,12 +302,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, getputFromVersion1_PS)
 
     // GET
     auto obj2 = std::dynamic_pointer_cast<PdxWrapper>(regPtr0->get(key));
-    auto npt2 =
-        reinterpret_cast<PdxTests::TestDiffTypePdxSV1*>(obj2->getObject());
+    auto npt2 = std::static_pointer_cast<PdxTests::TestDiffTypePdxSV1>(
+        obj2->getObject());
 
     // Create New object and Compare
-    auto npt1 = new PdxTests::TestDiffTypePdxSV1(true);
-    bool isEqual = npt1->equals(npt2);
+    auto npt1 = std::make_shared<PdxTests::TestDiffTypePdxSV1>(true);
+    bool isEqual = npt1->equals(*npt2);
     LOGDEBUG("getputFromVersion1_PS-1 isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Task getputFromVersion1_PS:Objects of type TestPdxSerializerForV1 "
@@ -314,20 +318,22 @@ DUNIT_TASK_DEFINITION(CLIENT1, getputFromVersion1_PS)
 
     auto key2 = CacheableKey::create(2);
     obj2 = std::dynamic_pointer_cast<PdxWrapper>(regPtr0->get(key2));
-    auto pRet =
-        reinterpret_cast<PdxTests::TestDiffTypePdxSV1*>(obj2->getObject());
-    isEqual = npt1->equals(pRet);
+    auto pRet = std::static_pointer_cast<PdxTests::TestDiffTypePdxSV1>(
+        obj2->getObject());
+    isEqual = npt1->equals(*pRet);
     LOGDEBUG("getputFromVersion1_PS-2 isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Task getputFromVersion1_PS:Objects of type TestPdxSerializerForV1 "
            "should be equal");
 
-    // Get then Put.. this should Not merge data back
-    auto pdxobj = std::make_shared<PdxWrapper>(
-        npt1, V1CLASSNAME2,
+    auto pdxSerializer =
         CacheRegionHelper::getCacheImpl(getHelper()->getCache().get())
             ->getSerializationRegistry()
-            ->getPdxSerializer());
+            ->getPdxSerializer();
+
+    // Get then Put.. this should Not merge data back
+    auto pdxobj =
+        std::make_shared<PdxWrapper>(npt1, V1CLASSNAME2, pdxSerializer);
     regPtr0->put(key2, pdxobj);
   }
 END_TASK_DEFINITION
@@ -342,10 +348,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, getAtVersion2_PS)
 
     // GET
     auto obj2 = std::dynamic_pointer_cast<PdxWrapper>(regPtr0->get(key));
-    auto pRet =
-        reinterpret_cast<PdxTests::TestDiffTypePdxSV2*>(obj2->getObject());
+    auto pRet = std::static_pointer_cast<PdxTests::TestDiffTypePdxSV2>(
+        obj2->getObject());
 
-    bool isEqual = np->equals(pRet);
+    bool isEqual = np->equals(*pRet);
     LOGDEBUG("getAtVersion2_PS-1 isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
@@ -356,8 +362,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, getAtVersion2_PS)
     np = new PdxTests::TestDiffTypePdxSV2(true);
 
     obj2 = std::dynamic_pointer_cast<PdxWrapper>(regPtr0->get(key2));
-    pRet = reinterpret_cast<PdxTests::TestDiffTypePdxSV2*>(obj2->getObject());
-    isEqual = np->equals(pRet);
+    pRet = std::static_pointer_cast<PdxTests::TestDiffTypePdxSV2>(
+        obj2->getObject());
+    isEqual = np->equals(*pRet);
 
     LOGDEBUG("getAtVersion2_PS-2 isEqual = %d", isEqual);
     ASSERT(

@@ -403,7 +403,7 @@ class TESTOBJECT_EXPORT TestDiffTypePdxSV1 {
 
   TestDiffTypePdxSV1(bool init);
 
-  bool equals(TestDiffTypePdxSV1* obj);
+  bool equals(const TestDiffTypePdxSV1& obj);
 };
 
 /************************************************************
@@ -431,18 +431,12 @@ class TestPdxSerializerForV1 : public PdxSerializer {
     }
   }
 
-  static size_t objectSize(const void* testObject,
+  static size_t objectSize(const std::shared_ptr<const void>& testObject,
                            const std::string& className) {
     // ASSERT(strcmp(className, V1CLASSNAME1) == 0 || strcmp(className,
     // V1CLASSNAME2) == 0, "Unexpected classname in objectSize()");
     LOGINFO("TestPdxSerializer::objectSize called");
     return 12345;  // dummy value
-  }
-
-  UserDeallocator getDeallocator(const std::string& className) override {
-    // ASSERT(strcmp(className, V1CLASSNAME1) == 0 || strcmp(className,
-    // V1CLASSNAME2) == 0, "Unexpected classname in getDeallocator");
-    return deallocate;
   }
 
   UserObjectSizer getObjectSizer(const std::string& className) override {
@@ -451,20 +445,21 @@ class TestPdxSerializerForV1 : public PdxSerializer {
     return objectSize;
   }
 
-  void* fromDataForTestKeyV1(PdxReader& pr) {
+  std::shared_ptr<void> fromDataForTestKeyV1(PdxReader& pr) {
     try {
-      PdxTests::TestKeyV1* tkv1 = new PdxTests::TestKeyV1;
+      auto tkv1 = std::make_shared<PdxTests::TestKeyV1>();
       tkv1->_id = pr.readString("_id");
-      return (void*)tkv1;
+      return tkv1;
     } catch (...) {
-      return NULL;
+      return nullptr;
     }
   }
 
-  bool toDataForTestKeyV1(void* testObject, PdxWriter& pw) {
+  bool toDataForTestKeyV1(const std::shared_ptr<const void>& testObject,
+                          PdxWriter& pw) {
     try {
-      PdxTests::TestKeyV1* tkv1 =
-          reinterpret_cast<PdxTests::TestKeyV1*>(testObject);
+      auto tkv1 =
+          std::static_pointer_cast<const PdxTests::TestKeyV1>(testObject);
       pw.writeString("_id", tkv1->_id);
 
       return true;
@@ -473,20 +468,22 @@ class TestPdxSerializerForV1 : public PdxSerializer {
     }
   }
 
-  void* fromDataForTestDiffTypePdxSV1(PdxReader& pr) {
+  std::shared_ptr<void> fromDataForTestDiffTypePdxSV1(PdxReader& pr) {
     try {
-      PdxTests::TestDiffTypePdxSV1* dtpv1 = new PdxTests::TestDiffTypePdxSV1;
+      auto dtpv1 = std::make_shared<PdxTests::TestDiffTypePdxSV1>();
       dtpv1->_id = pr.readString("_id");
       dtpv1->_name = pr.readString("_name");
-      return (void*)dtpv1;
+      return dtpv1;
     } catch (...) {
-      return NULL;
+      return nullptr;
     }
   }
 
-  bool toDataForTestDiffTypePdxSV1(void* testObject, PdxWriter& pw) {
+  bool toDataForTestDiffTypePdxSV1(
+      const std::shared_ptr<const void>& testObject, PdxWriter& pw) {
     try {
-      auto dtpv1 = reinterpret_cast<PdxTests::TestDiffTypePdxSV1*>(testObject);
+      auto dtpv1 = std::static_pointer_cast<const PdxTests::TestDiffTypePdxSV1>(
+          testObject);
       pw.writeString("_id", dtpv1->_id);
       pw.writeString("_name", dtpv1->_name);
 
@@ -496,7 +493,8 @@ class TestPdxSerializerForV1 : public PdxSerializer {
     }
   }
 
-  virtual void* fromData(const std::string& className, PdxReader& pr) override {
+  std::shared_ptr<void> fromData(const std::string& className,
+                                 PdxReader& pr) override {
     // ASSERT(strcmp(className, V1CLASSNAME1) == 0 || strcmp(className,
     // V1CLASSNAME2) == 0, "Unexpected classname in fromData");
 
@@ -508,12 +506,12 @@ class TestPdxSerializerForV1 : public PdxSerializer {
 
     } else {
       LOGINFO("TestPdxSerializerForV1::fromdata() Invalid Class Name");
-      return NULL;
+      return nullptr;
     }
   }
 
-  virtual bool toData(void* testObject, const std::string& className,
-                      PdxWriter& pw) override {
+  virtual bool toData(const std::shared_ptr<const void>& testObject,
+                      const std::string& className, PdxWriter& pw) override {
     // ASSERT(strcmp(className, V1CLASSNAME1) == 0 || strcmp(className,
     // V1CLASSNAME2) == 0, "Unexpected classname in toData");
 

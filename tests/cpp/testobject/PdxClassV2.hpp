@@ -430,7 +430,7 @@ class TESTOBJECT_EXPORT TestDiffTypePdxSV2 {
 
   TestDiffTypePdxSV2(bool init);
 
-  bool equals(TestDiffTypePdxSV2* obj);
+  bool equals(const TestDiffTypePdxSV2& obj);
 };
 
 /************************************************************
@@ -458,19 +458,12 @@ class TestPdxSerializerForV2 : public PdxSerializer {
     }
   }
 
-  static size_t objectSize(const void* testObject,
+  static size_t objectSize(const std::shared_ptr<const void> testObject,
                            const std::string& className) {
     // ASSERT(strcmp(className, V2CLASSNAME3) == 0 || strcmp(className,
     // V2CLASSNAME4) == 0, "Unexpected classname in objectSize()");
     LOGINFO("TestPdxSerializer::objectSize called");
     return 12345;  // dummy value
-  }
-
-  virtual UserDeallocator getDeallocator(
-      const std::string& className) override {
-    // ASSERT(strcmp(className, V2CLASSNAME3) == 0 || strcmp(className,
-    // V2CLASSNAME4) == 0, "Unexpected classname in getDeallocator");
-    return deallocate;
   }
 
   virtual UserObjectSizer getObjectSizer(
@@ -480,20 +473,21 @@ class TestPdxSerializerForV2 : public PdxSerializer {
     return objectSize;
   }
 
-  void* fromDataForTestKeyV2(PdxReader& pr) {
+  std::shared_ptr<void> fromDataForTestKeyV2(PdxReader& pr) {
     try {
-      PdxTests::TestKeyV2* tkv1 = new PdxTests::TestKeyV2;
+      auto tkv1 = std::shared_ptr<PdxTests::TestKeyV2>();
       tkv1->_id = pr.readString("_id");
-      return (void*)tkv1;
+      return tkv1;
     } catch (...) {
-      return NULL;
+      return nullptr;
     }
   }
 
-  bool toDataForTestKeyV2(void* testObject, PdxWriter& pw) {
+  bool toDataForTestKeyV2(const std::shared_ptr<const void>& testObject,
+                          PdxWriter& pw) {
     try {
-      PdxTests::TestKeyV2* tkv1 =
-          reinterpret_cast<PdxTests::TestKeyV2*>(testObject);
+      auto tkv1 =
+          std::static_pointer_cast<const PdxTests::TestKeyV2>(testObject);
       pw.writeString("_id", tkv1->_id);
 
       return true;
@@ -502,22 +496,23 @@ class TestPdxSerializerForV2 : public PdxSerializer {
     }
   }
 
-  void* fromDataForTestDiffTypePdxSV2(PdxReader& pr) {
+  std::shared_ptr<void> fromDataForTestDiffTypePdxSV2(PdxReader& pr) {
     try {
-      PdxTests::TestDiffTypePdxSV2* dtpv1 = new PdxTests::TestDiffTypePdxSV2;
+      auto dtpv1 = std::make_shared<PdxTests::TestDiffTypePdxSV2>();
       dtpv1->_id = pr.readString("_id");
       dtpv1->_name = pr.readString("_name");
       dtpv1->_count = pr.readInt("_count");
-      return (void*)dtpv1;
+      return dtpv1;
     } catch (...) {
-      return NULL;
+      return nullptr;
     }
   }
 
-  bool toDataForTestDiffTypePdxSV2(void* testObject, PdxWriter& pw) {
+  bool toDataForTestDiffTypePdxSV2(
+      const std::shared_ptr<const void>& testObject, PdxWriter& pw) {
     try {
-      PdxTests::TestDiffTypePdxSV2* dtpv1 =
-          reinterpret_cast<PdxTests::TestDiffTypePdxSV2*>(testObject);
+      auto dtpv1 = std::static_pointer_cast<const PdxTests::TestDiffTypePdxSV2>(
+          testObject);
       pw.writeString("_id", dtpv1->_id);
       pw.markIdentityField("_id");
       pw.writeString("_name", dtpv1->_name);
@@ -529,7 +524,8 @@ class TestPdxSerializerForV2 : public PdxSerializer {
     }
   }
 
-  void* fromData(const std::string& className, PdxReader& pr) override {
+  std::shared_ptr<void> fromData(const std::string& className,
+                                 PdxReader& pr) override {
     // ASSERT(strcmp(className, V2CLASSNAME3) == 0 || strcmp(className,
     // V2CLASSNAME4) == 0, "Unexpected classname in fromData");
 
@@ -545,8 +541,8 @@ class TestPdxSerializerForV2 : public PdxSerializer {
     }
   }
 
-  bool toData(void* testObject, const std::string& className,
-              PdxWriter& pw) override {
+  bool toData(const std::shared_ptr<const void>& testObject,
+              const std::string& className, PdxWriter& pw) override {
     // ASSERT(strcmp(className, V2CLASSNAME3) == 0 || strcmp(className,
     // V2CLASSNAME4) == 0, "Unexpected classname in toData");
 
