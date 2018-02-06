@@ -1,0 +1,31 @@
+---
+title:  Property Collections and Logging APIs
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+This section describes classes for property collections and logging.
+
+-   **Properties** **class**. Provides a collection of properties, each of which is a key/value pair. Each key is a string, and the value can be a string or an integer.
+-   **Log class**. Defines methods available to clients that need to write a log message to their <%=vars.product_name%> system shared log file. Any attempt to use an instance after its connection is disconnected throws a **NotConnectedException**. For any logged message the log file contains:
+    -   The log level of the message.
+    -   The time the message was logged.
+    -   The ID of the connection and thread that logged the message.
+    -   The message itself, possibly with an exception including its stack trace.
+
+

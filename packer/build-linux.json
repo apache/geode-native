@@ -72,7 +72,7 @@
         "rhel/install-repos.sh",
         "rhel/install-jdk-1.8.sh",
         "rhel/install-build-rpms.sh",
-        "rhel/install-scl-devtoolset-3.sh",
+        "rhel/install-scl-devtoolset.sh",
         "rhel/install-cmake.sh"
       ]
     },

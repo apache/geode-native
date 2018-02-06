@@ -1,0 +1,56 @@
+---
+title:  Using Apache.Geode.dll As a Private Assembly
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+To access `Apache.Geode.dll` as a private assembly, you need to specify a `.config` file for your application.
+
+The file needs to be the same name as your application, with a `.config` suffix. For example, the `.config` file for `main.exe` would be `main.exe.config`. The two files must reside in the same directory.
+
+Follow these steps to create a `.config` file:
+
+1.  Copy `%GFCPP%/docs/default.exe.config` to the appropriate location.
+2.  Rename `default.exe.config` to the name of your application.
+3.  Change the `href` attribute of the `CodeBase` element to point to your `Apache.Geode.dll` file. Any of three path types – http, relative, or absolute – will work.
+
+## A Sample .config File
+
+The following example shows an excerpt of a `.config` file. The `PublicKeyToken` value is only an example, and the codebase version value is not set correctly. See `%GFCPP%/docs/default.exe.config` for an actual example for this release.
+
+``` pre
+<configuration>
+   <runtime>
+      <assemblyBinding
+         xmlns="urn:schemas-microsoft-com:asm.v1">
+         <dependentAssembly>
+            <assemblyIdentity name="Apache.Geode"
+               publicKeyToken="126e6338d9f55e0c"
+               culture="neutral" />
+            <codeBase version="0.0.0.0"
+               href="../../bin/Apache.Geode.dll"/>
+         </dependentAssembly>
+      </assemblyBinding>
+   </runtime>
+</configuration>
+```
+
+**Note:**
+If the `.config` file contain errors, no warning or error messages are issued. The application runs as if no `.config` file is present.
+
+

@@ -1,0 +1,136 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include <ace/OS_NS_sys_utsname.h>
+
+#include <geode/internal/geode_globals.hpp>
+
+#include "config.h"
+#include "HostStatHelper.hpp"
+#include "GeodeStatisticsFactory.hpp"
+#include "../Assert.hpp"
+
+namespace apache {
+namespace geode {
+namespace statistics {
+
+int32_t HostStatHelper::PROCESS_STAT_FLAG = 1;
+int32_t HostStatHelper::SYSTEM_STAT_FLAG = 2;
+GFS_OSTYPES HostStatHelper::osCode =
+    static_cast<GFS_OSTYPES>(0);  // Default OS is Linux
+ProcessStats* HostStatHelper::processStats = nullptr;
+
+void HostStatHelper::initOSCode() {
+  ACE_utsname u;
+  ACE_OS::uname(&u);
+  std::string osName(u.sysname);
+
+  if (osName == "Linux") {
+    osCode = GFS_OSTYPE_LINUX;
+  } else if ((osName == "Windows") || (osName == "Win32")) {
+    osCode = GFS_OSTYPE_WINDOWS;
+  } else if (osName == "SunOS") {
+    osCode = GFS_OSTYPE_SOLARIS;
+  } else if (osName == "Darwin") {
+    osCode = GFS_OSTYPE_MACOSX;
+  } else {
+    char buf[1024] = {0};
+    ACE_OS::snprintf(buf, 1024,
+                     "HostStatHelper::initOSTypes:unhandled os type: %s",
+                     osName.c_str());
+    throw IllegalArgumentException(buf);
+  }
+}
+
+void HostStatHelper::refresh() {
+  if (processStats != nullptr) {
+#if defined(_SOLARIS)
+    HostStatHelperSolaris::refreshProcess(processStats);
+#elif defined(_LINUX)
+    HostStatHelperLinux::refreshProcess(processStats);
+#else
+    HostStatHelperNull::refreshProcess(processStats);
+#endif
+  }
+}
+
+void HostStatHelper::newProcessStats(GeodeStatisticsFactory* statisticsFactory,
+                                     int64_t pid, const char* name) {
+  // Init OsCode
+  initOSCode();
+
+  // Create processStats , Internally they will create own stats
+  switch (osCode) {
+    case GFS_OSTYPE_SOLARIS:
+      processStats = new SolarisProcessStats(statisticsFactory, pid, name);
+      break;
+    case GFS_OSTYPE_LINUX:
+      processStats = new LinuxProcessStats(statisticsFactory, pid, name);
+      break;
+    case GFS_OSTYPE_WINDOWS:
+      processStats = new WindowsProcessStats(statisticsFactory, pid, name);
+      break;
+    case GFS_OSTYPE_MACOSX:
+      processStats = new NullProcessStats(pid, name);
+      break;
+    default:
+      throw IllegalArgumentException(
+          "HostStatHelper::newProcess:unhandled osCodem");
+  }
+  GF_D_ASSERT(processStats != nullptr);
+}
+
+void HostStatHelper::close() {
+  if (processStats) {
+    processStats->close();
+  }
+}
+
+void HostStatHelper::cleanup() {
+#if defined(_SOLARIS)
+  HostStatHelperSolaris::closeHostStatHelperSolaris();  // close kstats
+#endif
+  if (processStats) {
+    delete processStats;
+    processStats = nullptr;
+  }
+}
+
+int32_t HostStatHelper::getCpuUsage() {
+  if (HostStatHelper::processStats != nullptr) {
+    return HostStatHelper::processStats->getCpuUsage();
+  }
+  return 0;
+}
+
+int64_t HostStatHelper::getCpuTime() {
+  if (HostStatHelper::processStats != nullptr) {
+    return HostStatHelper::processStats->getAllCpuTime();
+  }
+  return 0;
+}
+
+int32_t HostStatHelper::getNumThreads() {
+  if (HostStatHelper::processStats != nullptr) {
+    return HostStatHelper::processStats->getNumThreads();
+  }
+  return 0;
+}
+
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

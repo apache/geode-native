@@ -17,14 +17,18 @@
 
 set -e
 
+pkg change-facet facet.version-lock.consolidation/sunpro/sunpro-incorporation=false
+pkg update sunpro-incorporation || true
+
 pkg set-publisher \
     -k /var/pkg/ssl/pkg.oracle.com.key.pem \
     -c /var/pkg/ssl/pkg.oracle.com.certificate.pem \
     -G '*' -g https://pkg.oracle.com/solarisstudio/release solarisstudio
 
-pkg install -v solarisstudio-124/c++  solarisstudio-124/dbx
+pkg install --accept -v developerstudio-126/c++  developerstudio-126/dbx
 
-echo 'PATH=$PATH:/opt/solarisstudio12.4/bin; export PATH' >> ~/.profile
-
-echo 'PATH=$PATH:/opt/solarisstudio12.4/bin; export PATH' >> ~/.bashrc
-echo 'PATH=$PATH:/opt/csw//bin; export PATH' >> ~/.bashrc
+p='PATH=$PATH:/opt/developerstudio12.6/bin; export PATH'
+echo "$p" >> ~/.profile
+echo "$p" >> ~/.bashrc
+echo "$p" >> /etc/skel/.profile
+echo "$p" >> /etc/skel/.bashrc

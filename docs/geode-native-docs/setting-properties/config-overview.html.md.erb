@@ -1,0 +1,48 @@
+---
+title:  Configuring the Client and Server
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+You can configure clients through files and API calls. The servers are configured through command-line input and configuration files.
+
+-   **[Client Configuration](client-config.html)**
+
+    You configure the client in two files: `geode.properties` for system-level configuration and `cache.xml` for cache-level configuration.
+
+-   **[Cache Server Configuration](cache-server-config.html)**
+
+    You configure the cache server in two files: `gemfire.properties` for server system-level configuration and `cache.xml` for cache-level configuration.
+
+-   **[Attribute Definition Priority](attribute-def-priority.html)**
+
+    You can specify attributes in different ways, which can cause conflicting definitions. Applications can be configured programmatically, and that has priority over other settings.
+
+-   **[Search Path for Multiple Properties Files](propfile-search-path.html)**
+
+    The client and server processes first look for their properties file in the <code>_product-dir_/defaultSystem</code> directory, then in the working directory.
+
+-   **[Overriding Properties File Settings](propfile-overriding.html)**
+
+    Application developers have the option of configuring system attributes programmatically, rather than using the `geode.properties` file.
+
+-   **[Defining Properties Programmatically](define-programmatically.html)**
+
+    You can pass in specific properties programmatically by using a `Properties` object to define the non-default properties.
+
+

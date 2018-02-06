@@ -1,0 +1,41 @@
+---
+title:  About the Client Cache
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+The cache consists of data regions, each of which can contain any number of entries. Region entries hold the cached data. Every entry has a key that uniquely identifies it within the region and a value where the data object is stored.
+
+The `Cache` instance allows your process to set general parameters for communication between a cache and other caches in the distributed system, and to create and access any region in the cache.
+
+Regions are created from the `Cache` instance. Regions provide the entry point to the interfaces for instances of `Region` and `RegionEntry`.
+
+## <a id="native-client-cache__section_A0F2E9EF30324736BD0D5F92FE3D1BD7" class="no-quick-link"></a>Main Features and Functionality
+
+The client cache provides the following features and functionality.
+
+-   Local and distributed data caching for fast access.
+-   Data distribution between applications on the same or different platforms.
+-   Local and remote data loading through application plug-ins.
+-   Application plug-ins for synchronous and asynchronous handling of data events.
+-   Automated and application-specific data eviction for freeing up space in the cache, including optional overflow to disk.
+-   System message logging, and statistics gathering and archiving.
+
+For more information specific to your client programming language, see [C++ Client API](../cpp-caching-api/cpp-caching-api.html) or [.NET Client API](../dotnet-caching-api/dotnet-caching-api.html).
+
+

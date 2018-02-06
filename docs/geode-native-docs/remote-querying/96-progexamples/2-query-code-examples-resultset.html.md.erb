@@ -1,0 +1,85 @@
+---
+title:  Query Code Samples Returning ResultSet
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+API examples demonstrate methods for returning `ResultSet` for both built-in and user-defined data types.
+
+**Query Returns a ResultSet for a Built-In Data Type**
+
+``` pre
+QueryServicePtr qrySvcPtr = cachePtr->getQueryService("examplePool");
+QueryPtr query = qrySvcPtr->newQuery("select distinct pkid from /portfolios");
+//specify 10 seconds for the query timeout period
+SelectResultsPtr results = query->execute(10);
+if (results == NULLPTR)
+{
+   printf( "\nNo results returned from the server");
+}
+
+//obtaining a handle to resultset
+ResultSetPtr rs(dynamic_cast<ResultSet*> (results.ptr()));
+if (rs == NULLPTR)
+{
+   printf ("\nResultSet is not obtained \n"); return;
+}
+//iterating through the resultset using row index.
+for (int32_t row=0; row < rs->size(); row++)
+{
+   SerializablePtr ser((*rs)[row]);
+   CacheableStringPtr str(dynamic_cast<CacheableString*> (ser.ptr()));
+   if (str != NULLPTR)
+   {
+      printf("\n string column contains - %s \n", str->asChar() );
+   }
+}
+```
+
+**Query Returns a ResultSet for a User-Defined Data Type**
+
+``` pre
+QueryServicePtr qrySvcPtr = cachePtr->getQueryService("examplePool");
+const char * querystring = "select distinct * from /portfolios";
+QueryPtr query = qrySvcPtr->newQuery(querystring);
+//specify 10 seconds for the query timeout period
+SelectResultsPtr results = query->execute(10);
+if (results == NULLPTR)
+{
+   printf( "\nNo results returned from the server");
+}
+//obtaining a handle to resultset
+ResultSetPtr rs(dynamic_cast<ResultSet*> (results.ptr()));
+if (rs == NULLPTR)
+{
+   printf ("\nResultSet is not obtained \n"); return;
+}
+//iterating through the resultset using iterators.
+SelectResultsIterator iter = rs->getIterator();
+while (iter.hasNext())
+{
+   SerializablePtr ser = iter.next();
+   PortfolioPtr port(dynamic_cast<Portfolio*> (ser.ptr()));
+   if (port != NULLPTR)
+   {
+      printf("\nPortfolio object is - %s \n", port->toString().c_str() );
+   }
+} // end of rows
+```
+
+

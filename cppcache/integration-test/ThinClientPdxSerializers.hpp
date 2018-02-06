@@ -1,0 +1,303 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
+
+static const char *CLASSNAME1 = "PdxTests.PdxType";
+static const char *CLASSNAME2 = "PdxTests.Address";
+
+class TestPdxSerializer : public PdxSerializer {
+ public:
+  static void deallocate(void *testObject, const std::string &className) {
+    ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
+           "Unexpected classname in deallocate()");
+    LOG("TestPdxSerializer::deallocate called");
+    if (className == CLASSNAME1) {
+      PdxTests::NonPdxType *npt =
+          reinterpret_cast<PdxTests::NonPdxType *>(testObject);
+      delete npt;
+    } else {
+      PdxTests::NonPdxAddress *npa =
+          reinterpret_cast<PdxTests::NonPdxAddress *>(testObject);
+      delete npa;
+    }
+  }
+
+  static size_t objectSize(const void *testObject,
+                           const std::string &className) {
+    ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
+           "Unexpected classname in objectSize()");
+    LOG("TestPdxSerializer::objectSize called");
+    return 12345;  // dummy value
+  }
+
+  UserDeallocator getDeallocator(const std::string &className) override {
+    ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
+           "Unexpected classname in getDeallocator");
+    return deallocate;
+  }
+
+  UserObjectSizer getObjectSizer(const std::string &className) override {
+    ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
+           "Unexpected classname in getObjectSizer");
+    return objectSize;
+  }
+
+  void *fromDataForAddress(PdxReader &pr) {
+    try {
+      PdxTests::NonPdxAddress *npa = new PdxTests::NonPdxAddress;
+      npa->_aptNumber = pr.readInt("_aptNumber");
+      npa->_street = pr.readString("_street");
+      npa->_city = pr.readString("_city");
+      return (void *)npa;
+    } catch (...) {
+      return nullptr;
+    }
+  }
+
+  void *fromData(const std::string &className, PdxReader &pr) override {
+    ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
+           "Unexpected classname in fromData");
+
+    if (className == CLASSNAME2) {
+      return fromDataForAddress(pr);
+    }
+
+    PdxTests::NonPdxType *npt =
+        new PdxTests::NonPdxType(CacheRegionHelper::getCacheImpl(getHelper()->getCache().get())
+                                     ->getSerializationRegistry()
+                                     ->getPdxSerializer());
+
+    try {
+      auto Lengtharr = new int32_t[2];
+      int32_t arrLen = 0;
+      npt->m_byteByteArray =
+          pr.readArrayOfByteArrays("m_byteByteArray", arrLen, &Lengtharr);
+      // TODO::need to write compareByteByteArray() and check for
+      // m_byteByteArray elements
+
+      npt->m_char = pr.readChar("m_char");
+      // GenericValCompare
+
+      npt->m_bool = pr.readBoolean("m_bool");
+      // GenericValCompare
+      npt->m_boolArray = pr.readBooleanArray("m_boolArray");
+
+      npt->m_byte = pr.readByte("m_byte");
+      npt->m_byteArray = pr.readByteArray("m_byteArray");
+      npt->m_charArray = pr.readCharArray("m_charArray");
+
+      npt->m_arraylist = std::dynamic_pointer_cast<CacheableArrayList>(
+          pr.readObject("m_arraylist"));
+
+      npt->m_map =
+          std::dynamic_pointer_cast<CacheableHashMap>(pr.readObject("m_map"));
+      // TODO:Check for the size
+
+      npt->m_hashtable = std::dynamic_pointer_cast<CacheableHashTable>(
+          pr.readObject("m_hashtable"));
+      // TODO:Check for the size
+
+      npt->m_vector =
+          std::dynamic_pointer_cast<CacheableVector>(pr.readObject("m_vector"));
+      // TODO::Check for size
+
+      npt->m_chs =
+          std::dynamic_pointer_cast<CacheableHashSet>(pr.readObject("m_chs"));
+      // TODO::Size check
+
+      npt->m_clhs = std::dynamic_pointer_cast<CacheableLinkedHashSet>(
+          pr.readObject("m_clhs"));
+      // TODO:Size check
+
+      npt->m_string = pr.readString("m_string");  // GenericValCompare
+      npt->m_date = pr.readDate("m_dateTime");    // compareData
+
+      npt->m_double = pr.readDouble("m_double");
+
+      npt->m_doubleArray =
+          pr.readDoubleArray("m_doubleArray");
+      npt->m_float = pr.readFloat("m_float");
+      npt->m_floatArray =
+          pr.readFloatArray("m_floatArray");
+      npt->m_int16 = pr.readShort("m_int16");
+      npt->m_int32 = pr.readInt("m_int32");
+      npt->m_long = pr.readLong("m_long");
+      npt->m_int32Array = pr.readIntArray("m_int32Array");
+      npt->m_longArray = pr.readLongArray("m_longArray");
+      npt->m_int16Array =
+          pr.readShortArray("m_int16Array");
+      npt->m_sbyte = pr.readByte("m_sbyte");
+      npt->m_sbyteArray = pr.readByteArray("m_sbyteArray");
+      npt->m_stringArray = pr.readStringArray("m_stringArray");
+      npt->m_uint16 = pr.readShort("m_uint16");
+      npt->m_uint32 = pr.readInt("m_uint32");
+      npt->m_ulong = pr.readLong("m_ulong");
+      npt->m_uint32Array = pr.readIntArray("m_uint32Array");
+      npt->m_ulongArray = pr.readLongArray("m_ulongArray");
+      npt->m_uint16Array = pr.readShortArray("m_uint16Array");
+      // LOGINFO("PdxType::readInt() start...");
+
+      npt->m_byte252 = pr.readByteArray("m_byte252");
+      npt->m_byte253 = pr.readByteArray("m_byte253");
+      npt->m_byte65535 = pr.readByteArray("m_byte65535");
+      npt->m_byte65536 = pr.readByteArray("m_byte65536");
+
+      npt->m_pdxEnum = pr.readObject("m_pdxEnum");
+
+      npt->m_address = pr.readObject("m_address");
+
+      npt->m_objectArray = pr.readObjectArray("m_objectArray");
+
+      LOGINFO("TestPdxSerializer: NonPdxType fromData() Done.");
+    } catch (...) {
+      return nullptr;
+    }
+    return (void *)npt;
+  }
+
+  bool toDataForAddress(void *testObject, PdxWriter &pw) {
+    try {
+      PdxTests::NonPdxAddress *npa =
+          reinterpret_cast<PdxTests::NonPdxAddress *>(testObject);
+      pw.writeInt("_aptNumber", npa->_aptNumber);
+      pw.writeString("_street", npa->_street);
+      pw.writeString("_city", npa->_city);
+      return true;
+    } catch (...) {
+      return false;
+    }
+  }
+
+  bool toData(void *testObject, const std::string &className,
+              PdxWriter &pw) override {
+    ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
+           "Unexpected classname in toData");
+
+    if (className == CLASSNAME2) {
+      return toDataForAddress(testObject, pw);
+    }
+
+    PdxTests::NonPdxType *npt =
+        reinterpret_cast<PdxTests::NonPdxType *>(testObject);
+
+    try {
+      int *lengthArr = new int[2];
+
+      lengthArr[0] = 1;
+      lengthArr[1] = 2;
+      pw.writeArrayOfByteArrays("m_byteByteArray", npt->m_byteByteArray, 2,
+                                lengthArr);
+      pw.writeChar("m_char", npt->m_char);
+      pw.markIdentityField("m_char");
+      pw.writeBoolean("m_bool", npt->m_bool);  // 1
+      pw.markIdentityField("m_bool");
+      pw.writeBooleanArray("m_boolArray", npt->m_boolArray);
+      pw.markIdentityField("m_boolArray");
+      pw.writeByte("m_byte", npt->m_byte);
+      pw.markIdentityField("m_byte");
+      pw.writeByteArray("m_byteArray", npt->m_byteArray);
+      pw.markIdentityField("m_byteArray");
+      pw.writeCharArray("m_charArray", npt->m_charArray);
+      pw.markIdentityField("m_charArray");
+      pw.writeObject("m_arraylist", npt->m_arraylist);
+      pw.markIdentityField("m_arraylist");
+      pw.writeObject("m_map", npt->m_map);
+      pw.markIdentityField("m_map");
+      pw.writeObject("m_hashtable", npt->m_hashtable);
+      pw.markIdentityField("m_hashtable");
+      pw.writeObject("m_vector", npt->m_vector);
+      pw.markIdentityField("m_vector");
+      pw.writeObject("m_chs", npt->m_chs);
+      pw.markIdentityField("m_chs");
+      pw.writeObject("m_clhs", npt->m_clhs);
+      pw.markIdentityField("m_clhs");
+      pw.writeString("m_string", npt->m_string);
+      pw.markIdentityField("m_string");
+      pw.writeDate("m_dateTime", npt->m_date);
+      pw.markIdentityField("m_dateTime");
+      pw.writeDouble("m_double", npt->m_double);
+      pw.markIdentityField("m_double");
+      pw.writeDoubleArray("m_doubleArray", npt->m_doubleArray);
+      pw.markIdentityField("m_doubleArray");
+      pw.writeFloat("m_float", npt->m_float);
+      pw.markIdentityField("m_float");
+      pw.writeFloatArray("m_floatArray", npt->m_floatArray);
+      pw.markIdentityField("m_floatArray");
+      pw.writeShort("m_int16", npt->m_int16);
+      pw.markIdentityField("m_int16");
+      pw.writeInt("m_int32", npt->m_int32);
+      pw.markIdentityField("m_int32");
+      pw.writeLong("m_long", npt->m_long);
+      pw.markIdentityField("m_long");
+      pw.writeIntArray("m_int32Array", npt->m_int32Array);
+      pw.markIdentityField("m_int32Array");
+      pw.writeLongArray("m_longArray", npt->m_longArray);
+      pw.markIdentityField("m_longArray");
+      pw.writeShortArray("m_int16Array", npt->m_int16Array);
+      pw.markIdentityField("m_int16Array");
+      pw.writeByte("m_sbyte", npt->m_sbyte);
+      pw.markIdentityField("m_sbyte");
+      pw.writeByteArray("m_sbyteArray", npt->m_sbyteArray);
+      pw.markIdentityField("m_sbyteArray");
+
+      int *strlengthArr = new int[2];
+
+      strlengthArr[0] = 5;
+      strlengthArr[1] = 5;
+      pw.writeStringArray("m_stringArray", npt->m_stringArray);
+      pw.markIdentityField("m_stringArray");
+      pw.writeShort("m_uint16", npt->m_uint16);
+      pw.markIdentityField("m_uint16");
+      pw.writeInt("m_uint32", npt->m_uint32);
+      pw.markIdentityField("m_uint32");
+      pw.writeLong("m_ulong", npt->m_ulong);
+      pw.markIdentityField("m_ulong");
+      pw.writeIntArray("m_uint32Array", npt->m_uint32Array);
+      pw.markIdentityField("m_uint32Array");
+      pw.writeLongArray("m_ulongArray", npt->m_ulongArray);
+      pw.markIdentityField("m_ulongArray");
+      pw.writeShortArray("m_uint16Array", npt->m_uint16Array);
+      pw.markIdentityField("m_uint16Array");
+
+      pw.writeByteArray("m_byte252", npt->m_byte252);
+      pw.markIdentityField("m_byte252");
+      pw.writeByteArray("m_byte253", npt->m_byte253);
+      pw.markIdentityField("m_byte253");
+      pw.writeByteArray("m_byte65535", npt->m_byte65535);
+      pw.markIdentityField("m_byte65535");
+      pw.writeByteArray("m_byte65536", npt->m_byte65536);
+      pw.markIdentityField("m_byte65536");
+
+      pw.writeObject("m_pdxEnum", npt->m_pdxEnum);
+      pw.markIdentityField("m_pdxEnum");
+
+      pw.writeObject("m_address", npt->m_objectArray);
+      pw.writeObjectArray("m_objectArray", npt->m_objectArray);
+
+      LOG("TestPdxSerializer: NonPdxType toData() Done......");
+    } catch (...) {
+      return false;
+    }
+    return true;
+  }
+};
+
+#endif  // GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_

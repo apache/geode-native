@@ -4,3 +4,8 @@
 /.settings/
 /.cproject
 /.project
+/.idea/
+.vs/
+
+/examples/dotnet/*/bin/
+/examples/dotnet/*/obj/

@@ -1,0 +1,76 @@
+---
+title:  Extend the PDX Autoserializer
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+This example code demonstrates how to extend the autoserializer to customize serialization.
+
+## Extending the Autoserializer
+
+``` pre
+public class AutoSerializerEx : ReflectionBasedAutoSerializer
+{
+   public override object WriteTransform(FieldInfo fi, Type type, object originalValue) {
+      if (fi.FieldType.Equals(Type.GetType("System.Guid"))) {
+        return originalValue.ToString();
+      } else if (fi.FieldType.Equals(Type.GetType("System.Decimal"))) {
+        return originalValue.ToString();
+      } else
+        return base.WriteTransform(fi, type, originalValue);
+    }
+
+    public override object ReadTransform(FieldInfo fi, Type type, object serializeValue) {
+      if (fi.FieldType.Equals(Type.GetType("System.Guid"))) {
+        Guid g = new Guid((string)serializeValue);
+        return g;
+      } else if (fi.FieldType.Equals(Type.GetType("System.Decimal"))) {
+        return Convert.ToDecimal((string)serializeValue);
+      } else
+        return base.ReadTransform(fi, type, serializeValue);
+    }
+
+   public override FieldType GetFieldType(FieldInfo fi, Type type) {
+      if (fi.FieldType.Equals(Type.GetType("System.Guid")) ||
+              fi.FieldType.Equals(Type.GetType("System.Decimal")))
+        return FieldType.STRING;
+      return base.GetFieldType(fi, type);
+   }
+
+   public override bool IsIdentityField(FieldInfo fi, Type type) {
+      if (fi.Name == "_identityField")
+        return true;
+      return base.IsIdentityField(fi, type);
+   }
+
+   public override string GetFieldName(FieldInfo fi, Type type) {
+      if (fi.Name == "_nameChange")
+        return fi.Name + "NewName";
+      return fi.Name;
+    }
+ 
+   public override bool IsFieldIncluded(FieldInfo fi, Type type)
+   {
+      if (fi.Name == "_notInclude")
+        return false;
+      return base.IsFieldIncluded(fi, type);
+    }
+}
+```
+
+

@@ -1,0 +1,35 @@
+---
+title:  Data Serialization
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+All data moving out of the client cache must be serializable.
+
+Region data that must be serializable falls under the following categories:
+
+-   Partitioned regions (except functions that add data locally to a partitioned region use the deserialized form).
+-   Distributed regions.
+-   Regions that are persisted or overflowed to disk.
+-   Server or client regions in a client/server installation.
+-   Regions distributed between gateways in a multi-site installation.
+-   Regions that receive events from remote caches.
+-   Regions that provide function arguments and results.
+
+To minimize the cost of serialization and deserialization, <%=vars.product_name%> avoids changing the data format whenever possible. This means your data may be stored in the cache in serialized or deserialized form, depending on how you use it. For example, if a server acts only as a storage location for data distribution between clients, it makes sense to leave the data in serialized form, ready to be transmitted to clients that request it. Partitioned region data is always stored in serialized form with one exception—functions that add data to a partitioned region locally use the deserialized form.
+

@@ -1,0 +1,48 @@
+---
+title:  Durable Client Messaging
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+You can configure the redundancy level for client queues that are stored on cache servers. This ensures that the client will not lose messages if it loses the connection to its primary server.
+
+Durable messaging allows a disconnected client application to recover its subscribed data when it reconnects to the cache server because the server continues to queue messages for which the client has registered interest.
+
+-   **[Durable Client Messaging Requirements](durable-client-messaging-req.html)**
+
+    The messaging queues used for durable messaging are the same regular messaging queues used for basic server-to-client messaging, with additional requirements.
+
+-   **[Client-Side Configuration](client-side-config.html)**
+
+-   **[Sending Cache Ready Messages to the Server](sending-cache-ready-message.html)**
+
+    After a durable client connects and initializes its cache, regions, cache listeners, and any interest registration, it invokes `readyForEvents` to indicate to the servers that the client is ready to receive any messages accumulated for it.
+
+-   **[Disconnecting from the Server](disconnecting-from-server.html)**
+
+    When a durable client closes its cache and disconnects, it tells the servers whether to maintain its queues.
+
+-   **[Life Cycle of a Durable Client](durable-client-life-cycle.html)**
+
+    This section discusses the high-level operation of a durable client through initial startup, disconnection, and reconnection.
+
+-   **[Implementing Cache Listeners for Durable Clients](impl-cache-listeners-durable-clients.html)**
+
+    A cache listener for durable clients requires all callback methods to behave properly when stored events are replayed. A cache listener has a callback method, `afterRegionLive`, specifically for durable clients aspects.
+
+

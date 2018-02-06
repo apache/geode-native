@@ -1,0 +1,38 @@
+---
+title:  Executing Functions
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+Using the function execution service, you can execute application functions on a single server member, in parallel on a subset of server members, or in parallel on all server members of a distributed system.
+
+In these procedures, it is assumed that you have defined your client and server regions, and that you have coded and configured your servers to run your functions.
+See the server-side function execution information at
+[Function Execution](geodeman/developing/function_exec/chapter_overview.html).
+
+-   **[Running the Function](running-function.html)**
+
+    In this section you create an `Execution` object and use its methods to define and run the function. To run a function with high availability, you call `getResult` from the results collector returned from the `execute` method.
+
+-   **[Programming to Get Function Results](handling-function-results.html)**
+
+    <%=vars.product_name%> provides a default result collector. If you need special results handling, code a custom `ResultsCollector` implementation to replace the provided default. Use the `Execution::withCollector` method to define your custom collector.
+
+-   **[Solutions and Use Cases](solutions-use-cases.html)**
+
+    The function execution service provides solutions for various application use cases.

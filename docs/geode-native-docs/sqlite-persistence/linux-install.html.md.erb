@@ -1,0 +1,60 @@
+---
+title:  Linux Installation
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+This topic describes how to install the SQLite Persistence Manager on Linux.
+
+The <code>_product-dir_</code> directory refers to the path to the directory
+that contains the built library.
+
+The following libraries must be present in the runtime linking path:
+
+-   `libSqLiteImpl.so` is provided in <code>_product-dir_/lib</code>, so it is already present in the runtime linking path.
+-   `libsqlite3.so` is the SQLite Library. You need to create this library and make available in the runtime linking path, or copied to <code>_product-dir_/lib</code>, as described below.
+
+The library has been tested with SQLite v3.7.14.1.
+
+## <a id="concept_CC9BD47B46DE4281BBB789FABE6ABEA9__section_FAB703D706D54311963399A714D466F9" class="no-quick-link"></a>Downloading, Building and Installing the Library
+
+Create the SQLite database library by downloading the latest .zip file and compiling the source code.
+
+1.  Download the source code `sqlite-autoconf-NNNNNNN.tar.gz` file (where *NNNNNNN* corresponds to the version) for SQLite v3.7.14.1 or later from [http://www.sqlite.org/download.html](http://www.sqlite.org/download.html).
+2.  Extract the source code from the .tar.gz file. For example:
+
+    ``` pre
+    tar -xvf sqlite-autoconf-3071401.tar.gz
+    ```
+
+3.  Change directories to the extracted source files, and follow the install instructions located in the "INSTALL" file.
+    1.  Run the `configure` command for 32-bit or 64-bit with the following options, all entered on a single command line. Change the` --prefix` directory specification to the location where you want the libraries:
+        -   **32-bit:**
+
+            <code>
+            CFLAGS="-m32" ./configure --prefix=/_desired-binary-location_/sqlite-binaries
+            </code>
+        -   **64-bit:**
+
+            <code>
+            ./configure --prefix=/_desired-binary-location_/sqlite-binaries
+            </code>
+
+    2.  Run `gmake install` as described in the build instructions. The libraries will be available in the `sqlite-binaries` directory specified.
+
+4.  Copy <code>/_desired-binary-location_/sqlite-binaries/lib/libsqlite3.so</code> file to <code>_product-dir_/lib</code>.
