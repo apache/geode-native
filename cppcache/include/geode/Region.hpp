@@ -1033,7 +1033,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * Returns the <code>cache</code> associated with this region.
    * @return the cache
    */
-  virtual std::shared_ptr<RegionService> getRegionService() const = 0;
+  virtual RegionService& getRegionService() const = 0;
 
   virtual bool isDestroyed() const = 0;
 

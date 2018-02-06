@@ -242,7 +242,7 @@ class _GEODE_EXPORT LocalRegion : public RegionInternal {
                      nullptr) override;
   uint32_t size() override;
   virtual uint32_t size_remote();
-  std::shared_ptr<RegionService> getRegionService() const override;
+  RegionService& getRegionService() const override;
   virtual bool containsValueForKey_remote(
       const std::shared_ptr<CacheableKey>& keyPtr) const;
   bool containsValueForKey(

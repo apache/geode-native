@@ -473,8 +473,8 @@ class _GEODE_EXPORT ProxyRegion : public Region {
     throw UnsupportedOperationException("Region.entries()");
   }
 
-  virtual std::shared_ptr<RegionService> getRegionService() const override {
-    return std::shared_ptr<RegionService>(m_proxyCache.get());
+  virtual RegionService& getRegionService() const override {
+    return *m_proxyCache;
   }
 
   virtual bool isDestroyed() const override {

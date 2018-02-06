@@ -580,9 +580,9 @@ uint32_t LocalRegion::size() {
 
   return LocalRegion::size_remote();
 }
-std::shared_ptr<RegionService> LocalRegion::getRegionService() const {
+RegionService& LocalRegion::getRegionService() const {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getRegionService);
-  return m_cacheImpl->getCache()->shared_from_this();
+  return *m_cacheImpl->getCache();
 }
 
 CacheImpl* LocalRegion::getCacheImpl() const {

@@ -399,7 +399,7 @@ BEGIN_TEST(OverFlowTest)
              "persistence file still present");
     }
     // cache close
-    regionPtr->getRegionService()->close();
+    regionPtr->getRegionService().close();
   }
 END_TEST(OverFlowTest)
 
@@ -459,7 +459,7 @@ BEGIN_TEST(OverFlowTest_absPath)
              "persistence file still present");
     }
     // cache close
-    regionPtr->getRegionService()->close();
+    regionPtr->getRegionService().close();
   }
 END_TEST(OverFlowTest_absPath)
 

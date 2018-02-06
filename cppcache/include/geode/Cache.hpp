@@ -62,8 +62,7 @@ class RegionFactory;
  * <p>A cache can have multiple root regions, each with a different name.
  *
  */
-class _GEODE_EXPORT Cache : public GeodeCache,
-                            public std::enable_shared_from_this<Cache> {
+class _GEODE_EXPORT Cache : public GeodeCache {
   /**
    * @brief public methods
    */
