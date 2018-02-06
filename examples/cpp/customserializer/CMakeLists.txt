@@ -27,7 +27,10 @@ endif()
 
 find_package(geode-native REQUIRED)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME}
+    main.cpp
+    Order.cpp
+    OrderSerializer.cpp)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
