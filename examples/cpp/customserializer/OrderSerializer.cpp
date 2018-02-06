@@ -20,8 +20,6 @@
 
 namespace customserializer {
 
-const std::string OrderSerializer::CLASS_NAME_ = "com.example.Order";
-
 std::shared_ptr<void> OrderSerializer::fromData(const std::string& className,
                                                 PdxReader& pdxReader) {
   if (className != OrderSerializer::CLASS_NAME_) {
@@ -59,6 +57,7 @@ bool OrderSerializer::toData(const std::shared_ptr<const void>& userObject,
   return true;
 }
 
+const std::string OrderSerializer::CLASS_NAME_ = "com.example.Order";
 const std::string OrderSerializer::ORDER_ID_KEY_ = "orderid";
 const std::string OrderSerializer::NAME_KEY_ = "name";
 const std::string OrderSerializer::QUANTITY_KEY_ = "quantity";
