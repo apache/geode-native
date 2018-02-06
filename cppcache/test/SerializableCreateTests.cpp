@@ -72,8 +72,8 @@ TEST(SerializableCreateTests, forArrayOf_wchar_t) {
   ASSERT_EQ(cacheableString->value(), "test");
 }
 
-TEST(SerializableCreateTests, for_uint8_t) {
-  const auto serializable = Serializable::create(static_cast<uint8_t>(1));
+TEST(SerializableCreateTests, for_int8_t) {
+  const auto serializable = Serializable::create(static_cast<int8_t>(1));
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableByte = std::dynamic_pointer_cast<CacheableByte>(serializable);
   ASSERT_TRUE(nullptr != cacheableByte);

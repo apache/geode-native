@@ -439,12 +439,12 @@ _GEODE_CACHEABLE_KEY_TYPE_DEF_(bool, CacheableBoolean, 3);
  */
 _GEODE_CACHEABLE_KEY_TYPE_(bool, CacheableBoolean, 3);
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(uint8_t, CacheableByte, 15);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(int8_t, CacheableByte, 15);
 /**
  * An immutable wrapper for bytes that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(uint8_t, CacheableByte, 15);
+_GEODE_CACHEABLE_KEY_TYPE_(int8_t, CacheableByte, 15);
 
 _GEODE_CACHEABLE_KEY_TYPE_DEF_(double, CacheableDouble, 63);
 /**
