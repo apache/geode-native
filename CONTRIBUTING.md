@@ -37,11 +37,7 @@ This document assumes you have followed the [Apache Geode Code contribution inst
 ## Formatting C++
 For C++ it is required to follow the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html) and have a build target that uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) to achieve compliance.
 
-    $ cd <clone>
-    $ mkdir build
-    $ cd build
-    $ cmake ../src -DCLANG_FORMAT=<path to clang-format>
-    $ cmake --build . --target format
+    $ clang-format -i --style=file <PATH_TO_FILES>
 
 # System Requirements
 See [BUILDING.md](BUILDING.md)
