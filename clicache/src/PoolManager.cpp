@@ -37,8 +37,8 @@ namespace Apache
 
       PoolFactory^ PoolManager::CreateFactory()
       {
-        return PoolFactory::Create(std::make_shared<native::PoolFactory>(
-          m_nativeref.createFactory()));
+        return PoolFactory::Create(std::unique_ptr<native::PoolFactory>(
+          new native::PoolFactory(m_nativeref.createFactory())));
       }
 
       const Dictionary<String^, Pool^>^ PoolManager::GetAll()

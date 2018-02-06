@@ -531,9 +531,9 @@ class _GEODE_EXPORT PoolFactory {
    */
   PoolFactory& setPRSingleHopEnabled(bool enabled);
 
-  ~PoolFactory();
+  ~PoolFactory() = default;
 
-  PoolFactory(const PoolFactory&);
+  PoolFactory(const PoolFactory&) = default;
 
  private:
   PoolFactory(const Cache& cache);

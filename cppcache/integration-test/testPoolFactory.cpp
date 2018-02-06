@@ -29,10 +29,9 @@ BEGIN_TEST(POOLFACTORY)
 {
   auto cacheFactory = CacheFactory();
   auto cache = cacheFactory.create();
-  auto poolFactory = std::make_shared<PoolFactory>(cache.getPoolManager().createFactory());
-  ASSERT(poolFactory != nullptr, "poolFactory was a nullptr");
-  auto& testPoolFactory = poolFactory->setSubscriptionEnabled(true);
-  bool test = poolFactory.get() == std::addressof<PoolFactory>(testPoolFactory);
+  auto poolFactory = cache.getPoolManager().createFactory();
+  auto& testPoolFactory = poolFactory.setSubscriptionEnabled(true);
+  bool test = &poolFactory == std::addressof<PoolFactory>(testPoolFactory);
   ASSERT(test, "testPoolFactory and poolFactory not equal");
  }
 END_TEST(POOLFACTORY)

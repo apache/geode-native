@@ -184,7 +184,7 @@ class CacheHelper {
       int lel = 0, ExpirationAction action = ExpirationAction::DESTROY);
 
   void addServerLocatorEPs(const char* epList,
-                           std::shared_ptr<PoolFactory> pfPtr,
+                           PoolFactory pfPtr,
                            bool poolLocators = true);
 
   void addServerLocatorEPs(const char* epList,

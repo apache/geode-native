@@ -59,12 +59,12 @@ auto cptr4 = std::make_shared<DisconnectCacheListioner>(3);
 
 void createPooledRegionMine(bool callReadyForEventsAPI = false) {
   auto& poolManager = getHelper()->getCache()->getPoolManager();
-  auto poolFacPtr = std::make_shared<PoolFactory>(poolManager.createFactory());
-  poolFacPtr->setSubscriptionEnabled(true);
-  getHelper()->addServerLocatorEPs(locatorsG, poolFacPtr);
+  auto poolFac = poolManager.createFactory();
+  poolFac.setSubscriptionEnabled(true);
+  getHelper()->addServerLocatorEPs(locatorsG, poolFac);
   if ((poolManager.find("__TEST_POOL1__")) ==
       nullptr) {  // Pool does not exist with the same name.
-    auto pptr = poolFacPtr->create("__TEST_POOL1__");
+    auto pptr = poolFac.create("__TEST_POOL1__");
   }
   SLEEP(10000);
   AttributesFactory af;
