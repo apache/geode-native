@@ -25,7 +25,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-PdxWrapper::PdxWrapper(void *userObject, std::string className,
+PdxWrapper::PdxWrapper(std::shared_ptr<void> userObject, std::string className,
                        std::shared_ptr<PdxSerializer> pdxSerializerPtr)
     : m_userObject(userObject),
       m_className(className),
@@ -34,17 +34,6 @@ PdxWrapper::PdxWrapper(void *userObject, std::string className,
     LOGERROR("No registered PDX serializer found for PdxWrapper");
     throw IllegalArgumentException(
         "No registered PDX serializer found for PdxWrapper");
-  }
-
-  m_deallocator = m_serializer->getDeallocator(className);
-
-  if (m_deallocator == nullptr) {
-    LOGERROR(
-        "No deallocator function found from PDX serializer for PdxWrapper "
-        "for " +
-        className);
-    throw IllegalArgumentException(
-        "No deallocator function found from PDX serializer for PdxWrapper");
   }
 
   /* m_sizer can be nullptr - required only if heap LRU is enabled */
@@ -61,48 +50,27 @@ PdxWrapper::PdxWrapper(std::string className,
         "No registered PDX serializer found for PdxWrapper deserialization");
   }
 
-  m_deallocator = m_serializer->getDeallocator(className.c_str());
-
-  if (m_deallocator == nullptr) {
-    LOGERROR(
-        "No deallocator function found from PDX serializer for PdxWrapper "
-        "deserialization for " +
-        className);
-    throw IllegalArgumentException(
-        "No deallocator function found from PDX serializer for PdxWrapper "
-        "deserialization");
-  }
-
   /* m_sizer can be nullptr - required only if heap LRU is enabled */
   m_sizer = m_serializer->getObjectSizer(className);
 
-  /* adongre   - Coverity II
-   * CID 29277: Uninitialized pointer field (UNINIT_CTOR)
-   */
-  m_userObject = (void *)0;
+  m_userObject = nullptr;
 }
 
-void *PdxWrapper::getObject(bool detach) {
-  void *retVal = m_userObject;
-  if (detach) {
-    m_userObject = nullptr;
-  }
-  return retVal;
-}
+std::shared_ptr<void> PdxWrapper::getObject() { return m_userObject; }
 
 const std::string &PdxWrapper::getClassName() const { return m_className; }
 
 bool PdxWrapper::operator==(const CacheableKey &other) const {
-  PdxWrapper *wrapper =
-      dynamic_cast<PdxWrapper *>(const_cast<CacheableKey *>(&other));
+  auto wrapper = dynamic_cast<const PdxWrapper *>(&other);
   if (wrapper == nullptr) {
     return false;
   }
-  return (intptr_t)m_userObject == (intptr_t)wrapper->m_userObject;
+  return m_userObject == wrapper->m_userObject;
 }
 
 int32_t PdxWrapper::hashcode() const {
-  uint64_t hash = static_cast<uint64_t>((intptr_t)m_userObject);
+  auto hash = static_cast<uint64_t>(
+      reinterpret_cast<std::uintptr_t>(m_userObject.get()));
   return apache::geode::client::serializer::hashcode(hash);
 }
 
@@ -137,16 +105,11 @@ size_t PdxWrapper::objectSize() const {
     return m_sizer(m_userObject, m_className.c_str());
   }
 }
+
 std::string PdxWrapper::toString() const {
   std::string message = "PdxWrapper for ";
   message += m_className;
   return message.c_str();
-}
-
-PdxWrapper::~PdxWrapper() {
-  if (m_userObject != nullptr) {
-    m_deallocator(m_userObject, m_className);
-  }
 }
 
 }  // namespace client

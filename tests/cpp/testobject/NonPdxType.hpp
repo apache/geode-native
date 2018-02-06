@@ -129,7 +129,7 @@ class TESTOBJECT_EXPORT NonPdxType {
 
   std::shared_ptr<Serializable> m_address;
 
-  NonPdxAddress* m_add[10];
+  std::shared_ptr<NonPdxAddress> m_add[10];
 
   std::shared_ptr<CacheableArrayList> m_arraylist;
   std::shared_ptr<CacheableHashMap> m_map;
@@ -283,47 +283,47 @@ class TESTOBJECT_EXPORT NonPdxType {
 
     m_pdxEnum = CacheableEnum::create("PdxTests.pdxEnumTest", "pdx2", pdx2);
 
-    m_add[0] = new NonPdxAddress(1, "street0", "city0");
-    m_add[1] = new NonPdxAddress(2, "street1", "city1");
-    m_add[2] = new NonPdxAddress(3, "street2", "city2");
-    m_add[3] = new NonPdxAddress(4, "street3", "city3");
-    m_add[4] = new NonPdxAddress(5, "street4", "city4");
-    m_add[5] = new NonPdxAddress(6, "street5", "city5");
-    m_add[6] = new NonPdxAddress(7, "street6", "city6");
-    m_add[7] = new NonPdxAddress(8, "street7", "city7");
-    m_add[8] = new NonPdxAddress(9, "street8", "city8");
-    m_add[9] = new NonPdxAddress(10, "street9", "city9");
+    m_add[0] = std::make_shared<NonPdxAddress>(1, "street0", "city0");
+    m_add[1] = std::make_shared<NonPdxAddress>(2, "street1", "city1");
+    m_add[2] = std::make_shared<NonPdxAddress>(3, "street2", "city2");
+    m_add[3] = std::make_shared<NonPdxAddress>(4, "street3", "city3");
+    m_add[4] = std::make_shared<NonPdxAddress>(5, "street4", "city4");
+    m_add[5] = std::make_shared<NonPdxAddress>(6, "street5", "city5");
+    m_add[6] = std::make_shared<NonPdxAddress>(7, "street6", "city6");
+    m_add[7] = std::make_shared<NonPdxAddress>(8, "street7", "city7");
+    m_add[8] = std::make_shared<NonPdxAddress>(9, "street8", "city8");
+    m_add[9] = std::make_shared<NonPdxAddress>(10, "street9", "city9");
 
     m_objectArray = CacheableObjectArray::create();
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
-        new PdxWrapper(new NonPdxAddress(1, "street0", "city0"),
+        new PdxWrapper(std::make_shared<NonPdxAddress>(1, "street0", "city0"),
                        "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
-        new PdxWrapper(new NonPdxAddress(2, "street1", "city1"),
+        new PdxWrapper(std::make_shared<NonPdxAddress>(2, "street1", "city1"),
                        "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
-        new PdxWrapper(new NonPdxAddress(3, "street2", "city2"),
+        new PdxWrapper(std::make_shared<NonPdxAddress>(3, "street2", "city2"),
                        "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
-        new PdxWrapper(new NonPdxAddress(4, "street3", "city3"),
+        new PdxWrapper(std::make_shared<NonPdxAddress>(4, "street3", "city3"),
                        "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
-        new PdxWrapper(new NonPdxAddress(5, "street4", "city4"),
+        new PdxWrapper(std::make_shared<NonPdxAddress>(5, "street4", "city4"),
                        "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
-        new PdxWrapper(new NonPdxAddress(6, "street5", "city5"),
+        new PdxWrapper(std::make_shared<NonPdxAddress>(6, "street5", "city5"),
                        "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
-        new PdxWrapper(new NonPdxAddress(7, "street6", "city6"),
+        new PdxWrapper(std::make_shared<NonPdxAddress>(7, "street6", "city6"),
                        "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
-        new PdxWrapper(new NonPdxAddress(8, "street7", "city7"),
+        new PdxWrapper(std::make_shared<NonPdxAddress>(8, "street7", "city7"),
                        "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
-        new PdxWrapper(new NonPdxAddress(9, "street8", "city8"),
+        new PdxWrapper(std::make_shared<NonPdxAddress>(9, "street8", "city8"),
                        "PdxTests.Address", pdxSerializer)));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
-        new PdxWrapper(new NonPdxAddress(10, "street9", "city9"),
+        new PdxWrapper(std::make_shared<NonPdxAddress>(10, "street9", "city9"),
                        "PdxTests.Address", pdxSerializer)));
 
     m_byte252 = std::vector<int8_t>(252);

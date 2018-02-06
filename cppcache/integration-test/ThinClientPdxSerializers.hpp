@@ -40,18 +40,12 @@ class TestPdxSerializer : public PdxSerializer {
     }
   }
 
-  static size_t objectSize(const void *testObject,
+  static size_t objectSize(const std::shared_ptr<const void> &testObject,
                            const std::string &className) {
     ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in objectSize()");
     LOG("TestPdxSerializer::objectSize called");
     return 12345;  // dummy value
-  }
-
-  UserDeallocator getDeallocator(const std::string &className) override {
-    ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
-           "Unexpected classname in getDeallocator");
-    return deallocate;
   }
 
   UserObjectSizer getObjectSizer(const std::string &className) override {
@@ -60,19 +54,20 @@ class TestPdxSerializer : public PdxSerializer {
     return objectSize;
   }
 
-  void *fromDataForAddress(PdxReader &pr) {
+  std::shared_ptr<void> fromDataForAddress(PdxReader &pr) {
     try {
-      PdxTests::NonPdxAddress *npa = new PdxTests::NonPdxAddress;
+      auto npa = std::make_shared<PdxTests::NonPdxAddress>();
       npa->_aptNumber = pr.readInt("_aptNumber");
       npa->_street = pr.readString("_street");
       npa->_city = pr.readString("_city");
-      return (void *)npa;
+      return npa;
     } catch (...) {
       return nullptr;
     }
   }
 
-  void *fromData(const std::string &className, PdxReader &pr) override {
+  std::shared_ptr<void> fromData(const std::string &className,
+                                 PdxReader &pr) override {
     ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in fromData");
 
@@ -80,10 +75,10 @@ class TestPdxSerializer : public PdxSerializer {
       return fromDataForAddress(pr);
     }
 
-    PdxTests::NonPdxType *npt =
-        new PdxTests::NonPdxType(CacheRegionHelper::getCacheImpl(getHelper()->getCache().get())
-                                     ->getSerializationRegistry()
-                                     ->getPdxSerializer());
+    auto npt = std::make_shared<PdxTests::NonPdxType>(
+        CacheRegionHelper::getCacheImpl(getHelper()->getCache().get())
+            ->getSerializationRegistry()
+            ->getPdxSerializer());
 
     try {
       auto Lengtharr = new int32_t[2];
@@ -170,13 +165,14 @@ class TestPdxSerializer : public PdxSerializer {
     } catch (...) {
       return nullptr;
     }
-    return (void *)npt;
+    return npt;
   }
 
-  bool toDataForAddress(void *testObject, PdxWriter &pw) {
+  bool toDataForAddress(const std::shared_ptr<const void> &testObject,
+                        PdxWriter &pw) {
     try {
-      PdxTests::NonPdxAddress *npa =
-          reinterpret_cast<PdxTests::NonPdxAddress *>(testObject);
+      auto npa =
+          std::static_pointer_cast<const PdxTests::NonPdxAddress>(testObject);
       pw.writeInt("_aptNumber", npa->_aptNumber);
       pw.writeString("_street", npa->_street);
       pw.writeString("_city", npa->_city);
@@ -186,8 +182,8 @@ class TestPdxSerializer : public PdxSerializer {
     }
   }
 
-  bool toData(void *testObject, const std::string &className,
-              PdxWriter &pw) override {
+  bool toData(const std::shared_ptr<const void> &testObject,
+              const std::string &className, PdxWriter &pw) override {
     ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in toData");
 
@@ -195,8 +191,7 @@ class TestPdxSerializer : public PdxSerializer {
       return toDataForAddress(testObject, pw);
     }
 
-    PdxTests::NonPdxType *npt =
-        reinterpret_cast<PdxTests::NonPdxType *>(testObject);
+    auto npt = std::static_pointer_cast<const PdxTests::NonPdxType>(testObject);
 
     try {
       int *lengthArr = new int[2];

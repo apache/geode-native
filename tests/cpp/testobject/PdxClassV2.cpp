@@ -729,20 +729,15 @@ TestDiffTypePdxSV2::TestDiffTypePdxSV2(bool init) {
   }
 }
 
-bool TestDiffTypePdxSV2::equals(TestDiffTypePdxSV2 *obj) {
-  if (obj == NULL) return false;
-
-  TestDiffTypePdxSV2 *other = dynamic_cast<TestDiffTypePdxSV2 *>(obj);
-  if (other == NULL) return false;
-
-  LOGINFO("TestDiffTypePdxSV2 other->_coun = %d and _count = %d ",
-          other->_count, _count);
-  LOGINFO("TestDiffTypePdxSV2 other->_id = %s and _id = %s ",
-          other->_id.c_str(), _id.c_str());
+bool TestDiffTypePdxSV2::equals(const TestDiffTypePdxSV2& other) {
+  LOGINFO("TestDiffTypePdxSV2 other->_coun = %d and _count = %d ", other._count,
+          _count);
+  LOGINFO("TestDiffTypePdxSV2 other->_id = %s and _id = %s ", other._id.c_str(),
+          _id.c_str());
   LOGINFO("TestDiffTypePdxSV2 other->_name = %s and _name = %s ",
-          other->_name.c_str(), _name.c_str());
+          other._name.c_str(), _name.c_str());
 
-  if (other->_count == _count && other->_id == _id && other->_name == _name) {
+  if (other._count == _count && other._id == _id && other._name == _name) {
     return true;
   }
 

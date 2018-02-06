@@ -30,15 +30,10 @@ namespace client {
 
 /**
  * Function pointer type which takes a void pointer to an instance of a user
- * object to delete and class name.
- */
-using UserDeallocator = std::function<void(void*, const std::string&)>;
-
-/**
- * Function pointer type which takes a void pointer to an instance of a user
  * object and class name to return the size of the user object.
  */
-using UserObjectSizer = std::function<size_t(const void*, const std::string&)>;
+using UserObjectSizer = std::function<size_t(const std::shared_ptr<const void>&,
+                                             const std::string&)>;
 
 /**
  * The PdxSerializer class allows domain classes to be
@@ -60,22 +55,16 @@ class _GEODE_EXPORT PdxSerializer {
    * @param className the class name whose object need to de-serialize
    * @param pr the PdxReader stream to use for reading the object data
    */
-  virtual void* fromData(const std::string& className,
-                         PdxReader& pdxReader) = 0;
+  virtual std::shared_ptr<void> fromData(const std::string& className,
+                                         PdxReader& pdxReader) = 0;
 
   /**
    * Serializes this object in geode PDX format.
    * @param userObject the object which need to serialize
    * @param pw the PdxWriter object to use for serializing the object
    */
-  virtual bool toData(void* userObject, const std::string& className,
-                      PdxWriter& pdxWriter) = 0;
-
-  /**
-   * Get the function pointer to the user deallocator
-   * @param className to help select a deallocator for the correct class
-   */
-  virtual UserDeallocator getDeallocator(const std::string& className) = 0;
+  virtual bool toData(const std::shared_ptr<const void>& userObject,
+                      const std::string& className, PdxWriter& pdxWriter) = 0;
 
   /**
    * Get the function pointer to the user function that returns the size of an
