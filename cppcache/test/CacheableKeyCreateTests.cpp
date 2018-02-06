@@ -73,8 +73,8 @@ TEST(CacheableKeyCreateTests, forArrayOf_wchar_t) {
   EXPECT_EQ(cacheableString->value(), "test");
 }
 
-TEST(CacheableKeyCreateTests, for_uint8_t) {
-  const auto cacheableKey = CacheableKey::create(static_cast<uint8_t>(1));
+TEST(CacheableKeyCreateTests, for_int8_t) {
+  const auto cacheableKey = CacheableKey::create(static_cast<int8_t>(1));
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableByte = std::dynamic_pointer_cast<CacheableByte>(cacheableKey);
   ASSERT_TRUE(nullptr != cacheableByte);
