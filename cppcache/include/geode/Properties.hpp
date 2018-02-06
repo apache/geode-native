@@ -26,11 +26,11 @@
 
 #include <string>
 #include <memory>
+#include <unordered_map>
 
 #include "internal/geode_globals.hpp"
-#include "Serializable.hpp"
-#include "Serializable.hpp"
 #include "internal/chrono/duration.hpp"
+#include "CacheableKey.hpp"
 
 namespace apache {
 namespace geode {
@@ -40,16 +40,13 @@ using namespace apache::geode::internal::chrono::duration;
 
 class DataInput;
 class DataOutput;
-class CacheableKey;
 class CacheableString;
 
 /**
  * @class Properties Properties.hpp
  * Contains a set of (key, value) pair properties with key being the name of
  * the property; value, the value of the property.
- *
  */
-
 class _GEODE_EXPORT Properties : public Serializable {
  public:
   class Visitor {
@@ -161,17 +158,14 @@ class _GEODE_EXPORT Properties : public Serializable {
     return 0;  // don't care to set the right value
   }
 
-  /** destructor. */
-  ~Properties() noexcept;
+  ~Properties() override = default;
+  Properties(const Properties&) = delete;
+  Properties& operator=(const Properties&) = delete;
 
  private:
-  Properties();
+  HashMapOfCacheable m_map;
 
-  void* m_map;
-
- private:
-  Properties(const Properties&);
-  const Properties& operator=(const Properties&);
+  Properties() = default;
 
   _GEODE_FRIEND_STD_SHARED_PTR(Properties)
 };
