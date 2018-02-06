@@ -69,29 +69,29 @@ class putThread : public ACE_Task_Base {
 };
 
 void doAttrTestingAndCreatePool(const char* poolName) {
-  auto poolFacPtr = std::make_shared<PoolFactory>(getHelper()->getCache()->getPoolManager().createFactory());
-  poolFacPtr->setFreeConnectionTimeout(std::chrono::milliseconds(10000));
-  poolFacPtr->setLoadConditioningInterval(std::chrono::milliseconds(60000));
-  poolFacPtr->setSocketBufferSize(1024);
-  poolFacPtr->setReadTimeout(std::chrono::milliseconds(10000));
-  poolFacPtr->setMinConnections(4);
-  poolFacPtr->setMaxConnections(8);
-  poolFacPtr->setIdleTimeout(std::chrono::seconds(5));
-  poolFacPtr->setRetryAttempts(5);
-  poolFacPtr->setPingInterval(std::chrono::milliseconds(120000));
-  poolFacPtr->setUpdateLocatorListInterval(std::chrono::milliseconds(122000));
-  poolFacPtr->setStatisticInterval(std::chrono::milliseconds(120000));
-  poolFacPtr->setServerGroup(serverGroup);
-  poolFacPtr->setSubscriptionEnabled(true);
-  poolFacPtr->setSubscriptionRedundancy(1);
-  poolFacPtr->setSubscriptionMessageTrackingTimeout(
+  auto poolFac = getHelper()->getCache()->getPoolManager().createFactory();
+  poolFac.setFreeConnectionTimeout(std::chrono::milliseconds(10000));
+  poolFac.setLoadConditioningInterval(std::chrono::milliseconds(60000));
+  poolFac.setSocketBufferSize(1024);
+  poolFac.setReadTimeout(std::chrono::milliseconds(10000));
+  poolFac.setMinConnections(4);
+  poolFac.setMaxConnections(8);
+  poolFac.setIdleTimeout(std::chrono::seconds(5));
+  poolFac.setRetryAttempts(5);
+  poolFac.setPingInterval(std::chrono::milliseconds(120000));
+  poolFac.setUpdateLocatorListInterval(std::chrono::milliseconds(122000));
+  poolFac.setStatisticInterval(std::chrono::milliseconds(120000));
+  poolFac.setServerGroup(serverGroup);
+  poolFac.setSubscriptionEnabled(true);
+  poolFac.setSubscriptionRedundancy(1);
+  poolFac.setSubscriptionMessageTrackingTimeout(
       std::chrono::milliseconds(500000));
-  poolFacPtr->setSubscriptionAckInterval(std::chrono::milliseconds(120000));
-  poolFacPtr->addLocator("localhost", CacheHelper::staticLocatorHostPort1);
+  poolFac.setSubscriptionAckInterval(std::chrono::milliseconds(120000));
+  poolFac.addLocator("localhost", CacheHelper::staticLocatorHostPort1);
   // poolFacPtr->setMultiuserSecurityMode(true);
-  poolFacPtr->setPRSingleHopEnabled(false);
+  poolFac.setPRSingleHopEnabled(false);
 
- auto pptr = poolFacPtr->create(poolName);
+ auto pptr = poolFac.create(poolName);
 
  // Validate the attributes
  ASSERT(pptr->getFreeConnectionTimeout() == std::chrono::milliseconds(10000),
@@ -204,9 +204,9 @@ DUNIT_TASK(CLIENT1, StartC1)
    doAttrTestingAndCreatePool(poolName);
 
    // Do PoolCreation testing , create another pool with same name
-   auto poolFacPtr = std::make_shared<PoolFactory>(getHelper()->getCache()->getPoolManager().createFactory());
+   auto poolFac = getHelper()->getCache()->getPoolManager().createFactory();
    try {
-     auto pptr = poolFacPtr->create(poolName);
+     auto pptr = poolFac.create(poolName);
      FAIL("Pool creation with same name should fail");
    } catch (IllegalStateException&) {
      LOG("OK:Pool creation with same name should fail");

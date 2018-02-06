@@ -338,7 +338,7 @@ void FrameworkTest::localDestroyRegion(std::shared_ptr<Region>& region) {
 void FrameworkTest::parseEndPoints(int32_t ep, std::string label,
                                    bool isServer) {
   std::string poolName = "_Test_Pool";
-  auto pfPtr = std::make_shared<PoolFactory>(m_cache->getPoolManager().createFactory());
+  auto pf = m_cache->getPoolManager().createFactory();
   std::string tag = getStringValue("TAG");
   std::string bb("GFE_BB");
 
@@ -361,9 +361,9 @@ void FrameworkTest::parseEndPoints(int32_t ep, std::string label,
       std::string hostname = ep.substr(0, position);
       int portnumber = atoi((ep.substr(position + 1)).c_str());
       if (isServer) {
-        pfPtr->addServer(hostname.c_str(), portnumber);
+        pf.addServer(hostname.c_str(), portnumber);
       } else {
-        pfPtr->addLocator(hostname.c_str(), portnumber);
+        pf.addLocator(hostname.c_str(), portnumber);
       }
     }
   }
@@ -371,32 +371,32 @@ void FrameworkTest::parseEndPoints(int32_t ep, std::string label,
   FWKINFO("TESTSTICKY value is:" << checksticky);
   if ((checksticky.compare("ON")) == 0) {
     FWKINFO("setThreadLocalConnections to true & setMaxConnections to 13");
-    pfPtr->setThreadLocalConnections(true);
-    pfPtr->setPRSingleHopEnabled(false);
+    pf.setThreadLocalConnections(true);
+    pf.setPRSingleHopEnabled(false);
   } else {
     FWKINFO("ThreadLocalConnections set to false:Default");
   }
 
   if (isExcpHandling) {
     FWKINFO("The test is Exception Handling Test");
-    pfPtr->setRetryAttempts(10);
+    pf.setRetryAttempts(10);
   }
 
   if (multiUserMode) {
     FWKINFO("Setting multiuser mode");
-    pfPtr->setMultiuserAuthentication(true);
-    pfPtr->setSubscriptionEnabled(true);
+    pf.setMultiuserAuthentication(true);
+    pf.setSubscriptionEnabled(true);
   } else {
-    pfPtr->setSubscriptionEnabled(true);
+    pf.setSubscriptionEnabled(true);
   }
 
-  pfPtr->setMinConnections(20);
-  pfPtr->setMaxConnections(30);
-  pfPtr->setSubscriptionEnabled(true);
-  pfPtr->setReadTimeout(std::chrono::seconds(180));
-  pfPtr->setFreeConnectionTimeout(std::chrono::seconds(180));
+  pf.setMinConnections(20);
+  pf.setMaxConnections(30);
+  pf.setSubscriptionEnabled(true);
+  pf.setReadTimeout(std::chrono::seconds(180));
+  pf.setFreeConnectionTimeout(std::chrono::seconds(180));
   int32_t redundancyLevel = getIntValue("redundancyLevel");
-  if (redundancyLevel > 0) pfPtr->setSubscriptionRedundancy(redundancyLevel);
+  if (redundancyLevel > 0) pf.setSubscriptionRedundancy(redundancyLevel);
   // create tag specific pools
   std::shared_ptr<Pool> pptr = nullptr;
   if (!tag.empty()) {
@@ -404,14 +404,14 @@ void FrameworkTest::parseEndPoints(int32_t ep, std::string label,
     // check if pool already exists
     pptr = m_cache->getPoolManager().find(poolName.c_str());
     if (pptr == nullptr) {
-      pptr = pfPtr->create(poolName.c_str());
+      pptr = pf.create(poolName.c_str());
     }
   }
   // create default pool
   else {
     pptr = m_cache->getPoolManager().find(poolName.c_str());
     if (pptr == nullptr) {
-      pptr = pfPtr->create(poolName.c_str());
+      pptr = pf.create(poolName.c_str());
     }
   }
   if (pptr != nullptr)

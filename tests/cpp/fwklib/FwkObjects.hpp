@@ -490,7 +490,7 @@ class FwkPool {
   std::string m_name;
   std::shared_ptr<Cache> m_cache;
   PoolManager* m_poolManager;
-  std::shared_ptr<PoolFactory> m_poolFactory;
+  PoolFactory m_poolFactory;
   bool m_locators;
   bool m_servers;
 
@@ -498,86 +498,86 @@ class FwkPool {
   void setAttributesToFactory(const DOMNode* node);
 
   void setFreeConnectionTimeout(std::string val) {
-    m_poolFactory->setFreeConnectionTimeout(
+    m_poolFactory.setFreeConnectionTimeout(
         apache::geode::internal::chrono::duration::from_string<
             std::chrono::milliseconds>(val));
   }
 
   void setLoadConditioningInterval(std::string val) {
-    m_poolFactory->setLoadConditioningInterval(
+    m_poolFactory.setLoadConditioningInterval(
         apache::geode::internal::chrono::duration::from_string<
             std::chrono::milliseconds>(val));
   }
 
   void setSocketBufferSize(std::string val) {
-    m_poolFactory->setSocketBufferSize(FwkStrCvt::toInt32(val));
+    m_poolFactory.setSocketBufferSize(FwkStrCvt::toInt32(val));
   }
 
   void setReadTimeout(std::string val) {
-    m_poolFactory->setReadTimeout(
+    m_poolFactory.setReadTimeout(
         apache::geode::internal::chrono::duration::from_string<
             std::chrono::milliseconds>(val));
   }
 
   void setMinConnections(std::string val) {
-    m_poolFactory->setMinConnections(FwkStrCvt::toInt32(val));
+    m_poolFactory.setMinConnections(FwkStrCvt::toInt32(val));
   }
 
   void setMaxConnections(std::string val) {
-    m_poolFactory->setMaxConnections(FwkStrCvt::toInt32(val));
+    m_poolFactory.setMaxConnections(FwkStrCvt::toInt32(val));
   }
 
   void setIdleTimeout(std::string val) {
-    m_poolFactory->setIdleTimeout(
+    m_poolFactory.setIdleTimeout(
         apache::geode::internal::chrono::duration::from_string<
             std::chrono::milliseconds>(val));
   }
 
   void setRetryAttempts(std::string val) {
-    m_poolFactory->setRetryAttempts(FwkStrCvt::toInt32(val));
+    m_poolFactory.setRetryAttempts(FwkStrCvt::toInt32(val));
   }
 
   void setPingInterval(std::string val) {
-    m_poolFactory->setPingInterval(
+    m_poolFactory.setPingInterval(
         apache::geode::internal::chrono::duration::from_string<
             std::chrono::milliseconds>(val));
   }
 
   void setStatisticInterval(std::string val) {
-    m_poolFactory->setStatisticInterval(
+    m_poolFactory.setStatisticInterval(
         apache::geode::internal::chrono::duration::from_string<
             std::chrono::milliseconds>(val));
   }
 
   void setServerGroup(std::string val) {
-    m_poolFactory->setServerGroup(val.c_str());
+    m_poolFactory.setServerGroup(val.c_str());
   }
 
   void setSubscriptionEnabled(std::string val) {
-    m_poolFactory->setSubscriptionEnabled(FwkStrCvt::toBool(val));
+    m_poolFactory.setSubscriptionEnabled(FwkStrCvt::toBool(val));
   }
 
   void setSubscriptionRedundancy(std::string val) {
-    m_poolFactory->setSubscriptionRedundancy(FwkStrCvt::toInt32(val));
+    m_poolFactory.setSubscriptionRedundancy(FwkStrCvt::toInt32(val));
   }
 
   void setSubscriptionMessageTrackingTimeout(std::string val) {
-    m_poolFactory->setSubscriptionMessageTrackingTimeout(
+    m_poolFactory.setSubscriptionMessageTrackingTimeout(
         apache::geode::internal::chrono::duration::from_string<
             std::chrono::milliseconds>(val));
   }
 
   void setSubscriptionAckInterval(std::string val) {
-    m_poolFactory->setSubscriptionAckInterval(
+    m_poolFactory.setSubscriptionAckInterval(
         apache::geode::internal::chrono::duration::from_string<
             std::chrono::milliseconds>(val));
   }
 
   void setThreadLocalConnections(std::string val) {
-    m_poolFactory->setThreadLocalConnections(FwkStrCvt::toBool(val));
+    m_poolFactory.setThreadLocalConnections(FwkStrCvt::toBool(val));
   }
   void setPRSingleHopEnabled(std::string val) {
-    m_poolFactory->setPRSingleHopEnabled(FwkStrCvt::toBool(val));
+    m_poolFactory.setPRSingleHopEnabled(FwkStrCvt::toBool(val));
   }
 
   void setLocatorsFlag(std::string val) { m_locators = FwkStrCvt::toBool(val); }
@@ -586,11 +586,7 @@ class FwkPool {
 
  public:
   FwkPool(const DOMNode* node);
-  ~FwkPool() {
-    if (m_poolFactory != nullptr) {
-      // TODO:Close factory
-    }
-  }
+  ~FwkPool() = default;
   bool isPoolWithLocators() { return m_locators; }
   bool isPoolWithServers() { return m_servers; }
 
@@ -599,7 +595,7 @@ class FwkPool {
     if (position != std::string::npos) {
       std::string hostname = ep.substr(0, position);
       int portnumber = atoi((ep.substr(position + 1)).c_str());
-      m_poolFactory->addLocator(hostname.c_str(), portnumber);
+      m_poolFactory.addLocator(hostname.c_str(), portnumber);
     }
   }
 
@@ -609,18 +605,18 @@ class FwkPool {
     if (position != std::string::npos) {
       std::string hostname = ep.substr(0, position);
       int portnumber = atoi((ep.substr(position + 1)).c_str());
-      m_poolFactory->addServer(hostname.c_str(), portnumber);
+      m_poolFactory.addServer(hostname.c_str(), portnumber);
     }
   }
 
   //  std::shared_ptr<Pool> createPoolForPerf() { return
-  //  m_poolFactory->create(m_name.c_str()); }
+  //  m_poolFactory.create(m_name.c_str()); }
 
   //  std::shared_ptr<Pool> createPool() const {
   //    if (m_name.empty()) {
   //      FWKEXCEPTION("Pool name not specified.");
   //    } else {
-  //      return m_poolFactory->create(m_name.c_str());
+  //      return m_poolFactory.create(m_name.c_str());
   //    }
   //    return nullptr;
   //  }
