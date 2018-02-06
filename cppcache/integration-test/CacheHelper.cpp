@@ -136,7 +136,7 @@ CacheHelper::CacheHelper(const std::shared_ptr<Properties>& configPtr,
 
   auto poolFactory = cachePtr->getPoolManager().createFactory();
   addServerLocatorEPs("localhost:40404", poolFactory);
-  poolFactory->create("__CACHE_HELPER_POOL__");
+  poolFactory.create("__CACHE_HELPER_POOL__");
 
   m_doDisconnect = false;
 
@@ -235,34 +235,34 @@ CacheHelper::CacheHelper(const bool isthinClient, const char* poolName,
 
     auto poolFactory = cachePtr->getPoolManager().createFactory();
 
-    poolFactory->setPRSingleHopEnabled(prSingleHop);
-    poolFactory->setThreadLocalConnections(threadLocal);
+    poolFactory.setPRSingleHopEnabled(prSingleHop);
+    poolFactory.setThreadLocalConnections(threadLocal);
     printf(" Setting pr-single-hop to prSingleHop = %d ", prSingleHop);
     printf("Setting threadLocal to %d ", threadLocal);
     if (locators) {
       addServerLocatorEPs(locators, poolFactory);
       if (serverGroup) {
-        poolFactory->setServerGroup(serverGroup);
+        poolFactory.setServerGroup(serverGroup);
       }
     }
-    poolFactory->setSubscriptionRedundancy(redundancy);
-    poolFactory->setSubscriptionEnabled(clientNotification);
-    poolFactory->setMultiuserAuthentication(isMultiuserMode);
+    poolFactory.setSubscriptionRedundancy(redundancy);
+    poolFactory.setSubscriptionEnabled(clientNotification);
+    poolFactory.setMultiuserAuthentication(isMultiuserMode);
     if (loadConditioningInterval > 0) {
-      poolFactory->setLoadConditioningInterval(
+      poolFactory.setLoadConditioningInterval(
           std::chrono::milliseconds(loadConditioningInterval));
     }
     printf("Setting connections to %d ", connections);
     if (connections >= 0) {
-      poolFactory->setMinConnections(connections);
-      poolFactory->setMaxConnections(connections);
+      poolFactory.setMinConnections(connections);
+      poolFactory.setMaxConnections(connections);
     }
     if (subscriptionAckInterval != -1) {
-      poolFactory->setSubscriptionAckInterval(
+      poolFactory.setSubscriptionAckInterval(
           std::chrono::milliseconds(subscriptionAckInterval));
     }
 
-    poolFactory->create(poolName);
+    poolFactory.create(poolName);
 
   } catch (const Exception& excp) {
     LOG("Geode exception while creating cache, logged in following line");
@@ -443,31 +443,31 @@ std::shared_ptr<Pool> CacheHelper::createPool(
     std::chrono::milliseconds subscriptionAckInterval, int connections,
     int loadConditioningInterval, bool isMultiuserMode) {
   // printf(" in createPool isMultiuserMode = %d \n", isMultiuserMode);
-  auto poolFacPtr = getCache()->getPoolManager().createFactory();
+  auto poolFac = getCache()->getPoolManager().createFactory();
 
-  addServerLocatorEPs(locators, poolFacPtr);
+  addServerLocatorEPs(locators, poolFac);
   if (serverGroup) {
-    poolFacPtr->setServerGroup(serverGroup);
+    poolFac.setServerGroup(serverGroup);
   }
 
-  poolFacPtr->setSubscriptionRedundancy(redundancy);
-  poolFacPtr->setSubscriptionEnabled(clientNotification);
-  poolFacPtr->setMultiuserAuthentication(isMultiuserMode);
-  // poolFacPtr->setStatisticInterval(1000);
+  poolFac.setSubscriptionRedundancy(redundancy);
+  poolFac.setSubscriptionEnabled(clientNotification);
+  poolFac.setMultiuserAuthentication(isMultiuserMode);
+  // poolFac.setStatisticInterval(1000);
   if (loadConditioningInterval > 0) {
-    poolFacPtr->setLoadConditioningInterval(
+    poolFac.setLoadConditioningInterval(
         std::chrono::milliseconds(loadConditioningInterval));
   }
 
   if (connections >= 0) {
-    poolFacPtr->setMinConnections(connections);
-    poolFacPtr->setMaxConnections(connections);
+    poolFac.setMinConnections(connections);
+    poolFac.setMaxConnections(connections);
   }
   if (subscriptionAckInterval > std::chrono::milliseconds::zero()) {
-    poolFacPtr->setSubscriptionAckInterval(subscriptionAckInterval);
+    poolFac.setSubscriptionAckInterval(subscriptionAckInterval);
   }
 
-  return poolFacPtr->create(poolName);
+  return poolFac.create(poolName);
 }
 
 // this will create pool even endpoints and locatorhost has been not defined
@@ -475,32 +475,32 @@ std::shared_ptr<Pool> CacheHelper::createPool2(
     const char* poolName, const char* locators, const char* serverGroup,
     const char* servers, int redundancy, bool clientNotification,
     int subscriptionAckInterval, int connections) {
-  auto poolFacPtr = getCache()->getPoolManager().createFactory();
+  auto poolFac = getCache()->getPoolManager().createFactory();
 
   if (servers != 0)  // with explicit server list
   {
-    addServerLocatorEPs(servers, poolFacPtr, false);
+    addServerLocatorEPs(servers, poolFac, false);
     // do region creation with end
   } else if (locators != 0)  // with locator
   {
-    addServerLocatorEPs(locators, poolFacPtr);
+    addServerLocatorEPs(locators, poolFac);
     if (serverGroup) {
-      poolFacPtr->setServerGroup(serverGroup);
+      poolFac.setServerGroup(serverGroup);
     }
   }
 
-  poolFacPtr->setSubscriptionRedundancy(redundancy);
-  poolFacPtr->setSubscriptionEnabled(clientNotification);
+  poolFac.setSubscriptionRedundancy(redundancy);
+  poolFac.setSubscriptionEnabled(clientNotification);
   if (connections >= 0) {
-    poolFacPtr->setMinConnections(connections);
-    poolFacPtr->setMaxConnections(connections);
+    poolFac.setMinConnections(connections);
+    poolFac.setMaxConnections(connections);
   }
   if (subscriptionAckInterval != -1) {
-    poolFacPtr->setSubscriptionAckInterval(
+    poolFac.setSubscriptionAckInterval(
         std::chrono::milliseconds(subscriptionAckInterval));
   }
 
-  return poolFacPtr->create(poolName);
+  return poolFac.create(poolName);
 }
 
 void CacheHelper::logPoolAttributes(std::shared_ptr<Pool>& pool) {
@@ -596,7 +596,7 @@ std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool2(
 }
 
 void CacheHelper::addServerLocatorEPs(const char* epList,
-                                      std::shared_ptr<PoolFactory> pfPtr,
+                                     PoolFactory pf,
                                       bool poolLocators) {
   std::unordered_set<std::string> endpointNames;
   Utils::parseEndpointNamesString(epList, endpointNames);
@@ -609,9 +609,9 @@ void CacheHelper::addServerLocatorEPs(const char* epList,
       if (poolLocators) {
         LOG((*iter));
 
-        pfPtr->addLocator(hostname.c_str(), portnumber);
+        pf.addLocator(hostname.c_str(), portnumber);
       } else {
-        pfPtr->addServer(hostname.c_str(), portnumber);
+        pf.addServer(hostname.c_str(), portnumber);
       }
     }
   }
@@ -645,17 +645,17 @@ std::shared_ptr<Region> CacheHelper::createPooledRegion(
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
     const std::shared_ptr<CacheListener>& cacheListener,
     ExpirationAction action) {
-  auto poolFacPtr = getCache()->getPoolManager().createFactory();
-  poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
+  auto poolFac = getCache()->getPoolManager().createFactory();
+  poolFac.setSubscriptionEnabled(clientNotificationEnabled);
 
   if (locators) {
     LOG("adding pool locators");
-    addServerLocatorEPs(locators, poolFacPtr);
+    addServerLocatorEPs(locators, poolFac);
   }
 
   if ((getCache()->getPoolManager().find(poolName)) ==
       nullptr) {  // Pool does not exist with the same name.
-    auto pptr = poolFacPtr->create(poolName);
+    auto pptr = poolFac.create(poolName);
   }
 
   RegionShortcut preDefRA = RegionShortcut::PROXY;
@@ -684,15 +684,15 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionConcurrencyCheckDisabled(
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
     const std::shared_ptr<CacheListener>& cacheListener,
     ExpirationAction action) {
-  auto poolFacPtr = getCache()->getPoolManager().createFactory();
-  poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
+  auto poolFac = getCache()->getPoolManager().createFactory();
+  poolFac.setSubscriptionEnabled(clientNotificationEnabled);
 
   LOG("adding pool locators");
-  addServerLocatorEPs(locators, poolFacPtr);
+  addServerLocatorEPs(locators, poolFac);
 
   if ((getCache()->getPoolManager().find(poolName)) ==
       nullptr) {  // Pool does not exist with the same name.
-    auto pptr = poolFacPtr->create(poolName);
+    auto pptr = poolFac.create(poolName);
   }
 
   RegionShortcut preDefRA = RegionShortcut::PROXY;
@@ -753,17 +753,17 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
     const std::shared_ptr<CacheListener>& cacheListener,
     ExpirationAction action) {
-  auto poolFacPtr = getCache()->getPoolManager().createFactory();
-  poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
+  auto poolFac = getCache()->getPoolManager().createFactory();
+  poolFac.setSubscriptionEnabled(clientNotificationEnabled);
 
   if (locators)  // with locator
   {
     LOG("adding pool locators");
-    addServerLocatorEPs(locators, poolFacPtr);
+    addServerLocatorEPs(locators, poolFac);
   }
   if ((getCache()->getPoolManager().find(poolName)) ==
       nullptr) {  // Pool does not exist with the same name.
-    auto pptr = poolFacPtr->create(poolName);
+    auto pptr = poolFac.create(poolName);
   }
 
   if (!caching) {
@@ -809,17 +809,17 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionSticky(
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
     const std::shared_ptr<CacheListener>& cacheListener,
     ExpirationAction action) {
-  auto poolFacPtr = getCache()->getPoolManager().createFactory();
-  poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
-  poolFacPtr->setThreadLocalConnections(true);
-  poolFacPtr->setPRSingleHopEnabled(false);
+  auto poolFac = getCache()->getPoolManager().createFactory();
+  poolFac.setSubscriptionEnabled(clientNotificationEnabled);
+  poolFac.setThreadLocalConnections(true);
+  poolFac.setPRSingleHopEnabled(false);
 
   LOG("adding pool locators");
-  addServerLocatorEPs(locators, poolFacPtr);
+  addServerLocatorEPs(locators, poolFac);
 
   if ((getCache()->getPoolManager().find(poolName)) ==
       nullptr) {  // Pool does not exist with the same name.
-    auto pptr = poolFacPtr->create(poolName);
+    auto pptr = poolFac.create(poolName);
     LOG("createPooledRegionSticky logPoolAttributes");
     logPoolAttributes(pptr);
   }
@@ -851,16 +851,16 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionStickySingleHop(
     const std::shared_ptr<CacheListener>& cacheListener,
     ExpirationAction action) {
   LOG("createPooledRegionStickySingleHop");
-  auto poolFacPtr = getCache()->getPoolManager().createFactory();
-  poolFacPtr->setSubscriptionEnabled(clientNotificationEnabled);
-  poolFacPtr->setThreadLocalConnections(true);
-  poolFacPtr->setPRSingleHopEnabled(true);
+  auto poolFac = getCache()->getPoolManager().createFactory();
+  poolFac.setSubscriptionEnabled(clientNotificationEnabled);
+  poolFac.setThreadLocalConnections(true);
+  poolFac.setPRSingleHopEnabled(true);
   LOG("adding pool locators");
-  addServerLocatorEPs(locators, poolFacPtr);
+  addServerLocatorEPs(locators, poolFac);
 
   if ((getCache()->getPoolManager().find(poolName)) ==
       nullptr) {  // Pool does not exist with the same name.
-    auto pptr = poolFacPtr->create(poolName);
+    auto pptr = poolFac.create(poolName);
     LOG("createPooledRegionStickySingleHop logPoolAttributes");
     logPoolAttributes(pptr);
   }

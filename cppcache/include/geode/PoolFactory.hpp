@@ -531,11 +531,12 @@ class _GEODE_EXPORT PoolFactory {
    */
   PoolFactory& setPRSingleHopEnabled(bool enabled);
 
-  ~PoolFactory();
+  ~PoolFactory() = default;
+
+  PoolFactory(const PoolFactory&) = default;
 
  private:
   PoolFactory(const Cache& cache);
-  PoolFactory(const PoolFactory&);
   PoolFactory& addCheck(const std::string& host, int port);
   std::shared_ptr<PoolAttributes> m_attrs;
   bool m_isSubscriptionRedundancy;
@@ -544,6 +545,7 @@ class _GEODE_EXPORT PoolFactory {
 
   friend class Cache;
   friend class PoolManager;
+  friend class PoolManagerImpl;
   friend class CacheFactory;
   friend class CacheXmlCreation;
 

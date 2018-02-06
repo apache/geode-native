@@ -48,9 +48,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, PerformSecureOperationsWithUserCredentials)
   {
     auto cache = CacheFactory().create();
     auto poolFactory = cache.getPoolManager().createFactory();
-    poolFactory->setMultiuserAuthentication(true);
-    poolFactory->addLocator("localhost", CacheHelper::staticLocatorHostPort1);
-    poolFactory->create("mypool");
+    poolFactory.setMultiuserAuthentication(true);
+    poolFactory.addLocator("localhost", CacheHelper::staticLocatorHostPort1);
+    poolFactory.create("mypool");
 
     auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
     regionFactory.setPoolName("mypool");

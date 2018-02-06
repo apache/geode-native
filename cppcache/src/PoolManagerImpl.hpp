@@ -40,7 +40,7 @@ class PoolManagerImpl {
 
   void removePool(const std::string& name);
 
-  std::shared_ptr<PoolFactory> createFactory() const;
+  PoolFactory createFactory() const;
 
   void close(bool keepAlive);
 

@@ -193,7 +193,7 @@ void RunDurableCqClient() {
   auto cacheFactory = CacheFactory(pp);
   auto cachePtr = std::make_shared<Cache>(cacheFactory.create());
   auto poolFactory = cachePtr->getPoolManager().createFactory();
-  poolFactory->setSubscriptionEnabled(true)
+  poolFactory.setSubscriptionEnabled(true)
       .setSubscriptionAckInterval(std::chrono::milliseconds(5000))
       .setSubscriptionMessageTrackingTimeout(std::chrono::milliseconds(50000))
       .create("");

@@ -30,7 +30,7 @@ void PoolManager::removePool(const std::string& name) {
   m_pimpl->removePool(name);
 }
 
-std::shared_ptr<PoolFactory> PoolManager::createFactory() const {
+PoolFactory PoolManager::createFactory() const {
   return m_pimpl->createFactory();
 }
 

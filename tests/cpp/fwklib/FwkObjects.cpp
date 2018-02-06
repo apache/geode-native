@@ -569,11 +569,10 @@ Attributes::Attributes(const DOMNode* node)
   }
 }
 
-FwkPool::FwkPool(const DOMNode* node) : m_locators(false), m_servers(false) {
+FwkPool::FwkPool(const DOMNode* node) : m_poolFactory(m_poolManager->createFactory()), m_locators(false), m_servers(false) {
   // Init Factory
   m_cache = std::make_shared<Cache>(CacheFactory().create());
   m_poolManager = &m_cache->getPoolManager();
-  m_poolFactory = m_poolManager->createFactory();
   // Set Attrs to Pool
   setAttributesToFactory(node);
 

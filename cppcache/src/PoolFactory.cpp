@@ -69,8 +69,6 @@ PoolFactory::PoolFactory(const Cache& cache)
       m_addedServerOrLocator(false),
       m_cache(cache) {}
 
-PoolFactory::~PoolFactory() {}
-
 PoolFactory& PoolFactory::setFreeConnectionTimeout(
     std::chrono::milliseconds connectionTimeout) {
   if (connectionTimeout <= std::chrono::milliseconds::zero()) {
