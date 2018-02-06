@@ -19,8 +19,6 @@ project(templates.security)
 
 find_package(OpenSSL 1.0.1 REQUIRED)
 
-find_package(NativeClient REQUIRED PATHS ../../SampleCode/quickstart)
-
 file(GLOB_RECURSE SOURCES "*.cpp")
 
 add_library(securityImpl SHARED ${SOURCES})
