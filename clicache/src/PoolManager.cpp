@@ -15,10 +15,6 @@
  * limitations under the License.
  */
 
-
-
-
-
 #include "Region.hpp"
 #include "Pool.hpp"
 #include "PoolManager.hpp"
