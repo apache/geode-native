@@ -45,7 +45,7 @@ void TcpConn::clearNagle(ACE_HANDLE sock) {
 #endif
   int32_t plen = sizeof(val);
 
-  if (0 != setsockopt(sock, IPPROTO_TCP, 1, param, plen)) {
+  if (0 != ACE_OS::setsockopt(sock, IPPROTO_TCP, 1, param, plen)) {
     int32_t lastError = ACE_OS::last_error();
     LOGERROR("Failed to set TCP_NODELAY on socket. Errno: %d: %s", lastError,
              ACE_OS::strerror(lastError));
@@ -73,12 +73,12 @@ int32_t TcpConn::maxSize(ACE_HANDLE sock, int32_t flag, int32_t size) {
   while (lastRed != red) {
     lastRed = red;
     val += inc;
-    if (0 != setsockopt(sock, SOL_SOCKET, flag, cparam, clen)) {
+    if (0 != ACE_OS::setsockopt(sock, SOL_SOCKET, flag, cparam, clen)) {
       int32_t lastError = ACE_OS::last_error();
       LOGERROR("Failed to set socket options. Errno: %d : %s ", lastError,
                ACE_OS::strerror(lastError));
     }
-    if (0 != getsockopt(sock, SOL_SOCKET, flag, param, &plen)) {
+    if (0 != ACE_OS::getsockopt(sock, SOL_SOCKET, flag, param, &plen)) {
       int32_t lastError = ACE_OS::last_error();
       LOGERROR(
           "Failed to get buffer size for flag %d on socket. Errno: %d : %s",
@@ -101,7 +101,7 @@ void TcpConn::createSocket(ACE_HANDLE sock) {
 
 void TcpConn::init() {
   ACE_HANDLE sock = ACE_OS::socket(AF_INET, SOCK_STREAM, 0);
-  if (sock == -1) {
+  if (sock == ACE_INVALID_HANDLE) {
     int32_t lastError = ACE_OS::last_error();
     LOGERROR("Failed to create socket. Errno: %d: %s", lastError,
              ACE_OS::strerror(lastError));
@@ -216,7 +216,8 @@ void TcpConn::connect() {
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 
   LOGFINER("Connecting plain socket stream to %s:%d waiting %d micro sec",
-           ipaddr.get_host_name(), ipaddr.get_port_number(), waitMicroSeconds.count());
+           ipaddr.get_host_name(), ipaddr.get_port_number(),
+           waitMicroSeconds.count());
 
   ACE_SOCK_Connector conn;
   int32_t retVal = 0;
