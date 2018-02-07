@@ -121,10 +121,14 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
     return className;
   }
 
+  using PdxSerializable::toData;
+
   void toData(PdxWriter& pw) const override {
     pw.writeInt("counter", m_counter);
     m_toDataCount++;
   }
+
+  using PdxSerializable::fromData;
 
   void fromData(PdxReader& pr) override {
     m_counter = pr.readInt("counter");
