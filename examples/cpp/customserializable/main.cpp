@@ -33,8 +33,8 @@ int main(int argc, char** argv) {
   auto cache = cacheFactory.create();
 
   auto poolFactory = cache.getPoolManager().createFactory();
-  poolFactory->addLocator("localhost", 10334);
-  auto pool = poolFactory->create("pool");
+  poolFactory.addLocator("localhost", 10334);
+  auto pool = poolFactory.create("pool");
 
   auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
   auto region = regionFactory.setPoolName("pool").create("custom_orders");

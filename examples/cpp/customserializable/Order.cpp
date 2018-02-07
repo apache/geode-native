@@ -55,7 +55,9 @@ const std::string& Order::getClassName() const {
   return CLASS_NAME;
 }
 
-PdxSerializable* Order::createDeserializable() { return new Order(); }
+std::shared_ptr<PdxSerializable> Order::createDeserializable() {
+  return std::make_shared<Order>();
+}
 
 const std::string Order::ORDER_ID_KEY_ = "order_id";
 const std::string Order::NAME_KEY_ = "name";
