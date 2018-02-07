@@ -557,7 +557,7 @@ class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public Serializable {
 
   virtual void fromData(DataInput& input) override;
 
-  virtual void toData(DataOutput& output) const override;
+  void toData(DataOutput& output) const override;
 
   virtual int32_t classId() const override { return 0x10; }
 

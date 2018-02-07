@@ -66,12 +66,14 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   const std::string& getDSMemberIdForThinClientUse();
 
   // Serializable interface:
-  void toData(DataOutput& output) const;
-  void fromData(DataInput& input);
-  int32_t classId() const { return 0; }
-  int8_t typeId() const { return GeodeTypeIdsImpl::InternalDistributedMember; }
-  size_t objectSize() const { return 0; }
-  int8_t DSFID() const {
+  void toData(DataOutput& output) const override;
+  void fromData(DataInput& input) override;
+  int32_t classId() const override { return 0; }
+  int8_t typeId() const override {
+    return GeodeTypeIdsImpl::InternalDistributedMember;
+  }
+  size_t objectSize() const override { return 0; }
+  int8_t DSFID() const override {
     return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
   }
   void initObjectVars(const char* hostname, uint8_t* hostAddr,
@@ -87,9 +89,9 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   uint8_t* getHostAddr() const { return m_hostAddr; }
   uint32_t getHostAddrLen() const { return m_hostAddrLen; }
   uint32_t getHostPort() const { return m_hostPort; }
-  virtual std::string getHashKey();
-  virtual int16_t compareTo(const DSMemberForVersionStamp&) const;
-  virtual int32_t hashcode() const {
+  std::string getHashKey() override;
+  int16_t compareTo(const DSMemberForVersionStamp&) const override;
+  int32_t hashcode() const override {
     uint32_t result = 0;
     char hostInfo[255] = {0};
     uint32_t offset = 0;
@@ -102,7 +104,7 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
     return result;
   }
 
-  virtual bool operator==(const CacheableKey& other) const {
+  bool operator==(const CacheableKey& other) const override {
     return (this->compareTo(
                 dynamic_cast<const DSMemberForVersionStamp&>(other)) == 0);
   }

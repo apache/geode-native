@@ -82,7 +82,7 @@ class _GEODE_EXPORT PdxFieldType : public Serializable {
 
   // TODO:add more getters for the remaining members.
 
-  virtual void toData(DataOutput& output) const override;
+  void toData(DataOutput& output) const override;
 
   virtual void fromData(DataInput& input) override;
 

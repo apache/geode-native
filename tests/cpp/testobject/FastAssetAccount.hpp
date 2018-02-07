@@ -68,12 +68,12 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
         timestamp(0) {}
   FastAssetAccount(int index, bool encodeTimestp, int maxVal, int asstSize = 0);
   ~FastAssetAccount() override = default;
-  virtual void toData(apache::geode::client::DataOutput& output) const;
-  virtual void fromData(apache::geode::client::DataInput& input);
-  virtual int32_t classId() const { return 23; }
-  std::string toString() const;
+  void toData(DataOutput& output) const override;
+  void fromData(DataInput& input) override;
+  int32_t classId() const override { return 23; }
+  std::string toString() const override;
 
-  virtual size_t objectSize() const {
+  size_t objectSize() const override {
     auto objectSize = sizeof(FastAssetAccount);
     return objectSize;
   }
@@ -88,7 +88,7 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
 
   std::shared_ptr<CacheableHashMap> getAssets() { return assets; }
   int getIndex() { return acctId; }
-  uint64_t getTimestamp() {
+  uint64_t getTimestamp() override {
     if (encodeTimestamp) {
       return timestamp;
     } else {
@@ -96,7 +96,7 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
     }
   }
 
-  void resetTimestamp() {
+  void resetTimestamp() override {
     if (encodeTimestamp) {
       ACE_Time_Value startTime;
       startTime = ACE_OS::gettimeofday();

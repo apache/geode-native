@@ -49,20 +49,20 @@ class DiskStoreId : public DSMemberForVersionStamp {
     return *this;
   }
 
-  virtual void toData(DataOutput& output) const {
+  void toData(DataOutput& output) const override {
     throw IllegalStateException("DiskStoreId::toData not implemented");
   }
-  virtual void fromData(DataInput& input) {
+  void fromData(DataInput& input) override {
     m_mostSig = input.readInt64();
     m_leastSig = input.readInt64();
   }
-  virtual int32_t classId() const { return 0; }
+  int32_t classId() const override { return 0; }
 
-  virtual int8_t typeId() const {
+  int8_t typeId() const override {
     return static_cast<int8_t>(GeodeTypeIdsImpl::DiskStoreId);
   }
 
-  virtual int16_t compareTo(const DSMemberForVersionStamp& tagID) const {
+  int16_t compareTo(const DSMemberForVersionStamp& tagID) const override {
     const DiskStoreId& otherDiskStoreId =
         static_cast<const DiskStoreId&>(tagID);
     int64_t result = m_mostSig - otherDiskStoreId.m_mostSig;
@@ -80,9 +80,10 @@ class DiskStoreId : public DSMemberForVersionStamp {
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<DiskStoreId>();
   }
-  std::string getHashKey();
 
-  virtual int32_t hashcode() const {
+  std::string getHashKey() override;
+
+  int32_t hashcode() const override {
     static uint32_t prime = 31;
     uint32_t result = 1;
     result =
@@ -92,7 +93,7 @@ class DiskStoreId : public DSMemberForVersionStamp {
     return result;
   }
 
-  virtual bool operator==(const CacheableKey& other) const {
+  bool operator==(const CacheableKey& other) const override {
     return (this->compareTo(
                 dynamic_cast<const DSMemberForVersionStamp&>(other)) == 0);
   }

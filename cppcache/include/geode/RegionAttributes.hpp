@@ -193,22 +193,22 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
   ~RegionAttributes() noexcept override;
 
   /** Serialize out to stream */
-  virtual void toData(DataOutput& out) const;
+  void toData(DataOutput& out) const override;
 
   /** Initialize members from serialized data. */
-  virtual void fromData(DataInput& in);
+  void fromData(DataInput& in) override;
 
   /** Return an empty instance for deserialization. */
   static std::shared_ptr<Serializable> createDeserializable();
 
   /** Return class id for serialization. */
-  virtual int32_t classId() const;
+  int32_t classId() const override;
 
   /** Return type id for serialization. */
-  virtual int8_t typeId() const;
+  int8_t typeId() const override;
 
   // return zero deliberately
-  virtual size_t objectSize() const { return 0; }
+  size_t objectSize() const override { return 0; }
 
   /**
    * This method returns the path of the library from which

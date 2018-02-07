@@ -50,7 +50,7 @@ class SqLiteImpl : public PersistenceManager {
    * initialization fails.
    */
   void init(const std::shared_ptr<Region>& regionptr,
-            const std::shared_ptr<Properties>& diskProperties);
+            const std::shared_ptr<Properties>& diskProperties) override;
 
   /**
    * Stores a key-value pair in the SqLite implementation.
@@ -59,13 +59,13 @@ class SqLiteImpl : public PersistenceManager {
    * @throws DiskFailureException if the write fails due to disk failure.
    */
   void write(const std::shared_ptr<CacheableKey>& key,
-             const std::shared_ptr<Cacheable>& value, void*& dbHandle);
+             const std::shared_ptr<Cacheable>& value, void*& dbHandle) override;
 
   /**
    * Writes the entire region into the SqLite implementation.
    * @throws DiskFailureException if the write fails due to disk fail.
    */
-  bool writeAll();
+  bool writeAll() override;
 
   /**
    * Reads the value for the key from SqLite.
@@ -75,12 +75,12 @@ class SqLiteImpl : public PersistenceManager {
    * @throws DiskCorruptException if the data to be read is corrupt.
    */
   std::shared_ptr<Cacheable> read(const std::shared_ptr<CacheableKey>& key,
-                                  void*& dbHandle);
+                                  void*& dbHandle) override;
 
   /**
    * Read all the keys and values for a region stored in SqLite.
    */
-  bool readAll();
+  bool readAll() override;
 
   /**
    * Invalidates an entry stored in SqLite.
@@ -96,7 +96,8 @@ class SqLiteImpl : public PersistenceManager {
    * @throws RegionDestroyedException is the region is already destroyed.
    * @throws EntryNotFoundException if the entry is not found on the disk.
    */
-  void destroy(const std::shared_ptr<CacheableKey>& key, void*& dbHandle);
+  void destroy(const std::shared_ptr<CacheableKey>& key,
+               void*& dbHandle) override;
 
   /**
    * Returns number of entries stored in SqLite for the region.
@@ -115,7 +116,7 @@ class SqLiteImpl : public PersistenceManager {
    * @throws ShutdownFailedException if clean-up of region and environment files
    * fails..
    */
-  void close();
+  void close() override;
 
   /**
    * @brief destructor

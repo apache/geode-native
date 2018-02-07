@@ -50,7 +50,7 @@ class OperMonitor : public CacheListener {
     ASSERT(m_close && m_second, "m_second event not recieved");
   }
 
-  virtual void afterCreate(const EntryEvent& event) {
+  void afterCreate(const EntryEvent& event) override {
     if (!m_close) {
       m_first = true;
       LOG("First Event Recieved");
@@ -59,7 +59,7 @@ class OperMonitor : public CacheListener {
       LOG("Duplicate Recieved");
     }
   }
-  virtual void close(const std::shared_ptr<Region>& region) {
+  void close(Region& region) override {
     m_close = true;
     LOG("Listener Close Called");
   }

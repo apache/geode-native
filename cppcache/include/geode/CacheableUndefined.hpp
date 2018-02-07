@@ -44,7 +44,7 @@ class _GEODE_EXPORT CacheableUndefined : public Cacheable {
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const override;
+  void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object
@@ -76,7 +76,7 @@ class _GEODE_EXPORT CacheableUndefined : public Cacheable {
    * @brief Return the data serialization fixed ID size type for internal use.
    * @since GFE 5.7
    */
-  virtual int8_t DSFID() const override;
+  int8_t DSFID() const override;
 
   /**
    * Factory method for creating the default instance of CacheableUndefined.

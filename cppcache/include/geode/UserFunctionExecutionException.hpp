@@ -59,7 +59,7 @@ class UserFunctionExecutionException : public Serializable {
    *@brief serialize this object
    * @throws IllegalStateException If this api is called from User code.
    **/
-  virtual void toData(DataOutput& output) const override;
+  void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object, typical implementation should return

@@ -105,10 +105,6 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
   int32_t doubleArrayLen;
   int32_t floatArrayLen;
   int32_t strLenArray;
-  int32_t m_byte252Len;
-  int32_t m_byte253Len;
-  int32_t m_byte65535Len;
-  int32_t m_byte65536Len;
   int32_t byteByteArrayLen;
 
   int* lengthArr;

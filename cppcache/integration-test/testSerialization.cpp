@@ -80,14 +80,14 @@ class OtherType : public Serializable {
     m_struct.d = 0;
   }
 
-  virtual void toData(DataOutput& output) const {
+  void toData(DataOutput& output) const override {
     output.writeBytes((uint8_t*)&m_struct, sizeof(CData));
     output.writeInt(m_classIdToReturn);
   }
 
-  virtual size_t objectSize() const { return sizeof(CData); }
+  size_t objectSize() const override { return sizeof(CData); }
 
-  virtual void fromData(DataInput& input) {
+  void fromData(DataInput& input) override {
     int32_t size = input.readArrayLen();
     input.readBytesOnly(reinterpret_cast<uint8_t*>(&m_struct), size);
     m_classIdToReturn = input.readInt32();
@@ -105,7 +105,7 @@ class OtherType : public Serializable {
     return std::make_shared<OtherType>(g_classIdToReturn4);
   }
 
-  virtual int32_t classId() const { return m_classIdToReturn; }
+  int32_t classId() const override { return m_classIdToReturn; }
 
   uint32_t size() const { return sizeof(CData); }
 

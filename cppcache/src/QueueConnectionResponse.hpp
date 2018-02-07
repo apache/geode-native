@@ -32,9 +32,9 @@ class QueueConnectionResponse : public ServerLocationResponse {
  public:
   QueueConnectionResponse()
       : ServerLocationResponse(), m_durableQueueFound(false) {}
-  virtual void fromData(DataInput& input);
-  virtual int8_t typeId() const;
-  virtual size_t objectSize() const;
+  void fromData(DataInput& input) override;
+  int8_t typeId() const override;
+  size_t objectSize() const override;
   virtual std::list<ServerLocation> getServers() { return m_list; }
   virtual bool isDurableQueueFound() { return m_durableQueueFound; }
   static std::shared_ptr<Serializable> create() {

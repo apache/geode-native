@@ -30,20 +30,19 @@
 #define TESTOBJECT_EXPORT
 #endif
 
+namespace testobject {
+
 using namespace apache::geode::client;
 using namespace testframework;
 
-namespace testobject {
-
-class TESTOBJECT_EXPORT TimestampedObject
-    : public apache::geode::client::Serializable {
+class TESTOBJECT_EXPORT TimestampedObject : public Serializable {
  public:
   virtual uint64_t getTimestamp() { return 0; }
   virtual void resetTimestamp() {}
-  virtual void fromData(apache::geode::client::DataInput& input) {}
-  virtual void toData(apache::geode::client::DataOutput& output) const {}
-  virtual int32_t classId() const { return 0; }
-  virtual size_t objectSize() const { return 0; }
+  void fromData(DataInput& input) override {}
+  void toData(DataOutput& output) const override {}
+  int32_t classId() const override { return 0; }
+  size_t objectSize() const override { return 0; }
   ~TimestampedObject() override = default;
 };
 }  // namespace testobject

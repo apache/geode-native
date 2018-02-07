@@ -56,7 +56,7 @@ class _GEODE_EXPORT CacheableToken : public Cacheable {
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const override;
+  void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object

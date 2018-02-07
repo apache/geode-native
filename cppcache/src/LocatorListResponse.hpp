@@ -42,9 +42,9 @@ class LocatorListResponse : public ServerLocationResponse {
                                  * CID 28938: Uninitialized scalar field (UNINIT_CTOR) *
                                  */
         m_isBalanced(false) {}  // Default constru needed for de-serialization
-  virtual void fromData(DataInput& input);
-  virtual int8_t typeId() const;
-  virtual size_t objectSize() const;
+  void fromData(DataInput& input) override;
+  int8_t typeId() const override;
+  size_t objectSize() const override;
   const std::vector<ServerLocation>& getLocators() const;
   bool isBalanced() const;
   ~LocatorListResponse() override = default;

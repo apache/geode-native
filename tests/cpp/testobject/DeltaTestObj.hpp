@@ -82,7 +82,7 @@ class TESTOBJECT_EXPORT DeltaTestObj : public DeltaTestImpl {
     return buf;
   }
   static Serializable* create() { return new DeltaTestObj(); }
-  int32_t classId() const { return 32; }
+  int32_t classId() const override { return 32; }
 
  protected:
   void checkInvalidInt2(int intVal) {

@@ -534,9 +534,9 @@ bool gf_verifyDH(void *dhCtx, const char *subject,
   RSA* dh = EVP_PKEY_get1_RSA(evpkey);
 
   const ASN1_OBJECT *macobj;
-  const X509_ALGOR *algorithm;
+  const X509_ALGOR *algorithm = nullptr;
   X509_ALGOR_get0(&macobj, NULL, NULL, algorithm);
-  if (algorithm == NULL) {
+  if (algorithm == nullptr) {
     LOGDH("algo is null \n");
   }
 

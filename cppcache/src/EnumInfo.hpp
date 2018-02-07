@@ -41,7 +41,7 @@ class _GEODE_EXPORT EnumInfo : public CacheableKey {
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<EnumInfo>();
   }
-  virtual void toData(DataOutput& output) const override;
+  void toData(DataOutput& output) const override;
   virtual void fromData(DataInput& input) override;
   virtual size_t objectSize() const override {
     auto size = sizeof(EnumInfo);
@@ -56,7 +56,7 @@ class _GEODE_EXPORT EnumInfo : public CacheableKey {
   virtual bool operator==(const CacheableKey& other) const override;
   virtual int32_t hashcode() const override;
 
-  virtual int8_t DSFID() const override;
+  int8_t DSFID() const override;
   std::shared_ptr<CacheableString> getEnumClassName() const {
     return m_enumClassName;
   }

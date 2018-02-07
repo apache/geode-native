@@ -74,7 +74,7 @@ class _GEODE_EXPORT PdxSerializable
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const override;
+  void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object, typical implementation should return

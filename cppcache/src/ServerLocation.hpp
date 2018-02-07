@@ -70,32 +70,32 @@ class _GEODE_EXPORT ServerLocation : public Serializable {
 
   int getPort() const { return m_port; }
 
-  void toData(DataOutput& output) const {
+  void toData(DataOutput& output) const override {
     output.writeString(m_serverName);
     output.writeInt(m_port);
   }
 
-  void fromData(DataInput& input) {
+  void fromData(DataInput& input) override {
     m_serverName = input.readString();
     m_port = input.readInt32();
     makeEpString();
   }
 
-  size_t objectSize() const {
+  size_t objectSize() const override {
     size_t size = sizeof(ServerLocation);
     size += m_serverName.length();
     return size;
   }
 
-  int8_t typeId() const {
+  int8_t typeId() const override {
     return 0;  // NOt needed infact
   }
 
-  int8_t DSFID() const {
+  int8_t DSFID() const override {
     return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);  // Never used
   }
 
-  int32_t classId() const {
+  int32_t classId() const override {
     return 0;  // Never used
   }
 

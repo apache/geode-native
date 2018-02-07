@@ -28,15 +28,15 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class TXCommitMessage : public apache::geode::client::Cacheable {
+class TXCommitMessage : public Cacheable {
  public:
   TXCommitMessage(MemberListForVersionStamp& memberListForVersionStamp);
   ~TXCommitMessage() override = default;
 
-  virtual void fromData(DataInput& input);
-  virtual void toData(DataOutput& output) const;
-  virtual int32_t classId() const;
-  int8_t typeId() const;
+  void fromData(DataInput& input) override;
+  void toData(DataOutput& output) const override;
+  int32_t classId() const override;
+  int8_t typeId() const override;
   static std::shared_ptr<Serializable> create(
       MemberListForVersionStamp& memberListForVersionStamp);
   //	VectorOfEntryEvent getEvents(Cache* cache);

@@ -33,7 +33,7 @@ class CacheImpl;
 
 class DiskVersionTag : public VersionTag {
  protected:
-  virtual void readMembers(uint16_t flags, DataInput& input) {
+  void readMembers(uint16_t flags, DataInput& input) override {
     if ((flags & HAS_MEMBER_ID) != 0) {
       auto internalMemId = std::make_shared<DiskStoreId>();
       internalMemId->fromData(input);
@@ -55,9 +55,9 @@ class DiskVersionTag : public VersionTag {
   DiskVersionTag(MemberListForVersionStamp& memberListForVersionStamp)
       : VersionTag(memberListForVersionStamp) {}
 
-  virtual int32_t classId() const { return 0; }
+  int32_t classId() const override { return 0; }
 
-  virtual int8_t typeId() const {
+  int8_t typeId() const override {
     return static_cast<int8_t>(GeodeTypeIdsImpl::DiskVersionTag);
   }
 

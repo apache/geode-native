@@ -92,7 +92,7 @@ class BucketServerLocation : public ServerLocation {
 
   inline int8_t getVersion() const { return m_version; }
 
-  void toData(apache::geode::client::DataOutput& output) const {
+  void toData(DataOutput& output) const override {
     ServerLocation::toData(output);
     output.writeInt(m_bucketId);
     output.writeBoolean(m_isPrimary);
@@ -105,7 +105,7 @@ class BucketServerLocation : public ServerLocation {
     }
   }
 
-  void fromData(apache::geode::client::DataInput& input) {
+  void fromData(DataInput& input) override {
     ServerLocation::fromData(input);
     m_bucketId = input.readInt32();
     m_isPrimary = input.readBoolean();
@@ -124,19 +124,19 @@ class BucketServerLocation : public ServerLocation {
     }
   }
 
-  size_t objectSize() const {
+  size_t objectSize() const override {
     return sizeof(int32_t) + sizeof(bool) + sizeof(int8_t);
   }
 
-  int8_t typeId() const {
+  int8_t typeId() const override {
     return 0;  // NOt needed infact
   }
 
-  int8_t DSFID() const {
+  int8_t DSFID() const override {
     return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);  // Never used
   }
 
-  int32_t classId() const {
+  int32_t classId() const override {
     return 0;  // Never used
   }
 
