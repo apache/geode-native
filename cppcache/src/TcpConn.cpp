@@ -38,14 +38,10 @@ namespace client {
 
 void TcpConn::clearNagle(ACE_HANDLE sock) {
   int32_t val = 1;
-#ifdef WIN32
-  const char *param = (const char *)&val;
-#else
-  const void *param = (const void *)&val;
-#endif
-  int32_t plen = sizeof(val);
 
-  if (0 != ACE_OS::setsockopt(sock, IPPROTO_TCP, 1, param, plen)) {
+  if (0 != ACE_OS::setsockopt(sock, IPPROTO_TCP, 1,
+                              reinterpret_cast<const char *>(&val),
+                              sizeof(val))) {
     int32_t lastError = ACE_OS::last_error();
     LOGERROR("Failed to set TCP_NODELAY on socket. Errno: %d: %s", lastError,
              ACE_OS::strerror(lastError));
@@ -54,15 +50,6 @@ void TcpConn::clearNagle(ACE_HANDLE sock) {
 
 int32_t TcpConn::maxSize(ACE_HANDLE sock, int32_t flag, int32_t size) {
   int32_t val = 0;
-#ifdef _WIN32
-  const char *cparam = (const char *)&val;
-  char *param = (char *)&val;
-#else
-  const void *cparam = (const void *)&val;
-  void *param = (void *)&val;
-#endif
-  socklen_t plen = sizeof(val);
-  socklen_t clen = sizeof(val);
 
   int32_t inc = 32120;
   val = size - (3 * inc);
@@ -73,12 +60,16 @@ int32_t TcpConn::maxSize(ACE_HANDLE sock, int32_t flag, int32_t size) {
   while (lastRed != red) {
     lastRed = red;
     val += inc;
-    if (0 != ACE_OS::setsockopt(sock, SOL_SOCKET, flag, cparam, clen)) {
+    if (0 != ACE_OS::setsockopt(sock, SOL_SOCKET, flag,
+                                reinterpret_cast<const char *>(&val),
+                                sizeof(val))) {
       int32_t lastError = ACE_OS::last_error();
       LOGERROR("Failed to set socket options. Errno: %d : %s ", lastError,
                ACE_OS::strerror(lastError));
     }
-    if (0 != ACE_OS::getsockopt(sock, SOL_SOCKET, flag, param, &plen)) {
+    int plen = sizeof(val);
+    if (0 != ACE_OS::getsockopt(sock, SOL_SOCKET, flag,
+                                reinterpret_cast<char *>(&val), &plen)) {
       int32_t lastError = ACE_OS::last_error();
       LOGERROR(
           "Failed to get buffer size for flag %d on socket. Errno: %d : %s",
