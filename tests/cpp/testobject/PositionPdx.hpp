@@ -43,8 +43,7 @@ namespace testobject {
 
 using namespace apache::geode::client;
 
-class TESTOBJECT_EXPORT PositionPdx
-    : public PdxSerializable {
+class TESTOBJECT_EXPORT PositionPdx : public PdxSerializable {
  private:
   int64_t avg20DaysVol;
   std::string bondRating;
@@ -75,8 +74,8 @@ class TESTOBJECT_EXPORT PositionPdx
   PositionPdx(int32_t iForExactVal);
   ~PositionPdx() override = default;
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   void toData(PdxWriter& pw) const override;
 
