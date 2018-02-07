@@ -18,5 +18,5 @@
 set -x -e -o pipefail
 
 mkdir /gemfire
-tar -zxf gemfire.tar.gz -C /gemfire
+tar -zxf gemfire.tar.gz --strip-components=1 -C /gemfire
 rm gemfire.tar.gz
