@@ -54,7 +54,7 @@ Portfolio::Portfolio(int32_t i, uint32_t size,
   arrayZeroSize = NULL;
 }
 
-Portfolio::~Portfolio() {
+Portfolio::~Portfolio() noexcept {
   if (newVal != NULL) {
     delete[] newVal;
     newVal = NULL;

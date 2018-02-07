@@ -38,7 +38,7 @@ PdxTypes1::PdxTypes1() {
   m_i4 = 73567;
 }
 
-PdxTypes1::~PdxTypes1() {
+PdxTypes1::~PdxTypes1() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -101,7 +101,7 @@ PdxTypes2::PdxTypes2() {
   m_i4 = 73567;
 }
 
-PdxTypes2::~PdxTypes2() {
+PdxTypes2::~PdxTypes2() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -160,7 +160,7 @@ PdxTypes3::PdxTypes3() {
   m_i4 = 73567;
 }
 
-PdxTypes3::~PdxTypes3() {
+PdxTypes3::~PdxTypes3() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -216,7 +216,7 @@ PdxTypes4::PdxTypes4() {
   m_i4 = 73567;
 }
 
-PdxTypes4::~PdxTypes4() {
+PdxTypes4::~PdxTypes4() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -273,7 +273,7 @@ PdxTypes5::PdxTypes5() {
   m_i4 = 73567;
 }
 
-PdxTypes5::~PdxTypes5() {
+PdxTypes5::~PdxTypes5() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -338,7 +338,7 @@ PdxTypes6::PdxTypes6() {
   m_i4 = 73567;
 }
 
-PdxTypes6::~PdxTypes6() {
+PdxTypes6::~PdxTypes6() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -430,7 +430,7 @@ PdxTypes7::PdxTypes7() {
   m_i4 = 73567;
 }
 
-PdxTypes7::~PdxTypes7() {
+PdxTypes7::~PdxTypes7() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -692,7 +692,7 @@ NestedPdx::NestedPdx(char *key) {
   m_i3 = 4645734;
   m_i4 = 73567;
 }
-NestedPdx::~NestedPdx() {
+NestedPdx::~NestedPdx() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -773,7 +773,7 @@ MixedVersionNestedPdx::MixedVersionNestedPdx(char *key) {
   m_i3 = 4645734;
   m_i4 = 73567;
 }
-MixedVersionNestedPdx::~MixedVersionNestedPdx() {
+MixedVersionNestedPdx::~MixedVersionNestedPdx() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -843,7 +843,7 @@ PdxInsideIGeodeSerializable::PdxInsideIGeodeSerializable() {
   m_i4 = 73567;
 }
 
-PdxInsideIGeodeSerializable::~PdxInsideIGeodeSerializable() {
+PdxInsideIGeodeSerializable::~PdxInsideIGeodeSerializable() noexcept {
   // TODO Auto-generated destructor stub
 }
 

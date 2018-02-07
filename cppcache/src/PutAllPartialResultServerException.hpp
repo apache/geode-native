@@ -68,7 +68,7 @@ class _GEODE_EXPORT PutAllPartialResultServerException : public Serializable {
   /**
    * @brief destructor
    */
-  virtual ~PutAllPartialResultServerException() {}
+  ~PutAllPartialResultServerException() override = default;
 
   /**
    * @brief constructors

@@ -59,7 +59,7 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
     m_enum = CacheableEnum::create("Gender", "female", 5);
   }
 
-  virtual ~ChildPdx();
+  ~ChildPdx() override = default;
 
   virtual size_t objectSize() const override {
     auto objectSize = sizeof(ChildPdx);
@@ -120,7 +120,7 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
     m_charArrayLen = 2;
   }
 
-  virtual ~ParentPdx();
+  ~ParentPdx() override = default;
 
   virtual size_t objectSize() const override {
     auto objectSize = sizeof(ParentPdx);

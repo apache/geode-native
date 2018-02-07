@@ -40,8 +40,8 @@ class _GEODE_EXPORT PdxSerializable
     : public CacheableKey,
       public std::enable_shared_from_this<PdxSerializable> {
  public:
-  PdxSerializable();
-  virtual ~PdxSerializable();
+  PdxSerializable() = default;
+  ~PdxSerializable() noexcept override {}
 
   /**
    *@brief serialize this object in geode PDX format

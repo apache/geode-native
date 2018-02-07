@@ -41,7 +41,8 @@ class ClientReplacementRequest : public ClientConnectionRequest {
   virtual void toData(DataOutput& output) const;
   virtual void fromData(DataInput& input);
   virtual int8_t typeId() const;
-  virtual ~ClientReplacementRequest() {}  // Virtual destructor
+  ~ClientReplacementRequest() override = default;
+
  private:
   const ServerLocation m_serverLocation;
 };

@@ -97,7 +97,7 @@ class _GEODE_EXPORT PdxFieldType : public Serializable {
 
   std::string toString() const override;
 
-  virtual ~PdxFieldType();
+  ~PdxFieldType() override = default;
 
   bool equals(std::shared_ptr<PdxFieldType> otherObj);
 

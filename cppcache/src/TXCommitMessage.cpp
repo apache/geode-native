@@ -35,8 +35,6 @@ TXCommitMessage::TXCommitMessage(
 // UNUSED : m_processorId(0)
 {}
 
-TXCommitMessage::~TXCommitMessage() {}
-
 bool TXCommitMessage::isAckRequired() { return false; }
 
 void TXCommitMessage::fromData(DataInput& input) {

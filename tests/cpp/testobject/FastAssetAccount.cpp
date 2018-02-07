@@ -47,8 +47,6 @@ FastAssetAccount::FastAssetAccount(int idx, bool encodeTimestp, int maxVal,
   }
 }
 
-FastAssetAccount::~FastAssetAccount() {}
-
 void FastAssetAccount::toData(apache::geode::client::DataOutput& output) const {
   output.writeInt(static_cast<int32_t>(acctId));
   output.writeObject(customerName);

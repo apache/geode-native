@@ -48,7 +48,7 @@ class GetAllServersRequest : public Serializable {
     return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
   }
   virtual size_t objectSize() const { return m_serverGroup->length(); }
-  virtual ~GetAllServersRequest() {}
+  ~GetAllServersRequest() override = default;
 };
 
 }  // namespace client

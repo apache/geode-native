@@ -141,9 +141,6 @@ bool CacheableString::isAscii(const std::string& str) {
   return true;
 }
 
-
-CacheableString::~CacheableString() {}
-
 size_t CacheableString::objectSize() const {
   auto size = sizeof(CacheableString) +
               sizeof(std::string::value_type) * m_str.capacity();

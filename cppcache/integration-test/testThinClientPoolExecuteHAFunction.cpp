@@ -71,7 +71,7 @@ class MyResultCollector : public DefaultResultCollector {
  public:
   MyResultCollector()
       : m_endResultCount(0), m_addResultCount(0), m_getResultCount(0) {}
-  ~MyResultCollector() {}
+  ~MyResultCollector() override = default;
 
   std::shared_ptr<CacheableVector> getResult(
       std::chrono::milliseconds timeout) override {

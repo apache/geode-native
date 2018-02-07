@@ -40,7 +40,7 @@ class ServerLocationResponse : public Serializable {
   }
   virtual size_t objectSize()
       const = 0;  // Has to be implemented by concrete class
-  virtual ~ServerLocationResponse() {}  // Virtual destructor
+  ~ServerLocationResponse() override = default;
 };
 
 }  // namespace client

@@ -39,7 +39,7 @@ class ClientConnectionResponse : public ServerLocationResponse {
   static std::shared_ptr<Serializable> create() {
     return std::make_shared<ClientConnectionResponse>();
   }
-  virtual ~ClientConnectionResponse() {}
+  ~ClientConnectionResponse() override = default;
   bool serverFound() { return m_serverFound; }
 
  private:

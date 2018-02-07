@@ -104,7 +104,7 @@ AtomicStatisticsImpl::AtomicStatisticsImpl(StatisticsType* typeArg,
   }
 }
 
-AtomicStatisticsImpl::~AtomicStatisticsImpl() {
+AtomicStatisticsImpl::~AtomicStatisticsImpl() noexcept {
   try {
     statsType = nullptr;
     if (intStorage != nullptr) {

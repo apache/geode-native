@@ -108,7 +108,7 @@ class _GEODE_EXPORT EventId : public Cacheable {
   }
 
   /** Destructor. */
-  virtual ~EventId();
+  ~EventId() override = default;
 
   int64_t getEventIdData(DataInput& input, char numberCode);
 

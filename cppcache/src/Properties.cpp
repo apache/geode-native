@@ -85,7 +85,7 @@ Properties::Properties() : Serializable() {
   m_map = (void*)new CacheableKeyCacheableMap();
   MAP->open();
 }
-Properties::~Properties() {
+Properties::~Properties() noexcept {
   if (m_map != nullptr) {
     delete MAP;
     m_map = nullptr;

@@ -51,7 +51,7 @@ class QueueConnectionRequest : public ServerLocationRequest {
   virtual const ClientProxyMembershipID& getProxyMemberShipId() const;
   virtual int getRedundentCopies() const;
   virtual bool isFindDurable() const;
-  virtual ~QueueConnectionRequest() {}
+  ~QueueConnectionRequest() override = default;
 
  private:
   QueueConnectionRequest(const QueueConnectionRequest&);

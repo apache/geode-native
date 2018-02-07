@@ -82,7 +82,7 @@ class _GEODE_EXPORT CacheableToken : public Cacheable {
    */
   virtual int8_t typeId() const override;
 
-  virtual ~CacheableToken();
+  ~CacheableToken() override = default;
 
   _GEODE_FRIEND_STD_SHARED_PTR(CacheableToken)
 

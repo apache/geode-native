@@ -73,7 +73,7 @@ class ClientHealthStats : public Serializable {
     return std::shared_ptr<ClientHealthStats>(new ClientHealthStats(
         gets, puts, misses, listCalls, numThreads, cpuTime, cpus));
   }
-  ~ClientHealthStats();
+  ~ClientHealthStats() override = default;
 
  private:
   ClientHealthStats(int gets, int puts, int misses, int listCalls,
@@ -89,7 +89,7 @@ class ClientHealthStats : public Serializable {
   int m_cpus;
   std::shared_ptr<CacheableDate> m_updateTime;  // Last updateTime
 
-  _GEODE_FRIEND_STD_SHARED_PTR(ClientHealthStats);
+  _GEODE_FRIEND_STD_SHARED_PTR(ClientHealthStats)
 };
 
 }  // namespace client

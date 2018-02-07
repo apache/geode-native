@@ -160,7 +160,7 @@ class _GEODE_EXPORT Struct : public Serializable {
 
   int32_t m_lastAccessIndex;
 
-  _GEODE_FRIEND_STD_SHARED_PTR(Struct);
+  _GEODE_FRIEND_STD_SHARED_PTR(Struct)
 };
 }  // namespace client
 }  // namespace geode

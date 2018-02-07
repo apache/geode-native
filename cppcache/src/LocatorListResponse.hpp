@@ -47,7 +47,7 @@ class LocatorListResponse : public ServerLocationResponse {
   virtual size_t objectSize() const;
   const std::vector<ServerLocation>& getLocators() const;
   bool isBalanced() const;
-  virtual ~LocatorListResponse() {}  // Virtual destructor
+  ~LocatorListResponse() override = default;
   static std::shared_ptr<Serializable> create();
 };
 

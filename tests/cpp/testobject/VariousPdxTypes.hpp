@@ -51,7 +51,7 @@ class TESTOBJECT_EXPORT PdxTypes1 : public PdxSerializable {
  public:
   PdxTypes1();
 
-  virtual ~PdxTypes1();
+  ~PdxTypes1() noexcept override;
 
   int32_t getHashCode();
 
@@ -91,7 +91,7 @@ class TESTOBJECT_EXPORT PdxTypes2 : public PdxSerializable {
  public:
   PdxTypes2();
 
-  virtual ~PdxTypes2();
+  ~PdxTypes2() noexcept override;
 
   int32_t getHashCode();
 
@@ -131,7 +131,7 @@ class TESTOBJECT_EXPORT PdxTypes3 : public PdxSerializable {
  public:
   PdxTypes3();
 
-  virtual ~PdxTypes3();
+  ~PdxTypes3() noexcept override;
 
   int32_t getHashCode();
 
@@ -170,7 +170,7 @@ class TESTOBJECT_EXPORT PdxTypes4 : public PdxSerializable {
  public:
   PdxTypes4();
 
-  virtual ~PdxTypes4();
+  ~PdxTypes4() noexcept override;
 
   int32_t getHashCode();
 
@@ -210,7 +210,7 @@ class TESTOBJECT_EXPORT PdxTypes5 : public PdxSerializable {
  public:
   PdxTypes5();
 
-  virtual ~PdxTypes5();
+  ~PdxTypes5() noexcept override;
 
   int32_t getHashCode();
 
@@ -251,7 +251,7 @@ class TESTOBJECT_EXPORT PdxTypes6 : public PdxSerializable {
  public:
   PdxTypes6();
 
-  virtual ~PdxTypes6();
+  ~PdxTypes6() noexcept override;
 
   int32_t getHashCode();
 
@@ -292,7 +292,7 @@ class TESTOBJECT_EXPORT PdxTypes7 : public PdxSerializable {
  public:
   PdxTypes7();
 
-  virtual ~PdxTypes7();
+  ~PdxTypes7() noexcept override;
 
   int32_t getHashCode();
 
@@ -454,7 +454,7 @@ class TESTOBJECT_EXPORT NestedPdx : public PdxSerializable {
   NestedPdx();
   NestedPdx(char* key);
 
-  virtual ~NestedPdx();
+  ~NestedPdx() noexcept override;
 
   int32_t getHashCode();
 
@@ -501,7 +501,7 @@ class TESTOBJECT_EXPORT MixedVersionNestedPdx : public PdxSerializable {
   MixedVersionNestedPdx();
   MixedVersionNestedPdx(char* key);
 
-  virtual ~MixedVersionNestedPdx();
+  ~MixedVersionNestedPdx() noexcept override;
 
   int32_t getHashCode();
 
@@ -547,7 +547,7 @@ class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public Serializable {
  public:
   PdxInsideIGeodeSerializable();
 
-  virtual ~PdxInsideIGeodeSerializable();
+  ~PdxInsideIGeodeSerializable() noexcept override;
 
   int32_t getHashCode();
 

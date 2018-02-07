@@ -34,7 +34,7 @@ class ServerLocationRequest : public Serializable {
   virtual int8_t typeId() const = 0;
   virtual int8_t DSFID() const;
   virtual size_t objectSize() const = 0;
-  virtual ~ServerLocationRequest() {}
+  ~ServerLocationRequest() override = default;
 };
 
 }  // namespace client

@@ -26,10 +26,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-PdxSerializable::PdxSerializable() {}
-
-PdxSerializable::~PdxSerializable() {}
-
 int8_t PdxSerializable::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::PDX);
 }

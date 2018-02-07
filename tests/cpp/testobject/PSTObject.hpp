@@ -59,7 +59,7 @@ class TESTOBJECT_EXPORT PSTObject : public TimestampedObject {
  public:
   PSTObject() : timestamp(0), valueData(nullptr) {}
   PSTObject(int size, bool encodeKey, bool encodeTimestamp);
-  virtual ~PSTObject();
+  ~PSTObject() override = default;
   virtual void toData(apache::geode::client::DataOutput& output) const;
   virtual void fromData(apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 0x04; }

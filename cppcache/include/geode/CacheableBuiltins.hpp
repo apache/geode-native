@@ -185,7 +185,7 @@ class CacheableArrayType : public Cacheable {
     }
   }
 
-  virtual ~CacheableArrayType() { _GEODE_SAFE_DELETE_ARRAY(m_value); }
+  ~CacheableArrayType() noexcept override { _GEODE_SAFE_DELETE_ARRAY(m_value); }
 
   _GEODE_FRIEND_STD_SHARED_PTR(CacheableArrayType)
 

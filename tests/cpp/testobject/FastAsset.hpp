@@ -58,7 +58,7 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
  public:
   FastAsset() : assetId(0), value(0) {}
   FastAsset(int size, int maxVal);
-  virtual ~FastAsset();
+  ~FastAsset() override = default;
   virtual void toData(apache::geode::client::DataOutput& output) const;
   virtual void fromData(apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 24; }

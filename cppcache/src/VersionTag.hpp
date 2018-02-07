@@ -56,7 +56,7 @@ class VersionTag : public Cacheable {
  public:
   VersionTag(MemberListForVersionStamp& memberListForVersionStamp);
 
-  virtual ~VersionTag();
+  ~VersionTag() override = default;
 
   virtual int32_t classId() const;
 

@@ -39,7 +39,7 @@ PdxType1V1::PdxType1V1() {
   m_i4 = 73567;
 }
 
-PdxType1V1::~PdxType1V1() {
+PdxType1V1::~PdxType1V1() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -179,7 +179,7 @@ PdxType2V1::PdxType2V1() {
   m_i4 = 73567;
 }
 
-PdxType2V1::~PdxType2V1() {
+PdxType2V1::~PdxType2V1() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -255,7 +255,7 @@ PdxType3V1::PdxType3V1() {
   m_str2 = (char *)"0";
 }
 
-PdxType3V1::~PdxType3V1() {
+PdxType3V1::~PdxType3V1() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -346,7 +346,7 @@ PdxTypesV1R1::PdxTypesV1R1() {
   m_i4 = 73567;
 }
 
-PdxTypesV1R1::~PdxTypesV1R1() {
+PdxTypesV1R1::~PdxTypesV1R1() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -416,7 +416,7 @@ PdxTypesV1R2::PdxTypesV1R2() {
   m_i4 = 73567;
 }
 
-PdxTypesV1R2::~PdxTypesV1R2() {
+PdxTypesV1R2::~PdxTypesV1R2() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -485,7 +485,7 @@ PdxTypesIgnoreUnreadFieldsV1::PdxTypesIgnoreUnreadFieldsV1() {
   m_i4 = 73567;
 }
 
-PdxTypesIgnoreUnreadFieldsV1::~PdxTypesIgnoreUnreadFieldsV1() {
+PdxTypesIgnoreUnreadFieldsV1::~PdxTypesIgnoreUnreadFieldsV1() noexcept {
   // TODO Auto-generated destructor stub
 }
 
@@ -610,7 +610,7 @@ PdxVersionedV1::PdxVersionedV1(int32_t size) {
   LOGDEBUG("PdxVersioned 1");
 }
 
-PdxVersionedV1::~PdxVersionedV1() {
+PdxVersionedV1::~PdxVersionedV1() noexcept {
   // TODO Auto-generated destructor stub
 }
 

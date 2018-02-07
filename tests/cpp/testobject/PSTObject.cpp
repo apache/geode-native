@@ -39,8 +39,6 @@ PSTObject::PSTObject(int size, bool encodeKey, bool encodeTimestamp) {
   }
 }
 
-PSTObject::~PSTObject() {}
-
 void PSTObject::toData(apache::geode::client::DataOutput& output) const {
   output.writeInt(static_cast<int64_t>(timestamp));
   output.writeInt(static_cast<int32_t>(field1));

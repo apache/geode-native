@@ -54,8 +54,6 @@ PdxLocalWriter::PdxLocalWriter(DataOutput& dataOutput,
   initialize();
 }
 
-PdxLocalWriter::~PdxLocalWriter() {}
-
 void PdxLocalWriter::initialize() {
   if (m_pdxType != nullptr) {
     m_currentOffsetIndex = 0;

@@ -128,7 +128,7 @@ class _GEODE_EXPORT CacheableDate : public CacheableKey {
   virtual std::string toString() const override;
 
   /** Destructor */
-  virtual ~CacheableDate();
+  ~CacheableDate() override = default;
 
  protected:
   /** Constructor, used for deserialization. */

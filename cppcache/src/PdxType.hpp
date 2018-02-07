@@ -104,7 +104,7 @@ class PdxType : public Serializable,
   PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr,
           std::string pdxDomainClassName, bool isLocal);
 
-  virtual ~PdxType();
+  ~PdxType() noexcept override;
 
   virtual void toData(DataOutput& output) const;
 

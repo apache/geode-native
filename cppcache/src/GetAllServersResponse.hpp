@@ -49,7 +49,7 @@ class GetAllServersResponse : public Serializable {
   }
   virtual size_t objectSize() const { return m_servers.size(); }
   std::vector<ServerLocation> getServers() { return m_servers; }
-  virtual ~GetAllServersResponse() {}
+  ~GetAllServersResponse() override = default;
 };
 
 }  // namespace client

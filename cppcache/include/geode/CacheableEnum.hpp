@@ -60,7 +60,7 @@ class _GEODE_EXPORT CacheableEnum : public CacheableKey {
 
  public:
   /** Destructor */
-  ~CacheableEnum();
+  ~CacheableEnum() override = default;
 
   /**
    * @brief creation function for enum.

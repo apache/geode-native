@@ -31,7 +31,7 @@ namespace client {
 class TXCommitMessage : public apache::geode::client::Cacheable {
  public:
   TXCommitMessage(MemberListForVersionStamp& memberListForVersionStamp);
-  virtual ~TXCommitMessage();
+  ~TXCommitMessage() override = default;
 
   virtual void fromData(DataInput& input);
   virtual void toData(DataOutput& output) const;

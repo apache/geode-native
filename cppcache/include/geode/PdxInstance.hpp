@@ -53,7 +53,7 @@ class _GEODE_EXPORT PdxInstance : public PdxSerializable {
   /**
    * @brief destructor
    */
-  virtual ~PdxInstance() {}
+  ~PdxInstance() override = default;
 
   /**
    * Deserializes and returns the domain object that this instance represents.

@@ -32,7 +32,6 @@ BatchObject::BatchObject(int32_t anIndex, int32_t batchSize, int32_t size) {
   byteArray = CacheableBytes::create(size);
 }
 
-BatchObject::~BatchObject() {}
 void BatchObject::toData(apache::geode::client::DataOutput& output) const {
   output.writeInt(static_cast<int32_t>(index));
   output.writeInt(static_cast<int64_t>(timestamp));

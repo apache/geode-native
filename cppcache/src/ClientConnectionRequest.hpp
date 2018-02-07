@@ -45,7 +45,8 @@ class ClientConnectionRequest : public ServerLocationRequest {
   const std::set<ServerLocation>& getExcludedServerGroup() const {
     return m_excludeServergroup_serverLocation;
   }
-  virtual ~ClientConnectionRequest() {}  // Virtual destructor
+  ~ClientConnectionRequest() override = default;
+
  private:
   void writeSetOfServerLocation(DataOutput& output) const;
   std::string m_servergroup;

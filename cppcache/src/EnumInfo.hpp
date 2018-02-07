@@ -35,7 +35,7 @@ class _GEODE_EXPORT EnumInfo : public CacheableKey {
   int32_t m_ordinal;
 
  public:
-  ~EnumInfo();
+  ~EnumInfo() override = default;
   EnumInfo();
   EnumInfo(const char* enumClassName, const char* enumName, int32_t m_ordinal);
   static std::shared_ptr<Serializable> createDeserializable() {

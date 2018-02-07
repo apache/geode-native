@@ -130,7 +130,7 @@ class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
     throw IllegalStateException("Not got expected value for bool type: ");
   }
 
-  virtual ~PdxVersioned2() {}
+  ~PdxVersioned2() override = default;
 
   virtual size_t objectSize() const override {
     auto objectSize = sizeof(PdxVersioned2);

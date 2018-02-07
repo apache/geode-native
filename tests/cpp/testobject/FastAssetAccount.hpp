@@ -67,7 +67,7 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
         assets(nullptr),
         timestamp(0) {}
   FastAssetAccount(int index, bool encodeTimestp, int maxVal, int asstSize = 0);
-  virtual ~FastAssetAccount();
+  ~FastAssetAccount() override = default;
   virtual void toData(apache::geode::client::DataOutput& output) const;
   virtual void fromData(apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 23; }

@@ -28,8 +28,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-CacheableEnum::~CacheableEnum() {}
-
 CacheableEnum::CacheableEnum()
     : m_enumClassName(nullptr),
       m_enumName(nullptr),

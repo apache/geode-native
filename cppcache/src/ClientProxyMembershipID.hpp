@@ -57,7 +57,7 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   // ClientProxyMembershipID(const char *durableClientId = nullptr, const
   // uint32_t durableClntTimeOut = 0);
   ClientProxyMembershipID();
-  ~ClientProxyMembershipID();
+  ~ClientProxyMembershipID() noexcept override;
   static void increaseSynchCounter();
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<ClientProxyMembershipID>();

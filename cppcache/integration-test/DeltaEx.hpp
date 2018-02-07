@@ -76,7 +76,7 @@ class DeltaEx : public Cacheable, public Delta {
     cloneCount++;
     return std::make_shared<DeltaEx>(*this);
   }
-  virtual ~DeltaEx() {}
+  ~DeltaEx() noexcept override {}
   void setDelta(bool delta) { this->isDelta = delta; }
   static std::shared_ptr<Serializable> create() {
     return std::make_shared<DeltaEx>();
@@ -140,7 +140,7 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
     return std::make_shared<PdxDeltaEx>(*this);
   }
 
-  virtual ~PdxDeltaEx() {}
+  ~PdxDeltaEx() noexcept override {}
 
   void setDelta(bool delta) { this->m_isDelta = delta; }
 

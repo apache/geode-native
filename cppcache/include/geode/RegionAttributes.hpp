@@ -190,7 +190,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
   /*destructor
    *
    */
-  virtual ~RegionAttributes();
+  ~RegionAttributes() noexcept override;
 
   /** Serialize out to stream */
   virtual void toData(DataOutput& out) const;

@@ -125,7 +125,7 @@ OsStatisticsImpl::OsStatisticsImpl(StatisticsType* typeArg,
   }  // if(statsType == nullptr)
 }
 
-OsStatisticsImpl::~OsStatisticsImpl() {
+OsStatisticsImpl::~OsStatisticsImpl() noexcept {
   try {
     statsType = nullptr;
     if (intStorage != nullptr) {

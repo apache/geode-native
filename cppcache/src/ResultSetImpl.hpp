@@ -56,7 +56,7 @@ class _GEODE_EXPORT ResultSetImpl
   /** Get an iterator pointing to the end of vector. */
   virtual SelectResults::Iterator end() const override;
 
-  ~ResultSetImpl();
+  ~ResultSetImpl() noexcept override {}
 
  private:
   std::shared_ptr<CacheableVector> m_resultSetVector;

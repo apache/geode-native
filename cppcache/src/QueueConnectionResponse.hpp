@@ -40,7 +40,7 @@ class QueueConnectionResponse : public ServerLocationResponse {
   static std::shared_ptr<Serializable> create() {
     return std::make_shared<QueueConnectionResponse>();
   }
-  virtual ~QueueConnectionResponse(){};
+  ~QueueConnectionResponse() override = default;
 
  private:
   void readList(DataInput& input);

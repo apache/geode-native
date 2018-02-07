@@ -73,7 +73,7 @@ class TESTOBJECT_EXPORT PositionPdx
   PositionPdx(const char* id, int32_t out);
   // This constructor is just for some internal data validation test
   PositionPdx(int32_t iForExactVal);
-  virtual ~PositionPdx();
+  ~PositionPdx() override = default;
 
   virtual void toData(PdxWriter& pw) const override;
 

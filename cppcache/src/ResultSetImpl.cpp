@@ -54,4 +54,3 @@ SelectResults::Iterator ResultSetImpl::end() const {
   return m_resultSetVector->end();
 }
 
-ResultSetImpl::~ResultSetImpl() {}

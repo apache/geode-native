@@ -105,7 +105,7 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
  public:
   EqStruct() {}
   EqStruct(int index);
-  virtual ~EqStruct();
+  ~EqStruct() override = default;
   virtual void toData(apache::geode::client::DataOutput& output) const override;
   virtual void fromData(apache::geode::client::DataInput& input) override;
   virtual int32_t classId() const override { return 101; }

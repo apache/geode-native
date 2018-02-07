@@ -29,8 +29,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class PutAllPartialResult;
-
 class PutAllPartialResult : public Serializable {
  private:
   std::shared_ptr<VersionedCacheableObjectPartList> m_succeededKeys;
@@ -42,6 +40,7 @@ class PutAllPartialResult : public Serializable {
  public:
   PutAllPartialResult(int totalMapSize,
                       ACE_Recursive_Thread_Mutex& responseLock);
+  ~PutAllPartialResult() noexcept override {}
 
   void setTotalMapSize(int totalMapSize) { m_totalMapSize = totalMapSize; }
 

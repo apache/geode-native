@@ -496,7 +496,7 @@ class TESTOBJECT_EXPORT InvalidPdxUsage : public PdxSerializable {
     throw IllegalStateException("Not got expected value for bool type: ");
   }
 
-  virtual ~InvalidPdxUsage() {}
+  ~InvalidPdxUsage() override = default;
 
   virtual size_t objectSize() const override {
     auto objectSize = sizeof(InvalidPdxUsage);

@@ -136,7 +136,7 @@ class _GEODE_EXPORT CacheableString : public CacheableKey {
   virtual std::string toString() const override;
 
   /** Destructor */
-  virtual ~CacheableString();
+  ~CacheableString() override = default;
 
   virtual size_t objectSize() const override;
 

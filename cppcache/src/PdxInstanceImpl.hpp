@@ -40,10 +40,7 @@ typedef std::map<std::string, std::shared_ptr<Cacheable>> FieldVsValues;
 
 class _GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
  public:
-  /**
-   * @brief destructor
-   */
-  virtual ~PdxInstanceImpl();
+  ~PdxInstanceImpl() noexcept override;
 
   virtual std::shared_ptr<PdxSerializable> getObject() override;
 

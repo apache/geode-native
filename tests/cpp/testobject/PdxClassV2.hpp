@@ -67,7 +67,7 @@ class TESTOBJECT_EXPORT PdxTypes1V2 : public PdxSerializable {
  public:
   PdxTypes1V2();
 
-  virtual ~PdxTypes1V2();
+  ~PdxTypes1V2() noexcept override;
 
   static void reset(bool useWeakHashMap);
 
@@ -114,7 +114,7 @@ class TESTOBJECT_EXPORT PdxTypes2V2 : public PdxSerializable {
  public:
   PdxTypes2V2();
 
-  virtual ~PdxTypes2V2();
+  ~PdxTypes2V2() noexcept override;
 
   static void reset(bool useWeakHashMap);
 
@@ -162,7 +162,7 @@ class TESTOBJECT_EXPORT PdxTypes3V2 : public PdxSerializable {
  public:
   PdxTypes3V2();
 
-  virtual ~PdxTypes3V2();
+  ~PdxTypes3V2() noexcept override;
 
   std::string toString() const override;
 
@@ -211,7 +211,7 @@ class TESTOBJECT_EXPORT PdxTypesR1V2 : public PdxSerializable {
  public:
   PdxTypesR1V2();
 
-  virtual ~PdxTypesR1V2();
+  ~PdxTypesR1V2() noexcept override;
 
   std::string toString() const override;
 
@@ -260,7 +260,7 @@ class TESTOBJECT_EXPORT PdxTypesR2V2 : public PdxSerializable {
  public:
   PdxTypesR2V2();
 
-  virtual ~PdxTypesR2V2();
+  ~PdxTypesR2V2() noexcept override;
 
   static void reset(bool useWeakHashMap);
 
@@ -307,7 +307,7 @@ class TESTOBJECT_EXPORT PdxTypesIgnoreUnreadFieldsV2 : public PdxSerializable {
  public:
   PdxTypesIgnoreUnreadFieldsV2();
 
-  virtual ~PdxTypesIgnoreUnreadFieldsV2();
+  ~PdxTypesIgnoreUnreadFieldsV2() noexcept override;
 
   std::string toString() const override;
 
@@ -377,7 +377,7 @@ class TESTOBJECT_EXPORT PdxVersionedV2 : public PdxSerializable {
 
   PdxVersionedV2(int32_t size);
 
-  virtual ~PdxVersionedV2();
+  ~PdxVersionedV2() noexcept override;
 
   void init(int32_t size);
 

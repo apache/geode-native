@@ -120,7 +120,7 @@ class SqLiteImpl : public PersistenceManager {
   /**
    * @brief destructor
    */
-  ~SqLiteImpl() {}
+  ~SqLiteImpl() override = default;
 
   /**
    * @brief constructor

@@ -70,7 +70,9 @@ bool sortFunc(std::shared_ptr<PdxFieldType> field1,
   }
 }
 
-PdxInstanceImpl::~PdxInstanceImpl() { _GEODE_SAFE_DELETE_ARRAY(m_buffer); }
+PdxInstanceImpl::~PdxInstanceImpl() noexcept {
+  _GEODE_SAFE_DELETE_ARRAY(m_buffer);
+}
 
 PdxInstanceImpl::PdxInstanceImpl(
     apache::geode::client::FieldVsValues fieldVsValue,

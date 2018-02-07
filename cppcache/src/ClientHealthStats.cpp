@@ -80,7 +80,6 @@ ClientHealthStats::ClientHealthStats(int gets, int puts, int misses,
   m_updateTime = CacheableDate::create(ACE_OS::time(nullptr));
 }
 
-ClientHealthStats::~ClientHealthStats() {}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

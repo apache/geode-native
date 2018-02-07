@@ -73,7 +73,7 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   Position(const char* id, int32_t out);
   // This constructor is just for some internal data validation test
   Position(int32_t iForExactVal);
-  virtual ~Position();
+  ~Position() override = default;
   virtual void toData(apache::geode::client::DataOutput& output) const;
   virtual void fromData(apache::geode::client::DataInput& input);
   virtual int32_t classId() const { return 0x02; }

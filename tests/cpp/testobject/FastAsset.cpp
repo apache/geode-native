@@ -26,7 +26,6 @@ FastAsset::FastAsset(int idx, int maxVal) : assetId(idx) {
   value = GsRandom::getInstance().nextDouble(1, maxVal);
 }
 
-FastAsset::~FastAsset() {}
 void FastAsset::toData(apache::geode::client::DataOutput& output) const {
   output.writeInt(static_cast<int32_t>(assetId));
   output.writeDouble(value);

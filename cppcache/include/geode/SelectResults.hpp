@@ -43,6 +43,8 @@ class SelectResultsIterator;
  */
 class _GEODE_EXPORT SelectResults {
  public:
+  virtual ~SelectResults() = default;
+
   /**
    * Check whether the SelectResults is modifiable.
    *
