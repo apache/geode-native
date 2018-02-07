@@ -36,7 +36,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-void TcpConn::clearNagle(ACE_SOCKET sock) {
+void TcpConn::clearNagle(ACE_HANDLE sock) {
   int32_t val = 1;
 #ifdef WIN32
   const char *param = (const char *)&val;
@@ -52,7 +52,7 @@ void TcpConn::clearNagle(ACE_SOCKET sock) {
   }
 }
 
-int32_t TcpConn::maxSize(ACE_SOCKET sock, int32_t flag, int32_t size) {
+int32_t TcpConn::maxSize(ACE_HANDLE sock, int32_t flag, int32_t size) {
   int32_t val = 0;
 #ifdef _WIN32
   const char *cparam = (const char *)&val;
@@ -93,14 +93,14 @@ int32_t TcpConn::maxSize(ACE_SOCKET sock, int32_t flag, int32_t size) {
   return val;
 }
 
-void TcpConn::createSocket(ACE_SOCKET sock) {
+void TcpConn::createSocket(ACE_HANDLE sock) {
   LOGDEBUG("Creating plain socket stream");
   m_io = new ACE_SOCK_Stream((ACE_HANDLE)sock);
   // m_io->enable(ACE_NONBLOCK);
 }
 
 void TcpConn::init() {
-  ACE_SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+  ACE_HANDLE sock = ACE_OS::socket(AF_INET, SOCK_STREAM, 0);
   if (sock == -1) {
     int32_t lastError = ACE_OS::last_error();
     LOGERROR("Failed to create socket. Errno: %d: %s", lastError,

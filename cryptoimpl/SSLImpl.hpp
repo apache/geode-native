@@ -45,7 +45,7 @@ class SSLImpl : public apache::geode::client::Ssl {
   volatile static bool s_initialized;
 
  public:
-  SSLImpl(ACE_SOCKET sock, const char* pubkeyfile, const char* privkeyfile,
+  SSLImpl(ACE_HANDLE sock, const char* pubkeyfile, const char* privkeyfile,
           const char* password);
   virtual ~SSLImpl();
 
@@ -59,7 +59,7 @@ class SSLImpl : public apache::geode::client::Ssl {
 };
 
 extern "C" {
-_GEODE_EXPORT void* gf_create_SslImpl(ACE_SOCKET sock, const char* pubkeyfile,
+_GEODE_EXPORT void* gf_create_SslImpl(ACE_HANDLE sock, const char* pubkeyfile,
                                       const char* privkeyfile,
                                       const char* pemPassword);
 _GEODE_EXPORT void gf_destroy_SslImpl(void* impl);

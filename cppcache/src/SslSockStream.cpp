@@ -63,7 +63,7 @@ void SslSockStream::initACESSLFuncPtrs() {
   ASSIGN_SSL_FUNC_PTR(gf_get_local_addr)
 }
 
-SslSockStream::SslSockStream(ACE_SOCKET sock, const char *pubkey,
+SslSockStream::SslSockStream(ACE_HANDLE sock, const char *pubkey,
                              const char *privkey)
     : m_ctx(nullptr),
       m_sock(sock),
