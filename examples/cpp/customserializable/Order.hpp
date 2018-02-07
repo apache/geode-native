@@ -53,7 +53,7 @@ class Order : public PdxSerializable {
 
   const std::string& getClassName() const override;
 
-  static PdxSerializable* createDeserializable();
+  static std::shared_ptr<PdxSerializable> createDeserializable();
 
  private:
   static const std::string ORDER_ID_KEY_;
