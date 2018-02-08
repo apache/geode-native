@@ -265,7 +265,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                     result->operator[](i))) {
           LOGINFO("Done casting to uFEPtr");
           LOGINFO("Read expected uFEPtr exception %s ",
-                  uFEPtr->getMessage()->value().c_str());
+                  uFEPtr->getMessage().c_str());
         } else {
           FAIL(
               "exFuncNameSendException casting to string for bool argument "

@@ -2461,7 +2461,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
           ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
           LOGINFO("Done casting to uFEPtr");
           LOGINFO("Read expected uFEPtr exception %s ",
-                  uFEPtr->getMessage()->value().c_str());
+                  uFEPtr->getMessage().c_str());
         } catch (...) {
           FAIL(
               "exFuncNameSendException casting to string for bool arguement "
@@ -2631,7 +2631,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
           ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
           LOGINFO("Done casting to uFEPtr");
           LOGINFO("Read expected uFEPtr exception %s ",
-                  uFEPtr->getMessage()->value().c_str());
+                  uFEPtr->getMessage().c_str());
         } catch (...) {
           FAIL(
               "exFuncNameSendException casting to string for bool arguement "
@@ -2743,7 +2743,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, client3GetsV2Object)
           ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
           LOGINFO("Done casting to uFEPtr");
           LOGINFO("Read expected uFEPtr exception %s ",
-                  uFEPtr->getMessage()->value().c_str());
+                  uFEPtr->getMessage().c_str());
         } catch (...) {
           FAIL(
               "exFuncNameSendException casting to string for bool arguement "

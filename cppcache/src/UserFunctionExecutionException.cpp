@@ -48,9 +48,6 @@ int8_t UserFunctionExecutionException::typeId() const {
   return static_cast<int8_t>(0);
 }
 
-UserFunctionExecutionException::UserFunctionExecutionException(
-    std::shared_ptr<CacheableString> msg)
-    : m_message(msg) {}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

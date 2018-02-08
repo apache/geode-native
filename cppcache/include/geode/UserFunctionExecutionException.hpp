@@ -20,9 +20,8 @@
 #ifndef GEODE_USERFUNCTIONEXECUTIONEXCEPTION_H_
 #define GEODE_USERFUNCTIONEXECUTIONEXCEPTION_H_
 
-
-
 #include <memory>
+#include <string>
 
 #include "CacheableString.hpp"
 #include "Serializable.hpp"
@@ -32,93 +31,52 @@ namespace geode {
 namespace client {
 
 class UserFunctionExecutionException;
-class CacheableString;
 class DataInput;
 class DataOutput;
 
 /**
  * @brief UserFunctionExecutionException class is used to encapsulate geode
- *sendException in case of Function execution.
- **/
+ * sendException in case of Function execution.
+ */
 class UserFunctionExecutionException : public Serializable {
  public:
-  /**
-   * @brief constructors
-   */
-  explicit UserFunctionExecutionException(std::shared_ptr<CacheableString> msg);
+  explicit UserFunctionExecutionException(std::string message)
+      : m_message(std::move(message)) {}
   UserFunctionExecutionException(const UserFunctionExecutionException& other) =
       delete;
   void operator=(const UserFunctionExecutionException& other) = delete;
 
-  /**
-   * @brief destructor
-   */
-  virtual ~UserFunctionExecutionException() = default;
+  ~UserFunctionExecutionException() override = default;
 
-  /**
-   *@brief serialize this object
-   * @throws IllegalStateException If this api is called from User code.
-   **/
   void toData(DataOutput& output) const override;
 
-  /**
-   *@brief deserialize this object, typical implementation should return
-   * the 'this' pointer.
-   * @throws IllegalStateException If this api is called from User code.
-   **/
   virtual void fromData(DataInput& input) override;
 
-  /**
-   *@brief Return the classId of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   *
-   * The classId must be unique within an application suite.
-   * Using a negative value may result in undefined behavior.
-   * @throws IllegalStateException If this api is called from User code.
-   */
   virtual int32_t classId() const override;
 
-  /**
-   *@brief return the size in bytes of the instance being serialized.
-   * This is used to determine whether the cache is using up more
-   * physical memory than it has been configured to use. The method can
-   * return zero if the user does not require the ability to control
-   * cache memory utilization.
-   * Note that you must implement this only if you use the HeapLRU feature.
-   * @throws IllegalStateException If this api is called from User code.
-   */
   virtual size_t objectSize() const override;
 
-  /**
-   *@brief return the typeId byte of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   *
-   * Note that this should not be overridden by custom implementations
-   * and is reserved only for builtin types.
-   */
   virtual int8_t typeId() const override;
 
   /**
-   *@brief return as std::shared_ptr<CacheableString> the Exception message
-   *returned from geode sendException api.
-   **/
-  std::shared_ptr<CacheableString> getMessage() { return m_message; }
+   * @brief return as std::string the Exception message returned from geode
+   * sendException api.
+   */
+  const std::string& getMessage() const { return m_message; }
+
+  std::string toString() const override { return this->getMessage(); }
 
   /**
-   *@brief return as std::shared_ptr<CacheableString> the Exception name
-   *returned from geode sendException api.
-   **/
-  std::shared_ptr<CacheableString> getName() {
-    static const auto name =
-        CacheableString::create("UserFunctionExecutionException");
+   * @brief return as std::string the Exception name returned from geode
+   * sendException api.
+   */
+  const std::string& getName() const {
+    static const std::string name = "UserFunctionExecutionException";
     return name;
   }
 
  private:
-
-  std::shared_ptr<CacheableString> m_message;  // error message
+  std::string m_message;
 };
 
 }  // namespace client
