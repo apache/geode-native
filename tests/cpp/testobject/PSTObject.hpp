@@ -59,20 +59,20 @@ class TESTOBJECT_EXPORT PSTObject : public TimestampedObject {
  public:
   PSTObject() : timestamp(0), valueData(nullptr) {}
   PSTObject(int size, bool encodeKey, bool encodeTimestamp);
-  virtual ~PSTObject();
-  virtual void toData(apache::geode::client::DataOutput& output) const;
-  virtual void fromData(apache::geode::client::DataInput& input);
-  virtual int32_t classId() const { return 0x04; }
-  std::string toString() const;
+  ~PSTObject() override = default;
+  void toData(DataOutput& output) const override;
+  void fromData(DataInput& input) override;
+  int32_t classId() const override { return 0x04; }
+  std::string toString() const override;
 
-  virtual size_t objectSize() const {
+  size_t objectSize() const override {
     auto objectSize = sizeof(PSTObject);
     objectSize += getObjectSize(valueData);
     return objectSize;
   }
 
-  uint64_t getTimestamp() { return timestamp; }
-  void resetTimestamp() {
+  uint64_t getTimestamp() override { return timestamp; }
+  void resetTimestamp() override {
     ACE_Time_Value startTime;
     startTime = ACE_OS::gettimeofday();
     ACE_UINT64 tusec;

@@ -56,15 +56,15 @@ class VersionTag : public Cacheable {
  public:
   VersionTag(MemberListForVersionStamp& memberListForVersionStamp);
 
-  virtual ~VersionTag();
+  ~VersionTag() override = default;
 
-  virtual int32_t classId() const;
+  int32_t classId() const override;
 
-  virtual int8_t typeId() const;
+  int8_t typeId() const override;
 
-  virtual void toData(DataOutput& output) const;
+  void toData(DataOutput& output) const override;
 
-  virtual void fromData(DataInput& input);
+  void fromData(DataInput& input) override;
 
   static std::shared_ptr<Serializable> createDeserializable(
       MemberListForVersionStamp& memberListForVersionStamp);

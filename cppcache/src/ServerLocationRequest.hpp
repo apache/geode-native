@@ -28,13 +28,13 @@ namespace client {
 class ServerLocationRequest : public Serializable {
  public:
   ServerLocationRequest() : Serializable() {}
-  virtual void toData(DataOutput& output) const = 0;
-  virtual void fromData(DataInput& input) = 0;
-  virtual int32_t classId() const;
-  virtual int8_t typeId() const = 0;
-  virtual int8_t DSFID() const;
-  virtual size_t objectSize() const = 0;
-  virtual ~ServerLocationRequest() {}
+  void toData(DataOutput& output) const override = 0;
+  void fromData(DataInput& input) override = 0;
+  int32_t classId() const override;
+  int8_t typeId() const override = 0;
+  int8_t DSFID() const override;
+  size_t objectSize() const override = 0;
+  ~ServerLocationRequest() override = default;
 };
 
 }  // namespace client

@@ -59,7 +59,7 @@ class TESTOBJECT_EXPORT BatchObject : public TimestampedObject {
  public:
   BatchObject() : index(0), timestamp(0), batch(0), byteArray(nullptr) {}
   BatchObject(int32_t anIndex, int32_t batchSize, int32_t size);
-  virtual ~BatchObject();
+  ~BatchObject() override = default;
   virtual void toData(apache::geode::client::DataOutput& output) const override;
   virtual void fromData(apache::geode::client::DataInput& input) override;
   virtual int32_t classId() const override { return 25; }

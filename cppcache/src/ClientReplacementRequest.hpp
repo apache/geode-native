@@ -38,10 +38,11 @@ class ClientReplacementRequest : public ClientConnectionRequest {
                            std::string servergroup = "")
       : ClientConnectionRequest(excludeServergroup, servergroup),
         m_serverLocation(ServerLocation(serverName)) {}
-  virtual void toData(DataOutput& output) const;
-  virtual void fromData(DataInput& input);
-  virtual int8_t typeId() const;
-  virtual ~ClientReplacementRequest() {}  // Virtual destructor
+  void toData(DataOutput& output) const override;
+  void fromData(DataInput& input) override;
+  int8_t typeId() const override;
+  ~ClientReplacementRequest() override = default;
+
  private:
   const ServerLocation m_serverLocation;
 };

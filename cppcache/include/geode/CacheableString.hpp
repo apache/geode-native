@@ -47,7 +47,7 @@ class _GEODE_EXPORT CacheableString : public CacheableKey {
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const override;
+  void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object
@@ -136,7 +136,7 @@ class _GEODE_EXPORT CacheableString : public CacheableKey {
   virtual std::string toString() const override;
 
   /** Destructor */
-  virtual ~CacheableString();
+  ~CacheableString() override = default;
 
   virtual size_t objectSize() const override;
 

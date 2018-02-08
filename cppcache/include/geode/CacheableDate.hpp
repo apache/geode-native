@@ -57,7 +57,7 @@ class _GEODE_EXPORT CacheableDate : public CacheableKey {
   /**
    * @brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const override;
+  void toData(DataOutput& output) const override;
 
   /**
    * @brief deserialize this object
@@ -125,10 +125,10 @@ class _GEODE_EXPORT CacheableDate : public CacheableKey {
     return std::make_shared<CacheableDate>(value);
   }
 
-  virtual std::string toString() const override;
+  std::string toString() const override;
 
   /** Destructor */
-  virtual ~CacheableDate();
+  ~CacheableDate() override = default;
 
  protected:
   /** Constructor, used for deserialization. */

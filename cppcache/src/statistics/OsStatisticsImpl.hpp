@@ -107,7 +107,7 @@ class OsStatisticsImpl : public Statistics,
                    int64_t numericId, int64_t uniqueId,
                    StatisticsFactory* system);
 
-  ~OsStatisticsImpl();
+  ~OsStatisticsImpl() noexcept override;
 
   //////////////////////  Instance Methods  //////////////////////
 

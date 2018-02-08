@@ -76,7 +76,7 @@ class DeltaEx : public Cacheable, public Delta {
     cloneCount++;
     return std::make_shared<DeltaEx>(*this);
   }
-  virtual ~DeltaEx() {}
+  ~DeltaEx() noexcept override {}
   void setDelta(bool delta) { this->isDelta = delta; }
   static std::shared_ptr<Serializable> create() {
     return std::make_shared<DeltaEx>();
@@ -121,10 +121,14 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
     return className;
   }
 
+  using PdxSerializable::toData;
+
   void toData(PdxWriter& pw) const override {
     pw.writeInt("counter", m_counter);
     m_toDataCount++;
   }
+
+  using PdxSerializable::fromData;
 
   void fromData(PdxReader& pr) override {
     m_counter = pr.readInt("counter");
@@ -140,7 +144,7 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
     return std::make_shared<PdxDeltaEx>(*this);
   }
 
-  virtual ~PdxDeltaEx() {}
+  ~PdxDeltaEx() noexcept override {}
 
   void setDelta(bool delta) { this->m_isDelta = delta; }
 

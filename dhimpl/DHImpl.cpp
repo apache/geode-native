@@ -440,7 +440,7 @@ bool gf_verifyDH(const char *subject, const unsigned char *challenge,
   }
 
   const ASN1_OBJECT *macobj;
-  const X509_ALGOR *algorithm;
+  const X509_ALGOR *algorithm = nullptr;
   X509_ALGOR_get0(&macobj, NULL, NULL, algorithm);
 
   const EVP_MD *signatureDigest = EVP_get_digestbyobj(macobj);

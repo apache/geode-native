@@ -62,8 +62,6 @@ PdxFieldType::PdxFieldType(std::string fieldName, std::string className,
       m_relativeOffset(0),
       m_vlOffsetIndex(0) {}
 
-PdxFieldType::~PdxFieldType() {}
-
 void PdxFieldType::toData(DataOutput& output) const {
   output.writeString(m_fieldName);
   output.writeInt(m_sequenceId);

@@ -84,7 +84,6 @@ CacheableDate::CacheableDate(const CacheableDate::duration& value) {
   m_timevalue = value.count();
 }
 
-CacheableDate::~CacheableDate() {}
 std::string CacheableDate::toString() const {
   char buffer[25];
   struct tm date = {0};

@@ -38,11 +38,11 @@
 #define TESTOBJECT_EXPORT
 #endif
 
-using namespace apache::geode::client;
-
 namespace testobject {
 
-class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
+using namespace apache::geode::client;
+
+class TESTOBJECT_EXPORT Position : public Serializable {
  private:
   int64_t avg20DaysVol;
   std::shared_ptr<CacheableString> bondRating;
@@ -73,13 +73,13 @@ class TESTOBJECT_EXPORT Position : public apache::geode::client::Serializable {
   Position(const char* id, int32_t out);
   // This constructor is just for some internal data validation test
   Position(int32_t iForExactVal);
-  virtual ~Position();
-  virtual void toData(apache::geode::client::DataOutput& output) const;
-  virtual void fromData(apache::geode::client::DataInput& input);
-  virtual int32_t classId() const { return 0x02; }
-  std::string toString() const;
+  ~Position() override = default;
+  void toData(DataOutput& output) const override;
+  void fromData(DataInput& input) override;
+  int32_t classId() const override { return 0x02; }
+  std::string toString() const override;
 
-  virtual size_t objectSize() const {
+  size_t objectSize() const override {
     auto objectSize = sizeof(Position);
     objectSize += getObjectSize(bondRating);
     objectSize += getObjectSize(country);

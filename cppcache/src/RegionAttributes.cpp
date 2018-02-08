@@ -60,7 +60,7 @@ RegionAttributes::RegionAttributes()
 
 RegionAttributes::RegionAttributes(const RegionAttributes& rhs) = default;
 
-RegionAttributes::~RegionAttributes() = default;
+RegionAttributes::~RegionAttributes() noexcept = default;
 
 namespace impl {
 

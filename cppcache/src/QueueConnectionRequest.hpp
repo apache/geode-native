@@ -43,15 +43,15 @@ class QueueConnectionRequest : public ServerLocationRequest {
         m_findDurable(findDurable),
         m_serverGp(serverGp) {}  // No need for default constructor as creating
                                  // request with it does not make sense.
-  virtual void toData(DataOutput& output) const;
-  virtual void fromData(DataInput& input);
-  virtual int8_t typeId() const;
-  virtual size_t objectSize() const;
+  void toData(DataOutput& output) const override;
+  void fromData(DataInput& input) override;
+  int8_t typeId() const override;
+  size_t objectSize() const override;
   virtual std::set<ServerLocation> getExcludedServer() const;
   virtual const ClientProxyMembershipID& getProxyMemberShipId() const;
   virtual int getRedundentCopies() const;
   virtual bool isFindDurable() const;
-  virtual ~QueueConnectionRequest() {}
+  ~QueueConnectionRequest() override = default;
 
  private:
   QueueConnectionRequest(const QueueConnectionRequest&);

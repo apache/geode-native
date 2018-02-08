@@ -75,7 +75,7 @@ class _GEODE_EXPORT ResultSet : public SelectResults {
   /**
    * Destructor
    */
-  virtual ~ResultSet() = default;
+  ~ResultSet() override = default;
 };
 }  // namespace client
 }  // namespace geode

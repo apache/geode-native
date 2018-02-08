@@ -36,11 +36,11 @@ class SslSockStream {
   ACE_DLL m_dll;
 
   void *m_ctx;
-  ACE_SOCKET m_sock;
+  ACE_HANDLE m_sock;
   const char *m_pubkey;
   const char *m_privkey;
 
-  typedef void *(*gf_initSslImpl_Type)(ACE_SOCKET, const char *, const char *);
+  typedef void *(*gf_initSslImpl_Type)(ACE_HANDLE, const char *, const char *);
   typedef void (*gf_clearSslImpl_Type)(void *);
   typedef int (*gf_set_option_Type)(void *, int, int, void *, int);
   typedef int (*gf_listen_Type)(void *, ACE_INET_Addr, unsigned);
@@ -67,7 +67,7 @@ class SslSockStream {
 
  protected:
  public:
-  SslSockStream(ACE_SOCKET, const char *, const char *);
+  SslSockStream(ACE_HANDLE, const char *, const char *);
   ~SslSockStream();
 
   void init();

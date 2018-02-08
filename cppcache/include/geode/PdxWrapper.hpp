@@ -125,7 +125,7 @@ class _GEODE_EXPORT PdxWrapper : public PdxSerializable {
    */
   std::string toString() const override;
 
-  ~PdxWrapper() override = default;
+  ~PdxWrapper() noexcept override {}
 
  private:
   PdxWrapper() = delete;

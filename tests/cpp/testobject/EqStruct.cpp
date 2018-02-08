@@ -79,7 +79,6 @@ EqStruct::EqStruct(int index) {
   var9 = (char *)"abcdefghijklmnopqrstuvwxyz";
 }
 
-EqStruct::~EqStruct() {}
 void EqStruct::toData(apache::geode::client::DataOutput &out) const {
   // Strings
   out.writeUTF(state);

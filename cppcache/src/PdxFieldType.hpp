@@ -82,7 +82,7 @@ class _GEODE_EXPORT PdxFieldType : public Serializable {
 
   // TODO:add more getters for the remaining members.
 
-  virtual void toData(DataOutput& output) const override;
+  void toData(DataOutput& output) const override;
 
   virtual void fromData(DataInput& input) override;
 
@@ -97,7 +97,7 @@ class _GEODE_EXPORT PdxFieldType : public Serializable {
 
   std::string toString() const override;
 
-  virtual ~PdxFieldType();
+  ~PdxFieldType() override = default;
 
   bool equals(std::shared_ptr<PdxFieldType> otherObj);
 

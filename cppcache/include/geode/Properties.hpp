@@ -141,7 +141,7 @@ class _GEODE_EXPORT Properties : public Serializable {
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const override;
+  void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object
@@ -162,7 +162,7 @@ class _GEODE_EXPORT Properties : public Serializable {
   }
 
   /** destructor. */
-  virtual ~Properties();
+  ~Properties() noexcept;
 
  private:
   Properties();
@@ -173,7 +173,7 @@ class _GEODE_EXPORT Properties : public Serializable {
   Properties(const Properties&);
   const Properties& operator=(const Properties&);
 
-  _GEODE_FRIEND_STD_SHARED_PTR(Properties);
+  _GEODE_FRIEND_STD_SHARED_PTR(Properties)
 };
 
 }  // namespace client

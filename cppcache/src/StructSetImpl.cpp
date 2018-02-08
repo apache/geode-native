@@ -94,8 +94,6 @@ SelectResults::Iterator StructSetImpl::end() const {
   return m_structVector->end();
 }
 
-StructSetImpl::~StructSetImpl() {}
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

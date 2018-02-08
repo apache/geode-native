@@ -37,15 +37,16 @@ class ClientConnectionRequest : public ServerLocationRequest {
       : ServerLocationRequest(),
         m_servergroup(servergroup),
         m_excludeServergroup_serverLocation(excludeServergroup) {}
-  virtual void toData(DataOutput& output) const;
-  virtual void fromData(DataInput& input);
-  virtual size_t objectSize() const;
-  virtual int8_t typeId() const;
+  void toData(DataOutput& output) const override;
+  void fromData(DataInput& input) override;
+  size_t objectSize() const override;
+  int8_t typeId() const override;
   std::string getServerGroup() const { return m_servergroup; }
   const std::set<ServerLocation>& getExcludedServerGroup() const {
     return m_excludeServergroup_serverLocation;
   }
-  virtual ~ClientConnectionRequest() {}  // Virtual destructor
+  ~ClientConnectionRequest() override = default;
+
  private:
   void writeSetOfServerLocation(DataOutput& output) const;
   std::string m_servergroup;

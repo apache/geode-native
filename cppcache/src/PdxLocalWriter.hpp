@@ -60,7 +60,7 @@ class PdxLocalWriter : public PdxWriter {
 
   PdxLocalWriter(PdxLocalWriter&& move) = default;
 
-  virtual ~PdxLocalWriter();
+  ~PdxLocalWriter() override = default;
 
   void initialize();
 

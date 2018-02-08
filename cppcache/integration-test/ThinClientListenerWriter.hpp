@@ -40,14 +40,14 @@ class SimpleCacheListener : public CacheListener {
 
  public:
   // The Cache Listener callbacks.
-  virtual void afterCreate(const EntryEvent& event);
-  virtual void afterUpdate(const EntryEvent& event);
-  virtual void afterInvalidate(const EntryEvent& event);
-  virtual void afterDestroy(const EntryEvent& event);
-  virtual void afterRegionInvalidate(const RegionEvent& event);
-  virtual void afterRegionDestroy(const RegionEvent& event);
-  virtual void close(const std::shared_ptr<Region>& region);
-  virtual void afterRegionClear(const RegionEvent& event);
+  void afterCreate(const EntryEvent& event) override;
+  void afterUpdate(const EntryEvent& event) override;
+  void afterInvalidate(const EntryEvent& event) override;
+  void afterDestroy(const EntryEvent& event) override;
+  void afterRegionInvalidate(const RegionEvent& event) override;
+  void afterRegionDestroy(const RegionEvent& event) override;
+  void close(Region& region) override;
+  void afterRegionClear(const RegionEvent& event) override;
 
   SimpleCacheListener() : CacheListener(), m_creates(0), m_clears(0) {
     LOGINFO("SimpleCacheListener contructor called");
@@ -92,9 +92,9 @@ void SimpleCacheListener::afterRegionDestroy(const RegionEvent& event) {
       event.getRegion()->getName().c_str());
 }
 
-void SimpleCacheListener::close(const std::shared_ptr<Region>& region) {
+void SimpleCacheListener::close(Region& region) {
   LOGINFO("SimpleCacheListener: Got an close event for %s region .",
-          region.get()->getName().c_str());
+          region.getName().c_str());
 }
 
 void SimpleCacheListener::afterRegionClear(const RegionEvent& event) {

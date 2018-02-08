@@ -43,7 +43,7 @@ class _GEODE_EXPORT CacheableKey : public Cacheable {
   CacheableKey() : Cacheable() {}
 
   /** Destructor */
-  virtual ~CacheableKey() {}
+  ~CacheableKey() override = default;
 
   _GEODE_FRIEND_STD_SHARED_PTR(CacheableKey)
 

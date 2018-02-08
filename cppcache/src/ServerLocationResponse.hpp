@@ -30,17 +30,15 @@ namespace client {
 class ServerLocationResponse : public Serializable {
  public:
   ServerLocationResponse() : Serializable() {}
-  virtual void toData(DataOutput& output) const {}  // Not needed as of now
-  virtual void fromData(
-      DataInput& input) = 0;  // Has to be implemented by concerte class
-  virtual int32_t classId() const { return 0; }
-  virtual int8_t typeId() const = 0;  // Has to be implemented by concrete class
-  virtual int8_t DSFID() const {
+  void toData(DataOutput& output) const override {}
+  void fromData(DataInput& input) override = 0;
+  int32_t classId() const override { return 0; }
+  int8_t typeId() const override = 0;
+  int8_t DSFID() const override {
     return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
   }
-  virtual size_t objectSize()
-      const = 0;  // Has to be implemented by concrete class
-  virtual ~ServerLocationResponse() {}  // Virtual destructor
+  size_t objectSize() const override = 0;
+  ~ServerLocationResponse() override = default;
 };
 
 }  // namespace client

@@ -59,14 +59,14 @@ class _GEODE_EXPORT EventId : public Cacheable {
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const;
+  void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object
    **/
-  virtual void fromData(DataInput& input);
+  void fromData(DataInput& input) override;
 
-  virtual size_t objectSize() const {
+  size_t objectSize() const override {
     size_t objectSize = 0;
     objectSize += sizeof(uint8_t);
     objectSize += sizeof(int64_t);
@@ -87,19 +87,19 @@ class _GEODE_EXPORT EventId : public Cacheable {
    * This is used by deserialization to determine what instance
    * type to create and derserialize into.
    */
-  virtual int32_t classId() const;
+  int32_t classId() const override;
 
   /**
    *@brief return the typeId of the instance being serialized.
    * This is used by deserialization to determine what instance
    * type to create and derserialize into.
    */
-  virtual int8_t typeId() const;
+  int8_t typeId() const override;
 
   /**
    * Internal Data Serializable Fixed ID size type - since GFE 5.7
    */
-  virtual int8_t DSFID() const { return GeodeTypeIdsImpl::FixedIDByte; };
+  int8_t DSFID() const override { return GeodeTypeIdsImpl::FixedIDByte; };
 
   /** Returns a pointer to a new eventid value. */
   static std::shared_ptr<EventId> create(char* memId, uint32_t memIdLen,
@@ -108,7 +108,7 @@ class _GEODE_EXPORT EventId : public Cacheable {
   }
 
   /** Destructor. */
-  virtual ~EventId();
+  ~EventId() override = default;
 
   int64_t getEventIdData(DataInput& input, char numberCode);
 

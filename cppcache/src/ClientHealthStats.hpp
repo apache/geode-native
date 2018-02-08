@@ -33,12 +33,12 @@ class ClientHealthStats : public Serializable {
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const;
+  void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object
    **/
-  virtual void fromData(DataInput& input);
+  void fromData(DataInput& input) override;
 
   /**
    * @brief creation function for dates.
@@ -50,18 +50,18 @@ class ClientHealthStats : public Serializable {
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int32_t classId() const;
+  int32_t classId() const override;
 
   /**
    *@brief return the typeId byte of the instance being serialized.
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    */
-  virtual int8_t typeId() const;
+  int8_t typeId() const override;
 
-  virtual int8_t DSFID() const;
+  int8_t DSFID() const override;
   /** @return the size of the object in bytes */
-  virtual size_t objectSize() const { return sizeof(ClientHealthStats); }
+  size_t objectSize() const override { return sizeof(ClientHealthStats); }
   /**
    * Factory method for creating an instance of ClientHealthStats
    */
@@ -73,7 +73,7 @@ class ClientHealthStats : public Serializable {
     return std::shared_ptr<ClientHealthStats>(new ClientHealthStats(
         gets, puts, misses, listCalls, numThreads, cpuTime, cpus));
   }
-  ~ClientHealthStats();
+  ~ClientHealthStats() override = default;
 
  private:
   ClientHealthStats(int gets, int puts, int misses, int listCalls,
@@ -89,7 +89,7 @@ class ClientHealthStats : public Serializable {
   int m_cpus;
   std::shared_ptr<CacheableDate> m_updateTime;  // Last updateTime
 
-  _GEODE_FRIEND_STD_SHARED_PTR(ClientHealthStats);
+  _GEODE_FRIEND_STD_SHARED_PTR(ClientHealthStats)
 };
 
 }  // namespace client

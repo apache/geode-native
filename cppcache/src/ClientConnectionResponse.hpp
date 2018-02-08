@@ -31,15 +31,15 @@ namespace client {
 class ClientConnectionResponse : public ServerLocationResponse {
  public:
   ClientConnectionResponse() : ServerLocationResponse(), m_serverFound(false) {}
-  virtual void fromData(DataInput& input);
-  virtual int8_t typeId() const;
-  virtual size_t objectSize() const;
+  void fromData(DataInput& input) override;
+  int8_t typeId() const override;
+  size_t objectSize() const override;
   virtual ServerLocation getServerLocation() const;
   void printInfo() { m_server.printInfo(); }
   static std::shared_ptr<Serializable> create() {
     return std::make_shared<ClientConnectionResponse>();
   }
-  virtual ~ClientConnectionResponse() {}
+  ~ClientConnectionResponse() override = default;
   bool serverFound() { return m_serverFound; }
 
  private:

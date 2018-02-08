@@ -63,8 +63,6 @@ PdxRemoteWriter::PdxRemoteWriter(
   initialize();
 }
 
-PdxRemoteWriter::~PdxRemoteWriter() {}
-
 void PdxRemoteWriter::endObjectWriting() {
   writePreserveData();
   // write header

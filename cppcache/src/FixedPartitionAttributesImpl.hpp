@@ -51,35 +51,35 @@ class FixedPartitionAttributesImpl : public Serializable {
 
   int isPrimary() const { return m_isPrimary; }
 
-  void toData(DataOutput& output) const {
+  void toData(DataOutput& output) const override {
     output.writeString(m_partitionName);
     output.writeBoolean(m_isPrimary);
     output.writeInt(m_numBuckets);
     output.writeInt(m_startingBucketId);
   }
 
-  void fromData(DataInput& input) {
+  void fromData(DataInput& input) override {
     m_partitionName = input.readString();
     m_isPrimary = input.readBoolean();
     m_numBuckets = input.readInt32();
     m_startingBucketId = input.readInt32();
   }
 
-  size_t objectSize() const {
+  size_t objectSize() const override {
     return sizeof(int) + sizeof(int) + sizeof(bool) +
            (m_partitionName.length() *
             sizeof(decltype(m_partitionName)::value_type));
   }
 
-  int8_t typeId() const {
+  int8_t typeId() const override {
     return 0;  // NOt needed infact
   }
 
-  int8_t DSFID() const {
+  int8_t DSFID() const override {
     return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);  // Never used
   }
 
-  int32_t classId() const {
+  int32_t classId() const override {
     return 0;  // Never used
   }
 

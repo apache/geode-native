@@ -38,17 +38,17 @@ class GetAllServersRequest : public Serializable {
   GetAllServersRequest(const std::string& serverGroup) : Serializable() {
     m_serverGroup = CacheableString::create(serverGroup.c_str());
   }
-  virtual void toData(DataOutput& output) const;
-  virtual void fromData(DataInput& input);
-  virtual int32_t classId() const { return 0; }
-  virtual int8_t typeId() const {
+  void toData(DataOutput& output) const override;
+  void fromData(DataInput& input) override;
+  int32_t classId() const override { return 0; }
+  int8_t typeId() const override {
     return GeodeTypeIdsImpl::GetAllServersRequest;
   }
-  virtual int8_t DSFID() const {
+  int8_t DSFID() const override {
     return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
   }
-  virtual size_t objectSize() const { return m_serverGroup->length(); }
-  virtual ~GetAllServersRequest() {}
+  size_t objectSize() const override { return m_serverGroup->length(); }
+  ~GetAllServersRequest() override = default;
 };
 
 }  // namespace client

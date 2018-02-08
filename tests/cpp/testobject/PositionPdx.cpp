@@ -52,8 +52,6 @@ PositionPdx::PositionPdx(int32_t iForExactVal) {
   pid = iForExactVal;
 }
 
-PositionPdx::~PositionPdx() {}
-
 void PositionPdx::init() {
   avg20DaysVol = 0;
   bondRating = "";

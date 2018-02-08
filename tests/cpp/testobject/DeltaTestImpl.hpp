@@ -68,6 +68,8 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
   DeltaTestImpl();
   DeltaTestImpl(int intValue, std::shared_ptr<CacheableString> strptr);
   DeltaTestImpl(const DeltaTestImpl& rhs);
+  ~DeltaTestImpl() noexcept override {}
+
   void fromData(DataInput& input) override;
   void toData(DataOutput& output) const override;
 

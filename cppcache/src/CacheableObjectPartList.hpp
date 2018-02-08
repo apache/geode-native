@@ -114,12 +114,12 @@ class CacheableObjectPartList : public Cacheable {
   /**
    *@brief serialize this object
    **/
-  virtual void toData(DataOutput& output) const;
+  void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object
    **/
-  virtual void fromData(DataInput& input);
+  void fromData(DataInput& input) override;
 
   /**
    * @brief creation function for java Object[]
@@ -134,22 +134,22 @@ class CacheableObjectPartList : public Cacheable {
    * This is used by deserialization to determine what instance
    * type to create and derserialize into.
    */
-  virtual int32_t classId() const;
+  int32_t classId() const override;
 
   /**
    *@brief return the typeId byte of the instance being serialized.
    * This is used by deserialization to determine what instance
    * type to create and derserialize into.
    */
-  virtual int8_t typeId() const;
+  int8_t typeId() const override;
 
   /**
    * Return the data serializable fixed ID size type for internal use.
    * @since GFE 5.7
    */
-  virtual int8_t DSFID() const;
+  int8_t DSFID() const override;
 
-  virtual size_t objectSize() const;
+  size_t objectSize() const override;
 };
 
 }  // namespace client

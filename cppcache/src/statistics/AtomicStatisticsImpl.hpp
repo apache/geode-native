@@ -113,7 +113,7 @@ class AtomicStatisticsImpl : public Statistics, private NonCopyable {
                        StatisticsFactory* system);
 
   //////////////////////  Instance Methods  //////////////////////
-  ~AtomicStatisticsImpl();
+  ~AtomicStatisticsImpl() noexcept override;
 
   bool usesSystemCalls();
 

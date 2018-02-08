@@ -61,10 +61,6 @@ CacheableToken::CacheableToken() : m_value(CacheableToken::NOT_USED) {}
 
 CacheableToken::CacheableToken(TokenType value) : m_value(value) {}
 
-//------- dtor
-
-CacheableToken::~CacheableToken() {}
-
 /**
  * Display this object as 'string', which depend on the implementation in
  * the subclasses

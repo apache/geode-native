@@ -39,12 +39,11 @@
 #define TESTOBJECT_EXPORT
 #endif
 
-using namespace apache::geode::client;
-
 namespace testobject {
 
-class TESTOBJECT_EXPORT PositionPdx
-    : public apache::geode::client::PdxSerializable {
+using namespace apache::geode::client;
+
+class TESTOBJECT_EXPORT PositionPdx : public PdxSerializable {
  private:
   int64_t avg20DaysVol;
   std::string bondRating;
@@ -73,11 +72,14 @@ class TESTOBJECT_EXPORT PositionPdx
   PositionPdx(const char* id, int32_t out);
   // This constructor is just for some internal data validation test
   PositionPdx(int32_t iForExactVal);
-  virtual ~PositionPdx();
+  ~PositionPdx() override = default;
 
-  virtual void toData(PdxWriter& pw) const override;
+  using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
-  virtual void fromData(PdxReader& pr) override;
+  void toData(PdxWriter& pw) const override;
+
+  void fromData(PdxReader& pr) override;
 
   std::string toString() const override;
 

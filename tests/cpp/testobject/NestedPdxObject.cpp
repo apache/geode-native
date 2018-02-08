@@ -24,8 +24,6 @@
 using namespace apache::geode::client;
 using namespace testobject;
 
-ChildPdx::~ChildPdx() {}
-
 void ChildPdx::toData(PdxWriter& pw) const {
   LOGDEBUG("ChildPdx::toData() Started......");
 
@@ -70,8 +68,6 @@ bool ChildPdx::equals(ChildPdx& other) const {
   }
   return false;
 }
-
-ParentPdx::~ParentPdx() {}
 
 void ParentPdx::toData(PdxWriter& pw) const {
   LOGDEBUG("ParentPdx::toData() Started......");

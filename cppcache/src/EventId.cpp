@@ -165,8 +165,6 @@ void EventId::initFromTSS_SameThreadIdAndSameSequenceId() {
   m_eidSeq = EventIdTSS::s_eventId.getSeqNum();
 }
 
-EventId::~EventId() {}
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

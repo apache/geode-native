@@ -42,7 +42,7 @@ class PdxRemoteWriter : public PdxLocalWriter {
   std::shared_ptr<PdxTypeRegistry> getPdxTypeRegistry() const;
 
  public:
-  virtual ~PdxRemoteWriter() override;
+  ~PdxRemoteWriter() override = default;
 
   PdxRemoteWriter() = default;
 

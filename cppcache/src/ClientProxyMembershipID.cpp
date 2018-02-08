@@ -66,7 +66,7 @@ ClientProxyMembershipID::ClientProxyMembershipID()
       m_hostAddrLocalMem(false),
       m_vmViewId(0) {}
 
-ClientProxyMembershipID::~ClientProxyMembershipID() {
+ClientProxyMembershipID::~ClientProxyMembershipID() noexcept {
   if (m_hostAddrLocalMem) delete[] m_hostAddr;
 }
 

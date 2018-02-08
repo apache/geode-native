@@ -38,18 +38,18 @@ class TcpSslConn : public TcpConn {
   const char* m_pemPassword;
   // adongre: Added for Ticket #758
   // Pass extra parameter for the password
-  typedef void* (*gf_create_SslImpl)(ACE_SOCKET, const char*, const char*,
+  typedef void* (*gf_create_SslImpl)(ACE_HANDLE, const char*, const char*,
                                      const char*);
   typedef void (*gf_destroy_SslImpl)(void*);
 
-  Ssl* getSSLImpl(ACE_SOCKET sock, const char* pubkeyfile,
+  Ssl* getSSLImpl(ACE_HANDLE sock, const char* pubkeyfile,
                   const char* privkeyfile);
 
  protected:
   int32_t socketOp(SockOp op, char* buff, int32_t len,
                    std::chrono::microseconds waitSeconds) override;
 
-  void createSocket(ACE_SOCKET sock) override;
+  void createSocket(ACE_HANDLE sock) override;
 
  public:
   TcpSslConn(const char* hostname, int32_t port,

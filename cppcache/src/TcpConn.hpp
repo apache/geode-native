@@ -58,13 +58,13 @@ class _GEODE_EXPORT TcpConn : public Connector {
 
   enum SockOp { SOCK_READ, SOCK_WRITE };
 
-  void clearNagle(ACE_SOCKET sock);
-  int32_t maxSize(ACE_SOCKET sock, int32_t flag, int32_t size);
+  void clearNagle(ACE_HANDLE sock);
+  int32_t maxSize(ACE_HANDLE sock, int32_t flag, int32_t size);
 
   virtual int32_t socketOp(SockOp op, char* buff, int32_t len,
                            std::chrono::microseconds waitSeconds);
 
-  virtual void createSocket(ACE_SOCKET sock);
+  virtual void createSocket(ACE_HANDLE sock);
 
  public:
   int m_chunkSize;

@@ -24,7 +24,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-Ssl* TcpSslConn::getSSLImpl(ACE_SOCKET sock, const char* pubkeyfile,
+Ssl* TcpSslConn::getSSLImpl(ACE_HANDLE sock, const char* pubkeyfile,
                             const char* privkeyfile) {
   const char* libName = "cryptoImpl";
   if (m_dll.open(libName, RTLD_NOW | RTLD_GLOBAL, 0) == -1) {
@@ -48,7 +48,7 @@ Ssl* TcpSslConn::getSSLImpl(ACE_SOCKET sock, const char* pubkeyfile,
       func(sock, pubkeyfile, privkeyfile, m_pemPassword));
 }
 
-void TcpSslConn::createSocket(ACE_SOCKET sock) {
+void TcpSslConn::createSocket(ACE_HANDLE sock) {
   LOGDEBUG("Creating SSL socket stream");
   m_ssl = getSSLImpl(sock, m_pubkeyfile, m_privkeyfile);
 }

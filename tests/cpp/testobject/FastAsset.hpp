@@ -58,12 +58,12 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
  public:
   FastAsset() : assetId(0), value(0) {}
   FastAsset(int size, int maxVal);
-  virtual ~FastAsset();
-  virtual void toData(apache::geode::client::DataOutput& output) const;
-  virtual void fromData(apache::geode::client::DataInput& input);
-  virtual int32_t classId() const { return 24; }
+  ~FastAsset() override = default;
+  void toData(DataOutput& output) const override;
+  void fromData(DataInput& input) override;
+  int32_t classId() const override { return 24; }
 
-  virtual size_t objectSize() const {
+  size_t objectSize() const override {
     auto objectSize = sizeof(FastAsset);
     return objectSize;
   }
@@ -98,10 +98,9 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
    */
   void setAssetId(int i) { assetId = i; }
 
-  std::string toString() const {
-    char buf[102500];
-    sprintf(buf, "FastAsset:[assetId = %d value = %f]", assetId, value);
-    return buf;
+  std::string toString() const override {
+    return std::string("FastAsset:[assetId = ") + std::to_string(assetId) +
+           " value = " + std::to_string(value) + "]";
   }
 
   static apache::geode::client::Serializable* createDeserializable() {

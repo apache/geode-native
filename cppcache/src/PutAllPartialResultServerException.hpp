@@ -68,7 +68,7 @@ class _GEODE_EXPORT PutAllPartialResultServerException : public Serializable {
   /**
    * @brief destructor
    */
-  virtual ~PutAllPartialResultServerException() {}
+  ~PutAllPartialResultServerException() override = default;
 
   /**
    * @brief constructors
@@ -79,14 +79,14 @@ class _GEODE_EXPORT PutAllPartialResultServerException : public Serializable {
    *@brief serialize this object
    * @throws IllegalStateException If this api is called from User code.
    **/
-  virtual void toData(DataOutput& output) const;
+  void toData(DataOutput& output) const override;
 
   /**
    *@brief deserialize this object, typical implementation should return
    * the 'this' pointer.
    * @throws IllegalStateException If this api is called from User code.
    **/
-  virtual void fromData(DataInput& input);
+  void fromData(DataInput& input) override;
 
   /**
    *@brief Return the classId of the instance being serialized.
@@ -97,7 +97,7 @@ class _GEODE_EXPORT PutAllPartialResultServerException : public Serializable {
    * Using a negative value may result in undefined behavior.
    * @throws IllegalStateException If this api is called from User code.
    */
-  virtual int32_t classId() const;
+  int32_t classId() const override;
 
   /**
    *@brief return the size in bytes of the instance being serialized.
@@ -108,7 +108,7 @@ class _GEODE_EXPORT PutAllPartialResultServerException : public Serializable {
    * Note that you must implement this only if you use the HeapLRU feature.
    * @throws IllegalStateException If this api is called from User code.
    */
-  virtual size_t objectSize() const;
+  size_t objectSize() const override;
 
   /**
    *@brief return the typeId byte of the instance being serialized.
@@ -118,7 +118,7 @@ class _GEODE_EXPORT PutAllPartialResultServerException : public Serializable {
    * Note that this should not be overridden by custom implementations
    * and is reserved only for builtin types.
    */
-  virtual int8_t typeId() const;
+  int8_t typeId() const override;
 
   /**
    *@brief return as std::shared_ptr<CacheableString> the Exception name

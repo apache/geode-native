@@ -25,8 +25,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-EnumInfo::~EnumInfo() {}
-
 EnumInfo::EnumInfo()
     : m_enumClassName(nullptr), m_enumName(nullptr), m_ordinal(-1) {}
 

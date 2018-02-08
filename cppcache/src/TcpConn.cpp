@@ -36,33 +36,20 @@ namespace apache {
 namespace geode {
 namespace client {
 
-void TcpConn::clearNagle(ACE_SOCKET sock) {
+void TcpConn::clearNagle(ACE_HANDLE sock) {
   int32_t val = 1;
-#ifdef WIN32
-  const char *param = (const char *)&val;
-#else
-  const void *param = (const void *)&val;
-#endif
-  int32_t plen = sizeof(val);
 
-  if (0 != setsockopt(sock, IPPROTO_TCP, 1, param, plen)) {
+  if (0 != ACE_OS::setsockopt(sock, IPPROTO_TCP, 1,
+                              reinterpret_cast<const char *>(&val),
+                              sizeof(val))) {
     int32_t lastError = ACE_OS::last_error();
     LOGERROR("Failed to set TCP_NODELAY on socket. Errno: %d: %s", lastError,
              ACE_OS::strerror(lastError));
   }
 }
 
-int32_t TcpConn::maxSize(ACE_SOCKET sock, int32_t flag, int32_t size) {
+int32_t TcpConn::maxSize(ACE_HANDLE sock, int32_t flag, int32_t size) {
   int32_t val = 0;
-#ifdef _WIN32
-  const char *cparam = (const char *)&val;
-  char *param = (char *)&val;
-#else
-  const void *cparam = (const void *)&val;
-  void *param = (void *)&val;
-#endif
-  socklen_t plen = sizeof(val);
-  socklen_t clen = sizeof(val);
 
   int32_t inc = 32120;
   val = size - (3 * inc);
@@ -73,12 +60,16 @@ int32_t TcpConn::maxSize(ACE_SOCKET sock, int32_t flag, int32_t size) {
   while (lastRed != red) {
     lastRed = red;
     val += inc;
-    if (0 != setsockopt(sock, SOL_SOCKET, flag, cparam, clen)) {
+    if (0 != ACE_OS::setsockopt(sock, SOL_SOCKET, flag,
+                                reinterpret_cast<const char *>(&val),
+                                sizeof(val))) {
       int32_t lastError = ACE_OS::last_error();
       LOGERROR("Failed to set socket options. Errno: %d : %s ", lastError,
                ACE_OS::strerror(lastError));
     }
-    if (0 != getsockopt(sock, SOL_SOCKET, flag, param, &plen)) {
+    int plen = sizeof(val);
+    if (0 != ACE_OS::getsockopt(sock, SOL_SOCKET, flag,
+                                reinterpret_cast<char *>(&val), &plen)) {
       int32_t lastError = ACE_OS::last_error();
       LOGERROR(
           "Failed to get buffer size for flag %d on socket. Errno: %d : %s",
@@ -93,15 +84,15 @@ int32_t TcpConn::maxSize(ACE_SOCKET sock, int32_t flag, int32_t size) {
   return val;
 }
 
-void TcpConn::createSocket(ACE_SOCKET sock) {
+void TcpConn::createSocket(ACE_HANDLE sock) {
   LOGDEBUG("Creating plain socket stream");
   m_io = new ACE_SOCK_Stream((ACE_HANDLE)sock);
   // m_io->enable(ACE_NONBLOCK);
 }
 
 void TcpConn::init() {
-  ACE_SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
-  if (sock == -1) {
+  ACE_HANDLE sock = ACE_OS::socket(AF_INET, SOCK_STREAM, 0);
+  if (sock == ACE_INVALID_HANDLE) {
     int32_t lastError = ACE_OS::last_error();
     LOGERROR("Failed to create socket. Errno: %d: %s", lastError,
              ACE_OS::strerror(lastError));
@@ -216,7 +207,8 @@ void TcpConn::connect() {
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 
   LOGFINER("Connecting plain socket stream to %s:%d waiting %d micro sec",
-           ipaddr.get_host_name(), ipaddr.get_port_number(), waitMicroSeconds.count());
+           ipaddr.get_host_name(), ipaddr.get_port_number(),
+           waitMicroSeconds.count());
 
   ACE_SOCK_Connector conn;
   int32_t retVal = 0;

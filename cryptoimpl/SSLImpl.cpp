@@ -32,7 +32,7 @@ namespace client {
 ACE_Recursive_Thread_Mutex SSLImpl::s_mutex;
 volatile bool SSLImpl::s_initialized = false;
 
-void *gf_create_SslImpl(ACE_SOCKET sock, const char *pubkeyfile,
+void *gf_create_SslImpl(ACE_HANDLE sock, const char *pubkeyfile,
                         const char *privkeyfile, const char *pemPassword) {
   return reinterpret_cast<void *>(
       new SSLImpl(sock, pubkeyfile, privkeyfile, pemPassword));
@@ -52,7 +52,7 @@ static int pem_passwd_cb(char *buf, int size, int rwflag, void *passwd) {
 }
 }
 
-SSLImpl::SSLImpl(ACE_SOCKET sock, const char *pubkeyfile,
+SSLImpl::SSLImpl(ACE_HANDLE sock, const char *pubkeyfile,
                  const char *privkeyfile, const char *password) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(SSLImpl::s_mutex);
 
@@ -74,7 +74,7 @@ SSLImpl::SSLImpl(ACE_SOCKET sock, const char *pubkeyfile,
     SSLImpl::s_initialized = true;
   }
   m_io = new ACE_SSL_SOCK_Stream();
-  m_io->set_handle(reinterpret_cast<ACE_HANDLE>(sock));
+  m_io->set_handle(sock);
 }
 
 SSLImpl::~SSLImpl() {

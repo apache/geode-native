@@ -76,7 +76,7 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
   DeltaFastAssetAccount(int index, bool encodeTimestp, int maxVal,
                         int asstSize = 0, bool getbfrUpdate = false);
 
-  virtual ~DeltaFastAssetAccount() {}
+  ~DeltaFastAssetAccount() noexcept override {}
   void toData(apache::geode::client::DataOutput& output) const override;
   void fromData(apache::geode::client::DataInput& input) override;
   void toDelta(apache::geode::client::DataOutput& output) const override;

@@ -65,7 +65,7 @@ class _GEODE_EXPORT StructSetImpl
   /** Get an iterator pointing to the end of vector. */
   virtual SelectResults::Iterator end() const override;
 
-  virtual ~StructSetImpl();
+  ~StructSetImpl() noexcept override {}
 
  private:
   std::shared_ptr<CacheableVector> m_structVector;

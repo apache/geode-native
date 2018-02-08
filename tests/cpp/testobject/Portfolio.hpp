@@ -66,9 +66,9 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
         arrayZeroSize(NULL) {}
   Portfolio(int32_t id, uint32_t size = 0,
             std::shared_ptr<CacheableStringArray> nm = nullptr);
-  virtual ~Portfolio();
+  ~Portfolio() noexcept override;
 
-  virtual size_t objectSize() const {
+  size_t objectSize() const override {
     auto objectSize = sizeof(Portfolio);
     objectSize += getObjectSize(pkid);
     objectSize += getObjectSize(position1);
@@ -126,10 +126,10 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
     return std::make_shared<Portfolio>();
   }
 
-  virtual void toData(DataOutput& output) const;
-  virtual void fromData(DataInput& input);
-  virtual int32_t classId() const { return 0x03; }
-  std::string toString() const;
+  void toData(DataOutput& output) const override;
+  void fromData(DataInput& input) override;
+  int32_t classId() const override { return 0x03; }
+  std::string toString() const override;
 };
 
 }  // namespace testobject

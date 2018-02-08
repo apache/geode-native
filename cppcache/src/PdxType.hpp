@@ -104,20 +104,20 @@ class PdxType : public Serializable,
   PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr,
           std::string pdxDomainClassName, bool isLocal);
 
-  virtual ~PdxType();
+  ~PdxType() noexcept override;
 
-  virtual void toData(DataOutput& output) const;
+  void toData(DataOutput& output) const override;
 
-  virtual void fromData(DataInput& input);
+  void fromData(DataInput& input) override;
 
-  virtual int32_t classId() const { return GeodeTypeIds::PdxType; }
+  int32_t classId() const override { return GeodeTypeIds::PdxType; }
 
   static std::shared_ptr<Serializable> CreateDeserializable(
       std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr) {
     return std::make_shared<PdxType>(pdxTypeRegistryPtr, "", false);
   }
 
-  virtual size_t objectSize() const {
+  size_t objectSize() const override {
     auto size = sizeof(PdxType);
     if (m_pdxFieldTypes != nullptr) {
       for (size_t i = 0; i < m_pdxFieldTypes->size(); i++) {

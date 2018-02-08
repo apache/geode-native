@@ -56,7 +56,7 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
  public:
   DeltaPSTObject() : Delta(nullptr), timestamp(0), valueData(nullptr) {}
   DeltaPSTObject(int size, bool encodeKey, bool encodeTimestamp);
-  virtual ~DeltaPSTObject() {}
+  ~DeltaPSTObject() noexcept override {}
   void toData(apache::geode::client::DataOutput& output) const override;
   void fromData(apache::geode::client::DataInput& input) override;
   void fromDelta(DataInput& input) override;
