@@ -64,7 +64,7 @@ namespace Apache
         try
         {
           auto value = m_nativeptr->get()->getMessage();
-          return marshal_as<String^>(value->toString());
+          return marshal_as<String^>(value);
         }
         finally
         {
@@ -81,7 +81,7 @@ namespace Apache
         try
         {
           auto value = m_nativeptr->get()->getName();
-          return marshal_as<String^>(value->toString());
+          return marshal_as<String^>(value);
         }
         finally
         {
