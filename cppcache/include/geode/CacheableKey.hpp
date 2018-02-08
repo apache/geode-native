@@ -109,17 +109,16 @@ class _GEODE_EXPORT CacheableKey : public Cacheable {
 
 using namespace apache::geode::client::internal;
 
-typedef std::unordered_map<std::shared_ptr<CacheableKey>,
-                           std::shared_ptr<Cacheable>,
-                           dereference_hash<std::shared_ptr<CacheableKey>>,
-                           dereference_equal_to<std::shared_ptr<CacheableKey>>>
-    HashMapOfCacheable;
+using HashMapOfCacheable =
+    std::unordered_map<std::shared_ptr<CacheableKey>,
+                       std::shared_ptr<Cacheable>,
+                       dereference_hash<std::shared_ptr<CacheableKey>>,
+                       dereference_equal_to<std::shared_ptr<CacheableKey>>>;
 
-typedef std::unordered_set<std::shared_ptr<CacheableKey>,
-                           dereference_hash<std::shared_ptr<CacheableKey>>,
-                           dereference_equal_to<std::shared_ptr<CacheableKey>>>
-    HashSetOfCacheableKey;
-
+using HashSetOfCacheableKey =
+    std::unordered_set<std::shared_ptr<CacheableKey>,
+                       dereference_hash<std::shared_ptr<CacheableKey>>,
+                       dereference_equal_to<std::shared_ptr<CacheableKey>>>;
 
 }  // namespace client
 }  // namespace geode

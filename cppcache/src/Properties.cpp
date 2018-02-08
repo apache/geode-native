@@ -15,13 +15,6 @@
  * limitations under the License.
  */
 
-#include <ace/Hash_Map_Manager.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Guard_T.h>
-#include <ace/config-lite.h>
-#include <ace/Versioned_Namespace.h>
-#include <ace/OS_NS_stdio.h>
-
 #include <geode/Properties.hpp>
 #include <geode/GeodeTypeIds.hpp>
 #include <geode/CacheableKey.hpp>
@@ -30,41 +23,9 @@
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 
-ACE_BEGIN_VERSIONED_NAMESPACE_DECL
-
-template <>
-class ACE_Hash<std::shared_ptr<apache::geode::client::CacheableKey>> {
- public:
-  u_long operator()(
-      const std::shared_ptr<apache::geode::client::CacheableKey>& key) {
-    return key->hashcode();
-  }
-};
-
-template <>
-class ACE_Equal_To<std::shared_ptr<apache::geode::client::CacheableKey>> {
- public:
-  int operator()(
-      const std::shared_ptr<apache::geode::client::CacheableKey>& lhs,
-      const std::shared_ptr<apache::geode::client::CacheableKey>& rhs) const {
-    return (*lhs.get() == *rhs.get());
-  }
-};
-ACE_END_VERSIONED_NAMESPACE_DECL
-
 namespace apache {
 namespace geode {
 namespace client {
-
-typedef ACE_Hash_Map_Manager_Ex<
-    std::shared_ptr<CacheableKey>, std::shared_ptr<Cacheable>,
-    ACE_Hash<std::shared_ptr<CacheableKey>>,
-    ACE_Equal_To<std::shared_ptr<CacheableKey>>, ACE_Recursive_Thread_Mutex>
-    CacheableKeyCacheableMap;
-
-typedef ACE_Guard<ACE_Recursive_Thread_Mutex> CacheableKeyCacheableMapGuard;
-
-#define MAP ((CacheableKeyCacheableMap*)m_map)
 
 class PropertiesFile {
   Properties& m_props;
@@ -77,92 +38,73 @@ class PropertiesFile {
   void readFile(const std::string& fileName);
   char* nextBufferLine(char** cursor, char* bufbegin, size_t totalLen);
 };
-std::shared_ptr<Properties> Properties::create() {
-  return std::shared_ptr<Properties>(new Properties());
-}
 
-Properties::Properties() : Serializable() {
-  m_map = (void*)new CacheableKeyCacheableMap();
-  MAP->open();
-}
-Properties::~Properties() noexcept {
-  if (m_map != nullptr) {
-    delete MAP;
-    m_map = nullptr;
-  }
+std::shared_ptr<Properties> Properties::create() {
+  return std::make_shared<Properties>();
 }
 
 std::shared_ptr<CacheableString> Properties::find(const std::string& key) {
-  auto keyptr = CacheableString::create(key.c_str());
-  CacheableKeyCacheableMapGuard guard(MAP->mutex());
-  std::shared_ptr<Cacheable> value;
-  MAP->find(keyptr, value);
-  return std::dynamic_pointer_cast<CacheableString>(value);
+  return std::dynamic_pointer_cast<CacheableString>(
+      this->find(CacheableString::create(key)));
 }
+
 std::shared_ptr<Cacheable> Properties::find(
     const std::shared_ptr<CacheableKey>& key) {
-  if (key == nullptr) {
+  if (!key) {
     throw NullPointerException("Properties::find: Null key given.");
   }
-  CacheableKeyCacheableMapGuard guard(MAP->mutex());
-  std::shared_ptr<Cacheable> value;
-  MAP->find(key, value);
-  return value;
+
+  auto entry = m_map.find(key);
+  if (entry != m_map.end()) {
+    return entry->second;
+  }
+
+  return nullptr;
 }
 
 void Properties::insert(std::string key, std::string value) {
-  auto keyptr = CacheableString::create(std::move(key));
-  auto valptr = CacheableString::create(std::move(value));
-  MAP->rebind(keyptr, valptr);
+  this->insert(CacheableString::create(std::move(key)),
+               CacheableString::create(std::move(value)));
 }
 
 void Properties::insert(std::string key, const int value) {
-  auto keyptr = CacheableString::create(std::move(key));
-  auto valptr = CacheableString::create(std::to_string(value));
-  MAP->rebind(keyptr, valptr);
+  this->insert(CacheableString::create(std::move(key)),
+               CacheableString::create(std::to_string(value)));
 }
 
 void Properties::insert(const std::shared_ptr<CacheableKey>& key,
                         const std::shared_ptr<Cacheable>& value) {
-  if (key == nullptr) {
+  if (!key) {
     throw NullPointerException("Properties::insert: Null key given.");
   }
-  MAP->rebind(key, value);
+
+  m_map[key] = value;
 }
 
 void Properties::remove(const std::string& key) {
-  auto keyptr = CacheableString::create(key.c_str());
-  MAP->unbind(keyptr);
+  this->remove(CacheableString::create(key));
 }
 
 void Properties::remove(const std::shared_ptr<CacheableKey>& key) {
-  MAP->unbind(key);
+  m_map.erase(key);
 }
 
-size_t Properties::getSize() const { return MAP->current_size(); }
+size_t Properties::getSize() const {
+  return m_map.size();
+}
 
 void Properties::foreach (Visitor& visitor) const {
-  CacheableKeyCacheableMapGuard guard(MAP->mutex());
-
-  for (auto&& entry : *MAP) {
-    visitor.visit(entry.ext_id_, entry.int_id_);
+  for (auto& entry : m_map) {
+    visitor.visit(entry.first, entry.second);
   }
 }
 
 void Properties::addAll(const std::shared_ptr<Properties>& other) {
   if (other == nullptr) return;
 
-  class Copier : public Visitor {
-    Properties& m_lhs;
-
-   public:
-    explicit Copier(Properties& lhs) : m_lhs(lhs) {}
-    void visit(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value) {
-      m_lhs.insert(key, value);
-    }
-  } aCopier(*this);
-
-  other->foreach (aCopier);
+  for (auto& entry : other->m_map) {
+    m_map[entry.first] = entry.second;
+  }
 }
 
 void Properties::load(const std::string& fileName) {
@@ -259,23 +201,21 @@ int32_t Properties::classId() const { return 0; }
 int8_t Properties::typeId() const { return GeodeTypeIds::Properties; }
 
 void Properties::toData(DataOutput& output) const {
-  CacheableKeyCacheableMapGuard guard(MAP->mutex());
-  int32_t mapSize = getSize();
-  output.writeArrayLen(mapSize);
-  CacheableKeyCacheableMap::iterator iter = MAP->begin();
-  while (iter != MAP->end()) {
-    output.writeObject((*iter).ext_id_);
-    output.writeObject((*iter).int_id_);
-    ++iter;
+  output.writeArrayLen(static_cast<uint32_t>(m_map.size()));
+  for (auto& entry : m_map) {
+    output.writeObject(entry.first);
+    output.writeObject(entry.second);
   }
 }
 
 void Properties::fromData(DataInput& input) {
-  int32_t mapSize = input.readArrayLen();
+  auto mapSize = input.readArrayLen();
+  m_map.reserve(mapSize);
+
   for (int i = 0; i < mapSize; i++) {
     auto key = std::static_pointer_cast<CacheableKey>(input.readObject());
-    auto val = std::static_pointer_cast<Cacheable>(input.readObject());
-    MAP->rebind(key, val);
+    auto value = std::static_pointer_cast<Cacheable>(input.readObject());
+    m_map.emplace(key, value);
   }
 }
 
