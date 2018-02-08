@@ -125,7 +125,7 @@ class _GEODE_EXPORT CacheableDate : public CacheableKey {
     return std::make_shared<CacheableDate>(value);
   }
 
-  virtual std::string toString() const override;
+  std::string toString() const override;
 
   /** Destructor */
   ~CacheableDate() override = default;
