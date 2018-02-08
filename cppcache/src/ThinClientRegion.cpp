@@ -3701,9 +3701,9 @@ void ChunkedFunctionExecutionResponse::handleChunk(
     std::shared_ptr<Cacheable> result = nullptr;
     if (isExceptionPart) {
       result = std::make_shared<UserFunctionExecutionException>(
-          CacheableString::create(value->toString().c_str()));
+          std::dynamic_pointer_cast<CacheableString>(value)->value());
     } else {
-      result = std::dynamic_pointer_cast<Cacheable>(value);
+      result = value;
     }
     if (m_resultCollectorLock.get() != 0) {
       ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*m_resultCollectorLock);

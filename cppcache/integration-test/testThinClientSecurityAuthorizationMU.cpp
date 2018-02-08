@@ -391,7 +391,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
               ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
               LOGINFO("Done casting to uFEPtr");
               LOGINFO("Read expected uFEPtr exception %s ",
-                      uFEPtr->getMessage()->value().c_str());
+                      uFEPtr->getMessage().c_str());
             }
           } catch (ClassCastException& ex) {
             std::string logmsg = "";
@@ -443,7 +443,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
             ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
             LOGINFO("Done casting to uFEPtr");
             LOGINFO("Read expected uFEPtr exception %s ",
-                    uFEPtr->getMessage()->value().c_str());
+                    uFEPtr->getMessage().c_str());
           } catch (...) {
             FAIL(
                 "exFuncNameSendException casting to string for bool arguement "

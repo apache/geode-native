@@ -175,7 +175,7 @@ bool validateResultTypeAndAllowUserFunctionExecutionException(
             std::dynamic_pointer_cast<UserFunctionExecutionException>(result)) {
       LOGINFO("Done casting to uFEPtr");
       LOGINFO("Read expected uFEPtr exception %s ",
-              uFEPtr->getMessage()->value().c_str());
+              uFEPtr->getMessage().c_str());
       return true;
     } else {
       LOGINFO("Unexpected result type %s for index %d.",
@@ -191,8 +191,7 @@ bool validateResultTypeIsUserFunctionExecutionException(
   if (auto uFEPtr =
           std::dynamic_pointer_cast<UserFunctionExecutionException>(result)) {
     LOGINFO("Done casting to uFEPtr");
-    LOGINFO("Read expected uFEPtr exception %s ",
-            uFEPtr->getMessage()->value().c_str());
+    LOGINFO("Read expected uFEPtr exception %s ", uFEPtr->getMessage().c_str());
     return true;
   } else {
     LOGINFO("Unexpected result type %s for index %d.",
