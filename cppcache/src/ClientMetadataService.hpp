@@ -23,6 +23,8 @@
 #include <unordered_map>
 #include <memory>
 #include <string>
+#include <mutex>
+#include <chrono>
 
 #include <ace/Task.h>
 
@@ -43,6 +45,12 @@ namespace geode {
 namespace client {
 
 class ClienMetadata;
+
+static constexpr std::chrono::milliseconds DEFAULT_MUTEX_TIMEOUT =
+    std::chrono::seconds(1);
+
+static constexpr std::chrono::milliseconds CLOSE_SERVICE_MUTEX_TIMEOUT =
+    std::chrono::seconds(60);
 
 typedef std::map<std::string, std::shared_ptr<ClientMetadata>>
     RegionMetadataMapType;
@@ -209,7 +217,8 @@ class ClientMetadataService : public ACE_Task_Base,
   std::shared_ptr<ClientMetadata> SendClientPRMetadata(
       const char* regionPath, std::shared_ptr<ClientMetadata> cptr);
 
-  std::shared_ptr<ClientMetadata> getClientMetadata(const std::shared_ptr<Region>& region);
+  std::shared_ptr<ClientMetadata> getClientMetadata(
+      const std::shared_ptr<Region>& region);
 
  private:
   // ACE_Recursive_Thread_Mutex m_regionMetadataLock;
@@ -221,10 +230,10 @@ class ClientMetadataService : public ACE_Task_Base,
   Pool* m_pool;
   Queue<std::string>* m_regionQueue;
 
-  ACE_RW_Thread_Mutex m_PRbucketStatusLock;
   std::map<std::string, PRbuckets*> m_bucketStatus;
   std::chrono::milliseconds m_bucketWaitTimeout;
   static const char* NC_CMDSvcThread;
+  std::timed_mutex m_timedBucketStatusLock;
 };
 }  // namespace client
 }  // namespace geode
