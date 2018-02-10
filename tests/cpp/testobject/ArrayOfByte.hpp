@@ -70,12 +70,12 @@ class TESTOBJECT_EXPORT ArrayOfByte {
       int32_t rsiz = (bufSize <= 20) ? bufSize : 20;
       GsRandom::getAlphanumericString(rsiz, buf);
       memcpy(buf, dos.getBuffer(), dos.getBufferLength());
-      return CacheableBytes::createNoCopy(reinterpret_cast<int8_t *>(buf),
-                                          bufSize);
+      return CacheableBytes::create(std::vector<int8_t>(buf, buf +
+                                          bufSize));
     } else if (encodeTimestamp) {
       FWKEXCEPTION("Should not happen");
     } else {
-      return CacheableBytes::create(size);
+      return CacheableBytes::create(std::vector<int8_t>(size));
     }
   }
 
@@ -85,7 +85,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
       throw apache::geode::client::IllegalArgumentException(
           "the bytes arg was null");
     }
-    DataInputInternal di(reinterpret_cast<const uint8_t *>(bytes->value()),
+    DataInputInternal di(reinterpret_cast<const uint8_t *>(bytes->value().data()),
                          bytes->length(), nullptr);
     try {
       di.readInt32();
@@ -101,7 +101,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
 
   static void resetTimestamp(std::shared_ptr<CacheableBytes> bytes,
                              SerializationRegistry &serializationRegistry) {
-    DataInputInternal di(reinterpret_cast<const uint8_t *>(bytes->value()),
+    DataInputInternal di(reinterpret_cast<const uint8_t *>(bytes->value().data()),
                          bytes->length(), nullptr);
     int32_t index;
     try {

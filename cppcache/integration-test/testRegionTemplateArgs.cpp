@@ -27,7 +27,7 @@ bool CheckBytesEqual(std::shared_ptr<CacheableBytes> result,
                      std::shared_ptr<Cacheable> expected) {
   auto expectedPtr = std::dynamic_pointer_cast<CacheableBytes>(expected);
   // Assume that the bytes are really a char*
-  return (strcmp((char*)result->value(), (char*)expectedPtr->value()) == 0);
+  return result->value() == expectedPtr->value();
 }
 
 // This test checks the template methods of Region API with all possible
@@ -55,10 +55,10 @@ BEGIN_TEST(CheckTemplates)
     auto stringPtr = CacheableString::create(stringKey);
     auto int32Ptr = CacheableInt32::create(int32Key);
     auto bytesPtr = CacheableBytes::create(
-        reinterpret_cast<const int8_t*>(stringVal), sizeof(stringVal));
+        std::vector<int8_t>(stringVal, stringVal + sizeof(stringVal)));
     auto keyPtr = CacheableString::create(baseKey);
     auto valPtr = CacheableBytes::create(
-        reinterpret_cast<const int8_t*>(baseVal), sizeof(baseVal));
+        std::vector<int8_t>(baseVal, baseVal + sizeof(baseVal)));
 
     std::shared_ptr<CacheableBytes> resValPtr;
     std::shared_ptr<CacheableString> resStringPtr;

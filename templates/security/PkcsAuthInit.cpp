@@ -173,8 +173,8 @@ std::shared_ptr<Properties> PKCSAuthInit::getCredentials(
         "PKCSAuthInit::getCredentials: "
         "Unable to create signature");
   }
-  auto signatureValPtr = CacheableBytes::createNoCopy(
-      reinterpret_cast<int8_t*>(signatureData), lengthEncryptedData);
+  auto signatureValPtr = CacheableBytes::create(
+      std::vector<int8_t>(signatureData, signatureData + lengthEncryptedData));
 
   auto credentials = Properties::create();
   credentials->insert(KEYSTORE_ALIAS, alias);

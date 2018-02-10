@@ -290,7 +290,7 @@ namespace Apache
             array<TManaged>^ buffer = gcnew array<TManaged>(len);
             pin_ptr<TManaged> pin_buffer = &buffer[0];
 
-            memcpy((void*)pin_buffer, nativeptr->value(),
+            memcpy((void*)pin_buffer, nativeptr->value().data(),
                    len * sizeof(TManaged));
             m_value = buffer;
           }
@@ -636,7 +636,7 @@ namespace Apache
       /// An immutable wrapper for byte arrays that can serve
       /// as a distributable object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_ARRAY_DEF_NEW(CacheableBytes, Byte);
+      using CacheableBytes = CacheableArray<native::CacheableArray<int8_t, native::GeodeTypeIds::CacheableBytes>, Byte, GeodeClassIds::CacheableBytes>;
 
       /// <summary>
       /// An immutable wrapper for array of doubles that can serve

@@ -450,7 +450,7 @@ int32_t Security::initValues(int32_t numKeys, int32_t siz, bool useDefault) {
   for (int32_t i = 0; i < m_MaxValues; i++) {
     GsRandom::getAlphanumericString(rsiz, buf);
     m_CValue[i] =
-        CacheableBytes::create(reinterpret_cast<const int8_t *>(buf), siz);
+        CacheableBytes::create(std::vector<int8_t>(buf, buf + siz));
   }
   return siz;
 }
@@ -709,11 +709,11 @@ int32_t Security::checkValues() {
     int32_t unknowns = 0;
     for (int32_t i = 0; i < vals.size(); i++) {
       auto valStr = std::dynamic_pointer_cast<CacheableBytes>(vals.at(i));
-      if (strncmp("Create", reinterpret_cast<const char *>(valStr->value()),
+      if (strncmp("Create", reinterpret_cast<const char *>(valStr->value().data()),
                   6) == 0) {
         creates++;
       } else if (strncmp("Update",
-                         reinterpret_cast<const char *>(valStr->value()),
+                         reinterpret_cast<const char *>(valStr->value().data()),
                          6) == 0) {
         updates++;
       } else {
@@ -993,8 +993,8 @@ int32_t Security::doEntryOperations() {
           tmpValue = getUserObject(objectType);
         } else {
           tmpValue =
-              CacheableBytes::create(reinterpret_cast<const int8_t *>(valBuf),
-                                     static_cast<int32_t>(strlen(valBuf)));
+              CacheableBytes::create(std::vector<int8_t>(valBuf, valBuf +
+                                     static_cast<int32_t>(strlen(valBuf))));
         }
         regionPtr->create(keyPtr, tmpValue);
         creates++;
@@ -1006,18 +1006,18 @@ int32_t Security::doEntryOperations() {
           } else {
             int32_t keyVal = std::stoi(keyPtr->toString());
             tmpValue =
-                CacheableBytes::create(reinterpret_cast<const int8_t *>(valBuf),
-                                       static_cast<int32_t>(strlen(valBuf)));
+                CacheableBytes::create(std::vector<int8_t>(valBuf, valBuf +
+                                       static_cast<int32_t>(strlen(valBuf))));
             int32_t *val =
                 (int32_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
-                                ->value());
+                                ->value().data());
             *val =
                 (*val == keyVal) ? keyVal + 1 : keyVal;  // alternate the value
                                                          // so that it can be
                                                          // validated later.
             int64_t *adjNow =
                 (int64_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
-                                ->value() +
+                                ->value().data() +
                             4);
             *adjNow = getAdjustedNowMicros();
           }

@@ -67,7 +67,7 @@ void VersionedCacheableObjectPartList::readObjectPart(
       bytes = new int8_t[skipLen];
       input.readBytesOnly(bytes, skipLen);
     }
-    m_values->emplace(keyPtr, CacheableBytes::create(bytes, skipLen));
+    m_values->emplace(keyPtr, CacheableBytes::create(std::vector<int8_t>(bytes, bytes + skipLen)));
 
     /* adongre
      * CID 29377: Resource leak (RESOURCE_LEAK)Calling allocation function
