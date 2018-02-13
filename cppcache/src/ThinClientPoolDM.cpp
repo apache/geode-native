@@ -701,7 +701,8 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getLocators()
   for (auto&& locator : m_attrs->m_initLocList) {
     ptrArr[i++] = CacheableString::create(locator);
   }
-  return CacheableStringArray::createNoCopy(ptrArr, i);
+  return CacheableStringArray::create(
+	  std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
 }
 
 const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
@@ -712,7 +713,8 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
     for (auto&& server : m_attrs->m_initServList) {
       ptrArr[i++] = CacheableString::create(server);
     }
-    return CacheableStringArray::createNoCopy(ptrArr, i);
+    return CacheableStringArray::create(
+		std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
   } else if (!m_attrs->m_initLocList.empty()) {
     std::vector<ServerLocation> vec;
     // TODO thread - why is this member volatile?
@@ -726,9 +728,9 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
       ptrArr[i++] = CacheableString::create(serLoc.getServerName() + ":" +
                                             std::to_string(serLoc.getPort()));
     }
-    return CacheableStringArray::createNoCopy(ptrArr, i);
+    return CacheableStringArray::create(std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
   } else {
-    return CacheableStringArray::createNoCopy(nullptr, 0);
+    return CacheableStringArray::create(std::vector<std::shared_ptr<CacheableString>>{});
   }
 }
 

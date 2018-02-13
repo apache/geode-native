@@ -45,7 +45,7 @@ class TESTOBJECT_EXPORT TestObject1 : public Cacheable {
  public:
   TestObject1();
   TestObject1(int32_t id)
-      : name(nullptr), arr(CacheableBytes::create(4 * 1024)), identifier(id) {}
+      : name(nullptr), arr(CacheableBytes::create(std::vector<int8_t>(4 * 1024))), identifier(id) {}
   TestObject1(std::string& str, int32_t id);
   TestObject1(TestObject1& rhs);
   void toData(DataOutput& output) const override;

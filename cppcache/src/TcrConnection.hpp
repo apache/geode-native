@@ -350,7 +350,7 @@ class _GEODE_EXPORT TcrConnection {
   /**
    * Reads bytes from socket and handles error conditions in case of Handshake.
    */
-  std::shared_ptr<CacheableBytes> readHandshakeData(
+  std::vector<int8_t> readHandshakeData(
       int32_t msgLength, std::chrono::microseconds connectTimeout);
 
   /**

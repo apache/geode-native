@@ -20,8 +20,12 @@
 #ifndef GEODE_BUCKETSERVERLOCATION_H_
 #define GEODE_BUCKETSERVERLOCATION_H_
 
-#include "ServerLocation.hpp"
 #include <string>
+
+#include <geode/CacheableBuiltins.hpp>
+
+#include "ServerLocation.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -78,7 +82,8 @@ class BucketServerLocation : public ServerLocation {
       if (size > 0x7f) {
         // TODO:  should fail here since m_numServerGroups is int8_t?
       }
-      m_serverGroups = CacheableStringArray::createNoCopy(ptrArr, size);
+      m_serverGroups = CacheableStringArray::create(
+		  std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + size));
       m_numServerGroups = static_cast<int8_t>(size);
     } else {
       m_serverGroups = nullptr;
@@ -100,7 +105,7 @@ class BucketServerLocation : public ServerLocation {
     output.write(static_cast<int8_t>(m_numServerGroups));
     if (m_numServerGroups > 0) {
       for (int i = 0; i < m_numServerGroups; i++) {
-        output.writeObject((*m_serverGroups)[i]);
+        output.writeObject(m_serverGroups->value()[i]);
       }
     }
   }
@@ -120,7 +125,8 @@ class BucketServerLocation : public ServerLocation {
     }
     if (m_numServerGroups > 0) {
       m_serverGroups =
-          CacheableStringArray::createNoCopy(serverGroups, m_numServerGroups);
+          CacheableStringArray::create(
+			  std::vector<std::shared_ptr<CacheableString>>(serverGroups, serverGroups + m_numServerGroups));
     }
   }
 

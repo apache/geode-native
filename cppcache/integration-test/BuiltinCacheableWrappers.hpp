@@ -840,14 +840,14 @@ class CacheableBytesWrapper : public CacheableWrapper {
     auto randArr =
         CacheableHelper::randomArray<uint8_t>(maxSize, UCHAR_MAX);
     m_cacheableObject = CacheableBytes::create(
-        reinterpret_cast<const int8_t*>(randArr.data()), maxSize);
+        std::vector<int8_t>(std::begin(randArr), std::end(randArr)));
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
     const CacheableBytes* obj =
         dynamic_cast<const CacheableBytes*>(object.get());
     ASSERT(obj != nullptr, "getCheckSum: null object.");
-    return CacheableHelper::crc32(obj->value(), obj->length());
+    return CacheableHelper::crc32(obj->value().data(), obj->length());
   }
 };
 
@@ -1027,7 +1027,9 @@ class CacheableStringArrayWrapper : public CacheableWrapper {
         randArr[arrayIndex] = CacheableString::create(randStr);
       }
     }
-    m_cacheableObject = CacheableStringArray::create(randArr, arraySize);
+    m_cacheableObject = CacheableStringArray::create(
+      std::vector<std::shared_ptr<CacheableString>>(
+        randArr, randArr + arraySize));
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {

@@ -81,10 +81,10 @@ DUNIT_TASK(CLIENT1, StepOne)
     auto subregPtr = regptr->createSubregion(_regionNames[1], lattribPtr);
 
     auto&& qh = &QueryHelper::getHelper();
-    std::shared_ptr<CacheableString> cstr[4] = {
+    std::vector<std::shared_ptr<CacheableString>> cstr{
         CacheableString::create("Taaa"), CacheableString::create("Tbbb"),
         CacheableString::create("Tccc"), CacheableString::create("Tddd")};
-    auto nm = CacheableStringArray::create(cstr, 4);
+    auto nm = CacheableStringArray::create(cstr);
     qh->populatePortfolioData(regptr, 4, 3, 2, nm);
     qh->populatePositionData(subregPtr, 4, 3);
 

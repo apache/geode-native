@@ -227,7 +227,7 @@ void PdxInstanceImpl::writeField(PdxWriter& writer,
         for (auto&& entry : *vector) {
           if (auto&& val = std::dynamic_pointer_cast<CacheableBytes>(entry)) {
             values[i] = const_cast<int8_t*>(
-                reinterpret_cast<const int8_t*>(val->value()));
+                reinterpret_cast<const int8_t*>(val->value().data()));
             lengths[i] = val->length();
           }
           i++;
@@ -1345,7 +1345,8 @@ std::shared_ptr<CacheableStringArray> PdxInstanceImpl::getFieldNames() {
   }
 
   if (size > 0) {
-    return CacheableStringArray::createNoCopy(ptrArr, size);
+    return CacheableStringArray::create(
+		std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + size));
   }
   return nullptr;
 }
@@ -1956,7 +1957,8 @@ void PdxInstanceImpl::setField(const std::string& fieldName, int8_t** value,
   }
   auto cacheableObject = CacheableVector::create();
   for (int i = 0; i < arrayLength; i++) {
-    auto ptr = CacheableBytes::create(value[i], elementLength[i]);
+    auto ptr = CacheableBytes::create(
+      std::vector<int8_t>(value[i], value[i] + elementLength[i]));
     cacheableObject->push_back(ptr);
   }
   m_updatedFields[fieldName] = cacheableObject;
@@ -1980,7 +1982,8 @@ void PdxInstanceImpl::setField(const std::string& fieldName, std::string* value,
     }
   }
   if (length > 0) {
-    auto cacheableObject = CacheableStringArray::create(ptrArr, length);
+    auto cacheableObject = CacheableStringArray::create(
+		std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + length));
     m_updatedFields[fieldName] = cacheableObject;
   }
 }

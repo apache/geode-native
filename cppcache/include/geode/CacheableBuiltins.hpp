@@ -37,9 +37,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-template <typename Target, int8_t TYPEID>
-class CacheableArrayType;
-
 /** Template CacheableKey class for primitive types. */
 template <typename TObj, int8_t TYPEID, const char* TYPENAME,
           const char* SPRINTFSYM, int32_t STRSIZE>
@@ -144,119 +141,6 @@ inline void copyArray(std::shared_ptr<TObj>* dest,
   }
 }
 
-/**
- * Function to copy an array of
- * <code>std::shared_ptr<CacheableArrayType<>></code>s from source to
- * destination.
- */
-template <typename TObj, int8_t TYPEID>
-inline void copyArray(
-    std::shared_ptr<CacheableArrayType<TObj, TYPEID>>* dest,
-    const std::shared_ptr<CacheableArrayType<TObj, TYPEID>>* src,
-    size_t length) {
-  for (size_t index = 0; index < length; index++) {
-    dest[index] = src[index];
-  }
-}
-
-/** Template class for array of primitive types. */
-template <typename TObj, int8_t TYPEID>
-class CacheableArrayType : public Cacheable {
- protected:
-  TObj* m_value;
-  int32_t m_length;
-
-  inline CacheableArrayType() : m_value(nullptr), m_length(0) {}
-
-  inline CacheableArrayType(int32_t length) : m_length(length) {
-    if (length > 0) {
-      _GEODE_NEW(m_value, TObj[length]);
-    }
-  }
-
-  inline CacheableArrayType(TObj* value, int32_t length)
-      : m_value(value), m_length(length) {}
-
-  inline CacheableArrayType(const TObj* value, int32_t length, bool copy)
-      : m_value(nullptr), m_length(length) {
-    if (length > 0) {
-      _GEODE_NEW(m_value, TObj[length]);
-      copyArray(m_value, value, length);
-    }
-  }
-
-  ~CacheableArrayType() noexcept override { _GEODE_SAFE_DELETE_ARRAY(m_value); }
-
-  _GEODE_FRIEND_STD_SHARED_PTR(CacheableArrayType)
-
- private:
-  // Private to disable copy constructor and assignment operator.
-  CacheableArrayType(const CacheableArrayType& other)
-      : m_value(other.m_value), m_length(other.m_length) {}
-
-  CacheableArrayType& operator=(const CacheableArrayType& other) {
-    return *this;
-  }
-
- public:
-  /** Get the underlying array. */
-  inline const TObj* value() const { return m_value; }
-
-  /** Get the length of the array. */
-  inline int32_t length() const { return m_length; }
-
-  /** Get the element at given index. */
-  inline TObj operator[](size_t index) const {
-    if (index >= m_length) {
-      throw OutOfRangeException(
-          "CacheableArray::operator[]: Index out of range.");
-    }
-    return m_value[index];
-  }
-
-  // Cacheable methods
-
-  /** Serialize this object to the given <code>DataOutput</code>. */
-  virtual void toData(DataOutput& output) const override {
-    apache::geode::client::serializer::writeObject(output, m_value, m_length);
-  }
-
-  /** Deserialize this object from the given <code>DataInput</code>. */
-  virtual void fromData(DataInput& input) override {
-    _GEODE_SAFE_DELETE_ARRAY(m_value);
-    apache::geode::client::serializer::readObject(input, m_value, m_length);
-  }
-
-  /**
-   * Return the classId of the instance being serialized.
-   *
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int32_t classId() const override { return 0; }
-
-  /**
-   * Return the typeId byte of the instance being serialized.
-   *
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int8_t typeId() const override { return TYPEID; }
-
-  /**
-   * Return the size in bytes of the instance being serialized.
-   *
-   * This is used to determine whether the cache is using up more
-   * physical memory than it has been configured to use. The method can
-   * return zero if the user does not require the ability to control
-   * cache memory utilization.
-   */
-  virtual size_t objectSize() const override {
-    return sizeof(CacheableArrayType) +
-           serializer::objectSize(m_value, m_length);
-  }
-};
-
 /** Template class for container Cacheable types. */
 template <typename TBase, int8_t TYPEID>
 class CacheableContainerType : public Cacheable, public TBase {
@@ -350,58 +234,6 @@ class CacheableContainerType : public Cacheable, public TBase {
     return k::create(value);                                            \
   }
 
-#define _GEODE_CACHEABLE_ARRAY_TYPE_DEF_(p, c)                         \
-  template class _GEODE_EXPORT CacheableArrayType<p, GeodeTypeIds::c>; \
-  typedef CacheableArrayType<p, GeodeTypeIds::c> _##c;
-
-// use a class instead of typedef for bug #283
-#define _GEODE_CACHEABLE_ARRAY_TYPE_(p, c)                                    \
-  class _GEODE_EXPORT c : public CacheableArrayType<p, GeodeTypeIds::c> {     \
-   protected:                                                                 \
-    inline c() : _##c() {}                                                    \
-    inline c(int32_t length) : _##c(length) {}                                \
-    inline c(p* value, int32_t length) : _##c(value, length) {}               \
-    inline c(const p* value, int32_t length, bool copy)                       \
-        : _##c(value, length, true) {}                                        \
-                                                                              \
-   private:                                                                   \
-    /* Private to disable copy constructor and assignment operator. */        \
-    c(const c& other);                                                        \
-    c& operator=(const c& other);                                             \
-                                                                              \
-    _GEODE_FRIEND_STD_SHARED_PTR(c)                                           \
-                                                                              \
-   public:                                                                    \
-    /** Factory function registered with serialization registry. */           \
-    static std::shared_ptr<Serializable> createDeserializable() {             \
-      return std::make_shared<c>();                                           \
-    }                                                                         \
-    /** Factory function to create a new default instance. */                 \
-    inline static std::shared_ptr<c> create() {                               \
-      return std::make_shared<c>();                                           \
-    }                                                                         \
-    /** Factory function to create a cacheable array of given size. */        \
-    inline static std::shared_ptr<c> create(int32_t length) {                 \
-      return std::make_shared<c>(length);                                     \
-    }                                                                         \
-    /** Create a cacheable array copying from the given array. */             \
-    inline static std::shared_ptr<c> create(const p* value, int32_t length) { \
-      return nullptr == value ? nullptr                                       \
-                              : std::make_shared<c>(value, length, true);     \
-    }                                                                         \
-    /**                                                                       \
-     * Create a cacheable array taking ownership of the given array           \
-     * without creating a copy.                                               \
-     *                                                                        \
-     * Note that the application has to ensure that the given array is        \
-     * not deleted (apart from this class) and is allocated on the heap       \
-     * using the "new" operator.                                              \
-     */                                                                       \
-    inline static std::shared_ptr<c> createNoCopy(p* value, int32_t length) { \
-      return nullptr == value ? nullptr : std::make_shared<c>(value, length); \
-    }                                                                         \
-  };
-
 #define _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(p, c)                         \
   template class _GEODE_EXPORT CacheableContainerType<p, GeodeTypeIds::c>; \
   typedef CacheableContainerType<p, GeodeTypeIds::c> _##c;
@@ -490,32 +322,18 @@ _GEODE_CACHEABLE_KEY_TYPE_(char16_t, CacheableCharacter, 3);
 
 // Instantiations for array built-in Cacheables
 
-_GEODE_CACHEABLE_ARRAY_TYPE_DEF_(int8_t, CacheableBytes);
-/**
- * An immutable wrapper for byte arrays that can serve as
- * a distributable object for caching.
- */
-_GEODE_CACHEABLE_ARRAY_TYPE_(int8_t, CacheableBytes);
-
 template <typename T, GeodeTypeIds::IdValues GeodeTypeId>
 class _GEODE_EXPORT CacheableArray : public Cacheable {
- protected:
+protected:
 
-  inline T operator[](uint32_t index) const {
-    if (static_cast<int32_t>(index) >= m_value.size()) {
-      throw OutOfRangeException(
-          "CacheableArray::operator[]: Index out of range.");
-    }
-    return m_value[index];
-  }
+  inline CacheableArray() = default;
 
-  virtual void toData(DataOutput& output) const override {
-    apache::geode::client::serializer::writeArrayObject(output, m_value);
-  }
+  CacheableArray(const CacheableArray& other) = delete;
 
-  virtual void fromData(DataInput& input) override {
-    m_value = apache::geode::client::serializer::readArrayObject<T>(input);
-  }
+  CacheableArray& operator=(const CacheableArray& other) = delete;
+
+  template <typename TT>
+  CacheableArray(TT&& value) : m_value(std::forward<TT>(value)) {}
 
   virtual int32_t classId() const override { return 0; }
 
@@ -528,33 +346,62 @@ class _GEODE_EXPORT CacheableArray : public Cacheable {
         apache::geode::client::serializer::objectArraySize(m_value));
   }
 
- private:
-  CacheableArray(const CacheableArray& other) = delete;
-  CacheableArray& operator=(const CacheableArray& other) = delete;
+private:
+
+  _GEODE_FRIEND_STD_SHARED_PTR(CacheableArray)
+
   std::vector<T> m_value;
 
- public:
-  inline CacheableArray() {}
-  inline CacheableArray(int32_t length) : m_value(length) {}
-  inline CacheableArray(std::vector<T> value) : m_value(value) {}
+public:
 
-  inline const std::vector<T> value() const { return m_value; }
-  inline int32_t length() const { return m_value.size(); }
+  inline const std::vector<T>& value() const {
+    return m_value;
+  }
+
+  inline int32_t length() const {
+    return m_value.size();
+  }
+
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<CacheableArray<T, GeodeTypeId>>();
   }
+
   inline static std::shared_ptr<CacheableArray<T, GeodeTypeId>> create() {
     return std::make_shared<CacheableArray<T, GeodeTypeId>>();
   }
+
   inline static std::shared_ptr<CacheableArray<T, GeodeTypeId>> create(
-      int32_t length) {
-    return std::make_shared<CacheableArray<T, GeodeTypeId>>(length);
-  }
-  inline static std::shared_ptr<CacheableArray<T, GeodeTypeId>> create(
-      const std::vector<T> value) {
+      const std::vector<T>& value) {
     return std::make_shared<CacheableArray<T, GeodeTypeId>>(value);
   }
+
+  inline static std::shared_ptr<CacheableArray<T, GeodeTypeId>> create(
+      std::vector<T>&& value) {
+    return std::make_shared<CacheableArray<T, GeodeTypeId>>(std::move(value));
+  }
+
+  inline T operator[](uint32_t index) const {
+    if (static_cast<int32_t>(index) >= m_value.size()) {
+      throw OutOfRangeException(
+        "CacheableArray::operator[]: Index out of range.");
+    }
+    return m_value[index];
+  }
+
+  virtual void toData(DataOutput& output) const override {
+    apache::geode::client::serializer::writeArrayObject(output, m_value);
+  }
+
+  virtual void fromData(DataInput& input) override {
+    m_value = apache::geode::client::serializer::readArrayObject<T>(input);
+  }
 };
+
+/**
+* An immutable wrapper for byte arrays that can serve as
+* a distributable object for caching.
+*/
+using CacheableBytes = CacheableArray<int8_t, GeodeTypeIds::CacheableBytes>;
 
 /**
  * An immutable wrapper for array of booleans that can serve as
@@ -598,14 +445,11 @@ using CacheableInt32Array = CacheableArray<int32_t, GeodeTypeIds::CacheableInt32
  */
 using CacheableInt64Array = CacheableArray<int64_t, GeodeTypeIds::CacheableInt64Array>;
 
-_GEODE_CACHEABLE_ARRAY_TYPE_DEF_(std::shared_ptr<CacheableString>,
-                                 CacheableStringArray);
 /**
  * An immutable wrapper for array of strings that can serve as
  * a distributable object for caching.
  */
-_GEODE_CACHEABLE_ARRAY_TYPE_(std::shared_ptr<CacheableString>,
-                             CacheableStringArray);
+using CacheableStringArray = CacheableArray<std::shared_ptr<CacheableString>, GeodeTypeIds::CacheableStringArray>;
 
 // Instantiations for container types (Vector/HashMap/HashSet) Cacheables
 

@@ -43,7 +43,6 @@ class Cache;
 class CacheFactory;
 class PoolAttributes;
 class CacheImpl;
-class CacheableStringArray;
 class Properties;
 class QueryService;
 class RegionService;

@@ -29,7 +29,7 @@ BatchObject::BatchObject(int32_t anIndex, int32_t batchSize, int32_t size) {
   startTime.to_usec(tusec);
   timestamp = tusec * 1000;
   batch = anIndex / batchSize;
-  byteArray = CacheableBytes::create(size);
+  byteArray = CacheableBytes::create(std::vector<int8_t>(size));
 }
 
 void BatchObject::toData(apache::geode::client::DataOutput& output) const {

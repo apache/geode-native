@@ -91,7 +91,7 @@ DUNIT_TASK(CLIENT2, SetupClient2)
     regPtr->registerAllKeys();
     auto keyPtr = CacheableKey::create((const char*)"key01");
     auto valPtr =
-        CacheableBytes::create(reinterpret_cast<const int8_t*>("value01"), 7);
+      CacheableBytes::create(std::vector<int8_t>{'v','a','l','u','e','0','1'});
     regPtr->put(keyPtr, valPtr);
     ASSERT(regPtr->size() == 1, "size incorrect");
   }
@@ -112,7 +112,7 @@ DUNIT_TASK(CLIENT2, VerifyClear)
     ASSERT(regPtr->size() == 0, "size incorrect");
     auto keyPtr = CacheableKey::create((const char*)"key02");
     auto valPtr =
-        CacheableBytes::create(reinterpret_cast<const int8_t*>("value02"), 7);
+      CacheableBytes::create(std::vector<int8_t>{'v','a','l','u','e','0','2'});
     regPtr->put(keyPtr, valPtr);
     ASSERT(regPtr->size() == 1, "size incorrect");
     regPtr->localClear();

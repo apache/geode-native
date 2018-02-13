@@ -67,7 +67,7 @@ DUNIT_TASK(CLIENT1, puts)
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     auto keyPtr = CacheableKey::create("key01");
     auto valPtr =
-        CacheableBytes::create(reinterpret_cast<const int8_t*>("value01"), 7);
+      CacheableBytes::create(std::vector<int8_t>{'v','a','l','u','e','0','1'});
     regPtr->put(keyPtr, valPtr);
     ASSERT(regPtr->containsKeyOnServer(keyPtr), "key should be there");
   }

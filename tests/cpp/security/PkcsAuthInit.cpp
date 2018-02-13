@@ -202,8 +202,8 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
     LOGINFO(" Converting CREDS to STRING: %s",
             signatureValPtr->toString().c_str());
   } else {
-    signatureValPtr = CacheableBytes::createNoCopy(
-        reinterpret_cast<int8_t*>(signatureData), lengthEncryptedData);
+    signatureValPtr = CacheableBytes::create(
+        std::vector<int8_t>(signatureData, signatureData + lengthEncryptedData));
     LOGINFO(" Converting CREDS to BYTES: %s",
             signatureValPtr->toString().c_str());
   }
