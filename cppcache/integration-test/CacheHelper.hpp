@@ -183,13 +183,8 @@ class CacheHelper {
       const std::chrono::seconds& rit = std::chrono::seconds::zero(),
       int lel = 0, ExpirationAction action = ExpirationAction::DESTROY);
 
-  void addServerLocatorEPs(const char* epList,
-                           PoolFactory pfPtr,
-                           bool poolLocators = true);
-
-  void addServerLocatorEPs(const char* epList,
-                           std::shared_ptr<CacheFactory> cacheFac,
-                           bool poolLocators = true);
+  static void addServerLocatorEPs(const char* epList, PoolFactory& pfPtr,
+                                  bool poolLocators = true);
 
   std::shared_ptr<Region> createPooledRegion(
       const char* name, bool ack, const char* locators = 0,
@@ -350,7 +345,8 @@ class CacheHelper {
   // starting locator
   static void initLocator(int instance, bool ssl = false, bool multiDS = false,
                           int dsId = -1, int remoteLocator = 0,
-                          bool untrustedCert = false, bool useSecurityManager = false);
+                          bool untrustedCert = false,
+                          bool useSecurityManager = false);
 
   static void clearSecProp();
 
@@ -369,12 +365,10 @@ class CacheHelper {
   static int staticMcastAddress;
 
  private:
-  static std::string generateGeodeProperties(const std::string& path,
-                                             const bool ssl = false,
-                                             const int dsId = -1,
-                                             const int remoteLocator = 0,
-                                             const bool untrustedCert = false,
-                                             const bool useSecurityManager = false);
+  static std::string generateGeodeProperties(
+      const std::string& path, const bool ssl = false, const int dsId = -1,
+      const int remoteLocator = 0, const bool untrustedCert = false,
+      const bool useSecurityManager = false);
 };
 
 #ifndef test_cppcache_utils_static

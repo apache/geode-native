@@ -595,23 +595,19 @@ std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool2(
   return regionFactory.create(name);
 }
 
-void CacheHelper::addServerLocatorEPs(const char* epList,
-                                     PoolFactory pf,
+void CacheHelper::addServerLocatorEPs(const char* epList, PoolFactory& pf,
                                       bool poolLocators) {
   std::unordered_set<std::string> endpointNames;
   Utils::parseEndpointNamesString(epList, endpointNames);
-  for (std::unordered_set<std::string>::iterator iter = endpointNames.begin();
-       iter != endpointNames.end(); ++iter) {
-    size_t position = (*iter).find_first_of(":");
+  for (const auto& endpointName : endpointNames) {
+    auto position = endpointName.find_first_of(":");
     if (position != std::string::npos) {
-      std::string hostname = (*iter).substr(0, position);
-      int portnumber = atoi(((*iter).substr(position + 1)).c_str());
+      auto hostname = endpointName.substr(0, position);
+      auto portnumber = std::stoi(endpointName.substr(position + 1));
       if (poolLocators) {
-        LOG((*iter));
-
-        pf.addLocator(hostname.c_str(), portnumber);
+        pf.addLocator(hostname, portnumber);
       } else {
-        pf.addServer(hostname.c_str(), portnumber);
+        pf.addServer(hostname, portnumber);
       }
     }
   }
