@@ -840,7 +840,7 @@ class CacheableBytesWrapper : public CacheableWrapper {
     auto randArr =
         CacheableHelper::randomArray<uint8_t>(maxSize, UCHAR_MAX);
     m_cacheableObject = CacheableBytes::create(
-        std::vector<int8_t>(randArr.data(), randArr.data() + maxSize));
+        std::vector<int8_t>(std::begin(randArr), std::end(randArr)));
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {

@@ -366,18 +366,18 @@ public:
     return std::make_shared<CacheableArray<T, GeodeTypeId>>();
   }
 
-  static std::shared_ptr<CacheableArray<T, GeodeTypeId>> create() {
+  inline static std::shared_ptr<CacheableArray<T, GeodeTypeId>> create() {
     return std::make_shared<CacheableArray<T, GeodeTypeId>>();
   }
 
-  static std::shared_ptr<CacheableArray<T, GeodeTypeId>> create(
+  inline static std::shared_ptr<CacheableArray<T, GeodeTypeId>> create(
       const std::vector<T>& value) {
     return std::make_shared<CacheableArray<T, GeodeTypeId>>(value);
   }
 
-  static std::shared_ptr<CacheableArray<T, GeodeTypeId>> create(
-	  std::vector<T>&& value) {
-	  return std::make_shared<CacheableArray<T, GeodeTypeId>>(std::move(value));
+  inline static std::shared_ptr<CacheableArray<T, GeodeTypeId>> create(
+      std::vector<T>&& value) {
+    return std::make_shared<CacheableArray<T, GeodeTypeId>>(std::move(value));
   }
 
   inline T operator[](uint32_t index) const {
@@ -389,11 +389,11 @@ public:
   }
 
   virtual void toData(DataOutput& output) const override {
-	  apache::geode::client::serializer::writeArrayObject(output, m_value);
+    apache::geode::client::serializer::writeArrayObject(output, m_value);
   }
 
   virtual void fromData(DataInput& input) override {
-	  m_value = apache::geode::client::serializer::readArrayObject<T>(input);
+    m_value = apache::geode::client::serializer::readArrayObject<T>(input);
   }
 };
 
