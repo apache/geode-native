@@ -19,31 +19,34 @@
     $ cd <clone>
     $ mkdir build
     $ cd build
-    $ cmake ..
-    $ cmake --build . -- <optional parallelism parameters>
+    $ cmake .. <platform-specific generator parameters (see below)>
+    $ cmake --build . -- <platform-specific parallelism parameters (see below)>
 
-**For faster builds, use optional parallelism parameters in the last step:**
+### Generator
+CMake uses a "generator" to produce configuration files for use by a variety of build tools, e.g., UNIX makefiles, Visual Studio projects. By default a system-specific generator is used by CMake during configuration. (Please see [the CMake documentation](https://cmake.org/documentation/) for further information.) However, in many cases there is a better choice.
 
-**Unix**
+#### Mac OS X
+The recommended generator on Mac OS X is `Xcode`:
+
+	$ cmake .. -G "Xcode"
+
+#### Windows
+When running cmake commands on Windows, be sure to use [Visual Studio Native Tools Command Prompt](https://msdn.microsoft.com/en-us/library/f35ctcxw.aspx) so environment variables are set properly.
+
+The recommended generator on Windows is `Visual Studio 14 2015 Win64`:
+
+	$ cmake .. -G "Visual Studio 14 2015 Win64" -Thost=x64
+
+### Build Parallelism
+For faster builds, use optional parallelism parameters in the last build step:
+
+#### Unix
 
 	$ cmake --build . -- -j <# of jobs>
 
-**Windows**
+#### Windows
 
 	$ cmake --build . -- /m
-
-## Generator
-CMake uses a "generator" to produce configuration files for use by a variety of build tools, e.g., UNIX makefiles, Visual Studio projects. By default a system-specific generator is used by CMake during configuration. (Please see [the CMake documentation](https://cmake.org/documentation/) for further information.) However, in many cases there is a better choice.
-
-### Mac OS X Generator
-The recommended generator on Mac OS X is `Xcode`:
-
-	$ cmake -G "Xcode" ..
-
-### Windows Generator
-The recommended generator on Windows is `Visual Studio 14 2015 Win64`:
-
-	$ cmake -G "Visual Studio 14 2015 Win64" ..
 
 ## Installing
 By default a system-specific location is used by CMake as the destination of the `install` target, e.g., `/usr/local` on UNIX system. To explicitly specify the location in which the Native Client will be installed, add `-DCMAKE_INSTALL_PREFIX=/path/to/installation/destination` to the _initial_ `cmake` execution command.
@@ -62,10 +65,10 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 
 ## Mac OS X
 * Mac OS X 10.12 (Sierra) or newer
-* XCode 8.2 or newer
+* Xcode 8.2 or newer
 
 ### Required Tools
-* [XCode](https://developer.apple.com/xcode/download/)
+* [Xcode](https://developer.apple.com/xcode/download/)
 * Xcode command line developer tools
 
     `$ xcode-select --install`
@@ -84,6 +87,8 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 ### Required Tools
 * [Visual Studio 2015](https://www.visualstudio.com) or newer
 * .NET 4.5.2 or later
+* NUnit 2.6.4
+* activeperl
 * patch.exe (available as part of GnuWin)
 
 ## Linux
