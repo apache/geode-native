@@ -31,14 +31,11 @@
 #include "ProcessStats.hpp"
 #include "StatisticsFactory.hpp"
 #include "OsStatisticsImpl.hpp"
-#include "LinuxProcessStats.hpp"
-#include "SolarisProcessStats.hpp"
 #include "StatsDef.hpp"
 #include "HostStatHelperWin.hpp"
 #include "HostStatHelperLinux.hpp"
 #include "HostStatHelperSolaris.hpp"
 #include "HostStatHelperNull.hpp"
-#include "WindowsProcessStats.hpp"
 #include "NullProcessStats.hpp"
 
 // TODO refactor - conditionally include os specific impl headers.
@@ -49,6 +46,9 @@
 namespace apache {
 namespace geode {
 namespace statistics {
+
+class GeodeStatisticsFactory;
+
 /**
  * Provides native methods which fetch operating system statistics.
  * accessed by calling {@link #getInstance()}.
