@@ -1,6 +1,7 @@
-﻿# Cache Example
+﻿# PutGetRemove Example
 This is a very simple example showing how to create a `Cache` using the `CacheFactory`,
 configure a `Pool` with a `PoolFactory`, and configure a `Region` with a `RegionFactory`.
+We then put, get, and remove some primitive data in the region.
 
 ## Prerequisites
 * Install [Apache Geode](https://geode.apache.org)
@@ -13,7 +14,7 @@ configure a `Pool` with a `PoolFactory`, and configure a `Region` with a `Region
   gfsh>start server --name=server
   gfsh>create region --name=region --type=PARTITION
   ```
-* Execute `Apache.Geode.Examples.Cache.exe`.
+* Execute `Apache.Geode.Examples.PutGetRemove.exe`.
   
   output:
   ```
