@@ -12,12 +12,16 @@ We then put, get, and remove some primitive data in the region.
   ```
   gfsh>start locator --name=locator
   gfsh>start server --name=server
-  gfsh>create region --name=region --type=PARTITION
+  gfsh>create region --name=example_userinfo --type=PARTITION
   ```
 * Execute `Apache.Geode.Examples.PutGetRemove.exe`.
   
   output:
   ```
-  a = 1
-  b = 2
+  Storing id and username in the region
+  Getting the user info from the region
+  rtimmons = Robert Timmons
+  scharles = Sylvia Charles
+  Removing rtimmons info from the region
+  Info for rtimmons has been deleted
   ```
