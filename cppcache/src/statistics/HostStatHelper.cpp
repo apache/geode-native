@@ -58,13 +58,7 @@ void HostStatHelper::initOSCode() {
 
 void HostStatHelper::refresh() {
   if (processStats != nullptr) {
-#if defined(_SOLARIS)
-    HostStatHelperSolaris::refreshProcess(processStats);
-#elif defined(_LINUX)
-    HostStatHelperLinux::refreshProcess(processStats);
-#else
     HostStatHelperNull::refreshProcess(processStats);
-#endif
   }
 }
 
@@ -73,24 +67,7 @@ void HostStatHelper::newProcessStats(GeodeStatisticsFactory* statisticsFactory,
   // Init OsCode
   initOSCode();
 
-  // Create processStats , Internally they will create own stats
-  switch (osCode) {
-    case GFS_OSTYPE_SOLARIS:
-      processStats = new SolarisProcessStats(statisticsFactory, pid, name);
-      break;
-    case GFS_OSTYPE_LINUX:
-      processStats = new LinuxProcessStats(statisticsFactory, pid, name);
-      break;
-    case GFS_OSTYPE_WINDOWS:
-      processStats = new WindowsProcessStats(statisticsFactory, pid, name);
-      break;
-    case GFS_OSTYPE_MACOSX:
-      processStats = new NullProcessStats(pid, name);
-      break;
-    default:
-      throw IllegalArgumentException(
-          "HostStatHelper::newProcess:unhandled osCodem");
-  }
+  processStats = new NullProcessStats(pid, name);
   GF_D_ASSERT(processStats != nullptr);
 }
 
@@ -101,9 +78,6 @@ void HostStatHelper::close() {
 }
 
 void HostStatHelper::cleanup() {
-#if defined(_SOLARIS)
-  HostStatHelperSolaris::closeHostStatHelperSolaris();  // close kstats
-#endif
   if (processStats) {
     delete processStats;
     processStats = nullptr;
