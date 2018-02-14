@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apache.Geode.Examples.Cache", "Apache.Geode.Examples.Cache\Apache.Geode.Examples.Cache.csproj", "{15ACFB5B-0D2C-4C38-9236-7AF01874A84F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apache.Geode.Examples.PutGetRemove", "Apache.Geode.Examples.PutGetRemove\Apache.Geode.Examples.PutGetRemove.csproj", "{15ACFB5B-0D2C-4C38-9236-7AF01874A84F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apache.Geode.Examples.AuthInitialize", "Apache.Geode.Examples.AuthInitialize\Apache.Geode.Examples.AuthInitialize.csproj", "{047FC72E-F06D-4F3A-9EF3-B66FAE4B6C36}"
 EndProject
