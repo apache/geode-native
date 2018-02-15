@@ -87,9 +87,8 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 ### Required Tools
 * [Visual Studio 2015](https://www.visualstudio.com) or newer
 * .NET 4.5.2 or later
-* NUnit 2.6.4
-* activeperl
-* patch.exe (available as part of GnuWin)
+* Chocolately
+* [Other dependencies installed via Powershell](packer/windows/install-dependencies.ps1)
 
 ## Linux
 * RHEL/CentOS 6
