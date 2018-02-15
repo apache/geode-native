@@ -37,5 +37,5 @@ else
 
 if ($GFSH_PATH -ne "")
 {
-   Invoke-Expression "$GFSH_PATH -e 'start locator --name=locator --dir=$PSScriptRoot' -e 'start server --name=server --dir=$PSScriptRoot' -e 'create region --name=example_userinfo --type=PARTITION'"
+   Invoke-Expression "$GFSH_PATH -e 'start locator --name=locator --dir=$PSScriptRoot\locator' -e 'start server --name=server --dir=$PSScriptRoot\server' -e 'create region --name=example_userinfo --type=PARTITION'"
 }
