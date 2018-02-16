@@ -57,7 +57,6 @@ char* exFuncNamePdxType = (char*)"PdxFunctionTest";
 char* FEOnRegionPrSHOP = (char*)"FEOnRegionPrSHOP";
 char* FEOnRegionPrSHOP_OptimizeForWrite =
     (char*)"FEOnRegionPrSHOP_OptimizeForWrite";
-char* FETimeOut = (char*)"FunctionExecutionTimeOut";
 
 #define verifyGetResults()                                                     \
   bool found = false;                                                          \

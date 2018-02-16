@@ -34,7 +34,7 @@ import org.apache.geode.internal.cache.PartitionedRegion;
 import org.apache.geode.internal.cache.GemFireCacheImpl;
 import org.apache.geode.internal.cache.CacheServerImpl;
 
-import org.apache.geode.internal.cache.tier.ClientHandShake;
+import org.apache.geode.internal.cache.tier.ServerSideHandshake;
 import org.apache.geode.internal.cache.tier.sockets.AcceptorImpl;
 import org.apache.geode.internal.cache.tier.sockets.ServerConnection;
 import org.apache.geode.LogWriter;
@@ -54,11 +54,11 @@ public class FunctionExecutionTimeOut extends FunctionAdapter implements
     AcceptorImpl acceptor = ((CacheServerImpl) cache.getCacheServers().get(0)).getAcceptor();
     ServerConnection[] scs = acceptor.getAllServerConnectionList();
     for (int i = 0; i < scs.length; ++i) {
-      ClientHandShake hs = scs[i].getHandshake();
-	  if (hs != null) {
-	    logger.info("hs.getClientReadTimeout() =  " + hs.getClientReadTimeout());
+      ServerSideHandshake handshake = scs[i].getHandshake();
+	  if (handshake != null) {
+	    logger.info("handshake.getClientReadTimeout() =  " + handshake.getClientReadTimeout());
 	  }
-      if (hs != null && expected == hs.getClientReadTimeout()) {
+      if (handshake != null && expected == handshake.getClientReadTimeout()) {
         // success
 		timeoutFound = true;
 		break;
