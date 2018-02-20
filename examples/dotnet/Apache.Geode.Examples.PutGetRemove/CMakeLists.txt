@@ -20,10 +20,16 @@ project(PutGetRemove CSharp)
 add_executable(${PROJECT_NAME} 
     Program.cs)
 
+message(STATUS "output dir is ${RUNTIME_OUTPUT_DIRECTORY}")
+message(STATUS "project binary dir: ${PROJECT_BINARY_DIR}")
+
+message(STATUS "current source dir is ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "Attempting to link to ${CMAKE_CURRENT_SOURCE_DIR}/../../../build/clicache/src/Debug/Apache.Geode.dll")
+
 target_link_libraries(${PROJECT_NAME}
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../bin/Pivotal.Gemfire.dll)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../build/clicache/src/Debug/Apache.Geode.dll)
 
 set_property(TARGET PutGetRemove PROPERTY VS_DOTNET_REFERENCES
     "System"
-    "Pivotal.Gemfire")
+    "${CMAKE_CURRENT_SOURCE_DIR}\\..\\..\\..\\build\\clicache\\src\\Debug\\Apache.Geode.dll")
     
