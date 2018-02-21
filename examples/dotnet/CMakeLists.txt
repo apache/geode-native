@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 cmake_minimum_required(VERSION 3.4)
-project(examples)
 
-include(cmake/FindGeodeAssembly.cmake)
+project(Apache.Geode.Examples)
 
 add_subdirectory(Apache.Geode.Examples.PutGetRemove)
