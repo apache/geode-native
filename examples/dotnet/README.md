@@ -12,9 +12,10 @@
 ## Using
 1) Use cmake to generate the .sln and .vcxproj files for the Examples
 ```
-	cd examples\dotnet
-	mkdir build
-	cmake .. -G"Visual Studio 14 2015 Win64" -DGEODE_ASSEMBLY=C:\path\to\Apache.Geode.dll -Thost=x64
+    cd examples\dotnet
+    mkdir build
+    cd build
+    cmake .. -G"Visual Studio 14 2015 Win64" -DGEODE_ASSEMBLY=C:\path\to\Apache.Geode.dll -Thost=x64
 ```
 2) Open `Apache.Geode.Examples.sln` in [Visual Studio 2015](https://www.visualstudio.com/)
 or newer.
