@@ -27,9 +27,9 @@ message(STATUS "current source dir is ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "Attempting to link to ${CMAKE_CURRENT_SOURCE_DIR}/../../../build/clicache/src/Debug/Apache.Geode.dll")
 
 target_link_libraries(${PROJECT_NAME}
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../build/clicache/src/Debug/Apache.Geode.dll)
+	${GEODE_ASSEMBLY})
 
 set_property(TARGET PutGetRemove PROPERTY VS_DOTNET_REFERENCES
     "System"
-    "${CMAKE_CURRENT_SOURCE_DIR}\\..\\..\\..\\build\\clicache\\src\\Debug\\Apache.Geode.dll")
+    "${GEODE_ASSEMBLY}")
     
