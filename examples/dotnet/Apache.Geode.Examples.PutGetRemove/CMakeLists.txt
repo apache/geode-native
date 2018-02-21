@@ -17,6 +17,12 @@ cmake_minimum_required(VERSION 3.8.2)
 
 project(PutGetRemove CSharp)
 
+message(STATUS "Assembly is ${GEODE_ASSEMBLY}")
+
+if ("${GEODE_ASSEMBLY}" STREQUAL "")
+	message(FATAL_ERROR "GEODE_ASSEMBLY not set, examples will not build without it")
+endif()
+
 add_executable(${PROJECT_NAME} 
     Program.cs)
 
