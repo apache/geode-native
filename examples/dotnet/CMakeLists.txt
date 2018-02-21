@@ -15,4 +15,6 @@
 cmake_minimum_required(VERSION 3.4)
 project(examples)
 
+include(cmake/FindGeodeAssembly.cmake)
+
 add_subdirectory(Apache.Geode.Examples.PutGetRemove)
