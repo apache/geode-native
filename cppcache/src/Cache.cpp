@@ -17,7 +17,6 @@
 
 #include <memory>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/FunctionService.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/DistributedSystem.hpp>
