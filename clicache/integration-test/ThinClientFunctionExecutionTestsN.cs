@@ -129,7 +129,6 @@ namespace Apache.Geode.Client.UnitTests
     private static string FEOnRegionPrSHOP_OptimizeForWrite = "FEOnRegionPrSHOP_OptimizeForWrite";
     private static string putFuncName = "MultiPutFunction";
     private static string putFuncIName = "MultiPutFunctionI";
-    private static string FuncTimeOutName = "FunctionExecutionTimeOut";
 
     #endregion
 
@@ -953,60 +952,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public void ExecuteFETimeOut()
-    {
-      Region region = CacheHelper.GetVerifyRegion<object, object>(QERegionName);
-      for (int i = 0; i < 230; i++)
-      {
-        region[i] = "VALUE--" + i;
-      }
-
-      object args = 5000 * 1000;
-
-      Execution<object> exc = Client.FunctionService<object>.OnRegion<object, object>(region);
-      for (int k = 0; k < 210; k++)
-      {
-        int j = 0;
-        Object[] filter = new Object[20];
-        for (int i = k; i < k + 20; i++)
-        {
-          filter[j] = i;
-          j++;
-        }
-        Util.Log("filter count= {0}.", filter.Length);
-
-        IResultCollector<object> rc = exc.WithArgs<Object>(args).WithFilter<object>(filter).Execute(FuncTimeOutName, TimeSpan.FromSeconds(5000));
-        ICollection<object> FunctionResult = rc.GetResult();
-        Util.Log("ExecuteFETimeOut onRegion FunctionResult.Count = {0} ", FunctionResult.Count);        
-        Assert.AreEqual(true, FunctionResult.Any(), "ExecuteFETimeOut item never true");
-        Util.Log("ExecuteFETimeOut onRegion Done");
-      }
-
-      Pool pool = CacheHelper.DCache.GetPoolManager().Find(poolName);
-      Execution<object> excs = Client.FunctionService<object>.OnServer(pool);
-      IResultCollector<object> rcs = excs.WithArgs<Object>(args).Execute(FuncTimeOutName, TimeSpan.FromSeconds(5000));
-      ICollection<object> ServerFunctionResult = rcs.GetResult();
-      Util.Log("ExecuteFETimeOut onServer FunctionResult.Count = {0} ", ServerFunctionResult.Count);
-      foreach (Boolean item in ServerFunctionResult)
-      {
-        Util.Log("on server:ExecuteFETimeOut:= {0}.", item);
-        Assert.AreEqual(true, item, "ExecuteFETimeOut item not true");
-      }
-      Util.Log("ExecuteFETimeOut onServer Done");
-
-
-      Execution<object> excss = Client.FunctionService<object>.OnServers(pool);
-      IResultCollector<object> rcss = excss.WithArgs<Object>(args).Execute(FuncTimeOutName, TimeSpan.FromSeconds(5000));
-      ICollection<object> ServerFunctionResults = rcss.GetResult();
-      Util.Log("ExecuteFETimeOut onServer FunctionResult.Count = {0} ", ServerFunctionResults.Count);
-      foreach (Boolean item in ServerFunctionResults)
-      {
-        Util.Log("on servers:ExecuteFETimeOut:= {0}.", item);
-        Assert.AreEqual(true, item, "ExecuteFETimeOut item not true");
-      }
-      Util.Log("ExecuteFETimeOut onServers Done");        
-    }
-
     public void ExecuteFEOnRegionMultiFilterKeyStepTwo()
     {
       Region region = CacheHelper.GetVerifyRegion<object, object>(QERegionName);
@@ -1554,44 +1499,6 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.ClearLocators();
     }
 
-    void runExecuteFunctionTimeOut(bool singleHop)
-    {
-      CacheHelper.SetupJavaServers(true, "func_cacheserver1_pool.xml",
-      "func_cacheserver2_pool.xml", "func_cacheserver3_pool.xml");
-      CacheHelper.StartJavaLocator(1, "GFELOC");
-      Util.Log("Locator 1 started.");
-      CacheHelper.StartJavaServerWithLocators(1, "GFECS1", 1);
-      Util.Log("Cacheserver 1 started.");
-      CacheHelper.StartJavaServerWithLocators(2, "GFECS2", 1);
-      Util.Log("Cacheserver 2 started.");
-      CacheHelper.StartJavaServerWithLocators(3, "GFECS3", 1);
-      Util.Log("Cacheserver 3 started.");
-
-      m_client1.Call(createPool, poolName, CacheHelper.Locators, serverGroup, 1, true, singleHop, /*threadLocal*/false);
-      m_client1.Call(createRegionAndAttachPool, QERegionName, poolName);
-      Util.Log("Client 1 (pool locator) regions created");
-
-      m_client1.Call(ExecuteFETimeOut);      
-
-      m_client1.Call(Close);
-      Util.Log("Client 1 closed");
-
-      CacheHelper.StopJavaServer(1);
-      Util.Log("Cacheserver 1 stopped.");
-
-      CacheHelper.StopJavaServer(2);
-      Util.Log("Cacheserver 2 stopped.");
-
-      CacheHelper.StopJavaServer(3);
-      Util.Log("Cacheserver 3 stopped.");
-
-      CacheHelper.StopJavaLocator(1);
-      Util.Log("Locator 1 stopped.");
-
-      CacheHelper.ClearEndpoints();
-      CacheHelper.ClearLocators();
-    }
-
     void runFEOnRegionTx(bool singleHop)
     {
       CacheHelper.SetupJavaServers(true, "func_cacheserver1_pool.xml");
@@ -1820,18 +1727,6 @@ namespace Apache.Geode.Client.UnitTests
     public void ExecuteFunctionOnRegionMultiFilterKeySingleHop()
     {
       runExecuteFunctionOnRegionMultiFilterKey(true);
-    }
-
-    [Test]
-    public void ExecuteFunctionTimeOut()
-    {
-      runExecuteFunctionTimeOut(false);
-    }
-
-    [Test]
-    public void ExecuteFunctionTimeOutSingleHop()
-    {
-      runExecuteFunctionTimeOut(true);
     }
 
     [Test]
