@@ -18,7 +18,7 @@
 using System;
 using Apache.Geode.Client;
 
-namespace Apache.Geode.Examples.Cache
+namespace Apache.Geode.Examples.PutGetRemove
 {
     class Program
     {
