@@ -59,13 +59,13 @@ namespace Apache.Geode.Client.UnitTests
 
     public void CreateRegionWithTallyLoader(ScopeType scope)
     {
-      AttributesFactory af = new AttributesFactory();
-      af.SetCacheLoader(m_ldr);
-      af.SetScope(scope);
-      af.SetCachingEnabled(true);
+      RegionAttributesFactory regionAttributesFactory = new RegionAttributesFactory();
+      regionAttributesFactory.SetCacheLoader(m_ldr);
+      regionAttributesFactory.SetScope(scope);
+      regionAttributesFactory.SetCachingEnabled(true);
     
       m_region = CacheHelper.CreateRegion(TestRegion,
-        af.CreateRegionAttributes());
+        regionAttributesFactory.CreateRegionAttributes());
     }
 
     public void CreateRegionAndGetNEntries(int num)
@@ -89,10 +89,10 @@ namespace Apache.Geode.Client.UnitTests
 
     public void RegionThreeLoadEntries(int num)
     {
-      AttributesFactory af = new AttributesFactory();
-      af.SetScope(ScopeType.Local);
-      af.SetCacheLoader(m_ldr);
-      m_region = CacheHelper.CreateRegion(TestRegion, af.CreateRegionAttributes());
+      RegionAttributesFactory regionAttributesFactory = new RegionAttributesFactory();
+      regionAttributesFactory.SetScope(ScopeType.Local);
+      regionAttributesFactory.SetCacheLoader(m_ldr);
+      m_region = CacheHelper.CreateRegion(TestRegion, regionAttributesFactory.CreateRegionAttributes());
       m_ldr.Reset();
       Thread.Sleep(100);
       DoGets(m_region, num);
@@ -103,13 +103,13 @@ namespace Apache.Geode.Client.UnitTests
 
     public void CreateRegionWithTallyWriter(ScopeType scope)
     {
-      AttributesFactory af = new AttributesFactory();
-      af.SetCacheWriter(m_lwr);
-      af.SetScope(scope);
-      af.SetCachingEnabled(true);
+      RegionAttributesFactory regionAttributesFactory = new RegionAttributesFactory();
+      regionAttributesFactory.SetCacheWriter(m_lwr);
+      regionAttributesFactory.SetScope(scope);
+      regionAttributesFactory.SetCachingEnabled(true);
   
       m_netWriteRegion = CacheHelper.CreateRegion(TestRegionWrite,
-        af.CreateRegionAttributes());
+        regionAttributesFactory.CreateRegionAttributes());
     }
 
     public void RegionTwoCreateEntries(int num)

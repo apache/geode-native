@@ -60,7 +60,7 @@ namespace Apache
       /// implementation may choose to hand off the event to a thread pool that then processes
       /// the event on its thread rather than the listener thread
       /// </remarks>
-      /// <seealso cref="AttributesFactory.SetCacheListener" />
+      /// <seealso cref="RegionAttributesFactory.SetCacheListener" />
       /// <seealso cref="RegionAttributes.CacheListener" />
       /// <seealso cref="ICacheLoader" />
       /// <seealso cref="ICacheWriter" />

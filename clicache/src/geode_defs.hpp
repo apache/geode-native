@@ -55,8 +55,8 @@
 /// @file geode_includes.hpp
 /// Provides a commonly-used set of include directives.
 
-/// @file AttributesFactory.hpp
-/// Declares the AttributesFactory class.
+/// @file RegionAttributesFactory.hpp
+/// Declares the RegionAttributesFactory class.
 
 /// @file AttributesMutator.hpp
 /// Declares the AttributesMutator class.
@@ -64,8 +64,8 @@
 /// @file CacheAttributes.hpp
 /// Declares the CacheAttributes class.
 
-/// @file CacheAttributesFactory.hpp
-/// Declares the CacheAttributesFactory class.
+/// @file CacheRegionAttributesFactory.hpp
+/// Declares the CacheRegionAttributesFactory class.
 
 /// @file CacheableBuiltins.hpp
 /// Declares the CacheableBuiltinKey and CacheableBuiltinArray

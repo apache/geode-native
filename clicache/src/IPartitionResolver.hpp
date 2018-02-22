@@ -70,7 +70,7 @@ namespace Apache
       /// In the example above, all trade entries with the same month and year are
       /// guaranteed to be colocated.
       /// </remarks>
-      /// <seealso cref="AttributesFactory.SetPartitionResolver" />
+      /// <seealso cref="RegionAttributesFactory.SetPartitionResolver" />
       /// <seealso cref="RegionAttributes.PartitionResolver" />
       generic<class TKey, class TValue>
       public interface class IPartitionResolver

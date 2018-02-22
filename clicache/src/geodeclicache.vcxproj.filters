@@ -613,7 +613,7 @@ limitations under the License.
     <ClInclude Include="com\vmware\CacheAttributesMN.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="com\vmware\AttributesFactoryMN.hpp">
+    <ClInclude Include="com\vmware\RegionAttributesFactoryMN.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="com\vmware\AttributesMutatorMN.hpp">
@@ -1062,7 +1062,7 @@ limitations under the License.
     <ClCompile Include="com\vmware\CacheAttributesMN.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="com\vmware\AttributesFactoryMN.cpp">
+    <ClCompile Include="com\vmware\RegionAttributesFactoryMN.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="com\vmware\AttributesMutatorMN.cpp">

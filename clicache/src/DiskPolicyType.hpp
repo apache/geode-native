@@ -54,7 +54,7 @@ namespace Apache
       /// Static class containing convenience methods for <c>DiskPolicyType</c>.
       /// </summary>
       /// <seealso cref="RegionAttributes.DiskPolicy" />
-      /// <seealso cref="AttributesFactory.SetDiskPolicy" />
+      /// <seealso cref="RegionAttributesFactory.SetDiskPolicy" />
       public ref class DiskPolicy STATICCLASS
       {
       public:

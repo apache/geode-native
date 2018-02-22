@@ -244,36 +244,12 @@ namespace Apache.Geode.Client.UnitTests
     public void CreateRegion(string name, bool enableNotification, bool cloningEnabled)
     {
       Apache.Geode.Client.RegionAttributes<object, object> attrs;
-      AttributesFactory<object, object> attrFac = new AttributesFactory<object, object>();
-      attrFac.SetCacheListener(new SimpleCacheListener<object, object>());
-      attrFac.SetCloningEnabled(cloningEnabled);
-      attrs = attrFac.CreateRegionAttributes();
+      RegionAttributesFactory<object, object> regionAttributesFactory = new RegionAttributesFactory<object, object>();
+      regionAttributesFactory.SetCacheListener(new SimpleCacheListener<object, object>());
+      regionAttributesFactory.SetCloningEnabled(cloningEnabled);
+      attrs = regionAttributesFactory.CreateRegionAttributes();
       CacheHelper.CreateRegion<object, object>(name, attrs);
     }
-
-    //public void CreateOverflowRegion(string name, uint entriesLimit)
-    //{
-    //  AttributesFactory af = new AttributesFactory();
-    //  af.SetScope(ScopeType.DistributedAck);
-    //  af.SetCachingEnabled(true);
-    //  af.SetClientNotificationEnabled(true);
-    //  af.SetLruEntriesLimit(entriesLimit);// LRU Entry limit set to 3
-
-    //  af.SetDiskPolicy(DiskPolicyType.Overflows);
-    //  Properties bdbProperties = Properties.Create();
-    //  bdbProperties.Insert("CacheSizeGb", "0");
-    //  bdbProperties.Insert("CacheSizeMb", "512");
-    //  bdbProperties.Insert("PageSize", "65536");
-    //  bdbProperties.Insert("MaxFileSize", "512000000");
-    //  String wdPath = Directory.GetCurrentDirectory();
-    //  String absPersistenceDir = wdPath + "/absBDB";
-    //  String absEnvDir = wdPath + "/absBDBEnv";
-    //  bdbProperties.Insert("PersistenceDirectory", absPersistenceDir);
-    //  bdbProperties.Insert("EnvironmentDirectory", absEnvDir);
-    //  af.SetPersistenceManager("BDBImpl", "createBDBInstance", bdbProperties);
-
-    //  CacheHelper.CreateRegion(name, af.CreateRegionAttributes());
-    //}
 
     void DoPutWithDelta()
     {

@@ -46,7 +46,7 @@ namespace Apache
       /// <remarks>
       /// <para>
       /// It is required that the attributes be completely initialized using an
-      /// <see cref="AttributesFactory" /> before creating the region.
+      /// <see cref="RegionAttributesFactory" /> before creating the region.
       /// AttributesMutator can be applied to adjusting and tuning a subset of
       /// attributes that are modifiable at runtime.
       /// </para><para>
@@ -55,7 +55,7 @@ namespace Apache
       /// </remarks>
       /// <seealso cref="Region.AttributesMutator" />
       /// <seealso cref="RegionAttributes" />
-      /// <seealso cref="AttributesFactory" />
+      /// <seealso cref="RegionAttributesFactory" />
       generic<class TKey, class TValue>
       public ref class AttributesMutator sealed
       {

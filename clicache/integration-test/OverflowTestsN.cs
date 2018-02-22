@@ -129,15 +129,15 @@ namespace Apache.Geode.Client.UnitTests
 
     private IRegion<object, object> CreateSubRegion(IRegion<object, object> region, string subRegionName, string libraryName, string factoryFunctionName)
     {
-      AttributesFactory<object, object> attrsFact = new AttributesFactory<object, object>(region.Attributes);
+      RegionAttributesFactory<object, object> regionAttributesFactory = new RegionAttributesFactory<object, object>(region.Attributes);
       Properties<string, string> sqliteProperties = new Properties<string, string>();
       sqliteProperties.Insert("PageSize", "65536");
       sqliteProperties.Insert("MaxPageCount", "512000000");
       String sqlite_dir = "SqLiteDir" + Process.GetCurrentProcess().Id.ToString();
       sqliteProperties.Insert("PersistenceDirectory", sqlite_dir);
-      attrsFact.SetPersistenceManager(libraryName, factoryFunctionName, sqliteProperties);
+      regionAttributesFactory.SetPersistenceManager(libraryName, factoryFunctionName, sqliteProperties);
       IRegion<object, object> subRegion = region.CreateSubRegion(subRegionName,
-        attrsFact.CreateRegionAttributes());
+        regionAttributesFactory.CreateRegionAttributes());
       Assert.IsNotNull(subRegion, "Expected region to be non null");
       Assert.IsTrue(File.Exists(GetSqLiteFileName(sqlite_dir, subRegionName)), "Persistence file is not present");
       DoNput(subRegion, 50);

@@ -31,7 +31,7 @@ namespace Apache.Geode.Client.UnitTests
   [Category("group1")]
   [Category("unicast_only")]
   [Category("generics")]
-  public class AttributesFactoryTests : UnitTests
+  public class RegionAttributesFactoryTests : UnitTests
   {
 
     private UnitProcess m_client1, m_client2;
@@ -45,8 +45,8 @@ namespace Apache.Geode.Client.UnitTests
     [Test]
     public void fluentModeltest()
     {
-      AttributesFactory<string, string> af = new AttributesFactory<string, string>();
-      Apache.Geode.Client.RegionAttributes<string, string> rattrs = af.SetLruEntriesLimit(2).SetInitialCapacity(5).CreateRegionAttributes();
+      RegionAttributesFactory<string, string> regionAttributesFactory = new RegionAttributesFactory<string, string>();
+      Apache.Geode.Client.RegionAttributes<string, string> rattrs = regionAttributesFactory.SetLruEntriesLimit(2).SetInitialCapacity(5).CreateRegionAttributes();
       Assert.IsNotNull(rattrs);
       Assert.True(rattrs.LruEntriesLimit == 2);
       Assert.True(rattrs.InitialCapacity == 5);

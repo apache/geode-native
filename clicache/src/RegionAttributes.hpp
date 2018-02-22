@@ -56,14 +56,14 @@ namespace Apache
       /// and whether statistics are enabled for the region and its entries.
       ///
       /// To create an instance of this interface, use
-      /// <see cref="AttributesFactory.CreateRegionAttributes" />.
+      /// <see cref="RegionAttributesFactory.CreateRegionAttributes" />.
       ///
-      /// For compatibility rules and default values, see <see cref="AttributesFactory" />.
+      /// For compatibility rules and default values, see <see cref="RegionAttributesFactory" />.
       /// <para>
       /// Note that the <c>RegionAttributes</c> are not distributed with the region.
       /// </para>
       /// </remarks>
-      /// <seealso cref="AttributesFactory" />
+      /// <seealso cref="RegionAttributesFactory" />
       /// <seealso cref="AttributesMutator" />
       /// <seealso cref="Region.Attributes" />
       generic <class TKey, class TValue>
@@ -222,7 +222,7 @@ namespace Apache
         /// Returns the concurrency level of the entry's local cache.
         /// </summary>
         /// <returns>the concurrency level</returns>
-        /// <seealso cref="AttributesFactory" />
+        /// <seealso cref="RegionAttributesFactory" />
         property System::Int32 ConcurrencyLevel
         {
           System::Int32 get();
@@ -427,7 +427,7 @@ namespace Apache
         /// Returns the concurrency check enabled flag of the region
         /// </summary>
         /// <returns>the concurrency check enabled flag</returns>
-        /// <seealso cref="AttributesFactory" />
+        /// <seealso cref="RegionAttributesFactory" />
         property bool ConcurrencyChecksEnabled
         {
           bool get();

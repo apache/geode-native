@@ -816,10 +816,10 @@ namespace Apache.Geode.Client.UnitTests
     {
       Init();
       CreateCachingRegion<TKey, TValue>(rootName, true);
-      AttributesFactory<TKey, TValue> af = new AttributesFactory<TKey, TValue>();
-      af.SetLruEntriesLimit(0);
-      af.SetInitialCapacity(size);
-      Apache.Geode.Client.RegionAttributes<TKey, TValue> rattrs = af.CreateRegionAttributes();
+      RegionAttributesFactory<TKey, TValue> regionAttributesFactory = new RegionAttributesFactory<TKey, TValue>();
+      regionAttributesFactory.SetLruEntriesLimit(0);
+      regionAttributesFactory.SetInitialCapacity(size);
+      Apache.Geode.Client.RegionAttributes<TKey, TValue> rattrs = regionAttributesFactory.CreateRegionAttributes();
       IRegion<TKey, TValue> region = ((Region<TKey, TValue>)m_currRegion).CreateSubRegion(name, rattrs);
       Assert.IsNotNull(region, "SubRegion {0} was not created.", name);
       return region;
