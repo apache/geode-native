@@ -118,9 +118,9 @@ DUNIT_TASK(s2p2, CreateNormalRegion)
     regionPtr = getHelper()->createPooledRegion(
         "DistRegionAck", USE_ACK, locHostPort, "__TEST_POOL1__", true, true);
     getThread->setRegionFlag();
-    AttributesFactory af;
-   std::shared_ptr<RegionAttributes> rattrsPtr = af.createRegionAttributes();
-   getThread->setSubRegionFlag();
+    RegionAttributesFactory regionAttributesFactory;
+    std::shared_ptr<RegionAttributes> rattrsPtr = regionAttributesFactory.createRegionAttributes();
+    getThread->setSubRegionFlag();
    LOG("create normal region successful");
   }
 END_TASK(CreateNormalRegion)

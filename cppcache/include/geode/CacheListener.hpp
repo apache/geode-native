@@ -72,7 +72,7 @@ class RegionEvent;
  * first case where listeners are invoked only when the region update
  * operation succeeds.
  *
- * @see AttributesFactory::setCacheListener
+ * @see RegionAttributesFactory::setCacheListener
  * @see RegionAttributes::getCacheListener
  * @see CacheListenerException
  */

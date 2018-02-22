@@ -39,7 +39,7 @@ namespace client {
 RegionFactory::RegionFactory(RegionShortcut preDefinedRegion,
                              CacheImpl* cacheImpl)
     : m_preDefinedRegion(preDefinedRegion),
-      m_attributeFactory(std::make_shared<AttributesFactory>()),
+      m_attributeFactory(std::make_shared<RegionAttributesFactory>()),
       m_cacheImpl(cacheImpl) {
   setRegionShortcut();
 }

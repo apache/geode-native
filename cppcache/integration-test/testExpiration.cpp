@@ -81,14 +81,14 @@ void setExpTimes(
     const std::chrono::seconds& eit = std::chrono::seconds::zero(),
     const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
     const std::chrono::seconds& rit = std::chrono::seconds::zero()) {
-  AttributesFactory afact;
+  RegionAttributesFactory regionAttributesFactory;
 
-  afact.setEntryIdleTimeout(action, eit);
-  afact.setEntryTimeToLive(action, ettl);
-  afact.setRegionIdleTimeout(action, rit);
-  afact.setRegionTimeToLive(action, rttl);
+  regionAttributesFactory.setEntryIdleTimeout(action, eit);
+  regionAttributesFactory.setEntryTimeToLive(action, ettl);
+  regionAttributesFactory.setRegionIdleTimeout(action, rit);
+  regionAttributesFactory.setRegionTimeToLive(action, rttl);
 
-  attrs = afact.createRegionAttributes();
+  attrs = regionAttributesFactory.createRegionAttributes();
 }
 
 BEGIN_TEST(TEST_EXPIRATION)

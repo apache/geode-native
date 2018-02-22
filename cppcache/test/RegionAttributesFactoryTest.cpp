@@ -17,52 +17,52 @@
 
 #include <gtest/gtest.h>
 
-#include <geode/AttributesFactory.hpp>
+#include <geode/RegionAttributesFactory.hpp>
 
 using namespace apache::geode::client;
 
-TEST(AttributesFactoryTest, setEntryIdleTimeoutSeconds) {
-  AttributesFactory attributesFactory;
+TEST(RegionAttributesFactoryTest, setEntryIdleTimeoutSeconds) {
+  RegionAttributesFactory regionAttributesFactory;
   std::shared_ptr<RegionAttributes> regionAttributes =
-      attributesFactory
+      regionAttributesFactory
           .setEntryIdleTimeout(ExpirationAction::DESTROY,
                                std::chrono::seconds(10))
           .createRegionAttributes();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes->getEntryIdleTimeout());
 }
 
-TEST(AttributesFactoryTest, setEntryTimeToLiveSeconds) {
-  AttributesFactory attributesFactory;
+TEST(RegionAttributesFactoryTest, setEntryTimeToLiveSeconds) {
+  RegionAttributesFactory regionAttributesFactory;
   std::shared_ptr<RegionAttributes> regionAttributes =
-      attributesFactory
+      regionAttributesFactory
           .setEntryTimeToLive(ExpirationAction::DESTROY,
                               std::chrono::seconds(10))
           .createRegionAttributes();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes->getEntryTimeToLive());
 }
 
-TEST(AttributesFactoryTest, setRegionIdleTimeoutSeconds) {
-  AttributesFactory attributesFactory;
+TEST(RegionAttributesFactoryTest, setRegionIdleTimeoutSeconds) {
+  RegionAttributesFactory regionAttributesFactory;
   std::shared_ptr<RegionAttributes> regionAttributes =
-      attributesFactory
+      regionAttributesFactory
           .setRegionIdleTimeout(ExpirationAction::DESTROY,
                                 std::chrono::seconds(10))
           .createRegionAttributes();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes->getRegionIdleTimeout());
 }
 
-TEST(AttributesFactoryTest, setRegionTimeToLiveSeconds) {
-  AttributesFactory attributesFactory;
+TEST(RegionAttributesFactoryTest, setRegionTimeToLiveSeconds) {
+  RegionAttributesFactory regionAttributesFactory;
   std::shared_ptr<RegionAttributes> regionAttributes =
-      attributesFactory
+      regionAttributesFactory
           .setRegionTimeToLive(ExpirationAction::DESTROY,
                                std::chrono::seconds(10))
           .createRegionAttributes();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes->getRegionTimeToLive());
 }
 
-TEST(AttributesFactoryTest, setInitialCapacity) {
-  AttributesFactory* af = new AttributesFactory();
+TEST(RegionAttributesFactoryTest, setInitialCapacity) {
+  RegionAttributesFactory* af = new RegionAttributesFactory();
   EXPECT_NE(af, nullptr);
   std::unique_ptr<RegionAttributes> rattrs =
       af->setLruEntriesLimit(2).setInitialCapacity(5).createRegionAttributes();
@@ -70,8 +70,8 @@ TEST(AttributesFactoryTest, setInitialCapacity) {
   EXPECT_EQ(rattrs->getInitialCapacity(), 5);
 }
 
-TEST(AttributesFactoryTest, setLruEntriesLimit) {
-  AttributesFactory* af = new AttributesFactory();
+TEST(RegionAttributesFactoryTest, setLruEntriesLimit) {
+  RegionAttributesFactory* af = new RegionAttributesFactory();
   EXPECT_NE(af, nullptr);
   std::unique_ptr<RegionAttributes> rattrs =
       af->setLruEntriesLimit(2).setInitialCapacity(5).createRegionAttributes();

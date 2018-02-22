@@ -33,7 +33,7 @@
 #include <geode/Properties.hpp>
 #include <geode/ExpirationAction.hpp>
 #include <geode/RegionAttributes.hpp>
-#include <geode/AttributesFactory.hpp>
+#include <geode/RegionAttributesFactory.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/internal/chrono/duration.hpp>
 
@@ -365,7 +365,7 @@ class PersistManager {
 // ----------------------------------------------------------------------------
 
 class Attributes {
-  AttributesFactory m_factory;
+  RegionAttributesFactory m_factory;
   bool m_isLocal;
   bool m_withPool;
 

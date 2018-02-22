@@ -56,18 +56,18 @@ class CacheImpl;
  * and whether statistics are enabled for the region and its entries.
  *
  * To create an instance of this interface, use {@link
- * AttributesFactory::createRegionAttributes}.
+ * RegionAttributesFactory::createRegionAttributes}.
  *
- * For compatibility rules and default values, see {@link AttributesFactory}.
+ * For compatibility rules and default values, see {@link RegionAttributesFactory}.
  *
  * <p>Note that the <code>RegionAttributes</code> are not distributed with the
  * region.
  *
- * @see AttributesFactory
+ * @see RegionAttributesFactory
  * @see AttributesMutator
  * @see Region::getAttributes
  */
-class AttributesFactory;
+class RegionAttributesFactory;
 class AttributesMutator;
 class Cache;
 class Region;
@@ -159,7 +159,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
 
   /** Returns the concurrencyLevel of the entry's local cache.
    * @return the concurrencyLevel
-   * @see AttributesFactory
+   * @see RegionAttributesFactory
    */
   uint8_t getConcurrencyLevel() const;
 
@@ -392,7 +392,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
   std::string m_poolName;
   bool m_isClonable;
   bool m_isConcurrencyChecksEnabled;
-  friend class AttributesFactory;
+  friend class RegionAttributesFactory;
   friend class AttributesMutator;
   friend class Cache;
   friend class CacheImpl;

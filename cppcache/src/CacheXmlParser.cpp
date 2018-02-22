@@ -710,7 +710,7 @@ void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
 /**
  * When a <code>region</code> element is first encountered, we
  * create a {@link RegionCreation} and push it on the _stack.
- * An {@link AttributesFactory }is also created and puhed on _stack.
+ * An {@link RegionAttributesFactory }is also created and puhed on _stack.
  */
 void CacheXmlParser::startRegion(const xmlChar** atts, bool isRoot) {
   int attrsCount = 0;
@@ -766,14 +766,14 @@ void CacheXmlParser::startRegion(const xmlChar** atts, bool isRoot) {
 
   _stack.push(region);
 
-  AttributesFactory* attrsFactory = nullptr;
+  RegionAttributesFactory* regionAttributesFactory = nullptr;
   if (refid == nullptr) {
-    attrsFactory = new AttributesFactory();
+    regionAttributesFactory = new RegionAttributesFactory();
   } else {
     std::string refidStr(refid);
 
     if (namedRegions.find(refidStr) != namedRegions.end()) {
-      attrsFactory = new AttributesFactory(namedRegions[refidStr]);
+      regionAttributesFactory = new RegionAttributesFactory(namedRegions[refidStr]);
     } else {
       std::string s =
           "XML:referenced named attribute '" + refidStr + "' does not exist.";
@@ -781,8 +781,8 @@ void CacheXmlParser::startRegion(const xmlChar** atts, bool isRoot) {
     }
   }
 
-  region->setAttributes(attrsFactory->createRegionAttributes());
-  delete attrsFactory;
+  region->setAttributes(regionAttributesFactory->createRegionAttributes());
+  delete regionAttributesFactory;
 }
 
 void CacheXmlParser::startSubregion(const xmlChar** atts) {
@@ -796,7 +796,7 @@ void CacheXmlParser::startRootRegion(const xmlChar** atts) {
 void CacheXmlParser::startRegionAttributes(const xmlChar** atts) {
   bool isDistributed = false;
   bool isTCR = false;
-  std::shared_ptr<AttributesFactory> attrsFactory = nullptr;
+  std::shared_ptr<RegionAttributesFactory> regionAttributesFactory = nullptr;
   if (atts) {
     int attrsCount = 0;
     while (atts[attrsCount] != nullptr) ++attrsCount;
@@ -836,14 +836,14 @@ void CacheXmlParser::startRegionAttributes(const xmlChar** atts) {
 
     if (refid == nullptr) {
       auto region = std::static_pointer_cast<RegionXmlCreation>(_stack.top());
-      attrsFactory =
-          std::make_shared<AttributesFactory>(region->getAttributes());
+      regionAttributesFactory =
+          std::make_shared<RegionAttributesFactory>(region->getAttributes());
     } else {
       std::string refidStr(refid);
 
       if (namedRegions.find(refidStr) != namedRegions.end()) {
-        attrsFactory =
-            std::make_shared<AttributesFactory>(namedRegions[refidStr]);
+        regionAttributesFactory =
+            std::make_shared<RegionAttributesFactory>(namedRegions[refidStr]);
       } else {
         std::string s =
             "XML:referenced named attribute '" + refidStr + "' does not exist.";
@@ -851,12 +851,12 @@ void CacheXmlParser::startRegionAttributes(const xmlChar** atts) {
       }
     }
 
-    if (!attrsFactory) {
+    if (!regionAttributesFactory) {
       throw UnknownException(
           "CacheXmlParser::startRegionAttributes:Out of memeory");
     }
 
-    _stack.push(attrsFactory);
+    _stack.push(regionAttributesFactory);
 
     for (int i = 0; (atts[i] != nullptr); i++) {
       if (strcmp(ID, (char*)atts[i]) == 0 ||
@@ -887,15 +887,15 @@ void CacheXmlParser::startRegionAttributes(const xmlChar** atts) {
       } else if (strcmp(INITIAL_CAPACITY, (char*)atts[i]) == 0) {
         i++;
         char* initialCapacity = (char*)atts[i];
-        attrsFactory->setInitialCapacity(atoi(initialCapacity));
+        regionAttributesFactory->setInitialCapacity(atoi(initialCapacity));
       } else if (strcmp(CONCURRENCY_LEVEL, (char*)atts[i]) == 0) {
         i++;
         char* concurrencyLevel = (char*)atts[i];
-        attrsFactory->setConcurrencyLevel(atoi(concurrencyLevel));
+        regionAttributesFactory->setConcurrencyLevel(atoi(concurrencyLevel));
       } else if (strcmp(LOAD_FACTOR, (char*)atts[i]) == 0) {
         i++;
         char* loadFactor = (char*)atts[i];
-        attrsFactory->setLoadFactor(
+        regionAttributesFactory->setLoadFactor(
             static_cast<float>(atof(loadFactor)));  // check whether this works
       } else if (strcmp(CACHING_ENABLED, (char*)atts[i]) == 0) {
         bool flag = false;
@@ -915,23 +915,23 @@ void CacheXmlParser::startRegionAttributes(const xmlChar** atts) {
               " is not a valid value for the attribute <caching-enabled>";
           throw CacheXmlException(s.c_str());
         }
-        attrsFactory->setCachingEnabled(flag);  // check whether this works
+        regionAttributesFactory->setCachingEnabled(flag);  // check whether this works
       } else if (strcmp(LRU_ENTRIES_LIMIT, (char*)atts[i]) == 0) {
         i++;
         char* lruentriesLimit = (char*)atts[i];
         int lruentriesLimitInt = atoi(lruentriesLimit);
         uint32_t temp = static_cast<uint32_t>(lruentriesLimitInt);
-        attrsFactory->setLruEntriesLimit(temp);
+        regionAttributesFactory->setLruEntriesLimit(temp);
       } else if (strcmp(DISK_POLICY, (char*)atts[i]) == 0) {
         i++;
         char* diskPolicy = (char*)atts[i];
         if (strcmp(OVERFLOWS, diskPolicy) == 0) {
-          attrsFactory->setDiskPolicy(
+          regionAttributesFactory->setDiskPolicy(
               apache::geode::client::DiskPolicyType::OVERFLOWS);
         } else if (strcmp(PERSIST, diskPolicy) == 0) {
           throw IllegalStateException(" persistence feature is not supported");
         } else if (strcmp(NONE, diskPolicy) == 0) {
-          attrsFactory->setDiskPolicy(
+          regionAttributesFactory->setDiskPolicy(
               apache::geode::client::DiskPolicyType::NONE);
         } else {
           char* name = (char*)atts[i];
@@ -956,7 +956,7 @@ void CacheXmlParser::startRegionAttributes(const xmlChar** atts) {
       } else if (strcmp(POOL_NAME, (char*)atts[i]) == 0) {
         i++;
         char* poolName = (char*)atts[i];
-        attrsFactory->setPoolName(poolName);
+        regionAttributesFactory->setPoolName(poolName);
         isTCR = true;
       } else if (strcmp(CLONING_ENABLED, (char*)atts[i]) == 0) {
         i++;
@@ -978,7 +978,7 @@ void CacheXmlParser::startRegionAttributes(const xmlChar** atts) {
           throw CacheXmlException(s.c_str());
         }
 
-        attrsFactory->setCloningEnabled(flag);
+        regionAttributesFactory->setCloningEnabled(flag);
         isTCR = true;
       } else if (strcmp(CONCURRENCY_CHECKS_ENABLED, (char*)atts[i]) == 0) {
         bool flag = false;
@@ -998,14 +998,14 @@ void CacheXmlParser::startRegionAttributes(const xmlChar** atts) {
                           "<concurrency-checks-enabled>";
           throw CacheXmlException(s.c_str());
         }
-        attrsFactory->setConcurrencyChecksEnabled(flag);
+        regionAttributesFactory->setConcurrencyChecksEnabled(flag);
       }
     }  // for loop
   }    // atts is nullptr
   else {
     auto region = std::static_pointer_cast<RegionXmlCreation>(_stack.top());
-    attrsFactory = std::make_shared<AttributesFactory>(region->getAttributes());
-    _stack.push(attrsFactory);
+    regionAttributesFactory = std::make_shared<RegionAttributesFactory>(region->getAttributes());
+    _stack.push(regionAttributesFactory);
   }
 
   if (isDistributed && isTCR) {
@@ -1016,15 +1016,15 @@ void CacheXmlParser::startRegionAttributes(const xmlChar** atts) {
 }
 
 void CacheXmlParser::endRegionAttributes() {
-  auto attrsFactory = std::static_pointer_cast<AttributesFactory>(_stack.top());
+  auto regionAttributesFactory = std::static_pointer_cast<RegionAttributesFactory>(_stack.top());
   _stack.pop();
-  if (!attrsFactory) {
+  if (!regionAttributesFactory) {
     throw UnknownException(
-        "CacheXmlParser::endRegion:AttributesFactory is null");
+        "CacheXmlParser::endRegion:RegionAttributesFactory is null");
   }
 
   std::shared_ptr<RegionAttributes> regionAttributesPtr =
-      attrsFactory->createRegionAttributes();
+      regionAttributesFactory->createRegionAttributes();
 
   auto regionPtr = std::static_pointer_cast<RegionXmlCreation>(_stack.top());
   if (!regionPtr) {
@@ -1335,8 +1335,8 @@ void CacheXmlParser::startCacheLoader(const xmlChar** atts) {
     throw CacheXmlException(ex.what());
   }
 
-  auto attrsFactory = std::static_pointer_cast<AttributesFactory>(_stack.top());
-  attrsFactory->setCacheLoader(libraryName, libraryFunctionName);
+  auto regionAttributesFactory = std::static_pointer_cast<RegionAttributesFactory>(_stack.top());
+  regionAttributesFactory->setCacheLoader(libraryName, libraryFunctionName);
 }
 
 void CacheXmlParser::startCacheListener(const xmlChar** atts) {
@@ -1402,8 +1402,8 @@ void CacheXmlParser::startCacheListener(const xmlChar** atts) {
     throw CacheXmlException(ex.what());
   }
 
-  auto attrsFactory = std::static_pointer_cast<AttributesFactory>(_stack.top());
-  attrsFactory->setCacheListener(libraryName, libraryFunctionName);
+  auto regionAttributesFactory = std::static_pointer_cast<RegionAttributesFactory>(_stack.top());
+  regionAttributesFactory->setCacheListener(libraryName, libraryFunctionName);
 }
 
 void CacheXmlParser::startPartitionResolver(const xmlChar** atts) {
@@ -1472,8 +1472,8 @@ void CacheXmlParser::startPartitionResolver(const xmlChar** atts) {
     throw CacheXmlException(ex.what());
   }
 
-  auto attrsFactory = std::static_pointer_cast<AttributesFactory>(_stack.top());
-  attrsFactory->setPartitionResolver(libraryName, libraryFunctionName);
+  auto regionAttributesFactory = std::static_pointer_cast<RegionAttributesFactory>(_stack.top());
+  regionAttributesFactory->setPartitionResolver(libraryName, libraryFunctionName);
 }
 
 void CacheXmlParser::startCacheWriter(const xmlChar** atts) {
@@ -1540,8 +1540,8 @@ void CacheXmlParser::startCacheWriter(const xmlChar** atts) {
     throw CacheXmlException(ex.what());
   }
 
-  auto attrsFactory = std::static_pointer_cast<AttributesFactory>(_stack.top());
-  attrsFactory->setCacheWriter(libraryName, libraryFunctionName);
+  auto regionAttributesFactory = std::static_pointer_cast<RegionAttributesFactory>(_stack.top());
+  regionAttributesFactory->setCacheWriter(libraryName, libraryFunctionName);
 }
 
 /**
@@ -1585,7 +1585,7 @@ void CacheXmlParser::endCache() {}
 /**
  * When a <code>region-time-to-live</code> element is finished, the
  * {@link ExpirationAttributes} are on top of the _stack followed by
- * the {@link AttributesFactory} to which the expiration
+ * the {@link RegionAttributesFactory} to which the expiration
  * attributes are assigned.
  */
 void CacheXmlParser::endRegionTimeToLive() {
@@ -1600,8 +1600,8 @@ void CacheXmlParser::endRegionTimeToLive() {
       std::static_pointer_cast<ExpirationAttributes>(_stack.top());
   _stack.pop();
 
-  auto attrsFactory = std::static_pointer_cast<AttributesFactory>(_stack.top());
-  attrsFactory->setRegionTimeToLive(expireAttr->getAction(),
+  auto regionAttributesFactory = std::static_pointer_cast<RegionAttributesFactory>(_stack.top());
+  regionAttributesFactory->setRegionTimeToLive(expireAttr->getAction(),
                                     expireAttr->getTimeout());
   m_flagExpirationAttribute = false;
 }
@@ -1609,7 +1609,7 @@ void CacheXmlParser::endRegionTimeToLive() {
 /**
  * When a <code>region-idle-time</code> element is finished, the
  * {@link ExpirationAttributes} are on top of the _stack followed by
- * the {@link AttributesFactory} to which the expiration
+ * the {@link RegionAttributesFactory} to which the expiration
  * attributes are assigned.
  */
 void CacheXmlParser::endRegionIdleTime() {
@@ -1621,9 +1621,9 @@ void CacheXmlParser::endRegionIdleTime() {
   auto expireAttr =
       std::static_pointer_cast<ExpirationAttributes>(_stack.top());
   _stack.pop();
-  auto attrsFactory = std::static_pointer_cast<AttributesFactory>(_stack.top());
+  auto regionAttributesFactory = std::static_pointer_cast<RegionAttributesFactory>(_stack.top());
 
-  attrsFactory->setRegionIdleTimeout(expireAttr->getAction(),
+  regionAttributesFactory->setRegionIdleTimeout(expireAttr->getAction(),
                                      expireAttr->getTimeout());
   m_flagExpirationAttribute = false;
 }
@@ -1631,7 +1631,7 @@ void CacheXmlParser::endRegionIdleTime() {
 /**
  * When a <code>entry-time-to-live</code> element is finished, the
  * {@link ExpirationAttributes} are on top of the _stack followed by
- * the {@link AttributesFactory} to which the expiration
+ * the {@link RegionAttributesFactory} to which the expiration
  * attributes are assigned.
  */
 void CacheXmlParser::endEntryTimeToLive() {
@@ -1644,9 +1644,9 @@ void CacheXmlParser::endEntryTimeToLive() {
   auto expireAttr =
       std::static_pointer_cast<ExpirationAttributes>(_stack.top());
   _stack.pop();
-  auto attrsFactory = std::static_pointer_cast<AttributesFactory>(_stack.top());
+  auto regionAttributesFactory = std::static_pointer_cast<RegionAttributesFactory>(_stack.top());
 
-  attrsFactory->setEntryTimeToLive(expireAttr->getAction(),
+  regionAttributesFactory->setEntryTimeToLive(expireAttr->getAction(),
                                    expireAttr->getTimeout());
   m_flagExpirationAttribute = false;
 }
@@ -1654,7 +1654,7 @@ void CacheXmlParser::endEntryTimeToLive() {
 /**
  * When a <code>entry-idle-time</code> element is finished, the
  * {@link ExpirationAttributes} are on top of the _stack followed by
- * the {@link AttributesFactory} to which the expiration
+ * the {@link RegionAttributesFactory} to which the expiration
  * attributes are assigned.
  */
 void CacheXmlParser::endEntryIdleTime() {
@@ -1666,9 +1666,9 @@ void CacheXmlParser::endEntryIdleTime() {
   auto expireAttr =
       std::static_pointer_cast<ExpirationAttributes>(_stack.top());
   _stack.pop();
-  auto attrsFactory = std::static_pointer_cast<AttributesFactory>(_stack.top());
+  auto regionAttributesFactory = std::static_pointer_cast<RegionAttributesFactory>(_stack.top());
   // TODO GEODE-3136: consider string parser here.
-  attrsFactory->setEntryIdleTimeout(expireAttr->getAction(),
+  regionAttributesFactory->setEntryIdleTimeout(expireAttr->getAction(),
                                     expireAttr->getTimeout());
   m_flagExpirationAttribute = false;
 }
@@ -1684,13 +1684,13 @@ void CacheXmlParser::endPersistenceManager() {
   std::shared_ptr<std::string> libraryName =
       std::static_pointer_cast<std::string>(_stack.top());
   _stack.pop();
-  auto attrsFactory = std::static_pointer_cast<AttributesFactory>(_stack.top());
+  auto regionAttributesFactory = std::static_pointer_cast<RegionAttributesFactory>(_stack.top());
   if (m_config != nullptr) {
-    attrsFactory->setPersistenceManager(libraryName->c_str(),
+    regionAttributesFactory->setPersistenceManager(libraryName->c_str(),
                                         libraryFunctionName->c_str(), m_config);
     m_config = nullptr;
   } else {
-    attrsFactory->setPersistenceManager(libraryName->c_str(),
+    regionAttributesFactory->setPersistenceManager(libraryName->c_str(),
                                         libraryFunctionName->c_str());
   }
 }

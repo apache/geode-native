@@ -17,7 +17,7 @@
 
 #define ROOT_NAME "testLinkage"
 
-#include <geode/AttributesFactory.hpp>
+#include <geode/RegionAttributesFactory.hpp>
 #include "fw_helper.hpp"
 
 using namespace apache::geode::client;
@@ -28,7 +28,7 @@ using namespace apache::geode::client;
 BEGIN_TEST(LinkageTest)
   // just create one for now...
 
-  AttributesFactory af;
+  RegionAttributesFactory regionAttributesFactory;
 
   {
     std::shared_ptr<Cacheable> cacheablePtr;

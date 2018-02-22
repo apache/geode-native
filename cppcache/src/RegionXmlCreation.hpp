@@ -40,9 +40,9 @@ class Cache;
  */
 class _GEODE_EXPORT RegionXmlCreation {
  private:
-  /** An <code>AttributesFactory</code> for creating default
+  /** An <code>RegionAttributesFactory</code> for creating default
    * <code>RegionAttribute</code>s */
-  AttributesFactory attrFactory;
+  RegionAttributesFactory regionAttributeFactory;
 
   /** The name of this region */
   std::string regionName;

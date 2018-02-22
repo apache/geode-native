@@ -43,33 +43,33 @@ void getNumOfEntries(std::shared_ptr<Region>& regionPtr, uint32_t num) {
 
 void setAttributes(std::shared_ptr<RegionAttributes>& attrsPtr,
                    std::string pDir = sqlite_dir) {
-  AttributesFactory attrsFact;
-  attrsFact.setCachingEnabled(true);
-  attrsFact.setLruEntriesLimit(10);
-  attrsFact.setInitialCapacity(1000);
-  attrsFact.setDiskPolicy(DiskPolicyType::OVERFLOWS);
+  RegionAttributesFactory regionAttributesFactory;
+  regionAttributesFactory.setCachingEnabled(true);
+  regionAttributesFactory.setLruEntriesLimit(10);
+  regionAttributesFactory.setInitialCapacity(1000);
+  regionAttributesFactory.setDiskPolicy(DiskPolicyType::OVERFLOWS);
   auto sqliteProperties = Properties::create();
   sqliteProperties->insert("MaxPageCount", "1073741823");
   sqliteProperties->insert("PageSize", "65536");
   sqliteProperties->insert("PersistenceDirectory", pDir.c_str());
-  attrsFact.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
+  regionAttributesFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
                                   sqliteProperties);
 
-  attrsPtr = attrsFact.createRegionAttributes();
+  attrsPtr = regionAttributesFactory.createRegionAttributes();
 }
 void setAttributesWithMirror(std::shared_ptr<RegionAttributes>& attrsPtr) {
-  AttributesFactory attrsFact;
-  attrsFact.setCachingEnabled(true);
-  attrsFact.setLruEntriesLimit(20);
-  attrsFact.setInitialCapacity(1000);
-  attrsFact.setDiskPolicy(DiskPolicyType::OVERFLOWS);
+  RegionAttributesFactory regionAttributesFactory;
+  regionAttributesFactory.setCachingEnabled(true);
+  regionAttributesFactory.setLruEntriesLimit(20);
+  regionAttributesFactory.setInitialCapacity(1000);
+  regionAttributesFactory.setDiskPolicy(DiskPolicyType::OVERFLOWS);
   auto sqliteProperties = Properties::create();
   sqliteProperties->insert("MaxPageCount", "1073741823");
   sqliteProperties->insert("PageSize", "65536");
   sqliteProperties->insert("PersistenceDirectory", sqlite_dir.c_str());
-  attrsFact.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
+  regionAttributesFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
                                   sqliteProperties);
-  attrsPtr = attrsFact.createRegionAttributes();
+  attrsPtr = regionAttributesFactory.createRegionAttributes();
 }
 
 // Testing for attibute validation.

@@ -39,7 +39,7 @@
 #include <geode/CacheWriter.hpp>
 #include <geode/CacheLoader.hpp>
 #include <geode/AttributesMutator.hpp>
-#include <geode/AttributesFactory.hpp>
+#include <geode/RegionAttributesFactory.hpp>
 
 #include "RegionInternal.hpp"
 #include "RegionStats.hpp"

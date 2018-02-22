@@ -50,13 +50,13 @@ class CacheImplHelper : public CacheHelper {
                             bool ack = false, bool cacheServerClient = false,
                             bool cacheEnabled = true) {
     std::shared_ptr<RegionAttributes> regAttrs;
-    AttributesFactory attrFactory;
+    RegionAttributesFactory regionAttributesFactory;
     // set lru attributes...
-    attrFactory.setLruEntriesLimit(0);     // no limit.
-    attrFactory.setInitialCapacity(size);  // no limit.
+    regionAttributesFactory.setLruEntriesLimit(0);     // no limit.
+    regionAttributesFactory.setInitialCapacity(size);  // no limit.
     // then...
-    attrFactory.setCachingEnabled(cacheEnabled);
-    regAttrs = attrFactory.createRegionAttributes();
+    regionAttributesFactory.setCachingEnabled(cacheEnabled);
+    regAttrs = regionAttributesFactory.createRegionAttributes();
     showRegionAttributes(*regAttrs);
     CacheImpl* cimpl = TestUtils::getCacheImpl(cachePtr);
     ASSERT(cimpl != nullptr, "failed to get cacheImpl *.");

@@ -43,7 +43,7 @@ namespace client {
  * If the timeout is not specified, it defaults to zero (which means to never
  * time out).
  *
- * @see AttributesFactory
+ * @see RegionAttributesFactory
  * @see RegionAttributes
  * @see AttributesMutator
  */

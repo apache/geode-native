@@ -32,7 +32,7 @@
 #include "CacheableString.hpp"
 #include "ExceptionTypes.hpp"
 #include "Serializable.hpp"
-#include "AttributesFactory.hpp"
+#include "RegionAttributesFactory.hpp"
 #include "AttributesMutator.hpp"
 #include "CacheListener.hpp"
 #include "CacheLoader.hpp"
@@ -1096,7 +1096,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /**
    * Registers an array of keys for getting updates from the server.
    * Valid only for a Native Client region when client notification
-   * ( {@link AttributesFactory::setClientNotification} ) is true.
+   * ( {@link RegionAttributesFactory::setClientNotification} ) is true.
    *
    * @param keys the array of keys
    * @param isDurable flag to indicate whether this is a durable registration
@@ -1114,7 +1114,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    *   the exception that should be caught.
    * @throws UnsupportedOperationException If the region is not a Native Client
    * region or
-   * {@link AttributesFactory::setClientNotification} is false.
+   * {@link RegionAttributesFactory::setClientNotification} is false.
    * @throws CacheServerException If an exception is received from the Java
    * cache server.
    * @throws NotConnectedException if it is not connected to the cache because
@@ -1136,7 +1136,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /**
    * Unregisters an array of keys to stop getting updates for them.
    * Valid only for a Native Client region when client notification
-   * ( {@link AttributesFactory::setClientNotification} ) is true.
+   * ( {@link RegionAttributesFactory::setClientNotification} ) is true.
    *
    * @param keys the array of keys
    *
@@ -1144,7 +1144,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws IllegalStateException If no keys were previously registered.
    * @throws UnsupportedOperationException If the region is not a Native Client
    * region or
-   * {@link AttributesFactory::setClientNotification} is false.
+   * {@link RegionAttributesFactory::setClientNotification} is false.
    * @throws CacheServerException If an exception is received from the Java
    * cache server.
    * @throws NotConnectedException if it is not connected to the cache because
@@ -1163,7 +1163,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /**
    * Registers to get updates for all keys from the server.
    * Valid only for a Native Client region when client notification
-   * ( {@link AttributesFactory::setClientNotification} ) is true.
+   * ( {@link RegionAttributesFactory::setClientNotification} ) is true.
    *
    * @param isDurable flag to indicate whether this is a durable registration
    * @param getInitialValues true to populate the cache with values of all keys
@@ -1178,7 +1178,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    *   the exception that should be caught.
    * @throws UnsupportedOperationException If the region is not a Native Client
    * region or
-   * {@link AttributesFactory::setClientNotification} is false.
+   * {@link RegionAttributesFactory::setClientNotification} is false.
    * @throws CacheServerException If an exception is received from the Java
    * cache server.
    * @throws NotConnectedException if it is not connected to the cache because
@@ -1199,12 +1199,12 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /**
    * Registers to get updates for all keys from the server.
    * Valid only for a Native Client region when client notification
-   * ( {@link AttributesFactory::setClientNotification} ) is true.
+   * ( {@link RegionAttributesFactory::setClientNotification} ) is true.
    *
    * @throws IllegalStateException If not previously registered all keys.
    * @throws UnsupportedOperationException If the region is not a Native Client
    * region or
-   * {@link AttributesFactory::setClientNotification} is false.
+   * {@link RegionAttributesFactory::setClientNotification} is false.
    * @throws CacheServerException If an exception is received from the Java
    * cache server.
    * @throws NotConnectedException if it is not connected to the cache because
@@ -1224,7 +1224,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * Registers a regular expression to match with keys to get updates from the
    * server.
    * Valid only for a Native Client region when client notification
-   * ( {@link AttributesFactory::setClientNotification} ) is true.
+   * ( {@link RegionAttributesFactory::setClientNotification} ) is true.
    *
    * @param regex The regular expression string.
    * @param isDurable flag to indicate whether this is a durable registration
@@ -1245,7 +1245,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    *   the exception that should be caught.
    * @throws UnsupportedOperationException If the region is not a Native Client
    * region or
-   * {@link AttributesFactory::setClientNotification} is false.
+   * {@link RegionAttributesFactory::setClientNotification} is false.
    * @throws CacheServerException If an exception is received from the Java
    * cache server.
    * @throws NotConnectedException if it is not connected to the cache because
@@ -1271,7 +1271,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * Unregisters a regular expression to stop getting updates for keys from the
    * server.
    * Valid only for a Native Client region when client notification
-   * ( {@link AttributesFactory::setClientNotification} ) is true.
+   * ( {@link RegionAttributesFactory::setClientNotification} ) is true.
    *
    * @param regex The regular expression string.
    *
@@ -1280,7 +1280,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * expression string.
    * @throws UnsupportedOperationException If the region is not a Native Client
    * region or
-   * {@link AttributesFactory::setClientNotification} is false.
+   * {@link RegionAttributesFactory::setClientNotification} is false.
    * @throws CacheServerException If an exception is received from the Java
    * cache server.
    * @throws NotConnectedException if it is not connected to the cache because

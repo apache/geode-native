@@ -41,17 +41,17 @@ BEGIN_TEST(CacheFunction)
             << " and unitialized system" << std::endl;
   auto cacheFactory = CacheFactory();
   cptr = std::make_shared<Cache>(cacheFactory.create());
-  AttributesFactory attrFac;
+  RegionAttributesFactory regionAttributesFactory;
   std::shared_ptr<RegionAttributes> rAttr;
   std::cout << "create RegionAttributes" << std::endl;
   try {
-    rAttr = attrFac.createRegionAttributes();
+    rAttr = regionAttributesFactory.createRegionAttributes();
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, "attribute create failed");
   }
   if (rAttr == nullptr) {
-    std::cout << "Warnning! : AttributesFactory returned nullptr" << std::endl;
+    std::cout << "Warnning! : RegionAttributesFactory returned nullptr" << std::endl;
   }
   std::shared_ptr<Region> rptr;
   if (rptr != nullptr) {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testAttributesFactory"
+#define ROOT_NAME "testRegionAttributesFactory"
 
 #include "fw_helper.hpp"
 #include <CacheRegionHelper.hpp>

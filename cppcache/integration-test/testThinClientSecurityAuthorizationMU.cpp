@@ -18,7 +18,7 @@
 #include <geode/FunctionService.hpp>
 #include <geode/Execution.hpp>
 #include <geode/UserFunctionExecutionException.hpp>
-#include <geode/AttributesFactory.hpp>
+#include <geode/RegionAttributesFactory.hpp>
 #include <geode/CqAttributesFactory.hpp>
 
 #define ROOT_NAME "testThinClientSecurityAuthenticationMU"

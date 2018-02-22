@@ -32,112 +32,112 @@ namespace client {
 
 class Region;
 
-AttributesFactory::AttributesFactory() : m_regionAttributes() {}
+RegionAttributesFactory::RegionAttributesFactory() : m_regionAttributes() {}
 
-AttributesFactory::AttributesFactory(
+RegionAttributesFactory::RegionAttributesFactory(
     const std::shared_ptr<RegionAttributes>& regionAttributes)
     : m_regionAttributes(*regionAttributes) {}
 
-AttributesFactory::~AttributesFactory() {}
+RegionAttributesFactory::~RegionAttributesFactory() {}
 
-AttributesFactory& AttributesFactory::setCacheLoader(
+RegionAttributesFactory& RegionAttributesFactory::setCacheLoader(
     const std::shared_ptr<CacheLoader>& cacheLoader) {
   m_regionAttributes.m_cacheLoader = cacheLoader;
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setCacheWriter(
+RegionAttributesFactory& RegionAttributesFactory::setCacheWriter(
     const std::shared_ptr<CacheWriter>& cacheWriter) {
   m_regionAttributes.m_cacheWriter = cacheWriter;
   return *this;
 }
-AttributesFactory& AttributesFactory::setCacheListener(
+RegionAttributesFactory& RegionAttributesFactory::setCacheListener(
     const std::shared_ptr<CacheListener>& aListener) {
   m_regionAttributes.m_cacheListener = aListener;
   return *this;
 }
-AttributesFactory& AttributesFactory::setPartitionResolver(
+RegionAttributesFactory& RegionAttributesFactory::setPartitionResolver(
     const std::shared_ptr<PartitionResolver>& aResolver) {
   m_regionAttributes.m_partitionResolver = aResolver;
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setCacheLoader(const std::string& lib,
+RegionAttributesFactory& RegionAttributesFactory::setCacheLoader(const std::string& lib,
                                                      const std::string& func) {
   m_regionAttributes.setCacheLoader(lib, func);
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setCacheWriter(const std::string& lib,
+RegionAttributesFactory& RegionAttributesFactory::setCacheWriter(const std::string& lib,
                                                      const std::string& func) {
   m_regionAttributes.setCacheWriter(lib, func);
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setCacheListener(
+RegionAttributesFactory& RegionAttributesFactory::setCacheListener(
     const std::string& lib, const std::string& func) {
   m_regionAttributes.setCacheListener(lib, func);
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setPartitionResolver(
+RegionAttributesFactory& RegionAttributesFactory::setPartitionResolver(
     const std::string& lib, const std::string& func) {
   m_regionAttributes.setPartitionResolver(lib, func);
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setEntryIdleTimeout(
+RegionAttributesFactory& RegionAttributesFactory::setEntryIdleTimeout(
     ExpirationAction action, std::chrono::seconds idleTimeout) {
   m_regionAttributes.m_entryIdleTimeout = idleTimeout;
   m_regionAttributes.m_entryIdleTimeoutExpirationAction = action;
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setEntryTimeToLive(
+RegionAttributesFactory& RegionAttributesFactory::setEntryTimeToLive(
     ExpirationAction action, std::chrono::seconds timeToLive) {
   m_regionAttributes.m_entryTimeToLive = timeToLive;
   m_regionAttributes.m_entryTimeToLiveExpirationAction = action;
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setRegionIdleTimeout(
+RegionAttributesFactory& RegionAttributesFactory::setRegionIdleTimeout(
     ExpirationAction action, std::chrono::seconds idleTimeout) {
   m_regionAttributes.m_regionIdleTimeout = idleTimeout;
   m_regionAttributes.m_regionIdleTimeoutExpirationAction = action;
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setRegionTimeToLive(
+RegionAttributesFactory& RegionAttributesFactory::setRegionTimeToLive(
     ExpirationAction action, std::chrono::seconds timeToLive) {
   m_regionAttributes.m_regionTimeToLive = timeToLive;
   m_regionAttributes.m_regionTimeToLiveExpirationAction = action;
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setInitialCapacity(int initialCapacity) {
+RegionAttributesFactory& RegionAttributesFactory::setInitialCapacity(int initialCapacity) {
   m_regionAttributes.m_initialCapacity = initialCapacity;
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setLoadFactor(float loadFactor) {
+RegionAttributesFactory& RegionAttributesFactory::setLoadFactor(float loadFactor) {
   m_regionAttributes.m_loadFactor = loadFactor;
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setConcurrencyLevel(
+RegionAttributesFactory& RegionAttributesFactory::setConcurrencyLevel(
     uint8_t concurrencyLevel) {
   m_regionAttributes.m_concurrencyLevel = concurrencyLevel;
   return *this;
 }
 
-std::unique_ptr<RegionAttributes> AttributesFactory::createRegionAttributes() {
+std::unique_ptr<RegionAttributes> RegionAttributesFactory::createRegionAttributes() {
   std::shared_ptr<RegionAttributes> res;
   validateAttributes(m_regionAttributes);
   return std::unique_ptr<RegionAttributes>(
       new RegionAttributes(m_regionAttributes));
 }
 
-void AttributesFactory::validateAttributes(RegionAttributes& attrs) {
+void RegionAttributesFactory::validateAttributes(RegionAttributes& attrs) {
   if (!attrs.m_caching) {
     if (attrs.m_entryTimeToLive != std::chrono::seconds::zero()) {
       throw IllegalStateException(
@@ -178,13 +178,13 @@ void AttributesFactory::validateAttributes(RegionAttributes& attrs) {
   }
 }
 
-AttributesFactory& AttributesFactory::setLruEntriesLimit(
+RegionAttributesFactory& RegionAttributesFactory::setLruEntriesLimit(
     const uint32_t entriesLimit) {
   m_regionAttributes.m_lruEntriesLimit = entriesLimit;
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setDiskPolicy(
+RegionAttributesFactory& RegionAttributesFactory::setDiskPolicy(
     const DiskPolicyType diskPolicy) {
   if (diskPolicy == DiskPolicyType::PERSIST) {
     throw IllegalStateException("Persistence feature is not supported");
@@ -193,12 +193,12 @@ AttributesFactory& AttributesFactory::setDiskPolicy(
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setCachingEnabled(bool cachingEnabled) {
+RegionAttributesFactory& RegionAttributesFactory::setCachingEnabled(bool cachingEnabled) {
   m_regionAttributes.m_caching = cachingEnabled;
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setPersistenceManager(
+RegionAttributesFactory& RegionAttributesFactory::setPersistenceManager(
     const std::shared_ptr<PersistenceManager>& persistenceManager,
     const std::shared_ptr<Properties>& props) {
   m_regionAttributes.m_persistenceManager = persistenceManager;
@@ -206,23 +206,23 @@ AttributesFactory& AttributesFactory::setPersistenceManager(
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setPersistenceManager(
+RegionAttributesFactory& RegionAttributesFactory::setPersistenceManager(
     const std::string& lib, const std::string& func,
     const std::shared_ptr<Properties>& config) {
   m_regionAttributes.setPersistenceManager(lib, func, config);
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setPoolName(const std::string& name) {
+RegionAttributesFactory& RegionAttributesFactory::setPoolName(const std::string& name) {
   m_regionAttributes.setPoolName(name);
   return *this;
 }
 
-AttributesFactory& AttributesFactory::setCloningEnabled(bool isClonable) {
+RegionAttributesFactory& RegionAttributesFactory::setCloningEnabled(bool isClonable) {
   m_regionAttributes.setCloningEnabled(isClonable);
   return *this;
 }
-AttributesFactory& AttributesFactory::setConcurrencyChecksEnabled(bool enable) {
+RegionAttributesFactory& RegionAttributesFactory::setConcurrencyChecksEnabled(bool enable) {
   m_regionAttributes.setConcurrencyChecksEnabled(enable);
   return *this;
 }

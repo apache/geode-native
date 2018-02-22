@@ -40,7 +40,7 @@ class Cache;
  */
 class _GEODE_EXPORT PoolXmlCreation {
  private:
-  /** An <code>AttributesFactory</code> for creating default
+  /** An <code>RegionAttributesFactory</code> for creating default
    * <code>PoolAttribute</code>s */
   std::shared_ptr<PoolFactory> poolFactory;
 

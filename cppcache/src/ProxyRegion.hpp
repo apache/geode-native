@@ -35,7 +35,7 @@
 #include <geode/CacheLoader.hpp>
 #include <geode/RegionAttributes.hpp>
 #include <geode/AttributesMutator.hpp>
-#include <geode/AttributesFactory.hpp>
+#include <geode/RegionAttributesFactory.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/Query.hpp>
 

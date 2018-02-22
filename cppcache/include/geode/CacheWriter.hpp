@@ -80,7 +80,7 @@ class Region;
  * of whether the initiator is in the same process as the
  * <code>CacheWriter</code>.
  *
- * @see AttributesFactory::setCacheWriter
+ * @see RegionAttributesFactory::setCacheWriter
  * @see RegionAttributes::getCacheWriter
  * @see AttributesMutator::setCacheWriter
  */
