@@ -1,3 +1,5 @@
+﻿#!/bin/env bash
+
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -12,9 +14,28 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required(VERSION 3.4)
 
-project(Apache.Geode.Examples)
+$GFSH_PATH = ""
+if (Get-Command gfsh -ErrorAction SilentlyContinue)
+{
+    $GFSH_PATH = "gfsh"
+}
+else
+{
+    if (-not (Test-Path env:GEODE_HOME))
+    {
+        echo "Could not find gfsh.  Please set the GEODE_HOME path. e.g. "
+        echo "(Powershell) `$env:GEODE_HOME = <path to Geode>"
+        echo " OR"
+        echo "(Command-line) set %GEODE_HOME% = <path to Geode>"
+    }
+    else
+    {
+        $GFSH_PATH = "$env:GEODE_HOME\bin\gfsh.bat"
+    }
+}
 
-add_subdirectory(AuthInitialize)
-add_subdirectory(PutGetRemove)
+if ($GFSH_PATH -ne "")
+{
+   Invoke-Expression "$GFSH_PATH -e 'connect' -e 'destroy region --name=region' -e 'stop server --name=server' -e 'stop locator --name=locator'"
+}
