@@ -35,5 +35,5 @@ else
 
 if ($GFSH_PATH -ne "")
 {
-   Invoke-Expression "$GFSH_PATH -e 'connect' -e 'destroy region --name=region' -e 'stop server --name=server' -e 'stop locator --name=locator'"
+   Invoke-Expression "$GFSH_PATH -e 'start locator --name=locator --dir=$PSScriptRoot\locator' -e 'start server --name=server --dir=$PSScriptRoot\server' -e 'create region --name=example_orderobject --type=PARTITION'"
 }

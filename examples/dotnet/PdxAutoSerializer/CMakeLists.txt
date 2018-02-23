@@ -15,15 +15,16 @@
 
 cmake_minimum_required(VERSION 3.10.0)
 
-project(PutGetRemove CSharp)
+project(PDXAutoSerializer CSharp)
 
 add_executable(${PROJECT_NAME} 
-    Program.cs)
+    Program.cs
+    Order.cs)
 
 target_link_libraries(${PROJECT_NAME}
     ${GEODE_NATIVE_DOTNET_LIBRARY})
 
-set_property(TARGET PutGetRemove PROPERTY VS_DOTNET_REFERENCES
+set_property(TARGET PDXAutoSerializer PROPERTY VS_DOTNET_REFERENCES
     "System"
     "${GEODE_NATIVE_DOTNET_LIBRARY}")
     

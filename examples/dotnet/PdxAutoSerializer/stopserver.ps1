@@ -35,5 +35,5 @@ else
 
 if ($GFSH_PATH -ne "")
 {
-   Invoke-Expression "$GFSH_PATH -e 'connect' -e 'destroy region --name=region' -e 'stop server --name=server' -e 'stop locator --name=locator'"
+   Invoke-Expression "$GFSH_PATH -e 'connect' -e 'destroy region --name=example_orderobject' -e 'stop server --name=server' -e 'stop locator --name=locator'"
 }

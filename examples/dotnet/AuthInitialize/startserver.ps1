@@ -1,6 +1,4 @@
-﻿#!/bin/env bash
-
-# Licensed to the Apache Software Foundation (ASF) under one or more
+﻿# Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
 # The ASF licenses this file to You under the Apache License, Version 2.0
@@ -24,10 +22,10 @@ else
 {
     if (-not (Test-Path env:GEODE_HOME))
     {
-        echo "Could not find gfsh.  Please set the GEODE_HOME path. e.g. "
-        echo "(Powershell) `$env:GEODE_HOME = <path to Geode>"
-        echo " OR"
-        echo "(Command-line) set %GEODE_HOME% = <path to Geode>"
+        Write-Host "Could not find gfsh.  Please set the GEODE_HOME path. e.g. "
+        Write-Host "(Powershell) `$env:GEODE_HOME = <path to Geode>"
+        Write-Host " OR"
+        Write-Host "(Command-line) set %GEODE_HOME% = <path to Geode>"
     }
     else
     {
