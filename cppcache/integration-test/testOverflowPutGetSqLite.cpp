@@ -41,7 +41,7 @@ void getNumOfEntries(std::shared_ptr<Region>& regionPtr, uint32_t num) {
   ASSERT(vecValues.size() == num, (char*)"size of value vec and num not equal");
 }
 
-void setAttributes(std::shared_ptr<RegionAttributes>& attrsPtr,
+void setAttributes(std::shared_ptr<RegionAttributes>& regionAttributesPtr,
                    std::string pDir = sqlite_dir) {
   RegionAttributesFactory regionAttributesFactory;
   regionAttributesFactory.setCachingEnabled(true);
@@ -55,9 +55,9 @@ void setAttributes(std::shared_ptr<RegionAttributes>& attrsPtr,
   regionAttributesFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
                                   sqliteProperties);
 
-  attrsPtr = regionAttributesFactory.createRegionAttributes();
+  regionAttributesPtr = regionAttributesFactory.create();
 }
-void setAttributesWithMirror(std::shared_ptr<RegionAttributes>& attrsPtr) {
+void setAttributesWithMirror(std::shared_ptr<RegionAttributes>& regionAttributesPtr) {
   RegionAttributesFactory regionAttributesFactory;
   regionAttributesFactory.setCachingEnabled(true);
   regionAttributesFactory.setLruEntriesLimit(20);
@@ -69,7 +69,7 @@ void setAttributesWithMirror(std::shared_ptr<RegionAttributes>& attrsPtr) {
   sqliteProperties->insert("PersistenceDirectory", sqlite_dir.c_str());
   regionAttributesFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
                                   sqliteProperties);
-  attrsPtr = regionAttributesFactory.createRegionAttributes();
+  regionAttributesPtr = regionAttributesFactory.create();
 }
 
 // Testing for attibute validation.

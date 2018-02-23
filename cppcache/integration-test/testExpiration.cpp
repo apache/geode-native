@@ -76,7 +76,7 @@ std::shared_ptr<CacheableKey> do1Put(std::shared_ptr<Region>& rptr) {
 }
 
 void setExpTimes(
-    std::shared_ptr<RegionAttributes>& attrs,
+    std::shared_ptr<RegionAttributes>& regionAttributes,
     const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
     const std::chrono::seconds& eit = std::chrono::seconds::zero(),
     const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
@@ -88,7 +88,7 @@ void setExpTimes(
   regionAttributesFactory.setRegionIdleTimeout(action, rit);
   regionAttributesFactory.setRegionTimeToLive(action, rttl);
 
-  attrs = regionAttributesFactory.createRegionAttributes();
+  regionAttributes = regionAttributesFactory.create();
 }
 
 BEGIN_TEST(TEST_EXPIRATION)

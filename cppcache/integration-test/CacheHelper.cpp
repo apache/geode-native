@@ -340,16 +340,16 @@ void CacheHelper::createPlainRegion(const char* regionName,
 void CacheHelper::createPlainRegion(const char* regionName,
                                     std::shared_ptr<Region>& regionPtr,
                                     uint32_t size) {
-  std::shared_ptr<RegionAttributes> regAttrs;
+  std::shared_ptr<RegionAttributes> regionAttributes;
   RegionAttributesFactory regionAttributesFactory;
   // set lru attributes...
   regionAttributesFactory.setLruEntriesLimit(0);     // no limit.
   regionAttributesFactory.setInitialCapacity(size);  // no limit.
   // then...
-  regAttrs = regionAttributesFactory.createRegionAttributes();
-  showRegionAttributes(*regAttrs);
+  regionAttributes = regionAttributesFactory.create();
+  showRegionAttributes(*regionAttributes);
   // This is using subregions (deprecated) so not placing the new cache API here
-  regionPtr = rootRegionPtr->createSubregion(regionName, regAttrs);
+  regionPtr = rootRegionPtr->createSubregion(regionName, regionAttributes);
   ASSERT(regionPtr != nullptr, "failed to create region.");
 }
 
@@ -360,16 +360,16 @@ void CacheHelper::createLRURegion(const char* regionName,
 void CacheHelper::createLRURegion(const char* regionName,
                                   std::shared_ptr<Region>& regionPtr,
                                   uint32_t size) {
-  std::shared_ptr<RegionAttributes> regAttrs;
+  std::shared_ptr<RegionAttributes> regionAttributes;
   RegionAttributesFactory regionAttributesFactory;
   // set lru attributes...
   regionAttributesFactory.setLruEntriesLimit(size);
   regionAttributesFactory.setInitialCapacity(size);
   // then...
-  regAttrs = regionAttributesFactory.createRegionAttributes();
-  showRegionAttributes(*regAttrs);
+  regionAttributes = regionAttributesFactory.create();
+  showRegionAttributes(*regionAttributes);
   // This is using subregions (deprecated) so not placing the new cache API here
-  regionPtr = rootRegionPtr->createSubregion(regionName, regAttrs);
+  regionPtr = rootRegionPtr->createSubregion(regionName, regionAttributes);
   ASSERT(regionPtr != nullptr, "failed to create region.");
 }
 
@@ -381,16 +381,16 @@ void CacheHelper::createDistRegion(const char* regionName,
 void CacheHelper::createDistRegion(const char* regionName,
                                    std::shared_ptr<Region>& regionPtr,
                                    uint32_t size) {
-  std::shared_ptr<RegionAttributes> regAttrs;
+  std::shared_ptr<RegionAttributes> regionAttributes;
   RegionAttributesFactory regionAttributesFactory;
   // set lru attributes...
   regionAttributesFactory.setLruEntriesLimit(0);     // no limit.
   regionAttributesFactory.setInitialCapacity(size);  // no limit.
   // then...
-  regAttrs = regionAttributesFactory.createRegionAttributes();
-  showRegionAttributes(*regAttrs);
+  regionAttributes = regionAttributesFactory.create();
+  showRegionAttributes(*regionAttributes);
   // This is using subregions (deprecated) so not placing the new cache API here
-  regionPtr = rootRegionPtr->createSubregion(regionName, regAttrs);
+  regionPtr = rootRegionPtr->createSubregion(regionName, regionAttributes);
   ASSERT(regionPtr != nullptr, "failed to create region.");
 }
 std::shared_ptr<Region> CacheHelper::getRegion(const char* name) {
@@ -410,11 +410,11 @@ std::shared_ptr<Region> CacheHelper::createRegion(
     regionAttributeFactory.setConcurrencyChecksEnabled(concurrencyCheckEnabled);
   }
 
-  std::shared_ptr<RegionAttributes> rattrsPtr = regionAttributeFactory.createRegionAttributes();
+  std::shared_ptr<RegionAttributes> regionAttributesPtr = regionAttributeFactory.create();
 
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   std::shared_ptr<Region> regionPtr;
-  cacheImpl->createRegion(name, rattrsPtr, regionPtr);
+  cacheImpl->createRegion(name, regionAttributesPtr, regionPtr);
   return regionPtr;
 }
 std::shared_ptr<Region> CacheHelper::createRegion(
@@ -430,11 +430,11 @@ std::shared_ptr<Region> CacheHelper::createRegion(
   regionAttributeFactory.setRegionIdleTimeout(action, rit);
   regionAttributeFactory.setRegionTimeToLive(action, rttl);
 
-  std::shared_ptr<RegionAttributes> rattrsPtr = regionAttributeFactory.createRegionAttributes();
+  std::shared_ptr<RegionAttributes> regionAttributesPtr = regionAttributeFactory.create();
 
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   std::shared_ptr<Region> regionPtr;
-  cacheImpl->createRegion(name, rattrsPtr, regionPtr);
+  cacheImpl->createRegion(name, regionAttributesPtr, regionPtr);
   return regionPtr;
 }
 std::shared_ptr<Pool> CacheHelper::createPool(
@@ -736,10 +736,10 @@ std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
     regionAttributeFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance", sqLiteProps);
   }
 
-  std::shared_ptr<RegionAttributes> rattrsPtr = regionAttributeFactory.createRegionAttributes();
+  std::shared_ptr<RegionAttributes> regionAttributesPtr = regionAttributeFactory.create();
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   std::shared_ptr<Region> regionPtr;
-  cacheImpl->createRegion(name, rattrsPtr, regionPtr);
+  cacheImpl->createRegion(name, regionAttributesPtr, regionPtr);
   return regionPtr;
 }
 std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
@@ -888,9 +888,9 @@ std::shared_ptr<Region> CacheHelper::createSubregion(
   if (listener != nullptr) {
     regionAttributeFactory.setCacheListener(listener);
   }
-  std::shared_ptr<RegionAttributes> rattrsPtr = regionAttributeFactory.createRegionAttributes();
+  std::shared_ptr<RegionAttributes> regionAttributesPtr = regionAttributeFactory.create();
 
-  return parent->createSubregion(name, rattrsPtr);
+  return parent->createSubregion(name, regionAttributesPtr);
 }
 std::shared_ptr<CacheableString> CacheHelper::createCacheable(
     const char* value) {

@@ -42,15 +42,15 @@ BEGIN_TEST(CacheFunction)
   auto cacheFactory = CacheFactory();
   cptr = std::make_shared<Cache>(cacheFactory.create());
   RegionAttributesFactory regionAttributesFactory;
-  std::shared_ptr<RegionAttributes> rAttr;
+  std::shared_ptr<RegionAttributes> regionAttributes;
   std::cout << "create RegionAttributes" << std::endl;
   try {
-    rAttr = regionAttributesFactory.createRegionAttributes();
+    regionAttributes = regionAttributesFactory.create();
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, "attribute create failed");
   }
-  if (rAttr == nullptr) {
+  if (regionAttributes == nullptr) {
     std::cout << "Warnning! : RegionAttributesFactory returned nullptr" << std::endl;
   }
   std::shared_ptr<Region> rptr;
@@ -60,7 +60,7 @@ BEGIN_TEST(CacheFunction)
   std::cout << "create Region with name=" << regionName << std::endl;
   try {
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cptr.get());
-    cacheImpl->createRegion(regionName, rAttr, rptr);
+    cacheImpl->createRegion(regionName, regionAttributes, rptr);
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, (char*)"attribute create failed");
@@ -68,7 +68,7 @@ BEGIN_TEST(CacheFunction)
   std::cout << "create Sub Region with name=" << subRegionName1 << std::endl;
   std::shared_ptr<Region> subRptr1;
   try {
-    subRptr1 = rptr->createSubregion(subRegionName1, rAttr);
+    subRptr1 = rptr->createSubregion(subRegionName1, regionAttributes);
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, (char*)"subregion create failed");
@@ -76,7 +76,7 @@ BEGIN_TEST(CacheFunction)
   std::cout << "create Sub Region with name=" << subRegionName2 << std::endl;
   std::shared_ptr<Region> subRptr2;
   try {
-    subRptr2 = rptr->createSubregion(subRegionName2, rAttr);
+    subRptr2 = rptr->createSubregion(subRegionName2, regionAttributes);
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, (char*)"subregion create failed");
@@ -85,7 +85,7 @@ BEGIN_TEST(CacheFunction)
             << "inside region=" << subRegionName2 << std::endl;
   std::shared_ptr<Region> subRptr21;
   try {
-    subRptr21 = subRptr2->createSubregion(subRegionName21, rAttr);
+    subRptr21 = subRptr2->createSubregion(subRegionName21, regionAttributes);
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, (char*)"subregion create failed");

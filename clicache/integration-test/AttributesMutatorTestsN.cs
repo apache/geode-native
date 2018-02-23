@@ -145,7 +145,7 @@ namespace Apache.Geode.Client.UnitTests
       RegionAttributesFactory<string, string> regionAttributesFactory = new RegionAttributesFactory<string, string>();
 
       GIRegion region = CacheHelper.CreateRegion<string, string>(PeerRegionName,
-        regionAttributesFactory.CreateRegionAttributes());
+        regionAttributesFactory.Create());
 
       SetCacheListener(PeerRegionName, m_reg3Listener1);
       SetCacheLoader(PeerRegionName, m_reg3Loader1);
@@ -167,7 +167,7 @@ namespace Apache.Geode.Client.UnitTests
       RegionAttributesFactory<string, string> regionAttributesFactory = new RegionAttributesFactory<string, string>();
 
       GIRegion region = CacheHelper.CreateRegion<string, string>(PeerRegionName,
-        regionAttributesFactory.CreateRegionAttributes());
+        regionAttributesFactory.Create());
 
       CreateEntry(RegionNames[0], m_keys[1], m_vals[1]);
       CreateEntry(RegionNames[1], m_keys[3], m_vals[3]);

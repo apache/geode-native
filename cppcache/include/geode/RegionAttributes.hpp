@@ -56,7 +56,7 @@ class CacheImpl;
  * and whether statistics are enabled for the region and its entries.
  *
  * To create an instance of this interface, use {@link
- * RegionAttributesFactory::createRegionAttributes}.
+ * RegionAttributesFactory::create}.
  *
  * For compatibility rules and default values, see {@link RegionAttributesFactory}.
  *

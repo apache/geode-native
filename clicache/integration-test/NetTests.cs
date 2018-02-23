@@ -63,9 +63,9 @@ namespace Apache.Geode.Client.UnitTests
       regionAttributesFactory.SetCacheLoader(m_ldr);
       regionAttributesFactory.SetScope(scope);
       regionAttributesFactory.SetCachingEnabled(true);
-    
+
       m_region = CacheHelper.CreateRegion(TestRegion,
-        regionAttributesFactory.CreateRegionAttributes());
+        regionAttributesFactory.Create());
     }
 
     public void CreateRegionAndGetNEntries(int num)
@@ -92,7 +92,7 @@ namespace Apache.Geode.Client.UnitTests
       RegionAttributesFactory regionAttributesFactory = new RegionAttributesFactory();
       regionAttributesFactory.SetScope(ScopeType.Local);
       regionAttributesFactory.SetCacheLoader(m_ldr);
-      m_region = CacheHelper.CreateRegion(TestRegion, regionAttributesFactory.CreateRegionAttributes());
+      m_region = CacheHelper.CreateRegion(TestRegion, regionAttributesFactory.Create());
       m_ldr.Reset();
       Thread.Sleep(100);
       DoGets(m_region, num);
@@ -107,9 +107,9 @@ namespace Apache.Geode.Client.UnitTests
       regionAttributesFactory.SetCacheWriter(m_lwr);
       regionAttributesFactory.SetScope(scope);
       regionAttributesFactory.SetCachingEnabled(true);
-  
+
       m_netWriteRegion = CacheHelper.CreateRegion(TestRegionWrite,
-        regionAttributesFactory.CreateRegionAttributes());
+        regionAttributesFactory.Create());
     }
 
     public void RegionTwoCreateEntries(int num)

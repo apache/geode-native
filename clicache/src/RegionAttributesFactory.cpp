@@ -483,13 +483,13 @@ namespace Apache
       // FACTORY METHOD
 
       generic<class TKey, class TValue>
-      Apache::Geode::Client::RegionAttributes<TKey, TValue>^ RegionAttributesFactory<TKey, TValue>::CreateRegionAttributes()
+      Apache::Geode::Client::RegionAttributes<TKey, TValue>^ RegionAttributesFactory<TKey, TValue>::Create()
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
           try
           {
-            std::shared_ptr<native::RegionAttributes> nativeptr = m_nativeptr->get()->createRegionAttributes();
+            std::shared_ptr<native::RegionAttributes> nativeptr = m_nativeptr->get()->create();
             return Apache::Geode::Client::RegionAttributes<TKey, TValue>::Create(nativeptr);
           }
           finally

@@ -27,7 +27,7 @@ TEST(RegionAttributesFactoryTest, setEntryIdleTimeoutSeconds) {
       regionAttributesFactory
           .setEntryIdleTimeout(ExpirationAction::DESTROY,
                                std::chrono::seconds(10))
-          .createRegionAttributes();
+          .create();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes->getEntryIdleTimeout());
 }
 
@@ -37,7 +37,7 @@ TEST(RegionAttributesFactoryTest, setEntryTimeToLiveSeconds) {
       regionAttributesFactory
           .setEntryTimeToLive(ExpirationAction::DESTROY,
                               std::chrono::seconds(10))
-          .createRegionAttributes();
+          .create();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes->getEntryTimeToLive());
 }
 
@@ -47,7 +47,7 @@ TEST(RegionAttributesFactoryTest, setRegionIdleTimeoutSeconds) {
       regionAttributesFactory
           .setRegionIdleTimeout(ExpirationAction::DESTROY,
                                 std::chrono::seconds(10))
-          .createRegionAttributes();
+          .create();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes->getRegionIdleTimeout());
 }
 
@@ -57,24 +57,24 @@ TEST(RegionAttributesFactoryTest, setRegionTimeToLiveSeconds) {
       regionAttributesFactory
           .setRegionTimeToLive(ExpirationAction::DESTROY,
                                std::chrono::seconds(10))
-          .createRegionAttributes();
+          .create();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes->getRegionTimeToLive());
 }
 
 TEST(RegionAttributesFactoryTest, setInitialCapacity) {
-  RegionAttributesFactory* af = new RegionAttributesFactory();
-  EXPECT_NE(af, nullptr);
-  std::unique_ptr<RegionAttributes> rattrs =
-      af->setLruEntriesLimit(2).setInitialCapacity(5).createRegionAttributes();
-  EXPECT_NE(rattrs, nullptr);
-  EXPECT_EQ(rattrs->getInitialCapacity(), 5);
+  RegionAttributesFactory* regionAttributesFactory = new RegionAttributesFactory();
+  EXPECT_NE(regionAttributesFactory, nullptr);
+  std::unique_ptr<RegionAttributes> regionAttributes =
+      regionAttributesFactory->setLruEntriesLimit(2).setInitialCapacity(5).create();
+  EXPECT_NE(regionAttributes, nullptr);
+  EXPECT_EQ(regionAttributes->getInitialCapacity(), 5);
 }
 
 TEST(RegionAttributesFactoryTest, setLruEntriesLimit) {
-  RegionAttributesFactory* af = new RegionAttributesFactory();
-  EXPECT_NE(af, nullptr);
-  std::unique_ptr<RegionAttributes> rattrs =
-      af->setLruEntriesLimit(2).setInitialCapacity(5).createRegionAttributes();
-  EXPECT_NE(rattrs, nullptr);
-  EXPECT_EQ(rattrs->getLruEntriesLimit(), 2);
+  RegionAttributesFactory* regionAttributesFactory = new RegionAttributesFactory();
+  EXPECT_NE(regionAttributesFactory, nullptr);
+  std::unique_ptr<RegionAttributes> regionAttributes =
+      regionAttributesFactory->setLruEntriesLimit(2).setInitialCapacity(5).create();
+  EXPECT_NE(regionAttributes, nullptr);
+  EXPECT_EQ(regionAttributes->getLruEntriesLimit(), 2);
 }

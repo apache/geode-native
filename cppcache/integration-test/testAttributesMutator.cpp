@@ -43,10 +43,10 @@ DUNIT_TASK(A, Init)
     RegionAttributesFactory regionAttributesFactory;
     regionAttributesFactory.setEntryTimeToLive(ExpirationAction::LOCAL_INVALIDATE,
                           std::chrono::seconds(5));
-    std::shared_ptr<RegionAttributes> attrs = regionAttributesFactory.createRegionAttributes();
+    std::shared_ptr<RegionAttributes> regionAttributes = regionAttributesFactory.create();
 
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(Test.m_cache.get());
-    cacheImpl->createRegion("Local_ETTL_LI", attrs, Test.m_region);
+    cacheImpl->createRegion("Local_ETTL_LI", regionAttributes, Test.m_region);
   }
 ENDTASK
 

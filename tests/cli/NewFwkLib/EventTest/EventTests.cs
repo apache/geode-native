@@ -1358,10 +1358,10 @@ namespace Apache.Geode.Client.FwkLib
       {
 
         string fullName = parentRegion.FullPath;
-        RegionAttributes atts = parentRegion.Attributes;
-        AttributesFactory fact = new AttributesFactory(atts);
-        atts = fact.CreateRegionAttributes();
-        region = parentRegion.CreateSubRegion(sRegionName, atts);
+        RegionAttributes regionAttributes = parentRegion.Attributes;
+        AttributesFactory regionAttributesFactory = new AttributesFactory(regionAttributes);
+        regionAttributes = regionAttributesFactory.Create();
+        region = parentRegion.CreateSubRegion(sRegionName, regionAttributes);
         Util.BBSet(EventCountersBB, sRegionName, fullName);
       }
 

@@ -130,7 +130,7 @@ RegionAttributesFactory& RegionAttributesFactory::setConcurrencyLevel(
   return *this;
 }
 
-std::unique_ptr<RegionAttributes> RegionAttributesFactory::createRegionAttributes() {
+std::unique_ptr<RegionAttributes> RegionAttributesFactory::create() {
   std::shared_ptr<RegionAttributes> res;
   validateAttributes(m_regionAttributes);
   return std::unique_ptr<RegionAttributes>(

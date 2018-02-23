@@ -50,7 +50,7 @@ namespace client {
  * instances.
  * The setter methods are used to change the settings that will be used for
  * creating the next attributes instance with the {@link
- * #createRegionAttributes}
+ * #create}
  * method. If you create a factory with the default constructor, then the
  * factory is set up to create attributes with all default settings. You can
  * also create a factory by providing a <code>RegionAttributes</code>, which
@@ -433,7 +433,7 @@ class _GEODE_EXPORT RegionAttributesFactory {
    * compatibility rules
    * @return a reference to <code>this</code>
    */
-  std::unique_ptr<RegionAttributes> createRegionAttributes();
+  std::unique_ptr<RegionAttributes> create();
 
  private:
   RegionAttributes m_regionAttributes;

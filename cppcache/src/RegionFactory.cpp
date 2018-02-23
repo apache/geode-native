@@ -45,18 +45,18 @@ RegionFactory::RegionFactory(RegionShortcut preDefinedRegion,
 }
 std::shared_ptr<Region> RegionFactory::create(std::string name) {
   std::shared_ptr<Region> retRegionPtr = nullptr;
-  std::shared_ptr<RegionAttributes> regAttr =
-      m_attributeFactory->createRegionAttributes();
+  std::shared_ptr<RegionAttributes> regionAttributes =
+      m_attributeFactory->create();
   if (m_preDefinedRegion != RegionShortcut::LOCAL &&
-      regAttr->getPoolName().empty()) {
+      regionAttributes->getPoolName().empty()) {
     auto pool = m_cacheImpl->getPoolManager().getDefaultPool();
     if (!pool) {
       throw IllegalStateException("No pool for non-local region.");
     }
     m_attributeFactory->setPoolName(pool->getName());
-    regAttr = m_attributeFactory->createRegionAttributes();
+    regionAttributes = m_attributeFactory->create();
   }
-  m_cacheImpl->createRegion(name, regAttr, retRegionPtr);
+  m_cacheImpl->createRegion(name, regionAttributes, retRegionPtr);
 
   return retRegionPtr;
 }

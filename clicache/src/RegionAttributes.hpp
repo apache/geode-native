@@ -56,7 +56,7 @@ namespace Apache
       /// and whether statistics are enabled for the region and its entries.
       ///
       /// To create an instance of this interface, use
-      /// <see cref="RegionAttributesFactory.CreateRegionAttributes" />.
+      /// <see cref="RegionAttributesFactory.Create" />.
       ///
       /// For compatibility rules and default values, see <see cref="RegionAttributesFactory" />.
       /// <para>

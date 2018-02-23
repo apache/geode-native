@@ -819,7 +819,7 @@ namespace Apache.Geode.Client.UnitTests
       RegionAttributesFactory<TKey, TValue> regionAttributesFactory = new RegionAttributesFactory<TKey, TValue>();
       regionAttributesFactory.SetLruEntriesLimit(0);
       regionAttributesFactory.SetInitialCapacity(size);
-      Apache.Geode.Client.RegionAttributes<TKey, TValue> rattrs = regionAttributesFactory.CreateRegionAttributes();
+      Apache.Geode.Client.RegionAttributes<TKey, TValue> rattrs = regionAttributesFactory.Create();
       IRegion<TKey, TValue> region = ((Region<TKey, TValue>)m_currRegion).CreateSubRegion(name, rattrs);
       Assert.IsNotNull(region, "SubRegion {0} was not created.", name);
       return region;

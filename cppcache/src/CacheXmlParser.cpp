@@ -781,7 +781,7 @@ void CacheXmlParser::startRegion(const xmlChar** atts, bool isRoot) {
     }
   }
 
-  region->setAttributes(regionAttributesFactory->createRegionAttributes());
+  region->setAttributes(regionAttributesFactory->create());
   delete regionAttributesFactory;
 }
 
@@ -1024,7 +1024,7 @@ void CacheXmlParser::endRegionAttributes() {
   }
 
   std::shared_ptr<RegionAttributes> regionAttributesPtr =
-      regionAttributesFactory->createRegionAttributes();
+      regionAttributesFactory->create();
 
   auto regionPtr = std::static_pointer_cast<RegionXmlCreation>(_stack.top());
   if (!regionPtr) {

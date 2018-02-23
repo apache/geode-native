@@ -441,7 +441,7 @@ class Attributes {
   Attributes(const DOMNode* node);
 
   std::shared_ptr<RegionAttributes> getAttributes() {
-    return m_factory.createRegionAttributes();
+    return m_factory.create();
   }
 
   void setPoolName(std::string val) {

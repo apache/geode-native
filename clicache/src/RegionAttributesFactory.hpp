@@ -55,7 +55,7 @@ namespace Apache
       /// An <see cref="RegionAttributesFactory" />
       /// instance maintains state for creating <see cref="RegionAttributes" /> instances.
       /// The setter methods are used to change the settings that will be used for
-      /// creating the next attributes instance with the <see cref="CreateRegionAttributes" />
+      /// creating the next attributes instance with the <see cref="Create" />
       /// method. If you create a factory with the default constructor, then the
       /// factory is set up to create attributes with all default settings. You can
       /// also create a factory by providing a preset <see cref="RegionAttributes" />.
@@ -503,7 +503,7 @@ namespace Apache
         /// if the current settings violate the
         /// compatibility rules.
         /// </exception>
-        RegionAttributes<TKey, TValue>^ CreateRegionAttributes( );
+        RegionAttributes<TKey, TValue>^ Create( );
 
         private:
           native_unique_ptr<native::RegionAttributesFactory>^ m_nativeptr;

@@ -137,7 +137,7 @@ namespace Apache.Geode.Client.UnitTests
       sqliteProperties.Insert("PersistenceDirectory", sqlite_dir);
       regionAttributesFactory.SetPersistenceManager(libraryName, factoryFunctionName, sqliteProperties);
       IRegion<object, object> subRegion = region.CreateSubRegion(subRegionName,
-        regionAttributesFactory.CreateRegionAttributes());
+        regionAttributesFactory.Create());
       Assert.IsNotNull(subRegion, "Expected region to be non null");
       Assert.IsTrue(File.Exists(GetSqLiteFileName(sqlite_dir, subRegionName)), "Persistence file is not present");
       DoNput(subRegion, 50);
