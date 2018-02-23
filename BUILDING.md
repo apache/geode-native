@@ -77,6 +77,7 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 * [CMake GUI](https://cmake.org/)
 * [Doxygen GUI](http://ftp.stack.nl/pub/users/dimitri/Doxygen-1.8.11.dmg)
 * [Eclipse CDT 8.8](https://eclipse.org/cdt/) or newer
+* [CLion](https://www.jetbrains.com/clion/)
 
 ## Windows
 * Windows 8.1 64-bit
