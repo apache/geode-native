@@ -25,12 +25,17 @@
 ### Generator
 CMake uses a "generator" to produce configuration files for use by a variety of build tools, e.g., UNIX makefiles, Visual Studio projects. By default a system-specific generator is used by CMake during configuration. (Please see [the CMake documentation](https://cmake.org/documentation/) for further information.) However, in many cases there is a better choice.
 
-#### Mac OS X
-The recommended generator on Mac OS X is `Xcode`:
+#### CLion / Eclipse / Other
+The recommended generator for most unix platforms is 'Makefiles' (default):
+
+	$ cmake .. 
+
+#### Xcode
+The recommended generator for Xcode is `Xcode`:
 
 	$ cmake .. -G "Xcode"
 
-#### Windows
+#### Windows / Visual Studio
 When running cmake commands on Windows, be sure to use [Visual Studio Native Tools Command Prompt](https://msdn.microsoft.com/en-us/library/f35ctcxw.aspx) so environment variables are set properly.
 
 The recommended generator on Windows is `Visual Studio 14 2015 Win64`:
