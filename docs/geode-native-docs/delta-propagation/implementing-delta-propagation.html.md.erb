@@ -21,9 +21,6 @@ limitations under the License.
 
 By default, delta propagation is enabled in your distributed system and is used for objects that implement the delta interface. You program the client-side methods to extract delta information for your entries and to apply received delta information.
 
-For a complete delta propagation example, see
-[QuickStart Examples](../introduction/quickstart.html).
-
 **Prerequisites**
 
 -   Study your object types and expected application behavior to determine which objects should use delta propagation. Delta propagation is not beneficial for all data and data modification scenarios. See [Exceptions and Limitations](performance.html#performance).
@@ -55,5 +52,3 @@ For every class in which you want delta propagation, implement the delta interfa
 8.  Make sure you provide adequate synchronization to your object to maintain a consistent object state.
 
     If you do not use cloning, you will probably need to synchronize on reads and writes to avoid reading partially written updates from the cache. This might involve `toDelta`, `fromDelta`, and other object access and update methods. Additionally, your implementation should take into account the possibility of concurrent invocations of `fromDelta` and one or more of the object's update methods.
-
-

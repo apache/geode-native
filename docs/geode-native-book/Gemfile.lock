@@ -10,12 +10,12 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     ansi (1.5.0)
     backports (3.11.1)
-    bookbindery (10.1.12)
+    bookbindery (10.1.13)
       ansi (~> 1.4)
       css_parser
       elasticsearch
       fog-aws (~> 0.7.1)
-      font-awesome-sass
+      font-awesome-sass (= 4.7.0)
       git (~> 1.2.8)
       middleman (= 4.1.10)
       middleman-compass
@@ -165,7 +165,7 @@ GEM
     padrino-support (0.13.3.4)
       activesupport (>= 3.1)
     parallel (1.12.1)
-    public_suffix (3.0.1)
+    public_suffix (3.0.2)
     puma (3.11.2)
     rack (1.6.8)
     rack-livereload (0.3.16)
@@ -202,4 +202,4 @@ DEPENDENCIES
   libv8 (= 3.16.14.7)
 
 BUNDLED WITH
-   1.16.1
+   1.11.2
