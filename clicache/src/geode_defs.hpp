@@ -64,15 +64,15 @@
 /// @file CacheAttributes.hpp
 /// Declares the CacheAttributes class.
 
-/// @file CacheRegionAttributesFactory.hpp
-/// Declares the CacheRegionAttributesFactory class.
+/// @file CacheAttributesFactory.hpp
+/// Declares the CacheAttributesFactory class.
 
 /// @file CacheableBuiltins.hpp
 /// Declares the CacheableBuiltinKey and CacheableBuiltinArray
 /// template classes and their instantiations for CacheableBoolean,
 /// CacheableByte, CacheableDouble, CacheableFloat, CacheableInt16,
 /// CacheableInt32, CacheableInt64, CacheableBytes, CacheableDoubleArray,
-/// CacheableFloatArray, CacheableInt16Array, CacheableInt32Array, 
+/// CacheableFloatArray, CacheableInt16Array, CacheableInt32Array,
 /// CacheableInt64Array, BooleanArray and CharArray
 
 /// @file CacheableBuiltins.hpp
