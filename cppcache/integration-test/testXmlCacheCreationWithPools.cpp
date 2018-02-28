@@ -339,9 +339,9 @@ int testXmlCacheCreationWithPools() {
 
   std::cout << "Test the attributes of region" << std::endl;
 
-  const auto& poolNameReg1 = regPtr1->getAttributes()->getPoolName();
-  const auto& poolNameSubReg = subRegPtr->getAttributes()->getPoolName();
-  const auto& poolNameReg2 = regPtr2->getAttributes()->getPoolName();
+  const auto& poolNameReg1 = regPtr1->getAttributes().getPoolName();
+  const auto& poolNameSubReg = subRegPtr->getAttributes().getPoolName();
+  const auto& poolNameReg2 = regPtr2->getAttributes().getPoolName();
 
   if (poolNameReg1 != "test_pool_1") {
     std::cout << "Wrong pool name for region 1" << std::endl;
@@ -512,22 +512,21 @@ int testXmlDeclarativeCacheCreation() {
   }
   auto regPtr1 = vrp.at(0);
 
-  std::shared_ptr<RegionAttributes> raPtr = regPtr1->getAttributes();
-  RegionAttributes* regAttr = raPtr.get();
+  RegionAttributes regAttr = regPtr1->getAttributes();
   std::cout << "Test Attributes of root region Root1 " << std::endl;
   std::cout << "Region name " << regPtr1->getName() << std::endl;
 
-  if (regAttr->getCacheLoader() == nullptr) {
+  if (regAttr.getCacheLoader() == nullptr) {
     std::cout << "Cache Loader not initialized." << std::endl;
     return -1;
   }
 
-  if (regAttr->getCacheListener() == nullptr) {
+  if (regAttr.getCacheListener() == nullptr) {
     std::cout << "Cache Listener not initialized." << std::endl;
     return -1;
   }
 
-  if (regAttr->getCacheWriter() == nullptr) {
+  if (regAttr.getCacheWriter() == nullptr) {
     std::cout << "Cache Writer not initialized." << std::endl;
     return -1;
   }

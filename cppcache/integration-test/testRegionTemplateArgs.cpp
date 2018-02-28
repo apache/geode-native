@@ -38,7 +38,7 @@ BEGIN_TEST(CheckTemplates)
     auto cacheFactory = CacheFactory();
     auto cache = std::make_shared<Cache>(cacheFactory.create());
     RegionAttributesFactory regionAttributesFactory;
-    std::shared_ptr<RegionAttributes> regionAttributes = regionAttributesFactory.create();
+    auto regionAttributes = regionAttributesFactory.create();
     std::shared_ptr<Region> regPtr;
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
     cacheImpl->createRegion("TestRegion", regionAttributes, regPtr);

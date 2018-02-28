@@ -29,8 +29,6 @@ class RegionWrapper {
  public:
   explicit RegionWrapper(const char* name)
       : m_regionPtr(cacheHelper->getRegion(name)) {
-    std::shared_ptr<RegionAttributes> attrs;
-    attrs = m_regionPtr->getAttributes();
     m_noack = true;
   }
 

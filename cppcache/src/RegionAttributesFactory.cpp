@@ -35,8 +35,8 @@ class Region;
 RegionAttributesFactory::RegionAttributesFactory() : m_regionAttributes() {}
 
 RegionAttributesFactory::RegionAttributesFactory(
-    const std::shared_ptr<RegionAttributes>& regionAttributes)
-    : m_regionAttributes(*regionAttributes) {}
+    const RegionAttributes regionAttributes)
+    : m_regionAttributes(regionAttributes) {}
 
 RegionAttributesFactory::~RegionAttributesFactory() {}
 
@@ -62,14 +62,14 @@ RegionAttributesFactory& RegionAttributesFactory::setPartitionResolver(
   return *this;
 }
 
-RegionAttributesFactory& RegionAttributesFactory::setCacheLoader(const std::string& lib,
-                                                     const std::string& func) {
+RegionAttributesFactory& RegionAttributesFactory::setCacheLoader(
+    const std::string& lib, const std::string& func) {
   m_regionAttributes.setCacheLoader(lib, func);
   return *this;
 }
 
-RegionAttributesFactory& RegionAttributesFactory::setCacheWriter(const std::string& lib,
-                                                     const std::string& func) {
+RegionAttributesFactory& RegionAttributesFactory::setCacheWriter(
+    const std::string& lib, const std::string& func) {
   m_regionAttributes.setCacheWriter(lib, func);
   return *this;
 }
@@ -114,12 +114,14 @@ RegionAttributesFactory& RegionAttributesFactory::setRegionTimeToLive(
   return *this;
 }
 
-RegionAttributesFactory& RegionAttributesFactory::setInitialCapacity(int initialCapacity) {
+RegionAttributesFactory& RegionAttributesFactory::setInitialCapacity(
+    int initialCapacity) {
   m_regionAttributes.m_initialCapacity = initialCapacity;
   return *this;
 }
 
-RegionAttributesFactory& RegionAttributesFactory::setLoadFactor(float loadFactor) {
+RegionAttributesFactory& RegionAttributesFactory::setLoadFactor(
+    float loadFactor) {
   m_regionAttributes.m_loadFactor = loadFactor;
   return *this;
 }
@@ -130,11 +132,10 @@ RegionAttributesFactory& RegionAttributesFactory::setConcurrencyLevel(
   return *this;
 }
 
-std::unique_ptr<RegionAttributes> RegionAttributesFactory::create() {
-  std::shared_ptr<RegionAttributes> res;
+RegionAttributes RegionAttributesFactory::create() {
   validateAttributes(m_regionAttributes);
-  return std::unique_ptr<RegionAttributes>(
-      new RegionAttributes(m_regionAttributes));
+  RegionAttributes regionAttributes(m_regionAttributes);
+  return regionAttributes;  // RegionAttributes(m_regionAttributes);
 }
 
 void RegionAttributesFactory::validateAttributes(RegionAttributes& attrs) {
@@ -193,7 +194,8 @@ RegionAttributesFactory& RegionAttributesFactory::setDiskPolicy(
   return *this;
 }
 
-RegionAttributesFactory& RegionAttributesFactory::setCachingEnabled(bool cachingEnabled) {
+RegionAttributesFactory& RegionAttributesFactory::setCachingEnabled(
+    bool cachingEnabled) {
   m_regionAttributes.m_caching = cachingEnabled;
   return *this;
 }
@@ -213,16 +215,19 @@ RegionAttributesFactory& RegionAttributesFactory::setPersistenceManager(
   return *this;
 }
 
-RegionAttributesFactory& RegionAttributesFactory::setPoolName(const std::string& name) {
+RegionAttributesFactory& RegionAttributesFactory::setPoolName(
+    const std::string& name) {
   m_regionAttributes.setPoolName(name);
   return *this;
 }
 
-RegionAttributesFactory& RegionAttributesFactory::setCloningEnabled(bool isClonable) {
+RegionAttributesFactory& RegionAttributesFactory::setCloningEnabled(
+    bool isClonable) {
   m_regionAttributes.setCloningEnabled(isClonable);
   return *this;
 }
-RegionAttributesFactory& RegionAttributesFactory::setConcurrencyChecksEnabled(bool enable) {
+RegionAttributesFactory& RegionAttributesFactory::setConcurrencyChecksEnabled(
+    bool enable) {
   m_regionAttributes.setConcurrencyChecksEnabled(enable);
   return *this;
 }

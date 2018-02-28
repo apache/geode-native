@@ -398,11 +398,11 @@ std::shared_ptr<Region> createOverflowRegion(
   sqLiteProps->insert("PersistenceDirectory", sqlite_dir.c_str());
   regionAttributesFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance", sqLiteProps);
 
-  std::shared_ptr<RegionAttributes> regionAttributesPtr = regionAttributesFactory.create();
+  auto regionAttributes = regionAttributesFactory.create();
   auto cache = getHelper()->cachePtr;
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
   std::shared_ptr<Region> regionPtr;
-  cacheImpl->createRegion(name, regionAttributesPtr, regionPtr);
+  cacheImpl->createRegion(name, regionAttributes, regionPtr);
   return regionPtr;
 }
 std::shared_ptr<Region> createPooledRegion(

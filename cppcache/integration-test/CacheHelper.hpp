@@ -264,7 +264,7 @@ class CacheHelper {
 
   void showKeys(std::vector<std::shared_ptr<CacheableKey>>& vecKeys);
 
-  void showRegionAttributes(RegionAttributes& attributes);
+  void showRegionAttributes(RegionAttributes attributes);
 
   std::shared_ptr<QueryService> getQueryService();
 

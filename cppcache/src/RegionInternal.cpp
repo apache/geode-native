@@ -40,7 +40,7 @@ const CacheEventFlags CacheEventFlags::NOCACHEWRITER(
 
 RegionInternal::RegionInternal(
     Cache* cache,
-    const std::shared_ptr<RegionAttributes>& attributes)
+    RegionAttributes attributes)
     : Region(cache), m_regionAttributes(attributes) {}
 
 RegionInternal::~RegionInternal() {}
@@ -109,128 +109,90 @@ std::shared_ptr<RegionEntry> RegionInternal::createRegionEntry(
 }
 
 void RegionInternal::setLruEntriesLimit(uint32_t limit) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->m_lruEntriesLimit = limit;
-  }
+  m_regionAttributes.m_lruEntriesLimit = limit;
 }
 
 void RegionInternal::setRegionTimeToLiveExpirationAction(
     ExpirationAction action) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->m_regionTimeToLiveExpirationAction = action;
-  }
+  m_regionAttributes.m_regionTimeToLiveExpirationAction = action;
 }
 
 void RegionInternal::setRegionIdleTimeoutExpirationAction(
     ExpirationAction action) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->m_regionIdleTimeoutExpirationAction = action;
-  }
+  m_regionAttributes.m_regionIdleTimeoutExpirationAction = action;
 }
 
 void RegionInternal::setEntryTimeToLiveExpirationAction(
     ExpirationAction action) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->m_entryTimeToLiveExpirationAction = action;
-  }
+  m_regionAttributes.m_entryTimeToLiveExpirationAction = action;
 }
 
 void RegionInternal::setEntryIdleTimeoutExpirationAction(
     ExpirationAction action) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->m_entryIdleTimeoutExpirationAction = action;
-  }
+  m_regionAttributes.m_entryIdleTimeoutExpirationAction = action;
 }
 
 void RegionInternal::setRegionTimeToLive(const std::chrono::seconds& duration) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->m_regionTimeToLive = duration;
-  }
+  m_regionAttributes.m_regionTimeToLive = duration;
 }
 
 void RegionInternal::setRegionIdleTimeout(
     const std::chrono::seconds& duration) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->m_regionIdleTimeout = duration;
-  }
+  m_regionAttributes.m_regionIdleTimeout = duration;
 }
 
 void RegionInternal::setEntryTimeToLive(const std::chrono::seconds& duration) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->m_entryTimeToLive = duration;
-  }
+  m_regionAttributes.m_entryTimeToLive = duration;
 }
 
 void RegionInternal::setEntryIdleTimeout(const std::chrono::seconds& duration) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->m_entryIdleTimeout = duration;
-  }
+  m_regionAttributes.m_entryIdleTimeout = duration;
 }
 
 void RegionInternal::setCacheListener(const std::shared_ptr<CacheListener>& aListener) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->m_cacheListener = aListener;
-  }
+  m_regionAttributes.m_cacheListener = aListener;
 }
 
 void RegionInternal::setCacheListener(const std::string& libpath,
                                       const std::string& factoryFuncName) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->setCacheListener(libpath, factoryFuncName);
-  }
+  m_regionAttributes.setCacheListener(libpath, factoryFuncName);
 }
 
 void RegionInternal::setPartitionResolver(
     const std::shared_ptr<PartitionResolver>& aResolver) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->m_partitionResolver = aResolver;
-  }
+  m_regionAttributes.m_partitionResolver = aResolver;
 }
 
 void RegionInternal::setPartitionResolver(const std::string& libpath,
                                           const std::string& factoryFuncName) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->setPartitionResolver(libpath, factoryFuncName);
-  }
+  m_regionAttributes.setPartitionResolver(libpath, factoryFuncName);
 }
 
 void RegionInternal::setCacheLoader(const std::shared_ptr<CacheLoader>& aLoader) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->m_cacheLoader = aLoader;
-  }
+  m_regionAttributes.m_cacheLoader = aLoader;
 }
 
 void RegionInternal::setCacheLoader(const std::string& libpath,
                                     const std::string& factoryFuncName) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->setCacheLoader(libpath, factoryFuncName);
-  }
+  m_regionAttributes.setCacheLoader(libpath, factoryFuncName);
 }
 
 void RegionInternal::setCacheWriter(const std::shared_ptr<CacheWriter>& aWriter) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->m_cacheWriter = aWriter;
-  }
+  m_regionAttributes.m_cacheWriter = aWriter;
 }
 
 void RegionInternal::setCacheWriter(const std::string& libpath,
                                     const std::string& factoryFuncName) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->setCacheWriter(libpath, factoryFuncName);
-  }
+  m_regionAttributes.setCacheWriter(libpath, factoryFuncName);
 }
 
 void RegionInternal::setEndpoints(const std::string& endpoints) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->setEndpoints(endpoints);
-  }
+  m_regionAttributes.setEndpoints(endpoints);
 }
 
 void RegionInternal::setClientNotificationEnabled(
     bool clientNotificationEnabled) {
-  if (m_regionAttributes != nullptr) {
-    m_regionAttributes->m_clientNotificationEnabled = clientNotificationEnabled;
-  }
+  m_regionAttributes.m_clientNotificationEnabled = clientNotificationEnabled;
 }
 
 void RegionInternal::txDestroy(const std::shared_ptr<CacheableKey>& key,

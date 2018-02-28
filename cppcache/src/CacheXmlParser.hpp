@@ -66,7 +66,7 @@ class _GEODE_EXPORT CacheXmlParser : public CacheXml {
   bool m_flagIllegalStateException;
   bool m_flagAnyOtherException;
   bool m_flagExpirationAttribute;
-  std::map<std::string, std::shared_ptr<RegionAttributes>> namedRegions;
+  std::map<std::string, RegionAttributes> namedRegions;
   std::shared_ptr<PoolFactory> m_poolFactory;
 
   Cache* m_cache;

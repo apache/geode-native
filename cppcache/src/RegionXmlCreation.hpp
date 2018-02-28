@@ -54,7 +54,7 @@ class _GEODE_EXPORT RegionXmlCreation {
   bool isRoot;
 
   /** The attributes of this region */
-  std::shared_ptr<RegionAttributes> regAttrs;
+  RegionAttributes regionAttributes;
 
   /** This region's subregions */
   std::vector<std::shared_ptr<RegionXmlCreation>> subRegions;
@@ -83,12 +83,12 @@ class _GEODE_EXPORT RegionXmlCreation {
   /**
    * Sets the attributes of this region
    */
-  void setAttributes(std::shared_ptr<RegionAttributes> attrsPtr);
+  void setAttributes(const RegionAttributes attributes);
 
   /**
    * Gets the attributes of this region
    */
-  std::shared_ptr<RegionAttributes> getAttributes();
+  RegionAttributes getAttributes();
 
   /**
    * Creates a root {@link Region} in a given <code>Cache</code>

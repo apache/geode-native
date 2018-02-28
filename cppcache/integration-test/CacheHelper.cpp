@@ -102,7 +102,7 @@ CacheHelper::CacheHelper(const char* member_id,
     rootRegionPtr = cachePtr->getRegion(ROOT_NAME);
   }
 
-  showRegionAttributes(*rootRegionPtr->getAttributes());
+  showRegionAttributes(rootRegionPtr->getAttributes());
 }
 
 /** rootRegionPtr will still be null... */
@@ -150,7 +150,7 @@ CacheHelper::CacheHelper(const std::shared_ptr<Properties>& configPtr,
     rootRegionPtr = cachePtr->getRegion(ROOT_NAME);
   }
 
-  showRegionAttributes(*rootRegionPtr->getAttributes());
+  showRegionAttributes(rootRegionPtr->getAttributes());
 }
 
 CacheHelper::CacheHelper(const bool isThinclient,
@@ -340,14 +340,13 @@ void CacheHelper::createPlainRegion(const char* regionName,
 void CacheHelper::createPlainRegion(const char* regionName,
                                     std::shared_ptr<Region>& regionPtr,
                                     uint32_t size) {
-  std::shared_ptr<RegionAttributes> regionAttributes;
   RegionAttributesFactory regionAttributesFactory;
   // set lru attributes...
   regionAttributesFactory.setLruEntriesLimit(0);     // no limit.
   regionAttributesFactory.setInitialCapacity(size);  // no limit.
   // then...
-  regionAttributes = regionAttributesFactory.create();
-  showRegionAttributes(*regionAttributes);
+  auto regionAttributes = regionAttributesFactory.create();
+  showRegionAttributes(regionAttributes);
   // This is using subregions (deprecated) so not placing the new cache API here
   regionPtr = rootRegionPtr->createSubregion(regionName, regionAttributes);
   ASSERT(regionPtr != nullptr, "failed to create region.");
@@ -360,14 +359,13 @@ void CacheHelper::createLRURegion(const char* regionName,
 void CacheHelper::createLRURegion(const char* regionName,
                                   std::shared_ptr<Region>& regionPtr,
                                   uint32_t size) {
-  std::shared_ptr<RegionAttributes> regionAttributes;
   RegionAttributesFactory regionAttributesFactory;
   // set lru attributes...
   regionAttributesFactory.setLruEntriesLimit(size);
   regionAttributesFactory.setInitialCapacity(size);
   // then...
-  regionAttributes = regionAttributesFactory.create();
-  showRegionAttributes(*regionAttributes);
+  auto regionAttributes = regionAttributesFactory.create();
+  showRegionAttributes(regionAttributes);
   // This is using subregions (deprecated) so not placing the new cache API here
   regionPtr = rootRegionPtr->createSubregion(regionName, regionAttributes);
   ASSERT(regionPtr != nullptr, "failed to create region.");
@@ -381,14 +379,13 @@ void CacheHelper::createDistRegion(const char* regionName,
 void CacheHelper::createDistRegion(const char* regionName,
                                    std::shared_ptr<Region>& regionPtr,
                                    uint32_t size) {
-  std::shared_ptr<RegionAttributes> regionAttributes;
   RegionAttributesFactory regionAttributesFactory;
   // set lru attributes...
   regionAttributesFactory.setLruEntriesLimit(0);     // no limit.
   regionAttributesFactory.setInitialCapacity(size);  // no limit.
   // then...
-  regionAttributes = regionAttributesFactory.create();
-  showRegionAttributes(*regionAttributes);
+  auto regionAttributes = regionAttributesFactory.create();
+  showRegionAttributes(regionAttributes);
   // This is using subregions (deprecated) so not placing the new cache API here
   regionPtr = rootRegionPtr->createSubregion(regionName, regionAttributes);
   ASSERT(regionPtr != nullptr, "failed to create region.");
@@ -410,11 +407,11 @@ std::shared_ptr<Region> CacheHelper::createRegion(
     regionAttributeFactory.setConcurrencyChecksEnabled(concurrencyCheckEnabled);
   }
 
-  std::shared_ptr<RegionAttributes> regionAttributesPtr = regionAttributeFactory.create();
+  RegionAttributes regionAttributes = regionAttributeFactory.create();
 
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   std::shared_ptr<Region> regionPtr;
-  cacheImpl->createRegion(name, regionAttributesPtr, regionPtr);
+  cacheImpl->createRegion(name, regionAttributes, regionPtr);
   return regionPtr;
 }
 std::shared_ptr<Region> CacheHelper::createRegion(
@@ -430,11 +427,11 @@ std::shared_ptr<Region> CacheHelper::createRegion(
   regionAttributeFactory.setRegionIdleTimeout(action, rit);
   regionAttributeFactory.setRegionTimeToLive(action, rttl);
 
-  std::shared_ptr<RegionAttributes> regionAttributesPtr = regionAttributeFactory.create();
+  RegionAttributes regionAttributes = regionAttributeFactory.create();
 
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   std::shared_ptr<Region> regionPtr;
-  cacheImpl->createRegion(name, regionAttributesPtr, regionPtr);
+  cacheImpl->createRegion(name, regionAttributes, regionPtr);
   return regionPtr;
 }
 std::shared_ptr<Pool> CacheHelper::createPool(
@@ -736,10 +733,10 @@ std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
     regionAttributeFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance", sqLiteProps);
   }
 
-  std::shared_ptr<RegionAttributes> regionAttributesPtr = regionAttributeFactory.create();
+  RegionAttributes regionAttributes = regionAttributeFactory.create();
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   std::shared_ptr<Region> regionPtr;
-  cacheImpl->createRegion(name, regionAttributesPtr, regionPtr);
+  cacheImpl->createRegion(name, regionAttributes, regionPtr);
   return regionPtr;
 }
 std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
@@ -888,9 +885,9 @@ std::shared_ptr<Region> CacheHelper::createSubregion(
   if (listener != nullptr) {
     regionAttributeFactory.setCacheListener(listener);
   }
-  std::shared_ptr<RegionAttributes> regionAttributesPtr = regionAttributeFactory.create();
+  RegionAttributes regionAttributes = regionAttributeFactory.create();
 
-  return parent->createSubregion(name, regionAttributesPtr);
+  return parent->createSubregion(name, regionAttributes);
 }
 std::shared_ptr<CacheableString> CacheHelper::createCacheable(
     const char* value) {
@@ -906,7 +903,7 @@ void CacheHelper::showKeys(
   fflush(stdout);
 }
 
-void CacheHelper::showRegionAttributes(RegionAttributes& attributes) {
+void CacheHelper::showRegionAttributes(RegionAttributes attributes) {
   printf("caching=%s\n", attributes.getCachingEnabled() ? "true" : "false");
   printf("Entry Time To Live = %s\n",
          to_string(attributes.getEntryTimeToLive()).c_str());

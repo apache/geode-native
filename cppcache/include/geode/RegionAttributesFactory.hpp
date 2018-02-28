@@ -175,7 +175,9 @@ class _GEODE_EXPORT RegionAttributesFactory {
    * @param regionAttributes the <code>RegionAttributes</code> used to
    * initialize this RegionAttributesFactory
    */
-  RegionAttributesFactory(const std::shared_ptr<RegionAttributes>& regionAttributes);
+  RegionAttributesFactory(const RegionAttributes regionAttributes);
+
+  RegionAttributesFactory(const RegionAttributesFactory&) = default;
 
   /**
    *@brief destructor
@@ -433,7 +435,7 @@ class _GEODE_EXPORT RegionAttributesFactory {
    * compatibility rules
    * @return a reference to <code>this</code>
    */
-  std::unique_ptr<RegionAttributes> create();
+  RegionAttributes create();
 
  private:
   RegionAttributes m_regionAttributes;

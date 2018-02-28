@@ -93,7 +93,7 @@ std::shared_ptr<Region> ProxyCache::getRegion(const std::string& path) const {
     if (result != nullptr) {
      auto userAttachedPool = m_userAttributes->getPool();
      auto pool = m_cacheImpl->getCache()->getPoolManager().find(
-         result->getAttributes()->getPoolName());
+         result->getAttributes().getPoolName());
      if (pool != nullptr && pool.get() == userAttachedPool.get() &&
          !pool->isDestroyed()) {
        return std::make_shared<ProxyRegion>(
@@ -144,7 +144,7 @@ std::vector<std::shared_ptr<Region>> ProxyCache::rootRegions() const {
 
     for (const auto& reg : tmp) {
       if (m_userAttributes->getPool()->getName() ==
-          reg->getAttributes()->getPoolName()) {
+          reg->getAttributes().getPoolName()) {
         auto pRegion = std::make_shared<ProxyRegion>(
             std::const_pointer_cast<ProxyCache>(shared_from_this()),
             std::static_pointer_cast<RegionInternal>(reg));

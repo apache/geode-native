@@ -71,29 +71,29 @@ CacheHelper* getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
-void printAttribute(std::shared_ptr<RegionAttributes>& attr) {
+void printAttribute(RegionAttributes attr) {
   printf("CachingEnable: %s\n",
-         attr->getCachingEnabled() ? "enabled" : "disabled");
-  printf("InitialCapacity: %d\n", attr->getInitialCapacity());
-  printf("LoadFactor: %f\n", attr->getLoadFactor());
-  printf("ConcurencyLevel: %d\n", attr->getConcurrencyLevel());
+         attr.getCachingEnabled() ? "enabled" : "disabled");
+  printf("InitialCapacity: %d\n", attr.getInitialCapacity());
+  printf("LoadFactor: %f\n", attr.getLoadFactor());
+  printf("ConcurencyLevel: %d\n", attr.getConcurrencyLevel());
   printf("RegionTimeToLive: %s\n",
-         to_string(attr->getRegionTimeToLive()).c_str());
+         to_string(attr.getRegionTimeToLive()).c_str());
   printf("RegionIdleTimeout: %s\n",
-         to_string(attr->getRegionIdleTimeout()).c_str());
+         to_string(attr.getRegionIdleTimeout()).c_str());
   printf("EntryTimeToLive: %s\n",
-         to_string(attr->getEntryTimeToLive()).c_str());
+         to_string(attr.getEntryTimeToLive()).c_str());
   printf("EntryIdleTimeout: %s\n",
-         to_string(attr->getEntryIdleTimeout()).c_str());
-  printf("getLruEntriesLimit: %d\n", attr->getLruEntriesLimit());
-  printf("RegionTimeToLiveAction: %d\n", attr->getRegionTimeToLiveAction());
-  printf("RegionIdleTimeoutAction: %d\n", attr->getRegionIdleTimeoutAction());
-  printf("EntryTimeToLiveAction: %d\n", attr->getEntryTimeToLiveAction());
-  printf("EntryIdleTimeoutAction: %d\n", attr->getEntryIdleTimeoutAction());
-  printf("LruEvictionAction: %d\n", attr->getLruEvictionAction());
+         to_string(attr.getEntryIdleTimeout()).c_str());
+  printf("getLruEntriesLimit: %d\n", attr.getLruEntriesLimit());
+  printf("RegionTimeToLiveAction: %d\n", attr.getRegionTimeToLiveAction());
+  printf("RegionIdleTimeoutAction: %d\n", attr.getRegionIdleTimeoutAction());
+  printf("EntryTimeToLiveAction: %d\n", attr.getEntryTimeToLiveAction());
+  printf("EntryIdleTimeoutAction: %d\n", attr.getEntryIdleTimeoutAction());
+  printf("LruEvictionAction: %d\n", attr.getLruEvictionAction());
   printf("ClientNotification: %s\n",
-         attr->getClientNotificationEnabled() ? "true" : "false");
-  // printf("getEndPoint: %s\n",attr->getEndpoints());
+         attr.getClientNotificationEnabled() ? "true" : "false");
+  // printf("getEndPoint: %s\n",attr.getEndpoints());
 }
 
 void setCacheListener(const char* regName, std::shared_ptr<TallyListener> regListener) {

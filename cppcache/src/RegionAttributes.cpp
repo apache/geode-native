@@ -58,8 +58,6 @@ RegionAttributes::RegionAttributes()
       m_isClonable(false),
       m_isConcurrencyChecksEnabled(true) {}
 
-RegionAttributes::RegionAttributes(const RegionAttributes& rhs) = default;
-
 RegionAttributes::~RegionAttributes() noexcept = default;
 
 namespace impl {
@@ -206,7 +204,10 @@ const std::string& RegionAttributes::getPartitionResolverLibrary() {
   return m_partitionResolverLibrary;
 }
 
-const std::string& RegionAttributes::getEndpoints() { return m_endpoints; }
+const std::string& RegionAttributes::getEndpoints() const { 
+  return m_endpoints; 
+}
+
 bool RegionAttributes::getClientNotificationEnabled() const {
   return m_clientNotificationEnabled;
 }
@@ -268,7 +269,9 @@ uint32_t RegionAttributes::getLruEntriesLimit() const {
 DiskPolicyType RegionAttributes::getDiskPolicy() const {
   return m_diskPolicy;
 }
+
 const std::string& RegionAttributes::getPoolName() const { return m_poolName; }
+
 std::shared_ptr<Serializable> RegionAttributes::createDeserializable() {
   return std::make_shared<RegionAttributes>();
 }

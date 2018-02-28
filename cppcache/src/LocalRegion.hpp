@@ -130,7 +130,7 @@ class _GEODE_EXPORT LocalRegion : public RegionInternal {
    */
   LocalRegion(const std::string& name, CacheImpl* cache,
               const std::shared_ptr<RegionInternal>& rPtr,
-              const std::shared_ptr<RegionAttributes>& attributes,
+              RegionAttributes attributes,
               const std::shared_ptr<CacheStatistics>& stats,
               bool shared = false, bool enableTimeStatistics = true);
   virtual ~LocalRegion();
@@ -138,7 +138,7 @@ class _GEODE_EXPORT LocalRegion : public RegionInternal {
   const std::string& getName() const override;
   const std::string& getFullPath() const override;
   std::shared_ptr<Region> getParentRegion() const override;
-  std::shared_ptr<RegionAttributes> getAttributes() const override {
+  RegionAttributes getAttributes() const override {
     return m_regionAttributes;
   }
   std::shared_ptr<AttributesMutator> getAttributesMutator() const override {
@@ -166,7 +166,7 @@ class _GEODE_EXPORT LocalRegion : public RegionInternal {
   std::shared_ptr<Region> getSubregion(const std::string& path) override;
   std::shared_ptr<Region> createSubregion(
       const std::string& subregionName,
-      const std::shared_ptr<RegionAttributes>& aRegionAttributes) override;
+      RegionAttributes regionAttributes) override;
   std::vector<std::shared_ptr<Region>> subregions(
       const bool recursive) override;
   std::shared_ptr<RegionEntry> getEntry(
@@ -374,10 +374,10 @@ class _GEODE_EXPORT LocalRegion : public RegionInternal {
   // other public methods
   RegionStats* getRegionStats() override { return m_regionStats; }
   inline bool cacheEnabled() override {
-    return m_regionAttributes->getCachingEnabled();
+    return m_regionAttributes.getCachingEnabled();
   }
   inline bool cachelessWithListener() {
-    return !m_regionAttributes->getCachingEnabled() && (m_listener != nullptr);
+    return !m_regionAttributes.getCachingEnabled() && (m_listener != nullptr);
   }
   virtual bool isDestroyed() const override { return m_destroyPending; }
   /* above public methods are inherited from RegionInternal */

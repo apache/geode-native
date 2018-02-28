@@ -346,7 +346,7 @@ class RemoveAllWork : public PooledWork<GfErrType>,
 ThinClientRegion::ThinClientRegion(
     const std::string& name, CacheImpl* cacheImpl,
     const std::shared_ptr<RegionInternal>& rPtr,
-    const std::shared_ptr<RegionAttributes>& attributes,
+    RegionAttributes attributes,
     const std::shared_ptr<CacheStatistics>& stats, bool shared)
     : LocalRegion(name, cacheImpl, rPtr, attributes, stats, shared),
       m_tcrdm((ThinClientBaseDM*)0),
@@ -363,12 +363,12 @@ ThinClientRegion::ThinClientRegion(
 void ThinClientRegion::initTCR() {
   bool subscription = false;
   auto pool = m_cacheImpl->getCache()->getPoolManager().find(
-      getAttributes()->getPoolName());
+      getAttributes().getPoolName());
   if (pool != nullptr) {
     subscription = pool->getSubscriptionEnabled();
   }
   bool notificationEnabled =
-      getAttributes()->getClientNotificationEnabled() || subscription;
+      getAttributes().getClientNotificationEnabled() || subscription;
   if (notificationEnabled) {
     if (m_cacheImpl->getDistributedSystem()
             .getSystemProperties()
@@ -397,7 +397,7 @@ void ThinClientRegion::registerKeys(
     const std::vector<std::shared_ptr<CacheableKey>>& keys, bool isDurable,
     bool getInitialValues, bool receiveValues) {
   auto pool = m_cacheImpl->getCache()->getPoolManager().find(
-      getAttributes()->getPoolName());
+      getAttributes().getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
@@ -442,7 +442,7 @@ void ThinClientRegion::registerKeys(
 void ThinClientRegion::unregisterKeys(
     const std::vector<std::shared_ptr<CacheableKey>>& keys) {
   auto pool = m_cacheImpl->getCache()->getPoolManager().find(
-      getAttributes()->getPoolName());
+      getAttributes().getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
@@ -454,7 +454,7 @@ void ThinClientRegion::unregisterKeys(
           "only if pool subscription-enabled attribute is true.");
     }
   } else {
-    if (!getAttributes()->getClientNotificationEnabled()) {
+    if (!getAttributes().getClientNotificationEnabled()) {
       LOGERROR(
           "Unregister keys is supported "
           "only if region client-notification attribute is true.");
@@ -476,7 +476,7 @@ void ThinClientRegion::unregisterKeys(
 void ThinClientRegion::registerAllKeys(bool isDurable, bool getInitialValues,
                                        bool receiveValues) {
   auto pool = m_cacheImpl->getCache()->getPoolManager().find(
-      getAttributes()->getPoolName());
+      getAttributes().getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
@@ -526,7 +526,7 @@ void ThinClientRegion::registerRegex(const std::string& regex, bool isDurable,
                                      bool getInitialValues,
                                      bool receiveValues) {
   auto pool = m_cacheImpl->getCache()->getPoolManager().find(
-      getAttributes()->getPoolName());
+      getAttributes().getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
@@ -578,7 +578,7 @@ void ThinClientRegion::registerRegex(const std::string& regex, bool isDurable,
 
 void ThinClientRegion::unregisterRegex(const std::string& regex) {
   auto pool = m_cacheImpl->getCache()->getPoolManager().find(
-      getAttributes()->getPoolName());
+      getAttributes().getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
@@ -602,7 +602,7 @@ void ThinClientRegion::unregisterRegex(const std::string& regex) {
 
 void ThinClientRegion::unregisterAllKeys() {
   auto pool = m_cacheImpl->getCache()->getPoolManager().find(
-      getAttributes()->getPoolName());
+      getAttributes().getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGERROR(
@@ -669,7 +669,7 @@ bool ThinClientRegion::existsValue(const std::string& predicate,
 
 GfErrType ThinClientRegion::unregisterKeysBeforeDestroyRegion() {
   auto pool = m_cacheImpl->getCache()->getPoolManager().find(
-      getAttributes()->getPoolName());
+      getAttributes().getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
       LOGDEBUG(
@@ -1206,8 +1206,8 @@ GfErrType ThinClientRegion::getAllNoThrow_remote(
   GfErrType err = GF_NOERR;
   MapOfUpdateCounters updateCountMap;
   int32_t destroyTracker = 0;
-  addToLocalCache = addToLocalCache && m_regionAttributes->getCachingEnabled();
-  if (addToLocalCache && !m_regionAttributes->getConcurrencyChecksEnabled()) {
+  addToLocalCache = addToLocalCache && m_regionAttributes.getCachingEnabled();
+  if (addToLocalCache && !m_regionAttributes.getConcurrencyChecksEnabled()) {
     // start tracking the entries
     if (keys == nullptr) {
       // track all entries with destroy tracking for non-existent entries
@@ -1237,7 +1237,7 @@ GfErrType ThinClientRegion::getAllNoThrow_remote(
   reply.setChunkedResultHandler(resultCollector);
   err = m_tcrdm->sendSyncRequest(request, reply);
 
-  if (addToLocalCache && !m_regionAttributes->getConcurrencyChecksEnabled()) {
+  if (addToLocalCache && !m_regionAttributes.getConcurrencyChecksEnabled()) {
     // remove the tracking for remaining keys in case some keys do not have
     // values from server in GII
     for (MapOfUpdateCounters::const_iterator iter = updateCountMap.begin();
@@ -2278,7 +2278,7 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
 
   TcrMessageRegisterInterestList request(
       m_cache->createDataOutput(), this, keys, isDurable,
-      getAttributes()->getCachingEnabled(), receiveValues, interestPolicy,
+      getAttributes().getCachingEnabled(), receiveValues, interestPolicy,
       m_tcrdm);
   ACE_Recursive_Thread_Mutex responseLock;
   TcrChunkedResult* resultCollector = nullptr;
@@ -2455,7 +2455,7 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
   // TODO:
   TcrMessageRegisterInterest request(
       m_cache->createDataOutput(), m_fullPath, regex.c_str(), interestPolicy,
-      isDurable, getAttributes()->getCachingEnabled(), receiveValues, m_tcrdm);
+      isDurable, getAttributes().getCachingEnabled(), receiveValues, m_tcrdm);
   ACE_Recursive_Thread_Mutex responseLock;
   if (reply == nullptr) {
     TcrMessageReply replyLocal(true, m_tcrdm);
@@ -2852,7 +2852,7 @@ void ThinClientRegion::invalidateInterestList(
   std::shared_ptr<MapEntryImpl> me;
   std::shared_ptr<Cacheable> oldValue;
 
-  if (!m_regionAttributes->getCachingEnabled()) {
+  if (!m_regionAttributes.getCachingEnabled()) {
     return;
   }
   for (const auto& iter : interestList) {
@@ -2879,7 +2879,7 @@ void ThinClientRegion::localInvalidateForRegisterInterest(
   CHECK_DESTROY_PENDING(TryReadGuard,
                         ThinClientRegion::localInvalidateForRegisterInterest);
 
-  if (!m_regionAttributes->getCachingEnabled()) {
+  if (!m_regionAttributes.getCachingEnabled()) {
     return;
   }
 

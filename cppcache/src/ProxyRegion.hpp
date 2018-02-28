@@ -66,7 +66,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
     return m_realRegion->getParentRegion();
   }
 
-  virtual std::shared_ptr<RegionAttributes> getAttributes() const override {
+  virtual RegionAttributes getAttributes() const override {
     return m_realRegion->getAttributes();
   }
 
@@ -124,7 +124,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
 
   virtual std::shared_ptr<Region> createSubregion(
       const std::string& subregionName,
-      const std::shared_ptr<RegionAttributes>& aRegionAttributes) override {
+      RegionAttributes aRegionAttributes) override {
     throw UnsupportedOperationException("createSubregion()");
     return nullptr;
   }

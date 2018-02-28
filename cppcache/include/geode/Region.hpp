@@ -114,7 +114,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   /** Return the RegionAttributes for this region.
    */
-  virtual std::shared_ptr<RegionAttributes> getAttributes() const = 0;
+  virtual RegionAttributes getAttributes() const = 0;
 
   /** Return the a mutator object for changing a subset of the region
    * attributes.
@@ -251,7 +251,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /** Creates a subregion with the specified attributes */
   virtual std::shared_ptr<Region> createSubregion(
       const std::string& subregionName,
-      const std::shared_ptr<RegionAttributes>& aRegionAttributes) = 0;
+      RegionAttributes aRegionAttributes) = 0;
 
   /** Populates the passed in std::vector<std::shared_ptr<Region>> with
    * subregions of the current region

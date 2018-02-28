@@ -264,7 +264,7 @@ class _GEODE_EXPORT RegionFactory {
 
   RegionShortcut m_preDefinedRegion;
 
-  std::shared_ptr<RegionAttributesFactory> m_attributeFactory;
+  std::shared_ptr<RegionAttributesFactory> m_regionAttributesFactory;
 
   CacheImpl* m_cacheImpl;
 

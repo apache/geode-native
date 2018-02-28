@@ -60,7 +60,7 @@ namespace Apache
       RegionAttributesFactory<TKey, TValue>::RegionAttributesFactory( Apache::Geode::Client::RegionAttributes<TKey, TValue>^ regionAttributes )
       {
         auto attribptr = regionAttributes->GetNative();
-        m_nativeptr = gcnew native_unique_ptr<native::RegionAttributesFactory>(std::make_unique<native::RegionAttributesFactory>(attribptr));
+        m_nativeptr = gcnew native_unique_ptr<native::RegionAttributesFactory>(std::make_unique<native::RegionAttributesFactory>(*attribptr));
       }
 
       // CALLBACKS
@@ -133,20 +133,20 @@ namespace Apache
       {
         std::shared_ptr<native::PartitionResolver> resolverptr;
         if ( partitionresolver != nullptr ) {
-          Client::IFixedPartitionResolver<TKey, TValue>^ resolver = 
+          Client::IFixedPartitionResolver<TKey, TValue>^ resolver =
             dynamic_cast<Client::IFixedPartitionResolver<TKey, TValue>^>(partitionresolver);
-          if (resolver != nullptr) {            
+          if (resolver != nullptr) {
             FixedPartitionResolverGeneric<TKey, TValue>^ prg = gcnew FixedPartitionResolverGeneric<TKey, TValue>();
             prg->SetPartitionResolver(partitionresolver);
-            resolverptr = std::shared_ptr<native::ManagedFixedPartitionResolverGeneric>(new native::ManagedFixedPartitionResolverGeneric(partitionresolver)); 
+            resolverptr = std::shared_ptr<native::ManagedFixedPartitionResolverGeneric>(new native::ManagedFixedPartitionResolverGeneric(partitionresolver));
             ((native::ManagedFixedPartitionResolverGeneric*)resolverptr.get())->setptr(prg);
           }
-          else {            
+          else {
             PartitionResolverGeneric<TKey, TValue>^ prg = gcnew PartitionResolverGeneric<TKey, TValue>();
             prg->SetPartitionResolver(partitionresolver);
             resolverptr = std::shared_ptr<native::ManagedPartitionResolverGeneric>(new native::ManagedPartitionResolverGeneric(partitionresolver));
-            ((native::ManagedPartitionResolverGeneric*)resolverptr.get())->setptr(prg);            
-          }         
+            ((native::ManagedPartitionResolverGeneric*)resolverptr.get())->setptr(prg);
+          }
         }
         try
         {
@@ -302,18 +302,18 @@ namespace Apache
          }
         return this;
       }
-      
+
       generic<class TKey, class TValue>
       RegionAttributesFactory<TKey, TValue>^ RegionAttributesFactory<TKey, TValue>::SetPersistenceManager(IPersistenceManager<TKey, TValue>^ persistenceManager )
       {
         SetPersistenceManager(persistenceManager, nullptr);
         return this;
       }
-        
+
       generic<class TKey, class TValue>
       RegionAttributesFactory<TKey, TValue>^ RegionAttributesFactory<TKey, TValue>::SetPersistenceManager( String^ libPath,
         String^ factoryFunctionName )
-      {        
+      {
         SetPersistenceManager( libPath, factoryFunctionName, nullptr );
         return this;
       }
@@ -321,7 +321,7 @@ namespace Apache
       generic<class TKey, class TValue>
       RegionAttributesFactory<TKey, TValue>^ RegionAttributesFactory<TKey, TValue>::SetPersistenceManager( String^ libPath,
         String^ factoryFunctionName, Properties<String^, String^>^ config )
-      {        
+      {
 
         try
         {
@@ -332,7 +332,7 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
         return this;
-          
+
       }
 
       // STORAGE ATTRIBUTES
@@ -369,7 +369,7 @@ namespace Apache
           }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
-          
+
         return this;
       }
 
@@ -388,7 +388,7 @@ namespace Apache
           }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
-          
+
         return this;
       }
 
@@ -407,7 +407,7 @@ namespace Apache
           }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
-          
+
         return this;
       }
 
@@ -489,8 +489,8 @@ namespace Apache
 
           try
           {
-            std::shared_ptr<native::RegionAttributes> nativeptr = m_nativeptr->get()->create();
-            return Apache::Geode::Client::RegionAttributes<TKey, TValue>::Create(nativeptr);
+            native::RegionAttributes nativeRegionAttributes = m_nativeptr->get()->create();
+            return Apache::Geode::Client::RegionAttributes<TKey, TValue>::Create(nativeRegionAttributes);
           }
           finally
           {

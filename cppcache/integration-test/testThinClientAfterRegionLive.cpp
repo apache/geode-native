@@ -78,21 +78,21 @@ void createPooledRegionMine(bool callReadyForEventsAPI = false) {
   LOG("poolName = ");
   LOG("__TEST_POOL1__");
   regionAttributesFactory.setCacheListener(cptr1);
-  std::shared_ptr<RegionAttributes> regionAttributesPtr1 = regionAttributesFactory.create();
+  auto regionAttributes1 = regionAttributesFactory.create();
   regionAttributesFactory.setCacheListener(cptr2);
-  std::shared_ptr<RegionAttributes> regionAttributesPtr2 = regionAttributesFactory.create();
+  auto regionAttributes2 = regionAttributesFactory.create();
   regionAttributesFactory.setCacheListener(cptr3);
-  std::shared_ptr<RegionAttributes> regionAttributesPtr3 = regionAttributesFactory.create();
+  auto regionAttributes3 = regionAttributesFactory.create();
   regionAttributesFactory.setCacheListener(cptr4);
-  std::shared_ptr<RegionAttributes> regionAttributesPtr4 = regionAttributesFactory.create();
+  auto regionAttributes4 = regionAttributesFactory.create();
   CacheImpl* cacheImpl =
       CacheRegionHelper::getCacheImpl(getHelper()->cachePtr.get());
   std::shared_ptr<Region> region1;
-  cacheImpl->createRegion(regionNames[0], regionAttributesPtr1, region1);
+  cacheImpl->createRegion(regionNames[0], regionAttributes1, region1);
   std::shared_ptr<Region> region2;
-  cacheImpl->createRegion(regionNames[1], regionAttributesPtr2, region2);
-  auto subregion1 = region1->createSubregion(regionNames[0], regionAttributesPtr3);
-  auto subregion2 = region2->createSubregion(regionNames[1], regionAttributesPtr4);
+  cacheImpl->createRegion(regionNames[1], regionAttributes2, region2);
+  auto subregion1 = region1->createSubregion(regionNames[0], regionAttributes3);
+  auto subregion2 = region2->createSubregion(regionNames[1], regionAttributes4);
   if (callReadyForEventsAPI) {
     getHelper()->cachePtr->readyForEvents();
   }

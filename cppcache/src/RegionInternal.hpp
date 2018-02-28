@@ -284,7 +284,7 @@ class RegionInternal : public Region {
                      const std::shared_ptr<Serializable>& callBack,
                      std::shared_ptr<VersionTag> versionTag);
   inline bool isConcurrencyCheckEnabled() const {
-    return m_regionAttributes->getConcurrencyChecksEnabled();
+    return m_regionAttributes.getConcurrencyChecksEnabled();
   }
   virtual const std::shared_ptr<Pool>& getPool() const override = 0;
 
@@ -292,7 +292,7 @@ class RegionInternal : public Region {
   /**
    * @brief constructor
    */
-  RegionInternal(Cache* cache, const std::shared_ptr<RegionAttributes>& attributes);
+  RegionInternal(Cache* cache, RegionAttributes attributes);
 
   void setLruEntriesLimit(uint32_t limit);
   void setRegionTimeToLiveExpirationAction(ExpirationAction action);
@@ -319,14 +319,14 @@ class RegionInternal : public Region {
   void setEndpoints(const std::string& endpoints);
   void setClientNotificationEnabled(bool clientNotificationEnabled);
 
-  std::shared_ptr<RegionAttributes> m_regionAttributes;
+  RegionAttributes m_regionAttributes;
 
   inline bool entryExpiryEnabled() const {
-    return m_regionAttributes->getEntryExpiryEnabled();
+    return m_regionAttributes.getEntryExpiryEnabled();
   }
 
   inline bool regionExpiryEnabled() const {
-    return m_regionAttributes->getRegionExpiryEnabled();
+    return m_regionAttributes.getRegionExpiryEnabled();
   }
 
   RegionInternal(const RegionInternal&) = delete;

@@ -915,7 +915,7 @@ namespace Apache
           try
           {
             auto p_attrs = attributes->GetNative();
-            return Region::Create(m_nativeptr->get()->createSubregion(marshal_as<std::string>(subRegionName), p_attrs));
+            return Region::Create(m_nativeptr->get()->createSubregion(marshal_as<std::string>(subRegionName), *p_attrs));
           }
           finally
           {

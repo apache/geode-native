@@ -40,9 +40,9 @@ BEGIN_TEST(REGION_FACTORY)
     }
 
     auto region = rf.create("Local_ETTL_LI");
-    LOGINFO("region->getAttributes()->getInitialCapacity() = %d ",
-            region->getAttributes()->getInitialCapacity());
-    ASSERT(region->getAttributes()->getInitialCapacity() == 10000,
+    LOGINFO("region->getAttributes().getInitialCapacity() = %d ",
+            region->getAttributes().getInitialCapacity());
+    ASSERT(region->getAttributes().getInitialCapacity() == 10000,
            "Incorrect InitialCapacity");
 
     region->put(1, 1);
@@ -66,9 +66,9 @@ BEGIN_TEST(REGION_FACTORY)
       LOG("Got expected IllegalArgumentException");
     }
     auto region1 = rf1.create("Local_ETTL_LI");
-    LOGINFO("region1->getAttributes()->getInitialCapacity() = %d ",
-            region1->getAttributes()->getInitialCapacity());
-    ASSERT(region1->getAttributes()->getInitialCapacity() == 10000,
+    LOGINFO("region1->getAttributes().getInitialCapacity() = %d ",
+            region1->getAttributes().getInitialCapacity());
+    ASSERT(region1->getAttributes().getInitialCapacity() == 10000,
            "Incorrect InitialCapacity");
 
     region1->put(1, 1);

@@ -129,14 +129,13 @@ DUNIT_TASK(CLIENT1, VerifyClear1)
     ASSERT(regPtr->size() == 0, "size incorrect");
     auto keyPtr = CacheableKey::create((const char*)"key02");
     ASSERT(regPtr->containsKeyOnServer(keyPtr), "key should be there");
-    std::shared_ptr<RegionAttributes> attr = regPtr->getAttributes();
-    auto clp = attr->getCacheListener();
+    auto clp = regPtr->getAttributes().getCacheListener();
     MyCacheListener* mcl = dynamic_cast<MyCacheListener*>(clp.get());
     char buf[1024];
     sprintf(buf, "listener clear count=%d", mcl->getClearCnt());
     LOG(buf);
     ASSERT(mcl->getClearCnt() == 2, buf);
-    auto cwp = attr->getCacheWriter();
+    auto cwp = regPtr->getAttributes().getCacheWriter();
     MyCacheWriter* mcw = dynamic_cast<MyCacheWriter*>(cwp.get());
     sprintf(buf, "writer clear count=%d", mcw->getClearCnt());
     LOG(buf);

@@ -58,7 +58,8 @@ class CacheImpl;
  * To create an instance of this interface, use {@link
  * RegionAttributesFactory::create}.
  *
- * For compatibility rules and default values, see {@link RegionAttributesFactory}.
+ * For compatibility rules and default values, see {@link
+ * RegionAttributesFactory}.
  *
  * <p>Note that the <code>RegionAttributes</code> are not distributed with the
  * region.
@@ -187,6 +188,10 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
    */
   const std::string& getPoolName() const;
 
+  // will be created by the factory
+  RegionAttributes();
+  RegionAttributes(const RegionAttributes& rhs) = default;
+
   /*destructor
    *
    */
@@ -274,7 +279,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
   /**
    * This method returns the list of servername:portno separated by comma
    */
-  const std::string& getEndpoints();
+  const std::string& getEndpoints() const;
 
   /**
    * This method returns the setting of client notification
@@ -319,8 +324,10 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
    * <p>
    * @return true if concurrent update checks are turned on
    */
-  bool getConcurrencyChecksEnabled() { return m_isConcurrencyChecksEnabled; }
-  const RegionAttributes& operator=(const RegionAttributes&) = delete;
+  bool getConcurrencyChecksEnabled() const { 
+    return m_isConcurrencyChecksEnabled; 
+  }
+  RegionAttributes& operator=(const RegionAttributes&) = default;
 
  private:
   void setCacheListener(const std::string& libpath,
@@ -350,10 +357,6 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
     return (m_regionTimeToLive > std::chrono::seconds::zero() ||
             m_regionIdleTimeout > std::chrono::seconds::zero());
   }
-
-  // will be created by the factory
-  RegionAttributes(const RegionAttributes& rhs);
-  RegionAttributes();
 
   ExpirationAction m_regionTimeToLiveExpirationAction;
   ExpirationAction m_regionIdleTimeoutExpirationAction;

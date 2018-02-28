@@ -42,17 +42,10 @@ BEGIN_TEST(CacheFunction)
   auto cacheFactory = CacheFactory();
   cptr = std::make_shared<Cache>(cacheFactory.create());
   RegionAttributesFactory regionAttributesFactory;
-  std::shared_ptr<RegionAttributes> regionAttributes;
+
   std::cout << "create RegionAttributes" << std::endl;
-  try {
-    regionAttributes = regionAttributesFactory.create();
-  } catch (Exception& ex) {
-    std::cout << ex.what() << std::endl;
-    ASSERT(false, "attribute create failed");
-  }
-  if (regionAttributes == nullptr) {
-    std::cout << "Warnning! : RegionAttributesFactory returned nullptr" << std::endl;
-  }
+  auto regionAttributes = regionAttributesFactory.create();
+
   std::shared_ptr<Region> rptr;
   if (rptr != nullptr) {
     std::cout << "rptr is not null" << std::endl;

@@ -51,8 +51,8 @@ class ThinClientTallyLoader : public TallyLoader {
     char lstrvalue[32];
     sprintf(lstrvalue, "%i", loadValue);
    auto lreturnValue = CacheableString::create(lstrvalue);
-   if (key != nullptr && (!rp.getAttributes()->getEndpoints().empty() ||
-                          !rp.getAttributes()->getPoolName().empty())) {
+   if (key != nullptr && (!rp.getAttributes().getEndpoints().empty() ||
+                          !rp.getAttributes().getPoolName().empty())) {
      LOGDEBUG("Putting the value (%s) for local region clients only ",
               lstrvalue);
      rp.put(key, lreturnValue);

@@ -481,10 +481,9 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static RegionAttributes<TKey, TValue>^ Create(std::shared_ptr<native::RegionAttributes> nativeptr)
+        inline static RegionAttributes<TKey, TValue>^ Create(native::RegionAttributes nativeptr)
         {
-          return __nullptr == nativeptr ? nullptr :
-            gcnew RegionAttributes<TKey, TValue>( nativeptr );
+          return gcnew RegionAttributes<TKey, TValue>( nativeptr );
         }
 
         std::shared_ptr<native::RegionAttributes> GetNative()
@@ -498,8 +497,9 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline RegionAttributes<TKey, TValue>(std::shared_ptr<native::RegionAttributes> nativeptr)
+        inline RegionAttributes<TKey, TValue>(native::RegionAttributes nativeobj)
         {
+          const std::shared_ptr<native::RegionAttributes> nativeptr = std::make_shared<native::RegionAttributes>(nativeobj);
           m_nativeptr = gcnew native_shared_ptr<native::RegionAttributes>(nativeptr);
         }
 

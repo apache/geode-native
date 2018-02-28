@@ -32,7 +32,7 @@ using namespace apache::geode::client;
 ThinClientPoolRegion::ThinClientPoolRegion(
     const std::string& name, CacheImpl* cache,
     const std::shared_ptr<RegionInternal>& rPtr,
-    const std::shared_ptr<RegionAttributes>& attributes,
+    RegionAttributes attributes,
     const std::shared_ptr<CacheStatistics>& stats, bool shared)
     : ThinClientRegion(name, cache, rPtr, attributes, stats, shared) {}
 
@@ -43,7 +43,7 @@ void ThinClientPoolRegion::initTCR() {
     ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(
         getCache()
             .getPoolManager()
-            .find(m_regionAttributes->getPoolName())
+            .find(m_regionAttributes.getPoolName())
             .get());
     m_tcrdm = dynamic_cast<ThinClientBaseDM*>(poolDM);
     if (!m_tcrdm) {

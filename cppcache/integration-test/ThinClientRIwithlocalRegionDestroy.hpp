@@ -147,9 +147,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_Locator)
 
     // create subregion
     auto regptr = getHelper()->getRegion(regionNames[2]);
-    std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
-    auto subregPtr1 = regptr->createSubregion(regionNames[3], lattribPtr);
-    auto subregPtr2 = regptr->createSubregion(regionNames[4], lattribPtr);
+    auto subregPtr1 = regptr->createSubregion(regionNames[3], regptr->getAttributes());
+    auto subregPtr2 = regptr->createSubregion(regionNames[4], regptr->getAttributes());
 
     LOGINFO(
         "NIL: CLIENT1 StepOne_Pool_Locator subregions created successfully");
@@ -178,9 +177,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_Locator)
 
     // create subregion
     auto regptr = getHelper()->getRegion(regionNames[2]);
-    std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
-    auto subregPtr1 = regptr->createSubregion(regionNames[3], lattribPtr);
-    auto subregPtr2 = regptr->createSubregion(regionNames[4], lattribPtr);
+    auto subregPtr1 = regptr->createSubregion(regionNames[3], regptr->getAttributes());
+    auto subregPtr2 = regptr->createSubregion(regionNames[4], regptr->getAttributes());
 
     LOGINFO(
         "NIL: CLIENT2 StepTwo_Pool_Locator:: subregions created successfully");

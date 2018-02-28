@@ -83,22 +83,22 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
 
   auto atts = SubRegion11->getAttributes();
 
-  if (atts->getCachingEnabled() != true) {
+  if (atts.getCachingEnabled() != true) {
     LOGINFO("Caching is not enabled in SubRegion11");
     return -1;
   }
 
-  if (atts->getInitialCapacity() != 10) {
+  if (atts.getInitialCapacity() != 10) {
     LOGINFO("Initial capacity of SubRegion11 is not 10");
     return -1;
   }
 
-  if (atts->getConcurrencyLevel() != 52) {
+  if (atts.getConcurrencyLevel() != 52) {
     LOGINFO("Concurrency level of SubRegion11 is not 52");
     return -1;
   }
 
-  if (fabs(atts->getLoadFactor() - 0.89) > 0.001) {
+  if (fabs(atts.getLoadFactor() - 0.89) > 0.001) {
     LOGINFO("Load factor of SubRegion11 is not 0.89");
     return -1;
   }
@@ -107,22 +107,22 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
 
   atts = SubRegion2->getAttributes();
 
-  if (atts->getCachingEnabled() != true) {
+  if (atts.getCachingEnabled() != true) {
     LOGINFO("Caching is not enabled in SubRegion2");
     return -1;
   }
 
-  if (atts->getInitialCapacity() != 10) {
+  if (atts.getInitialCapacity() != 10) {
     LOGINFO("Initial capacity of SubRegion2 is not 10");
     return -1;
   }
 
-  if (fabs(atts->getLoadFactor() - 0.89) > 0.001) {
+  if (fabs(atts.getLoadFactor() - 0.89) > 0.001) {
     LOGINFO("Load factor of SubRegion2 is not 0.89");
     return -1;
   }
 
-  if (atts->getConcurrencyLevel() != 52) {
+  if (atts.getConcurrencyLevel() != 52) {
     LOGINFO("Concurrency level of SubRegion2 is not 52");
     return -1;
   }
@@ -131,42 +131,42 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
 
   atts = SubRegion21->getAttributes();
 
-  if (atts->getCachingEnabled() != true) {
+  if (atts.getCachingEnabled() != true) {
     LOGINFO("Caching is not enabled in SubRegion21");
     return -1;
   }
 
-  if (atts->getInitialCapacity() != 10) {
+  if (atts.getInitialCapacity() != 10) {
     LOGINFO("Initial capacity of SubRegion21 is not 10");
     return -1;
   }
 
-  if (fabs(atts->getLoadFactor() - 0.89) > 0.001) {
+  if (fabs(atts.getLoadFactor() - 0.89) > 0.001) {
     LOGINFO("Load factor of SubRegion21 is not 0.89");
     return -1;
   }
 
-  if (atts->getConcurrencyLevel() != 52) {
+  if (atts.getConcurrencyLevel() != 52) {
     LOGINFO("Concurrency level of SubRegion21 is not 52");
     return -1;
   }
 
-  if (atts->getEntryIdleTimeout().count() != 10) {
+  if (atts.getEntryIdleTimeout().count() != 10) {
     LOGINFO("Entryidletimeout of SubRegion21 is not 10");
     return -1;
   }
 
-  if (atts->getEntryIdleTimeoutAction() != ExpirationAction::INVALIDATE) {
+  if (atts.getEntryIdleTimeoutAction() != ExpirationAction::INVALIDATE) {
     LOGINFO("Entryidletimeoutaction of SubRegion21 is not invalidate");
     return -1;
   }
 
-  if (atts->getRegionIdleTimeout().count() != 20) {
+  if (atts.getRegionIdleTimeout().count() != 20) {
     LOGINFO("Regionidletimeout of SubRegion21 is not 20");
     return -1;
   }
 
-  if (atts->getRegionIdleTimeoutAction() != ExpirationAction::DESTROY) {
+  if (atts.getRegionIdleTimeoutAction() != ExpirationAction::DESTROY) {
     LOGINFO("Regionidletimeoutaction of SubRegion21 is not destroy");
     return -1;
   }
@@ -175,62 +175,62 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
 
   atts = Root2->getAttributes();
 
-  if (atts->getCachingEnabled() != true) {
+  if (atts.getCachingEnabled() != true) {
     LOGINFO("Caching is not enabled in Root2");
     return -1;
   }
 
-  if (atts->getInitialCapacity() != 25) {
+  if (atts.getInitialCapacity() != 25) {
     LOGINFO("Initial capacity of Root2 is not 10");
     return -1;
   }
 
-  if (fabs(atts->getLoadFactor() - 0.32) > 0.001) {
+  if (fabs(atts.getLoadFactor() - 0.32) > 0.001) {
     LOGINFO("Load factor of Root2 is not 0.0.32");
     return -1;
   }
 
-  if (atts->getConcurrencyLevel() != 16) {
+  if (atts.getConcurrencyLevel() != 16) {
     LOGINFO("Concurrency level of Root2 is not 16");
     return -1;
   }
 
-  if (atts->getEntryIdleTimeout().count() != 10) {
+  if (atts.getEntryIdleTimeout().count() != 10) {
     LOGINFO("Entryidletimeout of Root2 is not 10");
     return -1;
   }
 
-  if (atts->getEntryIdleTimeoutAction() != ExpirationAction::INVALIDATE) {
+  if (atts.getEntryIdleTimeoutAction() != ExpirationAction::INVALIDATE) {
     LOGINFO("Entryidletimeoutaction of Root2 is not invalidate");
     return -1;
   }
 
-  if (atts->getEntryTimeToLive().count() != 0) {
+  if (atts.getEntryTimeToLive().count() != 0) {
     LOGINFO("Entrytimetolive of Root2 is not 0");
     return -1;
   }
 
-  if (atts->getEntryTimeToLiveAction() != ExpirationAction::LOCAL_INVALIDATE) {
+  if (atts.getEntryTimeToLiveAction() != ExpirationAction::LOCAL_INVALIDATE) {
     LOGINFO("Entrytimetoliveaction of Root2 is not local_invalidate");
     return -1;
   }
 
-  if (atts->getRegionIdleTimeout().count() != 0) {
+  if (atts.getRegionIdleTimeout().count() != 0) {
     LOGINFO("Regionidletimeout of Root2 is not 0");
     return -1;
   }
 
-  if (atts->getRegionIdleTimeoutAction() != ExpirationAction::INVALIDATE) {
+  if (atts.getRegionIdleTimeoutAction() != ExpirationAction::INVALIDATE) {
     LOGINFO("Regionidletimeoutaction of Root2 is not invalidate");
     return -1;
   }
 
-  if (atts->getRegionTimeToLive().count() != 0) {
+  if (atts.getRegionTimeToLive().count() != 0) {
     LOGINFO("Regiontimetolive of Root2 is not 0");
     return -1;
   }
 
-  if (atts->getRegionTimeToLiveAction() != ExpirationAction::DESTROY) {
+  if (atts.getRegionTimeToLiveAction() != ExpirationAction::DESTROY) {
     LOGINFO("Regiontimetoliveaction of Root2 is not destroy");
     return -1;
   }

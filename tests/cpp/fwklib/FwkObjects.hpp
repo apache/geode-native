@@ -440,7 +440,7 @@ class Attributes {
  public:
   Attributes(const DOMNode* node);
 
-  std::shared_ptr<RegionAttributes> getAttributes() {
+  RegionAttributes getAttributes() {
     return m_factory.create();
   }
 
@@ -477,8 +477,10 @@ class FwkRegion {
   }
 
   const std::string& getName() const { return m_name; }
+
   Attributes* getAttributes() { return m_attributes; }
-  const std::shared_ptr<RegionAttributes> getAttributesPtr() const {
+
+  const RegionAttributes getRegionAttributes() const {
     return m_attributes->getAttributes();
   }
   void print() const { FWKINFO("FwkRegion " << m_name); }

@@ -214,9 +214,8 @@ void initCredentialGenerator() {
    LOG("StepOne1 complete. 3");
    auto regptr = getHelper()->getRegion(regionNamesCq[0]);
    LOG("StepOne1 complete. 4");
-   std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
    LOG("StepOne1 complete. 5");
-   auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+   auto subregPtr = regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
    LOG("StepOne complete.");
 }
@@ -229,9 +228,8 @@ void stepOne2(bool pool = false, bool locator = false) {
   LOG("StepOne2 complete. 3");
  auto regptr = getHelper()->getRegion(regionNamesCq[0]);
   LOG("StepOne2 complete. 4");
-  std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
   LOG("StepOne2 complete. 5");
-  auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+  auto subregPtr = regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
   LOG("StepOne2 complete.");
 }
