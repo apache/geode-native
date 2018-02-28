@@ -407,7 +407,7 @@ std::shared_ptr<Region> CacheHelper::createRegion(
     regionAttributeFactory.setConcurrencyChecksEnabled(concurrencyCheckEnabled);
   }
 
-  RegionAttributes regionAttributes = regionAttributeFactory.create();
+  auto regionAttributes = regionAttributeFactory.create();
 
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   std::shared_ptr<Region> regionPtr;
@@ -427,7 +427,7 @@ std::shared_ptr<Region> CacheHelper::createRegion(
   regionAttributeFactory.setRegionIdleTimeout(action, rit);
   regionAttributeFactory.setRegionTimeToLive(action, rttl);
 
-  RegionAttributes regionAttributes = regionAttributeFactory.create();
+  auto regionAttributes = regionAttributeFactory.create();
 
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   std::shared_ptr<Region> regionPtr;
@@ -610,27 +610,6 @@ void CacheHelper::addServerLocatorEPs(const char* epList, PoolFactory& pf,
   }
 }
 
-// void CacheHelper::addServerLocatorEPs(const char* epList,
-//                                      std::shared_ptr<CacheFactory> cacheFac,
-//                                      bool poolLocators) {
-//  std::unordered_set<std::string> endpointNames;
-//  Utils::parseEndpointNamesString(epList, endpointNames);
-//  for (std::unordered_set<std::string>::iterator iter = endpointNames.begin();
-//       iter != endpointNames.end(); ++iter) {
-//    size_t position = (*iter).find_first_of(":");
-//    if (position != std::string::npos) {
-//      std::string hostname = (*iter).substr(0, position);
-//      int portnumber = atoi(((*iter).substr(position + 1)).c_str());
-//      if (poolLocators) {
-//        getCache()->getPoolFactory()->addLocator(hostname.c_str(),
-//        portnumber);
-//      } else {
-//        printf("ankur Server: %d", portnumber);
-//        getCache()->getPoolFactory()->addServer(hostname.c_str(), portnumber);
-//      }
-//    }
-//  }
-//}
 std::shared_ptr<Region> CacheHelper::createPooledRegion(
     const char* name, bool ack, const char* locators, const char* poolName,
     bool caching, bool clientNotificationEnabled,
@@ -733,7 +712,7 @@ std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
     regionAttributeFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance", sqLiteProps);
   }
 
-  RegionAttributes regionAttributes = regionAttributeFactory.create();
+  auto regionAttributes = regionAttributeFactory.create();
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   std::shared_ptr<Region> regionPtr;
   cacheImpl->createRegion(name, regionAttributes, regionPtr);
@@ -885,7 +864,7 @@ std::shared_ptr<Region> CacheHelper::createSubregion(
   if (listener != nullptr) {
     regionAttributeFactory.setCacheListener(listener);
   }
-  RegionAttributes regionAttributes = regionAttributeFactory.create();
+  auto regionAttributes = regionAttributeFactory.create();
 
   return parent->createSubregion(name, regionAttributes);
 }

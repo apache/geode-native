@@ -129,7 +129,7 @@ namespace Apache.Geode.Client.UnitTests
 
     private IRegion<object, object> CreateSubRegion(IRegion<object, object> region, string subRegionName, string libraryName, string factoryFunctionName)
     {
-      RegionAttributesFactory<object, object> regionAttributesFactory = new RegionAttributesFactory<object, object>(region.Attributes);
+      var regionAttributesFactory = new RegionAttributesFactory<object, object>(region.Attributes);
       Properties<string, string> sqliteProperties = new Properties<string, string>();
       sqliteProperties.Insert("PageSize", "65536");
       sqliteProperties.Insert("MaxPageCount", "512000000");
@@ -270,7 +270,7 @@ namespace Apache.Geode.Client.UnitTests
       TestGetOp(region, 100);
 
       //Console.WriteLine("TEST-4");
-      // test to verify same region repeatedly to ensure that the persistece 
+      // test to verify same region repeatedly to ensure that the persistece
       // files are created and destroyed correctly
 
       IRegion<object, object> subRegion;
@@ -308,7 +308,7 @@ namespace Apache.Geode.Client.UnitTests
       TestGetOp(region, 100);
 
       //Console.WriteLine("TEST-4");
-      // test to verify same region repeatedly to ensure that the persistece 
+      // test to verify same region repeatedly to ensure that the persistece
       // files are created and destroyed correctly
 
       IRegion<object, object> subRegion;
@@ -404,7 +404,7 @@ namespace Apache.Geode.Client.UnitTests
       TestGetOp(region, 100);
 
       //Console.WriteLine("TEST-4");
-      // test to verify same region repeatedly to ensure that the persistece 
+      // test to verify same region repeatedly to ensure that the persistece
       // files are created and destroyed correctly
 
       IRegion<object, object> subRegion;

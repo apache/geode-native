@@ -24,8 +24,8 @@ namespace Apache.Geode.Client.UnitTests
 {
   using NUnit.Framework;
   using Apache.Geode.DUnitFramework;
-  
- 
+
+
 
   [TestFixture]
   [Category("group1")]
@@ -45,11 +45,11 @@ namespace Apache.Geode.Client.UnitTests
     [Test]
     public void fluentModeltest()
     {
-      RegionAttributesFactory<string, string> regionAttributesFactory = new RegionAttributesFactory<string, string>();
-      Apache.Geode.Client.RegionAttributes<string, string> rattrs = regionAttributesFactory.SetLruEntriesLimit(2).SetInitialCapacity(5).Create();
-      Assert.IsNotNull(rattrs);
-      Assert.True(rattrs.LruEntriesLimit == 2);
-      Assert.True(rattrs.InitialCapacity == 5);
+      var regionAttributesFactory = new RegionAttributesFactory<string, string>();
+      var regionAttributes = regionAttributesFactory.SetLruEntriesLimit(2).SetInitialCapacity(5).Create();
+      Assert.IsNotNull(regionAttributes);
+      Assert.True(regionAttributes.LruEntriesLimit == 2);
+      Assert.True(regionAttributes.InitialCapacity == 5);
     }
   }
 }

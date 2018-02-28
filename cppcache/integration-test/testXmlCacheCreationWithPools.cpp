@@ -512,21 +512,21 @@ int testXmlDeclarativeCacheCreation() {
   }
   auto regPtr1 = vrp.at(0);
 
-  RegionAttributes regAttr = regPtr1->getAttributes();
+  auto regionAttributes = regPtr1->getAttributes();
   std::cout << "Test Attributes of root region Root1 " << std::endl;
   std::cout << "Region name " << regPtr1->getName() << std::endl;
 
-  if (regAttr.getCacheLoader() == nullptr) {
+  if (regionAttributes.getCacheLoader() == nullptr) {
     std::cout << "Cache Loader not initialized." << std::endl;
     return -1;
   }
 
-  if (regAttr.getCacheListener() == nullptr) {
+  if (regionAttributes.getCacheListener() == nullptr) {
     std::cout << "Cache Listener not initialized." << std::endl;
     return -1;
   }
 
-  if (regAttr.getCacheWriter() == nullptr) {
+  if (regionAttributes.getCacheWriter() == nullptr) {
     std::cout << "Cache Writer not initialized." << std::endl;
     return -1;
   }

@@ -142,7 +142,7 @@ namespace Apache.Geode.Client.UnitTests
       //m_reg3Loader1 = new TallyLoader<string, string>();
       m_reg3Loader1 = new ThinClientTallyLoader();
       m_reg3Writer1 = new TallyWriter<string, string>();
-      RegionAttributesFactory<string, string> regionAttributesFactory = new RegionAttributesFactory<string, string>();
+      var regionAttributesFactory = new RegionAttributesFactory<string, string>();
 
       GIRegion region = CacheHelper.CreateRegion<string, string>(PeerRegionName,
         regionAttributesFactory.Create());
@@ -164,7 +164,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void StepTwoCallbacks()
     {
-      RegionAttributesFactory<string, string> regionAttributesFactory = new RegionAttributesFactory<string, string>();
+      var regionAttributesFactory = new RegionAttributesFactory<string, string>();
 
       GIRegion region = CacheHelper.CreateRegion<string, string>(PeerRegionName,
         regionAttributesFactory.Create());

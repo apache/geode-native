@@ -489,7 +489,7 @@ namespace Apache
 
           try
           {
-            native::RegionAttributes nativeRegionAttributes = m_nativeptr->get()->create();
+            auto nativeRegionAttributes = m_nativeptr->get()->create();
             return Apache::Geode::Client::RegionAttributes<TKey, TValue>::Create(nativeRegionAttributes);
           }
           finally

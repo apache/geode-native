@@ -59,7 +59,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void CreateRegionWithTallyLoader(ScopeType scope)
     {
-      RegionAttributesFactory regionAttributesFactory = new RegionAttributesFactory();
+      var regionAttributesFactory = new RegionAttributesFactory();
       regionAttributesFactory.SetCacheLoader(m_ldr);
       regionAttributesFactory.SetScope(scope);
       regionAttributesFactory.SetCachingEnabled(true);
@@ -89,7 +89,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void RegionThreeLoadEntries(int num)
     {
-      RegionAttributesFactory regionAttributesFactory = new RegionAttributesFactory();
+      var regionAttributesFactory = new RegionAttributesFactory();
       regionAttributesFactory.SetScope(ScopeType.Local);
       regionAttributesFactory.SetCacheLoader(m_ldr);
       m_region = CacheHelper.CreateRegion(TestRegion, regionAttributesFactory.Create());
@@ -103,7 +103,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void CreateRegionWithTallyWriter(ScopeType scope)
     {
-      RegionAttributesFactory regionAttributesFactory = new RegionAttributesFactory();
+      var regionAttributesFactory = new RegionAttributesFactory();
       regionAttributesFactory.SetCacheWriter(m_lwr);
       regionAttributesFactory.SetScope(scope);
       regionAttributesFactory.SetCachingEnabled(true);

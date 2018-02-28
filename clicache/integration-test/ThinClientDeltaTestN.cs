@@ -243,11 +243,10 @@ namespace Apache.Geode.Client.UnitTests
     }
     public void CreateRegion(string name, bool enableNotification, bool cloningEnabled)
     {
-      Apache.Geode.Client.RegionAttributes<object, object> regionAttributes;
-      RegionAttributesFactory<object, object> regionAttributesFactory = new RegionAttributesFactory<object, object>();
+      var regionAttributesFactory = new RegionAttributesFactory<object, object>();
       regionAttributesFactory.SetCacheListener(new SimpleCacheListener<object, object>());
       regionAttributesFactory.SetCloningEnabled(cloningEnabled);
-      regionAttributes = regionAttributesFactory.Create();
+      var regionAttributes = regionAttributesFactory.Create();
       CacheHelper.CreateRegion<object, object>(name, regionAttributes);
     }
 
