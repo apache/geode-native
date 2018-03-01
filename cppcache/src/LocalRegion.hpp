@@ -138,7 +138,7 @@ class _GEODE_EXPORT LocalRegion : public RegionInternal {
   const std::string& getName() const override;
   const std::string& getFullPath() const override;
   std::shared_ptr<Region> getParentRegion() const override;
-  RegionAttributes getAttributes() const override {
+  const RegionAttributes& getAttributes() const override {
     return m_regionAttributes;
   }
   std::shared_ptr<AttributesMutator> getAttributesMutator() const override {

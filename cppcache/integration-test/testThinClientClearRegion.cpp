@@ -110,7 +110,7 @@ DUNIT_TASK(CLIENT2, VerifyClear)
   {
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     ASSERT(regPtr->size() == 0, "size incorrect");
-    auto keyPtr = CacheableKey::create((const char*)"key02");
+    auto keyPtr = CacheableKey::create("key02");
     auto valPtr =
       CacheableBytes::create(std::vector<int8_t>{'v','a','l','u','e','0','2'});
     regPtr->put(keyPtr, valPtr);
@@ -123,23 +123,26 @@ END_TASK(VerifyClear)
 
 DUNIT_TASK(CLIENT1, VerifyClear1)
   {
-    auto regPtr = getHelper()->getRegion(regionNames[0]);
-    ASSERT(regPtr->size() == 1, "size incorrect");
-    regPtr->localClear();
-    ASSERT(regPtr->size() == 0, "size incorrect");
-    auto keyPtr = CacheableKey::create((const char*)"key02");
-    ASSERT(regPtr->containsKeyOnServer(keyPtr), "key should be there");
-    auto clp = regPtr->getAttributes().getCacheListener();
-    MyCacheListener* mcl = dynamic_cast<MyCacheListener*>(clp.get());
-    char buf[1024];
-    sprintf(buf, "listener clear count=%d", mcl->getClearCnt());
-    LOG(buf);
-    ASSERT(mcl->getClearCnt() == 2, buf);
-    auto cwp = regPtr->getAttributes().getCacheWriter();
-    MyCacheWriter* mcw = dynamic_cast<MyCacheWriter*>(cwp.get());
-    sprintf(buf, "writer clear count=%d", mcw->getClearCnt());
-    LOG(buf);
-    ASSERT(mcw->getClearCnt() == 2, buf);
+    auto region = getHelper()->getRegion(regionNames[0]);
+    ASSERT(region->size() == 1, "size incorrect");
+
+    region->localClear();
+    ASSERT(region->size() == 0, "size incorrect");
+
+    auto key = CacheableKey::create("key02");
+    ASSERT(region->containsKeyOnServer(key), "key should be there");
+
+    auto cacheListener = region->getAttributes().getCacheListener();
+    auto myCacheListener = std::dynamic_pointer_cast<MyCacheListener>(cacheListener);
+    auto listenerClearCount = "listener clear count" + std::to_string(myCacheListener->getClearCnt());
+    LOG(listenerClearCount);
+    ASSERT(myCacheListener->getClearCnt() == 2, listenerClearCount.c_str());
+
+    auto cacheWriter = region->getAttributes().getCacheWriter();
+    auto myCacheWriter = std::dynamic_pointer_cast<MyCacheWriter>(cacheWriter);
+    auto writerClearCount = "writer clear count" + std::to_string(myCacheWriter->getClearCnt());
+    LOG(writerClearCount);
+    ASSERT(myCacheWriter->getClearCnt() == 2, writerClearCount.c_str());
   }
 END_TASK(VerifyClear1)
 

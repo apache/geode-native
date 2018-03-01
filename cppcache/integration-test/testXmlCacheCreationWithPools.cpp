@@ -339,9 +339,9 @@ int testXmlCacheCreationWithPools() {
 
   std::cout << "Test the attributes of region" << std::endl;
 
-  const auto poolNameReg1 = regPtr1->getAttributes().getPoolName();
-  const auto poolNameSubReg = subRegPtr->getAttributes().getPoolName();
-  const auto poolNameReg2 = regPtr2->getAttributes().getPoolName();
+  const auto& poolNameReg1 = regPtr1->getAttributes().getPoolName();
+  const auto& poolNameSubReg = subRegPtr->getAttributes().getPoolName();
+  const auto& poolNameReg2 = regPtr2->getAttributes().getPoolName();
 
   if (poolNameReg1 != "test_pool_1") {
     std::cout << "Wrong pool name for region 1" << std::endl;

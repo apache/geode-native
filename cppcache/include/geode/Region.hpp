@@ -62,38 +62,38 @@ static constexpr std::chrono::milliseconds DEFAULT_RESPONSE_TIMEOUT =
     std::chrono::seconds(15);
 
 /**
-* @class Region Region.hpp
-*
-* This class manages subregions and cached data. Each region
-* can contain multiple subregions and entries for data.
-* Regions provide a hierachical name space
-* within the cache. Also, a region can be used to group cached
-* objects for management purposes.
-*
-* Entries managed by the region are key-value pairs. A set of region attributes
-* is associated with the region when it is created.
-*
-* The Region interface basically contains two set of APIs: Region management
-* APIs and (potentially) distributed operations on entries. Non-distributed
-* operations on entries  are provided by <code>RegionEntry</code>.
-*
-* Each <code>Cache</code> defines regions called the root regions.
-* User applications can use the root regions to create subregions
-* for isolated name space and object grouping.
-*
-* A region's name can be any String, except that it should not contain
-* the region name separator, a forward slash (/).
-*
-* <code>Regions</code>  can be referenced by a relative path name from any
-* region
-* higher in the hierarchy in {@link Region::getSubregion}. You can get the
-* relative
-* path from the root region with {@link Region::getFullPath}. The name separator
-* is used to concatenate all the region names together from the root, starting
-* with the root's subregions.
-*
-* @see RegionAttributes
-*/
+ * @class Region Region.hpp
+ *
+ * This class manages subregions and cached data. Each region
+ * can contain multiple subregions and entries for data.
+ * Regions provide a hierachical name space
+ * within the cache. Also, a region can be used to group cached
+ * objects for management purposes.
+ *
+ * Entries managed by the region are key-value pairs. A set of region attributes
+ * is associated with the region when it is created.
+ *
+ * The Region interface basically contains two set of APIs: Region management
+ * APIs and (potentially) distributed operations on entries. Non-distributed
+ * operations on entries  are provided by <code>RegionEntry</code>.
+ *
+ * Each <code>Cache</code> defines regions called the root regions.
+ * User applications can use the root regions to create subregions
+ * for isolated name space and object grouping.
+ *
+ * A region's name can be any String, except that it should not contain
+ * the region name separator, a forward slash (/).
+ *
+ * <code>Regions</code>  can be referenced by a relative path name from any
+ * region
+ * higher in the hierarchy in {@link Region::getSubregion}. You can get the
+ * relative
+ * path from the root region with {@link Region::getFullPath}. The name
+ * separator is used to concatenate all the region names together from the root,
+ * starting with the root's subregions.
+ *
+ * @see RegionAttributes
+ */
 class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /** @brief Public Methods
    */
@@ -114,7 +114,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   /** Return the RegionAttributes for this region.
    */
-  virtual RegionAttributes getAttributes() const = 0;
+  virtual const RegionAttributes& getAttributes() const = 0;
 
   /** Return the a mutator object for changing a subset of the region
    * attributes.
@@ -143,7 +143,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * This operation is not distributed.
    */
   virtual void invalidateRegion(
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
+    const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /** Invalidates this region. The invalidation will cascade to
   * all the subregions and cached entries. After
@@ -165,7 +165,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   */
   virtual void localInvalidateRegion(
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
+    const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /** Destroys the whole region and provides a user-defined parameter
    * object to any <code>CacheWriter</code> invoked in the process.
@@ -204,7 +204,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see  invalidateRegion
    */
   virtual void destroyRegion(
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
+    const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
   /**
    * Removes all entries from this region and provides a user-defined parameter
    * object to any <code>CacheWriter</code> or <code>CacheListener</code>
@@ -242,7 +242,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see  localInvalidateRegion
    */
   virtual void localDestroyRegion(
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
+    const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /** Returns the subregion identified by the path, nullptr if no such subregion
    */
@@ -250,8 +250,8 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   /** Creates a subregion with the specified attributes */
   virtual std::shared_ptr<Region> createSubregion(
-      const std::string& subregionName,
-      RegionAttributes aRegionAttributes) = 0;
+    const std::string& subregionName,
+    RegionAttributes aRegionAttributes) = 0;
 
   /** Populates the passed in std::vector<std::shared_ptr<Region>> with
    * subregions of the current region
@@ -992,7 +992,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * Return all the keys in the local process for this region. This includes
    * keys for which the entry is invalid.
    */
-  virtual std::vector<std::shared_ptr<CacheableKey>>  keys() = 0;
+  virtual std::vector<std::shared_ptr<CacheableKey>> keys() = 0;
 
   /**
    * Return the set of keys defined in the server process associated to this
@@ -1019,7 +1019,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws UnsupportedOperationException if the member type is not CLIENT
    *                                       or region is not a native client one.
    */
-  virtual std::vector<std::shared_ptr<CacheableKey>>  serverKeys() = 0;
+  virtual std::vector<std::shared_ptr<CacheableKey>> serverKeys() = 0;
 
   /**
    * Return all values in the local process for this region. No value is
@@ -1074,7 +1074,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws UnsupportedOperationException if the region's scope is
    * ScopeType::LOCAL.
    */
-  virtual std::vector<std::shared_ptr<CacheableKey>>  getInterestList() const = 0;
+  virtual std::vector<std::shared_ptr<CacheableKey>> getInterestList() const = 0;
   /**
    * Returns the list of regular expresssions on which this client is
    * interested and will be notified of changes.
@@ -1128,7 +1128,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws UnknownException For other exceptions.
    * @throws TimeoutException if operation timed out
    */
-  virtual void registerKeys(const std::vector<std::shared_ptr<CacheableKey>> & keys,
+  virtual void registerKeys(const std::vector<std::shared_ptr<CacheableKey>>& keys,
                             bool isDurable = false,
                             bool getInitialValues = false,
                             bool receiveValues = true) = 0;
@@ -1158,7 +1158,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws UnknownException For other exceptions.
    * @throws TimeoutException if operation timed out
    */
-  virtual void unregisterKeys(const std::vector<std::shared_ptr<CacheableKey>> & keys) = 0;
+  virtual void unregisterKeys(const std::vector<std::shared_ptr<CacheableKey>>& keys) = 0;
 
   /**
    * Registers to get updates for all keys from the server.

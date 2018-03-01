@@ -83,7 +83,7 @@ void* getFactoryFunc(const std::string& lib, const std::string& funcName) {
 
 }  // namespace impl
 
-std::shared_ptr<CacheLoader> RegionAttributes::getCacheLoader() {
+std::shared_ptr<CacheLoader> RegionAttributes::getCacheLoader() const {
   if (!m_cacheLoader && !m_cacheLoaderLibrary.empty()) {
     if (CacheXmlParser::managedCacheLoaderFn &&
         m_cacheLoaderFactory.find('.') != std::string::npos) {
@@ -100,7 +100,8 @@ std::shared_ptr<CacheLoader> RegionAttributes::getCacheLoader() {
   }
   return m_cacheLoader;
 }
-std::shared_ptr<CacheWriter> RegionAttributes::getCacheWriter() {
+
+std::shared_ptr<CacheWriter> RegionAttributes::getCacheWriter() const {
   if (!m_cacheWriter && !m_cacheWriterLibrary.empty()) {
     if (CacheXmlParser::managedCacheWriterFn &&
         m_cacheWriterFactory.find('.') != std::string::npos) {
@@ -117,7 +118,8 @@ std::shared_ptr<CacheWriter> RegionAttributes::getCacheWriter() {
   }
   return m_cacheWriter;
 }
-std::shared_ptr<CacheListener> RegionAttributes::getCacheListener() {
+
+std::shared_ptr<CacheListener> RegionAttributes::getCacheListener() const {
   if (!m_cacheListener && !m_cacheListenerLibrary.empty()) {
     if (CacheXmlParser::managedCacheListenerFn &&
         m_cacheListenerFactory.find('.') != std::string::npos) {
@@ -134,7 +136,8 @@ std::shared_ptr<CacheListener> RegionAttributes::getCacheListener() {
   }
   return m_cacheListener;
 }
-std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver() {
+
+std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver() const {
   if (!m_partitionResolver && !m_partitionResolverLibrary.empty()) {
     if (CacheXmlParser::managedPartitionResolverFn &&
         m_partitionResolverFactory.find('.') != std::string::npos) {
@@ -152,7 +155,8 @@ std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver() {
   }
   return m_partitionResolver;
 }
-std::shared_ptr<PersistenceManager> RegionAttributes::getPersistenceManager() {
+
+std::shared_ptr<PersistenceManager> RegionAttributes::getPersistenceManager() const {
   if (!m_persistenceManager && !m_persistenceLibrary.empty()) {
     if (CacheXmlParser::managedPartitionResolverFn &&
         m_persistenceFactory.find('.') != std::string::npos) {
@@ -169,52 +173,55 @@ std::shared_ptr<PersistenceManager> RegionAttributes::getPersistenceManager() {
   }
   return m_persistenceManager;
 }
-const std::string& RegionAttributes::getCacheLoaderFactory() {
+
+const std::string& RegionAttributes::getCacheLoaderFactory() const {
   return m_cacheLoaderFactory;
 }
 
-const std::string& RegionAttributes::getCacheWriterFactory() {
+const std::string& RegionAttributes::getCacheWriterFactory() const {
   return m_cacheWriterFactory;
 }
 
-const std::string& RegionAttributes::getCacheListenerFactory() {
+const std::string& RegionAttributes::getCacheListenerFactory() const {
   return m_cacheListenerFactory;
 }
 
-const std::string& RegionAttributes::getPartitionResolverFactory() {
+const std::string& RegionAttributes::getPartitionResolverFactory() const {
   return m_partitionResolverFactory;
 }
 
-const std::string& RegionAttributes::getPersistenceFactory() {
+const std::string& RegionAttributes::getPersistenceFactory() const {
   return m_persistenceFactory;
 }
-const std::string& RegionAttributes::getCacheLoaderLibrary() {
+const std::string& RegionAttributes::getCacheLoaderLibrary() const {
   return m_cacheLoaderLibrary;
 }
 
-const std::string& RegionAttributes::getCacheWriterLibrary() {
+const std::string& RegionAttributes::getCacheWriterLibrary() const {
   return m_cacheWriterLibrary;
 }
 
-const std::string& RegionAttributes::getCacheListenerLibrary() {
+const std::string& RegionAttributes::getCacheListenerLibrary() const {
   return m_cacheListenerLibrary;
 }
 
-const std::string& RegionAttributes::getPartitionResolverLibrary() {
+const std::string& RegionAttributes::getPartitionResolverLibrary() const {
   return m_partitionResolverLibrary;
 }
 
-const std::string& RegionAttributes::getEndpoints() const { 
-  return m_endpoints; 
+const std::string& RegionAttributes::getEndpoints() const {
+  return m_endpoints;
 }
 
 bool RegionAttributes::getClientNotificationEnabled() const {
   return m_clientNotificationEnabled;
 }
-const std::string& RegionAttributes::getPersistenceLibrary() {
+
+const std::string& RegionAttributes::getPersistenceLibrary() const {
   return m_persistenceLibrary;
 }
-std::shared_ptr<Properties> RegionAttributes::getPersistenceProperties() {
+
+std::shared_ptr<Properties> RegionAttributes::getPersistenceProperties() const {
   return m_persistenceProperties;
 }
 
@@ -269,8 +276,6 @@ uint32_t RegionAttributes::getLruEntriesLimit() const {
 DiskPolicyType RegionAttributes::getDiskPolicy() const {
   return m_diskPolicy;
 }
-
-const std::string& RegionAttributes::getPoolName() const { return m_poolName; }
 
 std::shared_ptr<Serializable> RegionAttributes::createDeserializable() {
   return std::make_shared<RegionAttributes>();

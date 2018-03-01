@@ -66,7 +66,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
     return m_realRegion->getParentRegion();
   }
 
-  virtual RegionAttributes getAttributes() const override {
+  virtual const RegionAttributes& getAttributes() const override {
     return m_realRegion->getAttributes();
   }
 
