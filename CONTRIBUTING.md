@@ -55,6 +55,7 @@ $ clang-format -i --style=file <PATH_TO_FILES>
 
 ### Code
 When writing new or refactoring old code please make the following changes.
+
  * Prefer the use of [`auto`](http://en.cppreference.com/w/cpp/language/auto) C++ or [`var`](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/var) in C# where applicable.
    ```c++
    std::vector<Cars> cars = lot.getCars();
@@ -63,6 +64,7 @@ When writing new or refactoring old code please make the following changes.
    ```c++
    auto cars = lot.getCars();
    ```
+
  * Prefer [range for](http://en.cppreference.com/w/cpp/language/range-for) loops over traditional for loops where applicable.
    ```c++
    for (std::vector<Car>::iterator i = cars.begin(); i != cars.end(), ++i) {
@@ -76,6 +78,7 @@ When writing new or refactoring old code please make the following changes.
      std::cout << car.getName();
    }
    ```
+
   * Fix bad variable names. Variable names should be expressive.
     ```c++
     double i = car.getFuelLevel();
@@ -84,7 +87,10 @@ When writing new or refactoring old code please make the following changes.
     ```c++
     auto fuelLevel = car.getFuelLevel();
     ```
+
   * Use [`override`](http://en.cppreference.com/w/cpp/language/override) on all method overrides.
+
+    Given a base class
     ```c++
     class Base {
      public:
@@ -93,6 +99,9 @@ When writing new or refactoring old code please make the following changes.
       virtual virtualMethod();
       virtual pureVirtualMethod() = 0;
     }
+    ```
+    the derived class
+    ```c++
     class Derived : public Base {
      public:
       virtual ~Derived();
@@ -102,13 +111,6 @@ When writing new or refactoring old code please make the following changes.
     ```
     should be changed to
     ```c++
-    class Base {
-     public:
-      Base();
-      virtual ~Base();
-      virtual virtualMethod();
-      virtual pureVirtualMethod() = 0;
-    }
     class Derived : public Base {
      public:
       Derived();
@@ -118,3 +120,42 @@ When writing new or refactoring old code please make the following changes.
     }
     ```
 
+  * Fix [`std::string::c_str()`](http://en.cppreference.com/w/cpp/string/basic_string/c_str) calls where passed to [`std::string`](http://en.cppreference.com/w/cpp/string/basic_string) parameters.
+    ```c++
+    auto name = std::string("Delorean");
+    ...
+    car.setName(name.c_str());
+    ```
+    should be changed to
+    ```c++
+    auto name = std::string("Delorean");
+    ...
+    car.setName(name);
+    ```
+
+  * Replace [`sprintf`](http://en.cppreference.com/w/cpp/io/c/fprintf) for logging messages with [`std::string`](http://en.cppreference.com/w/cpp/string/basic_string) or [`std::stringstream`](http://en.cppreference.com/w/cpp/io/basic_stringstream).
+    ```c++
+    char[1024] buffer;
+    sprintf(buffer, "Car::crashed: name=%s", car.getName().c_str());
+    LOG(buffer);
+    ```
+    should be changed to
+    ```c++
+    LOG("Car::crashed: name=" + car.getName());
+    ```
+
+  * Replace [`dynamic_cast`](http://en.cppreference.com/w/cpp/language/dynamic_cast) on [`std::shared_ptr`](http://en.cppreference.com/w/cpp/memory/shared_ptr) with [`std::dynamic_pointer_cast`](http://en.cppreference.com/w/cpp/memory/shared_ptr/pointer_cast). Same goes for [`static_cast`](http://en.cppreference.com/w/cpp/language/static_cast) to [`std::static_pointer_cast`](http://en.cppreference.com/w/cpp/memory/shared_ptr/pointer_cast), etc.
+    ```c++
+    std::shared_ptr<Car> car = garage.getCar();
+    Delorean* delorean = dynamic_cast<Delorean*>(car.get());
+    if (nullptr != delorean) {
+      delorean->setSpeed(88);
+    }
+    ```
+    should be changed to
+    ```c++
+    auto car = garage.getCar();
+    if (auto delorean = std::dynamic_cast<Delorean>(car)) {
+      delorean->setSpeed(88);
+    }
+    ```
