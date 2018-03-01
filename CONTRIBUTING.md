@@ -118,6 +118,3 @@ When writing new or refactoring old code please make the following changes.
     }
     ```
 
-
-# System Requirements
-See [BUILDING.md](BUILDING.md)
