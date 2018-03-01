@@ -2,7 +2,7 @@
 This document assumes you have followed the [Apache Geode Code contribution instructions](https://cwiki.apache.org/confluence/display/GEODE/Code+contributions)
 
 ## Building the code
-    see BUILDING.md
+see BUILDING.md
 
 ## Next steps
 * Make your changes/add your feature/fix a bug.
@@ -11,34 +11,112 @@ This document assumes you have followed the [Apache Geode Code contribution inst
 * Submit a pull request
 
 ## Testing
-   Before submitting a pull request the unit and integration tests must all pass. We are using CTest, (Please see [the CTest documentation](https://cmake.org/Wiki/CMake/Testing_With_CTest) for further information.)
+Before submitting a pull request the unit and integration tests must all pass. We are using CTest, (Please see [the CTest documentation](https://cmake.org/Wiki/CMake/Testing_With_CTest) for further information.)
 ### Running unit tests
-    $ cd <clone>
-    $ cd build
+```bash
+$ cd <clone>
+$ cd build
+```
+The following steps will be updated once the "run-unit-tests" target is fixed.
 
-   The following steps will be updated once the "run-unit-tests" target is fixed.
+```bash
+$ cd cppcache/test/<Debug|Release|if needed>
+$ ./gfcppcache_unittests
+```
 
-    $ cd cppcache/test/<Debug|Release|if needed>
-    $ ./gfcppcache_unittests
 ### Running integration tests
-    $ cd <clone>
-    $ cd build
-    $ cmake --build . --target run-integration-tests
+```bash
+$ cd <clone>
+$ cd build
+$ cmake --build . --target run-integration-tests
+```
 
-   Which is equivalent to running ctest directly:
+Which is equivalent to running ctest directly:
 
-    $ cd build/cppcache/integration-test
-    $ ctest --timeout 2000 -L STABLE -C <Debug|Release> -R . -j1
-   This will take ~ 2 hours, YMMV... you can up the jobs to 4 and run in parallel, but you may end up with test failures that will need to be re-run sequentially.  Like so:
+```bash
+$ cd build/cppcache/integration-test
+$ ctest --timeout 2000 -L STABLE -C <Debug|Release> -R . -j1
+```
+This will take ~ 2 hours, YMMV... you can up the jobs to 4 and run in parallel, but you may end up with test failures that will need to be re-run sequentially.  Like so:
 
-    $ cd build/cppcache/integration-test
-    $ ctest -R <test_name> -C <Debug|Release>
+```bash
+$ cd build/cppcache/integration-test
+$ ctest -R <test_name> -C <Debug|Release>
+```
 
-## Formatting C++
+## Style
+
+### Formatting C++
 For C++ it is required to follow the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html) and have a build target that uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) to achieve compliance.
+```bash
+$ clang-format -i --style=file <PATH_TO_FILES>
+```
 
-    $ clang-format -i --style=file <PATH_TO_FILES>
+### Code
+When writing new or refactoring old code please make the following changes.
+ * Prefer the use of [`auto`](http://en.cppreference.com/w/cpp/language/auto) C++ or [`var`](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/var) in C# where applicable.
+   ```c++
+   std::vector<Cars> cars = lot.getCars();
+   ```
+   should be changed to
+   ```c++
+   auto cars = lot.getCars();
+   ```
+ * Prefer [range for](http://en.cppreference.com/w/cpp/language/range-for) loops over traditional for loops where applicable.
+   ```c++
+   for (std::vector<Car>::iterator i = cars.begin(); i != cars.end(), ++i) {
+     Car car = *i;
+     std::cout << car.getName();
+   }
+   ```
+   should be changed to
+   ```c++
+   for (const auto& car : cars) {
+     std::cout << car.getName();
+   }
+   ```
+  * Fix bad variable names. Variable names should be expressive.
+    ```c++
+    double i = car.getFuelLevel();
+    ```
+    should be changed to
+    ```c++
+    auto fuelLevel = car.getFuelLevel();
+    ```
+  * Use [`override`]() on all method overrides.
+    ```c++
+    class Base {
+     public:
+      Base();
+      virtual ~Base();
+      virtual virtualMethod();
+      virtual pureVirtualMethod() = 0;
+    }
+    class Derived : public Base {
+     public:
+      virtual ~Derived();
+      virtual virtualMethod();
+      virtual pureVirtualMethod();
+    }
+    ```
+    should be changed to
+    ```c++
+    class Base {
+     public:
+      Base();
+      virtual ~Base();
+      virtual virtualMethod();
+      virtual pureVirtualMethod() = 0;
+    }
+    class Derived : public Base {
+     public:
+      Derived();
+      ~Derived() override;
+      virtualMethod() override;
+      pureVirtualMethod() override;
+    }
+    ```
+
 
 # System Requirements
 See [BUILDING.md](BUILDING.md)
-
