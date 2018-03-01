@@ -16,10 +16,6 @@ Before submitting a pull request the unit and integration tests must all pass. W
 ```bash
 $ cd <clone>
 $ cd build
-```
-The following steps will be updated once the "run-unit-tests" target is fixed.
-
-```bash
 $ cd cppcache/test/<Debug|Release|if needed>
 $ ./gfcppcache_unittests
 ```
