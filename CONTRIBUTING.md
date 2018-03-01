@@ -2,7 +2,7 @@
 This document assumes you have followed the [Apache Geode Code contribution instructions](https://cwiki.apache.org/confluence/display/GEODE/Code+contributions)
 
 ## Building the code
-see BUILDING.md
+see (BUILDING.md)
 
 ## Next steps
 * Make your changes/add your feature/fix a bug.
