@@ -43,6 +43,7 @@ This will take ~ 2 hours, YMMV... you can up the jobs to 4 and run in parallel, 
 $ cd build/cppcache/integration-test
 $ ctest -R <test_name> -C <Debug|Release>
 ```
+.NET integration tests can be executed similarly from `build/clicache/integration-test`.
 
 ## Style
 
