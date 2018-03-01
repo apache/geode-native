@@ -84,7 +84,7 @@ When writing new or refactoring old code please make the following changes.
     ```c++
     auto fuelLevel = car.getFuelLevel();
     ```
-  * Use [`override`]() on all method overrides.
+  * Use [`override`](http://en.cppreference.com/w/cpp/language/override) on all method overrides.
     ```c++
     class Base {
      public:
