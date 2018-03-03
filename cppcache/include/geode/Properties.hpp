@@ -47,7 +47,7 @@ class CacheableString;
  * Contains a set of (key, value) pair properties with key being the name of
  * the property; value, the value of the property.
  */
-class APACHE_GEODE_EXPORT Properties : public Serializable {
+class APACHE_GEODE_EXPORT Properties : public DataSerializablePrimitive {
  public:
   class Visitor {
    public:
@@ -135,28 +135,14 @@ class APACHE_GEODE_EXPORT Properties : public Serializable {
    */
   void load(const std::string& fileName);
 
-  /**
-   *@brief serialize this object
-   **/
-  void toData(DataOutput& output) const override;
-
-  /**
-   *@brief deserialize this object
-   **/
-  virtual void fromData(DataInput& input) override;
-
   /** Return an empty instance for deserialization. */
   static std::shared_ptr<Serializable> createDeserializable();
 
-  /** Return class id for serialization. */
-  virtual int32_t classId() const override;
+  void toData(DataOutput& output) const override;
 
-  /** Return type id for serialization. */
-  virtual int8_t typeId() const override;
+  void fromData(DataInput& input) override;
 
-  virtual size_t objectSize() const override {
-    return 0;  // don't care to set the right value
-  }
+  int8_t getDsCode() const override;
 
   ~Properties() override = default;
   Properties(const Properties&) = delete;

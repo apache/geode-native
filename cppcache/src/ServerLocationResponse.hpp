@@ -21,24 +21,17 @@
 #define GEODE_SERVERLOCATIONRESPONSE_H_
 
 #include <geode/Serializable.hpp>
-#include "GeodeTypeIdsImpl.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class ServerLocationResponse : public Serializable {
+class ServerLocationResponse : public DataSerializableFixedId {
  public:
-  ServerLocationResponse() : Serializable() {}
-  void toData(DataOutput&) const override {}
-  void fromData(DataInput& input) override = 0;
-  int32_t classId() const override { return 0; }
-  int8_t typeId() const override = 0;
-  int8_t DSFID() const override {
-    return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
-  }
-  size_t objectSize() const override = 0;
+  ServerLocationResponse() = default;
   ~ServerLocationResponse() override = default;
+
+  void toData(DataOutput& dataOutput) const final {}
 };
 
 }  // namespace client

@@ -47,15 +47,6 @@ std::shared_ptr<Serializable> ClientHealthStats::createDeserializable() {
   return std::make_shared<ClientHealthStats>();
 }
 
-int32_t ClientHealthStats::classId() const { return 0; }
-
-int8_t ClientHealthStats::DSFID() const {
-  return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
-}
-int8_t ClientHealthStats::typeId() const {
-  return static_cast<int8_t>(GeodeTypeIdsImpl::ClientHealthStats);
-}
-
 ClientHealthStats::ClientHealthStats()
     : m_numGets(0),
       m_numPuts(0),

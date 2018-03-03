@@ -170,7 +170,7 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
     } else {
       switch (replyCommitAfter.getMessageType()) {
         case TcrMessage::RESPONSE: {
-          auto commit = std::static_pointer_cast<TXCommitMessage>(
+          auto commit = std::dynamic_pointer_cast<TXCommitMessage>(
               replyCommitAfter.getValue());
           if (commit.get() !=
               nullptr)  // e.g. when afterCompletion(STATUS_ROLLEDBACK) called

@@ -45,31 +45,11 @@ class Serializable;
 
 class APACHE_GEODE_EXPORT CacheableFileName : public CacheableString {
  public:
-  /**
-   *@brief serialize this object
-   **/
   void toData(DataOutput& output) const override;
 
-  /**
-   *@brief deserialize this object
-   * Throw IllegalArgumentException if the packed CacheableString is not less
-   * than 64K bytes.
-   **/
   virtual void fromData(DataInput& input) override;
 
-  /**
-   *@brief Return the classId of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int32_t classId() const override;
-
-  /**
-   *@brief return the typeId byte of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int8_t typeId() const override;
+  virtual int8_t getDsCode() const override;
 
   /**
    * @brief creation function for filenames.

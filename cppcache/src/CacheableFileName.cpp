@@ -36,9 +36,7 @@ void CacheableFileName::fromData(DataInput& input) {
   CacheableString::fromData(input);
 }
 
-int32_t CacheableFileName::classId() const { return 0; }
-
-int8_t CacheableFileName::typeId() const {
+int8_t CacheableFileName::getDsCode() const {
   return GeodeTypeIds::CacheableFileName;
 }
 

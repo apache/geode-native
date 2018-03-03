@@ -60,7 +60,7 @@ void DeltaPSTObject::fromData(apache::geode::client::DataInput& input) {
   timestamp = input.readInt64();
   field1 = input.readInt32();
   field2 = input.read();
-  valueData = std::static_pointer_cast<CacheableBytes>(input.readObject());
+  valueData = std::dynamic_pointer_cast<CacheableBytes>(input.readObject());
 }
 std::string DeltaPSTObject::toString() const {
   char buf[102500];

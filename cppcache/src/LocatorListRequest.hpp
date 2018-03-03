@@ -37,10 +37,10 @@ class LocatorListRequest : public ServerLocationRequest {
 
  public:
   LocatorListRequest(const std::string& servergroup = "");
+  ~LocatorListRequest() override = default;
+
   void toData(DataOutput& output) const override;
-  void fromData(DataInput& input) override;
-  int8_t typeId() const override;
-  size_t objectSize() const override;
+  int32_t getDSFID() const override;
 };
 
 }  // namespace client

@@ -134,17 +134,7 @@ class BucketServerLocation : public ServerLocation {
     return sizeof(int32_t) + sizeof(bool) + sizeof(int8_t);
   }
 
-  int8_t typeId() const override {
-    return 0;  // NOt needed infact
-  }
-
-  int8_t DSFID() const override {
-    return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);  // Never used
-  }
-
-  int32_t classId() const override {
-    return 0;  // Never used
-  }
+  int8_t getInternalId() const override { return 0; }
 
   BucketServerLocation& operator=(const BucketServerLocation& rhs) {
     if (this == &rhs) return *this;

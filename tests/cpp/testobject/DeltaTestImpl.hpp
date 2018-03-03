@@ -35,7 +35,7 @@ using namespace apache::geode::client;
 
 namespace testobject {
 
-class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
+class TESTOBJECT_EXPORT DeltaTestImpl : public DataSerializable, public Delta {
  private:
   static uint8_t INT_MASK;
   static uint8_t STR_MASK;
@@ -63,15 +63,16 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public Cacheable, public Delta {
   ~DeltaTestImpl() noexcept override {}
 
   void fromData(DataInput& input) override;
+
   void toData(DataOutput& output) const override;
 
   void fromDelta(DataInput& input) override;
+
   void toDelta(DataOutput& output) const override;
+
   bool hasDelta() const override { return m_hasDelta; }
 
-  int32_t classId() const override { return 30; }
-
-  size_t objectSize() const override { return 0; }
+  int32_t getClassId() const override { return 30; }
 
   inline std::shared_ptr<Delta> clone() const override {
     return std::make_shared<DeltaTestImpl>(*this);

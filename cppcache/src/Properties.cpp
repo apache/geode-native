@@ -196,9 +196,7 @@ std::shared_ptr<Serializable> Properties::createDeserializable() {
   return std::make_shared<Properties>();
 }
 
-int32_t Properties::classId() const { return 0; }
-
-int8_t Properties::typeId() const { return GeodeTypeIds::Properties; }
+int8_t Properties::getDsCode() const { return GeodeTypeIds::Properties; }
 
 void Properties::toData(DataOutput& output) const {
   output.writeArrayLen(static_cast<uint32_t>(m_map.size()));
@@ -213,8 +211,8 @@ void Properties::fromData(DataInput& input) {
   m_map.reserve(mapSize);
 
   for (int i = 0; i < mapSize; i++) {
-    auto key = std::static_pointer_cast<CacheableKey>(input.readObject());
-    auto value = std::static_pointer_cast<Cacheable>(input.readObject());
+    auto key = std::dynamic_pointer_cast<CacheableKey>(input.readObject());
+    auto value = std::dynamic_pointer_cast<Cacheable>(input.readObject());
     m_map.emplace(key, value);
   }
 }

@@ -322,22 +322,24 @@ void TheTypeMap::find2(int64_t id, TypeFactoryMethod& func) const {
 }
 
 void TheTypeMap::bind(TypeFactoryMethod func) {
-  auto obj = func();
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_mapLock);
-  int64_t compId = static_cast<int64_t>(obj->typeId());
-  if (compId == GeodeTypeIdsImpl::CacheableUserData ||
-      compId == GeodeTypeIdsImpl::CacheableUserData2 ||
-      compId == GeodeTypeIdsImpl::CacheableUserData4) {
-    compId |= ((static_cast<int64_t>(obj->classId())) << 32);
-  }
-  int bindRes = m_map->bind(compId, func);
-  if (bindRes == 1) {
-    LOGERROR("A class with ID %d is already registered.", compId);
-    throw IllegalStateException("A class with given ID is already registered.");
-  } else if (bindRes == -1) {
-    LOGERROR("Unknown error while adding class ID %d to map.", compId);
-    throw IllegalStateException("Unknown error while adding type to map.");
-  }
+  //  auto obj = func();
+  //  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_mapLock);
+  //  int64_t compId = static_cast<int64_t>(obj->typeId());
+  //  if (compId == GeodeTypeIdsImpl::CacheableUserData ||
+  //      compId == GeodeTypeIdsImpl::CacheableUserData2 ||
+  //      compId == GeodeTypeIdsImpl::CacheableUserData4) {
+  //    compId |= ((static_cast<int64_t>(obj->classId())) << 32);
+  //  }
+  //  int bindRes = m_map->bind(compId, func);
+  //  if (bindRes == 1) {
+  //    LOGERROR("A class with ID %d is already registered.", compId);
+  //    throw IllegalStateException("A class with given ID is already
+  //    registered.");
+  //  } else if (bindRes == -1) {
+  //    LOGERROR("Unknown error while adding class ID %d to map.", compId);
+  //    throw IllegalStateException("Unknown error while adding type to map.");
+  //  }
+  throw UnsupportedOperationException("");
 }
 
 void TheTypeMap::rebind(int64_t compId, TypeFactoryMethod func) {

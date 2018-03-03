@@ -701,7 +701,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
   }
 
   std::shared_ptr<CacheableEnum> getEnum() {
-    return std::static_pointer_cast<CacheableEnum>(m_pdxEnum);
+    return std::dynamic_pointer_cast<CacheableEnum>(m_pdxEnum);
   }
 
   int32_t getByteArrayLength() { return byteArrayLen; }

@@ -36,10 +36,9 @@
 using namespace apache::geode::client;
 using namespace testframework;
 namespace testobject {
-/**
- * @brief User class for testing the query functionality.
- */
-class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
+
+class TESTOBJECT_EXPORT DeltaFastAssetAccount : public DataSerializable,
+                                                public Delta {
  private:
   bool encodeTimestamp;
   int32_t acctId;
@@ -118,7 +117,7 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
     }
   }
 
-  int32_t classId() const override { return 41; }
+  int32_t getClassId() const override { return 41; }
 
   bool hasDelta() const override { return true; }
 

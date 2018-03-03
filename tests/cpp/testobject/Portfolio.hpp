@@ -33,7 +33,7 @@ using namespace apache::geode::client;
 
 namespace testobject {
 
-class TESTOBJECT_EXPORT Portfolio : public Serializable {
+class TESTOBJECT_EXPORT Portfolio : public DataSerializable {
  private:
   int32_t ID;
   std::shared_ptr<CacheableString> pkid;
@@ -128,7 +128,7 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
 
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t classId() const override { return 0x03; }
+  int32_t getClassId() const override { return 0x03; }
   std::string toString() const override;
 };
 

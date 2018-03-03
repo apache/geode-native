@@ -30,7 +30,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class FixedPartitionAttributesImpl : public Serializable {
+class FixedPartitionAttributesImpl : public DataSerializableInternal {
  private:
   std::string m_partitionName;
   bool m_isPrimary;
@@ -71,17 +71,7 @@ class FixedPartitionAttributesImpl : public Serializable {
             sizeof(decltype(m_partitionName)::value_type));
   }
 
-  int8_t typeId() const override {
-    return 0;  // NOt needed infact
-  }
-
-  int8_t DSFID() const override {
-    return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);  // Never used
-  }
-
-  int32_t classId() const override {
-    return 0;  // Never used
-  }
+  int8_t getInternalId() const override { return 0; }
 
   FixedPartitionAttributesImpl& operator=(
       const FixedPartitionAttributesImpl& rhs) {

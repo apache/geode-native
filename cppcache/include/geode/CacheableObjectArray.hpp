@@ -25,6 +25,7 @@
 
 #include "internal/geode_globals.hpp"
 #include "Serializable.hpp"
+#include "GeodeTypeIds.hpp"
 
 /** @file
  */
@@ -42,17 +43,11 @@ class DataOutput;
 class Serializable;
 
 class APACHE_GEODE_EXPORT CacheableObjectArray
-    : public Cacheable,
+    : public DataSerializablePrimitive,
       public std::vector<std::shared_ptr<Cacheable>> {
  public:
-  /**
-   *@brief serialize this object
-   **/
   void toData(DataOutput& output) const override;
 
-  /**
-   *@brief deserialize this object
-   **/
   virtual void fromData(DataInput& input) override;
 
   /**
@@ -62,19 +57,9 @@ class APACHE_GEODE_EXPORT CacheableObjectArray
     return std::make_shared<CacheableObjectArray>();
   }
 
-  /**
-   *@brief Return the classId of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int32_t classId() const override;
-
-  /**
-   *@brief return the typeId byte of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int8_t typeId() const override;
+  int8_t getDsCode() const override {
+    return GeodeTypeIds::CacheableObjectArray;
+  }
 
   /**
    * Factory method for creating the default instance of CacheableObjectArray.

@@ -30,7 +30,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class GetAllServersResponse : public Serializable {
+class GetAllServersResponse : public DataSerializableFixedId_t<
+                                  GeodeTypeIdsImpl::GetAllServersResponse> {
   std::vector<ServerLocation> m_servers;
 
  public:
@@ -40,14 +41,10 @@ class GetAllServersResponse : public Serializable {
   GetAllServersResponse() : Serializable() {}
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t classId() const override { return 0; }
-  int8_t typeId() const override {
-    return GeodeTypeIdsImpl::GetAllServersResponse;
+
+  size_t objectSize() const override {
+    return sizeof(GetAllServersResponse) + m_servers.capacity();
   }
-  int8_t DSFID() const override {
-    return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
-  }
-  size_t objectSize() const override { return m_servers.size(); }
   std::vector<ServerLocation> getServers() { return m_servers; }
   ~GetAllServersResponse() override = default;
 };

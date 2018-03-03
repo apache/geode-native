@@ -77,51 +77,6 @@ class APACHE_GEODE_EXPORT PutAllPartialResultServerException
   PutAllPartialResultServerException(std::shared_ptr<CacheableString> msg);
 
   /**
-   *@brief serialize this object
-   * @throws IllegalStateException If this api is called from User code.
-   **/
-  void toData(DataOutput& output) const override;
-
-  /**
-   *@brief deserialize this object, typical implementation should return
-   * the 'this' pointer.
-   * @throws IllegalStateException If this api is called from User code.
-   **/
-  void fromData(DataInput& input) override;
-
-  /**
-   *@brief Return the classId of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   *
-   * The classId must be unique within an application suite.
-   * Using a negative value may result in undefined behavior.
-   * @throws IllegalStateException If this api is called from User code.
-   */
-  int32_t classId() const override;
-
-  /**
-   *@brief return the size in bytes of the instance being serialized.
-   * This is used to determine whether the cache is using up more
-   * physical memory than it has been configured to use. The method can
-   * return zero if the user does not require the ability to control
-   * cache memory utilization.
-   * Note that you must implement this only if you use the HeapLRU feature.
-   * @throws IllegalStateException If this api is called from User code.
-   */
-  size_t objectSize() const override;
-
-  /**
-   *@brief return the typeId byte of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   *
-   * Note that this should not be overridden by custom implementations
-   * and is reserved only for builtin types.
-   */
-  int8_t typeId() const override;
-
-  /**
    *@brief return as std::shared_ptr<CacheableString> the Exception name
    *returned from geode sendException api.
    **/

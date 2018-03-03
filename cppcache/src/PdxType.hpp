@@ -44,7 +44,7 @@ typedef std::map<std::string, std::shared_ptr<PdxFieldType>> NameVsPdxType;
 class PdxType;
 class PdxTypeRegistry;
 
-class PdxType : public Serializable,
+class PdxType : public DataSerializableInternal,
                 public std::enable_shared_from_this<PdxType>,
                 private NonCopyable,
                 private NonAssignable {
@@ -113,7 +113,7 @@ class PdxType : public Serializable,
 
   void fromData(DataInput& input) override;
 
-  int32_t classId() const override { return GeodeTypeIds::PdxType; }
+  int8_t getInternalId() const override { return GeodeTypeIds::PdxType; }
 
   static std::shared_ptr<Serializable> CreateDeserializable(
       PdxTypeRegistry& pdxTypeRegistry) {

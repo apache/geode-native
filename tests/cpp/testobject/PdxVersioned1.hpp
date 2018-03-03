@@ -194,7 +194,7 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
   std::shared_ptr<CacheableDate> getDate() { return m_date; }
 
   std::shared_ptr<CacheableEnum> getEnum() {
-    return std::static_pointer_cast<CacheableEnum>(m_pdxEnum);
+    return std::dynamic_pointer_cast<CacheableEnum>(m_pdxEnum);
   }
 
   int32_t getByteArrayLength() { return byteArrayLen; }

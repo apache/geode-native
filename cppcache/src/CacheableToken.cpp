@@ -49,9 +49,7 @@ void CacheableToken::fromData(DataInput& input) {
   m_value = static_cast<TokenType>(input.readInt32());
 }
 
-int32_t CacheableToken::classId() const { return 0; }
-
-int8_t CacheableToken::typeId() const {
+int8_t CacheableToken::getInternalId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableToken);
 }
 

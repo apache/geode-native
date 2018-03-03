@@ -176,20 +176,8 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
 
   virtual std::string toString() const override;
 
-  virtual void toData(DataOutput& output) const override {
-    PdxInstance::toData(output);
-  }
-
-  virtual void fromData(DataInput& input) override {
-    PdxInstance::fromData(input);
-  }
-
   virtual bool operator==(const CacheableKey& other) const override;
 
-  /** @return the size of the object in bytes
-   * This is an internal method.
-   * It is used in case of heap LRU property is set.
-   */
   virtual size_t objectSize() const override;
 
   virtual std::shared_ptr<CacheableStringArray> getFieldNames() override;

@@ -44,9 +44,8 @@ class QueueConnectionRequest : public ServerLocationRequest {
         m_serverGp(serverGp) {}  // No need for default constructor as creating
                                  // request with it does not make sense.
   void toData(DataOutput& output) const override;
-  void fromData(DataInput& input) override;
-  int8_t typeId() const override;
-  size_t objectSize() const override;
+  int32_t getDSFID() const override;
+
   virtual std::set<ServerLocation> getExcludedServer() const;
   virtual const ClientProxyMembershipID& getProxyMemberShipId() const;
   virtual int getRedundentCopies() const;

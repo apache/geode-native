@@ -41,7 +41,8 @@ namespace client {
  * can serve as a distributable key object for caching as well as being a date
  * value.
  */
-class APACHE_GEODE_EXPORT CacheableDate : public CacheableKey {
+class APACHE_GEODE_EXPORT CacheableDate : public DataSerializablePrimitive,
+                                          public CacheableKey {
  private:
   /**
    * Milliseconds since January 1, 1970, 00:00:00 GMT to be consistent with Java
@@ -54,14 +55,8 @@ class APACHE_GEODE_EXPORT CacheableDate : public CacheableKey {
   typedef std::chrono::time_point<clock> time_point;
   typedef std::chrono::milliseconds duration;
 
-  /**
-   * @brief serialize this object
-   **/
   void toData(DataOutput& output) const override;
 
-  /**
-   * @brief deserialize this object
-   **/
   virtual void fromData(DataInput& input) override;
 
   /**
@@ -69,19 +64,7 @@ class APACHE_GEODE_EXPORT CacheableDate : public CacheableKey {
    */
   static std::shared_ptr<Serializable> createDeserializable();
 
-  /**
-   * @brief Return the classId of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int32_t classId() const override;
-
-  /**
-   *@brief return the typeId byte of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int8_t typeId() const override;
+  virtual int8_t getDsCode() const override;
 
   /** @return the size of the object in bytes */
   virtual size_t objectSize() const override { return sizeof(CacheableDate); }

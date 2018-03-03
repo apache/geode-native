@@ -45,7 +45,8 @@ class StructSet;
  * returned after executing a Query obtained from a QueryService which in turn
  * is obtained from a Cache.
  */
-class APACHE_GEODE_EXPORT Struct : public Serializable {
+class APACHE_GEODE_EXPORT Struct
+    : public DataSerializableFixedId_t<GeodeTypeIds::Struct> {
  public:
   typedef std::vector<std::shared_ptr<Serializable>>::iterator iterator;
 
@@ -99,31 +100,9 @@ class APACHE_GEODE_EXPORT Struct : public Serializable {
    */
   int32_t size() const;
 
-  /**
-   * Deserializes the Struct object from the DataInput. @TODO KN: better comment
-   */
   void fromData(DataInput& input) override;
 
-  /**
-   * Serializes this Struct object. @TODO KN: better comment
-   */
   void toData(DataOutput& output) const override;
-
-  /**
-   * Returns the classId for internal use.
-   */
-  int32_t classId() const override;
-
-  /**
-   * Returns the typeId of Struct class.
-   */
-  int8_t typeId() const override;
-
-  /**
-   * Return the data serializable fixed ID size type for internal use.
-   * @since GFE 5.7
-   */
-  int8_t DSFID() const override;
 
   /**
    * Returns the name of the field corresponding to the index number in the

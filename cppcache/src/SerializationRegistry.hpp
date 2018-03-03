@@ -144,44 +144,45 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
    */
   inline void serialize(const Serializable* obj, DataOutput& output,
                         bool isDelta = false) const {
-    if (obj == nullptr) {
-      output.write(static_cast<int8_t>(GeodeTypeIds::NullObj));
-    } else {
-      int8_t typeId = obj->typeId();
-      switch (obj->DSFID()) {
-        case GeodeTypeIdsImpl::FixedIDByte:
-          output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte));
-          output.write(typeId);  // write the type ID.
-          break;
-        case GeodeTypeIdsImpl::FixedIDShort:
-          output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDShort));
-          output.writeInt(static_cast<int16_t>(typeId));  // write the type ID.
-          break;
-        case GeodeTypeIdsImpl::FixedIDInt:
-          output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDInt));
-          output.writeInt(static_cast<int32_t>(typeId));  // write the type ID.
-          break;
-        default:
-          output.write(typeId);  // write the type ID.
-          break;
-      }
-
-      if (static_cast<int32_t>(typeId) == GeodeTypeIdsImpl::CacheableUserData) {
-        output.write(static_cast<int8_t>(obj->classId()));
-      } else if (static_cast<int32_t>(typeId) ==
-                 GeodeTypeIdsImpl::CacheableUserData2) {
-        output.writeInt(static_cast<int16_t>(obj->classId()));
-      } else if (static_cast<int32_t>(typeId) ==
-                 GeodeTypeIdsImpl::CacheableUserData4) {
-        output.writeInt(obj->classId());
-      }
-      if (isDelta) {
-        const Delta* ptr = dynamic_cast<const Delta*>(obj);
-        ptr->toDelta(output);
-      } else {
-        obj->toData(output);  // let the obj serialize itself.
-      }
-    }
+    //    if (obj == nullptr) {
+    //      output.write(static_cast<int8_t>(GeodeTypeIds::NullObj));
+    //    } else {
+    //      int8_t typeId = obj->typeId();
+    //      switch (obj->DSFID()) {
+    //        case GeodeTypeIdsImpl::FixedIDByte:
+    //          output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte));
+    //          output.write(typeId);  // write the type ID.
+    //          break;
+    //        case GeodeTypeIdsImpl::FixedIDShort:
+    //          output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDShort));
+    //          output.writeInt(static_cast<int16_t>(typeId));  // write the
+    //          type ID. break;
+    //        case GeodeTypeIdsImpl::FixedIDInt:
+    //          output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDInt));
+    //          output.writeInt(static_cast<int32_t>(typeId));  // write the
+    //          type ID. break;
+    //        default:
+    //          output.write(typeId);  // write the type ID.
+    //          break;
+    //      }
+    //
+    //      if (static_cast<int32_t>(typeId) ==
+    //      GeodeTypeIdsImpl::CacheableUserData) {
+    //        output.write(static_cast<int8_t>(obj->classId()));
+    //      } else if (static_cast<int32_t>(typeId) ==
+    //                 GeodeTypeIdsImpl::CacheableUserData2) {
+    //        output.writeInt(static_cast<int16_t>(obj->classId()));
+    //      } else if (static_cast<int32_t>(typeId) ==
+    //                 GeodeTypeIdsImpl::CacheableUserData4) {
+    //        output.writeInt(obj->classId());
+    //      }
+    //      if (isDelta) {
+    //        const Delta* ptr = dynamic_cast<const Delta*>(obj);
+    //        ptr->toDelta(output);
+    //      } else {
+    //        obj->toData(output);  // let the obj serialize itself.
+    //      }
+    //    }
   }
 
   inline void serialize(const std::shared_ptr<Serializable>& obj, DataOutput& output) const {

@@ -29,6 +29,7 @@
 
 #include "MapWithLock.hpp"
 #include "HashMapOfException.hpp"
+#include "GeodeTypeIdsImpl.hpp"
 
 /** @file
  */
@@ -49,7 +50,7 @@ class ThinClientRegion;
  *
  *
  */
-class CacheableObjectPartList : public Cacheable {
+class CacheableObjectPartList : public DataSerializableFixedId {
  protected:
   const std::vector<std::shared_ptr<CacheableKey>> * m_keys;
   uint32_t* m_keysOffset;
@@ -111,43 +112,13 @@ class CacheableObjectPartList : public Cacheable {
         m_destroyTracker(destroyTracker),
         m_addToLocalCache(addToLocalCache) {}
 
-  /**
-   *@brief serialize this object
-   **/
   void toData(DataOutput& output) const override;
 
-  /**
-   *@brief deserialize this object
-   **/
   void fromData(DataInput& input) override;
 
-  /**
-   * @brief creation function for java Object[]
-   */
-  /*inline static std::shared_ptr<Serializable> createDeserializable()
-  {
-    return new CacheableObjectPartList();
-  }*/
-
-  /**
-   *@brief Return the classId byte of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and derserialize into.
-   */
-  int32_t classId() const override;
-
-  /**
-   *@brief return the typeId byte of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and derserialize into.
-   */
-  int8_t typeId() const override;
-
-  /**
-   * Return the data serializable fixed ID size type for internal use.
-   * @since GFE 5.7
-   */
-  int8_t DSFID() const override;
+  int32_t getDSFID() const override {
+    return GeodeTypeIdsImpl::CacheableObjectPartList;
+  }
 
   size_t objectSize() const override;
 };

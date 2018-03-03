@@ -107,7 +107,7 @@ void CacheTransactionManagerImpl::commit() {
     }
   }
 
-  auto commit = std::static_pointer_cast<TXCommitMessage>(reply.getValue());
+  auto commit = std::dynamic_pointer_cast<TXCommitMessage>(reply.getValue());
   txCleaner.clean();
   commit->apply(m_cache->getCache());
 

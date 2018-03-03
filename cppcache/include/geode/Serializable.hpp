@@ -56,46 +56,46 @@ using TypeFactoryMethodPdx = std::function<std::shared_ptr<PdxSerializable>()>;
  */
 class APACHE_GEODE_EXPORT Serializable {
  public:
-  /**
-   *@brief serialize this object
-   **/
-  virtual void toData(DataOutput& output) const = 0;
-
-  /**
-   *@brief deserialize this object.
-   **/
-  virtual void fromData(DataInput& input) = 0;
-
-  /**
-   *@brief Return the classId of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   *
-   * The classId must be unique within an application suite.
-   * Using a negative value may result in undefined behavior.
-   */
-  virtual int32_t classId() const = 0;
-
-  /**
-   *@brief return the typeId byte of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   *
-   * Note that this should not be overridden by custom implementations
-   * and is reserved only for builtin types.
-   */
-  virtual int8_t typeId() const;
-
-  /**
-   * @brief return the Data Serialization Fixed ID type.
-   * This is used to determine what instance type to create and deserialize
-   * into.
-   *
-   * Note that this should not be overridden by custom implementations
-   * and is reserved only for builtin types.
-   */
-  virtual int8_t DSFID() const;
-
+  //  /**
+  //   *@brief serialize this object
+  //   **/
+  //  virtual void toData(DataOutput& output) const = 0;
+  //
+  //  /**
+  //   *@brief deserialize this object.
+  //   **/
+  //  virtual void fromData(DataInput& input) = 0;
+  //
+  //  /**
+  //   *@brief Return the classId of the instance being serialized.
+  //   * This is used by deserialization to determine what instance
+  //   * type to create and deserialize into.
+  //   *
+  //   * The classId must be unique within an application suite.
+  //   * Using a negative value may result in undefined behavior.
+  //   */
+  //  virtual int32_t classId() const = 0;
+  //
+  //  /**
+  //   *@brief return the typeId byte of the instance being serialized.
+  //   * This is used by deserialization to determine what instance
+  //   * type to create and deserialize into.
+  //   *
+  //   * Note that this should not be overridden by custom implementations
+  //   * and is reserved only for builtin types.
+  //   */
+  //  virtual int8_t typeId() const;
+  //
+  //  /**
+  //   * @brief return the Data Serialization Fixed ID type.
+  //   * This is used to determine what instance type to create and deserialize
+  //   * into.
+  //   *
+  //   * Note that this should not be overridden by custom implementations
+  //   * and is reserved only for builtin types.
+  //   */
+  //  virtual int8_t DSFID() const;
+  //
   /**
    *@brief return the size in bytes of the instance being serialized.
    * This is used to determine whether the cache is using up more
@@ -108,8 +108,7 @@ class APACHE_GEODE_EXPORT Serializable {
 
   /**
    * Display this object as 'string', which depends on the implementation in
-   * the subclasses.
-   * The default implementation renders the classname.
+   * the subclasses. The default implementation renders the classname.
    */
   virtual std::string toString() const;
 
@@ -127,18 +126,52 @@ class APACHE_GEODE_EXPORT Serializable {
     return value;
   }
 
-  /**
-   * @brief destructor
-   */
   virtual ~Serializable() = default;
 
  protected:
-  Serializable() = default;
-  Serializable(const Serializable& other) = default;
-  Serializable& operator=(const Serializable& other) = default;
 };
 
 typedef Serializable Cacheable;
+
+class DataSerializable : public virtual Serializable {
+ public:
+  ~DataSerializable() override = default;
+  virtual void toData(DataOutput &dataOutput) const = 0;
+  virtual void fromData(DataInput &dataInput) = 0;
+  virtual int32_t getClassId() const = 0;
+};
+
+class DataSerializableFixedId : public virtual Serializable {
+ public:
+  ~DataSerializableFixedId() override = default;
+
+  virtual void toData(DataOutput &dataOutput) const = 0;
+  virtual void fromData(DataInput &dataInput) = 0;
+  virtual int32_t getDSFID() const = 0;
+};
+
+template <int32_t _DSFID>
+class DataSerializableFixedId_t : public DataSerializableFixedId {
+ public:
+  ~DataSerializableFixedId_t() override = default;
+  int32_t getDSFID() const final { return _DSFID; }
+};
+
+class DataSerializablePrimitive : public virtual Serializable {
+ public:
+  ~DataSerializablePrimitive() override = default;
+  virtual void toData(DataOutput &dataOutput) const = 0;
+  virtual void fromData(DataInput &dataInput) = 0;
+  virtual int8_t getDsCode() const = 0;
+};
+
+class DataSerializableInternal : public virtual Serializable {
+ public:
+  ~DataSerializableInternal() override = default;
+  virtual void toData(DataOutput &dataOutput) const = 0;
+  virtual void fromData(DataInput &dataInput) = 0;
+  virtual int8_t getInternalId() const = 0;
+};
 
 }  // namespace client
 }  // namespace geode

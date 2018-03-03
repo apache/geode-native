@@ -408,21 +408,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
   virtual std::string toString() const override = 0;
 
   /**
-   * @brief serialize this object. This is an internal method.
-   */
-  virtual void toData(DataOutput& output) const override {
-    PdxSerializable::toData(output);
-  }
-
-  /**
-   * @brief deserialize this object, typical implementation should return
-   * the 'this' pointer. This is an internal method.
-   */
-  virtual void fromData(DataInput& input) override {
-    return PdxSerializable::fromData(input);
-  }
-
-  /**
    * Returns true if the given CacheableKey derived object is equals to this
    * instance.
    * <p>If <code>other</code> is not a PdxInstance then it is not equal to this

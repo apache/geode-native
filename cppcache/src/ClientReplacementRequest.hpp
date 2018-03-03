@@ -38,10 +38,11 @@ class ClientReplacementRequest : public ClientConnectionRequest {
                            std::string servergroup = "")
       : ClientConnectionRequest(excludeServergroup, servergroup),
         m_serverLocation(ServerLocation(serverName)) {}
-  void toData(DataOutput& output) const override;
-  void fromData(DataInput& input) override;
-  int8_t typeId() const override;
+
   ~ClientReplacementRequest() override = default;
+
+  void toData(DataOutput& output) const override;
+  int32_t getDSFID() const override;
 
  private:
   const ServerLocation m_serverLocation;

@@ -461,7 +461,7 @@ TEST_F(DataInputTest, TestReadObjectSharedPtr) {
   TestDataInput dataInput(
       "57001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   auto objptr =
-      std::static_pointer_cast<CacheableString>(dataInput.readObject());
+      std::dynamic_pointer_cast<CacheableString>(dataInput.readObject());
   EXPECT_EQ("You had me at meat tornado.", objptr->value())
       << "Correct const char *";
 }

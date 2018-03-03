@@ -28,7 +28,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT EnumInfo : public CacheableKey {
+class APACHE_GEODE_EXPORT EnumInfo : public DataSerializableInternal,
+                                     public CacheableKey {
  private:
   std::shared_ptr<CacheableString> m_enumClassName;
   std::shared_ptr<CacheableString> m_enumName;
@@ -50,13 +51,14 @@ class APACHE_GEODE_EXPORT EnumInfo : public CacheableKey {
     size += m_enumName->objectSize();
     return size;
   }
-  virtual int32_t classId() const override { return 0; }
-  virtual int8_t typeId() const override { return GeodeTypeIds::EnumInfo; }
+
+  virtual int8_t getInternalId() const override {
+    return GeodeTypeIds::EnumInfo;
+  }
   virtual std::string toString() const override { return "EnumInfo"; }
   virtual bool operator==(const CacheableKey& other) const override;
   virtual int32_t hashcode() const override;
 
-  int8_t DSFID() const override;
   std::shared_ptr<CacheableString> getEnumClassName() const {
     return m_enumClassName;
   }

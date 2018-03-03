@@ -146,13 +146,10 @@ class APACHE_GEODE_EXPORT Utils {
     static bool youHaveBeenWarned = false;
     if (objectSize == 0 && !youHaveBeenWarned) {
       LOGWARN(
-          "Object size for Heap LRU returned by class ID %d is 0 (zero)."
-          "Even for empty objects the size returned should be at least one (1 "
-          "byte).",
-          theObject->classId());
+          "Object size for Heap LRU returned by %s is 0 (zero). Even for empty "
+          "objects the size returned should be at least one (1 byte).",
+          theObject->toString().c_str());
       youHaveBeenWarned = true;
-      LOGFINE("Type ID is %d for the object returning zero HeapLRU size",
-              theObject->typeId());
     }
     GF_DEV_ASSERT(objectSize != 0);
     return objectSize;

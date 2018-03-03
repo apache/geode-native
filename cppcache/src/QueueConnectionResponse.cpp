@@ -27,17 +27,13 @@ void QueueConnectionResponse::fromData(DataInput& input) {
   readList(input);
 }
 
-int8_t QueueConnectionResponse::typeId() const {
-  return static_cast<int8_t>(GeodeTypeIdsImpl::QueueConnectionResponse);
-}
-
-size_t QueueConnectionResponse::objectSize() const {
-  return 0;  // Can be implemented later.
+int32_t QueueConnectionResponse::getDSFID() const {
+  return GeodeTypeIdsImpl::QueueConnectionResponse;
 }
 
 void QueueConnectionResponse::readList(DataInput& input) {
-  uint32_t size = input.readInt32();
-  for (uint32_t i = 0; i < size; i++) {
+  auto size = input.readInt32();
+  for (decltype(size) i = 0; i < size; i++) {
     ServerLocation temp;
     temp.fromData(input);
     m_list.push_back(temp);

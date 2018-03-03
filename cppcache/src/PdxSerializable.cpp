@@ -26,22 +26,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-int8_t PdxSerializable::typeId() const {
-  return static_cast<int8_t>(GeodeTypeIdsImpl::PDX);
-}
-
-void PdxSerializable::toData(DataOutput& output) const {
-  LOGDEBUG("SerRegistry.cpp:serializePdx:86: PDX Object Type = %s",
-           typeid(*this).name());
-  PdxHelper::serializePdx(output, *this);
-}
-
-void PdxSerializable::fromData(DataInput&) {
-  throw UnsupportedOperationException(
-      "operation PdxSerializable::fromData() is not supported ");
-}
-
-std::string PdxSerializable::toString() const { return "PdxSerializable"; }
+std::string PdxSerializable::toString() const { return getClassName(); }
 
 bool PdxSerializable::operator==(const CacheableKey& other) const {
   return (this == &other);

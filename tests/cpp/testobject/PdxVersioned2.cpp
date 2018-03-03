@@ -333,9 +333,9 @@ void PdxTests::PdxVersioned2::fromData(PdxReader& pr) {
   m_byte = pr.readByte("m_byte");
   m_byteArray = pr.readByteArray("m_byteArray");
   m_charArray = pr.readCharArray("m_charArray");
-  m_arraylist = std::static_pointer_cast<CacheableArrayList>(
+  m_arraylist = std::dynamic_pointer_cast<CacheableArrayList>(
       pr.readObject("m_arraylist"));
-  m_map = std::static_pointer_cast<CacheableHashMap>(pr.readObject("m_map"));
+  m_map = std::dynamic_pointer_cast<CacheableHashMap>(pr.readObject("m_map"));
   // TODO:Check for the size
   m_string = pr.readString("m_string");  // GenericValCompare
   m_date = pr.readDate("m_dateTime");    // compareData

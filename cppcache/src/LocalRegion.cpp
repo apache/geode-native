@@ -1369,35 +1369,37 @@ class RemoveActions {
     GfErrType err = GF_NOERR;
     if (!allowNULLValue && m_region.getAttributes().getCachingEnabled()) {
       m_region.getEntry(key, valuePtr);
-      DataOutput out1 = m_region.getCacheImpl()->createDataOutput();
-      DataOutput out2 = m_region.getCacheImpl()->createDataOutput();
+      auto out1 = m_region.getCacheImpl()->getCache()->createDataOutput();
+      auto out2 = m_region.getCacheImpl()->getCache()->createDataOutput();
 
-      if (valuePtr != nullptr && value != nullptr) {
-        if (valuePtr->classId() != value->classId() ||
-            valuePtr->typeId() != value->typeId()) {
-          err = GF_ENOENT;
-          return err;
-        }
-        valuePtr->toData(out1);
-        value->toData(out2);
-        if (out1.getBufferLength() != out2.getBufferLength()) {
-          err = GF_ENOENT;
-          return err;
-        }
-        if (memcmp(out1.getBuffer(), out2.getBuffer(),
-                   out1.getBufferLength()) != 0) {
-          err = GF_ENOENT;
-          return err;
-        }
-      } else if ((valuePtr == nullptr || CacheableToken::isInvalid(valuePtr))) {
-        m_ServerResponse = m_region.removeNoThrow_remote(
-            key, value, aCallbackArgument, versionTag);
-
-        return m_ServerResponse;
-      } else if (valuePtr != nullptr && value == nullptr) {
-        err = GF_ENOENT;
-        return err;
-      }
+      throw Exception("not implmented");
+      //      if (valuePtr != nullptr && value != nullptr) {
+      //        if (valuePtr->classId() != value->classId() ||
+      //            valuePtr->typeId() != value->typeId()) {
+      //          err = GF_ENOENT;
+      //          return err;
+      //        }
+      //        valuePtr->toData(*out1);
+      //        value->toData(*out2);
+      //        if (out1->getBufferLength() != out2->getBufferLength()) {
+      //          err = GF_ENOENT;
+      //          return err;
+      //        }
+      //        if (memcmp(out1->getBuffer(), out2->getBuffer(),
+      //                   out1->getBufferLength()) != 0) {
+      //          err = GF_ENOENT;
+      //          return err;
+      //        }
+      //      } else if ((valuePtr == nullptr ||
+      //      CacheableToken::isInvalid(valuePtr))) {
+      //        m_ServerResponse = m_region.removeNoThrow_remote(
+      //            key, value, aCallbackArgument, versionTag);
+      //
+      //        return m_ServerResponse;
+      //      } else if (valuePtr != nullptr && value == nullptr) {
+      //        err = GF_ENOENT;
+      //        return err;
+      //      }
     }
     if (allowNULLValue) {
       m_ServerResponse =

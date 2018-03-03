@@ -71,31 +71,6 @@ PutAllPartialResultServerException::what() {
   return CacheableString::create(m_result->toString().c_str());
 }
 
-void PutAllPartialResultServerException::toData(DataOutput&) const {
-  throw IllegalStateException(
-      "PutAllPartialResultServerException::toData is not intended for use.");
-}
-
-void PutAllPartialResultServerException::fromData(DataInput&) {
-  throw IllegalStateException(
-      "PutAllPartialResultServerException::fromData is not intended for use.");
-}
-
-int32_t PutAllPartialResultServerException::classId() const {
-  throw IllegalStateException(
-      "PutAllPartialResultServerException::classId is not intended for use.");
-}
-
-size_t PutAllPartialResultServerException::objectSize() const {
-  throw IllegalStateException(
-      "PutAllPartialResultServerException::objectSize is not intended for "
-      "use.");
-}
-
-int8_t PutAllPartialResultServerException::typeId() const {
-  return static_cast<int8_t>(0);
-}
-
 PutAllPartialResultServerException::PutAllPartialResultServerException(
     std::shared_ptr<CacheableString> msg)
     : m_message(msg) {}

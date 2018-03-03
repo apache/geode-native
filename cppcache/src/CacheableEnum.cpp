@@ -73,10 +73,7 @@ void CacheableEnum::calculateHashcode() {
 }
 
 bool CacheableEnum::operator==(const CacheableKey& other) const {
-  if (other.typeId() != typeId()) {
-    return false;
-  }
-  auto&& otherEnum = dynamic_cast<const CacheableEnum*>(&other);
+  auto otherEnum = dynamic_cast<const CacheableEnum*>(&other);
   if (otherEnum == nullptr) {
     return false;
   }

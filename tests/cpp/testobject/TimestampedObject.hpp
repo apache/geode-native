@@ -27,14 +27,10 @@ namespace testobject {
 using namespace apache::geode::client;
 using namespace testframework;
 
-class TESTOBJECT_EXPORT TimestampedObject : public Serializable {
+class TESTOBJECT_EXPORT TimestampedObject : public DataSerializable {
  public:
   virtual uint64_t getTimestamp() { return 0; }
   virtual void resetTimestamp() {}
-  void fromData(DataInput&) override {}
-  void toData(DataOutput&) const override {}
-  int32_t classId() const override { return 0; }
-  size_t objectSize() const override { return 0; }
   ~TimestampedObject() override = default;
 };
 }  // namespace testobject

@@ -30,7 +30,7 @@
 
 #include "CacheHelper.hpp"
 
-class DeltaEx : public Cacheable, public Delta {
+class DeltaEx : public DataSerializable, public Delta {
  public:
   int counter;
   bool isDelta;
@@ -70,8 +70,7 @@ class DeltaEx : public Cacheable, public Delta {
     counter = input.readInt32();
     fromDataCount++;
   }
-  virtual int32_t classId() const override { return 1; }
-  virtual size_t objectSize() const override { return 0; }
+  virtual int32_t getClassId() const override { return 1; }
   std::shared_ptr<Delta> clone() const override {
     cloneCount++;
     return std::make_shared<DeltaEx>(*this);

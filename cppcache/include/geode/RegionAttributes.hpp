@@ -73,7 +73,7 @@ class AttributesMutator;
 class Cache;
 class Region;
 
-class APACHE_GEODE_EXPORT RegionAttributes : public Serializable {
+class APACHE_GEODE_EXPORT RegionAttributes : public DataSerializableInternal {
   /**
    * @brief public static methods
    */
@@ -197,23 +197,14 @@ class APACHE_GEODE_EXPORT RegionAttributes : public Serializable {
    */
   ~RegionAttributes() noexcept override;
 
-  /** Serialize out to stream */
-  void toData(DataOutput& out) const override;
-
-  /** Initialize members from serialized data. */
-  void fromData(DataInput& in) override;
-
   /** Return an empty instance for deserialization. */
   static std::shared_ptr<Serializable> createDeserializable();
 
-  /** Return class id for serialization. */
-  int32_t classId() const override;
+  void toData(DataOutput& out) const override;
 
-  /** Return type id for serialization. */
-  int8_t typeId() const override;
+  void fromData(DataInput& in) override;
 
-  // return zero deliberately
-  size_t objectSize() const override { return 0; }
+  int8_t getInternalId() const override;
 
   /**
    * This method returns the path of the library from which

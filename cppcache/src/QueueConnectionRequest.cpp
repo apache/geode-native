@@ -35,14 +35,8 @@ void QueueConnectionRequest::toData(DataOutput& output) const {
   output.writeBoolean(m_findDurable);
 }
 
-void QueueConnectionRequest::fromData(DataInput&) {}
-
-int8_t QueueConnectionRequest::typeId() const {
-  return static_cast<int8_t>(GeodeTypeIdsImpl::QueueConnectionRequest);
-}
-
-size_t QueueConnectionRequest::objectSize() const {
-  return 0;  // will implement later.
+int32_t QueueConnectionRequest::getDSFID() const {
+  return GeodeTypeIdsImpl::QueueConnectionRequest;
 }
 
 std::set<ServerLocation> QueueConnectionRequest::getExcludedServer() const {
@@ -63,9 +57,7 @@ bool QueueConnectionRequest::isFindDurable() const { return m_findDurable; }
 void QueueConnectionRequest::writeSetOfServerLocation(
     DataOutput& output) const {
   output.writeInt(static_cast<int32_t>(m_excludedServers.size()));
-  std::set<ServerLocation>::const_iterator it = m_excludedServers.begin();
-  while (it != m_excludedServers.end()) {
-    it->toData(output);
-    it++;
+  for (const auto& server : m_excludedServers) {
+    server.toData(output);
   }
 }

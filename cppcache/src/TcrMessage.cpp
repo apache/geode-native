@@ -346,7 +346,7 @@ int64_t TcrMessage::getConnectionId(TcrConnection* conn) {
 
 int64_t TcrMessage::getUniqueId(TcrConnection* conn) {
   if (m_value != nullptr) {
-    auto encryptBytes = std::static_pointer_cast<CacheableBytes>(m_value);
+    auto encryptBytes = std::dynamic_pointer_cast<CacheableBytes>(m_value);
 
     auto tmp = conn->decryptBytes(encryptBytes);
 
@@ -374,9 +374,9 @@ inline void TcrMessage::readKeyPart(DataInput& input) {
   const auto isObj = input.readBoolean();
   if (lenObj > 0) {
     if (isObj) {
-      m_key = std::static_pointer_cast<CacheableKey>(input.readObject());
+      m_key = std::dynamic_pointer_cast<CacheableKey>(input.readObject());
     } else {
-      m_key = std::static_pointer_cast<CacheableKey>(
+      m_key = std::dynamic_pointer_cast<CacheableKey>(
           readCacheableString(input, lenObj));
     }
   }
@@ -519,7 +519,8 @@ void TcrMessage::writeObjectPart(
         m_request->writeObject(se, isDelta);
       }
     } else {
-      se->toData(*m_request);
+      throw UnsupportedOperationException("implment serialization");
+      //      se->toData(*m_request);
     }
   } else {
     // TODO::
@@ -2376,7 +2377,7 @@ TcrMessageExecuteRegionFunction::TcrMessageExecuteRegionFunction(
 
   if (routingObj && routingObj->size() == 1) {
     LOGDEBUG("setting up key");
-    m_key = std::static_pointer_cast<CacheableKey>(routingObj->at(0));
+    m_key = std::dynamic_pointer_cast<CacheableKey>(routingObj->at(0));
   }
 
   uint32_t numOfParts =
@@ -2877,7 +2878,7 @@ void TcrMessage::readEventIdPart(DataInput& input, bool skip, int32_t parts) {
   // read and ignore isObj
   input.read();
 
-  m_eventid = std::static_pointer_cast<EventId>(input.readObject());
+  m_eventid = std::dynamic_pointer_cast<EventId>(input.readObject());
 }
 std::shared_ptr<DSMemberForVersionStamp> TcrMessage::readDSMember(
     apache::geode::client::DataInput& input) {
@@ -2945,20 +2946,16 @@ void TcrMessage::readHashMapForGCVersions(
 void TcrMessage::readHashSetForGCVersions(
     apache::geode::client::DataInput& input,
     std::shared_ptr<CacheableHashSet>& value) {
-  uint8_t hashsettypeid = input.read();
+  auto hashsettypeid = input.read();
   if (hashsettypeid != GeodeTypeIds::CacheableHashSet) {
     throw Exception(
         "Reading HashSet For GC versions. Expecting type id of hash set. ");
   }
-  int32_t len = input.readArrayLength();
 
-  if (len > 0) {
-    std::shared_ptr<CacheableKey> key;
-    std::shared_ptr<Cacheable> val;
-    for (int32_t index = 0; index < len; index++) {
-      auto keyPtr = std::static_pointer_cast<CacheableKey>(input.readObject());
-      value->insert(keyPtr);
-    }
+  auto len = input.readArrayLen();
+  for (decltype(len) index = 0; index < len; index++) {
+    auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(input.readObject());
+    value->insert(keyPtr);
   }
 }
 

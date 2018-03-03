@@ -36,10 +36,7 @@
 using namespace apache::geode::client;
 using namespace testframework;
 namespace testobject {
-/**
- * @brief User class for testing the put functionality for object.
- */
-class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
+class TESTOBJECT_EXPORT DeltaPSTObject : public DataSerializable, public Delta {
  private:
   uint64_t timestamp;
   int32_t field1;
@@ -56,7 +53,7 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
   void toDelta(DataOutput& output) const override;
   std::string toString() const override;
   bool hasDelta() const override { return true; }
-  int32_t classId() const override { return 42; }
+  int32_t getClassId() const override { return 42; }
 
   size_t objectSize() const override {
     auto objectSize = sizeof(DeltaPSTObject);

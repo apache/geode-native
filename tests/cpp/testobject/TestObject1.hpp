@@ -28,7 +28,7 @@
 using namespace apache::geode::client;
 namespace testobject {
 
-class TESTOBJECT_EXPORT TestObject1 : public Cacheable {
+class TESTOBJECT_EXPORT TestObject1 : public DataSerializable {
  private:
   std::shared_ptr<CacheableString> name;
   std::shared_ptr<CacheableBytes> arr;
@@ -42,14 +42,14 @@ class TESTOBJECT_EXPORT TestObject1 : public Cacheable {
         identifier(id) {}
   TestObject1(std::string& str, int32_t id);
   TestObject1(TestObject1& rhs);
+
   void toData(DataOutput& output) const override;
+
   void fromData(DataInput& input) override;
 
   int32_t getIdentifier() { return identifier; }
 
-  int32_t classId() const override { return 31; }
-
-  size_t objectSize() const override { return 0; }
+  int32_t getClassId() const override { return 31; }
 
   static Serializable* create();
 };

@@ -201,7 +201,7 @@ template <typename TObj,
                                   Serializable>::type* = nullptr>
 inline void readObject(apache::geode::client::DataInput& input,
                        std::shared_ptr<TObj>& value) {
-  value = std::static_pointer_cast<TObj>(input.readObject());
+  value = std::dynamic_pointer_cast<TObj>(input.readObject());
 }
 
 // For arrays
@@ -368,12 +368,14 @@ inline void readObject(
     std::unordered_map<TKey, TValue, Hash, KeyEqual, Allocator>& value) {
   int32_t len = input.readArrayLength();
   value.reserve(len);
-  TKey key;
-  TValue val;
+  std::shared_ptr<Serializable> key;
+  std::shared_ptr<Serializable> val;
   for (int32_t index = 0; index < len; index++) {
     readObject(input, key);
     readObject(input, val);
-    value.emplace(key, val);
+    value.emplace(
+        std::dynamic_pointer_cast<typename TKey::element_type>(key),
+        std::dynamic_pointer_cast<typename TValue::element_type>(val));
   }
 }
 
@@ -403,10 +405,10 @@ inline void readObject(
     std::unordered_set<TKey, Hash, KeyEqual, Allocator>& value) {
   int32_t len = input.readArrayLength();
   if (len > 0) {
-    TKey key;
+    std::shared_ptr<Serializable> key;
     for (int32_t index = 0; index < len; index++) {
       readObject(input, key);
-      value.insert(key);
+      value.insert(std::dynamic_pointer_cast<typename TKey::element_type>(key));
     }
   }
 }

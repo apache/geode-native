@@ -42,7 +42,7 @@ void CacheableObjectPartList::fromData(DataInput& input) {
     int32_t keysOffset = (m_keysOffset != nullptr ? *m_keysOffset : 0);
     for (int32_t index = keysOffset; index < keysOffset + len; ++index) {
       if (hasKeys) {
-        key = std::static_pointer_cast<CacheableKey>(input.readObject());
+        key = std::dynamic_pointer_cast<CacheableKey>(input.readObject());
       } else if (m_keys != nullptr) {
         key = m_keys->operator[](index);
       } else {
@@ -114,15 +114,6 @@ void CacheableObjectPartList::fromData(DataInput& input) {
   }
 }
 
-int32_t CacheableObjectPartList::classId() const { return 0; }
-
-int8_t CacheableObjectPartList::typeId() const {
-  return GeodeTypeIdsImpl::CacheableObjectPartList;
-}
-
-int8_t CacheableObjectPartList::DSFID() const {
-  return GeodeTypeIdsImpl::FixedIDByte;
-}
 
 size_t CacheableObjectPartList::objectSize() const { return 0; }
 }  // namespace client

@@ -24,5 +24,6 @@ void GetAllServersRequest::toData(DataOutput& output) const {
 }
 
 void GetAllServersRequest::fromData(DataInput& input) {
-  m_serverGroup = std::static_pointer_cast<CacheableString>(input.readObject());
+  m_serverGroup =
+      std::dynamic_pointer_cast<CacheableString>(input.readObject());
 }

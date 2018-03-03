@@ -28,10 +28,7 @@ LocatorListRequest::LocatorListRequest(const std::string& servergroup)
 void LocatorListRequest::toData(DataOutput& output) const {
   output.writeString(m_servergroup);
 }
-void LocatorListRequest::fromData(DataInput&) {}
 
-int8_t LocatorListRequest::typeId() const {
-  return static_cast<int8_t>(GeodeTypeIdsImpl::LocatorListRequest);
+int32_t LocatorListRequest::getDSFID() const {
+  return GeodeTypeIdsImpl::LocatorListRequest;
 }
-
-size_t LocatorListRequest::objectSize() const { return 0; }

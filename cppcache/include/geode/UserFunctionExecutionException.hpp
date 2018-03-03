@@ -48,16 +48,6 @@ class APACHE_GEODE_EXPORT UserFunctionExecutionException : public Serializable {
 
   ~UserFunctionExecutionException() override = default;
 
-  void toData(DataOutput& output) const override;
-
-  virtual void fromData(DataInput& input) override;
-
-  virtual int32_t classId() const override;
-
-  virtual size_t objectSize() const override;
-
-  virtual int8_t typeId() const override;
-
   /**
    * @brief return as std::string the Exception message returned from geode
    * sendException api.

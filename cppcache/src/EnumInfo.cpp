@@ -41,28 +41,13 @@ int32_t EnumInfo::hashcode() const {
 }
 
 bool EnumInfo::operator==(const CacheableKey &other) const {
-  if (other.typeId() != typeId()) {
-    return false;
+  if (auto otherEnum = dynamic_cast<const EnumInfo *>(&other)) {
+    return m_ordinal == otherEnum->m_ordinal &&
+           *m_enumClassName == *otherEnum->m_enumClassName &&
+           *m_enumName == *otherEnum->m_enumName;
   }
-  const EnumInfo &otherEnum = static_cast<const EnumInfo &>(other);
-  if (m_ordinal != otherEnum.m_ordinal) {
-    return false;
-  }
-  if (m_enumClassName == nullptr) {
-    return (otherEnum.m_enumClassName == nullptr);
-  }
-  if (m_enumName == nullptr) {
-    return (otherEnum.m_enumName == nullptr);
-  }
-  if (strcmp(m_enumClassName->value().c_str(),
-             otherEnum.m_enumClassName->value().c_str()) != 0) {
-    return false;
-  }
-  if (strcmp(m_enumName->value().c_str(),
-             otherEnum.m_enumName->value().c_str()) != 0) {
-    return false;
-  }
-  return true;
+
+  return false;
 }
 
 void EnumInfo::toData(apache::geode::client::DataOutput &output) const {
@@ -73,14 +58,11 @@ void EnumInfo::toData(apache::geode::client::DataOutput &output) const {
 
 void EnumInfo::fromData(apache::geode::client::DataInput &input) {
   m_enumClassName =
-      std::static_pointer_cast<CacheableString>(input.readObject());
-  m_enumName = std::static_pointer_cast<CacheableString>(input.readObject());
+      std::dynamic_pointer_cast<CacheableString>(input.readObject());
+  m_enumName = std::dynamic_pointer_cast<CacheableString>(input.readObject());
   m_ordinal = input.readInt32();
 }
 
-int8_t EnumInfo::DSFID() const {
-  return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
-}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
