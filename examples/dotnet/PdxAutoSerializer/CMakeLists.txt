@@ -13,25 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10.0)
 
-project(customserializable)
+project(PDXAutoSerializer CSharp)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
-set(CMAKE_CXX_STANDARD 11)
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
-    add_compile_options(-m64)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -m64")
-endif()
+find_package(GeodeNative REQUIRED COMPONENTS dotnet)
 
-find_package(GeodeNative REQUIRED COMPONENTS cpp)
-
-add_executable(${PROJECT_NAME}
-    main.cpp
-    Order.cpp)
+add_executable(${PROJECT_NAME} 
+    Program.cs
+    Order.cs)
 
 target_link_libraries(${PROJECT_NAME}
-    PUBLIC
-    GeodeNative::cpp
-)
+    GeodeNative::dotnet)
+
+set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DOTNET_REFERENCES
+    "System"
+    "${GeodeNative_DOTNET_LIBRARY}")
+    

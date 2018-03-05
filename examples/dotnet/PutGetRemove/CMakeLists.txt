@@ -13,29 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.10.0)
 
 project(PutGetRemove CSharp)
 
-message(STATUS "Assembly is ${GEODE_ASSEMBLY}")
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
 
-if ("${GEODE_ASSEMBLY}" STREQUAL "")
-	message(FATAL_ERROR "GEODE_ASSEMBLY not set, examples will not build without it")
-endif()
+find_package(GeodeNative REQUIRED COMPONENTS dotnet)
 
 add_executable(${PROJECT_NAME} 
     Program.cs)
 
-message(STATUS "output dir is ${RUNTIME_OUTPUT_DIRECTORY}")
-message(STATUS "project binary dir: ${PROJECT_BINARY_DIR}")
-
-message(STATUS "current source dir is ${CMAKE_CURRENT_SOURCE_DIR}")
-message(STATUS "Attempting to link to ${CMAKE_CURRENT_SOURCE_DIR}/../../../build/clicache/src/Debug/Apache.Geode.dll")
-
 target_link_libraries(${PROJECT_NAME}
-	${GEODE_ASSEMBLY})
+    GeodeNative::dotnet)
 
-set_property(TARGET PutGetRemove PROPERTY VS_DOTNET_REFERENCES
+set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DOTNET_REFERENCES
     "System"
-    "${GEODE_ASSEMBLY}")
+    "${GeodeNative_DOTNET_LIBRARY}")
     
