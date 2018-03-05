@@ -17,7 +17,7 @@
 
 #include "config.h"
 #include <geode/CacheableDate.hpp>
-#include <geode/CacheableKeys.hpp>
+#include <geode/internal/CacheableKeys.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/ExceptionTypes.hpp>

@@ -17,7 +17,7 @@
 
 #include <geode/PdxSerializable.hpp>
 #include <geode/CacheableString.hpp>
-#include <geode/CacheableKeys.hpp>
+#include <geode/internal/CacheableKeys.hpp>
 
 #include "GeodeTypeIdsImpl.hpp"
 #include "PdxHelper.hpp"
@@ -48,7 +48,7 @@ bool PdxSerializable::operator==(const CacheableKey& other) const {
 }
 
 int32_t PdxSerializable::hashcode() const {
-  uint64_t hash = static_cast<uint64_t>((intptr_t)this);
+  int64_t hash = static_cast<int64_t>((intptr_t)this);
   return apache::geode::client::serializer::hashcode(hash);
 }
 

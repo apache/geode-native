@@ -30,7 +30,7 @@
 #include "Serializable.hpp"
 #include "CacheableKey.hpp"
 #include "Serializer.hpp"
-#include "CacheableKeys.hpp"
+#include "internal/CacheableKeys.hpp"
 #include "CacheableString.hpp"
 
 namespace apache {
