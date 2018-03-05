@@ -21,7 +21,7 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/DefaultResultCollector.hpp>
 
-#include "ExecutionImpl.hpp"
+#include "geode/Execution.hpp"
 #include "ThinClientRegion.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "NoResult.hpp"
@@ -32,11 +32,11 @@ namespace apache {
 namespace geode {
 namespace client {
 
-FunctionToFunctionAttributes ExecutionImpl::m_func_attrs;
-ACE_Recursive_Thread_Mutex ExecutionImpl::m_func_attrs_lock;
-std::shared_ptr<Execution> ExecutionImpl::withFilter(
-    std::shared_ptr<CacheableVector> routingObj) {
-  // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
+FunctionToFunctionAttributes Execution::m_func_attrs;
+ACE_Recursive_Thread_Mutex Execution::m_func_attrs_lock;
+
+Execution& Execution::withFilter(
+        std::shared_ptr<CacheableVector> routingObj) {
   if (routingObj == nullptr) {
     throw IllegalArgumentException("Execution::withFilter: filter is null");
   }
@@ -45,33 +45,30 @@ std::shared_ptr<Execution> ExecutionImpl::withFilter(
         "Execution::withFilter: FunctionService::onRegion needs to be called "
         "first before calling this function");
   }
-  //      m_routingObj = routingObj;
-  return std::make_shared<ExecutionImpl>(routingObj, m_args, m_rc, m_region,
-                                         m_allServer, m_pool, m_proxyCache);
+  m_routingObj = routingObj;
+  return *this;
 }
-std::shared_ptr<Execution> ExecutionImpl::withArgs(
-    std::shared_ptr<Cacheable> args) {
-  // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
+
+Execution& Execution::withArgs(
+        std::shared_ptr<Cacheable> args) {
   if (args == nullptr) {
     throw IllegalArgumentException("Execution::withArgs: args is null");
   }
-  //  m_args = args;
-  return std::make_shared<ExecutionImpl>(m_routingObj, args, m_rc, m_region,
-                                         m_allServer, m_pool, m_proxyCache);
+    m_args = args;
+  return *this;
 }
-std::shared_ptr<Execution> ExecutionImpl::withCollector(
-    std::shared_ptr<ResultCollector> rs) {
-  // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
+
+Execution& Execution::withCollector(
+        std::shared_ptr<ResultCollector> rs) {
   if (rs == nullptr) {
     throw IllegalArgumentException(
         "Execution::withCollector: collector is null");
   }
-  //	m_rc = rs;
-  return std::make_shared<ExecutionImpl>(m_routingObj, m_args, rs, m_region,
-                                         m_allServer, m_pool, m_proxyCache);
+  	m_rc = rs;
+  return *this;
 }
 
-std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(
+std::vector<int8_t>* Execution::getFunctionAttributes(
     const std::string& func) {
   auto&& itr = m_func_attrs.find(func);
   if (itr != m_func_attrs.end()) {
@@ -79,7 +76,7 @@ std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(
   }
   return nullptr;
 }
-std::shared_ptr<ResultCollector> ExecutionImpl::execute(
+std::shared_ptr<ResultCollector> Execution::execute(
     const std::shared_ptr<CacheableVector>& routingObj,
     const std::shared_ptr<Cacheable>& args,
     const std::shared_ptr<ResultCollector>& rs, const std::string& func,
@@ -89,12 +86,12 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   m_rc = rs;
   return execute(func, timeout);
 }
-std::shared_ptr<ResultCollector> ExecutionImpl::execute(
+std::shared_ptr<ResultCollector> Execution::execute(
     const std::string& func, std::chrono::milliseconds timeout) {
-  LOGDEBUG("ExecutionImpl::execute: ");
+  LOGDEBUG("Execution::execute: ");
   GuardUserAttribures gua;
   if (m_proxyCache != nullptr) {
-    LOGDEBUG("ExecutionImpl::execute function on proxy cache");
+    LOGDEBUG("Execution::execute function on proxy cache");
     gua.setProxyCache(m_proxyCache.get());
   }
   bool serverHasResult = false;
@@ -128,7 +125,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   serverOptimizeForWrite = ((attr->at(2) == 1) ? true : false);
 
   LOGDEBUG(
-      "ExecutionImpl::execute got functionAttributes from srver for function = "
+      "Execution::execute got functionAttributes from srver for function = "
       "%s serverHasResult = %d "
       " serverIsHA = %d serverOptimizeForWrite = %d ",
       func.c_str(), serverHasResult, serverIsHA, serverOptimizeForWrite);
@@ -152,7 +149,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
     isHAHasResultOptimizeForWrite = isHAHasResultOptimizeForWrite | 4;
   }
 
-  LOGDEBUG("ExecutionImpl::execute: isHAHasResultOptimizeForWrite = %d",
+  LOGDEBUG("Execution::execute: isHAHasResultOptimizeForWrite = %d",
            isHAHasResultOptimizeForWrite);
   TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
 
@@ -179,13 +176,13 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
       if ((!m_routingObj || m_routingObj->empty()) &&
           txState == nullptr) {  // For transactions we should not create
                                  // multiple threads
-        LOGDEBUG("ExecutionImpl::execute: m_routingObj is empty");
+        LOGDEBUG("Execution::execute: m_routingObj is empty");
         auto serverToBucketsMap = cms->groupByServerToAllBuckets(
             m_region,
             /*serverOptimizeForWrite*/ (isHAHasResultOptimizeForWrite & 4));
         if (!serverToBucketsMap || serverToBucketsMap->empty()) {
           LOGDEBUG(
-              "ExecutionImpl::execute: m_routingObj is empty and locationMap "
+              "Execution::execute: m_routingObj is empty and locationMap "
               "is also empty so use old FE onRegion");
           std::dynamic_pointer_cast<ThinClientRegion>(m_region)
               ->executeFunction(
@@ -208,7 +205,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
             serverToKeysMap->emplace(entry.first, keys);
           }
           LOGDEBUG(
-              "ExecutionImpl::execute: withoutFilter and locationMap is not "
+              "Execution::execute: withoutFilter and locationMap is not "
               "empty");
           bool reExecute = std::dynamic_pointer_cast<ThinClientRegion>(m_region)
                                ->executeFunctionSH(
@@ -251,7 +248,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
               (isHAHasResultOptimizeForWrite & 4));
           if (!serverToKeysMap || serverToKeysMap->empty()) {
             LOGDEBUG(
-                "ExecutionImpl::execute: withFilter but locationMap is empty "
+                "Execution::execute: withFilter but locationMap is empty "
                 "so use old FE onRegion");
             dynamic_cast<ThinClientRegion*>(m_region.get())
                 ->executeFunction(
@@ -262,7 +259,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
             cms->enqueueForMetadataRefresh(m_region->getFullPath(), 0);
           } else {
             LOGDEBUG(
-                "ExecutionImpl::execute: withFilter and locationMap is not "
+                "Execution::execute: withFilter and locationMap is not "
                 "empty");
             bool reExecute =
                 dynamic_cast<ThinClientRegion*>(m_region.get())
@@ -327,7 +324,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
             }
     */
     if (serverHasResult == true) {
-      // ExecutionImpl::addResults(m_rc, rs);
+      // Execution::addResults(m_rc, rs);
       m_rc->endResults();
     }
 
@@ -344,7 +341,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
           (isHAHasResultOptimizeForWrite & 1) ? m_pool->getRetryAttempts() : 0,
           timeout);
       if (serverHasResult == true) {
-        // ExecutionImpl::addResults(m_rc, rs);
+        // Execution::addResults(m_rc, rs);
         m_rc->endResults();
       }
       return m_rc;
@@ -356,7 +353,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   return m_rc;
 }
 
-GfErrType ExecutionImpl::getFuncAttributes(const std::string& func,
+GfErrType Execution::getFuncAttributes(const std::string& func,
                                            std::vector<int8_t>** attr) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.get());
   if (tcrdm == nullptr) {
@@ -397,7 +394,7 @@ GfErrType ExecutionImpl::getFuncAttributes(const std::string& func,
   return err;
 }
 
-void ExecutionImpl::addResults(std::shared_ptr<ResultCollector>& collector,
+void Execution::addResults(std::shared_ptr<ResultCollector>& collector,
                                const std::shared_ptr<CacheableVector>& results) {
   if (results == nullptr || collector == nullptr) {
     return;
@@ -409,7 +406,7 @@ void ExecutionImpl::addResults(std::shared_ptr<ResultCollector>& collector,
   }
 }
 
-void ExecutionImpl::executeOnAllServers(const std::string& func,
+void Execution::executeOnAllServers(const std::string& func,
                                         uint8_t getResult,
                                         std::chrono::milliseconds timeout) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.get());
@@ -450,7 +447,7 @@ if (exceptionPtr != nullptr && err != GF_NOERR) {
     }
   }
 }
-std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
+std::shared_ptr<CacheableVector> Execution::executeOnPool(
     const std::string& func, uint8_t getResult, int32_t retryAttempts,
     std::chrono::milliseconds timeout) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.get());
@@ -529,15 +526,15 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
     ==25848==    at 0x4007D75: operator new(unsigned int)
     (vg_replace_malloc.c:313)
     ==25848==    by 0x42B575A:
-    apache::geode::client::ExecutionImpl::executeOnPool(stlp_std::basic_string<char,
+    apache::geode::client::Execution::executeOnPool(stlp_std::basic_string<char,
     stlp_std::char_traits<char>, stlp_std::allocator<char> >&, unsigned char,
-    int, unsigned int) (ExecutionImpl.cpp:426)
+    int, unsigned int) (Execution.cpp:426)
     ==25848==    by 0x42B65E6:
-    apache::geode::client::ExecutionImpl::execute(char const*,
-    bool, unsigned int, bool, bool, bool) (ExecutionImpl.cpp:292)
+    apache::geode::client::Execution::execute(char const*,
+    bool, unsigned int, bool, bool, bool) (Execution.cpp:292)
     ==25848==    by 0x42B7897:
-    apache::geode::client::ExecutionImpl::execute(char const*,
-    bool, unsigned int, bool, bool) (ExecutionImpl.cpp:76)
+    apache::geode::client::Execution::execute(char const*,
+    bool, unsigned int, bool, bool) (Execution.cpp:76)
     ==25848==    by 0x8081320: Task_Client1OpTest::doTask() (in
     /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPoolExecuteFunctionPrSHOP)
     ==25848==    by 0x808D5CA: dunit::TestSlave::begin() (in

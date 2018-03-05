@@ -19,7 +19,7 @@
 #include <geode/PoolManager.hpp>
 
 #include "CacheRegionHelper.hpp"
-#include "ExecutionImpl.hpp"
+#include "geode/Execution.hpp"
 #include "ProxyRegion.hpp"
 #include "UserAttributes.hpp"
 #include "ProxyCache.hpp"
@@ -73,7 +73,7 @@ std::shared_ptr<Execution> FunctionService::onRegion(
     }
   }
 
-  return std::make_shared<ExecutionImpl>(realRegion, proxyCache, pool);
+  return std::make_shared<Execution>(realRegion, proxyCache, pool);
 }
 std::shared_ptr<Execution> FunctionService::onServerWithPool(
     const std::shared_ptr<Pool>& pool) {
@@ -85,7 +85,7 @@ std::shared_ptr<Execution> FunctionService::onServerWithPool(
         "This API is not supported in multiuser mode. "
         "Please use FunctionService::onServer(RegionService) API.");
   }
-  return std::make_shared<ExecutionImpl>(pool);
+  return std::make_shared<Execution>(pool);
 }
  std::shared_ptr<Execution> FunctionService::onServersWithPool(const std::shared_ptr<Pool>& pool) {
    if (pool == nullptr) {
@@ -97,7 +97,7 @@ std::shared_ptr<Execution> FunctionService::onServerWithPool(
         "Please use FunctionService::onServers(RegionService) API.");
   }
 
-  return std::make_shared<ExecutionImpl>(pool, true);
+  return std::make_shared<Execution>(pool, true);
 }
  std::shared_ptr<Execution> FunctionService::onServerWithCache(const std::shared_ptr<RegionService>& cache) {
   if (cache->isClosed()) {
@@ -113,7 +113,7 @@ std::shared_ptr<Execution> FunctionService::onServerWithPool(
         pc->m_cacheImpl->getPoolManager().find(userAttachedPool->getName());
    if (pool != nullptr && pool.get() == userAttachedPool.get() &&
        !pool->isDestroyed()) {
-     return std::make_shared<ExecutionImpl>(pool, false, pc);
+     return std::make_shared<Execution>(pool, false, pc);
    }
    throw IllegalStateException(
        "Pool has been close to execute function on server");
@@ -138,7 +138,7 @@ std::shared_ptr<Execution> FunctionService::onServerWithPool(
          userAttachedPool->getName());
      if (pool != nullptr && pool.get() == userAttachedPool.get() &&
          !pool->isDestroyed()) {
-       return std::make_shared<ExecutionImpl>(pool, true, pc);
+       return std::make_shared<Execution>(pool, true, pc);
      }
      throw IllegalStateException(
          "Pool has been close to execute function on server");

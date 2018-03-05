@@ -374,7 +374,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
        auto funcExec = FunctionService::onRegion(regionPtr);
         ASSERT(funcExec != nullptr, "onRegion Returned nullptr");
 
-        auto collector = funcExec->withArgs(args)->withFilter(filter)->execute(
+        auto collector = funcExec->withArgs(args).withFilter(filter).execute(
             exFuncNameSendException, std::chrono::seconds(15));
         ASSERT(collector != nullptr, "onRegion collector nullptr");
 
@@ -412,7 +412,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
 
         LOG("exFuncNameSendException done for bool arguement.");
 
-        collector = funcExec->withArgs(arrList)->withFilter(filter)->execute(
+        collector = funcExec->withArgs(arrList).withFilter(filter).execute(
             exFuncNameSendException, std::chrono::seconds(15));
         ASSERT(collector != nullptr, "onRegion collector for arrList nullptr");
 
@@ -766,7 +766,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
 
       auto funcExec = FunctionService::onServers(virtualCache);
 
-      auto collector = funcExec->withArgs(args)->execute(
+      auto collector = funcExec->withArgs(args).execute(
           exFuncNameSendException, std::chrono::seconds(15));
 
       //----------------------------------------------------------------------------------------------//
@@ -833,7 +833,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
 
      auto funcExec = FunctionService::onRegion(regionPtr);
 
-     auto collector = funcExec->withArgs(args)->withFilter(filter)->execute(
+     auto collector = funcExec->withArgs(args).withFilter(filter).execute(
          exFuncNameSendException, std::chrono::seconds(15));
 
      //----------------------------------------------------------------------------------------------//

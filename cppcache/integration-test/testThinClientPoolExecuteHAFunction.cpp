@@ -205,7 +205,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       auto executeFunctionResult =
           exc->withArgs(routingObj)
-              ->execute(RegionOperationsHAFunction, std::chrono::seconds(15))
+              .execute(RegionOperationsHAFunction, std::chrono::seconds(15))
               ->getResult();
 
       if (executeFunctionResult == nullptr) {
@@ -250,8 +250,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       filter->push_back(CacheableString::create(key));
       executeFunctionResult =
           exc->withArgs(routingObj)
-              ->withFilter(filter)
-              ->execute(RegionOperationsHAFunction, std::chrono::seconds(15))
+              .withFilter(filter)
+              .execute(RegionOperationsHAFunction, std::chrono::seconds(15))
               ->getResult();
 
       if (executeFunctionResult == nullptr) {
@@ -337,7 +337,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
       // Test with HA exception
       auto executeFunctionResult =
           exc->withArgs(routingObj)
-              ->execute(OnServerHAExceptionFunction, std::chrono::seconds(15))
+              .execute(OnServerHAExceptionFunction, std::chrono::seconds(15))
               ->getResult();
 
       if (executeFunctionResult == nullptr) {
@@ -377,7 +377,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
       // Test with HA server shutdown
       auto executeFunctionResult1 =
           exc->withArgs(routingObj)
-              ->execute(OnServerHAShutdownFunction, std::chrono::seconds(15))
+              .execute(OnServerHAShutdownFunction, std::chrono::seconds(15))
               ->getResult();
 
       if (executeFunctionResult1 == nullptr) {

@@ -133,7 +133,7 @@ class _GEODE_EXPORT ProxyCache
   friend class ProxyRegion;
   friend class ProxyRemoteQueryService;
   friend class RemoteQuery;
-  friend class ExecutionImpl;
+  friend class Execution;
   friend class FunctionServiceImpl;
   friend class FunctionService;
   friend class GuardUserAttribures;

@@ -203,7 +203,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       auto executeFunctionResult =
           exc->withArgs(routingObj)
-              ->execute(RegionOperationsHAFunctionPrSHOP,
+              .execute(RegionOperationsHAFunctionPrSHOP,
                         std::chrono::seconds(15))
               ->getResult();
 
@@ -287,7 +287,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
       // Test with HA exception
       auto executeFunctionResult =
           exc->withArgs(routingObj)
-              ->execute(OnServerHAExceptionFunction, std::chrono::seconds(15))
+              .execute(OnServerHAExceptionFunction, std::chrono::seconds(15))
               ->getResult();
 
       if (executeFunctionResult == nullptr) {
@@ -327,7 +327,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
       // Test with HA server shutdown
       auto executeFunctionResult1 =
           exc->withArgs(routingObj)
-              ->execute(OnServerHAShutdownFunction, std::chrono::seconds(15))
+              .execute(OnServerHAShutdownFunction, std::chrono::seconds(15))
               ->getResult();
 
       if (executeFunctionResult1 == nullptr) {

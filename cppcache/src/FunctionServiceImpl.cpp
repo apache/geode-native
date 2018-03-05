@@ -16,7 +16,7 @@
  */
 
 #include "FunctionServiceImpl.hpp"
-#include "ExecutionImpl.hpp"
+#include "geode/Execution.hpp"
 #include <geode/PoolManager.hpp>
 
 using namespace apache::geode::client;

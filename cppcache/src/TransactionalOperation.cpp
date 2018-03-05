@@ -66,11 +66,11 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(Cache* cache) {
       }
       result = std::dynamic_pointer_cast<Cacheable>(
           execution->withArgs(m_arguments->at(0))
-              ->withFilter(
+              .withFilter(
                   std::static_pointer_cast<CacheableVector>(m_arguments->at(1)))
-              ->withCollector(std::dynamic_pointer_cast<ResultCollector>(
+              .withCollector(std::dynamic_pointer_cast<ResultCollector>(
                   m_arguments->at(2)))
-              ->execute(m_arguments->at(3)->toString().c_str(),
+              .execute(m_arguments->at(3)->toString().c_str(),
                         std::chrono::milliseconds(
                             std::static_pointer_cast<CacheableInt32>(
                                 m_arguments->at(4))
