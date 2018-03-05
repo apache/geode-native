@@ -122,10 +122,12 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
   bool findinternal = false;
   auto currentTypeId = typeId;
 
-  if (typeId == -1) currentTypeId = input.read();
+  if (typeId == -1) {
+    currentTypeId = input.read();
+  }
   int64_t compId = currentTypeId;
 
-  LOGDEBUG("SerializationRegistry::deserialize typeid = %d currentTypeId= %d ",
+  LOGDEBUG("SerializationRegistry::deserialize typeid = %d currentTypeId= %d",
            typeId, currentTypeId);
 
   switch (compId) {
@@ -201,8 +203,56 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
   }
 
   std::shared_ptr<Serializable> obj(createType());
-  obj->fromData(input);
+
+  deserialize(input, obj);
+
   return obj;
+}
+
+void SerializationRegistry::deserialize(
+    DataInput& input, std::shared_ptr<Serializable> obj) const {
+  if (!obj) {
+    // nothing to read
+  } else if (const auto dataSerializableFixedId =
+                 std::dynamic_pointer_cast<DataSerializableFixedId>(obj)) {
+    deserialize(input, dataSerializableFixedId);
+  } else if (const auto dataSerializablePrimitive =
+                 std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+    deserialize(input, dataSerializablePrimitive);
+  } else if (const auto dataSerializable =
+                 std::dynamic_pointer_cast<DataSerializable>(obj)) {
+    deserialize(input, dataSerializable);
+  } else if (const auto pdxSerializable =
+                 std::dynamic_pointer_cast<PdxSerializable>(obj)) {
+    deserialize(input, pdxSerializable);
+  } else {
+    throw UnsupportedOperationException("Serialization type not implemented.");
+  }
+}
+
+void SerializationRegistry::deserialize(
+    DataInput& input,
+    std::shared_ptr<DataSerializableFixedId> dataSerializableFixedId) const {
+  dataSerializableFixedId->fromData(input);
+}
+
+void SerializationRegistry::deserialize(
+    DataInput& input,
+    std::shared_ptr<DataSerializablePrimitive> dataSerializablePrimitive)
+    const {
+  dataSerializablePrimitive->fromData(input);
+}
+
+void SerializationRegistry::deserialize(
+    DataInput& input,
+    std::shared_ptr<DataSerializable> dataSerializable) const {
+  dataSerializable->fromData(input);
+}
+
+void SerializationRegistry::deserialize(
+    DataInput& input, std::shared_ptr<PdxSerializable> pdxSerializable) const {
+  throw UnsupportedOperationException(
+      "SerializationRegistry::deserialize<PdxSerializable> not implemented");
 }
 
 void SerializationRegistry::addType(TypeFactoryMethod func) {

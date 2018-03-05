@@ -295,6 +295,21 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
       return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData4);
     }
   }
+
+ private:
+  void deserialize(DataInput& input, std::shared_ptr<Serializable> obj) const;
+
+  void deserialize(DataInput& input,
+                   std::shared_ptr<DataSerializableFixedId> obj) const;
+
+  void deserialize(DataInput& input,
+                   std::shared_ptr<DataSerializablePrimitive> obj) const;
+
+  void deserialize(DataInput& input,
+                   std::shared_ptr<DataSerializable> obj) const;
+
+  void deserialize(DataInput& input,
+                   std::shared_ptr<PdxSerializable> obj) const;
 };
 
 }  // namespace client
