@@ -112,9 +112,8 @@ void TheTypeMap::setup() {
   bind2(LocatorListResponse::create);
   bind2(ClientProxyMembershipID::createDeserializable);
   bind2(GetAllServersResponse::create);
-  bind2(EnumInfo::createDeserializable);
-
-  rebind2(GeodeTypeIdsImpl::DiskStoreId, DiskStoreId::createDeserializable);
+  bind(EnumInfo::createDeserializable);
+  bind2(DiskStoreId::createDeserializable);
 }
 
 /** This starts at reading the typeid.. assumes the length has been read. */
@@ -322,24 +321,35 @@ void TheTypeMap::find2(int64_t id, TypeFactoryMethod& func) const {
 }
 
 void TheTypeMap::bind(TypeFactoryMethod func) {
-  //  auto obj = func();
-  //  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_mapLock);
-  //  int64_t compId = static_cast<int64_t>(obj->typeId());
-  //  if (compId == GeodeTypeIdsImpl::CacheableUserData ||
-  //      compId == GeodeTypeIdsImpl::CacheableUserData2 ||
-  //      compId == GeodeTypeIdsImpl::CacheableUserData4) {
-  //    compId |= ((static_cast<int64_t>(obj->classId())) << 32);
-  //  }
-  //  int bindRes = m_map->bind(compId, func);
-  //  if (bindRes == 1) {
-  //    LOGERROR("A class with ID %d is already registered.", compId);
-  //    throw IllegalStateException("A class with given ID is already
-  //    registered.");
-  //  } else if (bindRes == -1) {
-  //    LOGERROR("Unknown error while adding class ID %d to map.", compId);
-  //    throw IllegalStateException("Unknown error while adding type to map.");
-  //  }
-  throw UnsupportedOperationException("");
+  auto obj = func();
+  int64_t compId;
+
+  if (const auto dataSerializablePrimitive =
+          std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+    compId = static_cast<int64_t>(dataSerializablePrimitive->getDsCode());
+  } else if (const auto dataSerializableInternal =
+                 std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
+    compId = static_cast<int64_t>(dataSerializableInternal->getInternalId());
+  } else if (const auto dataSerializable =
+                 std::dynamic_pointer_cast<DataSerializable>(obj)) {
+    auto id = dataSerializable->getClassId();
+    compId = static_cast<int64_t>(
+                 SerializationRegistry::getSerializableDataDsCode(id)) |
+             static_cast<int64_t>(id) << 32;
+  } else {
+    throw UnsupportedOperationException(
+        "TheTypeMap::bind: Serialization type not implemented.");
+  }
+
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_mapLock);
+  int bindRes = m_map->bind(compId, func);
+  if (bindRes == 1) {
+    LOGERROR("A class with ID %d is already registered.", compId);
+    throw IllegalStateException("A class with given ID is already registered.");
+  } else if (bindRes == -1) {
+    LOGERROR("Unknown error while adding class ID %d to map.", compId);
+    throw IllegalStateException("Unknown error while adding type to map.");
+  }
 }
 
 void TheTypeMap::rebind(int64_t compId, TypeFactoryMethod func) {
@@ -363,15 +373,17 @@ void TheTypeMap::unbind(int64_t compId) {
 
 void TheTypeMap::bind2(TypeFactoryMethod func) {
   auto obj = func();
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_map2Lock);
-  int8_t dsfid = obj->DSFID();
 
   int64_t compId = 0;
-  if (dsfid == GeodeTypeIdsImpl::FixedIDShort) {
-    compId = static_cast<int64_t>(obj->classId()) << 32;
+  if (const auto dataSerializableFixedId =
+          std::dynamic_pointer_cast<DataSerializableFixedId>(obj)) {
+    compId = static_cast<int64_t>(dataSerializableFixedId->getDSFID());
   } else {
-    compId = static_cast<int64_t>(obj->typeId());
+    throw UnsupportedOperationException(
+        "TheTypeMap::bind2: Unknown serialization type.");
   }
+
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_map2Lock);
   int bindRes = m_map2->bind(compId, func);
   if (bindRes == 1) {
     LOGERROR(

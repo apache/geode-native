@@ -41,6 +41,7 @@
 #include "GeodeTypeIdsImpl.hpp"
 #include "MemberListForVersionStamp.hpp"
 #include "config.h"
+//#include "PdxHelper.hpp"
 
 #if defined(_MACOSX)
 namespace ACE_VERSIONED_NAMESPACE_NAME {
@@ -144,45 +145,24 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
    */
   inline void serialize(const Serializable* obj, DataOutput& output,
                         bool isDelta = false) const {
-    //    if (obj == nullptr) {
-    //      output.write(static_cast<int8_t>(GeodeTypeIds::NullObj));
-    //    } else {
-    //      int8_t typeId = obj->typeId();
-    //      switch (obj->DSFID()) {
-    //        case GeodeTypeIdsImpl::FixedIDByte:
-    //          output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte));
-    //          output.write(typeId);  // write the type ID.
-    //          break;
-    //        case GeodeTypeIdsImpl::FixedIDShort:
-    //          output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDShort));
-    //          output.writeInt(static_cast<int16_t>(typeId));  // write the
-    //          type ID. break;
-    //        case GeodeTypeIdsImpl::FixedIDInt:
-    //          output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDInt));
-    //          output.writeInt(static_cast<int32_t>(typeId));  // write the
-    //          type ID. break;
-    //        default:
-    //          output.write(typeId);  // write the type ID.
-    //          break;
-    //      }
-    //
-    //      if (static_cast<int32_t>(typeId) ==
-    //      GeodeTypeIdsImpl::CacheableUserData) {
-    //        output.write(static_cast<int8_t>(obj->classId()));
-    //      } else if (static_cast<int32_t>(typeId) ==
-    //                 GeodeTypeIdsImpl::CacheableUserData2) {
-    //        output.writeInt(static_cast<int16_t>(obj->classId()));
-    //      } else if (static_cast<int32_t>(typeId) ==
-    //                 GeodeTypeIdsImpl::CacheableUserData4) {
-    //        output.writeInt(obj->classId());
-    //      }
-    //      if (isDelta) {
-    //        const Delta* ptr = dynamic_cast<const Delta*>(obj);
-    //        ptr->toDelta(output);
-    //      } else {
-    //        obj->toData(output);  // let the obj serialize itself.
-    //      }
-    //    }
+    if (obj == nullptr) {
+      output.write(static_cast<int8_t>(GeodeTypeIds::NullObj));
+    } else if (const auto dataSerializableFixedId =
+                   dynamic_cast<const DataSerializableFixedId*>(obj)) {
+      serialize(dataSerializableFixedId, output);
+    } else if (const auto dataSerializablePrimitive =
+                   dynamic_cast<const DataSerializablePrimitive*>(obj)) {
+      serialize(dataSerializablePrimitive, output);
+    } else if (const auto dataSerializable =
+                   dynamic_cast<const DataSerializable*>(obj)) {
+      serialize(dataSerializable, output, isDelta);
+    } else if (const auto pdxSerializable =
+                   dynamic_cast<const PdxSerializable*>(obj)) {
+      serialize(pdxSerializable, output);
+    } else {
+      throw UnsupportedOperationException(
+          "Serialization type not implemented.");
+    }
   }
 
   inline void serialize(const std::shared_ptr<Serializable>& obj, DataOutput& output) const {
@@ -241,6 +221,80 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   std::shared_ptr<PdxSerializer> pdxSerializer;
   TheTypeMap theTypeMap;
   PdxTypeHandler pdxTypeHandler;
+
+  inline void serialize(const DataSerializableFixedId* obj,
+                        DataOutput& output) const {
+    auto id = obj->getDSFID();
+    if (id <= std::numeric_limits<int8_t>::max() &&
+        id >= std::numeric_limits<int8_t>::min()) {
+      output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte));
+      output.write(static_cast<int8_t>(id));
+    } else if (id <= std::numeric_limits<int16_t>::max() &&
+               id >= std::numeric_limits<int16_t>::min()) {
+      output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDShort));
+      output.writeInt(static_cast<int16_t>(id));
+    } else {
+      output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDInt));
+      output.writeInt(static_cast<int32_t>(id));
+    }
+
+    obj->toData(output);
+  }
+
+  inline void serialize(const DataSerializablePrimitive* obj,
+                        DataOutput& output) const {
+    auto id = obj->getDsCode();
+    output.write(static_cast<int8_t>(id));
+    obj->toData(output);
+  }
+
+  inline void serialize(const DataSerializable* obj, DataOutput& output,
+                        bool isDelta) const {
+    auto id = obj->getClassId();
+    auto dsCode = getSerializableDataDsCode(id);
+
+    output.write(dsCode);
+    switch (dsCode) {
+      case GeodeTypeIdsImpl::CacheableUserData:
+        output.write(static_cast<int8_t>(id));
+        break;
+      case GeodeTypeIdsImpl::CacheableUserData2:
+        output.writeInt(static_cast<int16_t>(id));
+        break;
+      case GeodeTypeIdsImpl::CacheableUserData4:
+        output.writeInt(static_cast<int32_t>(id));
+        break;
+      default:
+        IllegalStateException("Invalid DS Code.");
+    }
+
+    if (isDelta) {
+      const Delta* ptr = dynamic_cast<const Delta*>(obj);
+      ptr->toDelta(output);
+    } else {
+      obj->toData(output);
+    }
+  }
+
+  inline void serialize(const PdxSerializable* obj, DataOutput& output) const {
+    output.write(static_cast<int8_t>(GeodeTypeIdsImpl::PDX));
+    // TODO PdxSerializable
+    throw UnsupportedOperationException("Implement PdxSerializable");
+    // PdxHelper::serializePdx(output, *obj);
+  }
+
+ public:
+  static inline int8_t getSerializableDataDsCode(int32_t classId) {
+    if (classId <= std::numeric_limits<int8_t>::max() &&
+        classId >= std::numeric_limits<int8_t>::min()) {
+      return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData);
+    } else if (classId <= std::numeric_limits<int16_t>::max() &&
+               classId >= std::numeric_limits<int16_t>::min()) {
+      return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData2);
+    } else {
+      return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData4);
+    }
+  }
 };
 
 }  // namespace client
