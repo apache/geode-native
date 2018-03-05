@@ -17,6 +17,10 @@ cmake_minimum_required(VERSION 3.10.0)
 
 project(PDXAutoSerializer CSharp)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
+
+find_package(GeodeNative REQUIRED COMPONENTS dotnet)
+
 add_executable(${PROJECT_NAME} 
     Program.cs
     Order.cs)
@@ -24,7 +28,7 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     GeodeNative::dotnet)
 
-set_property(TARGET PDXAutoSerializer PROPERTY VS_DOTNET_REFERENCES
+set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DOTNET_REFERENCES
     "System"
     "${GeodeNative_DOTNET_LIBRARY}")
     

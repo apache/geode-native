@@ -17,13 +17,17 @@ cmake_minimum_required(VERSION 3.10.0)
 
 project(PutGetRemove CSharp)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
+
+find_package(GeodeNative REQUIRED COMPONENTS dotnet)
+
 add_executable(${PROJECT_NAME} 
     Program.cs)
 
 target_link_libraries(${PROJECT_NAME}
     GeodeNative::dotnet)
 
-set_property(TARGET PutGetRemove PROPERTY VS_DOTNET_REFERENCES
+set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DOTNET_REFERENCES
     "System"
     "${GeodeNative_DOTNET_LIBRARY}")
     
