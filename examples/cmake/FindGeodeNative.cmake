@@ -14,7 +14,7 @@
 # limitations under the License.
 
 #.rst:
-# Findgeode-native
+# FindGeodeNative
 # ---------
 #
 # Find the Geode Native headers and library.
@@ -24,24 +24,24 @@
 #
 # This module defines the following :prop_tgt:`IMPORTED` targets:
 #
-# ``apache.geode::cpp``
+# ``GeodeNative::cpp``
+# ``GeodeNative:dotnet``
 #
 # Result Variables
 # ^^^^^^^^^^^^^^^^
 #
 # This module will set the following variables in your project:
 #
-# ``GEODE_NATIVE_CPP_INCLUDE_DIRS``
-#   where to find CacheFactory.hpp, etc.
-# ``GEODE_NATIVE_LIBRARIES``
-#   the libraries to link against to use Geode Native.
-# ``GEODE_NATIVE_FOUND``
+# ``GeodeNative_FOUND``
 #   true if the Geode Native headers and libraries were found.
+#
+# ``GeodeNative_DOTNET_LIBRARY``
+#   Path to .NET assembly file.
 #
 
 set(_GEODE_NATIVE_ROOT "")
-if(GEODE_NATIVE_ROOT AND IS_DIRECTORY "${GEODE_NATIVE_ROOT}")
-    set(_GEODE_NATIVE_ROOT "${GEODE_NATIVE_ROOT}")
+if(GeodeNative_ROOT AND IS_DIRECTORY "${GeodeNative_ROOT}")
+    set(_GEODE_NATIVE_ROOT "${GeodeNative_ROOT}")
     set(_GEODE_NATIVE_ROOT_EXPLICIT 1)
 else()
     set(_ENV_GEODE_NATIVE_ROOT "")
@@ -72,7 +72,7 @@ endif()
 # Begin - component "cpp"
 set(_GEODE_NATIVE_CPP_NAMES apache-geode)
 
-find_library(GEODE_NATIVE_CPP_LIBRARY
+find_library(GeodeNative_CPP_LIBRARY
     NAMES ${_GEODE_NATIVE_CPP_NAMES}
     HINTS ${_GEODE_NATIVE_HINTS}
     PATHS ${_GEODE_NATIVE_PATHS}
@@ -80,7 +80,7 @@ find_library(GEODE_NATIVE_CPP_LIBRARY
 )
 
 # Look for the header file.
-find_path(GEODE_NATIVE_CPP_INCLUDE_DIR NAMES geode/CacheFactory.hpp
+find_path(GeodeNative_CPP_INCLUDE_DIR NAMES geode/CacheFactory.hpp
     HINTS ${_GEODE_NATIVE_HINTS}
     PATHS ${_GEODE_NATIVE_PATHS}
     PATH_SUFFIXES geode-native/include include
@@ -90,7 +90,7 @@ find_path(GEODE_NATIVE_CPP_INCLUDE_DIR NAMES geode/CacheFactory.hpp
 # Begin - component "dotnet"
 set(_GEODE_NATIVE_DOTNET_NAMES Apache.Geode.dll)
 
-find_file(GEODE_NATIVE_DOTNET_LIBRARY
+find_file(GeodeNative_DOTNET_LIBRARY
   NAMES ${_GEODE_NATIVE_DOTNET_NAMES}
   HINTS ${_GEODE_NATIVE_HINTS}
   PATHS ${_GEODE_NATIVE_PATHS}
@@ -106,11 +106,11 @@ if (GeodeNative_FIND_COMPONENTS)
   foreach (component ${GeodeNative_FIND_COMPONENTS})
     if (component STREQUAL "cpp")
       message(STATUS "component 'cpp'")
-      list(APPEND _GEODE_NATIVE_REQUIRED_VARS GEODE_NATIVE_CPP_LIBRARY GEODE_NATIVE_CPP_INCLUDE_DIR)
+      list(APPEND _GEODE_NATIVE_REQUIRED_VARS GeodeNative_CPP_LIBRARY GeodeNative_CPP_INCLUDE_DIR)
     endif()
     if (component STREQUAL "dotnet")
       message(STATUS "component 'dotnet'")
-      list(APPEND _GEODE_NATIVE_REQUIRED_VARS GEODE_NATIVE_DOTNET_LIBRARY)
+      list(APPEND _GEODE_NATIVE_REQUIRED_VARS GeodeNative_DOTNET_LIBRARY)
     endif()
   endforeach()
 endif()
@@ -123,20 +123,20 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(GeodeNative
 # Copy the results to the output variables and target.
 if(GeodeNative_FOUND)
   if(NOT TARGET ${GEODE_NATIVE_CPP_TARGET})
-    set(GEODE_NATIVE_CPP_TARGET "apache.geode::cpp")
+    set(GEODE_NATIVE_CPP_TARGET "GeodeNative::cpp")
     add_library(${GEODE_NATIVE_CPP_TARGET} UNKNOWN IMPORTED)
     set_target_properties(${GEODE_NATIVE_CPP_TARGET} PROPERTIES
       IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
-      IMPORTED_LOCATION "${GEODE_NATIVE_CPP_LIBRARY}"
-      INTERFACE_INCLUDE_DIRECTORIES "${GEODE_NATIVE_CPP_INCLUDE_DIR}")
+      IMPORTED_LOCATION "${GeodeNative_CPP_LIBRARY}"
+      INTERFACE_INCLUDE_DIRECTORIES "${GeodeNative_CPP_INCLUDE_DIR}")
   endif()
   if(NOT TARGET ${GEODE_NATIVE_DOTNET_TARGET})
-    set(GEODE_NATIVE_DOTNET_TARGET "apache.geode::dotnet")
+    set(GEODE_NATIVE_DOTNET_TARGET "GeodeNative::dotnet")
     add_library(${GEODE_NATIVE_DOTNET_TARGET} UNKNOWN IMPORTED)
     set_target_properties(${GEODE_NATIVE_DOTNET_TARGET} PROPERTIES
       IMPORTED_LINK_INTERFACE_LANGUAGES "CSharp"
-      IMPORTED_LOCATION "${GEODE_NATIVE_DOTNET_LIBRARY}")
+      IMPORTED_LOCATION "${GeodeNative_DOTNET_LIBRARY}")
   endif()
 endif()
 
-mark_as_advanced(GEODE_NATIVE_CPP_INCLUDE_DIR GEODE_NATIVE_CPP_LIBRARY GEODE_NATIVE_DOTNET_LIBRARY)
+mark_as_advanced(GeodeNative_CPP_INCLUDE_DIR GeodeNative_CPP_LIBRARY GeodeNative_DOTNET_LIBRARY)

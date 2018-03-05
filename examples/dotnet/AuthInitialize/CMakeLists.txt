@@ -26,9 +26,9 @@ add_executable(${PROJECT_NAME}
     ExampleAuthInitialize.cs)
 
 target_link_libraries(${PROJECT_NAME}
-    apache.geode::dotnet)
+    GeodeNative::dotnet)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DOTNET_REFERENCES
     "System"
-    "${GEODE_NATIVE_DOTNET_LIBRARY}")
+    "${GeodeNative_DOTNET_LIBRARY}")
     
