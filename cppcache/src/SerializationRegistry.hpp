@@ -165,6 +165,26 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     }
   }
 
+  inline void serializeWithoutHeader(const Serializable* obj,
+                                     DataOutput& output) const {
+    if (const auto dataSerializableFixedId =
+            dynamic_cast<const DataSerializableFixedId*>(obj)) {
+      serializeWithoutHeader(dataSerializableFixedId, output);
+    } else if (const auto dataSerializablePrimitive =
+                   dynamic_cast<const DataSerializablePrimitive*>(obj)) {
+      serializeWithoutHeader(dataSerializablePrimitive, output);
+    } else if (const auto dataSerializable =
+                   dynamic_cast<const DataSerializable*>(obj)) {
+      serializeWithoutHeader(dataSerializable, output);
+    } else if (const auto pdxSerializable =
+                   dynamic_cast<const PdxSerializable*>(obj)) {
+      serializeWithoutHeader(pdxSerializable, output);
+    } else {
+      throw UnsupportedOperationException(
+          "Serialization type not implemented.");
+    }
+  }
+
   inline void serialize(const std::shared_ptr<Serializable>& obj, DataOutput& output) const {
     serialize(obj.get(), output);
   }
@@ -238,6 +258,11 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
       output.writeInt(static_cast<int32_t>(id));
     }
 
+    serializeWithoutHeader(obj, output);
+  }
+
+  inline void serializeWithoutHeader(const DataSerializableFixedId* obj,
+                                     DataOutput& output) const {
     obj->toData(output);
   }
 
@@ -245,6 +270,12 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
                         DataOutput& output) const {
     auto id = obj->getDsCode();
     output.write(static_cast<int8_t>(id));
+
+    serializeWithoutHeader(obj, output);
+  }
+
+  inline void serializeWithoutHeader(const DataSerializablePrimitive* obj,
+                                     DataOutput& output) const {
     obj->toData(output);
   }
 
@@ -272,12 +303,23 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
       const Delta* ptr = dynamic_cast<const Delta*>(obj);
       ptr->toDelta(output);
     } else {
-      obj->toData(output);
+      serializeWithoutHeader(obj, output);
     }
+  }
+
+  inline void serializeWithoutHeader(const DataSerializable* obj,
+                                     DataOutput& output) const {
+    obj->toData(output);
   }
 
   inline void serialize(const PdxSerializable* obj, DataOutput& output) const {
     output.write(static_cast<int8_t>(GeodeTypeIdsImpl::PDX));
+
+    serializeWithoutHeader(obj, output);
+  }
+
+  inline void serializeWithoutHeader(const PdxSerializable* obj,
+                                     DataOutput& output) const {
     // TODO PdxSerializable
     throw UnsupportedOperationException("Implement PdxSerializable");
     // PdxHelper::serializePdx(output, *obj);

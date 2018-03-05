@@ -753,6 +753,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   friend CacheImpl;
   friend DataOutputInternal;
   friend CacheableString;
+  friend TcrMessage;
 };
 
 template void DataOutput::writeJavaModifiedUtf8(const std::u16string&);

@@ -519,7 +519,10 @@ void TcrMessage::writeObjectPart(
     auto deltaPtr = std::dynamic_pointer_cast<Delta>(se);
     deltaPtr->toDelta(*m_request);
   } else if (isObject) {
-    if (!callToData) {
+    if (callToData) {
+      m_request->getSerializationRegistry().serializeWithoutHeader(se.get(),
+                                                                   *m_request);
+    } else {
       if (getAllKeyList != nullptr) {
         int8_t typeId = GeodeTypeIds::CacheableObjectArray;
         m_request->write(typeId);
@@ -532,9 +535,6 @@ void TcrMessage::writeObjectPart(
       } else {
         m_request->writeObject(se, isDelta);
       }
-    } else {
-      throw UnsupportedOperationException("implment serialization");
-      //      se->toData(*m_request);
     }
   } else {
     // TODO::
