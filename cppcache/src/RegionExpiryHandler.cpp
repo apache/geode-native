@@ -47,7 +47,7 @@ int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
   try {
     auto statistics = m_regionPtr->getStatistics();
     auto lastTimeForExp = statistics->getLastAccessedTime();
-    if (m_regionPtr->getAttributes()->getRegionTimeToLive() >
+    if (m_regionPtr->getAttributes().getRegionTimeToLive() >
         std::chrono::seconds::zero()) {
       lastTimeForExp = statistics->getLastModifiedTime();
     }

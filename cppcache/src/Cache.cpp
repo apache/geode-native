@@ -91,7 +91,7 @@ std::shared_ptr<Region> Cache::getRegion(const std::string& path) const {
 
   if (result != nullptr) {
     if (isPoolInMultiuserMode(result)) {
-      LOGWARN("Pool " + result->getAttributes()->getPoolName() +
+      LOGWARN("Pool " + result->getAttributes().getPoolName() +
               " attached with region " + result->getFullPath() +
               " is in multiuser authentication mode. Operations may fail as "
               "this instance does not have any credentials.");
@@ -165,7 +165,7 @@ void Cache::initializeDeclarativeCache(const std::string& cacheXml) {
 void Cache::readyForEvents() { m_cacheImpl->readyForEvents(); }
 
 bool Cache::isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr) {
-  const auto& poolName = regionPtr->getAttributes()->getPoolName();
+  const auto& poolName = regionPtr->getAttributes().getPoolName();
 
   if (!poolName.empty()) {
     auto poolPtr = regionPtr->getCache().getPoolManager().find(poolName);

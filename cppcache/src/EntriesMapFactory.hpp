@@ -34,7 +34,7 @@ class _GEODE_EXPORT EntriesMapFactory {
    * type of entries map.
    */
   static EntriesMap* createMap(RegionInternal* region,
-                               const std::shared_ptr<RegionAttributes>& attrs);
+                               RegionAttributes attrs);
 
  private:
   /** @brief not to be instantiated. */

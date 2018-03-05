@@ -243,37 +243,12 @@ namespace Apache.Geode.Client.UnitTests
     }
     public void CreateRegion(string name, bool enableNotification, bool cloningEnabled)
     {
-      Apache.Geode.Client.RegionAttributes<object, object> attrs;
-      AttributesFactory<object, object> attrFac = new AttributesFactory<object, object>();
-      attrFac.SetCacheListener(new SimpleCacheListener<object, object>());
-      attrFac.SetCloningEnabled(cloningEnabled);
-      attrs = attrFac.CreateRegionAttributes();
-      CacheHelper.CreateRegion<object, object>(name, attrs);
+      var regionAttributesFactory = new RegionAttributesFactory<object, object>();
+      regionAttributesFactory.SetCacheListener(new SimpleCacheListener<object, object>());
+      regionAttributesFactory.SetCloningEnabled(cloningEnabled);
+      var regionAttributes = regionAttributesFactory.Create();
+      CacheHelper.CreateRegion<object, object>(name, regionAttributes);
     }
-
-    //public void CreateOverflowRegion(string name, uint entriesLimit)
-    //{
-    //  AttributesFactory af = new AttributesFactory();
-    //  af.SetScope(ScopeType.DistributedAck);
-    //  af.SetCachingEnabled(true);
-    //  af.SetClientNotificationEnabled(true);
-    //  af.SetLruEntriesLimit(entriesLimit);// LRU Entry limit set to 3
-
-    //  af.SetDiskPolicy(DiskPolicyType.Overflows);
-    //  Properties bdbProperties = Properties.Create();
-    //  bdbProperties.Insert("CacheSizeGb", "0");
-    //  bdbProperties.Insert("CacheSizeMb", "512");
-    //  bdbProperties.Insert("PageSize", "65536");
-    //  bdbProperties.Insert("MaxFileSize", "512000000");
-    //  String wdPath = Directory.GetCurrentDirectory();
-    //  String absPersistenceDir = wdPath + "/absBDB";
-    //  String absEnvDir = wdPath + "/absBDBEnv";
-    //  bdbProperties.Insert("PersistenceDirectory", absPersistenceDir);
-    //  bdbProperties.Insert("EnvironmentDirectory", absEnvDir);
-    //  af.SetPersistenceManager("BDBImpl", "createBDBInstance", bdbProperties);
-
-    //  CacheHelper.CreateRegion(name, af.CreateRegionAttributes());
-    //}
 
     void DoPutWithDelta()
     {
@@ -344,12 +319,12 @@ namespace Apache.Geode.Client.UnitTests
       DeltaEx.FromDataCount = 0;
       DeltaEx.FromDeltaCount = 0;
 
-      // Try Contains with key & value that are present. Result should be true.      
+      // Try Contains with key & value that are present. Result should be true.
       KeyValuePair<object, object> myentry = new KeyValuePair<object, object>(cKey, val1);
       bool containsOpflag = reg.Contains(myentry);
       Assert.IsTrue(containsOpflag, "Result should be true as key & value are present");
 
-      // Try Remove with key & value that are present. Result should be true. 
+      // Try Remove with key & value that are present. Result should be true.
       bool removeOpflag = reg.Remove(cKey);
       Assert.IsTrue(removeOpflag, "Result should be true as key & value are present");
 
@@ -456,7 +431,7 @@ namespace Apache.Geode.Client.UnitTests
       DeltaEx.ToDeltaCount = 0;
       DeltaEx.ToDataCount = 0;
     }
-    
+
     void DoCqWithDelta()
     {
       string cKey1 = "key1";
@@ -541,7 +516,7 @@ namespace Apache.Geode.Client.UnitTests
         // m_client1.Call(createPool, "__TEST_POOL1__", CacheHelper.Locators, (string)null, 0, false);
         // m_client1.Call(createRegionAndAttachPool, "DistRegionAck", "__TEST_POOL1__");
       }
-     
+
 
       m_client1.Call(initializeDeltaClientAD);
       m_client2.Call(initializeDeltaClientAD);
@@ -603,7 +578,7 @@ namespace Apache.Geode.Client.UnitTests
         //do nothing
       }
       IRegion<object, object> reg = CacheHelper.GetRegion<object, object>("DistRegionAck");
-      
+
       reg.GetSubscriptionService().RegisterRegex(".*");
       AttributesMutator<object, object> attrMutator = reg.AttributesMutator;
       attrMutator.SetCacheListener(new SimpleCacheListener<object, object>());
@@ -672,7 +647,7 @@ namespace Apache.Geode.Client.UnitTests
       string cKey = m_keys[0];
       IRegion<object, object> reg = CacheHelper.GetRegion<object, object>("DistRegionAck");
       DeltaTestImpl val = reg[cKey] as DeltaTestImpl;
-      
+
       if (val.GetIntVar() != 2)
         Assert.Fail("Int value after cloning should be 2, is " + val.GetIntVar());
       if (DeltaTestImpl.GetFromDataCount() != 2)

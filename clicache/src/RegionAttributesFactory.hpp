@@ -20,7 +20,7 @@
 
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
-#include <geode/AttributesFactory.hpp>
+#include <geode/RegionAttributesFactory.hpp>
 #include "end_native.hpp"
 
 #include "ExpirationAction.hpp"
@@ -52,10 +52,10 @@ namespace Apache
       /// Factory class to create instances of <see cref="RegionAttributes" />.
       /// </summary>
       /// <remarks>
-      /// An <see cref="AttributesFactory" />
+      /// An <see cref="RegionAttributesFactory" />
       /// instance maintains state for creating <see cref="RegionAttributes" /> instances.
       /// The setter methods are used to change the settings that will be used for
-      /// creating the next attributes instance with the <see cref="CreateRegionAttributes" />
+      /// creating the next attributes instance with the <see cref="Create" />
       /// method. If you create a factory with the default constructor, then the
       /// factory is set up to create attributes with all default settings. You can
       /// also create a factory by providing a preset <see cref="RegionAttributes" />.
@@ -152,28 +152,28 @@ namespace Apache
       /// <seealso cref="AttributesMutator" />
       /// <seealso cref="Region.CreateSubRegion" />
       generic<class TKey, class TValue>
-      public ref class AttributesFactory sealed
+      public ref class RegionAttributesFactory sealed
       {
       public:
 
         /// <summary>
-        /// Creates a new <c>AttributesFactory</c> ready to create
+        /// Creates a new <c>RegionAttributesFactory</c> ready to create
         /// a <c>RegionAttributes</c> with default settings.
         /// </summary>
-        inline AttributesFactory<TKey, TValue>( )
+        inline RegionAttributesFactory<TKey, TValue>( )
         {
-          m_nativeptr = gcnew native_unique_ptr<native::AttributesFactory>(std::make_unique<native::AttributesFactory>());
+          m_nativeptr = gcnew native_unique_ptr<native::RegionAttributesFactory>(std::make_unique<native::RegionAttributesFactory>());
         }
 
         /// <summary>
-        /// Creates a new instance of <c>AttributesFactory</c> ready to create
+        /// Creates a new instance of <c>RegionAttributesFactory</c> ready to create
         /// a <c>RegionAttributes</c> with the same settings as those in the
         /// specified <c>RegionAttributes</c>.
         /// </summary>
         /// <param name="regionAttributes">
-        /// attributes used to initialize this AttributesFactory
+        /// attributes used to initialize this RegionAttributesFactory
         /// </param>
-        AttributesFactory<TKey, TValue>(RegionAttributes<TKey, TValue>^ regionAttributes);
+        RegionAttributesFactory<TKey, TValue>(RegionAttributes<TKey, TValue>^ regionAttributes);
 
         // CALLBACKS
 
@@ -184,7 +184,7 @@ namespace Apache
         /// a user-defined cache loader, or null for no cache loader
         /// </param>
         //generic<class TKey, class TValue>
-        AttributesFactory<TKey, TValue>^ SetCacheLoader( ICacheLoader<TKey, TValue>^ cacheLoader );
+        RegionAttributesFactory<TKey, TValue>^ SetCacheLoader( ICacheLoader<TKey, TValue>^ cacheLoader );
 
         /// <summary>
         /// Sets the cache writer for the <c>RegionAttributes</c> being created.
@@ -193,7 +193,7 @@ namespace Apache
         /// user-defined cache writer, or null for no cache writer
         /// </param>
         //generic<class TKey, class TValue>
-        AttributesFactory<TKey, TValue>^ SetCacheWriter( ICacheWriter<TKey, TValue>^ cacheWriter );
+        RegionAttributesFactory<TKey, TValue>^ SetCacheWriter( ICacheWriter<TKey, TValue>^ cacheWriter );
 
         /// <summary>
         /// Sets the CacheListener for the <c>RegionAttributes</c> being created.
@@ -202,7 +202,7 @@ namespace Apache
         /// user-defined cache listener, or null for no cache listener
         /// </param>
         //generic<class TKey, class TValue>
-        AttributesFactory<TKey, TValue>^ SetCacheListener( ICacheListener<TKey, TValue>^ cacheListener );
+        RegionAttributesFactory<TKey, TValue>^ SetCacheListener( ICacheListener<TKey, TValue>^ cacheListener );
 
         /// <summary>
         /// Sets the PartitionResolver for the <c>RegionAttributes</c> being created.
@@ -211,7 +211,7 @@ namespace Apache
         /// user-defined partition resolver, or null for no partition resolver
         /// </param>
         //generic<class TKey, class TValue>
-        AttributesFactory<TKey, TValue>^ SetPartitionResolver( IPartitionResolver<TKey, TValue>^ partitionresolver );
+        RegionAttributesFactory<TKey, TValue>^ SetPartitionResolver( IPartitionResolver<TKey, TValue>^ partitionresolver );
 
         /// <summary>
         /// Sets the library path for the library that will be invoked for the loader of the region.
@@ -226,7 +226,7 @@ namespace Apache
         /// <c>ICacheLoader</c> for a managed library.
         /// </param>
         //generic<class TKey, class TValue>
-        AttributesFactory<TKey, TValue>^ SetCacheLoader( String^ libPath, String^ factoryFunctionName );
+        RegionAttributesFactory<TKey, TValue>^ SetCacheLoader( String^ libPath, String^ factoryFunctionName );
 
         /// <summary>
         /// Sets the library path for the library that will be invoked for the writer of the region.
@@ -241,7 +241,7 @@ namespace Apache
         /// <c>ICacheWriter</c> for a managed library.
         /// </param>
         //generic<class TKey, class TValue>
-        AttributesFactory<TKey, TValue>^ SetCacheWriter( String^ libPath, String^ factoryFunctionName );
+        RegionAttributesFactory<TKey, TValue>^ SetCacheWriter( String^ libPath, String^ factoryFunctionName );
 
         /// <summary>
         /// Sets the library path for the library that will be invoked for the listener of the region.
@@ -256,7 +256,7 @@ namespace Apache
         /// <c>ICacheListener</c> for a managed library.
         /// </param>
         //generic<class TKey, class TValue>
-        AttributesFactory<TKey, TValue>^ SetCacheListener( String^ libPath, String^ factoryFunctionName );
+        RegionAttributesFactory<TKey, TValue>^ SetCacheListener( String^ libPath, String^ factoryFunctionName );
 
 
         /// <summary>
@@ -272,7 +272,7 @@ namespace Apache
         /// <c>IPartitionResolver</c> for a managed library.
         /// </param>
         //generic<class TKey, class TValue>
-        AttributesFactory<TKey, TValue>^ SetPartitionResolver( String^ libPath, String^ factoryFunctionName );
+        RegionAttributesFactory<TKey, TValue>^ SetPartitionResolver( String^ libPath, String^ factoryFunctionName );
 
 
         // EXPIRATION ATTRIBUTES
@@ -287,7 +287,7 @@ namespace Apache
         /// <param name="idleTimeout">
         /// the idleTimeout in seconds for entries in this region.
         /// </param>
-        AttributesFactory<TKey, TValue>^ SetEntryIdleTimeout( ExpirationAction action, TimeSpan idleTimeout );
+        RegionAttributesFactory<TKey, TValue>^ SetEntryIdleTimeout( ExpirationAction action, TimeSpan idleTimeout );
 
         /// <summary>
         /// Sets the timeToLive expiration attributes for region entries for the next
@@ -299,7 +299,7 @@ namespace Apache
         /// <param name="timeToLive">
         /// the timeToLive in seconds for entries in this region.
         /// </param>
-        AttributesFactory<TKey, TValue>^ SetEntryTimeToLive( ExpirationAction action, TimeSpan timeToLive );
+        RegionAttributesFactory<TKey, TValue>^ SetEntryTimeToLive( ExpirationAction action, TimeSpan timeToLive );
 
         /// <summary>
         /// Sets the idleTimeout expiration attributes for the region itself for the
@@ -311,7 +311,7 @@ namespace Apache
         /// <param name="idleTimeout">
         /// the idleTimeout in seconds for the region as a whole.
         /// </param>
-        AttributesFactory<TKey, TValue>^ SetRegionIdleTimeout( ExpirationAction action, TimeSpan idleTimeout );
+        RegionAttributesFactory<TKey, TValue>^ SetRegionIdleTimeout( ExpirationAction action, TimeSpan idleTimeout );
 
         /// <summary>
         /// Sets the timeToLive expiration attributes for the region itself for the
@@ -323,7 +323,7 @@ namespace Apache
         /// <param name="timeToLive">
         /// the timeToLive in seconds for the region as a whole.
         /// </param>
-        AttributesFactory<TKey, TValue>^ SetRegionTimeToLive( ExpirationAction action, TimeSpan timeToLive );
+        RegionAttributesFactory<TKey, TValue>^ SetRegionTimeToLive( ExpirationAction action, TimeSpan timeToLive );
 
 
         // PERSISTENCE
@@ -335,7 +335,7 @@ namespace Apache
         /// Persistence Manager object
         /// </param>
         //generic<class TKey, class TValue>
-        AttributesFactory<TKey, TValue>^ SetPersistenceManager(IPersistenceManager<TKey, TValue>^ persistenceManager);
+        RegionAttributesFactory<TKey, TValue>^ SetPersistenceManager(IPersistenceManager<TKey, TValue>^ persistenceManager);
 
         /// <summary>
         /// Sets the PersistenceManager object that will be invoked for the persistence of the region.
@@ -347,7 +347,7 @@ namespace Apache
         /// The configuration properties to use for the PersistenceManager.
         /// </param>
         //generic<class TKey, class TValue>
-        AttributesFactory<TKey, TValue>^ SetPersistenceManager(IPersistenceManager<TKey, TValue>^ persistenceManager, Properties<String^, String^>^ config);
+        RegionAttributesFactory<TKey, TValue>^ SetPersistenceManager(IPersistenceManager<TKey, TValue>^ persistenceManager, Properties<String^, String^>^ config);
         
 
         /// <summary>
@@ -359,7 +359,7 @@ namespace Apache
         /// <param name="factoryFunctionName">
         /// The name of the factory function to create an instance of PersistenceManager object.
         /// </param>
-        AttributesFactory<TKey, TValue>^ SetPersistenceManager( String^ libPath, String^ factoryFunctionName );
+        RegionAttributesFactory<TKey, TValue>^ SetPersistenceManager( String^ libPath, String^ factoryFunctionName );
 
         /// <summary>
         /// Sets the library path for the library that will be invoked for the persistence of the region.
@@ -373,7 +373,7 @@ namespace Apache
         /// <param name="config">
         /// The configuration properties to use for the PersistenceManager.
         /// </param>
-        AttributesFactory<TKey, TValue>^ SetPersistenceManager( String^ libPath, String^ factoryFunctionName,
+        RegionAttributesFactory<TKey, TValue>^ SetPersistenceManager( String^ libPath, String^ factoryFunctionName,
           /*Dictionary<Object^, Object^>*/Properties<String^, String^>^ config );
 
 
@@ -388,7 +388,7 @@ namespace Apache
         /// <param name="poolName">
         /// The name of the pool to attach to this region.
         /// </param>
-        AttributesFactory<TKey, TValue>^ SetPoolName( String^ poolName );
+        RegionAttributesFactory<TKey, TValue>^ SetPoolName( String^ poolName );
 
         // MAP ATTRIBUTES
 
@@ -401,7 +401,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if initialCapacity is nonpositive
         /// </exception>
-        AttributesFactory<TKey, TValue>^ SetInitialCapacity( System::Int32 initialCapacity );
+        RegionAttributesFactory<TKey, TValue>^ SetInitialCapacity( System::Int32 initialCapacity );
 
         /// <summary>
         /// Sets the entry load factor for the next <c>RegionAttributes</c>
@@ -412,7 +412,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if loadFactor is nonpositive
         /// </exception>
-        AttributesFactory<TKey, TValue>^ SetLoadFactor( Single loadFactor );
+        RegionAttributesFactory<TKey, TValue>^ SetLoadFactor( Single loadFactor );
 
         /// <summary>
         /// Sets the concurrency level of the next <c>RegionAttributes</c>
@@ -424,7 +424,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if concurrencyLevel is nonpositive
         /// </exception>
-        AttributesFactory<TKey, TValue>^ SetConcurrencyLevel( System::Int32 concurrencyLevel );
+        RegionAttributesFactory<TKey, TValue>^ SetConcurrencyLevel( System::Int32 concurrencyLevel );
 
         /// <summary>
         /// Sets a limit on the number of entries that will be held in the cache.
@@ -435,7 +435,7 @@ namespace Apache
         /// The limit of the number of entries before eviction starts.
         /// Defaults to 0, meaning no LRU actions will used.
         /// </param>
-        AttributesFactory<TKey, TValue>^ SetLruEntriesLimit( System::UInt32 entriesLimit );
+        RegionAttributesFactory<TKey, TValue>^ SetLruEntriesLimit( System::UInt32 entriesLimit );
 
         /// <summary>
         /// Sets the disk policy type for the next <c>RegionAttributes</c> created.
@@ -443,7 +443,7 @@ namespace Apache
         /// <param name="diskPolicy">
         /// the disk policy to use for the region
         /// </param>
-        AttributesFactory<TKey, TValue>^ SetDiskPolicy( DiskPolicyType diskPolicy );
+        RegionAttributesFactory<TKey, TValue>^ SetDiskPolicy( DiskPolicyType diskPolicy );
 
         /// <summary>
         /// Set caching enabled flag for this region.
@@ -461,7 +461,7 @@ namespace Apache
         /// <param name="cachingEnabled">
         /// if true, cache data for this region in this process.
         /// </param>
-        AttributesFactory<TKey, TValue>^ SetCachingEnabled( bool cachingEnabled );
+        RegionAttributesFactory<TKey, TValue>^ SetCachingEnabled( bool cachingEnabled );
         /// <summary>
         /// Set cloning enabled flag for this region.
         /// </summary>
@@ -477,7 +477,7 @@ namespace Apache
         /// <param name="cloningEnabled">
         /// if true, clone old value before applying delta so that in-place change would not occour..
         /// </param>
-        AttributesFactory<TKey, TValue>^ SetCloningEnabled( bool cloningEnabled );
+        RegionAttributesFactory<TKey, TValue>^ SetCloningEnabled( bool cloningEnabled );
 
         /// <summary>
         /// Sets concurrency checks enabled flag for this region.
@@ -492,7 +492,7 @@ namespace Apache
         /// <param name="concurrencyChecksEnabled">
         /// if true, version checks for region entries will occur.
         /// </param>
-        AttributesFactory<TKey, TValue>^ SetConcurrencyChecksEnabled( bool concurrencyChecksEnabled );
+        RegionAttributesFactory<TKey, TValue>^ SetConcurrencyChecksEnabled( bool concurrencyChecksEnabled );
         // FACTORY METHOD
 
         /// <summary>
@@ -503,10 +503,10 @@ namespace Apache
         /// if the current settings violate the
         /// compatibility rules.
         /// </exception>
-        RegionAttributes<TKey, TValue>^ CreateRegionAttributes( );
+        RegionAttributes<TKey, TValue>^ Create( );
 
         private:
-          native_unique_ptr<native::AttributesFactory>^ m_nativeptr;
+          native_unique_ptr<native::RegionAttributesFactory>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

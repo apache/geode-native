@@ -734,8 +734,9 @@ namespace Apache
 
           try
           {
+            native::RegionAttributes regionAttributes;
             return Region<TKey, TValue>::Create(m_nativeptr->get()->createSubregion(
-              marshal_as<std::string>(subRegionName), __nullptr))->GetLocalView();
+              marshal_as<std::string>(subRegionName), regionAttributes))->GetLocalView();
           }
           finally
           {

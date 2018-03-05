@@ -131,51 +131,50 @@ int testXmlCacheCreationWithOverflow() {
 
   std::cout << "Test the attributes of region" << std::endl;
 
-  std::shared_ptr<RegionAttributes> raPtr = regPtr1->getAttributes();
-  RegionAttributes* regAttr = raPtr.get();
+  auto regionAttributes = regPtr1->getAttributes();
   std::cout << "Attributes of root region Root1 are : " << std::endl;
 
-  bool cachingEnabled = regAttr->getCachingEnabled();
+  bool cachingEnabled = regionAttributes.getCachingEnabled();
   std::cout << "Caching-enabled :true" << std::endl;
   if (!cachingEnabled) {
     return -1;
   }
-  int lruEL = regAttr->getLruEntriesLimit();
+  int lruEL = regionAttributes.getLruEntriesLimit();
   std::cout << "lru-entries-limit : 35" << std::endl;
   if (lruEL != 35) {
     return -1;
   }
-  int concurrency = regAttr->getConcurrencyLevel();
+  int concurrency = regionAttributes.getConcurrencyLevel();
   std::cout << "concurrency-level : 10" << std::endl;
   if (concurrency != 10) {
     return -1;
   }
-  int initialCapacity = regAttr->getInitialCapacity();
+  int initialCapacity = regionAttributes.getInitialCapacity();
   std::cout << "initial-capacity : 25" << std::endl;
   if (initialCapacity != 25) {
     return -1;
   }
-  int regionIdleTO = regAttr->getRegionIdleTimeout().count();
+  int regionIdleTO = regionAttributes.getRegionIdleTimeout().count();
   std::cout << "RegionIdleTimeout:20 " << std::endl;
   if (regionIdleTO != 20) {
     return -1;
   }
 
-  ExpirationAction action1 = regAttr->getRegionIdleTimeoutAction();
+  ExpirationAction action1 = regionAttributes.getRegionIdleTimeoutAction();
   std::cout << "RegionIdleTimeoutAction : Destroy" << std::endl;
   if (action1 != ExpirationAction::DESTROY) {
     return -1;
   }
-  const DiskPolicyType type = regAttr->getDiskPolicy();
+  const DiskPolicyType type = regionAttributes.getDiskPolicy();
   std::cout << "DiskPolicy : overflows" << std::endl;
   if (type != DiskPolicyType::OVERFLOWS) {
     std::cout << " diskpolicy is not overflows " << std::endl;
     return -1;
   }
 
-  std::cout << "persistence library = " << regAttr->getPersistenceLibrary() << std::endl;
-  std::cout << "persistence function = " << regAttr->getPersistenceFactory() << std::endl;
-  auto pconfig = regAttr->getPersistenceProperties();
+  std::cout << "persistence library = " << regionAttributes.getPersistenceLibrary() << std::endl;
+  std::cout << "persistence function = " << regionAttributes.getPersistenceFactory() << std::endl;
+  auto pconfig = regionAttributes.getPersistenceProperties();
   if (pconfig != nullptr) {
     std::cout << " persistence property is not null" << std::endl;
     std::cout << " persistencedir = "
@@ -188,10 +187,10 @@ int testXmlCacheCreationWithOverflow() {
   }
   std::cout << "****Attributes of Root1 are correctly set****" << std::endl;
 
-  std::shared_ptr<RegionAttributes> raPtr2 = regPtr2->getAttributes();
-  std::cout << "persistence library = " << raPtr2->getPersistenceLibrary() << std::endl;
-  std::cout << "persistence function = " << raPtr2->getPersistenceFactory() << std::endl;
-  auto pconfig2 = raPtr2->getPersistenceProperties();
+  auto regionAttributes2 = regPtr2->getAttributes();
+  std::cout << "persistence library = " << regionAttributes2.getPersistenceLibrary() << std::endl;
+  std::cout << "persistence function = " << regionAttributes2.getPersistenceFactory() << std::endl;
+  auto pconfig2 = regionAttributes2.getPersistenceProperties();
   if (pconfig2 != nullptr) {
     std::cout << " persistence property is not null for Root2" << std::endl;
     std::cout << " persistencedir2 = "

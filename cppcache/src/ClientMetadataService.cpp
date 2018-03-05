@@ -248,7 +248,7 @@ void ClientMetadataService::getBucketServerLocation(
       return;
     }
     std::shared_ptr<CacheableKey> resolvekey;
-    const auto& resolver = region->getAttributes()->getPartitionResolver();
+    const auto& resolver = region->getAttributes().getPartitionResolver();
 
     EntryEvent event(region, key, value, nullptr, aCallbackArgument, false);
     int bucketId = 0;
@@ -377,7 +377,7 @@ ClientMetadataService::getServerToFilterMap(
 
   for (const auto& key : keys) {
     LOGDEBUG("cmds = %s", key->toString().c_str());
-    const auto resolver = region->getAttributes()->getPartitionResolver();
+    const auto resolver = region->getAttributes().getPartitionResolver();
     std::shared_ptr<CacheableKey> resolveKey;
 
     if (resolver == nullptr) {
@@ -490,7 +490,7 @@ ClientMetadataService::groupByBucketOnClientSide(
   auto bucketToKeysMap = std::make_shared<BucketToKeysMap>();
   for (const auto& k : *keySet) {
     const auto key = std::static_pointer_cast<CacheableKey>(k);
-    const auto resolver = region->getAttributes()->getPartitionResolver();
+    const auto resolver = region->getAttributes().getPartitionResolver();
     std::shared_ptr<CacheableKey> resolvekey;
     EntryEvent event(region, key, nullptr, nullptr, nullptr, false);
     int bucketId = -1;

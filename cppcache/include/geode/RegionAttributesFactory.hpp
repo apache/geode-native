@@ -45,12 +45,12 @@ namespace client {
 
 /**
  * Creates instances of {@link RegionAttributes}. An
- * <code>AttributesFactory</code>
+ * <code>RegionAttributesFactory</code>
  * instance maintains state for creating <code>RegionAttributes</code>
  * instances.
  * The setter methods are used to change the settings that will be used for
  * creating the next attributes instance with the {@link
- * #createRegionAttributes}
+ * #create}
  * method. If you create a factory with the default constructor, then the
  * factory is set up to create attributes with all default settings. You can
  * also create a factory by providing a <code>RegionAttributes</code>, which
@@ -153,7 +153,7 @@ namespace client {
  * @see Region#createSubregion(String, RegionAttributes)
  */
 
-class _GEODE_EXPORT AttributesFactory {
+class _GEODE_EXPORT RegionAttributesFactory {
   /**
    * @brief public methods
    */
@@ -163,24 +163,26 @@ class _GEODE_EXPORT AttributesFactory {
    */
 
   /**
-   * Creates a new instance of AttributesFactory ready to create a
+   * Creates a new instance of RegionAttributesFactory ready to create a
    *       <code>RegionAttributes</code> with default settings.
    */
-  AttributesFactory();
+  RegionAttributesFactory();
 
   /**
-   * Creates a new instance of AttributesFactory ready to create a
+   * Creates a new instance of RegionAttributesFactory ready to create a
    *  <code>RegionAttributes</code> with the same settings as those in the
    *  specified <code>RegionAttributes</code>.
    * @param regionAttributes the <code>RegionAttributes</code> used to
-   * initialize this AttributesFactory
+   * initialize this RegionAttributesFactory
    */
-  AttributesFactory(const std::shared_ptr<RegionAttributes>& regionAttributes);
+  RegionAttributesFactory(const RegionAttributes regionAttributes);
+
+  RegionAttributesFactory(const RegionAttributesFactory&) = default;
 
   /**
    *@brief destructor
    */
-  virtual ~AttributesFactory();
+  virtual ~RegionAttributesFactory();
 
   // CALLBACKS
 
@@ -189,7 +191,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @param cacheLoader the cache loader or nullptr if no loader
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setCacheLoader(
+  RegionAttributesFactory& setCacheLoader(
       const std::shared_ptr<CacheLoader>& cacheLoader);
 
   /**
@@ -197,7 +199,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @param cacheWriter the cache writer or nullptr if no cache writer
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setCacheWriter(
+  RegionAttributesFactory& setCacheWriter(
       const std::shared_ptr<CacheWriter>& cacheWriter);
 
   /**
@@ -205,7 +207,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @param aListener a user defined CacheListener, nullptr if no listener
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setCacheListener(
+  RegionAttributesFactory& setCacheListener(
       const std::shared_ptr<CacheListener>& aListener);
 
   /**
@@ -214,7 +216,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @param aResolver a user defined PartitionResolver, nullptr if no resolver
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setPartitionResolver(
+  RegionAttributesFactory& setPartitionResolver(
       const std::shared_ptr<PartitionResolver>& aResolver);
 
   /**
@@ -222,7 +224,7 @@ class _GEODE_EXPORT AttributesFactory {
    * of the region.
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setCacheLoader(const std::string& libpath,
+  RegionAttributesFactory& setCacheLoader(const std::string& libpath,
                                     const std::string& factoryFuncName);
 
   /**
@@ -231,7 +233,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @return a reference to <code>this</code>
    */
 
-  AttributesFactory& setCacheWriter(const std::string& libpath,
+  RegionAttributesFactory& setCacheWriter(const std::string& libpath,
                                     const std::string& factoryFuncName);
 
   /**
@@ -239,7 +241,7 @@ class _GEODE_EXPORT AttributesFactory {
    * of the region.
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setCacheListener(const std::string& libpath,
+  RegionAttributesFactory& setCacheListener(const std::string& libpath,
                                       const std::string& factoryFuncName);
 
   /**
@@ -247,7 +249,7 @@ class _GEODE_EXPORT AttributesFactory {
    * partition resolver of the region.
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setPartitionResolver(const std::string& libpath,
+  RegionAttributesFactory& setPartitionResolver(const std::string& libpath,
                                           const std::string& factoryFuncName);
 
   // EXPIRATION ATTRIBUTES
@@ -262,7 +264,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @param idleTimeout the idleTimeout for entries in this region.
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setEntryIdleTimeout(ExpirationAction action,
+  RegionAttributesFactory& setEntryIdleTimeout(ExpirationAction action,
                                          std::chrono::seconds idleTimeout);
 
   /**
@@ -275,7 +277,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @param timeToLive the timeToLive for entries in this region.
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setEntryTimeToLive(ExpirationAction action,
+  RegionAttributesFactory& setEntryTimeToLive(ExpirationAction action,
                                         std::chrono::seconds timeToLive);
 
   /**
@@ -288,7 +290,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @param idleTimeout the idleTimeout for the region as a whole.
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setRegionIdleTimeout(ExpirationAction action,
+  RegionAttributesFactory& setRegionIdleTimeout(ExpirationAction action,
                                           std::chrono::seconds idleTimeout);
 
   /**
@@ -301,7 +303,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @param timeToLive the timeToLive for the region as a whole.
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setRegionTimeToLive(ExpirationAction action,
+  RegionAttributesFactory& setRegionTimeToLive(ExpirationAction action,
                                          std::chrono::seconds timeToLive);
 
   // PERSISTENCE
@@ -313,7 +315,7 @@ class _GEODE_EXPORT AttributesFactory {
    * this must be used to set the PersistenceManager.
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setPersistenceManager(
+  RegionAttributesFactory& setPersistenceManager(
       const std::string& libpath, const std::string& factoryFuncName,
       const std::shared_ptr<Properties>& config = nullptr);
 
@@ -323,7 +325,7 @@ class _GEODE_EXPORT AttributesFactory {
    * resolver
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setPersistenceManager(
+  RegionAttributesFactory& setPersistenceManager(
       const std::shared_ptr<PersistenceManager>& persistenceManager,
       const std::shared_ptr<Properties>& config = nullptr);
 
@@ -336,7 +338,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if initialCapacity is negative.
    */
-  AttributesFactory& setInitialCapacity(int initialCapacity);
+  RegionAttributesFactory& setInitialCapacity(int initialCapacity);
 
   /**
    * Sets the entry load factor for the next <code>RegionAttributes</code>
@@ -346,7 +348,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if loadFactor is nonpositive
    */
-  AttributesFactory& setLoadFactor(float loadFactor);
+  RegionAttributesFactory& setLoadFactor(float loadFactor);
 
   /**
    * Sets the concurrency level tof the next <code>RegionAttributes</code>
@@ -355,7 +357,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if concurrencyLevel is nonpositive
    */
-  AttributesFactory& setConcurrencyLevel(uint8_t concurrencyLevel);
+  RegionAttributesFactory& setConcurrencyLevel(uint8_t concurrencyLevel);
 
   /**
    * Sets a limit on the number of entries that will be held in the cache.
@@ -364,7 +366,7 @@ class _GEODE_EXPORT AttributesFactory {
    * used.
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setLruEntriesLimit(const uint32_t entriesLimit);
+  RegionAttributesFactory& setLruEntriesLimit(const uint32_t entriesLimit);
 
   /**
    * Sets the Disk policy type for the next <code>RegionAttributes</code>
@@ -373,7 +375,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if diskPolicyType is Invalid
    */
-  AttributesFactory& setDiskPolicy(const DiskPolicyType diskPolicy);
+  RegionAttributesFactory& setDiskPolicy(const DiskPolicyType diskPolicy);
 
   /**
    * Set caching enabled flag for this region. If set to false, then no data is
@@ -385,7 +387,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @param cachingEnabled if true, cache data for this region in this process.
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setCachingEnabled(bool cachingEnabled);
+  RegionAttributesFactory& setCachingEnabled(bool cachingEnabled);
 
   /**
    * Sets the pool name attribute.
@@ -405,7 +407,7 @@ class _GEODE_EXPORT AttributesFactory {
    * or <code>""</code> then the connection pool is disabled for regions
    * using these attributes.
    */
-  AttributesFactory& setPoolName(const std::string& name);
+  RegionAttributesFactory& setPoolName(const std::string& name);
 
   /**
    * Sets cloning on region
@@ -413,7 +415,7 @@ class _GEODE_EXPORT AttributesFactory {
    * @return a reference to <code>this</code>
    * @see RegionAttributes#getCloningEnabled()
    */
-  AttributesFactory& setCloningEnabled(bool isClonable);
+  RegionAttributesFactory& setCloningEnabled(bool isClonable);
 
   /**
    * Enables or disables concurrent modification checks
@@ -422,7 +424,7 @@ class _GEODE_EXPORT AttributesFactory {
    * operations
    * @return a reference to <code>this</code>
    */
-  AttributesFactory& setConcurrencyChecksEnabled(bool concurrencyChecksEnabled);
+  RegionAttributesFactory& setConcurrencyChecksEnabled(bool concurrencyChecksEnabled);
 
   // FACTORY METHOD
 
@@ -433,7 +435,7 @@ class _GEODE_EXPORT AttributesFactory {
    * compatibility rules
    * @return a reference to <code>this</code>
    */
-  std::unique_ptr<RegionAttributes> createRegionAttributes();
+  RegionAttributes create();
 
  private:
   RegionAttributes m_regionAttributes;

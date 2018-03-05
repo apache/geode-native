@@ -48,7 +48,7 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
     auto curr_time = std::chrono::system_clock::from_time_t(current_time.sec());
 
     auto lastTimeForExp = expProps.getLastAccessTime();
-    if (m_regionPtr->getAttributes()->getEntryTimeToLive() >
+    if (m_regionPtr->getAttributes().getEntryTimeToLive() >
         std::chrono::seconds::zero()) {
       lastTimeForExp = expProps.getLastModifiedTime();
     }

@@ -33,15 +33,15 @@ using namespace apache::geode::client;
  * support shared regions directly.
  */
 EntriesMap* EntriesMapFactory::createMap(
-    RegionInternal* region, const std::shared_ptr<RegionAttributes>& attrs) {
+    RegionInternal* region, RegionAttributes attrs) {
   EntriesMap* result = nullptr;
-  uint32_t initialCapacity = attrs->getInitialCapacity();
-  uint8_t concurrency = attrs->getConcurrencyLevel();
+  uint32_t initialCapacity = attrs.getInitialCapacity();
+  uint8_t concurrency = attrs.getConcurrencyLevel();
   /** @TODO will need a statistics entry factory... */
-  uint32_t lruLimit = attrs->getLruEntriesLimit();
-  const auto& ttl = attrs->getEntryTimeToLive();
-  const auto& idle = attrs->getEntryIdleTimeout();
-  bool concurrencyChecksEnabled = attrs->getConcurrencyChecksEnabled();
+  uint32_t lruLimit = attrs.getLruEntriesLimit();
+  const auto& ttl = attrs.getEntryTimeToLive();
+  const auto& idle = attrs.getEntryIdleTimeout();
+  bool concurrencyChecksEnabled = attrs.getConcurrencyChecksEnabled();
   bool heapLRUEnabled = false;
 
   auto cache = region->getCacheImpl();
@@ -50,7 +50,7 @@ EntriesMap* EntriesMapFactory::createMap(
 
   if ((lruLimit != 0) || (prop.heapLRULimitEnabled())) {  // create LRU map...
     LRUAction::Action lruEvictionAction;
-    DiskPolicyType dpType = attrs->getDiskPolicy();
+    DiskPolicyType dpType = attrs.getDiskPolicy();
     if (dpType == DiskPolicyType::OVERFLOWS) {
       lruEvictionAction = LRUAction::OVERFLOW_TO_DISK;
     } else if ((dpType == DiskPolicyType::NONE) ||

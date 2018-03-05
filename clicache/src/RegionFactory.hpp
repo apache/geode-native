@@ -20,7 +20,7 @@
 
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
-#include <geode/AttributesFactory.hpp>
+#include <geode/RegionAttributesFactory.hpp>
 #include <geode/RegionFactory.hpp>
 #include "end_native.hpp"
 

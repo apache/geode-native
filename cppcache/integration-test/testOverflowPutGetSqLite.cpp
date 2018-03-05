@@ -41,43 +41,43 @@ void getNumOfEntries(std::shared_ptr<Region>& regionPtr, uint32_t num) {
   ASSERT(vecValues.size() == num, (char*)"size of value vec and num not equal");
 }
 
-void setAttributes(std::shared_ptr<RegionAttributes>& attrsPtr,
+void setAttributes(RegionAttributes regionAttributes,
                    std::string pDir = sqlite_dir) {
-  AttributesFactory attrsFact;
-  attrsFact.setCachingEnabled(true);
-  attrsFact.setLruEntriesLimit(10);
-  attrsFact.setInitialCapacity(1000);
-  attrsFact.setDiskPolicy(DiskPolicyType::OVERFLOWS);
+  RegionAttributesFactory regionAttributesFactory;
+  regionAttributesFactory.setCachingEnabled(true);
+  regionAttributesFactory.setLruEntriesLimit(10);
+  regionAttributesFactory.setInitialCapacity(1000);
+  regionAttributesFactory.setDiskPolicy(DiskPolicyType::OVERFLOWS);
   auto sqliteProperties = Properties::create();
   sqliteProperties->insert("MaxPageCount", "1073741823");
   sqliteProperties->insert("PageSize", "65536");
   sqliteProperties->insert("PersistenceDirectory", pDir.c_str());
-  attrsFact.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
-                                  sqliteProperties);
+  regionAttributesFactory.setPersistenceManager(
+      "SqLiteImpl", "createSqLiteInstance", sqliteProperties);
 
-  attrsPtr = attrsFact.createRegionAttributes();
+  regionAttributes = regionAttributesFactory.create();
 }
-void setAttributesWithMirror(std::shared_ptr<RegionAttributes>& attrsPtr) {
-  AttributesFactory attrsFact;
-  attrsFact.setCachingEnabled(true);
-  attrsFact.setLruEntriesLimit(20);
-  attrsFact.setInitialCapacity(1000);
-  attrsFact.setDiskPolicy(DiskPolicyType::OVERFLOWS);
+void setAttributesWithMirror(RegionAttributes regionAttributes) {
+  RegionAttributesFactory regionAttributesFactory;
+  regionAttributesFactory.setCachingEnabled(true);
+  regionAttributesFactory.setLruEntriesLimit(20);
+  regionAttributesFactory.setInitialCapacity(1000);
+  regionAttributesFactory.setDiskPolicy(DiskPolicyType::OVERFLOWS);
   auto sqliteProperties = Properties::create();
   sqliteProperties->insert("MaxPageCount", "1073741823");
   sqliteProperties->insert("PageSize", "65536");
   sqliteProperties->insert("PersistenceDirectory", sqlite_dir.c_str());
-  attrsFact.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
-                                  sqliteProperties);
-  attrsPtr = attrsFact.createRegionAttributes();
+  regionAttributesFactory.setPersistenceManager(
+      "SqLiteImpl", "createSqLiteInstance", sqliteProperties);
+  regionAttributes = regionAttributesFactory.create();
 }
 
 // Testing for attibute validation.
 void validateAttribute(std::shared_ptr<Region>& regionPtr) {
-  std::shared_ptr<RegionAttributes> regAttr = regionPtr->getAttributes();
-  int initialCapacity = regAttr->getInitialCapacity();
+  RegionAttributes regAttr = regionPtr->getAttributes();
+  int initialCapacity = regAttr.getInitialCapacity();
   ASSERT(initialCapacity == 1000, "Expected initial capacity to be 1000");
-  const DiskPolicyType type = regAttr->getDiskPolicy();
+  const DiskPolicyType type = regAttr.getDiskPolicy();
   ASSERT(type == DiskPolicyType::OVERFLOWS,
          "Expected Action should overflow to disk");
 }
@@ -331,7 +331,7 @@ void setSqLiteProperties(std::shared_ptr<Properties>& sqliteProperties,
 void createSubRegion(std::shared_ptr<Region>& regionPtr,
                      std::shared_ptr<Region>& subRegion, const char* regionName,
                      std::string pDir = sqlite_dir) {
-  std::shared_ptr<RegionAttributes> regionAttributesPtr;
+  RegionAttributes regionAttributesPtr;
   setAttributes(regionAttributesPtr, pDir);
   subRegion = regionPtr->createSubregion(regionName, regionAttributesPtr);
   ASSERT(subRegion != nullptr, "Expected region to be NON-nullptr");
@@ -501,7 +501,6 @@ BEGIN_TEST(OverFlowTest_SqLiteFull)
   }
 END_TEST(OverFlowTest_SqLiteFull)
 
-
 BEGIN_TEST(OverFlowTest_HeapLRU)
   {
     /** Creating a cache to manage regions. */
@@ -544,9 +543,9 @@ BEGIN_TEST(OverFlowTest_HeapLRU)
 
     std::shared_ptr<Region> subRegion;
     for (int i = 0; i < 10; i++) {
-      std::shared_ptr<RegionAttributes> regionAttributesPtr;
-      setAttributes(regionAttributesPtr);
-      subRegion = regionPtr->createSubregion("SubRegion", regionAttributesPtr);
+      RegionAttributes regionAttributes;
+      setAttributes(regionAttributes);
+      subRegion = regionPtr->createSubregion("SubRegion", regionAttributes);
       ASSERT(subRegion != nullptr, "Expected region to be NON-nullptr");
       char fileName[512];
       sprintf(fileName, "%s/%s/%s.db", sqlite_dir.c_str(), "SubRegion",
@@ -573,14 +572,13 @@ BEGIN_TEST(OverFlowTest_MultiThreaded)
     auto cachePtr = std::make_shared<Cache>(CacheFactory().create());
     ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
 
-    std::shared_ptr<RegionAttributes> attrsPtr;
-    setAttributes(attrsPtr);
-    ASSERT(attrsPtr != nullptr, "Expected region attributes to be NON-nullptr");
-    /** Create a region with caching and LRU. */
+    RegionAttributes regionAttributes;
+    setAttributes(regionAttributes);
 
+    /** Create a region with caching and LRU. */
     std::shared_ptr<Region> regionPtr;
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
-    cacheImpl->createRegion("OverFlowRegion", attrsPtr, regionPtr);
+    cacheImpl->createRegion("OverFlowRegion", regionAttributes, regionPtr);
     ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
     validateAttribute(regionPtr);
 
@@ -614,14 +612,13 @@ BEGIN_TEST(OverFlowTest_PutGetAll)
     auto cachePtr = std::make_shared<Cache>(CacheFactory().create());
     ASSERT(cachePtr != nullptr, "Expected cache to be NON-nullptr");
 
-    std::shared_ptr<RegionAttributes> attrsPtr;
-    setAttributes(attrsPtr);
-    ASSERT(attrsPtr != nullptr, "Expected region attributes to be NON-nullptr");
-    /** Create a region with caching and LRU. */
+    RegionAttributes regionAttributes;
+    setAttributes(regionAttributes);
 
+    /** Create a region with caching and LRU. */
     std::shared_ptr<Region> regionPtr;
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
-    cacheImpl->createRegion("OverFlowRegion", attrsPtr, regionPtr);
+    cacheImpl->createRegion("OverFlowRegion", regionAttributes, regionPtr);
     ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
     validateAttribute(regionPtr);
 

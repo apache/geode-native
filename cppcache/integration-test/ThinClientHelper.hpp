@@ -384,10 +384,10 @@ std::shared_ptr<Region> createOverflowRegion(
     bool clientNotificationEnabled = true, bool caching = true) {
   std::string bdb_dir = "BDB";
   std::string bdb_dirEnv = "BDBEnv";
-  AttributesFactory af;
-  af.setCachingEnabled(caching);
-  af.setLruEntriesLimit(lel);
-  af.setDiskPolicy(DiskPolicyType::OVERFLOWS);
+  RegionAttributesFactory regionAttributesFactory;
+  regionAttributesFactory.setCachingEnabled(caching);
+  regionAttributesFactory.setLruEntriesLimit(lel);
+  regionAttributesFactory.setDiskPolicy(DiskPolicyType::OVERFLOWS);
 
   auto sqLiteProps = Properties::create();
   sqLiteProps->insert("PageSize", "65536");
@@ -396,13 +396,13 @@ std::shared_ptr<Region> createOverflowRegion(
       "SqLiteRegionData" +
       std::to_string(static_cast<long long int>(ACE_OS::getpid()));
   sqLiteProps->insert("PersistenceDirectory", sqlite_dir.c_str());
-  af.setPersistenceManager("SqLiteImpl", "createSqLiteInstance", sqLiteProps);
+  regionAttributesFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance", sqLiteProps);
 
-  std::shared_ptr<RegionAttributes> rattrsPtr = af.createRegionAttributes();
+  auto regionAttributes = regionAttributesFactory.create();
   auto cache = getHelper()->cachePtr;
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
   std::shared_ptr<Region> regionPtr;
-  cacheImpl->createRegion(name, rattrsPtr, regionPtr);
+  cacheImpl->createRegion(name, regionAttributes, regionPtr);
   return regionPtr;
 }
 std::shared_ptr<Region> createPooledRegion(

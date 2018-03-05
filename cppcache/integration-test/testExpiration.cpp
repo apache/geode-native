@@ -75,20 +75,19 @@ std::shared_ptr<CacheableKey> do1Put(std::shared_ptr<Region>& rptr) {
   return key;
 }
 
-void setExpTimes(
-    std::shared_ptr<RegionAttributes>& attrs,
-    const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
-    const std::chrono::seconds& eit = std::chrono::seconds::zero(),
-    const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
-    const std::chrono::seconds& rit = std::chrono::seconds::zero()) {
-  AttributesFactory afact;
+RegionAttributes setRegionAttributesTimeouts(
+    const std::chrono::seconds &entryTimeToLive = std::chrono::seconds::zero(),
+    const std::chrono::seconds &entryIdleTimeout = std::chrono::seconds::zero(),
+    const std::chrono::seconds &regionTimeToLive = std::chrono::seconds::zero(),
+    const std::chrono::seconds &regionIdleTimeout = std::chrono::seconds::zero()) {
+  RegionAttributesFactory regionAttributesFactory;
 
-  afact.setEntryIdleTimeout(action, eit);
-  afact.setEntryTimeToLive(action, ettl);
-  afact.setRegionIdleTimeout(action, rit);
-  afact.setRegionTimeToLive(action, rttl);
+  regionAttributesFactory.setEntryTimeToLive(action, entryTimeToLive);
+  regionAttributesFactory.setEntryIdleTimeout(action, entryIdleTimeout);
+  regionAttributesFactory.setRegionTimeToLive(action, regionTimeToLive);
+  regionAttributesFactory.setRegionIdleTimeout(action, regionIdleTimeout);
 
-  attrs = afact.createRegionAttributes();
+  return regionAttributesFactory.create();
 }
 
 BEGIN_TEST(TEST_EXPIRATION)
@@ -103,9 +102,9 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     size_t n;
 
-    std::shared_ptr<RegionAttributes> attrs_1;
+    RegionAttributes attrs_1;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_1);
+    attrs_1 = setRegionAttributesTimeouts();
     std::shared_ptr<Region> R1;
     cacheImpl->createRegion("R1", attrs_1, R1);
     ASSERT(R1 != nullptr, "Expected R1 to be NON-nullptr");
@@ -119,10 +118,10 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R1->isDestroyed() == false, "Expected R1 to be alive");
 
-    std::shared_ptr<RegionAttributes> attrs_2;
+    RegionAttributes attrs_2;
 
-    setExpTimes(attrs_2, std::chrono::seconds(20), std::chrono::seconds(2),
-                std::chrono::seconds(0), std::chrono::seconds(0));
+    attrs_2 = setRegionAttributesTimeouts(std::chrono::seconds(20), std::chrono::seconds(2),
+                                          std::chrono::seconds(0), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R2;
     cacheImpl->createRegion("R2", attrs_2, R2);
@@ -137,10 +136,10 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R2->isDestroyed() == false, "Expected R2 to be alive");
 
-    std::shared_ptr<RegionAttributes> attrs_3;
+    RegionAttributes attrs_3;
     // rttl = 20, reit = 2
-    setExpTimes(attrs_3, std::chrono::seconds(0), std::chrono::seconds(0),
-                std::chrono::seconds(20), std::chrono::seconds(2));
+    attrs_3 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(0),
+                                          std::chrono::seconds(20), std::chrono::seconds(2));
 
     std::shared_ptr<Region> R3;
     cacheImpl->createRegion("R3", attrs_3, R3);
@@ -150,10 +149,10 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R3->isDestroyed() == false, "Expected R3 to be alive");
 
-    std::shared_ptr<RegionAttributes> attrs_4;
+    RegionAttributes attrs_4;
 
-    setExpTimes(attrs_4, std::chrono::seconds(5), std::chrono::seconds(0),
-                std::chrono::seconds(0), std::chrono::seconds(0));
+    attrs_4 = setRegionAttributesTimeouts(std::chrono::seconds(5), std::chrono::seconds(0),
+                                          std::chrono::seconds(0), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R4;
     cacheImpl->createRegion("R4", attrs_4, R4);
@@ -169,10 +168,10 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R4->isDestroyed() == false, "Expected R4 to be alive");
 
-    std::shared_ptr<RegionAttributes> attrs_5;
+    RegionAttributes attrs_5;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_5, std::chrono::seconds(0), std::chrono::seconds(5),
-                std::chrono::seconds(0), std::chrono::seconds(0));
+    attrs_5 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(5),
+                                          std::chrono::seconds(0), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R5;
     cacheImpl->createRegion("R5", attrs_5, R5);
@@ -197,10 +196,10 @@ BEGIN_TEST(TEST_EXPIRATION)
     ASSERT(n == 0, "Expected 0 entry");
     ASSERT(R5->isDestroyed() == false, "Expected R5 to be alive");
 
-    std::shared_ptr<RegionAttributes> attrs_6;
+    RegionAttributes attrs_6;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_6, std::chrono::seconds(0), std::chrono::seconds(0),
-                std::chrono::seconds(5), std::chrono::seconds(0));
+    attrs_6 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(0),
+                                          std::chrono::seconds(5), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R6;
     cacheImpl->createRegion("R6", attrs_6, R6);
@@ -216,10 +215,10 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R6->isDestroyed() == true, "Expected R6 to be dead");
 
-    std::shared_ptr<RegionAttributes> attrs_7;
+    RegionAttributes attrs_7;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_7, std::chrono::seconds(0), std::chrono::seconds(0),
-                std::chrono::seconds(0), std::chrono::seconds(5));
+    attrs_7 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(0),
+                                          std::chrono::seconds(0), std::chrono::seconds(5));
 
     std::shared_ptr<Region> R7;
     cacheImpl->createRegion("R7", attrs_7, R7);
@@ -235,10 +234,10 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R7->isDestroyed() == true, "Expected R7 to be dead");
 
-    std::shared_ptr<RegionAttributes> attrs_8;
+    RegionAttributes attrs_8;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_8, std::chrono::seconds(10), std::chrono::seconds(0),
-                std::chrono::seconds(0), std::chrono::seconds(0));
+    attrs_8 = setRegionAttributesTimeouts(std::chrono::seconds(10), std::chrono::seconds(0),
+                                          std::chrono::seconds(0), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R8;
     cacheImpl->createRegion("R8", attrs_8, R8);
@@ -255,10 +254,10 @@ BEGIN_TEST(TEST_EXPIRATION)
     n = getNumOfEntries(R8);
     ASSERT(n == 0, "Expected 1 entries");
 
-    std::shared_ptr<RegionAttributes> attrs_9;
+    RegionAttributes attrs_9;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_9, std::chrono::seconds(0), std::chrono::seconds(0),
-                std::chrono::seconds(0), std::chrono::seconds(8));
+    attrs_9 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(0),
+                                          std::chrono::seconds(0), std::chrono::seconds(8));
 
     std::shared_ptr<Region> R9;
     cacheImpl->createRegion("R9", attrs_9, R9);
@@ -277,10 +276,10 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R9->isDestroyed() == false, "Expected R9 to be alive");
 
-    std::shared_ptr<RegionAttributes> attrs_10;
+    RegionAttributes attrs_10;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_10, std::chrono::seconds(6), std::chrono::seconds(0),
-                std::chrono::seconds(0), std::chrono::seconds(12));
+    attrs_10 = setRegionAttributesTimeouts(std::chrono::seconds(6), std::chrono::seconds(0),
+                                           std::chrono::seconds(0), std::chrono::seconds(12));
 
     std::shared_ptr<Region> R10;
     cacheImpl->createRegion("R10", attrs_10, R10);
@@ -297,11 +296,11 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R10->isDestroyed() == true, "Expected R10 to be dead");
 
-    std::shared_ptr<RegionAttributes> attrs_11;
+    RegionAttributes attrs_11;
 
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_11, std::chrono::seconds(0), std::chrono::seconds(4),
-                std::chrono::seconds(0), std::chrono::seconds(7));
+    attrs_11 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(4),
+                                           std::chrono::seconds(0), std::chrono::seconds(7));
 
     std::shared_ptr<Region> R11;
     cacheImpl->createRegion("R11", attrs_11, R11);
@@ -325,10 +324,10 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R11->isDestroyed() == true, "Expected R11 to be dead");
 
-    std::shared_ptr<RegionAttributes> attrs_12;
+    RegionAttributes attrs_12;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_12, std::chrono::seconds(5), std::chrono::seconds(0),
-                std::chrono::seconds(0), std::chrono::seconds(0));
+    attrs_12 = setRegionAttributesTimeouts(std::chrono::seconds(5), std::chrono::seconds(0),
+                                           std::chrono::seconds(0), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R12;
     cacheImpl->createRegion("R12", attrs_12, R12);
@@ -344,10 +343,10 @@ BEGIN_TEST(TEST_EXPIRATION)
     ASSERT(R12->isDestroyed() == false, "Expected R12 to be alive");
     /////////
 
-    std::shared_ptr<RegionAttributes> attrs_14;
+    RegionAttributes attrs_14;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_14, std::chrono::seconds(0), std::chrono::seconds(0),
-                std::chrono::seconds(10), std::chrono::seconds(0));
+    attrs_14 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(0),
+                                           std::chrono::seconds(10), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R14;
     cacheImpl->createRegion("R14", attrs_14, R14);
@@ -359,10 +358,10 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(R14->isDestroyed() == true, "Expected R14 to be dead");
 
-    std::shared_ptr<RegionAttributes> attrs_15;
+    RegionAttributes attrs_15;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_15, std::chrono::seconds(0), std::chrono::seconds(5),
-                std::chrono::seconds(0), std::chrono::seconds(0));
+    attrs_15 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(5),
+                                           std::chrono::seconds(0), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R15;
     cacheImpl->createRegion("R15", attrs_15, R15);
@@ -379,10 +378,10 @@ BEGIN_TEST(TEST_EXPIRATION)
     ASSERT(R15->isDestroyed() == false, "Expected R15 to be alive");
 
     //////////////
-    std::shared_ptr<RegionAttributes> attrs_18;
+    RegionAttributes attrs_18;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_18, std::chrono::seconds(6), std::chrono::seconds(3),
-                std::chrono::seconds(0), std::chrono::seconds(0));
+    attrs_18 = setRegionAttributesTimeouts(std::chrono::seconds(6), std::chrono::seconds(3),
+                                           std::chrono::seconds(0), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R18;
     cacheImpl->createRegion("R18", attrs_18, R18);
@@ -399,10 +398,10 @@ BEGIN_TEST(TEST_EXPIRATION)
     n = getNumOfEntries(R18);
     ASSERT(n == 0, "ttl is over so it should be 0");
 
-    std::shared_ptr<RegionAttributes> attrs_19;
+    RegionAttributes attrs_19;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    setExpTimes(attrs_19, std::chrono::seconds(0), std::chrono::seconds(0),
-                std::chrono::seconds(6), std::chrono::seconds(3));
+    attrs_19 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(0),
+                                           std::chrono::seconds(6), std::chrono::seconds(3));
 
     std::shared_ptr<Region> R19;
     cacheImpl->createRegion("R19x", attrs_19, R19);

@@ -37,7 +37,7 @@ namespace client {
  * @class DiskPolicyType DiskPolicyType.hpp
  * Enumerated type for disk policy.
  * @see RegionAttributes::getDiskPolicy
- * @see AttributesFactory::setDiskPolicy
+ * @see RegionAttributesFactory::setDiskPolicy
  */
 enum class DiskPolicyType { NONE = 0, OVERFLOWS, PERSIST };
 

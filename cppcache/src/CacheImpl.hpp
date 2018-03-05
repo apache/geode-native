@@ -170,7 +170,7 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
    * @throws UnknownException otherwise
    */
   void createRegion(std::string name,
-                    const std::shared_ptr<RegionAttributes>& aRegionAttributes,
+                    RegionAttributes aRegionAttributes,
                     std::shared_ptr<Region>& regionPtr);
 
   void getRegion(const std::string& path, std::shared_ptr<Region>& rptr);
@@ -240,7 +240,7 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   std::shared_ptr<RegionInternal> createRegion_internal(
       const std::string& name,
       const std::shared_ptr<RegionInternal>& rootRegion,
-      const std::shared_ptr<RegionAttributes>& attrs,
+      const RegionAttributes& attrs,
       const std::shared_ptr<CacheStatistics>& csptr, bool shared);
 
   /**
@@ -270,7 +270,7 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   bool getPdxReadSerialized() { return m_readPdxSerialized; }
   bool isCacheDestroyPending() const;
 
-  static std::map<std::string, std::shared_ptr<RegionAttributes>> getRegionShortcut();
+  static std::map<std::string, RegionAttributes> getRegionShortcut();
 
   std::shared_ptr<PdxTypeRegistry> getPdxTypeRegistry() const;
 
@@ -315,13 +315,13 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
     THINCLIENT_POOL_REGION
   };
 
-  RegionKind getRegionKind(const std::shared_ptr<RegionAttributes>& rattrs) const;
+  RegionKind getRegionKind(RegionAttributes rattrs) const;
 
   void sendNotificationCloseMsgs();
 
   void validateRegionAttributes(
       const std::string& name,
-      const std::shared_ptr<RegionAttributes>& attrs) const;
+      const RegionAttributes attrs) const;
 
   inline void getSubRegions(MapOfRegionWithLock& srm) {
     MapOfRegionGuard guard(m_regions->mutex());

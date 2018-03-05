@@ -40,13 +40,13 @@ DUNIT_TASK(A, Init)
     auto cacheFactory = CacheFactory();
     Test.m_cache = std::make_shared<Cache>(cacheFactory.create());
 
-    AttributesFactory af;
-    af.setEntryTimeToLive(ExpirationAction::LOCAL_INVALIDATE,
+    RegionAttributesFactory regionAttributesFactory;
+    regionAttributesFactory.setEntryTimeToLive(ExpirationAction::LOCAL_INVALIDATE,
                           std::chrono::seconds(5));
-    std::shared_ptr<RegionAttributes> attrs = af.createRegionAttributes();
+    auto regionAttributes = regionAttributesFactory.create();
 
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(Test.m_cache.get());
-    cacheImpl->createRegion("Local_ETTL_LI", attrs, Test.m_region);
+    cacheImpl->createRegion("Local_ETTL_LI", regionAttributes, Test.m_region);
   }
 ENDTASK
 

@@ -33,7 +33,7 @@
 #include <geode/Properties.hpp>
 #include <geode/ExpirationAction.hpp>
 #include <geode/RegionAttributes.hpp>
-#include <geode/AttributesFactory.hpp>
+#include <geode/RegionAttributesFactory.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/internal/chrono/duration.hpp>
 
@@ -365,7 +365,7 @@ class PersistManager {
 // ----------------------------------------------------------------------------
 
 class Attributes {
-  AttributesFactory m_factory;
+  RegionAttributesFactory m_factory;
   bool m_isLocal;
   bool m_withPool;
 
@@ -440,8 +440,8 @@ class Attributes {
  public:
   Attributes(const DOMNode* node);
 
-  std::shared_ptr<RegionAttributes> getAttributes() {
-    return m_factory.createRegionAttributes();
+  RegionAttributes getAttributes() {
+    return m_factory.create();
   }
 
   void setPoolName(std::string val) {
@@ -477,8 +477,10 @@ class FwkRegion {
   }
 
   const std::string& getName() const { return m_name; }
+
   Attributes* getAttributes() { return m_attributes; }
-  const std::shared_ptr<RegionAttributes> getAttributesPtr() const {
+
+  const RegionAttributes getRegionAttributes() const {
     return m_attributes->getAttributes();
   }
   void print() const { FWKINFO("FwkRegion " << m_name); }

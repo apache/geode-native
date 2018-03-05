@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <geode/AttributesFactory.hpp>
+#include <geode/RegionAttributesFactory.hpp>
 #include <geode/PoolFactory.hpp>
 #include <geode/internal/chrono/duration.hpp>
 

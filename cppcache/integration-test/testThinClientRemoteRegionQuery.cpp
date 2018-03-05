@@ -107,8 +107,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOnePoolLocator)
     createRegionAndAttachPool(qRegionNames[3], USE_ACK, poolNames[1]);
 
     auto regptr = getHelper()->getRegion(qRegionNames[0]);
-    std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
-    auto subregPtr = regptr->createSubregion(qRegionNames[1], lattribPtr);
+    auto subregPtr = regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
 
     LOG("StepOne complete.");
   }

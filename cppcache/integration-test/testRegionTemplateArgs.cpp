@@ -37,11 +37,11 @@ BEGIN_TEST(CheckTemplates)
   {
     auto cacheFactory = CacheFactory();
     auto cache = std::make_shared<Cache>(cacheFactory.create());
-    AttributesFactory afact;
-    std::shared_ptr<RegionAttributes> attrs = afact.createRegionAttributes();
+    RegionAttributesFactory regionAttributesFactory;
+    auto regionAttributes = regionAttributesFactory.create();
     std::shared_ptr<Region> regPtr;
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
-    cacheImpl->createRegion("TestRegion", attrs, regPtr);
+    cacheImpl->createRegion("TestRegion", regionAttributes, regPtr);
 
     const char charKey[] = "test key";
     const char charVal[] = "test value";

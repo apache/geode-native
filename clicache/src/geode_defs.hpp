@@ -55,8 +55,8 @@
 /// @file geode_includes.hpp
 /// Provides a commonly-used set of include directives.
 
-/// @file AttributesFactory.hpp
-/// Declares the AttributesFactory class.
+/// @file RegionAttributesFactory.hpp
+/// Declares the RegionAttributesFactory class.
 
 /// @file AttributesMutator.hpp
 /// Declares the AttributesMutator class.
@@ -72,7 +72,7 @@
 /// template classes and their instantiations for CacheableBoolean,
 /// CacheableByte, CacheableDouble, CacheableFloat, CacheableInt16,
 /// CacheableInt32, CacheableInt64, CacheableBytes, CacheableDoubleArray,
-/// CacheableFloatArray, CacheableInt16Array, CacheableInt32Array, 
+/// CacheableFloatArray, CacheableInt16Array, CacheableInt32Array,
 /// CacheableInt64Array, BooleanArray and CharArray
 
 /// @file CacheableBuiltins.hpp

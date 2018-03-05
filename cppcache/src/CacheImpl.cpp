@@ -128,7 +128,7 @@ void CacheImpl::netDown() {
 void CacheImpl::revive() { m_tcrConnectionManager->revive(); }
 
 CacheImpl::RegionKind CacheImpl::getRegionKind(
-    const std::shared_ptr<RegionAttributes>& rattrs) const {
+    RegionAttributes regionAttributes) const {
   RegionKind regionKind = CPP_REGION;
   std::string endpoints;
 
@@ -137,18 +137,18 @@ CacheImpl::RegionKind CacheImpl::getRegionKind(
       (m_attributes->getRedundancyLevel() > 0 ||
        m_tcrConnectionManager->isDurable())) {
     regionKind = THINCLIENT_HA_REGION;
-  } else if (!endpoints.empty() && rattrs->getEndpoints().empty()) {
-    rattrs->setEndpoints(endpoints);
+  } else if (!endpoints.empty() && regionAttributes.getEndpoints().empty()) {
+    regionAttributes.setEndpoints(endpoints);
   }
 
-  if (!(endpoints = rattrs->getEndpoints()).empty()) {
+  if (!(endpoints = regionAttributes.getEndpoints()).empty()) {
     if ("none" == endpoints) {
       regionKind = CPP_REGION;
     } else if (regionKind != THINCLIENT_HA_REGION) {
       regionKind = THINCLIENT_REGION;
     }
-  } else if (!rattrs->getPoolName().empty()) {
-    auto pPtr = getCache()->getPoolManager().find(rattrs->getPoolName());
+  } else if (!regionAttributes.getPoolName().empty()) {
+    auto pPtr = getCache()->getPoolManager().find(regionAttributes.getPoolName());
     if ((pPtr != nullptr && (pPtr->getSubscriptionRedundancy() > 0 ||
                              pPtr->getSubscriptionEnabled())) ||
         m_tcrConnectionManager->isDurable()) {
@@ -326,9 +326,9 @@ bool CacheImpl::isCacheDestroyPending() const { return m_destroyPending; }
 
 void CacheImpl::validateRegionAttributes(
     const std::string& name,
-    const std::shared_ptr<RegionAttributes>& attrs) const {
-  auto&& kind = getRegionKind(attrs);
-  if (attrs->m_clientNotificationEnabled && kind == CPP_REGION) {
+    const RegionAttributes regionAttributes) const {
+  auto&& kind = getRegionKind(regionAttributes);
+  if (regionAttributes.m_clientNotificationEnabled && kind == CPP_REGION) {
     throw UnsupportedOperationException(
         "Cache::createRegion: \"" + name +
         "\" Client notification can be enabled only for native client region");
@@ -340,12 +340,12 @@ void CacheImpl::validateRegionAttributes(
 // pointer here
 void CacheImpl::createRegion(
     std::string name,
-    const std::shared_ptr<RegionAttributes>& aRegionAttributes,
+    RegionAttributes regionAttributes,
     std::shared_ptr<Region>& regionPtr) {
   {
     ACE_Guard<ACE_Thread_Mutex> _guard(m_initDoneLock);
     if (!m_initDone) {
-      if (aRegionAttributes->getPoolName().empty()) {
+      if (regionAttributes.getPoolName().empty()) {
         m_tcrConnectionManager->init();
         m_remoteQueryServicePtr = std::make_shared<RemoteQueryService>(this);
         auto& prop = m_distributedSystem->getSystemProperties();
@@ -360,17 +360,13 @@ void CacheImpl::createRegion(
   if (m_closed || m_destroyPending) {
     throw CacheClosedException("Cache::createRegion: cache closed");
   }
-  if (aRegionAttributes == nullptr) {
-    throw IllegalArgumentException(
-        "Cache::createRegion: RegionAttributes is null");
-  }
 
   if (name.find('/') != std::string::npos) {
     throw IllegalArgumentException(
         "Malformed name string, contains region path seperator '/'");
   }
 
-  validateRegionAttributes(name, aRegionAttributes);
+  validateRegionAttributes(name, regionAttributes);
   std::shared_ptr<RegionInternal> rpImpl = nullptr;
   {
     // For multi threading and the operations between bind and find seems to be
@@ -385,7 +381,7 @@ void CacheImpl::createRegion(
 
     auto csptr = std::make_shared<CacheStatistics>();
     try {
-      rpImpl = createRegion_internal(name.c_str(), nullptr, aRegionAttributes,
+      rpImpl = createRegion_internal(name.c_str(), nullptr, regionAttributes,
                                      csptr, false);
     } catch (const AuthenticationFailedException&) {
       throw;
@@ -408,13 +404,13 @@ void CacheImpl::createRegion(
     regionPtr = rpImpl;
     rpImpl->addDisMessToQueue();
     // Instantiate a PersistenceManager object if DiskPolicy is overflow
-    if (aRegionAttributes->getDiskPolicy() == DiskPolicyType::OVERFLOWS) {
-     auto pmPtr = aRegionAttributes->getPersistenceManager();
+    if (regionAttributes.getDiskPolicy() == DiskPolicyType::OVERFLOWS) {
+     auto pmPtr = regionAttributes.getPersistenceManager();
       if (pmPtr == nullptr) {
         throw NullPointerException(
             "PersistenceManager could not be instantiated");
       }
-     auto props = aRegionAttributes->getPersistenceProperties();
+     auto props = regionAttributes.getPersistenceProperties();
       pmPtr->init(regionPtr, props);
       rpImpl->setPersistenceManager(pmPtr);
     }
@@ -427,7 +423,7 @@ void CacheImpl::createRegion(
     // metadata for single hop.
     auto& props = m_distributedSystem->getSystemProperties();
     if (!props.isGridClient()) {
-      const auto& poolName = aRegionAttributes->getPoolName();
+      const auto& poolName = regionAttributes.getPoolName();
       if (!poolName.empty()) {
         auto pool = getCache()->getPoolManager().find(poolName);
         if (pool != nullptr && !pool->isDestroyed() &&
@@ -506,18 +502,13 @@ void CacheImpl::getRegion(const std::string& path,
 
 std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
     const std::string& name, const std::shared_ptr<RegionInternal>& rootRegion,
-    const std::shared_ptr<RegionAttributes>& attrs, const std::shared_ptr<CacheStatistics>& csptr,
+    const RegionAttributes& attrs, const std::shared_ptr<CacheStatistics>& csptr,
     bool shared) {
-  if (attrs == nullptr) {
-    throw IllegalArgumentException(
-        "createRegion: "
-        "RegionAttributes is null");
-  }
 
   std::shared_ptr<RegionInternal> rptr = nullptr;
   RegionKind regionKind = getRegionKind(attrs);
-  const auto& poolName = attrs->getPoolName();
-  const auto& regionEndpoints = attrs->getEndpoints();
+  const auto& poolName = attrs.getPoolName();
+  const auto& regionEndpoints = attrs.getEndpoints();
   const std::string cacheEndpoints =
       m_attributes ? m_attributes->getEndpoints() : "";
 
@@ -531,7 +522,7 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
     auto pool = getCache()->getPoolManager().find(poolName);
     if (pool != nullptr && !pool->isDestroyed()) {
       bool isMultiUserSecureMode = pool->getMultiuserAuthentication();
-      if (isMultiUserSecureMode && (attrs->getCachingEnabled())) {
+      if (isMultiUserSecureMode && (attrs.getCachingEnabled())) {
         LOGERROR(
             "Pool [%s] is in multiuser authentication mode so region local "
             "caching is not supported.",
@@ -556,7 +547,7 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
 
   if (regionKind == THINCLIENT_REGION) {
     LOGINFO("Creating region " + name + " with region endpoints " +
-            attrs->getEndpoints().c_str());
+            attrs.getEndpoints().c_str());
     auto tmp = std::make_shared<ThinClientRegion>(name, this, rootRegion, attrs,
                                                   csptr, shared);
     tmp->initTCR();
@@ -569,7 +560,7 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
     rptr = tmp;
   } else if (regionKind == THINCLIENT_POOL_REGION) {
     LOGINFO("Creating region " + name + " attached to pool " +
-            attrs->getPoolName());
+            attrs.getPoolName());
     auto tmp = std::make_shared<ThinClientPoolRegion>(name, this, rootRegion,
                                                       attrs, csptr, shared);
     tmp->initTCR();
@@ -706,50 +697,52 @@ RegionFactory CacheImpl::createRegionFactory(RegionShortcut preDefinedRegion) {
   return RegionFactory(preDefinedRegion, this);
 }
 
-std::map<std::string, std::shared_ptr<RegionAttributes>> CacheImpl::getRegionShortcut() {
-  std::map<std::string, std::shared_ptr<RegionAttributes>> preDefined;
+std::map<std::string, RegionAttributes> CacheImpl::getRegionShortcut() {
+  std::map<std::string, RegionAttributes> preDefined;
 
   {
     // PROXY
-    auto regAttr_PROXY = std::make_shared<RegionAttributes>();
-    regAttr_PROXY->setCachingEnabled(false);
+    auto regAttr_PROXY = RegionAttributes();
+    regAttr_PROXY.setCachingEnabled(false);
     preDefined["PROXY"] = regAttr_PROXY;
   }
 
   {
     // CACHING_PROXY
-    auto regAttr_CACHING_PROXY = std::make_shared<RegionAttributes>();
-    regAttr_CACHING_PROXY->setCachingEnabled(true);
+    auto regAttr_CACHING_PROXY = RegionAttributes();
+    regAttr_CACHING_PROXY.setCachingEnabled(true);
     preDefined["CACHING_PROXY"] = regAttr_CACHING_PROXY;
   }
 
   {
     // CACHING_PROXY_ENTRY_LRU
-    auto regAttr_CACHING_PROXY_LRU = std::make_shared<RegionAttributes>();
-    regAttr_CACHING_PROXY_LRU->setCachingEnabled(true);
-    regAttr_CACHING_PROXY_LRU->setLruEntriesLimit(DEFAULT_LRU_MAXIMUM_ENTRIES);
+    auto regAttr_CACHING_PROXY_LRU = RegionAttributes();
+    regAttr_CACHING_PROXY_LRU.setCachingEnabled(true);
+    regAttr_CACHING_PROXY_LRU.setLruEntriesLimit(DEFAULT_LRU_MAXIMUM_ENTRIES);
     preDefined["CACHING_PROXY_ENTRY_LRU"] = regAttr_CACHING_PROXY_LRU;
   }
 
   {
     // LOCAL
-    auto regAttr_LOCAL = std::make_shared<RegionAttributes>();
+    auto regAttr_LOCAL = RegionAttributes();
     preDefined["LOCAL"] = regAttr_LOCAL;
   }
 
   {
     // LOCAL_ENTRY_LRU
-    auto regAttr_LOCAL_LRU = std::make_shared<RegionAttributes>();
-    regAttr_LOCAL_LRU->setLruEntriesLimit(DEFAULT_LRU_MAXIMUM_ENTRIES);
+    auto regAttr_LOCAL_LRU = RegionAttributes();
+    regAttr_LOCAL_LRU.setLruEntriesLimit(DEFAULT_LRU_MAXIMUM_ENTRIES);
     preDefined["LOCAL_ENTRY_LRU"] = regAttr_LOCAL_LRU;
   }
 
   return preDefined;
 }
- std::shared_ptr<PdxTypeRegistry> CacheImpl::getPdxTypeRegistry() const {
+
+std::shared_ptr<PdxTypeRegistry> CacheImpl::getPdxTypeRegistry() const {
   return m_pdxTypeRegistry;
  }
- std::shared_ptr<SerializationRegistry> CacheImpl::getSerializationRegistry()
+
+std::shared_ptr<SerializationRegistry> CacheImpl::getSerializationRegistry()
      const {
    return m_serializationRegistry;
 }

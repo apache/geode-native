@@ -97,8 +97,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1Regions)
     createRegionForCQ(regionNamesCq[0], USE_ACK, true);
     createRegionForCQ(regionNamesCq[2], USE_ACK, true);
     auto regptr = getHelper()->getRegion(regionNamesCq[0]);
-    std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
-    auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+    auto subregPtr = regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
     LOG("CreateClient1Regions complete.");
   }
@@ -109,8 +108,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2Regions)
     initClientCq(true);
     createRegionForCQ(regionNamesCq[0], USE_ACK, true);
     auto regptr = getHelper()->getRegion(regionNamesCq[0]);
-    std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
-    auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+    auto subregPtr = regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
     LOG("CreateClient2Regions complete.");
   }

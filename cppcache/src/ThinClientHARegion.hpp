@@ -48,7 +48,7 @@ class _GEODE_EXPORT ThinClientHARegion : public ThinClientRegion {
    */
   ThinClientHARegion(const std::string& name, CacheImpl* cache,
                      const std::shared_ptr<RegionInternal>& rPtr,
-                     const std::shared_ptr<RegionAttributes>& attributes,
+                     RegionAttributes attributes,
                      const std::shared_ptr<CacheStatistics>& stats,
                      bool shared = false, bool enableNotification = true);
 
@@ -69,7 +69,7 @@ class _GEODE_EXPORT ThinClientHARegion : public ThinClientRegion {
       std::shared_ptr<VersionTag>& versionTag);
 
  private:
-  std::shared_ptr<RegionAttributes> m_attribute;
+  RegionAttributes m_attributes;
   volatile bool m_processedMarker;
   void handleMarker();
 

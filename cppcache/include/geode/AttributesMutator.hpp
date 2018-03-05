@@ -46,7 +46,7 @@ class Region;
  *
  * Supports modification of certain region attributes after the region has been
  * created. It is required that the attributes be completely initialized
- * using an {@link AttributesFactory} before creating the region.
+ * using an {@link RegionAttributesFactory} before creating the region.
  *AttributesMutator
  * can be applied to adjusting and tuning a subset of attributes that are
  *modifiable
@@ -56,7 +56,7 @@ class Region;
  *
  * @see Region::getAttributesMutator
  * @see RegionAttributes
- * @see AttributesFactory
+ * @see RegionAttributesFactory
  */
 class _GEODE_EXPORT AttributesMutator {
  private:

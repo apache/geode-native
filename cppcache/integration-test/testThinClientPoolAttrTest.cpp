@@ -254,7 +254,7 @@ DUNIT_TASK(CLIENT1, ClientOp)
     SLEEP(5000);
     // Check current # connections they should be == min
     std::string poolName =
-        getHelper()->getRegion(poolRegNames[0])->getAttributes()->getPoolName();
+        getHelper()->getRegion(poolRegNames[0])->getAttributes().getPoolName();
     int level = TestUtils::getCacheImpl(getHelper()->cachePtr)
                     ->getPoolSize(poolName.c_str());
     int min = getHelper()

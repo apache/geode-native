@@ -660,7 +660,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public static void CloseUserCache(bool keepAlive)
     {
-      //TODO: need to look 
+      //TODO: need to look
       m_cacheForMultiUser.Close();
     }
 
@@ -816,11 +816,11 @@ namespace Apache.Geode.Client.UnitTests
     {
       Init();
       CreateCachingRegion<TKey, TValue>(rootName, true);
-      AttributesFactory<TKey, TValue> af = new AttributesFactory<TKey, TValue>();
-      af.SetLruEntriesLimit(0);
-      af.SetInitialCapacity(size);
-      Apache.Geode.Client.RegionAttributes<TKey, TValue> rattrs = af.CreateRegionAttributes();
-      IRegion<TKey, TValue> region = ((Region<TKey, TValue>)m_currRegion).CreateSubRegion(name, rattrs);
+      var regionAttributesFactory = new RegionAttributesFactory<TKey, TValue>();
+      regionAttributesFactory.SetLruEntriesLimit(0);
+      regionAttributesFactory.SetInitialCapacity(size);
+      var regionAttributes = regionAttributesFactory.Create();
+      IRegion<TKey, TValue> region = ((Region<TKey, TValue>)m_currRegion).CreateSubRegion(name, regionAttributes);
       Assert.IsNotNull(region, "SubRegion {0} was not created.", name);
       return region;
     }

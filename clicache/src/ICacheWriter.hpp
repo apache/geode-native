@@ -75,7 +75,7 @@ namespace Apache
       /// of whether the initiator is in the same process as the <c>ICacheWriter</c>.
       /// </para>
       /// </remarks>
-      /// <seealso cref="AttributesFactory.SetCacheWriter" />
+      /// <seealso cref="RegionAttributesFactory.SetCacheWriter" />
       /// <seealso cref="RegionAttributes.CacheWriter" />
       /// <seealso cref="ICacheLoader" />
       /// <seealso cref="ICacheListener" />

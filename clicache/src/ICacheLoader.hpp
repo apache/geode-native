@@ -64,7 +64,7 @@ namespace Apache
       /// creates the value for the desired key by performing an operation such
       /// as a database query. 
       /// </remarks>
-      /// <seealso cref="AttributesFactory.SetCacheLoader" />
+      /// <seealso cref="RegionAttributesFactory.SetCacheLoader" />
       /// <seealso cref="RegionAttributes.CacheLoader" />
       /// <seealso cref="ICacheListener" />
       /// <seealso cref="ICacheWriter" />

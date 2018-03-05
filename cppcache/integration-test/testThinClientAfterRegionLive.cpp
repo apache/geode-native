@@ -67,32 +67,32 @@ void createPooledRegionMine(bool callReadyForEventsAPI = false) {
     auto pptr = poolFac.create("__TEST_POOL1__");
   }
   SLEEP(10000);
-  AttributesFactory af;
-  af.setCachingEnabled(true);
-  af.setLruEntriesLimit(0);
-  af.setEntryIdleTimeout(ExpirationAction::DESTROY, std::chrono::seconds(0));
-  af.setEntryTimeToLive(ExpirationAction::DESTROY, std::chrono::seconds(0));
-  af.setRegionIdleTimeout(ExpirationAction::DESTROY, std::chrono::seconds(0));
-  af.setRegionTimeToLive(ExpirationAction::DESTROY, std::chrono::seconds(0));
-  af.setPoolName("__TEST_POOL1__");
+  RegionAttributesFactory regionAttributesFactory;
+  regionAttributesFactory.setCachingEnabled(true);
+  regionAttributesFactory.setLruEntriesLimit(0);
+  regionAttributesFactory.setEntryIdleTimeout(ExpirationAction::DESTROY, std::chrono::seconds(0));
+  regionAttributesFactory.setEntryTimeToLive(ExpirationAction::DESTROY, std::chrono::seconds(0));
+  regionAttributesFactory.setRegionIdleTimeout(ExpirationAction::DESTROY, std::chrono::seconds(0));
+  regionAttributesFactory.setRegionTimeToLive(ExpirationAction::DESTROY, std::chrono::seconds(0));
+  regionAttributesFactory.setPoolName("__TEST_POOL1__");
   LOG("poolName = ");
   LOG("__TEST_POOL1__");
-  af.setCacheListener(cptr1);
-  std::shared_ptr<RegionAttributes> rattrsPtr1 = af.createRegionAttributes();
-  af.setCacheListener(cptr2);
-  std::shared_ptr<RegionAttributes> rattrsPtr2 = af.createRegionAttributes();
-  af.setCacheListener(cptr3);
-  std::shared_ptr<RegionAttributes> rattrsPtr3 = af.createRegionAttributes();
-  af.setCacheListener(cptr4);
-  std::shared_ptr<RegionAttributes> rattrsPtr4 = af.createRegionAttributes();
+  regionAttributesFactory.setCacheListener(cptr1);
+  auto regionAttributes1 = regionAttributesFactory.create();
+  regionAttributesFactory.setCacheListener(cptr2);
+  auto regionAttributes2 = regionAttributesFactory.create();
+  regionAttributesFactory.setCacheListener(cptr3);
+  auto regionAttributes3 = regionAttributesFactory.create();
+  regionAttributesFactory.setCacheListener(cptr4);
+  auto regionAttributes4 = regionAttributesFactory.create();
   CacheImpl* cacheImpl =
       CacheRegionHelper::getCacheImpl(getHelper()->cachePtr.get());
   std::shared_ptr<Region> region1;
-  cacheImpl->createRegion(regionNames[0], rattrsPtr1, region1);
+  cacheImpl->createRegion(regionNames[0], regionAttributes1, region1);
   std::shared_ptr<Region> region2;
-  cacheImpl->createRegion(regionNames[1], rattrsPtr2, region2);
-  auto subregion1 = region1->createSubregion(regionNames[0], rattrsPtr3);
-  auto subregion2 = region2->createSubregion(regionNames[1], rattrsPtr4);
+  cacheImpl->createRegion(regionNames[1], regionAttributes2, region2);
+  auto subregion1 = region1->createSubregion(regionNames[0], regionAttributes3);
+  auto subregion2 = region2->createSubregion(regionNames[1], regionAttributes4);
   if (callReadyForEventsAPI) {
     getHelper()->cachePtr->readyForEvents();
   }

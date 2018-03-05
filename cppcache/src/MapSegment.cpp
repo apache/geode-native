@@ -674,7 +674,7 @@ GfErrType MapSegment::putForTrackedEntry(
       auto valueWithDelta = std::dynamic_pointer_cast<Delta>(oldValue);
       std::shared_ptr<Cacheable>& newValue1 = const_cast<std::shared_ptr<Cacheable>&>(newValue);
       try {
-        if (m_region->getAttributes()->getCloningEnabled()) {
+        if (m_region->getAttributes().getCloningEnabled()) {
          auto tempVal = valueWithDelta->clone();
           ACE_Time_Value currTimeBefore = ACE_OS::gettimeofday();
           tempVal->fromDelta(*delta);

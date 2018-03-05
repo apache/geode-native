@@ -62,7 +62,7 @@ class RegionHelper {
   }
 
   std::string regionAttributesToString() {
-    auto atts = m_region->getAttributesPtr();
+    auto atts = m_region->getRegionAttributes();
     return regionAttributesToString(atts);
   }
 
@@ -71,15 +71,15 @@ class RegionHelper {
   const std::string specName() { return m_spec; }
 
   std::string regionTag() {
-    auto atts = m_region->getAttributesPtr();
+    auto atts = m_region->getRegionAttributes();
     return regionTag(atts);
   }
 
-  static std::string regionTag(std::shared_ptr<RegionAttributes> attr) {
+  static std::string regionTag(RegionAttributes regionAttributes) {
     std::string sString;
 
-    sString += attr->getCachingEnabled() ? "Caching" : "NoCache";
-    sString += (attr->getCacheListener() == nullptr) ? "Nlstnr" : "Lstnr";
+    sString += regionAttributes.getCachingEnabled() ? "Caching" : "NoCache";
+    sString += (regionAttributes.getCacheListener() == nullptr) ? "Nlstnr" : "Lstnr";
     return sString;
   }
 
@@ -103,121 +103,121 @@ class RegionHelper {
    *  @retval A String representing aRegion.
    */
   static std::string regionAttributesToString(
-      std::shared_ptr<RegionAttributes>& attr) {
+      RegionAttributes regionAttributes) {
     std::string sString;
 
     sString += "\ncaching: ";
-    sString += attr->getCachingEnabled() ? "Enabled" : "Disabled";
+    sString += regionAttributes.getCachingEnabled() ? "Enabled" : "Disabled";
     sString += "\nendpoints: ";
-    sString += attr->getEndpoints();
+    sString += regionAttributes.getEndpoints();
     sString += "\nclientNotification: ";
-    sString += attr->getClientNotificationEnabled() ? "Enabled" : "Disabled";
+    sString += regionAttributes.getClientNotificationEnabled() ? "Enabled" : "Disabled";
     sString += "\ninitialCapacity: ";
-    sString += std::to_string(attr->getInitialCapacity());
+    sString += std::to_string(regionAttributes.getInitialCapacity());
     sString += "\nloadFactor: ";
-    sString += std::to_string(attr->getLoadFactor());
+    sString += std::to_string(regionAttributes.getLoadFactor());
     sString += "\nconcurrencyLevel: ";
-    sString += std::to_string(attr->getConcurrencyLevel());
+    sString += std::to_string(regionAttributes.getConcurrencyLevel());
     sString += "\nlruEntriesLimit: ";
-    sString += std::to_string(attr->getLruEntriesLimit());
+    sString += std::to_string(regionAttributes.getLruEntriesLimit());
     sString += "\nlruEvictionAction: ";
-    sString += to_string(attr->getLruEvictionAction());
+    sString += to_string(regionAttributes.getLruEvictionAction());
     sString += "\nentryTimeToLive: ";
     sString += apache::geode::internal::chrono::duration::to_string(
-        attr->getEntryTimeToLive());
+        regionAttributes.getEntryTimeToLive());
     sString += "\nentryTimeToLiveAction: ";
-    sString += to_string(attr->getEntryTimeToLiveAction());
+    sString += to_string(regionAttributes.getEntryTimeToLiveAction());
     sString += "\nentryIdleTimeout: ";
     sString += apache::geode::internal::chrono::duration::to_string(
-        attr->getEntryIdleTimeout());
+        regionAttributes.getEntryIdleTimeout());
     sString += "\nentryIdleTimeoutAction: ";
-    sString += to_string(attr->getEntryIdleTimeoutAction());
+    sString += to_string(regionAttributes.getEntryIdleTimeoutAction());
     sString += "\nregionTimeToLive: ";
     sString += apache::geode::internal::chrono::duration::to_string(
-        attr->getRegionTimeToLive());
+        regionAttributes.getRegionTimeToLive());
     sString += "\nregionTimeToLiveAction: ";
-    sString += to_string(attr->getRegionTimeToLiveAction());
+    sString += to_string(regionAttributes.getRegionTimeToLiveAction());
     sString += "\nregionIdleTimeout: ";
     sString += apache::geode::internal::chrono::duration::to_string(
-        attr->getRegionIdleTimeout());
+        regionAttributes.getRegionIdleTimeout());
     sString += "\nregionIdleTimeoutAction: ";
-    sString += to_string(attr->getRegionIdleTimeoutAction());
+    sString += to_string(regionAttributes.getRegionIdleTimeoutAction());
     sString += "\npoolName: ";
-    sString += attr->getPoolName();
+    sString += regionAttributes.getPoolName();
     sString += "\nCacheLoader: ";
-    sString += (attr->getCacheLoaderLibrary().empty() ||
-                attr->getCacheLoaderFactory().empty())
+    sString += (regionAttributes.getCacheLoaderLibrary().empty() ||
+                regionAttributes.getCacheLoaderFactory().empty())
                    ? "Disabled"
                    : "Enabled";
     sString += "\nCacheWriter: ";
-    sString += (attr->getCacheWriterLibrary().empty() ||
-                attr->getCacheWriterFactory().empty())
+    sString += (regionAttributes.getCacheWriterLibrary().empty() ||
+                regionAttributes.getCacheWriterFactory().empty())
                    ? "Disabled"
                    : "Enabled";
     sString += "\nCacheListener: ";
-    sString += (attr->getCacheListenerLibrary().empty() ||
-                attr->getCacheListenerFactory().empty())
+    sString += (regionAttributes.getCacheListenerLibrary().empty() ||
+                regionAttributes.getCacheListenerFactory().empty())
                    ? "Disabled"
                    : "Enabled";
     sString += "\nConcurrencyChecksEnabled: ";
-    sString += attr->getConcurrencyChecksEnabled() ? "Enabled" : "Disabled";
+    sString += regionAttributes.getConcurrencyChecksEnabled() ? "Enabled" : "Disabled";
     sString += "\n";
 
     return sString;
   }
   void setRegionAttributes(RegionFactory& regionFac) {
-    auto atts = m_region->getAttributesPtr();
-    regionFac.setCachingEnabled(atts->getCachingEnabled());
-    if (!(atts->getCacheListenerLibrary().empty() ||
-          atts->getCacheListenerFactory().empty())) {
-      regionFac.setCacheListener(atts->getCacheListenerLibrary(),
-                                 atts->getCacheListenerFactory());
+    auto regionAttributes = m_region->getRegionAttributes();
+    regionFac.setCachingEnabled(regionAttributes.getCachingEnabled());
+    if (!(regionAttributes.getCacheListenerLibrary().empty() ||
+          regionAttributes.getCacheListenerFactory().empty())) {
+      regionFac.setCacheListener(regionAttributes.getCacheListenerLibrary(),
+                                 regionAttributes.getCacheListenerFactory());
     }
-    if (!(atts->getCacheLoaderLibrary().empty() ||
-          atts->getCacheLoaderFactory().empty())) {
-      regionFac.setCacheLoader(atts->getCacheLoaderLibrary(),
-                               atts->getCacheLoaderFactory());
+    if (!(regionAttributes.getCacheLoaderLibrary().empty() ||
+          regionAttributes.getCacheLoaderFactory().empty())) {
+      regionFac.setCacheLoader(regionAttributes.getCacheLoaderLibrary(),
+                               regionAttributes.getCacheLoaderFactory());
     }
-    if (!(atts->getCacheWriterLibrary().empty() ||
-          atts->getCacheWriterFactory().empty())) {
-      regionFac.setCacheWriter(atts->getCacheWriterLibrary(),
-                               atts->getCacheWriterFactory());
+    if (!(regionAttributes.getCacheWriterLibrary().empty() ||
+          regionAttributes.getCacheWriterFactory().empty())) {
+      regionFac.setCacheWriter(regionAttributes.getCacheWriterLibrary(),
+                               regionAttributes.getCacheWriterFactory());
     }
-    if (atts->getEntryIdleTimeout().count() != 0) {
-      regionFac.setEntryIdleTimeout(atts->getEntryIdleTimeoutAction(),
-                                    atts->getEntryIdleTimeout());
+    if (regionAttributes.getEntryIdleTimeout().count() != 0) {
+      regionFac.setEntryIdleTimeout(regionAttributes.getEntryIdleTimeoutAction(),
+                                    regionAttributes.getEntryIdleTimeout());
     }
-    if (atts->getEntryTimeToLive().count() != 0) {
-      regionFac.setEntryTimeToLive(atts->getEntryTimeToLiveAction(),
-                                   atts->getEntryTimeToLive());
+    if (regionAttributes.getEntryTimeToLive().count() != 0) {
+      regionFac.setEntryTimeToLive(regionAttributes.getEntryTimeToLiveAction(),
+                                   regionAttributes.getEntryTimeToLive());
     }
-    if (atts->getRegionIdleTimeout().count() != 0) {
-      regionFac.setRegionIdleTimeout(atts->getRegionIdleTimeoutAction(),
-                                     atts->getRegionIdleTimeout());
+    if (regionAttributes.getRegionIdleTimeout().count() != 0) {
+      regionFac.setRegionIdleTimeout(regionAttributes.getRegionIdleTimeoutAction(),
+                                     regionAttributes.getRegionIdleTimeout());
     }
-    if (atts->getRegionTimeToLive().count() != 0) {
-      regionFac.setRegionTimeToLive(atts->getRegionTimeToLiveAction(),
-                                    atts->getRegionTimeToLive());
+    if (regionAttributes.getRegionTimeToLive().count() != 0) {
+      regionFac.setRegionTimeToLive(regionAttributes.getRegionTimeToLiveAction(),
+                                    regionAttributes.getRegionTimeToLive());
     }
-    if (!(atts->getPartitionResolverLibrary().empty() ||
-          atts->getPartitionResolverFactory().empty())) {
-      regionFac.setPartitionResolver(atts->getPartitionResolverLibrary(),
-                                     atts->getPartitionResolverFactory());
+    if (!(regionAttributes.getPartitionResolverLibrary().empty() ||
+          regionAttributes.getPartitionResolverFactory().empty())) {
+      regionFac.setPartitionResolver(regionAttributes.getPartitionResolverLibrary(),
+                                     regionAttributes.getPartitionResolverFactory());
     }
-    if (!(atts->getPersistenceLibrary().empty() ||
-          atts->getPersistenceFactory().empty())) {
-      regionFac.setPersistenceManager(atts->getPersistenceLibrary(),
-                                      atts->getPersistenceFactory(),
-                                      atts->getPersistenceProperties());
+    if (!(regionAttributes.getPersistenceLibrary().empty() ||
+          regionAttributes.getPersistenceFactory().empty())) {
+      regionFac.setPersistenceManager(regionAttributes.getPersistenceLibrary(),
+                                      regionAttributes.getPersistenceFactory(),
+                                      regionAttributes.getPersistenceProperties());
     }
-    regionFac.setInitialCapacity(atts->getInitialCapacity());
-    regionFac.setLoadFactor(atts->getLoadFactor());
-    regionFac.setConcurrencyLevel(atts->getConcurrencyLevel());
-    regionFac.setLruEntriesLimit(atts->getLruEntriesLimit());
-    regionFac.setDiskPolicy(atts->getDiskPolicy());
-    regionFac.setCloningEnabled(atts->getCloningEnabled());
-    regionFac.setPoolName(atts->getPoolName());
-    regionFac.setConcurrencyChecksEnabled(atts->getConcurrencyChecksEnabled());
+    regionFac.setInitialCapacity(regionAttributes.getInitialCapacity());
+    regionFac.setLoadFactor(regionAttributes.getLoadFactor());
+    regionFac.setConcurrencyLevel(regionAttributes.getConcurrencyLevel());
+    regionFac.setLruEntriesLimit(regionAttributes.getLruEntriesLimit());
+    regionFac.setDiskPolicy(regionAttributes.getDiskPolicy());
+    regionFac.setCloningEnabled(regionAttributes.getCloningEnabled());
+    regionFac.setPoolName(regionAttributes.getPoolName());
+    regionFac.setConcurrencyChecksEnabled(regionAttributes.getConcurrencyChecksEnabled());
   }
 
   std::shared_ptr<Region> createRootRegion(std::shared_ptr<Cache>& cachePtr) {
@@ -241,8 +241,8 @@ class RegionHelper {
     auto regionFac =
         cachePtr->createRegionFactory(RegionShortcut::CACHING_PROXY);
     setRegionAttributes(regionFac);
-    auto atts = m_region->getAttributesPtr();
-    const auto& poolName = atts->getPoolName();
+    auto regionAttributes = m_region->getRegionAttributes();
+    const auto& poolName = regionAttributes.getPoolName();
     auto region = regionFac.create(regionName.c_str());
     FWKINFO("Region created with name = " << regionName + " and pool name= "
                                           << poolName);

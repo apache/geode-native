@@ -43,7 +43,7 @@ namespace Apache
         /// <summary>
         /// Registers a collection of keys for getting updates from the server.
         /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
+        /// ( <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> ) is true.
         /// </summary>
         /// <param name="keys">a collection of keys</param>
         /// <exception cref="IllegalArgumentException">
@@ -66,7 +66,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnsupportedOperationException">
         /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
+        /// <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> is false.
         /// </exception>
         /// <exception cref="TimeoutException">
         /// if the operation timed out
@@ -77,7 +77,7 @@ namespace Apache
         /// <summary>
         /// Registers a collection of keys for getting updates from the server.
         /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
+        /// ( <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> ) is true.
         /// Should only be called for durable clients and with cache server version 5.5 onwards.
         /// </summary>
         /// <param name="keys">a collection of keys</param>
@@ -106,7 +106,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnsupportedOperationException">
         /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
+        /// <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> is false.
         /// </exception>
         /// <exception cref="TimeoutException">
         /// if the operation timed out
@@ -117,7 +117,7 @@ namespace Apache
         /// <summary>
         /// Registers a collection of keys for getting updates from the server.
         /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
+        /// ( <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> ) is true.
         /// Should only be called for durable clients and with cache server version 5.5 onwards.
         /// </summary>
         /// <param name="keys">a collection of keys</param>
@@ -147,7 +147,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnsupportedOperationException">
         /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
+        /// <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> is false.
         /// </exception>
         /// <exception cref="TimeoutException">
         /// if the operation timed out
@@ -158,7 +158,7 @@ namespace Apache
         /// <summary>
         /// Unregisters a collection of keys to stop getting updates for them.
         /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
+        /// ( <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> ) is true.
         /// </summary>
         /// <param name="keys">the collection of keys</param>
         /// <exception cref="IllegalArgumentException">
@@ -181,7 +181,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnsupportedOperationException">
         /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
+        /// <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> is false.
         /// </exception>
         /// <exception cref="TimeoutException">
         /// if the operation timed out
@@ -193,7 +193,7 @@ namespace Apache
         /// Register interest for all the keys of the region to get
         /// updates from the server.
         /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
+        /// ( <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> ) is true.
         /// </summary>
         /// <exception cref="CacheServerException">
         /// If an exception is received from the Java cache server.
@@ -209,7 +209,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnsupportedOperationException">
         /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
+        /// <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> is false.
         /// </exception>
         /// <exception cref="TimeoutException">
         /// if the operation timed out
@@ -221,7 +221,7 @@ namespace Apache
         /// Register interest for all the keys of the region to get
         /// updates from the server.
         /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
+        /// ( <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> ) is true.
         /// Should only be called for durable clients and with cache server version 5.5 onwards.
         /// </summary>
         /// <param name="isDurable">whether the registration should be durable</param>
@@ -239,7 +239,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnsupportedOperationException">
         /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
+        /// <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> is false.
         /// </exception>
         /// <exception cref="TimeoutException">
         /// if the operation timed out
@@ -251,7 +251,7 @@ namespace Apache
         /// Register interest for all the keys of the region to get
         /// updates from the server.
         /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
+        /// ( <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> ) is true.
         /// Should only be called for durable clients and with cache server version 5.5 onwards.
         /// </summary>
         /// <param name="isDurable">whether the registration should be durable</param>
@@ -273,7 +273,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnsupportedOperationException">
         /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
+        /// <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> is false.
         /// </exception>
         /// <exception cref="TimeoutException">
         /// if the operation timed out
@@ -286,7 +286,7 @@ namespace Apache
         /// Register interest for all the keys of the region to get
         /// updates from the server.
         /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
+        /// ( <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> ) is true.
         /// Should only be called for durable clients and with cache server version 5.5 onwards.
         /// </summary>
         /// <param name="isDurable">whether the registration should be durable</param>
@@ -309,7 +309,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnsupportedOperationException">
         /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
+        /// <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> is false.
         /// </exception>
         /// <exception cref="TimeoutException">
         /// if the operation timed out
@@ -333,7 +333,7 @@ namespace Apache
         /// Unregister interest for all the keys of the region to stop
         /// getting updates for them.
         /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
+        /// ( <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> ) is true.
         /// </summary>
         /// <exception cref="IllegalStateException">
         /// If not previously registered all keys.
@@ -352,7 +352,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnsupportedOperationException">
         /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
+        /// <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> is false.
         /// </exception>
         /// <exception cref="TimeoutException">
         /// if the operation timed out
@@ -364,7 +364,7 @@ namespace Apache
         /// Register interest for the keys of the region that match the
         /// given regular expression to get updates from the server.
         /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
+        /// ( <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> ) is true.
         /// </summary>
         /// <exception cref="IllegalArgumentException">
         /// If the regular expression string is empty.
@@ -388,7 +388,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnsupportedOperationException">
         /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
+        /// <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> is false.
         /// </exception>
         /// <exception cref="TimeoutException">
         /// if the operation timed out
@@ -400,7 +400,7 @@ namespace Apache
         /// Register interest for the keys of the region that match the
         /// given regular expression to get updates from the server.
         /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
+        /// ( <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> ) is true.
         /// Should only be called for durable clients and with cache server version 5.5 onwards.
         /// </summary>
         /// <param name="regex">the regular expression to register</param>
@@ -427,7 +427,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnsupportedOperationException">
         /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
+        /// <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> is false.
         /// </exception>
         /// <exception cref="TimeoutException">
         /// if the operation timed out
@@ -439,7 +439,7 @@ namespace Apache
         /// Register interest for the keys of the region that match the
         /// given regular expression to get updates from the server.
         /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
+        /// ( <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> ) is true.
         /// Should only be called for durable clients and with cache server version 5.5 onwards.
         /// </summary>
         /// <param name="regex">the regular expression to register</param>
@@ -470,7 +470,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnsupportedOperationException">
         /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
+        /// <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> is false.
         /// </exception>
         /// <exception cref="TimeoutException">
         /// if the operation timed out
@@ -482,7 +482,7 @@ namespace Apache
         /// Register interest for the keys of the region that match the
         /// given regular expression to get updates from the server.
         /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
+        /// ( <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> ) is true.
         /// Should only be called for durable clients and with cache server version 5.5 onwards.
         /// </summary>
         /// <param name="regex">the regular expression to register</param>
@@ -514,7 +514,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnsupportedOperationException">
         /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
+        /// <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> is false.
         /// </exception>
         /// <exception cref="TimeoutException">
         /// if the operation timed out
@@ -529,7 +529,7 @@ namespace Apache
         /// The regular expression must have been registered previously using
         /// a <c>RegisterRegex</c> call.
         /// Valid only for a Native Client region when client notification
-        /// ( <see cref="AttributesFactory.SetClientNotificationEnabled" /> ) is true.
+        /// ( <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> ) is true.
         /// </summary>
         /// <exception cref="IllegalArgumentException">
         /// If the regular expression string is empty.
@@ -552,7 +552,7 @@ namespace Apache
         /// </exception>
         /// <exception cref="UnsupportedOperationException">
         /// If the region is not a Native Client region or
-        /// <see cref="AttributesFactory.SetClientNotificationEnabled" /> is false.
+        /// <see cref="RegionAttributesFactory.SetClientNotificationEnabled" /> is false.
         /// </exception>
         /// <exception cref="TimeoutException">
         /// if the operation timed out

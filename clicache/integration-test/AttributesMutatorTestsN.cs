@@ -142,10 +142,10 @@ namespace Apache.Geode.Client.UnitTests
       //m_reg3Loader1 = new TallyLoader<string, string>();
       m_reg3Loader1 = new ThinClientTallyLoader();
       m_reg3Writer1 = new TallyWriter<string, string>();
-      AttributesFactory<string, string> af = new AttributesFactory<string, string>();
+      var regionAttributesFactory = new RegionAttributesFactory<string, string>();
 
       GIRegion region = CacheHelper.CreateRegion<string, string>(PeerRegionName,
-        af.CreateRegionAttributes());
+        regionAttributesFactory.Create());
 
       SetCacheListener(PeerRegionName, m_reg3Listener1);
       SetCacheLoader(PeerRegionName, m_reg3Loader1);
@@ -164,10 +164,10 @@ namespace Apache.Geode.Client.UnitTests
 
     public void StepTwoCallbacks()
     {
-      AttributesFactory<string, string> af = new AttributesFactory<string, string>();
+      var regionAttributesFactory = new RegionAttributesFactory<string, string>();
 
       GIRegion region = CacheHelper.CreateRegion<string, string>(PeerRegionName,
-        af.CreateRegionAttributes());
+        regionAttributesFactory.Create());
 
       CreateEntry(RegionNames[0], m_keys[1], m_vals[1]);
       CreateEntry(RegionNames[1], m_keys[3], m_vals[3]);

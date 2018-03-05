@@ -2181,11 +2181,11 @@ TcrMessagePutAll::TcrMessagePutAll(
   // Version tags are not sent back if dp is EMPTY or concurrency
   // checks are disabled.
   int flags = 0;
-  if (!region->getAttributes()->getCachingEnabled()) {
+  if (!region->getAttributes().getCachingEnabled()) {
     flags |= TcrMessage::m_flag_empty;
     LOGDEBUG("TcrMessage::PUTALL datapolicy empty flags = %d ", flags);
   }
-  if (region->getAttributes()->getConcurrencyChecksEnabled()) {
+  if (region->getAttributes().getConcurrencyChecksEnabled()) {
     flags |= TcrMessage::m_flag_concurrency_checks;
     LOGDEBUG("TcrMessage::PUTALL ConcurrencyChecksEnabled flags = %d ", flags);
   }
@@ -2234,11 +2234,11 @@ TcrMessageRemoveAll::TcrMessageRemoveAll(
   // Version tags are not sent back if dp is EMPTY or concurrency
   // checks are disabled.
   int flags = 0;
-  if (!region->getAttributes()->getCachingEnabled()) {
+  if (!region->getAttributes().getCachingEnabled()) {
     flags |= TcrMessage::m_flag_empty;
     LOGDEBUG("TcrMessage::REMOVE_ALL datapolicy empty flags = %d ", flags);
   }
-  if (region->getAttributes()->getConcurrencyChecksEnabled()) {
+  if (region->getAttributes().getConcurrencyChecksEnabled()) {
     flags |= TcrMessage::m_flag_concurrency_checks;
     LOGDEBUG("TcrMessage::REMOVE_ALL ConcurrencyChecksEnabled flags = %d ",
              flags);

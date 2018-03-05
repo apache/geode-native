@@ -23,7 +23,7 @@
 #include <chrono>
 
 #include "internal/geode_globals.hpp"
-#include "AttributesFactory.hpp"
+#include "RegionAttributesFactory.hpp"
 #include "internal/chrono/duration.hpp"
 
 /**
@@ -264,7 +264,7 @@ class _GEODE_EXPORT RegionFactory {
 
   RegionShortcut m_preDefinedRegion;
 
-  std::shared_ptr<AttributesFactory> m_attributeFactory;
+  std::shared_ptr<RegionAttributesFactory> m_regionAttributesFactory;
 
   CacheImpl* m_cacheImpl;
 

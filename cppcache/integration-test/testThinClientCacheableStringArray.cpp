@@ -77,8 +77,7 @@ DUNIT_TASK(CLIENT1, StepOne)
 
     auto regptr = getHelper()->createPooledRegion(
         _regionNames[0], USE_ACK, locHostPort, "__TEST_POOL1__", true, true);
-    std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
-    auto subregPtr = regptr->createSubregion(_regionNames[1], lattribPtr);
+    auto subregPtr = regptr->createSubregion(_regionNames[1], regptr->getAttributes());
 
     auto&& qh = &QueryHelper::getHelper();
     std::vector<std::shared_ptr<CacheableString>> cstr{

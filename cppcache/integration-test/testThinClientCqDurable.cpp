@@ -177,8 +177,7 @@ void stepOne() {
   initClientWithId(0);
   createRegionForCQ(regionNamesCq[0], USE_ACK, true);
   auto regptr = getHelper()->getRegion(regionNamesCq[0]);
-  std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
-  auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+  auto subregPtr = regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
   LOG("StepOne complete.");
 }
@@ -340,8 +339,7 @@ void stepOne2() {
   initClientWithId(1);
   createRegionForCQ(regionNamesCq[0], USE_ACK, true);
   auto regptr = getHelper()->getRegion(regionNamesCq[0]);
-  std::shared_ptr<RegionAttributes> lattribPtr = regptr->getAttributes();
-  auto subregPtr = regptr->createSubregion(regionNamesCq[1], lattribPtr);
+  auto subregPtr = regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
   LOG("StepOne2 complete.");
 }

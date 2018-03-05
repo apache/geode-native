@@ -56,18 +56,19 @@ class CacheImpl;
  * and whether statistics are enabled for the region and its entries.
  *
  * To create an instance of this interface, use {@link
- * AttributesFactory::createRegionAttributes}.
+ * RegionAttributesFactory::create}.
  *
- * For compatibility rules and default values, see {@link AttributesFactory}.
+ * For compatibility rules and default values, see {@link
+ * RegionAttributesFactory}.
  *
  * <p>Note that the <code>RegionAttributes</code> are not distributed with the
  * region.
  *
- * @see AttributesFactory
+ * @see RegionAttributesFactory
  * @see AttributesMutator
  * @see Region::getAttributes
  */
-class AttributesFactory;
+class RegionAttributesFactory;
 class AttributesMutator;
 class Cache;
 class Region;
@@ -82,21 +83,21 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
    * <code>CacheLoader</code> , nullptr if there is no CacheLoader for this
    * region.
    */
-  std::shared_ptr<CacheLoader> getCacheLoader();
+  std::shared_ptr<CacheLoader> getCacheLoader() const;
 
   /** Gets the cache writer for the region.
    * @return  a pointer that points to the region's ,
    * <code>CacheWriter</code> , nullptr if there is no CacheWriter for this
    * region
    */
-  std::shared_ptr<CacheWriter> getCacheWriter();
+  std::shared_ptr<CacheWriter> getCacheWriter() const;
 
   /** Gets the cache listener for the region.
    * @return  a pointer that points to the region's ,
    * <code>CacheListener</code> , nullptr if there is no CacheListener defined
    * for this region.
    */
-  std::shared_ptr<CacheListener> getCacheListener();
+  std::shared_ptr<CacheListener> getCacheListener() const;
 
   /** Gets the partition resolver for the partition region.
    * @return  a pointer that points to the region's ,
@@ -104,7 +105,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
    * defined
    * for this region.
    */
-  std::shared_ptr<PartitionResolver> getPartitionResolver();
+  std::shared_ptr<PartitionResolver> getPartitionResolver() const;
 
   /** Gets the <code>timeToLive</code> expiration attributes for the region as a
    * whole.
@@ -159,7 +160,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
 
   /** Returns the concurrencyLevel of the entry's local cache.
    * @return the concurrencyLevel
-   * @see AttributesFactory
+   * @see RegionAttributesFactory
    */
   uint8_t getConcurrencyLevel() const;
 
@@ -185,7 +186,11 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
   /**
    * Returns the name of the pool attached to the region.
    */
-  const std::string& getPoolName() const;
+  const std::string& getPoolName() const { return m_poolName; }
+
+  // will be created by the factory
+  RegionAttributes();
+  RegionAttributes(const RegionAttributes& rhs) = default;
 
   /*destructor
    *
@@ -214,49 +219,49 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
    * This method returns the path of the library from which
    * the factory function will be invoked on a cache server.
    */
-  const std::string& getCacheLoaderLibrary();
+  const std::string& getCacheLoaderLibrary() const;
 
   /**
    * This method returns the symbol name of the factory function from which
    * the loader will be created on a cache server.
    */
-  const std::string& getCacheLoaderFactory();
+  const std::string& getCacheLoaderFactory() const;
 
   /**
    * This method returns the path of the library from which
    * the factory function will be invoked on a cache server.
    */
-  const std::string& getCacheListenerLibrary();
+  const std::string& getCacheListenerLibrary() const;
 
   /**
    * This method returns the symbol name of the factory function from which
    * the loader will be created on a cache server.
    */
-  const std::string& getCacheListenerFactory();
+  const std::string& getCacheListenerFactory() const;
 
   /**
    * This method returns the path of the library from which
    * the factory function will be invoked on a cache server.
    */
-  const std::string& getCacheWriterLibrary();
+  const std::string& getCacheWriterLibrary() const;
 
   /**
    * This method returns the symbol name of the factory function from which
    * the loader will be created on a cache server.
    */
-  const std::string& getCacheWriterFactory();
+  const std::string& getCacheWriterFactory() const;
 
   /**
    * This method returns the path of the library from which
    * the factory function will be invoked on a cache server.
    */
-  const std::string& getPartitionResolverLibrary();
+  const std::string& getPartitionResolverLibrary() const;
 
   /**
    * This method returns the symbol name of the factory function from which
    * the loader will be created on a cache server.
    */
-  const std::string& getPartitionResolverFactory();
+  const std::string& getPartitionResolverFactory() const;
 
   /** Return true if all the attributes are equal to those of other. */
   bool operator==(const RegionAttributes& other) const;
@@ -274,7 +279,7 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
   /**
    * This method returns the list of servername:portno separated by comma
    */
-  const std::string& getEndpoints();
+  const std::string& getEndpoints() const;
 
   /**
    * This method returns the setting of client notification
@@ -285,18 +290,18 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
    * This method returns the path of the library from which
    * the factory function will be invoked on a cache server.
    */
-  const std::string& getPersistenceLibrary();
+  const std::string& getPersistenceLibrary() const;
 
   /**
    * This method returns the symbol name of the factory function from which
    * the persistence will be created on a cache server.
    */
-  const std::string& getPersistenceFactory();
+  const std::string& getPersistenceFactory() const;
 
   /**
    * This method returns the properties pointer which is set for persistence.
    */
-  std::shared_ptr<Properties> getPersistenceProperties();
+  std::shared_ptr<Properties> getPersistenceProperties() const;
 
   /** Gets the persistence for the region.
    * @return  a pointer that points to the region's ,
@@ -304,23 +309,19 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
    * for this
    * region.
    */
-  std::shared_ptr<PersistenceManager> getPersistenceManager();
+  std::shared_ptr<PersistenceManager> getPersistenceManager() const;
 
-  /** TODO
-   * Returns the name of the {@link Pool} that this region
-   * will use to communicate with servers, if any.
-   * @return the name of the client-server {@link Pool}
-   */
-  const std::string& getPoolName() { return m_poolName; }
-  bool getCloningEnabled() { return m_isClonable; }
+  bool getCloningEnabled() const { return m_isClonable; }
 
   /**
    * Returns true if concurrent update checks are turned on for this region.
    * <p>
    * @return true if concurrent update checks are turned on
    */
-  bool getConcurrencyChecksEnabled() { return m_isConcurrencyChecksEnabled; }
-  const RegionAttributes& operator=(const RegionAttributes&) = delete;
+  bool getConcurrencyChecksEnabled() const {
+    return m_isConcurrencyChecksEnabled;
+  }
+  RegionAttributes& operator=(const RegionAttributes&) = default;
 
  private:
   void setCacheListener(const std::string& libpath,
@@ -351,19 +352,15 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
             m_regionIdleTimeout > std::chrono::seconds::zero());
   }
 
-  // will be created by the factory
-  RegionAttributes(const RegionAttributes& rhs);
-  RegionAttributes();
-
   ExpirationAction m_regionTimeToLiveExpirationAction;
   ExpirationAction m_regionIdleTimeoutExpirationAction;
   ExpirationAction m_entryTimeToLiveExpirationAction;
   ExpirationAction m_entryIdleTimeoutExpirationAction;
   ExpirationAction m_lruEvictionAction;
-  std::shared_ptr<CacheWriter> m_cacheWriter;
-  std::shared_ptr<CacheLoader> m_cacheLoader;
-  std::shared_ptr<CacheListener> m_cacheListener;
-  std::shared_ptr<PartitionResolver> m_partitionResolver;
+  mutable std::shared_ptr<CacheWriter> m_cacheWriter;
+  mutable std::shared_ptr<CacheLoader> m_cacheLoader;
+  mutable std::shared_ptr<CacheListener> m_cacheListener;
+  mutable std::shared_ptr<PartitionResolver> m_partitionResolver;
   uint32_t m_lruEntriesLimit;
   bool m_caching;
   uint32_t m_maxValueDistLimit;
@@ -388,11 +385,11 @@ class _GEODE_EXPORT RegionAttributes : public Serializable {
   std::string m_persistenceLibrary;
   std::string m_persistenceFactory;
   std::shared_ptr<Properties> m_persistenceProperties;
-  std::shared_ptr<PersistenceManager> m_persistenceManager;
+  mutable std::shared_ptr<PersistenceManager> m_persistenceManager;
   std::string m_poolName;
   bool m_isClonable;
   bool m_isConcurrencyChecksEnabled;
-  friend class AttributesFactory;
+  friend class RegionAttributesFactory;
   friend class AttributesMutator;
   friend class Cache;
   friend class CacheImpl;

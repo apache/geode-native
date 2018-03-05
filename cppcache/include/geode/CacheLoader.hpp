@@ -49,7 +49,7 @@ class Region;
  * creates the value for the desired key by performing an operation such
  * as a database query.
  *
- * @see AttributesFactory::setCacheLoader
+ * @see RegionAttributesFactory::setCacheLoader
  * @see RegionAttributes::getCacheLoader
  */
 class _GEODE_EXPORT CacheLoader {

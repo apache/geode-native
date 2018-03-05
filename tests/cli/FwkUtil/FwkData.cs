@@ -137,7 +137,7 @@ namespace Apache.Geode.Client.FwkLib
   }
 
   [Serializable]
-  public class FwkData 
+  public class FwkData
   {
     #region Private members
 
@@ -180,21 +180,21 @@ namespace Apache.Geode.Client.FwkLib
       }
     }
     #endregion
-    
+
     public FwkData(object data1, object data2, DataKind kind)
     {
       m_data1 = data1;
       m_data2 = data2;
       m_kind = kind;
     }
-    
+
     public static Dictionary<string, FwkData> ReadDataNodes(XmlNode node)
     {
     throw new Exception();
 
     }
 
-    public static void SetThisAttribute(string name, XmlNode node, Apache.Geode.Client.AttributesFactory<string, string> af)
+    public static void SetThisAttribute(string name, XmlNode node, Apache.Geode.Client.RegionAttributesFactory<string, string> regionAttributesFactory)
     {
       string value = node.Value;
       switch (name)
@@ -202,42 +202,42 @@ namespace Apache.Geode.Client.FwkLib
         case "caching-enabled":
           if (value == "true")
           {
-            af.SetCachingEnabled(true);
+            regionAttributesFactory.SetCachingEnabled(true);
           }
           else
           {
-            af.SetCachingEnabled(false);
+            regionAttributesFactory.SetCachingEnabled(false);
           }
           break;
 
         case "load-factor":
           float lf = float.Parse(value);
-          af.SetLoadFactor(lf);
+          regionAttributesFactory.SetLoadFactor(lf);
           break;
 
         case "concurrency-level":
           int cl = int.Parse(value);
-          af.SetConcurrencyLevel(cl);
+          regionAttributesFactory.SetConcurrencyLevel(cl);
           break;
 
         case "lru-entries-limit":
           uint lel = uint.Parse(value);
-          af.SetLruEntriesLimit(lel);
+          regionAttributesFactory.SetLruEntriesLimit(lel);
           break;
 
         case "initial-capacity":
           int ic = int.Parse(value);
-          af.SetInitialCapacity(ic);
+          regionAttributesFactory.SetInitialCapacity(ic);
           break;
 
         case "disk-policy":
           if (value == "none")
           {
-              af.SetDiskPolicy(Apache.Geode.Client.DiskPolicyType.None);
+              regionAttributesFactory.SetDiskPolicy(Apache.Geode.Client.DiskPolicyType.None);
           }
           else if (value == "overflows")
           {
-              af.SetDiskPolicy(Apache.Geode.Client.DiskPolicyType.Overflows);
+              regionAttributesFactory.SetDiskPolicy(Apache.Geode.Client.DiskPolicyType.Overflows);
           }
           else
           {
@@ -247,11 +247,11 @@ namespace Apache.Geode.Client.FwkLib
         case "pool-name":
           if (value.Length != 0)
           {
-            af.SetPoolName(value);
+            regionAttributesFactory.SetPoolName(value);
           }
           else
           {
-            af.SetPoolName(value);
+            regionAttributesFactory.SetPoolName(value);
           }
           break;
 
@@ -265,7 +265,7 @@ namespace Apache.Geode.Client.FwkLib
             XmlAttributeCollection exAttrColl = nlrttl.Attributes;
             Apache.Geode.Client.ExpirationAction action = StrToExpirationAction(exAttrColl["action"].Value);
             string rttl = exAttrColl["timeout"].Value;
-            af.SetRegionTimeToLive(action, TimeSpan.FromSeconds(uint.Parse(rttl)));
+            regionAttributesFactory.SetRegionTimeToLive(action, TimeSpan.FromSeconds(uint.Parse(rttl)));
           }
           else
           {
@@ -280,7 +280,7 @@ namespace Apache.Geode.Client.FwkLib
             XmlAttributeCollection exAttrColl = nlrit.Attributes;
             Apache.Geode.Client.ExpirationAction action = StrToExpirationAction(exAttrColl["action"].Value);
             string rit = exAttrColl["timeout"].Value;
-            af.SetRegionIdleTimeout(action, TimeSpan.FromSeconds(uint.Parse(rit)));
+            regionAttributesFactory.SetRegionIdleTimeout(action, TimeSpan.FromSeconds(uint.Parse(rit)));
           }
           else
           {
@@ -295,7 +295,7 @@ namespace Apache.Geode.Client.FwkLib
             XmlAttributeCollection exAttrColl = nlettl.Attributes;
             Apache.Geode.Client.ExpirationAction action = StrToExpirationAction(exAttrColl["action"].Value);
             string ettl = exAttrColl["timeout"].Value;
-            af.SetEntryTimeToLive(action, TimeSpan.FromSeconds(uint.Parse(ettl)));
+            regionAttributesFactory.SetEntryTimeToLive(action, TimeSpan.FromSeconds(uint.Parse(ettl)));
           }
           else
           {
@@ -310,7 +310,7 @@ namespace Apache.Geode.Client.FwkLib
             XmlAttributeCollection exAttrColl = nleit.Attributes;
             Apache.Geode.Client.ExpirationAction action = StrToExpirationAction(exAttrColl["action"].Value);
             string eit = exAttrColl["timeout"].Value;
-            af.SetEntryIdleTimeout(action, TimeSpan.FromSeconds(uint.Parse(eit)));
+            regionAttributesFactory.SetEntryIdleTimeout(action, TimeSpan.FromSeconds(uint.Parse(eit)));
           }
           else
           {
@@ -346,7 +346,7 @@ namespace Apache.Geode.Client.FwkLib
                 loaderlibrary + '.' + loaderfunction;
               loaderlibrary = "FwkLib";
             }
-            af.SetCacheLoader(loaderlibrary, loaderfunction);
+            regionAttributesFactory.SetCacheLoader(loaderlibrary, loaderfunction);
           }
           break;
 
@@ -377,9 +377,9 @@ namespace Apache.Geode.Client.FwkLib
               listenerfunction = myType.Namespace + '.' +
                 listenerlibrary + '.' + listenerfunction;
               listenerlibrary = "FwkLib";
-              
+
             }
-            af.SetCacheListener(listenerlibrary, listenerfunction);
+            regionAttributesFactory.SetCacheListener(listenerlibrary, listenerfunction);
           }
           break;
 
@@ -411,7 +411,7 @@ namespace Apache.Geode.Client.FwkLib
                 writerlibrary + '.' + writerfunction;
               writerlibrary = "FwkLib";
             }
-            af.SetCacheWriter(writerlibrary, writerfunction);
+            regionAttributesFactory.SetCacheWriter(writerlibrary, writerfunction);
           }
           break;
 
@@ -459,7 +459,7 @@ namespace Apache.Geode.Client.FwkLib
               }
             }
           }
-          af.SetPersistenceManager(pmlibrary, pmfunction, prop);
+          regionAttributesFactory.SetPersistenceManager(pmlibrary, pmfunction, prop);
           break;
       }
     }

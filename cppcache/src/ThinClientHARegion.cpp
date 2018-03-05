@@ -29,11 +29,11 @@ namespace client {
 ThinClientHARegion::ThinClientHARegion(
     const std::string& name, CacheImpl* cache,
     const std::shared_ptr<RegionInternal>& rPtr,
-    const std::shared_ptr<RegionAttributes>& attributes,
+    RegionAttributes attributes,
     const std::shared_ptr<CacheStatistics>& stats, bool shared,
     bool enableNotification)
     : ThinClientRegion(name, cache, rPtr, attributes, stats, shared),
-      m_attribute(attributes),
+      m_attributes(attributes),
       m_processedMarker(false),
       m_poolDM(false) {
   setClientNotificationEnabled(enableNotification);
@@ -41,7 +41,7 @@ ThinClientHARegion::ThinClientHARegion(
 
 void ThinClientHARegion::initTCR() {
   try {
-    const bool isPool = !m_attribute->getPoolName().empty();
+    const bool isPool = !m_attributes.getPoolName().empty();
     if (m_cacheImpl->getDistributedSystem()
             .getSystemProperties()
             .isGridClient()) {
@@ -57,7 +57,7 @@ void ThinClientHARegion::initTCR() {
       m_tcrdm = dynamic_cast<ThinClientPoolHADM*>(
           m_cacheImpl->getCache()
               ->getPoolManager()
-              .find(m_attribute->getPoolName())
+              .find(m_attributes.getPoolName())
               .get());
       if (m_tcrdm) {
         m_poolDM = true;

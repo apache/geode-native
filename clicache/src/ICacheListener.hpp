@@ -72,7 +72,7 @@ namespace Apache
       /// first case where listeners are invoked only when the region update
       /// operation succeeds.
       /// </remarks>
-      /// <seealso cref="AttributesFactory.SetCacheListener" />
+      /// <seealso cref="RegionAttributesFactory.SetCacheListener" />
       /// <seealso cref="RegionAttributes.CacheListener" />
       /// <seealso cref="ICacheLoader" />
       /// <seealso cref="ICacheWriter" />

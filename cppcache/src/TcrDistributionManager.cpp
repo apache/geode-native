@@ -27,12 +27,12 @@ TcrDistributionManager::TcrDistributionManager(
     : ThinClientDistributionManager(connManager, region) {
   GF_R_ASSERT(region != nullptr);
   m_clientNotification =
-      region->getAttributes()->getClientNotificationEnabled();
+      region->getAttributes().getClientNotificationEnabled();
 }
 
 void TcrDistributionManager::getEndpointNames(
     std::unordered_set<std::string>& endpointNames) {
-  Utils::parseEndpointNamesString(m_region->getAttributes()->getEndpoints(),
+  Utils::parseEndpointNamesString(m_region->getAttributes().getEndpoints(),
                                   endpointNames);
 }
 
