@@ -20,19 +20,19 @@
  * limitations under the License.
  */
 
-#include "internal/geode_globals.hpp"
+#include "geode_globals.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
-namespace serializer {
+namespace internal {
 
 template <typename TObj>
 inline bool equals(const TObj& x, const TObj& y) {
   return (x == y);
 }
 
-inline uint32_t hashcode(const bool value) {
+inline int32_t hashcode(const bool value) {
   if (value) {
     return 1231;
   } else {
@@ -40,53 +40,37 @@ inline uint32_t hashcode(const bool value) {
   }
 }
 
-inline uint32_t hashcode(const uint8_t value) {
-  return static_cast<uint32_t>(value);
+inline int32_t hashcode(const int8_t value) {
+  return static_cast<int32_t>(value);
 }
 
-inline uint32_t hashcode(const int8_t value) {
-  return static_cast<uint32_t>(value);
+inline int32_t hashcode(const int16_t value) {
+  return static_cast<int32_t>(value);
 }
 
-inline uint32_t hashcode(const uint16_t value) {
-  return static_cast<uint32_t>(value);
+inline int32_t hashcode(const int32_t value) {
+  return static_cast<int32_t>(value);
 }
 
-inline uint32_t hashcode(const int16_t value) {
-  return static_cast<uint32_t>(value);
-}
-
-inline uint32_t hashcode(const uint32_t value) { return value; }
-
-inline uint32_t hashcode(const int32_t value) {
-  return static_cast<uint32_t>(value);
-}
-
-inline uint32_t hashcode(const uint64_t value) {
-  uint32_t hash = static_cast<uint32_t>(value);
-  hash = hash ^ static_cast<uint32_t>(value >> 32);
+inline int32_t hashcode(const int64_t value) {
+  int32_t hash = static_cast<int32_t>(value);
+  hash = hash ^ static_cast<int32_t>(value >> 32);
   return hash;
 }
 
-inline uint32_t hashcode(const int64_t value) {
-  uint32_t hash = static_cast<uint32_t>(value);
-  hash = hash ^ static_cast<uint32_t>(value >> 32);
-  return hash;
-}
-
-inline uint32_t hashcode(const float value) {
-  union float_uint32_t {
+inline int32_t hashcode(const float value) {
+  union float_int32_t {
     float f;
-    uint32_t u;
+    int32_t u;
   } v;
   v.f = value;
   return v.u;
 }
 
-inline uint32_t hashcode(const double value) {
-  union double_uint64_t {
+inline int32_t hashcode(const double value) {
+  union double_int64_t {
     double d;
-    uint64_t u;
+    int64_t u;
   } v;
   v.d = value;
   return hashcode(v.u);
