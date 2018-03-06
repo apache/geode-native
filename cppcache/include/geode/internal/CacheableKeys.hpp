@@ -25,7 +25,7 @@
 namespace apache {
 namespace geode {
 namespace client {
-namespace serializer {
+namespace internal {
 
 template <typename TObj>
 inline bool equals(const TObj& x, const TObj& y) {

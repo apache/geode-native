@@ -49,7 +49,7 @@ bool PdxSerializable::operator==(const CacheableKey& other) const {
 
 int32_t PdxSerializable::hashcode() const {
   int64_t hash = static_cast<int64_t>((intptr_t)this);
-  return apache::geode::client::serializer::hashcode(hash);
+  return apache::geode::client::internal::hashcode(hash);
 }
 
 }  // namespace client

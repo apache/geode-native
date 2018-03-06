@@ -71,7 +71,7 @@ bool PdxWrapper::operator==(const CacheableKey &other) const {
 int32_t PdxWrapper::hashcode() const {
   auto hash = static_cast<int64_t>(
       reinterpret_cast<std::uintptr_t>(m_userObject.get()));
-  return apache::geode::client::serializer::hashcode(hash);
+  return apache::geode::client::internal::hashcode(hash);
 }
 
 void PdxWrapper::toData(PdxWriter &output) const {

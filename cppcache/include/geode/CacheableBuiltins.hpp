@@ -92,7 +92,7 @@ class CacheableKeyType : public CacheableKey {
 
   /** Return the hashcode for this key. */
   virtual int32_t hashcode() const override {
-    return serializer::hashcode(m_value);
+    return internal::hashcode(m_value);
   }
 
   /** Return true if this key matches other. */
@@ -102,12 +102,12 @@ class CacheableKeyType : public CacheableKey {
     }
     const CacheableKeyType& otherValue =
         static_cast<const CacheableKeyType&>(other);
-    return serializer::equals(m_value, otherValue.m_value);
+    return internal::equals(m_value, otherValue.m_value);
   }
 
   /** Return true if this key matches other key value. */
   inline bool operator==(const TObj other) const {
-    return serializer::equals(m_value, other);
+    return internal::equals(m_value, other);
   }
 
   /**
