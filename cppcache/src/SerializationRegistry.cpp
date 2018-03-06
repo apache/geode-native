@@ -28,6 +28,7 @@
 #include <geode/CacheableFileName.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/CacheableUndefined.hpp>
+#include <geode/CacheableEnum.hpp>
 #include <geode/Struct.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
@@ -57,7 +58,7 @@
 #include "VersionTag.hpp"
 #include "DiskStoreId.hpp"
 #include "DiskVersionTag.hpp"
-#include <geode/CacheableEnum.hpp>
+#include "PdxHelper.hpp"
 
 namespace apache {
 namespace geode {
@@ -223,10 +224,12 @@ void SerializationRegistry::deserialize(
                  std::dynamic_pointer_cast<DataSerializable>(obj)) {
     deserialize(input, dataSerializable);
   } else if (const auto pdxSerializable =
-                 std::dynamic_pointer_cast<PdxSerializable>(obj)) {
+      std::dynamic_pointer_cast<PdxSerializable>(obj)) {
     deserialize(input, pdxSerializable);
   } else {
-    throw UnsupportedOperationException("Serialization type not implemented.");
+    throw UnsupportedOperationException(
+        "SerializationRegistry::deserialize: Serialization type not "
+        "implemented.");
   }
 }
 
@@ -254,6 +257,12 @@ void SerializationRegistry::deserialize(
   throw UnsupportedOperationException(
       "SerializationRegistry::deserialize<PdxSerializable> not implemented");
 }
+
+void SerializationRegistry::serializeWithoutHeader(const PdxSerializable* obj,
+                                   DataOutput& output) const {
+  PdxHelper::serializePdx(output, *obj);
+}
+
 
 void SerializationRegistry::addType(TypeFactoryMethod func) {
   theTypeMap.bind(func);

@@ -161,7 +161,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
       serialize(pdxSerializable, output);
     } else {
       throw UnsupportedOperationException(
-          "Serialization type not implemented.");
+          "SerializationRegistry::serialize: Serialization type not implemented.");
     }
   }
 
@@ -179,9 +179,13 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     } else if (const auto pdxSerializable =
                    dynamic_cast<const PdxSerializable*>(obj)) {
       serializeWithoutHeader(pdxSerializable, output);
+    } else if (const auto dataSerializableInternal =
+                   dynamic_cast<const DataSerializableInternal*>(obj)) {
+      serializeWithoutHeader(dataSerializableInternal, output);
     } else {
       throw UnsupportedOperationException(
-          "Serialization type not implemented.");
+          "SerializationRegistry::serializeWithoutHeader: Serialization type "
+          "not implemented.");
     }
   }
 
@@ -318,12 +322,14 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     serializeWithoutHeader(obj, output);
   }
 
-  inline void serializeWithoutHeader(const PdxSerializable* obj,
+  void serializeWithoutHeader(const PdxSerializable* obj,
+                              DataOutput& output) const;
+
+  inline void serializeWithoutHeader(const DataSerializableInternal* obj,
                                      DataOutput& output) const {
-    // TODO PdxSerializable
-    throw UnsupportedOperationException("Implement PdxSerializable");
-    // PdxHelper::serializePdx(output, *obj);
+    obj->toData(output);
   }
+
 
  public:
   static inline int8_t getSerializableDataDsCode(int32_t classId) {
