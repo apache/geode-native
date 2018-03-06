@@ -1,16 +1,15 @@
 # Apache Geode Native Client User Guide
 
-This document contains instructions for building and viewing the Apache Geode Native Client User Guide locally and moving the built guide to the Apache Geode website for publication.
+This document contains instructions for building and viewing the Apache Geode Native Client User Guide.
 
 - [About](#about)
 - [Prerequisites](#prerequisites)
 - [Bookbinder Usage](#bookbinder-usage)
 - [Building the Documentation](#building-the-documentation)
-- [Embedding the User Guide in the Geode Website](#embedding-the-user-guide-in-the-geode-website)
 
 ## About
 
-Apache Geode provides the full source for the Apache Geode Native Client User Guide in markdown format (see `{geode-native-project-dir}/geode-docs/CONTRIBUTE.md`). The latest check-ins to `{geode-native-project-dir}/docs/geode-native-docs` on the `develop` branch are regularly built and published to http://geode.apache.org/docs/. Users can build the markdown into an HTML user guide using [Bookbinder](https://github.com/pivotal-cf/bookbinder) and the instructions below.
+The geode-native repository provides the full source for the Apache Geode Native Client User Guide in markdown format (see `{geode-project-dir}/geode-docs/CONTRIBUTE.md` for more information on how to use markdown in this context). Users can build the markdown into an HTML user guide using [Bookbinder](https://github.com/pivotal-cf/bookbinder) and the instructions below.
 
 Bookbinder is a Ruby gem that binds  a unified documentation web application from markdown, html, and/or DITA source material. The source material for bookbinder must be stored either in local directories or in GitHub repositories. Bookbinder runs [Middleman](http://middlemanapp.com/) to produce a Rackup app that can be deployed locally or as a web application.
 
@@ -63,19 +62,3 @@ For Geode Native Client, a preconfigured **book** is provided in the directory `
 
    You can now view the local documentation at <http://localhost:9292>. 
 
-## Publishing the User Guide to the Geode Website
-
-Once you have reviewed your local build of the User Guide, you can move it to the Apache Geode website by doing the following:
-
-1. Navigate to: `{geode-native-project-dir}/docs/geode-native-book/final_app/public/docs/guide/NN`, where `NN` is the product version of your documentation (e.g., `{geode-native-project-dir}/docs/geode-native-book/final_app/public/docs/guide/11` if you are building the documentation for Apache Geode 1.1).
-
-2. To move the directory, enter:
-
-    ```
-    $ tar cvf ~/Desktop/new-guide-content.tar .
-    $ cd {geode-site-project-dir}/website/content/docs/guide/NN
-    $ tar xvf ~/Desktop/new-guide-content.tar
-    ```
-   **Note:** If the "`NN`" directory doesn't exist in the `{geode-site-project-dir}/website/content/docs/guide/` directory, you will need to create it first.
-
-3. Follow the instructions at `{geode-site-project-dir}/website/README.md` to build, review, and publish the Apache Geode website.
