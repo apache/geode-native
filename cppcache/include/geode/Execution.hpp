@@ -49,6 +49,7 @@ class Execution {
         m_allServer(false),
         m_pool(pp),
         m_proxyCache(proxyCache) {}
+
   Execution(std::shared_ptr<Pool> pool, bool allServer = false,
                 std::shared_ptr<ProxyCache> proxyCache = nullptr)
       : m_routingObj(nullptr),
@@ -58,12 +59,13 @@ class Execution {
         m_allServer(allServer),
         m_pool(pool),
         m_proxyCache(proxyCache) {}
-  Execution& withFilter(
-          std::shared_ptr<CacheableVector> routingObj);
-  Execution& withArgs(
-          std::shared_ptr<Cacheable> args);
-  Execution& withCollector(
-          std::shared_ptr<ResultCollector> rs);
+
+  Execution& withFilter(std::shared_ptr<CacheableVector> routingObj);
+
+  Execution& withArgs(std::shared_ptr<Cacheable> args);
+
+  Execution& withCollector(std::shared_ptr<ResultCollector> rs);
+
   // java function has hasResult property. we put the hasResult argument
   // here as a kluge.
   std::shared_ptr<ResultCollector> execute(

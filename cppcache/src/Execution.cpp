@@ -76,6 +76,7 @@ std::vector<int8_t>* Execution::getFunctionAttributes(
   }
   return nullptr;
 }
+
 std::shared_ptr<ResultCollector> Execution::execute(
     const std::shared_ptr<CacheableVector>& routingObj,
     const std::shared_ptr<Cacheable>& args,
@@ -86,6 +87,7 @@ std::shared_ptr<ResultCollector> Execution::execute(
   m_rc = rs;
   return execute(func, timeout);
 }
+
 std::shared_ptr<ResultCollector> Execution::execute(
     const std::string& func, std::chrono::milliseconds timeout) {
   LOGDEBUG("Execution::execute: ");
@@ -303,26 +305,7 @@ std::shared_ptr<ResultCollector> Execution::execute(
               func, m_args, m_routingObj, isHAHasResultOptimizeForWrite, m_rc,
               (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0, timeout);
     }
-    /*    } catch (TransactionDataNodeHasDepartedException e) {
-                    if(txState == nullptr)
-                    {
-                            GfErrTypeThrowException("Transaction is nullptr",
-       GF_CACHE_ILLEGAL_STATE_EXCEPTION);
-                    }
 
-                    if(!txState->isReplay())
-                            txState->replay(false);
-            } catch(TransactionDataRebalancedException e) {
-                    if(txState == nullptr)
-                    {
-                            GfErrTypeThrowException("Transaction is nullptr",
-       GF_CACHE_ILLEGAL_STATE_EXCEPTION);
-                    }
-
-                    if(!txState->isReplay())
-                            txState->replay(true);
-            }
-    */
     if (serverHasResult == true) {
       // Execution::addResults(m_rc, rs);
       m_rc->endResults();
@@ -447,6 +430,7 @@ if (exceptionPtr != nullptr && err != GF_NOERR) {
     }
   }
 }
+
 std::shared_ptr<CacheableVector> Execution::executeOnPool(
     const std::string& func, uint8_t getResult, int32_t retryAttempts,
     std::chrono::milliseconds timeout) {
@@ -456,22 +440,6 @@ std::shared_ptr<CacheableVector> Execution::executeOnPool(
         "Execute: pool cast to ThinClientPoolDM failed");
   }
   int32_t attempt = 0;
-
-  //auto csArray = tcrdm->getServers();
-
-  // if (csArray != nullptr && csArray->length() != 0) {
-  //  for (int i = 0; i < csArray->length(); i++)
-  //  {
-  //   auto cs = csArray[i];
-  //    TcrEndpoint *ep = nullptr;
-  //    /*
-  //    std::string endpointStr =
-  //    Utils::convertHostToCanonicalForm(cs->value().c_str()
-  //    );
-  //    */
-  //    ep = tcrdm->addEP(cs->value().c_str());
-  //  }
-  //}
 
   // if pools retry attempts are not set then retry once on all available
   // endpoints
@@ -518,32 +486,7 @@ std::shared_ptr<CacheableVector> Execution::executeOnPool(
         GfErrTypeToException("ExecuteOnPool:", err);
       }
     }
-    //auto values =
-    // resultCollector->getFunctionExecutionResults();
-    /*
-    ==25848== 1,610 (72 direct, 1,538 indirect) bytes in 2 blocks are definitely
-    lost in loss record 193 of 218
-    ==25848==    at 0x4007D75: operator new(unsigned int)
-    (vg_replace_malloc.c:313)
-    ==25848==    by 0x42B575A:
-    apache::geode::client::Execution::executeOnPool(stlp_std::basic_string<char,
-    stlp_std::char_traits<char>, stlp_std::allocator<char> >&, unsigned char,
-    int, unsigned int) (Execution.cpp:426)
-    ==25848==    by 0x42B65E6:
-    apache::geode::client::Execution::execute(char const*,
-    bool, unsigned int, bool, bool, bool) (Execution.cpp:292)
-    ==25848==    by 0x42B7897:
-    apache::geode::client::Execution::execute(char const*,
-    bool, unsigned int, bool, bool) (Execution.cpp:76)
-    ==25848==    by 0x8081320: Task_Client1OpTest::doTask() (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPoolExecuteFunctionPrSHOP)
-    ==25848==    by 0x808D5CA: dunit::TestSlave::begin() (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPoolExecuteFunctionPrSHOP)
-    ==25848==    by 0x8089807: dunit::dmain(int, char**) (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPoolExecuteFunctionPrSHOP)
-    ==25848==    by 0x805F9EA: main (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPoolExecuteFunctionPrSHOP)
-    */
+
     delete resultCollector;
     resultCollector = nullptr;
 
