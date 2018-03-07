@@ -28,10 +28,10 @@ namespace geode {
 namespace client {
 
 TransactionalOperation::TransactionalOperation(
-    ServerRegionOperation op, const char* regionName,
+    ServerRegionOperation operation, const char* regionName,
     std::shared_ptr<CacheableKey> key,
     std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> arguments)
-    : m_operation(op),
+    : m_operation(operation),
       m_regionName(regionName),
       m_key(key),
       m_arguments(arguments) {}
@@ -48,7 +48,6 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(Cache* cache) {
     case GF_CONTAINS_VALUE:
       GfErrTypeThrowException("Contains value not supported in transaction",
                               GF_NOTSUP);
-      // result = Boolean.valueOf(containsValue(args[0], true));
       break;
     case GF_CONTAINS_VALUE_FOR_KEY:
       result = CacheableBoolean::create(
