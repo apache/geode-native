@@ -44,7 +44,7 @@ class Execution {
                 std::shared_ptr<Pool> pp = nullptr)
       : m_routingObj(nullptr),
         m_args(nullptr),
-        m_rc(nullptr),
+        m_resultCollector(nullptr),
         m_region(rptr),
         m_allServer(false),
         m_pool(pp),
@@ -54,7 +54,7 @@ class Execution {
                 std::shared_ptr<ProxyCache> proxyCache = nullptr)
       : m_routingObj(nullptr),
         m_args(nullptr),
-        m_rc(nullptr),
+        m_resultCollector(nullptr),
         m_region(nullptr),
         m_allServer(allServer),
         m_pool(pool),
@@ -85,7 +85,7 @@ class Execution {
   Execution(const Execution& rhs)
       : m_routingObj(rhs.m_routingObj),
         m_args(rhs.m_args),
-        m_rc(rhs.m_rc),
+        m_resultCollector(rhs.m_resultCollector),
         m_region(rhs.m_region),
         m_allServer(rhs.m_allServer),
         m_pool(rhs.m_pool),
@@ -98,7 +98,7 @@ class Execution {
                 std::shared_ptr<ProxyCache> proxyCache = nullptr)
       : m_routingObj(routingObj),
         m_args(args),
-        m_rc(rc),
+        m_resultCollector(rc),
         m_region(region),
         m_allServer(allServer),
         m_pool(pool),
@@ -106,7 +106,7 @@ class Execution {
   // ACE_Recursive_Thread_Mutex m_lock;
   std::shared_ptr<CacheableVector> m_routingObj;
   std::shared_ptr<Cacheable> m_args;
-  std::shared_ptr<ResultCollector> m_rc;
+  std::shared_ptr<ResultCollector> m_resultCollector;
   std::shared_ptr<Region> m_region;
   bool m_allServer;
   std::shared_ptr<Pool> m_pool;
