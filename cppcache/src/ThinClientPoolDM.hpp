@@ -213,7 +213,6 @@ class ThinClientPoolDM
 
  protected:
   ThinClientStickyManager* m_manager;
-  std::vector<std::string> m_canonicalHosts;
   ACE_Map_Manager<std::string, TcrEndpoint*, ACE_Recursive_Thread_Mutex>
       m_endpoints;
   ACE_Recursive_Thread_Mutex m_endpointsLock;
@@ -379,9 +378,6 @@ class ThinClientPoolDM
                                 TcrConnection*& conn, bool isBGThread,
                                 bool& isServerException);
 
-  TcrConnection* getConnectionInMultiuserMode(
-      std::shared_ptr<UserAttributes> userAttribute);
-
   // get endpoint using the endpoint string
   TcrEndpoint* getEndPoint(std::string epNameStr);
 
@@ -402,8 +398,6 @@ class ThinClientPoolDM
   TcrConnection* getNoGetLock(bool& isClosed, GfErrType* error,
                               std::set<ServerLocation>& excludeServers,
                               bool& maxConnLimit);
-
-  bool exclude(TcrConnection* conn, std::set<ServerLocation>& excludeServers);
 
   void deleteAction() { removeEPConnections(1); }
 
