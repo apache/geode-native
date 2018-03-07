@@ -40,8 +40,6 @@ class Cache;
 class PdxSerializable;
 class Serializable;
 
-typedef void (*CliCallbackMethod)(Cache &cache);
-
 /** @brief signature of functions passed to registerType. Such functions
  * should return an empty instance of the type they represent. The instance
  * will typically be initialized immediately after creation by a call to
