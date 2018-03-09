@@ -379,37 +379,21 @@ class _GEODE_EXPORT DataInput {
 
   inline void readObject(double* value) { *value = readDouble(); }
 
-  inline std::vector<char16_t> readCharArray() {
-    return readArray<char16_t>();
-  }
+  inline std::vector<char16_t> readCharArray() { return readArray<char16_t>(); }
 
-  inline std::vector<bool> readBooleanArray() {
-    return readArray<bool>();
-  }
+  inline std::vector<bool> readBooleanArray() { return readArray<bool>(); }
 
-  inline std::vector<int8_t> readByteArray() {
-    return readArray<int8_t>();
-  }
+  inline std::vector<int8_t> readByteArray() { return readArray<int8_t>(); }
 
-  inline std::vector<int16_t> readShortArray() {
-    return readArray<int16_t>();
-  }
+  inline std::vector<int16_t> readShortArray() { return readArray<int16_t>(); }
 
-  inline std::vector<int32_t> readIntArray() {
-    return readArray<int32_t>();
-  }
+  inline std::vector<int32_t> readIntArray() { return readArray<int32_t>(); }
 
-  inline std::vector<int64_t> readLongArray() {
-    return readArray<int64_t>();
-  }
+  inline std::vector<int64_t> readLongArray() { return readArray<int64_t>(); }
 
-  inline std::vector<float> readFloatArray() {
-    return readArray<float>();
-  }
+  inline std::vector<float> readFloatArray() { return readArray<float>(); }
 
-  inline std::vector<double> readDoubleArray() {
-    return readArray<double>();
-  }
+  inline std::vector<double> readDoubleArray() { return readArray<double>(); }
 
   inline std::vector<std::string> readStringArray() {
     std::vector<std::string> value;
@@ -445,42 +429,6 @@ class _GEODE_EXPORT DataInput {
       *arrayofBytearr = tmpArray;
       *elementLength = tmpLengtharr;
     }
-  }
-
-  /**
-   * Get the length required to represent a given UTF-8 encoded string
-   * (created using {@link DataOutput::writeUTF} or
-   * <code>java.io.DataOutput.writeUTF</code>) in wide-character format.
-   *
-   * @param value The UTF-8 encoded stream.
-   * @param length The length of the stream to be read.
-   * @return The length of the decoded string.
-   * @see DataOutput::getEncodedLength
-   */
-  static int32_t getDecodedLength(const uint8_t* value, int32_t length) {
-    const uint8_t* end = value + length;
-    int32_t decodedLen = 0;
-    while (value < end) {
-      // get next byte unsigned
-      int32_t b = *value++ & 0xff;
-      int32_t k = b >> 5;
-      // classify based on the high order 3 bits
-      switch (k) {
-        case 6: {
-          value++;
-          break;
-        }
-        case 7: {
-          value += 2;
-          break;
-        }
-        default:
-          break;
-      }
-      decodedLen += 1;
-    }
-    if (value > end) decodedLen--;
-    return decodedLen;
   }
 
   /** destructor */
@@ -604,51 +552,6 @@ class _GEODE_EXPORT DataInput {
     }
   }
 
-  inline char16_t decodeJavaModifiedUtf8Char() {
-    char16_t c;
-    // get next byte unsigned
-    int32_t b = *m_buf++ & 0xff;
-    int32_t k = b >> 5;
-    // classify based on the high order 3 bits
-    switch (k) {
-      case 6: {
-        // two byte encoding
-        // 110yyyyy 10xxxxxx
-        // use low order 6 bits
-        int32_t y = b & 0x1f;
-        // use low order 6 bits of the next byte
-        // It should have high order bits 10, which we don't check.
-        int32_t x = *m_buf++ & 0x3f;
-        // 00000yyy yyxxxxxx
-        c = (y << 6 | x);
-        break;
-      }
-      case 7: {
-        // three byte encoding
-        // 1110zzzz 10yyyyyy 10xxxxxx
-        // use low order 4 bits
-        int32_t z = b & 0x0f;
-        // use low order 6 bits of the next byte
-        // It should have high order bits 10, which we don't check.
-        int32_t y = *m_buf++ & 0x3f;
-        // use low order 6 bits of the next byte
-        // It should have high order bits 10, which we don't check.
-        int32_t x = *m_buf++ & 0x3f;
-        // zzzzyyyy yyxxxxxx
-        c = (z << 12 | y << 6 | x);
-        break;
-      }
-      default:
-        // one byte encoding
-        // 0xxxxxxx
-        // use just low order 7 bits
-        // 00000000 0xxxxxxx
-        c = (b & 0x7f);
-        break;
-    }
-    return c;
-  }
-
   inline int8_t readNoCheck() { return *(m_buf++); }
 
   inline int16_t readInt16NoCheck() {
@@ -683,16 +586,8 @@ class _GEODE_EXPORT DataInput {
       std::basic_string<_CharT, _Traits, _Allocator>& value);
 
   template <class _Traits, class _Allocator>
-  inline void readJavaModifiedUtf8(
-      std::basic_string<char16_t, _Traits, _Allocator>& value) {
-    uint16_t length = readInt16();
-    _GEODE_CHECK_BUFFER_SIZE(length);
-    value.reserve(length);
-    const auto end = m_buf + length;
-    while (m_buf < end) {
-      value += decodeJavaModifiedUtf8Char();
-    }
-  }
+  void readJavaModifiedUtf8(
+      std::basic_string<char16_t, _Traits, _Allocator>& value);
 
   template <class _Traits, class _Allocator>
   void readJavaModifiedUtf8(

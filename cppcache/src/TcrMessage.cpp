@@ -302,7 +302,7 @@ void TcrMessage::readSecureObjectPart(DataInput& input, bool defaultString,
         // m_connectionIDBytes = readCacheableBytes(input, lenObj);
         m_connectionIDBytes = CacheableBytes::create(
             std::vector<int8_t>(input.currentBufferPosition(),
-              input.currentBufferPosition() + lenObj));
+                                input.currentBufferPosition() + lenObj));
         input.advanceCursor(lenObj);
       }
     }
@@ -322,19 +322,18 @@ void TcrMessage::readUniqueIDObjectPart(DataInput& input) {
   LOGDEBUG("TcrMessage::readUniqueIDObjectPart lenObj = %d isObj = %d", lenObj,
            isObj);
   if (lenObj > 0) {
-    m_value = CacheableBytes::create(
-        std::vector<int8_t>(input.currentBufferPosition(),
-                            input.currentBufferPosition() + lenObj));
+    m_value = CacheableBytes::create(std::vector<int8_t>(
+        input.currentBufferPosition(), input.currentBufferPosition() + lenObj));
     input.advanceCursor(lenObj);
   }
 }
 
 int64_t TcrMessage::getConnectionId(TcrConnection* conn) {
   if (m_connectionIDBytes != nullptr) {
-   auto tmp = conn->decryptBytes(m_connectionIDBytes);
-   auto di = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-       reinterpret_cast<const uint8_t*>(tmp->value().data()), tmp->length());
-   return di->readInt64();
+    auto tmp = conn->decryptBytes(m_connectionIDBytes);
+    auto di = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
+        reinterpret_cast<const uint8_t*>(tmp->value().data()), tmp->length());
+    return di->readInt64();
   } else {
     LOGWARN("Returning 0 as internal connection ID msgtype = %d ", m_msgType);
     return 0;
@@ -391,43 +390,13 @@ inline void TcrMessage::writeInt(uint8_t* buffer, uint32_t value) {
 }
 std::shared_ptr<Serializable> TcrMessage::readCacheableString(DataInput& input,
                                                               int lenObj) {
-  std::shared_ptr<Serializable> sPtr;
-  // check whether unicode or ASCII string (bug #356)
-  unsigned int decodedLen =
-      DataInput::getDecodedLength(input.currentBufferPosition(), lenObj);
+  auto decoded = JavaModifiedUtf8::decode(
+      reinterpret_cast<const char*>(input.currentBufferPosition()), lenObj);
+  input.advanceCursor(lenObj);
 
-  if (decodedLen == static_cast<unsigned int>(lenObj)) {
-    if (decodedLen <= 0xffff) {
-      input.rewindCursor(2);
-      writeInt(const_cast<uint8_t*>(input.currentBufferPosition()),
-               static_cast<uint16_t>(lenObj));
-      sPtr = input.readDirectObject(static_cast<int8_t>(
-          apache::geode::client::GeodeTypeIds::CacheableASCIIString));
-    } else {
-      input.rewindCursor(4);
-      writeInt(const_cast<uint8_t*>(input.currentBufferPosition()),
-               static_cast<uint32_t>(lenObj));
-      sPtr = input.readDirectObject(static_cast<int8_t>(
-          apache::geode::client::GeodeTypeIds::CacheableASCIIStringHuge));
-    }
-  } else {
-    if (decodedLen <= 0xffff) {
-      input.rewindCursor(2);
-      writeInt(const_cast<uint8_t*>(input.currentBufferPosition()),
-               static_cast<uint16_t>(lenObj));
-      sPtr = input.readDirectObject(static_cast<int8_t>(
-          apache::geode::client::GeodeTypeIds::CacheableString));
-    } else {
-      input.rewindCursor(4);
-      writeInt(const_cast<uint8_t*>(input.currentBufferPosition()),
-               static_cast<uint32_t>(lenObj));
-      sPtr = input.readDirectObject(static_cast<int8_t>(
-          apache::geode::client::GeodeTypeIds::CacheableStringHuge));
-    }
-  }
-
-  return sPtr;
+  return CacheableString::create(decoded);
 }
+
 std::shared_ptr<Serializable> TcrMessage::readCacheableBytes(DataInput& input,
                                                              int lenObj) {
   if (lenObj <= 252) {  // 252 is java's ((byte)-4 && 0xFF)
@@ -802,9 +771,9 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
         if (bytes == nullptr) {
           // last chunk -- wait for processing of all the chunks to complete
           m_chunkedResult->waitFinalize();
-         auto ex = m_chunkedResult->getException();
-         if (ex != nullptr) {
-           throw *ex;
+          auto ex = m_chunkedResult->getException();
+          if (ex != nullptr) {
+            throw *ex;
           }
         }
         break;
@@ -868,8 +837,9 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
     case TcrMessage::EXCEPTION: {
       if (bytes != nullptr) {
         DeleteArray<const uint8_t> delChunk(bytes);
-        auto input = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-                  bytes, len);
+        auto input =
+            m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
+                bytes, len);
         readExceptionPart(*input, isLastChunkAndisSecurityHeader);
         readSecureObjectPart(*input, false, true,
                              isLastChunkAndisSecurityHeader);
@@ -926,7 +896,7 @@ void TcrMessage::chunkSecurityHeader(int skipPart, const uint8_t* bytes,
   LOGDEBUG("TcrMessage::chunkSecurityHeader:: skipParts = %d", skipPart);
   if ((isLastChunkAndSecurityHeader & 0x3) == 0x3) {
     auto di = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-              bytes, len);
+        bytes, len);
     skipParts(*di, skipPart);
     readSecureObjectPart(*di, false, true, isLastChunkAndSecurityHeader);
   }
@@ -937,7 +907,7 @@ void TcrMessage::handleByteArrayResponse(
     const SerializationRegistry& serializationRegistry,
     MemberListForVersionStamp& memberListForVersionStamp) {
   auto input = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-                  (uint8_t*)bytearray, len);
+      (uint8_t*)bytearray, len);
   // TODO:: this need to make sure that pool is there
   //  if(m_tcdm == nullptr)
   //  throw IllegalArgumentException("Pool is nullptr in TcrMessage");
@@ -1251,7 +1221,8 @@ void TcrMessage::handleByteArrayResponse(
         LOGDEBUG("RESPONSE_CLIENT_PR_METADATA len is 17");
         return;
       }
-      m_metadata = new std::vector<std::vector<std::shared_ptr<BucketServerLocation>> >();
+      m_metadata =
+          new std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>();
       for (int32_t i = 0; i < numparts; i++) {
         int32_t bits32 = input->readInt32();  // partlen;
         input->read();                        // isObj;
@@ -1262,7 +1233,8 @@ void TcrMessage::handleByteArrayResponse(
         bits32 = input->readArrayLen();  // array length
         LOGDEBUG("Array length = %d ", bits32);
         if (bits32 > 0) {
-          std::vector<std::shared_ptr<BucketServerLocation>> bucketServerLocations;
+          std::vector<std::shared_ptr<BucketServerLocation>>
+              bucketServerLocations;
           for (int32_t index = 0; index < bits32; index++) {
             // ignore DS typeid, CLASS typeid, and string typeid
             input->advanceCursor(3);
@@ -1316,7 +1288,8 @@ void TcrMessage::handleByteArrayResponse(
 
         bits32 = input->readArrayLen();  // array length
         if (bits32 > 0) {
-          m_fpaSet = new std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>();
+          m_fpaSet =
+              new std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>();
           for (int32_t index = 0; index < bits32; index++) {
             input->advanceCursor(
                 3);  // ignore DS typeid, CLASS typeid, string typeid
@@ -1588,8 +1561,8 @@ TcrMessageQueryWithParameters::TcrMessageQueryWithParameters(
   // Part-5: Parameters
   if (paramList != nullptr) {
     for (int32_t i = 0; i < paramList->size(); i++) {
-     auto value = (*paramList)[i];
-     writeObjectPart(value);
+      auto value = (*paramList)[i];
+      writeObjectPart(value);
     }
   }
   writeMessageLength();
@@ -1754,11 +1727,11 @@ TcrMessageDestroy::TcrMessageDestroy(
     writeObjectPart(key);
     writeObjectPart(value);  // expectedOldValue part
     uint8_t removeByte = 8;  // OP_TYPE_DESTROY value from Operation.java
-   auto removeBytePart = CacheableByte::create(removeByte);
-   writeObjectPart(removeBytePart);  // operation part
-   writeEventIdPart();
-   if (aCallbackArgument != nullptr) {
-     writeObjectPart(aCallbackArgument);
+    auto removeBytePart = CacheableByte::create(removeByte);
+    writeObjectPart(removeBytePart);  // operation part
+    writeEventIdPart();
+    if (aCallbackArgument != nullptr) {
+      writeObjectPart(aCallbackArgument);
     }
     writeMessageLength();
   } else {
@@ -2130,11 +2103,11 @@ TcrMessagePeriodicAck::TcrMessagePeriodicAck(
   writeHeader(m_msgType, numParts);
   for (EventIdMapEntryList::const_iterator entry = entries.begin();
        entry != entries.end(); ++entry) {
-   auto src = entry->first;
-   auto seq = entry->second;
-   auto eid = EventId::create(src->getMemId(), src->getMemIdLen(),
-                              src->getThrId(), seq->getSeqNum());
-   writeObjectPart(eid);
+    auto src = entry->first;
+    auto seq = entry->second;
+    auto eid = EventId::create(src->getMemId(), src->getMemIdLen(),
+                               src->getThrId(), seq->getSeqNum());
+    writeObjectPart(eid);
   }
   writeMessageLength();
 }
@@ -2143,7 +2116,8 @@ TcrMessagePutAll::TcrMessagePutAll(
     std::unique_ptr<DataOutput> dataOutput, const Region* region,
     const HashMapOfCacheable& map,
     std::chrono::milliseconds messageResponsetimeout,
-    ThinClientBaseDM* connectionDM, const std::shared_ptr<Serializable>& aCallbackArgument) {
+    ThinClientBaseDM* connectionDM,
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   m_tcdm = connectionDM;
   m_regionName = region->getFullPath();
   m_region = region;
@@ -2297,7 +2271,8 @@ TcrMessageGetAll::TcrMessageGetAll(
   writeMessageLength();*/
 }
 
-void TcrMessage::InitializeGetallMsg(const std::shared_ptr<Serializable>& aCallbackArgument) {
+void TcrMessage::InitializeGetallMsg(
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   /*CacheableObjectArrayPtr keyArr = nullptr;
   if (m_keyList != nullptr) {
     keyArr = CacheableObjectArray::create();
@@ -2584,10 +2559,8 @@ void TcrMessage::createUserCredentialMessage(TcrConnection* conn) {
 
   if (m_creds != nullptr) m_creds->toData(*dOut);
 
-  auto credBytes =
-      CacheableBytes::create(
-        std::vector<int8_t>(dOut->getBuffer(),
-                            dOut->getBuffer() + dOut->getBufferLength()));
+  auto credBytes = CacheableBytes::create(std::vector<int8_t>(
+      dOut->getBuffer(), dOut->getBuffer() + dOut->getBufferLength()));
   auto encryptBytes = conn->encryptBytes(credBytes);
   writeObjectPart(encryptBytes);
 
@@ -2616,9 +2589,8 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
   dOutput->writeInt(connectionId);
   dOutput->writeInt(unique_id);
 
-  auto bytes = CacheableBytes::create(
-      std::vector<int8_t>(dOutput->getBuffer(), dOutput->getBuffer() +
-      dOutput->getBufferLength()));
+  auto bytes = CacheableBytes::create(std::vector<int8_t>(
+      dOutput->getBuffer(), dOutput->getBuffer() + dOutput->getBufferLength()));
 
   auto encryptBytes = conn->encryptBytes(bytes);
 
@@ -2642,13 +2614,13 @@ void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection* conn) {
   }
   m_isSecurityHeaderAdded = true;
   LOGDEBUG("TcrMessage::addSecurityPart only connid");
-  auto dOutput = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
+  auto dOutput =
+      m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
 
   dOutput->writeInt(connectionId);
 
-  auto bytes = CacheableBytes::create(
-      std::vector<int8_t>(dOutput->getBuffer(), dOutput->getBuffer() +
-      dOutput->getBufferLength()));
+  auto bytes = CacheableBytes::create(std::vector<int8_t>(
+      dOutput->getBuffer(), dOutput->getBuffer() + dOutput->getBufferLength()));
 
   auto encryptBytes = conn->encryptBytes(bytes);
 
@@ -2814,7 +2786,8 @@ void TcrMessage::setData(const char* bytearray, int32_t len, uint16_t memId,
                          const SerializationRegistry& serializationRegistry,
                          MemberListForVersionStamp& memberListForVersionStamp) {
   if (m_request == nullptr) {
-    m_request = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
+    m_request =
+        m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
   }
   if (bytearray) {
     DeleteArray<const char> delByteArr(bytearray);
@@ -2847,9 +2820,11 @@ void TcrMessage::setMessageTypeRequest(int32_t msgType) {
 int32_t TcrMessage::getMessageTypeRequest() const { return m_msgTypeRequest; }
 
 const std::map<std::string, int>* TcrMessage::getCqs() const { return m_cqs; }
- std::shared_ptr<CacheableKey> TcrMessage::getKey() const { return m_key; }
+std::shared_ptr<CacheableKey> TcrMessage::getKey() const { return m_key; }
 
-const std::shared_ptr<CacheableKey>& TcrMessage::getKeyRef() const { return m_key; }
+const std::shared_ptr<CacheableKey>& TcrMessage::getKeyRef() const {
+  return m_key;
+}
 std::shared_ptr<Cacheable> TcrMessage::getValue() const { return m_value; }
 
 const std::shared_ptr<Cacheable>& TcrMessage::getValueRef() const {
@@ -2882,16 +2857,16 @@ uint32_t TcrMessage::getMsgLength() const {
 uint32_t TcrMessage::getMsgBodyLength() const {
   return m_request->getBufferLength() - g_headerLen;
 }
- std::shared_ptr<EventId> TcrMessage::getEventId() const { return m_eventid; }
+std::shared_ptr<EventId> TcrMessage::getEventId() const { return m_eventid; }
 
- int32_t TcrMessage::getTransId() const { return m_txId; }
+int32_t TcrMessage::getTransId() const { return m_txId; }
 
- void TcrMessage::setTransId(int32_t txId) { m_txId = txId; }
+void TcrMessage::setTransId(int32_t txId) { m_txId = txId; }
 
- std::chrono::milliseconds TcrMessage::getTimeout() const { return m_timeout; }
+std::chrono::milliseconds TcrMessage::getTimeout() const { return m_timeout; }
 
- void TcrMessage::setTimeout(std::chrono::milliseconds timeout) {
-   m_timeout = timeout;
+void TcrMessage::setTimeout(std::chrono::milliseconds timeout) {
+  m_timeout = timeout;
 }
 
 void TcrMessage::skipParts(DataInput& input, int32_t numParts) {
@@ -2918,30 +2893,30 @@ void TcrMessage::readEventIdPart(DataInput& input, bool skip, int32_t parts) {
 
   m_eventid = std::static_pointer_cast<EventId>(input.readObject());
 }
- std::shared_ptr<DSMemberForVersionStamp> TcrMessage::readDSMember(
+std::shared_ptr<DSMemberForVersionStamp> TcrMessage::readDSMember(
     apache::geode::client::DataInput& input) {
-   uint8_t typeidLen = input.read();
-   if (typeidLen == 1) {
-     uint8_t typeidofMember = input.read();
-     if (typeidofMember != GeodeTypeIdsImpl::InternalDistributedMember) {
-       throw Exception(
-           "Reading DSMember. Expecting type id 92 for "
-           "InternalDistributedMember. ");
-     }
+  uint8_t typeidLen = input.read();
+  if (typeidLen == 1) {
+    uint8_t typeidofMember = input.read();
+    if (typeidofMember != GeodeTypeIdsImpl::InternalDistributedMember) {
+      throw Exception(
+          "Reading DSMember. Expecting type id 92 for "
+          "InternalDistributedMember. ");
+    }
 
-     auto memId = std::shared_ptr<ClientProxyMembershipID>(
-         new ClientProxyMembershipID());
-     memId->fromData(input);
-     return (std::shared_ptr<DSMemberForVersionStamp>)memId;
-   } else if (typeidLen == 2) {
-     uint16_t typeidofMember = input.readInt16();
-     if (typeidofMember != GeodeTypeIdsImpl::DiskStoreId) {
-       throw Exception(
-           "Reading DSMember. Expecting type id 2133 for DiskStoreId. ");
-     }
-     DiskStoreId* diskStore = new DiskStoreId();
-     diskStore->fromData(input);
-     return std::shared_ptr<DSMemberForVersionStamp>(diskStore);
+    auto memId =
+        std::shared_ptr<ClientProxyMembershipID>(new ClientProxyMembershipID());
+    memId->fromData(input);
+    return (std::shared_ptr<DSMemberForVersionStamp>)memId;
+  } else if (typeidLen == 2) {
+    uint16_t typeidofMember = input.readInt16();
+    if (typeidofMember != GeodeTypeIdsImpl::DiskStoreId) {
+      throw Exception(
+          "Reading DSMember. Expecting type id 2133 for DiskStoreId. ");
+    }
+    DiskStoreId* diskStore = new DiskStoreId();
+    diskStore->fromData(input);
+    return std::shared_ptr<DSMemberForVersionStamp>(diskStore);
   } else {
     throw Exception(
         "Reading DSMember. Expecting type id length as either one or two "

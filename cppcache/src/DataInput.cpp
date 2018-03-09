@@ -21,6 +21,7 @@
 #include "SerializationRegistry.hpp"
 #include "CacheImpl.hpp"
 #include "util/string.hpp"
+#include "util/JavaModifiedUtf8.hpp"
 
 namespace apache {
 namespace geode {
@@ -45,6 +46,16 @@ void DataInput::readJavaModifiedUtf8(
   value = to_utf8(utf16);
 }
 template _GEODE_EXPORT void DataInput::readJavaModifiedUtf8(std::string&);
+
+template <class _Traits, class _Allocator>
+void DataInput::readJavaModifiedUtf8(
+    std::basic_string<char16_t, _Traits, _Allocator>& value) {
+  uint16_t length = readInt16();
+  _GEODE_CHECK_BUFFER_SIZE(length);
+  value =
+      JavaModifiedUtf8::decode(reinterpret_cast<const char*>(m_buf), length);
+}
+template _GEODE_EXPORT void DataInput::readJavaModifiedUtf8(std::u16string&);
 
 template <class _Traits, class _Allocator>
 void DataInput::readJavaModifiedUtf8(

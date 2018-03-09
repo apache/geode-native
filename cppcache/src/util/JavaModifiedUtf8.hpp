@@ -115,6 +115,65 @@ struct JavaModifiedUtf8 {
       jmutf8 += static_cast<uint8_t>(0x80 | (c & 0x3F));
     }
   }
+
+  inline static std::u16string decode(const char* buf, uint16_t len) {
+    std::u16string value;
+    const auto end = buf + len;
+    while (buf < end) {
+      value += decodeJavaModifiedUtf8Char(&buf);
+    }
+    return value;
+  }
+
+  inline static char16_t decodeJavaModifiedUtf8Char(const char** pbuf) {
+    char16_t c;
+
+    // get next byte unsigned
+    int32_t b = **pbuf & 0xff;
+    (*pbuf)++;
+    int32_t k = b >> 5;
+    // classify based on the high order 3 bits
+    switch (k) {
+      case 6: {
+        // two byte encoding
+        // 110yyyyy 10xxxxxx
+        // use low order 6 bits
+        int32_t y = b & 0x1f;
+        // use low order 6 bits of the next byte
+        // It should have high order bits 10, which we don't check.
+        int32_t x = **pbuf & 0x3f;
+        (*pbuf)++;
+        // 00000yyy yyxxxxxx
+        c = (y << 6 | x);
+        break;
+      }
+      case 7: {
+        // three byte encoding
+        // 1110zzzz 10yyyyyy 10xxxxxx
+        // use low order 4 bits
+        int32_t z = b & 0x0f;
+        // use low order 6 bits of the next byte
+        // It should have high order bits 10, which we don't check.
+        int32_t y = **pbuf & 0x3f;
+        (*pbuf)++;
+        // use low order 6 bits of the next byte
+        // It should have high order bits 10, which we don't check.
+        int32_t x = **pbuf & 0x3f;
+        (*pbuf)++;
+        // zzzzyyyy yyxxxxxx
+        c = static_cast<char16_t>(z << 12 | y << 6 | x);
+        break;
+      }
+      default:
+        // one byte encoding
+        // 0xxxxxxx
+        // use just low order 7 bits
+        // 00000000 0xxxxxxx
+        c = static_cast<char16_t>(b & 0x7f);
+        break;
+    }
+    return c;
+  }
 };
 
 }  // namespace internal
