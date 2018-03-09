@@ -49,30 +49,30 @@ namespace Apache
       {
       public:
         /// <summary>
-		    /// Add a routing object, 
+        /// Add a routing object, 
         /// Return self.
         /// </summary>
-		    generic<class TFilter>
+        generic<class TFilter>
         Execution<TResult>^ WithFilter(System::Collections::Generic::ICollection<TFilter>^ routingObj);
 
         /// <summary>
-		    /// Add an argument, 
+        /// Add an argument, 
         /// Return self.
         /// </summary>
         generic<class TArgs>
-		    Execution<TResult>^ WithArgs(TArgs args);
+        Execution<TResult>^ WithArgs(TArgs args);
 
         /// <summary>
-		    /// Add a result collector, 
+        /// Add a result collector, 
         /// Return self.
         /// </summary>
-		    Execution<TResult>^ WithCollector(IResultCollector<TResult>^ rc);
+        Execution<TResult>^ WithCollector(IResultCollector<TResult>^ rc);
 
         /// <summary>
         /// Execute a function, 
         /// Return resultCollector.
         /// </summary>
-		    /// <param name="timeout"> Value to wait for the operation to finish before timing out.</param> 
+        /// <param name="timeout"> Value to wait for the operation to finish before timing out.</param> 
         IResultCollector<TResult>^ Execute(String^ func, TimeSpan timeout);
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Apache
         {
           return __nullptr == nativeptr ? nullptr :
             gcnew Execution<TResult>( nativeptr, rc );
-	      }
+        }
 
         /// <summary>
         /// Private constructor to wrap a native object pointer.

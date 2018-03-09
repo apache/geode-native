@@ -229,7 +229,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         sprintf(buf, "get result count = %zd", resultList->size());
         LOG(buf);
         ASSERT(resultList->size() == 17,
-               "get executeFunctionResult count is not 17");
+               "get executeFunctionResult count is  not 17");
         for (int32_t i = 0; i < resultList->size(); i++) {
           sprintf(buf, "result[%d] is null\n", i);
           ASSERT(resultList->operator[](i) != nullptr, buf);
@@ -257,19 +257,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %zd",
-                executeFunctionResult->size());
-        LOG(buf);
         resultList->clear();
-
-        for (unsigned item = 0;
-             item < static_cast<uint32_t>(executeFunctionResult->size());
-             item++) {
-          auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(
-              executeFunctionResult->operator[](item));
-          for (unsigned pos = 0; pos < static_cast<uint32_t>(arrayList->size());
-               pos++) {
-            resultList->push_back(arrayList->operator[](pos));
+        for (const auto& item : *executeFunctionResult) {
+          auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(item);
+          for (const auto& entry : *arrayList) {
+            resultList->push_back(entry);
           }
         }
         sprintf(buf, "get result count = %zd", resultList->size());

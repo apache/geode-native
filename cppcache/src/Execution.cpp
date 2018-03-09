@@ -35,7 +35,7 @@ namespace client {
 FunctionToFunctionAttributes Execution::m_func_attrs;
 ACE_Recursive_Thread_Mutex Execution::m_func_attrs_lock;
 
-Execution& Execution::withFilter(std::shared_ptr<CacheableVector> routingObj) {
+Execution Execution::withFilter(std::shared_ptr<CacheableVector> routingObj) {
   if (routingObj == nullptr) {
     throw IllegalArgumentException("Execution::withFilter: filter is null");
   }
@@ -44,25 +44,28 @@ Execution& Execution::withFilter(std::shared_ptr<CacheableVector> routingObj) {
         "Execution::withFilter: FunctionService::onRegion needs to be called "
         "first before calling this function");
   }
-  m_routingObj = routingObj;
-  return *this;
+  auto copy = *this;
+  copy.m_routingObj = routingObj;
+  return copy;
 }
 
-Execution& Execution::withArgs(std::shared_ptr<Cacheable> args) {
+Execution Execution::withArgs(std::shared_ptr<Cacheable> args) {
   if (args == nullptr) {
     throw IllegalArgumentException("Execution::withArgs: args is null");
   }
-  m_args = args;
-  return *this;
+  auto copy = *this;
+  copy.m_args = args;
+  return copy;
 }
 
-Execution& Execution::withCollector(std::shared_ptr<ResultCollector> rs) {
+Execution Execution::withCollector(std::shared_ptr<ResultCollector> rs) {
   if (rs == nullptr) {
     throw IllegalArgumentException(
         "Execution::withCollector: collector is null");
   }
-  m_resultCollector = rs;
-  return *this;
+  auto copy = *this;
+  copy.m_resultCollector = rs;
+  return copy;
 }
 
 std::vector<int8_t>* Execution::getFunctionAttributes(const std::string& func) {

@@ -40,11 +40,11 @@ set PROFILERCMD=
 set BUG481=
 set TESTNAME=${TEST}
 
-set
-
 rmdir /q /s "$<SHELL_PATH:${TEST_DIR}>" 2>nul
+
 mkdir "$<SHELL_PATH:${TEST_DIR}>"
 if %errorlevel% neq 0 exit /b %errorlevel%
+
 pushd "$<SHELL_PATH:${TEST_DIR}>"
 if %errorlevel% neq 0 exit /b %errorlevel%
 

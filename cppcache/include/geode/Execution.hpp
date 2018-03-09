@@ -35,13 +35,14 @@ namespace apache {
 namespace geode {
 namespace client {
 
-typedef std::map<std::string, std::vector<int8_t>*> FunctionToFunctionAttributes;
+typedef std::map<std::string, std::vector<int8_t>*>
+    FunctionToFunctionAttributes;
 
-class Execution {
+class _GEODE_EXPORT Execution {
  public:
   Execution(std::shared_ptr<Region> rptr = nullptr,
-                std::shared_ptr<ProxyCache> proxyCache = nullptr,
-                std::shared_ptr<Pool> pp = nullptr)
+            std::shared_ptr<ProxyCache> proxyCache = nullptr,
+            std::shared_ptr<Pool> pp = nullptr)
       : m_routingObj(nullptr),
         m_args(nullptr),
         m_resultCollector(nullptr),
@@ -51,7 +52,7 @@ class Execution {
         m_proxyCache(proxyCache) {}
 
   Execution(std::shared_ptr<Pool> pool, bool allServer = false,
-                std::shared_ptr<ProxyCache> proxyCache = nullptr)
+            std::shared_ptr<ProxyCache> proxyCache = nullptr)
       : m_routingObj(nullptr),
         m_args(nullptr),
         m_resultCollector(nullptr),
@@ -60,11 +61,11 @@ class Execution {
         m_pool(pool),
         m_proxyCache(proxyCache) {}
 
-  Execution& withFilter(std::shared_ptr<CacheableVector> routingObj);
+  Execution withFilter(std::shared_ptr<CacheableVector> routingObj);
 
-  Execution& withArgs(std::shared_ptr<Cacheable> args);
+  Execution withArgs(std::shared_ptr<Cacheable> args);
 
-  Execution& withCollector(std::shared_ptr<ResultCollector> rs);
+  Execution withCollector(std::shared_ptr<ResultCollector> rs);
 
   // java function has hasResult property. we put the hasResult argument
   // here as a kluge.
@@ -75,13 +76,12 @@ class Execution {
       std::chrono::milliseconds timeout);
 
   std::shared_ptr<ResultCollector> execute(
-      const std::string& func, std::chrono::milliseconds timeout =
-                                   DEFAULT_QUERY_RESPONSE_TIMEOUT);
+      const std::string& func,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   static void addResults(std::shared_ptr<ResultCollector>& collector,
                          const std::shared_ptr<CacheableVector>& results);
 
- private:
   Execution(const Execution& rhs)
       : m_routingObj(rhs.m_routingObj),
         m_args(rhs.m_args),
@@ -90,12 +90,14 @@ class Execution {
         m_allServer(rhs.m_allServer),
         m_pool(rhs.m_pool),
         m_proxyCache(rhs.m_proxyCache) {}
+
+ private:
   Execution(const std::shared_ptr<CacheableVector>& routingObj,
-                const std::shared_ptr<Cacheable>& args,
-                const std::shared_ptr<ResultCollector>& rc,
-                const std::shared_ptr<Region>& region, const bool allServer,
-                const std::shared_ptr<Pool>& pool,
-                std::shared_ptr<ProxyCache> proxyCache = nullptr)
+            const std::shared_ptr<Cacheable>& args,
+            const std::shared_ptr<ResultCollector>& rc,
+            const std::shared_ptr<Region>& region, const bool allServer,
+            const std::shared_ptr<Pool>& pool,
+            std::shared_ptr<ProxyCache> proxyCache = nullptr)
       : m_routingObj(routingObj),
         m_args(args),
         m_resultCollector(rc),
