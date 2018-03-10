@@ -35,6 +35,8 @@
 //TODO::split
 #include "../CqEvent.hpp"
 #include "../UserFunctionExecutionException.hpp"
+#include "../Cache.hpp"
+
 namespace Apache
 {
   namespace Geode
@@ -178,7 +180,7 @@ namespace Apache
       }
 
       generic<class TValue>
-      inline static native::Cacheable* SafeGenericM2UMConvert( TValue mg_val)
+      inline static native::Cacheable* SafeGenericM2UMConvert( TValue mg_val, Cache^ cache)
       {
         if (mg_val == nullptr) return NULL;
 
@@ -199,7 +201,7 @@ namespace Apache
 					return new native::ManagedCacheableKeyGeneric(tmpIGFS);
 				}
             
-        if(Serializable::IsObjectAndPdxSerializerRegistered(mg_obj->GetType()->FullName))
+        if(cache->GetTypeRegistry()->GetPdxSerializer() != nullptr)
         {
 				  return new native::PdxManagedCacheableKey(gcnew PdxWrapper(mg_obj));
         }
@@ -208,9 +210,9 @@ namespace Apache
       }
 
       generic<class TValue>
-      inline static native::Cacheable* SafeGenericMSerializableConvert( TValue mg_obj )
+      inline static native::Cacheable* SafeGenericMSerializableConvert( TValue mg_obj, Cache^ cache )
       {
-        return SafeGenericM2UMConvert<TValue>( mg_obj );
+        return SafeGenericM2UMConvert<TValue>( mg_obj, cache );
       }
 
       inline static IPdxSerializable^ SafeUMSerializablePDXConvert( std::shared_ptr<native::Serializable> obj )

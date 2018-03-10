@@ -36,19 +36,20 @@ namespace Apache
       generic<class TResult>
       void ResultCollector<TResult>::AddResult( const TResult rs )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        throw gcnew UnsupportedOperationException();
+        //_GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
-          try
-          {
-            auto result = std::shared_ptr<native::Cacheable>(SafeGenericMSerializableConvert((IGeodeSerializable^)rs));
-            m_nativeptr->get()->addResult(result);
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+        //  try
+        //  {
+        //    auto result = std::shared_ptr<native::Cacheable>(SafeGenericMSerializableConvert((IGeodeSerializable^)rs));
+        //    m_nativeptr->get()->addResult(result);
+        //  }
+        //  finally
+        //  {
+        //    GC::KeepAlive(m_nativeptr);
+        //  }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        //_GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
       generic<class TResult>

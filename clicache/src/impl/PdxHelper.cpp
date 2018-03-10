@@ -163,6 +163,7 @@ namespace Apache
             dataInput->AdvanceUMCursor();//it will increase the cursor in c++ layer
             dataInput->SetBuffer();//it will c++ buffer in cli layer
 
+            auto cache = dataInput->Cache;
             PdxType^ pType = dataInput->Cache->GetPdxTypeRegistry()->GetPdxType(typeId);
             PdxType^ pdxLocalType = nullptr;
 
@@ -174,7 +175,7 @@ namespace Apache
               pdxClassname = pType->PdxClassName;
               pdxDomainClassname = Serializable::GetLocalTypeName(pdxClassname);
               //Log::Debug("found type " + typeId + " " + pType->IsLocal);
-              pdxObject = Serializable::GetPdxType(pdxDomainClassname);
+              pdxObject = Serializable::GetPdxType(pdxDomainClassname, cache);
               if(pType->IsLocal)//local type no need to read Unread data
               {
                 PdxLocalReader^ plr = gcnew PdxLocalReader(dataInput, pType, len);
@@ -204,7 +205,7 @@ namespace Apache
               pdxClassname = pType->PdxClassName;
               pdxDomainClassname = Serializable::GetLocalTypeName(pdxClassname);
 
-              pdxObject = Serializable::GetPdxType(pdxDomainClassname);
+              pdxObject = Serializable::GetPdxType(pdxDomainClassname, cache);
               
               Object^ pdxRealObject = pdxObject;
               bool isPdxWrapper = false;

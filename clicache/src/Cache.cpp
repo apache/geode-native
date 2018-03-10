@@ -54,6 +54,7 @@ namespace Apache
       {
         m_nativeptr = gcnew native_shared_ptr<native::Cache>(nativeptr);
         m_pdxTypeRegistry = gcnew Apache::Geode::Client::Internal::PdxTypeRegistry(this);
+        m_typeRegistry = gcnew TypeRegistry();
       }
 
       String^ Cache::Name::get( )

@@ -21,6 +21,7 @@
 #include "geode_defs.hpp"
 #include "IGeodeCache.hpp"
 #include "native_shared_ptr.hpp"
+#include "TypeRegistry.hpp"
 
 using namespace System;
 
@@ -302,6 +303,10 @@ namespace Apache
           return m_pdxTypeRegistry;
         }
 
+        Apache::Geode::Client::TypeRegistry^ GetTypeRegistry()
+        {
+          return m_typeRegistry;
+        }
       private:
 
         /// <summary>
@@ -313,6 +318,7 @@ namespace Apache
         native_shared_ptr<native::Cache>^ m_nativeptr;
 
         Apache::Geode::Client::Internal::PdxTypeRegistry^ m_pdxTypeRegistry;
+        Apache::Geode::Client::TypeRegistry^ m_typeRegistry;
       };
     }  // namespace Client
   }  // namespace Geode

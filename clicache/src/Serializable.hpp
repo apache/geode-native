@@ -265,14 +265,7 @@ namespace Apache
         /// information in the latter case.
         /// </exception>
         static void RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod, Cache^ cache);
-
-        /// <summary>
-        /// Set the PDX serializer for the cache. If this serializer is set,
-        /// it will be consulted to see if it can serialize any domain classes which are 
-        /// added to the cache in portable data exchange format. 
-        /// </summary>
-        static void RegisterPdxSerializer(IPdxSerializer^ pdxSerializer);
-        
+       
 				/// <summary>
         /// Register an instance factory method for a given type.
         /// This should be used when registering types that implement
@@ -298,14 +291,12 @@ namespace Apache
         static void SetPdxTypeMapper(IPdxTypeMapper^ pdxTypeMapper);        
 
       internal:
-
+        static std::shared_ptr<CacheableKey> wrapIGeodeSerializable(IGeodeSerializable^ managedObject);
 				static System::Int32 GetPDXIdForType(String^ poolName, IGeodeSerializable^ pdxType, Cache^ cache);
 				static IGeodeSerializable^ GetPDXTypeById(String^ poolName, System::Int32 typeId, Cache^ cache);
-				static IPdxSerializable^ Serializable::GetPdxType(String^ className);
+				static IPdxSerializable^ Serializable::GetPdxType(String^ className, Cache^ cache);
 				static void RegisterPDXManagedCacheableKey(Cache^ cache);
-        static bool IsObjectAndPdxSerializerRegistered(String^ className);
 
-        static IPdxSerializer^ GetPdxSerializer();
         static String^ GetPdxTypeName(String^ localTypeName);
         static String^ GetLocalTypeName(String^ pdxTypeName);
         static void Clear();
@@ -515,7 +506,7 @@ namespace Apache
           return ret;
         }
 
-        static IPdxSerializer^ PdxSerializer = nullptr;
+      internal:
         static IPdxTypeMapper^ PdxTypeMapper = nullptr;
         static Object^ LockObj = gcnew Object();
         static Dictionary<String^, String^>^ PdxTypeNameToLocal =
