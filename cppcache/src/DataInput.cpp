@@ -54,6 +54,7 @@ void DataInput::readJavaModifiedUtf8(
   _GEODE_CHECK_BUFFER_SIZE(length);
   value =
       JavaModifiedUtf8::decode(reinterpret_cast<const char*>(m_buf), length);
+  advanceCursor(length);
 }
 template _GEODE_EXPORT void DataInput::readJavaModifiedUtf8(std::u16string&);
 
