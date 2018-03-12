@@ -28,6 +28,7 @@ namespace Apache
   {
     namespace Client
     {
+      ref class Cache;
 
       namespace Internal
       {
@@ -95,7 +96,7 @@ namespace Apache
             return false;
           }
 
-          Object^ GetEnum();
+          Object^ GetEnum(Cache^ cache);
 
         };
       }  // namespace Client

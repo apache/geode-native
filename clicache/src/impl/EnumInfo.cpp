@@ -47,9 +47,9 @@ namespace Apache
           _hashcode = input->ReadInt32();
         }
 
-       Object^ EnumInfo::GetEnum()
+       Object^ EnumInfo::GetEnum(Cache^ cache)
        {
-         String^ tmp = Serializable::GetLocalTypeName(_enumClassName);
+         String^ tmp = Serializable::GetLocalTypeName(_enumClassName, cache);
          Type^ t = Serializable::GetType(tmp);
          Object^ obj = Enum::Parse(t, _enumName);
 

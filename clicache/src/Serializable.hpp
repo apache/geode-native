@@ -280,16 +280,7 @@ namespace Apache
         
         static void RegisterPdxType(PdxTypeFactoryMethod^ creationMethod);
 
-        /// <summary>
-        /// Register an PdxTypeMapper to map the local types to pdx types
-        /// </summary>
-        /// <param name="pdxTypeMapper">
-        /// Object which implements IPdxTypeMapper interface
-        /// </param>
        
-
-        static void SetPdxTypeMapper(IPdxTypeMapper^ pdxTypeMapper);        
-
       internal:
         static std::shared_ptr<CacheableKey> wrapIGeodeSerializable(IGeodeSerializable^ managedObject);
 				static System::Int32 GetPDXIdForType(String^ poolName, IGeodeSerializable^ pdxType, Cache^ cache);
@@ -297,8 +288,8 @@ namespace Apache
 				static IPdxSerializable^ Serializable::GetPdxType(String^ className, Cache^ cache);
 				static void RegisterPDXManagedCacheableKey(Cache^ cache);
 
-        static String^ GetPdxTypeName(String^ localTypeName);
-        static String^ GetLocalTypeName(String^ pdxTypeName);
+        static String^ GetPdxTypeName(String^ localTypeName, Cache^ cache);
+        static String^ GetLocalTypeName(String^ pdxTypeName, Cache^ cache);
         static void Clear();
 
         static Type^ GetType(String^ className);
@@ -507,7 +498,6 @@ namespace Apache
         }
 
       internal:
-        static IPdxTypeMapper^ PdxTypeMapper = nullptr;
         static Object^ LockObj = gcnew Object();
         static Dictionary<String^, String^>^ PdxTypeNameToLocal =
           gcnew Dictionary<String^, String^>();
@@ -600,9 +590,6 @@ namespace Apache
 
 				static Serializable()
         {
-          PdxTypeMapper = nullptr;
-          //RegisterPDXManagedCacheableKey();
-
           {
           Dictionary<Object^, Object^>^ dic = gcnew Dictionary<Object^, Object^>();
           ManagedTypeMappingGeneric[dic->GetType()] = native::GeodeTypeIds::CacheableHashMap;

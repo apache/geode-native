@@ -39,17 +39,29 @@ namespace Apache.Geode.Client.UnitTests
 
       Assert.AreNotEqual(cacheOne, cacheTwo);
       
-      var dummyPdxSerializer = new DummySerializer();
+      var dummyPdxSerializer = new DummyPdxSerializer();
       cacheOne.TypeRegistry.PdxSerializer = dummyPdxSerializer;
 
       Assert.AreSame(dummyPdxSerializer, cacheOne.TypeRegistry.PdxSerializer);
-      //cacheOne.getTypeRegistry().RegisiterPdxSerilizer();
+    }
 
-      //new Serializable().PdxSerializer = );
+    [Test]
+    public void SetPdxTypeMapper()
+    {
+      var cacheFactory = new CacheFactory();
+      var cacheOne = cacheFactory.Create();
+      var cacheTwo = cacheFactory.Create();
+
+      Assert.AreNotEqual(cacheOne, cacheTwo);
+
+      var dummyPdxTypeMapper = new DummyPdxTypeMapper();
+      cacheOne.TypeRegistry.PdxTypeMapper = dummyPdxTypeMapper;
+
+      Assert.AreSame(dummyPdxTypeMapper, cacheOne.TypeRegistry.PdxTypeMapper);
     }
   }
 
-  internal class DummySerializer : IPdxSerializer
+  internal class DummyPdxSerializer : IPdxSerializer
   {
     public object FromData(string classname, IPdxReader reader)
     {
@@ -57,6 +69,19 @@ namespace Apache.Geode.Client.UnitTests
     }
 
     public bool ToData(object o, IPdxWriter writer)
+    {
+      throw new NotImplementedException();
+    }
+  }
+
+  internal class DummyPdxTypeMapper : IPdxTypeMapper
+  {
+    public string FromPdxTypeName(string pdxTypeName)
+    {
+      throw new NotImplementedException();
+    }
+
+    public string ToPdxTypeName(string localTypeName)
     {
       throw new NotImplementedException();
     }

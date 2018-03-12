@@ -320,7 +320,7 @@ namespace Apache
         System::Collections::IList^ list = (System::Collections::IList^)objectArray;
         this->WriteArrayLen(list->Count);
         WriteByte((int8_t)apache::geode::client::GeodeTypeIdsImpl::Class);
-        String^ pdxDomainClassname = Serializable::GetPdxTypeName(objectArray->GetType()->GetElementType()->FullName);
+        String^ pdxDomainClassname = Serializable::GetPdxTypeName(objectArray->GetType()->GetElementType()->FullName, m_cache);
         WriteByte((int8_t)apache::geode::client::GeodeTypeIds::CacheableASCIIString);
         WriteUTF(pdxDomainClassname);
         for each(Object^ o in list)

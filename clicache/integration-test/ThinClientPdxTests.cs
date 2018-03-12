@@ -4260,84 +4260,83 @@ namespace Apache.Geode.Client.UnitTests
 
      public void pdxTypeMapperTest1()
      {
-       Console.WriteLine("pdxTypeMapperTest 1");
-       Serializable.SetPdxTypeMapper(new PdxTypeMapper());
-       Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+        Console.WriteLine("pdxTypeMapperTest 1");
+        CacheHelper.DCache.TypeRegistry.PdxTypeMapper = new PdxTypeMapper();
+        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-       if(region0 == null)
-         Console.WriteLine("pdxTypeMapperTest region is null");
-       else
-         Console.WriteLine("pdxTypeMapperTest region is NOT null");
+        if(region0 == null)
+          Console.WriteLine("pdxTypeMapperTest region is null");
+        else
+          Console.WriteLine("pdxTypeMapperTest region is NOT null");
 
+        PdxTests.PdxType pt = new PdxType();
 
-       PdxTests.PdxType pt = new PdxType();
+        for (int i = 0; i < 10; i++)
+        {
+           region0[i] = pt;
+        }
+        for (int i = 0; i < 10; i++)
+        {
+           object ret = region0[i];
 
-       for (int i = 0; i < 10; i++)
-       {
-         region0[i] = pt;
-       }
-       for (int i = 0; i < 10; i++)
-       {
-         object ret = region0[i];
-
-         Assert.AreEqual(ret, pt);
-       }
+           Assert.AreEqual(ret, pt);
+        }
      }
 
      public void pdxTypeMapperTest2()
      {
-       Serializable.SetPdxTypeMapper(new PdxTypeMapper());
-       Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+        CacheHelper.DCache.TypeRegistry.PdxTypeMapper = new PdxTypeMapper();
+        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-       PdxTests.PdxType pt = new PdxType();
+        PdxTests.PdxType pt = new PdxType();
 
-       for (int i = 0; i < 10; i++)
-       {
-         object ret = region0[1];
+        for (int i = 0; i < 10; i++)
+        {
+           object ret = region0[1];
 
-         Assert.AreEqual(ret, pt);
-       }
+           Assert.AreEqual(ret, pt);
+        }
      }
 
      public void pdxITypeMapperTest()
      {
-       Serializable.SetPdxTypeMapper(new PdxTypeMapper());
-       Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+        CacheHelper.DCache.TypeRegistry.PdxTypeMapper = new PdxTypeMapper();
+        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-       PdxTests.PdxType pt = new PdxType();
+        PdxTests.PdxType pt = new PdxType();
 
-       for (int i = 0; i < 10; i++)
-       {
-         object ret = region0[1];
+        for (int i = 0; i < 10; i++)
+        {
+          object ret = region0[1];
 
-         IPdxInstance pi = ret as IPdxInstance;
-         Assert.IsNotNull(pi);
-         //IDisposable dis = (IDisposable)pi;
-         using (pi)
-         {
-           Assert.AreEqual(pi.GetObject(), pt);
-         }
-       }
+          IPdxInstance pi = ret as IPdxInstance;
+          Assert.IsNotNull(pi);
+
+          using (pi)
+          {
+             Assert.AreEqual(pi.GetObject(), pt);
+          }
+        }
      }
 
      public void pdxASTypeMapperTest()
      {
-       CacheHelper.DCache.TypeRegistry.PdxSerializer = new AutoSerializerEx();
-       Serializable.SetPdxTypeMapper(new PdxTypeMapper());
-       Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+        CacheHelper.DCache.TypeRegistry.PdxSerializer = new AutoSerializerEx();
+        CacheHelper.DCache.TypeRegistry.PdxTypeMapper = new PdxTypeMapper();
+        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-       SerializePdx3 sp3 = new SerializePdx3(true, 2);
+        SerializePdx3 sp3 = new SerializePdx3(true, 2);
 
-       for (int i = 100; i < 110; i++)
-       {
-         region0[i] = sp3;
-       }
+        for (int i = 100; i < 110; i++)
+        {
+           region0[i] = sp3;
+        }
 
-       for (int i = 100; i < 110; i++)
-       {
-         object ret = region0[i];
-         Assert.AreEqual(sp3, ret);
-       } 
+        for (int i = 100; i < 110; i++)
+        {
+           object ret = region0[i];
+           Assert.AreEqual(sp3, ret);
+        } 
      }
 
      public void runPdxTypeMapperTest()

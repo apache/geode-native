@@ -41,8 +41,23 @@ namespace Apache
           }
         }
 
+        /// <summary>
+        /// Register an PdxTypeMapper to map the local types to pdx types
+        /// </summary>
+        property IPdxTypeMapper^ PdxTypeMapper
+        {
+          IPdxTypeMapper^ get() {
+            return pdxTypeMapper;
+          }
+
+          void set(IPdxTypeMapper^ pdxTypeMapper) {
+            this->pdxTypeMapper = pdxTypeMapper;
+          }
+        }
+
       private:
-        IPdxSerializer ^ pdxSerializer;
+        IPdxSerializer^ pdxSerializer;
+        IPdxTypeMapper^ pdxTypeMapper;
        
       };
     }  // namespace Client

@@ -1333,13 +1333,13 @@ namespace Apache.Geode.Client.FwkLib
                     {
                         m_pdxVersionOneAsm = Assembly.LoadFrom(Path.Combine(m_sharePath, "PdxVersion1Lib.dll"));
                         Serializable.RegisterPdxType(registerPdxTypeOne);
-                        Serializable.SetPdxTypeMapper(new PdxTypeMapper());
+                        CacheHelper<TKey, TVal>.DCache.TypeRegistry.PdxTypeMapper = new PdxTypeMapper();
                     }
                     else if (objectType.Equals("PdxVersioned") && versionnum == 2)
                     {
-                        m_pdxVersionTwoAsm = Assembly.LoadFrom(Path.Combine(m_sharePath, "PdxVersion2Lib.dll"));
-                        Serializable.RegisterPdxType(registerPdxTypeTwo);
-                        Serializable.SetPdxTypeMapper(new PdxTypeMapper());
+                       m_pdxVersionTwoAsm = Assembly.LoadFrom(Path.Combine(m_sharePath, "PdxVersion2Lib.dll"));
+                       Serializable.RegisterPdxType(registerPdxTypeTwo);
+                       CacheHelper<TKey, TVal>.DCache.TypeRegistry.PdxTypeMapper = new PdxTypeMapper();
                     }
                     else if (objectType.Equals("Nested"))
                     {

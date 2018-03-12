@@ -939,15 +939,10 @@ namespace Apache
         return nullptr;
       }
 
-      void Serializable::SetPdxTypeMapper(IPdxTypeMapper^ pdxTypeMapper)
+      String^ Serializable::GetPdxTypeName(String^ localTypeName, Cache^ cache)
       {
-        if (pdxTypeMapper != nullptr)
-          PdxTypeMapper = pdxTypeMapper;
-      }
-
-      String^ Serializable::GetPdxTypeName(String^ localTypeName)
-      {
-        if (PdxTypeMapper == nullptr)
+        auto pdxTypeMapper = cache->TypeRegistry->PdxTypeMapper;
+        if (pdxTypeMapper == nullptr)
           return localTypeName;
         IDictionary<String^, String^>^ tmp = LocalTypeNameToPdx;
         String^ pdxTypeName = nullptr;
@@ -962,9 +957,9 @@ namespace Apache
 
           if (pdxTypeName != nullptr)
             return pdxTypeName;
-          if (PdxTypeMapper != nullptr)
+          if (pdxTypeMapper != nullptr)
           {
-            pdxTypeName = PdxTypeMapper->ToPdxTypeName(localTypeName);
+            pdxTypeName = pdxTypeMapper->ToPdxTypeName(localTypeName);
             if (pdxTypeName == nullptr)
             {
               throw gcnew IllegalStateException("PdxTypeName should not be null for local type " + localTypeName);
@@ -981,9 +976,10 @@ namespace Apache
         return pdxTypeName;
       }
 
-      String^ Serializable::GetLocalTypeName(String^ pdxTypeName)
+      String^ Serializable::GetLocalTypeName(String^ pdxTypeName, Cache^ cache)
       {
-        if (PdxTypeMapper == nullptr)
+        auto pdxTypeMapper = cache->TypeRegistry->PdxTypeMapper;
+        if (pdxTypeMapper == nullptr)
           return pdxTypeName;
 
         IDictionary<String^, String^>^ tmp = PdxTypeNameToLocal;
@@ -999,9 +995,9 @@ namespace Apache
 
           if (localTypeName != nullptr)
             return localTypeName;
-          if (PdxTypeMapper != nullptr)
+          if (pdxTypeMapper != nullptr)
           {
-            localTypeName = PdxTypeMapper->FromPdxTypeName(pdxTypeName);
+            localTypeName = pdxTypeMapper->FromPdxTypeName(pdxTypeName);
             if (localTypeName == nullptr)
             {
               throw gcnew IllegalStateException("LocalTypeName should not be null for pdx type " + pdxTypeName);
@@ -1020,7 +1016,6 @@ namespace Apache
 
       void Serializable::Clear()
       {
-        PdxTypeMapper = nullptr;
         LocalTypeNameToPdx->Clear();
         PdxTypeNameToLocal->Clear();
         ClassNameVsCreateNewObjectDelegate->Clear();
