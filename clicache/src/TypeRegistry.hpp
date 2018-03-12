@@ -27,6 +27,8 @@ namespace Apache
     namespace Client
     {
 
+      using namespace System::Collections::Concurrent;
+
       public ref class TypeRegistry
       {
       public:
@@ -46,18 +48,35 @@ namespace Apache
         /// </summary>
         property IPdxTypeMapper^ PdxTypeMapper
         {
-          IPdxTypeMapper^ get() {
+          IPdxTypeMapper^ get()
+          {
             return pdxTypeMapper;
           }
 
-          void set(IPdxTypeMapper^ pdxTypeMapper) {
+          void set(IPdxTypeMapper^ pdxTypeMapper)
+          {
             this->pdxTypeMapper = pdxTypeMapper;
           }
+        }
+
+        
+        String^ GetPdxTypeName(String^ localTypeName);
+ 
+        String^ GetLocalTypeName(String^ pdxTypeName);
+
+        void Clear()
+        {
+          pdxTypeNameToLocal->Clear();
+          localTypeNameToPdx->Clear();
         }
 
       private:
         IPdxSerializer^ pdxSerializer;
         IPdxTypeMapper^ pdxTypeMapper;
+        ConcurrentDictionary<String^, String^>^ pdxTypeNameToLocal =
+          gcnew ConcurrentDictionary<String^, String^>();
+        ConcurrentDictionary<String^, String^>^ localTypeNameToPdx =
+          gcnew ConcurrentDictionary<String^, String^>();
        
       };
     }  // namespace Client

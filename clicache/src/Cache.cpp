@@ -124,6 +124,7 @@ namespace Apache
         finally
         {
 					CacheRegionHelper::getCacheImpl(m_nativeptr->get())->getPdxTypeRegistry()->clear();
+          m_typeRegistry->Clear();
           Serializable::Clear();
           Apache::Geode::Client::DistributedSystem::unregisterCliCallback();
           GC::KeepAlive(m_nativeptr);

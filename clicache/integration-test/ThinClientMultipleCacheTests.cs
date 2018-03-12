@@ -30,34 +30,63 @@ namespace Apache.Geode.Client.UnitTests
   [TestFixture]
   public class ThinClientMultipleCacheTests
   {
+    Cache cacheOne;
+    Cache cacheTwo;
+
+    [TestFixtureSetUp]
+    public void SetUp()
+    {
+      var cacheFactory = new CacheFactory();
+      cacheOne = cacheFactory.Create();
+      cacheTwo = cacheFactory.Create();
+
+    }
+
     [Test]
     public void RegisterSerializerForTwoCaches()
     {
-      var cacheFactory = new CacheFactory();
-      var cacheOne = cacheFactory.Create();
-      var cacheTwo = cacheFactory.Create();
-
       Assert.AreNotEqual(cacheOne, cacheTwo);
       
       var dummyPdxSerializer = new DummyPdxSerializer();
       cacheOne.TypeRegistry.PdxSerializer = dummyPdxSerializer;
 
       Assert.AreSame(dummyPdxSerializer, cacheOne.TypeRegistry.PdxSerializer);
+
+      Assert.IsNull(cacheTwo.TypeRegistry.PdxSerializer);
     }
 
     [Test]
     public void SetPdxTypeMapper()
     {
-      var cacheFactory = new CacheFactory();
-      var cacheOne = cacheFactory.Create();
-      var cacheTwo = cacheFactory.Create();
-
-      Assert.AreNotEqual(cacheOne, cacheTwo);
-
       var dummyPdxTypeMapper = new DummyPdxTypeMapper();
       cacheOne.TypeRegistry.PdxTypeMapper = dummyPdxTypeMapper;
 
       Assert.AreSame(dummyPdxTypeMapper, cacheOne.TypeRegistry.PdxTypeMapper);
+      Assert.IsNull(cacheTwo.TypeRegistry.PdxTypeMapper);
+    }
+
+    [Test]
+    public void GetPdxTypeName()
+    {
+      var dummyPdxTypeMapper = new DummyPdxTypeMapper();
+      cacheOne.TypeRegistry.PdxTypeMapper = dummyPdxTypeMapper;
+
+      var pdxName = cacheOne.TypeRegistry.GetPdxTypeName("bar");
+
+      Assert.AreEqual("foo", pdxName);
+      Assert.AreEqual("bar", cacheTwo.TypeRegistry.GetPdxTypeName("bar"));
+    }
+
+    [Test]
+    public void GetLocalTypeName()
+    {
+      var dummyPdxTypeMapper = new DummyPdxTypeMapper();
+      cacheOne.TypeRegistry.PdxTypeMapper = dummyPdxTypeMapper;
+
+      var localName = cacheOne.TypeRegistry.GetLocalTypeName("foo");
+
+      Assert.AreEqual("bar", localName);
+      Assert.AreEqual("foo", cacheTwo.TypeRegistry.GetLocalTypeName("foo"));
     }
   }
 
@@ -78,12 +107,22 @@ namespace Apache.Geode.Client.UnitTests
   {
     public string FromPdxTypeName(string pdxTypeName)
     {
-      throw new NotImplementedException();
+      if ("foo".Equals(pdxTypeName))
+      {
+        return "bar";
+      }
+
+      return null;
     }
 
     public string ToPdxTypeName(string localTypeName)
     {
-      throw new NotImplementedException();
+      if ("bar".Equals(localTypeName))
+      {
+        return "foo";
+      }
+
+      return null;
     }
   }
 }

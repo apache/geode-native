@@ -783,7 +783,7 @@ namespace Apache
         {
           ReadByte(); // ignore CLASS typeid
           className = (String^)ReadObject();
-          className = Serializable::GetLocalTypeName(className, m_cache);
+          className = m_cache->TypeRegistry->GetLocalTypeName(className);
           System::Collections::IList^ list = nullptr;
           if (len == 0)
           {

@@ -288,8 +288,6 @@ namespace Apache
 				static IPdxSerializable^ Serializable::GetPdxType(String^ className, Cache^ cache);
 				static void RegisterPDXManagedCacheableKey(Cache^ cache);
 
-        static String^ GetPdxTypeName(String^ localTypeName, Cache^ cache);
-        static String^ GetLocalTypeName(String^ pdxTypeName, Cache^ cache);
         static void Clear();
 
         static Type^ GetType(String^ className);
@@ -498,13 +496,6 @@ namespace Apache
         }
 
       internal:
-        static Object^ LockObj = gcnew Object();
-        static Dictionary<String^, String^>^ PdxTypeNameToLocal =
-          gcnew Dictionary<String^, String^>();
-        static Dictionary<String^, String^>^ LocalTypeNameToPdx =
-          gcnew Dictionary<String^, String^>();
-
-
         static Object^ ClassNameVsTypeLockObj = gcnew Object();
         static Dictionary<String^, Type^>^ ClassNameVsType =
           gcnew Dictionary<String^, Type^>();

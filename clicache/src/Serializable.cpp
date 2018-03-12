@@ -939,94 +939,15 @@ namespace Apache
         return nullptr;
       }
 
-      String^ Serializable::GetPdxTypeName(String^ localTypeName, Cache^ cache)
-      {
-        auto pdxTypeMapper = cache->TypeRegistry->PdxTypeMapper;
-        if (pdxTypeMapper == nullptr)
-          return localTypeName;
-        IDictionary<String^, String^>^ tmp = LocalTypeNameToPdx;
-        String^ pdxTypeName = nullptr;
-        tmp->TryGetValue(localTypeName, pdxTypeName);
 
-        if (pdxTypeName != nullptr)
-          return pdxTypeName;
 
-        {
-          msclr::lock lockInstance(LockObj);
-          tmp->TryGetValue(localTypeName, pdxTypeName);
-
-          if (pdxTypeName != nullptr)
-            return pdxTypeName;
-          if (pdxTypeMapper != nullptr)
-          {
-            pdxTypeName = pdxTypeMapper->ToPdxTypeName(localTypeName);
-            if (pdxTypeName == nullptr)
-            {
-              throw gcnew IllegalStateException("PdxTypeName should not be null for local type " + localTypeName);
-            }
-
-            Dictionary<String^, String^>^ localToPdx = gcnew Dictionary<String^, String^>(LocalTypeNameToPdx);
-            localToPdx[localTypeName] = pdxTypeName;
-            LocalTypeNameToPdx = localToPdx;
-            Dictionary<String^, String^>^ pdxToLocal = gcnew Dictionary<String^, String^>(PdxTypeNameToLocal);
-            localToPdx[pdxTypeName] = localTypeName;
-            PdxTypeNameToLocal = pdxToLocal;
-          }
-        }
-        return pdxTypeName;
-      }
-
-      String^ Serializable::GetLocalTypeName(String^ pdxTypeName, Cache^ cache)
-      {
-        auto pdxTypeMapper = cache->TypeRegistry->PdxTypeMapper;
-        if (pdxTypeMapper == nullptr)
-          return pdxTypeName;
-
-        IDictionary<String^, String^>^ tmp = PdxTypeNameToLocal;
-        String^ localTypeName = nullptr;
-        tmp->TryGetValue(pdxTypeName, localTypeName);
-
-        if (localTypeName != nullptr)
-          return localTypeName;
-
-        {
-          msclr::lock lockInstance(LockObj);
-          tmp->TryGetValue(pdxTypeName, localTypeName);
-
-          if (localTypeName != nullptr)
-            return localTypeName;
-          if (pdxTypeMapper != nullptr)
-          {
-            localTypeName = pdxTypeMapper->FromPdxTypeName(pdxTypeName);
-            if (localTypeName == nullptr)
-            {
-              throw gcnew IllegalStateException("LocalTypeName should not be null for pdx type " + pdxTypeName);
-            }
-
-            Dictionary<String^, String^>^ localToPdx = gcnew Dictionary<String^, String^>(LocalTypeNameToPdx);
-            localToPdx[localTypeName] = pdxTypeName;
-            LocalTypeNameToPdx = localToPdx;
-            Dictionary<String^, String^>^ pdxToLocal = gcnew Dictionary<String^, String^>(PdxTypeNameToLocal);
-            localToPdx[pdxTypeName] = localTypeName;
-            PdxTypeNameToLocal = pdxToLocal;
-          }
-        }
-        return localTypeName;
-      }
 
       void Serializable::Clear()
       {
-        LocalTypeNameToPdx->Clear();
-        PdxTypeNameToLocal->Clear();
         ClassNameVsCreateNewObjectDelegate->Clear();
         ClassNameVsType->Clear();
         ClassNameVsCreateNewObjectArrayDelegate->Clear();
       }
-
-      //bool Serializable::IsObjectAndPdxSerializerRegistered(String^ className)
-      //{
-      //  return PdxSerializer != nullptr;
-      //}
 
       generic<class TKey>
       std::shared_ptr<native::CacheableKey> Serializable::GetUnmanagedValueGeneric(

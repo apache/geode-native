@@ -94,7 +94,7 @@ namespace Apache
   
           auto cache = dataOutput->Cache;
 
-          pdxClassname = Serializable::GetPdxTypeName(pdxType->FullName, cache);        
+          pdxClassname = cache->TypeRegistry->GetPdxTypeName(pdxType->FullName);
           PdxType^ localPdxType = dataOutput->Cache->GetPdxTypeRegistry()->GetLocalPdxType(pdxClassname);         
 
           if(localPdxType == nullptr)
@@ -175,7 +175,7 @@ namespace Apache
             if(pType != nullptr && pdxLocalType != nullptr)//type found 
             {
               pdxClassname = pType->PdxClassName;
-              pdxDomainClassname = Serializable::GetLocalTypeName(pdxClassname, cache);
+              pdxDomainClassname = cache->TypeRegistry->GetLocalTypeName(pdxClassname);
               //Log::Debug("found type " + typeId + " " + pType->IsLocal);
               pdxObject = Serializable::GetPdxType(pdxDomainClassname, cache);
               if(pType->IsLocal)//local type no need to read Unread data
@@ -205,7 +205,7 @@ namespace Apache
               }
               
               pdxClassname = pType->PdxClassName;
-              pdxDomainClassname = Serializable::GetLocalTypeName(pdxClassname, cache);
+              pdxDomainClassname = cache->TypeRegistry->GetLocalTypeName(pdxClassname);
 
               pdxObject = Serializable::GetPdxType(pdxDomainClassname, cache);
               
@@ -352,7 +352,7 @@ namespace Apache
         Int32 PdxHelper::GetEnumValue(String^ enumClassName, String^ enumName, int hashcode, Cache^ cache)
         {
           //in case app want different name
-          enumClassName = Serializable::GetPdxTypeName(enumClassName, cache);
+          enumClassName = cache->TypeRegistry->GetPdxTypeName(enumClassName);
           EnumInfo^ ei = gcnew EnumInfo(enumClassName, enumName, hashcode);
           return cache->GetPdxTypeRegistry()->GetEnumValue(ei);        
         }

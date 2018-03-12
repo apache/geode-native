@@ -22,6 +22,8 @@
 #include "EnumInfo.hpp"
 #include "../DataOutput.hpp"
 #include "../DataInput.hpp"
+#include "../Cache.hpp"
+
 using namespace System;
 
 namespace Apache
@@ -49,7 +51,7 @@ namespace Apache
 
        Object^ EnumInfo::GetEnum(Cache^ cache)
        {
-         String^ tmp = Serializable::GetLocalTypeName(_enumClassName, cache);
+         String^ tmp = cache->TypeRegistry->GetLocalTypeName(_enumClassName);
          Type^ t = Serializable::GetType(tmp);
          Object^ obj = Enum::Parse(t, _enumName);
 

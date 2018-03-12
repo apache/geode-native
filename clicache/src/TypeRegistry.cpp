@@ -25,7 +25,56 @@ namespace Apache
     namespace Client
     {
 
-     
+      String^ TypeRegistry::GetPdxTypeName(String^ localTypeName)
+      {
+        if (pdxTypeMapper == nullptr)
+        {
+          return localTypeName;
+        }
+
+        String^ pdxTypeName;
+        if (localTypeNameToPdx->TryGetValue(localTypeName, pdxTypeName)) {
+          return pdxTypeName;
+        }
+
+
+        pdxTypeName = pdxTypeMapper->ToPdxTypeName(localTypeName);
+        if (pdxTypeName == nullptr)
+        {
+          throw gcnew IllegalStateException("PdxTypeName should not be null for local type " + localTypeName);
+        }
+
+        localTypeNameToPdx[localTypeName] = pdxTypeName;
+        pdxTypeNameToLocal[pdxTypeName] = localTypeName;
+
+        return pdxTypeName;
+      }
+
+      String^ TypeRegistry::GetLocalTypeName(String^ pdxTypeName)
+      {
+        if (pdxTypeMapper == nullptr)
+        {
+          return pdxTypeName;
+        }
+
+        String^ localTypeName;
+        if (pdxTypeNameToLocal->TryGetValue(pdxTypeName, localTypeName))
+        {
+          return localTypeName;
+        }
+
+        localTypeName = pdxTypeMapper->FromPdxTypeName(pdxTypeName);
+        if (localTypeName == nullptr)
+        {
+          throw gcnew IllegalStateException("LocalTypeName should not be null for pdx type " + pdxTypeName);
+        }
+
+        localTypeNameToPdx[localTypeName] = pdxTypeName;
+        pdxTypeNameToLocal[pdxTypeName] = localTypeName;
+
+        return localTypeName;
+      }
+
     
     }  // namespace Client
   }  // namespace Geode
