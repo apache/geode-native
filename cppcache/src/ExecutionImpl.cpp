@@ -34,7 +34,7 @@ namespace client {
 
 FunctionToFunctionAttributes ExecutionImpl::m_func_attrs;
 ACE_Recursive_Thread_Mutex ExecutionImpl::m_func_attrs_lock;
-std::shared_ptr<Execution> ExecutionImpl::withFilter(
+<Execution> ExecutionImpl::withFilter(
     std::shared_ptr<CacheableVector> routingObj) {
   // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (routingObj == nullptr) {
@@ -46,20 +46,22 @@ std::shared_ptr<Execution> ExecutionImpl::withFilter(
         "first before calling this function");
   }
   //      m_routingObj = routingObj;
-  return std::make_shared<ExecutionImpl>(routingObj, m_args, m_rc, m_region,
-                                         m_allServer, m_pool, m_proxyCache);
+  return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(routingObj, m_args, m_rc, m_region,
+                                         m_allServer, m_pool, m_proxyCache)));
 }
-std::shared_ptr<Execution> ExecutionImpl::withArgs(
+
+<Execution> ExecutionImpl::withArgs(
     std::shared_ptr<Cacheable> args) {
   // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (args == nullptr) {
     throw IllegalArgumentException("Execution::withArgs: args is null");
   }
   //  m_args = args;
-  return std::make_shared<ExecutionImpl>(m_routingObj, args, m_rc, m_region,
-                                         m_allServer, m_pool, m_proxyCache);
+  return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(m_routingObj, args, m_rc, m_region,
+                                         m_allServer, m_pool, m_proxyCache)));
 }
-std::shared_ptr<Execution> ExecutionImpl::withCollector(
+
+<Execution> ExecutionImpl::withCollector(
     std::shared_ptr<ResultCollector> rs) {
   // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (rs == nullptr) {
@@ -67,8 +69,8 @@ std::shared_ptr<Execution> ExecutionImpl::withCollector(
         "Execution::withCollector: collector is null");
   }
   //	m_rc = rs;
-  return std::make_shared<ExecutionImpl>(m_routingObj, m_args, rs, m_region,
-                                         m_allServer, m_pool, m_proxyCache);
+  return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(m_routingObj, m_args, rs, m_region,
+                                         m_allServer, m_pool, m_proxyCache)));
 }
 
 std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(

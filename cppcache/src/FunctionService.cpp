@@ -73,7 +73,7 @@ std::shared_ptr<Execution> FunctionService::onRegion(
     }
   }
 
-  return std::make_shared<ExecutionImpl>(realRegion, proxyCache, pool);
+  return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(realRegion, proxyCache, pool)));
 }
 std::shared_ptr<Execution> FunctionService::onServerWithPool(
     const std::shared_ptr<Pool>& pool) {

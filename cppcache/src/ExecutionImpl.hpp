@@ -38,7 +38,7 @@ namespace client {
 
 typedef std::map<std::string, std::vector<int8_t>*> FunctionToFunctionAttributes;
 
-class ExecutionImpl : public Execution {
+class ExecutionImpl {
  public:
   ExecutionImpl(std::shared_ptr<Region> rptr = nullptr,
                 std::shared_ptr<ProxyCache> proxyCache = nullptr,
@@ -59,23 +59,23 @@ class ExecutionImpl : public Execution {
         m_allServer(allServer),
         m_pool(pool),
         m_proxyCache(proxyCache) {}
-  virtual std::shared_ptr<Execution> withFilter(
-      std::shared_ptr<CacheableVector> routingObj) override;
-  virtual std::shared_ptr<Execution> withArgs(
-      std::shared_ptr<Cacheable> args) override;
-  virtual std::shared_ptr<Execution> withCollector(
-      std::shared_ptr<ResultCollector> rs) override;
+  virtual Execution withFilter(
+      std::shared_ptr<CacheableVector> routingObj);
+  virtual Execution withArgs(
+      std::shared_ptr<Cacheable> args);
+  virtual Execution withCollector(
+      std::shared_ptr<ResultCollector> rs);
   // java function has hasResult property. we put the hasResult argument
   // here as a kluge.
   virtual std::shared_ptr<ResultCollector> execute(
       const std::shared_ptr<CacheableVector>& routingObj,
       const std::shared_ptr<Cacheable>& args,
       const std::shared_ptr<ResultCollector>& rs, const std::string& func,
-      std::chrono::milliseconds timeout) override;
+      std::chrono::milliseconds timeout);
 
   virtual std::shared_ptr<ResultCollector> execute(
       const std::string& func, std::chrono::milliseconds timeout =
-                                   DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+                                   DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   static void addResults(std::shared_ptr<ResultCollector>& collector,
                          const std::shared_ptr<CacheableVector>& results);
@@ -126,7 +126,7 @@ class ExecutionImpl : public Execution {
   GfErrType getFuncAttributes(const std::string& func,
                               std::vector<int8_t>** attr);
 
-  _GEODE_FRIEND_STD_SHARED_PTR(ExecutionImpl)
+
 };
 }  // namespace client
 }  // namespace geode
