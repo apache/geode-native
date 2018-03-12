@@ -300,11 +300,16 @@ namespace Apache
 
         virtual IPdxUnreadFields^ ReadUnreadFields();
      
-          /// <summary>
-          /// Reads the named field and returns its value.
-          /// </summary>
-          virtual Object^ ReadField(String^ fieldName, Type^ type);
-        };
+        /// <summary>
+        /// Reads the named field and returns its value.
+        /// </summary>
+        virtual Object^ ReadField(String^ fieldName, Type^ type);
+
+        property Apache::Geode::Client::Cache^ Cache
+        {
+          virtual Apache::Geode::Client::Cache^ get();
+        }
+      };
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

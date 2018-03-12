@@ -415,10 +415,13 @@ namespace Apache
               return this->ReadObject(fieldName);
                //throw gcnew IllegalStateException("ReadField unable to de-serialize  " 
 								//																	+ fieldName + " of " + type); 
+
+            }
+          }
+
+        Apache::Geode::Client::Cache^ PdxLocalReader::Cache::get() { return m_dataInput->Cache; }
+        
+      }  // namepsace Internal
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-    }
-  }
-}

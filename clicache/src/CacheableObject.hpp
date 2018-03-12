@@ -149,7 +149,7 @@ namespace Apache
 
       private:
         Object^ m_obj;
-        System::UInt32 m_objectSize;
+        System::UInt64 m_objectSize;
       };
     }  // namespace Client
   }  // namespace Geode

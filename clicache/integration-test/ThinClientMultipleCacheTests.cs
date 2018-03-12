@@ -40,12 +40,12 @@ namespace Apache.Geode.Client.UnitTests
       Assert.AreNotEqual(cacheOne, cacheTwo);
       
       var dummyPdxSerializer = new DummySerializer();
-      cacheOne.GetTypeRegistry().RegisterPdxSerializer(dummyPdxSerializer);
+      cacheOne.TypeRegistry.PdxSerializer = dummyPdxSerializer;
 
-      Assert.AreSame(dummyPdxSerializer, cacheOne.GetTypeRegistry().GetPdxSerializer());
+      Assert.AreSame(dummyPdxSerializer, cacheOne.TypeRegistry.PdxSerializer);
       //cacheOne.getTypeRegistry().RegisiterPdxSerilizer();
 
-      //new Serializable().RegisterPdxSerializer();
+      //new Serializable().PdxSerializer = );
     }
   }
 

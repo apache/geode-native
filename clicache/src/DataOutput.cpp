@@ -679,7 +679,7 @@ namespace Apache
               return;
             }
 
-            if (m_cache->GetTypeRegistry()->GetPdxSerializer())
+            if (m_cache->TypeRegistry->PdxSerializer)
             {
               pdxObj = gcnew PdxWrapper(obj);
               WriteByte(GeodeClassIds::PDX);

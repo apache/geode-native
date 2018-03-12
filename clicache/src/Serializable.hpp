@@ -426,7 +426,7 @@ namespace Apache
         static TValue GetManagedValueGeneric(std::shared_ptr<native::Serializable> val);
 
         generic<class TKey>
-        static std::shared_ptr<native::CacheableKey> GetUnmanagedValueGeneric(TKey key);
+        static std::shared_ptr<native::CacheableKey> GetUnmanagedValueGeneric(TKey ky);
 
         generic<class TKey>
         static std::shared_ptr<native::CacheableKey> GetUnmanagedValueGeneric(TKey key, bool isAciiChar);

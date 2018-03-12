@@ -277,6 +277,11 @@ namespace Apache
 
         virtual PoolManager^ GetPoolManager();
 
+        property Apache::Geode::Client::TypeRegistry^ TypeRegistry
+        {
+          Apache::Geode::Client::TypeRegistry^ get() { return m_typeRegistry; }
+        }
+
       internal:
 
         /// <summary>
@@ -303,10 +308,6 @@ namespace Apache
           return m_pdxTypeRegistry;
         }
 
-        Apache::Geode::Client::TypeRegistry^ GetTypeRegistry()
-        {
-          return m_typeRegistry;
-        }
       private:
 
         /// <summary>

@@ -1359,7 +1359,8 @@ namespace Apache.Geode.Client.FwkLib
                     }
                     else if (objectType.Equals("AutoSerilizer"))
                     {
-                        Serializable.RegisterPdxSerializer(new ReflectionBasedAutoSerializer());
+                        CacheHelper<TKey, TVal>.DCache.TypeRegistry
+                            .PdxSerializer = new ReflectionBasedAutoSerializer();
                     }
                 }
                 isSerialExecution = GetBoolValue("serialExecution");

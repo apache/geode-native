@@ -25,13 +25,8 @@ namespace Apache
     namespace Client
     {
 
-      void TypeRegistry::RegisterPdxSerializer(IPdxSerializer^ pdxSerializer) {
-        this->pdxSerializer = pdxSerializer;
-      }
-
-      IPdxSerializer^ TypeRegistry::GetPdxSerializer() {
-        return this->pdxSerializer;
-      }
+     
+    
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

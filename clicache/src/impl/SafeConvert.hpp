@@ -180,7 +180,7 @@ namespace Apache
       }
 
       generic<class TValue>
-      inline static native::Cacheable* SafeGenericM2UMConvert( TValue mg_val, Cache^ cache)
+      inline static native::Cacheable* SafeGenericM2UMConvert( TValue mg_val)
       {
         if (mg_val == nullptr) return NULL;
 
@@ -200,19 +200,14 @@ namespace Apache
 				{
 					return new native::ManagedCacheableKeyGeneric(tmpIGFS);
 				}
-            
-        if(cache->GetTypeRegistry()->GetPdxSerializer() != nullptr)
-        {
-				  return new native::PdxManagedCacheableKey(gcnew PdxWrapper(mg_obj));
-        }
 
-        throw gcnew Apache::Geode::Client::IllegalStateException(String::Format("Unable to map object type {0}. Possible Object type may not be registered or PdxSerializer is not registered. ", mg_obj->GetType()));
+        return new native::PdxManagedCacheableKey(gcnew PdxWrapper(mg_obj));
       }
 
       generic<class TValue>
-      inline static native::Cacheable* SafeGenericMSerializableConvert( TValue mg_obj, Cache^ cache )
+      inline static native::Cacheable* SafeGenericMSerializableConvert( TValue mg_obj)
       {
-        return SafeGenericM2UMConvert<TValue>( mg_obj, cache );
+        return SafeGenericM2UMConvert<TValue>( mg_obj );
       }
 
       inline static IPdxSerializable^ SafeUMSerializablePDXConvert( std::shared_ptr<native::Serializable> obj )

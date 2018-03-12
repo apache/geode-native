@@ -1408,7 +1408,7 @@ namespace Apache.Geode.Client.UnitTests
        Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
        object np = pt.InvokeMember("Create", BindingFlags.InvokeMethod, null, null, null);
 
-       Serializable.RegisterPdxSerializer((IPdxSerializer)np);
+       CacheHelper.DCache.TypeRegistry.PdxSerializer = (IPdxSerializer)np;
 
        //created new object
        np = pt.InvokeMember("TestDiffTypePdxS", BindingFlags.CreateInstance, null, null, new object[] { true });
@@ -1474,7 +1474,7 @@ namespace Apache.Geode.Client.UnitTests
 
        object np = pt.InvokeMember("Create", BindingFlags.InvokeMethod, null, null, null);
 
-       Serializable.RegisterPdxSerializer((IPdxSerializer)np);
+       CacheHelper.DCache.TypeRegistry.PdxSerializer = (IPdxSerializer)np;
 
        np = pt.InvokeMember("TestDiffTypePdxS", BindingFlags.CreateInstance, null, null, new object[] { true });
 
@@ -2586,7 +2586,7 @@ namespace Apache.Geode.Client.UnitTests
 
     void initializePdxSerializer()
     {
-      Serializable.RegisterPdxSerializer(new PdxSerializer());
+      CacheHelper.DCache.TypeRegistry.PdxSerializer = new PdxSerializer();
 
       //Serializable.RegisterTypeForPdxSerializer(SerializePdx1.CreateDeserializable);
     }
@@ -2735,7 +2735,7 @@ namespace Apache.Geode.Client.UnitTests
 
      void initializeReflectionPdxSerializer()
      {
-       Serializable.RegisterPdxSerializer(new AutoSerializerEx());
+       CacheHelper.DCache.TypeRegistry.PdxSerializer = new AutoSerializerEx();
 
        //Serializable.RegisterTypeForPdxSerializer(SerializePdx1.CreateDeserializable);
      }
@@ -2914,7 +2914,7 @@ namespace Apache.Geode.Client.UnitTests
 
      void dinitPdxSerializer()
      {
-       Serializable.RegisterPdxSerializer(null);
+       CacheHelper.DCache.TypeRegistry.PdxSerializer = null;
      }
 
      void doPutGetWithPdxSerializerNoReg()
@@ -4322,7 +4322,7 @@ namespace Apache.Geode.Client.UnitTests
 
      public void pdxASTypeMapperTest()
      {
-       Serializable.RegisterPdxSerializer(new AutoSerializerEx());
+       CacheHelper.DCache.TypeRegistry.PdxSerializer = new AutoSerializerEx();
        Serializable.SetPdxTypeMapper(new PdxTypeMapper());
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 

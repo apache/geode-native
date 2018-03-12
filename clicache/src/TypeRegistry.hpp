@@ -26,19 +26,20 @@ namespace Apache
   {
     namespace Client
     {
-      
 
       public ref class TypeRegistry
       {
       public:
-        void RegisterPdxSerializer(IPdxSerializer^ pdxSerializer);
-      
+        property IPdxSerializer^ PdxSerializer
+        {
+          IPdxSerializer^ get() {
+            return pdxSerializer; 
+          }
 
-
-      internal:
-        IPdxSerializer ^ GetPdxSerializer();
-        
-
+          void set(IPdxSerializer^ pdxSerializer) {
+            this->pdxSerializer = pdxSerializer; 
+          }
+        }
 
       private:
         IPdxSerializer ^ pdxSerializer;

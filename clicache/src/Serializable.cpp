@@ -482,7 +482,7 @@ namespace Apache
 
         if (retVal == nullptr){
 
-          if (cache->GetTypeRegistry()->GetPdxSerializer() != nullptr)
+          if (cache->TypeRegistry->PdxSerializer != nullptr)
           {
             return gcnew PdxWrapper(className);
           }
@@ -1164,7 +1164,7 @@ namespace Apache
         }
         default:
         {
-          std::shared_ptr<native::Cacheable> kPtr(SafeGenericMSerializableConvert(key, nullptr));
+          std::shared_ptr<native::Cacheable> kPtr(SafeGenericMSerializableConvert(key));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         }
