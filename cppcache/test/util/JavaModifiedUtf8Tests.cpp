@@ -21,6 +21,8 @@
 
 #include <util/JavaModifiedUtf8.hpp>
 
+#include "../ByteArray.hpp"
+
 using namespace apache::geode::client::internal;
 
 TEST(JavaModifiedUtf8Tests, EncodedLengthFromUtf8) {
@@ -30,4 +32,22 @@ TEST(JavaModifiedUtf8Tests, EncodedLengthFromUtf8) {
 TEST(JavaModifiedUtf8Tests, EncodedLengthUtf16) {
   EXPECT_EQ(27,
             JavaModifiedUtf8::encodedLength(u"You had me at meat tornado."));
+}
+
+TEST(JavaModifiedUtf8Tests, DecodeToString) {
+  const char* buf = "You had me at meat tornado!";
+  EXPECT_EQ(JavaModifiedUtf8::decode(buf, 27),
+            std::u16string(u"You had me at meat tornado!"));
+}
+
+TEST(JavaModifiedUtf8Tests, DecodeStringWithInlineNullChar) {
+  auto expected = std::u16string(u"You had me at");
+  expected.push_back(0);
+  expected.append(u"meat tornad\u00F6!\U000F0000");
+
+  auto buf = ByteArray::fromString(
+      "596F7520686164206D65206174C0806D65617420746F726E6164C3B621EDAE80EDB080");
+  std::u16string actual =
+      JavaModifiedUtf8::decode(reinterpret_cast<const char*>(buf.get()), 35);
+  EXPECT_EQ(expected, actual);
 }

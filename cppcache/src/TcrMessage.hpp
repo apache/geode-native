@@ -392,8 +392,8 @@ class _GEODE_EXPORT TcrMessage {
     if (m_deltaBytes == nullptr) {
       return nullptr;
     }
-    auto retVal =
-        CacheableBytes::create(std::vector<int8_t>(m_deltaBytes, m_deltaBytes + m_deltaBytesLen));
+    auto retVal = CacheableBytes::create(
+        std::vector<int8_t>(m_deltaBytes, m_deltaBytes + m_deltaBytesLen));
     m_deltaBytes = nullptr;
     return retVal;
   }
