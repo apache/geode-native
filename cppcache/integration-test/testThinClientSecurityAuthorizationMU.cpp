@@ -239,7 +239,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       regionPtr->put(1, 1);
       regionPtr->clear();
 
-     auto getVal = regionPtr->get(1);
+      auto getVal = regionPtr->get(1);
       if (getVal == nullptr) {
         LOG("Get completed after region.clear successfully");
       } else {
@@ -259,7 +259,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       for (int i = 0; i < 5; i++) {
         entrymap.emplace(CacheableKey::create(i), CacheableInt32::create(i));
       }
-      //auto regPtr = getHelper()->getRegion(regionNamesAuth[0]);
+      // auto regPtr = getHelper()->getRegion(regionNamesAuth[0]);
       regionPtr->putAll(entrymap);
       LOG("PutAll completed successfully");
       /*for (int i=0; i<5; i++) {
@@ -270,7 +270,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       auto keysvec = regionPtr->serverKeys();
       LOG("GetServerKeys check passed for ADMIN");
 
-      std::vector<std::shared_ptr<CacheableKey>>  entrykeys;
+      std::vector<std::shared_ptr<CacheableKey>> entrykeys;
       for (int i = 0; i < 5; i++) {
         entrykeys.push_back(CacheableKey::create(i));
       }
@@ -324,19 +324,19 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
         // auto funcServ = virtualCache->getFunctionService();
         // funcServ->onServer()->execute("securityTest", true)->getResult();
         FunctionService::onServer(virtualCache)
-            ->execute("securityTest")
+            .execute("securityTest")
             ->getResult();
         LOG("onServer executed successfully.");
         // funcServ->onServers()->execute("securityTest", true)->getResult();
         FunctionService::onServers(virtualCache)
-            ->execute("securityTest")
+            .execute("securityTest")
             ->getResult();
         LOG("onServerS executed successfully.");
         FunctionService::onRegion(regionPtr)
-            ->execute("securityTest")
+            .execute("securityTest")
             ->getResult();
         LOG("FunctionService::onRegion executed successfully.");
-        FunctionService::onRegion(regionPtr)->execute("FireNForget");
+        FunctionService::onRegion(regionPtr).execute("FireNForget");
         LOG("Function execution with no result completed successfully");
 
         //-----------------------Test with
@@ -360,7 +360,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
           arrList->push_back(key);
         }
 
-       auto filter = CacheableVector::create();
+        auto filter = CacheableVector::create();
         for (int i = 100; i < 120; i++) {
           sprintf(buf, "execKey-%d", i);
           auto key = CacheableKey::create(buf);
@@ -368,15 +368,13 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
         }
         LOG("Adding filter done.");
 
-       auto args = CacheableBoolean::create(1);
+        auto args = CacheableBoolean::create(1);
         // UNUSED bool getResult = true;
 
-       auto funcExec = FunctionService::onRegion(regionPtr);
-        ASSERT(funcExec != nullptr, "onRegion Returned nullptr");
+        auto funcExec = FunctionService::onRegion(regionPtr);
 
-        auto collector = funcExec->withArgs(args)->withFilter(filter)->execute(
+        auto collector = funcExec.withArgs(args).withFilter(filter).execute(
             exFuncNameSendException, std::chrono::seconds(15));
-        ASSERT(collector != nullptr, "onRegion collector nullptr");
 
         auto result = collector->getResult();
 
@@ -412,9 +410,8 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
 
         LOG("exFuncNameSendException done for bool arguement.");
 
-        collector = funcExec->withArgs(arrList)->withFilter(filter)->execute(
+        collector = funcExec.withArgs(arrList).withFilter(filter).execute(
             exFuncNameSendException, std::chrono::seconds(15));
-        ASSERT(collector != nullptr, "onRegion collector for arrList nullptr");
 
         result = collector->getResult();
         ASSERT(result->size() == arrList->size() + 1,
@@ -702,7 +699,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       // auto funcServ = virtualCache->getFunctionService();
       // funcServ->onServer()->execute("securityTest", true)->getResult();
       FunctionService::onServer(virtualCache)
-          ->execute("securityTest")
+          .execute("securityTest")
           ->getResult();
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
@@ -717,7 +714,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       // auto funcServ = virtualCache->getFunctionService();
       // funcServ->onServers()->execute("securityTest", true)->getResult();
       FunctionService::onServers(virtualCache)
-          ->execute("securityTest")
+          .execute("securityTest")
           ->getResult();
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
@@ -766,7 +763,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
 
       auto funcExec = FunctionService::onServers(virtualCache);
 
-      auto collector = funcExec->withArgs(args)->execute(
+      auto collector = funcExec.withArgs(args).execute(
           exFuncNameSendException, std::chrono::seconds(15));
 
       //----------------------------------------------------------------------------------------------//
@@ -783,42 +780,40 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       // FunctionService::onServer(pool)->execute("securityTest",
       // true)->getResult();
       // FAIL("Function execution should not have completed successfully");
-      FunctionService::onRegion(regionPtr)
-          ->execute("securityTest")
-          ->getResult();
+      FunctionService::onRegion(regionPtr).execute("securityTest")->getResult();
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
     try {
       std::shared_ptr<RegionService> virtualCache;
-     auto pool = getPool(regionNamesAuth[0]);
-     virtualCache = getVirtualCache(userCreds, pool);
-     std::shared_ptr<Region> regionPtr;
-     regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
+      auto pool = getPool(regionNamesAuth[0]);
+      virtualCache = getVirtualCache(userCreds, pool);
+      std::shared_ptr<Region> regionPtr;
+      regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
 
-     //-----------------------Test with
-     // sendException-------------------------------//
-     LOG("Function execution with sendException with expected Authorization "
-         "exception with onRegion");
-     char buf[128];
-     for (int i = 1; i <= 200; i++) {
-       auto value = CacheableInt32::create(i);
+      //-----------------------Test with
+      // sendException-------------------------------//
+      LOG("Function execution with sendException with expected Authorization "
+          "exception with onRegion");
+      char buf[128];
+      for (int i = 1; i <= 200; i++) {
+        auto value = CacheableInt32::create(i);
 
-       sprintf(buf, "execKey-%d", i);
-       auto key = CacheableKey::create(buf);
-       regionPtr->put(key, value);
-     }
-     LOG("Put for execKey's on region complete.");
+        sprintf(buf, "execKey-%d", i);
+        auto key = CacheableKey::create(buf);
+        regionPtr->put(key, value);
+      }
+      LOG("Put for execKey's on region complete.");
 
-     LOG("Adding filter");
-     auto arrList = CacheableArrayList::create();
-     for (int i = 100; i < 120; i++) {
-       sprintf(buf, "execKey-%d", i);
-       auto key = CacheableKey::create(buf);
-       arrList->push_back(key);
+      LOG("Adding filter");
+      auto arrList = CacheableArrayList::create();
+      for (int i = 100; i < 120; i++) {
+        sprintf(buf, "execKey-%d", i);
+        auto key = CacheableKey::create(buf);
+        arrList->push_back(key);
       }
 
-     auto filter = CacheableVector::create();
+      auto filter = CacheableVector::create();
       for (int i = 100; i < 120; i++) {
         sprintf(buf, "execKey-%d", i);
         auto key = CacheableKey::create(buf);
@@ -826,23 +821,23 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       }
       LOG("Adding filter done.");
 
-     auto args = CacheableBoolean::create(1);
+      auto args = CacheableBoolean::create(1);
       // UNUSED bool getResult = true;
 
       LOG("OnServers with sendException");
 
-     auto funcExec = FunctionService::onRegion(regionPtr);
+      auto funcExec = FunctionService::onRegion(regionPtr);
 
-     auto collector = funcExec->withArgs(args)->withFilter(filter)->execute(
-         exFuncNameSendException, std::chrono::seconds(15));
+      auto collector = funcExec.withArgs(args).withFilter(filter).execute(
+          exFuncNameSendException, std::chrono::seconds(15));
 
-     //----------------------------------------------------------------------------------------------//
+      //----------------------------------------------------------------------------------------------//
 
-     // FunctionService::onServer(pool)->execute("securityTest",
-     // true)->getResult();
-     // FAIL("Function execution should not have completed successfully");
-     // FunctionService::onRegion(regionPtr)->execute("securityTest",
-     // true)->getResult();
+      // FunctionService::onServer(pool)->execute("securityTest",
+      // true)->getResult();
+      // FAIL("Function execution should not have completed successfully");
+      // FunctionService::onRegion(regionPtr)->execute("securityTest",
+      // true)->getResult();
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
@@ -935,22 +930,22 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     // region");
 
     try {
-      //auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-     auto keyPtr = CacheableKey::create(keys[2]);
-     auto checkPtr =
-         std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr));
-     if (checkPtr != nullptr) {
-       char buf[1024];
-       sprintf(buf, "In net search, get returned %s for key %s",
-               checkPtr->value().c_str(), keys[2]);
-       LOG(buf);
-     } else {
-       LOG("checkPtr is nullptr");
-     }
+      // auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+      auto keyPtr = CacheableKey::create(keys[2]);
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr));
+      if (checkPtr != nullptr) {
+        char buf[1024];
+        sprintf(buf, "In net search, get returned %s for key %s",
+                checkPtr->value().c_str(), keys[2]);
+        LOG(buf);
+      } else {
+        LOG("checkPtr is nullptr");
+      }
     }
     HANDLE_NO_NOT_AUTHORIZED_EXCEPTION
 
-    //auto regPtr0 = getHelper()->getRegion( regionNamesAuth[0] );
+    // auto regPtr0 = getHelper()->getRegion( regionNamesAuth[0] );
     if (rptr != nullptr) {
       try {
         LOG("Going to do registerAllKeys");
@@ -980,7 +975,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     HANDLE_NO_NOT_AUTHORIZED_EXCEPTION
 
     try {
-      std::vector<std::shared_ptr<CacheableKey>>  entrykeys;
+      std::vector<std::shared_ptr<CacheableKey>> entrykeys;
       for (int i = 0; i < 5; i++) {
         entrykeys.push_back(CacheableKey::create(i));
       }
@@ -1004,10 +999,10 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
       // FunctionService::onServer(pool)->execute("securityTest",
       // true)->getResult();
       // FAIL("Function execution should not have completed successfully");
-      //auto funcServ = virtualCache->getFunctionService();
+      // auto funcServ = virtualCache->getFunctionService();
       // funcServ->onServer()->execute("securityTest", true)->getResult();
       FunctionService::onServer(virtualCache)
-          ->execute("securityTest")
+          .execute("securityTest")
           ->getResult();
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION

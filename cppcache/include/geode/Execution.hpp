@@ -46,6 +46,11 @@ class FunctionService;
  */
 class _GEODE_EXPORT Execution {
  public:
+  Execution();
+  ~Execution() noexcept;
+  Execution(Execution&& move) noexcept;
+  Execution& operator=(Execution&& move) noexcept;
+
   /**
    * Specifies a data filter of routing objects for selecting the Geode
    * members

@@ -50,8 +50,8 @@ namespace client {
  *  <br>
  *  <pre>
  * auto rc = FunctionService::onRegion(region)
- *                                      ->withArgs(args)
- *                                      ->withFilter(keySet)
+ *                                      .withArgs(args)
+ *                                      .withFilter(keySet)
  *                                      ->withCollector(new
  * MyCustomResultCollector())
  *                                      .execute(Function);

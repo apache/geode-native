@@ -58,23 +58,23 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(Cache* cache) {
       cache->getRegion(m_regionName)->destroy(m_key, m_arguments->at(0));
       break;
     case GF_EXECUTE_FUNCTION: {
-      std::shared_ptr<Execution> execution;
+      Execution execution;
       if (m_regionName == nullptr) {
         execution = FunctionService::onServer(std::shared_ptr<Cache>(cache));
       } else {
         execution = FunctionService::onRegion(cache->getRegion(m_regionName));
       }
       result = std::dynamic_pointer_cast<Cacheable>(
-          execution->withArgs(m_arguments->at(0))
-              ->withFilter(
+          execution.withArgs(m_arguments->at(0))
+              .withFilter(
                   std::static_pointer_cast<CacheableVector>(m_arguments->at(1)))
-              ->withCollector(std::dynamic_pointer_cast<ResultCollector>(
+              .withCollector(std::dynamic_pointer_cast<ResultCollector>(
                   m_arguments->at(2)))
-              ->execute(m_arguments->at(3)->toString().c_str(),
-                        std::chrono::milliseconds(
-                            std::static_pointer_cast<CacheableInt32>(
-                                m_arguments->at(4))
-                                ->value())));
+              .execute(m_arguments->at(3)->toString().c_str(),
+                       std::chrono::milliseconds(
+                           std::static_pointer_cast<CacheableInt32>(
+                               m_arguments->at(4))
+                               ->value())));
     } break;
     case GF_GET:
       result = cache->getRegion(m_regionName)->get(m_key, m_arguments->at(0));

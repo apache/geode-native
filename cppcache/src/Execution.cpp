@@ -23,23 +23,31 @@ namespace apache {
 namespace geode {
 namespace client {
 
-Execution::Execution(std::unique_ptr<ExecutionImpl> impl) : impl_(std::move(impl)){}
+Execution::Execution() = default;
+
+Execution::~Execution() noexcept = default;
+
+Execution::Execution(Execution&& move) noexcept = default;
+
+Execution& Execution::operator=(Execution&& move) noexcept = default;
+
+Execution::Execution(std::unique_ptr<ExecutionImpl> impl)
+    : impl_(std::move(impl)) {}
 
 Execution Execution::withFilter(std::shared_ptr<CacheableVector> routingObj) {
   return impl_->withFilter(routingObj);
 }
 
-Execution Execution::withArgs(std::shared_ptr<Cacheable> args){
+Execution Execution::withArgs(std::shared_ptr<Cacheable> args) {
   return impl_->withArgs(args);
 }
 
-Execution Execution::withCollector(std::shared_ptr<ResultCollector> rs){
+Execution Execution::withCollector(std::shared_ptr<ResultCollector> rs) {
   return impl_->withCollector(rs);
 }
 
 std::shared_ptr<ResultCollector> Execution::execute(
-    const std::string& func,
-    std::chrono::milliseconds timeout){
+    const std::string& func, std::chrono::milliseconds timeout) {
   return impl_->execute(func, timeout);
 }
 
@@ -47,7 +55,7 @@ std::shared_ptr<ResultCollector> Execution::execute(
     const std::shared_ptr<CacheableVector>& routingObj,
     const std::shared_ptr<Cacheable>& args,
     const std::shared_ptr<ResultCollector>& rs, const std::string& func,
-    std::chrono::milliseconds timeout){
+    std::chrono::milliseconds timeout) {
   return impl_->execute(routingObj, args, rs, func, timeout);
 }
 

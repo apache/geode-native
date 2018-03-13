@@ -214,7 +214,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       LOG("Tying Region creation");
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
 
-     auto regPtr = getHelper()->getRegion(regionNamesAuth[0]);
+      auto regPtr = getHelper()->getRegion(regionNamesAuth[0]);
 
       LOG("Region created successfully");
       //---------------------for region clear tests-----
@@ -245,7 +245,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       for (int i = 0; i < 5; i++) {
         regPtr->invalidate(CacheableKey::create(i));
       }
-      std::vector<std::shared_ptr<CacheableKey>>  entrykeys;
+      std::vector<std::shared_ptr<CacheableKey>> entrykeys;
       for (int i = 0; i < 5; i++) {
         entrykeys.push_back(CacheableKey::create(i));
       }
@@ -281,13 +281,13 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       LOG("CQ completed successfully");
       if (pool != nullptr) {
         // TODO:
-        FunctionService::onServer(pool)->execute("securityTest")->getResult();
+        FunctionService::onServer(pool).execute("securityTest")->getResult();
         LOG("Function execution completed successfully");
-        FunctionService::onServers(pool)->execute("securityTest")->getResult();
+        FunctionService::onServers(pool).execute("securityTest")->getResult();
         LOG("Function execution completed successfully");
-        FunctionService::onRegion(regPtr)->execute("securityTest")->getResult();
+        FunctionService::onRegion(regPtr).execute("securityTest")->getResult();
         LOG("Function execution completed successfully");
-        FunctionService::onRegion(regPtr)->execute("FireNForget");
+        FunctionService::onRegion(regPtr).execute("FireNForget");
         LOG("Function execution with no result completed successfully");
       } else {
         LOG("Skipping function execution for non pool case");
@@ -392,7 +392,7 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       for (int i = 0; i < 5; i++) {
         regPtr0->invalidate(CacheableKey::create(i));
       }
-      std::vector<std::shared_ptr<CacheableKey>>  entrykeys;
+      std::vector<std::shared_ptr<CacheableKey>> entrykeys;
       for (int i = 0; i < 5; i++) {
         entrykeys.push_back(CacheableKey::create(i));
       }
@@ -548,7 +548,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     HANDLE_NO_NOT_AUTHORIZED_EXCEPTION
 
     try {
-      std::vector<std::shared_ptr<CacheableKey>>  entrykeys;
+      std::vector<std::shared_ptr<CacheableKey>> entrykeys;
       for (int i = 0; i < 5; i++) {
         entrykeys.push_back(CacheableKey::create(i));
       }
@@ -592,7 +592,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
 
     try {
       if (pool != nullptr) {
-        FunctionService::onServer(pool)->execute("securityTest")->getResult();
+        FunctionService::onServer(pool).execute("securityTest")->getResult();
         FAIL("Function execution should not have completed successfully");
       } else {
         LOG("Skipping function execution for non pool case");
@@ -602,7 +602,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
 
     try {
       if (pool != nullptr) {
-        FunctionService::onServer(pool)->execute("securityTest")->getResult();
+        FunctionService::onServer(pool).execute("securityTest")->getResult();
         FAIL("Function execution should not have completed successfully");
       } else {
         LOG("Skipping function execution for non pool case");
@@ -612,7 +612,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
 
     try {
       if (pool != nullptr) {
-        FunctionService::onServers(pool)->execute("securityTest")->getResult();
+        FunctionService::onServers(pool).execute("securityTest")->getResult();
         FAIL("Function execution should not have completed successfully");
       } else {
         LOG("Skipping function execution for non pool case");
@@ -623,9 +623,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     try {
       if (pool != nullptr) {
         auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-        FunctionService::onRegion(regPtr0)
-            ->execute("securityTest")
-            ->getResult();
+        FunctionService::onRegion(regPtr0).execute("securityTest")->getResult();
         FAIL("Function execution should not have completed successfully");
       } else {
         LOG("Skipping function execution for non pool case");

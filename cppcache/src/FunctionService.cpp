@@ -26,8 +26,7 @@
 #include "CacheImpl.hpp"
 
 using namespace apache::geode::client;
-Execution FunctionService::onRegion(
-    const std::shared_ptr<Region>& region) {
+Execution FunctionService::onRegion(const std::shared_ptr<Region>& region) {
   LOGDEBUG("FunctionService::onRegion(std::shared_ptr<Region> region)");
   if (region == nullptr) {
     throw NullPointerException("FunctionService::onRegion: region is null");
@@ -73,13 +72,11 @@ Execution FunctionService::onRegion(
     }
   }
 
-   return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(realRegion, proxyCache, pool)));
-//  return std::shared_ptr<Execution>(
-//      (new ExecutionImpl(realRegion, proxyCache, pool)));
+  return Execution(std::unique_ptr<ExecutionImpl>(
+      new ExecutionImpl(realRegion, proxyCache, pool)));
 }
 
-Execution FunctionService::onServerWithPool(
-    const std::shared_ptr<Pool>& pool) {
+Execution FunctionService::onServerWithPool(const std::shared_ptr<Pool>& pool) {
   if (pool == nullptr) {
     throw NullPointerException("FunctionService::onServer: pool is null");
   }
@@ -88,7 +85,6 @@ Execution FunctionService::onServerWithPool(
         "This API is not supported in multiuser mode. "
         "Please use FunctionService::onServer(RegionService) API.");
   }
-  // return std::make_shared<ExecutionImpl>(pool);
   return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(pool)));
 }
 
@@ -103,8 +99,8 @@ Execution FunctionService::onServersWithPool(
         "Please use FunctionService::onServers(RegionService) API.");
   }
 
-  // return std::make_shared<ExecutionImpl>(pool, true);
-  return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(pool, true)));
+  return Execution(
+      std::unique_ptr<ExecutionImpl>(new ExecutionImpl(pool, true)));
 }
 
 Execution FunctionService::onServerWithCache(
@@ -122,8 +118,8 @@ Execution FunctionService::onServerWithCache(
         pc->m_cacheImpl->getPoolManager().find(userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
-      // return std::make_shared<ExecutionImpl>(pool, false, pc);
-      return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(pool, false, pc)));
+      return Execution(
+          std::unique_ptr<ExecutionImpl>(new ExecutionImpl(pool, false, pc)));
     }
     throw IllegalStateException(
         "Pool has been close to execute function on server");
@@ -149,8 +145,8 @@ Execution FunctionService::onServersWithCache(
         userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
-      // return std::make_shared<ExecutionImpl>(pool, true, pc);
-      return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(pool, false, pc)));
+      return Execution(
+          std::unique_ptr<ExecutionImpl>(new ExecutionImpl(pool, false, pc)));
     }
     throw IllegalStateException(
         "Pool has been close to execute function on server");

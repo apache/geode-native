@@ -229,31 +229,29 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     LOG("Put for execKey's on region complete.");
 
     LOG("Adding filter");
-   auto arrList = CacheableArrayList::create();
-   for (int i = 100; i < 120; i++) {
-     sprintf(buf, "execKey-%d", i);
-     auto key = CacheableKey::create(buf);
-     arrList->push_back(key);
-   }
+    auto arrList = CacheableArrayList::create();
+    for (int i = 100; i < 120; i++) {
+      sprintf(buf, "execKey-%d", i);
+      auto key = CacheableKey::create(buf);
+      arrList->push_back(key);
+    }
 
-   auto filter = CacheableVector::create();
-   for (int i = 100; i < 120; i++) {
-     sprintf(buf, "execKey-%d", i);
-     auto key = CacheableKey::create(buf);
-     filter->push_back(key);
-   }
-   LOG("Adding filter done.");
+    auto filter = CacheableVector::create();
+    for (int i = 100; i < 120; i++) {
+      sprintf(buf, "execKey-%d", i);
+      auto key = CacheableKey::create(buf);
+      filter->push_back(key);
+    }
+    LOG("Adding filter done.");
 
-   auto args = CacheableBoolean::create(1);
+    auto args = CacheableBoolean::create(1);
 
-   auto funcExec = FunctionService::onRegion(regPtr0);
-   ASSERT(funcExec != nullptr, "onRegion Returned nullptr");
+    auto funcExec = FunctionService::onRegion(regPtr0);
 
-   auto collector = funcExec->withArgs(args)->withFilter(filter)->execute(
-       exFuncNameSendException, std::chrono::seconds(15));
-   ASSERT(collector != nullptr, "onRegion collector nullptr");
+    auto collector = funcExec.withArgs(args).withFilter(filter).execute(
+        exFuncNameSendException, std::chrono::seconds(15));
 
-   auto result = collector->getResult();
+    auto result = collector->getResult();
 
     if (result == nullptr) {
       ASSERT(false, "echo String : result is nullptr");
@@ -275,7 +273,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
     LOG("exFuncNameSendException done for bool argument.");
 
-    collector = funcExec->withArgs(arrList)->withFilter(filter)->execute(
+    collector = funcExec.withArgs(arrList).withFilter(filter).execute(
         exFuncNameSendException, std::chrono::seconds(15));
     ASSERT(collector != nullptr, "onRegion collector for arrList nullptr");
     std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -287,10 +285,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
       LOGINFO("Executing the exception test it is expected to throw.");
       auto executeFunctionResult3 =
-          funcExec->withArgs(arrList)
-              ->withFilter(filter)
-              ->execute("ThinClientRegionExceptionTest",
-                        std::chrono::seconds(15))
+          funcExec.withArgs(arrList)
+              .withFilter(filter)
+              .execute("ThinClientRegionExceptionTest",
+                       std::chrono::seconds(15))
               ->getResult();
       FAIL("Failed to throw expected exception.");
     } catch (...) {
