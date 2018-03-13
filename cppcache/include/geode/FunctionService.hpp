@@ -62,7 +62,7 @@ class _GEODE_EXPORT FunctionService {
    * @throws NullPointerException
    *                 if the region passed in is nullptr
    */
-  static std::shared_ptr<Execution> onRegion(const std::shared_ptr<Region>& region);
+  static Execution onRegion(const std::shared_ptr<Region>& region);
 
   /**
    * Returns a {@link Execution} object that can be used to execute a data
@@ -77,7 +77,7 @@ class _GEODE_EXPORT FunctionService {
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
-  inline static std::shared_ptr<Execution> onServer(const std::shared_ptr<Pool>& pool) {
+  inline static Execution onServer(const std::shared_ptr<Pool>& pool) {
     return onServerWithPool(pool);
   }
 
@@ -95,7 +95,7 @@ class _GEODE_EXPORT FunctionService {
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
-  inline static std::shared_ptr<Execution> onServer(const std::shared_ptr<RegionService>& cache) {
+  inline static Execution onServer(const std::shared_ptr<RegionService>& cache) {
     return onServerWithCache(cache);
   }
 
@@ -112,7 +112,7 @@ class _GEODE_EXPORT FunctionService {
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
-  inline static std::shared_ptr<Execution> onServers(const std::shared_ptr<Pool>& pool) {
+  inline static Execution onServers(const std::shared_ptr<Pool>& pool) {
     return onServersWithPool(pool);
   }
 
@@ -130,23 +130,23 @@ class _GEODE_EXPORT FunctionService {
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
-  inline static std::shared_ptr<Execution> onServers(const std::shared_ptr<RegionService>& cache) {
+  inline static Execution onServers(const std::shared_ptr<RegionService>& cache) {
     return onServersWithCache(cache);
   }
 
   virtual ~FunctionService() {}
 
  private:
-  static std::shared_ptr<Execution> onServerWithPool(
+  static Execution onServerWithPool(
       const std::shared_ptr<Pool>& pool);
 
-  static std::shared_ptr<Execution> onServerWithCache(
+  static Execution onServerWithCache(
       const std::shared_ptr<RegionService>& cache);
 
-  static std::shared_ptr<Execution> onServersWithPool(
+  static Execution onServersWithPool(
       const std::shared_ptr<Pool>& pool);
 
-  static std::shared_ptr<Execution> onServersWithCache(const std::shared_ptr<RegionService>& cache);
+  static Execution onServersWithCache(const std::shared_ptr<RegionService>& cache);
 };
 }  // namespace client
 }  // namespace geode
