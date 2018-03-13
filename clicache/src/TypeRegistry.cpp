@@ -75,6 +75,61 @@ namespace Apache
         return localTypeName;
       }
 
+      Type^ TypeRegistry::GetType(String^ className)
+      {
+        Type^ retVal = nullptr;
+
+        if (classNameVsType->TryGetValue(className, retVal)) {
+          return retVal;
+        }
+
+        Dictionary<Assembly^, bool>^ referedAssembly = gcnew Dictionary<Assembly^, bool>();
+        AppDomain^ MyDomain = AppDomain::CurrentDomain;
+        array<Assembly^>^ AssembliesLoaded = MyDomain->GetAssemblies();
+        for each(Assembly^ assembly in AssembliesLoaded)
+        {
+          retVal = GetTypeFromRefrencedAssemblies(className, referedAssembly, assembly);
+          if (retVal) {
+            return retVal;
+          }
+        }
+        
+        return retVal;
+      }
+
+      Type^ TypeRegistry::GetTypeFromRefrencedAssemblies(String^ className, Dictionary<Assembly^, bool>^ referedAssembly, Assembly^ currentAssembly)
+      {
+        Type^ type = currentAssembly->GetType(className);
+        if (type != nullptr)
+        {
+          classNameVsType[className] = type;
+          return type;
+        }
+
+        //if (referedAssembly->ContainsKey(currentAssembly))
+        //  return nullptr;
+        //referedAssembly[currentAssembly] = true;
+
+        ////get all refrenced assembly
+        //array<AssemblyName^>^ ReferencedAssemblies = currentAssembly->GetReferencedAssemblies();
+        //for each(AssemblyName^ assembly in ReferencedAssemblies)
+        //{
+        //  try
+        //  {
+        //    Assembly^ loadedAssembly = Assembly::Load(assembly);
+        //    if (loadedAssembly != nullptr && (!referedAssembly->ContainsKey(loadedAssembly)))
+        //    {
+        //      type = GetTypeFromRefrencedAssemblies(className, referedAssembly, loadedAssembly);
+        //      if (!type)
+        //        return type;
+        //    }
+        //  }
+        //  catch (System::Exception^){//ignore
+        //  }
+        //}
+        return nullptr;
+      }
+
     
     }  // namespace Client
   }  // namespace Geode

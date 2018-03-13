@@ -284,14 +284,13 @@ namespace Apache
         Log::Debug("RegisterPdxType: class registered: " + obj->GetType()->FullName);
       }
 
-      Object^ Serializable::CreateObject(String^ className)
+      Object^ Serializable::CreateObject(String^ className, Cache^ cache)
       {
-
-        Object^ retVal = CreateObjectEx(className);
+        Object^ retVal = CreateObjectEx(className, cache);
 
         if (retVal == nullptr)
         {
-          Type^ t = GetType(className);
+          Type^ t = cache->TypeRegistry->GetType(className);
           if (t)
           {
             retVal = t->GetConstructor(Type::EmptyTypes)->Invoke(nullptr);
@@ -301,7 +300,7 @@ namespace Apache
         return retVal;
       }
 
-      Object^ Serializable::CreateObjectEx(String^ className)
+      Object^ Serializable::CreateObjectEx(String^ className, Cache^ cache)
       {
         CreateNewObjectDelegate^ del = nullptr;
         Dictionary<String^, CreateNewObjectDelegate^>^ tmp = ClassNameVsCreateNewObjectDelegate;
@@ -313,10 +312,10 @@ namespace Apache
           return del();
         }
 
-        Type^ t = GetType(className);
+        Type^ t = cache->TypeRegistry->GetType(className);
         if (t)
         {
-          msclr::lock lockInstance(ClassNameVsTypeLockObj);
+          msclr::lock lockInstance(ClassNameVsCreateNewObjectLockObj);
           {
             tmp = ClassNameVsCreateNewObjectDelegate;
             tmp->TryGetValue(className, del);
@@ -332,22 +331,22 @@ namespace Apache
         return nullptr;
       }
 
-      Object^ Serializable::GetArrayObject(String^ className, int len)
+      Object^ Serializable::GetArrayObject(String^ className, int length, Cache^ cache)
       {
-        Object^ retArr = GetArrayObjectEx(className, len);
+        Object^ retArr = GetArrayObjectEx(className, length, cache);
         if (retArr == nullptr)
         {
-          Type^ t = GetType(className);
-          if (t)
+          Type^ type = cache->TypeRegistry->GetType(className);
+          if (type)
           {
-            retArr = t->MakeArrayType()->GetConstructor(singleIntType)->Invoke(gcnew array<Object^>(1) { len });
+            retArr = type->MakeArrayType()->GetConstructor(singleIntType)->Invoke(gcnew array<Object^>(1) { length });
             return retArr;
           }
         }
         return retArr;
       }
 
-      Object^ Serializable::GetArrayObjectEx(String^ className, int len)
+      Object^ Serializable::GetArrayObjectEx(String^ className, int length, Cache^ cache)
       {
         CreateNewObjectArrayDelegate^ del = nullptr;
         Dictionary<String^, CreateNewObjectArrayDelegate^>^ tmp = ClassNameVsCreateNewObjectArrayDelegate;
@@ -356,23 +355,23 @@ namespace Apache
 
         if (del != nullptr)
         {
-          return del(len);
+          return del(length);
         }
 
-        Type^ t = GetType(className);
+        Type^ t = cache->TypeRegistry->GetType(className);
         if (t)
         {
-          msclr::lock lockInstance(ClassNameVsTypeLockObj);
+          msclr::lock lockInstance(ClassNameVsCreateNewObjectLockObj);
           {
             tmp = ClassNameVsCreateNewObjectArrayDelegate;
             tmp->TryGetValue(className, del);
             if (del != nullptr)
-              return del(len);
+              return del(length);
             del = CreateNewObjectArrayDelegateF(t);
             tmp = gcnew Dictionary<String^, CreateNewObjectArrayDelegate^>(ClassNameVsCreateNewObjectArrayDelegate);
             tmp[className] = del;
             ClassNameVsCreateNewObjectArrayDelegate = tmp;
-            return del(len);
+            return del(length);
           }
         }
         return nullptr;
@@ -411,70 +410,6 @@ namespace Apache
         return (Serializable::CreateNewObjectArrayDelegate^)dynam->CreateDelegate(createNewObjectArrayDelegateType);
       }
 
-      Type^ Serializable::getTypeFromRefrencedAssemblies(String^ className, Dictionary<Assembly^, bool>^ referedAssembly, Assembly^ currentAsm)
-      {
-        Type^ t = currentAsm->GetType(className);
-        if (t != nullptr)
-        {
-          Dictionary<String^, Type^>^ tmp = gcnew Dictionary<String^, Type^>(ClassNameVsType);
-          tmp[className] = t;
-          ClassNameVsType = tmp;
-          return t;
-        }
-        //already touched
-        if (referedAssembly->ContainsKey(currentAsm))
-          return nullptr;
-        referedAssembly[currentAsm] = true;
-
-        //get all refrenced assembly
-        array<AssemblyName^>^ ReferencedAssemblies = currentAsm->GetReferencedAssemblies();
-        for each(AssemblyName^ tmpAsm in ReferencedAssemblies)
-        {
-          try
-          {
-            Assembly^ la = Assembly::Load(tmpAsm);
-            if (la != nullptr && (!referedAssembly->ContainsKey(la)))
-            {
-              t = getTypeFromRefrencedAssemblies(className, referedAssembly, la);
-              if (!t)
-                return t;
-            }
-          }
-          catch (System::Exception^){//ignore
-          }
-        }
-        return nullptr;
-      }
-
-      Type^ Serializable::GetType(String^ className)
-      {
-        Type^ retVal = nullptr;
-        Dictionary<String^, Type^>^ tmp = ClassNameVsType;
-        tmp->TryGetValue(className, retVal);
-
-        if (retVal != nullptr)
-          return retVal;
-        msclr::lock lockInstance(ClassNameVsTypeLockObj);
-        {
-          tmp = ClassNameVsType;
-          tmp->TryGetValue(className, retVal);
-
-          if (retVal != nullptr)
-            return retVal;
-
-          Dictionary<Assembly^, bool>^ referedAssembly = gcnew Dictionary<Assembly^, bool>();
-          AppDomain^ MyDomain = AppDomain::CurrentDomain;
-          array<Assembly^>^ AssembliesLoaded = MyDomain->GetAssemblies();
-          for each(Assembly^ tmpAsm in AssembliesLoaded)
-          {
-            retVal = getTypeFromRefrencedAssemblies(className, referedAssembly, tmpAsm);
-            if (retVal)
-              return retVal;
-          }
-        }
-        return retVal;
-      }
-
       IPdxSerializable^ Serializable::GetPdxType(String^ className, Cache^ cache)
       {
         PdxTypeFactoryMethod^ retVal = nullptr;
@@ -488,7 +423,7 @@ namespace Apache
           }
           try
           {
-            Object^ retObj = CreateObject(className);
+            Object^ retObj = CreateObject(className, cache);
 
             IPdxSerializable^ retPdx = dynamic_cast<IPdxSerializable^>(retObj);
             if (retPdx != nullptr)
@@ -939,13 +874,9 @@ namespace Apache
         return nullptr;
       }
 
-
-
-
       void Serializable::Clear()
       {
         ClassNameVsCreateNewObjectDelegate->Clear();
-        ClassNameVsType->Clear();
         ClassNameVsCreateNewObjectArrayDelegate->Clear();
       }
 

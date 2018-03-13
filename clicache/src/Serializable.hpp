@@ -44,7 +44,7 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
-				interface class IPdxSerializable;
+        interface class IPdxSerializable;
         interface class IPdxSerializer;
         ref class Cache;
 
@@ -290,8 +290,6 @@ namespace Apache
 
         static void Clear();
 
-        static Type^ GetType(String^ className);
-
         static int GetEnumValue(Internal::EnumInfo^ ei, Cache^ cache);
         static Internal::EnumInfo^ GetEnum(int val, Cache^ cache);
 
@@ -496,9 +494,7 @@ namespace Apache
         }
 
       internal:
-        static Object^ ClassNameVsTypeLockObj = gcnew Object();
-        static Dictionary<String^, Type^>^ ClassNameVsType =
-          gcnew Dictionary<String^, Type^>();
+        static Object^ ClassNameVsCreateNewObjectLockObj = gcnew Object();
 
         delegate Object^ CreateNewObjectDelegate();
         static CreateNewObjectDelegate^ CreateNewObjectDelegateF(Type^ type);
@@ -513,9 +509,8 @@ namespace Apache
 
         static array<Type^>^ singleIntType = gcnew array<Type^>(1){Int32::typeid};
 
-        static Object^ CreateObject(String^ className);
-        static Object^ GetArrayObject(String^ className, int len);
-        static Type^ getTypeFromRefrencedAssemblies(String^ className, Dictionary<Assembly^, bool>^ referedAssembly, Assembly^ currentAsm);
+        static Object^ CreateObject(String^ className, Cache^ cache);
+        static Object^ GetArrayObject(String^ className, int length, Cache^ cache);
 
         static Dictionary<String^, CreateNewObjectDelegate^>^ ClassNameVsCreateNewObjectDelegate =
           gcnew Dictionary<String^, CreateNewObjectDelegate^>();
@@ -523,8 +518,8 @@ namespace Apache
         static Dictionary<String^, CreateNewObjectArrayDelegate^>^ ClassNameVsCreateNewObjectArrayDelegate =
           gcnew Dictionary<String^, CreateNewObjectArrayDelegate^>();
 
-        static Object^ CreateObjectEx(String^ className);
-        static Object^ GetArrayObjectEx(String^ className, int len);
+        static Object^ CreateObjectEx(String^ className, Cache^ cache);
+        static Object^ GetArrayObjectEx(String^ className, int length, Cache^ cache);
         /// <summary>
         /// Static array of managed <c>WrapperDelegate</c> delegates that
         /// maintains a mapping of built-in native typeIds to their corresponding

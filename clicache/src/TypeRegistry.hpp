@@ -59,15 +59,17 @@ namespace Apache
           }
         }
 
-        
         String^ GetPdxTypeName(String^ localTypeName);
  
         String^ GetLocalTypeName(String^ pdxTypeName);
+
+        Type^ GetType(String^ className);
 
         void Clear()
         {
           pdxTypeNameToLocal->Clear();
           localTypeNameToPdx->Clear();
+          classNameVsType->Clear();
         }
 
       private:
@@ -77,7 +79,11 @@ namespace Apache
           gcnew ConcurrentDictionary<String^, String^>();
         ConcurrentDictionary<String^, String^>^ localTypeNameToPdx =
           gcnew ConcurrentDictionary<String^, String^>();
-       
+        ConcurrentDictionary<String^, Type^>^ classNameVsType =
+          gcnew ConcurrentDictionary<String^, Type^>();
+
+        Type^ GetTypeFromRefrencedAssemblies(String^ className, Dictionary<Assembly^, bool>^ referedAssembly, Assembly^ currentAssembly);
+
       };
     }  // namespace Client
   }  // namespace Geode

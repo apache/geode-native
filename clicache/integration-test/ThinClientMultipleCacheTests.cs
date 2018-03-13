@@ -16,13 +16,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Threading;
 using NUnit.Framework;
-using Apache.Geode.DUnitFramework;
-using Apache.Geode.Client;
 
 namespace Apache.Geode.Client.UnitTests
 {
@@ -39,7 +33,6 @@ namespace Apache.Geode.Client.UnitTests
       var cacheFactory = new CacheFactory();
       cacheOne = cacheFactory.Create();
       cacheTwo = cacheFactory.Create();
-
     }
 
     [Test]
@@ -51,7 +44,6 @@ namespace Apache.Geode.Client.UnitTests
       cacheOne.TypeRegistry.PdxSerializer = dummyPdxSerializer;
 
       Assert.AreSame(dummyPdxSerializer, cacheOne.TypeRegistry.PdxSerializer);
-
       Assert.IsNull(cacheTwo.TypeRegistry.PdxSerializer);
     }
 
@@ -107,22 +99,12 @@ namespace Apache.Geode.Client.UnitTests
   {
     public string FromPdxTypeName(string pdxTypeName)
     {
-      if ("foo".Equals(pdxTypeName))
-      {
-        return "bar";
-      }
-
-      return null;
+      return "foo".Equals(pdxTypeName) ? "bar" : null;
     }
 
     public string ToPdxTypeName(string localTypeName)
     {
-      if ("bar".Equals(localTypeName))
-      {
-        return "foo";
-      }
-
-      return null;
+      return "bar".Equals(localTypeName) ? "foo" : null;
     }
   }
 }

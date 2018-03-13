@@ -52,7 +52,7 @@ namespace Apache
        Object^ EnumInfo::GetEnum(Cache^ cache)
        {
          String^ tmp = cache->TypeRegistry->GetLocalTypeName(_enumClassName);
-         Type^ t = Serializable::GetType(tmp);
+         Type^ t = cache->TypeRegistry->GetType(tmp);
          Object^ obj = Enum::Parse(t, _enumName);
 
          return obj;
