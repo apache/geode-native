@@ -53,7 +53,7 @@ enum ServerRegionOperation {
 class CacheableKey;
 class TransactionalOperation {
  public:
-  TransactionalOperation(ServerRegionOperation op, const char* regionName,
+  TransactionalOperation(ServerRegionOperation operation, const char* regionName,
                          std::shared_ptr<CacheableKey> key, std::shared_ptr<std::vector<std::shared_ptr<Cacheable>> > arguments);
   virtual ~TransactionalOperation();
 

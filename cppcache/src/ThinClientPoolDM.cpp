@@ -27,7 +27,7 @@
 #include "ThinClientPoolDM.hpp"
 #include "TcrEndpoint.hpp"
 #include "ThinClientRegion.hpp"
-#include "ExecutionImpl.hpp"
+#include "geode/Execution.hpp"
 #include "ExpiryHandler_T.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "DistributedSystemImpl.hpp"
@@ -52,7 +52,6 @@ class GetAllWork : public PooledWork<GfErrType>,
   std::shared_ptr<BucketServerLocation> m_serverLocation;
   TcrMessage* m_request;
   TcrMessageReply* m_reply;
-  MapOfUpdateCounters m_mapOfUpdateCounters;
   bool m_attemptFailover;
   bool m_isBGThread;
   bool m_addToLocalCache;
@@ -702,7 +701,7 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getLocators()
     ptrArr[i++] = CacheableString::create(locator);
   }
   return CacheableStringArray::create(
-	  std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
+      std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
 }
 
 const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
@@ -714,7 +713,7 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
       ptrArr[i++] = CacheableString::create(server);
     }
     return CacheableStringArray::create(
-		std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
+        std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
   } else if (!m_attrs->m_initLocList.empty()) {
     std::vector<ServerLocation> vec;
     // TODO thread - why is this member volatile?
@@ -728,9 +727,11 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
       ptrArr[i++] = CacheableString::create(serLoc.getServerName() + ":" +
                                             std::to_string(serLoc.getPort()));
     }
-    return CacheableStringArray::create(std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
+    return CacheableStringArray::create(
+        std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
   } else {
-    return CacheableStringArray::create(std::vector<std::shared_ptr<CacheableString>>{});
+    return CacheableStringArray::create(
+        std::vector<std::shared_ptr<CacheableString>>{});
   }
 }
 
@@ -910,21 +911,6 @@ void ThinClientPoolDM::sendUserCacheCloseMessage(bool keepAlive) {
     } else {
       uca->setUnAuthenticated();
     }
-  }
-}
-
-TcrConnection* ThinClientPoolDM::getConnectionInMultiuserMode(
-    std::shared_ptr<UserAttributes> userAttribute) {
-  LOGDEBUG("ThinClientPoolDM::getConnectionInMultiuserMode:");
-  UserConnectionAttributes* uca = userAttribute->getConnectionAttribute();
-  if (uca != nullptr) {
-    TcrEndpoint* ep = uca->getEndpoint();
-    LOGDEBUG(
-        "ThinClientPoolDM::getConnectionInMultiuserMode endpoint got = %s ",
-        ep->name().c_str());
-    return getFromEP(ep);
-  } else {
-    return nullptr;
   }
 }
 
@@ -1414,9 +1400,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
           "ThinClientPoolDM::sendSyncRequest: after "
           "getConnectionInMultiuserMode %d",
           isUserNeedToReAuthenticate);
-      if (conn !=
-          nullptr) {  // need to chk whether user is already authenticated
-                      // to this endpoint or not.
+      if (conn != nullptr) {  // need to chk whether user is already
+                              // authenticated to this endpoint or not.
         isUserNeedToReAuthenticate =
             !(userAttr->isEndpointAuthenticated(conn->getEndpointObject()));
       }
@@ -2299,11 +2284,6 @@ TcrConnection* ThinClientPoolDM::getNoGetLock(
   }
 
   return returnT;
-}
-
-bool ThinClientPoolDM::exclude(TcrConnection* conn,
-                               std::set<ServerLocation>& excludeServers) {
-  return excludeConnection(conn, excludeServers);
 }
 
 void ThinClientPoolDM::incRegionCount() {

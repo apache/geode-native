@@ -249,7 +249,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
    auto funcExec = FunctionService::onRegion(regPtr0);
    ASSERT(funcExec != nullptr, "onRegion Returned nullptr");
 
-   auto collector = funcExec->withArgs(args)->withFilter(filter)->execute(
+   auto collector = funcExec->withArgs(args).withFilter(filter).execute(
        exFuncNameSendException, std::chrono::seconds(15));
    ASSERT(collector != nullptr, "onRegion collector nullptr");
 
@@ -275,7 +275,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
 
     LOG("exFuncNameSendException done for bool argument.");
 
-    collector = funcExec->withArgs(arrList)->withFilter(filter)->execute(
+    collector = funcExec->withArgs(arrList).withFilter(filter).execute(
         exFuncNameSendException, std::chrono::seconds(15));
     ASSERT(collector != nullptr, "onRegion collector for arrList nullptr");
     std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -288,8 +288,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       LOGINFO("Executing the exception test it is expected to throw.");
       auto executeFunctionResult3 =
           funcExec->withArgs(arrList)
-              ->withFilter(filter)
-              ->execute("ThinClientRegionExceptionTest",
+              .withFilter(filter)
+              .execute("ThinClientRegionExceptionTest",
                         std::chrono::seconds(15))
               ->getResult();
       FAIL("Failed to throw expected exception.");

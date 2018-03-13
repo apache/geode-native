@@ -54,7 +54,8 @@ namespace Apache
           
           try
           {
-            return Execution<TResult>::Create(m_nativeptr->get()->withFilter(rsptr), this->m_rc);
+            auto exec = std::make_shared<native::Execution>(m_nativeptr->get()->withFilter(rsptr));
+            return Execution<TResult>::Create(exec, this->m_rc);
           }
           finally
           {
@@ -75,7 +76,8 @@ namespace Apache
           try
           {
             auto argsptr = Serializable::GetUnmanagedValueGeneric<TArgs>( args );
-            return Execution<TResult>::Create(m_nativeptr->get()->withArgs(argsptr), this->m_rc);
+            auto exec = std::make_shared<native::Execution>(m_nativeptr->get()->withArgs(argsptr));
+            return Execution<TResult>::Create(exec, this->m_rc);
           }
           finally
           {
@@ -96,7 +98,8 @@ namespace Apache
         }
         try
         {
-          return Execution<TResult>::Create( m_nativeptr->get()->withCollector(rcptr), rc);
+          auto exec = std::make_shared<native::Execution>(m_nativeptr->get()->withCollector(rcptr));
+          return Execution<TResult>::Create(exec, rc);
         }
         finally
         {

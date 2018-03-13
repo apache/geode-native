@@ -17,100 +17,122 @@
 
 #pragma once
 
-#ifndef GEODE_EXECUTION_H_
-#define GEODE_EXECUTION_H_
+#ifndef GEODE_EXECUTIONIMPL_H_
+#define GEODE_EXECUTIONIMPL_H_
 
-#include <memory>
-#include <chrono>
-#include <string>
+#include <map>
 
-#include "internal/geode_globals.hpp"
-#include "CacheableBuiltins.hpp"
-#include "ResultCollector.hpp"
+#include <ace/Condition_Recursive_Thread_Mutex.h>
+#include <ace/Guard_T.h>
 
-/**
- * @file
- */
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/ResultCollector.hpp>
+#include <geode/Region.hpp>
+
+#include "../../src/ProxyCache.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
-/**
- * @class Execution Execution.hpp
- * gathers results from function execution
- * @see FunctionService
- */
+
+typedef std::map<std::string, std::vector<int8_t>*>
+    FunctionToFunctionAttributes;
 
 class _GEODE_EXPORT Execution {
  public:
-  /**
-   * Specifies a data filter of routing objects for selecting the Geode
-   * members
-   * to execute the function.
-   * <p>
-   * If the filter set is empty the function is executed on all members
-   * that have the  FunctionService::onRegion(Region).</p>
-   * @param routingObj Set defining the data filter to be used for executing the
-   * function
-   * @return an Execution with the filter
-   * @throws IllegalArgumentException if filter passed is nullptr.
-   * @throws UnsupportedOperationException if not called after
-   *    FunctionService::onRegion(Region).
-   */
-  virtual std::shared_ptr<Execution> withFilter(std::shared_ptr<CacheableVector> routingObj) = 0;
-  /**
-   * Specifies the user data passed to the function when it is executed.
-   * @param args user data passed to the function execution
-   * @return an Execution with args
-   * @throws IllegalArgumentException if the input parameter is nullptr
-   *
-   */
-  virtual std::shared_ptr<Execution> withArgs(std::shared_ptr<Cacheable> args) = 0;
-  /**
-   * Specifies the {@link ResultCollector} that will receive the results after
-   * the function has been executed.
-   * @return an Execution with a collector
-   * @throws IllegalArgumentException if {@link ResultCollector} is nullptr
-   * @see ResultCollector
-   */
-  virtual std::shared_ptr<Execution> withCollector(std::shared_ptr<ResultCollector> rs) = 0;
-  /**
-   * Executes the function using its name
-   * <p>
-   * @param func the name of the function to be executed
-   * @param timeout value to wait for the operation to finish before timing out.
-   * @throws Exception if there is an error during function execution
-   * @return either a default result collector or one specified by {@link
-   * #withCollector(ResultCollector)}
-   */
-  virtual std::shared_ptr<ResultCollector> execute(
-      const std::string& func,
-      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
+  Execution(std::shared_ptr<Region> rptr = nullptr,
+            std::shared_ptr<ProxyCache> proxyCache = nullptr,
+            std::shared_ptr<Pool> pp = nullptr)
+      : m_routingObj(nullptr),
+        m_args(nullptr),
+        m_resultCollector(nullptr),
+        m_region(rptr),
+        m_allServer(false),
+        m_pool(pp),
+        m_proxyCache(proxyCache) {}
 
-  /**
-   * Executes the function using its name
-   * <p>
-   * @param routingObj Set defining the data filter to be used for executing the
-   * function
-   * @param args user data passed to the function execution
-   * @param rs * Specifies the {@link ResultCollector} that will receive the
-   * results after
-   * the function has been executed.
-   * @param func the name of the function to be executed
-   * @param timeout value to wait for the operation to finish before timing out.
-   * @throws Exception if there is an error during function execution
-   * @return either a default result collector or one specified by {@link
-   * #withCollector(ResultCollector)}
-   */
-  virtual std::shared_ptr<ResultCollector> execute(
+  Execution(std::shared_ptr<Pool> pool, bool allServer = false,
+            std::shared_ptr<ProxyCache> proxyCache = nullptr)
+      : m_routingObj(nullptr),
+        m_args(nullptr),
+        m_resultCollector(nullptr),
+        m_region(nullptr),
+        m_allServer(allServer),
+        m_pool(pool),
+        m_proxyCache(proxyCache) {}
+
+  Execution withFilter(std::shared_ptr<CacheableVector> routingObj);
+
+  Execution withArgs(std::shared_ptr<Cacheable> args);
+
+  Execution withCollector(std::shared_ptr<ResultCollector> rs);
+
+  // java function has hasResult property. we put the hasResult argument
+  // here as a kluge.
+  std::shared_ptr<ResultCollector> execute(
       const std::shared_ptr<CacheableVector>& routingObj,
       const std::shared_ptr<Cacheable>& args,
       const std::shared_ptr<ResultCollector>& rs, const std::string& func,
-      std::chrono::milliseconds timeout) = 0;
-};
+      std::chrono::milliseconds timeout);
 
+  std::shared_ptr<ResultCollector> execute(
+      const std::string& func,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+
+  static void addResults(std::shared_ptr<ResultCollector>& collector,
+                         const std::shared_ptr<CacheableVector>& results);
+
+  Execution(const Execution& rhs)
+      : m_routingObj(rhs.m_routingObj),
+        m_args(rhs.m_args),
+        m_resultCollector(rhs.m_resultCollector),
+        m_region(rhs.m_region),
+        m_allServer(rhs.m_allServer),
+        m_pool(rhs.m_pool),
+        m_proxyCache(rhs.m_proxyCache) {}
+
+ private:
+  Execution(const std::shared_ptr<CacheableVector>& routingObj,
+            const std::shared_ptr<Cacheable>& args,
+            const std::shared_ptr<ResultCollector>& rc,
+            const std::shared_ptr<Region>& region, const bool allServer,
+            const std::shared_ptr<Pool>& pool,
+            std::shared_ptr<ProxyCache> proxyCache = nullptr)
+      : m_routingObj(routingObj),
+        m_args(args),
+        m_resultCollector(rc),
+        m_region(region),
+        m_allServer(allServer),
+        m_pool(pool),
+        m_proxyCache(proxyCache) {}
+  // ACE_Recursive_Thread_Mutex m_lock;
+  std::shared_ptr<CacheableVector> m_routingObj;
+  std::shared_ptr<Cacheable> m_args;
+  std::shared_ptr<ResultCollector> m_resultCollector;
+  std::shared_ptr<Region> m_region;
+  bool m_allServer;
+  std::shared_ptr<Pool> m_pool;
+  std::shared_ptr<ProxyCache> m_proxyCache;
+  static ACE_Recursive_Thread_Mutex m_func_attrs_lock;
+  static FunctionToFunctionAttributes m_func_attrs;
+  //  std::vector<int8_t> m_attributes;
+
+  std::shared_ptr<CacheableVector> executeOnPool(
+      const std::string& func, uint8_t getResult, int32_t retryAttempts,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+
+  void executeOnAllServers(
+      const std::string& func, uint8_t getResult,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+
+  std::vector<int8_t>* getFunctionAttributes(const std::string& func);
+  GfErrType getFuncAttributes(const std::string& func,
+                              std::vector<int8_t>** attr);
+
+  _GEODE_FRIEND_STD_SHARED_PTR(Execution)
+};
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_EXECUTION_H_
+#endif  // GEODE_EXECUTIONIMPL_H_

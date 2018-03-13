@@ -2423,8 +2423,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
     auto funcExec = FunctionService::onRegion(regPtr0);
 
     auto collector = funcExec->withArgs(args)
-                         ->withFilter(routingObj)
-                         ->execute("ComparePdxTypes");
+                         .withFilter(routingObj)
+                         .execute("ComparePdxTypes");
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     auto result = collector->getResult();
@@ -2592,8 +2592,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
     auto funcExec = FunctionService::onRegion(regPtr0);
 
     auto collector = funcExec->withArgs(args)
-                         ->withFilter(routingObj)
-                         ->execute("ComparePdxTypes");
+                         .withFilter(routingObj)
+                         .execute("ComparePdxTypes");
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     auto result = collector->getResult();
