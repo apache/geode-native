@@ -493,7 +493,7 @@ namespace Apache
           &CliCallbackDelegate::Callback);
 
         native::DistributedSystemImpl::registerCliCallback(System::Threading::Thread::GetDomainID(),
-                                                                          (native::CliCallbackMethod)System::Runtime::InteropServices::
+                                                                          (void (*)(apache::geode::client::Cache &cache))System::Runtime::InteropServices::
                                                                           Marshal::GetFunctionPointerForDelegate(
                                                                           nativeCallback).ToPointer());
       }

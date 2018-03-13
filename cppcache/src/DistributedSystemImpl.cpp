@@ -31,15 +31,9 @@ ACE_Recursive_Thread_Mutex DistributedSystemImpl::m_cliCallbackLock;
 DistributedSystemImpl::DistributedSystemImpl(const char* name,
                                              DistributedSystem* implementee)
     : m_name(name == 0 ? "" : name), m_implementee(implementee) {
-  if (m_implementee->getSystemProperties().isDhOn()) {
-    // m_dh.initDhKeys(m_implementee->getSystemProperties()->getSecurityProperties());
-  }
 }
 
 DistributedSystemImpl::~DistributedSystemImpl() {
-  if (m_implementee->getSystemProperties().isDhOn()) {
-    // m_dh.clearDhKeys();
-  }
   LOGFINE("Destroyed DistributedSystemImpl");
 }
 
