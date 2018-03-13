@@ -77,56 +77,57 @@ namespace Apache
 
       Type^ TypeRegistry::GetType(String^ className)
       {
-        Type^ retVal = nullptr;
+        Type^ type = nullptr;
 
-        if (classNameVsType->TryGetValue(className, retVal)) {
-          return retVal;
+        if (classNameVsType->TryGetValue(className, type)) {
+          return type;
         }
 
-        Dictionary<Assembly^, bool>^ referedAssembly = gcnew Dictionary<Assembly^, bool>();
-        AppDomain^ MyDomain = AppDomain::CurrentDomain;
+        auto referedAssembly = gcnew Dictionary<Assembly^, bool>();
+        auto MyDomain = AppDomain::CurrentDomain;
         array<Assembly^>^ AssembliesLoaded = MyDomain->GetAssemblies();
         for each(Assembly^ assembly in AssembliesLoaded)
         {
-          retVal = GetTypeFromRefrencedAssemblies(className, referedAssembly, assembly);
-          if (retVal) {
-            return retVal;
+          type = GetTypeFromRefrencedAssemblies(className, referedAssembly, assembly);
+          if (type) {
+            classNameVsType[className] = type;
+            return type;
           }
         }
         
-        return retVal;
+        return type;
       }
 
       Type^ TypeRegistry::GetTypeFromRefrencedAssemblies(String^ className, Dictionary<Assembly^, bool>^ referedAssembly, Assembly^ currentAssembly)
       {
-        Type^ type = currentAssembly->GetType(className);
+        auto type = currentAssembly->GetType(className);
         if (type != nullptr)
-        {
-          classNameVsType[className] = type;
+        {          
           return type;
         }
 
-        //if (referedAssembly->ContainsKey(currentAssembly))
-        //  return nullptr;
-        //referedAssembly[currentAssembly] = true;
+        if (referedAssembly->ContainsKey(currentAssembly))
+          return nullptr;
+        referedAssembly[currentAssembly] = true;
 
-        ////get all refrenced assembly
-        //array<AssemblyName^>^ ReferencedAssemblies = currentAssembly->GetReferencedAssemblies();
-        //for each(AssemblyName^ assembly in ReferencedAssemblies)
-        //{
-        //  try
-        //  {
-        //    Assembly^ loadedAssembly = Assembly::Load(assembly);
-        //    if (loadedAssembly != nullptr && (!referedAssembly->ContainsKey(loadedAssembly)))
-        //    {
-        //      type = GetTypeFromRefrencedAssemblies(className, referedAssembly, loadedAssembly);
-        //      if (!type)
-        //        return type;
-        //    }
-        //  }
-        //  catch (System::Exception^){//ignore
-        //  }
-        //}
+        //get all refrenced assembly
+        array<AssemblyName^>^ ReferencedAssemblies = currentAssembly->GetReferencedAssemblies();
+        for each(AssemblyName^ assembly in ReferencedAssemblies)
+        {
+          try
+          {
+            Assembly^ loadedAssembly = Assembly::Load(assembly);
+            if (loadedAssembly != nullptr && (!referedAssembly->ContainsKey(loadedAssembly)))
+            {
+              type = GetTypeFromRefrencedAssemblies(className, referedAssembly, loadedAssembly);
+              if (!type) {
+                return type;
+              }
+            }
+          }
+          catch (System::Exception^){//ignore
+          }
+        }
         return nullptr;
       }
 
