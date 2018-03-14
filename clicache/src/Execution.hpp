@@ -93,7 +93,7 @@ namespace Apache
         /// </returns>
         inline static Execution<TResult>^ Create(native::Execution&& nativeExecution, IResultCollector<TResult>^ rc )
         {
-            return gcnew Execution<TResult>( std::move(nativeExecution), rc );
+          return gcnew Execution<TResult>( std::move(nativeExecution), rc );
 	      }
 
         /// <summary>
