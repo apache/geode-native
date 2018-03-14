@@ -94,7 +94,7 @@ namespace Apache
         inline static Execution<TResult>^ Create(native::Execution&& nativeExecution, IResultCollector<TResult>^ rc )
         {
           return gcnew Execution<TResult>( std::move(nativeExecution), rc );
-	      }
+        }
 
         /// <summary>
         /// Private constructor to wrap a native object pointer.
