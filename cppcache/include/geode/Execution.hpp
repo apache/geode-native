@@ -35,14 +35,22 @@
 namespace apache {
 namespace geode {
 namespace client {
+
+class ExecutionImpl;
+class FunctionService;
+
 /**
  * @class Execution Execution.hpp
  * gathers results from function execution
  * @see FunctionService
  */
-
 class _GEODE_EXPORT Execution {
  public:
+  Execution();
+  ~Execution() noexcept;
+  Execution(Execution&& move) noexcept;
+  Execution& operator=(Execution&& move) noexcept;
+
   /**
    * Specifies a data filter of routing objects for selecting the Geode
    * members
@@ -57,7 +65,7 @@ class _GEODE_EXPORT Execution {
    * @throws UnsupportedOperationException if not called after
    *    FunctionService::onRegion(Region).
    */
-  virtual std::shared_ptr<Execution> withFilter(std::shared_ptr<CacheableVector> routingObj) = 0;
+  Execution withFilter(std::shared_ptr<CacheableVector> routingObj);
   /**
    * Specifies the user data passed to the function when it is executed.
    * @param args user data passed to the function execution
@@ -65,7 +73,7 @@ class _GEODE_EXPORT Execution {
    * @throws IllegalArgumentException if the input parameter is nullptr
    *
    */
-  virtual std::shared_ptr<Execution> withArgs(std::shared_ptr<Cacheable> args) = 0;
+  Execution withArgs(std::shared_ptr<Cacheable> args);
   /**
    * Specifies the {@link ResultCollector} that will receive the results after
    * the function has been executed.
@@ -73,7 +81,7 @@ class _GEODE_EXPORT Execution {
    * @throws IllegalArgumentException if {@link ResultCollector} is nullptr
    * @see ResultCollector
    */
-  virtual std::shared_ptr<Execution> withCollector(std::shared_ptr<ResultCollector> rs) = 0;
+  Execution withCollector(std::shared_ptr<ResultCollector> rs);
   /**
    * Executes the function using its name
    * <p>
@@ -83,9 +91,9 @@ class _GEODE_EXPORT Execution {
    * @return either a default result collector or one specified by {@link
    * #withCollector(ResultCollector)}
    */
-  virtual std::shared_ptr<ResultCollector> execute(
+  std::shared_ptr<ResultCollector> execute(
       const std::string& func,
-      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT) = 0;
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   /**
    * Executes the function using its name
@@ -102,11 +110,19 @@ class _GEODE_EXPORT Execution {
    * @return either a default result collector or one specified by {@link
    * #withCollector(ResultCollector)}
    */
-  virtual std::shared_ptr<ResultCollector> execute(
+  std::shared_ptr<ResultCollector> execute(
       const std::shared_ptr<CacheableVector>& routingObj,
       const std::shared_ptr<Cacheable>& args,
       const std::shared_ptr<ResultCollector>& rs, const std::string& func,
-      std::chrono::milliseconds timeout) = 0;
+      std::chrono::milliseconds timeout);
+
+ private:
+  std::unique_ptr<ExecutionImpl> impl_;
+
+  Execution(std::unique_ptr<ExecutionImpl> impl);
+
+  friend ExecutionImpl;
+  friend FunctionService;
 };
 
 }  // namespace client

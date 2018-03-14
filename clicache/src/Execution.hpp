@@ -23,7 +23,7 @@
 #include <geode/Execution.hpp>
 #include "end_native.hpp"
 
-#include "native_shared_ptr.hpp"
+#include "native_unique_ptr.hpp"
 
 using namespace System;
 
@@ -91,25 +91,25 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static Execution<TResult>^ Create( std::shared_ptr<native::Execution> nativeptr, IResultCollector<TResult>^ rc )
+        inline static Execution<TResult>^ Create(native::Execution&& nativeExecution, IResultCollector<TResult>^ rc )
         {
-          return __nullptr == nativeptr ? nullptr :
-            gcnew Execution<TResult>( nativeptr, rc );
-	      }
+          return gcnew Execution<TResult>( std::move(nativeExecution), rc );
+        }
 
         /// <summary>
         /// Private constructor to wrap a native object pointer.
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline Execution( std::shared_ptr<native::Execution> nativeptr, IResultCollector<TResult>^ rc )
+        inline Execution( native::Execution&& nativeptr, IResultCollector<TResult>^ rc )
         {
           m_rc = rc;
-          m_nativeptr = gcnew native_shared_ptr<native::Execution>(nativeptr);
+          m_nativeptr = gcnew native_unique_ptr<native::Execution>(
+              std::unique_ptr<native::Execution>(new native::Execution(std::move(nativeptr))));
         }
       private:
         IResultCollector<TResult>^ m_rc;
 
-        native_shared_ptr<native::Execution>^ m_nativeptr;
+        native_unique_ptr<native::Execution>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

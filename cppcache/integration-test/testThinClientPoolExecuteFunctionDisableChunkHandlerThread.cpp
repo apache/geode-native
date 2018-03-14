@@ -223,8 +223,8 @@ class putThread : public ACE_Task_Base {
           auto routingObj = CacheableVector::create();
           routingObj->push_back(key);
           auto exc = FunctionService::onRegion(regPtr0);
-          exc->execute(routingObj, args, rPtr, getFuncName2,
-                       std::chrono::seconds(300))
+          exc.execute(routingObj, args, rPtr, getFuncName2,
+                      std::chrono::seconds(300))
               ->getResult();
         } catch (const TimeoutException& te) {
           LOGINFO("Timeout exception occurred %s", te.what());
@@ -266,8 +266,7 @@ void executeFunction() {
     auto routingObj = CacheableVector::create();
     routingObj->push_back(key);
     auto exc = FunctionService::onRegion(regPtr0);
-    exc->execute(routingObj, args, rPtr, getFuncName2,
-                 std::chrono::seconds(300))
+    exc.execute(routingObj, args, rPtr, getFuncName2, std::chrono::seconds(300))
         ->getResult();
   }
   LOGINFO("executeFunction failureCount %d", failureCount);

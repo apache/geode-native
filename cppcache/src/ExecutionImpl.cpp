@@ -34,7 +34,7 @@ namespace client {
 
 FunctionToFunctionAttributes ExecutionImpl::m_func_attrs;
 ACE_Recursive_Thread_Mutex ExecutionImpl::m_func_attrs_lock;
-std::shared_ptr<Execution> ExecutionImpl::withFilter(
+Execution ExecutionImpl::withFilter(
     std::shared_ptr<CacheableVector> routingObj) {
   // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (routingObj == nullptr) {
@@ -46,29 +46,29 @@ std::shared_ptr<Execution> ExecutionImpl::withFilter(
         "first before calling this function");
   }
   //      m_routingObj = routingObj;
-  return std::make_shared<ExecutionImpl>(routingObj, m_args, m_rc, m_region,
-                                         m_allServer, m_pool, m_proxyCache);
+  return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(
+      routingObj, m_args, m_rc, m_region, m_allServer, m_pool, m_proxyCache)));
 }
-std::shared_ptr<Execution> ExecutionImpl::withArgs(
-    std::shared_ptr<Cacheable> args) {
+
+Execution ExecutionImpl::withArgs(std::shared_ptr<Cacheable> args) {
   // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (args == nullptr) {
     throw IllegalArgumentException("Execution::withArgs: args is null");
   }
   //  m_args = args;
-  return std::make_shared<ExecutionImpl>(m_routingObj, args, m_rc, m_region,
-                                         m_allServer, m_pool, m_proxyCache);
+  return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(
+      m_routingObj, args, m_rc, m_region, m_allServer, m_pool, m_proxyCache)));
 }
-std::shared_ptr<Execution> ExecutionImpl::withCollector(
-    std::shared_ptr<ResultCollector> rs) {
+
+Execution ExecutionImpl::withCollector(std::shared_ptr<ResultCollector> rs) {
   // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (rs == nullptr) {
     throw IllegalArgumentException(
         "Execution::withCollector: collector is null");
   }
   //	m_rc = rs;
-  return std::make_shared<ExecutionImpl>(m_routingObj, m_args, rs, m_region,
-                                         m_allServer, m_pool, m_proxyCache);
+  return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(
+      m_routingObj, m_args, rs, m_region, m_allServer, m_pool, m_proxyCache)));
 }
 
 std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(
@@ -79,6 +79,7 @@ std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(
   }
   return nullptr;
 }
+
 std::shared_ptr<ResultCollector> ExecutionImpl::execute(
     const std::shared_ptr<CacheableVector>& routingObj,
     const std::shared_ptr<Cacheable>& args,
@@ -89,6 +90,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   m_rc = rs;
   return execute(func, timeout);
 }
+
 std::shared_ptr<ResultCollector> ExecutionImpl::execute(
     const std::string& func, std::chrono::milliseconds timeout) {
   LOGDEBUG("ExecutionImpl::execute: ");
@@ -368,10 +370,9 @@ GfErrType ExecutionImpl::getFuncAttributes(const std::string& func,
 
   // do TCR GET_FUNCTION_ATTRIBUTES
   LOGDEBUG("Tcrmessage request GET_FUNCTION_ATTRIBUTES ");
-  TcrMessageGetFunctionAttributes request(tcrdm->getConnectionManager()
-                                              .getCacheImpl()
-                                              ->createDataOutput(),
-                                          func, tcrdm);
+  TcrMessageGetFunctionAttributes request(
+      tcrdm->getConnectionManager().getCacheImpl()->createDataOutput(), func,
+      tcrdm);
   TcrMessageReply reply(true, tcrdm);
   err = tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) {
@@ -397,8 +398,9 @@ GfErrType ExecutionImpl::getFuncAttributes(const std::string& func,
   return err;
 }
 
-void ExecutionImpl::addResults(std::shared_ptr<ResultCollector>& collector,
-                               const std::shared_ptr<CacheableVector>& results) {
+void ExecutionImpl::addResults(
+    std::shared_ptr<ResultCollector>& collector,
+    const std::shared_ptr<CacheableVector>& results) {
   if (results == nullptr || collector == nullptr) {
     return;
   }
@@ -417,19 +419,19 @@ void ExecutionImpl::executeOnAllServers(const std::string& func,
     throw IllegalArgumentException(
         "Execute: pool cast to ThinClientPoolDM failed");
   }
-std::shared_ptr<CacheableString> exceptionPtr = nullptr;
-GfErrType err = tcrdm->sendRequestToAllServers(func.c_str(), getResult, timeout,
-                                               m_args, m_rc, exceptionPtr);
-if (exceptionPtr != nullptr && err != GF_NOERR) {
-  LOGDEBUG("Execute errorred: %d", err);
-  // throw FunctionExecutionException( "Execute: failed to execute function
-  // with server." );
-  if (err == GF_CACHESERVER_EXCEPTION) {
-    throw FunctionExecutionException(
-        "Execute: failed to execute function with server.");
-  } else {
-    GfErrTypeToException("Execute", err);
-  }
+  std::shared_ptr<CacheableString> exceptionPtr = nullptr;
+  GfErrType err = tcrdm->sendRequestToAllServers(
+      func.c_str(), getResult, timeout, m_args, m_rc, exceptionPtr);
+  if (exceptionPtr != nullptr && err != GF_NOERR) {
+    LOGDEBUG("Execute errorred: %d", err);
+    // throw FunctionExecutionException( "Execute: failed to execute function
+    // with server." );
+    if (err == GF_CACHESERVER_EXCEPTION) {
+      throw FunctionExecutionException(
+          "Execute: failed to execute function with server.");
+    } else {
+      GfErrTypeToException("Execute", err);
+    }
   }
 
   if (err == GF_AUTHENTICATION_FAILED_EXCEPTION ||
@@ -460,7 +462,7 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
   }
   int32_t attempt = 0;
 
-  //auto csArray = tcrdm->getServers();
+  // auto csArray = tcrdm->getServers();
 
   // if (csArray != nullptr && csArray->length() != 0) {
   //  for (int i = 0; i < csArray->length(); i++)
@@ -521,7 +523,7 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
         GfErrTypeToException("ExecuteOnPool:", err);
       }
     }
-    //auto values =
+    // auto values =
     // resultCollector->getFunctionExecutionResults();
     /*
     ==25848== 1,610 (72 direct, 1,538 indirect) bytes in 2 blocks are definitely

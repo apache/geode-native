@@ -198,13 +198,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       }
       // UNUSED bool getResult = true;
       auto exc = FunctionService::onRegion(regPtr0);
-      ASSERT(exc != nullptr, "onRegion Returned nullptr");
       auto resultList = CacheableVector::create();
 
       auto executeFunctionResult =
-          exc->withArgs(routingObj)
-              ->execute(RegionOperationsHAFunctionPrSHOP,
-                        std::chrono::seconds(15))
+          exc.withArgs(routingObj)
+              .execute(RegionOperationsHAFunctionPrSHOP,
+                       std::chrono::seconds(15))
               ->getResult();
 
       if (executeFunctionResult == nullptr) {
@@ -280,14 +279,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
       auto pool =
           getHelper()->getCache()->getPoolManager().find("__TEST_POOL1__");
       auto exc = FunctionService::onServer(pool);
-      ASSERT(exc != nullptr, "onServer Returned nullptr");
 
       auto resultList = CacheableVector::create();
 
       // Test with HA exception
       auto executeFunctionResult =
-          exc->withArgs(routingObj)
-              ->execute(OnServerHAExceptionFunction, std::chrono::seconds(15))
+          exc.withArgs(routingObj)
+              .execute(OnServerHAExceptionFunction, std::chrono::seconds(15))
               ->getResult();
 
       if (executeFunctionResult == nullptr) {
@@ -326,8 +324,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
 
       // Test with HA server shutdown
       auto executeFunctionResult1 =
-          exc->withArgs(routingObj)
-              ->execute(OnServerHAShutdownFunction, std::chrono::seconds(15))
+          exc.withArgs(routingObj)
+              .execute(OnServerHAShutdownFunction, std::chrono::seconds(15))
               ->getResult();
 
       if (executeFunctionResult1 == nullptr) {
