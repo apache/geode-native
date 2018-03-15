@@ -65,6 +65,22 @@ namespace Apache
 
         Type^ GetType(String^ className);
 
+        /// <summary>
+        /// Register an instance factory method for a given type.
+        /// This should be used when registering types that implement
+        /// IPdxSerializable.
+        /// </summary>
+        /// <param name="creationMethod">
+        /// the creation function to register
+        /// </param>
+        /// <exception cref="IllegalArgumentException">
+        /// if the method is null
+        /// </exception>
+
+        void RegisterPdxType(PdxTypeFactoryMethod^ creationMethod);
+
+        IPdxSerializable^ GetPdxType(String^ className);
+
         void Clear()
         {
           pdxTypeNameToLocal->Clear();
@@ -81,6 +97,8 @@ namespace Apache
           gcnew ConcurrentDictionary<String^, String^>();
         ConcurrentDictionary<String^, Type^>^ classNameVsType =
           gcnew ConcurrentDictionary<String^, Type^>();
+        Dictionary<String^, PdxTypeFactoryMethod^>^ PdxDelegateMap =
+          gcnew Dictionary<String^, PdxTypeFactoryMethod^>();
 
         Type^ GetTypeFromRefrencedAssemblies(String^ className, Dictionary<Assembly^, bool>^ referedAssembly, Assembly^ currentAssembly);
 

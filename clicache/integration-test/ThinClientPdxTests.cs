@@ -149,7 +149,7 @@ namespace Apache.Geode.Client.UnitTests
 
     void PutAndVerifyPdxInGet()
     {
-      Serializable.RegisterPdxType(PdxType.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxType.CreateDeserializable);
 
       Region region0 = CacheHelper.GetVerifyRegion<object,object>(m_regionNames[0]);
 
@@ -164,7 +164,7 @@ namespace Apache.Geode.Client.UnitTests
 
      void VerifyGetOnly()
      {
-       Serializable.RegisterPdxType(PdxType.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxType.CreateDeserializable);
 
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
        
@@ -176,18 +176,19 @@ namespace Apache.Geode.Client.UnitTests
 
     void PutAndVerifyVariousPdxTypes()
     {
-      Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes3.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes4.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes5.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes6.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes7.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes8.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes9.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTests.PortfolioPdx.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTests.PositionPdx.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTests.AllPdxTypes.Create);
+      var typeRegistry = CacheHelper.DCache.TypeRegistry;
+      typeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
+      typeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
+      typeRegistry.RegisterPdxType(PdxTypes3.CreateDeserializable);
+      typeRegistry.RegisterPdxType(PdxTypes4.CreateDeserializable);
+      typeRegistry.RegisterPdxType(PdxTypes5.CreateDeserializable);
+      typeRegistry.RegisterPdxType(PdxTypes6.CreateDeserializable);
+      typeRegistry.RegisterPdxType(PdxTypes7.CreateDeserializable);
+      typeRegistry.RegisterPdxType(PdxTypes8.CreateDeserializable);
+      typeRegistry.RegisterPdxType(PdxTypes9.CreateDeserializable);
+      typeRegistry.RegisterPdxType(PdxTests.PortfolioPdx.CreateDeserializable);
+      typeRegistry.RegisterPdxType(PdxTests.PositionPdx.CreateDeserializable);
+      typeRegistry.RegisterPdxType(PdxTests.AllPdxTypes.Create);
 
 
       Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
@@ -300,18 +301,19 @@ namespace Apache.Geode.Client.UnitTests
 
      void VerifyVariousPdxGets()
      {
-       Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes3.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes4.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes5.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes6.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes7.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes8.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes9.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTests.PortfolioPdx.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTests.PositionPdx.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTests.AllPdxTypes.Create);
+       var typeRegistry = CacheHelper.DCache.TypeRegistry;
+       typeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
+       typeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
+       typeRegistry.RegisterPdxType(PdxTypes3.CreateDeserializable);
+       typeRegistry.RegisterPdxType(PdxTypes4.CreateDeserializable);
+       typeRegistry.RegisterPdxType(PdxTypes5.CreateDeserializable);
+       typeRegistry.RegisterPdxType(PdxTypes6.CreateDeserializable);
+       typeRegistry.RegisterPdxType(PdxTypes7.CreateDeserializable);
+       typeRegistry.RegisterPdxType(PdxTypes8.CreateDeserializable);
+       typeRegistry.RegisterPdxType(PdxTypes9.CreateDeserializable);
+       typeRegistry.RegisterPdxType(PdxTests.PortfolioPdx.CreateDeserializable);
+       typeRegistry.RegisterPdxType(PdxTests.PositionPdx.CreateDeserializable);
+       typeRegistry.RegisterPdxType(PdxTests.AllPdxTypes.Create);
 
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
@@ -547,8 +549,8 @@ namespace Apache.Geode.Client.UnitTests
 
      void VerifyDataOutputAdvance()
      {
-       Serializable.RegisterPdxType(MyClass.Create);
-       Serializable.RegisterPdxType(MyClasses.Create);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(MyClass.Create);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(MyClasses.Create);
 
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
@@ -601,15 +603,15 @@ namespace Apache.Geode.Client.UnitTests
 
     void PutAndVerifyNestedPdxInGet()
     {
-      Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes3.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes4.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes5.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes6.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes7.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTypes8.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(NestedPdx.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes3.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes4.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes5.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes6.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes7.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes8.CreateDeserializable);
 
       Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
       NestedPdx np = new NestedPdx();
@@ -622,15 +624,15 @@ namespace Apache.Geode.Client.UnitTests
 
      void VerifyNestedGetOnly()
      {
-       Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes3.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes4.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes5.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes6.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes7.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTypes8.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(NestedPdx.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes3.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes4.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes5.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes6.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes7.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes8.CreateDeserializable);
 
 
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
@@ -686,15 +688,15 @@ namespace Apache.Geode.Client.UnitTests
        try
        {
          Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable, CacheHelper.DCache);
-         Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes3.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes4.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes5.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes6.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes7.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes8.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(NestedPdx.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes3.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes4.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes5.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes6.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes7.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes8.CreateDeserializable);
        }
        catch (Exception )
        { 
@@ -714,15 +716,15 @@ namespace Apache.Geode.Client.UnitTests
        try
        {
          Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable, CacheHelper.DCache);
-         Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes3.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes4.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes5.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes6.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes7.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes8.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(NestedPdx.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes3.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes4.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes5.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes6.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes7.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes8.CreateDeserializable);
        }
        catch (Exception )
        { }
@@ -818,7 +820,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        try
        {
-         Serializable.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);         
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);         
        }
        catch (Exception )
        {
@@ -839,7 +841,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        try
        {
-         Serializable.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
        }
        catch (Exception )
        {
@@ -929,15 +931,15 @@ namespace Apache.Geode.Client.UnitTests
        try
        {
          Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable, CacheHelper.DCache);
-         Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes3.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes4.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes5.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes6.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes7.CreateDeserializable);
-         Serializable.RegisterPdxType(PdxTypes8.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(NestedPdx.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes3.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes4.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes5.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes6.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes7.CreateDeserializable);
+         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes8.CreateDeserializable);
        }
        catch (Exception )
        { }
@@ -1041,13 +1043,13 @@ namespace Apache.Geode.Client.UnitTests
          try
          {
              Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable, CacheHelper.DCache);
-             Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
-             Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
-             Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
-             Serializable.RegisterPdxType(PdxTypes3.CreateDeserializable);
-             Serializable.RegisterPdxType(PdxTypes4.CreateDeserializable);
-             Serializable.RegisterPdxType(PdxTypes5.CreateDeserializable);
-             Serializable.RegisterPdxType(PdxTypes6.CreateDeserializable);
+             CacheHelper.DCache.TypeRegistry.RegisterPdxType(NestedPdx.CreateDeserializable);
+             CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
+             CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
+             CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes3.CreateDeserializable);
+             CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes4.CreateDeserializable);
+             CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes5.CreateDeserializable);
+             CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes6.CreateDeserializable);
 
          }
          catch (Exception)
@@ -1169,7 +1171,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        m_pdxVesionOneAsm = Assembly.LoadFrom("PdxVersion1Lib.dll");
        
-       Serializable.RegisterPdxType(registerPdxTypeOne);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeOne);
 
        Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes1");
 
@@ -1190,7 +1192,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        m_pdxVesionTwoAsm = Assembly.LoadFrom("PdxVersion2Lib.dll");
 
-       Serializable.RegisterPdxType(registerPdxTypeTwo);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwo);
        Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes1");
 
        object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null, new object[] { useWeakHashmap });
@@ -1638,7 +1640,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        m_pdxVesionOneAsm = Assembly.LoadFrom("PdxVersion1Lib.dll");
 
-       Serializable.RegisterPdxType(registerPdxTypeOne2);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeOne2);
 
        Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes2");
 
@@ -1658,7 +1660,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        m_pdxVesionTwoAsm = Assembly.LoadFrom("PdxVersion2Lib.dll");
 
-       Serializable.RegisterPdxType(registerPdxTypeTwo2);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwo2);
        Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes2");
 
        object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null, new object[] { useWeakHashmap });
@@ -1817,7 +1819,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        m_pdxVesionOneAsm = Assembly.LoadFrom("PdxVersion1Lib.dll");
 
-       Serializable.RegisterPdxType(registerPdxTypeOne3);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeOne3);
 
        Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
 
@@ -1837,7 +1839,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        m_pdxVesionTwoAsm = Assembly.LoadFrom("PdxVersion2Lib.dll");
 
-       Serializable.RegisterPdxType(registerPdxTypeTwo3);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwo3);
        Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
 
        object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null, new object[] { useWeakHashmap });
@@ -1982,7 +1984,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        m_pdxVesionOneAsm = Assembly.LoadFrom("PdxVersion1Lib.dll");
 
-       Serializable.RegisterPdxType(registerPdxTypeOneR1);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeOneR1);
 
        Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR1");
 
@@ -2004,7 +2006,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        m_pdxVesionTwoAsm = Assembly.LoadFrom("PdxVersion2Lib.dll");
 
-       Serializable.RegisterPdxType(registerPdxTypeTwoR1);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwoR1);
 
        Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR1");
 
@@ -2200,7 +2202,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        m_pdxVesionOneAsm = Assembly.LoadFrom("PdxVersion1Lib.dll");
 
-       Serializable.RegisterPdxType(registerPdxUIV1);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxUIV1);
 
        Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesIgnoreUnreadFields");
 
@@ -2239,7 +2241,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        m_pdxVesionTwoAsm = Assembly.LoadFrom("PdxVersion2Lib.dll");
 
-       Serializable.RegisterPdxType(registerPdxUIV2);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxUIV2);
 
        Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesIgnoreUnreadFields");
 
@@ -2328,7 +2330,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        m_pdxVesionOneAsm = Assembly.LoadFrom("PdxVersion1Lib.dll");
 
-       Serializable.RegisterPdxType(registerPdxTypeOneR2);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeOneR2);
 
        Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR2");
 
@@ -2350,7 +2352,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        m_pdxVesionTwoAsm = Assembly.LoadFrom("PdxVersion2Lib.dll");
 
-       Serializable.RegisterPdxType(registerPdxTypeTwoR2);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwoR2);
 
        Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR2");
 
@@ -2495,7 +2497,7 @@ namespace Apache.Geode.Client.UnitTests
 
      public void putFromPool1()
      {
-       Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
        Util.Log("Put from pool-1 started");
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(RegionNames[0]);
 
@@ -2995,7 +2997,7 @@ namespace Apache.Geode.Client.UnitTests
 
      void pdxPut()
      {
-       Serializable.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
        region0["pdxput"] = new PdxTests.PdxType();
@@ -3004,7 +3006,7 @@ namespace Apache.Geode.Client.UnitTests
 
      void getObject()
      {
-       Serializable.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
        IPdxInstance ret = (IPdxInstance)region0["pdxput"];
@@ -3029,7 +3031,7 @@ namespace Apache.Geode.Client.UnitTests
 
      void verifyPdxInstanceEquals()
      {
-       Serializable.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
        IPdxInstance ret = (IPdxInstance)region0["pdxput"];
@@ -3049,7 +3051,7 @@ namespace Apache.Geode.Client.UnitTests
 
      void verifyPdxInstanceHashcode()
      {
-       Serializable.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
        IPdxInstance ret = (IPdxInstance)region0["pdxput"];
@@ -3071,7 +3073,7 @@ namespace Apache.Geode.Client.UnitTests
 
      void accessPdxInstance()
      {
-       Serializable.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
        IPdxInstance ret = (IPdxInstance)region0["pdxput"];
@@ -3545,7 +3547,7 @@ namespace Apache.Geode.Client.UnitTests
 
      void putPdxWithIdentityField()
      {
-       Serializable.RegisterPdxType(SerializePdx.Create);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(SerializePdx.Create);
        SerializePdx sp = new SerializePdx(true);
 
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(RegionNames[0]);
@@ -3645,7 +3647,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       m_pdxVesionOneAsm = Assembly.LoadFrom("PdxVersion1Lib.dll");
 
-      Serializable.RegisterPdxType(registerPdxTypeForEqualv1);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeForEqualv1);
 
      // Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestEquals");
 
@@ -3666,7 +3668,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       m_pdxVesionTwoAsm= Assembly.LoadFrom("PdxVersion2Lib.dll");
 
-      Serializable.RegisterPdxType(registerPdxTypeForEqualv2);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeForEqualv2);
 
       // Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestEquals");
 
@@ -4918,8 +4920,8 @@ namespace Apache.Geode.Client.UnitTests
 
      void putFromLongRunningClient() 
      {
-       Serializable.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTests.PdxTypes2.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes2.CreateDeserializable);
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
        region0[1] = new PdxTests.PdxTypes1();
@@ -4929,8 +4931,8 @@ namespace Apache.Geode.Client.UnitTests
 
      void VerifyEntryFLRC()
      {
-       Serializable.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
-       Serializable.RegisterPdxType(PdxTests.PdxTypes2.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
+       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes2.CreateDeserializable);
        Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
        object ret = region0[1];

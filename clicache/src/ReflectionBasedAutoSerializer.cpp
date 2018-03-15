@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+#include "Cache.hpp"
 #include "ReflectionBasedAutoSerializer.hpp"
 #include "PdxIdentityFieldAttribute.hpp"
 #include "Serializable.hpp"
@@ -342,7 +343,7 @@ namespace Apache
 
         Object^ ReflectionBasedAutoSerializer::deserializeFields(String^ className, IPdxReader^ reader)
         {
-          Object^ object = CreateObject(className, reader->Cache);
+          Object^ object = CreateObject(className, reader->Cache->TypeRegistry->GetType());
 
           for each(FieldWrapper^ fi in GetFields(object->GetType()))
           {
@@ -354,9 +355,9 @@ namespace Apache
           return object;
         }
         
-        Object^ ReflectionBasedAutoSerializer::CreateObject(String^ className, Cache^ cache)
+        Object^ ReflectionBasedAutoSerializer::CreateObject(String^ className, Type^ type)
         {
-          return Serializable::CreateObject(className, cache);
+          return Serializable::CreateObject(className, type);
         }
 
         bool ReflectionBasedAutoSerializer::IsPdxIdentityField(FieldInfo^ fi)

@@ -177,7 +177,7 @@ namespace Apache
               pdxClassname = pType->PdxClassName;
               pdxDomainClassname = cache->TypeRegistry->GetLocalTypeName(pdxClassname);
               //Log::Debug("found type " + typeId + " " + pType->IsLocal);
-              pdxObject = Serializable::GetPdxType(pdxDomainClassname, cache);
+              pdxObject = cache->TypeRegistry->GetPdxType(pdxDomainClassname);
               if(pType->IsLocal)//local type no need to read Unread data
               {
                 PdxLocalReader^ plr = gcnew PdxLocalReader(dataInput, pType, len);
@@ -207,7 +207,7 @@ namespace Apache
               pdxClassname = pType->PdxClassName;
               pdxDomainClassname = cache->TypeRegistry->GetLocalTypeName(pdxClassname);
 
-              pdxObject = Serializable::GetPdxType(pdxDomainClassname, cache);
+              pdxObject = cache->TypeRegistry->GetPdxType(pdxDomainClassname);
               
               Object^ pdxRealObject = pdxObject;
               bool isPdxWrapper = false;

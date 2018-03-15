@@ -294,7 +294,7 @@ namespace Apache.Geode.Client.UnitTests
 
     void RegisterPdxType8()
     {
-      Serializable.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
     }
 
     void runCallbackArgTest()

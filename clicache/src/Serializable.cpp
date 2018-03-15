@@ -273,34 +273,22 @@ namespace Apache
         return (Internal::EnumInfo^)SafeUMSerializableConvertGeneric(sPtr);
       }
 
-      void Serializable::RegisterPdxType(PdxTypeFactoryMethod^ creationMethod)
+      Object^ Serializable::CreateObject(String^ className, Type^ type)
       {
-        if (creationMethod == nullptr) {
-          throw gcnew IllegalArgumentException("Serializable.RegisterPdxType(): "
-                                               "null PdxTypeFactoryMethod delegate passed");
-        }
-        IPdxSerializable^ obj = creationMethod();
-        PdxDelegateMap[obj->GetType()->FullName] = creationMethod;
-        Log::Debug("RegisterPdxType: class registered: " + obj->GetType()->FullName);
-      }
-
-      Object^ Serializable::CreateObject(String^ className, Cache^ cache)
-      {
-        Object^ retVal = CreateObjectEx(className, cache);
+        Object^ retVal = CreateObjectEx(className, type);
 
         if (retVal == nullptr)
         {
-          Type^ t = cache->TypeRegistry->GetType(className);
-          if (t)
+          if (type)
           {
-            retVal = t->GetConstructor(Type::EmptyTypes)->Invoke(nullptr);
+            retVal = type->GetConstructor(Type::EmptyTypes)->Invoke(nullptr);
             return retVal;
           }
         }
         return retVal;
       }
 
-      Object^ Serializable::CreateObjectEx(String^ className, Cache^ cache)
+      Object^ Serializable::CreateObjectEx(String^ className, Type^ type)
       {
         CreateNewObjectDelegate^ del = nullptr;
         Dictionary<String^, CreateNewObjectDelegate^>^ tmp = ClassNameVsCreateNewObjectDelegate;
@@ -312,8 +300,7 @@ namespace Apache
           return del();
         }
 
-        Type^ t = cache->TypeRegistry->GetType(className);
-        if (t)
+        if (type)
         {
           msclr::lock lockInstance(ClassNameVsCreateNewObjectLockObj);
           {
@@ -321,10 +308,8 @@ namespace Apache
             tmp->TryGetValue(className, del);
             if (del != nullptr)
               return del();
-            del = CreateNewObjectDelegateF(t);
-            tmp = gcnew Dictionary<String^, CreateNewObjectDelegate^>(ClassNameVsCreateNewObjectDelegate);
-            tmp[className] = del;
-            ClassNameVsCreateNewObjectDelegate = tmp;
+            del = CreateNewObjectDelegateF(type);
+            ClassNameVsCreateNewObjectDelegate[className] = del;
             return del();
           }
         }
@@ -408,36 +393,6 @@ namespace Apache
         il->Emit(OpCodes::Ret);
 
         return (Serializable::CreateNewObjectArrayDelegate^)dynam->CreateDelegate(createNewObjectArrayDelegateType);
-      }
-
-      IPdxSerializable^ Serializable::GetPdxType(String^ className, Cache^ cache)
-      {
-        PdxTypeFactoryMethod^ retVal = nullptr;
-        PdxDelegateMap->TryGetValue(className, retVal);
-
-        if (retVal == nullptr){
-
-          if (cache->TypeRegistry->PdxSerializer != nullptr)
-          {
-            return gcnew PdxWrapper(className);
-          }
-          try
-          {
-            Object^ retObj = CreateObject(className, cache);
-
-            IPdxSerializable^ retPdx = dynamic_cast<IPdxSerializable^>(retObj);
-            if (retPdx != nullptr)
-              return retPdx;
-          }
-          catch (System::Exception^ ex)
-          {
-            Log::Error("Unable to create object usqing reflection for class: " + className + " : " + ex->Message);
-          }
-          throw gcnew IllegalStateException("Pdx factory method (or PdxSerializer ) not registered (or don't have zero arg constructor)"
-                                            " to create default instance for class: " + className);
-        }
-
-        return retVal();
       }
 
       void Serializable::RegisterPDXManagedCacheableKey(Cache^ cache)

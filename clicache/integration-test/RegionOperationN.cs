@@ -39,8 +39,8 @@ namespace Apache.Geode.Client.UnitTests
 
     public RegionOperation(string RegionName)
     {
-      Serializable.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
       m_region = CacheHelper.GetRegion<object, object>(RegionName);
     }
 

@@ -1329,38 +1329,38 @@ namespace Apache.Geode.Client.FwkLib
                 m_sharePath = Path.Combine(sharedpath , "framework/csharp/bin");
                 if (objectType != null)
                 {
+                    var typeRegistry = CacheHelper<TKey, TVal>.DCache.TypeRegistry;
                     if (objectType.Equals("PdxVersioned") && versionnum == 1)
                     {
                         m_pdxVersionOneAsm = Assembly.LoadFrom(Path.Combine(m_sharePath, "PdxVersion1Lib.dll"));
-                        Serializable.RegisterPdxType(registerPdxTypeOne);
-                        CacheHelper<TKey, TVal>.DCache.TypeRegistry.PdxTypeMapper = new PdxTypeMapper();
+                        typeRegistry.RegisterPdxType(registerPdxTypeOne);
+                        typeRegistry.PdxTypeMapper = new PdxTypeMapper();
                     }
                     else if (objectType.Equals("PdxVersioned") && versionnum == 2)
                     {
                        m_pdxVersionTwoAsm = Assembly.LoadFrom(Path.Combine(m_sharePath, "PdxVersion2Lib.dll"));
-                       Serializable.RegisterPdxType(registerPdxTypeTwo);
-                       CacheHelper<TKey, TVal>.DCache.TypeRegistry.PdxTypeMapper = new PdxTypeMapper();
+                       typeRegistry.RegisterPdxType(registerPdxTypeTwo);
+                       typeRegistry.PdxTypeMapper = new PdxTypeMapper();
                     }
                     else if (objectType.Equals("Nested"))
                     {
-                        Serializable.RegisterPdxType(NestedPdx.CreateDeserializable);
-                        Serializable.RegisterPdxType(PdxTypes1.CreateDeserializable);
-                        Serializable.RegisterPdxType(PdxTypes2.CreateDeserializable);
-                        Serializable.RegisterPdxType(PdxTypes3.CreateDeserializable);
-                        Serializable.RegisterPdxType(PdxTypes4.CreateDeserializable);
-                        Serializable.RegisterPdxType(PdxTypes5.CreateDeserializable);
-                        Serializable.RegisterPdxType(PdxTypes6.CreateDeserializable);
-                        Serializable.RegisterPdxType(PdxTypes7.CreateDeserializable);
-                        Serializable.RegisterPdxType(PdxTypes8.CreateDeserializable);
+                        typeRegistry.RegisterPdxType(NestedPdx.CreateDeserializable);
+                        typeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
+                        typeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
+                        typeRegistry.RegisterPdxType(PdxTypes3.CreateDeserializable);
+                        typeRegistry.RegisterPdxType(PdxTypes4.CreateDeserializable);
+                        typeRegistry.RegisterPdxType(PdxTypes5.CreateDeserializable);
+                        typeRegistry.RegisterPdxType(PdxTypes6.CreateDeserializable);
+                        typeRegistry.RegisterPdxType(PdxTypes7.CreateDeserializable);
+                        typeRegistry.RegisterPdxType(PdxTypes8.CreateDeserializable);
                     }
                     else if (objectType.Equals("PdxType"))
                     {
-                        Serializable.RegisterPdxType(PdxType.CreateDeserializable);
+                        typeRegistry.RegisterPdxType(PdxType.CreateDeserializable);
                     }
                     else if (objectType.Equals("AutoSerilizer"))
                     {
-                        CacheHelper<TKey, TVal>.DCache.TypeRegistry
-                            .PdxSerializer = new ReflectionBasedAutoSerializer();
+                        typeRegistry.PdxSerializer = new ReflectionBasedAutoSerializer();
                     }
                 }
                 isSerialExecution = GetBoolValue("serialExecution");
@@ -2723,7 +2723,7 @@ namespace Apache.Geode.Client.FwkLib
 
         void doAccessPdxInstanceAndVerify()
         {
-            Serializable.RegisterPdxType(PdxType.CreateDeserializable);
+            CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterPdxType(PdxType.CreateDeserializable);
             FwkInfo("In doAccessPdxInstanceAndVerify");
             IRegion<TKey, TVal> region0 = GetRegion();
             PdxType dPdxType = new PdxType();

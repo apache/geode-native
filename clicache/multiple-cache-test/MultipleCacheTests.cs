@@ -46,11 +46,18 @@ namespace Apache.Geode.Client.UnitTests
     {
       Assert.NotEqual(cacheOne, cacheTwo);
 
-      var dummyPdxSerializer = new DummyPdxSerializer();
-      cacheOne.TypeRegistry.PdxSerializer = dummyPdxSerializer;
+      var dummyPdxSerializerOne = new DummyPdxSerializer();
+      cacheOne.TypeRegistry.PdxSerializer = dummyPdxSerializerOne;
+      
+      var dummyPdxSerializerTwo = new DummyPdxSerializer();
+      cacheTwo.TypeRegistry.PdxSerializer = dummyPdxSerializerTwo;
 
-      Assert.Same(dummyPdxSerializer, cacheOne.TypeRegistry.PdxSerializer);
-      Assert.Null(cacheTwo.TypeRegistry.PdxSerializer);
+      var cacheOnePdxSerializer = cacheOne.TypeRegistry.PdxSerializer;
+      var cacheTwoPdxSerializer = cacheTwo.TypeRegistry.PdxSerializer;
+
+      Assert.Same(dummyPdxSerializerOne, cacheOnePdxSerializer);
+      Assert.Same(dummyPdxSerializerTwo, cacheTwoPdxSerializer);
+      Assert.NotSame(cacheOnePdxSerializer, cacheTwoPdxSerializer);
     }
 
     [Fact]
@@ -99,6 +106,7 @@ namespace Apache.Geode.Client.UnitTests
       cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
       cacheTwo = cacheFactory.Create();
       cacheTwo.InitializeDeclarativeCache(cacheXml.File.FullName);
+
 
       var regionForCache1 = cacheOne.GetRegion<string, string>("testRegion1");
       var regionForCache2 = cacheTwo.GetRegion<string, string>("testRegion1");

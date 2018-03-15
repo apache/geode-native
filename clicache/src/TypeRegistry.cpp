@@ -17,6 +17,9 @@
 
 
 #include "TypeRegistry.hpp"
+#include "IPdxSerializable.hpp"
+#include "impl\PdxWrapper.hpp"
+
 
 namespace Apache
 {
@@ -96,6 +99,47 @@ namespace Apache
         }
         
         return type;
+      }
+
+      void TypeRegistry::RegisterPdxType(PdxTypeFactoryMethod^ creationMethod)
+      {
+        if (creationMethod == nullptr) {
+          throw gcnew IllegalArgumentException("Serializable.RegisterPdxType(): "
+            "null PdxTypeFactoryMethod delegate passed");
+        }
+        IPdxSerializable^ obj = creationMethod();
+        PdxDelegateMap[obj->GetType()->FullName] = creationMethod;
+        Log::Debug("RegisterPdxType: class registered: " + obj->GetType()->FullName);
+      }
+
+      IPdxSerializable^ TypeRegistry::GetPdxType(String^ className)
+      {
+        PdxTypeFactoryMethod^ retVal = nullptr;
+        PdxDelegateMap->TryGetValue(className, retVal);
+
+        if (retVal == nullptr) {
+
+          if (pdxSerializer != nullptr)
+          {
+            return gcnew PdxWrapper(className);
+          }
+          try
+          {
+            Object^ retObj = Serializable::CreateObject(className, GetType(className));
+
+            IPdxSerializable^ retPdx = dynamic_cast<IPdxSerializable^>(retObj);
+            if (retPdx != nullptr)
+              return retPdx;
+          }
+          catch (System::Exception^ ex)
+          {
+            Log::Error("Unable to create object usqing reflection for class: " + className + " : " + ex->Message);
+          }
+          throw gcnew IllegalStateException("Pdx factory method (or PdxSerializer ) not registered (or don't have zero arg constructor)"
+            " to create default instance for class: " + className);
+        }
+
+        return retVal();
       }
 
       Type^ TypeRegistry::GetTypeFromRefrencedAssemblies(String^ className, Dictionary<Assembly^, bool>^ referedAssembly, Assembly^ currentAssembly)

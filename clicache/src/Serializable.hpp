@@ -265,27 +265,11 @@ namespace Apache
         /// information in the latter case.
         /// </exception>
         static void RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod, Cache^ cache);
-       
-				/// <summary>
-        /// Register an instance factory method for a given type.
-        /// This should be used when registering types that implement
-        /// IPdxSerializable.
-        /// </summary>
-        /// <param name="creationMethod">
-        /// the creation function to register
-        /// </param>
-        /// <exception cref="IllegalArgumentException">
-        /// if the method is null
-        /// </exception>
-        
-        static void RegisterPdxType(PdxTypeFactoryMethod^ creationMethod);
 
-       
       internal:
         static std::shared_ptr<CacheableKey> wrapIGeodeSerializable(IGeodeSerializable^ managedObject);
 				static System::Int32 GetPDXIdForType(String^ poolName, IGeodeSerializable^ pdxType, Cache^ cache);
 				static IGeodeSerializable^ GetPDXTypeById(String^ poolName, System::Int32 typeId, Cache^ cache);
-				static IPdxSerializable^ Serializable::GetPdxType(String^ className, Cache^ cache);
 				static void RegisterPDXManagedCacheableKey(Cache^ cache);
 
         static void Clear();
@@ -293,9 +277,6 @@ namespace Apache
         static int GetEnumValue(Internal::EnumInfo^ ei, Cache^ cache);
         static Internal::EnumInfo^ GetEnum(int val, Cache^ cache);
 
-         static Dictionary<String^, PdxTypeFactoryMethod^>^ PdxDelegateMap =
-          gcnew Dictionary<String^, PdxTypeFactoryMethod^>();
-               
         // These are the new static methods to get/put data from c++
 
         //byte
@@ -509,7 +490,7 @@ namespace Apache
 
         static array<Type^>^ singleIntType = gcnew array<Type^>(1){Int32::typeid};
 
-        static Object^ CreateObject(String^ className, Cache^ cache);
+        static Object^ CreateObject(String^ className, Type^ type);
         static Object^ GetArrayObject(String^ className, int length, Cache^ cache);
 
         static Dictionary<String^, CreateNewObjectDelegate^>^ ClassNameVsCreateNewObjectDelegate =
@@ -518,7 +499,7 @@ namespace Apache
         static Dictionary<String^, CreateNewObjectArrayDelegate^>^ ClassNameVsCreateNewObjectArrayDelegate =
           gcnew Dictionary<String^, CreateNewObjectArrayDelegate^>();
 
-        static Object^ CreateObjectEx(String^ className, Cache^ cache);
+        static Object^ CreateObjectEx(String^ className, Type^ type);
         static Object^ GetArrayObjectEx(String^ className, int length, Cache^ cache);
         /// <summary>
         /// Static array of managed <c>WrapperDelegate</c> delegates that

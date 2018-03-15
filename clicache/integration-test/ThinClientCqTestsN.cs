@@ -352,8 +352,8 @@ namespace Apache.Geode.Client.UnitTests
       }
       else
       {
-        Serializable.RegisterPdxType(PortfolioPdx.CreateDeserializable);
-        Serializable.RegisterPdxType(PositionPdx.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterPdxType(PortfolioPdx.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterPdxType(PositionPdx.CreateDeserializable);
         qh.PopulatePortfolioPdxData(region0, qh.PortfolioSetSize,
          qh.PortfolioNumSets);
         qh.PopulatePortfolioPdxData(subRegion0, qh.PortfolioSetSize,
