@@ -33,13 +33,13 @@ public class GeodeServer : IDisposable
         LocatorPort = FreeTcpPort();
         var locatorJmxPort = FreeTcpPort();
 
-        var readSerializedStr = readSerialized ? "--read-serialized=true" : "--read-serialized=false";
+        string readSerializedStr = readSerialized ? "--read-serialized=true" : "--read-serialized=false";
 
         var gfsh = new Process
         {
             StartInfo =
             {
-                FileName = "\\bin\\gfsh.bat",
+                FileName = "c:\\gemfire\\bin\\gfsh.bat",
                 Arguments = " -e \"start locator --bind-address=localhost --port=" + LocatorPort +
                             " --J=-Dgemfire.jmx-manager-port=" + locatorJmxPort + " --http-service-port=0\"" +
                             " -e \"connect --locator=localhost[" + LocatorPort + "]\"" +
@@ -127,10 +127,10 @@ public class GeodeServer : IDisposable
 
     private static int FreeTcpPort()
     {
-        var tcpListener = new TcpListener(IPAddress.Loopback, 0);
-        tcpListener.Start();
-        var port = ((IPEndPoint)tcpListener.LocalEndpoint).Port;
-        tcpListener.Stop();
+        TcpListener l = new TcpListener(IPAddress.Loopback, 0);
+        l.Start();
+        var port = ((IPEndPoint)l.LocalEndpoint).Port;
+        l.Stop();
         return port;
     }
 

@@ -44,7 +44,7 @@ namespace Apache.Geode.Client.UnitTests
     [Fact]
     public void RegisterSerializerForTwoCaches()
     {
-      Assert.Equal(cacheOne, cacheTwo);
+      Assert.NotEqual(cacheOne, cacheTwo);
 
       var dummyPdxSerializer = new DummyPdxSerializer();
       cacheOne.TypeRegistry.PdxSerializer = dummyPdxSerializer;
@@ -92,32 +92,23 @@ namespace Apache.Geode.Client.UnitTests
     {
       var geodeServer = new GeodeServer();
       var cacheXml = new CacheXml(new FileInfo("cache.xml"), geodeServer);
-      const int webTimeoutMinutes = 1;//needed?????????????
 
-      var properties = new Properties<string, string>();
-      properties.Insert("cache-xml-file", cacheXml.File.FullName);
-      properties.Insert("geode-properties-file", "geode.properties");
-      properties.Insert("web-timeout-minutes", webTimeoutMinutes.ToString());
-
-      var cacheFactory = new CacheFactory(properties);
+      var cacheFactory = new CacheFactory();
 
       cacheOne = cacheFactory.Create();
+      cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
       cacheTwo = cacheFactory.Create();
+      cacheTwo.InitializeDeclarativeCache(cacheXml.File.FullName);
 
-      var regionOne = cacheOne.GetRegion<string, string>("testRegion1");
-      var regionTwo = cacheTwo.GetRegion<string, string>("testRegion1");
+      var regionForCache1 = cacheOne.GetRegion<string, string>("testRegion1");
+      var regionForCache2 = cacheTwo.GetRegion<string, string>("testRegion1");
 
       const string key = "hello";
-      const string expectedRegionOneResult = "dave";
-      const string expectedRegionTwoResult = "bob";
-      regionOne.Put(key, expectedRegionOneResult, null);
-      regionTwo.Put(key, expectedRegionTwoResult, null);
+      const string expectedResult = "dave";
+      regionForCache1.Put(key, expectedResult, null);
+      var actualResult = regionForCache2.Get(key, null);
 
-      var actualRegionOneResult = regionOne.Get(key, null);
-      var actualRegionTwoResult = regionTwo.Get(key, null);
-
-      Assert.Equal(expectedRegionOneResult, actualRegionOneResult);
-      Assert.Equal(expectedRegionTwoResult, actualRegionTwoResult);
+      Assert.Equal(expectedResult, actualResult);
 
       cacheXml.Dispose();
       geodeServer.Dispose();

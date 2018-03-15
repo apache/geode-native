@@ -18,6 +18,11 @@ project(nativeclient LANGUAGES C CXX)
 
 option(USE_PCH "Use precompiled headers (PCH)." OFF)
 
+find_program(NUGET nuget)
+add_custom_target(nuget-restore 
+  COMMAND ${NUGET} restore ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.sln
+)
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 if (USE_PCH)
@@ -46,6 +51,8 @@ set(PRODUCT_BITS "${BUILD_BITS}bit")
 
 set(PRODUCT_LIB_NAME "apache-geode" CACHE STRING "Binary name")
 set(PRODUCT_DLL_NAME "Apache.Geode" CACHE STRING ".Net Binary name")
+
+string(REPLACE "\\" "\\\\" GEODE_ROOT_ESCAPED_PATH ${GEODE_ROOT})
 
 if(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
   if (CMAKE_SYSTEM_PROCESSOR STREQUAL "sparc")
