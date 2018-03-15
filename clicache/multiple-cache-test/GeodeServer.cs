@@ -5,7 +5,7 @@ using System.IO;
 using System.Net.Sockets;
 using Xunit;
 
-public class GemFireServer : IDisposable
+public class GeodeServer : IDisposable
 {
     #region Properties/Fields
 
@@ -15,7 +15,7 @@ public class GemFireServer : IDisposable
 
     #region Public methods
 
-    public GemFireServer(string regionName = "session", bool readSerialized = false)
+    public GeodeServer(string regionName = "session", bool readSerialized = false)
     {
         try
         {
@@ -33,7 +33,7 @@ public class GemFireServer : IDisposable
         LocatorPort = FreeTcpPort();
         var locatorJmxPort = FreeTcpPort();
 
-        string readSerializedStr = readSerialized ? "--read-serialized=true" : "--read-serialized=false";
+        var readSerializedStr = readSerialized ? "--read-serialized=true" : "--read-serialized=false";
 
         var gfsh = new Process
         {
@@ -46,8 +46,7 @@ public class GemFireServer : IDisposable
                             " -e \"configure pdx " + readSerializedStr + "\"" +
                             " -e \"start server --bind-address=localhost --server-port=0 --log-level=all\"" +
                             " -e \"create region --name=" + regionName + " --type=PARTITION\"" +
-                            " -e \"create region --name=testRegion1 --type=PARTITION\"" +
-                            " -e \"deploy --jar=..\\..\\SessionStateStoreFunctions\\SessionStateStoreFunctions.jar\"",
+                            " -e \"create region --name=testRegion1 --type=PARTITION\"",
                 WindowStyle = ProcessWindowStyle.Hidden,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
@@ -59,13 +58,13 @@ public class GemFireServer : IDisposable
         gfsh.OutputDataReceived += (sender, args) =>
         {
             if (null != args.Data)
-                Debug.WriteLine("GemFireServer: " + args.Data);
+                Debug.WriteLine("GeodeServer: " + args.Data);
         };
 
         gfsh.ErrorDataReceived += (sender, args) =>
         {
             if (null != args.Data)
-                Debug.WriteLine("GemFireServer: ERROR: " + args.Data);
+                Debug.WriteLine("GeodeServer: ERROR: " + args.Data);
         };
 
         gfsh.Start();
@@ -73,7 +72,7 @@ public class GemFireServer : IDisposable
         gfsh.BeginErrorReadLine();
         gfsh.WaitForExit(60000 * 10);
 
-        Debug.WriteLine("GemFireServer Start: gfsh.HasExited = {0}, gfsh.ExitCode = {1}",
+        Debug.WriteLine("GeodeServer Start: gfsh.HasExited = {0}, gfsh.ExitCode = {1}",
             gfsh.HasExited, gfsh.ExitCode);
 
         Assert.True(gfsh.HasExited);
@@ -102,13 +101,13 @@ public class GemFireServer : IDisposable
             gfsh.OutputDataReceived += (sender, args) =>
             {
                 if (null != args.Data)
-                    Debug.WriteLine("GemFireServer: " + args.Data);
+                    Debug.WriteLine("GeodeServer: " + args.Data);
             };
 
             gfsh.ErrorDataReceived += (sender, args) =>
             {
                 if (null != args.Data)
-                    Debug.WriteLine("GemFireServer: ERROR: " + args.Data);
+                    Debug.WriteLine("GeodeServer: ERROR: " + args.Data);
             };
 
             gfsh.Start();
@@ -128,10 +127,10 @@ public class GemFireServer : IDisposable
 
     private static int FreeTcpPort()
     {
-        TcpListener l = new TcpListener(IPAddress.Loopback, 0);
-        l.Start();
-        var port = ((IPEndPoint)l.LocalEndpoint).Port;
-        l.Stop();
+        var tcpListener = new TcpListener(IPAddress.Loopback, 0);
+        tcpListener.Start();
+        var port = ((IPEndPoint)tcpListener.LocalEndpoint).Port;
+        tcpListener.Stop();
         return port;
     }
 

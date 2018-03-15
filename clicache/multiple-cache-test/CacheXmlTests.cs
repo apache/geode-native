@@ -8,7 +8,7 @@ public class CacheXmlTests
     [Fact]
     public void ConstructAndGenerate()
     {
-        using (var gfs = new GemFireServer())
+        using (var gfs = new GeodeServer())
         {
             var template = new FileInfo("cache.xml");
             var cacheXml = new CacheXml(template, gfs);
@@ -26,7 +26,7 @@ public class CacheXmlTests
     [Fact]
     public void DisposeAndCleanup()
     {
-        using (var gfs = new GemFireServer())
+        using (var gfs = new GeodeServer())
         {
             FileInfo file;
 

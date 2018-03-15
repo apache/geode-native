@@ -10,7 +10,7 @@ public class CacheXml : IDisposable
         private set;
     }
 
-    public CacheXml(FileInfo template, GemFireServer gfs, string regionName = "")
+    public CacheXml(FileInfo template, GeodeServer gfs, string regionName = "")
     {
         string content;
 
