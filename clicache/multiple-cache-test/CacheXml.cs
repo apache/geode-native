@@ -10,7 +10,7 @@ public class CacheXml : IDisposable
         private set;
     }
 
-    public CacheXml(FileInfo template, GeodeServer gfs, string regionName = "")
+    public CacheXml(FileInfo template, GeodeServer gfs, string regionName = "testRegion")
     {
         string content;
 
@@ -20,7 +20,7 @@ public class CacheXml : IDisposable
         }
 
         content = content.Replace("LOCATOR_PORT", gfs.LocatorPort.ToString());
-        content = content.Replace("REGION_NAME", !string.IsNullOrEmpty(regionName) ? regionName : "session");
+        content = content.Replace("REGION_NAME", regionName);
 
         Debug.WriteLine(content);
 

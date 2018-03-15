@@ -15,7 +15,7 @@ public class GeodeServer : IDisposable
 
     #region Public methods
 
-    public GeodeServer(string regionName = "session", bool readSerialized = false)
+    public GeodeServer(string regionName = "testRegion", bool readSerialized = false)
     {
         try
         {
@@ -33,7 +33,7 @@ public class GeodeServer : IDisposable
         LocatorPort = FreeTcpPort();
         var locatorJmxPort = FreeTcpPort();
 
-        string readSerializedStr = readSerialized ? "--read-serialized=true" : "--read-serialized=false";
+        var readSerializedStr = readSerialized ? "--read-serialized=true" : "--read-serialized=false";
 
         var gfsh = new Process
         {
@@ -127,10 +127,10 @@ public class GeodeServer : IDisposable
 
     private static int FreeTcpPort()
     {
-        TcpListener l = new TcpListener(IPAddress.Loopback, 0);
-        l.Start();
-        var port = ((IPEndPoint)l.LocalEndpoint).Port;
-        l.Stop();
+        var tcpListner = new TcpListener(IPAddress.Loopback, 0);
+        tcpListner.Start();
+        var port = ((IPEndPoint)tcpListner.LocalEndpoint).Port;
+        tcpListner.Stop();
         return port;
     }
 
