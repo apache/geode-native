@@ -21,7 +21,6 @@
 
 #include "PoolStatsSampler.hpp"
 #include "GeodeStatisticsFactory.hpp"
-#include "HostStatHelper.hpp"
 #include "../ReadWriteLock.hpp"
 #include "../CacheImpl.hpp"
 #include "../ThinClientPoolDM.hpp"
@@ -111,8 +110,6 @@ void PoolStatsSampler::putStatsInAdminRegion() {
             puts += creates;
           }
         }
-        numThreads = HostStatHelper::getNumThreads();
-        cpuTime = HostStatHelper::getCpuTime();
       }
       static int numCPU = ACE_OS::num_processors();
       auto obj = ClientHealthStats::create(gets, puts, misses, numListeners,

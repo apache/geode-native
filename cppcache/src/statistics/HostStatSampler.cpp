@@ -34,7 +34,6 @@
 #include <geode/SystemProperties.hpp>
 
 #include "HostStatSampler.hpp"
-#include "HostStatHelper.hpp"
 #include "StatArchiveWriter.hpp"
 #include "GeodeStatisticsFactory.hpp"
 #include "../util/Log.hpp"
@@ -513,16 +512,11 @@ int32_t HostStatSampler::rollArchive(std::string filename) {
 
 void HostStatSampler::initSpecialStats() {
   // After Special categories are decided initialize them here
-  HostStatHelper::newProcessStats(m_statMngr->getStatisticsFactory(), m_pid,
-                                  "ProcessStats");
 }
 
-void HostStatSampler::sampleSpecialStats() { HostStatHelper::refresh(); }
+void HostStatSampler::sampleSpecialStats() {  }
 
 void HostStatSampler::closeSpecialStats() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statMngr->getListMutex());
-  HostStatHelper::close();
-  HostStatHelper::cleanup();
 }
 
 void HostStatSampler::checkListeners() {}
@@ -581,8 +575,6 @@ void HostStatSampler::putStatsInAdminRegion() {
               puts += creates;
             }
           }
-          numThreads = HostStatHelper::getNumThreads();
-          cpuTime = HostStatHelper::getCpuTime();
         }
         static int numCPU = ACE_OS::num_processors();
         auto obj = ClientHealthStats::create(gets, puts, misses, numListeners,
