@@ -30,7 +30,6 @@
 #include "../util/Log.hpp"
 #include "AtomicStatisticsImpl.hpp"
 #include "OsStatisticsImpl.hpp"
-#include "HostStatHelper.hpp"
 
 namespace apache {
 namespace geode {

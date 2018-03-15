@@ -58,25 +58,11 @@ using std::chrono::system_clock;
 
 class StatArchiveWriter;
 class StatisticsManager;
+
 /**
  * HostStatSampler implements a thread which will monitor, sample and archive
  * statistics. It only has the common functionalities which any sampler needs.
  */
-
-/* adongre
- * CID 28733: Other violation (MISSING_COPY)
- * Class "apache::geode::statistics::OsStatisticsImpl" owns resources that are
- * managed in its constructor and destructor but has no user-written copy
- * constructor.
- *
- * CID 28719: Other violation (MISSING_ASSIGN) Class
- * "apache::geode::statistics::HostStatSampler"
- * owns resources that are managed in its constructor and destructor but has no
- * user-written assignment operator.
- *
- * FIX : Make the class NonCopyable
- */
-
 class _GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
                                       private NonCopyable,
                                       private NonAssignable {
