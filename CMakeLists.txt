@@ -197,11 +197,6 @@ else()
   set ( _DEBUG_OR_RELEASE )
 endif()
 
-# Since RPATH embeds path information into the executables that
-# may not be valid in all execution contexts, do not use RPATH.
-set(CMAKE_SKIP_RPATH TRUE)
-set(CMAKE_MACOSX_RPATH FALSE)
-
 # Default to only showing output on failure for unit tests but allow
 # overriding with the CTEST_UNITTEST_VERBOSITY environment variable.
 set(CTEST_UNITTEST_VERBOSITY --output-on-failure)
