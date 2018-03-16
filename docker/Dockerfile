@@ -17,18 +17,22 @@
 FROM ubuntu
 LABEL maintainer Apache Geode <dev@geode.apache.org>
 
-RUN \
-    apt-get update \
-    && apt-get install -y build-essential cmake doxygen git graphviz openjdk-8-jdk wget zlib1g-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install -y build-essential doxygen git graphviz openjdk-8-jdk wget zlib1g-dev
+RUN rm -rf /var/lib/apt/lists/*
 
-ENV GEODE_VERSION 1.1.0
-RUN \
-    wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tar.gz" -O - | tar xzf -
+ENV GEODE_VERSION 1.4.0
+RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" -O - | \
+        tar xzf -
 
 ENV RAT_VERSION 0.12
-RUN \
-    wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=creadur/apache-rat-${RAT_VERSION}/apache-rat-${RAT_VERSION}-bin.tar.gz2" -O - | tar xzf -
+RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=creadur/apache-rat-${RAT_VERSION}/apache-rat-${RAT_VERSION}-bin.tar.bz2" -O - | \
+        tar xjf -
+
+ENV CMAKE_VERSION 3.10.3
+RUN wget "https://cmake.org/files/LatestRelease/cmake-${CMAKE_VERSION}-Linux-x86_64.sh" -O /tmp/cmake && \
+        bash /tmp/cmake --skip-license --prefix=/usr/local && \
+        rm /tmp/cmake
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV GEODE_HOME /apache-geode-${GEODE_VERSION}
