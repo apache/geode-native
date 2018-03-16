@@ -21,8 +21,8 @@ RUN apt-get update
 RUN apt-get install -y build-essential doxygen git graphviz openjdk-8-jdk wget zlib1g-dev
 RUN rm -rf /var/lib/apt/lists/*
 
-ENV GEODE_VERSION 1.1.0
-RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tar.gz" -O - | \
+ENV GEODE_VERSION 1.4.0
+RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" -O - | \
         tar xzf -
 
 ENV RAT_VERSION 0.12
