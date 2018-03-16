@@ -22,7 +22,7 @@ source ~/.bashrc
 NCPU=2
 
 pushd `mktemp -d`
-wget -O - https://cmake.org/files/v3.10/cmake-3.10.2.tar.gz | \
+wget -O - https://cmake.org/files/LatestRelease/cmake-3.10.3.tar.gz | \
     gtar --strip-components=1 -zxf -
 ./bootstrap --system-curl --no-qt-gui --parallel=$NCPU -- -DBUILD_CursesDialog=off
 gmake -j$NCPU
