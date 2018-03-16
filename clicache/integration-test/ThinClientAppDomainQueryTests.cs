@@ -64,10 +64,10 @@ namespace Apache.Geode.Client.UnitTests
 
     public void InitClient()
     {
-      Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable, CacheHelper.DCache);
-      Serializable.RegisterTypeGeneric(Position.CreateDeserializable, CacheHelper.DCache);
-      CacheHelper.DCache.TypeRegistry.RegisterPdxType(Apache.Geode.Client.Tests.PortfolioPdx.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterPdxType(Apache.Geode.Client.Tests.PositionPdx.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(Portfolio.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(Position.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PortfolioPdx.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PositionPdx.CreateDeserializable);
     }
 
     public void CreateCache(string locators)

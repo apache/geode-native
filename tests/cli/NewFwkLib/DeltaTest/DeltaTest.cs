@@ -520,8 +520,8 @@ namespace Apache.Geode.Client.FwkLib
       {
         if (!isObjectRegistered)
         {
-          Serializable.RegisterTypeGeneric(DeltaTestImpl.CreateDeserializable, CacheHelper<TKey, TVal>.DCache);
-          Serializable.RegisterTypeGeneric(TestObject1.CreateDeserializable, CacheHelper<TKey, TVal>.DCache);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(DeltaTestImpl.CreateDeserializable);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(TestObject1.CreateDeserializable);
           isObjectRegistered = true;
         }
           IRegion<TKey, TVal> region = CreateRootRegion();

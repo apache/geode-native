@@ -54,7 +54,7 @@ namespace Apache
       {
         m_nativeptr = gcnew native_shared_ptr<native::Cache>(nativeptr);
         m_pdxTypeRegistry = gcnew Apache::Geode::Client::Internal::PdxTypeRegistry(this);
-        m_typeRegistry = gcnew TypeRegistry();
+        m_typeRegistry = gcnew TypeRegistry(this);
       }
 
       String^ Cache::Name::get( )
@@ -176,6 +176,7 @@ namespace Apache
         {
           GC::KeepAlive(m_nativeptr);
         }
+
         auto rootRegions = gcnew array<Client::IRegion<TKey, TValue>^>(static_cast<int>(vrr.size()));
 
         for( System::Int32 index = 0; index < vrr.size( ); index++ )

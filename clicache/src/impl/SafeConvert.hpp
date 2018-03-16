@@ -55,34 +55,34 @@ namespace Apache
       /// to managed <see cref="IGeodeSerializable" /> object.
       /// </summary>
       inline static Apache::Geode::Client::IGeodeSerializable^
-        SafeUMSerializableConvertGeneric(std::shared_ptr<native::Serializable> obj)
+        SafeUMSerializableConvertGeneric(std::shared_ptr<native::Serializable> serializableObject, Cache^ cache)
       {
-        if (obj == nullptr) return nullptr;
+        if (serializableObject == nullptr) return nullptr;
 
-        if (auto mg_obj = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(obj))
+        if (auto mg_obj = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(serializableObject))
         {
           return mg_obj->ptr();
         }
-        if (auto mg_obj_delta = std::dynamic_pointer_cast<native::ManagedCacheableDeltaGeneric>(obj))
+        if (auto mg_obj_delta = std::dynamic_pointer_cast<native::ManagedCacheableDeltaGeneric>(serializableObject))
         {
           return dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(mg_obj_delta->ptr());
         }
 
-        if (obj->typeId() == 0)
+        if (serializableObject->typeId() == 0)
         {
-          if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(obj))
+          if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(serializableObject))
           {
             return gcnew UserFunctionExecutionException(mg_UFEEobj);
           }
         }
 
-        auto wrapperMethod = Apache::Geode::Client::Serializable::GetWrapperGeneric( obj->typeId( ) );             
+        auto wrapperMethod = cache->TypeRegistry->GetWrapperGeneric( serializableObject->typeId( ) );             
         if (wrapperMethod != nullptr)
         {
-          return wrapperMethod( obj );
+          return wrapperMethod(serializableObject);
         }
 
-        return gcnew Apache::Geode::Client::Serializable( obj );
+        return gcnew Apache::Geode::Client::Serializable( serializableObject );
       }
 
       /// <summary>
@@ -133,7 +133,7 @@ namespace Apache
       }
 
       generic<class TValue>
-      inline static TValue SafeGenericUMSerializableConvert( std::shared_ptr<native::Serializable> obj )
+      inline static TValue SafeGenericUMSerializableConvert( std::shared_ptr<native::Serializable> obj, Cache^ cache )
       {
 
         if (obj == nullptr) return TValue();
@@ -156,7 +156,7 @@ namespace Apache
           }
         }
 
-        auto wrapperMethod = Apache::Geode::Client::Serializable::GetWrapperGeneric( obj->typeId( ) );             
+        auto wrapperMethod = cache->TypeRegistry->GetWrapperGeneric( obj->typeId( ) );             
         if (wrapperMethod != nullptr)
         {
           return safe_cast<TValue>(wrapperMethod( obj ));
@@ -223,7 +223,7 @@ namespace Apache
       /// to managed <see cref="ICacheableKey" /> object.
       /// </summary>
       generic<class TKey>
-      inline static Client::ICacheableKey^ SafeGenericUMKeyConvert( std::shared_ptr<native::CacheableKey> obj )
+      inline static Client::ICacheableKey^ SafeGenericUMKeyConvert( std::shared_ptr<native::CacheableKey> obj, Cache^ cache )
       {
         //All cacheables will be ManagedCacheableKey only
         if (obj == nullptr) return nullptr;
@@ -233,28 +233,13 @@ namespace Apache
             return (Client::ICacheableKey^)mg_obj->ptr( );
         }
 
-        auto wrapperMethod = Apache::Geode::Client::Serializable::GetWrapperGeneric( obj->typeId( ) );
+        auto wrapperMethod = cache->TypeRegistry->GetWrapperGeneric( obj->typeId( ) );
         if (wrapperMethod != nullptr)
         {
           return (Client::ICacheableKey^)wrapperMethod( obj );
         }
         return gcnew Client::CacheableKey( obj );
       }
-
-      //generic <class TKey>
-      //inline static native::CacheableKey* SafeGenericMKeyConvert( TKey mg_obj, Cache^ cache )
-      //{
-      //  if (mg_obj == nullptr) return NULL;
-      //  auto obj = Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<TKey>( mg_obj, cache );
-      //  if (obj.get() != nullptr)
-      //  {
-      //    return obj.get();
-      //  }
-      //  else
-      //  {
-      //    return new native::ManagedCacheableKeyGeneric(SafeUMSerializableConvertGeneric(obj));
-      //  }
-      //}
 
       template<typename NativeType, typename ManagedType>
       inline static NativeType* GetNativePtr2( ManagedType^ mg_obj )

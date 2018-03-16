@@ -92,19 +92,19 @@ namespace Apache.Geode.Client.UnitTests
     {
       CacheHelper.CreateTCRegion2<object, object>(RegionNames[0], true, false,
         null, locators, false);
-      Serializable.RegisterTypeGeneric(OtherType.CreateDeserializable, CacheHelper.DCache);
-      Serializable.RegisterTypeGeneric(OtherType2.CreateDeserializable, CacheHelper.DCache);
-      Serializable.RegisterTypeGeneric(OtherType22.CreateDeserializable, CacheHelper.DCache);
-      Serializable.RegisterTypeGeneric(OtherType4.CreateDeserializable, CacheHelper.DCache);
-      Serializable.RegisterTypeGeneric(OtherType42.CreateDeserializable, CacheHelper.DCache);
-      Serializable.RegisterTypeGeneric(OtherType43.CreateDeserializable, CacheHelper.DCache);
+      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType2.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType22.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType4.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType42.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType43.CreateDeserializable);
     }
 
     public void DoNPuts(int n)
     {
       try
       {
-        Serializable.RegisterTypeGeneric(OtherType.CreateDeserializable, CacheHelper.DCache);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType.CreateDeserializable);
         Assert.Fail("Expected exception in registering the type again.");
       }
       catch (IllegalStateException ex)
@@ -126,7 +126,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        Serializable.RegisterTypeGeneric(OtherType.CreateDeserializable, CacheHelper.DCache);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType.CreateDeserializable);
         Assert.Fail("Expected exception in registering the type again.");
       }
       catch (IllegalStateException ex)

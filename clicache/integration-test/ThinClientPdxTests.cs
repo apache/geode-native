@@ -687,7 +687,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        try
        {
-         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable, CacheHelper.DCache);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(PdxInsideIGeodeSerializable.CreateDeserializable);
          CacheHelper.DCache.TypeRegistry.RegisterPdxType(NestedPdx.CreateDeserializable);
          CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
          CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
@@ -715,7 +715,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        try
        {
-         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable, CacheHelper.DCache);
+         CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(PdxInsideIGeodeSerializable.CreateDeserializable);
          CacheHelper.DCache.TypeRegistry.RegisterPdxType(NestedPdx.CreateDeserializable);
          CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
          CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
@@ -930,7 +930,7 @@ namespace Apache.Geode.Client.UnitTests
      {
        try
        {
-         Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable, CacheHelper.DCache);
+         CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(PdxInsideIGeodeSerializable.CreateDeserializable);
          CacheHelper.DCache.TypeRegistry.RegisterPdxType(NestedPdx.CreateDeserializable);
          CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
          CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
@@ -1042,14 +1042,14 @@ namespace Apache.Geode.Client.UnitTests
      {
          try
          {
-             Serializable.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable, CacheHelper.DCache);
-             CacheHelper.DCache.TypeRegistry.RegisterPdxType(NestedPdx.CreateDeserializable);
-             CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
-             CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
-             CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes3.CreateDeserializable);
-             CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes4.CreateDeserializable);
-             CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes5.CreateDeserializable);
-             CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes6.CreateDeserializable);
+            CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(PdxTests.PdxInsideIGeodeSerializable.CreateDeserializable);
+            CacheHelper.DCache.TypeRegistry.RegisterPdxType(NestedPdx.CreateDeserializable);
+            CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
+            CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
+            CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes3.CreateDeserializable);
+            CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes4.CreateDeserializable);
+            CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes5.CreateDeserializable);
+            CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes6.CreateDeserializable);
 
          }
          catch (Exception)

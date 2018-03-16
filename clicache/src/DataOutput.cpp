@@ -484,9 +484,7 @@ namespace Apache
           return;
         }
 
-        //Apache::Geode::Client::Log::Debug("DataOutput::WriteObject " + obj);
-
-        Byte typeId = Apache::Geode::Client::Serializable::GetManagedTypeMappingGeneric(obj->GetType());
+        Byte typeId = m_cache->TypeRegistry->GetManagedTypeMappingGeneric(obj->GetType());
 
         switch (typeId)
         {
