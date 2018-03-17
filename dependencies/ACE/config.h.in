@@ -20,10 +20,6 @@
 
 #if __cplusplus >= 201103L
 
-#if defined(__clang__)
-#define ACE_HAS_CPP11 1
-#endif
-
 #if defined(__SUNPRO_CC)
 #define ACE_HAS_CPP11 1
 #define _RWSTD_ALLOCATOR 1
