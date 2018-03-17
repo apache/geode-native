@@ -18,6 +18,8 @@ project(nativeclient)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
+include(cotire)
+
 if(CMAKE_GENERATOR MATCHES Win64*)
 
   if ((CMAKE_GENERATOR MATCHES "Visual Studio") AND (CMAKE_GENERATOR_TOOLSET STREQUAL ""))

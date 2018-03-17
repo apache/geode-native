@@ -41,7 +41,30 @@ install(TARGETS apache-geode
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib)
 
-# For Visual Studio organization
+
+# BEGIN Visual Studio organization
 source_group("Header Files" REGULAR_EXPRESSION "\.(hpp|inl)$")
 source_group("Configure In Files" FILES ${CONFIGURE_IN_FILES})
 source_group("Configure Out Files" FILES ${CONFIGURE_OUT_FILES})
+# END Visual Studio organization
+
+
+# BEGIN PCH
+set(_COTIRE_PREFIX_HEADER_IGNORE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+list(APPEND _COTIRE_PREFIX_HEADER_IGNORE_PATH
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include/unwind.h
+${CMAKE_BINARY_DIR}/dependencies/boost/include/boost/stacktrace
+${CMAKE_BINARY_DIR}/dependencies/boost/include/boost/stacktrace.hpp)
+endif()
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+COTIRE_ENABLE_PRECOMPILED_HEADER TRUE
+COTIRE_ADD_UNITY_BUILD FALSE
+COTIRE_PREFIX_HEADER_IGNORE_PATH "${_COTIRE_PREFIX_HEADER_IGNORE_PATH}"
+COTIRE_PREFIX_HEADER_INCLUDE_PATH "${CMAKE_BINARY_DIR}/dependencies")
+
+set_source_files_properties(cppcache/version.h PROPERTIES GENERATED TRUE)
+
+cotire(${PROJECT_NAME})
+# END PCH
