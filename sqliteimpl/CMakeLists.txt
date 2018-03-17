@@ -13,14 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project(SqLiteImpl)
+cmake_minimum_required(VERSION 3.10)
+project(SqLiteImpl LANGUAGES CXX)
 
-file(GLOB_RECURSE SOURCES "*.cpp")
+add_library(${PROJECT_NAME} SHARED
+  SqLiteHelper.cpp
+  SqLiteHelper.hpp
+  SqLiteImpl.cpp
+  SqLiteImpl.hpp
+)
 
-add_library(${PROJECT_NAME} SHARED ${SOURCES})
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
     apache-geode
     sqlite
-    c++11
 )

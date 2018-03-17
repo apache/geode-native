@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( boost )
+project( boost LANGUAGES NONE )
 
 set( ${PROJECT_NAME}_VERSION 1.65.1 )
 set( ${PROJECT_NAME}_SHA265 a13de2c8fbad635e6ba9c8f8714a0e6b4264b60a29b964b940a22554705b6b60 )

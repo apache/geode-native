@@ -48,7 +48,7 @@ set(PRODUCT_BUILDDATE ${REV_DATE})
 set(PRODUCT_SOURCE_REVISION ${REV_SHA})
 set(PRODUCT_SOURCE_REPOSITORY ${REV_BRANCH})
 
-configure_file(@CMAKE_CURRENT_SOURCE_DIR@/version.h.in @CMAKE_CURRENT_BINARY_DIR@/version.h)
+configure_file(@CMAKE_CURRENT_SOURCE_DIR@/src/version.h.in @CMAKE_CURRENT_BINARY_DIR@/version.h)
 
 # Always touch since configure_file will not update file if values haven't change
 # but the index must have changed for this command to be called. If we don't touch

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( openssl C )
+project( openssl C LANGUAGES NONE )
 
 set( ${PROJECT_NAME}_VERSION 1.1.0 )
 set( ${PROJECT_NAME}_SHA265 f5c69ff9ac1472c80b868efc1c1c0d8dcfc746d29ebe563de2365dd56dbd8c82 )

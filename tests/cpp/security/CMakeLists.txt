@@ -12,28 +12,41 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required(VERSION 3.4)
-project(tests.security)
 
-file(GLOB_RECURSE SOURCES "*.cpp")
+cmake_minimum_required(VERSION 3.10)
+project(security LANGUAGES CXX)
 
-add_library(security STATIC ${SOURCES})
+add_library(${PROJECT_NAME} STATIC
+  CredentialGenerator.cpp
+  CredentialGenerator.hpp
+  DummyCredentialGenerator.hpp
+  DummyCredentialGenerator2.hpp
+  DummyCredentialGenerator3.hpp
+  LdapUserCredentialGenerator.hpp
+  NoopCredentialGenerator.hpp
+  PkcsAuthInit.cpp
+  PkcsAuthInit.hpp
+  PkcsCredentialGenerator.hpp
+  Security.cpp
+  Security.hpp
+  typedefs.hpp
+  XmlAuthzCredentialGenerator.hpp
+)
 
-target_link_libraries(security
+target_include_directories(${PROJECT_NAME}
   PRIVATE
-    ACE
+	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
+)
+
+target_link_libraries(${PROJECT_NAME}
   PUBLIC
     fwk
     testobject
     crypto
     ssl
+  PRIVATE
+    ACE
 )
 
-set_target_properties(security PROPERTIES FOLDER test)
-
-target_include_directories(security PRIVATE
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cppcache/src>
-)
-
-# TODO fix includes
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
+# For Visual Studio organization
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER test)

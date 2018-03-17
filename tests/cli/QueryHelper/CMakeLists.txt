@@ -12,39 +12,47 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required(VERSION 3.4)
-project(QueryWrapper)
 
-file(GLOB_RECURSE SOURCES "*.cpp")
+cmake_minimum_required(VERSION 3.10)
+project(QueryWrapper LANGUAGES CXX)
 
-add_library(QueryWrapper SHARED ${SOURCES})
+add_library(${PROJECT_NAME} SHARED 
+  AssemblyInfo.cpp
+  QueryStringsM.cpp
+  QueryStringsM.hpp
+)
 
-#TODO get external project library names
-target_link_libraries(QueryWrapper
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  VS_GLOBAL_CLRSupport "true"
+  VS_GLOBAL_KEYWORD "ManagedCProj"
+  VS_GLOBAL_PROJECT_TYPES "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
+  VS_GLOBAL_ROOTNAMESPACE "Apache.Geode.Client.Tests"
+  VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
+  VS_DOTNET_REFERENCES "System;System.Xml"
+)
+
+target_compile_options(${PROJECT_NAME}
+  PRIVATE
+	# disabled warnings
+	/wd4947
+)
+
+target_include_directories(${PROJECT_NAME}
+  PRIVATE
+    $<BUILD_INTERFACE:$<TARGET_PROPERTY:Apache.Geode,SOURCE_DIR>>
+    $<BUILD_INTERFACE:$<TARGET_PROPERTY:testThinClientRemoteQueryRS,SOURCE_DIR>>
+)
+
+target_link_libraries(${PROJECT_NAME}
   PUBLIC 
     Apache.Geode
+  PRIVATE
+    c++cli
     c++11
 )
 
-include_directories(${CMAKE_SOURCE_DIR}/clicache/src)
-include_directories(${CMAKE_SOURCE_DIR}/tests/clicache)
-include_directories(${CMAKE_SOURCE_DIR}/cppcache/integration-test)
-
-set_target_properties(QueryWrapper PROPERTIES FOLDER test/cliTests)
-
-# TODO discover framework
-set( DOT_NET_FRAMEWORK "C:/Program Files (x86)/Reference Assemblies/Microsoft/Framework/.NETFramework/v4.0")
-
-# TODO macro add_dotnet_assemble(taget assemblyname)
-set( ASM_PATH ${ASM_PATH} "/FU ${DOT_NET_FRAMEWORK}/System.dll")
-set( ASM_PATH ${ASM_PATH} "/FU ${DOT_NET_FRAMEWORK}/System.Xml.dll")
-target_compile_options(QueryWrapper PRIVATE ${ASM_PATH})
-
-#TODO make CLR macro to do all the CLR flags below, add_clr(target)
-string(REPLACE "/EHsc" "/EHa" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-#TODO evaluate the correct CMAKE_CXX_FLAGS_<CONFIG> settings for .NET
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /clr /wd4947")
-
-#TODO make macro for strong name key, add_strong_nake_key(traget keyfile)
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SHARED_LINKER_FLAGS_STRONG_KEY}")
+
+# For Visual Studio organization
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER test/cliTests)
