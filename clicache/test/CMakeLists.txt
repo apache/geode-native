@@ -42,18 +42,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   VS_DOTNET_REFERENCES "System;System.Xml;Microsoft.VisualStudio.QualityTools.UnitTestFramework"
 )
 
-target_compile_options(${PROJECT_NAME}
-  PRIVATE
-    /clr # C++/CLR
-	/EHa
-	/bigobj # C1128 - large number of templates causes too many section.
-	#/doc # Documents to xml
-	# warnings as error
-	/we4488 # interfaces fully implemented.
-	# disabled warnings
-	/wd4947 /wd4251 /wd4635
-)
-
 target_include_directories(${PROJECT_NAME}
   PRIVATE
   	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>
@@ -64,6 +52,9 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
     Apache.Geode
+  PRIVATE
+    c++cli
+	c++11
 )
 
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")

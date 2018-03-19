@@ -306,8 +306,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 target_compile_options(${PROJECT_NAME}
   PRIVATE
-    /clr # C++/CLR
-	/EHa
 	/bigobj # C1128 - large number of templates causes too many section.
 	#/doc # Documents to xml
 	# warnings as error
@@ -323,10 +321,11 @@ target_include_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
-    c++11
-  PRIVATE
-    apache-geode-static
     psapi
+  PRIVATE
+    c++cli
+    c++11
+    apache-geode-static
 )
 
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")

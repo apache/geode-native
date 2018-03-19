@@ -23,8 +23,6 @@ add_library(${PROJECT_NAME} SHARED
 
 target_compile_options(${PROJECT_NAME}
   PRIVATE
-    /clr # C++/CLR
-	/EHa
 	# disabled warnings
 	/wd4947
 )
@@ -41,8 +39,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_link_libraries(${PROJECT_NAME}
   PUBLIC 
     Apache.Geode
-    c++11
   PRIVATE
+	c++cli
+    c++11
     security
 )
 

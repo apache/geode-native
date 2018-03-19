@@ -33,8 +33,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 target_compile_options(${PROJECT_NAME}
   PRIVATE
-    /clr # C++/CLR
-	/EHa
 	# disabled warnings
 	/wd4947
 )
@@ -48,6 +46,8 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
   PUBLIC 
     Apache.Geode
+  PRIVATE
+    c++cli
     c++11
 )
 

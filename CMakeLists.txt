@@ -151,6 +151,15 @@ endif()
 #TODO remove this debugging for NMake
 set(CMAKE_VERBOSE_MAKEFILE 0)
 
+# Interface for C++/CLI language.
+add_library(c++cli INTERFACE)
+target_compile_options(c++cli
+  INTERFACE
+    /clr
+	/EHa
+)
+
+# Interface for C++11 language
 add_library(c++11 INTERFACE)
 
 
