@@ -13,43 +13,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.10)
 project(Apache.Geode.Test CXX)
-
-file(GLOB SOURCES "*.cpp")
 
 if(NOT "${STRONG_NAME_PUBLIC_KEY}" STREQUAL "")
   set(STRONG_NAME_PUBLIC_KEY_ATTRIBUTE ", PublicKey=${STRONG_NAME_PUBLIC_KEY}")
 endif()
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/AssemblyInfo.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/AssemblyInfo.cpp)
 list(APPEND CONFIGURE_IN_FILES ${CMAKE_CURRENT_SOURCE_DIR}/AssemblyInfo.cpp.in)
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/AssemblyInfo.cpp)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/AssemblyInfo.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/AssemblyInfo.cpp)
-
-set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)
 
 add_library(${PROJECT_NAME} MODULE
-  ${SOURCES}
-  ${CONFIGURE_IN_FILES}
+  AssemblyInfo.cpp.in
+  native_conditional_unqiue_ptrTests.cpp
+  native_shared_ptrTests.cpp
+  native_unique_ptrTests.cpp
+  TimeUtilsTests.cpp
   ${CONFIGURE_OUT_FILES}
-  ${RESOURCES}
-)
-#add_dependencies(unit-tests ${PROJECT_NAME})
-
-add_definitions(-DUNICODE -D_UNICODE)
-target_compile_definitions(${PROJECT_NAME}
-  PUBLIC
-    -DUNICODE -D_UNICODE
-)
-
-target_link_libraries(${PROJECT_NAME}
-  PRIVATE
-    Apache.Geode
-  PUBLIC
-    c++11
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
-  COMPILE_FLAGS "/clr"
   VS_GLOBAL_CLRSupport "true"
   VS_GLOBAL_KEYWORD "ManagedCProj"
   VS_GLOBAL_TestProjectType UnitTest
@@ -59,17 +42,33 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   VS_DOTNET_REFERENCES "System;System.Xml;Microsoft.VisualStudio.QualityTools.UnitTestFramework"
 )
 
-string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+target_compile_options(${PROJECT_NAME}
+  PRIVATE
+    /clr # C++/CLR
+	/EHa
+	/bigobj # C1128 - large number of templates causes too many section.
+	#/doc # Documents to xml
+	# warnings as error
+	/we4488 # interfaces fully implemented.
+	# disabled warnings
+	/wd4947 /wd4251 /wd4635
+)
+
+target_include_directories(${PROJECT_NAME}
+  PRIVATE
+  	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>
+  	$<TARGET_PROPERTY:apache-geode,INCLUDE_DIRECTORIES>
+  	$<TARGET_PROPERTY:Apache.Geode,SOURCE_DIR>
+)
+
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    Apache.Geode
+)
+
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${SHARED_LINKER_FLAGS_STRONG_KEY}")
 
-include_directories(${CMAKE_SOURCE_DIR}/clicache/src)
-include_directories(${CMAKE_SOURCE_DIR}/cppcache/src)
-include_directories(${CMAKE_SOURCE_DIR}/cppcache/include)
-#PCH issues
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
 # For Visual Studio organization
-source_group("Header Files" REGULAR_EXPRESSION "\.(hpp|inl)$")
 source_group("Configure In Files" FILES ${CONFIGURE_IN_FILES})
 source_group("Configure Out Files" FILES ${CONFIGURE_OUT_FILES})

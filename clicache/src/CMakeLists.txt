@@ -14,27 +14,285 @@
 # limitations under the License.
 
 cmake_minimum_required(VERSION 3.10)
-project(Apache.Geode)
-
-file(GLOB_RECURSE SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.cpp")
-
-file(GLOB_RECURSE PRIVATE_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.hpp")
-set_source_files_properties(${PRIVATE_HEADERS} PROPERTIES HEADER_FILE_ONLY TRUE)
-
-set(RESOURCES Apache.Geode.rc)
+project(Apache.Geode CXX)
 
 if(NOT "${STRONG_NAME_PUBLIC_KEY}" STREQUAL "")
   set(STRONG_NAME_PUBLIC_KEY_ATTRIBUTE ", PublicKey=${STRONG_NAME_PUBLIC_KEY}")
 endif()
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/impl/AssemblyInfo.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/impl/AssemblyInfo.cpp)
 list(APPEND CONFIGURE_IN_FILES ${CMAKE_CURRENT_SOURCE_DIR}/impl/AssemblyInfo.cpp.in)
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/impl/AssemblyInfo.cpp)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/impl/AssemblyInfo.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/impl/AssemblyInfo.cpp)
-
-set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)
 
 add_library(${PROJECT_NAME} SHARED
-  ${SOURCES}
-  ${PRIVATE_HEADERS} ${CONFIGURE_IN_FILES} ${CONFIGURE_OUT_FILES} ${RESOURCES})
+  Apache.Geode.rc
+  AttributesMutator.cpp
+  AttributesMutator.hpp
+  begin_native.hpp
+  Cache.cpp
+  Cache.hpp
+  CacheableArrayList.hpp
+  CacheableBuiltins.hpp
+  CacheableDate.cpp
+  CacheableDate.hpp
+  CacheableFileName.cpp
+  CacheableFileName.hpp
+  CacheableHashMap.cpp
+  CacheableHashMap.hpp
+  CacheableHashSet.hpp
+  CacheableHashTable.hpp
+  CacheableIdentityHashMap.hpp
+  CacheableKey.cpp
+  CacheableKey.hpp
+  CacheableLinkedList.hpp
+  CacheableObject.cpp
+  CacheableObject.hpp
+  CacheableObjectArray.cpp
+  CacheableObjectArray.hpp
+  CacheableObjectXml.cpp
+  CacheableObjectXml.hpp
+  CacheableStack.cpp
+  CacheableStack.hpp
+  CacheableString.cpp
+  CacheableString.hpp
+  CacheableStringArray.cpp
+  CacheableStringArray.hpp
+  CacheableUndefined.cpp
+  CacheableUndefined.hpp
+  CacheableVector.cpp
+  CacheableVector.hpp
+  CacheFactory.cpp
+  CacheFactory.hpp
+  CacheListenerAdapter.hpp
+  CacheStatistics.cpp
+  CacheStatistics.hpp
+  CacheTransactionManager.cpp
+  CacheTransactionManager.hpp
+  CacheWriterAdapter.hpp
+  CMakeLists.txt
+  CqAttributes.cpp
+  CqAttributes.hpp
+  CqAttributesFactory.cpp
+  CqAttributesFactory.hpp
+  CqAttributesMutator.cpp
+  CqAttributesMutator.hpp
+  CqEvent.cpp
+  CqEvent.hpp
+  CqOperation.hpp
+  CqQuery.cpp
+  CqQuery.hpp
+  CqServiceStatistics.cpp
+  CqServiceStatistics.hpp
+  CqState.hpp
+  CqStatistics.cpp
+  CqStatistics.hpp
+  DataInput.cpp
+  DataInput.hpp
+  DataOutput.cpp
+  DataOutput.hpp
+  DiskPolicyType.hpp
+  DistributedSystem.cpp
+  DistributedSystem.hpp
+  end_native.hpp
+  EntryEvent.cpp
+  EntryEvent.hpp
+  ExceptionTypes.cpp
+  ExceptionTypes.hpp
+  Execution.cpp
+  Execution.hpp
+  ExpirationAction.hpp
+  FunctionService.cpp
+  FunctionService.hpp
+  GeodeClassIds.hpp
+  geode_defs.hpp
+  geode_includes.cpp
+  geode_includes.hpp
+  IAuthInitialize.hpp
+  ICacheableKey.hpp
+  ICacheListener.hpp
+  ICacheLoader.hpp
+  ICacheWriter.hpp
+  ICqAttributes.hpp
+  ICqEvent.hpp
+  ICqListener.hpp
+  ICqResults.hpp
+  ICqStatusListener.hpp
+  IFixedPartitionResolver.hpp
+  IGeodeCache.hpp
+  IGeodeDelta.hpp
+  IGeodeSerializable.hpp
+  IPartitionResolver.hpp
+  IPdxInstance.hpp
+  IPdxInstanceFactory.hpp
+  IPdxReader.hpp
+  IPdxSerializable.hpp
+  IPdxSerializer.hpp
+  IPdxTypeMapper.hpp
+  IPdxUnreadFields.hpp
+  IPdxWriter.hpp
+  IPersistenceManager.hpp
+  IRegion.hpp
+  IRegionService.hpp
+  IResultCollector.hpp
+  ISelectResults.hpp
+  ISubscriptionService.hpp
+  ITransactionListener.hpp
+  ITransactionWriter.hpp
+  IWritablePdxInstance.hpp
+  LocalRegion.cpp
+  LocalRegion.hpp
+  Log.cpp
+  Log.hpp
+  native_conditional_shared_ptr.hpp
+  native_conditional_unique_ptr.hpp
+  native_shared_ptr.hpp
+  native_unique_ptr.hpp
+  PdxIdentityFieldAttribute.hpp
+  Pool.cpp
+  Pool.hpp
+  PoolFactory.cpp
+  PoolFactory.hpp
+  PoolManager.cpp
+  PoolManager.hpp
+  Properties.cpp
+  Properties.hpp
+  Query.cpp
+  Query.hpp
+  QueryService.cpp
+  QueryService.hpp
+  ReflectionBasedAutoSerializer.cpp
+  ReflectionBasedAutoSerializer.hpp
+  Region.cpp
+  Region.hpp
+  RegionAttributes.cpp
+  RegionAttributes.hpp
+  RegionAttributesFactory.cpp
+  RegionAttributesFactory.hpp
+  RegionEntry.cpp
+  RegionEntry.hpp
+  RegionEvent.cpp
+  RegionEvent.hpp
+  RegionFactory.cpp
+  RegionFactory.hpp
+  RegionShortcut.hpp
+  ResultCollector.cpp
+  ResultCollector.hpp
+  ResultSet.cpp
+  ResultSet.hpp
+  SelectResultsIterator.cpp
+  SelectResultsIterator.hpp
+  Serializable.cpp
+  Serializable.hpp
+  Struct.cpp
+  Struct.hpp
+  StructSet.cpp
+  StructSet.hpp
+  SystemProperties.cpp
+  SystemProperties.hpp
+  TimeUtils.hpp
+  TransactionEvent.cpp
+  TransactionEvent.hpp
+  TransactionId.hpp
+  TransactionListenerAdapter.hpp
+  TransactionWriterAdapte.hpp
+  UserFunctionExecutionException.cpp
+  UserFunctionExecutionException.hpp
+  Utils.cpp
+  Utils.hpp
+  impl/AppDomainContext.cpp
+  impl/AppDomainContext.hpp
+  impl/AssemblyInfo.cpp.in
+  impl/AuthenticatedCache.cpp
+  impl/AuthenticatedCache.hpp
+  impl/CacheListener.hpp
+  impl/CacheLoader.hpp
+  impl/CacheResolver.cpp
+  impl/CacheResolver.hpp
+  impl/CacheWriter.hpp
+  impl/CliCallbackDelgate.cpp
+  impl/CliCallbackDelgate.hpp
+  impl/CqListenerProxy.hpp
+  impl/CqStatusListenerProxy.hpp
+  impl/DelegateWrapper.hpp
+  impl/DotNetTypes.hpp
+  impl/EnumInfo.cpp
+  impl/EnumInfo.hpp
+  impl/FixedPartitionResolver.hpp
+  impl/GeodeDataInputStream.hpp
+  impl/GeodeDataOutputStream.hpp
+  impl/GeodeNullStream.hpp
+  impl/ManagedAuthInitialize.cpp
+  impl/ManagedAuthInitialize.hpp
+  impl/ManagedCacheableDelta.cpp
+  impl/ManagedCacheableDelta.hpp
+  impl/ManagedCacheableKey.cpp
+  impl/ManagedCacheableKey.hpp
+  impl/ManagedCacheListener.cpp
+  impl/ManagedCacheListener.hpp
+  impl/ManagedCacheLoader.cpp
+  impl/ManagedCacheLoader.hpp
+  impl/ManagedCacheWriter.cpp
+  impl/ManagedCacheWriter.hpp
+  impl/ManagedCqListener.cpp
+  impl/ManagedCqListener.hpp
+  impl/ManagedCqStatusListener.cpp
+  impl/ManagedCqStatusListener.hpp
+  impl/ManagedFixedPartitionResolver.cpp
+  impl/ManagedFixedPartitionResolver.hpp
+  impl/ManagedPartitionResolver.cpp
+  impl/ManagedPartitionResolver.hpp
+  impl/ManagedPersistenceManager.cpp
+  impl/ManagedPersistenceManager.hpp
+  impl/ManagedResultCollector.cpp
+  impl/ManagedResultCollector.hpp
+  impl/ManagedString.hpp
+  impl/ManagedTransactionListener.cpp
+  impl/ManagedTransactionListener.hpp
+  impl/ManagedTransactionWriter.cpp
+  impl/ManagedTransactionWriter.hpp
+  impl/ManagedVisitor.cpp
+  impl/ManagedVisitor.hpp
+  impl/MemoryPressureHandler.cpp
+  impl/MemoryPressureHandler.hpp
+  impl/PartitionResolver.hpp
+  impl/PdxFieldType.cpp
+  impl/PdxFieldType.hpp
+  impl/PdxHelper.cpp
+  impl/PdxHelper.hpp
+  impl/PdxInstanceFactoryImpl.cpp
+  impl/PdxInstanceFactoryImpl.hpp
+  impl/PdxInstanceImpl.cpp
+  impl/PdxInstanceImpl.hpp
+  impl/PdxLocalReader.cpp
+  impl/PdxLocalReader.hpp
+  impl/PdxLocalWriter.cpp
+  impl/PdxLocalWriter.hpp
+  impl/PdxManagedCacheableKey.cpp
+  impl/PdxManagedCacheableKey.hpp
+  impl/PdxReaderWithTypeCollector.cpp
+  impl/PdxReaderWithTypeCollector.hpp
+  impl/PdxRemotePreservedData.hpp
+  impl/PdxRemoteReader.cpp
+  impl/PdxRemoteReader.hpp
+  impl/PdxRemoteWriter.cpp
+  impl/PdxRemoteWriter.hpp
+  impl/PdxType.cpp
+  impl/PdxType.hpp
+  impl/PdxTypeRegistry.cpp
+  impl/PdxTypeRegistry.hpp
+  impl/PdxWrapper.hpp
+  impl/PdxWriterWithTypeCollector.cpp
+  impl/PdxWriterWithTypeCollector.hpp
+  impl/PersistenceManagerProxy.hpp
+  impl/RegionImpl.cpp
+  impl/RegionImpl.hpp
+  impl/ResultCollectorProxy.hpp
+  impl/SafeConvert.hpp
+  impl/TransactionListener.hpp
+  impl/TransactionWriter.hpp
+  impl/WeakhashMap.hpp
+
+  ${CONFIGURE_OUT_FILES}
+)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
   OUTPUT_NAME ${PRODUCT_DLL_NAME}
@@ -64,11 +322,11 @@ target_include_directories(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    c++11
   PRIVATE
     apache-geode-static
     psapi
-  PUBLIC
-    c++11
 )
 
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
@@ -89,6 +347,5 @@ add_dependencies(client-libraries ${PROJECT_NAME})
 add_subdirectory(templates)
 
 # For Visual Studio organization
-source_group("Header Files" REGULAR_EXPRESSION "\.(hpp|inl)$")
 source_group("Configure In Files" FILES ${CONFIGURE_IN_FILES})
 source_group("Configure Out Files" FILES ${CONFIGURE_OUT_FILES})
