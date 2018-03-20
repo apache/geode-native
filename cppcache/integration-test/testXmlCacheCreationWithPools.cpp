@@ -24,7 +24,6 @@
 #include <geode/internal/chrono/duration.hpp>
 
 #define CLIENT1 s1p1
-#define CLIENT2 s1p2
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
@@ -472,75 +471,6 @@ int testXmlCacheCreationWithPools() {
   return 0;
 }
 
-int testXmlDeclarativeCacheCreation() {
-  char* host_name = (char*)"XML_DECLARATIVE_CACHE_CREATION_TEST";
-  auto cacheFactory = CacheFactory();
-  std::shared_ptr<Cache> cptr;
-
-  std::string directory(ACE_OS::getenv("TESTSRC"));
-
-  std::cout << "create DistributedSytem with name=" << host_name << std::endl;
-
-  try {
-    const auto filePath =
-        directory + "/resources/valid_declarative_cache_creation.xml";
-    cptr = std::make_shared<Cache>(
-        cacheFactory.set("cache-xml-file", filePath).create());
-
-  } catch (Exception& ex) {
-    std::cout << "Exception: msg = " << ex.what() << std::endl;
-    LOG(ex.getStackTrace());
-    return -1;
-  } catch (...) {
-    LOGINFO("unknown exception");
-    return -1;
-  }
-
-  std::cout << "Test if number of root regions are correct" << std::endl;
-  auto vrp = cptr->rootRegions();
-  std::cout << "  vrp.size=" << vrp.size() << std::endl;
-
-  if (vrp.size() != 1) {
-    std::cout << "Number of root regions does not match" << std::endl;
-    return -1;
-  }
-
-  std::cout << "Root regions in Cache :" << std::endl;
-  for (int32_t i = 0; i < vrp.size(); i++) {
-    std::cout << "vc[" << i << "].m_reaPtr=" << vrp.at(i).get() << std::endl;
-    std::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << std::endl;
-  }
-  auto regPtr1 = vrp.at(0);
-
-  auto regionAttributes = regPtr1->getAttributes();
-  std::cout << "Test Attributes of root region Root1 " << std::endl;
-  std::cout << "Region name " << regPtr1->getName() << std::endl;
-
-  if (regionAttributes.getCacheLoader() == nullptr) {
-    std::cout << "Cache Loader not initialized." << std::endl;
-    return -1;
-  }
-
-  if (regionAttributes.getCacheListener() == nullptr) {
-    std::cout << "Cache Listener not initialized." << std::endl;
-    return -1;
-  }
-
-  if (regionAttributes.getCacheWriter() == nullptr) {
-    std::cout << "Cache Writer not initialized." << std::endl;
-    return -1;
-  }
-
-  std::cout << "Attributes of Root1 are correctly set" << std::endl;
-
-  if (!cptr->isClosed()) {
-    cptr->close();
-    cptr = nullptr;
-  }
-
-  return 0;
-}
-
 DUNIT_TASK_DEFINITION(CLIENT1, ValidXmlTestPools)
   {
     CacheHelper::initLocator(1);
@@ -562,18 +492,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, ValidXmlTestPools)
   }
 END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(CLIENT1, ValidXmlTestDeclarativeCacheCreation)
-  {
-    int res = testXmlDeclarativeCacheCreation();
-    if (res != 0) {
-      FAIL("DeclarativeCacheCreation Test Failed.");
-    }
-  }
-END_TASK_DEFINITION
-
 DUNIT_MAIN
-  {
-    CALL_TASK(ValidXmlTestPools);
-    CALL_TASK(ValidXmlTestDeclarativeCacheCreation);
-  }
+  { CALL_TASK(ValidXmlTestPools); }
 END_MAIN

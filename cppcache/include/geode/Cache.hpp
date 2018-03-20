@@ -238,12 +238,12 @@ class _GEODE_EXPORT Cache : public GeodeCache {
 
   virtual PoolManager& getPoolManager() const;
 
-  /**
-   * @brief destructor
-   */
+  Cache() = delete;
   virtual ~Cache();
-
+  Cache(const Cache& other) = delete;
+  Cache& operator=(const Cache& other) = delete; 
   Cache(Cache&& other) noexcept;
+  Cache& operator=(Cache&& other) noexcept;
 
  private:
   /**
@@ -257,7 +257,6 @@ class _GEODE_EXPORT Cache : public GeodeCache {
   std::unique_ptr<TypeRegistry> m_typeRegistry;
 
  protected:
-  Cache() = delete;
 
   static bool isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr);
 

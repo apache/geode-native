@@ -180,7 +180,8 @@ class RegionInternal : public Region {
   /** @brief Public Methods
    */
   virtual std::shared_ptr<PersistenceManager> getPersistenceManager() = 0;
-  virtual void setPersistenceManager(std::shared_ptr<PersistenceManager>& pmPtr) = 0;
+  virtual void setPersistenceManager(
+      std::shared_ptr<PersistenceManager>& pmPtr) = 0;
 
   virtual GfErrType getNoThrow(
       const std::shared_ptr<CacheableKey>& key,
@@ -247,13 +248,16 @@ class RegionInternal : public Region {
       const std::chrono::seconds& duration) = 0;
   virtual std::chrono::seconds adjustEntryExpiryDuration(
       const std::chrono::seconds& duration) = 0;
-  virtual void adjustCacheListener(const std::shared_ptr<CacheListener>& aListener) = 0;
+  virtual void adjustCacheListener(
+      const std::shared_ptr<CacheListener>& aListener) = 0;
   virtual void adjustCacheListener(const std::string& libpath,
                                    const std::string& factoryFuncName) = 0;
-  virtual void adjustCacheLoader(const std::shared_ptr<CacheLoader>& aLoader) = 0;
+  virtual void adjustCacheLoader(
+      const std::shared_ptr<CacheLoader>& aLoader) = 0;
   virtual void adjustCacheLoader(const std::string& libpath,
                                  const std::string& factoryFuncName) = 0;
-  virtual void adjustCacheWriter(const std::shared_ptr<CacheWriter>& aWriter) = 0;
+  virtual void adjustCacheWriter(
+      const std::shared_ptr<CacheWriter>& aWriter) = 0;
   virtual void adjustCacheWriter(const std::string& libpath,
                                  const std::string& factoryFuncName) = 0;
 
@@ -292,7 +296,7 @@ class RegionInternal : public Region {
   /**
    * @brief constructor
    */
-  RegionInternal(Cache* cache, RegionAttributes attributes);
+  RegionInternal(CacheImpl* cache, RegionAttributes attributes);
 
   void setLruEntriesLimit(uint32_t limit);
   void setRegionTimeToLiveExpirationAction(ExpirationAction action);

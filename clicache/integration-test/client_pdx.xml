@@ -24,7 +24,7 @@
     xsi:schemaLocation="http://schema.pivotal.io/gemfire/gfcpp-cache
                         http://schema.pivotal.io/gemfire/gfcpp-cache/gfcpp-cache-9.0.xsd"
     version="9.0"
-    redundancy-level="1" >
+     >
 
   <pdx read-serialized="true" />
 	<root-region name='DistRegionAck'>

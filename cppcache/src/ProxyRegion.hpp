@@ -135,15 +135,14 @@ class _GEODE_EXPORT ProxyRegion : public Region {
         m_realRegion->subregions(recursive);
     std::vector<std::shared_ptr<Region>> proxyRegions(realVectorRegion.size());
 
-    std::transform(
-        realVectorRegion.begin(), realVectorRegion.end(),
-        std::back_inserter(proxyRegions),
-        [this](const std::shared_ptr<Region>& realRegion)
-            -> std::shared_ptr<ProxyRegion> {
-          return std::make_shared<ProxyRegion>(
-              m_proxyCache,
-              std::static_pointer_cast<RegionInternal>(realRegion));
-        });
+    std::transform(realVectorRegion.begin(), realVectorRegion.end(),
+                   std::back_inserter(proxyRegions),
+                   [this](const std::shared_ptr<Region>& realRegion)
+                       -> std::shared_ptr<ProxyRegion> {
+                     return std::make_shared<ProxyRegion>(
+                         m_proxyCache,
+                         std::static_pointer_cast<RegionInternal>(realRegion));
+                   });
 
     return proxyRegions;
   }
@@ -609,7 +608,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
 
   ProxyRegion(const std::shared_ptr<ProxyCache>& proxyCache,
               const std::shared_ptr<RegionInternal>& realRegion)
-      : Region(&realRegion->getCache()) {
+      : Region(proxyCache->m_cacheImpl) {
     m_proxyCache = proxyCache;
     m_realRegion = realRegion;
   }

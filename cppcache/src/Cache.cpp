@@ -151,6 +151,10 @@ Cache::Cache(Cache&& other) noexcept
   m_cacheImpl->setCache(this);
 }
 
+Cache& Cache::operator=(Cache&& other) noexcept {
+   return std::move(other);
+}
+
 Cache::~Cache() = default;
 
 void Cache::initializeDeclarativeCache(const std::string& cacheXml) {

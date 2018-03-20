@@ -63,12 +63,12 @@ namespace geode {
 namespace client {
 
 #ifndef CHECK_DESTROY_PENDING
-#define CHECK_DESTROY_PENDING(lock, function)                      \
-  lock checkGuard(m_rwLock, m_destroyPending);                     \
-  if (m_destroyPending) {                                          \
-    std::string err_msg = #function;                               \
-    err_msg += ": region " + m_fullPath + " destroyed";            \
-    throw RegionDestroyedException(err_msg.c_str());               \
+#define CHECK_DESTROY_PENDING(lock, function)           \
+  lock checkGuard(m_rwLock, m_destroyPending);          \
+  if (m_destroyPending) {                               \
+    std::string err_msg = #function;                    \
+    err_msg += ": region " + m_fullPath + " destroyed"; \
+    throw RegionDestroyedException(err_msg.c_str());    \
   }
 #endif
 
@@ -382,7 +382,8 @@ class _GEODE_EXPORT LocalRegion : public RegionInternal {
   virtual bool isDestroyed() const override { return m_destroyPending; }
   /* above public methods are inherited from RegionInternal */
 
-  virtual void adjustCacheListener(const std::shared_ptr<CacheListener>& aListener) override;
+  virtual void adjustCacheListener(
+      const std::shared_ptr<CacheListener>& aListener) override;
   virtual void adjustCacheListener(const std::string& libpath,
                                    const std::string& factoryFuncName) override;
   virtual void adjustCacheLoader(
@@ -506,7 +507,6 @@ class _GEODE_EXPORT LocalRegion : public RegionInternal {
   std::shared_ptr<Region> m_parentRegion;
   MapOfRegionWithLock m_subRegions;
   std::string m_fullPath;
-  CacheImpl* m_cacheImpl;
   volatile bool m_destroyPending;
   std::shared_ptr<CacheListener> m_listener;
   std::shared_ptr<CacheWriter> m_writer;

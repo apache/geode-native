@@ -381,7 +381,7 @@ void CacheImpl::createRegion(
 
     auto csptr = std::make_shared<CacheStatistics>();
     try {
-      rpImpl = createRegion_internal(name.c_str(), nullptr, regionAttributes,
+      rpImpl = createRegion_internal(name, nullptr, regionAttributes,
                                      csptr, false);
     } catch (const AuthenticationFailedException&) {
       throw;

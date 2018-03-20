@@ -143,7 +143,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * This operation is not distributed.
    */
   virtual void invalidateRegion(
-    const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /** Invalidates this region. The invalidation will cascade to
   * all the subregions and cached entries. After
@@ -165,7 +165,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   */
   virtual void localInvalidateRegion(
-    const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /** Destroys the whole region and provides a user-defined parameter
    * object to any <code>CacheWriter</code> invoked in the process.
@@ -204,7 +204,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see  invalidateRegion
    */
   virtual void destroyRegion(
-    const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
   /**
    * Removes all entries from this region and provides a user-defined parameter
    * object to any <code>CacheWriter</code> or <code>CacheListener</code>
@@ -212,7 +212,8 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see CacheListener#afterRegionClear
    * @see CacheWriter#beforeRegionClear
    */
-  virtual void clear(const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
+  virtual void clear(
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
   /**
    * Removes all entries from this region and provides a user-defined parameter
    * object to any <code>CacheWriter</code> or <code>CacheListener</code>
@@ -220,7 +221,8 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see CacheListener#afterRegionClear
    * @see CacheWriter#beforeRegionClear
    */
-  virtual void localClear(const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
+  virtual void localClear(
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /** Destroys the whole region and provides a user-defined parameter
    * object to any <code>CacheWriter</code> invoked in the process.
@@ -242,7 +244,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @see  localInvalidateRegion
    */
   virtual void localDestroyRegion(
-    const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /** Returns the subregion identified by the path, nullptr if no such subregion
    */
@@ -250,8 +252,7 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   /** Creates a subregion with the specified attributes */
   virtual std::shared_ptr<Region> createSubregion(
-    const std::string& subregionName,
-    RegionAttributes aRegionAttributes) = 0;
+      const std::string& subregionName, RegionAttributes aRegionAttributes) = 0;
 
   /** Populates the passed in std::vector<std::shared_ptr<Region>> with
    * subregions of the current region
@@ -260,12 +261,14 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @param[out] sr subregions
    * @throws RegionDestroyedException
    */
-  virtual std::vector<std::shared_ptr<Region>> subregions(const bool recursive) = 0;
+  virtual std::vector<std::shared_ptr<Region>> subregions(
+      const bool recursive) = 0;
 
   /** Return the meta-object RegionEntry for key.
    * @throws IllegalArgumentException, RegionDestroyedException.
    */
-  virtual std::shared_ptr<RegionEntry> getEntry(const std::shared_ptr<CacheableKey>& key) = 0;
+  virtual std::shared_ptr<RegionEntry> getEntry(
+      const std::shared_ptr<CacheableKey>& key) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
@@ -830,7 +833,9 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
     return remove(key, Serializable::create(value), arg);
   }
 
-  bool remove(const std::shared_ptr<CacheableKey>& key) { return removeEx(key); }
+  bool remove(const std::shared_ptr<CacheableKey>& key) {
+    return removeEx(key);
+  }
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE>
@@ -1042,7 +1047,8 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * It is not propagated to the Geode cache server
    * to which it is connected.
    */
-  virtual bool containsValueForKey(const std::shared_ptr<CacheableKey>& keyPtr) const = 0;
+  virtual bool containsValueForKey(
+      const std::shared_ptr<CacheableKey>& keyPtr) const = 0;
 
   /**
    * Convenience method allowing key to be a const char*
@@ -1060,28 +1066,32 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * server
    * to which it is connected with.
    */
-  virtual bool containsKey(const std::shared_ptr<CacheableKey>& keyPtr) const = 0;
+  virtual bool containsKey(
+      const std::shared_ptr<CacheableKey>& keyPtr) const = 0;
   /**
    * The cache of the server, to which it is connected with, is searched
    * for the key to see if the key is present.
    * @throws UnsupportedOperationException if the region's scope is
    * ScopeType::LOCAL.
    */
-  virtual bool containsKeyOnServer(const std::shared_ptr<CacheableKey>& keyPtr) const = 0;
+  virtual bool containsKeyOnServer(
+      const std::shared_ptr<CacheableKey>& keyPtr) const = 0;
   /**
    * Returns the list of keys on which this client is interested and will be
    * notified of changes.
    * @throws UnsupportedOperationException if the region's scope is
    * ScopeType::LOCAL.
    */
-  virtual std::vector<std::shared_ptr<CacheableKey>> getInterestList() const = 0;
+  virtual std::vector<std::shared_ptr<CacheableKey>> getInterestList()
+      const = 0;
   /**
    * Returns the list of regular expresssions on which this client is
    * interested and will be notified of changes.
    * @throws UnsupportedOperationException if the region's scope is
    * ScopeType::LOCAL.
    */
-  virtual std::vector<std::shared_ptr<CacheableString>> getInterestListRegex() const = 0;
+  virtual std::vector<std::shared_ptr<CacheableString>> getInterestListRegex()
+      const = 0;
   /**
    * Convenience method allowing key to be a const char*
    * This operations checks for the key in the local cache .
@@ -1128,10 +1138,10 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws UnknownException For other exceptions.
    * @throws TimeoutException if operation timed out
    */
-  virtual void registerKeys(const std::vector<std::shared_ptr<CacheableKey>>& keys,
-                            bool isDurable = false,
-                            bool getInitialValues = false,
-                            bool receiveValues = true) = 0;
+  virtual void registerKeys(
+      const std::vector<std::shared_ptr<CacheableKey>>& keys,
+      bool isDurable = false, bool getInitialValues = false,
+      bool receiveValues = true) = 0;
 
   /**
    * Unregisters an array of keys to stop getting updates for them.
@@ -1158,7 +1168,8 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws UnknownException For other exceptions.
    * @throws TimeoutException if operation timed out
    */
-  virtual void unregisterKeys(const std::vector<std::shared_ptr<CacheableKey>>& keys) = 0;
+  virtual void unregisterKeys(
+      const std::vector<std::shared_ptr<CacheableKey>>& keys) = 0;
 
   /**
    * Registers to get updates for all keys from the server.
@@ -1461,16 +1472,16 @@ class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   virtual const std::shared_ptr<Pool>& getPool() const = 0;
 
-  inline Cache& getCache() { return *m_cache; }
+  Cache& getCache();
 
   Region(const Region&) = delete;
   Region& operator=(const Region&) = delete;
 
  protected:
-  Region(Cache* cache);
+  Region(CacheImpl* cacheImpl);
   virtual ~Region();
 
-  mutable Cache* m_cache;
+  CacheImpl* m_cacheImpl;
 
   _GEODE_FRIEND_STD_SHARED_PTR(Region)
 };
