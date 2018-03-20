@@ -28,13 +28,13 @@ PdxInstanceFactoryImpl::~PdxInstanceFactoryImpl() {}
 
 PdxInstanceFactoryImpl::PdxInstanceFactoryImpl(
     std::string className, CachePerfStats* cachePerfStats,
-    std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry, const Cache* cache,
+    std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry, const CacheImpl* cache,
     bool enableTimeStatistics)
     : m_pdxType(std::make_shared<PdxType>(pdxTypeRegistry, className, false)),
       m_created(false),
       m_cachePerfStats(cachePerfStats),
       m_pdxTypeRegistry(pdxTypeRegistry),
-      m_cache(cache),
+      m_cacheImpl(cache),
       m_enableTimeStatistics(enableTimeStatistics) {}
 
 std::unique_ptr<PdxInstance> PdxInstanceFactoryImpl::create() {
@@ -42,9 +42,9 @@ std::unique_ptr<PdxInstance> PdxInstanceFactoryImpl::create() {
     throw IllegalStateException(
         "The PdxInstanceFactory.Create() method can only be called once.");
   }
-  auto pi = std::unique_ptr<PdxInstance>(
-      new PdxInstanceImpl(m_FieldVsValues, m_pdxType, m_cachePerfStats,
-                          m_pdxTypeRegistry, m_cache, m_enableTimeStatistics));
+  auto pi = std::unique_ptr<PdxInstance>(new PdxInstanceImpl(
+      m_FieldVsValues, m_pdxType, m_cachePerfStats, m_pdxTypeRegistry,
+      m_cacheImpl, m_enableTimeStatistics));
   m_created = true;
   return pi;
 }
@@ -191,9 +191,8 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeByteArray(
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "byte[]",
                                         PdxFieldTypes::BYTE_ARRAY);
-  auto cacheableObject = CacheableArray<int8_t,
-                                        GeodeTypeIds::CacheableBytes>::create(
-                                            value);
+  auto cacheableObject =
+      CacheableArray<int8_t, GeodeTypeIds::CacheableBytes>::create(value);
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return shared_from_this();
 }
@@ -254,8 +253,7 @@ std::shared_ptr<PdxInstanceFactory> PdxInstanceFactoryImpl::writeStringArray(
     for (auto&& v : value) {
       ptrArr.push_back(CacheableString::create(v));
     }
-    auto cacheableObject =
-        CacheableStringArray::create(ptrArr);
+    auto cacheableObject = CacheableStringArray::create(ptrArr);
     m_FieldVsValues.emplace(fieldName, cacheableObject);
   }
   return shared_from_this();
@@ -279,7 +277,8 @@ PdxInstanceFactoryImpl::writeArrayOfByteArrays(const std::string& fieldName,
                                         PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS);
   auto cacheableObject = CacheableVector::create();
   for (int i = 0; i < arrayLength; i++) {
-    auto ptr = CacheableBytes::create(std::vector<int8_t>(value[i], value[i] + elementLength[i]));
+    auto ptr = CacheableBytes::create(
+        std::vector<int8_t>(value[i], value[i] + elementLength[i]));
     cacheableObject->push_back(ptr);
   }
   m_FieldVsValues.emplace(fieldName, cacheableObject);

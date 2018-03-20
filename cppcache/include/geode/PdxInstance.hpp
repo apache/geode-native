@@ -509,19 +509,16 @@ class _GEODE_EXPORT PdxInstance : public PdxSerializable {
    * @throws IllegalStateException if the PdxInstance typeid is not defined yet,
    * to get classname or if PdxType is not defined for PdxInstance.
    */
-  virtual PdxFieldTypes getFieldType(
-      const std::string& fieldname) const = 0;
+  virtual PdxFieldTypes getFieldType(const std::string& fieldname) const = 0;
+
+  PdxInstance(const PdxInstance& other) = delete;
+  void operator=(const PdxInstance& other) = delete;
 
  protected:
   /**
    * @brief constructors
    */
   PdxInstance() {}
-
- private:
-  // never implemented.
-  PdxInstance(const PdxInstance& other);
-  void operator=(const PdxInstance& other);
 };
 
 }  // namespace client

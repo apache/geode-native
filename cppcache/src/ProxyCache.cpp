@@ -91,18 +91,18 @@ std::shared_ptr<Region> ProxyCache::getRegion(const std::string& path) const {
     }
 
     if (result != nullptr) {
-     auto userAttachedPool = m_userAttributes->getPool();
-     auto pool = m_cacheImpl->getCache()->getPoolManager().find(
-         result->getAttributes().getPoolName());
-     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
-         !pool->isDestroyed()) {
-       return std::make_shared<ProxyRegion>(
-           std::const_pointer_cast<ProxyCache>(shared_from_this()),
-           std::static_pointer_cast<RegionInternal>(result));
-     }
-     throw IllegalArgumentException(
-         "The Region argument is not attached with the pool, which used to "
-         "create this user cache.");
+      auto userAttachedPool = m_userAttributes->getPool();
+      auto pool = m_cacheImpl->getCache()->getPoolManager().find(
+          result->getAttributes().getPoolName());
+      if (pool != nullptr && pool.get() == userAttachedPool.get() &&
+          !pool->isDestroyed()) {
+        return std::make_shared<ProxyRegion>(
+            std::const_pointer_cast<ProxyCache>(shared_from_this()),
+            std::static_pointer_cast<RegionInternal>(result));
+      }
+      throw IllegalArgumentException(
+          "The Region argument is not attached with the pool, which used to "
+          "create this user cache.");
     }
 
     return result;
@@ -169,8 +169,8 @@ std::shared_ptr<PdxInstanceFactory> ProxyCache::createPdxInstanceFactory(
     std::string className) const {
   return std::make_shared<PdxInstanceFactoryImpl>(
       className.c_str(), &(m_cacheImpl->getCachePerfStats()),
-      m_cacheImpl->getPdxTypeRegistry(), m_cacheImpl->getCache(),
+      m_cacheImpl->getPdxTypeRegistry(), m_cacheImpl,
       m_cacheImpl->getDistributedSystem()
           .getSystemProperties()
           .getEnableTimeStatistics());
- }
+}

@@ -151,9 +151,7 @@ Cache::Cache(Cache&& other) noexcept
   m_cacheImpl->setCache(this);
 }
 
-Cache& Cache::operator=(Cache&& other) noexcept {
-   return std::move(other);
-}
+Cache& Cache::operator=(Cache&& other) noexcept { return std::move(other); }
 
 Cache::~Cache() = default;
 
@@ -191,7 +189,7 @@ std::shared_ptr<PdxInstanceFactory> Cache::createPdxInstanceFactory(
     std::string className) const {
   return std::make_shared<PdxInstanceFactoryImpl>(
       className.c_str(), m_cacheImpl->m_cacheStats,
-      m_cacheImpl->getPdxTypeRegistry(), this,
+      m_cacheImpl->getPdxTypeRegistry(), m_cacheImpl.get(),
       m_cacheImpl->getDistributedSystem()
           .getSystemProperties()
           .getEnableTimeStatistics());

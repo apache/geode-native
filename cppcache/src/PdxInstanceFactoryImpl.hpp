@@ -101,7 +101,8 @@ class _GEODE_EXPORT PdxInstanceFactoryImpl
       const std::string& fieldName, const std::vector<bool>& value) override;
 
   virtual std::shared_ptr<PdxInstanceFactory> writeCharArray(
-      const std::string& fieldName, const std::vector<char16_t>& value) override;
+      const std::string& fieldName,
+      const std::vector<char16_t>& value) override;
 
   virtual std::shared_ptr<PdxInstanceFactory> writeByteArray(
       const std::string& fieldName, const std::vector<int8_t>& value) override;
@@ -138,7 +139,7 @@ class _GEODE_EXPORT PdxInstanceFactoryImpl
 
   PdxInstanceFactoryImpl(std::string className, CachePerfStats* cachePerfStats,
                          std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry,
-                         const Cache* cache, bool enableTimeStatistics);
+                         const CacheImpl* cache, bool enableTimeStatistics);
 
  private:
   bool m_created;
@@ -146,7 +147,7 @@ class _GEODE_EXPORT PdxInstanceFactoryImpl
   FieldVsValues m_FieldVsValues;
   CachePerfStats* m_cachePerfStats;
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
-  const Cache* m_cache;
+  const CacheImpl* m_cacheImpl;
   bool m_enableTimeStatistics;
   void isFieldAdded(const std::string& fieldName);
 };

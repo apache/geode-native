@@ -214,22 +214,12 @@ class _GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   PdxInstanceImpl(uint8_t* buffer, int length, int typeId,
                   CachePerfStats* cacheStats,
                   std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry,
-                  const Cache* cache, bool enableTimeStatistics)
-      : m_buffer(DataInput::getBufferCopy(buffer, length)),
-        m_bufferLength(length),
-        m_typeId(typeId),
-        m_pdxType(nullptr),
-        m_cacheStats(cacheStats),
-        m_pdxTypeRegistry(pdxTypeRegistry),
-        m_cache(cache),
-        m_enableTimeStatistics(enableTimeStatistics) {
-    LOGDEBUG("PdxInstanceImpl::m_bufferLength = %d ", m_bufferLength);
-  }
+                  const CacheImpl* cacheImpl, bool enableTimeStatistics);
 
   PdxInstanceImpl(FieldVsValues fieldVsValue, std::shared_ptr<PdxType> pdxType,
                   CachePerfStats* cacheStats,
                   std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry,
-                  const Cache* cache, bool enableTimeStatistics);
+                  const CacheImpl* cacheImpl, bool enableTimeStatistics);
 
   PdxInstanceImpl(const PdxInstanceImpl& other) = delete;
 
@@ -248,7 +238,7 @@ class _GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   CachePerfStats* m_cacheStats;
 
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
-  const Cache* m_cache;
+  const CacheImpl* m_cacheImpl;
   bool m_enableTimeStatistics;
 
   std::vector<std::shared_ptr<PdxFieldType>> getIdentityPdxFields(
