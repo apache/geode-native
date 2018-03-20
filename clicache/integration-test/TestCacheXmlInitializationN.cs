@@ -11,8 +11,6 @@ namespace Apache.Geode.Client.UnitTests
 {
     using NUnit.Framework;
     using Apache.Geode.DUnitFramework;
-    using System.Diagnostics;
-    using System.Threading.Tasks;
 
     [TestFixture]
     [Category("group3")]
@@ -20,12 +18,9 @@ namespace Apache.Geode.Client.UnitTests
     [Category("generics")]
     public class TestCacheXmlInitialization : ThinClientRegionSteps
     {
-        private UnitProcess _m_client1;
-
         protected override ClientBase[] GetClients()
         {
-            _m_client1 = new UnitProcess();
-            return new ClientBase[] { _m_client1 };
+            return new ClientBase[] { };
         }
 
         [TearDown]
@@ -60,17 +55,6 @@ namespace Apache.Geode.Client.UnitTests
             var region = CacheHelper.GetRegion<object, object>("DistRegionAck");
 
             Close();
-
-            CacheHelper.StopJavaServer(1);
-
-            CacheHelper.StopJavaLocator(1);
-        }
-
-        public void InitClientXml(string cacheXml, int serverport1, int serverport2)
-        {
-            CacheHelper.HOST_PORT_1 = serverport1;
-            CacheHelper.HOST_PORT_2 = serverport2;
-            CacheHelper.InitConfig(cacheXml);
         }
     }
 }
