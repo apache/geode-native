@@ -33,6 +33,11 @@ add_library(${PROJECT_NAME} STATIC
   XmlAuthzCredentialGenerator.hpp
 )
 
+target_include_directories(${PROJECT_NAME}
+  PRIVATE
+	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>
+)
+
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
     fwk
