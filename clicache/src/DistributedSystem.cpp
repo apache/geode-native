@@ -135,13 +135,13 @@ namespace Apache
         // TODO AppDomain should we be able to create a DS directly?
         _GF_MG_EXCEPTION_TRY2
 
-        auto nativeptr = native::DistributedSystem::create(marshal_as<std::string>(name),
+        auto nativeDistributedSystem = native::DistributedSystem::create(marshal_as<std::string>(name),
                                                            config->GetNative());
-        nativeptr->connect(cache->GetNative().get());
+        nativeDistributedSystem.connect(cache->GetNative().get());
 
         ManagedPostConnect(cache);
 
-        return gcnew DistributedSystem(std::move(nativeptr));
+        return gcnew DistributedSystem(nativeDistributedSystem);
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -153,8 +153,8 @@ namespace Apache
 
         Serializable::UnregisterNativesGeneric();
         DistributedSystem::UnregisterBuiltinManagedTypes(cache);
-        m_nativeptr->get()->disconnect();
-        GC::KeepAlive(m_nativeptr);
+        m_nativeDistributedSystem->get()->disconnect();
+        GC::KeepAlive(m_nativeDistributedSystem);
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -439,7 +439,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
 
           return Apache::Geode::Client::SystemProperties::Create(
-          &(m_nativeptr->get()->getSystemProperties()));
+          &(m_nativeDistributedSystem->get()->getSystemProperties()));
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -448,11 +448,11 @@ namespace Apache
       {
         try
         {
-          return marshal_as<String^>(m_nativeptr->get()->getName().c_str());
+          return marshal_as<String^>(m_nativeDistributedSystem->get()->getName().c_str());
         }
         finally
         {
-          GC::KeepAlive(m_nativeptr);
+          GC::KeepAlive(m_nativeDistributedSystem);
         }
       }
 
@@ -470,14 +470,15 @@ namespace Apache
         return instance;
       }
 
-      DistributedSystem::DistributedSystem(std::unique_ptr<native::DistributedSystem> nativeptr)
+      DistributedSystem::DistributedSystem(native::DistributedSystem nativeDistributedSystem)
       {
-        m_nativeptr = gcnew native_conditional_unique_ptr<native::DistributedSystem>(std::move(nativeptr));
+        native::DistributedSystem* nativeptr = new native::DistributedSystem(nativeDistributedSystem);
+        m_nativeDistributedSystem = gcnew native_conditional_unique_ptr<native::DistributedSystem>(nativeptr);
       }
 
-      DistributedSystem::DistributedSystem(native::DistributedSystem* nativeptr)
+      DistributedSystem::DistributedSystem(native::DistributedSystem* nativeDistributedSystem)
       {
-        m_nativeptr = gcnew native_conditional_unique_ptr<native::DistributedSystem>(nativeptr);
+        m_nativeDistributedSystem = gcnew native_conditional_unique_ptr<native::DistributedSystem>(nativeDistributedSystem);
       }
 
       DistributedSystem::~DistributedSystem()

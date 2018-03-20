@@ -142,7 +142,7 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
    * Returns the distributed system that this cache was
    * {@link CacheFactory::create created} with.
    */
-  DistributedSystem& getDistributedSystem() const;
+  DistributedSystem& getDistributedSystem();
 
   /**
    * Terminates this object cache and releases all the local resources.
@@ -214,7 +214,7 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   /**
    * @brief constructors
    */
-  CacheImpl(Cache* c, std::unique_ptr<DistributedSystem> sys,
+  CacheImpl(Cache* c, DistributedSystem distributedSystem,
             bool ignorePdxUnreadFields, bool readPdxSerialized,
             const std::shared_ptr<AuthInitialize>& authInitialize);
 
@@ -268,7 +268,9 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   }
 
   void setPdxReadSerialized(bool val) { m_readPdxSerialized = val; }
+
   bool getPdxReadSerialized() { return m_readPdxSerialized; }
+
   bool isCacheDestroyPending() const;
 
   static std::map<std::string, RegionAttributes> getRegionShortcut();
@@ -337,7 +339,7 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   bool m_closed;
   bool m_initialized;
 
-  std::unique_ptr<DistributedSystem> m_distributedSystem;
+  DistributedSystem m_distributedSystem;
   ClientProxyMembershipIDFactory m_clientProxyMembershipIDFactory;
   MapOfRegionWithLock* m_regions;
   Cache* m_cache;

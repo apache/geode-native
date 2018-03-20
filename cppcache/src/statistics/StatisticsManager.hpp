@@ -71,6 +71,8 @@ class StatisticsManager {
                     CacheImpl* cache, const char* durableClientId,
                     const std::chrono::seconds durableTimeout,
                     int64_t statFileLimit = 0, int64_t statDiskSpaceLimit = 0);
+  StatisticsManager(const StatisticsManager& statisticsManager) = default;
+  StatisticsManager& operator=(const StatisticsManager&) = default;
 
   void RegisterAdminRegion(std::shared_ptr<AdminRegion> adminRegPtr) {
     m_adminRegion = adminRegPtr;

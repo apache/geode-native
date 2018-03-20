@@ -122,7 +122,7 @@ namespace Apache
         /// </returns>
         static DistributedSystem^ Create(native::DistributedSystem* nativeptr);
 
-        DistributedSystem(std::unique_ptr<native::DistributedSystem> nativeptr);
+        DistributedSystem(native::DistributedSystem nativeDistributedSystem);
 
         delegate void cliCallback(apache::geode::client::Cache& cache);
 
@@ -147,7 +147,7 @@ namespace Apache
 
         native::DistributedSystem& GetNative()
         {
-          return *(m_nativeptr->get());
+          return *(m_nativeDistributedSystem->get());
         }
 
       private:
@@ -169,7 +169,7 @@ namespace Apache
         /// </summary>
         ~DistributedSystem();
 
-        native_conditional_unique_ptr<native::DistributedSystem>^ m_nativeptr;
+        native_conditional_unique_ptr<native::DistributedSystem>^ m_nativeDistributedSystem;
 
 
         /// <summary>

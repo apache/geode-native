@@ -29,9 +29,8 @@ std::map<int, CliCallbackMethod> DistributedSystemImpl::m_cliCallbackMap;
 ACE_Recursive_Thread_Mutex DistributedSystemImpl::m_cliCallbackLock;
 
 DistributedSystemImpl::DistributedSystemImpl(const char* name,
-                                             DistributedSystem* implementee)
-    : m_name(name == 0 ? "" : name), m_implementee(implementee) {
-}
+                                             DistributedSystem implementee)
+    : m_name(name == nullptr ? "" : name), m_implementee(implementee) {}
 
 DistributedSystemImpl::~DistributedSystemImpl() {
   LOGFINE("Destroyed DistributedSystemImpl");
@@ -46,10 +45,8 @@ void DistributedSystemImpl::disconnect() {
 void DistributedSystemImpl::CallCliCallBack(Cache& cache) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(m_cliCallbackLock);
   if (m_isCliCallbackSet == true) {
-    for (std::map<int, CliCallbackMethod>::iterator iter =
-             m_cliCallbackMap.begin();
-         iter != m_cliCallbackMap.end(); ++iter) {
-      (*iter).second(cache);
+    for (auto& iter : m_cliCallbackMap) {
+      iter.second(cache);
     }
   }
 }
@@ -63,8 +60,7 @@ void DistributedSystemImpl::registerCliCallback(int appdomainId,
 
 void DistributedSystemImpl::unregisterCliCallback(int appdomainId) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(m_cliCallbackLock);
-  std::map<int, CliCallbackMethod>::iterator iter =
-      m_cliCallbackMap.find(appdomainId);
+  auto iter = m_cliCallbackMap.find(appdomainId);
   if (iter != m_cliCallbackMap.end()) {
     m_cliCallbackMap.erase(iter);
     LOGFINE("Removing cliCallback %d", appdomainId);

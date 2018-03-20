@@ -56,6 +56,11 @@ class _GEODE_EXPORT DistributedSystem {
    * @brief public methods
    */
  public:
+  DistributedSystem(const DistributedSystem&) = default;
+  DistributedSystem& operator=(const DistributedSystem&) = default;
+  DistributedSystem(DistributedSystem&&) = default;
+  DistributedSystem& operator=(DistributedSystem&&) = default;
+
   /**
    * Initializes the Native Client system to be able to connect to the
    * Geode Java servers. If the name string is empty, then the default
@@ -63,8 +68,9 @@ class _GEODE_EXPORT DistributedSystem {
    * @throws IllegalStateException if GFCPP variable is not set and
    *   product installation directory cannot be determined
    **/
-  static std::unique_ptr<DistributedSystem> create(
-      const std::string& name, const std::shared_ptr<Properties>& configPtr = nullptr);
+  static DistributedSystem create(
+      const std::string& name,
+      const std::shared_ptr<Properties>& configPtr = nullptr);
 
   /**
    * @brief connects from the distributed system
@@ -96,7 +102,7 @@ class _GEODE_EXPORT DistributedSystem {
   /**
    * @brief destructor
    */
-  virtual ~DistributedSystem();
+  virtual ~DistributedSystem() = default;
 
  protected:
   /**
@@ -108,16 +114,13 @@ class _GEODE_EXPORT DistributedSystem {
  private:
   std::string m_name;
   bool m_connected;
-  std::unique_ptr<statistics::StatisticsManager> m_statisticsManager;
-  std::unique_ptr<SystemProperties> m_sysProps;
+  std::shared_ptr<statistics::StatisticsManager> m_statisticsManager;
+  std::shared_ptr<SystemProperties> m_sysProps;
 
  public:
   DistributedSystemImpl* m_impl;
 
  private:
-  DistributedSystem(const DistributedSystem&);
-  const DistributedSystem& operator=(const DistributedSystem&);
-
   void logSystemInformation() const;
 
   friend class CacheRegionHelper;

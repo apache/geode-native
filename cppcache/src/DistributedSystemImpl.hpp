@@ -84,16 +84,17 @@ class _GEODE_EXPORT DistributedSystemImpl {
 
   /** Retrieve the MemberId used to create this Cache. */
   virtual void disconnect();
-  virtual void connect();
-  std::string m_name;
-  DistributedSystem* m_implementee;
 
+  virtual void connect();
+
+  std::string m_name;
+  DistributedSystem m_implementee;
   DiffieHellman m_dh;
 
   /**
    * @brief constructors
    */
-  DistributedSystemImpl(const char* name, DistributedSystem* implementee);
+  DistributedSystemImpl(const char* name, DistributedSystem implementee);
 
   // acquire/release locks
 

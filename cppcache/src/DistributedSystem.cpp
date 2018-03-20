@@ -47,9 +47,8 @@ namespace client {
 
 using namespace apache::geode::statistics;
 
-DistributedSystem::DistributedSystem(
-    const std::string& name,
-    std::unique_ptr<SystemProperties> sysProps)
+DistributedSystem::DistributedSystem(const std::string& name,
+                                     std::unique_ptr<SystemProperties> sysProps)
     : m_name(name),
       m_statisticsManager(nullptr),
       m_sysProps(std::move(sysProps)),
@@ -59,11 +58,10 @@ DistributedSystem::DistributedSystem(
     DiffieHellman::initOpenSSLFuncPtrs();
   }
 }
-DistributedSystem::~DistributedSystem() {}
 
 void DistributedSystem::logSystemInformation() const {
-  std::string gfcpp = CppCacheLibrary::getProductDir();
-  LOGCONFIG("Using Geode Native Client Product Directory: %s", gfcpp.c_str());
+  std::string productDir = CppCacheLibrary::getProductDir();
+  LOGCONFIG("Using Geode Native Client Product Directory: " + productDir);
 
   // Add version information, source revision, current directory etc.
   LOGCONFIG("Product version: %s",
@@ -96,7 +94,7 @@ void DistributedSystem::logSystemInformation() const {
   m_sysProps->logSettings();
 }
 
-std::unique_ptr<DistributedSystem> DistributedSystem::create(
+DistributedSystem DistributedSystem::create(
     const std::string& _name, const std::shared_ptr<Properties>& configPtr) {
   // TODO global - Refactory out the static initialization
   // Trigger other library initialization.
@@ -133,7 +131,7 @@ std::unique_ptr<DistributedSystem> DistributedSystem::create(
   }
 
   try {
-    std::string gfcpp = CppCacheLibrary::getProductDir();
+    CppCacheLibrary::getProductDir();
   } catch (const Exception&) {
     LOGERROR(
         "Unable to determine Product Directory. Please set the "
@@ -141,15 +139,12 @@ std::unique_ptr<DistributedSystem> DistributedSystem::create(
     throw;
   }
 
-  auto distributedSystem = std::unique_ptr<DistributedSystem>(
-      new DistributedSystem(name,  std::move(sysProps)));
-  if (!distributedSystem) {
-    throw NullPointerException("DistributedSystem::connect: new failed");
-  }
-  distributedSystem->m_impl =
-      new DistributedSystemImpl(name.c_str(), distributedSystem.get());
+  auto distributedSystem = DistributedSystem(name, std::move(sysProps));
 
-  distributedSystem->logSystemInformation();
+  distributedSystem.m_impl =
+      new DistributedSystemImpl(name.c_str(), distributedSystem);
+
+  distributedSystem.logSystemInformation();
   LOGCONFIG("Starting the Geode Native Client");
   return distributedSystem;
 }
@@ -167,12 +162,12 @@ void DistributedSystem::connect(Cache* cache) {
     LOGERROR("Exception caught during client initialization: %s", e.what());
     std::string msg = "DistributedSystem::connect: caught exception: ";
     msg.append(e.what());
-    throw NotConnectedException(msg.c_str());
+    throw NotConnectedException(msg);
   } catch (const std::exception& e) {
     LOGERROR("Exception caught during client initialization: %s", e.what());
     std::string msg = "DistributedSystem::connect: caught exception: ";
     msg.append(e.what());
-    throw NotConnectedException(msg.c_str());
+    throw NotConnectedException(msg);
   } catch (...) {
     LOGERROR("Unknown exception caught during client initialization");
     throw NotConnectedException(
@@ -191,8 +186,7 @@ void DistributedSystem::connect(Cache* cache) {
             m_sysProps->statsDiskSpaceLimit()));
     cacheImpl->m_cacheStats =
         new CachePerfStats(getStatisticsManager()->getStatisticsFactory());
-  }
-  catch (const NullPointerException&) {
+  } catch (const NullPointerException&) {
     Log::close();
     throw;
   }
