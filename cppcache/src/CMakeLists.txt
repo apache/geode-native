@@ -73,6 +73,7 @@ if (${WIN32})
 endif()
 
 target_link_libraries(_apache-geode INTERFACE
+  c++11
   ACE
   boost
   libxml2
