@@ -26,7 +26,7 @@ ProcessorCount(_NPROCS)
 
 include(ExternalProject)
 
-set( _B2_FLAGS -d0 --prefix=<INSTALL_DIR> --with-system address-model=${BUILD_BITS} link=static )
+set( _B2_FLAGS -d0 --prefix=<INSTALL_DIR> --with-system --with-log address-model=${BUILD_BITS} link=static threading=multi)
 
 if (${_NPROCS})
   set ( _B2_FLAGS ${_B2_FLAGS} -j${_NPROCS} )
@@ -92,5 +92,27 @@ target_compile_definitions(${PROJECT_NAME} INTERFACE
 )
 target_link_libraries(${PROJECT_NAME} INTERFACE
 )
-
+add_library(Boost::boost ALIAS boost)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXTERN})
+
+add_library(boost_system INTERFACE)
+target_link_libraries(boost_system INTERFACE
+  ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_system${CMAKE_STATIC_LIBRARY_SUFFIX}
+)
+add_library(Boost::system ALIAS boost_system)
+
+add_library(boost_thread INTERFACE)
+target_link_libraries(boost_thread INTERFACE
+  Boost::boost
+  ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_thread${CMAKE_STATIC_LIBRARY_SUFFIX}
+)
+add_library(Boost::thread ALIAS boost_thread)
+
+add_library(boost_log INTERFACE)
+target_link_libraries(boost_log INTERFACE
+  Boost::boost
+  Boost::thread
+  ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_log${CMAKE_STATIC_LIBRARY_SUFFIX}
+  ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_log_setup${CMAKE_STATIC_LIBRARY_SUFFIX}
+)
+add_library(Boost::log ALIAS boost_log)

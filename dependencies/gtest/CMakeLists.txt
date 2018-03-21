@@ -40,8 +40,8 @@ set( gmock_SOURCE_DIR ${SOURCE_DIR}/googlemock )
 ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} INSTALL_DIR )
 set( ${PROJECT_NAME}_INSTALL_DIR ${INSTALL_DIR} )
 ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} BINARY_DIR )
-set( ${PROJECT_NAME}_BINARY_DIR ${BINARY_DIR}/googlemock/gtest//${_DEBUG_OR_RELEASE} )
-set( gmock_BINARY_DIR ${BINARY_DIR}/googlemock//${_DEBUG_OR_RELEASE} )
+set( ${PROJECT_NAME}_BINARY_DIR ${BINARY_DIR}/googlemock/gtest )
+set( gmock_BINARY_DIR ${BINARY_DIR}/googlemock )
 set( DEPENDENCIES_${PROJECT_NAME}_DIR ${${PROJECT_NAME}_BINARY_DIR} PARENT_SCOPE)
 
 set( ${PROJECT_NAME}_STATIC_LIB
@@ -70,3 +70,6 @@ target_link_libraries(${PROJECT_NAME}_main INTERFACE
   ${${PROJECT_NAME}_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${PROJECT_NAME}_main${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
 add_dependencies(${PROJECT_NAME}_main ${${PROJECT_NAME}_EXTERN})
+
+add_library(GTest::GTest ALIAS ${PROJECT_NAME})
+add_library(GTest::Main ALIAS ${PROJECT_NAME}_main)
