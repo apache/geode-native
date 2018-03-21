@@ -12,27 +12,76 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required(VERSION 3.4)
-project(nativeclient.tests.fwklib)
 
-file(GLOB_RECURSE SOURCES "*.cpp")
+cmake_minimum_required(VERSION 3.10)
+project(framework)
 
-add_library(framework STATIC ${SOURCES})
-set_target_properties(framework PROPERTIES FOLDER test)
+add_library(${PROJECT_NAME} STATIC 
+  ClientTask.hpp
+  FrameworkTest.cpp
+  FrameworkTest.hpp
+  FwkBB.hpp
+  FwkBBClient.cpp
+  FwkBBClient.hpp
+  FwkBBServer.cpp
+  FwkBBServer.hpp
+  FwkException.hpp
+  FwkExport.hpp
+  FwkLog.cpp
+  FwkLog.hpp
+  FwkObjects.cpp
+  FwkObjects.hpp
+  FwkStrCvt.cpp
+  FwkStrCvt.hpp
+  GsRandom.cpp
+  GsRandom.hpp
+  IpcHandler.cpp
+  IpcHandler.hpp
+  PaceMeter.hpp
+  PerfFwk.cpp
+  PerfFwk.hpp
+  PoolHelper.hpp
+  QueryHelper.hpp
+  RegionHelper.hpp
+  Service.cpp
+  Service.hpp
+  TaskClient.cpp
+  TaskClient.hpp
+  TcpIpc.cpp
+  TcpIpc.hpp
+  TestClient.cpp
+  TestClient.hpp
+  TimeBomb.cpp
+  TimeBomb.hpp
+  TimeLimit.hpp
+  Timer.hpp
+  TimeSync.cpp
+  TimeSync.hpp
+  UDPIpc.cpp
+  UDPIpc.hpp
+)
 
-target_link_libraries(framework
+target_compile_options(${PROJECT_NAME}
   PRIVATE
-    ACE
+    # Add PIC flags to link later with shared library
+    ${CMAKE_CXX_COMPILE_OPTIONS_PIC}
+)
+
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+    # headers for this library are referenced relative to the parent
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+  PRIVATE
+  	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
+)
+
+target_link_libraries(${PROJECT_NAME}
   PUBLIC 
     apache-geode
     xerces-c
-)
-target_include_directories(framework PRIVATE
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cppcache/src>
+  PRIVATE
+    ACE
 )
 
-# Add PIC flags to link later with shared library
-add_definitions(${CMAKE_CXX_COMPILE_OPTIONS_PIC})
-
-#TODO very bad we include root of tests
-include_directories(${CMAKE_SOURCE_DIR}/tests/cpp)
+# For Visual Studio organization
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER test)

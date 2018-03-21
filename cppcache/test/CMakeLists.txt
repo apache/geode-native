@@ -12,59 +12,69 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required( VERSION 3.3 )
+
+cmake_minimum_required( VERSION 3.10 )
 project(apache-geode_unittests)
 
 file(GLOB_RECURSE SOURCES "*.cpp")
 
-set(UNITTEST apache-geode_unittests)
-add_executable(${UNITTEST} ${SOURCES})
-add_dependencies(unit-tests ${UNITTEST})
-
-target_link_libraries(${UNITTEST}
-  apache-geode-static
-  gtest
-  gtest_main
-  boost
-  c++11
+add_executable(${PROJECT_NAME} 
+  AutoDeleteTest.cpp
+  ByteArray.cpp
+  ByteArray.hpp
+  ByteArrayFixture.cpp
+  ByteArrayFixture.hpp
+  ByteArrayTest.cpp
+  CacheableKeyCreateTests.cpp
+  CacheableKeysTest.cpp
+  CacheableStringEqualityTest.cpp
+  CacheableStringTests.cpp
+  CacheXmlParserTest.cpp
+  ClientConnectionResponseTest.cpp
+  ClientProxyMembershipIDFactoryTest.cpp
+  DataInputTest.cpp
+  DataOutputTest.cpp
+  ExceptionTypesTest.cpp
+  geodeBannerTest.cpp
+  gtest_extensions.h
+  InterestResultPolicyTest.cpp
+  RegionAttributesFactoryTest.cpp
+  SerializableCreateTests.cpp
+  StructSetTest.cpp
+  TcrMessage_unittest.cpp
 )
-target_include_directories(${UNITTEST} PRIVATE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../src>
-)
-
-enable_testing()
-
-# Function to resolve both config and generate stage variables.
-macro(generate_config INPUT TEMP OUTPUT)
-  configure_file(${INPUT} ${TEMP})
-  file(GENERATE OUTPUT ${OUTPUT} INPUT ${TEMP} CONDITION 1)
-endmacro()
-
-if (WIN32)
-  set (UNITTEST_SCRIPT_SUFFIX .bat)
-  generate_config(${CMAKE_CURRENT_SOURCE_DIR}/${UNITTEST}.bat.in ${CMAKE_CURRENT_BINARY_DIR}/.${UNITTEST}.bat.in $<TARGET_FILE:${UNITTEST}>${UNITTEST_SCRIPT_SUFFIX})
-
-  set(UNITTEST_COMMAND $<TARGET_FILE:${UNITTEST}>${UNITTEST_SCRIPT_SUFFIX})
-else()
-  set (UNITTEST_SCRIPT_SUFFIX .sh)
-  generate_config(${CMAKE_CURRENT_SOURCE_DIR}/${UNITTEST}.sh.in ${CMAKE_CURRENT_BINARY_DIR}/.${UNITTEST}.sh.in $<TARGET_FILE:${UNITTEST}>${UNITTEST_SCRIPT_SUFFIX})
-
-  # TODO fix file permissions on .sh
-  set(UNITTEST_COMMAND bash $<TARGET_FILE:${UNITTEST}>${UNITTEST_SCRIPT_SUFFIX})
-endif()
-
-add_test(NAME ${UNITTEST} COMMAND ${UNITTEST_COMMAND})
 
 if (MSVC)
-  target_compile_options(${UNITTEST} PRIVATE "/MD$<$<CONFIG:Debug>:d>")
+  target_compile_options(${PROJECT_NAME} PRIVATE "/MD$<$<CONFIG:Debug>:d>")
 endif()
 
-add_custom_target(run-cppcache-unit-tests
-  COMMAND ctest -C $<CONFIGURATION> ${CTEST_UNITTEST_VERBOSITY}
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  USES_TERMINAL)
-add_dependencies(run-unit-tests run-cppcache-unit-tests)
-set_target_properties(run-cppcache-unit-tests PROPERTIES
-    EXCLUDE_FROM_ALL TRUE
-    EXCLUDE_FROM_DEFAULT_BUILD TRUE
+target_link_libraries(${PROJECT_NAME}
+  PRIVATE
+    apache-geode-static
+    gtest
+    gtest_main
+    boost
 )
+
+target_include_directories(${PROJECT_NAME}
+  PRIVATE
+    $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
+)
+
+add_dependencies(unit-tests ${PROJECT_NAME})
+
+
+enable_testing()
+add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+
+
+add_custom_target(run-cppcache-unit-tests
+  COMMAND ctest -C $<CONFIGURATION> ${CTEST_${PROJECT_NAME}_VERBOSITY}
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  USES_TERMINAL
+)
+set_target_properties(run-cppcache-unit-tests PROPERTIES
+  EXCLUDE_FROM_ALL TRUE
+  EXCLUDE_FROM_DEFAULT_BUILD TRUE
+)
+add_dependencies(run-unit-tests run-cppcache-unit-tests)

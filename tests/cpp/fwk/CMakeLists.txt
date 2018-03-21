@@ -12,24 +12,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required(VERSION 3.4)
-project(nativeclient.tests.fwk)
 
-file(GLOB_RECURSE SOURCES "*.cpp")
+cmake_minimum_required(VERSION 3.10)
+project(fwk)
 
-add_library(fwk SHARED ${SOURCES})
-set_target_properties(fwk PROPERTIES FOLDER test)
+add_library(${PROJECT_NAME} SHARED 
+  UdpIpc.cpp
+  UdpIpc.hpp
+)
 
-target_link_libraries(fwk
+target_include_directories(${PROJECT_NAME}
   PRIVATE
-    ACE
+  	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
+)
+
+target_link_libraries(${PROJECT_NAME}
   PUBLIC 
     framework
-    c++11
-)
-target_include_directories(fwk PRIVATE
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cppcache/src>
+  PRIVATE
+    ACE
 )
 
-#TODO very bad we include root of tests
-include_directories(${CMAKE_SOURCE_DIR}/tests/cpp)
+# For Visual Studio organization
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER test)

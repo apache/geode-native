@@ -16,7 +16,13 @@
 cmake_minimum_required(VERSION 3.10)
 project(nativeclient)
 
+option(USE_PCH "Use precompiled headers (PCH)." OFF)
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
+if (USE_PCH)
+  include(cotire)
+endif()
 
 if(CMAKE_GENERATOR MATCHES Win64*)
 
@@ -151,6 +157,15 @@ endif()
 #TODO remove this debugging for NMake
 set(CMAKE_VERBOSE_MAKEFILE 0)
 
+# Interface for C++/CLI language.
+add_library(c++cli INTERFACE)
+target_compile_options(c++cli
+  INTERFACE
+    /clr
+	/EHa
+)
+
+# Interface for C++11 language
 add_library(c++11 INTERFACE)
 
 
