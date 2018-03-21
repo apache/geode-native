@@ -16,9 +16,13 @@
 cmake_minimum_required(VERSION 3.10)
 project(nativeclient)
 
+option(USE_PCH "Use precompiled headers (PCH)." OFF)
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-include(cotire)
+if (USE_PCH)
+  include(cotire)
+endif()
 
 if(CMAKE_GENERATOR MATCHES Win64*)
 
