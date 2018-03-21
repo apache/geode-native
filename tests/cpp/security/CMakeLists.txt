@@ -35,7 +35,7 @@ add_library(${PROJECT_NAME} STATIC
 
 target_include_directories(${PROJECT_NAME}
   PRIVATE
-	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>
+	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
 target_link_libraries(${PROJECT_NAME}
