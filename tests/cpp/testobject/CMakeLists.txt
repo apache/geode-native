@@ -12,25 +12,73 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required(VERSION 3.4)
-project(nativeclient.tests.testobject)
 
-file(GLOB_RECURSE SOURCES "*.cpp")
+cmake_minimum_required(VERSION 3.10)
+project(testobject)
 
-add_definitions(-DBUILD_TESTOBJECT)
+add_library(${PROJECT_NAME} SHARED 
+  ArrayOfByte.hpp
+  BatchObject.cpp
+  BatchObject.hpp
+  DeltaFastAssetAccount.cpp
+  DeltaFastAssetAccount.hpp
+  DeltaPSTObject.cpp
+  DeltaPSTObject.hpp
+  DeltaTestImpl.cpp
+  DeltaTestImpl.hpp
+  DeltaTestObj.hpp
+  EqStruct.cpp
+  EqStruct.hpp
+  FastAsset.cpp
+  FastAsset.hpp
+  FastAssetAccount.cpp
+  FastAssetAccount.hpp
+  InvalidPdxUsage.cpp
+  InvalidPdxUsage.hpp
+  NestedPdxObject.cpp
+  NestedPdxObject.hpp
+  NonPdxType.cpp
+  NonPdxType.hpp
+  NoopAuthInit.cpp
+  NoopAuthInit.hpp
+  PdxClassV1.cpp
+  PdxClassV1.hpp
+  PdxClassV2.cpp
+  PdxClassV2.hpp
+  PdxType.cpp
+  PdxType.hpp
+  PdxVersioned1.cpp
+  PdxVersioned1.hpp
+  PdxVersioned2.cpp
+  PdxVersioned2.hpp
+  Portfolio.cpp
+  Portfolio.hpp
+  PortfolioPdx.cpp
+  PortfolioPdx.hpp
+  Position.cpp
+  Position.hpp
+  PositionPdx.cpp
+  PositionPdx.hpp
+  PSTObject.cpp
+  PSTObject.hpp
+  TestObject1.cpp
+  TestObject1.hpp
+  TimestampedObject.hpp
+  VariousPdxTypes.cpp
+  VariousPdxTypes.hpp
+)
 
-if (APPLE)
-    set(DYNAMIC_LIBRARY_PATH DYLD_LIBRARY_PATH=$<TARGET_LINKER_FILE_DIR:apache-geode>)
-elseif(UNIX)
-    set(DYNAMIC_LIBRARY_PATH LD_LIBRARY_PATH=$<TARGET_LINKER_FILE_DIR:apache-geode>)
-endif()
+target_compile_definitions(${PROJECT_NAME}
+  PRIVATE
+    -DBUILD_TESTOBJECT
+)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME}
+  PRIVATE
+	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>
+)
 
-add_library(testobject SHARED ${SOURCES})
-set_target_properties(testobject PROPERTIES FOLDER test)
-
-target_link_libraries(testobject
+target_link_libraries(${PROJECT_NAME}
   PUBLIC 
     apache-geode
     fwk
@@ -38,10 +86,6 @@ target_link_libraries(testobject
   PRIVATE
     ACE
 )
-target_include_directories(testobject PRIVATE
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cppcache/src>
-)
 
-
-#TODO very bad we include root of tests
-include_directories(${CMAKE_SOURCE_DIR}/tests/cpp)
+# For Visual Studio organization
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER test)

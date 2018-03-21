@@ -12,31 +12,44 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required(VERSION 3.4)
+
+cmake_minimum_required(VERSION 3.10)
 project(PkcsWrapper)
 
-file(GLOB_RECURSE SOURCES "*.cpp")
+add_library(${PROJECT_NAME} SHARED 
+  PkcsAuthInitMN.cpp
+  PkcsAuthInitMN.hpp
+)
 
-add_library(PkcsWrapper SHARED ${SOURCES})
+target_compile_options(${PROJECT_NAME}
+  PRIVATE
+	# disabled warnings
+	/wd4947
+)
 
-target_link_libraries(PkcsWrapper
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  VS_GLOBAL_CLRSupport "true"
+  VS_GLOBAL_KEYWORD "ManagedCProj"
+  VS_GLOBAL_PROJECT_TYPES "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
+  VS_GLOBAL_ROOTNAMESPACE "Apache.Geode.Client.Tests"
+  VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
+  VS_DOTNET_REFERENCES "System;System.Xml"
+)
+
+target_link_libraries(${PROJECT_NAME}
   PUBLIC 
     Apache.Geode
-    c++11
   PRIVATE
+	c++cli
+    c++11
     security
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/clicache/src)
 include_directories(${CMAKE_SOURCE_DIR}/tests/cpp/security)
 
-set_target_properties(PkcsWrapper PROPERTIES FOLDER test/cliTests)
-
-set( DOT_NET_FRAMEWORK "C:/Program Files (x86)/Reference Assemblies/Microsoft/Framework/.NETFramework/v4.0")
-set( ASM_PATH ${ASM_PATH} "/FU ${DOT_NET_FRAMEWORK}/System.dll")
-set( ASM_PATH ${ASM_PATH} "/FU ${DOT_NET_FRAMEWORK}/System.Xml.dll")
-target_compile_options(PkcsWrapper PRIVATE ${ASM_PATH})
-string(REPLACE "/EHsc" "/EHa" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /clr /wd4947")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SHARED_LINKER_FLAGS_STRONG_KEY}")
+
+# For Visual Studio organization
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER test/cliTests)

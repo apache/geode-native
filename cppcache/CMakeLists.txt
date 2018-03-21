@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.10)
 project(cppcache)
 
 set(COMMON_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -37,28 +37,14 @@ list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/version.cmake)
 configure_file(${COMMON_SOURCE_DIR}/version.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/version.cmake @ONLY)
 
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-add_custom_command(OUTPUT version.h
-  COMMAND ${CMAKE_COMMAND} -P version.cmake
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}version.h
+  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/version.cmake
   DEPENDS ${CMAKE_SOURCE_DIR}/.git/index ${CMAKE_CURRENT_BINARY_DIR}/version.cmake
   MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/.git/index
-  )
+)
 # adds named target for version.h to avoid parallel generation under windows
 add_custom_target(version-header DEPENDS version.h)
 
-# TODO checks
-include(CheckIncludeFiles)
-check_include_files("sys/param.h;sys/mount.h" HAVE_SYS_MOUNT_H)
-
-include(CheckSymbolExists)
-check_symbol_exists(SIGSTKFLT "signal.h" HAVE_SIGSTKFLT)
-check_symbol_exists(SIGPWR "signal.h" HAVE_SIGPWR)
-
-include(CheckCXXSymbolExists)
-#TODO how can we do this, ACE not built yet
-#check_cxx_symbol_exists(ACE::ACE_Select_Reactor "ace/config.h;ace/Select_Reactor.h" HAVE_ACE_Select_Reactor)
-#check_cxx_symbol_exists(ACE::ACE_Dev_Poll_Reactor "ace/config.h;ace/Dev_Poll_Reactor.h" HAVE_ACE_Dev_Poll_Reactor)
-
-#TODO cmake collides with gf_globals.hpp
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   set( _SOLARIS 1 )
 elseif ("Linux" STREQUAL ${CMAKE_SYSTEM_NAME} )
@@ -73,7 +59,6 @@ list(APPEND CONFIGURE_IN_FILES ${COMMON_SOURCE_DIR}/config.h.in)
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 configure_file(${COMMON_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-#set_source_files_properties(${CONFIGURE_IN_FILES} PROPERTIES LANGUAGE NONE)
 set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)
 
 set(SOURCES_ALL ${SOURCES} ${PRIVATE_HEADERS} ${PUBLIC_HEADERS} ${CONFIGURE_IN_FILES} ${CONFIGURE_OUT_FILES})
