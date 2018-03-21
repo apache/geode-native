@@ -37,7 +37,7 @@ list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/version.cmake)
 configure_file(${COMMON_SOURCE_DIR}/version.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/version.cmake @ONLY)
 
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}version.h
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/version.h
   COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/version.cmake
   DEPENDS ${CMAKE_SOURCE_DIR}/.git/index ${CMAKE_CURRENT_BINARY_DIR}/version.cmake
   MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/.git/index
