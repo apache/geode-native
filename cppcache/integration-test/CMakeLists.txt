@@ -31,7 +31,7 @@ target_compile_definitions(${TEST_UTILS_LIB}
 )
 target_include_directories(${TEST_UTILS_LIB}
   PRIVATE
-    $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>
+    $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
 add_library(unit_test_callbacks SHARED LibraryCallbacks.cpp)
@@ -43,7 +43,7 @@ target_link_libraries(unit_test_callbacks
 )
 target_include_directories(unit_test_callbacks
   PRIVATE
-    $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>
+    $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
 enable_testing()
@@ -85,7 +85,7 @@ foreach(FILE ${SOURCES})
       fwk
   )
   target_include_directories(${TEST} PRIVATE
-    $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>
+    $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
   )
 
   # Some tests depend on these library

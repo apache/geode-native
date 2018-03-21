@@ -72,7 +72,7 @@ target_include_directories(${PROJECT_NAME}
     # headers for this library are referenced relative to the parent
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
   PRIVATE
-  	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>
+  	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
 target_link_libraries(${PROJECT_NAME}
