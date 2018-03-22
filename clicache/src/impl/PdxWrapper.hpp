@@ -23,6 +23,7 @@
 #include "../IPdxSerializer.hpp"
 #include "../Serializable.hpp"
 #include "../Cache.hpp"
+#include "../TypeRegistry.hpp"
 
 namespace Apache
 {

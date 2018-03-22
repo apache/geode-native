@@ -258,7 +258,7 @@ namespace Apache
       {        
         std::shared_ptr<apache::geode::client::Serializable> sPtr = 
             CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetPDXTypeById(cache->GetNative()->getPoolManager().find(marshal_as<std::string>(poolName)), typeId);
-        return SafeUMSerializableConvertGeneric(sPtr, cache);
+        return SafeUMSerializableConvertGeneric(sPtr);
       }
 
       int Serializable::GetEnumValue(Internal::EnumInfo^ ei, Cache^ cache)
@@ -270,7 +270,7 @@ namespace Apache
       Internal::EnumInfo^ Serializable::GetEnum(int val, Cache^ cache)
       {
         std::shared_ptr<apache::geode::client::Serializable> sPtr = CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetEnum(cache->GetNative()->getPoolManager().getAll().begin()->second, val);
-        return (Internal::EnumInfo^)SafeUMSerializableConvertGeneric(sPtr, cache);
+        return (Internal::EnumInfo^)SafeUMSerializableConvertGeneric(sPtr);
       }
 
       Object^ Serializable::CreateObject(String^ className, Type^ type)
@@ -440,7 +440,7 @@ namespace Apache
       std::shared_ptr<native::CacheableKey> Serializable::GetUnmanagedValueGeneric(
         Type^ managedType, TKey key, bool isAsciiChar)
       {
-        Byte typeId = Apache::Geode::Client::Serializable::GetManagedTypeMappingGeneric(managedType);
+        Byte typeId = Apache::Geode::Client::TypeRegistry::GetManagedTypeMappingGeneric(managedType);
 
         switch (typeId)
         {

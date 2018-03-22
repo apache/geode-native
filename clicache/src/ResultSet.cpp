@@ -62,7 +62,7 @@ namespace Apache
       {
         try
         {
-          return (Serializable::GetManagedValueGeneric<TResult>(m_nativeptr->get()->operator[](static_cast<System::Int32>(index))));
+          return (TypeRegistry::GetManagedValueGeneric<TResult>(m_nativeptr->get()->operator[](static_cast<System::Int32>(index))));
         }
         finally
         {

@@ -40,28 +40,28 @@ namespace Apache
       TKey EntryEvent<TKey, TValue>::Key::get( )
       {
         std::shared_ptr<apache::geode::client::CacheableKey>& keyptr( m_nativeptr->getKey( ) );
-        return Serializable::GetManagedValueGeneric<TKey>( keyptr );
+        return TypeRegistry::GetManagedValueGeneric<TKey>( keyptr );
       }
 
       generic<class TKey, class TValue>
       TValue EntryEvent<TKey, TValue>::OldValue::get( )
       {
         std::shared_ptr<apache::geode::client::Cacheable>& valptr( m_nativeptr->getOldValue( ) );
-        return Serializable::GetManagedValueGeneric<TValue>( valptr );
+        return TypeRegistry::GetManagedValueGeneric<TValue>( valptr );
       }
 
       generic<class TKey, class TValue>
       TValue EntryEvent<TKey, TValue>::NewValue::get( )
       {
         std::shared_ptr<apache::geode::client::Cacheable>& valptr( m_nativeptr->getNewValue( ) );
-        return Serializable::GetManagedValueGeneric<TValue>( valptr );
+        return TypeRegistry::GetManagedValueGeneric<TValue>( valptr );
       }
 
       generic<class TKey, class TValue>
       Object^ EntryEvent<TKey, TValue>::CallbackArgument::get()
       {
         std::shared_ptr<apache::geode::client::Serializable>& valptr(m_nativeptr->getCallbackArgument());
-        return Serializable::GetManagedValueGeneric<Object^>( valptr );
+        return TypeRegistry::GetManagedValueGeneric<Object^>( valptr );
       }
 
       generic<class TKey, class TValue>

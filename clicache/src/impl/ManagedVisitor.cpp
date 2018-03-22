@@ -31,12 +31,12 @@ namespace apache
     namespace client
     {
 
-      void ManagedVisitorGeneric::visit(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value, Apache::Geode::Client::Cache^ cache)
+      void ManagedVisitorGeneric::visit(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value)
       {
         using namespace Apache::Geode::Client;
         try {
-          ICacheableKey^ mg_key(SafeGenericUMKeyConvert<ICacheableKey^>(key, cache));
-          IGeodeSerializable^ mg_value(SafeUMSerializableConvertGeneric(value, cache));
+          ICacheableKey^ mg_key(SafeGenericUMKeyConvert<ICacheableKey^>(key));
+          IGeodeSerializable^ mg_value(SafeUMSerializableConvertGeneric(value));
 
           m_visitor->Invoke(mg_key, (Apache::Geode::Client::IGeodeSerializable^)mg_value);
         }

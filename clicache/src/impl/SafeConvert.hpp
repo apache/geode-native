@@ -55,7 +55,7 @@ namespace Apache
       /// to managed <see cref="IGeodeSerializable" /> object.
       /// </summary>
       inline static Apache::Geode::Client::IGeodeSerializable^
-        SafeUMSerializableConvertGeneric(std::shared_ptr<native::Serializable> serializableObject, Cache^ cache)
+        SafeUMSerializableConvertGeneric(std::shared_ptr<native::Serializable> serializableObject)
       {
         if (serializableObject == nullptr) return nullptr;
 
@@ -76,7 +76,7 @@ namespace Apache
           }
         }
 
-        auto wrapperMethod = cache->TypeRegistry->GetWrapperGeneric( serializableObject->typeId( ) );             
+        auto wrapperMethod = TypeRegistry::GetWrapperGeneric( serializableObject->typeId( ) );             
         if (wrapperMethod != nullptr)
         {
           return wrapperMethod(serializableObject);
@@ -133,7 +133,7 @@ namespace Apache
       }
 
       generic<class TValue>
-      inline static TValue SafeGenericUMSerializableConvert( std::shared_ptr<native::Serializable> obj, Cache^ cache )
+      inline static TValue SafeGenericUMSerializableConvert( std::shared_ptr<native::Serializable> obj)
       {
 
         if (obj == nullptr) return TValue();
@@ -156,7 +156,7 @@ namespace Apache
           }
         }
 
-        auto wrapperMethod = cache->TypeRegistry->GetWrapperGeneric( obj->typeId( ) );             
+        auto wrapperMethod = TypeRegistry::GetWrapperGeneric( obj->typeId( ) );             
         if (wrapperMethod != nullptr)
         {
           return safe_cast<TValue>(wrapperMethod( obj ));
@@ -223,7 +223,7 @@ namespace Apache
       /// to managed <see cref="ICacheableKey" /> object.
       /// </summary>
       generic<class TKey>
-      inline static Client::ICacheableKey^ SafeGenericUMKeyConvert( std::shared_ptr<native::CacheableKey> obj, Cache^ cache )
+      inline static Client::ICacheableKey^ SafeGenericUMKeyConvert( std::shared_ptr<native::CacheableKey> obj )
       {
         //All cacheables will be ManagedCacheableKey only
         if (obj == nullptr) return nullptr;
@@ -233,7 +233,7 @@ namespace Apache
             return (Client::ICacheableKey^)mg_obj->ptr( );
         }
 
-        auto wrapperMethod = cache->TypeRegistry->GetWrapperGeneric( obj->typeId( ) );
+        auto wrapperMethod = TypeRegistry::GetWrapperGeneric( obj->typeId( ) );
         if (wrapperMethod != nullptr)
         {
           return (Client::ICacheableKey^)wrapperMethod( obj );

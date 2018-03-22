@@ -69,7 +69,7 @@ namespace Apache
             for (System::Int32 index = 0; index < results->size(); index++)
             {
               auto nativeptr = results->operator[](index);
-              rs[index] = Serializable::GetManagedValueGeneric<TResult>(nativeptr);
+              rs[index] = TypeRegistry::GetManagedValueGeneric<TResult>(nativeptr);
             }
             auto collectionlist = (ICollection<TResult>^)rs;
             return collectionlist;

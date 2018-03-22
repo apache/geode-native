@@ -23,6 +23,8 @@
 #include <msclr/lock.h>
 #include "ExceptionTypes.hpp"
 #include "impl/DotNetTypes.hpp"
+#include "TypeRegistry.hpp"
+
 namespace Apache
 {
   namespace Geode

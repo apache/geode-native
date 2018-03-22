@@ -48,7 +48,7 @@ namespace Apache.Geode.Client.UnitTests
 
       var dummyPdxSerializerOne = new DummyPdxSerializer();
       cacheOne.TypeRegistry.PdxSerializer = dummyPdxSerializerOne;
-      
+
       var dummyPdxSerializerTwo = new DummyPdxSerializer();
       cacheTwo.TypeRegistry.PdxSerializer = dummyPdxSerializerTwo;
 
@@ -121,6 +121,65 @@ namespace Apache.Geode.Client.UnitTests
       cacheXml.Dispose();
       geodeServer.Dispose();
     }
+
+    [Fact]
+    public void PdxSerializer_MultipleCaches()
+    {
+      var geodeServer = new GeodeServer();
+      var cacheXml = new CacheXml(new FileInfo("cache.xml"), geodeServer);
+
+      var cacheFactory = new CacheFactory();
+
+      cacheOne = cacheFactory.Create();
+      cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
+      cacheTwo = cacheFactory.Create();
+      cacheTwo.InitializeDeclarativeCache(cacheXml.File.FullName);
+
+      var regionForCache1 = cacheOne.GetRegion<string, Pdx1>("testRegion1");
+      var regionForCache2 = cacheTwo.GetRegion<string, Pdx2>("testRegion1");
+
+      cacheOne.TypeRegistry.RegisterPdxType(Pdx1.CreateDeserializable);
+      cacheTwo.TypeRegistry.RegisterPdxType(Pdx2.CreateDeserializable);
+
+      // Put data in cache1
+      Pdx1 pdx1Src1 = new Pdx1(77, 10, new string[] { "LEAF", "Volt", "Bolt" });
+      Pdx1 pdx1Src2 = new Pdx1(88, 11, new string[] { "Charger", "Challenger", "Mustang", "Corvette" });
+      Pdx1 pdx1Src3 = new Pdx1(99, 12, new string[] { "Dominica", "LaMichael", "LaMarcus", "LaDamian" });
+      regionForCache1["1"] = pdx1Src1;
+      regionForCache1["2"] = pdx1Src2;
+      regionForCache1["3"] = pdx1Src3;
+
+      //// Put data in cache2
+      Pdx2 pdx2Src1 = new Pdx2(777, 100, new string[] { "A" }, new string[] { "Pearl" });
+      Pdx2 pdx2Src2 = new Pdx2(888, 101, new string[] { "B", "C" }, new string[] { "Chicago", "Detroit" });
+      Pdx2 pdx2Src3 = new Pdx2(888, 101, new string[] { "D", "E", "F" }, new string[] { "Flint", "Davison", "Saginaw" });
+      regionForCache2["1"] = pdx2Src1;
+      regionForCache2["2"] = pdx2Src2;
+      regionForCache2["3"] = pdx2Src3;
+
+      // Get data from cache1 and verify
+      try
+      {
+        var pdx11 = regionForCache1["1"];
+        Pdx1 pdx12 = regionForCache1["2"];
+        Pdx1 pdx13 = regionForCache1["3"];
+        Assert.Equal(pdx11.ToString(), pdx1Src1.ToString());
+        Assert.Equal(pdx12.ToString(), pdx1Src2.ToString());
+        Assert.Equal(pdx13.ToString(), pdx1Src3.ToString());
+
+        //// Get data from cache2 and verify
+        Pdx2 pdx21 = regionForCache2["1"];
+        Pdx2 pdx22 = regionForCache2["2"];
+        Pdx2 pdx23 = regionForCache2["3"];
+        Assert.Equal(pdx21.ToString(), pdx2Src1.ToString());
+        Assert.Equal(pdx22.ToString(), pdx2Src2.ToString());
+        Assert.Equal(pdx23.ToString(), pdx2Src3.ToString());
+      }
+      catch ( System.InvalidCastException ex)
+      {
+        Assert.True(false, ex.ToString());
+      }
+    }
   }
 
   internal class DummyPdxSerializer : IPdxSerializer
@@ -146,6 +205,192 @@ namespace Apache.Geode.Client.UnitTests
     public string ToPdxTypeName(string localTypeName)
     {
       return "bar".Equals(localTypeName) ? "foo" : null;
+    }
+  }
+
+  internal class Pdx1 : IPdxSerializable
+  {
+    // object fields
+    private int m_id;
+    private string m_pkid;
+    private string m_type;
+    private string m_status;
+    private string[] m_names;
+    private byte[] m_newVal;
+    private DateTime m_creationDate;
+    private byte[] m_arrayZeroSize;
+    private byte[] m_arrayNull;
+
+    public Pdx1() { }
+
+    public Pdx1(int id, int size, string[] names)
+    {
+      m_names = names;
+      m_id = id;
+      m_pkid = id.ToString();
+      m_status = (id % 2 == 0) ? "active" : "inactive";
+      m_type = "type" + (id % 3);
+
+      if (size > 0)
+      {
+        m_newVal = new byte[size];
+        for (int index = 0; index < size; index++)
+        {
+          m_newVal[index] = (byte)'B';
+        }
+      }
+      m_creationDate = DateTime.Now;
+      m_arrayNull = null;
+      m_arrayZeroSize = new byte[0];
+    }
+
+    public void FromData(IPdxReader reader)
+    {
+      m_id = reader.ReadInt("id");
+
+      bool isIdentity = reader.IsIdentityField("id");
+
+      if (isIdentity == false)
+        throw new IllegalStateException("Pdx1 id is identity field");
+
+      bool isId = reader.HasField("id");
+
+      if (isId == false)
+        throw new IllegalStateException("Pdx1 id field not found");
+
+      bool isNotId = reader.HasField("ID");
+
+      if (isNotId == true)
+        throw new IllegalStateException("Pdx1 isNotId field found");
+
+      m_pkid = reader.ReadString("pkid");
+      m_type = reader.ReadString("type");
+      m_status = reader.ReadString("status");
+      m_names = reader.ReadStringArray("names");
+      m_newVal = reader.ReadByteArray("newVal");
+      m_creationDate = reader.ReadDate("creationDate");
+      m_arrayNull = reader.ReadByteArray("arrayNull");
+      m_arrayZeroSize = reader.ReadByteArray("arrayZeroSize");
+    }
+
+    public void ToData(IPdxWriter writer)
+    {
+      writer
+        .WriteInt("id", m_id)
+        //identity field
+        .MarkIdentityField("id")
+        .WriteString("pkid", m_pkid)
+        .WriteString("type", m_type)
+        .WriteString("status", m_status)
+        .WriteStringArray("names", m_names)
+        .WriteByteArray("newVal", m_newVal)
+        .WriteDate("creationDate", m_creationDate)
+        .WriteByteArray("arrayNull", m_arrayNull)
+        .WriteByteArray("arrayZeroSize", m_arrayZeroSize);
+    }
+
+    public static IPdxSerializable CreateDeserializable()
+    {
+      return new Pdx1(777, 100, new string[] { "LEAF", "Volt", "Bolt" });
+    }
+  }
+
+  internal class Pdx2 : IPdxSerializable
+  {
+    // object fields
+    private int m_id;
+    private string m_pkid;
+    private string m_pkid2;
+    private string m_type;
+    private string m_status;
+    private string m_status2;
+    private string[] m_names;
+    private string[] m_addresses;
+    private byte[] m_newVal;
+    private DateTime m_creationDate;
+    private byte[] m_arrayZeroSize;
+    private byte[] m_arrayNull;
+
+    public Pdx2() { }
+
+    public Pdx2(int id, int size, string[] names, string[] addresses)
+    {
+      m_names = names;
+      m_addresses = addresses;
+      m_id = id;
+      m_pkid = id.ToString();
+      m_pkid2 = id.ToString() + "two";
+      m_status = (id % 2 == 0) ? "active" : "inactive";
+      m_status2 = (id % 3 == 0) ? "red" : "green";
+      m_type = "type" + (id % 3);
+
+      if (size > 0)
+      {
+        m_newVal = new byte[size];
+        for (int index = 0; index < size; index++)
+        {
+          m_newVal[index] = (byte)'B';
+        }
+      }
+      m_creationDate = DateTime.Now;
+      m_arrayNull = null;
+      m_arrayZeroSize = new byte[0];
+    }
+
+    public void FromData(IPdxReader reader)
+    {
+      m_id = reader.ReadInt("id");
+
+      bool isIdentity = reader.IsIdentityField("id");
+
+      if (isIdentity == false)
+        throw new IllegalStateException("Pdx1 id is identity field");
+
+      bool isId = reader.HasField("id");
+
+      if (isId == false)
+        throw new IllegalStateException("Pdx1 id field not found");
+
+      bool isNotId = reader.HasField("ID");
+
+      if (isNotId == true)
+        throw new IllegalStateException("Pdx1 isNotId field found");
+
+      m_pkid = reader.ReadString("pkid");
+      m_pkid2 = reader.ReadString("pkid2");
+      m_type = reader.ReadString("type");
+      m_status = reader.ReadString("status");
+      m_status2 = reader.ReadString("status2");
+      m_names = reader.ReadStringArray("names");
+      m_addresses = reader.ReadStringArray("addresses");
+      m_newVal = reader.ReadByteArray("newVal");
+      m_creationDate = reader.ReadDate("creationDate");
+      m_arrayNull = reader.ReadByteArray("arrayNull");
+      m_arrayZeroSize = reader.ReadByteArray("arrayZeroSize");
+    }
+
+    public void ToData(IPdxWriter writer)
+    {
+      writer
+        .WriteInt("id", m_id)
+        //identity field
+        .MarkIdentityField("id")
+        .WriteString("pkid", m_pkid)
+        .WriteString("pkid2", m_pkid2)
+        .WriteString("type", m_type)
+        .WriteString("status", m_status)
+        .WriteString("status2", m_status2)
+        .WriteStringArray("names", m_names)
+        .WriteStringArray("addresses", m_addresses)
+        .WriteByteArray("newVal", m_newVal)
+        .WriteDate("creationDate", m_creationDate)
+        .WriteByteArray("arrayNull", m_arrayNull)
+        .WriteByteArray("arrayZeroSize", m_arrayZeroSize);
+    }
+
+    public static IPdxSerializable CreateDeserializable()
+    {
+      return new Pdx2(777, 100, new string[] { "Nissan", "Chevy", "Volvo" }, new string[] { "4451 Court St", "1171 Elgin Ave", "721 NW 173rd Pl" });
     }
   }
 }

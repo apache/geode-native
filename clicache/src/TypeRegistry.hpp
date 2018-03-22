@@ -21,6 +21,8 @@
 #include "Serializable.hpp"
 #include <geode/CacheableBuiltins.hpp>
 
+
+
 namespace Apache
 {
   namespace Geode
@@ -30,10 +32,13 @@ namespace Apache
 
       using namespace System::Collections::Concurrent;
 
+      namespace native = apache::geode::client;
+      ref class Cache;
+
       public ref class TypeRegistry
       {
       public:
-        TypeRegistry(Cache^ cache) :m_cache(cache)
+        TypeRegistry(Cache^ cache) : m_cache(cache)
         {
           Dictionary<Object^, Object^>^ dic = gcnew Dictionary<Object^, Object^>();
           ManagedTypeMappingGeneric[dic->GetType()] = native::GeodeTypeIds::CacheableHashMap;
@@ -141,7 +146,7 @@ namespace Apache
         /// in registering the type; check <c>Utils::LastError</c> for more
         /// information in the latter case.
         /// </exception>
-        void RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod);
+        static void RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod, Cache^ cache);
 
         /// <summary>
         /// Register an instance factory method for a given type and typeId.
@@ -155,26 +160,28 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if the method is null
         /// </exception>
-        void RegisterTypeGeneric(Byte typeId, TypeFactoryMethodGeneric^ creationMethod, Type^ type);
+        static void RegisterTypeGeneric(Byte typeId, TypeFactoryMethodGeneric^ creationMethod, 
+          Type^ type, Cache^ cache);
 
 
         /// <summary>
         /// Unregister the type with the given typeId
         /// </summary>
         /// <param name="typeId">typeId of the type to unregister.</param>
-        void UnregisterTypeGeneric(Byte typeId);
+        static void UnregisterTypeGeneric(Byte typeId, Cache^ cache);
 
         /// <summary>
         /// This is to get manged delegates.
         /// </summary>
-        TypeFactoryMethodGeneric^ GetManagedDelegateGeneric(System::Int64 typeId)
+        static TypeFactoryMethodGeneric^ GetManagedDelegateGeneric(System::Int64 typeId)
         {
           TypeFactoryMethodGeneric^ ret = nullptr;
           ManagedDelegatesGeneric->TryGetValue(typeId, ret);
           return ret;
         }
+
         generic<class TValue>
-          TValue GetManagedValueGeneric(std::shared_ptr<native::Serializable> val);
+          static TValue GetManagedValueGeneric(std::shared_ptr<native::Serializable> val);
 
         /// <summary>
         /// Static method to register a managed wrapper for a native
@@ -186,7 +193,7 @@ namespace Apache
         /// </param>
         /// <param name="typeId">The typeId of the native type.</param>
         /// <seealso cref="NativeWrappers" />
-        void RegisterWrapperGeneric(WrapperDelegateGeneric^ wrapperMethod,
+        static void RegisterWrapperGeneric(WrapperDelegateGeneric^ wrapperMethod,
           Byte typeId, System::Type^ type);
 
         /// <summary>
@@ -194,7 +201,7 @@ namespace Apache
         /// RegisterType and RegisterWrapper methods when
         /// <see cref="DistributedSystem.Disconnect" /> is called.
         /// </summary>
-        void UnregisterNativesGeneric();
+        static void UnregisterNativesGeneric();
 
         void Clear()
         {
@@ -203,14 +210,14 @@ namespace Apache
           classNameVsType->Clear();
         }
 
-        Byte GetManagedTypeMappingGeneric(Type^ type)
+        static Byte GetManagedTypeMappingGeneric(Type^ type)
         {
           Byte retVal = 0;
           ManagedTypeMappingGeneric->TryGetValue(type, retVal);
           return retVal;
         }
 
-        inline WrapperDelegateGeneric^ GetWrapperGeneric(Byte typeId)
+        static inline WrapperDelegateGeneric^ GetWrapperGeneric(Byte typeId)
         {
           if (typeId >= 0 && typeId <= WrapperEndGeneric) {
             return NativeWrappersGeneric[typeId];
@@ -231,19 +238,19 @@ namespace Apache
         Dictionary<String^, PdxTypeFactoryMethod^>^ PdxDelegateMap =
           gcnew Dictionary<String^, PdxTypeFactoryMethod^>();
 
-        Dictionary<System::Int64, TypeFactoryMethodGeneric^>^ ManagedDelegatesGeneric =
+        static Dictionary<System::Int64, TypeFactoryMethodGeneric^>^ ManagedDelegatesGeneric =
           gcnew Dictionary<System::Int64, TypeFactoryMethodGeneric^>();
-        List<TypeFactoryNativeMethodGeneric^>^ NativeDelegatesGeneric =
+        static List<TypeFactoryNativeMethodGeneric^>^ NativeDelegatesGeneric =
           gcnew List<TypeFactoryNativeMethodGeneric^>();
-        Dictionary<UInt32, TypeFactoryMethodGeneric^>^ DelegateMapGeneric =
+        static Dictionary<UInt32, TypeFactoryMethodGeneric^>^ DelegateMapGeneric =
           gcnew Dictionary<UInt32, TypeFactoryMethodGeneric^>();
 
-        Dictionary<Byte, TypeFactoryNativeMethodGeneric^>^ BuiltInDelegatesGeneric =
+        static Dictionary<Byte, TypeFactoryNativeMethodGeneric^>^ BuiltInDelegatesGeneric =
           gcnew Dictionary<Byte, TypeFactoryNativeMethodGeneric^>();
-        Dictionary<System::Type^, Byte>^ ManagedTypeMappingGeneric =
+        static Dictionary<System::Type^, Byte>^ ManagedTypeMappingGeneric =
           gcnew Dictionary<System::Type^, Byte>();
         literal Byte WrapperEndGeneric = 128;
-        array<WrapperDelegateGeneric^>^ NativeWrappersGeneric =
+        static array<WrapperDelegateGeneric^>^ NativeWrappersGeneric =
           gcnew array<WrapperDelegateGeneric^>(WrapperEndGeneric + 1);
 
         Type^ GetTypeFromRefrencedAssemblies(String^ className, Dictionary<Assembly^, bool>^ referedAssembly, Assembly^ currentAssembly);

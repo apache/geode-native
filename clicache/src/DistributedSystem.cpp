@@ -151,7 +151,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
 
 
-        cache->TypeRegistry->UnregisterNativesGeneric();
+        TypeRegistry::UnregisterNativesGeneric();
         DistributedSystem::UnregisterBuiltinManagedTypes(cache);
         m_nativeptr->get()->disconnect();
         GC::KeepAlive(m_nativeptr);
@@ -169,115 +169,115 @@ namespace Apache
           // Register wrapper types for built-in types, this are still cpp wrapper
 
         //byte
-        cache->TypeRegistry->RegisterWrapperGeneric(
+        TypeRegistry::RegisterWrapperGeneric(
         gcnew WrapperDelegateGeneric(CacheableByte::Create),
         native::GeodeTypeIds::CacheableByte, SByte::typeid);
 
         //boolean
-        cache->TypeRegistry->RegisterWrapperGeneric(
+        TypeRegistry::RegisterWrapperGeneric(
           gcnew WrapperDelegateGeneric(CacheableBoolean::Create),
           native::GeodeTypeIds::CacheableBoolean, Boolean::typeid);
         //wide char
-        cache->TypeRegistry->RegisterWrapperGeneric(
+        TypeRegistry::RegisterWrapperGeneric(
           gcnew WrapperDelegateGeneric(CacheableCharacter::Create),
           native::GeodeTypeIds::CacheableCharacter, Char::typeid);
         //double
-        cache->TypeRegistry->RegisterWrapperGeneric(
+        TypeRegistry::RegisterWrapperGeneric(
           gcnew WrapperDelegateGeneric(CacheableDouble::Create),
           native::GeodeTypeIds::CacheableDouble, Double::typeid);
         //ascii string
-        cache->TypeRegistry->RegisterWrapperGeneric(
+        TypeRegistry::RegisterWrapperGeneric(
           gcnew WrapperDelegateGeneric(CacheableString::Create),
           native::GeodeTypeIds::CacheableASCIIString, String::typeid);
 
-        cache->TypeRegistry->RegisterWrapperGeneric(
+        TypeRegistry::RegisterWrapperGeneric(
           gcnew WrapperDelegateGeneric(CacheableFloat::Create),
           native::GeodeTypeIds::CacheableFloat, float::typeid);
         //int 16
-        cache->TypeRegistry->RegisterWrapperGeneric(
+        TypeRegistry::RegisterWrapperGeneric(
           gcnew WrapperDelegateGeneric(CacheableInt16::Create),
           native::GeodeTypeIds::CacheableInt16, Int16::typeid);
         //int32
-        cache->TypeRegistry->RegisterWrapperGeneric(
+        TypeRegistry::RegisterWrapperGeneric(
           gcnew WrapperDelegateGeneric(CacheableInt32::Create),
           native::GeodeTypeIds::CacheableInt32, Int32::typeid);
         //int64
-        cache->TypeRegistry->RegisterWrapperGeneric(
+        TypeRegistry::RegisterWrapperGeneric(
           gcnew WrapperDelegateGeneric(CacheableInt64::Create),
           native::GeodeTypeIds::CacheableInt64, Int64::typeid);
 
         //Now onwards all will be wrap in managed cacheable key..
 
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableBytes,
           gcnew TypeFactoryMethodGeneric(CacheableBytes::CreateDeserializable),
-          Type::GetType("System.Byte[]"));
+          Type::GetType("System.Byte[]"), cache);
 
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableDoubleArray,
           gcnew TypeFactoryMethodGeneric(CacheableDoubleArray::CreateDeserializable),
-          Type::GetType("System.Double[]"));
+          Type::GetType("System.Double[]"), cache);
 
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableFloatArray,
           gcnew TypeFactoryMethodGeneric(CacheableFloatArray::CreateDeserializable),
-          Type::GetType("System.Single[]"));
+          Type::GetType("System.Single[]"), cache);
 
         //TODO:
         //as it is
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableHashSet,
           gcnew TypeFactoryMethodGeneric(CacheableHashSet::CreateDeserializable),
-          nullptr);
+          nullptr, cache);
 
         //as it is
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableLinkedHashSet,
           gcnew TypeFactoryMethodGeneric(CacheableLinkedHashSet::CreateDeserializable),
-          nullptr);
+          nullptr, cache);
 
 
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableInt16Array,
           gcnew TypeFactoryMethodGeneric(CacheableInt16Array::CreateDeserializable),
-          Type::GetType("System.Int16[]"));
+          Type::GetType("System.Int16[]"), cache);
 
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableInt32Array,
           gcnew TypeFactoryMethodGeneric(CacheableInt32Array::CreateDeserializable),
-          Type::GetType("System.Int32[]"));
+          Type::GetType("System.Int32[]"), cache);
 
 
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableInt64Array,
           gcnew TypeFactoryMethodGeneric(CacheableInt64Array::CreateDeserializable),
-          Type::GetType("System.Int64[]"));
+          Type::GetType("System.Int64[]"), cache);
 
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::BooleanArray,
           gcnew TypeFactoryMethodGeneric(BooleanArray::CreateDeserializable),
-          Type::GetType("System.Boolean[]"));
+          Type::GetType("System.Boolean[]"), cache);
 
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CharArray,
           gcnew TypeFactoryMethodGeneric(CharArray::CreateDeserializable),
-          Type::GetType("System.Char[]"));
+          Type::GetType("System.Char[]"), cache);
 
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableStringArray,
           gcnew TypeFactoryMethodGeneric(CacheableStringArray::CreateDeserializable),
-          Type::GetType("System.String[]"));
+          Type::GetType("System.String[]"), cache);
 
         //as it is
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::Struct,
           gcnew TypeFactoryMethodGeneric(Struct::CreateDeserializable),
-          nullptr);
+          nullptr, cache);
 
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::EnumInfo,
           gcnew TypeFactoryMethodGeneric(Apache::Geode::Client::Internal::EnumInfo::CreateDeserializable),
-          nullptr);
+          nullptr, cache);
 
         // End register generic wrapper types for built-in types
 
@@ -316,78 +316,78 @@ namespace Apache
         // Register other built-in types for generics
         //c# datatime
 
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableDate,
           gcnew TypeFactoryMethodGeneric(CacheableDate::CreateDeserializable),
-          Type::GetType("System.DateTime"));
+          Type::GetType("System.DateTime"), cache);
 
         //as it is
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableFileName,
           gcnew TypeFactoryMethodGeneric(CacheableFileName::CreateDeserializable),
-          nullptr);
+          nullptr, cache);
 
         //for generic dictionary define its type in static constructor of Serializable.hpp
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableHashMap,
           gcnew TypeFactoryMethodGeneric(CacheableHashMap::CreateDeserializable),
-          nullptr);
+          nullptr, cache);
 
         //c# hashtable
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableHashTable,
           gcnew TypeFactoryMethodGeneric(CacheableHashTable::CreateDeserializable),
-          Type::GetType("System.Collections.Hashtable"));
+          Type::GetType("System.Collections.Hashtable"), cache);
 
         //Need to keep public as no counterpart in c#
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableIdentityHashMap,
           gcnew TypeFactoryMethodGeneric(
           CacheableIdentityHashMap::CreateDeserializable),
-          nullptr);
+          nullptr, cache);
 
         //keep as it is
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableUndefined,
           gcnew TypeFactoryMethodGeneric(CacheableUndefined::CreateDeserializable),
-          nullptr);
+          nullptr, cache);
 
         //c# arraylist
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableVector,
           gcnew TypeFactoryMethodGeneric(CacheableVector::CreateDeserializable),
-          nullptr);
+          nullptr, cache);
 
         //as it is
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableObjectArray,
           gcnew TypeFactoryMethodGeneric(
           CacheableObjectArray::CreateDeserializable),
-          nullptr);
+          nullptr, cache);
 
         //Generic::List
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableArrayList,
           gcnew TypeFactoryMethodGeneric(CacheableArrayList::CreateDeserializable),
-          nullptr);
+          nullptr, cache);
 
         //c# generic stack
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           native::GeodeTypeIds::CacheableStack,
           gcnew TypeFactoryMethodGeneric(CacheableStack::CreateDeserializable),
-          nullptr);
+          nullptr, cache);
 
         //as it is
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           GeodeClassIds::CacheableManagedObject - 0x80000000,
           gcnew TypeFactoryMethodGeneric(CacheableObject::CreateDeserializable),
-          nullptr);
+          nullptr, cache);
 
         //as it is
-        cache->TypeRegistry->RegisterTypeGeneric(
+        TypeRegistry::RegisterTypeGeneric(
           GeodeClassIds::CacheableManagedObjectXml - 0x80000000,
           gcnew TypeFactoryMethodGeneric(CacheableObjectXml::CreateDeserializable),
-          nullptr);
+          nullptr, cache);
 
         // End register other built-in types
 
@@ -406,30 +406,30 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          cache->TypeRegistry->UnregisterNativesGeneric();
+          TypeRegistry::UnregisterNativesGeneric();
 
-          cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableDate);
-          cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableFileName);
-          cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableHashMap);
-          cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableHashTable);
-          cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableIdentityHashMap);
-          cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableVector);
-          cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableObjectArray);
-          cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableArrayList);
-          cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableStack);
-          cache->TypeRegistry->UnregisterTypeGeneric(
-            GeodeClassIds::CacheableManagedObject - 0x80000000);
-          cache->TypeRegistry->UnregisterTypeGeneric(
-            GeodeClassIds::CacheableManagedObjectXml - 0x80000000);
+          TypeRegistry::UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableDate, cache);
+          TypeRegistry::UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableFileName, cache);
+          TypeRegistry::UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableHashMap, cache);
+          TypeRegistry::UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableHashTable, cache);
+          TypeRegistry::UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableIdentityHashMap, cache);
+          TypeRegistry::UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableVector, cache);
+          TypeRegistry::UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableObjectArray, cache);
+          TypeRegistry::UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableArrayList, cache);
+          TypeRegistry::UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableStack, cache);
+          TypeRegistry::UnregisterTypeGeneric(
+            GeodeClassIds::CacheableManagedObject - 0x80000000, cache);
+          TypeRegistry::UnregisterTypeGeneric(
+            GeodeClassIds::CacheableManagedObjectXml - 0x80000000, cache);
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }

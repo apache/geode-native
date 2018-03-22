@@ -148,7 +148,7 @@ namespace apache
       void ManagedResultCollectorGeneric::addResult(const std::shared_ptr<Cacheable>& result)
       {
         try {
-          Object^ rs = Apache::Geode::Client::Serializable::GetManagedValueGeneric<Object^>(result);
+          Object^ rs = Apache::Geode::Client::TypeRegistry::GetManagedValueGeneric<Object^>(result);
           m_managedptr->AddResult(rs);
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {

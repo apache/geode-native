@@ -23,6 +23,7 @@
 #include "../DataOutput.hpp"
 #include "../DataInput.hpp"
 #include "../Cache.hpp"
+#include "../TypeRegistry.hpp"
 
 using namespace System;
 

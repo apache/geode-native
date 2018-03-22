@@ -35,6 +35,8 @@
 #include "impl/PdxInstanceFactoryImpl.hpp"
 #include "CacheTransactionManager.hpp"
 #include "PoolManager.hpp"
+#include "TypeRegistry.hpp"
+
 
 
 #pragma warning(disable:4091)
