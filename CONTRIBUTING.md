@@ -2,7 +2,7 @@
 This document assumes you have followed the [Apache Geode Code contribution instructions](https://cwiki.apache.org/confluence/display/GEODE/Code+contributions)
 
 ## Building the code
-see (BUILDING.md)
+see [BUILDING.md](BUILDING.md)
 
 ## Next steps
 * Make your changes/add your feature/fix a bug.
@@ -151,7 +151,7 @@ When writing new or refactoring old code please make the following changes.
     should be changed to
     ```c++
     auto car = garage.getCar();
-    if (auto delorean = std::dynamic_cast<Delorean>(car)) {
+    if (auto delorean = std::dynamic_pointer_cast<Delorean>(car)) {
       delorean->setSpeed(88);
     }
     ```
