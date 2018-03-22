@@ -31,4 +31,8 @@ target_link_libraries(${PROJECT_NAME}
 set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DOTNET_REFERENCES
     "System"
     "${GeodeNative_DOTNET_LIBRARY}")
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
+)
     
