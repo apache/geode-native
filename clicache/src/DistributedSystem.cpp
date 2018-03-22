@@ -151,7 +151,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
 
 
-        TypeRegistry::UnregisterNativesGeneric();
+        TypeRegistry::UnregisterNativesGeneric(cache);
         DistributedSystem::UnregisterBuiltinManagedTypes(cache);
         m_nativeptr->get()->disconnect();
         GC::KeepAlive(m_nativeptr);
@@ -406,7 +406,7 @@ namespace Apache
       {
         _GF_MG_EXCEPTION_TRY2
 
-          TypeRegistry::UnregisterNativesGeneric();
+          TypeRegistry::UnregisterNativesGeneric(cache);
 
           TypeRegistry::UnregisterTypeGeneric(
             native::GeodeTypeIds::CacheableDate, cache);

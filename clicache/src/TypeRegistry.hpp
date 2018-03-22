@@ -201,7 +201,7 @@ namespace Apache
         /// RegisterType and RegisterWrapper methods when
         /// <see cref="DistributedSystem.Disconnect" /> is called.
         /// </summary>
-        static void UnregisterNativesGeneric();
+        static void UnregisterNativesGeneric(Cache^ cache);
 
         void Clear()
         {
@@ -240,13 +240,14 @@ namespace Apache
 
         Dictionary<System::Int64, TypeFactoryMethodGeneric^>^ ManagedDelegatesGeneric =
           gcnew Dictionary<System::Int64, TypeFactoryMethodGeneric^>();
-        static List<TypeFactoryNativeMethodGeneric^>^ NativeDelegatesGeneric =
+        List<TypeFactoryNativeMethodGeneric^>^ NativeDelegatesGeneric =
           gcnew List<TypeFactoryNativeMethodGeneric^>();
-        static Dictionary<UInt32, TypeFactoryMethodGeneric^>^ DelegateMapGeneric =
+        Dictionary<UInt32, TypeFactoryMethodGeneric^>^ DelegateMapGeneric =
           gcnew Dictionary<UInt32, TypeFactoryMethodGeneric^>();
 
-        static Dictionary<Byte, TypeFactoryNativeMethodGeneric^>^ BuiltInDelegatesGeneric =
+        Dictionary<Byte, TypeFactoryNativeMethodGeneric^>^ BuiltInDelegatesGeneric =
           gcnew Dictionary<Byte, TypeFactoryNativeMethodGeneric^>();
+        //*** here
         static Dictionary<System::Type^, Byte>^ ManagedTypeMappingGeneric =
           gcnew Dictionary<System::Type^, Byte>();
         literal Byte WrapperEndGeneric = 128;

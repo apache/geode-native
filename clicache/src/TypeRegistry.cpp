@@ -191,12 +191,12 @@ namespace Apache
             &DelegateWrapperGeneric::NativeDelegateGeneric);
 
         // this is avoid object being Gced
-        NativeDelegatesGeneric->Add(nativeDelegate);
+        cache->TypeRegistry->NativeDelegatesGeneric->Add(nativeDelegate);
 
         // register the type in the DelegateMap, this is pure c# for create domain object 
         IGeodeSerializable^ tmp = creationMethod();
         Log::Fine("Registering serializable class ID " + tmp->ClassId);
-        DelegateMapGeneric[tmp->ClassId] = creationMethod;
+        cache->TypeRegistry->DelegateMapGeneric[tmp->ClassId] = creationMethod;
 
         _GF_MG_EXCEPTION_TRY2
           CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
@@ -216,11 +216,11 @@ namespace Apache
           gcnew TypeFactoryNativeMethodGeneric(delegateObj,
             &DelegateWrapperGeneric::NativeDelegateGeneric);
 
-        BuiltInDelegatesGeneric[typeId] = nativeDelegate;
+        cache->TypeRegistry->BuiltInDelegatesGeneric[typeId] = nativeDelegate;
 
         if (type != nullptr)
         {
-          ManagedTypeMappingGeneric[type] = typeId;
+          cache->TypeRegistry->ManagedTypeMappingGeneric[type] = typeId;
         }
 
         auto typeRegistry = cache->TypeRegistry;
@@ -234,7 +234,7 @@ namespace Apache
         // register the type in the DelegateMap
         IGeodeSerializable^ tmp = creationMethod();
         Log::Finer("Registering(,) serializable class ID " + tmp->ClassId);
-        DelegateMapGeneric[tmp->ClassId] = creationMethod;
+        cache->TypeRegistry->DelegateMapGeneric[tmp->ClassId] = creationMethod;
 
         try
         {
@@ -263,7 +263,7 @@ namespace Apache
 
       void TypeRegistry::UnregisterTypeGeneric(Byte typeId, Cache^ cache)
       {
-        BuiltInDelegatesGeneric->Remove(typeId);
+        cache->TypeRegistry->BuiltInDelegatesGeneric->Remove(typeId);
         _GF_MG_EXCEPTION_TRY2
 
           CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->removeType(typeId);
@@ -283,11 +283,11 @@ namespace Apache
         ManagedTypeMappingGeneric[type] = typeId;
       }
 
-      void TypeRegistry::UnregisterNativesGeneric()
+      void TypeRegistry::UnregisterNativesGeneric(Cache^ cache)
       {
-        BuiltInDelegatesGeneric->Clear();
+        cache->TypeRegistry->BuiltInDelegatesGeneric->Clear();
         for (Byte typeId = 0; typeId <= WrapperEndGeneric; ++typeId) {
-          NativeWrappersGeneric[typeId] = nullptr;
+          cache->TypeRegistry->NativeWrappersGeneric[typeId] = nullptr;
         }
         //TODO:: unregister from managed hashmap as well.
         //  ManagedDelegates->Clear();
