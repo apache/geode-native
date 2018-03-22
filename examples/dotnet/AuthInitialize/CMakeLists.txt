@@ -28,10 +28,7 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     GeodeNative::dotnet)
 
-set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DOTNET_REFERENCES
-    "System"
-    "${GeodeNative_DOTNET_LIBRARY}")
-    
-set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DOTNET_TARGET_FRAMEWORK_VERSION 
-    "v4.5.2"
+set_target_properties(${PROJECT_NAME}
+  PROPERTIES VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
+  VS_DOTNET_REFERENCES "System;${GeodeNative_DOTNET_LIBRARY}"
 )
