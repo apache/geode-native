@@ -38,7 +38,7 @@ class ThinClientPoolDM;
 
 class _GEODE_EXPORT ProxyRemoteQueryService : public QueryService {
  public:
-  ProxyRemoteQueryService(std::shared_ptr<ProxyCache> cptr);
+  ProxyRemoteQueryService(ProxyCache* cptr);
   virtual ~ProxyRemoteQueryService() = default;
 
   std::shared_ptr<Query> newQuery(std::string querystring) override;
@@ -75,7 +75,7 @@ class _GEODE_EXPORT ProxyRemoteQueryService : public QueryService {
   void closeCqs(bool keepAlive);
 
   std::shared_ptr<QueryService> m_realQueryService;
-  std::shared_ptr<ProxyCache> m_proxyCache;
+  ProxyCache* m_proxyCache;
   query_container_type m_cqQueries;
   // lock for cqQuery list;
   mutable ACE_Recursive_Thread_Mutex m_cqQueryListLock;

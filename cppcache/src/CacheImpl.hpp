@@ -278,7 +278,7 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   std::shared_ptr<SerializationRegistry> getSerializationRegistry() const;
   inline CachePerfStats& getCachePerfStats() { return *m_cacheStats; }
 
-  PoolManager& getPoolManager() { return *m_poolManager; }
+  PoolManager& getPoolManager() const { return *m_poolManager; }
 
   ThreadPool* getThreadPool();
 

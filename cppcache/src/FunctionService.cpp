@@ -38,7 +38,7 @@ Execution FunctionService::onRegion(const std::shared_ptr<Region>& region) {
   if (pool == nullptr) {
     throw IllegalArgumentException("Pool attached with region is closed.");
   }
-  std::shared_ptr<ProxyCache> proxyCache = nullptr;
+  ProxyCache* proxyCache = nullptr;
 
   if (pool->getMultiuserAuthentication()) {
     if (auto pr = std::dynamic_pointer_cast<ProxyRegion>(realRegion)) {
@@ -103,16 +103,13 @@ Execution FunctionService::onServersWithPool(
       std::unique_ptr<ExecutionImpl>(new ExecutionImpl(pool, true)));
 }
 
-Execution FunctionService::onServerWithCache(
-    const std::shared_ptr<RegionService>& cache) {
-  if (cache->isClosed()) {
+Execution FunctionService::onServerWithCache(RegionService& cache) {
+  if (cache.isClosed()) {
     throw IllegalStateException("Cache has been closed");
   }
 
-  auto pc = std::dynamic_pointer_cast<ProxyCache>(cache);
-
   LOGDEBUG("FunctionService::onServer:");
-  if (pc != nullptr) {
+  if (auto pc = dynamic_cast<ProxyCache*>(&cache)) {
     auto userAttachedPool = pc->m_userAttributes->getPool();
     auto pool =
         pc->m_cacheImpl->getPoolManager().find(userAttachedPool->getName());
@@ -124,22 +121,19 @@ Execution FunctionService::onServerWithCache(
     throw IllegalStateException(
         "Pool has been close to execute function on server");
   } else {
-    auto realcache = std::static_pointer_cast<Cache>(cache);
+    auto& realcache = static_cast<Cache&>(cache);
     return FunctionService::onServer(
-        realcache->m_cacheImpl->getPoolManager().getDefaultPool());
+        realcache.m_cacheImpl->getPoolManager().getDefaultPool());
   }
 }
 
-Execution FunctionService::onServersWithCache(
-    const std::shared_ptr<RegionService>& cache) {
-  if (cache->isClosed()) {
+Execution FunctionService::onServersWithCache(RegionService& cache) {
+  if (cache.isClosed()) {
     throw IllegalStateException("Cache has been closed");
   }
 
-  auto pc = std::dynamic_pointer_cast<ProxyCache>(cache);
-
   LOGDEBUG("FunctionService::onServers:");
-  if (pc != nullptr && !cache->isClosed()) {
+  if (auto pc = dynamic_cast<ProxyCache*>(&cache)) {
     auto userAttachedPool = pc->m_userAttributes->getPool();
     auto pool = pc->m_cacheImpl->getCache()->getPoolManager().find(
         userAttachedPool->getName());
@@ -151,8 +145,8 @@ Execution FunctionService::onServersWithCache(
     throw IllegalStateException(
         "Pool has been close to execute function on server");
   } else {
-    auto realcache = std::static_pointer_cast<Cache>(cache);
+    auto& realcache = static_cast<Cache&>(cache);
     return FunctionService::onServers(
-        realcache->m_cacheImpl->getPoolManager().getDefaultPool());
+        realcache.m_cacheImpl->getPoolManager().getDefaultPool());
   }
 }

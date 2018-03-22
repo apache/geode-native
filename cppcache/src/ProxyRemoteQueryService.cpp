@@ -24,8 +24,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-ProxyRemoteQueryService::ProxyRemoteQueryService(
-    std::shared_ptr<ProxyCache> cptr)
+ProxyRemoteQueryService::ProxyRemoteQueryService(ProxyCache* cptr)
     : m_proxyCache(cptr) {}
 
 std::shared_ptr<Query> ProxyRemoteQueryService::newQuery(
@@ -36,7 +35,7 @@ std::shared_ptr<Query> ProxyRemoteQueryService::newQuery(
         userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
-      GuardUserAttribures gua(m_proxyCache.get());
+      GuardUserAttribures gua(m_proxyCache);
       auto poolDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
       if (!poolDM->isDestroyed()) {
         return poolDM->getQueryServiceWithoutCheck()->newQuery(querystring);
@@ -63,7 +62,7 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
         userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
-      GuardUserAttribures gua(m_proxyCache.get());
+      GuardUserAttribures gua(m_proxyCache);
       auto pooDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
       if (!pooDM->isDestroyed()) {
         auto cqQuery = pooDM->getQueryServiceWithoutCheck()->newCq(
@@ -92,7 +91,7 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
         userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
-      GuardUserAttribures gua(m_proxyCache.get());
+      GuardUserAttribures gua(m_proxyCache);
       auto poolDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
       if (!poolDM->isDestroyed()) {
         auto cqQuery = poolDM->getQueryServiceWithoutCheck()->newCq(
@@ -143,7 +142,7 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::getCq(
         userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
-      GuardUserAttribures gua(m_proxyCache.get());
+      GuardUserAttribures gua(m_proxyCache);
       auto poolDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
       if (!poolDM->isDestroyed()) {
         return poolDM->getQueryServiceWithoutCheck()->getCq(name);
@@ -190,13 +189,13 @@ std::shared_ptr<CqServiceStatistics>
 ProxyRemoteQueryService::getCqServiceStatistics() const {
   unSupportedException("getCqServiceStatistics()");
   return nullptr;
- }
- std::shared_ptr<CacheableArrayList>
- ProxyRemoteQueryService::getAllDurableCqsFromServer() const {
-   unSupportedException("getAllDurableCqsFromServer()");
-   return nullptr;
- }
+}
+std::shared_ptr<CacheableArrayList>
+ProxyRemoteQueryService::getAllDurableCqsFromServer() const {
+  unSupportedException("getAllDurableCqsFromServer()");
+  return nullptr;
+}
 
- }  // namespace client
- }  // namespace geode
- }  // namespace apache
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -21,11 +21,11 @@
 
 using namespace apache::geode::client;
 
-FunctionServiceImpl::FunctionServiceImpl(
-    std::shared_ptr<ProxyCache> proxyCache) {
+FunctionServiceImpl::FunctionServiceImpl(ProxyCache* proxyCache) {
   m_proxyCache = proxyCache;
 }
+
 std::shared_ptr<FunctionService> FunctionServiceImpl::getFunctionService(
-    std::shared_ptr<ProxyCache> proxyCache) {
+    ProxyCache* proxyCache) {
   return std::make_shared<FunctionServiceImpl>(proxyCache);
 }

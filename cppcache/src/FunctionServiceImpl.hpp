@@ -51,15 +51,16 @@ class _GEODE_EXPORT FunctionServiceImpl : public FunctionService {
   virtual ~FunctionServiceImpl() {}
 
  private:
-  FunctionServiceImpl(const FunctionService &);
-  FunctionServiceImpl &operator=(const FunctionService &);
+  FunctionServiceImpl(const FunctionService&);
+  FunctionServiceImpl& operator=(const FunctionService&);
 
-  FunctionServiceImpl(std::shared_ptr<ProxyCache> proxyCache);
+  FunctionServiceImpl(ProxyCache* proxyCache);
 
   static std::shared_ptr<FunctionService> getFunctionService(
-      std::shared_ptr<ProxyCache> proxyCache);
+      ProxyCache* proxyCache);
 
-  std::shared_ptr<ProxyCache> m_proxyCache;
+  ProxyCache* m_proxyCache;
+
   friend class ProxyCache;
 
   _GEODE_FRIEND_STD_SHARED_PTR(FunctionServiceImpl)

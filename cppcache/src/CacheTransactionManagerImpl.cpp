@@ -44,14 +44,14 @@ void CacheTransactionManagerImpl::begin() {
     GfErrTypeThrowException("Transaction already in progress",
                             GF_CACHE_ILLEGAL_STATE_EXCEPTION);
   }
-  TXState* txState = new TXState(m_cache->getCache());
+  auto txState = new TXState(m_cache);
   TSSTXStateWrapper::s_geodeTSSTXState->setTXState(txState);
   addTx(txState->getTransactionId().getId());
 }
 
 void CacheTransactionManagerImpl::commit() {
   TXCleaner txCleaner(this);
-  TXState* txState = txCleaner.getTXState();
+  auto txState = txCleaner.getTXState();
 
   if (txState == nullptr) {
     GfErrTypeThrowException(
@@ -59,10 +59,10 @@ void CacheTransactionManagerImpl::commit() {
         GF_CACHE_ILLEGAL_STATE_EXCEPTION);
   }
 
-  TcrMessageCommit request(m_cache->getCache()->createDataOutput());
+  TcrMessageCommit request(m_cache->createDataOutput());
   TcrMessageReply reply(true, nullptr);
 
-  ThinClientPoolDM* tcr_dm = getDM();
+  auto tcr_dm = getDM();
   // This is for the case when no cache operation/s is performed between
   // tx->begin() and tx->commit()/rollback(),
   // simply return without sending COMMIT message to server. tcr_dm is nullptr
@@ -358,9 +358,8 @@ TransactionId& CacheTransactionManagerImpl::suspend() {
                                 .suspendedTxTimeout();
   auto handler = new SuspendedTxExpiryHandler(this, txState->getTransactionId(),
                                               suspendedTxTimeout);
-  long id = m_cache->getExpiryTaskManager()
-                   .scheduleExpiryTask(handler, suspendedTxTimeout,
-                                    std::chrono::seconds::zero(), false);
+  long id = m_cache->getExpiryTaskManager().scheduleExpiryTask(
+      handler, suspendedTxTimeout, std::chrono::seconds::zero(), false);
   txState->setSuspendedExpiryTaskId(id);
 
   // add the transaction state to the list of suspended transactions
@@ -381,8 +380,8 @@ void CacheTransactionManagerImpl::resume(TransactionId& transactionId) {
   }
 
   // get the transaction state of the suspended transaction
-  TXState* txState = removeSuspendedTx(
-      (static_cast<TXId&>(transactionId)).getId());
+  TXState* txState =
+      removeSuspendedTx((static_cast<TXId&>(transactionId)).getId());
   if (txState == nullptr) {
     GfErrTypeThrowException(
         "Could not get transaction state for the transaction id.",
@@ -393,14 +392,13 @@ void CacheTransactionManagerImpl::resume(TransactionId& transactionId) {
 }
 
 bool CacheTransactionManagerImpl::isSuspended(TransactionId& transactionId) {
-  return isSuspendedTx(
-      (static_cast<TXId&>(transactionId)).getId());
+  return isSuspendedTx((static_cast<TXId&>(transactionId)).getId());
 }
 bool CacheTransactionManagerImpl::tryResume(TransactionId& transactionId) {
   return tryResume(transactionId, true);
 }
-bool CacheTransactionManagerImpl::tryResume(
-    TransactionId& transactionId, bool cancelExpiryTask) {
+bool CacheTransactionManagerImpl::tryResume(TransactionId& transactionId,
+                                            bool cancelExpiryTask) {
   // get the current state of the thread
   if (TSSTXStateWrapper::s_geodeTSSTXState->getTXState() != nullptr) {
     LOGFINE("A transaction is already in progress. Cannot resume transaction.");
@@ -408,8 +406,8 @@ bool CacheTransactionManagerImpl::tryResume(
   }
 
   // get the transaction state of the suspended transaction
-  TXState* txState = removeSuspendedTx(
-      (static_cast<TXId&>(transactionId)).getId());
+  TXState* txState =
+      removeSuspendedTx((static_cast<TXId&>(transactionId)).getId());
   if (txState == nullptr) return false;
 
   resumeTxUsingTxState(txState, cancelExpiryTask);
@@ -427,8 +425,8 @@ bool CacheTransactionManagerImpl::tryResume(
   if (!exists(transactionId)) return false;
 
   // get the transaction state of the suspended transaction
-  TXState* txState = removeSuspendedTx(
-      (static_cast<TXId&>(transactionId)).getId(), waitTime);
+  TXState* txState =
+      removeSuspendedTx((static_cast<TXId&>(transactionId)).getId(), waitTime);
   if (txState == nullptr) return false;
 
   resumeTxUsingTxState(txState);

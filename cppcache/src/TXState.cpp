@@ -28,14 +28,14 @@ namespace apache {
 namespace geode {
 namespace client {
 
-TXState::TXState(Cache* cache) {
+TXState::TXState(CacheImpl* cacheImpl) {
   m_txId = TXId();
   m_closed = false;
   m_modSerialNum = 0;
   m_dirty = false;
   m_replay = false;
   m_prepared = false;
-  m_cache = cache;
+  m_cache = cacheImpl;
   /* adongre
    * Non-static class member "m_suspendedExpiryTaskId" is not initialized in
    * this constructor nor in any functions that it calls.

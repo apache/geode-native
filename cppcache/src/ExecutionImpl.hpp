@@ -36,12 +36,13 @@ namespace apache {
 namespace geode {
 namespace client {
 
-typedef std::map<std::string, std::vector<int8_t>*> FunctionToFunctionAttributes;
+typedef std::map<std::string, std::vector<int8_t>*>
+    FunctionToFunctionAttributes;
 
 class ExecutionImpl {
  public:
   ExecutionImpl(std::shared_ptr<Region> rptr = nullptr,
-                std::shared_ptr<ProxyCache> proxyCache = nullptr,
+                ProxyCache* proxyCache = nullptr,
                 std::shared_ptr<Pool> pp = nullptr)
       : m_routingObj(nullptr),
         m_args(nullptr),
@@ -51,7 +52,7 @@ class ExecutionImpl {
         m_pool(pp),
         m_proxyCache(proxyCache) {}
   ExecutionImpl(std::shared_ptr<Pool> pool, bool allServer = false,
-                std::shared_ptr<ProxyCache> proxyCache = nullptr)
+                ProxyCache* proxyCache = nullptr)
       : m_routingObj(nullptr),
         m_args(nullptr),
         m_rc(nullptr),
@@ -59,12 +60,9 @@ class ExecutionImpl {
         m_allServer(allServer),
         m_pool(pool),
         m_proxyCache(proxyCache) {}
-  virtual Execution withFilter(
-      std::shared_ptr<CacheableVector> routingObj);
-  virtual Execution withArgs(
-      std::shared_ptr<Cacheable> args);
-  virtual Execution withCollector(
-      std::shared_ptr<ResultCollector> rs);
+  virtual Execution withFilter(std::shared_ptr<CacheableVector> routingObj);
+  virtual Execution withArgs(std::shared_ptr<Cacheable> args);
+  virtual Execution withCollector(std::shared_ptr<ResultCollector> rs);
   // java function has hasResult property. we put the hasResult argument
   // here as a kluge.
   virtual std::shared_ptr<ResultCollector> execute(
@@ -74,8 +72,8 @@ class ExecutionImpl {
       std::chrono::milliseconds timeout);
 
   virtual std::shared_ptr<ResultCollector> execute(
-      const std::string& func, std::chrono::milliseconds timeout =
-                                   DEFAULT_QUERY_RESPONSE_TIMEOUT);
+      const std::string& func,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   static void addResults(std::shared_ptr<ResultCollector>& collector,
                          const std::shared_ptr<CacheableVector>& results);
@@ -94,7 +92,7 @@ class ExecutionImpl {
                 const std::shared_ptr<ResultCollector>& rc,
                 const std::shared_ptr<Region>& region, const bool allServer,
                 const std::shared_ptr<Pool>& pool,
-                std::shared_ptr<ProxyCache> proxyCache = nullptr)
+                ProxyCache* proxyCache = nullptr)
       : m_routingObj(routingObj),
         m_args(args),
         m_rc(rc),
@@ -109,7 +107,7 @@ class ExecutionImpl {
   std::shared_ptr<Region> m_region;
   bool m_allServer;
   std::shared_ptr<Pool> m_pool;
-  std::shared_ptr<ProxyCache> m_proxyCache;
+  ProxyCache* m_proxyCache;
   static ACE_Recursive_Thread_Mutex m_func_attrs_lock;
   static FunctionToFunctionAttributes m_func_attrs;
   //  std::vector<int8_t> m_attributes;
@@ -125,8 +123,6 @@ class ExecutionImpl {
   std::vector<int8_t>* getFunctionAttributes(const std::string& func);
   GfErrType getFuncAttributes(const std::string& func,
                               std::vector<int8_t>** attr);
-
-
 };
 }  // namespace client
 }  // namespace geode

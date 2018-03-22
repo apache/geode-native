@@ -51,9 +51,7 @@ class FunctionServiceImpl;
  * <p>A cache can have multiple root regions, each with a different name.
  *
  */
-class _GEODE_EXPORT ProxyCache
-    : public RegionService,
-      public std::enable_shared_from_this<ProxyCache> {
+class _GEODE_EXPORT ProxyCache : public RegionService {
   /**
    * @brief public methods
    */

@@ -3345,8 +3345,8 @@ void ChunkedInterestResponse::reset() {
 void ChunkedInterestResponse::handleChunk(const uint8_t* chunk,
                                           int32_t chunkLen,
                                           uint8_t isLastChunkWithSecurity,
-                                          const Cache* cache) {
-  auto input = cache->createDataInput(chunk, chunkLen);
+                                          const CacheImpl* cacheImpl) {
+  auto input = cacheImpl->createDataInput(chunk, chunkLen);
 
   DataInputInternal::setPoolName(*input, m_replyMsg.getPoolName());
 
@@ -3377,8 +3377,8 @@ void ChunkedKeySetResponse::reset() {
 
 void ChunkedKeySetResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
                                         uint8_t isLastChunkWithSecurity,
-                                        const Cache* cache) {
-  auto input = cache->createDataInput(chunk, chunkLen);
+                                        const CacheImpl* cacheImpl) {
+  auto input = cacheImpl->createDataInput(chunk, chunkLen);
 
   DataInputInternal::setPoolName(*input, m_replyMsg.getPoolName());
 
@@ -3452,9 +3452,9 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
 
 void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
                                        uint8_t isLastChunkWithSecurity,
-                                       const Cache* cache) {
+                                       const CacheImpl* cacheImpl) {
   LOGDEBUG("ChunkedQueryResponse::handleChunk..");
-  auto input = cache->createDataInput(chunk, chunkLen);
+  auto input = cacheImpl->createDataInput(chunk, chunkLen);
   DataInputInternal::setPoolName(*input, m_msg.getPoolName());
   uint32_t partLen;
   TcrMessageHelper::ChunkObjectType objType;
@@ -3594,9 +3594,9 @@ void ChunkedFunctionExecutionResponse::reset() {
 
 void ChunkedFunctionExecutionResponse::handleChunk(
     const uint8_t* chunk, int32_t chunkLen, uint8_t isLastChunkWithSecurity,
-    const Cache* cache) {
+    const CacheImpl* cacheImpl) {
   LOGDEBUG("ChunkedFunctionExecutionResponse::handleChunk");
-  auto input = cache->createDataInput(chunk, chunkLen);
+  auto input = cacheImpl->createDataInput(chunk, chunkLen);
   DataInputInternal::setPoolName(*input, m_msg.getPoolName());
   uint32_t partLen;
 
@@ -3728,8 +3728,8 @@ void ChunkedGetAllResponse::reset() {
 // process a GET_ALL response chunk
 void ChunkedGetAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
                                         uint8_t isLastChunkWithSecurity,
-                                        const Cache* cache) {
-  auto input = cache->createDataInput(chunk, chunkLen);
+                                        const CacheImpl* cacheImpl) {
+  auto input = cacheImpl->createDataInput(chunk, chunkLen);
   DataInputInternal::setPoolName(*input, m_msg.getPoolName());
   uint32_t partLen;
   if (TcrMessageHelper::readChunkPartHeader(
@@ -3782,8 +3782,8 @@ void ChunkedPutAllResponse::reset() {
 // process a PUT_ALL response chunk
 void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
                                         uint8_t isLastChunkWithSecurity,
-                                        const Cache* cache) {
-  auto input = cache->createDataInput(chunk, chunkLen);
+                                        const CacheImpl* cacheImpl) {
+  auto input = cacheImpl->createDataInput(chunk, chunkLen);
   DataInputInternal::setPoolName(*input, m_msg.getPoolName());
   uint32_t partLen;
   int8_t chunkType;
@@ -3817,7 +3817,7 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     const auto byte1 = input->read();
     m_msg.readSecureObjectPart(*input, false, true, isLastChunkWithSecurity);
 
-    auto pool = cache->getPoolManager().find(m_msg.getPoolName());
+    auto pool = cacheImpl->getPoolManager().find(m_msg.getPoolName());
     if (pool != nullptr && !pool->isDestroyed() &&
         pool->getPRSingleHopEnabled()) {
       ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.get());
@@ -3842,8 +3842,8 @@ void ChunkedRemoveAllResponse::reset() {
 void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
                                            int32_t chunkLen,
                                            uint8_t isLastChunkWithSecurity,
-                                           const Cache* cache) {
-  auto input = cache->createDataInput(chunk, chunkLen);
+                                           const CacheImpl* cacheImpl) {
+  auto input = cacheImpl->createDataInput(chunk, chunkLen);
   DataInputInternal::setPoolName(*input, m_msg.getPoolName());
   uint32_t partLen;
   int8_t chunkType;
@@ -3878,7 +3878,7 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
     const auto byte1 = input->read();
     m_msg.readSecureObjectPart(*input, false, true, isLastChunkWithSecurity);
 
-    auto pool = cache->getPoolManager().find(m_msg.getPoolName());
+    auto pool = cacheImpl->getPoolManager().find(m_msg.getPoolName());
     if (pool != nullptr && !pool->isDestroyed() &&
         pool->getPRSingleHopEnabled()) {
       ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.get());
@@ -3903,8 +3903,8 @@ void ChunkedDurableCQListResponse::reset() {
 void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
                                                int32_t chunkLen,
                                                uint8_t isLastChunkWithSecurity,
-                                               const Cache* cache) {
-  auto input = cache->createDataInput(chunk, chunkLen);
+                                               const CacheImpl* cacheImpl) {
+  auto input = cacheImpl->createDataInput(chunk, chunkLen);
   DataInputInternal::setPoolName(*input, m_msg.getPoolName());
 
   // read part length

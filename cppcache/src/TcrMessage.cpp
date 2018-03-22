@@ -52,8 +52,8 @@ uint8_t* TcrMessage::m_keepalive = nullptr;
 const int TcrMessage::m_flag_empty = 0x01;
 const int TcrMessage::m_flag_concurrency_checks = 0x02;
 
-TcrMessagePing* TcrMessage::getPingMessage(Cache* cache) {
-  static auto pingMsg = new TcrMessagePing(cache->createDataOutput(), true);
+TcrMessagePing* TcrMessage::getPingMessage(CacheImpl* cacheImpl) {
+  static auto pingMsg = new TcrMessagePing(cacheImpl->createDataOutput(), true);
   return pingMsg;
 }
 
@@ -62,9 +62,9 @@ TcrMessage* TcrMessage::getAllEPDisMess() {
   return allEPDisconnected;
 }
 
-TcrMessage* TcrMessage::getCloseConnMessage(Cache* cache) {
+TcrMessage* TcrMessage::getCloseConnMessage(CacheImpl* cacheImpl) {
   static auto closeConnMsg =
-      new TcrMessageCloseConnection(cache->createDataOutput(), true);
+      new TcrMessageCloseConnection(cacheImpl->createDataOutput(), true);
   return closeConnMsg;
 }
 
@@ -765,7 +765,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
                  m_msgTypeRequest == TcrMessage::PUT_ALL_WITH_CALLBACK) {
         TcrChunkedContext* chunk = new TcrChunkedContext(
             bytes, len, m_chunkedResult, isLastChunkAndisSecurityHeader,
-            m_tcdm->getConnectionManager().getCacheImpl()->getCache());
+            m_tcdm->getConnectionManager().getCacheImpl());
         m_chunkedResult->setEndpointMemId(endpointmemId);
         m_tcdm->queueChunk(chunk);
         if (bytes == nullptr) {
@@ -789,7 +789,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
         LOGDEBUG("tcrmessage in case22 ");
         TcrChunkedContext* chunk = new TcrChunkedContext(
             bytes, len, m_chunkedResult, isLastChunkAndisSecurityHeader,
-            m_tcdm->getConnectionManager().getCacheImpl()->getCache());
+            m_tcdm->getConnectionManager().getCacheImpl());
         m_chunkedResult->setEndpointMemId(endpointmemId);
         m_tcdm->queueChunk(chunk);
         if (bytes == nullptr) {

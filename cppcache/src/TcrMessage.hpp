@@ -346,11 +346,11 @@ class _GEODE_EXPORT TcrMessage {
 
   /* we need a static method to generate ping */
   /* The caller should not delete the message since it is global. */
-  static TcrMessagePing* getPingMessage(Cache* cache);
+  static TcrMessagePing* getPingMessage(CacheImpl* cacheImpl);
   static TcrMessage* getAllEPDisMess();
   /* we need a static method to generate close connection message */
   /* The caller should not delete the message since it is global. */
-  static TcrMessage* getCloseConnMessage(Cache* cache);
+  static TcrMessage* getCloseConnMessage(CacheImpl* cacheImpl);
   static void setKeepAlive(bool keepalive);
   bool isDurable() const { return m_isDurable; }
   bool receiveValues() const { return m_receiveValues; }

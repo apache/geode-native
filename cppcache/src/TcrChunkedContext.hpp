@@ -53,7 +53,7 @@ class TcrChunkedResult {
   /** handle a chunk of response message from server */
   virtual void handleChunk(const uint8_t* bytes, int32_t len,
                            uint8_t isLastChunkWithSecurity,
-                           const Cache* cache) = 0;
+                           const CacheImpl* cacheImpl) = 0;
 
  public:
   inline TcrChunkedResult()
@@ -75,14 +75,15 @@ class TcrChunkedResult {
   virtual void reset() = 0;
 
   void fireHandleChunk(const uint8_t* bytes, int32_t len,
-                       uint8_t isLastChunkWithSecurity, const Cache* cache) {
+                       uint8_t isLastChunkWithSecurity,
+                       const CacheImpl* cacheImpl) {
     if (appDomainContext) {
       appDomainContext->run(
-          [this, bytes, len, isLastChunkWithSecurity, &cache]() {
-            handleChunk(bytes, len, isLastChunkWithSecurity, cache);
+          [this, bytes, len, isLastChunkWithSecurity, cacheImpl]() {
+            handleChunk(bytes, len, isLastChunkWithSecurity, cacheImpl);
           });
     } else {
-      handleChunk(bytes, len, isLastChunkWithSecurity, cache);
+      handleChunk(bytes, len, isLastChunkWithSecurity, cacheImpl);
     }
   }
 
@@ -120,9 +121,7 @@ class TcrChunkedResult {
 
   inline bool exceptionOccurred() const { return (m_ex != nullptr); }
 
-  inline void setException(std::shared_ptr<Exception> ex) {
-    m_ex = ex;
-  }
+  inline void setException(std::shared_ptr<Exception> ex) { m_ex = ex; }
 
   inline std::shared_ptr<Exception>& getException() { return m_ex; }
 };
@@ -136,17 +135,18 @@ class TcrChunkedContext {
   const uint8_t* m_bytes;
   const int32_t m_len;
   const uint8_t m_isLastChunkWithSecurity;
-  const Cache* m_cache;
+  const CacheImpl* m_cache;
   TcrChunkedResult* m_result;
 
  public:
   inline TcrChunkedContext(const uint8_t* bytes, int32_t len,
                            TcrChunkedResult* result,
-                           uint8_t isLastChunkWithSecurity, const Cache* cache)
+                           uint8_t isLastChunkWithSecurity,
+                           const CacheImpl* cacheImpl)
       : m_bytes(bytes),
         m_len(len),
         m_isLastChunkWithSecurity(isLastChunkWithSecurity),
-        m_cache(cache),
+        m_cache(cacheImpl),
         m_result(result) {}
 
   inline ~TcrChunkedContext() { _GEODE_SAFE_DELETE_ARRAY(m_bytes); }

@@ -37,7 +37,7 @@ namespace client {
 class ThinClientPoolDM;
 class TXState {
  public:
-  TXState(Cache* cache);
+  TXState(CacheImpl* cacheImpl);
   virtual ~TXState();
 
   TXId& getTransactionId();
@@ -82,7 +82,7 @@ class TXState {
   int32_t nextModSerialNum();
   bool m_replay;
   std::vector<std::shared_ptr<TransactionalOperation>> m_operations;
-  Cache* m_cache;
+  CacheImpl* m_cache;
   ThinClientPoolDM* m_pooldm;
   long m_suspendedExpiryTaskId;
   class ReplayControl {

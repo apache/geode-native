@@ -97,7 +97,7 @@ std::shared_ptr<Region> ProxyCache::getRegion(const std::string& path) const {
       if (pool != nullptr && pool.get() == userAttachedPool.get() &&
           !pool->isDestroyed()) {
         return std::make_shared<ProxyRegion>(
-            std::const_pointer_cast<ProxyCache>(shared_from_this()),
+            const_cast<ProxyCache&>(*this),
             std::static_pointer_cast<RegionInternal>(result));
       }
       throw IllegalArgumentException(
@@ -121,8 +121,7 @@ std::shared_ptr<Region> ProxyCache::getRegion(const std::string& path) const {
 std::shared_ptr<QueryService> ProxyCache::getQueryService() {
   if (!m_isProxyCacheClosed) {
     if (m_remoteQueryService != nullptr) return m_remoteQueryService;
-    auto prqsPtr =
-        std::make_shared<ProxyRemoteQueryService>(this->shared_from_this());
+    auto prqsPtr = std::make_shared<ProxyRemoteQueryService>(this);
     m_remoteQueryService = prqsPtr;
     return prqsPtr;
   }
@@ -146,7 +145,7 @@ std::vector<std::shared_ptr<Region>> ProxyCache::rootRegions() const {
       if (m_userAttributes->getPool()->getName() ==
           reg->getAttributes().getPoolName()) {
         auto pRegion = std::make_shared<ProxyRegion>(
-            std::const_pointer_cast<ProxyCache>(shared_from_this()),
+            const_cast<ProxyCache&>(*this),
             std::static_pointer_cast<RegionInternal>(reg));
         regions.push_back(pRegion);
       }

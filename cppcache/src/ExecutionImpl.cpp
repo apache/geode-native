@@ -97,7 +97,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   GuardUserAttribures gua;
   if (m_proxyCache != nullptr) {
     LOGDEBUG("ExecutionImpl::execute function on proxy cache");
-    gua.setProxyCache(m_proxyCache.get());
+    gua.setProxyCache(m_proxyCache);
   }
   bool serverHasResult = false;
   bool serverIsHA = false;
