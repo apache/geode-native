@@ -220,7 +220,7 @@ namespace Apache
 
         if (type != nullptr)
         {
-          cache->TypeRegistry->ManagedTypeMappingGeneric[type] = typeId;
+          cache->TypeRegistry->ManagedTypeToTypeId[type] = typeId;
         }
 
         auto typeRegistry = cache->TypeRegistry;
@@ -280,7 +280,7 @@ namespace Apache
             "registered is beyond acceptable range of 0-" + WrapperEndGeneric);
         }
         NativeWrappersGeneric[typeId] = wrapperMethod;
-        ManagedTypeMappingGeneric[type] = typeId;
+        ManagedTypeToTypeId[type] = typeId;
       }
 
       void TypeRegistry::UnregisterNativesGeneric(Cache^ cache)

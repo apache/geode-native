@@ -33,6 +33,7 @@ namespace Apache
       using namespace System::Collections::Concurrent;
 
       namespace native = apache::geode::client;
+      
       ref class Cache;
 
       public ref class TypeRegistry
@@ -40,47 +41,8 @@ namespace Apache
       public:
         TypeRegistry(Cache^ cache) : m_cache(cache)
         {
-          Dictionary<Object^, Object^>^ dic = gcnew Dictionary<Object^, Object^>();
-          ManagedTypeMappingGeneric[dic->GetType()] = native::GeodeTypeIds::CacheableHashMap;
-          ManagedTypeMappingGeneric[dic->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableHashMap;
-
-          System::Collections::ArrayList^ arr = gcnew System::Collections::ArrayList();
-          ManagedTypeMappingGeneric[arr->GetType()] = native::GeodeTypeIds::CacheableVector;
-
-          System::Collections::Generic::LinkedList<Object^>^ linketList = gcnew  System::Collections::Generic::LinkedList<Object^>();
-          ManagedTypeMappingGeneric[linketList->GetType()] = native::GeodeTypeIds::CacheableLinkedList;
-          ManagedTypeMappingGeneric[linketList->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableLinkedList;
-
-          System::Collections::Generic::IList<Object^>^ iList = gcnew System::Collections::Generic::List<Object^>();
-          ManagedTypeMappingGeneric[iList->GetType()] = native::GeodeTypeIds::CacheableArrayList;
-          ManagedTypeMappingGeneric[iList->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableArrayList;
-
-        //TODO: Linked list, non generic stack, some other map types and see if more
-        
-          System::Collections::Generic::Stack<Object^>^ stack = gcnew System::Collections::Generic::Stack<Object^>();
-          ManagedTypeMappingGeneric[stack->GetType()] = native::GeodeTypeIds::CacheableStack;
-          ManagedTypeMappingGeneric[stack->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableStack;
-        
-          ManagedTypeMappingGeneric[SByte::typeid] = native::GeodeTypeIds::CacheableByte;
-          ManagedTypeMappingGeneric[Boolean::typeid] = native::GeodeTypeIds::CacheableBoolean;
-          ManagedTypeMappingGeneric[Char::typeid] = native::GeodeTypeIds::CacheableCharacter;
-          ManagedTypeMappingGeneric[Double::typeid] = native::GeodeTypeIds::CacheableDouble;
-          ManagedTypeMappingGeneric[String::typeid] = native::GeodeTypeIds::CacheableASCIIString;
-          ManagedTypeMappingGeneric[float::typeid] = native::GeodeTypeIds::CacheableFloat;
-          ManagedTypeMappingGeneric[Int16::typeid] = native::GeodeTypeIds::CacheableInt16;
-          ManagedTypeMappingGeneric[Int32::typeid] = native::GeodeTypeIds::CacheableInt32;
-          ManagedTypeMappingGeneric[Int64::typeid] = native::GeodeTypeIds::CacheableInt64;
-          ManagedTypeMappingGeneric[Type::GetType("System.Byte[]")] = native::GeodeTypeIds::CacheableBytes;
-          ManagedTypeMappingGeneric[Type::GetType("System.Double[]")] = native::GeodeTypeIds::CacheableDoubleArray;
-          ManagedTypeMappingGeneric[Type::GetType("System.Single[]")] = native::GeodeTypeIds::CacheableFloatArray;
-          ManagedTypeMappingGeneric[Type::GetType("System.Int16[]")] = native::GeodeTypeIds::CacheableInt16Array;
-          ManagedTypeMappingGeneric[Type::GetType("System.Int32[]")] = native::GeodeTypeIds::CacheableInt32Array;
-          ManagedTypeMappingGeneric[Type::GetType("System.Int64[]")] = native::GeodeTypeIds::CacheableInt64Array;
-          ManagedTypeMappingGeneric[Type::GetType("System.String[]")] = native::GeodeTypeIds::CacheableStringArray;
-          ManagedTypeMappingGeneric[Type::GetType("System.DateTime")] = native::GeodeTypeIds::CacheableDate;
-          ManagedTypeMappingGeneric[Type::GetType("System.Collections.Hashtable")] = native::GeodeTypeIds::CacheableHashTable;
-        
         }
+
         property IPdxSerializer^ PdxSerializer
         {
           IPdxSerializer^ get() {
@@ -180,6 +142,7 @@ namespace Apache
           return ret;
         }
 
+      internal:
         generic<class TValue>
           static TValue GetManagedValueGeneric(std::shared_ptr<native::Serializable> val);
 
@@ -213,7 +176,7 @@ namespace Apache
         static Byte GetManagedTypeMappingGeneric(Type^ type)
         {
           Byte retVal = 0;
-          ManagedTypeMappingGeneric->TryGetValue(type, retVal);
+          ManagedTypeToTypeId->TryGetValue(type, retVal);
           return retVal;
         }
 
@@ -247,14 +210,70 @@ namespace Apache
 
         Dictionary<Byte, TypeFactoryNativeMethodGeneric^>^ BuiltInDelegatesGeneric =
           gcnew Dictionary<Byte, TypeFactoryNativeMethodGeneric^>();
-        //*** here
-        static Dictionary<System::Type^, Byte>^ ManagedTypeMappingGeneric =
+
+        // Fixed .NET to DSCode mapping
+        static Dictionary<System::Type^, Byte>^ ManagedTypeToTypeId =
           gcnew Dictionary<System::Type^, Byte>();
+
         literal Byte WrapperEndGeneric = 128;
         static array<WrapperDelegateGeneric^>^ NativeWrappersGeneric =
           gcnew array<WrapperDelegateGeneric^>(WrapperEndGeneric + 1);
 
         Type^ GetTypeFromRefrencedAssemblies(String^ className, Dictionary<Assembly^, bool>^ referedAssembly, Assembly^ currentAssembly);
+      
+
+        static TypeRegistry()
+        {
+          InitializeManagedTypeToTypeId();
+        }
+
+        /// <summary>
+        /// Initializes a static map of .NET types to DataSerializable codes. Internally
+        /// we call it TypeId.
+        /// </summary>
+        static void InitializeManagedTypeToTypeId()
+        {
+          Dictionary<Object^, Object^>^ dic = gcnew Dictionary<Object^, Object^>();
+          ManagedTypeToTypeId[dic->GetType()] = native::GeodeTypeIds::CacheableHashMap;
+          ManagedTypeToTypeId[dic->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableHashMap;
+
+          System::Collections::ArrayList^ arr = gcnew System::Collections::ArrayList();
+          ManagedTypeToTypeId[arr->GetType()] = native::GeodeTypeIds::CacheableVector;
+
+          System::Collections::Generic::LinkedList<Object^>^ linketList = gcnew  System::Collections::Generic::LinkedList<Object^>();
+          ManagedTypeToTypeId[linketList->GetType()] = native::GeodeTypeIds::CacheableLinkedList;
+          ManagedTypeToTypeId[linketList->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableLinkedList;
+
+          System::Collections::Generic::IList<Object^>^ iList = gcnew System::Collections::Generic::List<Object^>();
+          ManagedTypeToTypeId[iList->GetType()] = native::GeodeTypeIds::CacheableArrayList;
+          ManagedTypeToTypeId[iList->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableArrayList;
+
+          //TODO: Linked list, non generic stack, some other map types and see if more
+
+          System::Collections::Generic::Stack<Object^>^ stack = gcnew System::Collections::Generic::Stack<Object^>();
+          ManagedTypeToTypeId[stack->GetType()] = native::GeodeTypeIds::CacheableStack;
+          ManagedTypeToTypeId[stack->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableStack;
+
+          ManagedTypeToTypeId[SByte::typeid] = native::GeodeTypeIds::CacheableByte;
+          ManagedTypeToTypeId[Boolean::typeid] = native::GeodeTypeIds::CacheableBoolean;
+          ManagedTypeToTypeId[Char::typeid] = native::GeodeTypeIds::CacheableCharacter;
+          ManagedTypeToTypeId[Double::typeid] = native::GeodeTypeIds::CacheableDouble;
+          ManagedTypeToTypeId[String::typeid] = native::GeodeTypeIds::CacheableASCIIString;
+          ManagedTypeToTypeId[float::typeid] = native::GeodeTypeIds::CacheableFloat;
+          ManagedTypeToTypeId[Int16::typeid] = native::GeodeTypeIds::CacheableInt16;
+          ManagedTypeToTypeId[Int32::typeid] = native::GeodeTypeIds::CacheableInt32;
+          ManagedTypeToTypeId[Int64::typeid] = native::GeodeTypeIds::CacheableInt64;
+          ManagedTypeToTypeId[Type::GetType("System.Byte[]")] = native::GeodeTypeIds::CacheableBytes;
+          ManagedTypeToTypeId[Type::GetType("System.Double[]")] = native::GeodeTypeIds::CacheableDoubleArray;
+          ManagedTypeToTypeId[Type::GetType("System.Single[]")] = native::GeodeTypeIds::CacheableFloatArray;
+          ManagedTypeToTypeId[Type::GetType("System.Int16[]")] = native::GeodeTypeIds::CacheableInt16Array;
+          ManagedTypeToTypeId[Type::GetType("System.Int32[]")] = native::GeodeTypeIds::CacheableInt32Array;
+          ManagedTypeToTypeId[Type::GetType("System.Int64[]")] = native::GeodeTypeIds::CacheableInt64Array;
+          ManagedTypeToTypeId[Type::GetType("System.String[]")] = native::GeodeTypeIds::CacheableStringArray;
+          ManagedTypeToTypeId[Type::GetType("System.DateTime")] = native::GeodeTypeIds::CacheableDate;
+          ManagedTypeToTypeId[Type::GetType("System.Collections.Hashtable")] = native::GeodeTypeIds::CacheableHashTable;
+        }
+
       };
     }  // namespace Client
   }  // namespace Geode
