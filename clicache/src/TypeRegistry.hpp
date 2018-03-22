@@ -173,7 +173,7 @@ namespace Apache
         /// <summary>
         /// This is to get manged delegates.
         /// </summary>
-        static TypeFactoryMethodGeneric^ GetManagedDelegateGeneric(System::Int64 typeId)
+        TypeFactoryMethodGeneric^ GetManagedDelegateGeneric(System::Int64 typeId)
         {
           TypeFactoryMethodGeneric^ ret = nullptr;
           ManagedDelegatesGeneric->TryGetValue(typeId, ret);
@@ -238,7 +238,7 @@ namespace Apache
         Dictionary<String^, PdxTypeFactoryMethod^>^ PdxDelegateMap =
           gcnew Dictionary<String^, PdxTypeFactoryMethod^>();
 
-        static Dictionary<System::Int64, TypeFactoryMethodGeneric^>^ ManagedDelegatesGeneric =
+        Dictionary<System::Int64, TypeFactoryMethodGeneric^>^ ManagedDelegatesGeneric =
           gcnew Dictionary<System::Int64, TypeFactoryMethodGeneric^>();
         static List<TypeFactoryNativeMethodGeneric^>^ NativeDelegatesGeneric =
           gcnew List<TypeFactoryNativeMethodGeneric^>();

@@ -179,10 +179,12 @@ namespace Apache
 
         //--------------------------------------------------------------
 
+        auto typeRegistry = cache->TypeRegistry;
+
         //adding user type as well in global builtin hashmap
         System::Int64 classId = ((System::Int64)creationMethod()->ClassId);
-        if (!ManagedDelegatesGeneric->ContainsKey(classId))
-          ManagedDelegatesGeneric->Add(classId, creationMethod);
+        if (!typeRegistry->ManagedDelegatesGeneric->ContainsKey(classId))
+          typeRegistry->ManagedDelegatesGeneric->Add(classId, creationMethod);
 
         auto delegateObj = gcnew DelegateWrapperGeneric(creationMethod);
         auto nativeDelegate = gcnew TypeFactoryNativeMethodGeneric(delegateObj,
@@ -221,10 +223,12 @@ namespace Apache
           ManagedTypeMappingGeneric[type] = typeId;
         }
 
+        auto typeRegistry = cache->TypeRegistry;
+
         //This is hashmap for manged builtin objects
-        if (!ManagedDelegatesGeneric->ContainsKey(typeId + 0x80000000))
+        if (!typeRegistry->ManagedDelegatesGeneric->ContainsKey(typeId + 0x80000000))
         {
-          ManagedDelegatesGeneric->Add(typeId + 0x80000000, creationMethod);
+          typeRegistry->ManagedDelegatesGeneric->Add(typeId + 0x80000000, creationMethod);
         }
 
         // register the type in the DelegateMap

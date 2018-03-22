@@ -94,6 +94,34 @@ namespace Apache.Geode.Client.UnitTests
       Assert.Equal("foo", cacheTwo.TypeRegistry.GetLocalTypeName("foo"));
     }
 
+    static bool pdxDelegate1Called = false;
+    static IPdxSerializable delegateForPdx1()
+    {
+      pdxDelegate1Called = true;
+      return Pdx1.CreateDeserializable();
+    }
+    static bool pdxDelegate2Called = false;
+    static IPdxSerializable delegateForPdx2()
+    {
+      pdxDelegate2Called = true;
+      return Pdx2.CreateDeserializable();
+    }
+
+    [Fact]
+    public void RegisterPdxType()
+    {
+      cacheOne.TypeRegistry.RegisterPdxType(delegateForPdx1);
+      cacheTwo.TypeRegistry.RegisterPdxType(delegateForPdx2);
+
+      pdxDelegate1Called = false;
+      var pdx1Type = cacheOne.TypeRegistry.GetPdxType(typeof(Pdx1).FullName);
+      Assert.True(pdxDelegate1Called);
+
+      pdxDelegate2Called = false;
+      var pdx2Type = cacheOne.TypeRegistry.GetPdxType(typeof(Pdx2).FullName);
+      Assert.False(pdxDelegate2Called);
+    }
+
     [Fact]
     public void GetPut_withMultipleCaches()
     {
@@ -120,65 +148,6 @@ namespace Apache.Geode.Client.UnitTests
 
       cacheXml.Dispose();
       geodeServer.Dispose();
-    }
-
-    [Fact]
-    public void PdxSerializer_MultipleCaches()
-    {
-      var geodeServer = new GeodeServer();
-      var cacheXml = new CacheXml(new FileInfo("cache.xml"), geodeServer);
-
-      var cacheFactory = new CacheFactory();
-
-      cacheOne = cacheFactory.Create();
-      cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
-      cacheTwo = cacheFactory.Create();
-      cacheTwo.InitializeDeclarativeCache(cacheXml.File.FullName);
-
-      var regionForCache1 = cacheOne.GetRegion<string, Pdx1>("testRegion1");
-      var regionForCache2 = cacheTwo.GetRegion<string, Pdx2>("testRegion1");
-
-      cacheOne.TypeRegistry.RegisterPdxType(Pdx1.CreateDeserializable);
-      cacheTwo.TypeRegistry.RegisterPdxType(Pdx2.CreateDeserializable);
-
-      // Put data in cache1
-      Pdx1 pdx1Src1 = new Pdx1(77, 10, new string[] { "LEAF", "Volt", "Bolt" });
-      Pdx1 pdx1Src2 = new Pdx1(88, 11, new string[] { "Charger", "Challenger", "Mustang", "Corvette" });
-      Pdx1 pdx1Src3 = new Pdx1(99, 12, new string[] { "Dominica", "LaMichael", "LaMarcus", "LaDamian" });
-      regionForCache1["1"] = pdx1Src1;
-      regionForCache1["2"] = pdx1Src2;
-      regionForCache1["3"] = pdx1Src3;
-
-      //// Put data in cache2
-      Pdx2 pdx2Src1 = new Pdx2(777, 100, new string[] { "A" }, new string[] { "Pearl" });
-      Pdx2 pdx2Src2 = new Pdx2(888, 101, new string[] { "B", "C" }, new string[] { "Chicago", "Detroit" });
-      Pdx2 pdx2Src3 = new Pdx2(888, 101, new string[] { "D", "E", "F" }, new string[] { "Flint", "Davison", "Saginaw" });
-      regionForCache2["1"] = pdx2Src1;
-      regionForCache2["2"] = pdx2Src2;
-      regionForCache2["3"] = pdx2Src3;
-
-      // Get data from cache1 and verify
-      try
-      {
-        var pdx11 = regionForCache1["1"];
-        Pdx1 pdx12 = regionForCache1["2"];
-        Pdx1 pdx13 = regionForCache1["3"];
-        Assert.Equal(pdx11.ToString(), pdx1Src1.ToString());
-        Assert.Equal(pdx12.ToString(), pdx1Src2.ToString());
-        Assert.Equal(pdx13.ToString(), pdx1Src3.ToString());
-
-        //// Get data from cache2 and verify
-        Pdx2 pdx21 = regionForCache2["1"];
-        Pdx2 pdx22 = regionForCache2["2"];
-        Pdx2 pdx23 = regionForCache2["3"];
-        Assert.Equal(pdx21.ToString(), pdx2Src1.ToString());
-        Assert.Equal(pdx22.ToString(), pdx2Src2.ToString());
-        Assert.Equal(pdx23.ToString(), pdx2Src3.ToString());
-      }
-      catch ( System.InvalidCastException ex)
-      {
-        Assert.True(false, ex.ToString());
-      }
     }
   }
 
