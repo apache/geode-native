@@ -12,8 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required( VERSION 3.3 )
-project( sqlite-netFx )
+
+project( sqlite-netFx LANGUAGES NONE )
 set( ${PROJECT_NAME}_VERSION 1.0.102.0 )
 set( ${PROJECT_NAME}_SHA265 b980e8a151ddc685ed30652d39573381aef7b623478cba80b02d0795607638e1 )
 set( ${PROJECT_NAME}_URL "https://system.data.sqlite.org/blobs/${${PROJECT_NAME}_VERSION}/${PROJECT_NAME}451-binary-x64-2013-${${PROJECT_NAME}_VERSION}.zip" )

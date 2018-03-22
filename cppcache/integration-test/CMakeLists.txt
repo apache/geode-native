@@ -12,8 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required(VERSION 3.4)
-project(nativeclient.tests.cppcache)
+
+cmake_minimum_required(VERSION 3.10)
+project(nativeclient.tests.cppcache LANGUAGES CXX)
 
 set(TEST_UTILS_LIB test-cppcache-utils)
 add_library(${TEST_UTILS_LIB} STATIC fw_dunit.cpp BBNamingContext.cpp CacheHelper.cpp)
@@ -28,8 +29,9 @@ target_compile_definitions(${TEST_UTILS_LIB}
   PRIVATE
     $<MAKE_C_IDENTIFIER:${TEST_UTILS_LIB}>_static=1
 )
-target_include_directories(${TEST_UTILS_LIB} PRIVATE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../src>
+target_include_directories(${TEST_UTILS_LIB}
+  PRIVATE
+    $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
 add_library(unit_test_callbacks SHARED LibraryCallbacks.cpp)
@@ -38,10 +40,10 @@ target_link_libraries(unit_test_callbacks
     ACE
   PUBLIC
     apache-geode
-    c++11
 )
-target_include_directories(unit_test_callbacks PRIVATE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../src>
+target_include_directories(unit_test_callbacks
+  PRIVATE
+    $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
 enable_testing()
@@ -81,10 +83,9 @@ foreach(FILE ${SOURCES})
       apache-geode
       testobject
       fwk
-      c++11
   )
   target_include_directories(${TEST} PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../src>
+    $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
   )
 
   # Some tests depend on these library

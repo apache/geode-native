@@ -12,8 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required( VERSION 3.4 )
-project( gtest )
+
+project( gtest LANGUAGES NONE )
 
 set( ${PROJECT_NAME}_VERSION 1.8.0 )
 set( ${PROJECT_NAME}_SHA265 f3ed3b58511efd272eb074a3a6d6fb79d7c2e6a0e374323d1e6bcbcc1ef141bf )

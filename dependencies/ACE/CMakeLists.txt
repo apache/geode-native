@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( ACE )
+project( ACE LANGUAGES NONE )
 
 set( ${PROJECT_NAME}_VERSION 6.4.7 )
 set( ${PROJECT_NAME}_SHA265 b2b59a5f49b164121a8d1c109ff04fc23fcd67cfad040772e8c045c8a34cdabe )

@@ -12,12 +12,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required(VERSION 3.4)
-project(templates.security)
 
-file(GLOB_RECURSE SOURCES "*.cpp")
+cmake_minimum_required(VERSION 3.10)
+project(templates.security LANGUAGES CXX)
 
-add_library(securityImpl SHARED ${SOURCES} CMakeLists.txt.forInstall)
+add_library(securityImpl SHARED
+  PkcsAuthInit.cpp
+  PkcsAuthInit.hpp
+  UserPasswordAuthInit.cpp
+  UserPasswordAuthInit.hpp
+  CMakeLists.txt.forInstall
+)
 
 target_link_libraries(securityImpl
   PUBLIC

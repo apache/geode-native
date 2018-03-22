@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( libxml2 )
+project( libxml2 LANGUAGES NONE )
 
 set( ${PROJECT_NAME}_VERSION 2.9.7 )
 set( ${PROJECT_NAME}_SHA265 f63c5e7d30362ed28b38bfa1ac6313f9a80230720b7fb6c80575eeab3ff5900c )
