@@ -130,7 +130,7 @@ namespace Apache
         /// Unregister the type with the given typeId
         /// </summary>
         /// <param name="typeId">typeId of the type to unregister.</param>
-        static void UnregisterTypeGeneric(Byte typeId, Cache^ cache);
+        void UnregisterTypeGeneric(Byte typeId);
 
         /// <summary>
         /// This is to get manged delegates.

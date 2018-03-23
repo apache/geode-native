@@ -408,28 +408,28 @@ namespace Apache
 
           TypeRegistry::UnregisterNativesGeneric(cache);
 
-          TypeRegistry::UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableDate, cache);
-          TypeRegistry::UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableFileName, cache);
-          TypeRegistry::UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableHashMap, cache);
-          TypeRegistry::UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableHashTable, cache);
-          TypeRegistry::UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableIdentityHashMap, cache);
-          TypeRegistry::UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableVector, cache);
-          TypeRegistry::UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableObjectArray, cache);
-          TypeRegistry::UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableArrayList, cache);
-          TypeRegistry::UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableStack, cache);
-          TypeRegistry::UnregisterTypeGeneric(
-            GeodeClassIds::CacheableManagedObject - 0x80000000, cache);
-          TypeRegistry::UnregisterTypeGeneric(
-            GeodeClassIds::CacheableManagedObjectXml - 0x80000000, cache);
+          cache->TypeRegistry->UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableDate);
+          cache->TypeRegistry->UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableFileName);
+          cache->TypeRegistry->UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableHashMap);
+          cache->TypeRegistry->UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableHashTable);
+          cache->TypeRegistry->UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableIdentityHashMap);
+          cache->TypeRegistry->UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableVector);
+          cache->TypeRegistry->UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableObjectArray);
+          cache->TypeRegistry->UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableArrayList);
+          cache->TypeRegistry->UnregisterTypeGeneric(
+            native::GeodeTypeIds::CacheableStack);
+          cache->TypeRegistry->UnregisterTypeGeneric(
+            GeodeClassIds::CacheableManagedObject - 0x80000000);
+          cache->TypeRegistry->UnregisterTypeGeneric(
+            GeodeClassIds::CacheableManagedObjectXml - 0x80000000);
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }

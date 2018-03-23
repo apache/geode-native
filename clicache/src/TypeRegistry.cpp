@@ -261,12 +261,12 @@ namespace Apache
         }
       }
 
-      void TypeRegistry::UnregisterTypeGeneric(Byte typeId, Cache^ cache)
+      void TypeRegistry::UnregisterTypeGeneric(Byte typeId)
       {
-        cache->TypeRegistry->BuiltInDelegatesGeneric->Remove(typeId);
+        BuiltInDelegatesGeneric->Remove(typeId);
         _GF_MG_EXCEPTION_TRY2
 
-          CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->removeType(typeId);
+          CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry()->removeType(typeId);
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
