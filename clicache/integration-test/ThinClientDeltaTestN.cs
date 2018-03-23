@@ -254,7 +254,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        TypeRegistry.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -289,7 +289,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        TypeRegistry.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -337,7 +337,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        TypeRegistry.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -381,7 +381,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        TypeRegistry.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -414,7 +414,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        TypeRegistry.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -447,7 +447,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        TypeRegistry.RegisterTypeGeneric(DeltaTestAD.Create, CacheHelper.DCache);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(DeltaTestAD.Create, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -571,7 +571,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        TypeRegistry.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(DeltaEx.create, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {
@@ -588,7 +588,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        TypeRegistry.RegisterTypeGeneric(DeltaTestImpl.CreateDeserializable, CacheHelper.DCache);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(DeltaTestImpl.CreateDeserializable, CacheHelper.DCache);
       }
       catch (IllegalStateException)
       {

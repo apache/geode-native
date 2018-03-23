@@ -108,7 +108,7 @@ namespace Apache
         /// in registering the type; check <c>Utils::LastError</c> for more
         /// information in the latter case.
         /// </exception>
-        static void RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod, Cache^ cache);
+        void RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod, Cache^ cache);
 
         /// <summary>
         /// Register an instance factory method for a given type and typeId.
@@ -122,7 +122,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if the method is null
         /// </exception>
-        static void RegisterTypeGeneric(Byte typeId, TypeFactoryMethodGeneric^ creationMethod, 
+        void RegisterTypeGeneric(Byte typeId, TypeFactoryMethodGeneric^ creationMethod, 
           Type^ type, Cache^ cache);
 
 
