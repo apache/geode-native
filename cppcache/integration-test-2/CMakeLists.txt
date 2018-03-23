@@ -52,6 +52,7 @@ target_link_libraries(integration-test-2
 if(WIN32)
   target_compile_definitions(integration-test-2
     PUBLIC
+      # Required for Boost.WinAPI
       _WIN32_WINNT=0x06020000
   )
 
