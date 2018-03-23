@@ -50,6 +50,11 @@ target_link_libraries(integration-test-2
 )
 
 if(WIN32)
+  target_compile_definitions(integration-test-2
+    PUBLIC
+      _WIN32_WINNT=0x06020000
+  )
+
   foreach (_target apache-geode testobject)
     add_custom_command(TARGET integration-test-2 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:${_target}>" "$<TARGET_FILE_DIR:integration-test-2>")
@@ -59,4 +64,3 @@ endif()
 enable_testing()
 include(GoogleTest)
 gtest_discover_tests(integration-test-2)
-
