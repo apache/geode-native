@@ -96,6 +96,33 @@ if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   )
 endif()
 
+
+function(ADD_BOOST_LIBRARY)
+  set(options)
+  set(oneValueArgs)
+  set(multiValueArgs LIBRARIES DEPENDENCIES)
+  cmake_parse_arguments(PARSE_ARGV 1 args "${options}" "${oneValueArgs}" "${multiValueArgs}")
+
+  set(args_NAME ${ARGV0})
+
+  if (NOT DEFINED args_LIBRARIES OR args_LIBRARIES STREQUAL "")
+    set(args_LIBRARIES ${args_NAME})
+  endif()
+
+  set(linkLibraries)
+  foreach(library ${args_LIBRARIES})
+    list(APPEND linkLibraries "${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_${args_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  endforeach()
+
+  add_library(boost_${args_NAME} INTERFACE)
+  target_link_libraries(boost_${args_NAME} INTERFACE
+    ${linkLibraries}
+    ${args_DEPENDENCIES}
+  )
+  add_library(Boost::${args_NAME} ALIAS boost_${args_NAME})
+endfunction()
+
+
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE
   $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/include>
@@ -109,32 +136,9 @@ target_link_libraries(${PROJECT_NAME} INTERFACE
 add_library(Boost::boost ALIAS boost)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXTERN})
 
-add_library(boost_system INTERFACE)
-target_link_libraries(boost_system INTERFACE
-  ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_system${CMAKE_STATIC_LIBRARY_SUFFIX}
-)
-add_library(Boost::system ALIAS boost_system)
-
-add_library(boost_thread INTERFACE)
-target_link_libraries(boost_thread INTERFACE
-  ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_thread${CMAKE_STATIC_LIBRARY_SUFFIX}
-  Boost::boost
-)
-add_library(Boost::thread ALIAS boost_thread)
-
-add_library(boost_filesystem INTERFACE)
-target_link_libraries(boost_filesystem INTERFACE
-  ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_filesystem${CMAKE_STATIC_LIBRARY_SUFFIX}
-  Boost::boost
-)
-add_library(Boost::filesystem ALIAS boost_filesystem)
-
-add_library(boost_log INTERFACE)
-target_link_libraries(boost_log INTERFACE
-  ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_log${CMAKE_STATIC_LIBRARY_SUFFIX}
-  ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_log_setup${CMAKE_STATIC_LIBRARY_SUFFIX}
-  Boost::thread
-  Boost::filesystem
-  Boost::boost
-)
-add_library(Boost::log ALIAS boost_log)
+add_boost_library(system DEPENDENCIES Boost::boost)
+add_boost_library(atomic DEPENDENCIES Boost::boost)
+add_boost_library(thread DEPENDENCIES Boost::atomic Boost::boost)
+add_boost_library(filesystem DEPENDENCIES Boost::boost)
+add_boost_library(log DEPENDENCIES Boost::thread Boost::filesystem Boost::boost)
+add_boost_library(log_setup DEPENDENCIES Boost::log)
