@@ -28,8 +28,6 @@ add_executable(${PROJECT_NAME}
   framework/Framework.h
   framework/Cluster.cpp
   framework/Cluster.h
-  framework/GfshProcess.cpp
-  framework/GfshProcess.h
   framework/GfshExecute.cpp
   framework/GfshExecute.h
   RegionPutGetAllTest.cpp
@@ -54,6 +52,13 @@ target_link_libraries(${PROJECT_NAME}
     Boost::system
     Boost::log
 )
+
+if(WIN32)
+  foreach (_target apache-geode testobject)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:${_target}>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>")
+  endforeach()
+endif()
 
 enable_testing()
 include(GoogleTest)

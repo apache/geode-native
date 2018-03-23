@@ -67,7 +67,7 @@ class GfshExecute : public Gfsh {
     commands.push_back(command);
 
     auto env = boost::this_process::environment();
-    env["JAVA_ARGS"] = "-Xmx1g -client";
+    // broken on windows env["JAVA_ARGS"] = "-Xmx1g -client";
 
     ipstream outStream;
     ipstream errStream;
@@ -88,9 +88,9 @@ class GfshExecute : public Gfsh {
   }
 
   void extractConnectionCommand(const std::string &command) {
-    if (starts_with(command, std::__1::string("connect"))) {
+    if (starts_with(command, std::string("connect"))) {
       connection_ = command;
-    } else if (starts_with(command, std::__1::string("start locator"))) {
+    } else if (starts_with(command, std::string("start locator"))) {
       auto jmxManagerHost = std::string("localhost");
       auto jmxManagerPort = std::string("1099");
 

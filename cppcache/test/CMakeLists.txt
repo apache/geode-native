@@ -51,9 +51,9 @@ endif()
 target_link_libraries(${PROJECT_NAME}
   PRIVATE
     apache-geode-static
-    gtest
-    gtest_main
-    boost
+    GTest::GTest
+    GTest::Main
+    Boost::boost
 )
 
 target_include_directories(${PROJECT_NAME}

@@ -210,7 +210,7 @@ if (WIN32 OR ${CMAKE_GENERATOR} STREQUAL "Xcode")
   set ( _DEBUG_OR_RELEASE $<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:Release>)
 else()
   set(CMAKE_USES_BUILDTYPE FALSE)
-  set ( _DEBUG_OR_RELEASE )
+  set ( _DEBUG_OR_RELEASE .)
 endif()
 
 # Default to only showing output on failure for unit tests but allow

@@ -37,24 +37,24 @@ using namespace apache::geode::client;
 using namespace std::chrono;
 using namespace PdxTests;
 
-template <int32_t Index, class PdxType> struct PdxTypesHelper {
+template <int32_t Index, class PdxType>
+struct PdxTypesHelper {
   static constexpr int32_t index = Index;
   using type = PdxType;
 };
 
-using PdxTypesHelper1 = struct PdxTypesHelper<1, PdxTypes1>;
-using PdxTypesHelper2 = struct PdxTypesHelper<2, PdxTypes2>;
-using PdxTypesHelper3 = struct PdxTypesHelper<3, PdxTypes3>;
-using PdxTypesHelper4 = struct PdxTypesHelper<4, PdxTypes4>;
-using PdxTypesHelper5 = struct PdxTypesHelper<5, PdxTypes5>;
-using PdxTypesHelper6 = struct PdxTypesHelper<6, PdxTypes6>;
-using PdxTypesHelper7 = struct PdxTypesHelper<7, PdxTypes7>;
-using PdxTypesHelper8 = struct PdxTypesHelper<8, PdxTypes8>;
-using PdxTypesHelper9 = struct PdxTypesHelper<9, PdxTypes9>;
-using PdxTypesHelper10 = struct PdxTypesHelper<10, PdxTypes10>;
+using PdxTypesHelper1 = PdxTypesHelper<1, PdxTypes1>;
+using PdxTypesHelper2 = PdxTypesHelper<2, PdxTypes2>;
+using PdxTypesHelper3 = PdxTypesHelper<3, PdxTypes3>;
+using PdxTypesHelper4 = PdxTypesHelper<4, PdxTypes4>;
+using PdxTypesHelper5 = PdxTypesHelper<5, PdxTypes5>;
+using PdxTypesHelper6 = PdxTypesHelper<6, PdxTypes6>;
+using PdxTypesHelper7 = PdxTypesHelper<7, PdxTypes7>;
+using PdxTypesHelper8 = PdxTypesHelper<8, PdxTypes8>;
+using PdxTypesHelper9 = PdxTypesHelper<9, PdxTypes9>;
+using PdxTypesHelper10 = PdxTypesHelper<10, PdxTypes10>;
 
 std::shared_ptr<Region> setupRegion(Cache &cache) {
-
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
                     .setPoolName("default")
                     .create("region");
@@ -85,25 +85,25 @@ void setupPdxTypes(Cache &cache) {
 HashMapOfCacheable setupMap() {
   HashMapOfCacheable map;
   map.emplace(CacheableInt32::create(PdxTypesHelper1::index),
-                    std::make_shared<PdxTypesHelper1::type>());
+              std::make_shared<PdxTypesHelper1::type>());
   map.emplace(CacheableInt32::create(PdxTypesHelper2::index),
-                    std::make_shared<PdxTypesHelper2::type>());
+              std::make_shared<PdxTypesHelper2::type>());
   map.emplace(CacheableInt32::create(PdxTypesHelper3::index),
-                    std::make_shared<PdxTypesHelper3::type>());
+              std::make_shared<PdxTypesHelper3::type>());
   map.emplace(CacheableInt32::create(PdxTypesHelper4::index),
-                    std::make_shared<PdxTypesHelper4::type>());
+              std::make_shared<PdxTypesHelper4::type>());
   map.emplace(CacheableInt32::create(PdxTypesHelper5::index),
-                    std::make_shared<PdxTypesHelper5::type>());
+              std::make_shared<PdxTypesHelper5::type>());
   map.emplace(CacheableInt32::create(PdxTypesHelper6::index),
-                    std::make_shared<PdxTypesHelper6::type>());
+              std::make_shared<PdxTypesHelper6::type>());
   map.emplace(CacheableInt32::create(PdxTypesHelper7::index),
-                    std::make_shared<PdxTypesHelper7::type>());
+              std::make_shared<PdxTypesHelper7::type>());
   map.emplace(CacheableInt32::create(PdxTypesHelper8::index),
-                    std::make_shared<PdxTypesHelper8::type>());
+              std::make_shared<PdxTypesHelper8::type>());
   map.emplace(CacheableInt32::create(PdxTypesHelper9::index),
-                    std::make_shared<PdxTypesHelper9::type>());
+              std::make_shared<PdxTypesHelper9::type>());
   map.emplace(CacheableInt32::create(PdxTypesHelper10::index),
-                    std::make_shared<PdxTypesHelper10::type>());
+              std::make_shared<PdxTypesHelper10::type>());
   return map;
 }
 
@@ -132,23 +132,22 @@ void assert_eq(HashMapOfCacheable &expected, HashMapOfCacheable &actual) {
   assert_eq<PdxTypesHelper10>(expected, actual);
 }
 
-template <class Key, class ... Tail>
-std::vector<Key> to_keys(std::unordered_map<Key, Tail ...> map) {
+template <class Key, class... Tail>
+std::vector<Key> to_keys(std::unordered_map<Key, Tail...> map) {
   std::vector<Key> keys;
   keys.reserve(map.size());
-  for (const auto& entry : map) {
+  for (const auto &entry : map) {
     keys.push_back(entry.first);
   }
   return keys;
 };
 
 template <class Container>
-void localDestroy(Region& region, const Container keys) {
-  for (const auto& key : keys) {
+void localDestroy(Region &region, const Container keys) {
+  for (const auto &key : keys) {
     region.localDestroy(key);
   }
 }
-
 
 /**
  * Port of testThinClientPutGetAll
@@ -183,4 +182,4 @@ TEST(RegionPutGetAllTest, variousPdxTypes) {
   assert_eq(putAllMap, getAllMap);
 }
 
-} // namespace
+}  // namespace
