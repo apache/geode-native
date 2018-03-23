@@ -26,6 +26,7 @@
  *      Author: vrao
  */
 
+#include <geode/AuthenticatedView.hpp>
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "CacheImplHelper.hpp"
@@ -62,19 +63,25 @@ void createRegionForSecurity(
     sprintf(buff, "%s_%d", poolName, index++);
     poolName = buff;
   }
+
   printf("createRegionForSecurity poolname = %s \n", poolName);
+
   getHelper()->createPoolWithLocators(
       poolName, locatorsG, clientNotificationEnabled, subscriptionRedundancy,
       std::chrono::milliseconds::zero(), connections, isMultiuserMode);
+
   createRegionAndAttachPool(name, ackMode, poolName, caching);
   setCacheListener(name, listener);
 }
+
 std::shared_ptr<Pool> getPool(const char* name) {
   return getHelper()->getCache()->getPoolManager().find(name);
 }
- std::shared_ptr<RegionService> getVirtualCache(std::shared_ptr<Properties> creds, std::shared_ptr<Pool> pool) {
-   auto cachePtr = getHelper()->getCache();
-   return cachePtr->createAuthenticatedView(creds, pool->getName());
- }
+
+AuthenticatedView getVirtualCache(std::shared_ptr<Properties> creds,
+                                  std::shared_ptr<Pool> pool) {
+  auto cachePtr = getHelper()->getCache();
+  return cachePtr->createAuthenticatedView(creds, pool->getName());
+}
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTSECURITY_H_

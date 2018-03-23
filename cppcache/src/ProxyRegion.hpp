@@ -40,7 +40,7 @@
 #include <geode/Query.hpp>
 
 #include "RegionInternal.hpp"
-#include "ProxyCache.hpp"
+#include <geode/AuthenticatedView.hpp>
 
 namespace apache {
 namespace geode {
@@ -91,13 +91,13 @@ class _GEODE_EXPORT ProxyRegion : public Region {
 
   virtual void destroyRegion(const std::shared_ptr<Serializable>&
                                  aCallbackArgument = nullptr) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     m_realRegion->destroyRegion(aCallbackArgument);
   }
 
   virtual void clear(const std::shared_ptr<Serializable>& aCallbackArgument =
                          nullptr) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     m_realRegion->clear(aCallbackArgument);
   }
 
@@ -119,7 +119,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
 
     if (rPtr == nullptr) return rPtr;
 
-    return std::make_shared<ProxyRegion>(*m_proxyCache, rPtr);
+    return std::make_shared<ProxyRegion>(*m_authenticatedView, rPtr);
   }
 
   virtual std::shared_ptr<Region> createSubregion(
@@ -140,7 +140,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
                    [this](const std::shared_ptr<Region>& realRegion)
                        -> std::shared_ptr<ProxyRegion> {
                      return std::make_shared<ProxyRegion>(
-                         *m_proxyCache,
+                         *m_authenticatedView,
                          std::static_pointer_cast<RegionInternal>(realRegion));
                    });
 
@@ -162,7 +162,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Serializable>& aCallbackArgument =
           nullptr) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     return m_realRegion->get(key, aCallbackArgument);
   }
 
@@ -178,7 +178,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
                    const std::shared_ptr<Cacheable>& value,
                    const std::shared_ptr<Serializable>& aCallbackArgument =
                        nullptr) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     return m_realRegion->put(key, value, aCallbackArgument);
   }
 
@@ -209,7 +209,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
       std::chrono::milliseconds timeout = DEFAULT_RESPONSE_TIMEOUT,
       const std::shared_ptr<Serializable>& aCallbackArgument =
           nullptr) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     return m_realRegion->putAll(map, timeout, aCallbackArgument);
   }
 
@@ -247,7 +247,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
                       const std::shared_ptr<Cacheable>& value,
                       const std::shared_ptr<Serializable>& aCallbackArgument =
                           nullptr) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     m_realRegion->create(key, value, aCallbackArgument);
   }
 
@@ -307,7 +307,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   virtual void invalidate(const std::shared_ptr<CacheableKey>& key,
                           const std::shared_ptr<Serializable>&
                               aCallbackArgument = nullptr) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     m_realRegion->invalidate(key, aCallbackArgument);
   }
 
@@ -334,7 +334,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   virtual void destroy(const std::shared_ptr<CacheableKey>& key,
                        const std::shared_ptr<Serializable>& aCallbackArgument =
                            nullptr) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     m_realRegion->destroy(key, aCallbackArgument);
   }
 
@@ -362,7 +362,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
                       const std::shared_ptr<Cacheable>& value,
                       const std::shared_ptr<Serializable>& aCallbackArgument =
                           nullptr) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     return m_realRegion->remove(key, value, aCallbackArgument);
   }
 
@@ -392,7 +392,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   virtual bool removeEx(const std::shared_ptr<CacheableKey>& key,
                         const std::shared_ptr<Serializable>& aCallbackArgument =
                             nullptr) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     return m_realRegion->removeEx(key, aCallbackArgument);
   }
 
@@ -459,7 +459,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   }
 
   virtual std::vector<std::shared_ptr<CacheableKey>> serverKeys() override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     return m_realRegion->serverKeys();
   }
 
@@ -473,7 +473,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   }
 
   virtual RegionService& getRegionService() const override {
-    return *m_proxyCache;
+    return *m_authenticatedView;
   }
 
   virtual bool isDestroyed() const override {
@@ -505,7 +505,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
 
   virtual bool containsKeyOnServer(
       const std::shared_ptr<CacheableKey>& keyPtr) const override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     return m_realRegion->containsKeyOnServer(keyPtr);
   }
 
@@ -566,7 +566,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
       const std::vector<std::shared_ptr<CacheableKey>>& keys,
       const std::shared_ptr<Serializable>& aCallbackArgument =
           nullptr) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     return m_realRegion->getAll_internal(keys, aCallbackArgument, false);
   }
 
@@ -574,14 +574,14 @@ class _GEODE_EXPORT ProxyRegion : public Region {
       const std::string& predicate,
       std::chrono::milliseconds timeout =
           DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     return m_realRegion->query(predicate, timeout);
   }
 
   virtual bool existsValue(const std::string& predicate,
                            std::chrono::milliseconds timeout =
                                DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     return m_realRegion->existsValue(predicate, timeout);
   }
 
@@ -589,14 +589,14 @@ class _GEODE_EXPORT ProxyRegion : public Region {
       const std::string& predicate,
       std::chrono::milliseconds timeout =
           DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     return m_realRegion->selectValue(predicate, timeout);
   }
 
   virtual void removeAll(const std::vector<std::shared_ptr<CacheableKey>>& keys,
                          const std::shared_ptr<Serializable>&
                              aCallbackArgument = nullptr) override {
-    GuardUserAttribures gua(m_proxyCache);
+    GuardUserAttribures gua(m_authenticatedView);
     m_realRegion->removeAll(keys, aCallbackArgument);
   }
 
@@ -606,10 +606,10 @@ class _GEODE_EXPORT ProxyRegion : public Region {
     return m_realRegion->getPool();
   }
 
-  ProxyRegion(ProxyCache& proxyCache,
+  ProxyRegion(AuthenticatedView& authenticatedView,
               const std::shared_ptr<RegionInternal>& realRegion)
-      : Region(proxyCache.m_cacheImpl) {
-    m_proxyCache = &proxyCache;
+      : Region(authenticatedView.m_cacheImpl) {
+    m_authenticatedView = &authenticatedView;
     m_realRegion = realRegion;
   }
 
@@ -619,7 +619,7 @@ class _GEODE_EXPORT ProxyRegion : public Region {
   ProxyRegion& operator=(const ProxyRegion&) = delete;
 
  private:
-  ProxyCache* m_proxyCache;
+  AuthenticatedView* m_authenticatedView;
   std::shared_ptr<RegionInternal> m_realRegion;
   friend class FunctionService;
 

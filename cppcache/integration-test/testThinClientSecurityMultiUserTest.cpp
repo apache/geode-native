@@ -61,7 +61,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PerformSecureOperationsWithUserCredentials)
     config1->insert("security-password", "root-password");
 
     cache.createAuthenticatedView(config1, "mypool")
-        ->getRegion("DistRegionAck")
+        .getRegion("DistRegionAck")
         ->put("akey", "avalue");
 
     auto config2 = Properties::create();
@@ -70,7 +70,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PerformSecureOperationsWithUserCredentials)
 
     try {
       cache.createAuthenticatedView(config2, "mypool")
-          ->getRegion("DistRegionAck")
+          .getRegion("DistRegionAck")
           ->put("akey", "avalue");
       FAIL("Didn't throw expected AuthenticationFailedException.");
     } catch (const apache::geode::client::NotAuthorizedException&) {

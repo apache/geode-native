@@ -39,13 +39,13 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class AuthenticatedView;
 class Cache;
 class CacheFactory;
 class PoolAttributes;
 class CacheImpl;
 class Properties;
 class QueryService;
-class RegionService;
 
 /**
  * A pool of connections to connect from a client to a set of Geode Cache
@@ -298,7 +298,7 @@ class _GEODE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
    * @returns Logical instance of cache to do operations on behalf of one
    * particular user.
    */
-  virtual std::shared_ptr<RegionService> createSecureUserCache(
+  virtual AuthenticatedView createAuthenticatedView(
       std::shared_ptr<Properties> credentials, CacheImpl* cacheImpl);
 
   Pool(const Pool&);

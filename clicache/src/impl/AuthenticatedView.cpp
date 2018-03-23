@@ -29,7 +29,7 @@
 #include "../QueryService.hpp"
 #include "../FunctionService.hpp"
 #include "../Execution.hpp"
-#include "AuthenticatedCache.hpp"
+#include "AuthenticatedView.hpp"
 #include "PdxInstanceFactoryImpl.hpp"
 
 using namespace System;
@@ -41,7 +41,7 @@ namespace Apache
     namespace Client
     {
 
-      bool AuthenticatedCache::IsClosed::get( )
+      bool AuthenticatedView::IsClosed::get( )
       {
         try
         {
@@ -53,7 +53,7 @@ namespace Apache
         }
       }
 
-      void AuthenticatedCache::Close( )
+      void AuthenticatedView::Close( )
       {
         _GF_MG_EXCEPTION_TRY2
 
@@ -71,7 +71,7 @@ namespace Apache
       
 			//TODO::split
       generic<class TKey, class TValue>
-      IRegion<TKey, TValue>^ AuthenticatedCache::GetRegion( String^ path )
+      IRegion<TKey, TValue>^ AuthenticatedView::GetRegion( String^ path )
       {
         _GF_MG_EXCEPTION_TRY2
 
@@ -88,7 +88,7 @@ namespace Apache
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
       
-      Client::QueryService^ AuthenticatedCache::GetQueryService( )
+      Client::QueryService^ AuthenticatedView::GetQueryService( )
       {
         _GF_MG_EXCEPTION_TRY2
 
@@ -105,7 +105,7 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
-      array<IRegion<TKey, TValue>^>^ AuthenticatedCache::RootRegions( )
+      array<IRegion<TKey, TValue>^>^ AuthenticatedView::RootRegions( )
       {
         std::vector<std::shared_ptr<apache::geode::client::Region>> vrr;
         try
@@ -126,7 +126,7 @@ namespace Apache
         return rootRegions;
       }
 
-      IPdxInstanceFactory^ AuthenticatedCache::CreatePdxInstanceFactory(String^ className)
+      IPdxInstanceFactory^ AuthenticatedView::CreatePdxInstanceFactory(String^ className)
       {
         return gcnew Internal::PdxInstanceFactoryImpl(className, nullptr);
       }

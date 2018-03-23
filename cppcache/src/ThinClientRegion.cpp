@@ -148,7 +148,7 @@ class PutAllWork : public PooledWork<GfErrType>,
     GuardUserAttribures gua;
 
     if (m_userAttribute != nullptr) {
-      gua.setProxyCache(m_userAttribute->getProxyCache());
+      gua.setAuthenticatedView(m_userAttribute->getAuthenticatedView());
     }
 
     GfErrType err = GF_NOERR;
@@ -287,7 +287,7 @@ class RemoveAllWork : public PooledWork<GfErrType>,
     GuardUserAttribures gua;
 
     if (m_userAttribute != nullptr) {
-      gua.setProxyCache(m_userAttribute->getProxyCache());
+      gua.setAuthenticatedView(m_userAttribute->getAuthenticatedView());
     }
 
     GfErrType err = GF_NOERR;

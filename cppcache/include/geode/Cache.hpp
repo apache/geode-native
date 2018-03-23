@@ -48,6 +48,7 @@ class CacheImpl;
 class AuthInitialize;
 class CacheTransactionManager;
 class RegionFactory;
+class AuthenticatedView;
 
 /**
  * @class Cache Cache.hpp
@@ -196,7 +197,7 @@ class _GEODE_EXPORT Cache : public GeodeCache {
    * there are more than one Pool in Cache.
    */
 
-  virtual std::shared_ptr<RegionService> createAuthenticatedView(
+  virtual AuthenticatedView createAuthenticatedView(
       std::shared_ptr<Properties> userSecurityProperties,
       const std::string& poolName);
 
@@ -241,7 +242,7 @@ class _GEODE_EXPORT Cache : public GeodeCache {
   Cache() = delete;
   virtual ~Cache();
   Cache(const Cache& other) = delete;
-  Cache& operator=(const Cache& other) = delete; 
+  Cache& operator=(const Cache& other) = delete;
   Cache(Cache&& other) noexcept;
   Cache& operator=(Cache&& other) noexcept;
 
@@ -257,7 +258,6 @@ class _GEODE_EXPORT Cache : public GeodeCache {
   std::unique_ptr<TypeRegistry> m_typeRegistry;
 
  protected:
-
   static bool isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr);
 
   friend class CacheFactory;

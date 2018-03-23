@@ -28,7 +28,7 @@
 #include <geode/FunctionService.hpp>
 #include "ProxyRemoteQueryService.hpp"
 #include "FunctionServiceImpl.hpp"
-#include "ProxyCache.hpp"
+#include <geode/AuthenticatedView.hpp>
 #include <string>
 #include <geode/PoolManager.hpp>
 #include "ThinClientPoolDM.hpp"
@@ -44,7 +44,7 @@ using namespace apache::geode::client;
  *
  * @return true, if this cache is closed; false, otherwise
  */
-bool ProxyCache::isClosed() const { return m_isProxyCacheClosed; }
+bool AuthenticatedView::isClosed() const { return m_isAuthenticatedViewClosed; }
 
 /**
  * Terminates this object cache and releases all the local resources.
@@ -54,9 +54,10 @@ bool ProxyCache::isClosed() const { return m_isProxyCacheClosed; }
  * @param keepalive whether to keep the durable client's queue
  * @throws CacheClosedException,  if the cache is already closed.
  */
-void ProxyCache::close() {
-  LOGDEBUG("ProxyCache::close: isProxyCacheClosed = %d", m_isProxyCacheClosed);
-  if (!m_isProxyCacheClosed) {
+void AuthenticatedView::close() {
+  LOGDEBUG("AuthenticatedView::close: isAuthenticatedViewClosed = %d",
+           m_isAuthenticatedViewClosed);
+  if (!m_isAuthenticatedViewClosed) {
     if (m_remoteQueryService != nullptr) {
       ProxyRemoteQueryService* prqs =
           static_cast<ProxyRemoteQueryService*>(m_remoteQueryService.get());
@@ -64,7 +65,7 @@ void ProxyCache::close() {
     }
 
     GuardUserAttribures gua(this);
-    m_isProxyCacheClosed = true;
+    m_isAuthenticatedViewClosed = true;
     m_userAttributes->unSetCredentials();
     // send message to server
     auto userAttachedPool = m_userAttributes->getPool();
@@ -80,10 +81,11 @@ void ProxyCache::close() {
   }
   throw IllegalStateException("User cache has been closed.");
 }
-std::shared_ptr<Region> ProxyCache::getRegion(const std::string& path) const {
-  LOGDEBUG("ProxyCache::getRegion:");
+std::shared_ptr<Region> AuthenticatedView::getRegion(
+    const std::string& path) const {
+  LOGDEBUG("AuthenticatedView::getRegion:");
 
-  if (!m_isProxyCacheClosed) {
+  if (!m_isAuthenticatedViewClosed) {
     std::shared_ptr<Region> result;
 
     if (m_cacheImpl != nullptr && !m_cacheImpl->isClosed()) {
@@ -97,7 +99,7 @@ std::shared_ptr<Region> ProxyCache::getRegion(const std::string& path) const {
       if (pool != nullptr && pool.get() == userAttachedPool.get() &&
           !pool->isDestroyed()) {
         return std::make_shared<ProxyRegion>(
-            const_cast<ProxyCache&>(*this),
+            const_cast<AuthenticatedView&>(*this),
             std::static_pointer_cast<RegionInternal>(result));
       }
       throw IllegalArgumentException(
@@ -118,8 +120,8 @@ std::shared_ptr<Region> ProxyCache::getRegion(const std::string& path) const {
  * @param regions the region collection object containing the returned set of
  * regions when the function returns
  */
-std::shared_ptr<QueryService> ProxyCache::getQueryService() {
-  if (!m_isProxyCacheClosed) {
+std::shared_ptr<QueryService> AuthenticatedView::getQueryService() {
+  if (!m_isAuthenticatedViewClosed) {
     if (m_remoteQueryService != nullptr) return m_remoteQueryService;
     auto prqsPtr = std::make_shared<ProxyRemoteQueryService>(this);
     m_remoteQueryService = prqsPtr;
@@ -128,12 +130,12 @@ std::shared_ptr<QueryService> ProxyCache::getQueryService() {
   throw IllegalStateException("User cache has been closed.");
 }
 
-std::vector<std::shared_ptr<Region>> ProxyCache::rootRegions() const {
-  LOGDEBUG("ProxyCache::rootRegions:");
+std::vector<std::shared_ptr<Region>> AuthenticatedView::rootRegions() const {
+  LOGDEBUG("AuthenticatedView::rootRegions:");
 
   std::vector<std::shared_ptr<Region>> regions;
 
-  if (!m_isProxyCacheClosed && m_cacheImpl && !m_cacheImpl->isClosed()) {
+  if (!m_isAuthenticatedViewClosed && m_cacheImpl && !m_cacheImpl->isClosed()) {
     std::vector<std::shared_ptr<Region>> tmp;
 
     // this can cause issue when pool attached with region in multiuserSecure
@@ -145,7 +147,7 @@ std::vector<std::shared_ptr<Region>> ProxyCache::rootRegions() const {
       if (m_userAttributes->getPool()->getName() ==
           reg->getAttributes().getPoolName()) {
         auto pRegion = std::make_shared<ProxyRegion>(
-            const_cast<ProxyCache&>(*this),
+            const_cast<AuthenticatedView&>(*this),
             std::static_pointer_cast<RegionInternal>(reg));
         regions.push_back(pRegion);
       }
@@ -155,16 +157,17 @@ std::vector<std::shared_ptr<Region>> ProxyCache::rootRegions() const {
   return regions;
 }
 
-ProxyCache::ProxyCache(std::shared_ptr<Properties> credentials,
-                       std::shared_ptr<Pool> pool, CacheImpl* cacheImpl)
+AuthenticatedView::AuthenticatedView(std::shared_ptr<Properties> credentials,
+                                     std::shared_ptr<Pool> pool,
+                                     CacheImpl* cacheImpl)
     : m_remoteQueryService(nullptr),
-      m_isProxyCacheClosed(false),
+      m_isAuthenticatedViewClosed(false),
       m_userAttributes(
           std::make_shared<UserAttributes>(credentials, pool, this)),
       m_cacheImpl(cacheImpl) {}
 
-ProxyCache::~ProxyCache() {}
-std::shared_ptr<PdxInstanceFactory> ProxyCache::createPdxInstanceFactory(
+AuthenticatedView::~AuthenticatedView() {}
+std::shared_ptr<PdxInstanceFactory> AuthenticatedView::createPdxInstanceFactory(
     std::string className) const {
   return std::make_shared<PdxInstanceFactoryImpl>(
       className.c_str(), &(m_cacheImpl->getCachePerfStats()),

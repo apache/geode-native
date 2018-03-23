@@ -36,19 +36,19 @@ namespace client {
 RemoteQuery::RemoteQuery(
     std::string querystr,
     const std::shared_ptr<RemoteQueryService>& queryService,
-    ThinClientBaseDM* tccdmptr, ProxyCache* proxyCache)
+    ThinClientBaseDM* tccdmptr, AuthenticatedView* authenticatedView)
     : m_queryString(querystr),
       m_queryService(queryService),
       m_tccdm(tccdmptr),
-      m_proxyCache(proxyCache) {
+      m_authenticatedView(authenticatedView) {
   LOGFINEST("RemoteQuery: created a new query: " + querystr);
 }
 std::shared_ptr<SelectResults> RemoteQuery::execute(
     std::chrono::milliseconds timeout) {
   util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
   GuardUserAttribures gua;
-  if (m_proxyCache != nullptr) {
-    gua.setProxyCache(m_proxyCache);
+  if (m_authenticatedView != nullptr) {
+    gua.setAuthenticatedView(m_authenticatedView);
   }
   return execute(timeout, "Query::execute", m_tccdm, nullptr);
 }
@@ -57,8 +57,8 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
     std::chrono::milliseconds timeout) {
   util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
   GuardUserAttribures gua;
-  if (m_proxyCache != nullptr) {
-    gua.setProxyCache(m_proxyCache);
+  if (m_authenticatedView != nullptr) {
+    gua.setAuthenticatedView(m_authenticatedView);
   }
   return execute(timeout, "Query::execute", m_tccdm, paramList);
 }

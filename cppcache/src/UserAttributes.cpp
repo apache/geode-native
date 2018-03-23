@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 #include "UserAttributes.hpp"
-#include "ProxyCache.hpp"
+#include <geode/AuthenticatedView.hpp>
 
 using namespace apache::geode::client;
 
 UserAttributes::UserAttributes(std::shared_ptr<Properties> credentials,
                                std::shared_ptr<Pool> pool,
-                               ProxyCache* proxyCache)
+                               AuthenticatedView* authenticatedView)
     : m_isUserAuthenticated(false), m_pool(pool) {
   m_credentials = credentials;
 
-  m_proxyCache = proxyCache;
+  m_authenticatedView = authenticatedView;
 }
 
-bool UserAttributes::isCacheClosed() { return m_proxyCache->isClosed(); }
+bool UserAttributes::isCacheClosed() { return m_authenticatedView->isClosed(); }
 
 UserAttributes::~UserAttributes() {
   std::map<std::string, UserConnectionAttributes*>::iterator it;
@@ -113,7 +113,7 @@ bool UserAttributes::isEndpointAuthenticated(TcrEndpoint* ep) {
   return false;
 }
 std::shared_ptr<Properties> UserAttributes::getCredentials() {
-  if (m_proxyCache->isClosed()) {
+  if (m_authenticatedView->isClosed()) {
     throw IllegalStateException("User cache has been closed");
   }
   if (m_credentials == nullptr) {
@@ -123,32 +123,33 @@ std::shared_ptr<Properties> UserAttributes::getCredentials() {
   }
   return m_credentials;
 }
-ProxyCache* UserAttributes::getProxyCache() { return m_proxyCache; }
-
- ACE_TSS<TSSUserAttributesWrapper>
-     TSSUserAttributesWrapper::s_geodeTSSUserAttributes;
-
- GuardUserAttribures::GuardUserAttribures(
-     ProxyCache* proxyCache) {
-   setProxyCache(proxyCache);
- }
-
- void GuardUserAttribures::setProxyCache(
-     ProxyCache* proxyCache) {
-   m_proxyCache = proxyCache;
-   LOGDEBUG("GuardUserAttribures::GuardUserAttribures:");
-   if (m_proxyCache != nullptr && !proxyCache->isClosed()) {
-     TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(
-         proxyCache->m_userAttributes);
-   } else {
-     throw CacheClosedException("User Cache has been closed");
-   }
+AuthenticatedView* UserAttributes::getAuthenticatedView() {
+  return m_authenticatedView;
 }
 
-GuardUserAttribures::GuardUserAttribures() { m_proxyCache = nullptr; }
+ACE_TSS<TSSUserAttributesWrapper>
+    TSSUserAttributesWrapper::s_geodeTSSUserAttributes;
+
+GuardUserAttribures::GuardUserAttribures(AuthenticatedView* authenticatedView) {
+  setAuthenticatedView(authenticatedView);
+}
+
+void GuardUserAttribures::setAuthenticatedView(
+    AuthenticatedView* authenticatedView) {
+  m_authenticatedView = authenticatedView;
+  LOGDEBUG("GuardUserAttribures::GuardUserAttribures:");
+  if (m_authenticatedView != nullptr && !authenticatedView->isClosed()) {
+    TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(
+        authenticatedView->m_userAttributes);
+  } else {
+    throw CacheClosedException("User Cache has been closed");
+  }
+}
+
+GuardUserAttribures::GuardUserAttribures() { m_authenticatedView = nullptr; }
 
 GuardUserAttribures::~GuardUserAttribures() {
-  if (m_proxyCache != nullptr) {
+  if (m_authenticatedView != nullptr) {
     TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(
         nullptr);
   }

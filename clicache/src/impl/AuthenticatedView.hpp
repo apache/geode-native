@@ -21,9 +21,10 @@
 #include "../geode_defs.hpp"
 #include "../begin_native.hpp"
 #include <geode/RegionService.hpp>
+#include <geode/AuthenticatedView.hpp>
 #include "../end_native.hpp"
 
-#include "../native_shared_ptr.hpp"
+#include "../native_unique_ptr.hpp"
 #include "../RegionShortcut.hpp"
 #include "../RegionFactory.hpp"
 #include "../IRegionService.hpp"
@@ -56,7 +57,7 @@ namespace Apache
       /// A cache can have multiple root regions, each with a different name.
       /// </para>
       /// </remarks>
-      public ref class AuthenticatedCache 
+      public ref class AuthenticatedView 
         : public IRegionService
       {
       public:
@@ -142,15 +143,14 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static AuthenticatedCache^ Create( std::shared_ptr<native::RegionService> nativeptr )
+        inline static AuthenticatedView^ Create(native::AuthenticatedView&& nativeAuthenticatedView)
         {
-          return __nullptr == nativeptr ? nullptr :
-            gcnew AuthenticatedCache( nativeptr );
+           return gcnew AuthenticatedView(std::move(nativeAuthenticatedView));
         }
 
-        std::shared_ptr<native::RegionService> GetNative()
+        native::AuthenticatedView& GetNative()
         {
-          return m_nativeptr->get_shared_ptr();
+          return *(m_nativeptr->get());
         }
 
       private:
@@ -159,11 +159,14 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline AuthenticatedCache( std::shared_ptr<native::RegionService> nativeptr )
+        inline AuthenticatedView(native::AuthenticatedView&& nativeAuthenticatedView)
         {
-          m_nativeptr = gcnew native_shared_ptr<native::RegionService>(nativeptr);
+          m_nativeptr = gcnew native_unique_ptr<native::AuthenticatedView>(
+              std::unique_ptr<native::AuthenticatedView>(
+                  new native::AuthenticatedView(std::move(nativeAuthenticatedView))));
         }
-        native_shared_ptr<native::RegionService>^ m_nativeptr;
+
+        native_unique_ptr<native::AuthenticatedView>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

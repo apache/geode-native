@@ -46,8 +46,9 @@ Execution ExecutionImpl::withFilter(
         "first before calling this function");
   }
   //      m_routingObj = routingObj;
-  return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(
-      routingObj, m_args, m_rc, m_region, m_allServer, m_pool, m_proxyCache)));
+  return Execution(std::unique_ptr<ExecutionImpl>(
+      new ExecutionImpl(routingObj, m_args, m_rc, m_region, m_allServer, m_pool,
+                        m_authenticatedView)));
 }
 
 Execution ExecutionImpl::withArgs(std::shared_ptr<Cacheable> args) {
@@ -56,8 +57,9 @@ Execution ExecutionImpl::withArgs(std::shared_ptr<Cacheable> args) {
     throw IllegalArgumentException("Execution::withArgs: args is null");
   }
   //  m_args = args;
-  return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(
-      m_routingObj, args, m_rc, m_region, m_allServer, m_pool, m_proxyCache)));
+  return Execution(std::unique_ptr<ExecutionImpl>(
+      new ExecutionImpl(m_routingObj, args, m_rc, m_region, m_allServer, m_pool,
+                        m_authenticatedView)));
 }
 
 Execution ExecutionImpl::withCollector(std::shared_ptr<ResultCollector> rs) {
@@ -67,8 +69,9 @@ Execution ExecutionImpl::withCollector(std::shared_ptr<ResultCollector> rs) {
         "Execution::withCollector: collector is null");
   }
   //	m_rc = rs;
-  return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(
-      m_routingObj, m_args, rs, m_region, m_allServer, m_pool, m_proxyCache)));
+  return Execution(std::unique_ptr<ExecutionImpl>(
+      new ExecutionImpl(m_routingObj, m_args, rs, m_region, m_allServer, m_pool,
+                        m_authenticatedView)));
 }
 
 std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(
@@ -95,9 +98,9 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
     const std::string& func, std::chrono::milliseconds timeout) {
   LOGDEBUG("ExecutionImpl::execute: ");
   GuardUserAttribures gua;
-  if (m_proxyCache != nullptr) {
-    LOGDEBUG("ExecutionImpl::execute function on proxy cache");
-    gua.setProxyCache(m_proxyCache);
+  if (m_authenticatedView != nullptr) {
+    LOGDEBUG("ExecutionImpl::execute function on authenticated cache");
+    gua.setAuthenticatedView(m_authenticatedView);
   }
   bool serverHasResult = false;
   bool serverIsHA = false;

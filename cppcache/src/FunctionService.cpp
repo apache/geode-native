@@ -21,7 +21,7 @@
 #include "CacheRegionHelper.hpp"
 #include "ProxyRegion.hpp"
 #include "UserAttributes.hpp"
-#include "ProxyCache.hpp"
+#include <geode/AuthenticatedView.hpp>
 #include "ExecutionImpl.hpp"
 #include "CacheImpl.hpp"
 
@@ -38,7 +38,7 @@ Execution FunctionService::onRegion(const std::shared_ptr<Region>& region) {
   if (pool == nullptr) {
     throw IllegalArgumentException("Pool attached with region is closed.");
   }
-  ProxyCache* proxyCache = nullptr;
+  AuthenticatedView* authenticatedView = nullptr;
 
   if (pool->getMultiuserAuthentication()) {
     if (auto pr = std::dynamic_pointer_cast<ProxyRegion>(realRegion)) {
@@ -46,8 +46,8 @@ Execution FunctionService::onRegion(const std::shared_ptr<Region>& region) {
           "FunctionService::onRegion(std::shared_ptr<Region> region) proxy "
           "cache");
       // it is in multiuser mode
-      proxyCache = pr->m_proxyCache;
-      auto userAttachedPool = proxyCache->m_userAttributes->getPool();
+      authenticatedView = pr->m_authenticatedView;
+      auto userAttachedPool = authenticatedView->m_userAttributes->getPool();
       auto pool = realRegion->getCache().getPoolManager().find(
           userAttachedPool->getName());
       if (!(pool != nullptr && pool.get() == userAttachedPool.get() &&
@@ -73,7 +73,7 @@ Execution FunctionService::onRegion(const std::shared_ptr<Region>& region) {
   }
 
   return Execution(std::unique_ptr<ExecutionImpl>(
-      new ExecutionImpl(realRegion, proxyCache, pool)));
+      new ExecutionImpl(realRegion, authenticatedView, pool)));
 }
 
 Execution FunctionService::onServerWithPool(const std::shared_ptr<Pool>& pool) {
@@ -109,7 +109,7 @@ Execution FunctionService::onServerWithCache(RegionService& cache) {
   }
 
   LOGDEBUG("FunctionService::onServer:");
-  if (auto pc = dynamic_cast<ProxyCache*>(&cache)) {
+  if (auto pc = dynamic_cast<AuthenticatedView*>(&cache)) {
     auto userAttachedPool = pc->m_userAttributes->getPool();
     auto pool =
         pc->m_cacheImpl->getPoolManager().find(userAttachedPool->getName());
@@ -133,7 +133,7 @@ Execution FunctionService::onServersWithCache(RegionService& cache) {
   }
 
   LOGDEBUG("FunctionService::onServers:");
-  if (auto pc = dynamic_cast<ProxyCache*>(&cache)) {
+  if (auto pc = dynamic_cast<AuthenticatedView*>(&cache)) {
     auto userAttachedPool = pc->m_userAttributes->getPool();
     auto pool = pc->m_cacheImpl->getCache()->getPoolManager().find(
         userAttachedPool->getName());

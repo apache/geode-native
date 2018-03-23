@@ -489,7 +489,8 @@ class FunctionExecution : public PooledWork<GfErrType> {
     // TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(m_userAttr);
     GuardUserAttribures gua;
 
-    if (m_userAttr != nullptr) gua.setProxyCache(m_userAttr->getProxyCache());
+    if (m_userAttr != nullptr)
+      gua.setAuthenticatedView(m_userAttr->getAuthenticatedView());
 
     std::string funcName(m_func);
     TcrMessageExecuteFunction request(m_poolDM->getConnectionManager()
@@ -618,7 +619,8 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
   GfErrType execute(void) {
     GuardUserAttribures gua;
 
-    if (m_userAttr != nullptr) gua.setProxyCache(m_userAttr->getProxyCache());
+    if (m_userAttr != nullptr)
+      gua.setAuthenticatedView(m_userAttr->getAuthenticatedView());
 
     return m_poolDM->sendSyncRequest(*m_request, *m_reply, !(m_getResult & 1),
                                      m_isBGThread, m_serverLocation);

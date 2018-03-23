@@ -17,7 +17,7 @@
 
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
-#include "ProxyCache.hpp"
+#include <geode/AuthenticatedView.hpp>
 
 namespace apache {
 namespace geode {
@@ -27,13 +27,13 @@ CacheImpl* CacheRegionHelper::getCacheImpl(const Cache* cache) {
   return cache->m_cacheImpl.get();
 }
 
-CacheImpl* CacheRegionHelper::getCacheImpl(const ProxyCache* proxyCache) {
-  return proxyCache->m_cacheImpl;
+CacheImpl* CacheRegionHelper::getCacheImpl(const AuthenticatedView* authenticatedView) {
+  return authenticatedView->m_cacheImpl;
 }
 
 CacheImpl* CacheRegionHelper::getCacheImpl(const RegionService* regionService) {
-  if (const auto proxyCache = dynamic_cast<const ProxyCache*>(regionService)) {
-    return getCacheImpl(proxyCache);
+  if (const auto authenticatedView = dynamic_cast<const AuthenticatedView*>(regionService)) {
+    return getCacheImpl(authenticatedView);
   }
 
   if (const auto cache = dynamic_cast<const Cache*>(regionService)) {

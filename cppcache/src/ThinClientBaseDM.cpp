@@ -24,7 +24,7 @@
 #include "CacheImpl.hpp"
 #include <geode/SystemProperties.hpp>
 //#include "UserAttributes.hpp"
-#include "ProxyCache.hpp"
+#include <geode/AuthenticatedView.hpp>
 
 using namespace apache::geode::client;
 

@@ -24,18 +24,18 @@ namespace apache {
 namespace geode {
 namespace client {
 
-ProxyRemoteQueryService::ProxyRemoteQueryService(ProxyCache* cptr)
-    : m_proxyCache(cptr) {}
+ProxyRemoteQueryService::ProxyRemoteQueryService(AuthenticatedView* cptr)
+    : m_authenticatedView(cptr) {}
 
 std::shared_ptr<Query> ProxyRemoteQueryService::newQuery(
     std::string querystring) {
-  if (!m_proxyCache->isClosed()) {
-    auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    auto pool = m_proxyCache->m_cacheImpl->getCache()->getPoolManager().find(
+  if (!m_authenticatedView->isClosed()) {
+    auto userAttachedPool = m_authenticatedView->m_userAttributes->getPool();
+    auto pool = m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
         userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
-      GuardUserAttribures gua(m_proxyCache);
+      GuardUserAttribures gua(m_authenticatedView);
       auto poolDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
       if (!poolDM->isDestroyed()) {
         return poolDM->getQueryServiceWithoutCheck()->newQuery(querystring);
@@ -56,13 +56,13 @@ void ProxyRemoteQueryService::unSupportedException(
 std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
     std::string querystr, const std::shared_ptr<CqAttributes>& cqAttr,
     bool isDurable) {
-  if (!m_proxyCache->isClosed()) {
-    auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    auto pool = m_proxyCache->m_cacheImpl->getCache()->getPoolManager().find(
+  if (!m_authenticatedView->isClosed()) {
+    auto userAttachedPool = m_authenticatedView->m_userAttributes->getPool();
+    auto pool = m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
         userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
-      GuardUserAttribures gua(m_proxyCache);
+      GuardUserAttribures gua(m_authenticatedView);
       auto pooDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
       if (!pooDM->isDestroyed()) {
         auto cqQuery = pooDM->getQueryServiceWithoutCheck()->newCq(
@@ -85,13 +85,13 @@ void ProxyRemoteQueryService::addCqQuery(
 std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
     std::string name, std::string querystr,
     const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable) {
-  if (!m_proxyCache->isClosed()) {
-    auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    auto pool = m_proxyCache->m_cacheImpl->getCache()->getPoolManager().find(
+  if (!m_authenticatedView->isClosed()) {
+    auto userAttachedPool = m_authenticatedView->m_userAttributes->getPool();
+    auto pool = m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
         userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
-      GuardUserAttribures gua(m_proxyCache);
+      GuardUserAttribures gua(m_authenticatedView);
       auto poolDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
       if (!poolDM->isDestroyed()) {
         auto cqQuery = poolDM->getQueryServiceWithoutCheck()->newCq(
@@ -136,13 +136,13 @@ QueryService::query_container_type ProxyRemoteQueryService::getCqs() const {
 
 std::shared_ptr<CqQuery> ProxyRemoteQueryService::getCq(
     const std::string& name) const {
-  if (!m_proxyCache->isClosed()) {
-    auto userAttachedPool = m_proxyCache->m_userAttributes->getPool();
-    auto pool = m_proxyCache->m_cacheImpl->getCache()->getPoolManager().find(
+  if (!m_authenticatedView->isClosed()) {
+    auto userAttachedPool = m_authenticatedView->m_userAttributes->getPool();
+    auto pool = m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
         userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
-      GuardUserAttribures gua(m_proxyCache);
+      GuardUserAttribures gua(m_authenticatedView);
       auto poolDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
       if (!poolDM->isDestroyed()) {
         return poolDM->getQueryServiceWithoutCheck()->getCq(name);

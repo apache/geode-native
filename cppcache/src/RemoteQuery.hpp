@@ -32,7 +32,7 @@
 
 #include "CacheImpl.hpp"
 #include "ThinClientBaseDM.hpp"
-#include "ProxyCache.hpp"
+#include <geode/AuthenticatedView.hpp>
 
 /**
  * @file
@@ -47,13 +47,13 @@ class _GEODE_EXPORT RemoteQuery : public Query {
 
   std::shared_ptr<RemoteQueryService> m_queryService;
   ThinClientBaseDM* m_tccdm;
-  ProxyCache* m_proxyCache;
+  AuthenticatedView* m_authenticatedView;
 
  public:
   RemoteQuery(std::string querystr,
               const std::shared_ptr<RemoteQueryService>& queryService,
               ThinClientBaseDM* tccdmptr,
-              ProxyCache* proxyCache = nullptr);
+              AuthenticatedView* authenticatedView = nullptr);
 
   std::shared_ptr<SelectResults> execute(
       std::chrono::milliseconds timeout =

@@ -28,7 +28,7 @@ namespace geode {
 namespace client {
 
 class CacheImpl;
-class ProxyCache;
+class AuthenticatedView;
 
 class _GEODE_EXPORT CacheRegionHelper {
   /**
@@ -37,7 +37,7 @@ class _GEODE_EXPORT CacheRegionHelper {
    */
  public:
   static CacheImpl* getCacheImpl(const Cache* cache);
-  static CacheImpl* getCacheImpl(const ProxyCache* cache);
+  static CacheImpl* getCacheImpl(const AuthenticatedView* authenticatedView);
   static CacheImpl* getCacheImpl(const RegionService* cache);
 };
 }  // namespace client

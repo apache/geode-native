@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef GEODE_PROXYCACHE_H_
-#define GEODE_PROXYCACHE_H_
+#ifndef GEODE_AUTHENTICATEDVIEW_H_
+#define GEODE_AUTHENTICATEDVIEW_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -51,7 +51,7 @@ class FunctionServiceImpl;
  * <p>A cache can have multiple root regions, each with a different name.
  *
  */
-class _GEODE_EXPORT ProxyCache : public RegionService {
+class _GEODE_EXPORT AuthenticatedView : public RegionService {
   /**
    * @brief public methods
    */
@@ -103,10 +103,12 @@ class _GEODE_EXPORT ProxyCache : public RegionService {
   /**
    * @brief destructor
    */
-  virtual ~ProxyCache();
+  virtual ~AuthenticatedView();
 
-  ProxyCache(std::shared_ptr<Properties> credentials,
-             std::shared_ptr<Pool> pool, CacheImpl* cacheImpl);
+  AuthenticatedView(std::shared_ptr<Properties> credentials,
+                    std::shared_ptr<Pool> pool, CacheImpl* cacheImpl);
+  AuthenticatedView(AuthenticatedView&& other) = default;
+  AuthenticatedView(const AuthenticatedView& other) = delete;
 
   /**
    * Returns a factory that can create a {@link PdxInstance}.
@@ -118,13 +120,16 @@ class _GEODE_EXPORT ProxyCache : public RegionService {
   virtual std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
       std::string className) const override;
 
+  AuthenticatedView& operator=(AuthenticatedView&& other) = default;
+  AuthenticatedView& operator=(const AuthenticatedView& other) = delete;
+
  private:
   /**
    * @brief constructors
    */
 
   std::shared_ptr<UserAttributes> m_userAttributes;
-  bool m_isProxyCacheClosed;
+  bool m_isAuthenticatedViewClosed;
   std::shared_ptr<QueryService> m_remoteQueryService;
   CacheImpl* m_cacheImpl;
   friend class Pool;
@@ -141,4 +146,4 @@ class _GEODE_EXPORT ProxyCache : public RegionService {
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_PROXYCACHE_H_
+#endif  // GEODE_AUTHENTICATEDVIEW_H_

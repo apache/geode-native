@@ -37,7 +37,7 @@
 #include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
-#include "ProxyCache.hpp"
+#include <geode/AuthenticatedView.hpp>
 
 /**
  * @file
@@ -272,7 +272,7 @@ class CqQueryImpl : public CqQuery,
   mutable ACE_Recursive_Thread_Mutex m_mutex;
   void sendStopOrClose(TcrMessage::MsgType requestType);
   ThinClientBaseDM* m_tccdm;
-  ProxyCache* m_proxyCache;
+  AuthenticatedView* m_authenticatedView;
 
   _GEODE_FRIEND_STD_SHARED_PTR(CqQueryImpl)
 };

@@ -26,7 +26,7 @@
 #include "CacheStatistics.hpp"
 #include "AttributesMutator.hpp"
 #include "RegionEntry.hpp"
-#include "impl/AuthenticatedCache.hpp"
+#include "impl/AuthenticatedView.hpp"
 #include "impl/SafeConvert.hpp"
 #include "impl/CacheResolver.hpp"
 

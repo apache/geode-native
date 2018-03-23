@@ -115,7 +115,7 @@ class GetAllWork : public PooledWork<GfErrType>,
     GuardUserAttribures gua;
 
     if (m_userAttribute != nullptr) {
-      gua.setProxyCache(m_userAttribute->getProxyCache());
+      gua.setAuthenticatedView(m_userAttribute->getAuthenticatedView());
     }
     m_request->InitializeGetallMsg(
         m_request->getCallbackArgument());  // now init getall msg
