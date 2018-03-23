@@ -53,6 +53,7 @@ endif()
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   set ( _BOOTSTRAP_COMMAND ${_BOOTSTRAP_COMMAND} --with-toolset=sun )
+  set ( _B2_FLAGS ${_B2_FLAGS} define=BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES)
 elseif ("Windows" STREQUAL ${CMAKE_SYSTEM_NAME})
   set ( CMAKE_STATIC_LIBRARY_PREFIX lib )
 endif()
