@@ -152,9 +152,11 @@ Cache::Cache(Cache&& other) noexcept
 }
 
 Cache& Cache::operator=(Cache&& other) noexcept {
-  m_cacheImpl = std::move(other.m_cacheImpl);
-  m_typeRegistry = std::move(other.m_typeRegistry);
-  m_cacheImpl->setCache(this);
+  if (this != &other) {
+    m_cacheImpl = std::move(other.m_cacheImpl);
+    m_typeRegistry = std::move(other.m_typeRegistry);
+    m_cacheImpl->setCache(this);
+  }
   return *this;
 }
 
