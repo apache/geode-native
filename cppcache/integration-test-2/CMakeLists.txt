@@ -13,14 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
-project(integration-test-2 CXX)
-
-set(CMAKE_CXX_STANDARD 11)
-
 configure_file(framework/config.h.in config.h)
 
-add_executable(${PROJECT_NAME}
+add_executable(integration-test-2
   ExampleTest.cpp
   framework/Gfsh.cpp
   framework/Gfsh.h
@@ -33,16 +28,16 @@ add_executable(${PROJECT_NAME}
   RegionPutGetAllTest.cpp
   )
 
-target_compile_definitions(${PROJECT_NAME}
+target_compile_definitions(integration-test-2
   PUBLIC
 )
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(integration-test-2
   PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(integration-test-2
   PUBLIC
     apache-geode
     testobject
@@ -55,11 +50,11 @@ target_link_libraries(${PROJECT_NAME}
 
 if(WIN32)
   foreach (_target apache-geode testobject)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_FILE:${_target}>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>")
+    add_custom_command(TARGET integration-test-2 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:${_target}>" "$<TARGET_FILE_DIR:integration-test-2>")
   endforeach()
 endif()
 
 enable_testing()
 include(GoogleTest)
-gtest_discover_tests(${PROJECT_NAME})
+gtest_discover_tests(integration-test-2)
