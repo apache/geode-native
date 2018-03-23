@@ -54,7 +54,7 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
   std::shared_ptr<CacheableBytes> valueData;
 
  public:
-  DeltaPSTObject() : Delta(nullptr), timestamp(0), valueData(nullptr) {}
+  DeltaPSTObject() : Delta(), timestamp(0), valueData(nullptr) {}
   DeltaPSTObject(int size, bool encodeKey, bool encodeTimestamp);
   ~DeltaPSTObject() noexcept override {}
   void toData(apache::geode::client::DataOutput& output) const override;
@@ -75,7 +75,9 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
     incrementField1();
     resetTimestamp();
   }
+
   uint64_t getTimestamp() { return timestamp; }
+
   void resetTimestamp() {
     ACE_Time_Value startTime;
     startTime = ACE_OS::gettimeofday();
@@ -84,10 +86,7 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
     timestamp = tusec * 1000;
   }
 
-  //  std::shared_ptr<Delta> clone() const override {
-  //    // TODO shared_ptr - this isn't actually cloning.
-  //    return shared_from_this();
-  //  }
+  inline std::shared_ptr<Delta> clone() const override { return nullptr; }
 
   static Serializable* createDeserializable() { return new DeltaPSTObject(); }
 };
