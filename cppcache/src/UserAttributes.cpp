@@ -130,14 +130,14 @@ AuthenticatedView* UserAttributes::getAuthenticatedView() {
 ACE_TSS<TSSUserAttributesWrapper>
     TSSUserAttributesWrapper::s_geodeTSSUserAttributes;
 
-GuardUserAttribures::GuardUserAttribures(AuthenticatedView* authenticatedView) {
+GuardUserAttributes::GuardUserAttributes(AuthenticatedView* authenticatedView) {
   setAuthenticatedView(authenticatedView);
 }
 
-void GuardUserAttribures::setAuthenticatedView(
+void GuardUserAttributes::setAuthenticatedView(
     AuthenticatedView* authenticatedView) {
   m_authenticatedView = authenticatedView;
-  LOGDEBUG("GuardUserAttribures::GuardUserAttribures:");
+  LOGDEBUG("GuardUserAttributes::GuardUserAttributes:");
   if (m_authenticatedView != nullptr && !authenticatedView->isClosed()) {
     TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(
         authenticatedView->m_userAttributes);
@@ -146,9 +146,9 @@ void GuardUserAttribures::setAuthenticatedView(
   }
 }
 
-GuardUserAttribures::GuardUserAttribures() { m_authenticatedView = nullptr; }
+GuardUserAttributes::GuardUserAttributes() { m_authenticatedView = nullptr; }
 
-GuardUserAttribures::~GuardUserAttribures() {
+GuardUserAttributes::~GuardUserAttributes() {
   if (m_authenticatedView != nullptr) {
     TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(
         nullptr);

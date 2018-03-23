@@ -41,7 +41,7 @@
 #include "ThreadPool.hpp"
 #include "ThinClientStickyManager.hpp"
 #include "TXState.hpp"
-
+#include "UserAttributes.hpp"
 #include "NonCopyable.hpp"
 
 namespace apache {
@@ -487,7 +487,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
 
   GfErrType execute(void) {
     // TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(m_userAttr);
-    GuardUserAttribures gua;
+    GuardUserAttributes gua;
 
     if (m_userAttr != nullptr)
       gua.setAuthenticatedView(m_userAttr->getAuthenticatedView());
@@ -617,7 +617,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
   }
 
   GfErrType execute(void) {
-    GuardUserAttribures gua;
+    GuardUserAttributes gua;
 
     if (m_userAttr != nullptr)
       gua.setAuthenticatedView(m_userAttr->getAuthenticatedView());

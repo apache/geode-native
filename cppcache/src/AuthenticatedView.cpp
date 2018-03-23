@@ -64,7 +64,7 @@ void AuthenticatedView::close() {
       prqs->closeCqs(false);
     }
 
-    GuardUserAttribures gua(this);
+    GuardUserAttributes gua(this);
     m_isAuthenticatedViewClosed = true;
     m_userAttributes->unSetCredentials();
     // send message to server

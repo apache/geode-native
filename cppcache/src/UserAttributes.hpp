@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_USERATTRIBUTES_H_
-#define GEODE_USERATTRIBUTES_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_USERATTRIBUTES_H_
+#define GEODE_USERATTRIBUTES_H_
 
 #include <geode/internal/geode_globals.hpp>
 #include <geode/Properties.hpp>
@@ -138,15 +138,15 @@ class TSSUserAttributesWrapper {
   ~TSSUserAttributesWrapper() {}
 };
 
-class GuardUserAttribures {
+class GuardUserAttributes {
  public:
-  GuardUserAttribures();
+  GuardUserAttributes();
 
-  GuardUserAttribures(AuthenticatedView* const authenticatedView);
+  GuardUserAttributes(AuthenticatedView* const authenticatedView);
 
   void setAuthenticatedView(AuthenticatedView* const authenticatedView);
 
-  ~GuardUserAttribures();
+  ~GuardUserAttributes();
 
  private:
   AuthenticatedView* m_authenticatedView;

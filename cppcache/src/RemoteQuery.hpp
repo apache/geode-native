@@ -24,6 +24,7 @@
 #include <memory>
 
 #include <geode/internal/geode_globals.hpp>
+#include <geode/AuthenticatedView.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Query.hpp>
 #include <geode/SelectResults.hpp>
@@ -32,7 +33,6 @@
 
 #include "CacheImpl.hpp"
 #include "ThinClientBaseDM.hpp"
-#include <geode/AuthenticatedView.hpp>
 
 /**
  * @file
@@ -44,7 +44,6 @@ namespace client {
 
 class _GEODE_EXPORT RemoteQuery : public Query {
   std::string m_queryString;
-
   std::shared_ptr<RemoteQueryService> m_queryService;
   ThinClientBaseDM* m_tccdm;
   AuthenticatedView* m_authenticatedView;

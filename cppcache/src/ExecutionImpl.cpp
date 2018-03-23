@@ -97,7 +97,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
 std::shared_ptr<ResultCollector> ExecutionImpl::execute(
     const std::string& func, std::chrono::milliseconds timeout) {
   LOGDEBUG("ExecutionImpl::execute: ");
-  GuardUserAttribures gua;
+  GuardUserAttributes gua;
   if (m_authenticatedView != nullptr) {
     LOGDEBUG("ExecutionImpl::execute function on authenticated cache");
     gua.setAuthenticatedView(m_authenticatedView);

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_AUTHENTICATEDVIEW_H_
-#define GEODE_AUTHENTICATEDVIEW_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_AUTHENTICATEDVIEW_H_
+#define GEODE_AUTHENTICATEDVIEW_H_
+
 #include <geode/internal/geode_globals.hpp>
 #include <geode/Region.hpp>
 #include <geode/DistributedSystem.hpp>
 #include <geode/QueryService.hpp>
 #include <geode/PoolFactory.hpp>
-#include "UserAttributes.hpp"
 #include <geode/RegionService.hpp>
 
 /**
@@ -35,6 +35,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class GuardUserAttributes;
+class UserAttributes;
 class FunctionServiceImpl;
 
 /**
@@ -64,7 +66,7 @@ class _GEODE_EXPORT AuthenticatedView : public RegionService {
    *
    * @return true, if this cache is closed; false, otherwise
    */
-  virtual bool isClosed() const override;
+  bool isClosed() const override;
 
   /**
    * Terminates this object cache and releases all the local resources.
@@ -74,13 +76,13 @@ class _GEODE_EXPORT AuthenticatedView : public RegionService {
    * @param keepalive whether to keep a durable client's queue alive
    * @throws CacheClosedException,  if the cache is already closed.
    */
-  virtual void close() override;
+  void close() override;
 
   /** Look up a region with the full path from root.
    * @param path the region's path, such as <code>RootA/Sub1/Sub1A</code>.
    * @returns region, or nullptr if no such region exists.
    */
-  virtual std::shared_ptr<Region> getRegion(
+  std::shared_ptr<Region> getRegion(
       const std::string& path) const override;
 
   /**
@@ -88,7 +90,7 @@ class _GEODE_EXPORT AuthenticatedView : public RegionService {
    *
    * @returns A smart pointer to the QueryService.
    */
-  virtual std::shared_ptr<QueryService> getQueryService() override;
+  std::shared_ptr<QueryService> getQueryService() override;
 
   /**
    * Returns a set of root regions in the cache. This set is a snapshot and
@@ -98,13 +100,16 @@ class _GEODE_EXPORT AuthenticatedView : public RegionService {
    * @param regions the returned set of
    * regions
    */
-  virtual std::vector<std::shared_ptr<Region>> rootRegions() const override;
+  std::vector<std::shared_ptr<Region>> rootRegions() const override;
 
   /**
    * @brief destructor
    */
   virtual ~AuthenticatedView();
 
+  /**
+   * @brief constructors
+  */
   AuthenticatedView(std::shared_ptr<Properties> credentials,
                     std::shared_ptr<Pool> pool, CacheImpl* cacheImpl);
   AuthenticatedView(AuthenticatedView&& other) = default;
@@ -117,21 +122,18 @@ class _GEODE_EXPORT AuthenticatedView : public RegionService {
    * when it is fully deserialized.
    * @return the factory
    */
-  virtual std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
+  std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
       std::string className) const override;
 
   AuthenticatedView& operator=(AuthenticatedView&& other) = default;
   AuthenticatedView& operator=(const AuthenticatedView& other) = delete;
 
  private:
-  /**
-   * @brief constructors
-   */
-
   std::shared_ptr<UserAttributes> m_userAttributes;
   bool m_isAuthenticatedViewClosed;
   std::shared_ptr<QueryService> m_remoteQueryService;
   CacheImpl* m_cacheImpl;
+
   friend class Pool;
   friend class ProxyRegion;
   friend class ProxyRemoteQueryService;
@@ -139,7 +141,7 @@ class _GEODE_EXPORT AuthenticatedView : public RegionService {
   friend class ExecutionImpl;
   friend class FunctionServiceImpl;
   friend class FunctionService;
-  friend class GuardUserAttribures;
+  friend class GuardUserAttributes;
   friend class CacheRegionHelper;
 };
 }  // namespace client

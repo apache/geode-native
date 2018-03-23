@@ -25,6 +25,7 @@
 #include "ThinClientRegion.hpp"
 #include "ReadWriteLock.hpp"
 #include "ThinClientRegion.hpp"
+#include "UserAttributes.hpp"
 #include "util/bounds.hpp"
 #include "util/Log.hpp"
 #include "util/exception.hpp"
@@ -112,7 +113,7 @@ void CqQueryImpl::close(bool sendRequestToServer) {
     return;
   }
 
-  GuardUserAttribures gua;
+  GuardUserAttributes gua;
   if (m_authenticatedView != nullptr) {
     gua.setAuthenticatedView(m_authenticatedView);
   }
@@ -252,7 +253,7 @@ GfErrType CqQueryImpl::execute(TcrEndpoint* endpoint) {
     return GF_NOERR;
   }
 
-  GuardUserAttribures gua;
+  GuardUserAttributes gua;
   if (m_authenticatedView != nullptr) {
     gua.setAuthenticatedView(m_authenticatedView);
   }
@@ -306,7 +307,7 @@ void CqQueryImpl::executeAfterFailover() {
 }
 
 void CqQueryImpl::execute() {
-  GuardUserAttribures gua;
+  GuardUserAttributes gua;
   if (m_authenticatedView != nullptr) {
     gua.setAuthenticatedView(m_authenticatedView);
   }
@@ -323,7 +324,7 @@ void CqQueryImpl::execute() {
 
 // for          EXECUTE_REQUEST or REDUNDANT_EXECUTE_REQUEST
 bool CqQueryImpl::executeCq(TcrMessage::MsgType requestType) {
-  GuardUserAttribures gua;
+  GuardUserAttributes gua;
   if (m_authenticatedView != nullptr) {
     gua.setAuthenticatedView(m_authenticatedView);
   }
@@ -367,7 +368,7 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
     std::chrono::milliseconds timeout) {
   util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
 
-  GuardUserAttribures gua;
+  GuardUserAttributes gua;
   if (m_authenticatedView != nullptr) {
     gua.setAuthenticatedView(m_authenticatedView);
   }
@@ -449,7 +450,7 @@ void CqQueryImpl::stop() {
     throw CqClosedException(("CQ is closed, CqName : " + m_cqName).c_str());
   }
 
-  GuardUserAttribures gua;
+  GuardUserAttributes gua;
   if (m_authenticatedView != nullptr) {
     gua.setAuthenticatedView(m_authenticatedView);
   }

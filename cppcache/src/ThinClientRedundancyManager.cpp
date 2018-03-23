@@ -889,7 +889,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
       LOGDEBUG(
           "ThinClientRedundancyManager::sendSyncRequestCq: to primary [%s]",
           primaryEndpoint->name().c_str());
-      GuardUserAttribures gua;
+      GuardUserAttributes gua;
       if (authenticatedView != nullptr) {
         gua.setAuthenticatedView(authenticatedView);
       }

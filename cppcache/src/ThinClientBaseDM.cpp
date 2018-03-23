@@ -14,17 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/internal/geode_globals.hpp>
 #include "ThinClientBaseDM.hpp"
-#include "ThinClientRegion.hpp"
-#include "TcrMessage.hpp"
-#include "TcrEndpoint.hpp"
-#include <geode/ExceptionTypes.hpp>
-#include "Utils.hpp"
-#include "CacheImpl.hpp"
-#include <geode/SystemProperties.hpp>
-//#include "UserAttributes.hpp"
+
 #include <geode/AuthenticatedView.hpp>
+
+#include "ThinClientRegion.hpp"
+#include "UserAttributes.hpp"
 
 using namespace apache::geode::client;
 
@@ -40,7 +35,7 @@ ThinClientBaseDM::ThinClientBaseDM(TcrConnectionManager& connManager,
       m_chunks(true),
       m_chunkProcessor(nullptr) {}
 
-ThinClientBaseDM::~ThinClientBaseDM() {}
+ThinClientBaseDM::~ThinClientBaseDM() = default;
 
 void ThinClientBaseDM::init() {
   const auto& systemProperties = m_connManager.getCacheImpl()
@@ -97,14 +92,10 @@ GfErrType ThinClientBaseDM::sendSyncRequestRegisterInterest(
         break;
 
       case TcrMessage::REGISTER_INTEREST_DATA_ERROR:
-        // LOGERROR( "An error occurred while registering interest "
-        //    "on the endpoint %s", getActiveEndpoint( )->name( ).c_str( ) );
         err = GF_CACHESERVER_EXCEPTION;
         break;
 
       case TcrMessage::UNREGISTER_INTEREST_DATA_ERROR:
-        // LOGERROR( "An error occurred while un-registering interest "
-        //    "on the endpoint %s", getActiveEndpoint( )->name( ).c_str( ) );
         err = GF_CACHESERVER_EXCEPTION;
         break;
 
@@ -144,9 +135,7 @@ GfErrType ThinClientBaseDM::handleEPError(TcrEndpoint* ep,
           }
         }
       }
-    } /*else if ( !ep->connected( ) ) {
-      error = GF_NOTCON;
-    }*/
+    }
   }
   return error;
 }
@@ -176,8 +165,6 @@ bool ThinClientBaseDM::unrecoverableServerError(const char* exceptStr) {
   return (
       (strstr(exceptStr, "org.apache.geode.cache.CacheClosedException") !=
        nullptr) ||
-      /*(strstr(exceptStr,
-          "org.apache.geode.cache.execute.FunctionException") != nullptr) ||*/
       (strstr(exceptStr, "org.apache.geode.distributed.ShutdownException") !=
        nullptr) ||
       (strstr(exceptStr, "java.lang.OutOfMemoryError") != nullptr));
@@ -198,9 +185,7 @@ bool ThinClientBaseDM::nonFatalServerError(const char* exceptStr) {
           (strstr(exceptStr, "java.lang.IllegalStateException") != nullptr));
 }
 
-void ThinClientBaseDM::failover() {
-  // Empty Implementation
-}
+void ThinClientBaseDM::failover() {}
 
 void ThinClientBaseDM::queueChunk(TcrChunkedContext* chunk) {
   LOGDEBUG("ThinClientBaseDM::queueChunk");
@@ -291,15 +276,16 @@ void ThinClientBaseDM::beforeSendingRequest(const TcrMessage& request,
     }
 
     if (request.getMessageType() == TcrMessage::USER_CREDENTIAL_MESSAGE) {
-      TcrMessage* req = const_cast<TcrMessage*>(&request);
+      auto* req = const_cast<TcrMessage*>(&request);
       req->createUserCredentialMessage(conn);
       req->addSecurityPart(connId, conn);
     } else if (TcrMessage::isUserInitiativeOps(request)) {
-      TcrMessage* req = const_cast<TcrMessage*>(&request);
+      auto* req = const_cast<TcrMessage*>(&request);
       req->addSecurityPart(connId, uniqueId, conn);
     }
   }
 }
+
 void ThinClientBaseDM::afterSendingRequest(const TcrMessage& request,
                                            TcrMessageReply& reply,
                                            TcrConnection* conn) {

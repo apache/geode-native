@@ -145,7 +145,7 @@ class PutAllWork : public PooledWork<GfErrType>,
 
   void init() {}
   GfErrType execute(void) {
-    GuardUserAttribures gua;
+    GuardUserAttributes gua;
 
     if (m_userAttribute != nullptr) {
       gua.setAuthenticatedView(m_userAttribute->getAuthenticatedView());
@@ -284,7 +284,7 @@ class RemoveAllWork : public PooledWork<GfErrType>,
 
   void init() {}
   GfErrType execute(void) {
-    GuardUserAttribures gua;
+    GuardUserAttributes gua;
 
     if (m_userAttribute != nullptr) {
       gua.setAuthenticatedView(m_userAttribute->getAuthenticatedView());

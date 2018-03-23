@@ -21,16 +21,14 @@
 #define GEODE_EXECUTIONIMPL_H_
 
 #include <map>
-
 #include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
-
 #include <geode/Execution.hpp>
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/ResultCollector.hpp>
 #include <geode/Region.hpp>
-
 #include <geode/AuthenticatedView.hpp>
+#include "ErrType.hpp"
 
 namespace apache {
 namespace geode {

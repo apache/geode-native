@@ -151,7 +151,12 @@ Cache::Cache(Cache&& other) noexcept
   m_cacheImpl->setCache(this);
 }
 
-Cache& Cache::operator=(Cache&& other) noexcept { return std::move(other); }
+Cache& Cache::operator=(Cache&& other) noexcept {
+  m_cacheImpl = std::move(other.m_cacheImpl);
+  m_typeRegistry = std::move(other.m_typeRegistry);
+  m_cacheImpl->setCache(this);
+  return *this;
+}
 
 Cache::~Cache() = default;
 

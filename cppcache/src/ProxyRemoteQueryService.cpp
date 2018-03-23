@@ -35,7 +35,7 @@ std::shared_ptr<Query> ProxyRemoteQueryService::newQuery(
         userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
-      GuardUserAttribures gua(m_authenticatedView);
+      GuardUserAttributes gua(m_authenticatedView);
       auto poolDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
       if (!poolDM->isDestroyed()) {
         return poolDM->getQueryServiceWithoutCheck()->newQuery(querystring);
@@ -62,7 +62,7 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
         userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
-      GuardUserAttribures gua(m_authenticatedView);
+      GuardUserAttributes gua(m_authenticatedView);
       auto pooDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
       if (!pooDM->isDestroyed()) {
         auto cqQuery = pooDM->getQueryServiceWithoutCheck()->newCq(
@@ -91,7 +91,7 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
         userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
-      GuardUserAttribures gua(m_authenticatedView);
+      GuardUserAttributes gua(m_authenticatedView);
       auto poolDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
       if (!poolDM->isDestroyed()) {
         auto cqQuery = poolDM->getQueryServiceWithoutCheck()->newCq(
@@ -142,7 +142,7 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::getCq(
         userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
-      GuardUserAttribures gua(m_authenticatedView);
+      GuardUserAttributes gua(m_authenticatedView);
       auto poolDM = std::static_pointer_cast<ThinClientPoolDM>(pool);
       if (!poolDM->isDestroyed()) {
         return poolDM->getQueryServiceWithoutCheck()->getCq(name);
