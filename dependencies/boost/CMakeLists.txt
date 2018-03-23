@@ -116,24 +116,24 @@ add_library(Boost::system ALIAS boost_system)
 
 add_library(boost_thread INTERFACE)
 target_link_libraries(boost_thread INTERFACE
-  Boost::boost
   ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_thread${CMAKE_STATIC_LIBRARY_SUFFIX}
+  Boost::boost
 )
 add_library(Boost::thread ALIAS boost_thread)
 
 add_library(boost_filesystem INTERFACE)
 target_link_libraries(boost_filesystem INTERFACE
-  Boost::boost
   ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_filesystem${CMAKE_STATIC_LIBRARY_SUFFIX}
+  Boost::boost
 )
 add_library(Boost::filesystem ALIAS boost_filesystem)
 
 add_library(boost_log INTERFACE)
 target_link_libraries(boost_log INTERFACE
-  Boost::boost
-  Boost::thread
-  Boost::filesystem
   ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_log${CMAKE_STATIC_LIBRARY_SUFFIX}
   ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_log_setup${CMAKE_STATIC_LIBRARY_SUFFIX}
+  Boost::thread
+  Boost::filesystem
+  Boost::boost
 )
 add_library(Boost::log ALIAS boost_log)
