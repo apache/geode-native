@@ -170,7 +170,7 @@ namespace Apache
         return retVal();
       }
 
-      void TypeRegistry::RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod, Cache^ cache)
+      void TypeRegistry::RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod)
       {
         if (creationMethod == nullptr) {
           throw gcnew IllegalArgumentException("Serializable.RegisterType(): "
@@ -179,7 +179,7 @@ namespace Apache
 
         //--------------------------------------------------------------
 
-        auto typeRegistry = cache->TypeRegistry;
+        auto typeRegistry = m_cache->TypeRegistry;
 
         //adding user type as well in global builtin hashmap
         System::Int64 classId = ((System::Int64)creationMethod()->ClassId);
@@ -191,22 +191,22 @@ namespace Apache
             &DelegateWrapperGeneric::NativeDelegateGeneric);
 
         // this is avoid object being Gced
-        cache->TypeRegistry->NativeDelegatesGeneric->Add(nativeDelegate);
+        m_cache->TypeRegistry->NativeDelegatesGeneric->Add(nativeDelegate);
 
         // register the type in the DelegateMap, this is pure c# for create domain object 
         IGeodeSerializable^ tmp = creationMethod();
         Log::Fine("Registering serializable class ID " + tmp->ClassId);
-        cache->TypeRegistry->DelegateMapGeneric[tmp->ClassId] = creationMethod;
+        m_cache->TypeRegistry->DelegateMapGeneric[tmp->ClassId] = creationMethod;
 
         _GF_MG_EXCEPTION_TRY2
-          CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
+          CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get());
         cacheImpl->getSerializationRegistry()->addType((std::shared_ptr<native::Serializable>(*)())System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
       void TypeRegistry::RegisterTypeGeneric(Byte typeId,
-        TypeFactoryMethodGeneric^ creationMethod, Type^ type, Cache^ cache)
+        TypeFactoryMethodGeneric^ creationMethod, Type^ type)
       {
         if (creationMethod == nullptr) {
           throw gcnew IllegalArgumentException("Serializable.RegisterType(): ");
@@ -216,14 +216,14 @@ namespace Apache
           gcnew TypeFactoryNativeMethodGeneric(delegateObj,
             &DelegateWrapperGeneric::NativeDelegateGeneric);
 
-        cache->TypeRegistry->BuiltInDelegatesGeneric[typeId] = nativeDelegate;
+        m_cache->TypeRegistry->BuiltInDelegatesGeneric[typeId] = nativeDelegate;
 
         if (type != nullptr)
         {
-          cache->TypeRegistry->ManagedTypeToTypeId[type] = typeId;
+          m_cache->TypeRegistry->ManagedTypeToTypeId[type] = typeId;
         }
 
-        auto typeRegistry = cache->TypeRegistry;
+        auto typeRegistry = m_cache->TypeRegistry;
 
         //This is hashmap for manged builtin objects
         if (!typeRegistry->ManagedDelegatesGeneric->ContainsKey(typeId + 0x80000000))
@@ -234,11 +234,11 @@ namespace Apache
         // register the type in the DelegateMap
         IGeodeSerializable^ tmp = creationMethod();
         Log::Finer("Registering(,) serializable class ID " + tmp->ClassId);
-        cache->TypeRegistry->DelegateMapGeneric[tmp->ClassId] = creationMethod;
+        m_cache->TypeRegistry->DelegateMapGeneric[tmp->ClassId] = creationMethod;
 
         try
         {
-          CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
+          CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get());
           if (tmp->ClassId < 0xa0000000)
           {
             cacheImpl->getSerializationRegistry()->addType(typeId,

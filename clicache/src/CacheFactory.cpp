@@ -69,7 +69,7 @@ namespace Apache
           cache->TypeRegistry->RegisterTypeGeneric(
             native::GeodeTypeIds::PdxType,
             gcnew TypeFactoryMethodGeneric(Apache::Geode::Client::Internal::PdxType::CreateDeserializable),
-            nullptr, cache);
+            nullptr);
 
           DistributedSystem::ManagedPostConnect(cache);
           DistributedSystem::registerCliCallback();

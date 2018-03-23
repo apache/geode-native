@@ -689,9 +689,9 @@ namespace Apache.Geode.Client.FwkLib
           FwkInfo("isObjectRegistered value is {0}",isObjectRegistered);
         if (!isObjectRegistered)
         {
-          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Portfolio.CreateDeserializable, CacheHelper<TKey, TVal>.DCache);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Portfolio.CreateDeserializable);
           FwkInfo("Completed Portfolio registeration");
-          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Position.CreateDeserializable, CacheHelper<TKey, TVal>.DCache);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Position.CreateDeserializable);
           CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterPdxType(PortfolioPdx.CreateDeserializable);
           CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterPdxType(PositionPdx.CreateDeserializable);
           FwkInfo("Completed other object registeration");
@@ -1390,8 +1390,8 @@ namespace Apache.Geode.Client.FwkLib
         if (isTypeRegistered != "registered")
         {
           FwkInfo("Getting inside for registeration");
-          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Position.CreateDeserializable, CacheHelper<TKey, TVal>.DCache);
-          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Portfolio.CreateDeserializable, CacheHelper<TKey, TVal>.DCache);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Position.CreateDeserializable);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Portfolio.CreateDeserializable);
           CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterPdxType(Apache.Geode.Client.Tests.PortfolioPdx.CreateDeserializable);
           CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterPdxType(Apache.Geode.Client.Tests.PositionPdx.CreateDeserializable);
 
