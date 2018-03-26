@@ -115,7 +115,7 @@ class _GEODE_EXPORT DistributedSystem {
   std::string m_name;
   bool m_connected;
   std::shared_ptr<statistics::StatisticsManager> m_statisticsManager;
-  std::shared_ptr<SystemProperties> m_sysProps;
+  std::unique_ptr<SystemProperties> m_sysProps;
 
  public:
   DistributedSystemImpl* m_impl;
