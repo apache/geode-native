@@ -60,7 +60,7 @@ DistributedSystem::DistributedSystem(const std::string& name,
 }
 
 void DistributedSystem::logSystemInformation() const {
-  std::string productDir = CppCacheLibrary::getProductDir();
+  auto productDir = CppCacheLibrary::getProductDir();
   LOGCONFIG("Using Geode Native Client Product Directory: " + productDir);
 
   // Add version information, source revision, current directory etc.
@@ -142,7 +142,7 @@ DistributedSystem DistributedSystem::create(
   auto distributedSystem = DistributedSystem(name, std::move(sysProps));
 
   distributedSystem.m_impl =
-      new DistributedSystemImpl(name.c_str(), distributedSystem);
+      new DistributedSystemImpl(name.c_str(), std::move(distributedSystem));
 
   distributedSystem.logSystemInformation();
   LOGCONFIG("Starting the Geode Native Client");

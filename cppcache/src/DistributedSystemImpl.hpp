@@ -94,7 +94,7 @@ class _GEODE_EXPORT DistributedSystemImpl {
   /**
    * @brief constructors
    */
-  DistributedSystemImpl(const char* name, DistributedSystem implementee);
+  DistributedSystemImpl(std::string name, DistributedSystem implementee);
 
   // acquire/release locks
 

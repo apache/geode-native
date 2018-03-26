@@ -28,9 +28,9 @@ volatile bool DistributedSystemImpl::m_isCliCallbackSet = false;
 std::map<int, CliCallbackMethod> DistributedSystemImpl::m_cliCallbackMap;
 ACE_Recursive_Thread_Mutex DistributedSystemImpl::m_cliCallbackLock;
 
-DistributedSystemImpl::DistributedSystemImpl(const char* name,
+DistributedSystemImpl::DistributedSystemImpl(std::string name,
                                              DistributedSystem implementee)
-    : m_name(name == nullptr ? "" : name), m_implementee(implementee) {}
+    : m_name(name), m_implementee(std::move(implementee)) {}
 
 DistributedSystemImpl::~DistributedSystemImpl() {
   LOGFINE("Destroyed DistributedSystemImpl");
@@ -45,7 +45,7 @@ void DistributedSystemImpl::disconnect() {
 void DistributedSystemImpl::CallCliCallBack(Cache& cache) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(m_cliCallbackLock);
   if (m_isCliCallbackSet == true) {
-    for (auto& iter : m_cliCallbackMap) {
+    for (const auto& iter : m_cliCallbackMap) {
       iter.second(cache);
     }
   }

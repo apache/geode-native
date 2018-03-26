@@ -56,8 +56,8 @@ class _GEODE_EXPORT DistributedSystem {
    * @brief public methods
    */
  public:
-  DistributedSystem(const DistributedSystem&) = default;
-  DistributedSystem& operator=(const DistributedSystem&) = default;
+  DistributedSystem(const DistributedSystem&) = delete;
+  DistributedSystem& operator=(const DistributedSystem&) = delete;
   DistributedSystem(DistributedSystem&&) = default;
   DistributedSystem& operator=(DistributedSystem&&) = default;
 
