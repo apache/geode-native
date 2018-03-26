@@ -141,7 +141,7 @@ namespace Apache
 
         ManagedPostConnect(cache);
 
-        return gcnew DistributedSystem(nativeDistributedSystem);
+        return gcnew DistributedSystem(std::move(nativeDistributedSystem));
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -472,7 +472,7 @@ namespace Apache
 
       DistributedSystem::DistributedSystem(native::DistributedSystem nativeDistributedSystem)
       {
-        native::DistributedSystem* nativeptr = new native::DistributedSystem(nativeDistributedSystem);
+        native::DistributedSystem* nativeptr = new native::DistributedSystem(std::move(nativeDistributedSystem));
         m_nativeDistributedSystem = gcnew native_conditional_unique_ptr<native::DistributedSystem>(nativeptr);
       }
 
