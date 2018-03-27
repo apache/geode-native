@@ -19,18 +19,10 @@ project( Apache.Geode.Client.MultipleCacheTests CSharp )
 set(CMAKE_CSharp_FLAGS "/langversion:5")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINARY_DIR}/packages.config COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/GeodeServer.cs.in ${CMAKE_CURRENT_SOURCE_DIR}/GeodeServer.cs)
 
 add_library( ${PROJECT_NAME} SHARED
-    GeodeServer.cs
-    GeodeServerTests.cs
-    CacheXml.cs
-    CacheXmlTests.cs
     MultipleCacheTests.cs
-    cache.xml
-    geode.properties
     xunit.runner.json
-    GeodeServer.cs.in
 )
 
 set_source_files_properties(cache.xml xunit.runner.json geode.properties PROPERTIES
