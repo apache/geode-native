@@ -324,8 +324,7 @@ _GEODE_CACHEABLE_KEY_TYPE_(char16_t, CacheableCharacter, 3);
 
 template <typename T, GeodeTypeIds::IdValues GeodeTypeId>
 class _GEODE_EXPORT CacheableArray : public Cacheable {
-protected:
-
+ protected:
   inline CacheableArray() = default;
 
   CacheableArray(const CacheableArray& other) = delete;
@@ -337,30 +336,22 @@ protected:
 
   virtual int32_t classId() const override { return 0; }
 
-  virtual int8_t typeId() const override {
-    return GeodeTypeId;
-  }
+  virtual int8_t typeId() const override { return GeodeTypeId; }
 
   virtual size_t objectSize() const override {
     return static_cast<uint32_t>(
         apache::geode::client::serializer::objectArraySize(m_value));
   }
 
-private:
-
+ private:
   _GEODE_FRIEND_STD_SHARED_PTR(CacheableArray)
 
   std::vector<T> m_value;
 
-public:
+ public:
+  inline const std::vector<T>& value() const { return m_value; }
 
-  inline const std::vector<T>& value() const {
-    return m_value;
-  }
-
-  inline int32_t length() const {
-    return m_value.size();
-  }
+  inline int32_t length() const { return static_cast<int32_t>(m_value.size()); }
 
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<CacheableArray<T, GeodeTypeId>>();
@@ -383,7 +374,7 @@ public:
   inline T operator[](uint32_t index) const {
     if (static_cast<int32_t>(index) >= m_value.size()) {
       throw OutOfRangeException(
-        "CacheableArray::operator[]: Index out of range.");
+          "CacheableArray::operator[]: Index out of range.");
     }
     return m_value[index];
   }
@@ -398,9 +389,9 @@ public:
 };
 
 /**
-* An immutable wrapper for byte arrays that can serve as
-* a distributable object for caching.
-*/
+ * An immutable wrapper for byte arrays that can serve as
+ * a distributable object for caching.
+ */
 using CacheableBytes = CacheableArray<int8_t, GeodeTypeIds::CacheableBytes>;
 
 /**
@@ -419,37 +410,43 @@ using CharArray = CacheableArray<char16_t, GeodeTypeIds::CharArray>;
  * An immutable wrapper for array of doubles that can serve as
  * a distributable object for caching.
  */
-using CacheableDoubleArray = CacheableArray<double, GeodeTypeIds::CacheableDoubleArray>;
+using CacheableDoubleArray =
+    CacheableArray<double, GeodeTypeIds::CacheableDoubleArray>;
 
 /**
  * An immutable wrapper for array of floats that can serve as
  * a distributable object for caching.
  */
-using CacheableFloatArray = CacheableArray<float, GeodeTypeIds::CacheableFloatArray>;
+using CacheableFloatArray =
+    CacheableArray<float, GeodeTypeIds::CacheableFloatArray>;
 
 /**
  * An immutable wrapper for array of 16-bit integers that can serve as
  * a distributable object for caching.
  */
-using CacheableInt16Array = CacheableArray<int16_t, GeodeTypeIds::CacheableInt16Array>;
+using CacheableInt16Array =
+    CacheableArray<int16_t, GeodeTypeIds::CacheableInt16Array>;
 
 /**
  * An immutable wrapper for array of 32-bit integers that can serve as
  * a distributable object for caching.
  */
-using CacheableInt32Array = CacheableArray<int32_t, GeodeTypeIds::CacheableInt32Array>;
+using CacheableInt32Array =
+    CacheableArray<int32_t, GeodeTypeIds::CacheableInt32Array>;
 
 /**
  * An immutable wrapper for array of 64-bit integers that can serve as
  * a distributable object for caching.
  */
-using CacheableInt64Array = CacheableArray<int64_t, GeodeTypeIds::CacheableInt64Array>;
+using CacheableInt64Array =
+    CacheableArray<int64_t, GeodeTypeIds::CacheableInt64Array>;
 
 /**
  * An immutable wrapper for array of strings that can serve as
  * a distributable object for caching.
  */
-using CacheableStringArray = CacheableArray<std::shared_ptr<CacheableString>, GeodeTypeIds::CacheableStringArray>;
+using CacheableStringArray = CacheableArray<std::shared_ptr<CacheableString>,
+                                            GeodeTypeIds::CacheableStringArray>;
 
 // Instantiations for container types (Vector/HashMap/HashSet) Cacheables
 

@@ -54,7 +54,7 @@ class _GEODE_EXPORT StructSet : public CqResults {
    *
    * @returns the number of items in the StructSet.
    */
-  virtual int32_t size() const = 0;
+  virtual size_t size() const = 0;
 
   /**
    * Index operator to directly access an item in the StructSet.
@@ -73,7 +73,7 @@ class _GEODE_EXPORT StructSet : public CqResults {
    * @returns the index number of the specified field name.
    * @throws std::invalid_argument if the field name is not found.
    */
-  virtual const int32_t getFieldIndex(const std::string& fieldname) = 0;
+  virtual const size_t getFieldIndex(const std::string& fieldname) = 0;
 
   /**
    * Get the field name of the StructSet from the specified index number.

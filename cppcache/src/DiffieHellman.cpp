@@ -128,8 +128,8 @@ void DiffieHellman::clearDhKeys(void) {
 std::shared_ptr<CacheableBytes> DiffieHellman::getPublicKey(void) {
   int keyLen = 0;
   auto pubKeyPtr = gf_getPublicKey_Ptr(m_dhCtx, &keyLen);
-  return CacheableBytes::create(std::vector<int8_t>(pubKeyPtr, pubKeyPtr +
-                                      keyLen));
+  return CacheableBytes::create(
+      std::vector<int8_t>(pubKeyPtr, pubKeyPtr + keyLen));
 }
 
 void DiffieHellman::setPublicKeyOther(
@@ -148,12 +148,11 @@ std::shared_ptr<CacheableBytes> DiffieHellman::encrypt(
                  cleartext->length());
 }
 std::shared_ptr<CacheableBytes> DiffieHellman::encrypt(const uint8_t* cleartext,
-                                                       int len) {
-  int cipherLen = 0;
-  unsigned char* ciphertextPtr =
-      gf_encryptDH_Ptr(m_dhCtx, cleartext, len, &cipherLen);
-  return CacheableBytes::create(std::vector<int8_t>(ciphertextPtr, ciphertextPtr +
-                                      cipherLen));
+                                                       size_t len) {
+  size_t cipherLen = 0;
+  auto ciphertextPtr = gf_encryptDH_Ptr(m_dhCtx, cleartext, len, &cipherLen);
+  return CacheableBytes::create(
+      std::vector<int8_t>(ciphertextPtr, ciphertextPtr + cipherLen));
 }
 std::shared_ptr<CacheableBytes> DiffieHellman::decrypt(
     const std::shared_ptr<CacheableBytes>& cleartext) {
@@ -161,12 +160,11 @@ std::shared_ptr<CacheableBytes> DiffieHellman::decrypt(
                  cleartext->length());
 }
 std::shared_ptr<CacheableBytes> DiffieHellman::decrypt(const uint8_t* cleartext,
-                                                       int len) {
-  int cipherLen = 0;
-  unsigned char* ciphertextPtr =
-      gf_decryptDH_Ptr(m_dhCtx, cleartext, len, &cipherLen);
-  return CacheableBytes::create(std::vector<int8_t>(ciphertextPtr, ciphertextPtr +
-                                      cipherLen));
+                                                       size_t len) {
+  size_t cipherLen = 0;
+  auto ciphertextPtr = gf_decryptDH_Ptr(m_dhCtx, cleartext, len, &cipherLen);
+  return CacheableBytes::create(
+      std::vector<int8_t>(ciphertextPtr, ciphertextPtr + cipherLen));
 }
 
 bool DiffieHellman::verify(const std::shared_ptr<CacheableString>& subject,
@@ -176,9 +174,10 @@ bool DiffieHellman::verify(const std::shared_ptr<CacheableString>& subject,
   LOGDEBUG("DiffieHellman::verify");
   bool result = gf_verifyDH_Ptr(
       m_dhCtx, subject->value().c_str(),
-      reinterpret_cast<const uint8_t*>(challenge->value().data()), challenge->length(),
-      reinterpret_cast<const uint8_t*>(response->value().data()), response->length(),
-      &errCode);
+      reinterpret_cast<const uint8_t*>(challenge->value().data()),
+      challenge->length(),
+      reinterpret_cast<const uint8_t*>(response->value().data()),
+      response->length(), &errCode);
   LOGDEBUG("DiffieHellman::verify 2");
   if (errCode == DH_ERR_SUBJECT_NOT_FOUND) {
     LOGERROR("Subject name %s not found in imported certificates.",

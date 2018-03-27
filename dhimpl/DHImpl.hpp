@@ -58,7 +58,7 @@ _GEODE_EXPORT void gf_setPublicKeyOther(const unsigned char* pubkey,
                                         int length);
 _GEODE_EXPORT void gf_computeSharedSecret(void);
 _GEODE_EXPORT unsigned char* gf_encryptDH(const unsigned char* cleartext,
-                                          int len, int* retLen);
+                                          size_t len, size_t* retLen);
 _GEODE_EXPORT bool gf_verifyDH(const char* subject,
                                const unsigned char* challenge, int challengeLen,
                                const unsigned char* response, int responseLen,

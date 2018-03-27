@@ -265,9 +265,9 @@ void FrameworkTest::cacheInitialize(
     if (m_istransaction) {
       txManager = m_cache->getCacheTransactionManager();
     }
-  } catch (CacheExistsException& ignore) {
+  } catch (const CacheExistsException&) {
     m_cache = nullptr;
-  } catch (Exception& e) {
+  } catch (const Exception& e) {
     FWKEXCEPTION(
         "CacheFactory::create encountered Exception: " << e.what());
   }
@@ -284,8 +284,8 @@ void FrameworkTest::cacheFinalize() {
     try {
       destroyAllRegions();
       m_cache->close();
-    } catch (CacheClosedException& ignore) {
-    } catch (Exception& e) {
+    } catch (const CacheClosedException&) {
+    } catch (const Exception& e) {
       FWKSEVERE("Caught an unexpected Exception during cache close: "
                 << e.what());
     } catch (...) {

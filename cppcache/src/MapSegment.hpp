@@ -50,7 +50,8 @@ ACE_BEGIN_VERSIONED_NAMESPACE_DECL
 template <>
 class ACE_Hash<std::shared_ptr<apache::geode::client::CacheableKey>> {
  public:
-  u_long operator()(const std::shared_ptr<apache::geode::client::CacheableKey>& key) {
+  u_long operator()(
+      const std::shared_ptr<apache::geode::client::CacheableKey>& key) {
     return key->hashcode();
   }
 };
@@ -58,8 +59,9 @@ class ACE_Hash<std::shared_ptr<apache::geode::client::CacheableKey>> {
 template <>
 class ACE_Equal_To<std::shared_ptr<apache::geode::client::CacheableKey>> {
  public:
-  bool operator()(const std::shared_ptr<apache::geode::client::CacheableKey>& key1,
-                  const std::shared_ptr<apache::geode::client::CacheableKey>& key2) {
+  bool operator()(
+      const std::shared_ptr<apache::geode::client::CacheableKey>& key1,
+      const std::shared_ptr<apache::geode::client::CacheableKey>& key2) {
     return key1->operator==(*key2);
   }
 };
@@ -188,14 +190,16 @@ class _GEODE_EXPORT MapSegment {
                                int updateCount, VersionStamp& versionStamp,
                                DataInput* delta = nullptr);
 
-  std::shared_ptr<Cacheable> getFromDisc(std::shared_ptr<CacheableKey> key, std::shared_ptr<MapEntryImpl>& entryImpl);
+  std::shared_ptr<Cacheable> getFromDisc(
+      std::shared_ptr<CacheableKey> key,
+      std::shared_ptr<MapEntryImpl>& entryImpl);
 
   GfErrType removeWhenConcurrencyEnabled(
       const std::shared_ptr<CacheableKey>& key,
       std::shared_ptr<Cacheable>& oldValue, std::shared_ptr<MapEntryImpl>& me,
       int updateCount, std::shared_ptr<VersionTag> versionTag, bool afterRemote,
-      bool& isEntryFound, int64_t expiryTaskID, TombstoneExpiryHandler* handler,
-      bool& expTaskSet);
+      bool& isEntryFound, ExpiryTaskManager::id_type expiryTaskID,
+      TombstoneExpiryHandler* handler, bool& expTaskSet);
 
  public:
   MapSegment()
@@ -224,7 +228,8 @@ class _GEODE_EXPORT MapSegment {
    */
   void open(RegionInternal* region, const EntryFactory* entryFactory,
             ExpiryTaskManager* expiryTaskManager, uint32_t size,
-            std::atomic<int32_t>* destroyTrackers, bool concurrencyChecksEnabled);
+            std::atomic<int32_t>* destroyTrackers,
+            bool concurrencyChecksEnabled);
 
   void close();
   void clear();
@@ -251,14 +256,17 @@ class _GEODE_EXPORT MapSegment {
                 std::shared_ptr<VersionTag> versionTag,
                 DataInput* delta = nullptr);
 
-  GfErrType invalidate(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<MapEntryImpl>& me,
-                       std::shared_ptr<Cacheable>& oldValue, std::shared_ptr<VersionTag> versionTag,
+  GfErrType invalidate(const std::shared_ptr<CacheableKey>& key,
+                       std::shared_ptr<MapEntryImpl>& me,
+                       std::shared_ptr<Cacheable>& oldValue,
+                       std::shared_ptr<VersionTag> versionTag,
                        bool& isTokenAdded);
 
   /**
    * @brief remove an entry from the map, setting oldValue.
    */
-  GfErrType remove(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& oldValue,
+  GfErrType remove(const std::shared_ptr<CacheableKey>& key,
+                   std::shared_ptr<Cacheable>& oldValue,
                    std::shared_ptr<MapEntryImpl>& me, int updateCount,
                    std::shared_ptr<VersionTag> versionTag, bool afterRemote,
                    bool& isEntryFound);
@@ -279,7 +287,7 @@ class _GEODE_EXPORT MapSegment {
   /**
    * @brief return the all the keys in the provided list.
    */
-  void getKeys(std::vector<std::shared_ptr<CacheableKey>> & result);
+  void getKeys(std::vector<std::shared_ptr<CacheableKey>>& result);
 
   /**
    * @brief return all the entries in the provided list.
@@ -289,7 +297,7 @@ class _GEODE_EXPORT MapSegment {
   /**
    * @brief return all values in the provided list.
    */
-  void getValues(std::vector<std::shared_ptr<Cacheable>> & result);
+  void getValues(std::vector<std::shared_ptr<Cacheable>>& result);
 
   inline uint32_t rehashCount() { return m_rehashCount; }
 
@@ -307,16 +315,18 @@ class _GEODE_EXPORT MapSegment {
 
   void reapTombstones(std::shared_ptr<CacheableHashSet> removedKeys);
 
-  bool removeActualEntry(const std::shared_ptr<CacheableKey>& key, bool cancelTask = true);
+  bool removeActualEntry(const std::shared_ptr<CacheableKey>& key,
+                         bool cancelTask = true);
 
   bool unguardedRemoveActualEntryWithoutCancelTask(
-      const std::shared_ptr<CacheableKey>& key, TombstoneExpiryHandler*& handler,
-      int64_t& taskid);
+      const std::shared_ptr<CacheableKey>& key,
+      TombstoneExpiryHandler*& handler, ExpiryTaskManager::id_type& taskid);
 
   bool unguardedRemoveActualEntry(const std::shared_ptr<CacheableKey>& key,
                                   bool cancelTask = true);
 
-  GfErrType isTombstone(std::shared_ptr<CacheableKey> key, std::shared_ptr<MapEntryImpl>& me, bool& result);
+  GfErrType isTombstone(std::shared_ptr<CacheableKey> key,
+                        std::shared_ptr<MapEntryImpl>& me, bool& result);
 
   static bool boolVal;
 };

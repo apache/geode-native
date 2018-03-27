@@ -278,7 +278,8 @@ void ThinClientPoolDM::startBackgroundThreads() {
   ACE_Event_Handler* pingHandler =
       new ExpiryHandler_T<ThinClientPoolDM>(this, &ThinClientPoolDM::doPing);
 
-  long pingInterval = getPingInterval().count() / (1000 * 2);
+  auto pingInterval =
+      static_cast<int32_t>(getPingInterval().count() / (1000 * 2));
   if (pingInterval > 0) {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Scheduling ping task at %ld",
@@ -293,7 +294,8 @@ void ThinClientPoolDM::startBackgroundThreads() {
         getPingInterval().count());
   }
 
-  long updateLocatorListInterval = getUpdateLocatorListInterval().count();
+  auto updateLocatorListInterval =
+      static_cast<uint32_t>(getUpdateLocatorListInterval().count());
 
   if (updateLocatorListInterval > 0) {
     m_updateLocatorListTask =
@@ -702,7 +704,7 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getLocators()
     ptrArr[i++] = CacheableString::create(locator);
   }
   return CacheableStringArray::create(
-	  std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
+      std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
 }
 
 const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
@@ -714,7 +716,7 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
       ptrArr[i++] = CacheableString::create(server);
     }
     return CacheableStringArray::create(
-		std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
+        std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
   } else if (!m_attrs->m_initLocList.empty()) {
     std::vector<ServerLocation> vec;
     // TODO thread - why is this member volatile?
@@ -728,9 +730,11 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
       ptrArr[i++] = CacheableString::create(serLoc.getServerName() + ":" +
                                             std::to_string(serLoc.getPort()));
     }
-    return CacheableStringArray::create(std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
+    return CacheableStringArray::create(
+        std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
   } else {
-    return CacheableStringArray::create(std::vector<std::shared_ptr<CacheableString>>{});
+    return CacheableStringArray::create(
+        std::vector<std::shared_ptr<CacheableString>>{});
   }
 }
 
@@ -1414,9 +1418,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
           "ThinClientPoolDM::sendSyncRequest: after "
           "getConnectionInMultiuserMode %d",
           isUserNeedToReAuthenticate);
-      if (conn !=
-          nullptr) {  // need to chk whether user is already authenticated
-                      // to this endpoint or not.
+      if (conn != nullptr) {  // need to chk whether user is already
+                              // authenticated to this endpoint or not.
         isUserNeedToReAuthenticate =
             !(userAttr->isEndpointAuthenticated(conn->getEndpointObject()));
       }

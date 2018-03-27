@@ -253,18 +253,18 @@ void TcpConn::close() {
   }
 }
 
-int32_t TcpConn::receive(char *buff, int32_t len,
-                         std::chrono::microseconds waitSeconds) {
+size_t TcpConn::receive(char *buff, size_t len,
+                        std::chrono::microseconds waitSeconds) {
   return socketOp(SOCK_READ, buff, len, waitSeconds);
 }
 
-int32_t TcpConn::send(const char *buff, int32_t len,
-                      std::chrono::microseconds waitSeconds) {
+size_t TcpConn::send(const char *buff, size_t len,
+                     std::chrono::microseconds waitSeconds) {
   return socketOp(SOCK_WRITE, const_cast<char *>(buff), len, waitSeconds);
 }
 
-int32_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, int32_t len,
-                          std::chrono::microseconds waitSeconds) {
+size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
+                         std::chrono::microseconds waitSeconds) {
   {
     /*{
       ACE_HANDLE handle = m_io->get_handle();
@@ -301,8 +301,8 @@ int32_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, int32_t len,
     ssize_t retVal;
     bool errnoSet = false;
 
-    int32_t sendlen = len;
-    int32_t totalsend = 0;
+    auto sendlen = len;
+    size_t totalsend = 0;
 
     while (len > 0 && waitTime > ACE_Time_Value::zero) {
       if (len > m_chunkSize) {
@@ -318,8 +318,8 @@ int32_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, int32_t len,
         } else {
           retVal = m_io->send_n(buff, sendlen, &waitTime, &readLen);
         }
-        sendlen -= static_cast<int32_t>(readLen);
-        totalsend += static_cast<int32_t>(readLen);
+        sendlen -= readLen;
+        totalsend += readLen;
         if (retVal < 0) {
           int32_t lastError = ACE_OS::last_error();
           if (lastError == EAGAIN) {

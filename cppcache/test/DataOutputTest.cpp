@@ -317,7 +317,7 @@ TEST_F(DataOutputTest, TestCursorAdvance) {
       "001B596F7520686164206D65206174206D65617420746F726E61646F2E",
       dataOutput.getByteArray());
 
-  const uint32_t originalLength = dataOutput.getBufferLength();
+  const auto originalLength = dataOutput.getBufferLength();
   dataOutput.advanceCursor(2);
   EXPECT_EQ((originalLength + 2), dataOutput.getBufferLength())
       << "Correct length after advance";
@@ -330,7 +330,7 @@ TEST_F(DataOutputTest, TestCursorNegativeAdvance) {
       "001B596F7520686164206D65206174206D65617420746F726E61646F2E",
       dataOutput.getByteArray());
 
-  const uint32_t originalLength = dataOutput.getBufferLength();
+  const auto originalLength = dataOutput.getBufferLength();
   dataOutput.advanceCursor(-2);
   EXPECT_EQ((originalLength - 2), dataOutput.getBufferLength())
       << "Correct length after negative advance";

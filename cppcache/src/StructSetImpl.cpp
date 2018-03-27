@@ -36,8 +36,8 @@ StructSetImpl::StructSetImpl(const std::shared_ptr<CacheableVector>& response,
     m_fieldNameIndexMap.emplace(fieldName, i++);
   }
 
-  int32_t numOfValues = response->size();
-  int32_t valStoredCnt = 0;
+  auto numOfValues = response->size();
+  size_t valStoredCnt = 0;
 
   const auto numOfFields = fieldNames.size();
   m_structVector = CacheableVector::create();
@@ -53,7 +53,7 @@ StructSetImpl::StructSetImpl(const std::shared_ptr<CacheableVector>& response,
 
 bool StructSetImpl::isModifiable() const { return false; }
 
-int32_t StructSetImpl::size() const { return m_structVector->size(); }
+size_t StructSetImpl::size() const { return m_structVector->size(); }
 
 const std::shared_ptr<Serializable> StructSetImpl::operator[](
     size_t index) const {
@@ -68,9 +68,8 @@ SelectResultsIterator StructSetImpl::getIterator() {
   return SelectResultsIterator(m_structVector, shared_from_this());
 }
 
-const int32_t StructSetImpl::getFieldIndex(const std::string& fieldname) {
-  const auto& iter =
-      m_fieldNameIndexMap.find(fieldname);
+const size_t StructSetImpl::getFieldIndex(const std::string& fieldname) {
+  const auto& iter = m_fieldNameIndexMap.find(fieldname);
   if (iter != m_fieldNameIndexMap.end()) {
     return iter->second;
   } else {

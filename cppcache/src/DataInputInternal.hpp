@@ -28,10 +28,10 @@ namespace client {
 
 class DataInputInternal : public DataInput {
  public:
-  DataInputInternal(const uint8_t* buffer, int32_t len)
+  DataInputInternal(const uint8_t* buffer, size_t len)
       : DataInput(buffer, len, nullptr) {}
 
-  DataInputInternal(const uint8_t* buffer, int32_t len, const CacheImpl* cache)
+  DataInputInternal(const uint8_t* buffer, size_t len, const CacheImpl* cache)
       : DataInput(buffer, len, cache) {}
 
   virtual const Cache* getCache() override {

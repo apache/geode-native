@@ -89,7 +89,8 @@ void TcpSslConn::connect() {
   std::chrono::microseconds waitMicroSeconds = m_waitMilliSeconds;
 
   LOGDEBUG("Connecting SSL socket stream to %s:%d waiting %d micro sec",
-           m_addr.get_host_name(), m_addr.get_port_number(), waitMicroSeconds.count());
+           m_addr.get_host_name(), m_addr.get_port_number(),
+           waitMicroSeconds.count());
 
   int32_t retVal = m_ssl->connect(m_addr, waitMicroSeconds);
 
@@ -121,8 +122,8 @@ void TcpSslConn::close() {
   }
 }
 
-int32_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, int32_t len,
-                             std::chrono::microseconds waitSeconds) {
+size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
+                            std::chrono::microseconds waitSeconds) {
   {
     GF_DEV_ASSERT(m_ssl != nullptr);
     GF_DEV_ASSERT(buff != nullptr);
@@ -142,11 +143,11 @@ int32_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, int32_t len,
     endTime += waitTime;
     ACE_Time_Value sleepTime(0, 100);
     size_t readLen = 0;
-    ssize_t retVal;
+    size_t retVal;
     bool errnoSet = false;
 
-    int32_t sendlen = len;
-    int32_t totalsend = 0;
+    auto sendlen = len;
+    size_t totalsend = 0;
 
     while (len > 0 && waitTime > ACE_Time_Value::zero) {
       if (len > m_chunkSize) {
@@ -162,8 +163,8 @@ int32_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, int32_t len,
         } else {
           retVal = m_ssl->send(buff, sendlen, &waitTime, &readLen);
         }
-        sendlen -= static_cast<int32_t>(readLen);
-        totalsend += static_cast<int32_t>(readLen);
+        sendlen -= readLen;
+        totalsend += readLen;
         if (retVal < 0) {
           int32_t lastError = ACE_OS::last_error();
           if (lastError == EAGAIN) {

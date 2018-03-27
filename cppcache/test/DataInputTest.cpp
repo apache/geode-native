@@ -120,9 +120,7 @@ class TestDataInput {
     m_dataInput.readObject(ptr);
   }
 
-  std::vector<char16_t> readCharArray() {
-    return m_dataInput.readCharArray();
-  }
+  std::vector<char16_t> readCharArray() { return m_dataInput.readCharArray(); }
 
   std::vector<std::string> readStringArray() {
     return m_dataInput.readStringArray();
@@ -142,9 +140,9 @@ class TestDataInput {
     return m_dataInput.currentBufferPosition();
   }
 
-  int32_t getBytesRead() const { return m_dataInput.getBytesRead(); }
+  size_t getBytesRead() const { return m_dataInput.getBytesRead(); }
 
-  int32_t getBytesRemaining() const { return m_dataInput.getBytesRemaining(); }
+  size_t getBytesRemaining() const { return m_dataInput.getBytesRemaining(); }
 
   void advanceCursor(int32_t offset) { m_dataInput.advanceCursor(offset); }
 

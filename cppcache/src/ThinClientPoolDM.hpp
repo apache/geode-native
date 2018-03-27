@@ -413,7 +413,7 @@ class ThinClientPoolDM
   Task<ThinClientPoolDM>* m_updateLocatorListTask;
   Task<ThinClientPoolDM>* m_cliCallbackTask;
   long m_pingTaskId;
-  long m_updateLocatorListTaskId;
+  ExpiryTaskManager::id_type m_updateLocatorListTaskId;
   long m_connManageTaskId;
   int manageConnections(volatile bool& isRunning);
   int doPing(const ACE_Time_Value&, const void*);
@@ -514,7 +514,6 @@ class FunctionExecution : public PooledWork<GfErrType> {
     m_error = m_poolDM->handleEPError(m_ep, reply, m_error);
     if (m_error != GF_NOERR) {
       if (m_error == GF_NOTCON || m_error == GF_IOERR) {
-
         delete resultProcessor;
         resultProcessor = nullptr;
         return GF_NOERR;  // if server is unavailable its not an error for
@@ -537,7 +536,6 @@ class FunctionExecution : public PooledWork<GfErrType> {
       exceptionPtr = CacheableString::create(reply.getException());
     }
     if (resultProcessor->getResult() == true) {
-
     }
     delete resultProcessor;
     resultProcessor = nullptr;
@@ -609,7 +607,9 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
 
   TcrMessage* getReply() { return m_reply; }
 
-  std::shared_ptr<CacheableHashSet> getFailedNode() { return m_reply->getFailedNode(); }
+  std::shared_ptr<CacheableHashSet> getFailedNode() {
+    return m_reply->getFailedNode();
+  }
 
   ChunkedFunctionExecutionResponse* getResultCollector() {
     return static_cast<ChunkedFunctionExecutionResponse*>(m_resultCollector);

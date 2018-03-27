@@ -483,8 +483,8 @@ class TESTOBJECT_EXPORT NonPdxType {
   template <typename T1, typename T2>
   bool genericValCompare(T1 value1, T2 value2) const;
 
-  template <typename T1, typename T2>
-  bool genericCompare(T1* value1, T2* value2, int length) const;
+  template <typename T1, typename T2, typename L>
+  bool genericCompare(T1* value1, T2* value2, L length) const;
 
   template <typename T1, typename T2>
   bool generic2DCompare(T1** value1, T2** value2, int length,

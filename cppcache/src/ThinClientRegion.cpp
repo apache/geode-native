@@ -241,9 +241,9 @@ class RemoveAllWork : public PooledWork<GfErrType>,
         m_keys(keys),
         m_papException(nullptr),
         m_isPapeReceived(false) {
-    m_request = new TcrMessageRemoveAll(
-        m_region->getCache().createDataOutput(), m_region.get(), *keys,
-        m_aCallbackArgument, m_poolDM);
+    m_request = new TcrMessageRemoveAll(m_region->getCache().createDataOutput(),
+                                        m_region.get(), *keys,
+                                        m_aCallbackArgument, m_poolDM);
     m_reply = new TcrMessageReply(true, m_poolDM);
     // create new instanceof VCOPL
     ACE_Recursive_Thread_Mutex responseLock;
@@ -345,8 +345,7 @@ class RemoveAllWork : public PooledWork<GfErrType>,
 
 ThinClientRegion::ThinClientRegion(
     const std::string& name, CacheImpl* cacheImpl,
-    const std::shared_ptr<RegionInternal>& rPtr,
-    RegionAttributes attributes,
+    const std::shared_ptr<RegionInternal>& rPtr, RegionAttributes attributes,
     const std::shared_ptr<CacheStatistics>& stats, bool shared)
     : LocalRegion(name, cacheImpl, rPtr, attributes, stats, shared),
       m_tcrdm((ThinClientBaseDM*)0),
@@ -2913,8 +2912,8 @@ void ThinClientRegion::registerInterestGetValues(
     const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
         resultKeys) {
   auto exceptions = std::make_shared<HashMapOfException>();
-  auto err = getAllNoThrow_remote(keys, nullptr, exceptions, resultKeys,
-                                       true, nullptr);
+  auto err = getAllNoThrow_remote(keys, nullptr, exceptions, resultKeys, true,
+                                  nullptr);
   GfErrTypeToException(method, err);
   // log any exceptions here
   for (const auto& iter : *exceptions) {
@@ -3621,7 +3620,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
     return;
   }
 
-  int startLen =
+  auto startLen =
       input->getBytesRead() -
       1;  // from here need to look value part + memberid AND -1 for array type
   int32_t len = input->readArrayLen();
@@ -3685,13 +3684,13 @@ void ChunkedFunctionExecutionResponse::handleChunk(
     input->readObject(value);
     // TODO: track this memberId for PrFxHa
     // input->readObject(memberId);
-    int objectlen = input->getBytesRead() - startLen;
+    auto objectlen = input->getBytesRead() - startLen;
 
-    int memberIdLen = partLen - objectlen;
+    auto memberIdLen = partLen - objectlen;
     input->advanceCursor(memberIdLen);
-    LOGDEBUG("function partlen = %d , objectlen = %d,  memberidlen = %d ",
+    LOGDEBUG("function partlen = %d , objectlen = %z,  memberidlen = %z ",
              partLen, objectlen, memberIdLen);
-    LOGDEBUG("function input->getBytesRemaining() = %d ",
+    LOGDEBUG("function input->getBytesRemaining() = %z ",
              input->getBytesRemaining());
 
   } else {
@@ -3920,9 +3919,8 @@ void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
 
   input->advanceCursor(1);  // skip the CacheableArrayList type ID byte
 
-  const auto stringParts =
-      input->read();  // read the number of strings in the message this
-                      // is one byte
+  const auto stringParts = input->read();  // read the number of strings in the
+                                           // message this is one byte
 
   for (int i = 0; i < stringParts; i++) {
     m_resultList->push_back(

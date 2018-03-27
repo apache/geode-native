@@ -53,7 +53,8 @@ long TombstoneList::getExpiryTask(TombstoneExpiryHandler** handler) {
 }
 
 void TombstoneList::add(const std::shared_ptr<MapEntryImpl>& entry,
-                        TombstoneExpiryHandler* handler, long taskid) {
+                        TombstoneExpiryHandler* handler,
+                        ExpiryTaskManager::id_type taskid) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
   // read TombstoneTImeout from systemProperties.

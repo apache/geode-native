@@ -22,7 +22,9 @@ set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)
 
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
-    _apache-geode)
+    _apache-geode
+  PRIVATE
+    _WarningsAsError)
 
 add_dependencies(client-libraries ${PROJECT_NAME})
 

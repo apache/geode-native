@@ -57,7 +57,7 @@ class _GEODE_EXPORT SelectResults {
    *
    * @returns the number of items in the SelectResults.
    */
-  virtual int32_t size() const = 0;
+  virtual size_t size() const = 0;
 
   /**
    * Index operator to directly access an item in the SelectResults.

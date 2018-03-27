@@ -202,8 +202,8 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
               std::make_shared<ClientMetadataService::ServerToKeysMap>(
                   serverToBucketsMap->size());
           for (const auto& entry : *serverToBucketsMap) {
-            auto keys =
-                std::make_shared<CacheableHashSet>(entry.second->size());
+            auto keys = std::make_shared<CacheableHashSet>(
+                static_cast<int32_t>(entry.second->size()));
             for (const auto& bucket : *(entry.second)) {
               keys->insert(CacheableInt32::create(bucket));
             }

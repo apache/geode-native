@@ -32,19 +32,20 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
-using std::chrono::steady_clock;
-using std::chrono::system_clock;
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 using std::chrono::nanoseconds;
+using std::chrono::steady_clock;
+using std::chrono::system_clock;
 
 // Constructor and Member functions of StatDataOutput class
 
-StatDataOutput::StatDataOutput(CacheImpl* cache) : bytesWritten(0), m_fp(nullptr), closed(false) {
+StatDataOutput::StatDataOutput(CacheImpl *cache)
+    : bytesWritten(0), m_fp(nullptr), closed(false) {
   dataBuffer = cache->getCache()->createDataOutput();
 }
 
-StatDataOutput::StatDataOutput(std::string filename, CacheImpl* cache) {
+StatDataOutput::StatDataOutput(std::string filename, CacheImpl *cache) {
   if (filename.length() == 0) {
     std::string s("undefined archive file name");
     throw IllegalArgumentException(s.c_str());
@@ -298,20 +299,21 @@ void ResourceInst::writeResourceInst(StatDataOutput *dataOutArg,
                                      int32_t instId) {
   if (instId > MAX_BYTE_RESOURCE_INST_ID) {
     if (instId > MAX_SHORT_RESOURCE_INST_ID) {
-      dataOutArg->writeByte(static_cast<int8_t>(INT_RESOURCE_INST_ID_TOKEN));
+      dataOutArg->writeByte(static_cast<uint8_t>(INT_RESOURCE_INST_ID_TOKEN));
       dataOutArg->writeInt(instId);
     } else {
-      dataOutArg->writeByte(static_cast<int8_t>(SHORT_RESOURCE_INST_ID_TOKEN));
+      dataOutArg->writeByte(static_cast<uint8_t>(SHORT_RESOURCE_INST_ID_TOKEN));
       dataOutArg->writeShort(instId);
     }
   } else {
-    dataOutArg->writeByte(static_cast<int8_t>(instId));
+    dataOutArg->writeByte(static_cast<uint8_t>(instId));
   }
 }
 
 // Constructor and Member functions of StatArchiveWriter class
 StatArchiveWriter::StatArchiveWriter(std::string outfile,
-                                     HostStatSampler *samplerArg, CacheImpl* cache)
+                                     HostStatSampler *samplerArg,
+                                     CacheImpl *cache)
     : cache(cache) {
   resourceTypeId = 0;
   resourceInstId = 0;
@@ -516,10 +518,10 @@ void StatArchiveWriter::resampleResources() {
 
 void StatArchiveWriter::writeTimeStamp(
     const steady_clock::time_point &timeStamp) {
-  int32_t delta =
-      duration_cast<milliseconds>(timeStamp - this->previousTimeStamp).count();
+  auto delta = static_cast<int32_t>(
+      duration_cast<milliseconds>(timeStamp - this->previousTimeStamp).count());
   if (delta > MAX_SHORT_TIMESTAMP) {
-    dataBuffer->writeShort(static_cast<int16_t>(INT_TIMESTAMP_TOKEN));
+    dataBuffer->writeShort(static_cast<uint16_t>(INT_TIMESTAMP_TOKEN));
     dataBuffer->writeInt(delta);
   } else {
     dataBuffer->writeShort(static_cast<uint16_t>(delta));
@@ -605,14 +607,14 @@ void StatArchiveWriter::writeResourceInst(StatDataOutput *dataOut,
                                           int32_t instId) {
   if (instId > MAX_BYTE_RESOURCE_INST_ID) {
     if (instId > MAX_SHORT_RESOURCE_INST_ID) {
-      dataOut->writeByte(static_cast<int8_t>(INT_RESOURCE_INST_ID_TOKEN));
+      dataOut->writeByte(static_cast<uint8_t>(INT_RESOURCE_INST_ID_TOKEN));
       dataOut->writeInt(instId);
     } else {
-      dataOut->writeByte(static_cast<int8_t>(SHORT_RESOURCE_INST_ID_TOKEN));
+      dataOut->writeByte(static_cast<uint8_t>(SHORT_RESOURCE_INST_ID_TOKEN));
       dataOut->writeShort(instId);
     }
   } else {
-    dataOut->writeByte(static_cast<int8_t>(instId));
+    dataOut->writeByte(static_cast<uint8_t>(instId));
   }
 }
 }  // namespace statistics

@@ -64,7 +64,7 @@ void PdxLocalWriter::initialize() {
   m_startPosition = m_dataOutput->getBuffer();
 
   // data has been write
-  m_startPositionOffset = m_dataOutput->getBufferLength();
+  m_startPositionOffset = static_cast<int32_t>(m_dataOutput->getBufferLength());
 
   // Advance cursor to write pdx header
   m_dataOutput->advanceCursor(PdxHelper::PdxHeader);
@@ -73,9 +73,9 @@ void PdxLocalWriter::initialize() {
 void PdxLocalWriter::addOffset() {
   // bufferLen gives lenght which has been written to DataOutput
   // m_startPositionOffset: from where pdx header length starts
-  int bufferLen = m_dataOutput->getBufferLength() - m_startPositionOffset;
+  auto bufferLen = m_dataOutput->getBufferLength() - m_startPositionOffset;
 
-  int offset = bufferLen - PdxHelper::PdxHeader;
+  auto offset = static_cast<int32_t>(bufferLen - PdxHelper::PdxHeader);
 
   m_offsets.push_back(offset);
 }
@@ -139,13 +139,14 @@ PdxWriter& PdxLocalWriter::writeUnreadFields(
 }
 
 int32_t PdxLocalWriter::calculateLenWithOffsets() {
-  int bufferLen = m_dataOutput->getBufferLength() - m_startPositionOffset;
+  auto bufferLen = m_dataOutput->getBufferLength() - m_startPositionOffset;
   int32_t totalOffsets = 0;
   if (m_pdxType->getNumberOfVarLenFields() > 0) {
     totalOffsets = m_pdxType->getNumberOfVarLenFields() -
                    1;  // for first var len no need to append offset
   }
-  int32_t totalLen = bufferLen - PdxHelper::PdxHeader + totalOffsets;
+  auto totalLen =
+      static_cast<int32_t>(bufferLen - PdxHelper::PdxHeader + totalOffsets);
 
   if (totalLen <= 0xff) {  // 1 byte
     return totalLen;
@@ -158,8 +159,8 @@ int32_t PdxLocalWriter::calculateLenWithOffsets() {
 
 bool PdxLocalWriter::isFieldWritingStarted() { return true; }
 
-PdxWriter& PdxLocalWriter::writeChar(
-    const std::string& fieldName, char16_t value) {
+PdxWriter& PdxLocalWriter::writeChar(const std::string& fieldName,
+                                     char16_t value) {
   m_dataOutput->writeChar(value);
   return *this;
 }
@@ -167,50 +168,50 @@ PdxWriter& PdxLocalWriter::writeBoolean(const std::string& fieldName,
                                         bool value) {
   m_dataOutput->writeBoolean(value);
   return *this;
- }
- PdxWriter& PdxLocalWriter::writeByte(const std::string& fieldName,
-                                      int8_t value) {
-   m_dataOutput->write(value);
-   return *this;
- }
- PdxWriter& PdxLocalWriter::writeShort(const std::string& fieldName,
-                                       int16_t value) {
-   m_dataOutput->writeInt(value);
-   return *this;
+}
+PdxWriter& PdxLocalWriter::writeByte(const std::string& fieldName,
+                                     int8_t value) {
+  m_dataOutput->write(value);
+  return *this;
+}
+PdxWriter& PdxLocalWriter::writeShort(const std::string& fieldName,
+                                      int16_t value) {
+  m_dataOutput->writeInt(value);
+  return *this;
 }
 PdxWriter& PdxLocalWriter::writeInt(const std::string& fieldName,
                                     int32_t value) {
   m_dataOutput->writeInt(value);
   return *this;
- }
- PdxWriter& PdxLocalWriter::writeLong(const std::string& fieldName,
-                                      int64_t value) {
-   m_dataOutput->writeInt(value);
-   return *this;
- }
- PdxWriter& PdxLocalWriter::writeFloat(const std::string& fieldName,
-                                       float value) {
-   m_dataOutput->writeFloat(value);
-   return *this;
- }
- PdxWriter& PdxLocalWriter::writeDouble(const std::string& fieldName,
-                                        double value) {
-   m_dataOutput->writeDouble(value);
-   return *this;
- }
- PdxWriter& PdxLocalWriter::writeDate(const std::string& fieldName,
-                                      std::shared_ptr<CacheableDate> date) {
-   // m_dataOutput->writeObject(date.get());
-   if (date != nullptr) {
-     date->toData(*m_dataOutput);
-   } else {
-     m_dataOutput->writeInt(static_cast<uint64_t>(-1L));
-   }
-   return *this;
+}
+PdxWriter& PdxLocalWriter::writeLong(const std::string& fieldName,
+                                     int64_t value) {
+  m_dataOutput->writeInt(value);
+  return *this;
+}
+PdxWriter& PdxLocalWriter::writeFloat(const std::string& fieldName,
+                                      float value) {
+  m_dataOutput->writeFloat(value);
+  return *this;
+}
+PdxWriter& PdxLocalWriter::writeDouble(const std::string& fieldName,
+                                       double value) {
+  m_dataOutput->writeDouble(value);
+  return *this;
+}
+PdxWriter& PdxLocalWriter::writeDate(const std::string& fieldName,
+                                     std::shared_ptr<CacheableDate> date) {
+  // m_dataOutput->writeObject(date.get());
+  if (date != nullptr) {
+    date->toData(*m_dataOutput);
+  } else {
+    m_dataOutput->writeInt(static_cast<uint64_t>(-1L));
+  }
+  return *this;
 }
 
-PdxWriter& PdxLocalWriter::writeString(
-    const std::string& fieldName, const std::string& value) {
+PdxWriter& PdxLocalWriter::writeString(const std::string& fieldName,
+                                       const std::string& value) {
   addOffset();
   m_dataOutput->writeString(value);
   return *this;
@@ -219,15 +220,15 @@ PdxWriter& PdxLocalWriter::writeString(
 PdxWriter& PdxLocalWriter::writeStringArray(
     const std::string& fieldName, const std::vector<std::string>& array) {
   addOffset();
-  m_dataOutput->writeArrayLen(array.size());
+  m_dataOutput->writeArrayLen(static_cast<int32_t>(array.size()));
   for (auto&& entry : array) {
     m_dataOutput->writeString(entry);
   }
   return *this;
 }
 
-PdxWriter& PdxLocalWriter::writeObject(
-    const std::string& fieldName, std::shared_ptr<Serializable> value) {
+PdxWriter& PdxLocalWriter::writeObject(const std::string& fieldName,
+                                       std::shared_ptr<Serializable> value) {
   addOffset();
   std::shared_ptr<CacheableEnum> enumValPtr = nullptr;
   std::shared_ptr<CacheableObjectArray> objArrPtr = nullptr;
@@ -278,15 +279,15 @@ PdxWriter& PdxLocalWriter::writeBooleanArray(const std::string& fieldName,
   return *this;
 }
 
-PdxWriter& PdxLocalWriter::writeCharArray(
-    const std::string& fieldName, const std::vector<char16_t>& array) {
+PdxWriter& PdxLocalWriter::writeCharArray(const std::string& fieldName,
+                                          const std::vector<char16_t>& array) {
   addOffset();
   writeArrayObject(array);
   return *this;
 }
 
-PdxWriter& PdxLocalWriter::writeByteArray(
-    const std::string& fieldName, const std::vector<int8_t>& array) {
+PdxWriter& PdxLocalWriter::writeByteArray(const std::string& fieldName,
+                                          const std::vector<int8_t>& array) {
   addOffset();
   writeArrayObject(array);
   return *this;
@@ -308,29 +309,28 @@ PdxWriter& PdxLocalWriter::writeLongArray(const std::string& fieldName,
   addOffset();
   writeArrayObject(array);
   return *this;
- }
- PdxWriter& PdxLocalWriter::writeFloatArray(const std::string& fieldName,
-                                            const std::vector<float>& array) {
-   addOffset();
-   writeArrayObject(array);
-   return *this;
- }
- PdxWriter& PdxLocalWriter::writeDoubleArray(const std::string& fieldName,
-                                             const std::vector<double>& array) {
-   addOffset();
-   writeArrayObject(array);
-   return *this;
- }
- PdxWriter& PdxLocalWriter::writeObjectArray(
-     const std::string& fieldName,
-     std::shared_ptr<CacheableObjectArray> array) {
-   addOffset();
-   if (array != nullptr) {
-     array->toData(*m_dataOutput);
-   } else {
-     m_dataOutput->write(static_cast<int8_t>(-1));
-   }
-   return *this;
+}
+PdxWriter& PdxLocalWriter::writeFloatArray(const std::string& fieldName,
+                                           const std::vector<float>& array) {
+  addOffset();
+  writeArrayObject(array);
+  return *this;
+}
+PdxWriter& PdxLocalWriter::writeDoubleArray(const std::string& fieldName,
+                                            const std::vector<double>& array) {
+  addOffset();
+  writeArrayObject(array);
+  return *this;
+}
+PdxWriter& PdxLocalWriter::writeObjectArray(
+    const std::string& fieldName, std::shared_ptr<CacheableObjectArray> array) {
+  addOffset();
+  if (array != nullptr) {
+    array->toData(*m_dataOutput);
+  } else {
+    m_dataOutput->write(static_cast<int8_t>(-1));
+  }
+  return *this;
 }
 PdxWriter& PdxLocalWriter::writeArrayOfByteArrays(
     const std::string& fieldName, int8_t* const* const byteArrays,

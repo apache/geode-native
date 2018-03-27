@@ -334,8 +334,8 @@ class _GEODE_EXPORT TcrMessage {
   const char* getMsgData() const;
   const char* getMsgHeader() const;
   const char* getMsgBody() const;
-  uint32_t getMsgLength() const;
-  uint32_t getMsgBodyLength() const;
+  size_t getMsgLength() const;
+  size_t getMsgBodyLength() const;
   std::shared_ptr<EventId> getEventId() const;
 
   int32_t getTransId() const;

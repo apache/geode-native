@@ -43,10 +43,9 @@ class _GEODE_EXPORT ResultSetImpl
 
   bool isModifiable() const override;
 
-  int32_t size() const override;
+  size_t size() const override;
 
-  const std::shared_ptr<Serializable> operator[](
-      size_t index) const override;
+  const std::shared_ptr<Serializable> operator[](size_t index) const override;
 
   SelectResultsIterator getIterator() override;
 

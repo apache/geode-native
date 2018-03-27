@@ -168,6 +168,8 @@ target_compile_options(c++cli
 # Interface for C++11 language
 add_library(c++11 INTERFACE)
 
+# Interface for warning flags
+add_library(_WarningsAsError INTERFACE)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
   # Force linker to error on undefined symbols in shared libraries
@@ -186,8 +188,12 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(BUILD_CLI 1)
 
+  target_compile_options(_WarningsAsError INTERFACE /WX)
+
   # TODO error on warnings
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /ignore:4099")
 
   # Enables multiprocess compiles
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")

@@ -46,8 +46,8 @@ class TcpSslConn : public TcpConn {
                   const char* privkeyfile);
 
  protected:
-  int32_t socketOp(SockOp op, char* buff, int32_t len,
-                   std::chrono::microseconds waitSeconds) override;
+  size_t socketOp(SockOp op, char* buff, size_t len,
+                  std::chrono::microseconds waitSeconds) override;
 
   void createSocket(ACE_HANDLE sock) override;
 
@@ -86,10 +86,10 @@ class TcpSslConn : public TcpConn {
   void connect() override;
 
   void setOption(int32_t level, int32_t option, void* val,
-                 int32_t len) override {
+                 size_t len) override {
     GF_DEV_ASSERT(m_ssl != nullptr);
 
-    if (m_ssl->setOption(level, option, val, len) == -1) {
+    if (m_ssl->setOption(level, option, val, static_cast<int32_t>(len)) == -1) {
       int32_t lastError = ACE_OS::last_error();
       LOGERROR("Failed to set option, errno: %d: %s", lastError,
                ACE_OS::strerror(lastError));

@@ -47,7 +47,7 @@ char16_t PdxRemoteReader::readChar(const std::string& fieldName) {
           choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
       PdxLocalReader::resettoPdxHead();
       m_dataInput->advanceCursor(position);
-      char retVal = PdxLocalReader::readChar(fieldName);
+      auto retVal = PdxLocalReader::readChar(fieldName);
       PdxLocalReader::resettoPdxHead();
       return retVal;
     }
@@ -306,7 +306,8 @@ std::shared_ptr<Serializable> PdxRemoteReader::readObject(
   }
 }
 
-std::vector<char16_t> PdxRemoteReader::readCharArray(const std::string& fieldName) {
+std::vector<char16_t> PdxRemoteReader::readCharArray(
+    const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   std::vector<char16_t> array;
@@ -419,7 +420,8 @@ std::vector<int32_t> PdxRemoteReader::readIntArray(
   return array;
 }
 
-std::vector<int64_t> PdxRemoteReader::readLongArray(const std::string& fieldName) {
+std::vector<int64_t> PdxRemoteReader::readLongArray(
+    const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   std::vector<int64_t> array;
@@ -442,7 +444,8 @@ std::vector<int64_t> PdxRemoteReader::readLongArray(const std::string& fieldName
   return array;
 }
 
-std::vector<float> PdxRemoteReader::readFloatArray(const std::string& fieldName) {
+std::vector<float> PdxRemoteReader::readFloatArray(
+    const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   std::vector<float> array;
@@ -465,7 +468,8 @@ std::vector<float> PdxRemoteReader::readFloatArray(const std::string& fieldName)
   return array;
 }
 
-std::vector<double> PdxRemoteReader::readDoubleArray(const std::string& fieldName) {
+std::vector<double> PdxRemoteReader::readDoubleArray(
+    const std::string& fieldName) {
   int choice = m_localToRemoteMap[m_currentIndex++];
 
   std::vector<double> array;
@@ -480,8 +484,7 @@ std::vector<double> PdxRemoteReader::readDoubleArray(const std::string& fieldNam
       if (position != -1) {
         PdxLocalReader::resettoPdxHead();
         m_dataInput->advanceCursor(position);
-        array = PdxLocalReader::readDoubleArray(
-            fieldName);  // in same order
+        array = PdxLocalReader::readDoubleArray(fieldName);  // in same order
         PdxLocalReader::resettoPdxHead();
       }
     }

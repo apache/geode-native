@@ -131,7 +131,9 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   bool isClosed() const;
 
   /** Get the <code>CacheAttributes</code> for this cache. */
-  inline std::shared_ptr<CacheAttributes> getAttributes() const { return m_attributes; }
+  inline std::shared_ptr<CacheAttributes> getAttributes() const {
+    return m_attributes;
+  }
 
   /** Set the <code>CacheAttributes</code> for this cache. */
   void setAttributes(const std::shared_ptr<CacheAttributes>& attrs);
@@ -169,8 +171,7 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
    * @throws NotConnectedException if the cache is not connected
    * @throws UnknownException otherwise
    */
-  void createRegion(std::string name,
-                    RegionAttributes aRegionAttributes,
+  void createRegion(std::string name, RegionAttributes aRegionAttributes,
                     std::shared_ptr<Region>& regionPtr);
 
   void getRegion(const std::string& path, std::shared_ptr<Region>& rptr);
@@ -290,7 +291,7 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   }
 
   virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* buffer,
-                                                     int32_t len) const {
+                                                     size_t len) const {
     return std::unique_ptr<DataInput>(new DataInput(buffer, len, this));
   }
 
@@ -319,9 +320,8 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
 
   void sendNotificationCloseMsgs();
 
-  void validateRegionAttributes(
-      const std::string& name,
-      const RegionAttributes attrs) const;
+  void validateRegionAttributes(const std::string& name,
+                                const RegionAttributes attrs) const;
 
   inline void getSubRegions(MapOfRegionWithLock& srm) {
     MapOfRegionGuard guard(m_regions->mutex());

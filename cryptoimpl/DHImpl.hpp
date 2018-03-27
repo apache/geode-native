@@ -63,10 +63,10 @@ _GEODE_EXPORT void gf_setPublicKeyOther(void* dhCtx,
 _GEODE_EXPORT void gf_computeSharedSecret(void* dhCtx);
 _GEODE_EXPORT unsigned char* gf_encryptDH(void* dhCtx,
                                           const unsigned char* cleartext,
-                                          int len, int* retLen);
+                                          size_t len, size_t* retLen);
 _GEODE_EXPORT unsigned char* gf_decryptDH(void* dhCtx,
                                           const unsigned char* cleartext,
-                                          int len, int* retLen);
+                                          size_t len, size_t* retLen);
 _GEODE_EXPORT bool gf_verifyDH(void* dhCtx, const char* subject,
                                const unsigned char* challenge, int challengeLen,
                                const unsigned char* response, int responseLen,

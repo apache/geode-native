@@ -465,7 +465,7 @@ void TcrMessage::writeObjectPart(
   if (se != nullptr && se->typeId() == GeodeTypeIds::CacheableBytes) {
     // for an emty byte array write EMPTY_BYTEARRAY_CODE(2) to is object
     try {
-      int byteArrLength = -1;
+      size_t byteArrLength = -1;
 
       if (auto cacheableBytes = std::dynamic_pointer_cast<CacheableBytes>(se)) {
         byteArrLength = cacheableBytes->length();
@@ -495,7 +495,7 @@ void TcrMessage::writeObjectPart(
     m_request->write(isObject);
   }
 
-  uint32_t sizeBeforeWritingObj = m_request->getBufferLength();
+  auto sizeBeforeWritingObj = m_request->getBufferLength();
   if (isDelta) {
     auto deltaPtr = std::dynamic_pointer_cast<Delta>(se);
     deltaPtr->toDelta(*m_request);
@@ -522,8 +522,8 @@ void TcrMessage::writeObjectPart(
     // m_request->writeBytesOnly(rawByteArray->value(), rawByteArray->length());
     writeBytesOnly(se);
   }
-  uint32_t sizeAfterWritingObj = m_request->getBufferLength();
-  uint32_t sizeOfSerializedObj = sizeAfterWritingObj - sizeBeforeWritingObj;
+  auto sizeAfterWritingObj = m_request->getBufferLength();
+  auto sizeOfSerializedObj = sizeAfterWritingObj - sizeBeforeWritingObj;
   m_request->rewindCursor(sizeOfSerializedObj + 1 + 4);  //
   m_request->writeInt(static_cast<int32_t>(sizeOfSerializedObj));
   m_request->advanceCursor(sizeOfSerializedObj + 1);
@@ -544,7 +544,7 @@ void TcrMessage::readInt(uint8_t* buffer, uint32_t* value) {
 }
 
 void TcrMessage::writeBytesOnly(const std::shared_ptr<Serializable>& se) {
-  uint32_t cBufferLength = m_request->getBufferLength();
+  auto cBufferLength = m_request->getBufferLength();
   uint8_t* startBytes = nullptr;
   m_request->writeObject(se);
   uint8_t* cursor =
@@ -659,8 +659,8 @@ void TcrMessage::writeEventIdPart(int reserveSize,
 }
 
 void TcrMessage::writeMessageLength() {
-  uint32_t totalLen = m_request->getBufferLength();
-  uint32_t msgLen = totalLen - g_headerLen;
+  auto totalLen = m_request->getBufferLength();
+  auto msgLen = totalLen - g_headerLen;
   m_request->rewindCursor(
       totalLen -
       4);  // msg len is written after the msg type which is of 4 bytes ...
@@ -2850,11 +2850,9 @@ const char* TcrMessage::getMsgBody() const {
   return (char*)m_request->getBuffer() + g_headerLen;
 }
 
-uint32_t TcrMessage::getMsgLength() const {
-  return m_request->getBufferLength();
-}
+size_t TcrMessage::getMsgLength() const { return m_request->getBufferLength(); }
 
-uint32_t TcrMessage::getMsgBodyLength() const {
+size_t TcrMessage::getMsgBodyLength() const {
   return m_request->getBufferLength() - g_headerLen;
 }
 std::shared_ptr<EventId> TcrMessage::getEventId() const { return m_eventid; }
