@@ -174,8 +174,7 @@ namespace Apache
         {
           GC::KeepAlive(m_nativeptr);
         }
-        array<Client::IRegion<TKey, TValue>^>^ rootRegions =
-          gcnew array<Client::IRegion<TKey, TValue>^>( vrr.size( ) );
+        auto rootRegions = gcnew array<Client::IRegion<TKey, TValue>^>(static_cast<int>(vrr.size()));
 
         for( System::Int32 index = 0; index < vrr.size( ); index++ )
         {

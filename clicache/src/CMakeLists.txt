@@ -326,6 +326,7 @@ target_link_libraries(${PROJECT_NAME}
     c++cli
     c++11
     apache-geode-static
+	_WarningsAsError
 )
 
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")

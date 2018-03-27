@@ -50,7 +50,7 @@ namespace Apache
         {
           GC::KeepAlive(m_nativeptr);
         }
-        auto listners = gcnew array<ICqListener<TKey, TResult>^>(vrr.size());
+        auto listners = gcnew array<ICqListener<TKey, TResult>^>(static_cast<int>(vrr.size()));
 
         for (System::Int32 index = 0; index < vrr.size(); index++)
         {

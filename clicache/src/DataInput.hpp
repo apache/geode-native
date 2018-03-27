@@ -74,7 +74,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if the buffer is null
         /// </exception>
-        DataInput( array<Byte>^ buffer, System::Int32 len, Cache^ cache );
+        DataInput( array<Byte>^ buffer, size_t len, Cache^ cache );
 
         /// <summary>
         /// Dispose: frees the internal buffer.
@@ -174,17 +174,17 @@ namespace Apache
         /// <summary>
         /// Get the count of bytes that have been read from the stream.
         /// </summary>
-        property System::UInt32 BytesRead
+        property size_t BytesRead
         {
-          System::UInt32 get( );
+          size_t get( );
         }
 
         /// <summary>
         /// Get the count of bytes that are remaining in the buffer.
         /// </summary>
-        property System::UInt32 BytesRemaining
+        property size_t BytesRemaining
         {
-          System::UInt32 get();
+          size_t get();
         }
 
         property Apache::Geode::Client::Cache^ Cache
@@ -198,7 +198,7 @@ namespace Apache
         /// <param name="offset">
         /// The offset(number of bytes) by which to advance the cursor.
         /// </param>
-        void AdvanceCursor( System::Int32 offset );
+        void AdvanceCursor( size_t offset );
 
         /// <summary>
         /// Rewind the cursor of the buffer by the given offset.
@@ -206,7 +206,7 @@ namespace Apache
         /// <param name="offset">
         /// The offset(number of bytes) by which to rewind the cursor.
         /// </param>
-        void RewindCursor( System::Int32 offset );
+        void RewindCursor( size_t offset );
 
         /// <summary>
         /// Reset the cursor to the start of buffer.
@@ -315,9 +315,9 @@ namespace Apache
         /// <summary>
         /// Get the count of bytes that have been read from the stream, for internal use only.
         /// </summary>
-        property System::UInt32 BytesReadInternally
+        property size_t BytesReadInternally
         {
-          System::UInt32 get( );
+          size_t get( );
         }
 
         void ReadObject(bool% obj)
@@ -672,7 +672,7 @@ namespace Apache
           }
         }
 
-        DataInput( System::Byte* buffer, int size, Apache::Geode::Client::Cache^ cache );
+        DataInput( System::Byte* buffer, size_t size, Apache::Geode::Client::Cache^ cache );
 
         bool IsManagedObject()
         {
@@ -681,7 +681,7 @@ namespace Apache
 
         int GetPdxBytes()
         {
-          return m_bufferLength;
+          return static_cast<int>(m_bufferLength);
         }
 
       private:
@@ -694,8 +694,8 @@ namespace Apache
         bool m_isRootObjectPdx;
         Apache::Geode::Client::Cache^ m_cache;
         System::Byte* m_buffer;
-        unsigned int m_bufferLength;
-        int m_cursor;
+        size_t m_bufferLength;
+        size_t m_cursor;
         bool m_isManagedObject;
         array<Char>^ m_forStringDecode;
 

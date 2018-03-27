@@ -53,7 +53,7 @@ namespace Apache
       using namespace msclr::interop;
       namespace native = apache::geode::client;
 
-      DataInput::DataInput(System::Byte* buffer, int size, Apache::Geode::Client::Cache^ cache)
+      DataInput::DataInput(System::Byte* buffer, size_t size, Apache::Geode::Client::Cache^ cache)
       {
         m_ispdxDesrialization = false;
         m_isRootObjectPdx = false;
@@ -120,7 +120,7 @@ namespace Apache
         }
       }
 
-      DataInput::DataInput(array<Byte>^ buffer, System::Int32 len, Apache::Geode::Client::Cache^ cache)
+      DataInput::DataInput(array<Byte>^ buffer, size_t len, Apache::Geode::Client::Cache^ cache)
       {
         m_ispdxDesrialization = false;
         m_isRootObjectPdx = false;
@@ -358,7 +358,7 @@ namespace Apache
         CheckBufferSize(len);
 
         int i = 0;
-        int j = m_cursor + len - 1;
+        auto j = m_cursor + len - 1;
         array<Byte>^ bytes = gcnew array<Byte>(len);
 
         while (i < len)
@@ -664,11 +664,11 @@ namespace Apache
         else if (compId == GeodeClassIds::PDX)
         {
           //cache current state and reset after reading pdx object
-          int cacheCursor = m_cursor;
+          auto cacheCursor = m_cursor;
           System::Byte* cacheBuffer = m_buffer;
-          unsigned int cacheBufferLength = m_bufferLength;
+          auto cacheBufferLength = m_bufferLength;
           Object^ ret = Internal::PdxHelper::DeserializePdx(this, false, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
-          int tmp = m_nativeptr->get()->getBytesRemaining();
+          auto tmp = m_nativeptr->get()->getBytesRemaining();
           m_cursor = cacheBufferLength - tmp;
           m_buffer = cacheBuffer;
           m_bufferLength = cacheBufferLength;
@@ -883,7 +883,7 @@ namespace Apache
         throw gcnew IllegalStateException("Unregistered typeId in deserialization, aborting.");
       }
 
-      System::UInt32 DataInput::BytesRead::get()
+      size_t DataInput::BytesRead::get()
       {
         AdvanceUMCursor();
         SetBuffer();
@@ -898,12 +898,12 @@ namespace Apache
         }
       }
 
-      System::UInt32 DataInput::BytesReadInternally::get()
+      size_t DataInput::BytesReadInternally::get()
       {
         return m_cursor;
       }
 
-      System::UInt32 DataInput::BytesRemaining::get()
+      size_t DataInput::BytesRemaining::get()
       {
         AdvanceUMCursor();
         SetBuffer();
@@ -917,12 +917,12 @@ namespace Apache
         }
       }
 
-      void DataInput::AdvanceCursor(System::Int32 offset)
+      void DataInput::AdvanceCursor(size_t offset)
       {
         m_cursor += offset;
       }
 
-      void DataInput::RewindCursor(System::Int32 offset)
+      void DataInput::RewindCursor(size_t offset)
       {
         AdvanceUMCursor();
         try
@@ -1070,8 +1070,8 @@ namespace Apache
       List<Object^>^ DataInput::ReadObjectArray()
       {
         //this to know whether it is null or it is empty
-        int storeCursor = m_cursor;
-        int len = this->ReadArrayLen();
+        auto storeCursor = m_cursor;
+        auto len = this->ReadArrayLen();
         if (len == -1)
           return nullptr;
         //this will be read further by fromdata

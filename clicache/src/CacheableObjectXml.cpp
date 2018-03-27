@@ -54,13 +54,15 @@ namespace Apache
 
           XmlSerializer xs(objType);
           GeodeDataOutputStream dos(output);
-          System::Int64 checkpoint = dos.Length;
+          auto checkpoint = dos.Length;
           xs.Serialize(%dos, m_obj);
-          m_objectSize = (System::UInt32) (dos.Length - checkpoint);
+          m_objectSize = dos.Length - checkpoint;
 
-          output->RewindCursor(m_objectSize + 4);
-          output->WriteInt32(m_objectSize);
-          output->AdvanceCursor(m_objectSize);
+          auto size = stat_cast<uint32_t>(m_objectSize);
+
+          output->RewindCursor(size + 4);
+          output->WriteInt32(size);
+          output->AdvanceCursor(size);
         }
       }
 
