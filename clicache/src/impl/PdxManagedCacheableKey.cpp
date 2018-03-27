@@ -287,8 +287,6 @@ namespace apache
           if (auto cloneable = dynamic_cast<ICloneable^>((Apache::Geode::Client::IGeodeDelta^) m_managedDeltaptr)) {
             auto Mclone = dynamic_cast<Apache::Geode::Client::IPdxSerializable^>(cloneable->Clone());
             return std::shared_ptr<Delta>(static_cast<PdxManagedCacheableKey*>(SafeGenericM2UMConvert(Mclone)));
-          } else {
-            return Delta::clone();
           }
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {

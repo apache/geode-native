@@ -64,14 +64,14 @@ namespace apache
       public:
 
         inline PdxManagedCacheableKey()
-          : Delta(nullptr), m_managedptr(nullptr), m_hashcode(0), m_objectSize(0), m_managedDeltaptr(nullptr)
+          : Delta(), m_managedptr(nullptr), m_hashcode(0), m_objectSize(0), m_managedDeltaptr(nullptr)
         {
 
         }
 
         inline PdxManagedCacheableKey(
           Apache::Geode::Client::IPdxSerializable^ managedptr, int hashcode)
-          :Delta(nullptr), m_managedptr(managedptr), m_objectSize(0) {
+          :Delta(), m_managedptr(managedptr), m_objectSize(0) {
           m_hashcode = hashcode;
           m_managedDeltaptr = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(managedptr);
         }
@@ -83,7 +83,7 @@ namespace apache
         /// </param>
         inline PdxManagedCacheableKey(
           Apache::Geode::Client::IPdxSerializable^ managedptr)
-          : Delta(nullptr), m_managedptr(managedptr), m_objectSize(0) {
+          : Delta(), m_managedptr(managedptr), m_objectSize(0) {
           m_hashcode = 0;//it can be zero while initializing the object
           m_managedDeltaptr = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(managedptr);
         }

@@ -208,9 +208,6 @@ namespace apache
             return std::shared_ptr<Delta>(static_cast<ManagedCacheableDeltaGeneric*>(
               SafeMSerializableConvertGeneric(Mclone)));
           }
-          else {
-            return Delta::clone();
-          }
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();

@@ -73,7 +73,7 @@ namespace apache
         /// </param>
         inline ManagedCacheableDeltaGeneric(
           Apache::Geode::Client::IGeodeDelta^ managedptr)
-          : Delta(nullptr), m_managedptr(managedptr)
+          : Delta(), m_managedptr(managedptr)
         {
           m_managedSerializableptr = dynamic_cast <Apache::Geode::Client::IGeodeSerializable^> (managedptr);
           m_classId = m_managedSerializableptr->ClassId;
@@ -82,7 +82,7 @@ namespace apache
 
         inline ManagedCacheableDeltaGeneric(
           Apache::Geode::Client::IGeodeDelta^ managedptr, int hashcode, int classId)
-          :Delta(nullptr),  m_managedptr(managedptr) {
+          :Delta(),  m_managedptr(managedptr) {
           m_hashcode = hashcode;
           m_classId = classId;
           m_managedSerializableptr = dynamic_cast <Apache::Geode::Client::IGeodeSerializable^> (managedptr);
