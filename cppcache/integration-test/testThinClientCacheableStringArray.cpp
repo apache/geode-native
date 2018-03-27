@@ -77,7 +77,8 @@ DUNIT_TASK(CLIENT1, StepOne)
 
     auto regptr = getHelper()->createPooledRegion(
         _regionNames[0], USE_ACK, locHostPort, "__TEST_POOL1__", true, true);
-    auto subregPtr = regptr->createSubregion(_regionNames[1], regptr->getAttributes());
+    auto subregPtr =
+        regptr->createSubregion(_regionNames[1], regptr->getAttributes());
 
     auto&& qh = &QueryHelper::getHelper();
     std::vector<std::shared_ptr<CacheableString>> cstr{
@@ -103,8 +104,8 @@ DUNIT_TASK(CLIENT1, StepThree)
 
       SelectResultsIterator iter = results->getIterator();
       char buf[100];
-      int count = results->size();
-      sprintf(buf, "results size=%d", count);
+      auto count = results->size();
+      sprintf(buf, "results size=%zd", count);
       LOG(buf);
       while (iter.hasNext()) {
         count--;
@@ -131,12 +132,11 @@ DUNIT_TASK(CLIENT1, StepThree)
           }
         }
       }
-      sprintf(buf, "results last count=%d", count);
+      sprintf(buf, "results last count=%zd", count);
       LOG(buf);
     } catch (IllegalStateException& ise) {
       char isemsg[500] = {0};
-      ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s",
-                       ise.what());
+      ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s", ise.what());
       LOG(isemsg);
       FAIL(isemsg);
     } catch (Exception& excp) {

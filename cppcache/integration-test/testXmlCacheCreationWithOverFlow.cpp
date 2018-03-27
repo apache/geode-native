@@ -38,8 +38,8 @@ int testXmlCacheCreationWithOverflow() {
 
   std::cout << "create DistributedSytem with name=" << host_name << std::endl;
   std::cout << "Create cache with the configurations provided in "
-          "valid_overflowAttr.xml"
-       << std::endl;
+               "valid_overflowAttr.xml"
+            << std::endl;
 
   try {
     std::string filePath = directory + "/resources/non-existent.xml";
@@ -93,9 +93,10 @@ int testXmlCacheCreationWithOverflow() {
   }
   auto regPtr1 = vrp.at(0);
 
-  std::cout << "Test if the number of sub regions with the root region Root1 are "
-          "correct"
-       << std::endl;
+  std::cout
+      << "Test if the number of sub regions with the root region Root1 are "
+         "correct"
+      << std::endl;
   std::vector<std::shared_ptr<Region>> vr = regPtr1->subregions(true);
   std::cout << "  vr.size=" << vr.size() << std::endl;
   if (vr.size() != totalSubRegionsRoot1) {
@@ -104,7 +105,7 @@ int testXmlCacheCreationWithOverflow() {
   }
 
   std::cout << "get subregions from the root region :" << vrp.at(0)->getName()
-       << std::endl;
+            << std::endl;
   for (int32_t i = 0; i < vr.size(); i++) {
     std::cout << "vc[" << i << "].m_reaPtr=" << vr.at(i).get() << std::endl;
     std::cout << "vc[" << i << "]=" << vr.at(i)->getName() << std::endl;
@@ -118,13 +119,15 @@ int testXmlCacheCreationWithOverflow() {
     auto&& parentName = regPtr->getParentRegion()->getName();
     if (childName == "SubSubRegion221") {
       if (parentName != "SubRegion22") {
-        std::cout << "Incorrect parent: tree structure not formed correctly" << std::endl;
+        std::cout << "Incorrect parent: tree structure not formed correctly"
+                  << std::endl;
         return -1;
       }
     }
   }
-  std::cout << "****Correct region tree structure created from valid_cache.xml****"
-       << std::endl;
+  std::cout
+      << "****Correct region tree structure created from valid_cache.xml****"
+      << std::endl;
 
   vr.clear();
   vrp.clear();
@@ -154,7 +157,7 @@ int testXmlCacheCreationWithOverflow() {
   if (initialCapacity != 25) {
     return -1;
   }
-  int regionIdleTO = regionAttributes.getRegionIdleTimeout().count();
+  auto regionIdleTO = regionAttributes.getRegionIdleTimeout().count();
   std::cout << "RegionIdleTimeout:20 " << std::endl;
   if (regionIdleTO != 20) {
     return -1;
@@ -172,8 +175,10 @@ int testXmlCacheCreationWithOverflow() {
     return -1;
   }
 
-  std::cout << "persistence library = " << regionAttributes.getPersistenceLibrary() << std::endl;
-  std::cout << "persistence function = " << regionAttributes.getPersistenceFactory() << std::endl;
+  std::cout << "persistence library = "
+            << regionAttributes.getPersistenceLibrary() << std::endl;
+  std::cout << "persistence function = "
+            << regionAttributes.getPersistenceFactory() << std::endl;
   auto pconfig = regionAttributes.getPersistenceProperties();
   if (pconfig != nullptr) {
     std::cout << " persistence property is not null" << std::endl;
@@ -188,8 +193,10 @@ int testXmlCacheCreationWithOverflow() {
   std::cout << "****Attributes of Root1 are correctly set****" << std::endl;
 
   auto regionAttributes2 = regPtr2->getAttributes();
-  std::cout << "persistence library = " << regionAttributes2.getPersistenceLibrary() << std::endl;
-  std::cout << "persistence function = " << regionAttributes2.getPersistenceFactory() << std::endl;
+  std::cout << "persistence library = "
+            << regionAttributes2.getPersistenceLibrary() << std::endl;
+  std::cout << "persistence function = "
+            << regionAttributes2.getPersistenceFactory() << std::endl;
   auto pconfig2 = regionAttributes2.getPersistenceProperties();
   if (pconfig2 != nullptr) {
     std::cout << " persistence property is not null for Root2" << std::endl;
@@ -221,11 +228,11 @@ int testXmlCacheCreationWithOverflow() {
   ////////////////////////////testing of cache.xml completed///////////////////
 
   std::cout << "Create cache with the configurations provided in the "
-          "invalid_overflowAttr1.xml."
-       << std::endl;
+               "invalid_overflowAttr1.xml."
+            << std::endl;
   std::cout << "This is a well-formed xml....attributes not provided for "
-          "persistence manager. exception should be thrown"
-       << std::endl;
+               "persistence manager. exception should be thrown"
+            << std::endl;
 
   try {
     const auto filePath = directory + "/invalid_overflowAttr1.xml";
@@ -241,11 +248,12 @@ int testXmlCacheCreationWithOverflow() {
   ///////////////testing of invalid_cache1.xml completed///////////////////
 
   std::cout << "Create cache with the configurations provided in the "
-          "invalid_overflowAttr2.xml."
-       << std::endl;
-  std::cout << " This is a well-formed xml....attribute values is not provided for "
-          "persistence library name......should throw an exception"
-       << std::endl;
+               "invalid_overflowAttr2.xml."
+            << std::endl;
+  std::cout
+      << " This is a well-formed xml....attribute values is not provided for "
+         "persistence library name......should throw an exception"
+      << std::endl;
 
   try {
     const auto filePath = directory + "/invalid_overflowAttr2.xml";
@@ -261,12 +269,13 @@ int testXmlCacheCreationWithOverflow() {
   ///////////////testing of invalid_cache2.xml completed///////////////////
 
   std::cout << "Create cache with the configurations provided in the "
-          "invalid_overflowAttr3.xml."
-       << std::endl;
+               "invalid_overflowAttr3.xml."
+            << std::endl;
 
-  std::cout << "This is a well-formed xml....but region-attributes for persistence "
-          "invalid......should throw an exception"
-       << std::endl;
+  std::cout
+      << "This is a well-formed xml....but region-attributes for persistence "
+         "invalid......should throw an exception"
+      << std::endl;
 
   try {
     const auto filePath = directory + "/invalid_overflowAttr3.xml";

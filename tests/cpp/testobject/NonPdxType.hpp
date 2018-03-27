@@ -88,7 +88,7 @@ enum pdxEnumTest { pdx1, pdx2, pdx3 };
 
 class TESTOBJECT_EXPORT NonPdxType {
  public:
-  char m_char;
+  char16_t m_char;
   bool m_bool;
   int8_t m_byte;
   int8_t m_sbyte;  //

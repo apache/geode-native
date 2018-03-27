@@ -168,7 +168,8 @@ void stepOne() {
   createRegionForCQ(regionNamesCq[0], USE_ACK, true, 1);
 
   auto regptr = getHelper()->getRegion(regionNamesCq[0]);
-  auto subregPtr = regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
+  auto subregPtr =
+      regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
   QueryHelper* qh = &QueryHelper::getHelper();
 
@@ -186,7 +187,8 @@ void stepOne2() {
   initClientCq(1);
   createRegionForCQ(regionNamesCq[0], USE_ACK, true, 1);
   auto regptr = getHelper()->getRegion(regionNamesCq[0]);
-  auto subregPtr = regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
+  auto subregPtr =
+      regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
   LOG("StepOne2 complete.");
 }
@@ -220,8 +222,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 
       SelectResultsIterator iter = results->getIterator();
       char buf[100];
-      int count = results->size();
-      sprintf(buf, "results size=%d", count);
+      auto count = results->size();
+      sprintf(buf, "results size=%zd", count);
       LOG(buf);
       while (iter.hasNext()) {
         count--;
@@ -249,14 +251,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
           }
         }
       }
-      sprintf(buf, "results last count=%d", count);
+      sprintf(buf, "results last count=%zd", count);
       LOG(buf);
       //  ASSERT( count==0, "results traversal count incorrect!" );
       SLEEP(15000);
     } catch (IllegalStateException& ise) {
       char isemsg[500] = {0};
-      ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s",
-                       ise.what());
+      ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s", ise.what());
       LOG(isemsg);
       FAIL(isemsg);
     } catch (Exception& excp) {

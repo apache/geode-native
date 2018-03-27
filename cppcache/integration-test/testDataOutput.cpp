@@ -31,21 +31,21 @@
 
 using namespace apache::geode::client;
 
-void dumpnbytes(const uint8_t* buf, uint32_t length) {
-  for (uint32_t i = 0; i < length; i++) {
+void dumpnbytes(const uint8_t* buf, size_t length) {
+  for (size_t i = 0; i < length; i++) {
     std::cout << "buf[" << i << "] = " << std::setfill('0') << std::setw(2)
               << std::hex << (static_cast<int16_t>(buf[i]) & 0xff) << std::dec
               << " " << static_cast<char>(buf[i]) << std::endl;
   }
 }
-void dumpnshorts(const uint16_t* buf, uint32_t length) {
-  for (uint32_t i = 0; i < length; i++) {
+void dumpnshorts(const uint16_t* buf, size_t length) {
+  for (size_t i = 0; i < length; i++) {
     std::cout << "buf[" << i << "] = " << std::hex
               << static_cast<uint16_t>(buf[i]) << std::dec << std::endl;
   }
 }
-void dumpnwords(const uint32_t* buf, uint32_t length) {
-  for (uint32_t i = 0; i < length; i++) {
+void dumpnwords(const uint32_t* buf, size_t length) {
+  for (size_t i = 0; i < length; i++) {
     std::cout << "buf[" << i << "] = " << std::hex
               << static_cast<uint32_t>(buf[i]) << std::dec << std::endl;
   }

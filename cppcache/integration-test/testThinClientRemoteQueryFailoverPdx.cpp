@@ -167,10 +167,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, ValidateQueryExecutionAcrossServerFailure)
           kst->start();
         }
 
-        int resultsize = results->size();
+        auto resultsize = results->size();
 
         if (i % 100 == 0) {
-          printf("Iteration upto %d done, result size is %d\n", i, resultsize);
+          printf("Iteration upto %d done, result size is %zd\n", i, resultsize);
         }
 
         if (resultsize != 4)  // the XMLs for server 1 and server 2 have 1 and 2
@@ -184,8 +184,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ValidateQueryExecutionAcrossServerFailure)
       kst->stop();
     } catch (IllegalStateException& ise) {
       char isemsg[500] = {0};
-      ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s",
-                       ise.what());
+      ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s", ise.what());
       LOG(isemsg);
       FAIL(isemsg);
     } catch (Exception& excp) {

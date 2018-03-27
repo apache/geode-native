@@ -64,10 +64,11 @@ bool genericValCompare(T1 value1, T2 value2) /*const*/
   return true;
 }
 
-template <typename T1, typename T2>
-bool genericCompare(std::vector<T1> value1, std::vector<T2> value2, int length) /*const*/
+template <typename T1, typename T2, typename L>
+bool genericCompare(std::vector<T1> value1, std::vector<T2> value2,
+                    L length) /*const*/
 {
-  int i = 0;
+  L i = 0;
   while (i < length) {
     if (value1[i] != value2[i]) {
       return false;
@@ -232,7 +233,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, putPdxWithIdentityField)
     LOG("putPdxWithIdentityField started ");
 
     try {
-      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addPdxType(SerializePdx::createDeserializable);
       LOG("SerializePdx Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
@@ -256,7 +259,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, putCacheableObjectArrayWithPdxFields)
     LOG("putCacheableObjectArrayWithPdxFields started ");
 
     try {
-      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addPdxType(Address::createDeserializable);
       LOG("Address Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
@@ -280,10 +285,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, putCacheableObjectArrayWithPdxFields)
         std::shared_ptr<Address>(new Address(5, "street4", "city4")));
     objectArray->push_back(
         std::shared_ptr<Address>(new Address(6, "street5", "city5")));
-    objectArray->push_back(std::shared_ptr<Address>(new Address(7, "street6", "city6")));
-    objectArray->push_back(std::shared_ptr<Address>(new Address(8, "street7", "city7")));
-    objectArray->push_back(std::shared_ptr<Address>(new Address(9, "street8", "city8")));
-    objectArray->push_back(std::shared_ptr<Address>(new Address(10, "street9", "city9")));
+    objectArray->push_back(
+        std::shared_ptr<Address>(new Address(7, "street6", "city6")));
+    objectArray->push_back(
+        std::shared_ptr<Address>(new Address(8, "street7", "city7")));
+    objectArray->push_back(
+        std::shared_ptr<Address>(new Address(9, "street8", "city8")));
+    objectArray->push_back(
+        std::shared_ptr<Address>(new Address(10, "street9", "city9")));
 
     // PUT Operation
     rptr->put(CacheableInt32::create(100), objectArray);
@@ -298,7 +307,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
     LOG("verifyPdxIdentityField started ");
 
     try {
-      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addPdxType(SerializePdx::createDeserializable);
       LOG("SerializePdx Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
@@ -357,7 +368,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
     ASSERT(pi->hasField("i3") == false,
            "There is no field i3 in SerializePdx1's PdxInstance stream");
 
-    std::shared_ptr<CacheableKey> javaPdxHCKey = CacheableKey::create("javaPdxHC");
+    std::shared_ptr<CacheableKey> javaPdxHCKey =
+        CacheableKey::create("javaPdxHC");
     auto pIPtr2 = std::dynamic_pointer_cast<Cacheable>(rptr->get(javaPdxHCKey));
     LOG("javaPdxHCKey get done");
     CacheableInt32* val = dynamic_cast<CacheableInt32*>(pIPtr2.get());
@@ -417,7 +429,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyCacheableObjectArrayWithPdxField)
     LOG("verifyCacheableObjectArrayWithPdxField started ");
 
     try {
-      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
       serializationRegistry->addPdxType(Address::createDeserializable);
       LOG("Address Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
@@ -492,7 +506,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxNullIdentityFieldHC)
         rptr->get(CacheableInt32::create(2)));
     LOG("PdxInstancePtr get complete");
 
-    std::shared_ptr<CacheableKey> javaPdxHCKey = CacheableKey::create("javaPdxHC");
+    std::shared_ptr<CacheableKey> javaPdxHCKey =
+        CacheableKey::create("javaPdxHC");
     auto pIPtr2 = std::dynamic_pointer_cast<Cacheable>(rptr->get(javaPdxHCKey));
     LOG("javaPdxHCKey get done");
     CacheableInt32* val = dynamic_cast<CacheableInt32*>(pIPtr2.get());
@@ -531,7 +546,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, pdxPut)
   {
     LOG("pdxPut started ");
-    auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     try {
       serializationRegistry->addPdxType(
           PdxTests::PdxType::createDeserializable);
@@ -543,9 +560,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxPut)
     // Creating object of type PdxObject
     auto pdxobj = std::make_shared<PdxTests::PdxType>();
 
-   auto keyport = CacheableKey::create("pdxput");
-   auto keyport1 = CacheableKey::create("pdxput2");
-   auto rptr = getHelper()->getRegion(regionNames[0]);
+    auto keyport = CacheableKey::create("pdxput");
+    auto keyport1 = CacheableKey::create("pdxput2");
+    auto rptr = getHelper()->getRegion(regionNames[0]);
 
     // PUT Operation
     rptr->put(keyport, pdxobj);
@@ -615,9 +632,12 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, getObject)
   {
     LOG("getObject started ");
-    auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("PdxObject IllegalStateException");
@@ -747,8 +767,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxInstanceEquals)
     LOG("Task verifyPdxInstanceEquals started.");
 
     try {
-      auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
-      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
+      auto serializationRegistry =
+          CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+              ->getSerializationRegistry();
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("PdxObject IllegalStateException");
@@ -810,9 +833,12 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
   {
     LOG("accessPdxInstance started ");
-    auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("PdxObject IllegalStateException");
@@ -936,7 +962,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
            "Type Value BYTE_ARRAY Mismatch");
 
     auto boolArray = pIPtr->getBooleanArrayField("m_boolArray");
-    int32_t boolArrayLength = boolArray.size();
+    auto boolArrayLength = boolArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getBoolArrayLength(),
                              boolArrayLength) == true,
            "boolArrayLength should be equal");
@@ -947,7 +973,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
            "Type Value BOOLEAN_ARRAY Mismatch");
 
     auto shortArray = pIPtr->getShortArrayField("m_int16Array");
-    int32_t shortArrayLength = shortArray.size();
+    auto shortArrayLength = shortArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getShortArrayLength(),
                              shortArrayLength) == true,
            "shortArrayLength should be equal");
@@ -969,7 +995,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
            "Type Value SHORT_ARRAY Mismatch");
 
     auto intArray = pIPtr->getIntArrayField("m_int32Array");
-    int32_t intArrayLength = intArray.size();
+    auto intArrayLength = intArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getIntArrayLength(), intArrayLength) ==
                true,
            "intArrayLength should be equal");
@@ -990,7 +1016,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
            "Type Value INT_ARRAY Mismatch");
 
     auto longArray = pIPtr->getLongArrayField("m_longArray");
-    int32_t longArrayLength = longArray.size();
+    auto longArrayLength = longArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getLongArrayLength(),
                              longArrayLength) == true,
            "longArrayLength should be equal");
@@ -1012,7 +1038,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
            "Type Value LONG_ARRAY Mismatch");
 
     auto doubleArray = pIPtr->getDoubleArrayField("m_doubleArray");
-    int32_t doubleArrayLength = doubleArray.size();
+    auto doubleArrayLength = doubleArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getDoubleArrayLength(),
                              doubleArrayLength) == true,
            "doubleArrayLength should be equal");
@@ -1023,7 +1049,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
            "Type Value DOUBLE_ARRAY Mismatch");
 
     auto floatArray = pIPtr->getFloatArrayField("m_floatArray");
-    int32_t floatArrayLength = floatArray.size();
+    auto floatArrayLength = floatArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getFloatArrayLength(),
                              floatArrayLength) == true,
            "floatArrayLength should be equal");
@@ -1375,9 +1401,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-
-    std::vector<bool> setBoolArray{true, false, true, false, true, true, false, true};
-    int arrayLen = setBoolArray.size();
+    std::vector<bool> setBoolArray{true, false, true,  false,
+                                   true, true,  false, true};
+    auto arrayLen = setBoolArray.size();
     wpiPtr->setField("m_boolArray", setBoolArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -1812,7 +1838,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
 
     wpiPtr = pIPtr->createWriter();
     try {
-      wpiPtr->setField("m_byteByteArray", (std::shared_ptr<Cacheable>)linkedhashset);
+      wpiPtr->setField("m_byteByteArray",
+                       (std::shared_ptr<Cacheable>)linkedhashset);
       FAIL(
           "setField on m_byteByteArray with linkedhashset value should throw "
           "expected IllegalStateException");
@@ -1956,8 +1983,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
-    std::vector<bool> setBoolArray{true, false, true, false, true, true, false, true};
-    int arrayLen = setBoolArray.size();
+    std::vector<bool> setBoolArray{true, false, true,  false,
+                                   true, true,  false, true};
+    auto arrayLen = setBoolArray.size();
     wpiPtr->setField("m_boolArray", setBoolArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
@@ -2194,7 +2222,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
-
     LOG("modifyPdxInstanceAndCheckLocally complete.");
   }
 END_TASK_DEFINITION
@@ -2202,7 +2229,9 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
   {
     LOG("pdxIFPutGetTest started ");
-    auto serializationRegistry = CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())->getSerializationRegistry();
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
     try {
       serializationRegistry->addPdxType(Address::createDeserializable);
       LOG("Address Registered Successfully....");
@@ -2211,7 +2240,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("PdxObject IllegalStateException");
@@ -2443,9 +2473,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
            "Pdxhashcode hashcode not matched with java pdx hash code.");
 
     auto pp = std::make_shared<ParentPdx>(10);
-    auto if2 =
-        cacheHelper->getCache()->createPdxInstanceFactory(
-            "testobject::ParentPdx");
+    auto if2 = cacheHelper->getCache()->createPdxInstanceFactory(
+        "testobject::ParentPdx");
     if2->writeInt("m_parentId", pp->getParentId());
     if2->writeObject("m_enum", pp->getEnum());
     if2->writeString("m_parentName", pp->getParentName());

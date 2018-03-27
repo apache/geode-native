@@ -598,13 +598,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyUpdateLocatorListThread)
     dunit::sleep(sleepSeconds * 1000);
 
     auto pptr = getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
-    int updateIntervalSeconds =
+    auto updateIntervalSeconds =
         pptr->getUpdateLocatorListInterval().count() / 1000;
 
     int numLocatorListUpdates =
         CacheHelper::getNumLocatorListUpdates("Querying locator list at:");
 
-    int numExpectedLocatorListUpdates = 0;
+    decltype(updateIntervalSeconds) numExpectedLocatorListUpdates = 0;
     if (updateIntervalSeconds > 0) {
       numExpectedLocatorListUpdates = sleepSeconds / updateIntervalSeconds;
     }

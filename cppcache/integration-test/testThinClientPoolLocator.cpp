@@ -36,7 +36,7 @@ DUNIT_TASK(CLIENT1, SetupClient1_NoLocators_At_Init)
 
     try {
       createEntry(regionNames[0], keys[0], vals[0]);
-    } catch (NoAvailableLocatorsException& ex) {
+    } catch (NoAvailableLocatorsException&) {
       LOG("Caught expected exception.");
     } catch (...) {
       FAIL("NoAvailableLocatorsException was not thrown.");
