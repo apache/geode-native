@@ -23,7 +23,6 @@
 
 int SqLiteHelper::initDB(const char *regionName, int maxPageCount, int pageSize,
                          const char *regionDBfile, int busy_timeout_ms) {
-
   // open the database
   int retCode = sqlite3_open(regionDBfile, &m_dbHandle);
   if (retCode == SQLITE_OK) {
@@ -65,8 +64,8 @@ int SqLiteHelper::createTable() {
   return retCode == SQLITE_DONE ? 0 : retCode;
 }
 
-int SqLiteHelper::insertKeyValue(void *keyData, uint32_t keyDataSize,
-                                 void *valueData, uint32_t valueDataSize) {
+int SqLiteHelper::insertKeyValue(void *keyData, int keyDataSize,
+                                 void *valueData, int valueDataSize) {
   // construct query
   char query[QUERY_SIZE];
   SNPRINTF(query, QUERY_SIZE, "REPLACE INTO %s VALUES(?,?);", m_tableName);
@@ -85,7 +84,7 @@ int SqLiteHelper::insertKeyValue(void *keyData, uint32_t keyDataSize,
   return retCode == SQLITE_DONE ? 0 : retCode;
 }
 
-int SqLiteHelper::removeKey(void *keyData, uint32_t keyDataSize) {
+int SqLiteHelper::removeKey(void *keyData, int keyDataSize) {
   // construct query
   char query[QUERY_SIZE];
   SNPRINTF(query, QUERY_SIZE, "DELETE FROM %s WHERE key=?;", m_tableName);
@@ -103,8 +102,8 @@ int SqLiteHelper::removeKey(void *keyData, uint32_t keyDataSize) {
   return retCode == SQLITE_DONE ? 0 : retCode;
 }
 
-int SqLiteHelper::getValue(void *keyData, uint32_t keyDataSize,
-                           void *&valueData, uint32_t &valueDataSize) {
+int SqLiteHelper::getValue(void *keyData, int keyDataSize, void *&valueData,
+                           int &valueDataSize) {
   // construct query
   char query[QUERY_SIZE];
   SNPRINTF(query, QUERY_SIZE,

@@ -16,15 +16,17 @@
 cmake_minimum_required(VERSION 3.10)
 project(SqLiteImpl LANGUAGES CXX)
 
-add_library(${PROJECT_NAME} SHARED
+add_library(SqLiteImpl SHARED
   SqLiteHelper.cpp
   SqLiteHelper.hpp
   SqLiteImpl.cpp
   SqLiteImpl.hpp
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(SqLiteImpl
   PUBLIC
     apache-geode
     sqlite
+  PRIVATE
+    _WarningsAsError
 )

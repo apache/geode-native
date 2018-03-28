@@ -41,11 +41,11 @@ class SqLiteHelper {
  public:
   int initDB(const char* regionName, int maxPageCount, int pageSize,
              const char* regionDBfile, int busy_timeout_ms = 5000);
-  int insertKeyValue(void* keyData, uint32_t keyDataSize, void* valueData,
-                     uint32_t valueDataSize);
-  int removeKey(void* keyData, uint32_t keyDataSize);
-  int getValue(void* keyData, uint32_t keyDataSize, void*& valueData,
-               uint32_t& valueDataSize);
+  int insertKeyValue(void* keyData, int keyDataSize, void* valueData,
+                     int valueDataSize);
+  int removeKey(void* keyData, int keyDataSize);
+  int getValue(void* keyData, int keyDataSize, void*& valueData,
+               int& valueDataSize);
   int closeDB();
 
  private:
