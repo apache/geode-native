@@ -19,6 +19,6 @@ project(clicache_src)
 
 add_subdirectory(src)
 add_subdirectory(test)
+add_subdirectory(test2)
 add_subdirectory(integration-test)
-add_subdirectory(multiple-cache-integration-test)
-add_subdirectory(multiple-cache-test)
+add_subdirectory(integration-test2)

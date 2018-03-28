@@ -14,7 +14,7 @@
 # limitations under the License.
 
 cmake_minimum_required( VERSION 3.9 )
-project( Apache.Geode.Client.MultipleCacheTests CSharp )
+project( Apache.Geode.Client.Tests2 CSharp )
 
 set(CMAKE_CSharp_FLAGS "/langversion:5")
 

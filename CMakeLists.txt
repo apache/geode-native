@@ -52,8 +52,6 @@ set(PRODUCT_BITS "${BUILD_BITS}bit")
 set(PRODUCT_LIB_NAME "apache-geode" CACHE STRING "Binary name")
 set(PRODUCT_DLL_NAME "Apache.Geode" CACHE STRING ".Net Binary name")
 
-string(REPLACE "\\" "\\\\" GEODE_ROOT_ESCAPED_PATH ${GEODE_ROOT})
-
 if(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
   if (CMAKE_SYSTEM_PROCESSOR STREQUAL "sparc")
     set(PRODUCT_SYSTEM_NAME "solaris-sparc")
