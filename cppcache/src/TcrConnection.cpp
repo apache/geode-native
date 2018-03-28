@@ -356,7 +356,8 @@ bool TcrConnection::InitTcrConnection(
       }
       challengeBytes->toData(*cleartext);
       auto ciphertext =
-          m_dh->encrypt(cleartext->getBuffer(), cleartext->getBufferLength());
+          m_dh->encrypt(cleartext->getBuffer(),
+                        static_cast<int>(cleartext->getBufferLength()));
 
       auto sendCreds = cacheImpl->createDataOutput();
       ciphertext->toData(*sendCreds);

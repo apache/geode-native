@@ -59,16 +59,16 @@ static EVP_PKEY *DH_PUBKEY_get(DH_PUBKEY *key);
 static const EVP_CIPHER *getCipherFunc();
 static int setSkAlgo(const char *skalgo);
 
-ASN1_SEQUENCE(
-    DH_PUBKEY) = {ASN1_SIMPLE(DH_PUBKEY, algor, X509_ALGOR),
-                  ASN1_SIMPLE(DH_PUBKEY, public_key,
-                              ASN1_BIT_STRING)} ASN1_SEQUENCE_END(DH_PUBKEY)
+ASN1_SEQUENCE(DH_PUBKEY) = {
+    ASN1_SIMPLE(DH_PUBKEY, algor, X509_ALGOR),
+    ASN1_SIMPLE(DH_PUBKEY, public_key, ASN1_BIT_STRING)};
+ASN1_SEQUENCE_END(DH_PUBKEY);
 
-    // This gives us the i2d/d2i x.509 (ASN1 DER) encode/decode functions
-    IMPLEMENT_ASN1_FUNCTIONS(DH_PUBKEY)
+// This gives us the i2d/d2i x.509 (ASN1 DER) encode/decode functions
+IMPLEMENT_ASN1_FUNCTIONS(DH_PUBKEY);
 
-    // Returns Error code
-    int gf_initDhKeys(const char *dhAlgo, const char *ksPath) {
+// Returns Error code
+int gf_initDhKeys(const char *dhAlgo, const char *ksPath) {
   int errorCode = DH_ERR_NO_ERROR;  // No error;
 
   // ksPath can be null
@@ -209,9 +209,9 @@ unsigned char *gf_getPublicKey(int *pLen) {
   //
   //  Note, this temp pointer is needed because OpenSSL increments the pointer
   //  passed in
-  // so that following encoding can be done at the current output location, this
-  // will cause a
-  // problem if we try to free the pointer which has been moved by OpenSSL.
+  // so that following encoding can be done at the current output location,
+  // this will cause a problem if we try to free the pointer which has been
+  // moved by OpenSSL.
   //
   i2d_DH_PUBKEY(dhpubkey, &temp);
 
@@ -253,7 +253,7 @@ void gf_setPublicKeyOther(const unsigned char *pubkey, int length) {
 #endif
 }
 
-void gf_computeSharedSecret(void) {
+void gf_computeSharedSecret() {
   LOGDH("COMPUTE: DH ptr %p, pubkeyOther ptr %p", m_dh, m_pubKeyOther);
 
   LOGDH("DHcomputeKey DHSize is %d", DH_size(m_dh));
@@ -334,8 +334,8 @@ const EVP_CIPHER *getCipherFunc() {
   }
 }
 
-unsigned char *gf_encryptDH(const unsigned char *cleartext, size_t len,
-                            size_t *retLen) {
+unsigned char *gf_encryptDH(const unsigned char *cleartext, int len,
+                            int *retLen) {
   // Validation
   if (cleartext == NULL || len < 1 || retLen == NULL) {
     return NULL;
@@ -391,13 +391,14 @@ unsigned char *gf_encryptDH(const unsigned char *cleartext, size_t len,
 
   ret = EVP_CIPHER_CTX_cleanup(ctx);
 
-  LOGDH("DHencrypt: in len is %zd, out len is %d", len, outlen);
+  LOGDH("DHencrypt: in len is %d, out len is %d", len, outlen);
 
   *retLen = outlen;
   return ciphertext;
 }
 
-// std::shared_ptr<CacheableBytes> decrypt(const uint8_t * ciphertext, int len)
+// std::shared_ptr<CacheableBytes> decrypt(const uint8_t * ciphertext, int
+// len)
 // {
 //  LOGDH("DH: Used unimplemented decrypt!");
 //  return NULL;
@@ -639,8 +640,4 @@ EVP_PKEY *DH_PUBKEY_get(DH_PUBKEY *key) {
 
   if (asn1int != NULL) ASN1_INTEGER_free(asn1int);
   return (ret);
-err:
-  if (asn1int != NULL) ASN1_INTEGER_free(asn1int);
-  if (ret != NULL) EVP_PKEY_free(ret);
-  return (NULL);
 }

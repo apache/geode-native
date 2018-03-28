@@ -148,8 +148,8 @@ std::shared_ptr<CacheableBytes> DiffieHellman::encrypt(
                  cleartext->length());
 }
 std::shared_ptr<CacheableBytes> DiffieHellman::encrypt(const uint8_t* cleartext,
-                                                       size_t len) {
-  size_t cipherLen = 0;
+                                                       int len) {
+  int cipherLen = 0;
   auto ciphertextPtr = gf_encryptDH_Ptr(m_dhCtx, cleartext, len, &cipherLen);
   return CacheableBytes::create(
       std::vector<int8_t>(ciphertextPtr, ciphertextPtr + cipherLen));
@@ -160,8 +160,8 @@ std::shared_ptr<CacheableBytes> DiffieHellman::decrypt(
                  cleartext->length());
 }
 std::shared_ptr<CacheableBytes> DiffieHellman::decrypt(const uint8_t* cleartext,
-                                                       size_t len) {
-  size_t cipherLen = 0;
+                                                       int len) {
+  int cipherLen = 0;
   auto ciphertextPtr = gf_decryptDH_Ptr(m_dhCtx, cleartext, len, &cipherLen);
   return CacheableBytes::create(
       std::vector<int8_t>(ciphertextPtr, ciphertextPtr + cipherLen));

@@ -49,10 +49,10 @@ class DiffieHellman {
   void computeSharedSecret(void);
   std::shared_ptr<CacheableBytes> encrypt(
       const std::shared_ptr<CacheableBytes>& cleartext);
-  std::shared_ptr<CacheableBytes> encrypt(const uint8_t* cleartext, size_t len);
+  std::shared_ptr<CacheableBytes> encrypt(const uint8_t* cleartext, int len);
   std::shared_ptr<CacheableBytes> decrypt(
       const std::shared_ptr<CacheableBytes>& cleartext);
-  std::shared_ptr<CacheableBytes> decrypt(const uint8_t* cleartext, size_t len);
+  std::shared_ptr<CacheableBytes> decrypt(const uint8_t* cleartext, int len);
   bool verify(const std::shared_ptr<CacheableString>& subject,
               const std::shared_ptr<CacheableBytes>& challenge,
               const std::shared_ptr<CacheableBytes>& response);
@@ -78,10 +78,10 @@ class DiffieHellman {
   typedef void (*gf_computeSharedSecret_Type)(void* dhCtx);
   typedef unsigned char* (*gf_encryptDH_Type)(void* dhCtx,
                                               const unsigned char* cleartext,
-                                              size_t len, size_t* retLen);
+                                              int len, int* retLen);
   typedef unsigned char* (*gf_decryptDH_Type)(void* dhCtx,
                                               const unsigned char* cleartext,
-                                              size_t len, size_t* retLen);
+                                              int len, int* retLen);
   typedef bool (*gf_verifyDH_Type)(void* dhCtx, const char* subject,
                                    const unsigned char* challenge,
                                    int challengeLen,
