@@ -122,7 +122,7 @@ namespace Apache
         /// </returns>
         static DistributedSystem^ Create(native::DistributedSystem* nativeptr);
 
-        DistributedSystem(native::DistributedSystem nativeDistributedSystem);
+        DistributedSystem(std::unique_ptr<native::DistributedSystem> nativeDistributedSystem);
 
         delegate void cliCallback(apache::geode::client::Cache& cache);
 

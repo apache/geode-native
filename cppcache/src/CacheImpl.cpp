@@ -45,7 +45,7 @@
 
 using namespace apache::geode::client;
 
-CacheImpl::CacheImpl(Cache* c, DistributedSystem distributedSystem, bool iPUF,
+CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem, bool iPUF,
                      bool readPdxSerialized,
                      const std::shared_ptr<AuthInitialize>& authInitialize)
     : m_defaultPool(nullptr),

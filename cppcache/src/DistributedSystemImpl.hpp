@@ -88,13 +88,13 @@ class _GEODE_EXPORT DistributedSystemImpl {
   virtual void connect();
 
   std::string m_name;
-  DistributedSystem m_implementee;
+  DistributedSystem* m_implementee;
   DiffieHellman m_dh;
 
   /**
    * @brief constructors
    */
-  DistributedSystemImpl(std::string name, DistributedSystem implementee);
+  DistributedSystemImpl(std::string name, DistributedSystem* implementee);
 
   // acquire/release locks
 

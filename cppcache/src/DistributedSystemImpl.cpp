@@ -29,8 +29,8 @@ std::map<int, CliCallbackMethod> DistributedSystemImpl::m_cliCallbackMap;
 ACE_Recursive_Thread_Mutex DistributedSystemImpl::m_cliCallbackLock;
 
 DistributedSystemImpl::DistributedSystemImpl(std::string name,
-                                             DistributedSystem implementee)
-    : m_name(name), m_implementee(std::move(implementee)) {}
+                                             DistributedSystem* implementee)
+    : m_name(name), m_implementee(implementee) {}
 
 DistributedSystemImpl::~DistributedSystemImpl() {
   LOGFINE("Destroyed DistributedSystemImpl");

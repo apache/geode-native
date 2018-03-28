@@ -214,7 +214,7 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   /**
    * @brief constructors
    */
-  CacheImpl(Cache* c, DistributedSystem distributedSystem,
+  CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
             bool ignorePdxUnreadFields, bool readPdxSerialized,
             const std::shared_ptr<AuthInitialize>& authInitialize);
 

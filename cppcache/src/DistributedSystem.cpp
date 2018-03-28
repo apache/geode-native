@@ -59,6 +59,15 @@ DistributedSystem::DistributedSystem(const std::string& name,
   }
 }
 
+DistributedSystem::DistributedSystem(DistributedSystem&& moved) 
+    : m_name(std::move(moved.m_name)),
+      m_statisticsManager(std::move(moved.m_statisticsManager)),
+      m_sysProps(std::move(moved.m_sysProps)),
+      m_connected(std::move(moved.m_connected)),
+      m_impl(std::move(moved.m_impl)) {
+  m_impl->m_implementee = this;
+}
+
 void DistributedSystem::logSystemInformation() const {
   auto productDir = CppCacheLibrary::getProductDir();
   LOGCONFIG("Using Geode Native Client Product Directory: " + productDir);
@@ -142,7 +151,7 @@ DistributedSystem DistributedSystem::create(
   auto distributedSystem = DistributedSystem(name, std::move(sysProps));
 
   distributedSystem.m_impl =
-      new DistributedSystemImpl(name.c_str(), std::move(distributedSystem));
+      new DistributedSystemImpl(name, &distributedSystem);
 
   distributedSystem.logSystemInformation();
   LOGCONFIG("Starting the Geode Native Client");

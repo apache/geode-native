@@ -58,8 +58,8 @@ class _GEODE_EXPORT DistributedSystem {
  public:
   DistributedSystem(const DistributedSystem&) = delete;
   DistributedSystem& operator=(const DistributedSystem&) = delete;
-  DistributedSystem(DistributedSystem&&) = default;
-  DistributedSystem& operator=(DistributedSystem&&) = default;
+  DistributedSystem(DistributedSystem&&);
+  DistributedSystem& operator=(DistributedSystem&&) = delete;
 
   /**
    * Initializes the Native Client system to be able to connect to the
@@ -115,7 +115,7 @@ class _GEODE_EXPORT DistributedSystem {
   std::string m_name;
   bool m_connected;
   std::shared_ptr<statistics::StatisticsManager> m_statisticsManager;
-  std::unique_ptr<SystemProperties> m_sysProps;
+  std::shared_ptr<SystemProperties> m_sysProps;
 
  public:
   DistributedSystemImpl* m_impl;
