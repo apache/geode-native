@@ -45,7 +45,7 @@ namespace Apache
 
         Int32 PdxWriterWithTypeCollector::calculateLenWithOffsets()
         {
-          int bufferLen = m_dataOutput->BufferLength - m_startPositionOffset;
+          int bufferLen = static_cast<int>(m_dataOutput->BufferLength - m_startPositionOffset);
           Int32 totalOffsets = 0;
           if (m_offsets->Count > 0)
             totalOffsets = m_offsets->Count - 1;//for first var len no need to append offset
@@ -62,7 +62,7 @@ namespace Apache
 
         void PdxWriterWithTypeCollector::AddOffset()
         {
-          int bufferLen = m_dataOutput->BufferLength - m_startPositionOffset;
+          int bufferLen = static_cast<int>(m_dataOutput->BufferLength - m_startPositionOffset);
           int offset = bufferLen - PdxHelper::PdxHeader;
 
           m_offsets->Add(offset);

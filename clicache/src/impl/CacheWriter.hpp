@@ -47,37 +47,37 @@ namespace Apache
             m_writer = writer;
           }
 
-          virtual bool BeforeUpdate( Apache::Geode::Client::EntryEvent<Object^, Object^>^ ev ) override
+          bool BeforeUpdate( Apache::Geode::Client::EntryEvent<Object^, Object^>^ ev ) override
           {
             EntryEvent<TKey, TValue> gevent(ev->GetNative());
             return m_writer->BeforeUpdate(%gevent);
           }
 
-          virtual bool BeforeCreate(Apache::Geode::Client::EntryEvent<Object^, Object^>^ ev) override
+          bool BeforeCreate(Apache::Geode::Client::EntryEvent<Object^, Object^>^ ev) override
           {
             EntryEvent<TKey, TValue> gevent(ev->GetNative());
             return m_writer->BeforeCreate(%gevent);
           }
 
-          virtual bool BeforeDestroy(Apache::Geode::Client::EntryEvent<Object^, Object^>^ ev) override
+          bool BeforeDestroy(Apache::Geode::Client::EntryEvent<Object^, Object^>^ ev) override
           {
             EntryEvent<TKey, TValue> gevent(ev->GetNative());
             return m_writer->BeforeDestroy(%gevent);
           }
 
-          virtual bool BeforeRegionClear( Apache::Geode::Client::RegionEvent<Object^, Object^>^ ev ) override
+          bool BeforeRegionClear( Apache::Geode::Client::RegionEvent<Object^, Object^>^ ev ) override
           {
             RegionEvent<TKey, TValue> gevent(ev->GetNative());
             return m_writer->BeforeRegionClear(%gevent);
           }
 
-          virtual bool BeforeRegionDestroy(Apache::Geode::Client::RegionEvent<Object^, Object^>^ ev) override
+          bool BeforeRegionDestroy(Apache::Geode::Client::RegionEvent<Object^, Object^>^ ev) override
           {
             RegionEvent<TKey, TValue> gevent(ev->GetNative());
             return m_writer->BeforeRegionDestroy(%gevent);
           }
           
-          virtual void Close(Apache::Geode::Client::Region<Object^, Object^>^ region) override
+          void Close(Apache::Geode::Client::IRegion<Object^, Object^>^ region) override
           {
             m_writer->Close((IRegion<TKey, TValue>^) region);
           }

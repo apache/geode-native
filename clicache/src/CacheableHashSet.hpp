@@ -280,7 +280,7 @@ namespace Apache
             {
               try
               {
-                return static_cast<HSTYPE*>(m_nativeptr->get())->max_size();
+                return static_cast<int>(static_cast<HSTYPE*>(m_nativeptr->get())->max_size());
               }
               finally
               {
@@ -316,7 +316,7 @@ namespace Apache
             {
               try
               {
-                return static_cast<HSTYPE*>(m_nativeptr->get())->bucket_count();
+                return static_cast<int>(static_cast<HSTYPE*>(m_nativeptr->get())->bucket_count());
               }
               finally
               {
@@ -482,7 +482,7 @@ namespace Apache
             {
               try
               {
-                return static_cast<HSTYPE*>(m_nativeptr->get())->size();
+                return static_cast<int>(static_cast<HSTYPE*>(m_nativeptr->get())->size());
               }
               finally
               {

@@ -128,7 +128,7 @@ namespace Apache
 
       IPdxInstanceFactory^ AuthenticatedCache::CreatePdxInstanceFactory(String^ className)
       {
-        return gcnew Internal::PdxInstanceFactoryImpl(className, (Cache^)this);
+        return gcnew Internal::PdxInstanceFactoryImpl(className, nullptr);
       }
     }  // namespace Client
   }  // namespace Geode

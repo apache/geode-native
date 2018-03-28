@@ -249,9 +249,9 @@ namespace Apache
         /// <summary>
         /// Get the length of current data in the buffer.
         /// </summary>
-        property System::UInt32 BufferLength
+        property size_t BufferLength
         {
-          System::UInt32 get( );
+          size_t get( );
         }
         
         property Apache::Geode::Client::Cache^ Cache

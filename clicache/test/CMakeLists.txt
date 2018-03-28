@@ -55,6 +55,7 @@ target_link_libraries(${PROJECT_NAME}
   PRIVATE
     c++cli
 	c++11
+	_WarningsAsError
 )
 
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")

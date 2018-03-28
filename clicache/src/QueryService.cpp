@@ -114,7 +114,7 @@ namespace Apache
         {
           apache::geode::client::QueryService::query_container_type vrr =
               m_nativeptr->get()->getCqs();
-          auto cqs = gcnew array<CqQuery<TKey, TResult>^>(vrr.size());
+          auto cqs = gcnew array<CqQuery<TKey, TResult>^>(static_cast<int>(vrr.size()));
 
           for (System::Int32 index = 0; index < vrr.size(); index++)
           {

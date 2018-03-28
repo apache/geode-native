@@ -153,7 +153,7 @@ namespace Apache
 
           try
           {
-            return m_nativeptr->get()->getSize( );
+            return static_cast<uint32_t>(m_nativeptr->get()->getSize( ));
           }
           finally
           {

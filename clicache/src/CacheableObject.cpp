@@ -57,7 +57,7 @@ namespace Apache
       {
         int maxSize = input->ReadInt32();
         GeodeDataInputStream dis(input, maxSize);
-        System::UInt32 checkpoint = dis.BytesRead;
+        auto checkpoint = dis.BytesRead;
         BinaryFormatter bf;
         m_obj = bf.Deserialize(%dis);
         m_objectSize = dis.BytesRead - checkpoint;

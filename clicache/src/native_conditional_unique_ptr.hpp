@@ -56,8 +56,8 @@ namespace Apache
           return __nullptr == owned_ptr ? unowned_ptr : owned_ptr->get();
         }
 
-        inline _T& operator*() {
-          return *get();
+        static inline _T& operator*(native_conditional_unique_ptr<_T>^ t) {
+          return *(t->get());
         }
       };
     }

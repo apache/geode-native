@@ -70,7 +70,7 @@ namespace Apache
             //start position, this should start of c++ dataoutput buffer and then use bufferlen
             m_startPosition = m_dataOutput->GetStartBufferPosition();
             //TODO: need to use this carefully
-            m_startPositionOffset = m_dataOutput->BufferLength;//data has been write
+            m_startPositionOffset = static_cast<int>(m_dataOutput->BufferLength);//data has been write
             m_dataOutput->AdvanceCursor(PdxHelper::PdxHeader);//to write pdx header
           }
 
@@ -78,7 +78,7 @@ namespace Apache
           {
             //bufferlength gives lenght which has been writeen to unmanged Dataoutput
             //m_startPositionOffset: from where pdx header length starts
-            int bufferLen = m_dataOutput->BufferLength - m_startPositionOffset;
+            int bufferLen = static_cast<int>(m_dataOutput->BufferLength - m_startPositionOffset);
             int offset = bufferLen - PdxHelper::PdxHeader/* this needs to subtract*/;
 
             m_offsets[m_currentOffsetIndex++] = offset;
@@ -116,7 +116,7 @@ namespace Apache
           Int32 PdxLocalWriter::calculateLenWithOffsets()
           {
             //int bufferLen = m_dataOutput->GetCursorPdx();
-            int bufferLen = m_dataOutput->BufferLength - m_startPositionOffset;
+            int bufferLen = static_cast<int>(m_dataOutput->BufferLength - m_startPositionOffset);
             Int32 totalOffsets = 0;
             if(m_offsets->Length > 0)
               totalOffsets = m_offsets->Length -1;//for first var len no need to append offset

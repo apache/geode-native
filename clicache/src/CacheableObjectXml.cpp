@@ -58,7 +58,7 @@ namespace Apache
           xs.Serialize(%dos, m_obj);
           m_objectSize = dos.Length - checkpoint;
 
-          auto size = stat_cast<uint32_t>(m_objectSize);
+          auto size = static_cast<uint32_t>(m_objectSize);
 
           output->RewindCursor(size + 4);
           output->WriteInt32(size);
@@ -85,7 +85,7 @@ namespace Apache
             int maxSize = input->ReadInt32();
             GeodeDataInputStream dis(input, maxSize);
             XmlSerializer xs(objType);
-            System::UInt32 checkpoint = dis.BytesRead;
+            auto checkpoint = dis.BytesRead;
             m_obj = xs.Deserialize(%dis);
             m_objectSize = dis.BytesRead - checkpoint;
           }

@@ -21,10 +21,10 @@
 #include "../IFixedPartitionResolver.hpp"
 #include "../Region.hpp"
 #include "SafeConvert.hpp"
-#include "ManagedString.hpp"
+#include "../native_shared_ptr.hpp"
 
 using namespace System;
-using namespace System::Collections::Generic;
+using namespace System::Collections::Concurrent;
 using namespace System::Threading;
 
 namespace Apache
@@ -50,14 +50,14 @@ namespace Apache
 
           IPartitionResolver<TKey, TValue>^ m_resolver;
           IFixedPartitionResolver<TKey, TValue>^ m_fixedResolver;
-          Dictionary<String^, ManagedString^> ^m_strList;
+          ConcurrentDictionary<String^, native_shared_ptr<std::string>^>^ m_partitionNames;
         public:
 
           void SetPartitionResolver(IPartitionResolver<TKey, TValue>^ resolver)
           {            
             m_resolver = resolver;
             m_fixedResolver = dynamic_cast<IFixedPartitionResolver<TKey, TValue>^>(resolver);
-            m_strList = gcnew Dictionary<String^, ManagedString^>();
+            m_partitionNames = gcnew ConcurrentDictionary<String^, native_shared_ptr<std::string>^>();
           }
 
           virtual std::shared_ptr<apache::geode::client::CacheableKey> getRoutingObject(const apache::geode::client::EntryEvent& ev)
@@ -81,23 +81,17 @@ namespace Apache
             }
 
             EntryEvent<TKey, TValue> gevent(&opDetails);                        
-            String^ str = m_fixedResolver->GetPartitionName(%gevent);
-            ManagedString ^mnStr = nullptr;
-            try
+            String^ managedString = m_fixedResolver->GetPartitionName(%gevent);
+
+            native_shared_ptr<std::string>^ unmanagedString = nullptr;
+            if(!m_partitionNames->TryGetValue(managedString, unmanagedString))
             {
-              Monitor::Enter( m_strList );
-              if(!m_strList->TryGetValue(str,mnStr))
-              {
-                mnStr= gcnew ManagedString(str);
-                m_strList->Add(str,mnStr);
-              }
-            }
-            finally
-            { 
-              Monitor::Exit( m_strList );
+              unmanagedString = gcnew native_shared_ptr<std::string>(std::shared_ptr<std::string>(
+                new std::string(marshal_as<std::string>(managedString))));
+              m_partitionNames->TryAdd(managedString, unmanagedString);
             }
             
-            return mnStr->CharPtr;            
+            return *(unmanagedString->get());
           }
       };
     }  // namespace Client

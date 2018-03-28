@@ -210,7 +210,7 @@ namespace apache
             "loading managed library: "+ marshal_as<std::string>(ex->ToString());
           throw IllegalArgumentException(ex_str);
         }
-        return NULL;
+        throw IllegalStateException("Unexpected exception.");
       }
 
       std::shared_ptr<CacheableKey> ManagedFixedPartitionResolverGeneric::getRoutingObject(const EntryEvent& key)
@@ -224,7 +224,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return nullptr;
+        throw IllegalStateException("Unexpected exception.");
       }
 
       const std::string& ManagedFixedPartitionResolverGeneric::getName()
@@ -238,7 +238,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULL;
+        throw IllegalStateException("Unexpected exception.");
       }
 
       const std::string& ManagedFixedPartitionResolverGeneric::getPartitionName(const EntryEvent& opDetails)
@@ -252,7 +252,7 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return NULL;
+        throw IllegalStateException("Unexpected exception.");
       }
 
     }  // namespace client

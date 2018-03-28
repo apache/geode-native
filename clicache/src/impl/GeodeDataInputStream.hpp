@@ -98,10 +98,10 @@ namespace Apache
         virtual int Read(array<Byte> ^ buffer, int offset, int count) override
         {
           _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          int bytesRemaining = m_maxSize - (int) m_buffer->BytesReadInternally;
-					if(bytesRemaining == 0)
+          auto bytesRemaining = static_cast<int>(m_maxSize - m_buffer->BytesReadInternally);
+					if(bytesRemaining <= 0)
 						return bytesRemaining;
-          int actual =  bytesRemaining < count ? bytesRemaining : count;
+          auto actual = static_cast<int>(bytesRemaining < count ? bytesRemaining : count);
 					if (actual > 0)
           {
             /*
@@ -119,17 +119,17 @@ namespace Apache
 
         virtual void Flush() override { /* do nothing */ }
 
-        property System::UInt32 BytesRead
+        property size_t BytesRead
         {
-          System::UInt32 get()
+          size_t get()
           {
             return m_buffer->BytesReadInternally;
           }
         }
 
       private:
-        int m_position;
-        int m_maxSize;
+        size_t m_position;
+        size_t m_maxSize;
         DataInput ^ m_buffer;
       };
     }  // namespace Client
