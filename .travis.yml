@@ -28,7 +28,7 @@ install:
 script:
   - DOCKER_ARGS="--volume=${TRAVIS_BUILD_DIR}:/geode-native --workdir=/geode-native"
   - docker run ${DOCKER_ARGS} apachegeode/geode-native-build bash -c "java -jar /apache-rat-0.12/apache-rat-0.12.jar -E .ratignore -d ."
-  - docker run ${DOCKER_ARGS} apachegeode/geode-native-build bash -c 'mkdir build && cd build && cmake .. -DGEODE_ROOT=/geode && cmake --build . -- -j $((`nproc`+1)) && ./cppcache/test/apache-geode_unittests'
+  - docker run ${DOCKER_ARGS} apachegeode/geode-native-build bash -c 'mkdir build && cd build && cmake .. && cmake --build . -- -j $((`nproc`+1)) && ./cppcache/test/apache-geode_unittests'
   - docker stop $(docker ps -l -q)
 
 notifications:
