@@ -64,16 +64,16 @@ static const EVP_CIPHER* getCipherFunc();
 static int setSkAlgo(const char * skalgo);
 */
 
-ASN1_SEQUENCE(
-    DH_PUBKEY) = {ASN1_SIMPLE(DH_PUBKEY, algor, X509_ALGOR),
-                  ASN1_SIMPLE(DH_PUBKEY, public_key,
-                              ASN1_BIT_STRING)} ASN1_SEQUENCE_END(DH_PUBKEY)
+ASN1_SEQUENCE(DH_PUBKEY) = {
+    ASN1_SIMPLE(DH_PUBKEY, algor, X509_ALGOR),
+    ASN1_SIMPLE(DH_PUBKEY, public_key, ASN1_BIT_STRING)};
+ASN1_SEQUENCE_END(DH_PUBKEY);
 
-    // This gives us the i2d/d2i x.509 (ASN1 DER) encode/decode functions
-    IMPLEMENT_ASN1_FUNCTIONS(DH_PUBKEY)
+// This gives us the i2d/d2i x.509 (ASN1 DER) encode/decode functions
+IMPLEMENT_ASN1_FUNCTIONS(DH_PUBKEY);
 
-    // Returns Error code
-    int gf_initDhKeys(void **dhCtx, const char *dhAlgo, const char *ksPath) {
+// Returns Error code
+int gf_initDhKeys(void **dhCtx, const char *dhAlgo, const char *ksPath) {
   int errorCode = DH_ERR_NO_ERROR;  // No error;
 
   DHImpl *dhimpl = new DHImpl();
@@ -161,7 +161,7 @@ ASN1_SEQUENCE(
     }
   } while (cert != NULL);
 
-  LOGDH(" Total certificats imported # %d", dhimpl->m_serverCerts.size());
+  LOGDH(" Total certificats imported # %zd", dhimpl->m_serverCerts.size());
 
   fclose(keyStoreFP);
 
@@ -352,7 +352,7 @@ const EVP_CIPHER *DHImpl::getCipherFunc() {
 }
 
 unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
-                            size_t len, size_t *retLen) {
+                            int len, int *retLen) {
   DHImpl *dhimpl = reinterpret_cast<DHImpl *>(dhCtx);
 
   // Validation
@@ -420,7 +420,7 @@ unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
 }
 
 unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
-                            size_t len, size_t *retLen) {
+                            int len, int *retLen) {
   DHImpl *dhimpl = reinterpret_cast<DHImpl *>(dhCtx);
 
   // Validation

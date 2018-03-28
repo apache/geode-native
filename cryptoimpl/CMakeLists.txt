@@ -13,15 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 cmake_minimum_required(VERSION 3.4)
-project(cryptoimpl LANGUAGES CXX)
+project(cryptoImpl LANGUAGES CXX)
 
 file(GLOB_RECURSE SOURCES "*.cpp")
 
 add_library(cryptoImpl SHARED ${SOURCES})
 
+target_compile_definitions(cryptoImpl
+  PRIVATE
+    BUILD_CPPCACHE)
+
 target_link_libraries(cryptoImpl
   PRIVATE
     ACE_SSL
+	_WarningsAsError
   PUBLIC
    apache-geode
    crypto

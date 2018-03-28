@@ -17,13 +17,9 @@
 
 #include "SSLImpl.hpp"
 
-#include <ace/INET_Addr.h>
-#include <ace/SOCK_IO.h>
-#include <ace/Guard_T.h>
-#include <ace/SSL/SSL_SOCK_Connector.h>
-#include <ace/SSL/SSL_SOCK_Acceptor.h>
-#include <ace/OS.h>
 #include <cstdint>
+
+#include <ace/Guard_T.h>
 
 namespace apache {
 namespace geode {
@@ -43,13 +39,11 @@ void gf_destroy_SslImpl(void *impl) {
   delete theLib;
 }
 
-extern "C" {
-
-static int pem_passwd_cb(char *buf, int size, int rwflag, void *passwd) {
+extern "C" static int pem_passwd_cb(char *buf, int size, int rwflag,
+                                    void *passwd) {
   strncpy(buf, (char *)passwd, size);
   buf[size - 1] = '\0';
-  return (strlen(buf));
-}
+  return static_cast<int>(strlen(buf));
 }
 
 SSLImpl::SSLImpl(ACE_HANDLE sock, const char *pubkeyfile,
