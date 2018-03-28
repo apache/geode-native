@@ -46,6 +46,8 @@
 #include "Cache.hpp"
 
 using namespace apache::geode::client;
+using namespace System::Reflection;
+using namespace System::Reflection::Emit;
 
 namespace Apache
 {
@@ -151,7 +153,7 @@ namespace Apache
           }
           try
           {
-            Object^ retObj = Serializable::CreateObject(className, GetType(className));
+            Object^ retObj = CreateObject(className);
 
             IPdxSerializable^ retPdx = dynamic_cast<IPdxSerializable^>(retObj);
             if (retPdx != nullptr)
@@ -161,7 +163,7 @@ namespace Apache
           }
           catch (System::Exception^ ex)
           {
-            Log::Error("Unable to create object usqing reflection for class: " + className + " : " + ex->Message);
+            Log::Error("Unable to create object using reflection for class: " + className + " : " + ex->Message);
           }
           throw gcnew IllegalStateException("Pdx factory method (or PdxSerializer ) not registered (or don't have zero arg constructor)"
             " to create default instance for class: " + className);
@@ -341,13 +343,6 @@ namespace Apache
           case native::GeodeTypeIds::CacheableByte:
           {
             return (TValue)(int8_t)safe_cast<int8_t>(Serializable::getByte(val));
-            /* if (TValue::typeid == System::SByte::typeid) {
-            return (TValue)(int8_t)safe_cast<int8_t>(Serializable::getByte(val));
-            }
-            else {
-            return (TValue)(System::Byte)safe_cast<int8_t>(Serializable::getByte(val));
-            }
-            return safe_cast<TValue>(Serializable::getByte(val));*/
           }
           case native::GeodeTypeIds::CacheableBoolean:
           {
@@ -375,32 +370,14 @@ namespace Apache
           }
           case native::GeodeTypeIds::CacheableInt16:
           {
-            /* if (TValue::typeid == System::Int16::typeid) {
-            return (TValue)(System::Int16)safe_cast<System::Int16>(Serializable::getInt16(val));
-            }
-            else {
-            return (TValue)(System::UInt16)safe_cast<System::Int16>(Serializable::getInt16(val));
-            }*/
             return safe_cast<TValue>(Serializable::getInt16(val));
           }
           case native::GeodeTypeIds::CacheableInt32:
           {
-            /* if (TValue::typeid == System::Int32::typeid) {
-            return (TValue)(System::Int32)safe_cast<System::Int32>(Serializable::getInt32(val));
-            }
-            else {
-            return (TValue)(System::UInt32)safe_cast<System::Int32>(Serializable::getInt32(val));
-            }  */
             return safe_cast<TValue>(Serializable::getInt32(val));
           }
           case native::GeodeTypeIds::CacheableInt64:
           {
-            /*if (TValue::typeid == System::Int64::typeid) {
-            return (TValue)(System::Int64)safe_cast<System::Int64>(Serializable::getInt64(val));
-            }
-            else {
-            return (TValue)(System::UInt64)safe_cast<System::Int64>(Serializable::getInt64(val));
-            }*/
             return safe_cast<TValue>(Serializable::getInt64(val));
           }
           case native::GeodeTypeIds::CacheableDate:
@@ -609,6 +586,131 @@ namespace Apache
           }
           throw gcnew System::Exception("not found typeid");
         }
+
+        Object^ TypeRegistry::CreateObject(String^ className)
+        {
+          Object^ retVal = CreateObjectEx(className);
+
+          if (retVal == nullptr)
+          {
+            auto type = GetType(className);
+            if (type)
+            {
+              retVal = type->GetConstructor(Type::EmptyTypes)->Invoke(nullptr);
+              return retVal;
+            }
+          }
+          return retVal;
+        }
+
+        Object^ TypeRegistry::CreateObjectEx(String^ className)
+        {
+          CreateNewObjectDelegate^ del = nullptr;
+          Dictionary<String^, CreateNewObjectDelegate^>^ tmp = ClassNameVsCreateNewObjectDelegate;
+
+          tmp->TryGetValue(className, del);
+
+          if (del != nullptr)
+          {
+            return del();
+          }
+          auto type = GetType(className);
+          if (type)
+          {
+            msclr::lock lockInstance(ClassNameVsCreateNewObjectLockObj);
+            {
+              tmp = ClassNameVsCreateNewObjectDelegate;
+              tmp->TryGetValue(className, del);
+              if (del != nullptr)
+                return del();
+              del = CreateNewObjectDelegateF(type);
+              ClassNameVsCreateNewObjectDelegate[className] = del;
+              return del();
+            }
+          }
+          return nullptr;
+        }
+
+        Object^ TypeRegistry::GetArrayObject(String^ className, int length)
+        {
+          Object^ retArr = GetArrayObjectEx(className, length);
+          if (retArr == nullptr)
+          {
+            Type^ type = GetType(className);
+            if (type)
+            {
+              retArr = type->MakeArrayType()->GetConstructor(singleIntType)->Invoke(gcnew array<Object^>(1) { length });
+              return retArr;
+            }
+          }
+          return retArr;
+        }
+
+        Object^ TypeRegistry::GetArrayObjectEx(String^ className, int length)
+        {
+          CreateNewObjectArrayDelegate^ del = nullptr;
+          Dictionary<String^, CreateNewObjectArrayDelegate^>^ tmp = ClassNameVsCreateNewObjectArrayDelegate;
+
+          tmp->TryGetValue(className, del);
+
+          if (del != nullptr)
+          {
+            return del(length);
+          }
+
+          Type^ t = GetType(className);
+          if (t)
+          {
+            msclr::lock lockInstance(ClassNameVsCreateNewObjectLockObj);
+            {
+              tmp = ClassNameVsCreateNewObjectArrayDelegate;
+              tmp->TryGetValue(className, del);
+              if (del != nullptr)
+                return del(length);
+              del = CreateNewObjectArrayDelegateF(t);
+              tmp = gcnew Dictionary<String^, CreateNewObjectArrayDelegate^>(ClassNameVsCreateNewObjectArrayDelegate);
+              tmp[className] = del;
+              ClassNameVsCreateNewObjectArrayDelegate = tmp;
+              return del(length);
+            }
+          }
+          return nullptr;
+        }
+
+        //delegate Object^ CreateNewObject();
+        //static CreateNewObjectDelegate^ CreateNewObjectDelegateF(Type^ type);
+        TypeRegistry::CreateNewObjectDelegate^ TypeRegistry::CreateNewObjectDelegateF(Type^ type)
+        {
+          DynamicMethod^ dynam = gcnew DynamicMethod("", Internal::DotNetTypes::ObjectType, Type::EmptyTypes, type, true);
+          ILGenerator^ il = dynam->GetILGenerator();
+
+          ConstructorInfo^ ctorInfo = type->GetConstructor(Type::EmptyTypes);
+          if (ctorInfo == nullptr) {
+            Log::Error("Object missing public no arg constructor");
+            throw gcnew IllegalStateException("Object missing public no arg constructor");
+          }
+
+          il->Emit(OpCodes::Newobj, ctorInfo);
+          il->Emit(OpCodes::Ret);
+
+          return (TypeRegistry::CreateNewObjectDelegate^)dynam->CreateDelegate(createNewObjectDelegateType);
+        }
+
+        //delegate Object^ CreateNewObjectArray(int len);
+        TypeRegistry::CreateNewObjectArrayDelegate^ TypeRegistry::CreateNewObjectArrayDelegateF(Type^ type)
+        {
+          DynamicMethod^ dynam = gcnew DynamicMethod("", Internal::DotNetTypes::ObjectType, singleIntTypeA, type, true);
+          ILGenerator^ il = dynam->GetILGenerator();
+
+          il->Emit(OpCodes::Ldarg_0);
+
+          il->Emit(OpCodes::Newarr, type);
+          il->Emit(OpCodes::Ret);
+
+          return (TypeRegistry::CreateNewObjectArrayDelegate^)dynam->CreateDelegate(createNewObjectArrayDelegateType);
+        }
+
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

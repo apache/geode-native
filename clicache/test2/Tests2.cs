@@ -23,12 +23,12 @@ namespace Apache.Geode.Client.UnitTests
 {
 
   [Trait("Category", "UnitTests")]
-  public class MultipleCacheTests
+  public class Tests2
   {
     Cache cacheOne;
     Cache cacheTwo;
 
-    public MultipleCacheTests()
+    public Tests2()
     {
       var cacheFactory = new CacheFactory();
       cacheOne = cacheFactory.Create();
@@ -284,17 +284,17 @@ namespace Apache.Geode.Client.UnitTests
         bool isIdentity = reader.IsIdentityField("id");
 
         if (isIdentity == false)
-          throw new IllegalStateException("Pdx1 id is identity field");
+          throw new IllegalStateException("Pdx2 id is identity field");
 
         bool isId = reader.HasField("id");
 
         if (isId == false)
-          throw new IllegalStateException("Pdx1 id field not found");
+          throw new IllegalStateException("Pdx2 id field not found");
 
         bool isNotId = reader.HasField("ID");
 
         if (isNotId == true)
-          throw new IllegalStateException("Pdx1 isNotId field found");
+          throw new IllegalStateException("Pdx2 isNotId field found");
 
         m_pkid = reader.ReadString("pkid");
         m_pkid2 = reader.ReadString("pkid2");

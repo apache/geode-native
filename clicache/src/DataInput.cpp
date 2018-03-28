@@ -787,14 +787,14 @@ namespace Apache
           System::Collections::IList^ list = nullptr;
           if (len == 0)
           {
-            list = (System::Collections::IList^)Serializable::GetArrayObject(className, len, m_cache);
+            list = (System::Collections::IList^)m_cache->TypeRegistry->GetArrayObject(className, len);
             return list;
           }
           //read first object
 
           Object^ ret = ReadObject();//in case it returns pdxinstance or java.lang.object
 
-          list = (System::Collections::IList^)Serializable::GetArrayObject(ret->GetType()->FullName, len, m_cache);
+          list = (System::Collections::IList^)m_cache->TypeRegistry->GetArrayObject(ret->GetType()->FullName, len);
 
           list[0] = ret;
           for (System::Int32 index = 1; index < list->Count; ++index)

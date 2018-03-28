@@ -201,7 +201,7 @@ namespace Apache
           /// <param name="className"> name of the class to create default instance </param>
           /// <returns> the defaulf instance </returns>
 
-          virtual Object^ CreateObject(String^ className, Type^ type);
+          virtual Object^ CreateObject(String^ className, Cache^ cache);
 
           ReflectionBasedAutoSerializer();
         private:

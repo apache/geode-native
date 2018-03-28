@@ -31,6 +31,7 @@ namespace Apache
     {
 
       using namespace System::Collections::Concurrent;
+      using namespace System::Reflection;
 
       namespace native = apache::geode::client;
       
@@ -41,6 +42,18 @@ namespace Apache
       public:
         TypeRegistry(Cache^ cache) : m_cache(cache)
         {
+          ClassNameVsCreateNewObjectLockObj = gcnew Object();
+
+          singleIntTypeA = gcnew array<Type^>{ Int32::typeid };
+          singleIntType = gcnew array<Type^>(1) { Int32::typeid };
+
+          ClassNameVsCreateNewObjectDelegate =
+            gcnew Dictionary<String^, CreateNewObjectDelegate^>();
+          ClassNameVsCreateNewObjectArrayDelegate =
+            gcnew Dictionary<String^, CreateNewObjectArrayDelegate^>();
+
+          createNewObjectDelegateType = Type::GetType("Apache.Geode.Client.TypeRegistry+CreateNewObjectDelegate");
+          createNewObjectArrayDelegateType = Type::GetType("Apache.Geode.Client.TypeRegistry+CreateNewObjectArrayDelegate");
         }
 
         property IPdxSerializer^ PdxSerializer
@@ -171,6 +184,8 @@ namespace Apache
           pdxTypeNameToLocal->Clear();
           localTypeNameToPdx->Clear();
           classNameVsType->Clear();
+          ClassNameVsCreateNewObjectDelegate->Clear();
+          ClassNameVsCreateNewObjectArrayDelegate->Clear();
         }
 
         static Byte GetManagedTypeMappingGeneric(Type^ type)
@@ -187,6 +202,18 @@ namespace Apache
           }
           return nullptr;
         }
+        
+        delegate Object^ CreateNewObjectDelegate();
+        CreateNewObjectDelegate^ CreateNewObjectDelegateF(Type^ type);
+
+        delegate Object^ CreateNewObjectArrayDelegate(int len);
+        CreateNewObjectArrayDelegate^ CreateNewObjectArrayDelegateF(Type^ type);
+
+        Object^ CreateObject(String^ className);
+        Object^ GetArrayObject(String^ className, int length);
+
+        Object^ CreateObjectEx(String^ className);
+        Object^ GetArrayObjectEx(String^ className, int length);
 
       private:
         Cache^ m_cache;
@@ -220,7 +247,17 @@ namespace Apache
           gcnew array<WrapperDelegateGeneric^>(WrapperEndGeneric + 1);
 
         Type^ GetTypeFromRefrencedAssemblies(String^ className, Dictionary<Assembly^, bool>^ referedAssembly, Assembly^ currentAssembly);
-      
+        
+        Object^ ClassNameVsCreateNewObjectLockObj;
+        
+        array<Type^>^ singleIntTypeA;
+        array<Type^>^ singleIntType;
+        
+        Dictionary<String^, CreateNewObjectDelegate^>^ ClassNameVsCreateNewObjectDelegate;
+                Dictionary<String^, CreateNewObjectArrayDelegate^>^ ClassNameVsCreateNewObjectArrayDelegate;
+        
+        Type^ createNewObjectDelegateType;
+        Type^ createNewObjectArrayDelegateType;
 
         static TypeRegistry()
         {

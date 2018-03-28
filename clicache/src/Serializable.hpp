@@ -252,9 +252,7 @@ namespace Apache
 				static System::Int32 GetPDXIdForType(String^ poolName, IGeodeSerializable^ pdxType, Cache^ cache);
 				static IGeodeSerializable^ GetPDXTypeById(String^ poolName, System::Int32 typeId, Cache^ cache);
 				static void RegisterPDXManagedCacheableKey(Cache^ cache);
-
-        static void Clear();
-
+        
         static int GetEnumValue(Internal::EnumInfo^ ei, Cache^ cache);
         static Internal::EnumInfo^ GetEnum(int val, Cache^ cache);
 
@@ -361,48 +359,6 @@ namespace Apache
 
         generic<class TKey>
         static std::shared_ptr<native::CacheableKey> GetUnmanagedValueGeneric(Type^ managedType, TKey key, bool isAsciiChar);
-
-        // TODO AppDomain remove statics
-
-        static Dictionary<UInt32, TypeFactoryMethodGeneric^>^ InternalDelegateMapGeneric =
-          gcnew Dictionary<UInt32, TypeFactoryMethodGeneric^>();
-
-        //static TypeFactoryMethodGeneric^ GetTypeFactoryMethodGeneric(UInt32 classid)
-        //{
-        // // Log::Finer("TypeFactoryMethodGeneric type id " + classid + " domainid :" + System::Threading::Thread::GetDomainID() );
-        //  if(DelegateMapGeneric->ContainsKey(classid) )
-        //    return DelegateMapGeneric[classid];
-        //  else
-        //    return InternalDelegateMapGeneric[classid];//builtin types
-        //}
-
-      internal:
-        static Object^ ClassNameVsCreateNewObjectLockObj = gcnew Object();
-
-        delegate Object^ CreateNewObjectDelegate();
-        static CreateNewObjectDelegate^ CreateNewObjectDelegateF(Type^ type);
-       
-        delegate Object^ CreateNewObjectArrayDelegate(int len);
-        static CreateNewObjectArrayDelegate^ CreateNewObjectArrayDelegateF(Type^ type);
-        
-        static array<Type^>^ singleIntTypeA = gcnew array<Type^>{ Int32::typeid };
-
-        static Type^ createNewObjectDelegateType = Type::GetType("Apache.Geode.Client.Serializable+CreateNewObjectDelegate");
-        static Type^ createNewObjectArrayDelegateType = Type::GetType("Apache.Geode.Client.Serializable+CreateNewObjectArrayDelegate");
-
-        static array<Type^>^ singleIntType = gcnew array<Type^>(1){Int32::typeid};
-
-        static Object^ CreateObject(String^ className, Type^ type);
-        static Object^ GetArrayObject(String^ className, int length, Cache^ cache);
-
-        static Dictionary<String^, CreateNewObjectDelegate^>^ ClassNameVsCreateNewObjectDelegate =
-          gcnew Dictionary<String^, CreateNewObjectDelegate^>();
-
-        static Dictionary<String^, CreateNewObjectArrayDelegate^>^ ClassNameVsCreateNewObjectArrayDelegate =
-          gcnew Dictionary<String^, CreateNewObjectArrayDelegate^>();
-
-        static Object^ CreateObjectEx(String^ className, Type^ type);
-        static Object^ GetArrayObjectEx(String^ className, int length, Cache^ cache);
 
         static Serializable()
         {

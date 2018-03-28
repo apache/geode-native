@@ -14,14 +14,14 @@
 # limitations under the License.
 
 cmake_minimum_required( VERSION 3.9 )
-project( Apache.Geode.Client.Tests2 CSharp )
+project( ${PRODUCT_DLL_NAME}.Tests2 CSharp )
 
 set(CMAKE_CSharp_FLAGS "/langversion:5")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINARY_DIR}/packages.config COPYONLY)
 
 add_library( ${PROJECT_NAME} SHARED
-    MultipleCacheTests.cs
+    Tests2.cs
     xunit.runner.json
 )
 

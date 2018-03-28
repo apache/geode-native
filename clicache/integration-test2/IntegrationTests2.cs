@@ -23,12 +23,12 @@ namespace Apache.Geode.Client.IntegrationTests
 {
 
   [Trait("Category", "Integration")]
-  public class MultipleCacheIntegrationTests
+  public class IntegrationTests2
   {
     Cache cacheOne;
     Cache cacheTwo;
 
-    public MultipleCacheIntegrationTests()
+    public IntegrationTests2()
     {
       var cacheFactory = new CacheFactory();
       cacheOne = cacheFactory.Create();

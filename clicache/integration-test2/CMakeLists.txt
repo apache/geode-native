@@ -14,7 +14,7 @@
 # limitations under the License.
 
 cmake_minimum_required( VERSION 3.9 )
-project( Apache.Geode.Client.IntegrationTests2 CSharp )
+project( ${PRODUCT_DLL_NAME}.IntegrationTests2 CSharp )
 
 set(CMAKE_CSharp_FLAGS "/langversion:5")
 
@@ -28,7 +28,7 @@ add_library( ${PROJECT_NAME} SHARED
     GeodeServerTests.cs
     CacheXml.cs
     CacheXmlTests.cs
-    MultipleCacheIntegrationTests.cs
+    IntegrationTests2.cs
     cache.xml
     geode.properties
     xunit.runner.json

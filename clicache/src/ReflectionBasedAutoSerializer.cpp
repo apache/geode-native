@@ -345,7 +345,7 @@ namespace Apache
 
         Object^ ReflectionBasedAutoSerializer::deserializeFields(String^ className, IPdxReader^ reader)
         {
-          Object^ object = CreateObject(className, reader->Cache->TypeRegistry->GetType());
+          Object^ object = this->CreateObject(className, reader->Cache);
 
           for each(FieldWrapper^ fi in GetFields(object->GetType()))
           {
@@ -357,9 +357,9 @@ namespace Apache
           return object;
         }
         
-        Object^ ReflectionBasedAutoSerializer::CreateObject(String^ className, Type^ type)
+        Object^ ReflectionBasedAutoSerializer::CreateObject(String^ className, Cache^ cache)
         {
-          return Serializable::CreateObject(className, type);
+          return cache->TypeRegistry->CreateObject(className);
         }
 
         bool ReflectionBasedAutoSerializer::IsPdxIdentityField(FieldInfo^ fi)
