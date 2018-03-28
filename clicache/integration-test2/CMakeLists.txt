@@ -14,9 +14,11 @@
 # limitations under the License.
 
 cmake_minimum_required( VERSION 3.9 )
-project( Apache.Geode.Client.MultipleCacheIntegrationTests CSharp )
+project( Apache.Geode.Client.IntegrationTests2 CSharp )
 
 set(CMAKE_CSharp_FLAGS "/langversion:5")
+
+string(REPLACE "\\" "\\\\" GEODE_ROOT_ESCAPED_PATH ${GEODE_ROOT})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINARY_DIR}/packages.config COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/GeodeServer.cs.in ${CMAKE_CURRENT_SOURCE_DIR}/GeodeServer.cs)
