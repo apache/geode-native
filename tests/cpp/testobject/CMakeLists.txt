@@ -86,6 +86,7 @@ target_link_libraries(${PROJECT_NAME}
     fwk
   PRIVATE
     ACE
+	_WarningsAsError
 )
 
 # For Visual Studio organization

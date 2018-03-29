@@ -31,6 +31,7 @@ target_link_libraries(${PROJECT_NAME}
     framework
   PRIVATE
     ACE
+	_WarningsAsError
 )
 
 # For Visual Studio organization

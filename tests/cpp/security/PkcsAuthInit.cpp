@@ -63,16 +63,15 @@ uint8_t* createSignature(EVP_PKEY* key, X509* cert,
   if (key == NULL || cert == NULL || inputBuffer == NULL) {
     return NULL;
   }
-  const ASN1_OBJECT *macobj;
-  const X509_ALGOR *algorithm = nullptr;
+  const ASN1_OBJECT* macobj;
+  const X509_ALGOR* algorithm = nullptr;
   X509_ALGOR_get0(&macobj, NULL, NULL, algorithm);
   const EVP_MD* signatureDigest = EVP_get_digestbyobj(macobj);
   EVP_MD_CTX* signatureCtx = EVP_MD_CTX_new();
   uint8_t* signatureData = new uint8_t[EVP_PKEY_size(key)];
-  bool result =
-      (EVP_SignInit_ex(signatureCtx, signatureDigest, NULL) &&
-       EVP_SignUpdate(signatureCtx, inputBuffer, inputBufferLen) &&
-       EVP_SignFinal(signatureCtx, signatureData, signatureLen, key));
+  bool result = (EVP_SignInit_ex(signatureCtx, signatureDigest, NULL) &&
+                 EVP_SignUpdate(signatureCtx, inputBuffer, inputBufferLen) &&
+                 EVP_SignFinal(signatureCtx, signatureData, signatureLen, key));
   EVP_MD_CTX_free(signatureCtx);
   if (result) {
     return signatureData;
@@ -185,8 +184,8 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
   unsigned int lengthEncryptedData = 0;
 
   uint8_t* signatureData = createSignature(
-      privateKey, cert, reinterpret_cast<const unsigned char*>(alias), strlen(alias),
-      &lengthEncryptedData);
+      privateKey, cert, reinterpret_cast<const unsigned char*>(alias),
+      static_cast<uint32_t>(strlen(alias)), &lengthEncryptedData);
   EVP_PKEY_free(privateKey);
   X509_free(cert);
   if (signatureData == NULL) {
@@ -202,8 +201,8 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
     LOGINFO(" Converting CREDS to STRING: %s",
             signatureValPtr->toString().c_str());
   } else {
-    signatureValPtr = CacheableBytes::create(
-        std::vector<int8_t>(signatureData, signatureData + lengthEncryptedData));
+    signatureValPtr = CacheableBytes::create(std::vector<int8_t>(
+        signatureData, signatureData + lengthEncryptedData));
     LOGINFO(" Converting CREDS to BYTES: %s",
             signatureValPtr->toString().c_str());
   }

@@ -46,6 +46,7 @@ target_link_libraries(${PROJECT_NAME}
     ssl
   PRIVATE
     ACE
+	_WarningsAsError
 )
 
 # For Visual Studio organization
