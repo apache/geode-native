@@ -6,7 +6,7 @@
 * [Doxygen 8.11](http://www.stack.nl/~dimitri/doxygen/download.html) *(for building source documentation)*
 * [Apache Geode](http://geode.apache.org/releases/) binaries installed or available to link against
 
-   Building requires access to an installation of Geode. By default the value of `GEODE_ROOT` or `GEODE` is used during CMake configuration if either of those shell variables is exported. To explicitly specify the location in which Geode is installed, add `-DGEODE_ROOT=/path/to/geode` to the _initial_ `cmake` execution command.
+   Building requires access to an installation of Geode. By default the value of `GEODE_HOME` is used during CMake configuration if either of those shell variables is exported. To explicitly specify the location in which Geode is installed, add `-DGEODE_HOME=/path/to/geode` to the _initial_ `cmake` execution command.
 
 ### Platform-Specific Prerequisites
 * [Mac OS X](#mac-os-x)
@@ -28,7 +28,7 @@ CMake uses a "generator" to produce configuration files for use by a variety of 
 #### CLion / Eclipse / Other
 The recommended generator for most unix platforms is 'Makefiles' (default):
 
-	$ cmake .. 
+	$ cmake ..
 
 #### Xcode
 The recommended generator for Xcode is `Xcode`:
