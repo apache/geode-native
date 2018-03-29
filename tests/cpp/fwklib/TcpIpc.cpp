@@ -33,7 +33,7 @@
 using namespace apache::geode::client;
 using namespace apache::geode::client::testframework;
 
-void TcpIpc::clearNagle(int32_t sock) {
+void TcpIpc::clearNagle(ACE_HANDLE sock) {
   int32_t val = 1;
 #ifdef WIN32
   const char *param = (const char *)&val;
@@ -42,12 +42,12 @@ void TcpIpc::clearNagle(int32_t sock) {
 #endif
   int32_t plen = sizeof(param);
 
-  if (0 != setsockopt(sock, IPPROTO_TCP, 1, param, plen)) {
+  if (0 != ACE_OS::setsockopt(sock, IPPROTO_TCP, 1, param, plen)) {
     FWKSEVERE("Failed to set NAGLE on socket.  Errno: " << errno);
   }
 }
 
-int32_t TcpIpc::getSize(int32_t sock, int32_t flag) {
+int32_t TcpIpc::getSize(ACE_HANDLE sock, int32_t flag) {
   int32_t val = 0;
 #ifdef _WIN32
   char *param = (char *)&val;
@@ -56,7 +56,7 @@ int32_t TcpIpc::getSize(int32_t sock, int32_t flag) {
 #endif
   socklen_t plen = sizeof(val);
 
-  if (0 != getsockopt(sock, SOL_SOCKET, flag, param, &plen)) {
+  if (0 != ACE_OS::getsockopt(sock, SOL_SOCKET, flag, param, &plen)) {
     FWKSEVERE("Failed to get buff size for flag "
               << flag << " on socket.  Errno: " << errno);
   }
@@ -66,7 +66,7 @@ int32_t TcpIpc::getSize(int32_t sock, int32_t flag) {
   return val;
 }
 
-int32_t TcpIpc::setSize(int32_t sock, int32_t flag, int32_t size) {
+int32_t TcpIpc::setSize(ACE_HANDLE sock, int32_t flag, int32_t size) {
   int32_t val = 0;
   if (size <= 0) return 0;
 
@@ -88,8 +88,8 @@ int32_t TcpIpc::setSize(int32_t sock, int32_t flag, int32_t size) {
   while (lastRed != red) {
     lastRed = red;
     val += inc;
-    setsockopt(sock, SOL_SOCKET, flag, cparam, clen);
-    if (0 != getsockopt(sock, SOL_SOCKET, flag, param, &plen)) {
+    ACE_OS::setsockopt(sock, SOL_SOCKET, flag, cparam, clen);
+    if (0 != ACE_OS::getsockopt(sock, SOL_SOCKET, flag, param, &plen)) {
       FWKSEVERE("Failed to get buff size for flag "
                 << flag << " on socket.  Errno: " << errno);
     }
@@ -102,7 +102,7 @@ int32_t TcpIpc::setSize(int32_t sock, int32_t flag, int32_t size) {
 }
 
 void TcpIpc::init(int32_t sockBufferSize) {
-  int32_t sock = (int32_t)socket(AF_INET, SOCK_STREAM, 0);
+  auto sock = ACE_OS::socket(AF_INET, SOCK_STREAM, 0);
   if (sock < 0) {
     FWKSEVERE("Failed to create socket.  Errno: " << errno);
   }
@@ -116,7 +116,7 @@ void TcpIpc::init(int32_t sockBufferSize) {
     int32_t size = getSize(sock, SO_SNDBUF);
     size = getSize(sock, SO_RCVBUF);
   }
-  m_io = new ACE_SOCK_Stream((ACE_HANDLE)sock);
+  m_io = new ACE_SOCK_Stream(sock);
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 }
 

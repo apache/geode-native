@@ -37,9 +37,9 @@ class TcpIpc {
   std::string m_ipaddr;
 
   void init(int32_t sockBufferSize = 0);
-  void clearNagle(int32_t sock);
-  int32_t setSize(int32_t sock, int32_t flag, int32_t size);
-  int32_t getSize(int32_t sock, int32_t flag);
+  void clearNagle(ACE_HANDLE sock);
+  int32_t setSize(ACE_HANDLE sock, int32_t flag, int32_t size);
+  int32_t getSize(ACE_HANDLE sock, int32_t flag);
 
  public:
   TcpIpc(std::string& ipaddr, int32_t sockBufferSize = 0) : m_ipaddr(ipaddr) {
