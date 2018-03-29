@@ -184,7 +184,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
         char failmsg[100] = {0};
         ACE_OS::sprintf(
             failmsg,
-            "FAIL: Query # %d expected result size is %d, actual is %d", i,
+            "FAIL: Query # %d expected result size is %d, actual is %zd", i,
             regionQueryRowCounts[i], results->size());
         doAnyErrorOccured = true;
         LOG(failmsg);

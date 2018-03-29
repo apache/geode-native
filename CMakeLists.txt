@@ -185,6 +185,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
   target_link_libraries(c++11 INTERFACE -std=c++11 stdc++ gcc_s CrunG3 m c)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  target_compile_options(_WarningsAsError INTERFACE -Werror)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(BUILD_CLI 1)
 

@@ -159,7 +159,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       LOG("EXECUTE 1 STOP");
 
       char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %d", results->size());
+      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
 
       LOG("Didnt get expected timeout exception for first execute");
@@ -202,7 +202,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       LOG("EXECUTE 2 STOP");
 
       char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %d", results->size());
+      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
     } catch (Exception excp) {
       std::string failmsg = "";
@@ -241,7 +241,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       LOG("EXECUTE 3 STOP");
 
       char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %d", results->size());
+      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
 
       LOG("Didnt get expected timeout exception for third execute");
@@ -284,7 +284,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
       LOG("EXECUTE 4 STOP");
 
       char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %d", results->size());
+      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
     } catch (Exception excp) {
       std::string failmsg = "";
@@ -332,7 +332,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
       LOG("EXECUTE Five STOP");
 
       char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %d", results->size());
+      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
 
       LOG("Didnt get expected timeout exception for fifth execute");
@@ -385,7 +385,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       LOG("EXECUTE 6 STOP");
 
       char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %d", results->size());
+      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
     } catch (Exception excp) {
       std::string failmsg = "";
@@ -424,7 +424,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyNegativeValueTimeout)
       LOG("Task::verifyNegativeValueTimeout - EXECUTE 1 STOP");
 
       char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %d", results->size());
+      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
 
       LOG("Didnt get expected timeout exception for first execute");
@@ -469,7 +469,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyLargeValueTimeout)
       LOG("Task:: verifyLargeValueTimeout - EXECUTE 1 STOP");
 
       char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %d", results->size());
+      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
 
       LOG("Didnt get expected timeout exception for first execute");
