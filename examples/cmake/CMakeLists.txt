@@ -1,0 +1,3 @@
+string(REPLACE " " "" PRODUCT_NAME_NOSPACE ${PRODUCT_NAME})
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/FindGeodeNative.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/Find${PRODUCT_NAME_NOSPACE}.cmake)

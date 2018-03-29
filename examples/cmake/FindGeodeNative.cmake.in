@@ -70,7 +70,7 @@ else()
 endif()
 
 # Begin - component "cpp"
-set(_GEODE_NATIVE_CPP_NAMES apache-geode)
+set(_GEODE_NATIVE_CPP_NAMES @PRODUCT_LIB_NAME@)
 
 find_library(GeodeNative_CPP_LIBRARY
     NAMES ${_GEODE_NATIVE_CPP_NAMES}
@@ -88,7 +88,7 @@ find_path(GeodeNative_CPP_INCLUDE_DIR NAMES geode/CacheFactory.hpp
 # End - component "cpp"
 
 # Begin - component "dotnet"
-set(_GEODE_NATIVE_DOTNET_NAMES Apache.Geode.dll)
+set(_GEODE_NATIVE_DOTNET_NAMES @PRODUCT_DLL_NAME@.dll)
 
 find_file(GeodeNative_DOTNET_LIBRARY
   NAMES ${_GEODE_NATIVE_DOTNET_NAMES}
