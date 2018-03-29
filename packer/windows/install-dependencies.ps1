@@ -8,3 +8,4 @@ choco install netfx-4.5.2-devpack --allowEmptyChecksums -confirm
 choco install nsis -confirm
 choco install patch -confirm
 choco install gnuwin32-coreutils.portable -confirm
+choco install nuget.commandline -confirm
