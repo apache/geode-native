@@ -68,7 +68,7 @@ namespace Apache.Geode.Plugins.SQLite
           Path.Combine(m_regionDir, m_tableName + ".db"), pageSize, maxPageCount);
         SqliteHelper.InitalizeSqLite(m_tableName, m_connectionString);
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         throw;
       }
@@ -81,7 +81,7 @@ namespace Apache.Geode.Plugins.SQLite
       {
         return (TValue)SqliteHelper.GetValue(key, m_tableName, m_connectionString);
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         throw;
       }
@@ -93,7 +93,7 @@ namespace Apache.Geode.Plugins.SQLite
       {
         SqliteHelper.InsertKeyValue(key, value, m_tableName, m_connectionString);
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         throw;
       }
@@ -115,7 +115,7 @@ namespace Apache.Geode.Plugins.SQLite
       {
         SqliteHelper.RemoveKey(key, m_tableName, m_connectionString);
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         throw;
       }
@@ -129,7 +129,7 @@ namespace Apache.Geode.Plugins.SQLite
         Directory.Delete(m_regionDir, true);
         Directory.Delete(m_persistenceDir);
       }
-      catch (Exception ex)
+      catch (Exception)
       {
       }
     }

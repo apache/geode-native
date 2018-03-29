@@ -179,7 +179,6 @@ namespace Apache.Geode.Client.UnitTests
         args1.Add(routingObj[i]);
       }
 
-      Boolean getResult = true;
       //test data independant function execution with result onServer
       Pool/*<TKey, TValue>*/ pool = CacheHelper.DCache.GetPoolManager().Find(poolName);
 
