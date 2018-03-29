@@ -37,8 +37,6 @@
 #include "PoolManager.hpp"
 #include "TypeRegistry.hpp"
 
-
-
 #pragma warning(disable:4091)
 
 using namespace System;
@@ -56,7 +54,7 @@ namespace Apache
       {
         m_nativeptr = gcnew native_shared_ptr<native::Cache>(nativeptr);
         m_pdxTypeRegistry = gcnew Apache::Geode::Client::Internal::PdxTypeRegistry(this);
-        m_typeRegistry = gcnew TypeRegistry(this);
+        m_typeRegistry = gcnew Apache::Geode::Client::TypeRegistry(this);
       }
 
       String^ Cache::Name::get( )
