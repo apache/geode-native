@@ -39,11 +39,12 @@ void gf_destroy_SslImpl(void *impl) {
   delete theLib;
 }
 
-extern "C" static int pem_passwd_cb(char *buf, int size, int rwflag,
-                                    void *passwd) {
+extern "C" {
+static int pem_passwd_cb(char *buf, int size, int rwflag, void *passwd) {
   strncpy(buf, (char *)passwd, size);
   buf[size - 1] = '\0';
   return static_cast<int>(strlen(buf));
+}
 }
 
 SSLImpl::SSLImpl(ACE_HANDLE sock, const char *pubkeyfile,
