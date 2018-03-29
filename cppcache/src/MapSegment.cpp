@@ -710,7 +710,7 @@ GfErrType MapSegment::putForTrackedEntry(
     }
     if (m_concurrencyChecksEnabled) {
       // erase if the entry is in tombstone
-      m_tombstoneList->eraseEntryFromTombstoneList(key, m_region);
+      m_tombstoneList->eraseEntryFromTombstoneList(key, true);
       entryImpl->getVersionStamp().setVersions(versionStamp);
     }
     (void)incrementUpdateCount(key, entry);

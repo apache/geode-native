@@ -49,7 +49,7 @@ namespace client {
  *
  */
 class _GEODE_EXPORT InternalCacheTransactionManager2PC
-    : public virtual apache::geode::client::CacheTransactionManager {
+    : public virtual CacheTransactionManager {
  public:
   /**
    * Performs prepare during 2 phase commit completion.

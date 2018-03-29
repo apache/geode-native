@@ -33,8 +33,7 @@ namespace client {
 enum status { STATUS_COMMITTED = 3, STATUS_ROLLEDBACK = 4 };
 enum commitOp { BEFORE_COMMIT, AFTER_COMMIT };
 
-class CacheTransactionManagerImpl
-    : public virtual apache::geode::client::CacheTransactionManager {
+class CacheTransactionManagerImpl : public virtual CacheTransactionManager {
  public:
   CacheTransactionManagerImpl(CacheImpl* cache);
   virtual ~CacheTransactionManagerImpl();
@@ -45,11 +44,9 @@ class CacheTransactionManagerImpl
   virtual bool exists() override;
   virtual TransactionId& suspend() override;
   virtual void resume(TransactionId& transactionId) override;
-  virtual bool isSuspended(
-      TransactionId& transactionId) override;
+  virtual bool isSuspended(TransactionId& transactionId) override;
   virtual bool tryResume(TransactionId& transactionId) override;
-  bool tryResume(TransactionId& transactionId,
-                 bool cancelExpiryTask);
+  bool tryResume(TransactionId& transactionId, bool cancelExpiryTask);
   virtual bool tryResume(TransactionId& transactionId,
                          std::chrono::milliseconds waitTime) override;
   virtual bool exists(TransactionId& transactionId) override;

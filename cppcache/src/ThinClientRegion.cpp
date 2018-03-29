@@ -3002,7 +3002,7 @@ void ThinClientRegion::executeFunction(
     TcrMessageReply reply(true, m_tcrdm);
     // need to check
     ChunkedFunctionExecutionResponse* resultCollector(
-        new ChunkedFunctionExecutionResponse(reply, (getResult & 2), rc));
+        new ChunkedFunctionExecutionResponse(reply, (getResult & 2) == 2, rc));
     reply.setChunkedResultHandler(resultCollector);
     reply.setTimeout(timeout);
     GfErrType err = GF_NOERR;
@@ -3096,7 +3096,7 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
     TcrMessageReply reply(true, m_tcrdm);
     // need to check
     ChunkedFunctionExecutionResponse* resultCollector(
-        new ChunkedFunctionExecutionResponse(reply, (getResult & 2), rc));
+        new ChunkedFunctionExecutionResponse(reply, (getResult & 2) == 2, rc));
     reply.setChunkedResultHandler(resultCollector);
     reply.setTimeout(timeout);
 

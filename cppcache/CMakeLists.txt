@@ -85,14 +85,25 @@ target_link_libraries(_apache-geode INTERFACE
   boost
   libxml2
 )
+
 target_compile_definitions(_apache-geode INTERFACE
   # TODO replace BUILD_CPPCACHE with built-in _DLL
   $<BUILD_INTERFACE:BUILD_CPPCACHE>
 )
+
+if (USE_PCH)
+  # TODO figure out why PCH causes these warnings
+  # Ignore warnings resulting from using PCH
+  target_compile_options(_apache-geode INTERFACE
+    /wd4251 /wd4103 /wd4275 /wd4250
+  )
+endif()
+
 target_include_directories(_apache-geode INTERFACE
   $<BUILD_INTERFACE:${COMMON_INCLUDE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
+
 add_dependencies(_apache-geode version-header)
 
 install(DIRECTORY ${COMMON_INCLUDE_DIR} DESTINATION .)

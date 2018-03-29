@@ -500,8 +500,8 @@ class FunctionExecution : public PooledWork<GfErrType> {
                                       m_timeout);
     TcrMessageReply reply(true, m_poolDM);
     ChunkedFunctionExecutionResponse* resultProcessor(
-        new ChunkedFunctionExecutionResponse(reply, (m_getResult & 2), *m_rc,
-                                             m_resultCollectorLock));
+        new ChunkedFunctionExecutionResponse(reply, (m_getResult & 2) == 2,
+                                             *m_rc, m_resultCollectorLock));
     reply.setChunkedResultHandler(resultProcessor);
     reply.setTimeout(m_timeout);
     reply.setDM(m_poolDM);
@@ -593,7 +593,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
         m_allBuckets, timeout, m_poolDM);
     m_reply = new TcrMessageReply(true, m_poolDM);
     m_resultCollector = new ChunkedFunctionExecutionResponse(
-        *m_reply, (m_getResult & 2), m_rc, m_resultCollectorLock);
+        *m_reply, (m_getResult & 2) == 2, m_rc, m_resultCollectorLock);
     m_reply->setChunkedResultHandler(m_resultCollector);
     m_reply->setTimeout(m_timeout);
     m_reply->setDM(m_poolDM);
