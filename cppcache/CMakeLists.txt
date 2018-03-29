@@ -70,10 +70,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
     demangle
     kstat
   )
-endif()
-if (${WIN32})
+elseif (WIN32)
   target_link_libraries(_apache-geode INTERFACE
     Dbghelp
+  )
+  target_compile_definitions(_apache-geode INTERFACE
+    # Required for Boost.WinAPI
+    _WIN32_WINNT=0x06020000
   )
 endif()
 
@@ -98,3 +101,4 @@ add_subdirectory(shared)
 add_subdirectory(static)
 add_subdirectory(test)
 add_subdirectory(integration-test)
+add_subdirectory(integration-test-2)

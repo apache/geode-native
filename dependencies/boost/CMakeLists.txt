@@ -15,8 +15,8 @@
 
 project( boost LANGUAGES NONE )
 
-set( ${PROJECT_NAME}_VERSION 1.65.1 )
-set( ${PROJECT_NAME}_SHA265 a13de2c8fbad635e6ba9c8f8714a0e6b4264b60a29b964b940a22554705b6b60 )
+set( ${PROJECT_NAME}_VERSION 1.66.0 )
+set( ${PROJECT_NAME}_SHA265 bd0df411efd9a585e5a2212275f8762079fed8842264954675a4fddc46cfcf60 )
 string(REPLACE "." "_" _VERSION_UNDERSCORE ${${PROJECT_NAME}_VERSION})
 set( ${PROJECT_NAME}_URL "https://dl.bintray.com/boostorg/release/${${PROJECT_NAME}_VERSION}/source/boost_${_VERSION_UNDERSCORE}.tar.gz" )
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
@@ -26,7 +26,17 @@ ProcessorCount(_NPROCS)
 
 include(ExternalProject)
 
-set( _B2_FLAGS -d0 --prefix=<INSTALL_DIR> --with-system address-model=${BUILD_BITS} link=static )
+set(_B2_FLAGS
+  -d0
+  --prefix=<INSTALL_DIR>
+  --with-system
+  --with-log
+  --layout=system
+  address-model=${BUILD_BITS}
+  link=static
+  threading=multi
+  variant=$<LOWER_CASE:$<CONFIG>>
+)
 
 if (${_NPROCS})
   set ( _B2_FLAGS ${_B2_FLAGS} -j${_NPROCS} )
@@ -43,6 +53,9 @@ endif()
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   set ( _BOOTSTRAP_COMMAND ${_BOOTSTRAP_COMMAND} --with-toolset=sun )
+  set ( _B2_FLAGS ${_B2_FLAGS} define=BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES)
+elseif ("Windows" STREQUAL ${CMAKE_SYSTEM_NAME})
+  set ( CMAKE_STATIC_LIBRARY_PREFIX lib )
 endif()
 
 ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
@@ -83,14 +96,49 @@ if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   )
 endif()
 
+
+function(ADD_BOOST_LIBRARY)
+  set(options)
+  set(oneValueArgs)
+  set(multiValueArgs LIBRARIES DEPENDENCIES)
+  cmake_parse_arguments(PARSE_ARGV 1 args "${options}" "${oneValueArgs}" "${multiValueArgs}")
+
+  set(args_NAME ${ARGV0})
+
+  if (NOT DEFINED args_LIBRARIES OR args_LIBRARIES STREQUAL "")
+    set(args_LIBRARIES ${args_NAME})
+  endif()
+
+  set(linkLibraries)
+  foreach(library ${args_LIBRARIES})
+    list(APPEND linkLibraries "${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_${args_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  endforeach()
+
+  add_library(boost_${args_NAME} INTERFACE)
+  target_link_libraries(boost_${args_NAME} INTERFACE
+    ${linkLibraries}
+    ${args_DEPENDENCIES}
+  )
+  add_library(Boost::${args_NAME} ALIAS boost_${args_NAME})
+endfunction()
+
+
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE
   $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/include>
   $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/src>
 )
 target_compile_definitions(${PROJECT_NAME} INTERFACE
+  BOOST_ALL_NO_LIB
 )
 target_link_libraries(${PROJECT_NAME} INTERFACE
 )
-
+add_library(Boost::boost ALIAS boost)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXTERN})
+
+add_boost_library(system DEPENDENCIES Boost::boost)
+add_boost_library(atomic DEPENDENCIES Boost::boost)
+add_boost_library(thread DEPENDENCIES Boost::atomic Boost::boost)
+add_boost_library(filesystem DEPENDENCIES Boost::boost)
+add_boost_library(log DEPENDENCIES Boost::thread Boost::filesystem Boost::boost)
+add_boost_library(log_setup DEPENDENCIES Boost::log)
