@@ -364,7 +364,7 @@ class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
 
   friend class CacheFactory;
   friend class Cache;
-  friend class DistributedSystem;
+  friend class DistributedSystemImpl;
 };
 }  // namespace client
 }  // namespace geode

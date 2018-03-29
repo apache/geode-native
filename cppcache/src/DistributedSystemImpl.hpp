@@ -31,6 +31,7 @@
 #include "ace/OS.h"
 #include <geode/DistributedSystem.hpp>
 #include "DiffieHellman.hpp"
+#include "statistics/StatisticsManager.hpp"
 #include <string>
 #include <map>
 
@@ -85,7 +86,17 @@ class _GEODE_EXPORT DistributedSystemImpl {
   /** Retrieve the MemberId used to create this Cache. */
   virtual void disconnect();
 
-  virtual void connect();
+  virtual void connect(Cache* cache);
+
+  void logSystemInformation() const;
+
+  virtual const std::string& getName() const;
+
+  statistics::StatisticsManager* getStatisticsManager() const {
+    return m_statisticsManager.get();
+  }
+
+  SystemProperties& getSystemProperties() const;
 
   std::string m_name;
   DistributedSystem* m_implementee;
@@ -94,7 +105,8 @@ class _GEODE_EXPORT DistributedSystemImpl {
   /**
    * @brief constructors
    */
-  DistributedSystemImpl(std::string name, DistributedSystem* implementee);
+  DistributedSystemImpl(std::string name, DistributedSystem* implementee,
+                        std::unique_ptr<SystemProperties> sysProps);
 
   // acquire/release locks
 
@@ -109,6 +121,9 @@ class _GEODE_EXPORT DistributedSystemImpl {
   static ACE_Recursive_Thread_Mutex m_cliCallbackLock;
   static volatile bool m_isCliCallbackSet;
   static std::map<int, CliCallbackMethod> m_cliCallbackMap;
+  std::unique_ptr<statistics::StatisticsManager> m_statisticsManager;
+  std::unique_ptr<SystemProperties> m_sysProps;
+  bool m_connected;
 };
 }  // namespace client
 }  // namespace geode

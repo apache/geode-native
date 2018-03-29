@@ -56,6 +56,8 @@ class _GEODE_EXPORT DistributedSystem {
    * @brief public methods
    */
  public:
+  DistributedSystem() = delete;
+  ~DistributedSystem() noexcept;
   DistributedSystem(const DistributedSystem&) = delete;
   DistributedSystem& operator=(const DistributedSystem&) = delete;
   DistributedSystem(DistributedSystem&&);
@@ -93,16 +95,9 @@ class _GEODE_EXPORT DistributedSystem {
   /** Returns the name that identifies the distributed system instance
    * @return  name
    */
-  virtual const std::string& getName() const;
+  const std::string& getName() const;
 
-  statistics::StatisticsManager* getStatisticsManager() const {
-    return m_statisticsManager.get();
-  }
-
-  /**
-   * @brief destructor
-   */
-  virtual ~DistributedSystem() = default;
+  statistics::StatisticsManager* getStatisticsManager() const;
 
  protected:
   /**
@@ -112,16 +107,7 @@ class _GEODE_EXPORT DistributedSystem {
                     std::unique_ptr<SystemProperties> sysProps);
 
  private:
-  std::string m_name;
-  bool m_connected;
-  std::shared_ptr<statistics::StatisticsManager> m_statisticsManager;
-  std::shared_ptr<SystemProperties> m_sysProps;
-
- public:
-  DistributedSystemImpl* m_impl;
-
- private:
-  void logSystemInformation() const;
+  std::unique_ptr<DistributedSystemImpl> m_impl;
 
   friend class CacheRegionHelper;
   friend class DistributedSystemImpl;
