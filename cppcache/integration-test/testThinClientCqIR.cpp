@@ -97,7 +97,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1Regions)
     createRegionForCQ(regionNamesCq[0], USE_ACK, true);
     createRegionForCQ(regionNamesCq[2], USE_ACK, true);
     auto regptr = getHelper()->getRegion(regionNamesCq[0]);
-    auto subregPtr = regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
+    auto subregPtr =
+        regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
     LOG("CreateClient1Regions complete.");
   }
@@ -108,7 +109,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2Regions)
     initClientCq(true);
     createRegionForCQ(regionNamesCq[0], USE_ACK, true);
     auto regptr = getHelper()->getRegion(regionNamesCq[0]);
-    auto subregPtr = regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
+    auto subregPtr =
+        regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
     LOG("CreateClient2Regions complete.");
   }
@@ -181,8 +183,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
 
       auto iter = results->getIterator();
       char buf[100];
-      int count = results->size();
-      sprintf(buf, "results size=%d", count);
+      auto count = results->size();
+      sprintf(buf, "results size=%zd", count);
       LOG(buf);
       ASSERT(count > 0, "count should be > 0");
       while (iter.hasNext()) {
@@ -216,7 +218,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
           printf("   query pulled bad object\n");
         }
       }
-      sprintf(buf, "results last count=%d", count);
+      sprintf(buf, "results last count=%zd", count);
       LOG(buf);
 
       qry = qs->newCq("MyCq2", "select * from /Portfolios2", cqAttr);
@@ -228,7 +230,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       auto iter2 = results->getIterator();
 
       count = results->size();
-      sprintf(buf, "results2 size=%d", count);
+      sprintf(buf, "results2 size=%zd", count);
       LOG(buf);
       ASSERT(count > 0, "count should be > 0");
       while (iter2.hasNext()) {
@@ -262,7 +264,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
           printf("   query pulled bad object\n");
         }
       }
-      sprintf(buf, "results last count=%d", count);
+      sprintf(buf, "results last count=%zd", count);
       LOG(buf);
 
       {

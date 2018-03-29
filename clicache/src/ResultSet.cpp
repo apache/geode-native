@@ -49,7 +49,7 @@ namespace Apache
       {
         try
         {
-          return m_nativeptr->get()->size( );
+          return static_cast<int>(m_nativeptr->get()->size( ));
         }
         finally
         {

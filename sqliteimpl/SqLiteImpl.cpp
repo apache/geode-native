@@ -111,12 +111,14 @@ void SqLiteImpl::write(const std::shared_ptr<CacheableKey>& key,
 
   keyDataBuffer->writeObject(key);
   valueDataBuffer->writeObject(value);
-  void* keyData = const_cast<uint8_t*>(keyDataBuffer->getBuffer(&keyBufferSize));
+  void* keyData =
+      const_cast<uint8_t*>(keyDataBuffer->getBuffer(&keyBufferSize));
   void* valueData =
       const_cast<uint8_t*>(valueDataBuffer->getBuffer(&valueBufferSize));
 
-  if (m_sqliteHelper->insertKeyValue(keyData, keyBufferSize, valueData,
-                                     valueBufferSize) != 0) {
+  if (m_sqliteHelper->insertKeyValue(keyData, static_cast<int>(keyBufferSize),
+                                     valueData,
+                                     static_cast<int>(valueBufferSize)) != 0) {
     throw IllegalStateException("Failed to write key value in SQLITE.");
   }
 }
@@ -128,12 +130,13 @@ std::shared_ptr<Cacheable> SqLiteImpl::read(
   auto keyDataBuffer = m_regionPtr->getCache().createDataOutput();
   size_t keyBufferSize;
   keyDataBuffer->writeObject(key);
-  void* keyData = const_cast<uint8_t*>(keyDataBuffer->getBuffer(&keyBufferSize));
+  void* keyData =
+      const_cast<uint8_t*>(keyDataBuffer->getBuffer(&keyBufferSize));
   void* valueData;
-  uint32_t valueBufferSize;
+  int valueBufferSize;
 
-  if (m_sqliteHelper->getValue(keyData, keyBufferSize, valueData,
-                               valueBufferSize) != 0) {
+  if (m_sqliteHelper->getValue(keyData, static_cast<int>(keyBufferSize),
+                               valueData, valueBufferSize) != 0) {
     throw IllegalStateException("Failed to read the value from SQLITE.");
   }
 
@@ -166,13 +169,16 @@ void SqLiteImpl::destroyRegion() {
 #endif
 }
 
-void SqLiteImpl::destroy(const std::shared_ptr<CacheableKey>& key, void*& dbHandle) {
+void SqLiteImpl::destroy(const std::shared_ptr<CacheableKey>& key,
+                         void*& dbHandle) {
   // Serialize key and value.
   auto keyDataBuffer = m_regionPtr->getCache().createDataOutput();
   size_t keyBufferSize;
   keyDataBuffer->writeObject(key);
-  void* keyData = const_cast<uint8_t*>(keyDataBuffer->getBuffer(&keyBufferSize));
-  if (m_sqliteHelper->removeKey(keyData, keyBufferSize) != 0) {
+  void* keyData =
+      const_cast<uint8_t*>(keyDataBuffer->getBuffer(&keyBufferSize));
+  if (m_sqliteHelper->removeKey(keyData, static_cast<int>(keyBufferSize)) !=
+      0) {
     throw IllegalStateException("Failed to destroy the key from SQLITE.");
   }
 }

@@ -1040,6 +1040,15 @@ namespace PdxVersionTests
       throw new IllegalStateException("In TestDiffTypePdxS.ToData serializer class not found " + classname);
     }
 
+    public override int GetHashCode()
+    {
+      var hashCode = -414132507;
+      hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(_id);
+      hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(_name);
+      hashCode = hashCode * -1521134295 + _count.GetHashCode();
+      return hashCode;
+    }
+
     #endregion
 
 
@@ -2038,8 +2047,88 @@ static Random _random = new Random();
         {
             return "PdxVersioned 2 : " + m_string;
         }
-        #endregion
+
+    public override int GetHashCode()
+    {
+      var hashCode = 1454868752;
+      hashCode = hashCode * -1521134295 + m_char.GetHashCode();
+      hashCode = hashCode * -1521134295 + m_bool.GetHashCode();
+      hashCode = hashCode * -1521134295 + m_byte.GetHashCode();
+      hashCode = hashCode * -1521134295 + m_sbyte.GetHashCode();
+      hashCode = hashCode * -1521134295 + m_int16.GetHashCode();
+      hashCode = hashCode * -1521134295 + m_uint16.GetHashCode();
+      hashCode = hashCode * -1521134295 + m_int32.GetHashCode();
+      hashCode = hashCode * -1521134295 + m_uint32.GetHashCode();
+      hashCode = hashCode * -1521134295 + m_long.GetHashCode();
+      hashCode = hashCode * -1521134295 + m_ulong.GetHashCode();
+      hashCode = hashCode * -1521134295 + m_float.GetHashCode();
+      hashCode = hashCode * -1521134295 + m_double.GetHashCode();
+      hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(m_string);
+      hashCode = hashCode * -1521134295 + EqualityComparer<bool[]>.Default.GetHashCode(m_boolArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<byte[]>.Default.GetHashCode(m_byteArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<byte[]>.Default.GetHashCode(m_sbyteArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<char[]>.Default.GetHashCode(m_charArray);
+      hashCode = hashCode * -1521134295 + m_dateTime.GetHashCode();
+      hashCode = hashCode * -1521134295 + EqualityComparer<short[]>.Default.GetHashCode(m_int16Array);
+      hashCode = hashCode * -1521134295 + EqualityComparer<short[]>.Default.GetHashCode(m_uint16Array);
+      hashCode = hashCode * -1521134295 + EqualityComparer<int[]>.Default.GetHashCode(m_int32Array);
+      hashCode = hashCode * -1521134295 + EqualityComparer<int[]>.Default.GetHashCode(m_uint32Array);
+      hashCode = hashCode * -1521134295 + EqualityComparer<long[]>.Default.GetHashCode(m_longArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<long[]>.Default.GetHashCode(m_ulongArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<float[]>.Default.GetHashCode(m_floatArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<double[]>.Default.GetHashCode(m_doubleArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<byte[][]>.Default.GetHashCode(m_byteByteArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<string[]>.Default.GetHashCode(m_stringArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<List<object>>.Default.GetHashCode(m_arraylist);
+      hashCode = hashCode * -1521134295 + EqualityComparer<IDictionary<object, object>>.Default.GetHashCode(m_map);
+      hashCode = hashCode * -1521134295 + EqualityComparer<Hashtable>.Default.GetHashCode(m_hashtable);
+      hashCode = hashCode * -1521134295 + EqualityComparer<ArrayList>.Default.GetHashCode(m_vector);
+      hashCode = hashCode * -1521134295 + EqualityComparer<byte[]>.Default.GetHashCode(m_byte252);
+      hashCode = hashCode * -1521134295 + EqualityComparer<byte[]>.Default.GetHashCode(m_byte253);
+      hashCode = hashCode * -1521134295 + EqualityComparer<byte[]>.Default.GetHashCode(m_byte65535);
+      hashCode = hashCode * -1521134295 + EqualityComparer<byte[]>.Default.GetHashCode(m_byte65536);
+      hashCode = hashCode * -1521134295 + m_pdxEnum.GetHashCode();
+      hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(PString);
+      hashCode = hashCode * -1521134295 + Char.GetHashCode();
+      hashCode = hashCode * -1521134295 + Bool.GetHashCode();
+      hashCode = hashCode * -1521134295 + Byte.GetHashCode();
+      hashCode = hashCode * -1521134295 + Sbyte.GetHashCode();
+      hashCode = hashCode * -1521134295 + Int16.GetHashCode();
+      hashCode = hashCode * -1521134295 + Uint16.GetHashCode();
+      hashCode = hashCode * -1521134295 + Int32.GetHashCode();
+      hashCode = hashCode * -1521134295 + Uint32.GetHashCode();
+      hashCode = hashCode * -1521134295 + Long.GetHashCode();
+      hashCode = hashCode * -1521134295 + Ulong.GetHashCode();
+      hashCode = hashCode * -1521134295 + Float.GetHashCode();
+      hashCode = hashCode * -1521134295 + Double.GetHashCode();
+      hashCode = hashCode * -1521134295 + EqualityComparer<bool[]>.Default.GetHashCode(BoolArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<byte[]>.Default.GetHashCode(ByteArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<byte[]>.Default.GetHashCode(SbyteArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<char[]>.Default.GetHashCode(CharArray);
+      hashCode = hashCode * -1521134295 + DateTime.GetHashCode();
+      hashCode = hashCode * -1521134295 + EqualityComparer<short[]>.Default.GetHashCode(Int16Array);
+      hashCode = hashCode * -1521134295 + EqualityComparer<short[]>.Default.GetHashCode(Uint16Array);
+      hashCode = hashCode * -1521134295 + EqualityComparer<int[]>.Default.GetHashCode(Int32Array);
+      hashCode = hashCode * -1521134295 + EqualityComparer<int[]>.Default.GetHashCode(Uint32Array);
+      hashCode = hashCode * -1521134295 + EqualityComparer<long[]>.Default.GetHashCode(LongArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<long[]>.Default.GetHashCode(UlongArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<float[]>.Default.GetHashCode(FloatArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<double[]>.Default.GetHashCode(DoubleArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<byte[][]>.Default.GetHashCode(ByteByteArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<string[]>.Default.GetHashCode(StringArray);
+      hashCode = hashCode * -1521134295 + EqualityComparer<List<object>>.Default.GetHashCode(Arraylist);
+      hashCode = hashCode * -1521134295 + EqualityComparer<IDictionary<object, object>>.Default.GetHashCode(Map);
+      hashCode = hashCode * -1521134295 + EqualityComparer<Hashtable>.Default.GetHashCode(Hashtable);
+      hashCode = hashCode * -1521134295 + EqualityComparer<ArrayList>.Default.GetHashCode(Vector);
+      hashCode = hashCode * -1521134295 + EqualityComparer<byte[]>.Default.GetHashCode(Byte252);
+      hashCode = hashCode * -1521134295 + EqualityComparer<byte[]>.Default.GetHashCode(Byte253);
+      hashCode = hashCode * -1521134295 + EqualityComparer<byte[]>.Default.GetHashCode(Byte65535);
+      hashCode = hashCode * -1521134295 + EqualityComparer<byte[]>.Default.GetHashCode(Byte65536);
+      hashCode = hashCode * -1521134295 + PdxEnum.GetHashCode();
+      return hashCode;
     }
+    #endregion
+  }
 
     public class InnerPdx : IPdxSerializable
     {

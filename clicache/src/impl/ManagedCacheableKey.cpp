@@ -63,7 +63,7 @@ namespace apache
       void ManagedCacheableKeyGeneric::fromData(apache::geode::client::DataInput& input)
       {
         try {
-          int pos = input.getBytesRead();
+          auto pos = input.getBytesRead();
           auto cache = CacheResolver::Lookup(input.getCache());
           Apache::Geode::Client::DataInput mg_input(&input, true, cache);
           m_managedptr->FromData(%mg_input);

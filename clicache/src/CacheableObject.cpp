@@ -42,13 +42,14 @@ namespace Apache
 
           GeodeDataOutputStream dos(output);
           BinaryFormatter bf;
-          System::Int64 checkpoint = dos.Length;
+          auto checkpoint = dos.Length;
           bf.Serialize(%dos, m_obj);
-          m_objectSize = (System::UInt32) (dos.Length - checkpoint);
+          m_objectSize = dos.Length - checkpoint;
 
-          output->RewindCursor(m_objectSize + 4);
-          output->WriteInt32(m_objectSize);
-          output->AdvanceCursor(m_objectSize);
+          auto size = static_cast<uint32_t>(m_objectSize);
+          output->RewindCursor(size + 4);
+          output->WriteInt32(size);
+          output->AdvanceCursor(size);
         }
       }
 
@@ -56,7 +57,7 @@ namespace Apache
       {
         int maxSize = input->ReadInt32();
         GeodeDataInputStream dis(input, maxSize);
-        System::UInt32 checkpoint = dis.BytesRead;
+        auto checkpoint = dis.BytesRead;
         BinaryFormatter bf;
         m_obj = bf.Deserialize(%dis);
         m_objectSize = dis.BytesRead - checkpoint;

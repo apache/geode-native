@@ -774,7 +774,7 @@ namespace Apache
         {
           WriteBytesToUMDataOutput();
           SetBuffer();
-          int buffLen = m_nativeptr->get()->getBufferLength();
+          auto buffLen = static_cast<int>(m_nativeptr->get()->getBufferLength());
           array<Byte>^ buffer = gcnew array<Byte>(buffLen);
 
           if (buffLen > 0) {
@@ -789,7 +789,7 @@ namespace Apache
         }
       }
 
-      System::UInt32 DataOutput::BufferLength::get()
+      size_t DataOutput::BufferLength::get()
       {
         //first set native one
         WriteBytesToUMDataOutput();

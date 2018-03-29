@@ -46,9 +46,6 @@ namespace Apache.Geode.Client.UnitTests
     private uint[] m_cKeyCksums;
     private CacheableWrapper[] m_cValues;
     private uint[] m_cValCksums;
-    private static string FEOnRegionPrSHOP_OptimizeForWrite = "FEOnRegionPrSHOP_OptimizeForWrite";
-    private static string FEOnRegionPrSHOP = "FEOnRegionPrSHOP";
-    private static string getFuncName = "MultiGetFunction";
 
     #endregion
 
@@ -219,8 +216,6 @@ namespace Apache.Geode.Client.UnitTests
     public void DoPRSHFixedPartitionResolverTests(string rname)
     {
       IRegion<object, object> region = CacheHelper.GetRegion<object, object>(rname);
-      int metadatarefreshCount = 0;
-      int metadatarefreshCount1 = 0;
       Assert.IsNotNull(region, "DoPRSHPartitionResolverPuts: null region.");
       Util.Log("Inside DoPRSHFixedPartitionResolverTests region name is {0} ", region.Name.ToString());
       for (int i = 0; i < 2000; i++)

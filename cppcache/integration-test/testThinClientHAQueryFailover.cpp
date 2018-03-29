@@ -234,10 +234,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
           // SLEEP(15000);
         }
 
-        int resultsize = results->size();
+        auto resultsize = results->size();
 
         if (i % 100 == 0) {
-          printf("Iteration upto %d done, result size is %d\n", i, resultsize);
+          printf("Iteration upto %d done, result size is %zd\n", i, resultsize);
         }
 
         // ASSERT(resultsize==4, "Failed verification");
@@ -253,8 +253,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       kst->stop();
     } catch (IllegalStateException& ise) {
       char isemsg[500] = {0};
-      ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s",
-                       ise.what());
+      ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s", ise.what());
       LOG(isemsg);
       FAIL(isemsg);
     } catch (Exception& excp) {

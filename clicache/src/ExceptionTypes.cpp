@@ -154,10 +154,9 @@ namespace Apache
             return gcnew GeodeException(exName + ": " + exMsg,
                 gcnew GeodeException(GetStackTrace(nativeEx)));
           }
-          else {
-            return gcnew GeodeException(exName + ": " + exMsg, innerException);
-          }
         }
+
+        return gcnew GeodeException(exName + ": " + exMsg, innerException);
       }
 
     }  // namespace Client

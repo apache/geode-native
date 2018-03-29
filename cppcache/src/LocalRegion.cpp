@@ -127,20 +127,21 @@ void LocalRegion::updateAccessAndModifiedTime(bool modified) {
     }
   }
 }
- std::shared_ptr<CacheStatistics> LocalRegion::getStatistics() const {
-   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getStatistics);
-   bool m_statisticsEnabled = true;
-   auto& props = m_cacheImpl->getDistributedSystem().getSystemProperties();
-   m_statisticsEnabled = props.statisticsEnabled();
-   if (!m_statisticsEnabled) {
-     throw StatisticsDisabledException(
-         "LocalRegion::getStatistics statistics disabled for this region");
-   }
+std::shared_ptr<CacheStatistics> LocalRegion::getStatistics() const {
+  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getStatistics);
+  bool m_statisticsEnabled = true;
+  auto& props = m_cacheImpl->getDistributedSystem().getSystemProperties();
+  m_statisticsEnabled = props.statisticsEnabled();
+  if (!m_statisticsEnabled) {
+    throw StatisticsDisabledException(
+        "LocalRegion::getStatistics statistics disabled for this region");
+  }
 
-   return m_cacheStatistics;
+  return m_cacheStatistics;
 }
 
-void LocalRegion::invalidateRegion(const std::shared_ptr<Serializable>& aCallbackArgument) {
+void LocalRegion::invalidateRegion(
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   GfErrType err =
       invalidateRegionNoThrow(aCallbackArgument, CacheEventFlags::NORMAL);
   GfErrTypeToException("Region::invalidateRegion", err);
@@ -153,13 +154,15 @@ void LocalRegion::localInvalidateRegion(
   GfErrTypeToException("Region::localInvalidateRegion", err);
 }
 
-void LocalRegion::destroyRegion(const std::shared_ptr<Serializable>& aCallbackArgument) {
+void LocalRegion::destroyRegion(
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   GfErrType err =
       destroyRegionNoThrow(aCallbackArgument, true, CacheEventFlags::NORMAL);
   GfErrTypeToException("Region::destroyRegion", err);
 }
 
-void LocalRegion::localDestroyRegion(const std::shared_ptr<Serializable>& aCallbackArgument) {
+void LocalRegion::localDestroyRegion(
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   GfErrType err =
       destroyRegionNoThrow(aCallbackArgument, true, CacheEventFlags::LOCAL);
   GfErrTypeToException("Region::localDestroyRegion", err);
@@ -225,8 +228,7 @@ std::shared_ptr<Region> LocalRegion::getSubregion(const std::string& path) {
 }
 
 std::shared_ptr<Region> LocalRegion::createSubregion(
-    const std::string& subregionName,
-    RegionAttributes regionAttributes) {
+    const std::string& subregionName, RegionAttributes regionAttributes) {
   CHECK_DESTROY_PENDING(TryWriteGuard, LocalRegion::createSubregion);
   {
     std::string namestr = subregionName;
@@ -244,13 +246,13 @@ std::shared_ptr<Region> LocalRegion::createSubregion(
   }
 
   auto csptr = std::make_shared<CacheStatistics>();
- auto rPtr = m_cacheImpl->createRegion_internal(
+  auto rPtr = m_cacheImpl->createRegion_internal(
       subregionName,
       std::static_pointer_cast<RegionInternal>(shared_from_this()),
       regionAttributes, csptr, false);
- region_ptr = rPtr;
- if (!rPtr) {
-   throw OutOfMemoryException("createSubregion: failed to create region");
+  region_ptr = rPtr;
+  if (!rPtr) {
+    throw OutOfMemoryException("createSubregion: failed to create region");
   }
 
   // Instantiate a PersistenceManager object if DiskPolicy is overflow
@@ -274,9 +276,11 @@ std::shared_ptr<Region> LocalRegion::createSubregion(
   return region_ptr;
 }
 
-std::vector<std::shared_ptr<Region>> LocalRegion::subregions(const bool recursive) {
+std::vector<std::shared_ptr<Region>> LocalRegion::subregions(
+    const bool recursive) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::subregions);
-  if (m_subRegions.current_size() == 0) return std::vector<std::shared_ptr<Region>>();
+  if (m_subRegions.current_size() == 0)
+    return std::vector<std::shared_ptr<Region>>();
 
   return subregions_internal(recursive);
 }
@@ -295,7 +299,8 @@ std::shared_ptr<RegionEntry> LocalRegion::getEntry(
   return rptr;
 }
 
-void LocalRegion::getEntry(const std::shared_ptr<CacheableKey>& key, std::shared_ptr<Cacheable>& valuePtr) {
+void LocalRegion::getEntry(const std::shared_ptr<CacheableKey>& key,
+                           std::shared_ptr<Cacheable>& valuePtr) {
   if (key == nullptr) {
     throw IllegalArgumentException("LocalRegion::getEntry: null key");
   }
@@ -322,7 +327,8 @@ std::shared_ptr<Cacheable> LocalRegion::get(
   return rptr;
 }
 
-void LocalRegion::put(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value,
+void LocalRegion::put(const std::shared_ptr<CacheableKey>& key,
+                      const std::shared_ptr<Cacheable>& value,
                       const std::shared_ptr<Serializable>& aCallbackArgument) {
   std::shared_ptr<Cacheable> oldValue;
   int64_t sampleStartNanos = startStatOpTime();
@@ -335,9 +341,10 @@ void LocalRegion::put(const std::shared_ptr<CacheableKey>& key, const std::share
   GfErrTypeToException("Region::put", err);
 }
 
-void LocalRegion::localPut(const std::shared_ptr<CacheableKey>& key,
-                           const std::shared_ptr<Cacheable>& value,
-                           const std::shared_ptr<Serializable>& aCallbackArgument) {
+void LocalRegion::localPut(
+    const std::shared_ptr<CacheableKey>& key,
+    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   std::shared_ptr<Cacheable> oldValue;
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = putNoThrow(key, value, aCallbackArgument, oldValue, -1,
@@ -358,8 +365,9 @@ void LocalRegion::putAll(
   GfErrTypeToException("Region::putAll", err);
 }
 
-void LocalRegion::removeAll(const std::vector<std::shared_ptr<CacheableKey>> & keys,
-                            const std::shared_ptr<Serializable>& aCallbackArgument) {
+void LocalRegion::removeAll(
+    const std::vector<std::shared_ptr<CacheableKey>>& keys,
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   if (keys.size() == 0) {
     throw IllegalArgumentException("Region::removeAll: zero keys provided");
   }
@@ -370,8 +378,10 @@ void LocalRegion::removeAll(const std::vector<std::shared_ptr<CacheableKey>> & k
   GfErrTypeToException("Region::removeAll", err);
 }
 
-void LocalRegion::create(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value,
-                         const std::shared_ptr<Serializable>& aCallbackArgument) {
+void LocalRegion::create(
+    const std::shared_ptr<CacheableKey>& key,
+    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = createNoThrow(key, value, aCallbackArgument, -1,
                                 CacheEventFlags::NORMAL, versionTag);
@@ -379,9 +389,10 @@ void LocalRegion::create(const std::shared_ptr<CacheableKey>& key, const std::sh
   GfErrTypeToException("Region::create", err);
 }
 
-void LocalRegion::localCreate(const std::shared_ptr<CacheableKey>& key,
-                              const std::shared_ptr<Cacheable>& value,
-                              const std::shared_ptr<Serializable>& aCallbackArgument) {
+void LocalRegion::localCreate(
+    const std::shared_ptr<CacheableKey>& key,
+    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = createNoThrow(key, value, aCallbackArgument, -1,
                                 CacheEventFlags::LOCAL, versionTag);
@@ -398,8 +409,9 @@ void LocalRegion::invalidate(
   GfErrTypeToException("Region::invalidate", err);
 }
 
-void LocalRegion::localInvalidate(const std::shared_ptr<CacheableKey>& keyPtr,
-                                  const std::shared_ptr<Serializable>& aCallbackArgument) {
+void LocalRegion::localInvalidate(
+    const std::shared_ptr<CacheableKey>& keyPtr,
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = invalidateNoThrow(keyPtr, aCallbackArgument, -1,
                                     CacheEventFlags::LOCAL, versionTag);
@@ -417,8 +429,9 @@ void LocalRegion::destroy(
   GfErrTypeToException("Region::destroy", err);
 }
 
-void LocalRegion::localDestroy(const std::shared_ptr<CacheableKey>& key,
-                               const std::shared_ptr<Serializable>& aCallbackArgument) {
+void LocalRegion::localDestroy(
+    const std::shared_ptr<CacheableKey>& key,
+    const std::shared_ptr<Serializable>& aCallbackArgument) {
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = destroyNoThrow(key, aCallbackArgument, -1,
                                  CacheEventFlags::LOCAL, versionTag);
@@ -687,7 +700,7 @@ void LocalRegion::registerEntryExpiryTask(
   const auto& duration = getEntryExpiryDuration();
   auto handler =
       new EntryExpiryHandler(rptr, entry, getEntryExpirationAction(), duration);
-  int64_t id = rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
+  auto id = rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
       handler, duration, std::chrono::seconds::zero());
   if (Log::finestEnabled()) {
     std::shared_ptr<CacheableKey> key;
@@ -1441,10 +1454,10 @@ class RemoveActions {
                                                              : GF_ENOENT;
         if (updateCount >= 0 &&
             !m_region.getAttributes()
-                 .getConcurrencyChecksEnabled()) {   // This means server has
-                                                     // deleted an entry &
-                                                     // same entry has been
-                                                     // destroyed locally
+                 .getConcurrencyChecksEnabled()) {  // This means server has
+                                                    // deleted an entry &
+                                                    // same entry has been
+                                                    // destroyed locally
           // So call removeTrackerForEntry to remove key that was added in the
           // map during addTrackerForEntry call.
           m_region.m_entries->removeTrackerForEntry(key);
@@ -1690,7 +1703,8 @@ GfErrType LocalRegion::updateNoThrow(
           TAction::name(), Utils::nullSafeToString(key).c_str());
       m_cacheImpl->getCachePerfStats().incFailureOnDeltaReceived();
       // Get full object from server.
-      std::shared_ptr<Cacheable>& newValue1 = const_cast<std::shared_ptr<Cacheable>&>(value);
+      std::shared_ptr<Cacheable>& newValue1 =
+          const_cast<std::shared_ptr<Cacheable>&>(value);
       std::shared_ptr<VersionTag> versionTag1;
       err = getNoThrow_FullObject(eventId, newValue1, versionTag1);
       if (err == GF_NOERR && newValue1 != nullptr) {
@@ -1712,8 +1726,7 @@ GfErrType LocalRegion::updateNoThrow(
     }
   } else {  // if (getProcessedMarker())
     action.getCallbackOldValue(cachingEnabled, key, entry, oldValue);
-    if (updateCount >= 0 &&
-        !m_regionAttributes.getConcurrencyChecksEnabled()) {
+    if (updateCount >= 0 && !m_regionAttributes.getConcurrencyChecksEnabled()) {
       m_entries->removeTrackerForEntry(key);
     }
   }
@@ -1769,8 +1782,7 @@ GfErrType LocalRegion::updateNoThrowTX(
     }
   } else {  // if (getProcessedMarker())
     action.getCallbackOldValue(cachingEnabled, key, entry, oldValue);
-    if (updateCount >= 0 &&
-        !m_regionAttributes.getConcurrencyChecksEnabled()) {
+    if (updateCount >= 0 && !m_regionAttributes.getConcurrencyChecksEnabled()) {
       m_entries->removeTrackerForEntry(key);
     }
   }
@@ -1929,8 +1941,7 @@ GfErrType LocalRegion::putAllNoThrow(
     std::shared_ptr<Cacheable> oldValue;
     for (const auto& iter : map) {
       const auto& key = iter.first;
-      if (cachingEnabled &&
-          !m_regionAttributes.getConcurrencyChecksEnabled()) {
+      if (cachingEnabled && !m_regionAttributes.getConcurrencyChecksEnabled()) {
         int updateCount =
             m_entries->addTrackerForEntry(key, oldValue, true, false, true);
         oldValueMap.insert(
@@ -2247,7 +2258,7 @@ GfErrType LocalRegion::invalidateRegionNoThrow(
   GfErrType err = GF_NOERR;
 
   if (m_regionAttributes.getCachingEnabled()) {
-    std::vector<std::shared_ptr<CacheableKey>>  v = keys_internal();
+    std::vector<std::shared_ptr<CacheableKey>> v = keys_internal();
     const auto size = v.size();
     std::shared_ptr<MapEntryImpl> me;
     for (size_t i = 0; i < size; i++) {
@@ -2485,7 +2496,7 @@ GfErrType LocalRegion::putLocal(const std::string& name, bool isCreate,
 }
 
 std::vector<std::shared_ptr<CacheableKey>> LocalRegion::keys_internal() {
-  std::vector<std::shared_ptr<CacheableKey>>  keys;
+  std::vector<std::shared_ptr<CacheableKey>> keys;
 
   if (m_regionAttributes.getCachingEnabled()) {
     m_entries->getKeys(keys);
@@ -2494,8 +2505,8 @@ std::vector<std::shared_ptr<CacheableKey>> LocalRegion::keys_internal() {
   return keys;
 }
 
-void LocalRegion::entries_internal(std::vector<std::shared_ptr<RegionEntry>>& me,
-                                   const bool recursive) {
+void LocalRegion::entries_internal(
+    std::vector<std::shared_ptr<RegionEntry>>& me, const bool recursive) {
   m_entries->getEntries(me);
 
   if (recursive == true) {
@@ -2760,8 +2771,8 @@ GfErrType LocalRegion::invokeCacheListenerForRegionEvent(
 
 // TODO:  pass current time instead of evaluating it twice, here
 // and in region
-void LocalRegion::updateAccessAndModifiedTimeForEntry(std::shared_ptr<MapEntryImpl>& ptr,
-                                                      bool modified) {
+void LocalRegion::updateAccessAndModifiedTimeForEntry(
+    std::shared_ptr<MapEntryImpl>& ptr, bool modified) {
   // locking is not required since setters use atomic operations
   if (ptr != nullptr && entryExpiryEnabled()) {
     ExpEntryProperties& expProps = ptr->getExpProperties();
@@ -2788,7 +2799,7 @@ void LocalRegion::updateAccessAndModifiedTimeForEntry(std::shared_ptr<MapEntryIm
 uint32_t LocalRegion::adjustLruEntriesLimit(uint32_t limit) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustLruEntriesLimit);
 
- auto attrs = m_regionAttributes;
+  auto attrs = m_regionAttributes;
   if (!attrs.getCachingEnabled()) return 0;
   bool hadlru = (attrs.getLruEntriesLimit() != 0);
   bool needslru = (limit != 0);
@@ -2811,12 +2822,12 @@ ExpirationAction LocalRegion::adjustRegionExpiryAction(
     ExpirationAction action) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustRegionExpiryAction);
 
- auto attrs = m_regionAttributes;
- bool hadExpiry = (getRegionExpiryDuration() > std::chrono::seconds::zero());
- if (!hadExpiry) {
-   throw IllegalStateException(
-       "Cannot change region ExpirationAction for region created without "
-       "region expiry.");
+  auto attrs = m_regionAttributes;
+  bool hadExpiry = (getRegionExpiryDuration() > std::chrono::seconds::zero());
+  if (!hadExpiry) {
+    throw IllegalStateException(
+        "Cannot change region ExpirationAction for region created without "
+        "region expiry.");
   }
   ExpirationAction oldValue = getRegionExpiryAction();
 
@@ -2830,13 +2841,13 @@ ExpirationAction LocalRegion::adjustRegionExpiryAction(
 ExpirationAction LocalRegion::adjustEntryExpiryAction(ExpirationAction action) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustEntryExpiryAction);
 
- auto attrs = m_regionAttributes;
- bool hadExpiry = (getEntryExpiryDuration() > std::chrono::seconds::zero());
- if (!hadExpiry) {
-   throw IllegalStateException(
-       "Cannot change entry ExpirationAction for region created without "
-       "entry "
-       "expiry.");
+  auto attrs = m_regionAttributes;
+  bool hadExpiry = (getEntryExpiryDuration() > std::chrono::seconds::zero());
+  if (!hadExpiry) {
+    throw IllegalStateException(
+        "Cannot change entry ExpirationAction for region created without "
+        "entry "
+        "expiry.");
   }
   ExpirationAction oldValue = getEntryExpirationAction();
 
@@ -2913,8 +2924,7 @@ bool LocalRegion::useModifiedTimeForEntryExpiry() {
 
 bool LocalRegion::isEntryIdletimeEnabled() {
   if (m_regionAttributes.getCachingEnabled() &&
-      m_regionAttributes.getEntryIdleTimeout() >
-          std::chrono::seconds::zero()) {
+      m_regionAttributes.getEntryIdleTimeout() > std::chrono::seconds::zero()) {
     return true;
   } else {
     return false;
@@ -3079,7 +3089,8 @@ void LocalRegion::adjustCacheLoader(const std::string& lib,
   m_loader = m_regionAttributes.getCacheLoader();
 }
 
-void LocalRegion::adjustCacheWriter(const std::shared_ptr<CacheWriter>& aWriter) {
+void LocalRegion::adjustCacheWriter(
+    const std::shared_ptr<CacheWriter>& aWriter) {
   WriteGuard guard(m_rwLock);
   setCacheWriter(aWriter);
   m_writer = aWriter;
@@ -3145,7 +3156,9 @@ std::shared_ptr<Cacheable> LocalRegion::handleReplay(
 
   return value;
 }
- std::shared_ptr<TombstoneList> LocalRegion::getTombstoneList() { return m_tombstoneList; }
+std::shared_ptr<TombstoneList> LocalRegion::getTombstoneList() {
+  return m_tombstoneList;
+}
 
 int64_t LocalRegion::startStatOpTime() {
   return m_enableTimeStatistics ? Utils::startStatOpTime() : 0;

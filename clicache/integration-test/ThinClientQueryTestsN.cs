@@ -44,8 +44,6 @@ namespace Apache.Geode.Client.UnitTests
     private static string[] QueryRegionNames = { "Portfolios", "Positions", "Portfolios2",
       "Portfolios3" };
     private static string QERegionName = "Portfolios";
-    private static string endpoint1;
-    private static string endpoint2;
     #endregion
 
     protected override ClientBase[] GetClients()

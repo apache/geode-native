@@ -60,7 +60,7 @@ namespace apache
      void ManagedCacheableDeltaGeneric::fromData(DataInput& input)
       {
         try {
-          int pos = input.getBytesRead();
+          auto pos = input.getBytesRead();
           auto cache = CacheResolver::Lookup(input.getCache());
           Apache::Geode::Client::DataInput mg_input(&input, true, cache);
           m_managedSerializableptr->FromData(%mg_input);

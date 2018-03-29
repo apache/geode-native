@@ -67,8 +67,7 @@ void PdxLocalReader::resettoPdxHead() {
 
 void PdxLocalReader::initialize() {
   m_startBuffer = const_cast<uint8_t*>(m_dataInput->currentBufferPosition());
-  m_startPosition = m_dataInput->getBytesRead();  // number of bytes read in
-                                                  // c++;
+  m_startPosition = static_cast<int32_t>(m_dataInput->getBytesRead());
 
   if (m_serializedLengthWithOffsets <= 0xff) {
     m_offsetSize = 1;
@@ -147,7 +146,7 @@ std::vector<char16_t> PdxLocalReader::readCharArray(
 }
 
 std::vector<bool> PdxLocalReader::readBooleanArray(
-   const std::string& fieldName) {
+    const std::string& fieldName) {
   return m_dataInput->readBooleanArray();
 }
 
@@ -209,66 +208,66 @@ std::shared_ptr<CacheableDate> PdxLocalReader::readDate(
   auto cd = CacheableDate::create();
   cd->fromData(*m_dataInput);
   return cd;
- }
- std::shared_ptr<PdxRemotePreservedData> PdxLocalReader::getPreservedData(
-     std::shared_ptr<PdxType> mergedVersion,
-     std::shared_ptr<PdxSerializable> pdxObject) {
-   int nFieldExtra = m_pdxType->getNumberOfExtraFields();
-   LOGDEBUG(
-       "PdxLocalReader::getPreservedData::nFieldExtra = %d AND "
-       "PdxTypeRegistry::getPdxIgnoreUnreadFields = %d ",
-       nFieldExtra, m_pdxTypeRegistry->getPdxIgnoreUnreadFields());
-   if (nFieldExtra > 0 &&
-       m_pdxTypeRegistry->getPdxIgnoreUnreadFields() == false) {
-     m_pdxRemotePreserveData->initialize(
-         m_pdxType != nullptr ? m_pdxType->getTypeId() : 0,
-         mergedVersion->getTypeId(), nFieldExtra, pdxObject);
-     LOGDEBUG("PdxLocalReader::getPreservedData - 1");
+}
+std::shared_ptr<PdxRemotePreservedData> PdxLocalReader::getPreservedData(
+    std::shared_ptr<PdxType> mergedVersion,
+    std::shared_ptr<PdxSerializable> pdxObject) {
+  int nFieldExtra = m_pdxType->getNumberOfExtraFields();
+  LOGDEBUG(
+      "PdxLocalReader::getPreservedData::nFieldExtra = %d AND "
+      "PdxTypeRegistry::getPdxIgnoreUnreadFields = %d ",
+      nFieldExtra, m_pdxTypeRegistry->getPdxIgnoreUnreadFields());
+  if (nFieldExtra > 0 &&
+      m_pdxTypeRegistry->getPdxIgnoreUnreadFields() == false) {
+    m_pdxRemotePreserveData->initialize(
+        m_pdxType != nullptr ? m_pdxType->getTypeId() : 0,
+        mergedVersion->getTypeId(), nFieldExtra, pdxObject);
+    LOGDEBUG("PdxLocalReader::getPreservedData - 1");
 
-     m_localToRemoteMap = m_pdxType->getLocalToRemoteMap();
-     m_remoteToLocalMap = m_pdxType->getRemoteToLocalMap();
+    m_localToRemoteMap = m_pdxType->getLocalToRemoteMap();
+    m_remoteToLocalMap = m_pdxType->getRemoteToLocalMap();
 
-     int currentIdx = 0;
-     std::vector<int8_t> pdVector;
-     for (int i = 0; i < m_remoteToLocalMapSize; i++) {
-       if (m_remoteToLocalMap[i] == -1 ||
-           m_remoteToLocalMap[i] == -2)  // this field needs to preserve
-       {
-         int pos = m_pdxType->getFieldPosition(i, m_offsetsBuffer, m_offsetSize,
-                                               m_serializedLength);
-         int nFieldPos = 0;
+    int currentIdx = 0;
+    std::vector<int8_t> pdVector;
+    for (int i = 0; i < m_remoteToLocalMapSize; i++) {
+      if (m_remoteToLocalMap[i] == -1 ||
+          m_remoteToLocalMap[i] == -2)  // this field needs to preserve
+      {
+        int pos = m_pdxType->getFieldPosition(i, m_offsetsBuffer, m_offsetSize,
+                                              m_serializedLength);
+        int nFieldPos = 0;
 
-         if (i == m_remoteToLocalMapSize - 1) {
-           nFieldPos = m_serializedLength;
-         } else {
-           nFieldPos = m_pdxType->getFieldPosition(
-               i + 1, m_offsetsBuffer, m_offsetSize, m_serializedLength);
-         }
+        if (i == m_remoteToLocalMapSize - 1) {
+          nFieldPos = m_serializedLength;
+        } else {
+          nFieldPos = m_pdxType->getFieldPosition(
+              i + 1, m_offsetsBuffer, m_offsetSize, m_serializedLength);
+        }
 
-         resettoPdxHead();
-         m_dataInput->advanceCursor(pos);
+        resettoPdxHead();
+        m_dataInput->advanceCursor(pos);
 
-         for (int i = 0; i < (nFieldPos - pos); i++) {
-           pdVector.push_back(m_dataInput->read());
-         }
-         resettoPdxHead();
+        for (int i = 0; i < (nFieldPos - pos); i++) {
+          pdVector.push_back(m_dataInput->read());
+        }
+        resettoPdxHead();
 
-         m_pdxRemotePreserveData->setPreservedData(pdVector);
-         currentIdx++;
-         pdVector.erase(pdVector.begin(), pdVector.end());
-       } else {
-         LOGDEBUG("PdxLocalReader::getPreservedData No need to preserve");
-       }
-     }
+        m_pdxRemotePreserveData->setPreservedData(pdVector);
+        currentIdx++;
+        pdVector.erase(pdVector.begin(), pdVector.end());
+      } else {
+        LOGDEBUG("PdxLocalReader::getPreservedData No need to preserve");
+      }
+    }
 
-     if (m_isDataNeedToPreserve) {
-       return m_pdxRemotePreserveData;
-     } else {
-       LOGDEBUG(
-           "PdxLocalReader::GetPreservedData m_isDataNeedToPreserve is false");
-     }
-   }
-   return nullptr;
+    if (m_isDataNeedToPreserve) {
+      return m_pdxRemotePreserveData;
+    } else {
+      LOGDEBUG(
+          "PdxLocalReader::GetPreservedData m_isDataNeedToPreserve is false");
+    }
+  }
+  return nullptr;
 }
 
 bool PdxLocalReader::hasField(const std::string& fieldName) {

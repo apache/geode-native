@@ -1409,11 +1409,7 @@ class LocalFileSet : public TFwkSet<LocalFile> {};
 class FwkDomErrorHandler : public DOMErrorHandler {
  public:
   FwkDomErrorHandler() : m_hadErrors(false) {}
-  ~FwkDomErrorHandler() {
-    if (m_hadErrors) {
-      FWKEXCEPTION("Encountered errors during parse.");
-    }
-  }
+  ~FwkDomErrorHandler() = default;
 
   bool hadErrors() const { return m_hadErrors; }
   bool handleError(const DOMError& domError);

@@ -102,10 +102,11 @@ GfErrType ThinClientLocatorHelper::getAllServers(
       createConnection(conn, loc.getServerName().c_str(), loc.getPort(),
                        sysProps.connectTimeout(), buffSize);
       GetAllServersRequest request(serverGrp);
-      auto data = m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
+      auto data =
+          m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
       data->writeInt((int32_t)1001);  // GOSSIPVERSION
       data->writeObject(&request);
-      int sentLength = conn->send(
+      auto sentLength = conn->send(
           (char*)(data->getBuffer()), data->getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : std::chrono::seconds(10));
       if (sentLength <= 0) {
@@ -113,7 +114,7 @@ GfErrType ThinClientLocatorHelper::getAllServers(
         continue;
       }
       char buff[BUFF_SIZE];
-      int receivedLength = conn->receive(
+      auto receivedLength = conn->receive(
           buff, BUFF_SIZE,
           m_poolDM ? m_poolDM->getReadTimeout() : std::chrono::seconds(10));
       // conn->close();
@@ -122,8 +123,9 @@ GfErrType ThinClientLocatorHelper::getAllServers(
         continue;
       }
 
-      auto di = m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
-                   reinterpret_cast<uint8_t*>(buff), receivedLength);
+      auto di =
+          m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
+              reinterpret_cast<uint8_t*>(buff), receivedLength);
 
       /* adongre
        * SSL Enabled on Location and not in the client
@@ -194,10 +196,11 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
                        sysProps.connectTimeout(), buffSize);
       QueueConnectionRequest request(memId, exclEndPts, redundancy, false,
                                      serverGrp);
-      auto data = m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
+      auto data =
+          m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
       data->writeInt((int32_t)1001);  // GOSSIPVERSION
       data->writeObject(&request);
-      int sentLength = conn->send(
+      auto sentLength = conn->send(
           (char*)(data->getBuffer()), data->getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       if (sentLength <= 0) {
@@ -205,7 +208,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
         continue;
       }
       char buff[BUFF_SIZE];
-      int receivedLength = conn->receive(
+      auto receivedLength = conn->receive(
           buff, BUFF_SIZE,
           m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       // conn->close();
@@ -213,8 +216,9 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
       if (receivedLength <= 0) {
         continue;
       }
-      auto di = m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
-                   reinterpret_cast<uint8_t*>(buff), receivedLength);
+      auto di =
+          m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
+              reinterpret_cast<uint8_t*>(buff), receivedLength);
 
       /* adongre
        * ssl defect
@@ -282,9 +286,8 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
       ConnectionWrapper cw(conn);
       createConnection(conn, serLoc.getServerName().c_str(), serLoc.getPort(),
                        sysProps.connectTimeout(), buffSize);
-      auto data = m_poolDM->getConnectionManager()
-                      .getCacheImpl()
-                      ->createDataOutput();
+      auto data =
+          m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
       data->writeInt(1001);  // GOSSIPVERSION
       if (currentServer == nullptr) {
         LOGDEBUG("Creating ClientConnectionRequest");
@@ -297,7 +300,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
             currentServer->getEndpointObject()->name(), exclEndPts, serverGrp);
         data->writeObject(&request);
       }
-      int sentLength = conn->send(
+      auto sentLength = conn->send(
           (char*)(data->getBuffer()), data->getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       if (sentLength <= 0) {
@@ -306,7 +309,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
         continue;
       }
       char buff[BUFF_SIZE];
-      int receivedLength = conn->receive(
+      auto receivedLength = conn->receive(
           buff, BUFF_SIZE,
           m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       // conn->close();
@@ -314,8 +317,9 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
       if (receivedLength <= 0) {
         continue;  // return GF_EUNDEF;
       }
-      auto di = m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
-                   reinterpret_cast<uint8_t*>(buff), receivedLength);
+      auto di =
+          m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
+              reinterpret_cast<uint8_t*>(buff), receivedLength);
 
       /* adongre
        * SSL is enabled on locator and not in the client
@@ -380,12 +384,11 @@ GfErrType ThinClientLocatorHelper::updateLocators(
       createConnection(conn, serLoc.getServerName().c_str(), serLoc.getPort(),
                        sysProps.connectTimeout(), buffSize);
       LocatorListRequest request(serverGrp);
-      auto data = m_poolDM->getConnectionManager()
-                      .getCacheImpl()
-                      ->createDataOutput();
+      auto data =
+          m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
       data->writeInt((int32_t)1001);  // GOSSIPVERSION
       data->writeObject(&request);
-      int sentLength = conn->send(
+      auto sentLength = conn->send(
           (char*)(data->getBuffer()), data->getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       if (sentLength <= 0) {
@@ -395,7 +398,7 @@ GfErrType ThinClientLocatorHelper::updateLocators(
         continue;
       }
       char buff[BUFF_SIZE];
-      int receivedLength = conn->receive(
+      auto receivedLength = conn->receive(
           buff, BUFF_SIZE,
           m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       // conn->close();
@@ -403,10 +406,9 @@ GfErrType ThinClientLocatorHelper::updateLocators(
       if (receivedLength <= 0) {
         continue;
       }
-      auto di = m_poolDM->getConnectionManager()
-                    .getCacheImpl()
-                    ->createDataInput(reinterpret_cast<uint8_t*>(buff),
-                                      receivedLength);
+      auto di =
+          m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
+              reinterpret_cast<uint8_t*>(buff), receivedLength);
 
       /* adongre
        * SSL Enabled on Location and not in the client

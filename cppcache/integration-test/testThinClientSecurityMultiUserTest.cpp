@@ -36,10 +36,10 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer)
   {
     CacheHelper::initServer(
-      1, "cacheserver_notify_subscription2.xml",
-      CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1),
-      "--J=-Dsecurity-manager=javaobject.SimpleSecurityManager",
-      false, true, false, false, false, true);
+        1, "cacheserver_notify_subscription2.xml",
+        CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1),
+        "--J=-Dsecurity-manager=javaobject.SimpleSecurityManager", false, true,
+        false, false, false, true);
     LOG("Server started");
   }
 END_TASK_DEFINITION
@@ -60,18 +60,20 @@ DUNIT_TASK_DEFINITION(CLIENT1, PerformSecureOperationsWithUserCredentials)
     config1->insert("security-username", "root");
     config1->insert("security-password", "root-password");
 
-    cache.createAuthenticatedView(config1, "mypool")->getRegion("DistRegionAck")
-                                                    ->put("akey", "avalue");
+    cache.createAuthenticatedView(config1, "mypool")
+        ->getRegion("DistRegionAck")
+        ->put("akey", "avalue");
 
     auto config2 = Properties::create();
     config2->insert("security-username", "reader");
     config2->insert("security-password", "reader-password");
 
     try {
-      cache.createAuthenticatedView(config2, "mypool")->getRegion("DistRegionAck")
-                                                      ->put("akey", "avalue");
+      cache.createAuthenticatedView(config2, "mypool")
+          ->getRegion("DistRegionAck")
+          ->put("akey", "avalue");
       FAIL("Didn't throw expected AuthenticationFailedException.");
-    } catch (const apache::geode::client::NotAuthorizedException& other) {
+    } catch (const apache::geode::client::NotAuthorizedException&) {
       LOG("Caught expected AuthenticationFailedException.");
     }
   }
@@ -93,10 +95,10 @@ END_TASK_DEFINITION
 
 DUNIT_MAIN
   {
-  CALL_TASK(CreateLocator);
-  CALL_TASK(CreateServer);
-  CALL_TASK(PerformSecureOperationsWithUserCredentials);
-  CALL_TASK(CloseServer);
-  CALL_TASK(CloseLocator);
+    CALL_TASK(CreateLocator);
+    CALL_TASK(CreateServer);
+    CALL_TASK(PerformSecureOperationsWithUserCredentials);
+    CALL_TASK(CloseServer);
+    CALL_TASK(CloseLocator);
   }
 END_MAIN

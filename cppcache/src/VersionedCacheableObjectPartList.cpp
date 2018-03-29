@@ -67,7 +67,8 @@ void VersionedCacheableObjectPartList::readObjectPart(
       bytes = new int8_t[skipLen];
       input.readBytesOnly(bytes, skipLen);
     }
-    m_values->emplace(keyPtr, CacheableBytes::create(std::vector<int8_t>(bytes, bytes + skipLen)));
+    m_values->emplace(keyPtr, CacheableBytes::create(
+                                  std::vector<int8_t>(bytes, bytes + skipLen)));
 
     /* adongre
      * CID 29377: Resource leak (RESOURCE_LEAK)Calling allocation function
@@ -227,7 +228,7 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
                 new VersionTag(memberListForVersionStamp));
           }
           versionTag->fromData(input);
-          int32_t idNumber = input.readUnsignedVL();
+          auto idNumber = input.readUnsignedVL();
           versionTag->setInternalMemID(ids.at(idNumber));
           break;
         }

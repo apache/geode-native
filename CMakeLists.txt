@@ -168,6 +168,8 @@ target_compile_options(c++cli
 # Interface for C++11 language
 add_library(c++11 INTERFACE)
 
+# Interface for warning flags
+add_library(_WarningsAsError INTERFACE)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
   # Force linker to error on undefined symbols in shared libraries
@@ -183,12 +185,25 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
   target_link_libraries(c++11 INTERFACE -std=c++11 stdc++ gcc_s CrunG3 m c)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs")
-endif()
-if(MSVC)
-    # TODO error on warnings
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(BUILD_CLI 1)
+
+  target_compile_options(_WarningsAsError INTERFACE /WX)
+
+  # TODO error on warnings
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /ignore:4099")
+
+  # Enables multiprocess compiles
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+  
+  # Enables whole program optimizaion and link time code generation for release.
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
+  set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG:incremental")
+  set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG:incremental")
+
+  # Enables strong name signing
   set(STRONG_NAME_KEY "" CACHE FILEPATH "Strong Name Key File")
   if(EXISTS "${STRONG_NAME_KEY}")
     set(SHARED_LINKER_FLAGS_STRONG_KEY "/keyfile:${STRONG_NAME_KEY}")

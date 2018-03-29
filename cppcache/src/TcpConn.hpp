@@ -61,8 +61,8 @@ class _GEODE_EXPORT TcpConn : public Connector {
   void clearNagle(ACE_HANDLE sock);
   int32_t maxSize(ACE_HANDLE sock, int32_t flag, int32_t size);
 
-  virtual int32_t socketOp(SockOp op, char* buff, int32_t len,
-                           std::chrono::microseconds waitSeconds);
+  virtual size_t socketOp(SockOp op, char* buff, size_t len,
+                          std::chrono::microseconds waitSeconds);
 
   virtual void createSocket(ACE_HANDLE sock);
 
@@ -113,16 +113,15 @@ class _GEODE_EXPORT TcpConn : public Connector {
 
   virtual void connect();
 
-  int32_t receive(char* buff, int32_t len,
-                  std::chrono::microseconds waitSeconds) override;
-  int32_t send(const char* buff, int32_t len,
-               std::chrono::microseconds waitSeconds) override;
+  size_t receive(char* buff, size_t len,
+                 std::chrono::microseconds waitSeconds) override;
+  size_t send(const char* buff, size_t len,
+              std::chrono::microseconds waitSeconds) override;
 
-  virtual void setOption(int32_t level, int32_t option, void* val,
-                         int32_t len) {
+  virtual void setOption(int32_t level, int32_t option, void* val, size_t len) {
     GF_DEV_ASSERT(m_io != nullptr);
 
-    if (m_io->set_option(level, option, val, len) == -1) {
+    if (m_io->set_option(level, option, val, static_cast<int32_t>(len)) == -1) {
       int32_t lastError = ACE_OS::last_error();
       LOGERROR("Failed to set option, errno: %d: %s", lastError,
                ACE_OS::strerror(lastError));

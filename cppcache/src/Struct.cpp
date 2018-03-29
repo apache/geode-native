@@ -108,7 +108,7 @@ const std::shared_ptr<Serializable> Struct::operator[](int32_t index) const {
 
 const std::shared_ptr<Serializable> Struct::operator[](
     const std::string& fieldName) const {
-  int32_t index;
+  size_t index;
   if (m_parent == nullptr) {
     const auto& iter = m_fieldNames.find(fieldName);
     if (iter == m_fieldNames.end()) {

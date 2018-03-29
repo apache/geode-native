@@ -811,8 +811,8 @@ bool QueryHelper::compareTwoPositionObjects(
   p1->toData(o1);
   p2->toData(o2);
 
-  uint32_t len1 = o1.getBufferLength();
-  uint32_t len2 = o2.getBufferLength();
+  auto len1 = o1.getBufferLength();
+  auto len2 = o2.getBufferLength();
 
   if (len1 != len2) {
     return false;

@@ -64,7 +64,7 @@ namespace Apache
           try
           {
             auto results = m_nativeptr->get()->getResult(TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
-            auto rs = gcnew array<TResult>(results->size());
+            auto rs = gcnew array<TResult>(static_cast<int>(results->size()));
             for (System::Int32 index = 0; index < results->size(); index++)
             {
               auto nativeptr = results->operator[](index);

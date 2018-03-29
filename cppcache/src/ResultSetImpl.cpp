@@ -30,7 +30,7 @@ ResultSetImpl::ResultSetImpl(const std::shared_ptr<CacheableVector>& response)
 
 bool ResultSetImpl::isModifiable() const { return false; }
 
-int32_t ResultSetImpl::size() const {
+size_t ResultSetImpl::size() const {
   return static_cast<int32_t>(m_resultSetVector->size());
 }
 
@@ -53,4 +53,3 @@ SelectResults::Iterator ResultSetImpl::begin() const {
 SelectResults::Iterator ResultSetImpl::end() const {
   return m_resultSetVector->end();
 }
-

@@ -288,7 +288,6 @@ void PdxTypes3V2::fromData(PdxReader& pr) {
   m_i6 = pr.readInt("i6");
   auto tmp = pr.readString("m_str3");
 
-  char extraFieldsStr[20];
   if (tmp.empty()) {
     m_str3 = std::to_string(m_diffInExtraFields);
   } else {

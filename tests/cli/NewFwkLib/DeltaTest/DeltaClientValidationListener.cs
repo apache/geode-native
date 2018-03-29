@@ -147,11 +147,11 @@ namespace Apache.Geode.Client.FwkLib
     {
     }
 
-    public void Close(Apache.Geode.Client.IRegion<TKey, TVal> region)
+    public override void Close(Apache.Geode.Client.IRegion<TKey, TVal> region)
     {
     }
 
-    public void AfterRegionDisconnected(Apache.Geode.Client.IRegion<TKey, TVal> region)
+    public override void AfterRegionDisconnected(Apache.Geode.Client.IRegion<TKey, TVal> region)
     {
     }
     public override void AfterRegionClear(RegionEvent<TKey, TVal> ev)

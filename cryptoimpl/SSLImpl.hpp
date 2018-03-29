@@ -20,7 +20,10 @@
 #ifndef GEODE_CRYPTOIMPL_SSLIMPL_H_
 #define GEODE_CRYPTOIMPL_SSLIMPL_H_
 
-#include <ace/ACE.h>
+#pragma warning(push)
+#pragma warning(disable : 4311)
+#pragma warning(disable : 4302)
+#pragma pack(push)
 #include <ace/OS.h>
 #include <ace/INET_Addr.h>
 #include <ace/SOCK_IO.h>
@@ -29,6 +32,7 @@
 #include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Time_Value.h>
+#pragma pack(pop)
 
 #include <geode/internal/geode_base.hpp>
 

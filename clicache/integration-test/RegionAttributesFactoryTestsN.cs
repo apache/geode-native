@@ -34,8 +34,6 @@ namespace Apache.Geode.Client.UnitTests
   public class RegionAttributesFactoryTests : UnitTests
   {
 
-    private UnitProcess m_client1, m_client2;
-
     protected override ClientBase[] GetClients()
     {
       return new ClientBase[] {};

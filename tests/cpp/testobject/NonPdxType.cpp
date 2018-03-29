@@ -33,10 +33,10 @@ bool PdxTests::NonPdxType::genericValCompare(T1 value1, T2 value2) const {
   return true;
 }
 
-template <typename T1, typename T2>
+template <typename T1, typename T2, typename L>
 bool PdxTests::NonPdxType::genericCompare(T1* value1, T2* value2,
-                                          int length) const {
-  int i = 0;
+                                          L length) const {
+  L i = 0;
   while (i < length) {
     if (value1[i] != value2[i]) {
       return false;

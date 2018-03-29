@@ -24,7 +24,6 @@ namespace Apache.Geode.Client.UnitTests
   using NUnit.Framework;
   using Apache.Geode.DUnitFramework;
   using Apache.Geode.Client;
-  using Apache.Geode.Client;
   
   //using Com.Vmware.Cache;
   //using Region = Com.Vmware.Cache.IRegion<object, object>;

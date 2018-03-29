@@ -19,9 +19,16 @@ project(dhimpl LANGUAGES CXX)
 file(GLOB_RECURSE SOURCES "*.cpp")
 
 add_library(DHImpl SHARED ${SOURCES})
+
+target_compile_definitions(DHImpl
+  PRIVATE
+    BUILD_CPPCACHE)
+
 target_link_libraries(DHImpl
   PUBLIC 
     apache-geode
     crypto
     c++11
+  PRIVATE
+    _WarningsAsError
 )

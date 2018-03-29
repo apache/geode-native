@@ -39,8 +39,7 @@ uint8_t* createSignature(EVP_PKEY* key, X509* cert,
   }
 
   const ASN1_OBJECT *macobj;
-  const X509_ALGOR *algorithm;
-  X509_ALGOR_get0(&macobj, NULL, NULL, algorithm);
+  X509_ALGOR_get0(&macobj, NULL, NULL, NULL);
   const EVP_MD* signatureDigest = EVP_get_digestbyobj(macobj);
 
   EVP_MD_CTX* signatureCtx = EVP_MD_CTX_new();
@@ -165,7 +164,7 @@ std::shared_ptr<Properties> PKCSAuthInit::getCredentials(
 
   auto signatureData = createSignature(
       privateKey, cert, reinterpret_cast<const unsigned char*>(alias),
-      strlen(alias), &lengthEncryptedData);
+      static_cast<uint32_t>(strlen(alias)), &lengthEncryptedData);
   EVP_PKEY_free(privateKey);
   X509_free(cert);
   if (signatureData == NULL) {

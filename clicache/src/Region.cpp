@@ -358,7 +358,7 @@ namespace Apache
         {
           GC::KeepAlive(m_nativeptr);
         }
-        auto valarr = gcnew array<TValue>(vc.size());
+        auto valarr = gcnew array<TValue>(static_cast<int>(vc.size()));
         for (System::Int32 index = 0; index < vc.size(); index++)
         {
           auto& nativeptr = vc[index];
@@ -730,8 +730,8 @@ namespace Apache
           if (values != nullptr) {
             valuesPtr = std::make_shared<native::HashMapOfCacheable>();
           }
-         auto callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg, &m_nativeptr->get()->getCache());
-         native::HashMapOfCacheable native_value;
+          auto callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+          native::HashMapOfCacheable native_value;
           try
           {
             native_value = m_nativeptr->get()->getAll(vecKeys, callbackptr);

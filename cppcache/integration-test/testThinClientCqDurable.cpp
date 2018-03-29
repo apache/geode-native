@@ -177,7 +177,8 @@ void stepOne() {
   initClientWithId(0);
   createRegionForCQ(regionNamesCq[0], USE_ACK, true);
   auto regptr = getHelper()->getRegion(regionNamesCq[0]);
-  auto subregPtr = regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
+  auto subregPtr =
+      regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
   LOG("StepOne complete.");
 }
@@ -199,7 +200,8 @@ void RunDurableCqClient() {
 
   LOGINFO("Created the Geode Cache Programmatically");
 
-  auto regionFactory = cachePtr->createRegionFactory(RegionShortcut::CACHING_PROXY);
+  auto regionFactory =
+      cachePtr->createRegionFactory(RegionShortcut::CACHING_PROXY);
 
   // Create the Region Programmatically.
   auto regionPtr = regionFactory.create("DistRegionAck");
@@ -339,7 +341,8 @@ void stepOne2() {
   initClientWithId(1);
   createRegionForCQ(regionNamesCq[0], USE_ACK, true);
   auto regptr = getHelper()->getRegion(regionNamesCq[0]);
-  auto subregPtr = regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
+  auto subregPtr =
+      regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
   LOG("StepOne2 complete.");
 }
@@ -395,8 +398,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       LOG("EXECUTE 1 STOP");
       SelectResultsIterator iter = results->getIterator();
       char buf[100];
-      int count = results->size();
-      sprintf(buf, "results size=%d", count);
+      auto count = results->size();
+      sprintf(buf, "results size=%zd", count);
       LOG(buf);
     } catch (const Exception& excp) {
       std::string logmsg = "";
@@ -460,10 +463,10 @@ void client1Up() {
   QueryHelper::getHelper();
 
   std::shared_ptr<QueryService> qs = getHelper()
-           ->getCache()
-           ->getPoolManager()
-           .find(regionNamesCq[0])
-           ->getQueryService();
+                                         ->getCache()
+                                         ->getPoolManager()
+                                         .find(regionNamesCq[0])
+                                         ->getQueryService();
   CqAttributesFactory cqFac;
   auto cqLstner = std::make_shared<MyCqListener>();
   cqFac.addCqListener(cqLstner);

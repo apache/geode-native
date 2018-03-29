@@ -28,4 +28,6 @@ target_link_libraries(securityImpl
   PUBLIC
     apache-geode
     crypto
+  PRIVATE
+    _WarningsAsError
 )

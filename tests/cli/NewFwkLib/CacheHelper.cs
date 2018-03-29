@@ -102,7 +102,6 @@ namespace Apache.Geode.Client.FwkLib
     private static DistributedSystem m_dsys = null;
     private static Cache m_cache = null;
     private static IRegion<TKey,TVal> m_currRegion = null;
-    private static bool m_doDisconnect = true;
 
     private const string DefaultDSName = "dstest";
     private const string DefaultCacheName = "cachetest";
@@ -244,8 +243,6 @@ namespace Apache.Geode.Client.FwkLib
       {
         try
         {
-          CacheHelper<TKey, TVal>.m_doDisconnect = false;
-
           CacheFactory cf = new CacheFactory(config);
 
           if (cacheXml != null && cacheXml.Length > 0)

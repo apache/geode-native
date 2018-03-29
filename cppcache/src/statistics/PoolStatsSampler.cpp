@@ -30,8 +30,8 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
-using std::chrono::high_resolution_clock;
 using std::chrono::duration_cast;
+using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 using std::chrono::nanoseconds;
 
@@ -122,13 +122,11 @@ void PoolStatsSampler::putStatsInAdminRegion() {
   } catch (const AllConnectionsInUseException&) {
     LOGDEBUG("All connection are in use, trying again.");
   } catch (const NotConnectedException& ex) {
-    try
-    {
+    try {
       std::rethrow_if_nested(ex);
-    } catch (const NoAvailableLocatorsException& ex) {
+    } catch (const NoAvailableLocatorsException&) {
       LOGDEBUG("No locators available, trying again.");
-    }
-    catch (...) {
+    } catch (...) {
       LOGDEBUG("Not connected to geode, trying again.");
     }
   } catch (...) {

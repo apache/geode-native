@@ -164,7 +164,7 @@ class _GEODE_EXPORT TcrConnection {
    * operation: 1 write, 2 read
    */
   char* sendRequest(
-      const char* buffer, int32_t len, size_t* recvLen,
+      const char* buffer, size_t len, size_t* recvLen,
       std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
       std::chrono::microseconds receiveTimeoutSec = DEFAULT_READ_TIMEOUT_SECS,
       int32_t request = -1);
@@ -182,7 +182,7 @@ class _GEODE_EXPORT TcrConnection {
    * operation: 1 write, 2 read
    */
   void sendRequestForChunkedResponse(
-      const TcrMessage& request, int32_t len, TcrMessageReply& message,
+      const TcrMessage& request, size_t len, TcrMessageReply& message,
       std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
       std::chrono::microseconds receiveTimeoutSec = DEFAULT_READ_TIMEOUT_SECS);
 
@@ -198,11 +198,12 @@ class _GEODE_EXPORT TcrConnection {
    * @exception  TimeoutException  if timeout happens at any of the 3 socket
    * operation: 1 write, 2 read
    */
-  void send(const char* buffer, int len,
+  void send(const char* buffer, size_t len,
             std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
             bool checkConnected = true);
 
-  void send(std::chrono::microseconds& timeSpent, const char* buffer, int len,
+  void send(std::chrono::microseconds& timeSpent, const char* buffer,
+            size_t len,
             std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
             bool checkConnected = true);
 
@@ -376,18 +377,18 @@ class _GEODE_EXPORT TcrConnection {
   /**
    * Send data to the connection till sendTimeout
    */
-  ConnErrType sendData(const char* buffer, int32_t length,
+  ConnErrType sendData(const char* buffer, size_t length,
                        std::chrono::microseconds sendTimeout,
                        bool checkConnected = true);
 
   ConnErrType sendData(std::chrono::microseconds& timeSpent, const char* buffer,
-                       int32_t length, std::chrono::microseconds sendTimeout,
+                       size_t length, std::chrono::microseconds sendTimeout,
                        bool checkConnected = true);
 
   /**
    * Read data from the connection till receiveTimeoutSec
    */
-  ConnErrType receiveData(char* buffer, int32_t length,
+  ConnErrType receiveData(char* buffer, size_t length,
                           std::chrono::microseconds receiveTimeoutSec,
                           bool checkConnected = true,
                           bool isNotificationMessage = false);

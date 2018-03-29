@@ -37,7 +37,7 @@ namespace Apache
         {
           //pdx header already read before this
           m_startBuffer = m_dataInput->GetCursor();
-          m_startPosition = m_dataInput->BytesRead;//number of bytes read in c++;
+          m_startPosition = static_cast<int32_t>(m_dataInput->BytesRead);//number of bytes read in c++;
 
           //m_serializedLengthWithOffsets = PdxHelper::ReadInt32(m_startBuffer);
 

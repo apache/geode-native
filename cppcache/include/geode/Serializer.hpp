@@ -223,14 +223,15 @@ inline void writeObject(apache::geode::client::DataOutput& output,
 template <typename TObj>
 inline void writeArrayObject(apache::geode::client::DataOutput& output,
                              const std::vector<TObj>& array) {
-  output.writeArrayLen(array.size());
+  output.writeArrayLen(static_cast<int32_t>(array.size()));
   for (auto&& obj : array) {
     writeObject(output, obj);
   }
 }
 
 template <typename TObj>
-inline std::vector<TObj> readArrayObject(apache::geode::client::DataInput& input) {
+inline std::vector<TObj> readArrayObject(
+    apache::geode::client::DataInput& input) {
   std::vector<TObj> array;
   int len = input.readArrayLen();
   if (len >= 0) {

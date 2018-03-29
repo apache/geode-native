@@ -21,6 +21,7 @@ add_library(${TEST_UTILS_LIB} STATIC fw_dunit.cpp BBNamingContext.cpp CacheHelpe
 target_link_libraries(${TEST_UTILS_LIB}
   PRIVATE
     ACE
+	_WarningsAsError
   PUBLIC
     apache-geode
     fwk
@@ -38,6 +39,7 @@ add_library(unit_test_callbacks SHARED LibraryCallbacks.cpp)
 target_link_libraries(unit_test_callbacks
   PRIVATE
     ACE
+	_WarningsAsError
   PUBLIC
     apache-geode
 )
@@ -79,6 +81,7 @@ foreach(FILE ${SOURCES})
     PRIVATE
       ACE
       ${TEST_UTILS_LIB}
+	_WarningsAsError
     PUBLIC
       apache-geode
       testobject

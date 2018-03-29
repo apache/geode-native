@@ -35,15 +35,9 @@ namespace Apache.Geode.Client.UnitTests
   {
     #region Private members
 
-    private UnitProcess m_client1;
-    private UnitProcess m_client2;
 
     private static string[] QueryRegionNames = { "Portfolios", "Positions", "Portfolios2",
       "Portfolios3" };
-
-    private static string QERegionName = "Portfolios";
-    private static string endpoint1;
-    private static string endpoint2;
 
     #endregion Private members
 

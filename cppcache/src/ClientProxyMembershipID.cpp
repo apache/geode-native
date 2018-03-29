@@ -139,7 +139,8 @@ void ClientProxyMembershipID::initObjectVars(
   if (durableClientId != nullptr &&
       durableClntTimeOut != std::chrono::seconds::zero()) {
     m_memID.writeString(durableClientId);
-    const auto int32ptr = CacheableInt32::create(durableClntTimeOut.count());
+    const auto int32ptr = CacheableInt32::create(
+        static_cast<int32_t>(durableClntTimeOut.count()));
     int32ptr->toData(m_memID);
   }
   writeVersion(Version::getOrdinal(), m_memID);
@@ -230,17 +231,18 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
   input.readBytesOnly(hostAddr, len);  // inetaddress
   hostPort = input.readInt32();        // port
   hostname = std::static_pointer_cast<CacheableString>(input.readObject());
-  splitbrain = input.read();                       // splitbrain
-  dcport = input.readInt32();                      // port
-  vPID = input.readInt32();                        // pid
-  vmKind = input.read();                           // vmkind
+  splitbrain = input.read();   // splitbrain
+  dcport = input.readInt32();  // port
+  vPID = input.readInt32();    // pid
+  vmKind = input.read();       // vmkind
   auto aStringArray = CacheableStringArray::create();
   aStringArray->fromData(input);
   dsName = std::static_pointer_cast<CacheableString>(input.readObject());
   uniqueTag = std::static_pointer_cast<CacheableString>(input.readObject());
   durableClientId =
       std::static_pointer_cast<CacheableString>(input.readObject());
-  auto durableClntTimeOut = std::chrono::seconds(input.readInt32());  // durable client timeout
+  auto durableClntTimeOut =
+      std::chrono::seconds(input.readInt32());  // durable client timeout
   int32_t vmViewId = 0;
   readVersion(splitbrain, input);
 

@@ -88,7 +88,7 @@ enum pdxEnumTest { pdx1, pdx2, pdx3 };
 
 class TESTOBJECT_EXPORT NonPdxType {
  public:
-  char m_char;
+  char16_t m_char;
   bool m_bool;
   int8_t m_byte;
   int8_t m_sbyte;  //
@@ -483,8 +483,8 @@ class TESTOBJECT_EXPORT NonPdxType {
   template <typename T1, typename T2>
   bool genericValCompare(T1 value1, T2 value2) const;
 
-  template <typename T1, typename T2>
-  bool genericCompare(T1* value1, T2* value2, int length) const;
+  template <typename T1, typename T2, typename L>
+  bool genericCompare(T1* value1, T2* value2, L length) const;
 
   template <typename T1, typename T2>
   bool generic2DCompare(T1** value1, T2** value2, int length,

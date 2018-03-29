@@ -48,12 +48,11 @@ class _GEODE_EXPORT StructSetImpl
 
   bool isModifiable() const override;
 
-  int32_t size() const override;
+  size_t size() const override;
 
-  const std::shared_ptr<Serializable> operator[](
-      size_t index) const override;
+  const std::shared_ptr<Serializable> operator[](size_t index) const override;
 
-  const int32_t getFieldIndex(const std::string& fieldname) override;
+  const size_t getFieldIndex(const std::string& fieldname) override;
 
   const std::string& getFieldName(int32_t index) override;
 

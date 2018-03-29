@@ -184,7 +184,8 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
         LOGDEBUG("ExecutionImpl::execute: m_routingObj is empty");
         auto serverToBucketsMap = cms->groupByServerToAllBuckets(
             m_region,
-            /*serverOptimizeForWrite*/ (isHAHasResultOptimizeForWrite & 4));
+            /*serverOptimizeForWrite*/ (isHAHasResultOptimizeForWrite & 4) ==
+                4);
         if (!serverToBucketsMap || serverToBucketsMap->empty()) {
           LOGDEBUG(
               "ExecutionImpl::execute: m_routingObj is empty and locationMap "
@@ -202,8 +203,8 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
               std::make_shared<ClientMetadataService::ServerToKeysMap>(
                   serverToBucketsMap->size());
           for (const auto& entry : *serverToBucketsMap) {
-            auto keys =
-                std::make_shared<CacheableHashSet>(entry.second->size());
+            auto keys = std::make_shared<CacheableHashSet>(
+                static_cast<int32_t>(entry.second->size()));
             for (const auto& bucket : *(entry.second)) {
               keys->insert(CacheableInt32::create(bucket));
             }
@@ -250,7 +251,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
         if (txState == nullptr) {
           auto serverToKeysMap = cms->getServerToFilterMapFESHOP(
               m_routingObj, m_region, /*serverOptimizeForWrite*/
-              (isHAHasResultOptimizeForWrite & 4));
+              (isHAHasResultOptimizeForWrite & 4) == 4);
           if (!serverToKeysMap || serverToKeysMap->empty()) {
             LOGDEBUG(
                 "ExecutionImpl::execute: withFilter but locationMap is empty "
@@ -493,7 +494,8 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
                                   funcName, m_args, getResult, tcrdm, timeout);
     TcrMessageReply reply(true, tcrdm);
     ChunkedFunctionExecutionResponse* resultCollector(
-        new ChunkedFunctionExecutionResponse(reply, (getResult & 2), m_rc));
+        new ChunkedFunctionExecutionResponse(reply, (getResult & 2) == 2,
+                                             m_rc));
     reply.setChunkedResultHandler(resultCollector);
     reply.setTimeout(timeout);
 

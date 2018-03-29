@@ -74,8 +74,8 @@ class Connector {
    * @exception  GeodeIOException, TimeoutException, IllegalArgumentException,
    * OutOfMemoryException.
    */
-  virtual int32_t receive(char *b, int32_t len,
-                          std::chrono::microseconds waitSeconds) = 0;
+  virtual size_t receive(char *b, size_t len,
+                         std::chrono::microseconds waitSeconds) = 0;
 
   /**
    * Writes <code>len</code> bytes from the specified byte array
@@ -88,8 +88,8 @@ class Connector {
    * @return     the actual number of bytes written.
    * @exception  GeodeIOException, TimeoutException, IllegalArgumentException.
    */
-  virtual int32_t send(const char *b, int32_t len,
-                       std::chrono::microseconds waitSeconds) = 0;
+  virtual size_t send(const char *b, size_t len,
+                      std::chrono::microseconds waitSeconds) = 0;
 
   /**
    * Initialises the connection.

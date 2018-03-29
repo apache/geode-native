@@ -466,8 +466,8 @@ namespace Apache.Geode.Client.Tests
       p1.ToData(o1);
       p2.ToData(o2);
 
-      uint len1 = o1.BufferLength;
-      uint len2 = o2.BufferLength;
+      var len1 = o1.BufferLength;
+      var len2 = o2.BufferLength;
 
       if (len1 != len2)
       {

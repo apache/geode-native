@@ -23,6 +23,7 @@ set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)
 target_link_libraries(${PROJECT_NAME}
   PRIVATE
     _apache-geode
+    _WarningsAsError
   PUBLIC
     c++11)
 

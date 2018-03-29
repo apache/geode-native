@@ -79,7 +79,8 @@ class RegionHelper {
     std::string sString;
 
     sString += regionAttributes.getCachingEnabled() ? "Caching" : "NoCache";
-    sString += (regionAttributes.getCacheListener() == nullptr) ? "Nlstnr" : "Lstnr";
+    sString +=
+        (regionAttributes.getCacheListener() == nullptr) ? "Nlstnr" : "Lstnr";
     return sString;
   }
 
@@ -96,6 +97,7 @@ class RegionHelper {
       case ExpirationAction::INVALID_ACTION:
         return "INVALID_ACTION";
     }
+    throw std::invalid_argument("expirationAction is uknown.");
   }
 
   /** @brief Given RegionAttributes, return a string logging its configuration.
@@ -111,7 +113,8 @@ class RegionHelper {
     sString += "\nendpoints: ";
     sString += regionAttributes.getEndpoints();
     sString += "\nclientNotification: ";
-    sString += regionAttributes.getClientNotificationEnabled() ? "Enabled" : "Disabled";
+    sString += regionAttributes.getClientNotificationEnabled() ? "Enabled"
+                                                               : "Disabled";
     sString += "\ninitialCapacity: ";
     sString += std::to_string(regionAttributes.getInitialCapacity());
     sString += "\nloadFactor: ";
@@ -160,7 +163,8 @@ class RegionHelper {
                    ? "Disabled"
                    : "Enabled";
     sString += "\nConcurrencyChecksEnabled: ";
-    sString += regionAttributes.getConcurrencyChecksEnabled() ? "Enabled" : "Disabled";
+    sString +=
+        regionAttributes.getConcurrencyChecksEnabled() ? "Enabled" : "Disabled";
     sString += "\n";
 
     return sString;
@@ -184,31 +188,36 @@ class RegionHelper {
                                regionAttributes.getCacheWriterFactory());
     }
     if (regionAttributes.getEntryIdleTimeout().count() != 0) {
-      regionFac.setEntryIdleTimeout(regionAttributes.getEntryIdleTimeoutAction(),
-                                    regionAttributes.getEntryIdleTimeout());
+      regionFac.setEntryIdleTimeout(
+          regionAttributes.getEntryIdleTimeoutAction(),
+          regionAttributes.getEntryIdleTimeout());
     }
     if (regionAttributes.getEntryTimeToLive().count() != 0) {
       regionFac.setEntryTimeToLive(regionAttributes.getEntryTimeToLiveAction(),
                                    regionAttributes.getEntryTimeToLive());
     }
     if (regionAttributes.getRegionIdleTimeout().count() != 0) {
-      regionFac.setRegionIdleTimeout(regionAttributes.getRegionIdleTimeoutAction(),
-                                     regionAttributes.getRegionIdleTimeout());
+      regionFac.setRegionIdleTimeout(
+          regionAttributes.getRegionIdleTimeoutAction(),
+          regionAttributes.getRegionIdleTimeout());
     }
     if (regionAttributes.getRegionTimeToLive().count() != 0) {
-      regionFac.setRegionTimeToLive(regionAttributes.getRegionTimeToLiveAction(),
-                                    regionAttributes.getRegionTimeToLive());
+      regionFac.setRegionTimeToLive(
+          regionAttributes.getRegionTimeToLiveAction(),
+          regionAttributes.getRegionTimeToLive());
     }
     if (!(regionAttributes.getPartitionResolverLibrary().empty() ||
           regionAttributes.getPartitionResolverFactory().empty())) {
-      regionFac.setPartitionResolver(regionAttributes.getPartitionResolverLibrary(),
-                                     regionAttributes.getPartitionResolverFactory());
+      regionFac.setPartitionResolver(
+          regionAttributes.getPartitionResolverLibrary(),
+          regionAttributes.getPartitionResolverFactory());
     }
     if (!(regionAttributes.getPersistenceLibrary().empty() ||
           regionAttributes.getPersistenceFactory().empty())) {
-      regionFac.setPersistenceManager(regionAttributes.getPersistenceLibrary(),
-                                      regionAttributes.getPersistenceFactory(),
-                                      regionAttributes.getPersistenceProperties());
+      regionFac.setPersistenceManager(
+          regionAttributes.getPersistenceLibrary(),
+          regionAttributes.getPersistenceFactory(),
+          regionAttributes.getPersistenceProperties());
     }
     regionFac.setInitialCapacity(regionAttributes.getInitialCapacity());
     regionFac.setLoadFactor(regionAttributes.getLoadFactor());
@@ -217,7 +226,8 @@ class RegionHelper {
     regionFac.setDiskPolicy(regionAttributes.getDiskPolicy());
     regionFac.setCloningEnabled(regionAttributes.getCloningEnabled());
     regionFac.setPoolName(regionAttributes.getPoolName());
-    regionFac.setConcurrencyChecksEnabled(regionAttributes.getConcurrencyChecksEnabled());
+    regionFac.setConcurrencyChecksEnabled(
+        regionAttributes.getConcurrencyChecksEnabled());
   }
 
   std::shared_ptr<Region> createRootRegion(std::shared_ptr<Cache>& cachePtr) {
