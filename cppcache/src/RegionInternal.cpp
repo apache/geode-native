@@ -38,10 +38,9 @@ const CacheEventFlags CacheEventFlags::CACHE_CLOSE(
 const CacheEventFlags CacheEventFlags::NOCACHEWRITER(
     CacheEventFlags::GF_NOCACHEWRITER);
 
-RegionInternal::RegionInternal(
-    Cache* cache,
-    RegionAttributes attributes)
-    : Region(cache), m_regionAttributes(attributes) {}
+RegionInternal::RegionInternal(CacheImpl* cacheImpl,
+                               RegionAttributes attributes)
+    : Region(cacheImpl), m_regionAttributes(attributes) {}
 
 RegionInternal::~RegionInternal() {}
 
@@ -60,8 +59,7 @@ void RegionInternal::unregisterKeys(
       "Thin Client Region.");
 }
 
-void RegionInternal::registerAllKeys(bool isDurable,
-                                     bool getInitialValues,
+void RegionInternal::registerAllKeys(bool isDurable, bool getInitialValues,
                                      bool receiveValues) {
   throw UnsupportedOperationException(
       "registerAllKeys only supported by Thin Client Region.");
@@ -149,7 +147,8 @@ void RegionInternal::setEntryIdleTimeout(const std::chrono::seconds& duration) {
   m_regionAttributes.m_entryIdleTimeout = duration;
 }
 
-void RegionInternal::setCacheListener(const std::shared_ptr<CacheListener>& aListener) {
+void RegionInternal::setCacheListener(
+    const std::shared_ptr<CacheListener>& aListener) {
   m_regionAttributes.m_cacheListener = aListener;
 }
 
@@ -168,7 +167,8 @@ void RegionInternal::setPartitionResolver(const std::string& libpath,
   m_regionAttributes.setPartitionResolver(libpath, factoryFuncName);
 }
 
-void RegionInternal::setCacheLoader(const std::shared_ptr<CacheLoader>& aLoader) {
+void RegionInternal::setCacheLoader(
+    const std::shared_ptr<CacheLoader>& aLoader) {
   m_regionAttributes.m_cacheLoader = aLoader;
 }
 
@@ -177,7 +177,8 @@ void RegionInternal::setCacheLoader(const std::string& libpath,
   m_regionAttributes.setCacheLoader(libpath, factoryFuncName);
 }
 
-void RegionInternal::setCacheWriter(const std::shared_ptr<CacheWriter>& aWriter) {
+void RegionInternal::setCacheWriter(
+    const std::shared_ptr<CacheWriter>& aWriter) {
   m_regionAttributes.m_cacheWriter = aWriter;
 }
 

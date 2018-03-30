@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TRANSACTIONALOPERATION_H_
-#define GEODE_TRANSACTIONALOPERATION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,16 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TransactionalOperation.hpp
- *
- *  Created on: 10-May-2011
- *      Author: ankurs
- */
+
+#pragma once
+
+#ifndef GEODE_TRANSACTIONALOPERATION_H_
+#define GEODE_TRANSACTIONALOPERATION_H_
 
 #include <geode/internal/geode_globals.hpp>
 #include <geode/Serializable.hpp>
 #include <vector>
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -51,19 +46,23 @@ enum ServerRegionOperation {
 };
 
 class CacheableKey;
+class CacheImpl;
+
 class TransactionalOperation {
  public:
-  TransactionalOperation(ServerRegionOperation op, const char* regionName,
-                         std::shared_ptr<CacheableKey> key, std::shared_ptr<std::vector<std::shared_ptr<Cacheable>> > arguments);
+  TransactionalOperation(
+      ServerRegionOperation op, const char* regionName,
+      std::shared_ptr<CacheableKey> key,
+      std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> arguments);
   virtual ~TransactionalOperation();
 
-  std::shared_ptr<Cacheable> replay(Cache* cache);
+  std::shared_ptr<Cacheable> replay(CacheImpl* cache);
 
  private:
   ServerRegionOperation m_operation;
   const char* m_regionName;
   std::shared_ptr<CacheableKey> m_key;
-  std::shared_ptr<std::vector<std::shared_ptr<Cacheable>> > m_arguments;
+  std::shared_ptr<std::vector<std::shared_ptr<Cacheable>>> m_arguments;
 };
 }  // namespace client
 }  // namespace geode

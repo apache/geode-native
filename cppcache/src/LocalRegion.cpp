@@ -41,15 +41,14 @@ namespace apache {
 namespace geode {
 namespace client {
 
-LocalRegion::LocalRegion(const std::string& name, CacheImpl* cache,
+LocalRegion::LocalRegion(const std::string& name, CacheImpl* cacheImpl,
                          const std::shared_ptr<RegionInternal>& rPtr,
                          RegionAttributes attributes,
                          const std::shared_ptr<CacheStatistics>& stats,
                          bool shared, bool enableTimeStatistics)
-    : RegionInternal(cache->getCache(), attributes),
+    : RegionInternal(cacheImpl, attributes),
       m_name(name),
       m_parentRegion(rPtr),
-      m_cacheImpl(cache),
       m_destroyPending(false),
       m_listener(nullptr),
       m_writer(nullptr),
@@ -89,13 +88,11 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cache,
     (m_fullPath = "/") += m_name;
   }
 
-  m_regionStats = new RegionStats(cache->getDistributedSystem()
+  m_regionStats = new RegionStats(cacheImpl->getDistributedSystem()
                                       .getStatisticsManager()
                                       ->getStatisticsFactory(),
                                   m_fullPath);
-  auto p =
-      cache->getCache()->getPoolManager().find(getAttributes().getPoolName());
-  // m_attachedPool = p;
+  auto p = cacheImpl->getPoolManager().find(getAttributes().getPoolName());
   setPool(p);
 }
 

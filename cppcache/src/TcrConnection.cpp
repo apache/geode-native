@@ -1111,7 +1111,7 @@ void TcrConnection::close() {
   }
 
   TcrMessage* closeMsg = TcrMessage::getCloseConnMessage(
-      m_poolDM->getConnectionManager().getCacheImpl()->getCache());
+      m_poolDM->getConnectionManager().getCacheImpl());
   try {
     if (!TcrConnectionManager::TEST_DURABLE_CLIENT_CRASH &&
         !m_connectionManager->isNetDown()) {

@@ -29,7 +29,7 @@
 #include "RegionAttributes.hpp"
 #include "QueryService.hpp"
 #include "CacheFactory.hpp"
-#include "impl/AuthenticatedCache.hpp"
+#include "impl/AuthenticatedView.hpp"
 #include "impl/SafeConvert.hpp"
 #include "impl/PdxTypeRegistry.hpp"
 #include "impl/PdxInstanceFactoryImpl.hpp"
@@ -242,7 +242,7 @@ namespace Apache
 
           try
           {
-            return AuthenticatedCache::Create((m_nativeptr->get()->createAuthenticatedView(credentials->GetNative(), "")));
+            return AuthenticatedView::Create((m_nativeptr->get()->createAuthenticatedView(credentials->GetNative(), "")));
           }
           finally
           {
@@ -291,7 +291,7 @@ namespace Apache
 
           try
           {
-            return AuthenticatedCache::Create( (m_nativeptr->get()->createAuthenticatedView(credentials->GetNative(), marshal_as<std::string>(poolName))));
+            return AuthenticatedView::Create( (m_nativeptr->get()->createAuthenticatedView(credentials->GetNative(), marshal_as<std::string>(poolName))));
           }
           finally
           {

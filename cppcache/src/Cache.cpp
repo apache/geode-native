@@ -151,6 +151,15 @@ Cache::Cache(Cache&& other) noexcept
   m_cacheImpl->setCache(this);
 }
 
+Cache& Cache::operator=(Cache&& other) noexcept {
+  if (this != &other) {
+    m_cacheImpl = std::move(other.m_cacheImpl);
+    m_typeRegistry = std::move(other.m_typeRegistry);
+    m_cacheImpl->setCache(this);
+  }
+  return *this;
+}
+
 Cache::~Cache() = default;
 
 void Cache::initializeDeclarativeCache(const std::string& cacheXml) {
@@ -187,19 +196,19 @@ std::shared_ptr<PdxInstanceFactory> Cache::createPdxInstanceFactory(
     std::string className) const {
   return std::make_shared<PdxInstanceFactoryImpl>(
       className.c_str(), m_cacheImpl->m_cacheStats,
-      m_cacheImpl->getPdxTypeRegistry(), this,
+      m_cacheImpl->getPdxTypeRegistry(), m_cacheImpl.get(),
       m_cacheImpl->getDistributedSystem()
           .getSystemProperties()
           .getEnableTimeStatistics());
 }
-std::shared_ptr<RegionService> Cache::createAuthenticatedView(
+AuthenticatedView Cache::createAuthenticatedView(
     std::shared_ptr<Properties> userSecurityProperties,
     const std::string& poolName) {
   if (poolName.empty()) {
     auto pool = m_cacheImpl->getPoolManager().getDefaultPool();
     if (!this->isClosed() && pool != nullptr) {
-      return pool->createSecureUserCache(userSecurityProperties,
-                                         m_cacheImpl.get());
+      return pool->createAuthenticatedView(userSecurityProperties,
+                                           m_cacheImpl.get());
     }
 
     throw IllegalStateException(
@@ -210,8 +219,8 @@ std::shared_ptr<RegionService> Cache::createAuthenticatedView(
       if (!poolName.empty()) {
         auto poolPtr = m_cacheImpl->getPoolManager().find(poolName);
         if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
-          return poolPtr->createSecureUserCache(userSecurityProperties,
-                                                m_cacheImpl.get());
+          return poolPtr->createAuthenticatedView(userSecurityProperties,
+                                                  m_cacheImpl.get());
         }
         throw IllegalStateException(
             "Either pool not found or it has been destroyed");
@@ -221,7 +230,6 @@ std::shared_ptr<RegionService> Cache::createAuthenticatedView(
 
     throw IllegalStateException("Cache has been closed");
   }
-  return nullptr;
 }
 
 PoolManager& Cache::getPoolManager() const {

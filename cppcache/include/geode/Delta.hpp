@@ -44,7 +44,6 @@ namespace client {
  * of the class.
  */
 
-class Cache;
 class DataInput;
 class DataOutput;
 
@@ -88,18 +87,13 @@ class _GEODE_EXPORT Delta {
    * notification.
    * The region attribute for cloning must be set to 'true' in order to enable
    * cloning.
-   * The default implementation of this method creates an object clone by first
-   * serializing the object into
-   * a buffer, then deserializing from the buffer thus creating a clone of the
-   * original.
    */
-  virtual std::shared_ptr<Delta> clone() const;
+  virtual std::shared_ptr<Delta> clone() const = 0;
 
-  virtual ~Delta() {}
+  virtual ~Delta() = default;
 
  protected:
-  Delta(Cache* cache);
-  Cache* m_cache;
+  Delta() = default;
 };
 }  // namespace client
 }  // namespace geode

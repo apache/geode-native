@@ -88,8 +88,7 @@ GfErrType MapSegment::create(const std::shared_ptr<CacheableKey>& key,
       rehash();
     }
     std::shared_ptr<MapEntry> entry;
-    int status;
-    if ((status = m_map->find(key, entry)) == -1) {
+    if ((m_map->find(key, entry)) == -1) {
       if ((err = putNoEntry(key, newValue, me, updateCount, destroyTracker,
                             versionTag)) != GF_NOERR) {
         return err;
@@ -157,8 +156,7 @@ GfErrType MapSegment::put(const std::shared_ptr<CacheableKey>& key,
       rehash();
     }
     std::shared_ptr<MapEntry> entry;
-    int status;
-    if ((status = m_map->find(key, entry)) == -1) {
+    if ((m_map->find(key, entry)) == -1) {
       if (delta != nullptr) {
         return GF_INVALID_DELTA;  // You can not apply delta when there is no
       }
@@ -215,11 +213,10 @@ GfErrType MapSegment::invalidate(const std::shared_ptr<CacheableKey>& key,
                                  std::shared_ptr<VersionTag> versionTag,
                                  bool& isTokenAdded) {
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
-  int status;
   isTokenAdded = false;
   GfErrType err = GF_NOERR;
   std::shared_ptr<MapEntry> entry;
-  if ((status = m_map->find(key, entry)) != -1) {
+  if ((m_map->find(key, entry)) != -1) {
     VersionStamp versionStamp;
     if (m_concurrencyChecksEnabled) {
       versionStamp = entry->getVersionStamp();
@@ -264,11 +261,10 @@ GfErrType MapSegment::removeWhenConcurrencyEnabled(
     bool& isEntryFound, ExpiryTaskManager::id_type expiryTaskID,
     TombstoneExpiryHandler* handler, bool& expTaskSet) {
   GfErrType err = GF_NOERR;
-  int status;
   std::shared_ptr<MapEntry> entry;
   VersionStamp versionStamp;
   // If entry found, else return no entry
-  if ((status = m_map->find(key, entry)) != -1) {
+  if ((m_map->find(key, entry)) != -1) {
     isEntryFound = true;
     // If the version tag is null, use the version tag of
     // the existing entry
@@ -332,7 +328,6 @@ GfErrType MapSegment::remove(const std::shared_ptr<CacheableKey>& key,
                              std::shared_ptr<MapEntryImpl>& me, int updateCount,
                              std::shared_ptr<VersionTag> versionTag,
                              bool afterRemote, bool& isEntryFound) {
-  int status;
   std::shared_ptr<MapEntry> entry;
   if (m_concurrencyChecksEnabled) {
     TombstoneExpiryHandler* handler;
@@ -355,7 +350,7 @@ GfErrType MapSegment::remove(const std::shared_ptr<CacheableKey>& key,
 
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
   std::shared_ptr<Cacheable> value;
-  if ((status = m_map->unbind(key, entry)) == -1) {
+  if ((m_map->unbind(key, entry)) == -1) {
     // didn't unbind, probably no entry...
     oldValue = nullptr;
     volatile int destroyTrackers = *m_numDestroyTrackers;
@@ -412,9 +407,8 @@ bool MapSegment::getEntry(const std::shared_ptr<CacheableKey>& key,
                           std::shared_ptr<MapEntryImpl>& result,
                           std::shared_ptr<Cacheable>& value) {
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
-  int status;
   std::shared_ptr<MapEntry> entry;
-  if ((status = m_map->find(key, entry)) == -1) {
+  if ((m_map->find(key, entry)) == -1) {
     result = nullptr;
     value = nullptr;
     return false;
@@ -438,8 +432,7 @@ bool MapSegment::getEntry(const std::shared_ptr<CacheableKey>& key,
 bool MapSegment::containsKey(const std::shared_ptr<CacheableKey>& key) {
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
   std::shared_ptr<MapEntry> mePtr;
-  int status;
-  if ((status = m_map->find(key, mePtr)) == -1) {
+  if ((m_map->find(key, mePtr)) == -1) {
     return false;
   }
   // If the value is a tombstone return not found
@@ -577,8 +570,7 @@ void MapSegment::removeTrackerForEntry(
   if (m_concurrencyChecksEnabled) return;
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
   std::shared_ptr<MapEntry> entry;
-  int status;
-  if ((status = m_map->find(key, entry)) != -1) {
+  if ((m_map->find(key, entry)) != -1) {
     auto impl = entry->getImplPtr();
     removeTrackerForEntry(key, entry, impl);
   }
@@ -622,7 +614,7 @@ void MapSegment::rehash() {  // Only called from put, segment must already be
 
   uint32_t newMapSize = TableOfPrimes::getPrime(++m_primeIndex);
   LOGFINER("Rehashing MapSegment to size %d.", newMapSize);
-  CacheableKeyHashMap* newMap = new CacheableKeyHashMap();
+  auto* newMap = new CacheableKeyHashMap();
   newMap->open(newMapSize);
 
   // copy all entries into newMap..
@@ -641,7 +633,7 @@ void MapSegment::rehash() {  // Only called from put, segment must already be
 std::shared_ptr<Cacheable> MapSegment::getFromDisc(
     std::shared_ptr<CacheableKey> key,
     std::shared_ptr<MapEntryImpl>& entryImpl) {
-  LocalRegion* lregion = static_cast<LocalRegion*>(m_region);
+  auto* lregion = static_cast<LocalRegion*>(m_region);
   EntriesMap* em = lregion->getEntryMap();
   return em->getFromDisk(key, entryImpl);
 }
@@ -654,11 +646,12 @@ GfErrType MapSegment::putForTrackedEntry(
   if (updateCount < 0 || m_concurrencyChecksEnabled) {
     // for a non-tracked put (e.g. from notification) go ahead with the
     // create/update and increment the update counter
-    ThinClientRegion* tcRegion = dynamic_cast<ThinClientRegion*>(m_region);
+    auto* thinClientRegion = dynamic_cast<ThinClientRegion*>(m_region);
     ThinClientPoolDM* m_poolDM = nullptr;
-    if (tcRegion) {
-      m_poolDM = dynamic_cast<ThinClientPoolDM*>(tcRegion->getDistMgr());
+    if (thinClientRegion) {
+      m_poolDM = dynamic_cast<ThinClientPoolDM*>(thinClientRegion->getDistMgr());
     }
+
     if (delta != nullptr) {
       std::shared_ptr<Cacheable> oldValue;
       entryImpl->getValueI(oldValue);
@@ -675,14 +668,15 @@ GfErrType MapSegment::putForTrackedEntry(
           return GF_INVALID_DELTA;
         }
       }
+
       auto valueWithDelta = std::dynamic_pointer_cast<Delta>(oldValue);
-      std::shared_ptr<Cacheable>& newValue1 =
-          const_cast<std::shared_ptr<Cacheable>&>(newValue);
+      auto& newValue1 = const_cast<std::shared_ptr<Cacheable>&>(newValue);
       try {
         if (m_region->getAttributes().getCloningEnabled()) {
           auto tempVal = valueWithDelta->clone();
           ACE_Time_Value currTimeBefore = ACE_OS::gettimeofday();
           tempVal->fromDelta(*delta);
+
           if (m_poolDM) {
             m_poolDM->updateNotificationStats(
                 true,
@@ -694,6 +688,7 @@ GfErrType MapSegment::putForTrackedEntry(
           ACE_Time_Value currTimeBefore = ACE_OS::gettimeofday();
           valueWithDelta->fromDelta(*delta);
           newValue1 = std::dynamic_pointer_cast<Serializable>(valueWithDelta);
+
           if (m_poolDM) {
             m_poolDM->updateNotificationStats(
                 true,

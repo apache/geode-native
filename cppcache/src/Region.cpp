@@ -16,12 +16,18 @@
  */
 
 #include <geode/Region.hpp>
+#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
-Region::Region(Cache* cache) : m_cache(cache) {}
+
+Region::Region(CacheImpl* cacheImpl) : m_cacheImpl(cacheImpl) {}
+
 Region::~Region() {}
+
+Cache& Region::getCache() { return *m_cacheImpl->getCache(); }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

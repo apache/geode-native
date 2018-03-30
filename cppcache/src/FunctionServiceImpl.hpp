@@ -21,7 +21,7 @@
  */
 
 #include <geode/internal/geode_globals.hpp>
-#include "ProxyCache.hpp"
+#include <geode/AuthenticatedView.hpp>
 #include <geode/FunctionService.hpp>
 /**
  * @file
@@ -51,16 +51,17 @@ class _GEODE_EXPORT FunctionServiceImpl : public FunctionService {
   virtual ~FunctionServiceImpl() {}
 
  private:
-  FunctionServiceImpl(const FunctionService &);
-  FunctionServiceImpl &operator=(const FunctionService &);
+  FunctionServiceImpl(const FunctionService&);
+  FunctionServiceImpl& operator=(const FunctionService&);
 
-  FunctionServiceImpl(std::shared_ptr<ProxyCache> proxyCache);
+  FunctionServiceImpl(AuthenticatedView* authenticatedView);
 
   static std::shared_ptr<FunctionService> getFunctionService(
-      std::shared_ptr<ProxyCache> proxyCache);
+      AuthenticatedView* authenticatedView);
 
-  std::shared_ptr<ProxyCache> m_proxyCache;
-  friend class ProxyCache;
+  AuthenticatedView* m_authenticatedView;
+
+  friend class AuthenticatedView;
 
   _GEODE_FRIEND_STD_SHARED_PTR(FunctionServiceImpl)
 };

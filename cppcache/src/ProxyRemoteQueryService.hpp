@@ -24,7 +24,7 @@
 #include "CqService.hpp"
 #include "UserAttributes.hpp"
 #include <geode/QueryService.hpp>
-#include "ProxyCache.hpp"
+#include <geode/AuthenticatedView.hpp>
 #include "ThinClientCacheDistributionManager.hpp"
 
 #include <ace/Recursive_Thread_Mutex.h>
@@ -38,7 +38,7 @@ class ThinClientPoolDM;
 
 class _GEODE_EXPORT ProxyRemoteQueryService : public QueryService {
  public:
-  ProxyRemoteQueryService(std::shared_ptr<ProxyCache> cptr);
+  ProxyRemoteQueryService(AuthenticatedView* cptr);
   virtual ~ProxyRemoteQueryService() = default;
 
   std::shared_ptr<Query> newQuery(std::string querystring) override;
@@ -75,12 +75,12 @@ class _GEODE_EXPORT ProxyRemoteQueryService : public QueryService {
   void closeCqs(bool keepAlive);
 
   std::shared_ptr<QueryService> m_realQueryService;
-  std::shared_ptr<ProxyCache> m_proxyCache;
+  AuthenticatedView* m_authenticatedView;
   query_container_type m_cqQueries;
   // lock for cqQuery list;
   mutable ACE_Recursive_Thread_Mutex m_cqQueryListLock;
 
-  friend class ProxyCache;
+  friend class AuthenticatedView;
 };
 
 }  // namespace client

@@ -53,7 +53,6 @@ void PdxHelper::serializePdx(DataOutput& output,
 
 void PdxHelper::serializePdx(
     DataOutput& output, const std::shared_ptr<PdxSerializable>& pdxObject) {
-
   auto pdxII = std::dynamic_pointer_cast<PdxInstanceImpl>(pdxObject);
   auto cacheImpl = CacheRegionHelper::getCacheImpl(output.getCache());
   auto pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
@@ -202,70 +201,70 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
      */
     // pdxClassname = pType->getPdxClassName();
     pdxObjectptr = serializationRegistry->getPdxType(pType->getPdxClassName());
-   auto pdxRealObject = pdxObjectptr;
-   if (pdxLocalType == nullptr)  // need to know local type
-   {
-     auto prtc =
-         PdxReaderWithTypeCollector(dataInput, pType, length, pdxTypeRegistry);
-     pdxObjectptr->fromData(prtc);
+    auto pdxRealObject = pdxObjectptr;
+    if (pdxLocalType == nullptr)  // need to know local type
+    {
+      auto prtc =
+          PdxReaderWithTypeCollector(dataInput, pType, length, pdxTypeRegistry);
+      pdxObjectptr->fromData(prtc);
 
-     // Check for the PdxWrapper
+      // Check for the PdxWrapper
 
-     pdxLocalType = prtc.getLocalType();
+      pdxLocalType = prtc.getLocalType();
 
-     if (pType->Equals(pdxLocalType)) {
-       pdxTypeRegistry->addLocalPdxType(pdxRealObject->getClassName(), pType);
-       pdxTypeRegistry->addPdxType(pType->getTypeId(), pType);
-       pType->setLocal(true);
-     } else {
-       // Need to know local type and then merge type
-       pdxLocalType->InitializeType();
-       pdxLocalType->setTypeId(pdxTypeRegistry->getPDXIdForType(
-           pdxObjectptr->getClassName(),
-           DataInputInternal::getPoolName(dataInput).c_str(), pdxLocalType,
-           true));
-       pdxLocalType->setLocal(true);
-       pdxTypeRegistry->addLocalPdxType(pdxRealObject->getClassName(),
-                                        pdxLocalType);  // added local type
-       pdxTypeRegistry->addPdxType(pdxLocalType->getTypeId(), pdxLocalType);
+      if (pType->Equals(pdxLocalType)) {
+        pdxTypeRegistry->addLocalPdxType(pdxRealObject->getClassName(), pType);
+        pdxTypeRegistry->addPdxType(pType->getTypeId(), pType);
+        pType->setLocal(true);
+      } else {
+        // Need to know local type and then merge type
+        pdxLocalType->InitializeType();
+        pdxLocalType->setTypeId(pdxTypeRegistry->getPDXIdForType(
+            pdxObjectptr->getClassName(),
+            DataInputInternal::getPoolName(dataInput).c_str(), pdxLocalType,
+            true));
+        pdxLocalType->setLocal(true);
+        pdxTypeRegistry->addLocalPdxType(pdxRealObject->getClassName(),
+                                         pdxLocalType);  // added local type
+        pdxTypeRegistry->addPdxType(pdxLocalType->getTypeId(), pdxLocalType);
 
-       pType->InitializeType();
-       pdxTypeRegistry->addPdxType(pType->getTypeId(),
-                                   pType);  // adding remote type
+        pType->InitializeType();
+        pdxTypeRegistry->addPdxType(pType->getTypeId(),
+                                    pType);  // adding remote type
 
-       // create merge type
-       createMergedType(pdxLocalType, pType, dataInput);
+        // create merge type
+        createMergedType(pdxLocalType, pType, dataInput);
 
-       auto mergedVersion = pdxTypeRegistry->getMergedType(pType->getTypeId());
+        auto mergedVersion = pdxTypeRegistry->getMergedType(pType->getTypeId());
 
-       if (auto preserveData =
-               prtc.getPreservedData(mergedVersion, pdxObjectptr)) {
-         pdxTypeRegistry->setPreserveData(pdxObjectptr, preserveData,
-                                          cacheImpl->getExpiryTaskManager());
-       }
-     }
-     prtc.moveStream();
-   } else {  // remote reader will come here as local type is there
-     pType->InitializeType();
-     LOGDEBUG("Adding type %d ", pType->getTypeId());
-     pdxTypeRegistry->addPdxType(pType->getTypeId(),
-                                 pType);  // adding remote type
-     auto prr = PdxRemoteReader(dataInput, pType, length, pdxTypeRegistry);
-     pdxObjectptr->fromData(prr);
+        if (auto preserveData =
+                prtc.getPreservedData(mergedVersion, pdxObjectptr)) {
+          pdxTypeRegistry->setPreserveData(pdxObjectptr, preserveData,
+                                           cacheImpl->getExpiryTaskManager());
+        }
+      }
+      prtc.moveStream();
+    } else {  // remote reader will come here as local type is there
+      pType->InitializeType();
+      LOGDEBUG("Adding type %d ", pType->getTypeId());
+      pdxTypeRegistry->addPdxType(pType->getTypeId(),
+                                  pType);  // adding remote type
+      auto prr = PdxRemoteReader(dataInput, pType, length, pdxTypeRegistry);
+      pdxObjectptr->fromData(prr);
 
-     // Check for PdxWrapper to getObject.
+      // Check for PdxWrapper to getObject.
 
-     createMergedType(pdxLocalType, pType, dataInput);
+      createMergedType(pdxLocalType, pType, dataInput);
 
-     auto mergedVersion = pdxTypeRegistry->getMergedType(pType->getTypeId());
+      auto mergedVersion = pdxTypeRegistry->getMergedType(pType->getTypeId());
 
-     auto preserveData = prr.getPreservedData(mergedVersion, pdxObjectptr);
-     if (preserveData != nullptr) {
-       pdxTypeRegistry->setPreserveData(pdxObjectptr, preserveData,
-                                        cacheImpl->getExpiryTaskManager());
-     }
-     prr.moveStream();
-   }
+      auto preserveData = prr.getPreservedData(mergedVersion, pdxObjectptr);
+      if (preserveData != nullptr) {
+        pdxTypeRegistry->setPreserveData(pdxObjectptr, preserveData,
+                                         cacheImpl->getExpiryTaskManager());
+      }
+      prr.moveStream();
+    }
   }
   return pdxObjectptr;
 }
@@ -310,7 +309,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
     // TODO::Enable it once the PdxInstanceImple is CheckedIn.
     auto pdxObject = std::make_shared<PdxInstanceImpl>(
         const_cast<uint8_t*>(dataInput.currentBufferPosition()), len, typeId,
-        &cachePerfStats, pdxTypeRegistry, dataInput.getCache(),
+        &cachePerfStats, pdxTypeRegistry, cacheImpl,
         cacheImpl->getDistributedSystem()
             .getSystemProperties()
             .getEnableTimeStatistics());
@@ -321,7 +320,8 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
   }
 }
 
-void PdxHelper::createMergedType(std::shared_ptr<PdxType> localType, std::shared_ptr<PdxType> remoteType,
+void PdxHelper::createMergedType(std::shared_ptr<PdxType> localType,
+                                 std::shared_ptr<PdxType> remoteType,
                                  DataInput& dataInput) {
   auto mergedVersion = localType->mergeVersion(remoteType);
   auto cacheImpl = CacheRegionHelper::getCacheImpl(dataInput.getCache());
@@ -402,17 +402,18 @@ int32_t PdxHelper::readInt(uint8_t* offsetPosition, int size) {
   throw;
 }
 
-int32_t PdxHelper::getEnumValue(const char* enumClassName, const char* enumName,
-                                int hashcode,
-                                std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry) {
+int32_t PdxHelper::getEnumValue(
+    const char* enumClassName, const char* enumName, int hashcode,
+    std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry) {
   const auto& ei =
       std::make_shared<EnumInfo>(enumClassName, enumName, hashcode);
   return pdxTypeRegistry->getEnumValue(ei);
 }
- std::shared_ptr<EnumInfo> PdxHelper::getEnum(int enumId, std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry) {
+std::shared_ptr<EnumInfo> PdxHelper::getEnum(
+    int enumId, std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry) {
   const auto& ei = pdxTypeRegistry->getEnum(enumId);
   return ei;
- }
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

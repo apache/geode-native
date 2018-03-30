@@ -95,8 +95,8 @@ class _GEODE_EXPORT FunctionService {
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
-  inline static Execution onServer(const std::shared_ptr<RegionService>& cache) {
-    return onServerWithCache(cache);
+  inline static Execution onServer(RegionService& regionService) {
+    return onServerWithCache(regionService);
   }
 
   /**
@@ -130,23 +130,20 @@ class _GEODE_EXPORT FunctionService {
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
-  inline static Execution onServers(const std::shared_ptr<RegionService>& cache) {
-    return onServersWithCache(cache);
+  inline static Execution onServers(RegionService& regionService) {
+    return onServersWithCache(regionService);
   }
 
   virtual ~FunctionService() {}
 
  private:
-  static Execution onServerWithPool(
-      const std::shared_ptr<Pool>& pool);
+  static Execution onServerWithPool(const std::shared_ptr<Pool>& pool);
 
-  static Execution onServerWithCache(
-      const std::shared_ptr<RegionService>& cache);
+  static Execution onServerWithCache(RegionService& regionService);
 
-  static Execution onServersWithPool(
-      const std::shared_ptr<Pool>& pool);
+  static Execution onServersWithPool(const std::shared_ptr<Pool>& pool);
 
-  static Execution onServersWithCache(const std::shared_ptr<RegionService>& cache);
+  static Execution onServersWithCache(RegionService& regionService);
 };
 }  // namespace client
 }  // namespace geode

@@ -14,14 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- *DeltaTestImpl.cpp
- *
- *Created on: Jul 14, 2009
- *Author: abhaware
- */
+
 #include "DeltaTestImpl.hpp"
-#include <ace/Guard_T.h>
+
 using namespace testobject;
 
 uint8_t DeltaTestImpl::INT_MASK = 0x1;
@@ -31,7 +26,7 @@ uint8_t DeltaTestImpl::BYTE_ARR_MASK = 0x8;
 uint8_t DeltaTestImpl::TEST_OBJ_MASK = 0x10;
 uint8_t DeltaTestImpl::COMPLETE_MASK = 0x1F;
 
-DeltaTestImpl::DeltaTestImpl() : Delta(nullptr) {
+DeltaTestImpl::DeltaTestImpl() : Delta() {
   intVar = 1;
   str = CacheableString::create("test");
   doubleVar = 1.1;
@@ -43,15 +38,17 @@ DeltaTestImpl::DeltaTestImpl() : Delta(nullptr) {
   toDeltaCounter = 0;
   fromDeltaCounter = 0;
 }
+
 DeltaTestImpl::DeltaTestImpl(int intValue,
                              std::shared_ptr<CacheableString> strptr)
-    : Delta(nullptr),
+    : Delta(),
       intVar(intValue),
       str(strptr),
       doubleVar(0),
       toDeltaCounter(0),
       fromDeltaCounter(0) {}
-DeltaTestImpl::DeltaTestImpl(const DeltaTestImpl& rhs) : Delta(nullptr) {
+
+DeltaTestImpl::DeltaTestImpl(const DeltaTestImpl& rhs) : Delta() {
   intVar = rhs.intVar;
   str = CacheableString::create(rhs.str->value().c_str());
   doubleVar = rhs.doubleVar;
@@ -111,7 +108,9 @@ void DeltaTestImpl::fromDelta(DataInput& input) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
     fromDeltaCounter++;
   }
+
   deltaBits = input.read();
+
   if ((deltaBits & INT_MASK) == INT_MASK) {
     intVar = input.readInt32();
   }
@@ -123,13 +122,6 @@ void DeltaTestImpl::fromDelta(DataInput& input) {
   }
   if ((deltaBits & BYTE_ARR_MASK) == BYTE_ARR_MASK) {
     byteArr = std::static_pointer_cast<CacheableBytes>(input.readObject());
-    /*
-        uint8_t* bytes;
-        int32_t len;
-        input.readBytes( &bytes, &len );
-        byteArr = CacheableBytes::create( bytes, len );
-        delete bytes;
-    */
   }
   if ((deltaBits & TEST_OBJ_MASK) == TEST_OBJ_MASK) {
     testObj = std::static_pointer_cast<TestObject1>(input.readObject());

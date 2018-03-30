@@ -35,10 +35,10 @@ namespace apache {
 namespace geode {
 namespace client {
 
-#define throwException(ex)                              \
-  {                                                     \
+#define throwException(ex)                        \
+  {                                               \
     LOGFINEST("%s: %s", ex.getName(), ex.what()); \
-    throw ex;                                           \
+    throw ex;                                     \
   }
 /*
 This is replaced by the connect-timeout (times 3) system property for SR # 6525.
@@ -551,8 +551,7 @@ void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
   }
 
   if (!m_msgSent && !m_pingSent) {
-    TcrMessagePing* pingMsg =
-        TcrMessage::getPingMessage(m_cacheImpl->getCache());
+    TcrMessagePing* pingMsg = TcrMessage::getPingMessage(m_cacheImpl);
     TcrMessageReply reply(true, nullptr);
     LOGFINEST("Sending ping message to endpoint %s", m_name.c_str());
     GfErrType error;
@@ -697,11 +696,11 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
             }
           } else {
             LOGDEBUG("receive cq notification %d", msg->getMessageType());
-           auto queryService = getQueryService();
-           if (queryService != nullptr) {
-             static_cast<RemoteQueryService*>(queryService.get())
-                 ->receiveNotification(msg);
-           }
+            auto queryService = getQueryService();
+            if (queryService != nullptr) {
+              static_cast<RemoteQueryService*>(queryService.get())
+                  ->receiveNotification(msg);
+            }
           }
         }
       }
@@ -781,7 +780,8 @@ inline bool TcrEndpoint::handleIOException(const std::string& message,
   // EAGAIN =11, EWOULDBLOCK = 10035L, EPIPE = 32, ECONNRESET =10054L(An
   // existing connection was forcibly closed by the remote host.)
   if (!(lastError == EAGAIN || lastError == EWOULDBLOCK /*||
-        lastError == ECONNRESET */ /*|| lastError == EPIPE*/)) {
+        lastError == ECONNRESET */
+        /*|| lastError == EPIPE*/)) {
     // break from enclosing loop without retries
     // something wrong try connect in lock
     m_needToConnectInLock = true;
@@ -1336,16 +1336,16 @@ bool TcrEndpoint::isQueueHosted() { return m_isQueueHosted; }
 void TcrEndpoint::processMarker() {
   m_cacheImpl->tcrConnectionManager().processMarker();
 }
- std::shared_ptr<QueryService> TcrEndpoint::getQueryService() {
-   return m_cacheImpl->getQueryService(true);
- }
- void TcrEndpoint::sendRequestForChunkedResponse(const TcrMessage& request,
-                                                 TcrMessageReply& reply,
-                                                 TcrConnection* conn) {
-   conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply);
- }
- void TcrEndpoint::closeFailedConnection(TcrConnection*& conn) {
-   closeConnection(conn);
+std::shared_ptr<QueryService> TcrEndpoint::getQueryService() {
+  return m_cacheImpl->getQueryService(true);
+}
+void TcrEndpoint::sendRequestForChunkedResponse(const TcrMessage& request,
+                                                TcrMessageReply& reply,
+                                                TcrConnection* conn) {
+  conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply);
+}
+void TcrEndpoint::closeFailedConnection(TcrConnection*& conn) {
+  closeConnection(conn);
 }
 
 }  // namespace client

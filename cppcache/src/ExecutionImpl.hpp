@@ -21,27 +21,26 @@
 #define GEODE_EXECUTIONIMPL_H_
 
 #include <map>
-
 #include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
-
 #include <geode/Execution.hpp>
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/ResultCollector.hpp>
 #include <geode/Region.hpp>
-
-#include "ProxyCache.hpp"
+#include <geode/AuthenticatedView.hpp>
+#include "ErrType.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-typedef std::map<std::string, std::vector<int8_t>*> FunctionToFunctionAttributes;
+typedef std::map<std::string, std::vector<int8_t>*>
+    FunctionToFunctionAttributes;
 
 class ExecutionImpl {
  public:
   ExecutionImpl(std::shared_ptr<Region> rptr = nullptr,
-                std::shared_ptr<ProxyCache> proxyCache = nullptr,
+                AuthenticatedView* authenticatedView = nullptr,
                 std::shared_ptr<Pool> pp = nullptr)
       : m_routingObj(nullptr),
         m_args(nullptr),
@@ -49,22 +48,19 @@ class ExecutionImpl {
         m_region(rptr),
         m_allServer(false),
         m_pool(pp),
-        m_proxyCache(proxyCache) {}
+        m_authenticatedView(authenticatedView) {}
   ExecutionImpl(std::shared_ptr<Pool> pool, bool allServer = false,
-                std::shared_ptr<ProxyCache> proxyCache = nullptr)
+                AuthenticatedView* authenticatedView = nullptr)
       : m_routingObj(nullptr),
         m_args(nullptr),
         m_rc(nullptr),
         m_region(nullptr),
         m_allServer(allServer),
         m_pool(pool),
-        m_proxyCache(proxyCache) {}
-  virtual Execution withFilter(
-      std::shared_ptr<CacheableVector> routingObj);
-  virtual Execution withArgs(
-      std::shared_ptr<Cacheable> args);
-  virtual Execution withCollector(
-      std::shared_ptr<ResultCollector> rs);
+        m_authenticatedView(authenticatedView) {}
+  virtual Execution withFilter(std::shared_ptr<CacheableVector> routingObj);
+  virtual Execution withArgs(std::shared_ptr<Cacheable> args);
+  virtual Execution withCollector(std::shared_ptr<ResultCollector> rs);
   // java function has hasResult property. we put the hasResult argument
   // here as a kluge.
   virtual std::shared_ptr<ResultCollector> execute(
@@ -74,8 +70,8 @@ class ExecutionImpl {
       std::chrono::milliseconds timeout);
 
   virtual std::shared_ptr<ResultCollector> execute(
-      const std::string& func, std::chrono::milliseconds timeout =
-                                   DEFAULT_QUERY_RESPONSE_TIMEOUT);
+      const std::string& func,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   static void addResults(std::shared_ptr<ResultCollector>& collector,
                          const std::shared_ptr<CacheableVector>& results);
@@ -88,20 +84,20 @@ class ExecutionImpl {
         m_region(rhs.m_region),
         m_allServer(rhs.m_allServer),
         m_pool(rhs.m_pool),
-        m_proxyCache(rhs.m_proxyCache) {}
+        m_authenticatedView(rhs.m_authenticatedView) {}
   ExecutionImpl(const std::shared_ptr<CacheableVector>& routingObj,
                 const std::shared_ptr<Cacheable>& args,
                 const std::shared_ptr<ResultCollector>& rc,
                 const std::shared_ptr<Region>& region, const bool allServer,
                 const std::shared_ptr<Pool>& pool,
-                std::shared_ptr<ProxyCache> proxyCache = nullptr)
+                AuthenticatedView* authenticatedView = nullptr)
       : m_routingObj(routingObj),
         m_args(args),
         m_rc(rc),
         m_region(region),
         m_allServer(allServer),
         m_pool(pool),
-        m_proxyCache(proxyCache) {}
+        m_authenticatedView(authenticatedView) {}
   // ACE_Recursive_Thread_Mutex m_lock;
   std::shared_ptr<CacheableVector> m_routingObj;
   std::shared_ptr<Cacheable> m_args;
@@ -109,7 +105,7 @@ class ExecutionImpl {
   std::shared_ptr<Region> m_region;
   bool m_allServer;
   std::shared_ptr<Pool> m_pool;
-  std::shared_ptr<ProxyCache> m_proxyCache;
+  AuthenticatedView* m_authenticatedView;
   static ACE_Recursive_Thread_Mutex m_func_attrs_lock;
   static FunctionToFunctionAttributes m_func_attrs;
   //  std::vector<int8_t> m_attributes;
@@ -125,8 +121,6 @@ class ExecutionImpl {
   std::vector<int8_t>* getFunctionAttributes(const std::string& func);
   GfErrType getFuncAttributes(const std::string& func,
                               std::vector<int8_t>** attr);
-
-
 };
 }  // namespace client
 }  // namespace geode

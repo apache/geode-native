@@ -47,17 +47,14 @@ class _GEODE_EXPORT PdxInstanceFactory {
    * @brief destructor
    */
   virtual ~PdxInstanceFactory() {}
+  PdxInstanceFactory(const PdxInstanceFactory& other) = delete;
+  void operator=(const PdxInstanceFactory& other) = delete;
 
  protected:
   /**
    * @brief constructors
    */
   PdxInstanceFactory() {}
-
- private:
-  // never implemented.
-  PdxInstanceFactory(const PdxInstanceFactory& other);
-  void operator=(const PdxInstanceFactory& other);
 
  public:
   /**

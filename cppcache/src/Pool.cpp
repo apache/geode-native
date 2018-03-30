@@ -20,7 +20,7 @@
 #include <geode/CacheFactory.hpp>
 
 #include "PoolAttributes.hpp"
-#include "ProxyCache.hpp"
+#include <geode/AuthenticatedView.hpp>
 #include "ThinClientPoolHADM.hpp"
 
 /**
@@ -95,7 +95,8 @@ bool Pool::getThreadLocalConnections() const {
 bool Pool::getMultiuserAuthentication() const {
   return m_attrs->getMultiuserSecureModeEnabled();
 }
-std::shared_ptr<RegionService> Pool::createSecureUserCache(
+
+AuthenticatedView Pool::createAuthenticatedView(
     std::shared_ptr<Properties> credentials, CacheImpl* cacheImpl) {
   if (this->getMultiuserAuthentication()) {
     if (cacheImpl == nullptr) {
@@ -111,20 +112,17 @@ std::shared_ptr<RegionService> Pool::createSecureUserCache(
       credentials = nullptr;
     }
 
-    // TODO: this will return cache with userattribtes
-    return std::make_shared<ProxyCache>(credentials, shared_from_this(),
-                                        cacheImpl);
+    return AuthenticatedView(credentials, shared_from_this(), cacheImpl);
   }
 
   throw IllegalStateException(
       "This operation is only allowed when attached pool is in "
       "multiuserSecureMode");
-  // return nullptr;
 }
+
 bool Pool::getPRSingleHopEnabled() const {
   return m_attrs->getPRSingleHopEnabled();
 }
-// void Pool::releaseThreadLocalConnection(){}
 
 int Pool::getPendingEventCount() const {
   const auto poolHADM = dynamic_cast<const ThinClientPoolHADM*>(this);

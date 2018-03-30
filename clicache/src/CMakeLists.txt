@@ -201,8 +201,8 @@ add_library(${PROJECT_NAME} SHARED
   impl/AppDomainContext.cpp
   impl/AppDomainContext.hpp
   impl/AssemblyInfo.cpp.in
-  impl/AuthenticatedCache.cpp
-  impl/AuthenticatedCache.hpp
+  impl/AuthenticatedView.cpp
+  impl/AuthenticatedView.hpp
   impl/CacheListener.hpp
   impl/CacheLoader.hpp
   impl/CacheResolver.cpp

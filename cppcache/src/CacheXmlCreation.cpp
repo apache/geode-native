@@ -57,7 +57,7 @@ void CacheXmlCreation::setPdxReadSerialized(bool val) {
 
 CacheXmlCreation::CacheXmlCreation()
 
-    : m_cache((Cache*)0) {
+    : m_cache(nullptr) {
   m_pdxIgnoreUnreadFields = false;
   m_readPdxSerialized = false;
 }

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_USERATTRIBUTES_H_
-#define GEODE_USERATTRIBUTES_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_USERATTRIBUTES_H_
+#define GEODE_USERATTRIBUTES_H_
+
 #include <geode/internal/geode_globals.hpp>
 #include <geode/Properties.hpp>
 #include "TcrEndpoint.hpp"
@@ -30,7 +30,7 @@
 namespace apache {
 namespace geode {
 namespace client {
-class ProxyCache;
+class AuthenticatedView;
 class ThinClientPoolDM;
 class UserConnectionAttributes {
  public:
@@ -75,11 +75,11 @@ class _GEODE_EXPORT UserAttributes {
   ~UserAttributes();
   UserAttributes(std::shared_ptr<Properties> credentials,
                  std::shared_ptr<Pool> pool,
-                 ProxyCache* proxyCache);
+                 AuthenticatedView* authenticatedView);
 
   bool isCacheClosed();
 
-  ProxyCache* getProxyCache();
+  AuthenticatedView* getAuthenticatedView();
 
   std::shared_ptr<Pool> getPool();
 
@@ -112,7 +112,7 @@ class _GEODE_EXPORT UserAttributes {
   // ThinClientPoolDM m_pool;
   ACE_Recursive_Thread_Mutex m_listLock;
   bool m_isUserAuthenticated;
-  ProxyCache* m_proxyCache;
+  AuthenticatedView* m_authenticatedView;
   std::shared_ptr<Pool> m_pool;
 
   // Disallow copy constructor and assignment operator.
@@ -128,7 +128,9 @@ class TSSUserAttributesWrapper {
 
  public:
   static ACE_TSS<TSSUserAttributesWrapper> s_geodeTSSUserAttributes;
-  std::shared_ptr<UserAttributes> getUserAttributes() { return m_userAttribute; }
+  std::shared_ptr<UserAttributes> getUserAttributes() {
+    return m_userAttribute;
+  }
   void setUserAttributes(std::shared_ptr<UserAttributes> userAttr) {
     m_userAttribute = userAttr;
   }
@@ -136,18 +138,18 @@ class TSSUserAttributesWrapper {
   ~TSSUserAttributesWrapper() {}
 };
 
-class GuardUserAttribures {
+class GuardUserAttributes {
  public:
-  GuardUserAttribures();
+  GuardUserAttributes();
 
-  GuardUserAttribures(ProxyCache* proxyCache);
+  GuardUserAttributes(AuthenticatedView* const authenticatedView);
 
-  void setProxyCache(ProxyCache* proxyCache);
+  void setAuthenticatedView(AuthenticatedView* const authenticatedView);
 
-  ~GuardUserAttribures();
+  ~GuardUserAttributes();
 
  private:
-  ProxyCache* m_proxyCache;
+  AuthenticatedView* m_authenticatedView;
 };
 }  // namespace client
 }  // namespace geode

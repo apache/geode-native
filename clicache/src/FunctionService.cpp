@@ -25,7 +25,7 @@
 #include "Region.hpp"
 #include "Execution.hpp"
 
-#include "impl/AuthenticatedCache.hpp"
+#include "impl/AuthenticatedView.hpp"
 
 using namespace System;
 
@@ -79,12 +79,12 @@ namespace Apache
 
           if(auto realCache = dynamic_cast<Cache^>(cache))
           {
-            auto nativeptr = native::FunctionService::onServer(realCache->GetNative());
+            auto nativeptr = native::FunctionService::onServer(*realCache->GetNative());
             return Execution<TResult>::Create(std::move(nativeptr), nullptr );
           }
           else
           {
-            auto authCache = dynamic_cast<AuthenticatedCache^>(cache);
+            auto authCache = dynamic_cast<AuthenticatedView^>(cache);
             auto nativeptr = native::FunctionService::onServer(authCache->GetNative());
             return Execution<TResult>::Create(std::move(nativeptr), nullptr );
           }
@@ -99,12 +99,12 @@ namespace Apache
 
           if(auto realCache = dynamic_cast<Cache^>(cache))
           {
-            auto nativeptr = native::FunctionService::onServers(realCache->GetNative());
+            auto nativeptr = native::FunctionService::onServers(*realCache->GetNative());
             return Execution<TResult>::Create(std::move(nativeptr), nullptr );
           }
           else
           {
-            auto authCache = dynamic_cast<AuthenticatedCache^>(cache);
+            auto authCache = dynamic_cast<AuthenticatedView^>(cache);
             auto nativeptr = native::FunctionService::onServers(authCache->GetNative());
             return Execution<TResult>::Create(std::move(nativeptr), nullptr );
           }

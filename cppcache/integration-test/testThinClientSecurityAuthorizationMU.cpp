@@ -220,19 +220,20 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
                               -1, true, 0);
       LOG("Region created successfully");
       LOG("Tying Entry creation");
-      std::shared_ptr<RegionService> virtualCache;
-      std::shared_ptr<Region> regionPtr;
+
       auto pool = getPool(regionNamesAuth[0]);
       LOG(" 6");
-      if (pool != nullptr) {
-        LOG(" 7");
-        virtualCache = getVirtualCache(userCreds, pool);
-        LOG(" 8");
-        regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
-        LOG("Operation allowed, something is wrong.");
-      } else {
-        LOG("Pool is nullptr");
+
+      if (pool == nullptr) {
+        FAIL("Pool is nullptr");
       }
+
+      LOG(" 7");
+      auto virtualCache = getVirtualCache(userCreds, pool);
+      LOG(" 8");
+      auto regionPtr = virtualCache.getRegion(regionNamesAuth[0]);
+
+      LOG("Operation allowed, something is wrong.");
 
       //---------------------for region clear tests-----
       regionPtr->put(1, 1);
@@ -290,7 +291,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
         FAIL(other.what());
       }
 
-      qs = virtualCache->getQueryService();
+      qs = virtualCache.getQueryService();
 
       char queryString[100];
       sprintf(queryString, "select * from /%s", regionNamesAuth[0]);
@@ -458,7 +459,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
         LOG(" 7");
         virtualCache = getVirtualCache(userCreds, pool);
         LOG(" 8");
-        regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
+        regionPtr = virtualCache.getRegion(regionNamesAuth[0]);
         LOG("Operation allowed, something is wrong.");
       } else {
         LOG("Pool is nullptr");
@@ -467,7 +468,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       LOG("Region created successfully");
       regionPtr->create(keys[2], vals[2]);
       LOG("Entry created successfully");
-      virtualCache->close();
+      virtualCache.close();
       LOG("Cache close successfully");
     }
     HANDLE_NO_NOT_AUTHORIZED_EXCEPTION
@@ -491,19 +492,19 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, true, nullptr, false,
                               -1, true, 0);
       LOG("Region created successfully");
-      std::shared_ptr<RegionService> virtualCache;
-      std::shared_ptr<Region> regionPtr;
+
       auto pool = getPool(regionNamesAuth[0]);
       LOG(" 6");
-      if (pool != nullptr) {
-        LOG(" 7");
-        virtualCache = getVirtualCache(userCreds, pool);
-        LOG(" 8");
-        regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
-        LOG("Operation allowed, something is wrong.");
-      } else {
-        LOG("Pool is nullptr");
+
+      if (pool == nullptr) {
+        FAIL("Pool is nullptr");
       }
+
+      LOG(" 7");
+      auto virtualCache = getVirtualCache(userCreds, pool);
+      LOG(" 8");
+      auto regionPtr = virtualCache.getRegion(regionNamesAuth[0]);
+      LOG("Operation allowed, something is wrong.");
 
       regionPtr->create(keys[0], vals[0]);
       LOG("Entry created successfully");
@@ -526,12 +527,11 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     HANDLE_NO_NOT_AUTHORIZED_EXCEPTION
 
     try {
-      std::shared_ptr<RegionService> virtualCache;
       std::shared_ptr<Region> regionPtr;
       auto pool = getPool(regionNamesAuth[0]);
       if (pool != nullptr) {
-        virtualCache = getVirtualCache(userCreds, pool);
-        regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
+        auto virtualCache = getVirtualCache(userCreds, pool);
+        regionPtr = virtualCache.getRegion(regionNamesAuth[0]);
       } else {
         LOG("Pool is nullptr");
       }
@@ -543,19 +543,16 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
     try {
-      std::shared_ptr<RegionService> virtualCache;
-      std::shared_ptr<Region> regionPtr;
       auto pool = getPool(regionNamesAuth[0]);
       LOG(" 6");
-      if (pool != nullptr) {
-        LOG(" 7");
-        virtualCache = getVirtualCache(userCreds, pool);
-        LOG(" 8");
-        regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
-        LOG("Operation allowed, something is wrong.");
-      } else {
+      if (pool == nullptr) {
         LOG("Pool is nullptr");
       }
+      LOG(" 7");
+      auto virtualCache = getVirtualCache(userCreds, pool);
+      LOG(" 8");
+      auto regionPtr = virtualCache.getRegion(regionNamesAuth[0]);
+      LOG("Operation allowed, something is wrong.");
       auto keyPtr = CacheableKey::create(keys[2]);
       auto checkPtr =
           std::dynamic_pointer_cast<CacheableString>(regionPtr->get(keyPtr));
@@ -577,19 +574,16 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
     try {
-      std::shared_ptr<RegionService> virtualCache;
-      std::shared_ptr<Region> regionPtr;
       auto pool = getPool(regionNamesAuth[0]);
       LOG(" 6");
-      if (pool != nullptr) {
-        LOG(" 7");
-        virtualCache = getVirtualCache(userCreds, pool);
-        LOG(" 8");
-        regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
-        LOG("Operation allowed, something is wrong.");
-      } else {
+      if (pool == nullptr) {
         LOG("Pool is nullptr");
       }
+      LOG(" 7");
+      auto virtualCache = getVirtualCache(userCreds, pool);
+      LOG(" 8");
+      auto regionPtr = virtualCache.getRegion(regionNamesAuth[0]);
+      LOG("Operation allowed, something is wrong.");
 
       std::vector<std::shared_ptr<CacheableKey>> entrykeys;
       for (int i = 0; i < 5; i++) {
@@ -604,15 +598,14 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
     try {
-      std::shared_ptr<RegionService> virtualCache;
       std::shared_ptr<Region> regionPtr;
       auto pool = getPool(regionNamesAuth[0]);
       LOG(" 6");
       if (pool != nullptr) {
         LOG(" 7");
-        virtualCache = getVirtualCache(userCreds, pool);
+        auto virtualCache = getVirtualCache(userCreds, pool);
         LOG(" 8");
-        regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
+        regionPtr = virtualCache.getRegion(regionNamesAuth[0]);
         LOG("Operation allowed, something is wrong.");
       } else {
         LOG("Pool is nullptr");
@@ -623,25 +616,23 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
     try {
-      std::shared_ptr<RegionService> virtualCache;
       auto pool = getPool(regionNamesAuth[0]);
-      virtualCache = getVirtualCache(userCreds, pool);
-      auto qs = virtualCache->getQueryService();
+      auto virtualCache = getVirtualCache(userCreds, pool);
+      auto queryService = virtualCache.getQueryService();
 
       char queryString[100];
       sprintf(queryString, "select * from /%s", regionNamesAuth[0]);
       CqAttributesFactory cqFac;
       auto cqAttrs = cqFac.create();
-      auto qry = qs->newCq("cq_security", queryString, cqAttrs);
-      qs->executeCqs();
+      auto qry = queryService->newCq("cq_security", queryString, cqAttrs);
+      queryService->executeCqs();
       FAIL("CQ should not have completed successfully");
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
     try {
-      std::shared_ptr<RegionService> virtualCache;
       auto pool = getPool(regionNamesAuth[0]);
-      virtualCache = getVirtualCache(userCreds, pool);
+      auto virtualCache = getVirtualCache(userCreds, pool);
 
       FunctionService::onServer(virtualCache)
           .execute("securityTest")
@@ -650,9 +641,8 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
     try {
-      std::shared_ptr<RegionService> virtualCache;
       auto pool = getPool(regionNamesAuth[0]);
-      virtualCache = getVirtualCache(userCreds, pool);
+      auto virtualCache = getVirtualCache(userCreds, pool);
 
       FunctionService::onServers(virtualCache)
           .execute("securityTest")
@@ -661,11 +651,10 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
     try {
-      std::shared_ptr<RegionService> virtualCache;
       auto pool = getPool(regionNamesAuth[0]);
-      virtualCache = getVirtualCache(userCreds, pool);
+      auto virtualCache = getVirtualCache(userCreds, pool);
       std::shared_ptr<Region> regionPtr;
-      regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
+      regionPtr = virtualCache.getRegion(regionNamesAuth[0]);
 
       //-----------------------Test with
       // sendException-------------------------------//
@@ -711,22 +700,20 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
     try {
-      std::shared_ptr<RegionService> virtualCache;
       auto pool = getPool(regionNamesAuth[0]);
-      virtualCache = getVirtualCache(userCreds, pool);
+      auto virtualCache = getVirtualCache(userCreds, pool);
       std::shared_ptr<Region> regionPtr;
-      regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
+      regionPtr = virtualCache.getRegion(regionNamesAuth[0]);
 
       FunctionService::onRegion(regionPtr).execute("securityTest")->getResult();
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
     try {
-      std::shared_ptr<RegionService> virtualCache;
       auto pool = getPool(regionNamesAuth[0]);
-      virtualCache = getVirtualCache(userCreds, pool);
+      auto virtualCache = getVirtualCache(userCreds, pool);
       std::shared_ptr<Region> regionPtr;
-      regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
+      regionPtr = virtualCache.getRegion(regionNamesAuth[0]);
 
       //-----------------------Test with
       // sendException-------------------------------//
@@ -769,15 +756,14 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
     }
     HANDLE_NOT_AUTHORIZED_EXCEPTION
 
-    std::shared_ptr<RegionService> virtualCache;
     std::shared_ptr<Region> regionPtr;
     auto pool = getPool(regionNamesAuth[0]);
     LOG(" 6");
     if (pool != nullptr) {
       LOG(" 7");
-      virtualCache = getVirtualCache(userCreds, pool);
+      auto virtualCache = getVirtualCache(userCreds, pool);
       LOG(" 8");
-      regionPtr = virtualCache->getRegion(regionNamesAuth[0]);
+      regionPtr = virtualCache.getRegion(regionNamesAuth[0]);
       LOG("Operation allowed, something is wrong.");
     } else {
       LOG("Pool is nullptr");
@@ -799,19 +785,17 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
 
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr, false,
                             -1, true, 0);
-    std::shared_ptr<RegionService> virtualCache;
     std::shared_ptr<Region> rptr;
     auto pool = getPool(regionNamesAuth[0]);
     LOG(" 6");
     if (pool != nullptr) {
-      LOG(" 7");
-      virtualCache = getVirtualCache(userCreds, pool);
-      LOG(" 8");
-      rptr = virtualCache->getRegion(regionNamesAuth[0]);
-      LOG("Operation allowed, something is wrong.");
-    } else {
       LOG("Pool is nullptr");
     }
+    LOG(" 7");
+    auto virtualCache = getVirtualCache(userCreds, pool);
+    LOG(" 8");
+    rptr = virtualCache.getRegion(regionNamesAuth[0]);
+    LOG("Operation allowed, something is wrong.");
 
     sprintf(buf, "%s: %d", rptr->getName().c_str(), i);
     auto key = CacheableKey::create(buf);

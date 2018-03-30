@@ -34,7 +34,7 @@
 #include "ServerLocation.hpp"
 #include "ThinClientLocatorHelper.hpp"
 #include "UserAttributes.hpp"
-#include "ProxyCache.hpp"
+#include <geode/AuthenticatedView.hpp>
 #include <set>
 #include <algorithm>
 
@@ -866,13 +866,13 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
                  ? 5
                  : attempts;  // at least 5 attempts if ep lists are small.
 
-  ProxyCache* proxyCache = nullptr;
+  AuthenticatedView* authenticatedView = nullptr;
 
   while (attempts--) {
     if (err != GF_NOERR || m_redundantEndpoints.empty()) {
       auto userAttr = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
                           ->getUserAttributes();
-      if (userAttr != nullptr) proxyCache = userAttr->getProxyCache();
+      if (userAttr != nullptr) authenticatedView = userAttr->getAuthenticatedView();
       err = maintainRedundancyLevel();
       // we continue on fatal error because MRL only tries a handshake without
       // sending a request (no params passed) so no need to check
@@ -889,9 +889,9 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
       LOGDEBUG(
           "ThinClientRedundancyManager::sendSyncRequestCq: to primary [%s]",
           primaryEndpoint->name().c_str());
-      GuardUserAttribures gua;
-      if (proxyCache != nullptr) {
-        gua.setProxyCache(proxyCache);
+      GuardUserAttributes gua;
+      if (authenticatedView != nullptr) {
+        gua.setAuthenticatedView(authenticatedView);
       }
       err = theHADM->sendRequestToEP(request, reply, primaryEndpoint);
       if (err == GF_NOERR || err == GF_TIMOUT ||

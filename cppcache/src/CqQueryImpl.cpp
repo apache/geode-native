@@ -25,6 +25,7 @@
 #include "ThinClientRegion.hpp"
 #include "ReadWriteLock.hpp"
 #include "ThinClientRegion.hpp"
+#include "UserAttributes.hpp"
 #include "util/bounds.hpp"
 #include "util/Log.hpp"
 #include "util/exception.hpp"
@@ -52,9 +53,9 @@ CqQueryImpl::CqQueryImpl(
   m_cqAttributesMutator =
       std::make_shared<CqAttributesMutatorImpl>(m_cqAttributes);
   if (userAttributesPtr != nullptr) {
-    m_proxyCache = userAttributesPtr->getProxyCache();
+    m_authenticatedView = userAttributesPtr->getAuthenticatedView();
   } else {
-    m_proxyCache = nullptr;
+    m_authenticatedView = nullptr;
   }
 }
 
@@ -112,9 +113,9 @@ void CqQueryImpl::close(bool sendRequestToServer) {
     return;
   }
 
-  GuardUserAttribures gua;
-  if (m_proxyCache != nullptr) {
-    gua.setProxyCache(m_proxyCache);
+  GuardUserAttributes gua;
+  if (m_authenticatedView != nullptr) {
+    gua.setAuthenticatedView(m_authenticatedView);
   }
   LOGFINE("Started closing CQ CqName : %s", m_cqName.c_str());
 
@@ -252,9 +253,9 @@ GfErrType CqQueryImpl::execute(TcrEndpoint* endpoint) {
     return GF_NOERR;
   }
 
-  GuardUserAttribures gua;
-  if (m_proxyCache != nullptr) {
-    gua.setProxyCache(m_proxyCache);
+  GuardUserAttributes gua;
+  if (m_authenticatedView != nullptr) {
+    gua.setAuthenticatedView(m_authenticatedView);
   }
 
   LOGFINE("Executing CQ [%s]", m_cqName.c_str());
@@ -306,9 +307,9 @@ void CqQueryImpl::executeAfterFailover() {
 }
 
 void CqQueryImpl::execute() {
-  GuardUserAttribures gua;
-  if (m_proxyCache != nullptr) {
-    gua.setProxyCache(m_proxyCache);
+  GuardUserAttributes gua;
+  if (m_authenticatedView != nullptr) {
+    gua.setAuthenticatedView(m_authenticatedView);
   }
 
   ACE_Guard<ACE_Recursive_Thread_Mutex> guardRedundancy(
@@ -323,9 +324,9 @@ void CqQueryImpl::execute() {
 
 // for          EXECUTE_REQUEST or REDUNDANT_EXECUTE_REQUEST
 bool CqQueryImpl::executeCq(TcrMessage::MsgType requestType) {
-  GuardUserAttribures gua;
-  if (m_proxyCache != nullptr) {
-    gua.setProxyCache(m_proxyCache);
+  GuardUserAttributes gua;
+  if (m_authenticatedView != nullptr) {
+    gua.setAuthenticatedView(m_authenticatedView);
   }
 
   LOGDEBUG("CqQueryImpl::executeCq");
@@ -367,9 +368,9 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
     std::chrono::milliseconds timeout) {
   util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
 
-  GuardUserAttribures gua;
-  if (m_proxyCache != nullptr) {
-    gua.setProxyCache(m_proxyCache);
+  GuardUserAttributes gua;
+  if (m_authenticatedView != nullptr) {
+    gua.setAuthenticatedView(m_authenticatedView);
   }
 
   ACE_Guard<ACE_Recursive_Thread_Mutex> guardRedundancy(
@@ -449,9 +450,9 @@ void CqQueryImpl::stop() {
     throw CqClosedException(("CQ is closed, CqName : " + m_cqName).c_str());
   }
 
-  GuardUserAttribures gua;
-  if (m_proxyCache != nullptr) {
-    gua.setProxyCache(m_proxyCache);
+  GuardUserAttributes gua;
+  if (m_authenticatedView != nullptr) {
+    gua.setAuthenticatedView(m_authenticatedView);
   }
 
   if (!(isRunning())) {
@@ -584,7 +585,7 @@ bool CqQueryImpl::isRunning() const {
 bool CqQueryImpl::isStopped() const {
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
   return m_cqState == CqState::STOPPED ||
-         (m_proxyCache && m_proxyCache->isClosed());
+         (m_authenticatedView && m_authenticatedView->isClosed());
 }
 
 /**
@@ -594,7 +595,7 @@ bool CqQueryImpl::isStopped() const {
 bool CqQueryImpl::isClosed() const {
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
   return m_cqState == CqState::CLOSED ||
-         (m_proxyCache && m_proxyCache->isClosed());
+         (m_authenticatedView && m_authenticatedView->isClosed());
 }
 
 /**

@@ -22,6 +22,7 @@
 #include "TransactionalOperation.hpp"
 #include "RegionInternal.hpp"
 #include "util/exception.hpp"
+#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {
@@ -37,13 +38,15 @@ TransactionalOperation::TransactionalOperation(
       m_arguments(arguments) {}
 
 TransactionalOperation::~TransactionalOperation() {}
-std::shared_ptr<Cacheable> TransactionalOperation::replay(Cache* cache) {
+std::shared_ptr<Cacheable> TransactionalOperation::replay(
+    CacheImpl* cacheImpl) {
   std::shared_ptr<Cacheable> result = nullptr;
 
   switch (m_operation) {
     case GF_CONTAINS_KEY:
-      result = CacheableBoolean::create(
-          cache->getRegion(m_regionName)->containsKeyOnServer(m_key));
+      result = CacheableBoolean::create(cacheImpl->getCache()
+                                            ->getRegion(m_regionName)
+                                            ->containsKeyOnServer(m_key));
       break;
     case GF_CONTAINS_VALUE:
       GfErrTypeThrowException("Contains value not supported in transaction",
@@ -51,18 +54,22 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(Cache* cache) {
       // result = Boolean.valueOf(containsValue(args[0], true));
       break;
     case GF_CONTAINS_VALUE_FOR_KEY:
-      result = CacheableBoolean::create(
-          cache->getRegion(m_regionName)->containsValueForKey(m_key));
+      result = CacheableBoolean::create(cacheImpl->getCache()
+                                            ->getRegion(m_regionName)
+                                            ->containsValueForKey(m_key));
       break;
     case GF_DESTROY:  // includes REMOVE(k,v)
-      cache->getRegion(m_regionName)->destroy(m_key, m_arguments->at(0));
+      cacheImpl->getCache()
+          ->getRegion(m_regionName)
+          ->destroy(m_key, m_arguments->at(0));
       break;
     case GF_EXECUTE_FUNCTION: {
       Execution execution;
       if (m_regionName == nullptr) {
-        execution = FunctionService::onServer(std::shared_ptr<Cache>(cache));
+        execution = FunctionService::onServer(*cacheImpl->getCache());
       } else {
-        execution = FunctionService::onRegion(cache->getRegion(m_regionName));
+        execution = FunctionService::onRegion(
+            cacheImpl->getCache()->getRegion(m_regionName));
       }
       result = std::dynamic_pointer_cast<Cacheable>(
           execution.withArgs(m_arguments->at(0))
@@ -77,7 +84,9 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(Cache* cache) {
                                ->value())));
     } break;
     case GF_GET:
-      result = cache->getRegion(m_regionName)->get(m_key, m_arguments->at(0));
+      result = cacheImpl->getCache()
+                   ->getRegion(m_regionName)
+                   ->get(m_key, m_arguments->at(0));
       break;
     case GF_GET_ENTRY:
       GfErrTypeThrowException("getEntry not supported in transaction",
@@ -86,7 +95,7 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(Cache* cache) {
     case GF_GET_ALL: {
       const auto result =
           std::static_pointer_cast<RegionInternal>(
-              cache->getRegion(m_regionName))
+              cacheImpl->getCache()->getRegion(m_regionName))
               ->getAll_internal(
                   *std::dynamic_pointer_cast<
                       std::vector<std::shared_ptr<CacheableKey>>>(
@@ -101,14 +110,17 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(Cache* cache) {
       break;
     }
     case GF_INVALIDATE:
-      cache->getRegion(m_regionName)->invalidate(m_key, m_arguments->at(0));
+      cacheImpl->getCache()
+          ->getRegion(m_regionName)
+          ->invalidate(m_key, m_arguments->at(0));
       break;
     case GF_REMOVE:
-      cache->getRegion(m_regionName)
+      cacheImpl->getCache()
+          ->getRegion(m_regionName)
           ->remove(m_key, m_arguments->at(0), m_arguments->at(1));
       break;
     case GF_KEY_SET: {
-      auto tmp = cache->getRegion(m_regionName)->serverKeys();
+      auto tmp = cacheImpl->getCache()->getRegion(m_regionName)->serverKeys();
       auto serverKeys =
           std::dynamic_pointer_cast<std::vector<std::shared_ptr<CacheableKey>>>(
               m_arguments->at(0));
@@ -116,15 +128,18 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(Cache* cache) {
       break;
     }
     case GF_CREATE:  // includes PUT_IF_ABSENT
-      cache->getRegion(m_regionName)
+      cacheImpl->getCache()
+          ->getRegion(m_regionName)
           ->create(m_key, m_arguments->at(0), m_arguments->at(1));
       break;
     case GF_PUT:  // includes PUT_IF_ABSENT
-      cache->getRegion(m_regionName)
+      cacheImpl->getCache()
+          ->getRegion(m_regionName)
           ->put(m_key, m_arguments->at(0), m_arguments->at(1));
       break;
     case GF_PUT_ALL:
-      cache->getRegion(m_regionName)
+      cacheImpl->getCache()
+          ->getRegion(m_regionName)
           ->putAll(
               *std::dynamic_pointer_cast<HashMapOfCacheable>(
                   m_arguments->at(0)),

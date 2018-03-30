@@ -32,7 +32,7 @@
 #include "IGeodeSerializable.hpp"
 #include "ResultSet.hpp"
 #include "StructSet.hpp"
-#include "impl/AuthenticatedCache.hpp"
+#include "impl/AuthenticatedView.hpp"
 #include "impl/SafeConvert.hpp"
 #include "LocalRegion.hpp"
 #include "Pool.hpp"

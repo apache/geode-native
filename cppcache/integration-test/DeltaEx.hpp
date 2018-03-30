@@ -41,8 +41,8 @@ class DeltaEx : public Cacheable, public Delta {
   static int fromDeltaCount;
   static int fromDataCount;
   static int cloneCount;
-  DeltaEx() : Delta(nullptr), counter(1), isDelta(false) {}
-  DeltaEx(int count) : Delta(nullptr), counter(0), isDelta(false) {}
+  DeltaEx() : Delta(), counter(1), isDelta(false) {}
+  DeltaEx(int count) : Delta(), counter(0), isDelta(false) {}
   DeltaEx(const DeltaEx& rhs) = default;
 
   virtual bool hasDelta() const override { return isDelta; }
@@ -94,10 +94,10 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
   static int m_fromDeltaCount;
   static int m_fromDataCount;
   static int m_cloneCount;
-  PdxDeltaEx() : Delta(nullptr), m_counter(1), m_isDelta(false) {}
-  PdxDeltaEx(int count) : Delta(nullptr), m_counter(0), m_isDelta(false) {}
+  PdxDeltaEx() : Delta(), m_counter(1), m_isDelta(false) {}
+  PdxDeltaEx(int count) : Delta(), m_counter(0), m_isDelta(false) {}
   PdxDeltaEx(const PdxDeltaEx& rhs)
-      : Delta(nullptr), m_counter(rhs.m_counter), m_isDelta(rhs.m_isDelta) {}
+      : Delta(), m_counter(rhs.m_counter), m_isDelta(rhs.m_isDelta) {}
   virtual bool hasDelta() const override { return m_isDelta; }
   virtual void toDelta(DataOutput& out) const override {
     out.writeInt(m_counter);

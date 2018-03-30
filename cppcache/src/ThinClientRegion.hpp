@@ -415,7 +415,8 @@ class ChunkedInterestResponse : public TcrChunkedResult {
   }
 
   virtual void handleChunk(const uint8_t* chunk, int32_t chunkLen,
-                           uint8_t isLastChunkWithSecurity, const Cache* cache);
+                           uint8_t isLastChunkWithSecurity,
+                           const CacheImpl* cacheImpl);
   virtual void reset();
 };
 
@@ -451,7 +452,8 @@ class ChunkedQueryResponse : public TcrChunkedResult {
   }
 
   virtual void handleChunk(const uint8_t* chunk, int32_t chunkLen,
-                           uint8_t isLastChunkWithSecurity, const Cache* cache);
+                           uint8_t isLastChunkWithSecurity,
+                           const CacheImpl* cacheImpl);
   virtual void reset();
 
   void readObjectPartList(DataInput& input, bool isResultSet);
@@ -502,7 +504,8 @@ class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
   inline bool getResult() const { return m_getResult; }
 
   virtual void handleChunk(const uint8_t* chunk, int32_t chunkLen,
-                           uint8_t isLastChunkWithSecurity, const Cache* cache);
+                           uint8_t isLastChunkWithSecurity,
+                           const CacheImpl* cacheImpl);
   virtual void reset();
 };
 
@@ -515,7 +518,7 @@ class ChunkedGetAllResponse : public TcrChunkedResult {
  private:
   TcrMessage& m_msg;
   ThinClientRegion* m_region;
-  const std::vector<std::shared_ptr<CacheableKey>> * m_keys;
+  const std::vector<std::shared_ptr<CacheableKey>>* m_keys;
   std::shared_ptr<HashMapOfCacheable> m_values;
   std::shared_ptr<HashMapOfException> m_exceptions;
   std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_resultKeys;
@@ -552,14 +555,17 @@ class ChunkedGetAllResponse : public TcrChunkedResult {
         m_responseLock(responseLock) {}
 
   virtual void handleChunk(const uint8_t* chunk, int32_t chunkLen,
-                           uint8_t isLastChunkWithSecurity, const Cache* cache);
+                           uint8_t isLastChunkWithSecurity,
+                           const CacheImpl* cacheImpl);
   virtual void reset();
 
   void add(const ChunkedGetAllResponse* other);
   bool getAddToLocalCache() { return m_addToLocalCache; }
   std::shared_ptr<HashMapOfCacheable> getValues() { return m_values; }
   std::shared_ptr<HashMapOfException> getExceptions() { return m_exceptions; }
-  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>> > getResultKeys() { return m_resultKeys; }
+  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> getResultKeys() {
+    return m_resultKeys;
+  }
   MapOfUpdateCounters& getUpdateCounters() { return m_trackerMap; }
   ACE_Recursive_Thread_Mutex& getResponseLock() { return m_responseLock; }
 };
@@ -589,7 +595,8 @@ class ChunkedPutAllResponse : public TcrChunkedResult {
         m_list(list) {}
 
   virtual void handleChunk(const uint8_t* chunk, int32_t chunkLen,
-                           uint8_t isLastChunkWithSecurity, const Cache* cache);
+                           uint8_t isLastChunkWithSecurity,
+                           const CacheImpl* cacheImpl);
   virtual void reset();
   std::shared_ptr<VersionedCacheableObjectPartList> getList() { return m_list; }
   ACE_Recursive_Thread_Mutex& getResponseLock() { return m_responseLock; }
@@ -620,7 +627,8 @@ class ChunkedRemoveAllResponse : public TcrChunkedResult {
         m_list(list) {}
 
   virtual void handleChunk(const uint8_t* chunk, int32_t chunkLen,
-                           uint8_t isLastChunkWithSecurity, const Cache* cache);
+                           uint8_t isLastChunkWithSecurity,
+                           const CacheImpl* cacheImpl);
   virtual void reset();
   std::shared_ptr<VersionedCacheableObjectPartList> getList() { return m_list; }
   ACE_Recursive_Thread_Mutex& getResponseLock() { return m_responseLock; }
@@ -635,7 +643,7 @@ class ChunkedKeySetResponse : public TcrChunkedResult {
  private:
   TcrMessage& m_msg;
   TcrMessage& m_replyMsg;
-  std::vector<std::shared_ptr<CacheableKey>> & m_resultKeys;
+  std::vector<std::shared_ptr<CacheableKey>>& m_resultKeys;
 
   // disabled
   ChunkedKeySetResponse(const ChunkedKeySetResponse&);
@@ -651,10 +659,10 @@ class ChunkedKeySetResponse : public TcrChunkedResult {
         m_resultKeys(resultKeys) {}
 
   virtual void handleChunk(const uint8_t* chunk, int32_t chunkLen,
-                           uint8_t isLastChunkWithSecurity, const Cache* cache);
+                           uint8_t isLastChunkWithSecurity,
+                           const CacheImpl* cacheImpl);
   virtual void reset();
 };
-
 
 class ChunkedDurableCQListResponse : public TcrChunkedResult {
  private:
@@ -670,10 +678,13 @@ class ChunkedDurableCQListResponse : public TcrChunkedResult {
       : TcrChunkedResult(),
         m_msg(msg),
         m_resultList(CacheableArrayList::create()) {}
-  inline std::shared_ptr<CacheableArrayList> getResults() { return m_resultList; }
+  inline std::shared_ptr<CacheableArrayList> getResults() {
+    return m_resultList;
+  }
 
   virtual void handleChunk(const uint8_t* chunk, int32_t chunkLen,
-                           uint8_t isLastChunkWithSecurity, const Cache* cache);
+                           uint8_t isLastChunkWithSecurity,
+                           const CacheImpl* cacheImpl);
   virtual void reset();
 };
 
