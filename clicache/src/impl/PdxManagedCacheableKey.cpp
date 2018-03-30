@@ -222,7 +222,7 @@ namespace apache
             auto logstr = m_managedptr->GetType()->Name + '(' +
               m_managedptr->ToString() + ')';
 
-            return snprintf(buffer, maxLength, "%s", marshal_as<std::string>(logstr));
+            return snprintf(buffer, maxLength, "%s", marshal_as<std::string>(logstr).c_str());
           }
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
