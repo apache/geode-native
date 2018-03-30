@@ -24,8 +24,6 @@ if (USE_PCH)
   include(cotire)
 endif()
 
-include(examples)
-
 if(CMAKE_GENERATOR MATCHES Win64*)
 
   if ((CMAKE_GENERATOR MATCHES "Visual Studio") AND (CMAKE_GENERATOR_TOOLSET STREQUAL ""))
@@ -250,15 +248,12 @@ add_subdirectory(sqliteimpl)
 add_subdirectory(tests)
 add_subdirectory(templates/security)
 add_subdirectory(docs/api)
+add_subdirectory(examples)
 if (${BUILD_CLI})
   add_subdirectory(clicache)
   add_subdirectory(plugins/SQLiteCLI)
 endif()
 
-generate_examples_cmakelists()
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/examples/ DESTINATION examples)
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/examples/ DESTINATION examples
-  PATTERN "*.in" EXCLUDE)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/xsds/ DESTINATION xsds)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/defaultSystem/ DESTINATION defaultSystem)
 

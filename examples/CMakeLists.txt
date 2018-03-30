@@ -17,5 +17,29 @@ cmake_minimum_required(VERSION 3.10)
 
 project(examples LANGUAGES NONE)
 
+string(REPLACE " " "" PRODUCT_NAME_NOSPACE ${PRODUCT_NAME})
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindGeodeNative.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/cmake/Find${PRODUCT_NAME_NOSPACE}.cmake @ONLY)
+
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt
+  DESTINATION examples)
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/cmake/Find${PRODUCT_NAME_NOSPACE}.cmake
+  DESTINATION examples/cmake)
+  
+#install(
+#  DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/
+#  DESTINATION examples
+#  FILES_MATCHING
+#    PATTERN "CMakeLists.txt"
+#    PATTERN "*.cmake")
+
+#install(
+#  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+#  DESTINATION examples
+#  PATTERN "*.in" EXCLUDE)
+
 add_subdirectory(cpp)
-add_subdirectory(dotnet)
+#add_subdirectory(dotnet)
