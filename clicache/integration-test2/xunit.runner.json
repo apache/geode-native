@@ -1,4 +1,4 @@
 ﻿{
-    "methodDisplay": "classAndMethod",
-    "parallelizeTestCollections": "false"
+  "methodDisplay": "classAndMethod",
+  "parallelizeTestCollections": "false"
 }

@@ -32,6 +32,7 @@ add_library( ${PROJECT_NAME} SHARED
     cache.xml
     geode.properties
     xunit.runner.json
+    packages.config
 )
 
 set_source_files_properties(cache.xml xunit.runner.json geode.properties PROPERTIES
