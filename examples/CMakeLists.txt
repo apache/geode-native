@@ -28,18 +28,6 @@ install(FILES
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/cmake/Find${PRODUCT_NAME_NOSPACE}.cmake
   DESTINATION examples/cmake)
-  
-#install(
-#  DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/
-#  DESTINATION examples
-#  FILES_MATCHING
-#    PATTERN "CMakeLists.txt"
-#    PATTERN "*.cmake")
-
-#install(
-#  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
-#  DESTINATION examples
-#  PATTERN "*.in" EXCLUDE)
 
 add_subdirectory(cpp)
-#add_subdirectory(dotnet)
+add_subdirectory(dotnet)

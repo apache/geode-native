@@ -15,9 +15,43 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-project(Apache.Geode.Examples LANGUAGES NONE)
+project(examples LANGUAGES NONE)
 
-add_subdirectory(AuthInitialize)
-add_subdirectory(PdxAutoSerializer)
-add_subdirectory(PutGetRemove)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt COPYONLY)
 
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt
+  README.md
+  DESTINATION examples/dotnet)
+
+function(add_example)
+  set(options)
+  set(oneValueArgs NAME)
+  set(multiValueArgs SOURCE)
+  cmake_parse_arguments(ADD_EXAMPLE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+  foreach(SOURCE ${ADD_EXAMPLE_SOURCE})
+    list(APPEND EXAMPLE_SOURCES_PATHS ${ADD_EXAMPLE_NAME}/${SOURCE})
+  endforeach()
+
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.dotnet_example.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${ADD_EXAMPLE_NAME}/CMakeLists.txt
+    @ONLY)
+
+  install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/${ADD_EXAMPLE_NAME}/CMakeLists.txt
+    ${EXAMPLE_SOURCES_PATHS}
+    ${ADD_EXAMPLE_NAME}/README.md
+    ${ADD_EXAMPLE_NAME}/startserver.ps1
+    ${ADD_EXAMPLE_NAME}/stopserver.ps1
+    DESTINATION examples/dotnet/${ADD_EXAMPLE_NAME})
+endfunction()
+
+add_example(NAME AuthInitialize
+	SOURCE ExampleAuthInitialize.cs Program.cs)
+
+add_example(NAME PdxAutoSerializer
+	SOURCE Order.cs Program.cs)
+
+add_example(NAME PutGetRemove
+	SOURCE Program.cs)

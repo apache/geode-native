@@ -15,18 +15,9 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-project(PutGetRemove LANGUAGES CSharp)
+project(Apache.Geode.Examples LANGUAGES NONE)
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
+add_subdirectory(AuthInitialize)
+add_subdirectory(PdxAutoSerializer)
+add_subdirectory(PutGetRemove)
 
-find_package(@PRODUCT_NAME_NOSPACE@ REQUIRED COMPONENTS dotnet)
-
-add_executable(${PROJECT_NAME} 
-    Program.cs)
-
-target_link_libraries(${PROJECT_NAME}
-    GeodeNative::dotnet)
-
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
-    VS_DOTNET_REFERENCES "System;${GeodeNative_DOTNET_LIBRARY}")

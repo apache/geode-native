@@ -15,13 +15,13 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-project(@EXAMPLE_NAME@ LANGUAGES CSharp)
+project(@ADD_EXAMPLE_NAME@ LANGUAGES CSharp)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
 
 find_package(@PRODUCT_NAME_NOSPACE@ REQUIRED COMPONENTS dotnet)
 
-add_executable(${PROJECT_NAME} @EXAMPLE_SOURCES@)
+add_executable(${PROJECT_NAME} @ADD_EXAMPLE_SOURCE@)
 
 target_link_libraries(${PROJECT_NAME}
     GeodeNative::dotnet)
