@@ -1332,20 +1332,26 @@ void TcrEndpoint::setServerQueueStatus(ServerQueueStatus queueStatus,
 }
 
 bool TcrEndpoint::isQueueHosted() { return m_isQueueHosted; }
+
 void TcrEndpoint::processMarker() {
   m_cacheImpl->tcrConnectionManager().processMarker();
 }
+
 std::shared_ptr<QueryService> TcrEndpoint::getQueryService() {
   return m_cacheImpl->getQueryService(true);
 }
+
 void TcrEndpoint::sendRequestForChunkedResponse(const TcrMessage& request,
                                                 TcrMessageReply& reply,
                                                 TcrConnection* conn) {
   conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply);
 }
+
 void TcrEndpoint::closeFailedConnection(TcrConnection*& conn) {
   closeConnection(conn);
 }
+
+void TcrEndpoint::handleNotificationStats(int64_t) {}
 
 }  // namespace client
 }  // namespace geode

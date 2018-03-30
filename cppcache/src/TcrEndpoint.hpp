@@ -103,7 +103,7 @@ class APACHE_GEODE_EXPORT TcrEndpoint {
   //  TcrDistributionManager.
   void setConnectionStatus(bool status);
 
-  inline const int getNumRegionListeners() const { return m_numRegionListener; }
+  inline int getNumRegionListeners() const { return m_numRegionListener; }
 
   // TODO: for single user mode only
   void setUniqueId(int64_t uniqueId) {
@@ -119,7 +119,7 @@ class APACHE_GEODE_EXPORT TcrEndpoint {
 
   bool isAuthenticated() { return m_isAuthenticated; }
 
-  void setAuthenticated(bool flag) { m_isAuthenticated = false; }
+  void setAuthenticated(bool isAuthenticated) { m_isAuthenticated = isAuthenticated; }
 
   virtual bool isMultiUserMode();
   /*{
@@ -202,7 +202,7 @@ class APACHE_GEODE_EXPORT TcrEndpoint {
                                              TcrConnection* conn);
   virtual void closeFailedConnection(TcrConnection*& conn);
   void closeConnection(TcrConnection*& conn);
-  virtual void handleNotificationStats(int64_t byteLength){};
+  virtual void handleNotificationStats(int64_t byteLength);
   virtual void closeNotification();
   std::list<Task<TcrEndpoint>*> m_notifyReceiverList;
   std::list<TcrConnection*> m_notifyConnectionList;

@@ -15,38 +15,15 @@
  * limitations under the License.
  */
 
-#include <geode/CacheListener.hpp>
-#include <geode/Region.hpp>
-#include <geode/EntryEvent.hpp>
-#include <geode/RegionEvent.hpp>
+#include <geode/PdxSerializer.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-CacheListener::CacheListener() {}
-
-CacheListener::~CacheListener() {}
-
-void CacheListener::close(Region&) {}
-
-void CacheListener::afterCreate(const EntryEvent&) {}
-
-void CacheListener::afterUpdate(const EntryEvent&) {}
-
-void CacheListener::afterInvalidate(const EntryEvent&) {}
-
-void CacheListener::afterDestroy(const EntryEvent&) {}
-
-void CacheListener::afterRegionInvalidate(const RegionEvent&) {}
-
-void CacheListener::afterRegionDestroy(const RegionEvent&) {}
-
-void CacheListener::afterRegionClear(const RegionEvent&) {}
-
-void CacheListener::afterRegionLive(const RegionEvent&) {}
-
-void CacheListener::afterRegionDisconnected(Region&) {}
+UserObjectSizer PdxSerializer::getObjectSizer(const std::string&) {
+  return nullptr;
+}
 
 }  // namespace client
 }  // namespace geode

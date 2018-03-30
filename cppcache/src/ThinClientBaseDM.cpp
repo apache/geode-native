@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
 #include "ThinClientBaseDM.hpp"
 
 #include <geode/AuthenticatedView.hpp>
@@ -21,7 +22,9 @@
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 volatile bool ThinClientBaseDM::s_isDeltaEnabledOnServer = true;
 const char* ThinClientBaseDM::NC_ProcessChunk = "NC ProcessChunk";
@@ -315,3 +318,22 @@ void ThinClientBaseDM::afterSendingRequest(const TcrMessage& request,
     }
   }
 }
+
+GfErrType ThinClientBaseDM::sendSyncRequestRegisterInterestEP(TcrMessage&,
+                                                              TcrMessageReply&,
+                                                              bool,
+                                                              TcrEndpoint*) {
+  return GF_NOERR;
+}
+
+GfErrType ThinClientBaseDM::registerInterestForRegion(TcrEndpoint*,
+                                                      const TcrMessage*,
+                                                      TcrMessageReply*) {
+  return GF_NOERR;
+}
+
+bool ThinClientBaseDM::isEndpointAttached(TcrEndpoint* ep) { return false; };
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

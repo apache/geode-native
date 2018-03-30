@@ -194,33 +194,31 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
         this->m_tempKeys =
             std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>();
         this->m_hasKeys = true;
-        const auto size = other->m_tempKeys->size();
-        for (int i = 0; i < size; i++) {
-          this->m_tempKeys->push_back(other->m_tempKeys->at(i));
-        }
+        this->m_tempKeys->insert(this->m_tempKeys->cend(),
+                                 other->m_tempKeys->cbegin(),
+                                 other->m_tempKeys->cend());
       } else {
         if (this->m_tempKeys != nullptr) {
           if (!this->m_hasKeys) {
             LOGDEBUG(" VCOPL::addAll m_hasKeys should be true here");
             this->m_hasKeys = true;
           }
-          const auto size = other->m_tempKeys->size();
-          for (int i = 0; i < size; i++) {
-            this->m_tempKeys->push_back(other->m_tempKeys->at(i));
-          }
+          this->m_tempKeys->insert(this->m_tempKeys->cend(),
+                                   other->m_tempKeys->cbegin(),
+                                   other->m_tempKeys->cend());
         }
       }
     }
 
     // set m_regionIsVersioned
     this->m_regionIsVersioned |= other->m_regionIsVersioned;
-    size_t size = other->m_versionTags.size();
-    LOGDEBUG(" VCOPL::addAll other->m_versionTags.size() = %d ", size);
+    auto size = other->m_versionTags.size();
+    LOGDEBUG(" VCOPL::addAll other->m_versionTags.size() = %zd ", size);
     // Append m_versionTags
     if (size > 0) {
-      for (size_t i = 0; i < size; i++) {
-        this->m_versionTags.push_back(other->m_versionTags[i]);
-      }
+      this->m_versionTags.insert(this->m_versionTags.cend(),
+                                 other->m_versionTags.cbegin(),
+                                 other->m_versionTags.cend());
       m_hasTags = true;
     }
   }
@@ -238,15 +236,15 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     return -1;
   }
 
-  void addAllKeys(std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>> > keySet) {
+  void addAllKeys(
+      std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> keySet) {
     if (!this->m_hasKeys) {
       this->m_hasKeys = true;
       this->m_tempKeys =
           std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>(*keySet);
     } else {
-      for (int i = 0; i < keySet->size(); i++) {
-        this->m_tempKeys->push_back(keySet->at(i));
-      }
+      this->m_tempKeys->insert(this->m_tempKeys->cend(), keySet->cbegin(),
+                               keySet->cend());
     }
   }
 

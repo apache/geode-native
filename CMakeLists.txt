@@ -183,6 +183,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   target_compile_options(_WarningsAsError INTERFACE
     -Werror
     -Wall
+    -Wextra
     -Wno-unknown-pragmas
     -Wno-unused-variable
     -Wno-unused-function)

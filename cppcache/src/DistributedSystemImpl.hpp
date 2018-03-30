@@ -62,7 +62,7 @@ class APACHE_GEODE_EXPORT DistributedSystemImpl {
   /*
    * threadname should have less than 16 bytes
    */
-  static void setThreadName(const char* tn) {
+  static void setThreadName([[gnu::unused]] const char* tn) {
 #ifdef __linux
     int idx = 0;
     while (idx < 16) {
