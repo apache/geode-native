@@ -254,8 +254,9 @@ if (${BUILD_CLI})
   add_subdirectory(plugins/SQLiteCLI)
 endif()
 
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/examples/ DESTINATION examples)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/examples/ DESTINATION examples
-  PATTERN "CMakeLists.txt.in" EXCLUDE)
+  PATTERN "*.in" EXCLUDE)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/xsds/ DESTINATION xsds)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/defaultSystem/ DESTINATION defaultSystem)
 
