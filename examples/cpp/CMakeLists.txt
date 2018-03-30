@@ -21,32 +21,36 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_CURRENT_BIN
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt
+  BUILDING.md
   DESTINATION examples/cpp)
 
 function(add_example)
-    set(options)
-    set(oneValueArgs NAME)
-    set(multiValueArgs SOURCE)
-    cmake_parse_arguments(ADD_EXAMPLE "${options}" "${oneValueArgs}"
-                          "${multiValueArgs}" ${ARGN} )
-						  
+  set(options)
+  set(oneValueArgs NAME)
+  set(multiValueArgs SOURCE)
+  cmake_parse_arguments(ADD_EXAMPLE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+  foreach(SOURCE ${ADD_EXAMPLE_SOURCE})
+    list(APPEND EXAMPLE_SOURCES_PATHS ${ADD_EXAMPLE_NAME}/${SOURCE})
+  endforeach()
+
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.cpp_example.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${ADD_EXAMPLE_NAME}/CMakeLists.txt
+    @ONLY)
+
+  install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/${ADD_EXAMPLE_NAME}/CMakeLists.txt
+    ${EXAMPLE_SOURCES_PATHS}
+    ${ADD_EXAMPLE_NAME}/startserver.sh
+    ${ADD_EXAMPLE_NAME}/stopserver.sh
+    DESTINATION examples/cpp/${ADD_EXAMPLE_NAME})
 endfunction()
-  
-add_example(NAME customserializable 
-	SOURCE main.cpp order.cpp)
 
-set(EXAMPLE_NAME customserializable)
-set(EXAMPLE_SOURCES "main.cpp Order.cpp")
-set(EXAMPLE_SOURCES_PATHS ${EXAMPLE_NAME}/main.cpp ${EXAMPLE_NAME}/Order.cpp)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.cpp_example.in 
-	${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE_NAME}/CMakeLists.txt
-	@ONLY)
+add_example(NAME customserializable
+	SOURCE main.cpp Order.cpp Order.hpp)
 
-install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt
-  ${EXAMPLE_SOURCES_PATHS}
-  ${EXAMPLE_NAME}/startserver.sh
-  ${EXAMPLE_NAME}/stopserver.sh
-  DESTINATION examples/cpp/${EXAMPLE_NAME})
+add_example(NAME customserializer
+	SOURCE main.cpp Order.cpp Order.hpp OrderSerializer.cpp OrderSerializer.hpp)
 
-#add_example()
+add_example(NAME put-get-remove
+	SOURCE main.cpp)
