@@ -23,12 +23,12 @@ namespace Apache.Geode.Client.IntegrationTests
 {
 
   [Trait("Category", "Integration")]
-  public class IntegrationTests2
+  public class RegionTest
   {
     Cache cacheOne;
     Cache cacheTwo;
 
-    public IntegrationTests2()
+    public RegionTest()
     {
       var cacheFactory = new CacheFactory();
       cacheOne = cacheFactory.Create();
@@ -42,7 +42,7 @@ namespace Apache.Geode.Client.IntegrationTests
     }
 
     [Fact]
-    public void GetPut_withMultipleCaches()
+    public void PutOnOneCacheGetOnAnotherCache()
     {
       var geodeServer = new GeodeServer();
       var cacheXml = new CacheXml(new FileInfo("cache.xml"), geodeServer);

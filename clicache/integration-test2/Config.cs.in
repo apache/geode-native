@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -15,33 +15,12 @@
  * limitations under the License.
  */
 
-using Xunit;
+// GENERATED FROM Config.cs.in DO NOT EDIT Config.cs
 
-[Trait("Category", "Integration")]
-public class GemFireServerTest
+public class Config
 {
-    [Fact]
-    public void Start()
-    {
-        var gfs = new GeodeServer();
-        Assert.NotNull(gfs);
-        Assert.NotEqual(0, gfs.LocatorPort);
-        gfs.Dispose();
-    }
-
-    [Fact]
-    public void StartTwo()
-    {
-        var gfs1 = new GeodeServer();
-        Assert.NotNull(gfs1);
-        Assert.NotEqual(0, gfs1.LocatorPort);
-
-        var gfs2 = new GeodeServer();
-        Assert.NotNull(gfs2);
-        Assert.NotEqual(0, gfs2.LocatorPort);
-
-        Assert.NotEqual(gfs1.LocatorPort, gfs2.LocatorPort);
-        gfs1.Dispose();
-        gfs2.Dispose();
-    }
+  static public string GeodeGfsh
+  {
+    get { return @"@Geode_gfsh_EXECUTABLE@"; }
+  }
 }

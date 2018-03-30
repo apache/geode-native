@@ -18,21 +18,20 @@ project( Apache.Geode.IntegrationTests2 CSharp )
 
 set(CMAKE_CSharp_FLAGS "/langversion:5")
 
-string(REPLACE "\\" "\\\\" GEODE_ROOT_ESCAPED_PATH ${GEODE_ROOT})
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINARY_DIR}/packages.config COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/GeodeServer.cs.in ${CMAKE_CURRENT_SOURCE_DIR}/GeodeServer.cs)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cs.in ${CMAKE_CURRENT_BINARY_DIR}/Config.cs)
 
 add_library( ${PROJECT_NAME} SHARED
+    Config.cs.in
+    ${CMAKE_CURRENT_BINARY_DIR}/Config.cs
     GeodeServer.cs
     GeodeServerTests.cs
     CacheXml.cs
     CacheXmlTests.cs
-    IntegrationTests2.cs
+    RegionTest.cs
     cache.xml
     geode.properties
     xunit.runner.json
-    GeodeServer.cs.in
 )
 
 set_source_files_properties(cache.xml xunit.runner.json geode.properties PROPERTIES
