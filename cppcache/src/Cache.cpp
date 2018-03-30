@@ -238,8 +238,8 @@ PoolManager& Cache::getPoolManager() const {
 }
 
 std::unique_ptr<DataInput> Cache::createDataInput(const uint8_t* m_buffer,
-                                                  size_t len, const std::string& poolName) const {
-  return m_cacheImpl->createDataInput(m_buffer, len, poolName);
+                                                  size_t len) const {
+  return m_cacheImpl->createDataInput(m_buffer, len);
 }
 
 std::unique_ptr<DataOutput> Cache::createDataOutput() const {
