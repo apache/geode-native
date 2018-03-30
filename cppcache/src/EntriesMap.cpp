@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-#include "MapEntry.hpp"
-#include "MapEntryT.hpp"
+#include <geode/Region.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-void EntryFactory::newMapEntry(ExpiryTaskManager* expiryTaskManager,
-                               const std::shared_ptr<CacheableKey>& key,
-                               std::shared_ptr<MapEntryImpl>& result) const {
-  if (m_concurrencyChecksEnabled) {
-    result = MapEntryT<VersionedMapEntryImpl, 0, 0>::create(key);
-  } else {
-    result = MapEntryT<MapEntryImpl, 0, 0>::create(key);
-  }
+std::shared_ptr<Cacheable> EntriesMap::getFromDisk(
+    const std::shared_ptr<CacheableKey>& key,
+    std::shared_ptr<MapEntryImpl>& me) const {
+  return nullptr;
 }
-
-void EntryFactory::cleanup(const CacheEventFlags) {}
 
 }  // namespace client
 }  // namespace geode

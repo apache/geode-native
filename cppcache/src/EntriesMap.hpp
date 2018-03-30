@@ -169,9 +169,7 @@ class APACHE_GEODE_EXPORT EntriesMap {
 
   virtual std::shared_ptr<Cacheable> getFromDisk(
       const std::shared_ptr<CacheableKey>& key,
-      std::shared_ptr<MapEntryImpl>& me) const {
-    return nullptr;
-  }
+      std::shared_ptr<MapEntryImpl>& me) const;
 
   virtual void reapTombstones(std::map<uint16_t, int64_t>& gcVersions) = 0;
 

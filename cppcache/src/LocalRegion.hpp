@@ -373,36 +373,44 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
 
   // other public methods
   RegionStats* getRegionStats() override { return m_regionStats; }
-  inline bool cacheEnabled() override {
+
+  bool cacheEnabled() override {
     return m_regionAttributes.getCachingEnabled();
   }
+
   inline bool cachelessWithListener() {
     return !m_regionAttributes.getCachingEnabled() && (m_listener != nullptr);
   }
-  virtual bool isDestroyed() const override { return m_destroyPending; }
+
+  bool isDestroyed() const override { return m_destroyPending; }
   /* above public methods are inherited from RegionInternal */
 
-  virtual void adjustCacheListener(
+  void adjustCacheListener(
       const std::shared_ptr<CacheListener>& aListener) override;
-  virtual void adjustCacheListener(const std::string& libpath,
-                                   const std::string& factoryFuncName) override;
-  virtual void adjustCacheLoader(
-      const std::shared_ptr<CacheLoader>& aLoader) override;
-  virtual void adjustCacheLoader(const std::string& libpath,
-                                 const std::string& factoryFuncName) override;
-  virtual void adjustCacheWriter(
-      const std::shared_ptr<CacheWriter>& aWriter) override;
-  virtual void adjustCacheWriter(const std::string& libpath,
-                                 const std::string& factoryFuncName) override;
-  virtual CacheImpl* getCacheImpl() const override;
-  virtual void evict(int32_t percentage) override;
 
-  virtual void acquireGlobals(bool isFailover){};
-  virtual void releaseGlobals(bool isFailover){};
+  void adjustCacheListener(const std::string& libpath,
+                           const std::string& factoryFuncName) override;
+  void adjustCacheLoader(const std::shared_ptr<CacheLoader>& aLoader) override;
+
+  void adjustCacheLoader(const std::string& libpath,
+                         const std::string& factoryFuncName) override;
+  void adjustCacheWriter(const std::shared_ptr<CacheWriter>& aWriter) override;
+
+  void adjustCacheWriter(const std::string& libpath,
+                         const std::string& factoryFuncName) override;
+  CacheImpl* getCacheImpl() const override;
+
+  void evict(int32_t percentage) override;
+
+  virtual void acquireGlobals(bool isFailover);
+
+  virtual void releaseGlobals(bool isFailover);
 
   virtual bool getProcessedMarker() { return true; }
+
   EntriesMap* getEntryMap() { return m_entries; }
-  virtual std::shared_ptr<TombstoneList> getTombstoneList() override;
+
+  std::shared_ptr<TombstoneList> getTombstoneList() override;
 
  protected:
   /* virtual protected methods */

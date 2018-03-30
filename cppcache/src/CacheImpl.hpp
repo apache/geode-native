@@ -184,24 +184,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable
    * @param regions the region collection object containing the returned set of
    * regions when the function returns
    */
-
   void rootRegions(std::vector<std::shared_ptr<Region>>& regions);
-
-  /**
-   * FUTURE: not used currently. Gets the number of seconds a cache
-   * {@link Region::get} operation
-   * can spend searching for a value before it times out.
-   * The search includes any time spent loading the object.
-   * When the search times out, it causes the get to fail by throwing
-   * an exception.
-   * This method does not throw
-   * <code>CacheClosedException</code> if the cache is closed.
-   * Sets the number of seconds a cache get operation can spend searching
-   * for a value.
-   *
-   * @throws IllegalArgumentException if <code>seconds</code> is less than zero
-   */
-  inline void setSearchTimeout(int seconds = 0) {}
 
   virtual RegionFactory createRegionFactory(RegionShortcut preDefinedRegion);
 

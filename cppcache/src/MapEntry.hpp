@@ -93,8 +93,7 @@ class APACHE_GEODE_EXPORT ExpEntryProperties {
 
  protected:
   // this constructor deliberately skips initializing any fields
-  inline explicit ExpEntryProperties(bool noInit)
-      : m_lastAccessTime(time_point()), m_lastModifiedTime(time_point()) {}
+  inline explicit ExpEntryProperties(bool) {}
 
  private:
   /** last access time in secs, 32bit.. */
@@ -182,7 +181,7 @@ class APACHE_GEODE_EXPORT MapEntry {
  protected:
   inline MapEntry() {}
 
-  inline explicit MapEntry(bool noInit) {}
+  inline explicit MapEntry(bool) {}
 };
 
 /**
@@ -240,11 +239,12 @@ class MapEntryImpl : public MapEntry,
         "MapEntry::getVersionStamp called for "
         "non-versioned MapEntry");
   }
-  virtual void cleanup(const CacheEventFlags eventFlags) {}
+
+  virtual void cleanup(const CacheEventFlags eventFlags);
 
  protected:
-  inline explicit MapEntryImpl(bool noInit)
-      : MapEntry(true), m_value(nullptr), m_key(nullptr) {}
+  inline explicit MapEntryImpl(bool)
+      : MapEntry(true) {}
 
   inline MapEntryImpl(const std::shared_ptr<CacheableKey>& key) : MapEntry(), m_key(key) {}
 
@@ -265,7 +265,7 @@ class APACHE_GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
   virtual VersionStamp& getVersionStamp() { return *this; }
 
  protected:
-  inline explicit VersionedMapEntryImpl(bool noInit) : MapEntryImpl(true) {}
+  inline explicit VersionedMapEntryImpl(bool) : MapEntryImpl(true) {}
 
   inline VersionedMapEntryImpl(const std::shared_ptr<CacheableKey>& key)
       : MapEntryImpl(key) {}

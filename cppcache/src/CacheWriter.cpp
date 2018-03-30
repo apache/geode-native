@@ -28,16 +28,18 @@ CacheWriter::CacheWriter() {}
 
 CacheWriter::~CacheWriter() {}
 
-void CacheWriter::close(Region& region) {}
+void CacheWriter::close(Region&) {}
 
-bool CacheWriter::beforeUpdate(const EntryEvent& event) { return true; }
+bool CacheWriter::beforeUpdate(const EntryEvent&) { return true; }
 
-bool CacheWriter::beforeCreate(const EntryEvent& event) { return true; }
+bool CacheWriter::beforeCreate(const EntryEvent&) { return true; }
 
-bool CacheWriter::beforeDestroy(const EntryEvent& event) { return true; }
+bool CacheWriter::beforeDestroy(const EntryEvent&) { return true; }
 
-bool CacheWriter::beforeRegionDestroy(const RegionEvent& event) { return true; }
-bool CacheWriter::beforeRegionClear(const RegionEvent& event) { return true; }
+bool CacheWriter::beforeRegionDestroy(const RegionEvent&) { return true; }
+
+bool CacheWriter::beforeRegionClear(const RegionEvent&) { return true; }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

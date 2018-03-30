@@ -55,38 +55,35 @@ class FunctionService;
  */
 class APACHE_GEODE_EXPORT ProxyRegion : public Region {
  public:
-  virtual const std::string& getName() const override {
+  const std::string& getName() const override {
     return m_realRegion->getName();
   }
 
-  virtual const std::string& getFullPath() const override {
+  const std::string& getFullPath() const override {
     return m_realRegion->getFullPath();
   }
 
-  virtual std::shared_ptr<Region> getParentRegion() const override {
+  std::shared_ptr<Region> getParentRegion() const override {
     return m_realRegion->getParentRegion();
   }
 
-  virtual const RegionAttributes& getAttributes() const override {
+  const RegionAttributes& getAttributes() const override {
     return m_realRegion->getAttributes();
   }
 
-  virtual std::shared_ptr<AttributesMutator> getAttributesMutator()
-      const override {
+  std::shared_ptr<AttributesMutator> getAttributesMutator() const override {
     throw UnsupportedOperationException("Region.getAttributesMutator()");
   }
 
-  virtual std::shared_ptr<CacheStatistics> getStatistics() const override {
+  std::shared_ptr<CacheStatistics> getStatistics() const override {
     return m_realRegion->getStatistics();
   }
 
-  virtual void invalidateRegion(const std::shared_ptr<Serializable>&
-                                    aCallbackArgument = nullptr) override {
+  void invalidateRegion(const std::shared_ptr<Serializable>&) override {
     throw UnsupportedOperationException("Region.invalidateRegion()");
   }
 
-  virtual void localInvalidateRegion(const std::shared_ptr<Serializable>&
-                                         aCallbackArgument = nullptr) override {
+  void localInvalidateRegion(const std::shared_ptr<Serializable>&) override {
     throw UnsupportedOperationException("Region.localInvalidateRegion()");
   }
 
@@ -96,24 +93,23 @@ class APACHE_GEODE_EXPORT ProxyRegion : public Region {
     m_realRegion->destroyRegion(aCallbackArgument);
   }
 
-  virtual void clear(const std::shared_ptr<Serializable>& aCallbackArgument =
-                         nullptr) override {
+  void clear(const std::shared_ptr<Serializable>& aCallbackArgument =
+                 nullptr) override {
     GuardUserAttributes gua(m_authenticatedView);
     m_realRegion->clear(aCallbackArgument);
   }
 
-  virtual void localClear(const std::shared_ptr<Serializable>&
-                              aCallbackArgument = nullptr) override {
+  void localClear(const std::shared_ptr<Serializable>& aCallbackArgument =
+                      nullptr) override {
     throw UnsupportedOperationException("localClear()");
   }
 
-  virtual void localDestroyRegion(const std::shared_ptr<Serializable>&
-                                      aCallbackArgument = nullptr) override {
+  void localDestroyRegion(const std::shared_ptr<Serializable>&
+                              aCallbackArgument = nullptr) override {
     throw UnsupportedOperationException("Region.localDestroyRegion()");
   }
 
-  virtual std::shared_ptr<Region> getSubregion(
-      const std::string& path) override {
+  std::shared_ptr<Region> getSubregion(const std::string& path) override {
     LOGDEBUG("ProxyRegion getSubregion");
     auto rPtr = std::static_pointer_cast<RegionInternal>(
         m_realRegion->getSubregion(path));

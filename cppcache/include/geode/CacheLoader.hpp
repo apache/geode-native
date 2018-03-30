@@ -54,6 +54,10 @@ class Region;
  */
 class APACHE_GEODE_EXPORT CacheLoader {
  public:
+  virtual ~CacheLoader() = default;
+  CacheLoader(const CacheLoader& other) = delete;
+  void operator=(const CacheLoader& other) = delete;
+
   /**Loads a value. Application writers should implement this
    * method to customize the loading of a value. This method is called
    * by the caching service when the requested value is not in the cache.
@@ -89,15 +93,9 @@ class APACHE_GEODE_EXPORT CacheLoader {
    */
   virtual void close(Region& rp);
 
-  virtual ~CacheLoader();
-
  protected:
-  CacheLoader();
+  CacheLoader() = default;
 
- protected:
-  // never implemented.
-  CacheLoader(const CacheLoader& other);
-  void operator=(const CacheLoader& other);
 };
 }  // namespace client
 }  // namespace geode
