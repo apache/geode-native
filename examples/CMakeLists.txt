@@ -30,4 +30,6 @@ install(FILES
   DESTINATION examples/cmake)
 
 add_subdirectory(cpp)
-add_subdirectory(dotnet)
+if (BUILD_CLI)
+  add_subdirectory(dotnet)
+endif()
