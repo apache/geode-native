@@ -18,11 +18,6 @@ project(nativeclient LANGUAGES C CXX)
 
 option(USE_PCH "Use precompiled headers (PCH)." OFF)
 
-find_program(NUGET nuget)
-add_custom_target(nuget-restore 
-  COMMAND ${NUGET} restore ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.sln
-)
-
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 if (USE_PCH)

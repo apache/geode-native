@@ -126,7 +126,7 @@ namespace Apache
           else//we know locasl type, need to see preerved data
           {
             //if object got from server than create instance of RemoteWriter otherwise local writer.
-            PdxRemotePreservedData^ pd = cache->GetPdxTypeRegistry()->GetPreserveData(pdxObject);
+            auto pd = cache->GetPdxTypeRegistry()->GetPreserveData(pdxObject);
 
             //now always remotewriter as we have API Read/WriteUnreadFields 
 						//so we don't know whether user has used those or not;; Can we do some trick here?
