@@ -69,10 +69,10 @@ int ThreadPoolWorker::shutDown(void) {
 ACE_thread_t ThreadPoolWorker::threadId(void) { return threadId_; }
 
 ThreadPool::ThreadPool(uint32_t threadPoolSize)
-    : shutdown_(0),
+    : poolSize_(threadPoolSize),
+      shutdown_(0),
       workersLock_(),
-      workersCond_(workersLock_),
-      poolSize_(threadPoolSize) {
+      workersCond_(workersLock_) {
   activate();
 }
 

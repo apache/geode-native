@@ -59,8 +59,8 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cacheImpl,
       m_transactionEnabled(false),
       m_isPRSingleHopEnabled(false),
       m_attachedPool(nullptr),
-      m_persistenceManager(nullptr),
-      m_enableTimeStatistics(enableTimeStatistics) {
+      m_enableTimeStatistics(enableTimeStatistics),
+      m_persistenceManager(nullptr) {
   if (m_parentRegion != nullptr) {
     ((m_fullPath = m_parentRegion->getFullPath()) += "/") += m_name;
   } else {
@@ -2893,7 +2893,6 @@ std::chrono::seconds LocalRegion::adjustEntryExpiryDuration(
 
 /** they used to public methods in hpp file */
 bool LocalRegion::isStatisticsEnabled() {
-  bool status = true;
   if (m_cacheImpl == nullptr) {
     return false;
   }

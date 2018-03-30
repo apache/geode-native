@@ -281,7 +281,8 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
   hostPort = input.readInt32();  // port
   // TODO: RVV get the host name from
 
-  const uint8_t flag = input.read();
+  // read and ignore flag
+  input.read();
 
   const auto vmKind = input.read();  // vmkind
 

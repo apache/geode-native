@@ -95,11 +95,11 @@ PdxInstanceImpl::PdxInstanceImpl(
     CachePerfStats* cacheStats,
     std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry,
     const CacheImpl* cacheImpl, bool enableTimeStatistics)
-    : m_pdxType(pdxType),
-      m_updatedFields(fieldVsValue),
-      m_buffer(nullptr),
+    : m_buffer(nullptr),
       m_bufferLength(0),
       m_typeId(0),
+      m_pdxType(pdxType),
+      m_updatedFields(fieldVsValue),
       m_cacheStats(cacheStats),
       m_pdxTypeRegistry(pdxTypeRegistry),
       m_cacheImpl(cacheImpl),
@@ -1736,7 +1736,6 @@ void PdxInstanceImpl::setField(const std::string& fieldName, int32_t value) {
   auto pft = pt->getPdxField(fieldName);
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::INT) {
-    char excpStr[256] = {0};
     throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
                                 " or type of field not matched " +
                                 (pft != nullptr ? pft->toString() : ""));

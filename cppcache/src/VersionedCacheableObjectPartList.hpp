@@ -117,8 +117,8 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   VersionedCacheableObjectPartList(ThinClientRegion* region, uint16_t dsmemId,
                                    ACE_Recursive_Thread_Mutex& responseLock)
       : CacheableObjectPartList(region),
-        m_responseLock(responseLock),
-        m_endpointMemId(dsmemId) {
+        m_endpointMemId(dsmemId),
+        m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
     m_hasTags = false;
@@ -151,7 +151,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
 
   VersionedCacheableObjectPartList(ThinClientRegion* region,
                                    ACE_Recursive_Thread_Mutex& responseLock)
-      : m_responseLock(responseLock), CacheableObjectPartList(region) {
+      : CacheableObjectPartList(region), m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
     m_hasTags = false;

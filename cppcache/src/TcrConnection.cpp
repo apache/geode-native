@@ -1467,7 +1467,6 @@ TcrConnection::~TcrConnection() {
 bool TcrConnection::setAndGetBeingUsed(volatile bool isBeingUsed,
                                        bool forTransaction) {
   uint32_t currentValue = 0;
-  uint32_t retVal = 0U;
 
   if (!forTransaction) {
     if (isBeingUsed) {

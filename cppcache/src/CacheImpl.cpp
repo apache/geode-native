@@ -51,9 +51,12 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem, bool iPUF,
     : m_defaultPool(nullptr),
       m_ignorePdxUnreadFields(iPUF),
       m_readPdxSerialized(readPdxSerialized),
+      m_expiryTaskManager(
+          std::unique_ptr<ExpiryTaskManager>(new ExpiryTaskManager())),
       m_closed(false),
       m_initialized(false),
       m_distributedSystem(std::move(distributedSystem)),
+      m_clientProxyMembershipIDFactory(m_distributedSystem.getName()),
       m_cache(c),
       m_cond(m_mutex),
       m_attributes(nullptr),
@@ -67,9 +70,6 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem, bool iPUF,
           *(std::make_shared<MemberListForVersionStamp>())),
       m_serializationRegistry(std::make_shared<SerializationRegistry>()),
       m_pdxTypeRegistry(nullptr),
-      m_expiryTaskManager(
-          std::unique_ptr<ExpiryTaskManager>(new ExpiryTaskManager())),
-      m_clientProxyMembershipIDFactory(m_distributedSystem.getName()),
       m_threadPool(new ThreadPool(
           m_distributedSystem.getSystemProperties().threadPoolSize())),
       m_authInitialize(authInitialize) {

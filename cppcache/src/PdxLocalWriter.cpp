@@ -45,12 +45,12 @@ PdxLocalWriter::PdxLocalWriter(DataOutput& dataOutput,
                                std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
     : m_dataOutput(&dataOutput),
       m_pdxType(pdxType),
-      m_pdxClassName(pdxClassName),
       m_startPosition(nullptr),
       m_startPositionOffset(0),
       m_domainClassName(""),
       m_currentOffsetIndex(0),
-      m_pdxTypeRegistry(pdxTypeRegistry) {
+      m_pdxTypeRegistry(pdxTypeRegistry),
+      m_pdxClassName(pdxClassName) {
   initialize();
 }
 

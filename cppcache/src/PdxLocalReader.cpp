@@ -48,11 +48,11 @@ PdxLocalReader::PdxLocalReader(DataInput& input,
     : m_dataInput(&input),
       m_pdxType(remoteType),
       m_serializedLengthWithOffsets(pdxLen),
+      m_isDataNeedToPreserve(true),
+      m_pdxRemotePreserveData(std::make_shared<PdxRemotePreservedData>()),
       m_localToRemoteMap(remoteType->getLocalToRemoteMap()),
       m_remoteToLocalMap(remoteType->getRemoteToLocalMap()),
       m_remoteToLocalMapSize(remoteType->getTotalFields()),
-      m_pdxRemotePreserveData(std::make_shared<PdxRemotePreservedData>()),
-      m_isDataNeedToPreserve(true),
       m_pdxTypeRegistry(pdxTypeRegistry) {
   initialize();
 }

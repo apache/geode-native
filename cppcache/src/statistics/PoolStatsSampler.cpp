@@ -55,7 +55,6 @@ PoolStatsSampler::~PoolStatsSampler() {
 
 int32_t PoolStatsSampler::svc() {
   DistributedSystemImpl::setThreadName(NC_PSS_Thread);
-  auto msSpentWorking = milliseconds::zero();
   // ACE_Guard < ACE_Recursive_Thread_Mutex > _guard( m_lock );
   while (!m_stopRequested) {
     auto sampleStart = high_resolution_clock::now();

@@ -61,13 +61,13 @@ const std::string& CacheFactory::getProductDescription() {
 }
 
 CacheFactory::CacheFactory() noexcept
-    : ignorePdxUnreadFields(false), pdxReadSerialized(false), dsProp(nullptr) {}
+    : dsProp(nullptr), ignorePdxUnreadFields(false), pdxReadSerialized(false) {}
 
 CacheFactory::CacheFactory(
     const std::shared_ptr<Properties>& properties) noexcept
-    : ignorePdxUnreadFields(false),
-      pdxReadSerialized(false),
-      dsProp(properties) {}
+    : dsProp(properties),
+      ignorePdxUnreadFields(false),
+      pdxReadSerialized(false) {}
 
 Cache CacheFactory::create() const {
   auto cache =

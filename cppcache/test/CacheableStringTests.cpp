@@ -217,7 +217,7 @@ TEST_F(CacheableStringTests, TestFromDataNonAsciiHuge) {
       std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
           .from_bytes(utf8);
 
-  auto origStr = CacheableString::create(utf8.c_str());
+  auto origStr = CacheableString::create(utf16.c_str());
   DataOutputInternal out;
   origStr->toData(out);
 

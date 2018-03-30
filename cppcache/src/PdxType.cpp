@@ -47,17 +47,17 @@ PdxType::~PdxType() noexcept {
 PdxType::PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr,
                  std::string pdxDomainClassName, bool isLocal)
     : Serializable(),
+      m_pdxFieldTypes(new std::vector<std::shared_ptr<PdxFieldType>>()),
       m_className(pdxDomainClassName),
+      m_geodeTypeId(0),
       m_isLocal(isLocal),
       m_numberOfVarLenFields(0),
       m_varLenFieldIdx(0),
-      m_isVarLenFieldAdded(false),
-      m_noJavaClass(false),
-      m_pdxFieldTypes(new std::vector<std::shared_ptr<PdxFieldType>>()),
-      m_localToRemoteFieldMap(nullptr),
-      m_remoteToLocalFieldMap(nullptr),
-      m_geodeTypeId(0),
       m_numberOfFieldsExtra(0),
+      m_isVarLenFieldAdded(false),
+      m_remoteToLocalFieldMap(nullptr),
+      m_localToRemoteFieldMap(nullptr),
+      m_noJavaClass(false),
       m_pdxTypeRegistryPtr(pdxTypeRegistryPtr) {}
 
 void PdxType::toData(DataOutput& output) const {

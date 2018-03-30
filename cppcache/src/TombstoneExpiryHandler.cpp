@@ -34,8 +34,8 @@ TombstoneExpiryHandler::TombstoneExpiryHandler(
     std::chrono::milliseconds duration, CacheImpl* cacheImpl)
     : m_entryPtr(entryPtr),
       m_duration(duration),
-      m_tombstoneList(tombstoneList),
-      m_cacheImpl(cacheImpl) {}
+      m_cacheImpl(cacheImpl),
+      m_tombstoneList(tombstoneList) {}
 
 int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
                                            const void* arg) {

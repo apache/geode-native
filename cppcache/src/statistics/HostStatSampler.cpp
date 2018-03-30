@@ -710,7 +710,6 @@ int32_t HostStatSampler::svc(void) {
     if (!m_isStatDiskSpaceEnabled) {
       changeArchive(archivefilename);
     }
-    auto msSpentWorking = milliseconds::zero();
     auto samplingRate = milliseconds(getSampleRate());
     bool gotexception = false;
     int waitTime = 0;

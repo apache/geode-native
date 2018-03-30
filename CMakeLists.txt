@@ -157,14 +157,6 @@ endif()
 #TODO remove this debugging for NMake
 set(CMAKE_VERBOSE_MAKEFILE 0)
 
-# Interface for C++/CLI language.
-add_library(c++cli INTERFACE)
-target_compile_options(c++cli
-  INTERFACE
-    /clr
-    /EHa
-)
-
 # Interface for C++11 language
 add_library(c++11 INTERFACE)
 
@@ -183,14 +175,29 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
   # C++11 requires these libraries, treat -std=c++11 as library
   #TODO look into CMAKE_CXX_STANDARD_LIBRARIES
   target_link_libraries(c++11 INTERFACE -std=c++11 stdc++ gcc_s CrunG3 m c)
+
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs")
+
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  target_compile_options(_WarningsAsError INTERFACE -Werror)
+  target_compile_options(_WarningsAsError INTERFACE
+    -Werror
+    -Wall
+    -Wno-unknown-pragmas
+    -Wno-unused-variable
+    -Wno-unused-function)
+
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(BUILD_CLI 1)
 
-  target_compile_options(_WarningsAsError INTERFACE /WX)
+  # Interface for C++/CLI language.
+  add_library(c++cli INTERFACE)
+  target_compile_options(c++cli INTERFACE
+    /clr
+    /EHa)
+
+  target_compile_options(_WarningsAsError INTERFACE
+    /WX)
 
   # TODO error on warnings
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")

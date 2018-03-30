@@ -160,10 +160,10 @@ std::vector<std::shared_ptr<Region>> AuthenticatedView::rootRegions() const {
 AuthenticatedView::AuthenticatedView(std::shared_ptr<Properties> credentials,
                                      std::shared_ptr<Pool> pool,
                                      CacheImpl* cacheImpl)
-    : m_remoteQueryService(nullptr),
-      m_isAuthenticatedViewClosed(false),
-      m_userAttributes(
+    : m_userAttributes(
           std::make_shared<UserAttributes>(credentials, pool, this)),
+      m_isProxyCacheClosed(false),
+      m_remoteQueryService(nullptr),
       m_cacheImpl(cacheImpl) {}
 
 AuthenticatedView::~AuthenticatedView() {}

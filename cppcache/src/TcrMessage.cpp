@@ -119,7 +119,8 @@ void TcrMessage::readBooleanPartAsObject(DataInput& input, bool* boolVal) {
 }
 
 void TcrMessage::readOldValue(DataInput& input) {
-  int32_t lenObj = input.readInt32();
+  // read and ignore length
+  input.readInt32();
   input.read();  // ignore isObj
   std::shared_ptr<Cacheable> value;
   input.readObject(value);  // we are not using this value currently
@@ -355,8 +356,10 @@ int64_t TcrMessage::getUniqueId(TcrConnection* conn) {
 
 inline void TcrMessage::readFailedNodePart(DataInput& input,
                                            bool defaultString) {
-  int32_t lenObj = input.readInt32();
-  const auto isObj = input.readBoolean();
+  // read and ignore length
+  input.readInt32();
+  // read and ignore isObj
+  input.readBoolean();
   m_failedNode = CacheableHashSet::create();
   input.read();  // ignore typeId
   // input.readDirectObject(m_failedNode, typeId);
@@ -954,7 +957,8 @@ void TcrMessage::handleByteArrayResponse(
         input->advanceCursor(5);  // part header
         m_value = serializationRegistry.deserialize(*input);
       } else if (m_msgTypeRequest == TcrMessage::GET_FUNCTION_ATTRIBUTES) {
-        int32_t lenObj = input->readInt32();
+        // read and ignore length
+        input->readInt32();
         input->advanceCursor(1);  // ignore byte
 
         m_functionAttributes = new std::vector<int8_t>();
@@ -1318,7 +1322,9 @@ void TcrMessage::handleByteArrayResponse(
       regname[regionLen] = '\0';
       m_regionName = regname;
       readIntPart(*input, &tombstoneOpType);  // partlen;
-      int32_t len = input->readInt32();
+      // read and ignore length
+      input->readInt32();
+      // read and ignore isObj
       input->read();
 
       if (tombstoneOpType == 0) {
@@ -2883,11 +2889,10 @@ void TcrMessage::readEventIdPart(DataInput& input, bool skip, int32_t parts) {
   }
 
   // read the eventid part
-
-  int32_t eventIdLen = input.readInt32();
-  const auto isObj = input.read();
-
-  GF_D_ASSERT(isObj != 0);
+  // read and ignore length
+  input.readInt32();
+  // read and ignore isObj
+  input.read();
 
   m_eventid = std::static_pointer_cast<EventId>(input.readObject());
 }
@@ -2936,7 +2941,8 @@ void TcrMessage::readHashMapForGCVersions(
     std::shared_ptr<Cacheable> val;
     for (int32_t index = 0; index < len; index++) {
       key = readDSMember(input);
-      uint8_t versiontype = input.read();
+      // read and ignore versionType
+      input.read();
 
       auto valVersion = CacheableInt64::create(input.readInt64());
       auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(key);

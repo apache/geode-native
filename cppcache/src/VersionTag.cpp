@@ -33,9 +33,9 @@ VersionTag::VersionTag(int32_t entryVersion, int16_t regionVersionHighBytes,
       m_entryVersion(entryVersion),
       m_regionVersionHighBytes(regionVersionHighBytes),
       m_regionVersionLowBytes(regionVersionLowBytes),
-      m_timeStamp(0),
       m_internalMemId(internalMemId),
       m_previousMemId(previousMemId),
+      m_timeStamp(0),
       m_memberListForVersionStamp(memberListForVersionStamp) {}
 
 int32_t VersionTag::classId() const { return 0; }

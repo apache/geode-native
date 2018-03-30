@@ -779,7 +779,6 @@ bool ThinClientRegion::containsKeyOnServer(
     const std::shared_ptr<CacheableKey>& keyPtr) const {
   GfErrType err = GF_NOERR;
   bool ret = false;
-  TXState* txState = getTXState();
 
   /** @brief Create message and send to bridge server */
 
@@ -826,7 +825,6 @@ bool ThinClientRegion::containsValueForKey_remote(
     const std::shared_ptr<CacheableKey>& keyPtr) const {
   GfErrType err = GF_NOERR;
   bool ret = false;
-  TXState* txState = getTXState();
 
   /** @brief Create message and send to bridge server */
 
@@ -1800,8 +1798,6 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
            resultMap.size());
   for (const auto& resultMapIter : resultMap) {
     const auto& value = resultMapIter.second;
-    PutAllPartialResultServerException* papException = nullptr;
-    std::shared_ptr<VersionedCacheableObjectPartList> list = nullptr;
 
     if (const auto papException =
             std::dynamic_pointer_cast<PutAllPartialResultServerException>(
@@ -3479,8 +3475,7 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     return;
   }
 
-  uint16_t stiLen = 0;
-  // soubhik: ignoring parent classes for now
+  // ignoring parent classes for now
   // we will require to look at it once CQ is to be implemented.
   // skipping HashSet/StructSet
   // qhe: It was agreed upon that we'll use set for all kinds of results.
