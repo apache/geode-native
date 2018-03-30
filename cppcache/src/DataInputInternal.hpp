@@ -41,11 +41,6 @@ class DataInputInternal : public DataInput {
   inline static const std::string& getPoolName(const DataInput& dataInput) {
     return dataInput.getPoolName();
   }
-
-  inline static void setPoolName(DataInput& dataInput,
-                                 const std::string& poolName) {
-    return dataInput.setPoolName(poolName);
-  }
 };
 
 }  // namespace client

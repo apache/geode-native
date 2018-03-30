@@ -909,11 +909,10 @@ void TcrMessage::handleByteArrayResponse(
     const SerializationRegistry& serializationRegistry,
     MemberListForVersionStamp& memberListForVersionStamp) {
   auto input = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-      (uint8_t*)bytearray, len);
+      (uint8_t*)bytearray, len, getPoolName());
   // TODO:: this need to make sure that pool is there
   //  if(m_tcdm == nullptr)
   //  throw IllegalArgumentException("Pool is nullptr in TcrMessage");
-  DataInputInternal::setPoolName(*input, getPoolName());
   m_msgType = input->readInt32();
   int32_t msglen;
   msglen = input->readInt32();

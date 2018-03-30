@@ -3339,9 +3339,7 @@ void ChunkedInterestResponse::handleChunk(const uint8_t* chunk,
                                           int32_t chunkLen,
                                           uint8_t isLastChunkWithSecurity,
                                           const CacheImpl* cacheImpl) {
-  auto input = cacheImpl->createDataInput(chunk, chunkLen);
-
-  DataInputInternal::setPoolName(*input, m_replyMsg.getPoolName());
+  auto input = cacheImpl->createDataInput(chunk, chunkLen, m_replyMsg.getPoolName());
 
   uint32_t partLen;
   if (TcrMessageHelper::readChunkPartHeader(
@@ -3371,9 +3369,7 @@ void ChunkedKeySetResponse::reset() {
 void ChunkedKeySetResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
                                         uint8_t isLastChunkWithSecurity,
                                         const CacheImpl* cacheImpl) {
-  auto input = cacheImpl->createDataInput(chunk, chunkLen);
-
-  DataInputInternal::setPoolName(*input, m_replyMsg.getPoolName());
+  auto input = cacheImpl->createDataInput(chunk, chunkLen, m_replyMsg.getPoolName());
 
   uint32_t partLen;
   if (TcrMessageHelper::readChunkPartHeader(
@@ -3447,8 +3443,8 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
                                        uint8_t isLastChunkWithSecurity,
                                        const CacheImpl* cacheImpl) {
   LOGDEBUG("ChunkedQueryResponse::handleChunk..");
-  auto input = cacheImpl->createDataInput(chunk, chunkLen);
-  DataInputInternal::setPoolName(*input, m_msg.getPoolName());
+  auto input = cacheImpl->createDataInput(chunk, chunkLen, m_msg.getPoolName());
+
   uint32_t partLen;
   TcrMessageHelper::ChunkObjectType objType;
   if ((objType = TcrMessageHelper::readChunkPartHeader(
@@ -3588,8 +3584,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
     const uint8_t* chunk, int32_t chunkLen, uint8_t isLastChunkWithSecurity,
     const CacheImpl* cacheImpl) {
   LOGDEBUG("ChunkedFunctionExecutionResponse::handleChunk");
-  auto input = cacheImpl->createDataInput(chunk, chunkLen);
-  DataInputInternal::setPoolName(*input, m_msg.getPoolName());
+  auto input = cacheImpl->createDataInput(chunk, chunkLen, m_msg.getPoolName());
+
   uint32_t partLen;
 
   int8_t arrayType;
@@ -3722,8 +3718,8 @@ void ChunkedGetAllResponse::reset() {
 void ChunkedGetAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
                                         uint8_t isLastChunkWithSecurity,
                                         const CacheImpl* cacheImpl) {
-  auto input = cacheImpl->createDataInput(chunk, chunkLen);
-  DataInputInternal::setPoolName(*input, m_msg.getPoolName());
+  auto input = cacheImpl->createDataInput(chunk, chunkLen, m_msg.getPoolName());
+
   uint32_t partLen;
   if (TcrMessageHelper::readChunkPartHeader(
           m_msg, *input, GeodeTypeIdsImpl::FixedIDByte,
@@ -3776,8 +3772,8 @@ void ChunkedPutAllResponse::reset() {
 void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
                                         uint8_t isLastChunkWithSecurity,
                                         const CacheImpl* cacheImpl) {
-  auto input = cacheImpl->createDataInput(chunk, chunkLen);
-  DataInputInternal::setPoolName(*input, m_msg.getPoolName());
+  auto input = cacheImpl->createDataInput(chunk, chunkLen, m_msg.getPoolName());
+
   uint32_t partLen;
   int8_t chunkType;
   if ((chunkType = (TcrMessageHelper::ChunkObjectType)
@@ -3836,8 +3832,8 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
                                            int32_t chunkLen,
                                            uint8_t isLastChunkWithSecurity,
                                            const CacheImpl* cacheImpl) {
-  auto input = cacheImpl->createDataInput(chunk, chunkLen);
-  DataInputInternal::setPoolName(*input, m_msg.getPoolName());
+  auto input = cacheImpl->createDataInput(chunk, chunkLen, m_msg.getPoolName());
+
   uint32_t partLen;
   int8_t chunkType;
   if ((chunkType = (TcrMessageHelper::ChunkObjectType)
@@ -3894,10 +3890,10 @@ void ChunkedDurableCQListResponse::reset() {
 
 // handles the chunk response for GETDURABLECQS_MSG_TYPE
 void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
-                                               int32_t chunkLen, uint8_t,
-                                               const CacheImpl* m_cacheImpl) {
-  auto input = m_cacheImpl->createDataInput(chunk, chunkLen);
-  DataInputInternal::setPoolName(*input, m_msg.getPoolName());
+                                               int32_t chunkLen,
+                                               uint8_t,
+                                               const CacheImpl* cacheImpl) {
+  auto input = cacheImpl->createDataInput(chunk, chunkLen, m_msg.getPoolName());
 
   // read and ignore part length
   input->readInt32();
