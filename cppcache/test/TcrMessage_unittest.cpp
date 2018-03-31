@@ -323,7 +323,6 @@ TEST_F(TcrMessageTest, testConstructor5WithUNREGISTER_INTERST_LIST) {
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),
       static_cast<const Region *>(nullptr), keys,
       false,  // isDurable
-      false,  // isCacheingEnabled
       false,  // receiveValues
       InterestResultPolicy::NONE, static_cast<ThinClientBaseDM *>(nullptr));
 
@@ -367,9 +366,7 @@ TEST_F(TcrMessageTest, testConstructor6WithCREATE_REGION) {
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),
       "str1",  // TODO: what does this parameter do?!
       "str2",  // TODO: what does this parameter do?!
-      InterestResultPolicy::NONE,
       false,  // isDurable
-      false,  // isCacheingEnabled
       false,  // receiveValues
       static_cast<ThinClientBaseDM *>(nullptr));
 
@@ -406,7 +403,6 @@ TEST_F(TcrMessageTest, testConstructor6WithUNREGISTER_INTEREST) {
       "str2",  // TODO: what does this parameter do?!
       InterestResultPolicy::NONE,
       false,  // isDurable
-      false,  // isCacheingEnabled
       false,  // receiveValues
       static_cast<ThinClientBaseDM *>(nullptr));
 
@@ -444,7 +440,7 @@ TEST_F(TcrMessageTest, testConstructorGET_PDX_ID_FOR_TYPE) {
   std::shared_ptr<Cacheable> myPtr(CacheableString::createDeserializable());
   TcrMessageGetPdxIdForType message(
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()), myPtr,
-      static_cast<ThinClientBaseDM *>(nullptr), 42);
+      static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::GET_PDX_ID_FOR_TYPE, message.getMessageType());
 
@@ -469,7 +465,7 @@ TEST_F(TcrMessageTest, testConstructorGET_PDX_ID_FOR_ENUM) {
   TcrMessageGetPdxIdForEnum message(
       std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),
       static_cast<std::shared_ptr<Cacheable>>(nullptr),
-      static_cast<ThinClientBaseDM *>(nullptr), 42);
+      static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::GET_PDX_ID_FOR_ENUM, message.getMessageType());
 

@@ -22,12 +22,12 @@ namespace apache {
 namespace geode {
 namespace client {
 
-void UserFunctionExecutionException::toData(DataOutput& output) const {
+void UserFunctionExecutionException::toData(DataOutput&) const {
   throw IllegalStateException(
       "UserFunctionExecutionException::toData is not intended for use.");
 }
 
-void UserFunctionExecutionException::fromData(DataInput& input) {
+void UserFunctionExecutionException::fromData(DataInput&) {
   throw IllegalStateException(
       "UserFunctionExecutionException::fromData is not intended for use.");
 }

@@ -42,7 +42,7 @@ RegionExpiryHandler::RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
       m_expiryTaskId(0) {}
 
 int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
-                                        const void* arg) {
+                                        const void*) {
   auto curr_time = std::chrono::system_clock::from_time_t(current_time.sec());
   try {
     auto statistics = m_regionPtr->getStatistics();
@@ -82,8 +82,7 @@ int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
   return 0;
 }
 
-int RegionExpiryHandler::handle_close(ACE_HANDLE handle,
-                                      ACE_Reactor_Mask close_mask) {
+int RegionExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
   //  we now delete the handler in GF_Timer_Heap_ImmediateReset_T
   // delete this;
   return 0;

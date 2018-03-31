@@ -42,7 +42,7 @@ class TestDataOutput : public DataOutputInternal {
     // NOP
   }
 
-  TestDataOutput(Cache* cache)
+  TestDataOutput(Cache*)
       : DataOutputInternal(nullptr),
         m_byteArray(nullptr),
         m_serializationRegistry() {
@@ -80,7 +80,7 @@ class CacheableStringTests : public ::testing::Test, public ByteArrayFixture {
 inline std::string to_hex(const uint8_t* bytes, size_t len) {
   std::stringstream ss;
   ss << std::setfill('0') << std::hex;
-  for (int i(0); i < len; ++i) {
+  for (size_t i(0); i < len; ++i) {
     ss << std::setw(2) << (int)bytes[i];
   }
   return ss.str();

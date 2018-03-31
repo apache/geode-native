@@ -53,7 +53,7 @@ int8_t Struct::typeId() const { return GeodeTypeIds::Struct; }
 
 int8_t Struct::DSFID() const { return GeodeTypeIdsImpl::FixedIDByte; }
 
-void Struct::toData(DataOutput& output) const {
+void Struct::toData(DataOutput&) const {
   throw UnsupportedOperationException("Struct::toData: should not be called.");
 }
 
@@ -99,7 +99,7 @@ const std::string& Struct::getFieldName(const int32_t index) const {
 }
 
 const std::shared_ptr<Serializable> Struct::operator[](int32_t index) const {
-  if (index >= m_fieldValues.size()) {
+  if (index >= static_cast<int32_t>(m_fieldValues.size())) {
     return nullptr;
   }
 

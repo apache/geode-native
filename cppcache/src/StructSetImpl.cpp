@@ -68,7 +68,7 @@ SelectResultsIterator StructSetImpl::getIterator() {
   return SelectResultsIterator(m_structVector, shared_from_this());
 }
 
-const size_t StructSetImpl::getFieldIndex(const std::string& fieldname) {
+size_t StructSetImpl::getFieldIndex(const std::string& fieldname) {
   const auto& iter = m_fieldNameIndexMap.find(fieldname);
   if (iter != m_fieldNameIndexMap.end()) {
     return iter->second;

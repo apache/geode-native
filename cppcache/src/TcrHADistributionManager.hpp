@@ -40,49 +40,51 @@ class APACHE_GEODE_EXPORT TcrHADistributionManager
   TcrHADistributionManager(ThinClientRegion* theRegion,
                            TcrConnectionManager& connManager,
                            std::shared_ptr<CacheAttributes> cacheAttributes);
+  ~TcrHADistributionManager() = default;
+  TcrHADistributionManager(const TcrHADistributionManager&) = delete;
+  TcrHADistributionManager& operator=(const TcrHADistributionManager&) = delete;
 
-  void init();
+  void init() override ;
 
   GfErrType registerInterestForRegion(TcrEndpoint* ep,
                                       const TcrMessage* request,
-                                      TcrMessageReply* reply);
+                                      TcrMessageReply* reply) override ;
 
   GfErrType sendSyncRequestRegisterInterestEP(TcrMessage& request,
                                               TcrMessageReply& reply,
                                               bool attemptFailover,
-                                              TcrEndpoint* endpoint);
+                                              TcrEndpoint* endpoint) override ;
 
-  virtual GfErrType sendRequestToEP(const TcrMessage& request,
+  GfErrType sendRequestToEP(const TcrMessage& request,
                                     TcrMessageReply& reply,
-                                    TcrEndpoint* endpoint);
+                                    TcrEndpoint* endpoint) override ;
 
   ThinClientRegion* getRegion() { return m_region; }
 
-  virtual void acquireRedundancyLock() {
+  void acquireRedundancyLock() override {
     m_connManager.acquireRedundancyLock();
   };
-  virtual void releaseRedundancyLock() {
+
+  void releaseRedundancyLock() override {
     m_connManager.releaseRedundancyLock();
   };
 
  protected:
-  virtual GfErrType sendSyncRequestRegisterInterest(
+  GfErrType sendSyncRequestRegisterInterest(
       TcrMessage& request, TcrMessageReply& reply, bool attemptFailover = true,
-      ThinClientRegion* region = nullptr, TcrEndpoint* endpoint = nullptr);
+      ThinClientRegion* region = nullptr,
+      TcrEndpoint* endpoint = nullptr) override;
 
   virtual GfErrType sendSyncRequestCq(TcrMessage& request,
                                       TcrMessageReply& reply);
 
-  virtual void getEndpointNames(std::unordered_set<std::string>& endpointNames);
+  void getEndpointNames(std::unordered_set<std::string>& endpointNames) override ;
 
-  virtual bool preFailoverAction();
+  bool preFailoverAction() override ;
 
-  virtual bool postFailoverAction(TcrEndpoint* endpoint);
+  bool postFailoverAction(TcrEndpoint* endpoint) override ;
 
  private:
-  // Disallow copy constructor and assignment operator.
-  TcrHADistributionManager(const TcrHADistributionManager&);
-  TcrHADistributionManager& operator=(const TcrHADistributionManager&);
   std::shared_ptr<CacheAttributes> m_cacheAttributes;
   TcrConnectionManager& m_theTcrConnManager;
 

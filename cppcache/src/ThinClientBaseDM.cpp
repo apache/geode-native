@@ -55,7 +55,7 @@ bool ThinClientBaseDM::isSecurityOn() {
   return m_connManager.getCacheImpl()->getAuthInitialize() != nullptr;
 }
 
-void ThinClientBaseDM::destroy(bool keepalive) {
+void ThinClientBaseDM::destroy(bool) {
   if (!m_initDone) {
     // nothing to be done
     return;
@@ -67,7 +67,7 @@ void ThinClientBaseDM::destroy(bool keepalive) {
 
 GfErrType ThinClientBaseDM::sendSyncRequestRegisterInterest(
     TcrMessage& request, TcrMessageReply& reply, bool attemptFailover,
-    ThinClientRegion* region, TcrEndpoint* endpoint) {
+    ThinClientRegion*, TcrEndpoint* endpoint) {
   GfErrType err = GF_NOERR;
 
   if (endpoint == nullptr) {
@@ -332,7 +332,7 @@ GfErrType ThinClientBaseDM::registerInterestForRegion(TcrEndpoint*,
   return GF_NOERR;
 }
 
-bool ThinClientBaseDM::isEndpointAttached(TcrEndpoint* ep) { return false; };
+bool ThinClientBaseDM::isEndpointAttached(TcrEndpoint*) { return false; };
 
 }  // namespace client
 }  // namespace geode

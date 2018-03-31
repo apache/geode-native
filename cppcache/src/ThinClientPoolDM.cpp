@@ -493,7 +493,7 @@ void ThinClientPoolDM::cleanStaleConnections(volatile bool& isRunning) {
 
   LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize.load());
 }
-void ThinClientPoolDM::cleanStickyConnections(volatile bool& isRunning) {}
+void ThinClientPoolDM::cleanStickyConnections(volatile bool&) {}
 
 void ThinClientPoolDM::restoreMinConnections(volatile bool& isRunning) {
   if (!isRunning) {
@@ -1197,8 +1197,8 @@ TcrEndpoint* ThinClientPoolDM::getSingleHopServer(
 }
 
 TcrEndpoint* ThinClientPoolDM::getEndPoint(
-    const std::shared_ptr<BucketServerLocation>& serverLocation,
-    int8_t& version, std::set<ServerLocation>& excludeServers) {
+    const std::shared_ptr<BucketServerLocation>& serverLocation, int8_t&,
+    std::set<ServerLocation>& excludeServers) {
   TcrEndpoint* ep = nullptr;
   if (serverLocation->isValid()) {
     if (excludeServer(serverLocation->getEpString(), excludeServers)) {
@@ -1880,7 +1880,7 @@ GfErrType ThinClientPoolDM::createPoolConnection(
 }
 
 TcrConnection* ThinClientPoolDM::getConnectionFromQueue(
-    bool timeout, GfErrType* error, std::set<ServerLocation>& excludeServers,
+    bool, GfErrType* error, std::set<ServerLocation>& excludeServers,
     bool& maxConnLimit) {
   std::chrono::microseconds timeoutTime = m_attrs->getFreeConnectionTimeout();
 
@@ -1903,7 +1903,7 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueue(
   return mp;
 }
 
-bool ThinClientPoolDM::isEndpointAttached(TcrEndpoint* ep) { return true; }
+bool ThinClientPoolDM::isEndpointAttached(TcrEndpoint*) { return true; }
 
 GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
                                             TcrMessageReply& reply,
@@ -2387,7 +2387,7 @@ GfErrType ThinClientPoolDM::doFailover(TcrConnection* conn) {
 bool ThinClientPoolDM::canItBeDeletedNoImpl(TcrConnection*) { return false; };
 
 void ThinClientPoolDM::putInQueue(TcrConnection* conn, bool,
-                                  bool isTransaction = false) {
+                                  bool isTransaction) {
   if (isTransaction) {
     m_manager->setStickyConnection(conn, isTransaction);
   } else {
@@ -2398,7 +2398,7 @@ void ThinClientPoolDM::putInQueue(TcrConnection* conn, bool,
 TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
     GfErrType* error, std::set<ServerLocation>& excludeServers, bool,
     TcrMessage& request, int8_t& version, bool& match, bool& connFound,
-    const std::shared_ptr<BucketServerLocation>& serverLocation = nullptr) {
+    const std::shared_ptr<BucketServerLocation>& serverLocation) {
   TcrConnection* conn = nullptr;
   TcrEndpoint* theEP = nullptr;
   LOGDEBUG("prEnabled = %s, forSingleHop = %s %d",

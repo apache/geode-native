@@ -58,9 +58,8 @@ void TcrPoolEndPoint::closeNotification() {
   m_isQueueHosted = false;
 }
 
-GfErrType TcrPoolEndPoint::registerDM(bool clientNotification, bool isSecondary,
-                                      bool isActiveEndpoint,
-                                      ThinClientBaseDM* distMgr) {
+GfErrType TcrPoolEndPoint::registerDM(bool, bool isSecondary, bool,
+                                      ThinClientBaseDM*) {
   GfErrType err = GF_NOERR;
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_dm->getPoolLock());
   ACE_Guard<ACE_Recursive_Thread_Mutex> guardQueueHosted(getQueueHostedMutex());
@@ -104,8 +103,8 @@ GfErrType TcrPoolEndPoint::registerDM(bool clientNotification, bool isSecondary,
   setConnected(true);
   return err;
 }
-void TcrPoolEndPoint::unregisterDM(bool clientNotification,
-                                   ThinClientBaseDM* distMgr,
+void TcrPoolEndPoint::unregisterDM(bool ,
+                                   ThinClientBaseDM* ,
                                    bool checkQueueHosted) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(getQueueHostedMutex());
 

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TCRPOOLENDPOINT_H_
-#define GEODE_TCRPOOLENDPOINT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,47 +14,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_TCRPOOLENDPOINT_H_
+#define GEODE_TCRPOOLENDPOINT_H_
+
 #include "TcrEndpoint.hpp"
 #include "PoolStatistics.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
+
 class ThinClientPoolDM;
+
 class TcrPoolEndPoint : public TcrEndpoint {
  public:
   TcrPoolEndPoint(const std::string& name, CacheImpl* cache,
                   ACE_Semaphore& failoverSema, ACE_Semaphore& cleanupSema,
                   ACE_Semaphore& redundancySema, ThinClientPoolDM* dm);
-  virtual ThinClientPoolDM* getPoolHADM();
+  ThinClientPoolDM* getPoolHADM() override;
 
-  virtual bool checkDupAndAdd(std::shared_ptr<EventId> eventid);
-  virtual void processMarker();
-  virtual std::shared_ptr<QueryService> getQueryService();
-  virtual void sendRequestForChunkedResponse(const TcrMessage& request,
-                                             TcrMessageReply& reply,
-                                             TcrConnection* conn);
-  virtual void closeFailedConnection(TcrConnection*& conn);
-  virtual GfErrType registerDM(bool clientNotification,
-                               bool isSecondary = false,
-                               bool isActiveEndpoint = false,
-                               ThinClientBaseDM* distMgr = nullptr);
-  virtual void unregisterDM(bool clientNotification,
-                            ThinClientBaseDM* distMgr = nullptr,
-                            bool checkQueueHosted = false);
+  bool checkDupAndAdd(std::shared_ptr<EventId> eventid) override;
+  void processMarker() override;
+  std::shared_ptr<QueryService> getQueryService() override;
+  void sendRequestForChunkedResponse(const TcrMessage& request,
+                                     TcrMessageReply& reply,
+                                     TcrConnection* conn) override;
+  void closeFailedConnection(TcrConnection*& conn) override;
+  GfErrType registerDM(bool clientNotification, bool isSecondary = false,
+                       bool isActiveEndpoint = false,
+                       ThinClientBaseDM* distMgr = nullptr) override;
+  void unregisterDM(bool clientNotification,
+                    ThinClientBaseDM* distMgr = nullptr,
+                    bool checkQueueHosted = false) override;
   using TcrEndpoint::handleIOException;
-  virtual bool handleIOException(const std::string& message,
-                                 TcrConnection*& conn, bool isBgThread = false);
-  void handleNotificationStats(int64_t byteLength);
-  virtual ~TcrPoolEndPoint() { m_dm = nullptr; }
-  virtual bool isMultiUserMode();
+  bool handleIOException(const std::string& message, TcrConnection*& conn,
+                         bool isBgThread = false) override;
+  void handleNotificationStats(int64_t byteLength) override;
+  ~TcrPoolEndPoint() override { m_dm = nullptr; }
+  bool isMultiUserMode() override;
 
  protected:
-  virtual void closeNotification();
-  virtual void triggerRedundancyThread();
+  void closeNotification() override;
+  void triggerRedundancyThread() override;
 
  private:
   ThinClientPoolDM* m_dm;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

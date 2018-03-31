@@ -782,8 +782,9 @@ void ThinClientRedundancyManager::moveEndpointToLast(
   epVector.push_back(targetEp);
 }
 
-bool ThinClientRedundancyManager::sendMakePrimaryMesg(
-    TcrEndpoint* ep, const TcrMessage* request, ThinClientRegion* region) {
+bool ThinClientRedundancyManager::sendMakePrimaryMesg(TcrEndpoint* ep,
+                                                      const TcrMessage*,
+                                                      ThinClientRegion*) {
   if (!ep->connected()) {
     return false;
   }
@@ -910,9 +911,8 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
 }
 
 GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
-    TcrMessage& request, TcrMessageReply& reply, bool attemptFailover,
-    TcrEndpoint* endpoint, ThinClientBaseDM* theHADM,
-    ThinClientRegion* region) {
+    TcrMessage& request, TcrMessageReply& reply, bool, TcrEndpoint* endpoint,
+    ThinClientBaseDM* theHADM, ThinClientRegion* region) {
   LOGDEBUG("ThinClientRedundancyManager::sendSyncRequestRegisterInterest ");
   if (endpoint == nullptr) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);

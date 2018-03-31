@@ -58,6 +58,6 @@ void ThinClientPoolRegion::initTCR() {
   }
 }
 
-void ThinClientPoolRegion::destroyDM(bool keepEndpoints) {
+void ThinClientPoolRegion::destroyDM(bool) {
   dynamic_cast<ThinClientPoolDM*>(m_tcrdm)->decRegionCount();
 }

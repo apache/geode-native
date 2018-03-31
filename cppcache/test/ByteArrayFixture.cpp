@@ -18,7 +18,7 @@
 #include "ByteArrayFixture.hpp"
 
 ::testing::AssertionResult ByteArrayFixture::assertByteArrayEqual(
-    const char* expectedStr, const char* bytesStr, const char* expected,
+    const char* /*expectedStr*/, const char* /*bytesStr*/, const char* expected,
     const apache::geode::client::ByteArray& bytes) {
   // One would normally just use std::regex but gcc 4.4.7 is lacking.
   const std::string actual(apache::geode::client::ByteArray::toString(bytes));
@@ -34,7 +34,7 @@
       while (patternPos < pattern.length() && '}' != pattern[patternPos]) {
         ++patternPos;
       }
-      const int number =
+      const size_t number =
           std::stoi(pattern.substr(startPos, (patternPos - startPos)));
 
       std::string::size_type pos =

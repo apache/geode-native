@@ -44,7 +44,7 @@ bool TcrHADistributionManager::preFailoverAction() {
   return !m_region->isDestroyed();
 }
 
-bool TcrHADistributionManager::postFailoverAction(TcrEndpoint* endpoint) {
+bool TcrHADistributionManager::postFailoverAction(TcrEndpoint*) {
   // Trigger the redundancy thread.
   m_connManager.triggerRedundancyThread();
   return true;
@@ -91,7 +91,7 @@ GfErrType TcrHADistributionManager::sendSyncRequestRegisterInterestEP(
 
 GfErrType TcrHADistributionManager::sendSyncRequestRegisterInterest(
     TcrMessage& request, TcrMessageReply& reply, bool attemptFailover,
-    ThinClientRegion* region, TcrEndpoint* endpoint) {
+    ThinClientRegion*, TcrEndpoint* endpoint) {
   return m_connManager.sendSyncRequestRegisterInterest(
       request, reply, attemptFailover, endpoint, this, m_region);
 }

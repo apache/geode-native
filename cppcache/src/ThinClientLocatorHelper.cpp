@@ -154,7 +154,7 @@ GfErrType ThinClientLocatorHelper::getAllServers(
 
 GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
     ClientProxyMembershipID& memId, std::list<ServerLocation>& outEndpoint,
-    std::string& additionalLoc, int redundancy,
+    std::string& , int redundancy,
     const std::set<ServerLocation>& exclEndPts,
     /*const std::set<TcrEndpoint*>& exclEndPts,*/
     const std::string& serverGrp) {
@@ -246,7 +246,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
 }
 
 GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
-    ServerLocation& outEndpoint, std::string& additionalLoc,
+    ServerLocation& outEndpoint, std::string& ,
     const std::set<ServerLocation>& exclEndPts, const std::string& serverGrp,
     const TcrConnection* currentServer) {
   bool locatorFound = false;

@@ -85,7 +85,7 @@ APACHE_GEODE_EXPORT void DllMainGetPath(char *result, int maxLen) {
 #else
 #include <dlfcn.h>
 
-void DllMainGetPath(char *result, int maxLen) {
+void DllMainGetPath(char *result, int) {
   if (!initgflibDone) {
     result[0] = '\0';
     return;

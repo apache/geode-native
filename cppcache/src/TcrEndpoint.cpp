@@ -520,8 +520,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
 }
 
 void TcrEndpoint::unregisterDM(bool clientNotification,
-                               ThinClientBaseDM* distMgr,
-                               bool checkQueueHosted) {
+                               ThinClientBaseDM* distMgr, bool) {
   if (clientNotification) {
     LOGFINEST(
         "Closing subscription "
@@ -765,7 +764,7 @@ inline bool TcrEndpoint::compareTransactionIds(int32_t reqTransId,
 
 inline bool TcrEndpoint::handleIOException(const std::string& message,
                                            TcrConnection*& conn,
-                                           bool isBgThread) {
+                                           bool) {
   int32_t lastError = ACE_OS::last_error();
   if (lastError == ECONNRESET || lastError == EPIPE) {
     _GEODE_SAFE_DELETE(conn);

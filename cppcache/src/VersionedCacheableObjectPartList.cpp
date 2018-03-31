@@ -31,8 +31,7 @@ const uint8_t VersionedCacheableObjectPartList::FLAG_FULL_TAG = 1;
 const uint8_t VersionedCacheableObjectPartList::FLAG_TAG_WITH_NEW_ID = 2;
 const uint8_t VersionedCacheableObjectPartList::FLAG_TAG_WITH_NUMBER_ID = 3;
 
-void VersionedCacheableObjectPartList::toData(DataOutput& output) const {
-  // don't really care about toData() and should never get invoked
+void VersionedCacheableObjectPartList::toData(DataOutput&) const {
   throw UnsupportedOperationException(
       "VersionedCacheableObjectPartList::toData not implemented");
 }

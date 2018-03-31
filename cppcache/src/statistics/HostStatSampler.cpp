@@ -134,8 +134,6 @@ const char* HostStatSampler::NC_HSS_Thread = "NC HSS Thread";
 HostStatSampler::HostStatSampler(const char* filePath,
                                  std::chrono::milliseconds sampleIntervalMs,
                                  StatisticsManager* statMngr, CacheImpl* cache,
-                                 const char* durableClientId,
-                                 const std::chrono::seconds durableTimeout,
                                  int64_t statFileLimit,
                                  int64_t statDiskSpaceLimit)
     : m_cache(cache) {
@@ -443,7 +441,7 @@ int32_t HostStatSampler::rollArchive(std::string filename) {
     return 0;  // no need to roll
   } else {
     fclose(fpExist);
-    ACE_stat statBuf = {0};
+    ACE_stat statBuf = {};
     ACE_OS::stat(filename.c_str(), &statBuf);
     if (statBuf.st_size == 0) return 0;  // reuse this file
   }
@@ -663,7 +661,7 @@ void HostStatSampler::checkDiskLimit() {
   // struct dirent **resultArray;
   // int entries_count = ACE_OS::scandir(dirname.c_str(), &resultArray,
   // selector, comparator);
-  ACE_stat statBuf = {0};
+  ACE_stat statBuf = {};
   ACE_Dirent_Selector sds;
   int status = sds.open(dirname.c_str(), selector, comparator);
   if (status != -1) {

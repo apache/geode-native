@@ -158,7 +158,7 @@ class APACHE_GEODE_EXPORT Struct : public Serializable {
 
   StructSet* m_parent;
 
-  int32_t m_lastAccessIndex;
+  size_t m_lastAccessIndex;
 
   _GEODE_FRIEND_STD_SHARED_PTR(Struct)
 };

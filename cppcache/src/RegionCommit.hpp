@@ -44,7 +44,7 @@ class RegionCommit {
 
   void fromData(DataInput& input);
   void apply(Cache* cache);
-  void fillEvents(Cache* cache, std::vector<std::shared_ptr<FarSideEntryOp>>& ops);
+  void fillEvents(std::vector<std::shared_ptr<FarSideEntryOp>>& ops);
   std::shared_ptr<Region> getRegion(Cache* cache) {
     return cache->getRegion(m_regionPath->value());
   }

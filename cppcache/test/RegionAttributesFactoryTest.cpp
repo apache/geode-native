@@ -74,5 +74,5 @@ TEST(RegionAttributesFactoryTest, setLruEntriesLimit) {
   EXPECT_NE(regionAttributesFactory, nullptr);
   auto regionAttributes =
       regionAttributesFactory->setLruEntriesLimit(2).setInitialCapacity(5).create();
-  EXPECT_EQ(regionAttributes.getLruEntriesLimit(), 2);
+  EXPECT_EQ(regionAttributes.getLruEntriesLimit(), 2u);
 }

@@ -94,7 +94,7 @@ class APACHE_GEODE_EXPORT SelectResultsIterator {
                         std::shared_ptr<SelectResults> srp);
 
   std::shared_ptr<CacheableVector> m_vectorSR;
-  int32_t m_nextIndex;
+  size_t m_nextIndex;
   // this is to ensure that a reference of SelectResults is kept alive
   // if an iterator object is present
   std::shared_ptr<SelectResults> m_srp;

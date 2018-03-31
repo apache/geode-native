@@ -91,7 +91,7 @@ Statistics* GeodeStatisticsFactory::createStatistics(
 Statistics* GeodeStatisticsFactory::createStatistics(StatisticsType* type,
                                                      const std::string& textId,
                                                      int64_t numericId) {
-  return createAtomicStatistics(type, textId, 0);
+  return createAtomicStatistics(type, textId, numericId);
 }
 
 Statistics* GeodeStatisticsFactory::createOsStatistics(

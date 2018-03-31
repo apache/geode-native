@@ -1211,12 +1211,11 @@ GfErrType ThinClientRegion::getAllNoThrow_remote(
       // track all entries with destroy tracking for non-existent entries
       destroyTracker = m_entries->addTrackerForAllEntries(updateCountMap, true);
     } else {
-      for (int32_t index = 0; index < keys->size(); ++index) {
+      for (const auto& key : *keys) {
         std::shared_ptr<Cacheable> oldValue;
-        const std::shared_ptr<CacheableKey>& key = keys->operator[](index);
         int updateCount =
             m_entries->addTrackerForEntry(key, oldValue, true, false, false);
-        updateCountMap.insert(std::make_pair(key, updateCount));
+        updateCountMap.emplace(key, updateCount);
       }
     }
   }
@@ -2340,7 +2339,7 @@ GfErrType ThinClientRegion::unregisterKeysNoThrow(
   }
 
   TcrMessageUnregisterInterestList request(m_cacheImpl->createDataOutput(),
-                                           this, keys, false, false, true,
+                                           this, keys, false, true,
                                            InterestResultPolicy::NONE, m_tcrdm);
   err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
   if (err == GF_NOERR /*|| err == GF_CACHE_REDUNDANCY_FAILURE*/) {
@@ -2376,7 +2375,7 @@ GfErrType ThinClientRegion::unregisterKeysNoThrowLocalDestroy(
   }
 
   TcrMessageUnregisterInterestList request(m_cacheImpl->createDataOutput(),
-                                           this, keys, false, false, true,
+                                          this, keys, false, true,
                                            InterestResultPolicy::NONE, m_tcrdm);
   err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
   if (err == GF_NOERR) {
@@ -2531,7 +2530,7 @@ GfErrType ThinClientRegion::unregisterRegexNoThrow(const std::string& regex,
     TcrMessageReply reply(false, m_tcrdm);
     TcrMessageUnregisterInterest request(
         m_cacheImpl->createDataOutput(), m_fullPath, regex,
-        InterestResultPolicy::NONE, false, false, true, m_tcrdm);
+        InterestResultPolicy::NONE, false, true, m_tcrdm);
     err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
     if (err == GF_NOERR /*|| err == GF_CACHE_REDUNDANCY_FAILURE*/) {
       if (attemptFailover) {
@@ -2577,7 +2576,7 @@ GfErrType ThinClientRegion::unregisterRegexNoThrowLocalDestroy(
     TcrMessageReply reply(false, m_tcrdm);
     TcrMessageUnregisterInterest request(
         m_cacheImpl->createDataOutput(), m_fullPath, regex,
-        InterestResultPolicy::NONE, false, false, true, m_tcrdm);
+        InterestResultPolicy::NONE, false, true, m_tcrdm);
     err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
     if (err == GF_NOERR) {
       if (attemptFailover) {
@@ -3898,10 +3897,9 @@ void ChunkedDurableCQListResponse::reset() {
 
 // handles the chunk response for GETDURABLECQS_MSG_TYPE
 void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
-                                               int32_t chunkLen,
-                                               uint8_t isLastChunkWithSecurity,
-                                               const CacheImpl* cacheImpl) {
-  auto input = cacheImpl->createDataInput(chunk, chunkLen);
+                                               int32_t chunkLen, uint8_t,
+                                               const CacheImpl* m_cacheImpl) {
+  auto input = m_cacheImpl->createDataInput(chunk, chunkLen);
   DataInputInternal::setPoolName(*input, m_msg.getPoolName());
 
   // read part length

@@ -69,9 +69,9 @@ class APACHE_GEODE_EXPORT StructSetImpl
  private:
   std::shared_ptr<CacheableVector> m_structVector;
 
-  std::map<std::string, size_t> m_fieldNameIndexMap;
+  std::map<std::string, int32_t> m_fieldNameIndexMap;
 
-  int32_t m_nextIndex;
+  size_t m_nextIndex;
 };
 }  // namespace client
 }  // namespace geode

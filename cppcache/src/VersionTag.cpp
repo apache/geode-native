@@ -44,7 +44,7 @@ int8_t VersionTag::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::VersionTag);
 }
 
-void VersionTag::toData(DataOutput& output) const {
+void VersionTag::toData(DataOutput&) const {
   throw IllegalStateException("VersionTag::toData not implemented");
 }
 

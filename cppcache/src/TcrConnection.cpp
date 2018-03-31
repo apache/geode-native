@@ -792,8 +792,7 @@ void TcrConnection::send(const char* buffer, size_t len,
 
 void TcrConnection::send(std::chrono::microseconds& timeSpent,
                          const char* buffer, size_t len,
-                         std::chrono::microseconds sendTimeoutSec,
-                         bool checkConnected) {
+                         std::chrono::microseconds sendTimeoutSec, bool) {
   GF_DEV_ASSERT(m_conn != nullptr);
 
   // LOGINFO("TcrConnection::send: [%p] sending request to endpoint %s;",

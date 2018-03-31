@@ -36,7 +36,7 @@ using namespace apache::geode::client;
 
 class TestDataOutput : public DataOutputInternal {
  public:
-  TestDataOutput(Cache* cache)
+  TestDataOutput(Cache*)
       : DataOutputInternal(nullptr),
         m_byteArray(nullptr),
         m_serializationRegistry() {

@@ -111,7 +111,7 @@ void TXCommitMessage::fromData(DataInput& input) {
   }
 }
 
-void TXCommitMessage::toData(DataOutput& output) const {}
+void TXCommitMessage::toData(DataOutput&) const {}
 
 int32_t TXCommitMessage::classId() const { return 0; }
 
