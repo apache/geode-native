@@ -45,7 +45,7 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cacheImpl,
                          const std::shared_ptr<RegionInternal>& rPtr,
                          RegionAttributes attributes,
                          const std::shared_ptr<CacheStatistics>& stats,
-                         bool shared, bool enableTimeStatistics)
+                         bool enableTimeStatistics)
     : RegionInternal(cacheImpl, attributes),
       m_name(name),
       m_parentRegion(rPtr),
@@ -633,7 +633,7 @@ bool LocalRegion::containsValueForKey(
 }
 
 bool LocalRegion::containsKeyOnServer(
-    const std::shared_ptr<CacheableKey>& keyPtr) const {
+    const std::shared_ptr<CacheableKey>&) const {
   throw UnsupportedOperationException(
       "LocalRegion::containsKeyOnServer: is not supported.");
 }
@@ -790,29 +790,21 @@ std::vector<std::shared_ptr<Region>> LocalRegion::subregions_internal(
     const bool recursive) {
   MapOfRegionGuard guard(m_subRegions.mutex());
 
-  if (m_subRegions.current_size() == 0)
-    return std::vector<std::shared_ptr<Region>>();
-
   std::vector<std::shared_ptr<Region>> regions;
-  std::vector<std::shared_ptr<Region>> subRegions;
+  regions.reserve(m_subRegions.current_size());
 
-  for (MapOfRegionWithLock::iterator p = m_subRegions.begin();
-       p != m_subRegions.end(); ++p) {
-    regions.push_back((*p).int_id_);
-    // seperate list so children can be descended.
-    if (recursive) {
-      subRegions.push_back((*p).int_id_);
+  for (const auto& entry : m_subRegions) {
+    const auto& subRegion = entry.int_id_;
+    regions.push_back(subRegion);
+
+    if (recursive == true) {
+      if (auto localRegion = std::dynamic_pointer_cast<LocalRegion>(subRegion)) {
+        auto subRegions = localRegion->subregions_internal(true);
+        regions.insert(regions.end(), subRegions.begin(), subRegions.end());
+      }
     }
   }
 
-  if (recursive == true) {
-    // decend...
-    for (int32_t i = 0; i < subRegions.size(); i++) {
-      auto temp = dynamic_cast<LocalRegion*>(subRegions.at(i).get())
-                      ->subregions_internal(true);
-      regions.insert(regions.end(), temp.begin(), temp.end());
-    }
-  }
   return regions;
 }
 
@@ -1025,8 +1017,7 @@ GfErrType LocalRegion::getAllNoThrow(
   bool regionAccessed = false;
   auto& cachePerfStats = m_cacheImpl->getCachePerfStats();
 
-  for (int32_t index = 0; index < keys.size(); ++index) {
-    const std::shared_ptr<CacheableKey>& key = keys[index];
+  for (const auto& key : keys) {
     std::shared_ptr<MapEntryImpl> me;
     value = nullptr;
     m_regionStats->incGets();

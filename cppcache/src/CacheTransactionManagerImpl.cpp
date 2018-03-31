@@ -269,8 +269,7 @@ void CacheTransactionManagerImpl::rollback() {
   }
 }
 
-GfErrType CacheTransactionManagerImpl::rollback(TXState* txState,
-                                                bool callListener) {
+GfErrType CacheTransactionManagerImpl::rollback(TXState*, bool) {
   TcrMessageRollback request(m_cache->getCache()->createDataOutput());
   TcrMessageReply reply(true, nullptr);
   GfErrType err = GF_NOERR;

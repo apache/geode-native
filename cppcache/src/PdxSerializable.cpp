@@ -36,7 +36,7 @@ void PdxSerializable::toData(DataOutput& output) const {
   PdxHelper::serializePdx(output, *this);
 }
 
-void PdxSerializable::fromData(DataInput& input) {
+void PdxSerializable::fromData(DataInput&) {
   throw UnsupportedOperationException(
       "operation PdxSerializable::fromData() is not supported ");
 }

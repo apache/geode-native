@@ -34,8 +34,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-RegionConfig::RegionConfig(const std::string& s, const std::string& c)
-    : m_capacity(c) {}
+RegionConfig::RegionConfig(const std::string& capacity)
+    : m_capacity(capacity) {}
 
 void RegionConfig::setLru(const std::string& str) { m_lruEntriesLimit = str; }
 

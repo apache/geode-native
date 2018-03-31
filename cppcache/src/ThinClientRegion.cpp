@@ -3332,6 +3332,8 @@ void ThinClientRegion::txPut(
   GfErrTypeToException("Region::putTX", err);
 }
 
+void ThinClientRegion::setProcessedMarker(bool){};
+
 void ChunkedInterestResponse::reset() {
   if (m_resultKeys != nullptr && m_resultKeys->size() > 0) {
     m_resultKeys->clear();

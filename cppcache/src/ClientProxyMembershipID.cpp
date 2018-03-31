@@ -209,7 +209,7 @@ const std::string& ClientProxyMembershipID::getDSMemberIdForThinClientUse() {
 
 std::string ClientProxyMembershipID::getHashKey() { return m_hashKey; }
 
-void ClientProxyMembershipID::toData(DataOutput& output) const {
+void ClientProxyMembershipID::toData(DataOutput&) const {
   throw IllegalStateException("Member ID toData() not implemented.");
 }
 

@@ -278,19 +278,6 @@ void ClientMetadataService::getBucketServerLocation(
   }
 }
 
-void ClientMetadataService::removeBucketServerLocation(
-    BucketServerLocation serverLocation) {
-  ReadGuard guard(m_regionMetadataLock);
-  for (RegionMetadataMapType::iterator regionMetadataIter =
-           m_regionMetaDataMap.begin();
-       regionMetadataIter != m_regionMetaDataMap.end(); regionMetadataIter++) {
-    auto cptr = (*regionMetadataIter).second;
-    if (cptr != nullptr) {
-      // Yogesh has commented out this as it was causing a SIGV
-      // clientMetadata->removeBucketServerLocation(serverLocation);
-    }
-  }
-}
 std::shared_ptr<ClientMetadata> ClientMetadataService::getClientMetadata(
     const std::string& regionFullPath) {
   ReadGuard guard(m_regionMetadataLock);
@@ -433,10 +420,10 @@ ClientMetadataService::getServerToFilterMap(
     auto totalServers = serverToFilterMap->size();
     auto perServer = keyLefts / totalServers + 1;
 
-    int keyIdx = 0;
+    size_t keyIdx = 0;
     for (const auto& locationIter : *serverToFilterMap) {
       const auto keys = locationIter.second;
-      for (int i = 0; i < perServer; i++) {
+      for (size_t i = 0; i < perServer; i++) {
         if (keyIdx < keyLefts) {
           keys->push_back(keysWhichLeft.at(keyIdx++));
         } else {
@@ -456,7 +443,7 @@ void ClientMetadataService::markPrimaryBucketForTimeout(
     const std::shared_ptr<Region>& region,
     const std::shared_ptr<CacheableKey>& key,
     const std::shared_ptr<Cacheable>& value,
-    const std::shared_ptr<Serializable>& aCallbackArgument, bool isPrimary,
+    const std::shared_ptr<Serializable>& aCallbackArgument, bool,
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return;
 
@@ -801,7 +788,7 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
     const std::shared_ptr<Region>& region,
     const std::shared_ptr<CacheableKey>& key,
     const std::shared_ptr<Cacheable>& value,
-    const std::shared_ptr<Serializable>& aCallbackArgument, bool isPrimary,
+    const std::shared_ptr<Serializable>& aCallbackArgument, bool,
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return;
 

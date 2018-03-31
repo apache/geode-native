@@ -92,45 +92,44 @@ void PdxLocalReader::moveStream() {
   m_dataInput->reset(m_startPosition + m_serializedLengthWithOffsets);
 }
 
-char16_t PdxLocalReader::readChar(const std::string& fieldName) {
+char16_t PdxLocalReader::readChar(const std::string&) {
   char16_t value = m_dataInput->readInt16();
   return value;
 }
 
-bool PdxLocalReader::readBoolean(const std::string& fieldName) {
+bool PdxLocalReader::readBoolean(const std::string&) {
   return m_dataInput->readBoolean();
 }
 
-int8_t PdxLocalReader::readByte(const std::string& fieldName) {
+int8_t PdxLocalReader::readByte(const std::string&) {
   return m_dataInput->read();
 }
 
-int16_t PdxLocalReader::readShort(const std::string& fieldName) {
+int16_t PdxLocalReader::readShort(const std::string&) {
   return m_dataInput->readInt16();
 }
 
-int32_t PdxLocalReader::readInt(const std::string& fieldName) {
+int32_t PdxLocalReader::readInt(const std::string&) {
   return m_dataInput->readInt32();
 }
 
-int64_t PdxLocalReader::readLong(const std::string& fieldName) {
+int64_t PdxLocalReader::readLong(const std::string&) {
   return m_dataInput->readInt64();
 }
 
-float PdxLocalReader::readFloat(const std::string& fieldName) {
+float PdxLocalReader::readFloat(const std::string&) {
   return m_dataInput->readFloat();
 }
 
-double PdxLocalReader::readDouble(const std::string& fieldName) {
+double PdxLocalReader::readDouble(const std::string&) {
   return m_dataInput->readDouble();
 }
 
-std::string PdxLocalReader::readString(const std::string& fieldName) {
+std::string PdxLocalReader::readString(const std::string&) {
   return m_dataInput->readString();
 }
 
-std::shared_ptr<Serializable> PdxLocalReader::readObject(
-    const std::string& fieldName) {
+std::shared_ptr<Serializable> PdxLocalReader::readObject(const std::string&) {
   std::shared_ptr<Serializable> ptr;
   m_dataInput->readObject(ptr);
   if (ptr != nullptr) {
@@ -140,53 +139,45 @@ std::shared_ptr<Serializable> PdxLocalReader::readObject(
   }
 }
 
-std::vector<char16_t> PdxLocalReader::readCharArray(
-    const std::string& fieldName) {
+std::vector<char16_t> PdxLocalReader::readCharArray(const std::string&) {
   return m_dataInput->readCharArray();
 }
 
-std::vector<bool> PdxLocalReader::readBooleanArray(
-    const std::string& fieldName) {
+std::vector<bool> PdxLocalReader::readBooleanArray(const std::string&) {
   return m_dataInput->readBooleanArray();
 }
 
-std::vector<int8_t> PdxLocalReader::readByteArray(
-    const std::string& fieldName) {
+std::vector<int8_t> PdxLocalReader::readByteArray(const std::string&) {
   return m_dataInput->readByteArray();
 }
 
-std::vector<int16_t> PdxLocalReader::readShortArray(
-    const std::string& fieldName) {
+std::vector<int16_t> PdxLocalReader::readShortArray(const std::string&) {
   return m_dataInput->readShortArray();
 }
 
-std::vector<int32_t> PdxLocalReader::readIntArray(
-    const std::string& fieldName) {
+std::vector<int32_t> PdxLocalReader::readIntArray(const std::string&) {
   return m_dataInput->readIntArray();
 }
 
-std::vector<int64_t> PdxLocalReader::readLongArray(
-    const std::string& fieldName) {
+std::vector<int64_t> PdxLocalReader::readLongArray(const std::string&) {
   return m_dataInput->readLongArray();
 }
 
-std::vector<float> PdxLocalReader::readFloatArray(
-    const std::string& fieldName) {
+std::vector<float> PdxLocalReader::readFloatArray(const std::string&) {
   return m_dataInput->readFloatArray();
 }
 
 std::vector<double> PdxLocalReader::readDoubleArray(
-    const std::string& fieldName) {
+    const std::string&) {
   return m_dataInput->readDoubleArray();
 }
 
-std::vector<std::string> PdxLocalReader::readStringArray(
-    const std::string& fieldName) {
+std::vector<std::string> PdxLocalReader::readStringArray(const std::string&) {
   return m_dataInput->readStringArray();
 }
 
 std::shared_ptr<CacheableObjectArray> PdxLocalReader::readObjectArray(
-    const std::string& fieldName) {
+    const std::string&) {
   auto coa = CacheableObjectArray::create();
   coa->fromData(*m_dataInput);
   LOGDEBUG("PdxLocalReader::readObjectArray coa->size() = %d", coa->size());
@@ -196,19 +187,20 @@ std::shared_ptr<CacheableObjectArray> PdxLocalReader::readObjectArray(
   return coa;
 }
 
-int8_t** PdxLocalReader::readArrayOfByteArrays(const std::string& fieldName,
+int8_t** PdxLocalReader::readArrayOfByteArrays(const std::string&,
                                                int32_t& arrayLength,
                                                int32_t** elementLength) {
   int8_t** arrofBytearr = nullptr;
   m_dataInput->readArrayOfByteArrays(&arrofBytearr, arrayLength, elementLength);
   return arrofBytearr;
 }
-std::shared_ptr<CacheableDate> PdxLocalReader::readDate(
-    const std::string& fieldName) {
+
+std::shared_ptr<CacheableDate> PdxLocalReader::readDate(const std::string&) {
   auto cd = CacheableDate::create();
   cd->fromData(*m_dataInput);
   return cd;
 }
+
 std::shared_ptr<PdxRemotePreservedData> PdxLocalReader::getPreservedData(
     std::shared_ptr<PdxType> mergedVersion,
     std::shared_ptr<PdxSerializable> pdxObject) {
@@ -221,7 +213,7 @@ std::shared_ptr<PdxRemotePreservedData> PdxLocalReader::getPreservedData(
       m_pdxTypeRegistry->getPdxIgnoreUnreadFields() == false) {
     m_pdxRemotePreserveData->initialize(
         m_pdxType != nullptr ? m_pdxType->getTypeId() : 0,
-        mergedVersion->getTypeId(), nFieldExtra, pdxObject);
+        mergedVersion->getTypeId(), pdxObject);
     LOGDEBUG("PdxLocalReader::getPreservedData - 1");
 
     m_localToRemoteMap = m_pdxType->getLocalToRemoteMap();

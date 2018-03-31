@@ -323,7 +323,7 @@ void CqQueryImpl::execute() {
 }
 
 // for          EXECUTE_REQUEST or REDUNDANT_EXECUTE_REQUEST
-bool CqQueryImpl::executeCq(TcrMessage::MsgType requestType) {
+bool CqQueryImpl::executeCq(TcrMessage::MsgType) {
   GuardUserAttributes gua;
   if (m_authenticatedView != nullptr) {
     gua.setAuthenticatedView(m_authenticatedView);

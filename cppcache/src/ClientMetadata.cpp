@@ -288,42 +288,7 @@ void ClientMetadata::updateBucketServerLocations(
   }
 }
 
-void ClientMetadata::removeBucketServerLocation(
-    BucketServerLocation serverLocation) {
-  /*WriteGuard guard( m_readWriteLock );
-  int i=0;
-  bool locnfound = false;
-  BucketServerLocationsType locations;
-  BucketServerLocationsType::iterator locnsIter;
-  BucketServerLocationsListType::iterator iter =
-  m_bucketServerLocationsList.begin();
-  for(iter = m_bucketServerLocationsList.begin(); iter !=
-  m_bucketServerLocationsList.end();
-    iter++, i++) {
-      locations = *(iter);
-      for(locnsIter = locations.begin(); locnsIter != locations.end();
-  locnsIter++) {
-        LOGFINE("Erasing from inner list its size is %d",locations.size());
-        if (locations.erase(std::find(locations.begin(), locations.end(),
-  serverLocation)) != locations.end()) {
-          locnfound = true;
-          LOGFINE("Erased from inner list its size is %d",locations.size());
-          break;
-        }
-      }
-      if (locnfound) {
-         LOGFINE("Location found");
-        break;
-      }
-    }
-  LOGFINE("updating outer list size is & i is %d\t %d",
-  m_bucketServerLocationsList.size(),i);
-  if (locnfound) {
-    m_bucketServerLocationsList[i] = locations;
-  }
-  LOGFINE("updated outer list size is %d", m_bucketServerLocationsList.size());
-  */
-}
+void ClientMetadata::removeBucketServerLocation(BucketServerLocation) {}
 
 void ClientMetadata::populateDummyServers(int bucketId,
                                           BucketServerLocationsType locations) {

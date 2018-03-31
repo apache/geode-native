@@ -22,7 +22,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-void EntryFactory::newMapEntry(ExpiryTaskManager* expiryTaskManager,
+void EntryFactory::newMapEntry(ExpiryTaskManager*,
                                const std::shared_ptr<CacheableKey>& key,
                                std::shared_ptr<MapEntryImpl>& result) const {
   if (m_concurrencyChecksEnabled) {
@@ -31,8 +31,6 @@ void EntryFactory::newMapEntry(ExpiryTaskManager* expiryTaskManager,
     result = MapEntryT<MapEntryImpl, 0, 0>::create(key);
   }
 }
-
-void EntryFactory::cleanup(const CacheEventFlags) {}
 
 }  // namespace client
 }  // namespace geode

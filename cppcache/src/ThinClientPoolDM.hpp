@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTPOOLDM_H_
-#define GEODE_THINCLIENTPOOLDM_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,22 +15,30 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_THINCLIENTPOOLDM_H_
+#define GEODE_THINCLIENTPOOLDM_H_
+
 #include <string>
-#include "ThinClientBaseDM.hpp"
-#include <geode/Pool.hpp>
-#include "PoolAttributes.hpp"
-#include "ThinClientLocatorHelper.hpp"
-#include "RemoteQueryService.hpp"
 #include <memory>
 #include <set>
 #include <vector>
-#include "Task.hpp"
+
 #include <ace/Semaphore.h>
+
+#include <geode/Pool.hpp>
+#include <geode/ResultCollector.hpp>
+
+#include "ThinClientBaseDM.hpp"
+#include "PoolAttributes.hpp"
+#include "ThinClientLocatorHelper.hpp"
+#include "RemoteQueryService.hpp"
+#include "Task.hpp"
 #include "PoolStatistics.hpp"
 #include "FairQueue.hpp"
 #include "TcrPoolEndPoint.hpp"
 #include "ThinClientRegion.hpp"
-#include <geode/ResultCollector.hpp>
 #include "ExecutionImpl.hpp"
 #include "ClientMetadataService.hpp"
 #include "ThreadPool.hpp"
@@ -46,15 +49,17 @@
 
 namespace apache {
 namespace geode {
+
 namespace statistics {
+
 class PoolStatsSampler;
+
 }  // namespace statistics
-}  // namespace geode
-}  // namespace apache
-using namespace apache::geode::statistics;
-namespace apache {
-namespace geode {
+
 namespace client {
+
+using namespace apache::geode::statistics;
+
 class CacheImpl;
 class FunctionExecution;
 
@@ -151,9 +156,13 @@ class ThinClientPoolDM
   virtual void setStickyNull(bool isBGThread) {
     if (!isBGThread) m_manager->setStickyConnection(nullptr, false);
   };
-  virtual bool canItBeDeletedNoImpl(TcrConnection* conn) { return false; };
+
+  virtual bool canItBeDeletedNoImpl(TcrConnection* conn);
+
   void updateNotificationStats(bool isDeltaSuccess, long timeInNanoSecond);
+
   virtual bool isSecurityOn() { return m_isSecurityOn || m_isMultiUserMode; }
+
   virtual bool isMultiUserMode() { return m_isMultiUserMode; }
 
   virtual void sendUserCacheCloseMessage(bool keepAlive);
@@ -222,121 +231,20 @@ class ThinClientPoolDM
   virtual TcrConnection* getConnectionFromQueue(bool timeout, GfErrType* error,
                                                 std::set<ServerLocation>&,
                                                 bool& maxConnLimit);
+
   virtual void putInQueue(TcrConnection* conn, bool isBGThread,
-                          bool isTransaction = false) {
-    if (isTransaction) {
-      m_manager->setStickyConnection(conn, isTransaction);
-    } else {
-      put(conn, false);
-    }
-  };
+                          bool isTransaction = false);
 
   GfErrType doFailover(TcrConnection* conn);
 
   virtual bool canItBeDeleted(TcrConnection* conn);
+
   virtual TcrConnection* getConnectionFromQueueW(
       GfErrType* error, std::set<ServerLocation>& excludeServers,
       bool isBGThread, TcrMessage& request, int8_t& version, bool& match,
       bool& connFound,
-      const std::shared_ptr<BucketServerLocation>& serverLocation = nullptr) {
-    TcrConnection* conn = nullptr;
-    TcrEndpoint* theEP = nullptr;
-    LOGDEBUG("prEnabled = %s, forSingleHop = %s %d",
-             m_attrs->getPRSingleHopEnabled() ? "true" : "false",
-             request.forSingleHop() ? "true" : "false",
-             request.getMessageType());
+      const std::shared_ptr<BucketServerLocation>& serverLocation = nullptr);
 
-    match = false;
-    std::shared_ptr<BucketServerLocation> slTmp = nullptr;
-    if (request.forTransaction()) {
-      bool connFound =
-          m_manager->getStickyConnection(conn, error, excludeServers, true);
-      TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
-      if (*error == GF_NOERR && !connFound &&
-          (txState == nullptr || txState->isDirty())) {
-        *error = doFailover(conn);
-      }
-
-      if (*error != GF_NOERR) {
-        return nullptr;
-      }
-
-      if (txState != nullptr) {
-        txState->setDirty();
-      }
-    } else if (serverLocation != nullptr /*&& excludeServers.size() == 0*/) {
-      theEP = getEndPoint(serverLocation, version, excludeServers);
-    } else if (
-        m_attrs->getPRSingleHopEnabled() /*&& excludeServers.size() == 0*/ &&
-        request.forSingleHop() &&
-        (request.getMessageType() != TcrMessage::GET_ALL_70) &&
-        (request.getMessageType() != TcrMessage::GET_ALL_WITH_CALLBACK)) {
-      theEP = getSingleHopServer(request, version, slTmp, excludeServers);
-      if (theEP != nullptr) {
-        // if all buckets are not initialized
-        //  match = true;
-      }
-      if (slTmp != nullptr && m_clientMetadataService != nullptr) {
-        if (m_clientMetadataService->isBucketMarkedForTimeout(
-                request.getRegionName().c_str(), slTmp->getBucketId()) ==
-            true) {
-          *error = GF_CLIENT_WAIT_TIMEOUT;
-          return nullptr;
-        }
-      }
-      LOGDEBUG("theEP is %p", theEP);
-    }
-    bool maxConnLimit = false;
-    if (theEP != nullptr) {
-      conn = getFromEP(theEP);
-      if (!conn) {
-        LOGFINER("Creating connection to endpint as not found in pool ");
-        *error =
-            createPoolConnectionToAEndPoint(conn, theEP, maxConnLimit, true);
-        if (*error == GF_CLIENT_WAIT_TIMEOUT ||
-            *error == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
-          if (m_clientMetadataService == nullptr ||
-              request.getKey() == nullptr) {
-            return nullptr;
-          }
-          std::shared_ptr<Region> region;
-          m_connManager.getCacheImpl()->getRegion(
-              request.getRegionName().c_str(), region);
-          if (region != nullptr) {
-            slTmp = nullptr;
-            m_clientMetadataService
-                ->markPrimaryBucketForTimeoutButLookSecondaryBucket(
-                    region, request.getKey(), request.getValue(),
-                    request.getCallbackArgument(), request.forPrimary(), slTmp,
-                    version);
-          }
-          return nullptr;
-        }
-      }
-    }
-    if (conn == nullptr) {
-      LOGDEBUG("conn not found");
-      match = false;
-      LOGDEBUG("looking For connection");
-      conn = getConnectionFromQueue(true, error, excludeServers, maxConnLimit);
-      LOGDEBUG("Connection Found");
-    }
-
-    if (maxConnLimit) {
-      // we reach max connection limit, found connection but endpoint is
-      // (not)different, no need to refresh pr-meta-data
-      connFound = true;
-    } else {
-      // if server hints pr-meta-data refresh then refresh
-      // anything else???
-    }
-
-    LOGDEBUG(
-        "ThinClientPoolDM::getConnectionFromQueueW return conn = %p match = %d "
-        "connFound=%d",
-        conn, match, connFound);
-    return conn;
-  }
   TcrConnection* getFromEP(TcrEndpoint* theEP);
   virtual TcrEndpoint* getSingleHopServer(
       TcrMessage& request, int8_t& version,
@@ -626,6 +534,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
                                      m_isBGThread, m_serverLocation);
   }
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -32,6 +32,12 @@ class QueueConnectionResponse : public ServerLocationResponse {
  public:
   QueueConnectionResponse()
       : ServerLocationResponse(), m_durableQueueFound(false) {}
+
+  ~QueueConnectionResponse() override = default;
+
+  QueueConnectionResponse(const QueueConnectionResponse&) = delete;
+  void operator=(const QueueConnectionResponse&) = delete;
+
   void fromData(DataInput& input) override;
   int8_t typeId() const override;
   size_t objectSize() const override;
@@ -40,11 +46,9 @@ class QueueConnectionResponse : public ServerLocationResponse {
   static std::shared_ptr<Serializable> create() {
     return std::make_shared<QueueConnectionResponse>();
   }
-  ~QueueConnectionResponse() override = default;
 
  private:
   void readList(DataInput& input);
-  void operator=(const QueueConnectionResponse& val){};
   std::list<ServerLocation> m_list;
   bool m_durableQueueFound;
 };

@@ -125,14 +125,11 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
    * @brief Public Methods for Region
    */
  public:
-  /**
-   * @brief constructor/destructor
-   */
   LocalRegion(const std::string& name, CacheImpl* cache,
               const std::shared_ptr<RegionInternal>& rPtr,
               RegionAttributes attributes,
               const std::shared_ptr<CacheStatistics>& stats,
-              bool shared = false, bool enableTimeStatistics = true);
+              bool enableTimeStatistics = true);
   virtual ~LocalRegion();
 
   const std::string& getName() const override;

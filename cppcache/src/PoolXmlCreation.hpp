@@ -82,7 +82,7 @@ class APACHE_GEODE_EXPORT PoolXmlCreation {
    * @throws UnknownException otherwise
    *
    */
-  std::shared_ptr<Pool> create(Cache& cache);
+  std::shared_ptr<Pool> create();
 };
 }  // namespace client
 }  // namespace geode

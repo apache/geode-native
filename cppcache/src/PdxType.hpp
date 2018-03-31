@@ -82,13 +82,16 @@ class PdxType : public Serializable,
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistryPtr;
 
   void initRemoteToLocal();
+
   void initLocalToRemote();
+
   int32_t fixedLengthFieldPosition(std::shared_ptr<PdxFieldType> fixLenField,
                                    uint8_t* offsetPosition, int32_t offsetSize,
                                    int32_t pdxStreamlen);
+
   int32_t variableLengthFieldPosition(std::shared_ptr<PdxFieldType> varLenField,
                                       uint8_t* offsetPosition,
-                                      int32_t offsetSize, int32_t pdxStreamlen);
+                                      int32_t offsetSize);
 
   std::shared_ptr<PdxType> isContains(std::shared_ptr<PdxType> first,
                                       std::shared_ptr<PdxType> second);
@@ -185,19 +188,27 @@ class PdxType : public Serializable,
   void addFixedLengthTypeField(const std::string& fieldName,
                                const std::string& className,
                                PdxFieldTypes typeId, int32_t size);
+
   void addVariableLengthTypeField(const std::string& fieldName,
                                   const std::string& className,
                                   PdxFieldTypes typeId);
   void InitializeType();
+
   std::shared_ptr<PdxType> mergeVersion(std::shared_ptr<PdxType> otherVersion);
+
   int32_t getFieldPosition(const std::string& fieldName,
                            uint8_t* offsetPosition, int32_t offsetSize,
                            int32_t pdxStreamlen);
+
   int32_t getFieldPosition(int32_t fieldIdx, uint8_t* offsetPosition,
                            int32_t offsetSize, int32_t pdxStreamlen);
+
   int32_t* getLocalToRemoteMap();
+
   int32_t* getRemoteToLocalMap();
+
   bool Equals(std::shared_ptr<PdxType> otherObj);
+
   // This is for PdxType as key in std map.
   bool operator<(const PdxType& other) const;
 };

@@ -90,11 +90,13 @@ target_link_libraries(_apache-geode INTERFACE
 )
 
 if (USE_PCH)
-  # TODO figure out why PCH causes these warnings
-  # Ignore warnings resulting from using PCH
-  target_compile_options(_apache-geode INTERFACE
-    /wd4251 /wd4103 /wd4275 /wd4250
-  )
+  if (MSVC)
+    # TODO figure out why PCH causes these warnings
+    # Ignore warnings resulting from using PCH
+    target_compile_options(_apache-geode INTERFACE
+      /wd4251 /wd4103 /wd4275 /wd4250
+    )
+  endif()
 endif()
 
 target_include_directories(_apache-geode INTERFACE

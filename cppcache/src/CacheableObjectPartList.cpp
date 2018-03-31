@@ -25,7 +25,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-void CacheableObjectPartList::toData(DataOutput& output) const {
+void CacheableObjectPartList::toData(DataOutput&) const {
   // don't really care about toData() and should never get invoked
   throw UnsupportedOperationException(
       "CacheableObjectPartList::toData not implemented");

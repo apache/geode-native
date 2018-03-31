@@ -224,7 +224,7 @@ extern "C" void endElementSAX2Function(void* ctx, const xmlChar* name) {
  * Display and format a warning messages, gives file, line, position and
  * extra parameters.
  */
-extern "C" void warningDebug(void* ctx, const char* msg, ...) {
+extern "C" void warningDebug(void*, const char* msg, ...) {
   char logmsg[2048];
   va_list args;
   va_start(args, msg);
@@ -404,7 +404,7 @@ CacheXmlParser* CacheXmlParser::parse(const char* cacheXml, Cache* cache) {
   }
 }
 
-void CacheXmlParser::setAttributes(Cache* cache) {}
+void CacheXmlParser::setAttributes(Cache*) {}
 
 /**
  * Creates cache artifacts ({@link Cache}s, etc.) based upon the XML
@@ -439,7 +439,7 @@ void CacheXmlParser::create(Cache* cache) {
   Log::info("Declarative configuration of cache completed successfully");
 }
 
-void CacheXmlParser::startCache(void* ctx, const xmlChar** attrs) {
+void CacheXmlParser::startCache(void*, const xmlChar** attrs) {
   int attrsCount = 0;
   if (attrs != nullptr) {
     char* attrName;

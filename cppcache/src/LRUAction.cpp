@@ -29,7 +29,7 @@ LRUAction* LRUAction::newLRUAction(const LRUAction::Action& actionType,
 
   switch (actionType) {
     case LRUAction::INVALIDATE:
-      result = new LRULocalInvalidateAction(regionPtr, entriesMapPtr);
+      result = new LRULocalInvalidateAction(regionPtr);
       break;
     case LRUAction::LOCAL_DESTROY:
       result = new LRULocalDestroyAction(regionPtr, entriesMapPtr);
@@ -38,7 +38,6 @@ LRUAction* LRUAction::newLRUAction(const LRUAction::Action& actionType,
       result = new LRUOverFlowToDiskAction(regionPtr, entriesMapPtr);
       break;
     case LRUAction::DESTROY:
-      // result = new LRUDestroyAction( regionPtr );
       result = new LRULocalDestroyAction(regionPtr, entriesMapPtr);
       break;
     default:

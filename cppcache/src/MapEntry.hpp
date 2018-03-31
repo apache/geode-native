@@ -191,7 +191,9 @@ class APACHE_GEODE_EXPORT MapEntry {
 class MapEntryImpl : public MapEntry,
                      public std::enable_shared_from_this<MapEntryImpl> {
  public:
-  virtual ~MapEntryImpl() {}
+  ~MapEntryImpl() override  = default;
+  MapEntryImpl(const MapEntryImpl&) = delete;
+  MapEntryImpl& operator=(const MapEntryImpl&) = delete;
 
   inline void getKeyI(std::shared_ptr<CacheableKey>& result) const { result = m_key; }
 
@@ -204,43 +206,45 @@ class MapEntryImpl : public MapEntry,
     }
   }
 
-  inline void setValueI(const std::shared_ptr<Cacheable>& value) { m_value = value; }
+  inline void setValueI(const std::shared_ptr<Cacheable>& value) {
+    m_value = value;
+  }
 
-  virtual void getKey(std::shared_ptr<CacheableKey>& result) const {
+  void getKey(std::shared_ptr<CacheableKey>& result) const override {
     getKeyI(result);
   }
 
-  virtual void getValue(std::shared_ptr<Cacheable>& result) const {
+  void getValue(std::shared_ptr<Cacheable>& result) const override {
     getValueI(result);
   }
 
-  virtual void setValue(const std::shared_ptr<Cacheable>& value) {
+  void setValue(const std::shared_ptr<Cacheable>& value) override {
     setValueI(value);
   }
 
-  virtual std::shared_ptr<MapEntryImpl> getImplPtr() {
+  std::shared_ptr<MapEntryImpl> getImplPtr() override {
     return shared_from_this();
   }
 
-  virtual LRUEntryProperties& getLRUProperties() {
+  LRUEntryProperties& getLRUProperties() override {
     throw FatalInternalException(
         "MapEntry::getLRUProperties called for "
         "non-LRU MapEntry");
   }
 
-  virtual ExpEntryProperties& getExpProperties() {
+  ExpEntryProperties& getExpProperties() override {
     throw FatalInternalException(
         "MapEntry::getExpProperties called for "
         "non-expiration MapEntry");
   }
 
-  virtual VersionStamp& getVersionStamp() {
+  VersionStamp& getVersionStamp() override {
     throw FatalInternalException(
         "MapEntry::getVersionStamp called for "
         "non-versioned MapEntry");
   }
 
-  virtual void cleanup(const CacheEventFlags eventFlags);
+  void cleanup(const CacheEventFlags eventFlags) override;
 
  protected:
   inline explicit MapEntryImpl(bool)
@@ -250,11 +254,6 @@ class MapEntryImpl : public MapEntry,
 
   std::shared_ptr<Cacheable> m_value;
   std::shared_ptr<CacheableKey> m_key;
-
- private:
-  // disabled
-  MapEntryImpl(const MapEntryImpl&);
-  MapEntryImpl& operator=(const MapEntryImpl&);
 };
 
 class APACHE_GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,

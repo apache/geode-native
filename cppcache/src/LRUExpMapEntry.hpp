@@ -48,7 +48,7 @@ class APACHE_GEODE_EXPORT LRUExpMapEntry : public MapEntryImpl,
   }
 
  protected:
-  inline explicit LRUExpMapEntry(bool noInit)
+  inline explicit LRUExpMapEntry(bool)
       : MapEntryImpl(true),
         LRUEntryProperties(true),
         ExpEntryProperties(true) {}
@@ -71,7 +71,7 @@ class APACHE_GEODE_EXPORT VersionedLRUExpMapEntry : public LRUExpMapEntry,
   virtual VersionStamp& getVersionStamp() { return *this; }
 
  protected:
-  inline explicit VersionedLRUExpMapEntry(bool noInit) : LRUExpMapEntry(true) {}
+  inline explicit VersionedLRUExpMapEntry(bool) : LRUExpMapEntry(true) {}
 
   inline VersionedLRUExpMapEntry(ExpiryTaskManager* expiryTaskManager,
                                  const std::shared_ptr<CacheableKey>& key)

@@ -73,7 +73,7 @@ class APACHE_GEODE_EXPORT StructSet : public CqResults {
    * @returns the index number of the specified field name.
    * @throws std::invalid_argument if the field name is not found.
    */
-  virtual const size_t getFieldIndex(const std::string& fieldname) = 0;
+  virtual size_t getFieldIndex(const std::string& fieldname) = 0;
 
   /**
    * Get the field name of the StructSet from the specified index number.

@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-#include <geode/Region.hpp>
+#include "EntriesMap.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
 std::shared_ptr<Cacheable> EntriesMap::getFromDisk(
-    const std::shared_ptr<CacheableKey>& key,
-    std::shared_ptr<MapEntryImpl>& me) const {
+    const std::shared_ptr<CacheableKey>&,
+    std::shared_ptr<MapEntryImpl>&) const {
   return nullptr;
 }
 
