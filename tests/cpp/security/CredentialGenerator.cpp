@@ -24,6 +24,7 @@
 #include "NoopCredentialGenerator.hpp"
 
 using namespace apache::geode::client::testframework::security;
+using namespace apache::geode::client;
 
 CredentialGenerator::registeredClassMap* CredentialGenerator::generatormap =
     NULL;
@@ -55,11 +56,9 @@ std::shared_ptr<CredentialGenerator> CredentialGenerator::create(
   }
 }
 
-void CredentialGenerator::getValidCredentials(
-    std::shared_ptr<Properties>&) {}
+void CredentialGenerator::getValidCredentials(std::shared_ptr<Properties>&) {}
 
-void CredentialGenerator::getInvalidCredentials(
-    std::shared_ptr<Properties>&) {}
+void CredentialGenerator::getInvalidCredentials(std::shared_ptr<Properties>&) {}
 
 void CredentialGenerator::getAllowedCredentialsForOps(
     opCodeList&, std::shared_ptr<Properties>&, stringList*) {}

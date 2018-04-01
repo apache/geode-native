@@ -85,7 +85,8 @@ class APACHE_GEODE_EXPORT ExpEntryProperties {
 
   inline long getExpiryTaskId() const { return m_expiryTaskId; }
 
-  inline void cancelExpiryTaskId(const std::shared_ptr<CacheableKey>& key) const {
+  inline void cancelExpiryTaskId(
+      const std::shared_ptr<CacheableKey>& key) const {
     LOGDEBUG("Cancelling expiration task for key [%s] with id [%d]",
              Utils::nullSafeToString(key).c_str(), m_expiryTaskId);
     m_expiryTaskManager->cancelTask(m_expiryTaskId);
@@ -93,7 +94,8 @@ class APACHE_GEODE_EXPORT ExpEntryProperties {
 
  protected:
   // this constructor deliberately skips initializing any fields
-  inline explicit ExpEntryProperties(bool) {}
+  inline explicit ExpEntryProperties(bool)
+      : m_lastAccessTime(time_point()), m_lastModifiedTime(time_point()) {}
 
  private:
   /** last access time in secs, 32bit.. */
@@ -191,11 +193,13 @@ class APACHE_GEODE_EXPORT MapEntry {
 class MapEntryImpl : public MapEntry,
                      public std::enable_shared_from_this<MapEntryImpl> {
  public:
-  ~MapEntryImpl() override  = default;
+  ~MapEntryImpl() override = default;
   MapEntryImpl(const MapEntryImpl&) = delete;
   MapEntryImpl& operator=(const MapEntryImpl&) = delete;
 
-  inline void getKeyI(std::shared_ptr<CacheableKey>& result) const { result = m_key; }
+  inline void getKeyI(std::shared_ptr<CacheableKey>& result) const {
+    result = m_key;
+  }
 
   inline void getValueI(std::shared_ptr<Cacheable>& result) const {
     // If value is destroyed, then this returns nullptr
@@ -244,13 +248,13 @@ class MapEntryImpl : public MapEntry,
         "non-versioned MapEntry");
   }
 
-  void cleanup(const CacheEventFlags) override {};
+  void cleanup(const CacheEventFlags) override{};
 
  protected:
-  inline explicit MapEntryImpl(bool)
-      : MapEntry(true) {}
+  inline explicit MapEntryImpl(bool) : MapEntry(true) {}
 
-  inline MapEntryImpl(const std::shared_ptr<CacheableKey>& key) : MapEntry(), m_key(key) {}
+  inline MapEntryImpl(const std::shared_ptr<CacheableKey>& key)
+      : MapEntry(), m_key(key) {}
 
   std::shared_ptr<Cacheable> m_value;
   std::shared_ptr<CacheableKey> m_key;

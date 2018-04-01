@@ -451,7 +451,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyCacheableObjectArrayWithPdxField)
           cacheHelper->getCache()->createPdxInstanceFactory("PdxTests.Address");
       LOG("PdxInstanceFactoryPtr created for PdxTests.Address....");
 
-      pifPtr->writeInt("_aptNumber", i + 1);
+      pifPtr->writeInt("_aptNumber", static_cast<int32_t>(i + 1));
       char streetStr[256] = {0};
       sprintf(streetStr, "street%zd", i);
       pifPtr->writeString("_street", streetStr);
@@ -461,7 +461,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyCacheableObjectArrayWithPdxField)
 
       auto addrPtr = std::dynamic_pointer_cast<Address>(pi->getObject());
       LOG("AddressPtr created using PdxInstance getObject()....");
-      auto newAddrPtr = std::make_shared<Address>(i + 1, streetStr, cityStr);
+      auto newAddrPtr = std::make_shared<Address>(static_cast<int32_t>(i + 1),
+                                                  streetStr, cityStr);
       LOG("AddressPtr created using new....");
       ASSERT(addrPtr.get()->equals(*(newAddrPtr.get())) == true,
              "Both PdxInstances should be equal.");
@@ -1166,7 +1167,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
           cacheHelper->getCache()->createPdxInstanceFactory("PdxTests.Address");
       LOG("PdxInstanceFactoryPtr created for PdxTests.Address....");
 
-      pifPtr->writeInt("_aptNumber", i + 1);
+      pifPtr->writeInt("_aptNumber", static_cast<int32_t>(i + 1));
       char streetStr[256] = {0};
       sprintf(streetStr, "street%zd", i);
       pifPtr->writeString("_street", streetStr);
@@ -1176,7 +1177,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
 
       auto addrPtr = std::dynamic_pointer_cast<Address>(pi->getObject());
       LOG("AddressPtr created using PdxInstance getObject()....");
-      auto newAddrPtr = std::make_shared<Address>(i + 1, streetStr, cityStr);
+      auto newAddrPtr = std::make_shared<Address>(static_cast<int32_t>(i + 1),
+                                                  streetStr, cityStr);
       LOG("AddressPtr created using new....");
       ASSERT(addrPtr.get()->equals(*(newAddrPtr.get())) == true,
              "Both PdxInstances should be equal.");

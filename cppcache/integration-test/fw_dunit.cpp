@@ -163,8 +163,7 @@ class NamingContextImpl : virtual public NamingContext {
   virtual int rebind(const char* key, const char* value) {
     int res = -1;
     int attempts = 10;
-    while ((res = m_context.rebind(key, value)) == -1 &&
-           attempts--) {
+    while ((res = m_context.rebind(key, value)) == -1 && attempts--) {
       millisleep(10);
     }
     return checkResult(res, "rebind");
@@ -186,18 +185,13 @@ class NamingContextImpl : virtual public NamingContext {
    * is not found, the buf will contain the empty string "".
    */
   virtual void getValue(const char* key, char* buf) {
-#ifdef SOLARIS_USE_BB
-    char value[VALUE_MAX] = {0};
-    char type[VALUE_MAX] = {0};
-#else
     char* value = nullptr;
     char* type = nullptr;
-#endif
 
     int res = -1;
     // we should not increase attempts to avoid increasing test run times.
     int attempts = 3;
-    while ((res = m_context.resolve(key, value)) != 0 && attempts--) {
+    while ((res = m_context.resolve(key, value, type)) != 0 && attempts--) {
       // we should not increase sleep to avoid increasing test run times.
       millisleep(5);
     }
@@ -220,20 +214,14 @@ class NamingContextImpl : virtual public NamingContext {
     return ACE_OS::atoi(value);
   }
 
-  void open([[gnu::unused]] bool local = true) {
+  void open() {
 #ifdef SOLARIS_USE_BB
     m_context.open();
 #else
     ACE_Name_Options* name_options = m_context.name_options();
     name_options->process_name(getContextName().c_str());
     name_options->namespace_dir(".");
-    if (local)
-      name_options->context(ACE_Naming_Context::PROC_LOCAL);
-    else
-      name_options->context(ACE_Naming_Context::NET_LOCAL);
-    // std::string dbName = ACE_DEFAULT_LOCALNAME;
-    // dbName.append(ACE_OS::getenv("TESTNAME"));
-
+    name_options->context(ACE_Naming_Context::PROC_LOCAL);
     name_options->database(ACE_OS::getenv("TESTNAME"));
     checkResult(m_context.open(name_options->context(), 0), "open");
 #endif

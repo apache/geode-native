@@ -29,9 +29,9 @@ StructSetImpl::StructSetImpl(const std::shared_ptr<CacheableVector>& response,
                              const std::vector<std::string>& fieldNames) {
   m_nextIndex = 0;
 
-  size_t i = 0;
+  int32_t i = 0;
   for (auto&& fieldName : fieldNames) {
-    LOGDEBUG("StructSetImpl: pushing fieldName = %s with index = %zd",
+    LOGDEBUG("StructSetImpl: pushing fieldName = %s with index = %d",
              fieldName.c_str(), i);
     m_fieldNameIndexMap.emplace(fieldName, i++);
   }

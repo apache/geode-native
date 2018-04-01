@@ -61,7 +61,7 @@ const wchar_t* checkNullString(const wchar_t* str) {
 }
 
 std::string checkNullString(const std::string* str) {
-    return ((str == nullptr) ? "(null)" : *str);
+  return ((str == nullptr) ? "(null)" : *str);
 }
 
 void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
@@ -234,7 +234,8 @@ void stepOne() {
   createRegionAndAttachPool(qRegionNames[3], USE_ACK, poolNames[0]);
 
   auto regptr = getHelper()->getRegion(qRegionNames[0]);
-  auto subregPtr = regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
+  auto subregPtr =
+      regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
 
   LOG("StepOne complete.");
 }
@@ -478,17 +479,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
     HashMapOfCacheable expectedPortMap;
 
     auto& qh = QueryHelper::getHelper();
-    int setSize = qh.getPositionSetSize();
-    int numSets = qh.getPositionNumSets();
+    auto setSize = qh.getPositionSetSize();
+    auto numSets = qh.getPositionNumSets();
 
-    for (int set = 1; set <= numSets; ++set) {
-      for (int current = 1; current <= setSize; ++current) {
+    for (size_t set = 1; set <= numSets; ++set) {
+      for (size_t current = 1; current <= setSize; ++current) {
         char posname[100] = {0};
-        ACE_OS::sprintf(posname, "pos%d-%d", set, current);
+        ACE_OS::sprintf(posname, "pos%zd-%zd", set, current);
 
         auto posKey(CacheableKey::create(posname));
-        auto pos = std::make_shared<PositionPdx>(secIds[current % numSecIds],
-                                                 current * 100);
+        auto pos = std::make_shared<PositionPdx>(
+            secIds[current % numSecIds], static_cast<int32_t>(current * 100));
 
         posKeys.push_back(posKey);
         expectedPosMap.emplace(posKey, pos);
