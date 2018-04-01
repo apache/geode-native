@@ -141,7 +141,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllOneTask)
       LOGERROR("CPPTEST: PutAll caused random exception in PutAllOneTask");
       cleanProc();
       FAIL("PutAll caused unexpected exception");
-      throw IllegalStateException("TEST FAIL");
     }
     LOG("PutAllOneTask completed.");
   }
@@ -175,7 +174,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllTwoTask)
       LOGERROR("CPPTEST: PutAll caused random exception in PutAllTwoTask");
       cleanProc();
       FAIL("PutAll caused unexpected exception");
-      throw IllegalStateException("TEST FAIL");
     }
     LOG("PutAllTwoTask completed.");
   }
@@ -209,7 +207,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllThreeTask)
       LOGERROR("CPPTEST: PutAll caused random exception in PutAllThreeTask");
       cleanProc();
       FAIL("PutAll caused unexpected exception");
-      throw IllegalStateException("TEST FAIL");
     }
     LOG("PutAllThreeTask completed.");
   }
@@ -243,7 +240,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllFourTask)
       LOGERROR("CPPTEST: PutAll caused random exception in PutAllFourTask");
       cleanProc();
       FAIL("PutAll caused unexpected exception");
-      throw IllegalStateException("TEST FAIL");
     }
     LOG("PutAllFourTask completed.");
   }
@@ -309,7 +305,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllOneTask)
       LOGERROR("CPPTEST: RemoveAll caused random exception in PutAllOneTask");
       cleanProc();
       FAIL("RemoveAll caused unexpected exception");
-      throw IllegalStateException("TEST FAIL");
     }
     LOG("RemoveAllOneTask completed.");
   }
@@ -345,7 +340,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllTwoTask)
       LOGERROR("CPPTEST: RemoveAll caused random exception in PutAllTwoTask");
       cleanProc();
       FAIL("RemoveAll caused unexpected exception");
-      throw IllegalStateException("TEST FAIL");
     }
     LOG("RemoveAllTwoTask completed.");
   }
@@ -383,7 +377,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllThreeTask)
           "CPPTEST: RemoveAll caused random exception in RemoveAllThreeTask");
       cleanProc();
       FAIL("RemoveAll caused unexpected exception");
-      throw IllegalStateException("TEST FAIL");
     }
     LOG("RemoveAllThreeTask completed.");
   }
@@ -420,7 +413,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllFourTask)
           "CPPTEST: RemoveAll caused random exception in RemoveAllFourTask");
       cleanProc();
       FAIL("RemoveAll caused unexpected exception");
-      throw IllegalStateException("TEST FAIL");
     }
     LOG("RemoveAllFourTask completed.");
   }

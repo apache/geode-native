@@ -1009,17 +1009,20 @@ int32_t Security::doEntryOperations() {
             tmpValue =
                 CacheableBytes::create(std::vector<int8_t>(valBuf, valBuf +
                                        static_cast<int32_t>(strlen(valBuf))));
-            int32_t *val =
-                (int32_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
-                                ->value().data());
+            auto val = const_cast<int32_t *>(reinterpret_cast<const int32_t *>(
+                std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
+                    ->value()
+                    .data()));
             *val =
                 (*val == keyVal) ? keyVal + 1 : keyVal;  // alternate the value
                                                          // so that it can be
                                                          // validated later.
-            int64_t *adjNow =
-                (int64_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
-                                ->value().data() +
-                            4);
+            auto adjNow =
+                const_cast<int64_t *>(reinterpret_cast<const int64_t *>(
+                    std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
+                        ->value()
+                        .data() +
+                    4));
             *adjNow = getAdjustedNowMicros();
           }
           regionPtr->put(keyPtr, tmpValue);

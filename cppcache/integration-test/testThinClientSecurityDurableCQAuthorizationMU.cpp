@@ -41,8 +41,6 @@
 using namespace test;
 using namespace testData;
 
-#define ROOT_SCOPE DISTRIBUTED_ACK
-
 #include "CacheHelper.hpp"
 #include "ThinClientHelper.hpp"
 #include "ace/Process.h"
@@ -58,7 +56,6 @@ std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define CLIENT2 s1p2
-#define LOCATORSERVER s2p2
 
 #define MAX_LISTNER 8
 

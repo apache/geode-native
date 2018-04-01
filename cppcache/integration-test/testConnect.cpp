@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testConnect"
-
 #include "fw_dunit.hpp"
 #include <geode/CacheFactory.hpp>
 

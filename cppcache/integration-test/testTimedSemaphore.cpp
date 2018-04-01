@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testTimedSemaphore"
-
 #include "fw_helper.hpp"
 #include <ace/Synch.h>
 

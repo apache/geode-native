@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testLogger"
-
 #include "fw_helper.hpp"
 #include <geode/ExceptionTypes.hpp>
 

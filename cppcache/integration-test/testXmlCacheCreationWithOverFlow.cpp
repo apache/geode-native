@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testXmlCacheCreationWithOverFlow"
-
 #include <geode/CacheFactory.hpp>
 #include <geode/Region.hpp>
 #include <string>

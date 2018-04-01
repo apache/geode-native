@@ -262,7 +262,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
             expectedResult ? "true" : "false", existsValue ? "true" : "false");
         doAnyErrorOccured = true;
         ASSERT(false, failmsg);
-        continue;
       }
     }
 

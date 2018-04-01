@@ -35,8 +35,6 @@ using namespace test;
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 #define SERVER2 s2p2
-#define CREATE_TWICE_KEY "__create_twice_key"
-#define CREATE_TWICE_VALUE "__create_twice_value"
 CacheHelper* cacheHelper = nullptr;
 static bool isLocalServer = false;
 static bool isLocator = false;
@@ -155,8 +153,6 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   }
 }
 
-#define verifyInvalid(x, y) _verifyInvalid(x, y, __LINE__)
-
 void _verifyInvalid(const char* name, const char* key, int line) {
   char logmsg[1024];
   sprintf(logmsg, "verifyInvalid() called from %d.\n", line);
@@ -164,8 +160,6 @@ void _verifyInvalid(const char* name, const char* key, int line) {
   _verifyEntry(name, key, 0, false);
   LOG("Entry invalidated.");
 }
-
-#define verifyDestroyed(x, y) _verifyDestroyed(x, y, __LINE__)
 
 void _verifyDestroyed(const char* name, const char* key, int line) {
   char logmsg[1024];
@@ -275,7 +269,6 @@ void createEntryTwice(const char* name, const char* key, const char* value) {
   ASSERT(false,
          "Creating key twice is not allowed and while doing that exception was "
          "not thrown");
-  return;  // This return will never reach
 }
 
 void updateEntry(const char* name, const char* key, const char* value) {

@@ -34,7 +34,6 @@ using namespace apache::geode::client;
 using namespace test;
 
 #define CLIENT1 s1p1
-#define CLIENT2 s1p2
 #define SERVER1 s2p1
 
 static bool isLocator = false;

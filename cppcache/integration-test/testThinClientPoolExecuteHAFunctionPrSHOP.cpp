@@ -55,18 +55,6 @@ char* RegionOperationsHAFunctionPrSHOP =
   }                                                             \
   ASSERT(found, "this returned value is invalid");
 
-#define verifyPutResults()                          \
-  bool found = false;                               \
-  for (int j = 0; j < 34; j++) {                    \
-    if (j % 2 == 0) continue;                       \
-    sprintf(buf, "KEY--%d", j);                     \
-    if (strcmp(buf, value->value().c_str()) == 0) { \
-      found = true;                                 \
-      break;                                        \
-    }                                               \
-  }                                                 \
-  ASSERT(found, "this returned value is invalid");
-
 class MyResultCollector : public DefaultResultCollector {
  public:
   MyResultCollector()

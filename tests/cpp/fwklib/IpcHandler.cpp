@@ -229,7 +229,6 @@ bool IpcHandler::sendIpcMsg(IpcMsg msg, int32_t waitSeconds) {
       case IPC_RUN:
       case IPC_DONE:
         return true;
-        break;
       default:
         msg = getIpcMsg(60);
         if (msg == IPC_ACK) return true;
@@ -265,5 +264,4 @@ bool IpcHandler::sendBuffer(IpcMsg msg, const char *str) {
     return true;
   }
   FWKEXCEPTION("Tried to write " << length << " bytes, only wrote " << wrote);
-  return false;
 }

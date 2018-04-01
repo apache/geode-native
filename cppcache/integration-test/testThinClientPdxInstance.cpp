@@ -47,7 +47,6 @@ CacheHelper* cacheHelper = nullptr;
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
-#define SERVER2 s2p2
 static bool isLocator = false;
 const bool USE_ACK = true;
 const bool NO_ACK = false;

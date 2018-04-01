@@ -162,8 +162,6 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   }
 }
 
-#define verifyInvalid(x, y) _verifyInvalid(x, y, __LINE__)
-
 void _verifyInvalid(const char* name, const char* key, int line) {
   char logmsg[1024];
   sprintf(logmsg, "verifyInvalid() called from %d.\n", line);

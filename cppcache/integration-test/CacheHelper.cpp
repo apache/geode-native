@@ -57,7 +57,6 @@
 #define PATH_SEP "\\"
 #else
 #define GFSH "gfsh"
-#define COPY_COMMAND "cp -f"
 #define DELETE_COMMAND "rm -f"
 #define PATH_SEP "/"
 #endif
@@ -67,7 +66,6 @@ using namespace apache::geode::internal::chrono::duration;
 
 extern ClientCleanup gClientCleanup;
 
-#define SEED 0
 #define RANDOM_NUMBER_OFFSET 14000
 #define RANDOM_NUMBER_DIVIDER 15000
 std::shared_ptr<Cache> CacheHelper::getCache() { return cachePtr; }
@@ -1184,7 +1182,7 @@ void CacheHelper::initServer(int instance, const char* xml,
   char cmd[2048];
   char tmp[128];
   char currWDPath[2048];
-  int portNum;
+  int portNum = 0;
   std::string currDir = ACE_OS::getcwd(currWDPath, 2048);
 
   ASSERT(gfjavaenv != nullptr,

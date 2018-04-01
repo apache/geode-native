@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testLRUList"
-
 #include <iostream>
 
 #include "fw_helper.hpp"

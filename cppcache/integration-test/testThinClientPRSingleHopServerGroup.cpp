@@ -118,22 +118,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: Put caused random exception");
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     // relaxed this limit as it takes time
@@ -156,22 +152,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("get caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: get caused random exception");
         cleanProc();
         FAIL("get caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT1 get completed.");
@@ -196,22 +188,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: getAll caused random exception");
         cleanProc();
         FAIL("getAll caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT1 getAll completed.");
@@ -232,22 +220,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: destroy caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("destroy caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: destroy caused random exception");
         cleanProc();
         FAIL("destroy caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT1 destroy completed.");
@@ -280,22 +264,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: Put caused random exception");
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     ASSERT(failureCount > 0, "Count should be greater than 1");
@@ -314,22 +294,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("get caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: get caused random exception");
         cleanProc();
         FAIL("get caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT2 get completed.");
@@ -350,22 +326,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: getAll caused random exception");
         cleanProc();
         FAIL("getAll caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT2 getAll completed.");
@@ -383,22 +355,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: destroy caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("destroy caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: destroy caused random exception");
         cleanProc();
         FAIL("destroy caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT2 destroy completed.");
@@ -431,22 +399,18 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: Put caused random exception");
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     ASSERT(failureCount > 0, "Count should be greater than 1");
@@ -465,22 +429,18 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("get caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: get caused random exception");
         cleanProc();
         FAIL("get caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT3 get completed.");
@@ -500,22 +460,18 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: getAll caused random exception");
         cleanProc();
         FAIL("getAll caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT3 getAll completed.");
@@ -533,22 +489,18 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: destroy caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("destroy caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: destroy caused random exception");
         cleanProc();
         FAIL("destroy caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT3 destroy completed.");

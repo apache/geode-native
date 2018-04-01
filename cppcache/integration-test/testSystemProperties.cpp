@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testSystemProperties"
-
 #include "fw_helper.hpp"
 #include <geode/SystemProperties.hpp>
 #include <geode/Properties.hpp>

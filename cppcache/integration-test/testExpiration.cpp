@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testExpiration"
-
 #include "fw_helper.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"

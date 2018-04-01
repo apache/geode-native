@@ -50,7 +50,6 @@
 #define SOLARIS_USE_BB 1
 #endif
 
-#define KEY_MAX 128
 #define VALUE_MAX 128
 
 #ifdef SOLARIS_USE_BB
@@ -111,7 +110,6 @@ void getTimeStr(char* bufPtr) {
 }
 
 // some common values..
-#define SLAVE_STATE_UNKNOWN 0
 #define SLAVE_STATE_READY 1
 #define SLAVE_STATE_DONE 2
 #define SLAVE_STATE_TASK_ACTIVE 3

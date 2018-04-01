@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testDunit"
-
 #include <iostream>
 
 #include "fw_dunit.hpp"

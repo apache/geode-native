@@ -108,12 +108,6 @@ opCodeList::value_type tmpAArr[] = {OP_CREATE,       OP_UPDATE,
 #define ADMIN_CLIENT s1p1
 #define WRITER_CLIENT s1p2
 #define READER_CLIENT s2p1
-//#define USER_CLIENT s2p2
-
-#define TYPE_ADMIN_CLIENT 'A'
-#define TYPE_WRITER_CLIENT 'W'
-#define TYPE_READER_CLIENT 'R'
-#define TYPE_USER_CLIENT 'U'
 
 const char* regionNamesAuth[] = {"DistRegionAck"};
 

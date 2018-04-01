@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define ROOT_NAME "testPoolFactory"
 
 #include "fw_helper.hpp"
 #include <CacheRegionHelper.hpp>

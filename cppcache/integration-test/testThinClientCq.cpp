@@ -712,7 +712,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
      failmsg += excp.what();
      LOG(failmsg.c_str());
      FAIL(failmsg.c_str());
-     excp.getStackTrace();
     }
 
     LOG("StepFour complete.");

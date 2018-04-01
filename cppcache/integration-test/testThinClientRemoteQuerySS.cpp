@@ -330,7 +330,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         char failmsg[100] = {0};
         ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
         ASSERT(false, failmsg);
-        continue;
       }
 
       auto ssptr = std::dynamic_pointer_cast<StructSet>(results);
@@ -380,7 +379,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
           char failmsg[100] = {0};
           ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
           ASSERT(false, failmsg);
-          continue;
         }
 
         auto ssptr = std::dynamic_pointer_cast<StructSet>(results);
@@ -444,7 +442,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
           char failmsg[100] = {0};
           ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
           ASSERT(false, failmsg);
-          continue;
         }
 
         auto ssptr = std::dynamic_pointer_cast<StructSet>(results);

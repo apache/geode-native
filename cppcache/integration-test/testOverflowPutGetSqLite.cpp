@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testOverflowPutGetSqLite"
-
 #include <string>
 #include <iostream>
 
