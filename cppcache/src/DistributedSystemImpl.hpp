@@ -59,25 +59,16 @@ class APACHE_GEODE_EXPORT DistributedSystemImpl {
    * @brief public methods
    */
  public:
-  /*
-   * threadname should have less than 16 bytes
-   */
-  static void setThreadName([[gnu::unused]] const char* tn) {
+
+  static void setThreadName(const std::string& threadName) {
+    if (threadName.empty()) {
+      throw IllegalArgumentException("Thread name is empty.");
+    }
 #ifdef __linux
-    int idx = 0;
-    while (idx < 16) {
-      if (tn[idx++] != '\0') {
-        continue;
-      } else
-        break;
-    }
-    if (tn[idx - 1] != '\0') {
-      // throw exception
-      throw IllegalArgumentException("Thread name has more than 15 character.");
-    }
-    prctl(PR_SET_NAME, tn, 0, 0, 0);
+    prctl(PR_SET_NAME, threadName.c_str(), 0, 0, 0);
 #endif
   }
+
   /**
    * @brief destructor
    */
