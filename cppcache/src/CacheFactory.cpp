@@ -42,8 +42,6 @@
 #include "TXCommitMessage.hpp"
 #include "PdxHelper.hpp"
 
-#define DEFAULT_CACHE_NAME "default_GeodeCache"
-
 namespace apache {
 namespace geode {
 namespace client {

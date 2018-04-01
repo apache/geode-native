@@ -42,13 +42,6 @@ class TestDataOutput : public DataOutputInternal {
     // NOP
   }
 
-  TestDataOutput(Cache*)
-      : DataOutputInternal(nullptr),
-        m_byteArray(nullptr),
-        m_serializationRegistry() {
-    // NOP
-  }
-
   virtual ~TestDataOutput() {
     delete m_byteArray;
     m_byteArray = nullptr;

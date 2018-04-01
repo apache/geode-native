@@ -184,10 +184,42 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Werror
     -Wall
     -Wextra
+    -Wno-unknown-pragmas #TODO fix
+    -Wno-unused-variable #TODO fix
+    -Wno-unused-function #TODO fix
     -Wpedantic
-    -Wno-unknown-pragmas
-    -Wno-unused-variable
-    -Wno-unused-function)
+    -Weverything
+    -Wno-non-virtual-dtor #TODO fix
+    -Wno-missing-prototypes #TODO fix
+    -Wno-extra-semi # TODO fix
+    -Wno-sign-conversion #TODO fix
+    -Wno-deprecated #TODO fix
+    -Wno-old-style-cast #TODO fix
+    -Wno-format-nonliteral #TODO fix
+    -Wno-double-promotion #TODO fix
+    -Wno-undefined-func-template #TODO fix
+    -Wno-float-equal #TODO fix
+    -Wno-header-hygiene #TODO fix
+    -Wno-shorten-64-to-32 #TODO fix
+    -Wno-conversion #TODO fix
+    -Wno-shadow-field-in-constructor #TODO fix
+    -Wno-shadow #TODO fix
+    -Wno-missing-variable-declarations #TODO fix
+    -Wno-switch-enum #TODO fix
+    -Wno-reserved-id-macro #TODO fix
+    -Wno-documentation # TODO fix
+    -Wno-implicit-fallthrough #TODO fix
+    -Wno-covered-switch-default #TODO fix
+    -Wno-range-loop-analysis
+    -Wno-weak-vtables
+    -Wno-weak-template-vtables
+    -Wno-padded
+    -Wno-c++98-compat
+    -Wno-c++98-compat-pedantic
+    -Wno-global-constructors
+    -Wno-exit-time-destructors
+    -Wno-documentation-unknown-command
+    )
 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(BUILD_CLI 1)

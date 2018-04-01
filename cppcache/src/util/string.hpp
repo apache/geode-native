@@ -38,7 +38,7 @@ constexpr std::codecvt_mode codecvt_mode_native_endian =
                                      : (std::codecvt_mode)0;
 
 inline std::u16string to_utf16(const std::string& utf8) {
-#if _MSC_VER >= 1900
+#if defined(_MSC_VER) && _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
    * https://connect.microsoft.com/VisualStudio/feedback/details/1403302
@@ -55,7 +55,7 @@ inline std::u16string to_utf16(const std::string& utf8) {
 }
 
 inline std::u16string to_utf16(const std::u32string& ucs4) {
-#if _MSC_VER >= 1900
+#if defined(_MSC_VER) && _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
    * https://connect.microsoft.com/VisualStudio/feedback/details/1403302
@@ -79,7 +79,7 @@ inline std::u16string to_utf16(const std::u32string& ucs4) {
 }
 
 inline std::u16string to_utf16(const char32_t* ucs4, size_t len) {
-#if _MSC_VER >= 1900
+#if defined(_MSC_VER) && _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
    * https://connect.microsoft.com/VisualStudio/feedback/details/1403302
@@ -103,7 +103,7 @@ inline std::u16string to_utf16(const char32_t* ucs4, size_t len) {
 }
 
 inline std::u32string to_ucs4(const std::u16string& utf16) {
-#if _MSC_VER >= 1900
+#if defined(_MSC_VER) && _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
    * https://connect.microsoft.com/VisualStudio/feedback/details/1403302
@@ -126,7 +126,7 @@ inline std::u32string to_ucs4(const std::u16string& utf16) {
 }
 
 inline std::string to_utf8(const std::u16string& utf16) {
-#if _MSC_VER >= 1900
+#if defined(_MSC_VER) && _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
    * https://connect.microsoft.com/VisualStudio/feedback/details/1403302
@@ -141,7 +141,7 @@ inline std::string to_utf8(const std::u16string& utf16) {
 }
 
 inline std::string to_utf8(const std::u32string& ucs4) {
-#if _MSC_VER >= 1900
+#if defined(_MSC_VER) && _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
    * https://connect.microsoft.com/VisualStudio/feedback/details/1403302

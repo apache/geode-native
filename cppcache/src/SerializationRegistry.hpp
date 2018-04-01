@@ -43,7 +43,7 @@
 #include "config.h"
 
 #if defined(_MACOSX)
-ACE_BEGIN_VERSIONED_NAMESPACE_DECL
+namespace ACE_VERSIONED_NAMESPACE_NAME {
 // TODO CMake check type int64_t
 template <>
 class ACE_Export ACE_Hash<int64_t> {
@@ -53,7 +53,7 @@ class ACE_Export ACE_Hash<int64_t> {
   }
 };
 
-ACE_END_VERSIONED_NAMESPACE_DECL
+}  // namespace ACE_VERSIONED_NAMESPACE_NAME
 #endif
 
 namespace apache {

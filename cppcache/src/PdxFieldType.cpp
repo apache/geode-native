@@ -130,8 +130,8 @@ int32_t PdxFieldType::getFixedTypeSize() const {
     default:
       return -1;
   }
-  return -1;
 }
+
 std::string PdxFieldType::toString() const {
   char stringBuf[1024];
   ACE_OS::snprintf(
@@ -141,6 +141,7 @@ std::string PdxFieldType::toString() const {
       this->m_sequenceId);
   return std::string(stringBuf);
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

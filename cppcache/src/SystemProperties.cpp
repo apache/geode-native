@@ -254,7 +254,6 @@ bool SystemProperties::parseBooleanProperty(const std::string& property,
   }
 
   throwError("SystemProperties: non-boolean " + property + "=" + value);
-  return false;
 }
 
 template <class _Rep, class _Period>

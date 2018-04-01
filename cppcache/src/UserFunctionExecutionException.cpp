@@ -35,13 +35,11 @@ void UserFunctionExecutionException::fromData(DataInput&) {
 int32_t UserFunctionExecutionException::classId() const {
   throw IllegalStateException(
       "UserFunctionExecutionException::classId is not intended for use.");
-  return 0;
 }
 
 size_t UserFunctionExecutionException::objectSize() const {
   throw IllegalStateException(
       "UserFunctionExecutionException::objectSize is not intended for use.");
-  return 0;
 }
 
 int8_t UserFunctionExecutionException::typeId() const {

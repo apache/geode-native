@@ -132,22 +132,18 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
   switch (compId) {
     case GeodeTypeIds::NullObj: {
       return nullptr;
-      break;
     }
     case GeodeTypeIds::CacheableNullString: {
       return std::shared_ptr<Serializable>(
           CacheableString::createDeserializable());
-      break;
     }
     case GeodeTypeIdsImpl::PDX: {
       return pdxTypeHandler(input);
-      break;
     }
     case GeodeTypeIds::CacheableEnum: {
       auto enumObject = CacheableEnum::create(" ", " ", 0);
       enumObject->fromData(input);
       return enumObject;
-      break;
     }
     case GeodeTypeIdsImpl::CacheableUserData: {
       compId |= ((static_cast<int64_t>(input.read())) << 32);

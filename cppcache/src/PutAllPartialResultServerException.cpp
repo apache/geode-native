@@ -84,14 +84,12 @@ void PutAllPartialResultServerException::fromData(DataInput&) {
 int32_t PutAllPartialResultServerException::classId() const {
   throw IllegalStateException(
       "PutAllPartialResultServerException::classId is not intended for use.");
-  return 0;
 }
 
 size_t PutAllPartialResultServerException::objectSize() const {
   throw IllegalStateException(
       "PutAllPartialResultServerException::objectSize is not intended for "
       "use.");
-  return 0;
 }
 
 int8_t PutAllPartialResultServerException::typeId() const {

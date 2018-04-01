@@ -14,11 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "TcrPoolEndPoint.hpp"
+
 #include <geode/SystemProperties.hpp>
+
+#include "TcrPoolEndPoint.hpp"
 #include "ThinClientPoolDM.hpp"
-using namespace apache::geode::client;
-#define DEFAULT_CALLBACK_CONNECTION_TIMEOUT_SECONDS 180
+
+namespace apache {
+namespace geode {
+namespace client {
+
 TcrPoolEndPoint::TcrPoolEndPoint(const std::string& name, CacheImpl* cache,
                                  ACE_Semaphore& failoverSema,
                                  ACE_Semaphore& cleanupSema,
@@ -142,3 +147,7 @@ void TcrPoolEndPoint::handleNotificationStats(int64_t byteLength) {
   m_dm->getStats().incReceivedBytes(byteLength);
   m_dm->getStats().incMessageBeingReceived();
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

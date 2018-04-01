@@ -2019,16 +2019,12 @@ uint32_t ThinClientRegion::size_remote() {
     case TcrMessage::RESPONSE: {
       auto size = std::static_pointer_cast<CacheableInt32>(reply.getValue());
       return size->value();
-      // LOGINFO("Map is written into remote server at region %s",
-      // m_fullPath.c_str());
-    } break;
+    }
     case TcrMessage::EXCEPTION:
       err =
           handleServerException("ThinClientRegion::size", reply.getException());
       break;
     case TcrMessage::SIZE_ERROR:
-      // LOGERROR( "A write error occurred on the endpoint %s",
-      //     m_tcrdm->getActiveEndpoint( )->name( ).c_str( ) );
       err = GF_CACHESERVER_EXCEPTION;
       break;
     default:

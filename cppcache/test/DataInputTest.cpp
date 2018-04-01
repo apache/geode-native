@@ -19,6 +19,9 @@
 
 #include <stdint.h>
 #define NOMINMAX
+#if defined(NOMINMAX)
+// ifnore unused macro warning
+#endif
 #include <cstdint>
 
 #include <gtest/gtest.h>
@@ -55,14 +58,6 @@ class TestDataInput {
         m_dataInput(m_byteArray.get(), m_byteArray.size()) {
     // NOP
   }
-
-  explicit TestDataInput(const wchar_t *str)
-      : m_byteArray(ByteArray::fromString(str)),
-        m_dataInput(m_byteArray.get(), m_byteArray.size()) {
-    // NOP
-  }
-
-  operator const DataInput &() const { return m_dataInput; }
 
   operator DataInput &() { return m_dataInput; }
 
@@ -136,10 +131,6 @@ class TestDataInput {
                                       elementLength);
   }
 
-  const uint8_t *currentBufferPosition() const {
-    return m_dataInput.currentBufferPosition();
-  }
-
   size_t getBytesRead() const { return m_dataInput.getBytesRead(); }
 
   size_t getBytesRemaining() const { return m_dataInput.getBytesRemaining(); }
@@ -151,14 +142,6 @@ class TestDataInput {
   void reset() { m_dataInput.reset(); }
 
   void setBuffer() { m_dataInput.setBuffer(); }
-
-  const std::string &getPoolName() {
-    return DataInputInternal::getPoolName(m_dataInput);
-  }
-
-  void setPoolName(const std::string &poolName) {
-    DataInputInternal::setPoolName(m_dataInput, poolName);
-  }
 
   template <class CharT = char, class... Tail>
   inline std::basic_string<CharT, Tail...> readUTF() {

@@ -171,7 +171,7 @@ ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} platform
 endif()
 
 add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories(${PROJECT_NAME} INTERFACE
+target_include_directories(${PROJECT_NAME} SYSTEM INTERFACE
   $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/include>
 )
 target_compile_definitions(${PROJECT_NAME} INTERFACE

@@ -35,15 +35,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-#define throwException(ex)                        \
-  {                                               \
-    LOGFINEST("%s: %s", ex.getName(), ex.what()); \
-    throw ex;                                     \
-  }
-/*
-This is replaced by the connect-timeout (times 3) system property for SR # 6525.
-#define DEFAULT_CALLBACK_CONNECTION_TIMEOUT_SECONDS 180
-*/
 const char* TcrEndpoint::NC_Notification = "NC Notification";
 
 TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,

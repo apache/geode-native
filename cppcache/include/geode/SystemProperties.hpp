@@ -438,7 +438,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
       const std::string& property, const std::string& value,
       std::chrono::duration<_Rep, _Period>& duration);
 
-  static void throwError(const std::string& msg);
+  [[noreturn]] static void throwError(const std::string& msg);
 
  public:
   friend class DistributedSystemImpl;

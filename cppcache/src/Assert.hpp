@@ -51,8 +51,8 @@ class APACHE_GEODE_EXPORT Assert {
 
   /** Throws the given assertion.
   */
-  static void throwAssertion(const char* expressionText, const char* file,
-                             int line);
+  [[noreturn]] static void throwAssertion(const char* expressionText,
+                                          const char* file, int line);
 };
 }  // namespace client
 }  // namespace geode

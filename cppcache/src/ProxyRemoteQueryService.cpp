@@ -188,12 +188,10 @@ void ProxyRemoteQueryService::stopCqs() {
 std::shared_ptr<CqServiceStatistics>
 ProxyRemoteQueryService::getCqServiceStatistics() const {
   unSupportedException("getCqServiceStatistics()");
-  return nullptr;
 }
 std::shared_ptr<CacheableArrayList>
 ProxyRemoteQueryService::getAllDurableCqsFromServer() const {
   unSupportedException("getAllDurableCqsFromServer()");
-  return nullptr;
 }
 
 }  // namespace client
