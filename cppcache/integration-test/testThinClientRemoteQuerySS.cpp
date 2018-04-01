@@ -501,10 +501,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
 
     setSize = qh.getPortfolioSetSize();
     numSets = qh.getPortfolioNumSets();
-    for (int set = 1; set <= numSets; ++set) {
-      for (int current = 1; current <= setSize; ++current) {
+    for (size_t set = 1; set <= numSets; ++set) {
+      for (size_t current = 1; current <= setSize; ++current) {
         char portname[100] = {0};
-        ACE_OS::sprintf(portname, "port%d-%d", set, current);
+        ACE_OS::sprintf(portname, "port%zd-%zd", set, current);
 
         auto portKey = CacheableKey::create(portname);
         auto port = std::make_shared<PortfolioPdx>(current, 1);

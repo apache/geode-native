@@ -195,7 +195,7 @@ void QueryHelper::populatePositionData(std::shared_ptr<Region>& rptr,
           secIds[current % numSecIds], static_cast<int32_t>(current * 100));
 
       char posname[100] = {0};
-      ACE_OS::sprintf(posname, "pos%d-%d", set, current);
+      ACE_OS::sprintf(posname, "pos%zd-%zd", set, current);
 
       auto keypos = CacheableKey::create(posname);
       rptr->put(keypos, pos);

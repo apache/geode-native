@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_BBNAMINGCONTEXT_H_
-#define GEODE_INTEGRATION_TEST_BBNAMINGCONTEXT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_BBNAMINGCONTEXT_H_
+#define GEODE_INTEGRATION_TEST_BBNAMINGCONTEXT_H_
+
 // This these classes should have been in the framework libary. If we ever use
 // these, instead of the ACE context, onto windows and Linux then we should
 // move them there.
@@ -35,9 +36,9 @@ class BBNamingContextClient {
   ~BBNamingContextClient();
   void open();
   void close();
-  int rebind(const char* key, const char* value);
+  int rebind(const char* key, const char* value, char* type = nullptr);
   void dump();
-  int resolve(const char* key, char* value);
+  int resolve(const char* key, char* value, char* type = nullptr);
 };
 class BBNamingContextServerImpl;
 class BBNamingContextServer {
