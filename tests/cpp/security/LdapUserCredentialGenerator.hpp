@@ -39,7 +39,7 @@ class LdapUserCredentialGenerator : public CredentialGenerator {
     ;
   };
 
-  std::string getInitArgs(std::string workingDir, bool userMode) {
+  std::string getInitArgs(std::string workingDir, bool) override {
     std::string additionalArgs;
     char* buildDir = ACE_OS::getenv("BUILDDIR");
     if (buildDir != NULL && workingDir.length() == 0) {
@@ -68,21 +68,23 @@ class LdapUserCredentialGenerator : public CredentialGenerator {
     return additionalArgs;
   }
 
-  std::string getClientAuthInitLoaderFactory() {
+  std::string getClientAuthInitLoaderFactory() override {
     return "createUserPasswordAuthInitInstance";
   }
-  std::string getClientAuthInitLoaderLibrary() { return "securityImpl"; }
-  std::string getClientAuthenticator() {
+  std::string getClientAuthInitLoaderLibrary() override {
+    return "securityImpl";
+  }
+  std::string getClientAuthenticator() override {
     return "javaobject.LdapUserAuthenticator.create";
   }
-  std::string getClientAuthorizer() {
+  std::string getClientAuthorizer() override {
     return "javaobject.XmlAuthorization.create";
   }
 
-  std::string getClientDummyAuthorizer() {
+  std::string getClientDummyAuthorizer() override {
     return "javaobject.DummyAuthorization.create";
   }
-  void getValidCredentials(std::shared_ptr<Properties>& p) {
+  void getValidCredentials(std::shared_ptr<Properties>& p) override {
     p->insert("security-username", "geode1");
     p->insert("security-password", "geode1");
     FWKDEBUG("inserted valid security-username "
@@ -90,7 +92,7 @@ class LdapUserCredentialGenerator : public CredentialGenerator {
              << p->find("security-password")->value().c_str());
   }
 
-  void getInvalidCredentials(std::shared_ptr<Properties>& p) {
+  void getInvalidCredentials(std::shared_ptr<Properties>& p) override {
     p->insert("security-username", "geode1");
     p->insert("security-password", "1geode");
     FWKDEBUG("inserted invalid security-username "
@@ -100,14 +102,14 @@ class LdapUserCredentialGenerator : public CredentialGenerator {
 
   void getAllowedCredentialsForOps(opCodeList& opCodes,
                                    std::shared_ptr<Properties>& p,
-                                   stringList* regionNames = NULL) {
+                                   stringList* regionNames = NULL) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getAllowedCredentials(opCodes, p, regionNames);
   }
 
   void getDisallowedCredentialsForOps(opCodeList& opCodes,
                                       std::shared_ptr<Properties>& p,
-                                      stringList* regionNames = NULL) {
+                                      stringList* regionNames = NULL) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getDisallowedCredentials(opCodes, p, regionNames);
   }

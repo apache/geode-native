@@ -52,7 +52,7 @@ class UserPasswordAuthInit : public AuthInitialize {
 
   std::shared_ptr<Properties> getCredentials(
       const std::shared_ptr<Properties>& securityprops,
-      const std::string& server) override {
+      const std::string&) override {
     // LOGDEBUG("UserPasswordAuthInit: inside userPassword::getCredentials");
     std::shared_ptr<Cacheable> userName;
     if (securityprops == nullptr ||

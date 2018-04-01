@@ -41,7 +41,6 @@ class TestClient : public ACE_Task_Base {
   perf::Semaphore m_Run;
   perf::Semaphore m_Done;
   perf::Semaphore m_Clean;
-  //    ACE_TSS<ACE_thread_t> m_MyId;
   ACE_Thread_Mutex m_Mutex;
   int64_t m_TotalMicros;
   int32_t m_taskStatus;
@@ -71,7 +70,7 @@ class TestClient : public ACE_Task_Base {
     return until;
   }
 
-  TestClient(int32_t threadCnt, int32_t id);
+  TestClient(int32_t threadCnt);
 
   inline ~TestClient() {
     stopThreads();
@@ -79,7 +78,7 @@ class TestClient : public ACE_Task_Base {
   }
 
  public:
-  static TestClient* createTestClient(int32_t threadCnt, int32_t id);
+  static TestClient* createTestClient(int32_t threadCnt);
   static TestClient* getTestClient();
   void destroyTestClient();
 

@@ -70,8 +70,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
     }
   }
 
-  static int64_t getTimestamp(std::shared_ptr<CacheableBytes> bytes,
-                              SerializationRegistry &serializationRegistry) {
+  static int64_t getTimestamp(std::shared_ptr<CacheableBytes> bytes) {
     if (bytes == nullptr) {
       throw apache::geode::client::IllegalArgumentException(
           "the bytes arg was null");
@@ -93,9 +92,8 @@ class TESTOBJECT_EXPORT ArrayOfByte {
 
   static void resetTimestamp(std::shared_ptr<CacheableBytes> bytes,
                              SerializationRegistry &serializationRegistry) {
-    DataInputInternal di(
-        reinterpret_cast<const uint8_t *>(bytes->value().data()),
-        bytes->length(), nullptr);
+    DataInputInternal di(reinterpret_cast<const uint8_t *>(bytes->value().data()),
+                         bytes->length(), nullptr);
     int32_t index;
     try {
       index = di.readInt32();

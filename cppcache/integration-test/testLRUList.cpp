@@ -38,7 +38,7 @@ using namespace apache::geode::client;
 
 class MyNode : public LRUEntryProperties {
  public:
-  static MyNode* create(const std::shared_ptr<CacheableKey>& key = nullptr) {
+  static MyNode* create(const std::shared_ptr<CacheableKey>& = nullptr) {
     return new MyNode();
   }
   virtual ~MyNode() {}

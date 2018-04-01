@@ -60,7 +60,7 @@ bool checkStringArray(SLIST& first,
 
   if (second == nullptr && first.size() == 0) return true;
 
-  if (first.size() != second->length()) return false;
+  if (first.size() != static_cast<size_t>(second->length())) return false;
 
   for (size_t size = 0; size < first.size(); size++) {
     if (!findString(first[size], second)) {
@@ -81,8 +81,8 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
                       bool subscriptionEnabled,
                       int subscriptionMessageTrackingTimeout,
                       int subscriptionAckInterval, int subscriptionRedundancy,
-                      int statisticInterval, int threadLocalConnections,
-                      bool prSingleHopEnabled, int updateLocatorListInterval) {
+                      int statisticInterval, bool prSingleHopEnabled,
+                      int updateLocatorListInterval) {
   using namespace apache::geode::internal::chrono::duration;
 
   char logmsg[500] = {0};
@@ -293,7 +293,7 @@ int testXmlCacheCreationWithPools() {
   }
 
   std::cout << "Root regions in Cache :" << std::endl;
-  for (int32_t i = 0; i < vrp.size(); i++) {
+  for (size_t i = 0; i < vrp.size(); i++) {
     std::cout << "vc[" << i << "].m_regionPtr=" << vrp.at(i).get() << std::endl;
     std::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << std::endl;
   }
@@ -312,7 +312,7 @@ int testXmlCacheCreationWithPools() {
 
   std::cout << "get subregions from the root region :" << vrp.at(0)->getName()
             << std::endl;
-  for (int32_t i = 0; i < vr.size(); i++) {
+  for (size_t i = 0; i < vr.size(); i++) {
     std::cout << "vc[" << i << "].m_regionPtr=" << vr.at(i).get() << std::endl;
     std::cout << "vc[" << i << "]=" << vr.at(i)->getName() << std::endl;
   }
@@ -379,16 +379,16 @@ int testXmlCacheCreationWithPools() {
   bool check1 = checkPoolAttribs(
       poolOfReg1, locators, emptylist, 12345, 23456, 3, 7, 3,
       std::chrono::milliseconds(5555), 12345, "test_pool_1", 23456,
-      "ServerGroup1", 32768, true, 900123, 567, 0, 10123, 5, true, 250001);
+      "ServerGroup1", 32768, true, 900123, 567, 0, 10123, true, 250001);
 
   bool check2 = checkPoolAttribs(
       poolOfReg2, emptylist, servers, 23456, 34567, 2, 8, 5,
       std::chrono::milliseconds(6666), 23456, "test_pool_2", 34567,
-      "ServerGroup2", 65536, false, 800222, 678, 1, 20345, 3, false, 5000);
+      "ServerGroup2", 65536, false, 800222, 678, 1, 20345, false, 5000);
   bool check3 = checkPoolAttribs(
       poolOfSubReg, emptylist, servers, 23456, 34567, 2, 8, 5,
       std::chrono::milliseconds(6666), 23456, "test_pool_2", 34567,
-      "ServerGroup2", 65536, false, 800222, 678, 1, 20345, 3, false, 5000);
+      "ServerGroup2", 65536, false, 800222, 678, 1, 20345, false, 5000);
 
   if (!cptr->isClosed()) {
     cptr->close();

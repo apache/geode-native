@@ -24,9 +24,9 @@ using namespace apache::geode::client::testframework::perf;
 
 TestClient* TestClient::m_instance = NULL;
 
-TestClient* TestClient::createTestClient(int32_t threadCnt, int32_t id) {
+TestClient* TestClient::createTestClient(int32_t threadCnt) {
   if (m_instance == NULL) {
-    m_instance = new TestClient(threadCnt, id);
+    m_instance = new TestClient(threadCnt);
   }
   return m_instance;
 }
@@ -46,7 +46,7 @@ void TestClient::destroyTestClient() {
   }
 }
 
-TestClient::TestClient(int32_t threadCnt, int32_t id)
+TestClient::TestClient(int32_t threadCnt)
     : m_ThreadCount(threadCnt),
       m_Flag(0),
       m_Ready(0),

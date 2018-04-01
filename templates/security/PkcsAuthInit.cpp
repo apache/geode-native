@@ -95,9 +95,10 @@ bool openSSLInit() {
 static bool s_initDone = openSSLInit();
 }
 // end of extern "C"
+
 std::shared_ptr<Properties> PKCSAuthInit::getCredentials(
     const std::shared_ptr<Properties>& securityprops,
-    const std::string& server) {
+    const std::string&) {
   if (!s_initDone) {
     throw AuthenticationFailedException(
         "PKCSAuthInit::getCredentials: "

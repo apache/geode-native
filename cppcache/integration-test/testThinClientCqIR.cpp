@@ -89,7 +89,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CreateServer1_Locator)
   { createServer(true); }
 END_TASK_DEFINITION
 
-void stepOne(bool pool = false, bool locator = false) {}
+void stepOne() {}
 
 DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1Regions)
   {

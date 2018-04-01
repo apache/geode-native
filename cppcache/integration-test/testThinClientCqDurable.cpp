@@ -86,7 +86,7 @@ void initClientWithId(int ClientIdx, bool typeRegistered = false) {
 class MyCqListener1 : public CqListener {
  public:
   static int m_cntEvents;
-  void onEvent(const CqEvent& cqe) {
+  void onEvent(const CqEvent& cqe) override {
     m_cntEvents++;
     char* opStr = (char*)"Default";
     std::shared_ptr<CacheableInt32> value(
@@ -113,9 +113,11 @@ class MyCqListener1 : public CqListener {
             key->toString().c_str(), value->toString().c_str());
   }
 
-  void onError(const CqEvent& cqe) { LOGINFO("MyCqListener1::OnError called"); }
+  void onError(const CqEvent&) override {
+    LOGINFO("MyCqListener1::OnError called");
+  }
 
-  void close() { LOGINFO("MyCqListener1::close called"); }
+  void close() override { LOGINFO("MyCqListener1::close called"); }
 };
 int MyCqListener1::m_cntEvents = 0;
 
@@ -126,15 +128,17 @@ int onEventCount = 0;
 int onErrorCount = 0;
 int onEventCountBefore = 0;
 class MyCqListener : public CqListener {
-  void onEvent(const CqEvent& cqe) {
+  void onEvent(const CqEvent&) override {
     //    LOG("MyCqListener::OnEvent called");
     onEventCount++;
   }
-  void onError(const CqEvent& cqe) {
+
+  void onError(const CqEvent&) override {
     //   LOG("MyCqListener::OnError called");
     onErrorCount++;
   }
-  void close() { LOG("MyCqListener::close called"); }
+
+  void close() override { LOG("MyCqListener::close called"); }
 };
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateLocator)

@@ -72,8 +72,8 @@ class BBNamingContextClientImpl {
   void open();
   void close();
   void dump();
-  int rebind(const char* key, const char* value, char* type);
-  int resolve(const char* key, char* value, char* type);
+  int rebind(const char* key, const char* value);
+  int resolve(const char* key, char* value);
 };
 
 class BBNamingContextServerImpl {
@@ -118,8 +118,7 @@ void BBNamingContextClientImpl::close() {
     m_bbc = nullptr;
   }
 }
-int BBNamingContextClientImpl::rebind(const char* key, const char* value,
-                                      char* type) {
+int BBNamingContextClientImpl::rebind(const char* key, const char* value) {
   // fprintf(stdout, "bind: key=%s, value=%s\n", key, value);
   if (m_bbc == nullptr) {
     return -1;
@@ -173,8 +172,7 @@ void BBNamingContextClientImpl::dump() {
     m_errCount++;
   }
 }
-int BBNamingContextClientImpl::resolve(const char* key, char* value,
-                                       char* type) {
+int BBNamingContextClientImpl::resolve(const char* key, char* value) {
   // fprintf(stdout, "resolve: key=%s\n", key);fflush(stdout);
   if (m_bbc == nullptr) {
     return -1;
@@ -266,12 +264,11 @@ BBNamingContextClient::~BBNamingContextClient() {
 void BBNamingContextClient::open() { m_impl->open(); }
 void BBNamingContextClient::close() { m_impl->close(); }
 void BBNamingContextClient::dump() { m_impl->dump(); }
-int BBNamingContextClient::rebind(const char* key, const char* value,
-                                  char* type) {
-  return m_impl->rebind(key, value, type);
+int BBNamingContextClient::rebind(const char* key, const char* value) {
+  return m_impl->rebind(key, value);
 }
-int BBNamingContextClient::resolve(const char* key, char* value, char* type) {
-  return m_impl->resolve(key, value, type);
+int BBNamingContextClient::resolve(const char* key, char* value) {
+  return m_impl->resolve(key, value);
 }
 //
 // server

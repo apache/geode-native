@@ -40,7 +40,7 @@ class TestPdxSerializer : public PdxSerializer {
     }
   }
 
-  static size_t objectSize(const std::shared_ptr<const void> &testObject,
+  static size_t objectSize(const std::shared_ptr<const void> &/*testObject*/,
                            const std::string &className) {
     ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in objectSize()");

@@ -40,11 +40,12 @@ class DisconnectCacheListioner : public CacheListener {
  public:
   explicit DisconnectCacheListioner(int index) { m_index = index; };
 
-  void afterRegionDisconnected(Region& region) override {
+  void afterRegionDisconnected(Region&) override {
     isRegionDead[m_index] = true;
     LOG("After Region Disconnected event received");
   }
-  void afterRegionLive(const RegionEvent& event) override {
+
+  void afterRegionLive(const RegionEvent&) override {
     isRegionLive[m_index] = true;
     LOG("After region live received ");
   }

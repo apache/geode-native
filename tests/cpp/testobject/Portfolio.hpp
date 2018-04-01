@@ -102,7 +102,7 @@ class TESTOBJECT_EXPORT Portfolio : public Serializable {
 
   std::shared_ptr<CacheableHashMap> getPositions() const { return positions; }
 
-  bool testMethod(bool booleanArg) const { return true; }
+  bool testMethod() const { return true; }
 
   const std::string& getStatus() const { return status; }
 

@@ -193,7 +193,7 @@ extern "C" {
 #ifdef WIN32
 int wmain()
 #else
-int main(int argc, char* argv[])
+int main(int /*argc*/, char** /*argv*/)
 #endif
 {
   dunit::setupCRTOutput();

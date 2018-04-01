@@ -303,8 +303,7 @@ DUNIT_TASK_DEFINITION(CLIENT, Verify4)
   }
 END_TASK_DEFINITION
 
-void doThinClientDurableConnect(bool poolConfig = true,
-                                bool poolLocators = true) {
+void doThinClientDurableConnect() {
   CALL_TASK(StartLocator);
 
   CALL_TASK(S1Up);

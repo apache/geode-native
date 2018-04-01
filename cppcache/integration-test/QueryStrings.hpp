@@ -652,10 +652,10 @@ const QueryStrings regionQueries[RQ_ARRAY_SIZE] =
             "select element(select distinct * from /Portfolios where ID "
             "<=1).status = 'active'")};  // end of regionQueries
 
-const int regionQueryRowCounts[RQ_ARRAY_SIZE] =
+const size_t regionQueryRowCounts[RQ_ARRAY_SIZE] =
     {  // results sizes for regionQuery
         1, 19, 0, 0, 0, 0,  0,  20, 20, 0, 20,
-        0, 20, 0, 0, 2, 10, 20, 20, -1, -1};
+        0, 20, 0, 0, 2, 10, 20, 20, 0, 0};
 const QueryStrings cqResultsetQueries[CQRS_ARRAY_SIZE] = {
     // 0 idx
     QRY(singleRegion, "select * from /Portfolios port")

@@ -50,7 +50,7 @@ class OperMonitor : public CacheListener {
     ASSERT(m_close && m_second, "m_second event not recieved");
   }
 
-  void afterCreate(const EntryEvent& event) override {
+  void afterCreate(const EntryEvent&) override {
     if (!m_close) {
       m_first = true;
       LOG("First Event Recieved");
@@ -59,7 +59,7 @@ class OperMonitor : public CacheListener {
       LOG("Duplicate Recieved");
     }
   }
-  void close(Region& region) override {
+  void close(Region&) override {
     m_close = true;
     LOG("Listener Close Called");
   }

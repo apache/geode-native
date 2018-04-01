@@ -371,8 +371,7 @@ std::string PdxTests::PdxVersioned2::toString() const {
   return "PdxVersioned 2 : " + m_string;
 }
 
-bool PdxTests::PdxVersioned2::equals(PdxTests::PdxVersioned2& other,
-                                     bool isPdxReadSerialized) const {
+bool PdxTests::PdxVersioned2::equals(PdxTests::PdxVersioned2& other) const {
   PdxVersioned2* ot = dynamic_cast<PdxVersioned2*>(&other);
   if (ot == NULL) {
     return false;
@@ -416,7 +415,7 @@ bool PdxTests::PdxVersioned2::equals(PdxTests::PdxVersioned2& other,
   // false;
 
   genericValCompare(ot->m_arraylist->size(), m_arraylist->size());
-  for (int k = 0; k < m_arraylist->size(); k++) {
+  for (size_t k = 0; k < m_arraylist->size(); k++) {
     genericValCompare(ot->m_arraylist->at(k), m_arraylist->at(k));
   }
 

@@ -46,8 +46,8 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
   std::shared_ptr<CacheableBytes> valueData;
 
  public:
-  DeltaPSTObject() : Delta(), timestamp(0), valueData(nullptr) {}
-  DeltaPSTObject(int size, bool encodeKey, bool encodeTimestamp);
+  DeltaPSTObject() : Delta(nullptr), timestamp(0), valueData(nullptr) {}
+  DeltaPSTObject(int size, bool encodeKey);
   ~DeltaPSTObject() noexcept override {}
   void toData(apache::geode::client::DataOutput& output) const override;
   void fromData(apache::geode::client::DataInput& input) override;

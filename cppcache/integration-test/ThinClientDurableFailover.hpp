@@ -84,12 +84,12 @@ class OperMonitor : public CacheListener {
 
   ~OperMonitor() { m_map.clear(); }
 
-  void validate(int keyCount, int eventcount, int durableValue,
+  void validate(size_t keyCount, int eventcount, int durableValue,
                 int nonDurableValue) {
     LOG("validate called");
     char buf[256] = {'\0'};
 
-    sprintf(buf, "Expected %d keys for the region, Actual = %zd", keyCount,
+    sprintf(buf, "Expected %zd keys for the region, Actual = %zd", keyCount,
             m_map.size());
     ASSERT(m_map.size() == keyCount, buf);
 
@@ -115,23 +115,24 @@ class OperMonitor : public CacheListener {
     }
   }
 
-  virtual void afterCreate(const EntryEvent& event) {
+  void afterCreate(const EntryEvent& event) override {
     LOG("afterCreate called");
     check(event);
   }
 
-  virtual void afterUpdate(const EntryEvent& event) {
+  void afterUpdate(const EntryEvent& event) override {
     LOG("afterUpdate called");
     check(event);
   }
 
-  virtual void afterDestroy(const EntryEvent& event) {
+  void afterDestroy(const EntryEvent& event) override {
     LOG("afterDestroy called");
     check(event);
   }
 
-  virtual void afterRegionInvalidate(const RegionEvent& event){};
-  virtual void afterRegionDestroy(const RegionEvent& event){};
+  void afterRegionInvalidate(const RegionEvent&) override {};
+
+  void afterRegionDestroy(const RegionEvent&) override{};
 };
 
 void setCacheListener(const char* regName,
@@ -164,7 +165,8 @@ void initClientCache(int redundancy, int durableTimeout,
   // otherwise it will get the unacked events from GII causing the
   // client to get 2 extra / replayed events.
   initClientAndRegion(redundancy, durableIdx, std::chrono::seconds(1),
-                      std::chrono::seconds(1), std::chrono::seconds(300));
+                      std::chrono::seconds(1),
+                      std::chrono::seconds(durableTimeout));
 
   setCacheListener(regionNames[0], mon);
 

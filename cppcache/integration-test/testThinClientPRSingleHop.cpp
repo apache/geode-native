@@ -443,7 +443,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForAllKeysTask)
   {
     LOG("CheckPrSingleHopForAllKeysTask started.");
-    static int taskIndexPut = 0;
+    static size_t taskIndexPut = 0;
 
     auto keyTypes = CacheableWrapperFactory::getRegisteredKeyTypes();
     auto valueTypes = CacheableWrapperFactory::getRegisteredValueTypes();
@@ -1249,7 +1249,7 @@ DUNIT_MAIN
           CacheableWrapperFactory::getRegisteredValueTypes().size();
 
       CALL_TASK(CheckPrSingleHopForIntKeysTask);
-      for (int i = 0; i < totKeyTypes; i++) {
+      for (size_t i = 0; i < totKeyTypes; i++) {
         CALL_TASK(CheckPrSingleHopForAllKeysTask);
       }
 

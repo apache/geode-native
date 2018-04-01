@@ -197,7 +197,7 @@ class putThread : public ACE_Task_Base {
   volatile bool m_stop;
 
  public:
-  putThread(std::shared_ptr<Region> rp, int min, int max, bool isWarmUpTask)
+  putThread(std::shared_ptr<Region> rp, int min, int max)
       : regPtr(rp),
         m_min(min),
         m_max(max),

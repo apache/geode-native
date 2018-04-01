@@ -99,7 +99,7 @@ TESTTASK doCloseCache() {
 }
 
 void Security::getClientSecurityParams(std::shared_ptr<Properties> prop,
-                                       std::string credentials) {
+                                       std::string) {
   std::string securityParams = getStringValue("securityParams");
 
   // no security means security param is not applicable
@@ -707,9 +707,10 @@ int32_t Security::checkValues() {
     int32_t creates = 0;
     int32_t updates = 0;
     int32_t unknowns = 0;
-    for (int32_t i = 0; i < vals.size(); i++) {
+    for (size_t i = 0; i < vals.size(); i++) {
       auto valStr = std::dynamic_pointer_cast<CacheableBytes>(vals.at(i));
-      if (strncmp("Create", reinterpret_cast<const char *>(valStr->value().data()),
+      if (strncmp("Create",
+                  reinterpret_cast<const char *>(valStr->value().data()),
                   6) == 0) {
         creates++;
       } else if (strncmp("Update",

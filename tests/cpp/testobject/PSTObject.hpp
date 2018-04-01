@@ -50,7 +50,7 @@ class TESTOBJECT_EXPORT PSTObject : public TimestampedObject {
 
  public:
   PSTObject() : timestamp(0), valueData(nullptr) {}
-  PSTObject(int size, bool encodeKey, bool encodeTimestamp);
+  PSTObject(int size, bool encodeKey);
   ~PSTObject() override = default;
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;

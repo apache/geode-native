@@ -89,10 +89,10 @@ class QueryHelper {
                         int fieldCount);
 
   // utility methods
-  virtual int getPortfolioSetSize() { return portfolioSetSize; };
-  virtual int getPortfolioNumSets() { return portfolioNumSets; };
-  virtual int getPositionSetSize() { return positionSetSize; };
-  virtual int getPositionNumSets() { return positionNumSets; };
+  virtual size_t getPortfolioSetSize() { return portfolioSetSize; };
+  virtual size_t getPortfolioNumSets() { return portfolioNumSets; };
+  virtual size_t getPositionSetSize() { return positionSetSize; };
+  virtual size_t getPositionNumSets() { return positionNumSets; };
 
   bool isExpectedRowsConstantRS(int queryindex) {
     for (int i = (sizeof(constantExpectedRowsRS) / sizeof(int)) - 1; i > -1;
@@ -146,10 +146,10 @@ class QueryHelper {
   }
 
  private:
-  int portfolioSetSize;
-  int portfolioNumSets;
-  int positionSetSize;
-  int positionNumSets;
+  size_t portfolioSetSize;
+  size_t portfolioNumSets;
+  size_t positionSetSize;
+  size_t positionNumSets;
 };
 
 QueryHelper* QueryHelper::singleton = nullptr;
@@ -205,7 +205,7 @@ void QueryHelper::populatePositionData(std::shared_ptr<Region>& rptr,
 
 void QueryHelper::populatePortfolioPdxData(std::shared_ptr<Region>& rptr,
                                            int setSize, int numSets,
-                                           int32_t objSize, char** nm) {
+                                           int32_t objSize, char**) {
   // lets reset the counter for uniform population of position objects
   PositionPdx::resetCounter();
 
@@ -319,7 +319,7 @@ bool QueryHelper::verifyRS(std::shared_ptr<SelectResults>& resultSet,
 
   SelectResultsIterator iter = rsptr->getIterator();
 
-  for (int32_t rows = 0; rows < rsptr->size(); rows++) {
+  for (size_t rows = 0; rows < rsptr->size(); rows++) {
     auto ser = (*rsptr)[rows];
     foundRows++;
   }

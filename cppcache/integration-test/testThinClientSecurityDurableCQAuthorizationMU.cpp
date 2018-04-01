@@ -239,11 +239,11 @@ void readyForEvents() {
   }
 }
 
-void stepOne2(bool pool = false, bool locator = false) {
+void stepOne2() {
   LOG("StepOne2 complete. 1");
   initClientCq(true, 1);
   LOG("StepOne2 complete. 2");
-  createRegionForCQMU(regionNamesCq[0], USE_ACK, true, 0, nullptr, false, true);
+  createRegionForCQMU(regionNamesCq[0], USE_ACK, false);
   LOG("StepOne2 complete. 3");
   auto regptr = getHelper()->getRegion(regionNamesCq[0]);
   LOG("StepOne2 complete. 4");
@@ -254,13 +254,13 @@ void stepOne2(bool pool = false, bool locator = false) {
 }
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_PoolEP)
-  { stepOne(true, false); }
+  { stepOne(); }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepOne2_PoolEP)
   {
     initCredentialGenerator();
-    stepOne2(true, false);
+    stepOne2();
   }
 END_TASK_DEFINITION
 

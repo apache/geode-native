@@ -225,27 +225,17 @@ class CredentialGenerator {
     return securityCmdStr;
   }
 
-  virtual void getValidCredentials(std::shared_ptr<Properties>& p) {
-    ;
-    ;  // no credentials by default
-  }
-  virtual void getInvalidCredentials(std::shared_ptr<Properties>& p) {
-    ;
-    ;  // no credentials by default
-  }
+  virtual void getValidCredentials(std::shared_ptr<Properties>& p);
+
+  virtual void getInvalidCredentials(std::shared_ptr<Properties>& p);
 
   virtual void getAllowedCredentialsForOps(opCodeList& opCodes,
                                            std::shared_ptr<Properties>& p,
-                                           stringList* regionNames = NULL) {
-    ;
-    ;  // no credentials by default
-  }
+                                           stringList* regionNames = NULL);
+
   virtual void getDisallowedCredentialsForOps(opCodeList& opCodes,
                                               std::shared_ptr<Properties>& p,
-                                              stringList* regionNames = NULL) {
-    ;
-    ;  // no credentials by default
-  }
+                                              stringList* regionNames = NULL);
 
   static registeredClassMap& getRegisterdSchemes() {
     if (generators().size() == 0) {
@@ -258,9 +248,7 @@ class CredentialGenerator {
  public:
   virtual std::string getClientAuthInitLoaderFactory() { return ""; }
   virtual std::string getClientAuthInitLoaderLibrary() { return ""; }
-  virtual std::string getInitArgs(std::string workingDir, bool userMode) {
-    return "";
-  }
+  virtual std::string getInitArgs(std::string workingDir, bool userMode);
   virtual std::string getClientAuthenticator() { return ""; }
   virtual std::string getClientAuthorizer() { return ""; }
   virtual std::string getClientDummyAuthorizer() { return ""; }

@@ -229,10 +229,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         LOG(buf);
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult count is not 17");
-        for (int32_t i = 0; i < resultList->size(); i++) {
-          sprintf(buf, "result[%d] is null\n", i);
+        for (size_t i = 0; i < resultList->size(); i++) {
+          sprintf(buf, "result[%zd] is null\n", i);
           ASSERT(resultList->operator[](i) != nullptr, buf);
-          sprintf(buf, "get result[%d]=%s", i,
+          sprintf(buf, "get result[%zd]=%s", i,
                   std::dynamic_pointer_cast<CacheableString>(
                       resultList->operator[](i))
                       ->value()
@@ -275,10 +275,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         LOG(buf);
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult count is not 17");
-        for (int32_t i = 0; i < resultList->size(); i++) {
-          sprintf(buf, "result[%d] is null\n", i);
+        for (size_t i = 0; i < resultList->size(); i++) {
+          sprintf(buf, "result[%zd] is null\n", i);
           ASSERT(resultList->operator[](i) != nullptr, buf);
-          sprintf(buf, "get result[%d]=%s", i,
+          sprintf(buf, "get result[%zd]=%s", i,
                   std::dynamic_pointer_cast<CacheableString>(
                       resultList->operator[](i))
                       ->value()
@@ -359,10 +359,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
         LOG(buf);
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult count is not 17");
-        for (int32_t i = 0; i < resultList->size(); i++) {
-          sprintf(buf, "result[%d] is null\n", i);
+        for (size_t i = 0; i < resultList->size(); i++) {
+          sprintf(buf, "result[%zd] is null\n", i);
           ASSERT(resultList->operator[](i) != nullptr, buf);
-          sprintf(buf, "get result[%d]=%s", i,
+          sprintf(buf, "get result[%zd]=%s", i,
                   std::dynamic_pointer_cast<CacheableString>(
                       resultList->operator[](i))
                       ->value()
@@ -399,10 +399,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
         LOG(buf);
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult1 count is not 17");
-        for (int32_t i = 0; i < resultList->size(); i++) {
-          sprintf(buf, "result[%d] is null\n", i);
+        for (size_t i = 0; i < resultList->size(); i++) {
+          sprintf(buf, "result[%zd] is null\n", i);
           ASSERT(resultList->operator[](i) != nullptr, buf);
-          sprintf(buf, "get result[%d]=%s", i,
+          sprintf(buf, "get result[%zd]=%s", i,
                   std::dynamic_pointer_cast<CacheableString>(
                       resultList->operator[](i))
                       ->value()

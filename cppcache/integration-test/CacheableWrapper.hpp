@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_CACHEABLEWRAPPER_H_
-#define GEODE_INTEGRATION_TEST_CACHEABLEWRAPPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,16 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_CACHEABLEWRAPPER_H_
+#define GEODE_INTEGRATION_TEST_CACHEABLEWRAPPER_H_
+
 #include <string>
 #include <map>
 #include <vector>
+
+#include <geode/CacheableBuiltins.hpp>
 
 using namespace apache::geode::client;
 
@@ -42,9 +44,7 @@ class CacheableWrapper {
     throw IllegalArgumentException("Cannot call maxKeys.");
   }
 
-  virtual void initKey(int32_t keyIndex, int32_t maxSize) {
-    throw IllegalArgumentException("Cannot call initKey.");
-  }
+  virtual void initKey(int32_t keyIndex, int32_t maxSize);
 
   virtual void initRandomValue(int maxSize) = 0;
 
@@ -78,60 +78,6 @@ class CacheableWrapperFactory {
   static std::map<int8_t, std::string> m_typeIdNameMap;
 };
 
-std::map<int8_t, CacheableWrapperFunc>
-    CacheableWrapperFactory::m_registeredKeyMap;
-std::map<int8_t, CacheableWrapperFunc>
-    CacheableWrapperFactory::m_registeredValueMap;
-std::map<int8_t, std::string> CacheableWrapperFactory::m_typeIdNameMap;
 
-CacheableWrapper* CacheableWrapperFactory::createInstance(int8_t typeId) {
-  if (m_registeredValueMap.find(typeId) != m_registeredValueMap.end()) {
-    CacheableWrapperFunc wrapperFunc = m_registeredValueMap[typeId];
-    return wrapperFunc();
-  }
-  return nullptr;
-}
-
-void CacheableWrapperFactory::registerType(
-    int8_t typeId, const std::string wrapperType,
-    const CacheableWrapperFunc factoryFunc, const bool isKey) {
-  if (isKey) {
-    m_registeredKeyMap[typeId] = factoryFunc;
-  }
-  m_registeredValueMap[typeId] = factoryFunc;
-  m_typeIdNameMap[typeId] = wrapperType;
-}
-
-std::vector<int8_t> CacheableWrapperFactory::getRegisteredKeyTypes() {
-  std::vector<int8_t> keyVector;
-  std::map<int8_t, CacheableWrapperFunc>::iterator keyMapIterator;
-
-  for (keyMapIterator = m_registeredKeyMap.begin();
-       keyMapIterator != m_registeredKeyMap.end(); ++keyMapIterator) {
-    keyVector.push_back(keyMapIterator->first);
-  }
-  return keyVector;
-}
-
-std::vector<int8_t> CacheableWrapperFactory::getRegisteredValueTypes() {
-  std::vector<int8_t> valueVector;
-  std::map<int8_t, CacheableWrapperFunc>::iterator valueMapIterator;
-
-  for (valueMapIterator = m_registeredValueMap.begin();
-       valueMapIterator != m_registeredValueMap.end(); ++valueMapIterator) {
-    valueVector.push_back(valueMapIterator->first);
-  }
-  return valueVector;
-}
-
-std::string CacheableWrapperFactory::getTypeForId(int8_t typeId) {
-  std::map<int8_t, std::string>::iterator findType =
-      m_typeIdNameMap.find(typeId);
-  if (findType != m_typeIdNameMap.end()) {
-    return findType->second;
-  } else {
-    return "";
-  }
-}
 
 #endif  // GEODE_INTEGRATION_TEST_CACHEABLEWRAPPER_H_

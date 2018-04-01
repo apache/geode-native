@@ -71,12 +71,13 @@ class DupChecker : public CacheListener {
     }
   }
 
-  virtual void afterCreate(const EntryEvent& event) { check(event); }
+  void afterCreate(const EntryEvent& event) override { check(event); }
 
-  virtual void afterUpdate(const EntryEvent& event) { check(event); }
+  void afterUpdate(const EntryEvent& event) override { check(event); }
 
-  virtual void afterRegionInvalidate(const RegionEvent& event){};
-  virtual void afterRegionDestroy(const RegionEvent& event){};
+  void afterRegionInvalidate(const RegionEvent&) override {};
+
+  void afterRegionDestroy(const RegionEvent&) override {};
 };
 
 ///////////////////////////////////////////////////////

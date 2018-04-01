@@ -34,7 +34,7 @@ const char* locatorsG =
 using namespace apache::geode::client;
 using namespace test;
 class DisconnectCacheListioner : public CacheListener {
-  void afterRegionDisconnected(Region& region) {
+  void afterRegionDisconnected(Region&) override {
     LOG("After Region Disconnected event received");
     isDisconnected = true;
   }

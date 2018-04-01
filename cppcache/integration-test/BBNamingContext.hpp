@@ -35,9 +35,9 @@ class BBNamingContextClient {
   ~BBNamingContextClient();
   void open();
   void close();
-  int rebind(const char* key, const char* value, char* type = nullptr);
+  int rebind(const char* key, const char* value);
   void dump();
-  int resolve(const char* key, char* value, char* type = nullptr);
+  int resolve(const char* key, char* value);
 };
 class BBNamingContextServerImpl;
 class BBNamingContextServer {

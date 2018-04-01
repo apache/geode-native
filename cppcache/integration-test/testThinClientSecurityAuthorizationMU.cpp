@@ -368,7 +368,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
           ASSERT(false, "echo String : result is nullptr");
         } else {
           try {
-            for (int i = 0; i < result->size(); i++) {
+            for (size_t i = 0; i < result->size(); i++) {
               auto uFEPtr =
                   std::dynamic_pointer_cast<UserFunctionExecutionException>(
                       result->operator[](i));
@@ -404,7 +404,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
                "region get: resultList count is not as arrayList count + "
                "exception");
 
-        for (int i = 0; i < result->size(); i++) {
+        for (size_t i = 0; i < result->size(); i++) {
           try {
             auto intValue = std::dynamic_pointer_cast<CacheableInt32>(
                 result->operator[](i));

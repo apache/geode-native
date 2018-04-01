@@ -194,8 +194,7 @@ void _verifyCreated(const char* name, const char* key, int line) {
   LOG("Entry created.");
 }
 
-void createPooledRegion(const char* name, bool ackMode, const char* locators,
-                        const char* poolname,
+void createPooledRegion(const char* name, bool ackMode, const char* poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");

@@ -36,7 +36,7 @@ SECURITYIMPL_EXPORT AuthInitialize* createUserPasswordAuthInitInstance() {
 }
 std::shared_ptr<Properties> UserPasswordAuthInit::getCredentials(
     const std::shared_ptr<Properties>& securityprops,
-    const std::string& server) {
+    const std::string&) {
   // LOGDEBUG("UserPasswordAuthInit: inside userPassword::getCredentials");
   std::shared_ptr<Cacheable> userName;
   if (securityprops == nullptr ||

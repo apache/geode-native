@@ -198,7 +198,7 @@ class FwkBBMessage {
     * @retval command of message
     */
   std::string getCommand() { return m_cmd; };
-  const char getCmdChar() { return m_cmd.at(0); }
+  char getCmdChar() { return m_cmd.at(0); }
 
   /** @brief get result of message
     * @retval result of message

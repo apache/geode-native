@@ -125,7 +125,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
     QueryHelper* qh = &QueryHelper::getHelper();
 
     char buf[100];
-    sprintf(buf, "SetSize %d, NumSets %d", qh->getPortfolioSetSize(),
+    sprintf(buf, "SetSize %zd, NumSets %zd", qh->getPortfolioSetSize(),
             qh->getPortfolioNumSets());
     LOG(buf);
 
@@ -184,7 +184,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
         char failmsg[100] = {0};
         ACE_OS::sprintf(
             failmsg,
-            "FAIL: Query # %d expected result size is %d, actual is %zd", i,
+            "FAIL: Query # %d expected result size is %zd, actual is %zd", i,
             regionQueryRowCounts[i], results->size());
         doAnyErrorOccured = true;
         LOG(failmsg);

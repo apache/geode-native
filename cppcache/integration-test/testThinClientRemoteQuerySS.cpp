@@ -149,8 +149,8 @@ void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
 
 void _verifyStructSet(std::shared_ptr<StructSet>& ssptr, int i) {
   printf("query idx %d \n", i);
-  for (int32_t rows = 0; rows < ssptr->size(); rows++) {
-    if (rows > (int32_t)QueryHelper::getHelper().getPortfolioSetSize()) {
+  for (size_t rows = 0; rows < ssptr->size(); rows++) {
+    if (rows > QueryHelper::getHelper().getPortfolioSetSize()) {
       continue;
     }
 
@@ -160,7 +160,7 @@ void _verifyStructSet(std::shared_ptr<StructSet>& ssptr, int i) {
       continue;
     }
 
-    printf("   Row : %d \n", rows);
+    printf("   Row : %zd \n", rows);
     for (int32_t fields = 0; fields < siptr->length(); fields++) {
       auto field = (*siptr)[fields];
       if (field == nullptr) {
@@ -300,7 +300,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
                                  qh->getPortfolioNumSets());
 
     char buf[100];
-    sprintf(buf, "SetSize %d, NumSets %d", qh->getPortfolioSetSize(),
+    sprintf(buf, "SetSize %zd, NumSets %zd", qh->getPortfolioSetSize(),
             qh->getPortfolioNumSets());
     LOG(buf);
 

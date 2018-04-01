@@ -18,5 +18,5 @@
 #include "ThinClientSSL.hpp"
 
 DUNIT_MAIN
-  { doThinClientSSL(true, true); }
+  { doThinClientSSL(); }
 END_MAIN

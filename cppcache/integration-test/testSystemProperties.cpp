@@ -28,9 +28,8 @@
 
 using namespace apache::geode::client;
 
-const bool checkSecurityProperties(
-    std::shared_ptr<Properties> securityProperties, const char* key,
-    const char* value) {
+bool checkSecurityProperties(std::shared_ptr<Properties> securityProperties,
+                             const char* key, const char* value) {
   bool flag;
   if (key == nullptr || value == nullptr) {
     return false;

@@ -165,7 +165,7 @@ class NamingContextImpl : virtual public NamingContext {
   virtual int rebind(const char* key, const char* value) {
     int res = -1;
     int attempts = 10;
-    while ((res = m_context.rebind(key, value, (char*)"")) == -1 &&
+    while ((res = m_context.rebind(key, value)) == -1 &&
            attempts--) {
       millisleep(10);
     }
@@ -199,7 +199,7 @@ class NamingContextImpl : virtual public NamingContext {
     int res = -1;
     // we should not increase attempts to avoid increasing test run times.
     int attempts = 3;
-    while ((res = m_context.resolve(key, value, type)) != 0 && attempts--) {
+    while ((res = m_context.resolve(key, value)) != 0 && attempts--) {
       // we should not increase sleep to avoid increasing test run times.
       millisleep(5);
     }
@@ -222,7 +222,7 @@ class NamingContextImpl : virtual public NamingContext {
     return ACE_OS::atoi(value);
   }
 
-  void open(bool local = true) {
+  void open([[gnu::unused]] bool local = true) {
 #ifdef SOLARIS_USE_BB
     m_context.open();
 #else
@@ -802,7 +802,7 @@ void sleep(int millis) {
   }
 }
 
-void logMaster(std::string s, int lineno, const char* filename) {
+void logMaster(std::string s, int lineno, const char* /*filename*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf);
 
@@ -813,7 +813,7 @@ void logMaster(std::string s, int lineno, const char* filename) {
 
 // log a message and print the slave id as well.. used by fw_helper with no
 // slave id.
-void log(std::string s, int lineno, const char* filename, int id) {
+void log(std::string s, int lineno, const char* /*filename*/, int /*id*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf);
 
@@ -823,7 +823,7 @@ void log(std::string s, int lineno, const char* filename, int id) {
 }
 
 // log a message and print the slave id as well..
-void log(std::string s, int lineno, const char* filename) {
+void log(std::string s, int lineno, const char* /*filename*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf);
 

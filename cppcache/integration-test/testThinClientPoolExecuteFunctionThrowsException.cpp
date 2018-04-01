@@ -256,7 +256,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     if (result == nullptr) {
       ASSERT(false, "echo String : result is nullptr");
     } else {
-      for (int i = 0; i < result->size(); i++) {
+      for (size_t i = 0; i < result->size(); i++) {
         if (auto uFEPtr =
                 std::dynamic_pointer_cast<UserFunctionExecutionException>(
                     result->operator[](i))) {

@@ -134,7 +134,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     QueryHelper* qh = &QueryHelper::getHelper();
 
     char buf[100];
-    sprintf(buf, "SetSize %d, NumSets %d", qh->getPortfolioSetSize(),
+    sprintf(buf, "SetSize %zd, NumSets %zd", qh->getPortfolioSetSize(),
             qh->getPortfolioNumSets());
     LOG(buf);
 
@@ -194,8 +194,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
 
       auto rsptr = std::dynamic_pointer_cast<ResultSet>(results);
       SelectResultsIterator iter = rsptr->getIterator();
-      for (int32_t rows = 0; rows < rsptr->size(); rows++) {
-        if (rows > (int32_t)QueryHelper::getHelper().getPortfolioSetSize()) {
+      for (size_t rows = 0; rows < rsptr->size(); rows++) {
+        if (rows > QueryHelper::getHelper().getPortfolioSetSize()) {
           continue;
         }
 
@@ -300,8 +300,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
 
         auto rsptr = std::dynamic_pointer_cast<ResultSet>(results);
         SelectResultsIterator iter = rsptr->getIterator();
-        for (int32_t rows = 0; rows < rsptr->size(); rows++) {
-          if (rows > (int32_t)QueryHelper::getHelper().getPortfolioSetSize()) {
+        for (size_t rows = 0; rows < rsptr->size(); rows++) {
+          if (rows > QueryHelper::getHelper().getPortfolioSetSize()) {
             continue;
           }
 
@@ -416,8 +416,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
 
         auto rsptr = std::dynamic_pointer_cast<ResultSet>(results);
         SelectResultsIterator iter = rsptr->getIterator();
-        for (int32_t rows = 0; rows < rsptr->size(); rows++) {
-          if (rows > (int32_t)QueryHelper::getHelper().getPortfolioSetSize()) {
+        for (size_t rows = 0; rows < rsptr->size(); rows++) {
+          if (rows > QueryHelper::getHelper().getPortfolioSetSize()) {
             continue;
           }
 

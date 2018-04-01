@@ -83,7 +83,7 @@ const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 const bool USE_ACK = true;
 const bool NO_ACK = false;
 
-void createRegion(const char* name, bool ackMode, const char* endpoints,
+void createRegion(const char* name, bool ackMode, const char*,
                   bool isCacheEnabled, bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
@@ -94,7 +94,7 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   LOG("Region created.");
 }
 
-void createRegionLocal(const char* name, bool ackMode, const char* endpoints,
+void createRegionLocal(const char* name, bool ackMode, const char*,
                        bool isCacheEnabled,
                        bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
@@ -121,7 +121,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
 }
 
 void createPooledRegionConcurrencyCheckDisabled(
-    const char* name, bool ackMode, const char* endpoints, const char* locators,
+    const char* name, bool ackMode, const char*, const char* locators,
     const char* poolname, bool clientNotificationEnabled = false,
     bool cachingEnable = true, bool concurrencyCheckEnabled = true) {
   LOG("createRegion_Pool() entered.");

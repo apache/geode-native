@@ -19,8 +19,6 @@
 
 DUNIT_MAIN
   {
-    doThinClientDurableConnect(false);
-    //  doThinClientDurableConnect( true );
-    //  doThinClientDurableConnect( true, false );
+    doThinClientDurableConnect();
   }
 END_MAIN

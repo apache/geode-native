@@ -31,8 +31,8 @@ class TESTOBJECT_EXPORT TimestampedObject : public Serializable {
  public:
   virtual uint64_t getTimestamp() { return 0; }
   virtual void resetTimestamp() {}
-  void fromData(DataInput& input) override {}
-  void toData(DataOutput& output) const override {}
+  void fromData(DataInput&) override {}
+  void toData(DataOutput&) const override {}
   int32_t classId() const override { return 0; }
   size_t objectSize() const override { return 0; }
   ~TimestampedObject() override = default;

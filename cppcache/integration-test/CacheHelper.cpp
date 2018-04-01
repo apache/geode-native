@@ -79,7 +79,7 @@ CacheHelper& CacheHelper::getHelper() {
   return *singleton;
 }
 
-CacheHelper::CacheHelper(const char* member_id,
+CacheHelper::CacheHelper(const char*,
                          const std::shared_ptr<Properties>& configPtr,
                          const bool noRootRegion) {
   auto pp = configPtr;
@@ -106,7 +106,7 @@ CacheHelper::CacheHelper(const char* member_id,
 }
 
 /** rootRegionPtr will still be null... */
-CacheHelper::CacheHelper(const char* member_id, const char* cachexml,
+CacheHelper::CacheHelper(const char*, const char* cachexml,
                          const std::shared_ptr<Properties>& configPtr) {
   auto pp = configPtr;
   if (pp == nullptr) {
@@ -153,7 +153,7 @@ CacheHelper::CacheHelper(const std::shared_ptr<Properties>& configPtr,
   showRegionAttributes(rootRegionPtr->getAttributes());
 }
 
-CacheHelper::CacheHelper(const bool isThinclient,
+CacheHelper::CacheHelper(const bool,
                          const std::shared_ptr<AuthInitialize>& authInitialize,
                          const std::shared_ptr<Properties>& configPtr) {
   auto pp = configPtr;
@@ -173,9 +173,9 @@ CacheHelper::CacheHelper(const bool isThinclient,
   }
 }
 
-CacheHelper::CacheHelper(const bool isThinclient,
+CacheHelper::CacheHelper(const bool,
                          const std::shared_ptr<Properties>& configPtr,
-                         const bool noRootRegion) {
+                         const bool) {
   auto pp = configPtr;
   if (pp == nullptr) {
     pp = Properties::create();
@@ -193,10 +193,10 @@ CacheHelper::CacheHelper(const bool isThinclient,
   }
 }
 
-CacheHelper::CacheHelper(const bool isThinclient, bool pdxIgnoreUnreadFields,
+CacheHelper::CacheHelper(const bool, bool pdxIgnoreUnreadFields,
                          bool pdxReadSerialized,
                          const std::shared_ptr<Properties>& configPtr,
-                         const bool noRootRegion) {
+                         const bool) {
   auto pp = configPtr;
   if (pp == nullptr) {
     pp = Properties::create();
@@ -217,7 +217,7 @@ CacheHelper::CacheHelper(const bool isThinclient, bool pdxIgnoreUnreadFields,
   }
 }
 
-CacheHelper::CacheHelper(const bool isthinClient, const char* poolName,
+CacheHelper::CacheHelper(const bool, const char* poolName,
                          const char* locators, const char* serverGroup,
                          const std::shared_ptr<Properties>& configPtr,
                          int redundancy, bool clientNotification,
@@ -272,7 +272,7 @@ CacheHelper::CacheHelper(const bool isthinClient, const char* poolName,
   }
 }
 
-CacheHelper::CacheHelper(const int redundancyLevel,
+CacheHelper::CacheHelper(const int,
                          const std::shared_ptr<Properties>& configPtr) {
   auto pp = configPtr;
   if (pp == nullptr) {
@@ -394,10 +394,9 @@ std::shared_ptr<Region> CacheHelper::getRegion(const char* name) {
   return cachePtr->getRegion(name);
 }
 std::shared_ptr<Region> CacheHelper::createRegion(
-    const char* name, bool ack, bool caching,
-    const std::shared_ptr<CacheListener>& listener,
-    bool clientNotificationEnabled, bool scopeLocal,
-    bool concurrencyCheckEnabled, int32_t tombstonetimeout) {
+    const char* name, bool, bool caching,
+    const std::shared_ptr<CacheListener>& listener, bool, bool,
+    bool concurrencyCheckEnabled, int32_t) {
   RegionAttributesFactory regionAttributeFactory;
   regionAttributeFactory.setCachingEnabled(caching);
   if (listener != nullptr) {
@@ -415,10 +414,10 @@ std::shared_ptr<Region> CacheHelper::createRegion(
   return regionPtr;
 }
 std::shared_ptr<Region> CacheHelper::createRegion(
-    const char* name, bool ack, bool caching, const std::chrono::seconds& ettl,
+    const char* name, bool, bool caching, const std::chrono::seconds& ettl,
     const std::chrono::seconds& eit, const std::chrono::seconds& rttl,
     const std::chrono::seconds& rit, int lel, ExpirationAction action,
-    const char* endpoints, bool clientNotificationEnabled) {
+    const char*, bool) {
   RegionAttributesFactory regionAttributeFactory;
   regionAttributeFactory.setCachingEnabled(caching);
   regionAttributeFactory.setLruEntriesLimit(lel);
@@ -546,7 +545,7 @@ void CacheHelper::createPoolWithLocators(
   LOG("Pool created.");
 }
 std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool(
-    const char* name, bool ack, const char* poolName, bool caching,
+    const char* name, bool, const char* poolName, bool caching,
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
     ExpirationAction action) {
@@ -569,7 +568,7 @@ std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool2(
-    const char* name, bool ack, const char* poolName,
+    const char* name, bool, const char* poolName,
     const std::shared_ptr<PartitionResolver>& aResolver, bool caching,
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
@@ -611,7 +610,7 @@ void CacheHelper::addServerLocatorEPs(const char* epList, PoolFactory& pf,
 }
 
 std::shared_ptr<Region> CacheHelper::createPooledRegion(
-    const char* name, bool ack, const char* locators, const char* poolName,
+    const char* name, bool, const char* locators, const char* poolName,
     bool caching, bool clientNotificationEnabled,
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
@@ -650,7 +649,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegion(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createPooledRegionConcurrencyCheckDisabled(
-    const char* name, bool ack, const char* locators, const char* poolName,
+    const char* name, bool, const char* locators, const char* poolName,
     bool caching, bool clientNotificationEnabled, bool concurrencyCheckEnabled,
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
@@ -688,10 +687,9 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionConcurrencyCheckDisabled(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
-    const char* name, bool caching, bool clientNotificationEnabled,
-    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
-    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
-    ExpirationAction action) {
+    const char* name, bool caching, bool, const std::chrono::seconds& ettl,
+    const std::chrono::seconds& eit, const std::chrono::seconds& rttl,
+    const std::chrono::seconds& rit, int lel, ExpirationAction action) {
   RegionAttributesFactory regionAttributeFactory;
   regionAttributeFactory.setCachingEnabled(caching);
   regionAttributeFactory.setLruEntriesLimit(lel);
@@ -719,7 +717,7 @@ std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
   return regionPtr;
 }
 std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
-    const char* name, bool ack, const char* locators, const char* poolName,
+    const char* name, bool, const char* locators, const char* poolName,
     bool caching, bool clientNotificationEnabled,
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
@@ -775,7 +773,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createPooledRegionSticky(
-    const char* name, bool ack, const char* locators, const char* poolName,
+    const char* name, bool, const char* locators, const char* poolName,
     bool caching, bool clientNotificationEnabled,
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
@@ -816,7 +814,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionSticky(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createPooledRegionStickySingleHop(
-    const char* name, bool ack, const char* locators, const char* poolName,
+    const char* name, bool, const char* locators, const char* poolName,
     bool caching, bool clientNotificationEnabled,
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
@@ -857,7 +855,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionStickySingleHop(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createSubregion(
-    std::shared_ptr<Region>& parent, const char* name, bool ack, bool caching,
+    std::shared_ptr<Region>& parent, const char* name, bool, bool caching,
     const std::shared_ptr<CacheListener>& listener) {
   RegionAttributesFactory regionAttributeFactory;
   regionAttributeFactory.setCachingEnabled(caching);
@@ -1529,7 +1527,7 @@ void CacheHelper::closeServer(int instance) {
   staticServerInstanceList.remove(instance);
 }
 // closing locator
-void CacheHelper::closeLocator(int instance, bool ssl) {
+void CacheHelper::closeLocator(int instance, bool) {
   static char* gfjavaenv = ACE_OS::getenv("GFJAVA");
 
   char cmd[2048];
@@ -1670,7 +1668,7 @@ void CacheHelper::cleanupLocatorInstances() {
 }
 
 // starting locator
-void CacheHelper::initLocator(int instance, bool ssl, bool multiDS, int dsId,
+void CacheHelper::initLocator(int instance, bool ssl, bool, int dsId,
                               int remoteLocator, bool untrustedCert,
                               bool useSecurityManager) {
   if (!isLocatorCleanupCallbackRegistered &&

@@ -54,3 +54,17 @@ std::shared_ptr<CredentialGenerator> CredentialGenerator::create(
     return std::shared_ptr<CredentialGenerator>(new CredentialGenerator());
   }
 }
+
+void CredentialGenerator::getValidCredentials(
+    std::shared_ptr<Properties>&) {}
+
+void CredentialGenerator::getInvalidCredentials(
+    std::shared_ptr<Properties>&) {}
+
+void CredentialGenerator::getAllowedCredentialsForOps(
+    opCodeList&, std::shared_ptr<Properties>&, stringList*) {}
+
+void CredentialGenerator::getDisallowedCredentialsForOps(
+    opCodeList&, std::shared_ptr<Properties>&, stringList*) {}
+
+std::string CredentialGenerator::getInitArgs(std::string, bool) { return ""; }

@@ -103,7 +103,7 @@ void SqLiteImpl::init(const std::shared_ptr<Region>& region,
 
 void SqLiteImpl::write(const std::shared_ptr<CacheableKey>& key,
                        const std::shared_ptr<Cacheable>& value,
-                       void*& dbHandle) {
+                       void*&) {
   // Serialize key and value.
   auto& cache = m_regionPtr->getCache();
   auto keyDataBuffer = cache.createDataOutput();
@@ -126,7 +126,7 @@ void SqLiteImpl::write(const std::shared_ptr<CacheableKey>& key,
 
 bool SqLiteImpl::writeAll() { return true; }
 std::shared_ptr<Cacheable> SqLiteImpl::read(
-    const std::shared_ptr<CacheableKey>& key, void*& dbHandle) {
+    const std::shared_ptr<CacheableKey>& key, void*&) {
   // Serialize key.
   auto keyDataBuffer = m_regionPtr->getCache().createDataOutput();
   size_t keyBufferSize;
@@ -170,8 +170,7 @@ void SqLiteImpl::destroyRegion() {
 #endif
 }
 
-void SqLiteImpl::destroy(const std::shared_ptr<CacheableKey>& key,
-                         void*& dbHandle) {
+void SqLiteImpl::destroy(const std::shared_ptr<CacheableKey>& key, void*&) {
   // Serialize key and value.
   auto keyDataBuffer = m_regionPtr->getCache().createDataOutput();
   size_t keyBufferSize;
