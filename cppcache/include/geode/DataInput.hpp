@@ -125,7 +125,7 @@ class APACHE_GEODE_EXPORT DataInput {
    * @param len output parameter to hold the length of array read from stream
    */
   inline void readBytes(uint8_t** bytes, int32_t* len) {
-    auto length = readArrayLen();
+    auto length = readArrayLength();
     *len = length;
     uint8_t* buffer = nullptr;
     if (length > 0) {
@@ -148,7 +148,7 @@ class APACHE_GEODE_EXPORT DataInput {
    * @param len output parameter to hold the length of array read from stream
    */
   inline void readBytes(int8_t** bytes, int32_t* len) {
-    auto length = readArrayLen();
+    auto length = readArrayLength();
     *len = length;
     int8_t* buffer = nullptr;
     if (length > 0) {
@@ -178,7 +178,7 @@ class APACHE_GEODE_EXPORT DataInput {
    */
   inline int32_t readInt32() {
     _GEODE_CHECK_BUFFER_SIZE(4);
-    auto tmp = *(m_buf++);
+    int32_t tmp = *(m_buf++);
     tmp = (tmp << 8) | *(m_buf++);
     tmp = (tmp << 8) | *(m_buf++);
     tmp = (tmp << 8) | *(m_buf++);
@@ -227,7 +227,7 @@ class APACHE_GEODE_EXPORT DataInput {
    * @param len output parameter to hold the 32-bit signed length
    *   read from stream
    */
-  inline int32_t readArrayLen() {
+  inline int32_t readArrayLength() {
     const uint8_t code = read();
     if (code == 0xFF) {
       return -1;
@@ -396,7 +396,7 @@ class APACHE_GEODE_EXPORT DataInput {
   inline std::vector<std::string> readStringArray() {
     std::vector<std::string> value;
 
-    auto arrLen = readArrayLen();
+    auto arrLen = readArrayLength();
     if (arrLen > 0) {
       value.reserve(arrLen);
       for (int i = 0; i < arrLen; i++) {
@@ -410,7 +410,7 @@ class APACHE_GEODE_EXPORT DataInput {
   inline void readArrayOfByteArrays(int8_t*** arrayofBytearr,
                                     int32_t& arrayLength,
                                     int32_t** elementLength) {
-    auto arrLen = readArrayLen();
+    auto arrLen = readArrayLength();
     arrayLength = arrLen;
 
     if (arrLen == -1) {
@@ -507,7 +507,7 @@ class APACHE_GEODE_EXPORT DataInput {
 
   template <typename mType>
   void readObject(mType** value, int32_t& length) {
-    auto arrayLen = readArrayLen();
+    auto arrayLen = readArrayLength();
     length = arrayLen;
     mType* objArray;
     if (arrayLen > 0) {
@@ -524,7 +524,7 @@ class APACHE_GEODE_EXPORT DataInput {
 
   template <typename T>
   std::vector<T> readArray() {
-    auto arrayLen = readArrayLen();
+    auto arrayLen = readArrayLength();
     std::vector<T> objArray;
     if (arrayLen >= 0) {
       objArray.reserve(arrayLen);

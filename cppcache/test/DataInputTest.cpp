@@ -91,7 +91,7 @@ class TestDataInput {
 
   int64_t readInt64() { return m_dataInput.readInt64(); }
 
-  int32_t readArrayLen() { return m_dataInput.readArrayLen(); }
+  int32_t readArrayLen() { return m_dataInput.readArrayLength(); }
 
   int64_t readUnsignedVL() { return m_dataInput.readUnsignedVL(); }
 

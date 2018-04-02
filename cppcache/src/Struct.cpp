@@ -65,19 +65,19 @@ void Struct::fromData(DataInput& input) {
   input.advanceCursor(2);  // ignore classType
   skipClassName(input);
 
-  int32_t numOfFields = input.readArrayLen();
+  int32_t numOfFields = input.readArrayLength();
 
   m_parent = nullptr;
   for (int32_t i = 0; i < numOfFields; i++) {
     m_fieldNames.emplace(input.readString(), i);
   }
-  int32_t lengthForTypes = input.readArrayLen();
+  int32_t lengthForTypes = input.readArrayLength();
   skipClassName(input);
   for (int i = 0; i < lengthForTypes; i++) {
     input.advanceCursor(2);  // ignore classType
     skipClassName(input);
   }
-  int32_t numOfSerializedValues = input.readArrayLen();
+  int32_t numOfSerializedValues = input.readArrayLength();
   skipClassName(input);
   for (int i = 0; i < numOfSerializedValues; i++) {
     std::shared_ptr<Serializable> val;

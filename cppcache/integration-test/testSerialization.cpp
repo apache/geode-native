@@ -86,7 +86,7 @@ class OtherType : public Serializable {
   size_t objectSize() const override { return sizeof(CData); }
 
   void fromData(DataInput& input) override {
-    int32_t size = input.readArrayLen();
+    int32_t size = input.readArrayLength();
     input.readBytesOnly(reinterpret_cast<uint8_t*>(&m_struct), size);
     m_classIdToReturn = input.readInt32();
   }

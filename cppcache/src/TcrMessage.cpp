@@ -1232,7 +1232,7 @@ void TcrMessage::handleByteArrayResponse(
         LOGDEBUG("Expected typeID %d, got %d", GeodeTypeIds::CacheableArrayList,
                  bits8);
 
-        bits32 = input->readArrayLen();  // array length
+        bits32 = input->readArrayLength();  // array length
         LOGDEBUG("Array length = %d ", bits32);
         if (bits32 > 0) {
           std::vector<std::shared_ptr<BucketServerLocation>>
@@ -1288,7 +1288,7 @@ void TcrMessage::handleByteArrayResponse(
         input->read();                // ignore isObj;
         input->read();  // ignore cacheable CacheableHashSet typeid
 
-        bits32 = input->readArrayLen();  // array length
+        bits32 = input->readArrayLength();  // array length
         if (bits32 > 0) {
           m_fpaSet =
               new std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>();
@@ -2927,7 +2927,7 @@ void TcrMessage::readHashMapForGCVersions(
     throw Exception(
         "Reading HashMap For GC versions. Expecting type id of hash map. ");
   }
-  int32_t len = input.readArrayLen();
+  int32_t len = input.readArrayLength();
 
   if (len > 0) {
     std::shared_ptr<CacheableKey> key;
@@ -2960,7 +2960,7 @@ void TcrMessage::readHashSetForGCVersions(
     throw Exception(
         "Reading HashSet For GC versions. Expecting type id of hash set. ");
   }
-  int32_t len = input.readArrayLen();
+  int32_t len = input.readArrayLength();
 
   if (len > 0) {
     std::shared_ptr<CacheableKey> key;

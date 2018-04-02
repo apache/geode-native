@@ -302,7 +302,7 @@ void writeString(DataOutput& out, const std::string& field) {
 
 void readString(DataInput& in, std::string& field) {
   // length including null terminator
-  auto len = in.readArrayLen();
+  auto len = in.readArrayLength();
   // currentBufferPosition is read-only and we are only reading, cast away const
   field = std::string(const_cast<char*>(reinterpret_cast<const char*>(
                           in.currentBufferPosition())),
