@@ -744,4 +744,10 @@ CacheImpl::getMemberListForVersionStamp() {
   return *versionStampMemIdList;
 }
 
+std::unique_ptr<DataInput> CacheImpl::createDataInput(const uint8_t* buffer,
+                                                              size_t len) const {
+  auto poolName = getPoolManager().getDefaultPool()->getName();
+  return std::unique_ptr<DataInput>(new DataInput(buffer, len, this, poolName));
+}
+
 void CacheImpl::setCache(Cache* cache) { m_cache = cache; }

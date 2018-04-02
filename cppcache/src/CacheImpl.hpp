@@ -276,7 +276,10 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable
   }
 
   virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* buffer,
-                                                     size_t len, std::string poolName = EMPTY_STRING) const {
+                                                     size_t len) const;
+
+  virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* buffer,
+                                                     size_t len, std::string poolName) const {
     return std::unique_ptr<DataInput>(new DataInput(buffer, len, this, poolName));
   }
 
