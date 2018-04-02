@@ -46,7 +46,6 @@ class CacheableString;
 class DataInput;
 class Serializable;
 class SerializationRegistry;
-class DataInputInternal;
 class CacheImpl;
 class DataInputInternal;
 
@@ -126,7 +125,7 @@ class APACHE_GEODE_EXPORT DataInput {
    * @param len output parameter to hold the length of array read from stream
    */
   inline void readBytes(uint8_t** bytes, int32_t* len) {
-    int32_t length = readArrayLen();
+    auto length = readArrayLen();
     *len = length;
     uint8_t* buffer = nullptr;
     if (length > 0) {
@@ -149,7 +148,7 @@ class APACHE_GEODE_EXPORT DataInput {
    * @param len output parameter to hold the length of array read from stream
    */
   inline void readBytes(int8_t** bytes, int32_t* len) {
-    int32_t length = readArrayLen();
+    auto length = readArrayLen();
     *len = length;
     int8_t* buffer = nullptr;
     if (length > 0) {
@@ -179,7 +178,7 @@ class APACHE_GEODE_EXPORT DataInput {
    */
   inline int32_t readInt32() {
     _GEODE_CHECK_BUFFER_SIZE(4);
-    int32_t tmp = *(m_buf++);
+    auto tmp = *(m_buf++);
     tmp = (tmp << 8) | *(m_buf++);
     tmp = (tmp << 8) | *(m_buf++);
     tmp = (tmp << 8) | *(m_buf++);
@@ -333,7 +332,6 @@ class APACHE_GEODE_EXPORT DataInput {
 
   inline bool readNativeBool() {
     read();  // ignore type id
-
     return readBoolean();
   }
 
@@ -398,7 +396,7 @@ class APACHE_GEODE_EXPORT DataInput {
   inline std::vector<std::string> readStringArray() {
     std::vector<std::string> value;
 
-    int32_t arrLen = readArrayLen();
+    auto arrLen = readArrayLen();
     if (arrLen > 0) {
       value.reserve(arrLen);
       for (int i = 0; i < arrLen; i++) {
@@ -412,7 +410,7 @@ class APACHE_GEODE_EXPORT DataInput {
   inline void readArrayOfByteArrays(int8_t*** arrayofBytearr,
                                     int32_t& arrayLength,
                                     int32_t** elementLength) {
-    int32_t arrLen = readArrayLen();
+    auto arrLen = readArrayLen();
     arrayLength = arrLen;
 
     if (arrLen == -1) {
@@ -502,14 +500,14 @@ class APACHE_GEODE_EXPORT DataInput {
   const uint8_t* m_buf;
   const uint8_t* m_bufHead;
   size_t m_bufLength;
-  std::reference_wrapper<const std::string> m_poolName;
+  const std::string& m_poolName;
   const CacheImpl* m_cache;
 
   std::shared_ptr<Serializable> readObjectInternal(int8_t typeId = -1);
 
   template <typename mType>
   void readObject(mType** value, int32_t& length) {
-    int arrayLen = readArrayLen();
+    auto arrayLen = readArrayLen();
     length = arrayLen;
     mType* objArray;
     if (arrayLen > 0) {
@@ -526,7 +524,7 @@ class APACHE_GEODE_EXPORT DataInput {
 
   template <typename T>
   std::vector<T> readArray() {
-    int arrayLen = readArrayLen();
+    auto arrayLen = readArrayLen();
     std::vector<T> objArray;
     if (arrayLen >= 0) {
       objArray.reserve(arrayLen);
@@ -646,10 +644,6 @@ class APACHE_GEODE_EXPORT DataInput {
   }
 
   const std::string& getPoolName() const { return m_poolName; }
-
-  void setPoolName(const std::string& poolName) {
-    m_poolName = std::ref(poolName);
-  }
 
   // disable other constructors and assignment
   DataInput() = delete;
