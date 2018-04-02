@@ -584,8 +584,6 @@ void TcrMessage::writeBytesOnly(const std::shared_ptr<Serializable>& se) {
 }
 
 void TcrMessage::writeHeader(uint32_t msgType, uint32_t numOfParts) {
-  DataOutputInternal::setPoolName(*m_request, getPoolName());
-
   int8_t earlyAck = 0x0;
   LOGDEBUG("TcrMessage::writeHeader m_isMetaRegion = %d", m_isMetaRegion);
   if (m_tcdm != nullptr) {
@@ -2556,7 +2554,8 @@ void TcrMessage::createUserCredentialMessage(TcrConnection* conn) {
   m_isSecurityHeaderAdded = false;
   writeHeader(m_msgType, 1);
 
-  auto dOut = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
+  auto dOut = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
+      getPoolName());
 
   if (m_creds != nullptr) m_creds->toData(*dOut);
 
@@ -2585,7 +2584,8 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
   m_isSecurityHeaderAdded = true;
   LOGDEBUG("addSecurityPart( , ) ");
   auto dOutput =
-      m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
+      m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
+          getPoolName());
 
   dOutput->writeInt(connectionId);
   dOutput->writeInt(unique_id);
@@ -2616,7 +2616,8 @@ void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection* conn) {
   m_isSecurityHeaderAdded = true;
   LOGDEBUG("TcrMessage::addSecurityPart only connid");
   auto dOutput =
-      m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
+      m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
+          getPoolName());
 
   dOutput->writeInt(connectionId);
 
@@ -2785,8 +2786,8 @@ void TcrMessage::setData(const char* bytearray, int32_t len, uint16_t memId,
                          const SerializationRegistry& serializationRegistry,
                          MemberListForVersionStamp& memberListForVersionStamp) {
   if (m_request == nullptr) {
-    m_request =
-        m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
+    m_request = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
+        getPoolName());
   }
   if (bytearray) {
     DeleteArray<const char> delByteArr(bytearray);

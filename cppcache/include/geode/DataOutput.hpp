@@ -503,9 +503,9 @@ class APACHE_GEODE_EXPORT DataOutput {
   /**
    * Construct a new DataOutput.
    */
-  DataOutput(const CacheImpl* cache);
+  DataOutput(const CacheImpl* cache, const std::string& poolName = EMPTY_STRING);
 
-  DataOutput() : DataOutput(nullptr) {}
+  DataOutput() : DataOutput(nullptr, EMPTY_STRING) {}
 
   virtual const SerializationRegistry& getSerializationRegistry() const;
 
@@ -527,7 +527,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   // flag to indicate we have a big buffer
   volatile bool m_haveBigBuffer;
   const CacheImpl* m_cache;
-  std::reference_wrapper<const std::string> m_poolName;
+  const std::string& m_poolName;
 
   inline void writeAscii(const std::string& value) {
     uint16_t len = static_cast<uint16_t>(
@@ -741,10 +741,6 @@ class APACHE_GEODE_EXPORT DataOutput {
   }
 
   const std::string& getPoolName() const { return m_poolName; }
-
-  void setPoolName(const std::string& poolName) {
-    m_poolName = std::ref(poolName);
-  }
 
   static uint8_t* checkoutBuffer(size_t* size);
   static void checkinBuffer(uint8_t* buffer, size_t size);

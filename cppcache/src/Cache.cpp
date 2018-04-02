@@ -243,7 +243,7 @@ std::unique_ptr<DataInput> Cache::createDataInput(const uint8_t* m_buffer,
 }
 
 std::unique_ptr<DataOutput> Cache::createDataOutput() const {
-  return std::unique_ptr<DataOutput>(new DataOutput(m_cacheImpl.get()));
+  return m_cacheImpl->createDataOutput();
 }
 
 }  // namespace client

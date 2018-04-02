@@ -272,23 +272,26 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable
     return m_authInitialize;
   }
 
-  virtual std::unique_ptr<DataOutput> createDataOutput() const {
-    return std::unique_ptr<DataOutput>(new DataOutput(this));
+  virtual std::unique_ptr<DataOutput> createDataOutput() const;
+
+  virtual std::unique_ptr<DataOutput> createDataOutput(
+      const std::string& poolName) const {
+    return std::unique_ptr<DataOutput>(new DataOutput(this, poolName));
   }
 
   virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* buffer,
                                                      size_t len) const;
 
-  virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* buffer,
-                                                     size_t len, std::string poolName) const {
-    return std::unique_ptr<DataInput>(new DataInput(buffer, len, this, poolName));
+  virtual std::unique_ptr<DataInput> createDataInput(
+      const uint8_t* buffer, size_t len, const std::string& poolName) const {
+    return std::unique_ptr<DataInput>(
+        new DataInput(buffer, len, this, poolName));
   }
 
  private:
   std::atomic<bool> m_networkhop;
   std::atomic<int> m_blacklistBucketTimeout;
   std::atomic<int8_t> m_serverGroupFlag;
-  std::shared_ptr<Pool> m_defaultPool;
   bool m_ignorePdxUnreadFields;
   bool m_readPdxSerialized;
   std::unique_ptr<ExpiryTaskManager> m_expiryTaskManager;
