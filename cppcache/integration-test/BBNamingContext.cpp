@@ -72,8 +72,8 @@ class BBNamingContextClientImpl {
   void open();
   void close();
   void dump();
-  int rebind(const char* key, const char* value, char* type = nullptr);
-  int resolve(const char* key, char* value, char* type = nullptr);
+  int rebind(const char* key, const char* value, char* type);
+  int resolve(const char* key, char* value, char* type);
 };
 
 class BBNamingContextServerImpl {

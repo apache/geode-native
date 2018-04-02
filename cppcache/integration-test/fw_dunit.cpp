@@ -163,7 +163,8 @@ class NamingContextImpl : virtual public NamingContext {
   virtual int rebind(const char* key, const char* value) {
     int res = -1;
     int attempts = 10;
-    while ((res = m_context.rebind(key, value)) == -1 && attempts--) {
+    while ((res = m_context.rebind(key, value, (char*)"")) == -1 &&
+           attempts--) {
       millisleep(10);
     }
     return checkResult(res, "rebind");
@@ -185,8 +186,13 @@ class NamingContextImpl : virtual public NamingContext {
    * is not found, the buf will contain the empty string "".
    */
   virtual void getValue(const char* key, char* buf) {
+#ifdef SOLARIS_USE_BB
+    char value[VALUE_MAX] = {0};
+    char type[VALUE_MAX] = {0};
+#else
     char* value = nullptr;
     char* type = nullptr;
+#endif
 
     int res = -1;
     // we should not increase attempts to avoid increasing test run times.
