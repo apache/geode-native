@@ -49,7 +49,7 @@ typedef std::shared_ptr<PersistenceManager> (*getPersistenceManagerInstance)(
  * A specific disk storage implementation will implement all the methods
  * described here.
  */
-class _GEODE_EXPORT PersistenceManager {
+class APACHE_GEODE_EXPORT PersistenceManager {
  public:
   static constexpr char const* MAX_PAGE_COUNT = "MaxPageCount";
   static constexpr char const* PAGE_SIZE = "PageSize";

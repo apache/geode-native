@@ -46,7 +46,7 @@ class CacheImpl;
  * strings, <code>Serializable</code> objects to a byte stream.
  * This class is intentionally not thread safe.
  */
-class _GEODE_EXPORT DataOutput {
+class APACHE_GEODE_EXPORT DataOutput {
  public:
   /**
    * Write an unsigned byte to the <code>DataOutput</code>.

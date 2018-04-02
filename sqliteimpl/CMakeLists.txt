@@ -23,6 +23,13 @@ add_library(SqLiteImpl SHARED
   SqLiteImpl.hpp
 )
 
+include(GenerateExportHeader)
+generate_export_header(SqLiteImpl)
+
+target_include_directories(SqLiteImpl
+  PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+
 target_link_libraries(SqLiteImpl
   PUBLIC
     apache-geode

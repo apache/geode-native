@@ -16,18 +16,22 @@
  */
 
 #include "PkcsAuthInit.hpp"
+
+#include <cstdio>
+#include <string>
+
 #include "geode/Properties.hpp"
 #include "geode/CacheableBuiltins.hpp"
 #include "geode/ExceptionTypes.hpp"
-#include <cstdio>
-#include <string>
+
+#include "securityimpl_export.h"
 
 namespace apache {
 namespace geode {
 namespace client {
 
 extern "C" {
-_GEODE_LIBEXP AuthInitialize* createPKCSAuthInitInstance() {
+SECURITYIMPL_EXPORT AuthInitialize* createPKCSAuthInitInstance() {
   return new PKCSAuthInit();
 }
 
@@ -38,17 +42,16 @@ uint8_t* createSignature(EVP_PKEY* key, X509* cert,
     return NULL;
   }
 
-  const ASN1_OBJECT *macobj;
+  const ASN1_OBJECT* macobj;
   X509_ALGOR_get0(&macobj, NULL, NULL, NULL);
   const EVP_MD* signatureDigest = EVP_get_digestbyobj(macobj);
 
   EVP_MD_CTX* signatureCtx = EVP_MD_CTX_new();
   uint8_t* signatureData = new uint8_t[EVP_PKEY_size(key)];
 
-  bool result =
-      (EVP_SignInit_ex(signatureCtx, signatureDigest, NULL) &&
-       EVP_SignUpdate(signatureCtx, inputBuffer, inputBufferLen) &&
-       EVP_SignFinal(signatureCtx, signatureData, signatureLen, key));
+  bool result = (EVP_SignInit_ex(signatureCtx, signatureDigest, NULL) &&
+                 EVP_SignUpdate(signatureCtx, inputBuffer, inputBufferLen) &&
+                 EVP_SignFinal(signatureCtx, signatureData, signatureLen, key));
 
   EVP_MD_CTX_free(signatureCtx);
   if (result) {
@@ -106,34 +109,34 @@ std::shared_ptr<Properties> PKCSAuthInit::getCredentials(
         "No security-* properties are set.");
   }
 
- auto keyStoreptr = securityprops->find(KEYSTORE_FILE_PATH);
+  auto keyStoreptr = securityprops->find(KEYSTORE_FILE_PATH);
 
- const char* keyStorePath = keyStoreptr->value().c_str();
+  const char* keyStorePath = keyStoreptr->value().c_str();
 
- if (keyStorePath == NULL) {
-   throw AuthenticationFailedException(
-       "PKCSAuthInit::getCredentials: "
-       "key-store file path property KEYSTORE_FILE_PATH not set.");
+  if (keyStorePath == NULL) {
+    throw AuthenticationFailedException(
+        "PKCSAuthInit::getCredentials: "
+        "key-store file path property KEYSTORE_FILE_PATH not set.");
   }
 
- auto aliasptr = securityprops->find(KEYSTORE_ALIAS);
+  auto aliasptr = securityprops->find(KEYSTORE_ALIAS);
 
- const char* alias = aliasptr->value().c_str();
+  const char* alias = aliasptr->value().c_str();
 
- if (alias == NULL) {
-   throw AuthenticationFailedException(
-       "PKCSAuthInit::getCredentials: "
-       "key-store alias property KEYSTORE_ALIAS not set.");
+  if (alias == NULL) {
+    throw AuthenticationFailedException(
+        "PKCSAuthInit::getCredentials: "
+        "key-store alias property KEYSTORE_ALIAS not set.");
   }
 
- auto keyStorePassptr = securityprops->find(KEYSTORE_PASSWORD);
+  auto keyStorePassptr = securityprops->find(KEYSTORE_PASSWORD);
 
- const char* keyStorePass = keyStorePassptr->value().c_str();
+  const char* keyStorePass = keyStorePassptr->value().c_str();
 
- if (keyStorePass == NULL) {
-   throw AuthenticationFailedException(
-       "PKCSAuthInit::getCredentials: "
-       "key-store password property KEYSTORE_PASSWORD not set.");
+  if (keyStorePass == NULL) {
+    throw AuthenticationFailedException(
+        "PKCSAuthInit::getCredentials: "
+        "key-store password property KEYSTORE_PASSWORD not set.");
   }
 
   FILE* keyStoreFP = fopen(keyStorePath, "r");

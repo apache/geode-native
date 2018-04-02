@@ -65,7 +65,7 @@ class Pool;
  * </ul>
  *
  */
-class _GEODE_EXPORT PoolFactory {
+class APACHE_GEODE_EXPORT PoolFactory {
  public:
   /**
    * The default amount of time which we will wait for a free connection if max

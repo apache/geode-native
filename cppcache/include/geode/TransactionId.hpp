@@ -33,7 +33,7 @@ namespace client {
 * @see Cache#getCacheTransactionManager
 * @see CacheTransactionManager#getTransactionId
 */
-class _GEODE_EXPORT TransactionId {
+class APACHE_GEODE_EXPORT TransactionId {
  public:
   TransactionId();
   virtual ~TransactionId();

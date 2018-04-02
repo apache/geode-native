@@ -41,7 +41,7 @@ namespace client {
  * set from DistributedSystem::connect.
  *
  */
-class _GEODE_EXPORT SystemProperties {
+class APACHE_GEODE_EXPORT SystemProperties {
  public:
   /**
    * Constructor. Will set the default values first, and then overwrite with

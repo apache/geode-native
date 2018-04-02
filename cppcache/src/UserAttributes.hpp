@@ -68,7 +68,7 @@ class UserConnectionAttributes {
   // UserConnectionAttributes & operator =(const UserConnectionAttributes &);
 };
 
-class _GEODE_EXPORT UserAttributes {
+class APACHE_GEODE_EXPORT UserAttributes {
   // TODO: need to add lock here so that user should not be authenticated at two
   // servers
  public:

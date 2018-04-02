@@ -45,7 +45,7 @@ class StructSet;
  * returned after executing a Query obtained from a QueryService which in turn
  * is obtained from a Cache.
  */
-class _GEODE_EXPORT Struct : public Serializable {
+class APACHE_GEODE_EXPORT Struct : public Serializable {
  public:
   /**
    * Constructor - meant only for internal use.

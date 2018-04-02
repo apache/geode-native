@@ -39,7 +39,7 @@ namespace client {
 /**
  * @brief This class encapsulates LRU specific properties for a LRUList node.
  */
-class _GEODE_EXPORT LRUEntryProperties {
+class APACHE_GEODE_EXPORT LRUEntryProperties {
  public:
   inline LRUEntryProperties() : m_bits(0), m_persistenceInfo(nullptr) {}
 

@@ -38,7 +38,7 @@ namespace client {
  * EventID "token" with a Distributed Member ID, Thread ID and per-thread
  * Sequence ID
  */
-class _GEODE_EXPORT EventId : public Cacheable {
+class APACHE_GEODE_EXPORT EventId : public Cacheable {
  private:
   char m_eidMem[512];
   int32_t m_eidMemLen;

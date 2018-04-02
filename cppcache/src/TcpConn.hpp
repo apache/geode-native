@@ -46,7 +46,7 @@ namespace client {
 
 #endif
 
-class _GEODE_EXPORT TcpConn : public Connector {
+class APACHE_GEODE_EXPORT TcpConn : public Connector {
  private:
   ACE_SOCK_Stream* m_io;
 

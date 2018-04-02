@@ -53,7 +53,7 @@ namespace statistics {
  *
  */
 
-class _GEODE_EXPORT StatisticsFactory {
+class APACHE_GEODE_EXPORT StatisticsFactory {
  protected:
   StatisticsFactory() {}
   StatisticsFactory(const StatisticsFactory&) = delete;

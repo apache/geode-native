@@ -40,7 +40,7 @@ namespace client {
  * QueryService which in turn is obtained from a Cache.
  * It is the parent of a Struct which contains the field values.
  */
-class _GEODE_EXPORT StructSet : public CqResults {
+class APACHE_GEODE_EXPORT StructSet : public CqResults {
  public:
   /**
    * Check whether the StructSet is modifiable.

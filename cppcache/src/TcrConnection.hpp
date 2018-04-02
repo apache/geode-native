@@ -84,7 +84,7 @@ class TcrEndpoint;
 class SystemProperties;
 class ThinClientPoolDM;
 class TcrConnectionManager;
-class _GEODE_EXPORT TcrConnection {
+class APACHE_GEODE_EXPORT TcrConnection {
  public:
   /** Create one connection, endpoint is in format of hostname:portno
    * It will do handshake with j-server. There're 2 types of handshakes:

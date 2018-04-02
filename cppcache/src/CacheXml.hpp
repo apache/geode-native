@@ -26,7 +26,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class _GEODE_EXPORT CacheXml {
+class APACHE_GEODE_EXPORT CacheXml {
  public:
   /** The name of the <code>cache</code> element */
   const char* CACHE;

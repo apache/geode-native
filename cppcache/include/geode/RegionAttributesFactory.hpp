@@ -153,7 +153,7 @@ namespace client {
  * @see Region#createSubregion(String, RegionAttributes)
  */
 
-class _GEODE_EXPORT RegionAttributesFactory {
+class APACHE_GEODE_EXPORT RegionAttributesFactory {
   /**
    * @brief public methods
    */

@@ -63,7 +63,7 @@ class AuthenticatedView;
  * <p>A cache can have multiple root regions, each with a different name.
  *
  */
-class _GEODE_EXPORT Cache : public GeodeCache {
+class APACHE_GEODE_EXPORT Cache : public GeodeCache {
   /**
    * @brief public methods
    */

@@ -79,7 +79,7 @@ using std::chrono::steady_clock;
  *                 // descriptors in the previous sample run.
  */
 
-class _GEODE_EXPORT StatDataOutput {
+class APACHE_GEODE_EXPORT StatDataOutput {
  public:
   StatDataOutput(CacheImpl* cache);
   StatDataOutput(std::string, CacheImpl* cache);
@@ -139,7 +139,7 @@ class _GEODE_EXPORT StatDataOutput {
   friend class StatArchiveWriter;
 };
 
-class _GEODE_EXPORT ResourceType : private NonCopyable, private NonAssignable {
+class APACHE_GEODE_EXPORT ResourceType : private NonCopyable, private NonAssignable {
  public:
   ResourceType(int32_t id, const StatisticsType *type);
   int32_t getId() const;
@@ -166,7 +166,7 @@ class _GEODE_EXPORT ResourceType : private NonCopyable, private NonAssignable {
  * FIX : Make the class NonCopyable
  */
 
-class _GEODE_EXPORT ResourceInst : private NonCopyable, private NonAssignable {
+class APACHE_GEODE_EXPORT ResourceInst : private NonCopyable, private NonAssignable {
  public:
   ResourceInst(int32_t id, Statistics *, const ResourceType *,
                StatDataOutput *);
@@ -198,7 +198,7 @@ class HostStatSampler;
  * @class StatArchiveWriter
  */
 
-class _GEODE_EXPORT StatArchiveWriter {
+class APACHE_GEODE_EXPORT StatArchiveWriter {
  private:
   HostStatSampler *sampler;
   StatDataOutput *dataBuffer;

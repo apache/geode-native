@@ -43,7 +43,7 @@ using UserObjectSizer = std::function<size_t(const std::shared_ptr<const void>&,
  * Serializable::registerPdxSerializer} to create new
  * instance of type for de-serilization.
  */
-class _GEODE_EXPORT PdxSerializer {
+class APACHE_GEODE_EXPORT PdxSerializer {
  public:
   PdxSerializer() {}
 

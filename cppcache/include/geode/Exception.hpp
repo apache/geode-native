@@ -45,7 +45,7 @@ class StackTrace;
  * @class Exception Exception.hpp
  * A description of an exception that occurred during a cache operation.
  */
-class _GEODE_EXPORT Exception : public std::exception {
+class APACHE_GEODE_EXPORT Exception : public std::exception {
   /**
    * @brief public methods
    */

@@ -47,7 +47,7 @@ class AuthInitialize;
  * For the default values for the pool attributes see {@link PoolFactory}.
  * To create additional {@link Pool}s see {@link PoolManager}
  */
-class _GEODE_EXPORT CacheFactory {
+class APACHE_GEODE_EXPORT CacheFactory {
  public:
   /**
    * To create the instance of {@link CacheFactory}

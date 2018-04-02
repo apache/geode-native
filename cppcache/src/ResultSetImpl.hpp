@@ -35,7 +35,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class _GEODE_EXPORT ResultSetImpl
+class APACHE_GEODE_EXPORT ResultSetImpl
     : public ResultSet,
       public std::enable_shared_from_this<ResultSetImpl> {
  public:

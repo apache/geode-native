@@ -50,7 +50,7 @@ class CqQuery;
  * event.
  * The CqEvent is not an extension of CacheEvent.
  */
-class _GEODE_EXPORT CqEvent {
+class APACHE_GEODE_EXPORT CqEvent {
  public:
   CqEvent() {}
 

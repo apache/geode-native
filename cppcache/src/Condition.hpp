@@ -31,7 +31,7 @@ namespace client {
 /**
  * Condition wrapper when you want an absolute signal or timeout condition.
  */
-class _GEODE_EXPORT Condition {
+class APACHE_GEODE_EXPORT Condition {
  private:
   ACE_Condition<ACE_Recursive_Thread_Mutex> m_cond;
   bool m_signaled;

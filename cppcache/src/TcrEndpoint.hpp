@@ -48,7 +48,7 @@ class ThinClientPoolHADM;
 class ThinClientPoolDM;
 class QueryService;
 
-class _GEODE_EXPORT TcrEndpoint {
+class APACHE_GEODE_EXPORT TcrEndpoint {
  public:
   TcrEndpoint(
       const std::string& name, CacheImpl* cacheImpl,

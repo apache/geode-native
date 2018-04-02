@@ -52,7 +52,7 @@ namespace client {
  */
 class CacheAttributesFactory;
 
-class _GEODE_EXPORT CacheAttributes {
+class APACHE_GEODE_EXPORT CacheAttributes {
   /**
    * @brief public static methods
    */

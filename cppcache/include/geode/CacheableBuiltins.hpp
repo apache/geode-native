@@ -199,13 +199,13 @@ class CacheableContainerType : public Cacheable, public TBase {
 #define _GEODE_CACHEABLE_KEY_TYPE_DEF_(p, k, sz)                     \
   extern const char tName_##k[];                                     \
   extern const char tStr_##k[];                                      \
-  template class _GEODE_EXPORT                                       \
+  template class APACHE_GEODE_EXPORT                                       \
       CacheableKeyType<p, GeodeTypeIds::k, tName_##k, tStr_##k, sz>; \
   typedef CacheableKeyType<p, GeodeTypeIds::k, tName_##k, tStr_##k, sz> _##k;
 
 // use a class instead of typedef for bug #283
 #define _GEODE_CACHEABLE_KEY_TYPE_(p, k, sz)                            \
-  class _GEODE_EXPORT k : public _##k {                                 \
+  class APACHE_GEODE_EXPORT k : public _##k {                                 \
    protected:                                                           \
     inline k() : _##k() {}                                              \
     inline k(const p value) : _##k(value) {}                            \
@@ -235,12 +235,12 @@ class CacheableContainerType : public Cacheable, public TBase {
   }
 
 #define _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(p, c)                         \
-  template class _GEODE_EXPORT CacheableContainerType<p, GeodeTypeIds::c>; \
+  template class APACHE_GEODE_EXPORT CacheableContainerType<p, GeodeTypeIds::c>; \
   typedef CacheableContainerType<p, GeodeTypeIds::c> _##c;
 
 // use a class instead of typedef for bug #283
 #define _GEODE_CACHEABLE_CONTAINER_TYPE_(p, c)                         \
-  class _GEODE_EXPORT c : public _##c {                                \
+  class APACHE_GEODE_EXPORT c : public _##c {                                \
    protected:                                                          \
     inline c() : _##c() {}                                             \
     inline c(const int32_t n) : _##c(n) {}                             \
@@ -323,7 +323,7 @@ _GEODE_CACHEABLE_KEY_TYPE_(char16_t, CacheableCharacter, 3);
 // Instantiations for array built-in Cacheables
 
 template <typename T, GeodeTypeIds::IdValues GeodeTypeId>
-class _GEODE_EXPORT CacheableArray : public Cacheable {
+class APACHE_GEODE_EXPORT CacheableArray : public Cacheable {
  protected:
   inline CacheableArray() = default;
 

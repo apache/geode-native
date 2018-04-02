@@ -48,7 +48,7 @@ namespace client {
  * @since 8.3
  *
  */
-class _GEODE_EXPORT InternalCacheTransactionManager2PC
+class APACHE_GEODE_EXPORT InternalCacheTransactionManager2PC
     : public virtual CacheTransactionManager {
  public:
   /**

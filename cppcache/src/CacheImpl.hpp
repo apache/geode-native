@@ -85,7 +85,7 @@ class SerializationRegistry;
  *
  */
 
-class _GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
+class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
   /**
    * @brief public methods
    */

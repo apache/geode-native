@@ -41,7 +41,7 @@ namespace client {
  * multiple factories or use {@link PdxInstance#createWriter} to create
  * subsequent instances.
  */
-class _GEODE_EXPORT PdxInstanceFactory {
+class APACHE_GEODE_EXPORT PdxInstanceFactory {
  public:
   /**
    * @brief destructor

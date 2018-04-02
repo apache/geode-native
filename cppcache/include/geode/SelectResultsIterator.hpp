@@ -49,7 +49,7 @@ class Serializable;
  * A SelectResultsIterator is obtained from a ResultSet or StructSet and
  * is used to iterate over the items available in them.
  */
-class _GEODE_EXPORT SelectResultsIterator {
+class APACHE_GEODE_EXPORT SelectResultsIterator {
  public:
   /**
    * Check whether the SelectResultsIterator has another item to get.

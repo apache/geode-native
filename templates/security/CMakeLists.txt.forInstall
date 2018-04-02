@@ -17,11 +17,18 @@
 cmake_minimum_required(VERSION 3.4)
 project(templates.security)
 
-find_package(OpenSSL 1.0.1 REQUIRED)
+find_package(OpenSSL 1.0.2 REQUIRED)
 
 file(GLOB_RECURSE SOURCES "*.cpp")
 
 add_library(securityImpl SHARED ${SOURCES})
+
+include(GenerateExportHeader)
+generate_export_header(securityImpl)
+
+target_include_directories(securityImpl
+  PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 
 include_directories(${NATIVECLIENT_INCLUDE_DIR})
 

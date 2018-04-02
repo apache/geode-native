@@ -37,7 +37,7 @@ namespace client {
  *
  * Declares debugging assertion reporting functions.
  */
-class _GEODE_EXPORT Assert {
+class APACHE_GEODE_EXPORT Assert {
  public:
   /** If the given expression is true, does nothing, otherwise calls
   * @ref throwAssertion .

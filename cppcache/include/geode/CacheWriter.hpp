@@ -84,7 +84,7 @@ class Region;
  * @see RegionAttributes::getCacheWriter
  * @see AttributesMutator::setCacheWriter
  */
-class _GEODE_EXPORT CacheWriter {
+class APACHE_GEODE_EXPORT CacheWriter {
  public:
   /**
    * Called before an entry is updated. The entry update is initiated by a

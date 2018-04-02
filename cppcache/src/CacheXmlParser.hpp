@@ -53,7 +53,7 @@ typedef CacheWriter* (*LibraryCacheWriterFn)(const char* assemblyPath,
 typedef PersistenceManager* (*LibraryPersistenceManagerFn)(
     const char* assemblyPath, const char* factFuncName);
 
-class _GEODE_EXPORT CacheXmlParser : public CacheXml {
+class APACHE_GEODE_EXPORT CacheXmlParser : public CacheXml {
  private:
   std::stack<std::shared_ptr<void>> _stack;
   xmlSAXHandler m_saxHandler;

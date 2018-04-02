@@ -43,7 +43,7 @@ using client::ThinClientPoolDM;
 using client::AdminRegion;
 
 class StatisticsManager;
-class _GEODE_EXPORT PoolStatsSampler : public ACE_Task_Base {
+class APACHE_GEODE_EXPORT PoolStatsSampler : public ACE_Task_Base {
  public:
   PoolStatsSampler(std::chrono::milliseconds sampleRate, CacheImpl* cache,
                    ThinClientPoolDM* distMan);

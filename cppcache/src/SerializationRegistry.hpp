@@ -134,7 +134,7 @@ class TheTypeMap : private NonCopyable {
 
 class Pool;
 
-class _GEODE_EXPORT SerializationRegistry {
+class APACHE_GEODE_EXPORT SerializationRegistry {
  public:
   SerializationRegistry() : theTypeMap() {}
 

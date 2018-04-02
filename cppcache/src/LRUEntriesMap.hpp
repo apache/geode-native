@@ -57,7 +57,7 @@ class EvictionController;
  * its constructor and destructor but has no user-written assignment operator.
  * Fix : Make the class Non Assinable
  */
-class _GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
+class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
                                     private NonCopyable,
                                     private NonAssignable {
  protected:

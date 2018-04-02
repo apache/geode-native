@@ -40,7 +40,7 @@ class StatisticsFactory;
 /**
  * Statistics related to the statistic sampler.
  */
-class _GEODE_EXPORT StatSamplerStats {
+class APACHE_GEODE_EXPORT StatSamplerStats {
  private:
   StatisticsType* samplerType;
   Statistics* samplerStats;

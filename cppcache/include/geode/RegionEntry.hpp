@@ -47,7 +47,7 @@ class Region;
  * invocation, or an <code>EntryDestroyedException</code> if the entry has been
  * destroyed.
  */
-class _GEODE_EXPORT RegionEntry {
+class APACHE_GEODE_EXPORT RegionEntry {
  public:
   /** Returns the key for this entry.
    *

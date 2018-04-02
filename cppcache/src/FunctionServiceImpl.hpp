@@ -36,7 +36,7 @@ namespace client {
  * @see Execution
  */
 
-class _GEODE_EXPORT FunctionServiceImpl : public FunctionService {
+class APACHE_GEODE_EXPORT FunctionServiceImpl : public FunctionService {
  public:
   /**
    * This function is used in multiuser mode to execute function on server.

@@ -43,7 +43,7 @@ class DataInput;
 class DataOutput;
 class Serializable;
 
-class _GEODE_EXPORT CacheableFileName : public CacheableString {
+class APACHE_GEODE_EXPORT CacheableFileName : public CacheableString {
  public:
   /**
    *@brief serialize this object

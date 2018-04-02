@@ -41,7 +41,7 @@ namespace client {
  * send and invalidate methods.
  *
  */
-class _GEODE_EXPORT ThinClientHARegion : public ThinClientRegion {
+class APACHE_GEODE_EXPORT ThinClientHARegion : public ThinClientRegion {
  public:
   /**
    * @brief constructor/destructor

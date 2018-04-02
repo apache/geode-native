@@ -63,7 +63,7 @@ class StatisticsManager;
  * HostStatSampler implements a thread which will monitor, sample and archive
  * statistics. It only has the common functionalities which any sampler needs.
  */
-class _GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
+class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
                                       private NonCopyable,
                                       private NonAssignable {
  public:

@@ -53,7 +53,7 @@ class DistributedSystemImpl;
 
 using CliCallbackMethod = std::function<void(Cache&)>;
 
-class _GEODE_EXPORT DistributedSystemImpl {
+class APACHE_GEODE_EXPORT DistributedSystemImpl {
   /**
    * @brief public methods
    */

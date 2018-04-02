@@ -44,7 +44,7 @@ namespace client {
  * manager when region is destroyed
  *
  */
-class _GEODE_EXPORT RegionExpiryHandler : public ACE_Event_Handler {
+class APACHE_GEODE_EXPORT RegionExpiryHandler : public ACE_Event_Handler {
  public:
   /**
    * Constructor

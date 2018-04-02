@@ -27,11 +27,11 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class _GEODE_EXPORT CacheableToken;
+class APACHE_GEODE_EXPORT CacheableToken;
 
 /** Implement a non-mutable int64_t wrapper that can serve as a distributable
  * key object for cacheing as well as being a 64 bit value. */
-class _GEODE_EXPORT CacheableToken : public Cacheable {
+class APACHE_GEODE_EXPORT CacheableToken : public Cacheable {
  private:
   enum TokenType { NOT_USED = 0, INVALID, DESTROYED, OVERFLOWED, TOMBSTONE };
 

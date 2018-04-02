@@ -12,16 +12,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 cmake_minimum_required(VERSION 3.4)
 project(cryptoImpl LANGUAGES CXX)
 
-file(GLOB_RECURSE SOURCES "*.cpp")
+add_library(cryptoImpl SHARED
+  cryptoImpl_export.h
+  DHImpl.hpp
+  DHImpl.cpp
+  Ssl.hpp
+  SSLImpl.hpp
+  SSLImpl.cpp)
 
-add_library(cryptoImpl SHARED ${SOURCES})
+include(GenerateExportHeader)
+generate_export_header(cryptoImpl)
 
-target_compile_definitions(cryptoImpl
-  PRIVATE
-    BUILD_CPPCACHE)
+target_include_directories(cryptoImpl
+  PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 
 target_link_libraries(cryptoImpl
   PRIVATE

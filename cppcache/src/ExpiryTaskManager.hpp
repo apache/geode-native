@@ -48,7 +48,7 @@ using namespace apache::geode::internal::chrono::duration;
  * This class starts a reactor's event loop for taking care of expiry
  * tasks. The scheduling of event also happens through this manager.
  */
-class _GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
+class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
  public:
   typedef long id_type;
   /**

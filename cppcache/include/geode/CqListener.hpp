@@ -39,7 +39,7 @@ class CacheListener;
  * is an event satisfied by the CQ and the other called when there is an
  * error during CQ processing.
  */
-class _GEODE_EXPORT CqListener {
+class APACHE_GEODE_EXPORT CqListener {
  public:
   /**
    * This method is invoked when an event is occurred on the region

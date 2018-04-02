@@ -55,7 +55,7 @@ extern "C" {
 namespace apache {
 namespace geode {
 namespace client {
-class _GEODE_EXPORT Utils {
+class APACHE_GEODE_EXPORT Utils {
   /**
    * utilities
    *

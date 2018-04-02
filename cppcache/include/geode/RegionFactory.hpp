@@ -34,7 +34,7 @@ namespace apache {
 namespace geode {
 namespace client {
 class CacheImpl;
-class _GEODE_EXPORT RegionFactory {
+class APACHE_GEODE_EXPORT RegionFactory {
  public:
   RegionFactory() = delete;
   ~RegionFactory() = default;

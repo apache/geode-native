@@ -94,7 +94,7 @@ static constexpr std::chrono::milliseconds DEFAULT_RESPONSE_TIMEOUT =
  *
  * @see RegionAttributes
  */
-class _GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
+class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /** @brief Public Methods
    */
  public:

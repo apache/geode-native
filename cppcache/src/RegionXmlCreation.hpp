@@ -38,7 +38,7 @@ class Cache;
  *
  * @since 1.0
  */
-class _GEODE_EXPORT RegionXmlCreation {
+class APACHE_GEODE_EXPORT RegionXmlCreation {
  private:
   /** An <code>RegionAttributesFactory</code> for creating default
    * <code>RegionAttribute</code>s */

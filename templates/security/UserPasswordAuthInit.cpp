@@ -19,6 +19,7 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableString.hpp>
 
+#include "securityimpl_export.h"
 #include "UserPasswordAuthInit.hpp"
 
 #define SECURITY_USERNAME "security-username"
@@ -29,7 +30,7 @@ namespace geode {
 namespace client {
 
 extern "C" {
-_GEODE_LIBEXP AuthInitialize* createUserPasswordAuthInitInstance() {
+SECURITYIMPL_EXPORT AuthInitialize* createUserPasswordAuthInitInstance() {
   return new UserPasswordAuthInit();
 }
 }

@@ -57,7 +57,7 @@ namespace client {
 class CqAttributes;
 class CqListener;
 
-class _GEODE_EXPORT CqAttributesFactory {
+class APACHE_GEODE_EXPORT CqAttributesFactory {
  public:
   /**
    * Creates a new instance of AttributesFactory ready to create a

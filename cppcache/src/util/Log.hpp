@@ -140,7 +140,7 @@ class Exception;
   *
   */
 
-class _GEODE_EXPORT Log {
+class APACHE_GEODE_EXPORT Log {
  public:
   /******/
 
@@ -577,7 +577,7 @@ class LogFn {
  * These functions are added to facilitate logging in printf format.
  */
 
-class _GEODE_EXPORT LogVarargs {
+class APACHE_GEODE_EXPORT LogVarargs {
  public:
   static void debug(const char* fmt, ...);
   static void error(const char* fmt, ...);

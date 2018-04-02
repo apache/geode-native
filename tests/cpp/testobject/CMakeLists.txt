@@ -16,7 +16,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(testobject LANGUAGES CXX)
 
-add_library(${PROJECT_NAME} SHARED 
+add_library(testobject SHARED 
   ArrayOfByte.hpp
   BatchObject.cpp
   BatchObject.hpp
@@ -68,19 +68,27 @@ add_library(${PROJECT_NAME} SHARED
   VariousPdxTypes.hpp
 )
 
-target_compile_definitions(${PROJECT_NAME}
+include(GenerateExportHeader)
+generate_export_header(testobject)
+
+target_include_directories(testobject
+  PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+
+target_compile_definitions(testobject
   PRIVATE
     -DBUILD_TESTOBJECT
 )
 
-target_include_directories(${PROJECT_NAME}
-	PUBLIC
-	  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+target_include_directories(testobject
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   PRIVATE
-	  $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
+    $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(testobject
   PUBLIC 
     apache-geode
     fwk
@@ -90,4 +98,4 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # For Visual Studio organization
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER test)
+set_target_properties(testobject PROPERTIES FOLDER test)

@@ -45,7 +45,7 @@ class DistributedSystem;
  *
  */
 
-class _GEODE_EXPORT GeodeCache : public RegionService {
+class APACHE_GEODE_EXPORT GeodeCache : public RegionService {
   /**
    * @brief public methods
    */

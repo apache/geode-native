@@ -51,7 +51,7 @@ class CacheRegionHelper;
 class DiffieHellman;
 class TcrConnection;
 
-class _GEODE_EXPORT DistributedSystem {
+class APACHE_GEODE_EXPORT DistributedSystem {
   /**
    * @brief public methods
    */

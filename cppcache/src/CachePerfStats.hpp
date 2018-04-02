@@ -34,7 +34,7 @@ namespace client {
 using namespace apache::geode::statistics;
 
 /** hold statistics for cache.. */
-class _GEODE_EXPORT CachePerfStats {
+class APACHE_GEODE_EXPORT CachePerfStats {
  public:
   CachePerfStats(StatisticsFactory* factory) {
     auto statsType = factory->findType("CachePerfStats");

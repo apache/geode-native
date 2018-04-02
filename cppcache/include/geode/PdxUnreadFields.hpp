@@ -40,7 +40,7 @@ namespace client {
  * This should only happen when a domain class has changed by adding or removing
  *one or more fields.
  **/
-class _GEODE_EXPORT PdxUnreadFields {
+class APACHE_GEODE_EXPORT PdxUnreadFields {
  public:
   PdxUnreadFields() {}
   virtual ~PdxUnreadFields() {}

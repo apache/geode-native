@@ -38,7 +38,7 @@ using statistics::StatisticsType;
 using statistics::Statistics;
 using util::concurrent::spinlock_mutex;
 
-class _GEODE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
+class APACHE_GEODE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
  public:
   /** hold statistics for a cq. */
   CqServiceVsdStats(statistics::StatisticsFactory* factory,

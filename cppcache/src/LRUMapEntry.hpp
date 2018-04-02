@@ -59,7 +59,7 @@ namespace client {
  *
  *
  */
-class _GEODE_EXPORT LRUMapEntry : public MapEntryImpl,
+class APACHE_GEODE_EXPORT LRUMapEntry : public MapEntryImpl,
                                   public LRUEntryProperties {
  public:
   virtual ~LRUMapEntry() {}
@@ -87,7 +87,7 @@ class _GEODE_EXPORT LRUMapEntry : public MapEntryImpl,
   LRUMapEntry& operator=(const LRUMapEntry&);
 };
 
-class _GEODE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
+class APACHE_GEODE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
                                            public VersionStamp {
  public:
   virtual ~VersionedLRUMapEntry() {}
@@ -105,7 +105,7 @@ class _GEODE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
   VersionedLRUMapEntry& operator=(const VersionedLRUMapEntry&);
 };
 
-class _GEODE_EXPORT LRUEntryFactory : public EntryFactory {
+class APACHE_GEODE_EXPORT LRUEntryFactory : public EntryFactory {
  public:
   using EntryFactory::EntryFactory;
 

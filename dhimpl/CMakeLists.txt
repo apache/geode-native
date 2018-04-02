@@ -14,15 +14,18 @@
 # limitations under the License.
 
 cmake_minimum_required(VERSION 3.10)
-project(dhimpl LANGUAGES CXX)
+project(DHImpl LANGUAGES CXX)
 
 file(GLOB_RECURSE SOURCES "*.cpp")
 
 add_library(DHImpl SHARED ${SOURCES})
 
-target_compile_definitions(DHImpl
-  PRIVATE
-    BUILD_CPPCACHE)
+include(GenerateExportHeader)
+generate_export_header(DHImpl)
+
+target_include_directories(DHImpl
+  PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 
 target_link_libraries(DHImpl
   PUBLIC 

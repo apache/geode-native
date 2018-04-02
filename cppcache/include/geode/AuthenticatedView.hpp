@@ -53,7 +53,7 @@ class FunctionServiceImpl;
  * <p>A cache can have multiple root regions, each with a different name.
  *
  */
-class _GEODE_EXPORT AuthenticatedView : public RegionService {
+class APACHE_GEODE_EXPORT AuthenticatedView : public RegionService {
   /**
    * @brief public methods
    */

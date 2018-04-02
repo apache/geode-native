@@ -35,7 +35,7 @@ using statistics::StatisticDescriptor;
 using statistics::StatisticsType;
 using statistics::Statistics;
 
-class _GEODE_EXPORT RegionStats {
+class APACHE_GEODE_EXPORT RegionStats {
  public:
   /** hold statistics for a region.. */
   RegionStats(statistics::StatisticsFactory* factory, const std::string& regionName);

@@ -16,18 +16,21 @@
 cmake_minimum_required(VERSION 3.4)
 project(apache-geode LANGUAGES CXX)
 
-add_library(${PROJECT_NAME} SHARED ${SOURCES_ALL} ${RESOURCES})
+add_library(apache-geode SHARED ${SOURCES_ALL} ${RESOURCES})
+
+include(GenerateExportHeader)
+generate_export_header(apache-geode EXPORT_FILE_NAME ${EXPORT_FILE_NAME})
 
 set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(apache-geode
   PRIVATE
     _apache-geode
     _WarningsAsError
   PUBLIC
     c++11)
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(apache-geode
   PUBLIC
     $<TARGET_PROPERTY:_apache-geode,INTERFACE_INCLUDE_DIRECTORIES>)
 
@@ -35,13 +38,12 @@ set_target_properties(apache-geode PROPERTIES
   PUBLIC_HEADER "${PUBLIC_HEADERS}"
   OUTPUT_NAME ${PRODUCT_LIB_NAME})
 
-add_dependencies(client-libraries ${PROJECT_NAME})
+add_dependencies(client-libraries apache-geode)
 
 install(TARGETS apache-geode
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib)
-
 
 # BEGIN Visual Studio organization
 source_group("Header Files" REGULAR_EXPRESSION "\.(hpp|inl)$")
@@ -59,7 +61,7 @@ if (USE_PCH)
       ${CMAKE_BINARY_DIR}/dependencies/boost/include/boost/stacktrace.hpp)
   endif()
 
-  set_target_properties(${PROJECT_NAME} PROPERTIES
+  set_target_properties(apache-geode PROPERTIES
     COTIRE_ENABLE_PRECOMPILED_HEADER TRUE
     COTIRE_ADD_UNITY_BUILD TRUE
     COTIRE_PREFIX_HEADER_IGNORE_PATH "${_COTIRE_PREFIX_HEADER_IGNORE_PATH}"
@@ -67,5 +69,5 @@ if (USE_PCH)
 
   set_source_files_properties(cppcache/version.h PROPERTIES GENERATED TRUE)
 
-  cotire(${PROJECT_NAME})
+  cotire(apache-geode)
 endif()

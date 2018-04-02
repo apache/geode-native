@@ -76,7 +76,7 @@ class RegionEvent;
  * @see RegionAttributes::getCacheListener
  * @see CacheListenerException
  */
-class _GEODE_EXPORT CacheListener {
+class APACHE_GEODE_EXPORT CacheListener {
   /**
    * @brief public methods
    */

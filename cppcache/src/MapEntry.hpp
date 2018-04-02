@@ -38,17 +38,17 @@
 namespace apache {
 namespace geode {
 namespace client {
-class _GEODE_EXPORT MapEntry;
-class _GEODE_EXPORT MapEntryImpl;
+class APACHE_GEODE_EXPORT MapEntry;
+class APACHE_GEODE_EXPORT MapEntryImpl;
 
-class _GEODE_EXPORT LRUEntryProperties;
+class APACHE_GEODE_EXPORT LRUEntryProperties;
 class CacheImpl;
 
 /**
  * @brief This class encapsulates expiration specific properties for
  *   a MapEntry.
  */
-class _GEODE_EXPORT ExpEntryProperties {
+class APACHE_GEODE_EXPORT ExpEntryProperties {
  public:
   typedef std::chrono::system_clock::time_point time_point;
 
@@ -109,7 +109,7 @@ class _GEODE_EXPORT ExpEntryProperties {
 /**
  * @brief Interface class for region mapped entry value.
  */
-class _GEODE_EXPORT MapEntry {
+class APACHE_GEODE_EXPORT MapEntry {
  public:
   virtual ~MapEntry() {}
 
@@ -257,7 +257,7 @@ class MapEntryImpl : public MapEntry,
   MapEntryImpl& operator=(const MapEntryImpl&);
 };
 
-class _GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
+class APACHE_GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
                                             public VersionStamp {
  public:
   virtual ~VersionedMapEntryImpl() {}
@@ -276,7 +276,7 @@ class _GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
   VersionedMapEntryImpl& operator=(const VersionedMapEntryImpl&);
 };
 
-class _GEODE_EXPORT EntryFactory {
+class APACHE_GEODE_EXPORT EntryFactory {
  public:
   EntryFactory(const bool concurrencyChecksEnabled)
       : m_concurrencyChecksEnabled(concurrencyChecksEnabled) {}

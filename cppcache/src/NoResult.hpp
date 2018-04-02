@@ -40,7 +40,7 @@ namespace client {
  *
  *
  */
-class _GEODE_EXPORT NoResult : public ResultCollector {
+class APACHE_GEODE_EXPORT NoResult : public ResultCollector {
  public:
   NoResult() = default;
   virtual ~NoResult() override = default;
