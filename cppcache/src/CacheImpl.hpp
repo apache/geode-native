@@ -211,6 +211,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable
   }
 
   Cache* getCache() const { return m_cache; }
+
   TcrConnectionManager& tcrConnectionManager() {
     return *m_tcrConnectionManager;
   }
