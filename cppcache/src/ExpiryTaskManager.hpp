@@ -249,8 +249,7 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
                           bool cancelExistingTask = false) {
     LOGFINER(
         "ExpiryTaskManager: expTime %s, interval %s, cancelExistingTask %d",
-        to_string(expTime).c_str(),
-        to_string(interval).c_str(),
+        to_string(expTime).c_str(), to_string(interval).c_str(),
         cancelExistingTask);
     if (cancelExistingTask) {
       m_reactor->cancel_timer(handler, 1);

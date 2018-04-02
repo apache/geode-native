@@ -38,8 +38,7 @@ namespace geode {
 namespace client {
 
 /** Template CacheableKey class for primitive types. */
-template <typename TObj, int8_t TYPEID, const char* TYPENAME,
-          const char* SPRINTFSYM, int32_t STRSIZE>
+template <typename TObj, int8_t TYPEID, const char* TYPENAME>
 class CacheableKeyType : public CacheableKey {
  protected:
   TObj m_value;
@@ -83,9 +82,7 @@ class CacheableKeyType : public CacheableKey {
 
   /** Return a string representation of the object. */
   virtual std::string toString() const override {
-    char buffer[STRSIZE + 1];
-    std::sprintf(buffer, SPRINTFSYM, m_value);
-    return std::string(buffer);
+    return std::to_string(m_value);
   }
 
   // CacheableKey methods
@@ -196,16 +193,15 @@ class CacheableContainerType : public Cacheable, public TBase {
 #pragma warning(disable : 4231)
 #endif
 
-#define _GEODE_CACHEABLE_KEY_TYPE_DEF_(p, k, sz)                     \
-  extern const char tName_##k[];                                     \
-  extern const char tStr_##k[];                                      \
-  template class APACHE_GEODE_EXPORT                                       \
-      CacheableKeyType<p, GeodeTypeIds::k, tName_##k, tStr_##k, sz>; \
-  typedef CacheableKeyType<p, GeodeTypeIds::k, tName_##k, tStr_##k, sz> _##k;
+#define _GEODE_CACHEABLE_KEY_TYPE_DEF_(p, k)           \
+  extern const char tName_##k[];                       \
+  template class APACHE_GEODE_EXPORT                   \
+      CacheableKeyType<p, GeodeTypeIds::k, tName_##k>; \
+  typedef CacheableKeyType<p, GeodeTypeIds::k, tName_##k> _##k;
 
 // use a class instead of typedef for bug #283
-#define _GEODE_CACHEABLE_KEY_TYPE_(p, k, sz)                            \
-  class APACHE_GEODE_EXPORT k : public _##k {                                 \
+#define _GEODE_CACHEABLE_KEY_TYPE_(p, k)                                \
+  class APACHE_GEODE_EXPORT k : public _##k {                           \
    protected:                                                           \
     inline k() : _##k() {}                                              \
     inline k(const p value) : _##k(value) {}                            \
@@ -234,13 +230,14 @@ class CacheableContainerType : public Cacheable, public TBase {
     return k::create(value);                                            \
   }
 
-#define _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(p, c)                         \
-  template class APACHE_GEODE_EXPORT CacheableContainerType<p, GeodeTypeIds::c>; \
+#define _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(p, c) \
+  template class APACHE_GEODE_EXPORT               \
+      CacheableContainerType<p, GeodeTypeIds::c>;  \
   typedef CacheableContainerType<p, GeodeTypeIds::c> _##c;
 
 // use a class instead of typedef for bug #283
 #define _GEODE_CACHEABLE_CONTAINER_TYPE_(p, c)                         \
-  class APACHE_GEODE_EXPORT c : public _##c {                                \
+  class APACHE_GEODE_EXPORT c : public _##c {                          \
    protected:                                                          \
     inline c() : _##c() {}                                             \
     inline c(const int32_t n) : _##c(n) {}                             \
@@ -264,61 +261,61 @@ class CacheableContainerType : public Cacheable, public TBase {
 
 // Instantiations for the built-in CacheableKeys
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(bool, CacheableBoolean, 3);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(bool, CacheableBoolean);
 /**
  * An immutable wrapper for booleans that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(bool, CacheableBoolean, 3);
+_GEODE_CACHEABLE_KEY_TYPE_(bool, CacheableBoolean);
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(int8_t, CacheableByte, 15);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(int8_t, CacheableByte);
 /**
  * An immutable wrapper for bytes that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(int8_t, CacheableByte, 15);
+_GEODE_CACHEABLE_KEY_TYPE_(int8_t, CacheableByte);
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(double, CacheableDouble, 63);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(double, CacheableDouble);
 /**
  * An immutable wrapper for doubles that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(double, CacheableDouble, 63);
+_GEODE_CACHEABLE_KEY_TYPE_(double, CacheableDouble);
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(float, CacheableFloat, 63);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(float, CacheableFloat);
 /**
  * An immutable wrapper for floats that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(float, CacheableFloat, 63);
+_GEODE_CACHEABLE_KEY_TYPE_(float, CacheableFloat);
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(int16_t, CacheableInt16, 15);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(int16_t, CacheableInt16);
 /**
  * An immutable wrapper for 16-bit integers that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(int16_t, CacheableInt16, 15);
+_GEODE_CACHEABLE_KEY_TYPE_(int16_t, CacheableInt16);
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(int32_t, CacheableInt32, 15);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(int32_t, CacheableInt32);
 /**
  * An immutable wrapper for 32-bit integers that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(int32_t, CacheableInt32, 15);
+_GEODE_CACHEABLE_KEY_TYPE_(int32_t, CacheableInt32);
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(int64_t, CacheableInt64, 31);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(int64_t, CacheableInt64);
 /**
  * An immutable wrapper for 64-bit integers that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(int64_t, CacheableInt64, 31);
+_GEODE_CACHEABLE_KEY_TYPE_(int64_t, CacheableInt64);
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(char16_t, CacheableCharacter, 3);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(char16_t, CacheableCharacter);
 /**
  * An immutable wrapper for characters that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(char16_t, CacheableCharacter, 3);
+_GEODE_CACHEABLE_KEY_TYPE_(char16_t, CacheableCharacter);
 
 // Instantiations for array built-in Cacheables
 

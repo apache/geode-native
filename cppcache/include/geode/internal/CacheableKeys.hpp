@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHEABLEKEYS_H_
-#define GEODE_CACHEABLEKEYS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_CACHEABLEKEYS_H_
+#define GEODE_CACHEABLEKEYS_H_
 
 #include "geode_globals.hpp"
 
@@ -75,7 +75,7 @@ inline int32_t hashcode(const double value) {
   v.d = value;
   return hashcode(v.u);
 }
-}  // namespace serializer
+}  // namespace internal
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
