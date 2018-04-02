@@ -65,7 +65,7 @@ namespace Apache
         {
           throw gcnew KeyNotFoundException("The given key was not present in the region.");
         }
-        TValue returnVal = Serializable::GetManagedValueGeneric<TValue>(nativeptr);
+        TValue returnVal = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr);
         return returnVal;
       }
 
@@ -146,7 +146,7 @@ namespace Apache
         {
           throw gcnew KeyNotFoundException("The given key was not present in the region.");
         }
-        TValue returnVal = Serializable::GetManagedValueGeneric<TValue>(nativeptr);
+        TValue returnVal = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr);
         return returnVal;
       }
 
@@ -193,8 +193,8 @@ namespace Apache
         for (System::Int32 index = 0; index < toArray->Length; index++)
         {
           auto& nativeptr = vc[index];
-          auto key = Serializable::GetManagedValueGeneric<TKey>(nativeptr->getKey());
-          auto val = Serializable::GetManagedValueGeneric<TValue>(nativeptr->getValue());
+          auto key = TypeRegistry::GetManagedValueGeneric<TKey>(nativeptr->getKey());
+          auto val = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr->getValue());
           toArray[index] = KeyValuePair<TKey, TValue>(key, val);
         }
         return ((System::Collections::Generic::IEnumerable<KeyValuePair<TKey, TValue>>^)toArray)->GetEnumerator();
@@ -224,8 +224,8 @@ namespace Apache
         for (System::Int32 index = 0; index < toArray->Length; index++)
         {
           auto& nativeptr = vc[index];
-          auto key = Serializable::GetManagedValueGeneric<TKey>(nativeptr->getKey());
-          auto val = Serializable::GetManagedValueGeneric<TValue>(nativeptr->getValue());
+          auto key = TypeRegistry::GetManagedValueGeneric<TKey>(nativeptr->getKey());
+          auto val = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr->getValue());
           toArray[index] = KeyValuePair<TKey, TValue>(key, val);
         }
         return ((System::Collections::Generic::IEnumerable<Object^>^)toArray)->GetEnumerator();
@@ -277,7 +277,7 @@ namespace Apache
         if (nativeptr == nullptr) {
           return false;
         }
-        auto value = Serializable::GetManagedValueGeneric<TValue>(nativeptr);
+        auto value = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr);
         return ((Object^)value)->Equals(keyValuePair.Value);
       }
 
@@ -311,7 +311,7 @@ namespace Apache
           return false;
         }
         else {
-          val = Serializable::GetManagedValueGeneric<TValue>(nativeptr);
+          val = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr);
           return true;
         }
 
@@ -336,7 +336,7 @@ namespace Apache
         for (System::Int32 index = 0; index < keyarr->Length; index++)
         {
           auto& nativeptr = vc[index];
-          keyarr[index] = Serializable::GetManagedValueGeneric<TKey>(nativeptr);
+          keyarr[index] = TypeRegistry::GetManagedValueGeneric<TKey>(nativeptr);
         }
         auto collectionlist = (System::Collections::Generic::ICollection<TKey>^)keyarr;
         return collectionlist;
@@ -362,7 +362,7 @@ namespace Apache
         for (System::Int32 index = 0; index < vc.size(); index++)
         {
           auto& nativeptr = vc[index];
-          valarr[index] = Serializable::GetManagedValueGeneric<TValue>(nativeptr);
+          valarr[index] = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr);
         }
         auto collectionlist = (System::Collections::Generic::ICollection<TValue>^)valarr;
         return collectionlist;
@@ -696,8 +696,8 @@ namespace Apache
           }
           if (values != nullptr) {
             for (const auto& iter : native_value) {
-              TKey key = Serializable::GetManagedValueGeneric<TKey>(iter.first);
-              TValue val = Serializable::GetManagedValueGeneric<TValue>(iter.second);
+              TKey key = TypeRegistry::GetManagedValueGeneric<TKey>(iter.first);
+              TValue val = TypeRegistry::GetManagedValueGeneric<TValue>(iter.second);
               values->Add(key, val);
             }
           }
@@ -742,8 +742,8 @@ namespace Apache
           }
           if (values != nullptr) {
             for (const auto& iter : native_value) {
-              TKey key = Serializable::GetManagedValueGeneric<TKey>(iter.first);
-              TValue val = Serializable::GetManagedValueGeneric<TValue>(iter.second);
+              TKey key = TypeRegistry::GetManagedValueGeneric<TKey>(iter.first);
+              TValue val = TypeRegistry::GetManagedValueGeneric<TValue>(iter.second);
               values->Add(key, val);
             }
           }
@@ -1096,8 +1096,8 @@ namespace Apache
         for (System::Int32 index = 0; index < vc.size(); index++)
         {
           auto& nativeptr = vc[index];
-          auto key = Serializable::GetManagedValueGeneric<TKey>(nativeptr->getKey());
-          auto val = Serializable::GetManagedValueGeneric<TValue>(nativeptr->getValue());
+          auto key = TypeRegistry::GetManagedValueGeneric<TKey>(nativeptr->getKey());
+          auto val = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr->getValue());
           toArray[startIdx] = KeyValuePair<TKey, TValue>(key, val);
           ++startIdx;
         }
@@ -1243,7 +1243,7 @@ namespace Apache
         for (System::Int32 index = 0; index < keyarr->Length; index++)
         {
           auto& nativeptr = vc[index];
-          keyarr[index] = Serializable::GetManagedValueGeneric<TKey>(nativeptr);
+          keyarr[index] = TypeRegistry::GetManagedValueGeneric<TKey>(nativeptr);
         }
 
         auto collectionlist = (System::Collections::Generic::ICollection<TKey>^)keyarr;
@@ -1422,7 +1422,7 @@ namespace Apache
         try
         {
           auto nativeptr = m_nativeptr->get()->selectValue(marshal_as<std::string>(predicate), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
-          return Serializable::GetManagedValueGeneric<Object^>(nativeptr);
+          return TypeRegistry::GetManagedValueGeneric<Object^>(nativeptr);
         }
         finally
         {

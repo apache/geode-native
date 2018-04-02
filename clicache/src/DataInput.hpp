@@ -564,7 +564,7 @@ namespace Apache
           {
             m_buffer = const_cast<System::Byte*> (m_nativeptr->get()->currentBufferPosition());
             m_cursor = 0;
-            m_bufferLength = m_nativeptr->get()->getBytesRemaining();   
+            m_bufferLength = static_cast<decltype(m_bufferLength)>(m_nativeptr->get()->getBytesRemaining());
           }
           finally
           {
@@ -665,7 +665,7 @@ namespace Apache
           m_forStringDecode = gcnew array<Char>(100);
           m_buffer = const_cast<System::Byte*>(nativeptr->currentBufferPosition());
           if ( m_buffer != NULL) {
-            m_bufferLength = nativeptr->getBytesRemaining();     
+            m_bufferLength = static_cast<decltype(m_bufferLength)>(nativeptr->getBytesRemaining());
 					}
           else {
             m_bufferLength = 0;

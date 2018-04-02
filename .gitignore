@@ -10,3 +10,5 @@
 /examples/dotnet/*/bin/
 /examples/dotnet/*/obj/
 .ruby-version
+
+/clicache/integration-test2/GeodeServer.cs

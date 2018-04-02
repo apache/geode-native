@@ -496,7 +496,7 @@ namespace Apache
         /// <summary>
         /// Private constructor to wrap a native object pointer
         /// </summary>
-        /// <param name="nativeptr">The native object pointer</param>
+        /// <param name="nativeobj">The native object pointer</param>
         inline RegionAttributes<TKey, TValue>(native::RegionAttributes nativeobj)
         {
           const std::shared_ptr<native::RegionAttributes> nativeptr = std::make_shared<native::RegionAttributes>(nativeobj);

@@ -248,8 +248,8 @@ namespace Apache.Geode.Client.UnitTests
       GIRegion region = null;
       region = CacheHelper.CreateTCRegion_Pool<int, object>(RegionName, true, caching,
         callbackLis, locators, "__TESTPOOL1_", true);
-      Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable, CacheHelper.DCache);
-      Serializable.RegisterTypeGeneric(Position.CreateDeserializable, CacheHelper.DCache);
+      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(Portfolio.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(Position.CreateDeserializable);
     }
 
     public void ValidateLocalListenerWriterData()
@@ -294,7 +294,7 @@ namespace Apache.Geode.Client.UnitTests
 
     void RegisterPdxType8()
     {
-      Serializable.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
     }
 
     void runCallbackArgTest()
@@ -454,7 +454,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       if (!isRegistered)
       {
-        Serializable.RegisterTypeGeneric(DefaultType.CreateDeserializable, CacheHelper.DCache);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(DefaultType.CreateDeserializable);
         isRegistered = true;
       }
     }

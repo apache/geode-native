@@ -689,18 +689,13 @@ namespace Apache.Geode.Client.FwkLib
           FwkInfo("isObjectRegistered value is {0}",isObjectRegistered);
         if (!isObjectRegistered)
         {
-            {
-                Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable, CacheHelper<TKey, TVal>.DCache);
-                FwkInfo("Completed Portfolio registeration");
-            }
-            {
-                Serializable.RegisterTypeGeneric(Position.CreateDeserializable, CacheHelper<TKey, TVal>.DCache);
-                Serializable.RegisterPdxType(PortfolioPdx.CreateDeserializable);
-                Serializable.RegisterPdxType(PositionPdx.CreateDeserializable);
-                FwkInfo("Completed other object registeration");
-            }
-
-            isObjectRegistered = true;
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Portfolio.CreateDeserializable);
+          FwkInfo("Completed Portfolio registeration");
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Position.CreateDeserializable);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterPdxType(PortfolioPdx.CreateDeserializable);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterPdxType(PositionPdx.CreateDeserializable);
+          FwkInfo("Completed other object registeration");
+          isObjectRegistered = true;
         }
         string regionName = GetStringValue(RegionName);
         bool isDurable = GetBoolValue("isDurable");
@@ -1395,10 +1390,10 @@ namespace Apache.Geode.Client.FwkLib
         if (isTypeRegistered != "registered")
         {
           FwkInfo("Getting inside for registeration");
-          Serializable.RegisterTypeGeneric(Position.CreateDeserializable, CacheHelper<TKey, TVal>.DCache);
-          Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable, CacheHelper<TKey, TVal>.DCache);
-          Serializable.RegisterPdxType(Apache.Geode.Client.Tests.PortfolioPdx.CreateDeserializable);
-          Serializable.RegisterPdxType(Apache.Geode.Client.Tests.PositionPdx.CreateDeserializable);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Position.CreateDeserializable);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Portfolio.CreateDeserializable);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterPdxType(Apache.Geode.Client.Tests.PortfolioPdx.CreateDeserializable);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterPdxType(Apache.Geode.Client.Tests.PositionPdx.CreateDeserializable);
 
         }
         IRegion<TKey, TVal> parentRegion = null;

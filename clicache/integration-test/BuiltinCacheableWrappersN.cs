@@ -174,7 +174,7 @@ namespace Apache.Geode.Client.UnitTests
       typeof(PdxCDataWrapper), PdxCDataWrapper.Create, typeof(PdxCData));
 
       //need to register pdx type
-      Serializable.RegisterPdxType(PdxCData.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxCData.CreateDeserializable);
 
       #endregion
 
@@ -270,7 +270,7 @@ namespace Apache.Geode.Client.UnitTests
         typeof(CacheableHugeUnicodeStringWrapper), CacheableHugeUnicodeStringWrapper.Create);
 
       //need to register pdx type
-      Serializable.RegisterPdxType(PdxCData.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxCData.CreateDeserializable);
 
       #endregion
 
@@ -370,7 +370,7 @@ namespace Apache.Geode.Client.UnitTests
      typeof(PdxCDataWrapper), PdxCDataWrapper.Create, typeof(PdxCData));
 
       //need to register pdx type
-      Serializable.RegisterPdxType(PdxCData.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxCData.CreateDeserializable);
 
 
       #endregion

@@ -193,7 +193,9 @@ add_library(${PROJECT_NAME} SHARED
   TransactionEvent.hpp
   TransactionId.hpp
   TransactionListenerAdapter.hpp
-  TransactionWriterAdapte.hpp
+  TransactionWriterAdapter.hpp
+  TypeRegistry.cpp
+  TypeRegistry.hpp
   UserFunctionExecutionException.cpp
   UserFunctionExecutionException.hpp
   Utils.cpp

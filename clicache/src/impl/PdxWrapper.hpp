@@ -22,6 +22,9 @@
 #include "../IPdxReader.hpp"
 #include "../IPdxSerializer.hpp"
 #include "../Serializable.hpp"
+#include "../Cache.hpp"
+#include "../TypeRegistry.hpp"
+
 namespace Apache
 {
   namespace Geode
@@ -46,18 +49,19 @@ namespace Apache
 
           virtual void ToData( IPdxWriter^ writer )
           {
-            if(!Serializable::GetPdxSerializer()->ToData(m_object, writer))
+            auto cache = writer->Cache;
+            if(!cache->TypeRegistry->PdxSerializer->ToData(m_object, writer))
               throw gcnew IllegalStateException("PdxSerilizer unable serialize data for type " + m_object->GetType());
           }
           
           virtual void FromData( IPdxReader^ reader )
           {
             String^ className = dynamic_cast<String^>(m_object);
-
+            auto pdxSerializer = reader->Cache->TypeRegistry->PdxSerializer;
             if(className != nullptr)
-              m_object = Serializable::GetPdxSerializer()->FromData((String^)m_object, reader);
+              m_object = pdxSerializer->FromData((String^)m_object, reader);
             else
-              m_object = Serializable::GetPdxSerializer()->FromData(m_object->GetType()->FullName, reader);
+              m_object = pdxSerializer->FromData(m_object->GetType()->FullName, reader);
             if(m_object == nullptr)
               throw gcnew IllegalStateException("PdxSerilizer unable de-serialize data for type " + m_object->GetType());           
           }

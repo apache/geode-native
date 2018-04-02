@@ -44,7 +44,7 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
-				interface class IPdxSerializable;
+        interface class IPdxSerializable;
         interface class IPdxSerializer;
         ref class Cache;
 
@@ -246,78 +246,16 @@ namespace Apache
         /// to a <c>Serializable</c>.
         /// </summary>
         static operator Apache::Geode::Client::Serializable^ (array<String^>^ value);
-        
-        
-        /// <summary>
-        /// Register an instance factory method for a given type.
-        /// This should be used when registering types that implement
-        /// IGeodeSerializable.
-        /// </summary>
-        /// <param name="creationMethod">
-        /// the creation function to register
-        /// </param>
-        /// <exception cref="IllegalArgumentException">
-        /// if the method is null
-        /// </exception>
-        /// <exception cref="IllegalStateException">
-        /// if the typeId has already been registered, or there is an error
-        /// in registering the type; check <c>Utils::LastError</c> for more
-        /// information in the latter case.
-        /// </exception>
-        static void RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod, Cache^ cache);
-
-        /// <summary>
-        /// Set the PDX serializer for the cache. If this serializer is set,
-        /// it will be consulted to see if it can serialize any domain classes which are 
-        /// added to the cache in portable data exchange format. 
-        /// </summary>
-        static void RegisterPdxSerializer(IPdxSerializer^ pdxSerializer);
-        
-				/// <summary>
-        /// Register an instance factory method for a given type.
-        /// This should be used when registering types that implement
-        /// IPdxSerializable.
-        /// </summary>
-        /// <param name="creationMethod">
-        /// the creation function to register
-        /// </param>
-        /// <exception cref="IllegalArgumentException">
-        /// if the method is null
-        /// </exception>
-        
-        static void RegisterPdxType(PdxTypeFactoryMethod^ creationMethod);
-
-        /// <summary>
-        /// Register an PdxTypeMapper to map the local types to pdx types
-        /// </summary>
-        /// <param name="pdxTypeMapper">
-        /// Object which implements IPdxTypeMapper interface
-        /// </param>
-       
-
-        static void SetPdxTypeMapper(IPdxTypeMapper^ pdxTypeMapper);        
 
       internal:
-
+        static std::shared_ptr<CacheableKey> wrapIGeodeSerializable(IGeodeSerializable^ managedObject);
 				static System::Int32 GetPDXIdForType(String^ poolName, IGeodeSerializable^ pdxType, Cache^ cache);
 				static IGeodeSerializable^ GetPDXTypeById(String^ poolName, System::Int32 typeId, Cache^ cache);
-				static IPdxSerializable^ Serializable::GetPdxType(String^ className);
 				static void RegisterPDXManagedCacheableKey(Cache^ cache);
-        static bool IsObjectAndPdxSerializerRegistered(String^ className);
-
-        static IPdxSerializer^ GetPdxSerializer();
-        static String^ GetPdxTypeName(String^ localTypeName);
-        static String^ GetLocalTypeName(String^ pdxTypeName);
-        static void Clear();
-
-        static Type^ GetType(String^ className);
-
+        
         static int GetEnumValue(Internal::EnumInfo^ ei, Cache^ cache);
         static Internal::EnumInfo^ GetEnum(int val, Cache^ cache);
 
-         static Dictionary<String^, PdxTypeFactoryMethod^>^ PdxDelegateMap =
-          gcnew Dictionary<String^, PdxTypeFactoryMethod^>();
-               
         // These are the new static methods to get/put data from c++
 
         //byte
@@ -410,32 +348,8 @@ namespace Apache
           m_nativeptr = gcnew native_shared_ptr<native::Serializable>(nativeptr);
         }
 
-        /// <summary>
-        /// Register an instance factory method for a given type and typeId.
-        /// This should be used when registering types that implement
-        /// IGeodeSerializable.
-        /// </summary>
-        /// <param name="typeId">typeId of the type being registered.</param>
-        /// <param name="creationMethod">
-        /// the creation function to register
-        /// </param>
-        /// <exception cref="IllegalArgumentException">
-        /// if the method is null
-        /// </exception>
-        static void RegisterTypeGeneric(Byte typeId, TypeFactoryMethodGeneric^ creationMethod, Type^ type, Cache^ cache);
-
-
-        /// <summary>
-        /// Unregister the type with the given typeId
-        /// </summary>
-        /// <param name="typeId">typeId of the type to unregister.</param>
-        static void UnregisterTypeGeneric(Byte typeId, Cache^ cache);
-
-        generic<class TValue>
-        static TValue GetManagedValueGeneric(std::shared_ptr<native::Serializable> val);
-
         generic<class TKey>
-        static std::shared_ptr<native::CacheableKey> GetUnmanagedValueGeneric(TKey key);
+        static std::shared_ptr<native::CacheableKey> GetUnmanagedValueGeneric(TKey ky);
 
         generic<class TKey>
         static std::shared_ptr<native::CacheableKey> GetUnmanagedValueGeneric(TKey key, bool isAciiChar);
@@ -446,222 +360,9 @@ namespace Apache
         generic<class TKey>
         static std::shared_ptr<native::CacheableKey> GetUnmanagedValueGeneric(Type^ managedType, TKey key, bool isAsciiChar);
 
-        /// <summary>
-        /// Static map of <c>TypeFactoryMethod</c> delegates created
-        /// for managed <c>TypeFactoryMethod</c> delegates.
-        /// </summary>
-        static Dictionary<System::Type^, Byte>^ ManagedTypeMappingGeneric =
-          gcnew Dictionary<System::Type^, Byte>();
-
-        static Byte GetManagedTypeMappingGeneric (Type^ type)
+        static Serializable()
         {
-          Byte retVal = 0;
-          ManagedTypeMappingGeneric->TryGetValue(type, retVal);
-          return retVal;
-        }
-
-        /// <summary>
-        /// Static list of <c>TypeFactoryNativeMethod</c> delegates created
-        /// from registered managed <c>TypeFactoryMethod</c> delegates.
-        /// This is so that the underlying managed objects do not get GCed.
-        /// </summary>
-        static List<TypeFactoryNativeMethodGeneric^>^ NativeDelegatesGeneric =
-          gcnew List<TypeFactoryNativeMethodGeneric^>();
-
-        // TODO AppDomain remove statics
-
-        /// <summary>
-        /// Static map of <c>TypeFactoryMethod</c> delegates created
-        /// from registered managed <c>TypeFactoryMethod</c> delegates.
-        /// This is for cross AppDomain object creations.
-        /// </summary>
-        static Dictionary<UInt32, TypeFactoryMethodGeneric^>^ DelegateMapGeneric =
-          gcnew Dictionary<UInt32, TypeFactoryMethodGeneric^>();
-
-        static Dictionary<UInt32, TypeFactoryMethodGeneric^>^ InternalDelegateMapGeneric =
-          gcnew Dictionary<UInt32, TypeFactoryMethodGeneric^>();
-
-        static TypeFactoryMethodGeneric^ GetTypeFactoryMethodGeneric(UInt32 classid)
-        {
-         // Log::Finer("TypeFactoryMethodGeneric type id " + classid + " domainid :" + System::Threading::Thread::GetDomainID() );
-          if(DelegateMapGeneric->ContainsKey(classid) )
-            return DelegateMapGeneric[classid];
-          else
-            return InternalDelegateMapGeneric[classid];//builtin types
-        }
-
-        /// <summary>
-        /// Static map of <c>TypeFactoryNativeMethod</c> delegates created
-        /// for builtin managed <c>TypeFactoryMethod</c> delegates.
-        /// This is so that the underlying managed objects do not get GCed.
-        /// </summary>
-        static Dictionary<Byte, TypeFactoryNativeMethodGeneric^>^ BuiltInDelegatesGeneric =
-          gcnew Dictionary<Byte, TypeFactoryNativeMethodGeneric^>();
-
-        /// <summary>
-        /// Static map of <c>TypeFactoryMethod</c> delegates created
-        /// for managed <c>TypeFactoryMethod</c> delegates.
-        /// </summary>
-        static Dictionary<System::Int64, TypeFactoryMethodGeneric^>^ ManagedDelegatesGeneric =
-          gcnew Dictionary<System::Int64, TypeFactoryMethodGeneric^>();
-
-        /// <summary>
-        /// This is to get manged delegates.
-        /// </summary>
-        static TypeFactoryMethodGeneric^ GetManagedDelegateGeneric(System::Int64 typeId)
-        {
-          TypeFactoryMethodGeneric^ ret = nullptr;
-          ManagedDelegatesGeneric->TryGetValue(typeId, ret);
-          return ret;
-        }
-
-        static IPdxSerializer^ PdxSerializer = nullptr;
-        static IPdxTypeMapper^ PdxTypeMapper = nullptr;
-        static Object^ LockObj = gcnew Object();
-        static Dictionary<String^, String^>^ PdxTypeNameToLocal =
-          gcnew Dictionary<String^, String^>();
-        static Dictionary<String^, String^>^ LocalTypeNameToPdx =
-          gcnew Dictionary<String^, String^>();
-
-
-        static Object^ ClassNameVsTypeLockObj = gcnew Object();
-        static Dictionary<String^, Type^>^ ClassNameVsType =
-          gcnew Dictionary<String^, Type^>();
-
-        delegate Object^ CreateNewObjectDelegate();
-        static CreateNewObjectDelegate^ CreateNewObjectDelegateF(Type^ type);
-       
-        delegate Object^ CreateNewObjectArrayDelegate(int len);
-        static CreateNewObjectArrayDelegate^ CreateNewObjectArrayDelegateF(Type^ type);
-        
-        static array<Type^>^ singleIntTypeA = gcnew array<Type^>{ Int32::typeid };
-
-        static Type^ createNewObjectDelegateType = Type::GetType("Apache.Geode.Client.Serializable+CreateNewObjectDelegate");
-        static Type^ createNewObjectArrayDelegateType = Type::GetType("Apache.Geode.Client.Serializable+CreateNewObjectArrayDelegate");
-
-        static array<Type^>^ singleIntType = gcnew array<Type^>(1){Int32::typeid};
-
-        static Object^ CreateObject(String^ className);
-        static Object^ GetArrayObject(String^ className, int len);
-        static Type^ getTypeFromRefrencedAssemblies(String^ className, Dictionary<Assembly^, bool>^ referedAssembly, Assembly^ currentAsm);
-
-        static Dictionary<String^, CreateNewObjectDelegate^>^ ClassNameVsCreateNewObjectDelegate =
-          gcnew Dictionary<String^, CreateNewObjectDelegate^>();
-
-        static Dictionary<String^, CreateNewObjectArrayDelegate^>^ ClassNameVsCreateNewObjectArrayDelegate =
-          gcnew Dictionary<String^, CreateNewObjectArrayDelegate^>();
-
-        static Object^ CreateObjectEx(String^ className);
-        static Object^ GetArrayObjectEx(String^ className, int len);
-        /// <summary>
-        /// Static array of managed <c>WrapperDelegate</c> delegates that
-        /// maintains a mapping of built-in native typeIds to their corresponding
-        /// wrapper type delegates.
-        /// </summary>
-        /// <remarks>
-        /// This is as an array to make lookup as fast as possible, taking
-        /// advantage of the fact that the range of wrapped built-in typeIds is
-        /// small. <b>IMPORTANT:</b> If the built-in native typeIds encompass a
-        /// greater range then change <c>WrapperEnd</c> in this accordingly
-        /// or move to using a Dictionary instead.
-        /// </remarks>
-        static array<WrapperDelegateGeneric^>^ NativeWrappersGeneric =
-          gcnew array<WrapperDelegateGeneric^>(WrapperEndGeneric + 1);
-        literal Byte WrapperEndGeneric = 128;
-
-        /// <summary>
-        /// Static method to register a managed wrapper for a native
-        /// <c>native::Serializable</c> type.
-        /// </summary>
-        /// <param name="wrapperMethod">
-        /// A factory delegate of the managed wrapper class that returns the
-        /// managed object given the native object.
-        /// </param>
-        /// <param name="typeId">The typeId of the native type.</param>
-        /// <seealso cref="NativeWrappers" />
-        static void RegisterWrapperGeneric(WrapperDelegateGeneric^ wrapperMethod,
-          Byte typeId, System::Type^ type);
-
-        /// <summary>
-        /// Internal static method to remove managed artifacts created by
-        /// RegisterType and RegisterWrapper methods when
-        /// <see cref="DistributedSystem.Disconnect" /> is called.
-        /// </summary>
-        static void UnregisterNativesGeneric();
-
-        /// <summary>
-        /// Static method to lookup the wrapper delegate for a given typeId.
-        /// </summary>
-        /// <param name="typeId">
-        /// The typeId of the native <c>native::Serializable</c> type.
-        /// </param>
-        /// <returns>
-        /// If a managed wrapper is registered for the given typeId then the
-        /// wrapper delegate is returned, else this returns null.
-        /// </returns>
-        inline static WrapperDelegateGeneric^ GetWrapperGeneric(Byte typeId)
-        {
-          if (typeId >= 0 && typeId <= WrapperEndGeneric) {
-            return NativeWrappersGeneric[typeId];
-          }
-          return nullptr;
-        }
-
-				static Serializable()
-        {
-          PdxTypeMapper = nullptr;
-          //RegisterPDXManagedCacheableKey();
-
-          {
-          Dictionary<Object^, Object^>^ dic = gcnew Dictionary<Object^, Object^>();
-          ManagedTypeMappingGeneric[dic->GetType()] = native::GeodeTypeIds::CacheableHashMap;
-          ManagedTypeMappingGeneric[dic->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableHashMap;
-          }
-
-          {
-          System::Collections::ArrayList^ arr = gcnew System::Collections::ArrayList();
-          ManagedTypeMappingGeneric[arr->GetType()] = native::GeodeTypeIds::CacheableVector;
-          }
-		  
-          {
-          System::Collections::Generic::LinkedList<Object^>^ linketList = gcnew  System::Collections::Generic::LinkedList<Object^>();
-          ManagedTypeMappingGeneric[linketList->GetType()] = native::GeodeTypeIds::CacheableLinkedList;
-          ManagedTypeMappingGeneric[linketList->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableLinkedList;
-          }
-		  
-          {
-          System::Collections::Generic::IList<Object^>^ iList = gcnew System::Collections::Generic::List<Object^>();
-          ManagedTypeMappingGeneric[iList->GetType()] = native::GeodeTypeIds::CacheableArrayList;
-          ManagedTypeMappingGeneric[iList->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableArrayList;
-          }
-
-          //TODO: Linked list, non generic stack, some other map types and see if more
-
-          {
-            System::Collections::Generic::Stack<Object^>^ stack = gcnew System::Collections::Generic::Stack<Object^>();
-            ManagedTypeMappingGeneric[stack->GetType()] = native::GeodeTypeIds::CacheableStack;
-            ManagedTypeMappingGeneric[stack->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableStack;
-          }
-          {
-            ManagedTypeMappingGeneric[SByte::typeid] = native::GeodeTypeIds::CacheableByte;
-            ManagedTypeMappingGeneric[Boolean::typeid] = native::GeodeTypeIds::CacheableBoolean;
-            ManagedTypeMappingGeneric[Char::typeid] = native::GeodeTypeIds::CacheableCharacter;
-            ManagedTypeMappingGeneric[Double::typeid] = native::GeodeTypeIds::CacheableDouble;
-            ManagedTypeMappingGeneric[String::typeid] = native::GeodeTypeIds::CacheableASCIIString;
-            ManagedTypeMappingGeneric[float::typeid] = native::GeodeTypeIds::CacheableFloat;
-            ManagedTypeMappingGeneric[Int16::typeid] = native::GeodeTypeIds::CacheableInt16;
-            ManagedTypeMappingGeneric[Int32::typeid] = native::GeodeTypeIds::CacheableInt32;
-            ManagedTypeMappingGeneric[Int64::typeid] = native::GeodeTypeIds::CacheableInt64;
-            ManagedTypeMappingGeneric[Type::GetType("System.Byte[]")] = native::GeodeTypeIds::CacheableBytes;
-            ManagedTypeMappingGeneric[Type::GetType("System.Double[]")] = native::GeodeTypeIds::CacheableDoubleArray;
-            ManagedTypeMappingGeneric[Type::GetType("System.Single[]")] = native::GeodeTypeIds::CacheableFloatArray;
-            ManagedTypeMappingGeneric[Type::GetType("System.Int16[]")] = native::GeodeTypeIds::CacheableInt16Array;
-            ManagedTypeMappingGeneric[Type::GetType("System.Int32[]")] = native::GeodeTypeIds::CacheableInt32Array;
-            ManagedTypeMappingGeneric[Type::GetType("System.Int64[]")] = native::GeodeTypeIds::CacheableInt64Array;
-            ManagedTypeMappingGeneric[Type::GetType("System.String[]")] = native::GeodeTypeIds::CacheableStringArray;
-            ManagedTypeMappingGeneric[Type::GetType("System.DateTime")] = native::GeodeTypeIds::CacheableDate;
-            ManagedTypeMappingGeneric[Type::GetType("System.Collections.Hashtable")] = native::GeodeTypeIds::CacheableHashTable;
-          }
+          
         }
 
         protected:

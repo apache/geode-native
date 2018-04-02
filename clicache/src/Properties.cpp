@@ -71,7 +71,7 @@ namespace Apache
         {
           std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key);
           auto nativeptr = m_nativeptr->get()->find(keyptr);
-          return Serializable::GetManagedValueGeneric<TPropValue>(nativeptr);
+          return TypeRegistry::GetManagedValueGeneric<TPropValue>(nativeptr);
         }
         finally
         {

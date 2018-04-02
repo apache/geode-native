@@ -558,8 +558,8 @@ namespace Apache.Geode.Client.UnitTests
 
     public void genericFEResultDCPdxTest(string locators)
     {
-      Serializable.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
       IRegion<string, IPdxSerializable> region = CacheHelper.GetVerifyRegion<string, IPdxSerializable>(QERegionName);
       Pool pl = CacheHelper.DCache.GetPoolManager().Find(poolName);
 

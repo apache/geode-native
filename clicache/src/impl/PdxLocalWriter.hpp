@@ -348,6 +348,12 @@ namespace Apache
           virtual IPdxWriter^ WriteField(String^ fieldName, Object^ fieldValue, Type^ type);
 
           virtual void WriteByte(Byte byte);//for internal purpose
+
+          property Apache::Geode::Client::Cache^ Cache
+          {
+            virtual Apache::Geode::Client::Cache^ get();
+          }
+
         };
       }
     }  // namespace Client

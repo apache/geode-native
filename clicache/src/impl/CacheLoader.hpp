@@ -66,9 +66,9 @@ namespace Apache
           {
             IRegion<TKey, TValue>^ gregion = Region<TKey, TValue>::Create(&region);
 
-            TKey gkey = Serializable::GetManagedValueGeneric<TKey>(key);
+            TKey gkey = TypeRegistry::GetManagedValueGeneric<TKey>(key);
 
-            Object^ ghelper = Serializable::GetManagedValueGeneric<Object^>(helper);
+            Object^ ghelper = TypeRegistry::GetManagedValueGeneric<Object^>(helper);
 
             return Serializable::GetUnmanagedValueGeneric<TValue>(m_loader->Load(gregion, gkey, ghelper));
           }

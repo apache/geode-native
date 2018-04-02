@@ -541,8 +541,8 @@ namespace Apache.Geode.Client.UnitTests
 
     public void registerPdxTypes()
     {
-      Serializable.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
     }
 
     void runCredentialsForNotifications()

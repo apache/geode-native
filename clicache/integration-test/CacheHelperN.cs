@@ -122,7 +122,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void pdxPutGet(bool caching, bool readPdxSerialized)
     {
-      Serializable.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
       IRegion<object, object> reg = CacheHelper.GetRegion<object, object>(m_regionName);
       PdxTests.PdxType pt = new PdxTests.PdxType();
       reg["pi"] = pt;
@@ -151,7 +151,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void pdxGetPut(bool caching, bool readPdxSerialized)
     {
-      Serializable.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
       IRegion<object, object> reg = CacheHelper.GetRegion<object, object>(m_regionName);
       PdxTests.PdxType pt = new PdxTests.PdxType();
 

@@ -320,7 +320,7 @@ namespace Apache
         System::Collections::IList^ list = (System::Collections::IList^)objectArray;
         this->WriteArrayLen(list->Count);
         WriteByte((int8_t)apache::geode::client::GeodeTypeIdsImpl::Class);
-        String^ pdxDomainClassname = Serializable::GetPdxTypeName(objectArray->GetType()->GetElementType()->FullName);
+        String^ pdxDomainClassname = m_cache->TypeRegistry->GetPdxTypeName(objectArray->GetType()->GetElementType()->FullName);
         WriteByte((int8_t)apache::geode::client::GeodeTypeIds::CacheableASCIIString);
         WriteUTF(pdxDomainClassname);
         for each(Object^ o in list)
@@ -484,9 +484,7 @@ namespace Apache
           return;
         }
 
-        //Apache::Geode::Client::Log::Debug("DataOutput::WriteObject " + obj);
-
-        Byte typeId = Apache::Geode::Client::Serializable::GetManagedTypeMappingGeneric(obj->GetType());
+        Byte typeId = m_cache->TypeRegistry->GetManagedTypeMappingGeneric(obj->GetType());
 
         switch (typeId)
         {
@@ -679,7 +677,7 @@ namespace Apache
               return;
             }
 
-            if (Serializable::IsObjectAndPdxSerializerRegistered(nullptr))
+            if (m_cache->TypeRegistry->PdxSerializer)
             {
               pdxObj = gcnew PdxWrapper(obj);
               WriteByte(GeodeClassIds::PDX);

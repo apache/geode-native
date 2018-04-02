@@ -58,7 +58,7 @@ namespace Apache
 
             auto set = static_cast<HSTYPE*>(m_nativeptr->get());
             for (const auto& iter : *set) {
-              auto key = Serializable::GetManagedValueGeneric<Object^>(iter);
+              auto key = TypeRegistry::GetManagedValueGeneric<Object^>(iter);
               output->WriteObject(key);
             }
 
@@ -157,7 +157,7 @@ namespace Apache
                     throw gcnew System::InvalidOperationException(
                       "Call MoveNext first.");
                   }
-                auto ret = Serializable::GetManagedValueGeneric<Object^>(*(*(m_nativeptr->get())));
+                auto ret = TypeRegistry::GetManagedValueGeneric<Object^>(*(*(m_nativeptr->get())));
                 GC::KeepAlive(this);
                 return ret;
               }
@@ -466,7 +466,7 @@ namespace Apache
                                               "elements from HashSet");
             }
             for (const auto& iter : *set) {
-              array[index++] = Serializable::GetManagedValueGeneric<Object^>(iter);
+              array[index++] = TypeRegistry::GetManagedValueGeneric<Object^>(iter);
             }
 
             GC::KeepAlive(m_nativeptr);

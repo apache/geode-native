@@ -353,8 +353,8 @@ namespace Apache.Geode.Client.UnitTests
         region = CacheHelper.GetVerifyRegion<object, object>(RegionName, credentials);
       else
         region = CacheHelper.GetVerifyRegion<object, object>(RegionName);
-      Serializable.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
       for (int opNum = 1; opNum <= numOps; ++opNum)
       {
         try
@@ -436,8 +436,8 @@ namespace Apache.Geode.Client.UnitTests
           region = CacheHelper.GetVerifyRegion<object, object>(RegionName, credentials);
       else
           region = CacheHelper.GetVerifyRegion<object, object>(RegionName);
-      Serializable.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
       for (int opNum = 1; opNum <= numOps; ++opNum)
       {
         try
@@ -532,8 +532,8 @@ namespace Apache.Geode.Client.UnitTests
     {
       string valPrefix = (useNewVal ? NValuePrefix : ValuePrefix);
       IRegion<object, object> region;
-      Serializable.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
       if (isMultiuser)
       {
         region = CacheHelper.GetVerifyRegion<object, object>(RegionName, credential);

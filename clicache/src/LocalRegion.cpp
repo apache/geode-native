@@ -50,7 +50,7 @@ namespace Apache
         {
           throw gcnew KeyNotFoundException("The given key was not present in the region");
         }
-        TValue returnVal = Serializable::GetManagedValueGeneric<TValue>( nativeptr );
+        TValue returnVal = TypeRegistry::GetManagedValueGeneric<TValue>( nativeptr );
         return returnVal;        
       }     
 
@@ -103,7 +103,7 @@ namespace Apache
         {
           throw gcnew KeyNotFoundException("The given key was not present in the region");
         }
-        TValue returnVal = Serializable::GetManagedValueGeneric<TValue>( nativeptr );
+        TValue returnVal = TypeRegistry::GetManagedValueGeneric<TValue>( nativeptr );
         return returnVal;
       }
 
@@ -149,8 +149,8 @@ namespace Apache
         for( System::Int32 index = 0; index < vc.size( ); index++ )
         {
           auto nativeptr = vc[ index ];  
-          TKey key = Serializable::GetManagedValueGeneric<TKey> (nativeptr->getKey());
-          TValue val = Serializable::GetManagedValueGeneric<TValue> (nativeptr->getValue());
+          TKey key = TypeRegistry::GetManagedValueGeneric<TKey> (nativeptr->getKey());
+          TValue val = TypeRegistry::GetManagedValueGeneric<TValue> (nativeptr->getValue());
           toArray[ index ] = KeyValuePair<TKey,TValue>(key, val);           
         }                      
         return ((System::Collections::Generic::IEnumerable<KeyValuePair<TKey,TValue>>^)toArray)->GetEnumerator();
@@ -179,8 +179,8 @@ namespace Apache
         for( System::Int32 index = 0; index < vc.size( ); index++ )
         {
           auto nativeptr = vc[ index ];                       
-          TKey key = Serializable::GetManagedValueGeneric<TKey> (nativeptr->getKey());
-          TValue val = Serializable::GetManagedValueGeneric<TValue> (nativeptr->getValue());            
+          TKey key = TypeRegistry::GetManagedValueGeneric<TKey> (nativeptr->getKey());
+          TValue val = TypeRegistry::GetManagedValueGeneric<TValue> (nativeptr->getValue());            
           toArray[ index ] = KeyValuePair<TKey,TValue>(key, val);           
         }
         return ((System::Collections::Generic::IEnumerable<Object^>^)toArray)->GetEnumerator();        
@@ -230,7 +230,7 @@ namespace Apache
         if (nativeptr == nullptr) {
           return false;
         }        
-        TValue value = Serializable::GetManagedValueGeneric<TValue>(nativeptr);
+        TValue value = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr);
         return ((Object^)value)->Equals(keyValuePair.Value);
       } 
 
@@ -262,7 +262,7 @@ namespace Apache
           return false;
         }
         else {
-          val = Serializable::GetManagedValueGeneric<TValue>( nativeptr );
+          val = TypeRegistry::GetManagedValueGeneric<TValue>( nativeptr );
           return true;
         }          
       }      
@@ -286,7 +286,7 @@ namespace Apache
         for( System::Int32 index = 0; index < vc.size( ); index++ )
         {            
           auto& nativeptr = vc[ index ];
-          keyarr[ index ] = Serializable::GetManagedValueGeneric<TKey>(nativeptr);
+          keyarr[ index ] = TypeRegistry::GetManagedValueGeneric<TKey>(nativeptr);
         }
         auto collectionlist = (System::Collections::Generic::ICollection<TKey>^)keyarr;
         return collectionlist;
@@ -314,7 +314,7 @@ namespace Apache
           for( System::Int32 index = 0; index < vc.size( ); index++ )
           {
             auto& nativeptr = vc[ index ];            
-            valarr[ index ] = Serializable::GetManagedValueGeneric<TValue>(nativeptr);
+            valarr[ index ] = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr);
           }
           auto collectionlist = (System::Collections::Generic::ICollection<TValue>^)valarr;
           return collectionlist;
@@ -913,8 +913,8 @@ namespace Apache
         for( System::Int32 index = 0; index < vc.size( ); index++ )
         {
           std::shared_ptr<apache::geode::client::RegionEntry> nativeptr =  vc[ index ];
-          TKey key = Serializable::GetManagedValueGeneric<TKey> (nativeptr->getKey());
-          TValue val = Serializable::GetManagedValueGeneric<TValue> (nativeptr->getValue());            
+          TKey key = TypeRegistry::GetManagedValueGeneric<TKey> (nativeptr->getKey());
+          TValue val = TypeRegistry::GetManagedValueGeneric<TValue> (nativeptr->getValue());            
           toArray[ startIdx ] = KeyValuePair<TKey,TValue>(key, val);
           ++startIdx;
         }               

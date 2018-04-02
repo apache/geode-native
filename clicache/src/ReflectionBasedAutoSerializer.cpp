@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+#include "Cache.hpp"
 #include "ReflectionBasedAutoSerializer.hpp"
 #include "PdxIdentityFieldAttribute.hpp"
 #include "Serializable.hpp"
@@ -22,6 +23,8 @@
 #include <msclr/lock.h>
 #include "ExceptionTypes.hpp"
 #include "impl/DotNetTypes.hpp"
+#include "TypeRegistry.hpp"
+
 namespace Apache
 {
   namespace Geode
@@ -309,7 +312,7 @@ namespace Apache
           return true;
         }
 
-        Object^ ReflectionBasedAutoSerializer::FromData(String^ o, IPdxReader^ reader )
+        Object^ ReflectionBasedAutoSerializer::FromData(String^ o, IPdxReader^ reader)
         {
           return deserializeFields(o, reader);
         }
@@ -340,37 +343,23 @@ namespace Apache
         //  serializeBaseClassFields(o, writer, ty->BaseType);
         }
 
-		  
-        /*void ReflectionBasedAutoSerializer::SerializeField(Object^ o, FieldInfo^ fi, IPdxWriter^ writer)
-        {
-          writer->WriteField(fi->Name, fi->GetValue(o), fi->FieldType);
-        }
-
-        Object^ ReflectionBasedAutoSerializer::DeserializeField(Object^ o, FieldInfo^ fi, IPdxReader^ reader)
-        {
-           return reader->ReadField(fi->Name,  fi->FieldType);  
-        }*/
-
         Object^ ReflectionBasedAutoSerializer::deserializeFields(String^ className, IPdxReader^ reader)
         {
-          Object^ o = CreateObject(className);
-          //Log::Debug("ReflectionBasedAutoSerializer::deserializeFields classname {0}: objectType {1}", className,o->GetType());
-          for each(FieldWrapper^ fi in GetFields(o->GetType()))
+          Object^ object = this->CreateObject(className, reader->Cache);
+
+          for each(FieldWrapper^ fi in GetFields(object->GetType()))
           {
-            //Log::Debug("1ReflectionBasedAutoSerializer::deserializeFields fieldName: {0}, fieldType: {1}", fi->FieldName, fi->FType);
             Object^ serializeValue = fi->DeserializeField(reader);
             serializeValue = ReadTransform( fi->FI, fi->FType, serializeValue);
-            //fi->FI->SetValue(o, serializeValue);            
-            fi->SetFieldValue(o, serializeValue);
+            fi->SetFieldValue(object, serializeValue);
           }
 
-          return o;
-          //deserializeBaseClassFields(o, reader, ty->BaseType);
+          return object;
         }
         
-        Object^ ReflectionBasedAutoSerializer::CreateObject(String^ className)
+        Object^ ReflectionBasedAutoSerializer::CreateObject(String^ className, Cache^ cache)
         {
-          return Serializable::CreateObject(className);
+          return cache->TypeRegistry->CreateObject(className);
         }
 
         bool ReflectionBasedAutoSerializer::IsPdxIdentityField(FieldInfo^ fi)
