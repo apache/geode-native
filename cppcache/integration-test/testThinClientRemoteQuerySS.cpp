@@ -507,7 +507,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
         ACE_OS::sprintf(portname, "port%zd-%zd", set, current);
 
         auto portKey = CacheableKey::create(portname);
-        auto port = std::make_shared<PortfolioPdx>(current, 1);
+        auto port =
+            std::make_shared<PortfolioPdx>(static_cast<int32_t>(current), 1);
 
         portKeys.push_back(portKey);
         expectedPortMap.emplace(portKey, port);
