@@ -285,7 +285,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, dofuncOps)
 #ifdef __linux
 
     for (int thdIdx = 0; thdIdx < nThreads; thdIdx++) {
-      threads[thdIdx] = new putThread(regPtr0, 0, 500, false);
+      threads[thdIdx] = new putThread(regPtr0, 0, 500);
       threads[thdIdx]->start();
     }
 #endif
