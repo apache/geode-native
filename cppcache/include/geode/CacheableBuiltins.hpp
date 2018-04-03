@@ -39,7 +39,7 @@ namespace client {
 
 /** Template CacheableKey class for primitive types. */
 template <typename TObj, int8_t TYPEID, const char* TYPENAME>
-class CacheableKeyType : public CacheableKey {
+class APACHE_GEODE_EXPORT CacheableKeyType : public CacheableKey {
  protected:
   TObj m_value;
 
@@ -140,7 +140,7 @@ inline void copyArray(std::shared_ptr<TObj>* dest,
 
 /** Template class for container Cacheable types. */
 template <typename TBase, int8_t TYPEID>
-class CacheableContainerType : public Cacheable, public TBase {
+class APACHE_GEODE_EXPORT CacheableContainerType : public Cacheable, public TBase {
  protected:
   inline CacheableContainerType() : TBase() {}
 
@@ -195,7 +195,7 @@ class CacheableContainerType : public Cacheable, public TBase {
 
 #define _GEODE_CACHEABLE_KEY_TYPE_DEF_(p, k)           \
   extern const char tName_##k[];                       \
-  template class APACHE_GEODE_EXPORT                   \
+  template class                                       \
       CacheableKeyType<p, GeodeTypeIds::k, tName_##k>; \
   typedef CacheableKeyType<p, GeodeTypeIds::k, tName_##k> _##k;
 
@@ -231,7 +231,7 @@ class CacheableContainerType : public Cacheable, public TBase {
   }
 
 #define _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(p, c) \
-  template class APACHE_GEODE_EXPORT               \
+  template class                                   \
       CacheableContainerType<p, GeodeTypeIds::c>;  \
   typedef CacheableContainerType<p, GeodeTypeIds::c> _##c;
 

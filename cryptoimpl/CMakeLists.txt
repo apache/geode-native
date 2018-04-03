@@ -17,7 +17,7 @@ cmake_minimum_required(VERSION 3.4)
 project(cryptoImpl LANGUAGES CXX)
 
 add_library(cryptoImpl SHARED
-  cryptoImpl_export.h
+  ${CMAKE_CURRENT_BINARY_DIR}/cryptoimpl_export.h
   DHImpl.hpp
   DHImpl.cpp
   Ssl.hpp
@@ -29,7 +29,7 @@ generate_export_header(cryptoImpl)
 
 target_include_directories(cryptoImpl
   PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 
 target_link_libraries(cryptoImpl
   PRIVATE
