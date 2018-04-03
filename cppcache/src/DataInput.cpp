@@ -45,7 +45,8 @@ void DataInput::readJavaModifiedUtf8(
   readJavaModifiedUtf8(utf16);
   value = to_utf8(utf16);
 }
-template void DataInput::readJavaModifiedUtf8(std::string&);
+template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void
+DataInput::readJavaModifiedUtf8(std::string&);
 
 template <class _Traits, class _Allocator>
 void DataInput::readJavaModifiedUtf8(
@@ -56,7 +57,8 @@ void DataInput::readJavaModifiedUtf8(
       JavaModifiedUtf8::decode(reinterpret_cast<const char*>(m_buf), length);
   advanceCursor(length);
 }
-template void DataInput::readJavaModifiedUtf8(std::u16string&);
+template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void
+DataInput::readJavaModifiedUtf8(std::u16string&);
 
 template <class _Traits, class _Allocator>
 void DataInput::readJavaModifiedUtf8(
@@ -66,7 +68,8 @@ void DataInput::readJavaModifiedUtf8(
   readJavaModifiedUtf8(utf16);
   value = to_ucs4(utf16);
 }
-template void DataInput::readJavaModifiedUtf8(std::u32string&);
+template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void
+DataInput::readJavaModifiedUtf8(std::u32string&);
 
 template <class _Traits, class _Allocator>
 void DataInput::readUtf16Huge(
@@ -76,7 +79,8 @@ void DataInput::readUtf16Huge(
   readUtf16Huge(utf16);
   value = to_utf8(utf16);
 }
-template void DataInput::readUtf16Huge(std::string&);
+template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void DataInput::readUtf16Huge(
+    std::string&);
 
 template <class _Traits, class _Allocator>
 void DataInput::readUtf16Huge(
@@ -86,7 +90,8 @@ void DataInput::readUtf16Huge(
   readUtf16Huge(utf16);
   value = to_ucs4(utf16);
 }
-template void DataInput::readUtf16Huge(std::u32string&);
+template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void DataInput::readUtf16Huge(
+    std::u32string&);
 
 }  // namespace client
 }  // namespace geode

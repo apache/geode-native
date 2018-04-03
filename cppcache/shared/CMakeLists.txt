@@ -18,8 +18,15 @@ project(apache-geode LANGUAGES CXX)
 
 add_library(apache-geode SHARED ${SOURCES_ALL} ${RESOURCES})
 
+if (WIN32)
+  set(EXPORT_HEADER_CUSTOM_CONTENT "#define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT APACHE_GEODE_EXPORT")
+else()
+  set(EXPORT_HEADER_CUSTOM_CONTENT "#define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT")
+endif()
 include(GenerateExportHeader)
-generate_export_header(apache-geode EXPORT_FILE_NAME ${EXPORT_FILE_NAME})
+generate_export_header(apache-geode 
+  EXPORT_FILE_NAME ${EXPORT_FILE_NAME}
+  CUSTOM_CONTENT_FROM_VARIABLE EXPORT_HEADER_CUSTOM_CONTENT)
 
 set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)
 

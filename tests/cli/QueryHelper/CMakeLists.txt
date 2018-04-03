@@ -16,13 +16,13 @@
 cmake_minimum_required(VERSION 3.10)
 project(QueryWrapper LANGUAGES CXX)
 
-add_library(${PROJECT_NAME} SHARED 
+add_library(QueryWrapper SHARED 
   AssemblyInfo.cpp
   QueryStringsM.cpp
   QueryStringsM.hpp
 )
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
+set_target_properties(QueryWrapper PROPERTIES
   VS_GLOBAL_CLRSupport "true"
   VS_GLOBAL_KEYWORD "ManagedCProj"
   VS_GLOBAL_PROJECT_TYPES "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
@@ -31,28 +31,31 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   VS_DOTNET_REFERENCES "System;System.Xml"
 )
 
-target_compile_options(${PROJECT_NAME}
+target_compile_options(QueryWrapper
   PRIVATE
 	# disabled warnings
 	/wd4947
 )
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(QueryWrapper
   PRIVATE
     $<BUILD_INTERFACE:$<TARGET_PROPERTY:Apache.Geode,SOURCE_DIR>>
     $<BUILD_INTERFACE:$<TARGET_PROPERTY:testThinClientRemoteQueryRS,SOURCE_DIR>>
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(QueryWrapper
   PUBLIC 
-    Apache.Geode
+    # Apache.Geode #- Causes include of .lib
   PRIVATE
     c++cli
     c++11
 )
 
+# Makes project only reference, no .lib.
+add_dependencies(QueryWrapper Apache.Geode)
+
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SHARED_LINKER_FLAGS_STRONG_KEY}")
 
 # For Visual Studio organization
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER test/cliTests)
+set_target_properties(QueryWrapper PROPERTIES FOLDER test/cliTests)
