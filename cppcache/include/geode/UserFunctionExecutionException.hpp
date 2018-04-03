@@ -38,7 +38,7 @@ class DataOutput;
  * @brief UserFunctionExecutionException class is used to encapsulate geode
  * sendException in case of Function execution.
  */
-class UserFunctionExecutionException : public Serializable {
+class APACHE_GEODE_EXPORT UserFunctionExecutionException : public Serializable {
  public:
   explicit UserFunctionExecutionException(std::string message)
       : m_message(std::move(message)) {}

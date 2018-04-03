@@ -36,7 +36,10 @@ target_include_directories(apache-geode
 
 set_target_properties(apache-geode PROPERTIES
   PUBLIC_HEADER "${PUBLIC_HEADERS}"
-  OUTPUT_NAME ${PRODUCT_LIB_NAME})
+  OUTPUT_NAME ${PRODUCT_LIB_NAME}
+  CXX_VISIBILITY_PRESET hidden
+  VISIBILITY_INLINES_HIDDEN ON
+  )
 
 add_dependencies(client-libraries apache-geode)
 
