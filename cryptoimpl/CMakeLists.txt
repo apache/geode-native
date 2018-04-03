@@ -31,6 +31,10 @@ target_include_directories(cryptoImpl
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 
+set_target_properties(cryptoImpl PROPERTIES
+  CXX_VISIBILITY_PRESET hidden
+  VISIBILITY_INLINES_HIDDEN ON)
+
 target_link_libraries(cryptoImpl
   PRIVATE
     ACE_SSL
