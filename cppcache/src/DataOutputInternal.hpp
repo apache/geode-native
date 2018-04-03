@@ -32,7 +32,7 @@ class DataOutputInternal : public DataOutput {
  public:
   DataOutputInternal() : DataOutput() {}
 
-  DataOutputInternal(CacheImpl* cache) : DataOutput(cache) {}
+  DataOutputInternal(CacheImpl* cache) : DataOutput(cache, EMPTY_STRING) {}
 
   virtual const Cache* getCache() override {
     throw FatalInternalException("DataOutputInternal does not have a Cache");

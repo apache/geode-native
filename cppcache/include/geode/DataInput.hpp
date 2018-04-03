@@ -488,7 +488,7 @@ class APACHE_GEODE_EXPORT DataInput {
  protected:
   /** constructor given a pre-allocated byte array with size */
   DataInput(const uint8_t* m_buffer, size_t len, const CacheImpl* cache,
-            const std::string& poolName = EMPTY_STRING)
+            const std::string& poolName)
       : m_buf(m_buffer),
         m_bufHead(m_buffer),
         m_bufLength(len),

@@ -503,7 +503,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   /**
    * Construct a new DataOutput.
    */
-  DataOutput(const CacheImpl* cache, const std::string& poolName = EMPTY_STRING);
+  DataOutput(const CacheImpl* cache, const std::string& poolName);
 
   DataOutput() : DataOutput(nullptr, EMPTY_STRING) {}
 
