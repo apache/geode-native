@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include <string>
-#include <string>
 
 #include <ace/OS.h>
 #include <geode/CacheStatistics.hpp>
@@ -46,15 +45,15 @@
 
 using namespace apache::geode::client;
 
-CacheImpl::CacheImpl(Cache* c, std::unique_ptr<DistributedSystem> sys,
-                     bool iPUF, bool readPdxSerialized,
+CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem, bool iPUF,
+                     bool readPdxSerialized,
                      const std::shared_ptr<AuthInitialize>& authInitialize)
     : m_defaultPool(nullptr),
       m_ignorePdxUnreadFields(iPUF),
       m_readPdxSerialized(readPdxSerialized),
       m_closed(false),
       m_initialized(false),
-      m_distributedSystem(std::move(sys)),
+      m_distributedSystem(std::move(distributedSystem)),
       m_cache(c),
       m_cond(m_mutex),
       m_attributes(nullptr),
@@ -70,15 +69,15 @@ CacheImpl::CacheImpl(Cache* c, std::unique_ptr<DistributedSystem> sys,
       m_pdxTypeRegistry(nullptr),
       m_expiryTaskManager(
           std::unique_ptr<ExpiryTaskManager>(new ExpiryTaskManager())),
-      m_clientProxyMembershipIDFactory(m_distributedSystem->getName()),
+      m_clientProxyMembershipIDFactory(m_distributedSystem.getName()),
       m_threadPool(new ThreadPool(
-          m_distributedSystem->getSystemProperties().threadPoolSize())),
+          m_distributedSystem.getSystemProperties().threadPoolSize())),
       m_authInitialize(authInitialize) {
   m_cacheTXManager = std::shared_ptr<InternalCacheTransactionManager2PC>(
       new InternalCacheTransactionManager2PCImpl(this));
 
   m_regions = new MapOfRegionWithLock();
-  auto& prop = m_distributedSystem->getSystemProperties();
+  auto& prop = m_distributedSystem.getSystemProperties();
   if (prop.heapLRULimitEnabled()) {
     m_evictionControllerPtr =
         new EvictionController(prop.heapLRULimit(), prop.heapLRUDelta(), this);
@@ -105,7 +104,7 @@ void CacheImpl::initServices() {
     m_tcrConnectionManager->init();
     m_remoteQueryServicePtr = std::make_shared<RemoteQueryService>(this);
     // StartAdminRegion
-    auto& prop = m_distributedSystem->getSystemProperties();
+    auto& prop = m_distributedSystem.getSystemProperties();
     if (prop.statisticsEnabled()) {
       m_adminRegion = AdminRegion::create(this);
     }
@@ -148,7 +147,8 @@ CacheImpl::RegionKind CacheImpl::getRegionKind(
       regionKind = THINCLIENT_REGION;
     }
   } else if (!regionAttributes.getPoolName().empty()) {
-    auto pPtr = getCache()->getPoolManager().find(regionAttributes.getPoolName());
+    auto pPtr =
+        getCache()->getPoolManager().find(regionAttributes.getPoolName());
     if ((pPtr != nullptr && (pPtr->getSubscriptionRedundancy() > 0 ||
                              pPtr->getSubscriptionEnabled())) ||
         m_tcrConnectionManager->isDurable()) {
@@ -171,6 +171,7 @@ int CacheImpl::removeRegion(const char* name) {
   MapOfRegionGuard guard(m_regions->mutex());
   return m_regions->unbind(name);
 }
+
 std::shared_ptr<QueryService> CacheImpl::getQueryService(bool noInit) {
   if (m_defaultPool != nullptr) {
     if (m_defaultPool->isDestroyed()) {
@@ -188,19 +189,20 @@ std::shared_ptr<QueryService> CacheImpl::getQueryService(bool noInit) {
   }
   return m_remoteQueryServicePtr;
 }
- std::shared_ptr<QueryService> CacheImpl::getQueryService(const char* poolName) {
-   if (poolName == nullptr || strlen(poolName) == 0) {
-     throw IllegalArgumentException("PoolName is nullptr or not defined..");
-   }
-   auto pool = getCache()->getPoolManager().find(poolName);
 
-   if (pool != nullptr) {
-     if (pool->isDestroyed()) {
-       throw IllegalStateException("Pool has been destroyed.");
-     }
-     return pool->getQueryService();
-   } else {
-     throw IllegalArgumentException("Pool not found..");
+std::shared_ptr<QueryService> CacheImpl::getQueryService(const char* poolName) {
+  if (poolName == nullptr || strlen(poolName) == 0) {
+    throw IllegalArgumentException("PoolName is nullptr or not defined..");
+  }
+  auto pool = getCache()->getPoolManager().find(poolName);
+
+  if (pool != nullptr) {
+    if (pool->isDestroyed()) {
+      throw IllegalStateException("Pool has been destroyed.");
+    }
+    return pool->getQueryService();
+  } else {
+    throw IllegalArgumentException("Pool not found..");
   }
 }
 
@@ -215,7 +217,7 @@ CacheImpl::~CacheImpl() {
 }
 
 const std::string& CacheImpl::getName() const {
-  return m_distributedSystem->getName();
+  return m_distributedSystem.getName();
 }
 
 bool CacheImpl::isClosed() const { return m_closed; }
@@ -226,8 +228,8 @@ void CacheImpl::setAttributes(const std::shared_ptr<CacheAttributes>& attrs) {
   }
 }
 
-DistributedSystem& CacheImpl::getDistributedSystem() const {
-  return *m_distributedSystem;
+DistributedSystem& CacheImpl::getDistributedSystem() {
+  return m_distributedSystem;
 }
 
 void CacheImpl::sendNotificationCloseMsgs() {
@@ -281,12 +283,12 @@ void CacheImpl::close(bool keepalive) {
        ++q) {
     // TODO: remove dynamic_cast here by having RegionInternal in the regions
     // map
-   auto rImpl =
-        std::dynamic_pointer_cast<RegionInternal>((*q).int_id_);
-   if (rImpl != nullptr) {
-     rImpl->destroyRegionNoThrow(
-         nullptr, false, CacheEventFlags::LOCAL | CacheEventFlags::CACHE_CLOSE);
-   }
+    auto rImpl = std::dynamic_pointer_cast<RegionInternal>((*q).int_id_);
+    if (rImpl != nullptr) {
+      rImpl->destroyRegionNoThrow(
+          nullptr, false,
+          CacheEventFlags::LOCAL | CacheEventFlags::CACHE_CLOSE);
+    }
   }
 
   if (m_evictionControllerPtr != nullptr) {
@@ -325,8 +327,7 @@ void CacheImpl::close(bool keepalive) {
 bool CacheImpl::isCacheDestroyPending() const { return m_destroyPending; }
 
 void CacheImpl::validateRegionAttributes(
-    const std::string& name,
-    const RegionAttributes regionAttributes) const {
+    const std::string& name, const RegionAttributes regionAttributes) const {
   auto&& kind = getRegionKind(regionAttributes);
   if (regionAttributes.m_clientNotificationEnabled && kind == CPP_REGION) {
     throw UnsupportedOperationException(
@@ -338,17 +339,16 @@ void CacheImpl::validateRegionAttributes(
 // We'll pass a nullptr loader function pointer and let the region.get method to
 // do a load using a real C++ loader, instead of passing a member function
 // pointer here
-void CacheImpl::createRegion(
-    std::string name,
-    RegionAttributes regionAttributes,
-    std::shared_ptr<Region>& regionPtr) {
+void CacheImpl::createRegion(std::string name,
+                             RegionAttributes regionAttributes,
+                             std::shared_ptr<Region>& regionPtr) {
   {
     ACE_Guard<ACE_Thread_Mutex> _guard(m_initDoneLock);
     if (!m_initDone) {
       if (regionAttributes.getPoolName().empty()) {
         m_tcrConnectionManager->init();
         m_remoteQueryServicePtr = std::make_shared<RemoteQueryService>(this);
-        auto& prop = m_distributedSystem->getSystemProperties();
+        auto& prop = m_distributedSystem.getSystemProperties();
         if (prop.statisticsEnabled()) {
           m_adminRegion = AdminRegion::create(this);
         }
@@ -379,10 +379,10 @@ void CacheImpl::createRegion(
                                   "\" region exists in local cache");
     }
 
-    auto csptr = std::make_shared<CacheStatistics>();
+    auto cacheStatistics = std::make_shared<CacheStatistics>();
     try {
       rpImpl = createRegion_internal(name, nullptr, regionAttributes,
-                                     csptr, false);
+                                     cacheStatistics, false);
     } catch (const AuthenticationFailedException&) {
       throw;
     } catch (const AuthenticationRequiredException&) {
@@ -397,20 +397,22 @@ void CacheImpl::createRegion(
       throw UnknownException("Cache::createRegion: Failed to create Region \"" +
                              name + "\" due to unknown exception.");
     }
+
     if (rpImpl == nullptr) {
       throw RegionCreationFailedException(
           "Cache::createRegion: Failed to create Region \"" + name + "\"");
     }
+
     regionPtr = rpImpl;
     rpImpl->addDisMessToQueue();
     // Instantiate a PersistenceManager object if DiskPolicy is overflow
     if (regionAttributes.getDiskPolicy() == DiskPolicyType::OVERFLOWS) {
-     auto pmPtr = regionAttributes.getPersistenceManager();
+      auto pmPtr = regionAttributes.getPersistenceManager();
       if (pmPtr == nullptr) {
         throw NullPointerException(
             "PersistenceManager could not be instantiated");
       }
-     auto props = regionAttributes.getPersistenceProperties();
+      auto props = regionAttributes.getPersistenceProperties();
       pmPtr->init(regionPtr, props);
       rpImpl->setPersistenceManager(pmPtr);
     }
@@ -421,7 +423,7 @@ void CacheImpl::createRegion(
     // When region is created, added that region name in client meta data
     // service to fetch its
     // metadata for single hop.
-    auto& props = m_distributedSystem->getSystemProperties();
+    auto& props = m_distributedSystem.getSystemProperties();
     if (!props.isGridClient()) {
       const auto& poolName = regionAttributes.getPoolName();
       if (!poolName.empty()) {
@@ -445,8 +447,6 @@ void CacheImpl::createRegion(
   // schedule the root region expiry if regionExpiry enabled.
   rpImpl->setRegionExpiryTask();
   rpImpl->releaseReadLock();
-  //   LOGFINE( "Returning from CacheImpl::createRegion call for Region %s",
-  //   regionPtr->getFullPath() );
 }
 
 /**
@@ -502,21 +502,14 @@ void CacheImpl::getRegion(const std::string& path,
 
 std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
     const std::string& name, const std::shared_ptr<RegionInternal>& rootRegion,
-    const RegionAttributes& attrs, const std::shared_ptr<CacheStatistics>& csptr,
-    bool shared) {
-
+    const RegionAttributes& attrs,
+    const std::shared_ptr<CacheStatistics>& csptr, bool shared) {
   std::shared_ptr<RegionInternal> rptr = nullptr;
   RegionKind regionKind = getRegionKind(attrs);
   const auto& poolName = attrs.getPoolName();
   const auto& regionEndpoints = attrs.getEndpoints();
   const std::string cacheEndpoints =
       m_attributes ? m_attributes->getEndpoints() : "";
-
-  /*if(m_defaultPool != nullptr && (poolName == nullptr || strlen(poolName) ==
-  0))
-  {
-    attrs->setPoolName(m_defaultPool->getName());
-  }*/
 
   if (!poolName.empty()) {
     auto pool = getCache()->getPoolManager().find(poolName);
@@ -580,7 +573,7 @@ void CacheImpl::rootRegions(std::vector<std::shared_ptr<Region>>& regions) {
   regions.reserve(static_cast<int32_t>(m_regions->current_size()));
   for (MapOfRegionWithLock::iterator q = m_regions->begin();
        q != m_regions->end(); ++q) {
-    if ((*q).int_id_->isDestroyed() == false) {
+    if (!(*q).int_id_->isDestroyed()) {
       regions.push_back((*q).int_id_);
     }
   }
@@ -592,7 +585,7 @@ EvictionController* CacheImpl::getEvictionController() {
 
 void CacheImpl::readyForEvents() {
   bool autoReadyForEvents =
-      m_distributedSystem->getSystemProperties().autoReadyForEvents();
+      m_distributedSystem.getSystemProperties().autoReadyForEvents();
   bool isDurable = m_tcrConnectionManager->isDurable();
 
   if (!isDurable && autoReadyForEvents) {
@@ -700,64 +693,55 @@ RegionFactory CacheImpl::createRegionFactory(RegionShortcut preDefinedRegion) {
 std::map<std::string, RegionAttributes> CacheImpl::getRegionShortcut() {
   std::map<std::string, RegionAttributes> preDefined;
 
-  {
-    // PROXY
-    auto regAttr_PROXY = RegionAttributes();
-    regAttr_PROXY.setCachingEnabled(false);
-    preDefined["PROXY"] = regAttr_PROXY;
-  }
+  // PROXY
+  auto regAttr_PROXY = RegionAttributes();
+  regAttr_PROXY.setCachingEnabled(false);
+  preDefined["PROXY"] = regAttr_PROXY;
 
-  {
-    // CACHING_PROXY
-    auto regAttr_CACHING_PROXY = RegionAttributes();
-    regAttr_CACHING_PROXY.setCachingEnabled(true);
-    preDefined["CACHING_PROXY"] = regAttr_CACHING_PROXY;
-  }
+  // CACHING_PROXY
+  auto regAttr_CACHING_PROXY = RegionAttributes();
+  regAttr_CACHING_PROXY.setCachingEnabled(true);
+  preDefined["CACHING_PROXY"] = regAttr_CACHING_PROXY;
 
-  {
-    // CACHING_PROXY_ENTRY_LRU
-    auto regAttr_CACHING_PROXY_LRU = RegionAttributes();
-    regAttr_CACHING_PROXY_LRU.setCachingEnabled(true);
-    regAttr_CACHING_PROXY_LRU.setLruEntriesLimit(DEFAULT_LRU_MAXIMUM_ENTRIES);
-    preDefined["CACHING_PROXY_ENTRY_LRU"] = regAttr_CACHING_PROXY_LRU;
-  }
+  // CACHING_PROXY_ENTRY_LRU
+  auto regAttr_CACHING_PROXY_LRU = RegionAttributes();
+  regAttr_CACHING_PROXY_LRU.setCachingEnabled(true);
+  regAttr_CACHING_PROXY_LRU.setLruEntriesLimit(DEFAULT_LRU_MAXIMUM_ENTRIES);
+  preDefined["CACHING_PROXY_ENTRY_LRU"] = regAttr_CACHING_PROXY_LRU;
 
-  {
-    // LOCAL
-    auto regAttr_LOCAL = RegionAttributes();
-    preDefined["LOCAL"] = regAttr_LOCAL;
-  }
+  // LOCAL
+  auto regAttr_LOCAL = RegionAttributes();
+  preDefined["LOCAL"] = regAttr_LOCAL;
 
-  {
-    // LOCAL_ENTRY_LRU
-    auto regAttr_LOCAL_LRU = RegionAttributes();
-    regAttr_LOCAL_LRU.setLruEntriesLimit(DEFAULT_LRU_MAXIMUM_ENTRIES);
-    preDefined["LOCAL_ENTRY_LRU"] = regAttr_LOCAL_LRU;
-  }
+  // LOCAL_ENTRY_LRU
+  auto regAttr_LOCAL_LRU = RegionAttributes();
+  regAttr_LOCAL_LRU.setLruEntriesLimit(DEFAULT_LRU_MAXIMUM_ENTRIES);
+  preDefined["LOCAL_ENTRY_LRU"] = regAttr_LOCAL_LRU;
 
   return preDefined;
 }
 
 std::shared_ptr<PdxTypeRegistry> CacheImpl::getPdxTypeRegistry() const {
   return m_pdxTypeRegistry;
- }
+}
 
 std::shared_ptr<SerializationRegistry> CacheImpl::getSerializationRegistry()
-     const {
-   return m_serializationRegistry;
+    const {
+  return m_serializationRegistry;
 }
 
 ThreadPool* CacheImpl::getThreadPool() { return m_threadPool; }
 std::shared_ptr<CacheTransactionManager>
 CacheImpl::getCacheTransactionManager() {
   return m_cacheTXManager;
-} std::shared_ptr<MemberListForVersionStamp> CacheImpl::getMemberListForVersionStamp() {
+}
+
+std::shared_ptr<MemberListForVersionStamp>
+CacheImpl::getMemberListForVersionStamp() {
   static auto versionStampMemIdList =
       new std::shared_ptr<MemberListForVersionStamp>(
           new MemberListForVersionStamp());
   return *versionStampMemIdList;
 }
 
-void CacheImpl::setCache(Cache* cache) {
-  m_cache = cache;
-}
+void CacheImpl::setCache(Cache* cache) { m_cache = cache; }

@@ -25,21 +25,13 @@
 #include <geode/SystemProperties.hpp>
 #include <geode/DataOutput.hpp>
 
-#include "config.h"
-#include "version.h"
-
 #include "CppCacheLibrary.hpp"
 #include "Utils.hpp"
 #include "util/Log.hpp"
-#include "statistics/StatisticsManager.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "CacheImpl.hpp"
 #include "TcrMessage.hpp"
 #include "DistributedSystemImpl.hpp"
-#include "RegionStats.hpp"
-#include "PoolStatistics.hpp"
-#include "CacheRegionHelper.hpp"
-#include "DiffieHellman.hpp"
 
 namespace apache {
 namespace geode {
@@ -47,56 +39,18 @@ namespace client {
 
 using namespace apache::geode::statistics;
 
-DistributedSystem::DistributedSystem(
-    const std::string& name,
-    std::unique_ptr<SystemProperties> sysProps)
-    : m_name(name),
-      m_statisticsManager(nullptr),
-      m_sysProps(std::move(sysProps)),
-      m_connected(false) {
-  LOGDEBUG("DistributedSystem::DistributedSystem");
-  if (!m_sysProps->securityClientDhAlgo().empty()) {
-    DiffieHellman::initOpenSSLFuncPtrs();
-  }
-}
-DistributedSystem::~DistributedSystem() {}
+DistributedSystem::DistributedSystem(const std::string& name,
+                                     std::unique_ptr<SystemProperties> sysProps)
+    : m_impl(new DistributedSystemImpl(name, this, std::move(sysProps))) {}
 
-void DistributedSystem::logSystemInformation() const {
-  std::string gfcpp = CppCacheLibrary::getProductDir();
-  LOGCONFIG("Using Geode Native Client Product Directory: %s", gfcpp.c_str());
-
-  // Add version information, source revision, current directory etc.
-  LOGCONFIG("Product version: %s",
-            PRODUCT_VENDOR " " PRODUCT_NAME " " PRODUCT_VERSION
-                           " (" PRODUCT_BITS ") " PRODUCT_BUILDDATE);
-  LOGCONFIG("Source revision: %s", PRODUCT_SOURCE_REVISION);
-  LOGCONFIG("Source repository: %s", PRODUCT_SOURCE_REPOSITORY);
-
-  ACE_utsname u;
-  ACE_OS::uname(&u);
-  LOGCONFIG(
-      "Running on: SystemName=%s Machine=%s Host=%s Release=%s Version=%s",
-      u.sysname, u.machine, u.nodename, u.release, u.version);
-
-#ifdef _WIN32
-  const uint32_t pathMax = _MAX_PATH;
-#else
-  const uint32_t pathMax = PATH_MAX;
-#endif
-  ACE_TCHAR cwd[pathMax + 1];
-  (void)ACE_OS::getcwd(cwd, pathMax);
-  LOGCONFIG("Current directory: %s", cwd);
-  LOGCONFIG("Current value of PATH: %s", ACE_OS::getenv("PATH"));
-#ifndef _WIN32
-  const char* ld_libpath = ACE_OS::getenv("LD_LIBRARY_PATH");
-  LOGCONFIG("Current library path: %s",
-            ld_libpath == nullptr ? "nullptr" : ld_libpath);
-#endif
-  // Log the Geode system properties
-  m_sysProps->logSettings();
+DistributedSystem::DistributedSystem(DistributedSystem&& moved)
+    : m_impl(std::move(moved.m_impl)) {
+  m_impl->m_implementee = this;
 }
 
-std::unique_ptr<DistributedSystem> DistributedSystem::create(
+DistributedSystem::~DistributedSystem() noexcept = default;
+
+DistributedSystem DistributedSystem::create(
     const std::string& _name, const std::shared_ptr<Properties>& configPtr) {
   // TODO global - Refactory out the static initialization
   // Trigger other library initialization.
@@ -133,7 +87,7 @@ std::unique_ptr<DistributedSystem> DistributedSystem::create(
   }
 
   try {
-    std::string gfcpp = CppCacheLibrary::getProductDir();
+    CppCacheLibrary::getProductDir();
   } catch (const Exception&) {
     LOGERROR(
         "Unable to determine Product Directory. Please set the "
@@ -141,93 +95,27 @@ std::unique_ptr<DistributedSystem> DistributedSystem::create(
     throw;
   }
 
-  auto distributedSystem = std::unique_ptr<DistributedSystem>(
-      new DistributedSystem(name,  std::move(sysProps)));
-  if (!distributedSystem) {
-    throw NullPointerException("DistributedSystem::connect: new failed");
-  }
-  distributedSystem->m_impl =
-      new DistributedSystemImpl(name.c_str(), distributedSystem.get());
+  auto distributedSystem = DistributedSystem(name, std::move(sysProps));
 
-  distributedSystem->logSystemInformation();
   LOGCONFIG("Starting the Geode Native Client");
   return distributedSystem;
 }
 
-void DistributedSystem::connect(Cache* cache) {
-  if (m_connected == true) {
-    throw AlreadyConnectedException(
-        "DistributedSystem::connect: already connected, call getInstance to "
-        "get it");
-  }
+void DistributedSystem::connect(Cache* cache) { m_impl->connect(cache); }
 
-  try {
-    m_impl->connect();
-  } catch (const apache::geode::client::Exception& e) {
-    LOGERROR("Exception caught during client initialization: %s", e.what());
-    std::string msg = "DistributedSystem::connect: caught exception: ";
-    msg.append(e.what());
-    throw NotConnectedException(msg.c_str());
-  } catch (const std::exception& e) {
-    LOGERROR("Exception caught during client initialization: %s", e.what());
-    std::string msg = "DistributedSystem::connect: caught exception: ";
-    msg.append(e.what());
-    throw NotConnectedException(msg.c_str());
-  } catch (...) {
-    LOGERROR("Unknown exception caught during client initialization");
-    throw NotConnectedException(
-        "DistributedSystem::connect: caught unknown exception");
-  }
-
-  auto cacheImpl = CacheRegionHelper::getCacheImpl(cache);
-  try {
-    m_statisticsManager =
-        std::unique_ptr<StatisticsManager>(new StatisticsManager(
-            m_sysProps->statisticsArchiveFile().c_str(),
-            m_sysProps->statisticsSampleInterval(),
-            m_sysProps->statisticsEnabled(), cacheImpl,
-            m_sysProps->durableClientId().c_str(), m_sysProps->durableTimeout(),
-            m_sysProps->statsFileSizeLimit(),
-            m_sysProps->statsDiskSpaceLimit()));
-    cacheImpl->m_cacheStats =
-        new CachePerfStats(getStatisticsManager()->getStatisticsFactory());
-  }
-  catch (const NullPointerException&) {
-    Log::close();
-    throw;
-  }
-
-  m_connected = true;
-}
-
-void DistributedSystem::disconnect() {
-  if (!m_connected) {
-    throw NotConnectedException(
-        "DistributedSystem::disconnect: connect "
-        "not called");
-  }
-
-  if (m_impl) {
-    m_impl->disconnect();
-    delete m_impl;
-    m_impl = nullptr;
-  }
-
-  LOGFINEST("Deleted DistributedSystemImpl");
-
-  LOGCONFIG("Stopped the Geode Native Client");
-
-  // TODO global - log stays global so lets move this
-  Log::close();
-
-  m_connected = false;
-}
+void DistributedSystem::disconnect() { m_impl->disconnect(); }
 
 SystemProperties& DistributedSystem::getSystemProperties() const {
-  return *m_sysProps;
+  return m_impl->getSystemProperties();
 }
 
-const std::string& DistributedSystem::getName() const { return m_name; }
+const std::string& DistributedSystem::getName() const {
+  return m_impl->getName();
+}
+
+statistics::StatisticsManager* DistributedSystem::getStatisticsManager() const {
+  return m_impl->getStatisticsManager();
+}
 
 }  // namespace client
 }  // namespace geode

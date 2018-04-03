@@ -56,6 +56,13 @@ class _GEODE_EXPORT DistributedSystem {
    * @brief public methods
    */
  public:
+  DistributedSystem() = delete;
+  ~DistributedSystem() noexcept;
+  DistributedSystem(const DistributedSystem&) = delete;
+  DistributedSystem& operator=(const DistributedSystem&) = delete;
+  DistributedSystem(DistributedSystem&&);
+  DistributedSystem& operator=(DistributedSystem&&) = delete;
+
   /**
    * Initializes the Native Client system to be able to connect to the
    * Geode Java servers. If the name string is empty, then the default
@@ -63,8 +70,9 @@ class _GEODE_EXPORT DistributedSystem {
    * @throws IllegalStateException if GFCPP variable is not set and
    *   product installation directory cannot be determined
    **/
-  static std::unique_ptr<DistributedSystem> create(
-      const std::string& name, const std::shared_ptr<Properties>& configPtr = nullptr);
+  static DistributedSystem create(
+      const std::string& name,
+      const std::shared_ptr<Properties>& configPtr = nullptr);
 
   /**
    * @brief connects from the distributed system
@@ -87,16 +95,9 @@ class _GEODE_EXPORT DistributedSystem {
   /** Returns the name that identifies the distributed system instance
    * @return  name
    */
-  virtual const std::string& getName() const;
+  const std::string& getName() const;
 
-  statistics::StatisticsManager* getStatisticsManager() const {
-    return m_statisticsManager.get();
-  }
-
-  /**
-   * @brief destructor
-   */
-  virtual ~DistributedSystem();
+  statistics::StatisticsManager* getStatisticsManager() const;
 
  protected:
   /**
@@ -106,19 +107,7 @@ class _GEODE_EXPORT DistributedSystem {
                     std::unique_ptr<SystemProperties> sysProps);
 
  private:
-  std::string m_name;
-  bool m_connected;
-  std::unique_ptr<statistics::StatisticsManager> m_statisticsManager;
-  std::unique_ptr<SystemProperties> m_sysProps;
-
- public:
-  DistributedSystemImpl* m_impl;
-
- private:
-  DistributedSystem(const DistributedSystem&);
-  const DistributedSystem& operator=(const DistributedSystem&);
-
-  void logSystemInformation() const;
+  std::unique_ptr<DistributedSystemImpl> m_impl;
 
   friend class CacheRegionHelper;
   friend class DistributedSystemImpl;
