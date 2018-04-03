@@ -17,6 +17,40 @@ cmake_minimum_required(VERSION 3.10)
 
 project(examples LANGUAGES NONE)
 
-add_subdirectory(customserializable)
-add_subdirectory(customserializer)
-add_subdirectory(put-get-remove)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt COPYONLY)
+
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt
+  BUILDING.md
+  DESTINATION examples/cpp)
+
+function(add_example)
+  set(options)
+  set(oneValueArgs NAME)
+  set(multiValueArgs SOURCE)
+  cmake_parse_arguments(ADD_EXAMPLE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+  foreach(SOURCE ${ADD_EXAMPLE_SOURCE})
+    list(APPEND EXAMPLE_SOURCES_PATHS ${ADD_EXAMPLE_NAME}/${SOURCE})
+  endforeach()
+
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.cpp_example.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${ADD_EXAMPLE_NAME}/CMakeLists.txt
+    @ONLY)
+
+  install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/${ADD_EXAMPLE_NAME}/CMakeLists.txt
+    ${EXAMPLE_SOURCES_PATHS}
+    ${ADD_EXAMPLE_NAME}/startserver.sh
+    ${ADD_EXAMPLE_NAME}/stopserver.sh
+    DESTINATION examples/cpp/${ADD_EXAMPLE_NAME})
+endfunction()
+
+add_example(NAME customserializable
+	SOURCE main.cpp Order.cpp Order.hpp)
+
+add_example(NAME customserializer
+	SOURCE main.cpp Order.cpp Order.hpp OrderSerializer.cpp OrderSerializer.hpp)
+
+add_example(NAME put-get-remove
+	SOURCE main.cpp)
