@@ -749,8 +749,13 @@ std::unique_ptr<DataInput> CacheImpl::createDataInput(const uint8_t* buffer,
 }
 
 std::unique_ptr<DataOutput> CacheImpl::createDataOutput() const {
-  auto poolName = getPoolManager().getDefaultPool()->getName();
-  return std::unique_ptr<DataOutput>(new DataOutput(this, poolName));
+  auto defaultPool = getPoolManager().getDefaultPool();
+
+  if(defaultPool != nullptr) {
+    return std::unique_ptr<DataOutput>(new DataOutput(this, defaultPool->getName()));
+  }
+
+  return std::unique_ptr<DataOutput>(new DataOutput(this));
 }
 
 void CacheImpl::setCache(Cache* cache) { m_cache = cache; }
