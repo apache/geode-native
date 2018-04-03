@@ -52,7 +52,7 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 pushd "%TEST_DIR%"
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-${NUNIT_CONSOLE} /labels /run:${NAMESPACE}.${TESTCLASS} ..\..\$<CONFIG>\UnitTests.dll 
+${NUNIT_CONSOLE} /labels /framework 4.5.2 /run:${NAMESPACE}.${TESTCLASS} ..\..\$<CONFIG>\UnitTests.dll 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 popd
