@@ -19,7 +19,7 @@ project(examples LANGUAGES NONE)
 
 string(REPLACE " " "" PRODUCT_NAME_NOSPACE ${PRODUCT_NAME})
 if (BUILD_CLI)
-  set(CLI_SUBDIR "add_subdirectory(dotnet)")
+  set(DOTNET_SUB_DIRECTORY "add_subdirectory(dotnet)")
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt @ONLY)
