@@ -60,7 +60,6 @@ set(_GEODE_NATIVE_PATHS)
 
 if(_GEODE_NATIVE_ROOT)
     set(_GEODE_NATIVE_HINTS ${_GEODE_NATIVE_ROOT})
-    set(_GEODE_NATIVE_HINTS ${_GEODE_NATIVE_ROOT})
 else()
     set(_GEODE_NATIVE_PATHS (
         "/opt/local"
@@ -101,9 +100,9 @@ find_file(GeodeNative_DOTNET_LIBRARY
 # TODO find version
 set(GEODE_NATIVE_VERSION_STRING 1.0)
 
-if (GeodeNative_FIND_COMPONENTS)
+if (@PRODUCT_NAME_NOSPACE@_FIND_COMPONENTS)
   set(_GEODE_NATIVE_REQUIRED_VARS)
-  foreach (component ${GeodeNative_FIND_COMPONENTS})
+  foreach (component ${@PRODUCT_NAME_NOSPACE@_FIND_COMPONENTS})
     if (component STREQUAL "cpp")
       list(APPEND _GEODE_NATIVE_REQUIRED_VARS GeodeNative_CPP_LIBRARY GeodeNative_CPP_INCLUDE_DIR)
     endif()
@@ -119,7 +118,7 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(GeodeNative
                                   VERSION_VAR GEODE_NATIVE_VERSION_STRING)
 
 # Copy the results to the output variables and target.
-if(GeodeNative_FOUND)
+if(@PRODUCT_NAME_NOSPACE@_FOUND)
   if(NOT TARGET ${GEODE_NATIVE_CPP_TARGET})
     set(GEODE_NATIVE_CPP_TARGET "GeodeNative::cpp")
     add_library(${GEODE_NATIVE_CPP_TARGET} UNKNOWN IMPORTED)
