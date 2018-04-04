@@ -928,7 +928,7 @@ int dmain(int argc, ACE_TCHAR* argv[]) {
 /** entry point for test code modules to access the naming service. */
 NamingContext* globals() { return DUNIT->globals(); }
 
-};  // namespace dunit
+}  // namespace dunit
 
 namespace perf {
 
@@ -1172,6 +1172,6 @@ void Semaphore::release(int t) {
   }
 }
 
-};  // namespace perf
+}  // namespace perf
 
 namespace test {}  // namespace test

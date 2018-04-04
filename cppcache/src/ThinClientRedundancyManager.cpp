@@ -1223,9 +1223,7 @@ void ThinClientRedundancyManager::doPeriodicAck() {
 
       if (!acked) {
         // clear entries' acked flag for next periodic ack
-        uint32_t cleared = m_eventidmap.clearAckedFlags(entries);
-        GF_D_ASSERT(cleared <= count);
-        cleared = 0;  // this line to avoid a 'unused var' warning in gcc
+        m_eventidmap.clearAckedFlags(entries);
       }
     }
   }

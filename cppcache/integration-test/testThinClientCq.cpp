@@ -537,7 +537,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
      sprintf(buf, "number of listeners for cq[%s] is %zd", cqNames[i],
              vl.size());
      LOG(buf);
-     ASSERT(vl.size() == i + 1, "incorrect number of listeners");
+     ASSERT(vl.size() == static_cast<size_t>(i + 1),
+            "incorrect number of listeners");
      if (i == (MAX_LISTNER - 1)) {
        MyCqListener* myLl[MAX_LISTNER];
        for (int k = 0; k < MAX_LISTNER; k++) {

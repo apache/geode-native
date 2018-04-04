@@ -95,11 +95,8 @@ void TcpIpc::init(int32_t sockBufferSize) {
   if (sockBufferSize > 0) {
     clearNagle(sock);
 
-    int32_t size = setSize(sock, SO_SNDBUF, sockBufferSize);
-    size = setSize(sock, SO_RCVBUF, sockBufferSize);
-  } else {
-    int32_t size = getSize(sock, SO_SNDBUF);
-    size = getSize(sock, SO_RCVBUF);
+    setSize(sock, SO_SNDBUF, sockBufferSize);
+    setSize(sock, SO_RCVBUF, sockBufferSize);
   }
   m_io = new ACE_SOCK_Stream(sock);
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe

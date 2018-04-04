@@ -55,7 +55,7 @@ void PSTObject::fromData(apache::geode::client::DataInput& input) {
 std::string PSTObject::toString() const {
   char buf[102500];
   sprintf(buf,
-          "PSTObject:[timestamp = %lld field1 = %d field2 = %c valueData=%d ]",
+          "PSTObject:[timestamp = %" PRIu64 " field1 = %d field2 = %c valueData=%d ]",
           timestamp, field1, field2, valueData->length());
   return buf;
 }

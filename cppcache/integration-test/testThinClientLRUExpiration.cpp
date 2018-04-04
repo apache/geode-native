@@ -86,11 +86,16 @@ void printAttribute(RegionAttributes attr) {
   printf("EntryIdleTimeout: %s\n",
          to_string(attr.getEntryIdleTimeout()).c_str());
   printf("getLruEntriesLimit: %d\n", attr.getLruEntriesLimit());
-  printf("RegionTimeToLiveAction: %d\n", attr.getRegionTimeToLiveAction());
-  printf("RegionIdleTimeoutAction: %d\n", attr.getRegionIdleTimeoutAction());
-  printf("EntryTimeToLiveAction: %d\n", attr.getEntryTimeToLiveAction());
-  printf("EntryIdleTimeoutAction: %d\n", attr.getEntryIdleTimeoutAction());
-  printf("LruEvictionAction: %d\n", attr.getLruEvictionAction());
+  printf("RegionTimeToLiveAction: %d\n",
+         static_cast<int>(attr.getRegionTimeToLiveAction()));
+  printf("RegionIdleTimeoutAction: %d\n",
+         static_cast<int>(attr.getRegionIdleTimeoutAction()));
+  printf("EntryTimeToLiveAction: %d\n",
+         static_cast<int>(attr.getEntryTimeToLiveAction()));
+  printf("EntryIdleTimeoutAction: %d\n",
+         static_cast<int>(attr.getEntryIdleTimeoutAction()));
+  printf("LruEvictionAction: %d\n",
+         static_cast<int>(attr.getLruEvictionAction()));
   printf("ClientNotification: %s\n",
          attr.getClientNotificationEnabled() ? "true" : "false");
   // printf("getEndPoint: %s\n",attr.getEndpoints());

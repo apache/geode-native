@@ -96,7 +96,7 @@ class MyCqListener : public CqListener {
         m_numEvents(0) {}
   inline void updateCount(const CqEvent& cqEvent) {
     printf(" in cqEvent.getQueryOperation() %d id = %d\n",
-           cqEvent.getQueryOperation(), m_id);
+           static_cast<int>(cqEvent.getQueryOperation()), m_id);
     printf(" in update key = %s \n",
            (dynamic_cast<CacheableString*>(cqEvent.getKey().get()))
                ->value()
@@ -392,16 +392,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     char buf[1024];
 
     uint8_t i = 0;
-    uint32_t inserts[MAX_LISTNER];
-    uint32_t updates[MAX_LISTNER];
-    uint32_t deletes[MAX_LISTNER];
-    uint32_t events[MAX_LISTNER];
-    for (i = 0; i < MAX_LISTNER; i++) {
-      inserts[i] = 0;
-      updates[i] = 0;
-      deletes[i] = 0;
-      events[i] = 0;
-    }
 
     for (i = 0; i < MAX_LISTNER; i++) {
       sprintf(buf, "get info for cq[%s]:", cqNames[i]);
@@ -447,16 +437,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
     char buf[1024];
 
     uint8_t i = 0;
-    uint32_t inserts[MAX_LISTNER];
-    uint32_t updates[MAX_LISTNER];
-    uint32_t deletes[MAX_LISTNER];
-    uint32_t events[MAX_LISTNER];
-    for (i = 0; i < MAX_LISTNER; i++) {
-      inserts[i] = 0;
-      updates[i] = 0;
-      deletes[i] = 0;
-      events[i] = 0;
-    }
 
     for (i = 0; i < MAX_LISTNER; i++) {
       sprintf(buf, "get info for cq[%s]:", cqNames[i]);

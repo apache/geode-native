@@ -176,8 +176,17 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
   #TODO look into CMAKE_CXX_STANDARD_LIBRARIES
   target_link_libraries(c++11 INTERFACE -std=c++11 stdc++ gcc_s CrunG3 m c)
 
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs")
+  target_compile_options(_WarningsAsError INTERFACE
+    -Werror
+    -Wall
+    -Wno-unknown-pragmas #TODO fix
+    -Wno-unused-variable #TODO fix
+    -Wpedantic
+    # -Wshadow TODO fix
+    # -Weffc++ TODO fix
+    )
 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   target_compile_options(_WarningsAsError INTERFACE

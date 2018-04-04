@@ -64,9 +64,9 @@ void DeltaPSTObject::fromData(apache::geode::client::DataInput& input) {
 }
 std::string DeltaPSTObject::toString() const {
   char buf[102500];
-  sprintf(
-      buf,
-      "DeltaPSTObject:[timestamp = %lld field1 = %d field2 = %c valueData=%d ]",
-      timestamp, field1, field2, valueData->length());
+  sprintf(buf,
+          "DeltaPSTObject:[timestamp = %" PRIu64
+          " field1 = %d field2 = %c valueData=%d ]",
+          timestamp, field1, field2, valueData->length());
   return buf;
 }

@@ -78,7 +78,7 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
     char buf[102500];
     sprintf(buf,
             "DeltaFastAssetAccount:[acctId = %d customerName = %s netWorth = "
-            "%f timestamp = %lld]",
+            "%f timestamp = %" PRIu64 "]",
             acctId, customerName->toString().c_str(), netWorth, timestamp);
     return buf;
   }

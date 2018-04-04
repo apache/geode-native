@@ -23,14 +23,14 @@ namespace client {
 
 #define _GF_CACHEABLE_KEY_DEF_(k) const char tName_##k[] = #k;
 
-_GF_CACHEABLE_KEY_DEF_(CacheableBoolean);
-_GF_CACHEABLE_KEY_DEF_(CacheableByte);
-_GF_CACHEABLE_KEY_DEF_(CacheableDouble);
-_GF_CACHEABLE_KEY_DEF_(CacheableFloat);
-_GF_CACHEABLE_KEY_DEF_(CacheableInt16);
-_GF_CACHEABLE_KEY_DEF_(CacheableInt32);
-_GF_CACHEABLE_KEY_DEF_(CacheableInt64);
-_GF_CACHEABLE_KEY_DEF_(CacheableCharacter);
+_GF_CACHEABLE_KEY_DEF_(CacheableBoolean)
+_GF_CACHEABLE_KEY_DEF_(CacheableByte)
+_GF_CACHEABLE_KEY_DEF_(CacheableDouble)
+_GF_CACHEABLE_KEY_DEF_(CacheableFloat)
+_GF_CACHEABLE_KEY_DEF_(CacheableInt16)
+_GF_CACHEABLE_KEY_DEF_(CacheableInt32)
+_GF_CACHEABLE_KEY_DEF_(CacheableInt64)
+_GF_CACHEABLE_KEY_DEF_(CacheableCharacter)
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

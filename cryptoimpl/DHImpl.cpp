@@ -64,16 +64,16 @@ static const EVP_CIPHER* getCipherFunc();
 static int setSkAlgo(const char * skalgo);
 */
 
-ASN1_SEQUENCE(DH_PUBKEY) = {
-    ASN1_SIMPLE(DH_PUBKEY, algor, X509_ALGOR),
-    ASN1_SIMPLE(DH_PUBKEY, public_key, ASN1_BIT_STRING)};
-ASN1_SEQUENCE_END(DH_PUBKEY);
+ASN1_SEQUENCE(
+    DH_PUBKEY) = {ASN1_SIMPLE(DH_PUBKEY, algor, X509_ALGOR),
+                  ASN1_SIMPLE(DH_PUBKEY, public_key,
+                              ASN1_BIT_STRING)} ASN1_SEQUENCE_END(DH_PUBKEY)
 
-// This gives us the i2d/d2i x.509 (ASN1 DER) encode/decode functions
-IMPLEMENT_ASN1_FUNCTIONS(DH_PUBKEY);
+    // This gives us the i2d/d2i x.509 (ASN1 DER) encode/decode functions
+    IMPLEMENT_ASN1_FUNCTIONS(DH_PUBKEY)
 
-// Returns Error code
-int gf_initDhKeys(void **dhCtx, const char *dhAlgo, const char *ksPath) {
+    // Returns Error code
+    int gf_initDhKeys(void **dhCtx, const char *dhAlgo, const char *ksPath) {
   int errorCode = DH_ERR_NO_ERROR;  // No error;
 
   DHImpl *dhimpl = new DHImpl();
@@ -99,35 +99,34 @@ int gf_initDhKeys(void **dhCtx, const char *dhAlgo, const char *ksPath) {
 
   dhimpl->m_dh = DH_new();
 
-  int ret = -1;
 
   const BIGNUM *pbn, *gbn;
   DH_get0_pqg(dhimpl->m_dh, &pbn, NULL, &gbn);
-  ret = BN_dec2bn((BIGNUM **)&pbn, dhP);
+  BN_dec2bn((BIGNUM **)&pbn, dhP);
   LOGDH(" DHInit: BN_dec2bn dhP ret %d", ret);
 
   LOGDH(" DHInit: P ptr is %p", pbn);
   LOGDH(" DHInit: G ptr is %p", gbn);
   LOGDH(" DHInit: length is %d", DH_get_length(dhimpl->m_dh));
 
-  ret = BN_dec2bn((BIGNUM **)&gbn, dhG);
+  BN_dec2bn((BIGNUM **)&gbn, dhG);
   LOGDH(" DHInit: BN_dec2bn dhG ret %d", ret);
 
   DH_set_length(dhimpl->m_dh, dhL);
 
-  ret = DH_generate_key(dhimpl->m_dh);
+  DH_generate_key(dhimpl->m_dh);
   LOGDH(" DHInit: DH_generate_key ret %d", ret);
 
   const BIGNUM *pub_key, *priv_key;
   DH_get0_key(dhimpl->m_dh, &pub_key, &priv_key);
-  ret = BN_num_bits(priv_key);
+  BN_num_bits(priv_key);
   LOGDH(" DHInit: BN_num_bits priv_key is %d", ret);
 
-  ret = BN_num_bits(pub_key);
+  BN_num_bits(pub_key);
   LOGDH(" DHInit: BN_num_bits pub_key is %d", ret);
 
   int codes = 0;
-  ret = DH_check(dhimpl->m_dh, &codes);
+  DH_check(dhimpl->m_dh, &codes);
   LOGDH(" DHInit: DH_check ret %d : codes is 0x%04X", ret, codes);
   LOGDH(" DHInit: DH_size is %d", DH_size(dhimpl->m_dh));
 
@@ -153,10 +152,6 @@ int gf_initDhKeys(void **dhCtx, const char *dhAlgo, const char *ksPath) {
     cert = PEM_read_X509(keyStoreFP, NULL, NULL, NULL);
 
     if (cert != NULL) {
-      char *certSubject = NULL;
-      X509_NAME *xname = X509_get_subject_name(cert);
-      certSubject = X509_NAME_oneline(xname, NULL, 0);
-      LOGDH(" Imported cert with subject : [%s]\n", certSubject);
       dhimpl->m_serverCerts.push_back(cert);
     }
   } while (cert != NULL);
@@ -212,12 +207,10 @@ unsigned char *gf_getPublicKey(void *dhCtx, int *pLen) {
 
   EVP_PKEY *evppubkey = EVP_PKEY_new();
   LOGDH(" before assign DH ptr is %p\n", dhimpl->m_dh);
-  int ret = EVP_PKEY_assign_DH(evppubkey, dhimpl->m_dh);
-  LOGDH(" evp assign ret %d\n", ret);
+  EVP_PKEY_assign_DH(evppubkey, dhimpl->m_dh);
   LOGDH(" after assign DH ptr is %p\n", dhimpl->m_dh);
   DH_PUBKEY *dhpubkey = NULL;
-  ret = DH_PUBKEY_set(&dhpubkey, evppubkey);
-  LOGDH(" DHPUBKEYset ret %d\n", ret);
+  DH_PUBKEY_set(&dhpubkey, evppubkey);
   int len = i2d_DH_PUBKEY(dhpubkey, NULL);
   unsigned char *pubkey = new unsigned char[len];
   unsigned char *temp = pubkey;
@@ -264,8 +257,7 @@ void gf_setPublicKeyOther(void *dhCtx, const unsigned char *pubkey,
   DH_PUBKEY_free(dhpubkey);
 
   int codes = 0;
-  int ret = DH_check_pub_key(dhimpl->m_dh, dhimpl->m_pubKeyOther, &codes);
-  LOGDH(" DHInit: DH_check_pub_key ret %d\n", ret);
+  DH_check_pub_key(dhimpl->m_dh, dhimpl->m_pubKeyOther, &codes);
   LOGDH(" DHInit: DH check_pub_key codes is 0x%04X\n", codes);
 }
 
@@ -276,8 +268,8 @@ void gf_computeSharedSecret(void *dhCtx) {
         dhimpl->m_pubKeyOther);
 
   LOGDH("DHcomputeKey DHSize is %d", DH_size(dhimpl->m_dh));
-  int ret = DH_compute_key(dhimpl->m_key, dhimpl->m_pubKeyOther, dhimpl->m_dh);
-  LOGDH("DHcomputeKey ret %d : Compute err(%d): %s", ret, ERR_get_error(),
+  DH_compute_key(dhimpl->m_key, dhimpl->m_pubKeyOther, dhimpl->m_dh);
+  LOGDH("DHcomputeKey : Compute err(%d): %s", ERR_get_error(),
         ERR_error_string(ERR_get_error(), NULL));
 }
 
@@ -368,32 +360,25 @@ unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
   int outlen, tmplen;
   EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
 
-  int ret = -123;
-
   const EVP_CIPHER *cipherFunc = dhimpl->getCipherFunc();
 
   // init openssl cipher context
   if (dhimpl->m_skAlgo == "AES") {
     int keySize = dhimpl->m_keySize > 128 ? dhimpl->m_keySize / 8 : 16;
-    ret = EVP_EncryptInit_ex(ctx, cipherFunc, NULL,
-                             (unsigned char *)dhimpl->m_key,
-                             (unsigned char *)dhimpl->m_key + keySize);
+    EVP_EncryptInit_ex(ctx, cipherFunc, NULL, (unsigned char *)dhimpl->m_key,
+                       (unsigned char *)dhimpl->m_key + keySize);
   } else if (dhimpl->m_skAlgo == "Blowfish") {
     int keySize = dhimpl->m_keySize > 128 ? dhimpl->m_keySize / 8 : 16;
-    ret = EVP_EncryptInit_ex(ctx, cipherFunc, NULL, NULL,
-                             (unsigned char *)dhimpl->m_key + keySize);
+    EVP_EncryptInit_ex(ctx, cipherFunc, NULL, NULL,
+                       (unsigned char *)dhimpl->m_key + keySize);
     LOGDH("DHencrypt: init BF ret %d", ret);
     EVP_CIPHER_CTX_set_key_length(ctx, keySize);
     LOGDH("DHencrypt: BF keysize is %d", keySize);
-    ret = EVP_EncryptInit_ex(ctx, NULL, NULL, (unsigned char *)dhimpl->m_key,
-                             NULL);
+    EVP_EncryptInit_ex(ctx, NULL, NULL, (unsigned char *)dhimpl->m_key, NULL);
   } else if (dhimpl->m_skAlgo == "DESede") {
-    ret = EVP_EncryptInit_ex(ctx, cipherFunc, NULL,
-                             (unsigned char *)dhimpl->m_key,
-                             (unsigned char *)dhimpl->m_key + 24);
+    EVP_EncryptInit_ex(ctx, cipherFunc, NULL, (unsigned char *)dhimpl->m_key,
+                       (unsigned char *)dhimpl->m_key + 24);
   }
-
-  LOGDH(" DHencrypt: init ret %d", ret);
 
   if (!EVP_EncryptUpdate(ctx, ciphertext, &outlen, cleartext, len)) {
     LOGDH(" DHencrypt: enc update ret NULL");
@@ -436,32 +421,24 @@ unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
   int outlen, tmplen;
   EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
 
-  int ret = -123;
-
   const EVP_CIPHER *cipherFunc = dhimpl->getCipherFunc();
 
   // init openssl cipher context
   if (dhimpl->m_skAlgo == "AES") {
     int keySize = dhimpl->m_keySize > 128 ? dhimpl->m_keySize / 8 : 16;
-    ret = EVP_DecryptInit_ex(ctx, cipherFunc, NULL,
-                             (unsigned char *)dhimpl->m_key,
-                             (unsigned char *)dhimpl->m_key + keySize);
+    EVP_DecryptInit_ex(ctx, cipherFunc, NULL, (unsigned char *)dhimpl->m_key,
+                       (unsigned char *)dhimpl->m_key + keySize);
   } else if (dhimpl->m_skAlgo == "Blowfish") {
     int keySize = dhimpl->m_keySize > 128 ? dhimpl->m_keySize / 8 : 16;
-    ret = EVP_DecryptInit_ex(ctx, cipherFunc, NULL, NULL,
-                             (unsigned char *)dhimpl->m_key + keySize);
-    LOGDH("DHencrypt: init BF ret %d", ret);
+    EVP_DecryptInit_ex(ctx, cipherFunc, NULL, NULL,
+                       (unsigned char *)dhimpl->m_key + keySize);
     EVP_CIPHER_CTX_set_key_length(ctx, keySize);
     LOGDH("DHencrypt: BF keysize is %d", keySize);
-    ret = EVP_DecryptInit_ex(ctx, NULL, NULL, (unsigned char *)dhimpl->m_key,
-                             NULL);
+    EVP_DecryptInit_ex(ctx, NULL, NULL, (unsigned char *)dhimpl->m_key, NULL);
   } else if (dhimpl->m_skAlgo == "DESede") {
-    ret = EVP_DecryptInit_ex(ctx, cipherFunc, NULL,
-                             (unsigned char *)dhimpl->m_key,
-                             (unsigned char *)dhimpl->m_key + 24);
+    EVP_DecryptInit_ex(ctx, cipherFunc, NULL, (unsigned char *)dhimpl->m_key,
+                       (unsigned char *)dhimpl->m_key + 24);
   }
-
-  LOGDH(" DHencrypt: init ret %d", ret);
 
   if (!EVP_DecryptUpdate(ctx, ciphertext, &outlen, cleartext, len)) {
     LOGDH(" DHencrypt: enc update ret NULL");
@@ -530,8 +507,6 @@ bool gf_verifyDH(void *dhCtx, const char *subject,
     LOGDH("Certificate not found!");
     return false;
   }
-
-  RSA *dh = EVP_PKEY_get1_RSA(evpkey);
 
   const ASN1_OBJECT *macobj;
   const X509_ALGOR *algorithm = nullptr;
@@ -669,7 +644,6 @@ err:
 EVP_PKEY *DH_PUBKEY_get(DH_PUBKEY *key) {
   EVP_PKEY *ret = NULL;
   long j;
-  int type;
   const unsigned char *p;
   const unsigned char *cp;
   X509_ALGOR *a;
@@ -691,10 +665,6 @@ EVP_PKEY *DH_PUBKEY_get(DH_PUBKEY *key) {
     if (ret != NULL) EVP_PKEY_free(ret);
     return (NULL);
   }
-
-  type = OBJ_obj2nid(key->algor->algorithm);
-
-  LOGDH("DHPUBKEY type is %d", type);
 
   if ((ret = EVP_PKEY_new()) == NULL) {
     X509err(X509_F_X509_PUBKEY_DECODE, ERR_R_MALLOC_FAILURE);

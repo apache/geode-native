@@ -351,7 +351,7 @@ class TestException {
 
 int dmain(int argc, char* argv[]);
 
-};  // end namespace dunit.
+}  // end namespace dunit.
 
 #ifndef __DUNIT_NO_MAIN__
 

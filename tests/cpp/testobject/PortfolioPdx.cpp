@@ -105,14 +105,10 @@ void PortfolioPdx::fromData(PdxReader& pr) {
   type = pr.readString("type");
   status = pr.readString("status");
 
-  int32_t strLenArray = 0;
   names = pr.readStringArray("names");
-  int32_t byteArrayLen = 0;
   newVal = pr.readByteArray("newVal");
   creationDate = pr.readDate("creationDate");
-  int32_t arrayNullLen = 0;
   arrayNull = pr.readByteArray("arrayNull");
-  int32_t arrayZeroSizeLen = 0;
   arrayZeroSize = pr.readByteArray("arrayZeroSize");
 }
 std::string PortfolioPdx::toString() const {

@@ -493,7 +493,8 @@ const char* Log::levelToChars(LogLevel level) {
 
     default: {
       char buf[64] = {0};
-      ACE_OS::snprintf(buf, 64, "Unexpected log level: %d", level);
+      ACE_OS::snprintf(buf, 64, "Unexpected log level: %d",
+                       static_cast<int>(level));
       throw IllegalArgumentException(buf);
     }
   }

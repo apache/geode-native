@@ -85,7 +85,7 @@ int testXmlCacheCreationWithOverflow() {
   }
 
   std::cout << "Root regions in Cache :" << std::endl;
-  for (int32_t i = 0; i < vrp.size(); i++) {
+  for (size_t i = 0; i < vrp.size(); i++) {
     std::cout << "vc[" << i << "].m_reaPtr=" << vrp.at(i).get() << std::endl;
     std::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << std::endl;
   }
@@ -104,7 +104,7 @@ int testXmlCacheCreationWithOverflow() {
 
   std::cout << "get subregions from the root region :" << vrp.at(0)->getName()
             << std::endl;
-  for (int32_t i = 0; i < vr.size(); i++) {
+  for (size_t i = 0; i < vr.size(); i++) {
     std::cout << "vc[" << i << "].m_reaPtr=" << vr.at(i).get() << std::endl;
     std::cout << "vc[" << i << "]=" << vr.at(i)->getName() << std::endl;
   }

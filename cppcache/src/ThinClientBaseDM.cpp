@@ -332,7 +332,7 @@ GfErrType ThinClientBaseDM::registerInterestForRegion(TcrEndpoint*,
   return GF_NOERR;
 }
 
-bool ThinClientBaseDM::isEndpointAttached(TcrEndpoint*) { return false; };
+bool ThinClientBaseDM::isEndpointAttached(TcrEndpoint*) { return false; }
 
 }  // namespace client
 }  // namespace geode

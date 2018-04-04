@@ -827,7 +827,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
                                  ConnErrType* opErr, bool isNotificationMessage,
                                  int32_t request) {
   char msg_header[HEADER_LENGTH];
-  int32_t msgType, msgLen;
+  int32_t msgLen;
   ConnErrType error;
 
   std::chrono::microseconds headerTimeout = receiveTimeoutSec;
@@ -877,7 +877,8 @@ char* TcrConnection::readMessage(size_t* recvLen,
 
   auto input = m_connectionManager->getCacheImpl()->createDataInput(
       reinterpret_cast<uint8_t*>(msg_header), HEADER_LENGTH);
-  msgType = input->readInt32();
+  // ignore msgType
+  input->readInt32();
   msgLen = input->readInt32();
   //  check that message length is valid.
   if (!(msgLen > 0) && request == TcrMessage::GET_CLIENT_PR_METADATA) {

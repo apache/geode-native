@@ -28,7 +28,6 @@ PositionPdx::PositionPdx() { init(); }
 PositionPdx::PositionPdx(const char* id, int32_t out) {
   init();
 
-  size_t strSize = strlen(id) + 1;
   secId = std::string(id);
 
   qty = out * (cnt % 2 == 0 ? 10.0 : 100.0);

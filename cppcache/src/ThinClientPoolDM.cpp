@@ -437,11 +437,10 @@ void ThinClientPoolDM::cleanStaleConnections(volatile bool& isRunning) {
         getStats().incLoadCondDisconnects();
         LOGDEBUG("Removed a connection");
       } else {
-        GfErrType error = GF_NOERR;
         TcrConnection* newConn = nullptr;
         bool maxConnLimit = false;
-        error = createPoolConnection(newConn, excludeServers, maxConnLimit,
-                                     /*hasExpired(conn) ? nullptr :*/ conn);
+        createPoolConnection(newConn, excludeServers, maxConnLimit,
+                             /*hasExpired(conn) ? nullptr :*/ conn);
         if (newConn) {
           ACE_Time_Value nextIdle =
               _idle - (ACE_OS::gettimeofday() - newConn->getLastAccessed());
@@ -2384,7 +2383,7 @@ GfErrType ThinClientPoolDM::doFailover(TcrConnection* conn) {
   return err;
 }
 
-bool ThinClientPoolDM::canItBeDeletedNoImpl(TcrConnection*) { return false; };
+bool ThinClientPoolDM::canItBeDeletedNoImpl(TcrConnection*) { return false; }
 
 void ThinClientPoolDM::putInQueue(TcrConnection* conn, bool,
                                   bool isTransaction) {
@@ -2393,7 +2392,7 @@ void ThinClientPoolDM::putInQueue(TcrConnection* conn, bool,
   } else {
     put(conn, false);
   }
-};
+}
 
 TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
     GfErrType* error, std::set<ServerLocation>& excludeServers, bool,

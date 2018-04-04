@@ -48,7 +48,8 @@ void BatchObject::fromData(apache::geode::client::DataInput& input) {
 std::string BatchObject::toString() const {
   char buf[102500];
   sprintf(buf,
-          "BatchObject:[index = %d timestamp = %lld batch = %d byteArray=%d ]",
+          "BatchObject:[index = %d timestamp = %" PRIu64
+          " batch = %d byteArray=%d ]",
           index, timestamp, batch, byteArray->length());
   return buf;
 }

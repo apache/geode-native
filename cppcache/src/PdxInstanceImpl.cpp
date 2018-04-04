@@ -746,7 +746,7 @@ int32_t PdxInstanceImpl::hashcode() const {
          * Fix : using ACE_OS::snprintf
          */
         ACE_OS::snprintf(excpStr, 256, "PdxInstance not found typeid %d ",
-                         pField->getTypeId());
+                         static_cast<int>(pField->getTypeId()));
         throw IllegalStateException(excpStr);
       }
     }
@@ -1293,7 +1293,7 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
          * Fix : using ACE_OS::snprintf
          */
         ACE_OS::snprintf(excpStr, 256, "PdxInstance not found typeid  %d ",
-                         myPFT->getTypeId());
+                         static_cast<int>(myPFT->getTypeId()));
         throw IllegalStateException(excpStr);
       }
     }

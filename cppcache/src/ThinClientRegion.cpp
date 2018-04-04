@@ -3327,7 +3327,7 @@ void ThinClientRegion::txPut(
   GfErrTypeToException("Region::putTX", err);
 }
 
-void ThinClientRegion::setProcessedMarker(bool){};
+void ThinClientRegion::setProcessedMarker(bool) {}
 
 void ChunkedInterestResponse::reset() {
   if (m_resultKeys != nullptr && m_resultKeys->size() > 0) {
@@ -3617,7 +3617,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
   auto startLen =
       input->getBytesRead() -
       1;  // from here need to look value part + memberid AND -1 for array type
-  int32_t len = input->readArrayLen();
+  // iread adn gnore array length
+  input->readArrayLen();
 
   // read a byte to determine whether to read exception part for sendException
   // or read objects.
@@ -3662,8 +3663,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
       // is arrayList = 65.
       arrayType = input->read();
 
-      // then its len which is 2
-      len = input->readArrayLen();
+      // read and ignore its len which is 2
+      input->readArrayLen();
     }
   } else {
     // rewind cursor by 1 to what we had read a byte to determine whether to
@@ -3898,9 +3899,8 @@ void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
   auto input = m_cacheImpl->createDataInput(chunk, chunkLen);
   DataInputInternal::setPoolName(*input, m_msg.getPoolName());
 
-  // read part length
-  uint32_t partLen;
-  partLen = input->readInt32();
+  // read and ignore part length
+  input->readInt32();
   if (!input->readBoolean()) {
     // we're currently always expecting an object
     char exMsg[256];

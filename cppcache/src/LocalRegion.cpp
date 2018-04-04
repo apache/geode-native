@@ -3162,9 +3162,9 @@ void LocalRegion::updateStatOpTime(Statistics* statistics, int32_t statId,
   }
 }
 
-void LocalRegion::acquireGlobals(bool){};
+void LocalRegion::acquireGlobals(bool) {}
 
-void LocalRegion::releaseGlobals(bool){};
+void LocalRegion::releaseGlobals(bool) {}
 
 }  // namespace client
 }  // namespace geode
