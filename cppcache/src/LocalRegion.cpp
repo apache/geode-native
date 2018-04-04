@@ -798,7 +798,8 @@ std::vector<std::shared_ptr<Region>> LocalRegion::subregions_internal(
     regions.push_back(subRegion);
 
     if (recursive == true) {
-      if (auto localRegion = std::dynamic_pointer_cast<LocalRegion>(subRegion)) {
+      if (auto localRegion =
+              std::dynamic_pointer_cast<LocalRegion>(subRegion)) {
         auto subRegions = localRegion->subregions_internal(true);
         regions.insert(regions.end(), subRegions.begin(), subRegions.end());
       }
@@ -1252,13 +1253,16 @@ class DestroyActions {
     return m_region.destroyNoThrow_remote(key, aCallbackArgument, versionTag);
   }
 
-  inline GfErrType localUpdate(
-      const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& /*value*/,
-      std::shared_ptr<Cacheable>& oldValue, bool cachingEnabled,
-      const CacheEventFlags eventFlags, int updateCount,
-      std::shared_ptr<VersionTag> versionTag, DataInput* /*delta*/ = nullptr,
-      std::shared_ptr<EventId> /*eventId*/ = nullptr, bool afterRemote = false) {
+  inline GfErrType localUpdate(const std::shared_ptr<CacheableKey>& key,
+                               const std::shared_ptr<Cacheable>& /*value*/,
+                               std::shared_ptr<Cacheable>& oldValue,
+                               bool cachingEnabled,
+                               const CacheEventFlags eventFlags,
+                               int updateCount,
+                               std::shared_ptr<VersionTag> versionTag,
+                               DataInput* /*delta*/ = nullptr,
+                               std::shared_ptr<EventId> /*eventId*/ = nullptr,
+                               bool afterRemote = false) {
     auto& cachePerfStats = m_region.m_cacheImpl->getCachePerfStats();
 
     if (cachingEnabled) {

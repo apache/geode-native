@@ -95,7 +95,6 @@ class APACHE_GEODE_EXPORT CacheLoader {
 
  protected:
   CacheLoader() = default;
-
 };
 }  // namespace client
 }  // namespace geode

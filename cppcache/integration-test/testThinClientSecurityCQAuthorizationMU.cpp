@@ -522,7 +522,5 @@ void doThinClientCq() {
 }
 
 DUNIT_MAIN
-  {
-    doThinClientCq();
-  }
+  { doThinClientCq(); }
 END_MAIN

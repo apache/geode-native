@@ -59,7 +59,6 @@ class APACHE_GEODE_EXPORT DistributedSystemImpl {
    * @brief public methods
    */
  public:
-
   static void setThreadName(const std::string& threadName) {
     if (threadName.empty()) {
       throw IllegalArgumentException("Thread name is empty.");

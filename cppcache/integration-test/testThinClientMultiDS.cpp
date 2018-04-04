@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-
 #include "fw_dunit.hpp"
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 
 #include <string>
-
 
 #define ROOT_NAME "testThinClientMultiDS"
 #define ROOT_SCOPE DISTRIBUTED_ACK

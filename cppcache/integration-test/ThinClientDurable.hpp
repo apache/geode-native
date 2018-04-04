@@ -136,9 +136,9 @@ class OperMonitor : public CacheListener {
     check(event);
   }
 
-  void afterRegionInvalidate(const RegionEvent&) override {};
+  void afterRegionInvalidate(const RegionEvent&) override{};
 
-  void afterRegionDestroy(const RegionEvent&) override {};
+  void afterRegionDestroy(const RegionEvent&) override{};
 };
 
 void setCacheListener(const char* regName,

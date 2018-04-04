@@ -196,7 +196,9 @@ class APACHE_GEODE_EXPORT SystemProperties {
   /**
    * Returns the durable timeout
    */
-  const std::chrono::seconds& durableTimeout() const { return m_durableTimeout; }
+  const std::chrono::seconds& durableTimeout() const {
+    return m_durableTimeout;
+  }
 
   /**
    * Returns the connect timeout used for server and locator handshakes
@@ -250,9 +252,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
    */
   uint32_t statsDiskSpaceLimit() const { return m_statsDiskSpaceLimit; }
 
-  uint32_t connectionPoolSize() const {
-    return m_connectionPoolSize;
-  }
+  uint32_t connectionPoolSize() const { return m_connectionPoolSize; }
   void setjavaConnectionPoolSize(uint32_t size) {
     m_connectionPoolSize = size;
   }

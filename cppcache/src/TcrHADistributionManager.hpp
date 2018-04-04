@@ -44,20 +44,19 @@ class APACHE_GEODE_EXPORT TcrHADistributionManager
   TcrHADistributionManager(const TcrHADistributionManager&) = delete;
   TcrHADistributionManager& operator=(const TcrHADistributionManager&) = delete;
 
-  void init() override ;
+  void init() override;
 
   GfErrType registerInterestForRegion(TcrEndpoint* ep,
                                       const TcrMessage* request,
-                                      TcrMessageReply* reply) override ;
+                                      TcrMessageReply* reply) override;
 
   GfErrType sendSyncRequestRegisterInterestEP(TcrMessage& request,
                                               TcrMessageReply& reply,
                                               bool attemptFailover,
-                                              TcrEndpoint* endpoint) override ;
+                                              TcrEndpoint* endpoint) override;
 
-  GfErrType sendRequestToEP(const TcrMessage& request,
-                                    TcrMessageReply& reply,
-                                    TcrEndpoint* endpoint) override ;
+  GfErrType sendRequestToEP(const TcrMessage& request, TcrMessageReply& reply,
+                            TcrEndpoint* endpoint) override;
 
   ThinClientRegion* getRegion() { return m_region; }
 
@@ -78,11 +77,12 @@ class APACHE_GEODE_EXPORT TcrHADistributionManager
   virtual GfErrType sendSyncRequestCq(TcrMessage& request,
                                       TcrMessageReply& reply);
 
-  void getEndpointNames(std::unordered_set<std::string>& endpointNames) override ;
+  void getEndpointNames(
+      std::unordered_set<std::string>& endpointNames) override;
 
-  bool preFailoverAction() override ;
+  bool preFailoverAction() override;
 
-  bool postFailoverAction(TcrEndpoint* endpoint) override ;
+  bool postFailoverAction(TcrEndpoint* endpoint) override;
 
  private:
   std::shared_ptr<CacheAttributes> m_cacheAttributes;

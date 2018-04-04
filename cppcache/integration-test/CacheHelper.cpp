@@ -215,8 +215,8 @@ CacheHelper::CacheHelper(const bool, bool pdxIgnoreUnreadFields,
   }
 }
 
-CacheHelper::CacheHelper(const bool, const char* poolName,
-                         const char* locators, const char* serverGroup,
+CacheHelper::CacheHelper(const bool, const char* poolName, const char* locators,
+                         const char* serverGroup,
                          const std::shared_ptr<Properties>& configPtr,
                          int redundancy, bool clientNotification,
                          int subscriptionAckInterval, int connections,

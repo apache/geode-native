@@ -159,47 +159,39 @@ int32_t PdxLocalWriter::calculateLenWithOffsets() {
 
 bool PdxLocalWriter::isFieldWritingStarted() { return true; }
 
-PdxWriter& PdxLocalWriter::writeChar(const std::string&,
-                                     char16_t value) {
+PdxWriter& PdxLocalWriter::writeChar(const std::string&, char16_t value) {
   m_dataOutput->writeChar(value);
   return *this;
 }
-PdxWriter& PdxLocalWriter::writeBoolean(const std::string& ,
-                                        bool value) {
+PdxWriter& PdxLocalWriter::writeBoolean(const std::string&, bool value) {
   m_dataOutput->writeBoolean(value);
   return *this;
 }
-PdxWriter& PdxLocalWriter::writeByte(const std::string& ,
-                                     int8_t value) {
+PdxWriter& PdxLocalWriter::writeByte(const std::string&, int8_t value) {
   m_dataOutput->write(value);
   return *this;
 }
-PdxWriter& PdxLocalWriter::writeShort(const std::string& ,
-                                      int16_t value) {
+PdxWriter& PdxLocalWriter::writeShort(const std::string&, int16_t value) {
   m_dataOutput->writeInt(value);
   return *this;
 }
-PdxWriter& PdxLocalWriter::writeInt(const std::string& ,
-                                    int32_t value) {
+PdxWriter& PdxLocalWriter::writeInt(const std::string&, int32_t value) {
   m_dataOutput->writeInt(value);
   return *this;
 }
-PdxWriter& PdxLocalWriter::writeLong(const std::string& ,
-                                     int64_t value) {
+PdxWriter& PdxLocalWriter::writeLong(const std::string&, int64_t value) {
   m_dataOutput->writeInt(value);
   return *this;
 }
-PdxWriter& PdxLocalWriter::writeFloat(const std::string& ,
-                                      float value) {
+PdxWriter& PdxLocalWriter::writeFloat(const std::string&, float value) {
   m_dataOutput->writeFloat(value);
   return *this;
 }
-PdxWriter& PdxLocalWriter::writeDouble(const std::string& ,
-                                       double value) {
+PdxWriter& PdxLocalWriter::writeDouble(const std::string&, double value) {
   m_dataOutput->writeDouble(value);
   return *this;
 }
-PdxWriter& PdxLocalWriter::writeDate(const std::string& ,
+PdxWriter& PdxLocalWriter::writeDate(const std::string&,
                                      std::shared_ptr<CacheableDate> date) {
   // m_dataOutput->writeObject(date.get());
   if (date != nullptr) {
@@ -210,7 +202,7 @@ PdxWriter& PdxLocalWriter::writeDate(const std::string& ,
   return *this;
 }
 
-PdxWriter& PdxLocalWriter::writeString(const std::string& ,
+PdxWriter& PdxLocalWriter::writeString(const std::string&,
                                        const std::string& value) {
   addOffset();
   m_dataOutput->writeString(value);
@@ -218,7 +210,7 @@ PdxWriter& PdxLocalWriter::writeString(const std::string& ,
 }
 
 PdxWriter& PdxLocalWriter::writeStringArray(
-    const std::string& , const std::vector<std::string>& array) {
+    const std::string&, const std::vector<std::string>& array) {
   addOffset();
   m_dataOutput->writeArrayLen(static_cast<int32_t>(array.size()));
   for (auto&& entry : array) {
@@ -227,7 +219,7 @@ PdxWriter& PdxLocalWriter::writeStringArray(
   return *this;
 }
 
-PdxWriter& PdxLocalWriter::writeObject(const std::string& ,
+PdxWriter& PdxLocalWriter::writeObject(const std::string&,
                                        std::shared_ptr<Serializable> value) {
   addOffset();
   std::shared_ptr<CacheableEnum> enumValPtr = nullptr;
@@ -272,58 +264,58 @@ PdxWriter& PdxLocalWriter::writeObject(const std::string& ,
   }
   return *this;
 }
-PdxWriter& PdxLocalWriter::writeBooleanArray(const std::string& ,
+PdxWriter& PdxLocalWriter::writeBooleanArray(const std::string&,
                                              const std::vector<bool>& array) {
   addOffset();
   writeArrayObject(array);
   return *this;
 }
 
-PdxWriter& PdxLocalWriter::writeCharArray(const std::string& ,
+PdxWriter& PdxLocalWriter::writeCharArray(const std::string&,
                                           const std::vector<char16_t>& array) {
   addOffset();
   writeArrayObject(array);
   return *this;
 }
 
-PdxWriter& PdxLocalWriter::writeByteArray(const std::string& ,
+PdxWriter& PdxLocalWriter::writeByteArray(const std::string&,
                                           const std::vector<int8_t>& array) {
   addOffset();
   writeArrayObject(array);
   return *this;
 }
-PdxWriter& PdxLocalWriter::writeShortArray(const std::string& ,
+PdxWriter& PdxLocalWriter::writeShortArray(const std::string&,
                                            const std::vector<int16_t>& array) {
   addOffset();
   writeArrayObject(array);
   return *this;
 }
-PdxWriter& PdxLocalWriter::writeIntArray(const std::string& ,
+PdxWriter& PdxLocalWriter::writeIntArray(const std::string&,
                                          const std::vector<int32_t>& array) {
   addOffset();
   writeArrayObject(array);
   return *this;
 }
-PdxWriter& PdxLocalWriter::writeLongArray(const std::string& ,
+PdxWriter& PdxLocalWriter::writeLongArray(const std::string&,
                                           const std::vector<int64_t>& array) {
   addOffset();
   writeArrayObject(array);
   return *this;
 }
-PdxWriter& PdxLocalWriter::writeFloatArray(const std::string& ,
+PdxWriter& PdxLocalWriter::writeFloatArray(const std::string&,
                                            const std::vector<float>& array) {
   addOffset();
   writeArrayObject(array);
   return *this;
 }
-PdxWriter& PdxLocalWriter::writeDoubleArray(const std::string& ,
+PdxWriter& PdxLocalWriter::writeDoubleArray(const std::string&,
                                             const std::vector<double>& array) {
   addOffset();
   writeArrayObject(array);
   return *this;
 }
 PdxWriter& PdxLocalWriter::writeObjectArray(
-    const std::string& , std::shared_ptr<CacheableObjectArray> array) {
+    const std::string&, std::shared_ptr<CacheableObjectArray> array) {
   addOffset();
   if (array != nullptr) {
     array->toData(*m_dataOutput);
@@ -333,8 +325,8 @@ PdxWriter& PdxLocalWriter::writeObjectArray(
   return *this;
 }
 PdxWriter& PdxLocalWriter::writeArrayOfByteArrays(
-    const std::string& , int8_t* const* const byteArrays,
-    int arrayLength, const int* elementLength) {
+    const std::string&, int8_t* const* const byteArrays, int arrayLength,
+    const int* elementLength) {
   addOffset();
   if (byteArrays != nullptr) {
     m_dataOutput->writeArrayLen(arrayLength);
@@ -348,7 +340,7 @@ PdxWriter& PdxLocalWriter::writeArrayOfByteArrays(
   return *this;
 }
 
-PdxWriter& PdxLocalWriter::markIdentityField(const std::string& ) {
+PdxWriter& PdxLocalWriter::markIdentityField(const std::string&) {
   return *this;
 }
 

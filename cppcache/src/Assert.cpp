@@ -27,8 +27,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-void Assert::throwAssertion(const char* expressionText,
-                                         const char* file, int line) {
+void Assert::throwAssertion(const char* expressionText, const char* file,
+                            int line) {
   AssertionException ae(expressionText);
   LOGERROR("AssertionException: ( %s ) at %s:%d", expressionText, file, line);
   std::stringstream ss;

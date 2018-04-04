@@ -2403,8 +2403,7 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
   TcrEndpoint* theEP = nullptr;
   LOGDEBUG("prEnabled = %s, forSingleHop = %s %d",
            m_attrs->getPRSingleHopEnabled() ? "true" : "false",
-           request.forSingleHop() ? "true" : "false",
-           request.getMessageType());
+           request.forSingleHop() ? "true" : "false", request.getMessageType());
 
   match = false;
   std::shared_ptr<BucketServerLocation> slTmp = nullptr;
@@ -2426,11 +2425,10 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
     }
   } else if (serverLocation != nullptr /*&& excludeServers.size() == 0*/) {
     theEP = getEndPoint(serverLocation, version, excludeServers);
-  } else if (
-      m_attrs->getPRSingleHopEnabled() /*&& excludeServers.size() == 0*/ &&
-          request.forSingleHop() &&
-          (request.getMessageType() != TcrMessage::GET_ALL_70) &&
-          (request.getMessageType() != TcrMessage::GET_ALL_WITH_CALLBACK)) {
+  } else if (m_attrs->getPRSingleHopEnabled() /*&& excludeServers.size() == 0*/
+             && request.forSingleHop() &&
+             (request.getMessageType() != TcrMessage::GET_ALL_70) &&
+             (request.getMessageType() != TcrMessage::GET_ALL_WITH_CALLBACK)) {
     theEP = getSingleHopServer(request, version, slTmp, excludeServers);
     if (theEP != nullptr) {
       // if all buckets are not initialized
@@ -2438,8 +2436,7 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
     }
     if (slTmp != nullptr && m_clientMetadataService != nullptr) {
       if (m_clientMetadataService->isBucketMarkedForTimeout(
-          request.getRegionName().c_str(), slTmp->getBucketId()) ==
-          true) {
+              request.getRegionName().c_str(), slTmp->getBucketId()) == true) {
         *error = GF_CLIENT_WAIT_TIMEOUT;
         return nullptr;
       }
@@ -2451,17 +2448,15 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
     conn = getFromEP(theEP);
     if (!conn) {
       LOGFINER("Creating connection to endpint as not found in pool ");
-      *error =
-          createPoolConnectionToAEndPoint(conn, theEP, maxConnLimit, true);
+      *error = createPoolConnectionToAEndPoint(conn, theEP, maxConnLimit, true);
       if (*error == GF_CLIENT_WAIT_TIMEOUT ||
           *error == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
-        if (m_clientMetadataService == nullptr ||
-            request.getKey() == nullptr) {
+        if (m_clientMetadataService == nullptr || request.getKey() == nullptr) {
           return nullptr;
         }
         std::shared_ptr<Region> region;
-        m_connManager.getCacheImpl()->getRegion(
-            request.getRegionName().c_str(), region);
+        m_connManager.getCacheImpl()->getRegion(request.getRegionName().c_str(),
+                                                region);
         if (region != nullptr) {
           slTmp = nullptr;
           m_clientMetadataService
@@ -2492,9 +2487,9 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
   }
 
   LOGDEBUG(
-        "ThinClientPoolDM::getConnectionFromQueueW return conn = %p match = %d "
-            "connFound=%d",
-        conn, match, connFound);
+      "ThinClientPoolDM::getConnectionFromQueueW return conn = %p match = %d "
+      "connFound=%d",
+      conn, match, connFound);
   return conn;
 }
 

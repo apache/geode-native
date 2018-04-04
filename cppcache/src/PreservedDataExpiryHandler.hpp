@@ -50,7 +50,7 @@ class APACHE_GEODE_EXPORT PreservedDataExpiryHandler : public ACE_Event_Handler 
   int handle_timeout(const ACE_Time_Value& current_time,
                      const void* arg) override;
 
-  int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override ;
+  int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
 
  private:
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;

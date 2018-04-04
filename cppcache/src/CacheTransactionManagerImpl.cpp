@@ -357,9 +357,8 @@ TransactionId& CacheTransactionManagerImpl::suspend() {
                                 .suspendedTxTimeout();
   auto handler =
       new SuspendedTxExpiryHandler(this, txState->getTransactionId());
-  long id = m_cache->getExpiryTaskManager()
-                   .scheduleExpiryTask(handler, suspendedTxTimeout,
-                                    std::chrono::seconds::zero(), false);
+  long id = m_cache->getExpiryTaskManager().scheduleExpiryTask(
+      handler, suspendedTxTimeout, std::chrono::seconds::zero(), false);
   txState->setSuspendedExpiryTaskId(id);
 
   // add the transaction state to the list of suspended transactions

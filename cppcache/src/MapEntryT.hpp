@@ -147,7 +147,7 @@ class MapEntryT<TBase, NUM_TRACKERS, GF_UPDATE_MAX> final : public TBase {
   MapEntryT(const MapEntryT&) = delete;
   MapEntryT& operator=(const MapEntryT&) = delete;
 
-  int addTracker(std::shared_ptr<MapEntry>& ) final {
+  int addTracker(std::shared_ptr<MapEntry>&) final {
     return MapEntryST<TBase, NUM_TRACKERS, GF_UPDATE_MAX>::addTracker(this);
   }
 

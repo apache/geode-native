@@ -912,10 +912,10 @@ END_TASK_DEFINITION
 
 void checkCQStatusOnConnect(const char* poolName, const char* name,
                             uint32_t connect) {
- auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
- std::shared_ptr<QueryService> qs;
- if (pool != nullptr) {
-   qs = pool->getQueryService();
+  auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
+  std::shared_ptr<QueryService> qs;
+  if (pool != nullptr) {
+    qs = pool->getQueryService();
   }
   auto cq = qs->getCq(const_cast<char*>(name));
   auto cqAttr = cq->getCqAttributes();
@@ -955,10 +955,10 @@ END_TASK_DEFINITION
 
 void checkCQStatusOnDisConnect(const char* poolName, const char* cqName,
                                uint32_t disconnect) {
- auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
- std::shared_ptr<QueryService> qs;
- if (pool != nullptr) {
-   qs = pool->getQueryService();
+  auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
+  std::shared_ptr<QueryService> qs;
+  if (pool != nullptr) {
+    qs = pool->getQueryService();
   }
   auto cq = qs->getCq(const_cast<char*>(cqName));
   auto cqAttr = cq->getCqAttributes();
@@ -1025,10 +1025,10 @@ END_TASK_DEFINITION
 
 void checkCQStatusOnPutEvent(const char* poolName, const char* cqName,
                              uint32_t count) {
- auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
- std::shared_ptr<QueryService> qs;
- if (pool != nullptr) {
-   qs = pool->getQueryService();
+  auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
+  std::shared_ptr<QueryService> qs;
+  if (pool != nullptr) {
+    qs = pool->getQueryService();
   }
   auto cq = qs->getCq(const_cast<char*>(cqName));
   auto cqAttr = cq->getCqAttributes();

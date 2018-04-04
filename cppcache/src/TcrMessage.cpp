@@ -1535,7 +1535,7 @@ TcrMessageCloseCQ::TcrMessageCloseCQ(
 
 TcrMessageQueryWithParameters::TcrMessageQueryWithParameters(
     std::unique_ptr<DataOutput> dataOutput, const std::string& regionName,
-    const std::shared_ptr<Serializable>& ,
+    const std::shared_ptr<Serializable>&,
     std::shared_ptr<CacheableVector> paramList,
     std::chrono::milliseconds messageResponsetimeout,
     ThinClientBaseDM* connectionDM) {

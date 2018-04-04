@@ -1119,8 +1119,7 @@ std::shared_ptr<PdxSerializable> PdxInstanceImpl::getObject() {
   int64_t sampleStartNanos =
       m_enableTimeStatistics ? Utils::startStatOpTime() : 0;
   //[ToDo] do we have to call incPdxDeSerialization here?
-  auto ret =
-      PdxHelper::deserializePdx(*dataInput, m_typeId, m_bufferLength);
+  auto ret = PdxHelper::deserializePdx(*dataInput, m_typeId, m_bufferLength);
 
   if (m_cacheStats != nullptr) {
     if (m_enableTimeStatistics) {

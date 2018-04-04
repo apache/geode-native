@@ -295,13 +295,15 @@ void PdxType::InitializeType() {
 }
 
 int32_t PdxType::getFieldPosition(const std::string& fieldName,
-                                  uint8_t* offsetPosition, int32_t offsetSize, int32_t pdxStreamlen) {
+                                  uint8_t* offsetPosition, int32_t offsetSize,
+                                  int32_t pdxStreamlen) {
   auto pft = this->getPdxField(fieldName);
   if (pft != nullptr) {
     if (pft->IsVariableLengthType()) {
       return variableLengthFieldPosition(pft, offsetPosition, offsetSize);
     } else {
-      return fixedLengthFieldPosition(pft, offsetPosition, offsetSize, pdxStreamlen);
+      return fixedLengthFieldPosition(pft, offsetPosition, offsetSize,
+                                      pdxStreamlen);
     }
   }
   return -1;

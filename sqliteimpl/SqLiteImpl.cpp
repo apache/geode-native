@@ -102,8 +102,7 @@ void SqLiteImpl::init(const std::shared_ptr<Region>& region,
 }
 
 void SqLiteImpl::write(const std::shared_ptr<CacheableKey>& key,
-                       const std::shared_ptr<Cacheable>& value,
-                       void*&) {
+                       const std::shared_ptr<Cacheable>& value, void*&) {
   // Serialize key and value.
   auto& cache = m_regionPtr->getCache();
   auto keyDataBuffer = cache.createDataOutput();

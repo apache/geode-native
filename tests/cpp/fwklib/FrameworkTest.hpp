@@ -60,8 +60,7 @@ class FrameworkTest  // Base class all test classes written for xml testing
 
   int32_t finalize() { return FWK_SUCCESS; }
 
-  void cacheInitialize(
-      std::shared_ptr<Properties>& props);
+  void cacheInitialize(std::shared_ptr<Properties>& props);
 
   void cacheFinalize();
 

@@ -27,7 +27,6 @@
 #include "CppCacheLibrary.hpp"
 #include "Utils.hpp"
 
-
 void initLibDllEntry(void);
 
 extern "C" {

@@ -96,7 +96,7 @@ class ThinClientBaseDM {
   // add a new chunk to the queue
   void queueChunk(TcrChunkedContext* chunk);
 
-  virtual bool isEndpointAttached(TcrEndpoint* ep) ;
+  virtual bool isEndpointAttached(TcrEndpoint* ep);
 
   static GfErrType sendRequestToEndPoint(const TcrMessage& request,
                                          TcrMessageReply& reply,

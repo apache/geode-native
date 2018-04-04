@@ -2371,7 +2371,7 @@ GfErrType ThinClientRegion::unregisterKeysNoThrowLocalDestroy(
   }
 
   TcrMessageUnregisterInterestList request(m_cacheImpl->createDataOutput(),
-                                          this, keys, false, true,
+                                           this, keys, false, true,
                                            InterestResultPolicy::NONE, m_tcrdm);
   err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
   if (err == GF_NOERR) {

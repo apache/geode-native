@@ -119,7 +119,9 @@ class APACHE_GEODE_EXPORT TcrEndpoint {
 
   bool isAuthenticated() { return m_isAuthenticated; }
 
-  void setAuthenticated(bool isAuthenticated) { m_isAuthenticated = isAuthenticated; }
+  void setAuthenticated(bool isAuthenticated) {
+    m_isAuthenticated = isAuthenticated;
+  }
 
   virtual bool isMultiUserMode();
   /*{

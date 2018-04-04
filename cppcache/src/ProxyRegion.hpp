@@ -469,7 +469,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
     return containsValueForKey(CacheableKey::create(key));
   }
 
-  bool containsKey(const std::shared_ptr<CacheableKey>& ) const final {
+  bool containsKey(const std::shared_ptr<CacheableKey>&) const final {
     throw UnsupportedOperationException("Region.containsKey()");
   }
 

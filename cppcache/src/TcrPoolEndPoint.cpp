@@ -108,8 +108,7 @@ GfErrType TcrPoolEndPoint::registerDM(bool, bool isSecondary, bool,
   setConnected(true);
   return err;
 }
-void TcrPoolEndPoint::unregisterDM(bool ,
-                                   ThinClientBaseDM* ,
+void TcrPoolEndPoint::unregisterDM(bool, ThinClientBaseDM*,
                                    bool checkQueueHosted) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(getQueueHostedMutex());
 

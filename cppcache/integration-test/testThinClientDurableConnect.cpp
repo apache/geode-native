@@ -18,7 +18,5 @@
 #include "ThinClientDurableConnect.hpp"
 
 DUNIT_MAIN
-  {
-    doThinClientDurableConnect();
-  }
+  { doThinClientDurableConnect(); }
 END_MAIN

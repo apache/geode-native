@@ -75,9 +75,9 @@ class DupChecker : public CacheListener {
 
   void afterUpdate(const EntryEvent& event) override { check(event); }
 
-  void afterRegionInvalidate(const RegionEvent&) override {};
+  void afterRegionInvalidate(const RegionEvent&) override{};
 
-  void afterRegionDestroy(const RegionEvent&) override {};
+  void afterRegionDestroy(const RegionEvent&) override{};
 };
 
 ///////////////////////////////////////////////////////

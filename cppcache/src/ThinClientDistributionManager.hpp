@@ -29,7 +29,7 @@ class ThinClientDistributionManager : public ThinClientBaseDM {
  public:
   ThinClientDistributionManager(TcrConnectionManager& connManager,
                                 ThinClientRegion* region);
-  ~ThinClientDistributionManager() override  = default;
+  ~ThinClientDistributionManager() override = default;
 
   void init() override;
   void destroy(bool keepalive = false) override;
@@ -38,16 +38,18 @@ class ThinClientDistributionManager : public ThinClientBaseDM {
                                     bool attemptFailover = true,
                                     bool isBGThread = false) override;
 
-  void failover() override ;
+  void failover() override;
 
   void acquireFailoverLock() override { m_endpointsLock.acquire_read(); };
   void releaseFailoverLock() override { m_endpointsLock.release(); };
 
-  TcrEndpoint* getActiveEndpoint() override { return m_endpoints[m_activeEndpoint]; }
-  bool isEndpointAttached(TcrEndpoint* ep) override ;
+  TcrEndpoint* getActiveEndpoint() override {
+    return m_endpoints[m_activeEndpoint];
+  }
+  bool isEndpointAttached(TcrEndpoint* ep) override;
 
   GfErrType sendRequestToEP(const TcrMessage& request, TcrMessageReply& reply,
-                            TcrEndpoint* ep) override ;
+                            TcrEndpoint* ep) override;
 
  protected:
   virtual void getEndpointNames(std::unordered_set<std::string>& endpointNames);

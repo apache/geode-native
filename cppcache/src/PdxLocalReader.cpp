@@ -167,8 +167,7 @@ std::vector<float> PdxLocalReader::readFloatArray(const std::string&) {
   return m_dataInput->readFloatArray();
 }
 
-std::vector<double> PdxLocalReader::readDoubleArray(
-    const std::string&) {
+std::vector<double> PdxLocalReader::readDoubleArray(const std::string&) {
   return m_dataInput->readDoubleArray();
 }
 

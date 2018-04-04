@@ -92,8 +92,9 @@ class TESTOBJECT_EXPORT ArrayOfByte {
 
   static void resetTimestamp(std::shared_ptr<CacheableBytes> bytes,
                              SerializationRegistry &serializationRegistry) {
-    DataInputInternal di(reinterpret_cast<const uint8_t *>(bytes->value().data()),
-                         bytes->length(), nullptr);
+    DataInputInternal di(
+        reinterpret_cast<const uint8_t *>(bytes->value().data()),
+        bytes->length(), nullptr);
     int32_t index;
     try {
       index = di.readInt32();

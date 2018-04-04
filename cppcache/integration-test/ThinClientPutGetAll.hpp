@@ -97,8 +97,7 @@ void verifyGetAll(std::shared_ptr<Region> region, const char** _vals,
 }
 
 void verifyGetAllWithCallBackArg(std::shared_ptr<Region> region,
-                                 const char** vals,
-                                 int startIndex,
+                                 const char** vals, int startIndex,
                                  std::shared_ptr<Cacheable> callBack) {
   verifyGetAll(region, vals, startIndex, callBack);
 }
@@ -183,8 +182,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetAllUpdatedValuesFromClientTwo)
     // verify getAll get the data from local cache.
     auto region = getHelper()->getRegion(_regionNames[0]);
     verifyGetAll(region, _vals, 0);
-    verifyGetAllWithCallBackArg(region, _vals, 0,
-                                CacheableInt32::create(1000));
+    verifyGetAllWithCallBackArg(region, _vals, 0, CacheableInt32::create(1000));
     LOG("GetAllUpdatedValuesFromClientTwo complete.");
   }
 END_TASK_DEFINITION
@@ -200,8 +198,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetAllAfterLocalDestroyRegionOnClientTwo)
                                     "__TEST_POOL1__", true, true);
     reg0 = getHelper()->getRegion(_regionNames[0]);
     verifyGetAll(reg0, _nvals, 0);
-    verifyGetAllWithCallBackArg(reg0, _nvals, 0,
-                                CacheableInt32::create(1000));
+    verifyGetAllWithCallBackArg(reg0, _nvals, 0, CacheableInt32::create(1000));
   }
 END_TASK_DEFINITION
 
@@ -216,8 +213,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetAllAfterLocalDestroyRegionOnClientTwo_Pool)
                        true);
     reg0 = getHelper()->getRegion(_regionNames[0]);
     verifyGetAll(reg0, _nvals, 0);
-    verifyGetAllWithCallBackArg(reg0, _nvals, 0,
-                                CacheableInt32::create(1000));
+    verifyGetAllWithCallBackArg(reg0, _nvals, 0, CacheableInt32::create(1000));
   }
 END_TASK_DEFINITION
 

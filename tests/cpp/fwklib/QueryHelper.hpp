@@ -693,8 +693,8 @@ class QueryHelper {
 
   virtual bool verifyRS(std::shared_ptr<SelectResults>& resultset,
                         size_t rowCount);
-  virtual bool verifySS(std::shared_ptr<SelectResults>& structset, size_t rowCount,
-                        int fieldCount);
+  virtual bool verifySS(std::shared_ptr<SelectResults>& structset,
+                        size_t rowCount, int fieldCount);
 
   void populateRangePositionData(std::shared_ptr<Region>& rptr, int start,
                                  int end);
@@ -1074,7 +1074,8 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
 
   // lets log and return in case of error only situation
   char buffer[1024] = {'\0'};
-  sprintf(buffer, "found rows %zd, expected rows %zd\n", foundRows, expectedRows);
+  sprintf(buffer, "found rows %zd, expected rows %zd\n", foundRows,
+          expectedRows);
   FWKSEVERE(buffer);
   return false;
 }

@@ -141,9 +141,9 @@ void PdxHelper::serializePdx(
   }
 }
 
-std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
-    DataInput& dataInput, int32_t typeId,
-    int32_t length) {
+std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
+                                                           int32_t typeId,
+                                                           int32_t length) {
   std::shared_ptr<PdxSerializable> pdxObjectptr = nullptr;
   std::shared_ptr<PdxType> pdxLocalType = nullptr;
 
