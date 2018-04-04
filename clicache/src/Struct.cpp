@@ -40,7 +40,7 @@ namespace Apache
       {
         try
         {
-          return (Serializable::GetManagedValueGeneric<Object^>(
+          return (TypeRegistry::GetManagedValueGeneric<Object^>(
             static_cast<native::Struct*>(m_nativeptr->get())->operator[](static_cast<System::Int32>(index))));
         }
         finally
@@ -53,7 +53,7 @@ namespace Apache
       {
         try
         {
-          return (Serializable::GetManagedValueGeneric<Object^>(
+          return (TypeRegistry::GetManagedValueGeneric<Object^>(
             static_cast<native::Struct*>(m_nativeptr->get())->operator[](marshal_as<std::string>(fieldName))));
         }
         finally
@@ -104,7 +104,7 @@ namespace Apache
       {
         try
         {
-          return (Serializable::GetManagedValueGeneric<Object^>(
+          return (TypeRegistry::GetManagedValueGeneric<Object^>(
             static_cast<native::Struct*>(m_nativeptr->get())->next()));
         }
         finally

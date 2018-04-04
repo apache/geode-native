@@ -56,8 +56,8 @@ namespace Apache
             }
             virtual void write(const std::shared_ptr<native::CacheableKey>&  key, const std::shared_ptr<native::Cacheable>&  value/*, void *& PersistenceInfo*/)
             {
-               TKey gKey = Serializable::GetManagedValueGeneric<TKey>(key);
-               TValue gValue = Serializable::GetManagedValueGeneric<TValue>(value);
+               TKey gKey = TypeRegistry::GetManagedValueGeneric<TKey>(key);
+               TValue gValue = TypeRegistry::GetManagedValueGeneric<TValue>(value);
                m_persistenceManager->Write(gKey, gValue);
             }
             
@@ -75,7 +75,7 @@ namespace Apache
             
             virtual std::shared_ptr<native::Cacheable> read(const std::shared_ptr<native::CacheableKey>& key/*, void *& PersistenceInfo*/)
             {
-              TKey gKey = Serializable::GetManagedValueGeneric<TKey>(key);
+              TKey gKey = TypeRegistry::GetManagedValueGeneric<TKey>(key);
               return Serializable::GetUnmanagedValueGeneric<TValue>(m_persistenceManager->Read(gKey));
             }
             
@@ -86,7 +86,7 @@ namespace Apache
             
             virtual void destroy(const std::shared_ptr<native::CacheableKey>& key/*, void *& PersistenceInfo*/)
             {
-              TKey gKey = Serializable::GetManagedValueGeneric<TKey>(key);
+              TKey gKey = TypeRegistry::GetManagedValueGeneric<TKey>(key);
               m_persistenceManager->Destroy(gKey);
             }
             

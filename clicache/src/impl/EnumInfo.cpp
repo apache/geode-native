@@ -22,6 +22,9 @@
 #include "EnumInfo.hpp"
 #include "../DataOutput.hpp"
 #include "../DataInput.hpp"
+#include "../Cache.hpp"
+#include "../TypeRegistry.hpp"
+
 using namespace System;
 
 namespace Apache
@@ -47,10 +50,10 @@ namespace Apache
           _hashcode = input->ReadInt32();
         }
 
-       Object^ EnumInfo::GetEnum()
+       Object^ EnumInfo::GetEnum(Cache^ cache)
        {
-         String^ tmp = Serializable::GetLocalTypeName(_enumClassName);
-         Type^ t = Serializable::GetType(tmp);
+         String^ tmp = cache->TypeRegistry->GetLocalTypeName(_enumClassName);
+         Type^ t = cache->TypeRegistry->GetType(tmp);
          Object^ obj = Enum::Parse(t, _enumName);
 
          return obj;

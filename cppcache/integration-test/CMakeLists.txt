@@ -4,9 +4,9 @@
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -75,7 +75,7 @@ foreach(FILE ${SOURCES})
   set(TESTS ${TESTS} ${TEST})
   add_dependencies(integration-tests ${TEST})
   add_executable(${TEST} ${FILE})
-  set_target_properties(${TEST} PROPERTIES FOLDER test/cppTests)  
+  set_target_properties(${TEST} PROPERTIES FOLDER test/cppTests)
 
   target_link_libraries(${TEST}
     PRIVATE
@@ -93,11 +93,11 @@ foreach(FILE ${SOURCES})
 
   # Some tests depend on these library
   add_dependencies(${TEST} securityImpl cryptoImpl DHImpl SqLiteImpl)
-  
+
   set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/.tests/${TEST})
-    
+
   math(EXPR PORT "${PORT} + 1")
-    
+
   if (WIN32)
     set (TEST_SCRIPT_SUFFIX .bat)
     generate_config(${CMAKE_CURRENT_SOURCE_DIR}/test.bat.in ${CMAKE_CURRENT_BINARY_DIR}/.${TEST}.bat.in $<TARGET_FILE:${TEST}>${TEST_SCRIPT_SUFFIX})
@@ -110,13 +110,13 @@ foreach(FILE ${SOURCES})
 
     # TODO fix file permissions on .sh
     set(TEST_COMMAND bash $<TARGET_FILE:${TEST}>${TEST_SCRIPT_SUFFIX})
-    
+
   endif()
 
   add_test(NAME ${TEST}
       COMMAND ${TEST_COMMAND}
   )
-        
+
   set_property(TEST ${TEST} PROPERTY LABELS STABLE)
 endforeach()
 

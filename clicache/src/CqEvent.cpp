@@ -54,14 +54,14 @@ namespace Apache
       TKey CqEvent<TKey, TResult>::getKey( )
       {
         std::shared_ptr<native::CacheableKey>& keyptr( m_nativeptr->getKey( ) );
-        return Serializable::GetManagedValueGeneric<TKey>(keyptr);
+        return TypeRegistry::GetManagedValueGeneric<TKey>(keyptr);
       }
 
       generic<class TKey, class TResult>
       TResult CqEvent<TKey, TResult>::getNewValue( )
       {
         std::shared_ptr<native::Cacheable>& valptr( m_nativeptr->getNewValue( ) );
-        return Serializable::GetManagedValueGeneric<TResult>(valptr);
+        return TypeRegistry::GetManagedValueGeneric<TResult>(valptr);
       }
 
       generic<class TKey, class TResult>

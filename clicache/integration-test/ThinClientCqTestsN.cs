@@ -298,8 +298,8 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.Init();
       try
       {
-        Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable, CacheHelper.DCache);
-        Serializable.RegisterTypeGeneric(Position.CreateDeserializable, CacheHelper.DCache);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(Portfolio.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(Position.CreateDeserializable);
       }
       catch (IllegalStateException)
       {
@@ -352,8 +352,8 @@ namespace Apache.Geode.Client.UnitTests
       }
       else
       {
-        Serializable.RegisterPdxType(PortfolioPdx.CreateDeserializable);
-        Serializable.RegisterPdxType(PositionPdx.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterPdxType(PortfolioPdx.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterPdxType(PositionPdx.CreateDeserializable);
         qh.PopulatePortfolioPdxData(region0, qh.PortfolioSetSize,
          qh.PortfolioNumSets);
         qh.PopulatePortfolioPdxData(subRegion0, qh.PortfolioSetSize,

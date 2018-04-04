@@ -32,7 +32,7 @@ namespace Apache
       {
         try
         {
-          return Serializable::GetManagedValueGeneric<TResult>(m_nativeptr->get()->current( ));
+          return TypeRegistry::GetManagedValueGeneric<TResult>(m_nativeptr->get()->current( ));
         }
         finally
         {
@@ -71,7 +71,7 @@ namespace Apache
       {
         try
         {
-          return Serializable::GetManagedValueGeneric<TResult>(m_nativeptr->get()->next( ));
+          return TypeRegistry::GetManagedValueGeneric<TResult>(m_nativeptr->get()->next( ));
         }
         finally
         {

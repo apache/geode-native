@@ -511,7 +511,9 @@ namespace Apache
           {
             return m_dataOutput->Cache->GetPdxTypeRegistry()->GetLocalPdxType(pdxClassName);
           }
-
+         
+          Apache::Geode::Client::Cache^ PdxLocalWriter::Cache::get() { return m_dataOutput->Cache; }
+ 
       }  // namespace Internal
     }  // namespace Client
   }  // namespace Geode

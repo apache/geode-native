@@ -59,6 +59,8 @@ namespace Apache
 
       ref class DataOutput;
 
+      ref class TypeRegistry;
+
       /// <summary>
       /// Provides a distributed cache.
       /// </summary>
@@ -276,6 +278,11 @@ namespace Apache
 
         virtual PoolManager^ GetPoolManager();
 
+        property Apache::Geode::Client::TypeRegistry^ TypeRegistry
+        {
+          Apache::Geode::Client::TypeRegistry^ get() { return m_typeRegistry; }
+        }
+
       internal:
 
         /// <summary>
@@ -313,6 +320,7 @@ namespace Apache
         native_shared_ptr<native::Cache>^ m_nativeptr;
 
         Apache::Geode::Client::Internal::PdxTypeRegistry^ m_pdxTypeRegistry;
+        Apache::Geode::Client::TypeRegistry^ m_typeRegistry;
       };
     }  // namespace Client
   }  // namespace Geode

@@ -26,10 +26,10 @@ namespace Apache
     namespace Client
     {
 
-         /// <summary>
-         /// Application can implement this interface to map pdx type name to local type name.
+        /// <summary>
+        /// Application can implement this interface to map pdx type name to local type name.
         /// Need to set this using <see cref="Serializable.SetPdxTypeMapper" />
-         /// </summary>
+        /// </summary>
         public interface class IPdxTypeMapper
         {
           public:
@@ -38,14 +38,14 @@ namespace Apache
            /// <param name="localTypeName"> local type name </param>
            /// @return the pdx type name.
            /// </summary>
-          String^ ToPdxTypeName(String^ localTypeName);
+           String^ ToPdxTypeName(String^ localTypeName);
 
            /// <summary>
            /// To map the pdx type name to local type
            /// <param name="pdxTypeName"> pdx type name </param>
            /// @return the local type name.
            /// </summary>          
-            String^ FromPdxTypeName(String^ pdxTypeName);
+           String^ FromPdxTypeName(String^ pdxTypeName);
         };
     }  // namespace Client
   }  // namespace Geode

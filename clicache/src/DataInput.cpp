@@ -731,10 +731,10 @@ namespace Apache
         }
         if (findinternal) {
           compId += 0x80000000;
-          createType = Serializable::GetManagedDelegateGeneric((System::Int64)compId);
+          createType = m_cache->TypeRegistry->GetManagedDelegateGeneric((System::Int64)compId);
         }
         else {
-          createType = Serializable::GetManagedDelegateGeneric(compId);
+          createType = m_cache->TypeRegistry->GetManagedDelegateGeneric(compId);
           if (createType == nullptr)
           {
             Object^ retVal = ReadDotNetTypes(typeId);
@@ -747,7 +747,7 @@ namespace Apache
               return readDotNetObjectArray();
             }
             compId += 0x80000000;
-            createType = Serializable::GetManagedDelegateGeneric(compId);
+            createType = m_cache->TypeRegistry->GetManagedDelegateGeneric(compId);
 
             /*if (createType == nullptr)
             {
@@ -783,18 +783,18 @@ namespace Apache
         {
           ReadByte(); // ignore CLASS typeid
           className = (String^)ReadObject();
-          className = Serializable::GetLocalTypeName(className);
+          className = m_cache->TypeRegistry->GetLocalTypeName(className);
           System::Collections::IList^ list = nullptr;
           if (len == 0)
           {
-            list = (System::Collections::IList^)Serializable::GetArrayObject(className, len);
+            list = (System::Collections::IList^)m_cache->TypeRegistry->GetArrayObject(className, len);
             return list;
           }
           //read first object
 
           Object^ ret = ReadObject();//in case it returns pdxinstance or java.lang.object
 
-          list = (System::Collections::IList^)Serializable::GetArrayObject(ret->GetType()->FullName, len);
+          list = (System::Collections::IList^)m_cache->TypeRegistry->GetArrayObject(ret->GetType()->FullName, len);
 
           list[0] = ret;
           for (System::Int32 index = 1; index < list->Count; ++index)
@@ -857,10 +857,10 @@ namespace Apache
         }
         if (findinternal) {
           compId += 0x80000000;
-          createType = Serializable::GetManagedDelegateGeneric((System::Int64)compId);
+          createType = m_cache->TypeRegistry->GetManagedDelegateGeneric((System::Int64)compId);
         }
         else {
-          createType = Serializable::GetManagedDelegateGeneric(compId);
+          createType = m_cache->TypeRegistry->GetManagedDelegateGeneric(compId);
           if (createType == nullptr)
           {
             Object^ retVal = ReadDotNetTypes(typeId);
@@ -869,7 +869,7 @@ namespace Apache
               return retVal;
 
             compId += 0x80000000;
-            createType = Serializable::GetManagedDelegateGeneric(compId);
+            createType = m_cache->TypeRegistry->GetManagedDelegateGeneric(compId);
           }
         }
 

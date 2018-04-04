@@ -266,9 +266,9 @@ namespace Apache
         void Visit(Apache::Geode::Client::ICacheableKey^ key,
           Apache::Geode::Client::IGeodeSerializable^ value)
         {
-          TPropKey tpkey = Apache::Geode::Client::Serializable::
+          TPropKey tpkey = Apache::Geode::Client::TypeRegistry::
             GetManagedValueGeneric<TPropKey>(std::shared_ptr<apache::geode::client::Serializable>(SafeMSerializableConvertGeneric(key)));
-          TPropValue tpvalue = Apache::Geode::Client::Serializable::
+          TPropValue tpvalue = Apache::Geode::Client::TypeRegistry::
             GetManagedValueGeneric<TPropValue>(std::shared_ptr<apache::geode::client::Serializable>(SafeMSerializableConvertGeneric(value)));
           m_visitor->Invoke(tpkey, tpvalue);
         }

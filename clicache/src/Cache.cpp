@@ -35,7 +35,7 @@
 #include "impl/PdxInstanceFactoryImpl.hpp"
 #include "CacheTransactionManager.hpp"
 #include "PoolManager.hpp"
-
+#include "TypeRegistry.hpp"
 
 #pragma warning(disable:4091)
 
@@ -54,6 +54,7 @@ namespace Apache
       {
         m_nativeptr = gcnew native_shared_ptr<native::Cache>(nativeptr);
         m_pdxTypeRegistry = gcnew Apache::Geode::Client::Internal::PdxTypeRegistry(this);
+        m_typeRegistry = gcnew Apache::Geode::Client::TypeRegistry(this);
       }
 
       String^ Cache::Name::get( )
@@ -123,7 +124,7 @@ namespace Apache
         finally
         {
 					CacheRegionHelper::getCacheImpl(m_nativeptr->get())->getPdxTypeRegistry()->clear();
-          Serializable::Clear();
+          m_typeRegistry->Clear();
           Apache::Geode::Client::DistributedSystem::unregisterCliCallback();
           GC::KeepAlive(m_nativeptr);
         }
@@ -174,6 +175,7 @@ namespace Apache
         {
           GC::KeepAlive(m_nativeptr);
         }
+
         auto rootRegions = gcnew array<Client::IRegion<TKey, TValue>^>(static_cast<int>(vrr.size()));
 
         for( System::Int32 index = 0; index < vrr.size( ); index++ )

@@ -92,7 +92,9 @@ namespace Apache
             pdxType = pdxObject->GetType();
           }
   
-          pdxClassname = Serializable::GetPdxTypeName(pdxType->FullName);        
+          auto cache = dataOutput->Cache;
+
+          pdxClassname = cache->TypeRegistry->GetPdxTypeName(pdxType->FullName);
           PdxType^ localPdxType = dataOutput->Cache->GetPdxTypeRegistry()->GetLocalPdxType(pdxClassname);         
 
           if(localPdxType == nullptr)
@@ -111,8 +113,8 @@ namespace Apache
 
             ptc->EndObjectWriting();//now write typeid
 
-            dataOutput->Cache->GetPdxTypeRegistry()->AddLocalPdxType(pdxClassname, nType);//add classname VS pdxType
-            dataOutput->Cache->GetPdxTypeRegistry()->AddPdxType(nTypeId, nType);//add typeid vs pdxtype
+            cache->GetPdxTypeRegistry()->AddLocalPdxType(pdxClassname, nType);//add classname VS pdxType
+            cache->GetPdxTypeRegistry()->AddPdxType(nTypeId, nType);//add typeid vs pdxtype
 
             //This is for pdx Statistics
             System::Byte* stPos = dataOutput->GetStartBufferPosition() + ptc->getStartPositionOffset();
@@ -124,14 +126,14 @@ namespace Apache
           else//we know locasl type, need to see preerved data
           {
             //if object got from server than create instance of RemoteWriter otherwise local writer.
-            PdxRemotePreservedData^ pd = dataOutput->Cache->GetPdxTypeRegistry()->GetPreserveData(pdxObject);
+            auto pd = cache->GetPdxTypeRegistry()->GetPreserveData(pdxObject);
 
             //now always remotewriter as we have API Read/WriteUnreadFields 
 						//so we don't know whether user has used those or not;; Can we do some trick here?
             PdxRemoteWriter^ prw = nullptr;
             if(pd != nullptr)
             {
-              PdxType^ mergedPdxType = dataOutput->Cache->GetPdxTypeRegistry()->GetPdxType(pd->MergedTypeId);
+              PdxType^ mergedPdxType = cache->GetPdxTypeRegistry()->GetPdxType(pd->MergedTypeId);
             
               prw = gcnew PdxRemoteWriter(dataOutput, mergedPdxType, pd);
             }
@@ -157,24 +159,25 @@ namespace Apache
         IPdxSerializable^ PdxHelper::DeserializePdx(DataInput^ dataInput, bool forceDeserialize, int typeId, int len, const native::SerializationRegistry* serializationRegistry)
         {
           dataInput->setPdxdeserialization(true);
-           String^ pdxClassname = nullptr;
-           String^ pdxDomainClassname = nullptr; 
+          String^ pdxClassname = nullptr;
+          String^ pdxDomainClassname = nullptr; 
           IPdxSerializable^ pdxObject = nullptr;
-            dataInput->AdvanceUMCursor();//it will increase the cursor in c++ layer
-            dataInput->SetBuffer();//it will c++ buffer in cli layer
+          dataInput->AdvanceUMCursor();//it will increase the cursor in c++ layer
+          dataInput->SetBuffer();//it will c++ buffer in cli layer
 
-            PdxType^ pType = dataInput->Cache->GetPdxTypeRegistry()->GetPdxType(typeId);
+            auto cache = dataInput->Cache;
+            PdxType^ pType = cache->GetPdxTypeRegistry()->GetPdxType(typeId);
             PdxType^ pdxLocalType = nullptr;
 
             if(pType != nullptr)//this may happen with PdxInstanceFactory
-              pdxLocalType = dataInput->Cache->GetPdxTypeRegistry()->GetLocalPdxType(pType->PdxClassName);//this should be fine for IPdxTypeMapper
+              pdxLocalType = cache->GetPdxTypeRegistry()->GetLocalPdxType(pType->PdxClassName);//this should be fine for IPdxTypeMapper
 
             if(pType != nullptr && pdxLocalType != nullptr)//type found 
             {
               pdxClassname = pType->PdxClassName;
-              pdxDomainClassname = Serializable::GetLocalTypeName(pdxClassname);
+              pdxDomainClassname = cache->TypeRegistry->GetLocalTypeName(pdxClassname);
               //Log::Debug("found type " + typeId + " " + pType->IsLocal);
-              pdxObject = Serializable::GetPdxType(pdxDomainClassname);
+              pdxObject = cache->TypeRegistry->GetPdxType(pdxDomainClassname);
               if(pType->IsLocal)//local type no need to read Unread data
               {
                 PdxLocalReader^ plr = gcnew PdxLocalReader(dataInput, pType, len);
@@ -186,10 +189,10 @@ namespace Apache
                 PdxRemoteReader^ prr = gcnew PdxRemoteReader(dataInput, pType, len);              
                 pdxObject->FromData(prr);
 
-                PdxType^ mergedVersion = dataInput->Cache->GetPdxTypeRegistry()->GetMergedType(pType->TypeId);
+                PdxType^ mergedVersion = cache->GetPdxTypeRegistry()->GetMergedType(pType->TypeId);
                 PdxRemotePreservedData^ preserveData = prr->GetPreservedData(mergedVersion, pdxObject);
                 if(preserveData != nullptr)
-                  dataInput->Cache->GetPdxTypeRegistry()->SetPreserveData(pdxObject, preserveData);//it will set data in weakhashmap
+                  cache->GetPdxTypeRegistry()->SetPreserveData(pdxObject, preserveData);//it will set data in weakhashmap
                 prr->MoveStream();
               }
             }
@@ -202,9 +205,9 @@ namespace Apache
               }
               
               pdxClassname = pType->PdxClassName;
-              pdxDomainClassname = Serializable::GetLocalTypeName(pdxClassname);
+              pdxDomainClassname = cache->TypeRegistry->GetLocalTypeName(pdxClassname);
 
-              pdxObject = Serializable::GetPdxType(pdxDomainClassname);
+              pdxObject = cache->TypeRegistry->GetPdxType(pdxDomainClassname);
               
               Object^ pdxRealObject = pdxObject;
               bool isPdxWrapper = false;
@@ -349,7 +352,7 @@ namespace Apache
         Int32 PdxHelper::GetEnumValue(String^ enumClassName, String^ enumName, int hashcode, Cache^ cache)
         {
           //in case app want different name
-          enumClassName = Serializable::GetPdxTypeName(enumClassName);
+          enumClassName = cache->TypeRegistry->GetPdxTypeName(enumClassName);
           EnumInfo^ ei = gcnew EnumInfo(enumClassName, enumName, hashcode);
           return cache->GetPdxTypeRegistry()->GetEnumValue(ei);        
         }
@@ -357,7 +360,7 @@ namespace Apache
         Object^ PdxHelper::GetEnum(int enumId, Cache^ cache)
         {
           EnumInfo^ ei = cache->GetPdxTypeRegistry()->GetEnum(enumId);
-          return ei->GetEnum();
+          return ei->GetEnum(cache);
         }
 
         void PdxHelper::CreateMergedType(PdxType^ localType, PdxType^ remoteType, DataInput^ dataInput, const native::SerializationRegistry* serializationRegistry)

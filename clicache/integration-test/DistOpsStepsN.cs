@@ -553,7 +553,7 @@ namespace Apache.Geode.Client.UnitTests
       try
       {
         //   m_chw_forSecondAppDomain.CreateTCRegions_Pool_AD(regionNames, endpoints, locators, poolName, clientNotification, ssl);
-        Serializable.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxType.CreateDeserializable);
         CacheHelperWrapper chw = new CacheHelperWrapper();
         chw.CreateTCRegions_Pool_AD<object, object>(regionNames, locators, poolName, clientNotification, ssl, caching, pdxReadSerialized);
       }

@@ -73,8 +73,8 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.Init();
       try
       {
-        Serializable.RegisterTypeGeneric(Portfolio.CreateDeserializable, CacheHelper.DCache);
-        Serializable.RegisterTypeGeneric(Position.CreateDeserializable, CacheHelper.DCache);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(Portfolio.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(Position.CreateDeserializable);
       }
       catch (IllegalStateException)
       {

@@ -777,7 +777,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void initializePdxSerializer()
     {
-      Serializable.RegisterPdxSerializer(new PdxSerializer());
+      CacheHelper.DCache.TypeRegistry.PdxSerializer = new PdxSerializer();
     }
 
     public void doPutGetWithPdxSerializer()

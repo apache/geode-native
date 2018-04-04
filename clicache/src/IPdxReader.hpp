@@ -27,6 +27,7 @@ namespace Apache
   {
     namespace Client
     {
+      ref class Cache;
 
 				/// <summary>
 				/// A IPdxReader will be passed to IPdxSerializable.fromData or 
@@ -205,6 +206,11 @@ namespace Apache
           /// <param name="fieldName">The name of a member field.</param>
           /// <param name="type">The type of a member field, which value needs to read.</param>
           Object^ ReadField(String^ fieldName, Type^ type);
+
+          property Apache::Geode::Client::Cache^ Cache
+          {
+            Apache::Geode::Client::Cache^ get();
+          }
 				};
     }  // namespace Client
   }  // namespace Geode

@@ -29,6 +29,7 @@ namespace Apache
   {
     namespace Client
     {
+      ref class Cache;
 
 				/// <summary>
 				/// A IPdxWriter will be passed to IPdxSerializable.toData
@@ -241,6 +242,12 @@ namespace Apache
 					/// </summary>
 					/// <returns>this PdxWriter</returns>
           IPdxWriter^ WriteField(String^ fieldName, Object^ fieldValue, Type^ type);
+
+          property Apache::Geode::Client::Cache^ Cache
+          {
+            Apache::Geode::Client::Cache^ get();
+          }
+
 				};
     }  // namespace Client
   }  // namespace Geode

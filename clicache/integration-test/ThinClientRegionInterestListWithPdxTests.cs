@@ -536,8 +536,8 @@ namespace Apache.Geode.Client.UnitTests
 
     void RegisterKeysPdx()
     {
-      Serializable.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
       IRegion<object, object> region = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
       region.GetSubscriptionService().RegisterAllKeys();
@@ -545,8 +545,8 @@ namespace Apache.Geode.Client.UnitTests
 
     void StepThreePdx()
     {
-      Serializable.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
-      Serializable.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes1.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTests.PdxTypes8.CreateDeserializable);
       IRegion<object, object> region = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
       region[1] = new PdxTests.PdxTypes8();
