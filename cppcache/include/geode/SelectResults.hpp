@@ -41,7 +41,7 @@ class SelectResultsIterator;
  * A SelectResults is obtained by executing a Query on the server.
  * This can either be a ResultSet or a StructSet.
  */
-class _GEODE_EXPORT SelectResults {
+class APACHE_GEODE_EXPORT SelectResults {
  public:
   virtual ~SelectResults() = default;
 

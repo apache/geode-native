@@ -38,7 +38,7 @@ namespace statistics {
  * This is necessary for monitoring the health of Geode components.
  *
  */
-class _GEODE_EXPORT ProcessStats {
+class APACHE_GEODE_EXPORT ProcessStats {
  public:
   /**
    * Creates a new <code>ProcessStats</code> that wraps the given

@@ -44,7 +44,7 @@ class FunctionService;
  * gathers results from function execution
  * @see FunctionService
  */
-class _GEODE_EXPORT Execution {
+class APACHE_GEODE_EXPORT Execution {
  public:
   Execution();
   ~Execution() noexcept;

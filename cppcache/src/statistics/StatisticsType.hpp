@@ -44,7 +44,7 @@ using namespace apache::geode::client;
  *
  */
 
-class _GEODE_EXPORT StatisticsType {
+class APACHE_GEODE_EXPORT StatisticsType {
  public:
   /**
    * Returns the name of this statistics type.

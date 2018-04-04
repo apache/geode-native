@@ -47,7 +47,7 @@ namespace client {
  * @see RegionAttributes
  * @see AttributesMutator
  */
-class _GEODE_EXPORT ExpirationAttributes {
+class APACHE_GEODE_EXPORT ExpirationAttributes {
   /**
     * @brief public methods
     */

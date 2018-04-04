@@ -20,12 +20,14 @@
 #include "geode/ExceptionTypes.hpp"
 #include <util/Log.hpp>
 
+#include "testobject_export.h"
+
 namespace apache {
 namespace geode {
 namespace client {
 
 extern "C" {
-_GEODE_LIBEXP AuthInitialize* createNoopAuthInitInstance() {
+TESTOBJECT_EXPORT AuthInitialize* createNoopAuthInitInstance() {
   LOGINFO("rjk: calling createNoopAuthInitInstance");
   return new NoopAuthInit();
 }

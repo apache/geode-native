@@ -54,7 +54,7 @@ using TypeFactoryMethodPdx = std::function<std::shared_ptr<PdxSerializable>()>;
  * This abstract base class is the superclass of all user objects
  * in the cache that can be serialized.
  */
-class _GEODE_EXPORT Serializable {
+class APACHE_GEODE_EXPORT Serializable {
  public:
   /**
    *@brief serialize this object

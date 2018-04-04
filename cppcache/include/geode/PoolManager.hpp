@@ -59,7 +59,7 @@ typedef std::unordered_map<std::string, std::shared_ptr<Pool>> HashMapOfPools;
  *
  *
  */
-class _GEODE_EXPORT PoolManager {
+class APACHE_GEODE_EXPORT PoolManager {
  public:
 
   /**

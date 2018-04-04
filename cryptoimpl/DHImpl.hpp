@@ -28,7 +28,7 @@
 #include <cstring>
 #include <string>
 
-#include <geode/internal/geode_base.hpp>
+#include "cryptoimpl_export.h"
 
 #define DH_ERR_NO_ERROR 0
 #define DH_ERR_UNSUPPORTED_ALGO 1
@@ -53,24 +53,25 @@ typedef struct DH_pubkey_st {
 } DH_PUBKEY;
 
 extern "C" {
-_GEODE_EXPORT int gf_initDhKeys(void** dhCtx, const char* dhAlgo,
-                                const char* ksPath);
-_GEODE_EXPORT void gf_clearDhKeys(void* dhCtx);
-_GEODE_EXPORT unsigned char* gf_getPublicKey(void* dhCtx, int* len);
-_GEODE_EXPORT void gf_setPublicKeyOther(void* dhCtx,
-                                        const unsigned char* pubkey,
-                                        int length);
-_GEODE_EXPORT void gf_computeSharedSecret(void* dhCtx);
-_GEODE_EXPORT unsigned char* gf_encryptDH(void* dhCtx,
-                                          const unsigned char* cleartext,
-                                          int len, int* retLen);
-_GEODE_EXPORT unsigned char* gf_decryptDH(void* dhCtx,
-                                          const unsigned char* cleartext,
-                                          int len, int* retLen);
-_GEODE_EXPORT bool gf_verifyDH(void* dhCtx, const char* subject,
-                               const unsigned char* challenge, int challengeLen,
-                               const unsigned char* response, int responseLen,
-                               int* reason);
+CRYPTOIMPL_EXPORT int gf_initDhKeys(void** dhCtx, const char* dhAlgo,
+                                    const char* ksPath);
+CRYPTOIMPL_EXPORT void gf_clearDhKeys(void* dhCtx);
+CRYPTOIMPL_EXPORT unsigned char* gf_getPublicKey(void* dhCtx, int* len);
+CRYPTOIMPL_EXPORT void gf_setPublicKeyOther(void* dhCtx,
+                                            const unsigned char* pubkey,
+                                            int length);
+CRYPTOIMPL_EXPORT void gf_computeSharedSecret(void* dhCtx);
+CRYPTOIMPL_EXPORT unsigned char* gf_encryptDH(void* dhCtx,
+                                              const unsigned char* cleartext,
+                                              int len, int* retLen);
+CRYPTOIMPL_EXPORT unsigned char* gf_decryptDH(void* dhCtx,
+                                              const unsigned char* cleartext,
+                                              int len, int* retLen);
+CRYPTOIMPL_EXPORT bool gf_verifyDH(void* dhCtx, const char* subject,
+                                   const unsigned char* challenge,
+                                   int challengeLen,
+                                   const unsigned char* response,
+                                   int responseLen, int* reason);
 }
 
 class DHImpl {

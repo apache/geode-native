@@ -53,7 +53,7 @@ class ThinClientBaseDM;
  *
  */
 
-class _GEODE_EXPORT ThinClientRegion : public LocalRegion {
+class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
  public:
   /**
    * @brief constructor/initializer/destructor

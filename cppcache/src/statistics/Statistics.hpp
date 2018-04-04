@@ -40,7 +40,7 @@ namespace statistics {
  * setting, incrementing and getting individual <code>StatisticDescriptor</code>
  * values.
  */
-class _GEODE_EXPORT Statistics {
+class APACHE_GEODE_EXPORT Statistics {
  public:
   /**
    * Closes these statistics.  After statistics have been closed, they

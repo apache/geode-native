@@ -40,7 +40,7 @@ class CacheableKey;
 class Region;
 class Serializable;
 
-class _GEODE_EXPORT EntryEvent {
+class APACHE_GEODE_EXPORT EntryEvent {
  protected:
   std::shared_ptr<Region> m_region;      /**< Region */
   std::shared_ptr<CacheableKey> m_key;   /**< Cacheable key */

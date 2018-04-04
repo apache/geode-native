@@ -71,7 +71,7 @@ class EntryEvent;
  * @see PartitionResolver
  *
  */
-class _GEODE_EXPORT FixedPartitionResolver : public PartitionResolver {
+class APACHE_GEODE_EXPORT FixedPartitionResolver : public PartitionResolver {
   /**
   * @brief public methods
   */

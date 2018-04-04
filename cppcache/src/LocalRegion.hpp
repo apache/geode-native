@@ -120,7 +120,7 @@ typedef std::unordered_map<std::shared_ptr<CacheableKey>,
  * starting with the root's subregions.
  */
 
-class _GEODE_EXPORT LocalRegion : public RegionInternal {
+class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   /**
    * @brief Public Methods for Region
    */

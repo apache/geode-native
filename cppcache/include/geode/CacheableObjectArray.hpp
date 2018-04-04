@@ -41,7 +41,7 @@ class DataInput;
 class DataOutput;
 class Serializable;
 
-class _GEODE_EXPORT CacheableObjectArray
+class APACHE_GEODE_EXPORT CacheableObjectArray
     : public Cacheable,
       public std::vector<std::shared_ptr<Cacheable>> {
  public:

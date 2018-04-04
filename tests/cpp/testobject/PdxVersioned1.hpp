@@ -32,15 +32,7 @@
 #include <geode/PdxReader.hpp>
 #include "fwklib/FwkExport.hpp"
 
-#ifdef _WIN32
-#ifdef BUILD_TESTOBJECT
-#define TESTOBJECT_EXPORT _GEODE_LIBEXP
-#else
-#define TESTOBJECT_EXPORT _GEODE_LIBIMP
-#endif
-#else
-#define TESTOBJECT_EXPORT
-#endif
+#include "testobject_export.h"
 
 using namespace apache::geode::client;
 

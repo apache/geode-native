@@ -36,7 +36,7 @@ class PdxUnreadFields;
  * member
  * fields using this abstract class. This class is implemented by Native Client.
  */
-class _GEODE_EXPORT PdxWriter {
+class APACHE_GEODE_EXPORT PdxWriter {
  public:
   /**
    * @brief constructors

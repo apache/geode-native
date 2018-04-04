@@ -40,7 +40,7 @@ namespace client {
  *
  * For compatibility rules and default values, see {@link CqAttributesFactory}.
  */
-class _GEODE_EXPORT CqAttributes {
+class APACHE_GEODE_EXPORT CqAttributes {
  public:
   typedef std::vector<std::shared_ptr<CqListener>> listener_container_type;
 

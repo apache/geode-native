@@ -51,7 +51,7 @@ class ThinClientRegion;
 /**
  * @brief transport data between caches
  */
-class _GEODE_EXPORT TcrConnectionManager {
+class APACHE_GEODE_EXPORT TcrConnectionManager {
  public:
   TcrConnectionManager(CacheImpl* cache);
   ~TcrConnectionManager();

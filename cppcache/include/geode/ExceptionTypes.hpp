@@ -37,7 +37,7 @@ namespace client {
 /**
  *@brief A geode assertion exception.
  **/
-class _GEODE_EXPORT AssertionException : public Exception {
+class APACHE_GEODE_EXPORT AssertionException : public Exception {
  public:
   using Exception::Exception;
   virtual ~AssertionException() noexcept {}
@@ -49,7 +49,7 @@ class _GEODE_EXPORT AssertionException : public Exception {
 /**
  *@brief Thrown when an argument to a method is illegal.
  **/
-class _GEODE_EXPORT IllegalArgumentException : public Exception {
+class APACHE_GEODE_EXPORT IllegalArgumentException : public Exception {
  public:
   using Exception::Exception;
   virtual ~IllegalArgumentException() noexcept {}
@@ -61,7 +61,7 @@ class _GEODE_EXPORT IllegalArgumentException : public Exception {
 /**
  *@brief Thrown when the state of cache is manipulated to be illegal.
  **/
-class _GEODE_EXPORT IllegalStateException : public Exception {
+class APACHE_GEODE_EXPORT IllegalStateException : public Exception {
  public:
   using Exception::Exception;
   virtual ~IllegalStateException() noexcept {}
@@ -73,7 +73,7 @@ class _GEODE_EXPORT IllegalStateException : public Exception {
 /**
  *@brief Thrown when an attempt is made to create an existing cache.
  **/
-class _GEODE_EXPORT CacheExistsException : public Exception {
+class APACHE_GEODE_EXPORT CacheExistsException : public Exception {
  public:
   using Exception::Exception;
   virtual ~CacheExistsException() noexcept {}
@@ -85,7 +85,7 @@ class _GEODE_EXPORT CacheExistsException : public Exception {
 /**
  *@brief Thrown when the cache xml is incorrect.
  **/
-class _GEODE_EXPORT CacheXmlException : public Exception {
+class APACHE_GEODE_EXPORT CacheXmlException : public Exception {
  public:
   using Exception::Exception;
   virtual ~CacheXmlException() noexcept {}
@@ -96,7 +96,7 @@ class _GEODE_EXPORT CacheXmlException : public Exception {
 /**
  *@brief Thrown when a timout occurs.
  **/
-class _GEODE_EXPORT TimeoutException : public Exception {
+class APACHE_GEODE_EXPORT TimeoutException : public Exception {
  public:
   using Exception::Exception;
   virtual ~TimeoutException() noexcept {}
@@ -108,7 +108,7 @@ class _GEODE_EXPORT TimeoutException : public Exception {
 /**
  *@brief Thrown when the cache writer aborts the operation.
  **/
-class _GEODE_EXPORT CacheWriterException : public Exception {
+class APACHE_GEODE_EXPORT CacheWriterException : public Exception {
  public:
   using Exception::Exception;
   virtual ~CacheWriterException() noexcept {}
@@ -120,7 +120,7 @@ class _GEODE_EXPORT CacheWriterException : public Exception {
 /**
  *@brief Thrown when an attempt is made to create an existing region.
  **/
-class _GEODE_EXPORT RegionExistsException : public Exception {
+class APACHE_GEODE_EXPORT RegionExistsException : public Exception {
  public:
   using Exception::Exception;
   virtual ~RegionExistsException() noexcept {}
@@ -132,7 +132,7 @@ class _GEODE_EXPORT RegionExistsException : public Exception {
 /**
  *@brief Thrown when an operation is attempted on a closed cache.
  **/
-class _GEODE_EXPORT CacheClosedException : public Exception {
+class APACHE_GEODE_EXPORT CacheClosedException : public Exception {
  public:
   using Exception::Exception;
   virtual ~CacheClosedException() noexcept {}
@@ -144,7 +144,7 @@ class _GEODE_EXPORT CacheClosedException : public Exception {
 /**
  *@brief Thrown when lease of cache proxy has expired.
  **/
-class _GEODE_EXPORT LeaseExpiredException : public Exception {
+class APACHE_GEODE_EXPORT LeaseExpiredException : public Exception {
  public:
   using Exception::Exception;
   virtual ~LeaseExpiredException() noexcept {}
@@ -156,7 +156,7 @@ class _GEODE_EXPORT LeaseExpiredException : public Exception {
 /**
  *@brief Thrown when the cache loader aborts the operation.
  **/
-class _GEODE_EXPORT CacheLoaderException : public Exception {
+class APACHE_GEODE_EXPORT CacheLoaderException : public Exception {
  public:
   using Exception::Exception;
   virtual ~CacheLoaderException() noexcept {}
@@ -168,7 +168,7 @@ class _GEODE_EXPORT CacheLoaderException : public Exception {
 /**
  *@brief Thrown when an operation is attempted on a destroyed region.
  **/
-class _GEODE_EXPORT RegionDestroyedException : public Exception {
+class APACHE_GEODE_EXPORT RegionDestroyedException : public Exception {
  public:
   using Exception::Exception;
   virtual ~RegionDestroyedException() noexcept {}
@@ -180,7 +180,7 @@ class _GEODE_EXPORT RegionDestroyedException : public Exception {
 /**
  *@brief Thrown when an operation is attempted on a destroyed entry.
  **/
-class _GEODE_EXPORT EntryDestroyedException : public Exception {
+class APACHE_GEODE_EXPORT EntryDestroyedException : public Exception {
  public:
   using Exception::Exception;
   virtual ~EntryDestroyedException() noexcept {}
@@ -192,7 +192,7 @@ class _GEODE_EXPORT EntryDestroyedException : public Exception {
 /**
  *@brief Thrown when the connecting target is not running.
  **/
-class _GEODE_EXPORT NoSystemException : public Exception {
+class APACHE_GEODE_EXPORT NoSystemException : public Exception {
  public:
   using Exception::Exception;
   virtual ~NoSystemException() noexcept {}
@@ -205,7 +205,7 @@ class _GEODE_EXPORT NoSystemException : public Exception {
  *@brief Thrown when an attempt is made to connect to
  *       DistributedSystem second time.
  **/
-class _GEODE_EXPORT AlreadyConnectedException : public Exception {
+class APACHE_GEODE_EXPORT AlreadyConnectedException : public Exception {
  public:
   using Exception::Exception;
   virtual ~AlreadyConnectedException() noexcept {}
@@ -217,7 +217,7 @@ class _GEODE_EXPORT AlreadyConnectedException : public Exception {
 /**
  *@brief Thrown when a non-existing file is accessed.
  **/
-class _GEODE_EXPORT FileNotFoundException : public Exception {
+class APACHE_GEODE_EXPORT FileNotFoundException : public Exception {
  public:
   using Exception::Exception;
   virtual ~FileNotFoundException() noexcept {}
@@ -229,7 +229,7 @@ class _GEODE_EXPORT FileNotFoundException : public Exception {
 /**
  *@brief Thrown when an operation is interrupted.
  **/
-class _GEODE_EXPORT InterruptedException : public Exception {
+class APACHE_GEODE_EXPORT InterruptedException : public Exception {
  public:
   using Exception::Exception;
   virtual ~InterruptedException() noexcept {}
@@ -242,7 +242,7 @@ class _GEODE_EXPORT InterruptedException : public Exception {
  *@brief Thrown when an operation unsupported by the
  *       current configuration is attempted.
  **/
-class _GEODE_EXPORT UnsupportedOperationException : public Exception {
+class APACHE_GEODE_EXPORT UnsupportedOperationException : public Exception {
  public:
   using Exception::Exception;
   virtual ~UnsupportedOperationException() noexcept {}
@@ -255,7 +255,7 @@ class _GEODE_EXPORT UnsupportedOperationException : public Exception {
  *@brief Thrown when statistics are invoked for a region where
  *       they are disabled.
  **/
-class _GEODE_EXPORT StatisticsDisabledException : public Exception {
+class APACHE_GEODE_EXPORT StatisticsDisabledException : public Exception {
  public:
   using Exception::Exception;
   virtual ~StatisticsDisabledException() noexcept {}
@@ -267,7 +267,7 @@ class _GEODE_EXPORT StatisticsDisabledException : public Exception {
 /**
  *@brief Thrown when a concurrent operation fails.
  **/
-class _GEODE_EXPORT ConcurrentModificationException : public Exception {
+class APACHE_GEODE_EXPORT ConcurrentModificationException : public Exception {
  public:
   using Exception::Exception;
   virtual ~ConcurrentModificationException() noexcept {}
@@ -279,7 +279,7 @@ class _GEODE_EXPORT ConcurrentModificationException : public Exception {
 /**
  *@brief An unknown exception occurred.
  **/
-class _GEODE_EXPORT UnknownException : public Exception {
+class APACHE_GEODE_EXPORT UnknownException : public Exception {
  public:
   using Exception::Exception;
   virtual ~UnknownException() noexcept {}
@@ -291,7 +291,7 @@ class _GEODE_EXPORT UnknownException : public Exception {
 /**
  *@brief Thrown when a cast operation fails.
  **/
-class _GEODE_EXPORT ClassCastException : public Exception {
+class APACHE_GEODE_EXPORT ClassCastException : public Exception {
  public:
   using Exception::Exception;
   virtual ~ClassCastException() noexcept {}
@@ -303,7 +303,7 @@ class _GEODE_EXPORT ClassCastException : public Exception {
 /**
  *@brief Thrown when an operation is attempted on a non-existent entry.
  **/
-class _GEODE_EXPORT EntryNotFoundException : public Exception {
+class APACHE_GEODE_EXPORT EntryNotFoundException : public Exception {
  public:
   using Exception::Exception;
   virtual ~EntryNotFoundException() noexcept {}
@@ -315,7 +315,7 @@ class _GEODE_EXPORT EntryNotFoundException : public Exception {
 /**
  *@brief Thrown when there is an input/output error.
  **/
-class _GEODE_EXPORT GeodeIOException : public Exception {
+class APACHE_GEODE_EXPORT GeodeIOException : public Exception {
  public:
   using Exception::Exception;
   virtual ~GeodeIOException() noexcept {}
@@ -327,7 +327,7 @@ class _GEODE_EXPORT GeodeIOException : public Exception {
 /**
  *@brief Thrown when geode configuration file is incorrect.
  **/
-class _GEODE_EXPORT GeodeConfigException : public Exception {
+class APACHE_GEODE_EXPORT GeodeConfigException : public Exception {
  public:
   using Exception::Exception;
   virtual ~GeodeConfigException() noexcept {}
@@ -340,7 +340,7 @@ class _GEODE_EXPORT GeodeConfigException : public Exception {
  *@brief Thrown when a null argument is provided to a method
  *       where it is expected to be non-null.
  **/
-class _GEODE_EXPORT NullPointerException : public Exception {
+class APACHE_GEODE_EXPORT NullPointerException : public Exception {
  public:
   using Exception::Exception;
   virtual ~NullPointerException() noexcept {}
@@ -352,7 +352,7 @@ class _GEODE_EXPORT NullPointerException : public Exception {
 /**
  *@brief Thrown when attempt is made to create an existing entry.
  **/
-class _GEODE_EXPORT EntryExistsException : public Exception {
+class APACHE_GEODE_EXPORT EntryExistsException : public Exception {
  public:
   using Exception::Exception;
   virtual ~EntryExistsException() noexcept {}
@@ -365,7 +365,7 @@ class _GEODE_EXPORT EntryExistsException : public Exception {
  *@brief Thrown when an operation is attempted before connecting
  *       to the distributed system.
  **/
-class _GEODE_EXPORT NotConnectedException : public Exception {
+class APACHE_GEODE_EXPORT NotConnectedException : public Exception {
  public:
   using Exception::Exception;
   virtual ~NotConnectedException() noexcept {}
@@ -377,7 +377,7 @@ class _GEODE_EXPORT NotConnectedException : public Exception {
 /**
  *@brief Thrown when there is an error in the cache proxy.
  **/
-class _GEODE_EXPORT CacheProxyException : public Exception {
+class APACHE_GEODE_EXPORT CacheProxyException : public Exception {
  public:
   using Exception::Exception;
   virtual ~CacheProxyException() noexcept {}
@@ -389,7 +389,7 @@ class _GEODE_EXPORT CacheProxyException : public Exception {
 /**
  *@brief Thrown when the system cannot allocate any more memory.
  **/
-class _GEODE_EXPORT OutOfMemoryException : public Exception {
+class APACHE_GEODE_EXPORT OutOfMemoryException : public Exception {
  public:
   using Exception::Exception;
   virtual ~OutOfMemoryException() noexcept {}
@@ -402,7 +402,7 @@ class _GEODE_EXPORT OutOfMemoryException : public Exception {
  *@brief Thrown when an attempt is made to release a lock not
  *       owned by the thread.
  **/
-class _GEODE_EXPORT NotOwnerException : public Exception {
+class APACHE_GEODE_EXPORT NotOwnerException : public Exception {
  public:
   using Exception::Exception;
   virtual ~NotOwnerException() noexcept {}
@@ -414,7 +414,7 @@ class _GEODE_EXPORT NotOwnerException : public Exception {
 /**
  *@brief Thrown when a region is created in an incorrect scope.
  **/
-class _GEODE_EXPORT WrongRegionScopeException : public Exception {
+class APACHE_GEODE_EXPORT WrongRegionScopeException : public Exception {
  public:
   using Exception::Exception;
   virtual ~WrongRegionScopeException() noexcept {}
@@ -426,7 +426,7 @@ class _GEODE_EXPORT WrongRegionScopeException : public Exception {
 /**
  *@brief Thrown when the internal buffer size is exceeded.
  **/
-class _GEODE_EXPORT BufferSizeExceededException : public Exception {
+class APACHE_GEODE_EXPORT BufferSizeExceededException : public Exception {
  public:
   using Exception::Exception;
   virtual ~BufferSizeExceededException() noexcept {}
@@ -438,7 +438,7 @@ class _GEODE_EXPORT BufferSizeExceededException : public Exception {
 /**
  *@brief Thrown when a region creation operation fails.
  **/
-class _GEODE_EXPORT RegionCreationFailedException : public Exception {
+class APACHE_GEODE_EXPORT RegionCreationFailedException : public Exception {
  public:
   using Exception::Exception;
   virtual ~RegionCreationFailedException() noexcept {}
@@ -450,7 +450,7 @@ class _GEODE_EXPORT RegionCreationFailedException : public Exception {
 /**
  *@brief Thrown when there is a fatal internal exception in geode.
  */
-class _GEODE_EXPORT FatalInternalException : public Exception {
+class APACHE_GEODE_EXPORT FatalInternalException : public Exception {
  public:
   using Exception::Exception;
   virtual ~FatalInternalException() noexcept {}
@@ -463,7 +463,7 @@ class _GEODE_EXPORT FatalInternalException : public Exception {
  *@brief Thrown by the persistence manager when a write
  *       fails due to disk failure.
  **/
-class _GEODE_EXPORT DiskFailureException : public Exception {
+class APACHE_GEODE_EXPORT DiskFailureException : public Exception {
  public:
   using Exception::Exception;
   virtual ~DiskFailureException() noexcept {}
@@ -476,7 +476,7 @@ class _GEODE_EXPORT DiskFailureException : public Exception {
  *@brief Thrown by the persistence manager when the data
  *@brief to be read from disk is corrupt.
  **/
-class _GEODE_EXPORT DiskCorruptException : public Exception {
+class APACHE_GEODE_EXPORT DiskCorruptException : public Exception {
  public:
   using Exception::Exception;
   virtual ~DiskCorruptException() noexcept {}
@@ -488,7 +488,7 @@ class _GEODE_EXPORT DiskCorruptException : public Exception {
 /**
  *@brief Thrown when persistence manager fails to initialize.
  **/
-class _GEODE_EXPORT InitFailedException : public Exception {
+class APACHE_GEODE_EXPORT InitFailedException : public Exception {
  public:
   using Exception::Exception;
   virtual ~InitFailedException() noexcept {}
@@ -500,7 +500,7 @@ class _GEODE_EXPORT InitFailedException : public Exception {
 /**
  *@brief Thrown when persistence manager fails to close properly.
  **/
-class _GEODE_EXPORT ShutdownFailedException : public Exception {
+class APACHE_GEODE_EXPORT ShutdownFailedException : public Exception {
  public:
   using Exception::Exception;
   virtual ~ShutdownFailedException() noexcept {}
@@ -512,7 +512,7 @@ class _GEODE_EXPORT ShutdownFailedException : public Exception {
 /**
  *@brief Thrown when an exception occurs on the cache server.
  **/
-class _GEODE_EXPORT CacheServerException : public Exception {
+class APACHE_GEODE_EXPORT CacheServerException : public Exception {
  public:
   using Exception::Exception;
   virtual ~CacheServerException() noexcept {}
@@ -524,7 +524,7 @@ class _GEODE_EXPORT CacheServerException : public Exception {
 /**
  *@brief Thrown when bound of array/vector etc. is exceeded.
  **/
-class _GEODE_EXPORT OutOfRangeException : public Exception {
+class APACHE_GEODE_EXPORT OutOfRangeException : public Exception {
  public:
   using Exception::Exception;
   virtual ~OutOfRangeException() noexcept {}
@@ -536,7 +536,7 @@ class _GEODE_EXPORT OutOfRangeException : public Exception {
 /**
  *@brief Thrown when query exception occurs at the server.
  **/
-class _GEODE_EXPORT QueryException : public Exception {
+class APACHE_GEODE_EXPORT QueryException : public Exception {
  public:
   using Exception::Exception;
   virtual ~QueryException() noexcept {}
@@ -548,7 +548,7 @@ class _GEODE_EXPORT QueryException : public Exception {
 /**
  *@brief Thrown when an unknown message is received from the server.
  **/
-class _GEODE_EXPORT MessageException : public Exception {
+class APACHE_GEODE_EXPORT MessageException : public Exception {
  public:
   using Exception::Exception;
   virtual ~MessageException() noexcept {}
@@ -560,7 +560,7 @@ class _GEODE_EXPORT MessageException : public Exception {
 /**
  *@brief Thrown when a non authorized operation is done.
  **/
-class _GEODE_EXPORT NotAuthorizedException : public Exception {
+class APACHE_GEODE_EXPORT NotAuthorizedException : public Exception {
  public:
   using Exception::Exception;
   virtual ~NotAuthorizedException() noexcept {}
@@ -572,7 +572,7 @@ class _GEODE_EXPORT NotAuthorizedException : public Exception {
 /**
  *@brief Thrown when authentication fails.
  **/
-class _GEODE_EXPORT AuthenticationFailedException : public Exception {
+class APACHE_GEODE_EXPORT AuthenticationFailedException : public Exception {
  public:
   using Exception::Exception;
   virtual ~AuthenticationFailedException() noexcept {}
@@ -584,7 +584,7 @@ class _GEODE_EXPORT AuthenticationFailedException : public Exception {
 /**
  *@brief Thrown when no credentials are provided by client when server expects.
  **/
-class _GEODE_EXPORT AuthenticationRequiredException : public Exception {
+class APACHE_GEODE_EXPORT AuthenticationRequiredException : public Exception {
  public:
   using Exception::Exception;
   virtual ~AuthenticationRequiredException() noexcept {}
@@ -596,7 +596,7 @@ class _GEODE_EXPORT AuthenticationRequiredException : public Exception {
 /**
  *@brief Thrown when two durable connect with same Id.
  **/
-class _GEODE_EXPORT DuplicateDurableClientException : public Exception {
+class APACHE_GEODE_EXPORT DuplicateDurableClientException : public Exception {
  public:
   using Exception::Exception;
   virtual ~DuplicateDurableClientException() noexcept {}
@@ -608,7 +608,7 @@ class _GEODE_EXPORT DuplicateDurableClientException : public Exception {
 /**
  *@brief Thrown when the cache listener throws an exception.
  **/
-class _GEODE_EXPORT CacheListenerException : public Exception {
+class APACHE_GEODE_EXPORT CacheListenerException : public Exception {
  public:
   using Exception::Exception;
   virtual ~CacheListenerException() noexcept {}
@@ -619,7 +619,7 @@ class _GEODE_EXPORT CacheListenerException : public Exception {
 /**
  *@brief Thrown during continuous query execution time.
  **/
-class _GEODE_EXPORT CqException : public Exception {
+class APACHE_GEODE_EXPORT CqException : public Exception {
  public:
   using Exception::Exception;
   virtual ~CqException() noexcept {}
@@ -630,7 +630,7 @@ class _GEODE_EXPORT CqException : public Exception {
 /**
  *@brief Thrown if the Cq on which the operaion performed is closed
  **/
-class _GEODE_EXPORT CqClosedException : public Exception {
+class APACHE_GEODE_EXPORT CqClosedException : public Exception {
  public:
   using Exception::Exception;
   virtual ~CqClosedException() noexcept {}
@@ -641,7 +641,7 @@ class _GEODE_EXPORT CqClosedException : public Exception {
 /**
  *@brief Thrown if the Cq Query failed
  **/
-class _GEODE_EXPORT CqQueryException : public Exception {
+class APACHE_GEODE_EXPORT CqQueryException : public Exception {
  public:
   using Exception::Exception;
   virtual ~CqQueryException() noexcept {}
@@ -652,7 +652,7 @@ class _GEODE_EXPORT CqQueryException : public Exception {
 /**
  *@brief Thrown if a Cq by this name already exists on this client
  **/
-class _GEODE_EXPORT CqExistsException : public Exception {
+class APACHE_GEODE_EXPORT CqExistsException : public Exception {
  public:
   using Exception::Exception;
   virtual ~CqExistsException() noexcept {}
@@ -670,7 +670,7 @@ class _GEODE_EXPORT CqExistsException : public Exception {
  *region path.
  *      Bind parameters in the query are not supported for the initial release.
  **/
-class _GEODE_EXPORT CqInvalidException : public Exception {
+class APACHE_GEODE_EXPORT CqInvalidException : public Exception {
  public:
   using Exception::Exception;
   virtual ~CqInvalidException() noexcept {}
@@ -681,7 +681,7 @@ class _GEODE_EXPORT CqInvalidException : public Exception {
 /**
  *@brief Thrown if function execution failed
  **/
-class _GEODE_EXPORT FunctionExecutionException : public Exception {
+class APACHE_GEODE_EXPORT FunctionExecutionException : public Exception {
  public:
   using Exception::Exception;
   virtual ~FunctionExecutionException() noexcept {}
@@ -692,7 +692,7 @@ class _GEODE_EXPORT FunctionExecutionException : public Exception {
 /**
  *@brief Thrown if the No locators are active to reply for new connection.
  **/
-class _GEODE_EXPORT NoAvailableLocatorsException : public Exception {
+class APACHE_GEODE_EXPORT NoAvailableLocatorsException : public Exception {
  public:
   using Exception::Exception;
   virtual ~NoAvailableLocatorsException() noexcept {}
@@ -703,7 +703,7 @@ class _GEODE_EXPORT NoAvailableLocatorsException : public Exception {
 /**
  *@brief Thrown if all connections in the pool are in use.
  **/
-class _GEODE_EXPORT AllConnectionsInUseException : public Exception {
+class APACHE_GEODE_EXPORT AllConnectionsInUseException : public Exception {
  public:
   using Exception::Exception;
   virtual ~AllConnectionsInUseException() noexcept {}
@@ -714,7 +714,7 @@ class _GEODE_EXPORT AllConnectionsInUseException : public Exception {
 /**
  *@brief Thrown if Delta could not be applied.
  **/
-class _GEODE_EXPORT InvalidDeltaException : public Exception {
+class APACHE_GEODE_EXPORT InvalidDeltaException : public Exception {
  public:
   using Exception::Exception;
   virtual ~InvalidDeltaException() noexcept {}
@@ -725,7 +725,7 @@ class _GEODE_EXPORT InvalidDeltaException : public Exception {
 /**
  *@brief Thrown if a Key is not present in the region.
  **/
-class _GEODE_EXPORT KeyNotFoundException : public Exception {
+class APACHE_GEODE_EXPORT KeyNotFoundException : public Exception {
  public:
   using Exception::Exception;
   virtual ~KeyNotFoundException() noexcept {}
@@ -737,7 +737,7 @@ class _GEODE_EXPORT KeyNotFoundException : public Exception {
  * @brief This is for all Exceptions that may be thrown
  * by a Geode transaction.
  **/
-class _GEODE_EXPORT TransactionException : public Exception {
+class APACHE_GEODE_EXPORT TransactionException : public Exception {
  public:
   using Exception::Exception;
   virtual ~TransactionException() noexcept {}
@@ -750,7 +750,7 @@ class _GEODE_EXPORT TransactionException : public Exception {
  * has been rolled back or an operation cannot complete because the
  * transaction is marked for rollback only.
  **/
-class _GEODE_EXPORT RollbackException : public Exception {
+class APACHE_GEODE_EXPORT RollbackException : public Exception {
  public:
   using Exception::Exception;
   virtual ~RollbackException() noexcept {}
@@ -762,7 +762,7 @@ class _GEODE_EXPORT RollbackException : public Exception {
  * @brief Thrown when a commit fails due to a write conflict.
  * @see CacheTransactionManager#commit
  **/
-class _GEODE_EXPORT CommitConflictException : public Exception {
+class APACHE_GEODE_EXPORT CommitConflictException : public Exception {
  public:
   using Exception::Exception;
   virtual ~CommitConflictException() noexcept {}
@@ -776,7 +776,7 @@ class _GEODE_EXPORT CommitConflictException : public Exception {
  * being modified by the transaction.
  * This can be thrown while doing transactional operations or during commit.
  **/
-class _GEODE_EXPORT TransactionDataNodeHasDepartedException : public Exception {
+class APACHE_GEODE_EXPORT TransactionDataNodeHasDepartedException : public Exception {
  public:
   using Exception::Exception;
   virtual ~TransactionDataNodeHasDepartedException() noexcept {}
@@ -789,7 +789,7 @@ class _GEODE_EXPORT TransactionDataNodeHasDepartedException : public Exception {
  *transaction.
  * This can be thrown while doing transactional operations or during commit.
  **/
-class _GEODE_EXPORT TransactionDataRebalancedException : public Exception {
+class APACHE_GEODE_EXPORT TransactionDataRebalancedException : public Exception {
  public:
   using Exception::Exception;
   virtual ~TransactionDataRebalancedException() noexcept {}
@@ -801,7 +801,7 @@ class _GEODE_EXPORT TransactionDataRebalancedException : public Exception {
 /**
  * @brief Thrown if putAll operation with single hop succeeded partially.
  **/
-class _GEODE_EXPORT PutAllPartialResultException : public Exception {
+class APACHE_GEODE_EXPORT PutAllPartialResultException : public Exception {
  public:
   using Exception::Exception;
   virtual ~PutAllPartialResultException() noexcept {}

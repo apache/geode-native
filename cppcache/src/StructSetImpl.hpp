@@ -39,7 +39,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class _GEODE_EXPORT StructSetImpl
+class APACHE_GEODE_EXPORT StructSetImpl
     : public StructSet,
       public std::enable_shared_from_this<StructSetImpl> {
  public:

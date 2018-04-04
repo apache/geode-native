@@ -38,7 +38,7 @@ namespace client {
  * A ResultSet may be obtained after executing a Query which is obtained from a
  * QueryService which in turn is obtained from a Cache.
  */
-class _GEODE_EXPORT ResultSet : public SelectResults {
+class APACHE_GEODE_EXPORT ResultSet : public SelectResults {
  public:
   /**
    * Check whether the ResultSet is modifiable.

@@ -16,17 +16,21 @@
 cmake_minimum_required(VERSION 3.4)
 project(apache-geode-static LANGUAGES CXX)
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES_ALL})
+add_library(apache-geode-static STATIC ${SOURCES_ALL})
 
 set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)
 
-target_link_libraries(${PROJECT_NAME}
+target_compile_definitions(apache-geode-static PUBLIC
+  APACHE_GEODE_STATIC_DEFINE
+)
+
+target_link_libraries(apache-geode-static
   PUBLIC
     _apache-geode
   PRIVATE
     _WarningsAsError)
 
-add_dependencies(client-libraries ${PROJECT_NAME})
+add_dependencies(client-libraries apache-geode-static)
 
 
 # BEGIN Visual Studio organization
@@ -45,7 +49,7 @@ if (USE_PCH)
       ${CMAKE_BINARY_DIR}/dependencies/boost/include/boost/stacktrace.hpp)
   endif()
 
-  set_target_properties(${PROJECT_NAME} PROPERTIES
+  set_target_properties(apache-geode-static PROPERTIES
     COTIRE_ENABLE_PRECOMPILED_HEADER TRUE
     COTIRE_ADD_UNITY_BUILD TRUE
     COTIRE_PREFIX_HEADER_IGNORE_PATH "${_COTIRE_PREFIX_HEADER_IGNORE_PATH}"
@@ -53,5 +57,5 @@ if (USE_PCH)
 
   set_source_files_properties(cppcache/version.h PROPERTIES GENERATED TRUE)
 
-  cotire(${PROJECT_NAME})
+  cotire(apache-geode-static)
 endif()

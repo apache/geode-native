@@ -26,6 +26,7 @@
 
 #include "SerializationRegistry.hpp"
 #include "PkcsAuthInit.hpp"
+#include "security_export.h"
 
 namespace apache {
 namespace geode {
@@ -53,7 +54,7 @@ std::shared_ptr<CacheableString> convertBytesToString(const uint8_t* bytes,
 }
 
 extern "C" {
-_GEODE_LIBEXP AuthInitialize* createPKCSAuthInitInstance() {
+SECURITY_EXPORT AuthInitialize* createPKCSAuthInitInstance() {
   return new PKCSAuthInitInternal();
 }
 

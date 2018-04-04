@@ -43,7 +43,7 @@ namespace client {
  * TODO: TODO: cleanup region entry nodes and handlers from expiry task
  * manager when region is destroyed
  */
-class _GEODE_EXPORT EntryExpiryHandler : public ACE_Event_Handler {
+class APACHE_GEODE_EXPORT EntryExpiryHandler : public ACE_Event_Handler {
  public:
   /**
    * Constructor

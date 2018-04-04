@@ -39,7 +39,7 @@ namespace client {
 class CacheImpl;
 class ThinClientPoolDM;
 typedef std::map<std::string, bool> CqPoolsConnected;
-class _GEODE_EXPORT RemoteQueryService
+class APACHE_GEODE_EXPORT RemoteQueryService
     : public QueryService,
       public std::enable_shared_from_this<RemoteQueryService> {
  public:

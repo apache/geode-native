@@ -30,7 +30,7 @@ namespace client {
 class CacheImpl;
 class AuthenticatedView;
 
-class _GEODE_EXPORT CacheRegionHelper {
+class APACHE_GEODE_EXPORT CacheRegionHelper {
   /**
    * CacheHelper
    *

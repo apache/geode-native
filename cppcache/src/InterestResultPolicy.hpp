@@ -32,7 +32,7 @@ namespace client {
  * @class InterestResultPolicy InterestResultPolicy.hpp
  * Policy class for interest result.
  */
-class _GEODE_EXPORT InterestResultPolicy {
+class APACHE_GEODE_EXPORT InterestResultPolicy {
   // public static methods
  public:
   static char nextOrdinal;

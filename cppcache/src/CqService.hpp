@@ -58,7 +58,7 @@ namespace client {
  *
  */
 
-class _GEODE_EXPORT CqService : private NonCopyable,
+class APACHE_GEODE_EXPORT CqService : private NonCopyable,
                                 private NonAssignable,
                                 public std::enable_shared_from_this<CqService> {
  private:

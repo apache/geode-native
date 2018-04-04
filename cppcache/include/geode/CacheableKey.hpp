@@ -37,7 +37,7 @@ namespace geode {
 namespace client {
 
 /** Represents a cacheable key */
-class _GEODE_EXPORT CacheableKey : public Cacheable {
+class APACHE_GEODE_EXPORT CacheableKey : public Cacheable {
  protected:
   /** Constructor */
   CacheableKey() : Cacheable() {}

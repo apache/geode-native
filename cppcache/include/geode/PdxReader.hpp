@@ -54,7 +54,7 @@ class CacheableDate;
  * @note Custom implementations of PdxReader are not subject
  *       to this restriction.
  */
-class _GEODE_EXPORT PdxReader {
+class APACHE_GEODE_EXPORT PdxReader {
  public:
   /**
    * @brief constructors

@@ -40,7 +40,7 @@ namespace client {
 /**
  * @brief Concurrent entries map. Not designed for subclassing...
  */
-class _GEODE_EXPORT EntriesMap {
+class APACHE_GEODE_EXPORT EntriesMap {
  public:
   EntriesMap(std::unique_ptr<EntryFactory> entryFactory) : m_entryFactory(std::move(entryFactory)) {}
   virtual ~EntriesMap() {}

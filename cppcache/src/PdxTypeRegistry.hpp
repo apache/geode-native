@@ -59,7 +59,7 @@ typedef std::unordered_map<std::shared_ptr<PdxSerializable>,
 typedef std::map<std::shared_ptr<PdxType>, int32_t, PdxTypeLessThan>
     PdxTypeToTypeIdMap;
 
-class _GEODE_EXPORT PdxTypeRegistry
+class APACHE_GEODE_EXPORT PdxTypeRegistry
     : public std::enable_shared_from_this<PdxTypeRegistry> {
  private:
   CacheImpl* cache;

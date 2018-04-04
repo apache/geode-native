@@ -45,7 +45,7 @@ class LocalRegion;
  *@see Region::getStatistics
  *@see RegionEntry::getStatistics
  */
-class _GEODE_EXPORT CacheStatistics {
+class APACHE_GEODE_EXPORT CacheStatistics {
  public:
   typedef std::chrono::system_clock::time_point time_point;
 

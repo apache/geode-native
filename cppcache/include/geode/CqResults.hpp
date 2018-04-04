@@ -40,7 +40,7 @@ namespace client {
  * A CqResults is obtained by executing a Query on the server.
  * This will be a StructSet.
  */
-class _GEODE_EXPORT CqResults : public SelectResults {};
+class APACHE_GEODE_EXPORT CqResults : public SelectResults {};
 
 }  // namespace client
 }  // namespace geode

@@ -59,7 +59,7 @@ class TcrMessageHelper;
 class TcrConnection;
 class TcrMessagePing;
 
-class _GEODE_EXPORT TcrMessage {
+class APACHE_GEODE_EXPORT TcrMessage {
  private:
   inline static void writeInt(uint8_t* buffer, uint16_t value);
   inline static void writeInt(uint8_t* buffer, uint32_t value);

@@ -34,7 +34,7 @@ namespace client {
 /**
  * Declares region events.
  */
-class _GEODE_EXPORT RegionEvent {
+class APACHE_GEODE_EXPORT RegionEvent {
  protected:
   const std::shared_ptr<Region> m_region; /**< Region for this event. */
   const std::shared_ptr<Serializable>

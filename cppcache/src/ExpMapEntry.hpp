@@ -31,7 +31,7 @@ namespace client {
  * @brief Hold region mapped entry value.
  * This subclass adds expiration times.
  */
-class _GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
+class APACHE_GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
                                   public ExpEntryProperties {
  public:
   virtual ~ExpMapEntry() {}
@@ -59,7 +59,7 @@ class _GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
   ExpMapEntry& operator=(const ExpMapEntry&);
 };
 
-class _GEODE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
+class APACHE_GEODE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
                                            public VersionStamp {
  public:
   virtual ~VersionedExpMapEntry() {}
@@ -79,7 +79,7 @@ class _GEODE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
   VersionedExpMapEntry& operator=(const VersionedExpMapEntry&);
 };
 
-class _GEODE_EXPORT ExpEntryFactory : public EntryFactory {
+class APACHE_GEODE_EXPORT ExpEntryFactory : public EntryFactory {
  public:
   using EntryFactory::EntryFactory;
 

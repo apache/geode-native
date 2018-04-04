@@ -35,7 +35,7 @@ class PutAllPartialResultServerException;
  * @brief PutAllPartialResultServerException class is used to encapsulate
  *geode PutAllPartialResultServerException in case of PutAll execution.
  **/
-class _GEODE_EXPORT PutAllPartialResultServerException : public Serializable {
+class APACHE_GEODE_EXPORT PutAllPartialResultServerException : public Serializable {
   /**
    * @brief public methods
    */

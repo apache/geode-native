@@ -23,7 +23,7 @@
 namespace apache {
 namespace geode {
 namespace client {
-class _GEODE_EXPORT NonCopyable {
+class APACHE_GEODE_EXPORT NonCopyable {
  protected:
   NonCopyable() {}
   ~NonCopyable() {}
@@ -31,7 +31,7 @@ class _GEODE_EXPORT NonCopyable {
  private:
   NonCopyable(const NonCopyable&);
 };
-class _GEODE_EXPORT NonAssignable {
+class APACHE_GEODE_EXPORT NonAssignable {
  protected:
   NonAssignable() {}
   ~NonAssignable() {}

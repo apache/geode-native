@@ -39,7 +39,7 @@ class DataInput;
 class DataOutput;
 class Serializable;
 
-class _GEODE_EXPORT CacheableUndefined : public Cacheable {
+class APACHE_GEODE_EXPORT CacheableUndefined : public Cacheable {
  public:
   /**
    *@brief serialize this object

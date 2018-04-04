@@ -23,7 +23,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/AssemblyInfo.cpp.in ${CMAKE_CURRENT_B
 list(APPEND CONFIGURE_IN_FILES ${CMAKE_CURRENT_SOURCE_DIR}/AssemblyInfo.cpp.in)
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/AssemblyInfo.cpp)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(Apache.Geode.Test MODULE
   AssemblyInfo.cpp.in
   native_conditional_unqiue_ptrTests.cpp
   native_shared_ptrTests.cpp
@@ -32,31 +32,34 @@ add_library(${PROJECT_NAME} MODULE
   ${CONFIGURE_OUT_FILES}
 )
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
+set_target_properties(Apache.Geode.Test PROPERTIES
   VS_GLOBAL_CLRSupport "true"
   VS_GLOBAL_KEYWORD "ManagedCProj"
   VS_GLOBAL_TestProjectType UnitTest
   VS_GLOBAL_PROJECT_TYPES "{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
-  VS_GLOBAL_ROOTNAMESPACE ${PROJECT_NAME}
+  VS_GLOBAL_ROOTNAMESPACE Apache.Geode.Test
   VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
   VS_DOTNET_REFERENCES "System;System.Xml;Microsoft.VisualStudio.QualityTools.UnitTestFramework"
 )
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(Apache.Geode.Test
   PRIVATE
   	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>
   	$<TARGET_PROPERTY:apache-geode,INCLUDE_DIRECTORIES>
   	$<TARGET_PROPERTY:Apache.Geode,SOURCE_DIR>
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(Apache.Geode.Test
   PUBLIC
-    Apache.Geode
+    # Apache.Geode #- Causes include of .lib
   PRIVATE
     c++cli
 	c++11
 	_WarningsAsError
 )
+
+# Makes project only reference, no .lib.
+add_dependencies(Apache.Geode.Test Apache.Geode)
 
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${SHARED_LINKER_FLAGS_STRONG_KEY}")

@@ -26,7 +26,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class _GEODE_EXPORT ConnectCounter {
+class APACHE_GEODE_EXPORT ConnectCounter {
  public:
   ConnectCounter();
 

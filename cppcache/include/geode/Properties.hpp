@@ -47,7 +47,7 @@ class CacheableString;
  * Contains a set of (key, value) pair properties with key being the name of
  * the property; value, the value of the property.
  */
-class _GEODE_EXPORT Properties : public Serializable {
+class APACHE_GEODE_EXPORT Properties : public Serializable {
  public:
   class Visitor {
    public:

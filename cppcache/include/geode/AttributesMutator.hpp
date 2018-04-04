@@ -58,7 +58,7 @@ class Region;
  * @see RegionAttributes
  * @see RegionAttributesFactory
  */
-class _GEODE_EXPORT AttributesMutator {
+class APACHE_GEODE_EXPORT AttributesMutator {
  private:
   std::shared_ptr<Region> m_region;
 

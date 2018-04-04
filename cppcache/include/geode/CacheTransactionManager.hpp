@@ -31,7 +31,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class _GEODE_EXPORT CacheTransactionManager {
+class APACHE_GEODE_EXPORT CacheTransactionManager {
  public:
   /** Creates a new transaction and associates it with the current thread.
    *

@@ -39,7 +39,7 @@ class CqListener;
  * of certain CQ attributes after the CQ has been created.
  *
  */
-class _GEODE_EXPORT CqAttributesMutator {
+class APACHE_GEODE_EXPORT CqAttributesMutator {
  public:
   /**
    * Adds a CQ listener to the end of the list of CQ listeners on this CqQuery.

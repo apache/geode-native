@@ -46,7 +46,7 @@ namespace client {
  * operate on the same <code>Query</code> object concurrently rather should
  * have their own <code>Query</code> objects.
  */
-class _GEODE_EXPORT Query {
+class APACHE_GEODE_EXPORT Query {
  public:
   /**
    * Executes the OQL Query on the cache server and returns the results.

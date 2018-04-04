@@ -40,7 +40,7 @@ namespace client {
  * when a tombstone expires.
  *
  */
-class _GEODE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
+class APACHE_GEODE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
  public:
   /**
    * Constructor

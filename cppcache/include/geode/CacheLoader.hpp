@@ -52,7 +52,7 @@ class Region;
  * @see RegionAttributesFactory::setCacheLoader
  * @see RegionAttributes::getCacheLoader
  */
-class _GEODE_EXPORT CacheLoader {
+class APACHE_GEODE_EXPORT CacheLoader {
  public:
   /**Loads a value. Application writers should implement this
    * method to customize the loading of a value. This method is called

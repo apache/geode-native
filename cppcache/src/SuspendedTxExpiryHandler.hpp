@@ -42,7 +42,7 @@ class CacheTransactionManagerImpl;
  * when a suspended transaction expires.
  *
  */
-class _GEODE_EXPORT SuspendedTxExpiryHandler : public ACE_Event_Handler {
+class APACHE_GEODE_EXPORT SuspendedTxExpiryHandler : public ACE_Event_Handler {
  public:
   /**
    * Constructor

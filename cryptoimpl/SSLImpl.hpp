@@ -34,7 +34,7 @@
 #include <ace/Time_Value.h>
 #pragma pack(pop)
 
-#include <geode/internal/geode_base.hpp>
+#include "cryptoimpl_export.h"
 
 #include "Ssl.hpp"
 
@@ -63,10 +63,11 @@ class SSLImpl : public apache::geode::client::Ssl {
 };
 
 extern "C" {
-_GEODE_EXPORT void* gf_create_SslImpl(ACE_HANDLE sock, const char* pubkeyfile,
-                                      const char* privkeyfile,
-                                      const char* pemPassword);
-_GEODE_EXPORT void gf_destroy_SslImpl(void* impl);
+CRYPTOIMPL_EXPORT void* gf_create_SslImpl(ACE_HANDLE sock,
+                                          const char* pubkeyfile,
+                                          const char* privkeyfile,
+                                          const char* pemPassword);
+CRYPTOIMPL_EXPORT void gf_destroy_SslImpl(void* impl);
 }
 
 }  // namespace client

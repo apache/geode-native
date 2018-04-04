@@ -79,7 +79,7 @@ typedef ::ACE_Hash_Map_Manager_Ex<
     CacheableKeyHashMap;
 
 /** @brief type wrapper around the ACE map implementation. */
-class _GEODE_EXPORT MapSegment {
+class APACHE_GEODE_EXPORT MapSegment {
  private:
   // contain
   CacheableKeyHashMap* m_map;

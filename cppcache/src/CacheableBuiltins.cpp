@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
-
-#include <ace/OS.h>
-
-#include <geode/internal/geode_globals.hpp>
 #include <geode/CacheableBuiltins.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-#define _GF_CACHEABLE_KEY_DEF_(k, s) \
-  const char tName_##k[] = #k;       \
-  const char tStr_##k[] = s;
+#define _GF_CACHEABLE_KEY_DEF_(k) const char tName_##k[] = #k;
 
-_GF_CACHEABLE_KEY_DEF_(CacheableBoolean, "%" PRIi8);
-_GF_CACHEABLE_KEY_DEF_(CacheableByte, "%" PRIi8);
-_GF_CACHEABLE_KEY_DEF_(CacheableDouble, "%lf");
-_GF_CACHEABLE_KEY_DEF_(CacheableFloat, "%f");
-_GF_CACHEABLE_KEY_DEF_(CacheableInt16, "%" PRIi16);
-_GF_CACHEABLE_KEY_DEF_(CacheableInt32, "%" PRIi32);
-_GF_CACHEABLE_KEY_DEF_(CacheableInt64, "%" PRIi64);
-_GF_CACHEABLE_KEY_DEF_(CacheableCharacter, "%lc");
+_GF_CACHEABLE_KEY_DEF_(CacheableBoolean);
+_GF_CACHEABLE_KEY_DEF_(CacheableByte);
+_GF_CACHEABLE_KEY_DEF_(CacheableDouble);
+_GF_CACHEABLE_KEY_DEF_(CacheableFloat);
+_GF_CACHEABLE_KEY_DEF_(CacheableInt16);
+_GF_CACHEABLE_KEY_DEF_(CacheableInt32);
+_GF_CACHEABLE_KEY_DEF_(CacheableInt64);
+_GF_CACHEABLE_KEY_DEF_(CacheableCharacter);
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

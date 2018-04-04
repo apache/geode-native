@@ -42,7 +42,7 @@ class Execution;
  * entry point for function execution
  * @see Execution
  */
-class _GEODE_EXPORT FunctionService {
+class APACHE_GEODE_EXPORT FunctionService {
  public:
   /**
    * Returns a {@link Execution} object that can be used to execute a data

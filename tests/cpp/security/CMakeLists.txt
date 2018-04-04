@@ -16,7 +16,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(security LANGUAGES CXX)
 
-add_library(${PROJECT_NAME} STATIC
+add_library(security STATIC
   CredentialGenerator.cpp
   CredentialGenerator.hpp
   DummyCredentialGenerator.hpp
@@ -33,12 +33,17 @@ add_library(${PROJECT_NAME} STATIC
   XmlAuthzCredentialGenerator.hpp
 )
 
-target_include_directories(${PROJECT_NAME}
+include(GenerateExportHeader)
+generate_export_header(security)
+
+target_include_directories(security
+  PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
   PRIVATE
 	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(security
   PUBLIC
     fwk
     testobject
@@ -50,4 +55,4 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # For Visual Studio organization
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER test)
+set_target_properties(security PROPERTIES FOLDER test)

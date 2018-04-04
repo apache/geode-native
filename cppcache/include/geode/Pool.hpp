@@ -60,7 +60,7 @@ class QueryService;
  *
  *
  */
-class _GEODE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
+class APACHE_GEODE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
  public:
   /**
    * Gets the name of the connection pool

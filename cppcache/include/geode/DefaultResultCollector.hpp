@@ -38,7 +38,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class _GEODE_EXPORT DefaultResultCollector : public ResultCollector {
+class APACHE_GEODE_EXPORT DefaultResultCollector : public ResultCollector {
  public:
   DefaultResultCollector();
   virtual ~DefaultResultCollector() noexcept;

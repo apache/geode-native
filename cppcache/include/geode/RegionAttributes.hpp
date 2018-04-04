@@ -73,7 +73,7 @@ class AttributesMutator;
 class Cache;
 class Region;
 
-class _GEODE_EXPORT RegionAttributes : public Serializable {
+class APACHE_GEODE_EXPORT RegionAttributes : public Serializable {
   /**
    * @brief public static methods
    */

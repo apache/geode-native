@@ -41,7 +41,7 @@ namespace client {
  * of certain CQ attributes after the CQ has been created.
  *
  */
-class _GEODE_EXPORT CqAttributesMutatorImpl : public CqAttributesMutator {
+class APACHE_GEODE_EXPORT CqAttributesMutatorImpl : public CqAttributesMutator {
  public:
   CqAttributesMutatorImpl(const std::shared_ptr<CqAttributes>& impl);
 

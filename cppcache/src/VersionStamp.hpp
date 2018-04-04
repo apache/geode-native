@@ -34,7 +34,7 @@ namespace client {
 /**
  * @brief This class encapsulates Version Stamp for map entries.
  */
-class _GEODE_EXPORT VersionStamp {
+class APACHE_GEODE_EXPORT VersionStamp {
  public:
   VersionStamp()
       : m_memberID(0),

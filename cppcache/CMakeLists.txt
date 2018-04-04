@@ -59,6 +59,9 @@ list(APPEND CONFIGURE_IN_FILES ${COMMON_SOURCE_DIR}/config.h.in)
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 configure_file(${COMMON_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
+set(EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/apache-geode_export.h)
+list(APPEND CONFIGURE_OUT_FILES ${EXPORT_FILE_NAME})
+
 set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)
 
 set(SOURCES_ALL ${SOURCES} ${PRIVATE_HEADERS} ${PUBLIC_HEADERS} ${CONFIGURE_IN_FILES} ${CONFIGURE_OUT_FILES})
@@ -86,11 +89,6 @@ target_link_libraries(_apache-geode INTERFACE
   libxml2
 )
 
-target_compile_definitions(_apache-geode INTERFACE
-  # TODO replace BUILD_CPPCACHE with built-in _DLL
-  $<BUILD_INTERFACE:BUILD_CPPCACHE>
-)
-
 if (USE_PCH)
   # TODO figure out why PCH causes these warnings
   # Ignore warnings resulting from using PCH
@@ -107,6 +105,10 @@ target_include_directories(_apache-geode INTERFACE
 add_dependencies(_apache-geode version-header)
 
 install(DIRECTORY ${COMMON_INCLUDE_DIR} DESTINATION .)
+install(FILES
+ ${EXPORT_FILE_NAME}
+ DESTINATION include/geode/internal
+)
 
 add_subdirectory(shared)
 add_subdirectory(static)

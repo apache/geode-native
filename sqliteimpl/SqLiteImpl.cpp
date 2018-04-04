@@ -19,6 +19,7 @@
 #include <geode/Cache.hpp>
 
 #include "SqLiteImpl.hpp"
+#include "sqliteimpl_export.h"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -201,7 +202,7 @@ void SqLiteImpl::close() {
 
 extern "C" {
 
-_GEODE_LIBEXP PersistenceManager* createSqLiteInstance() {
+SQLITEIMPL_EXPORT PersistenceManager* createSqLiteInstance() {
   return new SqLiteImpl;
 }
 }

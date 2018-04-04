@@ -32,7 +32,7 @@ namespace client {
 class CacheImpl;
 class PdxSerializer;
 
-class _GEODE_EXPORT TypeRegistry {
+class APACHE_GEODE_EXPORT TypeRegistry {
  public:
   TypeRegistry(CacheImpl* cache);
 

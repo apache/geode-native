@@ -36,7 +36,7 @@ class RegionInternal;
 /**
  * @brief Concurrent entries map.
  */
-class _GEODE_EXPORT ConcurrentEntriesMap : public EntriesMap {
+class APACHE_GEODE_EXPORT ConcurrentEntriesMap : public EntriesMap {
  protected:
   ExpiryTaskManager* m_expiryTaskManager;
   uint8_t m_concurrency;

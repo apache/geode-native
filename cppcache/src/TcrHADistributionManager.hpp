@@ -34,7 +34,7 @@ class ThinClientHARegion;
 /**
  * @brief Distribute data between caches
  */
-class _GEODE_EXPORT TcrHADistributionManager
+class APACHE_GEODE_EXPORT TcrHADistributionManager
     : public ThinClientDistributionManager {
  public:
   TcrHADistributionManager(ThinClientRegion* theRegion,

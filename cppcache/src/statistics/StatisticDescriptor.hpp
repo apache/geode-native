@@ -46,7 +46,7 @@ using namespace apache::geode::client;
  *
  */
 
-class _GEODE_EXPORT StatisticDescriptor {
+class APACHE_GEODE_EXPORT StatisticDescriptor {
  public:
   /**
     * Returns the id of this statistic in a {@link StatisticsType

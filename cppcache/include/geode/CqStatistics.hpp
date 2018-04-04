@@ -38,7 +38,7 @@ namespace client {
  * represented by the CqQuery object.
  *
  */
-class _GEODE_EXPORT CqStatistics {
+class APACHE_GEODE_EXPORT CqStatistics {
  public:
   /**
    * Get number of Insert events qualified by this CQ.

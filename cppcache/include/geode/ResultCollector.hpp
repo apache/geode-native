@@ -62,7 +62,7 @@ namespace client {
  * @see FunctionService
  */
 
-class _GEODE_EXPORT ResultCollector {
+class APACHE_GEODE_EXPORT ResultCollector {
   /**
    * @brief public methods
    */

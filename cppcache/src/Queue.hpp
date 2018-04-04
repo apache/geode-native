@@ -31,7 +31,7 @@ namespace geode {
 namespace client {
 
 template <class T>
-class _GEODE_EXPORT Queue {
+class APACHE_GEODE_EXPORT Queue {
  public:
   /**
    * Constructor with parameter to specify whether the contained objects

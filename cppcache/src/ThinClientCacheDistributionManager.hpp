@@ -33,7 +33,7 @@ namespace client {
 class TcrMessage;
 class TcrConnection;
 
-class _GEODE_EXPORT ThinClientCacheDistributionManager
+class APACHE_GEODE_EXPORT ThinClientCacheDistributionManager
     : public ThinClientDistributionManager {
  public:
   ThinClientCacheDistributionManager(TcrConnectionManager& connManager);

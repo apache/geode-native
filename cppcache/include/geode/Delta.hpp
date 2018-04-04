@@ -47,7 +47,7 @@ namespace client {
 class DataInput;
 class DataOutput;
 
-class _GEODE_EXPORT Delta {
+class APACHE_GEODE_EXPORT Delta {
  public:
   /**
    * <code>hasDelta( )</code> is invoked by Geode during <code>Region::put(

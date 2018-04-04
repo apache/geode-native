@@ -36,7 +36,7 @@ namespace client {
  * This class provides methods to get aggregate statistical information
  * about the CQs of a client.
  */
-class _GEODE_EXPORT CqServiceStatistics {
+class APACHE_GEODE_EXPORT CqServiceStatistics {
  public:
   /**
    * Get the number of CQs currently active.

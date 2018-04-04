@@ -20,36 +20,7 @@
 #ifndef GEODE_BASE_H_
 #define GEODE_BASE_H_
 
-#if defined(WIN32)
-/** Library Export */
-#define _GEODE_LIBEXP __declspec(dllexport)
-/** Library Implementation */
-#define _GEODE_LIBIMP __declspec(dllimport)
-/** Library Call */
-#define _GEODE_LIBCALL __stdcall
-/** Library Export a type */
-#define _GEODE_LIBEXPORT(type) _GEODE_LIBEXP type _GEODE_LIBCALL
-#else
-/** Library Export */
-#define _GEODE_LIBEXP
-/** Library Implementation */
-#define _GEODE_LIBIMP extern
-/** Library Call */
-#define _GEODE_LIBCALL /**/
-/** Library Export a type */
-#define _GEODE_LIBEXPORT(type) type
-#endif
-
-/** Defines a Geode export */
-#if defined(WIN32)
-#ifdef BUILD_CPPCACHE
-#define _GEODE_EXPORT _GEODE_LIBEXP
-#else
-#define _GEODE_EXPORT _GEODE_LIBIMP
-#endif
-#else
-#define _GEODE_EXPORT
-#endif /* BUILD_CPPCACHE */
+#include "apache-geode_export.h"
 
 /**@namespace geode This namespace contains all the Geode
  * C++ API classes, enumerations and globals.

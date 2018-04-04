@@ -57,7 +57,7 @@ class DataInputInternal;
  * @remarks None of the output parameters in the methods below can be nullptr
  *   unless otherwise noted.
  */
-class _GEODE_EXPORT DataInput {
+class APACHE_GEODE_EXPORT DataInput {
  public:
   /**
    * Read a signed byte from the <code>DataInput</code>.

@@ -70,7 +70,7 @@ class EntryEvent;
  * In the example above, all trade entries with the same month and year are
  * guaranteed to be colocated.
  */
-class _GEODE_EXPORT PartitionResolver {
+class APACHE_GEODE_EXPORT PartitionResolver {
   /**
    * @brief public methods
    */

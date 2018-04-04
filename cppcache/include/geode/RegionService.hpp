@@ -58,7 +58,7 @@ class PdxInstanceFactory;
  *
  */
 
-class _GEODE_EXPORT RegionService {
+class APACHE_GEODE_EXPORT RegionService {
   /**
    * @brief public methods
    */

@@ -43,7 +43,7 @@ class PdxWriter;
  * A user domain object should be wrapped in an instance of a PdxWrapper with
  * a PdxSerializer registered that can handle the user domain class.
  */
-class _GEODE_EXPORT PdxWrapper : public PdxSerializable {
+class APACHE_GEODE_EXPORT PdxWrapper : public PdxSerializable {
 
  public:
   /**

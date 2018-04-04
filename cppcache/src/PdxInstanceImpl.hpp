@@ -38,7 +38,7 @@ namespace client {
 
 typedef std::map<std::string, std::shared_ptr<Cacheable>> FieldVsValues;
 
-class _GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
+class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
  public:
   ~PdxInstanceImpl() noexcept override;
 

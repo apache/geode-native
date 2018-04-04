@@ -29,15 +29,7 @@
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
 
-#ifdef _WIN32
-#ifdef BUILD_TESTOBJECT
-#define TESTOBJECT_EXPORT _GEODE_LIBEXP
-#else
-#define TESTOBJECT_EXPORT _GEODE_LIBIMP
-#endif
-#else
-#define TESTOBJECT_EXPORT
-#endif
+#include "testobject_export.h"
 
 using namespace apache::geode::client;
 using namespace testframework;
@@ -70,8 +62,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
       int32_t rsiz = (bufSize <= 20) ? bufSize : 20;
       GsRandom::getAlphanumericString(rsiz, buf);
       memcpy(buf, dos.getBuffer(), dos.getBufferLength());
-      return CacheableBytes::create(std::vector<int8_t>(buf, buf +
-                                          bufSize));
+      return CacheableBytes::create(std::vector<int8_t>(buf, buf + bufSize));
     } else if (encodeTimestamp) {
       FWKEXCEPTION("Should not happen");
     } else {
@@ -85,8 +76,9 @@ class TESTOBJECT_EXPORT ArrayOfByte {
       throw apache::geode::client::IllegalArgumentException(
           "the bytes arg was null");
     }
-    DataInputInternal di(reinterpret_cast<const uint8_t *>(bytes->value().data()),
-                         bytes->length(), nullptr);
+    DataInputInternal di(
+        reinterpret_cast<const uint8_t *>(bytes->value().data()),
+        bytes->length(), nullptr);
     try {
       di.readInt32();
       int64_t timestamp = di.readInt64();
@@ -101,8 +93,9 @@ class TESTOBJECT_EXPORT ArrayOfByte {
 
   static void resetTimestamp(std::shared_ptr<CacheableBytes> bytes,
                              SerializationRegistry &serializationRegistry) {
-    DataInputInternal di(reinterpret_cast<const uint8_t *>(bytes->value().data()),
-                         bytes->length(), nullptr);
+    DataInputInternal di(
+        reinterpret_cast<const uint8_t *>(bytes->value().data()),
+        bytes->length(), nullptr);
     int32_t index;
     try {
       index = di.readInt32();
