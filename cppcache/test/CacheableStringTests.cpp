@@ -206,11 +206,8 @@ TEST_F(CacheableStringTests, TestToDataNonAsciiHuge) {
 TEST_F(CacheableStringTests, TestFromDataNonAsciiHuge) {
   std::string utf8(std::numeric_limits<uint16_t>::max(), 'a');
   utf8.append(u8"\u00E4");
-  auto&& utf16 =
-      std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-          .from_bytes(utf8);
 
-  auto origStr = CacheableString::create(utf16.c_str());
+  auto origStr = CacheableString::create(utf8);
   DataOutputInternal out;
   origStr->toData(out);
 
