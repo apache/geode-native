@@ -90,8 +90,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
     }
   }
 
-  static void resetTimestamp(std::shared_ptr<CacheableBytes> bytes,
-                             SerializationRegistry &serializationRegistry) {
+  static void resetTimestamp(std::shared_ptr<CacheableBytes> bytes) {
     DataInputInternal di(
         reinterpret_cast<const uint8_t *>(bytes->value().data()),
         bytes->length(), nullptr);
