@@ -36,7 +36,7 @@ namespace Apache.Geode.Examples.Serializer
                 .SetPoolName("pool");
             var orderRegion = regionFactory.Create<int, Order>("example_orderobject");
 
-            Serializable.RegisterPdxSerializer(new ReflectionBasedAutoSerializer());
+            cache.TypeRegistry.RegisterPdxSerializer(new ReflectionBasedAutoSerializer());
 
             Console.WriteLine("Registering for reflection-based auto serialization");
 
