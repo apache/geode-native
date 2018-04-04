@@ -87,13 +87,13 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
 
   void destroyRegion(
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttribures gua(m_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     m_realRegion->destroyRegion(aCallbackArgument);
   }
 
   void clear(
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttribures gua(m_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     m_realRegion->clear(aCallbackArgument);
   }
 
@@ -151,7 +151,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
   std::shared_ptr<Cacheable> get(
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttribures gua(m_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     return m_realRegion->get(key, aCallbackArgument);
   }
 
@@ -167,7 +167,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Cacheable>& value,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttribures gua(m_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     return m_realRegion->put(key, value, aCallbackArgument);
   }
 
@@ -197,7 +197,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
       const HashMapOfCacheable& map,
       std::chrono::milliseconds timeout = DEFAULT_RESPONSE_TIMEOUT,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttribures gua(m_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     return m_realRegion->putAll(map, timeout, aCallbackArgument);
   }
 
@@ -234,7 +234,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Cacheable>& value,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttribures gua(mm_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     m_realRegion->create(key, value, aCallbackArgument);
   }
 
@@ -293,7 +293,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
   void invalidate(
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttribures gua(m_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     m_realRegion->invalidate(key, aCallbackArgument);
   }
 
@@ -319,7 +319,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
   void destroy(
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttribures gua(m_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     m_realRegion->destroy(key, aCallbackArgument);
   }
 
@@ -346,7 +346,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Cacheable>& value,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttribures gua(mm_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     return m_realRegion->remove(key, value, aCallbackArgument);
   }
 
@@ -376,7 +376,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
   bool removeEx(
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttribures gua(m_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     return m_realRegion->removeEx(key, aCallbackArgument);
   }
 
@@ -438,7 +438,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
   }
 
   std::vector<std::shared_ptr<CacheableKey>> serverKeys() final {
-    GuardUserAttribures gua(mm_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     return m_realRegion->serverKeys();
   }
 
@@ -475,7 +475,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
 
   bool containsKeyOnServer(
       const std::shared_ptr<CacheableKey>& keyPtr) const final {
-    GuardUserAttribures gua(m_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     return m_realRegion->containsKeyOnServer(keyPtr);
   }
 
@@ -527,35 +527,35 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
   HashMapOfCacheable getAll(
       const std::vector<std::shared_ptr<CacheableKey>>& keys,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttribures gua(mm_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     return m_realRegion->getAll_internal(keys, aCallbackArgument, false);
   }
 
   std::shared_ptr<SelectResults> query(
       const std::string& predicate, std::chrono::milliseconds timeout =
                                         DEFAULT_QUERY_RESPONSE_TIMEOUT) final {
-    GuardUserAttribures gua(m_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     return m_realRegion->query(predicate, timeout);
   }
 
   bool existsValue(const std::string& predicate,
                    std::chrono::milliseconds timeout =
                        DEFAULT_QUERY_RESPONSE_TIMEOUT) final {
-    GuardUserAttribures gua(m_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     return m_realRegion->existsValue(predicate, timeout);
   }
 
   std::shared_ptr<Serializable> selectValue(
       const std::string& predicate, std::chrono::milliseconds timeout =
                                         DEFAULT_QUERY_RESPONSE_TIMEOUT) final {
-    GuardUserAttribures gua(m_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     return m_realRegion->selectValue(predicate, timeout);
   }
 
   void removeAll(
       const std::vector<std::shared_ptr<CacheableKey>>& keys,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttribures gua(m_authenticatedView);
+    GuardUserAttributes gua(m_authenticatedView);
     m_realRegion->removeAll(keys, aCallbackArgument);
   }
 

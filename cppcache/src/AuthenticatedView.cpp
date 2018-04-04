@@ -162,7 +162,7 @@ AuthenticatedView::AuthenticatedView(std::shared_ptr<Properties> credentials,
                                      CacheImpl* cacheImpl)
     : m_userAttributes(
           std::make_shared<UserAttributes>(credentials, pool, this)),
-      m_isProxyCacheClosed(false),
+      m_isAuthenticatedViewClosed(false),
       m_remoteQueryService(nullptr),
       m_cacheImpl(cacheImpl) {}
 

@@ -76,7 +76,7 @@ int testXmlDeclarativeCacheCreation() {
   }
 
   std::cout << "Root regions in Cache :" << std::endl;
-  for (int32_t i = 0; i < vrp.size(); i++) {
+  for (size_t i = 0; i < vrp.size(); i++) {
     std::cout << "vc[" << i << "].m_reaPtr=" << vrp.at(i).get() << std::endl;
     std::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << std::endl;
   }

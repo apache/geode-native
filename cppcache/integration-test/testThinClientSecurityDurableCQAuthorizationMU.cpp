@@ -213,11 +213,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateServer2)
   }
 END_TASK_DEFINITION
 
-void stepOne(bool pool = false, bool locator = false) {
+void stepOne() {
   LOG("StepOne1 complete. 1");
   initClientCq(true, 0);
   LOG("StepOne1 complete. 2");
-  createRegionForCQMU(regionNamesCq[0], USE_ACK, true, 0, nullptr, false, true);
+  createRegionForCQMU(regionNamesCq[0], USE_ACK, false);
   LOG("StepOne1 complete. 3");
   auto regptr = getHelper()->getRegion(regionNamesCq[0]);
   LOG("StepOne1 complete. 4");

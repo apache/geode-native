@@ -69,7 +69,6 @@ void DistributedSystemImpl::connect(Cache* cache) {
             m_sysProps->statisticsArchiveFile().c_str(),
             m_sysProps->statisticsSampleInterval(),
             m_sysProps->statisticsEnabled(), cacheImpl,
-            m_sysProps->durableClientId().c_str(), m_sysProps->durableTimeout(),
             m_sysProps->statsFileSizeLimit(),
             m_sysProps->statsDiskSpaceLimit()));
     cacheImpl->m_cacheStats =
