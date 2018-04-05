@@ -56,7 +56,3 @@ if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
 endif()
 
 add_dependencies(${PROJECT_NAME} nuget-restore)
-
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION bin
-)
