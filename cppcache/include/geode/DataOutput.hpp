@@ -393,11 +393,6 @@ class APACHE_GEODE_EXPORT DataOutput {
   }
 
   uint8_t getValueAtPos(size_t offset) { return m_bytes[offset]; }
-  /** Destruct a DataOutput, including releasing the created buffer. */
-  ~DataOutput() {
-    reset();
-    DataOutput::checkinBuffer(m_bytes, m_size);
-  }
 
   /**
    * Get a pointer to the internal buffer of <code>DataOutput</code>.
@@ -499,13 +494,21 @@ class APACHE_GEODE_EXPORT DataOutput {
 
   virtual const Cache* getCache();
 
+  /** Destruct a DataOutput, including releasing the created buffer. */
+  ~DataOutput() {
+    reset();
+    DataOutput::checkinBuffer(m_bytes, m_size);
+  }
+
+  DataOutput() = delete;
+  DataOutput(const DataOutput&) = delete;
+  DataOutput& operator=(const DataOutput&) = delete;
+
  protected:
   /**
    * Construct a new DataOutput.
    */
   DataOutput(const CacheImpl* cache, const std::string& poolName);
-
-  DataOutput() : DataOutput(nullptr, EMPTY_STRING) {}
 
   virtual const SerializationRegistry& getSerializationRegistry() const;
 
@@ -744,10 +747,6 @@ class APACHE_GEODE_EXPORT DataOutput {
 
   static uint8_t* checkoutBuffer(size_t* size);
   static void checkinBuffer(uint8_t* buffer, size_t size);
-
-  // disable copy constructor and assignment
-  DataOutput(const DataOutput&);
-  DataOutput& operator=(const DataOutput&);
 
   friend Cache;
   friend CacheImpl;

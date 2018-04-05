@@ -429,9 +429,6 @@ class APACHE_GEODE_EXPORT DataInput {
     }
   }
 
-  /** destructor */
-  ~DataInput() {}
-
   /**
    * Get the pointer to current buffer position. This should be treated
    * as readonly and modification of contents using this internal pointer
@@ -484,6 +481,11 @@ class APACHE_GEODE_EXPORT DataInput {
   }
 
   virtual const Cache* getCache();
+
+  ~DataInput() = default;
+  DataInput() = delete;
+  DataInput(const DataInput&) = delete;
+  DataInput& operator=(const DataInput&) = delete;
 
  protected:
   /** constructor given a pre-allocated byte array with size */
@@ -645,11 +647,6 @@ class APACHE_GEODE_EXPORT DataInput {
   }
 
   const std::string& getPoolName() const { return m_poolName; }
-
-  // disable other constructors and assignment
-  DataInput() = delete;
-  DataInput(const DataInput&) = delete;
-  DataInput& operator=(const DataInput&) = delete;
 
   friend Cache;
   friend CacheImpl;

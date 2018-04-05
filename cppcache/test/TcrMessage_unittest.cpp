@@ -31,15 +31,7 @@ using namespace apache::geode::client;
 class DataOutputUnderTest : public DataOutput {
  public:
   using DataOutput::DataOutput;
-
- protected:
-  virtual const SerializationRegistry &getSerializationRegistry()
-      const override {
-    return m_serializationRegistry;
-  }
-
- private:
-  SerializationRegistry m_serializationRegistry;
+  DataOutputUnderTest() : DataOutput(nullptr, EMPTY_STRING) {}
 };
 
 #define EXPECT_MESSAGE_EQ(e, a) EXPECT_PRED_FORMAT2(assertMessageEqual, e, a)

@@ -30,13 +30,9 @@ class CacheImpl;
 
 class DataOutputInternal : public DataOutput {
  public:
-  DataOutputInternal() : DataOutput() {}
+  DataOutputInternal() : DataOutput(nullptr, EMPTY_STRING) {}
 
   DataOutputInternal(CacheImpl* cache) : DataOutput(cache, EMPTY_STRING) {}
-
-  virtual const Cache* getCache() override {
-    throw FatalInternalException("DataOutputInternal does not have a Cache");
-  }
 
   inline static const std::string& getPoolName(const DataOutput& dataOutput) {
     return dataOutput.getPoolName();
