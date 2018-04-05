@@ -481,9 +481,8 @@ void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
 void CqService::invokeCqConnectedListeners(const std::string& poolName,
                                            bool connected) {
   query_container_type vec = getAllCqs();
-  for (int32_t i = 0; i < vec.size(); i++) {
-    std::string cqName = vec.at(i)->getName();
-    auto cQuery = getCq(cqName);
+  for (auto& cQuery : vec) {
+    const auto& cqName = cQuery->getName();
     auto cQueryImpl = std::dynamic_pointer_cast<CqQueryImpl>(cQuery);
     if (cQueryImpl == nullptr || !cQueryImpl->isRunning()) {
       LOGFINE("Unable to invoke CqStatusListener, %s, CqName: %s",

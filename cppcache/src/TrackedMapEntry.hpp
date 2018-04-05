@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TRACKEDMAPENTRY_H_
-#define GEODE_TRACKEDMAPENTRY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,13 +15,18 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_TRACKEDMAPENTRY_H_
+#define GEODE_TRACKEDMAPENTRY_H_
+
 #include "MapEntry.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class TrackedMapEntry : public MapEntry {
+class TrackedMapEntry final : public MapEntry {
  public:
   // Constructor should be invoked only when starting the tracking
   // of a MapEntry, so m_trackingNumber is initialized with 1.
@@ -38,14 +38,14 @@ class TrackedMapEntry : public MapEntry {
 
   virtual ~TrackedMapEntry() {}
 
-  virtual std::shared_ptr<MapEntryImpl> getImplPtr() { return m_entry; }
+  std::shared_ptr<MapEntryImpl> getImplPtr() final { return m_entry; }
 
-  virtual int addTracker(std::shared_ptr<MapEntry>& newEntry) {
+  int addTracker(std::shared_ptr<MapEntry>&) final {
     ++m_trackingNumber;
     return m_updateCount;
   }
 
-  virtual std::pair<bool, int> removeTracker() {
+  std::pair<bool, int> removeTracker() final {
     if (m_trackingNumber > 0) {
       --m_trackingNumber;
     }
@@ -56,21 +56,27 @@ class TrackedMapEntry : public MapEntry {
     return std::make_pair(false, m_trackingNumber);
   }
 
-  virtual int incrementUpdateCount(std::shared_ptr<MapEntry>& newEntry) {
+  int incrementUpdateCount(std::shared_ptr<MapEntry>&) final {
     return ++m_updateCount;
   }
 
-  virtual int getTrackingNumber() const { return m_trackingNumber; }
+  int getTrackingNumber() const final { return m_trackingNumber; }
 
-  virtual int getUpdateCount() const { return m_updateCount; }
+  int getUpdateCount() const final { return m_updateCount; }
 
-  virtual void getKey(std::shared_ptr<CacheableKey>& result) const;
-  virtual void getValue(std::shared_ptr<Cacheable>& result) const;
-  virtual void setValue(const std::shared_ptr<Cacheable>& value);
-  virtual LRUEntryProperties& getLRUProperties();
-  virtual ExpEntryProperties& getExpProperties();
-  virtual VersionStamp& getVersionStamp();
-  virtual void cleanup(const CacheEventFlags eventFlags);
+  void getKey(std::shared_ptr<CacheableKey>& result) const final;
+
+  void getValue(std::shared_ptr<Cacheable>& result) const final;
+
+  void setValue(const std::shared_ptr<Cacheable>& value) final;
+
+  LRUEntryProperties& getLRUProperties() final;
+
+  ExpEntryProperties& getExpProperties() final;
+
+  VersionStamp& getVersionStamp() final;
+
+  void cleanup(const CacheEventFlags eventFlags) final;
 
  private:
   std::shared_ptr<MapEntryImpl> m_entry;

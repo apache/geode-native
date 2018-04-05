@@ -209,7 +209,7 @@ const std::string& ClientProxyMembershipID::getDSMemberIdForThinClientUse() {
 
 std::string ClientProxyMembershipID::getHashKey() { return m_hashKey; }
 
-void ClientProxyMembershipID::toData(DataOutput& output) const {
+void ClientProxyMembershipID::toData(DataOutput&) const {
   throw IllegalStateException("Member ID toData() not implemented.");
 }
 
@@ -281,7 +281,8 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
   hostPort = input.readInt32();  // port
   // TODO: RVV get the host name from
 
-  const uint8_t flag = input.read();
+  // read and ignore flag
+  input.read();
 
   const auto vmKind = input.read();  // vmkind
 

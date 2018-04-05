@@ -34,9 +34,9 @@
 #include "Queue.hpp"
 #include "ThinClientRedundancyManager.hpp"
 
-ACE_BEGIN_VERSIONED_NAMESPACE_DECL
+namespace ACE_VERSIONED_NAMESPACE_NAME {
 class ACE_Task_Base;
-ACE_END_VERSIONED_NAMESPACE_DECL
+}  // namespace ACE_VERSIONED_NAMESPACE_NAME
 
 namespace apache {
 namespace geode {

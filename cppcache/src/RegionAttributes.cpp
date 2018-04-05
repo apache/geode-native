@@ -265,7 +265,7 @@ uint8_t RegionAttributes::getConcurrencyLevel() const {
   return m_concurrencyLevel;
 }
 
-const ExpirationAction RegionAttributes::getLruEvictionAction() const {
+ExpirationAction RegionAttributes::getLruEvictionAction() const {
   return m_lruEvictionAction;
 }
 

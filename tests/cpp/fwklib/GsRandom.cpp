@@ -62,6 +62,7 @@ char *GsRandom::randomReadableString(int32_t max, int32_t min) {
 const char choseFrom[] =
     "0123456789 abcdefghijklmnopqrstuvwxyz_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const int32_t choseSize = static_cast<int32_t>(strlen(choseFrom)) - 1;
+
 /**
 * Like randomString(), but returns only only alphanumeric, underscore, or space
 * characters.
@@ -71,8 +72,7 @@ const int32_t choseSize = static_cast<int32_t>(strlen(choseFrom)) - 1;
 * @return a bounded random string with a length between min and
 * max length inclusive.
 */
-char *GsRandom::randomAlphanumericString(int32_t max, int32_t min,
-                                         const char *prefix) {
+char *GsRandom::randomAlphanumericString(int32_t max, int32_t min) {
   int32_t len = (max == min) ? max : nextInt(min, max);
   char *buf = reinterpret_cast<char *>(malloc(len + 1));
   for (int32_t i = 0; i < len; i++) buf[i] = choseFrom[nextByte(0, choseSize)];

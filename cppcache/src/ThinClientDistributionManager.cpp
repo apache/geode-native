@@ -95,7 +95,7 @@ void ThinClientDistributionManager::destroy(bool keepAlive) {
 void ThinClientDistributionManager::destroyAction() {}
 
 void ThinClientDistributionManager::getEndpointNames(
-    std::unordered_set<std::string>& endpointNames) {}
+    std::unordered_set<std::string>&) {}
 
 bool ThinClientDistributionManager::isEndpointAttached(TcrEndpoint* ep) {
   for (std::vector<TcrEndpoint*>::const_iterator iter = m_endpoints.begin();
@@ -110,7 +110,7 @@ bool ThinClientDistributionManager::isEndpointAttached(TcrEndpoint* ep) {
 GfErrType ThinClientDistributionManager::sendSyncRequest(TcrMessage& request,
                                                          TcrMessageReply& reply,
                                                          bool attemptFailover,
-                                                         bool isBGThread) {
+                                                         bool) {
   GfErrType error = GF_NOTCON;
   bool useActiveEndpoint = true;
   request.setDM(this);
@@ -306,7 +306,7 @@ void ThinClientDistributionManager::postUnregisterAction() {}
 
 bool ThinClientDistributionManager::preFailoverAction() { return true; }
 
-bool ThinClientDistributionManager::postFailoverAction(TcrEndpoint* endpoint) {
+bool ThinClientDistributionManager::postFailoverAction(TcrEndpoint*) {
   return true;
 }
 std::shared_ptr<Properties> ThinClientDistributionManager::getCredentials(

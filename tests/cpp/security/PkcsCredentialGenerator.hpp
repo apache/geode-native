@@ -41,7 +41,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
  public:
   PKCSCredentialGenerator() : CredentialGenerator(ID_PKI, "PKCS"){};
 
-  std::string getInitArgs(std::string workingDir, bool userMode) {
+  std::string getInitArgs(std::string workingDir, bool) override {
     FWKINFO("Inside PKCS credentials");
     std::string additionalArgs;
     char* buildDir = ACE_OS::getenv("BUILDDIR");
@@ -65,17 +65,19 @@ class PKCSCredentialGenerator : public CredentialGenerator {
     return additionalArgs;
   }
 
-  std::string getClientAuthInitLoaderFactory() {
+  std::string getClientAuthInitLoaderFactory() override {
     return "createPKCSAuthInitInstance";
   }
-  std::string getClientAuthInitLoaderLibrary() { return "securityImpl"; }
-  std::string getClientAuthenticator() {
+  std::string getClientAuthInitLoaderLibrary() override {
+    return "securityImpl";
+  }
+  std::string getClientAuthenticator() override {
     return "javaobject.PKCSAuthenticator.create";
   }
-  std::string getClientAuthorizer() {
+  std::string getClientAuthorizer() override {
     return "javaobject.XmlAuthorization.create";
   }
-  std::string getClientDummyAuthorizer() {
+  std::string getClientDummyAuthorizer() override {
     return "javaobject.DummyAuthorization.create";
   }
 
@@ -107,7 +109,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
     insertKeyStorePath(p, username);
   }
 
-  void getValidCredentials(std::shared_ptr<Properties>& p) {
+  void getValidCredentials(std::shared_ptr<Properties>& p) override {
     char username[20] = {'\0'};
     sprintf(username, "geode%d", (rand() % 10) + 1);
     setPKCSProperties(p, username);
@@ -115,7 +117,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
             << p->find("security-username")->value().c_str());
   }
 
-  void getInvalidCredentials(std::shared_ptr<Properties>& p) {
+  void getInvalidCredentials(std::shared_ptr<Properties>& p) override {
     char username[20] = {'\0'};
     sprintf(username, "%dgeode", (rand() % 11) + 1);
     setPKCSProperties(p, username);
@@ -125,7 +127,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
 
   void getAllowedCredentialsForOps(opCodeList& opCodes,
                                    std::shared_ptr<Properties>& p,
-                                   stringList* regionNames = NULL) {
+                                   stringList* regionNames = NULL) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getAllowedCredentials(opCodes, p, regionNames);
     const char* username = p->find("security-alias")->value().c_str();
@@ -134,7 +136,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
 
   void getDisallowedCredentialsForOps(opCodeList& opCodes,
                                       std::shared_ptr<Properties>& p,
-                                      stringList* regionNames = NULL) {
+                                      stringList* regionNames = NULL) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getDisallowedCredentials(opCodes, p, regionNames);
     const char* username = p->find("security-alias")->value().c_str();

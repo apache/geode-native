@@ -148,6 +148,4 @@ std::string PortfolioPdx::toString() const {
   sprintf(stringBuf, "%s%s%s%s%s", idbuf, pkidbuf, creationdatebuf,
           position1buf, position2buf);
   return stringBuf;
-
-  return idbuf;
 }

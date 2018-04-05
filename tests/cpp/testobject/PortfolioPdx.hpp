@@ -72,7 +72,7 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
 
   std::shared_ptr<CacheableHashMap> getPositions() { return positions; }
 
-  bool testMethod(bool booleanArg) { return true; }
+  bool testMethod() { return true; }
 
   const std::string& getStatus() { return status; }
 

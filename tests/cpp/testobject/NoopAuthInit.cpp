@@ -33,8 +33,7 @@ TESTOBJECT_EXPORT AuthInitialize* createNoopAuthInitInstance() {
 }
 }
 std::shared_ptr<Properties> NoopAuthInit::getCredentials(
-    const std::shared_ptr<Properties>& securityprops,
-    const std::string& server) {
+    const std::shared_ptr<Properties>&, const std::string&) {
   LOGINFO("rjk: calling NoopAuthInit::getCredentials");
   auto credentials = Properties::create();
   return credentials;

@@ -26,20 +26,14 @@ namespace geode {
 namespace client {
 
 FarSideEntryOp::FarSideEntryOp(
-    RegionCommit* region, MemberListForVersionStamp& memberListForVersionStamp)
-    :  // UNUSED m_region(region),
-       /* adongre
-        *
-        */
-      m_op(0),
+    MemberListForVersionStamp& memberListForVersionStamp)
+    : m_op(0),
       m_modSerialNum(0),
       m_eventOffset(0),
       m_didDestroy(false),
       m_memberListForVersionStamp(memberListForVersionStamp)
 
 {}
-
-FarSideEntryOp::~FarSideEntryOp() {}
 
 bool FarSideEntryOp::isDestroy(int8_t op) {
   return op == DESTROY || op == LOCAL_DESTROY || op == EVICT_DESTROY ||

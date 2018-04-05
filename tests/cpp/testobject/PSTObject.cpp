@@ -23,7 +23,7 @@ using namespace apache::geode::client;
 using namespace testframework;
 using namespace testobject;
 
-PSTObject::PSTObject(int size, bool encodeKey, bool encodeTimestamp) {
+PSTObject::PSTObject(int size, bool encodeKey) {
   ACE_Time_Value startTime;
   startTime = ACE_OS::gettimeofday();
   ACE_UINT64 tusec = 0;

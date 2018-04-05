@@ -379,9 +379,8 @@ void createRegion(const char* name, bool ackMode,
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-std::shared_ptr<Region> createOverflowRegion(
-    const char* name, bool ackMode, int lel = 0,
-    bool clientNotificationEnabled = true, bool caching = true) {
+std::shared_ptr<Region> createOverflowRegion(const char* name, bool,
+                                             int lel = 0, bool caching = true) {
   std::string bdb_dir = "BDB";
   std::string bdb_dirEnv = "BDBEnv";
   RegionAttributesFactory regionAttributesFactory;

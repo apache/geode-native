@@ -481,22 +481,16 @@ bool TcrConnection::InitTcrConnection(
         AuthenticationFailedException ex((char*)recvMessage.data());
         GF_SAFE_DELETE_CON(m_conn);
         throwException(ex);
-        // not expected to be reached
-        break;
       }
       case REPLY_AUTHENTICATION_REQUIRED: {
         AuthenticationRequiredException ex((char*)recvMessage.data());
         GF_SAFE_DELETE_CON(m_conn);
         throwException(ex);
-        // not expected to be reached
-        break;
       }
       case REPLY_DUPLICATE_DURABLE_CLIENT: {
         DuplicateDurableClientException ex((char*)recvMessage.data());
         GF_SAFE_DELETE_CON(m_conn);
         throwException(ex);
-        // not expected to be reached
-        break;
       }
       case REPLY_REFUSED:
       case REPLY_INVALID:
@@ -792,8 +786,7 @@ void TcrConnection::send(const char* buffer, size_t len,
 
 void TcrConnection::send(std::chrono::microseconds& timeSpent,
                          const char* buffer, size_t len,
-                         std::chrono::microseconds sendTimeoutSec,
-                         bool checkConnected) {
+                         std::chrono::microseconds sendTimeoutSec, bool) {
   GF_DEV_ASSERT(m_conn != nullptr);
 
   // LOGINFO("TcrConnection::send: [%p] sending request to endpoint %s;",
@@ -1155,7 +1148,6 @@ std::vector<int8_t> TcrConnection::readHandshakeData(
   } else {
     return std::vector<int8_t>(recvMessage, recvMessage + msgLength + 1);
   }
-  return std::vector<int8_t>{};
 }
 
 std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeRawData(
@@ -1184,8 +1176,6 @@ std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeRawData(
           GeodeIOException("TcrConnection::TcrConnection: "
                            "Handshake failure"));
     }
-    // not expected to be reached
-    return nullptr;
   } else {
     return CacheableBytes::create(
         std::vector<int8_t>(recvMessage, recvMessage + msgLength));
@@ -1347,7 +1337,6 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
   switch (static_cast<int8_t>(cstypeid)) {
     case GeodeTypeIds::CacheableNullString: {
       return nullptr;
-      break;
     }
     case GeodeTypeIds::CacheableASCIIString: {
       auto lenBytes = readHandshakeData(2, connectTimeout);
@@ -1389,8 +1378,6 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
           GeodeIOException("TcrConnection::TcrConnection: "
                            "Handshake failure reading string bytes"));
     }
-    // not expected to be reached
-    return nullptr;
   } else {
     LOGDEBUG(" Received string data [%s]", recvMessage.get());
     auto retval =
@@ -1467,7 +1454,6 @@ TcrConnection::~TcrConnection() {
 bool TcrConnection::setAndGetBeingUsed(volatile bool isBeingUsed,
                                        bool forTransaction) {
   uint32_t currentValue = 0;
-  uint32_t retVal = 0U;
 
   if (!forTransaction) {
     if (isBeingUsed) {

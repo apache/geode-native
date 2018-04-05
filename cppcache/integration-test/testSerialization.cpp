@@ -25,8 +25,6 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
-#define ROOT_SCOPE DISTRIBUTED_ACK
-
 #include "SerializationRegistry.hpp"
 #include <geode/CacheableString.hpp>
 #include <geode/GeodeTypeIds.hpp>
@@ -145,7 +143,6 @@ class OtherType : public Serializable {
   }
 };
 
-#define NoDist s2p2
 #define Sender s1p1
 #define Receiver s1p2
 std::shared_ptr<Region> regionPtr;

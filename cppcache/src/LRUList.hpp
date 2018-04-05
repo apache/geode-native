@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_LRULIST_H_
-#define GEODE_LRULIST_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,10 +15,15 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_LRULIST_H_
+#define GEODE_LRULIST_H_
+
 #include <atomic>
+#include <memory>
 
 #include <geode/internal/geode_globals.hpp>
-#include <memory>
 
 #include "util/concurrent/spinlock_mutex.hpp"
 
@@ -67,7 +67,7 @@ class APACHE_GEODE_EXPORT LRUEntryProperties {
 
  protected:
   // this constructor deliberately skips initializing any fields
-  inline LRUEntryProperties(bool noInit) {}
+  inline LRUEntryProperties(bool) {}
 
  private:
   std::atomic<uint32_t> m_bits;
@@ -149,6 +149,7 @@ class LRUList {
   LRUListNode* m_tailNode;
 
 };  // LRUList
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

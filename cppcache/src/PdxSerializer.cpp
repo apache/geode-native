@@ -15,21 +15,14 @@
  * limitations under the License.
  */
 
-#include "LRUMapEntry.hpp"
-#include "MapEntryT.hpp"
+#include <geode/PdxSerializer.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-void LRUEntryFactory::newMapEntry(ExpiryTaskManager*,
-                                  const std::shared_ptr<CacheableKey>& key,
-                                  std::shared_ptr<MapEntryImpl>& result) const {
-  if (m_concurrencyChecksEnabled) {
-    result = MapEntryT<VersionedLRUMapEntry, 0, 0>::create(key);
-  } else {
-    result = MapEntryT<LRUMapEntry, 0, 0>::create(key);
-  }
+UserObjectSizer PdxSerializer::getObjectSizer(const std::string&) {
+  return nullptr;
 }
 
 }  // namespace client

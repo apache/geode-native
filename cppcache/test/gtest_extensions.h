@@ -46,7 +46,7 @@ std::string squash(const std::string& str, size_t maxLength = 60) {
   ASSERT_PRED_FORMAT2(::apache::geode::testing::regexMatch, r, s)
 
 ::testing::AssertionResult regexMatch(const char* s1_expression,
-                                      const char* s2_expression,
+                                      const char* /*s2_expression*/,
                                       const std::regex& regex,
                                       const std::string& source) {
   if (!std::regex_match(source, regex)) {
@@ -57,8 +57,8 @@ std::string squash(const std::string& str, size_t maxLength = 60) {
   return ::testing::AssertionSuccess();
 }
 
-::testing::AssertionResult regexMatch(const char* s1_expression,
-                                      const char* s2_expression,
+::testing::AssertionResult regexMatch(const char* /*s1_expression*/,
+                                      const char* /*s2_expression*/,
                                       const std::string& regex,
                                       const std::string& source) {
   if (!std::regex_match(source, std::regex(regex))) {

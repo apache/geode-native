@@ -189,7 +189,6 @@ class putThread : public ACE_Task_Base {
 #define DEFAULTNUMKEYS 15
 #endif
 #define KEYSIZE 256
-#define VALUESIZE 1024
 
 std::vector<char*> storeEndPoints(const char* points) {
   std::vector<char*> endpointNames;
@@ -308,7 +307,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
         // if (!singlehop) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while putting key %s with
         // hashcode %d", logmsg, (int32_t)keyPtr->hashcode());
@@ -319,7 +317,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
         // if (!singlehop) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while putting key %s with
         // hashcode %d", logmsg, (int32_t)keyPtr->hashcode());
@@ -330,7 +327,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
         LOGERROR("CPPTEST: Put caused random exception in WarmUpTask");
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     // it takes time to fetch prmetadata so relaxing this limit
@@ -373,7 +369,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask3)
         // if (!singlehop) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while putting key %s with
         // hashcode %d", logmsg, (int32_t)keyPtr->hashcode());
@@ -384,7 +379,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask3)
         // if (!singlehop) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while putting key %s with
         // hashcode %d", logmsg, (int32_t)keyPtr->hashcode());
@@ -395,7 +389,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask3)
         LOGERROR("CPPTEST: Put caused random exception in WarmUpTask");
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     // it takes time to fetch prmetadata so relaxing this limit
@@ -443,7 +436,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForAllKeysTask)
   {
     LOG("CheckPrSingleHopForAllKeysTask started.");
-    static int taskIndexPut = 0;
+    static size_t taskIndexPut = 0;
 
     auto keyTypes = CacheableWrapperFactory::getRegisteredKeyTypes();
     auto valueTypes = CacheableWrapperFactory::getRegisteredValueTypes();
@@ -488,24 +481,20 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForAllKeysTask)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR(
             "CPPTEST: Put caused random exception in "
             "CheckPrSingleHopForAllKeysTask");
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
 
       try {
@@ -519,24 +508,20 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForAllKeysTask)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: Destroy caused extra hop.");
         FAIL("Destroy caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: Destroy caused extra hop.");
         FAIL("Destroy caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: Destroy caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("Destroy caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR(
             "CPPTEST: Destroy caused random exception in "
             "CheckPrSingleHopForAllKeysTask");
         cleanProc();
         FAIL("Destroy caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
       delete tmpkey;
     }
@@ -613,12 +598,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         // if (!singlehop) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
-        LOGINFO(
-            "CPPTEST: SINGLEHOP SUCCEEDED while putting key %d with hashcode "
-            "%d",
-            i, keyPtr->hashcode());
       } catch (CacheWriterException&) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
@@ -626,23 +606,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         // if (!singlehop) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
-        LOGINFO(
-            "CPPTEST: SINGLEHOP SUCCEEDED while putting key %d with hashcode "
-            "%d",
-            i, keyPtr->hashcode());
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: Put caused random exception");
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
 
       try {
@@ -669,7 +642,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         // if (!singlehop) {
         LOGERROR("CPPTEST: Destroy caused extra hop.");
         FAIL("Destroy caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         LOGINFO(
             "CPPTEST: SINGLEHOP SUCCEEDED while destroying key %d with "
@@ -683,7 +655,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         // if (!singlehop) {
         LOGERROR("CPPTEST: Destroy caused extra hop.");
         FAIL("Destroy caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         LOGINFO(
             "CPPTEST: SINGLEHOP SUCCEEDED while destroying key %d with "
@@ -695,12 +666,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("Destroy caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: Put caused random exception");
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     LOG("CheckPrSingleHopForIntKeysTask2 put completed.");
@@ -733,7 +702,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         // if (!singlehop) {
         LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         LOGINFO(
             "CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with hashcode "
@@ -746,7 +714,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         // if (!singlehop) {
         LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         LOGINFO(
             "CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with hashcode "
@@ -757,12 +724,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
                  ex.what());
         cleanProc();
         FAIL("get caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: get caused random exception");
         cleanProc();
         FAIL("get caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     LOG("CheckPrSingleHopForIntKeysTask2 get completed.");
@@ -789,7 +754,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         // if (!singlehop) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with
         // hashcode %d", i, (int32_t)keyPtr->hashcode());
@@ -800,7 +764,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         // if (!singlehop) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with
         // hashcode %d", i, (int32_t)keyPtr->hashcode());
@@ -809,12 +772,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: getAll caused random exception");
         cleanProc();
         FAIL("getAll caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
 
@@ -870,12 +831,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         // if (!singlehop) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
-        LOGINFO(
-            "CPPTEST: SINGLEHOP SUCCEEDED while putting key %d with hashcode "
-            "%d",
-            i, keyPtr->hashcode());
       } catch (CacheWriterException&) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
@@ -883,23 +839,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         // if (!singlehop) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
-        //}
-        LOGINFO(
-            "CPPTEST: SINGLEHOP SUCCEEDED while putting key %d with hashcode "
-            "%d",
-            i, keyPtr->hashcode());
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: Put caused random exception");
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
 
       try {
@@ -918,13 +866,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         // if (!singlehop) {
         LOGERROR("CPPTEST: Destroy caused extra hop.");
         FAIL("Destroy caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
-        LOGINFO(
-            "CPPTEST: SINGLEHOP SUCCEEDED while destroying key %d with "
-            "hashcode "
-            "%d",
-            i, keyPtr->hashcode());
       } catch (CacheWriterException&) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
@@ -932,24 +874,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         // if (!singlehop) {
         LOGERROR("CPPTEST: Destroy caused extra hop.");
         FAIL("Destroy caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
-        //}
-        LOGINFO(
-            "CPPTEST: SINGLEHOP SUCCEEDED while destroying key %d with "
-            "hashcode "
-            "%d",
-            i, keyPtr->hashcode());
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: Destroy caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("Destroy caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: Put caused random exception");
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     LOG("CheckPrSingleHopForIntKeysTask put completed.");
@@ -974,12 +907,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         // if (!singlehop) {
         LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
-        LOGINFO(
-            "CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with hashcode "
-            "%d",
-            i, keyPtr->hashcode());
       } catch (CacheWriterException&) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
@@ -987,23 +915,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         // if (!singlehop) {
         LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
-        //}
-        LOGINFO(
-            "CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with hashcode "
-            "%d",
-            i, keyPtr->hashcode());
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
         FAIL("get caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: get caused random exception");
         cleanProc();
         FAIL("get caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     LOG("CheckPrSingleHopForIntKeysTask get completed.");
@@ -1030,7 +950,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         // if (!singlehop) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with
         // hashcode %d", i, (int32_t)keyPtr->hashcode());
@@ -1041,7 +960,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         // if (!singlehop) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with
         // hashcode %d", i, (int32_t)keyPtr->hashcode());
@@ -1050,12 +968,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: getAll caused random exception");
         cleanProc();
         FAIL("getAll caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
 
       try {
@@ -1074,7 +990,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         // if (!singlehop) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with
         // hashcode %d", i, (int32_t)keyPtr->hashcode());
@@ -1085,7 +1000,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         // if (!singlehop) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with
         // hashcode %d", i, (int32_t)keyPtr->hashcode());
@@ -1094,12 +1008,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: getAll caused random exception");
         cleanProc();
         FAIL("getAll caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     int poolconn = TestUtils::getCacheImpl(getHelper()->cachePtr)
@@ -1249,7 +1161,7 @@ DUNIT_MAIN
           CacheableWrapperFactory::getRegisteredValueTypes().size();
 
       CALL_TASK(CheckPrSingleHopForIntKeysTask);
-      for (int i = 0; i < totKeyTypes; i++) {
+      for (size_t i = 0; i < totKeyTypes; i++) {
         CALL_TASK(CheckPrSingleHopForAllKeysTask);
       }
 

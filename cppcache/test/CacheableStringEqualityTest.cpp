@@ -29,14 +29,16 @@ using namespace apache::geode::client;
 TEST(CacheableStringEqualityTest, StdHashSpecializationViaStdSharedPtr) {
   auto s = CacheableString::create("test");
   typedef decltype(s) key_type;
-  EXPECT_EQ(s->hashcode(), dereference_hash<key_type>{}(s));
+  EXPECT_EQ(s->hashcode(),
+            static_cast<int32_t>(dereference_hash<key_type>{}(s)));
 }
 
 TEST(CacheableStringEqualityTest, StdHashSpecializationViaStdPtr) {
   auto s = CacheableString::create("test");
   typedef decltype(s)::element_type* key_type;
 
-  EXPECT_EQ(s->hashcode(), dereference_hash<key_type>{}(s.get()));
+  EXPECT_EQ(s->hashcode(),
+            static_cast<int32_t>(dereference_hash<key_type>{}(s.get())));
 }
 
 TEST(CacheableStringEqualityTest, CacheableEqualToCalled) {

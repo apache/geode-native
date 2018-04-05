@@ -148,7 +148,7 @@ const char* keysForRegex[] = {"key-regex-1", "key-regex-2", "key-regex-3"};
 void initClientForInterestNotify(std::shared_ptr<EventListener>& mon1,
                                  std::shared_ptr<EventListener>& mon2,
                                  std::shared_ptr<EventListener>& mon3,
-                                 const char* nbs, const char* clientName) {
+                                 const char* clientName) {
   auto props = Properties::create();
 
   initClient(true, props);
@@ -276,7 +276,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT_NBS_TRUE, ClientNbsTrue_Up)
   {
     initClientForInterestNotify(clientTrueRegionTrue, clientTrueRegionFalse,
-                                clientTrueRegionOther, "true", "clientNbsTrue");
+                                clientTrueRegionOther, "clientNbsTrue");
     LOG("ClientNbsTrue_Up complete");
   }
 END_TASK_DEFINITION

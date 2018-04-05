@@ -655,7 +655,7 @@ void Log::put(LogLevel level, const char* msg) {
     if ((g_diskSpaceLimit > 0) && (g_spaceUsed >= g_diskSpaceLimit)) {
       std::string dirname = ACE::dirname(g_logFile->c_str());
       g_spaceUsed = 0;
-      ACE_stat statBuf = {0};
+      ACE_stat statBuf = {};
 
       ACE_Dirent_Selector sds;
       int status = sds.open(dirname.c_str(), selector, comparator);

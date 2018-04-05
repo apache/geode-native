@@ -67,7 +67,7 @@ class APACHE_GEODE_EXPORT TcpConn : public Connector {
   virtual void createSocket(ACE_HANDLE sock);
 
  public:
-  int m_chunkSize;
+  size_t m_chunkSize;
 
   static int getDefaultChunkSize() {
     // Attempt to set chunk size to nearest OS page size

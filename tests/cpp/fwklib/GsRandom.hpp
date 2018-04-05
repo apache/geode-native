@@ -205,8 +205,7 @@ class GsRandom {
    * @return a bounded random string with a length between 0 and
    * max length inclusive.
    */
-  char* randomAlphanumericString(int32_t max, int32_t min,
-                                 const char* prefix = 0);
+  char* randomAlphanumericString(int32_t max, int32_t min);
 };
 
 }  // namespace testframework

@@ -180,7 +180,7 @@ void PdxTypeRegistry::setPreserveData(
     preserveData[obj] = pData;
   } else {
     // schedule new expiry task
-    auto handler = new PreservedDataExpiryHandler(shared_from_this(), obj, 20);
+    auto handler = new PreservedDataExpiryHandler(shared_from_this(), obj);
     long id = expiryTaskManager.scheduleExpiryTask(handler, 20, 0, false);
     pData->setPreservedDataExpiryTaskId(id);
     LOGDEBUG(

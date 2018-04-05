@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "ThinClientBaseDM.hpp"
 
 #include <geode/AuthenticatedView.hpp>
@@ -21,7 +22,9 @@
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 volatile bool ThinClientBaseDM::s_isDeltaEnabledOnServer = true;
 const char* ThinClientBaseDM::NC_ProcessChunk = "NC ProcessChunk";
@@ -52,7 +55,7 @@ bool ThinClientBaseDM::isSecurityOn() {
   return m_connManager.getCacheImpl()->getAuthInitialize() != nullptr;
 }
 
-void ThinClientBaseDM::destroy(bool keepalive) {
+void ThinClientBaseDM::destroy(bool) {
   if (!m_initDone) {
     // nothing to be done
     return;
@@ -64,7 +67,7 @@ void ThinClientBaseDM::destroy(bool keepalive) {
 
 GfErrType ThinClientBaseDM::sendSyncRequestRegisterInterest(
     TcrMessage& request, TcrMessageReply& reply, bool attemptFailover,
-    ThinClientRegion* region, TcrEndpoint* endpoint) {
+    ThinClientRegion*, TcrEndpoint* endpoint) {
   GfErrType err = GF_NOERR;
 
   if (endpoint == nullptr) {
@@ -315,3 +318,22 @@ void ThinClientBaseDM::afterSendingRequest(const TcrMessage& request,
     }
   }
 }
+
+GfErrType ThinClientBaseDM::sendSyncRequestRegisterInterestEP(TcrMessage&,
+                                                              TcrMessageReply&,
+                                                              bool,
+                                                              TcrEndpoint*) {
+  return GF_NOERR;
+}
+
+GfErrType ThinClientBaseDM::registerInterestForRegion(TcrEndpoint*,
+                                                      const TcrMessage*,
+                                                      TcrMessageReply*) {
+  return GF_NOERR;
+}
+
+bool ThinClientBaseDM::isEndpointAttached(TcrEndpoint*) { return false; };
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

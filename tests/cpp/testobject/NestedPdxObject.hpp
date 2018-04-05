@@ -276,7 +276,7 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
     return className;
   }
 
-  bool equals(SerializePdx& other, bool isPdxReadSerialized) const {
+  bool equals(SerializePdx& other) const {
     SerializePdx* ot = dynamic_cast<SerializePdx*>(&other);
     if (ot == NULL) {
       LOGINFO("SerializePdx::equals1");

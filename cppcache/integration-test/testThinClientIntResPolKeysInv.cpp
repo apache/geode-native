@@ -156,8 +156,6 @@ void _verifyInvalid(const char *name, const char *key, int line) {
   LOG("Entry invalidated.");
 }
 
-#define verifyDestroyed(x, y) _verifyDestroyed(x, y, __LINE__)
-
 void _verifyDestroyed(const char *name, const char *key, int line) {
   char logmsg[1024];
   sprintf(logmsg, "verifyDestroyed() called from %d.\n", line);
@@ -176,8 +174,6 @@ void _verifyEntry(const char *name, const char *key, const char *val,
   _verifyEntry(name, key, val, false);
   LOG("Entry verified.");
 }
-
-#define verifyCreated(x, y) _verifyCreated(x, y, __LINE__)
 
 void _verifyCreated(const char *name, const char *key, int line) {
   char logmsg[1024];

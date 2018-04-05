@@ -126,7 +126,7 @@ class FairQueue {
   ACE_Token m_queueGetLock;
   bool m_closed;
 
-  bool exclude(T* mp, void*) { return false; }
+  bool exclude(T*, void*) { return false; }
 
  protected:
   std::deque<T*> m_queue;

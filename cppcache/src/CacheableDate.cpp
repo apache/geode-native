@@ -86,7 +86,7 @@ CacheableDate::CacheableDate(const CacheableDate::duration& value) {
 
 std::string CacheableDate::toString() const {
   char buffer[25];
-  struct tm date = {0};
+  struct tm date = {};
   time_t sec = m_timevalue / 1000;
   ACE_OS::localtime_r(&sec, &date);
   ACE_OS::snprintf(buffer, 24, "%d/%d/%d %d:%d:%d", date.tm_mon + 1,

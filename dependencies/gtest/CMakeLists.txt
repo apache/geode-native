@@ -52,7 +52,7 @@ ${${PROJECT_NAME}_gmock_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmock_main${CM
 PARENT_SCOPE)
 
 add_library(${PROJECT_NAME}_gtest INTERFACE)
-target_include_directories(${PROJECT_NAME}_gtest INTERFACE
+target_include_directories(${PROJECT_NAME}_gtest SYSTEM INTERFACE
   $<BUILD_INTERFACE:${${PROJECT_NAME}_gtest_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${${PROJECT_NAME}_gmock_SOURCE_DIR}/include>
 )
@@ -62,7 +62,7 @@ target_link_libraries(${PROJECT_NAME}_gtest INTERFACE
 add_dependencies(${PROJECT_NAME}_gtest ${${PROJECT_NAME}_EXTERN})
 
 add_library(${PROJECT_NAME}_gtest_main INTERFACE)
-target_include_directories(${PROJECT_NAME}_gtest_main INTERFACE
+target_include_directories(${PROJECT_NAME}_gtest_main SYSTEM INTERFACE
   $<BUILD_INTERFACE:${${PROJECT_NAME}_gtest_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${${PROJECT_NAME}_gmock_SOURCE_DIR}/include>
 )

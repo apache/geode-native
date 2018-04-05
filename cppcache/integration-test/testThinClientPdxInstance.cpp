@@ -47,7 +47,6 @@ CacheHelper* cacheHelper = nullptr;
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
-#define SERVER2 s2p2
 static bool isLocator = false;
 const bool USE_ACK = true;
 const bool NO_ACK = false;
@@ -444,7 +443,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyCacheableObjectArrayWithPdxField)
         rptr->get(CacheableInt32::create(100)));
     LOG("PdxInstancePtr get on key 100 complete");
 
-    for (int i = 0; i < objectArrayPtr->size(); i++) {
+    for (size_t i = 0; i < objectArrayPtr->size(); i++) {
       auto pi = std::dynamic_pointer_cast<PdxInstance>(objectArrayPtr->at(i));
       LOG("PdxInstancePtr obtained from CacheableObjectArray");
 
@@ -452,17 +451,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyCacheableObjectArrayWithPdxField)
           cacheHelper->getCache()->createPdxInstanceFactory("PdxTests.Address");
       LOG("PdxInstanceFactoryPtr created for PdxTests.Address....");
 
-      pifPtr->writeInt("_aptNumber", i + 1);
+      pifPtr->writeInt("_aptNumber", static_cast<int32_t>(i + 1));
       char streetStr[256] = {0};
-      sprintf(streetStr, "street%d", i);
+      sprintf(streetStr, "street%zd", i);
       pifPtr->writeString("_street", streetStr);
       char cityStr[256] = {0};
-      sprintf(cityStr, "city%d", i);
+      sprintf(cityStr, "city%zd", i);
       pifPtr->writeString("_city", cityStr);
 
       auto addrPtr = std::dynamic_pointer_cast<Address>(pi->getObject());
       LOG("AddressPtr created using PdxInstance getObject()....");
-      auto newAddrPtr = std::make_shared<Address>(i + 1, streetStr, cityStr);
+      auto newAddrPtr = std::make_shared<Address>(static_cast<int32_t>(i + 1),
+                                                  streetStr, cityStr);
       LOG("AddressPtr created using new....");
       ASSERT(addrPtr.get()->equals(*(newAddrPtr.get())) == true,
              "Both PdxInstances should be equal.");
@@ -921,19 +921,20 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
            "Type Value STRING Mismatch");
 
     auto stringArrayVal = pIPtr->getStringArrayField("m_stringArray");
-    ASSERT(pdxobjPtr->getStringArrayLength() == stringArrayVal.size(),
+    ASSERT(pdxobjPtr->getStringArrayLength() ==
+               static_cast<int32_t>(stringArrayVal.size()),
            "stringArrayLen should be equal");
     ASSERT(pIPtr->getFieldType("m_stringArray") == PdxFieldTypes::STRING_ARRAY,
            "Type Value STRING_ARRAY Mismatch");
     auto strArray = pdxobjPtr->getStringArray();
-    for (int i = 0; i < stringArrayVal.size(); i++) {
+    for (size_t i = 0; i < stringArrayVal.size(); i++) {
       ASSERT(strArray[i] == stringArrayVal[i],
              "All stringVals should be equal");
     }
 
     auto byteArray = pIPtr->getByteArrayField("m_byteArray");
     ASSERT(genericValCompare(pdxobjPtr->getByteArrayLength(),
-                             byteArray.size()) == true,
+                             static_cast<int32_t>(byteArray.size())) == true,
            "byteArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getByteArray(), byteArray,
                           byteArray.size()) == true,
@@ -943,7 +944,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
 
     auto charArray = pIPtr->getCharArrayField("m_charArray");
     ASSERT(genericValCompare(pdxobjPtr->getCharArrayLength(),
-                             charArray.size()) == true,
+                             static_cast<int32_t>(charArray.size())) == true,
            "charArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getCharArray(), charArray,
                           charArray.size()) == true,
@@ -953,7 +954,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
 
     byteArray = pIPtr->getByteArrayField("m_sbyteArray");
     ASSERT(genericValCompare(pdxobjPtr->getByteArrayLength(),
-                             byteArray.size()) == true,
+                             static_cast<int32_t>(byteArray.size())) == true,
            "sbyteArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getSByteArray(), byteArray,
                           byteArray.size()) == true,
@@ -964,7 +965,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     auto boolArray = pIPtr->getBooleanArrayField("m_boolArray");
     auto boolArrayLength = boolArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getBoolArrayLength(),
-                             boolArrayLength) == true,
+                             static_cast<int32_t>(boolArrayLength)) == true,
            "boolArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getBoolArray(), boolArray,
                           boolArrayLength) == true,
@@ -975,7 +976,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     auto shortArray = pIPtr->getShortArrayField("m_int16Array");
     auto shortArrayLength = shortArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getShortArrayLength(),
-                             shortArrayLength) == true,
+                             static_cast<int32_t>(shortArrayLength)) == true,
            "shortArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getShortArray(), shortArray,
                           shortArrayLength) == true,
@@ -986,7 +987,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     shortArray = pIPtr->getShortArrayField("m_uint16Array");
     shortArrayLength = shortArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getShortArrayLength(),
-                             shortArrayLength) == true,
+                             static_cast<int32_t>(shortArrayLength)) == true,
            "shortArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getUInt16Array(), shortArray,
                           shortArrayLength) == true,
@@ -996,8 +997,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
 
     auto intArray = pIPtr->getIntArrayField("m_int32Array");
     auto intArrayLength = intArray.size();
-    ASSERT(genericValCompare(pdxobjPtr->getIntArrayLength(), intArrayLength) ==
-               true,
+    ASSERT(genericValCompare(pdxobjPtr->getIntArrayLength(),
+                             static_cast<int32_t>(intArrayLength)) == true,
            "intArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getIntArray(), intArray, intArrayLength) ==
                true,
@@ -1006,8 +1007,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
            "Type Value INT_ARRAY Mismatch");
 
     intArray = pIPtr->getIntArrayField("m_uint32Array");
-    ASSERT(genericValCompare(pdxobjPtr->getIntArrayLength(), intArrayLength) ==
-               true,
+    ASSERT(genericValCompare(pdxobjPtr->getIntArrayLength(),
+                             static_cast<int32_t>(intArrayLength)) == true,
            "intArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getUIntArray(), intArray,
                           intArrayLength) == true,
@@ -1018,7 +1019,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     auto longArray = pIPtr->getLongArrayField("m_longArray");
     auto longArrayLength = longArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getLongArrayLength(),
-                             longArrayLength) == true,
+                             static_cast<int32_t>(longArrayLength)) == true,
            "longArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getLongArray(), longArray,
                           longArrayLength) == true,
@@ -1029,7 +1030,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     longArray = pIPtr->getLongArrayField("m_ulongArray");
     longArrayLength = longArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getLongArrayLength(),
-                             longArrayLength) == true,
+                             static_cast<int32_t>(longArrayLength)) == true,
            "longArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getULongArray(), longArray,
                           longArrayLength) == true,
@@ -1040,7 +1041,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     auto doubleArray = pIPtr->getDoubleArrayField("m_doubleArray");
     auto doubleArrayLength = doubleArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getDoubleArrayLength(),
-                             doubleArrayLength) == true,
+                             static_cast<int32_t>(doubleArrayLength)) == true,
            "doubleArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getDoubleArray(), doubleArray,
                           doubleArrayLength) == true,
@@ -1051,7 +1052,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     auto floatArray = pIPtr->getFloatArrayField("m_floatArray");
     auto floatArrayLength = floatArray.size();
     ASSERT(genericValCompare(pdxobjPtr->getFloatArrayLength(),
-                             floatArrayLength) == true,
+                             static_cast<int32_t>(floatArrayLength)) == true,
            "floatArrayLength should be equal");
     ASSERT(genericCompare(pdxobjPtr->getFloatArray(), floatArray,
                           floatArrayLength) == true,
@@ -1158,7 +1159,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
                objectArrayEmptyFieldName->size()) == true,
            "objectArrayEmptyFieldName size should be equal");
 
-    for (int i = 0; i < objectArray->size(); i++) {
+    for (size_t i = 0; i < objectArray->size(); i++) {
       auto pi = std::dynamic_pointer_cast<PdxInstance>(objectArray->at(i));
       LOG("PdxInstancePtr obtained from CacheableObjectArray");
 
@@ -1166,17 +1167,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
           cacheHelper->getCache()->createPdxInstanceFactory("PdxTests.Address");
       LOG("PdxInstanceFactoryPtr created for PdxTests.Address....");
 
-      pifPtr->writeInt("_aptNumber", i + 1);
+      pifPtr->writeInt("_aptNumber", static_cast<int32_t>(i + 1));
       char streetStr[256] = {0};
-      sprintf(streetStr, "street%d", i);
+      sprintf(streetStr, "street%zd", i);
       pifPtr->writeString("_street", streetStr);
       char cityStr[256] = {0};
-      sprintf(cityStr, "city%d", i);
+      sprintf(cityStr, "city%zd", i);
       pifPtr->writeString("_city", cityStr);
 
       auto addrPtr = std::dynamic_pointer_cast<Address>(pi->getObject());
       LOG("AddressPtr created using PdxInstance getObject()....");
-      auto newAddrPtr = std::make_shared<Address>(i + 1, streetStr, cityStr);
+      auto newAddrPtr = std::make_shared<Address>(static_cast<int32_t>(i + 1),
+                                                  streetStr, cityStr);
       LOG("AddressPtr created using new....");
       ASSERT(addrPtr.get()->equals(*(newAddrPtr.get())) == true,
              "Both PdxInstances should be equal.");
@@ -1669,7 +1671,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     auto vecVal = std::dynamic_pointer_cast<CacheableVector>(object);
     ASSERT(genericValCompare(setVec->size(), vecVal->size()) == true,
            "vec size should be equal");
-    for (int j = 0; j < vecVal->size(); j++) {
+    for (size_t j = 0; j < vecVal->size(); j++) {
       genericValCompare(setVec->at(j), vecVal->at(j));
     }
 
@@ -1700,7 +1702,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     auto arrVal = std::dynamic_pointer_cast<CacheableArrayList>(object);
     ASSERT(genericValCompare(setarr->size(), arrVal->size()) == true,
            "arrList size should be equal");
-    for (int j = 0; j < arrVal->size(); j++) {
+    for (size_t j = 0; j < arrVal->size(); j++) {
       genericValCompare(setarr->at(j), arrVal->at(j));
     }
 
@@ -1855,7 +1857,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     auto getStringArray = newPiPtr->getStringArrayField("m_stringArray");
     ASSERT(arrayLen == 3, "Arraylength == 3 expected");
-    for (int i = 0; i < arrayLen; i++) {
+    for (size_t i = 0; i < arrayLen; i++) {
       LOGINFO("set string is %s ", setStringArray[i].c_str());
       LOGINFO("get string is %s ", getStringArray[i].c_str());
       ASSERT(setStringArray[i] == getStringArray[i],

@@ -99,7 +99,7 @@ TESTTASK doCloseCache() {
 }
 
 void Security::getClientSecurityParams(std::shared_ptr<Properties> prop,
-                                       std::string credentials) {
+                                       std::string) {
   std::string securityParams = getStringValue("securityParams");
 
   // no security means security param is not applicable
@@ -707,9 +707,10 @@ int32_t Security::checkValues() {
     int32_t creates = 0;
     int32_t updates = 0;
     int32_t unknowns = 0;
-    for (int32_t i = 0; i < vals.size(); i++) {
+    for (size_t i = 0; i < vals.size(); i++) {
       auto valStr = std::dynamic_pointer_cast<CacheableBytes>(vals.at(i));
-      if (strncmp("Create", reinterpret_cast<const char *>(valStr->value().data()),
+      if (strncmp("Create",
+                  reinterpret_cast<const char *>(valStr->value().data()),
                   6) == 0) {
         creates++;
       } else if (strncmp("Update",
@@ -1008,17 +1009,20 @@ int32_t Security::doEntryOperations() {
             tmpValue =
                 CacheableBytes::create(std::vector<int8_t>(valBuf, valBuf +
                                        static_cast<int32_t>(strlen(valBuf))));
-            int32_t *val =
-                (int32_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
-                                ->value().data());
+            auto val = const_cast<int32_t *>(reinterpret_cast<const int32_t *>(
+                std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
+                    ->value()
+                    .data()));
             *val =
                 (*val == keyVal) ? keyVal + 1 : keyVal;  // alternate the value
                                                          // so that it can be
                                                          // validated later.
-            int64_t *adjNow =
-                (int64_t *)(std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
-                                ->value().data() +
-                            4);
+            auto adjNow =
+                const_cast<int64_t *>(reinterpret_cast<const int64_t *>(
+                    std::dynamic_pointer_cast<CacheableBytes>(tmpValue)
+                        ->value()
+                        .data() +
+                    4));
             *adjNow = getAdjustedNowMicros();
           }
           regionPtr->put(keyPtr, tmpValue);

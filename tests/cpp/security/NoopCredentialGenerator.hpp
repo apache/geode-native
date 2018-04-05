@@ -35,7 +35,7 @@ class NoopCredentialGenerator : public CredentialGenerator {
     ;
   };
 
-  std::string getInitArgs(std::string workingDir, bool userMode) {
+  std::string getInitArgs(std::string workingDir, bool) override {
     std::string additionalArgs;
     char* buildDir = ACE_OS::getenv("BUILDDIR");
     if (buildDir != NULL && workingDir.length() == 0) {
@@ -47,14 +47,16 @@ class NoopCredentialGenerator : public CredentialGenerator {
     return additionalArgs;
   }
 
-  std::string getClientAuthInitLoaderFactory() {
+  std::string getClientAuthInitLoaderFactory() override {
     return "createNoopAuthInitInstance";
   }
-  std::string getClientAuthInitLoaderLibrary() { return "testobject"; }
-  std::string getClientAuthenticator() {
+  std::string getClientAuthInitLoaderLibrary() override { return "testobject"; }
+  std::string getClientAuthenticator() override {
     return "javaobject.NoopAuthenticator.create";
   }
-  std::string getClientAuthorizer() { return "javaobject.NoopAccessor.create"; }
+  std::string getClientAuthorizer() override {
+    return "javaobject.NoopAccessor.create";
+  }
 };
 
 }  // namespace security

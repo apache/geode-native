@@ -29,7 +29,6 @@ using namespace apache::geode::client;
 using namespace test;
 
 #define CLIENT1 s1p1
-#define LOCATOR s1p2
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 

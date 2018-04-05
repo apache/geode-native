@@ -24,9 +24,6 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/ResultCollector.hpp>
 
-/**
- * @file
- */
 namespace apache {
 namespace geode {
 namespace client {
@@ -40,28 +37,26 @@ namespace client {
  *
  *
  */
-class APACHE_GEODE_EXPORT NoResult : public ResultCollector {
+class APACHE_GEODE_EXPORT NoResult final : public ResultCollector {
  public:
   NoResult() = default;
-  virtual ~NoResult() override = default;
+  ~NoResult() final = default;
 
-  inline void addResult(
-      const std::shared_ptr<Cacheable>& resultOfSingleExecution) override {
+  void addResult(const std::shared_ptr<Cacheable>&) final {
     throw UnsupportedOperationException("can not add to NoResult");
   }
 
-  inline void endResults() override {
+  void endResults() final {
     throw UnsupportedOperationException("can not close on NoResult");
   }
 
   inline std::shared_ptr<CacheableVector> getResult(
-      std::chrono::milliseconds timeout =
-          DEFAULT_QUERY_RESPONSE_TIMEOUT) override {
+      std::chrono::milliseconds) final {
     throw FunctionExecutionException(
         "Cannot return any result, as Function.hasResult() is false");
   }
 
-  inline void clearResults() override {
+  inline void clearResults() final {
     throw UnsupportedOperationException("can not clear results on NoResult");
   }
 };

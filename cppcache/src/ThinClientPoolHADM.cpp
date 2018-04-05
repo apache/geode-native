@@ -139,7 +139,7 @@ GfErrType ThinClientPoolHADM::sendSyncRequestCq(TcrMessage& request,
 
 bool ThinClientPoolHADM::preFailoverAction() { return true; }
 
-bool ThinClientPoolHADM::postFailoverAction(TcrEndpoint* endpoint) {
+bool ThinClientPoolHADM::postFailoverAction(TcrEndpoint*) {
   m_connManager.triggerRedundancyThread();
   return true;
 }

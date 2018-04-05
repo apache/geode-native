@@ -22,5 +22,6 @@
 using namespace apache::geode::client;
 
 TEST(geodeBannerTest, ValidateBanner) {
-  EXPECT_LT(0, geodeBanner::getBanner().size()) << "Non-empty banner";
+  EXPECT_LT(static_cast<size_t>(0), geodeBanner::getBanner().size())
+      << "Non-empty banner";
 }

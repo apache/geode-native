@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testDataOutput"
-
 #include <string>
 #include <iostream>
 #include <iomanip>

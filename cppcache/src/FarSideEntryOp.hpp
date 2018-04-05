@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_FARSIDEENTRYOP_H_
-#define GEODE_FARSIDEENTRYOP_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,17 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * FarSideEntryOp.hpp
- *
- *  Created on: 22-Feb-2011
- *      Author: ankurs
- */
+
+#pragma once
+
+#ifndef GEODE_FARSIDEENTRYOP_H_
+#define GEODE_FARSIDEENTRYOP_H_
 
 #include <geode/internal/geode_globals.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
+
 #include "LocalRegion.hpp"
 
 namespace apache {
@@ -90,9 +85,8 @@ class RegionCommit;
 
 class FarSideEntryOp {
  public:
-  FarSideEntryOp(RegionCommit* region,
-                 MemberListForVersionStamp& memberListForVersionStamp);
-  virtual ~FarSideEntryOp();
+  FarSideEntryOp(MemberListForVersionStamp& memberListForVersionStamp);
+  virtual ~FarSideEntryOp() = default;
 
   void fromData(DataInput& input, bool largeModCount, uint16_t memId);
   void apply(std::shared_ptr<Region>& region);
@@ -101,10 +95,7 @@ class FarSideEntryOp {
     return lhs->m_modSerialNum > rhs->m_modSerialNum;
   }
 
-  // std::shared_ptr<EntryEvent> getEntryEvent(Cache* cache);
-
  private:
-  // UNUSED RegionCommit* m_region;
   int8_t m_op;
   int32_t m_modSerialNum;
   int32_t m_eventOffset;
@@ -114,11 +105,11 @@ class FarSideEntryOp {
   std::shared_ptr<Serializable> m_callbackArg;
   std::shared_ptr<VersionTag> m_versionTag;
   MemberListForVersionStamp& m_memberListForVersionStamp;
-  // FilterRoutingInfo filterRoutingInfo;
   bool isDestroy(int8_t op);
   bool isInvalidate(int8_t op);
   void skipFilterRoutingInfo(DataInput& input);
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

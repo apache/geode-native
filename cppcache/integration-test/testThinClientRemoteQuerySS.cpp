@@ -61,7 +61,7 @@ const wchar_t* checkNullString(const wchar_t* str) {
 }
 
 std::string checkNullString(const std::string* str) {
-    return ((str == nullptr) ? "(null)" : *str);
+  return ((str == nullptr) ? "(null)" : *str);
 }
 
 void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
@@ -149,8 +149,8 @@ void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
 
 void _verifyStructSet(std::shared_ptr<StructSet>& ssptr, int i) {
   printf("query idx %d \n", i);
-  for (int32_t rows = 0; rows < ssptr->size(); rows++) {
-    if (rows > (int32_t)QueryHelper::getHelper().getPortfolioSetSize()) {
+  for (size_t rows = 0; rows < ssptr->size(); rows++) {
+    if (rows > QueryHelper::getHelper().getPortfolioSetSize()) {
       continue;
     }
 
@@ -160,7 +160,7 @@ void _verifyStructSet(std::shared_ptr<StructSet>& ssptr, int i) {
       continue;
     }
 
-    printf("   Row : %d \n", rows);
+    printf("   Row : %zd \n", rows);
     for (int32_t fields = 0; fields < siptr->length(); fields++) {
       auto field = (*siptr)[fields];
       if (field == nullptr) {
@@ -234,7 +234,8 @@ void stepOne() {
   createRegionAndAttachPool(qRegionNames[3], USE_ACK, poolNames[0]);
 
   auto regptr = getHelper()->getRegion(qRegionNames[0]);
-  auto subregPtr = regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
+  auto subregPtr =
+      regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
 
   LOG("StepOne complete.");
 }
@@ -300,7 +301,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
                                  qh->getPortfolioNumSets());
 
     char buf[100];
-    sprintf(buf, "SetSize %d, NumSets %d", qh->getPortfolioSetSize(),
+    sprintf(buf, "SetSize %zd, NumSets %zd", qh->getPortfolioSetSize(),
             qh->getPortfolioNumSets());
     LOG(buf);
 
@@ -330,7 +331,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         char failmsg[100] = {0};
         ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
         ASSERT(false, failmsg);
-        continue;
       }
 
       auto ssptr = std::dynamic_pointer_cast<StructSet>(results);
@@ -380,7 +380,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
           char failmsg[100] = {0};
           ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
           ASSERT(false, failmsg);
-          continue;
         }
 
         auto ssptr = std::dynamic_pointer_cast<StructSet>(results);
@@ -444,7 +443,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
           char failmsg[100] = {0};
           ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
           ASSERT(false, failmsg);
-          continue;
         }
 
         auto ssptr = std::dynamic_pointer_cast<StructSet>(results);
@@ -481,17 +479,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
     HashMapOfCacheable expectedPortMap;
 
     auto& qh = QueryHelper::getHelper();
-    int setSize = qh.getPositionSetSize();
-    int numSets = qh.getPositionNumSets();
+    auto setSize = qh.getPositionSetSize();
+    auto numSets = qh.getPositionNumSets();
 
-    for (int set = 1; set <= numSets; ++set) {
-      for (int current = 1; current <= setSize; ++current) {
+    for (size_t set = 1; set <= numSets; ++set) {
+      for (size_t current = 1; current <= setSize; ++current) {
         char posname[100] = {0};
-        ACE_OS::sprintf(posname, "pos%d-%d", set, current);
+        ACE_OS::sprintf(posname, "pos%zd-%zd", set, current);
 
         auto posKey(CacheableKey::create(posname));
-        auto pos = std::make_shared<PositionPdx>(secIds[current % numSecIds],
-                                                 current * 100);
+        auto pos = std::make_shared<PositionPdx>(
+            secIds[current % numSecIds], static_cast<int32_t>(current * 100));
 
         posKeys.push_back(posKey);
         expectedPosMap.emplace(posKey, pos);
@@ -503,13 +501,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
 
     setSize = qh.getPortfolioSetSize();
     numSets = qh.getPortfolioNumSets();
-    for (int set = 1; set <= numSets; ++set) {
-      for (int current = 1; current <= setSize; ++current) {
+    for (size_t set = 1; set <= numSets; ++set) {
+      for (size_t current = 1; current <= setSize; ++current) {
         char portname[100] = {0};
-        ACE_OS::sprintf(portname, "port%d-%d", set, current);
+        ACE_OS::sprintf(portname, "port%zd-%zd", set, current);
 
         auto portKey = CacheableKey::create(portname);
-        auto port = std::make_shared<PortfolioPdx>(current, 1);
+        auto port =
+            std::make_shared<PortfolioPdx>(static_cast<int32_t>(current), 1);
 
         portKeys.push_back(portKey);
         expectedPortMap.emplace(portKey, port);

@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testFWHelper"
-
 #include <iostream>
 
 #include "fw_helper.hpp"

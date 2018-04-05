@@ -39,7 +39,7 @@ TEST(StructSetTest, Basic) {
 
   auto ss = StructSetImpl(values, fieldNames);
 
-  ASSERT_EQ(1, ss.size());
+  ASSERT_EQ(static_cast<size_t>(1), ss.size());
 }
 
 TEST(StructSetTest, MissingFieldIndex) {

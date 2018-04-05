@@ -71,12 +71,12 @@ PutAllPartialResultServerException::what() {
   return CacheableString::create(m_result->toString().c_str());
 }
 
-void PutAllPartialResultServerException::toData(DataOutput& output) const {
+void PutAllPartialResultServerException::toData(DataOutput&) const {
   throw IllegalStateException(
       "PutAllPartialResultServerException::toData is not intended for use.");
 }
 
-void PutAllPartialResultServerException::fromData(DataInput& input) {
+void PutAllPartialResultServerException::fromData(DataInput&) {
   throw IllegalStateException(
       "PutAllPartialResultServerException::fromData is not intended for use.");
 }
@@ -84,14 +84,12 @@ void PutAllPartialResultServerException::fromData(DataInput& input) {
 int32_t PutAllPartialResultServerException::classId() const {
   throw IllegalStateException(
       "PutAllPartialResultServerException::classId is not intended for use.");
-  return 0;
 }
 
 size_t PutAllPartialResultServerException::objectSize() const {
   throw IllegalStateException(
       "PutAllPartialResultServerException::objectSize is not intended for "
       "use.");
-  return 0;
 }
 
 int8_t PutAllPartialResultServerException::typeId() const {

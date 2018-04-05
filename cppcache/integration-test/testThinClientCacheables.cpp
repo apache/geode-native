@@ -290,8 +290,8 @@ DUNIT_MAIN
         CacheableWrapperFactory::getRegisteredKeyTypes().size();
     size_t totValTypes =
         CacheableWrapperFactory::getRegisteredValueTypes().size();
-    for (int i = 0; i < totKeyTypes; i++) {
-      for (int j = 0; j < totValTypes; j++) {
+    for (size_t i = 0; i < totKeyTypes; i++) {
+      for (size_t j = 0; j < totValTypes; j++) {
         CALL_TASK(PutsTask);
         CALL_TASK(GetsTask);
       }

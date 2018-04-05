@@ -49,9 +49,10 @@ class DiskStoreId : public DSMemberForVersionStamp {
     return *this;
   }
 
-  void toData(DataOutput& output) const override {
+  void toData(DataOutput&) const override {
     throw IllegalStateException("DiskStoreId::toData not implemented");
   }
+
   void fromData(DataInput& input) override {
     m_mostSig = input.readInt64();
     m_leastSig = input.readInt64();

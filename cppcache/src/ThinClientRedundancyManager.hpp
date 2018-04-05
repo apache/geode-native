@@ -70,7 +70,7 @@ class ThinClientRedundancyManager {
   void netDown();
   void acquireRedundancyLock() { m_redundantEndpointsLock.acquire_read(); }
   void releaseRedundancyLock() { m_redundantEndpointsLock.release(); }
-  volatile bool allEndPointDiscon() { return m_IsAllEpDisCon; }
+  bool allEndPointDiscon() { return m_IsAllEpDisCon; }
   void removeCallbackConnection(TcrEndpoint*);
 
   ACE_Recursive_Thread_Mutex& getRedundancyLock() {

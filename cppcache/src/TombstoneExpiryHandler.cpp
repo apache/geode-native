@@ -34,11 +34,11 @@ TombstoneExpiryHandler::TombstoneExpiryHandler(
     std::chrono::milliseconds duration, CacheImpl* cacheImpl)
     : m_entryPtr(entryPtr),
       m_duration(duration),
-      m_tombstoneList(tombstoneList),
-      m_cacheImpl(cacheImpl) {}
+      m_cacheImpl(cacheImpl),
+      m_tombstoneList(tombstoneList) {}
 
 int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
-                                           const void* arg) {
+                                           const void*) {
   std::shared_ptr<CacheableKey> key;
   m_entryPtr->getEntry()->getKeyI(key);
   int64_t creationTime = m_entryPtr->getTombstoneCreationTime();

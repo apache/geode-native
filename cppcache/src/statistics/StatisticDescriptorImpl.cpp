@@ -42,12 +42,12 @@ StatisticDescriptorImpl::StatisticDescriptorImpl(
     const std::string& statDescription, const std::string& statUnit,
     bool statIsStatCounter, bool statIsStatLargerBetter)
     : name(statName),
-      descriptorType(statDescriptorType),
       description(statDescription),
       unit(statUnit),
       isStatCounter(statIsStatCounter),
       isStatLargerBetter(statIsStatLargerBetter),
-      id(-1) {}
+      id(-1),
+      descriptorType(statDescriptorType) {}
 
 StatisticDescriptorImpl::~StatisticDescriptorImpl() {}
 

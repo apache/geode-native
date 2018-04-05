@@ -54,42 +54,42 @@ class TallyWriter : virtual public CacheWriter {
     LOG("TallyWriter Constructor called");
   }
 
-  virtual ~TallyWriter() {}
+  ~TallyWriter() override = default;
 
-  virtual bool beforeCreate(const EntryEvent& event) override {
+  bool beforeCreate(const EntryEvent& event) override {
     m_creates++;
     checkcallbackArg(event);
     LOG("TallyWriter::beforeCreate");
     return !isWriterfailed;
   }
 
-  virtual bool beforeUpdate(const EntryEvent& event) override {
+  bool beforeUpdate(const EntryEvent& event) override {
     m_updates++;
     checkcallbackArg(event);
     LOG("TallyWriter::beforeUpdate");
     return !isWriterfailed;
   }
 
-  virtual bool beforeInvalidate(const EntryEvent& event) {
+  bool beforeInvalidate(const EntryEvent& event) {
     m_invalidates++;
     checkcallbackArg(event);
     LOG("TallyWriter::beforeInvalidate");
     return !isWriterfailed;
   }
 
-  virtual bool beforeDestroy(const EntryEvent& event) override {
+  bool beforeDestroy(const EntryEvent& event) override {
     m_destroys++;
     checkcallbackArg(event);
     LOG("TallyWriter::beforeDestroy");
     return !isWriterfailed;
   }
 
-  virtual bool beforeRegionDestroy(const RegionEvent& event) override {
+  bool beforeRegionDestroy(const RegionEvent&) override {
     LOG("TallyWriter::beforeRegionDestroy");
     return !isWriterfailed;
   }
 
-  virtual void close(Region& region) override { LOG("TallyWriter::close"); }
+  void close(Region&) override { LOG("TallyWriter::close"); }
 
   int expectCreates(int expected) {
     int tries = 0;

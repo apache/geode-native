@@ -19,7 +19,6 @@
 #include "ThinClientHelper.hpp"
 
 #define CLIENT1 s1p1
-#define CLIENT2 s1p2
 #define SERVER1 s2p1
 
 #include "locator_globals.hpp"
@@ -72,11 +71,11 @@ DUNIT_TASK(CLIENT1, SetupClient1)
 
     auto vkey = regPtr0->getInterestList();
     auto vreg = regPtr0->getInterestListRegex();
-    for (int32_t i = 0; i < vkey.size(); i++) {
+    for (size_t i = 0; i < vkey.size(); i++) {
       char buf[1024];
       const char* key =
           std::dynamic_pointer_cast<CacheableString>(vkey[i])->value().c_str();
-      sprintf(buf, "key[%d]=%s", i, key);
+      sprintf(buf, "key[%zd]=%s", i, key);
       LOG(buf);
       bool found = false;
       for (const auto& k : vkey) {
@@ -85,31 +84,31 @@ DUNIT_TASK(CLIENT1, SetupClient1)
           break;
         }
       }
-      sprintf(buf, "key[%d]=%s not found!", i, key);
+      sprintf(buf, "key[%zd]=%s not found!", i, key);
       ASSERT(found, buf);
     }
-    for (int32_t i = 0; i < vreg.size(); i++) {
+    for (size_t i = 0; i < vreg.size(); i++) {
       char buf[1024];
       auto ptr = vreg[i];
       const char* reg = ptr->value().c_str();
-      sprintf(buf, "regex[%d]=%s", i, reg);
+      sprintf(buf, "regex[%zd]=%s", i, reg);
       LOG(buf);
       bool found = false;
-      for (int32_t j = 0; j < vreg.size(); j++) {
+      for (size_t j = 0; j < vreg.size(); j++) {
         if (!strcmp(reg, testregex[j])) {
           found = true;
           break;
         }
       }
-      sprintf(buf, "regex[%d]=%s not found!", i, reg);
+      sprintf(buf, "regex[%zd]=%s not found!", i, reg);
       ASSERT(found, buf);
     }
     regPtr0->registerAllKeys(true);
     auto vreg1 = regPtr0->getInterestListRegex();
-    for (int32_t i = 0; i < vreg1.size(); i++) {
+    for (size_t i = 0; i < vreg1.size(); i++) {
       char buf[1024];
       auto ptr = vreg1[i];
-      sprintf(buf, "regex[%d]=%s", i, ptr->value().c_str());
+      sprintf(buf, "regex[%zd]=%s", i, ptr->value().c_str());
       LOG(buf);
     }
   }

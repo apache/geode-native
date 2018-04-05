@@ -692,9 +692,9 @@ class QueryHelper {
   //  query);
 
   virtual bool verifyRS(std::shared_ptr<SelectResults>& resultset,
-                        int rowCount);
-  virtual bool verifySS(std::shared_ptr<SelectResults>& structset, int rowCount,
-                        int fieldCount);
+                        size_t rowCount);
+  virtual bool verifySS(std::shared_ptr<SelectResults>& structset,
+                        size_t rowCount, int fieldCount);
 
   void populateRangePositionData(std::shared_ptr<Region>& rptr, int start,
                                  int end);
@@ -970,7 +970,7 @@ void QueryHelper::populatePositionData(std::shared_ptr<Region>& rptr,
 
 void QueryHelper::populatePortfolioPdxData(std::shared_ptr<Region>& rptr,
                                            int setSize, int numSets,
-                                           int32_t objSize, char** nm) {
+                                           int32_t objSize, char**) {
   // lets reset the counter for uniform population of position objects
   testobject::PositionPdx::resetCounter();
 
@@ -1013,30 +1013,18 @@ void QueryHelper::populatePositionPdxData(std::shared_ptr<Region>& rptr,
   // positionSetSize = setSize; positionNumSets = numSets;
 }
 bool QueryHelper::verifyRS(std::shared_ptr<SelectResults>& resultSet,
-                           int expectedRows) {
-  if (!std::dynamic_pointer_cast<ResultSet>(resultSet)) {
-    return false;
+                           size_t expectedRows) {
+  if (auto rsptr = std::dynamic_pointer_cast<ResultSet>(resultSet)) {
+    auto foundRows = rsptr->size();
+    FWKINFO("found rows " << foundRows << " expected " << expectedRows);
+    if (foundRows == expectedRows) return true;
   }
-
-  auto rsptr = std::static_pointer_cast<ResultSet>(resultSet);
-
-  int foundRows = 0;
-
-  SelectResultsIterator iter = rsptr->getIterator();
-
-  for (int32_t rows = 0; rows < rsptr->size(); rows++) {
-    auto ser = (*rsptr)[rows];  // iter.next();
-    foundRows++;
-  }
-
-  FWKINFO("found rows " << foundRows << " expected " << expectedRows);
-  if (foundRows == expectedRows) return true;
 
   return false;
 }
 
 bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
-                           int expectedRows, int expectedFields) {
+                           size_t expectedRows, int expectedFields) {
   FWKINFO("QueryHelper::verifySS : expectedRows = "
           << expectedRows << " ,expectedFields = " << expectedFields);
 
@@ -1050,11 +1038,9 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
 
   auto ssptr = std::static_pointer_cast<StructSet>(structSet);
 
-  int foundRows = 0;
+  size_t foundRows = 0;
 
-  SelectResultsIterator iter = ssptr->getIterator();
-
-  for (int32_t rows = 0; rows < ssptr->size(); rows++) {
+  for (size_t rows = 0; rows < ssptr->size(); rows++) {
     auto ser = (*ssptr)[rows];  // iter.next();
     foundRows++;
 
@@ -1088,7 +1074,8 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
 
   // lets log and return in case of error only situation
   char buffer[1024] = {'\0'};
-  sprintf(buffer, "found rows %d, expected rows %d\n", foundRows, expectedRows);
+  sprintf(buffer, "found rows %zd, expected rows %zd\n", foundRows,
+          expectedRows);
   FWKSEVERE(buffer);
   return false;
 }

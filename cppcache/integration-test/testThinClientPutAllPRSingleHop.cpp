@@ -52,15 +52,6 @@ static bool isLocator = false;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-#if defined(WIN32)
-// because we run out of memory on our pune windows desktops
-#define DEFAULTNUMKEYS 5
-#else
-#define DEFAULTNUMKEYS 15
-#endif
-#define KEYSIZE 256
-#define VALUESIZE 1024
-
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
   {
     if (isLocalServer) {
@@ -145,7 +136,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
         // if (!singlehop) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while putting key %s with
         // hashcode %d", logmsg, (int32_t)keyPtr->hashcode());
@@ -156,7 +146,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
         // if (!singlehop) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-        throw IllegalStateException("TEST FAIL DUE TO EXTRA HOP");
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while putting key %s with
         // hashcode %d", logmsg, (int32_t)keyPtr->hashcode());
@@ -167,7 +156,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
         LOGERROR("CPPTEST: Put caused random exception in WarmUpTask");
         cleanProc();
         FAIL("Put caused unexpected exception");
-        throw IllegalStateException("TEST FAIL");
       }
     }
     // it takes time to fetch prmetadata so relaxing this limit
@@ -216,22 +204,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: putAll caused extra hop.");
         FAIL("putAll caused extra hop.");
-        throw IllegalStateException("putAll :: TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: putAll caused extra hop.");
         FAIL("putAll caused extra hop.");
-        throw IllegalStateException("putAll::TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: putAll caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("putAll caused unexpected exception");
-        throw IllegalStateException("putAll::TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: putAll caused random exception");
         cleanProc();
         FAIL("putAll caused unexpected exception");
-        throw IllegalStateException("putAll::TEST FAIL");
       }
     }
     int poolconn = TestUtils::getCacheImpl(getHelper()->cachePtr)
@@ -291,22 +275,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopRemoveAllForIntKeysTask)
       } catch (CacheServerException&) {
         LOGERROR("CPPTEST: removeall caused extra hop.");
         FAIL("removeall caused extra hop.");
-        throw IllegalStateException("removeall :: TEST FAIL DUE TO EXTRA HOP");
       } catch (CacheWriterException&) {
         LOGERROR("CPPTEST: removeall caused extra hop.");
         FAIL("removeall caused extra hop.");
-        throw IllegalStateException("removeall::TEST FAIL DUE TO EXTRA HOP");
       } catch (Exception& ex) {
         LOGERROR("CPPTEST: removeall caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("putAll caused unexpected exception");
-        throw IllegalStateException("removeall::TEST FAIL");
       } catch (...) {
         LOGERROR("CPPTEST: removeall caused random exception");
         cleanProc();
         FAIL("removeall caused unexpected exception");
-        throw IllegalStateException("removeall::TEST FAIL");
       }
     }
     int poolconn = TestUtils::getCacheImpl(getHelper()->cachePtr)

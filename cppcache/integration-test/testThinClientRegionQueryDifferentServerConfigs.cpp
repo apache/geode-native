@@ -109,9 +109,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClientCreateRegionAndRunQueries)
     std::shared_ptr<SelectResults> results;
     auto qry = qs->newQuery(qry1Str.c_str());
     results = qry->execute();
-    ASSERT(
-        results->size() == qh.getPortfolioSetSize() * qh.getPortfolioNumSets(),
-        "unexpected number of results");
+    ASSERT(results->size() == static_cast<size_t>(qh.getPortfolioSetSize() *
+                                                  qh.getPortfolioNumSets()),
+           "unexpected number of results");
     try {
       qry = qs->newQuery(qry2Str.c_str());
       results = qry->execute();
@@ -122,9 +122,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClientCreateRegionAndRunQueries)
 
     // now region queries
     results = reg->query(qry1Str.c_str());
-    ASSERT(
-        results->size() == qh.getPortfolioSetSize() * qh.getPortfolioNumSets(),
-        "unexpected number of results");
+    ASSERT(results->size() == static_cast<size_t>(qh.getPortfolioSetSize() *
+                                                  qh.getPortfolioNumSets()),
+           "unexpected number of results");
     try {
       results = reg->query(qry2Str.c_str());
       FAIL("Expected a QueryException");
@@ -178,7 +178,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegionAndRunQueries)
       printf("Good expected exception: %s\n", ex.what());
     }
     results = reg->query(qry2Str.c_str());
-    ASSERT(results->size() == qh.getPositionSetSize() * qh.getPositionNumSets(),
+    ASSERT(results->size() == static_cast<size_t>(qh.getPositionSetSize() *
+                                                  qh.getPositionNumSets()),
            "unexpected number of results");
 
     LOG("StepTwo complete.");

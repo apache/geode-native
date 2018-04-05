@@ -249,8 +249,7 @@ class Processor : public ServiceTask {
   // UNUSED bool m_sendReply;
 
  public:
-  Processor(UDPMessageQueues* shared, bool sendReply = false)
-      : ServiceTask(shared) /* UNUSED , m_sendReply( sendReply )*/ {
+  Processor(UDPMessageQueues* shared) : ServiceTask(shared) {
     m_queues = dynamic_cast<UDPMessageQueues*>(m_shared);
   }
 

@@ -409,8 +409,7 @@ void ExecutionImpl::addResults(
     return;
   }
 
-  for (int32_t resultItem = 0; resultItem < results->size(); resultItem++) {
-    std::shared_ptr<Cacheable> result(results->operator[](resultItem));
+  for (const auto& result : *results) {
     collector->addResult(result);
   }
 }

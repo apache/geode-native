@@ -29,25 +29,27 @@ class ThinClientDistributionManager : public ThinClientBaseDM {
  public:
   ThinClientDistributionManager(TcrConnectionManager& connManager,
                                 ThinClientRegion* region);
-  virtual ~ThinClientDistributionManager() {}
+  ~ThinClientDistributionManager() override = default;
 
-  virtual void init();
-  virtual void destroy(bool keepalive = false);
+  void init() override;
+  void destroy(bool keepalive = false) override;
 
   virtual GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
                                     bool attemptFailover = true,
-                                    bool isBGThread = false);
+                                    bool isBGThread = false) override;
 
-  void failover();
+  void failover() override;
 
-  void acquireFailoverLock() { m_endpointsLock.acquire_read(); };
-  void releaseFailoverLock() { m_endpointsLock.release(); };
+  void acquireFailoverLock() override { m_endpointsLock.acquire_read(); };
+  void releaseFailoverLock() override { m_endpointsLock.release(); };
 
-  TcrEndpoint* getActiveEndpoint() { return m_endpoints[m_activeEndpoint]; }
-  bool isEndpointAttached(TcrEndpoint* ep);
+  TcrEndpoint* getActiveEndpoint() override {
+    return m_endpoints[m_activeEndpoint];
+  }
+  bool isEndpointAttached(TcrEndpoint* ep) override;
 
   GfErrType sendRequestToEP(const TcrMessage& request, TcrMessageReply& reply,
-                            TcrEndpoint* ep);
+                            TcrEndpoint* ep) override;
 
  protected:
   virtual void getEndpointNames(std::unordered_set<std::string>& endpointNames);

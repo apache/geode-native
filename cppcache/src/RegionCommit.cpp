@@ -40,7 +40,7 @@ void RegionCommit::fromData(DataInput& input) {
     auto memId = m_memberListForVersionStamp.add(dsMember);
     for (int i = 0; i < size; i++) {
       auto entryOp =
-          std::make_shared<FarSideEntryOp>(this, m_memberListForVersionStamp);
+          std::make_shared<FarSideEntryOp>(m_memberListForVersionStamp);
       entryOp->fromData(input, largeModCount, memId);
       m_farSideEntryOps.push_back(entryOp);
     }
@@ -58,7 +58,7 @@ void RegionCommit::apply(Cache* cache) {
 }
 
 void RegionCommit::fillEvents(
-    Cache* cache, std::vector<std::shared_ptr<FarSideEntryOp>>& ops) {
+    std::vector<std::shared_ptr<FarSideEntryOp>>& ops) {
   for (auto& entryOp : m_farSideEntryOps) {
     ops.push_back(std::static_pointer_cast<FarSideEntryOp>(entryOp));
   }

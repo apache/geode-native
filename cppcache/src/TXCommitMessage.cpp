@@ -38,25 +38,22 @@ TXCommitMessage::TXCommitMessage(
 bool TXCommitMessage::isAckRequired() { return false; }
 
 void TXCommitMessage::fromData(DataInput& input) {
-  int32_t pId = input.readInt32();
-  /*
-if(isAckRequired()) {
-m_processorId = pId;
-// ReplyProcessor21.setMessageRPId(m_processorId);
-} else {
-m_processorId = -1;
-}
-   */
+  // read and ignore pId
+  input.readInt32();
 
-  int32_t m_txIdent = input.readInt32();
+  // read and ignore txIdent
+  input.readInt32();
+
   ClientProxyMembershipID memId;
   memId.fromData(input);
 
   if (input.readBoolean()) {
     memId.fromData(input);
-    int32_t m_lockId = input.readInt32();
+    // read and ignore lockId
+    input.readInt32();
   }
-  int32_t totalMaxSize = input.readInt32();
+  // read and ignore totalMaxSize
+  input.readInt32();
 
   int8_t* m_farsideBaseMembershipId;
   int32_t m_farsideBaseMembershipIdLen;
@@ -114,7 +111,7 @@ m_processorId = -1;
   }
 }
 
-void TXCommitMessage::toData(DataOutput& output) const {}
+void TXCommitMessage::toData(DataOutput&) const {}
 
 int32_t TXCommitMessage::classId() const { return 0; }
 

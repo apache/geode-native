@@ -50,7 +50,6 @@
 #define SOLARIS_USE_BB 1
 #endif
 
-#define KEY_MAX 128
 #define VALUE_MAX 128
 
 #ifdef SOLARIS_USE_BB
@@ -111,7 +110,6 @@ void getTimeStr(char* bufPtr) {
 }
 
 // some common values..
-#define SLAVE_STATE_UNKNOWN 0
 #define SLAVE_STATE_READY 1
 #define SLAVE_STATE_DONE 2
 #define SLAVE_STATE_TASK_ACTIVE 3
@@ -222,20 +220,14 @@ class NamingContextImpl : virtual public NamingContext {
     return ACE_OS::atoi(value);
   }
 
-  void open(bool local = true) {
+  void open() {
 #ifdef SOLARIS_USE_BB
     m_context.open();
 #else
     ACE_Name_Options* name_options = m_context.name_options();
     name_options->process_name(getContextName().c_str());
     name_options->namespace_dir(".");
-    if (local)
-      name_options->context(ACE_Naming_Context::PROC_LOCAL);
-    else
-      name_options->context(ACE_Naming_Context::NET_LOCAL);
-    // std::string dbName = ACE_DEFAULT_LOCALNAME;
-    // dbName.append(ACE_OS::getenv("TESTNAME"));
-
+    name_options->context(ACE_Naming_Context::PROC_LOCAL);
     name_options->database(ACE_OS::getenv("TESTNAME"));
     checkResult(m_context.open(name_options->context(), 0), "open");
 #endif
@@ -802,7 +794,7 @@ void sleep(int millis) {
   }
 }
 
-void logMaster(std::string s, int lineno, const char* filename) {
+void logMaster(std::string s, int lineno, const char* /*filename*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf);
 
@@ -813,7 +805,7 @@ void logMaster(std::string s, int lineno, const char* filename) {
 
 // log a message and print the slave id as well.. used by fw_helper with no
 // slave id.
-void log(std::string s, int lineno, const char* filename, int id) {
+void log(std::string s, int lineno, const char* /*filename*/, int /*id*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf);
 
@@ -823,7 +815,7 @@ void log(std::string s, int lineno, const char* filename, int id) {
 }
 
 // log a message and print the slave id as well..
-void log(std::string s, int lineno, const char* filename) {
+void log(std::string s, int lineno, const char* /*filename*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf);
 

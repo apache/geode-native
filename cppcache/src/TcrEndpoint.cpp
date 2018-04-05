@@ -35,15 +35,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-#define throwException(ex)                        \
-  {                                               \
-    LOGFINEST("%s: %s", ex.getName(), ex.what()); \
-    throw ex;                                     \
-  }
-/*
-This is replaced by the connect-timeout (times 3) system property for SR # 6525.
-#define DEFAULT_CALLBACK_CONNECTION_TIMEOUT_SECONDS 180
-*/
 const char* TcrEndpoint::NC_Notification = "NC Notification";
 
 TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
@@ -60,6 +51,7 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
       m_notifyReceiver(0),
       m_numRegionListener(0),
       m_isQueueHosted(false),
+      m_cacheImpl(cacheImpl),
       m_uniqueId(0),
       m_isAuthenticated(false),
       m_msgSent(false),
@@ -72,7 +64,6 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
       m_numRegions(0),
       m_pingTimeouts(0),
       m_notifyCount(0),
-      m_cacheImpl(cacheImpl),
       m_failoverSema(failoverSema),
       m_cleanupSema(cleanupSema),
       m_notificationCleanupSema(0),
@@ -81,7 +72,6 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
       m_serverQueueStatus(NON_REDUNDANT_SERVER),
       m_isServerQueueStatusSet(false),
       m_queueSize(0),
-      // m_poolHADM( poolHADM ),
       m_baseDM(DM),
       m_noOfConnRefs(0),
       m_distributedMemId(0) {
@@ -521,8 +511,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
 }
 
 void TcrEndpoint::unregisterDM(bool clientNotification,
-                               ThinClientBaseDM* distMgr,
-                               bool checkQueueHosted) {
+                               ThinClientBaseDM* distMgr, bool) {
   if (clientNotification) {
     LOGFINEST(
         "Closing subscription "
@@ -765,8 +754,7 @@ inline bool TcrEndpoint::compareTransactionIds(int32_t reqTransId,
 }
 
 inline bool TcrEndpoint::handleIOException(const std::string& message,
-                                           TcrConnection*& conn,
-                                           bool isBgThread) {
+                                           TcrConnection*& conn, bool) {
   int32_t lastError = ACE_OS::last_error();
   if (lastError == ECONNRESET || lastError == EPIPE) {
     _GEODE_SAFE_DELETE(conn);
@@ -1333,20 +1321,26 @@ void TcrEndpoint::setServerQueueStatus(ServerQueueStatus queueStatus,
 }
 
 bool TcrEndpoint::isQueueHosted() { return m_isQueueHosted; }
+
 void TcrEndpoint::processMarker() {
   m_cacheImpl->tcrConnectionManager().processMarker();
 }
+
 std::shared_ptr<QueryService> TcrEndpoint::getQueryService() {
   return m_cacheImpl->getQueryService(true);
 }
+
 void TcrEndpoint::sendRequestForChunkedResponse(const TcrMessage& request,
                                                 TcrMessageReply& reply,
                                                 TcrConnection* conn) {
   conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply);
 }
+
 void TcrEndpoint::closeFailedConnection(TcrConnection*& conn) {
   closeConnection(conn);
 }
+
+void TcrEndpoint::handleNotificationStats(int64_t) {}
 
 }  // namespace client
 }  // namespace geode

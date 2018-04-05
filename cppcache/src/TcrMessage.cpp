@@ -119,7 +119,8 @@ void TcrMessage::readBooleanPartAsObject(DataInput& input, bool* boolVal) {
 }
 
 void TcrMessage::readOldValue(DataInput& input) {
-  int32_t lenObj = input.readInt32();
+  // read and ignore length
+  input.readInt32();
   input.read();  // ignore isObj
   std::shared_ptr<Cacheable> value;
   input.readObject(value);  // we are not using this value currently
@@ -353,10 +354,11 @@ int64_t TcrMessage::getUniqueId(TcrConnection* conn) {
   return 0;
 }
 
-inline void TcrMessage::readFailedNodePart(DataInput& input,
-                                           bool defaultString) {
-  int32_t lenObj = input.readInt32();
-  const auto isObj = input.readBoolean();
+inline void TcrMessage::readFailedNodePart(DataInput& input) {
+  // read and ignore length
+  input.readInt32();
+  // read and ignore isObj
+  input.readBoolean();
   m_failedNode = CacheableHashSet::create();
   input.read();  // ignore typeId
   // input.readDirectObject(m_failedNode, typeId);
@@ -443,7 +445,7 @@ bool TcrMessage::readExceptionPart(DataInput& input, uint8_t isLastChunk,
     // TcrMessage::EXECUTE_REGION_FUNCTION && m_msgType !=
     // TcrMessage::EXCEPTION) {
     if (isLastChunk > 0) {
-      readFailedNodePart(input, true);
+      readFailedNodePart(input);
       return true;  // 3 parts
     } else {
       return true;  // 2 parts
@@ -507,8 +509,8 @@ void TcrMessage::writeObjectPart(
         m_request->writeArrayLen(static_cast<int32_t>(getAllKeyList->size()));
         m_request->write(static_cast<int8_t>(GeodeTypeIdsImpl::Class));
         m_request->writeString("java.lang.Object");
-        for (int32_t index = 0; index < getAllKeyList->size(); ++index) {
-          m_request->writeObject(getAllKeyList->operator[](index));
+        for (const auto& key : *getAllKeyList) {
+          m_request->writeObject(key);
         }
       } else {
         m_request->writeObject(se, isDelta);
@@ -954,7 +956,8 @@ void TcrMessage::handleByteArrayResponse(
         input->advanceCursor(5);  // part header
         m_value = serializationRegistry.deserialize(*input);
       } else if (m_msgTypeRequest == TcrMessage::GET_FUNCTION_ATTRIBUTES) {
-        int32_t lenObj = input->readInt32();
+        // read and ignore length
+        input->readInt32();
         input->advanceCursor(1);  // ignore byte
 
         m_functionAttributes = new std::vector<int8_t>();
@@ -1318,7 +1321,9 @@ void TcrMessage::handleByteArrayResponse(
       regname[regionLen] = '\0';
       m_regionName = regname;
       readIntPart(*input, &tombstoneOpType);  // partlen;
-      int32_t len = input->readInt32();
+      // read and ignore length
+      input->readInt32();
+      // read and ignore isObj
       input->read();
 
       if (tombstoneOpType == 0) {
@@ -1530,7 +1535,7 @@ TcrMessageCloseCQ::TcrMessageCloseCQ(
 
 TcrMessageQueryWithParameters::TcrMessageQueryWithParameters(
     std::unique_ptr<DataOutput> dataOutput, const std::string& regionName,
-    const std::shared_ptr<Serializable>& aCallbackArgument,
+    const std::shared_ptr<Serializable>&,
     std::shared_ptr<CacheableVector> paramList,
     std::chrono::milliseconds messageResponsetimeout,
     ThinClientBaseDM* connectionDM) {
@@ -1560,8 +1565,7 @@ TcrMessageQueryWithParameters::TcrMessageQueryWithParameters(
   }
   // Part-5: Parameters
   if (paramList != nullptr) {
-    for (int32_t i = 0; i < paramList->size(); i++) {
-      auto value = (*paramList)[i];
+    for (const auto& value : *paramList) {
       writeObjectPart(value);
     }
   }
@@ -1905,8 +1909,8 @@ TcrMessageRegisterInterestList::TcrMessageRegisterInterestList(
 TcrMessageUnregisterInterestList::TcrMessageUnregisterInterestList(
     std::unique_ptr<DataOutput> dataOutput, const Region* region,
     const std::vector<std::shared_ptr<CacheableKey>>& keys, bool isDurable,
-    bool isCachingEnabled, bool receiveValues,
-    InterestResultPolicy interestPolicy, ThinClientBaseDM* connectionDM) {
+    bool receiveValues, InterestResultPolicy interestPolicy,
+    ThinClientBaseDM* connectionDM) {
   m_request = std::move(dataOutput);
   m_msgType = TcrMessage::UNREGISTER_INTEREST_LIST;
   m_tcdm = connectionDM;
@@ -1944,8 +1948,7 @@ TcrMessageUnregisterInterestList::TcrMessageUnregisterInterestList(
 
 TcrMessageCreateRegion::TcrMessageCreateRegion(
     std::unique_ptr<DataOutput> dataOutput, const std::string& str1,
-    const std::string& str2, InterestResultPolicy interestPolicy,
-    bool isDurable, bool isCachingEnabled, bool receiveValues,
+    const std::string& str2, bool isDurable, bool receiveValues,
     ThinClientBaseDM* connectionDM) {
   m_request = std::move(dataOutput);
   m_msgType = TcrMessage::CREATE_REGION;
@@ -2001,8 +2004,7 @@ TcrMessageRegisterInterest::TcrMessageRegisterInterest(
 TcrMessageUnregisterInterest::TcrMessageUnregisterInterest(
     std::unique_ptr<DataOutput> dataOutput, const std::string& str1,
     const std::string& str2, InterestResultPolicy interestPolicy,
-    bool isDurable, bool isCachingEnabled, bool receiveValues,
-    ThinClientBaseDM* connectionDM) {
+    bool isDurable, bool receiveValues, ThinClientBaseDM* connectionDM) {
   m_request = std::move(dataOutput);
   m_msgType = TcrMessage::UNREGISTER_INTEREST;
   m_tcdm = connectionDM;
@@ -2646,8 +2648,7 @@ TcrMessageRequestEventValue::TcrMessageRequestEventValue(
 
 TcrMessageGetPdxIdForType::TcrMessageGetPdxIdForType(
     std::unique_ptr<DataOutput> dataOutput,
-    const std::shared_ptr<Cacheable>& pdxType, ThinClientBaseDM* connectionDM,
-    int32_t pdxTypeId) {
+    const std::shared_ptr<Cacheable>& pdxType, ThinClientBaseDM* connectionDM) {
   m_request = std::move(dataOutput);
   m_msgType = TcrMessage::GET_PDX_ID_FOR_TYPE;
   m_tcdm = connectionDM;
@@ -2683,8 +2684,7 @@ TcrMessageAddPdxType::TcrMessageAddPdxType(
 
 TcrMessageGetPdxIdForEnum::TcrMessageGetPdxIdForEnum(
     std::unique_ptr<DataOutput> dataOutput,
-    const std::shared_ptr<Cacheable>& pdxType, ThinClientBaseDM* connectionDM,
-    int32_t pdxTypeId) {
+    const std::shared_ptr<Cacheable>& pdxType, ThinClientBaseDM* connectionDM) {
   m_request = std::move(dataOutput);
   m_msgType = TcrMessage::GET_PDX_ID_FOR_ENUM;
   m_tcdm = connectionDM;
@@ -2883,11 +2883,10 @@ void TcrMessage::readEventIdPart(DataInput& input, bool skip, int32_t parts) {
   }
 
   // read the eventid part
-
-  int32_t eventIdLen = input.readInt32();
-  const auto isObj = input.read();
-
-  GF_D_ASSERT(isObj != 0);
+  // read and ignore length
+  input.readInt32();
+  // read and ignore isObj
+  input.read();
 
   m_eventid = std::static_pointer_cast<EventId>(input.readObject());
 }
@@ -2936,7 +2935,8 @@ void TcrMessage::readHashMapForGCVersions(
     std::shared_ptr<Cacheable> val;
     for (int32_t index = 0; index < len; index++) {
       key = readDSMember(input);
-      uint8_t versiontype = input.read();
+      // read and ignore versionType
+      input.read();
 
       auto valVersion = CacheableInt64::create(input.readInt64());
       auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(key);

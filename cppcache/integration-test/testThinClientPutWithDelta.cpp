@@ -205,7 +205,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CreateServer1_DisableDelta)
   }
 END_TASK_DEFINITION
 
-void doDeltaPut(bool usePools = true) {
+void doDeltaPut() {
   CALL_TASK(CreateServer1_ForDelta)
 
   CALL_TASK(CreateClient1_UsePools);
@@ -230,7 +230,6 @@ DUNIT_MAIN
     CALL_TASK(CreateLocator1);
 
     doDeltaPut();
-    doDeltaPut(false);
 
     CALL_TASK(CloseLocator1);
   }

@@ -29,7 +29,7 @@ class MyCacheWriter : public CacheWriter {
 
  public:
   MyCacheWriter() : m_clear(0) {}
-  bool beforeRegionClear(const RegionEvent& ev) {
+  bool beforeRegionClear(const RegionEvent&) override {
     LOG("beforeRegionClear called");
     m_clear++;
     return true;
@@ -41,7 +41,7 @@ class MyCacheListener : public CacheListener {
 
  public:
   MyCacheListener() : m_clear(0) {}
-  void afterRegionClear(const RegionEvent& ev) {
+  void afterRegionClear(const RegionEvent&) override {
     LOG("afterRegionClear called");
     m_clear++;
   }

@@ -16,14 +16,13 @@
  */
 
 #include <geode/Region.hpp>
-#include "CacheRegionHelper.hpp"
-#include "RegionInternal.hpp"
-#include "MapEntry.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
-CacheLoader::CacheLoader() {}
+void CacheLoader::close(Region&) {}
 
-CacheLoader::~CacheLoader() {}
-
-void CacheLoader::close(Region& rp) {}
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

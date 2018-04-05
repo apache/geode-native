@@ -37,7 +37,7 @@ void CacheXmlCreation::create(Cache* cache) {
   // Create any pools before creating any regions.
 
   for (const auto& pool : pools) {
-    pool->create(*m_cache);
+    pool->create();
   }
 
   for (const auto& rootRegion : rootRegions) {

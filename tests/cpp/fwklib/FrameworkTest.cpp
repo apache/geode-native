@@ -56,7 +56,7 @@ FrameworkTest::FrameworkTest(const char* initArgs) {
       port, const_cast<int32_t*>(
                 reinterpret_cast<volatile int32_t*>(&m_deltaMicros)));
   m_coll = new TestDriver(xml);
-  TestClient::createTestClient(50, m_id);
+  TestClient::createTestClient(50);
   incClientCount();
 }
 
@@ -230,9 +230,7 @@ const FwkPool* FrameworkTest::getPoolSnippet(const std::string& name) const {
 }
 // ----------------------------------------------------------------------------
 
-void FrameworkTest::cacheInitialize(
-    std::shared_ptr<Properties>& props,
-    const std::shared_ptr<CacheAttributes>& cAttrs) {
+void FrameworkTest::cacheInitialize(std::shared_ptr<Properties>& props) {
   // failures:
   // 2. cache exists exception
   // 3. create encountered exception
@@ -541,6 +539,7 @@ std::string FrameworkTest::poolAttributesToString(std::shared_ptr<Pool>& pool) {
   sString += "\n";
   return sString;
 }
+
 }  // namespace testframework
 }  // namespace client
 }  // namespace geode

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_ENTRIESMAP_H_
-#define GEODE_ENTRIESMAP_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,15 +15,21 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_ENTRIESMAP_H_
+#define GEODE_ENTRIESMAP_H_
+
 // This needs to be ace free so that the region can include it.
 
 #include <memory>
 
 #include <geode/internal/geode_globals.hpp>
-#include "MapEntry.hpp"
-#include <geode/CacheableKey.hpp>
-#include "MapSegment.hpp"
 #include <geode/RegionEntry.hpp>
+#include <geode/CacheableKey.hpp>
+
+#include "MapEntry.hpp"
+#include "MapSegment.hpp"
 
 namespace apache {
 namespace geode {
@@ -169,9 +170,7 @@ class APACHE_GEODE_EXPORT EntriesMap {
 
   virtual std::shared_ptr<Cacheable> getFromDisk(
       const std::shared_ptr<CacheableKey>& key,
-      std::shared_ptr<MapEntryImpl>& me) const {
-    return nullptr;
-  }
+      std::shared_ptr<MapEntryImpl>& me) const;
 
   virtual void reapTombstones(std::map<uint16_t, int64_t>& gcVersions) = 0;
 
@@ -194,6 +193,7 @@ class APACHE_GEODE_EXPORT EntriesMap {
   inline const EntryFactory* getEntryFactory() const { return m_entryFactory.get(); }
 
 };  // class EntriesMap
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

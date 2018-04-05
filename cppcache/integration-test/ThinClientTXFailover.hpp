@@ -145,7 +145,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   char logmsg[1024];
   sprintf(logmsg, "verifyEntry() called from %d.\n", line);
   LOG(logmsg);
-  //_verifyEntry(name, key, val, false );
+  _verifyEntry(name, key, val, false);
   LOG("Entry verified.");
 }
 

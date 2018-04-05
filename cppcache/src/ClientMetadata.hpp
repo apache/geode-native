@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CLIENTMETADATA_H_
-#define GEODE_CLIENTMETADATA_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,16 +15,24 @@
  * limitations under the License.
  */
 
-#include "util/Log.hpp"
+#pragma once
+
+#ifndef GEODE_CLIENTMETADATA_H_
+#define GEODE_CLIENTMETADATA_H_
+
+#include <vector>
+#include <map>
+
+#include <ace/ACE.h>
+#include <ace/Recursive_Thread_Mutex.h>
+
 #include <geode/PartitionResolver.hpp>
+
+#include "util/Log.hpp"
 #include "ServerLocation.hpp"
 #include "BucketServerLocation.hpp"
 #include "ReadWriteLock.hpp"
 #include "FixedPartitionAttributesImpl.hpp"
-#include <ace/ACE.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <vector>
-#include <map>
 #include "NonCopyable.hpp"
 
 /*Stores the information such as partition attributes and meta data details*/
@@ -37,6 +40,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class ThinClientPoolDM;
 class ClientMetadata;
 

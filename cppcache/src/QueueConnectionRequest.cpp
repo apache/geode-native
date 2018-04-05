@@ -35,7 +35,7 @@ void QueueConnectionRequest::toData(DataOutput& output) const {
   output.writeBoolean(m_findDurable);
 }
 
-void QueueConnectionRequest::fromData(DataInput& input) {}
+void QueueConnectionRequest::fromData(DataInput&) {}
 
 int8_t QueueConnectionRequest::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::QueueConnectionRequest);

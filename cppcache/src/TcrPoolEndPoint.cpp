@@ -14,11 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "TcrPoolEndPoint.hpp"
+
 #include <geode/SystemProperties.hpp>
+
+#include "TcrPoolEndPoint.hpp"
 #include "ThinClientPoolDM.hpp"
-using namespace apache::geode::client;
-#define DEFAULT_CALLBACK_CONNECTION_TIMEOUT_SECONDS 180
+
+namespace apache {
+namespace geode {
+namespace client {
+
 TcrPoolEndPoint::TcrPoolEndPoint(const std::string& name, CacheImpl* cache,
                                  ACE_Semaphore& failoverSema,
                                  ACE_Semaphore& cleanupSema,
@@ -58,9 +63,8 @@ void TcrPoolEndPoint::closeNotification() {
   m_isQueueHosted = false;
 }
 
-GfErrType TcrPoolEndPoint::registerDM(bool clientNotification, bool isSecondary,
-                                      bool isActiveEndpoint,
-                                      ThinClientBaseDM* distMgr) {
+GfErrType TcrPoolEndPoint::registerDM(bool, bool isSecondary, bool,
+                                      ThinClientBaseDM*) {
   GfErrType err = GF_NOERR;
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_dm->getPoolLock());
   ACE_Guard<ACE_Recursive_Thread_Mutex> guardQueueHosted(getQueueHostedMutex());
@@ -104,8 +108,7 @@ GfErrType TcrPoolEndPoint::registerDM(bool clientNotification, bool isSecondary,
   setConnected(true);
   return err;
 }
-void TcrPoolEndPoint::unregisterDM(bool clientNotification,
-                                   ThinClientBaseDM* distMgr,
+void TcrPoolEndPoint::unregisterDM(bool, ThinClientBaseDM*,
                                    bool checkQueueHosted) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(getQueueHostedMutex());
 
@@ -143,3 +146,7 @@ void TcrPoolEndPoint::handleNotificationStats(int64_t byteLength) {
   m_dm->getStats().incReceivedBytes(byteLength);
   m_dm->getStats().incMessageBeingReceived();
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

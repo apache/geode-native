@@ -19,6 +19,9 @@
 
 #include <stdint.h>
 #define NOMINMAX
+#if defined(NOMINMAX)
+// ifnore unused macro warning
+#endif
 #include <cstdint>
 
 #include <gtest/gtest.h>
@@ -55,14 +58,6 @@ class TestDataInput {
         m_dataInput(m_byteArray.get(), m_byteArray.size()) {
     // NOP
   }
-
-  explicit TestDataInput(const wchar_t *str)
-      : m_byteArray(ByteArray::fromString(str)),
-        m_dataInput(m_byteArray.get(), m_byteArray.size()) {
-    // NOP
-  }
-
-  operator const DataInput &() const { return m_dataInput; }
 
   operator DataInput &() { return m_dataInput; }
 
@@ -136,10 +131,6 @@ class TestDataInput {
                                       elementLength);
   }
 
-  const uint8_t *currentBufferPosition() const {
-    return m_dataInput.currentBufferPosition();
-  }
-
   size_t getBytesRead() const { return m_dataInput.getBytesRead(); }
 
   size_t getBytesRemaining() const { return m_dataInput.getBytesRemaining(); }
@@ -151,14 +142,6 @@ class TestDataInput {
   void reset() { m_dataInput.reset(); }
 
   void setBuffer() { m_dataInput.setBuffer(); }
-
-  const std::string &getPoolName() {
-    return DataInputInternal::getPoolName(m_dataInput);
-  }
-
-  void setPoolName(const std::string &poolName) {
-    DataInputInternal::setPoolName(m_dataInput, poolName);
-  }
 
   template <class CharT = char, class... Tail>
   inline std::basic_string<CharT, Tail...> readUTF() {
@@ -472,7 +455,7 @@ TEST_F(DataInputTest, TestReadUTFNarrow) {
   TestDataInput dataInput(
       "001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   auto value = dataInput.readUTF();
-  ASSERT_EQ(27, value.length()) << "Correct length";
+  ASSERT_EQ(static_cast<size_t>(27), value.length()) << "Correct length";
   EXPECT_EQ("You had me at meat tornado.", value) << "Correct string";
 }
 
@@ -521,7 +504,7 @@ TEST_F(DataInputTest, TestReadCharArray) {
       "1C0059006F007500200068006100640020006D00650020006100740020006D0065006100"
       "7400200074006F0072006E00610064006F002E0000");
   auto value = dataInput.readCharArray();
-  ASSERT_EQ((int32_t)28, value.size()) << "Correct length";
+  ASSERT_EQ(static_cast<size_t>(28), value.size()) << "Correct length";
   EXPECT_EQ(std::u16string(u"You had me at meat tornado."),
             std::u16string(value.data()))
       << "Correct const char *";
@@ -590,7 +573,7 @@ TEST_F(DataInputTest, TestReadStringArray) {
   TestDataInput dataInput(
       "0157001B596F7520686164206D65206174206D65617420746F726E61646F2E");
   auto value = dataInput.readStringArray();
-  ASSERT_EQ(1, value.size()) << "Correct length";
+  ASSERT_EQ(static_cast<size_t>(1), value.size()) << "Correct length";
   EXPECT_EQ("You had me at meat tornado.", value[0]) << "Correct char *";
 }
 
@@ -603,7 +586,7 @@ TEST_F(DataInputTest, TestReadArrayOfByteArrays) {
                                   &elementLength);
   EXPECT_NE((int8_t **)nullptr, arrayOfByteArrays)
       << "Non-null array of byte arrays";
-  ASSERT_EQ((int32_t)1, arrayLength) << "Correct array length";
+  ASSERT_EQ(1, arrayLength) << "Correct array length";
   EXPECT_NE((int8_t *)nullptr, arrayOfByteArrays[0])
       << "Non-null first byte array";
   ASSERT_EQ(4, elementLength[0]) << "Correct length";
@@ -617,119 +600,119 @@ TEST_F(DataInputTest, TestReadArrayOfByteArrays) {
 
 TEST_F(DataInputTest, TestGetBytesRead) {
   TestDataInput dataInput("123456789ABCDEF0");
-  EXPECT_EQ((int32_t)0, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(0), dataInput.getBytesRead())
       << "Correct bytes read before any reads";
   uint8_t value = 0U;
   dataInput.read(&value);
   dataInput.read(&value);
   dataInput.read(&value);
   dataInput.read(&value);
-  EXPECT_EQ((int32_t)4, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(4), dataInput.getBytesRead())
       << "Correct bytes read after half of the reads";
   dataInput.read(&value);
   dataInput.read(&value);
   dataInput.read(&value);
   dataInput.read(&value);
-  EXPECT_EQ((int32_t)8, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(8), dataInput.getBytesRead())
       << "Correct bytes read after all of the reads";
 }
 
 TEST_F(DataInputTest, TestGetBytesRemaining) {
   TestDataInput dataInput("123456789ABCDEF0");
-  EXPECT_EQ((int32_t)8, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(8), dataInput.getBytesRemaining())
       << "Correct bytes remaining before any reads";
   uint8_t value = 0U;
   dataInput.read(&value);
   dataInput.read(&value);
   dataInput.read(&value);
   dataInput.read(&value);
-  EXPECT_EQ((int32_t)4, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(4), dataInput.getBytesRemaining())
       << "Correct bytes remaining after half of the reads";
   dataInput.read(&value);
   dataInput.read(&value);
   dataInput.read(&value);
   dataInput.read(&value);
-  EXPECT_EQ((int32_t)0, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(0), dataInput.getBytesRemaining())
       << "Correct bytes remaining after all of the reads";
 }
 
 TEST_F(DataInputTest, TestAdvanceCursor) {
   TestDataInput dataInput("123456789ABCDEF0");
-  EXPECT_EQ((int32_t)0, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(0), dataInput.getBytesRead())
       << "Correct bytes read before any advancement";
-  EXPECT_EQ((int32_t)8, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(8), dataInput.getBytesRemaining())
       << "Correct bytes remaining before any advancement";
   dataInput.advanceCursor(5);
-  EXPECT_EQ((int32_t)5, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(5), dataInput.getBytesRead())
       << "Correct bytes read after forward advancement";
-  EXPECT_EQ((int32_t)3, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(3), dataInput.getBytesRemaining())
       << "Correct bytes remaining after forward advancement";
   dataInput.advanceCursor(-3);
-  EXPECT_EQ((int32_t)2, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(2), dataInput.getBytesRead())
       << "Correct bytes read after rearward advancement";
-  EXPECT_EQ((int32_t)6, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(6), dataInput.getBytesRemaining())
       << "Correct bytes remaining after rearward advancement";
 }
 
 TEST_F(DataInputTest, TestRewindCursor) {
   TestDataInput dataInput("123456789ABCDEF0");
-  EXPECT_EQ((int32_t)0, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(0), dataInput.getBytesRead())
       << "Correct bytes read before any rewinding";
-  EXPECT_EQ((int32_t)8, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(8), dataInput.getBytesRemaining())
       << "Correct bytes remaining before any rewinding";
   dataInput.rewindCursor(-5);
-  EXPECT_EQ((int32_t)5, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(5), dataInput.getBytesRead())
       << "Correct bytes read after forward rewinding";
-  EXPECT_EQ((int32_t)3, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(3), dataInput.getBytesRemaining())
       << "Correct bytes remaining after forward rewinding";
   dataInput.rewindCursor(3);
-  EXPECT_EQ((int32_t)2, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(2), dataInput.getBytesRead())
       << "Correct bytes read after rearward rewinding";
-  EXPECT_EQ((int32_t)6, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(6), dataInput.getBytesRemaining())
       << "Correct bytes remaining after rearward rewinding";
 }
 
 TEST_F(DataInputTest, TestReset) {
   TestDataInput dataInput("123456789ABCDEF0");
-  EXPECT_EQ((int32_t)0, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(0), dataInput.getBytesRead())
       << "Correct bytes read before any reads";
-  EXPECT_EQ((int32_t)8, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(8), dataInput.getBytesRemaining())
       << "Correct bytes remaining before any reads";
   uint8_t value = 0U;
   dataInput.read(&value);
   dataInput.read(&value);
   dataInput.read(&value);
   dataInput.read(&value);
-  EXPECT_EQ((int32_t)4, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(4), dataInput.getBytesRead())
       << "Correct bytes read after the reads";
-  EXPECT_EQ((int32_t)4, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(4), dataInput.getBytesRemaining())
       << "Correct bytes remaining after the reads";
   dataInput.reset();
-  EXPECT_EQ((int32_t)0, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(0), dataInput.getBytesRead())
       << "Correct bytes read after the reset";
-  EXPECT_EQ((int32_t)8, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(8), dataInput.getBytesRemaining())
       << "Correct bytes remaining after the reset";
 }
 
 TEST_F(DataInputTest, TestSetBuffer) {
   TestDataInput dataInput("123456789ABCDEF0");
-  EXPECT_EQ((int32_t)0, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(0), dataInput.getBytesRead())
       << "Correct bytes read before any reads";
-  EXPECT_EQ((int32_t)8, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(8), dataInput.getBytesRemaining())
       << "Correct bytes remaining before any reads";
   uint8_t value = 0U;
   dataInput.read(&value);
   dataInput.read(&value);
   dataInput.read(&value);
   dataInput.read(&value);
-  EXPECT_EQ((int32_t)4, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(4), dataInput.getBytesRead())
       << "Correct bytes read after the reads";
-  EXPECT_EQ((int32_t)4, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(4), dataInput.getBytesRemaining())
       << "Correct bytes remaining after the reads";
   dataInput.setBuffer();
-  EXPECT_EQ((int32_t)4, dataInput.getBytesRead())
+  EXPECT_EQ(static_cast<size_t>(4), dataInput.getBytesRead())
       << "Correct bytes read after the setting";
-  EXPECT_EQ((int32_t)0, dataInput.getBytesRemaining())
+  EXPECT_EQ(static_cast<size_t>(0), dataInput.getBytesRemaining())
       << "Correct bytes remaining after the setting";
 }
 
@@ -749,7 +732,7 @@ TEST_F(DataInputTest, TestSetPoolName) {
 TEST_F(DataInputTest, TestReadNullArray) {
   TestDataInput dataInput("FF12345678");
 
-  EXPECT_EQ(0, dataInput.readBooleanArray().size());
+  EXPECT_EQ(static_cast<size_t>(0), dataInput.readBooleanArray().size());
 }
 
 }  // namespace

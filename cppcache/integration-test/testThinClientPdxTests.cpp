@@ -170,7 +170,7 @@ void initClient2WithClientName(
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 
-void stepOneForClient1(bool isPdxIgnoreUnreadFields = false) {
+void stepOneForClient1() {
   // Create just one pool and attach all regions to that.
   initClient1WithClientName(true);
 
@@ -181,7 +181,7 @@ void stepOneForClient1(bool isPdxIgnoreUnreadFields = false) {
   LOG("StepOne complete.");
 }
 
-void stepOneForClient2(bool isPdxIgnoreUnreadFields = false) {
+void stepOneForClient2() {
   // Create just one pool and attach all regions to that.
   initClient2WithClientName(true);
 
@@ -603,7 +603,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet1)
 
     ASSERT(genericValCompare(m_linkedlist->size(), listPtr->size()) == true,
            "LinkedList size should be equal");
-    for (int j = 0; j < m_linkedlist->size(); j++) {
+    for (size_t j = 0; j < m_linkedlist->size(); j++) {
       genericValCompare(m_linkedlist->at(j), listPtr->at(j));
     }
 
@@ -2434,7 +2434,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
     } else {
       //
       bool gotResult = false;
-      for (int i = 0; i < result->size(); i++) {
+      for (size_t i = 0; i < result->size(); i++) {
         try {
           auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(
               result->operator[](i));
@@ -2603,7 +2603,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
       ASSERT(false, "echo String : result is nullptr");
     } else {
       bool gotResult = false;
-      for (int i = 0; i < result->size(); i++) {
+      for (size_t i = 0; i < result->size(); i++) {
         try {
           auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(
               result->operator[](i));
@@ -2715,7 +2715,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, client3GetsV2Object)
       ASSERT(false, "echo String : result is nullptr");
     } else {
       bool gotResult = false;
-      for (int i = 0; i < result->size(); i++) {
+      for (size_t i = 0; i < result->size(); i++) {
         try {
           auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(
               result->operator[](i));
@@ -3538,7 +3538,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
 
     // Compare local vs remote CacheableObjectArray elements.
     bool isEqual = true;
-    for (int i = 0; i < remoteCObjArray->size(); i++) {
+    for (size_t i = 0; i < remoteCObjArray->size(); i++) {
       auto rAddr1 = std::dynamic_pointer_cast<Address>(remoteCObjArray->at(i));
       auto lAddr1 =
           std::dynamic_pointer_cast<Address>(m_localObjectArray->at(i));
@@ -3878,8 +3878,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, SetWeakHashMapToFalseC2BMR2)
 END_TASK_DEFINITION
 ///
 
-void runPdxLongRunningClientTest(bool poolConfig = false,
-                                 bool withLocators = false) {
+void runPdxLongRunningClientTest() {
   CALL_TASK(StartLocator)
   CALL_TASK(CreateServerWithLocator)
   CALL_TASK(StepOnePoolLocSysConfig)
@@ -3925,8 +3924,7 @@ void runPdxDistOps() {
   CALL_TASK(CloseLocator)
 }
 
-void runPdxTestForCharTypes(bool poolConfig = false,
-                            bool withLocators = false) {
+void runPdxTestForCharTypes() {
   CALL_TASK(StartLocator)
   CALL_TASK(CreateServerWithLocator)
   CALL_TASK(StepOnePoolLoc)

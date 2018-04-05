@@ -28,25 +28,26 @@ CacheListener::CacheListener() {}
 
 CacheListener::~CacheListener() {}
 
-void CacheListener::close(Region& region) {}
+void CacheListener::close(Region&) {}
 
-void CacheListener::afterCreate(const EntryEvent& event) {}
+void CacheListener::afterCreate(const EntryEvent&) {}
 
-void CacheListener::afterUpdate(const EntryEvent& event) {}
+void CacheListener::afterUpdate(const EntryEvent&) {}
 
-void CacheListener::afterInvalidate(const EntryEvent& event) {}
+void CacheListener::afterInvalidate(const EntryEvent&) {}
 
-void CacheListener::afterDestroy(const EntryEvent& event) {}
+void CacheListener::afterDestroy(const EntryEvent&) {}
 
-void CacheListener::afterRegionInvalidate(const RegionEvent& event) {}
+void CacheListener::afterRegionInvalidate(const RegionEvent&) {}
 
-void CacheListener::afterRegionDestroy(const RegionEvent& event) {}
+void CacheListener::afterRegionDestroy(const RegionEvent&) {}
 
-void CacheListener::afterRegionClear(const RegionEvent& event) {}
+void CacheListener::afterRegionClear(const RegionEvent&) {}
 
-void CacheListener::afterRegionLive(const RegionEvent& event) {}
+void CacheListener::afterRegionLive(const RegionEvent&) {}
 
-void CacheListener::afterRegionDisconnected(Region& region) {}
+void CacheListener::afterRegionDisconnected(Region&) {}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

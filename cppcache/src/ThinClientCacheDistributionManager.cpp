@@ -77,8 +77,7 @@ GfErrType ThinClientCacheDistributionManager::sendSyncRequestCq(
 }
 
 GfErrType ThinClientCacheDistributionManager::sendSyncRequest(
-    TcrMessage& request, TcrMessageReply& reply, bool attemptFailover,
-    bool isBGThread) {
+    TcrMessage& request, TcrMessageReply& reply, bool attemptFailover, bool) {
   GfErrType err = GF_NOERR;
   int32_t type = request.getMessageType();
   if (m_connManager.haEnabled() &&

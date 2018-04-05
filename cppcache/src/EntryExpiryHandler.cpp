@@ -28,7 +28,9 @@
 
 #include "RegionInternal.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 EntryExpiryHandler::EntryExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
                                        std::shared_ptr<MapEntryImpl>& entryPtr,
@@ -40,7 +42,7 @@ EntryExpiryHandler::EntryExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
       m_duration(duration) {}
 
 int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
-                                       const void* arg) {
+                                       const void*) {
   std::shared_ptr<CacheableKey> key;
   m_entryPtr->getKeyI(key);
   ExpEntryProperties& expProps = m_entryPtr->getExpProperties();
@@ -154,3 +156,7 @@ inline void EntryExpiryHandler::DoTheExpirationAction(
     }
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

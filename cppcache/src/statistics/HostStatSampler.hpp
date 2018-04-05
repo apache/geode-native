@@ -73,8 +73,6 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
   HostStatSampler(const char* filePath,
                   std::chrono::milliseconds sampleIntervalMs,
                   StatisticsManager* statMngr, CacheImpl* cache,
-                  const char* durableClientId,
-                  const std::chrono::seconds durableTimeout,
                   int64_t statFileLimit = 0, int64_t statDiskSpaceLimit = 0);
 
   /**

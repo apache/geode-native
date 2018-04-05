@@ -17,8 +17,18 @@
 
 #include <geode/CqListener.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
+
 CqListener::CqListener() {}
-void CqListener::onEvent(const CqEvent& aCqEvent) {}
-void CqListener::onError(const CqEvent& aCqEvent) {}
+
+void CqListener::onEvent(const CqEvent&) {}
+
+void CqListener::onError(const CqEvent&) {}
+
 void CqListener::close() {}
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

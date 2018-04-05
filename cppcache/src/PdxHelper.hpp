@@ -53,7 +53,6 @@ class PdxHelper {
                                                          bool forceDeserialize);
 
   static std::shared_ptr<PdxSerializable> deserializePdx(DataInput& dataInput,
-                                                         bool forceDeserialize,
                                                          int32_t typeId,
                                                          int32_t length);
 

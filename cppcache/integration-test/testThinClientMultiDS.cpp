@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "fw_dunit.hpp"
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
@@ -25,12 +26,13 @@
 
 #include "ThinClientSecurityHelper.hpp"
 
+#ifdef __disabled_test__
+
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
-#ifdef __disabled_test__
 static int clientWithNothing = 0;
 void initClient() {
   if (cacheHelper == nullptr) {

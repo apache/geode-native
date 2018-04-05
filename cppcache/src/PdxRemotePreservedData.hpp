@@ -54,7 +54,6 @@ class PdxRemotePreservedData : public PdxUnreadFields {
     delete[] m_preservedData;*/
   }
   PdxRemotePreservedData(int32_t typeId, int32_t mergedTypeId,
-                         int32_t numberOfFields, /*Object^*/
                          std::shared_ptr<Serializable> owner) {
     m_typeId = typeId;
     m_mergedTypeId = mergedTypeId;
@@ -64,7 +63,6 @@ class PdxRemotePreservedData : public PdxUnreadFields {
   }
 
   void initialize(int32_t typeId, int32_t mergedTypeId,
-                  int32_t numberOfFields, /*Object^*/
                   std::shared_ptr<Serializable> owner) {
     m_typeId = typeId;
     m_mergedTypeId = mergedTypeId;

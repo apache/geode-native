@@ -29,7 +29,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class PutAllPartialResult : public Serializable {
+class PutAllPartialResult final : public Serializable {
  private:
   std::shared_ptr<VersionedCacheableObjectPartList> m_succeededKeys;
   std::shared_ptr<CacheableKey> m_firstFailedKey;
@@ -40,7 +40,7 @@ class PutAllPartialResult : public Serializable {
  public:
   PutAllPartialResult(int totalMapSize,
                       ACE_Recursive_Thread_Mutex& responseLock);
-  ~PutAllPartialResult() noexcept override {}
+  ~PutAllPartialResult() noexcept final {}
 
   void setTotalMapSize(int totalMapSize) { m_totalMapSize = totalMapSize; }
 
@@ -51,11 +51,14 @@ class PutAllPartialResult : public Serializable {
 
   std::shared_ptr<Exception> getFailure() { return m_firstCauseOfFailure; }
 
-  void addKeysAndVersions(std::shared_ptr<VersionedCacheableObjectPartList> keysAndVersion);
+  void addKeysAndVersions(
+      std::shared_ptr<VersionedCacheableObjectPartList> keysAndVersion);
 
-  void addKeys(std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>> > m_keys);
+  void addKeys(
+      std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_keys);
 
-  void saveFailedKey(std::shared_ptr<CacheableKey> key, std::shared_ptr<Exception> cause) {
+  void saveFailedKey(std::shared_ptr<CacheableKey> key,
+                     std::shared_ptr<Exception> cause) {
     if (key == nullptr) {
       return;
     }
@@ -66,7 +69,8 @@ class PutAllPartialResult : public Serializable {
     }
   }
 
-  std::shared_ptr<VersionedCacheableObjectPartList> getSucceededKeysAndVersions();
+  std::shared_ptr<VersionedCacheableObjectPartList>
+  getSucceededKeysAndVersions();
 
   // Returns the first key that failed
   std::shared_ptr<CacheableKey> getFirstFailedKey() { return m_firstFailedKey; }
@@ -77,7 +81,7 @@ class PutAllPartialResult : public Serializable {
   // Returns there's saved succeed keys
   bool hasSucceededKeys();
 
-  virtual std::string toString() const override {
+  virtual std::string toString() const final {
     char msgStr1[1024];
     if (m_firstFailedKey != nullptr) {
       ACE_OS::snprintf(msgStr1, 1024, "[ Key =%s ]",
@@ -107,29 +111,29 @@ class PutAllPartialResult : public Serializable {
     return std::string(stringBuf);
   }
 
-  void toData(DataOutput& output) const override {
+  void toData(DataOutput&) const final {
     throw IllegalStateException(
         "PutAllPartialResult::toData is not intended for use.");
   }
 
-  void fromData(DataInput& input) override {
+  void fromData(DataInput&) final {
     throw IllegalStateException(
         "PutAllPartialResult::fromData is not intended for use.");
   }
 
-  int32_t classId() const override {
+  int32_t classId() const final {
     throw IllegalStateException(
         "PutAllPartialResult::classId is not intended for use.");
     return 0;
   }
 
-  size_t objectSize() const override {
+  size_t objectSize() const final {
     throw IllegalStateException(
         "PutAllPartialResult::objectSize is not intended for use.");
     return 0;
   }
 
-  int8_t typeId() const override { return static_cast<int8_t>(0); }
+  int8_t typeId() const final { return static_cast<int8_t>(0); }
 };
 
 }  // namespace client

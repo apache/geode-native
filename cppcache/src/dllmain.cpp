@@ -1,5 +1,3 @@
-#define DLL_MAIN_C
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -17,16 +15,17 @@
  * limitations under the License.
  */
 
-#include "CppCacheLibrary.hpp"
 #include <cstdlib>
 #include <cstdio>
 #include <string>
-#include "Utils.hpp"
-#include <geode/Exception.hpp>
+
 #include <ace/TSS_T.h>
 
-#include <string>
+#include <geode/Exception.hpp>
+
 #include "config.h"
+#include "CppCacheLibrary.hpp"
+#include "Utils.hpp"
 
 void initLibDllEntry(void);
 
@@ -85,7 +84,7 @@ APACHE_GEODE_EXPORT void DllMainGetPath(char *result, int maxLen) {
 #else
 #include <dlfcn.h>
 
-void DllMainGetPath(char *result, int maxLen) {
+void DllMainGetPath(char *result, int) {
   if (!initgflibDone) {
     result[0] = '\0';
     return;

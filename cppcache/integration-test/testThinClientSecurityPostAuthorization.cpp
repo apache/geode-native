@@ -130,7 +130,7 @@ void getKeysVector(std::vector<std::shared_ptr<CacheableKey>>& keysVec,
 }
 
 void checkValuesMap(HashMapOfCacheable& values, int clientNum, int numKeys) {
-  int expectedNum = 0;
+  size_t expectedNum = 0;
   std::shared_ptr<CacheableKey> key;
   std::shared_ptr<CacheableString> val;
   std::shared_ptr<CacheableString> expectedVal;
@@ -143,14 +143,14 @@ void checkValuesMap(HashMapOfCacheable& values, int clientNum, int numKeys) {
     expectedVal = CacheableString::create(nvals[index]);
     ASSERT(*val == *expectedVal, "unexpected value in values map");
   }
-  printf("Expected number of values: %d; got values: %zd", expectedNum,
+  printf("Expected number of values: %zd; got values: %zd", expectedNum,
          values.size());
   ASSERT(values.size() == expectedNum, "unexpected number of values");
 }
 
 void checkExceptionsMap(HashMapOfException& exceptions, int clientNum,
                         int numKeys) {
-  int expectedNum = 0;
+  size_t expectedNum = 0;
   std::shared_ptr<CacheableKey> key;
   for (int index = 0; index < numKeys; ++index) {
     if ((index + 1) % clientNum != 0) {
@@ -165,7 +165,7 @@ void checkExceptionsMap(HashMapOfException& exceptions, int clientNum,
              iter->second->what());
     }
   }
-  printf("Expected number of exceptions: %d; got exceptions: %zd", expectedNum,
+  printf("Expected number of exceptions: %zd; got exceptions: %zd", expectedNum,
          exceptions.size());
   ASSERT(exceptions.size() == expectedNum, "unexpected number of exceptions");
 }

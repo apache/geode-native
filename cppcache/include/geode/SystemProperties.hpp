@@ -65,7 +65,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   /** print all settings to the process log. */
   void logSettings();
 
-  const uint32_t threadPoolSize() const { return m_threadPoolSize; }
+  uint32_t threadPoolSize() const { return m_threadPoolSize; }
 
   /**
    * Returns the sampling interval of the sampling thread.
@@ -138,7 +138,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
    * memory
    *
    */
-  const bool heapLRULimitEnabled() const { return (m_heapLRULimit > 0); }
+  bool heapLRULimitEnabled() const { return (m_heapLRULimit > 0); }
 
   /**
    * Returns  the HeapLRULimit value (in bytes), the maximum memory that values
@@ -147,35 +147,36 @@ class APACHE_GEODE_EXPORT SystemProperties {
    * cache memory usage
    *
    */
-  const size_t heapLRULimit() const { return m_heapLRULimit; }
+  size_t heapLRULimit() const { return m_heapLRULimit; }
 
   /**
    * Returns  the HeapLRUDelta value (a percent value). This specifies the
    * percentage of entries the system will evict each time it detects that
    * it has exceeded the HeapLRULimit. Defaults to 10%
    */
-  const int32_t heapLRUDelta() const { return m_heapLRUDelta; }
+  int32_t heapLRUDelta() const { return m_heapLRUDelta; }
 
   /**
    * Returns  the maximum socket buffer size to use
    */
-  const int32_t maxSocketBufferSize() const { return m_maxSocketBufferSize; }
+  int32_t maxSocketBufferSize() const { return m_maxSocketBufferSize; }
 
   /**
    * Returns  the time between two consecutive ping to servers
    */
-  const std::chrono::seconds pingInterval() const { return m_pingInterval; }
+  const std::chrono::seconds& pingInterval() const { return m_pingInterval; }
+
   /**
    * Returns  the time between two consecutive checks for redundancy for HA
    */
-  const std::chrono::seconds redundancyMonitorInterval() const {
+  const std::chrono::seconds& redundancyMonitorInterval() const {
     return m_redundancyMonitorInterval;
   }
 
   /**
    * Returns the periodic notify ack interval
    */
-  const std::chrono::milliseconds notifyAckInterval() const {
+  const std::chrono::milliseconds& notifyAckInterval() const {
     return m_notifyAckInterval;
   }
 
@@ -183,7 +184,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
    * Returns the expiry time of an idle event id map entry for duplicate
    * notification checking
    */
-  const std::chrono::milliseconds notifyDupCheckLife() const {
+  const std::chrono::milliseconds& notifyDupCheckLife() const {
     return m_notifyDupCheckLife;
   }
 
@@ -195,12 +196,14 @@ class APACHE_GEODE_EXPORT SystemProperties {
   /**
    * Returns the durable timeout
    */
-  const std::chrono::seconds durableTimeout() const { return m_durableTimeout; }
+  const std::chrono::seconds& durableTimeout() const {
+    return m_durableTimeout;
+  }
 
   /**
    * Returns the connect timeout used for server and locator handshakes
    */
-  const std::chrono::milliseconds connectTimeout() const {
+  const std::chrono::milliseconds& connectTimeout() const {
     return m_connectTimeout;
   }
 
@@ -208,7 +211,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
    * Returns the connect wait timeout(in millis) used for to connect to server
    * This is only applicable for linux
    */
-  const std::chrono::milliseconds connectWaitTimeout() const {
+  const std::chrono::milliseconds& connectWaitTimeout() const {
     return m_connectWaitTimeout;
   }
 
@@ -216,7 +219,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
    * Returns the connect wait timeout(in millis) used for to connect to server
    * This is only applicable for linux
    */
-  const std::chrono::milliseconds bucketWaitTimeout() const {
+  const std::chrono::milliseconds& bucketWaitTimeout() const {
     return m_bucketWaitTimeout;
   }
 
@@ -232,26 +235,24 @@ class APACHE_GEODE_EXPORT SystemProperties {
   /**
    * Returns the log-file-size-limit.
    */
-  const uint32_t logFileSizeLimit() const { return m_logFileSizeLimit; }
+  uint32_t logFileSizeLimit() const { return m_logFileSizeLimit; }
 
   /**
    * Returns the log-disk-space-limit.
    */
-  const uint32_t logDiskSpaceLimit() const { return m_logDiskSpaceLimit; }
+  uint32_t logDiskSpaceLimit() const { return m_logDiskSpaceLimit; }
 
   /**
    * Returns the stat-file-space-limit.
    */
-  const uint32_t statsFileSizeLimit() const { return m_statsFileSizeLimit; }
+  uint32_t statsFileSizeLimit() const { return m_statsFileSizeLimit; }
 
   /**
    * Returns the stat-disk-size-limit.
    */
-  const uint32_t statsDiskSpaceLimit() const { return m_statsDiskSpaceLimit; }
+  uint32_t statsDiskSpaceLimit() const { return m_statsDiskSpaceLimit; }
 
-  const uint32_t connectionPoolSize() const {
-    return m_connectionPoolSize;
-  }
+  uint32_t connectionPoolSize() const { return m_connectionPoolSize; }
   void setjavaConnectionPoolSize(uint32_t size) {
     m_connectionPoolSize = size;
   }
@@ -437,7 +438,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
       const std::string& property, const std::string& value,
       std::chrono::duration<_Rep, _Period>& duration);
 
-  static void throwError(const std::string& msg);
+  [[noreturn]] static void throwError(const std::string& msg);
 
  public:
   friend class DistributedSystemImpl;

@@ -38,26 +38,26 @@ class SimpleCacheListener : public CacheListener {
  public:
   // The Cache Listener callbacks.
   SimpleCacheListener() { m_count = 0; }
-  void afterCreate(const EntryEvent& event) override {
+  void afterCreate(const EntryEvent&) override {
     m_count++;
     LOGINFO("SimpleCacheListener: Got an afterCreate event.");
   }
-  void afterUpdate(const EntryEvent& event) override {
+  void afterUpdate(const EntryEvent&) override {
     LOGINFO("SimpleCacheListener: Got an afterUpdate event.");
   }
-  void afterInvalidate(const EntryEvent& event) override {
+  void afterInvalidate(const EntryEvent&) override {
     LOGINFO("SimpleCacheListener: Got an afterInvalidate event.");
   }
-  void afterDestroy(const EntryEvent& event) override {
+  void afterDestroy(const EntryEvent&) override {
     LOGINFO("SimpleCacheListener: Got an afterDestroy event.");
   }
-  void afterRegionInvalidate(const RegionEvent& event) override {
+  void afterRegionInvalidate(const RegionEvent&) override {
     LOGINFO("SimpleCacheListener: Got an afterRegionInvalidate event.");
   }
-  void afterRegionDestroy(const RegionEvent& event) override {
+  void afterRegionDestroy(const RegionEvent&) override {
     LOGINFO("SimpleCacheListener: Got an afterRegionDestroy event.");
   }
-  void close(Region& region) override {
+  void close(Region&) override {
     LOGINFO("SimpleCacheListener: Got an close event.");
   }
 

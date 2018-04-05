@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTBASEDM_H_
-#define GEODE_THINCLIENTBASEDM_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,10 +15,17 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_THINCLIENTBASEDM_H_
+#define GEODE_THINCLIENTBASEDM_H_
+
+#include <vector>
+
 #include <geode/internal/geode_globals.hpp>
+
 #include "TcrConnectionManager.hpp"
 #include "TcrEndpoint.hpp"
-#include <vector>
 
 namespace apache {
 namespace geode {
@@ -54,9 +56,7 @@ class ThinClientBaseDM {
   virtual GfErrType sendSyncRequestRegisterInterestEP(TcrMessage& request,
                                                       TcrMessageReply& reply,
                                                       bool attemptFailover,
-                                                      TcrEndpoint* endpoint) {
-    return GF_NOERR;
-  }
+                                                      TcrEndpoint* endpoint);
 
   virtual void failover();
 
@@ -76,9 +76,8 @@ class ThinClientBaseDM {
 
   virtual GfErrType registerInterestForRegion(TcrEndpoint* ep,
                                               const TcrMessage* request,
-                                              TcrMessageReply* reply) {
-    return GF_NOERR;
-  }
+                                              TcrMessageReply* reply);
+
   inline static bool isFatalError(GfErrType err) {
     return (err == GF_MSG || err == GF_CACHESERVER_EXCEPTION ||
             err == GF_NOT_AUTHORIZED_EXCEPTION ||
@@ -97,7 +96,7 @@ class ThinClientBaseDM {
   // add a new chunk to the queue
   void queueChunk(TcrChunkedContext* chunk);
 
-  virtual bool isEndpointAttached(TcrEndpoint* ep) { return false; };
+  virtual bool isEndpointAttached(TcrEndpoint* ep);
 
   static GfErrType sendRequestToEndPoint(const TcrMessage& request,
                                          TcrMessageReply& reply,
@@ -200,6 +199,7 @@ class ThinClientBaseDM {
   static volatile bool s_isDeltaEnabledOnServer;
   static const char* NC_ProcessChunk;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

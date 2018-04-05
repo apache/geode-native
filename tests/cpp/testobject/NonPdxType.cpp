@@ -111,7 +111,7 @@ bool PdxTests::NonPdxType::equals(PdxTests::NonPdxType& other,
   LOGINFO("NonPdxType::equals isPdxReadSerialized = %d", isPdxReadSerialized);
 
   if (!isPdxReadSerialized) {
-    for (int i = 0; i < m_objectArray->size(); i++) {
+    for (size_t i = 0; i < m_objectArray->size(); i++) {
       auto wrapper1 =
           std::dynamic_pointer_cast<PdxWrapper>(ot->m_objectArray->at(i));
       auto otherAddr1 =
@@ -131,12 +131,12 @@ bool PdxTests::NonPdxType::equals(PdxTests::NonPdxType& other,
   if (myenum->getEnumName() != otenum->getEnumName()) return false;
 
   genericValCompare(ot->m_arraylist->size(), m_arraylist->size());
-  for (int k = 0; k < m_arraylist->size(); k++) {
+  for (size_t k = 0; k < m_arraylist->size(); k++) {
     genericValCompare(ot->m_arraylist->at(k), m_arraylist->at(k));
   }
 
   genericValCompare(ot->m_vector->size(), m_vector->size());
-  for (int j = 0; j < m_vector->size(); j++) {
+  for (size_t j = 0; j < m_vector->size(); j++) {
     genericValCompare(ot->m_vector->at(j), m_vector->at(j));
   }
 

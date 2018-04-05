@@ -71,9 +71,7 @@ class APACHE_GEODE_EXPORT PdxSerializer {
    * instance of a user domain object
    * @param className to help select an object sizer for the correct class
    */
-  virtual UserObjectSizer getObjectSizer(const std::string& className) {
-    return nullptr;
-  };
+  virtual UserObjectSizer getObjectSizer(const std::string& className);
 };
 }  // namespace client
 }  // namespace geode

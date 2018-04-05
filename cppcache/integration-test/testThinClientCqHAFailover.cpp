@@ -62,7 +62,7 @@ class MyCqListener : public CqListener {
   uint32_t getCountBefore() { return m_cnt_before; }
   uint32_t getCountAfter() { return m_cnt_after; }
 
-  void onEvent(const CqEvent& cqe) {
+  void onEvent(const CqEvent&) override {
     if (m_failedOver) {
       // LOG("after:MyCqListener::OnEvent called");
       m_cnt_after++;
@@ -71,7 +71,7 @@ class MyCqListener : public CqListener {
       m_cnt_before++;
     }
   }
-  void onError(const CqEvent& cqe) {
+  void onError(const CqEvent&) override {
     if (m_failedOver) {
       // LOG("after: MyCqListener::OnError called");
       m_cnt_after++;
@@ -80,7 +80,7 @@ class MyCqListener : public CqListener {
       m_cnt_before++;
     }
   }
-  void close() { LOG("MyCqListener::close called"); }
+  void close() override { LOG("MyCqListener::close called"); }
 };
 
 class KillServerThread : public ACE_Task_Base {
@@ -108,7 +108,7 @@ class KillServerThread : public ACE_Task_Base {
   }
 };
 
-void initClientCq(int redundancyLevel) {
+void initClientCq() {
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(true);
   }
@@ -163,7 +163,7 @@ DUNIT_TASK_DEFINITION(SERVER2, StepTwo_Locator)
 END_TASK_DEFINITION
 
 void stepOne() {
-  initClientCq(1);
+  initClientCq();
 
   createRegionForCQ(regionNamesCq[0], USE_ACK, true, 1);
 
@@ -184,7 +184,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_PoolLocator)
 END_TASK_DEFINITION
 
 void stepOne2() {
-  initClientCq(1);
+  initClientCq();
   createRegionForCQ(regionNamesCq[0], USE_ACK, true, 1);
   auto regptr = getHelper()->getRegion(regionNamesCq[0]);
   auto subregPtr =

@@ -64,7 +64,7 @@ class MyCqListener : public CqListener {
   uint32_t getCountBefore() { return m_cnt_before; }
   uint32_t getCountAfter() { return m_cnt_after; }
 
-  void onEvent(const CqEvent& cqe) {
+  void onEvent(const CqEvent&) override {
     if (m_failedOver) {
       // LOG("after:MyCqListener::OnEvent called");
       m_cnt_after++;
@@ -73,7 +73,7 @@ class MyCqListener : public CqListener {
       m_cnt_before++;
     }
   }
-  void onError(const CqEvent& cqe) {
+  void onError(const CqEvent&) override {
     if (m_failedOver) {
       // LOG("after: MyCqListener::OnError called");
       m_cnt_after++;
@@ -82,7 +82,7 @@ class MyCqListener : public CqListener {
       m_cnt_before++;
     }
   }
-  void close() { LOG("MyCqListener::close called"); }
+  void close() override { LOG("MyCqListener::close called"); }
 };
 
 class KillServerThread : public ACE_Task_Base {

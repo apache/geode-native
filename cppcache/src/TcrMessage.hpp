@@ -558,7 +558,7 @@ class APACHE_GEODE_EXPORT TcrMessage {
       const SerializationRegistry& serializationRegistry,
       MemberListForVersionStamp& memberListForVersionStamp);
   void readObjectPart(DataInput& input, bool defaultString = false);
-  void readFailedNodePart(DataInput& input, bool defaultString = false);
+  void readFailedNodePart(DataInput& input);
   void readCallbackObjectPart(DataInput& input, bool defaultString = false);
   void readKeyPart(DataInput& input);
   void readBooleanPartAsObject(DataInput& input, bool* boolVal);
@@ -817,8 +817,7 @@ class TcrMessageUnregisterInterestList : public TcrMessage {
   TcrMessageUnregisterInterestList(
       std::unique_ptr<DataOutput> dataOutput, const Region* region,
       const std::vector<std::shared_ptr<CacheableKey>>& keys,
-      bool isDurable = false, bool isCachingEnabled = false,
-      bool receiveValues = true,
+      bool isDurable = false, bool receiveValues = true,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
       ThinClientBaseDM* connectionDM = nullptr);
 
@@ -844,12 +843,10 @@ class TcrMessagePut : public TcrMessage {
 
 class TcrMessageCreateRegion : public TcrMessage {
  public:
-  TcrMessageCreateRegion(
-      std::unique_ptr<DataOutput> dataOutput, const std::string& str1,
-      const std::string& str2,
-      InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
-      bool isDurable = false, bool isCachingEnabled = false,
-      bool receiveValues = true, ThinClientBaseDM* connectionDM = nullptr);
+  TcrMessageCreateRegion(std::unique_ptr<DataOutput> dataOutput,
+                         const std::string& str1, const std::string& str2,
+                         bool isDurable = false, bool receiveValues = true,
+                         ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageCreateRegion() {}
 
@@ -876,8 +873,8 @@ class TcrMessageUnregisterInterest : public TcrMessage {
       std::unique_ptr<DataOutput> dataOutput, const std::string& str1,
       const std::string& str2,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
-      bool isDurable = false, bool isCachingEnabled = false,
-      bool receiveValues = true, ThinClientBaseDM* connectionDM = nullptr);
+      bool isDurable = false, bool receiveValues = true,
+      ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageUnregisterInterest() {}
 
@@ -1074,8 +1071,7 @@ class TcrMessageGetPdxIdForType : public TcrMessage {
  public:
   TcrMessageGetPdxIdForType(std::unique_ptr<DataOutput> dataOutput,
                             const std::shared_ptr<Cacheable>& pdxType,
-                            ThinClientBaseDM* connectionDM,
-                            int32_t pdxTypeId = 0);
+                            ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageGetPdxIdForType() {}
 
@@ -1097,8 +1093,7 @@ class TcrMessageGetPdxIdForEnum : public TcrMessage {
  public:
   TcrMessageGetPdxIdForEnum(std::unique_ptr<DataOutput> dataOutput,
                             const std::shared_ptr<Cacheable>& pdxType,
-                            ThinClientBaseDM* connectionDM,
-                            int32_t pdxTypeId = 0);
+                            ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageGetPdxIdForEnum() {}
 

@@ -45,22 +45,18 @@ RegionInternal::RegionInternal(CacheImpl* cacheImpl,
 RegionInternal::~RegionInternal() {}
 
 void RegionInternal::registerKeys(
-    const std::vector<std::shared_ptr<CacheableKey>>& keys, bool isDurable,
-    bool getInitialValues, bool receiveValues) {
+    const std::vector<std::shared_ptr<CacheableKey>>&, bool, bool, bool) {
   throw UnsupportedOperationException(
-      "registerKeys only supported by "
-      "Thin Client Region.");
+      "registerKeys only supported by Thin Client Region.");
 }
 
 void RegionInternal::unregisterKeys(
-    const std::vector<std::shared_ptr<CacheableKey>>& keys) {
+    const std::vector<std::shared_ptr<CacheableKey>>&) {
   throw UnsupportedOperationException(
-      "unregisterKeys only supported by "
-      "Thin Client Region.");
+      "unregisterKeys only supported by Thin Client Region.");
 }
 
-void RegionInternal::registerAllKeys(bool isDurable, bool getInitialValues,
-                                     bool receiveValues) {
+void RegionInternal::registerAllKeys(bool, bool, bool) {
   throw UnsupportedOperationException(
       "registerAllKeys only supported by Thin Client Region.");
 }
@@ -70,36 +66,39 @@ void RegionInternal::unregisterAllKeys() {
       "unregisterAllKeys only supported by Thin Client Region.");
 }
 
-void RegionInternal::registerRegex(const std::string& regex, bool isDurable,
-                                   bool getInitialValues, bool receiveValues) {
+void RegionInternal::registerRegex(const std::string&, bool, bool, bool) {
   throw UnsupportedOperationException(
       "registerRegex only supported by Thin Client Region.");
 }
 
-void RegionInternal::unregisterRegex(const std::string& regex) {
+void RegionInternal::unregisterRegex(const std::string&) {
   throw UnsupportedOperationException(
       "unregisterRegex only supported by Thin Client Region.");
 }
+
 std::shared_ptr<SelectResults> RegionInternal::query(
-    const std::string& predicate, std::chrono::milliseconds timeout) {
+    const std::string&, std::chrono::milliseconds) {
   throw UnsupportedOperationException(
       "query only supported by Thin Client Region.");
 }
 
-bool RegionInternal::existsValue(const std::string& predicate,
-                                 std::chrono::milliseconds timeout) {
+bool RegionInternal::existsValue(const std::string&,
+                                 std::chrono::milliseconds) {
   throw UnsupportedOperationException(
       "existsValue only supported by Thin Client Region.");
 }
+
 std::shared_ptr<Serializable> RegionInternal::selectValue(
-    const std::string& predicate, std::chrono::milliseconds timeout) {
+    const std::string&, std::chrono::milliseconds) {
   throw UnsupportedOperationException(
       "selectValue only supported by Thin Client Region.");
 }
+
 std::shared_ptr<TombstoneList> RegionInternal::getTombstoneList() {
   throw UnsupportedOperationException(
       "getTombstoneList only supported by LocalRegion.");
 }
+
 std::shared_ptr<RegionEntry> RegionInternal::createRegionEntry(
     const std::shared_ptr<CacheableKey>& key,
     const std::shared_ptr<Cacheable>& value) {
@@ -196,24 +195,24 @@ void RegionInternal::setClientNotificationEnabled(
   m_regionAttributes.m_clientNotificationEnabled = clientNotificationEnabled;
 }
 
-void RegionInternal::txDestroy(const std::shared_ptr<CacheableKey>& key,
-                               const std::shared_ptr<Serializable>& callBack,
-                               std::shared_ptr<VersionTag> versionTag) {
+void RegionInternal::txDestroy(const std::shared_ptr<CacheableKey>&,
+                               const std::shared_ptr<Serializable>&,
+                               std::shared_ptr<VersionTag>) {
   throw UnsupportedOperationException(
       "txDestroy only supported by Thin Client Region.");
 }
 
-void RegionInternal::txInvalidate(const std::shared_ptr<CacheableKey>& key,
-                                  const std::shared_ptr<Serializable>& callBack,
-                                  std::shared_ptr<VersionTag> versionTag) {
+void RegionInternal::txInvalidate(const std::shared_ptr<CacheableKey>&,
+                                  const std::shared_ptr<Serializable>&,
+                                  std::shared_ptr<VersionTag>) {
   throw UnsupportedOperationException(
       "txInvalidate only supported by Thin Client Region.");
 }
 
-void RegionInternal::txPut(const std::shared_ptr<CacheableKey>& key,
-                           const std::shared_ptr<Cacheable>& value,
-                           const std::shared_ptr<Serializable>& callBack,
-                           std::shared_ptr<VersionTag> versionTag) {
+void RegionInternal::txPut(const std::shared_ptr<CacheableKey>&,
+                           const std::shared_ptr<Cacheable>&,
+                           const std::shared_ptr<Serializable>&,
+                           std::shared_ptr<VersionTag>) {
   throw UnsupportedOperationException(
       "txPut only supported by Thin Client Region.");
 }

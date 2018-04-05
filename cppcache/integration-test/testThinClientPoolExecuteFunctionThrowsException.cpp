@@ -58,66 +58,6 @@ char* FEOnRegionPrSHOP = (char*)"FEOnRegionPrSHOP";
 char* FEOnRegionPrSHOP_OptimizeForWrite =
     (char*)"FEOnRegionPrSHOP_OptimizeForWrite";
 
-#define verifyGetResults()                                                     \
-  bool found = false;                                                          \
-  for (int j = 0; j < 34; j++) {                                               \
-    if (j % 2 == 0) continue;                                                  \
-    sprintf(buf, "VALUE--%d", j);                                              \
-    if (strcmp(buf, dynCast<std::shared_ptr<CacheableString>>(                 \
-                        resultList->operator[](i))                             \
-                        ->value()                                              \
-                        .c_str()) == 0) {                                      \
-      LOGINFO(                                                                 \
-          "buf = %s "                                                          \
-          "dynCast<std::shared_ptr<CacheableString>>(resultList->operator[]("  \
-          "i))->value().c_str() "                                              \
-          "= %s ",                                                             \
-          buf,                                                                 \
-          dynCast<std::shared_ptr<CacheableString>>(resultList->operator[](i)) \
-              ->value()                                                        \
-              .c_str());                                                       \
-      found = true;                                                            \
-      break;                                                                   \
-    }                                                                          \
-  }                                                                            \
-  ASSERT(found, "this returned value is invalid");
-
-#define verifyGetKeyResults()                                                  \
-  bool found = false;                                                          \
-  for (int j = 0; j < 34; j++) {                                               \
-    if (j % 2 == 0) continue;                                                  \
-    sprintf(buf, "KEY--%d", j);                                                \
-    if (strcmp(buf, dynCast<std::shared_ptr<CacheableString>>(                 \
-                        resultList->operator[](i))                             \
-                        ->value()                                              \
-                        .c_str()) == 0) {                                      \
-      LOGINFO(                                                                 \
-          "buf = %s "                                                          \
-          "dynCast<std::shared_ptr<CacheableString>>(resultList->operator[]("  \
-          "i))->value().c_str() "                                              \
-          "= %s ",                                                             \
-          buf,                                                                 \
-          dynCast<std::shared_ptr<CacheableString>>(resultList->operator[](i)) \
-              ->value()                                                        \
-              .c_str());                                                       \
-      found = true;                                                            \
-      break;                                                                   \
-    }                                                                          \
-  }                                                                            \
-  ASSERT(found, "this returned KEY is invalid");
-
-#define verifyPutResults()                          \
-  bool found = false;                               \
-  for (int j = 0; j < 34; j++) {                    \
-    if (j % 2 == 0) continue;                       \
-    sprintf(buf, "KEY--%d", j);                     \
-    if (strcmp(buf, value->value().c_str()) == 0) { \
-      found = true;                                 \
-      break;                                        \
-    }                                               \
-  }                                                 \
-  ASSERT(found, "this returned value is invalid");
-
 class MyResultCollector : public DefaultResultCollector {
  public:
   MyResultCollector()
@@ -256,7 +196,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     if (result == nullptr) {
       ASSERT(false, "echo String : result is nullptr");
     } else {
-      for (int i = 0; i < result->size(); i++) {
+      for (size_t i = 0; i < result->size(); i++) {
         if (auto uFEPtr =
                 std::dynamic_pointer_cast<UserFunctionExecutionException>(
                     result->operator[](i))) {

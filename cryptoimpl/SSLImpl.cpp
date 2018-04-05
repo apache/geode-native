@@ -40,7 +40,7 @@ void gf_destroy_SslImpl(void *impl) {
 }
 
 extern "C" {
-static int pem_passwd_cb(char *buf, int size, int rwflag, void *passwd) {
+static int pem_passwd_cb(char *buf, int size, int /*rwflag*/, void *passwd) {
   strncpy(buf, (char *)passwd, size);
   buf[size - 1] = '\0';
   return static_cast<int>(strlen(buf));

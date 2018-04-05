@@ -27,7 +27,7 @@ void ClientReplacementRequest::toData(DataOutput& output) const {
   this->m_serverLocation.toData(output);
 }
 
-void ClientReplacementRequest::fromData(DataInput& input) {}
+void ClientReplacementRequest::fromData(DataInput&) {}
 
 int8_t ClientReplacementRequest::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::ClientReplacementRequest);

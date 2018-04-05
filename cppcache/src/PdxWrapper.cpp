@@ -58,10 +58,10 @@ PdxWrapper::PdxWrapper(std::string className,
 
 std::shared_ptr<void> PdxWrapper::getObject() { return m_userObject; }
 
-const std::string &PdxWrapper::getClassName() const { return m_className; }
+const std::string& PdxWrapper::getClassName() const { return m_className; }
 
-bool PdxWrapper::operator==(const CacheableKey &other) const {
-  auto wrapper = dynamic_cast<const PdxWrapper *>(&other);
+bool PdxWrapper::operator==(const CacheableKey& other) const {
+  auto wrapper = dynamic_cast<const PdxWrapper*>(&other);
   if (wrapper == nullptr) {
     return false;
   }
@@ -74,7 +74,7 @@ int32_t PdxWrapper::hashcode() const {
   return apache::geode::client::internal::hashcode(hash);
 }
 
-void PdxWrapper::toData(PdxWriter &output) const {
+void PdxWrapper::toData(PdxWriter& output) const {
   if (m_userObject != nullptr) {
     m_serializer->toData(m_userObject, m_className.c_str(), output);
   } else {
@@ -84,15 +84,15 @@ void PdxWrapper::toData(PdxWriter &output) const {
   }
 }
 
-void PdxWrapper::fromData(PdxReader &input) {
+void PdxWrapper::fromData(PdxReader& input) {
   m_userObject = m_serializer->fromData(m_className.c_str(), input);
 }
 
-void PdxWrapper::toData(DataOutput &output) const {
+void PdxWrapper::toData(DataOutput& output) const {
   PdxHelper::serializePdx(output, *this);
 }
 
-void PdxWrapper::fromData(DataInput &input) {
+void PdxWrapper::fromData(DataInput&) {
   LOGERROR("PdxWrapper fromData should not have been called");
   throw IllegalStateException(
       "PdxWrapper fromData should not have been called");

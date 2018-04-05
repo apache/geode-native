@@ -479,7 +479,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServer1)
   }
 END_TASK_DEFINITION
 
-void doThinClientSSL(bool poolConfig = true, bool poolLocators = true) {
+void doThinClientSSL() {
   CALL_TASK(CreateLocator1_With_SSL);
   CALL_TASK(CreateServer1_With_Locator_And_SSL)
 

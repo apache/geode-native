@@ -119,7 +119,7 @@ void BBNamingContextClientImpl::close() {
   }
 }
 int BBNamingContextClientImpl::rebind(const char* key, const char* value,
-                                      char* type) {
+                                      char*) {
   // fprintf(stdout, "bind: key=%s, value=%s\n", key, value);
   if (m_bbc == nullptr) {
     return -1;
@@ -143,11 +143,11 @@ int BBNamingContextClientImpl::rebind(const char* key, const char* value,
       return 0;
     }
   } catch (FwkException& e) {
+    m_errCount++;
     FWKEXCEPTION(" rebind encounted Exception: " << e.what());
-    m_errCount++;
   } catch (...) {
-    FWKEXCEPTION("rebind unknown exception\n");
     m_errCount++;
+    FWKEXCEPTION("rebind unknown exception\n");
   }
   return -1;
 }
@@ -166,15 +166,14 @@ void BBNamingContextClientImpl::dump() {
       m_errCount = 0;
     }
   } catch (FwkException& e) {
+    m_errCount++;
     FWKEXCEPTION("create dump encounted Exception: " << e.what());
-    m_errCount++;
   } catch (...) {
-    FWKEXCEPTION("dump unknown exception\n");
     m_errCount++;
+    FWKEXCEPTION("dump unknown exception\n");
   }
 }
-int BBNamingContextClientImpl::resolve(const char* key, char* value,
-                                       char* type) {
+int BBNamingContextClientImpl::resolve(const char* key, char* value, char*) {
   // fprintf(stdout, "resolve: key=%s\n", key);fflush(stdout);
   if (m_bbc == nullptr) {
     return -1;
@@ -195,14 +194,14 @@ int BBNamingContextClientImpl::resolve(const char* key, char* value,
     }
     return v.length() == 0 ? -1 : 0;
   } catch (FwkException& e) {
+    m_errCount++;
     FWKEXCEPTION("create resolve encounted Exception: " << e.what());
-    m_errCount++;
   } catch (...) {
-    FWKEXCEPTION("resolve unknown exception\n");
     m_errCount++;
+    FWKEXCEPTION("resolve unknown exception\n");
   }
-  return -1;
 }
+
 bool BBNamingContextClientImpl::checkValue(const std::string& k,
                                            const std::string& k1,
                                            const std::string& value) {

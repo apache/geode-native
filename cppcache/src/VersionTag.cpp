@@ -33,9 +33,9 @@ VersionTag::VersionTag(int32_t entryVersion, int16_t regionVersionHighBytes,
       m_entryVersion(entryVersion),
       m_regionVersionHighBytes(regionVersionHighBytes),
       m_regionVersionLowBytes(regionVersionLowBytes),
-      m_timeStamp(0),
       m_internalMemId(internalMemId),
       m_previousMemId(previousMemId),
+      m_timeStamp(0),
       m_memberListForVersionStamp(memberListForVersionStamp) {}
 
 int32_t VersionTag::classId() const { return 0; }
@@ -44,7 +44,7 @@ int8_t VersionTag::typeId() const {
   return static_cast<int8_t>(GeodeTypeIdsImpl::VersionTag);
 }
 
-void VersionTag::toData(DataOutput& output) const {
+void VersionTag::toData(DataOutput&) const {
   throw IllegalStateException("VersionTag::toData not implemented");
 }
 

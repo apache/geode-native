@@ -45,19 +45,20 @@ class MyListener : public CacheListener {
     LOG("MyListener contructor called");
   }
 
-  virtual ~MyListener() {}
+  ~MyListener() override = default;
 
-  virtual void afterCreate(const EntryEvent& event) { m_events++; }
+  void afterCreate(const EntryEvent&) override { m_events++; }
 
-  virtual void afterUpdate(const EntryEvent& event) { m_events++; }
+  void afterUpdate(const EntryEvent&) override { m_events++; }
 
-  virtual void afterInvalidate(const EntryEvent& event) { m_events++; }
+  void afterInvalidate(const EntryEvent&) override { m_events++; }
 
-  virtual void afterDestroy(const EntryEvent& event) { m_events++; }
+  void afterDestroy(const EntryEvent&) override { m_events++; }
 
-  virtual void afterRegionInvalidate(const RegionEvent& event) {}
+  void afterRegionInvalidate(const RegionEvent&) override {}
 
-  virtual void afterRegionDestroy(const RegionEvent& event) {}
+  void afterRegionDestroy(const RegionEvent&) override {}
+
   int getNumEvents() { return m_events; }
 };
 
@@ -170,7 +171,7 @@ DUNIT_TASK_DEFINITION(SERVER1, StopLocator2)
   }
 END_TASK_DEFINITION
 
-void runListenerInit(bool poolConfig = true, bool isLocator = true) {
+void runListenerInit() {
   CALL_TASK(StartLocator1);
   CALL_TASK(StartLocator2);
   CALL_TASK(StartServer1);

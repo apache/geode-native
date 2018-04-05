@@ -181,7 +181,7 @@ class APACHE_GEODE_EXPORT RegionAttributes : public Serializable {
    * Returns the ExpirationAction used for LRU Eviction, default is
    * LOCAL_DESTROY.
    */
-  const ExpirationAction getLruEvictionAction() const;
+  ExpirationAction getLruEvictionAction() const;
 
   /**
    * Returns the name of the pool attached to the region.

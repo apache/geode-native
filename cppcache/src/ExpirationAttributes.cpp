@@ -14,9 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <geode/ExpirationAttributes.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 ExpirationAttributes::ExpirationAttributes()
     : m_action(ExpirationAction::INVALIDATE), m_timeout(0) {}
@@ -24,7 +27,7 @@ ExpirationAttributes::ExpirationAttributes()
 ExpirationAttributes::ExpirationAttributes(
     const std::chrono::seconds& expirationTime,
     const ExpirationAction expirationAction)
-    : m_action(ExpirationAction::INVALIDATE), m_timeout(expirationTime) {}
+    : m_action(expirationAction), m_timeout(expirationTime) {}
 const std::chrono::seconds& ExpirationAttributes::getTimeout() const {
   return m_timeout;
 }
@@ -37,3 +40,7 @@ ExpirationAction ExpirationAttributes::getAction() const { return m_action; }
 void ExpirationAttributes::setAction(const ExpirationAction& action) {
   m_action = action;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

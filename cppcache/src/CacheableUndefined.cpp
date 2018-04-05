@@ -25,9 +25,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
-void CacheableUndefined::toData(DataOutput& output) const {}
+void CacheableUndefined::toData(DataOutput&) const {}
 
-void CacheableUndefined::fromData(DataInput& input) {}
+void CacheableUndefined::fromData(DataInput&) {}
 
 int32_t CacheableUndefined::classId() const { return 0; }
 

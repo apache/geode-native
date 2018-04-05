@@ -309,7 +309,7 @@ bool PdxTests::PdxType::equals(PdxTests::PdxType& other,
   // lengthArr);
 
   if (!isPdxReadSerialized) {
-    for (int i = 0; i < m_objectArray->size(); i++) {
+    for (size_t i = 0; i < m_objectArray->size(); i++) {
       Address* otherAddr1 =
           dynamic_cast<Address*>(ot->m_objectArray->at(i).get());
       Address* myAddr1 = dynamic_cast<Address*>(m_objectArray->at(i).get());
@@ -320,7 +320,7 @@ bool PdxTests::PdxType::equals(PdxTests::PdxType& other,
 
   // m_objectArrayEmptyPdxFieldName
   if (!isPdxReadSerialized) {
-    for (int i = 0; i < m_objectArrayEmptyPdxFieldName->size(); i++) {
+    for (size_t i = 0; i < m_objectArrayEmptyPdxFieldName->size(); i++) {
       Address* otherAddr1 =
           dynamic_cast<Address*>(ot->m_objectArray->at(i).get());
       Address* myAddr1 = dynamic_cast<Address*>(m_objectArray->at(i).get());
@@ -337,19 +337,19 @@ bool PdxTests::PdxType::equals(PdxTests::PdxType& other,
   if (myenum->getEnumName() != otenum->getEnumName()) return false;
 
   genericValCompare(ot->m_arraylist->size(), m_arraylist->size());
-  for (int k = 0; k < m_arraylist->size(); k++) {
+  for (size_t k = 0; k < m_arraylist->size(); k++) {
     genericValCompare(ot->m_arraylist->at(k), m_arraylist->at(k));
   }
 
   LOGINFO("Equals Linked List Starts");
   genericValCompare(ot->m_linkedlist->size(), m_linkedlist->size());
-  for (int k = 0; k < m_linkedlist->size(); k++) {
+  for (size_t k = 0; k < m_linkedlist->size(); k++) {
     genericValCompare(ot->m_linkedlist->at(k), m_linkedlist->at(k));
   }
   LOGINFO("Equals Linked List Finished");
 
   genericValCompare(ot->m_vector->size(), m_vector->size());
-  for (int j = 0; j < m_vector->size(); j++) {
+  for (size_t j = 0; j < m_vector->size(); j++) {
     genericValCompare(ot->m_vector->at(j), m_vector->at(j));
   }
 

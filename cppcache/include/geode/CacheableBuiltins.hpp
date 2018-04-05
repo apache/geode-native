@@ -368,8 +368,8 @@ class APACHE_GEODE_EXPORT CacheableArray : public Cacheable {
     return std::make_shared<CacheableArray<T, GeodeTypeId>>(std::move(value));
   }
 
-  inline T operator[](uint32_t index) const {
-    if (static_cast<int32_t>(index) >= m_value.size()) {
+  inline T operator[](int32_t index) const {
+    if (index >= static_cast<int32_t>(m_value.size())) {
       throw OutOfRangeException(
           "CacheableArray::operator[]: Index out of range.");
     }

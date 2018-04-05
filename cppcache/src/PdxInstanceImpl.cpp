@@ -95,11 +95,11 @@ PdxInstanceImpl::PdxInstanceImpl(
     CachePerfStats* cacheStats,
     std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry,
     const CacheImpl* cacheImpl, bool enableTimeStatistics)
-    : m_pdxType(pdxType),
-      m_updatedFields(fieldVsValue),
-      m_buffer(nullptr),
+    : m_buffer(nullptr),
       m_bufferLength(0),
       m_typeId(0),
+      m_pdxType(pdxType),
+      m_updatedFields(fieldVsValue),
       m_cacheStats(cacheStats),
       m_pdxTypeRegistry(pdxTypeRegistry),
       m_cacheImpl(cacheImpl),
@@ -287,7 +287,7 @@ bool PdxInstanceImpl::enumerateObjectArrayEquals(
     return false;
   }
 
-  for (int i = 0; i < Obj->size(); i++) {
+  for (size_t i = 0; i < Obj->size(); i++) {
     if (!deepArrayEquals(Obj->at(i), OtherObj->at(i))) {
       return false;
     }
@@ -310,7 +310,7 @@ bool PdxInstanceImpl::enumerateVectorEquals(
     return false;
   }
 
-  for (int i = 0; i < Obj->size(); i++) {
+  for (size_t i = 0; i < Obj->size(); i++) {
     if (!deepArrayEquals(Obj->at(i), OtherObj->at(i))) {
       return false;
     }
@@ -333,7 +333,7 @@ bool PdxInstanceImpl::enumerateArrayListEquals(
     return false;
   }
 
-  for (int i = 0; i < Obj->size(); i++) {
+  for (size_t i = 0; i < Obj->size(); i++) {
     if (!deepArrayEquals(Obj->at(i), OtherObj->at(i))) {
       return false;
     }
@@ -569,8 +569,8 @@ int PdxInstanceImpl::enumerateHashTableCode(
 int PdxInstanceImpl::enumerateObjectArrayHashCode(
     std::shared_ptr<CacheableObjectArray> objArray) {
   int h = 1;
-  for (int i = 0; i < objArray->size(); i++) {
-    h = h * 31 + deepArrayHashCode(objArray->at(i));
+  for (const auto& obj : *objArray) {
+    h = h * 31 + deepArrayHashCode(obj);
   }
   return h;
 }
@@ -578,8 +578,8 @@ int PdxInstanceImpl::enumerateObjectArrayHashCode(
 int PdxInstanceImpl::enumerateVectorHashCode(
     std::shared_ptr<CacheableVector> vec) {
   int h = 1;
-  for (int i = 0; i < vec->size(); i++) {
-    h = h * 31 + deepArrayHashCode(vec->at(i));
+  for (const auto& obj : *vec) {
+    h = h * 31 + deepArrayHashCode(obj);
   }
   return h;
 }
@@ -587,8 +587,8 @@ int PdxInstanceImpl::enumerateVectorHashCode(
 int PdxInstanceImpl::enumerateArrayListHashCode(
     std::shared_ptr<CacheableArrayList> arrList) {
   int h = 1;
-  for (int i = 0; i < arrList->size(); i++) {
-    h = h * 31 + deepArrayHashCode(arrList->at(i));
+  for (const auto& obj : *arrList) {
+    h = h * 31 + deepArrayHashCode(obj);
   }
   return h;
 }
@@ -596,8 +596,8 @@ int PdxInstanceImpl::enumerateArrayListHashCode(
 int PdxInstanceImpl::enumerateLinkedListHashCode(
     std::shared_ptr<CacheableLinkedList> linkedList) {
   int h = 1;
-  for (int i = 0; i < linkedList->size(); i++) {
-    h = h * 31 + deepArrayHashCode(linkedList->at(i));
+  for (const auto& obj : *linkedList) {
+    h = h * 31 + deepArrayHashCode(obj);
   }
   return h;
 }
@@ -930,7 +930,7 @@ std::string PdxInstanceImpl::toString() const {
                          pt->getPdxClassName() + "]{";
   bool firstElement = true;
   auto identityFields = getIdentityPdxFields(pt);
-  for (size_t i = 0; i < static_cast<int>(identityFields.size()); i++) {
+  for (size_t i = 0; i < identityFields.size(); i++) {
     if (firstElement) {
       firstElement = false;
     } else {
@@ -1119,8 +1119,7 @@ std::shared_ptr<PdxSerializable> PdxInstanceImpl::getObject() {
   int64_t sampleStartNanos =
       m_enableTimeStatistics ? Utils::startStatOpTime() : 0;
   //[ToDo] do we have to call incPdxDeSerialization here?
-  auto ret =
-      PdxHelper::deserializePdx(*dataInput, true, m_typeId, m_bufferLength);
+  auto ret = PdxHelper::deserializePdx(*dataInput, m_typeId, m_bufferLength);
 
   if (m_cacheStats != nullptr) {
     if (m_enableTimeStatistics) {
@@ -1448,7 +1447,7 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
   m_updatedFields.clear();
 }
 
-void PdxInstanceImpl::fromData(PdxReader& input) {
+void PdxInstanceImpl::fromData(PdxReader&) {
   throw IllegalStateException(
       "PdxInstance::FromData( .. ) shouldn't have called");
 }
@@ -1736,7 +1735,6 @@ void PdxInstanceImpl::setField(const std::string& fieldName, int32_t value) {
   auto pft = pt->getPdxField(fieldName);
 
   if (pft != nullptr && pft->getTypeId() != PdxFieldTypes::INT) {
-    char excpStr[256] = {0};
     throw IllegalStateException("PdxInstance doesn't have field " + fieldName +
                                 " or type of field not matched " +
                                 (pft != nullptr ? pft->toString() : ""));

@@ -243,7 +243,6 @@ void ResourceInst::writeStatValue(StatisticDescriptor *sd, int64_t v) {
     default:
       std::string s = "Unexpected type code";
       throw IllegalArgumentException(s.c_str());
-      break;
   }
 }
 

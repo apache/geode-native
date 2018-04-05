@@ -70,7 +70,8 @@ class APACHE_GEODE_EXPORT ProxyRemoteQueryService : public QueryService {
       const override;
 
  private:
-  static void unSupportedException(const std::string& operationName);
+  [[noreturn]] static void unSupportedException(
+      const std::string& operationName);
   void addCqQuery(const std::shared_ptr<CqQuery>& cqQuery);
   void closeCqs(bool keepAlive);
 

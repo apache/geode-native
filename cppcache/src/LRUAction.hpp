@@ -97,17 +97,14 @@ class APACHE_GEODE_EXPORT LRUAction {
 class APACHE_GEODE_EXPORT LRUDestroyAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
-  // UNUSED LRUEntriesMap* m_entriesMapPtr;
 
-  LRUDestroyAction(RegionInternal* regionPtr, LRUEntriesMap* entriesMapPtr)
-      : m_regionPtr(regionPtr)  // UNUSED , m_entriesMapPtr(entriesMapPtr)
-  {
+  LRUDestroyAction(RegionInternal* regionPtr) : m_regionPtr(regionPtr) {
     m_destroys = true;
     m_distributes = true;
   }
 
  public:
-  virtual ~LRUDestroyAction() {}
+  virtual ~LRUDestroyAction() = default;
 
   virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
     std::shared_ptr<CacheableKey> keyPtr;
@@ -136,17 +133,13 @@ class APACHE_GEODE_EXPORT LRUDestroyAction : public virtual LRUAction {
 class APACHE_GEODE_EXPORT LRULocalInvalidateAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
-  // UNUSED LRUEntriesMap* m_entriesMapPtr;
 
-  LRULocalInvalidateAction(RegionInternal* regionPtr,
-                           LRUEntriesMap* entriesMapPtr)
-      : m_regionPtr(regionPtr)  // UNUSED , m_entriesMapPtr(entriesMapPtr)
-  {
+  LRULocalInvalidateAction(RegionInternal* regionPtr) : m_regionPtr(regionPtr) {
     m_invalidates = true;
   }
 
  public:
-  virtual ~LRULocalInvalidateAction() {}
+  virtual ~LRULocalInvalidateAction() = default;
 
   virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr);
 

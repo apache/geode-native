@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testRegionTemplateArgs"
-
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 #include "fw_helper.hpp"

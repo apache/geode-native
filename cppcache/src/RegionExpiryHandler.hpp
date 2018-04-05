@@ -27,13 +27,10 @@
 #include <geode/ExpirationAction.hpp>
 #include "RegionInternal.hpp"
 
-/**
- * @file
- */
-
 namespace apache {
 namespace geode {
 namespace client {
+
 /**
  * @class RegionExpiryHandler RegionExpiryHandler.hpp
  *
@@ -46,20 +43,14 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT RegionExpiryHandler : public ACE_Event_Handler {
  public:
-  /**
-   * Constructor
-   */
   RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
                       ExpirationAction action, std::chrono::seconds duration);
 
-  /** This handler object will be registered with the Timer Queue.
-   *  When the timer expires the handle_timeout is invoked.
-   */
-  int handle_timeout(const ACE_Time_Value& current_time, const void* arg);
-  /**
-   * This is called when the task object needs to be cleaned up..
-   */
-  int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask);
+  int handle_timeout(const ACE_Time_Value& current_time,
+                     const void* arg) override;
+
+  int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
+
   void setExpiryTaskId(long expiryTaskId) { m_expiryTaskId = expiryTaskId; }
 
  private:

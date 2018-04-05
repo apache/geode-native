@@ -42,13 +42,6 @@ class TestDataOutput : public DataOutputInternal {
     // NOP
   }
 
-  TestDataOutput(Cache* cache)
-      : DataOutputInternal(nullptr),
-        m_byteArray(nullptr),
-        m_serializationRegistry() {
-    // NOP
-  }
-
   virtual ~TestDataOutput() {
     delete m_byteArray;
     m_byteArray = nullptr;
@@ -80,7 +73,7 @@ class CacheableStringTests : public ::testing::Test, public ByteArrayFixture {
 inline std::string to_hex(const uint8_t* bytes, size_t len) {
   std::stringstream ss;
   ss << std::setfill('0') << std::hex;
-  for (int i(0); i < len; ++i) {
+  for (size_t i(0); i < len; ++i) {
     ss << std::setw(2) << (int)bytes[i];
   }
   return ss.str();
@@ -213,11 +206,8 @@ TEST_F(CacheableStringTests, TestToDataNonAsciiHuge) {
 TEST_F(CacheableStringTests, TestFromDataNonAsciiHuge) {
   std::string utf8(std::numeric_limits<uint16_t>::max(), 'a');
   utf8.append(u8"\u00E4");
-  auto&& utf16 =
-      std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-          .from_bytes(utf8);
 
-  auto origStr = CacheableString::create(utf8.c_str());
+  auto origStr = CacheableString::create(utf8);
   DataOutputInternal out;
   origStr->toData(out);
 

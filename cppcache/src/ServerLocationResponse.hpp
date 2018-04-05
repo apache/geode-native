@@ -30,7 +30,7 @@ namespace client {
 class ServerLocationResponse : public Serializable {
  public:
   ServerLocationResponse() : Serializable() {}
-  void toData(DataOutput& output) const override {}
+  void toData(DataOutput&) const override {}
   void fromData(DataInput& input) override = 0;
   int32_t classId() const override { return 0; }
   int8_t typeId() const override = 0;

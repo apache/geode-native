@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testSpinLock"
-
 #include "fw_dunit.hpp"
 
 #include <mutex>

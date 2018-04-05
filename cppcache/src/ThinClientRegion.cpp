@@ -779,7 +779,6 @@ bool ThinClientRegion::containsKeyOnServer(
     const std::shared_ptr<CacheableKey>& keyPtr) const {
   GfErrType err = GF_NOERR;
   bool ret = false;
-  TXState* txState = getTXState();
 
   /** @brief Create message and send to bridge server */
 
@@ -826,7 +825,6 @@ bool ThinClientRegion::containsValueForKey_remote(
     const std::shared_ptr<CacheableKey>& keyPtr) const {
   GfErrType err = GF_NOERR;
   bool ret = false;
-  TXState* txState = getTXState();
 
   /** @brief Create message and send to bridge server */
 
@@ -1213,12 +1211,11 @@ GfErrType ThinClientRegion::getAllNoThrow_remote(
       // track all entries with destroy tracking for non-existent entries
       destroyTracker = m_entries->addTrackerForAllEntries(updateCountMap, true);
     } else {
-      for (int32_t index = 0; index < keys->size(); ++index) {
+      for (const auto& key : *keys) {
         std::shared_ptr<Cacheable> oldValue;
-        const std::shared_ptr<CacheableKey>& key = keys->operator[](index);
         int updateCount =
             m_entries->addTrackerForEntry(key, oldValue, true, false, false);
-        updateCountMap.insert(std::make_pair(key, updateCount));
+        updateCountMap.emplace(key, updateCount);
       }
     }
   }
@@ -1800,8 +1797,6 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
            resultMap.size());
   for (const auto& resultMapIter : resultMap) {
     const auto& value = resultMapIter.second;
-    PutAllPartialResultServerException* papException = nullptr;
-    std::shared_ptr<VersionedCacheableObjectPartList> list = nullptr;
 
     if (const auto papException =
             std::dynamic_pointer_cast<PutAllPartialResultServerException>(
@@ -2024,16 +2019,12 @@ uint32_t ThinClientRegion::size_remote() {
     case TcrMessage::RESPONSE: {
       auto size = std::static_pointer_cast<CacheableInt32>(reply.getValue());
       return size->value();
-      // LOGINFO("Map is written into remote server at region %s",
-      // m_fullPath.c_str());
-    } break;
+    }
     case TcrMessage::EXCEPTION:
       err =
           handleServerException("ThinClientRegion::size", reply.getException());
       break;
     case TcrMessage::SIZE_ERROR:
-      // LOGERROR( "A write error occurred on the endpoint %s",
-      //     m_tcrdm->getActiveEndpoint( )->name( ).c_str( ) );
       err = GF_CACHESERVER_EXCEPTION;
       break;
     default:
@@ -2344,7 +2335,7 @@ GfErrType ThinClientRegion::unregisterKeysNoThrow(
   }
 
   TcrMessageUnregisterInterestList request(m_cacheImpl->createDataOutput(),
-                                           this, keys, false, false, true,
+                                           this, keys, false, true,
                                            InterestResultPolicy::NONE, m_tcrdm);
   err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
   if (err == GF_NOERR /*|| err == GF_CACHE_REDUNDANCY_FAILURE*/) {
@@ -2380,7 +2371,7 @@ GfErrType ThinClientRegion::unregisterKeysNoThrowLocalDestroy(
   }
 
   TcrMessageUnregisterInterestList request(m_cacheImpl->createDataOutput(),
-                                           this, keys, false, false, true,
+                                           this, keys, false, true,
                                            InterestResultPolicy::NONE, m_tcrdm);
   err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
   if (err == GF_NOERR) {
@@ -2535,7 +2526,7 @@ GfErrType ThinClientRegion::unregisterRegexNoThrow(const std::string& regex,
     TcrMessageReply reply(false, m_tcrdm);
     TcrMessageUnregisterInterest request(
         m_cacheImpl->createDataOutput(), m_fullPath, regex,
-        InterestResultPolicy::NONE, false, false, true, m_tcrdm);
+        InterestResultPolicy::NONE, false, true, m_tcrdm);
     err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
     if (err == GF_NOERR /*|| err == GF_CACHE_REDUNDANCY_FAILURE*/) {
       if (attemptFailover) {
@@ -2581,7 +2572,7 @@ GfErrType ThinClientRegion::unregisterRegexNoThrowLocalDestroy(
     TcrMessageReply reply(false, m_tcrdm);
     TcrMessageUnregisterInterest request(
         m_cacheImpl->createDataOutput(), m_fullPath, regex,
-        InterestResultPolicy::NONE, false, false, true, m_tcrdm);
+        InterestResultPolicy::NONE, false, true, m_tcrdm);
     err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
     if (err == GF_NOERR) {
       if (attemptFailover) {
@@ -3336,6 +3327,8 @@ void ThinClientRegion::txPut(
   GfErrTypeToException("Region::putTX", err);
 }
 
+void ThinClientRegion::setProcessedMarker(bool){};
+
 void ChunkedInterestResponse::reset() {
   if (m_resultKeys != nullptr && m_resultKeys->size() > 0) {
     m_resultKeys->clear();
@@ -3479,8 +3472,7 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     return;
   }
 
-  uint16_t stiLen = 0;
-  // soubhik: ignoring parent classes for now
+  // ignoring parent classes for now
   // we will require to look at it once CQ is to be implemented.
   // skipping HashSet/StructSet
   // qhe: It was agreed upon that we'll use set for all kinds of results.
@@ -3901,10 +3893,9 @@ void ChunkedDurableCQListResponse::reset() {
 
 // handles the chunk response for GETDURABLECQS_MSG_TYPE
 void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
-                                               int32_t chunkLen,
-                                               uint8_t isLastChunkWithSecurity,
-                                               const CacheImpl* cacheImpl) {
-  auto input = cacheImpl->createDataInput(chunk, chunkLen);
+                                               int32_t chunkLen, uint8_t,
+                                               const CacheImpl* m_cacheImpl) {
+  auto input = m_cacheImpl->createDataInput(chunk, chunkLen);
   DataInputInternal::setPoolName(*input, m_msg.getPoolName());
 
   // read part length

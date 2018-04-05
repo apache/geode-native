@@ -157,14 +157,6 @@ endif()
 #TODO remove this debugging for NMake
 set(CMAKE_VERBOSE_MAKEFILE 0)
 
-# Interface for C++/CLI language.
-add_library(c++cli INTERFACE)
-target_compile_options(c++cli
-  INTERFACE
-    /clr
-    /EHa
-)
-
 # Interface for C++11 language
 add_library(c++11 INTERFACE)
 
@@ -183,12 +175,63 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
   # C++11 requires these libraries, treat -std=c++11 as library
   #TODO look into CMAKE_CXX_STANDARD_LIBRARIES
   target_link_libraries(c++11 INTERFACE -std=c++11 stdc++ gcc_s CrunG3 m c)
+
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs")
+
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  target_compile_options(_WarningsAsError INTERFACE
+    -Werror
+    -Wall
+    -Wextra
+    -Wno-unknown-pragmas #TODO fix
+    -Wno-unused-variable #TODO fix
+    -Wno-unused-function #TODO fix
+    -Wpedantic
+    -Weverything
+    -Wno-non-virtual-dtor #TODO fix
+    -Wno-missing-prototypes #TODO fix
+    -Wno-extra-semi # TODO fix
+    -Wno-sign-conversion #TODO fix
+    -Wno-deprecated #TODO fix
+    -Wno-old-style-cast #TODO fix
+    -Wno-format-nonliteral #TODO fix
+    -Wno-double-promotion #TODO fix
+    -Wno-undefined-func-template #TODO fix
+    -Wno-float-equal #TODO fix
+    -Wno-header-hygiene #TODO fix
+    -Wno-shorten-64-to-32 #TODO fix
+    -Wno-conversion #TODO fix
+    -Wno-shadow-field-in-constructor #TODO fix
+    -Wno-shadow #TODO fix
+    -Wno-missing-variable-declarations #TODO fix
+    -Wno-switch-enum #TODO fix
+    -Wno-reserved-id-macro #TODO fix
+    -Wno-documentation # TODO fix
+    -Wno-implicit-fallthrough #TODO fix
+    -Wno-covered-switch-default #TODO fix
+    -Wno-range-loop-analysis
+    -Wno-weak-vtables
+    -Wno-weak-template-vtables
+    -Wno-padded
+    -Wno-c++98-compat
+    -Wno-c++98-compat-pedantic
+    -Wno-global-constructors
+    -Wno-exit-time-destructors
+    -Wno-documentation-unknown-command
+    )
+
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(BUILD_CLI 1)
 
-  target_compile_options(_WarningsAsError INTERFACE /WX)
+  # Interface for C++/CLI language.
+  add_library(c++cli INTERFACE)
+  target_compile_options(c++cli INTERFACE
+    /clr
+    /EHa)
+
+  target_compile_options(_WarningsAsError INTERFACE
+    /WX)
 
   # TODO error on warnings
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")

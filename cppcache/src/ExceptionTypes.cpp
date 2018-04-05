@@ -33,7 +33,7 @@ namespace client {
 void setTSSExceptionMessage(const char* exMsg);
 const char* getTSSExceptionMessage();
 
-void GfErrTypeThrowException(const char* str, GfErrType err) {
+[[noreturn]] void GfErrTypeThrowException(const char* str, GfErrType err) {
   std::string func;
   std::string message;
   const char* exMsg = getTSSExceptionMessage();

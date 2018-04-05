@@ -113,11 +113,6 @@ opCodeList::value_type tmpAArr[] = {OP_CREATE,       OP_UPDATE,
 #define WRITER_CLIENT s1p2
 #define READER_CLIENT s2p1
 
-#define TYPE_ADMIN_CLIENT 'A'
-#define TYPE_WRITER_CLIENT 'W'
-#define TYPE_READER_CLIENT 'R'
-#define TYPE_USER_CLIENT 'U'
-
 const char* regionNamesAuth[] = {"DistRegionAck"};
 std::shared_ptr<Properties> userCreds;
 void initClientAuth(char UserType) {
@@ -368,7 +363,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
           ASSERT(false, "echo String : result is nullptr");
         } else {
           try {
-            for (int i = 0; i < result->size(); i++) {
+            for (size_t i = 0; i < result->size(); i++) {
               auto uFEPtr =
                   std::dynamic_pointer_cast<UserFunctionExecutionException>(
                       result->operator[](i));
@@ -404,7 +399,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
                "region get: resultList count is not as arrayList count + "
                "exception");
 
-        for (int i = 0; i < result->size(); i++) {
+        for (size_t i = 0; i < result->size(); i++) {
           try {
             auto intValue = std::dynamic_pointer_cast<CacheableInt32>(
                 result->operator[](i));

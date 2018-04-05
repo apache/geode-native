@@ -28,14 +28,11 @@
 using namespace apache::geode::client;
 
 SuspendedTxExpiryHandler::SuspendedTxExpiryHandler(
-    CacheTransactionManagerImpl* cacheTxMgr, TransactionId& tid,
-    std::chrono::seconds duration)
-    :  // UNUSED m_duration(duration),
-      m_cacheTxMgr(cacheTxMgr),
-      m_txid(tid) {}
+    CacheTransactionManagerImpl* cacheTxMgr, TransactionId& tid)
+    : m_cacheTxMgr(cacheTxMgr), m_txid(tid) {}
 
-int SuspendedTxExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
-                                             const void* arg) {
+int SuspendedTxExpiryHandler::handle_timeout(const ACE_Time_Value&,
+                                             const void*) {
   LOGDEBUG("Entered SuspendedTxExpiryHandler");
   try {
     // resume the transaction and rollback it

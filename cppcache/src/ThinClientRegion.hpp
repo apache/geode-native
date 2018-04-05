@@ -311,7 +311,7 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
   virtual void handleMarker() {}
 
   virtual void destroyDM(bool keepEndpoints = false);
-  virtual void setProcessedMarker(bool mark = true){};
+  virtual void setProcessedMarker(bool mark = true);
 
  private:
   bool isRegexRegistered(

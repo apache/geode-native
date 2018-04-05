@@ -141,9 +141,9 @@ void PdxHelper::serializePdx(
   }
 }
 
-std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
-    DataInput& dataInput, bool forceDeserialize, int32_t typeId,
-    int32_t length) {
+std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
+                                                           int32_t typeId,
+                                                           int32_t length) {
   std::shared_ptr<PdxSerializable> pdxObjectptr = nullptr;
   std::shared_ptr<PdxType> pdxLocalType = nullptr;
 
@@ -282,8 +282,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
 
     cachePerfStats.incPdxDeSerialization(len + 9);  // pdxLen + 1 + 2*4
 
-    return PdxHelper::deserializePdx(dataInput, forceDeserialize,
-                                     (int32_t)typeId, (int32_t)len);
+    return PdxHelper::deserializePdx(dataInput, (int32_t)typeId, (int32_t)len);
 
   } else {
     // Read Length

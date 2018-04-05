@@ -235,7 +235,7 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
     return std::make_shared<PdxVersioned1>();
   }
 
-  bool equals(PdxTests::PdxVersioned1& other, bool isPdxReadSerialized) const;
+  bool equals(PdxTests::PdxVersioned1& other) const;
 
   template <typename T1, typename T2>
   bool genericValCompare(T1 value1, T2 value2) const;

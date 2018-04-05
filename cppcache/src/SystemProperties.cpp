@@ -48,8 +48,6 @@ const char LogLevelProperty[] = "log-level";
 const char Name[] = "name";
 const char ConnectionPoolSize[] = "connection-pool-size";
 
-const char LicenseFilename[] = "license-file";
-const char LicenseType[] = "license-type";
 const char CacheXMLFile[] = "cache-xml-file";
 const char LogFileSizeLimit[] = "log-file-size-limit";
 const char LogDiskSpaceLimit[] = "log-disk-space-limit";
@@ -104,9 +102,6 @@ const apache::geode::client::LogLevel DefaultLogLevel =
     apache::geode::client::LogLevel::Config;
 
 const int DefaultConnectionPoolSize = 5;
-
-// defaults for crash dump related properties
-const bool DefaultCrashDumpEnabled = true;
 
 const bool DefaultGridClient = false;
 const bool DefaultAutoReadyForEvents = true;
@@ -259,7 +254,6 @@ bool SystemProperties::parseBooleanProperty(const std::string& property,
   }
 
   throwError("SystemProperties: non-boolean " + property + "=" + value);
-  return false;
 }
 
 template <class _Rep, class _Period>

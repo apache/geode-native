@@ -422,17 +422,12 @@ class TestPdxSerializerForV1 : public PdxSerializer {
     }
   }
 
-  static size_t objectSize(const std::shared_ptr<const void>& testObject,
-                           const std::string& className) {
-    // ASSERT(strcmp(className, V1CLASSNAME1) == 0 || strcmp(className,
-    // V1CLASSNAME2) == 0, "Unexpected classname in objectSize()");
-    LOGINFO("TestPdxSerializer::objectSize called");
+  static size_t objectSize(const std::shared_ptr<const void>&,
+                           const std::string&) {
     return 12345;  // dummy value
   }
 
-  UserObjectSizer getObjectSizer(const std::string& className) override {
-    // ASSERT(strcmp(className, V1CLASSNAME1) == 0 || strcmp(className,
-    // V1CLASSNAME2) == 0, "Unexpected classname in getObjectSizer");
+  UserObjectSizer getObjectSizer(const std::string&) override {
     return objectSize;
   }
 

@@ -40,11 +40,11 @@ PdxFieldType::PdxFieldType()
       m_typeId(PdxFieldTypes::UNKNOWN),
       m_sequenceId(0),
       m_isVariableLengthType(false),
+      m_isIdentityField(false),
       m_fixedSize(0),
       m_varLenFieldIdx(0),
-      m_isIdentityField(false),
-      m_relativeOffset(0),
-      m_vlOffsetIndex(0) {}
+      m_vlOffsetIndex(0),
+      m_relativeOffset(0) {}
 
 PdxFieldType::PdxFieldType(std::string fieldName, std::string className,
                            PdxFieldTypes typeId, int32_t sequenceId,
@@ -56,11 +56,11 @@ PdxFieldType::PdxFieldType(std::string fieldName, std::string className,
       m_typeId(typeId),
       m_sequenceId(sequenceId),
       m_isVariableLengthType(isVariableLengthType),
+      m_isIdentityField(false),
       m_fixedSize(fixedSize),
       m_varLenFieldIdx(varLenFieldIdx),
-      m_isIdentityField(false),
-      m_relativeOffset(0),
-      m_vlOffsetIndex(0) {}
+      m_vlOffsetIndex(0),
+      m_relativeOffset(0) {}
 
 void PdxFieldType::toData(DataOutput& output) const {
   output.writeString(m_fieldName);
@@ -130,8 +130,8 @@ int32_t PdxFieldType::getFixedTypeSize() const {
     default:
       return -1;
   }
-  return -1;
 }
+
 std::string PdxFieldType::toString() const {
   char stringBuf[1024];
   ACE_OS::snprintf(
@@ -141,6 +141,7 @@ std::string PdxFieldType::toString() const {
       this->m_sequenceId);
   return std::string(stringBuf);
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

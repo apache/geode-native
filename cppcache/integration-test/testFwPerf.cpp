@@ -17,8 +17,6 @@
 
 #include "fw_dunit.hpp"
 
-#define ROOT_NAME "testFwPerf"
-
 perf::PerfSuite perfSuite("FwPerf");
 
 class LocalPutTask : public perf::Thread {

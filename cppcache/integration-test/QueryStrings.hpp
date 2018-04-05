@@ -496,11 +496,11 @@ const QueryStrings structsetQueries[SS_ARRAY_SIZE] = {
 #endif
 };  // end of structsetQueries
 
-const int structsetRowCounts[SS_ARRAY_SIZE] = {
+const size_t structsetRowCounts[SS_ARRAY_SIZE] = {
     20, 2, 2,  20, 20, 0, 0, 20, 0,  20, 20, 0,  20, 0,  20, 20, 0, 10,
     1,  1, 10, 1,  20, 9, 1, 1,  20, 20, 2,  20, 20, 20, 0,  1,  1, 1};
 
-const int structsetFieldCounts[SS_ARRAY_SIZE] = {
+const int32_t structsetFieldCounts[SS_ARRAY_SIZE] = {
     6, 2, 2, 2, 2, 0, 0, 2, 0, 4, 3, 0, 3, 0, 3, 2, 0, 3,
     2, 2, 3, 2, 4, 4, 3, 5, 3, 5, 3, 2, 2, 2, 0, 3, 3, 3};
 
@@ -652,10 +652,9 @@ const QueryStrings regionQueries[RQ_ARRAY_SIZE] =
             "select element(select distinct * from /Portfolios where ID "
             "<=1).status = 'active'")};  // end of regionQueries
 
-const int regionQueryRowCounts[RQ_ARRAY_SIZE] =
+const size_t regionQueryRowCounts[RQ_ARRAY_SIZE] =
     {  // results sizes for regionQuery
-        1, 19, 0, 0, 0, 0,  0,  20, 20, 0, 20,
-        0, 20, 0, 0, 2, 10, 20, 20, -1, -1};
+        1, 19, 0, 0, 0, 0, 0, 20, 20, 0, 20, 0, 20, 0, 0, 2, 10, 20, 20, 0, 0};
 const QueryStrings cqResultsetQueries[CQRS_ARRAY_SIZE] = {
     // 0 idx
     QRY(singleRegion, "select * from /Portfolios port")

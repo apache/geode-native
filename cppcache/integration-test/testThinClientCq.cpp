@@ -101,10 +101,15 @@ const char* regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
 
 class MyCqListener1026 : public CqListener {
  public:
-  void close() { LOGINFO("MyCqListener::close called"); }
-  void onError(const CqEvent& cqe) { LOGINFO("MyCqListener::OnError called"); }
+  void close() override { LOGINFO("MyCqListener::close called"); }
 
-  void onEvent(const CqEvent& cqe) { LOGINFO("MyCqListener::onEvent called"); }
+  void onError(const CqEvent&) override {
+    LOGINFO("MyCqListener::OnError called");
+  }
+
+  void onEvent(const CqEvent&) override {
+    LOGINFO("MyCqListener::onEvent called");
+  }
 };
 
 class MyCqListener : public CqListener {
@@ -707,7 +712,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
      failmsg += excp.what();
      LOG(failmsg.c_str());
      FAIL(failmsg.c_str());
-     excp.getStackTrace();
     }
 
     LOG("StepFour complete.");
@@ -772,7 +776,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, UnsetPortfolioTypeToPdxC2)
   { m_isPdx = false; }
 END_TASK_DEFINITION
 //
-void doThinClientCq(bool poolConfig = false, bool poolLocators = false) {
+void doThinClientCq() {
   CALL_TASK(CreateLocator);
   CALL_TASK(CreateServer1_Locator);
 
@@ -907,11 +911,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, executeCQ)
 END_TASK_DEFINITION
 
 void checkCQStatusOnConnect(const char* poolName, const char* name,
-                            int connect) {
- auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
- std::shared_ptr<QueryService> qs;
- if (pool != nullptr) {
-   qs = pool->getQueryService();
+                            uint32_t connect) {
+  auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
+  std::shared_ptr<QueryService> qs;
+  if (pool != nullptr) {
+    qs = pool->getQueryService();
   }
   auto cq = qs->getCq(const_cast<char*>(name));
   auto cqAttr = cq->getCqAttributes();
@@ -950,11 +954,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, checkCQStatusOnConnect_Pool)
 END_TASK_DEFINITION
 
 void checkCQStatusOnDisConnect(const char* poolName, const char* cqName,
-                               int disconnect) {
- auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
- std::shared_ptr<QueryService> qs;
- if (pool != nullptr) {
-   qs = pool->getQueryService();
+                               uint32_t disconnect) {
+  auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
+  std::shared_ptr<QueryService> qs;
+  if (pool != nullptr) {
+    qs = pool->getQueryService();
   }
   auto cq = qs->getCq(const_cast<char*>(cqName));
   auto cqAttr = cq->getCqAttributes();
@@ -1020,11 +1024,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, putEntries)
 END_TASK_DEFINITION
 
 void checkCQStatusOnPutEvent(const char* poolName, const char* cqName,
-                             int count) {
- auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
- std::shared_ptr<QueryService> qs;
- if (pool != nullptr) {
-   qs = pool->getQueryService();
+                             uint32_t count) {
+  auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
+  std::shared_ptr<QueryService> qs;
+  if (pool != nullptr) {
+    qs = pool->getQueryService();
   }
   auto cq = qs->getCq(const_cast<char*>(cqName));
   auto cqAttr = cq->getCqAttributes();

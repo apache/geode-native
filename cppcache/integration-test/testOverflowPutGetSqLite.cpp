@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testOverflowPutGetSqLite"
-
 #include <string>
 #include <iostream>
 
@@ -88,7 +86,7 @@ void checkOverflowTokenValues(std::shared_ptr<Region>& regionPtr,
   std::shared_ptr<CacheableKey> keyPtr;
   std::shared_ptr<Cacheable> valuePtr;
   int count = 0;
-  int nonoverflowCount = 0;
+  size_t nonoverflowCount = 0;
   for (uint32_t i = 0; i < num; i++) {
     keyPtr = v.at(i);
     auto rPtr = regionPtr->getEntry(keyPtr);

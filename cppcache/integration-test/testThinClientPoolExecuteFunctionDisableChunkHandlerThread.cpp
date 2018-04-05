@@ -197,7 +197,7 @@ class putThread : public ACE_Task_Base {
   volatile bool m_stop;
 
  public:
-  putThread(std::shared_ptr<Region> rp, int min, int max, bool isWarmUpTask)
+  putThread(std::shared_ptr<Region> rp, int min, int max)
       : regPtr(rp),
         m_min(min),
         m_max(max),
@@ -285,7 +285,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, dofuncOps)
 #ifdef __linux
 
     for (int thdIdx = 0; thdIdx < nThreads; thdIdx++) {
-      threads[thdIdx] = new putThread(regPtr0, 0, 500, false);
+      threads[thdIdx] = new putThread(regPtr0, 0, 500);
       threads[thdIdx]->start();
     }
 #endif

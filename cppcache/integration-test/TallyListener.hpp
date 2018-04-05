@@ -146,9 +146,9 @@ class TallyListener : public CacheListener {
 
   virtual void afterRegionClear(const EntryEvent& event);
 
-  virtual void afterRegionInvalidate(const RegionEvent& event) {}
+  virtual void afterRegionInvalidate(const RegionEvent&) {}
 
-  virtual void afterRegionDestroy(const RegionEvent& event) {}
+  virtual void afterRegionDestroy(const RegionEvent&) {}
 
   void showTallies() {
     char buf[1024];

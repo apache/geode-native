@@ -281,7 +281,7 @@ inline uint32_t objectArraySize(const std::vector<TObj>& array) {
 template <typename TObj, typename TLen,
           typename std::enable_if<!std::is_base_of<Serializable, TObj>::value,
                                   Serializable>::type* = nullptr>
-inline size_t objectSize(const TObj* array, TLen len) {
+inline size_t objectSize(const TObj*, TLen len) {
   return sizeof(TObj) * len;
 }
 

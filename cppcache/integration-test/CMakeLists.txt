@@ -17,7 +17,11 @@ cmake_minimum_required(VERSION 3.10)
 project(nativeclient.tests.cppcache LANGUAGES CXX)
 
 set(TEST_UTILS_LIB test-cppcache-utils)
-add_library(${TEST_UTILS_LIB} STATIC fw_dunit.cpp BBNamingContext.cpp CacheHelper.cpp)
+add_library(${TEST_UTILS_LIB} STATIC
+  fw_dunit.cpp
+  BBNamingContext.cpp
+  CacheHelper.cpp
+  CacheableWrapper.cpp)
 target_link_libraries(${TEST_UTILS_LIB}
   PRIVATE
     ACE

@@ -47,14 +47,14 @@ class APACHE_GEODE_EXPORT ExpiryHandler_T : public ACE_Event_Handler {
   ExpiryHandler_T(T *op_handler, TO_HANDLER timeout)
       : op_handler_(op_handler), to_handler_(timeout) {}
 
-  virtual ~ExpiryHandler_T() {}
+  ~ExpiryHandler_T() override = default;
 
-  virtual int handle_timeout(const ACE_Time_Value &tv, const void *arg) {
+  int handle_timeout(const ACE_Time_Value &tv, const void *arg) override {
     return (this->to_handler_ == 0 ? 0 : (this->op_handler_->*to_handler_)(
                                              tv, arg));
   }
 
-  virtual int handle_close(ACE_HANDLE fd, ACE_Reactor_Mask close_mask) {
+  int handle_close(ACE_HANDLE, ACE_Reactor_Mask) override {
     //  delete the handler so this class can only be used for cases
     // that do not handle deletion themselves and those that never expire
     // otherwise, since GF_Timer_Heap_ImmediateReset_T also deletes handlers

@@ -71,12 +71,9 @@ class DupChecker : public CacheListener {
     }
   }
 
-  virtual void afterCreate(const EntryEvent& event) { check(event); }
+  void afterCreate(const EntryEvent& event) override { check(event); }
 
-  virtual void afterUpdate(const EntryEvent& event) { check(event); }
-
-  virtual void afterRegionInvalidate(const RegionEvent& event){};
-  virtual void afterRegionDestroy(const RegionEvent& event){};
+  void afterUpdate(const EntryEvent& event) override { check(event); }
 };
 
 ///////////////////////////////////////////////////////
@@ -323,8 +320,6 @@ void _verifyIntEntry(const char* name, const char* key, const int val,
   _verifyIntEntry(name, key, val, false);
   LOG("Entry verified.");
 }
-
-#define verifyCreated(x, y) _verifyCreated(x, y, __LINE__)
 
 void _verifyCreated(const char* name, const char* key, int line) {
   char logmsg[1024];

@@ -16,6 +16,7 @@
  */
 
 #include <algorithm>
+
 #include <ace/INET_Addr.h>
 
 #include <geode/ResultCollector.hpp>
@@ -36,7 +37,10 @@
 #include "NonCopyable.hpp"
 #include "util/exception.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
+
 using namespace apache::geode::statistics;
 
 /* adongre
@@ -489,7 +493,7 @@ void ThinClientPoolDM::cleanStaleConnections(volatile bool& isRunning) {
 
   LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize.load());
 }
-void ThinClientPoolDM::cleanStickyConnections(volatile bool& isRunning) {}
+void ThinClientPoolDM::cleanStickyConnections(volatile bool&) {}
 
 void ThinClientPoolDM::restoreMinConnections(volatile bool& isRunning) {
   if (!isRunning) {
@@ -1193,8 +1197,8 @@ TcrEndpoint* ThinClientPoolDM::getSingleHopServer(
 }
 
 TcrEndpoint* ThinClientPoolDM::getEndPoint(
-    const std::shared_ptr<BucketServerLocation>& serverLocation,
-    int8_t& version, std::set<ServerLocation>& excludeServers) {
+    const std::shared_ptr<BucketServerLocation>& serverLocation, int8_t&,
+    std::set<ServerLocation>& excludeServers) {
   TcrEndpoint* ep = nullptr;
   if (serverLocation->isValid()) {
     if (excludeServer(serverLocation->getEpString(), excludeServers)) {
@@ -1876,7 +1880,7 @@ GfErrType ThinClientPoolDM::createPoolConnection(
 }
 
 TcrConnection* ThinClientPoolDM::getConnectionFromQueue(
-    bool timeout, GfErrType* error, std::set<ServerLocation>& excludeServers,
+    bool, GfErrType* error, std::set<ServerLocation>& excludeServers,
     bool& maxConnLimit) {
   std::chrono::microseconds timeoutTime = m_attrs->getFreeConnectionTimeout();
 
@@ -1899,7 +1903,7 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueue(
   return mp;
 }
 
-bool ThinClientPoolDM::isEndpointAttached(TcrEndpoint* ep) { return true; }
+bool ThinClientPoolDM::isEndpointAttached(TcrEndpoint*) { return true; }
 
 GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
                                             TcrMessageReply& reply,
@@ -2379,3 +2383,116 @@ GfErrType ThinClientPoolDM::doFailover(TcrConnection* conn) {
 
   return err;
 }
+
+bool ThinClientPoolDM::canItBeDeletedNoImpl(TcrConnection*) { return false; };
+
+void ThinClientPoolDM::putInQueue(TcrConnection* conn, bool,
+                                  bool isTransaction) {
+  if (isTransaction) {
+    m_manager->setStickyConnection(conn, isTransaction);
+  } else {
+    put(conn, false);
+  }
+};
+
+TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
+    GfErrType* error, std::set<ServerLocation>& excludeServers, bool,
+    TcrMessage& request, int8_t& version, bool& match, bool& connFound,
+    const std::shared_ptr<BucketServerLocation>& serverLocation) {
+  TcrConnection* conn = nullptr;
+  TcrEndpoint* theEP = nullptr;
+  LOGDEBUG("prEnabled = %s, forSingleHop = %s %d",
+           m_attrs->getPRSingleHopEnabled() ? "true" : "false",
+           request.forSingleHop() ? "true" : "false", request.getMessageType());
+
+  match = false;
+  std::shared_ptr<BucketServerLocation> slTmp = nullptr;
+  if (request.forTransaction()) {
+    bool connFound =
+        m_manager->getStickyConnection(conn, error, excludeServers, true);
+    TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+    if (*error == GF_NOERR && !connFound &&
+        (txState == nullptr || txState->isDirty())) {
+      *error = doFailover(conn);
+    }
+
+    if (*error != GF_NOERR) {
+      return nullptr;
+    }
+
+    if (txState != nullptr) {
+      txState->setDirty();
+    }
+  } else if (serverLocation != nullptr /*&& excludeServers.size() == 0*/) {
+    theEP = getEndPoint(serverLocation, version, excludeServers);
+  } else if (m_attrs->getPRSingleHopEnabled() /*&& excludeServers.size() == 0*/
+             && request.forSingleHop() &&
+             (request.getMessageType() != TcrMessage::GET_ALL_70) &&
+             (request.getMessageType() != TcrMessage::GET_ALL_WITH_CALLBACK)) {
+    theEP = getSingleHopServer(request, version, slTmp, excludeServers);
+    if (theEP != nullptr) {
+      // if all buckets are not initialized
+      //  match = true;
+    }
+    if (slTmp != nullptr && m_clientMetadataService != nullptr) {
+      if (m_clientMetadataService->isBucketMarkedForTimeout(
+              request.getRegionName().c_str(), slTmp->getBucketId()) == true) {
+        *error = GF_CLIENT_WAIT_TIMEOUT;
+        return nullptr;
+      }
+    }
+    LOGDEBUG("theEP is %p", theEP);
+  }
+  bool maxConnLimit = false;
+  if (theEP != nullptr) {
+    conn = getFromEP(theEP);
+    if (!conn) {
+      LOGFINER("Creating connection to endpint as not found in pool ");
+      *error = createPoolConnectionToAEndPoint(conn, theEP, maxConnLimit, true);
+      if (*error == GF_CLIENT_WAIT_TIMEOUT ||
+          *error == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
+        if (m_clientMetadataService == nullptr || request.getKey() == nullptr) {
+          return nullptr;
+        }
+        std::shared_ptr<Region> region;
+        m_connManager.getCacheImpl()->getRegion(request.getRegionName().c_str(),
+                                                region);
+        if (region != nullptr) {
+          slTmp = nullptr;
+          m_clientMetadataService
+              ->markPrimaryBucketForTimeoutButLookSecondaryBucket(
+                  region, request.getKey(), request.getValue(),
+                  request.getCallbackArgument(), request.forPrimary(), slTmp,
+                  version);
+        }
+        return nullptr;
+      }
+    }
+  }
+  if (conn == nullptr) {
+    LOGDEBUG("conn not found");
+    match = false;
+    LOGDEBUG("looking For connection");
+    conn = getConnectionFromQueue(true, error, excludeServers, maxConnLimit);
+    LOGDEBUG("Connection Found");
+  }
+
+  if (maxConnLimit) {
+    // we reach max connection limit, found connection but endpoint is
+    // (not)different, no need to refresh pr-meta-data
+    connFound = true;
+  } else {
+    // if server hints pr-meta-data refresh then refresh
+    // anything else???
+  }
+
+  LOGDEBUG(
+      "ThinClientPoolDM::getConnectionFromQueueW return conn = %p match = %d "
+      "connFound=%d",
+      conn, match, connFound);
+  return conn;
+}
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

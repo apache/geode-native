@@ -88,29 +88,32 @@ class MapEntryST<TBase, 0, UPDATE_COUNT> {
  *
  */
 template <typename TBase, int NUM_TRACKERS, int UPDATE_COUNT>
-class MapEntryT : public TBase {
+class MapEntryT final : public TBase {
  public:
-  inline explicit MapEntryT(bool noInit) : TBase(true) {}
+  inline explicit MapEntryT(bool) : TBase(true) {}
 
-  virtual ~MapEntryT() {}
+  ~MapEntryT() final = default;
 
-  virtual int addTracker(std::shared_ptr<MapEntry>& newEntry) {
+  MapEntryT(const MapEntryT&) = delete;
+  MapEntryT& operator=(const MapEntryT&) = delete;
+
+  int addTracker(std::shared_ptr<MapEntry>&) final {
     return MapEntryST<TBase, NUM_TRACKERS, UPDATE_COUNT>::addTracker(this);
   }
 
-  virtual std::pair<bool, int> removeTracker() {
+  std::pair<bool, int> removeTracker() final {
     return std::make_pair(
         false,
         MapEntryST<TBase, NUM_TRACKERS, UPDATE_COUNT>::removeTracker(this));
   }
 
-  virtual int incrementUpdateCount(std::shared_ptr<MapEntry>& newEntry) {
+  int incrementUpdateCount(std::shared_ptr<MapEntry>&) final {
     return MapEntryST<TBase, NUM_TRACKERS, UPDATE_COUNT>::incUpdateCount(this);
   }
 
-  virtual int getTrackingNumber() const { return NUM_TRACKERS; }
+  int getTrackingNumber() const final { return NUM_TRACKERS; }
 
-  virtual int getUpdateCount() const { return UPDATE_COUNT; }
+  int getUpdateCount() const final { return UPDATE_COUNT; }
 
   inline static std::shared_ptr<MapEntryT> create(
       const std::shared_ptr<CacheableKey>& key) {
@@ -129,123 +132,112 @@ class MapEntryT : public TBase {
                    const std::shared_ptr<CacheableKey>& key)
       : TBase(expiryTaskManager, key) {}
 
- private:
-  // disabled
-  MapEntryT(const MapEntryT&);
-  MapEntryT& operator=(const MapEntryT&);
-
   _GEODE_FRIEND_STD_SHARED_PTR(MapEntryT)
 };
 
 // specialization of MapEntryT to terminate the recursive template definition
 // for update counter == GF_UPDATE_MAX
 template <typename TBase, int NUM_TRACKERS>
-class MapEntryT<TBase, NUM_TRACKERS, GF_UPDATE_MAX> : public TBase {
+class MapEntryT<TBase, NUM_TRACKERS, GF_UPDATE_MAX> final : public TBase {
  public:
-  inline explicit MapEntryT(bool noInit) : TBase(true) {}
+  inline explicit MapEntryT(bool) : TBase(true) {}
 
-  virtual ~MapEntryT() {}
+  ~MapEntryT() final = default;
 
-  virtual int addTracker(std::shared_ptr<MapEntry>& newEntry) {
+  MapEntryT(const MapEntryT&) = delete;
+  MapEntryT& operator=(const MapEntryT&) = delete;
+
+  int addTracker(std::shared_ptr<MapEntry>&) final {
     return MapEntryST<TBase, NUM_TRACKERS, GF_UPDATE_MAX>::addTracker(this);
   }
 
-  virtual std::pair<bool, int> removeTracker() {
+  std::pair<bool, int> removeTracker() final {
     return std::make_pair(
         false,
         MapEntryST<TBase, NUM_TRACKERS, GF_UPDATE_MAX>::removeTracker(this));
   }
 
-  virtual int incrementUpdateCount(std::shared_ptr<MapEntry>& newEntry) {
+  int incrementUpdateCount(std::shared_ptr<MapEntry>& newEntry) final {
     // fallback to TrackedMapEntry
     newEntry = std::make_shared<TrackedMapEntry>(
         this->shared_from_this(), NUM_TRACKERS, GF_UPDATE_MAX + 1);
     return (GF_UPDATE_MAX + 1);
   }
 
-  virtual int getTrackingNumber() const { return NUM_TRACKERS; }
+  int getTrackingNumber() const final { return NUM_TRACKERS; }
 
-  virtual int getUpdateCount() const { return GF_UPDATE_MAX; }
-
- private:
-  // disabled
-  MapEntryT(const MapEntryT&);
-  MapEntryT& operator=(const MapEntryT&);
+  int getUpdateCount() const final { return GF_UPDATE_MAX; }
 };
 
 // specialization of MapEntryT to terminate the recursive template definition
 // for tracking number == GF_TRACK_MAX
 template <typename TBase, int UPDATE_COUNT>
-class MapEntryT<TBase, GF_TRACK_MAX, UPDATE_COUNT> : public TBase {
+class MapEntryT<TBase, GF_TRACK_MAX, UPDATE_COUNT> final : public TBase {
  public:
-  inline explicit MapEntryT(bool noInit) : TBase(true) {}
+  inline explicit MapEntryT(bool) : TBase(true) {}
 
-  virtual ~MapEntryT() {}
+  ~MapEntryT() final = default;
 
-  virtual int addTracker(std::shared_ptr<MapEntry>& newEntry) {
+  MapEntryT(const MapEntryT&) = delete;
+  MapEntryT& operator=(const MapEntryT&) = delete;
+
+  int addTracker(std::shared_ptr<MapEntry>& newEntry) final {
     // fallback to TrackedMapEntry
     newEntry = std::make_shared<TrackedMapEntry>(
         this->shared_from_this(), GF_TRACK_MAX + 1, UPDATE_COUNT);
     return UPDATE_COUNT;
   }
 
-  virtual std::pair<bool, int> removeTracker() {
+  std::pair<bool, int> removeTracker() final {
     return std::make_pair(
         false,
         MapEntryST<TBase, GF_TRACK_MAX, UPDATE_COUNT>::removeTracker(this));
   }
 
-  virtual int incrementUpdateCount(std::shared_ptr<MapEntry>& newEntry) {
+  int incrementUpdateCount(std::shared_ptr<MapEntry>&) final {
     return MapEntryST<TBase, GF_TRACK_MAX, UPDATE_COUNT>::incUpdateCount(this);
   }
 
-  virtual int getTrackingNumber() const { return GF_TRACK_MAX; }
+  int getTrackingNumber() const final { return GF_TRACK_MAX; }
 
-  virtual int getUpdateCount() const { return UPDATE_COUNT; }
-
- private:
-  // disabled
-  MapEntryT(const MapEntryT&);
-  MapEntryT& operator=(const MapEntryT&);
+  int getUpdateCount() const final { return UPDATE_COUNT; }
 };
 
 // specialization of MapEntryT to terminate the recursive template definition
 // for tracking number == GF_TRACK_MAX and update counter == GF_UPDATE_MAX
 template <typename TBase>
-class MapEntryT<TBase, GF_TRACK_MAX, GF_UPDATE_MAX> : public TBase {
+class MapEntryT<TBase, GF_TRACK_MAX, GF_UPDATE_MAX> final : public TBase {
  public:
-  inline explicit MapEntryT(bool noInit) : TBase(true) {}
+  inline explicit MapEntryT(bool) : TBase(true) {}
 
-  virtual ~MapEntryT() {}
+  ~MapEntryT() final = default;
 
-  virtual int addTracker(std::shared_ptr<MapEntry>& newEntry) {
+  MapEntryT(const MapEntryT&) = delete;
+  MapEntryT& operator=(const MapEntryT&) = delete;
+
+  int addTracker(std::shared_ptr<MapEntry>& newEntry) final {
     // fallback to TrackedMapEntry
     newEntry = std::make_shared<TrackedMapEntry>(
         this->shared_from_this(), GF_TRACK_MAX + 1, GF_UPDATE_MAX);
     return GF_UPDATE_MAX;
   }
 
-  virtual std::pair<bool, int> removeTracker() {
+  std::pair<bool, int> removeTracker() final {
     return std::make_pair(
         false,
         MapEntryST<TBase, GF_TRACK_MAX, GF_UPDATE_MAX>::removeTracker(this));
   }
 
-  virtual int incrementUpdateCount(std::shared_ptr<MapEntry>& newEntry) {
+  int incrementUpdateCount(std::shared_ptr<MapEntry>& newEntry) final {
     // fallback to TrackedMapEntry
     newEntry = std::make_shared<TrackedMapEntry>(
         this->shared_from_this(), GF_TRACK_MAX, GF_UPDATE_MAX + 1);
     return (GF_UPDATE_MAX + 1);
   }
 
-  virtual int getTrackingNumber() const { return GF_TRACK_MAX; }
+  int getTrackingNumber() const final { return GF_TRACK_MAX; }
 
-  virtual int getUpdateCount() const { return GF_UPDATE_MAX; }
-
- private:
-  // disabled
-  MapEntryT(const MapEntryT&);
-  MapEntryT& operator=(const MapEntryT&);
+  int getUpdateCount() const final { return GF_UPDATE_MAX; }
 };
 
 template <typename TBase, int NUM_TRACKERS, int UPDATE_COUNT>
@@ -294,12 +286,12 @@ inline int MapEntryST<TBase, 0, UPDATE_COUNT>::addTracker(TBase* loc) {
 }
 
 template <typename TBase, int UPDATE_COUNT>
-inline int MapEntryST<TBase, 0, UPDATE_COUNT>::removeTracker(TBase* loc) {
+inline int MapEntryST<TBase, 0, UPDATE_COUNT>::removeTracker(TBase*) {
   return 0;
 }
 
 template <typename TBase, int UPDATE_COUNT>
-inline int MapEntryST<TBase, 0, UPDATE_COUNT>::incUpdateCount(TBase* loc) {
+inline int MapEntryST<TBase, 0, UPDATE_COUNT>::incUpdateCount(TBase*) {
   return UPDATE_COUNT;
 }
 }  // namespace client

@@ -42,7 +42,6 @@ using namespace test;
 using namespace testobject;
 
 #define CLIENT1 s1p1
-#define CLIENT2 s1p2
 #define SERVER s2p1
 #define LOCATOR s2p2
 

@@ -40,7 +40,6 @@ const char* locatorsG =
 void createRegionForCQ(const char* name, bool ackMode,
                        bool clientNotificationEnabled = false,
                        int redundancyLevel = 0,
-                       const std::shared_ptr<CacheListener>& listener = nullptr,
                        bool caching = true) {
   // Use region name as pool name to avoid recreating pools with the same name.
   getHelper()->createPoolWithLocators(name, locatorsG,
@@ -49,11 +48,7 @@ void createRegionForCQ(const char* name, bool ackMode,
   createRegionAndAttachPool(name, ackMode, name, caching);
 }
 
-void createRegionForCQMU(
-    const char* name, bool ackMode, bool clientNotificationEnabled = false,
-    int redundancyLevel = 0,
-    const std::shared_ptr<CacheListener>& listener = nullptr,
-    bool caching = true, bool poolIsInMultiuserMode = false) {
+void createRegionForCQMU(const char* name, bool ackMode, bool caching = true) {
   // Use region name as pool name to avoid recreating pools with the same name.
   // TODO:
   // getHelper()->createPoolWithLocators( name, locatorsG,

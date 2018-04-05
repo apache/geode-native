@@ -269,8 +269,7 @@ void CacheTransactionManagerImpl::rollback() {
   }
 }
 
-GfErrType CacheTransactionManagerImpl::rollback(TXState* txState,
-                                                bool callListener) {
+GfErrType CacheTransactionManagerImpl::rollback(TXState*, bool) {
   TcrMessageRollback request(m_cache->getCache()->createDataOutput());
   TcrMessageReply reply(true, nullptr);
   GfErrType err = GF_NOERR;
@@ -356,8 +355,8 @@ TransactionId& CacheTransactionManagerImpl::suspend() {
   auto suspendedTxTimeout = m_cache->getDistributedSystem()
                                 .getSystemProperties()
                                 .suspendedTxTimeout();
-  auto handler = new SuspendedTxExpiryHandler(this, txState->getTransactionId(),
-                                              suspendedTxTimeout);
+  auto handler =
+      new SuspendedTxExpiryHandler(this, txState->getTransactionId());
   long id = m_cache->getExpiryTaskManager().scheduleExpiryTask(
       handler, suspendedTxTimeout, std::chrono::seconds::zero(), false);
   txState->setSuspendedExpiryTaskId(id);

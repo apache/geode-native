@@ -79,10 +79,8 @@ OsStatisticsImpl::OsStatisticsImpl(StatisticsType* typeArg,
                                    const std::string& textIdArg,
                                    int64_t numericIdArg, int64_t uniqueIdArg,
                                    StatisticsFactory* system)
-    : textId(calcTextId(system, textIdArg)),
-      statsType(dynamic_cast<StatisticsTypeImpl*>(typeArg))
-
-{
+    : statsType(dynamic_cast<StatisticsTypeImpl*>(typeArg)),
+      textId(calcTextId(system, textIdArg)) {
   this->numericId = calcNumericId(system, numericIdArg);
   this->uniqueId = uniqueIdArg;
   this->closed = false;

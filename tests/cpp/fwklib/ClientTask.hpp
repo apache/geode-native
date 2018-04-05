@@ -125,16 +125,9 @@ class ExitTask : public ClientTask {
 class ThreadedTask : public ClientTask {
   FwkAction m_func;
   std::string m_args;
-  // UNUSED const char * m_file;
-  // UNUSED const char * m_class;
-  // UNUSED const char * m_method;
 
  public:
   ThreadedTask(FwkAction func, std::string args) : m_func(func), m_args(args) {}
-
-  ThreadedTask(FwkAction func, std::string args, const char* file,
-               const char* className, const char* method)
-      : m_func(func), m_args(args) {}
 
   uint32_t doTask(ACE_thread_t id) {
     id = 0;

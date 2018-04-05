@@ -27,7 +27,7 @@ void ClientConnectionRequest::toData(DataOutput& output) const {
   writeSetOfServerLocation(output);
 }
 
-void ClientConnectionRequest::fromData(DataInput& input) {}
+void ClientConnectionRequest::fromData(DataInput&) {}
 
 size_t ClientConnectionRequest::objectSize() const { return 0; }
 

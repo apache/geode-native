@@ -47,7 +47,6 @@ class CacheImplHelper : public CacheHelper {
 
   virtual void createRegion(const char* regionName,
                             std::shared_ptr<Region>& regionPtr, uint32_t size,
-                            bool ack = false, bool cacheServerClient = false,
                             bool cacheEnabled = true) {
     RegionAttributesFactory regionAttributesFactory;
     // set lru attributes...

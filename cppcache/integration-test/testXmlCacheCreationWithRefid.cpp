@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testXmlCacheCreationWithRefid"
-
 #include <string>
 #include <iostream>
 #include <math.h>

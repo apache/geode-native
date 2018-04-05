@@ -25,10 +25,9 @@ void Statistics::close() {}
 
 ////////////////////////  accessor Methods  ///////////////////////
 
-int32_t Statistics::nameToId(const std::string& name) const { return 0; }
+int32_t Statistics::nameToId(const std::string&) const { return 0; }
 
-StatisticDescriptor* Statistics::nameToDescriptor(
-    const std::string& name) const {
+StatisticDescriptor* Statistics::nameToDescriptor(const std::string&) const {
   return nullptr;
 }
 
@@ -51,51 +50,43 @@ bool Statistics::isClosed() const { return 0; }
 
 ////////////////////////  set() Methods  ///////////////////////
 
-void Statistics::setInt(int32_t id, int32_t value) {}
+void Statistics::setInt(int32_t, int32_t) {}
 
-void Statistics::setInt(const std::string& name, int32_t value) {}
+void Statistics::setInt(const std::string&, int32_t) {}
 
-void Statistics::setInt(const StatisticDescriptor* descriptor, int32_t value) {}
+void Statistics::setInt(const StatisticDescriptor*, int32_t) {}
 
-void Statistics::setLong(int32_t id, int64_t value) {}
+void Statistics::setLong(int32_t, int64_t) {}
 
-void Statistics::setLong(const StatisticDescriptor* descriptor, int64_t value) {
-}
+void Statistics::setLong(const StatisticDescriptor*, int64_t) {}
 
-void Statistics::setLong(const std::string& name, int64_t value) {}
+void Statistics::setLong(const std::string&, int64_t) {}
 
-void Statistics::setDouble(int32_t id, double value) {}
+void Statistics::setDouble(int32_t, double) {}
 
-void Statistics::setDouble(const StatisticDescriptor* descriptor,
-                           double value) {}
+void Statistics::setDouble(const StatisticDescriptor*, double) {}
 
-void setDouble(const std::string& name, double value) {}
+void setDouble(const std::string&, double) {}
 
 ///////////////////////  get() Methods  ///////////////////////
 
-int32_t Statistics::getInt(int32_t id) const { return 0; }
+int32_t Statistics::getInt(int32_t) const { return 0; }
 
-int32_t Statistics::getInt(const StatisticDescriptor* descriptor) const {
-  return 0;
-}
+int32_t Statistics::getInt(const StatisticDescriptor*) const { return 0; }
 
-int32_t Statistics::getInt(const std::string& name) const { return 0; }
+int32_t Statistics::getInt(const std::string&) const { return 0; }
 
-int64_t Statistics::getLong(int32_t id) const { return 0; }
+int64_t Statistics::getLong(int32_t) const { return 0; }
 
-int64_t Statistics::getLong(const StatisticDescriptor* descriptor) const {
-  return 0;
-}
+int64_t Statistics::getLong(const StatisticDescriptor*) const { return 0; }
 
-int64_t Statistics::getLong(const std::string& name) const { return 0; }
+int64_t Statistics::getLong(const std::string&) const { return 0; }
 
-double Statistics::getDouble(int32_t id) const { return 0; }
+double Statistics::getDouble(int32_t) const { return 0; }
 
-double Statistics::getDouble(const StatisticDescriptor* descriptor) const {
-  return 0;
-}
+double Statistics::getDouble(const StatisticDescriptor*) const { return 0; }
 
-double Statistics::getDouble(const std::string& name) const { return 0; }
+double Statistics::getDouble(const std::string&) const { return 0; }
 
 ////////////////////////  inc() Methods  ////////////////////////
 
@@ -111,36 +102,23 @@ double Statistics::getDouble(const std::string& name) const { return 0; }
  * @throws IllegalArgumentException
  *         If the id is invalid.
  */
-int32_t Statistics::incInt(int32_t id, int32_t delta) { return 0; }
+int32_t Statistics::incInt(int32_t, int32_t) { return 0; }
 
-int32_t Statistics::incInt(const StatisticDescriptor* descriptor,
-                           int32_t delta) {
-  return 0;
-}
+int32_t Statistics::incInt(const StatisticDescriptor*, int32_t) { return 0; }
 
-int32_t Statistics::incInt(const std::string& name, int32_t delta) { return 0; }
+int32_t Statistics::incInt(const std::string&, int32_t) { return 0; }
 
-int64_t Statistics::incLong(int32_t id, int64_t delta) { return 0; }
+int64_t Statistics::incLong(int32_t, int64_t) { return 0; }
 
-int64_t Statistics::incLong(const StatisticDescriptor* descriptor,
-                            int64_t delta) {
-  return 0;
-}
+int64_t Statistics::incLong(const StatisticDescriptor*, int64_t) { return 0; }
 
-int64_t Statistics::incLong(const std::string& name, int64_t delta) {
-  return 0;
-}
+int64_t Statistics::incLong(const std::string&, int64_t) { return 0; }
 
-double Statistics::incDouble(int32_t id, double delta) { return 0; }
+double Statistics::incDouble(int32_t, double) { return 0; }
 
-double Statistics::incDouble(const StatisticDescriptor* descriptor,
-                             double delta) {
-  return 0;
-}
+double Statistics::incDouble(const StatisticDescriptor*, double) { return 0; }
 
-double Statistics::incDouble(const std::string& name, double delta) {
-  return 0;
-}
+double Statistics::incDouble(const std::string&, double) { return 0; }
 
 }  // namespace statistics
 }  // namespace geode

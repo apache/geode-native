@@ -47,17 +47,17 @@ PdxType::~PdxType() noexcept {
 PdxType::PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr,
                  std::string pdxDomainClassName, bool isLocal)
     : Serializable(),
+      m_pdxFieldTypes(new std::vector<std::shared_ptr<PdxFieldType>>()),
       m_className(pdxDomainClassName),
+      m_geodeTypeId(0),
       m_isLocal(isLocal),
       m_numberOfVarLenFields(0),
       m_varLenFieldIdx(0),
-      m_isVarLenFieldAdded(false),
-      m_noJavaClass(false),
-      m_pdxFieldTypes(new std::vector<std::shared_ptr<PdxFieldType>>()),
-      m_localToRemoteFieldMap(nullptr),
-      m_remoteToLocalFieldMap(nullptr),
-      m_geodeTypeId(0),
       m_numberOfFieldsExtra(0),
+      m_isVarLenFieldAdded(false),
+      m_remoteToLocalFieldMap(nullptr),
+      m_localToRemoteFieldMap(nullptr),
+      m_noJavaClass(false),
       m_pdxTypeRegistryPtr(pdxTypeRegistryPtr) {}
 
 void PdxType::toData(DataOutput& output) const {
@@ -300,8 +300,7 @@ int32_t PdxType::getFieldPosition(const std::string& fieldName,
   auto pft = this->getPdxField(fieldName);
   if (pft != nullptr) {
     if (pft->IsVariableLengthType()) {
-      return variableLengthFieldPosition(pft, offsetPosition, offsetSize,
-                                         pdxStreamlen);
+      return variableLengthFieldPosition(pft, offsetPosition, offsetSize);
     } else {
       return fixedLengthFieldPosition(pft, offsetPosition, offsetSize,
                                       pdxStreamlen);
@@ -315,8 +314,7 @@ int32_t PdxType::getFieldPosition(int32_t fieldIdx, uint8_t* offsetPosition,
   auto pft = m_pdxFieldTypes->at(fieldIdx);
   if (pft != nullptr) {
     if (pft->IsVariableLengthType()) {
-      return variableLengthFieldPosition(pft, offsetPosition, offsetSize,
-                                         pdxStreamlen);
+      return variableLengthFieldPosition(pft, offsetPosition, offsetSize);
     } else {
       return fixedLengthFieldPosition(pft, offsetPosition, offsetSize,
                                       pdxStreamlen);
@@ -349,7 +347,7 @@ int32_t PdxType::fixedLengthFieldPosition(
 
 int32_t PdxType::variableLengthFieldPosition(
     std::shared_ptr<PdxFieldType> varLenField, uint8_t* offsetPosition,
-    int32_t offsetSize, int32_t pdxStreamlen) {
+    int32_t offsetSize) {
   int32_t offset = varLenField->getVarLenOffsetIndex();
   if (offset == -1) {
     return /*first var len field*/ varLenField->getRelativeOffset();

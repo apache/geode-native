@@ -30,8 +30,8 @@ PdxInstanceFactoryImpl::PdxInstanceFactoryImpl(
     std::string className, CachePerfStats* cachePerfStats,
     std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry, const CacheImpl* cache,
     bool enableTimeStatistics)
-    : m_pdxType(std::make_shared<PdxType>(pdxTypeRegistry, className, false)),
-      m_created(false),
+    : m_created(false),
+      m_pdxType(std::make_shared<PdxType>(pdxTypeRegistry, className, false)),
       m_cachePerfStats(cachePerfStats),
       m_pdxTypeRegistry(pdxTypeRegistry),
       m_cacheImpl(cache),

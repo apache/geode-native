@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TOMBSTONEEXPIRYHANDLER_H_
-#define GEODE_TOMBSTONEEXPIRYHANDLER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,19 +15,22 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_TOMBSTONEEXPIRYHANDLER_H_
+#define GEODE_TOMBSTONEEXPIRYHANDLER_H_
+
 #include <geode/internal/geode_globals.hpp>
 #include <geode/Region.hpp>
 #include <geode/ExpirationAction.hpp>
+
 #include "RegionInternal.hpp"
 #include "TombstoneList.hpp"
-
-/**
- * @file
- */
 
 namespace apache {
 namespace geode {
 namespace client {
+
 /**
  * @class TombstoneExpiryHandler TombstoneExpiryHandler.hpp
  *
@@ -42,22 +40,15 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
  public:
-  /**
-   * Constructor
-   */
   TombstoneExpiryHandler(std::shared_ptr<TombstoneEntry> entryPtr,
                          TombstoneList* tombstoneList,
                          std::chrono::milliseconds duration,
                          CacheImpl* cacheImpl);
 
-  /** This task object will be registered with the Timer Queue.
-   *  When the timer expires the handle_timeout is invoked.
-   */
-  int handle_timeout(const ACE_Time_Value& current_time, const void* arg);
-  /**
-   * This is called when the task object needs to be cleaned up..
-   */
-  int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask);
+  int handle_timeout(const ACE_Time_Value& current_time,
+                     const void* arg) override;
+
+  int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
 
   void setTombstoneEntry(std::shared_ptr<TombstoneEntry> entryPtr) {
     m_entryPtr = entryPtr;

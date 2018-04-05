@@ -143,7 +143,6 @@ size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
     endTime += waitTime;
     ACE_Time_Value sleepTime(0, 100);
     size_t readLen = 0;
-    size_t retVal;
     bool errnoSet = false;
 
     auto sendlen = len;
@@ -158,6 +157,7 @@ size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
         len = 0;
       }
       do {
+        ssize_t retVal;
         if (op == SOCK_READ) {
           retVal = m_ssl->recv(buff, sendlen, &waitTime, &readLen);
         } else {

@@ -33,8 +33,8 @@ TEST(ClientProxyMembershipIDFactoryTest, testCreate) {
 
   EXPECT_EQ("myDs", id->getDSName());
   EXPECT_EQ(hostAddr, *reinterpret_cast<uint32_t*>(id->getHostAddr()));
-  EXPECT_EQ(4, id->getHostAddrLen());
-  EXPECT_EQ(2, id->getHostPort());
+  EXPECT_EQ(static_cast<uint32_t>(4), id->getHostAddrLen());
+  EXPECT_EQ(static_cast<uint32_t>(2), id->getHostPort());
 
   auto uniqueTag = id->getUniqueTag();
   ASSERT_NE("", uniqueTag);

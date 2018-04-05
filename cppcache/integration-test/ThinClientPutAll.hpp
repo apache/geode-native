@@ -226,7 +226,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
 }
 
 void createPooledRegionConcurrencyCheckDisabled(
-    const char* name, bool ackMode, const char* endpoints, const char* locators,
+    const char* name, bool ackMode, const char*, const char* locators,
     const char* poolname, bool clientNotificationEnabled = false,
     bool cachingEnable = true, bool concurrencyCheckEnabled = true) {
   LOG("createRegion_Pool() entered.");

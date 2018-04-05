@@ -47,7 +47,7 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public Cacheable, public Delta {
 
  public:
   DeltaPSTObject() : Delta(), timestamp(0), valueData(nullptr) {}
-  DeltaPSTObject(int size, bool encodeKey, bool encodeTimestamp);
+  DeltaPSTObject(int size, bool encodeKey);
   ~DeltaPSTObject() noexcept override {}
   void toData(apache::geode::client::DataOutput& output) const override;
   void fromData(apache::geode::client::DataInput& input) override;

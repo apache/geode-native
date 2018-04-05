@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#define ROOT_NAME "testAttributesMutator"
-
 #include "fw_dunit.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"

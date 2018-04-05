@@ -41,8 +41,6 @@
 using namespace test;
 using namespace testData;
 
-#define ROOT_SCOPE DISTRIBUTED_ACK
-
 #include "CacheHelper.hpp"
 #include "ThinClientHelper.hpp"
 #include "ace/Process.h"
@@ -58,7 +56,6 @@ std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define CLIENT2 s1p2
-#define LOCATORSERVER s2p2
 
 #define MAX_LISTNER 8
 
@@ -216,11 +213,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateServer2)
   }
 END_TASK_DEFINITION
 
-void stepOne(bool pool = false, bool locator = false) {
+void stepOne() {
   LOG("StepOne1 complete. 1");
   initClientCq(true, 0);
   LOG("StepOne1 complete. 2");
-  createRegionForCQMU(regionNamesCq[0], USE_ACK, true, 0, nullptr, false, true);
+  createRegionForCQMU(regionNamesCq[0], USE_ACK, false);
   LOG("StepOne1 complete. 3");
   auto regptr = getHelper()->getRegion(regionNamesCq[0]);
   LOG("StepOne1 complete. 4");
@@ -239,11 +236,11 @@ void readyForEvents() {
   }
 }
 
-void stepOne2(bool pool = false, bool locator = false) {
+void stepOne2() {
   LOG("StepOne2 complete. 1");
   initClientCq(true, 1);
   LOG("StepOne2 complete. 2");
-  createRegionForCQMU(regionNamesCq[0], USE_ACK, true, 0, nullptr, false, true);
+  createRegionForCQMU(regionNamesCq[0], USE_ACK, false);
   LOG("StepOne2 complete. 3");
   auto regptr = getHelper()->getRegion(regionNamesCq[0]);
   LOG("StepOne2 complete. 4");
@@ -254,13 +251,13 @@ void stepOne2(bool pool = false, bool locator = false) {
 }
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_PoolEP)
-  { stepOne(true, false); }
+  { stepOne(); }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepOne2_PoolEP)
   {
     initCredentialGenerator();
-    stepOne2(true, false);
+    stepOne2();
   }
 END_TASK_DEFINITION
 

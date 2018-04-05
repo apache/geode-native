@@ -35,7 +35,7 @@ void PoolXmlCreation::addServer(const char * host, const char * port)
   serverports.push_back(port);
 }
 */
-std::shared_ptr<Pool> PoolXmlCreation::create(Cache& cache) {
+std::shared_ptr<Pool> PoolXmlCreation::create() {
   return poolFactory->create(poolName.c_str());
 }
 
