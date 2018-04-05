@@ -17,15 +17,15 @@
 
 #ifndef __PKCSAUTHINIT__
 #define __PKCSAUTHINIT__
-#include "geode/AuthInitialize.hpp"
+
 #include <cstdio>
 #include <cstdlib>
+
+#pragma error_messages(off, macroredef)
+
 #include <openssl/pem.h>
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>
-//#include <unistd.h>
-//#include <netinet/in.h>
-//#include <fcntl.h>
 #include <openssl/evp.h>
 #include <openssl/rsa.h>
 #include <openssl/evp.h>
@@ -33,8 +33,11 @@
 #include <openssl/x509.h>
 #include <openssl/pem.h>
 #define KSSL_H 1
-//#define OPENSSL_NO_KRB5 1
 #include <openssl/ssl.h>
+
+#pragma error_messages(on, macroredef)
+
+#include <geode/AuthInitialize.hpp>
 
 /**
  * @file

@@ -35,7 +35,7 @@ class TallyLoader : virtual public CacheLoader {
         m_loads(0)
 
   {}
-  virtual ~TallyLoader() {}
+  virtual ~TallyLoader() = default;
 
   std::shared_ptr<Cacheable> load(Region&, const std::shared_ptr<CacheableKey>&,
                                   const std::shared_ptr<Serializable>&) {

@@ -39,7 +39,7 @@ class ThinClientTallyLoader : public TallyLoader {
  public:
   ThinClientTallyLoader() : TallyLoader() {}
 
-  virtual ~ThinClientTallyLoader() {}
+  virtual ~ThinClientTallyLoader() = default;
 
   std::shared_ptr<Cacheable> load(
       Region& rp,

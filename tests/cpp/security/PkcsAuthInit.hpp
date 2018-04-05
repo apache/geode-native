@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_SECURITY_PKCSAUTHINIT_H_
-#define GEODE_SECURITY_PKCSAUTHINIT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,15 +15,19 @@
  * limitations under the License.
  */
 
-#include <geode/AuthInitialize.hpp>
+#pragma once
+
+#ifndef GEODE_SECURITY_PKCSAUTHINIT_H_
+#define GEODE_SECURITY_PKCSAUTHINIT_H_
+
 #include <cstdio>
 #include <cstdlib>
+
+#pragma error_messages(off, macroredef)
+
 #include <openssl/pem.h>
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>
-//#include <unistd.h>
-//#include <netinet/in.h>
-//#include <fcntl.h>
 #include <openssl/evp.h>
 #include <openssl/rsa.h>
 #include <openssl/evp.h>
@@ -36,8 +35,11 @@
 #include <openssl/x509.h>
 #include <openssl/pem.h>
 #define KSSL_H 1
-//#define OPENSSL_NO_KRB5 1
 #include <openssl/ssl.h>
+
+#pragma error_messages(on, macroredef)
+
+#include <geode/AuthInitialize.hpp>
 
 /**
  * @file

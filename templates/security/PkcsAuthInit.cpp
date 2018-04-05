@@ -26,6 +26,10 @@
 
 #include "securityimpl_export.h"
 
+#include <geode/Properties.hpp>
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/ExceptionTypes.hpp>
+
 namespace apache {
 namespace geode {
 namespace client {

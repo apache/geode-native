@@ -76,16 +76,16 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
   LOGINFO(" NILKANTH InvalidPdxUsage::toData() Start exceptionCounter = %d ",
           toDataexceptionCounter);
 
-  int* lengthArr = new int[2];
+  int* lengths = new int[2];
 
-  lengthArr[0] = 1;
-  lengthArr[1] = 2;
+  lengths[0] = 1;
+  lengths[1] = 2;
 
   // TestCase: writeArrayOfByteArrays with empty field name,
   // IllegalStateException is expected
 
   try {
-    pw.writeArrayOfByteArrays("", m_byteByteArray, 2, lengthArr);
+    pw.writeArrayOfByteArrays("", m_byteByteArray, 2, lengths);
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
     LOGINFO("writeArrayOfByteArrays():: Got expected Exception :: %s ",
