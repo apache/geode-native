@@ -31,4 +31,4 @@ add_executable(${PROJECT_NAME} @ADD_EXAMPLE_SOURCE@)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-    GeodeNative::cpp)
+    @PRODUCT_NAME_NOSPACE@::cpp)

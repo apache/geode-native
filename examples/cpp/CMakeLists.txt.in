@@ -15,7 +15,7 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-project(examples LANGUAGES NONE)
+project(@PRODUCT_DLL_NAME@.Cpp.Examples LANGUAGES NONE)
 
 add_subdirectory(customserializable)
 add_subdirectory(customserializer)

@@ -14,54 +14,54 @@
 # limitations under the License.
 
 #.rst:
-# FindGeodeNative
+# Find@PRODUCT_NAME_NOSPACE@
 # ---------
 #
-# Find the Geode Native headers and library.
+# Find the @PRODUCT_NAME@ headers and library.
 #
 # Imported Targets
 # ^^^^^^^^^^^^^^^^
 #
 # This module defines the following :prop_tgt:`IMPORTED` targets:
 #
-# ``GeodeNative::cpp``
-# ``GeodeNative:dotnet``
+# ``@PRODUCT_NAME_NOSPACE@::cpp``
+# ``@PRODUCT_NAME_NOSPACE@:dotnet``
 #
 # Result Variables
 # ^^^^^^^^^^^^^^^^
 #
 # This module will set the following variables in your project:
 #
-# ``GeodeNative_FOUND``
-#   true if the Geode Native headers and libraries were found.
+# ``@PRODUCT_NAME_NOSPACE@_FOUND``
+#   true if the @PRODUCT_NAME@ headers and libraries were found.
 #
-# ``GeodeNative_DOTNET_LIBRARY``
+# ``@PRODUCT_NAME_NOSPACE@_DOTNET_LIBRARY``
 #   Path to .NET assembly file.
 #
 
-set(_GEODE_NATIVE_ROOT "")
+set(_@PRODUCT_NAME_NOSPACE@_ROOT "")
 if(@PRODUCT_NAME_NOSPACE@_ROOT AND IS_DIRECTORY "${@PRODUCT_NAME_NOSPACE@_ROOT}")
-    set(_GEODE_NATIVE_ROOT "${@PRODUCT_NAME_NOSPACE@_ROOT}")
-    set(_GEODE_NATIVE_ROOT_EXPLICIT 1)
+    set(_@PRODUCT_NAME_NOSPACE@_ROOT "${@PRODUCT_NAME_NOSPACE@_ROOT}")
+    set(_@PRODUCT_NAME_NOSPACE@_ROOT_EXPLICIT 1)
 else()
-    set(_ENV_GEODE_NATIVE_ROOT "")
+    set(_ENV_@PRODUCT_NAME_NOSPACE@_ROOT "")
     if(DEFINED ENV{GFCPP})
-        file(TO_CMAKE_PATH "$ENV{GFCPP}" _ENV_GEODE_NATIVE_ROOT)
+        file(TO_CMAKE_PATH "$ENV{GFCPP}" _ENV_@PRODUCT_NAME_NOSPACE@_ROOT)
     endif()
-    if(_ENV_GEODE_NATIVE_ROOT AND IS_DIRECTORY "${_ENV_GEODE_NATIVE_ROOT}")
-        set(_GEODE_NATIVE_ROOT "${_ENV_GEODE_NATIVE_ROOT}")
-        set(_GEODE_NATIVE_ROOT_EXPLICIT 0)
+    if(_ENV_@PRODUCT_NAME_NOSPACE@_ROOT AND IS_DIRECTORY "${_ENV_@PRODUCT_NAME_NOSPACE@_ROOT}")
+        set(_@PRODUCT_NAME_NOSPACE@_ROOT "${_ENV_@PRODUCT_NAME_NOSPACE@_ROOT}")
+        set(_@PRODUCT_NAME_NOSPACE@_ROOT_EXPLICIT 0)
     endif()
-    unset(_ENV_GEODE_NATIVE_ROOT)
+    unset(_ENV_@PRODUCT_NAME_NOSPACE@_ROOT)
 endif()
 
-set(_GEODE_NATIVE_HINTS)
-set(_GEODE_NATIVE_PATHS)
+set(_@PRODUCT_NAME_NOSPACE@_HINTS)
+set(_@PRODUCT_NAME_NOSPACE@_PATHS)
 
-if(_GEODE_NATIVE_ROOT)
-    set(_GEODE_NATIVE_HINTS ${_GEODE_NATIVE_ROOT})
+if(_@PRODUCT_NAME_NOSPACE@_ROOT)
+    set(_@PRODUCT_NAME_NOSPACE@_HINTS ${_@PRODUCT_NAME_NOSPACE@_ROOT})
 else()
-    set(_GEODE_NATIVE_PATHS (
+    set(_@PRODUCT_NAME_NOSPACE@_PATHS (
         "/opt/local"
         "/usr/local"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../../"
@@ -69,73 +69,73 @@ else()
 endif()
 
 # Begin - component "cpp"
-set(_GEODE_NATIVE_CPP_NAMES @PRODUCT_LIB_NAME@)
+set(_@PRODUCT_NAME_NOSPACE@_CPP_NAMES @PRODUCT_LIB_NAME@)
 
-find_library(GeodeNative_CPP_LIBRARY
-    NAMES ${_GEODE_NATIVE_CPP_NAMES}
-    HINTS ${_GEODE_NATIVE_HINTS}
-    PATHS ${_GEODE_NATIVE_PATHS}
-    PATH_SUFFIXES geode-native/lib lib 
+find_library(@PRODUCT_NAME_NOSPACE@_CPP_LIBRARY
+    NAMES ${_@PRODUCT_NAME_NOSPACE@_CPP_NAMES}
+    HINTS ${_@PRODUCT_NAME_NOSPACE@_HINTS}
+    PATHS ${_@PRODUCT_NAME_NOSPACE@_PATHS}
+    PATH_SUFFIXES @PRODUCT_LIB_NAME@/lib lib
 )
 
 # Look for the header file.
-find_path(GeodeNative_CPP_INCLUDE_DIR NAMES geode/CacheFactory.hpp
-    HINTS ${_GEODE_NATIVE_HINTS}
-    PATHS ${_GEODE_NATIVE_PATHS}
-    PATH_SUFFIXES geode-native/include include
+find_path(@PRODUCT_NAME_NOSPACE@_CPP_INCLUDE_DIR NAMES geode/CacheFactory.hpp
+    HINTS ${_@PRODUCT_NAME_NOSPACE@_HINTS}
+    PATHS ${_@PRODUCT_NAME_NOSPACE@_PATHS}
+    PATH_SUFFIXES @PRODUCT_LIB_NAME@/include include
 )
 # End - component "cpp"
 
 # Begin - component "dotnet"
-set(_GEODE_NATIVE_DOTNET_NAMES @PRODUCT_DLL_NAME@.dll)
+set(_@PRODUCT_NAME_NOSPACE@_DOTNET_NAMES @PRODUCT_DLL_NAME@.dll)
 
-find_file(GeodeNative_DOTNET_LIBRARY
-  NAMES ${_GEODE_NATIVE_DOTNET_NAMES}
-  HINTS ${_GEODE_NATIVE_HINTS}
-  PATHS ${_GEODE_NATIVE_PATHS}
-  PATH_SUFFIXES geode-native/bin bin 
+find_file(@PRODUCT_NAME_NOSPACE@_DOTNET_LIBRARY
+  NAMES ${_@PRODUCT_NAME_NOSPACE@_DOTNET_NAMES}
+  HINTS ${_@PRODUCT_NAME_NOSPACE@_HINTS}
+  PATHS ${_@PRODUCT_NAME_NOSPACE@_PATHS}
+  PATH_SUFFIXES @PRODUCT_LIB_NAME@/bin bin
 )
 # End - component "dotnet"
 
 # TODO find version
-set(GEODE_NATIVE_VERSION_STRING 1.0)
+set(@PRODUCT_NAME_NOSPACE@_VERSION_STRING 1.0)
 
 if (@PRODUCT_NAME_NOSPACE@_FIND_COMPONENTS)
-  set(_GEODE_NATIVE_REQUIRED_VARS)
+  set(_@PRODUCT_NAME_NOSPACE@_REQUIRED_VARS)
   foreach (component ${@PRODUCT_NAME_NOSPACE@_FIND_COMPONENTS})
     if (component STREQUAL "cpp")
-      list(APPEND _GEODE_NATIVE_REQUIRED_VARS GeodeNative_CPP_LIBRARY GeodeNative_CPP_INCLUDE_DIR)
+      list(APPEND _@PRODUCT_NAME_NOSPACE@_REQUIRED_VARS @PRODUCT_NAME_NOSPACE@_CPP_LIBRARY @PRODUCT_NAME_NOSPACE@_CPP_INCLUDE_DIR)
     endif()
     if (component STREQUAL "dotnet")
-      list(APPEND _GEODE_NATIVE_REQUIRED_VARS GeodeNative_DOTNET_LIBRARY)
+      list(APPEND _@PRODUCT_NAME_NOSPACE@_REQUIRED_VARS @PRODUCT_NAME_NOSPACE@_DOTNET_LIBRARY)
     endif()
   endforeach()
 endif()
 
 include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(@PRODUCT_NAME_NOSPACE@
-                                  REQUIRED_VARS ${_GEODE_NATIVE_REQUIRED_VARS}
-                                  VERSION_VAR GEODE_NATIVE_VERSION_STRING)
+                                  REQUIRED_VARS ${_@PRODUCT_NAME_NOSPACE@_REQUIRED_VARS}
+                                  VERSION_VAR @PRODUCT_NAME_NOSPACE@_VERSION_STRING)
 
 # Copy the results to the output variables and target.
 if(@PRODUCT_NAME_NOSPACE@_FOUND)
-  if(NOT TARGET ${GEODE_NATIVE_CPP_TARGET})
-    set(GEODE_NATIVE_CPP_TARGET "GeodeNative::cpp")
-    add_library(${GEODE_NATIVE_CPP_TARGET} UNKNOWN IMPORTED)
-    set_target_properties(${GEODE_NATIVE_CPP_TARGET} PROPERTIES
+  if(NOT TARGET ${@PRODUCT_NAME_NOSPACE@_CPP_TARGET})
+    set(@PRODUCT_NAME_NOSPACE@_CPP_TARGET "@PRODUCT_NAME_NOSPACE@::cpp")
+    add_library(${@PRODUCT_NAME_NOSPACE@_CPP_TARGET} UNKNOWN IMPORTED)
+    set_target_properties(${@PRODUCT_NAME_NOSPACE@_CPP_TARGET} PROPERTIES
       IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
-      IMPORTED_LOCATION "${GeodeNative_CPP_LIBRARY}"
-      INTERFACE_INCLUDE_DIRECTORIES "${GeodeNative_CPP_INCLUDE_DIR}")
+      IMPORTED_LOCATION "${@PRODUCT_NAME_NOSPACE@_CPP_LIBRARY}"
+      INTERFACE_INCLUDE_DIRECTORIES "${@PRODUCT_NAME_NOSPACE@_CPP_INCLUDE_DIR}")
   endif()
-  if(NOT TARGET ${GEODE_NATIVE_DOTNET_TARGET})
-    set(GEODE_NATIVE_DOTNET_TARGET "GeodeNative::dotnet")
-    add_library(${GEODE_NATIVE_DOTNET_TARGET} UNKNOWN IMPORTED)
-    set_target_properties(${GEODE_NATIVE_DOTNET_TARGET} PROPERTIES
+  if(NOT TARGET ${@PRODUCT_NAME_NOSPACE@_DOTNET_TARGET})
+    set(@PRODUCT_NAME_NOSPACE@_DOTNET_TARGET "@PRODUCT_NAME_NOSPACE@::dotnet")
+    add_library(${@PRODUCT_NAME_NOSPACE@_DOTNET_TARGET} UNKNOWN IMPORTED)
+    set_target_properties(${@PRODUCT_NAME_NOSPACE@_DOTNET_TARGET} PROPERTIES
       IMPORTED_LINK_INTERFACE_LANGUAGES "CSharp"
-      IMPORTED_LOCATION "${GeodeNative_DOTNET_LIBRARY}")
+      IMPORTED_LOCATION "${@PRODUCT_NAME_NOSPACE@_DOTNET_LIBRARY}")
   endif()
 else()
   message(STATUS "FOUND var not set")
 endif()
 
-mark_as_advanced(GeodeNative_CPP_INCLUDE_DIR GeodeNative_CPP_LIBRARY GeodeNative_DOTNET_LIBRARY)
+mark_as_advanced(@PRODUCT_NAME_NOSPACE@_CPP_INCLUDE_DIR @PRODUCT_NAME_NOSPACE@_CPP_LIBRARY @PRODUCT_NAME_NOSPACE@_DOTNET_LIBRARY)
