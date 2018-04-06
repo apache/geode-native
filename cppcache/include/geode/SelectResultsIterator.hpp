@@ -40,7 +40,6 @@ namespace client {
 
 class ResultSetImpl;
 class StructSetImpl;
-class CacheableVector;
 class SelectResults;
 class Serializable;
 
