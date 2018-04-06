@@ -100,7 +100,7 @@ ASN1_SEQUENCE(
 
   int codes = 0;
   DH_check(m_dh, &codes);
-  LOGDH(" DHInit: DH_check ret %d : codes is 0x%04X", ret, codes);
+  LOGDH(" DHInit: DH_check codes is 0x%04X", codes);
   LOGDH(" DHInit: DH_size is %d", DH_size(m_dh));
 
   // load the server's RSA public key for server authentication
@@ -336,7 +336,6 @@ unsigned char *gf_encryptDH(const unsigned char *cleartext, int len,
     int keySize = m_keySize > 128 ? m_keySize / 8 : 16;
     EVP_EncryptInit_ex(ctx, cipherFunc, NULL, NULL,
                        (unsigned char *)m_key + keySize);
-    LOGDH("DHencrypt: init BF ret %d", ret);
     EVP_CIPHER_CTX_set_key_length(ctx, keySize);
     LOGDH("DHencrypt: BF keysize is %d", keySize);
     EVP_EncryptInit_ex(ctx, NULL, NULL, (unsigned char *)m_key, NULL);

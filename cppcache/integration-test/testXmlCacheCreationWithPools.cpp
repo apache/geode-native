@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-#include <string>
-#include <iostream>
-#include <vector>
+#include <inttypes.h>
 #include <cstdint>
-
-#include "fw_dunit.hpp"
+#include <iostream>
+#include <string>
+#include <vector>
 
 #include <geode/internal/chrono/duration.hpp>
+
+#include "fw_dunit.hpp"
 
 #define CLIENT1 s1p1
 #define SERVER1 s2p1

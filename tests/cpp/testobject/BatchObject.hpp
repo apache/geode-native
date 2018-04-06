@@ -20,23 +20,24 @@
 #ifndef GEODE_TESTOBJECT_BATCHOBJECT_H_
 #define GEODE_TESTOBJECT_BATCHOBJECT_H_
 
-/*
- * @brief User class for testing the cq functionality.
- */
-
+#include <inttypes.h>
 #include <string>
-#include "fwklib/Timer.hpp"
-#include "fwklib/FrameworkTest.hpp"
-#include "TimestampedObject.hpp"
+
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Time_Value.h>
 
+#include "fwklib/Timer.hpp"
+#include "fwklib/FrameworkTest.hpp"
+#include "TimestampedObject.hpp"
 #include "testobject_export.h"
 
 using namespace apache::geode::client;
 using namespace testframework;
 namespace testobject {
+/**
+ * @brief User class for testing the cq functionality.
+ */
 class TESTOBJECT_EXPORT BatchObject : public TimestampedObject {
  private:
   int32_t index;

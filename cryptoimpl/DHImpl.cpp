@@ -99,35 +99,29 @@ ASN1_SEQUENCE(
 
   dhimpl->m_dh = DH_new();
 
-
   const BIGNUM *pbn, *gbn;
   DH_get0_pqg(dhimpl->m_dh, &pbn, NULL, &gbn);
   BN_dec2bn((BIGNUM **)&pbn, dhP);
-  LOGDH(" DHInit: BN_dec2bn dhP ret %d", ret);
 
   LOGDH(" DHInit: P ptr is %p", pbn);
   LOGDH(" DHInit: G ptr is %p", gbn);
   LOGDH(" DHInit: length is %d", DH_get_length(dhimpl->m_dh));
 
   BN_dec2bn((BIGNUM **)&gbn, dhG);
-  LOGDH(" DHInit: BN_dec2bn dhG ret %d", ret);
 
   DH_set_length(dhimpl->m_dh, dhL);
 
   DH_generate_key(dhimpl->m_dh);
-  LOGDH(" DHInit: DH_generate_key ret %d", ret);
 
   const BIGNUM *pub_key, *priv_key;
   DH_get0_key(dhimpl->m_dh, &pub_key, &priv_key);
   BN_num_bits(priv_key);
-  LOGDH(" DHInit: BN_num_bits priv_key is %d", ret);
 
   BN_num_bits(pub_key);
-  LOGDH(" DHInit: BN_num_bits pub_key is %d", ret);
 
   int codes = 0;
   DH_check(dhimpl->m_dh, &codes);
-  LOGDH(" DHInit: DH_check ret %d : codes is 0x%04X", ret, codes);
+  LOGDH(" DHInit: DH_check codes is 0x%04X", codes);
   LOGDH(" DHInit: DH_size is %d", DH_size(dhimpl->m_dh));
 
   // load the server's RSA public key for server authentication
@@ -371,7 +365,6 @@ unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
     int keySize = dhimpl->m_keySize > 128 ? dhimpl->m_keySize / 8 : 16;
     EVP_EncryptInit_ex(ctx, cipherFunc, NULL, NULL,
                        (unsigned char *)dhimpl->m_key + keySize);
-    LOGDH("DHencrypt: init BF ret %d", ret);
     EVP_CIPHER_CTX_set_key_length(ctx, keySize);
     LOGDH("DHencrypt: BF keysize is %d", keySize);
     EVP_EncryptInit_ex(ctx, NULL, NULL, (unsigned char *)dhimpl->m_key, NULL);

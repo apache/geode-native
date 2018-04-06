@@ -20,9 +20,7 @@
 #ifndef GEODE_TESTOBJECT_DELTAFASTASSETACCOUNT_H_
 #define GEODE_TESTOBJECT_DELTAFASTASSETACCOUNT_H_
 
-/*
- * @brief User class for testing the query functionality.
- */
+#include <inttypes.h>
 #include <string>
 
 #include <ace/ACE.h>
@@ -32,15 +30,15 @@
 #include <geode/Delta.hpp>
 
 #include "fwklib/FrameworkTest.hpp"
-
 #include "FastAsset.hpp"
-
 #include "testobject_export.h"
 
 using namespace apache::geode::client;
 using namespace testframework;
 namespace testobject {
-
+/**
+ * @brief User class for testing the query functionality.
+ */
 class TESTOBJECT_EXPORT DeltaFastAssetAccount : public Cacheable, public Delta {
  private:
   bool encodeTimestamp;
