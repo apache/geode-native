@@ -16,11 +16,12 @@
  */
 
 #include <inttypes.h>
-#include <geode/internal/chrono/duration.hpp>
 #include <cstdint>
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include <geode/internal/chrono/duration.hpp>
 
 #include "fw_dunit.hpp"
 
