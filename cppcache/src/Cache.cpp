@@ -139,8 +139,8 @@ Cache::Cache(std::shared_ptr<Properties> dsProp, bool ignorePdxUnreadFields,
              const std::shared_ptr<AuthInitialize>& authInitialize) {
   auto distributedSystem = DistributedSystem::create(DEFAULT_DS_NAME, dsProp);
   m_cacheImpl = std::unique_ptr<CacheImpl>(
-      new CacheImpl(this, std::move(distributedSystem),
-                    ignorePdxUnreadFields, readPdxSerialized, authInitialize));
+      new CacheImpl(this, std::move(distributedSystem), ignorePdxUnreadFields,
+                    readPdxSerialized, authInitialize));
   m_cacheImpl->getDistributedSystem().connect(this);
   m_typeRegistry =
       std::unique_ptr<TypeRegistry>(new TypeRegistry(m_cacheImpl.get()));

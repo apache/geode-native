@@ -140,7 +140,8 @@ inline void copyArray(std::shared_ptr<TObj>* dest,
 
 /** Template class for container Cacheable types. */
 template <typename TBase, int8_t TYPEID>
-class APACHE_GEODE_EXPORT CacheableContainerType : public Cacheable, public TBase {
+class APACHE_GEODE_EXPORT CacheableContainerType : public Cacheable,
+                                                   public TBase {
  protected:
   inline CacheableContainerType() : TBase() {}
 
@@ -193,10 +194,9 @@ class APACHE_GEODE_EXPORT CacheableContainerType : public Cacheable, public TBas
 #pragma warning(disable : 4231)
 #endif
 
-#define _GEODE_CACHEABLE_KEY_TYPE_DEF_(p, k)           \
-  extern const char tName_##k[];                       \
-  template class                                       \
-      CacheableKeyType<p, GeodeTypeIds::k, tName_##k>; \
+#define _GEODE_CACHEABLE_KEY_TYPE_DEF_(p, k)                      \
+  extern const char tName_##k[];                                  \
+  template class CacheableKeyType<p, GeodeTypeIds::k, tName_##k>; \
   typedef CacheableKeyType<p, GeodeTypeIds::k, tName_##k> _##k;
 
 // use a class instead of typedef for bug #283
@@ -230,9 +230,8 @@ class APACHE_GEODE_EXPORT CacheableContainerType : public Cacheable, public TBas
     return k::create(value);                                            \
   }
 
-#define _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(p, c) \
-  template class                                   \
-      CacheableContainerType<p, GeodeTypeIds::c>;  \
+#define _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(p, c)           \
+  template class CacheableContainerType<p, GeodeTypeIds::c>; \
   typedef CacheableContainerType<p, GeodeTypeIds::c> _##c;
 
 // use a class instead of typedef for bug #283

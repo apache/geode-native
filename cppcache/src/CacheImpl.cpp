@@ -742,21 +742,30 @@ CacheImpl::getMemberListForVersionStamp() {
   return *versionStampMemIdList;
 }
 
-std::unique_ptr<DataInput> CacheImpl::createDataInput(const uint8_t* buffer,
-                                                      size_t len) const {
-  auto poolName = getPoolManager().getDefaultPool()->getName();
-  return std::unique_ptr<DataInput>(new DataInput(buffer, len, this, poolName));
+std::unique_ptr<DataOutput> CacheImpl::createDataOutput() const {
+  return CacheImpl::createDataOutput(nullptr);
 }
 
-std::unique_ptr<DataOutput> CacheImpl::createDataOutput() const {
-  auto defaultPool = getPoolManager().getDefaultPool();
-
-  if (defaultPool != nullptr) {
-    return std::unique_ptr<DataOutput>(
-        new DataOutput(this, defaultPool->getName()));
+std::unique_ptr<DataOutput> CacheImpl::createDataOutput(Pool* pool) const {
+  if (!pool) {
+    pool = this->getPoolManager().getDefaultPool().get();
   }
 
-  return std::unique_ptr<DataOutput>(new DataOutput(this, EMPTY_STRING));
+  return std::unique_ptr<DataOutput>(new DataOutput(this, pool));
+}
+
+std::unique_ptr<DataInput> CacheImpl::createDataInput(const uint8_t* buffer,
+                                                      size_t len) const {
+  return CacheImpl::createDataInput(buffer, len, nullptr);
+}
+
+std::unique_ptr<DataInput> CacheImpl::createDataInput(const uint8_t* buffer,
+                                                      size_t len,
+                                                      Pool* pool) const {
+  if (!pool) {
+    pool = this->getPoolManager().getDefaultPool().get();
+  }
+  return std::unique_ptr<DataInput>(new DataInput(buffer, len, this, pool));
 }
 
 void CacheImpl::setCache(Cache* cache) { m_cache = cache; }

@@ -143,9 +143,7 @@ class TestDataInput {
 
   void setBuffer() { m_dataInput.setBuffer(); }
 
-  const std::string &getPoolName() {
-    return DataInputInternal::getPoolName(m_dataInput);
-  }
+  Pool *getPool() { return DataInputInternal::getPool(m_dataInput); }
 
   template <class CharT = char, class... Tail>
   inline std::basic_string<CharT, Tail...> readUTF() {

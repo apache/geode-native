@@ -44,7 +44,6 @@ class PdxWriter;
  * a PdxSerializer registered that can handle the user domain class.
  */
 class APACHE_GEODE_EXPORT PdxWrapper : public PdxSerializable {
-
  public:
   /**
    * Constructor which takes the address of the user object to contain for PDX

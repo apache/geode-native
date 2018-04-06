@@ -32,7 +32,7 @@ namespace client {
  * This subclass adds expiration times.
  */
 class APACHE_GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
-                                  public ExpEntryProperties {
+                                        public ExpEntryProperties {
  public:
   virtual ~ExpMapEntry() {}
 
@@ -60,7 +60,7 @@ class APACHE_GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
 };
 
 class APACHE_GEODE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
-                                           public VersionStamp {
+                                                 public VersionStamp {
  public:
   virtual ~VersionedExpMapEntry() {}
 

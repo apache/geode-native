@@ -30,16 +30,14 @@
 #include "Serializable.hpp"
 #include "CacheableString.hpp"
 
-/**
- * @file
- */
-
 namespace apache {
 namespace geode {
 namespace client {
+
 class SerializationRegistry;
 class DataOutputInternal;
 class CacheImpl;
+class Pool;
 
 /**
  * Provide operations for writing primitive data values, byte arrays,
@@ -508,7 +506,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   /**
    * Construct a new DataOutput.
    */
-  DataOutput(const CacheImpl* cache, const std::string& poolName);
+  DataOutput(const CacheImpl* cache, Pool* pool);
 
   virtual const SerializationRegistry& getSerializationRegistry() const;
 
@@ -530,7 +528,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   // flag to indicate we have a big buffer
   volatile bool m_haveBigBuffer;
   const CacheImpl* m_cache;
-  const std::string& m_poolName;
+  Pool* m_pool;
 
   inline void writeAscii(const std::string& value) {
     uint16_t len = static_cast<uint16_t>(
@@ -743,7 +741,7 @@ class APACHE_GEODE_EXPORT DataOutput {
     writeNoCheck(static_cast<uint8_t>(value));
   }
 
-  const std::string& getPoolName() const { return m_poolName; }
+  Pool* getPool() const { return m_pool; }
 
   static uint8_t* checkoutBuffer(size_t* size);
   static void checkinBuffer(uint8_t* buffer, size_t size);

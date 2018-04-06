@@ -38,7 +38,8 @@ namespace client {
  * when a preserved data expires.
  *
  */
-class APACHE_GEODE_EXPORT PreservedDataExpiryHandler : public ACE_Event_Handler {
+class APACHE_GEODE_EXPORT PreservedDataExpiryHandler
+    : public ACE_Event_Handler {
  public:
   /**
    * Constructor

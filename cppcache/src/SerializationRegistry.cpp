@@ -254,39 +254,43 @@ std::shared_ptr<PdxSerializable> SerializationRegistry::getPdxType(
   return pdxObj;
 }
 
-void SerializationRegistry::setPdxSerializer(std::shared_ptr<PdxSerializer> serializer) {
+void SerializationRegistry::setPdxSerializer(
+    std::shared_ptr<PdxSerializer> serializer) {
   this->pdxSerializer = serializer;
 }
+
 std::shared_ptr<PdxSerializer> SerializationRegistry::getPdxSerializer() {
   return pdxSerializer;
 }
 
-int32_t SerializationRegistry::GetPDXIdForType(std::shared_ptr<Pool> pool,
-                                               std::shared_ptr<Serializable> pdxType) const {
-  if (pool == nullptr) {
-    throw IllegalStateException("Pool not found, Pdx operation failed");
+int32_t SerializationRegistry::GetPDXIdForType(
+    Pool* pool, std::shared_ptr<Serializable> pdxType) const {
+  if (auto poolDM = dynamic_cast<ThinClientPoolDM*>(pool)) {
+    return poolDM->GetPDXIdForType(pdxType);
   }
 
-  return static_cast<ThinClientPoolDM*>(pool.get())->GetPDXIdForType(pdxType);
+  throw IllegalStateException("Pool not found, Pdx operation failed");
 }
- std::shared_ptr<Serializable> SerializationRegistry::GetPDXTypeById(std::shared_ptr<Pool> pool,
-                                                      int32_t typeId) const {
-   if (pool == nullptr) {
-     throw IllegalStateException("Pool not found, Pdx operation failed");
+
+std::shared_ptr<Serializable> SerializationRegistry::GetPDXTypeById(
+    Pool* pool, int32_t typeId) const {
+  if (auto poolDM = dynamic_cast<ThinClientPoolDM*>(pool)) {
+    return poolDM->GetPDXTypeById(typeId);
   }
 
-  return static_cast<ThinClientPoolDM*>(pool.get())->GetPDXTypeById(typeId);
+  throw IllegalStateException("Pool not found, Pdx operation failed");
 }
 
-int32_t SerializationRegistry::GetEnumValue(std::shared_ptr<Pool> pool,
-                                            std::shared_ptr<Serializable> enumInfo) const {
+int32_t SerializationRegistry::GetEnumValue(
+    std::shared_ptr<Pool> pool, std::shared_ptr<Serializable> enumInfo) const {
   if (pool == nullptr) {
     throw IllegalStateException("Pool not found, Pdx operation failed");
   }
 
   return static_cast<ThinClientPoolDM*>(pool.get())->GetEnumValue(enumInfo);
-} std::shared_ptr<Serializable> SerializationRegistry::GetEnum(std::shared_ptr<Pool> pool,
-                                               int32_t val) const {
+}
+std::shared_ptr<Serializable> SerializationRegistry::GetEnum(
+    std::shared_ptr<Pool> pool, int32_t val) const {
   if (pool == nullptr) {
     throw IllegalStateException("Pool not found, Pdx operation failed");
   }

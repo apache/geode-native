@@ -261,7 +261,7 @@ class MapEntryImpl : public MapEntry,
 };
 
 class APACHE_GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
-                                            public VersionStamp {
+                                                  public VersionStamp {
  public:
   virtual ~VersionedMapEntryImpl() {}
 

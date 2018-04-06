@@ -31,7 +31,7 @@ using namespace apache::geode::client;
 class DataOutputUnderTest : public DataOutput {
  public:
   using DataOutput::DataOutput;
-  DataOutputUnderTest() : DataOutput(nullptr, EMPTY_STRING) {}
+  DataOutputUnderTest() : DataOutput(nullptr, nullptr) {}
 };
 
 #define EXPECT_MESSAGE_EQ(e, a) EXPECT_PRED_FORMAT2(assertMessageEqual, e, a)

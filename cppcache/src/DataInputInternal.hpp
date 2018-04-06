@@ -29,17 +29,13 @@ namespace client {
 class DataInputInternal : public DataInput {
  public:
   DataInputInternal(const uint8_t* buffer, size_t len)
-      : DataInput(buffer, len, nullptr, EMPTY_STRING) {}
+      : DataInput(buffer, len, nullptr, nullptr) {}
 
   DataInputInternal(const uint8_t* buffer, size_t len, const CacheImpl* cache)
-      : DataInput(buffer, len, cache, EMPTY_STRING) {}
+      : DataInput(buffer, len, cache, nullptr) {}
 
-  virtual const Cache* getCache() override {
-    throw FatalInternalException("DataInputInternal does not have a Cache");
-  }
-
-  inline static const std::string& getPoolName(const DataInput& dataInput) {
-    return dataInput.getPoolName();
+  inline static Pool* getPool(const DataInput& dataInput) {
+    return dataInput.getPool();
   }
 };
 

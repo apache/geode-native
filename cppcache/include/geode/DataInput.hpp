@@ -48,6 +48,7 @@ class Serializable;
 class SerializationRegistry;
 class CacheImpl;
 class DataInputInternal;
+class Pool;
 
 /**
  * Provide operations for reading primitive data values, byte arrays,
@@ -490,12 +491,7 @@ class APACHE_GEODE_EXPORT DataInput {
  protected:
   /** constructor given a pre-allocated byte array with size */
   DataInput(const uint8_t* m_buffer, size_t len, const CacheImpl* cache,
-            const std::string& poolName)
-      : m_buf(m_buffer),
-        m_bufHead(m_buffer),
-        m_bufLength(len),
-        m_poolName(poolName),
-        m_cache(cache) {}
+            Pool* pool);
 
   virtual const SerializationRegistry& getSerializationRegistry() const;
 
@@ -503,7 +499,7 @@ class APACHE_GEODE_EXPORT DataInput {
   const uint8_t* m_buf;
   const uint8_t* m_bufHead;
   size_t m_bufLength;
-  const std::string& m_poolName;
+  Pool* m_pool;
   const CacheImpl* m_cache;
 
   std::shared_ptr<Serializable> readObjectInternal(int8_t typeId = -1);
@@ -646,7 +642,7 @@ class APACHE_GEODE_EXPORT DataInput {
     value.assign(reinterpret_cast<const wchar_t*>(tmp.data()), tmp.length());
   }
 
-  const std::string& getPoolName() const { return m_poolName; }
+  Pool* getPool() const { return m_pool; }
 
   friend Cache;
   friend CacheImpl;

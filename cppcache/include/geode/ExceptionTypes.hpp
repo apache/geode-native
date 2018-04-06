@@ -776,7 +776,8 @@ class APACHE_GEODE_EXPORT CommitConflictException : public Exception {
  * being modified by the transaction.
  * This can be thrown while doing transactional operations or during commit.
  **/
-class APACHE_GEODE_EXPORT TransactionDataNodeHasDepartedException : public Exception {
+class APACHE_GEODE_EXPORT TransactionDataNodeHasDepartedException
+    : public Exception {
  public:
   using Exception::Exception;
   virtual ~TransactionDataNodeHasDepartedException() noexcept {}
@@ -789,7 +790,8 @@ class APACHE_GEODE_EXPORT TransactionDataNodeHasDepartedException : public Excep
  *transaction.
  * This can be thrown while doing transactional operations or during commit.
  **/
-class APACHE_GEODE_EXPORT TransactionDataRebalancedException : public Exception {
+class APACHE_GEODE_EXPORT TransactionDataRebalancedException
+    : public Exception {
  public:
   using Exception::Exception;
   virtual ~TransactionDataRebalancedException() noexcept {}

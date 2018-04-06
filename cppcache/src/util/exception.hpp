@@ -30,7 +30,7 @@ namespace geode {
 namespace client {
 
 extern void APACHE_GEODE_EXPORT GfErrTypeThrowException(const char* str,
-                                                  GfErrType err);
+                                                        GfErrType err);
 
 #define GfErrTypeToException(str, err)   \
   {                                      \

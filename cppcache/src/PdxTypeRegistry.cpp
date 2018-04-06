@@ -41,8 +41,7 @@ size_t PdxTypeRegistry::testNumberOfPreservedData() const {
   return preserveData.size();
 }
 
-int32_t PdxTypeRegistry::getPDXIdForType(const std::string& type,
-                                         const std::string& poolname,
+int32_t PdxTypeRegistry::getPDXIdForType(const std::string& type, Pool* pool,
                                          std::shared_ptr<PdxType> nType,
                                          bool checkIfThere) {
   // WriteGuard guard(g_readerWriterLock);
@@ -56,8 +55,7 @@ int32_t PdxTypeRegistry::getPDXIdForType(const std::string& type,
     }
   }
 
-  int typeId = cache->getSerializationRegistry()
-                    ->GetPDXIdForType(cache->getPoolManager().find(poolname), nType);
+  int typeId = cache->getSerializationRegistry()->GetPDXIdForType(pool, nType);
   nType->setTypeId(typeId);
 
   PdxTypeRegistry::addPdxType(typeId, nType);
@@ -65,7 +63,7 @@ int32_t PdxTypeRegistry::getPDXIdForType(const std::string& type,
 }
 
 int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
-                                         const std::string& poolname) {
+                                         Pool* pool) {
   int32_t typeId = 0;
   {
     ReadGuard read(g_readerWriterLock);
@@ -88,8 +86,7 @@ int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
     }
   }
 
-  typeId = cache->getSerializationRegistry()
-                ->GetPDXIdForType(cache->getPoolManager().find(poolname), nType);
+  typeId = cache->getSerializationRegistry()->GetPDXIdForType(pool, nType);
   nType->setTypeId(typeId);
   pdxTypeToTypeIdMap.insert(std::make_pair(nType, typeId));
   addPdxType(typeId, nType);

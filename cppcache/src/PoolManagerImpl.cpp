@@ -69,7 +69,7 @@ std::shared_ptr<Pool> PoolManagerImpl::find(const std::string& name) const {
 
 std::shared_ptr<Pool> PoolManagerImpl::find(
     std::shared_ptr<Region> region) const {
-  return find(region->getAttributes().getPoolName().c_str());
+  return find(region->getAttributes().getPoolName());
 }
 
 const HashMapOfPools& PoolManagerImpl::getAll() const {

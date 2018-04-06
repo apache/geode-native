@@ -58,9 +58,10 @@ namespace client {
  *
  */
 
-class APACHE_GEODE_EXPORT CqService : private NonCopyable,
-                                private NonAssignable,
-                                public std::enable_shared_from_this<CqService> {
+class APACHE_GEODE_EXPORT CqService
+    : private NonCopyable,
+      private NonAssignable,
+      public std::enable_shared_from_this<CqService> {
  private:
   ThinClientBaseDM* m_tccdm;
   statistics::StatisticsFactory* m_statisticsFactory;

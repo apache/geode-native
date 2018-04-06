@@ -60,7 +60,7 @@ namespace client {
  *
  */
 class APACHE_GEODE_EXPORT LRUMapEntry : public MapEntryImpl,
-                                  public LRUEntryProperties {
+                                        public LRUEntryProperties {
  public:
   virtual ~LRUMapEntry() {}
 
@@ -88,7 +88,7 @@ class APACHE_GEODE_EXPORT LRUMapEntry : public MapEntryImpl,
 };
 
 class APACHE_GEODE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
-                                           public VersionStamp {
+                                                 public VersionStamp {
  public:
   virtual ~VersionedLRUMapEntry() {}
 

@@ -881,13 +881,11 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
   }
 }
 
-const std::string& TcrMessage::getPoolName() const {
+Pool* TcrMessage::getPool() const {
   if (m_region) {
-    if (const auto& p = m_region->getPool()) {
-      return p->getName();
-    }
+    return m_region->getPool().get();
   }
-  return EMPTY_STRING;
+  return nullptr;
 }
 
 void TcrMessage::chunkSecurityHeader(int skipPart, const uint8_t* bytes,
@@ -907,7 +905,7 @@ void TcrMessage::handleByteArrayResponse(
     const SerializationRegistry& serializationRegistry,
     MemberListForVersionStamp& memberListForVersionStamp) {
   auto input = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-      (uint8_t*)bytearray, len, getPoolName());
+      (uint8_t*)bytearray, len, getPool());
   // TODO:: this need to make sure that pool is there
   //  if(m_tcdm == nullptr)
   //  throw IllegalArgumentException("Pool is nullptr in TcrMessage");
@@ -2555,7 +2553,7 @@ void TcrMessage::createUserCredentialMessage(TcrConnection* conn) {
   writeHeader(m_msgType, 1);
 
   auto dOut = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
-      getPoolName());
+      getPool());
 
   if (m_creds != nullptr) m_creds->toData(*dOut);
 
@@ -2585,7 +2583,7 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
   LOGDEBUG("addSecurityPart( , ) ");
   auto dOutput =
       m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
-          getPoolName());
+          getPool());
 
   dOutput->writeInt(connectionId);
   dOutput->writeInt(unique_id);
@@ -2617,7 +2615,7 @@ void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection* conn) {
   LOGDEBUG("TcrMessage::addSecurityPart only connid");
   auto dOutput =
       m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
-          getPoolName());
+          getPool());
 
   dOutput->writeInt(connectionId);
 
@@ -2787,7 +2785,7 @@ void TcrMessage::setData(const char* bytearray, int32_t len, uint16_t memId,
                          MemberListForVersionStamp& memberListForVersionStamp) {
   if (m_request == nullptr) {
     m_request = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
-        getPoolName());
+        getPool());
   }
   if (bytearray) {
     DeleteArray<const char> delByteArr(bytearray);

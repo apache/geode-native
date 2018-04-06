@@ -32,8 +32,8 @@ namespace client {
  * @brief Hold region mapped entry value and lru information.
  */
 class APACHE_GEODE_EXPORT LRUExpMapEntry : public MapEntryImpl,
-                                     public LRUEntryProperties,
-                                     public ExpEntryProperties {
+                                           public LRUEntryProperties,
+                                           public ExpEntryProperties {
  public:
   virtual ~LRUExpMapEntry() {}
 
@@ -64,7 +64,7 @@ class APACHE_GEODE_EXPORT LRUExpMapEntry : public MapEntryImpl,
 };
 
 class APACHE_GEODE_EXPORT VersionedLRUExpMapEntry : public LRUExpMapEntry,
-                                              public VersionStamp {
+                                                    public VersionStamp {
  public:
   virtual ~VersionedLRUExpMapEntry() {}
 

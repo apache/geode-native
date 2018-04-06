@@ -113,11 +113,8 @@ TSSDataOutput::~TSSDataOutput() {
 
 ACE_TSS<TSSDataOutput> TSSDataOutput::s_tssDataOutput;
 
-DataOutput::DataOutput(const CacheImpl* cache, const std::string& poolName)
-    : m_cache(cache),
-      m_size(0),
-      m_haveBigBuffer(false), 
-      m_poolName(poolName) {
+DataOutput::DataOutput(const CacheImpl* cache, Pool* pool)
+    : m_cache(cache), m_size(0), m_haveBigBuffer(false), m_pool(pool) {
   m_buf = m_bytes = DataOutput::checkoutBuffer(&m_size);
 }
 

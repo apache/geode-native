@@ -85,7 +85,8 @@ class SerializationRegistry;
  *
  */
 
-class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
+class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
+                                      private NonAssignable {
   /**
    * @brief public methods
    */
@@ -274,19 +275,14 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable
 
   virtual std::unique_ptr<DataOutput> createDataOutput() const;
 
-  virtual std::unique_ptr<DataOutput> createDataOutput(
-      const std::string& poolName) const {
-    return std::unique_ptr<DataOutput>(new DataOutput(this, poolName));
-  }
+  virtual std::unique_ptr<DataOutput> createDataOutput(Pool* pool) const;
 
   virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* buffer,
                                                      size_t len) const;
 
-  virtual std::unique_ptr<DataInput> createDataInput(
-      const uint8_t* buffer, size_t len, const std::string& poolName) const {
-    return std::unique_ptr<DataInput>(
-        new DataInput(buffer, len, this, poolName));
-  }
+  virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* buffer,
+                                                     size_t len,
+                                                     Pool* pool) const;
 
  private:
   std::atomic<bool> m_networkhop;

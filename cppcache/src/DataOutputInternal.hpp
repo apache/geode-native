@@ -22,6 +22,9 @@
 
 #include <geode/DataOutput.hpp>
 
+#include "CacheImpl.hpp"          // TODO remove
+#include <geode/PoolManager.hpp>  // TODO remove
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -30,12 +33,12 @@ class CacheImpl;
 
 class DataOutputInternal : public DataOutput {
  public:
-  DataOutputInternal() : DataOutput(nullptr, EMPTY_STRING) {}
+  DataOutputInternal() : DataOutput(nullptr, nullptr) {}
 
-  DataOutputInternal(CacheImpl* cache) : DataOutput(cache, EMPTY_STRING) {}
+  DataOutputInternal(CacheImpl* cache) : DataOutput(cache, nullptr) {}
 
-  inline static const std::string& getPoolName(const DataOutput& dataOutput) {
-    return dataOutput.getPoolName();
+  inline static Pool* getPool(const DataOutput& dataOutput) {
+    return dataOutput.getPool();
   }
 };
 
