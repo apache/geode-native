@@ -45,10 +45,10 @@
 
 using namespace apache::geode::client;
 
-CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem, bool iPUF,
-                     bool readPdxSerialized,
+CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
+                     bool ignorePdxUnreadFields, bool readPdxSerialized,
                      const std::shared_ptr<AuthInitialize>& authInitialize)
-    : m_ignorePdxUnreadFields(iPUF),
+    : m_ignorePdxUnreadFields(ignorePdxUnreadFields),
       m_readPdxSerialized(readPdxSerialized),
       m_expiryTaskManager(
           std::unique_ptr<ExpiryTaskManager>(new ExpiryTaskManager())),
