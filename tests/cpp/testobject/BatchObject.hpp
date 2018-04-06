@@ -24,16 +24,16 @@
  * @brief User class for testing the cq functionality.
  */
 
+#include <inttypes.h>
+#include <ace/ACE.h>
+#include <ace/OS.h>
+#include <ace/Time_Value.h>
+#include <string>
+
 #include "fwklib/Timer.hpp"
 #include "fwklib/FrameworkTest.hpp"
 #include "TimestampedObject.hpp"
 #include "testobject_export.h"
-
-#include <ace/ACE.h>
-#include <ace/OS.h>
-#include <ace/Time_Value.h>
-#include <inttypes.h>
-#include <string>
 
 using namespace apache::geode::client;
 using namespace testframework;

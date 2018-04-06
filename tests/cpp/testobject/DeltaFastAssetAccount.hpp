@@ -24,16 +24,16 @@
  * @brief User class for testing the query functionality.
  */
 
-#include "fwklib/FrameworkTest.hpp"
-#include "FastAsset.hpp"
-#include "testobject_export.h"
-
+#include <inttypes.h>
 #include <geode/Delta.hpp>
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Time_Value.h>
-#include <inttypes.h>
 #include <string>
+
+#include "fwklib/FrameworkTest.hpp"
+#include "FastAsset.hpp"
+#include "testobject_export.h"
 
 using namespace apache::geode::client;
 using namespace testframework;
