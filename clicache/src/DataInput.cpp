@@ -1164,11 +1164,11 @@ namespace Apache
         }
       }
 
-      String^ DataInput::GetPoolName()
+      native::Pool* DataInput::GetPool()
       {
         try
         {
-          return marshal_as<String^>(native::DataInputInternal::getPoolName(*m_nativeptr));
+          return native::DataInputInternal::getPool(*m_nativeptr);
         }
         finally {
           GC::KeepAlive(m_nativeptr);

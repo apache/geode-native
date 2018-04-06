@@ -73,7 +73,7 @@ namespace Apache
               PdxType^ piPt = pdxII->getPdxType();
               if(piPt != nullptr && piPt->TypeId == 0)//from pdxInstance factory need to get typeid from server
               {
-                int typeId = dataOutput->Cache->GetPdxTypeRegistry()->GetPDXIdForType(piPt, dataOutput->GetPoolName());
+                int typeId = dataOutput->Cache->GetPdxTypeRegistry()->GetPDXIdForType(piPt, dataOutput->GetPool());
                 pdxII->setPdxId(typeId);
               }
               PdxLocalWriter^ plw = gcnew PdxLocalWriter(dataOutput, piPt);  
@@ -108,7 +108,7 @@ namespace Apache
 
 						//get type id from server and then set it
             int nTypeId = dataOutput->Cache->GetPdxTypeRegistry()->GetPDXIdForType(pdxType, 
-																														dataOutput->GetPoolName(), nType, true);
+																														dataOutput->GetPool(), nType, true);
             nType->TypeId = nTypeId;
 
             ptc->EndObjectWriting();//now write typeid
@@ -200,7 +200,7 @@ namespace Apache
             {
               if(pType == nullptr)
               {
-                pType = (PdxType^)(Serializable::GetPDXTypeById(dataInput->GetPoolName(), typeId, dataInput->Cache));
+                pType = (PdxType^)(Serializable::GetPDXTypeById(dataInput->GetPool(), typeId, dataInput->Cache));
                 pdxLocalType = dataInput->Cache->GetPdxTypeRegistry()->GetLocalPdxType(pType->PdxClassName);//this should be fine for IPdxTypeMappers
               }
               
@@ -245,7 +245,7 @@ namespace Apache
                   //need to know local type and then merge type
                   pdxLocalType->InitializeType(dataInput->Cache);
                   pdxLocalType->TypeId = dataInput->Cache->GetPdxTypeRegistry()->GetPDXIdForType(pdxObject->GetType(), 
-																																				  dataInput->GetPoolName(), 
+																																				  dataInput->GetPool(), 
 																																				  pdxLocalType, true);
                   pdxLocalType->IsLocal = true;
                   dataInput->Cache->GetPdxTypeRegistry()->AddLocalPdxType(pdxClassname, pdxLocalType);//added local type
@@ -323,7 +323,7 @@ namespace Apache
 
             if(pType == nullptr)
             {
-              PdxType^ pType = (PdxType^)(Serializable::GetPDXTypeById(dataInput->GetPoolName(), typeId, dataInput->Cache));
+              PdxType^ pType = (PdxType^)(Serializable::GetPDXTypeById(dataInput->GetPool(), typeId, dataInput->Cache));
               //this should be fine for IPdxTypeMapper
               dataInput->Cache->GetPdxTypeRegistry()->AddLocalPdxType(pType->PdxClassName, pType);
               dataInput->Cache->GetPdxTypeRegistry()->AddPdxType(pType->TypeId, pType); 
@@ -379,7 +379,7 @@ namespace Apache
           {//need to create new version            
             mergedVersion->InitializeType(dataInput->Cache);
             if(mergedVersion->TypeId == 0)
-              mergedVersion->TypeId = Serializable::GetPDXIdForType(dataInput->GetPoolName(), mergedVersion, dataInput->Cache);              
+              mergedVersion->TypeId = Serializable::GetPDXIdForType(dataInput->GetPool(), mergedVersion, dataInput->Cache);              
             
            // dataInput->Cache->GetPdxTypeRegistry()->AddPdxType(remoteType->TypeId, mergedVersion);
             dataInput->Cache->GetPdxTypeRegistry()->AddPdxType(mergedVersion->TypeId, mergedVersion);  

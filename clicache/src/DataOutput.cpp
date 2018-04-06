@@ -936,11 +936,11 @@ namespace Apache
         WriteObject<double>(doubleArray);
       }
 
-      String^ DataOutput::GetPoolName()
+      native::Pool* DataOutput::GetPool()
       {
         try
         {
-          return marshal_as<String^>(native::DataOutputInternal::getPoolName(*m_nativeptr));
+          return native::DataOutputInternal::getPool(*m_nativeptr);
         }
         finally
         {

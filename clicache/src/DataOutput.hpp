@@ -403,7 +403,7 @@ namespace Apache
           return m_cursor;
         }
 
-        String^ GetPoolName();
+        native::Pool* GetPool();
 
         void WriteStringArray(array<String^>^ strArray);
 
