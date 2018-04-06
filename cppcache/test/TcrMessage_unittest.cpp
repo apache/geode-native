@@ -32,6 +32,15 @@ class DataOutputUnderTest : public DataOutput {
  public:
   using DataOutput::DataOutput;
   DataOutputUnderTest() : DataOutput(nullptr, nullptr) {}
+
+ protected:
+  virtual const SerializationRegistry &getSerializationRegistry()
+  const override {
+    return m_serializationRegistry;
+  }
+
+ private:
+  SerializationRegistry m_serializationRegistry;
 };
 
 #define EXPECT_MESSAGE_EQ(e, a) EXPECT_PRED_FORMAT2(assertMessageEqual, e, a)

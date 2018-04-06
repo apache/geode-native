@@ -59,8 +59,6 @@ class TestDataInput {
     // NOP
   }
 
-  operator DataInput &() { return m_dataInput; }
-
   void read(uint8_t *value) { *value = m_dataInput.read(); }
 
   void read(int8_t *value) { *value = m_dataInput.read(); }
@@ -142,8 +140,6 @@ class TestDataInput {
   void reset() { m_dataInput.reset(); }
 
   void setBuffer() { m_dataInput.setBuffer(); }
-
-  Pool *getPool() { return DataInputInternal::getPool(m_dataInput); }
 
   template <class CharT = char, class... Tail>
   inline std::basic_string<CharT, Tail...> readUTF() {
