@@ -38,7 +38,7 @@ namespace geode {
 namespace client {
 
 /** Template CacheableKey class for primitive types. */
-template <typename TObj, int8_t TYPEID, const char* TYPENAME>
+template <typename TObj, int8_t TYPEID>
 class APACHE_GEODE_EXPORT CacheableKeyType : public CacheableKey {
  protected:
   TObj m_value;
@@ -47,6 +47,9 @@ class APACHE_GEODE_EXPORT CacheableKeyType : public CacheableKey {
       : m_value(apache::geode::client::serializer::zeroObject<TObj>()) {}
 
   inline CacheableKeyType(const TObj value) : m_value(value) {}
+
+  using KEYTYPE = CacheableKeyType<TObj, TYPEID>;
+  _GEODE_FRIEND_STD_SHARED_PTR(KEYTYPE)
 
  public:
   /** Gets the contained value. */
@@ -118,6 +121,19 @@ class APACHE_GEODE_EXPORT CacheableKeyType : public CacheableKey {
   virtual size_t objectSize() const override {
     return sizeof(CacheableKeyType);
   }
+
+  /** Factory function registered with serialization registry. */
+  static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<CacheableKeyType<TObj, TYPEID>>();
+  }
+  /** Factory function to create a new default instance. */
+  inline static std::shared_ptr<CacheableKeyType> create() {
+    return std::make_shared<CacheableKeyType>();
+  }
+  /** Factory function to create an instance with the given value. */
+  inline static std::shared_ptr<CacheableKeyType> create(const TObj value) {
+    return std::make_shared<CacheableKeyType>(value);
+  }
 };
 
 /** Function to copy an array from source to destination. */
@@ -145,6 +161,9 @@ class APACHE_GEODE_EXPORT CacheableContainerType : public Cacheable, public TBas
   inline CacheableContainerType() : TBase() {}
 
   inline CacheableContainerType(const int32_t n) : TBase(n) {}
+
+  using CONTAINTERTYPE = CacheableContainerType<TBase, TYPEID>;
+  _GEODE_FRIEND_STD_SHARED_PTR(CONTAINTERTYPE)
 
  public:
   // Cacheable methods
@@ -186,6 +205,18 @@ class APACHE_GEODE_EXPORT CacheableContainerType : public Cacheable, public TBas
   virtual size_t objectSize() const override {
     return sizeof(CacheableContainerType) + serializer::objectSize(*this);
   }
+  /** Factory function registered with serialization registry. */
+  static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<CONTAINTERTYPE>();
+  }
+  /** Factory function to create a default instance. */
+  inline static std::shared_ptr<CONTAINTERTYPE> create() {
+    return std::make_shared<CONTAINTERTYPE>();
+  }
+  /** Factory function to create an instance with the given size. */
+  inline static std::shared_ptr<CONTAINTERTYPE> create(const int32_t n) {
+    return std::make_shared<CONTAINTERTYPE>(n);
+  }
 };
 
 // Disable extern template warning on MSVC compiler
@@ -193,129 +224,118 @@ class APACHE_GEODE_EXPORT CacheableContainerType : public Cacheable, public TBas
 #pragma warning(disable : 4231)
 #endif
 
-#define _GEODE_CACHEABLE_KEY_TYPE_DEF_(p, k)           \
-  extern const char tName_##k[];                       \
-  template class                                       \
-      CacheableKeyType<p, GeodeTypeIds::k, tName_##k>; \
-  typedef CacheableKeyType<p, GeodeTypeIds::k, tName_##k> _##k;
-
-// use a class instead of typedef for bug #283
-#define _GEODE_CACHEABLE_KEY_TYPE_(p, k)                                \
-  class APACHE_GEODE_EXPORT k : public _##k {                           \
-   protected:                                                           \
-    inline k() : _##k() {}                                              \
-    inline k(const p value) : _##k(value) {}                            \
-    _GEODE_FRIEND_STD_SHARED_PTR(k)                                     \
-                                                                        \
-   public:                                                              \
-    /** Factory function registered with serialization registry. */     \
-    static std::shared_ptr<Serializable> createDeserializable() {       \
-      return std::make_shared<k>();                                     \
-    }                                                                   \
-    /** Factory function to create a new default instance. */           \
-    inline static std::shared_ptr<k> create() {                         \
-      return std::make_shared<k>();                                     \
-    }                                                                   \
-    /** Factory function to create an instance with the given value. */ \
-    inline static std::shared_ptr<k> create(const p value) {            \
-      return std::make_shared<k>(value);                                \
-    }                                                                   \
-  };                                                                    \
-  template <>                                                           \
-  inline std::shared_ptr<CacheableKey> CacheableKey::create(p value) {  \
-    return k::create(value);                                            \
-  }                                                                     \
-  template <>                                                           \
-  inline std::shared_ptr<Cacheable> Serializable::create(p value) {     \
-    return k::create(value);                                            \
-  }
-
-#define _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(p, c) \
-  template class                                   \
-      CacheableContainerType<p, GeodeTypeIds::c>;  \
-  typedef CacheableContainerType<p, GeodeTypeIds::c> _##c;
-
-// use a class instead of typedef for bug #283
-#define _GEODE_CACHEABLE_CONTAINER_TYPE_(p, c)                         \
-  class APACHE_GEODE_EXPORT c : public _##c {                          \
-   protected:                                                          \
-    inline c() : _##c() {}                                             \
-    inline c(const int32_t n) : _##c(n) {}                             \
-                                                                       \
-    _GEODE_FRIEND_STD_SHARED_PTR(c)                                    \
-                                                                       \
-   public:                                                             \
-    /** Factory function registered with serialization registry. */    \
-    static std::shared_ptr<Serializable> createDeserializable() {      \
-      return std::make_shared<c>();                                    \
-    }                                                                  \
-    /** Factory function to create a default instance. */              \
-    inline static std::shared_ptr<c> create() {                        \
-      return std::make_shared<c>();                                    \
-    }                                                                  \
-    /** Factory function to create an instance with the given size. */ \
-    inline static std::shared_ptr<c> create(const int32_t n) {         \
-      return std::make_shared<c>(n);                                   \
-    }                                                                  \
-  };
-
 // Instantiations for the built-in CacheableKeys
-
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(bool, CacheableBoolean);
 /**
  * An immutable wrapper for booleans that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(bool, CacheableBoolean);
+using CacheableBoolean = CacheableKeyType<bool, GeodeTypeIds::CacheableBoolean>;
+template <>
+inline std::shared_ptr<CacheableKey> CacheableKey::create(bool value) {
+  return CacheableBoolean::create(value);
+}
+template <>
+inline std::shared_ptr<Cacheable> Serializable::create(bool value) {
+  return CacheableBoolean::create(value);
+}
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(int8_t, CacheableByte);
 /**
  * An immutable wrapper for bytes that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(int8_t, CacheableByte);
+using CacheableByte = CacheableKeyType<int8_t, GeodeTypeIds::CacheableByte>;
+template <>
+inline std::shared_ptr<CacheableKey> CacheableKey::create(int8_t value) {
+  return CacheableByte::create(value);
+}
+template <>
+inline std::shared_ptr<Cacheable> Serializable::create(int8_t value) {
+  return CacheableByte::create(value);
+}
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(double, CacheableDouble);
 /**
  * An immutable wrapper for doubles that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(double, CacheableDouble);
+using CacheableDouble = CacheableKeyType<double, GeodeTypeIds::CacheableDouble>;
+template <>
+inline std::shared_ptr<CacheableKey> CacheableKey::create(double value) {
+  return CacheableDouble::create(value);
+}
+template <>
+inline std::shared_ptr<Cacheable> Serializable::create(double value) {
+  return CacheableDouble::create(value);
+}
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(float, CacheableFloat);
 /**
  * An immutable wrapper for floats that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(float, CacheableFloat);
+using CacheableFloat = CacheableKeyType<float, GeodeTypeIds::CacheableFloat>;
+template <>
+inline std::shared_ptr<CacheableKey> CacheableKey::create(float value) {
+  return CacheableFloat::create(value);
+}
+template <>
+inline std::shared_ptr<Cacheable> Serializable::create(float value) {
+  return CacheableFloat::create(value);
+}
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(int16_t, CacheableInt16);
 /**
  * An immutable wrapper for 16-bit integers that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(int16_t, CacheableInt16);
+using CacheableInt16 = CacheableKeyType<int16_t, GeodeTypeIds::CacheableInt16>;
+template <>
+inline std::shared_ptr<CacheableKey> CacheableKey::create(int16_t value) {
+  return CacheableInt16::create(value);
+}
+template <>
+inline std::shared_ptr<Cacheable> Serializable::create(int16_t value) {
+  return CacheableInt16::create(value);
+}
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(int32_t, CacheableInt32);
 /**
  * An immutable wrapper for 32-bit integers that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(int32_t, CacheableInt32);
+using CacheableInt32 = CacheableKeyType<int32_t, GeodeTypeIds::CacheableInt32>;
+template <>
+inline std::shared_ptr<CacheableKey> CacheableKey::create(int32_t value) {
+  return CacheableInt32::create(value);
+}
+template <>
+inline std::shared_ptr<Cacheable> Serializable::create(int32_t value) {
+  return CacheableInt32::create(value);
+}
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(int64_t, CacheableInt64);
 /**
  * An immutable wrapper for 64-bit integers that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(int64_t, CacheableInt64);
+using CacheableInt64 = CacheableKeyType<int64_t, GeodeTypeIds::CacheableInt64>;
+template <>
+inline std::shared_ptr<CacheableKey> CacheableKey::create(int64_t value) {
+  return CacheableInt64::create(value);
+}
+template <>
+inline std::shared_ptr<Cacheable> Serializable::create(int64_t value) {
+  return CacheableInt64::create(value);
+}
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(char16_t, CacheableCharacter);
 /**
  * An immutable wrapper for characters that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(char16_t, CacheableCharacter);
+using CacheableCharacter = CacheableKeyType<char16_t, GeodeTypeIds::CacheableCharacter>;
+template <>
+inline std::shared_ptr<CacheableKey> CacheableKey::create(char16_t value) {
+  return CacheableCharacter::create(value);
+}
+template <>
+inline std::shared_ptr<Cacheable> Serializable::create(char16_t value) {
+  return CacheableCharacter::create(value);
+}
 
 // Instantiations for array built-in Cacheables
 
@@ -447,66 +467,63 @@ using CacheableStringArray = CacheableArray<std::shared_ptr<CacheableString>,
 
 // Instantiations for container types (Vector/HashMap/HashSet) Cacheables
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>,
-                                     CacheableVector);
 /**
  * A mutable <code>Cacheable</code> vector wrapper that can serve as
  * a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(std::vector<std::shared_ptr<Cacheable>>,
-                                 CacheableVector);
+using CacheableVector =
+    CacheableContainerType<std::vector<std::shared_ptr<Cacheable>>,
+                           GeodeTypeIds::CacheableVector>;
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable, CacheableHashMap);
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableHashMap);
+using CacheableHashMap =
+    CacheableContainerType<HashMapOfCacheable,
+                           GeodeTypeIds::CacheableHashMap>;
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey, CacheableHashSet);
 /**
  * A mutable <code>CacheableKey</code> hash set wrapper that can serve as
  * a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableHashSet);
+using CacheableHashSet =
+    CacheableContainerType<HashSetOfCacheableKey,
+                           GeodeTypeIds::CacheableHashSet>;
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>,
-                                     CacheableArrayList);
 /**
  * A mutable <code>Cacheable</code> array list wrapper that can serve as
  * a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(std::vector<std::shared_ptr<Cacheable>>,
-                                 CacheableArrayList);
+using CacheableArrayList =
+    CacheableContainerType<std::vector<std::shared_ptr<Cacheable>>,
+                           GeodeTypeIds::CacheableArrayList>;
 
 // linketlist for JSON formattor issue
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>,
-                                     CacheableLinkedList);
 /**
  * A mutable <code>Cacheable</code> array list wrapper that can serve as
  * a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(std::vector<std::shared_ptr<Cacheable>>,
-                                 CacheableLinkedList);
+using CacheableLinkedList =
+    CacheableContainerType<std::vector<std::shared_ptr<Cacheable>>,
+                           GeodeTypeIds::CacheableLinkedList>;
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>,
-                                     CacheableStack);
 /**
  * A mutable <code>Cacheable</code> stack wrapper that can serve as
  * a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(std::vector<std::shared_ptr<Cacheable>>,
-                                 CacheableStack);
+using CacheableStack =
+    CacheableContainerType<std::vector<std::shared_ptr<Cacheable>>,
+                           GeodeTypeIds::CacheableStack>;
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable, CacheableHashTable);
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableHashTable);
+using CacheableHashTable =
+    CacheableContainerType<HashMapOfCacheable,
+                           GeodeTypeIds::CacheableHashTable>;
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable,
-                                     CacheableIdentityHashMap);
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching. This is
@@ -514,10 +531,10 @@ _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable,
  * to <code>CacheableHashMap</code> i.e. does not provide the semantics of
  * java <code>IdentityHashMap</code>.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableIdentityHashMap);
+using CacheableIdentityHashMap =
+    CacheableContainerType<HashMapOfCacheable,
+                           GeodeTypeIds::CacheableIdentityHashMap>;
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey,
-                                     CacheableLinkedHashSet);
 /**
  * A mutable <code>CacheableKey</code> hash set wrapper that can serve as
  * a distributable object for caching. This is provided for compability
@@ -525,7 +542,9 @@ _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey,
  * <code>CacheableHashSet</code> i.e. does not provide the predictable
  * iteration semantics of java <code>LinkedHashSet</code>.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableLinkedHashSet);
+using CacheableLinkedHashSet =
+    CacheableContainerType<HashSetOfCacheableKey,
+                           GeodeTypeIds::CacheableLinkedHashSet>;
 
 }  // namespace client
 }  // namespace geode
