@@ -49,6 +49,7 @@ target_link_libraries(QueryWrapper
   PRIVATE
     c++cli
     c++11
+	_WarningsAsError
 )
 
 # Makes project only reference, no .lib.
