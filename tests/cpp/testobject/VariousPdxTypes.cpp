@@ -402,7 +402,6 @@ void PdxTypes6::fromData(PdxReader &pr) {
 
   m_i1 = pr.readInt("i1");
   // LOGDEBUG("PdxTypes6::fromData m_i1 = %d", m_i1);
-  int32_t byteArrLen = 0;
   bytes128 = pr.readByteArray("bytes128");
   m_i2 = pr.readInt("i2");
   // LOGDEBUG("PdxTypes6::fromData m_i2 = %d", m_i2);
@@ -477,7 +476,6 @@ std::string PdxTypes7::toString() const {
    m_i1 = pr.readInt("i1");
    m_i2 = pr.readInt("i2");
    m_s1 = pr.readString("s1");
-   int32_t byteArrLen = 0;
    bytes38000 = pr.readByteArray("bytes38000");
    m_i3 = pr.readInt("i3");
    m_i4 = pr.readInt("i4");
@@ -543,7 +541,6 @@ std::string PdxTypes8::toString() const {
    m_i1 = pr.readInt("i1");
    m_i2 = pr.readInt("i2");
    m_s1 = pr.readString("s1");
-   int32_t byteArrLen = 0;
    bytes300 = pr.readByteArray("bytes300");
    _enum = pr.readObject("_enum");
    m_s2 = pr.readString("s2");
@@ -602,7 +599,6 @@ void PdxTypes9::toData(PdxWriter &pw) const {
 void PdxTypes9::fromData(PdxReader &pr) {
   m_s1 = pr.readString("s1");
   m_s2 = pr.readString("s2");
-  int32_t byteArrLen = 0;
   m_bytes66000 = pr.readByteArray("bytes66000");
   m_s3 = pr.readString("s3");
   m_s4 = pr.readString("s4");
@@ -660,7 +656,6 @@ void PdxTypes10::toData(PdxWriter &pw) const {
 void PdxTypes10::fromData(PdxReader &pr) {
   m_s1 = pr.readString("s1");
   m_s2 = pr.readString("s2");
-  int32_t byteArrLen = 0;
   m_bytes66000 = pr.readByteArray("bytes66000");
   m_s3 = pr.readString("s3");
   m_s4 = pr.readString("s4");

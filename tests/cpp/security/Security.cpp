@@ -820,15 +820,12 @@ std::shared_ptr<Cacheable> Security::getUserObject(const std::string &objType) {
   resetValue("valueSizes");
   int objSize = getIntValue("valueSizes");
   QueryHelper *qh = &QueryHelper::getHelper();
-  int numSet = 0;
   int setSize = 0;
   if (objType == "Portfolio") {
     setSize = qh->getPortfolioSetSize();
-    numSet = numOfKeys / setSize;
     usrObj = std::make_shared<Portfolio>(GsRandom::random(setSize), objSize);
   } else if (objType == "Position") {
     setSize = qh->getPositionSetSize();
-    numSet = numOfKeys / setSize;
     int numSecIds = sizeof(secIds) / sizeof(char *);
     usrObj =
         std::make_shared<Position>(secIds[setSize % numSecIds], setSize * 100);

@@ -1530,7 +1530,6 @@ void CacheHelper::closeLocator(int instance, bool) {
 
   char cmd[2048];
   char currWDPath[2048];
-  int portnum = 0;
   std::string currDir = ACE_OS::getcwd(currWDPath, 2048);
   std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
 
@@ -1549,21 +1548,15 @@ void CacheHelper::closeLocator(int instance, bool) {
 
   switch (instance) {
     case 1:
-      // portnum = 34756;
-      portnum = CacheHelper::staticLocatorHostPort1;
       sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort1);
       currDir += tmp;  // currDir += "1";
       break;
     case 2:
-      // portnum = 34757;
-      portnum = CacheHelper::staticLocatorHostPort2;
       sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort2);
       currDir += tmp;
       // currDir += "2";
       break;
     case 3:
-      // portnum = 34758;
-      portnum = CacheHelper::staticLocatorHostPort3;
       sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort3);
       currDir += tmp;
       // currDir += "3";

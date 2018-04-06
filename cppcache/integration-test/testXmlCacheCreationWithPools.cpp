@@ -18,6 +18,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <cstdint>
 
 #include "fw_dunit.hpp"
 
@@ -112,7 +113,7 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
       pool->getFreeConnectionTimeout()) {
     sprintf(logmsg,
             "checkPoolAttribs: Pool freeConnectionTimeout expected [%d], "
-            "actual [%lld]",
+            "actual [%" PRId64 "]",
             freeConnectionTimeout, pool->getFreeConnectionTimeout().count());
     LOG(logmsg);
     return false;
@@ -121,7 +122,7 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
       pool->getLoadConditioningInterval()) {
     sprintf(logmsg,
             "checkPoolAttribs: Pool loadConditioningInterval expected [%d], "
-            "actual [%lld]",
+            "actual [%" PRId64 "]",
             loadConditioningInterval,
             pool->getLoadConditioningInterval().count());
     LOG(logmsg);
@@ -157,15 +158,18 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
     return false;
   }
   if (std::chrono::milliseconds(pingInterval) != pool->getPingInterval()) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool pingInterval expected [%d], actual [%lld]",
-            pingInterval, pool->getPingInterval().count());
+    sprintf(
+        logmsg,
+        "checkPoolAttribs: Pool pingInterval expected [%d], actual [%" PRId64
+        "]",
+        pingInterval, pool->getPingInterval().count());
     LOG(logmsg);
     return false;
   }
   if (std::chrono::milliseconds(readTimeout) != pool->getReadTimeout()) {
     sprintf(logmsg,
-            "checkPoolAttribs: Pool readTimeout expected [%d], actual [%lld]",
+            "checkPoolAttribs: Pool readTimeout expected [%d], actual [%" PRId64
+            "]",
             readTimeout, pool->getReadTimeout().count());
     LOG(logmsg);
     return false;
@@ -198,7 +202,7 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
       pool->getSubscriptionMessageTrackingTimeout()) {
     sprintf(logmsg,
             "checkPoolAttribs: Pool subscriptionMessageTrackingTimeout "
-            "expected [%d], actual [%lld]",
+            "expected [%d], actual [%" PRId64 "]",
             subscriptionMessageTrackingTimeout,
             pool->getSubscriptionMessageTrackingTimeout().count());
     LOG(logmsg);
@@ -208,7 +212,7 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
       pool->getSubscriptionAckInterval()) {
     sprintf(logmsg,
             "checkPoolAttribs: Pool subscriptionAckInterval expected [%d], "
-            "actual [%lld]",
+            "actual [%" PRId64 "]",
             subscriptionAckInterval,
             pool->getSubscriptionAckInterval().count());
     LOG(logmsg);
@@ -224,10 +228,10 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
   }
   if (std::chrono::milliseconds(statisticInterval) !=
       pool->getStatisticInterval()) {
-    sprintf(
-        logmsg,
-        "checkPoolAttribs: Pool statisticInterval expected [%d], actual [%lld]",
-        statisticInterval, pool->getStatisticInterval().count());
+    sprintf(logmsg,
+            "checkPoolAttribs: Pool statisticInterval expected [%d], actual "
+            "[%" PRId64 "]",
+            statisticInterval, pool->getStatisticInterval().count());
     LOG(logmsg);
     return false;
   }
@@ -243,7 +247,7 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
       pool->getUpdateLocatorListInterval()) {
     sprintf(logmsg,
             "checkPoolAttribs: Pool updateLocatorListInterval expected [%d], "
-            "actual [%lld]",
+            "actual [%" PRId64 "]",
             updateLocatorListInterval,
             pool->getUpdateLocatorListInterval().count());
     LOG(logmsg);

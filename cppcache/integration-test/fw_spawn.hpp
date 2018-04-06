@@ -124,6 +124,6 @@
     ACE_TCHAR programName_[2048];
   };
 
-};  // namespace dunit.
+}  // namespace dunit.
 
 #endif  // GEODE_INTEGRATION_TEST_FW_SPAWN_H_

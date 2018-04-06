@@ -200,7 +200,7 @@ void EqStruct::fromData(apache::geode::client::DataInput &in) {
 }
 std::string EqStruct::toString() const {
   char buf[102500];
-  sprintf(buf, "EqStruct:[timestamp = %lld myIndex = %d cxlQty = %d ]",
+  sprintf(buf, "EqStruct:[timestamp = %" PRIu64 " myIndex = %d cxlQty = %d ]",
           timestamp, myIndex, cxlQty);
   return buf;
 }

@@ -261,61 +261,61 @@ class APACHE_GEODE_EXPORT CacheableContainerType : public Cacheable, public TBas
 
 // Instantiations for the built-in CacheableKeys
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(bool, CacheableBoolean);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(bool, CacheableBoolean)
 /**
  * An immutable wrapper for booleans that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(bool, CacheableBoolean);
+_GEODE_CACHEABLE_KEY_TYPE_(bool, CacheableBoolean)
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(int8_t, CacheableByte);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(int8_t, CacheableByte)
 /**
  * An immutable wrapper for bytes that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(int8_t, CacheableByte);
+_GEODE_CACHEABLE_KEY_TYPE_(int8_t, CacheableByte)
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(double, CacheableDouble);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(double, CacheableDouble)
 /**
  * An immutable wrapper for doubles that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(double, CacheableDouble);
+_GEODE_CACHEABLE_KEY_TYPE_(double, CacheableDouble)
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(float, CacheableFloat);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(float, CacheableFloat)
 /**
  * An immutable wrapper for floats that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(float, CacheableFloat);
+_GEODE_CACHEABLE_KEY_TYPE_(float, CacheableFloat)
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(int16_t, CacheableInt16);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(int16_t, CacheableInt16)
 /**
  * An immutable wrapper for 16-bit integers that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(int16_t, CacheableInt16);
+_GEODE_CACHEABLE_KEY_TYPE_(int16_t, CacheableInt16)
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(int32_t, CacheableInt32);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(int32_t, CacheableInt32)
 /**
  * An immutable wrapper for 32-bit integers that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(int32_t, CacheableInt32);
+_GEODE_CACHEABLE_KEY_TYPE_(int32_t, CacheableInt32)
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(int64_t, CacheableInt64);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(int64_t, CacheableInt64)
 /**
  * An immutable wrapper for 64-bit integers that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(int64_t, CacheableInt64);
+_GEODE_CACHEABLE_KEY_TYPE_(int64_t, CacheableInt64)
 
-_GEODE_CACHEABLE_KEY_TYPE_DEF_(char16_t, CacheableCharacter);
+_GEODE_CACHEABLE_KEY_TYPE_DEF_(char16_t, CacheableCharacter)
 /**
  * An immutable wrapper for characters that can serve as
  * a distributable key object for caching.
  */
-_GEODE_CACHEABLE_KEY_TYPE_(char16_t, CacheableCharacter);
+_GEODE_CACHEABLE_KEY_TYPE_(char16_t, CacheableCharacter)
 
 // Instantiations for array built-in Cacheables
 
@@ -448,65 +448,65 @@ using CacheableStringArray = CacheableArray<std::shared_ptr<CacheableString>,
 // Instantiations for container types (Vector/HashMap/HashSet) Cacheables
 
 _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>,
-                                     CacheableVector);
+                                     CacheableVector)
 /**
  * A mutable <code>Cacheable</code> vector wrapper that can serve as
  * a distributable object for caching.
  */
 _GEODE_CACHEABLE_CONTAINER_TYPE_(std::vector<std::shared_ptr<Cacheable>>,
-                                 CacheableVector);
+                                 CacheableVector)
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable, CacheableHashMap);
+_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable, CacheableHashMap)
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableHashMap);
+_GEODE_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableHashMap)
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey, CacheableHashSet);
+_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey, CacheableHashSet)
 /**
  * A mutable <code>CacheableKey</code> hash set wrapper that can serve as
  * a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableHashSet);
+_GEODE_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableHashSet)
 
 _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>,
-                                     CacheableArrayList);
+                                     CacheableArrayList)
 /**
  * A mutable <code>Cacheable</code> array list wrapper that can serve as
  * a distributable object for caching.
  */
 _GEODE_CACHEABLE_CONTAINER_TYPE_(std::vector<std::shared_ptr<Cacheable>>,
-                                 CacheableArrayList);
+                                 CacheableArrayList)
 
 // linketlist for JSON formattor issue
 _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>,
-                                     CacheableLinkedList);
+                                     CacheableLinkedList)
 /**
  * A mutable <code>Cacheable</code> array list wrapper that can serve as
  * a distributable object for caching.
  */
 _GEODE_CACHEABLE_CONTAINER_TYPE_(std::vector<std::shared_ptr<Cacheable>>,
-                                 CacheableLinkedList);
+                                 CacheableLinkedList)
 
 _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>,
-                                     CacheableStack);
+                                     CacheableStack)
 /**
  * A mutable <code>Cacheable</code> stack wrapper that can serve as
  * a distributable object for caching.
  */
 _GEODE_CACHEABLE_CONTAINER_TYPE_(std::vector<std::shared_ptr<Cacheable>>,
-                                 CacheableStack);
+                                 CacheableStack)
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable, CacheableHashTable);
+_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable, CacheableHashTable)
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableHashTable);
+_GEODE_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableHashTable)
 
 _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable,
-                                     CacheableIdentityHashMap);
+                                     CacheableIdentityHashMap)
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching. This is
@@ -514,10 +514,10 @@ _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable,
  * to <code>CacheableHashMap</code> i.e. does not provide the semantics of
  * java <code>IdentityHashMap</code>.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableIdentityHashMap);
+_GEODE_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableIdentityHashMap)
 
 _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey,
-                                     CacheableLinkedHashSet);
+                                     CacheableLinkedHashSet)
 /**
  * A mutable <code>CacheableKey</code> hash set wrapper that can serve as
  * a distributable object for caching. This is provided for compability
@@ -525,7 +525,7 @@ _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey,
  * <code>CacheableHashSet</code> i.e. does not provide the predictable
  * iteration semantics of java <code>LinkedHashSet</code>.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableLinkedHashSet);
+_GEODE_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableLinkedHashSet)
 
 }  // namespace client
 }  // namespace geode

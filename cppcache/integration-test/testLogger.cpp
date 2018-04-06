@@ -166,7 +166,7 @@ BEGIN_TEST(ALL_LEVEL_MACRO)
       int lines = numOfLinesInFile("all_logfile.log");
 
       printf("lines = %d Level = %d, %d\n", lines, static_cast<int>(level),
-             Log::logLevel());
+             static_cast<int>(Log::logLevel()));
 
       ASSERT(lines == expected(level), "Wrong number of lines");
       Log::close();
@@ -201,13 +201,13 @@ BEGIN_TEST(FILE_LIMIT)
       int lines = numOfLinesInFile("logfile.log");
         int expectedLines = static_cast<int>(level) + LENGTH_OF_BANNER -
             (level >= LogLevel::Default ? 1 : 0);
-      printf("lines = %d expectedLines = %d level = %d\n", lines, expectedLines,
-             level);
+        printf("lines = %d expectedLines = %d level = %d\n", lines,
+               expectedLines, static_cast<int>(level));
 
-      ASSERT(lines == expectedLines, "Wrong number of lines");
+        ASSERT(lines == expectedLines, "Wrong number of lines");
 
-      Log::close();
-      unlink("logfile.log");
+        Log::close();
+        unlink("logfile.log");
     }
 #endif
   }

@@ -553,7 +553,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   void writeJavaModifiedUtf8(
       const std::basic_string<_CharT, _Traits, _Allocator>& value) {
     writeJavaModifiedUtf8(value.data(), value.length());
-  };
+  }
 
   template <class _Traits, class _Allocator>
   void writeJavaModifiedUtf8(

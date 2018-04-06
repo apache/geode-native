@@ -232,9 +232,9 @@ BBNamingContextServerImpl::BBNamingContextServerImpl() {
     m_serv = new BBProcessor(m_shared, m_bbServer);
     m_resp = new Responder(m_shared, prt);
     m_farm = new Service(3);
-    uint32_t thrds = m_farm->runThreaded(m_recv, 1);
-    thrds = m_farm->runThreaded(m_serv, 1);
-    thrds = m_farm->runThreaded(m_resp, 1);
+    m_farm->runThreaded(m_recv, 1);
+    m_farm->runThreaded(m_serv, 1);
+    m_farm->runThreaded(m_resp, 1);
   } catch (FwkException& e) {
     FWKEXCEPTION("create bb server encounted Exception: " << e.what());
   } catch (...) {

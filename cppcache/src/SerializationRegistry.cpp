@@ -360,7 +360,7 @@ void TheTypeMap::bind2(TypeFactoryMethod func) {
 
   int64_t compId = 0;
   if (dsfid == GeodeTypeIdsImpl::FixedIDShort) {
-    compId = compId = static_cast<int64_t>(obj->classId());
+    compId = static_cast<int64_t>(obj->classId()) << 32;
   } else {
     compId = static_cast<int64_t>(obj->typeId());
   }
