@@ -28,6 +28,10 @@ namespace Apache.Geode.Examples.Serializer
                 .Set("log-level", "none");
             var cache = cacheFactory.Create();
 
+            Console.WriteLine("Registering for reflection-based auto serialization");
+
+            cache.TypeRegistry.PdxSerializer = new ReflectionBasedAutoSerializer();
+
             var poolFactory = cache.GetPoolFactory()
                 .AddLocator("localhost", 10334);
             poolFactory.Create("pool", cache);
@@ -36,14 +40,10 @@ namespace Apache.Geode.Examples.Serializer
                 .SetPoolName("pool");
             var orderRegion = regionFactory.Create<int, Order>("example_orderobject");
 
-            Serializable.RegisterPdxSerializer(new ReflectionBasedAutoSerializer());
-
-            Console.WriteLine("Registering for reflection-based auto serialization");
-
             Console.WriteLine("Storing order object in the region");
 
             const int orderKey = 65;
-                
+
             var order = new Order(orderKey, "Vox AC30", 11);
 
             Console.WriteLine("order to put is " + order);

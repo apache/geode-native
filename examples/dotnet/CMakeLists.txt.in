@@ -15,7 +15,7 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-project(Apache.Geode.Examples LANGUAGES NONE)
+project(@PRODUCT_DLL_NAME@.DotNet.Examples LANGUAGES NONE)
 
 add_subdirectory(AuthInitialize)
 add_subdirectory(PdxAutoSerializer)

@@ -17,7 +17,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(examples LANGUAGES NONE)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt @ONLY)
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt

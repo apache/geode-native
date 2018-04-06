@@ -24,8 +24,8 @@ find_package(@PRODUCT_NAME_NOSPACE@ REQUIRED COMPONENTS dotnet)
 add_executable(${PROJECT_NAME} @ADD_EXAMPLE_SOURCE@)
 
 target_link_libraries(${PROJECT_NAME}
-    GeodeNative::dotnet)
+    @PRODUCT_NAME_NOSPACE@::dotnet)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
-    VS_DOTNET_REFERENCES "System;${GeodeNative_DOTNET_LIBRARY}")
+    VS_DOTNET_REFERENCES "System;${@PRODUCT_NAME_NOSPACE@_DOTNET_LIBRARY}")
