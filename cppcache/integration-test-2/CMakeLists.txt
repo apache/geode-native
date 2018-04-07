@@ -47,6 +47,8 @@ target_link_libraries(integration-test-2
     Boost::boost
     Boost::system
     Boost::log
+  PRIVATE
+    _WarningsAsError
 )
 
 if(WIN32)

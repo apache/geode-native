@@ -23,7 +23,6 @@
 #include <string>
 #include <iostream>
 
-#include <boost/process.hpp>
 #include <boost/log/trivial.hpp>
 
 class Gfsh {
@@ -114,6 +113,11 @@ class Gfsh {
         command_ += " --log-level=" + logLevel;
         return *this;
       };
+
+      Locator &withMaxHeap(const std::string maxHeap) {
+        command_ += " --max-heap=" + maxHeap;
+        return *this;
+      };
     };
 
     class Server : public Command<void> {
@@ -147,6 +151,11 @@ class Gfsh {
 
       Server &withLogLevel(const std::string logLevel) {
         command_ += " --log-level=" + logLevel;
+        return *this;
+      };
+
+      Server &withMaxHeap(const std::string maxHeap) {
+        command_ += " --max-heap=" + maxHeap;
         return *this;
       };
     };
