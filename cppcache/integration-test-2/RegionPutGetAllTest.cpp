@@ -140,7 +140,7 @@ std::vector<Key> to_keys(std::unordered_map<Key, Tail...> map) {
     keys.push_back(entry.first);
   }
   return keys;
-};
+}
 
 template <class Container>
 void localDestroy(Region &region, const Container keys) {
