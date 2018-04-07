@@ -112,7 +112,7 @@ void assert_eq(HashMapOfCacheable &expected, HashMapOfCacheable &actual) {
   const auto key = CacheableInt32::create(T::index);
   ASSERT_TRUE(
       std::dynamic_pointer_cast<typename T::type>(expected[key])
-          ->equals(std::dynamic_pointer_cast<typename T::type>(expected[key])))
+          ->equals(std::dynamic_pointer_cast<typename T::type>(actual[key])))
       << "Expected key " << key->value() << " with value of type "
       << typeid(typename T::type).name() << " to be equal.";
 }

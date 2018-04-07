@@ -55,8 +55,8 @@ class Locator {
   Locator(Cluster &cluster, std::vector<Locator> &locators, std::string name,
           uint16_t jmxManagerPort)
       : cluster_(cluster),
-        locators_(locators),
         name_(std::move(name)),
+        locators_(locators),
         jmxManagerPort_(jmxManagerPort) {
     auto hostname = "localhost";
     auto port = Framework::getAvailablePort();
@@ -79,11 +79,11 @@ class Locator {
   Locator &operator=(const Locator &copy) = delete;
   Locator(Locator &&move)
       : cluster_(move.cluster_),
+        name_(move.name_),
         locators_(move.locators_),
         locatorAddress_(move.locatorAddress_),
         jmxManagerPort_(move.jmxManagerPort_),
-        started_(move.started_),
-        name_(move.name_) {
+        started_(move.started_) {
     move.started_ = false;
   };
   //  Locator &operator=(Locator &&move) = default;
@@ -96,13 +96,14 @@ class Locator {
 
  private:
   Cluster &cluster_;
+
+  std::string name_;
+
   std::vector<Locator> &locators_;
 
   LocatorAddress locatorAddress_;
 
   uint16_t jmxManagerPort_;
-
-  std::string name_;
 
   bool started_ = false;
 };
