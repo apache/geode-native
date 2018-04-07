@@ -44,6 +44,6 @@ constexpr std::chrono::duration<_Rep, _Period> debug_safe(
 #else
   return duration;
 #endif
-};
+}
 
 #endif  // INTEGRATION_TEST_FRAMEWORK_FRAMEWORK_H

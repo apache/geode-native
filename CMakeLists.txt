@@ -163,7 +163,7 @@ add_library(c++11 INTERFACE)
 # Interface for warning flags
 add_library(_WarningsAsError INTERFACE)
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
+if(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
   # Force linker to error on undefined symbols in shared libraries
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z defs")
   if (PRODUCT_SYSTEM_NAME STREQUAL "solaris-sparc")
@@ -176,6 +176,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
   #TODO look into CMAKE_CXX_STANDARD_LIBRARIES
   target_link_libraries(c++11 INTERFACE -std=c++11 stdc++ gcc_s CrunG3 m c)
 
+  target_compile_options(_WarningsAsError INTERFACE
+    -errtags
+    -errwarn=%all
+  )
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs")
   target_compile_options(_WarningsAsError INTERFACE
@@ -196,6 +200,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Wno-unknown-pragmas #TODO fix
     -Wno-unused-variable #TODO fix
     -Wno-unused-function #TODO fix
+    -Wno-used-but-marked-unused #TODO fix
     -Wpedantic
     -Weverything
     -Wno-non-virtual-dtor #TODO fix
@@ -240,7 +245,9 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     /EHa)
 
   target_compile_options(_WarningsAsError INTERFACE
-    /WX)
+    /WX
+	/wd4068 # TODO fix
+	)
 
   # TODO error on warnings
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")

@@ -24,6 +24,10 @@
 #pragma warning(disable : 4311)
 #pragma warning(disable : 4302)
 #pragma pack(push)
+
+
+#pragma error_messages(off, macroredef)
+
 #include <ace/OS.h>
 #include <ace/INET_Addr.h>
 #include <ace/SOCK_IO.h>
@@ -32,6 +36,9 @@
 #include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Time_Value.h>
+
+#pragma error_messages(on, macroredef)
+
 #pragma pack(pop)
 
 #include "cryptoimpl_export.h"

@@ -25,7 +25,9 @@
 #include <algorithm>
 #include <regex>
 
+#pragma error_messages(off, oklambdaretmulti, wvarhidemem, w_constexprnonlitret, explctspectypename)
 #include <boost/process.hpp>
+#pragma error_messages(on, oklambdaretmulti, wvarhidemem, w_constexprnonlitret, explctspectypename)
 #include <boost/log/trivial.hpp>
 
 #include "Gfsh.h"

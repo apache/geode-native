@@ -26,6 +26,7 @@ void Locator::start() {
       .withDir(name_)
       .withBindAddress(locatorAddress_.address)
       .withPort(locatorAddress_.port)
+      .withMaxHeap("256m")
       .withJmxManagerPort(jmxManagerPort_)
       .withHttpServicePort(0)
       .execute();
@@ -50,6 +51,7 @@ void Server::start() {
       .withDir(name_)
       .withBindAddress(serverAddress_.address)
       .withPort(serverAddress_.port)
+      .withMaxHeap("1g")
       .withLocators(locators_.front().getAdddress().address + "[" +
                     std::to_string(locators_.front().getAdddress().port) + "]")
       .execute();

@@ -237,11 +237,11 @@ void PdxVersioned1::init(const char* key) {
 void PdxTests::PdxVersioned1::toData(PdxWriter& pw) const {
   // TODO:delete it later
 
-  int* lengthArr = new int[2];
+  int* lengths = new int[2];
 
-  lengthArr[0] = 1;
-  lengthArr[1] = 2;
-  pw.writeArrayOfByteArrays("m_byteByteArray", m_byteByteArray, 2, lengthArr);
+  lengths[0] = 1;
+  lengths[1] = 2;
+  pw.writeArrayOfByteArrays("m_byteByteArray", m_byteByteArray, 2, lengths);
   pw.writeChar("m_char", m_char);
   pw.writeBoolean("m_bool", m_bool);  // 1
   pw.writeBooleanArray("m_boolArray", m_boolArray);
