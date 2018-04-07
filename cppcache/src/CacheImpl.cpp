@@ -171,11 +171,11 @@ int CacheImpl::removeRegion(const char* name) {
 }
 
 std::shared_ptr<QueryService> CacheImpl::getQueryService(bool noInit) {
-  if (getPoolManager().getDefaultPool() != nullptr) {
-    if (getPoolManager().getDefaultPool()->isDestroyed()) {
+  if (auto&& defaultPool = getPoolManager().getDefaultPool()) {
+    if (defaultPool->isDestroyed()) {
       throw IllegalStateException("Pool has been destroyed.");
     }
-    return getPoolManager().getDefaultPool()->getQueryService();
+    return defaultPool->getQueryService();
   }
 
   if (m_remoteQueryServicePtr == nullptr) {
@@ -220,9 +220,9 @@ const std::string& CacheImpl::getName() const {
 
 bool CacheImpl::isClosed() const { return m_closed; }
 
-void CacheImpl::setAttributes(const std::shared_ptr<CacheAttributes>& attrs) {
-  if (m_attributes == nullptr && attrs != nullptr) {
-    m_attributes = attrs;
+void CacheImpl::setAttributes(const std::shared_ptr<CacheAttributes>& attributes) {
+  if (m_attributes == nullptr && attributes != nullptr) {
+    m_attributes = attributes;
   }
 }
 

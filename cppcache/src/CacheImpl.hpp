@@ -137,7 +137,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   }
 
   /** Set the <code>CacheAttributes</code> for this cache. */
-  void setAttributes(const std::shared_ptr<CacheAttributes>& attrs);
+  void setAttributes(const std::shared_ptr<CacheAttributes>& attributes);
 
   /**
    * Returns the distributed system that this cache was
