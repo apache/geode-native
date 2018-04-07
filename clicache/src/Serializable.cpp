@@ -248,16 +248,19 @@ namespace Apache
         return (Apache::Geode::Client::Serializable^)CacheableStringArray::Create(value);
       }
 
-      System::Int32 Serializable::GetPDXIdForType(String^ poolName, IGeodeSerializable^ pdxType, Cache^ cache)
+      System::Int32 Serializable::GetPDXIdForType(native::Pool* pool, IGeodeSerializable^ pdxType, Cache^ cache)
       {
         std::shared_ptr<native::Cacheable> kPtr(SafeMSerializableConvertGeneric(pdxType));
-        return CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetPDXIdForType(cache->GetNative()->getPoolManager().find(marshal_as<std::string>(poolName)), kPtr);
+        return CacheRegionHelper::getCacheImpl(cache->GetNative().get())
+            ->getSerializationRegistry()
+            ->GetPDXIdForType(pool, kPtr);
       }
 
-      IGeodeSerializable^ Serializable::GetPDXTypeById(String^ poolName, System::Int32 typeId, Cache^ cache)
+      IGeodeSerializable^ Serializable::GetPDXTypeById(native::Pool* pool, System::Int32 typeId, Cache^ cache)
       {        
-        std::shared_ptr<apache::geode::client::Serializable> sPtr = 
-            CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetPDXTypeById(cache->GetNative()->getPoolManager().find(marshal_as<std::string>(poolName)), typeId);
+        auto sPtr =  CacheRegionHelper::getCacheImpl(cache->GetNative().get())
+            ->getSerializationRegistry()
+            ->GetPDXTypeById(pool, typeId);
         return SafeUMSerializableConvertGeneric(sPtr);
       }
 

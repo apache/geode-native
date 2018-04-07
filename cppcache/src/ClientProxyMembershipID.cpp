@@ -220,7 +220,7 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
   std::shared_ptr<CacheableString> hostname, dsName, uniqueTag, durableClientId;
   int8_t splitbrain, vmKind;
 
-  len = input.readArrayLen();  // inetaddress len
+  len = input.readArrayLength();  // inetaddress len
   m_hostAddrLocalMem = true;
   /* adongre  - Coverity II
    * CID 29184: Out-of-bounds access (OVERRUN_DYNAMIC)
@@ -268,7 +268,7 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
   int32_t len, hostPort, vmViewId = 0;
   std::shared_ptr<CacheableString> hostname, dsName, uniqueTag, vmViewIdstr;
 
-  len = input.readArrayLen();  // inetaddress len
+  len = input.readArrayLength();  // inetaddress len
   m_hostAddrLocalMem = true;
   /* adongre - Coverity II
    * CID 29183: Out-of-bounds access (OVERRUN_DYNAMIC)

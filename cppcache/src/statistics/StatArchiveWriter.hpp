@@ -139,7 +139,8 @@ class APACHE_GEODE_EXPORT StatDataOutput {
   friend class StatArchiveWriter;
 };
 
-class APACHE_GEODE_EXPORT ResourceType : private NonCopyable, private NonAssignable {
+class APACHE_GEODE_EXPORT ResourceType : private NonCopyable,
+                                         private NonAssignable {
  public:
   ResourceType(int32_t id, const StatisticsType *type);
   int32_t getId() const;
@@ -166,7 +167,8 @@ class APACHE_GEODE_EXPORT ResourceType : private NonCopyable, private NonAssigna
  * FIX : Make the class NonCopyable
  */
 
-class APACHE_GEODE_EXPORT ResourceInst : private NonCopyable, private NonAssignable {
+class APACHE_GEODE_EXPORT ResourceInst : private NonCopyable,
+                                         private NonAssignable {
  public:
   ResourceInst(int32_t id, Statistics *, const ResourceType *,
                StatDataOutput *);

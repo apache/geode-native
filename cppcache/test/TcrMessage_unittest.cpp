@@ -31,10 +31,11 @@ using namespace apache::geode::client;
 class DataOutputUnderTest : public DataOutput {
  public:
   using DataOutput::DataOutput;
+  DataOutputUnderTest() : DataOutput(nullptr, nullptr) {}
 
  protected:
   virtual const SerializationRegistry &getSerializationRegistry()
-      const override {
+  const override {
     return m_serializationRegistry;
   }
 

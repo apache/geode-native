@@ -85,7 +85,8 @@ class SerializationRegistry;
  *
  */
 
-class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable {
+class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
+                                      private NonAssignable {
   /**
    * @brief public methods
    */
@@ -136,7 +137,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable
   }
 
   /** Set the <code>CacheAttributes</code> for this cache. */
-  void setAttributes(const std::shared_ptr<CacheAttributes>& attrs);
+  void setAttributes(const std::shared_ptr<CacheAttributes>& attributes);
 
   /**
    * Returns the distributed system that this cache was
@@ -211,6 +212,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable
   }
 
   Cache* getCache() const { return m_cache; }
+
   TcrConnectionManager& tcrConnectionManager() {
     return *m_tcrConnectionManager;
   }
@@ -271,20 +273,21 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable, private NonAssignable
     return m_authInitialize;
   }
 
-  virtual std::unique_ptr<DataOutput> createDataOutput() const {
-    return std::unique_ptr<DataOutput>(new DataOutput(this));
-  }
+  virtual std::unique_ptr<DataOutput> createDataOutput() const;
+
+  virtual std::unique_ptr<DataOutput> createDataOutput(Pool* pool) const;
 
   virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* buffer,
-                                                     size_t len) const {
-    return std::unique_ptr<DataInput>(new DataInput(buffer, len, this));
-  }
+                                                     size_t len) const;
+
+  virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* buffer,
+                                                     size_t len,
+                                                     Pool* pool) const;
 
  private:
   std::atomic<bool> m_networkhop;
   std::atomic<int> m_blacklistBucketTimeout;
   std::atomic<int8_t> m_serverGroupFlag;
-  std::shared_ptr<Pool> m_defaultPool;
   bool m_ignorePdxUnreadFields;
   bool m_readPdxSerialized;
   std::unique_ptr<ExpiryTaskManager> m_expiryTaskManager;

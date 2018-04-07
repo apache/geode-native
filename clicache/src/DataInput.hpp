@@ -308,7 +308,7 @@ namespace Apache
         /// </summary>
         String^ ReadASCIIHuge( );
 
-        String^ GetPoolName();
+        native::Pool* GetPool();
 
         Object^ ReadDotNetTypes(int8_t typeId);
 

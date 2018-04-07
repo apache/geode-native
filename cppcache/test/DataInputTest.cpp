@@ -59,8 +59,6 @@ class TestDataInput {
     // NOP
   }
 
-  operator DataInput &() { return m_dataInput; }
-
   void read(uint8_t *value) { *value = m_dataInput.read(); }
 
   void read(int8_t *value) { *value = m_dataInput.read(); }
@@ -91,7 +89,7 @@ class TestDataInput {
 
   int64_t readInt64() { return m_dataInput.readInt64(); }
 
-  int32_t readArrayLen() { return m_dataInput.readArrayLen(); }
+  int32_t readArrayLen() { return m_dataInput.readArrayLength(); }
 
   int64_t readUnsignedVL() { return m_dataInput.readUnsignedVL(); }
 
@@ -714,19 +712,6 @@ TEST_F(DataInputTest, TestSetBuffer) {
       << "Correct bytes read after the setting";
   EXPECT_EQ(static_cast<size_t>(0), dataInput.getBytesRemaining())
       << "Correct bytes remaining after the setting";
-}
-
-TEST_F(DataInputTest, TestSetPoolName) {
-  std::string poolName = "Das Schwimmbad";
-
-  TestDataInput dataInput("123456789ABCDEF0");
-  EXPECT_TRUE(DataInputInternal::getPoolName(dataInput).empty())
-      << "Empty pool name before setting";
-  DataInputInternal::setPoolName(dataInput, poolName);
-  EXPECT_FALSE(DataInputInternal::getPoolName(dataInput).empty())
-      << " pool name after setting";
-  EXPECT_EQ(poolName, DataInputInternal::getPoolName(dataInput))
-      << "Correct pool name after setting";
 }
 
 TEST_F(DataInputTest, TestReadNullArray) {

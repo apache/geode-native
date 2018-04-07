@@ -30,16 +30,14 @@
 #include "Serializable.hpp"
 #include "CacheableString.hpp"
 
-/**
- * @file
- */
-
 namespace apache {
 namespace geode {
 namespace client {
+
 class SerializationRegistry;
 class DataOutputInternal;
 class CacheImpl;
+class Pool;
 
 /**
  * Provide operations for writing primitive data values, byte arrays,
@@ -393,11 +391,6 @@ class APACHE_GEODE_EXPORT DataOutput {
   }
 
   uint8_t getValueAtPos(size_t offset) { return m_bytes[offset]; }
-  /** Destruct a DataOutput, including releasing the created buffer. */
-  ~DataOutput() {
-    reset();
-    DataOutput::checkinBuffer(m_bytes, m_size);
-  }
 
   /**
    * Get a pointer to the internal buffer of <code>DataOutput</code>.
@@ -499,13 +492,21 @@ class APACHE_GEODE_EXPORT DataOutput {
 
   virtual const Cache* getCache();
 
+  /** Destruct a DataOutput, including releasing the created buffer. */
+  ~DataOutput() {
+    reset();
+    DataOutput::checkinBuffer(m_bytes, m_size);
+  }
+
+  DataOutput() = delete;
+  DataOutput(const DataOutput&) = delete;
+  DataOutput& operator=(const DataOutput&) = delete;
+
  protected:
   /**
    * Construct a new DataOutput.
    */
-  DataOutput(const CacheImpl* cache);
-
-  DataOutput() : DataOutput(nullptr) {}
+  DataOutput(const CacheImpl* cache, Pool* pool);
 
   virtual const SerializationRegistry& getSerializationRegistry() const;
 
@@ -527,7 +528,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   // flag to indicate we have a big buffer
   volatile bool m_haveBigBuffer;
   const CacheImpl* m_cache;
-  std::reference_wrapper<const std::string> m_poolName;
+  Pool* m_pool;
 
   inline void writeAscii(const std::string& value) {
     uint16_t len = static_cast<uint16_t>(
@@ -740,18 +741,10 @@ class APACHE_GEODE_EXPORT DataOutput {
     writeNoCheck(static_cast<uint8_t>(value));
   }
 
-  const std::string& getPoolName() const { return m_poolName; }
-
-  void setPoolName(const std::string& poolName) {
-    m_poolName = std::ref(poolName);
-  }
+  Pool* getPool() const { return m_pool; }
 
   static uint8_t* checkoutBuffer(size_t* size);
   static void checkinBuffer(uint8_t* buffer, size_t size);
-
-  // disable copy constructor and assignment
-  DataOutput(const DataOutput&);
-  DataOutput& operator=(const DataOutput&);
 
   friend Cache;
   friend CacheImpl;

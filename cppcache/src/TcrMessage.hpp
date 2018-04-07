@@ -257,7 +257,7 @@ class APACHE_GEODE_EXPORT TcrMessage {
     }
   }
 
-  const std::string& getPoolName() const;
+  Pool* getPool() const;
 
   /**
    * Whether the request is meant to be

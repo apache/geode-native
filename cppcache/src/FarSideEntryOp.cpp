@@ -90,7 +90,7 @@ void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
         }
       } else {
         // uint8_t* buf = nullptr;
-        input.readArrayLen();  // ignore len
+        input.readArrayLength();  // ignore len
         input.readObject(m_value);
 
         // input.readBytes(&buf, &len);
@@ -129,10 +129,10 @@ void FarSideEntryOp::skipFilterRoutingInfo(DataInput& input) {
       // memId.fromData(input);
       memId.readEssentialData(input);
 
-      int32_t len = input.readArrayLen();
+      int32_t len = input.readArrayLength();
 
       if (input.readBoolean()) {
-        len = input.readArrayLen();
+        len = input.readArrayLength();
         for (int j = 0; j < len; j++) {
           input.readUnsignedVL();
           input.readUnsignedVL();

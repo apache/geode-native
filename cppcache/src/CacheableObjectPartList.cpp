@@ -57,7 +57,7 @@ void CacheableObjectPartList::fromData(DataInput& input) {
       uint8_t byte = input.read();
 
       if (byte == 2 /* for exception*/) {
-        input.advanceCursor(input.readArrayLen());
+        input.advanceCursor(input.readArrayLength());
         // input.readObject(exMsgPtr, true);// Changed
         auto exMsg = input.readString();
         if (exMsg == "org.apache.geode.security.NotAuthorizedException") {

@@ -119,7 +119,7 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
 
   void clear();
 
-  int32_t getPDXIdForType(const std::string& type, const std::string& poolname,
+  int32_t getPDXIdForType(const std::string& type, Pool* pool,
                           std::shared_ptr<PdxType> nType, bool checkIfThere);
 
   bool getPdxIgnoreUnreadFields() const { return pdxIgnoreUnreadFields; }
@@ -138,8 +138,7 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
 
   std::shared_ptr<EnumInfo> getEnum(int32_t enumVal);
 
-  int32_t getPDXIdForType(std::shared_ptr<PdxType> nType,
-                          const std::string& poolname);
+  int32_t getPDXIdForType(std::shared_ptr<PdxType> nType, Pool* pool);
 
   ACE_RW_Thread_Mutex& getPreservedDataLock() const {
     return g_preservedDataLock;

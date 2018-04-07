@@ -584,8 +584,6 @@ void TcrMessage::writeBytesOnly(const std::shared_ptr<Serializable>& se) {
 }
 
 void TcrMessage::writeHeader(uint32_t msgType, uint32_t numOfParts) {
-  DataOutputInternal::setPoolName(*m_request, getPoolName());
-
   int8_t earlyAck = 0x0;
   LOGDEBUG("TcrMessage::writeHeader m_isMetaRegion = %d", m_isMetaRegion);
   if (m_tcdm != nullptr) {
@@ -883,13 +881,11 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
   }
 }
 
-const std::string& TcrMessage::getPoolName() const {
+Pool* TcrMessage::getPool() const {
   if (m_region) {
-    if (const auto& p = m_region->getPool()) {
-      return p->getName();
-    }
+    return m_region->getPool().get();
   }
-  return EMPTY_STRING;
+  return nullptr;
 }
 
 void TcrMessage::chunkSecurityHeader(int skipPart, const uint8_t* bytes,
@@ -909,11 +905,10 @@ void TcrMessage::handleByteArrayResponse(
     const SerializationRegistry& serializationRegistry,
     MemberListForVersionStamp& memberListForVersionStamp) {
   auto input = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-      (uint8_t*)bytearray, len);
+      (uint8_t*)bytearray, len, getPool());
   // TODO:: this need to make sure that pool is there
   //  if(m_tcdm == nullptr)
   //  throw IllegalArgumentException("Pool is nullptr in TcrMessage");
-  DataInputInternal::setPoolName(*input, getPoolName());
   m_msgType = input->readInt32();
   int32_t msglen;
   msglen = input->readInt32();
@@ -1233,7 +1228,7 @@ void TcrMessage::handleByteArrayResponse(
         LOGDEBUG("Expected typeID %d, got %d", GeodeTypeIds::CacheableArrayList,
                  bits8);
 
-        bits32 = input->readArrayLen();  // array length
+        bits32 = input->readArrayLength();  // array length
         LOGDEBUG("Array length = %d ", bits32);
         if (bits32 > 0) {
           std::vector<std::shared_ptr<BucketServerLocation>>
@@ -1289,7 +1284,7 @@ void TcrMessage::handleByteArrayResponse(
         input->read();                // ignore isObj;
         input->read();  // ignore cacheable CacheableHashSet typeid
 
-        bits32 = input->readArrayLen();  // array length
+        bits32 = input->readArrayLength();  // array length
         if (bits32 > 0) {
           m_fpaSet =
               new std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>();
@@ -2557,7 +2552,8 @@ void TcrMessage::createUserCredentialMessage(TcrConnection* conn) {
   m_isSecurityHeaderAdded = false;
   writeHeader(m_msgType, 1);
 
-  auto dOut = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
+  auto dOut = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
+      getPool());
 
   if (m_creds != nullptr) m_creds->toData(*dOut);
 
@@ -2586,7 +2582,8 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
   m_isSecurityHeaderAdded = true;
   LOGDEBUG("addSecurityPart( , ) ");
   auto dOutput =
-      m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
+      m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
+          getPool());
 
   dOutput->writeInt(connectionId);
   dOutput->writeInt(unique_id);
@@ -2617,7 +2614,8 @@ void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection* conn) {
   m_isSecurityHeaderAdded = true;
   LOGDEBUG("TcrMessage::addSecurityPart only connid");
   auto dOutput =
-      m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
+      m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
+          getPool());
 
   dOutput->writeInt(connectionId);
 
@@ -2786,8 +2784,8 @@ void TcrMessage::setData(const char* bytearray, int32_t len, uint16_t memId,
                          const SerializationRegistry& serializationRegistry,
                          MemberListForVersionStamp& memberListForVersionStamp) {
   if (m_request == nullptr) {
-    m_request =
-        m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput();
+    m_request = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
+        getPool());
   }
   if (bytearray) {
     DeleteArray<const char> delByteArr(bytearray);
@@ -2928,7 +2926,7 @@ void TcrMessage::readHashMapForGCVersions(
     throw Exception(
         "Reading HashMap For GC versions. Expecting type id of hash map. ");
   }
-  int32_t len = input.readArrayLen();
+  int32_t len = input.readArrayLength();
 
   if (len > 0) {
     std::shared_ptr<CacheableKey> key;
@@ -2961,7 +2959,7 @@ void TcrMessage::readHashSetForGCVersions(
     throw Exception(
         "Reading HashSet For GC versions. Expecting type id of hash set. ");
   }
-  int32_t len = input.readArrayLen();
+  int32_t len = input.readArrayLength();
 
   if (len > 0) {
     std::shared_ptr<CacheableKey> key;

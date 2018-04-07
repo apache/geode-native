@@ -209,7 +209,7 @@ void Properties::toData(DataOutput& output) const {
 }
 
 void Properties::fromData(DataInput& input) {
-  auto mapSize = input.readArrayLen();
+  auto mapSize = input.readArrayLength();
   m_map.reserve(mapSize);
 
   for (int i = 0; i < mapSize; i++) {

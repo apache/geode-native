@@ -82,7 +82,7 @@ void TXCommitMessage::fromData(DataInput& input) {
     if (dfsid == GeodeTypeIdsImpl::ClientProxyMembershipId) {
       ClientProxyMembershipID memId1;
 
-      input.advanceCursor(input.readArrayLen());
+      input.advanceCursor(input.readArrayLength());
 
       input.readInt32();
     } else {
@@ -104,7 +104,7 @@ void TXCommitMessage::fromData(DataInput& input) {
         GF_CACHE_ILLEGAL_STATE_EXCEPTION);
   }
 
-  int32_t len = input.readArrayLen();
+  int32_t len = input.readArrayLength();
   for (int j = 0; j < len; j++) {
     std::shared_ptr<Cacheable> tmp;
     input.readObject(tmp);

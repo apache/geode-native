@@ -46,9 +46,9 @@ class CacheableString;
 class DataInput;
 class Serializable;
 class SerializationRegistry;
-class DataInputInternal;
 class CacheImpl;
 class DataInputInternal;
+class Pool;
 
 /**
  * Provide operations for reading primitive data values, byte arrays,
@@ -126,7 +126,7 @@ class APACHE_GEODE_EXPORT DataInput {
    * @param len output parameter to hold the length of array read from stream
    */
   inline void readBytes(uint8_t** bytes, int32_t* len) {
-    int32_t length = readArrayLen();
+    auto length = readArrayLength();
     *len = length;
     uint8_t* buffer = nullptr;
     if (length > 0) {
@@ -149,7 +149,7 @@ class APACHE_GEODE_EXPORT DataInput {
    * @param len output parameter to hold the length of array read from stream
    */
   inline void readBytes(int8_t** bytes, int32_t* len) {
-    int32_t length = readArrayLen();
+    auto length = readArrayLength();
     *len = length;
     int8_t* buffer = nullptr;
     if (length > 0) {
@@ -228,7 +228,7 @@ class APACHE_GEODE_EXPORT DataInput {
    * @param len output parameter to hold the 32-bit signed length
    *   read from stream
    */
-  inline int32_t readArrayLen() {
+  inline int32_t readArrayLength() {
     const uint8_t code = read();
     if (code == 0xFF) {
       return -1;
@@ -333,7 +333,6 @@ class APACHE_GEODE_EXPORT DataInput {
 
   inline bool readNativeBool() {
     read();  // ignore type id
-
     return readBoolean();
   }
 
@@ -398,7 +397,7 @@ class APACHE_GEODE_EXPORT DataInput {
   inline std::vector<std::string> readStringArray() {
     std::vector<std::string> value;
 
-    int32_t arrLen = readArrayLen();
+    auto arrLen = readArrayLength();
     if (arrLen > 0) {
       value.reserve(arrLen);
       for (int i = 0; i < arrLen; i++) {
@@ -412,7 +411,7 @@ class APACHE_GEODE_EXPORT DataInput {
   inline void readArrayOfByteArrays(int8_t*** arrayofBytearr,
                                     int32_t& arrayLength,
                                     int32_t** elementLength) {
-    int32_t arrLen = readArrayLen();
+    auto arrLen = readArrayLength();
     arrayLength = arrLen;
 
     if (arrLen == -1) {
@@ -430,9 +429,6 @@ class APACHE_GEODE_EXPORT DataInput {
       *elementLength = tmpLengtharr;
     }
   }
-
-  /** destructor */
-  ~DataInput() {}
 
   /**
    * Get the pointer to current buffer position. This should be treated
@@ -487,14 +483,15 @@ class APACHE_GEODE_EXPORT DataInput {
 
   virtual const Cache* getCache();
 
+  ~DataInput() = default;
+  DataInput() = delete;
+  DataInput(const DataInput&) = delete;
+  DataInput& operator=(const DataInput&) = delete;
+
  protected:
   /** constructor given a pre-allocated byte array with size */
-  DataInput(const uint8_t* m_buffer, size_t len, const CacheImpl* cache)
-      : m_buf(m_buffer),
-        m_bufHead(m_buffer),
-        m_bufLength(len),
-        m_poolName(EMPTY_STRING),
-        m_cache(cache) {}
+  DataInput(const uint8_t* m_buffer, size_t len, const CacheImpl* cache,
+            Pool* pool);
 
   virtual const SerializationRegistry& getSerializationRegistry() const;
 
@@ -502,14 +499,14 @@ class APACHE_GEODE_EXPORT DataInput {
   const uint8_t* m_buf;
   const uint8_t* m_bufHead;
   size_t m_bufLength;
-  std::reference_wrapper<const std::string> m_poolName;
+  Pool* m_pool;
   const CacheImpl* m_cache;
 
   std::shared_ptr<Serializable> readObjectInternal(int8_t typeId = -1);
 
   template <typename mType>
   void readObject(mType** value, int32_t& length) {
-    int arrayLen = readArrayLen();
+    auto arrayLen = readArrayLength();
     length = arrayLen;
     mType* objArray;
     if (arrayLen > 0) {
@@ -526,7 +523,7 @@ class APACHE_GEODE_EXPORT DataInput {
 
   template <typename T>
   std::vector<T> readArray() {
-    int arrayLen = readArrayLen();
+    auto arrayLen = readArrayLength();
     std::vector<T> objArray;
     if (arrayLen >= 0) {
       objArray.reserve(arrayLen);
@@ -645,16 +642,7 @@ class APACHE_GEODE_EXPORT DataInput {
     value.assign(reinterpret_cast<const wchar_t*>(tmp.data()), tmp.length());
   }
 
-  const std::string& getPoolName() const { return m_poolName; }
-
-  void setPoolName(const std::string& poolName) {
-    m_poolName = std::ref(poolName);
-  }
-
-  // disable other constructors and assignment
-  DataInput() = delete;
-  DataInput(const DataInput&) = delete;
-  DataInput& operator=(const DataInput&) = delete;
+  Pool* getPool() const { return m_pool; }
 
   friend Cache;
   friend CacheImpl;

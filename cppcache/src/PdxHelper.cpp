@@ -65,7 +65,7 @@ void PdxHelper::serializePdx(
             0)  // from pdxInstance factory need to get typeid from server
     {
       int typeId = pdxTypeRegistry->getPDXIdForType(
-          piPt, DataOutputInternal::getPoolName(output).c_str());
+          piPt, DataOutputInternal::getPool(output));
       pdxII->setPdxId(typeId);
     }
     auto plw = PdxLocalWriter(output, piPt, pdxTypeRegistry);
@@ -92,8 +92,7 @@ void PdxHelper::serializePdx(
 
     nType->InitializeType();
     int32_t nTypeId = pdxTypeRegistry->getPDXIdForType(
-        className.c_str(), DataOutputInternal::getPoolName(output).c_str(),
-        nType, true);
+        className.c_str(), DataOutputInternal::getPool(output), nType, true);
     nType->setTypeId(nTypeId);
 
     ptc.endObjectWriting();
@@ -188,9 +187,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
     if (pType == nullptr) {
       pType = std::static_pointer_cast<PdxType>(
           serializationRegistry->GetPDXTypeById(
-              cacheImpl->getCache()->getPoolManager().find(
-                  DataInputInternal::getPoolName(dataInput)),
-              typeId));
+              DataInputInternal::getPool(dataInput), typeId));
       pdxLocalType = pdxTypeRegistry->getLocalPdxType(pType->getPdxClassName());
     }
     /* adongre  - Coverity II
@@ -220,9 +217,8 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
         // Need to know local type and then merge type
         pdxLocalType->InitializeType();
         pdxLocalType->setTypeId(pdxTypeRegistry->getPDXIdForType(
-            pdxObjectptr->getClassName(),
-            DataInputInternal::getPoolName(dataInput).c_str(), pdxLocalType,
-            true));
+            pdxObjectptr->getClassName(), DataInputInternal::getPool(dataInput),
+            pdxLocalType, true));
         pdxLocalType->setLocal(true);
         pdxTypeRegistry->addLocalPdxType(pdxRealObject->getClassName(),
                                          pdxLocalType);  // added local type
@@ -296,9 +292,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
       // TODO shared_ptr why redef?
       auto pType = std::static_pointer_cast<PdxType>(
           serializationRegistry->GetPDXTypeById(
-              cacheImpl->getCache()->getPoolManager().find(
-                  DataInputInternal::getPoolName(dataInput)),
-              typeId));
+              DataInputInternal::getPool(dataInput), typeId));
       pdxTypeRegistry->addLocalPdxType(pType->getPdxClassName(), pType);
       pdxTypeRegistry->addPdxType(pType->getTypeId(), pType);
     }
@@ -335,9 +329,7 @@ void PdxHelper::createMergedType(std::shared_ptr<PdxType> localType,
     mergedVersion->InitializeType();
     if (mergedVersion->getTypeId() == 0) {
       mergedVersion->setTypeId(serializaionRegistry->GetPDXIdForType(
-          dataInput.getCache()->getPoolManager().find(
-              DataInputInternal::getPoolName(dataInput)),
-          mergedVersion));
+          DataInputInternal::getPool(dataInput), mergedVersion));
     }
 
     // PdxTypeRegistry::AddPdxType(remoteType->TypeId, mergedVersion);

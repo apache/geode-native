@@ -64,8 +64,8 @@ class StatisticsManager;
  * statistics. It only has the common functionalities which any sampler needs.
  */
 class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
-                                      private NonCopyable,
-                                      private NonAssignable {
+                                            private NonCopyable,
+                                            private NonAssignable {
  public:
   /*
    * Constructor:

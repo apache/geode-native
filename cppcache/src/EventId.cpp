@@ -73,9 +73,9 @@ void EventId::toData(DataOutput& output) const {
 
 void EventId::fromData(DataInput& input) {
   // TODO: statics being assigned; not thread-safe??
-  m_eidMemLen = input.readArrayLen();
+  m_eidMemLen = input.readArrayLength();
   input.readBytesOnly(reinterpret_cast<int8_t*>(m_eidMem), m_eidMemLen);
-  input.readArrayLen();  // ignore arrayLen
+  input.readArrayLength();  // ignore arrayLen
   m_eidThr = getEventIdData(input, input.read());
   m_eidSeq = getEventIdData(input, input.read());
   m_bucketId = input.readInt32();

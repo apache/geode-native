@@ -22,10 +22,19 @@
 #include "CacheImpl.hpp"
 #include "util/string.hpp"
 #include "util/JavaModifiedUtf8.hpp"
+#include <geode/PoolManager.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
+
+DataInput::DataInput(const uint8_t* m_buffer, size_t len,
+                     const CacheImpl* cache, Pool* pool)
+    : m_buf(m_buffer),
+      m_bufHead(m_buffer),
+      m_bufLength(len),
+      m_pool(pool),
+      m_cache(cache) {}
 
 std::shared_ptr<Serializable> DataInput::readObjectInternal(int8_t typeId) {
   return getSerializationRegistry().deserialize(*this, typeId);

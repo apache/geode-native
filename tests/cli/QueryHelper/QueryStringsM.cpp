@@ -212,8 +212,8 @@ namespace Apache
 
           StructSetRowCounts = gcnew array<Int32>( testData::SS_ARRAY_SIZE );
           for (Int32 index = 0; index < testData::SS_ARRAY_SIZE; ++index) {
-            StructSetRowCounts[ index ] =
-              testData::structsetRowCounts[ index ];
+            StructSetRowCounts[ index ] = static_cast<int32_t>(
+              testData::structsetRowCounts[ index ]);
           }
 
           StructSetPQRowCounts = gcnew array<Int32>( testData::SSP_ARRAY_SIZE );
@@ -260,8 +260,8 @@ namespace Apache
 
           RegionQueryRowCounts = gcnew array<Int32>( testData::RQ_ARRAY_SIZE );
           for (Int32 index = 0; index < testData::RQ_ARRAY_SIZE; ++index) {
-            RegionQueryRowCounts[ index ] =
-              testData::regionQueryRowCounts[ index ];
+            RegionQueryRowCounts[ index ] = static_cast<int32_t>(
+              testData::regionQueryRowCounts[ index ]);
           }
 
           CqResultSetQueries = gcnew array<QueryStrings^>(

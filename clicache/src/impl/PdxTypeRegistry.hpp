@@ -68,9 +68,9 @@ namespace Apache
 
            void clear();
 
-            Int32 GetPDXIdForType(Type^ type, String^ poolname, PdxType^ nType, bool checkIfThere);
+            Int32 GetPDXIdForType(Type^ type, native::Pool* pool, PdxType^ nType, bool checkIfThere);
 
-            Int32 GetPDXIdForType(PdxType^ type, String^ poolname);
+            Int32 GetPDXIdForType(PdxType^ type, native::Pool*);
 
             Int32 GetEnumValue(EnumInfo^ ei);
 

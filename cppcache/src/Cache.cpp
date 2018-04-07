@@ -139,8 +139,8 @@ Cache::Cache(std::shared_ptr<Properties> dsProp, bool ignorePdxUnreadFields,
              const std::shared_ptr<AuthInitialize>& authInitialize) {
   auto distributedSystem = DistributedSystem::create(DEFAULT_DS_NAME, dsProp);
   m_cacheImpl = std::unique_ptr<CacheImpl>(
-      new CacheImpl(this, std::move(distributedSystem),
-                    ignorePdxUnreadFields, readPdxSerialized, authInitialize));
+      new CacheImpl(this, std::move(distributedSystem), ignorePdxUnreadFields,
+                    readPdxSerialized, authInitialize));
   m_cacheImpl->getDistributedSystem().connect(this);
   m_typeRegistry =
       std::unique_ptr<TypeRegistry>(new TypeRegistry(m_cacheImpl.get()));
@@ -239,12 +239,11 @@ PoolManager& Cache::getPoolManager() const {
 
 std::unique_ptr<DataInput> Cache::createDataInput(const uint8_t* m_buffer,
                                                   size_t len) const {
-  return std::unique_ptr<DataInput>(
-      new DataInput(m_buffer, len, m_cacheImpl.get()));
+  return m_cacheImpl->createDataInput(m_buffer, len);
 }
 
 std::unique_ptr<DataOutput> Cache::createDataOutput() const {
-  return std::unique_ptr<DataOutput>(new DataOutput(m_cacheImpl.get()));
+  return m_cacheImpl->createDataOutput();
 }
 
 }  // namespace client

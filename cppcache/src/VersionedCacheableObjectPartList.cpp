@@ -45,7 +45,7 @@ void VersionedCacheableObjectPartList::readObjectPart(
 
   if (isException) {  // Exception case
     // Skip the exception that is in java serialized format, we cant read it.
-    input.advanceCursor(input.readArrayLen());
+    input.advanceCursor(input.readArrayLength());
     const auto exMsg = input.readString();  ////4.1
 
     std::shared_ptr<Exception> ex;
@@ -59,7 +59,7 @@ void VersionedCacheableObjectPartList::readObjectPart(
     m_exceptions->emplace(keyPtr, ex);
   } else if (m_serializeValues) {
     // read length
-    int32_t skipLen = input.readArrayLen();
+    int32_t skipLen = input.readArrayLength();
     int8_t* bytes = nullptr;
     if (skipLen > 0) {
       // readObject
