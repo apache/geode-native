@@ -638,8 +638,8 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
         if (!msg->hasCqPart()) {
           if (msg->getMessageType() != TcrMessage::CLIENT_MARKER) {
             const std::string& regionFullPath1 = msg->getRegionName();
-            std::shared_ptr<Region> region1;
-            m_cacheImpl->getRegion(regionFullPath1.c_str(), region1);
+            auto region1 = m_cacheImpl->getRegion(regionFullPath1);
+
             if (region1 != nullptr &&
                 !static_cast<ThinClientRegion*>(region1.get())
                      ->getDistMgr()
@@ -672,8 +672,8 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
           if (!msg->hasCqPart())  // || msg->isInterestListPassed())
           {
             const std::string& regionFullPath = msg->getRegionName();
-            std::shared_ptr<Region> region;
-            m_cacheImpl->getRegion(regionFullPath.c_str(), region);
+            auto region = m_cacheImpl->getRegion(regionFullPath);
+
             if (region != nullptr) {
               static_cast<ThinClientRegion*>(region.get())
                   ->receiveNotification(msg);

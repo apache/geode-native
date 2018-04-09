@@ -89,7 +89,7 @@ std::shared_ptr<Region> AuthenticatedView::getRegion(
     std::shared_ptr<Region> result;
 
     if (m_cacheImpl != nullptr && !m_cacheImpl->isClosed()) {
-      m_cacheImpl->getRegion(path.c_str(), result);
+      result = m_cacheImpl->getRegion(path);
     }
 
     if (result != nullptr) {

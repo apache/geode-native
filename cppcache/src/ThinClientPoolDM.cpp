@@ -1173,8 +1173,7 @@ TcrEndpoint* ThinClientPoolDM::getSingleHopServer(
   auto region = nullptr == r ? nullptr : r->shared_from_this();
   TcrEndpoint* ep = nullptr;
   if (region == nullptr) {
-    m_connManager.getCacheImpl()->getRegion(request.getRegionName().c_str(),
-                                            region);
+    region = m_connManager.getCacheImpl()->getRegion(request.getRegionName());
   }
   if (region != nullptr) {
     m_clientMetadataService->getBucketServerLocation(
@@ -1270,9 +1269,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
        type == TcrMessage::GET_ALL_WITH_CALLBACK) &&
       m_clientMetadataService != nullptr) {
     GfErrType error = GF_NOERR;
-    std::shared_ptr<Region> region;
-    m_connManager.getCacheImpl()->getRegion(request.getRegionName().c_str(),
-                                            region);
+
+    auto region = m_connManager.getCacheImpl()->getRegion(request.getRegionName());
     auto locationMap = m_clientMetadataService->getServerToFilterMap(
         *(request.getKeys()), region, request.forPrimary());
 
@@ -1429,9 +1427,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
       return GF_CLIENT_WAIT_TIMEOUT;
     } else if (queueErr == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
       // need to refresh meta data
-      std::shared_ptr<Region> region;
-      m_connManager.getCacheImpl()->getRegion(request.getRegionName().c_str(),
-                                              region);
+      auto region = m_connManager.getCacheImpl()->getRegion(request.getRegionName());
+
       if (region != nullptr) {
         LOGFINE(
             "Need to refresh pr-meta-data timeout in client only  with refresh "
@@ -1558,9 +1555,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
             request.getKeyRef() != nullptr && reply.isFEAnotherHop()))) {
         // Need to get direct access to Region's name to avoid referencing
         // temp data and causing crashes
-        std::shared_ptr<Region> region;
-        m_connManager.getCacheImpl()->getRegion(request.getRegionName().c_str(),
-                                                region);
+        auto region = m_connManager.getCacheImpl()->getRegion(request.getRegionName());
+
         if (region != nullptr) {
           if (!connFound)  // max limit case then don't refresh otherwise always
                            // refresh
@@ -2449,9 +2445,8 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
         if (m_clientMetadataService == nullptr || request.getKey() == nullptr) {
           return nullptr;
         }
-        std::shared_ptr<Region> region;
-        m_connManager.getCacheImpl()->getRegion(request.getRegionName().c_str(),
-                                                region);
+
+        auto region = m_connManager.getCacheImpl()->getRegion(request.getRegionName());
         if (region != nullptr) {
           slTmp = nullptr;
           m_clientMetadataService

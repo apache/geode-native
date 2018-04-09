@@ -75,30 +75,10 @@ void Cache::close() { close(false); }
  */
 void Cache::close(bool keepalive) {
   m_cacheImpl->close(keepalive);
-
-  try {
-    getDistributedSystem().disconnect();
-  } catch (const apache::geode::client::NotConnectedException&) {
-  } catch (const apache::geode::client::Exception&) {
-  } catch (...) {
-  }
 }
 
 std::shared_ptr<Region> Cache::getRegion(const std::string& path) const {
-  LOGDEBUG("Cache::getRegion " + path);
-  std::shared_ptr<Region> result;
-  m_cacheImpl->getRegion(path.c_str(), result);
-
-  if (result != nullptr) {
-    if (isPoolInMultiuserMode(result)) {
-      LOGWARN("Pool " + result->getAttributes().getPoolName() +
-              " attached with region " + result->getFullPath() +
-              " is in multiuser authentication mode. Operations may fail as "
-              "this instance does not have any credentials.");
-    }
-  }
-
-  return result;
+  return m_cacheImpl->getRegion(path);
 }
 
 /**
@@ -175,15 +155,7 @@ void Cache::initializeDeclarativeCache(const std::string& cacheXml) {
 void Cache::readyForEvents() { m_cacheImpl->readyForEvents(); }
 
 bool Cache::isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr) {
-  const auto& poolName = regionPtr->getAttributes().getPoolName();
-
-  if (!poolName.empty()) {
-    auto poolPtr = regionPtr->getCache().getPoolManager().find(poolName);
-    if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
-      return poolPtr->getMultiuserAuthentication();
-    }
-  }
-  return false;
+  return CacheImpl::isPoolInMultiuserMode(regionPtr);
 }
 
 bool Cache::getPdxIgnoreUnreadFields() const {

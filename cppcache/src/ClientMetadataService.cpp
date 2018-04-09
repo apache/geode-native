@@ -199,7 +199,7 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
   GfErrType err = tcrdm->sendSyncRequest(request, reply);
   if (err == GF_NOERR &&
       reply.getMessageType() == TcrMessage::RESPONSE_CLIENT_PR_METADATA) {
-    tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionPath, region);
+    region = tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionPath);
     if (region != nullptr) {
       LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.get());
       lregion->getRegionStats()->incMetaDataRefreshCount();
@@ -302,10 +302,9 @@ void ClientMetadataService::enqueueForMetadataRefresh(
     throw IllegalArgumentException(
         "ClientMetaData: pool cast to ThinClientPoolDM failed");
   }
-  std::shared_ptr<Region> region;
 
   auto cache = tcrdm->getConnectionManager().getCacheImpl();
-  cache->getRegion(regionFullPath, region);
+  auto region = cache->getRegion(regionFullPath);
 
   std::string serverGroup = tcrdm->getServerGroup();
   if (serverGroup.length() != 0) {

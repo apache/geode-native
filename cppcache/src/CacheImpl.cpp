@@ -333,6 +333,13 @@ void CacheImpl::close(bool keepalive) {
 
   m_expiryTaskManager->stopExpiryTaskManager();
 
+  try {
+    getDistributedSystem().disconnect();
+  } catch (const apache::geode::client::NotConnectedException&) {
+  } catch (const apache::geode::client::Exception&) {
+  } catch (...) {
+  }
+
   m_closed = true;
 
   LOGFINE("Cache closed.");
@@ -475,13 +482,13 @@ void CacheImpl::createRegion(std::string name,
  * @throws IllegalArgumentException if path is null, the empty string, or "/"
  */
 
-void CacheImpl::getRegion(const std::string& path,
-                          std::shared_ptr<Region>& rptr) {
+std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
+  LOGDEBUG("Cache::getRegion " + path);
+
   TryReadGuard guardCacheDestroy(m_destroyCacheMutex, m_destroyPending);
-  rptr = nullptr;
 
   if (m_destroyPending) {
-    return;
+    return nullptr;
   }
 
   MapOfRegionGuard guard(m_regions->mutex());
@@ -494,24 +501,31 @@ void CacheImpl::getRegion(const std::string& path,
   if (fullname.substr(0, 1) == slash) {
     fullname = path.substr(1);
   }
+
   // find second separator
-  uint32_t idx = static_cast<uint32_t>(fullname.find('/'));
+  auto idx = static_cast<uint32_t>(fullname.find('/'));
   auto stepname = fullname.substr(0, idx);
-  std::shared_ptr<Region> region;
+
+  std::shared_ptr<Region> region = nullptr;
+
   if (0 == m_regions->find(stepname, region)) {
-    if (stepname == fullname) {
-      // done...
-      rptr = region;
-      return;
-    }
-    auto remainder = fullname.substr(stepname.length() + 1);
-    if (region != nullptr) {
-      rptr = region->getSubregion(remainder.c_str());
-    } else {
-      rptr = nullptr;
-      return;  // Return null if the parent region was not found.
+    if (stepname != fullname) {
+      auto remainder = fullname.substr(stepname.length() + 1);
+
+      if (region != nullptr) {
+        region = region->getSubregion(remainder.c_str());
+      }
+
+      if (isPoolInMultiuserMode(region)) {
+        LOGWARN("Pool " + region->getAttributes().getPoolName() +
+                " attached with region " + region->getFullPath() +
+                " is in multiuser authentication mode. Operations may fail as "
+                        "this instance does not have any credentials.");
+      }
     }
   }
+
+  return region;
 }
 
 std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
@@ -634,6 +648,19 @@ void CacheImpl::readyForEvents() {
               " with exception: " + ex.getMessage());
     }
   }
+}
+
+bool CacheImpl::isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr) {
+  const auto& poolName = regionPtr->getAttributes().getPoolName();
+
+  if (!poolName.empty()) {
+    auto poolPtr = regionPtr->getCache().getPoolManager().find(poolName);
+    if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
+      return poolPtr->getMultiuserAuthentication();
+    }
+  }
+
+  return false;
 }
 
 bool CacheImpl::getEndpointStatus(const std::string& endpoint) {

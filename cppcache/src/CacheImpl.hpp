@@ -175,7 +175,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   void createRegion(std::string name, RegionAttributes aRegionAttributes,
                     std::shared_ptr<Region>& regionPtr);
 
-  void getRegion(const std::string& path, std::shared_ptr<Region>& rptr);
+  std::shared_ptr<Region> getRegion(const std::string& path);
 
   /**
    * Returns a set of root regions in the cache. Does not cause any
@@ -195,6 +195,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
    * @brief destructor
    */
   virtual ~CacheImpl();
+
   /**
    * @brief constructors
    */
@@ -233,6 +234,8 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
    * Send the "client ready" message to the server.
    */
   void readyForEvents();
+
+  static bool isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr);
 
   //  TESTING: Durable clients. Not thread safe.
   bool getEndpointStatus(const std::string& endpoint);
