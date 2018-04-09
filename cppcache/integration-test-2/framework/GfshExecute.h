@@ -25,9 +25,11 @@
 #include <algorithm>
 #include <regex>
 
-#pragma error_messages(off, oklambdaretmulti, wvarhidemem, w_constexprnonlitret, explctspectypename)
+#pragma error_messages(off, oklambdaretmulti, wvarhidemem, \
+                       w_constexprnonlitret, explctspectypename)
 #include <boost/process.hpp>
-#pragma error_messages(on, oklambdaretmulti, wvarhidemem, w_constexprnonlitret, explctspectypename)
+#pragma error_messages(on, oklambdaretmulti, wvarhidemem, \
+                       w_constexprnonlitret, explctspectypename)
 #include <boost/log/trivial.hpp>
 
 #include "Gfsh.h"
@@ -55,39 +57,7 @@ class GfshExecute : public Gfsh {
   };
 
  protected:
-  void execute(const std::string &command) override {
-    BOOST_LOG_TRIVIAL(info) << "Gfsh::execute: " << command;
-
-    using namespace boost::process;
-
-    std::vector<std::string> commands;
-    if (!connection_.empty()) {
-      commands.push_back("-e");
-      commands.push_back(connection_);
-    }
-    commands.push_back("-e");
-    commands.push_back(command);
-
-    auto env = boost::this_process::environment();
-    // broken on windows env["JAVA_ARGS"] = "-Xmx1g -client";
-
-    ipstream outStream;
-    ipstream errStream;
-    child gfsh(GFSH_EXECUTABLE, args = commands, env, std_out > outStream,
-               std_err > errStream);
-
-    std::string line;
-
-    while (outStream && std::getline(outStream, line) && !line.empty())
-      BOOST_LOG_TRIVIAL(debug) << "Gfsh::execute: " << line;
-
-    while (errStream && std::getline(errStream, line) && !line.empty())
-      BOOST_LOG_TRIVIAL(error) << "Gfsh::execute: " << line;
-
-    gfsh.wait();
-
-    extractConnectionCommand(command);
-  }
+  void execute(const std::string &command) override;
 
   void extractConnectionCommand(const std::string &command) {
     if (starts_with(command, std::string("connect"))) {

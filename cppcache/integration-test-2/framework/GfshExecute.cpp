@@ -16,3 +16,38 @@
  */
 
 #include "GfshExecute.h"
+
+void GfshExecute::execute(const std::string &command) {
+  BOOST_LOG_TRIVIAL(info) << "Gfsh::execute: " << command;
+
+  using namespace boost::process;
+
+  std::vector<std::string> commands;
+  if (!connection_.empty()) {
+    commands.push_back("-e");
+    commands.push_back(connection_);
+  }
+  commands.push_back("-e");
+  commands.push_back(command);
+
+  auto env = boost::this_process::environment();
+  // broken on windows env["JAVA_ARGS"] = "-Xmx1g -client";
+
+  // pipes broken on windows.
+  // ipstream outStream;
+  // ipstream errStream;
+  child gfsh(GFSH_EXECUTABLE, args = commands, env, std_out > null,
+             std_err > null, std_in < null);
+
+  // std::string line;
+
+  // while (outStream && std::getline(outStream, line) && !line.empty())
+  //  BOOST_LOG_TRIVIAL(debug) << "Gfsh::execute: " << line;
+
+  // while (errStream && std::getline(errStream, line) && !line.empty())
+  //  BOOST_LOG_TRIVIAL(error) << "Gfsh::execute: " << line;
+
+  gfsh.wait();
+
+  extractConnectionCommand(command);
+}

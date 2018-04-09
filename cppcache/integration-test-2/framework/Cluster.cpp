@@ -20,10 +20,14 @@
 void Locator::start() {
   if (started_) return;
 
+  auto safeName = name_;
+  std::replace(safeName.begin(), safeName.end(), '/', '_');
+
   cluster_.getGfsh()
       .start()
       .locator()
       .withDir(name_)
+      .withName(safeName)
       .withBindAddress(locatorAddress_.address)
       .withPort(locatorAddress_.port)
       .withMaxHeap("256m")
@@ -45,10 +49,14 @@ void Locator::stop() {
 }
 
 void Server::start() {
+  auto safeName = name_;
+  std::replace(safeName.begin(), safeName.end(), '/', '_');
+
   cluster_.getGfsh()
       .start()
       .server()
       .withDir(name_)
+      .withName(safeName)
       .withBindAddress(serverAddress_.address)
       .withPort(serverAddress_.port)
       .withMaxHeap("1g")
