@@ -22,6 +22,8 @@
     $ cmake .. <platform-specific generator parameters (see below)>
     $ cmake --build . -- <platform-specific parallelism parameters (see below)>
 
+To explicitly specify the location in which the Native Client will be installed, add `-DCMAKE_INSTALL_PREFIX=/path/to/installation/destination` to this initial `cmake` execution command.
+ 
 ### Generator
 CMake uses a "generator" to produce configuration files for use by a variety of build tools, e.g., UNIX makefiles, Visual Studio projects. By default a system-specific generator is used by CMake during configuration. (Please see [the CMake documentation](https://cmake.org/documentation/) for further information.) However, in many cases there is a better choice.
 
