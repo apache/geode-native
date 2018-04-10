@@ -21,10 +21,11 @@ namespace apache {
 namespace geode {
 namespace client {
 
-StackTrace::StackTrace()
-  : stacktrace(boost::stacktrace::stacktrace()) {}
+StackTrace::StackTrace(size_t skip)
+    : stacktrace(boost::stacktrace::stacktrace(skip + 2,
+                                               static_cast<std::size_t>(-1))) {}
 
-StackTrace::~StackTrace() {}
+StackTrace::~StackTrace() noexcept = default;
 
 std::string StackTrace::getString() const {
   std::stringstream ss;

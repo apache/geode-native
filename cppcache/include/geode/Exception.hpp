@@ -27,10 +27,6 @@
 #include "internal/geode_globals.hpp"
 #include "internal/functional.hpp"
 
-/**
- * @file
- */
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -42,44 +38,39 @@ class StackTrace;
 #pragma warning(disable : 4275)
 
 /**
- * @class Exception Exception.hpp
  * A description of an exception that occurred during a cache operation.
  */
 class APACHE_GEODE_EXPORT Exception : public std::exception {
-  /**
-   * @brief public methods
-   */
  public:
   explicit Exception(const std::string& message);
   Exception(std::string&& message);
   Exception(const char* message);
-
-  /** Creates an exception as a copy of the given other exception.
-   * @param  other the original exception.
-   *
-   **/
-  Exception(const Exception& other) = default;
-  Exception(Exception&& other) noexcept = default;
+  Exception(const Exception&) = default;
+  Exception& operator=(const Exception&) = default;
+  Exception(Exception&&) noexcept = default;
+  Exception& operator=(Exception&&) = default;
+  ~Exception() noexcept override;
 
   /**
-   * @brief destructor
-   */
-  virtual ~Exception() noexcept;
-
-  /** Get a stacktrace string from the location the exception was created.
+   * Get a stacktrace string from the location the exception was created.
    */
   virtual std::string getStackTrace() const;
 
-  /** Return the name of this exception type. */
+  /**
+   * Return the name of this exception type.
+   * */
   virtual std::string getName() const;
 
+  /**
+   * Get a message with details regarding this exception."
+   */
   virtual const std::string& getMessage() const noexcept;
 
-  virtual const char* what() const noexcept override;
+  const char* what() const noexcept override;
 
  private:
-  std::string message;
-  std::shared_ptr<StackTrace> m_stack;
+  std::string message_;
+  std::shared_ptr<StackTrace> stack_;
 };
 
 #pragma warning(pop)

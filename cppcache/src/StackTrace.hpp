@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STACKTRACE_H_
-#define GEODE_STACKTRACE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_STACKTRACE_H_
+#define GEODE_STACKTRACE_H_
+
 #include <memory>
 #include <string>
 
@@ -32,8 +32,8 @@ namespace client {
 
 class StackTrace {
  public:
-  StackTrace();
-  virtual ~StackTrace();
+  StackTrace(size_t skip = 0);
+  ~StackTrace() noexcept;
   std::string getString() const;
 
  private:

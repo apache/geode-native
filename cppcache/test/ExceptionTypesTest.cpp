@@ -21,8 +21,14 @@
 
 using namespace apache::geode::client;
 
-TEST(ExceptionTypesTest, testExceptionGetName) {
+TEST(ExceptionTypesTest, getName) {
   AssertionException e("an exception message");
   EXPECT_EQ("apache::geode::client::AssertionException",
             std::string(e.getName()));
+}
+
+TEST(ExceptionTypesTest, getStackTrace) {
+  AssertionException e("an exception message");
+  auto s = e.getStackTrace();
+  EXPECT_TRUE(!s.empty());
 }

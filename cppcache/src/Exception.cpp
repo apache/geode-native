@@ -31,15 +31,18 @@ namespace apache {
 namespace geode {
 namespace client {
 
-Exception::Exception(const std::string& message) : message(message) {}
+Exception::Exception(const std::string& message)
+    : message_(message), stack_(std::make_shared<StackTrace>()) {}
 
-Exception::Exception(std::string&& message) : message(std::move(message)) {}
+Exception::Exception(std::string&& message)
+    : message_(std::move(message)), stack_(std::make_shared<StackTrace>()) {}
 
-Exception::Exception(const char* message) : Exception(std::string(message)) {}
+Exception::Exception(const char* message)
+    : message_(message), stack_(std::make_shared<StackTrace>()) {}
 
-const std::string& Exception::getMessage() const noexcept { return message; }
+const std::string& Exception::getMessage() const noexcept { return message_; }
 
-const char* Exception::what() const noexcept { return message.c_str(); }
+const char* Exception::what() const noexcept { return message_.c_str(); }
 
 Exception::~Exception() noexcept {}
 
@@ -48,7 +51,7 @@ std::string Exception::getName() const {
 }
 
 std::string Exception::getStackTrace() const {
-  return m_stack ? m_stack->getString() : "No stack available.";
+  return stack_ ? stack_->getString() : "No stack available.";
 }
 
 // class to store/clear last server exception in TSS area
