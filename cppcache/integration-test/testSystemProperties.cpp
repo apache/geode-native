@@ -79,10 +79,7 @@ BEGIN_TEST(NEW_CONFIG)
     ASSERT1(safname == "stats.gfs");
 
     auto&& logfname = sp->logFilename();
-    ASSERT1(logfname == "gfcpp.log");
-
-    // Log::LogLevel ll = sp->logLevel();
-    // ASSERT( ll == Log::Debug, "expected Log::Debug" );
+    ASSERT1(logfname == "geode-native.log");
 
     auto&& name = sp->name();
     ASSERT1(name == "system");

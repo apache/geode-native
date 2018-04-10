@@ -219,7 +219,7 @@ SystemProperties::SystemProperties(
   } catch (Exception&) {
     LOGERROR(
         "Unable to determine Product Directory. Please set the "
-        "GFCPP environment variable.");
+        "GEODE_NATIVE environment variable.");
     throw;
   }
 

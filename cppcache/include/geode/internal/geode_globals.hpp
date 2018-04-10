@@ -17,8 +17,8 @@
 
 #pragma once
 
-#ifndef GEODE_GFCPP_GLOBALS_H_
-#define GEODE_GFCPP_GLOBALS_H_
+#ifndef GEODE_NATIVE_GLOBALS_H_
+#define GEODE_NATIVE_GLOBALS_H_
 
 #ifdef _MSC_VER
 // disable: "C++ Exception Specification ignored"
@@ -56,4 +56,4 @@
 
 #include "geode_base.hpp"
 
-#endif  // GEODE_GFCPP_GLOBALS_H_
+#endif  // GEODE_NATIVE_GLOBALS_H_

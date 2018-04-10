@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef GEODE_GFCPPBANNER_H_
-#define GEODE_GFCPPBANNER_H_
+#ifndef GEODE_BANNER_H_
+#define GEODE_BANNER_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -32,4 +32,4 @@ class geodeBanner {
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_GFCPPBANNER_H_
+#endif  // GEODE_BANNER_H_
