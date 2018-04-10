@@ -17,6 +17,8 @@
 
 #include "Cluster.h"
 
+#include <future>
+
 void Locator::start() {
   if (started_) return;
 

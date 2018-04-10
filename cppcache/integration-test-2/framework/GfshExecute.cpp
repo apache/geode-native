@@ -17,6 +17,14 @@
 
 #include "GfshExecute.h"
 
+#include <mutex>
+
+#include <boost/log/trivial.hpp>
+
+#if defined(_WINDOWS)
+std::mutex g_child_mutex;
+#endif
+
 void GfshExecute::execute(const std::string &command) {
   BOOST_LOG_TRIVIAL(info) << "Gfsh::execute: " << command;
 
@@ -33,21 +41,34 @@ void GfshExecute::execute(const std::string &command) {
   auto env = boost::this_process::environment();
   // broken on windows env["JAVA_ARGS"] = "-Xmx1g -client";
 
-  // pipes broken on windows.
-  // ipstream outStream;
-  // ipstream errStream;
-  child gfsh(GFSH_EXECUTABLE, args = commands, env, std_out > null,
-             std_err > null, std_in < null);
+  ipstream outStream;
+  ipstream errStream;
 
-  // std::string line;
+  auto gfsh = executeChild(commands, env, outStream, errStream);
 
-  // while (outStream && std::getline(outStream, line) && !line.empty())
-  //  BOOST_LOG_TRIVIAL(debug) << "Gfsh::execute: " << line;
+  std::string line;
 
-  // while (errStream && std::getline(errStream, line) && !line.empty())
-  //  BOOST_LOG_TRIVIAL(error) << "Gfsh::execute: " << line;
+  while (outStream && std::getline(outStream, line) && !line.empty())
+    BOOST_LOG_TRIVIAL(debug) << "Gfsh::execute: " << line;
+
+  while (errStream && std::getline(errStream, line) && !line.empty())
+    BOOST_LOG_TRIVIAL(error) << "Gfsh::execute: " << line;
 
   gfsh.wait();
 
   extractConnectionCommand(command);
+}
+
+boost::process::child GfshExecute::executeChild(
+    std::vector<std::string> &commands, boost::process::native_environment &env,
+    boost::process::ipstream &outStream, boost::process::ipstream &errStream) {
+  using namespace boost::process;
+
+#if defined(_WINDOWS)
+  // https://github.com/klemens-morgenstern/boost-process/issues/159
+  std::lock_guard<std::mutex> guard(g_child_mutex);
+#endif
+
+  return child(GFSH_EXECUTABLE, args = commands, env, std_out > outStream,
+               std_err > errStream, std_in < null);
 }

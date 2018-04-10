@@ -30,7 +30,6 @@
 #include <boost/process.hpp>
 #pragma error_messages(on, oklambdaretmulti, wvarhidemem, \
                        w_constexprnonlitret, explctspectypename)
-#include <boost/log/trivial.hpp>
 
 #include "Gfsh.h"
 #include "config.h"
@@ -58,6 +57,11 @@ class GfshExecute : public Gfsh {
 
  protected:
   void execute(const std::string &command) override;
+
+  boost::process::child executeChild(std::vector<std::string> &commands,
+                                     boost::process::native_environment &env,
+                                     boost::process::ipstream &outStream,
+                                     boost::process::ipstream &errStream);
 
   void extractConnectionCommand(const std::string &command) {
     if (starts_with(command, std::string("connect"))) {
