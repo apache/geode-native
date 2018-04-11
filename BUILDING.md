@@ -6,20 +6,28 @@
 * [Doxygen 8.11](http://www.stack.nl/~dimitri/doxygen/download.html) *(for building source documentation)*
 * [Apache Geode](http://geode.apache.org/releases/) binaries installed or available to link against
 
-   Building requires access to an installation of Geode. By default the value of `GEODE_ROOT` or `GEODE_HOME` is used during CMake configuration if either of those shell variables is exported. To explicitly specify the location in which Geode is installed, add `-DGEODE_ROOT=/path/to/geode` to the _initial_ `cmake` execution command.
-
 ### Platform-Specific Prerequisites
 * [Mac OS X](#mac-os-x)
 * [Linux](#linux)
 * [Solaris](#solaris)
 * [Windows](#windows)
 
+## Setting Path to Geode
+Building requires access to an installation of Geode. There are two ways to achieve this:
+* Set an environment variable called `GEODE_HOME` that points to your Geode installation path.
+* Pass in `GEODE_ROOT` during the CMake configuration step.
+  * e.g.  add `-DGEODE_ROOT=/path/to/geode` to the _initial_ `cmake` execution command.
+
+
+
 ## Steps to build
 
     $ cd <clone>
     $ mkdir build
     $ cd build
+    // configuration step
     $ cmake .. <platform-specific generator parameters (see below)>
+    // build step
     $ cmake --build . -- <platform-specific parallelism parameters (see below)>
 
 ### Generator
