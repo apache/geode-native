@@ -52,7 +52,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Apache.Geode.Client">
-      <HintPath>${GEODE_NATIVE}\bin\Apache.Geode.dll</HintPath>
+      <HintPath>${GEODE_NATIVE_HOME}\bin\Apache.Geode.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -75,7 +75,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) ${GEODE_NATIVE}\bin\$(TargetFileName)</PostBuildEvent>
+    <PostBuildEvent>copy $(TargetPath) ${GEODE_NATIVE_HOME}\bin\$(TargetFileName)</PostBuildEvent>
   </PropertyGroup>  
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -46,6 +46,6 @@ target_link_libraries(securityImpl
 )
 
 install(TARGETS securityImpl
-    RUNTIME DESTINATION ${GEODE_NATIVE}/bin
-    LIBRARY DESTINATION ${GEODE_NATIVE}/lib
+    RUNTIME DESTINATION ${GEODE_NATIVE_HOME}/bin
+    LIBRARY DESTINATION ${GEODE_NATIVE_HOME}/lib
 )

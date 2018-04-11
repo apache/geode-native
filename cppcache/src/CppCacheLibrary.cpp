@@ -104,7 +104,7 @@ std::string CppCacheLibrary::getProductLibDir() {
 
 std::string CppCacheLibrary::getProductDir() {
   // If the environment variable is set, use it.
-  std::string geodeNativeEnvironment = Utils::getEnv("GEODE_NATIVE");
+  std::string geodeNativeEnvironment = Utils::getEnv("GEODE_NATIVE_HOME");
   if (geodeNativeEnvironment.length() > 0) {
     return geodeNativeEnvironment;
   }
@@ -114,11 +114,11 @@ std::string CppCacheLibrary::getProductDir() {
   if (productLibraryDirectoryName.size() == 0) {
     fprintf(stderr,
             "Cannot determine location of product directory.\n"
-            "Please set GEODE_NATIVE environment variable.\n");
+            "Please set GEODE_NATIVE_HOME environment variable.\n");
     fflush(stderr);
     throw apache::geode::client::IllegalStateException(
         "Product installation directory "
-        "not found. Please set GEODE_NATIVE environment variable.");
+        "not found. Please set GEODE_NATIVE_HOME environment variable.");
   }
   // replace all '\' with '/' to make everything easier..
   size_t len = productLibraryDirectoryName.length() + 1;

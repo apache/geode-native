@@ -69,7 +69,7 @@ int32_t TimeBomb::svc() {
         char buf[8192];
         sprintf(
             buf,
-            "bash -c \"perl $GEODE_NATIVE/../framework/scripts/gdb.pl %d ; cat "
+            "bash -c \"perl $GEODE_NATIVE_HOME/../framework/scripts/gdb.pl %d ; cat "
             "gdbout.%d\"",
             pid, pid);
         FILE* pip = popen(buf, "r");
@@ -97,7 +97,7 @@ int32_t TimeBomb::svc() {
         char buf[8192];
 
         sprintf(buf,
-                "bash -c \"perl $GEODE_NATIVE/../framework/scripts/cdb.pl %d\"",
+                "bash -c \"perl $GEODE_NATIVE_HOME/../framework/scripts/cdb.pl %d\"",
                 pid);
         FILE* pip = _popen(buf, "r");
         if (pip == NULL) {

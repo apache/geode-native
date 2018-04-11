@@ -92,7 +92,7 @@ DistributedSystem DistributedSystem::create(
   } catch (const Exception&) {
     LOGERROR(
         "Unable to determine Product Directory. Please set the "
-        "GEODE_NATIVE environment variable.");
+        "GEODE_NATIVE_HOME environment variable.");
     throw;
   }
 
