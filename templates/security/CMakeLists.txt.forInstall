@@ -33,14 +33,14 @@ target_include_directories(securityImpl
 include_directories(${NATIVECLIENT_INCLUDE_DIR})
 
 if (${WIN32})
-  set(NATIVECLIENT_CACHE "${NATIVECLIENT_LIBRARIES}/apache-geode${CMAKE_IMPORT_LIBRARY_SUFFIX}")
+  set(GEODE_NATIVE_CACHE "${NATIVECLIENT_LIBRARIES}/apache-geode${CMAKE_IMPORT_LIBRARY_SUFFIX}")
 else ()
-  get_filename_component(NATIVECLIENT_CACHE "${NATIVECLIENT_LIBRARIES}/${CMAKE_SHARED_LIBRARY_PREFIX}apache-geode${CMAKE_SHARED_LIBRARY_SUFFIX}" ABSOLUTE)
+  get_filename_component(GEODE_NATIVE_CACHE "${NATIVECLIENT_LIBRARIES}/${CMAKE_SHARED_LIBRARY_PREFIX}apache-geode${CMAKE_SHARED_LIBRARY_SUFFIX}" ABSOLUTE)
 endif()
 
 target_link_libraries(securityImpl
   PUBLIC
-    ${NATIVECLIENT_CACHE}
+    ${GEODE_NATIVE_CACHE}
     OpenSSL::Crypto
     OpenSSL::SSL
 )
