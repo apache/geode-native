@@ -59,7 +59,7 @@ class GfshExecute : public Gfsh {
   void execute(const std::string &command) override;
 
   boost::process::child executeChild(std::vector<std::string> &commands,
-                                     boost::process::native_environment &env,
+                                     boost::process::environment &env,
                                      boost::process::ipstream &outStream,
                                      boost::process::ipstream &errStream);
 

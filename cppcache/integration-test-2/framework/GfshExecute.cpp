@@ -39,28 +39,34 @@ void GfshExecute::execute(const std::string &command) {
   commands.push_back(command);
 
   auto env = boost::this_process::environment();
+  environment _env = env;
   // broken on windows env["JAVA_ARGS"] = "-Xmx1g -client";
 
   ipstream outStream;
   ipstream errStream;
 
-  auto gfsh = executeChild(commands, env, outStream, errStream);
+  auto gfsh = executeChild(commands, _env, outStream, errStream);
 
   std::string line;
 
-  while (outStream && std::getline(outStream, line) && !line.empty())
+  while (outStream && std::getline(outStream, line)) {
     BOOST_LOG_TRIVIAL(debug) << "Gfsh::execute: " << line;
+  }
 
-  while (errStream && std::getline(errStream, line) && !line.empty())
+  while (errStream && std::getline(errStream, line)) {
     BOOST_LOG_TRIVIAL(error) << "Gfsh::execute: " << line;
+  }
 
   gfsh.wait();
+
+  auto exit_code = gfsh.exit_code();
+  BOOST_LOG_TRIVIAL(debug) << "Gfsh::execute: exit:" << exit_code;
 
   extractConnectionCommand(command);
 }
 
 boost::process::child GfshExecute::executeChild(
-    std::vector<std::string> &commands, boost::process::native_environment &env,
+    std::vector<std::string> &commands, boost::process::environment &env,
     boost::process::ipstream &outStream, boost::process::ipstream &errStream) {
   using namespace boost::process;
 
@@ -68,7 +74,6 @@ boost::process::child GfshExecute::executeChild(
   // https://github.com/klemens-morgenstern/boost-process/issues/159
   std::lock_guard<std::mutex> guard(g_child_mutex);
 #endif
-
   return child(GFSH_EXECUTABLE, args = commands, env, std_out > outStream,
-               std_err > errStream, std_in < null);
+               std_err > errStream);
 }

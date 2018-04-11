@@ -93,6 +93,27 @@ void Cluster::start() {
         {*this, locators_, name_ + "/server/" + std::to_string(i)});
   }
 
+  startLocators();
+
+  startServers();
+
+  //    std::cout << "cluster: " << jmxManagerPort_ << ": started" << std::endl;
+  started_ = true;
+}
+
+void Cluster::startServers() {
+  std::vector<std::future<void>> futures;
+
+  for (auto &server : this->servers_) {
+    futures.push_back(std::async(std::launch::async, [&] { server.start(); }));
+  }
+
+  for (auto &future : futures) {
+    future.get();
+  }
+}
+
+void Cluster::startLocators() {
   std::vector<std::future<void>> futures;
 
   for (auto &locator : locators_) {
@@ -102,19 +123,8 @@ void Cluster::start() {
   // TODO hack until there is a way to either tell servers to retry or wait
   // for single future.
   for (auto &future : futures) {
-    future.wait();
+    future.get();
   }
-
-  for (auto &server : servers_) {
-    futures.push_back(std::async(std::launch::async, [&] { server.start(); }));
-  }
-
-  for (auto &future : futures) {
-    future.wait();
-  }
-
-  //    std::cout << "cluster: " << jmxManagerPort_ << ": started" << std::endl;
-  started_ = true;
 }
 
 void Cluster::stop() {

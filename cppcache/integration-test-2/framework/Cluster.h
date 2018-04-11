@@ -118,7 +118,7 @@ class Server {
   Server(Cluster &cluster, std::vector<Locator> &locators, std::string name)
       : cluster_(cluster), locators_(locators), name_(std::move(name)) {
     auto hostname = "localhost";
-    auto port = Framework::getAvailablePort();
+    auto port = static_cast<uint16_t>(0);
     serverAddress_ = ServerAddress{hostname, port};
 
     // start();
@@ -240,6 +240,9 @@ class Cluster {
   uint16_t jmxManagerPort_;
 
   GfshExecute gfsh_;
+
+  void startLocators();
+  void startServers();
 };
 
 #endif  // INTEGRATION_TEST_FRAMEWORK_CLUSTER_H
