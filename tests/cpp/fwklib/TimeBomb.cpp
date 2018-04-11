@@ -67,10 +67,11 @@ int32_t TimeBomb::svc() {
 
         int32_t pid = ACE_OS::getpid();
         char buf[8192];
-        sprintf(buf,
-                "bash -c \"perl $GEODE_NATIVE/../framework/scripts/gdb.pl %d ; cat "
-                "gdbout.%d\"",
-                pid, pid);
+        sprintf(
+            buf,
+            "bash -c \"perl $GEODE_NATIVE/../framework/scripts/gdb.pl %d ; cat "
+            "gdbout.%d\"",
+            pid, pid);
         FILE* pip = popen(buf, "r");
         if (pip == NULL) {
           FWKSEVERE("TimeBomb: Unable to dump threads.");
@@ -95,7 +96,8 @@ int32_t TimeBomb::svc() {
         int32_t pid = ACE_OS::getpid();
         char buf[8192];
 
-        sprintf(buf, "bash -c \"perl $GEODE_NATIVE/../framework/scripts/cdb.pl %d\"",
+        sprintf(buf,
+                "bash -c \"perl $GEODE_NATIVE/../framework/scripts/cdb.pl %d\"",
                 pid);
         FILE* pip = _popen(buf, "r");
         if (pip == NULL) {

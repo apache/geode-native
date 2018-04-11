@@ -21,6 +21,7 @@
  */
 
 #include <string>
+
 namespace apache {
 namespace geode {
 namespace client {
