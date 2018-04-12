@@ -41,11 +41,20 @@ target_include_directories(apache-geode
   PUBLIC
     $<TARGET_PROPERTY:_apache-geode,INTERFACE_INCLUDE_DIRECTORIES>)
 
-set_target_properties(apache-geode PROPERTIES
-  PUBLIC_HEADER "${PUBLIC_HEADERS}"
-  OUTPUT_NAME ${PRODUCT_LIB_NAME}
-  CXX_VISIBILITY_PRESET hidden
-  VISIBILITY_INLINES_HIDDEN ON)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  set_target_properties(apache-geode PROPERTIES
+    PUBLIC_HEADER "${PUBLIC_HEADERS}"
+    OUTPUT_NAME ${PRODUCT_LIB_NAME}
+    CXX_VISIBILITY_PRESET default
+    VISIBILITY_INLINES_HIDDEN ON)
+else()
+  set_target_properties(apache-geode PROPERTIES
+    PUBLIC_HEADER "${PUBLIC_HEADERS}"
+    OUTPUT_NAME ${PRODUCT_LIB_NAME}
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN ON)
+endif()
+
 
 add_dependencies(client-libraries apache-geode)
 
