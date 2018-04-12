@@ -75,8 +75,7 @@ const char SslEnabled[] = "ssl-enabled";
 const char TimeStatisticsEnabled[] = "enable-time-statistics";
 const char SslKeyStore[] = "ssl-keystore";
 const char SslTrustStore[] = "ssl-truststore";
-const char SslKeystorePassword[] =
-    "ssl-keystore-password";  // adongre: Added for Ticket #758
+const char SslKeystorePassword[] = "ssl-keystore-password";
 const char ThreadPoolSize[] = "max-fe-threads";
 const char SuspendedTxTimeout[] = "suspended-tx-timeout";
 const char DisableChunkHandlerThread[] = "disable-chunk-handler-thread";
@@ -110,7 +109,7 @@ const bool DefaultTimeStatisticsEnabled = false;  // or true;
 
 const char DefaultSslKeyStore[] = "";
 const char DefaultSslTrustStore[] = "";
-const char DefaultSslKeystorePassword[] = "";  // adongre: Added for Ticket #758
+const char DefaultSslKeystorePassword[] = "";
 const char DefaultName[] = "";
 const char DefaultCacheXMLFile[] = "";
 const uint32_t DefaultLogFileSizeLimit = 0;     // = unlimited
@@ -118,7 +117,7 @@ const uint32_t DefaultLogDiskSpaceLimit = 0;    // = unlimited
 const uint32_t DefaultStatsFileSizeLimit = 0;   // = unlimited
 const uint32_t DefaultStatsDiskSpaceLimit = 0;  // = unlimited
 
-const size_t DefaultHeapLRULimit = 0;  // = unlimited, disabled when it is 0
+const size_t DefaultHeapLRULimit = 0;    // = unlimited, disabled when it is 0
 const int32_t DefaultHeapLRUDelta = 10;  // = unlimited, disabled when it is 0
 
 const int32_t DefaultMaxSocketBufferSize = 65 * 1024;
@@ -213,13 +212,13 @@ SystemProperties::SystemProperties(
   auto givenConfigPtr = Properties::create();
   // Load the file from product tree.
   try {
-    std::string defsysprops =
+    std::string defaultSystemProperties =
         CppCacheLibrary::getProductDir() + "/defaultSystem/geode.properties";
-    givenConfigPtr->load(defsysprops.c_str());
+    givenConfigPtr->load(defaultSystemProperties);
   } catch (Exception&) {
     LOGERROR(
         "Unable to determine Product Directory. Please set the "
-        "GFCPP environment variable.");
+        "GEODE_NATIVE_HOME environment variable.");
     throw;
   }
 
@@ -328,8 +327,7 @@ void SystemProperties::processProperty(const std::string& property,
       m_logLevel = Log::charsToLevel(value);
     } catch (IllegalArgumentException&) {
       throwError(
-          ("SystemProperties: unknown log level " + property + "=" + value)
-              .c_str());
+          ("SystemProperties: unknown log level " + property + "=" + value));
     }
   } else if (property == ConnectionPoolSize) {
     m_connectionPoolSize = std::stol(value);
@@ -499,7 +497,7 @@ void SystemProperties::logSettings() {
 
   // *** PLEASE ADD IN ALPHABETICAL ORDER - USER VISIBLE ***
 
-  LOGCONFIG(settings.c_str());
+  LOGCONFIG(settings);
 }
 
 }  // namespace client

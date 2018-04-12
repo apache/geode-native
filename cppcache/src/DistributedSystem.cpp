@@ -56,7 +56,7 @@ DistributedSystem DistributedSystem::create(
   // Trigger other library initialization.
   CppCacheLibrary::initLib();
 
-  auto sysProps =
+  auto systemProperties =
       std::unique_ptr<SystemProperties>(new SystemProperties(configPtr));
 
   auto name = _name;
@@ -65,25 +65,26 @@ DistributedSystem DistributedSystem::create(
   }
 
   // Set client name via native client API
-  auto&& propName = sysProps->name();
+  auto&& propName = systemProperties->name();
   if (!propName.empty()) {
     name = propName;
   }
 
   // TODO global - keep global but setup once.
-  auto&& logFilename = sysProps->logFilename();
+  auto&& logFilename = systemProperties->logFilename();
   if (!logFilename.empty()) {
     try {
       Log::close();
-      Log::init(sysProps->logLevel(), logFilename.c_str(),
-                sysProps->logFileSizeLimit(), sysProps->logDiskSpaceLimit());
+      Log::init(systemProperties->logLevel(), logFilename.c_str(),
+                systemProperties->logFileSizeLimit(),
+                systemProperties->logDiskSpaceLimit());
     } catch (const GeodeIOException&) {
       Log::close();
-      sysProps = nullptr;
+      systemProperties = nullptr;
       throw;
     }
   } else {
-    Log::setLogLevel(sysProps->logLevel());
+    Log::setLogLevel(systemProperties->logLevel());
   }
 
   try {
@@ -91,11 +92,11 @@ DistributedSystem DistributedSystem::create(
   } catch (const Exception&) {
     LOGERROR(
         "Unable to determine Product Directory. Please set the "
-        "GFCPP environment variable.");
+        "GEODE_NATIVE_HOME environment variable.");
     throw;
   }
 
-  auto distributedSystem = DistributedSystem(name, std::move(sysProps));
+  auto distributedSystem = DistributedSystem(name, std::move(systemProperties));
 
   LOGCONFIG("Starting the Geode Native Client");
   return distributedSystem;

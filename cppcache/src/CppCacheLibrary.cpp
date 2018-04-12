@@ -53,9 +53,7 @@ namespace client {
 // if we can... Probably safest to call from DistributedSystem factory method.
 // impl type Unit tests may need to call this themselves to ensure the
 // internals are prepared. fw_helper framework will handle this.
-void CppCacheLibrary::initLib(void) {
-  ACE::init();
-}
+void CppCacheLibrary::initLib(void) { ACE::init(); }
 
 // this closes ace and triggers the cleanup of the singleton CppCacheLibrary.
 void CppCacheLibrary::closeLib(void) {
@@ -106,57 +104,61 @@ std::string CppCacheLibrary::getProductLibDir() {
 
 std::string CppCacheLibrary::getProductDir() {
   // If the environment variable is set, use it.
-  std::string gfcppenv = Utils::getEnv("GFCPP");
-  if (gfcppenv.length() > 0) {
-    return gfcppenv;
+  std::string geodeNativeEnvironment = Utils::getEnv("GEODE_NATIVE_HOME");
+  if (geodeNativeEnvironment.length() > 0) {
+    return geodeNativeEnvironment;
   }
 
   // otherwise... get the DLL path, and work backwards from it.
-  std::string libdirname = getProductLibDir();
-  if (libdirname.size() == 0) {
+  std::string productLibraryDirectoryName = getProductLibDir();
+  if (productLibraryDirectoryName.size() == 0) {
     fprintf(stderr,
             "Cannot determine location of product directory.\n"
-            "Please set GFCPP environment variable.\n");
+            "Please set GEODE_NATIVE_HOME environment variable.\n");
     fflush(stderr);
     throw apache::geode::client::IllegalStateException(
         "Product installation directory "
-        "not found. Please set GFCPP environment variable.");
+        "not found. Please set GEODE_NATIVE_HOME environment variable.");
   }
   // replace all '\' with '/' to make everything easier..
-  size_t len = libdirname.length() + 1;
+  size_t len = productLibraryDirectoryName.length() + 1;
   char* slashtmp = new char[len];
-  ACE_OS::strncpy(slashtmp, libdirname.c_str(), len);
-  for (size_t i = 0; i < libdirname.length(); i++) {
+  ACE_OS::strncpy(slashtmp, productLibraryDirectoryName.c_str(), len);
+  for (size_t i = 0; i < productLibraryDirectoryName.length(); i++) {
     if (slashtmp[i] == '\\') {
       slashtmp[i] = '/';
     }
   }
-  libdirname = slashtmp;
+  productLibraryDirectoryName = slashtmp;
   delete[] slashtmp;
   slashtmp = nullptr;
 
   // check if it is "hidden/lib/debug" and work back from build area.
-  size_t hiddenidx = libdirname.find("hidden");
+  size_t hiddenidx = productLibraryDirectoryName.find("hidden");
   if (hiddenidx != std::string::npos) {
     // make sure hidden was a whole word...
     hiddenidx--;
-    if (libdirname[hiddenidx] == '/' || libdirname[hiddenidx] == '\\') {
+    if (productLibraryDirectoryName[hiddenidx] == '/' ||
+        productLibraryDirectoryName[hiddenidx] == '\\') {
       // odds are high hiddenidx terminates osbuild.dir.
-      std::string hiddenroute = libdirname.substr(0, hiddenidx) + "/product";
+      std::string hiddenroute =
+          productLibraryDirectoryName.substr(0, hiddenidx) + "/product";
       return hiddenroute;
     }
   }
   // check if bin on windows, and go back one...
-  GF_D_ASSERT(libdirname.length() > 4);
+  GF_D_ASSERT(productLibraryDirectoryName.length() > 4);
 #ifdef WIN32
   std::string libpart = "bin";
 #else
   std::string libpart = "lib";
 #endif
-  if (libdirname.substr(libdirname.length() - 3) == libpart) {
-    return libdirname.substr(0, libdirname.length() - 4);
+  if (productLibraryDirectoryName.substr(productLibraryDirectoryName.length() -
+                                         3) == libpart) {
+    return productLibraryDirectoryName.substr(
+        0, productLibraryDirectoryName.length() - 4);
   } else {
-    return libdirname;
+    return productLibraryDirectoryName;
   }
 }
 

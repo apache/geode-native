@@ -17,7 +17,7 @@ Before submitting a pull request the unit and integration tests must all pass. W
 $ cd <clone>
 $ cd build
 $ cd cppcache/test/<Debug|Release|if needed>
-$ ./gfcppcache_unittests
+$ ./apache-geode_unittests
 ```
 
 ### Running integration tests

@@ -38,7 +38,7 @@ namespace Apache.Geode.DUnitFramework
   {
     /// <summary>
     /// Enumeration to specify logging level.
-    /// For now this is same as the GFCPP product LogLevel enumeration.
+    /// For now this is same as the GEODE_NATIVE_HOME product LogLevel enumeration.
     /// </summary>
     public enum LogLevel
     {

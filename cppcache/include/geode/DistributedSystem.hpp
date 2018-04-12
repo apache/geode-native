@@ -67,7 +67,7 @@ class APACHE_GEODE_EXPORT DistributedSystem {
    * Initializes the Native Client system to be able to connect to the
    * Geode Java servers. If the name string is empty, then the default
    * "NativeDS" is used as the name of distributed system.
-   * @throws IllegalStateException if GFCPP variable is not set and
+   * @throws IllegalStateException if GEODE_NATIVE_HOME variable is not set and
    *   product installation directory cannot be determined
    **/
   static DistributedSystem create(
