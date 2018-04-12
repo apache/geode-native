@@ -40,19 +40,19 @@ using std::chrono::system_clock;
 
 // Constructor and Member functions of StatDataOutput class
 
-StatDataOutput::StatDataOutput(CacheImpl *cache)
+StatDataOutput::StatDataOutput(CacheImpl *cacheImpl)
     : bytesWritten(0), m_fp(nullptr), closed(false) {
-  dataBuffer = cache->getCache()->createDataOutput();
+  dataBuffer = cacheImpl->createDataOutput();
 }
 
-StatDataOutput::StatDataOutput(std::string filename, CacheImpl *cache) {
+StatDataOutput::StatDataOutput(std::string filename, CacheImpl *cacheImpl) {
   if (filename.length() == 0) {
     std::string s("undefined archive file name");
     throw IllegalArgumentException(s.c_str());
   }
 
   SerializationRegistry serializationRegistry;
-  dataBuffer = cache->getCache()->createDataOutput();
+  dataBuffer = cacheImpl->createDataOutput();
   outFile = filename;
   closed = false;
   bytesWritten = 0;
