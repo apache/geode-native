@@ -40,26 +40,24 @@ using std::chrono::system_clock;
 
 // Constructor and Member functions of StatDataOutput class
 
-StatDataOutput::StatDataOutput(CacheImpl *cache)
+StatDataOutput::StatDataOutput(CacheImpl *cacheImpl)
     : bytesWritten(0), m_fp(nullptr), closed(false) {
-  dataBuffer = cache->getCache()->createDataOutput();
+  dataBuffer = cacheImpl->createDataOutput();
 }
 
-StatDataOutput::StatDataOutput(std::string filename, CacheImpl *cache) {
+StatDataOutput::StatDataOutput(std::string filename, CacheImpl *cacheImpl) {
   if (filename.length() == 0) {
-    std::string s("undefined archive file name");
-    throw IllegalArgumentException(s.c_str());
+    throw IllegalArgumentException("undefined archive file name");
   }
 
   SerializationRegistry serializationRegistry;
-  dataBuffer = cache->getCache()->createDataOutput();
+  dataBuffer = cacheImpl->createDataOutput();
   outFile = filename;
   closed = false;
   bytesWritten = 0;
   m_fp = fopen(outFile.c_str(), "a+b");
   if (m_fp == nullptr) {
-    std::string s("error in opening archive file for writing");
-    throw NullPointerException(s.c_str());
+    throw NullPointerException("error in opening archive file for writing");
   }
 }
 
@@ -74,13 +72,11 @@ int64_t StatDataOutput::getBytesWritten() { return this->bytesWritten; }
 void StatDataOutput::flush() {
   const uint8_t *buffBegin = dataBuffer->getBuffer();
   if (buffBegin == nullptr) {
-    std::string s("undefined stat data buffer beginning");
-    throw NullPointerException(s.c_str());
+    throw NullPointerException("undefined stat data buffer beginning");
   }
   const uint8_t *buffEnd = dataBuffer->getCursor();
   if (buffEnd == nullptr) {
-    std::string s("undefined stat data buffer end");
-    throw NullPointerException(s.c_str());
+    throw NullPointerException("undefined stat data buffer end");
   }
   int32_t sizeOfUInt8 = sizeof(uint8_t);
   int32_t len = static_cast<int32_t>(buffEnd - buffBegin);
@@ -140,8 +136,7 @@ void StatDataOutput::close() {
 void StatDataOutput::openFile(std::string filename, int64_t size) {
   m_fp = fopen(filename.c_str(), "a+b");
   if (m_fp == nullptr) {
-    std::string s("error in opening archive file for writing");
-    throw NullPointerException(s.c_str());
+    throw NullPointerException("error in opening archive file for writing");
   }
   closed = false;
   bytesWritten = size;
@@ -241,8 +236,7 @@ void ResourceInst::writeStatValue(StatisticDescriptor *sd, int64_t v) {
       writeCompactValue(v);
       break;
     default:
-      std::string s = "Unexpected type code";
-      throw IllegalArgumentException(s.c_str());
+      throw IllegalArgumentException("Unexpected type code");
   }
 }
 
@@ -431,13 +425,11 @@ void StatArchiveWriter::openFile(std::string filename) {
 
   const uint8_t *buffBegin = dataBuffer->dataBuffer->getBuffer();
   if (buffBegin == nullptr) {
-    std::string s("undefined stat data buffer beginning");
-    throw NullPointerException(s.c_str());
+    throw NullPointerException("undefined stat data buffer beginning");
   }
   const uint8_t *buffEnd = dataBuffer->dataBuffer->getCursor();
   if (buffEnd == nullptr) {
-    std::string s("undefined stat data buffer end");
-    throw NullPointerException(s.c_str());
+    throw NullPointerException("undefined stat data buffer end");
   }
   int32_t len = static_cast<int32_t>(buffEnd - buffBegin);
 
@@ -544,8 +536,7 @@ void StatArchiveWriter::allocateResourceInst(Statistics *s) {
 
   ResourceInst *ri = new ResourceInst(resourceInstId, s, type, dataBuffer);
   if (ri == nullptr) {
-    std::string s("could not create new resource instance");
-    throw NullPointerException(s.c_str());
+    throw NullPointerException("could not create new resource instance");
   }
   resourceInstMap.insert(std::pair<Statistics *, ResourceInst *>(s, ri));
   this->dataBuffer->writeByte(RESOURCE_INSTANCE_CREATE_TOKEN);
@@ -560,8 +551,7 @@ void StatArchiveWriter::allocateResourceInst(Statistics *s) {
 const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
   const auto type = s->getType();
   if (type == nullptr) {
-    std::string s("could not know the type of the statistics object");
-    throw NullPointerException(s.c_str());
+    throw NullPointerException("could not know the type of the statistics object");
   }
   const ResourceType *rt = nullptr;
   const auto p = resourceTypeMap.find(type);
@@ -570,8 +560,7 @@ const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
   } else {
     rt = new ResourceType(resourceTypeId, type);
     if (type == nullptr) {
-      std::string s("could not allocate memory for a new resourcetype");
-      throw NullPointerException(s.c_str());
+      throw NullPointerException("could not allocate memory for a new resourcetype");
     }
     resourceTypeMap.emplace(type, rt);
     // write the type to the archive
@@ -587,8 +576,7 @@ const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
       this->dataBuffer->writeUTF(statsName);
       StatisticDescriptorImpl *sdImpl = (StatisticDescriptorImpl *)stats[i];
       if (sdImpl == nullptr) {
-        std::string err("could not down cast to StatisticDescriptorImpl");
-        throw NullPointerException(err.c_str());
+        throw NullPointerException("could not down cast to StatisticDescriptorImpl");
       }
       this->dataBuffer->writeByte(static_cast<int8_t>(sdImpl->getTypeCode()));
       this->dataBuffer->writeBoolean(stats[i]->isCounter());
