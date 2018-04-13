@@ -47,6 +47,11 @@ set_target_properties(apache-geode PROPERTIES
   CXX_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN ON)
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  set_target_properties(apache-geode PROPERTIES
+    CXX_VISIBILITY_PRESET default)
+endif()
+
 add_dependencies(client-libraries apache-geode)
 
 install(TARGETS apache-geode
