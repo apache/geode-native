@@ -113,10 +113,6 @@ const std::string& DistributedSystem::getName() const {
   return m_impl->getName();
 }
 
-statistics::StatisticsManager* DistributedSystem::getStatisticsManager() const {
-  return m_impl->getStatisticsManager();
-}
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -32,9 +32,8 @@ RemoteQueryService::RemoteQueryService(CacheImpl* cache,
                                        ThinClientPoolDM* poolDM)
     : m_invalid(true),
       m_cqService(nullptr),
-      m_statisticsFactory(cache->getDistributedSystem()
-                              .getStatisticsManager()
-                              ->getStatisticsFactory()) {
+      m_statisticsFactory(
+          cache->getStatisticsManager()->getStatisticsFactory()) {
   if (poolDM) {
     m_tccdm = poolDM;
   } else {

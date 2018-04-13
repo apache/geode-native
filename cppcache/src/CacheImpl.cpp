@@ -71,7 +71,8 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
       m_pdxTypeRegistry(nullptr),
       m_threadPool(new ThreadPool(
           m_distributedSystem.getSystemProperties().threadPoolSize())),
-      m_authInitialize(authInitialize) {
+      m_authInitialize(authInitialize),
+      m_statisticsManager(nullptr) {
   m_cacheTXManager = std::shared_ptr<InternalCacheTransactionManager2PC>(
       new InternalCacheTransactionManager2PCImpl(this));
 
@@ -220,7 +221,8 @@ const std::string& CacheImpl::getName() const {
 
 bool CacheImpl::isClosed() const { return m_closed; }
 
-void CacheImpl::setAttributes(const std::shared_ptr<CacheAttributes>& attributes) {
+void CacheImpl::setAttributes(
+    const std::shared_ptr<CacheAttributes>& attributes) {
   if (m_attributes == nullptr && attributes != nullptr) {
     m_attributes = attributes;
   }

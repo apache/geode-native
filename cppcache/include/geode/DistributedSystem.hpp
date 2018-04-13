@@ -97,8 +97,6 @@ class APACHE_GEODE_EXPORT DistributedSystem {
    */
   const std::string& getName() const;
 
-  statistics::StatisticsManager* getStatisticsManager() const;
-
  protected:
   /**
    * @brief constructors
