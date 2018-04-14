@@ -19,9 +19,6 @@ write-host "Installing Chocolatey"
 # Avoid bug in 7zip when running via WinRM
 $Env:chocolateyUseWindowsCompression = $true
 
-# Avoid https://github.com/chocolatey/choco/issues/1529
-$Env:chocolateyVersion = '0.10.8'
-
 iwr https://chocolatey.org/install.ps1 | iex
 
 write-host "Chocolatey Installed"
