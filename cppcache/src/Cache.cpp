@@ -34,7 +34,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-/** Returns the name of this cache.
+/**
+ * Returns the name of this cache.
  * This method does not throw
  * <code>CacheClosedException</code> if the cache is closed.
  * @return the string name of this cache
@@ -92,7 +93,6 @@ std::shared_ptr<Region> Cache::getRegion(const std::string& path) const {
  * @param regions the region collection object containing the returned set of
  * regions when the function returns
  */
-
 std::vector<std::shared_ptr<Region>> Cache::rootRegions() const {
   return m_cacheImpl->rootRegions();
 }
