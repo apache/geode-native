@@ -33,7 +33,7 @@ RemoteQueryService::RemoteQueryService(CacheImpl* cache,
     : m_invalid(true),
       m_cqService(nullptr),
       m_statisticsFactory(
-          cache->getStatisticsManager()->getStatisticsFactory()) {
+          cache->getStatisticsManager().getStatisticsFactory()) {
   if (poolDM) {
     m_tccdm = poolDM;
   } else {

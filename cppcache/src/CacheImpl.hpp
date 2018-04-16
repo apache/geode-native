@@ -273,8 +273,8 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
     return m_authInitialize;
   }
 
-  statistics::StatisticsManager* getStatisticsManager() const {
-    return m_statisticsManager.get();
+  statistics::StatisticsManager& getStatisticsManager() const {
+    return *(m_statisticsManager.get());
   }
 
   virtual std::unique_ptr<DataOutput> createDataOutput() const;

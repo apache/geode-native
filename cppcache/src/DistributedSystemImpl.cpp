@@ -61,21 +61,6 @@ void DistributedSystemImpl::connect(Cache* cache) {
         "get it");
   }
 
-  auto cacheImpl = CacheRegionHelper::getCacheImpl(cache);
-  try {
-    cacheImpl->m_statisticsManager = std::unique_ptr<StatisticsManager>(
-        new StatisticsManager(m_sysProps->statisticsArchiveFile().c_str(),
-                              m_sysProps->statisticsSampleInterval(),
-                              m_sysProps->statisticsEnabled(), cacheImpl,
-                              m_sysProps->statsFileSizeLimit(),
-                              m_sysProps->statsDiskSpaceLimit()));
-    cacheImpl->m_cacheStats = new CachePerfStats(
-        cacheImpl->getStatisticsManager()->getStatisticsFactory());
-  } catch (const NullPointerException&) {
-    Log::close();
-    throw;
-  }
-
   m_connected = true;
 }
 

@@ -89,7 +89,7 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cacheImpl,
   }
 
   m_regionStats = new RegionStats(
-      cacheImpl->getStatisticsManager()->getStatisticsFactory(), m_fullPath);
+      cacheImpl->getStatisticsManager().getStatisticsFactory(), m_fullPath);
   auto p = cacheImpl->getPoolManager().find(getAttributes().getPoolName());
   setPool(p);
 }
