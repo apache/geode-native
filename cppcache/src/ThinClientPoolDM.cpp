@@ -198,10 +198,9 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
   reset();
   m_locHelper = new ThinClientLocatorHelper(m_attrs->m_initLocList, this);
 
-  auto statisticsManager = cacheImpl->getStatisticsManager();
-  m_stats =
-      new PoolStats(statisticsManager->getStatisticsFactory(), m_poolName);
-  statisticsManager->forceSample();
+  m_stats = new PoolStats(
+      cacheImpl->getStatisticsManager().getStatisticsFactory(), m_poolName);
+  cacheImpl->getStatisticsManager().forceSample();
 
   if (!sysProp.isEndpointShufflingDisabled()) {
     if (m_attrs->m_initServList.size() > 0) {
@@ -833,7 +832,7 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
 
     // Close Stats
     getStats().close();
-    m_connManager.getCacheImpl()->getStatisticsManager()->forceSample();
+    m_connManager.getCacheImpl()->getStatisticsManager().forceSample();
 
     if (m_clientMetadataService != nullptr) {
       _GEODE_SAFE_DELETE(m_clientMetadataService);

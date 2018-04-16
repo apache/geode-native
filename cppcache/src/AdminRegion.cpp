@@ -39,11 +39,7 @@ std::shared_ptr<AdminRegion> AdminRegion::create(CacheImpl* cache,
     if (!distMan) {
       adminRegion->m_distMngr =
           new ThinClientCacheDistributionManager(*adminRegion->m_connectionMgr);
-      auto mngr = cache->getStatisticsManager();
-      if (mngr) {
-        // Register it with StatisticsManager
-        mngr->RegisterAdminRegion(adminRegion);
-      }
+      cache->getStatisticsManager().RegisterAdminRegion(adminRegion);
     } else {
       adminRegion->m_distMngr = distMan;
     }

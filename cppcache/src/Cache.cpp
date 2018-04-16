@@ -237,10 +237,6 @@ PoolManager& Cache::getPoolManager() const {
   return m_cacheImpl->getPoolManager();
 }
 
-statistics::StatisticsManager* Cache::getStatisticsManager() const {
-  return m_cacheImpl->getStatisticsManager();
-}
-
 std::unique_ptr<DataInput> Cache::createDataInput(const uint8_t* m_buffer,
                                                   size_t len) const {
   return m_cacheImpl->createDataInput(m_buffer, len);

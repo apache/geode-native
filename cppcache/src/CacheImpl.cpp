@@ -91,6 +91,19 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
   m_initialized = true;
   m_pdxTypeRegistry = std::make_shared<PdxTypeRegistry>(this);
   m_poolManager = std::unique_ptr<PoolManager>(new PoolManager(this));
+
+  try {
+    m_statisticsManager =
+        std::unique_ptr<StatisticsManager>(new StatisticsManager(
+            prop.statisticsArchiveFile().c_str(),
+            prop.statisticsSampleInterval(), prop.statisticsEnabled(), this,
+            prop.statsFileSizeLimit(), prop.statsDiskSpaceLimit()));
+    m_cacheStats =
+        new CachePerfStats(m_statisticsManager->getStatisticsFactory());
+  } catch (const NullPointerException&) {
+    Log::close();
+    throw;
+  }
 }
 
 void CacheImpl::initServices() {

@@ -239,13 +239,6 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
 
   virtual PoolManager& getPoolManager() const;
 
-  /**
-   * Returns a statistics manager that can be used to collect data on cache
-   * operations.
-   * @return the statistics manager
-   */
-  statistics::StatisticsManager* getStatisticsManager() const;
-
   Cache() = delete;
   virtual ~Cache();
   Cache(const Cache& other) = delete;
