@@ -42,7 +42,6 @@ DistributedSystemImpl::DistributedSystemImpl(
     std::unique_ptr<SystemProperties> sysProps)
     : m_name(name),
       m_implementee(implementee),
-      m_statisticsManager(nullptr),
       m_sysProps(std::move(sysProps)),
       m_connected(false) {
   if (!m_sysProps->securityClientDhAlgo().empty()) {
@@ -60,22 +59,6 @@ void DistributedSystemImpl::connect(Cache* cache) {
     throw AlreadyConnectedException(
         "DistributedSystem::connect: already connected, call getInstance to "
         "get it");
-  }
-
-  auto cacheImpl = CacheRegionHelper::getCacheImpl(cache);
-  try {
-    m_statisticsManager =
-        std::unique_ptr<StatisticsManager>(new StatisticsManager(
-            m_sysProps->statisticsArchiveFile().c_str(),
-            m_sysProps->statisticsSampleInterval(),
-            m_sysProps->statisticsEnabled(), cacheImpl,
-            m_sysProps->statsFileSizeLimit(),
-            m_sysProps->statsDiskSpaceLimit()));
-    cacheImpl->m_cacheStats =
-        new CachePerfStats(getStatisticsManager()->getStatisticsFactory());
-  } catch (const NullPointerException&) {
-    Log::close();
-    throw;
   }
 
   m_connected = true;

@@ -41,9 +41,8 @@ PoolStatsSampler::PoolStatsSampler(milliseconds sampleRate, CacheImpl* cache,
                                    ThinClientPoolDM* distMan)
     : m_sampleRate(sampleRate),
       m_distMan(distMan),
-      m_statisticsFactory(cache->getDistributedSystem()
-                              .getStatisticsManager()
-                              ->getStatisticsFactory()) {
+      m_statisticsFactory(
+          cache->getStatisticsManager().getStatisticsFactory()) {
   m_running = false;
   m_stopRequested = false;
   m_adminRegion = AdminRegion::create(cache, distMan);

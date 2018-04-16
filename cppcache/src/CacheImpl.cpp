@@ -52,6 +52,7 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
       m_readPdxSerialized(readPdxSerialized),
       m_expiryTaskManager(
           std::unique_ptr<ExpiryTaskManager>(new ExpiryTaskManager())),
+      m_statisticsManager(nullptr),
       m_closed(false),
       m_initialized(false),
       m_distributedSystem(std::move(distributedSystem)),
@@ -72,6 +73,7 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
       m_threadPool(new ThreadPool(
           m_distributedSystem.getSystemProperties().threadPoolSize())),
       m_authInitialize(authInitialize) {
+
   m_cacheTXManager = std::shared_ptr<InternalCacheTransactionManager2PC>(
       new InternalCacheTransactionManager2PCImpl(this));
 
@@ -89,6 +91,19 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
   m_initialized = true;
   m_pdxTypeRegistry = std::make_shared<PdxTypeRegistry>(this);
   m_poolManager = std::unique_ptr<PoolManager>(new PoolManager(this));
+
+  try {
+    m_statisticsManager =
+        std::unique_ptr<StatisticsManager>(new StatisticsManager(
+            prop.statisticsArchiveFile().c_str(),
+            prop.statisticsSampleInterval(), prop.statisticsEnabled(), this,
+            prop.statsFileSizeLimit(), prop.statsDiskSpaceLimit()));
+    m_cacheStats =
+        new CachePerfStats(m_statisticsManager->getStatisticsFactory());
+  } catch (const NullPointerException&) {
+    Log::close();
+    throw;
+  }
 }
 
 void CacheImpl::initServices() {
@@ -220,7 +235,8 @@ const std::string& CacheImpl::getName() const {
 
 bool CacheImpl::isClosed() const { return m_closed; }
 
-void CacheImpl::setAttributes(const std::shared_ptr<CacheAttributes>& attributes) {
+void CacheImpl::setAttributes(
+    const std::shared_ptr<CacheAttributes>& attributes) {
   if (m_attributes == nullptr && attributes != nullptr) {
     m_attributes = attributes;
   }

@@ -273,6 +273,10 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
     return m_authInitialize;
   }
 
+  statistics::StatisticsManager& getStatisticsManager() const {
+    return *(m_statisticsManager.get());
+  }
+
   virtual std::unique_ptr<DataOutput> createDataOutput() const;
 
   virtual std::unique_ptr<DataOutput> createDataOutput(Pool* pool) const;
@@ -296,6 +300,8 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   CachePerfStats* m_cacheStats;
 
   std::unique_ptr<PoolManager> m_poolManager;
+
+  std::unique_ptr<statistics::StatisticsManager> m_statisticsManager;
 
   enum RegionKind {
     CPP_REGION,
