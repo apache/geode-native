@@ -52,6 +52,7 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
       m_readPdxSerialized(readPdxSerialized),
       m_expiryTaskManager(
           std::unique_ptr<ExpiryTaskManager>(new ExpiryTaskManager())),
+      m_statisticsManager(nullptr),
       m_closed(false),
       m_initialized(false),
       m_distributedSystem(std::move(distributedSystem)),
@@ -71,8 +72,8 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
       m_pdxTypeRegistry(nullptr),
       m_threadPool(new ThreadPool(
           m_distributedSystem.getSystemProperties().threadPoolSize())),
-      m_authInitialize(authInitialize),
-      m_statisticsManager(nullptr) {
+      m_authInitialize(authInitialize) {
+
   m_cacheTXManager = std::shared_ptr<InternalCacheTransactionManager2PC>(
       new InternalCacheTransactionManager2PCImpl(this));
 
