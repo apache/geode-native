@@ -1436,15 +1436,12 @@ class RemoveActions {
           err = GF_ENOENT;
           return err;
         }
-      } else if (value == nullptr &&
-      (!CacheableToken::isInvalid(valuePtr) ||
+      } else if (value == nullptr && (!CacheableToken::isInvalid(valuePtr) ||
                                       valuePtr == nullptr)) {
         err = (m_ServerResponse == 0 && valuePtr == nullptr) ? GF_NOERR
-                                                             :
-                                                             GF_ENOENT;
+                                                             : GF_ENOENT;
         if (updateCount >= 0 &&
-            !m_region.getAttributes()
-                 ->getConcurrencyChecksEnabled()) {
+            !m_region.getAttributes()->getConcurrencyChecksEnabled()) {
           // This means server has deleted an entry & same entry has been
           // destroyed locally
           // So call removeTrackerForEntry to remove key that

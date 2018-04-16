@@ -39,7 +39,8 @@ namespace client {
 
 /** Template CacheableKey class for primitive types. */
 template <typename TObj, int8_t TYPEID, const char* TYPENAME>
-class APACHE_GEODE_EXPORT CacheableKeyType : public DataSerializablePrimitive, public CacheableKey {
+class APACHE_GEODE_EXPORT CacheableKeyType : public DataSerializablePrimitive,
+                                             public CacheableKey {
  protected:
   TObj m_value;
 
@@ -126,8 +127,9 @@ inline void copyArray(std::shared_ptr<TObj>* dest,
 
 /** Template class for container Cacheable types. */
 template <typename TBase, int8_t TYPEID>
-class APACHE_GEODE_EXPORT CacheableContainerType : public DataSerializablePrimitive,
-                                                   public TBase {
+class APACHE_GEODE_EXPORT CacheableContainerType
+    : public DataSerializablePrimitive,
+      public TBase {
  protected:
   inline CacheableContainerType() : TBase() {}
 
