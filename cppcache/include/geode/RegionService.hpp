@@ -116,7 +116,7 @@ class APACHE_GEODE_EXPORT RegionService {
    * @return the factory
    */
   virtual std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
-      std::string className) const = 0;
+      const std::string& className) const = 0;
 };
 }  // namespace client
 }  // namespace geode

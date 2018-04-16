@@ -42,6 +42,8 @@
 #include "PdxTypeRegistry.hpp"
 #include "SerializationRegistry.hpp"
 #include "ThreadPool.hpp"
+#include "PdxInstanceFactoryImpl.hpp"
+#include "CacheXmlParser.hpp"
 
 using namespace apache::geode::client;
 
@@ -520,7 +522,7 @@ std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
         LOGWARN("Pool " + region->getAttributes().getPoolName() +
                 " attached with region " + region->getFullPath() +
                 " is in multiuser authentication mode. Operations may fail as "
-                        "this instance does not have any credentials.");
+                "this instance does not have any credentials.");
       }
     }
   }
@@ -605,6 +607,15 @@ void CacheImpl::rootRegions(std::vector<std::shared_ptr<Region>>& regions) {
       regions.push_back((*q).int_id_);
     }
   }
+}
+
+void CacheImpl::initializeDeclarativeCache(const std::string& cacheXml) {
+  CacheXmlParser* xmlParser = CacheXmlParser::parse(cacheXml.c_str(), m_cache);
+  xmlParser->setAttributes(m_cache);
+  initServices();
+  xmlParser->create(m_cache);
+  delete xmlParser;
+  xmlParser = nullptr;
 }
 
 EvictionController* CacheImpl::getEvictionController() {
@@ -809,6 +820,42 @@ std::unique_ptr<DataInput> CacheImpl::createDataInput(const uint8_t* buffer,
     pool = this->getPoolManager().getDefaultPool().get();
   }
   return std::unique_ptr<DataInput>(new DataInput(buffer, len, this, pool));
+}
+
+std::shared_ptr<PdxInstanceFactory> CacheImpl::createPdxInstanceFactory(
+    const std::string& className) const {
+  return std::make_shared<PdxInstanceFactoryImpl>(
+      className, m_cacheStats, m_pdxTypeRegistry, this,
+      m_distributedSystem.getSystemProperties().getEnableTimeStatistics());
+}
+
+AuthenticatedView CacheImpl::createAuthenticatedView(
+    std::shared_ptr<Properties> userSecurityProperties,
+    const std::string& poolName) {
+  if (poolName.empty()) {
+    auto pool = m_poolManager->getDefaultPool();
+    if (!this->isClosed() && pool != nullptr) {
+      return pool->createAuthenticatedView(userSecurityProperties, this);
+    }
+
+    throw IllegalStateException(
+        "Either cache has been closed or there are more than two pool."
+        "Pass poolname to get the secure Cache");
+  } else {
+    if (!this->isClosed()) {
+      if (!poolName.empty()) {
+        auto poolPtr = m_poolManager->find(poolName);
+        if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
+          return poolPtr->createAuthenticatedView(userSecurityProperties, this);
+        }
+        throw IllegalStateException(
+            "Either pool not found or it has been destroyed");
+      }
+      throw IllegalArgumentException("poolname is nullptr");
+    }
+
+    throw IllegalStateException("Cache has been closed");
+  }
 }
 
 void CacheImpl::setCache(Cache* cache) { m_cache = cache; }

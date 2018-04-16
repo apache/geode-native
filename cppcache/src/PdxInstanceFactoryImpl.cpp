@@ -27,7 +27,7 @@ namespace client {
 PdxInstanceFactoryImpl::~PdxInstanceFactoryImpl() {}
 
 PdxInstanceFactoryImpl::PdxInstanceFactoryImpl(
-    std::string className, CachePerfStats* cachePerfStats,
+    const std::string& className, CachePerfStats* cachePerfStats,
     std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry, const CacheImpl* cache,
     bool enableTimeStatistics)
     : m_created(false),

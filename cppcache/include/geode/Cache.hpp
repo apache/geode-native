@@ -198,7 +198,7 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    */
 
   virtual AuthenticatedView createAuthenticatedView(
-      std::shared_ptr<Properties> userSecurityProperties,
+      const std::shared_ptr<Properties>& userSecurityProperties,
       const std::string& poolName);
 
   /**
@@ -231,7 +231,7 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    * @return the factory
    */
   virtual std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
-      std::string className) const override;
+      const std::string& className) const override;
 
   virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* m_buffer,
                                                      size_t len) const;
@@ -262,7 +262,6 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
 
   friend class CacheFactory;
   friend class CacheRegionHelper;
-  friend class Pool;
   friend class FunctionService;
   friend class CacheXmlCreation;
   friend class RegionXmlCreation;

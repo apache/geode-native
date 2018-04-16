@@ -24,12 +24,10 @@
 #include <geode/Cache.hpp>
 
 #include "DistributedSystemImpl.hpp"
-#include "CacheXmlParser.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 #include "UserAttributes.hpp"
 #include "ProxyRegion.hpp"
-#include "PdxInstanceFactoryImpl.hpp"
 
 #define DEFAULT_DS_NAME "default_GeodeDS"
 
@@ -73,9 +71,7 @@ void Cache::close() { close(false); }
  * @param keepalive whether to keep the durable client's queue
  * @throws CacheClosedException,  if the cache is already closed.
  */
-void Cache::close(bool keepalive) {
-  m_cacheImpl->close(keepalive);
-}
+void Cache::close(bool keepalive) { m_cacheImpl->close(keepalive); }
 
 std::shared_ptr<Region> Cache::getRegion(const std::string& path) const {
   return m_cacheImpl->getRegion(path);
@@ -144,12 +140,7 @@ Cache& Cache::operator=(Cache&& other) noexcept {
 Cache::~Cache() = default;
 
 void Cache::initializeDeclarativeCache(const std::string& cacheXml) {
-  CacheXmlParser* xmlParser = CacheXmlParser::parse(cacheXml.c_str(), this);
-  xmlParser->setAttributes(this);
-  m_cacheImpl->initServices();
-  xmlParser->create(this);
-  delete xmlParser;
-  xmlParser = nullptr;
+  m_cacheImpl->initializeDeclarativeCache(cacheXml);
 }
 
 void Cache::readyForEvents() { m_cacheImpl->readyForEvents(); }
@@ -165,44 +156,16 @@ bool Cache::getPdxIgnoreUnreadFields() const {
 bool Cache::getPdxReadSerialized() const {
   return m_cacheImpl->getPdxReadSerialized();
 }
+
 std::shared_ptr<PdxInstanceFactory> Cache::createPdxInstanceFactory(
-    std::string className) const {
-  return std::make_shared<PdxInstanceFactoryImpl>(
-      className.c_str(), m_cacheImpl->m_cacheStats,
-      m_cacheImpl->getPdxTypeRegistry(), m_cacheImpl.get(),
-      m_cacheImpl->getDistributedSystem()
-          .getSystemProperties()
-          .getEnableTimeStatistics());
+    const std::string& className) const {
+  return m_cacheImpl->createPdxInstanceFactory(className);
 }
+
 AuthenticatedView Cache::createAuthenticatedView(
-    std::shared_ptr<Properties> userSecurityProperties,
+    const std::shared_ptr<Properties>& userSecurityProperties,
     const std::string& poolName) {
-  if (poolName.empty()) {
-    auto pool = m_cacheImpl->getPoolManager().getDefaultPool();
-    if (!this->isClosed() && pool != nullptr) {
-      return pool->createAuthenticatedView(userSecurityProperties,
-                                           m_cacheImpl.get());
-    }
-
-    throw IllegalStateException(
-        "Either cache has been closed or there are more than two pool."
-        "Pass poolname to get the secure Cache");
-  } else {
-    if (!this->isClosed()) {
-      if (!poolName.empty()) {
-        auto poolPtr = m_cacheImpl->getPoolManager().find(poolName);
-        if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
-          return poolPtr->createAuthenticatedView(userSecurityProperties,
-                                                  m_cacheImpl.get());
-        }
-        throw IllegalStateException(
-            "Either pool not found or it has been destroyed");
-      }
-      throw IllegalArgumentException("poolname is nullptr");
-    }
-
-    throw IllegalStateException("Cache has been closed");
-  }
+  return m_cacheImpl->createAuthenticatedView(userSecurityProperties, poolName);
 }
 
 PoolManager& Cache::getPoolManager() const {

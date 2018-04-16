@@ -137,7 +137,8 @@ class APACHE_GEODE_EXPORT PdxInstanceFactoryImpl
   virtual std::shared_ptr<PdxInstanceFactory> markIdentityField(
       const std::string& fieldName) override;
 
-  PdxInstanceFactoryImpl(std::string className, CachePerfStats* cachePerfStats,
+  PdxInstanceFactoryImpl(const std::string& className,
+                         CachePerfStats* cachePerfStats,
                          std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry,
                          const CacheImpl* cache, bool enableTimeStatistics);
 

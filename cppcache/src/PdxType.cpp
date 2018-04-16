@@ -42,10 +42,8 @@ PdxType::~PdxType() noexcept {
   _GEODE_SAFE_DELETE_ARRAY(m_localToRemoteFieldMap);
 }
 
-// PdxType::PdxType() : PdxType(nullptr, false) {}
-
 PdxType::PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr,
-                 std::string pdxDomainClassName, bool isLocal)
+                 const std::string& pdxDomainClassName, bool isLocal)
     : Serializable(),
       m_pdxFieldTypes(new std::vector<std::shared_ptr<PdxFieldType>>()),
       m_className(pdxDomainClassName),
@@ -88,8 +86,8 @@ void PdxType::toData(DataOutput& output) const {
 }
 
 void PdxType::fromData(DataInput& input) {
-  input.read();  // ignore dsByte
-  input.read();  // ignore classByte
+  input.read();        // ignore dsByte
+  input.read();        // ignore classByte
   input.readString();  // ignore classtypeId
 
   m_className = input.readString();
@@ -405,77 +403,79 @@ std::shared_ptr<PdxType> PdxType::isContains(std::shared_ptr<PdxType> first,
   }
   return first;
 }
- std::shared_ptr<PdxType> PdxType::clone() {
-   auto clone =
-       std::make_shared<PdxType>(m_pdxTypeRegistryPtr, m_className, false);
-   clone->m_geodeTypeId = 0;
-   clone->m_numberOfVarLenFields = m_numberOfVarLenFields;
+std::shared_ptr<PdxType> PdxType::clone() {
+  auto clone =
+      std::make_shared<PdxType>(m_pdxTypeRegistryPtr, m_className, false);
+  clone->m_geodeTypeId = 0;
+  clone->m_numberOfVarLenFields = m_numberOfVarLenFields;
 
-   for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it =
-            m_pdxFieldTypes->begin();
-        it != m_pdxFieldTypes->end(); ++it) {
-     auto pdxPtr = *it;
-     clone->m_pdxFieldTypes->push_back(pdxPtr);
-   }
-   return clone;
- }
- std::shared_ptr<PdxType> PdxType::isLocalTypeContains(
-     std::shared_ptr<PdxType> otherType) {
-   if (m_pdxFieldTypes->size() >= otherType->m_pdxFieldTypes->size()) {
-     return isContains(shared_from_this(), otherType);
-   }
-   return nullptr;
+  for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it =
+           m_pdxFieldTypes->begin();
+       it != m_pdxFieldTypes->end(); ++it) {
+    auto pdxPtr = *it;
+    clone->m_pdxFieldTypes->push_back(pdxPtr);
+  }
+  return clone;
 }
- std::shared_ptr<PdxType> PdxType::isRemoteTypeContains(std::shared_ptr<PdxType> remoteType) {
+std::shared_ptr<PdxType> PdxType::isLocalTypeContains(
+    std::shared_ptr<PdxType> otherType) {
+  if (m_pdxFieldTypes->size() >= otherType->m_pdxFieldTypes->size()) {
+    return isContains(shared_from_this(), otherType);
+  }
+  return nullptr;
+}
+std::shared_ptr<PdxType> PdxType::isRemoteTypeContains(
+    std::shared_ptr<PdxType> remoteType) {
   if (m_pdxFieldTypes->size() <= remoteType->m_pdxFieldTypes->size()) {
     return isContains(remoteType, shared_from_this());
   }
   return nullptr;
 }
- std::shared_ptr<PdxType> PdxType::mergeVersion(std::shared_ptr<PdxType> otherVersion) {
+std::shared_ptr<PdxType> PdxType::mergeVersion(
+    std::shared_ptr<PdxType> otherVersion) {
   // int nTotalFields = otherVersion->m_pdxFieldTypes->size();
-std::shared_ptr<PdxType> contains = nullptr;
+  std::shared_ptr<PdxType> contains = nullptr;
 
-if (isLocalTypeContains(otherVersion) != nullptr) return shared_from_this();
+  if (isLocalTypeContains(otherVersion) != nullptr) return shared_from_this();
 
-if (isRemoteTypeContains(otherVersion) != nullptr) return otherVersion;
+  if (isRemoteTypeContains(otherVersion) != nullptr) return otherVersion;
 
-// need to create new one, clone of local
-auto newone = clone();
-int varLenFields = newone->getNumberOfVarLenFields();
+  // need to create new one, clone of local
+  auto newone = clone();
+  int varLenFields = newone->getNumberOfVarLenFields();
 
-for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it =
-         otherVersion->m_pdxFieldTypes->begin();
-     it != otherVersion->m_pdxFieldTypes->end(); ++it) {
-  bool found = false;
-  // for each(PdxFieldType^ tmpNew in newone->m_pdxFieldTypes)
-  for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it2 =
-           newone->m_pdxFieldTypes->begin();
-       it2 != newone->m_pdxFieldTypes->end(); ++it2) {
-    if ((*it2)->equals(*it)) {
-      found = true;
-      break;
+  for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it =
+           otherVersion->m_pdxFieldTypes->begin();
+       it != otherVersion->m_pdxFieldTypes->end(); ++it) {
+    bool found = false;
+    // for each(PdxFieldType^ tmpNew in newone->m_pdxFieldTypes)
+    for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it2 =
+             newone->m_pdxFieldTypes->begin();
+         it2 != newone->m_pdxFieldTypes->end(); ++it2) {
+      if ((*it2)->equals(*it)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      auto newFt = std::make_shared<PdxFieldType>(
+          (*it)->getFieldName(), (*it)->getClassName(), (*it)->getTypeId(),
+          static_cast<int32_t>(newone->m_pdxFieldTypes->size()),  // sequence id
+          (*it)->IsVariableLengthType(), (*it)->getFixedSize(),
+          ((*it)->IsVariableLengthType()
+               ? varLenFields++ /*it increase after that*/
+               : 0));
+      newone->m_pdxFieldTypes->push_back(
+          newFt);  // fieldnameVsPFT will happen after that
     }
   }
-  if (!found) {
-    auto newFt = std::make_shared<PdxFieldType>(
-        (*it)->getFieldName(), (*it)->getClassName(), (*it)->getTypeId(),
-        static_cast<int32_t>(newone->m_pdxFieldTypes->size()),  // sequence id
-        (*it)->IsVariableLengthType(), (*it)->getFixedSize(),
-        ((*it)->IsVariableLengthType()
-             ? varLenFields++ /*it increase after that*/
-             : 0));
-    newone->m_pdxFieldTypes->push_back(
-        newFt);  // fieldnameVsPFT will happen after that
-  }
-}
 
-newone->setNumberOfVarLenFields(varLenFields);
-if (varLenFields > 0) newone->setVarLenFieldIdx(varLenFields);
+  newone->setNumberOfVarLenFields(varLenFields);
+  if (varLenFields > 0) newone->setVarLenFieldIdx(varLenFields);
 
-// need to keep all versions in local version
-// m_otherVersions->Add(newone);
-return newone;
+  // need to keep all versions in local version
+  // m_otherVersions->Add(newone);
+  return newone;
 }
 
 void PdxType::generatePositionMap() {
@@ -483,10 +483,10 @@ void PdxType::generatePositionMap() {
   int lastVarLenSeqId = 0;
   int prevFixedSizeOffsets = 0;
   // set offsets from back first
-std::shared_ptr<PdxFieldType> previousField = nullptr;
+  std::shared_ptr<PdxFieldType> previousField = nullptr;
 
   for (int i = static_cast<int>(m_pdxFieldTypes->size()) - 1; i >= 0; i--) {
-   auto tmpft = m_pdxFieldTypes->at(i);
+    auto tmpft = m_pdxFieldTypes->at(i);
     std::string temp = tmpft->getFieldName();
     std::pair<std::string, std::shared_ptr<PdxFieldType>> pc(temp, tmpft);
     m_fieldNameVsPdxType.insert(pc);
@@ -520,7 +520,7 @@ std::shared_ptr<PdxFieldType> previousField = nullptr;
   prevFixedSizeOffsets = 0;
   // now do optimization till you don't fine var len
   for (uint32_t i = 0; (i < m_pdxFieldTypes->size()) && !foundVarLen; i++) {
-   auto tmpft = m_pdxFieldTypes->at(i);
+    auto tmpft = m_pdxFieldTypes->at(i);
 
     if (tmpft->IsVariableLengthType()) {
       tmpft->setVarLenOffsetIndex(-1);  // first var len field

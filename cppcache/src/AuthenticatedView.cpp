@@ -167,8 +167,9 @@ AuthenticatedView::AuthenticatedView(std::shared_ptr<Properties> credentials,
       m_cacheImpl(cacheImpl) {}
 
 AuthenticatedView::~AuthenticatedView() {}
+
 std::shared_ptr<PdxInstanceFactory> AuthenticatedView::createPdxInstanceFactory(
-    std::string className) const {
+    const std::string& className) const {
   return std::make_shared<PdxInstanceFactoryImpl>(
       className.c_str(), &(m_cacheImpl->getCachePerfStats()),
       m_cacheImpl->getPdxTypeRegistry(), m_cacheImpl,

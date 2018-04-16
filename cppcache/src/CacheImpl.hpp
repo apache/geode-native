@@ -65,6 +65,7 @@ class CacheFactory;
 class ExpiryTaskManager;
 class PdxTypeRegistry;
 class SerializationRegistry;
+class Pool;
 
 /**
  * @class Cache Cache.hpp
@@ -189,6 +190,8 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
 
   virtual RegionFactory createRegionFactory(RegionShortcut preDefinedRegion);
 
+  void initializeDeclarativeCache(const std::string& cacheXml);
+
   std::shared_ptr<CacheTransactionManager> getCacheTransactionManager();
 
   /**
@@ -290,6 +293,13 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* buffer,
                                                      size_t len,
                                                      Pool* pool) const;
+
+  std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
+      const std::string& className) const;
+
+  AuthenticatedView createAuthenticatedView(
+      std::shared_ptr<Properties> userSecurityProperties,
+      const std::string& poolName);
 
  private:
   std::atomic<bool> m_networkhop;

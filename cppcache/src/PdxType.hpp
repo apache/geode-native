@@ -105,7 +105,7 @@ class PdxType : public Serializable,
 
  public:
   PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr,
-          std::string pdxDomainClassName, bool isLocal);
+          const std::string& pdxDomainClassName, bool isLocal);
 
   ~PdxType() noexcept override;
 
