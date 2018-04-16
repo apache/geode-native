@@ -22,10 +22,12 @@
 
 #include <string>
 
-#include "fw_dunit.hpp"
 #include <geode/CacheFactory.hpp>
+#include <geode/RegionFactory.hpp>
+#include <geode/RegionShortcut.hpp>
 
 #include "CacheHelper.hpp"
+#include "fw_dunit.hpp"
 
 using namespace apache::geode::client;
 using namespace test;

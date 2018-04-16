@@ -20,6 +20,7 @@
 #include <math.h>
 
 #include <geode/CacheFactory.hpp>
+#include <geode/Region.hpp>
 
 #include "fw_helper.hpp"
 
@@ -35,8 +36,8 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
 
   std::cout << "create DistributedSytem with name=" << host_name << std::endl;
   std::cout << "Create cache with the configurations provided in "
-          "valid_cache_refid.xml"
-       << std::endl;
+               "valid_cache_refid.xml"
+            << std::endl;
 
   try {
     const auto filePath = directory + fileName;
@@ -77,7 +78,8 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  std::cout << "Verify whether region 'SubRegion11' has correct attributes" << std::endl;
+  std::cout << "Verify whether region 'SubRegion11' has correct attributes"
+            << std::endl;
 
   auto atts = SubRegion11->getAttributes();
 
@@ -101,7 +103,8 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  std::cout << "Verify whether region 'SubRegion2' has correct attributes" << std::endl;
+  std::cout << "Verify whether region 'SubRegion2' has correct attributes"
+            << std::endl;
 
   atts = SubRegion2->getAttributes();
 
@@ -125,7 +128,8 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  std::cout << "Verify whether region 'SubRegion21' has correct attributes" << std::endl;
+  std::cout << "Verify whether region 'SubRegion21' has correct attributes"
+            << std::endl;
 
   atts = SubRegion21->getAttributes();
 
@@ -169,7 +173,8 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     return -1;
   }
 
-  std::cout << "Verify whether region 'Root2' has correct attributes" << std::endl;
+  std::cout << "Verify whether region 'Root2' has correct attributes"
+            << std::endl;
 
   atts = Root2->getAttributes();
 

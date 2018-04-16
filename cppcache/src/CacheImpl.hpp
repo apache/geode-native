@@ -21,18 +21,20 @@
 #define GEODE_CACHEIMPL_H_
 
 #include <atomic>
-
-#include <geode/internal/geode_globals.hpp>
 #include <memory>
 
-#include <geode/Cache.hpp>
-#include <geode/CacheAttributes.hpp>
-#include <geode/DistributedSystem.hpp>
-#include "MapWithLock.hpp"
 #include <ace/ACE.h>
 #include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
+
+#include <geode/internal/geode_globals.hpp>
+#include <geode/Cache.hpp>
+#include <geode/CacheAttributes.hpp>
+#include <geode/DistributedSystem.hpp>
+#include <geode/TypeRegistry.hpp>
+
+#include "MapWithLock.hpp"
 #include "Condition.hpp"
 #include "TcrConnectionManager.hpp"
 #include "EvictionController.hpp"
@@ -42,12 +44,8 @@
 #include "PdxTypeRegistry.hpp"
 #include "MemberListForVersionStamp.hpp"
 #include "ClientProxyMembershipIDFactory.hpp"
-
-#include <string>
-#include <string>
-#include <map>
-
 #include "NonCopyable.hpp"
+
 #define DEFAULT_LRU_MAXIMUM_ENTRIES 100000
 /** @todo period '.' consistency */
 /** @todo fix returns to param documentation of result ptr... */
@@ -60,12 +58,14 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class ThreadPool;
 class CacheFactory;
+class CacheStatistics;
 class ExpiryTaskManager;
 class PdxTypeRegistry;
-class SerializationRegistry;
 class Pool;
+class RegionAttributes;
+class SerializationRegistry;
+class ThreadPool;
 
 /**
  * @class Cache Cache.hpp
@@ -147,6 +147,12 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   DistributedSystem& getDistributedSystem();
 
   /**
+   * Returns the type registry that this cache was
+   * {@link CacheFactory::create created} with.
+   */
+  TypeRegistry& getTypeRegistry();
+
+  /**
    * Terminates this object cache and releases all the local resources.
    * After this cache is closed, any further
    * method call on this cache or any region object will throw
@@ -186,7 +192,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
    * @param regions the region collection object containing the returned set of
    * regions when the function returns
    */
-  void rootRegions(std::vector<std::shared_ptr<Region>>& regions);
+  std::vector<std::shared_ptr<Region>> rootRegions();
 
   virtual RegionFactory createRegionFactory(RegionShortcut preDefinedRegion);
 
@@ -202,7 +208,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   /**
    * @brief constructors
    */
-  CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
+  CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
             bool ignorePdxUnreadFields, bool readPdxSerialized,
             const std::shared_ptr<AuthInitialize>& authInitialize);
 
@@ -366,6 +372,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
   ThreadPool* m_threadPool;
   const std::shared_ptr<AuthInitialize> m_authInitialize;
+  std::unique_ptr<TypeRegistry> m_typeRegistry;
 
   friend class CacheFactory;
   friend class Cache;

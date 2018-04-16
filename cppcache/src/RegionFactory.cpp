@@ -18,19 +18,20 @@
 #include <map>
 #include <string>
 
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
+#include <ace/Recursive_Thread_Mutex.h>
 
-#include <geode/CacheFactory.hpp>
-#include <geode/RegionFactory.hpp>
 #include <geode/Cache.hpp>
-#include <geode/SystemProperties.hpp>
+#include <geode/CacheFactory.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/RegionFactory.hpp>
+#include <geode/RegionShortcut.hpp>
+#include <geode/SystemProperties.hpp>
 
-#include "CppCacheLibrary.hpp"
 #include "CacheImpl.hpp"
 #include "CacheConfig.hpp"
 #include "CacheRegionHelper.hpp"
+#include "CppCacheLibrary.hpp"
 
 namespace apache {
 namespace geode {
@@ -70,12 +71,14 @@ void RegionFactory::setRegionShortcut() {
     } break;
     case RegionShortcut::CACHING_PROXY_ENTRY_LRU: {
       m_regionAttributesFactory->setCachingEnabled(true);
-      m_regionAttributesFactory->setLruEntriesLimit(DEFAULT_LRU_MAXIMUM_ENTRIES);
+      m_regionAttributesFactory->setLruEntriesLimit(
+          DEFAULT_LRU_MAXIMUM_ENTRIES);
     } break;
     case RegionShortcut::LOCAL: {
     } break;
     case RegionShortcut::LOCAL_ENTRY_LRU: {
-      m_regionAttributesFactory->setLruEntriesLimit(DEFAULT_LRU_MAXIMUM_ENTRIES);
+      m_regionAttributesFactory->setLruEntriesLimit(
+          DEFAULT_LRU_MAXIMUM_ENTRIES);
     } break;
   }
 }
@@ -178,8 +181,7 @@ RegionFactory& RegionFactory::setLruEntriesLimit(const uint32_t entriesLimit) {
   return *this;
 }
 
-RegionFactory& RegionFactory::setDiskPolicy(
-    const DiskPolicyType diskPolicy) {
+RegionFactory& RegionFactory::setDiskPolicy(const DiskPolicyType diskPolicy) {
   m_regionAttributesFactory->setDiskPolicy(diskPolicy);
   return *this;
 }

@@ -17,6 +17,7 @@
 
 #include <geode/Pool.hpp>
 #include <geode/PoolFactory.hpp>
+#include <geode/Region.hpp>
 
 #include "PoolManagerImpl.hpp"
 #include "CacheImpl.hpp"

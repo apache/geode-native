@@ -22,14 +22,13 @@
 #include <geode/PoolManager.hpp>
 #include <geode/DistributedSystem.hpp>
 #include <geode/Cache.hpp>
+#include <geode/RegionFactory.hpp>
 
 #include "DistributedSystemImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 #include "UserAttributes.hpp"
 #include "ProxyRegion.hpp"
-
-#define DEFAULT_DS_NAME "default_GeodeDS"
 
 namespace apache {
 namespace geode {
@@ -61,6 +60,14 @@ DistributedSystem& Cache::getDistributedSystem() const {
   return m_cacheImpl->getDistributedSystem();
 }
 
+/**
+ * Returns the type registry that this cache was
+ * {@link CacheFactory::create created} with.
+ */
+TypeRegistry& Cache::getTypeRegistry() {
+  return m_cacheImpl->getTypeRegistry();
+}
+
 void Cache::close() { close(false); }
 
 /**
@@ -87,12 +94,11 @@ std::shared_ptr<Region> Cache::getRegion(const std::string& path) const {
  */
 
 std::vector<std::shared_ptr<Region>> Cache::rootRegions() const {
-  std::vector<std::shared_ptr<Region>> regions;
-  m_cacheImpl->rootRegions(regions);
-  return regions;
+  return m_cacheImpl->rootRegions();
 }
 
-RegionFactory Cache::createRegionFactory(RegionShortcut preDefinedRegion) {
+RegionFactory Cache::createRegionFactory(
+    const RegionShortcut& preDefinedRegion) {
   return m_cacheImpl->createRegionFactory(preDefinedRegion);
 }
 
@@ -108,30 +114,21 @@ std::shared_ptr<CacheTransactionManager> Cache::getCacheTransactionManager()
   return m_cacheImpl->getCacheTransactionManager();
 }
 
-TypeRegistry& Cache::getTypeRegistry() { return *(m_typeRegistry.get()); }
-
-Cache::Cache(std::shared_ptr<Properties> dsProp, bool ignorePdxUnreadFields,
-             bool readPdxSerialized,
+Cache::Cache(const std::shared_ptr<Properties>& dsProp,
+             bool ignorePdxUnreadFields, bool readPdxSerialized,
              const std::shared_ptr<AuthInitialize>& authInitialize) {
-  auto distributedSystem = DistributedSystem::create(DEFAULT_DS_NAME, dsProp);
-  m_cacheImpl = std::unique_ptr<CacheImpl>(
-      new CacheImpl(this, std::move(distributedSystem), ignorePdxUnreadFields,
-                    readPdxSerialized, authInitialize));
-  m_cacheImpl->getDistributedSystem().connect(this);
-  m_typeRegistry =
-      std::unique_ptr<TypeRegistry>(new TypeRegistry(m_cacheImpl.get()));
+  m_cacheImpl = std::unique_ptr<CacheImpl>(new CacheImpl(
+      this, dsProp, ignorePdxUnreadFields, readPdxSerialized, authInitialize));
 }
 
 Cache::Cache(Cache&& other) noexcept
-    : m_cacheImpl(std::move(other.m_cacheImpl)),
-      m_typeRegistry(std::move(other.m_typeRegistry)) {
+    : m_cacheImpl(std::move(other.m_cacheImpl)) {
   m_cacheImpl->setCache(this);
 }
 
 Cache& Cache::operator=(Cache&& other) noexcept {
   if (this != &other) {
     m_cacheImpl = std::move(other.m_cacheImpl);
-    m_typeRegistry = std::move(other.m_typeRegistry);
     m_cacheImpl->setCache(this);
   }
   return *this;

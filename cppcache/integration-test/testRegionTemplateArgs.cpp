@@ -15,8 +15,14 @@
  * limitations under the License.
  */
 
-#include "CacheRegionHelper.hpp"
+#include <geode/CacheFactory.hpp>
+#include <geode/Region.hpp>
+#include <geode/RegionEntry.hpp>
+#include <geode/RegionAttributesFactory.hpp>
+
 #include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
+
 #include "fw_helper.hpp"
 
 using namespace apache::geode::client;

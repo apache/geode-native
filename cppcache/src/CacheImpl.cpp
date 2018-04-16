@@ -23,6 +23,7 @@
 #include <geode/PoolManager.hpp>
 #include <geode/RegionAttributes.hpp>
 #include <geode/PersistenceManager.hpp>
+#include <geode/RegionFactory.hpp>
 
 #include "CacheImpl.hpp"
 #include "Utils.hpp"
@@ -45,9 +46,11 @@
 #include "PdxInstanceFactoryImpl.hpp"
 #include "CacheXmlParser.hpp"
 
+#define DEFAULT_DS_NAME "default_GeodeDS"
+
 using namespace apache::geode::client;
 
-CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
+CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
                      bool ignorePdxUnreadFields, bool readPdxSerialized,
                      const std::shared_ptr<AuthInitialize>& authInitialize)
     : m_ignorePdxUnreadFields(ignorePdxUnreadFields),
@@ -57,7 +60,7 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
       m_statisticsManager(nullptr),
       m_closed(false),
       m_initialized(false),
-      m_distributedSystem(std::move(distributedSystem)),
+      m_distributedSystem(DistributedSystem::create(DEFAULT_DS_NAME, dsProps)),
       m_clientProxyMembershipIDFactory(m_distributedSystem.getName()),
       m_cache(c),
       m_cond(m_mutex),
@@ -93,6 +96,7 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
   m_initialized = true;
   m_pdxTypeRegistry = std::make_shared<PdxTypeRegistry>(this);
   m_poolManager = std::unique_ptr<PoolManager>(new PoolManager(this));
+  m_typeRegistry = std::unique_ptr<TypeRegistry>(new TypeRegistry(this));
 
   try {
     m_statisticsManager =
@@ -106,6 +110,8 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
     Log::close();
     throw;
   }
+
+  m_distributedSystem.connect(m_cache);
 }
 
 void CacheImpl::initServices() {
@@ -247,6 +253,8 @@ void CacheImpl::setAttributes(
 DistributedSystem& CacheImpl::getDistributedSystem() {
   return m_distributedSystem;
 }
+
+TypeRegistry& CacheImpl::getTypeRegistry() { return *m_typeRegistry.get(); }
 
 void CacheImpl::sendNotificationCloseMsgs() {
   for (const auto& iter : getPoolManager().getAll()) {
@@ -596,17 +604,23 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
   return rptr;
 }
 
-void CacheImpl::rootRegions(std::vector<std::shared_ptr<Region>>& regions) {
-  regions.clear();
+std::vector<std::shared_ptr<Region>> CacheImpl::rootRegions() {
+  std::vector<std::shared_ptr<Region>> regions;
+
   MapOfRegionGuard guard(m_regions->mutex());
-  if (m_regions->current_size() == 0) return;
-  regions.reserve(static_cast<int32_t>(m_regions->current_size()));
-  for (MapOfRegionWithLock::iterator q = m_regions->begin();
-       q != m_regions->end(); ++q) {
-    if (!(*q).int_id_->isDestroyed()) {
-      regions.push_back((*q).int_id_);
+
+  if (m_regions->current_size() != 0) {
+    regions.reserve(static_cast<int32_t>(m_regions->current_size()));
+
+    for (MapOfRegionWithLock::iterator q = m_regions->begin();
+         q != m_regions->end(); ++q) {
+      if (!(*q).int_id_->isDestroyed()) {
+        regions.push_back((*q).int_id_);
+      }
     }
   }
+
+  return regions;
 }
 
 void CacheImpl::initializeDeclarativeCache(const std::string& cacheXml) {

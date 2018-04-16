@@ -15,9 +15,14 @@
  * limitations under the License.
  */
 
-#include "fw_dunit.hpp"
-#include "CacheRegionHelper.hpp"
+#include <geode/CacheFactory.hpp>
+#include <geode/Region.hpp>
+#include <geode/RegionAttributesFactory.hpp>
+
 #include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
+
+#include "fw_dunit.hpp"
 
 // this is a test.
 
@@ -39,8 +44,8 @@ DUNIT_TASK(A, Init)
     Test.m_cache = std::make_shared<Cache>(cacheFactory.create());
 
     RegionAttributesFactory regionAttributesFactory;
-    regionAttributesFactory.setEntryTimeToLive(ExpirationAction::LOCAL_INVALIDATE,
-                          std::chrono::seconds(5));
+    regionAttributesFactory.setEntryTimeToLive(
+        ExpirationAction::LOCAL_INVALIDATE, std::chrono::seconds(5));
     auto regionAttributes = regionAttributesFactory.create();
 
     CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(Test.m_cache.get());

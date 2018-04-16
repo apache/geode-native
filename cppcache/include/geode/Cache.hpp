@@ -24,13 +24,6 @@
 
 #include "internal/geode_globals.hpp"
 #include "GeodeCache.hpp"
-#include "Region.hpp"
-#include "DistributedSystem.hpp"
-#include "QueryService.hpp"
-#include "PoolFactory.hpp"
-#include "RegionShortcut.hpp"
-#include "RegionFactory.hpp"
-#include "TypeRegistry.hpp"
 
 /**
  * @file
@@ -40,15 +33,24 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class PoolManager;
-class CacheFactory;
-class CacheRegionHelper;
-class Pool;
-class CacheImpl;
-class AuthInitialize;
-class CacheTransactionManager;
-class RegionFactory;
 class AuthenticatedView;
+class AuthInitialize;
+class CacheFactory;
+class CacheImpl;
+class CacheRegionHelper;
+class CacheTransactionManager;
+class DataInput;
+class DataOutput;
+class DistributedSystem;
+class Pool;
+class PoolFactory;
+class PoolManager;
+class Properties;
+class QueryService;
+class Region;
+class RegionFactory;
+class TypeRegistry;
+enum class RegionShortcut;
 
 /**
  * @class Cache Cache.hpp
@@ -76,7 +78,8 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    * @param regionShortcut
    *        To create the region specific type, @see RegionShortcut
    */
-  virtual RegionFactory createRegionFactory(RegionShortcut regionShortcut);
+  virtual RegionFactory createRegionFactory(
+      const RegionShortcut& regionShortcut);
 
   /**
    * Initializes the cache from an xml file
@@ -106,6 +109,12 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    * {@link CacheFactory created} with.
    */
   virtual DistributedSystem& getDistributedSystem() const override;
+
+  /**
+   * Returns the type registry that this cache was
+   * {@link CacheFactory::create created} with.
+   */
+  virtual TypeRegistry& getTypeRegistry();
 
   /**
    * Terminates this object cache and releases all the local resources.
@@ -220,8 +229,6 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    */
   virtual bool getPdxReadSerialized() const override;
 
-  virtual TypeRegistry& getTypeRegistry();
-
   /**
    * Returns a factory that can create a {@link PdxInstance}.
    * @param className the fully qualified class name that the PdxInstance will
@@ -250,12 +257,11 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
   /**
    * @brief constructors
    */
-  Cache(std::shared_ptr<Properties> dsProp, bool ignorePdxUnreadFields,
+  Cache(const std::shared_ptr<Properties>& dsProp, bool ignorePdxUnreadFields,
         bool readPdxSerialized,
         const std::shared_ptr<AuthInitialize>& authInitialize);
 
   std::unique_ptr<CacheImpl> m_cacheImpl;
-  std::unique_ptr<TypeRegistry> m_typeRegistry;
 
  protected:
   static bool isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr);

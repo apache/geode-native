@@ -18,6 +18,10 @@
 #include <string>
 #include <iostream>
 
+#include <geode/CacheFactory.hpp>
+#include <geode/RegionAttributesFactory.hpp>
+#include <geode/Region.hpp>
+
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 #include "fw_helper.hpp"

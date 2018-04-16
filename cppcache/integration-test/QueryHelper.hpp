@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_QUERYHELPER_H_
-#define GEODE_INTEGRATION_TEST_QUERYHELPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,21 +15,29 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_QUERYHELPER_H_
+#define GEODE_INTEGRATION_TEST_QUERYHELPER_H_
+
 #include <cstdlib>
-#include <geode/SystemProperties.hpp>
+
 #include <ace/OS.h>
 
-#include "DistributedSystemImpl.hpp"
+#include <geode/Region.hpp>
+#include <geode/ResultSet.hpp>
+#include <geode/StructSet.hpp>
+#include <geode/SystemProperties.hpp>
 
+#include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
+#include "DistributedSystemImpl.hpp"
 #include "testobject/Portfolio.hpp"
 #include "testobject/Position.hpp"
 #include "testobject/PdxType.hpp"
 #include "testobject/PortfolioPdx.hpp"
 #include "testobject/PositionPdx.hpp"
-#include <geode/ResultSet.hpp>
-#include <geode/StructSet.hpp>
-#include "CacheRegionHelper.hpp"
-#include "CacheImpl.hpp"
+
 //#include <geode/Struct.hpp>
 
 //#ifndef ROOT_NAME

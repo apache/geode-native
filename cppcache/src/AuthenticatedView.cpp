@@ -136,11 +136,9 @@ std::vector<std::shared_ptr<Region>> AuthenticatedView::rootRegions() const {
   std::vector<std::shared_ptr<Region>> regions;
 
   if (!m_isAuthenticatedViewClosed && m_cacheImpl && !m_cacheImpl->isClosed()) {
-    std::vector<std::shared_ptr<Region>> tmp;
-
     // this can cause issue when pool attached with region in multiuserSecure
     // mode
-    m_cacheImpl->rootRegions(tmp);
+    auto tmp = m_cacheImpl->rootRegions();
     regions.reserve(tmp.size());
 
     for (const auto& reg : tmp) {

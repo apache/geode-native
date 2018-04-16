@@ -17,6 +17,7 @@
 
 #include <geode/Cache.hpp>
 #include <geode/CacheableKey.hpp>
+#include <geode/RegionEntry.hpp>
 
 #include "CacheableToken.hpp"
 

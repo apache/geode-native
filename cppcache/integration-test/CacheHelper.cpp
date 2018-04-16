@@ -27,6 +27,8 @@
 #include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/internal/chrono/duration.hpp>
+#include <geode/RegionShortcut.hpp>
+#include <geode/RegionFactory.hpp>
 
 #include "CacheRegionHelper.hpp"
 #include "DistributedSystemImpl.hpp"
@@ -705,7 +707,8 @@ std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
         "SqLiteRegionData" +
         std::to_string(static_cast<long long int>(ACE_OS::getpid()));
     sqLiteProps->insert("PersistenceDirectory", sqlite_dir.c_str());
-    regionAttributeFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance", sqLiteProps);
+    regionAttributeFactory.setPersistenceManager(
+        "SqLiteImpl", "createSqLiteInstance", sqLiteProps);
   }
 
   auto regionAttributes = regionAttributeFactory.create();
