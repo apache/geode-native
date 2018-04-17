@@ -427,7 +427,7 @@ namespace Apache
 		  }
 
 
-      Pool^ PoolFactory::Create(String^ name, Cache^ cache)
+      Pool^ PoolFactory::Create(String^ name)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
