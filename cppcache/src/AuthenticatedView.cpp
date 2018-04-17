@@ -89,7 +89,7 @@ std::shared_ptr<Region> AuthenticatedView::getRegion(
     std::shared_ptr<Region> result;
 
     if (m_cacheImpl != nullptr && !m_cacheImpl->isClosed()) {
-      m_cacheImpl->getRegion(path.c_str(), result);
+      result = m_cacheImpl->getRegion(path);
     }
 
     if (result != nullptr) {
@@ -136,11 +136,9 @@ std::vector<std::shared_ptr<Region>> AuthenticatedView::rootRegions() const {
   std::vector<std::shared_ptr<Region>> regions;
 
   if (!m_isAuthenticatedViewClosed && m_cacheImpl && !m_cacheImpl->isClosed()) {
-    std::vector<std::shared_ptr<Region>> tmp;
-
     // this can cause issue when pool attached with region in multiuserSecure
     // mode
-    m_cacheImpl->rootRegions(tmp);
+    auto tmp = m_cacheImpl->rootRegions();
     regions.reserve(tmp.size());
 
     for (const auto& reg : tmp) {
@@ -167,8 +165,9 @@ AuthenticatedView::AuthenticatedView(std::shared_ptr<Properties> credentials,
       m_cacheImpl(cacheImpl) {}
 
 AuthenticatedView::~AuthenticatedView() {}
+
 std::shared_ptr<PdxInstanceFactory> AuthenticatedView::createPdxInstanceFactory(
-    std::string className) const {
+    const std::string& className) const {
   return std::make_shared<PdxInstanceFactoryImpl>(
       className.c_str(), &(m_cacheImpl->getCachePerfStats()),
       m_cacheImpl->getPdxTypeRegistry(), m_cacheImpl,

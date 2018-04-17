@@ -82,8 +82,7 @@ class APACHE_GEODE_EXPORT AuthenticatedView : public RegionService {
    * @param path the region's path, such as <code>RootA/Sub1/Sub1A</code>.
    * @returns region, or nullptr if no such region exists.
    */
-  std::shared_ptr<Region> getRegion(
-      const std::string& path) const override;
+  std::shared_ptr<Region> getRegion(const std::string& path) const override;
 
   /**
    * Gets the QueryService from which a new Query can be obtained.
@@ -109,7 +108,7 @@ class APACHE_GEODE_EXPORT AuthenticatedView : public RegionService {
 
   /**
    * @brief constructors
-  */
+   */
   AuthenticatedView(std::shared_ptr<Properties> credentials,
                     std::shared_ptr<Pool> pool, CacheImpl* cacheImpl);
   AuthenticatedView(AuthenticatedView&& other) = default;
@@ -123,7 +122,7 @@ class APACHE_GEODE_EXPORT AuthenticatedView : public RegionService {
    * @return the factory
    */
   std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
-      std::string className) const override;
+      const std::string& className) const override;
 
   AuthenticatedView& operator=(AuthenticatedView&& other) = default;
   AuthenticatedView& operator=(const AuthenticatedView& other) = delete;

@@ -22,22 +22,20 @@
 #include <geode/PoolManager.hpp>
 #include <geode/DistributedSystem.hpp>
 #include <geode/Cache.hpp>
+#include <geode/RegionFactory.hpp>
 
 #include "DistributedSystemImpl.hpp"
-#include "CacheXmlParser.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 #include "UserAttributes.hpp"
 #include "ProxyRegion.hpp"
-#include "PdxInstanceFactoryImpl.hpp"
-
-#define DEFAULT_DS_NAME "default_GeodeDS"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-/** Returns the name of this cache.
+/**
+ * Returns the name of this cache.
  * This method does not throw
  * <code>CacheClosedException</code> if the cache is closed.
  * @return the string name of this cache
@@ -63,6 +61,14 @@ DistributedSystem& Cache::getDistributedSystem() const {
   return m_cacheImpl->getDistributedSystem();
 }
 
+/**
+ * Returns the type registry that this cache was
+ * {@link CacheFactory::create created} with.
+ */
+TypeRegistry& Cache::getTypeRegistry() {
+  return m_cacheImpl->getTypeRegistry();
+}
+
 void Cache::close() { close(false); }
 
 /**
@@ -73,32 +79,10 @@ void Cache::close() { close(false); }
  * @param keepalive whether to keep the durable client's queue
  * @throws CacheClosedException,  if the cache is already closed.
  */
-void Cache::close(bool keepalive) {
-  m_cacheImpl->close(keepalive);
-
-  try {
-    getDistributedSystem().disconnect();
-  } catch (const apache::geode::client::NotConnectedException&) {
-  } catch (const apache::geode::client::Exception&) {
-  } catch (...) {
-  }
-}
+void Cache::close(bool keepalive) { m_cacheImpl->close(keepalive); }
 
 std::shared_ptr<Region> Cache::getRegion(const std::string& path) const {
-  LOGDEBUG("Cache::getRegion " + path);
-  std::shared_ptr<Region> result;
-  m_cacheImpl->getRegion(path.c_str(), result);
-
-  if (result != nullptr) {
-    if (isPoolInMultiuserMode(result)) {
-      LOGWARN("Pool " + result->getAttributes().getPoolName() +
-              " attached with region " + result->getFullPath() +
-              " is in multiuser authentication mode. Operations may fail as "
-              "this instance does not have any credentials.");
-    }
-  }
-
-  return result;
+  return m_cacheImpl->getRegion(path);
 }
 
 /**
@@ -109,11 +93,8 @@ std::shared_ptr<Region> Cache::getRegion(const std::string& path) const {
  * @param regions the region collection object containing the returned set of
  * regions when the function returns
  */
-
 std::vector<std::shared_ptr<Region>> Cache::rootRegions() const {
-  std::vector<std::shared_ptr<Region>> regions;
-  m_cacheImpl->rootRegions(regions);
-  return regions;
+  return m_cacheImpl->rootRegions();
 }
 
 RegionFactory Cache::createRegionFactory(RegionShortcut preDefinedRegion) {
@@ -123,39 +104,32 @@ RegionFactory Cache::createRegionFactory(RegionShortcut preDefinedRegion) {
 std::shared_ptr<QueryService> Cache::getQueryService() {
   return m_cacheImpl->getQueryService();
 }
+
 std::shared_ptr<QueryService> Cache::getQueryService(
     const std::string& poolName) const {
   return m_cacheImpl->getQueryService(poolName.c_str());
 }
+
 std::shared_ptr<CacheTransactionManager> Cache::getCacheTransactionManager()
     const {
   return m_cacheImpl->getCacheTransactionManager();
 }
 
-TypeRegistry& Cache::getTypeRegistry() { return *(m_typeRegistry.get()); }
-
-Cache::Cache(std::shared_ptr<Properties> dsProp, bool ignorePdxUnreadFields,
-             bool readPdxSerialized,
-             const std::shared_ptr<AuthInitialize>& authInitialize) {
-  auto distributedSystem = DistributedSystem::create(DEFAULT_DS_NAME, dsProp);
-  m_cacheImpl = std::unique_ptr<CacheImpl>(
-      new CacheImpl(this, std::move(distributedSystem), ignorePdxUnreadFields,
-                    readPdxSerialized, authInitialize));
-  m_cacheImpl->getDistributedSystem().connect(this);
-  m_typeRegistry =
-      std::unique_ptr<TypeRegistry>(new TypeRegistry(m_cacheImpl.get()));
-}
+Cache::Cache(const std::shared_ptr<Properties>& dsProp,
+             bool ignorePdxUnreadFields, bool readPdxSerialized,
+             const std::shared_ptr<AuthInitialize>& authInitialize)
+    : m_cacheImpl(std::unique_ptr<CacheImpl>(
+          new CacheImpl(this, dsProp, ignorePdxUnreadFields, readPdxSerialized,
+                        authInitialize))) {}
 
 Cache::Cache(Cache&& other) noexcept
-    : m_cacheImpl(std::move(other.m_cacheImpl)),
-      m_typeRegistry(std::move(other.m_typeRegistry)) {
+    : m_cacheImpl(std::move(other.m_cacheImpl)) {
   m_cacheImpl->setCache(this);
 }
 
 Cache& Cache::operator=(Cache&& other) noexcept {
   if (this != &other) {
     m_cacheImpl = std::move(other.m_cacheImpl);
-    m_typeRegistry = std::move(other.m_typeRegistry);
     m_cacheImpl->setCache(this);
   }
   return *this;
@@ -164,26 +138,13 @@ Cache& Cache::operator=(Cache&& other) noexcept {
 Cache::~Cache() = default;
 
 void Cache::initializeDeclarativeCache(const std::string& cacheXml) {
-  CacheXmlParser* xmlParser = CacheXmlParser::parse(cacheXml.c_str(), this);
-  xmlParser->setAttributes(this);
-  m_cacheImpl->initServices();
-  xmlParser->create(this);
-  delete xmlParser;
-  xmlParser = nullptr;
+  m_cacheImpl->initializeDeclarativeCache(cacheXml);
 }
 
 void Cache::readyForEvents() { m_cacheImpl->readyForEvents(); }
 
 bool Cache::isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr) {
-  const auto& poolName = regionPtr->getAttributes().getPoolName();
-
-  if (!poolName.empty()) {
-    auto poolPtr = regionPtr->getCache().getPoolManager().find(poolName);
-    if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
-      return poolPtr->getMultiuserAuthentication();
-    }
-  }
-  return false;
+  return CacheImpl::isPoolInMultiuserMode(regionPtr);
 }
 
 bool Cache::getPdxIgnoreUnreadFields() const {
@@ -193,44 +154,16 @@ bool Cache::getPdxIgnoreUnreadFields() const {
 bool Cache::getPdxReadSerialized() const {
   return m_cacheImpl->getPdxReadSerialized();
 }
+
 std::shared_ptr<PdxInstanceFactory> Cache::createPdxInstanceFactory(
-    std::string className) const {
-  return std::make_shared<PdxInstanceFactoryImpl>(
-      className.c_str(), m_cacheImpl->m_cacheStats,
-      m_cacheImpl->getPdxTypeRegistry(), m_cacheImpl.get(),
-      m_cacheImpl->getDistributedSystem()
-          .getSystemProperties()
-          .getEnableTimeStatistics());
+    const std::string& className) const {
+  return m_cacheImpl->createPdxInstanceFactory(className);
 }
+
 AuthenticatedView Cache::createAuthenticatedView(
-    std::shared_ptr<Properties> userSecurityProperties,
+    const std::shared_ptr<Properties>& userSecurityProperties,
     const std::string& poolName) {
-  if (poolName.empty()) {
-    auto pool = m_cacheImpl->getPoolManager().getDefaultPool();
-    if (!this->isClosed() && pool != nullptr) {
-      return pool->createAuthenticatedView(userSecurityProperties,
-                                           m_cacheImpl.get());
-    }
-
-    throw IllegalStateException(
-        "Either cache has been closed or there are more than two pool."
-        "Pass poolname to get the secure Cache");
-  } else {
-    if (!this->isClosed()) {
-      if (!poolName.empty()) {
-        auto poolPtr = m_cacheImpl->getPoolManager().find(poolName);
-        if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
-          return poolPtr->createAuthenticatedView(userSecurityProperties,
-                                                  m_cacheImpl.get());
-        }
-        throw IllegalStateException(
-            "Either pool not found or it has been destroyed");
-      }
-      throw IllegalArgumentException("poolname is nullptr");
-    }
-
-    throw IllegalStateException("Cache has been closed");
-  }
+  return m_cacheImpl->createAuthenticatedView(userSecurityProperties, poolName);
 }
 
 PoolManager& Cache::getPoolManager() const {

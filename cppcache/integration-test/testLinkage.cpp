@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
+#include <geode/AttributesMutator.hpp>
+#include <geode/Region.hpp>
 #include <geode/RegionAttributesFactory.hpp>
+
 #include "fw_helper.hpp"
 
 using namespace apache::geode::client;

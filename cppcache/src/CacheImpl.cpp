@@ -23,6 +23,7 @@
 #include <geode/PoolManager.hpp>
 #include <geode/RegionAttributes.hpp>
 #include <geode/PersistenceManager.hpp>
+#include <geode/RegionFactory.hpp>
 
 #include "CacheImpl.hpp"
 #include "Utils.hpp"
@@ -42,10 +43,14 @@
 #include "PdxTypeRegistry.hpp"
 #include "SerializationRegistry.hpp"
 #include "ThreadPool.hpp"
+#include "PdxInstanceFactoryImpl.hpp"
+#include "CacheXmlParser.hpp"
+
+#define DEFAULT_DS_NAME "default_GeodeDS"
 
 using namespace apache::geode::client;
 
-CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
+CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
                      bool ignorePdxUnreadFields, bool readPdxSerialized,
                      const std::shared_ptr<AuthInitialize>& authInitialize)
     : m_ignorePdxUnreadFields(ignorePdxUnreadFields),
@@ -55,7 +60,7 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
       m_statisticsManager(nullptr),
       m_closed(false),
       m_initialized(false),
-      m_distributedSystem(std::move(distributedSystem)),
+      m_distributedSystem(DistributedSystem::create(DEFAULT_DS_NAME, dsProps)),
       m_clientProxyMembershipIDFactory(m_distributedSystem.getName()),
       m_cache(c),
       m_cond(m_mutex),
@@ -73,7 +78,6 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
       m_threadPool(new ThreadPool(
           m_distributedSystem.getSystemProperties().threadPoolSize())),
       m_authInitialize(authInitialize) {
-
   m_cacheTXManager = std::shared_ptr<InternalCacheTransactionManager2PC>(
       new InternalCacheTransactionManager2PCImpl(this));
 
@@ -91,6 +95,7 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
   m_initialized = true;
   m_pdxTypeRegistry = std::make_shared<PdxTypeRegistry>(this);
   m_poolManager = std::unique_ptr<PoolManager>(new PoolManager(this));
+  m_typeRegistry = std::unique_ptr<TypeRegistry>(new TypeRegistry(this));
 
   try {
     m_statisticsManager =
@@ -104,6 +109,8 @@ CacheImpl::CacheImpl(Cache* c, DistributedSystem&& distributedSystem,
     Log::close();
     throw;
   }
+
+  m_distributedSystem.connect(m_cache);
 }
 
 void CacheImpl::initServices() {
@@ -246,6 +253,8 @@ DistributedSystem& CacheImpl::getDistributedSystem() {
   return m_distributedSystem;
 }
 
+TypeRegistry& CacheImpl::getTypeRegistry() { return *m_typeRegistry.get(); }
+
 void CacheImpl::sendNotificationCloseMsgs() {
   for (const auto& iter : getPoolManager().getAll()) {
     if (const auto& pool =
@@ -332,6 +341,13 @@ void CacheImpl::close(bool keepalive) {
   m_cacheTXManager = nullptr;
 
   m_expiryTaskManager->stopExpiryTaskManager();
+
+  try {
+    getDistributedSystem().disconnect();
+  } catch (const apache::geode::client::NotConnectedException&) {
+  } catch (const apache::geode::client::Exception&) {
+  } catch (...) {
+  }
 
   m_closed = true;
 
@@ -475,13 +491,13 @@ void CacheImpl::createRegion(std::string name,
  * @throws IllegalArgumentException if path is null, the empty string, or "/"
  */
 
-void CacheImpl::getRegion(const std::string& path,
-                          std::shared_ptr<Region>& rptr) {
+std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
+  LOGDEBUG("Cache::getRegion " + path);
+
   TryReadGuard guardCacheDestroy(m_destroyCacheMutex, m_destroyPending);
-  rptr = nullptr;
 
   if (m_destroyPending) {
-    return;
+    return nullptr;
   }
 
   MapOfRegionGuard guard(m_regions->mutex());
@@ -494,24 +510,31 @@ void CacheImpl::getRegion(const std::string& path,
   if (fullname.substr(0, 1) == slash) {
     fullname = path.substr(1);
   }
+
   // find second separator
-  uint32_t idx = static_cast<uint32_t>(fullname.find('/'));
+  auto idx = static_cast<uint32_t>(fullname.find('/'));
   auto stepname = fullname.substr(0, idx);
-  std::shared_ptr<Region> region;
+
+  std::shared_ptr<Region> region = nullptr;
+
   if (0 == m_regions->find(stepname, region)) {
-    if (stepname == fullname) {
-      // done...
-      rptr = region;
-      return;
-    }
-    auto remainder = fullname.substr(stepname.length() + 1);
-    if (region != nullptr) {
-      rptr = region->getSubregion(remainder.c_str());
-    } else {
-      rptr = nullptr;
-      return;  // Return null if the parent region was not found.
+    if (stepname != fullname) {
+      auto remainder = fullname.substr(stepname.length() + 1);
+
+      if (region != nullptr) {
+        region = region->getSubregion(remainder.c_str());
+      }
     }
   }
+
+  if (region != nullptr && isPoolInMultiuserMode(region)) {
+    LOGWARN("Pool " + region->getAttributes().getPoolName() +
+            " attached with region " + region->getFullPath() +
+            " is in multiuser authentication mode. Operations may fail as "
+            "this instance does not have any credentials.");
+  }
+
+  return region;
 }
 
 std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
@@ -580,17 +603,32 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
   return rptr;
 }
 
-void CacheImpl::rootRegions(std::vector<std::shared_ptr<Region>>& regions) {
-  regions.clear();
+std::vector<std::shared_ptr<Region>> CacheImpl::rootRegions() {
+  std::vector<std::shared_ptr<Region>> regions;
+
   MapOfRegionGuard guard(m_regions->mutex());
-  if (m_regions->current_size() == 0) return;
-  regions.reserve(static_cast<int32_t>(m_regions->current_size()));
-  for (MapOfRegionWithLock::iterator q = m_regions->begin();
-       q != m_regions->end(); ++q) {
-    if (!(*q).int_id_->isDestroyed()) {
-      regions.push_back((*q).int_id_);
+
+  if (m_regions->current_size() != 0) {
+    regions.reserve(static_cast<int32_t>(m_regions->current_size()));
+
+    for (MapOfRegionWithLock::iterator q = m_regions->begin();
+         q != m_regions->end(); ++q) {
+      if (!(*q).int_id_->isDestroyed()) {
+        regions.push_back((*q).int_id_);
+      }
     }
   }
+
+  return regions;
+}
+
+void CacheImpl::initializeDeclarativeCache(const std::string& cacheXml) {
+  CacheXmlParser* xmlParser = CacheXmlParser::parse(cacheXml.c_str(), m_cache);
+  xmlParser->setAttributes(m_cache);
+  initServices();
+  xmlParser->create(m_cache);
+  delete xmlParser;
+  xmlParser = nullptr;
 }
 
 EvictionController* CacheImpl::getEvictionController() {
@@ -634,6 +672,19 @@ void CacheImpl::readyForEvents() {
               " with exception: " + ex.getMessage());
     }
   }
+}
+
+bool CacheImpl::isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr) {
+  const auto& poolName = regionPtr->getAttributes().getPoolName();
+
+  if (!poolName.empty()) {
+    auto poolPtr = regionPtr->getCache().getPoolManager().find(poolName);
+    if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
+      return poolPtr->getMultiuserAuthentication();
+    }
+  }
+
+  return false;
 }
 
 bool CacheImpl::getEndpointStatus(const std::string& endpoint) {
@@ -782,6 +833,42 @@ std::unique_ptr<DataInput> CacheImpl::createDataInput(const uint8_t* buffer,
     pool = this->getPoolManager().getDefaultPool().get();
   }
   return std::unique_ptr<DataInput>(new DataInput(buffer, len, this, pool));
+}
+
+std::shared_ptr<PdxInstanceFactory> CacheImpl::createPdxInstanceFactory(
+    const std::string& className) const {
+  return std::make_shared<PdxInstanceFactoryImpl>(
+      className, m_cacheStats, m_pdxTypeRegistry, this,
+      m_distributedSystem.getSystemProperties().getEnableTimeStatistics());
+}
+
+AuthenticatedView CacheImpl::createAuthenticatedView(
+    std::shared_ptr<Properties> userSecurityProperties,
+    const std::string& poolName) {
+  if (poolName.empty()) {
+    auto pool = m_poolManager->getDefaultPool();
+    if (!this->isClosed() && pool != nullptr) {
+      return pool->createAuthenticatedView(userSecurityProperties, this);
+    }
+
+    throw IllegalStateException(
+        "Either cache has been closed or there are more than two pool."
+        "Pass poolname to get the secure Cache");
+  } else {
+    if (!this->isClosed()) {
+      if (!poolName.empty()) {
+        auto poolPtr = m_poolManager->find(poolName);
+        if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
+          return poolPtr->createAuthenticatedView(userSecurityProperties, this);
+        }
+        throw IllegalStateException(
+            "Either pool not found or it has been destroyed");
+      }
+      throw IllegalArgumentException("poolname is nullptr");
+    }
+
+    throw IllegalStateException("Cache has been closed");
+  }
 }
 
 void CacheImpl::setCache(Cache* cache) { m_cache = cache; }

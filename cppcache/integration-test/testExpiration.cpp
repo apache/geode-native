@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+#include <geode/ExpirationAction.hpp>
+#include <geode/Region.hpp>
+
 #include "fw_helper.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
@@ -74,10 +77,11 @@ std::shared_ptr<CacheableKey> do1Put(std::shared_ptr<Region>& rptr) {
 }
 
 RegionAttributes setRegionAttributesTimeouts(
-    const std::chrono::seconds &entryTimeToLive = std::chrono::seconds::zero(),
-    const std::chrono::seconds &entryIdleTimeout = std::chrono::seconds::zero(),
-    const std::chrono::seconds &regionTimeToLive = std::chrono::seconds::zero(),
-    const std::chrono::seconds &regionIdleTimeout = std::chrono::seconds::zero()) {
+    const std::chrono::seconds& entryTimeToLive = std::chrono::seconds::zero(),
+    const std::chrono::seconds& entryIdleTimeout = std::chrono::seconds::zero(),
+    const std::chrono::seconds& regionTimeToLive = std::chrono::seconds::zero(),
+    const std::chrono::seconds& regionIdleTimeout =
+        std::chrono::seconds::zero()) {
   RegionAttributesFactory regionAttributesFactory;
 
   regionAttributesFactory.setEntryTimeToLive(action, entryTimeToLive);
@@ -118,8 +122,9 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributes attrs_2;
 
-    attrs_2 = setRegionAttributesTimeouts(std::chrono::seconds(20), std::chrono::seconds(2),
-                                          std::chrono::seconds(0), std::chrono::seconds(0));
+    attrs_2 = setRegionAttributesTimeouts(
+        std::chrono::seconds(20), std::chrono::seconds(2),
+        std::chrono::seconds(0), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R2;
     cacheImpl->createRegion("R2", attrs_2, R2);
@@ -136,8 +141,9 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributes attrs_3;
     // rttl = 20, reit = 2
-    attrs_3 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(0),
-                                          std::chrono::seconds(20), std::chrono::seconds(2));
+    attrs_3 = setRegionAttributesTimeouts(
+        std::chrono::seconds(0), std::chrono::seconds(0),
+        std::chrono::seconds(20), std::chrono::seconds(2));
 
     std::shared_ptr<Region> R3;
     cacheImpl->createRegion("R3", attrs_3, R3);
@@ -149,8 +155,9 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributes attrs_4;
 
-    attrs_4 = setRegionAttributesTimeouts(std::chrono::seconds(5), std::chrono::seconds(0),
-                                          std::chrono::seconds(0), std::chrono::seconds(0));
+    attrs_4 = setRegionAttributesTimeouts(
+        std::chrono::seconds(5), std::chrono::seconds(0),
+        std::chrono::seconds(0), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R4;
     cacheImpl->createRegion("R4", attrs_4, R4);
@@ -168,8 +175,9 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributes attrs_5;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    attrs_5 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(5),
-                                          std::chrono::seconds(0), std::chrono::seconds(0));
+    attrs_5 = setRegionAttributesTimeouts(
+        std::chrono::seconds(0), std::chrono::seconds(5),
+        std::chrono::seconds(0), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R5;
     cacheImpl->createRegion("R5", attrs_5, R5);
@@ -196,8 +204,9 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributes attrs_6;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    attrs_6 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(0),
-                                          std::chrono::seconds(5), std::chrono::seconds(0));
+    attrs_6 = setRegionAttributesTimeouts(
+        std::chrono::seconds(0), std::chrono::seconds(0),
+        std::chrono::seconds(5), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R6;
     cacheImpl->createRegion("R6", attrs_6, R6);
@@ -215,8 +224,9 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributes attrs_7;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    attrs_7 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(0),
-                                          std::chrono::seconds(0), std::chrono::seconds(5));
+    attrs_7 = setRegionAttributesTimeouts(
+        std::chrono::seconds(0), std::chrono::seconds(0),
+        std::chrono::seconds(0), std::chrono::seconds(5));
 
     std::shared_ptr<Region> R7;
     cacheImpl->createRegion("R7", attrs_7, R7);
@@ -234,8 +244,9 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributes attrs_8;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    attrs_8 = setRegionAttributesTimeouts(std::chrono::seconds(10), std::chrono::seconds(0),
-                                          std::chrono::seconds(0), std::chrono::seconds(0));
+    attrs_8 = setRegionAttributesTimeouts(
+        std::chrono::seconds(10), std::chrono::seconds(0),
+        std::chrono::seconds(0), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R8;
     cacheImpl->createRegion("R8", attrs_8, R8);
@@ -254,8 +265,9 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributes attrs_9;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    attrs_9 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(0),
-                                          std::chrono::seconds(0), std::chrono::seconds(8));
+    attrs_9 = setRegionAttributesTimeouts(
+        std::chrono::seconds(0), std::chrono::seconds(0),
+        std::chrono::seconds(0), std::chrono::seconds(8));
 
     std::shared_ptr<Region> R9;
     cacheImpl->createRegion("R9", attrs_9, R9);
@@ -276,8 +288,9 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributes attrs_10;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    attrs_10 = setRegionAttributesTimeouts(std::chrono::seconds(6), std::chrono::seconds(0),
-                                           std::chrono::seconds(0), std::chrono::seconds(12));
+    attrs_10 = setRegionAttributesTimeouts(
+        std::chrono::seconds(6), std::chrono::seconds(0),
+        std::chrono::seconds(0), std::chrono::seconds(12));
 
     std::shared_ptr<Region> R10;
     cacheImpl->createRegion("R10", attrs_10, R10);
@@ -297,8 +310,9 @@ BEGIN_TEST(TEST_EXPIRATION)
     RegionAttributes attrs_11;
 
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    attrs_11 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(4),
-                                           std::chrono::seconds(0), std::chrono::seconds(7));
+    attrs_11 = setRegionAttributesTimeouts(
+        std::chrono::seconds(0), std::chrono::seconds(4),
+        std::chrono::seconds(0), std::chrono::seconds(7));
 
     std::shared_ptr<Region> R11;
     cacheImpl->createRegion("R11", attrs_11, R11);
@@ -324,8 +338,9 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributes attrs_12;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    attrs_12 = setRegionAttributesTimeouts(std::chrono::seconds(5), std::chrono::seconds(0),
-                                           std::chrono::seconds(0), std::chrono::seconds(0));
+    attrs_12 = setRegionAttributesTimeouts(
+        std::chrono::seconds(5), std::chrono::seconds(0),
+        std::chrono::seconds(0), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R12;
     cacheImpl->createRegion("R12", attrs_12, R12);
@@ -343,8 +358,9 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributes attrs_14;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    attrs_14 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(0),
-                                           std::chrono::seconds(10), std::chrono::seconds(0));
+    attrs_14 = setRegionAttributesTimeouts(
+        std::chrono::seconds(0), std::chrono::seconds(0),
+        std::chrono::seconds(10), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R14;
     cacheImpl->createRegion("R14", attrs_14, R14);
@@ -358,8 +374,9 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributes attrs_15;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    attrs_15 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(5),
-                                           std::chrono::seconds(0), std::chrono::seconds(0));
+    attrs_15 = setRegionAttributesTimeouts(
+        std::chrono::seconds(0), std::chrono::seconds(5),
+        std::chrono::seconds(0), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R15;
     cacheImpl->createRegion("R15", attrs_15, R15);
@@ -378,8 +395,9 @@ BEGIN_TEST(TEST_EXPIRATION)
     //////////////
     RegionAttributes attrs_18;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    attrs_18 = setRegionAttributesTimeouts(std::chrono::seconds(6), std::chrono::seconds(3),
-                                           std::chrono::seconds(0), std::chrono::seconds(0));
+    attrs_18 = setRegionAttributesTimeouts(
+        std::chrono::seconds(6), std::chrono::seconds(3),
+        std::chrono::seconds(0), std::chrono::seconds(0));
 
     std::shared_ptr<Region> R18;
     cacheImpl->createRegion("R18", attrs_18, R18);
@@ -398,8 +416,9 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     RegionAttributes attrs_19;
     // ettl = 0, eit = 0, rttl = 0, reit = 0
-    attrs_19 = setRegionAttributesTimeouts(std::chrono::seconds(0), std::chrono::seconds(0),
-                                           std::chrono::seconds(6), std::chrono::seconds(3));
+    attrs_19 = setRegionAttributesTimeouts(
+        std::chrono::seconds(0), std::chrono::seconds(0),
+        std::chrono::seconds(6), std::chrono::seconds(3));
 
     std::shared_ptr<Region> R19;
     cacheImpl->createRegion("R19x", attrs_19, R19);

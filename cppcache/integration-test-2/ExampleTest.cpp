@@ -24,6 +24,8 @@
 
 #include <geode/Cache.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/RegionFactory.hpp>
+#include <geode/RegionShortcut.hpp>
 
 #include "framework/Framework.h"
 #include "framework/Gfsh.h"
@@ -122,7 +124,6 @@ TEST(ExampleTest, DISABLED_putGetAndUpdateWith1Server) {
 
     region->put(1, "two");
     updatePromise.set_value();
-
   });
   ASSERT_EQ(std::future_status::ready, task2.wait_for(debug_safe(minutes(1))));
 }

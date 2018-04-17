@@ -305,7 +305,7 @@ class APACHE_GEODE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
 
   friend class PoolFactory;
   friend class CacheFactory;
-  friend class Cache;
+  friend class CacheImpl;
 };
 
 }  // namespace client

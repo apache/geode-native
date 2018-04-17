@@ -16,6 +16,8 @@
  */
 
 #include <geode/AuthInitialize.hpp>
+#include <geode/RegionFactory.hpp>
+#include <geode/RegionShortcut.hpp>
 
 #include "fw_dunit.hpp"
 #include "ThinClientSecurity.hpp"

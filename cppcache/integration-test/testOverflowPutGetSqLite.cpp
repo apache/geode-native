@@ -20,10 +20,14 @@
 
 #include <ace/OS.h>
 
-#include "fw_helper.hpp"
+#include <geode/RegionShortcut.hpp>
+#include <geode/RegionFactory.hpp>
+
 #include <CacheableToken.hpp>
-#include <MapEntry.hpp>
 #include <CacheRegionHelper.hpp>
+#include <MapEntry.hpp>
+
+#include "fw_helper.hpp"
 
 using namespace apache::geode::client;
 

@@ -14,26 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "fw_dunit.hpp"
-#include "ThinClientHelper.hpp"
-#include <geode/CqAttributesFactory.hpp>
-#include <geode/CqAttributes.hpp>
-#include <geode/CqListener.hpp>
-#include <geode/CqQuery.hpp>
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
+
 #include <string>
 #include <thread>
 #include <chrono>
 
-#define ROOT_SCOPE DISTRIBUTED_ACK
+#include <ace/OS.h>
+#include <ace/High_Res_Timer.h>
 
-#include "QueryStrings.hpp"
-#include "QueryHelper.hpp"
+#include <geode/CqAttributesFactory.hpp>
+#include <geode/CqAttributes.hpp>
+#include <geode/CqListener.hpp>
+#include <geode/CqQuery.hpp>
+#include <geode/RegionFactory.hpp>
+
+#include "fw_dunit.hpp"
+#include "ThinClientHelper.hpp"
+
+#define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include <geode/Query.hpp>
 #include <geode/QueryService.hpp>
+#include <geode/RegionShortcut.hpp>
 
+#include "QueryStrings.hpp"
+#include "QueryHelper.hpp"
 #include "ThinClientCQ.hpp"
 
 using namespace apache::geode::client;
