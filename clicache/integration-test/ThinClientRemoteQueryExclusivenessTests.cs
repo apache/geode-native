@@ -89,7 +89,7 @@ namespace Apache.Geode.Client.UnitTests
       m_isPdx = isPdx;
       try
       {
-				var poolFail = CacheHelper.DCache.GetPoolManager().CreateFactory().Create("_TESTFAILPOOL_", CacheHelper.DCache);
+				var poolFail = CacheHelper.DCache.GetPoolManager().CreateFactory().Create("_TESTFAILPOOL_");
 				var qsFail = poolFail.GetQueryService();
         var qryFail = qsFail.NewQuery<object>("select distinct * from /" + QERegionName);
         var resultsFail = qryFail.Execute();
