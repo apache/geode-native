@@ -137,7 +137,7 @@ namespace Apache
 
         auto nativeDistributedSystem = native::DistributedSystem::create(marshal_as<std::string>(name),
                                                            config->GetNative());
-        nativeDistributedSystem.connect(cache->GetNative().get());
+        nativeDistributedSystem.connect();
 
         ManagedPostConnect(cache);
 
