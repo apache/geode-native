@@ -224,7 +224,7 @@ void SerializationRegistry::deserialize(
                  std::dynamic_pointer_cast<DataSerializable>(obj)) {
     deserialize(input, dataSerializable);
   } else if (const auto pdxSerializable =
-      std::dynamic_pointer_cast<PdxSerializable>(obj)) {
+                 std::dynamic_pointer_cast<PdxSerializable>(obj)) {
     deserialize(input, pdxSerializable);
   } else {
     throw UnsupportedOperationException(
@@ -253,16 +253,16 @@ void SerializationRegistry::deserialize(
 }
 
 void SerializationRegistry::deserialize(
-    DataInput& input, std::shared_ptr<PdxSerializable> pdxSerializable) const {
+    DataInput& /*input*/,
+    std::shared_ptr<PdxSerializable> /*pdxSerializable*/) const {
   throw UnsupportedOperationException(
       "SerializationRegistry::deserialize<PdxSerializable> not implemented");
 }
 
 void SerializationRegistry::serializeWithoutHeader(const PdxSerializable* obj,
-                                   DataOutput& output) const {
+                                                   DataOutput& output) const {
   PdxHelper::serializePdx(output, *obj);
 }
-
 
 void SerializationRegistry::addType(TypeFactoryMethod func) {
   theTypeMap.bind(func);

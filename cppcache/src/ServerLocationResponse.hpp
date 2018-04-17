@@ -31,7 +31,7 @@ class ServerLocationResponse : public DataSerializableFixedId {
   ServerLocationResponse() = default;
   ~ServerLocationResponse() override = default;
 
-  void toData(DataOutput& dataOutput) const final {}
+  void toData(DataOutput&) const final {}
 };
 
 }  // namespace client

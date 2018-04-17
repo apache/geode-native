@@ -2973,7 +2973,7 @@ void TcrMessage::readHashSetForGCVersions(
         "Reading HashSet For GC versions. Expecting type id of hash set. ");
   }
 
-  auto len = input.readArrayLen();
+  auto len = input.readArrayLength();
   for (decltype(len) index = 0; index < len; index++) {
     auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(input.readObject());
     value->insert(keyPtr);

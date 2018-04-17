@@ -14,12 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/CacheableUndefined.hpp>
-#include <geode/DataOutput.hpp>
-#include <geode/DataInput.hpp>
-#include <geode/GeodeTypeIds.hpp>
 
-#include "GeodeTypeIdsImpl.hpp"
+#include <geode/CacheableUndefined.hpp>
 
 namespace apache {
 namespace geode {
@@ -29,17 +25,6 @@ void CacheableUndefined::toData(DataOutput&) const {}
 
 void CacheableUndefined::fromData(DataInput&) {}
 
-int32_t CacheableUndefined::classId() const { return 0; }
-
-int8_t CacheableUndefined::typeId() const {
-  return GeodeTypeIds::CacheableUndefined;
-}
-
-int8_t CacheableUndefined::DSFID() const {
-  return GeodeTypeIdsImpl::FixedIDByte;
-}
-
-size_t CacheableUndefined::objectSize() const { return 0; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

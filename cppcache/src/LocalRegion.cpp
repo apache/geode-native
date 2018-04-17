@@ -1377,8 +1377,6 @@ class RemoveActions {
           "SerializationRegistry::deserialize: Serialization type not "
           "implemented.");
     }
-
-    return false;
   }
 
   inline GfErrType remoteUpdate(
@@ -1389,7 +1387,7 @@ class RemoveActions {
     // propagate the remove to remote server, if any
     std::shared_ptr<Cacheable> oldValue;
     GfErrType err = GF_NOERR;
-    if (!allowNULLValue && m_region.getAttributes()->getCachingEnabled()) {
+    if (!allowNULLValue && m_region.getAttributes().getCachingEnabled()) {
       m_region.getEntry(key, oldValue);
       if (oldValue != nullptr && newValue != nullptr) {
         if (!serializedEqualTo(oldValue, newValue)) {
@@ -1441,7 +1439,7 @@ class RemoveActions {
         err = (m_ServerResponse == 0 && valuePtr == nullptr) ? GF_NOERR
                                                              : GF_ENOENT;
         if (updateCount >= 0 &&
-            !m_region.getAttributes()->getConcurrencyChecksEnabled()) {
+            !m_region.getAttributes().getConcurrencyChecksEnabled()) {
           // This means server has deleted an entry & same entry has been
           // destroyed locally
           // So call removeTrackerForEntry to remove key that

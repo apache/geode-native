@@ -38,7 +38,7 @@ VersionTag::VersionTag(int32_t entryVersion, int16_t regionVersionHighBytes,
       m_timeStamp(0),
       m_memberListForVersionStamp(memberListForVersionStamp) {}
 
-void VersionTag::toData(DataOutput& output) const {
+void VersionTag::toData(DataOutput&) const {
   throw IllegalStateException("VersionTag::toData not implemented");
 }
 

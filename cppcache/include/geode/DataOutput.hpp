@@ -38,6 +38,7 @@ class SerializationRegistry;
 class DataOutputInternal;
 class CacheImpl;
 class Pool;
+class TcrMessage;
 
 /**
  * Provide operations for writing primitive data values, byte arrays,

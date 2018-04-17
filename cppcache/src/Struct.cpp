@@ -41,7 +41,7 @@ void Struct::skipClassName(DataInput& input) {
   }
 }
 
-void Struct::toData(DataOutput& output) const {
+void Struct::toData(DataOutput&) const {
   throw UnsupportedOperationException("Struct::toData: should not be called.");
 }
 

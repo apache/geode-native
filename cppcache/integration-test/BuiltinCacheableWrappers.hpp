@@ -747,7 +747,7 @@ class CacheableHashMapTypeWrapper : public CacheableWrapper {
 
   uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const override {
     auto map = std::dynamic_pointer_cast<const HMAPTYPE>(object);
-    ASSERT(obj != nullptr, "getCheckSum: null object.");
+    ASSERT(map != nullptr, "getCheckSum: null object.");
     uint32_t chksum = 0;
 
     for (const auto& obj : *map) {
@@ -814,7 +814,7 @@ class CacheableHashSetTypeWrapper : public CacheableWrapper {
 
   uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const override {
     auto set = std::dynamic_pointer_cast<HSETTYPE>(object);
-    ASSERT(obj != nullptr, "getCheckSum: null object.");
+    ASSERT(set != nullptr, "getCheckSum: null object.");
     uint32_t checkSum = 0;
 
     for (const auto& obj : *set) {

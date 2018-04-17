@@ -161,7 +161,8 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
       serialize(pdxSerializable, output);
     } else {
       throw UnsupportedOperationException(
-          "SerializationRegistry::serialize: Serialization type not implemented.");
+          "SerializationRegistry::serialize: Serialization type not "
+          "implemented.");
     }
   }
 
@@ -330,7 +331,6 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     obj->toData(output);
   }
 
-
  public:
   static inline int8_t getSerializableDataDsCode(int32_t classId) {
     if (classId <= std::numeric_limits<int8_t>::max() &&
@@ -356,8 +356,8 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   void deserialize(DataInput& input,
                    std::shared_ptr<DataSerializable> obj) const;
 
-  void deserialize(DataInput& input,
-                   std::shared_ptr<PdxSerializable> obj) const;
+  [[noreturn]] void deserialize(DataInput& input,
+                                std::shared_ptr<PdxSerializable> obj) const;
 };
 
 }  // namespace client

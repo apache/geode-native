@@ -38,11 +38,11 @@ class DataOutput;
 class Serializable;
 
 class APACHE_GEODE_EXPORT CacheableUndefined
-  : public DataSerializableFixedId_t<GeodeTypeIds::CacheableUndefined> {
+    : public DataSerializableFixedId_t<GeodeTypeIds::CacheableUndefined> {
  public:
-  void toData(DataOutput& output) const override{};
+  void toData(DataOutput&) const override;
 
-  virtual void fromData(DataInput& input) override{};
+  void fromData(DataInput&) override;
 
   /**
    * @brief creation function for undefined query result

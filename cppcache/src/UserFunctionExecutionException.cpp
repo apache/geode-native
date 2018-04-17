@@ -22,30 +22,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-void UserFunctionExecutionException::toData(DataOutput&) const {
-  throw IllegalStateException(
-      "UserFunctionExecutionException::toData is not intended for use.");
-}
-
-void UserFunctionExecutionException::fromData(DataInput&) {
-  throw IllegalStateException(
-      "UserFunctionExecutionException::fromData is not intended for use.");
-}
-
-int32_t UserFunctionExecutionException::classId() const {
-  throw IllegalStateException(
-      "UserFunctionExecutionException::classId is not intended for use.");
-}
-
-size_t UserFunctionExecutionException::objectSize() const {
-  throw IllegalStateException(
-      "UserFunctionExecutionException::objectSize is not intended for use.");
-}
-
-int8_t UserFunctionExecutionException::typeId() const {
-  return static_cast<int8_t>(0);
-}
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

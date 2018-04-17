@@ -31,7 +31,7 @@ class ServerLocationRequest : public DataSerializableFixedId {
   ServerLocationRequest() = default;
   ~ServerLocationRequest() override = default;
 
-  void fromData(DataInput& dataInput) final {}
+  void fromData(DataInput&) final {}
 };
 
 }  // namespace client

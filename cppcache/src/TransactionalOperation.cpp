@@ -72,16 +72,16 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(
             cacheImpl->getCache()->getRegion(m_regionName));
       }
       result = std::dynamic_pointer_cast<Cacheable>(
-          execution->withArgs(m_arguments->at(0))
-              ->withFilter(std::dynamic_pointer_cast<CacheableVector>(
+          execution.withArgs(m_arguments->at(0))
+              .withFilter(std::dynamic_pointer_cast<CacheableVector>(
                   m_arguments->at(1)))
-              ->withCollector(std::dynamic_pointer_cast<ResultCollector>(
+              .withCollector(std::dynamic_pointer_cast<ResultCollector>(
                   m_arguments->at(2)))
-              ->execute(m_arguments->at(3)->toString().c_str(),
-                        std::chrono::milliseconds(
-                            std::dynamic_pointer_cast<CacheableInt32>(
-                                m_arguments->at(4))
-                                ->value())));
+              .execute(m_arguments->at(3)->toString().c_str(),
+                       std::chrono::milliseconds(
+                           std::dynamic_pointer_cast<CacheableInt32>(
+                               m_arguments->at(4))
+                               ->value())));
     } break;
     case GF_GET:
       result = cacheImpl->getCache()
@@ -95,8 +95,7 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(
     case GF_GET_ALL: {
       const auto result =
           std::static_pointer_cast<RegionInternal>(
-            cacheImpl->getCache()
-                         ->getRegion(m_regionName)
+              cacheImpl->getCache()->getRegion(m_regionName))
               ->getAll_internal(*std::dynamic_pointer_cast<
                                     std::vector<std::shared_ptr<CacheableKey>>>(
                                     m_arguments->at(0)),
