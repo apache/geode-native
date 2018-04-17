@@ -105,10 +105,12 @@ RegionFactory Cache::createRegionFactory(
 std::shared_ptr<QueryService> Cache::getQueryService() {
   return m_cacheImpl->getQueryService();
 }
+
 std::shared_ptr<QueryService> Cache::getQueryService(
     const std::string& poolName) const {
   return m_cacheImpl->getQueryService(poolName.c_str());
 }
+
 std::shared_ptr<CacheTransactionManager> Cache::getCacheTransactionManager()
     const {
   return m_cacheImpl->getCacheTransactionManager();
@@ -116,10 +118,10 @@ std::shared_ptr<CacheTransactionManager> Cache::getCacheTransactionManager()
 
 Cache::Cache(const std::shared_ptr<Properties>& dsProp,
              bool ignorePdxUnreadFields, bool readPdxSerialized,
-             const std::shared_ptr<AuthInitialize>& authInitialize) {
-  m_cacheImpl = std::unique_ptr<CacheImpl>(new CacheImpl(
-      this, dsProp, ignorePdxUnreadFields, readPdxSerialized, authInitialize));
-}
+             const std::shared_ptr<AuthInitialize>& authInitialize)
+    : m_cacheImpl(std::unique_ptr<CacheImpl>(
+          new CacheImpl(this, dsProp, ignorePdxUnreadFields, readPdxSerialized,
+                        authInitialize))) { }
 
 Cache::Cache(Cache&& other) noexcept
     : m_cacheImpl(std::move(other.m_cacheImpl)) {
