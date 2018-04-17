@@ -43,7 +43,6 @@
 #include "PdxTypeRegistry.hpp"
 #include "SerializationRegistry.hpp"
 #include "ThreadPool.hpp"
-#include "PdxInstanceFactoryImpl.hpp"
 #include "CacheXmlParser.hpp"
 
 #define DEFAULT_DS_NAME "default_GeodeDS"
@@ -835,10 +834,10 @@ std::unique_ptr<DataInput> CacheImpl::createDataInput(const uint8_t* buffer,
   return std::unique_ptr<DataInput>(new DataInput(buffer, len, this, pool));
 }
 
-std::shared_ptr<PdxInstanceFactory> CacheImpl::createPdxInstanceFactory(
+PdxInstanceFactory CacheImpl::createPdxInstanceFactory(
     const std::string& className) const {
-  return std::make_shared<PdxInstanceFactoryImpl>(
-      className, m_cacheStats, m_pdxTypeRegistry, this,
+  return PdxInstanceFactory(
+      className, *m_cacheStats, m_pdxTypeRegistry, *this,
       m_distributedSystem.getSystemProperties().getEnableTimeStatistics());
 }
 

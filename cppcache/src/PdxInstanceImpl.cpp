@@ -75,9 +75,9 @@ PdxInstanceImpl::~PdxInstanceImpl() noexcept {
 }
 
 PdxInstanceImpl::PdxInstanceImpl(
-    uint8_t* buffer, int length, int typeId, CachePerfStats* cacheStats,
+    uint8_t* buffer, int length, int typeId, CachePerfStats& cacheStats,
     std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry,
-    const CacheImpl* cacheImpl, bool enableTimeStatistics)
+    const CacheImpl& cacheImpl, bool enableTimeStatistics)
     : m_buffer(DataInput::getBufferCopy(buffer, length)),
       m_bufferLength(length),
       m_typeId(typeId),
@@ -92,9 +92,9 @@ PdxInstanceImpl::PdxInstanceImpl(
 PdxInstanceImpl::PdxInstanceImpl(
     apache::geode::client::FieldVsValues fieldVsValue,
     std::shared_ptr<apache::geode::client::PdxType> pdxType,
-    CachePerfStats* cacheStats,
+    CachePerfStats& cacheStats,
     std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry,
-    const CacheImpl* cacheImpl, bool enableTimeStatistics)
+    const CacheImpl& cacheImpl, bool enableTimeStatistics)
     : m_buffer(nullptr),
       m_bufferLength(0),
       m_typeId(0),
@@ -683,7 +683,7 @@ int32_t PdxInstanceImpl::hashcode() const {
 
   auto pdxIdentityFieldList = getIdentityPdxFields(pt);
 
-  auto dataInput = m_cacheImpl->createDataInput(m_buffer, m_bufferLength);
+  auto dataInput = m_cacheImpl.createDataInput(m_buffer, m_bufferLength);
 
   for (uint32_t i = 0; i < pdxIdentityFieldList.size(); i++) {
     auto pField = pdxIdentityFieldList.at(i);
@@ -1115,21 +1115,18 @@ std::string PdxInstanceImpl::toString() const {
 }
 
 std::shared_ptr<PdxSerializable> PdxInstanceImpl::getObject() {
-  auto dataInput = m_cacheImpl->createDataInput(m_buffer, m_bufferLength);
+  auto dataInput = m_cacheImpl.createDataInput(m_buffer, m_bufferLength);
   int64_t sampleStartNanos =
       m_enableTimeStatistics ? Utils::startStatOpTime() : 0;
   //[ToDo] do we have to call incPdxDeSerialization here?
   auto ret = PdxHelper::deserializePdx(*dataInput, m_typeId, m_bufferLength);
 
-  if (m_cacheStats != nullptr) {
-    if (m_enableTimeStatistics) {
-      Utils::updateStatOpTime(
-          m_cacheStats->getStat(),
-          m_cacheStats->getPdxInstanceDeserializationTimeId(),
-          sampleStartNanos);
-    }
-    m_cacheStats->incPdxInstanceDeserializations();
+  if (m_enableTimeStatistics) {
+    Utils::updateStatOpTime(m_cacheStats.getStat(),
+                            m_cacheStats.getPdxInstanceDeserializationTimeId(),
+                            sampleStartNanos);
   }
+  m_cacheStats.incPdxInstanceDeserializations();
   return ret;
 }
 
@@ -1191,9 +1188,9 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
   equatePdxFields(myPdxIdentityFieldList, otherPdxIdentityFieldList);
   equatePdxFields(otherPdxIdentityFieldList, myPdxIdentityFieldList);
 
-  auto myDataInput = m_cacheImpl->createDataInput(m_buffer, m_bufferLength);
-  auto otherDataInput = m_cacheImpl->createDataInput(otherPdx->m_buffer,
-                                                     otherPdx->m_bufferLength);
+  auto myDataInput = m_cacheImpl.createDataInput(m_buffer, m_bufferLength);
+  auto otherDataInput =
+      m_cacheImpl.createDataInput(otherPdx->m_buffer, otherPdx->m_bufferLength);
 
   PdxFieldTypes fieldTypeId;
   for (size_t i = 0; i < myPdxIdentityFieldList.size(); i++) {
@@ -1404,7 +1401,7 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
   if (m_buffer != nullptr) {
     uint8_t* copy = apache::geode::client::DataInput::getBufferCopy(
         m_buffer, m_bufferLength);
-    auto dataInput = m_cacheImpl->createDataInput(copy, m_bufferLength);
+    auto dataInput = m_cacheImpl.createDataInput(copy, m_bufferLength);
     for (size_t i = 0; i < pdxFieldList->size(); i++) {
       auto currPf = pdxFieldList->at(i);
       LOGDEBUG("toData filedname = %s , isVarLengthType = %d ",
@@ -2039,7 +2036,7 @@ std::unique_ptr<DataInput> PdxInstanceImpl::getDataInputForField(
     throw IllegalStateException("PdxInstance doesn't have field " + fieldname);
   }
 
-  auto dataInput = m_cacheImpl->createDataInput(m_buffer, m_bufferLength);
+  auto dataInput = m_cacheImpl.createDataInput(m_buffer, m_bufferLength);
   auto pos = getOffset(*dataInput, pt, pft->getSequenceId());
 
   dataInput->reset();

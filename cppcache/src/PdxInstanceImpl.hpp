@@ -212,14 +212,14 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    */
 
   PdxInstanceImpl(uint8_t* buffer, int length, int typeId,
-                  CachePerfStats* cacheStats,
+                  CachePerfStats& cacheStats,
                   std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry,
-                  const CacheImpl* cacheImpl, bool enableTimeStatistics);
+                  const CacheImpl& cacheImpl, bool enableTimeStatistics);
 
   PdxInstanceImpl(FieldVsValues fieldVsValue, std::shared_ptr<PdxType> pdxType,
-                  CachePerfStats* cacheStats,
+                  CachePerfStats& cacheStats,
                   std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry,
-                  const CacheImpl* cacheImpl, bool enableTimeStatistics);
+                  const CacheImpl& cacheImpl, bool enableTimeStatistics);
 
   PdxInstanceImpl(const PdxInstanceImpl& other) = delete;
 
@@ -235,10 +235,10 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   int m_typeId;
   std::shared_ptr<PdxType> m_pdxType;
   FieldVsValues m_updatedFields;
-  CachePerfStats* m_cacheStats;
+  CachePerfStats& m_cacheStats;
 
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
-  const CacheImpl* m_cacheImpl;
+  const CacheImpl& m_cacheImpl;
   bool m_enableTimeStatistics;
 
   std::vector<std::shared_ptr<PdxFieldType>> getIdentityPdxFields(

@@ -121,7 +121,7 @@ class APACHE_GEODE_EXPORT AuthenticatedView : public RegionService {
    * when it is fully deserialized.
    * @return the factory
    */
-  std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
+  PdxInstanceFactory createPdxInstanceFactory(
       const std::string& className) const override;
 
   AuthenticatedView& operator=(AuthenticatedView&& other) = default;

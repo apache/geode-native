@@ -14,25 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/internal/geode_globals.hpp>
+
+#include <string>
 #include <memory>
 
+#include <geode/internal/geode_globals.hpp>
 #include <geode/DistributedSystem.hpp>
+#include <geode/Cache.hpp>
+#include <geode/FunctionService.hpp>
+#include <geode/AuthenticatedView.hpp>
+#include <geode/PoolManager.hpp>
+
 #include "DistributedSystemImpl.hpp"
 #include "CacheXmlParser.hpp"
 #include "CacheRegionHelper.hpp"
-#include <geode/Cache.hpp>
 #include "CacheImpl.hpp"
 #include "UserAttributes.hpp"
 #include "ProxyRegion.hpp"
-#include <geode/FunctionService.hpp>
 #include "ProxyRemoteQueryService.hpp"
 #include "FunctionServiceImpl.hpp"
-#include <geode/AuthenticatedView.hpp>
-#include <string>
-#include <geode/PoolManager.hpp>
 #include "ThinClientPoolDM.hpp"
-#include "PdxInstanceFactoryImpl.hpp"
 
 using namespace apache::geode::client;
 
@@ -166,12 +167,11 @@ AuthenticatedView::AuthenticatedView(std::shared_ptr<Properties> credentials,
 
 AuthenticatedView::~AuthenticatedView() {}
 
-std::shared_ptr<PdxInstanceFactory> AuthenticatedView::createPdxInstanceFactory(
+PdxInstanceFactory AuthenticatedView::createPdxInstanceFactory(
     const std::string& className) const {
-  return std::make_shared<PdxInstanceFactoryImpl>(
-      className.c_str(), &(m_cacheImpl->getCachePerfStats()),
-      m_cacheImpl->getPdxTypeRegistry(), m_cacheImpl,
-      m_cacheImpl->getDistributedSystem()
-          .getSystemProperties()
-          .getEnableTimeStatistics());
+  return PdxInstanceFactory(className, m_cacheImpl->getCachePerfStats(),
+                            m_cacheImpl->getPdxTypeRegistry(), *m_cacheImpl,
+                            m_cacheImpl->getDistributedSystem()
+                                .getSystemProperties()
+                                .getEnableTimeStatistics());
 }

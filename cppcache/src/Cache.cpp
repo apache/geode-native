@@ -155,7 +155,7 @@ bool Cache::getPdxReadSerialized() const {
   return m_cacheImpl->getPdxReadSerialized();
 }
 
-std::shared_ptr<PdxInstanceFactory> Cache::createPdxInstanceFactory(
+PdxInstanceFactory Cache::createPdxInstanceFactory(
     const std::string& className) const {
   return m_cacheImpl->createPdxInstanceFactory(className);
 }

@@ -24,6 +24,7 @@
 #include <memory>
 
 #include "internal/geode_globals.hpp"
+#include "PdxInstanceFactory.hpp"
 
 /**
  * @file
@@ -35,7 +36,7 @@ namespace client {
 
 class Region;
 class QueryService;
-class PdxInstanceFactory;
+
 /**
  * A RegionService provides access to existing {@link Region regions} that exist
  * in a {@link GeodeCache Geode cache}.
@@ -115,7 +116,7 @@ class APACHE_GEODE_EXPORT RegionService {
    * when it is fully deserialized.
    * @return the factory
    */
-  virtual std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
+  virtual PdxInstanceFactory createPdxInstanceFactory(
       const std::string& className) const = 0;
 };
 }  // namespace client
