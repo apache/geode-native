@@ -78,8 +78,7 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    * @param regionShortcut
    *        To create the region specific type, @see RegionShortcut
    */
-  virtual RegionFactory createRegionFactory(
-      const RegionShortcut& regionShortcut);
+  virtual RegionFactory createRegionFactory(RegionShortcut regionShortcut);
 
   /**
    * Initializes the cache from an xml file

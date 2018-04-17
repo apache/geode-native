@@ -97,8 +97,7 @@ std::vector<std::shared_ptr<Region>> Cache::rootRegions() const {
   return m_cacheImpl->rootRegions();
 }
 
-RegionFactory Cache::createRegionFactory(
-    const RegionShortcut& preDefinedRegion) {
+RegionFactory Cache::createRegionFactory(RegionShortcut preDefinedRegion) {
   return m_cacheImpl->createRegionFactory(preDefinedRegion);
 }
 
@@ -121,7 +120,7 @@ Cache::Cache(const std::shared_ptr<Properties>& dsProp,
              const std::shared_ptr<AuthInitialize>& authInitialize)
     : m_cacheImpl(std::unique_ptr<CacheImpl>(
           new CacheImpl(this, dsProp, ignorePdxUnreadFields, readPdxSerialized,
-                        authInitialize))) { }
+                        authInitialize))) {}
 
 Cache::Cache(Cache&& other) noexcept
     : m_cacheImpl(std::move(other.m_cacheImpl)) {
