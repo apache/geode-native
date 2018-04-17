@@ -525,14 +525,14 @@ std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
       if (region != nullptr) {
         region = region->getSubregion(remainder.c_str());
       }
-
-      if (isPoolInMultiuserMode(region)) {
-        LOGWARN("Pool " + region->getAttributes().getPoolName() +
-                " attached with region " + region->getFullPath() +
-                " is in multiuser authentication mode. Operations may fail as "
-                "this instance does not have any credentials.");
-      }
     }
+  }
+
+  if (region != nullptr && isPoolInMultiuserMode(region)) {
+    LOGWARN("Pool " + region->getAttributes().getPoolName() +
+            " attached with region " + region->getFullPath() +
+            " is in multiuser authentication mode. Operations may fail as "
+            "this instance does not have any credentials.");
   }
 
   return region;
