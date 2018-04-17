@@ -380,7 +380,7 @@ namespace Apache.Geode.Client.UnitTests
       factory.AddLocator("localhost", CacheHelper.LOCATOR_PORT_1);
       factory.SetPRSingleHopEnabled(false);
 
-      Pool pool = factory.Create(poolName, CacheHelper.DCache);
+      Pool pool = factory.Create(poolName);
 
       Assert.AreEqual(TimeSpan.FromSeconds(10000), pool.FreeConnectionTimeout, "FreeConnectionTimeout");
       Assert.AreEqual(TimeSpan.FromSeconds(1), pool.LoadConditioningInterval, "LoadConditioningInterval");
@@ -438,7 +438,7 @@ namespace Apache.Geode.Client.UnitTests
       PoolFactory factory = CacheHelper.DCache.GetPoolManager().CreateFactory();
       try
       {
-        factory.Create(poolName, CacheHelper.DCache);
+        factory.Create(poolName);
         Assert.Fail("Did not get expected IllegalStateException");
       }
       catch (IllegalStateException /*excp*/)
