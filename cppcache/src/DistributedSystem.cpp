@@ -102,7 +102,7 @@ DistributedSystem DistributedSystem::create(
   return distributedSystem;
 }
 
-void DistributedSystem::connect(Cache* cache) { m_impl->connect(cache); }
+void DistributedSystem::connect() { m_impl->connect(); }
 
 void DistributedSystem::disconnect() { m_impl->disconnect(); }
 

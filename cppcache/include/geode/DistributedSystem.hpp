@@ -78,7 +78,7 @@ class APACHE_GEODE_EXPORT DistributedSystem {
    * @brief connects from the distributed system
    * @throws AlreadyConnectedException if this call has succeeded once before
    */
-  void connect(Cache* cache);
+  void connect();
 
   /**
    * @brief disconnect from the distributed system

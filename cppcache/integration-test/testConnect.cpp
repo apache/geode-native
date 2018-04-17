@@ -26,7 +26,7 @@ DUNIT_TASK(s1p1, CreateRegionOne)
     auto factory = CacheFactory();
     auto cache = std::make_shared<Cache>(factory.create());
     try {
-      cache->getDistributedSystem().connect(cache.get());
+      cache->getDistributedSystem().connect();
       FAIL("Expected an exception.");
     } catch (const AlreadyConnectedException& ex) {
       LOG("Got expected exception.");

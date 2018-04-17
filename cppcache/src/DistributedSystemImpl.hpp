@@ -76,7 +76,7 @@ class APACHE_GEODE_EXPORT DistributedSystemImpl {
   /** Retrieve the MemberId used to create this Cache. */
   virtual void disconnect();
 
-  virtual void connect(Cache* cache);
+  virtual void connect();
 
   void logSystemInformation() const;
 

@@ -110,7 +110,7 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
     throw;
   }
 
-  m_distributedSystem.connect(m_cache);
+  m_distributedSystem.connect();
 }
 
 void CacheImpl::initServices() {

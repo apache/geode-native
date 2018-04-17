@@ -54,7 +54,7 @@ DistributedSystemImpl::~DistributedSystemImpl() {
   LOGFINE("Destroyed DistributedSystemImpl");
 }
 
-void DistributedSystemImpl::connect(Cache* cache) {
+void DistributedSystemImpl::connect() {
   if (m_connected == true) {
     throw AlreadyConnectedException(
         "DistributedSystem::connect: already connected, call getInstance to "
