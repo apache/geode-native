@@ -19,8 +19,10 @@
 #include <sstream>
 
 #include <geode/CacheFactory.hpp>
-#include <geode/PdxWrapper.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/RegionFactory.hpp>
+#include <geode/RegionShortcut.hpp>
+#include <geode/TypeRegistry.hpp>
 
 #include "Order.hpp"
 

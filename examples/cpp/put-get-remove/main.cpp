@@ -19,11 +19,12 @@
 
 #include <geode/CacheFactory.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/RegionFactory.hpp>
+#include <geode/RegionShortcut.hpp>
 
 using namespace apache::geode::client;
 
 int main(int argc, char** argv) {
-
   auto cacheFactory = CacheFactory();
   cacheFactory.set("log-level", "none");
   auto cache = cacheFactory.create();
@@ -41,16 +42,19 @@ int main(int argc, char** argv) {
   std::cout << "Getting the user info from the region" << std::endl;
   auto user1 = region->get("rtimmons");
   auto user2 = region->get("scharles");
-  std::cout << "  rtimmons = " << std::dynamic_pointer_cast<CacheableString>(user1)->value() << std::endl;
-  std::cout << "  scharles = " << std::dynamic_pointer_cast<CacheableString>(user2)->value() << std::endl;
+  std::cout << "  rtimmons = "
+            << std::dynamic_pointer_cast<CacheableString>(user1)->value()
+            << std::endl;
+  std::cout << "  scharles = "
+            << std::dynamic_pointer_cast<CacheableString>(user2)->value()
+            << std::endl;
 
   std::cout << "Removing rtimmons info from the region" << std::endl;
   region->remove("rtimmons");
 
-  if(region->existsValue("rtimmons")) {
+  if (region->existsValue("rtimmons")) {
     std::cout << "rtimmons's info not deleted" << std::endl;
-  }
-  else {
+  } else {
     std::cout << "rtimmons's info successfully deleted" << std::endl;
   }
 
