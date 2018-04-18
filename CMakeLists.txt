@@ -245,11 +245,9 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     /EHa)
 
   target_compile_options(_WarningsAsError INTERFACE
-    /W3
     /WX
-    /w34100 # -Wunused-parameter
-    /wd4068 # TODO fix
-    )
+	/wd4068 # TODO fix
+	)
 
   # TODO error on warnings
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")
