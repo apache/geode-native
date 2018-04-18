@@ -25,10 +25,11 @@ namespace apache {
 namespace geode {
 namespace client {
 
-PdxInstanceFactory::PdxInstanceFactory(
-    const std::string& className, CachePerfStats& cachePerfStats,
-    std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry, const CacheImpl& cache,
-    bool enableTimeStatistics)
+PdxInstanceFactory::PdxInstanceFactory(const std::string& className,
+                                       CachePerfStats& cachePerfStats,
+                                       PdxTypeRegistry& pdxTypeRegistry,
+                                       const CacheImpl& cache,
+                                       bool enableTimeStatistics)
     : m_created(false),
       m_pdxType(std::make_shared<PdxType>(pdxTypeRegistry, className, false)),
       m_cachePerfStats(cachePerfStats),

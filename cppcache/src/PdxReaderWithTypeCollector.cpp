@@ -36,7 +36,7 @@ PdxReaderWithTypeCollector::PdxReaderWithTypeCollector(
     std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
     : PdxLocalReader(dataInput, pdxType, pdxlen, pdxTypeRegistry) {
   m_newPdxType = std::make_shared<PdxType>(
-      m_pdxTypeRegistry, pdxType->getPdxClassName().c_str(), true);
+      *m_pdxTypeRegistry, pdxType->getPdxClassName().c_str(), true);
 }
 
 PdxReaderWithTypeCollector::~PdxReaderWithTypeCollector() {}

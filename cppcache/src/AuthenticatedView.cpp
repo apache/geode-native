@@ -170,7 +170,7 @@ AuthenticatedView::~AuthenticatedView() {}
 PdxInstanceFactory AuthenticatedView::createPdxInstanceFactory(
     const std::string& className) const {
   return PdxInstanceFactory(className, m_cacheImpl->getCachePerfStats(),
-                            m_cacheImpl->getPdxTypeRegistry(), *m_cacheImpl,
+                            *m_cacheImpl->getPdxTypeRegistry(), *m_cacheImpl,
                             m_cacheImpl->getDistributedSystem()
                                 .getSystemProperties()
                                 .getEnableTimeStatistics());

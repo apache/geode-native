@@ -302,7 +302,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
     // TODO::Enable it once the PdxInstanceImple is CheckedIn.
     auto pdxObject = std::make_shared<PdxInstanceImpl>(
         const_cast<uint8_t*>(dataInput.currentBufferPosition()), len, typeId,
-        cachePerfStats, pdxTypeRegistry, *cacheImpl,
+        cachePerfStats, *pdxTypeRegistry, *cacheImpl,
         cacheImpl->getDistributedSystem()
             .getSystemProperties()
             .getEnableTimeStatistics());

@@ -74,10 +74,11 @@ PdxInstanceImpl::~PdxInstanceImpl() noexcept {
   _GEODE_SAFE_DELETE_ARRAY(m_buffer);
 }
 
-PdxInstanceImpl::PdxInstanceImpl(
-    uint8_t* buffer, int length, int typeId, CachePerfStats& cacheStats,
-    std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry,
-    const CacheImpl& cacheImpl, bool enableTimeStatistics)
+PdxInstanceImpl::PdxInstanceImpl(uint8_t* buffer, int length, int typeId,
+                                 CachePerfStats& cacheStats,
+                                 PdxTypeRegistry& pdxTypeRegistry,
+                                 const CacheImpl& cacheImpl,
+                                 bool enableTimeStatistics)
     : m_buffer(DataInput::getBufferCopy(buffer, length)),
       m_bufferLength(length),
       m_typeId(typeId),
@@ -89,12 +90,12 @@ PdxInstanceImpl::PdxInstanceImpl(
   LOGDEBUG("PdxInstanceImpl::m_bufferLength = %d ", m_bufferLength);
 }
 
-PdxInstanceImpl::PdxInstanceImpl(
-    apache::geode::client::FieldVsValues fieldVsValue,
-    std::shared_ptr<apache::geode::client::PdxType> pdxType,
-    CachePerfStats& cacheStats,
-    std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry,
-    const CacheImpl& cacheImpl, bool enableTimeStatistics)
+PdxInstanceImpl::PdxInstanceImpl(FieldVsValues fieldVsValue,
+                                 std::shared_ptr<PdxType> pdxType,
+                                 CachePerfStats& cacheStats,
+                                 PdxTypeRegistry& pdxTypeRegistry,
+                                 const CacheImpl& cacheImpl,
+                                 bool enableTimeStatistics)
     : m_buffer(nullptr),
       m_bufferLength(0),
       m_typeId(0),
@@ -765,7 +766,7 @@ std::shared_ptr<PdxType> PdxInstanceImpl::getPdxType() const {
     }
     return m_pdxType;
   }
-  auto pType = getPdxTypeRegistry()->getPdxType(m_typeId);
+  auto pType = getPdxTypeRegistry().getPdxType(m_typeId);
   return pType;
 }
 
@@ -1451,7 +1452,7 @@ void PdxInstanceImpl::fromData(PdxReader&) {
 
 const std::string& PdxInstanceImpl::getClassName() const {
   if (m_typeId != 0) {
-    auto pdxtype = getPdxTypeRegistry()->getPdxType(m_typeId);
+    auto pdxtype = getPdxTypeRegistry().getPdxType(m_typeId);
     if (pdxtype == nullptr) {
       char excpStr[256] = {0};
       ACE_OS::snprintf(excpStr, 256,
@@ -2023,7 +2024,8 @@ size_t PdxInstanceImpl::objectSize() const {
   }
   return size;
 }
-std::shared_ptr<PdxTypeRegistry> PdxInstanceImpl::getPdxTypeRegistry() const {
+
+PdxTypeRegistry& PdxInstanceImpl::getPdxTypeRegistry() const {
   return m_pdxTypeRegistry;
 }
 

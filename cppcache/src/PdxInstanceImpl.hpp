@@ -212,13 +212,11 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    */
 
   PdxInstanceImpl(uint8_t* buffer, int length, int typeId,
-                  CachePerfStats& cacheStats,
-                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry,
+                  CachePerfStats& cacheStats, PdxTypeRegistry& pdxTypeRegistry,
                   const CacheImpl& cacheImpl, bool enableTimeStatistics);
 
   PdxInstanceImpl(FieldVsValues fieldVsValue, std::shared_ptr<PdxType> pdxType,
-                  CachePerfStats& cacheStats,
-                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry,
+                  CachePerfStats& cacheStats, PdxTypeRegistry& pdxTypeRegistry,
                   const CacheImpl& cacheImpl, bool enableTimeStatistics);
 
   PdxInstanceImpl(const PdxInstanceImpl& other) = delete;
@@ -236,8 +234,7 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   std::shared_ptr<PdxType> m_pdxType;
   FieldVsValues m_updatedFields;
   CachePerfStats& m_cacheStats;
-
-  std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
+  PdxTypeRegistry& m_pdxTypeRegistry;
   const CacheImpl& m_cacheImpl;
   bool m_enableTimeStatistics;
 
@@ -281,7 +278,7 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   void equatePdxFields(std::vector<std::shared_ptr<PdxFieldType>>& my,
                        std::vector<std::shared_ptr<PdxFieldType>>& other) const;
 
-  std::shared_ptr<PdxTypeRegistry> getPdxTypeRegistry() const;
+  PdxTypeRegistry& getPdxTypeRegistry() const;
 
   void toDataMutable(PdxWriter& output);
 

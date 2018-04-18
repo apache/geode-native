@@ -837,7 +837,7 @@ std::unique_ptr<DataInput> CacheImpl::createDataInput(const uint8_t* buffer,
 PdxInstanceFactory CacheImpl::createPdxInstanceFactory(
     const std::string& className) const {
   return PdxInstanceFactory(
-      className, *m_cacheStats, m_pdxTypeRegistry, *this,
+      className, *m_cacheStats, *m_pdxTypeRegistry, *this,
       m_distributedSystem.getSystemProperties().getEnableTimeStatistics());
 }
 

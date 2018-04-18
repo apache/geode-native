@@ -79,7 +79,7 @@ class PdxType : public Serializable,
 
   bool m_noJavaClass;
 
-  std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistryPtr;
+  PdxTypeRegistry& m_pdxTypeRegistry;
 
   void initRemoteToLocal();
 
@@ -104,7 +104,7 @@ class PdxType : public Serializable,
       std::shared_ptr<PdxType> localType);
 
  public:
-  PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr,
+  PdxType(PdxTypeRegistry& pdxTypeRegistryPtr,
           const std::string& pdxDomainClassName, bool isLocal);
 
   ~PdxType() noexcept override;
@@ -116,8 +116,8 @@ class PdxType : public Serializable,
   int32_t classId() const override { return GeodeTypeIds::PdxType; }
 
   static std::shared_ptr<Serializable> CreateDeserializable(
-      std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr) {
-    return std::make_shared<PdxType>(pdxTypeRegistryPtr, "", false);
+      PdxTypeRegistry& pdxTypeRegistry) {
+    return std::make_shared<PdxType>(pdxTypeRegistry, "", false);
   }
 
   size_t objectSize() const override {

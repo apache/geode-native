@@ -417,15 +417,15 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
   std::shared_ptr<PdxType> m_pdxType;
   FieldVsValues m_FieldVsValues;
   CachePerfStats& m_cachePerfStats;
-  std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
+  PdxTypeRegistry& m_pdxTypeRegistry;
   const CacheImpl& m_cacheImpl;
   bool m_enableTimeStatistics;
   void isFieldAdded(const std::string& fieldName);
 
   PdxInstanceFactory(const std::string& className,
                      CachePerfStats& cachePerfStats,
-                     std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry,
-                     const CacheImpl& cache, bool enableTimeStatistics);
+                     PdxTypeRegistry& m_pdxTypeRegistry, const CacheImpl& cache,
+                     bool enableTimeStatistics);
 
   friend CacheImpl;
   friend AuthenticatedView;
