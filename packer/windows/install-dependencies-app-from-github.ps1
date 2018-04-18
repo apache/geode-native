@@ -13,15 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-choco install jdk8 -confirm
-choco install cmake.portable -confirm
-choco install git.install -confirm
-choco install activeperl -confirm
-choco install doxygen.install --allowEmptyChecksums -confirm
-choco install dogtail.dotnet3.5sp1 -confirm
-choco install nunit.install --version 2.6.4 -confirm
-choco install netfx-4.5.2-devpack --allowEmptyChecksums -confirm
-choco install nsis -confirm
-choco install patch -confirm
-choco install gnuwin32-coreutils.portable -confirm
-choco install nuget.commandline -confirm
+$repo = "lucasg/Dependencies"
+$file = "Dependencies.zip"
+
+$releases = "https://api.github.com/repos/$repo/releases"
+
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+Write-Host Determining latest release
+$tag = (Invoke-WebRequest $releases | ConvertFrom-Json)[0].tag_name
+
+$download = "https://github.com/$repo/releases/download/$tag/$file"
+$name = $file.Split(".")[0]
+$zip = "c:\$name-$tag.zip"
+
+Write-Host Downloading latest release
+Invoke-WebRequest $download -Out $zip
+
+Write-Host Extracting release files
+Expand-Archive -Path $zip -DestinationPath c:\Users\Administrator\Desktop\Dependencies-$tag -Force
+
+# Removing temp files
+Remove-Item $zip -Force
