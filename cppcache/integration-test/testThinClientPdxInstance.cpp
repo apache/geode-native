@@ -2380,7 +2380,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     std::shared_ptr<PdxInstance> ret = pdxFactory.create();
     LOG("PdxInstancePtr created....");
 
-    LOGINFO("PdxInstance getClassName = " + ret->getClassName());
     ASSERT(ret->getClassName() == "PdxTests.PdxType",
            "pdxInstance.getClassName should return PdxTests.PdxType.");
 
@@ -2605,64 +2604,67 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseLocator1)
   }
 END_TASK_DEFINITION
 
-void runThinClientPdxInstance(int index) {
+void testPdxInstance() {
   CALL_TASK(CreateLocator1);
   CALL_TASK(CreateServer1_With_Locator)
 
-  if (index == 0) {
-    CALL_TASK(StepOne_Pooled_Locator);
-    CALL_TASK(StepTwo_Pooled_Locator);
+  CALL_TASK(StepOne_Pooled_Locator);
+  CALL_TASK(StepTwo_Pooled_Locator);
 
-    CALL_TASK(pdxIFPutGetTest);
+  CALL_TASK(pdxIFPutGetTest);
 
-    CALL_TASK(CloseCache1);
-    CALL_TASK(CloseCache2);
-    CALL_TASK(CloseServer1);
+  CALL_TASK(CloseCache1);
+  CALL_TASK(CloseCache2);
+  CALL_TASK(CloseServer1);
 
-    CALL_TASK(CloseLocator1);
+  CALL_TASK(CloseLocator1);
+}
 
-  } else if (index == 1) {
-    CALL_TASK(StepOne_Pooled_Locator_PdxReadSerialized);
-    CALL_TASK(StepTwo_Pooled_Locator_CachingEnabled_PdxReadSerialized);
+void testPdxInstanceWithPdxReadSerializedAndCaching() {
+  CALL_TASK(CreateLocator1);
+  CALL_TASK(CreateServer1_With_Locator)
 
-    CALL_TASK(pdxPut);
-    CALL_TASK(modifyPdxInstanceAndCheckLocally);
-    CALL_TASK(pdxInstanceWithEmptyKeys);
+  CALL_TASK(StepOne_Pooled_Locator_PdxReadSerialized);
+  CALL_TASK(StepTwo_Pooled_Locator_CachingEnabled_PdxReadSerialized);
 
-    CALL_TASK(CloseCache1);
-    CALL_TASK(CloseCache2);
-    CALL_TASK(CloseServer1);
+  CALL_TASK(pdxPut);
+  CALL_TASK(modifyPdxInstanceAndCheckLocally);
+  CALL_TASK(pdxInstanceWithEmptyKeys);
 
-    CALL_TASK(CloseLocator1);
+  CALL_TASK(CloseCache1);
+  CALL_TASK(CloseCache2);
+  CALL_TASK(CloseServer1);
 
-  } else if (index == 2) {
-    CALL_TASK(StepOne_Pooled_Locator_PdxReadSerialized);
-    CALL_TASK(StepTwo_Pooled_Locator_PdxReadSerialized);
+  CALL_TASK(CloseLocator1);
+}
 
-    CALL_TASK(pdxPut);
-    CALL_TASK(getObject);
-    CALL_TASK(verifyPdxInstanceEquals);
-    CALL_TASK(verifyPdxInstanceHashcode);
-    CALL_TASK(accessPdxInstance);
-    CALL_TASK(modifyPdxInstance);
+void testPdxInstanceWithPdxReadSerialized() {
+  CALL_TASK(CreateLocator1);
+  CALL_TASK(CreateServer1_With_Locator)
 
-    CALL_TASK(CloseCache1);
-    CALL_TASK(CloseCache2);
-    CALL_TASK(CloseServer1);
+  CALL_TASK(StepOne_Pooled_Locator_PdxReadSerialized);
+  CALL_TASK(StepTwo_Pooled_Locator_PdxReadSerialized);
 
-    CALL_TASK(CloseLocator1);
-  }
+  CALL_TASK(pdxPut);
+  CALL_TASK(getObject);
+  CALL_TASK(verifyPdxInstanceEquals);
+  CALL_TASK(verifyPdxInstanceHashcode);
+  CALL_TASK(accessPdxInstance);
+  CALL_TASK(modifyPdxInstance);
+
+  CALL_TASK(CloseCache1);
+  CALL_TASK(CloseCache2);
+  CALL_TASK(CloseServer1);
+
+  CALL_TASK(CloseLocator1);
 }
 
 DUNIT_MAIN
   {
-    runThinClientPdxInstance(
-        0);  // Locator, caching = false, PdxReadSerialized = false
+    testPdxInstance();
 
-    runThinClientPdxInstance(
-        1);  // Locator, caching = true, PdxReadSerialized = true
-
-    runThinClientPdxInstance(
-        2);  // Locator, caching = false, PdxReadSerialized = true
+//    testPdxInstanceWithPdxReadSerializedAndCaching();
+//
+//    testPdxInstanceWithPdxReadSerialized();
   }
 END_MAIN

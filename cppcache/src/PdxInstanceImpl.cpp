@@ -1454,10 +1454,8 @@ const std::string& PdxInstanceImpl::getClassName() const {
   if (m_typeId != 0) {
     auto pdxtype = getPdxTypeRegistry().getPdxType(m_typeId);
     if (pdxtype == nullptr) {
-      char excpStr[256] = {0};
-      ACE_OS::snprintf(excpStr, 256,
-                       "PdxType is not defined for PdxInstance: %d ", m_typeId);
-      throw IllegalStateException(excpStr);
+      throw IllegalStateException("PdxType is not defined for PdxInstance: " +
+                                  std::to_string(m_typeId));
     }
     return pdxtype->getPdxClassName();
   }

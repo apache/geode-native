@@ -84,7 +84,6 @@ target_include_directories(testobject
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-  PRIVATE
     $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
