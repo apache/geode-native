@@ -43,6 +43,7 @@ target_link_libraries(integration-test-2
   PUBLIC
     apache-geode
     testobject
+    ACE
     GTest::GTest
     GTest::Main
     Boost::boost

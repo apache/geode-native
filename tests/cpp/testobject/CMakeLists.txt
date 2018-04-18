@@ -93,7 +93,7 @@ target_link_libraries(testobject
     fwk
   PRIVATE
     ACE
-	_WarningsAsError
+	  _WarningsAsError
 )
 
 # For Visual Studio organization

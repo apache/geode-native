@@ -2479,7 +2479,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
 
     auto pp = std::make_shared<ParentPdx>(10);
     auto pdxFactory2 = cacheHelper->getCache()->createPdxInstanceFactory(
-        "testobject::ParentPdx");
+        "testobject.ParentPdx");
     pdxFactory2.writeInt("m_parentId", pp->getParentId());
     pdxFactory2.writeObject("m_enum", pp->getEnum());
     pdxFactory2.writeString("m_parentName", pp->getParentName());
@@ -2493,8 +2493,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     LOG("PdxInstancePtr created");
 
     LOGINFO("PdxInstance getClassName = " + ip2->getClassName());
-    ASSERT(ip2->getClassName() == "testobject::ParentPdx",
-           "pdxInstance.getClassName should return testobject::ParentPdx.");
+    ASSERT(ip2->getClassName() == "testobject.ParentPdx",
+           "pdxInstance.getClassName should return testobject.ParentPdx.");
 
     auto keyport = CacheableKey::create("pp");
     rptr->put(keyport, ip2);
@@ -2663,8 +2663,8 @@ DUNIT_MAIN
   {
     testPdxInstance();
 
-//    testPdxInstanceWithPdxReadSerializedAndCaching();
-//
-//    testPdxInstanceWithPdxReadSerialized();
+    testPdxInstanceWithPdxReadSerializedAndCaching();
+
+    testPdxInstanceWithPdxReadSerialized();
   }
 END_MAIN

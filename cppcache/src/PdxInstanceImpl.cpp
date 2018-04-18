@@ -22,21 +22,9 @@
 #include <geode/Cache.hpp>
 
 #include "PdxInstanceImpl.hpp"
-#include "PdxTypeRegistry.hpp"
 #include "PdxHelper.hpp"
-#include "PdxTypes.hpp"
-#include "PdxLocalWriter.hpp"
 #include "CacheRegionHelper.hpp"
-#include "Utils.hpp"
 #include "util/string.hpp"
-
-/* adongre  - Coverity II
- * CID 29255: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
- * "sprintf" can cause a buffer overflow when done incorrectly. Because
- * sprintf() assumes an arbitrarily long string, callers must be careful not to
- * overflow the actual space of the destination. Use snprintf() instead, or
- * correct precision specifiers. Fix : using ACE_OS::snprintf
- */
 
 namespace apache {
 namespace geode {

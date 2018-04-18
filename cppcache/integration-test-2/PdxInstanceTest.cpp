@@ -32,6 +32,7 @@
 
 #include <PdxType.hpp>
 #include <NestedPdxObject.hpp>
+#include <LocalRegion.hpp>
 
 #include "framework/Cluster.h"
 #include "framework/Gfsh.h"
@@ -51,6 +52,111 @@ std::shared_ptr<Region> setupRegion(Cache& cache) {
   return region;
 }
 
+void clonePdxInstance(PdxTests::PdxType& source,
+                      PdxInstanceFactory& destination) {
+  destination.writeBoolean("m_bool", source.getBool());
+  destination.markIdentityField("m_bool");
+  destination.writeByte("m_byte", source.getByte());
+  destination.markIdentityField("m_byte");
+  destination.writeShort("m_int16", source.getShort());
+  destination.markIdentityField("m_int16");
+  destination.writeInt("m_int32", source.getInt());
+  destination.markIdentityField("m_int32");
+  destination.writeLong("m_long", source.getLong());
+  destination.markIdentityField("m_long");
+  destination.writeFloat("m_float", source.getFloat());
+  destination.markIdentityField("m_float");
+  destination.writeDouble("m_double", source.getDouble());
+  destination.markIdentityField("m_double");
+  destination.writeString("m_string", source.getString());
+  destination.markIdentityField("m_string");
+  destination.writeDate("m_dateTime", source.getDate());
+  destination.markIdentityField("m_dateTime");
+  destination.writeBooleanArray("m_boolArray", source.getBoolArray());
+  destination.markIdentityField("m_boolArray");
+  destination.writeByteArray("m_byteArray", source.getByteArray());
+  destination.markIdentityField("m_byteArray");
+  destination.writeShortArray("m_int16Array", source.getShortArray());
+  destination.markIdentityField("m_int16Array");
+  destination.writeIntArray("m_int32Array", source.getIntArray());
+  destination.markIdentityField("m_int32Array");
+  destination.writeLongArray("m_longArray", source.getLongArray());
+  destination.markIdentityField("m_longArray");
+  destination.writeFloatArray("m_floatArray", source.getFloatArray());
+  destination.markIdentityField("m_floatArray");
+  destination.writeDoubleArray("m_doubleArray", source.getDoubleArray());
+  destination.markIdentityField("m_doubleArray");
+  destination.writeObject("m_map", source.getHashMap());
+  destination.markIdentityField("m_map");
+  destination.writeStringArray("m_stringArray", source.getStringArray());
+  destination.markIdentityField("m_stringArray");
+  destination.writeObjectArray("m_objectArray",
+                               source.getCacheableObjectArray());
+  destination.writeObject("m_pdxEnum", source.getEnum());
+  destination.markIdentityField("m_pdxEnum");
+  destination.writeObject("m_arraylist", source.getArrayList());
+  destination.markIdentityField("m_arraylist");
+  destination.writeObject("m_linkedlist", source.getLinkedList());
+  destination.markIdentityField("m_linkedlist");
+  destination.writeObject("m_hashtable", source.getHashTable());
+  destination.markIdentityField("m_hashtable");
+  destination.writeObject("m_vector", source.getVector());
+  destination.markIdentityField("m_vector");
+
+  int lengths[2] = {1, 2};
+  destination.writeArrayOfByteArrays("m_byteByteArray",
+                                     source.getArrayOfByteArrays(), 2, lengths);
+
+  destination.markIdentityField("m_byteByteArray");
+  destination.writeChar("m_char", source.getChar());
+  destination.markIdentityField("m_char");
+  destination.writeCharArray("m_charArray", source.getCharArray());
+  destination.markIdentityField("m_charArray");
+  destination.writeObject("m_chs", source.getHashSet());
+  destination.markIdentityField("m_chs");
+  destination.writeObject("m_clhs", source.getLinkedHashSet());
+  destination.markIdentityField("m_clhs");
+  destination.writeByte("m_sbyte", source.getSByte());
+  destination.markIdentityField("m_sbyte");
+  destination.writeByteArray("m_sbyteArray", source.getSByteArray());
+  destination.markIdentityField("m_sbyteArray");
+  destination.writeShort("m_uint16", source.getUint16());
+  destination.markIdentityField("m_uint16");
+  destination.writeInt("m_uint32", source.getUInt());
+  destination.markIdentityField("m_uint32");
+  destination.writeLong("m_ulong", source.getULong());
+  destination.markIdentityField("m_ulong");
+  destination.writeShortArray("m_uint16Array", source.getUInt16Array());
+  destination.markIdentityField("m_uint16Array");
+  destination.writeIntArray("m_uint32Array", source.getUIntArray());
+  destination.markIdentityField("m_uint32Array");
+  destination.writeLongArray("m_ulongArray", source.getULongArray());
+  destination.markIdentityField("m_ulongArray");
+
+  destination.writeByteArray("m_byte252", source.getByte252());
+  destination.markIdentityField("m_byte252");
+  destination.writeByteArray("m_byte253", source.getByte253());
+  destination.markIdentityField("m_byte253");
+  destination.writeByteArray("m_byte65535", source.getByte65535());
+  destination.markIdentityField("m_byte65535");
+  destination.writeByteArray("m_byte65536", source.getByte65536());
+  destination.markIdentityField("m_byte65536");
+  destination.writeObject("m_address", source.getCacheableObjectArray());
+
+  destination.writeObjectArray(
+      "", source.getCacheableObjectArrayEmptyPdxFieldName());
+}
+
+void clonePdxInstance(ParentPdx& source, PdxInstanceFactory& destination) {
+  destination.writeInt("m_parentId", source.getParentId());
+  destination.writeObject("m_enum", source.getEnum());
+  destination.writeString("m_parentName", source.getParentName());
+  destination.writeObject("m_childPdx", source.getChildPdx());
+  destination.writeChar("m_char", source.getChar());
+  destination.writeChar("m_wideChar", source.getChar());
+  destination.writeCharArray("m_charArray", source.getCharArray());
+}
+
 /**
  * Port of testThinClientPdxInstance::testPdxInstance
  */
@@ -63,127 +169,104 @@ TEST(PdxInstanceTest, testPdxInstance) {
       .withType("REPLICATE")
       .execute();
 
-  auto cache1 = cluster.createCache();
-  auto region1 = setupRegion(cache1);
+  auto cache = cluster.createCache();
+  auto region = setupRegion(cache);
 
-  //  auto cache2 = cluster.createCache();
-  //  auto region2 = setupRegion(cache2);
-
-  auto&& typeRegistry = cache1.getTypeRegistry();
+  auto&& typeRegistry = cache.getTypeRegistry();
   typeRegistry.registerPdxType(Address::createDeserializable);
   typeRegistry.registerPdxType(PdxTests::PdxType::createDeserializable);
   typeRegistry.registerPdxType(ChildPdx::createDeserializable);
   typeRegistry.registerPdxType(ParentPdx::createDeserializable);
 
-  auto pdxobj = std::make_shared<PdxTests::PdxType>();
+  PdxTests::PdxType pdxTypeOriginal;
+  auto&& pdxTypeInstanceFactory =
+      cache.createPdxInstanceFactory("PdxTests.PdxType");
 
-  auto&& pdxInstanceFactory =
-      cache1.createPdxInstanceFactory("PdxTests.PdxType");
+  clonePdxInstance(pdxTypeOriginal, pdxTypeInstanceFactory);
 
-  pdxInstanceFactory->writeBoolean("m_bool", pdxobj->getBool());
-  ASSERT_THROW(pdxInstanceFactory->writeBoolean("m_bool", pdxobj->getBool()),
-               IllegalStateException);
+  ASSERT_THROW(
+      pdxTypeInstanceFactory.writeBoolean("m_bool", pdxTypeOriginal.getBool()),
+      IllegalStateException);
 
-  pdxInstanceFactory->markIdentityField("m_bool");
-  pdxInstanceFactory->writeByte("m_byte", pdxobj->getByte());
-  pdxInstanceFactory->markIdentityField("m_byte");
-  pdxInstanceFactory->writeShort("m_int16", pdxobj->getShort());
-  pdxInstanceFactory->markIdentityField("m_int16");
-  pdxInstanceFactory->writeInt("m_int32", pdxobj->getInt());
-  pdxInstanceFactory->markIdentityField("m_int32");
-  pdxInstanceFactory->writeLong("m_long", pdxobj->getLong());
-  pdxInstanceFactory->markIdentityField("m_long");
-  pdxInstanceFactory->writeFloat("m_float", pdxobj->getFloat());
-  pdxInstanceFactory->markIdentityField("m_float");
-  pdxInstanceFactory->writeDouble("m_double", pdxobj->getDouble());
-  pdxInstanceFactory->markIdentityField("m_double");
-  pdxInstanceFactory->writeString("m_string", pdxobj->getString());
-  pdxInstanceFactory->markIdentityField("m_string");
-  pdxInstanceFactory->writeDate("m_dateTime", pdxobj->getDate());
-  pdxInstanceFactory->markIdentityField("m_dateTime");
-  pdxInstanceFactory->writeBooleanArray("m_boolArray", pdxobj->getBoolArray());
-  pdxInstanceFactory->markIdentityField("m_boolArray");
-  pdxInstanceFactory->writeByteArray("m_byteArray", pdxobj->getByteArray());
-  pdxInstanceFactory->markIdentityField("m_byteArray");
-  pdxInstanceFactory->writeShortArray("m_int16Array", pdxobj->getShortArray());
-  pdxInstanceFactory->markIdentityField("m_int16Array");
-  pdxInstanceFactory->writeIntArray("m_int32Array", pdxobj->getIntArray());
-  pdxInstanceFactory->markIdentityField("m_int32Array");
-  pdxInstanceFactory->writeLongArray("m_longArray", pdxobj->getLongArray());
-  pdxInstanceFactory->markIdentityField("m_longArray");
-  pdxInstanceFactory->writeFloatArray("m_floatArray", pdxobj->getFloatArray());
-  pdxInstanceFactory->markIdentityField("m_floatArray");
-  pdxInstanceFactory->writeDoubleArray("m_doubleArray",
-                                       pdxobj->getDoubleArray());
-  pdxInstanceFactory->markIdentityField("m_doubleArray");
-  pdxInstanceFactory->writeObject("m_map", pdxobj->getHashMap());
-  pdxInstanceFactory->markIdentityField("m_map");
-  pdxInstanceFactory->writeStringArray("m_stringArray",
-                                       pdxobj->getStringArray());
-  pdxInstanceFactory->markIdentityField("m_stringArray");
-  pdxInstanceFactory->writeObjectArray("m_objectArray",
-                                       pdxobj->getCacheableObjectArray());
-  pdxInstanceFactory->writeObject("m_pdxEnum", pdxobj->getEnum());
-  pdxInstanceFactory->markIdentityField("m_pdxEnum");
-  pdxInstanceFactory->writeObject("m_arraylist", pdxobj->getArrayList());
-  pdxInstanceFactory->markIdentityField("m_arraylist");
-  pdxInstanceFactory->writeObject("m_linkedlist", pdxobj->getLinkedList());
-  pdxInstanceFactory->markIdentityField("m_linkedlist");
-  pdxInstanceFactory->writeObject("m_hashtable", pdxobj->getHashTable());
-  pdxInstanceFactory->markIdentityField("m_hashtable");
-  pdxInstanceFactory->writeObject("m_vector", pdxobj->getVector());
-  pdxInstanceFactory->markIdentityField("m_vector");
+  auto&& pdxTypeInstance = pdxTypeInstanceFactory.create();
+  ASSERT_NE(nullptr, pdxTypeInstance);
 
-  auto lengths = new int[2] {1, 2};
-  pdxInstanceFactory->writeArrayOfByteArrays(
-      "m_byteByteArray", pdxobj->getArrayOfByteArrays(), 2, lengths);
+  EXPECT_EQ("PdxTests.PdxType", pdxTypeInstance->getClassName())
+      << "pdxTypeInstance.getClassName should return PdxTests.PdxType.";
 
-  pdxInstanceFactory->markIdentityField("m_byteByteArray");
-  pdxInstanceFactory->writeChar("m_char", pdxobj->getChar());
-  pdxInstanceFactory->markIdentityField("m_char");
-  pdxInstanceFactory->writeCharArray("m_charArray", pdxobj->getCharArray());
-  pdxInstanceFactory->markIdentityField("m_charArray");
-  pdxInstanceFactory->writeObject("m_chs", pdxobj->getHashSet());
-  pdxInstanceFactory->markIdentityField("m_chs");
-  pdxInstanceFactory->writeObject("m_clhs", pdxobj->getLinkedHashSet());
-  pdxInstanceFactory->markIdentityField("m_clhs");
-  pdxInstanceFactory->writeByte("m_sbyte", pdxobj->getSByte());
-  pdxInstanceFactory->markIdentityField("m_sbyte");
-  pdxInstanceFactory->writeByteArray("m_sbyteArray", pdxobj->getSByteArray());
-  pdxInstanceFactory->markIdentityField("m_sbyteArray");
-  pdxInstanceFactory->writeShort("m_uint16", pdxobj->getUint16());
-  pdxInstanceFactory->markIdentityField("m_uint16");
-  pdxInstanceFactory->writeInt("m_uint32", pdxobj->getUInt());
-  pdxInstanceFactory->markIdentityField("m_uint32");
-  pdxInstanceFactory->writeLong("m_ulong", pdxobj->getULong());
-  pdxInstanceFactory->markIdentityField("m_ulong");
-  pdxInstanceFactory->writeShortArray("m_uint16Array",
-                                      pdxobj->getUInt16Array());
-  pdxInstanceFactory->markIdentityField("m_uint16Array");
-  pdxInstanceFactory->writeIntArray("m_uint32Array", pdxobj->getUIntArray());
-  pdxInstanceFactory->markIdentityField("m_uint32Array");
-  pdxInstanceFactory->writeLongArray("m_ulongArray", pdxobj->getULongArray());
-  pdxInstanceFactory->markIdentityField("m_ulongArray");
+  auto&& objectFromPdxTypeInstance = pdxTypeInstance->getObject();
+  ASSERT_NE(nullptr, objectFromPdxTypeInstance);
 
-  pdxInstanceFactory->writeByteArray("m_byte252", pdxobj->getByte252());
-  pdxInstanceFactory->markIdentityField("m_byte252");
-  pdxInstanceFactory->writeByteArray("m_byte253", pdxobj->getByte253());
-  pdxInstanceFactory->markIdentityField("m_byte253");
-  pdxInstanceFactory->writeByteArray("m_byte65535", pdxobj->getByte65535());
-  pdxInstanceFactory->markIdentityField("m_byte65535");
-  pdxInstanceFactory->writeByteArray("m_byte65536", pdxobj->getByte65536());
-  pdxInstanceFactory->markIdentityField("m_byte65536");
-  pdxInstanceFactory->writeObject("m_address",
-                                  pdxobj->getCacheableObjectArray());
+  auto&& cachePerfStats = std::dynamic_pointer_cast<LocalRegion>(region)
+                              ->getCacheImpl()
+                              ->getCachePerfStats();
 
-  pdxInstanceFactory->writeObjectArray(
-      "", pdxobj->getCacheableObjectArrayEmptyPdxFieldName());
+  EXPECT_EQ(1, cachePerfStats.getPdxInstanceDeserializations())
+      << "pdxInstanceDeserialization should be equal to 1.";
 
-  auto&& pdxInstance = pdxInstanceFactory->create();
-  ASSERT_NE(nullptr, pdxInstance);
+  EXPECT_EQ(0, cachePerfStats.getPdxInstanceCreations())
+      << "pdxInstanceCreations should be equal to 0.";
 
-  EXPECT_EQ("PdxTests.PdxType", pdxInstance->getClassName())
-      << "pdxInstance.getClassName should return PdxTests.PdxType.";
+  EXPECT_EQ(0, cachePerfStats.getPdxInstanceDeserializationTime())
+      << "pdxInstanceDeserializationTime should be equal to 0.";
+
+  auto pdxTypeFromPdxTypeInstance =
+      std::dynamic_pointer_cast<PdxTests::PdxType>(objectFromPdxTypeInstance);
+  EXPECT_TRUE(pdxTypeOriginal.equals(*pdxTypeFromPdxTypeInstance, false))
+      << "PdxObjects should be equal.";
+
+  auto pdxInstanceKey = CacheableKey::create("pdxTypeInstance");
+  region->put(pdxInstanceKey, pdxTypeInstance);
+
+  auto objectFromPdxTypeInstanceGet =
+      std::dynamic_pointer_cast<PdxSerializable>(region->get(pdxInstanceKey));
+  ASSERT_NE(nullptr, objectFromPdxTypeInstanceGet);
+
+  EXPECT_EQ(1, cachePerfStats.getPdxInstanceDeserializations())
+      << "pdxInstanceDeserialization should be equal to 1.";
+
+  EXPECT_EQ(0, cachePerfStats.getPdxInstanceCreations())
+      << "pdxInstanceCreations should be equal to 0.";
+
+  EXPECT_LT(0, cachePerfStats.getPdxInstanceDeserializationTime())
+      << "pdxInstanceDeserializationTime should be greater than 0.";
+
+  auto pdxTypeFromPdxTypeInstanceGet =
+      std::dynamic_pointer_cast<PdxTests::PdxType>(
+          objectFromPdxTypeInstanceGet);
+  EXPECT_TRUE(
+      pdxTypeFromPdxTypeInstance->equals(*pdxTypeFromPdxTypeInstanceGet, false))
+      << "PdxObjects should be equal.";
+
+  EXPECT_EQ(-960665662, pdxTypeInstance->hashcode())
+      << "Pdxhashcode hashcode not matched with java pdx hash code.";
+
+  // TODO split into separate test for nested pdx object test.
+  ParentPdx pdxParentOriginal(10);
+  auto pdxParentInstanceFactory =
+      cache.createPdxInstanceFactory("testobject.ParentPdx");
+  clonePdxInstance(pdxParentOriginal, pdxParentInstanceFactory);
+  auto pdxParentInstance = pdxParentInstanceFactory.create();
+  EXPECT_EQ("testobject.ParentPdx", pdxParentInstance->getClassName())
+      << "pdxTypeInstance.getClassName should return testobject.ParentPdx.";
+
+  auto keyport = CacheableKey::create("pdxParentOriginal");
+  region->put(keyport, pdxParentInstance);
+  auto objectFromPdxParentInstanceGet =
+      std::dynamic_pointer_cast<PdxSerializable>(region->get(keyport));
+
+  EXPECT_EQ(1, cachePerfStats.getPdxInstanceDeserializations())
+      << "pdxInstanceDeserialization should be equal to 1.";
+  EXPECT_EQ(0, cachePerfStats.getPdxInstanceCreations())
+      << "pdxInstanceCreations should be equal to 0.";
+  EXPECT_LT(0, cachePerfStats.getPdxInstanceDeserializationTime())
+      << "pdxInstanceDeserializationTime should be greater than 0.";
+
+  auto pdxParentFromPdxParentInstnaceGet =
+      std::dynamic_pointer_cast<ParentPdx>(objectFromPdxParentInstanceGet);
+  EXPECT_TRUE(
+      pdxParentOriginal.equals(*pdxParentFromPdxParentInstnaceGet, false))
+      << "ParentPdx objects should be equal.";
 }
 
 }  // namespace

@@ -20,6 +20,7 @@
 #include "PdxType.hpp"
 #include "PdxTypes.hpp"
 #include "PdxInstanceImpl.hpp"
+#include "PdxHelper.hpp"
 
 namespace apache {
 namespace geode {
@@ -37,15 +38,19 @@ PdxInstanceFactory::PdxInstanceFactory(const std::string& className,
       m_cacheImpl(cache),
       m_enableTimeStatistics(enableTimeStatistics) {}
 
-std::unique_ptr<PdxInstance> PdxInstanceFactory::create() {
+std::shared_ptr<PdxInstance> PdxInstanceFactory::create() {
   if (m_created) {
     throw IllegalStateException(
         "The PdxInstanceFactory.Create() method can only be called once.");
   }
-  auto pi = std::unique_ptr<PdxInstance>(new PdxInstanceImpl(
+  auto pi = std::make_shared<PdxInstanceImpl>(
       m_FieldVsValues, m_pdxType, m_cachePerfStats, m_pdxTypeRegistry,
-      m_cacheImpl, m_enableTimeStatistics));
+      m_cacheImpl, m_enableTimeStatistics);
   m_created = true;
+
+  // Forces registration of PdxType
+  PdxHelper::serializePdx(*m_cacheImpl.createDataOutput(), pi);
+
   return pi;
 }
 PdxInstanceFactory& PdxInstanceFactory::writeChar(const std::string& fieldName,

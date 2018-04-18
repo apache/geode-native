@@ -66,7 +66,7 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @return the created Pdxinstance
    * @throws IllegalStateException if called more than once
    */
-  std::unique_ptr<PdxInstance> create();
+  std::shared_ptr<PdxInstance> create();
 
   /**
    * Writes the named field with the given value to the serialized form.
