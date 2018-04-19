@@ -27,13 +27,9 @@ namespace client {
 
 PdxWrapper::PdxWrapper(std::shared_ptr<void> userObject, std::string className)
     : m_userObject(userObject), m_className(className) {
-  //  /* m_sizer can be nullptr - required only if heap LRU is enabled */
-  m_sizer = nullptr;
 }
 
 PdxWrapper::PdxWrapper(std::string className) : m_className(className) {
-  /* m_sizer can be nullptr - required only if heap LRU is enabled */
-  m_sizer = nullptr;
   m_userObject = nullptr;
 }
 
@@ -77,14 +73,6 @@ void PdxWrapper::fromData(DataInput&) {
   LOGERROR("PdxWrapper fromData should not have been called");
   throw IllegalStateException(
       "PdxWrapper fromData should not have been called");
-}
-
-size_t PdxWrapper::objectSize() const {
-  if (m_sizer == nullptr || m_userObject == nullptr) {
-    return 0;
-  } else {
-    return m_sizer(m_userObject, m_className);
-  }
 }
 
 std::string PdxWrapper::toString() const {
