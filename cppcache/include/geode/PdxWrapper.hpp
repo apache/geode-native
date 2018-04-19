@@ -117,7 +117,6 @@ class APACHE_GEODE_EXPORT PdxWrapper : public PdxSerializable {
 
  private:
   PdxWrapper() = delete;
-  PdxWrapper(std::string className);
 
   _GEODE_FRIEND_STD_SHARED_PTR(PdxWrapper)
 

@@ -29,10 +29,6 @@ PdxWrapper::PdxWrapper(std::shared_ptr<void> userObject, std::string className)
     : m_userObject(userObject), m_className(className) {
 }
 
-PdxWrapper::PdxWrapper(std::string className) : m_className(className) {
-  m_userObject = nullptr;
-}
-
 std::shared_ptr<void> PdxWrapper::getObject() { return m_userObject; }
 
 const std::string& PdxWrapper::getClassName() const { return m_className; }

@@ -233,14 +233,16 @@ void SerializationRegistry::addType2(int64_t compId, TypeFactoryMethod func) {
 void SerializationRegistry::removeType2(int64_t compId) {
   theTypeMap.unbind2(compId);
 }
+
 std::shared_ptr<PdxSerializable> SerializationRegistry::getPdxType(
     const std::string& className) const {
   TypeFactoryMethodPdx objectType = nullptr;
   theTypeMap.findPdxType(className, objectType);
-  std::shared_ptr<PdxSerializable> pdxObj;
+  std::shared_ptr<PdxSerializable> pdxSerializable;
+
   if (nullptr == objectType) {
     try {
-      pdxObj = std::make_shared<PdxWrapper>(className);
+      pdxSerializable = std::make_shared<PdxWrapper>(nullptr, className);
     } catch (const Exception&) {
       LOGERROR("Unregistered class " + className +
                " during PDX deserialization: Did the application register the "
@@ -249,9 +251,9 @@ std::shared_ptr<PdxSerializable> SerializationRegistry::getPdxType(
           "Unregistered class or serializer in PDX deserialization");
     }
   } else {
-    pdxObj = objectType();
+    pdxSerializable = objectType();
   }
-  return pdxObj;
+  return pdxSerializable;
 }
 
 void SerializationRegistry::setPdxSerializer(
