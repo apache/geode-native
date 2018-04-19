@@ -153,8 +153,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
   auto pType = pdxTypeRegistry->getPdxType(typeId);
   if (pType != nullptr) {  // this may happen with PdxInstanceFactory {
     pdxLocalType = pdxTypeRegistry->getLocalPdxType(
-        pType->getPdxClassName()
-            .c_str());  // this should be fine for IPdxTypeMapper
+        pType->getPdxClassName());  // this should be fine for IPdxTypeMapper
   }
   if (pType != nullptr && pdxLocalType != nullptr)  // type found
   {
