@@ -138,7 +138,7 @@ const SerializationRegistry& DataOutput::getSerializationRegistry() const {
   return *m_cache->getSerializationRegistry();
 }
 
-const Cache* DataOutput::getCache() { return m_cache->getCache(); }
+Cache* DataOutput::getCache() const { return m_cache->getCache(); }
 
 template <class _Traits, class _Allocator>
 void DataOutput::writeJavaModifiedUtf8(

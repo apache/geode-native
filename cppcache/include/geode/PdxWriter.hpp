@@ -29,7 +29,9 @@ namespace geode {
 namespace client {
 
 class CacheableObjectArray;
+class PdxSerializer;
 class PdxUnreadFields;
+
 /**
  * A PdxWriter will be passed to PdxSerializable.toData
  * when it is serializing the domain class. The domain class needs to serialize
@@ -395,6 +397,8 @@ class APACHE_GEODE_EXPORT PdxWriter {
    */
   virtual PdxWriter& writeUnreadFields(
       std::shared_ptr<PdxUnreadFields> unread) = 0;
+
+  virtual std::shared_ptr<PdxSerializer> getPdxSerializer() const = 0;
 };
 }  // namespace client
 }  // namespace geode

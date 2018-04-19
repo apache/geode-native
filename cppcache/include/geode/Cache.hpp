@@ -113,7 +113,7 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    * Returns the type registry that this cache was
    * {@link CacheFactory::create created} with.
    */
-  virtual TypeRegistry& getTypeRegistry();
+  virtual TypeRegistry& getTypeRegistry() const;
 
   /**
    * Terminates this object cache and releases all the local resources.

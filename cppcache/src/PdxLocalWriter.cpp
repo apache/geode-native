@@ -138,6 +138,10 @@ PdxWriter& PdxLocalWriter::writeUnreadFields(
   return *this;
 }
 
+std::shared_ptr<PdxSerializer> PdxLocalWriter::getPdxSerializer() const {
+  return m_dataOutput->getCache()->getTypeRegistry().getPdxSerializer();
+}
+
 int32_t PdxLocalWriter::calculateLenWithOffsets() {
   auto bufferLen = m_dataOutput->getBufferLength() - m_startPositionOffset;
   int32_t totalOffsets = 0;

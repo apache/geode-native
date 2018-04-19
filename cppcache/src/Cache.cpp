@@ -65,7 +65,7 @@ DistributedSystem& Cache::getDistributedSystem() const {
  * Returns the type registry that this cache was
  * {@link CacheFactory::create created} with.
  */
-TypeRegistry& Cache::getTypeRegistry() {
+TypeRegistry& Cache::getTypeRegistry() const {
   return m_cacheImpl->getTypeRegistry();
 }
 

@@ -490,7 +490,7 @@ class APACHE_GEODE_EXPORT DataOutput {
 
   static void safeDelete(uint8_t* src) { _GEODE_SAFE_DELETE(src); }
 
-  virtual const Cache* getCache();
+  virtual Cache* getCache() const;
 
   /** Destruct a DataOutput, including releasing the created buffer. */
   ~DataOutput() {

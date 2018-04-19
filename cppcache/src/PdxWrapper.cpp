@@ -76,7 +76,7 @@ int32_t PdxWrapper::hashcode() const {
 
 void PdxWrapper::toData(PdxWriter& output) const {
   if (m_userObject != nullptr) {
-    m_serializer->toData(m_userObject, m_className.c_str(), output);
+    output.getPdxSerializer()->toData(m_userObject, m_className.c_str(), output);
   } else {
     LOGERROR("User object is nullptr or detached in PdxWrapper toData");
     throw IllegalStateException(

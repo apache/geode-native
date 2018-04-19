@@ -481,7 +481,7 @@ class APACHE_GEODE_EXPORT DataInput {
     return result;
   }
 
-  virtual const Cache* getCache();
+  virtual Cache* getCache() const;
 
   ~DataInput() = default;
   DataInput() = delete;

@@ -40,3 +40,7 @@ void TypeRegistry::registerPdxSerializer(
   m_cache->getSerializationRegistry()
          ->setPdxSerializer(pdxSerializer);
 }
+
+std::shared_ptr<PdxSerializer> TypeRegistry::getPdxSerializer() {
+  return m_cache->getSerializationRegistry()->getPdxSerializer();
+}
