@@ -53,8 +53,7 @@ class APACHE_GEODE_EXPORT PdxWrapper : public PdxSerializable {
    * @param className the fully qualified class name to map this user object to
    * the Java side.
    */
-  PdxWrapper(std::shared_ptr<void> userObject, std::string className,
-             std::shared_ptr<PdxSerializer> pdxSerializerPtr);
+  PdxWrapper(std::shared_ptr<void> userObject, std::string className);
 
   /**
    * Returns the pointer to the user object which is deserialized with a
@@ -128,16 +127,13 @@ class APACHE_GEODE_EXPORT PdxWrapper : public PdxSerializable {
 
  private:
   PdxWrapper() = delete;
-  PdxWrapper(std::string className,
-             std::shared_ptr<PdxSerializer> pdxSerializerPtr);
+  PdxWrapper(std::string className);
 
   _GEODE_FRIEND_STD_SHARED_PTR(PdxWrapper)
 
   std::shared_ptr<void> m_userObject;
   std::string m_className;
-  std::shared_ptr<PdxSerializer> m_serializer;
   UserObjectSizer m_sizer;
-
 };
 }  // namespace client
 }  // namespace geode

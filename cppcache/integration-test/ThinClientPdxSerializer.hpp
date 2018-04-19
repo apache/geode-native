@@ -171,9 +171,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
     auto region0 = getHelper()->getRegion("DistRegionAck");
     auto keyPort = CacheableKey::create(1);
 
-    auto nonPdxType1 = std::make_shared<PdxTests::NonPdxType>(pdxSerializer);
-    auto pdxWrapper1 =
-        std::make_shared<PdxWrapper>(nonPdxType1, CLASSNAME1, pdxSerializer);
+    auto nonPdxType1 = std::make_shared<PdxTests::NonPdxType>();
+    auto pdxWrapper1 = std::make_shared<PdxWrapper>(nonPdxType1, CLASSNAME1);
     region0->put(keyPort, pdxWrapper1);
 
     auto pdxWrapper2 =
@@ -241,8 +240,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putFromVersion1_PS)
 
     // Create New object and wrap it in PdxWrapper (owner)
     auto nonPdxType1 = std::make_shared<PdxTests::TestDiffTypePdxSV1>(true);
-    auto pdxWrapper =
-        std::make_shared<PdxWrapper>(nonPdxType1, V1CLASSNAME2, pdxSerializer);
+    auto pdxWrapper = std::make_shared<PdxWrapper>(nonPdxType1, V1CLASSNAME2);
 
     // PUT
     region0->put(key, pdxWrapper);
@@ -279,8 +277,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, putFromVersion2_PS)
 
     // Create New object and wrap it in PdxWrapper (owner)
     auto nonPdxType1 = std::make_shared<PdxTests::TestDiffTypePdxSV2>(true);
-    auto pdxWrapper =
-        std::make_shared<PdxWrapper>(nonPdxType1, V2CLASSNAME4, pdxSerializer);
+    auto pdxWrapper = std::make_shared<PdxWrapper>(nonPdxType1, V2CLASSNAME4);
 
     // PUT
     region0->put(key, pdxWrapper);
@@ -339,8 +336,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, getputFromVersion1_PS)
             ->getPdxSerializer();
 
     // Get then Put.. this should Not merge data back
-    auto pdxWrapper =
-        std::make_shared<PdxWrapper>(nonPdxType1, V1CLASSNAME2, pdxSerializer);
+    auto pdxWrapper = std::make_shared<PdxWrapper>(nonPdxType1, V1CLASSNAME2);
     region0->put(key2, pdxWrapper);
   }
 END_TASK_DEFINITION

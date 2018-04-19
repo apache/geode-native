@@ -175,7 +175,7 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * or fieldName is nullptr or empty
    */
   virtual PdxWriter& writeString(const std::string& fieldName,
-                                                 const std::string& value) = 0;
+                                 const std::string& value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -222,8 +222,8 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxWriter& writeCharArray(
-      const std::string& fieldName, const std::vector<char16_t>& array) = 0;
+  virtual PdxWriter& writeCharArray(const std::string& fieldName,
+                                    const std::vector<char16_t>& array) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -354,9 +354,10 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxWriter& writeArrayOfByteArrays(
-      const std::string& fieldName, int8_t* const* const array, int arrayLength,
-      const int* elementLength) = 0;
+  virtual PdxWriter& writeArrayOfByteArrays(const std::string& fieldName,
+                                            int8_t* const* const array,
+                                            int arrayLength,
+                                            const int* elementLength) = 0;
 
   /**
    * Indicate that the given field name should be included in hashCode and

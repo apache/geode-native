@@ -240,7 +240,7 @@ std::shared_ptr<PdxSerializable> SerializationRegistry::getPdxType(
   std::shared_ptr<PdxSerializable> pdxObj;
   if (nullptr == objectType) {
     try {
-      pdxObj = std::make_shared<PdxWrapper>(className, pdxSerializer);
+      pdxObj = std::make_shared<PdxWrapper>(className);
     } catch (const Exception&) {
       LOGERROR("Unregistered class " + className +
                " during PDX deserialization: Did the application register the "
