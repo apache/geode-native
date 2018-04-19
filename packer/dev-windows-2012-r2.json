@@ -46,6 +46,12 @@
     },
     {
       "type":"powershell",
+      "scripts":[
+        "windows/install-dependencies-app-from-github.ps1"
+      ]
+    },
+    {
+      "type":"powershell",
       "inline":[
         "Remove-Item C:\\Users\\build\\.ssh -Recurse -Force -ErrorAction SilentlyContinue"
       ]
