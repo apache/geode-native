@@ -570,7 +570,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
        LOG("removing listener");
        auto cqAttrMtor = cqy->getCqAttributesMutator();
        auto ptr = vl[0];
-       cqAttrMtor->removeCqListener(ptr);
+       cqAttrMtor.removeCqListener(ptr);
        vl = cqAttr->getCqListeners();
        sprintf(buf, "number of listeners for cq[%s] is %zd", cqNames[i],
                vl.size());
@@ -1108,13 +1108,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
 
    auto cqAttrMtor = cq->getCqAttributesMutator();
    auto ptr = vl[0];
-   cqAttrMtor->removeCqListener(ptr);
+   cqAttrMtor.removeCqListener(ptr);
    vl = cqAttr->getCqListeners();
    LOGINFO("number of listeners = %d", vl.size());
 
    ASSERT(vl.size() == 1, "incorrect number of listeners");
 
-   cqAttrMtor->removeCqListener(vl[0]);
+   cqAttrMtor.removeCqListener(vl[0]);
    LOGINFO("removeCqListener again");
    vl = cqAttr->getCqListeners();
    LOGINFO("number of listeners = %d", vl.size());
@@ -1124,7 +1124,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
    std::vector<std::shared_ptr<CqListener>> v2;
    v2.push_back(cqStatusLstner);
    v2.push_back(cqLstner);
-   cqAttrMtor->setCqListeners(v2);
+   cqAttrMtor.setCqListeners(v2);
    LOG("ProcessCQ setCqListeneres done.");
 
    cqAttr = cq->getCqAttributes();

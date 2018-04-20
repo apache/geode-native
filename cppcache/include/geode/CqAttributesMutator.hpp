@@ -19,10 +19,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#include "internal/geode_globals.hpp"
-#include <vector>
 #include <memory>
+#include <vector>
+
+#include "CqAttributes.hpp"
+#include "internal/geode_globals.hpp"
 /**
  * @file
  */
@@ -41,12 +42,14 @@ class CqListener;
  */
 class APACHE_GEODE_EXPORT CqAttributesMutator {
  public:
+  CqAttributesMutator(const std::shared_ptr<CqAttributes>& impl);
+
   /**
    * Adds a CQ listener to the end of the list of CQ listeners on this CqQuery.
    * @param aListener the user defined CQ listener to add to the CqQuery.
    * @throws IllegalArgumentException if <code>aListener</code> is nullptr
    */
-  virtual void addCqListener(const std::shared_ptr<CqListener>& aListener) = 0;
+  void addCqListener(const std::shared_ptr<CqListener>& aListener);
 
   /**
    * Removes given CQ listener from the list of CQ listeners on this CqQuery.
@@ -56,8 +59,7 @@ class APACHE_GEODE_EXPORT CqAttributesMutator {
    * @param aListener the CQ listener to remove from the CqQuery.
    * @throws IllegalArgumentException if <code>aListener</code> is nullptr
    */
-  virtual void removeCqListener(
-      const std::shared_ptr<CqListener>& aListener) = 0;
+  void removeCqListener(const std::shared_ptr<CqListener>& aListener);
 
   /**
    * Adds the given set CqListner on this CQ. If the CQ already has CqListeners,
@@ -68,8 +70,11 @@ class APACHE_GEODE_EXPORT CqAttributesMutator {
    * @throws IllegalArgumentException if the <code>newListeners</code> array
    * has a nullptr element
    */
-  virtual void setCqListeners(
-      const std::vector<std::shared_ptr<CqListener>>& newListeners) = 0;
+  void setCqListeners(
+      const std::vector<std::shared_ptr<CqListener>>& newListeners);
+
+ private:
+  std::shared_ptr<CqAttributes> m_cqAttributes;
 };
 }  // namespace client
 }  // namespace geode

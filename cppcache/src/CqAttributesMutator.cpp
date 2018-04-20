@@ -14,26 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "CqAttributesMutatorImpl.hpp"
+#include <geode/CqAttributesMutator.hpp>
+
 #include "CqAttributesImpl.hpp"
+
 using namespace apache::geode::client;
-CqAttributesMutatorImpl::CqAttributesMutatorImpl(
-    const std::shared_ptr<CqAttributes>& impl)
+CqAttributesMutator::CqAttributesMutator(const std::shared_ptr<CqAttributes>& impl)
     : m_cqAttributes(impl) {}
 
-void CqAttributesMutatorImpl::addCqListener(
+void CqAttributesMutator::addCqListener(
     const std::shared_ptr<CqListener>& aListener) {
   std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
       ->addCqListener(aListener);
 }
 
-void CqAttributesMutatorImpl::removeCqListener(
+void CqAttributesMutator::removeCqListener(
     const std::shared_ptr<CqListener>& aListener) {
   std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
       ->removeCqListener(aListener);
 }
 
-void CqAttributesMutatorImpl::setCqListeners(
+void CqAttributesMutator::setCqListeners(
     const CqAttributesImpl::listener_container_type& newListeners) {
   std::static_pointer_cast<CqAttributesImpl>(m_cqAttributes)
       ->setCqListeners(newListeners);
