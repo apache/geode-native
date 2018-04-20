@@ -47,10 +47,10 @@ int main(int argc, char **argv) {
 
   auto order1 = std::make_shared<Order>(1, "product x", 42);
   auto pdxobj1 = std::make_shared<PdxWrapper>(
-      order1, OrderSerializer::CLASS_NAME_, orderSer);
+      order1, OrderSerializer::CLASS_NAME_);
   auto order2 = std::make_shared<Order>(2, "product y", 37);
   auto pdxobj2 = std::make_shared<PdxWrapper>(
-      order2, OrderSerializer::CLASS_NAME_, orderSer);
+      order2, OrderSerializer::CLASS_NAME_);
 
   std::cout << "Storing orders in the region" << std::endl;
   region->put("Customer1", pdxobj1);
