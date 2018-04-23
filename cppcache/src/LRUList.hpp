@@ -59,9 +59,11 @@ class APACHE_GEODE_EXPORT LRUEntryProperties {
 
   inline void clearEvicted() { m_bits &= ~EVICTED_BITS; }
 
-  inline void* getPersistenceInfo() const { return m_persistenceInfo; }
+  inline const std::shared_ptr<void>& getPersistenceInfo() const {
+    return m_persistenceInfo;
+  }
 
-  inline void setPersistenceInfo(void* persistenceInfo) {
+  inline void setPersistenceInfo(const std::shared_ptr<void>& persistenceInfo) {
     m_persistenceInfo = persistenceInfo;
   }
 
@@ -71,7 +73,7 @@ class APACHE_GEODE_EXPORT LRUEntryProperties {
 
  private:
   std::atomic<uint32_t> m_bits;
-  void* m_persistenceInfo;
+  std::shared_ptr<void> m_persistenceInfo;
 };
 
 using util::concurrent::spinlock_mutex;

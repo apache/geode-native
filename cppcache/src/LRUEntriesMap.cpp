@@ -218,7 +218,7 @@ GfErrType LRUEntriesMap::invalidate(const std::shared_ptr<CacheableKey>& key,
   // TODO: assess any other effects of this race
   if (CacheableToken::isOverflowed(oldValue)) {
     ACE_Guard<MapSegment> _guard(*segmentRPtr);
-    void* persistenceInfo = me->getLRUProperties().getPersistenceInfo();
+    auto&& persistenceInfo = me->getLRUProperties().getPersistenceInfo();
     //  get the old value first which is required for heapLRU
     // calculation and for listeners; note even though there is a race
     // here between get and destroy, it will not harm if we get a slightly
@@ -294,7 +294,7 @@ GfErrType LRUEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
         segmentRPtr->release();
         segmentLocked = true;
       }
-      void* persistenceInfo = me->getLRUProperties().getPersistenceInfo();
+      auto&& persistenceInfo = me->getLRUProperties().getPersistenceInfo();
       oldValue = m_pmPtr->read(key, persistenceInfo);
       if (oldValue != nullptr) {
         m_pmPtr->destroy(key, persistenceInfo);
@@ -391,7 +391,7 @@ bool LRUEntriesMap::get(const std::shared_ptr<CacheableKey>& key,
     auto nodeToMark = mePtr;
     LRUEntryProperties& lruProps = nodeToMark->getLRUProperties();
     if (returnPtr != nullptr && CacheableToken::isOverflowed(returnPtr)) {
-      void* persistenceInfo = lruProps.getPersistenceInfo();
+      auto&& persistenceInfo = lruProps.getPersistenceInfo();
       std::shared_ptr<Cacheable> tmpObj;
       try {
         tmpObj = m_pmPtr->read(key, persistenceInfo);
@@ -467,7 +467,7 @@ GfErrType LRUEntriesMap::remove(const std::shared_ptr<CacheableKey>& key,
       }
       if (CacheableToken::isOverflowed(result)) {
         ACE_Guard<MapSegment> _guard(*segmentRPtr);
-        void* persistenceInfo = lruProps.getPersistenceInfo();
+        auto&& persistenceInfo = lruProps.getPersistenceInfo();
         //  get the old value first which is required for heapLRU
         // calculation and for listeners; note even though there is a race
         // here between get and destroy, it will not harm if we get a slightly
@@ -504,7 +504,7 @@ void LRUEntriesMap::updateMapSize(int64_t size) {
 std::shared_ptr<Cacheable> LRUEntriesMap::getFromDisk(
     const std::shared_ptr<CacheableKey>& key,
     std::shared_ptr<MapEntryImpl>& me) const {
-  void* persistenceInfo = me->getLRUProperties().getPersistenceInfo();
+  auto&& persistenceInfo = me->getLRUProperties().getPersistenceInfo();
   std::shared_ptr<Cacheable> tmpObj;
   try {
     LOGDEBUG("Reading value from persistence layer for key: %s",

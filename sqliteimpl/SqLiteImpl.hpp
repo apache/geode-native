@@ -59,7 +59,8 @@ class SqLiteImpl : public PersistenceManager {
    * @throws DiskFailureException if the write fails due to disk failure.
    */
   void write(const std::shared_ptr<CacheableKey>& key,
-             const std::shared_ptr<Cacheable>& value, void*& dbHandle) override;
+             const std::shared_ptr<Cacheable>& value,
+             std::shared_ptr<void>& dbHandle) override;
 
   /**
    * Writes the entire region into the SqLite implementation.
@@ -74,8 +75,9 @@ class SqLiteImpl : public PersistenceManager {
    * @throws IllegalArgumentException if the key is NULL.
    * @throws DiskCorruptException if the data to be read is corrupt.
    */
-  std::shared_ptr<Cacheable> read(const std::shared_ptr<CacheableKey>& key,
-                                  void*& dbHandle) override;
+  std::shared_ptr<Cacheable> read(
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<void>& dbHandle) override;
 
   /**
    * Read all the keys and values for a region stored in SqLite.
@@ -97,7 +99,7 @@ class SqLiteImpl : public PersistenceManager {
    * @throws EntryNotFoundException if the entry is not found on the disk.
    */
   void destroy(const std::shared_ptr<CacheableKey>& key,
-               void*& dbHandle) override;
+               const std::shared_ptr<void>& dbHandle) override;
 
   /**
    * Returns number of entries stored in SqLite for the region.
