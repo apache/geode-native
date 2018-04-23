@@ -63,7 +63,7 @@ class CqQueryImpl : public CqQuery,
  private:
   std::shared_ptr<Query> m_query;
   std::shared_ptr<CqAttributes> m_cqAttributes;
-  std::shared_ptr<CqAttributesMutator> m_cqAttributesMutator;
+  CqAttributesMutator m_cqAttributesMutator;
   std::shared_ptr<CqService> m_cqService;
   std::string m_serverCqName;
   bool m_isDurable;
@@ -223,7 +223,7 @@ class CqQueryImpl : public CqQuery,
    */
   void setCqState(CqState state);
 
-  std::shared_ptr<CqAttributesMutator> getCqAttributesMutator() const override;
+  CqAttributesMutator getCqAttributesMutator() const override;
 
   /**
    * @return Returns the cqOperation.

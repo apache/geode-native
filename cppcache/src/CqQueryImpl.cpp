@@ -17,9 +17,9 @@
 
 #include <geode/CqAttributesFactory.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/CqAttributesMutator.hpp>
 
 #include "CqQueryImpl.hpp"
-#include "CqAttributesMutatorImpl.hpp"
 #include "ResultSetImpl.hpp"
 #include "StructSetImpl.hpp"
 #include "ThinClientRegion.hpp"
@@ -40,18 +40,16 @@ CqQueryImpl::CqQueryImpl(
     const std::shared_ptr<UserAttributes>& userAttributesPtr)
     : m_cqName(cqName),
       m_queryString(queryString),
+      m_cqAttributes(CqAttributesFactory(cqAttributes).create()),
+      m_cqAttributesMutator(m_cqAttributes),
       m_cqService(cqService),
-      m_serverCqName(
-          cqName),  // On Client Side serverCqName and cqName will be same.
+      // On Client Side serverCqName and cqName will be same.
+      m_serverCqName(cqName),
       m_isDurable(isDurable),
       m_stats(std::make_shared<CqQueryVsdStats>(factory, m_cqName)),
       m_cqState(CqState::STOPPED),  // Initial state is stopped
       m_cqOperation(CqOperation::OP_TYPE_INVALID),
       m_tccdm(m_cqService->getDM()) {
-  CqAttributesFactory cqAf(cqAttributes);
-  m_cqAttributes = cqAf.create();
-  m_cqAttributesMutator =
-      std::make_shared<CqAttributesMutatorImpl>(m_cqAttributes);
   if (userAttributesPtr != nullptr) {
     m_authenticatedView = userAttributesPtr->getAuthenticatedView();
   } else {
@@ -220,17 +218,17 @@ const std::string& CqQueryImpl::getQueryString() const { return m_queryString; }
  * Return the query
  * @return the Query for the query string
  */
- std::shared_ptr<Query> CqQueryImpl::getQuery() const { return m_query; }
+std::shared_ptr<Query> CqQueryImpl::getQuery() const { return m_query; }
 
 /**
  * @see org.apache.geode.cache.query.CqQuery#getStatistics()
  */
- std::shared_ptr<CqStatistics> CqQueryImpl::getStatistics() const {
-   return m_stats;
- }
+std::shared_ptr<CqStatistics> CqQueryImpl::getStatistics() const {
+  return m_stats;
+}
 
- std::shared_ptr<CqAttributes> CqQueryImpl::getCqAttributes() const {
-   return m_cqAttributes;
+std::shared_ptr<CqAttributes> CqQueryImpl::getCqAttributes() const {
+  return m_cqAttributes;
 }
 
 /**
@@ -410,8 +408,7 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
     if (err == GF_CACHESERVER_EXCEPTION) {
       throw CqQueryException(
           std::string("CqQuery::executeWithInitialResults: exception ") +
-          "at the server side: " +
-          reply.getException());
+          "at the server side: " + reply.getException());
     } else {
       GfErrTypeToException("CqQuery::executeWithInitialResults", err);
     }
@@ -529,16 +526,14 @@ void CqQueryImpl::setCqState(CqState state) {
   m_cqState = state;
 }
 
-std::shared_ptr<CqAttributesMutator> CqQueryImpl::getCqAttributesMutator()
-    const {
+CqAttributesMutator CqQueryImpl::getCqAttributesMutator() const {
   return m_cqAttributesMutator;
 }
+
 /**
  * @return Returns the cqOperation.
  */
-CqOperation CqQueryImpl::getCqOperation() const {
-  return m_cqOperation;
-}
+CqOperation CqQueryImpl::getCqOperation() const { return m_cqOperation; }
 
 /**
  * @param cqOperation The cqOperation to set.
