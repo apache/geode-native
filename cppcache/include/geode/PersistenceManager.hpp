@@ -72,8 +72,9 @@ class APACHE_GEODE_EXPORT PersistenceManager {
    * @throws OutofMemoryException if the disk is full
    * @throws DiskFailureException if the write fails due to disk fail.
    */
-  virtual void write(const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<Cacheable>& value,
-                     void*& PersistenceInfo) = 0;
+  virtual void write(const std::shared_ptr<CacheableKey>& key,
+                     const std::shared_ptr<Cacheable>& value,
+                     std::shared_ptr<void>& persistenceInfo) = 0;
 
   /**
    * Writes all the entries for a region. Refer persistance requirement doc for
@@ -99,13 +100,14 @@ class APACHE_GEODE_EXPORT PersistenceManager {
    * @returns value of type std::shared_ptr<Cacheable>.
    * @throws DiskCorruptException if the data to be read is corrupt.
    */
-  virtual std::shared_ptr<Cacheable> read(const std::shared_ptr<CacheableKey>& key,
-                            void*& PersistenceInfo) = 0;
+  virtual std::shared_ptr<Cacheable> read(
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<void>& PersistenceInfo) = 0;
 
   /**
-  * Reads all the values from the region.
-  * @return true
-  */
+   * Reads all the values from the region.
+   * @return true
+   */
   virtual bool readAll() = 0;
 
   /**
@@ -115,7 +117,8 @@ class APACHE_GEODE_EXPORT PersistenceManager {
    * @throws RegionDestroyedException is the region is already destroyed.
    * @throws EntryNotFoundException if the entry is not found on the disk.
    */
-  virtual void destroy(const std::shared_ptr<CacheableKey>& key, void*& PersistenceInfo) = 0;
+  virtual void destroy(const std::shared_ptr<CacheableKey>& key,
+                       const std::shared_ptr<void>& PersistenceInfo) = 0;
 
   /**
    * Closes the persistence manager instance.

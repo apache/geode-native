@@ -67,8 +67,8 @@ bool LRUOverFlowToDiskAction::evict(
         "OverflowAction: destroyed entry added to "
         "LRU list");
   }
-  LRUEntryProperties& lruProps = mePtr->getLRUProperties();
-  void* persistenceInfo = lruProps.getPersistenceInfo();
+  auto&& lruProps = mePtr->getLRUProperties();
+  auto persistenceInfo = lruProps.getPersistenceInfo();
   bool setInfo = false;
   if (persistenceInfo == nullptr) {
     setInfo = true;
