@@ -173,11 +173,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
     auto pdxWrapper2 =
         std::dynamic_pointer_cast<PdxWrapper>(region0->get(keyPort));
 
-    auto boolPtr =
+    auto regionGetSuccess =
         std::dynamic_pointer_cast<CacheableBoolean>(region0->get("success"));
-    bool isEqual = boolPtr.get()->value();
+    bool actualValue = regionGetSuccess.get()->value();
 
-    ASSERT(isEqual == true,
+    ASSERT(actualValue == true,
            "Task JavaPutGet:Objects of type NonPdxType should be equal");
 
     auto nonPdxType2 = std::static_pointer_cast<PdxTests::NonPdxType>(
