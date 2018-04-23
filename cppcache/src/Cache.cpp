@@ -53,15 +53,6 @@ const std::string& Cache::getName() const { return m_cacheImpl->getName(); }
 bool Cache::isClosed() const { return m_cacheImpl->isClosed(); }
 
 /**
- * Returns the distributed system that this cache was
- * {@link CacheFactory::create created} with. This method does not throw
- * <code>CacheClosedException</code> if the cache is closed.
- */
-DistributedSystem& Cache::getDistributedSystem() const {
-  return m_cacheImpl->getDistributedSystem();
-}
-
-/**
  * Returns the type registry that this cache was
  * {@link CacheFactory::create created} with.
  */
@@ -168,6 +159,10 @@ AuthenticatedView Cache::createAuthenticatedView(
 
 PoolManager& Cache::getPoolManager() const {
   return m_cacheImpl->getPoolManager();
+}
+
+SystemProperties& Cache::getSystemProperties() const {
+  return m_cacheImpl->getSystemProperties();
 }
 
 std::unique_ptr<DataInput> Cache::createDataInput(const uint8_t* m_buffer,

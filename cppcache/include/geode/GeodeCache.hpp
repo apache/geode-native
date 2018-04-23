@@ -31,7 +31,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class DistributedSystem;
+class SystemProperties;
 
 /**
  * GeodeCache represents the singleton cache that must be created
@@ -71,11 +71,7 @@ class APACHE_GEODE_EXPORT GeodeCache : public RegionService {
    */
   virtual void initializeDeclarativeCache(const std::string& cacheXml) = 0;
 
-  /**
-   * Returns the distributed system that this cache was
-   * {@link CacheFactory created} with.
-   */
-  virtual DistributedSystem& getDistributedSystem() const = 0;
+  virtual SystemProperties& getSystemProperties() const = 0;
 
   /**
    * Returns whether Cache saves unread fields for Pdx types.

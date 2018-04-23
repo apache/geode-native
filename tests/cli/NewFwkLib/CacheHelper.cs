@@ -99,7 +99,6 @@ namespace Apache.Geode.Client.FwkLib
   {
     #region Private static members and constants
 
-    private static DistributedSystem m_dsys = null;
     private static Cache m_cache = null;
     private static IRegion<TKey,TVal> m_currRegion = null;
 
@@ -148,14 +147,6 @@ namespace Apache.Geode.Client.FwkLib
     #endregion
 
     #region Public accessors
-
-    public static DistributedSystem DSYS
-    {
-      get
-      {
-        return m_dsys;
-      }
-    }
 
     public static Cache DCache
     {
@@ -266,7 +257,6 @@ namespace Apache.Geode.Client.FwkLib
         }
       }
 
-      m_dsys = m_cache.DistributedSystem;
     }
 
     public static void InitConfigForPoolDurable(string durableClientId, int durableTimeout, string conflateEvents, bool isSslEnable)
@@ -300,7 +290,6 @@ namespace Apache.Geode.Client.FwkLib
     public static void Close()
     {
       CloseCache();
-      m_dsys = null;
     }
 
     public static void CloseCache()
@@ -315,7 +304,6 @@ namespace Apache.Geode.Client.FwkLib
     public static void CloseKeepAlive()
     {
       CloseCacheKeepAlive();
-      m_dsys = null;
     }
 
     public static void CloseCacheKeepAlive()

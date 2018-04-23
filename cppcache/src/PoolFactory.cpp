@@ -233,73 +233,73 @@ PoolFactory& PoolFactory::setPRSingleHopEnabled(bool enabled) {
 }
 std::shared_ptr<Pool> PoolFactory::create(std::string name) {
   std::shared_ptr<ThinClientPoolDM> poolDM;
-  {
-    if (m_cache.getPoolManager().find(name) != nullptr) {
-      throw IllegalStateException("Pool with the same name already exists");
-    }
-    // Create a clone of Attr;
-    auto copyAttrs = m_attrs->clone();
 
-    auto cacheImpl = CacheRegionHelper::getCacheImpl(&m_cache);
+  auto&& poolManager = m_cache.getPoolManager();
 
-    if (m_cache.isClosed()) {
-      throw CacheClosedException("Cache is closed");
-    }
-    if (cacheImpl->getCacheMode() && m_isSubscriptionRedundancy) {
-      LOGWARN(
-          "At least one pool has been created so ignoring cache level "
-          "redundancy setting");
-    }
-    TcrConnectionManager& tccm = cacheImpl->tcrConnectionManager();
-
-    LOGDEBUG("PoolFactory::create mulitusermode = %d ",
-             copyAttrs->getMultiuserSecureModeEnabled());
-    if (copyAttrs->getMultiuserSecureModeEnabled()) {
-      if (copyAttrs->getThreadLocalConnectionSetting()) {
-        LOGERROR(
-            "When pool [%s] is in multiuser authentication mode then thread "
-            "local connections are not supported.",
-            name.c_str());
-        throw IllegalArgumentException(
-            "When pool is in multiuser authentication mode then thread local "
-            "connections are not supported.");
-      }
-    }
-    if (!copyAttrs->getSubscriptionEnabled() &&
-        copyAttrs->getSubscriptionRedundancy() == 0 && !tccm.isDurable()) {
-      if (copyAttrs->getThreadLocalConnectionSetting()) {
-        // TODO: what should we do for sticky connections
-        poolDM = std::make_shared<ThinClientPoolStickyDM>(name.c_str(),
-                                                          copyAttrs, tccm);
-      } else {
-        LOGDEBUG("ThinClientPoolDM created ");
-        poolDM =
-            std::make_shared<ThinClientPoolDM>(name.c_str(), copyAttrs, tccm);
-      }
-    } else {
-      LOGDEBUG("ThinClientPoolHADM created ");
-      if (copyAttrs->getThreadLocalConnectionSetting()) {
-        poolDM = std::make_shared<ThinClientPoolStickyHADM>(name.c_str(),
-                                                            copyAttrs, tccm);
-      } else {
-        poolDM =
-            std::make_shared<ThinClientPoolHADM>(name.c_str(), copyAttrs, tccm);
-      }
-    }
-
-    cacheImpl->getPoolManager().addPool(name,
-                                        std::static_pointer_cast<Pool>(poolDM));
+  if (poolManager.find(name) != nullptr) {
+    throw IllegalStateException("Pool with the same name already exists");
   }
+  // Create a clone of Attr;
+  auto copyAttrs = m_attrs->clone();
+
+  auto cacheImpl = CacheRegionHelper::getCacheImpl(&m_cache);
+
+  if (m_cache.isClosed()) {
+    throw CacheClosedException("Cache is closed");
+  }
+  if (cacheImpl->getCacheMode() && m_isSubscriptionRedundancy) {
+    LOGWARN(
+        "At least one pool has been created so ignoring cache level "
+        "redundancy setting");
+  }
+  auto&& tccm = cacheImpl->tcrConnectionManager();
+
+  LOGDEBUG("PoolFactory::create mulitusermode = %d ",
+           copyAttrs->getMultiuserSecureModeEnabled());
+  if (copyAttrs->getMultiuserSecureModeEnabled()) {
+    if (copyAttrs->getThreadLocalConnectionSetting()) {
+      LOGERROR(
+          "When pool [%s] is in multiuser authentication mode then thread "
+          "local connections are not supported.",
+          name.c_str());
+      throw IllegalArgumentException(
+          "When pool is in multiuser authentication mode then thread local "
+          "connections are not supported.");
+    }
+  }
+  if (!copyAttrs->getSubscriptionEnabled() &&
+      copyAttrs->getSubscriptionRedundancy() == 0 && !tccm.isDurable()) {
+    if (copyAttrs->getThreadLocalConnectionSetting()) {
+      // TODO: what should we do for sticky connections
+      poolDM = std::make_shared<ThinClientPoolStickyDM>(name.c_str(), copyAttrs,
+                                                        tccm);
+    } else {
+      LOGDEBUG("ThinClientPoolDM created ");
+      poolDM =
+          std::make_shared<ThinClientPoolDM>(name.c_str(), copyAttrs, tccm);
+    }
+  } else {
+    LOGDEBUG("ThinClientPoolHADM created ");
+    if (copyAttrs->getThreadLocalConnectionSetting()) {
+      poolDM = std::make_shared<ThinClientPoolStickyHADM>(name.c_str(),
+                                                          copyAttrs, tccm);
+    } else {
+      poolDM =
+          std::make_shared<ThinClientPoolHADM>(name.c_str(), copyAttrs, tccm);
+    }
+  }
+
+  poolManager.addPool(name, poolDM);
 
   // TODO: poolDM->init() should not throw exceptions!
   // Pool DM should only be inited once.
-  if (m_cache.getDistributedSystem()
+  if (cacheImpl->getDistributedSystem()
           .getSystemProperties()
           .autoReadyForEvents()) {
     poolDM->init();
   }
 
-  return std::static_pointer_cast<Pool>(poolDM);
+  return poolDM;
 }
 
 PoolFactory& PoolFactory::addCheck(const std::string& host, int port) {

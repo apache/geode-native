@@ -72,8 +72,9 @@ Cache CacheFactory::create() const {
       Cache(dsProp, ignorePdxUnreadFields, pdxReadSerialized, authInitialize);
 
   try {
-    auto&& cacheXml =
-        cache.getDistributedSystem().getSystemProperties().cacheXMLFile();
+    auto&& cacheXml = cache.m_cacheImpl->getDistributedSystem()
+                          .getSystemProperties()
+                          .cacheXMLFile();
     if (!cacheXml.empty()) {
       cache.initializeDeclarativeCache(cacheXml);
     } else {
@@ -132,8 +133,9 @@ Cache CacheFactory::create(
   cache.m_cacheImpl->setAttributes(attrs);
 
   try {
-    auto&& cacheXml =
-        cache.getDistributedSystem().getSystemProperties().cacheXMLFile();
+    auto&& cacheXml = cache.m_cacheImpl->getDistributedSystem()
+                          .getSystemProperties()
+                          .cacheXMLFile();
     if (!cacheXml.empty()) {
       cache.initializeDeclarativeCache(cacheXml);
     } else {

@@ -31,7 +31,7 @@ namespace Apache
     namespace Client
     {
 
-      ref class DistributedSystem;
+      ref class SystemProperties;
 
       ref class CacheTransactionManager;
 
@@ -76,17 +76,9 @@ namespace Apache
         /// <param name="cacheXml">pathname of a <c>cache.xml</c> file</param>
         void InitializeDeclarativeCache(String^ cacheXml);
 
-        /// <summary>
-        /// Returns the distributed system used to
-        /// <see cref="CacheFactory.Create" /> this cache.
-        /// </summary>
-        /// <remarks>
-        /// This method does not throw
-        /// <c>CacheClosedException</c> if the cache is closed.
-        /// </remarks>
-        property DistributedSystem^ DistributedSystem
+        property SystemProperties^ SystemProperties
         {
-          Apache::Geode::Client::DistributedSystem^ get();
+          Apache::Geode::Client::SystemProperties^ get();
         }
 
         /// <summary>

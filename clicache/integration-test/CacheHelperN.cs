@@ -341,17 +341,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static DistributedSystem DSYS
-    {
-      get
-      {
-        return m_dsys;
-      }
-      set
-      {
-        m_dsys = value;
-      }
-    }
     public static CacheTransactionManager CSTXManager
     {
       get
@@ -625,7 +614,6 @@ namespace Apache.Geode.Client.UnitTests
         }
       }
 
-      m_dsys = m_cache.DistributedSystem;
       m_cstxManager = m_cache.CacheTransactionManager;
     }
 

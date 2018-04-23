@@ -36,10 +36,7 @@ namespace Apache.Geode.Client.UnitTests
 
   public class OverflowTests : UnitTests
   {
-    private DistributedSystem m_dsys = null;
-
-    private const string DSYSName = "OverflowTest";
-
+   
     protected override ClientBase[] GetClients()
     {
       return null;
@@ -49,7 +46,6 @@ namespace Apache.Geode.Client.UnitTests
     public override void InitTests()
     {
       base.InitTests();
-      m_dsys = CacheHelper.DSYS;
     }
 
     [TestFixtureTearDown]

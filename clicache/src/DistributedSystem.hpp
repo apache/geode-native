@@ -48,7 +48,7 @@ namespace Apache
       /// distributed system, each application needs to connect to the
       /// DistributedSystem.
       /// </remarks>
-      public ref class DistributedSystem sealed
+      private ref class DistributedSystem sealed
       {
       public:
 
