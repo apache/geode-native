@@ -86,12 +86,12 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    * @param cacheXml
    *        Valid cache.xml file
    */
-  virtual void initializeDeclarativeCache(const std::string& cacheXml) override;
+  void initializeDeclarativeCache(const std::string& cacheXml) override;
 
   /** Returns the name of this cache.
    * @return the string name of this cache
    */
-  virtual const std::string& getName() const override;
+  const std::string& getName() const override;
 
   /**
    * Indicates if this cache has been closed.
@@ -101,13 +101,13 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    *
    * @return true, if this cache is closed; false, otherwise
    */
-  virtual bool isClosed() const override;
+  bool isClosed() const override;
 
   /**
    * Returns the distributed system that this cache was
    * {@link CacheFactory created} with.
    */
-  virtual DistributedSystem& getDistributedSystem() const override;
+  DistributedSystem& getDistributedSystem() const override;
 
   /**
    * Returns the type registry that this cache was
@@ -124,7 +124,7 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    * reset user related security data.
    * @throws CacheClosedException,  if the cache is already closed.
    */
-  virtual void close() override;
+  void close() override;
 
   /**
    * Terminates this object cache and releases all the local resources.
@@ -148,8 +148,7 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    * @param path the region's name, such as <code>AuthRegion</code>.
    * @returns region, or nullptr if no such region exists.
    */
-  virtual std::shared_ptr<Region> getRegion(
-      const std::string& path) const override;
+  std::shared_ptr<Region> getRegion(const std::string& path) const override;
 
   /**
    * Returns a set of root regions in the cache. This set is a snapshot and
@@ -159,13 +158,13 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    * @param regions the returned set of
    * regions
    */
-  virtual std::vector<std::shared_ptr<Region>> rootRegions() const override;
+  std::vector<std::shared_ptr<Region>> rootRegions() const override;
 
   /**
    * Gets the QueryService from which a new Query can be obtained.
    * @returns A smart pointer to the QueryService.
    */
-  virtual std::shared_ptr<QueryService> getQueryService() override;
+  std::shared_ptr<QueryService> getQueryService() override;
 
   /**
    * Gets the QueryService from which a new Query can be obtained.
@@ -220,13 +219,13 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
   /**
    * Returns whether Cache saves unread fields for Pdx types.
    */
-  virtual bool getPdxIgnoreUnreadFields() const override;
+  bool getPdxIgnoreUnreadFields() const override;
 
   /**
    * Returns whether { @link PdxInstance} is preferred for PDX types instead of
    * C++ object.
    */
-  virtual bool getPdxReadSerialized() const override;
+  bool getPdxReadSerialized() const override;
 
   /**
    * Returns a factory that can create a {@link PdxInstance}.
@@ -236,11 +235,12 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    * @throws IllegalStateException if the className is nullptr or invalid.
    * @return the factory
    */
-  virtual std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
+  PdxInstanceFactory createPdxInstanceFactory(
       const std::string& className) const override;
 
   virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* m_buffer,
                                                      size_t len) const;
+
   virtual std::unique_ptr<DataOutput> createDataOutput() const;
 
   virtual PoolManager& getPoolManager() const;

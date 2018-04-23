@@ -26,6 +26,7 @@ add_executable(integration-test-2
   framework/GfshExecute.cpp
   framework/GfshExecute.h
   RegionPutGetAllTest.cpp
+  PdxInstanceTest.cpp
   )
 
 target_compile_definitions(integration-test-2
@@ -42,6 +43,7 @@ target_link_libraries(integration-test-2
   PUBLIC
     apache-geode
     testobject
+    ACE
     GTest::GTest
     GTest::Main
     Boost::boost

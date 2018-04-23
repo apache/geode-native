@@ -312,8 +312,10 @@ std::vector<char16_t> PdxRemoteReader::readCharArray(
 
   std::vector<char16_t> array;
   switch (choice) {
-    case -2:
+    case -2: {
       array = PdxLocalReader::readCharArray(fieldName);  // in same order
+      break;
+    }
     default: {
       // sequence id read field and then update
       int position = m_pdxType->getFieldPosition(
@@ -333,8 +335,10 @@ std::vector<bool> PdxRemoteReader::readBooleanArray(
 
   std::vector<bool> array;
   switch (choice) {
-    case -2:
+    case -2: {
       array = PdxLocalReader::readBooleanArray(fieldName);  // in same order
+      break;
+    }
     default: {
       // sequence id read field and then update
       int position = m_pdxType->getFieldPosition(
@@ -356,6 +360,7 @@ std::vector<int8_t> PdxRemoteReader::readByteArray(
   switch (choice) {
     case -2: {
       array = PdxLocalReader::readByteArray(fieldName);  // in same order
+      break;
     }
     default: {
       // sequence id read field and then update
@@ -380,6 +385,7 @@ std::vector<int16_t> PdxRemoteReader::readShortArray(
   switch (choice) {
     case -2: {
       array = PdxLocalReader::readShortArray(fieldName);  // in same order
+      break;
     }
     default: {
       // sequence id read field and then update
@@ -404,6 +410,7 @@ std::vector<int32_t> PdxRemoteReader::readIntArray(
   switch (choice) {
     case -2: {
       array = PdxLocalReader::readIntArray(fieldName);  // in same order
+      break;
     }
     default: {
       // sequence id read field and then update
@@ -428,6 +435,7 @@ std::vector<int64_t> PdxRemoteReader::readLongArray(
   switch (choice) {
     case -2: {
       array = PdxLocalReader::readLongArray(fieldName);  // in same order
+      break;
     }
     default: {
       // sequence id read field and then update
@@ -452,6 +460,7 @@ std::vector<float> PdxRemoteReader::readFloatArray(
   switch (choice) {
     case -2: {
       array = PdxLocalReader::readFloatArray(fieldName);  // in same order
+      break;
     }
     default: {
       // sequence id read field and then update
@@ -476,6 +485,7 @@ std::vector<double> PdxRemoteReader::readDoubleArray(
   switch (choice) {
     case -2: {
       array = PdxLocalReader::readDoubleArray(fieldName);  // in same order
+      break;
     }
     default: {
       // sequence id read field and then update

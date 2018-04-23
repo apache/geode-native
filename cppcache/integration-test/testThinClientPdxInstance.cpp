@@ -16,25 +16,29 @@
  */
 
 #include <string>
+
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
+#include <ace/Date_Time.h>
 
-#include "fw_dunit.hpp"
 #include <geode/PdxInstance.hpp>
 #include <geode/PdxInstanceFactory.hpp>
 #include <geode/WritablePdxInstance.hpp>
+
+#include "fw_dunit.hpp"
 #include "testobject/PdxType.hpp"
 #include "testobject/NestedPdxObject.hpp"
 #include "CachePerfStats.hpp"
-#include <LocalRegion.hpp>
+#include "LocalRegion.hpp"
+
 #define ROOT_NAME "testThinClientPdxInstance"
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "CacheHelper.hpp"
 #include "CacheImpl.hpp"
-#include <ace/Date_Time.h>
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
+
 using namespace apache::geode::client;
 using namespace test;
 using namespace testobject;
@@ -447,17 +451,17 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyCacheableObjectArrayWithPdxField)
       auto pi = std::dynamic_pointer_cast<PdxInstance>(objectArrayPtr->at(i));
       LOG("PdxInstancePtr obtained from CacheableObjectArray");
 
-      auto pifPtr =
+      auto pdxFactory =
           cacheHelper->getCache()->createPdxInstanceFactory("PdxTests.Address");
       LOG("PdxInstanceFactoryPtr created for PdxTests.Address....");
 
-      pifPtr->writeInt("_aptNumber", static_cast<int32_t>(i + 1));
+      pdxFactory.writeInt("_aptNumber", static_cast<int32_t>(i + 1));
       char streetStr[256] = {0};
       sprintf(streetStr, "street%zd", i);
-      pifPtr->writeString("_street", streetStr);
+      pdxFactory.writeString("_street", streetStr);
       char cityStr[256] = {0};
       sprintf(cityStr, "city%zd", i);
-      pifPtr->writeString("_city", cityStr);
+      pdxFactory.writeString("_city", cityStr);
 
       auto addrPtr = std::dynamic_pointer_cast<Address>(pi->getObject());
       LOG("AddressPtr created using PdxInstance getObject()....");
@@ -467,7 +471,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyCacheableObjectArrayWithPdxField)
       ASSERT(addrPtr.get()->equals(*(newAddrPtr.get())) == true,
              "Both PdxInstances should be equal.");
 
-      auto retPtr = pifPtr->create();
+      auto retPtr = pdxFactory.create();
       LOG("PdxInstancePtr created....");
 
       bool ret = false;
@@ -1163,17 +1167,17 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
       auto pi = std::dynamic_pointer_cast<PdxInstance>(objectArray->at(i));
       LOG("PdxInstancePtr obtained from CacheableObjectArray");
 
-      auto pifPtr =
+      auto pdxFactory =
           cacheHelper->getCache()->createPdxInstanceFactory("PdxTests.Address");
       LOG("PdxInstanceFactoryPtr created for PdxTests.Address....");
 
-      pifPtr->writeInt("_aptNumber", static_cast<int32_t>(i + 1));
+      pdxFactory.writeInt("_aptNumber", static_cast<int32_t>(i + 1));
       char streetStr[256] = {0};
       sprintf(streetStr, "street%zd", i);
-      pifPtr->writeString("_street", streetStr);
+      pdxFactory.writeString("_street", streetStr);
       char cityStr[256] = {0};
       sprintf(cityStr, "city%zd", i);
-      pifPtr->writeString("_city", cityStr);
+      pdxFactory.writeString("_city", cityStr);
 
       auto addrPtr = std::dynamic_pointer_cast<Address>(pi->getObject());
       LOG("AddressPtr created using PdxInstance getObject()....");
@@ -1183,7 +1187,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
       ASSERT(addrPtr.get()->equals(*(newAddrPtr.get())) == true,
              "Both PdxInstances should be equal.");
 
-      auto retPtr = pifPtr->create();
+      auto retPtr = pdxFactory.create();
       LOG("PdxInstancePtr created....");
 
       bool ret = false;
@@ -1405,17 +1409,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
 
     std::vector<bool> setBoolArray{true, false, true,  false,
                                    true, true,  false, true};
-    auto arrayLen = setBoolArray.size();
     wpiPtr->setField("m_boolArray", setBoolArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_boolArray") == true,
            "m_boolArray = true expected");
     auto getBoolArray = newPiPtr->getBooleanArrayField("m_boolArray");
-    arrayLen = getBoolArray.size();
-    ASSERT(arrayLen == 8, "Arraylength == 8 expected");
-    ASSERT(genericCompare(setBoolArray, getBoolArray, arrayLen) == true,
-           "boolArray should be equal");
+    ASSERT(getBoolArray.size() == 8, "Arraylength == 8 expected");
+    ASSERT(
+        genericCompare(setBoolArray, getBoolArray, getBoolArray.size()) == true,
+        "boolArray should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
@@ -1437,10 +1440,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_byteArray") == true,
            "m_byteArray = true expected");
     auto getByteArray = newPiPtr->getByteArrayField("m_byteArray");
-    arrayLen = getByteArray.size();
-    ASSERT(arrayLen == 4, "Arraylength == 4 expected");
-    ASSERT(genericCompare(setByteArray, getByteArray, arrayLen) == true,
-           "byteArray should be equal");
+    ASSERT(getByteArray.size() == 4, "Arraylength == 4 expected");
+    ASSERT(
+        genericCompare(setByteArray, getByteArray, getByteArray.size()) == true,
+        "byteArray should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
@@ -1462,10 +1465,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_charArray") == true,
            "m_charArray = true expected");
     auto getCharArray = newPiPtr->getCharArrayField("m_charArray");
-    arrayLen = getCharArray.size();
-    ASSERT(arrayLen == 4, "Arraylength == 4 expected");
-    ASSERT(genericCompare(setCharArray, getCharArray, arrayLen) == true,
-           "charArray should be equal");
+    ASSERT(getCharArray.size() == 4, "Arraylength == 4 expected");
+    ASSERT(
+        genericCompare(setCharArray, getCharArray, getCharArray.size()) == true,
+        "charArray should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
@@ -1487,9 +1490,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_int16Array") == true,
            "m_int16Array = true expected");
     auto getShortArray = newPiPtr->getShortArrayField("m_int16Array");
-    arrayLen = getShortArray.size();
-    ASSERT(arrayLen == 4, "Arraylength == 4 expected");
-    ASSERT(genericCompare(setShortArray, getShortArray, arrayLen) == true,
+    ASSERT(getShortArray.size() == 4, "Arraylength == 4 expected");
+    ASSERT(genericCompare(setShortArray, getShortArray, getShortArray.size()) ==
+               true,
            "shortArray should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
@@ -1512,9 +1515,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_int32Array") == true,
            "m_int32Array = true expected");
     auto newValArray = newPiPtr->getIntArrayField("m_int32Array");
-    arrayLen = newValArray.size();
-    ASSERT(arrayLen == 3, "Arraylength == 3 expected");
-    ASSERT(genericCompare(setIntArray, newValArray, arrayLen) == true,
+    ASSERT(newValArray.size() == 3, "Arraylength == 3 expected");
+    ASSERT(genericCompare(setIntArray, newValArray, newValArray.size()) == true,
            "intArray should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
@@ -1537,10 +1539,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_longArray") == true,
            "m_longArray = true expected");
     auto getLongArray = newPiPtr->getLongArrayField("m_longArray");
-    arrayLen = getLongArray.size();
-    ASSERT(arrayLen == 2, "Arraylength == 2 expected");
-    ASSERT(genericCompare(setLongArray, getLongArray, arrayLen) == true,
-           "longArray should be equal");
+    ASSERT(getLongArray.size() == 2, "Arraylength == 2 expected");
+    ASSERT(
+        genericCompare(setLongArray, getLongArray, getLongArray.size()) == true,
+        "longArray should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
 
@@ -1563,9 +1565,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_floatArray") == true,
            "m_floatArray = true expected");
     auto getFloatArray = newPiPtr->getFloatArrayField("m_floatArray");
-    arrayLen = getFloatArray.size();
-    ASSERT(arrayLen == 2, "Arraylength == 2 expected");
-    ASSERT(genericCompare(setFloatArray, getFloatArray, arrayLen) == true,
+    ASSERT(getFloatArray.size() == 2, "Arraylength == 2 expected");
+    ASSERT(genericCompare(setFloatArray, getFloatArray, getFloatArray.size()) ==
+               true,
            "floatArray should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
@@ -1588,9 +1590,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_doubleArray") == true,
            "m_doubleArray = true expected");
     auto getDoubleArray = newPiPtr->getDoubleArrayField("m_doubleArray");
-    arrayLen = getDoubleArray.size();
-    ASSERT(arrayLen == 2, "Arraylength == 2 expected");
-    ASSERT(genericCompare(setDoubleArray, getDoubleArray, arrayLen) == true,
+    ASSERT(getDoubleArray.size() == 2, "Arraylength == 2 expected");
+    ASSERT(genericCompare(setDoubleArray, getDoubleArray,
+                          getDoubleArray.size()) == true,
            "doubleArray should be equal");
     ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
            "PdxInstance should not be equal");
@@ -1856,8 +1858,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     auto getStringArray = newPiPtr->getStringArrayField("m_stringArray");
-    ASSERT(arrayLen == 3, "Arraylength == 3 expected");
-    for (size_t i = 0; i < arrayLen; i++) {
+    ASSERT(getStringArray.size() == 3, "Arraylength == 3 expected");
+    for (size_t i = 0; i < getStringArray.size(); i++) {
       LOGINFO("set string is %s ", setStringArray[i].c_str());
       LOGINFO("get string is %s ", getStringArray[i].c_str());
       ASSERT(setStringArray[i] == getStringArray[i],
@@ -1913,10 +1915,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_charArray") == true,
            "m_charArray = true expected");
     auto getParentCharArray = newPiPtr->getCharArrayField("m_charArray");
-    arrayLen = getParentCharArray.size();
-    ASSERT(arrayLen == 4, "Arraylength == 4 expected");
-    ASSERT(genericCompare(setParentCharArray, getParentCharArray, arrayLen) ==
-               true,
+    ASSERT(getParentCharArray.size() == 4, "Arraylength == 4 expected");
+    ASSERT(genericCompare(setParentCharArray, getParentCharArray,
+                          getParentCharArray.size()) == true,
            "charArray should be equal");
     LOG("modifyPdxInstance complete.");
   }
@@ -2267,7 +2268,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
 
     auto pdxobj = std::make_shared<PdxTests::PdxType>();
 
-    auto pifPtr =
+    auto pdxFactory =
         cacheHelper->getCache()->createPdxInstanceFactory("PdxTests.PdxType");
     LOG("PdxInstanceFactoryPtr created....");
 
@@ -2276,107 +2277,106 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     lengthArr[0] = 1;
     lengthArr[1] = 2;
 
-    pifPtr->writeBoolean("m_bool", pdxobj->getBool());
+    pdxFactory.writeBoolean("m_bool", pdxobj->getBool());
     try {
-      pifPtr->writeBoolean("m_bool", pdxobj->getBool());
+      pdxFactory.writeBoolean("m_bool", pdxobj->getBool());
       FAIL(
           "calling writeBoolean on same fieldname should have thrown "
           "IllegalStateException");
     } catch (IllegalStateException&) {
       LOG("Got expected IllegalStateException for m_bool");
     }
-    pifPtr->markIdentityField("m_bool");
-    pifPtr->writeByte("m_byte", pdxobj->getByte());
-    pifPtr->markIdentityField("m_byte");
-    pifPtr->writeShort("m_int16", pdxobj->getShort());
-    pifPtr->markIdentityField("m_int16");
-    pifPtr->writeInt("m_int32", pdxobj->getInt());
-    pifPtr->markIdentityField("m_int32");
-    pifPtr->writeLong("m_long", pdxobj->getLong());
-    pifPtr->markIdentityField("m_long");
-    pifPtr->writeFloat("m_float", pdxobj->getFloat());
-    pifPtr->markIdentityField("m_float");
-    pifPtr->writeDouble("m_double", pdxobj->getDouble());
-    pifPtr->markIdentityField("m_double");
-    pifPtr->writeString("m_string", pdxobj->getString());
-    pifPtr->markIdentityField("m_string");
-    pifPtr->writeDate("m_dateTime", pdxobj->getDate());
-    pifPtr->markIdentityField("m_dateTime");
-    pifPtr->writeBooleanArray("m_boolArray", pdxobj->getBoolArray());
-    pifPtr->markIdentityField("m_boolArray");
-    pifPtr->writeByteArray("m_byteArray", pdxobj->getByteArray());
-    pifPtr->markIdentityField("m_byteArray");
-    pifPtr->writeShortArray("m_int16Array", pdxobj->getShortArray());
-    pifPtr->markIdentityField("m_int16Array");
-    pifPtr->writeIntArray("m_int32Array", pdxobj->getIntArray());
-    pifPtr->markIdentityField("m_int32Array");
-    pifPtr->writeLongArray("m_longArray", pdxobj->getLongArray());
-    pifPtr->markIdentityField("m_longArray");
-    pifPtr->writeFloatArray("m_floatArray", pdxobj->getFloatArray());
-    pifPtr->markIdentityField("m_floatArray");
-    pifPtr->writeDoubleArray("m_doubleArray", pdxobj->getDoubleArray());
-    pifPtr->markIdentityField("m_doubleArray");
-    pifPtr->writeObject("m_map", pdxobj->getHashMap());
-    pifPtr->markIdentityField("m_map");
-    pifPtr->writeStringArray("m_stringArray", pdxobj->getStringArray());
-    pifPtr->markIdentityField("m_stringArray");
-    pifPtr->writeObjectArray("m_objectArray",
-                             pdxobj->getCacheableObjectArray());
-    pifPtr->writeObject("m_pdxEnum", pdxobj->getEnum());
-    pifPtr->markIdentityField("m_pdxEnum");
-    pifPtr->writeObject("m_arraylist", pdxobj->getArrayList());
-    pifPtr->markIdentityField("m_arraylist");
-    pifPtr->writeObject("m_linkedlist", pdxobj->getLinkedList());
-    pifPtr->markIdentityField("m_linkedlist");
-    pifPtr->writeObject("m_hashtable", pdxobj->getHashTable());
-    pifPtr->markIdentityField("m_hashtable");
-    pifPtr->writeObject("m_vector", pdxobj->getVector());
-    pifPtr->markIdentityField("m_vector");
-    pifPtr->writeArrayOfByteArrays(
+    pdxFactory.markIdentityField("m_bool");
+    pdxFactory.writeByte("m_byte", pdxobj->getByte());
+    pdxFactory.markIdentityField("m_byte");
+    pdxFactory.writeShort("m_int16", pdxobj->getShort());
+    pdxFactory.markIdentityField("m_int16");
+    pdxFactory.writeInt("m_int32", pdxobj->getInt());
+    pdxFactory.markIdentityField("m_int32");
+    pdxFactory.writeLong("m_long", pdxobj->getLong());
+    pdxFactory.markIdentityField("m_long");
+    pdxFactory.writeFloat("m_float", pdxobj->getFloat());
+    pdxFactory.markIdentityField("m_float");
+    pdxFactory.writeDouble("m_double", pdxobj->getDouble());
+    pdxFactory.markIdentityField("m_double");
+    pdxFactory.writeString("m_string", pdxobj->getString());
+    pdxFactory.markIdentityField("m_string");
+    pdxFactory.writeDate("m_dateTime", pdxobj->getDate());
+    pdxFactory.markIdentityField("m_dateTime");
+    pdxFactory.writeBooleanArray("m_boolArray", pdxobj->getBoolArray());
+    pdxFactory.markIdentityField("m_boolArray");
+    pdxFactory.writeByteArray("m_byteArray", pdxobj->getByteArray());
+    pdxFactory.markIdentityField("m_byteArray");
+    pdxFactory.writeShortArray("m_int16Array", pdxobj->getShortArray());
+    pdxFactory.markIdentityField("m_int16Array");
+    pdxFactory.writeIntArray("m_int32Array", pdxobj->getIntArray());
+    pdxFactory.markIdentityField("m_int32Array");
+    pdxFactory.writeLongArray("m_longArray", pdxobj->getLongArray());
+    pdxFactory.markIdentityField("m_longArray");
+    pdxFactory.writeFloatArray("m_floatArray", pdxobj->getFloatArray());
+    pdxFactory.markIdentityField("m_floatArray");
+    pdxFactory.writeDoubleArray("m_doubleArray", pdxobj->getDoubleArray());
+    pdxFactory.markIdentityField("m_doubleArray");
+    pdxFactory.writeObject("m_map", pdxobj->getHashMap());
+    pdxFactory.markIdentityField("m_map");
+    pdxFactory.writeStringArray("m_stringArray", pdxobj->getStringArray());
+    pdxFactory.markIdentityField("m_stringArray");
+    pdxFactory.writeObjectArray("m_objectArray",
+                                pdxobj->getCacheableObjectArray());
+    pdxFactory.writeObject("m_pdxEnum", pdxobj->getEnum());
+    pdxFactory.markIdentityField("m_pdxEnum");
+    pdxFactory.writeObject("m_arraylist", pdxobj->getArrayList());
+    pdxFactory.markIdentityField("m_arraylist");
+    pdxFactory.writeObject("m_linkedlist", pdxobj->getLinkedList());
+    pdxFactory.markIdentityField("m_linkedlist");
+    pdxFactory.writeObject("m_hashtable", pdxobj->getHashTable());
+    pdxFactory.markIdentityField("m_hashtable");
+    pdxFactory.writeObject("m_vector", pdxobj->getVector());
+    pdxFactory.markIdentityField("m_vector");
+    pdxFactory.writeArrayOfByteArrays(
         "m_byteByteArray", pdxobj->getArrayOfByteArrays(), 2, lengthArr);
-    pifPtr->markIdentityField("m_byteByteArray");
-    pifPtr->writeChar("m_char", pdxobj->getChar());
-    pifPtr->markIdentityField("m_char");
-    pifPtr->writeCharArray("m_charArray", pdxobj->getCharArray());
-    pifPtr->markIdentityField("m_charArray");
-    pifPtr->writeObject("m_chs", pdxobj->getHashSet());
-    pifPtr->markIdentityField("m_chs");
-    pifPtr->writeObject("m_clhs", pdxobj->getLinkedHashSet());
-    pifPtr->markIdentityField("m_clhs");
-    pifPtr->writeByte("m_sbyte", pdxobj->getSByte());
-    pifPtr->markIdentityField("m_sbyte");
-    pifPtr->writeByteArray("m_sbyteArray", pdxobj->getSByteArray());
-    pifPtr->markIdentityField("m_sbyteArray");
-    pifPtr->writeShort("m_uint16", pdxobj->getUint16());
-    pifPtr->markIdentityField("m_uint16");
-    pifPtr->writeInt("m_uint32", pdxobj->getUInt());
-    pifPtr->markIdentityField("m_uint32");
-    pifPtr->writeLong("m_ulong", pdxobj->getULong());
-    pifPtr->markIdentityField("m_ulong");
-    pifPtr->writeShortArray("m_uint16Array", pdxobj->getUInt16Array());
-    pifPtr->markIdentityField("m_uint16Array");
-    pifPtr->writeIntArray("m_uint32Array", pdxobj->getUIntArray());
-    pifPtr->markIdentityField("m_uint32Array");
-    pifPtr->writeLongArray("m_ulongArray", pdxobj->getULongArray());
-    pifPtr->markIdentityField("m_ulongArray");
+    pdxFactory.markIdentityField("m_byteByteArray");
+    pdxFactory.writeChar("m_char", pdxobj->getChar());
+    pdxFactory.markIdentityField("m_char");
+    pdxFactory.writeCharArray("m_charArray", pdxobj->getCharArray());
+    pdxFactory.markIdentityField("m_charArray");
+    pdxFactory.writeObject("m_chs", pdxobj->getHashSet());
+    pdxFactory.markIdentityField("m_chs");
+    pdxFactory.writeObject("m_clhs", pdxobj->getLinkedHashSet());
+    pdxFactory.markIdentityField("m_clhs");
+    pdxFactory.writeByte("m_sbyte", pdxobj->getSByte());
+    pdxFactory.markIdentityField("m_sbyte");
+    pdxFactory.writeByteArray("m_sbyteArray", pdxobj->getSByteArray());
+    pdxFactory.markIdentityField("m_sbyteArray");
+    pdxFactory.writeShort("m_uint16", pdxobj->getUint16());
+    pdxFactory.markIdentityField("m_uint16");
+    pdxFactory.writeInt("m_uint32", pdxobj->getUInt());
+    pdxFactory.markIdentityField("m_uint32");
+    pdxFactory.writeLong("m_ulong", pdxobj->getULong());
+    pdxFactory.markIdentityField("m_ulong");
+    pdxFactory.writeShortArray("m_uint16Array", pdxobj->getUInt16Array());
+    pdxFactory.markIdentityField("m_uint16Array");
+    pdxFactory.writeIntArray("m_uint32Array", pdxobj->getUIntArray());
+    pdxFactory.markIdentityField("m_uint32Array");
+    pdxFactory.writeLongArray("m_ulongArray", pdxobj->getULongArray());
+    pdxFactory.markIdentityField("m_ulongArray");
 
-    pifPtr->writeByteArray("m_byte252", pdxobj->getByte252());
-    pifPtr->markIdentityField("m_byte252");
-    pifPtr->writeByteArray("m_byte253", pdxobj->getByte253());
-    pifPtr->markIdentityField("m_byte253");
-    pifPtr->writeByteArray("m_byte65535", pdxobj->getByte65535());
-    pifPtr->markIdentityField("m_byte65535");
-    pifPtr->writeByteArray("m_byte65536", pdxobj->getByte65536());
-    pifPtr->markIdentityField("m_byte65536");
-    pifPtr->writeObject("m_address", pdxobj->getCacheableObjectArray());
+    pdxFactory.writeByteArray("m_byte252", pdxobj->getByte252());
+    pdxFactory.markIdentityField("m_byte252");
+    pdxFactory.writeByteArray("m_byte253", pdxobj->getByte253());
+    pdxFactory.markIdentityField("m_byte253");
+    pdxFactory.writeByteArray("m_byte65535", pdxobj->getByte65535());
+    pdxFactory.markIdentityField("m_byte65535");
+    pdxFactory.writeByteArray("m_byte65536", pdxobj->getByte65536());
+    pdxFactory.markIdentityField("m_byte65536");
+    pdxFactory.writeObject("m_address", pdxobj->getCacheableObjectArray());
 
-    pifPtr->writeObjectArray(
+    pdxFactory.writeObjectArray(
         "", pdxobj->getCacheableObjectArrayEmptyPdxFieldName());
 
-    std::shared_ptr<PdxInstance> ret = pifPtr->create();
+    std::shared_ptr<PdxInstance> ret = pdxFactory.create();
     LOG("PdxInstancePtr created....");
 
-    LOGINFO("PdxInstance getClassName = " + ret->getClassName());
     ASSERT(ret->getClassName() == "PdxTests.PdxType",
            "pdxInstance.getClassName should return PdxTests.PdxType.");
 
@@ -2475,23 +2475,23 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
            "Pdxhashcode hashcode not matched with java pdx hash code.");
 
     auto pp = std::make_shared<ParentPdx>(10);
-    auto if2 = cacheHelper->getCache()->createPdxInstanceFactory(
-        "testobject::ParentPdx");
-    if2->writeInt("m_parentId", pp->getParentId());
-    if2->writeObject("m_enum", pp->getEnum());
-    if2->writeString("m_parentName", pp->getParentName());
-    if2->writeObject("m_childPdx", pp->getChildPdx());
-    if2->writeChar("m_char", pp->getChar());
-    if2->writeChar("m_wideChar", pp->getChar());
-    if2->writeCharArray("m_charArray", pp->getCharArray());
+    auto pdxFactory2 = cacheHelper->getCache()->createPdxInstanceFactory(
+        "testobject.ParentPdx");
+    pdxFactory2.writeInt("m_parentId", pp->getParentId());
+    pdxFactory2.writeObject("m_enum", pp->getEnum());
+    pdxFactory2.writeString("m_parentName", pp->getParentName());
+    pdxFactory2.writeObject("m_childPdx", pp->getChildPdx());
+    pdxFactory2.writeChar("m_char", pp->getChar());
+    pdxFactory2.writeChar("m_wideChar", pp->getChar());
+    pdxFactory2.writeCharArray("m_charArray", pp->getCharArray());
 
     LOG("write set done....");
-    std::shared_ptr<PdxInstance> ip2 = if2->create();
+    std::shared_ptr<PdxInstance> ip2 = pdxFactory2.create();
     LOG("PdxInstancePtr created");
 
     LOGINFO("PdxInstance getClassName = " + ip2->getClassName());
-    ASSERT(ip2->getClassName() == "testobject::ParentPdx",
-           "pdxInstance.getClassName should return testobject::ParentPdx.");
+    ASSERT(ip2->getClassName() == "testobject.ParentPdx",
+           "pdxInstance.getClassName should return testobject.ParentPdx.");
 
     auto keyport = CacheableKey::create("pp");
     rptr->put(keyport, ip2);
@@ -2549,13 +2549,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxInstanceWithEmptyKeys)
   {
     LOG("pdxInstanceWithEmptyKeys started ");
     auto rptr = getHelper()->getRegion(regionNames[0]);
-    auto pifPtr =
+    auto pdxFactory =
         cacheHelper->getCache()->createPdxInstanceFactory("EMPTY_KEY_NAME");
     LOG("PdxInstanceFactoryPtr created....");
 
     bool falseValue = false;
-    pifPtr->writeBoolean("", falseValue);
-    std::shared_ptr<PdxInstance> putValue = pifPtr->create();
+    pdxFactory.writeBoolean("", falseValue);
+    std::shared_ptr<PdxInstance> putValue = pdxFactory.create();
 
     auto key = CacheableKey::create("pp");
     rptr->put(key, putValue);
@@ -2601,64 +2601,67 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseLocator1)
   }
 END_TASK_DEFINITION
 
-void runThinClientPdxInstance(int index) {
+void testPdxInstance() {
   CALL_TASK(CreateLocator1);
   CALL_TASK(CreateServer1_With_Locator)
 
-  if (index == 0) {
-    CALL_TASK(StepOne_Pooled_Locator);
-    CALL_TASK(StepTwo_Pooled_Locator);
+  CALL_TASK(StepOne_Pooled_Locator);
+  CALL_TASK(StepTwo_Pooled_Locator);
 
-    CALL_TASK(pdxIFPutGetTest);
+  CALL_TASK(pdxIFPutGetTest);
 
-    CALL_TASK(CloseCache1);
-    CALL_TASK(CloseCache2);
-    CALL_TASK(CloseServer1);
+  CALL_TASK(CloseCache1);
+  CALL_TASK(CloseCache2);
+  CALL_TASK(CloseServer1);
 
-    CALL_TASK(CloseLocator1);
+  CALL_TASK(CloseLocator1);
+}
 
-  } else if (index == 1) {
-    CALL_TASK(StepOne_Pooled_Locator_PdxReadSerialized);
-    CALL_TASK(StepTwo_Pooled_Locator_CachingEnabled_PdxReadSerialized);
+void testPdxInstanceWithPdxReadSerializedAndCaching() {
+  CALL_TASK(CreateLocator1);
+  CALL_TASK(CreateServer1_With_Locator)
 
-    CALL_TASK(pdxPut);
-    CALL_TASK(modifyPdxInstanceAndCheckLocally);
-    CALL_TASK(pdxInstanceWithEmptyKeys);
+  CALL_TASK(StepOne_Pooled_Locator_PdxReadSerialized);
+  CALL_TASK(StepTwo_Pooled_Locator_CachingEnabled_PdxReadSerialized);
 
-    CALL_TASK(CloseCache1);
-    CALL_TASK(CloseCache2);
-    CALL_TASK(CloseServer1);
+  CALL_TASK(pdxPut);
+  CALL_TASK(modifyPdxInstanceAndCheckLocally);
+  CALL_TASK(pdxInstanceWithEmptyKeys);
 
-    CALL_TASK(CloseLocator1);
+  CALL_TASK(CloseCache1);
+  CALL_TASK(CloseCache2);
+  CALL_TASK(CloseServer1);
 
-  } else if (index == 2) {
-    CALL_TASK(StepOne_Pooled_Locator_PdxReadSerialized);
-    CALL_TASK(StepTwo_Pooled_Locator_PdxReadSerialized);
+  CALL_TASK(CloseLocator1);
+}
 
-    CALL_TASK(pdxPut);
-    CALL_TASK(getObject);
-    CALL_TASK(verifyPdxInstanceEquals);
-    CALL_TASK(verifyPdxInstanceHashcode);
-    CALL_TASK(accessPdxInstance);
-    CALL_TASK(modifyPdxInstance);
+void testPdxInstanceWithPdxReadSerialized() {
+  CALL_TASK(CreateLocator1);
+  CALL_TASK(CreateServer1_With_Locator)
 
-    CALL_TASK(CloseCache1);
-    CALL_TASK(CloseCache2);
-    CALL_TASK(CloseServer1);
+  CALL_TASK(StepOne_Pooled_Locator_PdxReadSerialized);
+  CALL_TASK(StepTwo_Pooled_Locator_PdxReadSerialized);
 
-    CALL_TASK(CloseLocator1);
-  }
+  CALL_TASK(pdxPut);
+  CALL_TASK(getObject);
+  CALL_TASK(verifyPdxInstanceEquals);
+  CALL_TASK(verifyPdxInstanceHashcode);
+  CALL_TASK(accessPdxInstance);
+  CALL_TASK(modifyPdxInstance);
+
+  CALL_TASK(CloseCache1);
+  CALL_TASK(CloseCache2);
+  CALL_TASK(CloseServer1);
+
+  CALL_TASK(CloseLocator1);
 }
 
 DUNIT_MAIN
   {
-    runThinClientPdxInstance(
-        0);  // Locator, caching = false, PdxReadSerialized = false
+    //    testPdxInstance();
 
-    runThinClientPdxInstance(
-        1);  // Locator, caching = true, PdxReadSerialized = true
+    //    testPdxInstanceWithPdxReadSerializedAndCaching();
 
-    runThinClientPdxInstance(
-        2);  // Locator, caching = false, PdxReadSerialized = true
+    testPdxInstanceWithPdxReadSerialized();
   }
 END_MAIN

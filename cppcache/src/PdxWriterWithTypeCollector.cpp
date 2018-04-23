@@ -41,7 +41,7 @@ PdxWriterWithTypeCollector::PdxWriterWithTypeCollector(
 
 void PdxWriterWithTypeCollector::initialize() {
   m_pdxType =
-      std::make_shared<PdxType>(m_pdxTypeRegistry, m_domainClassName, true);
+      std::make_shared<PdxType>(*m_pdxTypeRegistry, m_domainClassName, true);
 }
 
 void PdxWriterWithTypeCollector::endObjectWriting() {

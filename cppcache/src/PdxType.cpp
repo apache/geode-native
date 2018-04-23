@@ -42,7 +42,7 @@ PdxType::~PdxType() noexcept {
   _GEODE_SAFE_DELETE_ARRAY(m_localToRemoteFieldMap);
 }
 
-PdxType::PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr,
+PdxType::PdxType(PdxTypeRegistry& pdxTypeRegistry,
                  const std::string& pdxDomainClassName, bool isLocal)
     : Serializable(),
       m_pdxFieldTypes(new std::vector<std::shared_ptr<PdxFieldType>>()),
@@ -56,7 +56,7 @@ PdxType::PdxType(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistryPtr,
       m_remoteToLocalFieldMap(nullptr),
       m_localToRemoteFieldMap(nullptr),
       m_noJavaClass(false),
-      m_pdxTypeRegistryPtr(pdxTypeRegistryPtr) {}
+      m_pdxTypeRegistry(pdxTypeRegistry) {}
 
 void PdxType::toData(DataOutput& output) const {
   output.write(static_cast<int8_t>(GeodeTypeIdsImpl::DataSerializable));  // 45
@@ -174,7 +174,7 @@ void PdxType::initRemoteToLocal() {
 
   std::shared_ptr<PdxType> localPdxType = nullptr;
   //[TODO - open this up once PdxTypeRegistry is done]
-  localPdxType = m_pdxTypeRegistryPtr->getLocalPdxType(m_className);
+  localPdxType = m_pdxTypeRegistry.getLocalPdxType(m_className);
   m_numberOfFieldsExtra = 0;
 
   if (localPdxType != nullptr) {
@@ -234,7 +234,7 @@ void PdxType::initLocalToRemote() {
   // 5. else if local field is not in remote type then -1
 
   std::shared_ptr<PdxType> localPdxType = nullptr;
-  localPdxType = m_pdxTypeRegistryPtr->getLocalPdxType(m_className);
+  localPdxType = m_pdxTypeRegistry.getLocalPdxType(m_className);
 
   if (localPdxType != nullptr) {
     std::vector<std::shared_ptr<PdxFieldType>>* localPdxFields =
@@ -404,8 +404,7 @@ std::shared_ptr<PdxType> PdxType::isContains(std::shared_ptr<PdxType> first,
   return first;
 }
 std::shared_ptr<PdxType> PdxType::clone() {
-  auto clone =
-      std::make_shared<PdxType>(m_pdxTypeRegistryPtr, m_className, false);
+  auto clone = std::make_shared<PdxType>(m_pdxTypeRegistry, m_className, false);
   clone->m_geodeTypeId = 0;
   clone->m_numberOfVarLenFields = m_numberOfVarLenFields;
 

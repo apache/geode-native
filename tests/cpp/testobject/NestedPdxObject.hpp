@@ -92,8 +92,6 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
   char16_t m_char;
   std::vector<char16_t> m_charArray;
 
-  int32_t m_charArrayLen;
-
  public:
   ParentPdx() {}
 
@@ -105,11 +103,7 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
 
     m_char = 'C';
 
-    m_charArray = std::vector<char16_t>(2);
-    m_charArray[0] = 'X';
-    m_charArray[1] = 'Y';
-
-    m_charArrayLen = 2;
+    m_charArray = std::vector<char16_t>({'X', 'Y'});
   }
 
   ~ParentPdx() override = default;
@@ -133,8 +127,6 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
 
   std::vector<char16_t> getCharArray() { return m_charArray; }
 
-  int32_t getCharArrayLength() { return m_charArrayLen; }
-
   using PdxSerializable::fromData;
   using PdxSerializable::toData;
 
@@ -153,7 +145,7 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
     return std::make_shared<ParentPdx>();
   }
 
-  bool equals(ParentPdx& other, bool isPdxReadSerialized) const;
+  bool equals(const ParentPdx& other, bool isPdxReadSerialized) const;
 };
 
 enum enumQuerytest { id1, id2, id3 };

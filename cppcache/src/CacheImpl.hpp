@@ -300,7 +300,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
                                                      size_t len,
                                                      Pool* pool) const;
 
-  std::shared_ptr<PdxInstanceFactory> createPdxInstanceFactory(
+  PdxInstanceFactory createPdxInstanceFactory(
       const std::string& className) const;
 
   AuthenticatedView createAuthenticatedView(

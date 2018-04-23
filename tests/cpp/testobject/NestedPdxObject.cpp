@@ -115,39 +115,24 @@ std::string ParentPdx::toString() const {
   return idbuf;
 }
 
-bool ParentPdx::equals(ParentPdx& other, bool isPdxReadSerialized) const {
-  LOGINFO("ParentPdx::equals");
-  ParentPdx* ot = dynamic_cast<ParentPdx*>(&other);
-  if (ot == NULL) {
-    LOGINFO("ParentPdx::equals1");
-    return false;
-  }
+bool ParentPdx::equals(const ParentPdx& other, bool isPdxReadSerialized) const {
   if ((m_parentName == other.m_parentName) &&
       (m_parentId == other.m_parentId) &&
       (m_enum->getEnumOrdinal() == other.m_enum->getEnumOrdinal()) &&
       (m_enum->getEnumClassName() == other.m_enum->getEnumClassName()) &&
       (m_enum->getEnumName() == other.m_enum->getEnumName()) &&
-      m_charArrayLen == other.m_charArrayLen && m_char == other.m_char) {
-    LOGINFO("ParentPdx::equals2");
-
-    for (int j = 0; j < m_charArrayLen; j++) {
-      if (m_charArray[j] != other.m_charArray[j]) {
-        LOGINFO("ParentPdx::equals not char array ");
-        return false;
-      }
-    }
+      m_char == other.m_char && m_charArray == other.m_charArray) {
 
     if (!isPdxReadSerialized) {
       ChildPdx* ch1 = dynamic_cast<ChildPdx*>(m_childPdx.get());
       ChildPdx* ch2 = dynamic_cast<ChildPdx*>(other.m_childPdx.get());
 
       if (ch1->equals(*ch2)) {
-        LOGINFO("ParentPdx::equals3");
         return true;
       }
     }
     return true;
   }
-  LOGINFO("ParentPdx:: not equals");
+
   return false;
 }

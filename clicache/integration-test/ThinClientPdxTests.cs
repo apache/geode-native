@@ -3435,7 +3435,7 @@ namespace Apache.Geode.Client.UnitTests
        iwpi.SetField("m_chs", chm);
        region0["pdxput"] = iwpi;
        newpdxins = (IPdxInstance)region0["pdxput"];
-       Assert.AreEqual((CacheableHashSet)newpdxins.GetField("m_chs"), chm, "CacheableHashSet is not equal");
+       Assert.True(chm.Equals(newpdxins.GetField("m_chs")), "CacheableHashSet is not equal");
        Assert.AreNotEqual(pdxins, newpdxins, "PdxInstance should not be equal");
 
        CacheableLinkedHashSet clhs = CacheableLinkedHashSet.Create();
@@ -3446,7 +3446,7 @@ namespace Apache.Geode.Client.UnitTests
        iwpi.SetField("m_clhs", clhs);
        region0["pdxput"] = iwpi;
        newpdxins = (IPdxInstance)region0["pdxput"];
-       Assert.AreEqual((CacheableLinkedHashSet)newpdxins.GetField("m_clhs"), clhs, "CacheableLinkedHashSet is not equal");
+       Assert.True(clhs.Equals(newpdxins.GetField("m_clhs")), "CacheableLinkedHashSet is not equal");
        Assert.AreNotEqual(pdxins, newpdxins, "PdxInstance should not be equal");
 
        PdxTests.Address[] aa = new PdxTests.Address[2];
@@ -3991,7 +3991,7 @@ namespace Apache.Geode.Client.UnitTests
        iwpi.SetField("m_chs", chm);
        region0["pdxput"] = iwpi;
        newpdxins = (IPdxInstance)lRegion["pdxput"];
-       Assert.AreEqual((CacheableHashSet)newpdxins.GetField("m_chs"), chm, "CacheableHashSet is not equal");
+       Assert.True(chm.Equals(newpdxins.GetField("m_chs")), "CacheableHashSet is not equal");
        Assert.AreNotEqual(pdxins, newpdxins, "PdxInstance should not be equal");
 
        CacheableLinkedHashSet clhs = CacheableLinkedHashSet.Create();
@@ -4002,8 +4002,8 @@ namespace Apache.Geode.Client.UnitTests
        iwpi.SetField("m_clhs", clhs);
        region0["pdxput"] = iwpi;
        newpdxins = (IPdxInstance)lRegion["pdxput"];
-       Assert.AreEqual((CacheableLinkedHashSet)newpdxins.GetField("m_clhs"), clhs, "CacheableLinkedHashSet is not equal");
-       Assert.AreNotEqual(pdxins, newpdxins, "PdxInstance should not be equal");
+      Assert.True(clhs.Equals(newpdxins.GetField("m_clhs")), "CacheableLinkedHashSet is not equal");
+      Assert.AreNotEqual(pdxins, newpdxins, "PdxInstance should not be equal");
      }
 
      void runPdxInstanceLocalTest()
@@ -4947,27 +4947,15 @@ namespace Apache.Geode.Client.UnitTests
 
      void VerifyEntry2FLRC()
      {
-       bool gotException = false;
+       Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
        try
        {
-         Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
-         object orig = new PdxTests.PdxTypes2();
          object ret = region0[2];
-         Util.Log("ret object : " + ret.GetType().ToString());
-         if (orig.Equals(ret))
-         {
-           Util.Log("both objects are equal");
-         }
-         else {
-           Util.Log("both objects are NOT equal");
-         }
+         Assert.Fail("Expected exception.");
        }
        catch (Exception ex) {
-         Util.Log("Got exception " + ex.Message);
-         gotException = true;
+         // Expected
        }
-
-       Assert.IsFalse(gotException);
      }
 
      string testSysPropFileName = "testLR.properties";
@@ -5089,7 +5077,8 @@ namespace Apache.Geode.Client.UnitTests
      {
        runPutAllGetAllOps();
      }
-      [Test]
+     
+     [Test]
      public void LocalOps()
      {
        runLocalOps();
@@ -5218,23 +5207,23 @@ namespace Apache.Geode.Client.UnitTests
        runPdxTypeMapperTest();
      }
 
-      //[Test]
-      public void PdxTypeObjectSizeTest()
-      {
-        runPdxTypeObjectSizeTest();
-      }
+     //[Test]
+     public void PdxTypeObjectSizeTest()
+     {
+       runPdxTypeObjectSizeTest();
+     }
 
-      [Test]
-      public void ByteArrayObjectSizeTest()
-      {
-        runByteArrayObjectSizeTest();
-      }
+     [Test]
+     public void ByteArrayObjectSizeTest()
+     {
+       runByteArrayObjectSizeTest();
+     }
 
-      [Test]
-      public void PdxEnumQueryTest()
-      {
-        runPdxEnumQueryTest();
-      }
+     [Test]
+     public void PdxEnumQueryTest()
+     {
+       runPdxEnumQueryTest();
+     }
 
      [Test]
      public void PdxDeltaTest()

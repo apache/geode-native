@@ -105,7 +105,7 @@ Cache CacheFactory::create() const {
 
   serializationRegistry->addType(
       GeodeTypeIds::PdxType,
-      std::bind(PdxType::CreateDeserializable, pdxTypeRegistry));
+      std::bind(PdxType::CreateDeserializable, std::ref(*pdxTypeRegistry)));
 
   serializationRegistry->addType(
       std::bind(VersionTag::createDeserializable, memberListForVersionStamp));

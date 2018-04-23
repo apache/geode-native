@@ -351,12 +351,12 @@ namespace Apache
         } \
         virtual std::shared_ptr<apache::geode::client::Exception> GetNative() override \
         { \
-          std::shared_ptr<apache::geode::client::Exception> cause; \
+          auto message = marshal_as<std::string>(this->Message + ": " + this->StackTrace); \
           if (this->InnerException != nullptr) { \
-            cause = GeodeException::GetNative(this->InnerException); \
+            auto cause = GeodeException::GetNative(this->InnerException); \
+            message += "Caused by: " + cause->getMessage(); \
           } \
-          return std::make_shared<apache::geode::client::y>( \
-            marshal_as<std::string>(this->Message + ": " + this->StackTrace) + cause->getMessage()); \
+          return std::make_shared<apache::geode::client::y>(message); \
         } \
       }
 

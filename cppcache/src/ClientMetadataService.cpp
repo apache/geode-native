@@ -188,7 +188,6 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
   }
   TcrMessageGetClientPrMetadata request(tcrdm->getConnectionManager()
                                             .getCacheImpl()
-                                            ->getCache()
                                             ->createDataOutput(),
                                         regionPath);
   TcrMessageReply reply(true, nullptr);

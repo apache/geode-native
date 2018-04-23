@@ -20,6 +20,8 @@
 #ifndef GEODE_PDXINSTANCEFACTORY_H_
 #define GEODE_PDXINSTANCEFACTORY_H_
 
+#include <map>
+
 #include "PdxInstance.hpp"
 #include "internal/geode_globals.hpp"
 #include "CacheableBuiltins.hpp"
@@ -29,6 +31,12 @@
 namespace apache {
 namespace geode {
 namespace client {
+
+class PdxType;
+typedef std::map<std::string, std::shared_ptr<Cacheable>> FieldVsValues;
+class CachePerfStats;
+class PdxTypeRegistry;
+class AuthenticatedView;
 
 /**
  * PdxInstanceFactory gives you a way to create PdxInstances.
@@ -43,18 +51,12 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT PdxInstanceFactory {
  public:
-  /**
-   * @brief destructor
-   */
-  virtual ~PdxInstanceFactory() {}
-  PdxInstanceFactory(const PdxInstanceFactory& other) = delete;
-  void operator=(const PdxInstanceFactory& other) = delete;
-
- protected:
-  /**
-   * @brief constructors
-   */
-  PdxInstanceFactory() {}
+  PdxInstanceFactory() = delete;
+  ~PdxInstanceFactory() noexcept = default;
+  PdxInstanceFactory(const PdxInstanceFactory& other) = default;
+  PdxInstanceFactory& operator=(const PdxInstanceFactory& other) = default;
+  PdxInstanceFactory(PdxInstanceFactory&& other) = default;
+  PdxInstanceFactory& operator=(PdxInstanceFactory&& other) = default;
 
  public:
   /**
@@ -64,7 +66,7 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @return the created Pdxinstance
    * @throws IllegalStateException if called more than once
    */
-  virtual std::unique_ptr<PdxInstance> create() = 0;
+  std::shared_ptr<PdxInstance> create();
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -76,8 +78,7 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeChar(
-      const std::string& fieldName, char16_t value) = 0;
+  PdxInstanceFactory& writeChar(const std::string& fieldName, char16_t value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -89,8 +90,7 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeChar(
-      const std::string& fieldName, char value) = 0;
+  PdxInstanceFactory& writeChar(const std::string& fieldName, char value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -102,8 +102,7 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeBoolean(
-      const std::string& fieldName, bool value) = 0;
+  PdxInstanceFactory& writeBoolean(const std::string& fieldName, bool value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -115,8 +114,7 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeByte(
-      const std::string& fieldName, int8_t value) = 0;
+  PdxInstanceFactory& writeByte(const std::string& fieldName, int8_t value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -128,8 +126,7 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeShort(
-      const std::string& fieldName, int16_t value) = 0;
+  PdxInstanceFactory& writeShort(const std::string& fieldName, int16_t value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -141,8 +138,7 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeInt(
-      const std::string& fieldName, int32_t value) = 0;
+  PdxInstanceFactory& writeInt(const std::string& fieldName, int32_t value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -154,8 +150,7 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeLong(
-      const std::string& fieldName, int64_t value) = 0;
+  PdxInstanceFactory& writeLong(const std::string& fieldName, int64_t value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -167,8 +162,7 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeFloat(
-      const std::string& fieldName, float value) = 0;
+  PdxInstanceFactory& writeFloat(const std::string& fieldName, float value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -180,8 +174,7 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeDouble(
-      const std::string& fieldName, double value) = 0;
+  PdxInstanceFactory& writeDouble(const std::string& fieldName, double value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -193,8 +186,8 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeDate(
-      const std::string& fieldName, std::shared_ptr<CacheableDate> value) = 0;
+  PdxInstanceFactory& writeDate(const std::string& fieldName,
+                                std::shared_ptr<CacheableDate> value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -206,11 +199,11 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeString(
-      const std::string& fieldName, const std::string& value) = 0;
+  PdxInstanceFactory& writeString(const std::string& fieldName,
+                                  const std::string& value);
 
-  virtual std::shared_ptr<PdxInstanceFactory> writeString(
-      const std::string& fieldName, std::string&& value) = 0;
+  PdxInstanceFactory& writeString(const std::string& fieldName,
+                                  std::string&& value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -229,8 +222,8 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeObject(
-      const std::string& fieldName, std::shared_ptr<Cacheable> value) = 0;
+  PdxInstanceFactory& writeObject(const std::string& fieldName,
+                                  std::shared_ptr<Cacheable> value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -243,8 +236,8 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeBooleanArray(
-      const std::string& fieldName, const std::vector<bool>& value) = 0;
+  PdxInstanceFactory& writeBooleanArray(const std::string& fieldName,
+                                        const std::vector<bool>& value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -257,8 +250,8 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeCharArray(
-      const std::string& fieldName, const std::vector<char16_t>& value) = 0;
+  PdxInstanceFactory& writeCharArray(const std::string& fieldName,
+                                     const std::vector<char16_t>& value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -271,8 +264,8 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeByteArray(
-      const std::string& fieldName, const std::vector<int8_t>& value) = 0;
+  PdxInstanceFactory& writeByteArray(const std::string& fieldName,
+                                     const std::vector<int8_t>& value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -285,8 +278,8 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeShortArray(
-      const std::string& fieldName, const std::vector<int16_t>& value) = 0;
+  PdxInstanceFactory& writeShortArray(const std::string& fieldName,
+                                      const std::vector<int16_t>& value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -299,8 +292,8 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeIntArray(
-      const std::string& fieldName, const std::vector<int32_t>& value) = 0;
+  PdxInstanceFactory& writeIntArray(const std::string& fieldName,
+                                    const std::vector<int32_t>& value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -313,8 +306,8 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeLongArray(
-      const std::string& fieldName, const std::vector<int64_t>& value) = 0;
+  PdxInstanceFactory& writeLongArray(const std::string& fieldName,
+                                     const std::vector<int64_t>& value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -327,8 +320,8 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeFloatArray(
-      const std::string& fieldName, const std::vector<float>& value) = 0;
+  PdxInstanceFactory& writeFloatArray(const std::string& fieldName,
+                                      const std::vector<float>& value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -341,8 +334,8 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeDoubleArray(
-      const std::string& fieldName, const std::vector<double>& value) = 0;
+  PdxInstanceFactory& writeDoubleArray(const std::string& fieldName,
+                                       const std::vector<double>& value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -355,8 +348,8 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeStringArray(
-      const std::string& fieldName, const std::vector<std::string>& value) = 0;
+  PdxInstanceFactory& writeStringArray(const std::string& fieldName,
+                                       const std::vector<std::string>& value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -372,9 +365,9 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeObjectArray(
+  PdxInstanceFactory& writeObjectArray(
       const std::string& fieldName,
-      std::shared_ptr<CacheableObjectArray> value) = 0;
+      std::shared_ptr<CacheableObjectArray> value);
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -389,9 +382,10 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> writeArrayOfByteArrays(
-      const std::string& fieldName, int8_t** value, int32_t arrayLength,
-      int32_t* elementLength) = 0;
+  PdxInstanceFactory& writeArrayOfByteArrays(const std::string& fieldName,
+                                             int8_t** value,
+                                             int32_t arrayLength,
+                                             int32_t* elementLength);
 
   /**
    * Indicate that the named field should be included in hashCode and equals
@@ -416,8 +410,25 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * @return this PdxInstanceFactory
    * @throws IllegalStateException if the named field does not exist.
    */
-  virtual std::shared_ptr<PdxInstanceFactory> markIdentityField(
-      const std::string& fieldName) = 0;
+  PdxInstanceFactory& markIdentityField(const std::string& fieldName);
+
+ private:
+  bool m_created;
+  std::shared_ptr<PdxType> m_pdxType;
+  FieldVsValues m_FieldVsValues;
+  CachePerfStats& m_cachePerfStats;
+  PdxTypeRegistry& m_pdxTypeRegistry;
+  const CacheImpl& m_cacheImpl;
+  bool m_enableTimeStatistics;
+  void isFieldAdded(const std::string& fieldName);
+
+  PdxInstanceFactory(const std::string& className,
+                     CachePerfStats& cachePerfStats,
+                     PdxTypeRegistry& m_pdxTypeRegistry, const CacheImpl& cache,
+                     bool enableTimeStatistics);
+
+  friend CacheImpl;
+  friend AuthenticatedView;
 };
 }  // namespace client
 }  // namespace geode
