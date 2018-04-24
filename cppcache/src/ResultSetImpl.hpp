@@ -50,10 +50,10 @@ class APACHE_GEODE_EXPORT ResultSetImpl
   SelectResultsIterator getIterator() override;
 
   /** Get an iterator pointing to the start of vector. */
-  virtual SelectResults::Iterator begin() const override;
+  virtual SelectResults::iterator begin() const override;
 
   /** Get an iterator pointing to the end of vector. */
-  virtual SelectResults::Iterator end() const override;
+  virtual SelectResults::iterator end() const override;
 
   ~ResultSetImpl() noexcept override {}
 

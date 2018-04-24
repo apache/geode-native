@@ -78,13 +78,13 @@ class APACHE_GEODE_EXPORT SelectResults {
   virtual SelectResultsIterator getIterator() = 0;
 
   /** Interface of an iterator for <code>SelectResults</code>.*/
-  typedef CacheableVector::iterator Iterator;
+  typedef CacheableVector::iterator iterator;
 
   /** Get an iterator pointing to the start of vector. */
-  virtual Iterator begin() const = 0;
+  virtual iterator begin() const = 0;
 
   /** Get an iterator pointing to the end of vector. */
-  virtual Iterator end() const = 0;
+  virtual iterator end() const = 0;
 };
 }  // namespace client
 }  // namespace geode

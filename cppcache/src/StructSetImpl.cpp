@@ -85,11 +85,11 @@ const std::string& StructSetImpl::getFieldName(int32_t index) {
   throw std::out_of_range("Struct: fieldName not found.");
 }
 
-SelectResults::Iterator StructSetImpl::begin() const {
+SelectResults::iterator StructSetImpl::begin() const {
   return m_structVector->begin();
 }
 
-SelectResults::Iterator StructSetImpl::end() const {
+SelectResults::iterator StructSetImpl::end() const {
   return m_structVector->end();
 }
 

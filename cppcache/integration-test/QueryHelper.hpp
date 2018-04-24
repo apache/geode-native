@@ -315,76 +315,58 @@ void QueryHelper::getPDXObject(std::shared_ptr<Region>& rptr) {
 
 bool QueryHelper::verifyRS(std::shared_ptr<SelectResults>& resultSet,
                            size_t expectedRows) {
-  if (!std::dynamic_pointer_cast<ResultSet>(resultSet)) {
-    return false;
+  if (auto rsptr = std::static_pointer_cast<ResultSet>(resultSet)) {
+    size_t foundRows = 0;
+    for (auto&& row : *rsptr) {
+      foundRows++;
+    }
+
+    printf("found rows %zd, expected %zd \n", foundRows, expectedRows);
+    if (foundRows == expectedRows) return true;
   }
-
-  auto rsptr = std::static_pointer_cast<ResultSet>(resultSet);
-
-  size_t foundRows = 0;
-
-  SelectResultsIterator iter = rsptr->getIterator();
-
-  for (size_t rows = 0; rows < rsptr->size(); rows++) {
-    auto ser = (*rsptr)[rows];
-    foundRows++;
-  }
-
-  printf("found rows %zd, expected %zd \n", foundRows, expectedRows);
-  if (foundRows == expectedRows) return true;
-
   return false;
 }
 
 bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
                            size_t expectedRows, int32_t expectedFields) {
-  if (!std::dynamic_pointer_cast<StructSet>(structSet)) {
+  if (auto ssptr = std::static_pointer_cast<StructSet>(structSet)) {
+    size_t foundRows = 0;
+    for (auto&& ser : *ssptr) {
+      foundRows++;
+
+      auto siptr = std::dynamic_pointer_cast<Struct>(ser);
+
+      if (siptr == nullptr) {
+        printf("siptr is nullptr \n\n");
+        return false;
+      }
+
+      int32_t foundFields = 0;
+      for (auto&& field : *siptr) {
+        foundFields++;
+      }
+
+      if (foundFields != expectedFields) {
+        char buffer[1024] = {'\0'};
+        sprintf(buffer, "found fields %d, expected fields %d \n", foundFields,
+                expectedFields);
+        LOG(buffer);
+        return false;
+      }
+    }
+
+    if (foundRows == expectedRows) return true;
+
+    // lets log and return in case of error only situation
+    char buffer[1024] = {'\0'};
+    sprintf(buffer, "found rows %zd, expected rows %zd\n", foundRows,
+            expectedRows);
+    LOG(buffer);
+  } else {
     if (expectedRows == 0 && expectedFields == 0) {
       return true;  // quite possible we got a null set back.
     }
-    printf("we have structSet itself nullptr \n");
-    return false;
   }
-
-  auto ssptr = std::static_pointer_cast<StructSet>(structSet);
-
-  size_t foundRows = 0;
-
-  for (SelectResults::Iterator iter = ssptr->begin(); iter != ssptr->end();
-       iter++) {
-    auto ser = (*iter);
-    foundRows++;
-
-    Struct* siptr = dynamic_cast<Struct*>(ser.get());
-
-    if (siptr == nullptr) {
-      printf("siptr is nullptr \n\n");
-      return false;
-    }
-
-    int32_t foundFields = 0;
-
-    for (int32_t cols = 0; cols < siptr->length(); cols++) {
-      auto field = (*siptr)[cols];
-      foundFields++;
-    }
-
-    if (foundFields != expectedFields) {
-      char buffer[1024] = {'\0'};
-      sprintf(buffer, "found fields %d, expected fields %d \n", foundFields,
-              expectedFields);
-      LOG(buffer);
-      return false;
-    }
-  }
-
-  if (foundRows == expectedRows) return true;
-
-  // lets log and return in case of error only situation
-  char buffer[1024] = {'\0'};
-  sprintf(buffer, "found rows %zd, expected rows %zd\n", foundRows,
-          expectedRows);
-  LOG(buffer);
   return false;
 }
 

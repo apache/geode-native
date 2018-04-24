@@ -46,10 +46,10 @@ SelectResultsIterator ResultSetImpl::getIterator() {
   return SelectResultsIterator(m_resultSetVector, shared_from_this());
 }
 
-SelectResults::Iterator ResultSetImpl::begin() const {
+SelectResults::iterator ResultSetImpl::begin() const {
   return m_resultSetVector->begin();
 }
 
-SelectResults::Iterator ResultSetImpl::end() const {
+SelectResults::iterator ResultSetImpl::end() const {
   return m_resultSetVector->end();
 }
