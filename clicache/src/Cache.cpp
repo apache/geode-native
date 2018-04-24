@@ -81,11 +81,12 @@ namespace Apache
         }
       }
 
-      DistributedSystem^ Cache::DistributedSystem::get( )
+      SystemProperties^ Cache::SystemProperties::get( )
       {
         try
         {
-          return Client::DistributedSystem::Create(&(m_nativeptr->get()->getDistributedSystem()));
+          auto&& systemProperties = m_nativeptr->get()->getSystemProperties();
+          return Apache::Geode::Client::SystemProperties::Create(&systemProperties);
         }
         finally
         {

@@ -279,6 +279,10 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
 
   PoolManager& getPoolManager() const { return *m_poolManager; }
 
+  SystemProperties& getSystemProperties() const {
+    return m_distributedSystem.getSystemProperties();
+  }
+
   ThreadPool* getThreadPool();
 
   inline const std::shared_ptr<AuthInitialize>& getAuthInitialize() {

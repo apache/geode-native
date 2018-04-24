@@ -318,15 +318,6 @@ void CacheHelper::disconnect(bool keepalive) {
   }
 
   LOG("Closed cache.");
-  try {
-    if (m_doDisconnect) {
-      LOG("Disconnecting...");
-      cachePtr->getDistributedSystem().disconnect();
-      LOG("Finished disconnect.");
-    }
-  } catch (...) {
-    LOG("Throwing exception while disconnecting....");
-  }
   cachePtr = nullptr;
   singleton = nullptr;
   LOG("Finished cleanup after CacheHelper.");
@@ -1746,17 +1737,16 @@ void CacheHelper::initLocator(int instance, bool ssl, bool, int dsId,
 void CacheHelper::clearSecProp() {
   auto tmpSecProp = CacheHelper::getHelper()
                         .getCache()
-                        ->getDistributedSystem()
-                        .getSystemProperties()
+                        ->getSystemProperties()
                         .getSecurityProperties();
   tmpSecProp->remove("security-username");
   tmpSecProp->remove("security-password");
 }
+
 void CacheHelper::setJavaConnectionPoolSize(long size) {
   CacheHelper::getHelper()
       .getCache()
-      ->getDistributedSystem()
-      .getSystemProperties()
+      ->getSystemProperties()
       .setjavaConnectionPoolSize(size);
 }
 

@@ -41,7 +41,6 @@ class CacheRegionHelper;
 class CacheTransactionManager;
 class DataInput;
 class DataOutput;
-class DistributedSystem;
 class Pool;
 class PoolFactory;
 class PoolManager;
@@ -102,12 +101,6 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    * @return true, if this cache is closed; false, otherwise
    */
   bool isClosed() const override;
-
-  /**
-   * Returns the distributed system that this cache was
-   * {@link CacheFactory created} with.
-   */
-  DistributedSystem& getDistributedSystem() const override;
 
   /**
    * Returns the type registry that this cache was
@@ -244,6 +237,8 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
   virtual std::unique_ptr<DataOutput> createDataOutput() const;
 
   virtual PoolManager& getPoolManager() const;
+
+  SystemProperties& getSystemProperties() const override;
 
   Cache() = delete;
   virtual ~Cache();

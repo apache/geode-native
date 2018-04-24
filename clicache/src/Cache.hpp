@@ -43,9 +43,7 @@ namespace Apache
       enum class ExpirationAction;
 
       enum class RegionShortcut;
-      
-      ref class DistributedSystem;
-      
+            
       ref class CacheTransactionManager2PC;
       
       generic<class TPropKey, class TPropValue>
@@ -113,17 +111,9 @@ namespace Apache
           bool get();
         }
 
-        /// <summary>
-        /// Returns the distributed system used to
-        /// <see cref="CacheFactory.Create" /> this cache.
-        /// </summary>
-        /// <remarks>
-        /// This method does not throw
-        /// <c>CacheClosedException</c> if the cache is closed.
-        /// </remarks>
-        virtual property Apache::Geode::Client::DistributedSystem^ DistributedSystem
+        virtual property SystemProperties^ SystemProperties
         {
-          Apache::Geode::Client::DistributedSystem^ get();
+          Apache::Geode::Client::SystemProperties^ get();
         }
 
         /// <summary>
