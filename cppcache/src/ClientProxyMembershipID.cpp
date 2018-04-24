@@ -16,16 +16,20 @@
  */
 
 #include "ClientProxyMembershipID.hpp"
+
 #include <ctime>
-#include <ace/OS.h>
-#include <geode/DistributedSystem.hpp>
-#include <geode/GeodeTypeIds.hpp>
-#include "GeodeTypeIdsImpl.hpp"
-#include <geode/CacheableBuiltins.hpp>
-#include "DataOutputInternal.hpp"
-#include "Version.hpp"
 #include <string>
 #include <memory>
+
+#include <ace/OS.h>
+
+#include <geode/GeodeTypeIds.hpp>
+#include <geode/CacheableBuiltins.hpp>
+
+#include "GeodeTypeIdsImpl.hpp"
+#include "DistributedSystem.hpp"
+#include "DataOutputInternal.hpp"
+#include "Version.hpp"
 
 #define ADDRSIZE 4
 #define DCPORT 12334

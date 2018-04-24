@@ -19,10 +19,10 @@
 
 #include <geode/CqStatusListener.hpp>
 #include <geode/CqServiceStatistics.hpp>
-#include <geode/DistributedSystem.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/ExceptionTypes.hpp>
 
+#include "DistributedSystem.hpp"
 #include "CqService.hpp"
 #include "ReadWriteLock.hpp"
 #include "CqQueryImpl.hpp"
@@ -126,16 +126,17 @@ std::shared_ptr<CqQuery> CqService::newCq(
         ("CQ with the given name already exists. CqName : " + cqName).c_str());
   }
 
-std::shared_ptr<UserAttributes> ua = nullptr;
-if (m_tccdm != nullptr && m_tccdm->isMultiUserMode()) {
-  ua = TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
-}
+  std::shared_ptr<UserAttributes> ua = nullptr;
+  if (m_tccdm != nullptr && m_tccdm->isMultiUserMode()) {
+    ua =
+        TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
+  }
 
-auto cQuery = std::make_shared<CqQueryImpl>(shared_from_this(), cqName,
-                                            queryString, cqAttributes,
-                                            m_statisticsFactory, isDurable, ua);
-cQuery->initCq();
-return cQuery;
+  auto cQuery = std::make_shared<CqQueryImpl>(
+      shared_from_this(), cqName, queryString, cqAttributes,
+      m_statisticsFactory, isDurable, ua);
+  cQuery->initCq();
+  return cQuery;
 }
 
 /**
@@ -169,7 +170,8 @@ void CqService::removeCq(const std::string& cqName) {
 /**
  * Retrieve a CqQuery by name.
  * @return the CqQuery or null if not found
- */ std::shared_ptr<CqQuery> CqService::getCq(const std::string& cqName) {
+ */
+std::shared_ptr<CqQuery> CqService::getCq(const std::string& cqName) {
   MapOfRegionGuard guard(m_cqQueryMap->mutex());
   std::shared_ptr<CqQuery> tmp;
   if (0 != m_cqQueryMap->find(cqName, tmp)) {
@@ -347,7 +349,10 @@ void CqService::closeCqs(query_container_type& cqs) {
 /**
  * Get statistics information for all CQs
  * @return the CqServiceStatistics
- */ std::shared_ptr<CqServiceStatistics> CqService::getCqServiceStatistics() { return m_stats; }
+ */
+std::shared_ptr<CqServiceStatistics> CqService::getCqServiceStatistics() {
+  return m_stats;
+}
 
 /**
  * Close the CQ Service after cleanup if any.
@@ -562,7 +567,8 @@ CqOperation CqService::getOperation(int eventType) {
  *
  * @return List of names of registered durable CQs, empty list if no durable
  * cqs.
- */ std::shared_ptr<CacheableArrayList> CqService::getAllDurableCqsFromServer() {
+ */
+std::shared_ptr<CacheableArrayList> CqService::getAllDurableCqsFromServer() {
   TcrMessageGetDurableCqs msg(m_tccdm->getConnectionManager()
                                   .getCacheImpl()
                                   ->getCache()
@@ -590,15 +596,14 @@ CqOperation CqService::getOperation(int eventType) {
     if (err == GF_CACHESERVER_EXCEPTION) {
       std::stringstream message;
       message << "CqService::getAllDurableCqsFromServer: exception "
-              << "at the server side: "
-              << reply.getException();
+              << "at the server side: " << reply.getException();
       throw CqQueryException(message.str());
     } else {
       GfErrTypeToException("CqService::getAllDurableCqsFromServer", err);
     }
   }
 
- auto tmpRes = resultCollector->getResults();
+  auto tmpRes = resultCollector->getResults();
   delete resultCollector;
   return tmpRes;
 }

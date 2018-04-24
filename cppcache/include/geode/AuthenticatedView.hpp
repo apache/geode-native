@@ -22,7 +22,6 @@
 
 #include <geode/internal/geode_globals.hpp>
 #include <geode/Region.hpp>
-#include <geode/DistributedSystem.hpp>
 #include <geode/QueryService.hpp>
 #include <geode/PoolFactory.hpp>
 #include <geode/RegionService.hpp>

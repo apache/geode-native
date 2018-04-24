@@ -20,7 +20,7 @@
 
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
-#include <geode/DistributedSystem.hpp>
+#include "DistributedSystem.hpp"
 #include "end_native.hpp"
 
 #include "native_conditional_unique_ptr.hpp"

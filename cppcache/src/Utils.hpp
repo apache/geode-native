@@ -40,8 +40,8 @@
 #include <geode/CacheableString.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/SystemProperties.hpp>
-#include <geode/DistributedSystem.hpp>
 
+#include "DistributedSystem.hpp"
 #include "statistics/Statistics.hpp"
 #include "util/Log.hpp"
 #include "Assert.hpp"

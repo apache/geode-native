@@ -4953,7 +4953,7 @@ namespace Apache.Geode.Client.UnitTests
          object ret = region0[2];
          Assert.Fail("Expected exception.");
        }
-       catch (Exception ex) {
+       catch (Exception) {
          // Expected
        }
      }

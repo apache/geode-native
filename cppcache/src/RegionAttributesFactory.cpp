@@ -20,10 +20,10 @@
 
 #include <geode/Cache.hpp>
 #include <geode/ExpirationAttributes.hpp>
-#include <geode/DistributedSystem.hpp>
 #include <geode/Pool.hpp>
 #include <geode/PoolManager.hpp>
 
+#include "DistributedSystem.hpp"
 #include "Utils.hpp"
 
 namespace apache {

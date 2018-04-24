@@ -20,11 +20,11 @@
 #include <ace/Recursive_Thread_Mutex.h>
 
 #include <geode/internal/geode_globals.hpp>
-#include <geode/DistributedSystem.hpp>
 #include <geode/CacheFactory.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/DataOutput.hpp>
 
+#include "DistributedSystem.hpp"
 #include "CppCacheLibrary.hpp"
 #include "Utils.hpp"
 #include "util/Log.hpp"

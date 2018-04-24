@@ -30,12 +30,12 @@
 #include <ace/OS_NS_sys_stat.h>
 
 #include <geode/internal/geode_globals.hpp>
-#include <geode/DistributedSystem.hpp>
 #include <geode/SystemProperties.hpp>
 
 #include "HostStatSampler.hpp"
 #include "StatArchiveWriter.hpp"
 #include "GeodeStatisticsFactory.hpp"
+#include "../DistributedSystem.hpp"
 #include "../util/Log.hpp"
 #include "../ClientHealthStats.hpp"
 #include "../ClientProxyMembershipID.hpp"
@@ -118,14 +118,14 @@ int comparator(const dirent** d1, const dirent** d2) {
   }
 }
 
-}
+}  // namespace
 
 namespace apache {
 namespace geode {
 namespace statistics {
 
-using std::chrono::high_resolution_clock;
 using std::chrono::duration_cast;
+using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 using std::chrono::nanoseconds;
 
@@ -512,10 +512,9 @@ void HostStatSampler::initSpecialStats() {
   // After Special categories are decided initialize them here
 }
 
-void HostStatSampler::sampleSpecialStats() {  }
+void HostStatSampler::sampleSpecialStats() {}
 
-void HostStatSampler::closeSpecialStats() {
-}
+void HostStatSampler::closeSpecialStats() {}
 
 void HostStatSampler::checkListeners() {}
 

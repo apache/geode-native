@@ -20,23 +20,18 @@
  * limitations under the License.
  */
 
-/**
- * @file
- */
-// CacheConfig.h: interface for the CacheConfig class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if defined(_MSC_VER) && _MSC_VER > 1000
 #pragma warning(disable : 4786)
 #endif  // _MSC_VER > 1000
 
-#include <geode/internal/geode_globals.hpp>
 #include <string>
 #include <map>
-#include "RegionConfig.hpp"
+
+#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
-#include <geode/DistributedSystem.hpp>
+
+#include "RegionConfig.hpp"
+#include "DistributedSystem.hpp"
 
 //
 // Sneaky structure forward decl;

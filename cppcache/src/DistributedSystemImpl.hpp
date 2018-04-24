@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_DISTRIBUTEDSYSTEMIMPL_H_
-#define GEODE_DISTRIBUTEDSYSTEMIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,20 +15,28 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_DISTRIBUTEDSYSTEMIMPL_H_
+#define GEODE_DISTRIBUTEDSYSTEMIMPL_H_
+
 /**
  * @file
  */
 
-#include <geode/internal/geode_globals.hpp>
 #include <memory>
-#include "ace/Recursive_Thread_Mutex.h"
-#include "ace/Guard_T.h"
-#include "ace/OS.h"
-#include <geode/DistributedSystem.hpp>
-#include "DiffieHellman.hpp"
-#include "statistics/StatisticsManager.hpp"
 #include <string>
 #include <map>
+
+#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Guard_T.h>
+#include <ace/OS.h>
+
+#include <geode/internal/geode_globals.hpp>
+
+#include "DistributedSystem.hpp"
+#include "DiffieHellman.hpp"
+#include "statistics/StatisticsManager.hpp"
 
 #ifdef __linux
 #include <sys/prctl.h>

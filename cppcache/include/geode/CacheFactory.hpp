@@ -23,7 +23,6 @@
 #include <string>
 
 #include "internal/geode_globals.hpp"
-#include "DistributedSystem.hpp"
 #include "Cache.hpp"
 #include "CacheAttributes.hpp"
 #include "PoolFactory.hpp"

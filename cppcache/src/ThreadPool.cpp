@@ -14,18 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * ThreadPool.cpp
- *
- *  Created on: 16-Mar-2010
- *      Author: ankurs
- */
+
+#include <geode/SystemProperties.hpp>
 
 #include "ThreadPool.hpp"
-#include <geode/DistributedSystem.hpp>
-#include <geode/SystemProperties.hpp>
+#include "DistributedSystem.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "CacheImpl.hpp"
+
 using namespace apache::geode::client;
 
 ThreadPoolWorker::ThreadPoolWorker(IThreadPool* manager)

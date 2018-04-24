@@ -23,10 +23,10 @@
 #include <ace/SOCK_Acceptor.h>
 #include <ace/OS.h>
 
-#include <geode/DistributedSystem.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/internal/chrono/duration.hpp>
 
+#include "DistributedSystem.hpp"
 #include "TcpConn.hpp"
 #include "CacheImpl.hpp"
 #include "util/Log.hpp"

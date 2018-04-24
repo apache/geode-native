@@ -14,10 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "TcpSslConn.hpp"
 
 #include <geode/SystemProperties.hpp>
-#include <geode/DistributedSystem.hpp>
+
+#include "DistributedSystem.hpp"
 #include "CacheImpl.hpp"
 
 namespace apache {

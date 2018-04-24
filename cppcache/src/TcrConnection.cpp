@@ -20,7 +20,6 @@
 #include <ace/INET_Addr.h>
 #include <ace/OS.h>
 
-#include <geode/DistributedSystem.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/AuthInitialize.hpp>
 

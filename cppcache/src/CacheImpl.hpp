@@ -31,9 +31,9 @@
 #include <geode/internal/geode_globals.hpp>
 #include <geode/Cache.hpp>
 #include <geode/CacheAttributes.hpp>
-#include <geode/DistributedSystem.hpp>
 #include <geode/TypeRegistry.hpp>
 
+#include "DistributedSystem.hpp"
 #include "MapWithLock.hpp"
 #include "Condition.hpp"
 #include "TcrConnectionManager.hpp"

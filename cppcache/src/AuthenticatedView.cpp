@@ -19,7 +19,6 @@
 #include <memory>
 
 #include <geode/internal/geode_globals.hpp>
-#include <geode/DistributedSystem.hpp>
 #include <geode/Cache.hpp>
 #include <geode/FunctionService.hpp>
 #include <geode/AuthenticatedView.hpp>
