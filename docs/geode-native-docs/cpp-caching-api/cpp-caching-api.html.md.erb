@@ -1,0 +1,68 @@
+---
+title:  C++ Client API
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+This section describes the primary classes and usage conventions for the C++ client API. It demonstrates how to use the API to create caches and perform data serialization.
+
+The C++ API documentation is available at [C++ API]((http://geode.apache.org/docs/). It provides extensive implementation details for the C++ structures and functions.
+
+Several example API programs are included in the `SampleCode` directory. See [QuickStart Examples](../examples.html).
+
+-   **[About the C++ Client API](gfe-cpp-api.html)**
+
+    The C++ client API allows C++ developers to programmatically create, populate, and manage a distributed system. The C++ library is thread-safe, except where specified otherwise in the API documentation.
+
+-   **[Creating a Cache](creating-cache.html)**
+
+    The code snippets in this section show cache creation.
+
+-   **[Creating a Proxy Client-Side Region](creating-region.html)**
+
+    This section provides code examples for creating and customizing proxy client-side regions.
+
+-   **[Adding an Entry to the Cache](add-entry-to-cache.html)**
+
+    You can populate a client region with cache entries using the `Region::put` or the `Region::create` API functions. Code examples demonstrate these actions.
+
+-   **[Accessing an Entry](accessing-entry.html)**
+
+    The standard `Region::get API` method returns the value associated with the specified key, and passes the callback argument to any cache loaders or cache writers that are invoked in the operation.
+
+-   **[Removing an Entry](removing-entry.html)**
+
+    The standard `Region::remove` API removes the entry with the specified key and provides a user-defined parameter object to any `CacheWriter` or `CacheListener` invoked in the process.
+
+-   **[Serializing Data](serialization-overview.html)**
+
+    All data moved out of the local cache must be serializable.
+
+-   **[Implementing User-Defined Objects in Java Clients](user-defined-objects.html)**
+
+    You can use one of two methods to implement a user-defined object in a Java client that works with C++ clients: `Instantiator.register` and `DataSerializable`.
+
+-   **[Using a Custom Class](using-custom-class.html)**
+
+    This example shows how to use the defined `BankAccount` custom key type and the `AccountHistory` value type.
+
+-   **[Creating New Statistics](creating-new-statistics.html)**
+
+    This example provides a programmatic code sample for creating and registering new statistics.
+
+

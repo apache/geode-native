@@ -1,0 +1,34 @@
+---
+title:  When an Error Occurs in a Running CQ
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+When an error occurs in CQ execution on the server, specific information on the error itself is stored in the server's log file. An exception is passed to the client, and the client throws an exception.
+
+The server log will contain an error message indicating an error while processing CQ , like this:
+
+``` pre
+[error 2007/12/18 12:03:18.903 PST <RMI TCP Connection(2)-
+192.0.2.0> tid=0x18] Error while processing CQ on the event, key :
+key-1, CqName :testCQEvents_0, ClientId :
+identity(carlos(3249):52623/35391,connection=1,durableAttributes=null)
+Error :No public attribute named 'ID' was found in class java.lang.Object
+```
+
+Errors in CQ execution are usually caused by data errors, such as invalid object types that are stored in the server region. In this case, the query is trying to read into an object of type Portfolio for an entry where an empty object has been stored. You can avoid these types of errors by placing constraints on the region entries, or by otherwise controlling the types of objects stored in your server regions.

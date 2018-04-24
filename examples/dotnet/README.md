@@ -1,4 +1,4 @@
-﻿# Geode Native .NET Examples
+# Geode Native .NET Examples
 
 ## Prerequisites
 * Install [Apache Geode](https://geode.apache.org)
@@ -9,13 +9,28 @@
 * [Apache.Geode.Examples.AuthInitialize](Apache.Geode.Examples.Cache/README.md)
 * [Apache.Geode.Examples.Cache](Apache.Geode.Examples.Cache/README.md)
 
-## Using
-1) Use cmake to generate the .sln and .vcxproj files for the Examples
-```
-    cd examples\dotnet
+## Building the Examples
+
+1. Copy the `examples` directory from the native client installation folder to a folder in your workspace.
+
+1. Use cmake to generate the .sln and .vcxproj files for the examples:
+
+    ```
+    cd workspace\examples\dotnet
     mkdir build
     cd build
-    cmake .. -G"Visual Studio 14 2015 Win64" -DGEODE_ASSEMBLY=C:\path\to\Apache.Geode.dll -Thost=x64
-```
-2) Open `Apache.Geode.Examples.sln` in [Visual Studio 2015](https://www.visualstudio.com/)
-or newer.
+    cmake .. -G"Visual Studio 14 2015 Win64" -DGeodeNative_ROOT="c:\Program Files\nativeclient"
+    ```
+The result is a Visual Studio solution for the .NET examples.
+1. Open the solution file, `examples.sln`, in [Visual Studio 2015](https://www.visualstudio.com/) or newer and build all projects.
+
+
+## Running the Examples
+To run the examples, 
+
+1.  Decide which example to try first. Follow directions in the README file in the source directory for that example to start the server and create a region. 
+
+1. Assuming you are still in Visual Studio, select the desired example as your StartUp project and execute it.
+
+The example's README file describes the expected output.
+

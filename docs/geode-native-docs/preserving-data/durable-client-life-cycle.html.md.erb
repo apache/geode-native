@@ -1,0 +1,44 @@
+---
+title:  Life Cycle of a Durable Client
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+This section discusses the high-level operation of a durable client through initial startup, disconnection, and reconnection.
+
+-   **[Initial Operation](initial-operation.html)**
+
+    The initial startup of a durable client is similar to the startup of any other client, except that it specifically calls the `Cache.readyForEvents` method when all regions and listeners on the client are ready to process messages from the server.
+
+-   **[Disconnection](disconnection.html)**
+
+    While the client and servers are disconnected, their operation varies depending on the circumstances.
+
+-   **[Reconnection](reconnection.html)**
+
+    During initialization, operations on the client cache can come from multiple sources.
+
+-   **[Durable Message Replay](durable-message-replay.html)**
+
+    When the primary server receives the cache ready message, the servers and client execute a procedure to update the queue and replay the events from the stored messages.
+
+-   **[Application Operations During Interest Registration](app-ops-during-int-reg.html)**
+
+    As soon as the client creates its regions, the application hosting the client can start cache operations, even while the client is still receiving its interest registration responses.
+
+

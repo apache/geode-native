@@ -1,0 +1,34 @@
+---
+title:  Programming Examples
+---
+
+The <%=vars.product_name%> Client build provides a set of programming examples to help you understand the client API.
+The `examples` directory contains CMake files and a `cpp` subdirectory containing C++ examples.
+The Windows build also includes a `dotnet` subdirectory containing C# examples.
+
+CMake files are located at each level of the directory structure to allow examples to be built individually or in groups.
+
+The directory structure resembles this hierarchy (some entries are omitted for clarity):
+
+    MyProject/
+      cmake/
+      CMakeLists.txt
+      examples/
+        BUILDING.md
+        CMakeLists.txt
+        CMakeLists.txt.in
+        cmake/
+        cpp/
+          BUILDING.md
+          customserializable/
+          customserializer/
+          put-get-remove/
+        dotnet/
+          AuthInitialize/
+          PdxAutoSerializer/
+          PutGetRemove/
+          README.md
+
+See the `BUILDING.md` or `README.md` file in each directory for detailed instructions on building
+and executing the examples, and read the source code to understand how the examples are constructed.
+
