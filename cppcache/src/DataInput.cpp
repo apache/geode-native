@@ -44,7 +44,7 @@ const SerializationRegistry& DataInput::getSerializationRegistry() const {
   return *m_cache->getSerializationRegistry();
 }
 
-const Cache* DataInput::getCache() { return m_cache->getCache(); }
+Cache* DataInput::getCache() const { return m_cache->getCache(); }
 
 template <class _Traits, class _Allocator>
 void DataInput::readJavaModifiedUtf8(

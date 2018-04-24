@@ -128,6 +128,8 @@ class PdxLocalReader : public PdxReader {
 
   virtual std::shared_ptr<PdxUnreadFields> readUnreadFields() override;
 
+  std::shared_ptr<PdxSerializer> getPdxSerializer() const override;
+
  protected:
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
 };

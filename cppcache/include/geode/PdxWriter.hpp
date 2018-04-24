@@ -29,7 +29,9 @@ namespace geode {
 namespace client {
 
 class CacheableObjectArray;
+class PdxSerializer;
 class PdxUnreadFields;
+
 /**
  * A PdxWriter will be passed to PdxSerializable.toData
  * when it is serializing the domain class. The domain class needs to serialize
@@ -173,7 +175,7 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * or fieldName is nullptr or empty
    */
   virtual PdxWriter& writeString(const std::string& fieldName,
-                                                 const std::string& value) = 0;
+                                 const std::string& value) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -220,8 +222,8 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxWriter& writeCharArray(
-      const std::string& fieldName, const std::vector<char16_t>& array) = 0;
+  virtual PdxWriter& writeCharArray(const std::string& fieldName,
+                                    const std::vector<char16_t>& array) = 0;
 
   /**
    * Writes the named field with the given value to the serialized form.
@@ -352,9 +354,10 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
    */
-  virtual PdxWriter& writeArrayOfByteArrays(
-      const std::string& fieldName, int8_t* const* const array, int arrayLength,
-      const int* elementLength) = 0;
+  virtual PdxWriter& writeArrayOfByteArrays(const std::string& fieldName,
+                                            int8_t* const* const array,
+                                            int arrayLength,
+                                            const int* elementLength) = 0;
 
   /**
    * Indicate that the given field name should be included in hashCode and
@@ -395,6 +398,8 @@ class APACHE_GEODE_EXPORT PdxWriter {
    */
   virtual PdxWriter& writeUnreadFields(
       std::shared_ptr<PdxUnreadFields> unread) = 0;
+
+  virtual std::shared_ptr<PdxSerializer> getPdxSerializer() const = 0;
 };
 }  // namespace client
 }  // namespace geode

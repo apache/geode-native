@@ -159,7 +159,7 @@ class TESTOBJECT_EXPORT NonPdxType {
  public:
   bool selfCheck();
 
-  inline void init(std::shared_ptr<PdxSerializer> pdxSerializer) {
+  inline void init() {
     m_char = 'C';
     m_bool = true;
     m_byte = 0x74;
@@ -179,9 +179,6 @@ class TESTOBJECT_EXPORT NonPdxType {
     m_boolArray[0] = true;
     m_boolArray[1] = false;
     m_boolArray[2] = true;
-    /*for(int i=0; i<3; i++){
-      m_boolArray[i] = true;
-    };*/
 
     m_byteArray = std::vector<int8_t>(2);
     m_byteArray[0] = 0x34;
@@ -289,34 +286,34 @@ class TESTOBJECT_EXPORT NonPdxType {
     m_objectArray = CacheableObjectArray::create();
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
         new PdxWrapper(std::make_shared<NonPdxAddress>(1, "street0", "city0"),
-                       "PdxTests.Address", pdxSerializer)));
+                       "PdxTests.Address")));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
         new PdxWrapper(std::make_shared<NonPdxAddress>(2, "street1", "city1"),
-                       "PdxTests.Address", pdxSerializer)));
+                       "PdxTests.Address")));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
         new PdxWrapper(std::make_shared<NonPdxAddress>(3, "street2", "city2"),
-                       "PdxTests.Address", pdxSerializer)));
+                       "PdxTests.Address")));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
         new PdxWrapper(std::make_shared<NonPdxAddress>(4, "street3", "city3"),
-                       "PdxTests.Address", pdxSerializer)));
+                       "PdxTests.Address")));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
         new PdxWrapper(std::make_shared<NonPdxAddress>(5, "street4", "city4"),
-                       "PdxTests.Address", pdxSerializer)));
+                       "PdxTests.Address")));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
         new PdxWrapper(std::make_shared<NonPdxAddress>(6, "street5", "city5"),
-                       "PdxTests.Address", pdxSerializer)));
+                       "PdxTests.Address")));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
         new PdxWrapper(std::make_shared<NonPdxAddress>(7, "street6", "city6"),
-                       "PdxTests.Address", pdxSerializer)));
+                       "PdxTests.Address")));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
         new PdxWrapper(std::make_shared<NonPdxAddress>(8, "street7", "city7"),
-                       "PdxTests.Address", pdxSerializer)));
+                       "PdxTests.Address")));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
         new PdxWrapper(std::make_shared<NonPdxAddress>(9, "street8", "city8"),
-                       "PdxTests.Address", pdxSerializer)));
+                       "PdxTests.Address")));
     m_objectArray->push_back(std::shared_ptr<PdxWrapper>(
         new PdxWrapper(std::make_shared<NonPdxAddress>(10, "street9", "city9"),
-                       "PdxTests.Address", pdxSerializer)));
+                       "PdxTests.Address")));
 
     m_byte252 = std::vector<int8_t>(252);
     for (int i = 0; i < 252; i++) {
@@ -355,9 +352,7 @@ class TESTOBJECT_EXPORT NonPdxType {
     lengthArr[1] = 2;
   }
 
-  NonPdxType(std::shared_ptr<PdxSerializer> pdxSerializer) {
-    init(pdxSerializer);
-  }
+  NonPdxType() { init(); }
 
   inline bool compareBool(bool b, bool b2) {
     if (b == b2) return b;

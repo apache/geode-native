@@ -194,6 +194,8 @@ class PdxLocalWriter : public PdxWriter {
   virtual PdxWriter& writeUnreadFields(
       std::shared_ptr<PdxUnreadFields> unread) override;
 
+  std::shared_ptr<PdxSerializer> getPdxSerializer() const override;
+
   // this is used to get pdx stream when WriteablePdxStream udpadates the field
   // It should be called after pdx stream has been written to output
   uint8_t* getPdxStream(int& pdxLen);

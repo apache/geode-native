@@ -278,6 +278,10 @@ std::shared_ptr<PdxUnreadFields> PdxLocalReader::readUnreadFields() {
   return m_pdxRemotePreserveData;
 }
 
+std::shared_ptr<PdxSerializer> PdxLocalReader::getPdxSerializer() const {
+  return m_dataInput->getCache()->getTypeRegistry().getPdxSerializer();
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

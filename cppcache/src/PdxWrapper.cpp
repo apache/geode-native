@@ -25,35 +25,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-PdxWrapper::PdxWrapper(std::shared_ptr<void> userObject, std::string className,
-                       std::shared_ptr<PdxSerializer> pdxSerializerPtr)
-    : m_userObject(userObject),
-      m_className(className),
-      m_serializer(pdxSerializerPtr) {
-  if (m_serializer == nullptr) {
-    LOGERROR("No registered PDX serializer found for PdxWrapper");
-    throw IllegalArgumentException(
-        "No registered PDX serializer found for PdxWrapper");
-  }
-
-  /* m_sizer can be nullptr - required only if heap LRU is enabled */
-  m_sizer = m_serializer->getObjectSizer(className);
-}
-
-PdxWrapper::PdxWrapper(std::string className,
-                       std::shared_ptr<PdxSerializer> pdxSerializerPtr)
-    : m_className(className), m_serializer(pdxSerializerPtr) {
-  if (m_serializer == nullptr) {
-    LOGERROR(
-        "No registered PDX serializer found for PdxWrapper deserialization");
-    throw IllegalArgumentException(
-        "No registered PDX serializer found for PdxWrapper deserialization");
-  }
-
-  /* m_sizer can be nullptr - required only if heap LRU is enabled */
-  m_sizer = m_serializer->getObjectSizer(className);
-
-  m_userObject = nullptr;
+PdxWrapper::PdxWrapper(std::shared_ptr<void> userObject, std::string className)
+    : m_userObject(userObject), m_className(className) {
 }
 
 std::shared_ptr<void> PdxWrapper::getObject() { return m_userObject; }
@@ -76,7 +49,7 @@ int32_t PdxWrapper::hashcode() const {
 
 void PdxWrapper::toData(PdxWriter& output) const {
   if (m_userObject != nullptr) {
-    m_serializer->toData(m_userObject, m_className.c_str(), output);
+    output.getPdxSerializer()->toData(m_userObject, m_className, output);
   } else {
     LOGERROR("User object is nullptr or detached in PdxWrapper toData");
     throw IllegalStateException(
@@ -85,7 +58,7 @@ void PdxWrapper::toData(PdxWriter& output) const {
 }
 
 void PdxWrapper::fromData(PdxReader& input) {
-  m_userObject = m_serializer->fromData(m_className.c_str(), input);
+  m_userObject = input.getPdxSerializer()->fromData(m_className, input);
 }
 
 void PdxWrapper::toData(DataOutput& output) const {
@@ -98,18 +71,10 @@ void PdxWrapper::fromData(DataInput&) {
       "PdxWrapper fromData should not have been called");
 }
 
-size_t PdxWrapper::objectSize() const {
-  if (m_sizer == nullptr || m_userObject == nullptr) {
-    return 0;
-  } else {
-    return m_sizer(m_userObject, m_className.c_str());
-  }
-}
-
 std::string PdxWrapper::toString() const {
   std::string message = "PdxWrapper for ";
   message += m_className;
-  return message.c_str();
+  return message;
 }
 
 }  // namespace client

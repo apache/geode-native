@@ -27,9 +27,10 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class PdxReader;
-class CacheableObjectArray;
 class CacheableDate;
+class CacheableObjectArray;
+class PdxReader;
+class PdxSerializer;
 
 /**
  * A PdxReader will be passed to PdxSerializable.fromData or
@@ -366,6 +367,8 @@ class APACHE_GEODE_EXPORT PdxReader {
    * @return an object that represents the unread fields.
    */
   virtual std::shared_ptr<PdxUnreadFields> readUnreadFields() = 0;
+
+  virtual std::shared_ptr<PdxSerializer> getPdxSerializer() const = 0;
 };
 }  // namespace client
 }  // namespace geode

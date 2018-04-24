@@ -61,8 +61,9 @@ class APACHE_GEODE_EXPORT TypeRegistry {
    */
   void registerPdxSerializer(std::shared_ptr<PdxSerializer> pdxSerializer);
 
- private:
+  std::shared_ptr<PdxSerializer> getPdxSerializer();
 
+ private:
   CacheImpl* m_cache;
 };
 
@@ -70,4 +71,4 @@ class APACHE_GEODE_EXPORT TypeRegistry {
 }  // namespace geode
 }  // namespace apache
 
-#endif //GEODE_TYPEREGISTRY_H_
+#endif  // GEODE_TYPEREGISTRY_H_

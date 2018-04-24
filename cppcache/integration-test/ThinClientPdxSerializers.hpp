@@ -30,17 +30,17 @@ class TestPdxSerializer : public PdxSerializer {
            "Unexpected classname in deallocate()");
     LOG("TestPdxSerializer::deallocate called");
     if (className == CLASSNAME1) {
-      PdxTests::NonPdxType *npt =
+      PdxTests::NonPdxType *nonPdxType =
           reinterpret_cast<PdxTests::NonPdxType *>(testObject);
-      delete npt;
+      delete nonPdxType;
     } else {
-      PdxTests::NonPdxAddress *npa =
+      PdxTests::NonPdxAddress *nonPdxAddress =
           reinterpret_cast<PdxTests::NonPdxAddress *>(testObject);
-      delete npa;
+      delete nonPdxAddress;
     }
   }
 
-  static size_t objectSize(const std::shared_ptr<const void> & /*testObject*/,
+  static size_t objectSize(const std::shared_ptr<const void> &,
                            const std::string &className) {
     ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in objectSize()");
@@ -56,126 +56,120 @@ class TestPdxSerializer : public PdxSerializer {
 
   std::shared_ptr<void> fromDataForAddress(PdxReader &pr) {
     try {
-      auto npa = std::make_shared<PdxTests::NonPdxAddress>();
-      npa->_aptNumber = pr.readInt("_aptNumber");
-      npa->_street = pr.readString("_street");
-      npa->_city = pr.readString("_city");
-      return npa;
+      auto nonPdxAddress = std::make_shared<PdxTests::NonPdxAddress>();
+      nonPdxAddress->_aptNumber = pr.readInt("_aptNumber");
+      nonPdxAddress->_street = pr.readString("_street");
+      nonPdxAddress->_city = pr.readString("_city");
+      return nonPdxAddress;
     } catch (...) {
       return nullptr;
     }
   }
 
   std::shared_ptr<void> fromData(const std::string &className,
-                                 PdxReader &pr) override {
+                                 PdxReader &pdxReader) override {
     ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in fromData");
 
     if (className == CLASSNAME2) {
-      return fromDataForAddress(pr);
+      return fromDataForAddress(pdxReader);
     }
 
-    auto npt = std::make_shared<PdxTests::NonPdxType>(
-        CacheRegionHelper::getCacheImpl(getHelper()->getCache().get())
-            ->getSerializationRegistry()
-            ->getPdxSerializer());
+    auto nonPdxType = std::make_shared<PdxTests::NonPdxType>();
 
     try {
       auto Lengtharr = new int32_t[2];
       int32_t arrLen = 0;
-      npt->m_byteByteArray =
-          pr.readArrayOfByteArrays("m_byteByteArray", arrLen, &Lengtharr);
+      nonPdxType->m_byteByteArray = pdxReader.readArrayOfByteArrays(
+          "m_byteByteArray", arrLen, &Lengtharr);
       // TODO::need to write compareByteByteArray() and check for
       // m_byteByteArray elements
 
-      npt->m_char = pr.readChar("m_char");
+      nonPdxType->m_char = pdxReader.readChar("m_char");
       // GenericValCompare
 
-      npt->m_bool = pr.readBoolean("m_bool");
+      nonPdxType->m_bool = pdxReader.readBoolean("m_bool");
       // GenericValCompare
-      npt->m_boolArray = pr.readBooleanArray("m_boolArray");
+      nonPdxType->m_boolArray = pdxReader.readBooleanArray("m_boolArray");
 
-      npt->m_byte = pr.readByte("m_byte");
-      npt->m_byteArray = pr.readByteArray("m_byteArray");
-      npt->m_charArray = pr.readCharArray("m_charArray");
+      nonPdxType->m_byte = pdxReader.readByte("m_byte");
+      nonPdxType->m_byteArray = pdxReader.readByteArray("m_byteArray");
+      nonPdxType->m_charArray = pdxReader.readCharArray("m_charArray");
 
-      npt->m_arraylist = std::dynamic_pointer_cast<CacheableArrayList>(
-          pr.readObject("m_arraylist"));
+      nonPdxType->m_arraylist = std::dynamic_pointer_cast<CacheableArrayList>(
+          pdxReader.readObject("m_arraylist"));
 
-      npt->m_map =
-          std::dynamic_pointer_cast<CacheableHashMap>(pr.readObject("m_map"));
+      nonPdxType->m_map = std::dynamic_pointer_cast<CacheableHashMap>(
+          pdxReader.readObject("m_map"));
       // TODO:Check for the size
 
-      npt->m_hashtable = std::dynamic_pointer_cast<CacheableHashTable>(
-          pr.readObject("m_hashtable"));
+      nonPdxType->m_hashtable = std::dynamic_pointer_cast<CacheableHashTable>(
+          pdxReader.readObject("m_hashtable"));
       // TODO:Check for the size
 
-      npt->m_vector =
-          std::dynamic_pointer_cast<CacheableVector>(pr.readObject("m_vector"));
+      nonPdxType->m_vector = std::dynamic_pointer_cast<CacheableVector>(
+          pdxReader.readObject("m_vector"));
       // TODO::Check for size
 
-      npt->m_chs =
-          std::dynamic_pointer_cast<CacheableHashSet>(pr.readObject("m_chs"));
+      nonPdxType->m_chs = std::dynamic_pointer_cast<CacheableHashSet>(
+          pdxReader.readObject("m_chs"));
       // TODO::Size check
 
-      npt->m_clhs = std::dynamic_pointer_cast<CacheableLinkedHashSet>(
-          pr.readObject("m_clhs"));
+      nonPdxType->m_clhs = std::dynamic_pointer_cast<CacheableLinkedHashSet>(
+          pdxReader.readObject("m_clhs"));
       // TODO:Size check
 
-      npt->m_string = pr.readString("m_string");  // GenericValCompare
-      npt->m_date = pr.readDate("m_dateTime");    // compareData
+      nonPdxType->m_string =
+          pdxReader.readString("m_string");  // GenericValCompare
+      nonPdxType->m_date = pdxReader.readDate("m_dateTime");  // compareData
 
-      npt->m_double = pr.readDouble("m_double");
+      nonPdxType->m_double = pdxReader.readDouble("m_double");
 
-      npt->m_doubleArray =
-          pr.readDoubleArray("m_doubleArray");
-      npt->m_float = pr.readFloat("m_float");
-      npt->m_floatArray =
-          pr.readFloatArray("m_floatArray");
-      npt->m_int16 = pr.readShort("m_int16");
-      npt->m_int32 = pr.readInt("m_int32");
-      npt->m_long = pr.readLong("m_long");
-      npt->m_int32Array = pr.readIntArray("m_int32Array");
-      npt->m_longArray = pr.readLongArray("m_longArray");
-      npt->m_int16Array =
-          pr.readShortArray("m_int16Array");
-      npt->m_sbyte = pr.readByte("m_sbyte");
-      npt->m_sbyteArray = pr.readByteArray("m_sbyteArray");
-      npt->m_stringArray = pr.readStringArray("m_stringArray");
-      npt->m_uint16 = pr.readShort("m_uint16");
-      npt->m_uint32 = pr.readInt("m_uint32");
-      npt->m_ulong = pr.readLong("m_ulong");
-      npt->m_uint32Array = pr.readIntArray("m_uint32Array");
-      npt->m_ulongArray = pr.readLongArray("m_ulongArray");
-      npt->m_uint16Array = pr.readShortArray("m_uint16Array");
-      // LOGINFO("PdxType::readInt() start...");
+      nonPdxType->m_doubleArray = pdxReader.readDoubleArray("m_doubleArray");
+      nonPdxType->m_float = pdxReader.readFloat("m_float");
+      nonPdxType->m_floatArray = pdxReader.readFloatArray("m_floatArray");
+      nonPdxType->m_int16 = pdxReader.readShort("m_int16");
+      nonPdxType->m_int32 = pdxReader.readInt("m_int32");
+      nonPdxType->m_long = pdxReader.readLong("m_long");
+      nonPdxType->m_int32Array = pdxReader.readIntArray("m_int32Array");
+      nonPdxType->m_longArray = pdxReader.readLongArray("m_longArray");
+      nonPdxType->m_int16Array = pdxReader.readShortArray("m_int16Array");
+      nonPdxType->m_sbyte = pdxReader.readByte("m_sbyte");
+      nonPdxType->m_sbyteArray = pdxReader.readByteArray("m_sbyteArray");
+      nonPdxType->m_stringArray = pdxReader.readStringArray("m_stringArray");
+      nonPdxType->m_uint16 = pdxReader.readShort("m_uint16");
+      nonPdxType->m_uint32 = pdxReader.readInt("m_uint32");
+      nonPdxType->m_ulong = pdxReader.readLong("m_ulong");
+      nonPdxType->m_uint32Array = pdxReader.readIntArray("m_uint32Array");
+      nonPdxType->m_ulongArray = pdxReader.readLongArray("m_ulongArray");
+      nonPdxType->m_uint16Array = pdxReader.readShortArray("m_uint16Array");
 
-      npt->m_byte252 = pr.readByteArray("m_byte252");
-      npt->m_byte253 = pr.readByteArray("m_byte253");
-      npt->m_byte65535 = pr.readByteArray("m_byte65535");
-      npt->m_byte65536 = pr.readByteArray("m_byte65536");
+      nonPdxType->m_byte252 = pdxReader.readByteArray("m_byte252");
+      nonPdxType->m_byte253 = pdxReader.readByteArray("m_byte253");
+      nonPdxType->m_byte65535 = pdxReader.readByteArray("m_byte65535");
+      nonPdxType->m_byte65536 = pdxReader.readByteArray("m_byte65536");
 
-      npt->m_pdxEnum = pr.readObject("m_pdxEnum");
+      nonPdxType->m_pdxEnum = pdxReader.readObject("m_pdxEnum");
 
-      npt->m_address = pr.readObject("m_address");
+      nonPdxType->m_address = pdxReader.readObject("m_address");
 
-      npt->m_objectArray = pr.readObjectArray("m_objectArray");
+      nonPdxType->m_objectArray = pdxReader.readObjectArray("m_objectArray");
 
       LOGINFO("TestPdxSerializer: NonPdxType fromData() Done.");
     } catch (...) {
       return nullptr;
     }
-    return npt;
+    return nonPdxType;
   }
 
   bool toDataForAddress(const std::shared_ptr<const void> &testObject,
-                        PdxWriter &pw) {
+                        PdxWriter &pdxWriter) {
     try {
-      auto npa =
+      auto nonPdxAddress =
           std::static_pointer_cast<const PdxTests::NonPdxAddress>(testObject);
-      pw.writeInt("_aptNumber", npa->_aptNumber);
-      pw.writeString("_street", npa->_street);
-      pw.writeString("_city", npa->_city);
+      pdxWriter.writeInt("_aptNumber", nonPdxAddress->_aptNumber);
+      pdxWriter.writeString("_street", nonPdxAddress->_street);
+      pdxWriter.writeString("_city", nonPdxAddress->_city);
       return true;
     } catch (...) {
       return false;
@@ -183,109 +177,110 @@ class TestPdxSerializer : public PdxSerializer {
   }
 
   bool toData(const std::shared_ptr<const void> &testObject,
-              const std::string &className, PdxWriter &pw) override {
+              const std::string &className, PdxWriter &pdxWriter) override {
     ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in toData");
 
     if (className == CLASSNAME2) {
-      return toDataForAddress(testObject, pw);
+      return toDataForAddress(testObject, pdxWriter);
     }
 
-    auto npt = std::static_pointer_cast<const PdxTests::NonPdxType>(testObject);
+    auto nonPdxType =
+        std::static_pointer_cast<const PdxTests::NonPdxType>(testObject);
 
     try {
       int *lengthArr = new int[2];
 
       lengthArr[0] = 1;
       lengthArr[1] = 2;
-      pw.writeArrayOfByteArrays("m_byteByteArray", npt->m_byteByteArray, 2,
-                                lengthArr);
-      pw.writeChar("m_char", npt->m_char);
-      pw.markIdentityField("m_char");
-      pw.writeBoolean("m_bool", npt->m_bool);  // 1
-      pw.markIdentityField("m_bool");
-      pw.writeBooleanArray("m_boolArray", npt->m_boolArray);
-      pw.markIdentityField("m_boolArray");
-      pw.writeByte("m_byte", npt->m_byte);
-      pw.markIdentityField("m_byte");
-      pw.writeByteArray("m_byteArray", npt->m_byteArray);
-      pw.markIdentityField("m_byteArray");
-      pw.writeCharArray("m_charArray", npt->m_charArray);
-      pw.markIdentityField("m_charArray");
-      pw.writeObject("m_arraylist", npt->m_arraylist);
-      pw.markIdentityField("m_arraylist");
-      pw.writeObject("m_map", npt->m_map);
-      pw.markIdentityField("m_map");
-      pw.writeObject("m_hashtable", npt->m_hashtable);
-      pw.markIdentityField("m_hashtable");
-      pw.writeObject("m_vector", npt->m_vector);
-      pw.markIdentityField("m_vector");
-      pw.writeObject("m_chs", npt->m_chs);
-      pw.markIdentityField("m_chs");
-      pw.writeObject("m_clhs", npt->m_clhs);
-      pw.markIdentityField("m_clhs");
-      pw.writeString("m_string", npt->m_string);
-      pw.markIdentityField("m_string");
-      pw.writeDate("m_dateTime", npt->m_date);
-      pw.markIdentityField("m_dateTime");
-      pw.writeDouble("m_double", npt->m_double);
-      pw.markIdentityField("m_double");
-      pw.writeDoubleArray("m_doubleArray", npt->m_doubleArray);
-      pw.markIdentityField("m_doubleArray");
-      pw.writeFloat("m_float", npt->m_float);
-      pw.markIdentityField("m_float");
-      pw.writeFloatArray("m_floatArray", npt->m_floatArray);
-      pw.markIdentityField("m_floatArray");
-      pw.writeShort("m_int16", npt->m_int16);
-      pw.markIdentityField("m_int16");
-      pw.writeInt("m_int32", npt->m_int32);
-      pw.markIdentityField("m_int32");
-      pw.writeLong("m_long", npt->m_long);
-      pw.markIdentityField("m_long");
-      pw.writeIntArray("m_int32Array", npt->m_int32Array);
-      pw.markIdentityField("m_int32Array");
-      pw.writeLongArray("m_longArray", npt->m_longArray);
-      pw.markIdentityField("m_longArray");
-      pw.writeShortArray("m_int16Array", npt->m_int16Array);
-      pw.markIdentityField("m_int16Array");
-      pw.writeByte("m_sbyte", npt->m_sbyte);
-      pw.markIdentityField("m_sbyte");
-      pw.writeByteArray("m_sbyteArray", npt->m_sbyteArray);
-      pw.markIdentityField("m_sbyteArray");
+      pdxWriter.writeArrayOfByteArrays(
+          "m_byteByteArray", nonPdxType->m_byteByteArray, 2, lengthArr);
+      pdxWriter.writeChar("m_char", nonPdxType->m_char);
+      pdxWriter.markIdentityField("m_char");
+      pdxWriter.writeBoolean("m_bool", nonPdxType->m_bool);  // 1
+      pdxWriter.markIdentityField("m_bool");
+      pdxWriter.writeBooleanArray("m_boolArray", nonPdxType->m_boolArray);
+      pdxWriter.markIdentityField("m_boolArray");
+      pdxWriter.writeByte("m_byte", nonPdxType->m_byte);
+      pdxWriter.markIdentityField("m_byte");
+      pdxWriter.writeByteArray("m_byteArray", nonPdxType->m_byteArray);
+      pdxWriter.markIdentityField("m_byteArray");
+      pdxWriter.writeCharArray("m_charArray", nonPdxType->m_charArray);
+      pdxWriter.markIdentityField("m_charArray");
+      pdxWriter.writeObject("m_arraylist", nonPdxType->m_arraylist);
+      pdxWriter.markIdentityField("m_arraylist");
+      pdxWriter.writeObject("m_map", nonPdxType->m_map);
+      pdxWriter.markIdentityField("m_map");
+      pdxWriter.writeObject("m_hashtable", nonPdxType->m_hashtable);
+      pdxWriter.markIdentityField("m_hashtable");
+      pdxWriter.writeObject("m_vector", nonPdxType->m_vector);
+      pdxWriter.markIdentityField("m_vector");
+      pdxWriter.writeObject("m_chs", nonPdxType->m_chs);
+      pdxWriter.markIdentityField("m_chs");
+      pdxWriter.writeObject("m_clhs", nonPdxType->m_clhs);
+      pdxWriter.markIdentityField("m_clhs");
+      pdxWriter.writeString("m_string", nonPdxType->m_string);
+      pdxWriter.markIdentityField("m_string");
+      pdxWriter.writeDate("m_dateTime", nonPdxType->m_date);
+      pdxWriter.markIdentityField("m_dateTime");
+      pdxWriter.writeDouble("m_double", nonPdxType->m_double);
+      pdxWriter.markIdentityField("m_double");
+      pdxWriter.writeDoubleArray("m_doubleArray", nonPdxType->m_doubleArray);
+      pdxWriter.markIdentityField("m_doubleArray");
+      pdxWriter.writeFloat("m_float", nonPdxType->m_float);
+      pdxWriter.markIdentityField("m_float");
+      pdxWriter.writeFloatArray("m_floatArray", nonPdxType->m_floatArray);
+      pdxWriter.markIdentityField("m_floatArray");
+      pdxWriter.writeShort("m_int16", nonPdxType->m_int16);
+      pdxWriter.markIdentityField("m_int16");
+      pdxWriter.writeInt("m_int32", nonPdxType->m_int32);
+      pdxWriter.markIdentityField("m_int32");
+      pdxWriter.writeLong("m_long", nonPdxType->m_long);
+      pdxWriter.markIdentityField("m_long");
+      pdxWriter.writeIntArray("m_int32Array", nonPdxType->m_int32Array);
+      pdxWriter.markIdentityField("m_int32Array");
+      pdxWriter.writeLongArray("m_longArray", nonPdxType->m_longArray);
+      pdxWriter.markIdentityField("m_longArray");
+      pdxWriter.writeShortArray("m_int16Array", nonPdxType->m_int16Array);
+      pdxWriter.markIdentityField("m_int16Array");
+      pdxWriter.writeByte("m_sbyte", nonPdxType->m_sbyte);
+      pdxWriter.markIdentityField("m_sbyte");
+      pdxWriter.writeByteArray("m_sbyteArray", nonPdxType->m_sbyteArray);
+      pdxWriter.markIdentityField("m_sbyteArray");
 
       int *strlengthArr = new int[2];
 
       strlengthArr[0] = 5;
       strlengthArr[1] = 5;
-      pw.writeStringArray("m_stringArray", npt->m_stringArray);
-      pw.markIdentityField("m_stringArray");
-      pw.writeShort("m_uint16", npt->m_uint16);
-      pw.markIdentityField("m_uint16");
-      pw.writeInt("m_uint32", npt->m_uint32);
-      pw.markIdentityField("m_uint32");
-      pw.writeLong("m_ulong", npt->m_ulong);
-      pw.markIdentityField("m_ulong");
-      pw.writeIntArray("m_uint32Array", npt->m_uint32Array);
-      pw.markIdentityField("m_uint32Array");
-      pw.writeLongArray("m_ulongArray", npt->m_ulongArray);
-      pw.markIdentityField("m_ulongArray");
-      pw.writeShortArray("m_uint16Array", npt->m_uint16Array);
-      pw.markIdentityField("m_uint16Array");
+      pdxWriter.writeStringArray("m_stringArray", nonPdxType->m_stringArray);
+      pdxWriter.markIdentityField("m_stringArray");
+      pdxWriter.writeShort("m_uint16", nonPdxType->m_uint16);
+      pdxWriter.markIdentityField("m_uint16");
+      pdxWriter.writeInt("m_uint32", nonPdxType->m_uint32);
+      pdxWriter.markIdentityField("m_uint32");
+      pdxWriter.writeLong("m_ulong", nonPdxType->m_ulong);
+      pdxWriter.markIdentityField("m_ulong");
+      pdxWriter.writeIntArray("m_uint32Array", nonPdxType->m_uint32Array);
+      pdxWriter.markIdentityField("m_uint32Array");
+      pdxWriter.writeLongArray("m_ulongArray", nonPdxType->m_ulongArray);
+      pdxWriter.markIdentityField("m_ulongArray");
+      pdxWriter.writeShortArray("m_uint16Array", nonPdxType->m_uint16Array);
+      pdxWriter.markIdentityField("m_uint16Array");
 
-      pw.writeByteArray("m_byte252", npt->m_byte252);
-      pw.markIdentityField("m_byte252");
-      pw.writeByteArray("m_byte253", npt->m_byte253);
-      pw.markIdentityField("m_byte253");
-      pw.writeByteArray("m_byte65535", npt->m_byte65535);
-      pw.markIdentityField("m_byte65535");
-      pw.writeByteArray("m_byte65536", npt->m_byte65536);
-      pw.markIdentityField("m_byte65536");
+      pdxWriter.writeByteArray("m_byte252", nonPdxType->m_byte252);
+      pdxWriter.markIdentityField("m_byte252");
+      pdxWriter.writeByteArray("m_byte253", nonPdxType->m_byte253);
+      pdxWriter.markIdentityField("m_byte253");
+      pdxWriter.writeByteArray("m_byte65535", nonPdxType->m_byte65535);
+      pdxWriter.markIdentityField("m_byte65535");
+      pdxWriter.writeByteArray("m_byte65536", nonPdxType->m_byte65536);
+      pdxWriter.markIdentityField("m_byte65536");
 
-      pw.writeObject("m_pdxEnum", npt->m_pdxEnum);
-      pw.markIdentityField("m_pdxEnum");
+      pdxWriter.writeObject("m_pdxEnum", nonPdxType->m_pdxEnum);
+      pdxWriter.markIdentityField("m_pdxEnum");
 
-      pw.writeObject("m_address", npt->m_objectArray);
-      pw.writeObjectArray("m_objectArray", npt->m_objectArray);
+      pdxWriter.writeObject("m_address", nonPdxType->m_objectArray);
+      pdxWriter.writeObjectArray("m_objectArray", nonPdxType->m_objectArray);
 
       LOG("TestPdxSerializer: NonPdxType toData() Done......");
     } catch (...) {

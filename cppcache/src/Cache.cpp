@@ -55,7 +55,7 @@ bool Cache::isClosed() const { return m_cacheImpl->isClosed(); }
  * Returns the type registry that this cache was
  * {@link CacheFactory::create created} with.
  */
-TypeRegistry& Cache::getTypeRegistry() {
+TypeRegistry& Cache::getTypeRegistry() const {
   return m_cacheImpl->getTypeRegistry();
 }
 
