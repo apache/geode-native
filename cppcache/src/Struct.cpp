@@ -125,6 +125,14 @@ const std::shared_ptr<StructSet> Struct::getStructSet() const {
   return std::shared_ptr<StructSet>(m_parent);
 }
 
+Struct::iterator Struct::begin() {
+  return m_fieldValues.begin();
+}
+
+Struct::iterator Struct::end() {
+  return m_fieldValues.end();
+}
+
 bool Struct::hasNext() const {
   if (m_lastAccessIndex + 1 <= m_fieldValues.size()) {
     return true;

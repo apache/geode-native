@@ -47,6 +47,8 @@ class StructSet;
  */
 class APACHE_GEODE_EXPORT Struct : public Serializable {
  public:
+  typedef std::vector<std::shared_ptr<Serializable>>::iterator iterator;
+
   /**
    * Constructor - meant only for internal use.
    */
@@ -83,6 +85,10 @@ class APACHE_GEODE_EXPORT Struct : public Serializable {
    * @returns A smart pointer to the parent StructSet of this Struct.
    */
   const std::shared_ptr<StructSet> getStructSet() const;
+
+  iterator begin();
+
+  iterator end();
 
   /**
    * Check whether another field value is available to iterate over in this

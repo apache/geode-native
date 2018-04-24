@@ -27,7 +27,7 @@ add_executable(integration-test-2
   framework/GfshExecute.h
   RegionPutGetAllTest.cpp
   PdxInstanceTest.cpp
-  )
+  StructTest.cpp)
 
 target_compile_definitions(integration-test-2
   PUBLIC
@@ -49,6 +49,7 @@ target_link_libraries(integration-test-2
     Boost::boost
     Boost::system
     Boost::log
+    Boost::filesystem
   PRIVATE
     _WarningsAsError
 )
