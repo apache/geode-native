@@ -1,0 +1,34 @@
+---
+title:  Application Operations During Interest Registration
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+As soon as the client creates its regions, the application hosting the client can start cache operations, even while the client is still receiving its interest registration responses.
+
+In that case, application operations take precedence over interest registration responses.
+
+When adding register interest responses to the cache, the following rules are applied:
+
+-   If the entry already exists in the cache with a valid value, it is not updated.
+-   If the entry is invalid and the register interest response is valid, the valid value is put into the cache.
+-   If an entry is marked destroyed, it is not updated. Destroyed entries are removed from the system after the register interest response is completed.
+
+If the interest response does not contain any results because all of those keys are absent from the server’s cache, the client’s cache can start out empty. If the queue contains old messages related to those keys, the events are still replayed in the client’s cache.
+
+

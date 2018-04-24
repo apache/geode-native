@@ -1,0 +1,93 @@
+---
+title:  Native Client Configuration
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+You configure your native client to establish connectivity to a server, which requires specifying
+
+  - locator address and port
+  - connection credentials
+  - identity of a shared region on the server
+
+You can configure your native client application:
+
+ - programmatically in your app code
+ - via XML files and properties files
+ - through a combination of programmatic and file-based approaches
+
+This section describes configuration on two levels, the system level and the cache level.
+
+## <a id="config_programmatic_vs_xml"></a>Programmatic Configuration vs XML Configuration
+
+**C++ RegionFactory Example**
+
+The following examples illustrate how to set a region's expiration timeout attribute programmatically and through XML.
+
+Setting a property programmatically:
+
+``` cpp
+    auto regionFactory = cache.createRegionFactory(RegionShortcut::CACHING_PROXY);
+    auto region = regionFactory.setRegionTimeToLive(ExpirationAction::INVALIDATE, 120)
+         .create("exampleRegion0");
+```
+
+XML equivalent:
+
+``` xml
+  <region name="exampleRegion0" refid="CACHING_PROXY">
+    <region-attributes pool-name="default">
+      <region-time-to-live>
+        <expiration-attributes timeout="120" action="invalidate"/>
+      </region-time-to-live>
+    </region-attributes>
+  </region>
+```
+
+## <a id="config_connecting_to_the_server"></a>Connecting to the Server
+
+Example of connecting to the Server, taken from the put-get-remove example.
+
+``` cpp
+int main(int argc, char** argv) {
+
+  auto cacheFactory = CacheFactory();                         // instantiate cache factory
+  cacheFactory.set("log-level", "none");                      // set cache log-level characteristics
+  auto cache = cacheFactory.create();                         // create cache
+  auto poolFactory = cache.getPoolManager().createFactory();  // instantiate pool factory
+
+  poolFactory.addLocator("localhost", 10334);                 // add locator to pool factory
+  auto pool = poolFactory.create("pool");                     // create a pool called "pool" that knows where the server is
+  auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY); // instantiate region factory with PROXY characteristics
+  auto region = regionFactory.setPoolName("pool").create("example_userinfo"); // create a connection to the region "example_userinfo" on the server
+
+  ...            // do something
+
+  cache.close(); // clean up
+}
+```
+
+## Tables of properties
+
+See [System Properties](sysprops.html) for a list of system properties that can be configured
+programmatically or in the `geode.properties` file.
+
+## <a id="config_high_availability"></a>High Availability with Server Redundancy
+
+Availability is high when servers are redundant.
+

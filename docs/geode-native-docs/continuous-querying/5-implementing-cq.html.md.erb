@@ -1,0 +1,39 @@
+---
+title:  Implementing a Continuous Query
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+You can specify CQs for any client region.
+
+Here are the high-level steps for implementing a continuous query, with links to more detailed information in this chapter.
+
+1.  Make sure your system is configured properly to run CQs. See [Configuring for Continuous Querying](2-config-for-continuous-querying.html#security).
+2.  Decide what data to track on the server and write your queries. Use your criteria for tracking data changes to write your CQ queries. See [Writing the Continuous Query](5a-writing-cq.html#security).
+3.  Determine how to handle the CQ events on the client and write your listeners.
+
+    Each CQ can have any number of listeners. In addition to your core CQ listeners, you might have listeners that you use for all CQs to track statistics or other general information. See [Writing the CQ Listener](5b-writing-cq-listener.html#security).
+
+4. The [`CqEvent` object](5c-cq-event-object.html) contains information about the CQ event.
+
+5.  Write the client code to put the queries and their listeners into named CQ queries and execute the queries. Make sure you close the queries if your client no longer needs them and when the client exits. See [Running the Continuous Query Code](5e-running-cq-code.html#security).
+
+6. [CQ Execution Options](5f-cq-execution-options.html).
+7. [When an Error Occurs in a Running CQ](5d-when-error-occurs.html).
+8.  Run your code, monitor and tune as needed.
+

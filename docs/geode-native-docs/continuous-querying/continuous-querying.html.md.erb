@@ -1,0 +1,40 @@
+---
+title:  Continuous Querying
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+*Continuous Querying* describes how to implement continuous querying in the <%=vars.product_name_long%> native client so that C++ and .NET clients can run queries against events in the <%=vars.product_name%> cache server region. It also describes main features and the native client CQ API.
+
+-   **[How Continuous Querying Works](1-how-cont-query-works.html)**
+
+    C++ and .NET clients register interest in events using simple query expressions. Events are sent to client listeners that you can program to do whatever your application requires.
+
+-   **[Implementing a Continuous Query](5-implementing-cq.html)**
+
+    You can specify CQs for any client region.
+
+-   **[Managing Continuous Queries](6-managing-cqs.html)**
+
+    This section discusses how to access and manage your CQs from your client. The calls discussed here are all executed specifically for the calling client. A client cannot access or modify the CQs belonging to another client.
+
+-   **[CQ API and Main Features](3-client-cq-api.html)**
+
+    This chapter documents the primary native client API for CQ management.
+
+
