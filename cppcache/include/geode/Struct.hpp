@@ -55,6 +55,8 @@ class APACHE_GEODE_EXPORT Struct : public Serializable {
   Struct(StructSet* ssPtr,
          std::vector<std::shared_ptr<Serializable>>& fieldValues);
 
+  ~Struct() = default;
+
   /**
    * Factory function for registration of <code>Struct</code>.
    */
@@ -91,27 +93,11 @@ class APACHE_GEODE_EXPORT Struct : public Serializable {
   iterator end();
 
   /**
-   * Check whether another field value is available to iterate over in this
-   * Struct.
-   *
-   * @returns true if available otherwise false.
-   */
-  bool hasNext() const;
-
-  /**
    * Get the number of field values available.
    *
    * @returns the number of field values available.
    */
   int32_t length() const;
-
-  /**
-   * Get the next field value item available in this Struct.
-   *
-   * @returns A smart pointer to the next item in the Struct or nullptr if no
-   * more available.
-   */
-  const std::shared_ptr<Serializable> next();
 
   /**
    * Deserializes the Struct object from the DataInput. @TODO KN: better comment
@@ -154,17 +140,15 @@ class APACHE_GEODE_EXPORT Struct : public Serializable {
   }
 
  private:
+  Struct() = default;
+
   void skipClassName(DataInput& input);
 
-  Struct();
+  typedef std::unordered_map<std::string, int32_t> FieldNameToIndexMap;
 
-  typedef std::unordered_map<std::string, int32_t> FieldNames;
-  FieldNames m_fieldNames;
+  StructSet* m_parent = nullptr;
   std::vector<std::shared_ptr<Serializable>> m_fieldValues;
-
-  StructSet* m_parent;
-
-  size_t m_lastAccessIndex;
+  FieldNameToIndexMap m_fieldNameToIndex;
 
   _GEODE_FRIEND_STD_SHARED_PTR(Struct)
 };

@@ -25,15 +25,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
-Struct::Struct() : m_parent(nullptr), m_lastAccessIndex(0) {}
-
 Struct::Struct(StructSet* ssPtr,
-               std::vector<std::shared_ptr<Serializable>>& fieldValues) {
-  m_parent = ssPtr;
-  m_fieldValues.insert(m_fieldValues.end(), fieldValues.begin(),
-                       fieldValues.end());
-  m_lastAccessIndex = 0;
-}
+               std::vector<std::shared_ptr<Serializable>>& fieldValues)
+    : m_parent(ssPtr), m_fieldValues(fieldValues) {}
 
 void Struct::skipClassName(DataInput& input) {
   if (input.read() == GeodeTypeIdsImpl::Class) {
@@ -69,7 +63,7 @@ void Struct::fromData(DataInput& input) {
 
   m_parent = nullptr;
   for (int32_t i = 0; i < numOfFields; i++) {
-    m_fieldNames.emplace(input.readString(), i);
+    m_fieldNameToIndex.emplace(input.readString(), i);
   }
   int32_t lengthForTypes = input.readArrayLength();
   skipClassName(input);
@@ -87,10 +81,10 @@ void Struct::fromData(DataInput& input) {
 }
 
 const std::string& Struct::getFieldName(const int32_t index) const {
-  if (m_parent != nullptr) {
+  if (m_parent) {
     return m_parent->getFieldName(index);
   } else {
-    for (const auto& iter : m_fieldNames) {
+    for (const auto& iter : m_fieldNameToIndex) {
       if (iter.second == index) return (iter.first);
     }
   }
@@ -109,14 +103,14 @@ const std::shared_ptr<Serializable> Struct::operator[](int32_t index) const {
 const std::shared_ptr<Serializable> Struct::operator[](
     const std::string& fieldName) const {
   size_t index;
-  if (m_parent == nullptr) {
-    const auto& iter = m_fieldNames.find(fieldName);
-    if (iter == m_fieldNames.end()) {
+  if (m_parent) {
+    index = m_parent->getFieldIndex(fieldName);
+  } else {
+    const auto& iter = m_fieldNameToIndex.find(fieldName);
+    if (iter == m_fieldNameToIndex.end()) {
       throw OutOfRangeException("Struct: fieldName not found.");
     }
     index = iter->second;
-  } else {
-    index = m_parent->getFieldIndex(fieldName);
   }
   return m_fieldValues[index];
 }
@@ -125,25 +119,9 @@ const std::shared_ptr<StructSet> Struct::getStructSet() const {
   return std::shared_ptr<StructSet>(m_parent);
 }
 
-Struct::iterator Struct::begin() {
-  return m_fieldValues.begin();
-}
+Struct::iterator Struct::begin() { return m_fieldValues.begin(); }
 
-Struct::iterator Struct::end() {
-  return m_fieldValues.end();
-}
-
-bool Struct::hasNext() const {
-  if (m_lastAccessIndex + 1 <= m_fieldValues.size()) {
-    return true;
-  }
-  return false;
-}
-
-const std::shared_ptr<Serializable> Struct::next() {
-  m_lastAccessIndex++;
-  return m_fieldValues[m_lastAccessIndex - 1];
-}
+Struct::iterator Struct::end() { return m_fieldValues.end(); }
 
 std::shared_ptr<Serializable> Struct::createDeserializable() {
   return std::make_shared<Struct>();
