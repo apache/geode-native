@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_RESULTSETIMPL_H_
-#define GEODE_RESULTSETIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,47 +15,38 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_RESULTSETIMPL_H_
+#define GEODE_RESULTSETIMPL_H_
+
 #include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
-
 #include <geode/ResultSet.hpp>
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/SelectResultsIterator.hpp>
-
-/**
- * @file
- */
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT ResultSetImpl
-    : public ResultSet,
-      public std::enable_shared_from_this<ResultSetImpl> {
+class APACHE_GEODE_EXPORT ResultSetImpl : public ResultSet {
  public:
   ResultSetImpl(const std::shared_ptr<CacheableVector>& response);
-
-  bool isModifiable() const override;
+  ~ResultSetImpl() noexcept override = default;
 
   size_t size() const override;
 
   const std::shared_ptr<Serializable> operator[](size_t index) const override;
 
-  SelectResultsIterator getIterator() override;
-
-  /** Get an iterator pointing to the start of vector. */
   virtual SelectResults::iterator begin() const override;
 
-  /** Get an iterator pointing to the end of vector. */
   virtual SelectResults::iterator end() const override;
-
-  ~ResultSetImpl() noexcept override {}
 
  private:
   std::shared_ptr<CacheableVector> m_resultSetVector;
-  // UNUSED int32_t m_nextIndex;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

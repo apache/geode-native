@@ -25,10 +25,6 @@
 #include "SelectResults.hpp"
 #include "SelectResultsIterator.hpp"
 
-/**
- * @file
- */
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -40,43 +36,9 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT ResultSet : public SelectResults {
  public:
-  /**
-   * Check whether the ResultSet is modifiable.
-   *
-   * @returns false always at this time.
-   */
-  virtual bool isModifiable() const override = 0;
-
-  /**
-   * Get the size of the ResultSet.
-   *
-   * @returns the number of items in the ResultSet.
-   */
-  virtual size_t size() const override = 0;
-
-  /**
-   * Index operator to directly access an item in the ResultSet.
-   *
-   * @param index the index number of the required item.
-   * @throws IllegalArgumentException if the index is out of bounds.
-   * @returns A smart pointer to the item indexed.
-   */
-  virtual const std::shared_ptr<Serializable> operator[](
-      size_t index) const override = 0;
-
-  /**
-   * Get a SelectResultsIterator with which to iterate over the items in the
-   * ResultSet.
-   *
-   * @returns The SelectResultsIterator with which to iterate.
-   */
-  virtual SelectResultsIterator getIterator() override = 0;
-
-  /**
-   * Destructor
-   */
-  ~ResultSet() override = default;
+  ~ResultSet() noexcept override = default;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

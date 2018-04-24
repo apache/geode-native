@@ -43,14 +43,7 @@ class SelectResultsIterator;
  */
 class APACHE_GEODE_EXPORT SelectResults {
  public:
-  virtual ~SelectResults() = default;
-
-  /**
-   * Check whether the SelectResults is modifiable.
-   *
-   * @returns false always at this time.
-   */
-  virtual bool isModifiable() const = 0;
+  virtual ~SelectResults() noexcept = default;
 
   /**
    * Get the size of the SelectResults.
@@ -68,14 +61,6 @@ class APACHE_GEODE_EXPORT SelectResults {
    */
   virtual const std::shared_ptr<Serializable> operator[](
       size_t index) const = 0;
-
-  /**
-   * Get a SelectResultsIterator with which to iterate over the items in the
-   * SelectResults.
-   *
-   * @returns The SelectResultsIterator with which to iterate.
-   */
-  virtual SelectResultsIterator getIterator() = 0;
 
   /** Interface of an iterator for <code>SelectResults</code>.*/
   typedef CacheableVector::iterator iterator;

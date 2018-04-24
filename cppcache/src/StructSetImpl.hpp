@@ -39,14 +39,12 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT StructSetImpl
-    : public StructSet,
-      public std::enable_shared_from_this<StructSetImpl> {
+class APACHE_GEODE_EXPORT StructSetImpl : public StructSet {
  public:
   StructSetImpl(const std::shared_ptr<CacheableVector>& values,
                 const std::vector<std::string>& fieldNames);
 
-  bool isModifiable() const override;
+  ~StructSetImpl() noexcept override = default;
 
   size_t size() const override;
 
@@ -56,15 +54,9 @@ class APACHE_GEODE_EXPORT StructSetImpl
 
   const std::string& getFieldName(int32_t index) override;
 
-  SelectResultsIterator getIterator() override;
-
-  /** Get an iterator pointing to the start of vector. */
   virtual SelectResults::iterator begin() const override;
 
-  /** Get an iterator pointing to the end of vector. */
   virtual SelectResults::iterator end() const override;
-
-  ~StructSetImpl() noexcept override {}
 
  private:
   std::shared_ptr<CacheableVector> m_structVector;

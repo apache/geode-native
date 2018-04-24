@@ -28,8 +28,6 @@ ResultSetImpl::ResultSetImpl(const std::shared_ptr<CacheableVector>& response)
 // UNUSED , m_nextIndex(0)
 {}
 
-bool ResultSetImpl::isModifiable() const { return false; }
-
 size_t ResultSetImpl::size() const {
   return static_cast<int32_t>(m_resultSetVector->size());
 }
@@ -40,10 +38,6 @@ const std::shared_ptr<Serializable> ResultSetImpl::operator[](
     throw IllegalArgumentException("index out of bounds");
   }
   return m_resultSetVector->operator[](index);
-}
-
-SelectResultsIterator ResultSetImpl::getIterator() {
-  return SelectResultsIterator(m_resultSetVector, shared_from_this());
 }
 
 SelectResults::iterator ResultSetImpl::begin() const {

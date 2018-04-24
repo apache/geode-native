@@ -213,43 +213,30 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       cqFac.addCqListener(cqLstner);
       auto cqAttr = cqFac.create();
 
-      char* qryStr = (char*)"select * from /Portfolios p where p.ID != 1";
+      auto qryStr = "select * from /Portfolios p where p.ID != 1";
       // char* qryStr = (char*)"select * from /Portfolios p where p.ID != 2";
       // char* qryStr = (char*)"select * from /Portfolios p where p.ID < 3";
-      auto qry = qs->newCq(cqName, qryStr, cqAttr);
-      std::shared_ptr<SelectResults> results;
-      results = qry->executeWithInitialResults();
+      auto&& qry = qs->newCq(cqName, qryStr, cqAttr);
+      auto&& results = qry->executeWithInitialResults();
 
-      SelectResultsIterator iter = results->getIterator();
       char buf[100];
       auto count = results->size();
       sprintf(buf, "results size=%zd", count);
       LOG(buf);
-      while (iter.hasNext()) {
+      for (auto&& ser: *results) {
         count--;
-        auto ser = iter.next();
-        std::shared_ptr<Portfolio> portfolio(
-            dynamic_cast<Portfolio*>(ser.get()));
-        std::shared_ptr<Position> position(dynamic_cast<Position*>(ser.get()));
-
-        if (portfolio != nullptr) {
+        if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(ser)) {
           printf("   query pulled portfolio object ID %d, pkid %s\n",
                  portfolio->getID(), portfolio->getPkid()->value().c_str());
-        }
-
-        else if (position != nullptr) {
+        } else if (auto position = std::dynamic_pointer_cast<Position>(ser)) {
           printf("   query  pulled position object secId %s, shares %d\n",
                  position->getSecId()->value().c_str(),
                  position->getSharesOutstanding());
-        }
-
-        else {
-          if (ser != nullptr) {
-            printf(" query pulled object %s\n", ser->toString().c_str());
+        } else if (ser) {
+          printf(" query pulled object %s\n", ser->toString().c_str());
           } else {
-            printf("   query pulled bad object\n");
+            printf("   query pulled nullptr object\n");
           }
-        }
       }
       sprintf(buf, "results last count=%zd", count);
       LOG(buf);

@@ -51,8 +51,6 @@ StructSetImpl::StructSetImpl(const std::shared_ptr<CacheableVector>& response,
   }
 }
 
-bool StructSetImpl::isModifiable() const { return false; }
-
 size_t StructSetImpl::size() const { return m_structVector->size(); }
 
 const std::shared_ptr<Serializable> StructSetImpl::operator[](
@@ -62,10 +60,6 @@ const std::shared_ptr<Serializable> StructSetImpl::operator[](
   }
 
   return m_structVector->operator[](index);
-}
-
-SelectResultsIterator StructSetImpl::getIterator() {
-  return SelectResultsIterator(m_structVector, shared_from_this());
 }
 
 size_t StructSetImpl::getFieldIndex(const std::string& fieldname) {

@@ -42,29 +42,7 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT StructSet : public CqResults {
  public:
-  /**
-   * Check whether the StructSet is modifiable.
-   *
-   * @returns false always at this time.
-   */
-  virtual bool isModifiable() const = 0;
-
-  /**
-   * Get the size of the StructSet.
-   *
-   * @returns the number of items in the StructSet.
-   */
-  virtual size_t size() const = 0;
-
-  /**
-   * Index operator to directly access an item in the StructSet.
-   *
-   * @param index the index number of the item to get.
-   * @throws IllegalArgumentException if the index is out of bounds.
-   * @returns A smart pointer to the item indexed.
-   */
-  virtual const std::shared_ptr<Serializable> operator[](
-      size_t index) const = 0;
+  ~StructSet() noexcept override = default;
 
   /**
    * Get the index number of the specified field name in the StructSet.
@@ -85,18 +63,6 @@ class APACHE_GEODE_EXPORT StructSet : public CqResults {
    */
   virtual const std::string& getFieldName(int32_t index) = 0;
 
-  /**
-   * Get a SelectResultsIterator with which to iterate over the items in the
-   * StructSet.
-   *
-   * @returns The SelectResultsIterator with which to iterate.
-   */
-  virtual SelectResultsIterator getIterator() = 0;
-
-  /**
-   * Destructor
-   */
-  virtual ~StructSet() = default;
 };
 }  // namespace client
 }  // namespace geode
