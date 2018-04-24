@@ -29,6 +29,7 @@ template_variables:
   product_name: Geode
   product_version: 1.5
   product_version_nodot: 15
+  client_name: Geode Native
   min_java_update: 121
   support_url: http://geode.apache.org/community
   product_url: http://geode.apache.org

@@ -21,24 +21,120 @@ limitations under the License.
 
 The cache is the entry point to data caching in <%=vars.product_name%>. Through the cache, clients gain access to the <%=vars.product_name%> caching framework for data loading, distribution, and maintenance.
 
--   **[About the Client Cache](overview-client-cache.html)**
+## <a id="about-the-client-cache"></a>About the Client Cache
 
-    The cache consists of data regions, each of which can contain any number of entries. Region entries hold the cached data. Every entry has a key that uniquely identifies it within the region and a value where the data object is stored.
+The cache consists of data regions, each of which can contain any number of entries. Region entries hold the cached data. Every entry has a key that uniquely identifies it within the region and a value where the data object is stored.
 
--   **[Cache APIs](caching-apis.html)**
+The `Cache` instance allows your process to set general parameters for communication between a cache and other caches in the distributed system, and to create and access any region in the cache.
 
-    The client has two cache APIs, `RegionService` and `Cache`.
+Regions are created from the `Cache` instance. Regions provide the entry point to the interfaces for instances of `Region` and `RegionEntry`.
 
--   **[Local, Remote, and Distributed Caches](cache-ownership.html)**
+### <a id="native-client-cache__section_A0F2E9EF30324736BD0D5F92FE3D1BD7" class="no-quick-link"></a>Main Features and Functionality
 
-    The *distributed system* defines how client and cache server processes find each other.
+The client cache provides the following features and functionality.
 
--   **[Creating and Accessing a Cache](create-access-cache.html)**
+-   Local and distributed data caching for fast access.
+-   Data distribution between applications on the same or different platforms.
+-   Local and remote data loading through application plug-ins.
+-   Application plug-ins for synchronous and asynchronous handling of data events.
+-   Automated and application-specific data eviction for freeing up space in the cache, including optional overflow to disk.
+-   System message logging, and statistics gathering and archiving.
 
-    When you create a client cache, you are creating a client cache instance. You must provide some basic configuration information such as a connection name and cache initialization parameters for the client's cache instance.
+For more information specific to your client programming language, see [C++ Client API](../cpp-caching-api/cpp-caching-api.html) or [.NET Client API](../dotnet-caching-api/dotnet-caching-api.html).
 
--   **[Closing the Cache](closing-cache.html)**
 
-    Use the `Cache::close` function to release system resources when you finish using the cache.
+## <a id="cache-apis"></a>Cache APIs
+
+The client has two cache APIs, `RegionService` and `Cache`.
+
+### <a id="caching-apis__section_8F81996678B64BBE94EF352527F7F006" class="no-quick-link"></a>RegionService API
+
+`RegionService` provides:
+
+-   Access to existing cache regions.
+-   Access to the query service for the cache, which sends queries to the servers. See [Remote Querying](../remote-querying/remote-querying.html) and [Continuous Querying](../continuous-querying/continuous-querying.html).
+
+`RegionService` is inherited by `Cache`.
+
+You do not use instances of `RegionService` except for secure client applications with many users. See [Creating Multiple Secure User Connections with RegionService](../security/createsecureconnregionservice.html).
+
+### <a id="caching-apis__section_403383B9B5044A939A89A5BBB4915452" class="no-quick-link"></a>Cache API
+
+Use the `Cache` to manage your client caches. You have one `Cache` per client.
+
+The `Cache` inherits `RegionService` and adds management of these client caching features:
+
+-   Region creation.
+-   Subscription keepalive management for durable clients.
+-   Access to the underlying distributed system.
+-   `RegionService` creation for secure access by multiple users.
+
+## <a id="local-remote-distributed-caches"></a> Local, Remote, and Distributed Caches
+
+The *distributed system* defines how client and server processes find each other.
+
+The distributed system keeps track of its membership list and makes its members aware of the identities of the other members in the distributed system.
+
+A cache within the client is referred to as its *local cache*. All other caches in the distributed system are considered *remote caches* to the application. Every cache server and application process has its own cache. The term *distributed cache* is used to describe the union of all caches in the distributed system.
+
+## <a id="creating-and-accessing-cache"></a>Creating and Accessing a Cache
+
+When you create a client cache, you are creating a client cache instance. You must provide some basic configuration information such as a connection name and cache initialization parameters for the client's cache instance.
+
+When you create a cache, you provide the following input:
+
+-   **Connection name**. Used in logging to identify both the distributed system connection and the cache instance. If you do not specify a connection name, a unique (but non-descriptive) default name is assigned.
+-   **`cache.xml` to initialize the cache (if the initialization is not done programmatically)**. To modify the cache structure, edit `cache.xml` in your preferred text editor. No changes to the application code are required. If you do not specify a `cache.xml` file, you need to initialize the cache programmatically.
+
+The `cache.xml` file contains XML declarations for cache, region, and region entry configuration.
+
+This XML declares server connection pools and regions:
+
+``` pre
+<cache>
+  <region name="clientRegion1" refid="PROXY">
+    <region-attributes pool-name="serverPool1"/>
+  </region>
+  <region name="clientRegion2" refid="PROXY">
+    <region-attributes pool-name="serverPool2"/>
+  </region>
+  <region name="localRegion3" refid="LOCAL"/>
+  <pool name="serverPool1">
+    <locator host="host1" port="40404"/>
+  </pool>
+  <pool name="serverPool2">
+    <locator host="host2" port="40404"/>
+  </pool>
+</cache>
+    
+```
+
+When you use the regions, the client regions connect to the servers through the pools named in their configurations.
+
+This file can have any name, but is generally referred to as `cache.xml` .
+
+For a list of the parameters in the `cache.xml` file, including the XSD, see [Cache Initialization File](cache-init-file.html).
+
+To create your cache, call the `CacheFactory create` function.
+The `cache` object it returns gives access to the client caching API. For example:
+
+``` pre
+CacheFactoryPtr cacheFactory = CacheFactory::createCacheFactory();
+CachePtr cachePtr = cacheFactory->create();
+    
+```
+
+**Note:** For more information on how to create a cache for C++ clients, see [Creating a Cache](../cpp-caching-api/creating-cache.html), or for .NET clients, see [Creating a Cache](../dotnet-caching-api/creating-a-cache.html).
+
+
+## <a id="closing-the-cache"></a>Closing the Cache
+
+Use the `Cache::close` function to release system resources when you finish using the cache.
+
+After the cache is closed, any further method calls on the cache or any region object result in a `CacheClosedException`.
+
+If the cache is in a durable client, you need to use the `keepalive` version of the close method. See [Disconnecting From the Server](../preserving-data/disconnecting-from-server.html).
+
+
 
 
