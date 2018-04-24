@@ -26,22 +26,106 @@ The region is the core building block of the <%=vars.product_name%> distributed 
 
 A distributed region can be either non-partitioned or a partitioned region. See [Data Regions](geodeman/basic_config/data_regions/chapter_overview.html) for detailed descriptions of both non-partitioned and partitioned regions. Region creation is subject to attribute consistency checks. The requirements for consistency between attributes are detailed both in the API documentation and throughout the discussion of [Region Attributes](region-attributes.html#region-attributes).
 
--   **[Declarative Region Creation](declarative-region-creation.html)**
+## <a id="programmatic-region-creation"></a>Programmatic Region Creation
 
-    Declarative region creation involves placing the region's XML declaration, with the appropriate attribute settings, in the `cache.xml` file that is loaded at cache creation.
+You create regions programmatically with the `regionFactory` class.
 
--   **[Programmatic Region Creation](programmatic-region-creation.html)**
+**Note:**
+Before creating a region, specify region attributes. See [Region Attributes](region-attributes.html).
 
-    You create regions programmatically with the `regionFactory` class.
+Create your regions using the `regionFactory` class.
 
--   **[Invalidating and Destroying Regions](invalidating-region.html)**
+**C++ RegionFactory Example**
 
-    Invalidation marks all entries contained in the region as invalid (with null values). Destruction removes the region and all of its contents from the cache.
+``` pre
+RegionFactoryPtr regionFactory =
+    cachePtr->createRegionFactory(CACHING_PROXY);
+RegionPtr regPtr0 = regionFactory->setLruEntriesLimit(20000)
+        ->create("exampleRegion0");
+    
+```
 
--   **[Region Access](region-access.html)**
+## <a id="declarative-region-creation"></a>Declarative Region Creation
 
-    You can use `Cache::getRegion` to retrieve a reference to a specified region.
+Declarative region creation involves placing the region's XML declaration, with the appropriate attribute settings, in the `cache.xml` file that is loaded at cache creation.
 
--   **[Getting the Region Size](getting-the-region-size.html)**
+**Note:**
+Before creating a region, specify region attributes. See [Region Attributes](region-attributes.html).
 
-    The `Region` API provides a `size` method (`Size` property for .NET) that gets the size of a region.
+Regions are placed inside the cache declaration in `region` elements. For example:
+
+``` pre
+<cache>
+  <pool name="examplePool" subscription-enabled="true" >
+    <server host="localhost" port="40404" />
+  </pool>
+  <region name="A" refid="PROXY">
+    <region-attributes pool-name="examplePool"/>
+  </region>
+  <region name="A1">
+    <region-attributes refid="PROXY" pool-name="examplePool"/>
+  </region>
+  <region name="A2" refid="CACHING_PROXY">
+    <region-attributes pool-name="examplePool">
+      <region-time-to-live>
+        <expiration-attributes timeout="120" action="invalidate"/>
+      </region-time-to-live>
+    </region-attributes>
+  </region>
+</cache>
+    
+```
+
+The `cache.xml` file contents must conform to the XML described at [http://geode.apache.org/schema/cache/cache-1.0.xsd](http://geode.apache.org/schema/cache/cache-1.0.xsd). For details, see [Cache Initialization File](../client-cache/cache-init-file.html).
+
+
+## <a id="invalidating-regions"></a>Invalidating and Destroying Regions
+
+Invalidation marks all entries contained in the region as invalid (with null values). Destruction removes the region and all of its contents from the cache.
+
+<a id="invalidating-region__section_6F7E304D1D5743F1B53FCBD4F82651D0"></a>
+You can execute these operations explicitly in the local cache in the following ways:
+
+-   Through direct API calls from the client.
+-   Through expiration activities based on the region's statistics and attribute settings.
+
+In either case, you can perform invalidation and destruction as a local or a distributed operation.
+
+-   A local operation affects the region only in the local cache.
+-   A distributed operation works first on the region in the local cache and then distributes the operation to all other caches where the region is defined. This is the proper choice when the region is no longer needed, or valid, for any application in the distributed system.
+-   If the region on the server is configured as a partitioned region, it cannot be cleared using API calls from the client.
+
+A user-defined cache writer can abort a region destroy operation. Cache writers are synchronous listeners with the ability to abort operations. If a cache writer is defined for the region anywhere in the distributed system, it is invoked before the region is explicitly destroyed.
+
+Region invalidation and destruction can cause other user-defined application plug-ins to be invoked as well. These plug-ins are described in detail in the [Overview of Application Plug-Ins](application-plugins.html#application-plugins__section_8FEB62EEC7A042E0A85E0FEDC9F71597).
+
+
+Whether carried out explicitly or through expiration activities, invalidation and destruction cause event notification.
+
+
+## <a id="region-access"></a>Region Access
+
+You can use `Cache::getRegion` to retrieve a reference to a specified region.
+
+`RegionPtr` returns `NULL` if the region is not already present in the application's cache. A server region must already exist.
+
+A region name *cannot* contain these characters:
+
+-   &lt;
+-   &gt;
+-   :
+-   "
+-   /
+-   \\
+-   |
+-   ?
+-   \*
+
+
+## <a id="getting-region-size"></a>Getting the Region Size
+
+The `Region` API provides a `size` method (`Size` property for .NET) that gets the size of a region.
+
+For client regions, this gives the number of entries in the local cache, not on the servers.
+
+See the `Region` API documentation for details.
