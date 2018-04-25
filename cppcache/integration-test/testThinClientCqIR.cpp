@@ -36,6 +36,7 @@
 #include <geode/QueryService.hpp>
 
 #include "ThinClientCQ.hpp"
+#include <hacks/range.h>
 
 using namespace apache::geode::client;
 using namespace test;
@@ -186,7 +187,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       sprintf(buf, "results size=%zd", count);
       LOG(buf);
       ASSERT(count > 0, "count should be > 0");
-      for (auto&& ser : *results) {
+      for (auto&& ser : hacks::range(*results)) {
         count--;
 
         if (ser) {
@@ -227,7 +228,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       sprintf(buf, "results2 size=%zd", count);
       LOG(buf);
       ASSERT(count > 0, "count should be > 0");
-      for (auto&& ser : *results) {
+      for (auto&& ser : hacks::range(*results)) {
         count--;
 
         if (ser) {

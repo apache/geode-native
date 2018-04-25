@@ -27,6 +27,8 @@
 #include <geode/Struct.hpp>
 #include <geode/QueryService.hpp>
 
+#include <hacks/range.h>
+
 #include "framework/Framework.h"
 #include "framework/Gfsh.h"
 #include "framework/Cluster.h"
@@ -70,14 +72,15 @@ TEST(StructTest, queryResultForRange) {
       cache.getQueryService()
           ->newQuery("SELECT e.key, e.value FROM /region.entries e")
           ->execute();
-  for (auto&& row : *queryResult) {
+  for (auto&& row : hacks::range(*queryResult)) {
     auto rowStruct = std::dynamic_pointer_cast<Struct>(row);
     ASSERT_NE(nullptr, rowStruct);
 
     auto key = -1;
     for (auto&& column : *rowStruct) {
       // Expect to read: key:int, value:string
-      if (auto columnValue = std::dynamic_pointer_cast<CacheableInt32>(column)) {
+      if (auto columnValue =
+              std::dynamic_pointer_cast<CacheableInt32>(column)) {
         key = columnValue->value();
         EXPECT_NE(values.end(), values.find(key));
         break;

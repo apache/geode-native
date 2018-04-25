@@ -22,6 +22,7 @@
 #include "QueryHelper.hpp"
 #include <geode/Query.hpp>
 #include <geode/QueryService.hpp>
+#include <hacks/range.h>
 
 using namespace apache::geode::client;
 using namespace test;
@@ -117,7 +118,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxEnumQuery)
     auto&& results = rptr->query("m_enumid.name = 'id2'");
     ASSERT(results->size() == 1, "query result should have one item");
     auto rsptr = std::dynamic_pointer_cast<ResultSet>(results);
-    for (auto&& row : *rsptr) {
+    for (auto&& row : hacks::range(*rsptr)) {
       auto re = std::dynamic_pointer_cast<PdxEnumTestClass>(row);
       ASSERT(re->getID() == 1, "query should have return id 1");
     }
@@ -130,7 +131,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxEnumQuery)
         "'id3'");
     results = qry->execute();
     rsptr = std::dynamic_pointer_cast<ResultSet>(results);
-    for (auto&& row : *rsptr) {
+    for (auto&& row : hacks::range(*rsptr)) {
       auto re = std::dynamic_pointer_cast<PdxEnumTestClass>(row);
       ASSERT(re->getID() == 2, "query should have return id 0");
     }

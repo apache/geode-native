@@ -36,6 +36,7 @@
 #include <geode/QueryService.hpp>
 
 #include "ThinClientCQ.hpp"
+#include <hacks/range.h>
 
 using namespace apache::geode::client;
 using namespace test;
@@ -223,7 +224,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       auto count = results->size();
       sprintf(buf, "results size=%zd", count);
       LOG(buf);
-      for (auto&& ser: *results) {
+      for (auto&& ser: hacks::range(*results)) {
         count--;
         if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(ser)) {
           printf("   query pulled portfolio object ID %d, pkid %s\n",

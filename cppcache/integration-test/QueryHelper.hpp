@@ -37,6 +37,7 @@
 #include "testobject/PdxType.hpp"
 #include "testobject/PortfolioPdx.hpp"
 #include "testobject/PositionPdx.hpp"
+#include <hacks/range.h>
 
 //#include <geode/Struct.hpp>
 
@@ -317,7 +318,7 @@ bool QueryHelper::verifyRS(std::shared_ptr<SelectResults>& resultSet,
                            size_t expectedRows) {
   if (auto rsptr = std::static_pointer_cast<ResultSet>(resultSet)) {
     size_t foundRows = 0;
-    for (auto&& row : *rsptr) {
+    for (auto&& row : hacks::range(*rsptr)) {
       foundRows++;
     }
 
@@ -331,7 +332,7 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
                            size_t expectedRows, int32_t expectedFields) {
   if (auto ssptr = std::static_pointer_cast<StructSet>(structSet)) {
     size_t foundRows = 0;
-    for (auto&& ser : *ssptr) {
+    for (auto&& ser : hacks::range(*ssptr)) {
       foundRows++;
 
       auto siptr = std::dynamic_pointer_cast<Struct>(ser);
