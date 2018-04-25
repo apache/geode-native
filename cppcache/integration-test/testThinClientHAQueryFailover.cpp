@@ -33,7 +33,6 @@
 #include <geode/QueryService.hpp>
 #include <geode/ResultSet.hpp>
 #include <geode/StructSet.hpp>
-#include <geode/SelectResultsIterator.hpp>
 
 #include "testobject/Portfolio.hpp"
 
