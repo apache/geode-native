@@ -120,7 +120,7 @@ class CacheHelper {
   void createDistRegion(const char* regionName,
                         std::shared_ptr<Region>& regionPtr, uint32_t size);
 
-  std::shared_ptr<Region> getRegion(const char* name);
+  std::shared_ptr<Region> getRegion(const std::string& name);
 
   std::shared_ptr<Region> createRegion(
       const char* name, bool ack, bool caching,
@@ -138,8 +138,9 @@ class CacheHelper {
       const char* endpoints = 0, bool clientNotificationEnabled = false);
 
   std::shared_ptr<Pool> createPool(
-      const char* poolName, const char* locators, const char* serverGroup,
-      int redundancy = 0, bool clientNotification = false,
+      const std::string& poolName, const char* locators,
+      const char* serverGroup, int redundancy = 0,
+      bool clientNotification = false,
       std::chrono::milliseconds subscriptionAckInterval =
           std::chrono::milliseconds::zero(),
       int connections = -1, int loadConditioningInterval = -1,
@@ -157,7 +158,7 @@ class CacheHelper {
   void logPoolAttributes(std::shared_ptr<Pool>& pool);
 
   void createPoolWithLocators(
-      const char* name, const char* locators = nullptr,
+      const std::string& name, const char* locators = nullptr,
       bool clientNotificationEnabled = false, int subscriptionRedundancy = -1,
       std::chrono::milliseconds subscriptionAckInterval =
           std::chrono::milliseconds::zero(),
@@ -165,7 +166,7 @@ class CacheHelper {
       const char* serverGroup = nullptr);
 
   std::shared_ptr<Region> createRegionAndAttachPool(
-      const char* name, bool ack, const char* poolName = nullptr,
+      const std::string& name, bool ack, const std::string& poolName,
       bool caching = true,
       const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
       const std::chrono::seconds& eit = std::chrono::seconds::zero(),

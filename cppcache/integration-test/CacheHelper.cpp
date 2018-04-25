@@ -381,7 +381,7 @@ void CacheHelper::createDistRegion(const char* regionName,
   regionPtr = rootRegionPtr->createSubregion(regionName, regionAttributes);
   ASSERT(regionPtr != nullptr, "failed to create region.");
 }
-std::shared_ptr<Region> CacheHelper::getRegion(const char* name) {
+std::shared_ptr<Region> CacheHelper::getRegion(const std::string& name) {
   return cachePtr->getRegion(name);
 }
 std::shared_ptr<Region> CacheHelper::createRegion(
@@ -425,7 +425,7 @@ std::shared_ptr<Region> CacheHelper::createRegion(
   return regionPtr;
 }
 std::shared_ptr<Pool> CacheHelper::createPool(
-    const char* poolName, const char* locators, const char* serverGroup,
+    const std::string& poolName, const char* locators, const char* serverGroup,
     int redundancy, bool clientNotification,
     std::chrono::milliseconds subscriptionAckInterval, int connections,
     int loadConditioningInterval, bool isMultiuserMode) {
@@ -522,8 +522,8 @@ void CacheHelper::logPoolAttributes(std::shared_ptr<Pool>& pool) {
 }
 
 void CacheHelper::createPoolWithLocators(
-    const char* name, const char* locators, bool clientNotificationEnabled,
-    int subscriptionRedundancy,
+    const std::string& name, const char* locators,
+    bool clientNotificationEnabled, int subscriptionRedundancy,
     std::chrono::milliseconds subscriptionAckInterval, int connections,
     bool isMultiuserMode, const char* serverGroup) {
   LOG("createPool() entered.");
@@ -536,7 +536,7 @@ void CacheHelper::createPoolWithLocators(
   LOG("Pool created.");
 }
 std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool(
-    const char* name, bool, const char* poolName, bool caching,
+    const std::string& name, bool, const std::string& poolName, bool caching,
     const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
     const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
     ExpirationAction action) {
@@ -553,7 +553,7 @@ std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool(
   regionFactory.setEntryTimeToLive(action, ettl);
   regionFactory.setRegionIdleTimeout(action, rit);
   regionFactory.setRegionTimeToLive(action, rttl);
-  if (poolName != nullptr) {
+  if (!poolName.empty()) {
     regionFactory.setPoolName(poolName);
   }
   return regionFactory.create(name);

@@ -65,7 +65,7 @@ class APACHE_GEODE_EXPORT SelectResults {
   /**
    * Interface of an iterator for <code>SelectResults</code>.
    */
-  typedef CacheableVector::iterator iterator;
+  typedef std::vector<std::shared_ptr<Cacheable>>::iterator iterator;
 
   /**
    * Get an iterator pointing to the start of <code>SelectResults</code>.

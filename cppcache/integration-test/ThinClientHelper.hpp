@@ -159,7 +159,7 @@ const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 const bool USE_ACK = true;
 const bool NO_ACK = false;
 
-void _verifyEntry(const char* name, const char* key, const char* val,
+void _verifyEntry(const std::string& name, const char* key, const char* val,
                   bool noKey, bool checkVal = true) {
   // Verify key and value exist in this region, in this process.
   const char* value = (val == 0) ? "" : val;
@@ -167,13 +167,14 @@ void _verifyEntry(const char* name, const char* key, const char* val,
       reinterpret_cast<char*>(malloc(1024 + strlen(key) + strlen(value)));
   ASSERT(buf, "Unable to malloc buffer for logging.");
   if (noKey) {
-    sprintf(buf, "Verify key %s does not exist in region %s", key, name);
+    sprintf(buf, "Verify key %s does not exist in region %s", key,
+            name.c_str());
   } else if (val == 0) {
     sprintf(buf, "Verify value for key %s does not exist in region %s", key,
-            name);
+            name.c_str());
   } else {
     sprintf(buf, "Verify value for key %s is: %s in region %s", key, value,
-            name);
+            name.c_str());
   }
   LOG(buf);
   free(buf);
@@ -255,7 +256,7 @@ void _verifyDestroyed(const char* name, const char* key, int line) {
   LOG("Entry destroyed.");
 }
 
-void verifyEntry(const char* name, const char* key, const char* val,
+void verifyEntry(const std::string& name, const char* key, const char* val,
                  bool checkVal = true) {
   char logmsg[1024];
   sprintf(logmsg, "verifyEntry() called from %d.\n", __LINE__);
@@ -477,7 +478,8 @@ std::shared_ptr<Pool> createPool2(const char* poolName, const char* locators,
   return poolPtr;
 }
 std::shared_ptr<Region> createRegionAndAttachPool(
-    const char* name, bool ack, const char* poolName, bool caching = true,
+    const std::string& name, bool ack, const std::string& poolName,
+    bool caching = true,
     const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
     const std::chrono::seconds& eit = std::chrono::seconds::zero(),
     const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
@@ -491,10 +493,10 @@ std::shared_ptr<Region> createRegionAndAttachPool(
   return regPtr;
 }
 
-void createEntry(const char* name, const char* key, const char* value) {
+void createEntry(const std::string& name, const char* key, const char* value) {
   LOG("createEntry() entered.");
   fprintf(stdout, "Creating entry -- key: %s  value: %s in region %s\n", key,
-          value, name);
+          value, name.c_str());
   fflush(stdout);
   // Create entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
@@ -652,9 +654,9 @@ void destroyEntry(const char* name, const char* key) {
   LOG("Entry destroyed.");
 }
 
-void destroyRegion(const char* name) {
+void destroyRegion(const std::string& name) {
   LOG("destroyRegion() entered.");
- auto regPtr = getHelper()->getRegion(name);
+  auto regPtr = getHelper()->getRegion(name);
   regPtr->localDestroyRegion();
   LOG("Region destroyed.");
 }
