@@ -37,51 +37,92 @@ Create your regions using the `regionFactory` class.
 
 **C++ RegionFactory Example**
 
-``` pre
-RegionFactoryPtr regionFactory =
-    cachePtr->createRegionFactory(CACHING_PROXY);
-RegionPtr regPtr0 = regionFactory->setLruEntriesLimit(20000)
-        ->create("exampleRegion0");
-    
+``` cpp
+auto cacheFactory = CacheFactory();
+auto cache = cacheFactory.create();
+
+auto examplePool = cache.getPoolManager()
+    .createFactory()
+    .addLocator("localhost", 40404)
+    .setSubscriptionEnabled(true)
+    .create("examplePool");
+
+auto clientRegion1 = cache.createRegionFactory(RegionShortcut::PROXY)
+  .setPoolName("examplePool")
+  .create("clientRegion1");
+
+auto clientRegion2 = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
+  .setPoolName("examplePool")
+  .setRegionTimeToLive(ExpirationAction::INVALIDATE, std::chrono::minutes(2))
+  .create("clientRegion2");
+```
+
+**.NET C# RegionFactory Example**
+
+``` csharp
+var cacheFactory = CacheFactory();
+var cache = cacheFactory.Create();
+
+var examplePool = cache.GetPoolManager()
+    .CreateFactory()
+    .AddLocator("localhost", 40404)
+    .SetSubscriptionEnabled(true)
+    .Create("examplePool");
+
+var clientRegion1 = cache.CreateRegionFactory(RegionShortcut.PROXY)
+  .SetPoolName("examplePool")
+  .Create("clientRegion1");
+
+var clientRegion2 = cache.CreateRegionFactory(RegionShortcut.CACHING_PROXY)
+  .SetPoolName("examplePool")
+  .SetRegionTimeToLive(ExpirationAction.INVALIDATE, TimeSpan.FromMinutes(2))
+  .Create("clientRegion2");
 ```
 
 ## <a id="declarative-region-creation"></a>Declarative Region Creation
 
-Declarative region creation involves placing the region's XML declaration, with the appropriate attribute settings, in the `cache.xml` file that is loaded at cache creation.
+Declarative region creation involves placing the region's XML declaration, with the appropriate
+attribute settings, in the `cache.xml` file that is loaded at cache creation.
 
 **Note:**
 Before creating a region, specify region attributes. See [Region Attributes](region-attributes.html).
 
 Regions are placed inside the cache declaration in `region` elements. For example:
 
-``` pre
-<cache>
-  <pool name="examplePool" subscription-enabled="true" >
-    <server host="localhost" port="40404" />
-  </pool>
-  <region name="A" refid="PROXY">
-    <region-attributes pool-name="examplePool"/>
-  </region>
-  <region name="A1">
-    <region-attributes refid="PROXY" pool-name="examplePool"/>
-  </region>
-  <region name="A2" refid="CACHING_PROXY">
-    <region-attributes pool-name="examplePool">
-      <region-time-to-live>
-        <expiration-attributes timeout="120" action="invalidate"/>
-      </region-time-to-live>
-    </region-attributes>
-  </region>
-</cache>
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<client-cache
+    xmlns="http://geode.apache.org/schema/cpp-cache"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://geode.apache.org/schema/cpp-cache
+                        http://geode.apache.org/schema/cpp-cache/cpp-cache-1.0.xsd"
+    version="1.0">
+    <pool name="examplePool" subscription-enabled="true">
+        <server host="localhost" port="40404" />
+    </pool>
+    <region name="clientRegion1" refid="PROXY">
+        <region-attributes pool-name="examplePool"/>
+    </region>
+    <region name="clientRegion2" refid="CACHING_PROXY">
+        <region-attributes pool-name="examplePool">
+            <region-time-to-live>
+                <expiration-attributes timeout="120s" action="invalidate"/>
+            </region-time-to-live>
+        </region-attributes>
+    </region>
+</client-cache>
     
 ```
 
-The `cache.xml` file contents must conform to the XML described at [http://geode.apache.org/schema/cache/cache-1.0.xsd](http://geode.apache.org/schema/cache/cache-1.0.xsd). For details, see [Cache Initialization File](../client-cache/cache-init-file.html).
+The `cache.xml` file contents must conform to the XML described at
+[http://geode.apache.org/schema/cache/cache-1.0.xsd](http://geode.apache.org/schema/cache/cache-1.0.xsd). For
+details, see [Cache Initialization File](../client-cache/cache-init-file.html).
 
 
 ## <a id="invalidating-regions"></a>Invalidating and Destroying Regions
 
-Invalidation marks all entries contained in the region as invalid (with null values). Destruction removes the region and all of its contents from the cache.
+Invalidation marks all entries contained in the region as invalid (with null values). Destruction
+removes the region and all of its contents from the cache.
 
 <a id="invalidating-region__section_6F7E304D1D5743F1B53FCBD4F82651D0"></a>
 You can execute these operations explicitly in the local cache in the following ways:
@@ -95,10 +136,13 @@ In either case, you can perform invalidation and destruction as a local or a dis
 -   A distributed operation works first on the region in the local cache and then distributes the operation to all other caches where the region is defined. This is the proper choice when the region is no longer needed, or valid, for any application in the distributed system.
 -   If the region on the server is configured as a partitioned region, it cannot be cleared using API calls from the client.
 
-A user-defined cache writer can abort a region destroy operation. Cache writers are synchronous listeners with the ability to abort operations. If a cache writer is defined for the region anywhere in the distributed system, it is invoked before the region is explicitly destroyed.
+A user-defined cache writer can abort a region destroy operation. Cache writers are synchronous
+listeners with the ability to abort operations. If a cache writer is defined for the region anywhere
+in the distributed system, it is invoked before the region is explicitly destroyed.
 
-Region invalidation and destruction can cause other user-defined application plug-ins to be invoked as well. These plug-ins are described in detail in the [Overview of Application Plug-Ins](application-plugins.html#application-plugins__section_8FEB62EEC7A042E0A85E0FEDC9F71597).
-
+Region invalidation and destruction can cause other user-defined application plug-ins to be invoked
+as well. These plug-ins are described in detail in the [Overview of Application
+Plug-Ins](application-plugins.html#application-plugins__section_8FEB62EEC7A042E0A85E0FEDC9F71597).
 
 Whether carried out explicitly or through expiration activities, invalidation and destruction cause event notification.
 
