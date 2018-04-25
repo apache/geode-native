@@ -1,5 +1,5 @@
 ---
-title:  Regions
+title:  Configuring Regions
 ---
 
 <!--
@@ -19,23 +19,33 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-You create cache regions either programmatically or through declarative statements in the `cache.xml` file. Generally, a cache is organized and populated through a combination of the two approaches.
+The region is the core building block of the <%=vars.product_name%> distributed system. All cached
+data is organized into data regions and you do all of your data puts, gets, and querying activities
+against them.
 
-<a id="regions__section_1BE4ABB76537488C966E452C2D89478F"></a>
-The region is the core building block of the <%=vars.product_name%> distributed system. All cached data is organized into data regions and you do all of your data puts, gets, and querying activities against them.
+A client application must participate in at least one region that is shared with the <%=vars.product_name%> server.
+The client instance of the shared region must match the server's implementation of the same region.
+See [Data Regions](geodeman/basic_config/data_regions/chapter_overview.html) in the <%=vars.product_name%> User Guide
+for details regarding server regions, and [Region Attributes](region-attributes.html) in this guide for
+client region configuration parameters.
 
-A distributed region can be either non-partitioned or a partitioned region. See [Data Regions](geodeman/basic_config/data_regions/chapter_overview.html) for detailed descriptions of both non-partitioned and partitioned regions. Region creation is subject to attribute consistency checks. The requirements for consistency between attributes are detailed both in the API documentation and throughout the discussion of [Region Attributes](region-attributes.html#region-attributes).
+You can create regions either programmatically or through declarative statements in a `cache.xml` file. 
+Programmatic configuration is recommended, as it keeps the configuration close at hand and eliminates an external dependency.
+Region creation is subject to attribute consistency checks.
 
 ## <a id="programmatic-region-creation"></a>Programmatic Region Creation
 
-You create regions programmatically with the `regionFactory` class.
+To create a region:
 
-**Note:**
-Before creating a region, specify region attributes. See [Region Attributes](region-attributes.html).
+1. Instantiate a `cacheFactory` and use it to create a cache.
+1. Instantiate a `PoolManager` and use it to create a connection pool.
+1. Use cache to instantiate a `RegionFactory` and use it to create a region, specifying any desired attributes
+and an association with the connection pool.
 
-Create your regions using the `regionFactory` class.
+### C++ RegionFactory Example
 
-**C++ RegionFactory Example**
+The following example illustrates how to two regions using C++. In keeping with common coding practice, the
+operations are chained together, so some of the classnames mentioned in the procedure above do not appear verbatim in the example code.
 
 ``` cpp
 auto cacheFactory = CacheFactory();
@@ -57,7 +67,9 @@ auto clientRegion2 = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
   .create("clientRegion2");
 ```
 
-**.NET C# RegionFactory Example**
+### .NET C# RegionFactory Example**
+
+This example illustrates how to create a pair of regions using C#:
 
 ``` csharp
 var cacheFactory = CacheFactory();
@@ -79,15 +91,12 @@ var clientRegion2 = cache.CreateRegionFactory(RegionShortcut.CACHING_PROXY)
   .Create("clientRegion2");
 ```
 
-## <a id="declarative-region-creation"></a>Declarative Region Creation
+### <a id="declarative-region-creation"></a>Declarative Region Creation
 
 Declarative region creation involves placing the region's XML declaration, with the appropriate
 attribute settings, in the `cache.xml` file that is loaded at cache creation.
 
-**Note:**
-Before creating a region, specify region attributes. See [Region Attributes](region-attributes.html).
-
-Regions are placed inside the cache declaration in `region` elements. For example:
+Like the programmatic examples above, the following example creates two regions with attributes and a connection pool:
 
 ``` xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -114,9 +123,8 @@ Regions are placed inside the cache declaration in `region` elements. For exampl
     
 ```
 
-The `cache.xml` file contents must conform to the XML described at
-[http://geode.apache.org/schema/cache/cache-1.0.xsd](http://geode.apache.org/schema/cache/cache-1.0.xsd). For
-details, see [Cache Initialization File](../client-cache/cache-init-file.html).
+The `cache.xml` file contents must conform to the XML described in the XSD file provided in your distribution's `xsd`
+subdirectory.
 
 
 ## <a id="invalidating-regions"></a>Invalidating and Destroying Regions
