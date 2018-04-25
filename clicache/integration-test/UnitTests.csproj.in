@@ -217,7 +217,11 @@
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\SerializationTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientConflationTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientCqIRTestsN.cs" />
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientCqTestsN.cs" />
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientCqPdxTest.cs" />
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientCqAttributesMutatorTests.cs" />
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientCqTest.cs" />
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientCqStatusTest.cs" />
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientCqStatusTestTwoServers.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientStringArrayTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientCSTXN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientDeltaTestN.cs" />
