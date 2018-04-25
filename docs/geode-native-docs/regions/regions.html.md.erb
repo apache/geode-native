@@ -23,8 +23,8 @@ The region is the core building block of the <%=vars.product_name%> distributed 
 data is organized into data regions and you do all of your data puts, gets, and querying activities
 against them.
 
-A client application must participate in at least one region that is shared with the <%=vars.product_name%> server.
-The client instance of the shared region must match the server's implementation of the same region.
+In order to connect to a <%=vars.product_name%> server, a client application must define a region that corresponds to
+a region on the server, at least in name.
 See [Data Regions](geodeman/basic_config/data_regions/chapter_overview.html) in the <%=vars.product_name%> User Guide
 for details regarding server regions, and [Region Attributes](region-attributes.html) in this guide for
 client region configuration parameters.
@@ -37,15 +37,14 @@ Region creation is subject to attribute consistency checks.
 
 To create a region:
 
-1. Instantiate a `cacheFactory` and use it to create a cache.
-1. Instantiate a `PoolManager` and use it to create a connection pool.
+1. Instantiate a `CacheFactory` and use it to create a cache.
+1. The cache includes an instance of `PoolManager` -- use it to create a connection pool.
 1. Use cache to instantiate a `RegionFactory` and use it to create a region, specifying any desired attributes
 and an association with the connection pool.
 
-### C++ RegionFactory Example
+### C++ Region Creation Example
 
-The following example illustrates how to two regions using C++. In keeping with common coding practice, the
-operations are chained together, so some of the classnames mentioned in the procedure above do not appear verbatim in the example code.
+The following example illustrates how to create two regions using C++.
 
 ``` cpp
 auto cacheFactory = CacheFactory();
@@ -67,7 +66,7 @@ auto clientRegion2 = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
   .create("clientRegion2");
 ```
 
-### .NET C# RegionFactory Example**
+### .NET C# Region Creation Example**
 
 This example illustrates how to create a pair of regions using C#:
 
@@ -91,10 +90,10 @@ var clientRegion2 = cache.CreateRegionFactory(RegionShortcut.CACHING_PROXY)
   .Create("clientRegion2");
 ```
 
-### <a id="declarative-region-creation"></a>Declarative Region Creation
+## <a id="declarative-region-creation"></a>Declarative Region Creation
 
 Declarative region creation involves placing the region's XML declaration, with the appropriate
-attribute settings, in the `cache.xml` file that is loaded at cache creation.
+attribute settings, in a `cache.xml` file that is loaded at cache creation.
 
 Like the programmatic examples above, the following example creates two regions with attributes and a connection pool:
 
