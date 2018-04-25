@@ -21,9 +21,7 @@
 #define GEODE_RESULTSET_H_
 
 #include "internal/geode_globals.hpp"
-#include "ExceptionTypes.hpp"
 #include "SelectResults.hpp"
-#include "SelectResultsIterator.hpp"
 
 namespace apache {
 namespace geode {

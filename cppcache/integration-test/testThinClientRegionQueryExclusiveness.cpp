@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "fw_dunit.hpp"
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
@@ -31,7 +32,6 @@
 #include <geode/QueryService.hpp>
 #include <geode/ResultSet.hpp>
 #include <geode/StructSet.hpp>
-#include <geode/SelectResultsIterator.hpp>
 
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"

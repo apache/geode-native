@@ -19,7 +19,6 @@
 #include <limits>
 #include <regex>
 
-#include <geode/SelectResultsIterator.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/UserFunctionExecutionException.hpp>

@@ -23,7 +23,6 @@
 #include "internal/geode_globals.hpp"
 #include "CqResults.hpp"
 #include "Struct.hpp"
-#include "SelectResultsIterator.hpp"
 
 /**
  * @file

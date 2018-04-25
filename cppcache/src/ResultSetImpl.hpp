@@ -20,11 +20,11 @@
 #ifndef GEODE_RESULTSETIMPL_H_
 #define GEODE_RESULTSETIMPL_H_
 
+#include <memory>
+
 #include <geode/internal/geode_globals.hpp>
-#include <geode/ExceptionTypes.hpp>
 #include <geode/ResultSet.hpp>
 #include <geode/CacheableBuiltins.hpp>
-#include <geode/SelectResultsIterator.hpp>
 
 namespace apache {
 namespace geode {
