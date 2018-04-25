@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STRUCTSETIMPL_H_
-#define GEODE_STRUCTSETIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_STRUCTSETIMPL_H_
+#define GEODE_STRUCTSETIMPL_H_
+
 #include <geode/internal/geode_globals.hpp>
 
 #include <geode/StructSet.hpp>
@@ -29,11 +29,7 @@
 #include <geode/SelectResultsIterator.hpp>
 
 #include <string>
-#include <map>
-
-/**
- * @file
- */
+#include <unordered_map>
 
 namespace apache {
 namespace geode {
@@ -54,17 +50,16 @@ class APACHE_GEODE_EXPORT StructSetImpl : public StructSet {
 
   const std::string& getFieldName(int32_t index) override;
 
-  virtual SelectResults::iterator begin() const override;
+  SelectResults::iterator begin() override;
 
-  virtual SelectResults::iterator end() const override;
+  SelectResults::iterator end() override;
 
  private:
-  std::shared_ptr<CacheableVector> m_structVector;
+  std::vector<std::shared_ptr<Serializable>> m_structVector;
 
-  std::map<std::string, int32_t> m_fieldNameIndexMap;
-
-  size_t m_nextIndex;
+  std::unordered_map<std::string, int32_t> m_fieldNameIndexMap;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

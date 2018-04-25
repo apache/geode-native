@@ -62,14 +62,20 @@ class APACHE_GEODE_EXPORT SelectResults {
   virtual const std::shared_ptr<Serializable> operator[](
       size_t index) const = 0;
 
-  /** Interface of an iterator for <code>SelectResults</code>.*/
+  /**
+   * Interface of an iterator for <code>SelectResults</code>.
+   */
   typedef CacheableVector::iterator iterator;
 
-  /** Get an iterator pointing to the start of vector. */
-  virtual iterator begin() const = 0;
+  /**
+   * Get an iterator pointing to the start of <code>SelectResults</code>.
+   */
+  virtual iterator begin() = 0;
 
-  /** Get an iterator pointing to the end of vector. */
-  virtual iterator end() const = 0;
+  /**
+   * Get an iterator pointing to the end of <code>SelectResults</code>.
+   */
+  virtual iterator end() = 0;
 };
 }  // namespace client
 }  // namespace geode

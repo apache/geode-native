@@ -24,9 +24,7 @@
 using namespace apache::geode::client;
 
 ResultSetImpl::ResultSetImpl(const std::shared_ptr<CacheableVector>& response)
-    : m_resultSetVector(response)
-// UNUSED , m_nextIndex(0)
-{}
+    : m_resultSetVector(response) {}
 
 size_t ResultSetImpl::size() const {
   return static_cast<int32_t>(m_resultSetVector->size());
@@ -40,10 +38,10 @@ const std::shared_ptr<Serializable> ResultSetImpl::operator[](
   return m_resultSetVector->operator[](index);
 }
 
-SelectResults::iterator ResultSetImpl::begin() const {
+SelectResults::iterator ResultSetImpl::begin() {
   return m_resultSetVector->begin();
 }
 
-SelectResults::iterator ResultSetImpl::end() const {
+SelectResults::iterator ResultSetImpl::end() {
   return m_resultSetVector->end();
 }

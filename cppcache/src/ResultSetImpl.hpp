@@ -39,9 +39,9 @@ class APACHE_GEODE_EXPORT ResultSetImpl : public ResultSet {
 
   const std::shared_ptr<Serializable> operator[](size_t index) const override;
 
-  virtual SelectResults::iterator begin() const override;
+  SelectResults::iterator begin() override;
 
-  virtual SelectResults::iterator end() const override;
+  SelectResults::iterator end() override;
 
  private:
   std::shared_ptr<CacheableVector> m_resultSetVector;
