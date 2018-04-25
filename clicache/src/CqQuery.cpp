@@ -141,7 +141,8 @@ namespace Apache
       {
         try
         {
-          return CqAttributesMutator<TKey, TResult>::Create(&(m_nativeptr->get()->getCqAttributesMutator()));
+          return CqAttributesMutator<TKey, TResult>::Create(
+            new native::CqAttributesMutator(m_nativeptr->get()->getCqAttributesMutator()));
         }
         finally
         {
