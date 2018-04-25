@@ -32,20 +32,7 @@ namespace Apache
     {
 
       generic<class TResult>
-      bool ResultSet<TResult>::IsModifiable::get( )
-      {
-        try
-        {
-          return m_nativeptr->get()->isModifiable( );
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-      }
-
-      generic<class TResult>
-      System::Int32 ResultSet<TResult>::Size::get( )
+      size_t ResultSet<TResult>::Size::get( )
       {
         try
         {
@@ -62,21 +49,7 @@ namespace Apache
       {
         try
         {
-          return (TypeRegistry::GetManagedValueGeneric<TResult>(m_nativeptr->get()->operator[](static_cast<System::Int32>(index))));
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-      }
-
-      generic<class TResult>
-      SelectResultsIterator<TResult>^ ResultSet<TResult>::GetIterator()
-      {
-        try
-        {
-          return SelectResultsIterator<TResult>::Create(std::make_unique<apache::geode::client::SelectResultsIterator>(
-            m_nativeptr->get()->getIterator()));
+          return TypeRegistry::GetManagedValueGeneric<TResult>(m_nativeptr->get()->operator[](index));
         }
         finally
         {
@@ -87,13 +60,13 @@ namespace Apache
       generic<class TResult>
       System::Collections::Generic::IEnumerator<TResult>^ ResultSet<TResult>::GetEnumerator( )
       {
-        return GetIterator( );
+        return SelectResultsIterator<TResult>::Create(this);
       }
 
       generic<class TResult>
       System::Collections::IEnumerator^ ResultSet<TResult>::GetIEnumerator()
       {
-        return GetIterator();
+        return SelectResultsIterator<TResult>::Create(this);
       }
     }  // namespace Client
   }  // namespace Geode

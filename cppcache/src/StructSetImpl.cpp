@@ -27,7 +27,6 @@ namespace client {
 
 StructSetImpl::StructSetImpl(const std::shared_ptr<CacheableVector>& response,
                              const std::vector<std::string>& fieldNames) {
-
   int32_t i = 0;
   for (auto&& fieldName : fieldNames) {
     LOGDEBUG("StructSetImpl: pushing fieldName = %s with index = %d",
@@ -60,7 +59,7 @@ const std::shared_ptr<Serializable> StructSetImpl::operator[](
   return m_structVector.operator[](index);
 }
 
-size_t StructSetImpl::getFieldIndex(const std::string& fieldname) {
+int32_t StructSetImpl::getFieldIndex(const std::string& fieldname) {
   const auto& iter = m_fieldNameIndexMap.find(fieldname);
   if (iter != m_fieldNameIndexMap.end()) {
     return iter->second;
@@ -81,9 +80,7 @@ SelectResults::iterator StructSetImpl::begin() {
   return m_structVector.begin();
 }
 
-SelectResults::iterator StructSetImpl::end() {
-  return m_structVector.end();
-}
+SelectResults::iterator StructSetImpl::end() { return m_structVector.end(); }
 
 }  // namespace client
 }  // namespace geode

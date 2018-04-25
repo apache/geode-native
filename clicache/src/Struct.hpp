@@ -46,7 +46,6 @@ namespace Apache
       /// returned after executing a Query obtained from a QueryService which in turn
       /// is obtained from a Cache.
       /// </remarks>
-      //generic<class TResult>
       public ref class Struct sealed
         : public Apache::Geode::Client::Serializable
       {
@@ -58,9 +57,9 @@ namespace Apache
         /// <returns>
         /// The value of the field or null if index is out of bounds.
         /// </returns>
-        property /*Apache::Geode::Client::IGeodeSerializable^*//*TResult*/ Object^ GFINDEXER( size_t )
+        property Object^ GFINDEXER( int32_t )
         {
-          /*Apache::Geode::Client::IGeodeSerializable^*/ /*TResult*/ Object^ get( size_t index );
+          Object^ get( int32_t index );
         }
 
         /// <summary>
@@ -70,9 +69,9 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if the field name is not found.
         /// </exception>
-        property /*Apache::Geode::Client::IGeodeSerializable^*//*TResult*/Object^ GFINDEXER( String^ )
+        property Object^ GFINDEXER( String^ )
         {
-          /*Apache::Geode::Client::IGeodeSerializable^*//*TResult*/Object^ get( String^ fieldName );
+          Object^ get( String^ fieldName );
         }
 
         /// <summary>
@@ -81,36 +80,19 @@ namespace Apache
         /// <returns>
         /// A reference to the parent <c>StructSet</c> of this <c>Struct</c>.
         /// </returns>
-        property Apache::Geode::Client::StructSet</*TResult*/Object^>^ Set
+        property Apache::Geode::Client::StructSet<Object^>^ Set
         {
-          Apache::Geode::Client::StructSet</*TResult*/Object^>^ get( );
+          Apache::Geode::Client::StructSet<Object^>^ get( );
         }
-
-        /// <summary>
-        /// Check whether another field value is available to iterate over
-        /// in this <c>Struct</c>.
-        /// </summary>
-        /// <returns>true if available otherwise false.</returns>
-        bool HasNext( );
 
         /// <summary>
         /// Get the number of field values available.
         /// </summary>
         /// <returns>the number of field values available.</returns>
-        property size_t Length
+        property int32_t Length
         {
-          size_t get( );
+          int32_t get( );
         }
-
-        /// <summary>
-        /// Get the next field value item available in this <c>Struct</c>.
-        /// </summary>
-        /// <returns>
-        /// A reference to the next item in the <c>Struct</c>
-        /// or null if no more available.
-        /// </returns>
-        /*Apache::Geode::Client::IGeodeSerializable^*//*TResult*/Object^ Next( );
-
 
       private:
 
@@ -129,21 +111,19 @@ namespace Apache
         /// <summary>
         /// Factory function to register wrapper
         /// </summary>
-        inline static Apache::Geode::Client::IGeodeSerializable^ /*Struct^*/ /*<TResult>*/ Create( ::std::shared_ptr<apache::geode::client::Serializable> obj )
+        inline static Apache::Geode::Client::IGeodeSerializable^ Create( ::std::shared_ptr<apache::geode::client::Serializable> obj )
         {
           return ( obj != nullptr ?
-            gcnew Apache::Geode::Client::Struct/*<TResult>*/( obj ) : nullptr );
-          /*return ( obj != nullptr ?
-            gcnew Struct( obj ) : nullptr );*/
+            gcnew Apache::Geode::Client::Struct( obj ) : nullptr );
         }
 
         inline static Apache::Geode::Client::IGeodeSerializable^ CreateDeserializable( )
         {
-          return gcnew Apache::Geode::Client::Struct/*<TResult>*/(  ) ;
-          //return gcnew Struct(  ) ;
+          return gcnew Apache::Geode::Client::Struct(  ) ;
         }
       };
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
- //namespace 
+

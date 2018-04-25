@@ -51,7 +51,7 @@ class APACHE_GEODE_EXPORT StructSet : public CqResults {
    * @returns the index number of the specified field name.
    * @throws std::invalid_argument if the field name is not found.
    */
-  virtual size_t getFieldIndex(const std::string& fieldname) = 0;
+  virtual int32_t getFieldIndex(const std::string& fieldname) = 0;
 
   /**
    * Get the field name of the StructSet from the specified index number.
@@ -62,8 +62,8 @@ class APACHE_GEODE_EXPORT StructSet : public CqResults {
    * @throws std::out_of_range if index is not found
    */
   virtual const std::string& getFieldName(int32_t index) = 0;
-
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

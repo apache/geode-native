@@ -136,7 +136,7 @@ namespace Apache.Geode.Client.UnitTests
 
       Query<object> qry = qs.NewQuery<object>("select distinct * from /" + QERegionName);
       ISelectResults<object> results = qry.Execute();
-      Int32 count = results.Size;
+      var count = results.Size;
       Assert.AreEqual(4, count, "Expected 4 as number of portfolio objects.");
 
       // Bring down the region
@@ -149,7 +149,7 @@ namespace Apache.Geode.Client.UnitTests
       Util.Log("Going to execute the query");
       Query<object> qry = qs.NewQuery<object>("select distinct * from /" + QERegionName);
       ISelectResults<object> results = qry.Execute();
-      Int32 count = results.Size;
+      var count = results.Size;
       Assert.AreEqual(4, count, "Expected 4 as number of portfolio objects.");
     }
 

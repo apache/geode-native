@@ -46,7 +46,7 @@ class APACHE_GEODE_EXPORT StructSetImpl : public StructSet {
 
   const std::shared_ptr<Serializable> operator[](size_t index) const override;
 
-  size_t getFieldIndex(const std::string& fieldname) override;
+  int32_t getFieldIndex(const std::string& fieldname) override;
 
   const std::string& getFieldName(int32_t index) override;
 

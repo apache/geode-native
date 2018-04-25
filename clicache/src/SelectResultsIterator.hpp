@@ -17,14 +17,7 @@
 
 #pragma once
 
-
-#include "geode_defs.hpp"
-#include "begin_native.hpp"
-#include <geode/SelectResultsIterator.hpp>
-#include "end_native.hpp"
-
-#include "native_unique_ptr.hpp"
-
+#include "ISelectResults.hpp"
 
 using namespace System;
 
@@ -34,8 +27,6 @@ namespace Apache
   {
     namespace Client
     {
-      namespace native = apache::geode::client;
-
       interface class IGeodeSerializable;
 
       /// <summary>
@@ -43,7 +34,7 @@ namespace Apache
       /// </summary>
       generic<class TResult>
       public ref class SelectResultsIterator sealed
-        : public System::Collections::Generic::IEnumerator</*Apache::Geode::Client::IGeodeSerializable^*/TResult>
+        : public System::Collections::Generic::IEnumerator<TResult>
       {
       public:
 
@@ -55,9 +46,14 @@ namespace Apache
         /// The element in the collection at the current position
         /// of the enumerator.
         /// </returns>
-        virtual property /*Apache::Geode::Client::IGeodeSerializable^*/TResult Current
+        property TResult Current
         {
-          virtual /*Apache::Geode::Client::IGeodeSerializable^*/TResult get( );
+          virtual TResult get( );
+        }
+
+        property Object^ Current2
+        {
+          virtual Object^ get( ) = System::Collections::IEnumerator::Current::get;
         }
 
         /// <summary>
@@ -76,19 +72,6 @@ namespace Apache
         /// </summary>
         virtual void Reset( );
 
-        /// <summary>
-        /// Get the current element and move to the next one.
-        /// </summary>
-        /*Apache::Geode::Client::IGeodeSerializable^*/TResult Next( );
-
-        /// <summary>
-        /// Check if there is a next element.
-        /// </summary>
-        property bool HasNext
-        {
-          bool get( );
-        }
-
         ~SelectResultsIterator() {};
 
       internal:
@@ -101,36 +84,26 @@ namespace Apache
         /// <returns>
         /// The managed wrapper object; null if the native pointer is null.
         /// </returns>
-        inline static Apache::Geode::Client::SelectResultsIterator<TResult>^ Create(
-          std::unique_ptr<native::SelectResultsIterator> nativeptr )
+        inline static SelectResultsIterator<TResult>^ Create(
+          ISelectResults<TResult>^ results )
         {
-          return ( nativeptr != nullptr ?
-            gcnew Apache::Geode::Client::SelectResultsIterator<TResult>( std::move(nativeptr) ) : nullptr );
+          return results == nullptr ? nullptr :
+            gcnew SelectResultsIterator<TResult>(results);
         }
 
 
       private:
 
-        virtual property Object^ ICurrent
-        {
-          virtual Object^ get( ) sealed
-            = System::Collections::IEnumerator::Current::get
-          {
-            return Current;
-          }
-        }
-
         /// <summary>
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline SelectResultsIterator(
-        std::unique_ptr<native::SelectResultsIterator> nativeptr )
+        inline SelectResultsIterator(ISelectResults<TResult>^ results) : m_results(results)
         {
-          m_nativeptr = gcnew native_unique_ptr<native::SelectResultsIterator>(std::move(nativeptr));
         }
 
-        native_unique_ptr<native::SelectResultsIterator>^ m_nativeptr;
+        ISelectResults<TResult>^ m_results;
+        int m_index = -1;
       };
     }  // namespace Client
   }  // namespace Geode

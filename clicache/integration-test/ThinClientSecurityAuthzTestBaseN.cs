@@ -318,8 +318,8 @@ namespace Apache.Geode.Client.UnitTests
               {
                 Assert.AreEqual(numOps, queryResults.Size);
               }
-              //CacheableHashSet querySet = new CacheableHashSet(queryResults.Size);
-              List<string> querySet = new List<string>(queryResults.Size);
+
+              var querySet = new List<string>((int) queryResults.Size);
               ResultSet<object> rs = queryResults as ResultSet<object>;
               foreach ( object result in  rs)
               {

@@ -52,23 +52,14 @@ namespace Apache
       public:
 
         /// <summary>
-        /// True if this <c>StructSet</c> is modifiable.
-        /// </summary>
-        /// <returns>returns false always at this time.</returns>
-        virtual property bool IsModifiable
-        {
-          virtual bool get( );
-        }
-
-        /// <summary>
         /// The size of the <c>StructSet</c>.
         /// </summary>
         /// <returns>
         /// the number of items in the <c>StructSet</c>.
         /// </returns>
-        virtual property System::Int32 Size
+        virtual property size_t Size
         {
-          virtual System::Int32 get( );
+          virtual size_t get( );
         }
 
         /// <summary>
@@ -78,19 +69,10 @@ namespace Apache
         /// if the index is out of bounds.
         /// </exception>
         /// <returns>Item at the given index.</returns>
-        virtual property /*Apache::Geode::Client::IGeodeSerializable^*/TResult GFINDEXER( size_t )
+        virtual property TResult GFINDEXER( size_t )
         {
-          virtual /*Apache::Geode::Client::IGeodeSerializable^*/TResult get( size_t index );
+          virtual TResult get( size_t index );
         }
-
-        /// <summary>
-        /// Get a <c>SelectResultsIterator</c> with which to iterate
-        /// over the items in the <c>StructSet</c>.
-        /// </summary>
-        /// <returns>
-        /// The <c>SelectResultsIterator</c> with which to iterate.
-        /// </returns>
-        virtual SelectResultsIterator<TResult>^ GetIterator( );
 
         /// <summary>
         /// Get the index number of the specified field name
@@ -103,7 +85,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if the field name is not found.
         /// </exception>
-        size_t GetFieldIndex( String^ fieldName );
+        int32_t GetFieldIndex( String^ fieldName );
 
         /// <summary>
         /// Get the field name of the <c>StructSet</c> from the
@@ -115,7 +97,7 @@ namespace Apache
         /// <returns>
         /// the field name from the specified index number or null if not found.
         /// </returns>
-        String^ GetFieldName( size_t index );
+        String^ GetFieldName( int32_t index );
 
 
         // Region: IEnumerable<IGeodeSerializable^> Members
@@ -127,7 +109,7 @@ namespace Apache
         /// A <c>System.Collections.Generic.IEnumerator</c> that
         /// can be used to iterate through the <c>StructSet</c>.
         /// </returns>
-        virtual System::Collections::Generic::IEnumerator</*Apache::Geode::Client::IGeodeSerializable^*/TResult>^
+        virtual System::Collections::Generic::IEnumerator<TResult>^
           GetEnumerator( );
 
         // End Region: IEnumerable<IGeodeSerializable^> Members
@@ -166,7 +148,8 @@ namespace Apache
 
         native_shared_ptr<native::StructSet>^ m_nativeptr; 
       };
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
- //namespace 
+

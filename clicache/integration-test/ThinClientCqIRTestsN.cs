@@ -163,11 +163,8 @@ namespace Apache.Geode.Client.UnitTests
       Thread.Sleep(18000); // sleep 0.3min to allow server c query to complete
       Util.Log("Results size {0}.", results.Size);
 
-      SelectResultsIterator<object> iter = results.GetIterator();
-
-      while (iter.HasNext)
+      foreach (var item in results)
       {
-        object item = iter.Next();
         if (item != null)
         {
           Struct st = item as Struct;

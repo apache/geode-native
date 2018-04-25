@@ -304,11 +304,8 @@ namespace Apache.Geode.Client.Tests
 
       int foundRows = 0;
 
-      SelectResultsIterator<object> sr = resultset.GetIterator();
-      while (sr.HasNext)  
+      foreach (var ser in resultset)  
       {
-       //TVal ser = (TVal)sr.Next();
-        Object ser = sr.Next();
         if (ser == null)
         {
           Util.Log("QueryHelper.VerifyRS: Object is null.");
@@ -344,7 +341,7 @@ namespace Apache.Geode.Client.Tests
         }
 
         int foundFields = 0;
-        for (uint cols = 0; cols < si.Length; cols++)
+        for (int cols = 0; cols < si.Length; cols++)
         {
           //IGeodeSerializable field = si[cols];
           object field = (object)si[cols];
