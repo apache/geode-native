@@ -113,7 +113,7 @@ void TheTypeMap::setup() {
   bind2(LocatorListResponse::create);
   bind2(ClientProxyMembershipID::createDeserializable);
   bind2(GetAllServersResponse::create);
-  bind(EnumInfo::createDeserializable);
+  bind2(EnumInfo::createDeserializable);
   bind2(DiskStoreId::createDeserializable);
 }
 

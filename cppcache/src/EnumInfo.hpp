@@ -28,7 +28,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT EnumInfo : public DataSerializableInternal,
+class APACHE_GEODE_EXPORT EnumInfo : public DataSerializableFixedId_t<GeodeTypeIds::EnumInfo>,
                                      public CacheableKey {
  private:
   std::shared_ptr<CacheableString> m_enumClassName;
@@ -39,11 +39,15 @@ class APACHE_GEODE_EXPORT EnumInfo : public DataSerializableInternal,
   ~EnumInfo() override = default;
   EnumInfo();
   EnumInfo(const char* enumClassName, const char* enumName, int32_t m_ordinal);
+
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<EnumInfo>();
   }
+
   void toData(DataOutput& output) const override;
+
   virtual void fromData(DataInput& input) override;
+
   virtual size_t objectSize() const override {
     auto size = sizeof(EnumInfo);
     size += sizeof(int32_t);
@@ -52,17 +56,18 @@ class APACHE_GEODE_EXPORT EnumInfo : public DataSerializableInternal,
     return size;
   }
 
-  virtual int8_t getInternalId() const override {
-    return GeodeTypeIds::EnumInfo;
-  }
   virtual std::string toString() const override { return "EnumInfo"; }
+
   virtual bool operator==(const CacheableKey& other) const override;
+
   virtual int32_t hashcode() const override;
 
   std::shared_ptr<CacheableString> getEnumClassName() const {
     return m_enumClassName;
   }
+
   std::shared_ptr<CacheableString> getEnumName() const { return m_enumName; }
+
   int32_t getEnumOrdinal() const { return m_ordinal; }
 };
 
