@@ -14,6 +14,7 @@
 
 ## Setting Path to Geode
 Building requires access to an installation of Geode. There are two ways to achieve this:
+
 * Set an environment variable called `GEODE_HOME` that points to your Geode installation path.
 * Pass in `GEODE_ROOT` during the CMake configuration step.
   * e.g.  add `-DGEODE_ROOT=/path/to/geode` to the _initial_ `cmake` execution command.
