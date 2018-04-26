@@ -478,7 +478,7 @@ std::shared_ptr<Pool> createPool2(const char* poolName, const char* locators,
   return poolPtr;
 }
 std::shared_ptr<Region> createRegionAndAttachPool(
-    const std::string& name, bool ack, const std::string& poolName,
+    const std::string& name, bool ack, const std::string& poolName = "",
     bool caching = true,
     const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
     const std::chrono::seconds& eit = std::chrono::seconds::zero(),

@@ -86,7 +86,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartC1)
     // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
     // createRegionAndAttachPool(poolRegNames[0],USE_ACK, poolName);
 
-    auto regPtr0 = createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
+    auto regPtr0 = createRegionAndAttachPool(poolRegNames[0], USE_ACK);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
     regPtr0->registerAllKeys();
 
@@ -144,7 +144,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartTestClient)
                        -1, -1, -1, true, false);
     // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
 
-    auto regPtr0 = createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
+    auto regPtr0 = createRegionAndAttachPool(poolRegNames[0], USE_ACK);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
 
     LOG("StartTestClient complete.");
@@ -165,7 +165,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StartTestClient2)
                        -1, -1, -1, true, false);
     // createPool(poolName, locHostPort,serverGroup, nullptr, 0, true );
 
-    auto regPtr0 = createRegionAndAttachPool(poolRegNames[0], USE_ACK, nullptr);
+    auto regPtr0 = createRegionAndAttachPool(poolRegNames[0], USE_ACK);
     ;  // getHelper()->createRegion( poolRegNames[0], USE_ACK);
 
     LOG("StartTestClient complete.");
