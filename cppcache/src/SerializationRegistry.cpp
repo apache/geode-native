@@ -214,6 +214,9 @@ void SerializationRegistry::deserialize(
     DataInput& input, std::shared_ptr<Serializable> obj) const {
   if (!obj) {
     // nothing to read
+  } else if (const auto dataSerializableInternal =
+                 std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
+    deserialize(input, dataSerializableInternal);
   } else if (const auto dataSerializableFixedId =
                  std::dynamic_pointer_cast<DataSerializableFixedId>(obj)) {
     deserialize(input, dataSerializableFixedId);
@@ -231,6 +234,12 @@ void SerializationRegistry::deserialize(
         "SerializationRegistry::deserialize: Serialization type not "
         "implemented.");
   }
+}
+
+void SerializationRegistry::deserialize(
+    DataInput& input,
+    std::shared_ptr<DataSerializableInternal> dataSerializableInternal) const {
+  dataSerializableInternal->fromData(input);
 }
 
 void SerializationRegistry::deserialize(

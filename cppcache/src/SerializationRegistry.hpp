@@ -348,6 +348,9 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   void deserialize(DataInput& input, std::shared_ptr<Serializable> obj) const;
 
   void deserialize(DataInput& input,
+                   std::shared_ptr<DataSerializableInternal> obj) const;
+
+  void deserialize(DataInput& input,
                    std::shared_ptr<DataSerializableFixedId> obj) const;
 
   void deserialize(DataInput& input,
