@@ -39,19 +39,19 @@ The following XML declaration specifies a cache loader for a region when the reg
 
 The rest of this section gives more detailed descriptions of these application plug-ins, followed by special considerations for plug-ins in distributed regions and some guidelines for writing callbacks.
 
-## <a id="application-plugins__section_FD3057C0416840BAB76850E115F48B5C" class="no-quick-link"></a>CacheLoader
+## <a id="application-plugins_cacheloader" class="no-quick-link"></a>CacheLoader
 
 A cache loader is an application plug-in used to load data into the region. When an entry is requested that is unavailable in the region, a cache loader may be called upon to load it. Generally, you use a cache loader to retrieve the data from a database or another source outside the distributed system, but it may perform any operation defined by the user.
 
 The `CacheLoader` interface provides one function, `load`, for customizing region entry loading. A distributed region may have cache loaders defined in any or all caches where the region is defined. When loading an entry value, a locally defined cache loader is always used before a remote loader. In distributed regions, loaders are available for remote entry retrieval.
 
-## <a id="application-plugins__section_1754F575011742A59149FD280CEA0F16" class="no-quick-link"></a>CacheWriter
+## <a id="application-plugins_cachewriter" class="no-quick-link"></a>CacheWriter
 
 A cache writer is an application plug-in that synchronously handles changes to a region's contents. It is generally used to keep back-end data sources synchronized with a cache region. A cache writer has callback functions to handle region destruction and entry creation, update, and destruction. These functions are all called before the modification has taken place and can abort the operation.
 
 You can also use cache writers to store data that you want to make persistent.
 
-## <a id="application-plugins__section_3F43B898CD254076B4DD777E9B4CC8F0" class="no-quick-link"></a>CacheListener
+## <a id="application-plugins_cachelistener" class="no-quick-link"></a>CacheListener
 
 A cache listener is an application plug-in that asynchronously handles changes to a region's contents. A cache listener has callback functions to handle region destruction and invalidation, along with entry creation, update, invalidation, and destruction. These functions are called asynchronously after the modification has taken place.
 
@@ -85,7 +85,7 @@ class DisconnectCacheListener : public CacheListener
 };
 ```
 
-## <a id="application-plugins__section_348E00A84F274D4B9DBA9ECFEB2F012E" class="no-quick-link"></a>PartitionResolver
+## <a id="application-plugins_partitionresolver" class="no-quick-link"></a>PartitionResolver
 
 This section pertains to data access in server regions that have custom partitioning. Custom partitioning uses a Java `PartitionResolver` to colocate like data in the same buckets. For the client, you can use a `PartitionResolver` that matches the server's implementation to access data in a single hop. With single-hop data access, the client pool maintains information on where a partitioned region's data is hosted. When accessing a single entry, the client directly contacts the server that hosts the key--in a single hop.
 
@@ -212,7 +212,7 @@ See the server documentation on [Custom-Partitioning and Colocating Data](geodem
 
 Your implementation of `PartitionResolver` must match that of the server side.
 
-## <a id="application-plugins__section_4EC30A57C37E4DDF83990A264D2C0284" class="no-quick-link"></a>Using AttributesMutator to Modify a Plug-In
+## <a id="application-plugins_attributesmutator" class="no-quick-link"></a>Using AttributesMutator to Modify a Plug-In
 
 A cache listener, cache loader or cache writer can be added to or removed from a region after the region is created by retrieving and running the `Region` object's `AttributesMutator`. Mutable attributes define operations that are run from the client itself.
 

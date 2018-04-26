@@ -23,27 +23,241 @@ Region attributes govern the automated management of a region and its entries.
 
 Region attribute settings determine where the data resides, how the region is managed in memory, and the automatic loading, distribution, and expiration of region entries.
 
--   **[Specifying Region Attributes](specify-region-attributes.html)**
+## <a id="specifying-region-attributes"></a>Specifying Region Attributes
 
--   **[Region Shortcuts](region-shortcuts.html)**
+Specify region attributes before creating the region. You can do this either through the API or
+through the declarative XML file. The API includes classes for defining a region's attributes before
+creation and for modifying some of them after creation. For details, see the API for
+`RegionShortcut`, `RegionAttributes`, `AttributesFactory`, and `AttributesMutator`.
 
--   **[Mutable and Immutable Region Attributes](region-attributes-desc.html)**
+## <a id="region-shortcuts"></a>Region Shortcuts
 
--   **[CachingEnabled](../client-cache/caching-enabled.html)**
+<%=vars.product_name%> provides predefined, shortcut region attributes settings for your use in `RegionShortcut`.
 
--   **[InitialCapacity](../client-cache/initial-capacity.html)**
+Shortcut attributes are a convenience only. They are named attributes that <%=vars.product_name%>
+has already stored for you. You can override their settings by storing new attributes with the same
+`id` as the predefined attributes.
 
--   **[LoadFactor](../client-cache/load-factor.html)**
+You can also create custom region attributes and store them with an identifier for later
+retrieval. Both types of stored attributes are referred to as named region attributes. You can
+create and store your attribute settings through the API or in the `cache.xml` file.
 
--   **[ConcurrencyLevel](../client-cache/concurrency-level.html)**
+Retrieve named attributes by providing the ID to the region creation. This example uses the shortcut
+`CACHING_PROXY` attributes to create a region:
 
--   **[ConcurrencyChecksEnabled](../client-cache/concurrency-checks-enabled.html)**
+``` pre
+<region name="testRegion" refid="CACHING_PROXY"/>
+```
 
--   **[LruEntriesLimit](../client-cache/lru-entries-limit.html)**
+You can modify named attributes as needed. For example, this adds a cache listener to the region:
+
+``` pre
+<region name="testRegion" refid="CACHING_PROXY">
+    <region-attributes>
+        <cache-listener library-name="myAppLib"
+            library-function-name ="myCacheListener" />
+    </region-attributes>
+</region>
+```
+
+In this example, the modified region shortcut is saved to the cache using the region attribute id, for retrieval and use by a second region:
+
+``` pre
+<region name="testRegion" refid="CACHING_PROXY">
+    <region-attributes id="Caching_Proxy_With_Listener">
+        <cache-listener library-name="myAppLib"
+            library-function-name ="myCacheListener" />
+    </region-attributes>
+</region>
+<region name="newTestRegion" refid="Caching_Proxy_With_Listener"/>
+```
+
+### <a id="region-shortcuts_shortcut-attribute-options"></a>Shortcut Attribute Options
+
+You can select the most common region attributes settings from `RegionShortcut`, the predefined named region attributes.
+
+This section provides an overview of the options available in the region shortcut settings.
+
+**Communication with Servers and Data Storage**
+
+`PROXY`
+>  does not store data in the client cache, but connects the region to the servers for data requests and updates, interest registrations, and so on.
+
+`CACHING_PROXY`
+>  stores data in the client cache and connects the region to the servers for data requests and updates, interest registrations, and so on.
+
+`LOCAL`
+>  stores data in the client cache and does not connect the region to the servers. This is a client-side-only region.
+
+**Data Eviction**
+
+Non-PROXY regions are those that store data in the client cache.
+You can add data eviction for non-PROXY regions:
+
+`ENTRY_LRU`
+>  causes least recently used data to be evicted from memory when the region reaches the entry count limit.
+
+## <a id="immutable-region-attributes"></a>Immutable Region Attributes
+
+Attributes that are immutable (fixed) after region creation govern storage location, data
+distribution, statistics, application plug-ins, and the configuration and management of the region's
+data hashmap.
+
+This table lists the immutable attributes and their default settings.
+
+| Immutable Region Attribute                                         | Default Setting |
+|--------------------------------------------------------------------|-----------------|
+| [CachingEnabled](#caching-enabled)                                 | true            |
+| [InitialCapacity](#initial-capacity)                               | 16 (entries)    |
+| [LoadFactor](#load-factor)                                         | 0.75            |
+| [ConcurrencyLevel](#concurrency-level)                             | 16              |
+| [DiskPolicy](../client-cache/disk-policy.html#disk-policy)                         |                 |
+| [PersistenceManager](../client-cache/persistence-manager.html#persistence-manager) | NULL            |
+| [PartitionResolver](../client-cache/application-plugins.html#application-plugins_partitionresolver) |                 |
+
+
+### <a id="caching-enabled"></a>CachingEnabled
+
+This attribute determines whether data is cached in this region. For example, you might choose to
+configure the distributed system as a simple messaging service where clients run without a cache.
+
+**Note:**
+You can configure the most common of these options with the predefined region attributes. See
+[Region Shortcuts](#region-shortcuts) and the API docs for `RegionShortcut`.
+
+If `CachingEnabled` is false (no caching), an `IllegalStateException` is thrown if any of these cache behavior attributes are set:
+- [InitialCapacity](#initial-capacity)
+- [EntryTimeToLive](../client-cache/expiration-attributes.html#expiration-attributes)
+- [EntryIdleTimeout](../client-cache/expiration-attributes.html#expiration-attributes)
+- [LoadFactor](#load-factor)
+- [ConcurrencyLevel](#concurrency-level)
+- [LruEntriesLimit](#lru-entries-limit)
+- [DiskPolicy](../client-cache/disk-policy.html#disk-policy)
+
+The following declaration enables caching for the region:
+
+``` pre
+<region-attributes caching-enabled="true"> 
+</region-attributes>
+```
+
+### <a id="initial-capacity"></a>InitialCapacity
+
+Use this attribute, together with the `LoadFactor` attribute, to set the initial parameters on the
+underlying hashmap that stores region entries. This is the number of entries that the region map
+will be ready to hold when it is created.
+
+This declaration sets the region's initial capacity to `10000`:
+
+``` pre
+<region-attributes initial-capacity="10000">
+</region-attributes>
+```
+
+### <a id="load-factor"></a>LoadFactor
+
+Use this attribute, together with the `InitialCapacity` attribute, to set the initial parameters on
+the underlying hashmap that stores region entries. When the number of entries in the map exceeds the
+`LoadFactor` times current capacity, the capacity is increased and the map is rehashed. You get the
+best performance if you configure a properly sized region at the start and do not have to rehash it.
+
+This declaration sets the region's load factor to `0.75` :
+
+``` pre
+<region-attributes load-factor="0.75">
+</region-attributes>
+```
+
+### <a id="concurrency-level"></a>ConcurrencyLevel
+
+This attribute estimates the maximum number of application threads that concurrently access a region
+entry at one time. This attribute helps optimize the use of system resources and reduce thread
+contention.
+
+The following declaration sets the region's `ConcurrencyLevel` to `16`:
+
+``` pre
+<region-attributes concurrency-level="16">
+</region-attributes>
+```
+
+**Note:**
+When `CachingEnabled` is `false`, do not set the `ConcurrencyLevel` attribute. An `IllegalStateException` is thrown if the attribute is set.
 
 -   **[DiskPolicy](../client-cache/disk-policy.html)**
 
 -   **[PersistenceManager](../client-cache/persistence-manager.html)**
+
+
+## <a id="mutable-region-attributes"></a>Mutable Region Attributes
+
+Mutable region attributes identify expiration and cache listener, cache writer and cache loader
+actions that are run from the defining client. The next table lists the mutable attributes that
+generally can be modified after region creation by using the `AttributesMutator` for the region.
+
+| Mutable Region Attribute                                            | Default Setting |
+|---------------------------------------------------------------------|-----------------|
+| Expiration attributes. See [Specifying Expiration Attributes](expiration-attributes.html#expiration-attributes). | no expiration   |
+| [LruEntriesLimit](#lru-entries-limit)                              | 0 (no limit)    |
+| [CacheLoader](../client-cache/application-plugins.html#application-plugins_cacheloader)      |                 |
+| [CacheWriter](../client-cache/application-plugins.html#application-plugins_cachewriter)      |                 |
+| [CacheListener](../client-cache/application-plugins.html#application-plugins_cachelistener)    |                 |
+
+
+See [AttributesMutator](application-plugins.html#application-plugins_attributesmutator) for
+information about using `AttributesMutator` with cache listeners, cache loaders, and cache writers.
+
+The remainder of this section examines these attributes in detail. Throughout the descriptions,
+`cache.xml` file snippets show how each attribute can be set declaratively.
+
+### <a id="concurrency-checks-enabled"></a>ConcurrencyChecksEnabled
+
+This attribute determines whether members perform checks to provide consistent handling for
+concurrent or out-of-order updates to distributed regions.
+
+A client cache can disable consistency checking for a region even if server caches enable
+consistency checking for the same region. This configuration ensures that the client sees all events
+for the region, but it does not prevent the client cache region from becoming out-of-sync with the
+server cache.
+
+Optionally enable concurrency checks for the region. Example:
+
+``` pre
+<region-attributes concurrency-checks-enabled="true"> 
+</region-attributes>
+```
+
+See [Region Consistency](consistency-checking-in-regions.html) for more information.
+
+### <a id="lru-entries-limit"></a>LruEntriesLimit
+
+This attribute sets the maximum number of entries to hold in a caching region. When the capacity of
+the caching region is exceeded, a least-recently-used (LRU) algorithm is used to evict entries.
+
+**Note:**
+This is a tuning parameter that affects system performance.
+
+When eviction is configured, memory consumption or entry count is monitored and, when capacity is
+reached, <%=vars.product_name%> makes way for new entries by removing or overflowing the stalest LRU
+entries to disk.
+
+If you use disk data overflow to supplement memory for your data cache, make sure you have enough disk space to store the data.
+
+This declaration limits the region to 20,000 entries:
+
+``` pre
+<region-attributes lru-entries-limit="20000"
+     initial-capacity="20000"
+     load-factor="1">
+</region-attributes>
+```
+
+Evicted entries can be destroyed or moved to disk as an extension of the cache. See [DiskPolicy](../client-cache/disk-policy.html#disk-policy).
+
+**Note:**
+When `CachingEnabled` is `false`, do not set the `LruEntriesLimit` attribute. An `IllegalStateException` is thrown if the attribute is set.
+
+See also [Controlling Cache Size](../client-cache/controlling-cache-size.html).
 
 -   **[Specifying Expiration Attributes](../client-cache/expiration-attributes.html)**
 
