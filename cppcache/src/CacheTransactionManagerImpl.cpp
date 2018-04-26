@@ -271,7 +271,7 @@ void CacheTransactionManagerImpl::rollback() {
 
 GfErrType CacheTransactionManagerImpl::rollback(TXState*, bool) {
   TcrMessageRollback request(
-      new DataOutput(m_cache->getCache()->createDataOutput()));
+      new DataOutput(m_cache->createDataOutput()));
   TcrMessageReply reply(true, nullptr);
   GfErrType err = GF_NOERR;
   ThinClientPoolDM* tcr_dm = getDM();

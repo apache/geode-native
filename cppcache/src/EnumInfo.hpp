@@ -28,8 +28,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT EnumInfo : public DataSerializableFixedId_t<GeodeTypeIds::EnumInfo>,
-                                     public CacheableKey {
+class APACHE_GEODE_EXPORT EnumInfo
+    : public DataSerializableFixedId_t<GeodeTypeIds::EnumInfo>,
+      public CacheableKey {
  private:
   std::shared_ptr<CacheableString> m_enumClassName;
   std::shared_ptr<CacheableString> m_enumName;
