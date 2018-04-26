@@ -31,7 +31,7 @@ namespace Apache.Geode.Client.UnitTests
   [Category("unicast_only")]
   [Category("generics")]
 
-  public class ThinClientCqTests : ThinClientRegionSteps
+  public class ThinClientCqPdxTest : ThinClientRegionSteps
   {
     public class MyCqListener<TKey, TResult> : ICqListener<TKey, TResult>
     {
