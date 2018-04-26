@@ -105,7 +105,8 @@ namespace Apache
         /// <param name="nativeptr">The native object pointer</param>
         inline CqAttributesMutator<TKey, TResult>(native::CqAttributesMutator* nativeptr)
         {
-            m_nativeptr = gcnew native_unique_ptr<native::CqAttributesMutator>(nativeptr);
+            std::unique_ptr<native::CqAttributesMutator> mutator(new native::CqAttributesMutator(*nativeptr));
+            m_nativeptr = gcnew native_unique_ptr<native::CqAttributesMutator>(std::move(mutator));
         }
 
         native_unique_ptr<native::CqAttributesMutator>^ m_nativeptr;
