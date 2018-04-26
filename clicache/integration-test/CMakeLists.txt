@@ -95,7 +95,7 @@ foreach(FILE ${SOURCES})
 endforeach()
 
 # Label any flaky tests here
-set_property(TEST ThinClientCqTestsN PROPERTY LABELS FLAKY)
+set_property(TEST ThinClientCqStatusTestTwoServers PROPERTY LABELS FLAKY)
 set_property(TEST ThinClientQueryTestsN PROPERTY LABELS FLAKY)
 
 # Label any tests that always fail here

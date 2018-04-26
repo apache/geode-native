@@ -23,7 +23,7 @@
 #include "end_native.hpp"
 
 #include "native_shared_ptr.hpp"
-#include "native_conditional_unique_ptr.hpp"
+#include "native_unique_ptr.hpp"
 
 using namespace System;
 using namespace System::Collections::Generic;
@@ -105,10 +105,10 @@ namespace Apache
         /// <param name="nativeptr">The native object pointer</param>
         inline CqAttributesMutator<TKey, TResult>(native::CqAttributesMutator* nativeptr)
         {
-            m_nativeptr = gcnew native_conditional_unique_ptr<native::CqAttributesMutator>(nativeptr);
+            m_nativeptr = gcnew native_unique_ptr<native::CqAttributesMutator>(nativeptr);
         }
 
-        native_conditional_unique_ptr<native::CqAttributesMutator>^ m_nativeptr;
+        native_unique_ptr<native::CqAttributesMutator>^ m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode
