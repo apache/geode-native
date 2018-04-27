@@ -148,8 +148,7 @@ listeners with the ability to abort operations. If a cache writer is defined for
 in the distributed system, it is invoked before the region is explicitly destroyed.
 
 Region invalidation and destruction can cause other user-defined application plug-ins to be invoked
-as well. These plug-ins are described in detail in the [Overview of Application
-Plug-Ins](application-plugins.html#application-plugins__section_8FEB62EEC7A042E0A85E0FEDC9F71597).
+as well. These plug-ins are described in detail in [Application Plug-Ins](../client-cache/application-plugins.html).
 
 Whether carried out explicitly or through expiration activities, invalidation and destruction cause event notification.
 
@@ -162,15 +161,15 @@ You can use `Cache::getRegion` to retrieve a reference to a specified region.
 
 A region name *cannot* contain these characters:
 
--   &lt;
--   &gt;
--   :
--   "
--   /
--   \\
--   |
--   ?
--   \*
+| Ineligible Character description | Ineligible Character |
+|----------------------------------|----------------------|
+| angle brackets                   |  &lt; &nbsp; &gt;    |
+| colon                            |   :                  |
+| quote                            |   `"`                |
+| forward slash and back slash     |   / &nbsp;   \\      |
+| pipe (vertical bar)              |   &#124;             |
+| question mark                    |   ?                  |
+| asterisk                         |   \*                 |
 
 
 ## <a id="getting-region-size"></a>Getting the Region Size
