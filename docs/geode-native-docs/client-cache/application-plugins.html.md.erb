@@ -87,17 +87,16 @@ class DisconnectCacheListener : public CacheListener
 
 ## <a id="application-plugins_partitionresolver" class="no-quick-link"></a>PartitionResolver
 
-This section pertains to data access in server regions that have custom partitioning. Custom partitioning uses a Java `PartitionResolver` to colocate like data in the same buckets. For the client, you can use a `PartitionResolver` that matches the server's implementation to access data in a single hop. With single-hop data access, the client pool maintains information on where a partitioned region's data is hosted. When accessing a single entry, the client directly contacts the server that hosts the key--in a single hop.
+This section pertains to data access in server regions that have custom partitioning. Custom partitioning uses a Java `PartitionResolver` to colocate like data in the same buckets. For the client, you can use a `PartitionResolver` that matches the server's implementation to access data in a single hop. With single-hop data access, the client pool maintains information on where a partitioned region's data is hosted. When accessing a single entry, the client directly contacts the server that hosts the key in a single hop.
 
 **Note:**
 Single hop is used for the following operations: `put`, `get`, `destroy`, `putAll`, `getAll`, `removeAll` and `onRegion` function execution.
 
 **Implementing Single-Hop on a Partitioned Region**
 
-1.  Make sure the pool attribute, `pr-single-hop-enabled`, is set to `true` or not set. It is `true` by default.
-2.  If the server uses a custom `PartitionResolver` install an implementation of `PartitionResolver` in the client region that returns, entry for entry, the same value as the server's Java `PartitionResolver` implementation. The server uses the resolver to colocate like data within a partitioned region.
-
-    If the server does not use a custom resolver, the default resolvers in client and server match, so single hop will work there by default.
+-  Make sure the pool attribute, `pr-single-hop-enabled`, is set to `true` or not set. It is `true` by default.
+-  If the server uses a custom `PartitionResolver` install an implementation of `PartitionResolver` in the client region that returns, entry for entry, the same value as the server's Java `PartitionResolver` implementation. The server uses the resolver to colocate like data within a partitioned region.
+- If the server does not use a custom resolver, the default resolvers in client and server match, so single hop will work there by default.
 
 Disable single hop behavior for a region by setting its pool attribute `pr-single-hop-enabled` to `false`.
 

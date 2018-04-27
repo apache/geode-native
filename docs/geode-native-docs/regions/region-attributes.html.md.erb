@@ -126,6 +126,7 @@ You can configure the most common of these options with the predefined region at
 [Region Shortcuts](#region-shortcuts) and the API docs for `RegionShortcut`.
 
 If `CachingEnabled` is false (no caching), an `IllegalStateException` is thrown if any of these cache behavior attributes are set:
+
 - [InitialCapacity](#initial-capacity)
 - [EntryTimeToLive](../client-cache/expiration-attributes.html#expiration-attributes)
 - [EntryIdleTimeout](../client-cache/expiration-attributes.html#expiration-attributes)
@@ -184,31 +185,23 @@ The following declaration sets the region's `ConcurrencyLevel` to `16`:
 **Note:**
 When `CachingEnabled` is `false`, do not set the `ConcurrencyLevel` attribute. An `IllegalStateException` is thrown if the attribute is set.
 
--   **[DiskPolicy](../client-cache/disk-policy.html)**
-
--   **[PersistenceManager](../client-cache/persistence-manager.html)**
-
-
 ## <a id="mutable-region-attributes"></a>Mutable Region Attributes
 
 Mutable region attributes identify expiration and cache listener, cache writer and cache loader
-actions that are run from the defining client. The next table lists the mutable attributes that
+actions that are run from the defining client. The following table lists the mutable attributes that
 generally can be modified after region creation by using the `AttributesMutator` for the region.
 
-| Mutable Region Attribute                                            | Default Setting |
-|---------------------------------------------------------------------|-----------------|
-| Expiration attributes. See [Specifying Expiration Attributes](expiration-attributes.html#expiration-attributes). | no expiration   |
-| [LruEntriesLimit](#lru-entries-limit)                              | 0 (no limit)    |
+| Mutable Region Attribute                                                                     | Default Setting |
+|----------------------------------------------------------------------------------------------|-----------------|
+| [Expiration attributes](expiration-attributes.html#expiration-attributes).                   | no expiration   |
+| [LruEntriesLimit](#lru-entries-limit)                                                        | 0 (no limit)    |
 | [CacheLoader](../client-cache/application-plugins.html#application-plugins_cacheloader)      |                 |
 | [CacheWriter](../client-cache/application-plugins.html#application-plugins_cachewriter)      |                 |
-| [CacheListener](../client-cache/application-plugins.html#application-plugins_cachelistener)    |                 |
+| [CacheListener](../client-cache/application-plugins.html#application-plugins_cachelistener)  |                 |
 
 
-See [AttributesMutator](application-plugins.html#application-plugins_attributesmutator) for
+See [AttributesMutator](../client-cache/application-plugins.html#application-plugins_attributesmutator) for
 information about using `AttributesMutator` with cache listeners, cache loaders, and cache writers.
-
-The remainder of this section examines these attributes in detail. Throughout the descriptions,
-`cache.xml` file snippets show how each attribute can be set declaratively.
 
 ### <a id="concurrency-checks-enabled"></a>ConcurrencyChecksEnabled
 
