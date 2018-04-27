@@ -28,6 +28,8 @@ add_executable(integration-test-2
   RegionPutGetAllTest.cpp
   PdxInstanceTest.cpp
   StructTest.cpp)
+  DisableChunkHandlerThreadTest.cpp
+  )
 
 target_compile_definitions(integration-test-2
   PUBLIC

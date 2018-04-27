@@ -208,10 +208,34 @@ class Cluster {
 
   void stop();
 
+
+  apache::geode::client::Cache createCache(const std::unordered_map<std::string, std::string>& properties) {
+    using namespace apache::geode::client;
+    CacheFactory cacheFactory;
+
+    for (auto&& entry : properties) {
+      cacheFactory.set(entry.first, entry.second);
+    }
+
+    auto cache = cacheFactory
+            .set("log-level", "none")
+            .set("statistic-sampling-enabled", "false")
+            .create();
+
+    auto poolFactory = cache.getPoolManager().createFactory();
+    for (const auto &locator : locators_) {
+      poolFactory.addLocator(locator.getAdddress().address,
+                             locator.getAdddress().port);
+      poolFactory.create("default");
+    }
+
+    return cache;
+  }
+
   apache::geode::client::Cache createCache() {
     using namespace apache::geode::client;
     auto cache = CacheFactory()
-                     .set("log-level", "none")
+                     .set("log-level", "config")
                      .set("statistic-sampling-enabled", "false")
                      .create();
 
