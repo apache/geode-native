@@ -89,14 +89,6 @@ TEST(ChunkHandlerThreadTest, isDisabledUsesDifferentThread) {
   auto objectOne = std::make_shared<SerializableWithThreadId>(1);
   region->put("objectOne", objectOne);
 
-  std::shared_ptr<SerializableWithThreadId> result;
-  void ivansget() {
-    result = std::dynamic_pointer_cast<SerializableWithThreadId>(region->get("objectOne"));
-  }
-  std::thread ivansThread(&ivansget);
-  ivansThread.join();
-  EXPECT_NE(result->getThreadId(), std::this_thread::get_id());
-
   auto returnedObjectOne = std::dynamic_pointer_cast<SerializableWithThreadId>(
       region->get("objectOne"));
 

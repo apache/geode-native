@@ -213,8 +213,8 @@ class Cluster {
     using namespace apache::geode::client;
     CacheFactory cacheFactory;
 
-    for (auto&& entry : properties) {
-      cacheFactory.set(entry.first, entry.second);
+    for (auto&& property : properties) {
+      cacheFactory.set(property.first, property.second);
     }
 
     auto cache = cacheFactory
@@ -233,20 +233,7 @@ class Cluster {
   }
 
   apache::geode::client::Cache createCache() {
-    using namespace apache::geode::client;
-    auto cache = CacheFactory()
-                     .set("log-level", "config")
-                     .set("statistic-sampling-enabled", "false")
-                     .create();
-
-    auto poolFactory = cache.getPoolManager().createFactory();
-    for (const auto &locator : locators_) {
-      poolFactory.addLocator(locator.getAdddress().address,
-                             locator.getAdddress().port);
-      poolFactory.create("default");
-    }
-
-    return cache;
+    return createCache({});
   }
 
   Gfsh &getGfsh() noexcept { return gfsh_; }
