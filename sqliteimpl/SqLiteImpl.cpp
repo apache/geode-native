@@ -145,7 +145,7 @@ std::shared_ptr<Cacheable> SqLiteImpl::read(
   auto valueDataBuffer = m_regionPtr->getCache().createDataInput(
       reinterpret_cast<uint8_t*>(valueData), valueBufferSize);
   std::shared_ptr<Cacheable> retValue;
-  valueDataBuffer->readObject(retValue);
+  valueDataBuffer.readObject(retValue);
 
   // Free memory for serialized form of Cacheable object.
   free(valueData);

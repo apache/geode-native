@@ -397,11 +397,11 @@ bool TcrConnection::InitTcrConnection(
       m_hasServerQueue = NON_REDUNDANT_SERVER;
     }
     auto queueSizeMsg = readHandshakeData(4, connectTimeout);
-    auto dI = cacheImpl->createDataInput(
+    auto dataInput = cacheImpl->createDataInput(
         reinterpret_cast<const uint8_t*>(queueSizeMsg.data()),
         queueSizeMsg.size());
     int32_t queueSize = 0;
-    queueSize = dI->readInt32();
+    queueSize = dataInput.readInt32();
     m_queueSize = queueSize > 0 ? queueSize : 0;
 
     m_endpointObj->setServerQueueStatus(m_hasServerQueue, m_queueSize);
@@ -429,26 +429,26 @@ bool TcrConnection::InitTcrConnection(
       // now check for array length headers - since GFE 5.7
       if (static_cast<int8_t>(arrayLenHeader[0]) == -2) {
         auto recvMsgLenBytes = readHandshakeData(2, connectTimeout);
-        auto dI2 = m_connectionManager->getCacheImpl()->createDataInput(
+        auto dataInput2 = m_connectionManager->getCacheImpl()->createDataInput(
             reinterpret_cast<const uint8_t*>(recvMsgLenBytes.data()),
             recvMsgLenBytes.size());
-        recvMsgLen = dI2->readInt16();
+        recvMsgLen = dataInput2.readInt16();
       } else if (static_cast<int8_t>(arrayLenHeader[0]) == -3) {
         auto recvMsgLenBytes = readHandshakeData(4, connectTimeout);
-        auto dI2 = m_connectionManager->getCacheImpl()->createDataInput(
+        auto dataInput2 = m_connectionManager->getCacheImpl()->createDataInput(
             reinterpret_cast<const uint8_t*>(recvMsgLenBytes.data()),
             recvMsgLenBytes.size());
-        recvMsgLen = dI2->readInt32();
+        recvMsgLen = dataInput2.readInt32();
       }
       auto recvMessage = readHandshakeData(recvMsgLen, connectTimeout);
       // If the distributed member has not been set yet, set it.
       if (getEndpointObject()->getDistributedMemberID() == 0) {
         LOGDEBUG("Deserializing distributed member Id");
-        auto diForClient = cacheImpl->createDataInput(
+        auto dataInputForClient = cacheImpl->createDataInput(
             reinterpret_cast<const uint8_t*>(recvMessage.data()),
             recvMessage.size());
         auto member = std::static_pointer_cast<ClientProxyMembershipID>(
-            diForClient->readObject());
+            dataInputForClient.readObject());
         auto memId = cacheImpl->getMemberListForVersionStamp()->add(member);
         getEndpointObject()->setDistributedMemberID(memId);
         LOGDEBUG("Deserialized distributed member Id %d", memId);
@@ -456,17 +456,17 @@ bool TcrConnection::InitTcrConnection(
     }
 
     auto recvMsgLenBytes = readHandshakeData(2, connectTimeout);
-    auto dI3 = m_connectionManager->getCacheImpl()->createDataInput(
+    auto dataInput3 = m_connectionManager->getCacheImpl()->createDataInput(
         reinterpret_cast<const uint8_t*>(recvMsgLenBytes.data()),
         recvMsgLenBytes.size());
-    uint16_t recvMsgLen2 = dI3->readInt16();
+    uint16_t recvMsgLen2 = dataInput3.readInt16();
     auto recvMessage = readHandshakeData(recvMsgLen2, connectTimeout);
 
     if (!isClientNotification) {
       auto deltaEnabledMsg = readHandshakeData(1, connectTimeout);
       auto di = m_connectionManager->getCacheImpl()->createDataInput(
           reinterpret_cast<const uint8_t*>(deltaEnabledMsg.data()), 1);
-      ThinClientBaseDM::setDeltaEnabledOnServer(di->readBoolean());
+      ThinClientBaseDM::setDeltaEnabledOnServer(di.readBoolean());
     }
 
     switch (acceptanceCode[0]) {
@@ -877,8 +877,8 @@ char* TcrConnection::readMessage(size_t* recvLen,
   auto input = m_connectionManager->getCacheImpl()->createDataInput(
       reinterpret_cast<uint8_t*>(msg_header), HEADER_LENGTH);
   // ignore msgType
-  input->readInt32();
-  msgLen = input->readInt32();
+  input.readInt32();
+  msgLen = input.readInt32();
   //  check that message length is valid.
   if (!(msgLen > 0) && request == TcrMessage::GET_CLIENT_PR_METADATA) {
     char* fullMessage;
@@ -986,14 +986,14 @@ void TcrConnection::readMessageChunked(
 
   auto input = m_connectionManager->getCacheImpl()->createDataInput(msg_header,
                                                                     HDR_LEN_12);
-  int32_t msgType = input->readInt32();
+  int32_t msgType = input.readInt32();
   reply.setMessageType(msgType);
   int32_t txId;
-  int32_t numOfParts = input->readInt32();
+  int32_t numOfParts = input.readInt32();
   LOGDEBUG("TcrConnection::readMessageChunked numberof parts = %d ",
            numOfParts);
   // input->advanceCursor(4);
-  txId = input->readInt32();
+  txId = input.readInt32();
   reply.setTransId(txId);
 
   // bool isLastChunk = false;
@@ -1052,10 +1052,10 @@ void TcrConnection::readMessageChunked(
     auto input = m_connectionManager->getCacheImpl()->createDataInput(
         msg_header + HDR_LEN_12, HDR_LEN);
     int32_t chunkLen;
-    chunkLen = input->readInt32();
+    chunkLen = input.readInt32();
     //  check that chunk length is valid.
     GF_DEV_ASSERT(chunkLen > 0);
-    isLastChunk = input->read();
+    isLastChunk = input.read();
 
     uint8_t* chunk_body;
     _GEODE_NEW(chunk_body, uint8_t[chunkLen]);
@@ -1194,7 +1194,7 @@ uint32_t TcrConnection::readHandshakeArraySize(
   auto codeBytes = readHandshakeData(1, connectTimeout);
   auto codeDI = m_connectionManager->getCacheImpl()->createDataInput(
       reinterpret_cast<const uint8_t*>(codeBytes.data()), codeBytes.size());
-  uint8_t code = codeDI->read();
+  uint8_t code = codeDI.read();
   uint32_t arraySize = 0;
   if (code == 0xFF) {
     return 0;
@@ -1205,13 +1205,13 @@ uint32_t TcrConnection::readHandshakeArraySize(
         auto lenBytes = readHandshakeData(2, connectTimeout);
         auto lenDI = m_connectionManager->getCacheImpl()->createDataInput(
             reinterpret_cast<const uint8_t*>(lenBytes.data()), lenBytes.size());
-        uint16_t val = lenDI->readInt16();
+        uint16_t val = lenDI.readInt16();
         tempLen = val;
       } else if (code == 0xFD) {
         auto lenBytes = readHandshakeData(4, connectTimeout);
         auto lenDI = m_connectionManager->getCacheImpl()->createDataInput(
             reinterpret_cast<const uint8_t*>(lenBytes.data()), lenBytes.size());
-        uint32_t val = lenDI->readInt32();
+        uint32_t val = lenDI.readInt32();
         tempLen = val;
       } else {
         GF_SAFE_DELETE_CON(m_conn);
@@ -1304,7 +1304,7 @@ int32_t TcrConnection::readHandShakeInt(
 
   auto di =
       m_connectionManager->getCacheImpl()->createDataInput(recvMessage, 4);
-  int32_t val = di->readInt32();
+  int32_t val = di.readInt32();
 
   _GEODE_SAFE_DELETE_ARRAY(recvMessage);
 
@@ -1342,7 +1342,7 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
       auto lenBytes = readHandshakeData(2, connectTimeout);
       auto lenDI = m_connectionManager->getCacheImpl()->createDataInput(
           reinterpret_cast<const uint8_t*>(lenBytes.data()), lenBytes.size());
-      length = lenDI->readInt16();
+      length = lenDI.readInt16();
 
       break;
     }

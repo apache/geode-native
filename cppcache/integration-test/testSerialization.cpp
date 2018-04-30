@@ -52,7 +52,7 @@ std::shared_ptr<T> duplicate(const std::shared_ptr<T>& orig) {
   size_t length = 0;
   const uint8_t* buffer = dout->getBuffer(&length);
   auto din = getHelper()->getCache()->createDataInput(buffer, length);
-  din->readObject(result);
+  din.readObject(result);
 
   return result;
 }

@@ -333,7 +333,7 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
       std::shared_ptr<CacheableHashTable> Obj,
       std::shared_ptr<CacheableHashTable> OtherObj);
 
-  std::unique_ptr<DataInput> getDataInputForField(
+  DataInput getDataInputForField(
       const std::string& fieldname) const;
 
   static int8_t m_BooleanDefaultBytes[];

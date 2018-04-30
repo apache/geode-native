@@ -487,6 +487,8 @@ class APACHE_GEODE_EXPORT DataInput {
   DataInput() = delete;
   DataInput(const DataInput&) = delete;
   DataInput& operator=(const DataInput&) = delete;
+  DataInput(DataInput&&) = default;
+  DataInput& operator=(DataInput&&) = default;
 
  protected:
   /** constructor given a pre-allocated byte array with size */

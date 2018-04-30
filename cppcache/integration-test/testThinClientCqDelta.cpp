@@ -58,7 +58,7 @@ class CqDeltaListener : public CqListener {
     auto input = getHelper()->getCache()->createDataInput(
         reinterpret_cast<const uint8_t*>(deltaValue->value().data()),
         deltaValue->length());
-    newValue.fromDelta(*input);
+    newValue.fromDelta(input);
     if (newValue.getIntVar() == 5) {
       m_deltaCount++;
     }

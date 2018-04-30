@@ -820,18 +820,18 @@ std::unique_ptr<DataOutput> CacheImpl::createDataOutput(Pool* pool) const {
   return std::unique_ptr<DataOutput>(new DataOutput(this, pool));
 }
 
-std::unique_ptr<DataInput> CacheImpl::createDataInput(const uint8_t* buffer,
+DataInput CacheImpl::createDataInput(const uint8_t* buffer,
                                                       size_t len) const {
   return CacheImpl::createDataInput(buffer, len, nullptr);
 }
 
-std::unique_ptr<DataInput> CacheImpl::createDataInput(const uint8_t* buffer,
+DataInput CacheImpl::createDataInput(const uint8_t* buffer,
                                                       size_t len,
                                                       Pool* pool) const {
   if (!pool) {
     pool = this->getPoolManager().getDefaultPool().get();
   }
-  return std::unique_ptr<DataInput>(new DataInput(buffer, len, this, pool));
+  return DataInput(buffer, len, this, pool);
 }
 
 PdxInstanceFactory CacheImpl::createPdxInstanceFactory(
