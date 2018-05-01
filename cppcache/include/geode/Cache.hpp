@@ -234,7 +234,7 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
   virtual DataInput createDataInput(const uint8_t* m_buffer,
                                                      size_t len) const;
 
-  virtual std::unique_ptr<DataOutput> createDataOutput() const;
+  virtual DataOutput createDataOutput() const;
 
   virtual PoolManager& getPoolManager() const;
 

@@ -229,10 +229,10 @@ GfErrType TcrEndpoint::createNewConnection(
           LOGFINE("Sending update notification message to endpoint %s",
                   m_name.c_str());
           TcrMessageUpdateClientNotification updateNotificationMsg(
-              newConn->getConnectionManager()
+                  std::unique_ptr<DataOutput>(new DataOutput(newConn->getConnectionManager()
                   .getCacheImpl()
                   ->getCache()
-                  ->createDataOutput(),
+                  ->createDataOutput())),
               static_cast<int32_t>(newConn->getPort()));
           newConn->send(updateNotificationMsg.getMsgData(),
                         updateNotificationMsg.getMsgLength());
@@ -307,7 +307,7 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
     }
 
     TcrMessageUserCredential request(
-        m_cacheImpl->getCache()->createDataOutput(), creds, m_baseDM);
+            std::unique_ptr<DataOutput>(new DataOutput(m_cacheImpl->getCache()->createDataOutput())), creds, m_baseDM);
 
     LOGDEBUG("request is created");
     TcrMessageReply reply(true, this->m_baseDM);

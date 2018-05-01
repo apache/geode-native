@@ -47,10 +47,10 @@ template <class T>
 std::shared_ptr<T> duplicate(const std::shared_ptr<T>& orig) {
   std::shared_ptr<T> result;
   auto dout = getHelper()->getCache()->createDataOutput();
-  dout->writeObject(orig);
+  dout.writeObject(orig);
 
   size_t length = 0;
-  const uint8_t* buffer = dout->getBuffer(&length);
+  const uint8_t* buffer = dout.getBuffer(&length);
   auto din = getHelper()->getCache()->createDataInput(buffer, length);
   din.readObject(result);
 

@@ -169,7 +169,7 @@ DataInput Cache::createDataInput(const uint8_t* m_buffer,
   return m_cacheImpl->createDataInput(m_buffer, len);
 }
 
-std::unique_ptr<DataOutput> Cache::createDataOutput() const {
+DataOutput Cache::createDataOutput() const {
   return m_cacheImpl->createDataOutput();
 }
 

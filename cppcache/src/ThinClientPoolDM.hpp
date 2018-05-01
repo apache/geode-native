@@ -401,10 +401,10 @@ class FunctionExecution : public PooledWork<GfErrType> {
       gua.setAuthenticatedView(m_userAttr->getAuthenticatedView());
 
     std::string funcName(m_func);
-    TcrMessageExecuteFunction request(m_poolDM->getConnectionManager()
+    TcrMessageExecuteFunction request(std::unique_ptr<DataOutput>(new DataOutput(m_poolDM->getConnectionManager()
                                           .getCacheImpl()
                                           ->getCache()
-                                          ->createDataOutput(),
+                                          ->createDataOutput())),
                                       funcName, m_args, m_getResult, m_poolDM,
                                       m_timeout);
     TcrMessageReply reply(true, m_poolDM);
@@ -494,10 +494,10 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
         m_region(region),
         m_allBuckets(allBuckets) {
     m_request = new TcrMessageExecuteRegionFunctionSingleHop(
-        m_poolDM->getConnectionManager()
+            std::unique_ptr<DataOutput>(new DataOutput(m_poolDM->getConnectionManager()
             .getCacheImpl()
             ->getCache()
-            ->createDataOutput(),
+            ->createDataOutput())),
         m_func, m_region, m_args, m_routingObj, m_getResult, nullptr,
         m_allBuckets, timeout, m_poolDM);
     m_reply = new TcrMessageReply(true, m_poolDM);

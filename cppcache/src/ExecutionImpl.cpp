@@ -375,7 +375,7 @@ GfErrType ExecutionImpl::getFuncAttributes(const std::string& func,
   // do TCR GET_FUNCTION_ATTRIBUTES
   LOGDEBUG("Tcrmessage request GET_FUNCTION_ATTRIBUTES ");
   TcrMessageGetFunctionAttributes request(
-      tcrdm->getConnectionManager().getCacheImpl()->createDataOutput(), func,
+          std::unique_ptr<DataOutput>(new DataOutput(tcrdm->getConnectionManager().getCacheImpl()->createDataOutput())), func,
       tcrdm);
   TcrMessageReply reply(true, tcrdm);
   err = tcrdm->sendSyncRequest(request, reply);
@@ -489,10 +489,10 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
 
   while (attempt <= retryAttempts) {
     std::string funcName(func);
-    TcrMessageExecuteFunction msg(tcrdm->getConnectionManager()
+    TcrMessageExecuteFunction msg(std::unique_ptr<DataOutput>(new DataOutput(tcrdm->getConnectionManager()
                                       .getCacheImpl()
                                       ->getCache()
-                                      ->createDataOutput(),
+                                      ->createDataOutput())),
                                   funcName, m_args, getResult, tcrdm, timeout);
     TcrMessageReply reply(true, tcrdm);
     ChunkedFunctionExecutionResponse* resultCollector(

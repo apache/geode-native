@@ -49,7 +49,8 @@ std::shared_ptr<PdxInstance> PdxInstanceFactory::create() {
   m_created = true;
 
   // Forces registration of PdxType
-  PdxHelper::serializePdx(*m_cacheImpl.createDataOutput(), pi);
+  auto dataOutput = m_cacheImpl.createDataOutput();
+  PdxHelper::serializePdx(dataOutput, pi);
 
   return pi;
 }

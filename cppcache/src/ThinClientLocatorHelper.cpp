@@ -104,10 +104,10 @@ GfErrType ThinClientLocatorHelper::getAllServers(
       GetAllServersRequest request(serverGrp);
       auto data =
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
-      data->writeInt((int32_t)1001);  // GOSSIPVERSION
-      data->writeObject(&request);
+      data.writeInt((int32_t)1001);  // GOSSIPVERSION
+      data.writeObject(&request);
       auto sentLength = conn->send(
-          (char*)(data->getBuffer()), data->getBufferLength(),
+          (char*)(data.getBuffer()), data.getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : std::chrono::seconds(10));
       if (sentLength <= 0) {
         // conn->close(); delete conn; conn = nullptr;
@@ -197,10 +197,10 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
                                      serverGrp);
       auto data =
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
-      data->writeInt((int32_t)1001);  // GOSSIPVERSION
-      data->writeObject(&request);
+      data.writeInt((int32_t)1001);  // GOSSIPVERSION
+      data.writeObject(&request);
       auto sentLength = conn->send(
-          (char*)(data->getBuffer()), data->getBufferLength(),
+          (char*)(data.getBuffer()), data.getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       if (sentLength <= 0) {
         // conn->close(); delete conn; conn = nullptr;
@@ -287,20 +287,20 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
                        sysProps.connectTimeout(), buffSize);
       auto data =
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
-      data->writeInt(1001);  // GOSSIPVERSION
+      data.writeInt(1001);  // GOSSIPVERSION
       if (currentServer == nullptr) {
         LOGDEBUG("Creating ClientConnectionRequest");
         ClientConnectionRequest request(exclEndPts, serverGrp);
-        data->writeObject(&request);
+        data.writeObject(&request);
       } else {
         LOGDEBUG("Creating ClientReplacementRequest for connection: ",
                  currentServer->getEndpointObject()->name().c_str());
         ClientReplacementRequest request(
             currentServer->getEndpointObject()->name(), exclEndPts, serverGrp);
-        data->writeObject(&request);
+        data.writeObject(&request);
       }
       auto sentLength = conn->send(
-          (char*)(data->getBuffer()), data->getBufferLength(),
+          (char*)(data.getBuffer()), data.getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       if (sentLength <= 0) {
         // conn->close();
@@ -385,10 +385,10 @@ GfErrType ThinClientLocatorHelper::updateLocators(
       LocatorListRequest request(serverGrp);
       auto data =
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
-      data->writeInt((int32_t)1001);  // GOSSIPVERSION
-      data->writeObject(&request);
+      data.writeInt((int32_t)1001);  // GOSSIPVERSION
+      data.writeObject(&request);
       auto sentLength = conn->send(
-          (char*)(data->getBuffer()), data->getBufferLength(),
+          (char*)(data.getBuffer()), data.getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       if (sentLength <= 0) {
         //  conn->close();

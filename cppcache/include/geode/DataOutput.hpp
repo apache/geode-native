@@ -501,6 +501,8 @@ class APACHE_GEODE_EXPORT DataOutput {
   DataOutput() = delete;
   DataOutput(const DataOutput&) = delete;
   DataOutput& operator=(const DataOutput&) = delete;
+  DataOutput(DataOutput&&) = default;
+  DataOutput& operator=(DataOutput&&) = default;
 
  protected:
   /**

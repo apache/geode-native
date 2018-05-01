@@ -162,17 +162,17 @@ inline uint32_t crc32(const int8_t* buffer, size_t bufLen) {
 template <typename TPRIM>
 inline uint32_t crc32(TPRIM value) {
   auto output = CacheHelper::getHelper().getCache()->createDataOutput();
-  apache::geode::client::serializer::writeObject(*output, value);
-  return crc32(output->getBuffer(), output->getBufferLength());
+  apache::geode::client::serializer::writeObject(output, value);
+  return crc32(output.getBuffer(), output.getBufferLength());
 }
 
 template <typename TPRIM>
 inline uint32_t crc32Array(const std::vector<TPRIM> arr) {
   auto output = CacheHelper::getHelper().getCache()->createDataOutput();
   for (auto obj : arr) {
-    apache::geode::client::serializer::writeObject(*output, obj);
+    apache::geode::client::serializer::writeObject(output, obj);
   }
-  return crc32(output->getBuffer(), output->getBufferLength());
+  return crc32(output.getBuffer(), output.getBufferLength());
 }
 
 inline bool isContainerTypeId(int8_t typeId) {

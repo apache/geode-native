@@ -42,7 +42,7 @@ using std::chrono::system_clock;
 
 StatDataOutput::StatDataOutput(CacheImpl *cacheImpl)
     : bytesWritten(0), m_fp(nullptr), closed(false) {
-  dataBuffer = cacheImpl->createDataOutput();
+  dataBuffer = std::unique_ptr<DataOutput>(new DataOutput(cacheImpl->createDataOutput()));
 }
 
 StatDataOutput::StatDataOutput(std::string filename, CacheImpl *cacheImpl) {
@@ -51,7 +51,7 @@ StatDataOutput::StatDataOutput(std::string filename, CacheImpl *cacheImpl) {
   }
 
   SerializationRegistry serializationRegistry;
-  dataBuffer = cacheImpl->createDataOutput();
+  dataBuffer = std::unique_ptr<DataOutput>(new DataOutput(cacheImpl->createDataOutput()));
   outFile = filename;
   closed = false;
   bytesWritten = 0;

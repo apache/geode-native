@@ -53,7 +53,7 @@ const int TcrMessage::m_flag_empty = 0x01;
 const int TcrMessage::m_flag_concurrency_checks = 0x02;
 
 TcrMessagePing* TcrMessage::getPingMessage(CacheImpl* cacheImpl) {
-  static auto pingMsg = new TcrMessagePing(cacheImpl->createDataOutput(), true);
+  static auto pingMsg = new TcrMessagePing(std::unique_ptr<DataOutput>(new DataOutput(cacheImpl->createDataOutput())), true);
   return pingMsg;
 }
 
@@ -64,7 +64,7 @@ TcrMessage* TcrMessage::getAllEPDisMess() {
 
 TcrMessage* TcrMessage::getCloseConnMessage(CacheImpl* cacheImpl) {
   static auto closeConnMsg =
-      new TcrMessageCloseConnection(cacheImpl->createDataOutput(), true);
+      new TcrMessageCloseConnection(std::unique_ptr<DataOutput>(new DataOutput(cacheImpl->createDataOutput())), true);
   return closeConnMsg;
 }
 
@@ -2555,10 +2555,10 @@ void TcrMessage::createUserCredentialMessage(TcrConnection* conn) {
   auto dOut = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
       getPool());
 
-  if (m_creds != nullptr) m_creds->toData(*dOut);
+  if (m_creds != nullptr) m_creds->toData(dOut);
 
   auto credBytes = CacheableBytes::create(std::vector<int8_t>(
-      dOut->getBuffer(), dOut->getBuffer() + dOut->getBufferLength()));
+      dOut.getBuffer(), dOut.getBuffer() + dOut.getBufferLength()));
   auto encryptBytes = conn->encryptBytes(credBytes);
   writeObjectPart(encryptBytes);
 
@@ -2585,11 +2585,11 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
       m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
           getPool());
 
-  dOutput->writeInt(connectionId);
-  dOutput->writeInt(unique_id);
+  dOutput.writeInt(connectionId);
+  dOutput.writeInt(unique_id);
 
   auto bytes = CacheableBytes::create(std::vector<int8_t>(
-      dOutput->getBuffer(), dOutput->getBuffer() + dOutput->getBufferLength()));
+      dOutput.getBuffer(), dOutput.getBuffer() + dOutput.getBufferLength()));
 
   auto encryptBytes = conn->encryptBytes(bytes);
 
@@ -2617,10 +2617,10 @@ void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection* conn) {
       m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
           getPool());
 
-  dOutput->writeInt(connectionId);
+  dOutput.writeInt(connectionId);
 
   auto bytes = CacheableBytes::create(std::vector<int8_t>(
-      dOutput->getBuffer(), dOutput->getBuffer() + dOutput->getBufferLength()));
+      dOutput.getBuffer(), dOutput.getBuffer() + dOutput.getBufferLength()));
 
   auto encryptBytes = conn->encryptBytes(bytes);
 
@@ -2784,8 +2784,8 @@ void TcrMessage::setData(const char* bytearray, int32_t len, uint16_t memId,
                          const SerializationRegistry& serializationRegistry,
                          MemberListForVersionStamp& memberListForVersionStamp) {
   if (m_request == nullptr) {
-    m_request = m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
-        getPool());
+    m_request = std::unique_ptr<DataOutput>(new DataOutput(m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
+        getPool())));
   }
   if (bytearray) {
     DeleteArray<const char> delByteArr(bytearray);

@@ -1369,9 +1369,9 @@ class RemoveActions {
     GfErrType err = GF_NOERR;
     if (!allowNULLValue && m_region.getAttributes().getCachingEnabled()) {
       m_region.getEntry(key, valuePtr);
-      std::unique_ptr<DataOutput> out1 =
+      DataOutput out1 =
           m_region.getCacheImpl()->getCache()->createDataOutput();
-      std::unique_ptr<DataOutput> out2 =
+      DataOutput out2 =
           m_region.getCacheImpl()->getCache()->createDataOutput();
 
       if (valuePtr != nullptr && value != nullptr) {
@@ -1380,14 +1380,14 @@ class RemoveActions {
           err = GF_ENOENT;
           return err;
         }
-        valuePtr->toData(*out1);
-        value->toData(*out2);
-        if (out1->getBufferLength() != out2->getBufferLength()) {
+        valuePtr->toData(out1);
+        value->toData(out2);
+        if (out1.getBufferLength() != out2.getBufferLength()) {
           err = GF_ENOENT;
           return err;
         }
-        if (memcmp(out1->getBuffer(), out2->getBuffer(),
-                   out1->getBufferLength()) != 0) {
+        if (memcmp(out1.getBuffer(), out2.getBuffer(),
+                   out1.getBufferLength()) != 0) {
           err = GF_ENOENT;
           return err;
         }
@@ -1426,9 +1426,9 @@ class RemoveActions {
     GfErrType err = GF_NOERR;
     if (!allowNULLValue && cachingEnabled) {
       m_region.getEntry(key, valuePtr);
-      std::unique_ptr<DataOutput> out1 =
+      DataOutput out1 =
           m_region.getCacheImpl()->getCache()->createDataOutput();
-      std::unique_ptr<DataOutput> out2 =
+      DataOutput out2 =
           m_region.getCacheImpl()->getCache()->createDataOutput();
       if (valuePtr != nullptr && value != nullptr) {
         if (valuePtr->classId() != value->classId() ||
@@ -1436,14 +1436,14 @@ class RemoveActions {
           err = GF_ENOENT;
           return err;
         }
-        valuePtr->toData(*out1);
-        value->toData(*out2);
-        if (out1->getBufferLength() != out2->getBufferLength()) {
+        valuePtr->toData(out1);
+        value->toData(out2);
+        if (out1.getBufferLength() != out2.getBufferLength()) {
           err = GF_ENOENT;
           return err;
         }
-        if (memcmp(out1->getBuffer(), out2->getBuffer(),
-                   out1->getBufferLength()) != 0) {
+        if (memcmp(out1.getBuffer(), out2.getBuffer(),
+                   out1.getBufferLength()) != 0) {
           err = GF_ENOENT;
           return err;
         }
