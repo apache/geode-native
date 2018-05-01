@@ -250,15 +250,15 @@ namespace Apache
           }
           auto out1 = m_nativeptr->get_conditional_shared_ptr()->getCache().createDataOutput();
           auto out2 = m_nativeptr->get_conditional_shared_ptr()->getCache().createDataOutput();
-          val1->toData(*out1);
-          val2->toData(*out2);
+          val1->toData(out1);
+          val2->toData(out2);
 
           GC::KeepAlive(m_nativeptr);
-          if (out1->getBufferLength() != out2->getBufferLength())
+          if (out1.getBufferLength() != out2.getBufferLength())
           {
             return false;
           }
-          else if (memcmp(out1->getBuffer(), out2->getBuffer(), out1->getBufferLength()) != 0)
+          else if (memcmp(out1.getBuffer(), out2.getBuffer(), out1.getBufferLength()) != 0)
           {
             return false;
           }
