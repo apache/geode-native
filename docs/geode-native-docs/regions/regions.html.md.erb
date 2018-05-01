@@ -135,6 +135,8 @@ removes the region and all of its contents from the cache.
 You can execute these operations explicitly in the local cache in the following ways:
 
 -   Through direct API calls from the client.
+  - .NET : Apache::Geode::Client::IRegion<TKey, TValue >::InvalidateRegion()
+  - C++ : apache::geode::client::Region:invalidateRegion()
 -   Through expiration activities based on the region's statistics and attribute settings.
 
 In either case, you can perform invalidation and destruction as a local or a distributed operation.
