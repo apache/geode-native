@@ -216,7 +216,6 @@ set_property(TEST testThinClientTicket303 PROPERTY LABELS OMITTED)
 set_property(TEST testThinClientTicket304 PROPERTY LABELS OMITTED)
 set_property(TEST testThinClientTracking PROPERTY LABELS OMITTED)
 set_property(TEST testThinClientWriterException PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientPoolExecuteFunctionDisableChunkHandlerThread PROPERTY LABELS OMITTED)
 
 add_custom_target(run-stable-cppcache-integration-tests
   COMMAND ctest -C $<CONFIGURATION> -L STABLE
