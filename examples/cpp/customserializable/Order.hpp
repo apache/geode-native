@@ -43,6 +43,10 @@ class Order : public PdxSerializable {
 
   inline uint16_t getQuantity() const { return quantity_; }
 
+  using PdxSerializable::fromData;
+
+  using PdxSerializable::toData;
+
   void fromData(PdxReader& pdxReader) override;
 
   void toData(PdxWriter& pdxWriter) const override;

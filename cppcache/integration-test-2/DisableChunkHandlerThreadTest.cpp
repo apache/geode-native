@@ -41,6 +41,9 @@ class SerializableWithThreadId : public PdxSerializable {
 
   ~SerializableWithThreadId() noexcept override = default;
 
+  using PdxSerializable::fromData;
+  using PdxSerializable::toData;
+
   void fromData(PdxReader& pdxReader) override {
     id_ = static_cast<uint32_t>(pdxReader.readLong("id_"));
     thread_id_ = std::this_thread::get_id();
@@ -88,6 +91,7 @@ TEST(ChunkHandlerThreadTest, isDisabledUsesDifferentThread) {
       SerializableWithThreadId::createDeserializable);
 
   auto objectOne = std::make_shared<SerializableWithThreadId>(1);
+
   region->put("objectOne", objectOne);
 
   auto returnedObjectOne = dynamic_cast<SerializableWithThreadId*>(
@@ -120,6 +124,7 @@ TEST(ChunkHandlerThreadTest, isEnabledUsesSameThread) {
       SerializableWithThreadId::createDeserializable);
 
   auto objectOne = std::make_shared<SerializableWithThreadId>(1);
+
   region->put("objectOne", objectOne);
 
   auto returnedObjectOne = dynamic_cast<SerializableWithThreadId*>(
