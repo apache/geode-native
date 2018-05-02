@@ -39,6 +39,8 @@
 #include "DataOutputInternal.hpp"
 #include "util/JavaModifiedUtf8.hpp"
 
+#pragma error_messages(off, SEC_UNINITIALIZED_MEM_READ)
+
 using namespace apache::geode::client;
 static const uint32_t REGULAR_EXPRESSION =
     1;  // come from Java InterestType.REGULAR_EXPRESSION
@@ -2970,3 +2972,5 @@ void TcrMessage::readHashSetForGCVersions(
     }
   }
 }
+
+#pragma error_messages(default, SEC_UNINITIALIZED_MEM_READ)
