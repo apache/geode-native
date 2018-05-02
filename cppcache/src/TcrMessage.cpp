@@ -1881,12 +1881,7 @@ TcrMessageRegisterInterestList::TcrMessageRegisterInterestList(
   m_isDurable = isDurable;
   m_receiveValues = receiveValues;
 
-  uint32_t numInItrestList = static_cast<uint32_t>(keys.size());
-  GF_R_ASSERT(numInItrestList != 0);
-
-  uint32_t numOfParts = 5 + numInItrestList;
-
-  writeHeader(m_msgType, numOfParts);
+  writeHeader(m_msgType, 6);
 
   // Part 1
   writeRegionPart(m_regionName);
@@ -1897,25 +1892,25 @@ TcrMessageRegisterInterestList::TcrMessageRegisterInterestList(
   // Part 3
   writeBytePart(isDurable ? 1 : 0);  // keepalive
 
-  // Part 3 + numInItrestList
+  // Part 4
   auto cal = CacheableArrayList::create();
-  for (uint32_t i = 0; i < numInItrestList; i++) {
-    if (keys[i] == nullptr) {
+  for (auto&& key : keys) {
+    if (key == nullptr) {
       throw IllegalArgumentException(
           "keys in the interest list cannot be nullptr");
     }
-    cal->push_back(keys[i]);
+    cal->push_back(key);
   }
   writeObjectPart(cal);
 
-  // Part 4 + numInItrestList
+  // Part 5
   int8_t bytes[2];
   std::shared_ptr<CacheableBytes> byteArr = nullptr;
   bytes[0] = receiveValues ? 0 : 1;  // reveive values
   byteArr = CacheableBytes::create(std::vector<int8_t>(bytes, bytes + 1));
   writeObjectPart(byteArr);
 
-  // Part 5 + numInItrestList
+  // Part 6
   bytes[0] = isCachingEnabled ? 1 : 0;  // region policy
   bytes[1] = 0;                         // serialize values
   byteArr = CacheableBytes::create(std::vector<int8_t>(bytes, bytes + 2));
