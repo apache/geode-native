@@ -51,7 +51,7 @@ void Struct::toData(DataOutput&) const {
   throw UnsupportedOperationException("Struct::toData: should not be called.");
 }
 
-int32_t Struct::length() const {
+int32_t Struct::size() const {
   return static_cast<int32_t>(m_fieldValues.size());
 }
 

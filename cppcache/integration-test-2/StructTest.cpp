@@ -62,19 +62,23 @@ TEST(StructTest, queryResultForRange) {
   auto region = setupRegion(cache);
 
   std::unordered_map<int, std::string> values = {
-      {1, "one"}, {2, "two"}, {3, "3"}};
+      {1, "one"}, {2, "two"}, {3, "three"}};
 
-  region->put(1, "one");
-  region->put(2, "two");
-  region->put(3, "three");
 
-  auto queryResult =
+  for (auto&& value : values) {
+    region->put(value.first, value.second);
+  }
+
+  auto&& queryResult =
       cache.getQueryService()
           ->newQuery("SELECT e.key, e.value FROM /region.entries e")
           ->execute();
+  EXPECT_EQ(3, queryResult->size());
+
   for (auto&& row : hacks::range(*queryResult)) {
     auto rowStruct = std::dynamic_pointer_cast<Struct>(row);
     ASSERT_NE(nullptr, rowStruct);
+    EXPECT_EQ(2, rowStruct->size());
 
     auto key = -1;
     for (auto&& column : *rowStruct) {
@@ -83,12 +87,13 @@ TEST(StructTest, queryResultForRange) {
               std::dynamic_pointer_cast<CacheableInt32>(column)) {
         key = columnValue->value();
         EXPECT_NE(values.end(), values.find(key));
-        break;
+      } else if (auto columnValue =
+                     std::dynamic_pointer_cast<CacheableString>(column)) {
+        auto value = columnValue->value();
+        EXPECT_EQ(values.find(key)->second, value);
+      } else {
+        FAIL() << "Column is not int or string.";
       }
-      auto columnValue = std::dynamic_pointer_cast<CacheableString>(column);
-      ASSERT_NE(nullptr, columnValue);
-      auto value = columnValue->value();
-      EXPECT_NE(values.find(key)->second, value);
     }
   }
 }

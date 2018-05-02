@@ -73,6 +73,42 @@ TEST(CacheableKeyCreateTests, forArrayOf_wchar_t) {
   EXPECT_EQ(cacheableString->value(), "test");
 }
 
+TEST(CacheableKeyCreateTests, for_string) {
+  const auto cacheableKey = CacheableKey::create(std::string("test"));
+  ASSERT_TRUE(nullptr != cacheableKey);
+  auto&& cacheableString =
+      std::dynamic_pointer_cast<CacheableString>(cacheableKey);
+  ASSERT_TRUE(nullptr != cacheableString);
+  EXPECT_EQ(cacheableString->value(), "test");
+}
+
+TEST(CacheableKeyCreateTests, for_u16string) {
+  const auto cacheableKey = CacheableKey::create(std::u16string(u"test"));
+  ASSERT_TRUE(nullptr != cacheableKey);
+  auto&& cacheableString =
+      std::dynamic_pointer_cast<CacheableString>(cacheableKey);
+  ASSERT_TRUE(nullptr != cacheableString);
+  EXPECT_EQ(cacheableString->value(), "test");
+}
+
+TEST(CacheableKeyCreateTests, for_u32string) {
+  const auto cacheableKey = CacheableKey::create(std::u32string(U"test"));
+  ASSERT_TRUE(nullptr != cacheableKey);
+  auto&& cacheableString =
+      std::dynamic_pointer_cast<CacheableString>(cacheableKey);
+  ASSERT_TRUE(nullptr != cacheableString);
+  EXPECT_EQ(cacheableString->value(), "test");
+}
+
+TEST(CacheableKeyCreateTests, for_wstring) {
+  const auto cacheableKey = CacheableKey::create(std::wstring(L"test"));
+  ASSERT_TRUE(nullptr != cacheableKey);
+  auto&& cacheableString =
+      std::dynamic_pointer_cast<CacheableString>(cacheableKey);
+  ASSERT_TRUE(nullptr != cacheableString);
+  EXPECT_EQ(cacheableString->value(), "test");
+}
+
 TEST(CacheableKeyCreateTests, for_int8_t) {
   const auto cacheableKey = CacheableKey::create(static_cast<int8_t>(1));
   ASSERT_TRUE(nullptr != cacheableKey);

@@ -97,7 +97,7 @@ class APACHE_GEODE_EXPORT Struct : public Serializable {
    *
    * @returns the number of field values available.
    */
-  int32_t length() const;
+  int32_t size() const;
 
   /**
    * Deserializes the Struct object from the DataInput. @TODO KN: better comment
