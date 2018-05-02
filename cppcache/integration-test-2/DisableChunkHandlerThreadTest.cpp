@@ -23,6 +23,7 @@
 #include <geode/RegionShortcut.hpp>
 #include <geode/PdxReader.hpp>
 #include <geode/PdxWriter.hpp>
+#include <geode/QueryService.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/TypeRegistry.hpp>
 
@@ -89,8 +90,12 @@ TEST(ChunkHandlerThreadTest, isDisabledUsesDifferentThread) {
   auto objectOne = std::make_shared<SerializableWithThreadId>(1);
   region->put("objectOne", objectOne);
 
-  auto returnedObjectOne = std::dynamic_pointer_cast<SerializableWithThreadId>(
-      region->get("objectOne"));
+  auto returnedObjectOne = dynamic_cast<SerializableWithThreadId*>(
+      cache.getQueryService()
+          ->newQuery("select * from /region")
+          ->execute()
+          ->begin()
+          ->get());
 
   EXPECT_EQ(returnedObjectOne->getId(), objectOne->getId());
 
@@ -117,14 +122,16 @@ TEST(ChunkHandlerThreadTest, isEnabledUsesSameThread) {
   auto objectOne = std::make_shared<SerializableWithThreadId>(1);
   region->put("objectOne", objectOne);
 
-  auto returnedObjectOne = std::dynamic_pointer_cast<SerializableWithThreadId>(
-      region->get("objectOne"));
+  auto returnedObjectOne = dynamic_cast<SerializableWithThreadId*>(
+      cache.getQueryService()
+          ->newQuery("select * from /region")
+          ->execute()
+          ->begin()
+          ->get());
 
   EXPECT_EQ(returnedObjectOne->getId(), objectOne->getId());
 
   EXPECT_EQ(std::this_thread::get_id(), returnedObjectOne->getThreadId());
 }
-
-
 
 }  // namespace
