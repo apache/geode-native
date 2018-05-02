@@ -50,14 +50,10 @@ The following tables list attributes that can be specified programmatically or s
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td>appdomain-enabled</td>
-<td>If <code class="ph codeph">true</code>, allows client to work when multiple .NET appdomains are in use.</td>
-<td>false</td>
-</tr>
 <tr class="even">
 <td>cache-xml-file</td>
-<td>Name and path of the file whose contents are used by default to initialize a cache if one is created. If not specified, the client starts with an empty cache, which is populated at run time.
+<td>Name and path of the file whose contents are used by default to configure a cache if one is
+created. If not specified, the client starts with an empty cache, which is populated at run time.
 <p>See <a href="../cache-init-file/chapter-overview.html#chapter-overview">Cache Initialization File</a> for more information on the cache initialization file.</p></td>
 <td>no default</td>
 </tr>
@@ -88,14 +84,10 @@ This property is used only if <code class="ph codeph">heap-lru-limit</code> is g
 <td>Number of connections per endpoint</td>
 <td>5</td>
 </tr>
-<tr class="even">
-<td>crash-dump-enabled</td>
-<td>Whether crash dump generation for unhandled fatal errors is enabled. True is enabled, false otherwise.</td>
-<td>true</td>
-</tr>
 <tr class="odd">
-<td>disable-chunk-handler-thread</td>
-<td>When set to false, each application thread processes its own response. If set to true, the chunk-handler-thread processes the response for each application thread.</td>
+<td>enable-chunk-handler-thread</td>
+<td>If the chunk-handler-thread is operative (enable-chunk-handler=true), it processes the response for each application thread. 
+When the chunk handler is not operative (enable-chunk-handler=false), each application thread processes its own response.</td>
 <td>false</td>
 </tr>
 <tr class="even">
@@ -111,7 +103,7 @@ This property is used only if <code class="ph codeph">heap-lru-limit</code> is g
 <tr class="even">
 <td>max-fe-threads</td>
 <td>Thread pool size for parallel function execution. An example of this is the GetAll operations.</td>
-<td>2 * number of CPU cores</td>
+<td>2 * number of logical processors</td>
 </tr>
 <tr class="odd">
 <td>max-socket-buffer-size</td>
@@ -137,11 +129,6 @@ This property is used only if <code class="ph codeph">heap-lru-limit</code> is g
 <td>redundancy-monitor-interval</td>
 <td>Interval, in seconds, at which the subscription HA maintenance thread checks for the configured redundancy of subscription servers.</td>
 <td>10</td>
-</tr>
-<tr class="even">
-<td>stacktrace-enabled</td>
-<td>If <code class="ph codeph">true</code>, the exception classes capture a stack trace that can be printed with their <code class="ph codeph">printStackTrace</code> function. If false, the function prints a message that the trace is unavailable.</td>
-<td>false</td>
 </tr>
 <tr class="odd">
 <td>tombstone-timeout</td>
