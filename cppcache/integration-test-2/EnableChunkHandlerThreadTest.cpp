@@ -73,7 +73,7 @@ class SerializableWithThreadId : public PdxSerializable {
   std::thread::id thread_id_;
 };
 
-TEST(ChunkHandlerThreadTest, isDisabledUsesDifferentThread) {
+TEST(ChunkHandlerThreadTest, isDisabledUsesSameThread) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.getGfsh()
       .create()
@@ -103,10 +103,10 @@ TEST(ChunkHandlerThreadTest, isDisabledUsesDifferentThread) {
 
   EXPECT_EQ(returnedObjectOne->getId(), objectOne->getId());
 
-  EXPECT_NE(std::this_thread::get_id(), returnedObjectOne->getThreadId());
+  EXPECT_EQ(std::this_thread::get_id(), returnedObjectOne->getThreadId());
 }
 
-TEST(ChunkHandlerThreadTest, isEnabledUsesSameThread) {
+TEST(ChunkHandlerThreadTest, isEnabledUsesDifferentThread) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.getGfsh()
       .create()
@@ -115,7 +115,7 @@ TEST(ChunkHandlerThreadTest, isEnabledUsesSameThread) {
       .withType("PARTITION")
       .execute();
 
-  auto cache = cluster.createCache({{"disable-chunk-handler-thread", "true"}});
+  auto cache = cluster.createCache({{"enable-chunk-handler-thread", "true"}});
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
                     .setPoolName("default")
                     .create("region");
@@ -136,7 +136,7 @@ TEST(ChunkHandlerThreadTest, isEnabledUsesSameThread) {
 
   EXPECT_EQ(returnedObjectOne->getId(), objectOne->getId());
 
-  EXPECT_EQ(std::this_thread::get_id(), returnedObjectOne->getThreadId());
+  EXPECT_NE(std::this_thread::get_id(), returnedObjectOne->getThreadId());
 }
 
 }  // namespace

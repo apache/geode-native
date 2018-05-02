@@ -258,17 +258,15 @@ class APACHE_GEODE_EXPORT SystemProperties {
   }
 
   /**
-   * This can be call to know whether chunkhandler thread is disable for that
-   * opertaion
+   * Returns true if chunk handler thread is enabled, false if not
    */
-  bool disableChunkHandlerThread() const { return m_disableChunkHandlerThread; }
+  bool enableChunkHandlerThread() const { return m_enableChunkHandlerThread; }
 
   /**
-   * This can be call multiple time to disable chunkhandler thread for those
-   * operations
+   * Enables or disables the chunk handler thread
    */
-  void setDisableChunkHandlerThread(bool set) {
-    m_disableChunkHandlerThread = set;
+  void setEnableChunkHandlerThread(bool set) {
+    m_enableChunkHandlerThread = set;
   }
 
   /**
@@ -423,7 +421,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   uint32_t m_threadPoolSize;
   std::chrono::seconds m_suspendedTxTimeout;
   std::chrono::milliseconds m_tombstoneTimeout;
-  bool m_disableChunkHandlerThread;
+  bool m_enableChunkHandlerThread;
   bool m_onClientDisconnectClearPdxTypeIds;
 
   /**

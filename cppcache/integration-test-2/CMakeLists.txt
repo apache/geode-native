@@ -27,8 +27,8 @@ add_executable(integration-test-2
   framework/GfshExecute.h
   RegionPutGetAllTest.cpp
   PdxInstanceTest.cpp
-  StructTest.cpp)
-  DisableChunkHandlerThreadTest.cpp
+  StructTest.cpp
+  EnableChunkHandlerThreadTest.cpp
   )
 
 target_compile_definitions(integration-test-2

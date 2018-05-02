@@ -78,7 +78,7 @@ const char SslTrustStore[] = "ssl-truststore";
 const char SslKeystorePassword[] = "ssl-keystore-password";
 const char ThreadPoolSize[] = "max-fe-threads";
 const char SuspendedTxTimeout[] = "suspended-tx-timeout";
-const char DisableChunkHandlerThread[] = "disable-chunk-handler-thread";
+const char EnableChunkHandlerThread[] = "enable-chunk-handler-thread";
 const char OnClientDisconnectClearPdxTypeIds[] =
     "on-client-disconnect-clear-pdxType-Ids";
 const char TombstoneTimeoutInMSec[] = "tombstone-timeout";
@@ -130,7 +130,7 @@ const uint32_t DefaultThreadPoolSize = ACE_OS::num_processors() * 2;
 constexpr auto DefaultSuspendedTxTimeout = std::chrono::seconds(30);
 constexpr auto DefaultTombstoneTimeout = std::chrono::seconds(480);
 // not disable; all region api will use chunk handler thread
-const bool DefaultDisableChunkHandlerThread = false;
+const bool DefaultEnableChunkHandlerThread = false;
 const bool DefaultOnClientDisconnectClearPdxTypeIds = false;
 
 }  // namespace
@@ -187,7 +187,7 @@ SystemProperties::SystemProperties(
       m_threadPoolSize(DefaultThreadPoolSize),
       m_suspendedTxTimeout(DefaultSuspendedTxTimeout),
       m_tombstoneTimeout(DefaultTombstoneTimeout),
-      m_disableChunkHandlerThread(DefaultDisableChunkHandlerThread),
+      m_enableChunkHandlerThread(DefaultEnableChunkHandlerThread),
       m_onClientDisconnectClearPdxTypeIds(
           DefaultOnClientDisconnectClearPdxTypeIds) {
   // now that defaults are set, consume files and override the defaults.
@@ -361,8 +361,8 @@ void SystemProperties::processProperty(const std::string& property,
     parseDurationProperty(property, std::string(value), m_suspendedTxTimeout);
   } else if (property == TombstoneTimeoutInMSec) {
     parseDurationProperty(property, std::string(value), m_tombstoneTimeout);
-  } else if (property == DisableChunkHandlerThread) {
-    m_disableChunkHandlerThread = parseBooleanProperty(property, value);
+  } else if (property == EnableChunkHandlerThread) {
+    m_enableChunkHandlerThread = parseBooleanProperty(property, value);
   } else if (property == OnClientDisconnectClearPdxTypeIds) {
     m_onClientDisconnectClearPdxTypeIds = parseBooleanProperty(property, value);
   } else {
@@ -404,8 +404,8 @@ void SystemProperties::logSettings() {
   settings += "\n  connect-wait-timeout = ";
   settings += to_string(connectWaitTimeout());
 
-  settings += "\n  disable-chunk-handler-thread = ";
-  settings += disableChunkHandlerThread() ? "true" : "false";
+  settings += "\n  enable-chunk-handler-thread = ";
+  settings += enableChunkHandlerThread() ? "true" : "false";
 
   settings += "\n  disable-shuffling-of-endpoints = ";
   settings += isEndpointShufflingDisabled() ? "true" : "false";
