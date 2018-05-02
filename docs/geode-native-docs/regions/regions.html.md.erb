@@ -47,8 +47,7 @@ and an association with the connection pool.
 The following example illustrates how to create two regions using C++.
 
 ``` cpp
-auto cacheFactory = CacheFactory();
-auto cache = cacheFactory.create();
+auto cache = CacheFactory().create();
 
 auto examplePool = cache.getPoolManager()
     .createFactory()
@@ -59,11 +58,6 @@ auto examplePool = cache.getPoolManager()
 auto clientRegion1 = cache.createRegionFactory(RegionShortcut::PROXY)
   .setPoolName("examplePool")
   .create("clientRegion1");
-
-auto clientRegion2 = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
-  .setPoolName("examplePool")
-  .setRegionTimeToLive(ExpirationAction::INVALIDATE, std::chrono::minutes(2))
-  .create("clientRegion2");
 ```
 
 ### .NET C# Region Creation Example
@@ -71,8 +65,7 @@ auto clientRegion2 = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
 This example illustrates how to create a pair of regions using C#:
 
 ``` csharp
-var cacheFactory = CacheFactory();
-var cache = cacheFactory.Create();
+var cache = new CacheFactory().Create();
 
 var examplePool = cache.GetPoolManager()
     .CreateFactory()
@@ -83,11 +76,6 @@ var examplePool = cache.GetPoolManager()
 var clientRegion1 = cache.CreateRegionFactory(RegionShortcut.PROXY)
   .SetPoolName("examplePool")
   .Create("clientRegion1");
-
-var clientRegion2 = cache.CreateRegionFactory(RegionShortcut.CACHING_PROXY)
-  .SetPoolName("examplePool")
-  .SetRegionTimeToLive(ExpirationAction.INVALIDATE, TimeSpan.FromMinutes(2))
-  .Create("clientRegion2");
 ```
 
 ## <a id="declarative-region-creation"></a>Declarative Region Creation
