@@ -122,7 +122,7 @@ class APACHE_GEODE_EXPORT Serializable {
 
   template <class _T>
   inline static std::shared_ptr<Serializable> create(
-      const std::shared_ptr<_T>& value) {
+      const std::shared_ptr<_T> &value) {
     return value;
   }
 
@@ -133,7 +133,7 @@ class APACHE_GEODE_EXPORT Serializable {
 
 typedef Serializable Cacheable;
 
-class DataSerializable : public virtual Serializable {
+class APACHE_GEODE_EXPORT DataSerializable : public virtual Serializable {
  public:
   ~DataSerializable() override = default;
   virtual void toData(DataOutput &dataOutput) const = 0;
@@ -141,7 +141,8 @@ class DataSerializable : public virtual Serializable {
   virtual int32_t getClassId() const = 0;
 };
 
-class DataSerializableFixedId : public virtual Serializable {
+class APACHE_GEODE_EXPORT DataSerializableFixedId
+    : public virtual Serializable {
  public:
   ~DataSerializableFixedId() override = default;
 
@@ -151,13 +152,15 @@ class DataSerializableFixedId : public virtual Serializable {
 };
 
 template <int32_t _DSFID>
-class DataSerializableFixedId_t : public DataSerializableFixedId {
+class APACHE_GEODE_EXPORT DataSerializableFixedId_t
+    : public DataSerializableFixedId {
  public:
   ~DataSerializableFixedId_t() override = default;
   int32_t getDSFID() const final { return _DSFID; }
 };
 
-class DataSerializablePrimitive : public virtual Serializable {
+class APACHE_GEODE_EXPORT DataSerializablePrimitive
+    : public virtual Serializable {
  public:
   ~DataSerializablePrimitive() override = default;
   virtual void toData(DataOutput &dataOutput) const = 0;
@@ -165,7 +168,8 @@ class DataSerializablePrimitive : public virtual Serializable {
   virtual int8_t getDsCode() const = 0;
 };
 
-class DataSerializableInternal : public virtual Serializable {
+class APACHE_GEODE_EXPORT DataSerializableInternal
+    : public virtual Serializable {
  public:
   ~DataSerializableInternal() override = default;
   virtual void toData(DataOutput &dataOutput) const = 0;
