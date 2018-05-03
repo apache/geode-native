@@ -89,7 +89,7 @@ namespace Apache
         /// Get the number of field values available.
         /// </summary>
         /// <returns>the number of field values available.</returns>
-        property int32_t Length
+        property int32_t Count
         {
           int32_t get( );
         }

@@ -121,7 +121,7 @@ void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
           printf("   end of map \n");
         } else if (auto structimpl = std::dynamic_pointer_cast<Struct>(field)) {
           printf("   structImpl %s {\n", ssptr->getFieldName(fields).c_str());
-          for (int32_t inner_fields = 0; inner_fields < structimpl->length();
+          for (int32_t inner_fields = 0; inner_fields < structimpl->size();
                inner_fields++) {
             auto field = (*structimpl)[inner_fields];
             if (field == nullptr) {
@@ -161,7 +161,7 @@ void _verifyStructSet(std::shared_ptr<StructSet>& ssptr, int i) {
     }
 
     printf("   Row : %zd \n", rows);
-    for (int32_t fields = 0; fields < siptr->length(); fields++) {
+    for (int32_t fields = 0; fields < siptr->size(); fields++) {
       auto field = (*siptr)[fields];
       if (field == nullptr) {
         printf("we got null fields here, probably we have nullptr data\n");

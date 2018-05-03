@@ -76,11 +76,11 @@ namespace Apache
       }
 
 
-      int32_t Struct::Length::get()
+      int32_t Struct::Count::get()
       {
         try
         {
-          return static_cast<native::Struct*>(m_nativeptr->get())->length();
+          return static_cast<native::Struct*>(m_nativeptr->get())->size();
         }
         finally
         {

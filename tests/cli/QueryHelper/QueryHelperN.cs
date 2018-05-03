@@ -341,7 +341,7 @@ namespace Apache.Geode.Client.Tests
         }
 
         int foundFields = 0;
-        for (int cols = 0; cols < si.Length; cols++)
+        for (int cols = 0; cols < si.Count; cols++)
         {
           //IGeodeSerializable field = si[cols];
           object field = (object)si[cols];

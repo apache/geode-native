@@ -204,7 +204,7 @@ namespace Apache.Geode.Client.UnitTests
         foreach (Struct si in ss)
         {
           rows++;
-          fields = (Int32)si.Length;
+          fields = (Int32)si.Count;
         }
 
         Util.Log("Query index {0} has {1} rows and {2} fields.", qryIdx, rows, fields);

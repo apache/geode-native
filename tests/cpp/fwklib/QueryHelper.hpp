@@ -1053,8 +1053,7 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
 
     int foundFields = 0;
 
-    for (int32_t cols = 0; cols < siptr->length(); cols++) {
-      auto field = (*siptr)[cols];  // siptr->next();
+    for (auto&& field : *siptr) {
       foundFields++;
     }
 
