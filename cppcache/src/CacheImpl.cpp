@@ -724,14 +724,18 @@ void CacheImpl::processMarker() {
       if (const auto tcrHARegion =
               std::dynamic_pointer_cast<ThinClientHARegion>(q.int_id_)) {
         auto regionMsg = new TcrMessageClientMarker(
-            std::unique_ptr<DataOutput>(new DataOutput(this->getCache()->createDataOutput())), true);
+            std::unique_ptr<DataOutput>(
+                new DataOutput(this->getCache()->createDataOutput())),
+            true);
         tcrHARegion->receiveNotification(regionMsg);
         for (const auto& iter : tcrHARegion->subregions(true)) {
           if (!iter->isDestroyed()) {
             if (const auto subregion =
                     std::dynamic_pointer_cast<ThinClientHARegion>(iter)) {
               regionMsg = new TcrMessageClientMarker(
-                  std::unique_ptr<DataOutput>(new DataOutput(this->getCache()->createDataOutput())), true);
+                  std::unique_ptr<DataOutput>(
+                      new DataOutput(this->getCache()->createDataOutput())),
+                  true);
               subregion->receiveNotification(regionMsg);
             }
           }
@@ -812,7 +816,7 @@ DataOutput CacheImpl::createDataOutput() const {
   return CacheImpl::createDataOutput(nullptr);
 }
 
-DataOutput CacheImpl::createDataOutput(Pool *pool) const {
+DataOutput CacheImpl::createDataOutput(Pool* pool) const {
   if (!pool) {
     pool = this->getPoolManager().getDefaultPool().get();
   }
@@ -820,14 +824,12 @@ DataOutput CacheImpl::createDataOutput(Pool *pool) const {
   return DataOutput(this, pool);
 }
 
-DataInput CacheImpl::createDataInput(const uint8_t* buffer,
-                                                      size_t len) const {
+DataInput CacheImpl::createDataInput(const uint8_t* buffer, size_t len) const {
   return CacheImpl::createDataInput(buffer, len, nullptr);
 }
 
-DataInput CacheImpl::createDataInput(const uint8_t* buffer,
-                                                      size_t len,
-                                                      Pool* pool) const {
+DataInput CacheImpl::createDataInput(const uint8_t* buffer, size_t len,
+                                     Pool* pool) const {
   if (!pool) {
     pool = this->getPoolManager().getDefaultPool().get();
   }

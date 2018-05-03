@@ -28,10 +28,10 @@ namespace apache {
 namespace geode {
 namespace client {
 
-DataInput::DataInput(const uint8_t* m_buffer, size_t len,
+DataInput::DataInput(const uint8_t* buffer, size_t len,
                      const CacheImpl* cache, Pool* pool)
-    : m_buf(m_buffer),
-      m_bufHead(m_buffer),
+    : m_buf(buffer),
+      m_bufHead(buffer),
       m_bufLength(len),
       m_pool(pool),
       m_cache(cache) {}

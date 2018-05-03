@@ -155,8 +155,10 @@ void ThinClientHARegion::addDisMessToQueue() {
 
     if (poolDM->m_redundancyManager->m_globalProcessedMarker &&
         !m_processedMarker) {
-      TcrMessage* regionMsg =
-          new TcrMessageClientMarker(std::unique_ptr<DataOutput>(new DataOutput(m_cacheImpl->createDataOutput())), true);
+      TcrMessage* regionMsg = new TcrMessageClientMarker(
+          std::unique_ptr<DataOutput>(
+              new DataOutput(m_cacheImpl->createDataOutput())),
+          true);
       receiveNotification(regionMsg);
     }
   }
@@ -165,8 +167,10 @@ void ThinClientHARegion::addDisMessToQueue() {
 GfErrType ThinClientHARegion::getNoThrow_FullObject(
     std::shared_ptr<EventId> eventId, std::shared_ptr<Cacheable>& fullObject,
     std::shared_ptr<VersionTag>& versionTag) {
-  TcrMessageRequestEventValue fullObjectMsg(std::unique_ptr<DataOutput>(new DataOutput(m_cacheImpl->createDataOutput())),
-                                            eventId);
+  TcrMessageRequestEventValue fullObjectMsg(
+      std::unique_ptr<DataOutput>(
+          new DataOutput(m_cacheImpl->createDataOutput())),
+      eventId);
   TcrMessageReply reply(true, nullptr);
 
   ThinClientPoolHADM* poolHADM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);

@@ -55,7 +55,10 @@ const int TcrMessage::m_flag_empty = 0x01;
 const int TcrMessage::m_flag_concurrency_checks = 0x02;
 
 TcrMessagePing* TcrMessage::getPingMessage(CacheImpl* cacheImpl) {
-  static auto pingMsg = new TcrMessagePing(std::unique_ptr<DataOutput>(new DataOutput(cacheImpl->createDataOutput())), true);
+  static auto pingMsg =
+      new TcrMessagePing(std::unique_ptr<DataOutput>(
+                             new DataOutput(cacheImpl->createDataOutput())),
+                         true);
   return pingMsg;
 }
 
@@ -65,8 +68,10 @@ TcrMessage* TcrMessage::getAllEPDisMess() {
 }
 
 TcrMessage* TcrMessage::getCloseConnMessage(CacheImpl* cacheImpl) {
-  static auto closeConnMsg =
-      new TcrMessageCloseConnection(std::unique_ptr<DataOutput>(new DataOutput(cacheImpl->createDataOutput())), true);
+  static auto closeConnMsg = new TcrMessageCloseConnection(
+      std::unique_ptr<DataOutput>(
+          new DataOutput(cacheImpl->createDataOutput())),
+      true);
   return closeConnMsg;
 }
 
@@ -1160,8 +1165,8 @@ void TcrMessage::handleByteArrayResponse(
         input.advanceCursor(1);  // ignore byte
         m_deltaBytes = new int8_t[m_deltaBytesLen];
         input.readBytesOnly(m_deltaBytes, m_deltaBytesLen);
-        m_delta =
-             std::unique_ptr<DataInput>(new DataInput(m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
+        m_delta = std::unique_ptr<DataInput>(new DataInput(
+            m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
                 reinterpret_cast<const uint8_t*>(m_deltaBytes),
                 m_deltaBytesLen)));
       } else {
@@ -1284,7 +1289,7 @@ void TcrMessage::handleByteArrayResponse(
 
         bits32 = input.readInt32();  // partlen;
         input.read();                // ignore isObj;
-        input.read();  // ignore cacheable CacheableHashSet typeid
+        input.read();                // ignore cacheable CacheableHashSet typeid
 
         bits32 = input.readArrayLength();  // array length
         if (bits32 > 0) {
@@ -2786,8 +2791,9 @@ void TcrMessage::setData(const char* bytearray, int32_t len, uint16_t memId,
                          const SerializationRegistry& serializationRegistry,
                          MemberListForVersionStamp& memberListForVersionStamp) {
   if (m_request == nullptr) {
-    m_request = std::unique_ptr<DataOutput>(new DataOutput(m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
-        getPool())));
+    m_request = std::unique_ptr<DataOutput>(new DataOutput(
+        m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
+            getPool())));
   }
   if (bytearray) {
     DeleteArray<const char> delByteArr(bytearray);

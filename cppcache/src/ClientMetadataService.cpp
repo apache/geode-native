@@ -129,11 +129,12 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
   std::shared_ptr<ClientMetadata> newCptr = nullptr;
 
   if (cptr == nullptr) {
-    TcrMessageGetClientPartitionAttributes request(std::unique_ptr<DataOutput>(new DataOutput(tcrdm->getConnectionManager()
+    TcrMessageGetClientPartitionAttributes request(
+        std::unique_ptr<DataOutput>(new DataOutput(tcrdm->getConnectionManager()
                                                        .getCacheImpl()
                                                        ->getCache()
                                                        ->createDataOutput())),
-                                                   regionFullPath);
+        regionFullPath);
     GfErrType err = tcrdm->sendSyncRequest(request, reply);
     if (err == GF_NOERR &&
         reply.getMessageType() ==
@@ -186,10 +187,10 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
     throw IllegalArgumentException(
         "ClientMetaData: pool cast to ThinClientPoolDM failed");
   }
-  TcrMessageGetClientPrMetadata request(std::unique_ptr<DataOutput>(new DataOutput(tcrdm->getConnectionManager()
-                                            .getCacheImpl()
-                                            ->createDataOutput())),
-                                        regionPath);
+  TcrMessageGetClientPrMetadata request(
+      std::unique_ptr<DataOutput>(new DataOutput(
+          tcrdm->getConnectionManager().getCacheImpl()->createDataOutput())),
+      regionPath);
   TcrMessageReply reply(true, nullptr);
   // send this message to server and get metadata from server.
   LOGFINE("Now sending GET_CLIENT_PR_METADATA for getting from server: %s",

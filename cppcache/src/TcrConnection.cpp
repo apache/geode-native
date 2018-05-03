@@ -354,9 +354,8 @@ bool TcrConnection::InitTcrConnection(
         credentials->toData(cleartext);
       }
       challengeBytes->toData(cleartext);
-      auto ciphertext =
-          m_dh->encrypt(cleartext.getBuffer(),
-                        static_cast<int>(cleartext.getBufferLength()));
+      auto ciphertext = m_dh->encrypt(
+          cleartext.getBuffer(), static_cast<int>(cleartext.getBufferLength()));
 
       auto sendCreds = cacheImpl->createDataOutput();
       ciphertext->toData(sendCreds);

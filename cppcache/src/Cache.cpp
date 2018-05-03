@@ -164,8 +164,7 @@ SystemProperties& Cache::getSystemProperties() const {
   return m_cacheImpl->getSystemProperties();
 }
 
-DataInput Cache::createDataInput(const uint8_t* m_buffer,
-                                                  size_t len) const {
+DataInput Cache::createDataInput(const uint8_t* m_buffer, size_t len) const {
   return m_cacheImpl->createDataInput(m_buffer, len);
 }
 

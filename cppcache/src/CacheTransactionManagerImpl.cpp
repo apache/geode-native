@@ -59,7 +59,8 @@ void CacheTransactionManagerImpl::commit() {
         GF_CACHE_ILLEGAL_STATE_EXCEPTION);
   }
 
-  TcrMessageCommit request(std::unique_ptr<DataOutput>(new DataOutput(m_cache->createDataOutput())));
+  TcrMessageCommit request(
+      std::unique_ptr<DataOutput>(new DataOutput(m_cache->createDataOutput())));
   TcrMessageReply reply(true, nullptr);
 
   auto tcr_dm = getDM();
@@ -270,7 +271,8 @@ void CacheTransactionManagerImpl::rollback() {
 }
 
 GfErrType CacheTransactionManagerImpl::rollback(TXState*, bool) {
-  TcrMessageRollback request(std::unique_ptr<DataOutput>(new DataOutput(m_cache->getCache()->createDataOutput())));
+  TcrMessageRollback request(std::unique_ptr<DataOutput>(
+      new DataOutput(m_cache->getCache()->createDataOutput())));
   TcrMessageReply reply(true, nullptr);
   GfErrType err = GF_NOERR;
   ThinClientPoolDM* tcr_dm = getDM();

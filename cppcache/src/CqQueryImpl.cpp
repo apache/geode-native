@@ -258,13 +258,13 @@ GfErrType CqQueryImpl::execute(TcrEndpoint* endpoint) {
 
   LOGFINE("Executing CQ [%s]", m_cqName.c_str());
 
-  TcrMessageExecuteCq request(std::unique_ptr<DataOutput>(new DataOutput(m_cqService->getDM()
-                                  ->getConnectionManager()
-                                  .getCacheImpl()
-                                  ->getCache()
-                                  ->createDataOutput())),
-                              m_cqName, m_queryString, CqState::RUNNING,
-                              isDurable(), m_tccdm);
+  TcrMessageExecuteCq request(
+      std::unique_ptr<DataOutput>(new DataOutput(m_cqService->getDM()
+                                                     ->getConnectionManager()
+                                                     .getCacheImpl()
+                                                     ->getCache()
+                                                     ->createDataOutput())),
+      m_cqName, m_queryString, CqState::RUNNING, isDurable(), m_tccdm);
   TcrMessageReply reply(true, m_tccdm);
 
   GfErrType err = GF_NOERR;
@@ -328,13 +328,13 @@ bool CqQueryImpl::executeCq(TcrMessage::MsgType) {
   }
 
   LOGDEBUG("CqQueryImpl::executeCq");
-  TcrMessageExecuteCq msg(std::unique_ptr<DataOutput>(new DataOutput(m_cqService->getDM()
-                              ->getConnectionManager()
-                              .getCacheImpl()
-                              ->getCache()
-                              ->createDataOutput())),
-                          m_cqName, m_queryString, CqState::RUNNING,
-                          isDurable(), m_tccdm);
+  TcrMessageExecuteCq msg(
+      std::unique_ptr<DataOutput>(new DataOutput(m_cqService->getDM()
+                                                     ->getConnectionManager()
+                                                     .getCacheImpl()
+                                                     ->getCache()
+                                                     ->createDataOutput())),
+      m_cqName, m_queryString, CqState::RUNNING, isDurable(), m_tccdm);
   TcrMessageReply reply(true, m_tccdm);
 
   GfErrType err = GF_NOERR;
@@ -380,13 +380,13 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
         "CqQuery::executeWithInitialResults: cq is already running");
   }
   // QueryResult values;
-  TcrMessageExecuteCqWithIr msg(std::unique_ptr<DataOutput>(new DataOutput(m_cqService->getDM()
-                                    ->getConnectionManager()
-                                    .getCacheImpl()
-                                    ->getCache()
-                                    ->createDataOutput())),
-                                m_cqName, m_queryString, CqState::RUNNING,
-                                isDurable(), m_tccdm);
+  TcrMessageExecuteCqWithIr msg(
+      std::unique_ptr<DataOutput>(new DataOutput(m_cqService->getDM()
+                                                     ->getConnectionManager()
+                                                     .getCacheImpl()
+                                                     ->getCache()
+                                                     ->createDataOutput())),
+      m_cqName, m_queryString, CqState::RUNNING, isDurable(), m_tccdm);
 
   TcrMessageReply reply(true, m_tccdm);
   auto resultCollector =
@@ -473,20 +473,22 @@ void CqQueryImpl::sendStopOrClose(TcrMessage::MsgType requestType) {
   TcrMessageReply reply(true, m_tccdm);
 
   if (requestType == TcrMessage::STOPCQ_MSG_TYPE) {
-    TcrMessageStopCQ msg(std::unique_ptr<DataOutput>(new DataOutput(m_cqService->getDM()
-                             ->getConnectionManager()
-                             .getCacheImpl()
-                             ->getCache()
-                             ->createDataOutput())),
-                         m_cqName, std::chrono::milliseconds(-1), m_tccdm);
+    TcrMessageStopCQ msg(
+        std::unique_ptr<DataOutput>(new DataOutput(m_cqService->getDM()
+                                                       ->getConnectionManager()
+                                                       .getCacheImpl()
+                                                       ->getCache()
+                                                       ->createDataOutput())),
+        m_cqName, std::chrono::milliseconds(-1), m_tccdm);
     err = m_tccdm->sendSyncRequest(msg, reply);
   } else if (requestType == TcrMessage::CLOSECQ_MSG_TYPE) {
-    TcrMessageCloseCQ msg(std::unique_ptr<DataOutput>(new DataOutput(m_cqService->getDM()
-                              ->getConnectionManager()
-                              .getCacheImpl()
-                              ->getCache()
-                              ->createDataOutput())),
-                          m_cqName, std::chrono::milliseconds(-1), m_tccdm);
+    TcrMessageCloseCQ msg(
+        std::unique_ptr<DataOutput>(new DataOutput(m_cqService->getDM()
+                                                       ->getConnectionManager()
+                                                       .getCacheImpl()
+                                                       ->getCache()
+                                                       ->createDataOutput())),
+        m_cqName, std::chrono::milliseconds(-1), m_tccdm);
     err = m_tccdm->sendSyncRequest(msg, reply);
   }
 

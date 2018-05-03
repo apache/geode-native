@@ -520,7 +520,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   static void releaseLock();
 
   // memory m_buffer to encode to.
-  std::unique_ptr<uint8_t>  m_bytes;
+  std::unique_ptr<uint8_t> m_bytes;
   // cursor.
   uint8_t* m_buf;
   // size of m_bytes.

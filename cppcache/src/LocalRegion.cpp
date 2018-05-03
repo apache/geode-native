@@ -1369,10 +1369,8 @@ class RemoveActions {
     GfErrType err = GF_NOERR;
     if (!allowNULLValue && m_region.getAttributes().getCachingEnabled()) {
       m_region.getEntry(key, valuePtr);
-      DataOutput out1 =
-          m_region.getCacheImpl()->getCache()->createDataOutput();
-      DataOutput out2 =
-          m_region.getCacheImpl()->getCache()->createDataOutput();
+      DataOutput out1 = m_region.getCacheImpl()->getCache()->createDataOutput();
+      DataOutput out2 = m_region.getCacheImpl()->getCache()->createDataOutput();
 
       if (valuePtr != nullptr && value != nullptr) {
         if (valuePtr->classId() != value->classId() ||
@@ -1426,10 +1424,8 @@ class RemoveActions {
     GfErrType err = GF_NOERR;
     if (!allowNULLValue && cachingEnabled) {
       m_region.getEntry(key, valuePtr);
-      DataOutput out1 =
-          m_region.getCacheImpl()->getCache()->createDataOutput();
-      DataOutput out2 =
-          m_region.getCacheImpl()->getCache()->createDataOutput();
+      DataOutput out1 = m_region.getCacheImpl()->getCache()->createDataOutput();
+      DataOutput out2 = m_region.getCacheImpl()->getCache()->createDataOutput();
       if (valuePtr != nullptr && value != nullptr) {
         if (valuePtr->classId() != value->classId() ||
             valuePtr->typeId() != value->typeId()) {

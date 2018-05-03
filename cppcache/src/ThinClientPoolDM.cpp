@@ -87,9 +87,10 @@ class GetAllWork : public PooledWork<GfErrType>,
         m_keys(keys),
         m_region(region),
         m_aCallbackArgument(aCallbackArgument) {
-    m_request = new TcrMessageGetAll(std::unique_ptr<DataOutput>(new DataOutput(region->getCache().createDataOutput())),
-                                     region.get(), m_keys.get(), m_poolDM,
-                                     m_aCallbackArgument);
+    m_request = new TcrMessageGetAll(
+        std::unique_ptr<DataOutput>(
+            new DataOutput(region->getCache().createDataOutput())),
+        region.get(), m_keys.get(), m_poolDM, m_aCallbackArgument);
     m_reply = new TcrMessageReply(true, m_poolDM);
     if (m_poolDM->isMultiUserMode()) {
       m_userAttribute = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
@@ -903,7 +904,8 @@ void ThinClientPoolDM::sendUserCacheCloseMessage(bool keepAlive) {
     UserConnectionAttributes* uca = (*it).second;
     if (uca->isAuthenticated() && uca->getEndpoint()->connected()) {
       TcrMessageRemoveUserAuth request(
-              std::unique_ptr<DataOutput>(new DataOutput(m_connManager.getCacheImpl()->getCache()->createDataOutput())),
+          std::unique_ptr<DataOutput>(new DataOutput(
+              m_connManager.getCacheImpl()->getCache()->createDataOutput())),
           keepAlive, this);
       TcrMessageReply reply(true, this);
 
@@ -938,8 +940,9 @@ int32_t ThinClientPoolDM::GetPDXIdForType(
   GfErrType err = GF_NOERR;
 
   TcrMessageGetPdxIdForType request(
-          std::unique_ptr<DataOutput>(new DataOutput(m_connManager.getCacheImpl()->getCache()->createDataOutput())), pdxType,
-      this);
+      std::unique_ptr<DataOutput>(new DataOutput(
+          m_connManager.getCacheImpl()->getCache()->createDataOutput())),
+      pdxType, this);
 
   TcrMessageReply reply(true, this);
 
@@ -979,8 +982,9 @@ void ThinClientPoolDM::AddPdxType(std::shared_ptr<Serializable> pdxType,
   GfErrType err = GF_NOERR;
 
   TcrMessageAddPdxType request(
-      std::unique_ptr<DataOutput>(new DataOutput(m_connManager.getCacheImpl()->getCache()->createDataOutput())), pdxType,
-      this, pdxTypeId);
+      std::unique_ptr<DataOutput>(new DataOutput(
+          m_connManager.getCacheImpl()->getCache()->createDataOutput())),
+      pdxType, this, pdxTypeId);
 
   TcrMessageReply reply(true, this);
 
@@ -1000,8 +1004,9 @@ std::shared_ptr<Serializable> ThinClientPoolDM::GetPDXTypeById(int32_t typeId) {
   GfErrType err = GF_NOERR;
 
   TcrMessageGetPdxTypeById request(
-      std::unique_ptr<DataOutput>(new DataOutput(m_connManager.getCacheImpl()->getCache()->createDataOutput())), typeId,
-      this);
+      std::unique_ptr<DataOutput>(new DataOutput(
+          m_connManager.getCacheImpl()->getCache()->createDataOutput())),
+      typeId, this);
 
   TcrMessageReply reply(true, this);
 
@@ -1024,8 +1029,9 @@ int32_t ThinClientPoolDM::GetEnumValue(std::shared_ptr<Serializable> enumInfo) {
   GfErrType err = GF_NOERR;
 
   TcrMessageGetPdxIdForEnum request(
-          std::unique_ptr<DataOutput>(new DataOutput(m_connManager.getCacheImpl()->getCache()->createDataOutput())), enumInfo,
-      this);
+      std::unique_ptr<DataOutput>(new DataOutput(
+          m_connManager.getCacheImpl()->getCache()->createDataOutput())),
+      enumInfo, this);
 
   TcrMessageReply reply(true, this);
 
@@ -1064,7 +1070,9 @@ std::shared_ptr<Serializable> ThinClientPoolDM::GetEnum(int32_t val) {
   GfErrType err = GF_NOERR;
 
   TcrMessageGetPdxEnumById request(
-      std::unique_ptr<DataOutput>(new DataOutput(m_connManager.getCacheImpl()->getCache()->createDataOutput())), val, this);
+      std::unique_ptr<DataOutput>(new DataOutput(
+          m_connManager.getCacheImpl()->getCache()->createDataOutput())),
+      val, this);
 
   TcrMessageReply reply(true, this);
 
@@ -1088,8 +1096,9 @@ void ThinClientPoolDM::AddEnum(std::shared_ptr<Serializable> enumInfo,
   GfErrType err = GF_NOERR;
 
   TcrMessageAddPdxEnum request(
-      std::unique_ptr<DataOutput>(new DataOutput(m_connManager.getCacheImpl()->getCache()->createDataOutput())), enumInfo,
-      this, enumVal);
+      std::unique_ptr<DataOutput>(new DataOutput(
+          m_connManager.getCacheImpl()->getCache()->createDataOutput())),
+      enumInfo, this, enumVal);
 
   TcrMessageReply reply(true, this);
 
@@ -1112,8 +1121,9 @@ GfErrType ThinClientPoolDM::sendUserCredentials(
   GfErrType err = GF_NOERR;
 
   TcrMessageUserCredential request(
-      std::unique_ptr<DataOutput>(new DataOutput(m_connManager.getCacheImpl()->getCache()->createDataOutput())), credentials,
-      this);
+      std::unique_ptr<DataOutput>(new DataOutput(
+          m_connManager.getCacheImpl()->getCache()->createDataOutput())),
+      credentials, this);
 
   TcrMessageReply reply(true, this);
 
@@ -2342,8 +2352,8 @@ void ThinClientPoolDM::updateNotificationStats(bool isDeltaSuccess,
 
 GfErrType ThinClientPoolDM::doFailover(TcrConnection* conn) {
   m_manager->setStickyConnection(conn, true);
-  TcrMessageTxFailover request(
-      std::unique_ptr<DataOutput>(new DataOutput(m_connManager.getCacheImpl()->getCache()->createDataOutput())));
+  TcrMessageTxFailover request(std::unique_ptr<DataOutput>(new DataOutput(
+      m_connManager.getCacheImpl()->getCache()->createDataOutput())));
   TcrMessageReply reply(true, nullptr);
 
   GfErrType err = this->sendSyncRequest(request, reply);

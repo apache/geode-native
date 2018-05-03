@@ -231,8 +231,7 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
   PdxInstanceFactory createPdxInstanceFactory(
       const std::string& className) const override;
 
-  virtual DataInput createDataInput(const uint8_t* m_buffer,
-                                                     size_t len) const;
+  virtual DataInput createDataInput(const uint8_t* m_buffer, size_t len) const;
 
   virtual DataOutput createDataOutput() const;
 

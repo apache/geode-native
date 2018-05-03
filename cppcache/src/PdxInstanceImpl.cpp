@@ -1405,8 +1405,7 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
       }
       if (value != nullptr) {
         writeField(writer, currPf->getFieldName(), currPf->getTypeId(), value);
-        position =
-            getNextFieldPosition(dataInput, static_cast<int>(i) + 1, pt);
+        position = getNextFieldPosition(dataInput, static_cast<int>(i) + 1, pt);
       } else {
         if (currPf->IsVariableLengthType()) {
           // need to add offset

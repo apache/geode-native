@@ -112,8 +112,7 @@ void SqLiteImpl::write(const std::shared_ptr<CacheableKey>& key,
 
   keyDataBuffer.writeObject(key);
   valueDataBuffer.writeObject(value);
-  void* keyData =
-      const_cast<uint8_t*>(keyDataBuffer.getBuffer(&keyBufferSize));
+  void* keyData = const_cast<uint8_t*>(keyDataBuffer.getBuffer(&keyBufferSize));
   void* valueData =
       const_cast<uint8_t*>(valueDataBuffer.getBuffer(&valueBufferSize));
 
@@ -131,8 +130,7 @@ std::shared_ptr<Cacheable> SqLiteImpl::read(
   auto keyDataBuffer = m_regionPtr->getCache().createDataOutput();
   size_t keyBufferSize;
   keyDataBuffer.writeObject(key);
-  void* keyData =
-      const_cast<uint8_t*>(keyDataBuffer.getBuffer(&keyBufferSize));
+  void* keyData = const_cast<uint8_t*>(keyDataBuffer.getBuffer(&keyBufferSize));
   void* valueData;
   int valueBufferSize;
 
@@ -176,8 +174,7 @@ void SqLiteImpl::destroy(const std::shared_ptr<CacheableKey>& key,
   auto keyDataBuffer = m_regionPtr->getCache().createDataOutput();
   size_t keyBufferSize;
   keyDataBuffer.writeObject(key);
-  void* keyData =
-      const_cast<uint8_t*>(keyDataBuffer.getBuffer(&keyBufferSize));
+  void* keyData = const_cast<uint8_t*>(keyDataBuffer.getBuffer(&keyBufferSize));
   if (m_sqliteHelper->removeKey(keyData, static_cast<int>(keyBufferSize)) !=
       0) {
     throw IllegalStateException("Failed to destroy the key from SQLITE.");
