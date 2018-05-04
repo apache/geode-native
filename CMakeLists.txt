@@ -93,6 +93,12 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug)
 endif()
 
+option(BUILD_BENCHMARKS "Build benchmarks" ON)
+if (CMAKE_CXX_COMPILER_ID MATCHES "SunPro" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "sparc")
+  # Google benchmark does not compile on SunPro for SPARC
+  set(BUILD_BENCHMARKS OFF)
+endif()
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # TODO this doesn't seem to have effect
