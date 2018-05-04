@@ -182,7 +182,7 @@ namespace Apache.Geode.Client.UnitTests
 
         ISelectResults<object> results = region.Query<object>(qrystr.Query);
 
-        if (results.Size != QueryStatics.RegionQueryRowCounts[qryIdx])
+        if (results.Size != (ulong) QueryStatics.RegionQueryRowCounts[qryIdx])
         {
           ErrorOccurred = true;
           Util.Log("FAIL: Query # {0} expected result size is {1}, actual is {2}", qryIdx,

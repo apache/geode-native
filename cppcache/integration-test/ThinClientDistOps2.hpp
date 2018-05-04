@@ -51,7 +51,7 @@ const char* locatorsG =
 
 #define verifyEntry(a, b, c, d) _verifyEntry(a, b, c, d, __LINE__)
 
-void _verifyEntry(const char* name, const char* key, const char* val,
+void _verifyEntry(const std::string& name, const char* key, const char* val,
                   bool checkLocal, int line) {
   char logmsg[1024];
   sprintf(logmsg, "verifyEntry() called from %d.\n", line);

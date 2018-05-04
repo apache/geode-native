@@ -167,6 +167,48 @@ class APACHE_GEODE_EXPORT CacheableString : public CacheableKey {
 };
 
 template <>
+inline std::shared_ptr<CacheableKey> CacheableKey::create(std::string value) {
+  return CacheableString::create(value);
+}
+
+template <>
+inline std::shared_ptr<CacheableKey> CacheableKey::create(
+    std::u16string value) {
+  return CacheableString::create(value);
+}
+
+template <>
+inline std::shared_ptr<CacheableKey> CacheableKey::create(
+    std::u32string value) {
+  return CacheableString::create(value);
+}
+
+template <>
+inline std::shared_ptr<CacheableKey> CacheableKey::create(std::wstring value) {
+  return CacheableString::create(value);
+}
+
+template <>
+inline std::shared_ptr<Cacheable> Serializable::create(std::string value) {
+  return CacheableString::create(value);
+}
+
+template <>
+inline std::shared_ptr<Cacheable> Serializable::create(std::u16string value) {
+  return CacheableString::create(value);
+}
+
+template <>
+inline std::shared_ptr<Cacheable> Serializable::create(std::u32string value) {
+  return CacheableString::create(value);
+}
+
+template <>
+inline std::shared_ptr<Cacheable> Serializable::create(std::wstring value) {
+  return CacheableString::create(value);
+}
+
+template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(const char* value) {
   return CacheableString::create(value);
 }

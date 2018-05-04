@@ -113,7 +113,7 @@ opCodeList::value_type tmpAArr[] = {OP_CREATE,       OP_UPDATE,
 #define WRITER_CLIENT s1p2
 #define READER_CLIENT s2p1
 
-const char* regionNamesAuth[] = {"DistRegionAck"};
+const std::string regionNamesAuth[] = {"DistRegionAck"};
 std::shared_ptr<Properties> userCreds;
 void initClientAuth(char UserType) {
   userCreds = Properties::create();
@@ -288,24 +288,20 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
 
       qs = virtualCache.getQueryService();
 
-      char queryString[100];
-      sprintf(queryString, "select * from /%s", regionNamesAuth[0]);
-      auto qry = qs->newQuery(queryString);
+      auto queryString = "select * from /" + regionNamesAuth[0];
 
-      std::shared_ptr<SelectResults> results;
+      auto&& qry = qs->newQuery(queryString);
       printf(" before query executing\n");
-      results = qry->execute(std::chrono::seconds(850));
+      auto&& results = qry->execute(std::chrono::seconds(850));
       LOG("Query completed successfully");
 
-      sprintf(queryString, "select * from /%s", regionNamesAuth[0]);
-      CqAttributesFactory cqFac;
-      auto cqAttrs = cqFac.create();
-      auto cqQry = qs->newCq("cq_security", queryString, cqAttrs);
+      auto&& cqAttrs = CqAttributesFactory{}.create();
+      auto&& cqQry = qs->newCq("cq_security", queryString, cqAttrs);
       cqQry->execute();
       cqQry->close();
       LOG("CQ completed successfully");
 
-      if (pool != nullptr) {
+      if (pool) {
         FunctionService::onServer(virtualCache)
             .execute("securityTest")
             ->getResult();
@@ -447,7 +443,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
                               false, -1, true, 0);
       char buf[100] = {'\0'};
       static int indexForPool = 0;
-      sprintf(buf, "%s_%d", regionNamesAuth[0], indexForPool++);
+      sprintf(buf, "%s_%d", regionNamesAuth[0].c_str(), indexForPool++);
       pool = getPool(buf);
       LOG(" 6");
       if (pool != nullptr) {
@@ -615,10 +611,9 @@ DUNIT_TASK_DEFINITION(WRITER_CLIENT, StepTwo)
       auto virtualCache = getVirtualCache(userCreds, pool);
       auto queryService = virtualCache.getQueryService();
 
-      char queryString[100];
-      sprintf(queryString, "select * from /%s", regionNamesAuth[0]);
-      CqAttributesFactory cqFac;
-      auto cqAttrs = cqFac.create();
+      auto queryString = "select * from /" + regionNamesAuth[0];
+
+      auto cqAttrs = CqAttributesFactory{}.create();
       auto qry = queryService->newCq("cq_security", queryString, cqAttrs);
       queryService->executeCqs();
       FAIL("CQ should not have completed successfully");

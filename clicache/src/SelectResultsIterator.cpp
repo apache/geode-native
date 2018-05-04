@@ -30,67 +30,27 @@ namespace Apache
       generic<class TResult>
       TResult SelectResultsIterator<TResult>::Current::get( )
       {
-        try
-        {
-          return TypeRegistry::GetManagedValueGeneric<TResult>(m_nativeptr->get()->current( ));
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+        return m_results[m_index];
+      }
+
+      generic<class TResult>
+      Object^ SelectResultsIterator<TResult>::Current2::get( )
+      {
+        return m_results[m_index];
       }
 
       generic<class TResult>
       bool SelectResultsIterator<TResult>::MoveNext( )
       {
-        try
-        {
-          return m_nativeptr->get()->moveNext( );
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+         return ++m_index < m_results->Size;
       }
 
       generic<class TResult>
       void SelectResultsIterator<TResult>::Reset( )
       {
-        try
-        {
-          m_nativeptr->get()->reset( );
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+        m_index = -1;
       }
 
-      generic<class TResult>
-      TResult SelectResultsIterator<TResult>::Next( )
-      {
-        try
-        {
-          return TypeRegistry::GetManagedValueGeneric<TResult>(m_nativeptr->get()->next( ));
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-      }
-
-      generic<class TResult>
-      bool SelectResultsIterator<TResult>::HasNext::get()
-      {
-        try
-        {
-          return m_nativeptr->get()->hasNext();
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-      }
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

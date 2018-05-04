@@ -36,12 +36,12 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
-      Object^ Struct::default::get(size_t index)
+      Object^ Struct::default::get(int32_t index)
       {
         try
         {
           return (TypeRegistry::GetManagedValueGeneric<Object^>(
-            static_cast<native::Struct*>(m_nativeptr->get())->operator[](static_cast<System::Int32>(index))));
+            static_cast<native::Struct*>(m_nativeptr->get())->operator[](index)));
         }
         finally
         {
@@ -66,7 +66,7 @@ namespace Apache
       {
         try
         {
-          return StructSet</*TResult*/Object^>::Create(
+          return StructSet<Object^>::Create(
             static_cast<native::Struct*>(m_nativeptr->get())->getStructSet());
         }
         finally
@@ -76,36 +76,11 @@ namespace Apache
       }
 
 
-      bool Struct/*<TResult>*/::HasNext()
+      int32_t Struct::Count::get()
       {
         try
         {
-          return static_cast<native::Struct*>(m_nativeptr->get())->hasNext();
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-      }
-
-      size_t Struct/*<TResult>*/::Length::get()
-      {
-        try
-        {
-          return static_cast<native::Struct*>(m_nativeptr->get())->length();
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-      }
-
-      Object^ Struct/*<TResult>*/::Next()
-      {
-        try
-        {
-          return (TypeRegistry::GetManagedValueGeneric<Object^>(
-            static_cast<native::Struct*>(m_nativeptr->get())->next()));
+          return static_cast<native::Struct*>(m_nativeptr->get())->size();
         }
         finally
         {

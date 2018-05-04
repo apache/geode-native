@@ -687,7 +687,7 @@ namespace Apache.Geode.Client.UnitTests
           killRes = ksd.BeginInvoke(null, null);
         }
 
-        Int32 resultSize = results.Size;
+        var resultSize = results.Size;
 
         if (i % 100 == 0)
         {

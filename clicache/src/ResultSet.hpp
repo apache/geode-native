@@ -53,33 +53,20 @@ namespace Apache
       public:
 
         /// <summary>
-        /// True if this <c>ResultSet</c> is modifiable.
-        /// </summary>
-        virtual property bool IsModifiable
-        {
-          virtual bool get();
-        }
-
-        /// <summary>
         /// The size of the <c>ResultSet</c>.
         /// </summary>
-        virtual property System::Int32 Size
+        virtual property size_t Size
         {
-          virtual System::Int32 get();
+          virtual size_t get();
         }
 
         /// <summary>
         /// Get an object at the given index.
         /// </summary>
-        virtual property /*IGeodeSerializable^*/TResult GFINDEXER(size_t)
+        virtual property TResult GFINDEXER(size_t)
         {
-          virtual /*IGeodeSerializable^*/TResult get(size_t index);
+          virtual TResult get(size_t index);
         }
-
-        /// <summary>
-        /// Get an iterator for the result set.
-        /// </summary>
-        virtual SelectResultsIterator<TResult>^ GetIterator();
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -88,9 +75,11 @@ namespace Apache
         /// A <c>System.Collections.Generic.IEnumerator</c> that
         /// can be used to iterate through the <c>ResultSet</c>.
         /// </returns>
-        virtual System::Collections::Generic::IEnumerator</*IGeodeSerializable^*/TResult>^
-          GetEnumerator();
+        virtual System::Collections::Generic::IEnumerator<TResult>^ GetEnumerator();
 
+
+        virtual System::Collections::IEnumerator^ GetIEnumerator()
+          = System::Collections::IEnumerable::GetEnumerator;
 
       internal:
 
@@ -111,9 +100,6 @@ namespace Apache
 
       private:
 
-        virtual System::Collections::IEnumerator^ GetIEnumerator() sealed
-          = System::Collections::IEnumerable::GetEnumerator;
-
         /// <summary>
         /// Private constructor to wrap a native object pointer
         /// </summary>
@@ -125,6 +111,7 @@ namespace Apache
 
         native_shared_ptr<native::ResultSet>^ m_nativeptr;
       };
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

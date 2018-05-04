@@ -156,11 +156,8 @@ namespace Apache.Geode.Client.UnitTests
       ISelectResults<object> results = qry.Execute();
       Util.Log("Results size {0}.", results.Size);
 
-      SelectResultsIterator<object> iter = results.GetIterator();
-
-      while (iter.HasNext)
+      foreach (var item in results)
       {
-        /*IGeodeSerializable*/ object item = iter.Next();
         Portfolio port = item as Portfolio;
         if (port == null)
         {

@@ -38,7 +38,7 @@ static int numberOfLocators = 1;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
-void setCacheListener(const char* regName,
+void setCacheListener(const std::string& regName,
                       const std::shared_ptr<CacheListener>& listener) {
   if (listener != nullptr) {
     auto reg = getHelper()->getRegion(regName);
@@ -48,7 +48,8 @@ void setCacheListener(const char* regName,
 }
 
 void createRegionForSecurity(
-    const char* name, bool ackMode, bool clientNotificationEnabled = false,
+    const std::string& name, bool ackMode,
+    bool clientNotificationEnabled = false,
     const std::shared_ptr<CacheListener>& listener = nullptr,
     bool caching = true, int connections = -1, bool isMultiuserMode = false,
     int subscriptionRedundancy = -1) {
@@ -56,15 +57,14 @@ void createRegionForSecurity(
   LOG(msg);
   LOG(" pool is creating");
   char buff[128] = {'\0'};
-  const char* poolName = name;
+  auto poolName = name;
 
-  if (getHelper()->getCache()->getPoolManager().find(name) != nullptr) {
+  if (getHelper()->getCache()->getPoolManager().find(name)) {
     static unsigned int index = 0;
-    sprintf(buff, "%s_%d", poolName, index++);
-    poolName = buff;
+    poolName += "_" + std::to_string(index++);
   }
 
-  printf("createRegionForSecurity poolname = %s \n", poolName);
+  printf("createRegionForSecurity poolname = %s \n", poolName.c_str());
 
   getHelper()->createPoolWithLocators(
       poolName, locatorsG, clientNotificationEnabled, subscriptionRedundancy,
@@ -74,7 +74,7 @@ void createRegionForSecurity(
   setCacheListener(name, listener);
 }
 
-std::shared_ptr<Pool> getPool(const char* name) {
+std::shared_ptr<Pool> getPool(const std::string& name) {
   return getHelper()->getCache()->getPoolManager().find(name);
 }
 

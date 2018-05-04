@@ -32,24 +32,11 @@ namespace Apache
     {
 
       generic<class TResult>
-      bool StructSet<TResult>::IsModifiable::get( )
+      size_t StructSet<TResult>::Size::get( )
       {
         try
         {
-          return m_nativeptr->get()->isModifiable( );
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-      }
-
-      generic<class TResult>
-      System::Int32 StructSet<TResult>::Size::get( )
-      {
-        try
-        {
-          return static_cast<int>(m_nativeptr->get()->size( ));
+          return m_nativeptr->get()->size( );
         }
         finally
         {
@@ -62,20 +49,7 @@ namespace Apache
       {
         try
         {
-          return TypeRegistry::GetManagedValueGeneric<TResult>((m_nativeptr->get()->operator[](static_cast<System::Int32>(index))));
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-      }
-
-      generic<class TResult>
-      SelectResultsIterator<TResult>^ StructSet<TResult>::GetIterator( )
-      {
-        try
-        {
-          return SelectResultsIterator<TResult>::Create(std::make_unique<apache::geode::client::SelectResultsIterator>(m_nativeptr->get()->getIterator()));
+          return TypeRegistry::GetManagedValueGeneric<TResult>(m_nativeptr->get()->operator[](index));
         }
         finally
         {
@@ -86,17 +60,17 @@ namespace Apache
       generic<class TResult>
       System::Collections::Generic::IEnumerator<TResult>^ StructSet<TResult>::GetEnumerator( )
       {
-        return GetIterator( );
+        return SelectResultsIterator<TResult>::Create(this);
       }
 
       generic<class TResult>
       System::Collections::IEnumerator^ StructSet<TResult>::GetIEnumerator( )
       {
-        return GetIterator( );
+        return SelectResultsIterator<TResult>::Create(this);
       }
 
       generic<class TResult>
-      size_t StructSet<TResult>::GetFieldIndex( String^ fieldName )
+      int32_t StructSet<TResult>::GetFieldIndex( String^ fieldName )
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
 
@@ -113,11 +87,11 @@ namespace Apache
       }
 
       generic<class TResult>
-      String^ StructSet<TResult>::GetFieldName(size_t index)
+      String^ StructSet<TResult>::GetFieldName(int32_t index)
       {
         try
         {
-          return marshal_as<String^>(m_nativeptr->get()->getFieldName(static_cast<System::Int32> (index)));
+          return marshal_as<String^>(m_nativeptr->get()->getFieldName(index));
         }
         finally
         {

@@ -43,38 +43,26 @@ namespace Apache
       /// </summary>
       generic<class TResult>
       public interface class ISelectResults
-        : public System::Collections::Generic::IEnumerable</*IGeodeSerializable^*/TResult>
+        : public System::Collections::Generic::IEnumerable<TResult>
       {
       public:
 
         /// <summary>
-        /// True if this <c>ISelectResults</c> is modifiable.
-        /// </summary>
-        property bool IsModifiable
-        {
-          bool get( );
-        }
-
-        /// <summary>
         /// The size of the <c>ISelectResults</c>.
         /// </summary>
-        property System::Int32 Size
+        property size_t Size
         {
-          System::Int32 get( );
+          size_t get( );
         }
 
         /// <summary>
         /// Get an object at the given index.
         /// </summary>
-        property /*Apache::Geode::Client::IGeodeSerializable^*/TResult GFINDEXER( size_t )
+        property TResult GFINDEXER( size_t )
         {
-          /*Apache::Geode::Client::IGeodeSerializable^*/TResult get( size_t index );
+          TResult get( size_t index );
         }
 
-        /// <summary>
-        /// Get an iterator for the result set.
-        /// </summary>
-        Apache::Geode::Client::SelectResultsIterator<TResult>^ GetIterator( );
       };
     }  // namespace Client
   }  // namespace Geode

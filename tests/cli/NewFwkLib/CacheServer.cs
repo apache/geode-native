@@ -3505,7 +3505,7 @@ public void DoVerifyQueryResult()
   FwkInfo("verifyQueryResult() called");
   string query = GetStringValue("query");
   IRegion<TKey, TVal> region = GetRegion();
-  Int32 resultSize = region.Count;
+  var resultSize = region.Count;
   bool isSerial = GetBoolValue("serialExecution");
   Int32 localInvalidate = 0;
   if (isSerial)
@@ -3533,7 +3533,7 @@ public void DoVerifyQueryResult()
       startTime = DateTime.Now;
       results = cq.ExecuteWithInitialResults(QueryResponseTimeout);
       elapsedTime = DateTime.Now - startTime;
-      if ((resultSize - localInvalidate) != results.Size)
+      if ((resultSize - localInvalidate) != (int) results.Size)
       {
         FwkSevere("ReadQueryString: Result size found {0}, expected {1}.",
            results.Size, (resultSize - localInvalidate));

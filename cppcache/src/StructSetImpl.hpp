@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STRUCTSETIMPL_H_
-#define GEODE_STRUCTSETIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,59 +15,49 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
+#pragma once
 
+#ifndef GEODE_STRUCTSETIMPL_H_
+#define GEODE_STRUCTSETIMPL_H_
+
+#include <string>
+#include <unordered_map>
+#include <memory>
+
+#include <geode/internal/geode_globals.hpp>
 #include <geode/StructSet.hpp>
 #include <geode/Struct.hpp>
 #include <geode/CacheableBuiltins.hpp>
-
-#include <geode/SelectResultsIterator.hpp>
-
-#include <string>
-#include <map>
-
-/**
- * @file
- */
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT StructSetImpl
-    : public StructSet,
-      public std::enable_shared_from_this<StructSetImpl> {
+class APACHE_GEODE_EXPORT StructSetImpl : public StructSet {
  public:
   StructSetImpl(const std::shared_ptr<CacheableVector>& values,
                 const std::vector<std::string>& fieldNames);
 
-  bool isModifiable() const override;
+  ~StructSetImpl() noexcept override = default;
 
   size_t size() const override;
 
   const std::shared_ptr<Serializable> operator[](size_t index) const override;
 
-  size_t getFieldIndex(const std::string& fieldname) override;
+  int32_t getFieldIndex(const std::string& fieldname) override;
 
   const std::string& getFieldName(int32_t index) override;
 
-  SelectResultsIterator getIterator() override;
+  SelectResults::iterator begin() override;
 
-  /** Get an iterator pointing to the start of vector. */
-  virtual SelectResults::Iterator begin() const override;
-
-  /** Get an iterator pointing to the end of vector. */
-  virtual SelectResults::Iterator end() const override;
-
-  ~StructSetImpl() noexcept override {}
+  SelectResults::iterator end() override;
 
  private:
-  std::shared_ptr<CacheableVector> m_structVector;
+  std::vector<std::shared_ptr<Serializable>> m_structVector;
 
-  std::map<std::string, int32_t> m_fieldNameIndexMap;
-
-  size_t m_nextIndex;
+  std::unordered_map<std::string, int32_t> m_fieldNameIndexMap;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

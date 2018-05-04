@@ -395,19 +395,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     cqFac.addCqListener(cqLstner);
     auto cqAttr = cqFac.create();
 
-    const char* qryStr = "select * from /Portfolios p where p.ID < 3";
-    auto qry = qs->newCq(cqName, qryStr, cqAttr);
+    auto qryStr = "select * from /Portfolios p where p.ID < 3";
+    auto&& qry = qs->newCq(cqName, qryStr, cqAttr);
 
-    std::shared_ptr<SelectResults> results;
     try {
       LOG("EXECUTE 1 START");
 
-      results = qry->executeWithInitialResults();
+      auto&& results = qry->executeWithInitialResults();
 
       LOG("EXECUTE 1 STOP");
-      SelectResultsIterator iter = results->getIterator();
-      char buf[100];
       auto count = results->size();
+      char buf[100];
       sprintf(buf, "results size=%zd", count);
       LOG(buf);
     } catch (const Exception& excp) {
@@ -422,6 +420,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     LOG("StepThree complete.");
   }
 END_TASK_DEFINITION
+
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo2)
   {
     auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);

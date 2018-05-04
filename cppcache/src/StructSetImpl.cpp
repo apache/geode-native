@@ -27,8 +27,6 @@ namespace client {
 
 StructSetImpl::StructSetImpl(const std::shared_ptr<CacheableVector>& response,
                              const std::vector<std::string>& fieldNames) {
-  m_nextIndex = 0;
-
   int32_t i = 0;
   for (auto&& fieldName : fieldNames) {
     LOGDEBUG("StructSetImpl: pushing fieldName = %s with index = %d",
@@ -36,39 +34,32 @@ StructSetImpl::StructSetImpl(const std::shared_ptr<CacheableVector>& response,
     m_fieldNameIndexMap.emplace(fieldName, i++);
   }
 
-  auto numOfValues = response->size();
-  size_t valStoredCnt = 0;
-
+  const auto numOfValues = response->size();
   const auto numOfFields = fieldNames.size();
-  m_structVector = CacheableVector::create();
+  m_structVector.reserve(numOfValues / numOfFields);
+
+  size_t valStoredCnt = 0;
   while (valStoredCnt < numOfValues) {
     std::vector<std::shared_ptr<Serializable>> tmpVec;
     for (size_t i = 0; i < numOfFields; i++) {
       tmpVec.push_back(response->operator[](valStoredCnt++));
     }
-    auto siPtr = std::make_shared<Struct>(this, tmpVec);
-    m_structVector->push_back(siPtr);
+    m_structVector.push_back(std::make_shared<Struct>(this, tmpVec));
   }
 }
 
-bool StructSetImpl::isModifiable() const { return false; }
-
-size_t StructSetImpl::size() const { return m_structVector->size(); }
+size_t StructSetImpl::size() const { return m_structVector.size(); }
 
 const std::shared_ptr<Serializable> StructSetImpl::operator[](
     size_t index) const {
-  if (index >= m_structVector->size()) {
+  if (index >= m_structVector.size()) {
     throw IllegalArgumentException("Index out of bounds");
   }
 
-  return m_structVector->operator[](index);
+  return m_structVector.operator[](index);
 }
 
-SelectResultsIterator StructSetImpl::getIterator() {
-  return SelectResultsIterator(m_structVector, shared_from_this());
-}
-
-size_t StructSetImpl::getFieldIndex(const std::string& fieldname) {
+int32_t StructSetImpl::getFieldIndex(const std::string& fieldname) {
   const auto& iter = m_fieldNameIndexMap.find(fieldname);
   if (iter != m_fieldNameIndexMap.end()) {
     return iter->second;
@@ -85,13 +76,11 @@ const std::string& StructSetImpl::getFieldName(int32_t index) {
   throw std::out_of_range("Struct: fieldName not found.");
 }
 
-SelectResults::Iterator StructSetImpl::begin() const {
-  return m_structVector->begin();
+SelectResults::iterator StructSetImpl::begin() {
+  return m_structVector.begin();
 }
 
-SelectResults::Iterator StructSetImpl::end() const {
-  return m_structVector->end();
-}
+SelectResults::iterator StructSetImpl::end() { return m_structVector.end(); }
 
 }  // namespace client
 }  // namespace geode

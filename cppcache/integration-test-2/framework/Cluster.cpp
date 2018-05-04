@@ -19,11 +19,19 @@
 
 #include <future>
 
+#include <signal.h>
+
+#include <boost/filesystem.hpp>
+
 void Locator::start() {
   if (started_) return;
 
   auto safeName = name_;
   std::replace(safeName.begin(), safeName.end(), '/', '_');
+
+  if (boost::filesystem::is_regular_file(name_ + "/vf.gf.locator.pid")) {
+    cluster_.getGfsh().stop().locator().withDir(name_).execute();
+  }
 
   cluster_.getGfsh()
       .start()

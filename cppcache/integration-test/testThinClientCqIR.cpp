@@ -36,6 +36,7 @@
 #include <geode/QueryService.hpp>
 
 #include "ThinClientCQ.hpp"
+#include <hacks/range.h>
 
 using namespace apache::geode::client;
 using namespace test;
@@ -181,38 +182,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       auto results = qry->executeWithInitialResults();
       LOG("before executing executeWithInitialResults done.");
 
-      auto iter = results->getIterator();
       char buf[100];
       auto count = results->size();
       sprintf(buf, "results size=%zd", count);
       LOG(buf);
       ASSERT(count > 0, "count should be > 0");
-      while (iter.hasNext()) {
+      for (auto&& ser : hacks::range(*results)) {
         count--;
-        auto ser = iter.next();
 
-        if (ser != nullptr) {
+        if (ser) {
           printf(" query pulled object %s\n", ser->toString().c_str());
 
           auto stPtr = std::dynamic_pointer_cast<Struct>(ser);
           ASSERT(stPtr != nullptr, "Failed to get struct in CQ result.");
 
-          if (stPtr != nullptr) {
-            LOG(" got struct ptr ");
-            auto serKey = (*stPtr)["key"];
-            ASSERT(serKey != nullptr, "Failed to get KEY in CQ result.");
-            if (serKey != nullptr) {
-              LOG("got struct key ");
-              printf("  got struct key %s\n", serKey->toString().c_str());
-            }
+          LOG(" got struct ptr ");
+          auto serKey = (*stPtr)["key"];
+          ASSERT(serKey != nullptr, "Failed to get KEY in CQ result.");
+          if (serKey != nullptr) {
+            LOG("got struct key ");
+            printf("  got struct key %s\n", serKey->toString().c_str());
+          }
 
-            auto serVal = (*stPtr)["value"];
-            ASSERT(serVal != nullptr, "Failed to get VALUE in CQ result.");
+          auto serVal = (*stPtr)["value"];
+          ASSERT(serVal != nullptr, "Failed to get VALUE in CQ result.");
 
-            if (serVal != nullptr) {
-              LOG("got struct value ");
-              printf("  got struct value %s\n", serVal->toString().c_str());
-            }
+          if (serVal != nullptr) {
+            LOG("got struct value ");
+            printf("  got struct value %s\n", serVal->toString().c_str());
           }
         } else {
           printf("   query pulled bad object\n");
@@ -227,38 +224,33 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       results = qry->executeWithInitialResults();
       LOG("before executing executeWithInitialResults2 done.");
 
-      auto iter2 = results->getIterator();
-
       count = results->size();
       sprintf(buf, "results2 size=%zd", count);
       LOG(buf);
       ASSERT(count > 0, "count should be > 0");
-      while (iter2.hasNext()) {
+      for (auto&& ser : hacks::range(*results)) {
         count--;
-        auto ser = iter2.next();
 
-        if (ser != nullptr) {
+        if (ser) {
           printf(" query pulled object %s\n", ser->toString().c_str());
 
           auto stPtr = std::dynamic_pointer_cast<Struct>(ser);
           ASSERT(stPtr != nullptr, "Failed to get struct in CQ result.");
 
-          if (stPtr != nullptr) {
-            LOG(" got struct ptr ");
-            auto serKey = (*stPtr)["key"];
-            ASSERT(serKey != nullptr, "Failed to get KEY in CQ result.");
-            if (serKey != nullptr) {
-              LOG("got struct key ");
-              printf("  got struct key %s\n", serKey->toString().c_str());
-            }
+          LOG(" got struct ptr ");
+          auto serKey = (*stPtr)["key"];
+          ASSERT(serKey != nullptr, "Failed to get KEY in CQ result.");
+          if (serKey != nullptr) {
+            LOG("got struct key ");
+            printf("  got struct key %s\n", serKey->toString().c_str());
+          }
 
-            auto serVal = (*stPtr)["value"];
-            ASSERT(serVal != nullptr, "Failed to get VALUE in CQ result.");
+          auto serVal = (*stPtr)["value"];
+          ASSERT(serVal != nullptr, "Failed to get VALUE in CQ result.");
 
-            if (serVal != nullptr) {
-              LOG("got struct value ");
-              printf("  got struct value %s\n", serVal->toString().c_str());
-            }
+          if (serVal != nullptr) {
+            LOG("got struct value ");
+            printf("  got struct value %s\n", serVal->toString().c_str());
           }
         } else {
           printf("   query pulled bad object\n");

@@ -43,14 +43,7 @@ class SelectResultsIterator;
  */
 class APACHE_GEODE_EXPORT SelectResults {
  public:
-  virtual ~SelectResults() = default;
-
-  /**
-   * Check whether the SelectResults is modifiable.
-   *
-   * @returns false always at this time.
-   */
-  virtual bool isModifiable() const = 0;
+  virtual ~SelectResults() noexcept = default;
 
   /**
    * Get the size of the SelectResults.
@@ -70,21 +63,19 @@ class APACHE_GEODE_EXPORT SelectResults {
       size_t index) const = 0;
 
   /**
-   * Get a SelectResultsIterator with which to iterate over the items in the
-   * SelectResults.
-   *
-   * @returns The SelectResultsIterator with which to iterate.
+   * Interface of an iterator for <code>SelectResults</code>.
    */
-  virtual SelectResultsIterator getIterator() = 0;
+  typedef std::vector<std::shared_ptr<Cacheable>>::iterator iterator;
 
-  /** Interface of an iterator for <code>SelectResults</code>.*/
-  typedef CacheableVector::iterator Iterator;
+  /**
+   * Get an iterator pointing to the start of <code>SelectResults</code>.
+   */
+  virtual iterator begin() = 0;
 
-  /** Get an iterator pointing to the start of vector. */
-  virtual Iterator begin() const = 0;
-
-  /** Get an iterator pointing to the end of vector. */
-  virtual Iterator end() const = 0;
+  /**
+   * Get an iterator pointing to the end of <code>SelectResults</code>.
+   */
+  virtual iterator end() = 0;
 };
 }  // namespace client
 }  // namespace geode

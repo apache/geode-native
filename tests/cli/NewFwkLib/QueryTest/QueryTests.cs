@@ -560,7 +560,7 @@ namespace Apache.Geode.Client.FwkLib
       bool isCq = GetBoolValue("cq");
       do
       {
-        int resultSize = GetUIntValue(ResultSize);  // set the query result size in xml
+        var resultSize = (ulong) GetUIntValue(ResultSize);  // set the query result size in xml
         FwkInfo("ReadQueryString: Query String is: {0}, resultSize: {1}",
           query, resultSize);
         if (resultSize < 0)

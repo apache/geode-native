@@ -35,6 +35,7 @@
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
+#include <hacks/range.h>
 
 using namespace apache::geode::client;
 using namespace test;
@@ -93,41 +94,29 @@ END_TASK(StepOne)
 DUNIT_TASK(CLIENT1, StepThree)
   {
     try {
-      auto qs = getHelper()->cachePtr->getQueryService("__TEST_POOL1__");
+      auto&& qs = getHelper()->cachePtr->getQueryService("__TEST_POOL1__");
+      auto qryStr = "select * from /Portfolios p where p.ID < 3";
+      auto&& qry = qs->newQuery(qryStr);
+      auto&& results = qry->execute();
 
-      char* qryStr = (char*)"select * from /Portfolios p where p.ID < 3";
-      auto qry = qs->newQuery(qryStr);
-      std::shared_ptr<SelectResults> results;
-      results = qry->execute();
-
-      SelectResultsIterator iter = results->getIterator();
       char buf[100];
       auto count = results->size();
       sprintf(buf, "results size=%zd", count);
       LOG(buf);
-      while (iter.hasNext()) {
+      for (auto&& ser : hacks::range(*results)) {
         count--;
-        auto ser = iter.next();
-        auto portfolio = std::dynamic_pointer_cast<Portfolio>(ser);
-        auto position = std::dynamic_pointer_cast<Position>(ser);
 
-        if (portfolio != nullptr) {
+        if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(ser)) {
           printf("   query pulled portfolio object ID %d, pkid %s\n",
                  portfolio->getID(), portfolio->getPkid()->value().c_str());
-        }
-
-        else if (position != nullptr) {
+        } else if (auto position = std::dynamic_pointer_cast<Position>(ser)) {
           printf("   query  pulled position object secId %s, shares %d\n",
                  position->getSecId()->value().c_str(),
                  position->getSharesOutstanding());
-        }
-
-        else {
-          if (ser != nullptr) {
+        } else if (ser) {
             printf(" query pulled object %s\n", ser->toString().c_str());
-          } else {
-            printf("   query pulled bad object\n");
-          }
+        } else {
+          printf("   query pulled nullptr object\n");
         }
       }
       sprintf(buf, "results last count=%zd", count);

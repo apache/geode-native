@@ -138,7 +138,7 @@ namespace Apache.Geode.Client.UnitTests
 
       Query<object> qry = qs.NewQuery<object>("select distinct * from /" + QERegionName);
       ISelectResults<object> results = qry.Execute();
-      Int32 count = results.Size;
+      var count = results.Size;
       Assert.AreEqual(4, count, "Expected 4 as number of portfolio objects.");
 
       // Bring down the region
@@ -151,7 +151,7 @@ namespace Apache.Geode.Client.UnitTests
       Util.Log("Going to execute the query");
       Query<object> qry = qs.NewQuery<object>("select distinct * from /" + QERegionName);
       ISelectResults<object> results = qry.Execute();
-      Int32 count = results.Size;
+      var count = results.Size;
       Assert.AreEqual(4, count, "Expected 4 as number of portfolio objects.");
     }
 
@@ -644,7 +644,7 @@ namespace Apache.Geode.Client.UnitTests
         foreach (Struct si in ss)
         {
           rows++;
-          fields = (Int32)si.Length;
+          fields = (Int32)si.Count;
         }
 
         Util.Log("Query index {0} has {1} rows and {2} fields.", qryIdx, rows, fields);
@@ -736,7 +736,7 @@ namespace Apache.Geode.Client.UnitTests
         foreach (Struct si in ss)
         {
           rows++;
-          fields = (Int32)si.Length;
+          fields = (Int32)si.Count;
         }
 
         Util.Log("Query index {0} has {1} rows and {2} fields.", qryIdx, rows, fields);
@@ -933,7 +933,7 @@ namespace Apache.Geode.Client.UnitTests
           killRes = ksd.BeginInvoke(null, null);
         }
 
-        Int32 resultSize = results.Size;
+        var resultSize = results.Size;
 
         if (i % 100 == 0)
         {
@@ -972,7 +972,7 @@ namespace Apache.Geode.Client.UnitTests
           killRes = ksd.BeginInvoke(null, null);
         }
 
-        Int32 resultSize = results.Size;
+        var resultSize = results.Size;
 
         if (i % 100 == 0)
         {
@@ -1180,7 +1180,7 @@ namespace Apache.Geode.Client.UnitTests
 
         ISelectResults<object> results = region.Query<object>(qrystr.Query);
 
-        if (results.Size != QueryStatics.RegionQueryRowCounts[qryIdx])
+        if (results.Size != (ulong) QueryStatics.RegionQueryRowCounts[qryIdx])
         {
           ErrorOccurred = true;
           Util.Log("FAIL: Query # {0} expected result size is {1}, actual is {2}", qryIdx,

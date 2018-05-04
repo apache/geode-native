@@ -81,3 +81,31 @@ TEST(StructSetTest, MissingFieldName) {
 
   ASSERT_THROW(ss.getFieldName(100), std::out_of_range);
 }
+
+TEST(StructSetTest, ForRange) {
+  auto values = CacheableVector::create();
+  std::vector<std::string> fieldNames;
+
+  size_t numOfFields = 10;
+
+  for (size_t i = 0; i < numOfFields; i++) {
+    std::string value = "value";
+    value += std::to_string(i);
+    std::string field = "field";
+    field += std::to_string(i);
+    values->push_back(CacheableString::create(value.c_str()));
+    fieldNames.push_back(field);
+  }
+
+  auto ss = StructSetImpl(values, fieldNames);
+
+  for(auto&& row : ss) {
+    auto rowStruct = std::dynamic_pointer_cast<Struct>(row);
+    ASSERT_NE(nullptr, rowStruct);
+
+    size_t i = 0;
+    for (auto&& column : *rowStruct) {
+      EXPECT_EQ("value" + std::to_string(i++), column->toString());
+    }
+  }
+}
