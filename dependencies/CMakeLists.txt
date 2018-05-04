@@ -26,6 +26,7 @@ set ( DEPENDENCIES
 	sqlite
 	doxygen
 	gtest
+  benchmark
 )
 
 if ( "" STREQUAL "${USE_C++}" )
