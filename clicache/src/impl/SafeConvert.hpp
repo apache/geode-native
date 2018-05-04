@@ -63,23 +63,23 @@ namespace Apache
         {
           return mg_obj->ptr();
         }
+
         if (auto mg_obj_delta = std::dynamic_pointer_cast<native::ManagedCacheableDeltaGeneric>(serializableObject))
         {
           return dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(mg_obj_delta->ptr());
         }
 
-        if (serializableObject->typeId() == 0)
+        if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(serializableObject))
         {
-          if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(serializableObject))
-          {
-            return gcnew UserFunctionExecutionException(mg_UFEEobj);
-          }
+          return gcnew UserFunctionExecutionException(mg_UFEEobj);
         }
 
-        auto wrapperMethod = TypeRegistry::GetWrapperGeneric( serializableObject->typeId( ) );             
-        if (wrapperMethod != nullptr)
-        {
-          return wrapperMethod(serializableObject);
+        if (auto primitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(serializableObject)) {
+          auto wrapperMethod = TypeRegistry::GetWrapperGeneric(primitive->getDsCode());             
+          if (wrapperMethod != nullptr)
+          {
+            return wrapperMethod(primitive);
+          }
         }
 
         return gcnew Apache::Geode::Client::Serializable( serializableObject );
@@ -135,34 +135,11 @@ namespace Apache
       generic<class TValue>
       inline static TValue SafeGenericUMSerializableConvert( std::shared_ptr<native::Serializable> obj)
       {
+        auto converted = SafeUMSerializableConvertGeneric(obj);
 
-        if (obj == nullptr) return TValue();
+        if (converted == nullptr) return TValue();
         
-        if (auto mg_obj = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(obj))
-        {
-          return (TValue)mg_obj->ptr();
-        }
-
-        if (auto mg_obj_delta = std::dynamic_pointer_cast<native::ManagedCacheableDeltaGeneric>(obj))
-        {
-          return safe_cast<TValue>(mg_obj_delta->ptr());
-        }
-
-        if (obj->typeId() == 0)
-        {
-          if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(obj))
-          {
-            return safe_cast<TValue> (gcnew UserFunctionExecutionException(mg_UFEEobj));
-          }
-        }
-
-        auto wrapperMethod = TypeRegistry::GetWrapperGeneric( obj->typeId( ) );             
-        if (wrapperMethod != nullptr)
-        {
-          return safe_cast<TValue>(wrapperMethod( obj ));
-        }
-
-        return safe_cast<TValue>(gcnew Apache::Geode::Client::Serializable( obj ));
+        return safe_cast<TValue>(converted);
       }
 
       /// <summary>
@@ -233,11 +210,14 @@ namespace Apache
             return (Client::ICacheableKey^)mg_obj->ptr( );
         }
 
-        auto wrapperMethod = TypeRegistry::GetWrapperGeneric( obj->typeId( ) );
-        if (wrapperMethod != nullptr)
-        {
-          return (Client::ICacheableKey^)wrapperMethod( obj );
+        if (auto primitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(obj)) {
+          auto wrapperMethod = TypeRegistry::GetWrapperGeneric( primitive->getDsCode( ) );
+          if (wrapperMethod != nullptr)
+          {
+            return (Client::ICacheableKey^)wrapperMethod(primitive);
+          }
         }
+
         return gcnew Client::CacheableKey( obj );
       }
 

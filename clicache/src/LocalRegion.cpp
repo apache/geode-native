@@ -200,6 +200,7 @@ namespace Apache
         }
         else if( val1 != nullptr && val2 != nullptr )
         {
+          /* TODO serializable
           if (val1->classId() != val2->classId() || val1->typeId() != val2->typeId())
           {
             return false;
@@ -216,6 +217,7 @@ namespace Apache
           {
             return false;
           }
+          */
           return true;
         }
         return false;

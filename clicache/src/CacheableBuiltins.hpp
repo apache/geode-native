@@ -94,7 +94,7 @@ namespace Apache
         {
           try
           {
-            return static_cast<TNative*>(m_nativeptr->get())->value().ToString();
+            return dynamic_cast<TNative*>(m_nativeptr->get())->value().ToString();
           }
           finally
           {
@@ -113,8 +113,8 @@ namespace Apache
           if (auto o = dynamic_cast<CacheableBuiltinKey^>(other)) {
             try
             {
-              return static_cast<TNative*>(m_nativeptr->get())->operator==(
-                *static_cast<TNative*>(o->m_nativeptr->get()));
+              return dynamic_cast<TNative*>(m_nativeptr->get())->operator==(
+                *dynamic_cast<TNative*>(o->m_nativeptr->get()));
             }
             finally
             {
@@ -143,7 +143,7 @@ namespace Apache
         {
           try
           {
-            return (static_cast<TNative*>(m_nativeptr->get())->value() == other);
+            return (dynamic_cast<TNative*>(m_nativeptr->get())->value() == other);
           }
           finally
           {
@@ -161,7 +161,7 @@ namespace Apache
           {
             try
             {
-              return static_cast<TNative*>(m_nativeptr->get())->value();
+              return dynamic_cast<TNative*>(m_nativeptr->get())->value();
             }
             finally
             {
@@ -283,7 +283,7 @@ namespace Apache
         inline CacheableBuiltinArray(std::shared_ptr<native::Serializable> nptr)
           : Serializable(nptr)
         {
-          auto nativeptr = std::static_pointer_cast<TNative>(nptr);
+          auto nativeptr = std::dynamic_pointer_cast<TNative>(nptr);
           System::Int32 len = nativeptr->length();
           if (len > 0)
           {

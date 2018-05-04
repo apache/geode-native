@@ -42,6 +42,7 @@ namespace apache
   {
     namespace client
     {
+      /* TODO serializable
       void PdxManagedCacheableKey::toData(apache::geode::client::DataOutput& output) const
       {
         try
@@ -91,6 +92,7 @@ namespace apache
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
       }
+      */
 
       size_t PdxManagedCacheableKey::objectSize() const
       {
@@ -110,6 +112,7 @@ namespace apache
         return 0;
       }
 
+      /* TODO serializable
       System::Int32 PdxManagedCacheableKey::classId() const
       {
         return 0;
@@ -124,6 +127,7 @@ namespace apache
       {
         return 0;
       }
+      */
 
       std::string PdxManagedCacheableKey::toString() const
       {
@@ -296,7 +300,7 @@ namespace apache
           {
             auto managedclone = dynamic_cast<Apache::Geode::Client::IPdxSerializable^>(cloneable->Clone());
 
-            return std::shared_ptr<Delta>(static_cast<PdxManagedCacheableKey*>(SafeGenericM2UMConvert(managedclone)));
+            return std::shared_ptr<Delta>(dynamic_cast<PdxManagedCacheableKey*>(SafeGenericM2UMConvert(managedclone)));
           }
         }
         catch (Apache::Geode::Client::GeodeException^ ex)

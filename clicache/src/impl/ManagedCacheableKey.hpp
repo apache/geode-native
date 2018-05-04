@@ -82,45 +82,9 @@ namespace apache
         }
 
         /// <summary>
-        /// serialize this object
-        /// </summary>
-        virtual void toData(apache::geode::client::DataOutput& output) const override;
-
-        /// <summary>
-        /// deserialize this object, typical implementation should return
-        /// the 'this' pointer.
-        /// </summary>
-        virtual void fromData(apache::geode::client::DataInput& input) override;
-
-
-        /// <summary>
         /// return the size of this object in bytes
         /// </summary>
         virtual size_t objectSize() const override;
-
-        /// <summary>
-        /// return the classId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        virtual System::Int32 classId() const override;
-
-        /// <summary>
-        /// return the typeId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        virtual int8_t typeId() const override;
-
-        /// <summary>
-        /// return the Data Serialization Fixed ID type.
-        /// This is used to determine what instance type to create
-        /// and deserialize into.
-        ///
-        /// Note that this should not be overridden by custom implementations
-        /// and is reserved only for builtin types.
-        /// </summary>
-        virtual int8_t DSFID() const override;
 
         /// <summary>
         /// Display this object as 'string', which depends on the implementation in

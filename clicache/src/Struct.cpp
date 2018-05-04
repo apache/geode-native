@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
- 
+
 
 #include "begin_native.hpp"
 #include <geode/Struct.hpp>
@@ -41,7 +41,7 @@ namespace Apache
         try
         {
           return (TypeRegistry::GetManagedValueGeneric<Object^>(
-            static_cast<native::Struct*>(m_nativeptr->get())->operator[](index)));
+            dynamic_cast<native::Struct*>(m_nativeptr->get())->operator[](index)));
         }
         finally
         {
@@ -54,7 +54,7 @@ namespace Apache
         try
         {
           return (TypeRegistry::GetManagedValueGeneric<Object^>(
-            static_cast<native::Struct*>(m_nativeptr->get())->operator[](marshal_as<std::string>(fieldName))));
+            dynamic_cast<native::Struct*>(m_nativeptr->get())->operator[](marshal_as<std::string>(fieldName))));
         }
         finally
         {
@@ -67,7 +67,7 @@ namespace Apache
         try
         {
           return StructSet<Object^>::Create(
-            static_cast<native::Struct*>(m_nativeptr->get())->getStructSet());
+            dynamic_cast<native::Struct*>(m_nativeptr->get())->getStructSet());
         }
         finally
         {
@@ -80,7 +80,7 @@ namespace Apache
       {
         try
         {
-          return static_cast<native::Struct*>(m_nativeptr->get())->size();
+          return dynamic_cast<native::Struct*>(m_nativeptr->get())->size();
         }
         finally
         {

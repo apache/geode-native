@@ -76,7 +76,7 @@ namespace Apache
         try
         {
           auto nativeOutput = output->GetNative();
-          m_nativeptr->get()->toData(*nativeOutput);
+          // TODO serializable - m_nativeptr->get()->toData(*nativeOutput);
         }
         finally
         {
@@ -97,7 +97,7 @@ namespace Apache
 
         try
         {
-          m_nativeptr->get()->fromData(*nativeInput);
+          // TODO serializable - m_nativeptr->get()->fromData(*nativeInput);
           if (input->IsManagedObject()) {
             input->SetBuffer();
           }
@@ -122,23 +122,25 @@ namespace Apache
 
       System::UInt32 Apache::Geode::Client::Serializable::ClassId::get()
       {
-        try
-        {
-          auto n = m_nativeptr->get();
-          int8_t typeId = n->typeId();
-          if (typeId == native::GeodeTypeIdsImpl::CacheableUserData ||
-            typeId == native::GeodeTypeIdsImpl::CacheableUserData2 ||
-            typeId == native::GeodeTypeIdsImpl::CacheableUserData4) {
-            return n->classId();
-          }
-          else {
-            return typeId + 0x80000000 + (0x20000000 * n->DSFID());
-          }
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+        throw gcnew UnsupportedOperationException("Serializable::ClassId");
+        // TODO serializable
+        //try
+        //{
+        //  auto n = m_nativeptr->get();
+        //  int8_t typeId = n->typeId();
+        //  if (typeId == native::GeodeTypeIdsImpl::CacheableUserData ||
+        //    typeId == native::GeodeTypeIdsImpl::CacheableUserData2 ||
+        //    typeId == native::GeodeTypeIdsImpl::CacheableUserData4) {
+        //    return n->classId();
+        //  }
+        //  else {
+        //    return typeId + 0x80000000 + (0x20000000 * n->DSFID());
+        //  }
+        //}
+        //finally
+        //{
+        //  GC::KeepAlive(m_nativeptr);
+        //}
       }
 
       String^ Apache::Geode::Client::Serializable::ToString()
@@ -275,12 +277,14 @@ namespace Apache
         std::shared_ptr<apache::geode::client::Serializable> sPtr = CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetEnum(cache->GetNative()->getPoolManager().getAll().begin()->second, val);
         return (Internal::EnumInfo^)SafeUMSerializableConvertGeneric(sPtr);
       }
+
       void Serializable::RegisterPDXManagedCacheableKey(Cache^ cache)
       {
         auto cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
         cacheImpl->getSerializationRegistry()->setPdxTypeHandler([](native::DataInput& dataInput){
           auto obj = std::make_shared<native::PdxManagedCacheableKey>();
-          obj->fromData(dataInput);
+          // TODO serializable
+          // obj->fromData(dataInput);
           return obj;
         });
       }
@@ -453,7 +457,7 @@ namespace Apache
       //byte
       Byte Serializable::getByte(std::shared_ptr<native::Serializable> nativeptr)
       {
-        native::CacheableByte* ci = static_cast<native::CacheableByte*>(nativeptr.get());
+        auto ci = dynamic_cast<native::CacheableByte*>(nativeptr.get());
         return ci->value();
       }
 
@@ -465,7 +469,7 @@ namespace Apache
       //boolean
       bool Serializable::getBoolean(std::shared_ptr<native::Serializable> nativeptr)
       {
-        native::CacheableBoolean* ci = static_cast<native::CacheableBoolean*>(nativeptr.get());
+        auto ci = dynamic_cast<native::CacheableBoolean*>(nativeptr.get());
         return ci->value();
       }
 
@@ -477,7 +481,7 @@ namespace Apache
       //widechar
       Char Serializable::getChar(std::shared_ptr<native::Serializable> nativeptr)
       {
-        native::CacheableCharacter* ci = static_cast<native::CacheableCharacter*>(nativeptr.get());
+        auto ci = dynamic_cast<native::CacheableCharacter*>(nativeptr.get());
         return ci->value();
       }
 
@@ -489,7 +493,7 @@ namespace Apache
       //double
       double Serializable::getDouble(std::shared_ptr<native::Serializable> nativeptr)
       {
-        native::CacheableDouble* ci = static_cast<native::CacheableDouble*>(nativeptr.get());
+        auto ci = dynamic_cast<native::CacheableDouble*>(nativeptr.get());
         return ci->value();
       }
 
@@ -501,7 +505,7 @@ namespace Apache
       //float
       float Serializable::getFloat(std::shared_ptr<native::Serializable> nativeptr)
       {
-        native::CacheableFloat* ci = static_cast<native::CacheableFloat*>(nativeptr.get());
+        auto ci = dynamic_cast<native::CacheableFloat*>(nativeptr.get());
         return ci->value();
       }
 
@@ -513,7 +517,7 @@ namespace Apache
       //int16
       System::Int16 Serializable::getInt16(std::shared_ptr<native::Serializable> nativeptr)
       {
-        native::CacheableInt16* ci = static_cast<native::CacheableInt16*>(nativeptr.get());
+        auto ci = dynamic_cast<native::CacheableInt16*>(nativeptr.get());
         return ci->value();
       }
 
@@ -525,7 +529,7 @@ namespace Apache
       //int32
       System::Int32 Serializable::getInt32(std::shared_ptr<native::Serializable> nativeptr)
       {
-        native::CacheableInt32* ci = static_cast<native::CacheableInt32*>(nativeptr.get());
+        auto ci = dynamic_cast<native::CacheableInt32*>(nativeptr.get());
         return ci->value();
       }
 
@@ -537,7 +541,7 @@ namespace Apache
       //int64
       System::Int64 Serializable::getInt64(std::shared_ptr<native::Serializable> nativeptr)
       {
-        native::CacheableInt64* ci = static_cast<native::CacheableInt64*>(nativeptr.get());
+        auto ci = dynamic_cast<native::CacheableInt64*>(nativeptr.get());
         return ci->value();
       }
 
@@ -597,7 +601,7 @@ namespace Apache
           cStr = native::CacheableString::create(marshal_as<std::string>(value));
         }
         else {
-          cStr = std::static_pointer_cast<native::CacheableString>(native::CacheableString::createDeserializable());
+          cStr = std::dynamic_pointer_cast<native::CacheableString>(native::CacheableString::createDeserializable());
         }
 
         return cStr;

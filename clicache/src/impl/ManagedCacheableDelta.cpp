@@ -36,7 +36,7 @@ namespace apache
   {
     namespace client
     {
-
+      /* TODO serializable
       void ManagedCacheableDeltaGeneric::toData(DataOutput& output) const
       {
         try {
@@ -81,6 +81,7 @@ namespace apache
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
       }
+      */
 
      size_t ManagedCacheableDeltaGeneric::objectSize() const
       {
@@ -100,6 +101,7 @@ namespace apache
         return 0;
       }
 
+     /* TODO serializable
       System::Int32 ManagedCacheableDeltaGeneric::classId() const
       {
         System::UInt32 classId;
@@ -155,6 +157,7 @@ namespace apache
         }
         return 0;
       }
+      */
 
       bool ManagedCacheableDeltaGeneric::hasDelta() const
       {
@@ -205,7 +208,7 @@ namespace apache
             Apache::Geode::Client::IGeodeDelta^) m_managedptr)) {
             auto Mclone = 
               dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(cloneable->Clone());
-            return std::shared_ptr<Delta>(static_cast<ManagedCacheableDeltaGeneric*>(
+            return std::shared_ptr<Delta>(dynamic_cast<ManagedCacheableDeltaGeneric*>(
               SafeMSerializableConvertGeneric(Mclone)));
           }
         }

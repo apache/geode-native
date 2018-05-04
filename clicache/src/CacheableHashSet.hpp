@@ -56,7 +56,7 @@ namespace Apache
           {
             output->WriteArrayLen(this->Count);
 
-            auto set = static_cast<HSTYPE*>(m_nativeptr->get());
+            auto set = dynamic_cast<HSTYPE*>(m_nativeptr->get());
             for (const auto& iter : *set) {
               auto key = TypeRegistry::GetManagedValueGeneric<Object^>(iter);
               output->WriteObject(key);
@@ -178,14 +178,14 @@ namespace Apache
             virtual bool MoveNext()
             {
               auto nptr = m_nativeptr->get();
-              bool isEnd = static_cast<HSTYPE*>(m_set->m_nativeptr->get())->end() == *nptr;
+              bool isEnd = dynamic_cast<HSTYPE*>(m_set->m_nativeptr->get())->end() == *nptr;
               if (!m_started) {
                 m_started = true;
               }
               else {
                 if (!isEnd) {
                   (*nptr)++;
-                  isEnd = static_cast<HSTYPE*>(m_set->m_nativeptr->get())->end() == *nptr;
+                  isEnd = dynamic_cast<HSTYPE*>(m_set->m_nativeptr->get())->end() == *nptr;
                 }
               }
               GC::KeepAlive(this);
@@ -202,7 +202,7 @@ namespace Apache
               {
                 m_nativeptr = gcnew native_unique_ptr<typename HSTYPE::iterator>(
                     std::make_unique<typename HSTYPE::iterator>(
-                    static_cast<HSTYPE*>(m_set->m_nativeptr->get())->begin()));
+                    dynamic_cast<HSTYPE*>(m_set->m_nativeptr->get())->begin()));
               }
               finally
               {
@@ -280,7 +280,7 @@ namespace Apache
             {
               try
               {
-                return static_cast<int>(static_cast<HSTYPE*>(m_nativeptr->get())->max_size());
+                return static_cast<int>(dynamic_cast<HSTYPE*>(m_nativeptr->get())->max_size());
               }
               finally
               {
@@ -298,7 +298,7 @@ namespace Apache
             {
               try
               {
-                return static_cast<HSTYPE*>(m_nativeptr->get())->empty();
+                return dynamic_cast<HSTYPE*>(m_nativeptr->get())->empty();
               }
               finally
               {
@@ -316,7 +316,7 @@ namespace Apache
             {
               try
               {
-                return static_cast<int>(static_cast<HSTYPE*>(m_nativeptr->get())->bucket_count());
+                return static_cast<int>(dynamic_cast<HSTYPE*>(m_nativeptr->get())->bucket_count());
               }
               finally
               {
@@ -333,7 +333,7 @@ namespace Apache
           {
             try
             {
-              static_cast<HSTYPE*>(m_nativeptr->get())->reserve(size);
+              dynamic_cast<HSTYPE*>(m_nativeptr->get())->reserve(size);
             }
             finally
             {
@@ -353,8 +353,8 @@ namespace Apache
             try
             {
               if (other != nullptr) {
-                static_cast<HSTYPE*>(m_nativeptr->get())->swap(
-                  *static_cast<HSTYPE*>(other->m_nativeptr->get()));
+                dynamic_cast<HSTYPE*>(m_nativeptr->get())->swap(
+                  *dynamic_cast<HSTYPE*>(other->m_nativeptr->get()));
               }
             }
             finally
@@ -378,7 +378,7 @@ namespace Apache
 
             try
             {
-              static_cast<HSTYPE*>(m_nativeptr->get())->insert(Serializable::GetUnmanagedValueGeneric(item));
+              dynamic_cast<HSTYPE*>(m_nativeptr->get())->insert(Serializable::GetUnmanagedValueGeneric(item));
             }
             finally
             {
@@ -395,7 +395,7 @@ namespace Apache
           {
             try
             {
-              static_cast<HSTYPE*>(m_nativeptr->get())->clear();
+              dynamic_cast<HSTYPE*>(m_nativeptr->get())->clear();
             }
             finally
             {
@@ -418,7 +418,7 @@ namespace Apache
           {
             try
             {
-              return static_cast<HSTYPE*>(m_nativeptr->get())->find(Serializable::GetUnmanagedValueGeneric(item)) != static_cast<HSTYPE*>(m_nativeptr->get())->end();
+              return dynamic_cast<HSTYPE*>(m_nativeptr->get())->find(Serializable::GetUnmanagedValueGeneric(item)) != dynamic_cast<HSTYPE*>(m_nativeptr->get())->end();
             }
             finally
             {
@@ -455,7 +455,7 @@ namespace Apache
                                                    " array is null or array index is less than zero");
             }
 
-            auto set = static_cast<HSTYPE*>(m_nativeptr->get());
+            auto set = dynamic_cast<HSTYPE*>(m_nativeptr->get());
             System::Int32 index = arrayIndex;
 
             if (arrayIndex >= array->Length ||
@@ -482,7 +482,7 @@ namespace Apache
             {
               try
               {
-                return static_cast<int>(static_cast<HSTYPE*>(m_nativeptr->get())->size());
+                return static_cast<int>(dynamic_cast<HSTYPE*>(m_nativeptr->get())->size());
               }
               finally
               {
@@ -508,7 +508,7 @@ namespace Apache
           {
             try
             {
-              return (static_cast<HSTYPE*>(m_nativeptr->get())->erase(Serializable::GetUnmanagedValueGeneric(item)) > 0);
+              return (dynamic_cast<HSTYPE*>(m_nativeptr->get())->erase(Serializable::GetUnmanagedValueGeneric(item)) > 0);
             }
             finally
             {

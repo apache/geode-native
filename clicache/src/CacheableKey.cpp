@@ -31,12 +31,11 @@ namespace Apache
 
       namespace native = apache::geode::client;
 
-     // generic<class TKey>
       System::Int32 CacheableKey::GetHashCode()
       {
         try
         {
-          return static_cast<native::CacheableKey*>(m_nativeptr->get())->hashcode();
+          return dynamic_cast<native::CacheableKey*>(m_nativeptr->get())->hashcode();
         }
         finally
         {
@@ -44,7 +43,6 @@ namespace Apache
         }
       }
 
-     // generic<class TKey>
       bool CacheableKey::Equals(Client::ICacheableKey^ other)
       {
         if (other == nullptr || other->ClassId != ClassId) {
@@ -52,8 +50,8 @@ namespace Apache
         }
         try
         {
-          return static_cast<native::CacheableKey*>(m_nativeptr->get())->operator==(
-            *static_cast<native::CacheableKey*>(
+          return dynamic_cast<native::CacheableKey*>(m_nativeptr->get())->operator==(
+            *dynamic_cast<native::CacheableKey*>(
             ((Client::CacheableKey^)other)->m_nativeptr->get()));
         }
         finally
@@ -63,61 +61,51 @@ namespace Apache
         }
       }
 
-      //generic<class TKey>
       bool CacheableKey::Equals(Object^ obj)
       {
         return Equals(dynamic_cast<CacheableKey^>(obj));
       }
 
-      //generic<class TKey>
       CacheableKey::operator CacheableKey^ (Byte value)
       {
         return (CacheableKey^) CacheableByte::Create(value);
       }
 
-      //generic<class TKey>
       CacheableKey::operator CacheableKey^ (bool value)
       {
         return (CacheableKey^) CacheableBoolean::Create(value);
       }
 
-      //generic<class TKey>
       CacheableKey::operator CacheableKey^ (Char value)
       {
         return (CacheableKey^) CacheableCharacter::Create(value);
       }
 
-      //generic<class TKey>
       CacheableKey::operator CacheableKey^ (Double value)
       {
         return (CacheableKey^) CacheableDouble::Create(value);
       }
 
-      //generic<class TKey>
       CacheableKey::operator CacheableKey^ (Single value)
       {
         return (CacheableKey^) CacheableFloat::Create(value);
       }
 
-      //generic<class TKey>
       CacheableKey::operator CacheableKey^ (System::Int16 value)
       {
         return (CacheableKey^) CacheableInt16::Create(value);
       }
 
-      //generic<class TKey>
       CacheableKey::operator CacheableKey^ (System::Int32 value)
       {
         return (CacheableKey^) CacheableInt32::Create(value);
       }
 
-     // generic<class TKey>
       CacheableKey::operator CacheableKey^ (System::Int64 value)
       {
         return (CacheableKey^) CacheableInt64::Create(value);
       }
 
-      //generic<class TKey>
       CacheableKey::operator CacheableKey ^ (String^ value)
       {
         return dynamic_cast<CacheableKey^>(CacheableString::Create(value));

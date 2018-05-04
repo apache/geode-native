@@ -38,6 +38,7 @@ namespace apache
     namespace client
     {
 
+      /* TODO serializable
       void ManagedCacheableKeyGeneric::toData(apache::geode::client::DataOutput& output) const
       {
         try {
@@ -79,7 +80,7 @@ namespace apache
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
       }
-
+      */
       size_t ManagedCacheableKeyGeneric::objectSize() const
       {
         try {
@@ -97,7 +98,7 @@ namespace apache
         }
         return 0;
       }
-
+      /* TODO serializable
       System::Int32 ManagedCacheableKeyGeneric::classId() const
       {
         return (m_classId >= 0x80000000 ? 0 : m_classId);
@@ -126,6 +127,7 @@ namespace apache
         }
         return 0;
       }
+      */
 
       std::string ManagedCacheableKeyGeneric::toString() const
       {
