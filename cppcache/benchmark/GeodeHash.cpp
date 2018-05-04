@@ -26,7 +26,8 @@ class GeodeHashBM : public benchmark::Fixture {};
 BENCHMARK_DEFINE_F(GeodeHashBM, std_string)(benchmark::State& state) {
   std::string x(state.range(0), 'x');
   for (auto _ : state) {
-    auto hashcode = geode_hash<std::string>{}(x);
+    int hashcode;
+    benchmark::DoNotOptimize(hashcode = geode_hash<std::string>{}(x));
   }
 }
 BENCHMARK_REGISTER_F(GeodeHashBM, std_string)->Range(8, 8 << 10);
@@ -34,7 +35,8 @@ BENCHMARK_REGISTER_F(GeodeHashBM, std_string)->Range(8, 8 << 10);
 BENCHMARK_DEFINE_F(GeodeHashBM, std_u16string)(benchmark::State& state) {
   std::u16string x(state.range(0), u'x');
   for (auto _ : state) {
-    auto hashcode = geode_hash<std::u16string>{}(x);
+    int hashcode;
+    benchmark::DoNotOptimize(hashcode = geode_hash<std::u16string>{}(x));
   }
 }
 BENCHMARK_REGISTER_F(GeodeHashBM, std_u16string)->Range(8, 8 << 10);
