@@ -26,7 +26,6 @@
 #include <geode/QueryService.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/TypeRegistry.hpp>
-#include <geode/SelectResultsIterator.hpp>
 
 #include "framework/Cluster.h"
 
@@ -98,8 +97,8 @@ TEST(ChunkHandlerThreadTest, isDisabledUsesSameThread) {
   auto queryResults =
       cache.getQueryService()->newQuery("select * from /region")->execute();
 
-  auto returnedObjectOne = std::dynamic_pointer_cast<SerializableWithThreadId>(
-      queryResults->getIterator().next());
+  auto returnedObjectOne =
+      std::dynamic_pointer_cast<SerializableWithThreadId>((*queryResults)[0]);
 
   EXPECT_EQ(objectOne->getId(), returnedObjectOne->getId());
 
@@ -130,8 +129,8 @@ TEST(ChunkHandlerThreadTest, isEnabledUsesDifferentThread) {
   auto queryResults =
       cache.getQueryService()->newQuery("select * from /region")->execute();
 
-  auto returnedObjectOne = std::dynamic_pointer_cast<SerializableWithThreadId>(
-      queryResults->getIterator().next());
+  auto returnedObjectOne =
+      std::dynamic_pointer_cast<SerializableWithThreadId>((*queryResults)[0]);
 
   EXPECT_EQ(objectOne->getId(), returnedObjectOne->getId());
 
