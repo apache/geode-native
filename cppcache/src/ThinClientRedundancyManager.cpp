@@ -1192,7 +1192,7 @@ void ThinClientRedundancyManager::doPeriodicAck() {
 
       if (endpoint != m_redundantEndpoints.end()) {
         TcrMessagePeriodicAck request(
-            m_theTcrConnManager->getCacheImpl()->getCache()->createDataOutput(),
+            m_theTcrConnManager->getCacheImpl()->createDataOutput(),
             entries);
         TcrMessageReply reply(true, nullptr);
 

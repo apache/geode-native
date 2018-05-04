@@ -231,7 +231,6 @@ GfErrType TcrEndpoint::createNewConnection(
           TcrMessageUpdateClientNotification updateNotificationMsg(
               newConn->getConnectionManager()
                   .getCacheImpl()
-                  ->getCache()
                   ->createDataOutput(),
               static_cast<int32_t>(newConn->getPort()));
           newConn->send(updateNotificationMsg.getMsgData(),
