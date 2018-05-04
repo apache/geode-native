@@ -61,14 +61,6 @@ void PdxWrapper::fromData(PdxReader& input) {
   m_userObject = input.getPdxSerializer()->fromData(m_className, input);
 }
 
-size_t PdxWrapper::objectSize() const {
-  if (m_sizer == nullptr || m_userObject == nullptr) {
-    return 0;
-  } else {
-    return m_sizer(m_userObject, m_className.c_str());
-  }
-}
-
 std::string PdxWrapper::toString() const {
   return "PdxWrapper for " + m_className;
 }
