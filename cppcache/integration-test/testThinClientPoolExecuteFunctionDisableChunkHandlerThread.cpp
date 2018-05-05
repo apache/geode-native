@@ -134,7 +134,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartTestClient)
   {
     LOG("in before starting StartTestClient");
     auto config = Properties::create();
-    config->insert("disable-chunk-handler-thread", "true");
+    config->insert("enable-chunk-handler-thread", "false");
     config->insert("read-timeout-unit-in-millis", "true");
     config->insert("ping-interval", "-1");
     config->insert("bucket-wait-timeout", "2000s");
@@ -155,7 +155,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StartTestClient2)
   {
     LOG("in before starting StartTestClient");
     auto config = Properties::create();
-    config->insert("disable-chunk-handler-thread", "true");
+    config->insert("enable-chunk-handler-thread", "false");
     config->insert("read-timeout-unit-in-millis", "true");
     config->insert("ping-interval", "-1");
     config->insert("bucket-wait-timeout", "2000s");
