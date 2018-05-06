@@ -23,8 +23,8 @@ set( ${PROJECT_NAME}_DEPENDS gtest_gtest )
 
 include(ExternalProject)
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
-  set(SUN_COMPILER_FLAGS "-DCMAKE_CXX_FLAGS=-std=c++11 -m64")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
+  set(SUN_COMPILER_FLAGS "-DCMAKE_CXX_FLAGS=-m64")
 endif()
 
 ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
@@ -38,7 +38,21 @@ ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
    DEPENDS ${${PROJECT_NAME}_DEPENDS}
 )
 
+ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} SOURCE_DIR )
 ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} INSTALL_DIR )
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
+  set(PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches)
+  ExternalProject_Add_Step(${${PROJECT_NAME}_EXTERN} patches
+    ALWAYS 0
+    DEPENDEES download
+    DEPENDERS patch
+    DEPENDS ${PATCH_FILE}
+    BYPRODUCTS ${SOURCE_DIR}/CMakeLists.txt
+    WORKING_DIRECTORY ${SOURCE_DIR}
+    COMMAND ${PATCH} -u -N -p1 < ${PATCH_FILE}
+  )
+endif()
 
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} SYSTEM INTERFACE

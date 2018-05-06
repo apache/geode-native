@@ -40,6 +40,7 @@ endif()
 set(CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION "4.5.2")
 set(DOTNET_TARGET_FRAMEWORK_VERSION "4.5.2")
 set(BUILD_BITS 64 CACHE STRING "Build for 64 (Geode default) or 32 bit.")
+option(BUILD_BENCHMARKS "Build benchmarks" ON)
 
 set(PRODUCT_VENDOR "Apache" CACHE STRING "Product vendor")
 set(PRODUCT_VENDOR_NAME "The Apache Software Foundation" CACHE STRING "Product vendor full legal name")
@@ -91,12 +92,6 @@ set(CMAKE_INSTALL_PREFIX "nativeclient" CACHE STRING "Install prefix")
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug)
-endif()
-
-option(BUILD_BENCHMARKS "Build benchmarks" ON)
-if (CMAKE_CXX_COMPILER_ID MATCHES "SunPro" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "sparc")
-  # Google benchmark does not compile on SunPro for SPARC
-  set(BUILD_BENCHMARKS OFF)
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
