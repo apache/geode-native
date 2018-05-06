@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_executable(apache-geode-benchmark GeodeHash.cpp main.cpp)
+add_executable(apache-geode-benchmark GeodeHashBM.cpp main.cpp)
 
 target_link_libraries(apache-geode-benchmark
   apache-geode-static
