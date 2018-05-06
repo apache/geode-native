@@ -13,18 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-configure_file(framework/config.h.in config.h)
+configure_file(../integration/framework/config.h.in config.h)
 
 add_executable(integration-test-2
   ExampleTest.cpp
-  framework/Gfsh.cpp
-  framework/Gfsh.h
-  framework/Framework.cpp
-  framework/Framework.h
-  framework/Cluster.cpp
-  framework/Cluster.h
-  framework/GfshExecute.cpp
-  framework/GfshExecute.h
+  ../integration/framework/Gfsh.cpp
+  ../integration/framework/Gfsh.h
+  ../integration/framework/Framework.cpp
+  ../integration/framework/Framework.h
+  ../integration/framework/Cluster.cpp
+  ../integration/framework/Cluster.h
+  ../integration/framework/GfshExecute.cpp
+  ../integration/framework/GfshExecute.h
   RegionPutGetAllTest.cpp
   PdxInstanceTest.cpp
   RegisterKeysTest.cpp
@@ -47,6 +47,7 @@ target_include_directories(integration-test-2
 target_link_libraries(integration-test-2
   PUBLIC
     apache-geode
+    integration-framework
     testobject
     ACE
     GTest::GTest

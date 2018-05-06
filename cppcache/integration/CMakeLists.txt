@@ -13,15 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_executable(apache-geode-benchmark
-  main.cpp
-  GeodeHashBM.cpp
-  )
+add_subdirectory(framework)
 
-target_link_libraries(apache-geode-benchmark
-  PUBLIC
-    apache-geode-static
-    benchmark::benchmark
-  PRIVATE
-    _WarningsAsError
-  )
+if (BUILD_BENCHMARKS)
+  add_subdirectory(benchmark)
+endif()

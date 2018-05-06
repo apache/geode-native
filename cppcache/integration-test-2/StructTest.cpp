@@ -29,9 +29,9 @@
 #include <geode/RegionShortcut.hpp>
 #include <geode/Struct.hpp>
 
-#include "framework/Cluster.h"
-#include "framework/Framework.h"
-#include "framework/Gfsh.h"
+#include <framework/Framework.h>
+#include <framework/Gfsh.h>
+#include <framework/Cluster.h>
 
 namespace {
 

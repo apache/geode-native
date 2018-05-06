@@ -23,7 +23,7 @@
 #include <cstdint>
 #include <string>
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 #include <geode/Cache.hpp>
 #include <geode/PoolManager.hpp>

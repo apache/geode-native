@@ -33,8 +33,9 @@
 #include "LocalRegion.hpp"
 #include "NestedPdxObject.hpp"
 #include "PdxType.hpp"
-#include "framework/Cluster.h"
-#include "framework/Gfsh.h"
+
+#include <framework/Cluster.h>
+#include <framework/Gfsh.h>
 
 namespace {
 

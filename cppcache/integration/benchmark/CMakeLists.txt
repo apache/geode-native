@@ -13,15 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_executable(apache-geode-benchmark
+add_executable(apache-geode-integration-benchmark
   main.cpp
-  GeodeHashBM.cpp
+  RegionBM.cpp
   )
 
-target_link_libraries(apache-geode-benchmark
+target_link_libraries(apache-geode-integration-benchmark
   PUBLIC
-    apache-geode-static
+    apache-geode
     benchmark::benchmark
+    integration-framework
   PRIVATE
     _WarningsAsError
   )

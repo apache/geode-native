@@ -13,15 +13,49 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_executable(apache-geode-benchmark
-  main.cpp
-  GeodeHashBM.cpp
+configure_file(config.h.in config.h)
+
+add_library(integration-framework STATIC
+  Gfsh.cpp
+  Gfsh.h
+  Framework.cpp
+  Framework.h
+  Cluster.cpp
+  Cluster.h
+  GfshExecute.cpp
+  GfshExecute.h
   )
 
-target_link_libraries(apache-geode-benchmark
+target_compile_definitions(integration-framework
   PUBLIC
-    apache-geode-static
-    benchmark::benchmark
+    BOOST_ASIO_HAS_MOVE
+)
+
+target_include_directories(integration-framework
+  PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
+  PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}
+
+)
+
+target_link_libraries(integration-framework
+  PUBLIC
+    apache-geode
+    GTest::GTest
+    Boost::boost
+    Boost::system
+    Boost::log
+    Boost::filesystem
   PRIVATE
     _WarningsAsError
+    internal
+)
+
+if(WIN32)
+  target_compile_definitions(integration-framework
+    PUBLIC
+      # Required for Boost.WinAPI
+      _WIN32_WINNT=0x06020000
   )
+endif()
