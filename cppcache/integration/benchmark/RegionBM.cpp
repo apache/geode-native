@@ -17,15 +17,96 @@
 
 #include <benchmark/benchmark.h>
 
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
+#include <framework/Cluster.h>
+#include <framework/Gfsh.h>
+
 #include <geode/CacheableString.hpp>
+#include <geode/Cache.hpp>
+#include <geode/PoolManager.hpp>
+#include <geode/RegionFactory.hpp>
+#include <geode/RegionShortcut.hpp>
 
 using namespace apache::geode::client;
 
-class RegionBM : public benchmark::Fixture {};
+namespace {
 
-BENCHMARK_F(RegionBM, put)(benchmark::State& state) {
+std::shared_ptr<Region> setupRegion(Cache& cache) {
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("default")
+                    .create("region");
+
+  return region;
+}
+
+class RegionBM : public benchmark::Fixture {
+ public:
+  RegionBM() {
+    boost::log::core::get()->set_filter(boost::log::trivial::severity >=
+                                        boost::log::trivial::warning);
+  }
+
+  void SetUp(benchmark::State&) override {
+    if (!cluster) {
+      cluster = std::unique_ptr<Cluster>(
+          new Cluster(Name{this->name}, LocatorCount{1}, ServerCount{1}));
+      cluster->getGfsh()
+          .create()
+          .region()
+          .withName("region")
+          .withType("REPLICATE")
+          .execute();
+
+      cache = std::unique_ptr<Cache>(new Cache(cluster->createCache()));
+      region = cache->createRegionFactory(RegionShortcut::PROXY)
+          .setPoolName("default")
+          .create("region");
+    }
+  }
+
+  void TearDown(benchmark::State&) override {
+    if (cluster) {
+      region = nullptr;
+      cache = nullptr;
+      cluster = nullptr;
+    }
+  }
+
+ protected:
+
+  void SetName(const char* name) {
+    this->name = name;
+
+    Benchmark::SetName(name);
+  }
+
+  std::unique_ptr<Cluster> cluster;
+  std::unique_ptr<Cache> cache;
+  std::shared_ptr<Region> region;
+
+ private:
+  std::string name;
+};
+
+BENCHMARK_F(RegionBM, put_string)(benchmark::State& state) {
+  auto key = CacheableString::create("key");
+  auto value = CacheableString::create("value");
 
   for (auto _ : state) {
-
+    region->put(key, value);
   }
 }
+
+BENCHMARK_F(RegionBM, put_int)(benchmark::State& state) {
+  auto key = CacheableInt32::create(1);
+  auto value = CacheableInt32::create(1);
+
+  for (auto _ : state) {
+    region->put(key, value);
+  }
+}
+
+}  // namespace
