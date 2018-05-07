@@ -61,7 +61,9 @@ namespace Apache
         if (buffer != nullptr && size > 0) {
           _GF_MG_EXCEPTION_TRY2
 
-          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(std::unique_ptr<native::DataInput>(new native::DataInput(cache->GetNative()->createDataInput(buffer, size))));
+          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(
+            std::unique_ptr<native::DataInput>(
+              new native::DataInput(cache->GetNative()->createDataInput(buffer, size))));
           m_cursor = 0;
           m_isManagedObject = false;
           m_forStringDecode = gcnew array<Char>(100);

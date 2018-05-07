@@ -86,8 +86,8 @@ namespace Apache
           DataInput^ dataInput = gcnew DataInput(m_buffer, m_bufferLength, m_cache);
           dataInput->setRootObjectPdx(true);
           System::Int64 sampleStartNanos = Utils::startStatOpTime();
-          Object^ ret = Internal::PdxHelper::DeserializePdx(dataInput, true, m_typeId, m_bufferLength, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
-          //dataInput->ResetPdx(0);
+          Object^ ret = Internal::PdxHelper::DeserializePdx(dataInput, true, m_typeId, m_bufferLength,
+            CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
 
           if(m_cachePerfStats)
           {
