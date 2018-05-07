@@ -1,0 +1,70 @@
+---
+title: Getting Started with the Native Library
+---
+
+To use the <%=vars.product_name%> Native Library for developing <%=vars.product_name%> client applications:
+
+- Obtain a distribution of the Native library and install it on your development platform.
+- Establish access to a new or existing <%=vars.product_name%> cluster.
+- Set up your development environment with the tools you need, such as a compiler, a dynamic loader, and an OpenSSL security library.
+- Write your client application using the <%=vars.product_name%> native library to interact with the <%=vars.product_name%> server.
+
+## <a id="establish_cluster_access"></a>Establish Access to a <%=vars.product_name%> Cluster
+
+As you develop your application, you will need access to a <%=vars.product_name%> cluster.
+Your client application connects to a <%=vars.product_name%> cluster by specifying the address (host name
+or IP address) and port number of one or more locators, and the name of a region that also exists
+on the cluster.
+
+You can choose whether to use a large, remote, production-quality cluster, a small, local,
+development cluster, or something in-between, such as a testing or experimental lab installation.
+
+See [Client-to-Server Connection Process](../client-cache/client-to-server-connection.html) for details on how your 
+client application can connect to the server.
+
+Refer to the  [_GemFire User's Guide_](http://gemfire.docs.pivotal.io/gemfire/about_gemfire.html) for instructions on configuring and starting the cluster.
+
+
+## <a id="set_up_dev_environment"></a>Set Up Your Development Environment
+
+Whether you are developing a C++ or .NET application, you will need some essential tools, such as a compiler and a dynamic linker.
+Your compiler must have access to the Native Client header files, and the dynamic loader must have access to the Native Client libraries.
+The header files and libraries are located in *native-client-dir*.
+
+### <a id="app_dev_walkthroughs"></a>Application Development Walkthroughs
+
+- [C++ App Development Walkthrough](app-dev-walkthrough-cpp.html)
+- [.NET App Development Walkthrough](app-dev-walkthrough-dotnet.html)
+
+## <a id="programming_examples"></a>Programming Examples
+
+The <%=vars.product_name%> Client build provides a set of programming examples to help you understand the client API.
+The `examples` directory contains CMake files and a `cpp` subdirectory containing C++ examples.
+The Windows build also includes a `dotnet` subdirectory containing C# examples.
+
+CMake files are located at each level of the directory structure to allow examples to be built individually or in groups.
+
+The directory structure resembles this hierarchy (some entries are omitted for clarity):
+
+    MyProject/
+      cmake/
+      CMakeLists.txt
+      examples/
+        BUILDING.md
+        CMakeLists.txt
+        CMakeLists.txt.in
+        cmake/
+        cpp/
+          BUILDING.md
+          customserializable/
+          customserializer/
+          put-get-remove/
+        dotnet/
+          AuthInitialize/
+          PdxAutoSerializer/
+          PutGetRemove/
+          README.md
+
+See the `BUILDING.md` or `README.md` file in each directory for detailed instructions on building
+and executing the examples, and read the source code to understand how the examples are constructed.
+

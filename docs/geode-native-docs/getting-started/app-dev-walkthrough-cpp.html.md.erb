@@ -1,0 +1,130 @@
+---
+title:  C++ Application Development Walkthrough
+---
+
+This section describes how to set up a native client development environment using C++ and CMake.
+
+## <a id="prerequisites_cpp"></a>Prerequisites
+This walkthrough assumes that certain components are in place:
+
+- The **<%=vars.product_name%> Native Client libraries**. Install the Native Client as described in
+  [Getting Started with the Native Client](getting-started-nc-client.html). Follow the ease-of-use
+  recommendations by installing the Native Client in a well-known location and renaming it.
+
+| System | Native Client Library Well-Known Location |
+|-----|-----|
+| Linux | /usr/local/nativeclient |
+| Windows | C:\Program Files\nativeclient |
+
+
+- The **CMake** tool suite. Download and install CMake, following the instructions on [cmake.org] (https://cmake.org).
+
+- **GemFire**: Install and configure GemFire. See the [_GemFire User's Guide_](http://gemfire.docs.pivotal.io/gemfire/about_gemfire.html) for instructions and system requirements.
+
+To develop a Native Client application using C++ and CMake:
+
+  - Create a project directory structure
+  - Populate the project directories with C++ source code
+  - Configure the CMake build environment
+  - Run CMake to build your application
+  - Run your application
+
+## <a id="setting_up_dirs_cpp"></a>Setting up Directories and Sources
+
+1. Create a project directory structure. In this example, the project is called MyProject. The
+directory structure provides a place for your application source files and a `cmake` modules
+directory for project-specific CMake files:
+
+    ```
+    MyProject/
+      cmake/
+        FindGemFireNative.cmake
+      CMakeLists.txt
+      main.cpp
+    ```
+
+1. Change directory to MyProject and create your application sources. In this example, we have one
+source file, `main.cpp`.
+
+## <a id="configuring_cmake_cpp"></a>Configuring CMake
+
+1. Copy the `FindGemFireNative.cmake` script from one of the Native Client examples to the `cmake` subdirectory.
+
+1. Create CMakeLists.txt. Copy the file from an example, if you like, as a starting point. The CMakeLists.txt file
+should contain the following CMake instructions:
+
+  - CMake minimum version
+
+    ```
+    cmake_minimum_required(VERSION 3.10)
+    ```
+
+  - Your project name and language
+
+    ```
+    project(MyProject LANGUAGES CXX)
+    ```
+
+  - Minimum language version. For the Native Client, the minimum C++ version is 11.
+
+    ```
+    set(CMAKE_CXX_STANDARD 11)
+    ```
+
+  - Path to the CMake modules directory where the `FindGemFireNative.cmake` script is located and an instruction
+    telling CMake to use it:
+
+    ```
+    set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+    find_package(GemFireNative REQUIRED COMPONENTS cpp)
+    ```
+
+  - The compilation target and the source(s) to be compiled
+
+    ```
+    add_executable(MyProject main.cpp)
+
+    target_link_libraries(MyProject
+      PUBLIC
+        GemFireNative::cpp)
+    ```
+
+Combined, the above elements comprise the following CMakeLists.txt:
+
+```
+# CMakeLists.txt for C++ Native Client App
+cmake_minimum_required(VERSION 3.10)
+
+project(MyProject LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 11)
+
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
+find_package(GemFireNative REQUIRED COMPONENTS cpp)
+
+add_executable(MyProject main.cpp)
+
+target_link_libraries(MyProject
+  PUBLIC
+    GemFireNative::cpp)
+```
+
+## <a id="building_the_app_cpp"></a>Building the App
+
+1. Create a build directory and set it as your current directory:
+
+    ```
+    $ mkdir build
+    $ cd build
+    ```
+
+1. Run CMake twice, once to configure the build, then again to perform the build, generating the executable application.
+
+    ```
+    $ cmake ..
+    $ cmake --build .
+    ```
+
+This creates the executable application in your build directory.
+

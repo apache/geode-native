@@ -15,13 +15,36 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <div id="sub-nav" class="js-sidenav nav-container" role="navigation">
-    <a class="sidenav-title" data-behavior="SubMenuMobile">
-        Doc Index</a>
-    <div class="nav-content">
-        <ul>
-            <li>
-                <a href="/docs/guide-native/15/about-client-users-guide.html">Apache Geode Native Documentation</a>
-            </li>
-        </ul>
-    </div>
+<a class="sidenav-title" data-behavior="SubMenuMobile">Doc Index</a>
+  <div class="nav-content">
+  <ul>
+    <li>
+      <a href="/docs/guide-native/<%=vars.product_version_nodot%>/about-client-users-guide.html">Apache Geode Native Documentation</a>
+    </li>
+    <li class="has_submenu">
+      <a href="/docs/guide-native/<%=vars.product_version_nodot%>/getting-started/getting-started-nc-client.html">Getting Started with the Native Library</a>
+      <ul>
+        <li>
+          <a href="/docs/guide-native/<%=vars.product_version_nodot%>/getting-started/getting-started-nc-client.html#app_dev_walkthroughs">Application Development Walkthroughs</a>
+        </li>
+        <li>
+          <a href="/docs/guide-native/<%=vars.product_version_nodot%>/getting-started/getting-started-nc-client.html#programming_examples">Programming Examples</a>
+        </li>
+      </ul>
+    </li>
+    <li class="has_submenu">
+      <a href="/docs/guide-native/<%=vars.product_version_nodot%>/configuring/configuration.html">Configuring <%=vars.client_name%></a>
+      <ul>
+        <li class="has_submenu">
+          <a href="/docs/guide-native/<%=vars.product_version_nodot%>/configuring/system-level-configuration.html">System Level Configuration</a>
+          <ul>
+	    <li>
+	      <a href="/docs/guide-native/<%=vars.product_version_nodot%>/configuring/sysprops.html">System Properties</a>
+	    </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+  </div>
 </div>

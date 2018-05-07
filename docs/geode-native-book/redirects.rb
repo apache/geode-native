@@ -19,3 +19,6 @@ r301 %r{/releases/latest/javadoc/(.*)}, 'http://geode.apache.org/releases/latest
 # Links to User Guides #
 rewrite '/', '/docs/guide-native/15/about-client-users-guide.html'
 rewrite '/index.html', '/docs/guide-native/15/about-client-users-guide.html'
+r301 %r{/gfmanual/(.*)}, 'http://gemfire.docs.pivotal.io/docs-gemfire/$1'
+r301 %r{/serverman/(.*)}, 'http://geode.apache.org/docs/guide/16/$1'
+r301 %r{/geodeman/(.*)}, 'http://geode.apache.org/docs/guide/16/$1'
