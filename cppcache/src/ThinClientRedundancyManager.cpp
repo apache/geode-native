@@ -748,7 +748,7 @@ bool ThinClientRedundancyManager::readyForEvents(
   }
 
   TcrMessageClientReady request(std::unique_ptr<DataOutput>(new DataOutput(
-      m_theTcrConnManager->getCacheImpl()->getCache()->createDataOutput())));
+      m_theTcrConnManager->getCacheImpl()->createDataOutput())));
   TcrMessageReply reply(true, nullptr);
 
   GfErrType err = GF_NOTCON;
@@ -791,7 +791,7 @@ bool ThinClientRedundancyManager::sendMakePrimaryMesg(TcrEndpoint* ep,
   TcrMessageReply reply(false, nullptr);
   const TcrMessageMakePrimary makePrimaryRequest(
       std::unique_ptr<DataOutput>(new DataOutput(
-          m_theTcrConnManager->getCacheImpl()->getCache()->createDataOutput())),
+          m_theTcrConnManager->getCacheImpl()->createDataOutput())),
       ThinClientRedundancyManager::m_sentReadyForEvents);
 
   LOGFINE("Making primary subscription endpoint %s", ep->name().c_str());
@@ -1107,7 +1107,7 @@ bool ThinClientRedundancyManager::isDurable() {
 
 void ThinClientRedundancyManager::readyForEvents() {
   TcrMessageClientReady request(std::unique_ptr<DataOutput>(new DataOutput(
-      m_theTcrConnManager->getCacheImpl()->getCache()->createDataOutput())));
+      m_theTcrConnManager->getCacheImpl()->createDataOutput())));
   TcrMessageReply reply(true, nullptr);
   GfErrType result = GF_NOTCON;
   unsigned int epCount = 0;

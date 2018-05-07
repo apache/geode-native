@@ -339,7 +339,7 @@ GfErrType ThinClientDistributionManager::sendUserCredentials(
 
   TcrMessageUserCredential request(
       std::unique_ptr<DataOutput>(new DataOutput(
-          m_connManager.getCacheImpl()->getCache()->createDataOutput())),
+          m_connManager.getCacheImpl()->createDataOutput())),
       credentials, this);
 
   TcrMessageReply reply(true, this);
