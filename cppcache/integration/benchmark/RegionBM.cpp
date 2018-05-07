@@ -34,14 +34,6 @@ using namespace apache::geode::client;
 
 namespace {
 
-std::shared_ptr<Region> setupRegion(Cache& cache) {
-  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
-                    .setPoolName("default")
-                    .create("region");
-
-  return region;
-}
-
 class RegionBM : public benchmark::Fixture {
  public:
   RegionBM() {

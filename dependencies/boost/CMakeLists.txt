@@ -133,9 +133,13 @@ target_link_libraries(${PROJECT_NAME} INTERFACE
 add_library(Boost::boost ALIAS boost)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXTERN})
 
+find_package(Threads REQUIRED)
+
 add_boost_library(system DEPENDENCIES Boost::boost)
 add_boost_library(atomic DEPENDENCIES Boost::boost)
 add_boost_library(thread DEPENDENCIES Boost::atomic Boost::boost)
 add_boost_library(filesystem DEPENDENCIES Boost::system Boost::boost)
+add_boost_library(thread DEPENDENCIES Threads::Threads Boost::atomic Boost::boost)
+add_boost_library(filesystem DEPENDENCIES Boost::boost)
 add_boost_library(log DEPENDENCIES Boost::thread Boost::filesystem Boost::boost)
 add_boost_library(log_setup DEPENDENCIES Boost::log)
