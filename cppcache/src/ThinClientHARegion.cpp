@@ -156,9 +156,7 @@ void ThinClientHARegion::addDisMessToQueue() {
     if (poolDM->m_redundancyManager->m_globalProcessedMarker &&
         !m_processedMarker) {
       TcrMessage* regionMsg = new TcrMessageClientMarker(
-          std::unique_ptr<DataOutput>(
-              new DataOutput(m_cacheImpl->createDataOutput())),
-          true);
+          new DataOutput(m_cacheImpl->createDataOutput()), true);
       receiveNotification(regionMsg);
     }
   }

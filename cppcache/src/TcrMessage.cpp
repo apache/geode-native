@@ -1848,9 +1848,9 @@ TcrMessageCloseConnection::TcrMessageCloseConnection(
   m_request->write(static_cast<int8_t>(0));  // keepalive is '0'.
 }
 
-TcrMessageClientMarker::TcrMessageClientMarker(
-    std::unique_ptr<DataOutput> dataOutput, bool decodeAll) {
-  m_request = std::move(dataOutput);
+TcrMessageClientMarker::TcrMessageClientMarker(DataOutput* dataOutput,
+                                               bool decodeAll) {
+  m_request.reset(dataOutput);
   m_msgType = TcrMessage::CLIENT_MARKER;
   m_decodeAll = decodeAll;
 }

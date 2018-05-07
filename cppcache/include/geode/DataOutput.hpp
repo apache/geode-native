@@ -494,7 +494,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   /** Destruct a DataOutput, including releasing the created buffer. */
   ~DataOutput() {
     reset();
-    if (m_bytes != nullptr) {
+    if (m_bytes) {
       DataOutput::checkinBuffer(m_bytes.release(), m_size);
     }
   }

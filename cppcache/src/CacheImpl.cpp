@@ -724,18 +724,14 @@ void CacheImpl::processMarker() {
       if (const auto tcrHARegion =
               std::dynamic_pointer_cast<ThinClientHARegion>(q.int_id_)) {
         auto regionMsg = new TcrMessageClientMarker(
-            std::unique_ptr<DataOutput>(
-                new DataOutput(this->getCache()->createDataOutput())),
-            true);
+            new DataOutput(createDataOutput()), true);
         tcrHARegion->receiveNotification(regionMsg);
         for (const auto& iter : tcrHARegion->subregions(true)) {
           if (!iter->isDestroyed()) {
             if (const auto subregion =
                     std::dynamic_pointer_cast<ThinClientHARegion>(iter)) {
               regionMsg = new TcrMessageClientMarker(
-                  std::unique_ptr<DataOutput>(
-                      new DataOutput(this->getCache()->createDataOutput())),
-                  true);
+                  new DataOutput(createDataOutput()), true);
               subregion->receiveNotification(regionMsg);
             }
           }

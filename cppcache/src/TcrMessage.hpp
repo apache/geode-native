@@ -1230,8 +1230,7 @@ class TcrMessageCloseConnection : public TcrMessage {
 
 class TcrMessageClientMarker : public TcrMessage {
  public:
-  TcrMessageClientMarker(std::unique_ptr<DataOutput> dataOutput,
-                         bool decodeAll);
+  TcrMessageClientMarker(DataOutput* dataOutput, bool decodeAll);
 
   virtual ~TcrMessageClientMarker() {}
 
