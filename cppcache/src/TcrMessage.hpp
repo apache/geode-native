@@ -665,7 +665,7 @@ class APACHE_GEODE_EXPORT TcrMessage {
 class TcrMessageDestroyRegion : public TcrMessage {
  public:
   TcrMessageDestroyRegion(
-      std::unique_ptr<DataOutput> dataOutput, const Region* region,
+      DataOutput* dataOutput, const Region* region,
       const std::shared_ptr<Serializable>& aCallbackArgument,
       std::chrono::milliseconds messageResponsetimeout,
       ThinClientBaseDM* connectionDM);
@@ -677,8 +677,7 @@ class TcrMessageDestroyRegion : public TcrMessage {
 
 class TcrMessageClearRegion : public TcrMessage {
  public:
-  TcrMessageClearRegion(std::unique_ptr<DataOutput> dataOutput,
-                        const Region* region,
+  TcrMessageClearRegion(DataOutput* dataOutput, const Region* region,
                         const std::shared_ptr<Serializable>& aCallbackArgument,
                         std::chrono::milliseconds messageResponsetimeout,
                         ThinClientBaseDM* connectionDM);
@@ -690,8 +689,7 @@ class TcrMessageClearRegion : public TcrMessage {
 
 class TcrMessageQuery : public TcrMessage {
  public:
-  TcrMessageQuery(std::unique_ptr<DataOutput> dataOutput,
-                  const std::string& regionName,
+  TcrMessageQuery(DataOutput* dataOutput, const std::string& regionName,
                   std::chrono::milliseconds messageResponsetimeout,
                   ThinClientBaseDM* connectionDM);
 
@@ -702,8 +700,7 @@ class TcrMessageQuery : public TcrMessage {
 
 class TcrMessageStopCQ : public TcrMessage {
  public:
-  TcrMessageStopCQ(std::unique_ptr<DataOutput> dataOutput,
-                   const std::string& regionName,
+  TcrMessageStopCQ(DataOutput* dataOutput, const std::string& regionName,
                    std::chrono::milliseconds messageResponsetimeout,
                    ThinClientBaseDM* connectionDM);
 
@@ -714,8 +711,7 @@ class TcrMessageStopCQ : public TcrMessage {
 
 class TcrMessageCloseCQ : public TcrMessage {
  public:
-  TcrMessageCloseCQ(std::unique_ptr<DataOutput> dataOutput,
-                    const std::string& regionName,
+  TcrMessageCloseCQ(DataOutput* dataOutput, const std::string& regionName,
                     std::chrono::milliseconds messageResponsetimeout,
                     ThinClientBaseDM* connectionDM);
 
@@ -727,7 +723,7 @@ class TcrMessageCloseCQ : public TcrMessage {
 class TcrMessageQueryWithParameters : public TcrMessage {
  public:
   TcrMessageQueryWithParameters(
-      std::unique_ptr<DataOutput> dataOutput, const std::string& regionName,
+      DataOutput* dataOutput, const std::string& regionName,
       const std::shared_ptr<Serializable>& aCallbackArgument,
       std::shared_ptr<CacheableVector> paramList,
       std::chrono::milliseconds messageResponsetimeout,
@@ -740,8 +736,7 @@ class TcrMessageQueryWithParameters : public TcrMessage {
 
 class TcrMessageContainsKey : public TcrMessage {
  public:
-  TcrMessageContainsKey(std::unique_ptr<DataOutput> dataOutput,
-                        const Region* region,
+  TcrMessageContainsKey(DataOutput* dataOutput, const Region* region,
                         const std::shared_ptr<CacheableKey>& key,
                         const std::shared_ptr<Serializable>& aCallbackArgument,
                         bool isContainsKey, ThinClientBaseDM* connectionDM);
@@ -753,7 +748,7 @@ class TcrMessageContainsKey : public TcrMessage {
 
 class TcrMessageGetDurableCqs : public TcrMessage {
  public:
-  TcrMessageGetDurableCqs(std::unique_ptr<DataOutput> dataOutput,
+  TcrMessageGetDurableCqs(DataOutput* dataOutput,
                           ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageGetDurableCqs() {}
@@ -763,8 +758,7 @@ class TcrMessageGetDurableCqs : public TcrMessage {
 
 class TcrMessageRequest : public TcrMessage {
  public:
-  TcrMessageRequest(std::unique_ptr<DataOutput> dataOutput,
-                    const Region* region,
+  TcrMessageRequest(DataOutput* dataOutput, const Region* region,
                     const std::shared_ptr<CacheableKey>& key,
                     const std::shared_ptr<Serializable>& aCallbackArgument,
                     ThinClientBaseDM* connectionDM = nullptr);
@@ -776,8 +770,7 @@ class TcrMessageRequest : public TcrMessage {
 
 class TcrMessageInvalidate : public TcrMessage {
  public:
-  TcrMessageInvalidate(std::unique_ptr<DataOutput> dataOutput,
-                       const Region* region,
+  TcrMessageInvalidate(DataOutput* dataOutput, const Region* region,
                        const std::shared_ptr<CacheableKey>& key,
                        const std::shared_ptr<Serializable>& aCallbackArgument,
                        ThinClientBaseDM* connectionDM = nullptr);
@@ -787,8 +780,7 @@ class TcrMessageInvalidate : public TcrMessage {
 
 class TcrMessageDestroy : public TcrMessage {
  public:
-  TcrMessageDestroy(std::unique_ptr<DataOutput> dataOutput,
-                    const Region* region,
+  TcrMessageDestroy(DataOutput* dataOutput, const Region* region,
                     const std::shared_ptr<CacheableKey>& key,
                     const std::shared_ptr<Cacheable>& value,
                     const std::shared_ptr<Serializable>& aCallbackArgument,
@@ -800,7 +792,7 @@ class TcrMessageDestroy : public TcrMessage {
 class TcrMessageRegisterInterestList : public TcrMessage {
  public:
   TcrMessageRegisterInterestList(
-      std::unique_ptr<DataOutput> dataOutput, const Region* region,
+      DataOutput* dataOutput, const Region* region,
       const std::vector<std::shared_ptr<CacheableKey>>& keys,
       bool isDurable = false, bool isCachingEnabled = false,
       bool receiveValues = true,
@@ -815,7 +807,7 @@ class TcrMessageRegisterInterestList : public TcrMessage {
 class TcrMessageUnregisterInterestList : public TcrMessage {
  public:
   TcrMessageUnregisterInterestList(
-      std::unique_ptr<DataOutput> dataOutput, const Region* region,
+      DataOutput* dataOutput, const Region* region,
       const std::vector<std::shared_ptr<CacheableKey>>& keys,
       bool isDurable = false, bool receiveValues = true,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
@@ -828,7 +820,7 @@ class TcrMessageUnregisterInterestList : public TcrMessage {
 
 class TcrMessagePut : public TcrMessage {
  public:
-  TcrMessagePut(std::unique_ptr<DataOutput> dataOutput, const Region* region,
+  TcrMessagePut(DataOutput* dataOutput, const Region* region,
                 const std::shared_ptr<CacheableKey>& key,
                 const std::shared_ptr<Cacheable>& value,
                 const std::shared_ptr<Serializable>& aCallbackArgument,
@@ -843,9 +835,9 @@ class TcrMessagePut : public TcrMessage {
 
 class TcrMessageCreateRegion : public TcrMessage {
  public:
-  TcrMessageCreateRegion(std::unique_ptr<DataOutput> dataOutput,
-                         const std::string& str1, const std::string& str2,
-                         bool isDurable = false, bool receiveValues = true,
+  TcrMessageCreateRegion(DataOutput* dataOutput, const std::string& str1,
+                         const std::string& str2, bool isDurable = false,
+                         bool receiveValues = true,
                          ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageCreateRegion() {}
@@ -856,8 +848,7 @@ class TcrMessageCreateRegion : public TcrMessage {
 class TcrMessageRegisterInterest : public TcrMessage {
  public:
   TcrMessageRegisterInterest(
-      std::unique_ptr<DataOutput> dataOutput, const std::string& str1,
-      const std::string& str2,
+      DataOutput* dataOutput, const std::string& str1, const std::string& str2,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
       bool isDurable = false, bool isCachingEnabled = false,
       bool receiveValues = true, ThinClientBaseDM* connectionDM = nullptr);
@@ -870,8 +861,7 @@ class TcrMessageRegisterInterest : public TcrMessage {
 class TcrMessageUnregisterInterest : public TcrMessage {
  public:
   TcrMessageUnregisterInterest(
-      std::unique_ptr<DataOutput> dataOutput, const std::string& str1,
-      const std::string& str2,
+      DataOutput* dataOutput, const std::string& str1, const std::string& str2,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
       bool isDurable = false, bool receiveValues = true,
       ThinClientBaseDM* connectionDM = nullptr);
@@ -883,8 +873,8 @@ class TcrMessageUnregisterInterest : public TcrMessage {
 
 class TcrMessageTxSynchronization : public TcrMessage {
  public:
-  TcrMessageTxSynchronization(std::unique_ptr<DataOutput> dataOutput,
-                              int ordinal, int txid, int status);
+  TcrMessageTxSynchronization(DataOutput* dataOutput, int ordinal, int txid,
+                              int status);
 
   virtual ~TcrMessageTxSynchronization() {}
 
@@ -893,7 +883,7 @@ class TcrMessageTxSynchronization : public TcrMessage {
 
 class TcrMessageClientReady : public TcrMessage {
  public:
-  TcrMessageClientReady(std::unique_ptr<DataOutput> dataOutput);
+  TcrMessageClientReady(DataOutput* dataOutput);
 
   virtual ~TcrMessageClientReady() {}
 
@@ -902,7 +892,7 @@ class TcrMessageClientReady : public TcrMessage {
 
 class TcrMessageCommit : public TcrMessage {
  public:
-  TcrMessageCommit(std::unique_ptr<DataOutput> dataOutput);
+  TcrMessageCommit(DataOutput* dataOutput);
 
   virtual ~TcrMessageCommit() {}
 
@@ -911,7 +901,7 @@ class TcrMessageCommit : public TcrMessage {
 
 class TcrMessageRollback : public TcrMessage {
  public:
-  TcrMessageRollback(std::unique_ptr<DataOutput> dataOutput);
+  TcrMessageRollback(DataOutput* dataOutput);
 
   virtual ~TcrMessageRollback() {}
 
@@ -920,7 +910,7 @@ class TcrMessageRollback : public TcrMessage {
 
 class TcrMessageTxFailover : public TcrMessage {
  public:
-  TcrMessageTxFailover(std::unique_ptr<DataOutput> dataOutput);
+  TcrMessageTxFailover(DataOutput* dataOutput);
 
   virtual ~TcrMessageTxFailover() {}
 
@@ -929,8 +919,7 @@ class TcrMessageTxFailover : public TcrMessage {
 
 class TcrMessageMakePrimary : public TcrMessage {
  public:
-  TcrMessageMakePrimary(std::unique_ptr<DataOutput> dataOutput,
-                        bool processedMarker);
+  TcrMessageMakePrimary(DataOutput* dataOutput, bool processedMarker);
 
   virtual ~TcrMessageMakePrimary() {}
 
@@ -939,7 +928,7 @@ class TcrMessageMakePrimary : public TcrMessage {
 
 class TcrMessagePutAll : public TcrMessage {
  public:
-  TcrMessagePutAll(std::unique_ptr<DataOutput> dataOutput, const Region* region,
+  TcrMessagePutAll(DataOutput* dataOutput, const Region* region,
                    const HashMapOfCacheable& map,
                    std::chrono::milliseconds messageResponsetimeout,
                    ThinClientBaseDM* connectionDM,
@@ -952,8 +941,7 @@ class TcrMessagePutAll : public TcrMessage {
 
 class TcrMessageRemoveAll : public TcrMessage {
  public:
-  TcrMessageRemoveAll(std::unique_ptr<DataOutput> dataOutput,
-                      const Region* region,
+  TcrMessageRemoveAll(DataOutput* dataOutput, const Region* region,
                       const std::vector<std::shared_ptr<CacheableKey>>& keys,
                       const std::shared_ptr<Serializable>& aCallbackArgument,
                       ThinClientBaseDM* connectionDM = nullptr);
@@ -965,9 +953,8 @@ class TcrMessageRemoveAll : public TcrMessage {
 
 class TcrMessageExecuteCq : public TcrMessage {
  public:
-  TcrMessageExecuteCq(std::unique_ptr<DataOutput> dataOutput,
-                      const std::string& str1, const std::string& str2,
-                      CqState state, bool isDurable,
+  TcrMessageExecuteCq(DataOutput* dataOutput, const std::string& str1,
+                      const std::string& str2, CqState state, bool isDurable,
                       ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageExecuteCq() {}
@@ -977,10 +964,9 @@ class TcrMessageExecuteCq : public TcrMessage {
 
 class TcrMessageExecuteCqWithIr : public TcrMessage {
  public:
-  TcrMessageExecuteCqWithIr(std::unique_ptr<DataOutput> dataOutput,
-                            const std::string& str1, const std::string& str2,
-                            CqState state, bool isDurable,
-                            ThinClientBaseDM* connectionDM);
+  TcrMessageExecuteCqWithIr(DataOutput* dataOutput, const std::string& str1,
+                            const std::string& str2, CqState state,
+                            bool isDurable, ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageExecuteCqWithIr() {}
 
@@ -990,8 +976,8 @@ class TcrMessageExecuteCqWithIr : public TcrMessage {
 class TcrMessageExecuteRegionFunction : public TcrMessage {
  public:
   TcrMessageExecuteRegionFunction(
-      std::unique_ptr<DataOutput> dataOutput, const std::string& funcName,
-      const Region* region, const std::shared_ptr<Cacheable>& args,
+      DataOutput* dataOutput, const std::string& funcName, const Region* region,
+      const std::shared_ptr<Cacheable>& args,
       std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
       std::shared_ptr<CacheableHashSet> failedNodes,
       std::chrono::milliseconds timeout,
@@ -1005,8 +991,8 @@ class TcrMessageExecuteRegionFunction : public TcrMessage {
 class TcrMessageExecuteRegionFunctionSingleHop : public TcrMessage {
  public:
   TcrMessageExecuteRegionFunctionSingleHop(
-      std::unique_ptr<DataOutput> dataOutput, const std::string& funcName,
-      const Region* region, const std::shared_ptr<Cacheable>& args,
+      DataOutput* dataOutput, const std::string& funcName, const Region* region,
+      const std::shared_ptr<Cacheable>& args,
       std::shared_ptr<CacheableHashSet> routingObj, uint8_t getResult,
       std::shared_ptr<CacheableHashSet> failedNodes, bool allBuckets,
       std::chrono::milliseconds timeout, ThinClientBaseDM* connectionDM);
@@ -1018,7 +1004,7 @@ class TcrMessageExecuteRegionFunctionSingleHop : public TcrMessage {
 
 class TcrMessageGetClientPartitionAttributes : public TcrMessage {
  public:
-  TcrMessageGetClientPartitionAttributes(std::unique_ptr<DataOutput> dataOutput,
+  TcrMessageGetClientPartitionAttributes(DataOutput* dataOutput,
                                          const char* regionName);
 
   virtual ~TcrMessageGetClientPartitionAttributes() {}
@@ -1028,8 +1014,7 @@ class TcrMessageGetClientPartitionAttributes : public TcrMessage {
 
 class TcrMessageGetClientPrMetadata : public TcrMessage {
  public:
-  TcrMessageGetClientPrMetadata(std::unique_ptr<DataOutput> dataOutput,
-                                const char* regionName);
+  TcrMessageGetClientPrMetadata(DataOutput* dataOutput, const char* regionName);
 
   virtual ~TcrMessageGetClientPrMetadata() {}
 
@@ -1038,8 +1023,7 @@ class TcrMessageGetClientPrMetadata : public TcrMessage {
 
 class TcrMessageSize : public TcrMessage {
  public:
-  TcrMessageSize(std::unique_ptr<DataOutput> dataOutput,
-                 const char* regionName);
+  TcrMessageSize(DataOutput* dataOutput, const char* regionName);
 
   virtual ~TcrMessageSize() {}
 
@@ -1048,7 +1032,7 @@ class TcrMessageSize : public TcrMessage {
 
 class TcrMessageUserCredential : public TcrMessage {
  public:
-  TcrMessageUserCredential(std::unique_ptr<DataOutput> dataOutput,
+  TcrMessageUserCredential(DataOutput* dataOutput,
                            std::shared_ptr<Properties> creds,
                            ThinClientBaseDM* connectionDM = nullptr);
 
@@ -1059,8 +1043,8 @@ class TcrMessageUserCredential : public TcrMessage {
 
 class TcrMessageRemoveUserAuth : public TcrMessage {
  public:
-  TcrMessageRemoveUserAuth(std::unique_ptr<DataOutput> dataOutput,
-                           bool keepAlive, ThinClientBaseDM* connectionDM);
+  TcrMessageRemoveUserAuth(DataOutput* dataOutput, bool keepAlive,
+                           ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageRemoveUserAuth() {}
 
@@ -1069,7 +1053,7 @@ class TcrMessageRemoveUserAuth : public TcrMessage {
 
 class TcrMessageGetPdxIdForType : public TcrMessage {
  public:
-  TcrMessageGetPdxIdForType(std::unique_ptr<DataOutput> dataOutput,
+  TcrMessageGetPdxIdForType(DataOutput* dataOutput,
                             const std::shared_ptr<Cacheable>& pdxType,
                             ThinClientBaseDM* connectionDM);
 
@@ -1080,7 +1064,7 @@ class TcrMessageGetPdxIdForType : public TcrMessage {
 
 class TcrMessageAddPdxType : public TcrMessage {
  public:
-  TcrMessageAddPdxType(std::unique_ptr<DataOutput> dataOutput,
+  TcrMessageAddPdxType(DataOutput* dataOutput,
                        const std::shared_ptr<Cacheable>& pdxType,
                        ThinClientBaseDM* connectionDM, int32_t pdxTypeId = 0);
 
@@ -1091,7 +1075,7 @@ class TcrMessageAddPdxType : public TcrMessage {
 
 class TcrMessageGetPdxIdForEnum : public TcrMessage {
  public:
-  TcrMessageGetPdxIdForEnum(std::unique_ptr<DataOutput> dataOutput,
+  TcrMessageGetPdxIdForEnum(DataOutput* dataOutput,
                             const std::shared_ptr<Cacheable>& pdxType,
                             ThinClientBaseDM* connectionDM);
 
@@ -1102,7 +1086,7 @@ class TcrMessageGetPdxIdForEnum : public TcrMessage {
 
 class TcrMessageAddPdxEnum : public TcrMessage {
  public:
-  TcrMessageAddPdxEnum(std::unique_ptr<DataOutput> dataOutput,
+  TcrMessageAddPdxEnum(DataOutput* dataOutput,
                        const std::shared_ptr<Cacheable>& pdxType,
                        ThinClientBaseDM* connectionDM, int32_t pdxTypeId = 0);
 
@@ -1113,8 +1097,8 @@ class TcrMessageAddPdxEnum : public TcrMessage {
 
 class TcrMessageGetPdxTypeById : public TcrMessage {
  public:
-  TcrMessageGetPdxTypeById(std::unique_ptr<DataOutput> dataOutput,
-                           int32_t typeId, ThinClientBaseDM* connectionDM);
+  TcrMessageGetPdxTypeById(DataOutput* dataOutput, int32_t typeId,
+                           ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageGetPdxTypeById() {}
 
@@ -1123,8 +1107,8 @@ class TcrMessageGetPdxTypeById : public TcrMessage {
 
 class TcrMessageGetPdxEnumById : public TcrMessage {
  public:
-  TcrMessageGetPdxEnumById(std::unique_ptr<DataOutput> dataOutput,
-                           int32_t typeId, ThinClientBaseDM* connectionDM);
+  TcrMessageGetPdxEnumById(DataOutput* dataOutput, int32_t typeId,
+                           ThinClientBaseDM* connectionDM);
 
   virtual ~TcrMessageGetPdxEnumById() {}
 
@@ -1133,7 +1117,7 @@ class TcrMessageGetPdxEnumById : public TcrMessage {
 
 class TcrMessageGetFunctionAttributes : public TcrMessage {
  public:
-  TcrMessageGetFunctionAttributes(std::unique_ptr<DataOutput> dataOutput,
+  TcrMessageGetFunctionAttributes(DataOutput* dataOutput,
                                   const std::string& funcName,
                                   ThinClientBaseDM* connectionDM = nullptr);
 
@@ -1144,8 +1128,7 @@ class TcrMessageGetFunctionAttributes : public TcrMessage {
 
 class TcrMessageKeySet : public TcrMessage {
  public:
-  TcrMessageKeySet(std::unique_ptr<DataOutput> dataOutput,
-                   const std::string& funcName,
+  TcrMessageKeySet(DataOutput* dataOutput, const std::string& funcName,
                    ThinClientBaseDM* connectionDM = nullptr);
 
   virtual ~TcrMessageKeySet() {}
@@ -1155,7 +1138,7 @@ class TcrMessageKeySet : public TcrMessage {
 
 class TcrMessageRequestEventValue : public TcrMessage {
  public:
-  TcrMessageRequestEventValue(std::unique_ptr<DataOutput> dataOutput,
+  TcrMessageRequestEventValue(DataOutput* dataOutput,
                               std::shared_ptr<EventId> eventId);
 
   virtual ~TcrMessageRequestEventValue() {}
@@ -1165,7 +1148,7 @@ class TcrMessageRequestEventValue : public TcrMessage {
 
 class TcrMessagePeriodicAck : public TcrMessage {
  public:
-  TcrMessagePeriodicAck(std::unique_ptr<DataOutput> dataOutput,
+  TcrMessagePeriodicAck(DataOutput* dataOutput,
                         const EventIdMapEntryList& entries);
 
   virtual ~TcrMessagePeriodicAck() {}
@@ -1175,8 +1158,7 @@ class TcrMessagePeriodicAck : public TcrMessage {
 
 class TcrMessageUpdateClientNotification : public TcrMessage {
  public:
-  TcrMessageUpdateClientNotification(std::unique_ptr<DataOutput> dataOutput,
-                                     int32_t port);
+  TcrMessageUpdateClientNotification(DataOutput* dataOutput, int32_t port);
 
   virtual ~TcrMessageUpdateClientNotification() {}
 
@@ -1186,7 +1168,7 @@ class TcrMessageUpdateClientNotification : public TcrMessage {
 class TcrMessageGetAll : public TcrMessage {
  public:
   TcrMessageGetAll(
-      std::unique_ptr<DataOutput> dataOutput, const Region* region,
+      DataOutput* dataOutput, const Region* region,
       const std::vector<std::shared_ptr<CacheableKey>>* keys,
       ThinClientBaseDM* connectionDM = nullptr,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
@@ -1198,8 +1180,7 @@ class TcrMessageGetAll : public TcrMessage {
 
 class TcrMessageExecuteFunction : public TcrMessage {
  public:
-  TcrMessageExecuteFunction(std::unique_ptr<DataOutput> dataOutput,
-                            const std::string& funcName,
+  TcrMessageExecuteFunction(DataOutput* dataOutput, const std::string& funcName,
                             const std::shared_ptr<Cacheable>& args,
                             uint8_t getResult, ThinClientBaseDM* connectionDM,
                             std::chrono::milliseconds timeout);
@@ -1211,7 +1192,7 @@ class TcrMessageExecuteFunction : public TcrMessage {
 
 class TcrMessagePing : public TcrMessage {
  public:
-  TcrMessagePing(std::unique_ptr<DataOutput> dataOutput, bool decodeAll);
+  TcrMessagePing(DataOutput* dataOutput, bool decodeAll);
 
   virtual ~TcrMessagePing() {}
 
@@ -1220,8 +1201,7 @@ class TcrMessagePing : public TcrMessage {
 
 class TcrMessageCloseConnection : public TcrMessage {
  public:
-  TcrMessageCloseConnection(std::unique_ptr<DataOutput> dataOutput,
-                            bool decodeAll);
+  TcrMessageCloseConnection(DataOutput* dataOutput, bool decodeAll);
 
   virtual ~TcrMessageCloseConnection() {}
 

@@ -747,8 +747,8 @@ bool ThinClientRedundancyManager::readyForEvents(
     return true;
   }
 
-  TcrMessageClientReady request(std::unique_ptr<DataOutput>(new DataOutput(
-      m_theTcrConnManager->getCacheImpl()->createDataOutput())));
+  TcrMessageClientReady request(
+      new DataOutput(m_theTcrConnManager->getCacheImpl()->createDataOutput()));
   TcrMessageReply reply(true, nullptr);
 
   GfErrType err = GF_NOTCON;
@@ -790,8 +790,7 @@ bool ThinClientRedundancyManager::sendMakePrimaryMesg(TcrEndpoint* ep,
   }
   TcrMessageReply reply(false, nullptr);
   const TcrMessageMakePrimary makePrimaryRequest(
-      std::unique_ptr<DataOutput>(new DataOutput(
-          m_theTcrConnManager->getCacheImpl()->createDataOutput())),
+      new DataOutput(m_theTcrConnManager->getCacheImpl()->createDataOutput()),
       ThinClientRedundancyManager::m_sentReadyForEvents);
 
   LOGFINE("Making primary subscription endpoint %s", ep->name().c_str());
@@ -874,7 +873,8 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
     if (err != GF_NOERR || m_redundantEndpoints.empty()) {
       auto userAttr = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
                           ->getUserAttributes();
-      if (userAttr != nullptr) authenticatedView = userAttr->getAuthenticatedView();
+      if (userAttr != nullptr)
+        authenticatedView = userAttr->getAuthenticatedView();
       err = maintainRedundancyLevel();
       // we continue on fatal error because MRL only tries a handshake without
       // sending a request (no params passed) so no need to check
@@ -1106,8 +1106,8 @@ bool ThinClientRedundancyManager::isDurable() {
 }
 
 void ThinClientRedundancyManager::readyForEvents() {
-  TcrMessageClientReady request(std::unique_ptr<DataOutput>(new DataOutput(
-      m_theTcrConnManager->getCacheImpl()->createDataOutput())));
+  TcrMessageClientReady request(
+      new DataOutput(m_theTcrConnManager->getCacheImpl()->createDataOutput()));
   TcrMessageReply reply(true, nullptr);
   GfErrType result = GF_NOTCON;
   unsigned int epCount = 0;
@@ -1193,10 +1193,8 @@ void ThinClientRedundancyManager::doPeriodicAck() {
 
       if (endpoint != m_redundantEndpoints.end()) {
         TcrMessagePeriodicAck request(
-            std::unique_ptr<DataOutput>(
-                new DataOutput(m_theTcrConnManager->getCacheImpl()
-                                   ->getCache()
-                                   ->createDataOutput())),
+            new DataOutput(m_theTcrConnManager->getCacheImpl()
+                               ->createDataOutput()),
             entries);
         TcrMessageReply reply(true, nullptr);
 
@@ -1261,9 +1259,9 @@ void ThinClientRedundancyManager::startPeriodicAck() {
       "notify-dupcheck-life = %ld, periodic ack is %sabled",
       m_processEventIdMapTaskId,
       (m_poolHADM ? m_poolHADM->getSubscriptionAckInterval()
-                 : props.notifyAckInterval()).count(),
+                  : props.notifyAckInterval()).count(),
       (m_poolHADM ? m_poolHADM->getSubscriptionMessageTrackingTimeout()
-                 : props.notifyDupCheckLife()).count(),
+                  : props.notifyDupCheckLife()).count(),
       m_HAenabled ? "en" : "dis");
 }
 

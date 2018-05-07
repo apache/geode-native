@@ -130,10 +130,10 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
 
   if (cptr == nullptr) {
     TcrMessageGetClientPartitionAttributes request(
-        std::unique_ptr<DataOutput>(new DataOutput(tcrdm->getConnectionManager()
-                                                       .getCacheImpl()
-                                                       ->getCache()
-                                                       ->createDataOutput())),
+        new DataOutput(tcrdm->getConnectionManager()
+                           .getCacheImpl()
+                           ->getCache()
+                           ->createDataOutput()),
         regionFullPath);
     GfErrType err = tcrdm->sendSyncRequest(request, reply);
     if (err == GF_NOERR &&
@@ -188,8 +188,8 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
         "ClientMetaData: pool cast to ThinClientPoolDM failed");
   }
   TcrMessageGetClientPrMetadata request(
-      std::unique_ptr<DataOutput>(new DataOutput(
-          tcrdm->getConnectionManager().getCacheImpl()->createDataOutput())),
+      new DataOutput(
+          tcrdm->getConnectionManager().getCacheImpl()->createDataOutput()),
       regionPath);
   TcrMessageReply reply(true, nullptr);
   // send this message to server and get metadata from server.
@@ -199,7 +199,8 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
   GfErrType err = tcrdm->sendSyncRequest(request, reply);
   if (err == GF_NOERR &&
       reply.getMessageType() == TcrMessage::RESPONSE_CLIENT_PR_METADATA) {
-    region = tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionPath);
+    region =
+        tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionPath);
     if (region != nullptr) {
       LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.get());
       lregion->getRegionStats()->incMetaDataRefreshCount();

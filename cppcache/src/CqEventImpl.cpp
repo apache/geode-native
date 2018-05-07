@@ -21,10 +21,8 @@
 #include "TcrMessage.hpp"
 
 using namespace apache::geode::client;
-CqEventImpl::CqEventImpl(std::shared_ptr<CqQuery>& cQuery,
-                         CqOperation baseOp,
-                         CqOperation cqOp,
-                         std::shared_ptr<CacheableKey>& key,
+CqEventImpl::CqEventImpl(std::shared_ptr<CqQuery>& cQuery, CqOperation baseOp,
+                         CqOperation cqOp, std::shared_ptr<CacheableKey>& key,
                          std::shared_ptr<Cacheable>& value,
                          ThinClientBaseDM* tcrdm,
                          std::shared_ptr<CacheableBytes> deltaBytes,
@@ -42,41 +40,35 @@ CqEventImpl::CqEventImpl(std::shared_ptr<CqQuery>& cQuery,
 }
 std::shared_ptr<CqQuery> CqEventImpl::getCq() const { return m_cQuery; }
 
-CqOperation CqEventImpl::getBaseOperation() const {
-  return m_baseOp;
-}
+CqOperation CqEventImpl::getBaseOperation() const { return m_baseOp; }
 
 /**
  * Get the the operation on the query results. Supported operations include
  * update, create, and destroy.
  */
-CqOperation CqEventImpl::getQueryOperation() const {
-  return m_queryOp;
-}
+CqOperation CqEventImpl::getQueryOperation() const { return m_queryOp; }
 
 /**
  * Get the key relating to the event.
  * @return Object key.
- */ std::shared_ptr<CacheableKey>
-CqEventImpl::getKey() const {
+ */
+std::shared_ptr<CacheableKey> CqEventImpl::getKey() const {
   return m_key;
 }
 /**
  * Get the new value of the modification.
  *  If there is no new value because this is a delete, then
  *  return null.
- */ std::shared_ptr<Cacheable>
-CqEventImpl::getNewValue() const {
+ */
+std::shared_ptr<Cacheable> CqEventImpl::getNewValue() const {
   if (m_deltaValue == nullptr) {
     return m_newValue;
   } else {
     // Get full object for delta
     TcrMessageRequestEventValue fullObjectMsg(
-        std::unique_ptr<DataOutput>(
-            new DataOutput(m_tcrdm->getConnectionManager()
-                               .getCacheImpl()
-                               ->getCache()
-                               ->createDataOutput())),
+        new DataOutput(m_tcrdm->getConnectionManager()
+                           .getCacheImpl()
+                           ->createDataOutput()),
         m_eventId);
     TcrMessageReply reply(true, nullptr);
     ThinClientPoolHADM* poolHADM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);

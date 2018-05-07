@@ -166,9 +166,7 @@ GfErrType ThinClientHARegion::getNoThrow_FullObject(
     std::shared_ptr<EventId> eventId, std::shared_ptr<Cacheable>& fullObject,
     std::shared_ptr<VersionTag>& versionTag) {
   TcrMessageRequestEventValue fullObjectMsg(
-      std::unique_ptr<DataOutput>(
-          new DataOutput(m_cacheImpl->createDataOutput())),
-      eventId);
+      new DataOutput(m_cacheImpl->createDataOutput()), eventId);
   TcrMessageReply reply(true, nullptr);
 
   ThinClientPoolHADM* poolHADM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);
