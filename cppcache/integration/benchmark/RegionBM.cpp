@@ -49,10 +49,11 @@ class RegionBM : public benchmark::Fixture {
                                         boost::log::trivial::warning);
   }
 
+  using benchmark::Fixture::SetUp;
   void SetUp(benchmark::State&) override {
     if (!cluster) {
       cluster = std::unique_ptr<Cluster>(
-          new Cluster(Name{this->name}, LocatorCount{1}, ServerCount{1}));
+          new Cluster(Name{name_}, LocatorCount{1}, ServerCount{1}));
       cluster->getGfsh()
           .create()
           .region()
@@ -67,6 +68,7 @@ class RegionBM : public benchmark::Fixture {
     }
   }
 
+  using benchmark::Fixture::TearDown;
   void TearDown(benchmark::State&) override {
     if (cluster) {
       region = nullptr;
@@ -78,7 +80,7 @@ class RegionBM : public benchmark::Fixture {
  protected:
 
   void SetName(const char* name) {
-    this->name = name;
+    name_ = name;
 
     Benchmark::SetName(name);
   }
@@ -88,7 +90,7 @@ class RegionBM : public benchmark::Fixture {
   std::shared_ptr<Region> region;
 
  private:
-  std::string name;
+  std::string name_;
 };
 
 BENCHMARK_F(RegionBM, put_string)(benchmark::State& state) {

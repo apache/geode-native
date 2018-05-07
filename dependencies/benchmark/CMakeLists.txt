@@ -61,10 +61,14 @@ target_include_directories(${PROJECT_NAME} SYSTEM INTERFACE
 target_link_libraries(${PROJECT_NAME} INTERFACE
   ${INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
-if(WIN32)
+if (WIN32)
 target_link_libraries(${PROJECT_NAME} INTERFACE
   Shlwapi
 )
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
+  target_link_libraries(${PROJECT_NAME} INTERFACE
+    kstat
+  )
 endif()
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXTERN})
 
