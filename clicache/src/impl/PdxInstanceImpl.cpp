@@ -61,10 +61,10 @@ namespace Apache
           m_cachePerfStats = &CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getCachePerfStats();
           m_pdxType->InitializeType(cache);//to generate static position map
 
-          //need to initiailize stream. this will call todata and in toData we will have stream
+          //need to initialize stream. this will call todata and in toData we will have stream
           auto output = m_cache->GetNative()->createDataOutput();
 
-          Apache::Geode::Client::DataOutput mg_output(new native::DataOutput(std::move(output)), true, cache);
+          Apache::Geode::Client::DataOutput mg_output(&output, true, cache);
           Apache::Geode::Client::Internal::PdxHelper::SerializePdx(%mg_output, this);
         }
 
