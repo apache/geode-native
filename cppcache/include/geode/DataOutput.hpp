@@ -494,16 +494,35 @@ class APACHE_GEODE_EXPORT DataOutput {
   /** Destruct a DataOutput, including releasing the created buffer. */
   ~DataOutput() {
     reset();
-    if (m_bytes != nullptr) {
+    if (m_bytes) {
       DataOutput::checkinBuffer(m_bytes, m_size);
     }
+  }
+
+  void move(DataOutput&& other) {
+    m_bytes = other.m_bytes;
+    m_buf = other.m_buf;
+    m_size = other.m_size;
+    m_lowWaterMark = other.m_lowWaterMark;
+    m_highWaterMark = other.m_highWaterMark;
+    m_haveBigBuffer = other.m_haveBigBuffer;
+    m_cache = other.m_cache;
+    m_pool = other.m_pool;
+    other.m_bytes = other.m_buf = nullptr;
+    other.m_size = 0;
   }
 
   DataOutput() = delete;
   DataOutput(const DataOutput&) = delete;
   DataOutput& operator=(const DataOutput&) = delete;
-  DataOutput(DataOutput&&) = default;
-  DataOutput& operator=(DataOutput&&) = default;
+  DataOutput& operator=(DataOutput&& other) {
+    move(std::move(other));
+    return *this;
+  }
+
+  DataOutput(DataOutput&& other) {
+    move(std::move(other));
+  }
 
  protected:
   /**
