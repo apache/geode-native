@@ -27,32 +27,45 @@ For ease of use, a Docker image is provided that contains a self-consistent Book
 
 1. Navigate to the directory that contains the Dockerfile and run the `docker build` command to create the Bookbinder-enabled Docker image:
 
-    $ cd _geode-native-project-dir_/docs/docker  
-    $ docker build -t docs/bb .
+    ```bash
+    $ cd geode-native/docs/docker
+    $ docker build -t geode-native-userman .
+    ```
     
 1. Run the Docker image in interactive mode with a command similar to the following:
 
-    $ docker run -it -p 9292:9292 -p 1234:1234 -v _/my/github/directory_:/github docs/bb
+    ```bash
+    $ docker run -it -p 9292:9292 -p 1234:1234 -v PATH-TO-GEODE-NATIVE/docs:/docs geode-native-userman
+    ```
 
-    Substitute your local github directory (the parent directory of _geode-native-project-dir_) for _/my/github/directory_. This brings up the interactive Docker container, with `/` as your current working directory.
+    where `PATH-TO-GEODE-NATIVE` is the fully-qualified path to the geode-native repo. This brings up the interactive Docker container, with `/` as your current working directory.
 
 1. To build the documentation, `cd` to the book directory:
 
-    $ cd github/_geode-native-project-dir_/docs/geode-native-book
+    ```bash
+    $ cd docs/geode-native-book
+    ```
+
+1. Run `bundle install` to install the dependencies required to build the user guide.
+
+    ```bash
+    $ bundle install
+    ```
 
 1. Invoke bookbinder to build the user guide. Bookbinder converts the markdown source into HTML, which it puts in the `final_app` directory:
 
-
+    ```bash
     $ bundle exec bookbinder bind local
+    ```
 
-    Note: You may be prompted to run `bundle install` to supply any missing components. Do that, then re-try the bookbinder command.
+1. To start a local website of the Apache Geode Native Client User Guide, navigate to the `final_app` directory and run `rackup`:
 
-1. To start a local website of the Apache Geode Native Client User Guide, navigate to the `final_app` directory and enter:
-
-
+    ```bash
+    $ cd final_app
     $ rackup
+    ```
 
-    Note: You may be prompted to run `bundle install` to supply any missing components. Do that, then re-try the rackup command.
+    Note: You may be prompted to run `bundle install` to supply any missing components. Do that, then re-try the `rackup` command.
 
    You can now view the local documentation in a browser at <http://localhost:9292>. 
 
