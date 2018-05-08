@@ -103,4 +103,26 @@ BENCHMARK_F(RegionBM, put_int)(benchmark::State& state) {
   }
 }
 
+BENCHMARK_F(RegionBM, get_string)(benchmark::State& state) {
+  auto key = CacheableString::create("key");
+  auto value = CacheableString::create("value");
+
+  region->put(key, value);
+
+  for (auto _ : state) {
+    region->get(key);
+  }
+}
+
+BENCHMARK_F(RegionBM, get_int)(benchmark::State& state) {
+  auto key = CacheableInt32::create(1);
+  auto value = CacheableInt32::create(1);
+
+  region->put(key, value);
+
+  for (auto _ : state) {
+    region->get(key);
+  }
+}
+
 }  // namespace
