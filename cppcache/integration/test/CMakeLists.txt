@@ -13,38 +13,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-configure_file(../integration/framework/config.h.in config.h)
-
-add_executable(integration-test-2
+add_executable(cpp-integration-test
   ExampleTest.cpp
-  ../integration/framework/Gfsh.cpp
-  ../integration/framework/Gfsh.h
-  ../integration/framework/Framework.cpp
-  ../integration/framework/Framework.h
-  ../integration/framework/Cluster.cpp
-  ../integration/framework/Cluster.h
-  ../integration/framework/GfshExecute.cpp
-  ../integration/framework/GfshExecute.h
   RegionPutGetAllTest.cpp
   PdxInstanceTest.cpp
   RegisterKeysTest.cpp
   StructTest.cpp
   EnableChunkHandlerThreadTest.cpp
   DataSerializableTest.cpp
-  FunctionExecutionTest.cpp)
+  FunctionExecutionTest.cpp
+  StructTest.cpp
+)
 
-target_compile_definitions(integration-test-2
+target_compile_definitions(cpp-integration-test
   PUBLIC
     BOOST_ASIO_HAS_MOVE
     GTEST_ELLIPSIS_NEEDS_POD_
 )
 
-target_include_directories(integration-test-2
+target_include_directories(cpp-integration-test
   PUBLIC
    ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-target_link_libraries(integration-test-2
+target_link_libraries(cpp-integration-test
   PUBLIC
     apache-geode
     integration-framework
@@ -62,28 +54,28 @@ target_link_libraries(integration-test-2
 )
 
 if(WIN32)
-  target_compile_definitions(integration-test-2
+  target_compile_definitions(cpp-integration-test
     PUBLIC
       # Required for Boost.WinAPI
       _WIN32_WINNT=0x06020000
   )
 
   foreach (_target apache-geode testobject)
-    add_custom_command(TARGET integration-test-2 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    add_custom_command(TARGET cpp-integration-test POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:${_target}>"
         "$<$<CONFIG:Debug>:$<TARGET_PDB_FILE:${_target}>>"
         "$<TARGET_FILE_DIR:integration-test-2>")
   endforeach()
 endif()
 
-set_target_properties(integration-test-2 PROPERTIES
+set_target_properties(cpp-integration-test PROPERTIES
   CXX_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN ON
   FOLDER cpp/test/integration
 )
 
-add_clangformat(integration-test-2)
+add_clangformat(cpp-integration-test)
 
 enable_testing()
 include(GoogleTest)
-gtest_discover_tests(integration-test-2)
+gtest_discover_tests(cpp-integration-test)

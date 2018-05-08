@@ -131,7 +131,6 @@ add_subdirectory(test)
 add_subdirectory(internal)
 add_subdirectory(integration)
 add_subdirectory(integration-test)
-add_subdirectory(integration-test-2)
 
 if (BUILD_BENCHMARKS)
   add_subdirectory(benchmark)

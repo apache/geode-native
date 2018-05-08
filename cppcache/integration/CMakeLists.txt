@@ -14,6 +14,7 @@
 # limitations under the License.
 
 add_subdirectory(framework)
+add_subdirectory(test)
 
 if (BUILD_BENCHMARKS)
   add_subdirectory(benchmark)

@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_executable(apache-geode-integration-benchmark
+add_executable(cpp-integration-benchmark
   main.cpp
   RegionBM.cpp
   )
 
-target_link_libraries(apache-geode-integration-benchmark
+target_link_libraries(cpp-integration-benchmark
   PUBLIC
     apache-geode
     benchmark::benchmark
