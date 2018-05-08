@@ -66,8 +66,6 @@ class SerializableWithThreadId : public PdxSerializable {
 
   std::thread::id getThreadId() { return thread_id_; }
 
-  uint32_t getId() { return id_; }
-
  private:
   uint32_t id_;
   std::thread::id thread_id_;
@@ -100,7 +98,7 @@ TEST(ChunkHandlerThreadTest, isDisabledUsesSameThread) {
   auto returnedObjectOne =
       std::dynamic_pointer_cast<SerializableWithThreadId>((*queryResults)[0]);
 
-  EXPECT_EQ(objectOne->getId(), returnedObjectOne->getId());
+  ASSERT_NE(nullptr, returnedObjectOne);
 
   EXPECT_EQ(std::this_thread::get_id(), returnedObjectOne->getThreadId());
 }
@@ -132,7 +130,7 @@ TEST(ChunkHandlerThreadTest, isEnabledUsesDifferentThread) {
   auto returnedObjectOne =
       std::dynamic_pointer_cast<SerializableWithThreadId>((*queryResults)[0]);
 
-  EXPECT_EQ(objectOne->getId(), returnedObjectOne->getId());
+  ASSERT_NE(nullptr, returnedObjectOne);
 
   EXPECT_NE(std::this_thread::get_id(), returnedObjectOne->getThreadId());
 }
