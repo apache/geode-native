@@ -64,7 +64,7 @@ if(WIN32)
     add_custom_command(TARGET cpp-integration-test POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:${_target}>"
         "$<$<CONFIG:Debug>:$<TARGET_PDB_FILE:${_target}>>"
-        "$<TARGET_FILE_DIR:integration-test-2>")
+        "$<TARGET_FILE_DIR:cpp-integration-test>")
   endforeach()
 endif()
 
