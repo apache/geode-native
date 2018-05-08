@@ -44,10 +44,12 @@ void ThinClientBaseDM::init() {
   const auto& systemProperties = m_connManager.getCacheImpl()
                                      ->getDistributedSystem()
                                      .getSystemProperties();
-  if (!(systemProperties.isGridClient() &&
-        systemProperties.disableChunkHandlerThread())) {
+
+  if (!systemProperties.isGridClient() &&
+      systemProperties.enableChunkHandlerThread()) {
     startChunkProcessor();
   }
+
   m_initDone = true;
 }
 

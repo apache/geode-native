@@ -208,12 +208,19 @@ class Cluster {
 
   void stop();
 
-  apache::geode::client::Cache createCache() {
+
+  apache::geode::client::Cache createCache(const std::unordered_map<std::string, std::string>& properties) {
     using namespace apache::geode::client;
-    auto cache = CacheFactory()
-                     .set("log-level", "none")
-                     .set("statistic-sampling-enabled", "false")
-                     .create();
+    CacheFactory cacheFactory;
+
+    for (auto&& property : properties) {
+      cacheFactory.set(property.first, property.second);
+    }
+
+    auto cache = cacheFactory
+            .set("log-level", "none")
+            .set("statistic-sampling-enabled", "false")
+            .create();
 
     auto poolFactory = cache.getPoolManager().createFactory();
     for (const auto &locator : locators_) {
@@ -223,6 +230,10 @@ class Cluster {
     }
 
     return cache;
+  }
+
+  apache::geode::client::Cache createCache() {
+    return createCache({});
   }
 
   Gfsh &getGfsh() noexcept { return gfsh_; }
