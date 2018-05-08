@@ -441,10 +441,8 @@ bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj,
   }
 
   if (auto primitive =
-      std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
-    auto id = primitive->getDsCode();
-
-    switch (id) {
+          std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+    switch (primitive->getDsCode()) {
       case GeodeTypeIds::CacheableObjectArray: {
         auto objArrayPtr = std::dynamic_pointer_cast<CacheableObjectArray>(obj);
         auto otherObjArrayPtr =
@@ -588,8 +586,7 @@ int PdxInstanceImpl::deepArrayHashCode(std::shared_ptr<Cacheable> obj) {
 
   if (auto primitive =
           std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
-    auto id = primitive->getDsCode();
-    switch (id) {
+    switch (primitive->getDsCode()) {
       case GeodeTypeIds::CacheableObjectArray: {
         return enumerateObjectArrayHashCode(
             std::dynamic_pointer_cast<CacheableObjectArray>(obj));
