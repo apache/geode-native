@@ -62,8 +62,7 @@ namespace Apache
           _GF_MG_EXCEPTION_TRY2
 
           m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(
-            std::unique_ptr<native::DataInput>(
-              new native::DataInput(cache->GetNative()->createDataInput(buffer, size))));
+            std::make_unique<native::DataInput>(cache->GetNative()->createDataInput(buffer, size)));
           m_cursor = 0;
           m_isManagedObject = false;
           m_forStringDecode = gcnew array<Char>(100);
@@ -98,8 +97,8 @@ namespace Apache
           _GEODE_NEW(m_buffer, System::Byte[len]);
           pin_ptr<const Byte> pin_buffer = &buffer[0];
           memcpy(m_buffer, (void*)pin_buffer, len);
-          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(std::make_unique<native::DataInput>(m_cache->GetNative()->createDataInput(m_buffer, len)));
-
+          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(
+            std::make_unique<native::DataInput>(m_cache->GetNative()->createDataInput(m_buffer, len)));
           m_cursor = 0;
           m_isManagedObject = false;
           m_forStringDecode = gcnew array<Char>(100);
@@ -140,7 +139,8 @@ namespace Apache
             _GEODE_NEW(m_buffer, System::Byte[len]);
           pin_ptr<const Byte> pin_buffer = &buffer[0];
           memcpy(m_buffer, (void*)pin_buffer, len);
-          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(std::unique_ptr<native::DataInput>(new native::DataInput(m_cache->GetNative()->createDataInput(m_buffer, len))));
+          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(
+            std::make_unique<native::DataInput>(m_cache->GetNative()->createDataInput(m_buffer, len)));
 
           try
           {
