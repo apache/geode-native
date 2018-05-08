@@ -441,7 +441,7 @@ bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj,
   }
 
   if (auto primitive =
-          std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+      std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
     auto id = primitive->getDsCode();
 
     switch (id) {
@@ -487,20 +487,18 @@ bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj,
         return enumerateHashTableEquals(hashTable, otherhashTable);
       }
     }
-  } else {
-    auto pdxInstPtr = std::dynamic_pointer_cast<PdxInstance>(obj);
-    auto otherPdxInstPtr = std::dynamic_pointer_cast<PdxInstance>(otherObj);
-    if (pdxInstPtr != nullptr && otherPdxInstPtr != nullptr) {
-      return (*pdxInstPtr.get() == *otherPdxInstPtr.get());
+  }
+
+  if (auto pdxInstance = std::dynamic_pointer_cast<PdxInstance>(obj)) {
+    if (auto otherPdxInstance =
+            std::dynamic_pointer_cast<PdxInstance>(otherObj)) {
+      return *pdxInstance == *otherPdxInstance;
     }
-    // Chk if it is of std::shared_ptr<CacheableKey> type, eg:
-    // CacheableInt32
-    else {
-      auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj);
-      auto otherKeyType = std::dynamic_pointer_cast<CacheableKey>(otherObj);
-      if (keyType != nullptr && otherKeyType != nullptr) {
-        return keyType->operator==(*otherKeyType);
-      }
+  }
+
+  if (auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj)) {
+    if (auto otherKeyType = std::dynamic_pointer_cast<CacheableKey>(otherObj)) {
+        return *keyType == *otherKeyType;
     }
   }
 
@@ -626,18 +624,14 @@ int PdxInstanceImpl::deepArrayHashCode(std::shared_ptr<Cacheable> obj) {
             std::dynamic_pointer_cast<CacheableHashTable>(obj));
       }
     }
-  } else {
-    auto pdxInstPtr = std::dynamic_pointer_cast<PdxInstance>(obj);
-    if (pdxInstPtr != nullptr) {
-      return pdxInstPtr->hashcode();
-    } else {
-      // Chk if it is of std::shared_ptr<CacheableKey> type, eg:
-      // CacheableInt32
-      auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj);
-      if (keyType != nullptr) {
-        return keyType->hashcode();
-      }
-    }
+  }
+
+  if (auto pdxInstance = std::dynamic_pointer_cast<PdxInstance>(obj)) {
+    return pdxInstance->hashcode();
+  }
+
+  if (auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj)) {
+    return keyType->hashcode();
   }
 
   throw IllegalStateException(
