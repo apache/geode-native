@@ -35,7 +35,8 @@ namespace Apache
       /// key object for caching as well as being a string value.
       /// </summary>
       public ref class CacheableDate
-        : public ICacheableKey
+        : public ICacheableKey,
+          public IDataSerializable
       {
       public:
         /// <summary>

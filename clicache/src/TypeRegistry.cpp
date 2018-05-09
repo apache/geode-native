@@ -184,6 +184,7 @@ namespace Apache
         auto typeRegistry = m_cache->TypeRegistry;
 
         //adding user type as well in global builtin hashmap
+        /* TODO serializable
         System::Int64 classId = ((System::Int64)creationMethod()->ClassId);
         if (!typeRegistry->ManagedDelegatesGeneric->ContainsKey(classId))
           typeRegistry->ManagedDelegatesGeneric->Add(classId, creationMethod);
@@ -205,6 +206,7 @@ namespace Apache
         cacheImpl->getSerializationRegistry()->addType((std::shared_ptr<native::Serializable>(*)())System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
 
         _GF_MG_EXCEPTION_CATCH_ALL2
+        */
       }
 
       void TypeRegistry::RegisterTypeGeneric(Byte typeId,
@@ -234,6 +236,7 @@ namespace Apache
         }
 
         // register the type in the DelegateMap
+        /* TODO serializable 
         IGeodeSerializable^ tmp = creationMethod();
         Log::Finer("Registering(,) serializable class ID " + tmp->ClassId);
         m_cache->TypeRegistry->DelegateMapGeneric[tmp->ClassId] = creationMethod;
@@ -261,6 +264,7 @@ namespace Apache
         {
           //ignore it as this is internal only
         }
+        */
       }
 
       void TypeRegistry::UnregisterTypeGeneric(Byte typeId)

@@ -88,11 +88,13 @@ namespace Apache
             return std::shared_ptr<apache::geode::client::ManagedCacheableDeltaGeneric>(
               new apache::geode::client::ManagedCacheableDeltaGeneric(tempDelta));
           }
-          else
+          else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(tempObj))
           {
             return std::shared_ptr<apache::geode::client::ManagedCacheableKeyGeneric>(
-              new apache::geode::client::ManagedCacheableKeyGeneric(tempObj));
+              new apache::geode::client::ManagedCacheableKeyGeneric(dataSerializable));
           }
+          // TODO serializable other serializable type wrappers.
+          return nullptr;
         }
 
 

@@ -714,6 +714,7 @@ namespace Apache
           WriteByte((int8_t)GeodeTypeIds::NullObj);
         }
         else {
+          /* TODO serializable
           int8_t typeId = DataOutput::GetTypeId(obj->ClassId);
           switch (DataOutput::DSFID(obj->ClassId)) {
           case GeodeTypeIdsImpl::FixedIDByte:
@@ -743,6 +744,7 @@ namespace Apache
             WriteInt32((System::Int32)obj->ClassId);
           }
           obj->ToData(this); // let the obj serialize itself.
+          */
         }
       }
 

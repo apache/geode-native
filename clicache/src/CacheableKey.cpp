@@ -45,9 +45,6 @@ namespace Apache
 
       bool CacheableKey::Equals(Client::ICacheableKey^ other)
       {
-        if (other == nullptr || other->ClassId != ClassId) {
-          return false;
-        }
         try
         {
           return dynamic_cast<native::CacheableKey*>(m_nativeptr->get())->operator==(

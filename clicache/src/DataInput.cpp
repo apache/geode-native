@@ -767,7 +767,9 @@ namespace Apache
         bool isPdxDeserialization = m_ispdxDesrialization;
         m_ispdxDesrialization = false;//for nested objects
         IGeodeSerializable^ newObj = createType();
+        /* TODO serializable
         newObj->FromData(this);
+        */
         m_ispdxDesrialization = isPdxDeserialization;
         return newObj;
         }
@@ -878,7 +880,9 @@ namespace Apache
         if (createType != nullptr)
         {
           IGeodeSerializable^ newObj = createType();
+          /*TODO serializable
           newObj->FromData(this);
+          */
           return newObj;
         }
 

@@ -263,25 +263,18 @@ namespace Apache
       ref class PropertyVisitorProxy
       {
       public:
-        void Visit(Apache::Geode::Client::ICacheableKey^ key,
-          Apache::Geode::Client::IGeodeSerializable^ value)
+        void Visit(ICacheableKey^ key, IGeodeSerializable^ value)
         {
-          TPropKey tpkey = Apache::Geode::Client::TypeRegistry::
-            GetManagedValueGeneric<TPropKey>(std::shared_ptr<apache::geode::client::Serializable>(SafeMSerializableConvertGeneric(key)));
-          TPropValue tpvalue = Apache::Geode::Client::TypeRegistry::
-            GetManagedValueGeneric<TPropValue>(std::shared_ptr<apache::geode::client::Serializable>(SafeMSerializableConvertGeneric(value)));
-          m_visitor->Invoke(tpkey, tpvalue);
+          m_visitor->Invoke(safe_cast<TPropKey>(key), safe_cast<TPropValue>(value));
         }
 
-        void SetPropertyVisitorGeneric(
-          Apache::Geode::Client::PropertyVisitorGeneric<TPropKey, TPropValue>^ visitor)
+        void SetPropertyVisitorGeneric(PropertyVisitorGeneric<TPropKey, TPropValue>^ visitor)
         {
           m_visitor = visitor;
         }
 
       private:
-
-        Apache::Geode::Client::PropertyVisitorGeneric<TPropKey, TPropValue>^ m_visitor;
+        PropertyVisitorGeneric<TPropKey, TPropValue>^ m_visitor;
       };
 
     }  // namespace Client

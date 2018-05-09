@@ -93,12 +93,7 @@ namespace Apache
 
       bool CacheableDate::Equals(ICacheableKey^ other)
       {
-        if (other == nullptr ||
-            other->ClassId != GeodeClassIds::CacheableDate) {
-          return false;
-        }
-        return m_dateTime.Equals(static_cast<CacheableDate^>(
-          other)->m_dateTime);
+        return Equals((Object^) other);
       }
 
       bool CacheableDate::Equals(Object^ obj)
@@ -110,9 +105,8 @@ namespace Apache
           return (m_dateTime == otherDate->m_dateTime);
         }
         return false;
-      }  // namespace Client
-    }  // namespace Geode
-  }  // namespace Apache
-
-} //namespace 
+      }
+    }  // namespace Client
+  }  // namespace Geode
+}  // namespace Apache
 

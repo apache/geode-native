@@ -64,7 +64,7 @@ namespace Apache
           return mg_obj->ptr();
         }
 
-        if (auto mg_obj_delta = std::dynamic_pointer_cast<native::ManagedCacheableDeltaGeneric>(serializableObject))
+        if (auto mg_obj_delta = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(serializableObject))
         {
           return dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(mg_obj_delta->ptr());
         }
@@ -151,9 +151,14 @@ namespace Apache
         Apache::Geode::Client::IGeodeSerializable^ mg_obj )
       {
         //it is called for cacheables types  only
-        return SafeM2UMConvertGeneric<Apache::Geode::Client::IGeodeSerializable,
-          native::ManagedCacheableKeyGeneric, native::Serializable,
-          Apache::Geode::Client::Serializable>(mg_obj);
+        if (auto dataSerializable = dynamic_cast<IDataSerializable^>(mg_obj))
+        {
+          return SafeM2UMConvertGeneric<IDataSerializable,
+            native::ManagedCacheableKeyGeneric, native::Serializable,
+            Serializable>(dataSerializable);
+        }
+        // TODO serializable other serializable types here
+        return nullptr;
       }
 
       generic<class TValue>
@@ -173,9 +178,9 @@ namespace Apache
           return new native::ManagedCacheableDeltaGeneric(sDelta);
         }
 
-        if(auto tmpIGFS = dynamic_cast<IGeodeSerializable^>(mg_obj))
+        if(auto dataSerializable = dynamic_cast<IDataSerializable^>(mg_obj))
 				{
-					return new native::ManagedCacheableKeyGeneric(tmpIGFS);
+					return new native::ManagedCacheableKeyGeneric(dataSerializable);
 				}
 
         return new native::PdxManagedCacheableKey(gcnew PdxWrapper(mg_obj));

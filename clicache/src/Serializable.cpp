@@ -448,7 +448,7 @@ namespace Apache
         if (nullptr == managedObject) {
           return __nullptr;
         }
-        auto wrappedObject = new native::ManagedCacheableKeyGeneric(managedObject);
+        auto wrappedObject = dynamic_cast<native::CacheableKey*>(SafeMSerializableConvertGeneric(managedObject));
         return std::shared_ptr<native::CacheableKey>(wrappedObject);
       }
 

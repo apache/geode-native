@@ -113,17 +113,7 @@ namespace Apache
 
       bool CacheableString::Equals(Apache::Geode::Client::ICacheableKey^ other)
       {
-        if (other == nullptr || other->ClassId != ClassId) {
-          return false;
-        }
-
-        CacheableString^ otherStr =
-          dynamic_cast<CacheableString^>(other);
-
-        if (otherStr == nullptr)
-          return false;
-
-        return m_value->Equals(otherStr->Value);//TODO::
+        return Equals((Object^) other);
       }
 
       bool CacheableString::Equals(Object^ obj)

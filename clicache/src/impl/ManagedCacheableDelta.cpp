@@ -36,7 +36,6 @@ namespace apache
   {
     namespace client
     {
-      /* TODO serializable
       void ManagedCacheableDeltaGeneric::toData(DataOutput& output) const
       {
         try {
@@ -81,7 +80,6 @@ namespace apache
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
       }
-      */
 
      size_t ManagedCacheableDeltaGeneric::objectSize() const
       {
@@ -101,8 +99,7 @@ namespace apache
         return 0;
       }
 
-     /* TODO serializable
-      System::Int32 ManagedCacheableDeltaGeneric::classId() const
+      System::Int32 ManagedCacheableDeltaGeneric::getClassId() const
       {
         System::UInt32 classId;
         try {
@@ -117,6 +114,7 @@ namespace apache
         return (classId >= 0x80000000 ? 0 : classId);
       }
 
+      /* TODO serializable
       int8_t ManagedCacheableDeltaGeneric::typeId() const
       {
         try {

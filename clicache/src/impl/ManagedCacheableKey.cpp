@@ -38,7 +38,6 @@ namespace apache
     namespace client
     {
 
-      /* TODO serializable
       void ManagedCacheableKeyGeneric::toData(apache::geode::client::DataOutput& output) const
       {
         try {
@@ -80,7 +79,7 @@ namespace apache
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
       }
-      */
+      
       size_t ManagedCacheableKeyGeneric::objectSize() const
       {
         try {
@@ -98,12 +97,13 @@ namespace apache
         }
         return 0;
       }
-      /* TODO serializable
-      System::Int32 ManagedCacheableKeyGeneric::classId() const
+
+      int32_t ManagedCacheableKeyGeneric::getClassId() const
       {
         return (m_classId >= 0x80000000 ? 0 : m_classId);
       }
 
+      /* TODO serializable
       int8_t ManagedCacheableKeyGeneric::typeId() const
       {
         if (m_classId >= 0x80000000) {
@@ -145,33 +145,19 @@ namespace apache
 
       bool ManagedCacheableKeyGeneric::operator ==(const apache::geode::client::CacheableKey& other) const
       {
-        try {
-          // now checking classId(), typeId(), DSFID() etc. will be much more
-          // expensive than just a dynamic_cast
-          const ManagedCacheableKeyGeneric* p_other =
-            dynamic_cast<const ManagedCacheableKeyGeneric*>(&other);
-          if (p_other != NULL) {
-            return static_cast<Apache::Geode::Client::ICacheableKey^>(
-              (static_cast<Apache::Geode::Client::IGeodeSerializable^>((Apache::Geode::Client::IGeodeSerializable^)m_managedptr)))->Equals(
-              static_cast<Apache::Geode::Client::ICacheableKey^>(p_other->ptr()));
-          }
-          return false;
+        if (auto&& otherKey = dynamic_cast<const ManagedCacheableKeyGeneric*>(&other))
+        {
+          return this->operator==(*otherKey);
         }
-        catch (Apache::Geode::Client::GeodeException^ ex) {
-          ex->ThrowNative();
-        }
-        catch (System::Exception^ ex) {
-          Apache::Geode::Client::GeodeException::ThrowNative(ex);
-        }
+
         return false;
       }
 
       bool ManagedCacheableKeyGeneric::operator ==(const ManagedCacheableKeyGeneric& other) const
       {
         try {
-          return static_cast<Apache::Geode::Client::ICacheableKey^>(
-            (Apache::Geode::Client::IGeodeSerializable^)(Apache::Geode::Client::IGeodeSerializable^)m_managedptr)->Equals(
-            static_cast<Apache::Geode::Client::ICacheableKey^>(other.ptr()));
+          return dynamic_cast<Apache::Geode::Client::ICacheableKey^>(ptr())->Equals(
+            dynamic_cast<Apache::Geode::Client::ICacheableKey^>(other.ptr()));
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();
