@@ -137,9 +137,6 @@ A user-defined cache writer can abort a region destroy operation. Cache writers 
 listeners with the ability to abort operations. If a cache writer is defined for the region anywhere
 in the distributed system, it is invoked before the region is explicitly destroyed.
 
-Region invalidation and destruction can cause other user-defined application plug-ins to be invoked
-as well. These plug-ins are described in detail in [Application Plug-Ins](../client-cache/application-plugins.html).
-
 Whether carried out explicitly or through expiration activities, invalidation and destruction cause event notification.
 
 

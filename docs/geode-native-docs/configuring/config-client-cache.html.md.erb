@@ -1,0 +1,46 @@
+---
+title:  Configuring the Client Cache
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+The client cache provides a framework for clients to store, manage, and distribute application data.
+
+The cache is the entry point for access to <%=vars.product_name%>. Through the cache, clients gain
+access to the <%=vars.product_name%> caching framework for data loading, distribution, and
+maintenance.
+
+The `Cache` instance allows your client to set general parameters for communication between a cache
+and other caches in the distributed system, and to create and access any region in the cache.
+
+Regions are created from the `Cache` instance. Regions provide the entry point to the interfaces for
+instances of `Region` and `RegionEntry`.
+
+For more information specific to your client programming language, see 
+[C++ Client API](../cpp-caching-api/cpp-caching-api.html) or 
+[.NET Client API](../dotnet-caching-api/dotnet-caching-api.html).
+
+The `Cache` inherits `RegionService` and adds management of these client caching features:
+
+-   Region creation.
+-   Subscription keepalive management for durable clients.
+-   Access to the underlying distributed system.
+-   `RegionService` creation for secure access by multiple users.
+See [Creating Multiple Secure User Connections with RegionService](../security/createsecureconnregionservice.html).
+
+
