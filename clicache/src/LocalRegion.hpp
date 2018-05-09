@@ -254,7 +254,6 @@ namespace Apache
 
         private:        
         inline std::shared_ptr<apache::geode::client::Serializable> getRegionEntryValue(std::shared_ptr<apache::geode::client::CacheableKey>& key);
-        bool AreValuesEqual(std::shared_ptr<apache::geode::client::Cacheable>& val1, std::shared_ptr<apache::geode::client::Cacheable>& val2);
 
         native_shared_ptr<native::Region>^ m_nativeptr;   
       };
