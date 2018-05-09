@@ -487,10 +487,12 @@ class APACHE_GEODE_EXPORT DataInput {
   DataInput() = delete;
   DataInput(const DataInput&) = delete;
   DataInput& operator=(const DataInput&) = delete;
+  DataInput(DataInput&&) = default;
+  DataInput& operator=(DataInput&&) = default;
 
  protected:
   /** constructor given a pre-allocated byte array with size */
-  DataInput(const uint8_t* m_buffer, size_t len, const CacheImpl* cache,
+  DataInput(const uint8_t* buffer, size_t len, const CacheImpl* cache,
             Pool* pool);
 
   virtual const SerializationRegistry& getSerializationRegistry() const;

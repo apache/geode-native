@@ -700,23 +700,23 @@ int32_t PdxInstanceImpl::hashcode() const {
       case PdxFieldTypes::DOUBLE_ARRAY:
       case PdxFieldTypes::STRING_ARRAY:
       case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS: {
-        int retH = getRawHashCode(pt, pField, *dataInput);
+        int retH = getRawHashCode(pt, pField, dataInput);
         if (retH != 0) hashCode = 31 * hashCode + retH;
         break;
       }
       case PdxFieldTypes::OBJECT: {
-        setOffsetForObject(*dataInput, pt, pField->getSequenceId());
+        setOffsetForObject(dataInput, pt, pField->getSequenceId());
         std::shared_ptr<Cacheable> object = nullptr;
-        dataInput->readObject(object);
+        dataInput.readObject(object);
         if (object != nullptr) {
           hashCode = 31 * hashCode + deepArrayHashCode(object);
         }
         break;
       }
       case PdxFieldTypes::OBJECT_ARRAY: {
-        setOffsetForObject(*dataInput, pt, pField->getSequenceId());
+        setOffsetForObject(dataInput, pt, pField->getSequenceId());
         auto objectArray = CacheableObjectArray::create();
-        objectArray->fromData(*dataInput);
+        objectArray->fromData(dataInput);
         hashCode =
             31 * hashCode +
             ((objectArray != nullptr) ? deepArrayHashCode(objectArray) : 0);
@@ -775,109 +775,109 @@ bool PdxInstanceImpl::hasField(const std::string& fieldname) {
 
 bool PdxInstanceImpl::getBooleanField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readBoolean();
+  return dataInput.readBoolean();
 }
 
 int8_t PdxInstanceImpl::getByteField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->read();
+  return dataInput.read();
 }
 
 int16_t PdxInstanceImpl::getShortField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readInt16();
+  return dataInput.readInt16();
 }
 
 int32_t PdxInstanceImpl::getIntField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readInt32();
+  return dataInput.readInt32();
 }
 
 int64_t PdxInstanceImpl::getLongField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readInt64();
+  return dataInput.readInt64();
 }
 
 float PdxInstanceImpl::getFloatField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readFloat();
+  return dataInput.readFloat();
 }
 
 double PdxInstanceImpl::getDoubleField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readDouble();
+  return dataInput.readDouble();
 }
 
 char16_t PdxInstanceImpl::getCharField(const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readInt16();
+  return dataInput.readInt16();
 }
 
 std::string PdxInstanceImpl::getStringField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readString();
+  return dataInput.readString();
 }
 
 std::vector<bool> PdxInstanceImpl::getBooleanArrayField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readBooleanArray();
+  return dataInput.readBooleanArray();
 }
 
 std::vector<int8_t> PdxInstanceImpl::getByteArrayField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readByteArray();
+  return dataInput.readByteArray();
 }
 
 std::vector<int16_t> PdxInstanceImpl::getShortArrayField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readShortArray();
+  return dataInput.readShortArray();
 }
 
 std::vector<int32_t> PdxInstanceImpl::getIntArrayField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readIntArray();
+  return dataInput.readIntArray();
 }
 
 std::vector<int64_t> PdxInstanceImpl::getLongArrayField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readLongArray();
+  return dataInput.readLongArray();
 }
 
 std::vector<float> PdxInstanceImpl::getFloatArrayField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readFloatArray();
+  return dataInput.readFloatArray();
 }
 
 std::vector<double> PdxInstanceImpl::getDoubleArrayField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readDoubleArray();
+  return dataInput.readDoubleArray();
 }
 
 std::vector<char16_t> PdxInstanceImpl::getCharArrayField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readCharArray();
+  return dataInput.readCharArray();
 }
 
 std::vector<std::string> PdxInstanceImpl::getStringArrayField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
-  return dataInput->readStringArray();
+  return dataInput.readStringArray();
 }
 
 std::shared_ptr<CacheableDate> PdxInstanceImpl::getCacheableDateField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   auto value = CacheableDate::create();
-  value->fromData(*dataInput);
+  value->fromData(dataInput);
   return value;
 }
 
@@ -885,7 +885,7 @@ std::shared_ptr<Cacheable> PdxInstanceImpl::getCacheableField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   std::shared_ptr<Cacheable> value;
-  dataInput->readObject(value);
+  dataInput.readObject(value);
   return value;
 }
 std::shared_ptr<CacheableObjectArray>
@@ -893,7 +893,7 @@ PdxInstanceImpl::getCacheableObjectArrayField(
     const std::string& fieldname) const {
   auto dataInput = getDataInputForField(fieldname);
   auto value = CacheableObjectArray::create();
-  value->fromData(*dataInput);
+  value->fromData(dataInput);
   return value;
 }
 
@@ -901,7 +901,7 @@ void PdxInstanceImpl::getField(const std::string& fieldname, int8_t*** value,
                                int32_t& arrayLength,
                                int32_t*& elementLength) const {
   auto dataInput = getDataInputForField(fieldname);
-  dataInput->readArrayOfByteArrays(value, arrayLength, &elementLength);
+  dataInput.readArrayOfByteArrays(value, arrayLength, &elementLength);
 }
 
 std::string PdxInstanceImpl::toString() const {
@@ -1108,7 +1108,7 @@ std::shared_ptr<PdxSerializable> PdxInstanceImpl::getObject() {
   int64_t sampleStartNanos =
       m_enableTimeStatistics ? Utils::startStatOpTime() : 0;
   //[ToDo] do we have to call incPdxDeSerialization here?
-  auto ret = PdxHelper::deserializePdx(*dataInput, m_typeId, m_bufferLength);
+  auto ret = PdxHelper::deserializePdx(dataInput, m_typeId, m_bufferLength);
 
   if (m_enableTimeStatistics) {
     Utils::updateStatOpTime(m_cacheStats.getStat(),
@@ -1218,8 +1218,8 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
       case PdxFieldTypes::DOUBLE_ARRAY:
       case PdxFieldTypes::STRING_ARRAY:
       case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS: {
-        if (!compareRawBytes(*otherPdx, myPdxType, myPFT, *myDataInput,
-                             otherPdxType, otherPFT, *otherDataInput)) {
+        if (!compareRawBytes(*otherPdx, myPdxType, myPFT, myDataInput,
+                             otherPdxType, otherPFT, otherDataInput)) {
           return false;
         }
         break;
@@ -1228,14 +1228,14 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
         std::shared_ptr<Cacheable> object = nullptr;
         std::shared_ptr<Cacheable> otherObject = nullptr;
         if (!myPFT->equals(m_DefaultPdxFieldType)) {
-          setOffsetForObject(*myDataInput, myPdxType, myPFT->getSequenceId());
-          myDataInput->readObject(object);
+          setOffsetForObject(myDataInput, myPdxType, myPFT->getSequenceId());
+          myDataInput.readObject(object);
         }
 
         if (!otherPFT->equals(m_DefaultPdxFieldType)) {
-          otherPdx->setOffsetForObject(*otherDataInput, otherPdxType,
+          otherPdx->setOffsetForObject(otherDataInput, otherPdxType,
                                        otherPFT->getSequenceId());
-          otherDataInput->readObject(otherObject);
+          otherDataInput.readObject(otherObject);
         }
 
         if (object != nullptr) {
@@ -1252,14 +1252,14 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
         auto objectArray = CacheableObjectArray::create();
 
         if (!myPFT->equals(m_DefaultPdxFieldType)) {
-          setOffsetForObject(*myDataInput, myPdxType, myPFT->getSequenceId());
-          objectArray->fromData(*myDataInput);
+          setOffsetForObject(myDataInput, myPdxType, myPFT->getSequenceId());
+          objectArray->fromData(myDataInput);
         }
 
         if (!otherPFT->equals(m_DefaultPdxFieldType)) {
-          otherPdx->setOffsetForObject(*otherDataInput, otherPdxType,
+          otherPdx->setOffsetForObject(otherDataInput, otherPdxType,
                                        otherPFT->getSequenceId());
-          otherObjectArray->fromData(*otherDataInput);
+          otherObjectArray->fromData(otherDataInput);
         }
         if (!deepArrayEquals(objectArray, otherObjectArray)) {
           return false;
@@ -1405,8 +1405,7 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
       }
       if (value != nullptr) {
         writeField(writer, currPf->getFieldName(), currPf->getTypeId(), value);
-        position =
-            getNextFieldPosition(*dataInput, static_cast<int>(i) + 1, pt);
+        position = getNextFieldPosition(dataInput, static_cast<int>(i) + 1, pt);
       } else {
         if (currPf->IsVariableLengthType()) {
           // need to add offset
@@ -1414,8 +1413,8 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
         }
         // write raw byte array...
         nextFieldPosition =
-            getNextFieldPosition(*dataInput, static_cast<int>(i) + 1, pt);
-        writeUnmodifieldField(*dataInput, position, nextFieldPosition,
+            getNextFieldPosition(dataInput, static_cast<int>(i) + 1, pt);
+        writeUnmodifieldField(dataInput, position, nextFieldPosition,
                               static_cast<PdxLocalWriter&>(writer));
         position = nextFieldPosition;  // mark next field;
       }
@@ -2015,7 +2014,7 @@ PdxTypeRegistry& PdxInstanceImpl::getPdxTypeRegistry() const {
   return m_pdxTypeRegistry;
 }
 
-std::unique_ptr<DataInput> PdxInstanceImpl::getDataInputForField(
+DataInput PdxInstanceImpl::getDataInputForField(
     const std::string& fieldname) const {
   auto pt = getPdxType();
   auto pft = pt->getPdxField(fieldname);
@@ -2025,10 +2024,10 @@ std::unique_ptr<DataInput> PdxInstanceImpl::getDataInputForField(
   }
 
   auto dataInput = m_cacheImpl.createDataInput(m_buffer, m_bufferLength);
-  auto pos = getOffset(*dataInput, pt, pft->getSequenceId());
+  auto pos = getOffset(dataInput, pt, pft->getSequenceId());
 
-  dataInput->reset();
-  dataInput->advanceCursor(pos);
+  dataInput.reset();
+  dataInput.advanceCursor(pos);
 
   return dataInput;
 }

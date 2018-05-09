@@ -258,11 +258,10 @@ GfErrType CqQueryImpl::execute(TcrEndpoint* endpoint) {
 
   LOGFINE("Executing CQ [%s]", m_cqName.c_str());
 
-  TcrMessageExecuteCq request(m_cqService->getDM()
-                                  ->getConnectionManager()
-                                  .getCacheImpl()
-                                  ->getCache()
-                                  ->createDataOutput(),
+  TcrMessageExecuteCq request(new DataOutput(m_cqService->getDM()
+                                                 ->getConnectionManager()
+                                                 .getCacheImpl()
+                                                 ->createDataOutput()),
                               m_cqName, m_queryString, CqState::RUNNING,
                               isDurable(), m_tccdm);
   TcrMessageReply reply(true, m_tccdm);
@@ -328,11 +327,10 @@ bool CqQueryImpl::executeCq(TcrMessage::MsgType) {
   }
 
   LOGDEBUG("CqQueryImpl::executeCq");
-  TcrMessageExecuteCq msg(m_cqService->getDM()
-                              ->getConnectionManager()
-                              .getCacheImpl()
-                              ->getCache()
-                              ->createDataOutput(),
+  TcrMessageExecuteCq msg(new DataOutput(m_cqService->getDM()
+                                             ->getConnectionManager()
+                                             .getCacheImpl()
+                                             ->createDataOutput()),
                           m_cqName, m_queryString, CqState::RUNNING,
                           isDurable(), m_tccdm);
   TcrMessageReply reply(true, m_tccdm);
@@ -380,11 +378,10 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
         "CqQuery::executeWithInitialResults: cq is already running");
   }
   // QueryResult values;
-  TcrMessageExecuteCqWithIr msg(m_cqService->getDM()
-                                    ->getConnectionManager()
-                                    .getCacheImpl()
-                                    ->getCache()
-                                    ->createDataOutput(),
+  TcrMessageExecuteCqWithIr msg(new DataOutput(m_cqService->getDM()
+                                                   ->getConnectionManager()
+                                                   .getCacheImpl()
+                                                   ->createDataOutput()),
                                 m_cqName, m_queryString, CqState::RUNNING,
                                 isDurable(), m_tccdm);
 
@@ -473,19 +470,17 @@ void CqQueryImpl::sendStopOrClose(TcrMessage::MsgType requestType) {
   TcrMessageReply reply(true, m_tccdm);
 
   if (requestType == TcrMessage::STOPCQ_MSG_TYPE) {
-    TcrMessageStopCQ msg(m_cqService->getDM()
-                             ->getConnectionManager()
-                             .getCacheImpl()
-                             ->getCache()
-                             ->createDataOutput(),
+    TcrMessageStopCQ msg(new DataOutput(m_cqService->getDM()
+                                            ->getConnectionManager()
+                                            .getCacheImpl()
+                                            ->createDataOutput()),
                          m_cqName, std::chrono::milliseconds(-1), m_tccdm);
     err = m_tccdm->sendSyncRequest(msg, reply);
   } else if (requestType == TcrMessage::CLOSECQ_MSG_TYPE) {
-    TcrMessageCloseCQ msg(m_cqService->getDM()
-                              ->getConnectionManager()
-                              .getCacheImpl()
-                              ->getCache()
-                              ->createDataOutput(),
+    TcrMessageCloseCQ msg(new DataOutput(m_cqService->getDM()
+                                             ->getConnectionManager()
+                                             .getCacheImpl()
+                                             ->createDataOutput()),
                           m_cqName, std::chrono::milliseconds(-1), m_tccdm);
     err = m_tccdm->sendSyncRequest(msg, reply);
   }

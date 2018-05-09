@@ -338,8 +338,8 @@ GfErrType ThinClientDistributionManager::sendUserCredentials(
   GfErrType err = GF_NOERR;
 
   TcrMessageUserCredential request(
-      m_connManager.getCacheImpl()->getCache()->createDataOutput(), credentials,
-      this);
+      new DataOutput(m_connManager.getCacheImpl()->createDataOutput()),
+      credentials, this);
 
   TcrMessageReply reply(true, this);
 

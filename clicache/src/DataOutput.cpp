@@ -46,7 +46,8 @@ namespace Apache
       DataOutput::DataOutput(Apache::Geode::Client::Cache^ cache)
       { 
         m_cache = cache;
-        m_nativeptr = gcnew native_conditional_unique_ptr<native::DataOutput>(cache->GetNative()->createDataOutput());
+        m_nativeptr = gcnew native_conditional_unique_ptr<native::DataOutput>(
+          std::make_unique<native::DataOutput>(cache->GetNative()->createDataOutput()));
         m_isManagedObject = true;
         m_cursor = 0;
         try

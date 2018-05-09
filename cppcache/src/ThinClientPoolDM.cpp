@@ -87,9 +87,9 @@ class GetAllWork : public PooledWork<GfErrType>,
         m_keys(keys),
         m_region(region),
         m_aCallbackArgument(aCallbackArgument) {
-    m_request = new TcrMessageGetAll(region->getCache().createDataOutput(),
-                                     region.get(), m_keys.get(), m_poolDM,
-                                     m_aCallbackArgument);
+    m_request = new TcrMessageGetAll(
+        new DataOutput(region->getCache().createDataOutput()), region.get(),
+        m_keys.get(), m_poolDM, m_aCallbackArgument);
     m_reply = new TcrMessageReply(true, m_poolDM);
     if (m_poolDM->isMultiUserMode()) {
       m_userAttribute = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
@@ -903,7 +903,7 @@ void ThinClientPoolDM::sendUserCacheCloseMessage(bool keepAlive) {
     UserConnectionAttributes* uca = (*it).second;
     if (uca->isAuthenticated() && uca->getEndpoint()->connected()) {
       TcrMessageRemoveUserAuth request(
-          m_connManager.getCacheImpl()->getCache()->createDataOutput(),
+          new DataOutput(m_connManager.getCacheImpl()->createDataOutput()),
           keepAlive, this);
       TcrMessageReply reply(true, this);
 
@@ -938,7 +938,7 @@ int32_t ThinClientPoolDM::GetPDXIdForType(
   GfErrType err = GF_NOERR;
 
   TcrMessageGetPdxIdForType request(
-      m_connManager.getCacheImpl()->getCache()->createDataOutput(), pdxType,
+      new DataOutput(m_connManager.getCacheImpl()->createDataOutput()), pdxType,
       this);
 
   TcrMessageReply reply(true, this);
@@ -958,8 +958,7 @@ int32_t ThinClientPoolDM::GetPDXIdForType(
 
   // need to broadcast this id to all other pool
   {
-    auto& poolManager =
-        m_connManager.getCacheImpl()->getCache()->getPoolManager();
+    auto& poolManager = m_connManager.getCacheImpl()->getPoolManager();
     for (const auto& iter : poolManager.getAll()) {
       auto currPool = static_cast<ThinClientPoolDM*>(iter.second.get());
 
@@ -979,7 +978,7 @@ void ThinClientPoolDM::AddPdxType(std::shared_ptr<Serializable> pdxType,
   GfErrType err = GF_NOERR;
 
   TcrMessageAddPdxType request(
-      m_connManager.getCacheImpl()->getCache()->createDataOutput(), pdxType,
+      new DataOutput(m_connManager.getCacheImpl()->createDataOutput()), pdxType,
       this, pdxTypeId);
 
   TcrMessageReply reply(true, this);
@@ -1000,7 +999,7 @@ std::shared_ptr<Serializable> ThinClientPoolDM::GetPDXTypeById(int32_t typeId) {
   GfErrType err = GF_NOERR;
 
   TcrMessageGetPdxTypeById request(
-      m_connManager.getCacheImpl()->getCache()->createDataOutput(), typeId,
+      new DataOutput(m_connManager.getCacheImpl()->createDataOutput()), typeId,
       this);
 
   TcrMessageReply reply(true, this);
@@ -1024,8 +1023,8 @@ int32_t ThinClientPoolDM::GetEnumValue(std::shared_ptr<Serializable> enumInfo) {
   GfErrType err = GF_NOERR;
 
   TcrMessageGetPdxIdForEnum request(
-      m_connManager.getCacheImpl()->getCache()->createDataOutput(), enumInfo,
-      this);
+      new DataOutput(m_connManager.getCacheImpl()->createDataOutput()),
+      enumInfo, this);
 
   TcrMessageReply reply(true, this);
 
@@ -1044,8 +1043,7 @@ int32_t ThinClientPoolDM::GetEnumValue(std::shared_ptr<Serializable> enumInfo) {
 
   // need to broadcast this id to all other pool
   {
-    auto& poolManager =
-        m_connManager.getCacheImpl()->getCache()->getPoolManager();
+    auto& poolManager = m_connManager.getCacheImpl()->getPoolManager();
     for (const auto& iter : poolManager.getAll()) {
       const auto& currPool =
           std::dynamic_pointer_cast<ThinClientPoolDM>(iter.second);
@@ -1064,7 +1062,8 @@ std::shared_ptr<Serializable> ThinClientPoolDM::GetEnum(int32_t val) {
   GfErrType err = GF_NOERR;
 
   TcrMessageGetPdxEnumById request(
-      m_connManager.getCacheImpl()->getCache()->createDataOutput(), val, this);
+      new DataOutput(m_connManager.getCacheImpl()->createDataOutput()), val,
+      this);
 
   TcrMessageReply reply(true, this);
 
@@ -1088,8 +1087,8 @@ void ThinClientPoolDM::AddEnum(std::shared_ptr<Serializable> enumInfo,
   GfErrType err = GF_NOERR;
 
   TcrMessageAddPdxEnum request(
-      m_connManager.getCacheImpl()->getCache()->createDataOutput(), enumInfo,
-      this, enumVal);
+      new DataOutput(m_connManager.getCacheImpl()->createDataOutput()),
+      enumInfo, this, enumVal);
 
   TcrMessageReply reply(true, this);
 
@@ -1112,8 +1111,8 @@ GfErrType ThinClientPoolDM::sendUserCredentials(
   GfErrType err = GF_NOERR;
 
   TcrMessageUserCredential request(
-      m_connManager.getCacheImpl()->getCache()->createDataOutput(), credentials,
-      this);
+      new DataOutput(m_connManager.getCacheImpl()->createDataOutput()),
+      credentials, this);
 
   TcrMessageReply reply(true, this);
 
@@ -1270,7 +1269,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
       m_clientMetadataService != nullptr) {
     GfErrType error = GF_NOERR;
 
-    auto region = m_connManager.getCacheImpl()->getRegion(request.getRegionName());
+    auto region =
+        m_connManager.getCacheImpl()->getRegion(request.getRegionName());
     auto locationMap = m_clientMetadataService->getServerToFilterMap(
         *(request.getKeys()), region, request.forPrimary());
 
@@ -1427,7 +1427,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
       return GF_CLIENT_WAIT_TIMEOUT;
     } else if (queueErr == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
       // need to refresh meta data
-      auto region = m_connManager.getCacheImpl()->getRegion(request.getRegionName());
+      auto region =
+          m_connManager.getCacheImpl()->getRegion(request.getRegionName());
 
       if (region != nullptr) {
         LOGFINE(
@@ -1555,7 +1556,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
             request.getKeyRef() != nullptr && reply.isFEAnotherHop()))) {
         // Need to get direct access to Region's name to avoid referencing
         // temp data and causing crashes
-        auto region = m_connManager.getCacheImpl()->getRegion(request.getRegionName());
+        auto region =
+            m_connManager.getCacheImpl()->getRegion(request.getRegionName());
 
         if (region != nullptr) {
           if (!connFound)  // max limit case then don't refresh otherwise always
@@ -2343,7 +2345,7 @@ void ThinClientPoolDM::updateNotificationStats(bool isDeltaSuccess,
 GfErrType ThinClientPoolDM::doFailover(TcrConnection* conn) {
   m_manager->setStickyConnection(conn, true);
   TcrMessageTxFailover request(
-      m_connManager.getCacheImpl()->getCache()->createDataOutput());
+      new DataOutput(m_connManager.getCacheImpl()->createDataOutput()));
   TcrMessageReply reply(true, nullptr);
 
   GfErrType err = this->sendSyncRequest(request, reply);
@@ -2446,7 +2448,8 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
           return nullptr;
         }
 
-        auto region = m_connManager.getCacheImpl()->getRegion(request.getRegionName());
+        auto region =
+            m_connManager.getCacheImpl()->getRegion(request.getRegionName());
         if (region != nullptr) {
           slTmp = nullptr;
           m_clientMetadataService

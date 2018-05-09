@@ -569,10 +569,9 @@ CqOperation CqService::getOperation(int eventType) {
  * cqs.
  */
 std::shared_ptr<CacheableArrayList> CqService::getAllDurableCqsFromServer() {
-  TcrMessageGetDurableCqs msg(m_tccdm->getConnectionManager()
-                                  .getCacheImpl()
-                                  ->getCache()
-                                  ->createDataOutput(),
+  TcrMessageGetDurableCqs msg(new DataOutput(m_tccdm->getConnectionManager()
+                                                 .getCacheImpl()
+                                                 ->createDataOutput()),
                               m_tccdm);
   TcrMessageReply reply(true, m_tccdm);
 

@@ -129,11 +129,12 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
   std::shared_ptr<ClientMetadata> newCptr = nullptr;
 
   if (cptr == nullptr) {
-    TcrMessageGetClientPartitionAttributes request(tcrdm->getConnectionManager()
-                                                       .getCacheImpl()
-                                                       ->getCache()
-                                                       ->createDataOutput(),
-                                                   regionFullPath);
+    TcrMessageGetClientPartitionAttributes request(
+        new DataOutput(tcrdm->getConnectionManager()
+                           .getCacheImpl()
+                           ->getCache()
+                           ->createDataOutput()),
+        regionFullPath);
     GfErrType err = tcrdm->sendSyncRequest(request, reply);
     if (err == GF_NOERR &&
         reply.getMessageType() ==
@@ -186,10 +187,10 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
     throw IllegalArgumentException(
         "ClientMetaData: pool cast to ThinClientPoolDM failed");
   }
-  TcrMessageGetClientPrMetadata request(tcrdm->getConnectionManager()
-                                            .getCacheImpl()
-                                            ->createDataOutput(),
-                                        regionPath);
+  TcrMessageGetClientPrMetadata request(
+      new DataOutput(
+          tcrdm->getConnectionManager().getCacheImpl()->createDataOutput()),
+      regionPath);
   TcrMessageReply reply(true, nullptr);
   // send this message to server and get metadata from server.
   LOGFINE("Now sending GET_CLIENT_PR_METADATA for getting from server: %s",
@@ -198,7 +199,8 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
   GfErrType err = tcrdm->sendSyncRequest(request, reply);
   if (err == GF_NOERR &&
       reply.getMessageType() == TcrMessage::RESPONSE_CLIENT_PR_METADATA) {
-    region = tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionPath);
+    region =
+        tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionPath);
     if (region != nullptr) {
       LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.get());
       lregion->getRegionStats()->incMetaDataRefreshCount();

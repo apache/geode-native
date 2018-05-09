@@ -61,10 +61,10 @@ namespace Apache
           m_cachePerfStats = &CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getCachePerfStats();
           m_pdxType->InitializeType(cache);//to generate static position map
 
-          //need to initiailize stream. this will call todata and in toData we will have stream
+          //need to initialize stream. this will call todata and in toData we will have stream
           auto output = m_cache->GetNative()->createDataOutput();
 
-          Apache::Geode::Client::DataOutput mg_output(output.get(), true, cache);
+          Apache::Geode::Client::DataOutput mg_output(&output, true, cache);
           Apache::Geode::Client::Internal::PdxHelper::SerializePdx(%mg_output, this);
         }
 
@@ -86,8 +86,8 @@ namespace Apache
           DataInput^ dataInput = gcnew DataInput(m_buffer, m_bufferLength, m_cache);
           dataInput->setRootObjectPdx(true);
           System::Int64 sampleStartNanos = Utils::startStatOpTime();
-          Object^ ret = Internal::PdxHelper::DeserializePdx(dataInput, true, m_typeId, m_bufferLength, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
-          //dataInput->ResetPdx(0);
+          Object^ ret = Internal::PdxHelper::DeserializePdx(dataInput, true, m_typeId, m_bufferLength,
+            CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
 
           if(m_cachePerfStats)
           {

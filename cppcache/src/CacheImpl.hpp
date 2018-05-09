@@ -293,16 +293,14 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
     return *(m_statisticsManager.get());
   }
 
-  virtual std::unique_ptr<DataOutput> createDataOutput() const;
+  virtual DataOutput createDataOutput() const;
 
-  virtual std::unique_ptr<DataOutput> createDataOutput(Pool* pool) const;
+  virtual DataOutput createDataOutput(Pool* pool) const;
 
-  virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* buffer,
-                                                     size_t len) const;
+  virtual DataInput createDataInput(const uint8_t* buffer, size_t len) const;
 
-  virtual std::unique_ptr<DataInput> createDataInput(const uint8_t* buffer,
-                                                     size_t len,
-                                                     Pool* pool) const;
+  virtual DataInput createDataInput(const uint8_t* buffer, size_t len,
+                                    Pool* pool) const;
 
   PdxInstanceFactory createPdxInstanceFactory(
       const std::string& className) const;

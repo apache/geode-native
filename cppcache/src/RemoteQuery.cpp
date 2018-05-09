@@ -131,12 +131,10 @@ GfErrType RemoteQuery::executeNoThrow(
            m_queryString.c_str());
   if (paramList != nullptr) {
     // QUERY_WITH_PARAMETERS
-    TcrMessageQueryWithParameters msg(m_tccdm->getConnectionManager()
-                                          .getCacheImpl()
-                                          ->getCache()
-                                          ->createDataOutput(),
-                                      m_queryString, nullptr, paramList,
-                                      timeout, tcdm);
+    TcrMessageQueryWithParameters msg(
+        new DataOutput(
+            m_tccdm->getConnectionManager().getCacheImpl()->createDataOutput()),
+        m_queryString, nullptr, paramList, timeout, tcdm);
     msg.setTimeout(timeout);
     reply.setTimeout(timeout);
 
@@ -157,11 +155,10 @@ GfErrType RemoteQuery::executeNoThrow(
     }
     return err;
   } else {
-    TcrMessageQuery msg(m_tccdm->getConnectionManager()
-                            .getCacheImpl()
-                            ->getCache()
-                            ->createDataOutput(),
-                        m_queryString, timeout, tcdm);
+    TcrMessageQuery msg(
+        new DataOutput(
+            m_tccdm->getConnectionManager().getCacheImpl()->createDataOutput()),
+        m_queryString, timeout, tcdm);
     msg.setTimeout(timeout);
     reply.setTimeout(timeout);
 
