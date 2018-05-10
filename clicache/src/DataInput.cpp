@@ -767,9 +767,14 @@ namespace Apache
         bool isPdxDeserialization = m_ispdxDesrialization;
         m_ispdxDesrialization = false;//for nested objects
         IGeodeSerializable^ newObj = createType();
-        /* TODO serializable
-        newObj->FromData(this);
-        */
+
+        if (auto dataSerializable = dynamic_cast<IDataSerializablePrimitive^>(newObj))
+        {
+          dataSerializable->FromData(this);
+        } else {
+          throw gcnew IllegalStateException("Unknown serialization type.");
+        }
+
         m_ispdxDesrialization = isPdxDeserialization;
         return newObj;
         }
@@ -808,85 +813,6 @@ namespace Apache
           return list;
         }
         return nullptr;
-      }
-
-      Object^ DataInput::ReadInternalGenericObject()
-      {
-        bool findinternal = false;
-        int8_t typeId = ReadByte();
-        System::Int64 compId = typeId;
-        TypeFactoryMethodGeneric^ createType = nullptr;
-
-        if (compId == GeodeTypeIds::NullObj) {
-          return nullptr;
-        }
-        else if (compId == GeodeClassIds::PDX)
-        {
-          return Internal::PdxHelper::DeserializePdx(this, false, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
-        }
-        else if (compId == GeodeTypeIds::CacheableNullString) {
-          //return SerializablePtr(CacheableString::createDeserializable());
-          //TODO::
-          return nullptr;
-        }
-        else if (compId == GeodeTypeIdsImpl::CacheableUserData) {
-          int8_t classId = ReadByte();
-          //compId |= ( ( (System::Int64)classId ) << 32 );
-          compId = (System::Int64)classId;
-        }
-        else if (compId == GeodeTypeIdsImpl::CacheableUserData2) {
-          System::Int16 classId = ReadInt16();
-          //compId |= ( ( (System::Int64)classId ) << 32 );
-          compId = (System::Int64)classId;
-        }
-        else if (compId == GeodeTypeIdsImpl::CacheableUserData4) {
-          System::Int32 classId = ReadInt32();
-          //compId |= ( ( (System::Int64)classId ) << 32 );
-          compId = (System::Int64)classId;
-        }
-        else if (compId == GeodeTypeIdsImpl::FixedIDByte) {//TODO: need to verify again
-          int8_t fixedId = ReadByte();
-          compId = fixedId;
-          findinternal = true;
-        }
-        else if (compId == GeodeTypeIdsImpl::FixedIDShort) {
-          System::Int16 fixedId = ReadInt16();
-          compId = fixedId;
-          findinternal = true;
-        }
-        else if (compId == GeodeTypeIdsImpl::FixedIDInt) {
-          System::Int32 fixedId = ReadInt32();
-          compId = fixedId;
-          findinternal = true;
-        }
-        if (findinternal) {
-          compId += 0x80000000;
-          createType = m_cache->TypeRegistry->GetManagedDelegateGeneric((System::Int64)compId);
-        }
-        else {
-          createType = m_cache->TypeRegistry->GetManagedDelegateGeneric(compId);
-          if (createType == nullptr)
-          {
-            Object^ retVal = ReadDotNetTypes(typeId);
-
-            if (retVal != nullptr)
-              return retVal;
-
-            compId += 0x80000000;
-            createType = m_cache->TypeRegistry->GetManagedDelegateGeneric(compId);
-          }
-        }
-
-        if (createType != nullptr)
-        {
-          IGeodeSerializable^ newObj = createType();
-          /*TODO serializable
-          newObj->FromData(this);
-          */
-          return newObj;
-        }
-
-        throw gcnew IllegalStateException("Unregistered typeId in deserialization, aborting.");
       }
 
       size_t DataInput::BytesRead::get()

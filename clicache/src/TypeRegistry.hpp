@@ -123,6 +123,8 @@ namespace Apache
         /// </exception>
         void RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod);
 
+      internal:
+
         /// <summary>
         /// Register an instance factory method for a given type and typeId.
         /// This should be used when registering types that implement
@@ -155,7 +157,6 @@ namespace Apache
           return ret;
         }
 
-      internal:
         generic<class TValue>
           static TValue GetManagedValueGeneric(std::shared_ptr<native::Serializable> val);
 

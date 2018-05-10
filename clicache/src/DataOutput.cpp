@@ -755,6 +755,10 @@ namespace Apache
             }
             dataSerializable->ToData(this);
           }
+          else
+          {
+            throw gcnew IllegalStateException("Unknown serializable type.");
+          }
         }
       }
 

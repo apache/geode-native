@@ -643,9 +643,6 @@ namespace Apache
 
         void CheckBufferSize(int size);
        
-
-        Object^ ReadInternalGenericObject();
-
         Object^ ReadInternalObject();
 
         DataInput^ GetClone();

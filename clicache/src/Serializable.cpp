@@ -220,8 +220,9 @@ namespace Apache
         auto cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
         cacheImpl->getSerializationRegistry()->setPdxTypeHandler([](native::DataInput& dataInput){
           auto obj = std::make_shared<native::PdxManagedCacheableKey>();
-          // TODO serializable
+          // TODO serializable pdx
           // obj->fromData(dataInput);
+          throw gcnew IllegalStateException("not implemented");
           return obj;
         });
       }
