@@ -334,6 +334,152 @@ namespace Apache
       }
 
       generic<class TValue>
+      TValue wrap(std::shared_ptr<native::DataSerializablePrimitive> dataSerializablePrimitive)
+      {
+        switch (dataSerializablePrimitive->getDsCode())
+        {
+          case native::GeodeTypeIds::CacheableDate:
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableDate^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case native::GeodeTypeIds::CacheableBytes:
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableBytes^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case native::GeodeTypeIds::CacheableDoubleArray:
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableDoubleArray^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case native::GeodeTypeIds::CacheableFloatArray:
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableFloatArray^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case native::GeodeTypeIds::CacheableInt16Array:
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableInt16Array^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case native::GeodeTypeIds::CacheableInt32Array:
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableInt32Array^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case native::GeodeTypeIds::CacheableInt64Array:
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableInt64Array^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case native::GeodeTypeIds::CacheableStringArray:
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableStringArray^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->GetValues());
+          }
+          case native::GeodeTypeIds::CacheableArrayList://Ilist generic
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableArrayList^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case native::GeodeTypeIds::CacheableLinkedList://LinkedList generic
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableLinkedList^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case native::GeodeTypeIds::CacheableHashTable://collection::hashtable
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableHashTable^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case native::GeodeTypeIds::CacheableHashMap://generic dictionary
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableHashMap^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case native::GeodeTypeIds::CacheableIdentityHashMap:
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableIdentityHashMap^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case native::GeodeTypeIds::CacheableHashSet://no need of it, default case should work
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableHashSet^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret);
+          }
+          case native::GeodeTypeIds::CacheableLinkedHashSet://no need of it, default case should work
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableLinkedHashSet^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret);
+          }
+          case native::GeodeTypeIds::CacheableFileName:
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableFileName^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret);
+          }
+          case native::GeodeTypeIds::CacheableObjectArray:
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableObjectArray^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret);
+          }
+          case native::GeodeTypeIds::CacheableVector://collection::arraylist
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableVector^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case native::GeodeTypeIds::CacheableUndefined:
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableUndefined^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret);
+          }
+          case native::GeodeTypeIds::Struct:
+          {
+            return safe_cast<TValue>(Struct::Create(dataSerializablePrimitive));
+          }
+          case native::GeodeTypeIds::CacheableStack:
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableStack^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case 7: //GeodeClassIds::CacheableManagedObject
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableObject^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret);
+          }
+          case 8://GeodeClassIds::CacheableManagedObjectXml
+          {
+            auto ret = SafeGenericUMSerializableConvert<CacheableObjectXml^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret);
+          }
+          /*
+          case native::GeodeTypeIds::Properties: // TODO: replace with IDictionary<K, V>
+          {
+            auto ret = SafeGenericUMSerializableConvert<Properties^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret);
+          }
+          */
+          case native::GeodeTypeIds::BooleanArray:
+          {
+            auto ret = SafeGenericUMSerializableConvert<BooleanArray^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case native::GeodeTypeIds::CharArray:
+          {
+            auto ret = SafeGenericUMSerializableConvert<CharArray^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret->Value);
+          }
+          case 0://UserFunctionExecutionException unregistered
+          {
+            auto ret = SafeGenericUMSerializableConvert<UserFunctionExecutionException^>(dataSerializablePrimitive);
+            return safe_cast<TValue>(ret);
+          }
+        }
+
+        throw gcnew IllegalArgumentException("Unknown type");
+      }
+
+      generic<class TValue>
       TValue TypeRegistry::GetManagedValueGeneric(std::shared_ptr<native::Serializable> val)
       {
         if (val == nullptr)
@@ -341,260 +487,74 @@ namespace Apache
           return TValue();
         }
 
-        // TODO serializable
-        /*
-        Byte typeId = val->typeId();
-        //Log::Debug("TypeRegistry::GetManagedValueGeneric typeid = " + typeId);
-        switch (typeId)
+        if (auto dataSerializablePrimitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(val))
         {
-        case native::GeodeTypeIds::CacheableByte:
-        {
-          return (TValue)(int8_t)safe_cast<int8_t>(Serializable::getByte(val));
+          switch (dataSerializablePrimitive->getDsCode())
+          {
+            case native::GeodeTypeIds::CacheableByte:
+            {
+              return (TValue)(int8_t)safe_cast<int8_t>(Serializable::getByte(dataSerializablePrimitive));
+            }
+            case native::GeodeTypeIds::CacheableBoolean:
+            {
+              return safe_cast<TValue>(Serializable::getBoolean(dataSerializablePrimitive));
+            }
+            case native::GeodeTypeIds::CacheableCharacter:
+            {
+              return safe_cast<TValue>(Serializable::getChar(dataSerializablePrimitive));
+            }
+            case native::GeodeTypeIds::CacheableDouble:
+            {
+              return safe_cast<TValue>(Serializable::getDouble(dataSerializablePrimitive));
+            }
+            case native::GeodeTypeIds::CacheableASCIIString:
+            case native::GeodeTypeIds::CacheableASCIIStringHuge:
+            case native::GeodeTypeIds::CacheableString:
+            case native::GeodeTypeIds::CacheableStringHuge:
+            {
+              //TODO serializable: need to look all strings types
+              return safe_cast<TValue>(Serializable::getASCIIString(dataSerializablePrimitive));
+            }
+            case native::GeodeTypeIds::CacheableFloat:
+            {
+              return safe_cast<TValue>(Serializable::getFloat(dataSerializablePrimitive));
+            }
+            case native::GeodeTypeIds::CacheableInt16:
+            {
+              return safe_cast<TValue>(Serializable::getInt16(dataSerializablePrimitive));
+            }
+            case native::GeodeTypeIds::CacheableInt32:
+            {
+              return safe_cast<TValue>(Serializable::getInt32(dataSerializablePrimitive));
+            }
+            case native::GeodeTypeIds::CacheableInt64:
+            {
+              return safe_cast<TValue>(Serializable::getInt64(dataSerializablePrimitive));
+            }
+            default:
+              return wrap<TValue>(dataSerializablePrimitive);
+          }
         }
-        case native::GeodeTypeIds::CacheableBoolean:
+        else if (auto dataSerializable = std::dynamic_pointer_cast<native::DataSerializable>(val))
         {
-          return safe_cast<TValue>(Serializable::getBoolean(val));
-        }
-        case native::GeodeTypeIds::CacheableCharacter:
-        {
-          return safe_cast<TValue>(Serializable::getChar(val));
-        }
-        case native::GeodeTypeIds::CacheableDouble:
-        {
-          return safe_cast<TValue>(Serializable::getDouble(val));
-        }
-        case native::GeodeTypeIds::CacheableASCIIString:
-        case native::GeodeTypeIds::CacheableASCIIStringHuge:
-        case native::GeodeTypeIds::CacheableString:
-        case native::GeodeTypeIds::CacheableStringHuge:
-        {
-          //TODO: need to look all strings types
-          return safe_cast<TValue>(Serializable::getASCIIString(val));
-        }
-        case native::GeodeTypeIds::CacheableFloat:
-        {
-          return safe_cast<TValue>(Serializable::getFloat(val));
-        }
-        case native::GeodeTypeIds::CacheableInt16:
-        {
-          return safe_cast<TValue>(Serializable::getInt16(val));
-        }
-        case native::GeodeTypeIds::CacheableInt32:
-        {
-          return safe_cast<TValue>(Serializable::getInt32(val));
-        }
-        case native::GeodeTypeIds::CacheableInt64:
-        {
-          return safe_cast<TValue>(Serializable::getInt64(val));
-        }
-        case native::GeodeTypeIds::CacheableDate:
-        {
-          //TODO::
-          Apache::Geode::Client::CacheableDate^ ret = static_cast<Apache::Geode::Client::CacheableDate ^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableDate^>(val));
-
-          System::DateTime dt(ret->Value.Ticks);
-          return safe_cast<TValue>(dt);
-        }
-        case native::GeodeTypeIdsImpl::CacheableUserData:
-        case native::GeodeTypeIdsImpl::CacheableUserData2:
-        case native::GeodeTypeIdsImpl::CacheableUserData4:
-        {
-          //TODO::split 
-          IGeodeSerializable^ ret = SafeUMSerializableConvertGeneric(val);
+          auto ret = SafeUMSerializableConvertGeneric(dataSerializable);
           return safe_cast<TValue>(ret);
-          //return TValue();
         }
-        case native::GeodeTypeIdsImpl::PDX:
+        else if (auto pdxSerializable = std::dynamic_pointer_cast<native::PdxSerializable>(val))
         {
-          IPdxSerializable^ ret = SafeUMSerializablePDXConvert(val);
-
-          PdxWrapper^ pdxWrapper = dynamic_cast<PdxWrapper^>(ret);
-
-          if (pdxWrapper != nullptr)
+          auto ret = SafeUMSerializablePDXConvert(pdxSerializable);
+          if (auto pdxWrapper = dynamic_cast<PdxWrapper^>(ret))
           {
             return safe_cast<TValue>(pdxWrapper->GetObject());
           }
 
           return safe_cast<TValue>(ret);
         }
-        case native::GeodeTypeIds::CacheableBytes:
+        else
         {
-          Apache::Geode::Client::CacheableBytes^ ret = safe_cast<Apache::Geode::Client::CacheableBytes ^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableBytes^>(val));
-
-          return safe_cast<TValue>(ret->Value);
-        }
-        case native::GeodeTypeIds::CacheableDoubleArray:
-        {
-          Apache::Geode::Client::CacheableDoubleArray^ ret = safe_cast<Apache::Geode::Client::CacheableDoubleArray ^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableDoubleArray^>(val));
-
-          return safe_cast<TValue>(ret->Value);
-        }
-        case native::GeodeTypeIds::CacheableFloatArray:
-        {
-          Apache::Geode::Client::CacheableFloatArray^ ret = safe_cast<Apache::Geode::Client::CacheableFloatArray^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableFloatArray^>(val));
-
-          return safe_cast<TValue>(ret->Value);
-        }
-        case native::GeodeTypeIds::CacheableInt16Array:
-        {
-          Apache::Geode::Client::CacheableInt16Array^ ret = safe_cast<Apache::Geode::Client::CacheableInt16Array^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableInt16Array^>(val));
-
-          return safe_cast<TValue>(ret->Value);
-        }
-        case native::GeodeTypeIds::CacheableInt32Array:
-        {
-          Apache::Geode::Client::CacheableInt32Array^ ret = safe_cast<Apache::Geode::Client::CacheableInt32Array^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableInt32Array^>(val));
-
-          return safe_cast<TValue>(ret->Value);
-        }
-        case native::GeodeTypeIds::CacheableInt64Array:
-        {
-          Apache::Geode::Client::CacheableInt64Array^ ret = safe_cast<Apache::Geode::Client::CacheableInt64Array^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableInt64Array^>(val));
-
-          return safe_cast<TValue>(ret->Value);
-        }
-        case native::GeodeTypeIds::CacheableStringArray:
-        {
-          Apache::Geode::Client::CacheableStringArray^ ret = safe_cast<Apache::Geode::Client::CacheableStringArray^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableStringArray^>(val));
-
-          return safe_cast<TValue>(ret->GetValues());
-        }
-        case native::GeodeTypeIds::CacheableArrayList://Ilist generic
-        {
-          Apache::Geode::Client::CacheableArrayList^ ret = safe_cast<Apache::Geode::Client::CacheableArrayList^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableArrayList^>(val));
-
-          return safe_cast<TValue>(ret->Value);
-        }
-        case native::GeodeTypeIds::CacheableLinkedList://LinkedList generic
-        {
-          Apache::Geode::Client::CacheableLinkedList^ ret = safe_cast<Apache::Geode::Client::CacheableLinkedList^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableLinkedList^>(val));
-
-          return safe_cast<TValue>(ret->Value);
-        }
-        case native::GeodeTypeIds::CacheableHashTable://collection::hashtable
-        {
-          Apache::Geode::Client::CacheableHashTable^ ret = safe_cast<Apache::Geode::Client::CacheableHashTable^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableHashTable^>(val));
-
-          return safe_cast<TValue>(ret->Value);
-        }
-        case native::GeodeTypeIds::CacheableHashMap://generic dictionary
-        {
-          Apache::Geode::Client::CacheableHashMap^ ret = safe_cast<Apache::Geode::Client::CacheableHashMap^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableHashMap^>(val));
-
-          return safe_cast<TValue>(ret->Value);
-        }
-        case native::GeodeTypeIds::CacheableIdentityHashMap:
-        {
-          Apache::Geode::Client::CacheableIdentityHashMap^ ret = static_cast<Apache::Geode::Client::CacheableIdentityHashMap^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableIdentityHashMap^>(val));
-          return safe_cast<TValue>(ret->Value);
-        }
-        case native::GeodeTypeIds::CacheableHashSet://no need of it, default case should work
-        {
-          Apache::Geode::Client::CacheableHashSet^ ret = static_cast<Apache::Geode::Client::CacheableHashSet^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableHashSet^>(val));
-          return safe_cast<TValue>(ret);
-        }
-        case native::GeodeTypeIds::CacheableLinkedHashSet://no need of it, default case should work
-        {
-          Apache::Geode::Client::CacheableLinkedHashSet^ ret = static_cast<Apache::Geode::Client::CacheableLinkedHashSet^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableLinkedHashSet^>(val));
-          return safe_cast<TValue>(ret);
-        }
-        case native::GeodeTypeIds::CacheableFileName:
-        {
-          Apache::Geode::Client::CacheableFileName^ ret = static_cast<Apache::Geode::Client::CacheableFileName^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableFileName^>(val));
-          return safe_cast<TValue>(ret);
-        }
-        case native::GeodeTypeIds::CacheableObjectArray:
-        {
-          Apache::Geode::Client::CacheableObjectArray^ ret = static_cast<Apache::Geode::Client::CacheableObjectArray^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableObjectArray^>(val));
-          return safe_cast<TValue>(ret);
-        }
-        case native::GeodeTypeIds::CacheableVector://collection::arraylist
-        {
-          Apache::Geode::Client::CacheableVector^ ret = static_cast<Apache::Geode::Client::CacheableVector^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableVector^>(val));
-          return safe_cast<TValue>(ret->Value);
-        }
-        case native::GeodeTypeIds::CacheableUndefined:
-        {
-          Apache::Geode::Client::CacheableUndefined^ ret = static_cast<Apache::Geode::Client::CacheableUndefined^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableUndefined^>(val));
-          return safe_cast<TValue>(ret);
-        }
-        case native::GeodeTypeIds::Struct:
-        {
-          return safe_cast<TValue>(Apache::Geode::Client::Struct::Create(val));
-        }
-        case native::GeodeTypeIds::CacheableStack:
-        {
-          Apache::Geode::Client::CacheableStack^ ret = static_cast<Apache::Geode::Client::CacheableStack^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableStack^>(val));
-          return safe_cast<TValue>(ret->Value);
-        }
-        case 7: //GeodeClassIds::CacheableManagedObject
-        {
-          Apache::Geode::Client::CacheableObject^ ret = static_cast<Apache::Geode::Client::CacheableObject^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableObject^>(val));
-          return safe_cast<TValue>(ret);
-        }
-        case 8://GeodeClassIds::CacheableManagedObjectXml
-        {
-          Apache::Geode::Client::CacheableObjectXml^ ret = static_cast<Apache::Geode::Client::CacheableObjectXml^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CacheableObjectXml^>(val));
-          return safe_cast<TValue>(ret);
-        }
-        */
-        /*  TODO: replace with IDictionary<K, V>
-        case native::GeodeTypeIds::Properties:
-        {
-        Apache::Geode::Client::Properties^ ret = safe_cast<Apache::Geode::Client::Properties^>
-        ( SafeGenericUMSerializableConvert<Apache::Geode::Client::Properties^>(val));
-
-        return safe_cast<TValue>(ret);
-        }*/
-
-        /* TODO serializable
-        case native::GeodeTypeIds::BooleanArray:
-        {
-          Apache::Geode::Client::BooleanArray^ ret = safe_cast<Apache::Geode::Client::BooleanArray^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::BooleanArray^>(val));
-
-          return safe_cast<TValue>(ret->Value);
-        }
-        case native::GeodeTypeIds::CharArray:
-        {
-          Apache::Geode::Client::CharArray^ ret = safe_cast<Apache::Geode::Client::CharArray^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::CharArray^>(val));
-
-          return safe_cast<TValue>(ret->Value);
-        }
-        case 0://UserFunctionExecutionException unregistered
-        {
-          Apache::Geode::Client::UserFunctionExecutionException^ ret = static_cast<Apache::Geode::Client::UserFunctionExecutionException^>
-            (SafeGenericUMSerializableConvert<Apache::Geode::Client::UserFunctionExecutionException^>(val));
-          return safe_cast<TValue>(ret);
-        }
-        default:
-          throw gcnew System::Exception("not found typeid");
+          throw gcnew IllegalStateException("Unknown serialization type.");
         }
 
-        */
         throw gcnew System::Exception("not found typeid");
       }
 

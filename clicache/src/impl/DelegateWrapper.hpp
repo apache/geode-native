@@ -93,8 +93,8 @@ namespace Apache
             return std::shared_ptr<apache::geode::client::ManagedCacheableKeyGeneric>(
               new apache::geode::client::ManagedCacheableKeyGeneric(dataSerializable));
           }
-          // TODO serializable other serializable type wrappers.
-          return nullptr;
+          
+          throw native::IllegalStateException("Unknown serialization type.");
         }
 
 
