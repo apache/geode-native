@@ -245,6 +245,8 @@ When the chunk handler is not operative (enable-chunk-handler=false), each appli
 
 The table describes the security-related system properties for native client authentication and authorization.
 
+See [SSL Client/Server Communication](../security/sslclientserver.html).
+
 <table>
 <caption><span class="tablecap">System Properties for Client Authentication and Authorization</span></caption>
 <thead>
@@ -272,17 +274,12 @@ The table describes the security-related system properties for native client aut
 </tr>
 <tr class="even">
 <td><code class="ph codeph">security-client-kspath</code></td>
-<td>Path to a .pem file, which contains the public certificates for all Geode cache servers to which the client can connect through specified endpoints.</td>
+<td>Path to a .PEM file, which contains the public certificates for all Geode cache servers to which the client can connect through specified endpoints.</td>
 <td>null</td>
 </tr>
 <tr class="odd">
 <td><code class="ph codeph">security-client-kspasswd</code></td>
 <td>Password for the public key file store on the client.</td>
-<td></td>
-</tr>
-<tr class="even">
-<td><code class="ph codeph">security-keystorepath</code></td>
-<td>Path to the public keystore.</td>
 <td></td>
 </tr>
 <tr class="odd">
@@ -295,14 +292,9 @@ The table describes the security-related system properties for native client aut
 <td>Sets the password for the password-protected keystore.</td>
 <td></td>
 </tr>
-<tr>
-<td><code class="ph codeph">ssl-cipher</code></td>
-<td>List of SSL ciphers in the form of a comma-separated list.</td>
-<td>"any"</td>
-</tr>
 <tr class="odd">
 <td><code class="ph codeph">ssl-enabled</code></td>
-<td>True if ssl connection support is enabled.</td>
+<td>True if SSL connection support is enabled.</td>
 <td>empty</td>
 </tr>
 <tr class="even">
@@ -312,7 +304,7 @@ The table describes the security-related system properties for native client aut
 </tr>
 <tr class="odd">
 <td><code class="ph codeph">ssl-keystore-password</code></td>
-<td>Sets the password for the private key PEM file for SSL.</td>
+<td>Sets the password for the private key .PEM file for SSL.</td>
 <td>null</td>
 </tr>
 <tr class="even">

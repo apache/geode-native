@@ -68,21 +68,15 @@ where _jdk-or-jre-path_ is the directory in which Java is installed.
 ## Step 3. Configure SSL properties in client and server properties files
 
 Configure SSL properties. For details on the SSL properties available, see "Managing > Security >
-SSL > Configuring SSL" in the server User Guide.  
+SSL > Configuring SSL" in the [_<%=vars.product_name%> User's Guide_](/serverman/about_<%=vars.product_name.downcase%>.html).  
 
-On the client, the list of enabled components reflects the server’s configuration so the client
-knows how it is expected to communicate with (for example) servers and locators. Paths to keystore
-and truststore are local to the client.
+1.  On the client, set `ssl-keystore` and `ssl-truststore` to point to your keystore files. Paths to the keystore and truststore are local to the client.
+See [Security-Related System Properties](security-systemprops.html#security) for a description of these properties.
 
-1.  In your client properties file (usually `gemfire.properties`), set `ssl-enabled-components` to appropriate values (for example, `server,locator`) and set `ssl-keystore` and `ssl-truststore` to point to your keystore files. See [Security-Related System Properties (gemfire.properties)](security-systemprops.html#security) for a description of these properties.
-2.  On each locator, enable SSL and set the following SSL properties in the locator’s properties file (usually `gemfire.properties`, but on the locator's host):
+1.  On the client, set `ssl-enabled` to `true`. 
 
-    ```
-    ssl-enabled-components=server,locator
-    ssl-protocols=any
-    ssl-ciphers=SSL_RSA_WITH_NULL_SHA
-    ```
-    Make sure your choice of cipher matches a cipher supported on the server.
+1.  On the server, enable SSL for the `locator` and `server` components, as the SSL-enabled client
+must be able to communicate with both locators and servers.
 
 # Starting and stopping the client and server with SSL in place
 
@@ -99,28 +93,28 @@ For details on stopping and starting locators and cache servers with SSL, see [S
 
 **Example locator start command**
 
-Ensure that all required SSL properties are configured in your server's `gemfire.properties` file. Then start your locator as follows:
+Ensure that all required SSL properties are configured in your server's `geode.properties` file. Then start your locator as follows:
 
 ``` pre
 gfsh>start locator --name=my_locator --port=12345 --dir=. \
---security-properties-file=/path/to/your/gemfire.properties
+--security-properties-file=/path/to/your/geode.properties
 ```
 
 **Example locator stop command**
 
 ``` pre
 gfsh>stop locator --port=12345 \
---security-properties-file=/path/to/your/gemfire.properties
+--security-properties-file=/path/to/your/geode.properties
 ```
 
 **Example server start command**
 
-Again, ensure that all required SSL properties are configured in `gemfire.properties`. Then start the server with:
+Again, ensure that all required SSL properties are configured in `geode.properties`. Then start the server with:
 
 ``` pre
 gfsh>start server --name=my_server --locators=hostname[12345] \
 --cache-xml-file=server.xml --log-level=fine \
---security-properties-file=/path/to/your/gemfire.properties
+--security-properties-file=/path/to/your/geode.properties
 ```
 
 **Example server stop command**
