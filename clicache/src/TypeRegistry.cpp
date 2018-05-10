@@ -236,33 +236,29 @@ namespace Apache
         auto typeRegistry = m_cache->TypeRegistry;
 
         //This is hashmap for manged builtin objects
-        if (!typeRegistry->ManagedDelegatesGeneric->ContainsKey(typeId + 0x80000000))
+        int32_t classId = typeId + 0x80000000;
+        if (!typeRegistry->ManagedDelegatesGeneric->ContainsKey(classId))
         {
-          typeRegistry->ManagedDelegatesGeneric->Add(typeId + 0x80000000, creationMethod);
+          typeRegistry->ManagedDelegatesGeneric->Add(classId, creationMethod);
         }
 
         // register the type in the DelegateMap
-        /* TODO serializable 
-        IGeodeSerializable^ tmp = creationMethod();
-        Log::Finer("Registering(,) serializable class ID " + tmp->ClassId);
-        m_cache->TypeRegistry->DelegateMapGeneric[tmp->ClassId] = creationMethod;
+        Log::Finer("Registering(,) serializable class ID " + classId);
+        m_cache->TypeRegistry->DelegateMapGeneric[classId] = creationMethod;
 
         try
         {
-          CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get());
-          if (tmp->ClassId < 0xa0000000)
+          auto&& serializationRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
+          auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
+              System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
+          if (classId < 0xa0000000)
           {
-            cacheImpl->getSerializationRegistry()->addType(typeId,
-              (std::shared_ptr<native::Serializable>(*)())System::Runtime::InteropServices::
-              Marshal::GetFunctionPointerForDelegate(
-                nativeDelegate).ToPointer());
+            serializationRegistry->addType(typeId, nativeDelegateFunction);
           }
           else
-          {//special case for CacheableUndefined type
-            cacheImpl->getSerializationRegistry()->addType2(typeId,
-              (std::shared_ptr<native::Serializable>(*)())System::Runtime::InteropServices::
-              Marshal::GetFunctionPointerForDelegate(
-                nativeDelegate).ToPointer());
+          {
+            //special case for CacheableUndefined type
+            serializationRegistry->addType2(typeId, nativeDelegateFunction);
           }
 
         }
@@ -270,7 +266,6 @@ namespace Apache
         {
           //ignore it as this is internal only
         }
-        */
       }
 
       void TypeRegistry::UnregisterTypeGeneric(Byte typeId)
