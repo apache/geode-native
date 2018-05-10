@@ -427,17 +427,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
-    {
-      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
-      orig.ToData(dout);
-
-      //DataInput din = new DataInput(dout.GetBuffer());
-      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
-      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
-      return dup;
-    }
-
     #region IGeodeSerializable Members
 
     public void FromData(DataInput input)
@@ -574,17 +563,6 @@ namespace Apache.Geode.Client.UnitTests
         return m_struct;
       }
     }
-
-    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
-    {
-      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
-      orig.ToData(dout);
-
-      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
-      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
-      return dup;
-    }
-
     #region IGeodeSerializable Members
 
     public void FromData(DataInput input)
@@ -723,16 +701,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
-    {
-      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
-      orig.ToData(dout);
-
-      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
-      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
-      return dup;
-    }
-
     #region IGeodeSerializable Members
 
     public void FromData(DataInput input)
@@ -868,16 +836,6 @@ namespace Apache.Geode.Client.UnitTests
       {
         return m_struct;
       }
-    }
-
-    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
-    {
-      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
-      orig.ToData(dout);
-
-      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
-      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
-      return dup;
     }
 
     #region IGeodeSerializable Members
@@ -1018,16 +976,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
-    {
-      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
-      orig.ToData(dout);
-
-      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
-      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
-      return dup;
-    }
-
     #region IGeodeSerializable Members
 
     public void FromData(DataInput input)
@@ -1164,16 +1112,6 @@ namespace Apache.Geode.Client.UnitTests
       {
         return m_struct;
       }
-    }
-
-    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
-    {
-      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
-      orig.ToData(dout);
-
-      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
-      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
-      return dup;
     }
 
     #region IGeodeSerializable Members
