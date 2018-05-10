@@ -482,6 +482,18 @@ namespace Apache
         
         static int8_t DSFID(System::UInt32 classId);        
   
+        static inline int8_t getSerializableDataDsCode(int32_t classId) {
+          if (classId <= std::numeric_limits<int8_t>::max() &&
+              classId >= std::numeric_limits<int8_t>::min()) {
+            return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData);
+          } else if (classId <= std::numeric_limits<int16_t>::max() &&
+                     classId >= std::numeric_limits<int16_t>::min()) {
+            return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData2);
+          } else {
+            return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData4);
+          }
+        }
+
         void WriteObjectInternal( IGeodeSerializable^ obj );     
 
         void WriteBytesToUMDataOutput();

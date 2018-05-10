@@ -714,7 +714,7 @@ namespace Apache
           WriteByte((int8_t)GeodeTypeIds::NullObj);
         }
         else {
-          /* TODO serializable
+          /* TODO serializable this is likely dead code, no DSFIDs found
           int8_t typeId = DataOutput::GetTypeId(obj->ClassId);
           switch (DataOutput::DSFID(obj->ClassId)) {
           case GeodeTypeIdsImpl::FixedIDByte:
@@ -733,18 +733,28 @@ namespace Apache
             WriteByte(typeId); // write the type ID.
             break;
           }
-
-          if ((System::Int32)typeId == GeodeTypeIdsImpl::CacheableUserData) {
-            WriteByte((int8_t)obj->ClassId);
-          }
-          else if ((System::Int32)typeId == GeodeTypeIdsImpl::CacheableUserData2) {
-            WriteInt16((System::Int16)obj->ClassId);
-          }
-          else if ((System::Int32)typeId == GeodeTypeIdsImpl::CacheableUserData4) {
-            WriteInt32((System::Int32)obj->ClassId);
-          }
-          obj->ToData(this); // let the obj serialize itself.
           */
+
+          if (auto dataSerializable = dynamic_cast<IDataSerializable^>(obj))
+          {
+            auto id = dataSerializable->ClassId;
+            auto dsCode = getSerializableDataDsCode(id);
+            WriteByte(dsCode);
+            switch (dsCode) {
+              case GeodeTypeIdsImpl::CacheableUserData:
+                WriteByte(static_cast<int8_t>(id));
+                break;
+              case GeodeTypeIdsImpl::CacheableUserData2:
+                WriteInt16(static_cast<int16_t>(id));
+                break;
+              case GeodeTypeIdsImpl::CacheableUserData4:
+                WriteInt32(static_cast<int32_t>(id));
+                break;
+              default:
+                IllegalStateException("Invalid DS Code.");
+            }
+            dataSerializable->ToData(this);
+          }
         }
       }
 

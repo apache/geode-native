@@ -30,52 +30,52 @@ class GeodeTypeIdsImpl {
   // User visible IDs are in GeodeTypeIds.hpp
 
   enum IdValues {
-    // keep the following in alphabetical order please.
-    ObjectTypeImpl = -61,
-    StructTypeImpl = -60,
-    CollectionTypeImpl = -59,
-    FixedIDDefault = 0,
-    FixedIDByte = 1,
-    FixedIDShort = 2,
-    FixedIDInt = 3,
-    FixedIDNone = 4,
-    CacheableToken = 14,  // because there's no equivalence in java
-    VersionedObjectPartList = 7,
+    // keep the following in alphabetical order, please.
     CacheableObjectPartList = 25,
-    EventId = 36,
-    InterestResultPolicy = 37,
-    ClientProxyMembershipId = 38,
-    CacheableUserData4 = 37,
-    CacheableUserData2 = 38,
-    CacheableUserData = 39,
+    CacheableObjectPartList66 = 2121,
+    CacheableToken = 14,  // because there's no equivalence in java
     CacheableUserClass = 40,
+    CacheableUserData = 39,
+    CacheableUserData2 = 38,
+    CacheableUserData4 = 37,
     Class = 43,
-    JavaSerializable = 44,
-    DataSerializable = 45,
-    InternalDistributedMember = 92,
-    PDX = 93,
-    // PDX_ENUM = 94,
-    EntryEventImpl = 105,
-    RegionEventImpl = 108,
-    ClientHealthStats = -126,
-    GatewayEventCallbackArgument = -56,         // 0xC8
-    GatewaySenderEventCallbackArgument = -135,  // 0xC8
     ClientConnectionRequest = -53,
     ClientConnectionResponse = -50,
-    QueueConnectionRequest = -52,
-    QueueConnectionResponse = -49,
-    LocatorListRequest = -54,
-    LocatorListResponse = -51,
+    ClientHealthStats = -126,
+    ClientProxyMembershipId = 38,
+    ClientReplacementRequest = -48,
+    CollectionTypeImpl = -59,
+    DataSerializable = 45,
+    DiskStoreId = 2133,
+    DiskVersionTag = 2131,
+    EntryEventImpl = 105,
+    EventId = 36,
+    FixedIDByte = 1,
+    FixedIDDefault = 0,
+    FixedIDInt = 3,
+    FixedIDNone = 4,
+    FixedIDShort = 2,
+    GatewayEventCallbackArgument = -56,         // 0xC8
+    GatewaySenderEventCallbackArgument = -135,  // 0xC8
     GetAllServersRequest = -43,
     GetAllServersResponse = -42,
-    ClientReplacementRequest = -48,
-    VmCachedDeserializable = -64,
+    InterestResultPolicy = 37,
+    InternalDistributedMember = 92,
+    JavaSerializable = 44,
+    LocatorListRequest = -54,
+    LocatorListResponse = -51,
+    ObjectTypeImpl = -61,
+    PDX = 93,
+    // PDX_ENUM = 94,
     PreferBytesCachedDeserializable = -65,
+    QueueConnectionRequest = -52,
+    QueueConnectionResponse = -49,
+    RegionEventImpl = 108,
+    StructTypeImpl = -60,
     TXCommitMessage = 110,
-    CacheableObjectPartList66 = 2121,
+    VersionedObjectPartList = 7,
     VersionTag = -120,
-    DiskStoreId = 2133,
-    DiskVersionTag = 2131
+    VmCachedDeserializable = -64
   };
 };
 }  // namespace client
