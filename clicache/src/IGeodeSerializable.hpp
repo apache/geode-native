@@ -43,27 +43,6 @@ namespace Apache
       public interface class IGeodeSerializable
       {
       public:
-
-        ///// <summary>
-        ///// Serializes this object.
-        ///// </summary>
-        ///// <param name="output">
-        ///// the DataOutput object to use for serializing the object
-        ///// </param>
-        //void ToData( DataOutput^ output );
-
-        ////bool HasDelta();
-
-        ///// <summary>
-        ///// Deserialize this object, typical implementation should return
-        ///// the 'this' pointer.
-        ///// </summary>
-        ///// <param name="input">
-        ///// the DataInput stream to use for reading the object data
-        ///// </param>
-        ///// <returns>the deserialized object</returns>
-        //void FromData( DataInput^ input );
-
         /// <summary>
         /// Get the size of this object in bytes.
         /// This is only needed if you use the HeapLRU feature.
@@ -77,31 +56,15 @@ namespace Apache
           System::UInt64 get( );
         }
 
-        ///// <summary>
-        ///// Returns the classId of the instance being serialized.
-        ///// This is used by deserialization to determine what instance
-        ///// type to create and deserialize into.
-        ///// </summary>
-        ///// <remarks>
-        ///// The classId must be unique within an application suite
-        ///// and in the range 0 to ((2^31)-1) both inclusive. An application can
-        ///// thus define upto 2^31 custom <c>IGeodeSerializable</c> classes.
-        ///// Returning a value greater than ((2^31)-1) may result in undefined
-        ///// behaviour.
-        ///// </remarks>
-        ///// <returns>the classId</returns>
-        //property System::UInt32 ClassId
-        //{
-        //  System::UInt32 get( );
-        //}
-
         /// <summary>
         /// Return a string representation of the object.
         /// </summary>
         String^ ToString( );
       };
 
-      public interface class IDataSerializable : public IGeodeSerializable {
+      public interface class IDataSerializable : public IGeodeSerializable
+      {
+      public:
         /// <summary>
         /// Serializes this object.
         /// </summary>
@@ -141,45 +104,49 @@ namespace Apache
         }
       };
 
-      public interface class IDataSerializablePrimitive : public IGeodeSerializable {
-        /// <summary>
-        /// Serializes this object.
-        /// </summary>
-        /// <param name="output">
-        /// the DataOutput object to use for serializing the object
-        /// </param>
-        void ToData( DataOutput^ output );
-
-        //bool HasDelta();
-
-        /// <summary>
-        /// Deserialize this object, typical implementation should return
-        /// the 'this' pointer.
-        /// </summary>
-        /// <param name="input">
-        /// the DataInput stream to use for reading the object data
-        /// </param>
-        /// <returns>the deserialized object</returns>
-        void FromData( DataInput^ input );
-
-        /// <summary>
-        /// Returns the classId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        /// <remarks>
-        /// The classId must be unique within an application suite
-        /// and in the range 0 to ((2^31)-1) both inclusive. An application can
-        /// thus define upto 2^31 custom <c>IGeodeSerializable</c> classes.
-        /// Returning a value greater than ((2^31)-1) may result in undefined
-        /// behaviour.
-        /// </remarks>
-        /// <returns>the classId</returns>
-        property int8_t DsCode
-        {
-          int8_t get( );
-        }
+      public interface class IDataSerializablePrimitive : public IDataSerializable
+      {
       };
+
+      //public interface class IDataSerializablePrimitive : public IGeodeSerializable {
+      //  /// <summary>
+      //  /// Serializes this object.
+      //  /// </summary>
+      //  /// <param name="output">
+      //  /// the DataOutput object to use for serializing the object
+      //  /// </param>
+      //  void ToData( DataOutput^ output );
+
+      //  //bool HasDelta();
+
+      //  /// <summary>
+      //  /// Deserialize this object, typical implementation should return
+      //  /// the 'this' pointer.
+      //  /// </summary>
+      //  /// <param name="input">
+      //  /// the DataInput stream to use for reading the object data
+      //  /// </param>
+      //  /// <returns>the deserialized object</returns>
+      //  void FromData( DataInput^ input );
+
+      //  /// <summary>
+      //  /// Returns the classId of the instance being serialized.
+      //  /// This is used by deserialization to determine what instance
+      //  /// type to create and deserialize into.
+      //  /// </summary>
+      //  /// <remarks>
+      //  /// The classId must be unique within an application suite
+      //  /// and in the range 0 to ((2^31)-1) both inclusive. An application can
+      //  /// thus define upto 2^31 custom <c>IGeodeSerializable</c> classes.
+      //  /// Returning a value greater than ((2^31)-1) may result in undefined
+      //  /// behaviour.
+      //  /// </remarks>
+      //  /// <returns>the classId</returns>
+      //  property int8_t DsCode
+      //  {
+      //    int8_t get( );
+      //  }
+      //};
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

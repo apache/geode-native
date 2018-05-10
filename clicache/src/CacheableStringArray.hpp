@@ -45,7 +45,7 @@ namespace Apache
       /// a distributable object for caching.
       /// </summary>
       ref class CacheableStringArray
-        : public Serializable
+        :  public IDataSerializablePrimitive
       {
       public:
         /// <summary>
@@ -65,45 +65,21 @@ namespace Apache
                   gcnew CacheableStringArray(strings) : nullptr);
         }
 
-        /// <summary>
-        /// Serializes this managed object.
-        /// </summary>
-        /// <param name="output">
-        /// the DataOutput object to use for serializing the object
-        /// </param>
-        virtual void ToData(DataOutput^ output) override;
+        virtual void ToData(DataOutput^ output);
 
-        /// <summary>
-        /// Deserializes the managed object -- returns an instance of the
-        /// <c>IGeodeSerializable</c> class.
-        /// </summary>
-        /// <param name="input">
-        /// the DataInput stream to use for reading the object data
-        /// </param>
-        /// <returns>the deserialized object</returns>
-        virtual void FromData(DataInput^ input) override;
+        virtual void FromData(DataInput^ input);
 
-
-        /// <summary>
-        /// Returns the classId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property System::UInt32 ClassId
         {
-          virtual System::UInt32 get() override
+          virtual System::UInt32 get()
           {
             return GeodeClassIds::CacheableStringArray;
           }
         }
 
-        /// <summary>
-        /// return the size of this object in bytes
-        /// </summary>
-        virtual property System::UInt64 ObjectSize
+        property System::UInt64 ObjectSize
         {
-          virtual System::UInt64 get() override
+          virtual System::UInt64 get()
           {
             auto size = sizeof(this);
             for (int i = 0; i < m_value->Length; i++)
@@ -152,15 +128,6 @@ namespace Apache
           return gcnew CacheableStringArray();
         }
 
-      internal:
-        /// <summary>
-        /// Factory function to register wrapper
-        /// </summary>
-        static IGeodeSerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj)
-        {
-          return (obj != nullptr ?
-                  gcnew CacheableStringArray(obj) : nullptr);
-        }
 
       private:
         array<String^>^ m_value;
@@ -174,18 +141,8 @@ namespace Apache
 
 
         inline CacheableStringArray()
-          : Serializable()
         {
-          //apache::geode::client::Serializable* sp = apache::geode::client::CacheableStringArray::createDeserializable();
-          //SetSP(sp);
         }
-
-        /// <summary>
-        /// Private constructor to wrap a native object pointer
-        /// </summary>
-        /// <param name="nativeptr">The native object pointer</param>
-        inline CacheableStringArray(std::shared_ptr<apache::geode::client::Serializable> nativeptr)
-          : Serializable(nativeptr) { }
       };
     }  // namespace Client
   }  // namespace Geode

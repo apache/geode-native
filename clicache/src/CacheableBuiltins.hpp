@@ -50,7 +50,7 @@ namespace Apache
       /// </summary>
       template <typename TNative, typename TManaged, System::UInt32 TYPEID>
       ref class CacheableBuiltinKey
-        : public CacheableKey
+        : public IDataSerializablePrimitive, public CacheableKey
       {
       public:
         /// <summary>
@@ -72,15 +72,9 @@ namespace Apache
           m_nativeptr = gcnew native_shared_ptr<native::Serializable>(nativeptr);
         }
 
-        /// <summary>
-        /// Returns the classId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property System::UInt32 ClassId
         {
-          virtual System::UInt32 get() override
+          virtual System::UInt32 get()
           {
             return TYPEID;
           }
@@ -90,11 +84,11 @@ namespace Apache
         /// Return a string representation of the object.
         /// This returns the string for the <c>Value</c> property.
         /// </summary>
-        virtual String^ ToString() override
+        String^ ToString() override
         {
           try
           {
-            return dynamic_cast<TNative*>(m_nativeptr->get())->value().ToString();
+            return GetNative()->value().ToString();
           }
           finally
           {
@@ -113,7 +107,7 @@ namespace Apache
           if (auto o = dynamic_cast<CacheableBuiltinKey^>(other)) {
             try
             {
-              return dynamic_cast<TNative*>(m_nativeptr->get())->operator==(
+              return GetNative()->operator==(
                 *dynamic_cast<TNative*>(o->m_nativeptr->get()));
             }
             finally
@@ -143,7 +137,7 @@ namespace Apache
         {
           try
           {
-            return (dynamic_cast<TNative*>(m_nativeptr->get())->value() == other);
+            return (GetNative()->value() == other);
           }
           finally
           {
@@ -161,13 +155,37 @@ namespace Apache
           {
             try
             {
-              return dynamic_cast<TNative*>(m_nativeptr->get())->value();
+              return GetNative()->value();
             }
             finally
             {
               GC::KeepAlive(m_nativeptr);
             }
 
+          }
+        }
+
+        virtual void ToData(DataOutput^ dataOutput)
+        {
+          try
+          {
+            return GetNative()->toData(*dataOutput->GetNative());
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+        }
+
+        virtual void FromData(DataInput^ dataInput)
+        {
+          try
+          {
+            return GetNative()->fromData(*dataInput->GetNative());
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
           }
         }
 
@@ -179,6 +197,12 @@ namespace Apache
         /// <param name="nativeptr">The native object pointer</param>
         inline CacheableBuiltinKey(std::shared_ptr<native::Serializable> nativeptr)
           : CacheableKey(nativeptr) { }
+
+      private:
+        inline TNative* GetNative()
+        {
+          return dynamic_cast<TNative*>(m_nativeptr->get());
+        }
       };
 
 
@@ -189,7 +213,7 @@ namespace Apache
       template <typename TNative, typename TNativePtr, typename TManaged,
         System::UInt32 TYPEID>
       ref class CacheableBuiltinArray
-        : public Serializable
+        : public IDataSerializablePrimitive
       {
       public:
 
@@ -199,27 +223,27 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property System::UInt32 ClassId
         {
-          virtual System::UInt32 get() override
+          virtual System::UInt32 get()
           {
             return TYPEID;
           }
         }
 
-        virtual void ToData(DataOutput^ output) override
+        virtual void ToData(DataOutput^ output)
         {
           output->WriteObject(m_value);
         }
 
-        virtual void FromData(DataInput^ input) override
+        virtual void FromData(DataInput^ input)
         {
           input->ReadObject(m_value);
         }
 
-        virtual property System::UInt64 ObjectSize
+        property System::UInt64 ObjectSize
         {
-          virtual System::UInt64 get() override
+          virtual System::UInt64 get()
           {
             return m_value->Length * sizeof(TManaged);
           }
@@ -281,7 +305,6 @@ namespace Apache
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
         inline CacheableBuiltinArray(std::shared_ptr<native::Serializable> nptr)
-          : Serializable(nptr)
         {
           auto nativeptr = std::dynamic_pointer_cast<TNative>(nptr);
           System::Int32 len = nativeptr->length();

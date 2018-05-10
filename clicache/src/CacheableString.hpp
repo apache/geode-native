@@ -42,7 +42,7 @@ namespace Apache
       /// key object for caching as well as being a string value.
       /// </summary>
       ref class CacheableString
-        : public CacheableKey
+        :  public IDataSerializablePrimitive, public CacheableKey
       {
       public:
         /// <summary>
@@ -80,45 +80,21 @@ namespace Apache
                   gcnew CacheableString(value, true) : nullptr);
         }
 
-        /// <summary>
-        /// Serializes this managed object.
-        /// </summary>
-        /// <param name="output">
-        /// the DataOutput object to use for serializing the object
-        /// </param>
-        virtual void ToData(DataOutput^ output) override;
+        virtual void ToData(DataOutput^ output);
 
-        /// <summary>
-        /// Deserializes the managed object -- returns an instance of the
-        /// <c>IGeodeSerializable</c> class.
-        /// </summary>
-        /// <param name="input">
-        /// the DataInput stream to use for reading the object data
-        /// </param>
-        /// <returns>the deserialized object</returns>
-        virtual void FromData(DataInput^ input) override;
+        virtual void FromData(DataInput^ input);
 
-        // <summary>
-        /// Returns the classId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property System::UInt32 ClassId
         {
-          virtual System::UInt32 get() override
+          virtual System::UInt32 get()
           {
             return m_type;
           }
         }
 
-
-        /// <summary>
-        /// return the size of this object in bytes
-        /// </summary>
-        virtual property System::UInt64 ObjectSize
+        property System::UInt64 ObjectSize
         {
-          virtual System::UInt64 get() override;
+          System::UInt64 get() override;
         }
 
         /// <summary>

@@ -67,47 +67,6 @@ namespace Apache
       using namespace msclr::interop;
       namespace native = apache::geode::client;
 
-      void Apache::Geode::Client::Serializable::ToData(
-        Apache::Geode::Client::DataOutput^ output)
-      {
-        if (output->IsManagedObject()) {
-          output->WriteBytesToUMDataOutput();
-        }
-        try
-        {
-          auto nativeOutput = output->GetNative();
-          // TODO serializable - m_nativeptr->get()->toData(*nativeOutput);
-        }
-        finally
-        {
-          GC::KeepAlive(output);
-          GC::KeepAlive(m_nativeptr);
-        }
-        if (output->IsManagedObject()) {
-          output->SetBuffer();
-        }
-      }
-
-      void Serializable::FromData(DataInput^ input)
-      {
-        if (input->IsManagedObject()) {
-          input->AdvanceUMCursor();
-        }
-        auto* nativeInput = input->GetNative();
-
-        try
-        {
-          // TODO serializable - m_nativeptr->get()->fromData(*nativeInput);
-          if (input->IsManagedObject()) {
-            input->SetBuffer();
-          }
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-      }
-
       System::UInt64 Apache::Geode::Client::Serializable::ObjectSize::get()
       {
         try
@@ -118,29 +77,6 @@ namespace Apache
         {
           GC::KeepAlive(m_nativeptr);
         }
-      }
-
-      System::UInt32 Apache::Geode::Client::Serializable::ClassId::get()
-      {
-        throw gcnew UnsupportedOperationException("Serializable::ClassId");
-        // TODO serializable
-        //try
-        //{
-        //  auto n = m_nativeptr->get();
-        //  int8_t typeId = n->typeId();
-        //  if (typeId == native::GeodeTypeIdsImpl::CacheableUserData ||
-        //    typeId == native::GeodeTypeIdsImpl::CacheableUserData2 ||
-        //    typeId == native::GeodeTypeIdsImpl::CacheableUserData4) {
-        //    return n->classId();
-        //  }
-        //  else {
-        //    return typeId + 0x80000000 + (0x20000000 * n->DSFID());
-        //  }
-        //}
-        //finally
-        //{
-        //  GC::KeepAlive(m_nativeptr);
-        //}
       }
 
       String^ Apache::Geode::Client::Serializable::ToString()
@@ -155,100 +91,101 @@ namespace Apache
         }
       }
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (Byte value)
-      {
-        return (Apache::Geode::Client::Serializable^) CacheableByte::Create(value);
-      }
+      // TODO serializable this probably aren't used anymore
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (Byte value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^) CacheableByte::Create(value);
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (bool value)
-      {
-        return (Apache::Geode::Client::Serializable^)CacheableBoolean::Create(value);
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (bool value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^)CacheableBoolean::Create(value);
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<bool>^ value)
-      {
-        // return (Apache::Geode::Client::Serializable^)Apache::Geode::Client::CacheableBooleanArray::Create(value);
-        //TODO:split
-        return nullptr;
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<bool>^ value)
+      //{
+      //  // return (Apache::Geode::Client::Serializable^)Apache::Geode::Client::CacheableBooleanArray::Create(value);
+      //  //TODO:split
+      //  return nullptr;
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<Byte>^ value)
-      {
-        return (Apache::Geode::Client::Serializable^)CacheableBytes::Create(value);
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<Byte>^ value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^) CacheableBytes::Create(value);
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (Char value)
-      {
-        return (Apache::Geode::Client::Serializable^)CacheableCharacter::Create(value);
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (Char value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^)CacheableCharacter::Create(value);
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<Char>^ value)
-      {
-        //return (Apache::Geode::Client::Serializable^)Apache::Geode::Client::CacheableCharArray::Create(value);
-        //TODO:split
-        return nullptr;
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<Char>^ value)
+      //{
+      //  //return (Apache::Geode::Client::Serializable^)Apache::Geode::Client::CacheableCharArray::Create(value);
+      //  //TODO:split
+      //  return nullptr;
 
-      }
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (Double value)
-      {
-        return (Apache::Geode::Client::Serializable^)CacheableDouble::Create(value);
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (Double value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^)CacheableDouble::Create(value);
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<Double>^ value)
-      {
-        return (Apache::Geode::Client::Serializable^)CacheableDoubleArray::Create(value);
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<Double>^ value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^)CacheableDoubleArray::Create(value);
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (Single value)
-      {
-        return (Apache::Geode::Client::Serializable^)CacheableFloat::Create(value);
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (Single value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^)CacheableFloat::Create(value);
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<Single>^ value)
-      {
-        return (Apache::Geode::Client::Serializable^)CacheableFloatArray::Create(value);
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<Single>^ value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^)CacheableFloatArray::Create(value);
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (System::Int16 value)
-      {
-        return (Apache::Geode::Client::Serializable^)CacheableInt16::Create(value);
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (System::Int16 value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^)CacheableInt16::Create(value);
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<System::Int16>^ value)
-      {
-        return (Apache::Geode::Client::Serializable^)CacheableInt16Array::Create(value);
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<System::Int16>^ value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^)CacheableInt16Array::Create(value);
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (System::Int32 value)
-      {
-        return (Apache::Geode::Client::Serializable^)CacheableInt32::Create(value);
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (System::Int32 value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^)CacheableInt32::Create(value);
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<System::Int32>^ value)
-      {
-        return (Apache::Geode::Client::Serializable^)CacheableInt32Array::Create(value);
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<System::Int32>^ value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^)CacheableInt32Array::Create(value);
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (System::Int64 value)
-      {
-        return (Apache::Geode::Client::Serializable^)CacheableInt64::Create(value);
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (System::Int64 value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^)CacheableInt64::Create(value);
+      //}
 
-      /*Apache::Geode::Client::*/Serializable::operator /*Apache::Geode::Client::*/Serializable ^ (array<System::Int64>^ value)
-      {
-        return (Apache::Geode::Client::Serializable^)Apache::Geode::Client::CacheableInt64Array::Create(value);
-      }
+      ///*Apache::Geode::Client::*/Serializable::operator /*Apache::Geode::Client::*/Serializable ^ (array<System::Int64>^ value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^)Apache::Geode::Client::CacheableInt64Array::Create(value);
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (String^ value)
-      {
-        return (Apache::Geode::Client::Serializable^)CacheableString::Create(value);
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (String^ value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^)CacheableString::Create(value);
+      //}
 
-      Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<String^>^ value)
-      {
-        return (Apache::Geode::Client::Serializable^)CacheableStringArray::Create(value);
-      }
+      //Apache::Geode::Client::Serializable::operator Apache::Geode::Client::Serializable ^ (array<String^>^ value)
+      //{
+      //  return (Apache::Geode::Client::Serializable^)CacheableStringArray::Create(value);
+      //}
 
       System::Int32 Serializable::GetPDXIdForType(native::Pool* pool, IGeodeSerializable^ pdxType, Cache^ cache)
       {

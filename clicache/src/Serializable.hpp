@@ -93,23 +93,7 @@ namespace Apache
       public ref class Serializable
         : public Apache::Geode::Client::IGeodeSerializable
       {
-      public:
-        /// <summary>
-        /// Serializes this native (C++) object.
-        /// </summary>
-        /// <param name="output">
-        /// the DataOutput object to use for serializing the object
-        /// </param>
-        virtual void ToData(Apache::Geode::Client::DataOutput^ output);
-
-        /// <summary>
-        /// Deserializes the native (C++) object with the native object wrapped inside.
-        /// </summary>
-        /// <param name="input">
-        /// the DataInput stream to use for reading the object data
-        /// </param>
-        virtual void FromData(Apache::Geode::Client::DataInput^ input);
-        
+      public:        
         /// <summary>
         /// return the size of this object in bytes
         /// </summary>
@@ -119,133 +103,123 @@ namespace Apache
         }
 
         /// <summary>
-        /// Returns the classId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
-        {
-          virtual System::UInt32 get();
-        }
-
-        /// <summary>
         /// Return a string representation of the object.
         /// It simply returns the string representation of the underlying
         /// native object by calling its <c>toString()</c> function.
         /// </summary>
         virtual String^ ToString() override;
 
+        // TODO serializable not needed anymore?
         // Static conversion function from primitive types string, integer
         // and byte array.
 
-        /// <summary>
-        /// Implicit conversion operator from a boolean
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (bool value);
+        ///// <summary>
+        ///// Implicit conversion operator from a boolean
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (bool value);
 
-        /// <summary>
-        /// Implicit conversion operator from a byte
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (Byte value);
+        ///// <summary>
+        ///// Implicit conversion operator from a byte
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (Byte value);
 
-        /// <summary>
-        /// Implicit conversion operator from an array of bytes
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<Byte>^ value);
+        ///// <summary>
+        ///// Implicit conversion operator from an array of bytes
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (array<Byte>^ value);
 
-        /// <summary>
-        /// Implicit conversion operator from an boolean array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<bool>^ value);
+        ///// <summary>
+        ///// Implicit conversion operator from an boolean array
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (array<bool>^ value);
 
-        /// <summary>
-        /// Implicit conversion operator from a double
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (Double value);
+        ///// <summary>
+        ///// Implicit conversion operator from a double
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (Double value);
 
-        /// <summary>
-        /// Implicit conversion operator from a double array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<Double>^ value);
+        ///// <summary>
+        ///// Implicit conversion operator from a double array
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (array<Double>^ value);
 
-        /// <summary>
-        /// Implicit conversion operator from a float
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (Single value);
+        ///// <summary>
+        ///// Implicit conversion operator from a float
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (Single value);
 
-        /// <summary>
-        /// Implicit conversion operator from a float array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<Single>^ value);
+        ///// <summary>
+        ///// Implicit conversion operator from a float array
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (array<Single>^ value);
 
-        /// <summary>
-        /// Implicit conversion operator from a 16-bit integer
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (System::Int16 value);
+        ///// <summary>
+        ///// Implicit conversion operator from a 16-bit integer
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (System::Int16 value);
 
-        /// <summary>
-        /// Implicit conversion operator from a character
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (Char value);
+        ///// <summary>
+        ///// Implicit conversion operator from a character
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (Char value);
 
-        /// <summary>
-        /// Implicit conversion operator from a character array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<Char>^ value);
+        ///// <summary>
+        ///// Implicit conversion operator from a character array
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (array<Char>^ value);
 
-        /// <summary>
-        /// Implicit conversion operator from a 16-bit integer array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<System::Int16>^ value);
+        ///// <summary>
+        ///// Implicit conversion operator from a 16-bit integer array
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (array<System::Int16>^ value);
 
-        /// <summary>
-        /// Implicit conversion operator from a 32-bit integer
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (System::Int32 value);
+        ///// <summary>
+        ///// Implicit conversion operator from a 32-bit integer
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (System::Int32 value);
 
-        /// <summary>
-        /// Implicit conversion operator from a 32-bit integer array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<System::Int32>^ value);
+        ///// <summary>
+        ///// Implicit conversion operator from a 32-bit integer array
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (array<System::Int32>^ value);
 
-        /// <summary>
-        /// Implicit conversion operator from a 64-bit integer
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator /*Apache::Geode::Client::*/Serializable^ (System::Int64 value);
+        ///// <summary>
+        ///// Implicit conversion operator from a 64-bit integer
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator /*Apache::Geode::Client::*/Serializable^ (System::Int64 value);
 
-        /// <summary>
-        /// Implicit conversion operator from a 64-bit integer array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<System::Int64>^ value);
+        ///// <summary>
+        ///// Implicit conversion operator from a 64-bit integer array
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (array<System::Int64>^ value);
 
-        /// <summary>
-        /// Implicit conversion operator from a string
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (String^ value);
+        ///// <summary>
+        ///// Implicit conversion operator from a string
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (String^ value);
 
-        /// <summary>
-        /// Implicit conversion operator from a string array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<String^>^ value);
+        ///// <summary>
+        ///// Implicit conversion operator from a string array
+        ///// to a <c>Serializable</c>.
+        ///// </summary>
+        //static operator Apache::Geode::Client::Serializable^ (array<String^>^ value);
 
       internal:
         static std::shared_ptr<CacheableKey> wrapIGeodeSerializable(IGeodeSerializable^ managedObject);

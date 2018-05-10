@@ -48,11 +48,13 @@ namespace Apache
         /// </summary>
         template <System::UInt32 TYPEID, typename HSTYPE>
         public ref class CacheableHashSetType
-          : public Serializable, public ICollection<Object^>
+          : public IDataSerializablePrimitive,
+            public Serializable,
+            public ICollection<Object^>
         {
         public:
 
-          virtual void ToData(DataOutput^ output) override
+          virtual void ToData(DataOutput^ output)
           {
             output->WriteArrayLen(this->Count);
 
@@ -65,7 +67,7 @@ namespace Apache
             GC::KeepAlive(this);
           }
 
-          virtual void FromData(DataInput^ input) override
+          virtual void FromData(DataInput^ input)
           {
             int len = input->ReadArrayLen();
             if (len > 0)
@@ -78,9 +80,9 @@ namespace Apache
             }
           }
 
-          virtual property System::UInt64 ObjectSize
+          property System::UInt64 ObjectSize
           {
-            virtual System::UInt64 get() override
+            System::UInt64 get() override
             {
               System::UInt64 size = 0;
               for each (Object^ key in this) {
@@ -93,7 +95,7 @@ namespace Apache
             }
           }
 
-          virtual int GetHashCode() override
+          int GetHashCode() override
           {
             IEnumerator<Object^>^ ie = GetEnumerator();
 
@@ -105,7 +107,7 @@ namespace Apache
             return h;
           }
 
-          virtual bool Equals(Object^ other)override
+          bool Equals(Object^ other) override
           {
             if (other == nullptr)
               return false;
@@ -257,15 +259,9 @@ namespace Apache
             native_unique_ptr<typename HSTYPE::iterator>^ m_nativeptr;
           };
 
-          /// <summary>
-          /// Returns the classId of the instance being serialized.
-          /// This is used by deserialization to determine what instance
-          /// type to create and deserialize into.
-          /// </summary>
-          /// <returns>the classId</returns>
-          virtual property System::UInt32 ClassId
+          property System::UInt32 ClassId
           {
-            virtual System::UInt32 get() override
+            virtual System::UInt32 get()
             {
               return TYPEID;
             }
