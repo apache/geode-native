@@ -121,7 +121,7 @@ namespace Apache
         /// in registering the type; check <c>Utils::LastError</c> for more
         /// information in the latter case.
         /// </exception>
-        void RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod);
+        void RegisterType(TypeFactoryMethod^ creationMethod);
 
       internal:
 
@@ -137,7 +137,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if the method is null
         /// </exception>
-        void RegisterTypeGeneric(Byte typeId, TypeFactoryMethodGeneric^ creationMethod, 
+        void RegisterType(Byte typeId, TypeFactoryMethod^ creationMethod, 
           Type^ type);
 
 
@@ -150,9 +150,9 @@ namespace Apache
         /// <summary>
         /// This is to get manged delegates.
         /// </summary>
-        TypeFactoryMethodGeneric^ GetManagedDelegateGeneric(System::Int64 typeId)
+        TypeFactoryMethod^ GetManagedDelegateGeneric(System::Int64 typeId)
         {
-          TypeFactoryMethodGeneric^ ret = nullptr;
+          TypeFactoryMethod^ ret = nullptr;
           ManagedDelegatesGeneric->TryGetValue(typeId, ret);
           return ret;
         }
@@ -229,12 +229,12 @@ namespace Apache
         Dictionary<String^, PdxTypeFactoryMethod^>^ PdxDelegateMap =
           gcnew Dictionary<String^, PdxTypeFactoryMethod^>();
 
-        Dictionary<System::Int64, TypeFactoryMethodGeneric^>^ ManagedDelegatesGeneric =
-          gcnew Dictionary<System::Int64, TypeFactoryMethodGeneric^>();
+        Dictionary<System::Int64, TypeFactoryMethod^>^ ManagedDelegatesGeneric =
+          gcnew Dictionary<System::Int64, TypeFactoryMethod^>();
         List<TypeFactoryNativeMethodGeneric^>^ NativeDelegatesGeneric =
           gcnew List<TypeFactoryNativeMethodGeneric^>();
-        Dictionary<UInt32, TypeFactoryMethodGeneric^>^ DelegateMapGeneric =
-          gcnew Dictionary<UInt32, TypeFactoryMethodGeneric^>();
+        Dictionary<UInt32, TypeFactoryMethod^>^ DelegateMapGeneric =
+          gcnew Dictionary<UInt32, TypeFactoryMethod^>();
 
         Dictionary<Byte, TypeFactoryNativeMethodGeneric^>^ BuiltInDelegatesGeneric =
           gcnew Dictionary<Byte, TypeFactoryNativeMethodGeneric^>();

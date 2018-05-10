@@ -172,7 +172,7 @@ namespace Apache
         return retVal();
       }
 
-      void TypeRegistry::RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod)
+      void TypeRegistry::RegisterType(TypeFactoryMethod^ creationMethod)
       {
         if (creationMethod == nullptr) {
           throw gcnew IllegalArgumentException("Serializable.RegisterType(): "
@@ -209,8 +209,8 @@ namespace Apache
         */
       }
 
-      void TypeRegistry::RegisterTypeGeneric(Byte typeId,
-        TypeFactoryMethodGeneric^ creationMethod, Type^ type)
+      void TypeRegistry::RegisterType(Byte typeId,
+        TypeFactoryMethod^ creationMethod, Type^ type)
       {
         if (creationMethod == nullptr) {
           throw gcnew IllegalArgumentException("Serializable.RegisterType(): ");

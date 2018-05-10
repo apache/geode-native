@@ -658,7 +658,7 @@ namespace Apache
         bool findinternal = false;
         int8_t typeId = ReadByte();
         System::Int64 compId = typeId;
-        TypeFactoryMethodGeneric^ createType = nullptr;
+        TypeFactoryMethod^ createType = nullptr;
 
         if (compId == GeodeTypeIds::NullObj) {
           return nullptr;

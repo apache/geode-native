@@ -67,7 +67,7 @@ namespace Apache
       /// <c>DelegateWrapper.NativeDelegate</c> method by a call to
       /// <see cref="IGeodeSerializable.FromData" />.
       /// </summary>
-      public delegate Apache::Geode::Client::IGeodeSerializable^ TypeFactoryMethodGeneric();
+      public delegate Apache::Geode::Client::IGeodeSerializable^ TypeFactoryMethod();
       /// <summary>
       /// Delegate to wrap a native <c>native::Serializable</c> type.
       /// </summary>

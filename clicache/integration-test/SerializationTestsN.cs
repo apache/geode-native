@@ -92,19 +92,19 @@ namespace Apache.Geode.Client.UnitTests
     {
       CacheHelper.CreateTCRegion2<object, object>(RegionNames[0], true, false,
         null, locators, false);
-      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType22.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType4.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType2.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType42.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType43.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType22.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType4.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType2.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType42.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType43.CreateDeserializable);
     }
 
     public void DoNPuts(int n)
     {
       try
       {
-        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable);
         Assert.Fail("Expected exception in registering the type again.");
       }
       catch (IllegalStateException ex)
@@ -126,7 +126,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable);
         Assert.Fail("Expected exception in registering the type again.");
       }
       catch (IllegalStateException ex)

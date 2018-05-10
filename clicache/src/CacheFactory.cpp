@@ -66,9 +66,9 @@ namespace Apache
 
           Log::SetLogLevel(static_cast<LogLevel>(native::Log::logLevel( )));
           native::createAppDomainContext = &Apache::Geode::Client::createAppDomainContext;
-          cache->TypeRegistry->RegisterTypeGeneric(
+          cache->TypeRegistry->RegisterType(
             native::GeodeTypeIds::PdxType,
-            gcnew TypeFactoryMethodGeneric(Apache::Geode::Client::Internal::PdxType::CreateDeserializable),
+            gcnew TypeFactoryMethod(Apache::Geode::Client::Internal::PdxType::CreateDeserializable),
             nullptr);
 
           DistributedSystem::ManagedPostConnect(cache);
