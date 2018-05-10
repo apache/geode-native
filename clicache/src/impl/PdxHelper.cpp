@@ -54,21 +54,17 @@ namespace Apache
           dataOutput->setPdxSerialization(true);
           String^ pdxClassname = nullptr;
           bool isPdxWrapper = false;
-          //String^ className = nullptr;
           Type^ pdxType = nullptr;
-          
-          PdxWrapper^ pdxWrapper = dynamic_cast<PdxWrapper^>(pdxObject);
 
-          if(pdxWrapper != nullptr)
+
+          if (auto pdxWrapper = dynamic_cast<PdxWrapper^>(pdxObject))
           {
-            //className = pdxWrapper->GetObject()->GetType()->FullName;
             isPdxWrapper = true;
             pdxType = pdxWrapper->GetObject()->GetType();
           }
           else
           {
-            PdxInstanceImpl^ pdxII = dynamic_cast<PdxInstanceImpl^>(pdxObject);
-            if(pdxII != nullptr)
+            if (auto pdxII = dynamic_cast<PdxInstanceImpl^>(pdxObject))
             {
               PdxType^ piPt = pdxII->getPdxType();
               if(piPt != nullptr && piPt->TypeId == 0)//from pdxInstance factory need to get typeid from server
@@ -85,10 +81,9 @@ namespace Apache
               System::Byte* pdxStream = plw->GetPdxStream(len);
               pdxII->updatePdxStream( pdxStream, len);
 
-
               return;
             }
-            //className = pdxObject->GetType()->FullName;
+
             pdxType = pdxObject->GetType();
           }
   

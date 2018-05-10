@@ -186,12 +186,6 @@ namespace Apache
         return new native::PdxManagedCacheableKey(gcnew PdxWrapper(mg_obj));
       }
 
-      generic<class TValue>
-      inline static native::Cacheable* SafeGenericMSerializableConvert( TValue mg_obj)
-      {
-        return SafeGenericM2UMConvert<TValue>( mg_obj );
-      }
-
       inline static IPdxSerializable^ SafeUMSerializablePDXConvert( std::shared_ptr<native::Serializable> obj )
       {
          if(auto mg_obj = std::dynamic_pointer_cast<native::PdxManagedCacheableKey>( obj ))
