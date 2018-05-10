@@ -54,7 +54,9 @@ namespace apache
       /// object and implements the native <c>apache::geode::client::CacheableKey</c> interface.
       /// </summary>
       class PdxManagedCacheableKey
-        : public apache::geode::client::CacheableKey, public apache::geode::client::Delta
+        : public DataSerializableInternal,
+          public CacheableKey,
+          public Delta
       {
         public:
           inline PdxManagedCacheableKey()
@@ -82,51 +84,33 @@ namespace apache
             m_managedDeltaptr = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(managedptr);
           }
 
-          virtual void toDelta(apache::geode::client::DataOutput& output) const override;
+          int8_t getInternalId() const override
+          {
+            throw IllegalStateException("not implemented");
+          }
 
-          virtual void fromDelta(apache::geode::client::DataInput& input) override;
+          void toData(DataOutput& output) const override;
 
-          virtual bool hasDelta() const override;
+          void fromData(DataInput& input) override;
 
-          virtual std::shared_ptr<apache::geode::client::Delta> clone() const override;
+          void toDelta(DataOutput& output) const override;
 
-          /// <summary>
-          /// return the size of this object in bytes
-          /// </summary>
-          virtual size_t objectSize() const override;
+          void fromDelta(DataInput& input) override;
 
-          /// <summary>
-          /// Display this object as 'string', which depends on the implementation in
-          /// the managed class
-          /// </summary>
-          virtual std::string toString() const override;
+          bool hasDelta() const override;
 
-          /// <summary>
-          /// return true if this key matches other CacheableKey
-          /// </summary>
-          virtual bool operator == (const CacheableKey& other) const;
-          /// <summary>
-          /// return true if this key matches other ManagedCacheableKey
-          /// </summary>
+          std::shared_ptr<apache::geode::client::Delta> clone() const override;
+
+          size_t objectSize() const override;
+
+          std::string toString() const override;
+
+          bool operator == (const CacheableKey& other) const override;
+          
           virtual bool operator == (const PdxManagedCacheableKey& other) const;
 
-          /// <summary>
-          /// return the hashcode for this key.
-          /// </summary>
-          virtual System::Int32 hashcode() const;
+          System::Int32 hashcode() const override;
 
-          /// <summary>
-          /// Copy the string form of a key into a char* buffer for logging purposes.
-          /// implementations should only generate a string as long as maxLength chars,
-          /// and return the number of chars written. buffer is expected to be large 
-          /// enough to hold at least maxLength chars.
-          /// The default implementation renders the classname and instance address.
-          /// </summary>
-          virtual size_t logString(char* buffer, size_t maxLength) const;
-
-          /// <summary>
-          /// Returns the wrapped managed object reference.
-          /// </summary>
           inline Apache::Geode::Client::IPdxSerializable^ ptr() const
           {
             return m_managedptr;

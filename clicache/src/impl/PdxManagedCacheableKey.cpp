@@ -42,7 +42,6 @@ namespace apache
   {
     namespace client
     {
-      /* TODO serializable
       void PdxManagedCacheableKey::toData(apache::geode::client::DataOutput& output) const
       {
         try
@@ -92,7 +91,6 @@ namespace apache
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
       }
-      */
 
       size_t PdxManagedCacheableKey::objectSize() const
       {
@@ -111,23 +109,6 @@ namespace apache
 
         return 0;
       }
-
-      /* TODO serializable
-      System::Int32 PdxManagedCacheableKey::classId() const
-      {
-        return 0;
-      }
-
-      int8_t PdxManagedCacheableKey::typeId() const
-      {
-        return (int8_t)GeodeTypeIdsImpl::PDX;
-      }
-
-      int8_t PdxManagedCacheableKey::DSFID() const
-      {
-        return 0;
-      }
-      */
 
       std::string PdxManagedCacheableKey::toString() const
       {
@@ -211,28 +192,6 @@ namespace apache
         }
         catch (System::Exception^ ex)
         {
-          Apache::Geode::Client::GeodeException::ThrowNative(ex);
-        }
-
-        return 0;
-      }
-
-      size_t PdxManagedCacheableKey::logString(char* buffer, size_t maxLength) const
-      {
-        try
-        {
-          if (maxLength > 0)
-          {
-            auto logstr = m_managedptr->GetType()->Name + '(' +
-              m_managedptr->ToString() + ')';
-
-            return snprintf(buffer, maxLength, "%s", marshal_as<std::string>(logstr).c_str());
-          }
-        }
-        catch (Apache::Geode::Client::GeodeException^ ex) {
-          ex->ThrowNative();
-        }
-        catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
 
