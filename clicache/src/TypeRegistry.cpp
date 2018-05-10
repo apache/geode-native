@@ -182,10 +182,18 @@ namespace Apache
         //--------------------------------------------------------------
 
         auto typeRegistry = m_cache->TypeRegistry;
+        int32_t classId;
 
         //adding user type as well in global builtin hashmap
-        /* TODO serializable
-        System::Int64 classId = ((System::Int64)creationMethod()->ClassId);
+        auto obj = creationMethod();
+        if (auto dataSerializable = dynamic_cast<IDataSerializable^>(obj))
+        {
+          classId = dataSerializable->ClassId;
+        } else
+        {
+          throw gcnew IllegalArgumentException("Unknown serialization type.");
+        }
+
         if (!typeRegistry->ManagedDelegatesGeneric->ContainsKey(classId))
           typeRegistry->ManagedDelegatesGeneric->Add(classId, creationMethod);
 
@@ -197,20 +205,18 @@ namespace Apache
         m_cache->TypeRegistry->NativeDelegatesGeneric->Add(nativeDelegate);
 
         // register the type in the DelegateMap, this is pure c# for create domain object 
-        IGeodeSerializable^ tmp = creationMethod();
-        Log::Fine("Registering serializable class ID " + tmp->ClassId);
-        m_cache->TypeRegistry->DelegateMapGeneric[tmp->ClassId] = creationMethod;
+        Log::Fine("Registering serializable class ID " + classId);
+        m_cache->TypeRegistry->DelegateMapGeneric[classId] = creationMethod;
 
         _GF_MG_EXCEPTION_TRY2
-          CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get());
-        cacheImpl->getSerializationRegistry()->addType((std::shared_ptr<native::Serializable>(*)())System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
-
+          auto&& nativeTypeRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
+          auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
+              System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
+          nativeTypeRegistry->addType(nativeDelegateFunction);
         _GF_MG_EXCEPTION_CATCH_ALL2
-        */
       }
 
-      void TypeRegistry::RegisterType(Byte typeId,
-        TypeFactoryMethod^ creationMethod, Type^ type)
+      void TypeRegistry::RegisterType(Byte typeId, TypeFactoryMethod^ creationMethod, Type^ type)
       {
         if (creationMethod == nullptr) {
           throw gcnew IllegalArgumentException("Serializable.RegisterType(): ");
