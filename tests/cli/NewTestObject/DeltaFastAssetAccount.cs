@@ -22,7 +22,7 @@ namespace Apache.Geode.Client.Tests
 {
   using Apache.Geode.Client;
   public class DeltaFastAssetAccount
-    : IGeodeSerializable, IGeodeDelta
+    : IDataSerializable, IGeodeDelta
   {
     private bool encodeTimestamp;
     private Int32 acctId;

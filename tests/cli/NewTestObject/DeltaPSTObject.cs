@@ -21,7 +21,7 @@ namespace Apache.Geode.Client.Tests
 {
   using Apache.Geode.Client;
   public class DeltaPSTObject
-    : IGeodeSerializable, IGeodeDelta
+    : IDataSerializable, IGeodeDelta
   {
     private long timestamp;
     private Int32 field1;

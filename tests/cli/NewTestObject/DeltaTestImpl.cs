@@ -21,7 +21,7 @@ namespace Apache.Geode.Client.Tests
 {
   using Apache.Geode.Client;
   public class DeltaTestImpl
-    : IGeodeSerializable, IGeodeDelta
+    : IDataSerializable, IGeodeDelta
   {
     private static sbyte INT_MASK = 0x1;
     private static sbyte STR_MASK = 0X2;

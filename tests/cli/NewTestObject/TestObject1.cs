@@ -21,7 +21,7 @@ namespace Apache.Geode.Client.Tests
 {
   using Apache.Geode.Client;
   public class TestObject1
-    : IGeodeSerializable
+    : IDataSerializable
   {
     private string name;
     private byte[] arr;

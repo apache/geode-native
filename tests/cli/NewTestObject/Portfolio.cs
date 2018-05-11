@@ -25,7 +25,7 @@ namespace Apache.Geode.Client.Tests
   /// User class for testing the put functionality for object.
   /// </summary>
   public class Portfolio
-    : IGeodeSerializable
+    : IDataSerializable
   {
     #region Private members and methods
 
@@ -231,7 +231,7 @@ namespace Apache.Geode.Client.Tests
 
     #endregion
 
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {

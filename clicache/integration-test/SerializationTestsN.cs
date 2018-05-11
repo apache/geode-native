@@ -385,7 +385,7 @@ namespace Apache.Geode.Client.UnitTests
 
   };
 
-  public class OtherType : IGeodeSerializable
+  public class OtherType : IDataSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -427,7 +427,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {
@@ -522,7 +522,7 @@ namespace Apache.Geode.Client.UnitTests
     }
   }
 
-  public class OtherType2 : IGeodeSerializable
+  public class OtherType2 : IDataSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -563,7 +563,7 @@ namespace Apache.Geode.Client.UnitTests
         return m_struct;
       }
     }
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {
@@ -659,7 +659,7 @@ namespace Apache.Geode.Client.UnitTests
 
   }
 
-  public class OtherType22 : IGeodeSerializable
+  public class OtherType22 : IDataSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -701,7 +701,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {
@@ -796,7 +796,7 @@ namespace Apache.Geode.Client.UnitTests
     }
   }
 
-  public class OtherType4 : IGeodeSerializable
+  public class OtherType4 : IDataSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -838,7 +838,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {
@@ -934,7 +934,7 @@ namespace Apache.Geode.Client.UnitTests
 
   }
 
-  public class OtherType42 : IGeodeSerializable
+  public class OtherType42 : IDataSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -976,7 +976,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {
@@ -1072,7 +1072,7 @@ namespace Apache.Geode.Client.UnitTests
 
   }
 
-  public class OtherType43 : IGeodeSerializable
+  public class OtherType43 : IDataSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -1114,7 +1114,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {

@@ -21,7 +21,7 @@ namespace Apache.Geode.Client.Tests
 {
   using Apache.Geode.Client;
   public class Position
-    : IGeodeSerializable
+    : IDataSerializable
   {
     #region Private members
 
@@ -157,7 +157,7 @@ namespace Apache.Geode.Client.Tests
 
     #endregion
 
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {

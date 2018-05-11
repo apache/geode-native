@@ -118,7 +118,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public uint ClassId
     {
