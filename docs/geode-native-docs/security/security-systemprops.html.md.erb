@@ -50,10 +50,6 @@ The table describes the security-related system properties in the `gemfire.prope
 <td><code class="ph codeph">security-client-kspasswd</code></td>
 <td>Password for the public key file store on the client.</td>
 </tr>
-<tr class="even">
-<td><code class="ph codeph">security-keystorepath</code></td>
-<td>Path to the public keystore.</td>
-</tr>
 <tr class="odd">
 <td><code class="ph codeph">security-alias</code></td>
 <td>Alias name for the key in the keystore.</td>
@@ -62,13 +58,9 @@ The table describes the security-related system properties in the `gemfire.prope
 <td><code class="ph codeph">security-keystorepass</code></td>
 <td>Sets the password for the password-protected keystore.</td>
 </tr>
-<tr>
-<td><code class="ph codeph">ssl-cipher</code></td>
-<td>List of SSL ciphers in the form of a comma-separated list (default "any").</td>
-</tr>
 <tr class="odd">
-<td><code class="ph codeph">ssl-enabled-components</code></td>
-<td>Enables SSL-based client/server communication for the specified components, given as a comma-separated list. Valid components are `all`, `cluster`, `gateway`, `jmx` , `locator`, `server`, `web`.</td>
+<td><code class="ph codeph">ssl-enabled</code></td>
+<td>True if SSL connection support is enabled.</td>
 </tr>
 <tr class="even">
 <td><code class="ph codeph">ssl-keystore</code></td>
