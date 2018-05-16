@@ -157,8 +157,14 @@
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientDurableCqTestsN.cs">
       <Link>ThinClientDurableCqTestsN.cs</Link>
     </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientPdxTests.cs">
-      <Link>ThinClientPdxTests.cs</Link>
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientPdxTests1.cs">
+      <Link>ThinClientPdxTests1.cs</Link>
+    </Compile>
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientPdxTests2.cs">
+      <Link>ThinClientPdxTests2.cs</Link>
+    </Compile>
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientPdxTests3.cs">
+      <Link>ThinClientPdxTests3.cs</Link>
     </Compile>
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientSecurityAuthSetAuthInitializeTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\RegionAttributesFactoryTestsN.cs" />
