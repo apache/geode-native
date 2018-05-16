@@ -25,9 +25,6 @@ JAVADOC_AUTOBRIEF      = YES
 # Always generate a detailed description of functions
 ALWAYS_DETAILED_SEC    = YES
 
-# Include a detailed description of the class/file like Javadoc does
-DETAILS_AT_TOP         = YES
-
 # We're generating documentation for C
 OPTIMIZE_OUTPUT_FOR_C  = YES
 
@@ -101,7 +98,6 @@ SOURCE_BROWSER         = NO
 VERBATIM_HEADERS       = NO
 SHOW_INCLUDE_FILES     = NO
 SHOW_USED_FILES        = NO
-SHOW_DIRECTORIES       = NO
 INTERNAL_DOCS          = NO
 INLINE_INHERITED_MEMB  = YES
 INHERIT_DOCS           = YES

@@ -104,7 +104,8 @@ class APACHE_GEODE_EXPORT CacheWriter {
    */
   virtual bool beforeUpdate(const EntryEvent& event);
 
-  /** Called before an entry is created. Entry creation is initiated by a
+  /**
+   * Called before an entry is created. Entry creation is initiated by a
    * <code>create</code>, a <code>put</code>, or a <code>get</code>.
    * The <code>CacheWriter</code> can determine whether this value comes from a
    * <code>get</code> or not from {@link EntryEvent::isLoad}. The entry being
@@ -136,7 +137,8 @@ class APACHE_GEODE_EXPORT CacheWriter {
    */
   virtual bool beforeDestroy(const EntryEvent& event);
 
-  /*@brief called before this region is cleared
+  /**
+   * @brief called before this region is cleared
    * @param event EntryEvent denotes the event object associated with clearing
    * the region
    *
@@ -144,7 +146,8 @@ class APACHE_GEODE_EXPORT CacheWriter {
    */
   virtual bool beforeRegionClear(const RegionEvent& event);
 
-  /*@brief called before this region is destroyed
+  /**
+   * @brief called before this region is destroyed
    * @param event EntryEvent denotes the event object associated with destroying
    * the region
    *
@@ -152,7 +155,8 @@ class APACHE_GEODE_EXPORT CacheWriter {
    */
   virtual bool beforeRegionDestroy(const RegionEvent& event);
 
-  /** Called when the region containing this callback is destroyed, when
+  /**
+   * Called when the region containing this callback is destroyed, when
    * the cache is closed.
    *
    * <p>Implementations should clean up any external

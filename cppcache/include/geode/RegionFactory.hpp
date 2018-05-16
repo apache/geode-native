@@ -34,6 +34,12 @@ namespace apache {
 namespace geode {
 namespace client {
 class CacheImpl;
+
+/**
+ * @class RegionFactory RegionFactory.hpp
+ *
+ * Provides for the configuration and creation of instances of Region.
+ */
 class APACHE_GEODE_EXPORT RegionFactory {
  public:
   RegionFactory() = delete;
@@ -41,8 +47,8 @@ class APACHE_GEODE_EXPORT RegionFactory {
   RegionFactory(const RegionFactory& nocopy) = delete;
   RegionFactory(RegionFactory&& move) = default;
 
-  /*
-   * To create the (@link Region}.
+  /**
+   * Create a {@link Region} of the given <code>name</code>.
    * @param name
    *        the name of the Region.
    * @throws RegionExistsException if a region is already in
