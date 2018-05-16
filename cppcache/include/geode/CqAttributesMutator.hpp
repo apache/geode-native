@@ -42,6 +42,9 @@ class CqListener;
  */
 class APACHE_GEODE_EXPORT CqAttributesMutator {
  public:
+  /** Constructs a <code>CqAttributesMutator</code> with the given {@link
+   * CqAttributes}.
+   */
   CqAttributesMutator(const std::shared_ptr<CqAttributes>& impl);
 
   /**
@@ -62,9 +65,9 @@ class APACHE_GEODE_EXPORT CqAttributesMutator {
   void removeCqListener(const std::shared_ptr<CqListener>& aListener);
 
   /**
-   * Adds the given set CqListner on this CQ. If the CQ already has CqListeners,
-   * this
-   * removes those old CQs and initializes with the newListeners.
+   * Adds the given set CqListener on this CQ. If the CQ already has
+   * CqListeners, this removes those old CQs and initializes with the
+   * newListeners.
    * @param newListeners a possibly empty array of listeners to add
    * to this CqQuery.
    * @throws IllegalArgumentException if the <code>newListeners</code> array

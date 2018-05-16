@@ -54,7 +54,7 @@ enum class RegionShortcut;
 /**
  * @class Cache Cache.hpp
  *
- * Cache are obtained from create method on the {@link CacheFactory#create}
+ * Caches are obtained from the create method on the {@link CacheFactory#create}
  * class
  * <p>
  * When a cache will no longer be used, it should be {@link #close closed}.

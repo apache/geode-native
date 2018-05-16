@@ -35,37 +35,41 @@ class CacheableKey;
 class EntryEvent;
 
 /**
- * Implementers of interface <code>PartitionResolver</code> enable custom
+ * Implement the <code>PartitionResolver</code> interface to enable custom
  * partitioning on the <code>PartitionedRegion</code>.
- * 1. The Key class or callback arg can implement PartitionResolver interface to
- * enable custom partitioning OR
- * 2. Configure your own PartitionResolver class in partition attributes (For
- * instance when the Key is a primitive type or String) Implement the
- * appropriate equals - For all implementations, you need to be sure to code the
- * class equals method so it properly verifies equality for the
+ *
+ * The Key class or callback arg can implement the PartitionResolver interface
+ * to enable custom partitioning, or you can configure your own
+ * PartitionResolver class in partition attributes (for instance when the Key is
+ * a primitive type or String):
+ * - Implement the appropriate equals. For all implementations, you need to be
+ * sure to code the class equals method so it properly verifies equality for the
  * PartitionResolver implementation. This might mean verifying that class names
- * are the same or that the returned routing objects are the same etc.. When you
+ * are the same or that the returned routing objects are the same etc. When you
  * initiate the partitioned region on multiple nodes, Geode uses the equals
  * method to ensure you are using the same PartitionResolver implementation for
  * all of the nodes for the region.
- * Geode uses the routing object's hashCode to determine where the data is
+ * - Geode uses the routing object's hashCode to determine where the data is
  * being managed. Say, for example, you want to colocate all Trades by month and
- * year.The key is implemented by TradeKey class which also implements the
- * PartitionResolver interface.
- * public class TradeKey implements PartitionResolver {<br>
- * &nbsp &nbsp private String tradeID;<br>
- * &nbsp &nbsp private Month month ;<br>
- * &nbsp &nbsp private Year year ;<br>
+ * year. The key is implemented by a TradeKey class which also implements the
+ * PartitionResolver interface:
  *
- * &nbsp &nbsp public TradingKey(){ } <br>
- * &nbsp &nbsp public TradingKey(Month month, Year year){<br>
- * &nbsp &nbsp &nbsp &nbsp this.month = month;<br>
- * &nbsp &nbsp &nbsp &nbsp this.year = year;<br>
- * &nbsp &nbsp } <br>
- * &nbsp &nbsp public Serializable getRoutingObject(EntryOperation
- * opDetails){<br>
- * &nbsp &nbsp &nbsp &nbsp return this.month + this.year;<br>
- * &nbsp &nbsp }<br> }<br>
+ * @code
+ * public class TradeKey implements PartitionResolver {
+ *   private String tradeID;
+ *   private Month month;
+ *   private Year year;
+ *
+ *   public TradingKey() { }
+ *   public TradingKey(Month month, Year year) {
+ *     this.month = month;
+ *     this.year = year;
+ *   }
+ *   public Serializable getRoutingObject(EntryOperation opDetails) {
+ *     return this.month + this.year;
+ *   }
+ * }
+ * @endcode
  *
  * In the example above, all trade entries with the same month and year are
  * guaranteed to be colocated.

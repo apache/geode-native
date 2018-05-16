@@ -42,14 +42,16 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT CqAttributes {
  public:
+  /**
+   * CqListeners type
+   */
   typedef std::vector<std::shared_ptr<CqListener>> listener_container_type;
 
   /**
    * Get the CqListeners set with the CQ.
    * Returns all the Listeners associated with this CQ.
    * @see CqListener
-   * @param[out] std::vector<std::shared_ptr<CqListener>> of
-   * std::shared_ptr<CqListner>
+   * @returns listener_container_type
    */
   virtual listener_container_type getCqListeners() = 0;
 };
