@@ -26,7 +26,6 @@
 #include "end_native.hpp"
 
 #include "CacheableKey.hpp"
-#include "GeodeClassIds.hpp"
 
 using namespace System;
 
@@ -84,9 +83,9 @@ namespace Apache
 
         virtual void FromData(DataInput^ input);
 
-        property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get()
+          virtual int8_t get()
           {
             return m_type;
           }
@@ -198,22 +197,22 @@ namespace Apache
       internal:
         static IGeodeSerializable^ CreateDeserializable()
         {
-          return gcnew CacheableString(GeodeClassIds::CacheableASCIIString);
+          return gcnew CacheableString(GeodeTypeIds::CacheableASCIIString);
         }
 
         static IGeodeSerializable^ createDeserializableHuge()
         {
-          return gcnew CacheableString(GeodeClassIds::CacheableASCIIStringHuge);
+          return gcnew CacheableString(GeodeTypeIds::CacheableASCIIStringHuge);
         }
 
         static IGeodeSerializable^ createUTFDeserializable()
         {
-          return gcnew CacheableString(GeodeClassIds::CacheableString);
+          return gcnew CacheableString(GeodeTypeIds::CacheableString);
         }
 
         static IGeodeSerializable^ createUTFDeserializableHuge()
         {
-          return gcnew CacheableString(GeodeClassIds::CacheableStringHuge);
+          return gcnew CacheableString(GeodeTypeIds::CacheableStringHuge);
         }
         /// <summary>
         /// Factory function to register wrapper
@@ -236,7 +235,7 @@ namespace Apache
 
         CacheableString() : CacheableKey()
         {
-          m_type = GeodeClassIds::CacheableASCIIString;
+          m_type = GeodeTypeIds::CacheableASCIIString;
         }
 
         void SetStringType();

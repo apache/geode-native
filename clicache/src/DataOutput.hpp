@@ -482,7 +482,7 @@ namespace Apache
         
         static int8_t DSFID(System::UInt32 classId);        
   
-        static inline int8_t getSerializableDataDsCode(int32_t classId) {
+        static inline int8_t getDataSerializableDsCode(int32_t classId) {
           if (classId <= std::numeric_limits<int8_t>::max() &&
               classId >= std::numeric_limits<int8_t>::min()) {
             return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData);
@@ -491,6 +491,18 @@ namespace Apache
             return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData2);
           } else {
             return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData4);
+          }
+        }
+
+				static inline int8_t getDataSerializableFixedIdDsCode(int32_t fixedId) {
+          if (fixedId <= std::numeric_limits<int8_t>::max() &&
+              fixedId >= std::numeric_limits<int8_t>::min()) {
+            return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
+          } else if (fixedId <= std::numeric_limits<int16_t>::max() &&
+                     fixedId >= std::numeric_limits<int16_t>::min()) {
+            return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDShort);
+          } else {
+            return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDInt);
           }
         }
 

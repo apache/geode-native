@@ -138,7 +138,7 @@ namespace PdxTests
     byte[] m_byte253 = new byte[253];
     byte[] m_byte65535 = new byte[65535];
     byte[] m_byte65536 = new byte[65536];
-    pdxEnumTest m_pdxEnum = pdxEnumTest.pdx2;
+    //pdxEnumTest m_pdxEnum = pdxEnumTest.pdx2;
 
     Address[] m_address;
     List<object> m_objectArray = new List<object>();
@@ -210,7 +210,7 @@ namespace PdxTests
       m_clhs.Add(1);
       m_clhs.Add(2);
 
-      m_pdxEnum = pdxEnumTest.pdx2;
+      //m_pdxEnum = pdxEnumTest.pdx2;
 
       m_address = new Address[10];
 
@@ -710,8 +710,8 @@ namespace PdxTests
 
       if (m_byte65536.Length != 65536 && other.m_byte65536.Length != 65536)
         throw new Exception("Array len 65536 not found");
-      if(m_pdxEnum != other.m_pdxEnum)
-        throw new Exception("pdx enum is not equal");
+      //if(m_pdxEnum != other.m_pdxEnum)
+      //  throw new Exception("pdx enum is not equal");
 
       {
         for (int i = 0; i < m_address.Length; i++)
@@ -854,9 +854,9 @@ namespace PdxTests
       if (ret.Length != 65536)
         throw new Exception("Array len 65536 not found");
 
-      pdxEnumTest retenum = (pdxEnumTest)reader.ReadObject("m_pdxEnum");
-      if (retenum != m_pdxEnum)
-        throw new Exception("Enum is not equal");
+      //pdxEnumTest retenum = (pdxEnumTest)reader.ReadObject("m_pdxEnum");
+      //if (retenum != m_pdxEnum)
+      //  throw new Exception("Enum is not equal");
       //byte[] m_byte252 = new byte[252];
       //byte[] m_byte253 = new byte[253];
       //byte[] m_byte65535 = new byte[65535];
@@ -931,7 +931,7 @@ namespace PdxTests
       writer.WriteByteArray("m_byte253", m_byte253);
       writer.WriteByteArray("m_byte65535", m_byte65535);
       writer.WriteByteArray("m_byte65536", m_byte65536);
-      writer.WriteObject("m_pdxEnum", m_pdxEnum);
+      //writer.WriteObject("m_pdxEnum", m_pdxEnum);
       writer.WriteObject("m_address", m_address);
       writer.WriteObjectArray("m_objectArray", m_objectArray);
       //byte[] m_byte252 = new byte[252];
@@ -1110,7 +1110,7 @@ namespace PdxTests
 
     public pdxEnumTest PdxEnum
     {
-      get { return m_pdxEnum; }
+      get { return 0; }
     }
     public Address[] AddressArray
     {

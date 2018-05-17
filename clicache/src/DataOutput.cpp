@@ -485,7 +485,7 @@ namespace Apache
           return;
         }
 
-        Byte typeId = m_cache->TypeRegistry->GetManagedTypeMappingGeneric(obj->GetType());
+        Byte typeId = m_cache->TypeRegistry->GetDsCodeForManagedType(obj->GetType());
 
         switch (typeId)
         {
@@ -713,52 +713,55 @@ namespace Apache
         if (obj == nullptr) {
           WriteByte((int8_t)GeodeTypeIds::NullObj);
         }
-        else {
-          /* TODO serializable this is likely dead code, no DSFIDs found
-          int8_t typeId = DataOutput::GetTypeId(obj->ClassId);
-          switch (DataOutput::DSFID(obj->ClassId)) {
-          case GeodeTypeIdsImpl::FixedIDByte:
-            WriteByte((int8_t)GeodeTypeIdsImpl::FixedIDByte);
-            WriteByte(typeId); // write the type ID.
-            break;
-          case GeodeTypeIdsImpl::FixedIDShort:
-            WriteByte((int8_t)GeodeTypeIdsImpl::FixedIDShort);
-            WriteInt16((System::Int16)typeId); // write the type ID.
-            break;
-          case GeodeTypeIdsImpl::FixedIDInt:
-            WriteByte((int8_t)GeodeTypeIdsImpl::FixedIDInt);
-            WriteInt32((System::Int32)typeId); // write the type ID.
-            break;
-          default:
-            WriteByte(typeId); // write the type ID.
-            break;
+        else if (auto dataSerializablePrimitive = dynamic_cast<IDataSerializablePrimitive^>(obj))
+        {
+          auto dsCode = dataSerializablePrimitive->DsCode;
+          WriteByte(dsCode);
+          dataSerializablePrimitive->ToData(this);
+        }
+        else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(obj))
+        {
+          auto id = dataSerializable->ClassId;
+          auto dsCode = getDataSerializableDsCode(id);
+          WriteByte(dsCode);
+          switch (dsCode) {
+            case GeodeTypeIdsImpl::CacheableUserData:
+              WriteByte(static_cast<int8_t>(id));
+              break;
+            case GeodeTypeIdsImpl::CacheableUserData2:
+              WriteInt16(static_cast<int16_t>(id));
+              break;
+            case GeodeTypeIdsImpl::CacheableUserData4:
+              WriteInt32(static_cast<int32_t>(id));
+              break;
+            default:
+              IllegalStateException("Invalid DS Code.");
           }
-          */
-
-          if (auto dataSerializable = dynamic_cast<IDataSerializable^>(obj))
-          {
-            auto id = dataSerializable->ClassId;
-            auto dsCode = getSerializableDataDsCode(id);
-            WriteByte(dsCode);
-            switch (dsCode) {
-              case GeodeTypeIdsImpl::CacheableUserData:
-                WriteByte(static_cast<int8_t>(id));
-                break;
-              case GeodeTypeIdsImpl::CacheableUserData2:
-                WriteInt16(static_cast<int16_t>(id));
-                break;
-              case GeodeTypeIdsImpl::CacheableUserData4:
-                WriteInt32(static_cast<int32_t>(id));
-                break;
-              default:
-                IllegalStateException("Invalid DS Code.");
-            }
-            dataSerializable->ToData(this);
+          dataSerializable->ToData(this);
+        }
+        else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(obj))
+        {
+          auto id = dataSerializableFixedId->DSFID;
+          auto dsCode = getDataSerializableFixedIdDsCode(id);
+          WriteByte(dsCode);
+          switch (dsCode) {
+            case GeodeTypeIdsImpl::FixedIDByte:
+              WriteByte(static_cast<int8_t>(id));
+              break;
+            case GeodeTypeIdsImpl::FixedIDShort:
+              WriteInt16(static_cast<int16_t>(id));
+              break;
+            case GeodeTypeIdsImpl::FixedIDInt:
+              WriteInt32(static_cast<int32_t>(id));
+              break;
+            default:
+              IllegalStateException("Invalid DS Code.");
           }
-          else
-          {
-            throw gcnew IllegalStateException("Unknown serializable type.");
-          }
+          dataSerializable->ToData(this);
+        }
+        else
+        {
+          throw gcnew IllegalStateException("Unknown serializable type.");
         }
       }
 

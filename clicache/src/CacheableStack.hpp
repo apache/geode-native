@@ -37,7 +37,7 @@ namespace Apache
       /// a distributable object for caching.
       /// </summary>
       ref class CacheableStack
-        : public IGeodeSerializable
+        : public IDataSerializablePrimitive
       {
       public:
         /// <summary>
@@ -100,9 +100,9 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get();
+          virtual int8_t get();
         }
 
         virtual property System::Collections::ICollection^ Value

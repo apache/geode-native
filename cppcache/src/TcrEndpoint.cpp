@@ -1042,30 +1042,31 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
           epFailure = true;
           createNewConn = true;
         }
-      } catch (...) {
-        failReason = "unexpected exception";
-        LOGERROR(
-            "Unexpected exception while sending request to "
-            "endpoint %s",
-            m_name.c_str());
-        if (compareTransactionIds(reqTransId, reply.getTransId(), failReason,
-                                  conn)) {
-          error = GF_MSG;
-          if (useEPPool) {
-            m_opConnections.put(conn, false);
-          } else {
-            // we are here its better to close the connection as
-            // "compareTransactionIds"
-            // will not close the connection
-            closeConnection(conn);
-          }
-          break;
-        } else {
-          error = GF_NOTCON;
-          epFailure = true;
-          createNewConn = true;
-        }
       }
+      //} catch (...) {
+      //  failReason = "unexpected exception";
+      //  LOGERROR(
+      //      "Unexpected exception while sending request to "
+      //      "endpoint %s",
+      //      m_name.c_str());
+      //  if (compareTransactionIds(reqTransId, reply.getTransId(), failReason,
+      //                            conn)) {
+      //    error = GF_MSG;
+      //    if (useEPPool) {
+      //      m_opConnections.put(conn, false);
+      //    } else {
+      //      // we are here its better to close the connection as
+      //      // "compareTransactionIds"
+      //      // will not close the connection
+      //      closeConnection(conn);
+      //    }
+      //    break;
+      //  } else {
+      //    error = GF_NOTCON;
+      //    epFailure = true;
+      //    createNewConn = true;
+      //  }
+      //}
     } else {
       if (useEPPool) {
         epFailure = true;
@@ -1091,7 +1092,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
     }
   } while (++sendRetryCount <= maxSendRetries);
   return error;
-}
+}  // namespace client
 
 void TcrEndpoint::setRetry(const TcrMessage& request, int& maxSendRetries) {
   int32_t type = request.getMessageType();

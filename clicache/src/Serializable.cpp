@@ -206,12 +206,14 @@ namespace Apache
       int Serializable::GetEnumValue(Internal::EnumInfo^ ei, Cache^ cache)
       {
         std::shared_ptr<native::Cacheable> kPtr(SafeMSerializableConvertGeneric(ei));
-        return  CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetEnumValue(cache->GetNative()->getPoolManager().getAll().begin()->second, kPtr);
+        auto&& cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
+        return cacheImpl->getSerializationRegistry()->GetEnumValue(cacheImpl->getDefaultPool(), kPtr);
       }
 
       Internal::EnumInfo^ Serializable::GetEnum(int val, Cache^ cache)
       {
-        std::shared_ptr<apache::geode::client::Serializable> sPtr = CacheRegionHelper::getCacheImpl(cache->GetNative().get())->getSerializationRegistry()->GetEnum(cache->GetNative()->getPoolManager().getAll().begin()->second, val);
+        auto cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
+        auto sPtr = cacheImpl->getSerializationRegistry()->GetEnum(cacheImpl->getDefaultPool(), val);
         return (Internal::EnumInfo^)SafeUMSerializableConvertGeneric(sPtr);
       }
 
@@ -220,9 +222,8 @@ namespace Apache
         auto cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
         cacheImpl->getSerializationRegistry()->setPdxTypeHandler([](native::DataInput& dataInput){
           auto obj = std::make_shared<native::PdxManagedCacheableKey>();
-          // TODO serializable pdx
-          // obj->fromData(dataInput);
-          throw gcnew IllegalStateException("not implemented");
+          //ODO serializable pdx
+          obj->fromData(dataInput);
           return obj;
         });
       }
@@ -256,7 +257,7 @@ namespace Apache
       std::shared_ptr<native::CacheableKey> Serializable::GetUnmanagedValueGeneric(
         Type^ managedType, TKey key, bool isAsciiChar)
       {
-        Byte typeId = Apache::Geode::Client::TypeRegistry::GetManagedTypeMappingGeneric(managedType);
+        Byte typeId = Apache::Geode::Client::TypeRegistry::GetDsCodeForManagedType(managedType);
 
         switch (typeId)
         {
@@ -338,11 +339,11 @@ namespace Apache
         {
           return wrapIGeodeSerializable(Apache::Geode::Client::CacheableStack::Create((System::Collections::ICollection^)key));
         }
-        case 7: //GeodeClassIds::CacheableManagedObject
+        case native::GeodeTypeIds::CacheableManagedObject:
         {
           return wrapIGeodeSerializable((Apache::Geode::Client::CacheableObject^)key);
         }
-        case 8://GeodeClassIds::CacheableManagedObjectXml
+        case native::GeodeTypeIds::CacheableManagedObjectXml:
         {
           return wrapIGeodeSerializable((Apache::Geode::Client::CacheableObjectXml^)key);
         }

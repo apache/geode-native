@@ -129,6 +129,15 @@ namespace Apache
         static void registerCliCallback();
 
         static void unregisterCliCallback();
+
+        static void RegisterDataSerializablePrimitives(Cache^ cache);
+
+        static void RegisterDataSerializablePrimitivesWrapNativeDeserialization();
+
+        static void RegisterDataSerializablePrimitivesOverrideNativeDeserialization(Cache^ cache);
+
+        static void RegisterDataSerializableFixedIdsOverrideNativeDeserialization(Cache^ cache);
+
         /// <summary>
         /// Stuff that needs to be done for Connect in each AppDomain.
         /// </summary>

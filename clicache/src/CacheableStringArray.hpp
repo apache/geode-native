@@ -69,11 +69,11 @@ namespace Apache
 
         virtual void FromData(DataInput^ input);
 
-        property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get()
+          virtual int8_t get()
           {
-            return GeodeClassIds::CacheableStringArray;
+            return GeodeTypeIds::CacheableStringArray;
           }
         }
 

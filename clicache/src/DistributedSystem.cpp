@@ -46,6 +46,7 @@
 #include "CacheableUndefined.hpp"
 #include "CacheableVector.hpp"
 #include "CacheableArrayList.hpp"
+#include "CacheableLinkedList.hpp"
 #include "CacheableStack.hpp"
 #include "CacheableObject.hpp"
 #include "CacheableObjectXml.hpp"
@@ -150,140 +151,215 @@ namespace Apache
       void DistributedSystem::Disconnect(Cache^ cache)
       {
         _GF_MG_EXCEPTION_TRY2
-
-
-        TypeRegistry::UnregisterNativesGeneric(cache);
-        DistributedSystem::UnregisterBuiltinManagedTypes(cache);
-        m_nativeDistributedSystem->get()->disconnect();
-        GC::KeepAlive(m_nativeDistributedSystem);
-
+          DistributedSystem::UnregisterBuiltinManagedTypes(cache);
+          m_nativeDistributedSystem->get()->disconnect();
+          GC::KeepAlive(m_nativeDistributedSystem);
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
-      void DistributedSystem::AppDomainInstanceInitialization(Cache^ cache)
-
-        // TODO AppDomain move this.
-
+      void DistributedSystem::RegisterDataSerializablePrimitives(Cache^ cache)
       {
-        _GF_MG_EXCEPTION_TRY2
+        RegisterDataSerializablePrimitivesWrapNativeDeserialization();
+        RegisterDataSerializablePrimitivesOverrideNativeDeserialization(cache);
+      }
 
-          // Register wrapper types for built-in types, this are still cpp wrapper
+      void DistributedSystem::RegisterDataSerializablePrimitivesWrapNativeDeserialization()
+      {
+        // TODO serializable - These appear to be global, either make all prmitive types global or not.
+        // Register wrappers for primitive types
+        // Does not intercept deserialization
 
-        //byte
-        TypeRegistry::RegisterWrapperGeneric(
-        gcnew WrapperDelegateGeneric(CacheableByte::Create),
-        native::GeodeTypeIds::CacheableByte, SByte::typeid);
+        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableByte::Create),
+          native::GeodeTypeIds::CacheableByte, SByte::typeid);
 
-        //boolean
-        TypeRegistry::RegisterWrapperGeneric(
-          gcnew WrapperDelegateGeneric(CacheableBoolean::Create),
+        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableBoolean::Create),
           native::GeodeTypeIds::CacheableBoolean, Boolean::typeid);
-        //wide char
-        TypeRegistry::RegisterWrapperGeneric(
-          gcnew WrapperDelegateGeneric(CacheableCharacter::Create),
+
+        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableCharacter::Create),
           native::GeodeTypeIds::CacheableCharacter, Char::typeid);
-        //double
-        TypeRegistry::RegisterWrapperGeneric(
-          gcnew WrapperDelegateGeneric(CacheableDouble::Create),
+
+        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableDouble::Create),
           native::GeodeTypeIds::CacheableDouble, Double::typeid);
-        //ascii string
-        TypeRegistry::RegisterWrapperGeneric(
-          gcnew WrapperDelegateGeneric(CacheableString::Create),
+
+        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableString::Create),
           native::GeodeTypeIds::CacheableASCIIString, String::typeid);
 
-        TypeRegistry::RegisterWrapperGeneric(
-          gcnew WrapperDelegateGeneric(CacheableFloat::Create),
+        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableFloat::Create),
           native::GeodeTypeIds::CacheableFloat, float::typeid);
-        //int 16
-        TypeRegistry::RegisterWrapperGeneric(
-          gcnew WrapperDelegateGeneric(CacheableInt16::Create),
+
+        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableInt16::Create),
           native::GeodeTypeIds::CacheableInt16, Int16::typeid);
-        //int32
-        TypeRegistry::RegisterWrapperGeneric(
-          gcnew WrapperDelegateGeneric(CacheableInt32::Create),
+
+        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableInt32::Create),
           native::GeodeTypeIds::CacheableInt32, Int32::typeid);
-        //int64
-        TypeRegistry::RegisterWrapperGeneric(
-          gcnew WrapperDelegateGeneric(CacheableInt64::Create),
+
+        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableInt64::Create),
           native::GeodeTypeIds::CacheableInt64, Int64::typeid);
+			}
 
-        //Now onwards all will be wrap in managed cacheable key..
+      void DistributedSystem::RegisterDataSerializablePrimitivesOverrideNativeDeserialization(Cache^ cache)
+      {
+        // TODO serializable - appears to register per cache while other types are global, make consistent.
+        // Registers overrides in the C++ layer to incercept deserialization into managed layer.
 
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableBytes,
-          gcnew TypeFactoryMethod(CacheableBytes::CreateDeserializable),
-          Type::GetType("System.Byte[]"));
+        auto&& typeRegistry = cache->TypeRegistry;
 
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableDoubleArray,
-          gcnew TypeFactoryMethod(CacheableDoubleArray::CreateDeserializable),
-          Type::GetType("System.Double[]"));
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableBytes,
+            gcnew TypeFactoryMethod(CacheableBytes::CreateDeserializable),
+            Type::GetType("System.Byte[]"));
 
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableFloatArray,
-          gcnew TypeFactoryMethod(CacheableFloatArray::CreateDeserializable),
-          Type::GetType("System.Single[]"));
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableDoubleArray,
+            gcnew TypeFactoryMethod(CacheableDoubleArray::CreateDeserializable),
+            Type::GetType("System.Double[]"));
 
-        //TODO:
-        //as it is
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableHashSet,
-          gcnew TypeFactoryMethod(CacheableHashSet::CreateDeserializable),
-          nullptr);
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableFloatArray,
+            gcnew TypeFactoryMethod(CacheableFloatArray::CreateDeserializable),
+            Type::GetType("System.Single[]"));
 
-        //as it is
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableLinkedHashSet,
-          gcnew TypeFactoryMethod(CacheableLinkedHashSet::CreateDeserializable),
-          nullptr);
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableHashSet,
+            gcnew TypeFactoryMethod(CacheableHashSet::CreateDeserializable),
+            nullptr);
 
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableLinkedHashSet,
+            gcnew TypeFactoryMethod(CacheableLinkedHashSet::CreateDeserializable),
+            nullptr);
 
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableInt16Array,
-          gcnew TypeFactoryMethod(CacheableInt16Array::CreateDeserializable),
-          Type::GetType("System.Int16[]"));
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableInt16Array,
+            gcnew TypeFactoryMethod(CacheableInt16Array::CreateDeserializable),
+            Type::GetType("System.Int16[]"));
 
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableInt32Array,
-          gcnew TypeFactoryMethod(CacheableInt32Array::CreateDeserializable),
-          Type::GetType("System.Int32[]"));
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableInt32Array,
+            gcnew TypeFactoryMethod(CacheableInt32Array::CreateDeserializable),
+            Type::GetType("System.Int32[]"));
 
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableInt64Array,
+            gcnew TypeFactoryMethod(CacheableInt64Array::CreateDeserializable),
+            Type::GetType("System.Int64[]"));
 
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableInt64Array,
-          gcnew TypeFactoryMethod(CacheableInt64Array::CreateDeserializable),
-          Type::GetType("System.Int64[]"));
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::BooleanArray,
+            gcnew TypeFactoryMethod(BooleanArray::CreateDeserializable),
+            Type::GetType("System.Boolean[]"));
 
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::BooleanArray,
-          gcnew TypeFactoryMethod(BooleanArray::CreateDeserializable),
-          Type::GetType("System.Boolean[]"));
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CharArray,
+            gcnew TypeFactoryMethod(CharArray::CreateDeserializable),
+            Type::GetType("System.Char[]"));
 
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CharArray,
-          gcnew TypeFactoryMethod(CharArray::CreateDeserializable),
-          Type::GetType("System.Char[]"));
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableStringArray,
+            gcnew TypeFactoryMethod(CacheableStringArray::CreateDeserializable),
+            Type::GetType("System.String[]"));
 
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableStringArray,
-          gcnew TypeFactoryMethod(CacheableStringArray::CreateDeserializable),
-          Type::GetType("System.String[]"));
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::Struct,
+            gcnew TypeFactoryMethod(Struct::CreateDeserializable),
+            nullptr);
+        
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableDate,
+            gcnew TypeFactoryMethod(CacheableDate::CreateDeserializable),
+            Type::GetType("System.DateTime"));
 
-        //as it is
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::Struct,
-          gcnew TypeFactoryMethod(Struct::CreateDeserializable),
-          nullptr);
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableFileName,
+            gcnew TypeFactoryMethod(CacheableFileName::CreateDeserializable),
+            nullptr);
 
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::EnumInfo,
-          gcnew TypeFactoryMethod(Apache::Geode::Client::Internal::EnumInfo::CreateDeserializable),
-          nullptr);
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableHashMap,
+            gcnew TypeFactoryMethod(CacheableHashMap::CreateDeserializable),
+            nullptr);
 
-        // End register generic wrapper types for built-in types
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableHashTable,
+            gcnew TypeFactoryMethod(CacheableHashTable::CreateDeserializable),
+            Type::GetType("System.Collections.Hashtable"));
 
-        //if (!native::DistributedSystem::isConnected())
-        //{
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableIdentityHashMap,
+            gcnew TypeFactoryMethod(CacheableIdentityHashMap::CreateDeserializable),
+            nullptr);
+
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableUndefined,
+            gcnew TypeFactoryMethod(CacheableUndefined::CreateDeserializable),
+            nullptr);
+
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableVector,
+            gcnew TypeFactoryMethod(CacheableVector::CreateDeserializable),
+            nullptr);
+
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableObjectArray,
+            gcnew TypeFactoryMethod(CacheableObjectArray::CreateDeserializable),
+            nullptr);
+
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableArrayList,
+            gcnew TypeFactoryMethod(CacheableArrayList::CreateDeserializable),
+            nullptr);
+
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableLinkedList,
+            gcnew TypeFactoryMethod(CacheableLinkedList::CreateDeserializable),
+            nullptr);
+
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableStack,
+            gcnew TypeFactoryMethod(CacheableStack::CreateDeserializable),
+            nullptr);
+
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableManagedObject,
+            gcnew TypeFactoryMethod(CacheableObject::CreateDeserializable),
+            nullptr);
+
+        typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::CacheableManagedObjectXml,
+            gcnew TypeFactoryMethod(CacheableObjectXml::CreateDeserializable),
+            nullptr);
+      }
+
+      void DistributedSystem::RegisterDataSerializableFixedIdsOverrideNativeDeserialization(Cache^ cache)
+      {
+        auto&& typeRegistry = cache->TypeRegistry;
+ 
+        typeRegistry->RegisterDataSerializableFixedIdTypeOverrideNativeDeserialization(
+            native::GeodeTypeIds::EnumInfo,
+            gcnew TypeFactoryMethod(Internal::EnumInfo::CreateDeserializable));
+      }
+
+      void DistributedSystem::AppDomainInstanceInitialization(Cache^ cache)
+      {
+        RegisterDataSerializablePrimitives(cache);
+        RegisterDataSerializableFixedIdsOverrideNativeDeserialization(cache);
+
+        // Actually an internal type being registered as a primitive
+        cache->TypeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            native::GeodeTypeIds::PdxType,
+            gcnew TypeFactoryMethod(Apache::Geode::Client::Internal::PdxType::CreateDeserializable),
+            nullptr);
+
+        _GF_MG_EXCEPTION_TRY2
 
           // Set the Generic ManagedCacheLoader/Listener/Writer factory functions.
           native::CacheXmlParser::managedCacheLoaderFn =
@@ -300,98 +376,12 @@ namespace Apache
           // Set the Generic ManagedPersistanceManager factory function
           native::CacheXmlParser::managedPersistenceManagerFn =
             native::ManagedPersistenceManagerGeneric::create;
-        //}
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
       void DistributedSystem::ManagedPostConnect(Cache^ cache)
       {
-        //  The registration into the native map should be after
-        // native connect since it can be invoked only once
-
-        // Register other built-in types
-
-        // End register other built-in types
-
-        // Register other built-in types for generics
-        //c# datatime
-
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableDate,
-          gcnew TypeFactoryMethod(CacheableDate::CreateDeserializable),
-          Type::GetType("System.DateTime"));
-
-        //as it is
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableFileName,
-          gcnew TypeFactoryMethod(CacheableFileName::CreateDeserializable),
-          nullptr);
-
-        //for generic dictionary define its type in static constructor of Serializable.hpp
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableHashMap,
-          gcnew TypeFactoryMethod(CacheableHashMap::CreateDeserializable),
-          nullptr);
-
-        //c# hashtable
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableHashTable,
-          gcnew TypeFactoryMethod(CacheableHashTable::CreateDeserializable),
-          Type::GetType("System.Collections.Hashtable"));
-
-        //Need to keep public as no counterpart in c#
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableIdentityHashMap,
-          gcnew TypeFactoryMethod(
-          CacheableIdentityHashMap::CreateDeserializable),
-          nullptr);
-
-        //keep as it is
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableUndefined,
-          gcnew TypeFactoryMethod(CacheableUndefined::CreateDeserializable),
-          nullptr);
-
-        //c# arraylist
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableVector,
-          gcnew TypeFactoryMethod(CacheableVector::CreateDeserializable),
-          nullptr);
-
-        //as it is
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableObjectArray,
-          gcnew TypeFactoryMethod(
-          CacheableObjectArray::CreateDeserializable),
-          nullptr);
-
-        //Generic::List
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableArrayList,
-          gcnew TypeFactoryMethod(CacheableArrayList::CreateDeserializable),
-          nullptr);
-
-        //c# generic stack
-        cache->TypeRegistry->RegisterType(
-          native::GeodeTypeIds::CacheableStack,
-          gcnew TypeFactoryMethod(CacheableStack::CreateDeserializable),
-          nullptr);
-
-        //as it is
-        cache->TypeRegistry->RegisterType(
-          GeodeClassIds::CacheableManagedObject - 0x80000000,
-          gcnew TypeFactoryMethod(CacheableObject::CreateDeserializable),
-          nullptr);
-
-        //as it is
-        cache->TypeRegistry->RegisterType(
-          GeodeClassIds::CacheableManagedObjectXml - 0x80000000,
-          gcnew TypeFactoryMethod(CacheableObjectXml::CreateDeserializable),
-          nullptr);
-
-        // End register other built-in types
-
         // Log the version of the C# layer being used
         Log::Config(".NET layer assembly version: {0}({1})", System::Reflection::
                     Assembly::GetExecutingAssembly()->GetName()->Version->ToString(),

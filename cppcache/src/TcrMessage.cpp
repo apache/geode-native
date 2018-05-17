@@ -179,7 +179,9 @@ void TcrMessage::readVersionTag(
 
 void TcrMessage::readIntPart(DataInput& input, uint32_t* intValue) {
   uint32_t intLen = input.readInt32();
-  if (intLen != 4) throw Exception("int length should have been 4");
+  if (intLen != 4) {
+    throw Exception("int length should have been 4");
+  }
   if (input.read()) throw Exception("Integer is not an object");
   *intValue = input.readInt32();
 }

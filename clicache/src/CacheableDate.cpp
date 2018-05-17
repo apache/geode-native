@@ -69,9 +69,9 @@ namespace Apache
         return sizeof(DateTime);
       }
 
-      System::UInt32 CacheableDate::ClassId::get()
+      int8_t CacheableDate::DsCode::get()
       {
-        return GeodeClassIds::CacheableDate;
+        return native::GeodeTypeIds::CacheableDate;
       }
 
       String^ CacheableDate::ToString()

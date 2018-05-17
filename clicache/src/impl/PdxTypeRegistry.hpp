@@ -39,64 +39,64 @@ namespace Apache
 
       namespace Internal
       {
-        public ref class PdxTypeRegistry
+        private ref class PdxTypeRegistry
         {
         public:
 
           PdxTypeRegistry(Cache^ cache) :m_cache(cache) {}
-					//test hook;
-					  int testGetNumberOfPdxIds();
+          //test hook;
+          int testGetNumberOfPdxIds();
 
-					//test hook
-					  int testNumberOfPreservedData();
+          //test hook
+          int testNumberOfPreservedData();
+          
+          void AddPdxType(Int32 typeId, PdxType^ pdxType);
+          
+          PdxType^ GetPdxType(Int32 typeId);
+          
+          void AddLocalPdxType(String^ localType, PdxType^ pdxType);
+          
+          PdxType^ GetLocalPdxType(String^ localType);
+          
+          void SetMergedType(Int32 remoteTypeId, PdxType^ mergedType);
+          
+          PdxType^ GetMergedType(Int32 remoteTypeId);
+          
+          void SetPreserveData(IPdxSerializable^ obj, PdxRemotePreservedData^ preserveData);
+          
+          PdxRemotePreservedData^ GetPreserveData(IPdxSerializable^ obj);      
 
-            void AddPdxType(Int32 typeId, PdxType^ pdxType);
+          void clear();
 
-            PdxType^ GetPdxType(Int32 typeId);
+          Int32 GetPDXIdForType(Type^ type, native::Pool* pool, PdxType^ nType, bool checkIfThere);
 
-            void AddLocalPdxType(String^ localType, PdxType^ pdxType);
+          Int32 GetPDXIdForType(PdxType^ type, native::Pool*);
 
-            PdxType^ GetLocalPdxType(String^ localType);
+          Int32 GetEnumValue(EnumInfo^ ei);
 
-            void SetMergedType(Int32 remoteTypeId, PdxType^ mergedType);
-
-            PdxType^ GetMergedType(Int32 remoteTypeId);
-
-            void SetPreserveData(IPdxSerializable^ obj, PdxRemotePreservedData^ preserveData);
-
-            PdxRemotePreservedData^ GetPreserveData(IPdxSerializable^ obj);      
-
-           void clear();
-
-            Int32 GetPDXIdForType(Type^ type, native::Pool* pool, PdxType^ nType, bool checkIfThere);
-
-            Int32 GetPDXIdForType(PdxType^ type, native::Pool*);
-
-            Int32 GetEnumValue(EnumInfo^ ei);
-
-            EnumInfo^ GetEnum(Int32 enumVal);
+          EnumInfo^ GetEnum(Int32 enumVal);
 
         private:
-            Cache^ m_cache;
+          Cache^ m_cache;
 
-            IDictionary<Int32, PdxType^>^ typeIdToPdxType = gcnew Dictionary<Int32, PdxType^>();
+          Dictionary<Int32, PdxType^>^ typeIdToPdxType = gcnew Dictionary<Int32, PdxType^>();
 
-            IDictionary<PdxType^, Int32>^ pdxTypeToTypeId = gcnew Dictionary<PdxType^, Int32>();
+          Dictionary<PdxType^, Int32>^ pdxTypeToTypeId = gcnew Dictionary<PdxType^, Int32>();
 
-            IDictionary<Int32, PdxType^>^ remoteTypeIdToMergedPdxType = gcnew Dictionary<Int32, PdxType^>();
+          Dictionary<Int32, PdxType^>^ remoteTypeIdToMergedPdxType = gcnew Dictionary<Int32, PdxType^>();
 
-            IDictionary<String^, PdxType^>^ localTypeToPdxType = gcnew Dictionary<String^, PdxType^>();
+          Dictionary<String^, PdxType^>^ localTypeToPdxType = gcnew Dictionary<String^, PdxType^>();
 
-           IDictionary<EnumInfo^, Int32>^ enumToInt = gcnew Dictionary<EnumInfo^, Int32>();
+          Dictionary<EnumInfo^, Int32>^ enumToInt = gcnew Dictionary<EnumInfo^, Int32>();
 
-           IDictionary<Int32, EnumInfo^>^ intToEnum = gcnew Dictionary<Int32, EnumInfo^>();
+          Dictionary<Int32, EnumInfo^>^ intToEnum = gcnew Dictionary<Int32, EnumInfo^>();
 
-            WeakHashMap^ preserveData = gcnew WeakHashMap();          
+          WeakHashMap^ preserveData = gcnew WeakHashMap();          
 
-           ReaderWriterLock^ g_readerWriterLock = gcnew ReaderWriterLock();
+          ReaderWriterLock^ g_readerWriterLock = gcnew ReaderWriterLock();
 
-					 bool pdxIgnoreUnreadFields = false;
-           bool pdxReadSerialized = false;
+          bool pdxIgnoreUnreadFields = false;
+          bool pdxReadSerialized = false;
         };
       }
     }  // namespace Client

@@ -61,7 +61,6 @@ typedef std::unordered_map<std::string, std::shared_ptr<Pool>> HashMapOfPools;
  */
 class APACHE_GEODE_EXPORT PoolManager {
  public:
-
   /**
    * Creates a new {@link PoolFactory pool factory},
    * which is used to configure and create new {@link Pool}s.
@@ -97,7 +96,7 @@ class APACHE_GEODE_EXPORT PoolManager {
    * region does
    * not have a pool.
    */
-  std::shared_ptr<Pool> find(std::shared_ptr<Region> region) const;
+  std::shared_ptr<Pool> find(const std::shared_ptr<Region>& region) const;
 
   /**
    * Unconditionally destroys all created pools that are in this manager.
@@ -113,7 +112,7 @@ class APACHE_GEODE_EXPORT PoolManager {
 
   void addPool(std::string name, const std::shared_ptr<Pool>& pool);
 
-  std::shared_ptr<Pool> getDefaultPool() const;
+  const std::shared_ptr<Pool>& getDefaultPool() const;
 
   std::shared_ptr<PoolManagerImpl> m_pimpl;
 

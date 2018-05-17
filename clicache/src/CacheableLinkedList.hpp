@@ -38,7 +38,7 @@ namespace Apache
       /// <c>List</c> class.
       /// </summary>
       ref class CacheableLinkedList
-        : public IGeodeSerializable
+        : public IDataSerializablePrimitive
       {
         System::Collections::Generic::LinkedList<Object^>^ m_linkedList;
       public:
@@ -76,11 +76,11 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get()
+          virtual int8_t get()
           {
-            return GeodeClassIds::CacheableLinkedList;
+            return native::GeodeTypeIds::CacheableLinkedList;
           }
         }
 

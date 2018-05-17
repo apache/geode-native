@@ -102,8 +102,8 @@ namespace Apache
         literal System::UInt32 CacheableUndefined =
           apache::geode::client::GeodeTypeIds::CacheableUndefined + 0xa0000000;
 
-        literal System::UInt32 EnumInfo =
-          apache::geode::client::GeodeTypeIds::EnumInfo + 0xa0000000;
+        literal System::Int32 EnumInfo =
+          apache::geode::client::GeodeTypeIds::EnumInfo;
 
         /// <summary>
         /// ClassId of <c>Struct</c> class
@@ -315,12 +315,15 @@ namespace Apache
         /// <summary>
         /// ClassId of <c>CacheableObject</c> class
         /// </summary>
-        literal System::UInt32 CacheableManagedObject = 7 + 0x80000000;
+        literal System::UInt32 CacheableManagedObject = 
+          apache::geode::client::GeodeTypeIds::CacheableManagedObject + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableObjectXml</c> class
         /// </summary>
-        literal System::UInt32 CacheableManagedObjectXml = 8 + 0x80000000;
+        literal System::UInt32 CacheableManagedObjectXml = 
+          apache::geode::client::GeodeTypeIds::CacheableManagedObjectXml + 0x80000000;
+
       internal:
 
         literal System::UInt32 PdxType = apache::geode::client::GeodeTypeIds::PdxType + 0x80000000;

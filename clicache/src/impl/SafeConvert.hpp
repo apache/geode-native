@@ -59,27 +59,33 @@ namespace Apache
       {
         if (serializableObject == nullptr) return nullptr;
 
-        if (auto mg_obj = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(serializableObject))
+        if (auto managedDataSerializable = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(serializableObject))
         {
-          return mg_obj->ptr();
+          return managedDataSerializable->ptr();
         }
-
-        if (auto mg_obj_delta = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(serializableObject))
-        {
-          return dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(mg_obj_delta->ptr());
-        }
-
-        if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(serializableObject))
+				//TODO serializable delta??
+				// else if (auto mg_obj_delta = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(serializableObject))
+    //    {
+    //      return mg_obj_delta->ptr();
+    //    }
+				else if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(serializableObject))
         {
           return gcnew UserFunctionExecutionException(mg_UFEEobj);
         }
-
-        if (auto primitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(serializableObject)) {
-          auto wrapperMethod = TypeRegistry::GetWrapperGeneric(primitive->getDsCode());             
-          if (wrapperMethod != nullptr)
+				else if (auto managedPrimitive = std::dynamic_pointer_cast<native::ManagedDataSerializablePrimitive>(serializableObject))
+				{           
+          return managedPrimitive->ptr();
+        } 
+				else if (auto primitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(serializableObject))
+				{           
+          if (auto wrapperMethod = TypeRegistry::GetDataSerializablePrimitiveWrapperDelegateForDsCode(primitive->getDsCode()))
           {
             return wrapperMethod(primitive);
           }
+        }
+				else if (auto dataSerializableInternal = std::dynamic_pointer_cast<native::ManagedDataSerializableInternal>(serializableObject))
+				{           
+          return dataSerializableInternal->ptr();
         }
 
         return gcnew Apache::Geode::Client::Serializable( serializableObject );
@@ -114,7 +120,8 @@ namespace Apache
       {
         if (mg_obj == nullptr) return __nullptr;
         
-        NativeWrapper^ obj = dynamic_cast<NativeWrapper^>( mg_obj );
+        // TODO serializable - looks like this may have once expected to get the native pointer from here and exit.
+        // NativeWrapper^ obj = dynamic_cast<NativeWrapper^>( mg_obj );
         
         if(auto sDelta = dynamic_cast<Apache::Geode::Client::IGeodeDelta^> (mg_obj))
         {
@@ -157,8 +164,20 @@ namespace Apache
             native::ManagedCacheableKeyGeneric, native::Serializable,
             Serializable>(dataSerializable);
         }
+        else if (auto dataSerializablePrimitive = dynamic_cast<IDataSerializablePrimitive^>(mg_obj))
+        {
+          return new native::ManagedDataSerializablePrimitive(dataSerializablePrimitive);
+        }
+        else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(mg_obj))
+        {
+          return new native::ManagedDataSerializableFixedId(dataSerializableFixedId);
+        }
+        else if (auto dataSerializableInternal = dynamic_cast<IDataSerializableInternal^>(mg_obj))
+        {
+          return new native::ManagedDataSerializableInternal(dataSerializableInternal);
+        }
         // TODO serializable other serializable types here
-        return nullptr;
+        throw gcnew IllegalStateException("Unknown serialization type.");
       }
 
       generic<class TValue>
@@ -173,6 +192,7 @@ namespace Apache
 					return new native::PdxManagedCacheableKey(pdxType);
         }
       
+				// TODO serializable - PDX/Delta and DataSerializable/Delta should be supported
         if(auto sDelta = dynamic_cast<IGeodeDelta^> (mg_obj))
 				{
           return new native::ManagedCacheableDeltaGeneric(sDelta);
@@ -181,6 +201,11 @@ namespace Apache
         if(auto dataSerializable = dynamic_cast<IDataSerializable^>(mg_obj))
 				{
 					return new native::ManagedCacheableKeyGeneric(dataSerializable);
+				}
+
+				if(auto dataSerializablePrimitive = dynamic_cast<IDataSerializablePrimitive^>(mg_obj))
+				{
+					return new native::ManagedDataSerializablePrimitive(dataSerializablePrimitive);
 				}
 
         return new native::PdxManagedCacheableKey(gcnew PdxWrapper(mg_obj));
@@ -210,7 +235,7 @@ namespace Apache
         }
 
         if (auto primitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(obj)) {
-          auto wrapperMethod = TypeRegistry::GetWrapperGeneric( primitive->getDsCode( ) );
+          auto wrapperMethod = TypeRegistry::GetDataSerializablePrimitiveWrapperDelegateForDsCode( primitive->getDsCode( ) );
           if (wrapperMethod != nullptr)
           {
             return (Client::ICacheableKey^)wrapperMethod(primitive);

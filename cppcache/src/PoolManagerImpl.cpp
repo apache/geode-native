@@ -87,9 +87,11 @@ void PoolManagerImpl::addPool(std::string name,
 
   m_connectionPools.emplace(name, pool);
 }
-std::shared_ptr<Pool> PoolManagerImpl::getDefaultPool() const {
+
+const std::shared_ptr<Pool>& PoolManagerImpl::getDefaultPool() const {
   return m_defaultPool;
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

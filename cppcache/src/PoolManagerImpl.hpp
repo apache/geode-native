@@ -52,7 +52,7 @@ class PoolManagerImpl {
 
   void addPool(std::string name, const std::shared_ptr<Pool>& pool);
 
-  std::shared_ptr<Pool> getDefaultPool() const;
+  const std::shared_ptr<Pool>& getDefaultPool() const;
 
  private:
   HashMapOfPools m_connectionPools;

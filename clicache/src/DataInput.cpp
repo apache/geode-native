@@ -732,8 +732,7 @@ namespace Apache
           findinternal = true;
         }
         if (findinternal) {
-          compId += 0x80000000;
-          createType = m_cache->TypeRegistry->GetManagedDelegateGeneric((System::Int64)compId);
+          createType = m_cache->TypeRegistry->GetDataSerializableFixedTypeFactoryMethodForFixedId((Int32)compId);
         }
         else {
           createType = m_cache->TypeRegistry->GetManagedDelegateGeneric(compId);
@@ -748,15 +747,8 @@ namespace Apache
             {//object array and pdxSerialization
               return readDotNetObjectArray();
             }
-            compId += 0x80000000;
-            createType = m_cache->TypeRegistry->GetManagedDelegateGeneric(compId);
-
-            /*if (createType == nullptr)
-            {
-            //TODO:: final check for user type if its not in cache
-            compId -= 0x80000000;
-            createType = Serializable::GetManagedDelegate(compId);
-            }*/
+            
+            createType = m_cache->TypeRegistry->GetDataSerializablePrimitiveTypeFactoryMethodForDsCode(typeId);
           }
         }
 
@@ -771,7 +763,17 @@ namespace Apache
         if (auto dataSerializable = dynamic_cast<IDataSerializablePrimitive^>(newObj))
         {
           dataSerializable->FromData(this);
-        } else {
+        }
+				else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(newObj))
+        {
+          dataSerializable->FromData(this);
+        }
+				else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(newObj))
+        {
+          dataSerializableFixedId->FromData(this);
+        }
+				else
+				{
           throw gcnew IllegalStateException("Unknown serialization type.");
         }
 

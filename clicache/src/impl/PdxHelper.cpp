@@ -52,6 +52,7 @@ namespace Apache
         void PdxHelper::SerializePdx(DataOutput^ dataOutput, IPdxSerializable^ pdxObject)
         {          
           dataOutput->setPdxSerialization(true);
+          dataOutput->WriteByte(GeodeTypeIdsImpl::PDX);
           String^ pdxClassname = nullptr;
           bool isPdxWrapper = false;
           Type^ pdxType = nullptr;

@@ -44,9 +44,11 @@ public class GeodeServer : IDisposable
                             " --J=-Dgemfire.jmx-manager-port=" + locatorJmxPort + " --http-service-port=0\"" +
                             " -e \"connect --locator=localhost[" + LocatorPort + "]\"" +
                             " -e \"configure pdx " + readSerializedStr + "\"" +
-                            " -e \"start server --bind-address=localhost --server-port=0 --log-level=all\"" +
+                            " -e \"start server --bind-address=localhost --server-port=0 --log-level=all --classpath=" + Config.JavaobjectJarPath + "\"" +
                             " -e \"create region --name=" + regionName + " --type=PARTITION\"" +
-                            " -e \"create region --name=testRegion1 --type=PARTITION\"",
+                            " -e \"create region --name=testRegion1 --type=PARTITION\"" +
+                            " -e \"create region --name=DistRegionAck --type=REPLICATE\"",
+//                            " -e \"create region --name=DistRegionAck --type=REPLICATE --cache-listener=javaobject.PdxCacheListener\"",
                 WindowStyle = ProcessWindowStyle.Hidden,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,

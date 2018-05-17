@@ -32,7 +32,7 @@ namespace Apache
 
       namespace Internal
       {
-        public ref class EnumInfo : public IGeodeSerializable
+        private ref class EnumInfo : public IDataSerializableFixedId
         {
         private:
           String^ _enumClassName;
@@ -56,16 +56,21 @@ namespace Apache
           {
             return gcnew EnumInfo();
           }
+          
           virtual void ToData(DataOutput^ output);
+          
           virtual void FromData(DataInput^ input);
-          virtual property System::UInt64 ObjectSize
+          
+          property UInt64 ObjectSize
           {
-            System::UInt64 get(){ return 0; }
+            virtual UInt64 get() { return 0; }
           }
-          virtual property System::UInt32 ClassId
+
+          property Int32 DSFID
           {
-            System::UInt32 get(){ return GeodeClassIds::EnumInfo; }
+            virtual Int32 get() { return GeodeClassIds::EnumInfo; }
           }
+
           virtual String^ ToString() override
           {
             return "EnumInfo";

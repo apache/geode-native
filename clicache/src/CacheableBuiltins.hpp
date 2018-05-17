@@ -48,7 +48,7 @@ namespace Apache
       /// An immutable template wrapper for C++ <c>CacheableKey</c>s that can
       /// serve as a distributable key object for caching.
       /// </summary>
-      template <typename TNative, typename TManaged, System::UInt32 TYPEID>
+      template <typename TNative, typename TManaged, int8_t TYPEID>
       ref class CacheableBuiltinKey
         : public IDataSerializablePrimitive, public CacheableKey
       {
@@ -72,9 +72,9 @@ namespace Apache
           m_nativeptr = gcnew native_shared_ptr<native::Serializable>(nativeptr);
         }
 
-        property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get()
+          virtual int8_t get()
           {
             return TYPEID;
           }
@@ -211,7 +211,7 @@ namespace Apache
       /// distributable object for caching.
       /// </summary>
       template <typename TNative, typename TNativePtr, typename TManaged,
-        System::UInt32 TYPEID>
+        int8_t TYPEID>
       ref class CacheableBuiltinArray
         : public IDataSerializablePrimitive
       {
@@ -223,9 +223,9 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get()
+          virtual int8_t get()
           {
             return TYPEID;
           }
@@ -365,7 +365,7 @@ namespace Apache
       //mt = managed type(bool, int)
 #define _GFCLI_CACHEABLE_KEY_DEF_NEW(n, m, mt)                                   \
       ref class m : public CacheableBuiltinKey<n, mt,        \
-        GeodeClassIds::m>                                                   \
+        GeodeTypeIds::m>                                                   \
       {                                                                       \
       public:                                                                 \
          /** <summary>
@@ -572,9 +572,9 @@ namespace Apache
 
       // Built-in Cacheable array types
 
-      template <typename NativeArray, typename ManagedType, System::UInt32 GeodeClassId>
+      template <typename NativeArray, typename ManagedType, int8_t DsCode>
       ref class CacheableArray : public CacheableBuiltinArray<
-          NativeArray, NativeArray, ManagedType, GeodeClassId> {
+          NativeArray, NativeArray, ManagedType, DsCode> {
       public:
           /** <summary>
           *  Static function to create a new instance copying
@@ -659,49 +659,49 @@ namespace Apache
       /// An immutable wrapper for byte arrays that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableBytes = CacheableArray<native::CacheableArray<int8_t, native::GeodeTypeIds::CacheableBytes>, Byte, GeodeClassIds::CacheableBytes>;
+      using CacheableBytes = CacheableArray<native::CacheableArray<int8_t, native::GeodeTypeIds::CacheableBytes>, Byte, GeodeTypeIds::CacheableBytes>;
 
       /// <summary>
       /// An immutable wrapper for array of doubles that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableDoubleArray = CacheableArray<native::CacheableArray<double, native::GeodeTypeIds::CacheableDoubleArray>, Double, GeodeClassIds::CacheableDoubleArray>;
+      using CacheableDoubleArray = CacheableArray<native::CacheableArray<double, native::GeodeTypeIds::CacheableDoubleArray>, Double, GeodeTypeIds::CacheableDoubleArray>;
 
       /// <summary>
       /// An immutable wrapper for array of floats that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableFloatArray = CacheableArray<native::CacheableArray<float, native::GeodeTypeIds::CacheableFloatArray>, Single, GeodeClassIds::CacheableFloatArray>;
+      using CacheableFloatArray = CacheableArray<native::CacheableArray<float, native::GeodeTypeIds::CacheableFloatArray>, Single, GeodeTypeIds::CacheableFloatArray>;
 
       /// <summary>
       /// An immutable wrapper for array of 16-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableInt16Array = CacheableArray<native::CacheableArray<int16_t, native::GeodeTypeIds::CacheableInt16Array>, System::Int16, GeodeClassIds::CacheableInt16Array>;
+      using CacheableInt16Array = CacheableArray<native::CacheableArray<int16_t, native::GeodeTypeIds::CacheableInt16Array>, System::Int16, GeodeTypeIds::CacheableInt16Array>;
 
       /// <summary>
       /// An immutable wrapper for array of 32-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableInt32Array = CacheableArray<native::CacheableArray<int32_t, native::GeodeTypeIds::CacheableInt32Array>, System::Int32, GeodeClassIds::CacheableInt32Array>;
+      using CacheableInt32Array = CacheableArray<native::CacheableArray<int32_t, native::GeodeTypeIds::CacheableInt32Array>, System::Int32, GeodeTypeIds::CacheableInt32Array>;
 
       /// <summary>
       /// An immutable wrapper for array of 64-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableInt64Array = CacheableArray<native::CacheableArray<int64_t, native::GeodeTypeIds::CacheableInt64Array>, System::Int64, GeodeClassIds::CacheableInt64Array>;
+      using CacheableInt64Array = CacheableArray<native::CacheableArray<int64_t, native::GeodeTypeIds::CacheableInt64Array>, System::Int64, GeodeTypeIds::CacheableInt64Array>;
 
       /// <summary>
       /// An immutable wrapper for array of booleans that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using BooleanArray = CacheableArray<native::CacheableArray<bool, native::GeodeTypeIds::BooleanArray>, bool, GeodeClassIds::BooleanArray>;
+      using BooleanArray = CacheableArray<native::CacheableArray<bool, native::GeodeTypeIds::BooleanArray>, bool, GeodeTypeIds::BooleanArray>;
 
       /// <summary>
       /// An immutable wrapper for array of 16-bit characters that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CharArray = CacheableArray<native::CacheableArray<char16_t, native::GeodeTypeIds::CharArray>, Char, GeodeClassIds::CharArray>;
+      using CharArray = CacheableArray<native::CacheableArray<char16_t, native::GeodeTypeIds::CharArray>, Char, GeodeTypeIds::CharArray>;
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

@@ -189,6 +189,132 @@ namespace apache
         return 0;
       }
 
+      std::string ManagedDataSerializablePrimitive::toString() const {
+        return marshal_as<std::string>(m_managedptr->ToString());
+      }
+
+      void ManagedDataSerializablePrimitive::toData(apache::geode::client::DataOutput& output) const {
+        try {
+          auto cache = CacheResolver::Lookup(output.getCache());
+          Apache::Geode::Client::DataOutput mg_output(&output, true, cache);
+          m_managedptr->ToData(%mg_output);
+          mg_output.WriteBytesToUMDataOutput();
+        }
+        catch (Apache::Geode::Client::GeodeException^ ex) {
+          ex->ThrowNative();
+        }
+        catch (System::Exception^ ex) {
+          Apache::Geode::Client::GeodeException::ThrowNative(ex);
+        }
+      }
+
+      void ManagedDataSerializablePrimitive::fromData(apache::geode::client::DataInput& input) {
+        try {
+          auto cache = CacheResolver::Lookup(input.getCache());
+          Apache::Geode::Client::DataInput mg_input(&input, true, cache);
+          m_managedptr->FromData(%mg_input);
+          input.advanceCursor(mg_input.BytesReadInternally);
+        }
+        catch (Apache::Geode::Client::GeodeException^ ex) {
+          ex->ThrowNative();
+        }
+        catch (System::Exception^ ex) {
+          Apache::Geode::Client::GeodeException::ThrowNative(ex);
+        }
+      }
+
+      bool ManagedDataSerializablePrimitive::operator ==(const apache::geode::client::CacheableKey& other) const
+      {
+        if (auto&& otherKey = dynamic_cast<const ManagedDataSerializablePrimitive*>(&other))
+        {
+          return m_managedptr->Equals(otherKey->m_managedptr);
+        }
+
+        return false;
+      }
+
+      System::Int32 ManagedDataSerializablePrimitive::hashcode() const
+      {
+        try {
+          return m_managedptr->GetHashCode();
+        }
+        catch (Apache::Geode::Client::GeodeException^ ex) {
+          ex->ThrowNative();
+        }
+        catch (System::Exception^ ex) {
+          Apache::Geode::Client::GeodeException::ThrowNative(ex);
+        }
+        return 0;
+      }
+
+      std::string ManagedDataSerializableInternal::toString() const {
+        return marshal_as<std::string>(m_managedptr->ToString());
+      }
+
+      void ManagedDataSerializableInternal::toData(apache::geode::client::DataOutput& output) const {
+        try {
+          auto cache = CacheResolver::Lookup(output.getCache());
+          Apache::Geode::Client::DataOutput mg_output(&output, true, cache);
+          m_managedptr->ToData(%mg_output);
+          mg_output.WriteBytesToUMDataOutput();
+        }
+        catch (Apache::Geode::Client::GeodeException^ ex) {
+          ex->ThrowNative();
+        }
+        catch (System::Exception^ ex) {
+          Apache::Geode::Client::GeodeException::ThrowNative(ex);
+        }
+      }
+
+      void ManagedDataSerializableInternal::fromData(apache::geode::client::DataInput& input) {
+        try {
+          auto cache = CacheResolver::Lookup(input.getCache());
+          Apache::Geode::Client::DataInput mg_input(&input, true, cache);
+          m_managedptr->FromData(%mg_input);
+          input.advanceCursor(mg_input.BytesReadInternally);
+        }
+        catch (Apache::Geode::Client::GeodeException^ ex) {
+          ex->ThrowNative();
+        }
+        catch (System::Exception^ ex) {
+          Apache::Geode::Client::GeodeException::ThrowNative(ex);
+        }
+      }
+
+      std::string ManagedDataSerializableFixedId::toString() const {
+        return marshal_as<std::string>(m_managedptr->ToString());
+      }
+
+      void ManagedDataSerializableFixedId::toData(apache::geode::client::DataOutput& output) const {
+        try {
+          auto cache = CacheResolver::Lookup(output.getCache());
+          Apache::Geode::Client::DataOutput mg_output(&output, true, cache);
+          m_managedptr->ToData(%mg_output);
+          mg_output.WriteBytesToUMDataOutput();
+        }
+        catch (Apache::Geode::Client::GeodeException^ ex) {
+          ex->ThrowNative();
+        }
+        catch (System::Exception^ ex) {
+          Apache::Geode::Client::GeodeException::ThrowNative(ex);
+        }
+      }
+
+      void ManagedDataSerializableFixedId::fromData(apache::geode::client::DataInput& input) {
+        try {
+          auto cache = CacheResolver::Lookup(input.getCache());
+          Apache::Geode::Client::DataInput mg_input(&input, true, cache);
+          m_managedptr->FromData(%mg_input);
+          input.advanceCursor(mg_input.BytesReadInternally);
+        }
+        catch (Apache::Geode::Client::GeodeException^ ex) {
+          ex->ThrowNative();
+        }
+        catch (System::Exception^ ex) {
+          Apache::Geode::Client::GeodeException::ThrowNative(ex);
+        }
+      }
+
     }  // namespace client
   }  // namespace geode
 }  // namespace apache

@@ -34,9 +34,10 @@ namespace Apache
 
       ref class DataOutput;
       ref class DataInput;
+
       namespace Internal
       {
-        public ref class PdxType : public IGeodeSerializable
+        private ref class PdxType : public IDataSerializableInternal
         {
         private:
           Object^                 m_lockObj;
@@ -46,7 +47,7 @@ namespace Apache
           Int32                   m_cachedHashcode;
 
           //Type^                 m_pdxDomainType;
-          String^               m_className;
+          String^                 m_className;
           Int32                   m_geodeTypeId;
           bool                    m_isLocal;
           Int32                   m_numberOfVarLenFields;

@@ -74,11 +74,11 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get() override
+          int8_t get() override
           {
-            return GeodeClassIds::CacheableArrayList;
+            return native::GeodeTypeIds::CacheableArrayList;
           }
         }
 

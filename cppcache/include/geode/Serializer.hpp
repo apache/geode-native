@@ -169,7 +169,7 @@ inline void readObject(apache::geode::client::DataInput& input, float& value) {
 }
 
 inline void writeObject(apache::geode::client::DataOutput& output,
-                        wchar_t value) {
+                        char16_t value) {
   output.writeInt(static_cast<int16_t>(value));
 }
 

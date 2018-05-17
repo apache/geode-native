@@ -72,7 +72,7 @@ namespace Apache
       /// or an integer.
       /// </summary>
       public ref class Properties sealed
-        : public IGeodeSerializable //,public ISerializable
+        : public IDataSerializablePrimitive
       {
       public:
 
@@ -189,33 +189,13 @@ namespace Apache
           virtual System::UInt64 get( ); 
         }
 
-        /// <summary>
-        /// Returns the classId of this class for serialization.
-        /// </summary>
-        /// <returns>classId of the Properties class</returns>
-        /// <seealso cref="IGeodeSerializable.ClassId" />
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          inline virtual System::UInt32 get( )
+          inline virtual int8_t get( )
           {
-            return GeodeClassIds::Properties;
+            return native::GeodeTypeIds::Properties;
           }
         }
-
-        // End: IGeodeSerializable members
-
-        // ISerializable members
-
-        //virtual void GetObjectData( SerializationInfo^ info,
-        //  StreamingContext context);
-
-        // End: ISerializable members
-
-      protected:
-
-        // For deserialization using the .NET serialization (ISerializable)
-        //Properties(SerializationInfo^ info, StreamingContext context, std::shared_ptr<native::SerializationRegistry> serializationRegistry);
-
 
       internal:
 

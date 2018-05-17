@@ -67,9 +67,9 @@ namespace Apache
         }
       }
 
-      System::UInt32 CacheableStack::ClassId::get()
+      int8_t CacheableStack::DsCode::get()
       {
-        return GeodeClassIds::CacheableStack;
+        return native::GeodeTypeIds::CacheableStack;
       }
 
       System::UInt64 CacheableStack::ObjectSize::get()

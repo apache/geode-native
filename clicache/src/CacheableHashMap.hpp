@@ -34,6 +34,7 @@ namespace Apache
   {
     namespace Client
     {
+			namespace native = apache::geode::client;
 
       /// <summary>
       /// A mutable <c>ICacheableKey</c> to <c>IGeodeSerializable</c> hash map
@@ -41,7 +42,7 @@ namespace Apache
       /// extends .NET generic <c>Dictionary</c> class.
       /// </summary>
       ref class CacheableHashMap
-        : public IGeodeSerializable
+        : public IDataSerializablePrimitive
       {
       protected:
         Object^ m_dictionary;
@@ -116,11 +117,11 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          inline virtual System::UInt32 get()
+          virtual int8_t get()
           {
-            return GeodeClassIds::CacheableHashMap;
+            return native::GeodeTypeIds::CacheableHashMap;
           }
         }
 

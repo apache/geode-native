@@ -75,7 +75,7 @@ namespace Apache
       /// This delegate should return an object of type <c>IGeodeSerializable</c>
       /// given a native object.
       /// </remarks>
-      delegate Apache::Geode::Client::IGeodeSerializable^ WrapperDelegateGeneric(std::shared_ptr<native::Serializable> obj);
+      delegate Apache::Geode::Client::IGeodeSerializable^ DataSerializablePrimitiveWrapperDelegate(std::shared_ptr<native::Serializable> obj);
 
 			/// <summary>
       /// Signature of function delegates passed to

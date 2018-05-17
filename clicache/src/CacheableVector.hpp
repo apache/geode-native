@@ -32,6 +32,7 @@ namespace Apache
   {
     namespace Client
     {
+			namespace native = apache::geode::client;
 
       /// <summary>
       /// A mutable <c>IGeodeSerializable</c> vector wrapper that can serve as
@@ -39,7 +40,7 @@ namespace Apache
       /// <c>List</c> class.
       /// </summary>
       ref class CacheableVector
-        : public IGeodeSerializable
+        : public IDataSerializablePrimitive
       {
       public:
         /// <summary>
@@ -102,11 +103,11 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get()
+          virtual int8_t get()
           {
-            return GeodeClassIds::CacheableVector;
+            return native::GeodeTypeIds::CacheableVector;
           }
         }
 

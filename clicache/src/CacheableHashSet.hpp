@@ -46,7 +46,7 @@ namespace Apache
         /// A mutable <c>ICacheableKey</c> hash set wrapper that can serve as
         /// a distributable object for caching.
         /// </summary>
-        template <System::UInt32 TYPEID, typename HSTYPE>
+        template <int8_t TYPEID, typename HSTYPE>
         public ref class CacheableHashSetType
           : public IDataSerializablePrimitive,
             public Serializable,
@@ -259,9 +259,9 @@ namespace Apache
             native_unique_ptr<typename HSTYPE::iterator>^ m_nativeptr;
           };
 
-          property System::UInt32 ClassId
+          property int8_t DsCode
           {
-            virtual System::UInt32 get()
+            virtual int8_t get()
             {
               return TYPEID;
             }
@@ -599,7 +599,7 @@ namespace Apache
       }
 
 #define _GFCLI_CACHEABLEHASHSET_DEF_GENERIC(m, HSTYPE)                               \
-	public ref class m : public Internal::CacheableHashSetType<Apache::Geode::Client::GeodeClassIds::m, HSTYPE>      \
+	public ref class m : public Internal::CacheableHashSetType<native::GeodeTypeIds::m, HSTYPE>      \
             {                                                                       \
       public:                                                                 \
         /** <summary>
@@ -607,7 +607,7 @@ namespace Apache
       *  </summary>
       */                                                                   \
       inline m()                                                            \
-      : Internal::CacheableHashSetType<Apache::Geode::Client::GeodeClassIds::m, HSTYPE>() {}                      \
+      : Internal::CacheableHashSetType<native::GeodeTypeIds::m, HSTYPE>() {}                      \
       \
       /** <summary>
        *  Allocates a new instance with the given size.
@@ -615,7 +615,7 @@ namespace Apache
        *  <param name="size">the intial size of the new instance</param>
        */                                                                   \
        inline m(System::Int32 size)                                                 \
-       : Internal::CacheableHashSetType<Apache::Geode::Client::GeodeClassIds::m, HSTYPE>(size) {}                  \
+       : Internal::CacheableHashSetType<native::GeodeTypeIds::m, HSTYPE>(size) {}                  \
        \
        /** <summary>
         *  Static function to create a new empty instance.
@@ -652,7 +652,7 @@ namespace Apache
       \
             private:                                                                \
               inline m(std::shared_ptr<apache::geode::client::Serializable> nativeptr)                            \
-              : Internal::CacheableHashSetType<Apache::Geode::Client::GeodeClassIds::m, HSTYPE>(nativeptr) { }             \
+              : Internal::CacheableHashSetType<native::GeodeTypeIds::m, HSTYPE>(nativeptr) { }             \
       };
 
       /// <summary>

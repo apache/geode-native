@@ -309,6 +309,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_compile_options(${PROJECT_NAME}
   PRIVATE
 	/bigobj # C1128 - large number of templates causes too many section.
+	/Zm32   # C3859 - internal heap limit reached
 	#/doc # Documents to xml
 	# warnings as error
 	/we4488 # interfaces fully implemented.

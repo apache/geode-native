@@ -16,7 +16,7 @@
 project(nativeclient.tests LANGUAGES NONE)
 
 add_subdirectory(cpp)
-add_subdirectory(javaobject)
+#add_subdirectory(javaobject)
 
 if (${BUILD_CLI})
 add_subdirectory(cli)

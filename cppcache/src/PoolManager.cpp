@@ -40,7 +40,8 @@ std::shared_ptr<Pool> PoolManager::find(const std::string& name) const {
   return m_pimpl->find(name.c_str());
 }
 
-std::shared_ptr<Pool> PoolManager::find(std::shared_ptr<Region> region) const {
+std::shared_ptr<Pool> PoolManager::find(
+    const std::shared_ptr<Region>& region) const {
   return m_pimpl->find(region);
 }
 
@@ -49,7 +50,8 @@ const HashMapOfPools& PoolManager::getAll() const { return m_pimpl->getAll(); }
 void PoolManager::addPool(std::string name, const std::shared_ptr<Pool>& pool) {
   m_pimpl->addPool(name, pool);
 }
-std::shared_ptr<Pool> PoolManager::getDefaultPool() const {
+
+const std::shared_ptr<Pool>& PoolManager::getDefaultPool() const {
   return m_pimpl->getDefaultPool();
 }
 

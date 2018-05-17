@@ -30,9 +30,11 @@ class GeodeTypeIds {
   // Internal IDs are in GeodeTypeIds.hpp
 
   enum IdValues {
-    // Do not use IDs 5 and 6 which are used by .NET
+    // Do not use IDs 7 and 8 which are used by .NET
     // ManagedObject and ManagedObjectXml. If those are
     // required then change those in GeodeTypeIdsM.hpp
+    CacheableManagedObject = 7,
+    CacheableManagedObjectXml = 8,
 
     // keep the following in alphabetical order please.
     EnumInfo = 9,

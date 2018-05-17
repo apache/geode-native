@@ -93,6 +93,16 @@ namespace Apache
             return std::shared_ptr<apache::geode::client::ManagedCacheableKeyGeneric>(
               new apache::geode::client::ManagedCacheableKeyGeneric(dataSerializable));
           }
+          else if (auto dataSerializablePrimitive = dynamic_cast<IDataSerializablePrimitive^>(tempObj))
+          {
+            return std::shared_ptr<apache::geode::client::ManagedDataSerializablePrimitive>(
+              new apache::geode::client::ManagedDataSerializablePrimitive(dataSerializablePrimitive));
+          }
+          else if (auto dataSerializableInternal = dynamic_cast<IDataSerializableInternal^>(tempObj))
+          {
+            return std::shared_ptr<apache::geode::client::ManagedDataSerializableInternal>(
+              new apache::geode::client::ManagedDataSerializableInternal(dataSerializableInternal));
+          }
           
           throw native::IllegalStateException("Unknown serialization type.");
         }

@@ -159,6 +159,9 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     } else if (const auto pdxSerializable =
                    dynamic_cast<const PdxSerializable*>(obj)) {
       serialize(pdxSerializable, output);
+    } else if (const auto dataSerializableInternal =
+                   dynamic_cast<const DataSerializableInternal*>(obj)) {
+      serialize(dataSerializableInternal, output);
     } else {
       throw UnsupportedOperationException(
           "SerializationRegistry::serialize: Serialization type not "
@@ -190,7 +193,8 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     }
   }
 
-  inline void serialize(const std::shared_ptr<Serializable>& obj, DataOutput& output) const {
+  inline void serialize(const std::shared_ptr<Serializable>& obj,
+                        DataOutput& output) const {
     serialize(obj.get(), output);
   }
 
@@ -198,7 +202,8 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
    * Read the length, typeid, and run the objs fromData. Returns the New
    * object.
    */
-  std::shared_ptr<Serializable> deserialize(DataInput& input, int8_t typeId = -1) const;
+  std::shared_ptr<Serializable> deserialize(DataInput& input,
+                                            int8_t typeId = -1) const;
 
   void addType(TypeFactoryMethod func);
 
@@ -325,6 +330,11 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
 
   void serializeWithoutHeader(const PdxSerializable* obj,
                               DataOutput& output) const;
+
+  inline void serialize(const DataSerializableInternal* obj,
+                        DataOutput& output) const {
+    serializeWithoutHeader(obj, output);
+  }
 
   inline void serializeWithoutHeader(const DataSerializableInternal* obj,
                                      DataOutput& output) const {

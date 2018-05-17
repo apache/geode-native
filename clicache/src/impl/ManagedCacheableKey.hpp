@@ -118,6 +118,108 @@ namespace apache
         gcroot<Apache::Geode::Client::IDataSerializable^> m_managedptr;
       };
 
+      class ManagedDataSerializablePrimitive
+        : public native::DataSerializablePrimitive , public native::CacheableKey
+      {
+      public:
+
+        inline ManagedDataSerializablePrimitive(
+          Apache::Geode::Client::IDataSerializablePrimitive^ managedptr)
+          : m_managedptr(managedptr) {
+        }
+
+        ManagedDataSerializablePrimitive(const ManagedDataSerializablePrimitive&) = delete;
+        ManagedDataSerializablePrimitive operator = (const ManagedDataSerializablePrimitive&) = delete;
+
+        size_t objectSize() const override { return 0; }
+
+        std::string toString() const override;
+
+        void toData(DataOutput& output) const override;
+
+        void fromData(DataInput& input) override;
+
+        int8_t getDsCode() const override { return m_managedptr->DsCode; }
+
+        bool operator == (const CacheableKey& other) const override;
+
+        int32_t hashcode() const override;
+
+        inline Apache::Geode::Client::IDataSerializablePrimitive^ ptr() const
+        {
+          return m_managedptr;
+        }
+
+
+      private:
+        gcroot<Apache::Geode::Client::IDataSerializablePrimitive^> m_managedptr;
+      };
+
+      class ManagedDataSerializableInternal
+        : public native::DataSerializableInternal
+      {
+      public:
+
+        inline ManagedDataSerializableInternal(
+          Apache::Geode::Client::IDataSerializableInternal^ managedptr)
+          : m_managedptr(managedptr) {
+        }
+
+        ManagedDataSerializableInternal(const ManagedDataSerializableInternal&) = delete;
+        ManagedDataSerializableInternal& operator = (const ManagedDataSerializableInternal&) = delete;
+
+        size_t objectSize() const override { return 0; }
+
+        std::string toString() const override;
+
+        void toData(DataOutput& output) const override;
+
+        void fromData(DataInput& input) override;
+
+        int8_t getInternalId() const override { return 0; }
+
+        inline Apache::Geode::Client::IDataSerializableInternal^ ptr() const
+        {
+          return m_managedptr;
+        }
+
+
+      private:
+        gcroot<Apache::Geode::Client::IDataSerializableInternal^> m_managedptr;
+      };
+
+      class ManagedDataSerializableFixedId
+        : public native::DataSerializableFixedId
+      {
+      public:
+
+        inline ManagedDataSerializableFixedId(
+          Apache::Geode::Client::IDataSerializableFixedId^ managedptr)
+          : m_managedptr(managedptr) {
+        }
+
+        ManagedDataSerializableFixedId(const ManagedDataSerializableFixedId&) = delete;
+        ManagedDataSerializableFixedId& operator = (const ManagedDataSerializableFixedId&) = delete;
+
+        size_t objectSize() const override { return 0; }
+
+        std::string toString() const override;
+
+        void toData(DataOutput& output) const override;
+
+        void fromData(DataInput& input) override;
+
+        int32_t getDSFID() const override { return m_managedptr->DSFID; }
+
+        inline Apache::Geode::Client::IDataSerializableFixedId^ ptr() const
+        {
+          return m_managedptr;
+        }
+
+
+      private:
+        gcroot<Apache::Geode::Client::IDataSerializableFixedId^> m_managedptr;
+      };
     }  // namespace client
   }  // namespace geode
 }  // namespace apache
