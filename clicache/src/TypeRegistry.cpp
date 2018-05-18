@@ -548,6 +548,10 @@ namespace Apache
         {
           return safe_cast<TValue>(gcnew UserFunctionExecutionException(userFunctionExecutionException));
         }
+        else if (auto pdxManagedCacheableKey = std::dynamic_pointer_cast<native::PdxManagedCacheableKey>(val))
+        {
+          return safe_cast<TValue>(pdxManagedCacheableKey->ptr());
+        }
         else
         {
           throw gcnew IllegalStateException("Unknown serialization type.");
