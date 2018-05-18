@@ -529,6 +529,18 @@ namespace Apache
               return wrap<TValue>(dataSerializablePrimitive);
           }
         }
+        else if (auto dataSerializableFixedId = std::dynamic_pointer_cast<native::DataSerializableFixedId>(val))
+        {
+          switch (dataSerializableFixedId->getDSFID())
+          {
+          case native::GeodeTypeIds::Struct:
+          {
+            return safe_cast<TValue>(Struct::Create(val));
+          }
+          default:
+            break;
+          }
+        }
         else if (auto dataSerializable = std::dynamic_pointer_cast<native::DataSerializable>(val))
         {
           auto ret = SafeUMSerializableConvertGeneric(dataSerializable);
