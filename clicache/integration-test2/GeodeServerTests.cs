@@ -23,25 +23,27 @@ public class GemFireServerTest
     [Fact]
     public void Start()
     {
-        var gfs = new GeodeServer();
-        Assert.NotNull(gfs);
-        Assert.NotEqual(0, gfs.LocatorPort);
-        gfs.Dispose();
+        using (var geodeServer = new GeodeServer())
+        {
+            Assert.NotNull(geodeServer);
+            Assert.NotEqual(0, geodeServer.LocatorPort);
+        }
     }
 
     [Fact]
     public void StartTwo()
     {
-        var gfs1 = new GeodeServer();
-        Assert.NotNull(gfs1);
-        Assert.NotEqual(0, gfs1.LocatorPort);
+        using (var geodeServer1 = new GeodeServer())
+        {
+            Assert.NotNull(geodeServer1);
+            Assert.NotEqual(0, geodeServer1.LocatorPort);
 
-        var gfs2 = new GeodeServer();
-        Assert.NotNull(gfs2);
-        Assert.NotEqual(0, gfs2.LocatorPort);
-
-        Assert.NotEqual(gfs1.LocatorPort, gfs2.LocatorPort);
-        gfs1.Dispose();
-        gfs2.Dispose();
+            using (var geodeServer2 = new GeodeServer())
+            {
+                Assert.NotNull(geodeServer2);
+                Assert.NotEqual(0, geodeServer2.LocatorPort);
+                Assert.NotEqual(geodeServer1.LocatorPort, geodeServer2.LocatorPort);
+            }
+        }
     }
 }

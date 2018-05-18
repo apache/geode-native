@@ -26,9 +26,12 @@ namespace Apache.Geode.Client.IntegrationTests
   {
     private readonly Cache _cacheOne;
     private readonly Cache _cacheTwo;
+    private readonly GeodeServer _geodeServer;
 
     public RegionTest()
     {
+      _geodeServer = new GeodeServer();
+
       var cacheFactory = new CacheFactory();
       _cacheOne = cacheFactory.Create();
       _cacheTwo = cacheFactory.Create();
@@ -38,30 +41,28 @@ namespace Apache.Geode.Client.IntegrationTests
     {
       _cacheOne.Close();
       _cacheTwo.Close();
+      _geodeServer.Dispose();
     }
 
     [Fact]
     public void PutOnOneCacheGetOnAnotherCache()
     {
-      var geodeServer = new GeodeServer();
-      var cacheXml = new CacheXml(new FileInfo("cache.xml"), geodeServer);
+      using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), _geodeServer))
+      {
+        _cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
+        _cacheTwo.InitializeDeclarativeCache(cacheXml.File.FullName);
 
-      _cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
-      _cacheTwo.InitializeDeclarativeCache(cacheXml.File.FullName);
+        var regionForCache1 = _cacheOne.GetRegion<string, string>("testRegion1");
+        var regionForCache2 = _cacheTwo.GetRegion<string, string>("testRegion1");
 
-      var regionForCache1 = _cacheOne.GetRegion<string, string>("testRegion1");
-      var regionForCache2 = _cacheTwo.GetRegion<string, string>("testRegion1");
+        const string key = "hello";
+        const string expectedResult = "dave";
 
-      const string key = "hello";
-      const string expectedResult = "dave";
+        regionForCache1.Put(key, expectedResult, null);
+        var actualResult = regionForCache2.Get(key, null);
 
-      regionForCache1.Put(key, expectedResult, null);
-      var actualResult = regionForCache2.Get(key, null);
-
-      Assert.Equal(expectedResult, actualResult);
-
-      cacheXml.Dispose();
-      geodeServer.Dispose();
+        Assert.Equal(expectedResult, actualResult);
+      }
     }
   }
 }
