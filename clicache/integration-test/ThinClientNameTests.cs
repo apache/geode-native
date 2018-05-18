@@ -20,8 +20,6 @@ namespace Apache.Geode.Client.UnitTests
   using NUnit.Framework;
   using DUnitFramework;
   using Client;
-  using Region = IRegion<object, object>;
-
 
   [TestFixture]
   [Category("group4")]
