@@ -35,8 +35,6 @@ namespace Apache.Geode.Client.UnitTests
   [Category("generics")]
   internal class ThinClientPdxTests3 : ThinClientRegionSteps
   {
-    private static bool m_useWeakHashMap = false;
-
     #region Private members
 
     private UnitProcess m_client1, m_client2, m_client3, m_client4;
@@ -84,7 +82,7 @@ namespace Apache.Geode.Client.UnitTests
         CacheHelper.SetExtraPropertiesFile(null);
         if (m_clients != null)
         {
-          foreach (ClientBase client in m_clients)
+          foreach (var client in m_clients)
           {
             try
             {
@@ -114,17 +112,17 @@ namespace Apache.Geode.Client.UnitTests
 
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeOne3);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
 
-      object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
     private IPdxSerializable registerPdxTypeOne3()
     {
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
 
-      object ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         null);
 
       return (IPdxSerializable) ob;
@@ -135,17 +133,17 @@ namespace Apache.Geode.Client.UnitTests
       m_pdxVesionTwoAsm = Assembly.LoadFrom("PdxVersion2Lib.dll");
 
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwo3);
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
 
-      object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
     private IPdxSerializable registerPdxTypeTwo3()
     {
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
 
-      object ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         null);
 
       return (IPdxSerializable) ob;
@@ -156,7 +154,7 @@ namespace Apache.Geode.Client.UnitTests
     private void pdxPut()
     {
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxType.CreateDeserializable);
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
       region0["pdxput"] = new PdxType();
       region0["pdxput2"] = new ParentPdx(1);
@@ -175,9 +173,9 @@ namespace Apache.Geode.Client.UnitTests
 
     private IPdxSerializable registerPdxTypeForEqualv1()
     {
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestEquals");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestEquals");
 
-      object ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         null);
 
       return (IPdxSerializable) ob;
@@ -196,9 +194,9 @@ namespace Apache.Geode.Client.UnitTests
 
     private IPdxSerializable registerPdxTypeForEqualv2()
     {
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestEquals");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestEquals");
 
-      object ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         null);
 
       return (IPdxSerializable) ob;
@@ -208,11 +206,11 @@ namespace Apache.Geode.Client.UnitTests
     {
       initializePdxAssemblyForEqualTestv1();
 
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestEquals");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestEquals");
 
-      object np = pt.InvokeMember("TestEquals", BindingFlags.CreateInstance, null, null, null);
+      var np = pt.InvokeMember("TestEquals", BindingFlags.CreateInstance, null, null, null);
       region0[1] = np;
     }
 
@@ -220,19 +218,19 @@ namespace Apache.Geode.Client.UnitTests
     {
       initializePdxAssemblyForEqualTestv2();
 
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestEquals");
-      object np = pt.InvokeMember("TestEquals", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestEquals");
+      var np = pt.InvokeMember("TestEquals", BindingFlags.CreateInstance, null, null, null);
       region0[2] = np;
     }
 
     private void getVersionObject()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      IPdxInstance v1 = (IPdxInstance) region0[1];
-      IPdxInstance v2 = (IPdxInstance) region0[2];
+      var v1 = (IPdxInstance) region0[1];
+      var v2 = (IPdxInstance) region0[2];
 
       Assert.AreEqual(v1, v2, "both pdxinstance should be equal");
     }
@@ -277,31 +275,31 @@ namespace Apache.Geode.Client.UnitTests
 
     private void modifyPdxInstanceAndCheckLocally()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
       IPdxInstance newpdxins;
-      IPdxInstance pdxins = (IPdxInstance) region0["pdxput"];
+      var pdxins = (IPdxInstance) region0["pdxput"];
 
-      int oldVal = (int) pdxins.GetField("m_int32");
+      var oldVal = (int) pdxins.GetField("m_int32");
 
-      IWritablePdxInstance iwpi = pdxins.CreateWriter();
+      var iwpi = pdxins.CreateWriter();
 
       iwpi.SetField("m_int32", oldVal + 1);
       iwpi.SetField("m_string", "change the string");
       region0["pdxput"] = iwpi;
 
-      IRegion<object, object> lRegion = region0.GetLocalView();
+      var lRegion = region0.GetLocalView();
 
       newpdxins = (IPdxInstance) lRegion["pdxput"];
 
-      int newVal = (int) newpdxins.GetField("m_int32");
+      var newVal = (int) newpdxins.GetField("m_int32");
 
       Assert.AreEqual(oldVal + 1, newVal);
 
-      string cStr = (string) newpdxins.GetField("m_string");
+      var cStr = (string) newpdxins.GetField("m_string");
       Assert.AreEqual("change the string", cStr);
 
-      List<object> arr = (List<object>) newpdxins.GetField("m_arraylist");
+      var arr = (List<object>) newpdxins.GetField("m_arraylist");
 
       Assert.AreEqual(arr.Count, 2);
 
@@ -396,8 +394,8 @@ namespace Apache.Geode.Client.UnitTests
       Assert.AreNotEqual(pdxins, newpdxins, "PdxInstance should not be equal");
 
       iwpi = pdxins.CreateWriter();
-      long ticks = 634460644691580000L;
-      DateTime tdt = new DateTime(ticks);
+      var ticks = 634460644691580000L;
+      var tdt = new DateTime(ticks);
       iwpi.SetField("m_dateTime", tdt);
       region0["pdxput"] = iwpi;
       newpdxins = (IPdxInstance) lRegion["pdxput"];
@@ -444,7 +442,7 @@ namespace Apache.Geode.Client.UnitTests
         "double array is not equal");
       Assert.AreNotEqual(pdxins, newpdxins, "PdxInstance should not be equal");
 
-      byte[][] tmpbb = new byte[][]
+      var tmpbb = new byte[][]
       {
         new byte[] {0x23},
         new byte[] {0x34, 0x55},
@@ -455,7 +453,7 @@ namespace Apache.Geode.Client.UnitTests
       iwpi.SetField("m_byteByteArray", tmpbb);
       region0["pdxput"] = iwpi;
       newpdxins = (IPdxInstance) lRegion["pdxput"];
-      byte[][] retbb = (byte[][]) newpdxins.GetField("m_byteByteArray");
+      var retbb = (byte[][]) newpdxins.GetField("m_byteByteArray");
 
       PdxType.compareByteByteArray(tmpbb, retbb);
 
@@ -469,7 +467,7 @@ namespace Apache.Geode.Client.UnitTests
         "string array is not equal");
       Assert.AreNotEqual(pdxins, newpdxins, "PdxInstance should not be equal");
 
-      List<object> tl = new List<object>();
+      var tl = new List<object>();
       tl.Add(new PdxType());
       tl.Add(new byte[] {0x34, 0x55});
 
@@ -480,7 +478,7 @@ namespace Apache.Geode.Client.UnitTests
       Assert.AreEqual(((List<object>) newpdxins.GetField("m_arraylist")).Count, tl.Count, "list<object> is not equal");
       Assert.AreNotEqual(pdxins, newpdxins, "PdxInstance should not be equal");
 
-      Dictionary<object, object> map = new Dictionary<object, object>();
+      var map = new Dictionary<object, object>();
       map.Add(1, new bool[] {true, false, true, false, true, true, false, true});
       map.Add(2, new string[] {"one", "two", "eeeee"});
 
@@ -491,7 +489,7 @@ namespace Apache.Geode.Client.UnitTests
       Assert.AreEqual(((Dictionary<object, object>) newpdxins.GetField("m_map")).Count, map.Count, "map is not equal");
       Assert.AreNotEqual(pdxins, newpdxins, "PdxInstance should not be equal");
 
-      Hashtable hashtable = new Hashtable();
+      var hashtable = new Hashtable();
       hashtable.Add(1, new string[] {"one", "two", "eeeee"});
       hashtable.Add(2, new int[] {23, 676868, 34343});
 
@@ -502,7 +500,7 @@ namespace Apache.Geode.Client.UnitTests
       Assert.AreEqual(((Hashtable) newpdxins.GetField("m_hashtable")).Count, hashtable.Count, "hashtable is not equal");
       Assert.AreNotEqual(pdxins, newpdxins, "PdxInstance should not be equal");
 
-      ArrayList vector = new ArrayList();
+      var vector = new ArrayList();
       vector.Add(1);
       vector.Add(2);
 
@@ -513,7 +511,7 @@ namespace Apache.Geode.Client.UnitTests
       Assert.AreEqual(((ArrayList) newpdxins.GetField("m_vector")).Count, vector.Count, "vector is not equal");
       Assert.AreNotEqual(pdxins, newpdxins, "PdxInstance should not be equal");
 
-      CacheableHashSet chm = CacheableHashSet.Create();
+      var chm = CacheableHashSet.Create();
       chm.Add(1);
       chm.Add("jkfdkjdsfl");
 
@@ -524,7 +522,7 @@ namespace Apache.Geode.Client.UnitTests
       Assert.True(chm.Equals(newpdxins.GetField("m_chs")), "CacheableHashSet is not equal");
       Assert.AreNotEqual(pdxins, newpdxins, "PdxInstance should not be equal");
 
-      CacheableLinkedHashSet clhs = CacheableLinkedHashSet.Create();
+      var clhs = CacheableLinkedHashSet.Create();
       clhs.Add(111);
       clhs.Add(111343);
 
@@ -574,11 +572,11 @@ namespace Apache.Geode.Client.UnitTests
 
     public void pdxIFPutGetTest()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      PdxType pt = new PdxType();
+      var pt = new PdxType();
 
-      IPdxInstanceFactory pif = CacheHelper.DCache.CreatePdxInstanceFactory("PdxTests.PdxType");
+      var pif = CacheHelper.DCache.CreatePdxInstanceFactory("PdxTests.PdxType");
 
       pif.WriteInt("m_int32", pt.Int32);
       pif.WriteString("m_string", pt.PString);
@@ -623,22 +621,22 @@ namespace Apache.Geode.Client.UnitTests
       pif.WriteObject("m_address", pt.AddressArray);
       pif.WriteObjectArray("m_objectArray", pt.ObjectArray);
 
-      IPdxInstance pi = pif.Create();
+      var pi = pif.Create();
 
       Assert.AreEqual(pi.GetClassName(), "PdxTests.PdxType",
         "PdxInstanceFactory created PdxInstance. PdxInstance.GetClassName should return PdxTests.PdxType");
 
-      object piObject = pi.GetObject();
+      var piObject = pi.GetObject();
 
       Assert.AreEqual(piObject, pt);
 
       region0["pi"] = pi;
 
-      object ret = region0["pi"];
+      var ret = region0["pi"];
 
       Assert.AreEqual(ret, pt);
 
-      bool gotexcep = false;
+      var gotexcep = false;
       try
       {
         pif.Create();
@@ -650,14 +648,14 @@ namespace Apache.Geode.Client.UnitTests
 
       Assert.IsTrue(gotexcep, "Pdx instance factory should have thrown IllegalStateException");
 
-      ParentPdx pp = new ParentPdx(2);
-      IPdxInstanceFactory if2 = CacheHelper.DCache.CreatePdxInstanceFactory(pp.GetType().FullName);
+      var pp = new ParentPdx(2);
+      var if2 = CacheHelper.DCache.CreatePdxInstanceFactory(pp.GetType().FullName);
       if2.WriteInt("_parentId", pp._parentId);
       if2.WriteObject("_gender", pp._gender);
       if2.WriteString("_parentName", pp._parentName);
       if2.WriteObject("_childPdx", pp._childPdx);
 
-      IPdxInstance ip2 = if2.Create();
+      var ip2 = if2.Create();
       region0["pp"] = ip2;
 
       ret = region0["pp"];
@@ -668,11 +666,11 @@ namespace Apache.Geode.Client.UnitTests
     //this test use write field Api
     public void pdxIFPutGetTest2()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      PdxType pt = new PdxType();
+      var pt = new PdxType();
 
-      IPdxInstanceFactory pif = CacheHelper.DCache.CreatePdxInstanceFactory("PdxTests.PdxType");
+      var pif = CacheHelper.DCache.CreatePdxInstanceFactory("PdxTests.PdxType");
 
       pif.WriteField("m_int32", pt.Int32, pt.Int32.GetType());
       pif.WriteField("m_string", pt.PString, pt.PString.GetType());
@@ -716,9 +714,9 @@ namespace Apache.Geode.Client.UnitTests
       pif.WriteField("m_byte65536", pt.Byte65536, pt.Byte65536.GetType());
       pif.WriteField("m_pdxEnum", pt.PdxEnum, pt.PdxEnum.GetType());
 
-      PdxTests.Address[] aa = new PdxTests.Address[10];
+      var aa = new PdxTests.Address[10];
 
-      for (int i = 0; i < 10; i++)
+      for (var i = 0; i < 10; i++)
       {
         aa[i] = new PdxTests.Address(i + 1, "street" + i.ToString(), "city" + i.ToString());
       }
@@ -726,26 +724,26 @@ namespace Apache.Geode.Client.UnitTests
       pif.WriteField("m_address", pt.AddressArray, aa.GetType());
       pif.WriteField("m_objectArray", pt.ObjectArray, pt.ObjectArray.GetType());
 
-      IPdxInstance pi = pif.Create();
+      var pi = pif.Create();
 
-      object piObject = pi.GetObject();
+      var piObject = pi.GetObject();
 
       Assert.AreEqual(piObject, pt);
 
       region0["pi2"] = pi;
 
-      object ret = region0["pi2"];
+      var ret = region0["pi2"];
 
       Assert.AreEqual(ret, pt);
 
-      ParentPdx pp = new ParentPdx(2);
-      IPdxInstanceFactory if2 = CacheHelper.DCache.CreatePdxInstanceFactory(pp.GetType().FullName);
+      var pp = new ParentPdx(2);
+      var if2 = CacheHelper.DCache.CreatePdxInstanceFactory(pp.GetType().FullName);
       if2.WriteField("_parentId", pp._parentId, pp._parentId.GetType());
       if2.WriteField("_gender", pp._gender, pp._gender.GetType());
       if2.WriteField("_parentName", pp._parentName, pp._parentName.GetType());
       if2.WriteField("_childPdx", pp._childPdx, pp._childPdx.GetType());
 
-      IPdxInstance ip2 = if2.Create();
+      var ip2 = if2.Create();
       region0["ppwf"] = ip2;
 
       ret = region0["ppwf"];
@@ -795,23 +793,23 @@ namespace Apache.Geode.Client.UnitTests
     {
       Console.WriteLine("pdxTypeMapperTest 1");
       CacheHelper.DCache.TypeRegistry.PdxTypeMapper = new PdxTypeMapper();
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
       if (region0 == null)
         Console.WriteLine("pdxTypeMapperTest region is null");
       else
         Console.WriteLine("pdxTypeMapperTest region is NOT null");
 
-      PdxType pt = new PdxType();
+      var pt = new PdxType();
 
-      for (int i = 0; i < 10; i++)
+      for (var i = 0; i < 10; i++)
       {
         region0[i] = pt;
       }
 
-      for (int i = 0; i < 10; i++)
+      for (var i = 0; i < 10; i++)
       {
-        object ret = region0[i];
+        var ret = region0[i];
 
         Assert.AreEqual(ret, pt);
       }
@@ -820,13 +818,13 @@ namespace Apache.Geode.Client.UnitTests
     public void pdxTypeMapperTest2()
     {
       CacheHelper.DCache.TypeRegistry.PdxTypeMapper = new PdxTypeMapper();
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      PdxType pt = new PdxType();
+      var pt = new PdxType();
 
-      for (int i = 0; i < 10; i++)
+      for (var i = 0; i < 10; i++)
       {
-        object ret = region0[1];
+        var ret = region0[1];
 
         Assert.AreEqual(ret, pt);
       }
@@ -835,15 +833,15 @@ namespace Apache.Geode.Client.UnitTests
     public void pdxITypeMapperTest()
     {
       CacheHelper.DCache.TypeRegistry.PdxTypeMapper = new PdxTypeMapper();
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      PdxType pt = new PdxType();
+      var pt = new PdxType();
 
-      for (int i = 0; i < 10; i++)
+      for (var i = 0; i < 10; i++)
       {
-        object ret = region0[1];
+        var ret = region0[1];
 
-        IPdxInstance pi = ret as IPdxInstance;
+        var pi = ret as IPdxInstance;
         Assert.IsNotNull(pi);
 
         using (pi)
@@ -857,18 +855,18 @@ namespace Apache.Geode.Client.UnitTests
     {
       CacheHelper.DCache.TypeRegistry.PdxSerializer = new AutoSerializerEx();
       CacheHelper.DCache.TypeRegistry.PdxTypeMapper = new PdxTypeMapper();
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      SerializePdx3 sp3 = new SerializePdx3(true, 2);
+      var sp3 = new SerializePdx3(true, 2);
 
-      for (int i = 100; i < 110; i++)
+      for (var i = 100; i < 110; i++)
       {
         region0[i] = sp3;
       }
 
-      for (int i = 100; i < 110; i++)
+      for (var i = 100; i < 110; i++)
       {
-        object ret = region0[i];
+        var ret = region0[i];
         Assert.AreEqual(sp3, ret);
       }
     }
@@ -928,19 +926,19 @@ namespace Apache.Geode.Client.UnitTests
 
     private void checkLocalCache()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
-      IRegion<object, object> localregion = region0.GetLocalView();
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var localregion = region0.GetLocalView();
 
-      int entryNotFound = 0;
-      int entryFound = 0;
-      for (int i = 0; i < nPdxPuts; i++)
+      var entryNotFound = 0;
+      var entryFound = 0;
+      for (var i = 0; i < nPdxPuts; i++)
       {
         try
         {
-          object ret = localregion[i];
+          var ret = localregion[i];
           if (ret != null)
           {
-            Heaptest ht = ret as Heaptest;
+            var ht = ret as Heaptest;
             if (ht != null)
               entryFound++;
           }
@@ -957,9 +955,9 @@ namespace Apache.Geode.Client.UnitTests
 
     private void putPdxheaptest()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      for (int i = 0; i < nPdxPuts; i++)
+      for (var i = 0; i < nPdxPuts; i++)
       {
         region0[i] = new Heaptest(pdxobjsize);
       }
@@ -969,10 +967,10 @@ namespace Apache.Geode.Client.UnitTests
 
     private void getPdxHeaptest()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
-      for (int i = 0; i < nPdxPuts; i++)
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      for (var i = 0; i < nPdxPuts; i++)
       {
-        object ret = region0[i];
+        var ret = region0[i];
       }
 
       checkLocalCache();
@@ -1022,19 +1020,19 @@ namespace Apache.Geode.Client.UnitTests
 
     private void checkLocalCacheBA(bool checkmem)
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
-      IRegion<object, object> localregion = region0.GetLocalView();
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var localregion = region0.GetLocalView();
 
-      int entryNotFound = 0;
-      int entryFound = 0;
-      for (int i = 0; i < nBAPuts; i++)
+      var entryNotFound = 0;
+      var entryFound = 0;
+      for (var i = 0; i < nBAPuts; i++)
       {
         try
         {
-          object ret = localregion[i];
+          var ret = localregion[i];
           if (ret != null)
           {
-            byte[] ht = ret as byte[];
+            var ht = ret as byte[];
             if (ht != null)
               entryFound++;
           }
@@ -1048,16 +1046,16 @@ namespace Apache.Geode.Client.UnitTests
       Assert.Greater(entryFound, 8, "enteries should be in local cache");
       Assert.Greater(nBAPuts, entryFound + 10, "pdx object should have evicted");
 
-      int mem = (int) GC.GetTotalMemory(true);
+      var mem = (int) GC.GetTotalMemory(true);
       // if(checkmem)
       //Assert.Less(mem, 200000000, "Memory should be less then 200 mb");
     }
 
     private void putBAheaptest()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      for (int i = 0; i < nBAPuts; i++)
+      for (var i = 0; i < nBAPuts; i++)
       {
         region0[i] = new byte[baSize];
       }
@@ -1067,10 +1065,10 @@ namespace Apache.Geode.Client.UnitTests
 
     private void getBAHeaptest()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
-      for (int i = 0; i < nBAPuts; i++)
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      for (var i = 0; i < nBAPuts; i++)
       {
-        object ret = region0[i];
+        var ret = region0[i];
       }
 
       checkLocalCacheBA(true);
@@ -1117,7 +1115,7 @@ namespace Apache.Geode.Client.UnitTests
 
     private void putPdxWithEnum()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
       region0[0] = new PdxEnumTestClass(0);
       region0[1] = new PdxEnumTestClass(1);
       region0[2] = new PdxEnumTestClass(2);
@@ -1125,16 +1123,16 @@ namespace Apache.Geode.Client.UnitTests
 
     private void pdxEnumQuery()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
-      ISelectResults<object> sr = region0.Query<object>("_enumid.name = 'id2'");
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var sr = region0.Query<object>("_enumid.name = 'id2'");
 
       Assert.AreEqual(1, sr.Size, "query result should have one item");
 
-      IEnumerator<object> en = sr.GetEnumerator();
+      var en = sr.GetEnumerator();
 
       while (en.MoveNext())
       {
-        PdxEnumTestClass re = (PdxEnumTestClass) en.Current;
+        var re = (PdxEnumTestClass) en.Current;
         Assert.AreEqual(1, re.ID, "query should have return id 1");
       }
     }
@@ -1174,15 +1172,15 @@ namespace Apache.Geode.Client.UnitTests
 
     private void registerPdxDelta()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
       region0.GetSubscriptionService().RegisterAllKeys();
     }
 
     private void putPdxDelta()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
-      javaobject.PdxDelta pd = new javaobject.PdxDelta(1001);
-      for (int i = 0; i < 10; i++)
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var pd = new javaobject.PdxDelta(1001);
+      for (var i = 0; i < 10; i++)
       {
         region0["pdxdelta"] = pd;
       }
@@ -1193,9 +1191,9 @@ namespace Apache.Geode.Client.UnitTests
     private void verifyPdxDelta()
     {
       System.Threading.Thread.Sleep(5000);
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
       //Assert.Greater(javaobject.PdxDelta.GotDelta, 7, "this should have recieve delta");
-      javaobject.PdxDelta pd = (javaobject.PdxDelta) region0.GetLocalView()["pdxdelta"];
+      var pd = (javaobject.PdxDelta) region0.GetLocalView()["pdxdelta"];
       Assert.Greater(pd.Delta, 7, "this should have recieve delta");
       Assert.Greater(javaobject.PdxDelta.GotDelta, 7, "this should have more todelta");
     }
@@ -1235,21 +1233,21 @@ namespace Apache.Geode.Client.UnitTests
 
     private void generateJavaPdxType()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      string args = "saveAllJavaPdxTypes";
-      List<object> filter = new List<object>();
+      var args = "saveAllJavaPdxTypes";
+      var filter = new List<object>();
       filter.Add(1);
-      Execution<object> execution = FunctionService<object>.OnRegion<object, object>(region0)
+      var execution = FunctionService<object>.OnRegion<object, object>(region0)
         .WithArgs<object>(args).WithFilter<object>(filter);
 
 
-      IResultCollector<object> resultCollector = execution.Execute("ComparePdxTypes");
+      var resultCollector = execution.Execute("ComparePdxTypes");
 
-      ICollection<object> executeFunctionResult = resultCollector.GetResult();
+      var executeFunctionResult = resultCollector.GetResult();
 
-      bool gotResult = false;
-      foreach (object item in executeFunctionResult)
+      var gotResult = false;
+      foreach (var item in executeFunctionResult)
       {
         Assert.AreEqual(item, true, "Function should return true");
         gotResult = true;
@@ -1260,55 +1258,55 @@ namespace Apache.Geode.Client.UnitTests
 
     private void putAllPdxTypes()
     {
-      Region r = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
-      PdxTypes1 p1 = new PdxTypes1();
+      var r = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var p1 = new PdxTypes1();
       r[p1.GetType().FullName] = p1;
 
-      PdxTypes2 p2 = new PdxTypes2();
+      var p2 = new PdxTypes2();
       r[p2.GetType().FullName] = p2;
 
-      PdxTypes3 p3 = new PdxTypes3();
+      var p3 = new PdxTypes3();
       r[p3.GetType().FullName] = p3;
 
-      PdxTypes4 p4 = new PdxTypes4();
+      var p4 = new PdxTypes4();
       r[p4.GetType().FullName] = p4;
 
-      PdxTypes5 p5 = new PdxTypes5();
+      var p5 = new PdxTypes5();
       r[p5.GetType().FullName] = p5;
 
-      PdxTypes6 p6 = new PdxTypes6();
+      var p6 = new PdxTypes6();
       r[p6.GetType().FullName] = p6;
 
-      PdxTypes7 p7 = new PdxTypes7();
+      var p7 = new PdxTypes7();
       r[p7.GetType().FullName] = p7;
 
-      PdxTypes8 p8 = new PdxTypes8();
+      var p8 = new PdxTypes8();
       r[p8.GetType().FullName] = p8;
 
-      PdxTypes9 p9 = new PdxTypes9();
+      var p9 = new PdxTypes9();
       r[p9.GetType().FullName] = p9;
 
-      PdxTypes10 p10 = new PdxTypes10();
+      var p10 = new PdxTypes10();
       r[p10.GetType().FullName] = p10;
     }
 
     private void verifyDotNetPdxTypes()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      string args = "compareDotNETPdxTypes";
-      List<object> filter = new List<object>();
+      var args = "compareDotNETPdxTypes";
+      var filter = new List<object>();
       filter.Add(1);
-      Execution<object> execution = FunctionService<object>.OnRegion<object, object>(region0)
+      var execution = FunctionService<object>.OnRegion<object, object>(region0)
         .WithArgs<object>(args).WithFilter<object>(filter);
 
 
-      IResultCollector<object> resultCollector = execution.Execute("ComparePdxTypes");
+      var resultCollector = execution.Execute("ComparePdxTypes");
 
-      ICollection<object> executeFunctionResult = resultCollector.GetResult();
+      var executeFunctionResult = resultCollector.GetResult();
 
-      bool gotResult = false;
-      foreach (object item in executeFunctionResult)
+      var gotResult = false;
+      foreach (var item in executeFunctionResult)
       {
         Assert.AreEqual(item, true, "Function should return true");
         gotResult = true;
@@ -1357,13 +1355,13 @@ namespace Apache.Geode.Client.UnitTests
       initializePdxAssemblyOne3(false);
 
 
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
-      object np = pt.InvokeMember("PdxTypes3", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
+      var np = pt.InvokeMember("PdxTypes3", BindingFlags.CreateInstance, null, null, null);
       region0[1] = np;
 
-      object pRet = region0[1];
+      var pRet = region0[1];
     }
 
     //this has v2 object
@@ -1371,13 +1369,13 @@ namespace Apache.Geode.Client.UnitTests
     {
       initializePdxAssemblyTwo3(false);
 
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
-      object np = pt.InvokeMember("PdxTypes3", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
+      var np = pt.InvokeMember("PdxTypes3", BindingFlags.CreateInstance, null, null, null);
 
       //get v1 ojbject ..
-      object pRet = (object) region0[1];
+      var pRet = (object) region0[1];
 
       //now put v2 object
       region0[2] = np;
@@ -1386,18 +1384,18 @@ namespace Apache.Geode.Client.UnitTests
     //this should fails..
     private void client3GetsV2Object()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      List<object> filter = new List<object>();
+      var filter = new List<object>();
       filter.Add(1);
-      Execution<object> execution = FunctionService<object>.OnRegion<object, object>(region0);
+      var execution = FunctionService<object>.OnRegion<object, object>(region0);
 
-      IResultCollector<object> resultCollector = execution.Execute("IterateRegion");
+      var resultCollector = execution.Execute("IterateRegion");
 
-      ICollection<object> executeFunctionResult = resultCollector.GetResult();
+      var executeFunctionResult = resultCollector.GetResult();
 
-      bool gotResult = false;
-      foreach (object item in executeFunctionResult)
+      var gotResult = false;
+      foreach (var item in executeFunctionResult)
       {
         Assert.AreEqual(item, true, "Function should return true");
         gotResult = true;
@@ -1446,7 +1444,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
       region0[1] = new PdxTypes1();
       region0[2] = new PdxTypes2();
@@ -1454,17 +1452,17 @@ namespace Apache.Geode.Client.UnitTests
 
     private void put2FromLongRunningClient()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
       region0[2] = new PdxTypes2();
     }
 
     private void VerifyEntry2FLRC()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
       try
       {
-        object ret = region0[2];
+        var ret = region0[2];
         Assert.Fail("Expected exception.");
       }
       catch (Exception)
@@ -1478,7 +1476,7 @@ namespace Apache.Geode.Client.UnitTests
     private void createExtraSysPropFile(string name, string value)
     {
       // create a file for alternate properties...
-      StreamWriter sw = new StreamWriter(testSysPropFileName);
+      var sw = new StreamWriter(testSysPropFileName);
       sw.WriteLine(name + "=" + value);
       sw.Close();
     }

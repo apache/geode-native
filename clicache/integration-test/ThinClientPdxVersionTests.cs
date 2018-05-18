@@ -16,30 +16,27 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Collections;
-using PdxTests;
 using System.Reflection;
 
 namespace Apache.Geode.Client.UnitTests
 {
   using NUnit.Framework;
-  using Apache.Geode.DUnitFramework;
-  using Apache.Geode.Client;
-  using Region = Apache.Geode.Client.IRegion<Object, Object>;
+  using DUnitFramework;
+  using Client;
+  using Region = IRegion<object, object>;
 
 
   [TestFixture]
   [Category("group4")]
   [Category("unicast_only")]
   [Category("generics")]
-  class ThinClientPdxVersionTests : ThinClientRegionSteps
+  internal class ThinClientPdxVersionTests : ThinClientRegionSteps
   {
-    static bool m_useWeakHashMap = false;
+    private static bool m_useWeakHashMap = false;
 
     #region Private members
 
-    private UnitProcess m_client1, m_client2, m_client3, m_client4;
+    private UnitProcess m_client1, m_client2;
 
     #endregion
 
@@ -47,10 +44,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       m_client1 = new UnitProcess();
       m_client2 = new UnitProcess();
-      m_client3 = new UnitProcess();
-      m_client4 = new UnitProcess();
-      return new ClientBase[] {m_client1, m_client2, m_client3, m_client4};
-      //return new ClientBase[] { m_client1, m_client2 };
+      return new ClientBase[] {m_client1, m_client2};
     }
 
     [TestFixtureTearDown]
@@ -79,13 +73,13 @@ namespace Apache.Geode.Client.UnitTests
       base.EndTest();
     }
 
-    void cleanup()
+    private void cleanup()
     {
       {
         CacheHelper.SetExtraPropertiesFile(null);
         if (m_clients != null)
         {
-          foreach (ClientBase client in m_clients)
+          foreach (var client in m_clients)
           {
             try
             {
@@ -104,142 +98,142 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    Assembly m_pdxVesionOneAsm;
-    Assembly m_pdxVesionTwoAsm;
+    private Assembly m_pdxVesionOneAsm;
+    private Assembly m_pdxVesionTwoAsm;
 
     #region "Version Fisrt will be here PdxType1"
 
-    void initializePdxAssemblyOne(bool useWeakHashmap)
+    private void initializePdxAssemblyOne(bool useWeakHashmap)
     {
       m_pdxVesionOneAsm = Assembly.LoadFrom("PdxVersion1Lib.dll");
 
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeOne);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes1");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes1");
 
-      object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
       m_useWeakHashMap = useWeakHashmap;
     }
 
-    IPdxSerializable registerPdxTypeOne()
+    private IPdxSerializable registerPdxTypeOne()
     {
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes1");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes1");
 
-      object ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         null);
 
       return (IPdxSerializable) ob;
     }
 
-    void initializePdxAssemblyTwo(bool useWeakHashmap)
+    private void initializePdxAssemblyTwo(bool useWeakHashmap)
     {
       m_pdxVesionTwoAsm = Assembly.LoadFrom("PdxVersion2Lib.dll");
 
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwo);
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes1");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes1");
 
-      object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
       m_useWeakHashMap = useWeakHashmap;
     }
 
-    IPdxSerializable registerPdxTypeTwo()
+    private IPdxSerializable registerPdxTypeTwo()
     {
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes1");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes1");
 
-      object ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         null);
 
       return (IPdxSerializable) ob;
     }
 
-    void putAtVersionOne11(bool useWeakHashmap)
+    private void putAtVersionOne11(bool useWeakHashmap)
     {
       initializePdxAssemblyOne(useWeakHashmap);
 
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes1");
-      object np = pt.InvokeMember("PdxTypes1", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes1");
+      var np = pt.InvokeMember("PdxTypes1", BindingFlags.CreateInstance, null, null, null);
       region0[1] = np;
 
-      object pRet = region0[1];
+      var pRet = region0[1];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
 
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
       Assert.IsTrue(isEqual);
     }
 
-    void getPutAtVersionTwo12(bool useWeakHashmap)
+    private void getPutAtVersionTwo12(bool useWeakHashmap)
     {
       initializePdxAssemblyTwo(useWeakHashmap);
 
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes1");
-      object np = pt.InvokeMember("PdxTypes1", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes1");
+      var np = pt.InvokeMember("PdxTypes1", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = (object) region0[1];
+      var pRet = (object) region0[1];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
 
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
 
       Assert.IsTrue(isEqual);
 
       region0[1] = pRet;
     }
 
-    public void getPutAtVersionOne13()
+    private void getPutAtVersionOne13()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes1");
-      object np = pt.InvokeMember("PdxTypes1", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes1");
+      var np = pt.InvokeMember("PdxTypes1", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = region0[1];
+      var pRet = region0[1];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
       Assert.IsTrue(isEqual);
 
       region0[1] = pRet;
     }
 
-    public void getPutAtVersionTwo14()
+    private void getPutAtVersionTwo14()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes1");
-      object np = pt.InvokeMember("PdxTypes1", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes1");
+      var np = pt.InvokeMember("PdxTypes1", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = (object) region0[1];
+      var pRet = (object) region0[1];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
 
       Assert.IsTrue(isEqual);
 
       region0[1] = pRet;
     }
 
-    public void getPutAtVersionOne15()
+    private void getPutAtVersionOne15()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes1");
-      object np = pt.InvokeMember("PdxTypes1", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes1");
+      var np = pt.InvokeMember("PdxTypes1", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = region0[1];
+      var pRet = region0[1];
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
       Assert.IsTrue(isEqual);
 
       region0[1] = pRet;
@@ -253,18 +247,18 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public void getPutAtVersionTwo16()
+    private void getPutAtVersionTwo16()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes1");
-      object np = pt.InvokeMember("PdxTypes1", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes1");
+      var np = pt.InvokeMember("PdxTypes1", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = (object) region0[1];
+      var pRet = (object) region0[1];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
 
       Assert.IsTrue(isEqual);
 
@@ -291,17 +285,17 @@ namespace Apache.Geode.Client.UnitTests
 
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeOne2);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes2");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes2");
 
-      object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
     private IPdxSerializable registerPdxTypeOne2()
     {
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes2");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes2");
 
-      object ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         null);
 
       return (IPdxSerializable) ob;
@@ -312,17 +306,17 @@ namespace Apache.Geode.Client.UnitTests
       m_pdxVesionTwoAsm = Assembly.LoadFrom("PdxVersion2Lib.dll");
 
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwo2);
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes2");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes2");
 
-      object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
     private IPdxSerializable registerPdxTypeTwo2()
     {
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes2");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes2");
 
-      object ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         null);
 
       return (IPdxSerializable) ob;
@@ -338,17 +332,17 @@ namespace Apache.Geode.Client.UnitTests
 
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeOne3);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
 
-      object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
     private IPdxSerializable registerPdxTypeOne3()
     {
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
 
-      object ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         null);
 
       return (IPdxSerializable) ob;
@@ -359,24 +353,24 @@ namespace Apache.Geode.Client.UnitTests
       m_pdxVesionTwoAsm = Assembly.LoadFrom("PdxVersion2Lib.dll");
 
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwo3);
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
 
-      object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
     private IPdxSerializable registerPdxTypeTwo3()
     {
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
 
-      object ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         null);
 
       return (IPdxSerializable) ob;
     }
 
     #endregion
-    
+
     #region PdxType2 Version two first
 
     private void initializePdxAssemblyOneR2(bool useWeakHashmap)
@@ -385,17 +379,17 @@ namespace Apache.Geode.Client.UnitTests
 
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeOneR2);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR2");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR2");
 
-      object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
     private IPdxSerializable registerPdxTypeOneR2()
     {
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR2");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR2");
 
-      object ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         null);
 
       return (IPdxSerializable) ob;
@@ -407,17 +401,17 @@ namespace Apache.Geode.Client.UnitTests
 
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwoR2);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR2");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR2");
 
-      object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
     private IPdxSerializable registerPdxTypeTwoR2()
     {
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR2");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR2");
 
-      object ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         null);
 
       return (IPdxSerializable) ob;
@@ -425,7 +419,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    void runBasicMergeOps()
+    private void runBasicMergeOps()
     {
       CacheHelper.SetupJavaServers(true, "cacheserver.xml");
       CacheHelper.StartJavaLocator(1, "GFELOC");
@@ -453,7 +447,7 @@ namespace Apache.Geode.Client.UnitTests
       m_client2.Call(getPutAtVersionTwo14);
       Util.Log("StepSix complete.");
 
-      for (int i = 0; i < 10; i++)
+      for (var i = 0; i < 10; i++)
       {
         m_client1.Call(getPutAtVersionOne15);
         Util.Log("StepSeven complete." + i);
@@ -477,44 +471,43 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.ClearLocators();
     }
 
-
-    void initializePdxAssemblyOnePS(bool useWeakHashmap)
+    private void initializePdxAssemblyOnePS(bool useWeakHashmap)
     {
       m_pdxVesionOneAsm = Assembly.LoadFrom("PdxVersion1Lib.dll");
 
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
 
       //object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null, new object[] { useWeakHashmap });
       m_useWeakHashMap = useWeakHashmap;
     }
 
-    void putFromVersion1_PS(bool useWeakHashmap)
+    private void putFromVersion1_PS(bool useWeakHashmap)
     {
       //local cache is on
       initializePdxAssemblyOnePS(useWeakHashmap);
 
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
-      object np = pt.InvokeMember("Create", BindingFlags.InvokeMethod, null, null, null);
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
+      var np = pt.InvokeMember("Create", BindingFlags.InvokeMethod, null, null, null);
 
       CacheHelper.DCache.TypeRegistry.PdxSerializer = (IPdxSerializer) np;
 
       //created new object
       np = pt.InvokeMember("TestDiffTypePdxS", BindingFlags.CreateInstance, null, null, new object[] {true});
 
-      Type keytype = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestKey");
-      object key = keytype.InvokeMember("TestKey", BindingFlags.CreateInstance, null, null, new object[] {"key-1"});
+      var keytype = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestKey");
+      var key = keytype.InvokeMember("TestKey", BindingFlags.CreateInstance, null, null, new object[] {"key-1"});
 
       region0[key] = np;
 
-      object pRet = region0[key];
+      var pRet = region0[key];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
 
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
       Assert.IsTrue(isEqual);
 
       //this should come from local caching
@@ -523,12 +516,12 @@ namespace Apache.Geode.Client.UnitTests
       Assert.IsNotNull(pRet);
 
       region0.GetLocalView().Invalidate(key);
-      bool isKNFE = false;
+      var isKNFE = false;
       try
       {
         pRet = region0.GetLocalView()[key];
       }
-      catch (Apache.Geode.Client.KeyNotFoundException)
+      catch (Client.KeyNotFoundException)
       {
         isKNFE = true;
       }
@@ -543,68 +536,68 @@ namespace Apache.Geode.Client.UnitTests
       region0.GetLocalView().Remove(key);
     }
 
-    void initializePdxAssemblyTwoPS(bool useWeakHashmap)
+    private void initializePdxAssemblyTwoPS(bool useWeakHashmap)
     {
       m_pdxVesionTwoAsm = Assembly.LoadFrom("PdxVersion2Lib.dll");
 
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
 
       //object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null, new object[] { useWeakHashmap });
       m_useWeakHashMap = useWeakHashmap;
     }
 
-    void putFromVersion2_PS(bool useWeakHashmap)
+    private void putFromVersion2_PS(bool useWeakHashmap)
     {
       initializePdxAssemblyTwoPS(useWeakHashmap);
 
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
 
-      object np = pt.InvokeMember("Create", BindingFlags.InvokeMethod, null, null, null);
+      var np = pt.InvokeMember("Create", BindingFlags.InvokeMethod, null, null, null);
 
       CacheHelper.DCache.TypeRegistry.PdxSerializer = (IPdxSerializer) np;
 
       np = pt.InvokeMember("TestDiffTypePdxS", BindingFlags.CreateInstance, null, null, new object[] {true});
 
-      Type keytype = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestKey");
-      object key = keytype.InvokeMember("TestKey", BindingFlags.CreateInstance, null, null, new object[] {"key-1"});
+      var keytype = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestKey");
+      var key = keytype.InvokeMember("TestKey", BindingFlags.CreateInstance, null, null, new object[] {"key-1"});
 
       region0[key] = np;
 
-      object pRet = region0[key];
+      var pRet = region0[key];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
 
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
       Assert.IsTrue(isEqual);
 
-      object key2 = keytype.InvokeMember("TestKey", BindingFlags.CreateInstance, null, null, new object[] {"key-2"});
+      var key2 = keytype.InvokeMember("TestKey", BindingFlags.CreateInstance, null, null, new object[] {"key-2"});
       region0[key2] = np;
     }
 
-    void getputFromVersion1_PS()
+    private void getputFromVersion1_PS()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
-      object np = pt.InvokeMember("TestDiffTypePdxS", BindingFlags.CreateInstance, null, null, new object[] {true});
-
-
-      Type keytype = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestKey");
-      object key = keytype.InvokeMember("TestKey", BindingFlags.CreateInstance, null, null, new object[] {"key-1"});
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
+      var np = pt.InvokeMember("TestDiffTypePdxS", BindingFlags.CreateInstance, null, null, new object[] {true});
 
 
-      object pRet = region0[key];
+      var keytype = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestKey");
+      var key = keytype.InvokeMember("TestKey", BindingFlags.CreateInstance, null, null, new object[] {"key-1"});
+
+
+      var pRet = region0[key];
 
       Assert.IsTrue(np.Equals(pRet));
 
       //get then put.. this should merge data back
       region0[key] = pRet;
 
-      object key2 = keytype.InvokeMember("TestKey", BindingFlags.CreateInstance, null, null, new object[] {"key-2"});
+      var key2 = keytype.InvokeMember("TestKey", BindingFlags.CreateInstance, null, null, new object[] {"key-2"});
 
       pRet = region0[key2];
 
@@ -614,21 +607,21 @@ namespace Apache.Geode.Client.UnitTests
       region0[key2] = np;
     }
 
-    void getAtVersion2_PS()
+    private void getAtVersion2_PS()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
-      object np = pt.InvokeMember("TestDiffTypePdxS", BindingFlags.CreateInstance, null, null, new object[] {true});
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
+      var np = pt.InvokeMember("TestDiffTypePdxS", BindingFlags.CreateInstance, null, null, new object[] {true});
 
 
-      Type keytype = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestKey");
-      object key = keytype.InvokeMember("TestKey", BindingFlags.CreateInstance, null, null, new object[] {"key-1"});
+      var keytype = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestKey");
+      var key = keytype.InvokeMember("TestKey", BindingFlags.CreateInstance, null, null, new object[] {"key-1"});
 
-      bool gotexcep = false;
+      var gotexcep = false;
       try
       {
-        object r = region0.GetLocalView()[key];
+        var r = region0.GetLocalView()[key];
       }
       catch (Exception)
       {
@@ -637,15 +630,15 @@ namespace Apache.Geode.Client.UnitTests
 
       Assert.IsTrue(gotexcep);
 
-      object pRet = region0[key];
+      var pRet = region0[key];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
 
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
       Assert.IsTrue(isEqual);
 
-      object key2 = keytype.InvokeMember("TestKey", BindingFlags.CreateInstance, null, null, new object[] {"key-2"});
+      var key2 = keytype.InvokeMember("TestKey", BindingFlags.CreateInstance, null, null, new object[] {"key-2"});
 
       np = pt.InvokeMember("TestDiffTypePdxS", BindingFlags.CreateInstance, null, null, new object[] {true});
 
@@ -657,7 +650,7 @@ namespace Apache.Geode.Client.UnitTests
       Assert.IsTrue(!np.Equals(pRet));
     }
 
-    void runBasicMergeOpsWithPdxSerializer()
+    private void runBasicMergeOpsWithPdxSerializer()
     {
       CacheHelper.SetupJavaServers(true, "cacheserverPdxSerializer.xml");
       CacheHelper.StartJavaLocator(1, "GFELOC");
@@ -721,61 +714,61 @@ namespace Apache.Geode.Client.UnitTests
 
     #region "Version two will first here"
 
-    void initializePdxAssemblyOneR1(bool useWeakHashmap)
+    private void initializePdxAssemblyOneR1(bool useWeakHashmap)
     {
       m_pdxVesionOneAsm = Assembly.LoadFrom("PdxVersion1Lib.dll");
 
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeOneR1);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR1");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR1");
 
-      object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
-    IPdxSerializable registerPdxTypeOneR1()
+    private IPdxSerializable registerPdxTypeOneR1()
     {
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR1");
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR1");
 
-      object ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         null);
 
       return (IPdxSerializable) ob;
     }
 
-    void initializePdxAssemblyTwoR1(bool useWeakHashmap)
+    private void initializePdxAssemblyTwoR1(bool useWeakHashmap)
     {
       m_pdxVesionTwoAsm = Assembly.LoadFrom("PdxVersion2Lib.dll");
 
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwoR1);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR1");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR1");
 
-      object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
-    IPdxSerializable registerPdxTypeTwoR1()
+    private IPdxSerializable registerPdxTypeTwoR1()
     {
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR1");
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR1");
 
-      object ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      var ob = pt.InvokeMember("CreateDeserializable", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         null);
 
       return (IPdxSerializable) ob;
     }
 
-    public void putAtVersionTwo1(bool useWeakHashmap)
+    private void putAtVersionTwo1(bool useWeakHashmap)
     {
       initializePdxAssemblyTwoR1(useWeakHashmap);
 
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR1");
-      object np = pt.InvokeMember("PdxTypesR1", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR1");
+      var np = pt.InvokeMember("PdxTypesR1", BindingFlags.CreateInstance, null, null, null);
       region0[1] = np;
 
-      object pRet = region0[1];
+      var pRet = region0[1];
 
       Console.WriteLine(np);
       Console.WriteLine(pRet);
@@ -783,93 +776,93 @@ namespace Apache.Geode.Client.UnitTests
       Assert.AreEqual(np, pRet);
     }
 
-    public void getPutAtVersionOne2(bool useWeakHashmap)
+    private void getPutAtVersionOne2(bool useWeakHashmap)
     {
       initializePdxAssemblyOneR1(useWeakHashmap);
 
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR1");
-      object np = pt.InvokeMember("PdxTypesR1", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR1");
+      var np = pt.InvokeMember("PdxTypesR1", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = region0[1];
+      var pRet = region0[1];
 
       Console.WriteLine(np);
       Console.WriteLine(pRet);
 
-      bool retVal = np.Equals(pRet);
+      var retVal = np.Equals(pRet);
       Assert.IsTrue(retVal);
 
       region0[1] = pRet;
     }
 
-    public void getPutAtVersionTwo3()
+    private void getPutAtVersionTwo3()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR1");
-      object np = pt.InvokeMember("PdxTypesR1", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR1");
+      var np = pt.InvokeMember("PdxTypesR1", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = region0[1]; //get
+      var pRet = region0[1]; //get
 
       Console.WriteLine(np);
       Console.WriteLine(pRet);
 
-      bool retVal = np.Equals(pRet);
+      var retVal = np.Equals(pRet);
       Assert.IsTrue(retVal);
 
       region0[1] = pRet;
     }
 
-    public void getPutAtVersionOne4()
+    private void getPutAtVersionOne4()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR1");
-      object np = pt.InvokeMember("PdxTypesR1", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR1");
+      var np = pt.InvokeMember("PdxTypesR1", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = region0[1];
+      var pRet = region0[1];
 
       Console.WriteLine(np);
       Console.WriteLine(pRet);
 
-      bool retVal = np.Equals(pRet);
+      var retVal = np.Equals(pRet);
       Assert.IsTrue(retVal);
 
       region0[1] = pRet;
     }
 
-    public void getPutAtVersionTwo5()
+    private void getPutAtVersionTwo5()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR1");
-      object np = pt.InvokeMember("PdxTypesR1", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR1");
+      var np = pt.InvokeMember("PdxTypesR1", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = region0[1];
+      var pRet = region0[1];
 
       Console.WriteLine(np);
       Console.WriteLine(pRet);
 
-      bool retVal = np.Equals(pRet);
+      var retVal = np.Equals(pRet);
       Assert.IsTrue(retVal);
 
       region0[1] = pRet;
     }
 
-    public void getPutAtVersionOne6()
+    private void getPutAtVersionOne6()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR1");
-      object np = pt.InvokeMember("PdxTypesR1", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR1");
+      var np = pt.InvokeMember("PdxTypesR1", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = region0[1];
+      var pRet = region0[1];
 
       Console.WriteLine(np);
       Console.WriteLine(pRet);
 
-      bool retVal = np.Equals(pRet);
+      var retVal = np.Equals(pRet);
       Assert.IsTrue(retVal);
 
       region0[1] = pRet;
@@ -877,7 +870,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    void runBasicMergeOpsR1()
+    private void runBasicMergeOpsR1()
     {
       CacheHelper.SetupJavaServers(true, "cacheserver.xml");
       CacheHelper.StartJavaLocator(1, "GFELOC");
@@ -906,7 +899,7 @@ namespace Apache.Geode.Client.UnitTests
       m_client1.Call(getPutAtVersionOne4);
       Util.Log("StepSix complete.");
 
-      for (int i = 0; i < 10; i++)
+      for (var i = 0; i < 10; i++)
       {
         m_client2.Call(getPutAtVersionTwo5);
         Util.Log("StepSeven complete." + i);
@@ -930,7 +923,7 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.ClearLocators();
     }
 
-    void dinitPdxSerializer()
+    private void dinitPdxSerializer()
     {
       CacheHelper.DCache.TypeRegistry.PdxSerializer = null;
     }
@@ -957,7 +950,7 @@ namespace Apache.Geode.Client.UnitTests
 
       m_client2.Call(getPutAtVersionTwo22, m_useWeakHashMap);
 
-      for (int i = 0; i < 10; i++)
+      for (var i = 0; i < 10; i++)
       {
         m_client1.Call(getPutAtVersionOne23);
         m_client2.Call(getPutAtVersionTwo24);
@@ -1003,7 +996,7 @@ namespace Apache.Geode.Client.UnitTests
 
       m_client2.Call(getPutAtVersionTwo32, m_useWeakHashMap);
 
-      for (int i = 0; i < 10; i++)
+      for (var i = 0; i < 10; i++)
       {
         m_client1.Call(getPutAtVersionOne33);
         m_client2.Call(getPutAtVersionTwo34);
@@ -1031,24 +1024,24 @@ namespace Apache.Geode.Client.UnitTests
     {
       initializePdxAssemblyOne2(useWeakHashmap);
 
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes2");
-      object np = pt.InvokeMember("PdxTypes2", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes2");
+      var np = pt.InvokeMember("PdxTypes2", BindingFlags.CreateInstance, null, null, null);
       region0[1] = np;
 
-      object pRet = region0[1];
+      var pRet = region0[1];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
 
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
       Assert.IsTrue(isEqual);
 
       pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.Pdx1");
-      object pdx1 = pt.InvokeMember("Pdx1", BindingFlags.CreateInstance, null, null, null);
+      var pdx1 = pt.InvokeMember("Pdx1", BindingFlags.CreateInstance, null, null, null);
 
-      for (int i = 1000; i < 1010; i++)
+      for (var i = 1000; i < 1010; i++)
       {
         region0[i] = pdx1;
       }
@@ -1057,43 +1050,43 @@ namespace Apache.Geode.Client.UnitTests
     private void getPutAtVersionTwo22(bool useWeakHashmap)
     {
       initializePdxAssemblyTwo2(useWeakHashmap);
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes2");
-      object np = pt.InvokeMember("PdxTypes2", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes2");
+      var np = pt.InvokeMember("PdxTypes2", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = (object) region0[1];
+      var pRet = (object) region0[1];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
 
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
 
       Assert.IsTrue(isEqual);
 
       region0[1] = pRet;
 
       pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.Pdx1");
-      object pdx1 = pt.InvokeMember("Pdx1", BindingFlags.CreateInstance, null, null, null);
+      var pdx1 = pt.InvokeMember("Pdx1", BindingFlags.CreateInstance, null, null, null);
 
-      for (int i = 1000; i < 1010; i++)
+      for (var i = 1000; i < 1010; i++)
       {
-        object ret = region0[i];
+        var ret = region0[i];
       }
     }
 
     private void getPutAtVersionOne23()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes2");
-      object np = pt.InvokeMember("PdxTypes2", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes2");
+      var np = pt.InvokeMember("PdxTypes2", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = (object) region0[1];
+      var pRet = (object) region0[1];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
 
       Assert.IsTrue(isEqual);
 
@@ -1102,17 +1095,17 @@ namespace Apache.Geode.Client.UnitTests
 
     private void getPutAtVersionTwo24()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes2");
-      object np = pt.InvokeMember("PdxTypes2", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes2");
+      var np = pt.InvokeMember("PdxTypes2", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = (object) region0[1];
+      var pRet = (object) region0[1];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
 
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
 
       Assert.IsTrue(isEqual);
 
@@ -1123,35 +1116,35 @@ namespace Apache.Geode.Client.UnitTests
     {
       initializePdxAssemblyOne3(useWeakHashmap);
 
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
-      object np = pt.InvokeMember("PdxTypes3", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
+      var np = pt.InvokeMember("PdxTypes3", BindingFlags.CreateInstance, null, null, null);
       region0[1] = np;
 
-      object pRet = region0[1];
+      var pRet = region0[1];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
 
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
       Assert.IsTrue(isEqual);
     }
 
     private void getPutAtVersionTwo32(bool useWeakHashmap)
     {
       initializePdxAssemblyTwo3(useWeakHashmap);
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
-      object np = pt.InvokeMember("PdxTypes3", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
+      var np = pt.InvokeMember("PdxTypes3", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = (object) region0[1];
+      var pRet = (object) region0[1];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
 
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
 
       Assert.IsTrue(isEqual);
 
@@ -1160,17 +1153,17 @@ namespace Apache.Geode.Client.UnitTests
 
     private void getPutAtVersionOne33()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
-      object np = pt.InvokeMember("PdxTypes3", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
+      var np = pt.InvokeMember("PdxTypes3", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = (object) region0[1];
+      var pRet = (object) region0[1];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
 
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
 
       Assert.IsTrue(isEqual);
 
@@ -1179,17 +1172,17 @@ namespace Apache.Geode.Client.UnitTests
 
     private void getPutAtVersionTwo34()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
-      object np = pt.InvokeMember("PdxTypes3", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
+      var np = pt.InvokeMember("PdxTypes3", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = (object) region0[1];
+      var pRet = (object) region0[1];
 
       Console.WriteLine(np.ToString());
       Console.WriteLine(pRet.ToString());
 
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
 
       Assert.IsTrue(isEqual);
 
@@ -1219,7 +1212,7 @@ namespace Apache.Geode.Client.UnitTests
       m_client1.Call(getPutAtVersionOneR22, m_useWeakHashMap);
       Util.Log("StepFour complete.");
 
-      for (int i = 0; i < 10; i++)
+      for (var i = 0; i < 10; i++)
       {
         m_client2.Call(getPutAtVersionTwoR23);
         Util.Log("StepFive complete.");
@@ -1247,18 +1240,18 @@ namespace Apache.Geode.Client.UnitTests
     {
       initializePdxAssemblyTwoR2(useWeakHashmap);
 
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR2");
-      object np = pt.InvokeMember("PdxTypesR2", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR2");
+      var np = pt.InvokeMember("PdxTypesR2", BindingFlags.CreateInstance, null, null, null);
       region0[1] = np;
 
-      object pRet = region0[1];
+      var pRet = region0[1];
 
       Console.WriteLine(np);
       Console.WriteLine(pRet);
 
-      bool isEqual = np.Equals(pRet);
+      var isEqual = np.Equals(pRet);
 
       Assert.IsTrue(isEqual);
     }
@@ -1267,17 +1260,17 @@ namespace Apache.Geode.Client.UnitTests
     {
       initializePdxAssemblyOneR2(useWeakHashmap);
 
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR2");
-      object np = pt.InvokeMember("PdxTypesR2", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR2");
+      var np = pt.InvokeMember("PdxTypesR2", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = region0[1];
+      var pRet = region0[1];
 
       Console.WriteLine(np);
       Console.WriteLine(pRet);
 
-      bool retVal = np.Equals(pRet);
+      var retVal = np.Equals(pRet);
       Assert.IsTrue(retVal);
 
       region0[1] = pRet;
@@ -1285,17 +1278,17 @@ namespace Apache.Geode.Client.UnitTests
 
     private void getPutAtVersionTwoR23()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR2");
-      object np = pt.InvokeMember("PdxTypesR2", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR2");
+      var np = pt.InvokeMember("PdxTypesR2", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = region0[1]; //get
+      var pRet = region0[1]; //get
 
       Console.WriteLine(np);
       Console.WriteLine(pRet);
 
-      bool retVal = np.Equals(pRet);
+      var retVal = np.Equals(pRet);
       Assert.IsTrue(retVal);
 
       region0[1] = pRet;
@@ -1303,29 +1296,21 @@ namespace Apache.Geode.Client.UnitTests
 
     private void getPutAtVersionOneR24()
     {
-      Region region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
+      var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      Type pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR2");
-      object np = pt.InvokeMember("PdxTypesR2", BindingFlags.CreateInstance, null, null, null);
+      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR2");
+      var np = pt.InvokeMember("PdxTypesR2", BindingFlags.CreateInstance, null, null, null);
 
-      object pRet = region0[1];
+      var pRet = region0[1];
 
       Console.WriteLine(np);
       Console.WriteLine(pRet);
 
-      bool retVal = np.Equals(pRet);
+      var retVal = np.Equals(pRet);
       Assert.IsTrue(retVal);
 
       region0[1] = pRet;
     }
-
-    int nPdxPuts = 100000;
-    int pdxobjsize = 5000;
-
-    int nBAPuts = 25;
-    int baSize = 16240000;
-
-    string testSysPropFileName = "testLR.properties";
 
     #region Tests
 
