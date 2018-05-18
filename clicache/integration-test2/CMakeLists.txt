@@ -46,6 +46,7 @@ set_source_files_properties(cache.xml xunit.runner.json geode.properties PROPERT
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
     Apache.Geode
+	PdxClassLibrary
 )
 
 set_target_properties( ${PROJECT_NAME} PROPERTIES
