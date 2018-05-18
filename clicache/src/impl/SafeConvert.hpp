@@ -83,8 +83,12 @@ namespace Apache
             return wrapperMethod(primitive);
           }
         }
-				else if (auto dataSerializableInternal = std::dynamic_pointer_cast<native::ManagedDataSerializableInternal>(serializableObject))
+				else if (auto dataSerializableFixedId = std::dynamic_pointer_cast<native::ManagedDataSerializableFixedId>(serializableObject))
 				{           
+          return dataSerializableFixedId->ptr();
+        }
+        else if (auto dataSerializableInternal = std::dynamic_pointer_cast<native::ManagedDataSerializableInternal>(serializableObject))
+        {
           return dataSerializableInternal->ptr();
         }
 

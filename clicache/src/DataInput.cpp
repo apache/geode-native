@@ -764,16 +764,16 @@ namespace Apache
         {
           dataSerializable->FromData(this);
         }
-				else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(newObj))
+        else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(newObj))
         {
           dataSerializable->FromData(this);
         }
-				else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(newObj))
+        else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(newObj))
         {
           dataSerializableFixedId->FromData(this);
         }
-				else
-				{
+        else
+        {
           throw gcnew IllegalStateException("Unknown serialization type.");
         }
 

@@ -544,6 +544,10 @@ namespace Apache
 
           return safe_cast<TValue>(ret);
         }
+				else if (auto userFunctionExecutionException = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(val))
+        {
+          return safe_cast<TValue>(gcnew UserFunctionExecutionException(userFunctionExecutionException));
+        }
         else
         {
           throw gcnew IllegalStateException("Unknown serialization type.");

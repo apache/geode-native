@@ -824,7 +824,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
           // of populating cache with registerAllKeys(), so that should be
           // documented since rolling that back may not be a good idea either.
           if (const auto& ex = m_chunkedResult->getException()) {
-            throw *ex;
+            throw Exception(*ex);
           }
         }
       } else if (TcrMessage::CQ_EXCEPTION_TYPE == m_msgType ||

@@ -98,12 +98,17 @@ namespace Apache
             return std::shared_ptr<apache::geode::client::ManagedDataSerializablePrimitive>(
               new apache::geode::client::ManagedDataSerializablePrimitive(dataSerializablePrimitive));
           }
+          else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(tempObj))
+          {
+            return std::shared_ptr<apache::geode::client::ManagedDataSerializableFixedId>(
+              new apache::geode::client::ManagedDataSerializableFixedId(dataSerializableFixedId));
+          }
           else if (auto dataSerializableInternal = dynamic_cast<IDataSerializableInternal^>(tempObj))
           {
             return std::shared_ptr<apache::geode::client::ManagedDataSerializableInternal>(
               new apache::geode::client::ManagedDataSerializableInternal(dataSerializableInternal));
           }
-          
+
           throw native::IllegalStateException("Unknown serialization type.");
         }
 
