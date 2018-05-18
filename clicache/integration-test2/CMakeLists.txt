@@ -35,7 +35,7 @@ add_library( ${PROJECT_NAME} SHARED
     xunit.runner.json
     packages.config
     RegionTest.cs
-	AppDomainQueryTests.cs
+	SerializationTests.cs
 )
 
 set_source_files_properties(cache.xml xunit.runner.json geode.properties PROPERTIES
