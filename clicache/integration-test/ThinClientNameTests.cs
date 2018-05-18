@@ -27,7 +27,7 @@ namespace Apache.Geode.Client.UnitTests
   [Category("group4")]
   [Category("unicast_only")]
   [Category("generics")]
-  internal class ThinClientBug866Tests : ThinClientRegionSteps
+  internal class ThinClientNameTests : ThinClientRegionSteps
   {
     #region Private members
 
@@ -156,7 +156,7 @@ namespace Apache.Geode.Client.UnitTests
 
     [Test]
     //NON PDX UnitTest for Ticket#866 on NC OR SR#13306117704. Set client name via native client API
-    public void TestBug866()
+    public void UserCanSetClientName()
     {
       CacheHelper.SetupJavaServers(true, "cacheserverPdx.xml");
       CacheHelper.StartJavaLocator(1, "GFELOC");

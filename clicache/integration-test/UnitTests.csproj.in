@@ -166,8 +166,8 @@
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientPdxTests3.cs">
       <Link>ThinClientPdxTests3.cs</Link>
     </Compile>
-    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientBug866Tests.cs">
-      <Link>ThinClientBug866Tests.cs</Link>
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientNameTests.cs">
+      <Link>ThinClientNameTests.cs</Link>
     </Compile>
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientPdxLocalTests.cs">
       <Link>ThinClientPdxLocalTests.cs</Link>
