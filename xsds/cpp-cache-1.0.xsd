@@ -25,7 +25,7 @@ limitations under the License.
     version="1.0">
   <xsd:annotation>
     <xsd:documentation><![CDATA[
-      This is the XML Schema for the GemFire distributed cache declarative
+      This is the XML Schema for the Geode distributed cache declarative
       caching XML file.  All declarative cache files must include a schema
       of the following form:
 
@@ -44,7 +44,7 @@ or a ClientCache when it is created.
 The top-level element in this syntax is "client-cache". All elements are
 listed here in alphabetical order.
 
-The following conventions apply to all GemFire distributed cache
+The following conventions apply to all Geode distributed cache
 declarative caching XML file elements unless indicated otherwise.
 
 - In elements that contain PCDATA, leading and trailing whitespace in
