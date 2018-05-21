@@ -17,8 +17,7 @@
 
 #pragma once
 
-
-
+#include <msclr/marshal.h>
 
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
@@ -219,8 +218,11 @@ namespace Apache
         /// </summary>
         static IGeodeSerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj)
         {
-          return (obj != nullptr ?
-                  gcnew CacheableString(obj) : nullptr);
+          if (auto str = std::dynamic_pointer_cast<apache::geode::client::CacheableString>(obj)) {
+            return gcnew CacheableString(str);
+          }
+
+          return nullptr;
         }
 
         CacheableString(System::UInt32 type) : CacheableKey()
@@ -230,7 +232,7 @@ namespace Apache
 
       private:
         String^ m_value;
-        System::UInt32 m_type;
+        int8_t m_type;
         int m_hashcode;
 
         CacheableString() : CacheableKey()
@@ -255,8 +257,13 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheableString(std::shared_ptr<apache::geode::client::Serializable> nativeptr)
-          : CacheableKey(nativeptr) { }
+        inline CacheableString(std::shared_ptr<apache::geode::client::CacheableString> nativeptr)
+          : CacheableKey(nativeptr) {
+        
+          m_value = msclr::interop::marshal_as<String^>(nativeptr->value());
+          m_type = nativeptr->getDsCode();
+          m_hashcode = nativeptr->hashcode();
+        }
       };
     }  // namespace Client
   }  // namespace Geode

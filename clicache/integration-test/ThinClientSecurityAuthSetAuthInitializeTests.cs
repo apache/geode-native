@@ -34,7 +34,6 @@ namespace Apache.Geode.Client.UnitTests
 	{
 		#region Private members
 
-		private UnitProcess m_client1;
 		private const string CacheXml1 = "cacheserver_notify_subscription.xml";
 
 		private UsernamePasswordAuthInitialize authInitialize = new UsernamePasswordAuthInitialize();
@@ -43,15 +42,14 @@ namespace Apache.Geode.Client.UnitTests
 
 		protected override ClientBase[] GetClients()
 		{
-			m_client1 = new UnitProcess();
-			return new ClientBase[] { m_client1 };
+			return new ClientBase[] {  };
 		}
 
 		[TearDown]
 		public override void EndTest()
 		{
 			try {
-				m_client1.Call(CacheHelper.Close);
+				CacheHelper.Close();
 				CacheHelper.ClearEndpoints();
 				CacheHelper.ClearLocators();
 			} finally {
@@ -100,17 +98,17 @@ namespace Apache.Geode.Client.UnitTests
 			Util.Log("Cacheserver 1 started.");
 
 
-      m_client1.Call(AssertAuthInitializeCalled, false);
-      m_client1.Call(CreateClient, RegionName, CacheHelper.Locators);
+      AssertAuthInitializeCalled(false);
+      CreateClient(RegionName, CacheHelper.Locators);
 
 			// Perform some put operations from client1
-			m_client1.Call(DoPuts, 4);
-			m_client1.Call(AssertAuthInitializeCalled, true);
+			DoPuts(4);
+			AssertAuthInitializeCalled(true);
 
 			// Verify that the puts succeeded
-			m_client1.Call(DoGets, 4);
+			DoGets(4);
 
-			m_client1.Call(Close);
+			Close();
 
 			CacheHelper.StopJavaServer(1);
 

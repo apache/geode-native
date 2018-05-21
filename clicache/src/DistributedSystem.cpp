@@ -159,52 +159,8 @@ namespace Apache
 
       void DistributedSystem::RegisterDataSerializablePrimitives(Cache^ cache)
       {
-        RegisterDataSerializablePrimitivesWrapNativeDeserialization();
         RegisterDataSerializablePrimitivesOverrideNativeDeserialization(cache);
       }
-
-      void DistributedSystem::RegisterDataSerializablePrimitivesWrapNativeDeserialization()
-      {
-        // TODO serializable - These appear to be global, either make all prmitive types global or not.
-        // Register wrappers for primitive types
-        // Does not intercept deserialization
-
-        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
-          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableByte::Create),
-          native::GeodeTypeIds::CacheableByte, SByte::typeid);
-
-        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
-          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableBoolean::Create),
-          native::GeodeTypeIds::CacheableBoolean, Boolean::typeid);
-
-        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
-          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableCharacter::Create),
-          native::GeodeTypeIds::CacheableCharacter, Char::typeid);
-
-        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
-          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableDouble::Create),
-          native::GeodeTypeIds::CacheableDouble, Double::typeid);
-
-        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
-          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableString::Create),
-          native::GeodeTypeIds::CacheableASCIIString, String::typeid);
-
-        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
-          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableFloat::Create),
-          native::GeodeTypeIds::CacheableFloat, float::typeid);
-
-        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
-          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableInt16::Create),
-          native::GeodeTypeIds::CacheableInt16, Int16::typeid);
-
-        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
-          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableInt32::Create),
-          native::GeodeTypeIds::CacheableInt32, Int32::typeid);
-
-        TypeRegistry::RegisterDataSerializablePrimitiveWrapper(
-          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableInt64::Create),
-          native::GeodeTypeIds::CacheableInt64, Int64::typeid);
-			}
 
       void DistributedSystem::RegisterDataSerializablePrimitivesOverrideNativeDeserialization(Cache^ cache)
       {

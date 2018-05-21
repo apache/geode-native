@@ -265,6 +265,7 @@ namespace Apache
         static TypeRegistry()
         {
           InitializeManagedTypeToDsCode();
+          RegisterDataSerializablePrimitivesWrapNativeDeserialization();
         }
 
         /// <summary>
@@ -313,6 +314,8 @@ namespace Apache
           ManagedTypeToDsCode[Type::GetType("System.DateTime")] = native::GeodeTypeIds::CacheableDate;
           ManagedTypeToDsCode[Type::GetType("System.Collections.Hashtable")] = native::GeodeTypeIds::CacheableHashTable;
         }
+
+        static void RegisterDataSerializablePrimitivesWrapNativeDeserialization();
 
       };
     }  // namespace Client

@@ -287,11 +287,6 @@ namespace Apache
       void TypeRegistry::UnregisterNativesGeneric(Cache^ cache)
       {
         cache->TypeRegistry->DsCodeToDataSerializablePrimitiveNativeDelegate->Clear();
-
-        // TODO serializable a cache shutdown clears the global delegate map!!!!!
-        for (auto typeId = 0; typeId < DsCodeToDataSerializablePrimitiveWrapperDelegate->Length; ++typeId) {
-          DsCodeToDataSerializablePrimitiveWrapperDelegate[typeId] = nullptr;
-        }
       }
 
       Type^ TypeRegistry::GetTypeFromRefrencedAssemblies(String^ className, Dictionary<Assembly^, bool>^ referedAssembly, Assembly^ currentAssembly)
@@ -699,6 +694,47 @@ namespace Apache
         return (TypeRegistry::CreateNewObjectArrayDelegate^)dynam->CreateDelegate(createNewObjectArrayDelegateType);
       }
 
+      void TypeRegistry::RegisterDataSerializablePrimitivesWrapNativeDeserialization()
+      {
+        // Register wrappers for primitive types
+        // Does not intercept deserialization
+
+        RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableByte::Create),
+          native::GeodeTypeIds::CacheableByte, SByte::typeid);
+
+        RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableBoolean::Create),
+          native::GeodeTypeIds::CacheableBoolean, Boolean::typeid);
+
+        RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableCharacter::Create),
+          native::GeodeTypeIds::CacheableCharacter, Char::typeid);
+
+        RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableDouble::Create),
+          native::GeodeTypeIds::CacheableDouble, Double::typeid);
+
+        RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableString::Create),
+          native::GeodeTypeIds::CacheableASCIIString, String::typeid);
+
+        RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableFloat::Create),
+          native::GeodeTypeIds::CacheableFloat, float::typeid);
+
+        RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableInt16::Create),
+          native::GeodeTypeIds::CacheableInt16, Int16::typeid);
+
+        RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableInt32::Create),
+          native::GeodeTypeIds::CacheableInt32, Int32::typeid);
+
+        RegisterDataSerializablePrimitiveWrapper(
+          gcnew DataSerializablePrimitiveWrapperDelegate(CacheableInt64::Create),
+          native::GeodeTypeIds::CacheableInt64, Int64::typeid);
+      }
 
     }  // namespace Client
   }  // namespace Geode
