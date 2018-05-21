@@ -77,8 +77,7 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void BuiltInSerializableTypes()
         {
-            var region = Cache.CreateRegionFactory(RegionShortcut.PROXY)
-                              .Create<object, object>("testRegion");
+            var region = Cache.GetRegion<object, object>("testRegion");
             Assert.NotNull(region);
 
             putAndCheck(region, "CacheableString", "foo");
