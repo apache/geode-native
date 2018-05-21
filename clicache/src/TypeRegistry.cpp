@@ -537,6 +537,10 @@ namespace Apache
           {
             return safe_cast<TValue>(Struct::Create(val));
           }
+          case native::GeodeTypeIds::CacheableUndefined:
+          {
+            return safe_cast<TValue>(CacheableUndefined::Create());
+          }
           default:
             break;
           }
