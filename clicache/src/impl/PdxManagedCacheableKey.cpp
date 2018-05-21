@@ -46,6 +46,8 @@ namespace apache
       {
         try
         {
+          output.write(static_cast<int8_t>(GeodeTypeIdsImpl::PDX));
+
           System::UInt32 pos = (int)output.getBufferLength();
           auto cache = CacheResolver::Lookup(output.getCache());
           Apache::Geode::Client::DataOutput mg_output(&output, true, cache);

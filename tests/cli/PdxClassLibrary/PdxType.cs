@@ -25,7 +25,7 @@ using Apache.Geode.Client.Internal;
 namespace PdxTests
 {
 
-  public enum pdxEnumTest { pdx1, pdx2, pdx3};
+  public enum pdxEnumTest { pdx1, pdx2, pdx3 };
 
   public class Address : IPdxSerializable
   {
@@ -37,7 +37,7 @@ namespace PdxTests
     { }
     public override string ToString()
     {
-      return _aptNumber + " :"  + _street + " : "+ _city;
+      return _aptNumber + " :" + _street + " : " + _city;
     }
     public Address(int aptN, string street, string city)
     {
@@ -63,7 +63,7 @@ namespace PdxTests
     }
     public override int GetHashCode()
     {
-        return base.GetHashCode();
+      return base.GetHashCode();
     }
 
     #region IPdxSerializable Members
@@ -127,7 +127,7 @@ namespace PdxTests
     string[] m_stringArray;
 
     List<object> m_arraylist = new List<object>();
-    IDictionary<object, object> m_map = new Dictionary<object, object>();    
+    IDictionary<object, object> m_map = new Dictionary<object, object>();
     Hashtable m_hashtable = new Hashtable();
     ArrayList m_vector = new ArrayList();
 
@@ -138,7 +138,7 @@ namespace PdxTests
     byte[] m_byte253 = new byte[253];
     byte[] m_byte65535 = new byte[65535];
     byte[] m_byte65536 = new byte[65536];
-    //pdxEnumTest m_pdxEnum = pdxEnumTest.pdx2;
+    pdxEnumTest m_pdxEnum = pdxEnumTest.pdx2;
 
     Address[] m_address;
     List<object> m_objectArray = new List<object>();
@@ -165,7 +165,7 @@ namespace PdxTests
 
       m_charArray = new char[] { 'c', 'v' };
 
-      DateTime n = new DateTime((62135596800000/*epoch*/ + 1310447869154 ) * 10000, DateTimeKind.Utc);
+      DateTime n = new DateTime((62135596800000/*epoch*/ + 1310447869154) * 10000, DateTimeKind.Utc);
       m_dateTime = n.ToLocalTime();
 
       Console.WriteLine(m_dateTime.Ticks);
@@ -183,7 +183,7 @@ namespace PdxTests
       m_doubleArray = new double[] { 23423432d, 4324235435d };
 
       m_byteByteArray = new byte[][]{new byte[] {0x23},
-                                             new byte[]{0x34, 0x55}   
+                                             new byte[]{0x34, 0x55}
                                               };
 
       m_stringArray = new string[] { "one", "two" };
@@ -210,7 +210,7 @@ namespace PdxTests
       m_clhs.Add(1);
       m_clhs.Add(2);
 
-      //m_pdxEnum = pdxEnumTest.pdx2;
+      m_pdxEnum = pdxEnumTest.pdx2;
 
       m_address = new Address[10];
 
@@ -223,7 +223,7 @@ namespace PdxTests
       for (int i = 0; i < 10; i++)
       {
         m_objectArray.Add(new Address(i + 1, "street" + i.ToString(), "city" + i.ToString()));
-      }      
+      }
     }
 
     public PdxType()
@@ -632,13 +632,13 @@ namespace PdxTests
     {
       if (b.Equals(b2))
         return b;
-      throw new IllegalStateException("Not got expected value for type: " + b2.GetType().ToString() + " : values " + b.ToString() +  ": "  + b2.ToString());
+      throw new IllegalStateException("Not got expected value for type: " + b2.GetType().ToString() + " : values " + b.ToString() + ": " + b2.ToString());
     }
     public override bool Equals(object obj)
     {
       if (obj == null)
         return false;
-      
+
       PdxType other = obj as PdxType;
       if (other == null)
         return false;
@@ -710,8 +710,8 @@ namespace PdxTests
 
       if (m_byte65536.Length != 65536 && other.m_byte65536.Length != 65536)
         throw new Exception("Array len 65536 not found");
-      //if(m_pdxEnum != other.m_pdxEnum)
-      //  throw new Exception("pdx enum is not equal");
+      if (m_pdxEnum != other.m_pdxEnum)
+        throw new Exception("pdx enum is not equal");
 
       {
         for (int i = 0; i < m_address.Length; i++)
@@ -726,12 +726,12 @@ namespace PdxTests
         if (!m_objectArray[i].Equals(other.m_objectArray[i]))
           return false;
       }
-        return true;
+      return true;
     }
 
     public override int GetHashCode()
     {
-        return base.GetHashCode();
+      return base.GetHashCode();
     }
     public void FromData(IPdxReader reader)
     {
@@ -854,9 +854,9 @@ namespace PdxTests
       if (ret.Length != 65536)
         throw new Exception("Array len 65536 not found");
 
-      //pdxEnumTest retenum = (pdxEnumTest)reader.ReadObject("m_pdxEnum");
-      //if (retenum != m_pdxEnum)
-      //  throw new Exception("Enum is not equal");
+      pdxEnumTest retenum = (pdxEnumTest)reader.ReadObject("m_pdxEnum");
+      if (retenum != m_pdxEnum)
+        throw new Exception("Enum is not equal");
       //byte[] m_byte252 = new byte[252];
       //byte[] m_byte253 = new byte[253];
       //byte[] m_byte65535 = new byte[65535];
@@ -878,8 +878,8 @@ namespace PdxTests
 
       List<object> retoa = reader.ReadObjectArray("m_objectArray");
       for (int i = 0; i < m_objectArray.Count; i++)
-      { 
-        if(!m_objectArray[i].Equals(retoa[i]))
+      {
+        if (!m_objectArray[i].Equals(retoa[i]))
           throw new Exception("Object array not mateched " + i);
       }
     }
@@ -905,7 +905,7 @@ namespace PdxTests
 
       writer.WriteObject("m_chs", m_chs);
       writer.WriteObject("m_clhs", m_clhs);
-      
+
       writer.WriteString("m_string", m_string);
       writer.WriteDate("m_dateTime", m_dateTime);
       writer.WriteDouble("m_double", m_double);
@@ -931,7 +931,7 @@ namespace PdxTests
       writer.WriteByteArray("m_byte253", m_byte253);
       writer.WriteByteArray("m_byte65535", m_byte65535);
       writer.WriteByteArray("m_byte65536", m_byte65536);
-      //writer.WriteObject("m_pdxEnum", m_pdxEnum);
+      writer.WriteObject("m_pdxEnum", m_pdxEnum);
       writer.WriteObject("m_address", m_address);
       writer.WriteObjectArray("m_objectArray", m_objectArray);
       //byte[] m_byte252 = new byte[252];
@@ -1110,7 +1110,7 @@ namespace PdxTests
 
     public pdxEnumTest PdxEnum
     {
-      get { return 0; }
+      get { return m_pdxEnum; }
     }
     public Address[] AddressArray
     {
