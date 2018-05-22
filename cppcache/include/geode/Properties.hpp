@@ -29,6 +29,7 @@
 #include <unordered_map>
 
 #include "internal/geode_globals.hpp"
+#include "internal/DataSerializablePrimitive.hpp"
 #include "internal/chrono/duration.hpp"
 #include "CacheableKey.hpp"
 
@@ -47,7 +48,8 @@ class CacheableString;
  * Contains a set of (key, value) pair properties with key being the name of
  * the property; value, the value of the property.
  */
-class APACHE_GEODE_EXPORT Properties : public DataSerializablePrimitive {
+class APACHE_GEODE_EXPORT Properties
+    : public internal::DataSerializablePrimitive {
  public:
   class Visitor {
    public:

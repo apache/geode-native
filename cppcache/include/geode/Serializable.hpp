@@ -89,15 +89,6 @@ class APACHE_GEODE_EXPORT Serializable {
 
 typedef Serializable Cacheable;
 
-class APACHE_GEODE_EXPORT DataSerializablePrimitive
-    : public virtual Serializable {
- public:
-  ~DataSerializablePrimitive() override = default;
-  virtual void toData(DataOutput &dataOutput) const = 0;
-  virtual void fromData(DataInput &dataInput) = 0;
-  virtual int8_t getDsCode() const = 0;
-};
-
 class APACHE_GEODE_EXPORT DataSerializableInternal
     : public virtual Serializable {
  public:

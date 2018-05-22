@@ -24,6 +24,7 @@
 #include <memory>
 
 #include "internal/geode_globals.hpp"
+#include "internal/DataSerializablePrimitive.hpp"
 #include "Serializable.hpp"
 #include "GeodeTypeIds.hpp"
 
@@ -43,7 +44,7 @@ class DataOutput;
 class Serializable;
 
 class APACHE_GEODE_EXPORT CacheableObjectArray
-    : public DataSerializablePrimitive,
+ : public internal::DataSerializablePrimitive,
       public std::vector<std::shared_ptr<Cacheable>> {
  public:
   void toData(DataOutput& output) const override;

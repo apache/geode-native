@@ -21,6 +21,7 @@
 #define GEODE_CACHEABLESTRING_H_
 
 #include "internal/geode_globals.hpp"
+#include "internal/DataSerializablePrimitive.hpp"
 #include "CacheableKey.hpp"
 #include "GeodeTypeIds.hpp"
 
@@ -35,8 +36,9 @@ namespace client {
  * Implement a immutable C string wrapper that can serve as a distributable
  * key object for caching as well as being a string value.
  */
-class APACHE_GEODE_EXPORT CacheableString : public DataSerializablePrimitive,
-                                            public CacheableKey {
+class APACHE_GEODE_EXPORT CacheableString
+    : public internal::DataSerializablePrimitive,
+      public CacheableKey {
  protected:
   std::string m_str;
   int8_t m_type;
