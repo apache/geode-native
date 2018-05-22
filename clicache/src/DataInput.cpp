@@ -678,9 +678,7 @@ namespace Apache
 
           if (ret != nullptr)
           {
-            Apache::Geode::Client::PdxWrapper^ pdxWrapper = dynamic_cast<Apache::Geode::Client::PdxWrapper^>(ret);
-
-            if (pdxWrapper != nullptr)
+            if (auto pdxWrapper = dynamic_cast<Apache::Geode::Client::PdxWrapper^>(ret))
             {
               return pdxWrapper->GetObject();
             }

@@ -32,57 +32,67 @@ namespace Apache
     namespace Client
     {
 
-        ref class PdxWrapper : IPdxSerializable
+      ref class PdxWrapper : IPdxSerializable
+      {
+      private:
+        Object^ m_object;
+      public:
+        PdxWrapper(Object^ object)
         {
-        private:
-          Object^ m_object;
-        public:
-          PdxWrapper(Object^ object)
-          {
-            m_object = object;
-          }
+          m_object = object;
+        }
           
-          Object^ GetObject()
-          {
-            return m_object;
-          }
+        Object^ GetObject()
+        {
+          return m_object;
+        }
 
-          virtual void ToData( IPdxWriter^ writer )
+        virtual void ToData( IPdxWriter^ writer )
+        {
+          auto pdxSerializer = writer->Cache->TypeRegistry->PdxSerializer;
+          if (!pdxSerializer->ToData(m_object, writer))
           {
-            auto cache = writer->Cache;
-            if(!cache->TypeRegistry->PdxSerializer->ToData(m_object, writer))
-              throw gcnew IllegalStateException("PdxSerilizer unable serialize data for type " + m_object->GetType());
+            throw gcnew IllegalStateException("PdxSerilizer unable serialize data for type " + m_object->GetType());
           }
+        }
           
-          virtual void FromData( IPdxReader^ reader )
+        virtual void FromData( IPdxReader^ reader )
+        {
+          auto pdxSerializer = reader->Cache->TypeRegistry->PdxSerializer;
+          if (auto className = dynamic_cast<String^>(m_object))
           {
-            String^ className = dynamic_cast<String^>(m_object);
-            auto pdxSerializer = reader->Cache->TypeRegistry->PdxSerializer;
-            if(className != nullptr)
-              m_object = pdxSerializer->FromData((String^)m_object, reader);
-            else
-              m_object = pdxSerializer->FromData(m_object->GetType()->FullName, reader);
-            if(m_object == nullptr)
-              throw gcnew IllegalStateException("PdxSerilizer unable de-serialize data for type " + m_object->GetType());           
+            m_object = pdxSerializer->FromData(className, reader);
+          }
+          else
+          {
+            m_object = pdxSerializer->FromData(m_object->GetType()->FullName, reader);
           }
 
-          virtual int GetHashCode()override 
+          if (m_object == nullptr)
           {
-            return m_object->GetHashCode();
+            throw gcnew IllegalStateException("PdxSerilizer unable de-serialize data for type " + m_object->GetType());
           }
+        }
 
-          virtual  bool Equals(Object^ obj)override
+        virtual int GetHashCode()override 
+        {
+          return m_object->GetHashCode();
+        }
+
+        virtual  bool Equals(Object^ obj)override
+        {
+          if(obj != nullptr)
           {
-            if(obj != nullptr)
+            if (auto pdxWrapper = dynamic_cast<PdxWrapper^>(obj))
             {
-              PdxWrapper^ pdxWrapper = dynamic_cast<PdxWrapper^>(obj);
-              if(pdxWrapper != nullptr)
-                return m_object->Equals(pdxWrapper->m_object);
-              return m_object->Equals(obj);
+              return m_object->Equals(pdxWrapper->m_object);
             }
-            return false;
+
+            return m_object->Equals(obj);
           }
-        };
+          return false;
+        }
+      };
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

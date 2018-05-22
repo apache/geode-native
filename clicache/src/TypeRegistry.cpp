@@ -561,7 +561,12 @@ namespace Apache
         }
         else if (auto pdxManagedCacheableKey = std::dynamic_pointer_cast<native::PdxManagedCacheableKey>(val))
         {
-          return safe_cast<TValue>(pdxManagedCacheableKey->ptr());
+          auto pdx = pdxManagedCacheableKey->ptr();
+          if (auto pdxWrapper = dynamic_cast<PdxWrapper^>(pdx))
+          {
+            return safe_cast<TValue>(pdxWrapper->GetObject());
+          }
+          return safe_cast<TValue>(pdx);
         }
         else
         {
