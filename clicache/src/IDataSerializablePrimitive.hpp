@@ -36,7 +36,7 @@ namespace Apache
       ref class DataOutput;
       ref class DataInput;
 
-      public interface class IDataSerializablePrimitive : public IGeodeSerializable
+      private interface class IDataSerializablePrimitive : public IGeodeSerializable
       {
         void ToData( DataOutput^ output );
 
