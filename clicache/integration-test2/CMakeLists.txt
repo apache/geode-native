@@ -56,7 +56,6 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
   VS_GLOBAL_PROJECT_TYPES "{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
   VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
   VS_DOTNET_REFERENCES "System;System.Xml;System.Web;System.Configuration"
-  VS_DOTNET_REFERENCE_PdxClassLibrary "${CMAKE_BINARY_DIR}/tests/cli/PdxClassLibrary/Debug/PdxClassLibrary.dll"
   VS_DOTNET_REFERENCE_Microsoft.VisualStudio.TestPlatform.TestFramework "${CMAKE_BINARY_DIR}/clicache/packages/Microsoft.VisualStudio.TestPlatform.14.0.0.1/lib/net20/Microsoft.VisualStudio.TestPlatform.TestFramework.dll"
   VS_DOTNET_REFERENCE_Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions "${CMAKE_BINARY_DIR}/clicache/packages/Microsoft.VisualStudio.TestPlatform.14.0.0.1/lib/net20/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll"
   VS_DOTNET_REFERENCE_xunit.core "${CMAKE_BINARY_DIR}/clicache/packages/xunit.extensibility.core.2.3.1/lib/netstandard1.1/xunit.core.dll"
