@@ -28,6 +28,7 @@
 #include <ace/Null_Mutex.h>
 
 #include <geode/internal/geode_globals.hpp>
+#include <geode/internal/DataSerializableInternal.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/PdxSerializer.hpp>
 #include <geode/GeodeTypeIds.hpp>

@@ -22,6 +22,7 @@
 
 #include <string>
 
+#include <geode/internal/DataSerializableInternal.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
@@ -35,7 +36,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT ServerLocation : public DataSerializableInternal {
+class APACHE_GEODE_EXPORT ServerLocation
+    : public internal::DataSerializableInternal {
  public:
   ServerLocation(std::string serverName, int port)
       : Serializable(), m_serverName(std::move(serverName)), m_port(port) {

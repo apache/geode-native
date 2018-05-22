@@ -89,15 +89,6 @@ class APACHE_GEODE_EXPORT Serializable {
 
 typedef Serializable Cacheable;
 
-class APACHE_GEODE_EXPORT DataSerializableInternal
-    : public virtual Serializable {
- public:
-  ~DataSerializableInternal() override = default;
-  virtual void toData(DataOutput &dataOutput) const = 0;
-  virtual void fromData(DataInput &dataInput) = 0;
-  virtual int8_t getInternalId() const = 0;
-};
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

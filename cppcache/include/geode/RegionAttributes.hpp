@@ -27,6 +27,7 @@
 #include <chrono>
 
 #include "internal/geode_globals.hpp"
+#include "internal/DataSerializableInternal.hpp"
 #include "CacheLoader.hpp"
 #include "ExpirationAttributes.hpp"
 #include "CacheWriter.hpp"
@@ -73,7 +74,8 @@ class AttributesMutator;
 class Cache;
 class Region;
 
-class APACHE_GEODE_EXPORT RegionAttributes : public DataSerializableInternal {
+class APACHE_GEODE_EXPORT RegionAttributes
+    : public internal::DataSerializableInternal {
   /**
    * @brief public static methods
    */

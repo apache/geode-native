@@ -21,6 +21,7 @@
 #define GEODE_CACHEABLETOKEN_H_
 
 #include <geode/internal/geode_globals.hpp>
+#include <geode/internal/DataSerializableInternal.hpp>
 #include <geode/Serializable.hpp>
 
 namespace apache {
@@ -31,7 +32,8 @@ class APACHE_GEODE_EXPORT CacheableToken;
 
 /** Implement a non-mutable int64_t wrapper that can serve as a distributable
  * key object for cacheing as well as being a 64 bit value. */
-class APACHE_GEODE_EXPORT CacheableToken : public DataSerializableInternal {
+class APACHE_GEODE_EXPORT CacheableToken
+    : public internal::DataSerializableInternal {
  private:
   enum TokenType { NOT_USED = 0, INVALID, DESTROYED, OVERFLOWED, TOMBSTONE };
 
@@ -43,7 +45,9 @@ class APACHE_GEODE_EXPORT CacheableToken : public DataSerializableInternal {
   static std::shared_ptr<CacheableToken> tombstoneToken;
 
  public:
-  inline static std::shared_ptr<CacheableToken>& invalid() { return invalidToken; }
+  inline static std::shared_ptr<CacheableToken>& invalid() {
+    return invalidToken;
+  }
   inline static std::shared_ptr<CacheableToken>& destroyed() {
     return destroyedToken;
   }
