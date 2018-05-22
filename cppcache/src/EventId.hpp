@@ -20,12 +20,13 @@
 #ifndef GEODE_EVENTID_H_
 #define GEODE_EVENTID_H_
 
+#include <string>
+
 #include <geode/internal/geode_globals.hpp>
-#include <geode/Serializable.hpp>
-#include "GeodeTypeIdsImpl.hpp"
+#include <geode/internal/DataSerializableFixedId.hpp>
 #include <geode/DataOutput.hpp>
 
-#include <string>
+#include "GeodeTypeIdsImpl.hpp"
 
 /** @file
  */
@@ -39,7 +40,7 @@ namespace client {
  * Sequence ID
  */
 class APACHE_GEODE_EXPORT EventId
-    : public DataSerializableFixedId_t<GeodeTypeIdsImpl::EventId> {
+    : public internal::DataSerializableFixedId_t<GeodeTypeIdsImpl::EventId> {
  private:
   char m_eidMem[512];
   int32_t m_eidMemLen;

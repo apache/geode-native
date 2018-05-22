@@ -27,6 +27,7 @@
 #include <geode/DataInput.hpp>
 #include <geode/Serializable.hpp>
 
+#include "geode/internal/DataSerializableFixedId.hpp"
 #include "MapWithLock.hpp"
 #include "HashMapOfException.hpp"
 #include "GeodeTypeIdsImpl.hpp"

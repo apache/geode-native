@@ -20,17 +20,19 @@
 #ifndef GEODE_GETALLSERVERSRESPONSE_H_
 #define GEODE_GETALLSERVERSRESPONSE_H_
 
+#include <geode/internal/DataSerializableFixedId.hpp>
 #include <geode/Serializable.hpp>
-#include "ServerLocation.hpp"
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 #include <vector>
+
+#include "ServerLocation.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class GetAllServersResponse : public DataSerializableFixedId_t<
+class GetAllServersResponse : public internal::DataSerializableFixedId_t<
                                   GeodeTypeIdsImpl::GetAllServersResponse> {
   std::vector<ServerLocation> m_servers;
 

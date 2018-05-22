@@ -24,6 +24,8 @@
 #include <geode/CacheableString.hpp>
 #include <geode/CacheableKey.hpp>
 
+#include "geode/internal/DataSerializableFixedId.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {

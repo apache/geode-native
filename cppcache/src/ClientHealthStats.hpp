@@ -22,6 +22,7 @@
 
 #include <geode/Serializable.hpp>
 #include <geode/CacheableDate.hpp>
+#include <geode/internal/DataSerializableFixedId.hpp>
 
 #include "util/Log.hpp"
 #include "GeodeTypeIdsImpl.hpp"
@@ -31,7 +32,7 @@ namespace geode {
 namespace client {
 
 class ClientHealthStats
-    : public DataSerializableFixedId_t<GeodeTypeIdsImpl::ClientHealthStats> {
+ : public internal::DataSerializableFixedId_t<GeodeTypeIdsImpl::ClientHealthStats> {
  public:
   void toData(DataOutput& output) const override;
 

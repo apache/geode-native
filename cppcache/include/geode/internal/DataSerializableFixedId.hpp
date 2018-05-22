@@ -17,42 +17,44 @@
 
 #pragma once
 
-#ifndef GEODE_GETALLSERVERSREQUEST_H_
-#define GEODE_GETALLSERVERSREQUEST_H_
+#ifndef GEODE_DATASERIALIZABLEFIXEDID_H_
+#define GEODE_DATASERIALIZABLEFIXEDID_H_
 
-#include <string>
-
-#include <geode/internal/DataSerializableFixedId.hpp>
-#include <geode/Serializable.hpp>
-#include <geode/DataInput.hpp>
-#include <geode/DataOutput.hpp>
-#include <geode/CacheableString.hpp>
-
-#include "GeodeTypeIdsImpl.hpp"
+#include "../Serializable.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class GetAllServersRequest : public internal::DataSerializableFixedId_t<
-                                 GeodeTypeIdsImpl::GetAllServersRequest> {
-  std::shared_ptr<CacheableString> m_serverGroup;
+class DataOutput;
+class DataInput;
 
+namespace internal {
+
+class APACHE_GEODE_EXPORT DataSerializableFixedId
+    : public virtual Serializable {
  public:
-  GetAllServersRequest(const std::string& serverGroup) : Serializable() {
-    m_serverGroup = CacheableString::create(serverGroup);
-  }
-  void toData(DataOutput& output) const override;
-  void fromData(DataInput& input) override;
+  ~DataSerializableFixedId() override = default;
 
-  size_t objectSize() const override {
-    return sizeof(GetAllServersRequest) + m_serverGroup->objectSize();
-  }
-  ~GetAllServersRequest() override = default;
+  virtual void toData(DataOutput &dataOutput) const = 0;
+
+  virtual void fromData(DataInput &dataInput) = 0;
+
+  virtual int32_t getDSFID() const = 0;
 };
 
+template <int32_t _DSFID>
+class APACHE_GEODE_EXPORT DataSerializableFixedId_t
+    : public DataSerializableFixedId {
+ public:
+  ~DataSerializableFixedId_t() override = default;
+
+  int32_t getDSFID() const final { return _DSFID; }
+};
+
+}  // namespace internal
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_GETALLSERVERSREQUEST_H_
+#endif  // GEODE_DATASERIALIZABLEFIXEDID_H_

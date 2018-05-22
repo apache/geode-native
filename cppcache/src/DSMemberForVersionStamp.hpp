@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_DSMEMBERFORVERSIONSTAMP_H_
-#define GEODE_DSMEMBERFORVERSIONSTAMP_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,13 +15,21 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/CacheableKey.hpp>
+#pragma once
+
+#ifndef GEODE_DSMEMBERFORVERSIONSTAMP_H_
+#define GEODE_DSMEMBERFORVERSIONSTAMP_H_
+
 #include <string>
+
+#include <geode/CacheableKey.hpp>
+
+#include "geode/internal/DataSerializableFixedId.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 class DSMemberForVersionStamp;
 
 class DSMemberForVersionStamp : public CacheableKey,
@@ -35,8 +38,8 @@ class DSMemberForVersionStamp : public CacheableKey,
   virtual int16_t compareTo(const DSMemberForVersionStamp& tagID) const = 0;
 
   virtual std::string getHashKey() = 0;
-
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

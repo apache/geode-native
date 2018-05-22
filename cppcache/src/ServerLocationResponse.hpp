@@ -20,13 +20,13 @@
 #ifndef GEODE_SERVERLOCATIONRESPONSE_H_
 #define GEODE_SERVERLOCATIONRESPONSE_H_
 
-#include <geode/Serializable.hpp>
+#include <geode/internal/DataSerializableFixedId.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class ServerLocationResponse : public DataSerializableFixedId {
+class ServerLocationResponse : public internal::DataSerializableFixedId {
  public:
   ServerLocationResponse() = default;
   ~ServerLocationResponse() override = default;

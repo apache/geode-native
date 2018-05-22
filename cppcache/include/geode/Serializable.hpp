@@ -89,24 +89,6 @@ class APACHE_GEODE_EXPORT Serializable {
 
 typedef Serializable Cacheable;
 
-class APACHE_GEODE_EXPORT DataSerializableFixedId
-    : public virtual Serializable {
- public:
-  ~DataSerializableFixedId() override = default;
-
-  virtual void toData(DataOutput &dataOutput) const = 0;
-  virtual void fromData(DataInput &dataInput) = 0;
-  virtual int32_t getDSFID() const = 0;
-};
-
-template <int32_t _DSFID>
-class APACHE_GEODE_EXPORT DataSerializableFixedId_t
-    : public DataSerializableFixedId {
- public:
-  ~DataSerializableFixedId_t() override = default;
-  int32_t getDSFID() const final { return _DSFID; }
-};
-
 class APACHE_GEODE_EXPORT DataSerializablePrimitive
     : public virtual Serializable {
  public:
