@@ -26,6 +26,7 @@
 #include "../end_native.hpp"
 
 #include "../IDataSerializable.hpp"
+#include "../IDataSerializablePrimitive.hpp"
 
 using namespace System;
 

@@ -20,7 +20,7 @@
 
 #include "geode_defs.hpp"
 #include "IGeodeSerializable.hpp"
-#include "ICacheableKey.hpp"
+#include "IDataSerializablePrimitive.hpp"
 #include "GeodeClassIds.hpp"
 
 using namespace System;

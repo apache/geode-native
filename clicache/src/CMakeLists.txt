@@ -117,6 +117,7 @@ add_library(${PROJECT_NAME} SHARED
   ICqResults.hpp
   ICqStatusListener.hpp
   IDataSerializable.hpp
+  IDataSerializablePrimitive.hpp
   IFixedPartitionResolver.hpp
   IGeodeCache.hpp
   IGeodeDelta.hpp

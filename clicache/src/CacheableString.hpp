@@ -25,6 +25,7 @@
 #include "end_native.hpp"
 
 #include "CacheableKey.hpp"
+#include "IDataSerializablePrimitive.hpp"
 
 using namespace System;
 

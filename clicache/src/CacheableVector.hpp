@@ -19,6 +19,7 @@
 
 
 #include "geode_defs.hpp"
+#include "IDataSerializablePrimitive.hpp"
 #include "IGeodeSerializable.hpp"
 #include "GeodeClassIds.hpp"
 

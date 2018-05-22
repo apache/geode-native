@@ -22,6 +22,7 @@
 #include "begin_native.hpp"
 #include <geode/internal/geode_globals.hpp>
 #include "end_native.hpp"
+#include "IGeodeSerializable.hpp"
 
 using namespace System;
 
@@ -34,50 +35,16 @@ namespace Apache
 
       ref class DataOutput;
       ref class DataInput;
-      ref class Serializable;
 
-      /// <summary>
-      /// This interface class is the superclass of all user objects 
-      /// in the cache that can be serialized.
-      /// </summary>
-      public interface class IGeodeSerializable
-      {
-      public:
-        /// <summary>
-        /// Get the size of this object in bytes.
-        /// This is only needed if you use the HeapLRU feature.
-        /// </summary>
-        /// <remarks>
-        /// Note that you can simply return zero if you are not using the HeapLRU feature.
-        /// </remarks>
-        /// <returns>the size of this object in bytes.</returns>
-        property System::UInt64 ObjectSize
-        {
-          System::UInt64 get( );
-        }
-
-        /// <summary>
-        /// Return a string representation of the object.
-        /// </summary>
-        String^ ToString( );
-      };
-
-      public interface class IDataSerializableInternal : public IGeodeSerializable
-      {
-        void ToData( DataOutput^ output );
-
-        void FromData( DataInput^ input );
-      };
-
-      public interface class IDataSerializableFixedId : public IGeodeSerializable
+      public interface class IDataSerializablePrimitive : public IGeodeSerializable
       {
         void ToData( DataOutput^ output );
 
         void FromData( DataInput^ input );
 
-        property Int32 DSFID
+        property int8_t DsCode
         {
-          Int32 get( );
+          int8_t get( );
         }
       };
 

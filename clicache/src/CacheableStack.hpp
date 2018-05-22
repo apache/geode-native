@@ -19,7 +19,7 @@
 
 
 #include "geode_defs.hpp"
-#include "IGeodeSerializable.hpp"
+#include "IDataSerializablePrimitive.hpp"
 
 
 using namespace System;
