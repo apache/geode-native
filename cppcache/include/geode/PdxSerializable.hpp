@@ -33,8 +33,6 @@ namespace client {
 
 class PdxReader;
 class PdxWriter;
-class DataInput;
-class DataOutput;
 
 class APACHE_GEODE_EXPORT PdxSerializable
     : public virtual Serializable,
