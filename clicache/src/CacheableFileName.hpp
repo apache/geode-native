@@ -22,6 +22,7 @@
 
 #include "geode_defs.hpp"
 #include "ICacheableKey.hpp"
+#include "IDataSerializable.hpp"
 
 
 using namespace System;

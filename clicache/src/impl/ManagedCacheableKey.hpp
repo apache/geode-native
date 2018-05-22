@@ -25,7 +25,7 @@
 #include <GeodeTypeIdsImpl.hpp>
 #include "../end_native.hpp"
 
-#include "../IGeodeSerializable.hpp"
+#include "../IDataSerializable.hpp"
 
 using namespace System;
 

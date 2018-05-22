@@ -25,6 +25,7 @@
 
 
 #include "DataOutput.hpp"
+#include "IDataSerializable.hpp"
 #include "IGeodeSerializable.hpp"
 #include "CacheableObjectArray.hpp"
 #include "impl/PdxHelper.hpp"

@@ -24,22 +24,9 @@
 #include "../begin_native.hpp"
 #include "../end_native.hpp"
 #include "../IGeodeDelta.hpp"
-#include "../IGeodeSerializable.hpp"
+#include "../IDataSerializable.hpp"
 
 using namespace System;
-
-namespace Apache
-{
-  namespace Geode
-  {
-    namespace Client
-    {
-      interface class IGeodeSerializable;
-      interface class IGeodeDelta;
-    }  // namespace Client
-  }  // namespace Geode
-}  // namespace Apache
-
 
 namespace apache
 {

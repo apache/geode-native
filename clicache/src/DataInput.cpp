@@ -36,6 +36,7 @@
 #include "CacheableIDentityHashMap.hpp"
 #include "CacheableDate.hpp"
 #include "CacheableObjectArray.hpp"
+#include "IDataSerializable.hpp"
 #include "Serializable.hpp"
 #include "impl/PdxHelper.hpp"
 #include "impl/PdxWrapper.hpp"
