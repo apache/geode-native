@@ -30,11 +30,31 @@ namespace client {
 class DataOutput;
 class DataInput;
 
+/**
+ * An interface for objects whose state can be written/read as primitive types.
+ */
 class APACHE_GEODE_EXPORT DataSerializable : public virtual Serializable {
  public:
   ~DataSerializable() override = default;
+
+  /**
+   * @brief serialize this object
+   **/
   virtual void toData(DataOutput &dataOutput) const = 0;
+
+  /**
+   * @brief deserialize this object.
+   **/
   virtual void fromData(DataInput &dataInput) = 0;
+
+  /**
+   * @brief Return the classId of the instance being serialized.
+   * This is used by deserialization to determine what instance
+   * type to create and deserialize into.
+   *
+   * The classId must be unique within an application suite.
+   * Using a negative value may result in undefined behavior.
+   */
   virtual int32_t getClassId() const = 0;
 };
 
