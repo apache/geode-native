@@ -35,6 +35,7 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Delta.hpp>
 #include <geode/PdxSerializable.hpp>
+#include <geode/DataSerializable.hpp>
 
 #include "util/concurrent/spinlock_mutex.hpp"
 #include "NonCopyable.hpp"

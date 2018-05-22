@@ -17,24 +17,29 @@
 
 #pragma once
 
-#ifndef GEODE_TESTOBJECT_TIMESTAMPEDOBJECT_H_
-#define GEODE_TESTOBJECT_TIMESTAMPEDOBJECT_H_
+#ifndef GEODE_DATASERIALIZABLE_H_
+#define GEODE_DATASERIALIZABLE_H_
 
-#include <geode/DataSerializable.hpp>
+#include "internal/geode_globals.hpp"
+#include "Serializable.hpp"
 
-#include "testobject_export.h"
+namespace apache {
+namespace geode {
+namespace client {
 
-namespace testobject {
+class DataOutput;
+class DataInput;
 
-using namespace apache::geode::client;
-using namespace testframework;
-
-class TESTOBJECT_EXPORT TimestampedObject : public DataSerializable {
+class APACHE_GEODE_EXPORT DataSerializable : public virtual Serializable {
  public:
-  virtual uint64_t getTimestamp() { return 0; }
-  virtual void resetTimestamp() {}
-  ~TimestampedObject() override = default;
+  ~DataSerializable() override = default;
+  virtual void toData(DataOutput &dataOutput) const = 0;
+  virtual void fromData(DataInput &dataInput) = 0;
+  virtual int32_t getClassId() const = 0;
 };
-}  // namespace testobject
 
-#endif  // GEODE_TESTOBJECT_TIMESTAMPEDOBJECT_H_
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
+
+#endif  // GEODE_DATASERIALIZABLE_H_

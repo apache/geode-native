@@ -27,6 +27,7 @@
 #include <string>
 
 #include <geode/CacheableString.hpp>
+#include <geode/DataSerializable.hpp>
 
 #include "testobject_export.h"
 

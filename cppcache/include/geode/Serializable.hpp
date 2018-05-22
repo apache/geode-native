@@ -20,10 +20,6 @@
 #ifndef GEODE_SERIALIZABLE_H_
 #define GEODE_SERIALIZABLE_H_
 
-/**
- * @file
- */
-
 #include <functional>
 #include <memory>
 #include <string>
@@ -56,46 +52,6 @@ using TypeFactoryMethodPdx = std::function<std::shared_ptr<PdxSerializable>()>;
  */
 class APACHE_GEODE_EXPORT Serializable {
  public:
-  //  /**
-  //   *@brief serialize this object
-  //   **/
-  //  virtual void toData(DataOutput& output) const = 0;
-  //
-  //  /**
-  //   *@brief deserialize this object.
-  //   **/
-  //  virtual void fromData(DataInput& input) = 0;
-  //
-  //  /**
-  //   *@brief Return the classId of the instance being serialized.
-  //   * This is used by deserialization to determine what instance
-  //   * type to create and deserialize into.
-  //   *
-  //   * The classId must be unique within an application suite.
-  //   * Using a negative value may result in undefined behavior.
-  //   */
-  //  virtual int32_t classId() const = 0;
-  //
-  //  /**
-  //   *@brief return the typeId byte of the instance being serialized.
-  //   * This is used by deserialization to determine what instance
-  //   * type to create and deserialize into.
-  //   *
-  //   * Note that this should not be overridden by custom implementations
-  //   * and is reserved only for builtin types.
-  //   */
-  //  virtual int8_t typeId() const;
-  //
-  //  /**
-  //   * @brief return the Data Serialization Fixed ID type.
-  //   * This is used to determine what instance type to create and deserialize
-  //   * into.
-  //   *
-  //   * Note that this should not be overridden by custom implementations
-  //   * and is reserved only for builtin types.
-  //   */
-  //  virtual int8_t DSFID() const;
-  //
   /**
    *@brief return the size in bytes of the instance being serialized.
    * This is used to determine whether the cache is using up more
@@ -132,14 +88,6 @@ class APACHE_GEODE_EXPORT Serializable {
 };
 
 typedef Serializable Cacheable;
-
-class APACHE_GEODE_EXPORT DataSerializable : public virtual Serializable {
- public:
-  ~DataSerializable() override = default;
-  virtual void toData(DataOutput &dataOutput) const = 0;
-  virtual void fromData(DataInput &dataInput) = 0;
-  virtual int32_t getClassId() const = 0;
-};
 
 class APACHE_GEODE_EXPORT DataSerializableFixedId
     : public virtual Serializable {

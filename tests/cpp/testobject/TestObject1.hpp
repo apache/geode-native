@@ -20,8 +20,10 @@
 #ifndef GEODE_TESTOBJECT_TESTOBJECT1_H_
 #define GEODE_TESTOBJECT_TESTOBJECT1_H_
 
-#include <geode/CacheableBuiltins.hpp>
 #include <string>
+
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/DataSerializable.hpp>
 
 #include "testobject_export.h"
 
