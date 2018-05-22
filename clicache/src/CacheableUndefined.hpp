@@ -19,6 +19,7 @@
 
 
 #include "geode_defs.hpp"
+#include "IDataSerializableFixedId.hpp"
 #include "IGeodeSerializable.hpp"
 #include "GeodeClassIds.hpp"
 #include "Log.hpp"

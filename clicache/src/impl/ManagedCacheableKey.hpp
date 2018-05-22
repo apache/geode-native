@@ -26,6 +26,7 @@
 #include "../end_native.hpp"
 
 #include "../IDataSerializable.hpp"
+#include "../IDataSerializableFixedId.hpp"
 #include "../IDataSerializablePrimitive.hpp"
 #include "../IDataSerializableInternal.hpp"
 

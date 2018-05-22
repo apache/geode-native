@@ -17,8 +17,10 @@
 
 #pragma once
 
+#include "../IDataSerializableFixedId.hpp"
 #include "../IGeodeSerializable.hpp"
 #include "../GeodeClassIds.hpp"
+
 using namespace System;
 using namespace System::Collections::Generic;
 
