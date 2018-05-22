@@ -22,6 +22,7 @@ using namespace System;
 #include "../DataOutput.hpp"
 #include "../DataInput.hpp"
 #include "../GeodeClassIds.hpp"
+#include "../IDataSerializableInternal.hpp"
 
 namespace Apache
 {

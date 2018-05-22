@@ -27,6 +27,7 @@
 
 #include "../IDataSerializable.hpp"
 #include "../IDataSerializablePrimitive.hpp"
+#include "../IDataSerializableInternal.hpp"
 
 using namespace System;
 
