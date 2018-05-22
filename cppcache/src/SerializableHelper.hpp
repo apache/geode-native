@@ -50,15 +50,15 @@ struct SerializableHelper {
     auto lhsOut = cache.createDataOutput();
     auto rhsOut = cache.createDataOutput();
 
-    serialize(*lhsOut, lhs);
-    serialize(*rhsOut, rhs);
+    serialize(lhsOut, lhs);
+    serialize(rhsOut, rhs);
 
-    if (lhsOut->getBufferLength() != rhsOut->getBufferLength()) {
+    if (lhsOut.getBufferLength() != rhsOut.getBufferLength()) {
       return false;
     }
 
-    return memcmp(lhsOut->getBuffer(), rhsOut->getBuffer(),
-                  lhsOut->getBufferLength()) == 0;
+    return memcmp(lhsOut.getBuffer(), rhsOut.getBuffer(),
+                  lhsOut.getBufferLength()) == 0;
   }
 
   inline bool equalTo(CacheImpl& cache,

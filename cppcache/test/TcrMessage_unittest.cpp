@@ -311,8 +311,7 @@ TEST_F(TcrMessageTest, TcrMessageRegisterInterestListWithManyKeys) {
       CacheableString::create("mykey3"), CacheableString::create("mykey4")};
 
   TcrMessageRegisterInterestList message(
-      std::unique_ptr<DataOutputUnderTest>(new DataOutputUnderTest()),
-      static_cast<const Region *>(nullptr), keys,
+      new DataOutputUnderTest(), static_cast<const Region *>(nullptr), keys,
       false,  // isDurable
       false,  // isCacheingEnabled
       false,  // receiveValues

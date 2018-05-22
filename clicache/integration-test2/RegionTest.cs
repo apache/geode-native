@@ -22,7 +22,7 @@ using Xunit;
 namespace Apache.Geode.Client.IntegrationTests
 {
   [Trait("Category", "Integration")]
-  public class RegionTest : IDisposable
+  public class RegionTest
   {
 
     [Fact]
