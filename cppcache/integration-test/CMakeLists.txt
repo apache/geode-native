@@ -81,6 +81,12 @@ foreach(FILE ${SOURCES})
   add_executable(${TEST} ${FILE})
   set_target_properties(${TEST} PROPERTIES FOLDER test/cppTests)
 
+  if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU" AND ${USE_CPP_COVERAGE})
+      set_target_properties(${TEST}
+          PROPERTIES APPEND_STRING COMPILE_FLAGS "--coverage"
+                     APPEND_STRING LINK_FLAGS "--coverage")
+  endif()
+
   target_link_libraries(${TEST}
     PRIVATE
       ACE
