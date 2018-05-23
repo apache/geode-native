@@ -104,7 +104,11 @@ namespace Apache
 
           virtual void Put(TKey key, TValue value, Object^ callbackArg);
 
+          virtual void Put(TKey key, TValue value);
+
           virtual TValue Get(TKey key, Object^ callbackArg);
+
+          virtual TValue Get(TKey key);
 
           virtual void InvalidateRegion();
 
