@@ -4,9 +4,9 @@
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,8 @@ target_link_libraries(apache-geode-static
   PUBLIC
     _apache-geode
   PRIVATE
-    _WarningsAsError)
+    _WarningsAsError
+    _CppCodeCoverage)
 
 add_dependencies(client-libraries apache-geode-static)
 
@@ -38,7 +39,6 @@ source_group("Header Files" REGULAR_EXPRESSION "\.(hpp|inl)$")
 source_group("Configure In Files" FILES ${CONFIGURE_IN_FILES})
 source_group("Configure Out Files" FILES ${CONFIGURE_OUT_FILES})
 # END Visual Studio organization
-
 
 if (USE_PCH)
   set(_COTIRE_PREFIX_HEADER_IGNORE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})

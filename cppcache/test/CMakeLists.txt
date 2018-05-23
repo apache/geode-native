@@ -55,6 +55,7 @@ target_link_libraries(${PROJECT_NAME}
     GTest::Main
     Boost::boost
     _WarningsAsError
+    _CppCodeCoverage
 )
 
 target_include_directories(${PROJECT_NAME}
@@ -63,7 +64,6 @@ target_include_directories(${PROJECT_NAME}
 )
 
 add_dependencies(unit-tests ${PROJECT_NAME})
-
 
 enable_testing()
 add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
