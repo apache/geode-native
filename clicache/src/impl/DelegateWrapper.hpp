@@ -40,7 +40,7 @@ namespace Apache
       namespace native = apache::geode::client;
       /// <summary>
       /// Template class to wrap a managed <see cref="TypeFactoryMethod" />
-      /// delegate that returns an <see cref="IGeodeSerializable" /> object. It contains
+      /// delegate that returns an <see cref="ISerializable" /> object. It contains
       /// a method that converts the managed object gotten by invoking the
       /// delegate to the native <c>apache::geode::client::Serializable</c> object
       /// (using the provided wrapper class constructor).

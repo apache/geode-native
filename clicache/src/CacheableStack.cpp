@@ -37,7 +37,7 @@ namespace Apache
     namespace Client
     {
 
-      // Region: IGeodeSerializable Members
+      // Region: ISerializable Members
 
       void CacheableStack::ToData(DataOutput^ output)
       {
@@ -76,7 +76,7 @@ namespace Apache
       {
         //TODO:
         /*System::UInt32 size = static_cast<System::UInt32> (sizeof(CacheableStack^));
-        for each (IGeodeSerializable^ val in this) {
+        for each (ISerializable^ val in this) {
         if (val != nullptr) {
         size += val->ObjectSize;
         }

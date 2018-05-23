@@ -404,13 +404,13 @@ namespace Apache
             * Factory function to register this class.
             * </summary>
             */                                                                   \
-            static IGeodeSerializable^ CreateDeserializable()                        \
+            static ISerializable^ CreateDeserializable()                        \
            {                                                                     \
            return gcnew m();                                       \
            }                                                                     \
            \
            internal:                                                               \
-           static IGeodeSerializable^ Create(std::shared_ptr<native::Serializable> obj)            \
+           static ISerializable^ Create(std::shared_ptr<native::Serializable> obj)            \
            {                                                                     \
            return (obj != nullptr ? gcnew m(obj) : nullptr);                   \
            }                                                                     \
@@ -467,13 +467,13 @@ namespace Apache
        * Factory function to register this class.
        * </summary>
        */                                                                   \
-       static IGeodeSerializable^ CreateDeserializable()                        \
+       static ISerializable^ CreateDeserializable()                        \
       {                                                                     \
       return gcnew m();                                                   \
       }                                                                     \
       \
             internal:                                                               \
-              static IGeodeSerializable^ Create(std::shared_ptr<native::Serializable> obj)            \
+              static ISerializable^ Create(std::shared_ptr<native::Serializable> obj)            \
       {                                                                     \
       return (obj != nullptr ? gcnew m(obj) : nullptr);                   \
       }                                                                     \
@@ -616,12 +616,12 @@ namespace Apache
           * Factory function to register this class.
           * </summary>
           */
-          static IGeodeSerializable^ CreateDeserializable()
+          static ISerializable^ CreateDeserializable()
           {
               return gcnew CacheableArray();
           }
         internal:
-          static IGeodeSerializable^ Create(std::shared_ptr<native::Serializable> obj)
+          static ISerializable^ Create(std::shared_ptr<native::Serializable> obj)
           {
               return (obj != nullptr ? gcnew CacheableArray(obj) : nullptr);
           }

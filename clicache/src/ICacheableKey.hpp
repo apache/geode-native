@@ -19,7 +19,7 @@
 
 
 #include "geode_defs.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 
 using namespace System;
 
@@ -44,7 +44,7 @@ namespace Apache
       /// and will not work correctly.
       /// </remarks>
       public interface class ICacheableKey
-        : public IGeodeSerializable
+        : public ISerializable
       {
       public:
 

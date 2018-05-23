@@ -19,7 +19,7 @@
 
 
 #include "geode_defs.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "GeodeClassIds.hpp"
 
 using namespace System;
@@ -41,7 +41,7 @@ namespace Apache
       /// [Serializable] attribute set or implements
       /// <see cref="System.Runtime.Serialization.ISerializable" /> interface.
       /// However, for better efficiency the latter should be avoided and the
-      /// user should implement <see cref="../../IGeodeSerializable" /> instead.
+      /// user should implement <see cref="../../ISerializable" /> instead.
       /// </para><para>
       /// The user must keep in mind that the rules that apply to runtime
       /// serialization would be the rules that apply to this class. For
@@ -52,7 +52,7 @@ namespace Apache
       /// </para>
       /// </remarks>
       public ref class CacheableObject
-        : public IGeodeSerializable
+        : public ISerializable
       {
       public:
         /// <summary>
@@ -133,7 +133,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableObject(nullptr);
         }

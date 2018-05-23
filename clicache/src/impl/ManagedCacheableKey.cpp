@@ -176,7 +176,7 @@ namespace apache
 
           ManagedCacheableKeyGeneric* tmp = const_cast<ManagedCacheableKeyGeneric*>(this);
           tmp->m_hashcode = ((Apache::Geode::Client::ICacheableKey^)
-                             (Apache::Geode::Client::IGeodeSerializable^)m_managedptr)
+                             (Apache::Geode::Client::ISerializable^)m_managedptr)
                              ->GetHashCode();
           return m_hashcode;
         }

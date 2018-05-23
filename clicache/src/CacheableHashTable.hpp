@@ -34,7 +34,7 @@ namespace Apache
     {
 
       /// <summary>
-      /// A mutable <c>ICacheableKey</c> to <c>IGeodeSerializable</c> hash table
+      /// A mutable <c>ICacheableKey</c> to <c>ISerializable</c> hash table
       /// that can serve as a distributable object for caching. This class
       /// extends .NET generic <c>Dictionary</c> class.
       /// </summary>
@@ -71,7 +71,7 @@ namespace Apache
         { }
 
 
-        // Region: IGeodeSerializable Members
+        // Region: ISerializable Members
 
         /// <summary>
         /// Returns the classId of the instance being serialized.
@@ -87,12 +87,12 @@ namespace Apache
           }
         }
 
-        // End Region: IGeodeSerializable Members
+        // End Region: ISerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableHashTable();
         }
@@ -106,7 +106,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ Create(Object^ hashtable)
+        static ISerializable^ Create(Object^ hashtable)
         {
           return gcnew CacheableHashTable(hashtable);
         }

@@ -40,7 +40,7 @@ namespace Apache
       /// This interface class is the superclass of all user objects 
       /// in the cache that can be serialized.
       /// </summary>
-      public interface class IGeodeSerializable
+      public interface class ISerializable
       {
       public:
         /// <summary>

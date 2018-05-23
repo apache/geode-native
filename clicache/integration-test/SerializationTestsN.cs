@@ -70,9 +70,9 @@ namespace Apache.Geode.Client.UnitTests
       base.EndTest();
     }
 
-    private IGeodeSerializable CreateOtherType(int i, int otherType)
+    private ISerializable CreateOtherType(int i, int otherType)
     {
-      IGeodeSerializable ot;
+      ISerializable ot;
       switch (otherType)
       {
         case OTHER_TYPE1: ot = new OtherType(i, i + 20000); break;
@@ -147,7 +147,7 @@ namespace Apache.Geode.Client.UnitTests
       IRegion<object, object> region = CacheHelper.GetVerifyRegion<object, object>(RegionNames[0]);
       for (int i = 0; i < n; i++)
       {
-        IGeodeSerializable ot = CreateOtherType(i, otherType);
+        ISerializable ot = CreateOtherType(i, otherType);
         region[i + 10] = ot;
       }
     }
@@ -158,7 +158,7 @@ namespace Apache.Geode.Client.UnitTests
       for (int i = 0; i < n; i++)
       {
         object val = region[i + 10];
-        IGeodeSerializable ot = CreateOtherType(i, otherType);
+        ISerializable ot = CreateOtherType(i, otherType);
         Assert.IsTrue(ot.Equals(val), "Found unexpected value");
       }
     }
@@ -501,7 +501,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType();
     }
@@ -637,7 +637,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType2();
     }
@@ -775,7 +775,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType22();
     }
@@ -912,7 +912,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType4();
     }
@@ -1050,7 +1050,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType42();
     }
@@ -1188,7 +1188,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType43();
     }

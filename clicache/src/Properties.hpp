@@ -25,7 +25,7 @@
 #include "SerializationRegistry.hpp"
 #include "end_native.hpp"
 
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "ICacheableKey.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
@@ -46,7 +46,7 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
-      delegate void PropertyVisitor(Apache::Geode::Client::ICacheableKey^ key, Apache::Geode::Client::IGeodeSerializable^ value);
+      delegate void PropertyVisitor(Apache::Geode::Client::ICacheableKey^ key, Apache::Geode::Client::ISerializable^ value);
 
       generic <class TPropKey, class TPropValue>
       ref class PropertyVisitorProxy;
@@ -162,7 +162,7 @@ namespace Apache
         /// </returns>
         virtual String^ ToString( ) override;
 
-        // IGeodeSerializable members
+        // ISerializable members
 
         /// <summary>
         /// Serializes this Properties object.
@@ -218,7 +218,7 @@ namespace Apache
           return m_nativeptr->get_shared_ptr();
         }
 
-        inline static IGeodeSerializable^ CreateDeserializable()
+        inline static ISerializable^ CreateDeserializable()
         {
           return Create();
         }
@@ -243,7 +243,7 @@ namespace Apache
       ref class PropertyVisitorProxy
       {
       public:
-        void Visit(ICacheableKey^ key, IGeodeSerializable^ value)
+        void Visit(ICacheableKey^ key, ISerializable^ value)
         {
           auto tpkey = TypeRegistry::GetManagedValueGeneric<TPropKey>(std::shared_ptr<apache::geode::client::Serializable>(SafeMSerializableConvertGeneric(key)));
           auto tpvalue = TypeRegistry::GetManagedValueGeneric<TPropValue>(std::shared_ptr<apache::geode::client::Serializable>(SafeMSerializableConvertGeneric(value)));

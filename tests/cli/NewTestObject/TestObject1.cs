@@ -65,7 +65,7 @@ namespace Apache.Geode.Client.Tests
       output.WriteInt32(identifire);
     }
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new TestObject1();
     }

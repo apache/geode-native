@@ -151,7 +151,7 @@ namespace Apache.Geode.Client.Tests
                 return 101;
             }
         }
-        public static IGeodeSerializable CreateDeserializable()
+        public static ISerializable CreateDeserializable()
         {
             return new PSTObject();
         }

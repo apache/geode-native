@@ -174,7 +174,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       int numKeys = 0;
       string message;
-      IGeodeSerializable[] keys = CacheHelper.CurrentRegion.GetKeys();
+      ISerializable[] keys = CacheHelper.CurrentRegion.GetKeys();
       if (keys != null)
       {
         numKeys = keys.Length;

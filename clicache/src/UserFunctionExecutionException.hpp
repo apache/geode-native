@@ -26,7 +26,7 @@
 #include "end_native.hpp"
 
 #include "native_shared_ptr.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
 
@@ -44,10 +44,10 @@ namespace Apache
       /// UserFunctionExecutionException class is used to encapsulate geode sendException in case of Function execution. 
       /// </summary>
       public ref class UserFunctionExecutionException sealed
-        : public IGeodeSerializable
+        : public ISerializable
       {
       public:
-        // IGeodeSerializable members
+        // ISerializable members
 
         /// <summary>
         /// Serializes this object.
@@ -82,7 +82,7 @@ namespace Apache
         /// If this api is called from User code.
         /// </exception>
         /// <returns>classId of this class</returns>
-        /// <seealso cref="IGeodeSerializable.ClassId" />
+        /// <seealso cref="ISerializable.ClassId" />
         virtual property System::UInt32 ClassId
         {
           inline virtual System::UInt32 get()
@@ -104,7 +104,7 @@ namespace Apache
           virtual System::UInt64 get();
         }
 
-        // End: IGeodeSerializable members   
+        // End: ISerializable members   
 
         /// <summary>
         /// return as String the Exception message returned from geode sendException api.          

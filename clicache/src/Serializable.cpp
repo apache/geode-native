@@ -187,7 +187,7 @@ namespace Apache
       //  return (Apache::Geode::Client::Serializable^)CacheableStringArray::Create(value);
       //}
 
-      System::Int32 Serializable::GetPDXIdForType(native::Pool* pool, IGeodeSerializable^ pdxType, Cache^ cache)
+      System::Int32 Serializable::GetPDXIdForType(native::Pool* pool, ISerializable^ pdxType, Cache^ cache)
       {
         std::shared_ptr<native::Cacheable> kPtr(SafeMSerializableConvertGeneric(pdxType));
         return CacheRegionHelper::getCacheImpl(cache->GetNative().get())
@@ -195,7 +195,7 @@ namespace Apache
             ->GetPDXIdForType(pool, kPtr);
       }
 
-      IGeodeSerializable^ Serializable::GetPDXTypeById(native::Pool* pool, System::Int32 typeId, Cache^ cache)
+      ISerializable^ Serializable::GetPDXTypeById(native::Pool* pool, System::Int32 typeId, Cache^ cache)
       {        
         auto sPtr =  CacheRegionHelper::getCacheImpl(cache->GetNative().get())
             ->getSerializationRegistry()
@@ -383,7 +383,7 @@ namespace Apache
         }
       } //
       
-      std::shared_ptr<native::CacheableKey> Serializable::wrapIGeodeSerializable(IGeodeSerializable^ managedObject) {
+      std::shared_ptr<native::CacheableKey> Serializable::wrapIGeodeSerializable(ISerializable^ managedObject) {
         if (nullptr == managedObject) {
           return __nullptr;
         }

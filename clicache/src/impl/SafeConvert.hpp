@@ -52,9 +52,9 @@ namespace Apache
 
       /// <summary>
       /// Helper function to convert native <c>apache::geode::client::Serializable</c> object
-      /// to managed <see cref="IGeodeSerializable" /> object.
+      /// to managed <see cref="ISerializable" /> object.
       /// </summary>
-      inline static Apache::Geode::Client::IGeodeSerializable^
+      inline static Apache::Geode::Client::ISerializable^
         SafeUMSerializableConvertGeneric(std::shared_ptr<native::Serializable> serializableObject)
       {
         if (serializableObject == nullptr) return nullptr;
@@ -102,7 +102,7 @@ namespace Apache
       /// <para>
       /// Consider the scenario that we have both native objects of class
       /// <c>native::Serializable</c> and managed objects of class
-      /// <see cref="IGeodeSerializable" /> in a Region.
+      /// <see cref="ISerializable" /> in a Region.
       /// </para><para>
       /// The former would be passed wrapped inside the
       /// <see cref="Serializable" /> class.
@@ -154,12 +154,12 @@ namespace Apache
       }
 
       /// <summary>
-      /// Helper function to convert managed <see cref="IGeodeSerializable" />
+      /// Helper function to convert managed <see cref="ISerializable" />
       /// object to native <c>native::Serializable</c> object using
       /// <c>SafeM2UMConvert</c>.
       /// </summary>
       inline static native::Serializable* SafeMSerializableConvertGeneric(
-        Apache::Geode::Client::IGeodeSerializable^ mg_obj )
+        Apache::Geode::Client::ISerializable^ mg_obj )
       {
         //it is called for cacheables types  only
         if (auto dataSerializable = dynamic_cast<IDataSerializable^>(mg_obj))

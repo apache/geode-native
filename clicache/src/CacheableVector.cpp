@@ -35,7 +35,7 @@ namespace Apache
     namespace Client
     {
 
-      // Region: IGeodeSerializable Members
+      // Region: ISerializable Members
 
       void CacheableVector::ToData(DataOutput^ output)
       {
@@ -64,7 +64,7 @@ namespace Apache
       { 
         //TODO::
         /*System::UInt32 size = static_cast<System::UInt32> (sizeof(CacheableVector^));
-        for each (IGeodeSerializable^ val in this) {
+        for each (ISerializable^ val in this) {
           if (val != nullptr) {
             size += val->ObjectSize;
           }

@@ -192,8 +192,8 @@
 /// @file ICacheWriter.hpp
 /// Declares the ICacheWriter interface.
 
-/// @file IGeodeSerializable.hpp
-/// Declares the IGeodeSerializable interface.
+/// @file ISerializable.hpp
+/// Declares the ISerializable interface.
 
 /// @file ISelectResults.hpp
 /// Declares the ISelectResults interface.

@@ -94,7 +94,7 @@ namespace Apache.Geode.Client.Tests
         return 0x1E;
       }
     }
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new DeltaTestImpl();
     }

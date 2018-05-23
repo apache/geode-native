@@ -29,7 +29,7 @@ namespace Apache
     namespace Client
     {
 
-      // IGeodeSerializable methods
+      // ISerializable methods
 
       void UserFunctionExecutionException::ToData(DataOutput^ output)
       {

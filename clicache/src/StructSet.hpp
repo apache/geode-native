@@ -37,7 +37,7 @@ namespace Apache
     {
 
       namespace native = apache::geode::client;
-      interface class IGeodeSerializable;
+      interface class ISerializable;
 
       generic<class TResult>
       ref class SelectResultsIterator;
@@ -100,7 +100,7 @@ namespace Apache
         String^ GetFieldName( int32_t index );
 
 
-        // Region: IEnumerable<IGeodeSerializable^> Members
+        // Region: IEnumerable<ISerializable^> Members
 
         /// <summary>
         /// Returns an enumerator that iterates through the <c>StructSet</c>.
@@ -112,7 +112,7 @@ namespace Apache
         virtual System::Collections::Generic::IEnumerator<TResult>^
           GetEnumerator( );
 
-        // End Region: IEnumerable<IGeodeSerializable^> Members
+        // End Region: IEnumerable<ISerializable^> Members
 
 
       internal:

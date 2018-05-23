@@ -667,7 +667,7 @@ namespace Apache.Geode.Client.FwkLib
       ResetKey("distinctKeys");
       Int32 numKeys = GetUIntValue("distinctKeys");
       int clientNum = Util.ClientNum;
-      //IGeodeSerializable[] filterObj = new IGeodeSerializable[numKeys];
+      //ISerializable[] filterObj = new ISerializable[numKeys];
       Object[] filterObj = new Object[numKeys];
       try
       {
@@ -705,7 +705,7 @@ namespace Apache.Geode.Client.FwkLib
         {
           int clntId = Util.ClientNum;
           filterObj = new Object[1];
-          //filterObj = new IGeodeSerializable[1];
+          //filterObj = new ISerializable[1];
           Random rnd = new Random();
           //filterObj[0] = new CacheableString("KEY--" + clntId + "--" + rnd.Next(numKeys));
           filterObj[0] = "KEY--" + clntId + "--" + rnd.Next(numKeys);
@@ -755,7 +755,7 @@ namespace Apache.Geode.Client.FwkLib
             funcName = "RegionOperationsWithOutResultFunction";
         }
         //FwkInfo("ExecuteFunction - function name is{0} ", funcName);
-        //IGeodeSerializable[] executeFunctionResult = null;
+        //ISerializable[] executeFunctionResult = null;
         ICollection<object> executeFunctionResult = null;
         if(!isReplicate){
           if(getresult == true){
@@ -1051,11 +1051,11 @@ namespace Apache.Geode.Client.FwkLib
           // ICacheableKey<TKey>[]keys = region.GetKeys();
            ICollection<TKey> keys = region.GetLocalView().Keys;
                       
-           //IGeodeSerializable[] filterObj = new IGeodeSerializable[keys.Count];
+           //ISerializable[] filterObj = new ISerializable[keys.Count];
            Object[] filterObj = new Object[keys.Count];
            for (int i = 0; i < keys.Count; i++)
            {
-             //filterObj[i] = (IGeodeSerializable)keys;
+             //filterObj[i] = (ISerializable)keys;
              filterObj[i] = keys;
            }
            exc = exc.WithFilter(filterObj).WithCollector(myRC);

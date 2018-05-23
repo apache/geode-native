@@ -64,7 +64,7 @@ namespace Apache.Geode.Client.Tests
       output.WriteDouble(value);
     }
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new FastAsset();
     }

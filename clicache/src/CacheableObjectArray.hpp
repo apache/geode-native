@@ -19,7 +19,7 @@
 
 
 #include "geode_defs.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "GeodeClassIds.hpp"
 
 
@@ -34,13 +34,13 @@ namespace Apache
     {
 
       /// <summary>
-      /// A mutable <c>IGeodeSerializable</c> object array wrapper that can serve
+      /// A mutable <c>ISerializable</c> object array wrapper that can serve
       /// as a distributable object for caching. Though this class provides
       /// compatibility with java Object[] serialization, it provides the
       /// semantics of .NET generic <c>List</c> class.
       /// </summary>
       public ref class CacheableObjectArray
-        : public List<Object^>, public IGeodeSerializable
+        : public List<Object^>, public ISerializable
       {
       public:
         /// <summary>
@@ -96,7 +96,7 @@ namespace Apache
           return gcnew CacheableObjectArray(capacity);
         }
 
-        // Region: IGeodeSerializable Members
+        // Region: ISerializable Members
 
         /// <summary>
         /// Serializes this object.
@@ -138,12 +138,12 @@ namespace Apache
           }
         }
 
-        // End Region: IGeodeSerializable Members
+        // End Region: ISerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableObjectArray();
         }

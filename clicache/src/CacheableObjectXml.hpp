@@ -19,7 +19,7 @@
 
 
 #include "geode_defs.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "GeodeClassIds.hpp"
 
 using namespace System;
@@ -44,7 +44,7 @@ namespace Apache
       /// of the object (or implement the <see cref="System.Xml.Serialization.IXmlSerializable" />)
       /// to change the serialization/deserialization. However, the latter should
       /// be avoided for efficiency reasons and the user should implement
-      /// <see cref="../../IGeodeSerializable" /> instead.
+      /// <see cref="../../ISerializable" /> instead.
       /// </para><para>
       /// The user must keep in mind that the rules that apply to <c>XmlSerializer</c>
       /// would be the rules that apply to this class. For instance the user
@@ -55,7 +55,7 @@ namespace Apache
       /// </para>
       /// </remarks>
       public ref class CacheableObjectXml
-        : public IGeodeSerializable
+        : public ISerializable
       {
       public:
         /// <summary>
@@ -136,7 +136,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableObjectXml(nullptr);
         }

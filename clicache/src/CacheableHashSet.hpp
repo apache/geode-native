@@ -549,7 +549,7 @@ namespace Apache
           /// <summary>
           /// Factory function to register wrapper
           /// </summary>
-          static IGeodeSerializable^ Create(apache::geode::client::Serializable* obj)
+          static ISerializable^ Create(apache::geode::client::Serializable* obj)
           {
             return (obj != NULL ?
                     gcnew CacheableHashSetType<TYPEID, HSTYPE>(obj) : nullptr);
@@ -639,13 +639,13 @@ namespace Apache
        * Factory function to register this class.
        * </summary>
        */                                                                   \
-       static IGeodeSerializable^ CreateDeserializable()                        \
+       static ISerializable^ CreateDeserializable()                        \
       {                                                                     \
       return gcnew m();                                                   \
       }                                                                     \
       \
             internal:                                                               \
-              static IGeodeSerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj)            \
+              static ISerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj)            \
       {                                                                     \
       return gcnew m(obj);                                                \
       }                                                                     \

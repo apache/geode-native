@@ -66,7 +66,7 @@ namespace Apache.Geode.Client.UnitTests
           regionName + ": value of " + i.ToString());
       }
       ICacheableKey[] cKeys = region.GetKeys();
-      IGeodeSerializable[] cValues = region.GetValues();
+      ISerializable[] cValues = region.GetValues();
       Assert.AreEqual(num, cKeys.Length, "Number of keys in region is incorrect.");
       Assert.AreEqual(num, cValues.Length, "Number of values in region is incorrect.");
 

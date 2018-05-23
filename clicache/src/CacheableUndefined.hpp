@@ -20,7 +20,7 @@
 
 #include "geode_defs.hpp"
 #include "IDataSerializableFixedId.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "GeodeClassIds.hpp"
 #include "Log.hpp"
 
@@ -55,7 +55,7 @@ namespace Apache
           return gcnew CacheableUndefined();
         }
 
-        // Region: IGeodeSerializable Members
+        // Region: ISerializable Members
 
         /// <summary>
         /// Serializes this object.
@@ -97,12 +97,12 @@ namespace Apache
           }
         }
 
-        // End Region: IGeodeSerializable Members
+        // End Region: ISerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableUndefined();
         }

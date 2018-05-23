@@ -24,7 +24,7 @@
 #include "end_native.hpp"
 
 #include "native_shared_ptr.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "ExpirationAction.hpp"
 #include "DiskPolicyType.hpp"
 #include "GeodeClassIds.hpp"

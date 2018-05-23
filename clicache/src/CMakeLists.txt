@@ -123,7 +123,7 @@ add_library(${PROJECT_NAME} SHARED
   IFixedPartitionResolver.hpp
   IGeodeCache.hpp
   IGeodeDelta.hpp
-  IGeodeSerializable.hpp
+  ISerializable.hpp
   IPartitionResolver.hpp
   IPdxInstance.hpp
   IPdxInstanceFactory.hpp

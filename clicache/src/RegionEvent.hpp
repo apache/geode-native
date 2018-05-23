@@ -23,7 +23,7 @@
 #include <geode/RegionEvent.hpp>
 #include "end_native.hpp"
 
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "IRegion.hpp"
 #include "Region.hpp"
 

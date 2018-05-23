@@ -22,7 +22,7 @@
 #include "begin_native.hpp"
 #include <geode/internal/geode_globals.hpp>
 #include "end_native.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 
 using namespace System;
 
@@ -36,7 +36,7 @@ namespace Apache
       ref class DataOutput;
       ref class DataInput;
 
-      private interface class IDataSerializablePrimitive : public IGeodeSerializable
+      private interface class IDataSerializablePrimitive : public ISerializable
       {
         void ToData( DataOutput^ output );
 

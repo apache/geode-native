@@ -294,7 +294,7 @@ namespace Apache.Geode.Client.FwkLib
                 string query = QueryStatics.ResultSetParamQueries[index].Query;
                 FwkInfo("QueryTests.VerifyResultSet: Query Category [{0}]," +
                 " QueryString [{1}], NumSet [{2}].", category - 1, query, numSet);
-                //IGeodeSerializable[] paramList = new IGeodeSerializable[QueryStatics.NoOfQueryParam[index]];
+                //ISerializable[] paramList = new ISerializable[QueryStatics.NoOfQueryParam[index]];
                 object[] paramList = new object[QueryStatics.NoOfQueryParam[index]];
                 Int32 numVal = 0;
                 for (Int32 ind = 0; ind < QueryStatics.NoOfQueryParam[index]; ind++)

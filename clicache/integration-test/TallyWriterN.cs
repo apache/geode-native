@@ -178,8 +178,8 @@ namespace Apache.Geode.Client.UnitTests
       /*
         if (m_callbackArg != null)
         {
-          IGeodeSerializable callbkArg1 = ev.CallbackArgument as IGeodeSerializable;
-          IGeodeSerializable callbkArg2 = m_callbackArg as IGeodeSerializable;
+          ISerializable callbkArg1 = ev.CallbackArgument as ISerializable;
+          ISerializable callbkArg2 = m_callbackArg as ISerializable;
           if (callbkArg1 != null && callbkArg1.Equals(callbkArg2))
           {
             isCallbackCalled = true;

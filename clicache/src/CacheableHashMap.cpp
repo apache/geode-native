@@ -32,7 +32,7 @@ namespace Apache
     namespace Client
     {
 
-      // Region: IGeodeSerializable Members
+      // Region: ISerializable Members
 
       void Client::CacheableHashMap::ToData(DataOutput^ output)
       {

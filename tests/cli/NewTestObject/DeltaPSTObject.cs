@@ -113,7 +113,7 @@ namespace Apache.Geode.Client.Tests
     {
       return new DeltaPSTObject();
     }
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new DeltaPSTObject();
     }

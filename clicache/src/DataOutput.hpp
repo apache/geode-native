@@ -46,11 +46,11 @@ namespace Apache
       namespace native = apache::geode::client;
 
       ref class Cache;
-      interface class IGeodeSerializable;
+      interface class ISerializable;
 
       /// <summary>
       /// Provides operations for writing primitive data values, and
-      /// user-defined objects implementing IGeodeSerializable, to a byte stream.
+      /// user-defined objects implementing ISerializable, to a byte stream.
       /// This class is intentionally not thread safe.
       /// </summary>
       public ref class DataOutput sealed
@@ -220,7 +220,7 @@ namespace Apache
         /// Write a <c>Serializable</c> object to the <c>DataOutput</c>.
         /// This is provided to conveniently pass primitive types (like string)
         /// that shall be implicitly converted to corresponding
-        /// <c>IGeodeSerializable</c> wrapper types.
+        /// <c>ISerializable</c> wrapper types.
         /// </summary>
         /// <param name="obj">The object to write.</param>
         void WriteObject( Object^ obj );
@@ -506,7 +506,7 @@ namespace Apache
           }
         }
 
-        void WriteObjectInternal( IGeodeSerializable^ obj );     
+        void WriteObjectInternal( ISerializable^ obj );     
 
         void WriteBytesToUMDataOutput();
         

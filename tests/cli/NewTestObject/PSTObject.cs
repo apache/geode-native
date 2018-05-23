@@ -79,7 +79,7 @@ namespace Apache.Geode.Client.Tests
       output.WriteBytes(valueData);
     }
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new PSTObject();
     }

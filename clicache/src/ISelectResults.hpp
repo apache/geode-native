@@ -24,7 +24,7 @@
 #include "end_native.hpp"
 
 
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 
 using namespace System;
 

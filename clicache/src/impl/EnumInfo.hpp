@@ -18,7 +18,7 @@
 #pragma once
 
 #include "../IDataSerializableFixedId.hpp"
-#include "../IGeodeSerializable.hpp"
+#include "../ISerializable.hpp"
 #include "../GeodeClassIds.hpp"
 
 using namespace System;
@@ -54,7 +54,7 @@ namespace Apache
             _hashcode = hashcode;
           }
 
-          static IGeodeSerializable^ CreateDeserializable()
+          static ISerializable^ CreateDeserializable()
           {
             return gcnew EnumInfo();
           }

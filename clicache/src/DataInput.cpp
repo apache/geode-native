@@ -757,7 +757,7 @@ namespace Apache
 
         bool isPdxDeserialization = m_ispdxDesrialization;
         m_ispdxDesrialization = false;//for nested objects
-        IGeodeSerializable^ newObj = createType();
+        ISerializable^ newObj = createType();
 
         if (auto dataSerializable = dynamic_cast<IDataSerializablePrimitive^>(newObj))
         {

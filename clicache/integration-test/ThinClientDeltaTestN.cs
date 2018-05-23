@@ -79,7 +79,7 @@ namespace Apache.Geode.Client.UnitTests
     private int m_valueCount;
   }
 
-  public class DeltaTestAD : IGeodeDelta, IGeodeSerializable
+  public class DeltaTestAD : IGeodeDelta, ISerializable
   {
     private int _deltaUpdate;
     private string _staticData;

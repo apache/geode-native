@@ -58,7 +58,7 @@ namespace Apache.Geode.Client.FwkLib
         expected = bbExpected;
       }
       Region testReg = CacheHelper.GetRegion(testRegionName);
-      IGeodeSerializable[] keys = testReg.GetKeys();
+      ISerializable[] keys = testReg.GetKeys();
       int keyCount = keys.Length;
       double diff = 0;
       if (keyCount > expected)
@@ -92,7 +92,7 @@ namespace Apache.Geode.Client.FwkLib
         {
           return;
         }
-        IGeodeSerializable[] keys = reg.GetKeys();
+        ISerializable[] keys = reg.GetKeys();
         int maxkeys = GetUIntValue("distinctKeys");
         int balanceEntries = GetUIntValue("balanceEntries");
         FwkInfo("After getrandomregion inside doentrytest Check 2 balance entries = {0}", balanceEntries);
@@ -704,7 +704,7 @@ namespace Apache.Geode.Client.FwkLib
       }
 
       ICacheableKey key;
-      IGeodeSerializable value;
+      ISerializable value;
 
       int entryPassCnt = 0;
       int entryFailCnt = 0;
@@ -768,7 +768,7 @@ namespace Apache.Geode.Client.FwkLib
       }
 
       ICacheableKey key;
-      IGeodeSerializable value;
+      ISerializable value;
 
       int entryPassCnt = 0;
       int entryFailCnt = 0;
@@ -939,7 +939,7 @@ namespace Apache.Geode.Client.FwkLib
 
       for (int i = 0; i < numKeys; ++i)
       {
-        IGeodeSerializable val = region.Get(keys[i]);
+        ISerializable val = region.Get(keys[i]);
 
         if (val.ToString() != values[i].ToString())
         {
@@ -967,7 +967,7 @@ namespace Apache.Geode.Client.FwkLib
 
       for (int i = 0; i < numKeys; ++i)
       {
-        IGeodeSerializable val = region.Get(keys[i]);         // get
+        ISerializable val = region.Get(keys[i]);         // get
 
         if (val.ToString() != values[i].ToString())
         {
@@ -1302,7 +1302,7 @@ namespace Apache.Geode.Client.FwkLib
         return;
       }
 
-      IGeodeSerializable anObj = randomRegion.Get(keyP);
+      ISerializable anObj = randomRegion.Get(keyP);
 
       int vsize = GetUIntValue("valueSizes");
       if (vsize < 0)
@@ -1622,7 +1622,7 @@ namespace Apache.Geode.Client.FwkLib
       }
 
       CacheableKey key = null;
-      IGeodeSerializable value = null;
+      ISerializable value = null;
 
       for (uint ulIndex = 0; ulIndex < ulKeysInRegion; ulIndex++)
       {

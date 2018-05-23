@@ -195,29 +195,29 @@ namespace Apache
         }
 
       internal:
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableString(GeodeTypeIds::CacheableASCIIString);
         }
 
-        static IGeodeSerializable^ createDeserializableHuge()
+        static ISerializable^ createDeserializableHuge()
         {
           return gcnew CacheableString(GeodeTypeIds::CacheableASCIIStringHuge);
         }
 
-        static IGeodeSerializable^ createUTFDeserializable()
+        static ISerializable^ createUTFDeserializable()
         {
           return gcnew CacheableString(GeodeTypeIds::CacheableString);
         }
 
-        static IGeodeSerializable^ createUTFDeserializableHuge()
+        static ISerializable^ createUTFDeserializableHuge()
         {
           return gcnew CacheableString(GeodeTypeIds::CacheableStringHuge);
         }
         /// <summary>
         /// Factory function to register wrapper
         /// </summary>
-        static IGeodeSerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj)
+        static ISerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj)
         {
           if (auto str = std::dynamic_pointer_cast<apache::geode::client::CacheableString>(obj)) {
             return gcnew CacheableString(str);

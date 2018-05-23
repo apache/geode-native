@@ -45,7 +45,7 @@ namespace Apache.Geode.Client.Tests
     private static string[] m_secIds = { "SUN", "IBM", "YHOO", "GOOG", "MSFT",
       "AOL", "APPL", "ORCL", "SAP", "DELL" };
 
-    private UInt64 GetObjectSize(IGeodeSerializable obj)
+    private UInt64 GetObjectSize(ISerializable obj)
     {
       return (obj == null ? 0 : obj.ObjectSize);
     }
@@ -262,7 +262,7 @@ namespace Apache.Geode.Client.Tests
       output.WriteUTF(m_status);
       output.WriteObject(m_names);
       output.WriteBytes(m_newVal);
-      //output.WriteObject((IGeodeSerializable)(object)m_creationDate); // VJR: TODO
+      //output.WriteObject((ISerializable)(object)m_creationDate); // VJR: TODO
       //output.WriteObject(CacheableDate.Create(m_creationDate));
       output.WriteDate(m_creationDate);
       output.WriteBytes(m_arrayNull);
@@ -299,7 +299,7 @@ namespace Apache.Geode.Client.Tests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new Portfolio();
     }

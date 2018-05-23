@@ -191,7 +191,7 @@ namespace Apache.Geode.Client.Tests
       }
       return clonePtr;
     }
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new DeltaFastAssetAccount();
     }

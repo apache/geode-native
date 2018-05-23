@@ -24,7 +24,7 @@
 #include <geode/CacheableBuiltins.hpp>
 #include "end_native.hpp"
 
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "IGeodeDelta.hpp"
 #include "native_shared_ptr.hpp"
 #include "impl/EnumInfo.hpp"
@@ -65,17 +65,17 @@ namespace Apache
       /// The delegate shall be stored in the internal <c>DelegateWrapper</c>
       /// class and an instance will be initialized in the
       /// <c>DelegateWrapper.NativeDelegate</c> method by a call to
-      /// <see cref="IGeodeSerializable.FromData" />.
+      /// <see cref="ISerializable.FromData" />.
       /// </summary>
-      public delegate Apache::Geode::Client::IGeodeSerializable^ TypeFactoryMethod();
+      public delegate Apache::Geode::Client::ISerializable^ TypeFactoryMethod();
       /// <summary>
       /// Delegate to wrap a native <c>native::Serializable</c> type.
       /// </summary>
       /// <remarks>
-      /// This delegate should return an object of type <c>IGeodeSerializable</c>
+      /// This delegate should return an object of type <c>ISerializable</c>
       /// given a native object.
       /// </remarks>
-      delegate Apache::Geode::Client::IGeodeSerializable^ DataSerializablePrimitiveWrapperDelegate(std::shared_ptr<native::Serializable> obj);
+      delegate Apache::Geode::Client::ISerializable^ DataSerializablePrimitiveWrapperDelegate(std::shared_ptr<native::Serializable> obj);
 
 			/// <summary>
       /// Signature of function delegates passed to
@@ -88,10 +88,10 @@ namespace Apache
       
       /// <summary>
       /// This class wraps the native C++ <c>native::Serializable</c> objects
-      /// as managed <see cref="IGeodeSerializable" /> objects.
+      /// as managed <see cref="ISerializable" /> objects.
       /// </summary>
       public ref class Serializable
-        : public Apache::Geode::Client::IGeodeSerializable
+        : public Apache::Geode::Client::ISerializable
       {
       public:        
         /// <summary>
@@ -201,7 +201,7 @@ namespace Apache
         ///// Implicit conversion operator from a 64-bit integer
         ///// to a <c>Serializable</c>.
         ///// </summary>
-        //static operator /*Apache::Geode::Client::*/Serializable^ (System::Int64 value);
+        //statIic operator /*Apache::Geode::Client::*/Serializable^ (System::Int64 value);
 
         ///// <summary>
         ///// Implicit conversion operator from a 64-bit integer array
@@ -222,9 +222,9 @@ namespace Apache
         //static operator Apache::Geode::Client::Serializable^ (array<String^>^ value);
 
       internal:
-        static std::shared_ptr<CacheableKey> wrapIGeodeSerializable(IGeodeSerializable^ managedObject);
-				static System::Int32 GetPDXIdForType(native::Pool* pool, IGeodeSerializable^ pdxType, Cache^ cache);
-				static IGeodeSerializable^ GetPDXTypeById(native::Pool* pool, System::Int32 typeId, Cache^ cache);
+        static std::shared_ptr<CacheableKey> wrapIGeodeSerializable(ISerializable^ managedObject);
+				static System::Int32 GetPDXIdForType(native::Pool* pool, ISerializable^ pdxType, Cache^ cache);
+				static ISerializable^ GetPDXTypeById(native::Pool* pool, System::Int32 typeId, Cache^ cache);
 				static void RegisterPDXManagedCacheableKey(Cache^ cache);
         
         static int GetEnumValue(Internal::EnumInfo^ ei, Cache^ cache);

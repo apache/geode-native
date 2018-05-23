@@ -29,7 +29,7 @@
 #include "AttributesMutator.hpp"
 #include "RegionEntry.hpp"
 #include "ISelectResults.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "ResultSet.hpp"
 #include "StructSet.hpp"
 #include "impl/AuthenticatedView.hpp"

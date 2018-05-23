@@ -37,7 +37,7 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
-      interface class IGeodeSerializable;
+      interface class ISerializable;
 
       generic<class TResult>
       ref class SelectResultsIterator;

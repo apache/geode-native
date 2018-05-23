@@ -43,7 +43,7 @@ namespace Apache
 
       ref class Cache;
       ref class CacheStatistics;
-      //interface class IGeodeSerializable;
+      //interface class ISerializable;
       interface class IRegionService;
 
       generic<class TResult>
@@ -924,7 +924,7 @@ namespace Apache
           /// </param>
           /// <param name="callbackArg">
           /// An argument passed into the CacheLoader if loader is used.
-          /// Has to be Serializable (i.e. implement <c>IGeodeSerializable</c>);
+          /// Has to be Serializable (i.e. implement <c>ISerializable</c>);
           /// can be null.
           /// </param>
           /// <returns>

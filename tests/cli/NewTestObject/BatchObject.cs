@@ -63,7 +63,7 @@ namespace Apache.Geode.Client.Tests
       DateTime startTime = DateTime.Now;
       timestamp = startTime.Ticks * (1000000 / TimeSpan.TicksPerMillisecond);
     }
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new BatchObject();
     }

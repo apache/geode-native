@@ -21,7 +21,7 @@
 #include "geode_defs.hpp"
 #include "IPdxWriter.hpp"
 #include "IPdxReader.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 
 namespace Apache
 {

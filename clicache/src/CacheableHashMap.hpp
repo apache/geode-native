@@ -19,7 +19,7 @@
 
 
 #include "geode_defs.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "IDataSerializablePrimitive.hpp"
 #include "GeodeClassIds.hpp"
 
@@ -37,7 +37,7 @@ namespace Apache
 			namespace native = apache::geode::client;
 
       /// <summary>
-      /// A mutable <c>ICacheableKey</c> to <c>IGeodeSerializable</c> hash map
+      /// A mutable <c>ICacheableKey</c> to <c>ISerializable</c> hash map
       /// that can serve as a distributable object for caching. This class
       /// extends .NET generic <c>Dictionary</c> class.
       /// </summary>
@@ -83,7 +83,7 @@ namespace Apache
         }
 
 
-        // Region: IGeodeSerializable Members
+        // Region: ISerializable Members
 
         /// <summary>
         /// Serializes this object.
@@ -133,12 +133,12 @@ namespace Apache
           }
         }
 
-        // End Region: IGeodeSerializable Members
+        // End Region: ISerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableHashMap();
         }

@@ -108,7 +108,7 @@ namespace Apache
         /// <summary>
         /// Register an instance factory method for a given type.
         /// This should be used when registering types that implement
-        /// IGeodeSerializable.
+        /// ISerializable.
         /// </summary>
         /// <param name="creationMethod">
         /// the creation function to register

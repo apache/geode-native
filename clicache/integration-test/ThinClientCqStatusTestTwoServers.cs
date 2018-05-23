@@ -69,7 +69,7 @@ namespace Apache.Geode.Client.UnitTests
       else
         m_eventCountBefore++;
 
-      //IGeodeSerializable val = ev.getNewValue();
+      //ISerializable val = ev.getNewValue();
       //ICacheableKey key = ev.getKey();
 
       TResult val = (TResult)ev.getNewValue();

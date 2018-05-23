@@ -816,7 +816,7 @@ namespace PdxTests
     int m_i4 = 73567;
 
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new PdxInsideIGeodeSerializable();
     }

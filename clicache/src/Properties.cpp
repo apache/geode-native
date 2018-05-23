@@ -50,7 +50,7 @@ namespace Apache
         inline PropertyToString( ) : m_str( "{" )
         { }
 
-        void Visit( Apache::Geode::Client::ICacheableKey^ key, IGeodeSerializable^ value )
+        void Visit( Apache::Geode::Client::ICacheableKey^ key, ISerializable^ value )
         {
           if ( m_str->Length > 1 ) {
             m_str += ",";
@@ -203,7 +203,7 @@ namespace Apache
 				return "";
       }
 
-      // IGeodeSerializable methods
+      // ISerializable methods
 
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::ToData( DataOutput^ output )

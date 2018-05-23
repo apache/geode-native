@@ -272,7 +272,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new TradeKey();
     }
@@ -867,7 +867,7 @@ namespace Apache.Geode.Client.UnitTests
     //  else {
     //    region0 = CacheHelper.CreateTCRegion(RegionNames[0], true, true, null, endpoints, true); //caching enable true
     //  }
-    //  Dictionary<ICacheableKey, IGeodeSerializable> values = new Dictionary<ICacheableKey, IGeodeSerializable>();
+    //  Dictionary<ICacheableKey, ISerializable> values = new Dictionary<ICacheableKey, ISerializable>();
     //  Dictionary<ICacheableKey, Exception> exceptions = new Dictionary<ICacheableKey, Exception>();
     //  resultKeys.Clear();
     //  try {

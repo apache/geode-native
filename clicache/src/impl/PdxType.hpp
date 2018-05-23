@@ -112,7 +112,7 @@ namespace Apache
             m_geodeTypeId = 0;
           }
 
-          static IGeodeSerializable^ CreateDeserializable()
+          static ISerializable^ CreateDeserializable()
           {
             return gcnew PdxType();
           }

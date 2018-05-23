@@ -62,7 +62,7 @@ namespace Apache
             gcnew CacheableFileName(value) : nullptr);
         }
 
-        // Region: IGeodeSerializable Members
+        // Region: ISerializable Members
 
         /// <summary>
         /// Serializes this object.
@@ -110,7 +110,7 @@ namespace Apache
           return m_str;
         }
 
-        // End Region: IGeodeSerializable Members
+        // End Region: ISerializable Members
 
         // Region: ICacheableKey Members
 
@@ -146,7 +146,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableFileName((String^)nullptr);
         }

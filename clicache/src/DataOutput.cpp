@@ -26,7 +26,7 @@
 
 #include "DataOutput.hpp"
 #include "IDataSerializable.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "CacheableObjectArray.hpp"
 #include "impl/PdxHelper.hpp"
 #include "impl/PdxWrapper.hpp"
@@ -429,12 +429,12 @@ namespace Apache
 
       /*void DataOutput::WriteObject( Object^ obj )
       {
-      WriteObjectInternal((IGeodeSerializable^)obj);
+      WriteObjectInternal((ISerializable^)obj);
       }*/
 
       /*void DataOutput::WriteObject( Object^ obj )
       {
-      WriteObject( (IGeodeSerializable^)obj );
+      WriteObject( (ISerializable^)obj );
       }*/
 
       int8_t DataOutput::GetTypeId(System::UInt32 classId)
@@ -673,7 +673,7 @@ namespace Apache
               return;
             }
 
-            IGeodeSerializable^ ct = dynamic_cast<IGeodeSerializable^>(obj);
+            ISerializable^ ct = dynamic_cast<ISerializable^>(obj);
             if (ct != nullptr) {
               WriteObjectInternal(ct);
               return;
@@ -708,7 +708,7 @@ namespace Apache
           WriteByte(-1);
       }
 
-      void DataOutput::WriteObjectInternal(IGeodeSerializable^ obj)
+      void DataOutput::WriteObjectInternal(ISerializable^ obj)
       {
         //CacheableKey^ key = gcnew CacheableKey();
         if (obj == nullptr) {

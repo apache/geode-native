@@ -38,13 +38,13 @@ namespace Apache
 
       namespace native = apache::geode::client;
 
-      interface class IGeodeSerializable;
+      interface class ISerializable;
 
       ref class Cache;
 
       /// <summary>
       /// Provides operations for reading primitive data values, byte arrays,
-      /// strings, <c>IGeodeSerializable</c> objects from a byte stream.
+      /// strings, <c>ISerializable</c> objects from a byte stream.
       /// </summary>
       public ref class DataInput sealed
       {

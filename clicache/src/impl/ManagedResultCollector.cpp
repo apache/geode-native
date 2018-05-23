@@ -19,10 +19,10 @@
 //#include "../../geode_includes.hpp"
 //#include "../../../geode_includes.hpp"
 #include "ManagedResultCollector.hpp"
-//#include "../../../IGeodeSerializable.hpp"
+//#include "../../../ISerializable.hpp"
 
 
-//#include "../IGeodeSerializable.hpp"
+//#include "../ISerializable.hpp"
 #include "ManagedString.hpp"
 #include "SafeConvert.hpp"
 #include "../ExceptionTypes.hpp"
@@ -164,11 +164,11 @@ namespace apache
       std::shared_ptr<CacheableVector> ManagedResultCollectorGeneric::getResult(std::chrono::milliseconds timeout)
       {
         try {
-          //array<IGeodeSerializable^>^ rs = m_managedptr->GetResult(timeout);
+          //array<ISerializable^>^ rs = m_managedptr->GetResult(timeout);
           //std::shared_ptr<apache::geode::client::CacheableVector> rsptr = apache::geode::client::CacheableVector::create();
           //for( int index = 0; index < rs->Length; index++ )
           //{
-          //  //std::shared_ptr<apache::geode::client::Cacheable> valueptr(Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<IGeodeSerializable^>(rs[ index]));
+          //  //std::shared_ptr<apache::geode::client::Cacheable> valueptr(Apache::Geode::Client::Serializable::GetUnmanagedValueGeneric<ISerializable^>(rs[ index]));
           //  std::shared_ptr<apache::geode::client::Cacheable> valueptr (SafeMSerializableConvert(rs[ index]));
           //  rsptr->push_back(valueptr);
           //}

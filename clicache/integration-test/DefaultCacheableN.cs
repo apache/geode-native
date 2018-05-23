@@ -251,7 +251,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new DefaultType();
     }

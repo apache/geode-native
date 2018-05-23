@@ -36,9 +36,9 @@ namespace apache
         using namespace Apache::Geode::Client;
         try {
           ICacheableKey^ mg_key(SafeGenericUMKeyConvert<ICacheableKey^>(key));
-          IGeodeSerializable^ mg_value(SafeUMSerializableConvertGeneric(value));
+          Apache::Geode::Client::ISerializable^ mg_value(SafeUMSerializableConvertGeneric(value));
 
-          m_visitor->Invoke(mg_key, (Apache::Geode::Client::IGeodeSerializable^)mg_value);
+          m_visitor->Invoke(mg_key, (Apache::Geode::Client::ISerializable^)mg_value);
         }
         catch (GeodeException^ ex) {
           ex->ThrowNative();

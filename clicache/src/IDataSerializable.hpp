@@ -22,7 +22,7 @@
 #include "begin_native.hpp"
 #include <geode/internal/geode_globals.hpp>
 #include "end_native.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 
 using namespace System;
 
@@ -36,7 +36,7 @@ namespace Apache
       ref class DataOutput;
       ref class DataInput;
 
-      public interface class IDataSerializable : public IGeodeSerializable
+      public interface class IDataSerializable : public ISerializable
       {
       public:
         /// <summary>
@@ -65,7 +65,7 @@ namespace Apache
         /// <remarks>
         /// The classId must be unique within an application suite
         /// and in the range 0 to ((2^31)-1) both inclusive. An application can
-        /// thus define upto 2^31 custom <c>IGeodeSerializable</c> classes.
+        /// thus define upto 2^31 custom <c>ISerializable</c> classes.
         /// Returning a value greater than ((2^31)-1) may result in undefined
         /// behaviour.
         /// </remarks>
