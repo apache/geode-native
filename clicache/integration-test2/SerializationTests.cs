@@ -107,7 +107,7 @@ namespace Apache.Geode.Client.IntegrationTests
             putAndCheck(region, "CacheableVector", new ArrayList() { "one", "two" });
             putAndCheck(region, "CacheableArrayList", new List<string>() { "one", "two" });
             putAndCheck(region, "CacheableLinkedList", new LinkedList<object>(new string[] { "one", "two" }));
-            // TODO serializable - ordering issue: putAndCheck(region, "CacheableStack", new Stack<object>(new string[] { "one", "two" }));
+            putAndCheck(region, "CacheableStack", new Stack<object>(new string[] { "one", "two" }));
 
             {
                 var cacheableHashSet = new CacheableHashSet();

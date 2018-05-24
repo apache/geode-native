@@ -44,7 +44,8 @@ namespace Apache
         if (m_stack != nullptr)
         {
           output->WriteArrayLen((System::Int32)m_stack->Count);
-          for each (Object^ obj in m_stack) {
+          auto stack = safe_cast<System::Collections::Generic::Stack<Object^>^>(m_stack);
+          for each (auto obj in Linq::Enumerable::Reverse(stack)) {
             output->WriteObject(obj);
           }
         }
@@ -56,13 +57,13 @@ namespace Apache
 
       void CacheableStack::FromData(DataInput^ input)
       {
-        int len = input->ReadArrayLen();
+        auto len = input->ReadArrayLen();
         if (len > 0)
         {
-          System::Collections::Generic::Stack<Object^>^ stack = safe_cast<System::Collections::Generic::Stack<Object^>^>(m_stack);
+          auto stack = safe_cast<System::Collections::Generic::Stack<Object^>^>(m_stack);
           for (int i = 0; i < len; i++)
           {
-            (stack)->Push(input->ReadObject());
+            stack->Push(input->ReadObject());
           }
         }
       }
