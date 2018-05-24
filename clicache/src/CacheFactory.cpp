@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+#include "begin_native.hpp"
+#include "CacheRegionHelper.hpp"
+#include "end_native.hpp"
 
 #include "ExceptionTypes.hpp"
 #include "CacheFactory.hpp"
@@ -26,6 +29,7 @@
 #include "impl/AppDomainContext.hpp"
 #include "impl/CacheResolver.hpp"
 #include "impl/ManagedAuthInitialize.hpp"
+#include "ManagedPdxTypeHandler.hpp"
 
 using namespace System;
 
@@ -70,7 +74,8 @@ namespace Apache
 
           DistributedSystem::ManagedPostConnect(cache);
           DistributedSystem::registerCliCallback();
-          Serializable::RegisterPDXManagedCacheableKey(cache);
+          auto&& cacheImpl = CacheRegionHelper::getCacheImpl(nativeCache.get());
+          cacheImpl->getSerializationRegistry()->setPdxTypeHandler(new ManagedPdxTypeHandler());
 
           return cache;
         _GF_MG_EXCEPTION_CATCH_ALL2

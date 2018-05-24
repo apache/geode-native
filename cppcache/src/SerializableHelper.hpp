@@ -85,6 +85,18 @@ inline bool SerializableHelper<DataSerializable>::metadataEqualTo(
   return lhs.getClassId() == rhs.getClassId();
 }
 
+template <>
+inline bool SerializableHelper<PdxSerializable>::equalTo(
+    CacheImpl& cache, const PdxSerializable& lhs, const PdxSerializable& rhs) {
+  return lhs == rhs;
+}
+
+template <>
+inline bool SerializableHelper<DataSerializableInternal>::metadataEqualTo(
+    const DataSerializableInternal& lhs, const DataSerializableInternal& rhs) {
+  return lhs.getInternalId() == rhs.getInternalId();
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

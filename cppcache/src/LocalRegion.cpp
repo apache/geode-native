@@ -1362,20 +1362,31 @@ class RemoveActions {
 
   bool serializedEqualTo(const std::shared_ptr<Cacheable>& lhs,
                          const std::shared_ptr<Cacheable>& rhs) {
+    auto&& cache = *(m_region.getCacheImpl());
+
     if (const auto dataSerializablePrimitive =
             std::dynamic_pointer_cast<DataSerializablePrimitive>(lhs)) {
       return SerializableHelper<DataSerializablePrimitive>{}.equalTo(
-          *(m_region.getCacheImpl()), dataSerializablePrimitive,
+          cache, dataSerializablePrimitive,
           std::dynamic_pointer_cast<DataSerializablePrimitive>(rhs));
     } else if (const auto dataSerializable =
                    std::dynamic_pointer_cast<DataSerializable>(lhs)) {
       return SerializableHelper<DataSerializable>{}.equalTo(
-          *(m_region.getCacheImpl()), dataSerializable,
+          cache, dataSerializable,
           std::dynamic_pointer_cast<DataSerializable>(rhs));
+    } else if (const auto pdxSerializable =
+                   std::dynamic_pointer_cast<PdxSerializable>(lhs)) {
+      return SerializableHelper<PdxSerializable>{}.equalTo(
+          cache, pdxSerializable,
+          std::dynamic_pointer_cast<PdxSerializable>(rhs));
+    } else if (const auto dataSerializableInternal =
+                   std::dynamic_pointer_cast<DataSerializableInternal>(lhs)) {
+      return SerializableHelper<DataSerializableInternal>{}.equalTo(
+          cache, dataSerializableInternal,
+          std::dynamic_pointer_cast<DataSerializableInternal>(rhs));
     } else {
       throw UnsupportedOperationException(
-          "SerializationRegistry::deserialize: Serialization type not "
-          "implemented.");
+          "Serialization type not implemented.");
     }
   }
 

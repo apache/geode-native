@@ -116,9 +116,7 @@ Cache CacheFactory::create() const {
       std::bind(DiskVersionTag::createDeserializable,
                 memberListForVersionStamp));
 
-  serializationRegistry->setPdxTypeHandler([](DataInput& dataInput) {
-    return PdxHelper::deserializePdx(dataInput, false);
-  });
+  serializationRegistry->setPdxTypeHandler(new PdxTypeHandler());
 
   pdxTypeRegistry->setPdxIgnoreUnreadFields(cache.getPdxIgnoreUnreadFields());
   pdxTypeRegistry->setPdxReadSerialized(cache.getPdxReadSerialized());

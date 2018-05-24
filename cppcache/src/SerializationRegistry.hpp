@@ -137,6 +137,19 @@ class TheTypeMap : private NonCopyable {
 
 class Pool;
 
+/**
+ * Used to register handlers for the PDX DsCode. .NET client extends this to
+ * intercept PDX (de)serialization.
+ */
+class PdxTypeHandler {
+ public:
+  virtual ~PdxTypeHandler() noexcept = default;
+  virtual void serialize(const PdxSerializable& pdxSerializable,
+                         DataOutput& dataOutput) const;
+  virtual std::shared_ptr<PdxSerializable> deserialize(
+      DataInput& dataInput) const;
+};
+
 class APACHE_GEODE_EXPORT SerializationRegistry {
  public:
   SerializationRegistry() : theTypeMap() {}
@@ -243,16 +256,14 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   std::shared_ptr<PdxSerializable> getPdxType(
       const std::string& className) const;
 
-  typedef std::function<std::shared_ptr<Serializable>(DataInput&)>
-      PdxTypeHandler;
-  void setPdxTypeHandler(const PdxTypeHandler& handler) {
-    this->pdxTypeHandler = handler;
+  void setPdxTypeHandler(PdxTypeHandler* handler) {
+    this->pdxTypeHandler = std::unique_ptr<PdxTypeHandler>(handler);
   }
 
  private:
+  std::unique_ptr<PdxTypeHandler> pdxTypeHandler;
   std::shared_ptr<PdxSerializer> pdxSerializer;
   TheTypeMap theTypeMap;
-  PdxTypeHandler pdxTypeHandler;
 
   inline void serialize(const DataSerializableFixedId* obj,
                         DataOutput& output) const {

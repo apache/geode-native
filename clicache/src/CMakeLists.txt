@@ -146,6 +146,7 @@ add_library(${PROJECT_NAME} SHARED
   LocalRegion.hpp
   Log.cpp
   Log.hpp
+  ManagedPdxTypeHandler.hpp
   native_conditional_shared_ptr.hpp
   native_conditional_unique_ptr.hpp
   native_shared_ptr.hpp

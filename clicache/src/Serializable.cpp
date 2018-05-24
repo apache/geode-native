@@ -217,17 +217,6 @@ namespace Apache
         return (Internal::EnumInfo^)SafeUMSerializableConvertGeneric(sPtr);
       }
 
-      void Serializable::RegisterPDXManagedCacheableKey(Cache^ cache)
-      {
-        auto cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
-        cacheImpl->getSerializationRegistry()->setPdxTypeHandler([](native::DataInput& dataInput){
-          auto obj = std::make_shared<native::PdxManagedCacheableKey>();
-          //ODO serializable pdx
-          obj->fromData(dataInput);
-          return obj;
-        });
-      }
-
       generic<class TKey>
       std::shared_ptr<native::CacheableKey> Serializable::GetUnmanagedValueGeneric(TKey key)
       {

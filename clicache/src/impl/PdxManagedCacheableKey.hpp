@@ -17,13 +17,14 @@
 
 #pragma once
 
-#include <geode/CacheableKey.hpp>
-#include <geode/Delta.hpp>
-#include <GeodeTypeIdsImpl.hpp>
 #include <vcclr.h>
 
 #include "../begin_native.hpp"
+#include <geode/CacheableKey.hpp>
+#include <geode/Delta.hpp>
+#include <GeodeTypeIdsImpl.hpp>
 #include "../end_native.hpp"
+
 #include "../geode_defs.hpp"
 #include "../IPdxSerializable.hpp"
 #include "../IGeodeDelta.hpp"
@@ -54,8 +55,7 @@ namespace apache
       /// object and implements the native <c>apache::geode::client::CacheableKey</c> interface.
       /// </summary>
       class PdxManagedCacheableKey
-        : public DataSerializableInternal,
-          public CacheableKey,
+        : public PdxSerializable,
           public Delta
       {
         public:
@@ -66,6 +66,7 @@ namespace apache
             Apache::Geode::Client::IPdxSerializable^ managedptr, int hashcode)
             :Delta(), m_managedptr(managedptr), m_objectSize(0) 
           {
+            m_className = marshal_as<std::string>(m_managedptr->GetType()->Name);
             m_hashcode = hashcode;
             m_managedDeltaptr = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(managedptr);
           }
@@ -78,20 +79,13 @@ namespace apache
           /// </param>
           inline PdxManagedCacheableKey(
             Apache::Geode::Client::IPdxSerializable^ managedptr)
-            : Delta(), m_managedptr(managedptr), m_objectSize(0) 
-          {
-            m_hashcode = 0; //it can be zero while initializing the object
-            m_managedDeltaptr = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(managedptr);
-          }
+            : PdxManagedCacheableKey(managedptr, 0) {}
 
-          int8_t getInternalId() const override
-          {
-            throw IllegalStateException("not implemented");
-          }
+          void toData(PdxWriter& output) const override;
 
-          void toData(DataOutput& output) const override;
+          void fromData(PdxReader& input) override;
 
-          void fromData(DataInput& input) override;
+          const std::string& getClassName() const override;
 
           void toDelta(DataOutput& output) const override;
 
@@ -127,6 +121,7 @@ namespace apache
         private:
           int m_hashcode;
           size_t m_objectSize;
+          std::string m_className;
 
           /// <summary>
           /// Using gcroot to hold the managed delegate pointer (since it cannot be stored directly).

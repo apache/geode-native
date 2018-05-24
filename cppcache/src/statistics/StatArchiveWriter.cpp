@@ -51,7 +51,6 @@ StatDataOutput::StatDataOutput(std::string filename, CacheImpl *cacheImpl) {
     throw IllegalArgumentException("undefined archive file name");
   }
 
-  SerializationRegistry serializationRegistry;
   dataBuffer = std::unique_ptr<DataOutput>(
       new DataOutput(cacheImpl->createDataOutput()));
   outFile = filename;
@@ -553,7 +552,8 @@ void StatArchiveWriter::allocateResourceInst(Statistics *s) {
 const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
   const auto type = s->getType();
   if (type == nullptr) {
-    throw NullPointerException("could not know the type of the statistics object");
+    throw NullPointerException(
+        "could not know the type of the statistics object");
   }
   const ResourceType *rt = nullptr;
   const auto p = resourceTypeMap.find(type);
@@ -562,7 +562,8 @@ const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
   } else {
     rt = new ResourceType(resourceTypeId, type);
     if (type == nullptr) {
-      throw NullPointerException("could not allocate memory for a new resourcetype");
+      throw NullPointerException(
+          "could not allocate memory for a new resourcetype");
     }
     resourceTypeMap.emplace(type, rt);
     // write the type to the archive
@@ -578,7 +579,8 @@ const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
       this->dataBuffer->writeUTF(statsName);
       StatisticDescriptorImpl *sdImpl = (StatisticDescriptorImpl *)stats[i];
       if (sdImpl == nullptr) {
-        throw NullPointerException("could not down cast to StatisticDescriptorImpl");
+        throw NullPointerException(
+            "could not down cast to StatisticDescriptorImpl");
       }
       this->dataBuffer->writeByte(static_cast<int8_t>(sdImpl->getTypeCode()));
       this->dataBuffer->writeBoolean(stats[i]->isCounter());

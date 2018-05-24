@@ -19,10 +19,10 @@
 
 #include "PdxManagedCacheableKey.hpp"
 
-#include <GeodeTypeIdsImpl.hpp>
-
 #include "../begin_native.hpp"
+#include <GeodeTypeIdsImpl.hpp>
 #include "../end_native.hpp"
+
 #include "../DataInput.hpp"
 #include "../DataOutput.hpp"
 #include "../CacheableString.hpp"
@@ -42,56 +42,14 @@ namespace apache
   {
     namespace client
     {
-      void PdxManagedCacheableKey::toData(apache::geode::client::DataOutput& output) const
+      void PdxManagedCacheableKey::toData(PdxWriter& output) const
       {
-        try
-        {
-          output.write(static_cast<int8_t>(GeodeTypeIdsImpl::PDX));
-
-          System::UInt32 pos = (int)output.getBufferLength();
-          auto cache = CacheResolver::Lookup(output.getCache());
-          Apache::Geode::Client::DataOutput mg_output(&output, true, cache);
-          Apache::Geode::Client::Internal::PdxHelper::SerializePdx(%mg_output, m_managedptr);
-
-          //this will move the cursor in c++ layer
-          mg_output.WriteBytesToUMDataOutput();
-          auto tmp = const_cast<PdxManagedCacheableKey*>(this);
-          tmp->m_objectSize = (int)(output.getBufferLength() - pos);
-        }
-        catch (Apache::Geode::Client::GeodeException^ ex)
-        {
-          ex->ThrowNative();
-        }
-        catch (System::Exception^ ex)
-        {
-          Apache::Geode::Client::GeodeException::ThrowNative(ex);
-        }
+        throw IllegalStateException("Should have been intercepted by ManagedPdxTypeHandler::serialize.");
       }
 
-      void PdxManagedCacheableKey::fromData(apache::geode::client::DataInput& input)
+      void PdxManagedCacheableKey::fromData(PdxReader& input)
       {
-        try
-        {
-          auto pos = input.getBytesRead();
-          auto cache = CacheResolver::Lookup(input.getCache());
-          Apache::Geode::Client::DataInput mg_input(&input, true, cache);
-
-          Apache::Geode::Client::IPdxSerializable^ tmp = Apache::Geode::Client::Internal::PdxHelper::DeserializePdx(%mg_input, false,  CacheRegionHelper::getCacheImpl(input.getCache())->getSerializationRegistry().get());
-          m_managedptr = tmp;
-          m_managedDeltaptr = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(tmp);
-
-          //this will move the cursor in c++ layer
-          input.advanceCursor(mg_input.BytesReadInternally);
-          m_objectSize = input.getBytesRead() - pos;
-        }
-        catch (Apache::Geode::Client::GeodeException^ ex)
-        {
-          ex->ThrowNative();
-        }
-        catch (System::Exception^ ex)
-        {
-          Apache::Geode::Client::GeodeException::ThrowNative(ex);
-        }
+        throw IllegalStateException("Should have been intercepted by ManagedPdxTypeHandler::deserialize.");
       }
 
       size_t PdxManagedCacheableKey::objectSize() const
@@ -128,6 +86,10 @@ namespace apache
         }
 
         return "";
+      }
+
+      const std::string& PdxManagedCacheableKey::getClassName() const {
+        return m_className;
       }
 
       bool PdxManagedCacheableKey::operator ==(const apache::geode::client::CacheableKey& other) const

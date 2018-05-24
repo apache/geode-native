@@ -225,7 +225,6 @@ namespace Apache
         static std::shared_ptr<CacheableKey> wrapIGeodeSerializable(ISerializable^ managedObject);
 				static System::Int32 GetPDXIdForType(native::Pool* pool, ISerializable^ pdxType, Cache^ cache);
 				static ISerializable^ GetPDXTypeById(native::Pool* pool, System::Int32 typeId, Cache^ cache);
-				static void RegisterPDXManagedCacheableKey(Cache^ cache);
         
         static int GetEnumValue(Internal::EnumInfo^ ei, Cache^ cache);
         static Internal::EnumInfo^ GetEnum(int val, Cache^ cache);

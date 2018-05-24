@@ -140,7 +140,7 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
           CacheableString::createDeserializable());
     }
     case GeodeTypeIdsImpl::PDX: {
-      return pdxTypeHandler(input);
+      return pdxTypeHandler->deserialize(input);
     }
     case GeodeTypeIds::CacheableEnum: {
       auto enumObject = CacheableEnum::create(" ", " ", 0);
@@ -230,9 +230,7 @@ void SerializationRegistry::deserialize(
                  std::dynamic_pointer_cast<PdxSerializable>(obj)) {
     deserialize(input, pdxSerializable);
   } else {
-    throw UnsupportedOperationException(
-        "SerializationRegistry::deserialize: Serialization type not "
-        "implemented.");
+    throw UnsupportedOperationException("Serialization type not implemented.");
   }
 }
 
@@ -270,7 +268,7 @@ void SerializationRegistry::deserialize(
 
 void SerializationRegistry::serializeWithoutHeader(const PdxSerializable* obj,
                                                    DataOutput& output) const {
-  PdxHelper::serializePdx(output, *obj);
+  pdxTypeHandler->serialize(*obj, output);
 }
 
 void SerializationRegistry::addType(TypeFactoryMethod func) {
@@ -523,6 +521,16 @@ void TheTypeMap::rebindPdxType(std::string objFullName,
 void TheTypeMap::unbindPdxType(const std::string& objFullName) {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(m_pdxTypemapLock);
   m_pdxTypemap->unbind(objFullName);
+}
+
+void PdxTypeHandler::serialize(const PdxSerializable& pdxSerializable,
+                               DataOutput& dataOutput) const {
+  PdxHelper::serializePdx(dataOutput, pdxSerializable);
+}
+
+std::shared_ptr<PdxSerializable> PdxTypeHandler::deserialize(
+    DataInput& dataInput) const {
+  return PdxHelper::deserializePdx(dataInput, false);
 }
 
 }  // namespace client
