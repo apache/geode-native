@@ -383,47 +383,14 @@ namespace Apache
       }
 
       //cacheable ascii string
-      String^ Serializable::getASCIIString(std::shared_ptr<native::Serializable> nativeptr)
+      String^ Serializable::getString(std::shared_ptr<native::Serializable> nativeptr)
       {
+        if (auto cacheableString = std::dynamic_pointer_cast<native::CacheableString>(nativeptr))
+        {
+          return marshal_as<String^>(cacheableString->value());
+        }
+
         return marshal_as<String^>(nativeptr->toString());
-      }
-
-      std::shared_ptr<native::CacheableKey> Serializable::getCacheableASCIIString(String^ val)
-      {
-        return GetCacheableString(val);
-      }
-
-      //cacheable ascii string huge
-      String^ Serializable::getASCIIStringHuge(std::shared_ptr<native::Serializable> nativeptr)
-      {
-        return marshal_as<String^>(nativeptr->toString());
-      }
-
-      std::shared_ptr<native::CacheableKey> Serializable::getCacheableASCIIStringHuge(String^ val)
-      {
-        return GetCacheableString(val);
-      }
-
-      //cacheable string
-      String^ Serializable::getUTFString(std::shared_ptr<native::Serializable> nativeptr)
-      {
-        return marshal_as<String^>(nativeptr->toString());
-      }
-
-      std::shared_ptr<native::CacheableKey> Serializable::getCacheableUTFString(String^ val)
-      {
-        return GetCacheableString(val);
-      }
-
-      //cacheable string huge
-      String^ Serializable::getUTFStringHuge(std::shared_ptr<native::Serializable> nativeptr)
-      {
-        return marshal_as<String^>(nativeptr->toString());
-      }
-
-      std::shared_ptr<native::CacheableKey> Serializable::getCacheableUTFStringHuge(String^ val)
-      {
-        return GetCacheableString(val);
       }
 
       std::shared_ptr<native::CacheableString> Serializable::GetCacheableString(String^ value)

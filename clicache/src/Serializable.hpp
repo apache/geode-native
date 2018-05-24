@@ -160,31 +160,9 @@ namespace Apache
         
         static std::shared_ptr<native::CacheableKey> getCacheableInt64(System::Int64 val);
         
-        //cacheable ascii string
-        static String^ getASCIIString(std::shared_ptr<native::Serializable> nativeptr);
-
-        static std::shared_ptr<native::CacheableKey> getCacheableASCIIString(String^ val);
-        
-        //cacheable ascii string huge
-        static String^ getASCIIStringHuge(std::shared_ptr<native::Serializable> nativeptr);
-        
-        static std::shared_ptr<native::CacheableKey> getCacheableASCIIStringHuge(String^ val);
-
-        //cacheable string
-        static String^ getUTFString(std::shared_ptr<native::Serializable> nativeptr);
-
-        static std::shared_ptr<native::CacheableKey> getCacheableUTFString(String^ val);
-        
-
-        //cacheable string huge
-        static String^ getUTFStringHuge(std::shared_ptr<native::Serializable> nativeptr);
-        
-
-        static std::shared_ptr<native::CacheableKey> getCacheableUTFStringHuge(String^ val);
-        
-
+        static String^ getString(std::shared_ptr<native::Serializable> nativeptr);
+                
         static std::shared_ptr<native::CacheableString> GetCacheableString(String^ value);
-
 
         static array<Byte>^ getSByteArray(array<SByte>^ sArray);
         

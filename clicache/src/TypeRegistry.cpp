@@ -501,8 +501,7 @@ namespace Apache
             case native::GeodeTypeIds::CacheableString:
             case native::GeodeTypeIds::CacheableStringHuge:
             {
-              //TODO serializable: need to look all strings types
-              return safe_cast<TValue>(Serializable::getASCIIString(dataSerializablePrimitive));
+              return safe_cast<TValue>(Serializable::getString(dataSerializablePrimitive));
             }
             case native::GeodeTypeIds::CacheableFloat:
             {
