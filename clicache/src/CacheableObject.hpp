@@ -66,28 +66,10 @@ namespace Apache
                   nullptr);
         }
 
-        /// <summary>
-        /// Serializes this <see cref="System.Object" /> using
-        /// <see cref="System.Runtime.Serialization.Formatters.Binary.BinaryFormatter" /> class.
-        /// </summary>
-        /// <param name="output">
-        /// the DataOutput object to use for serializing the object
-        /// </param>
         virtual void ToData(DataOutput^ output);
 
-        /// <summary>
-        /// Deserializes the <see cref="System.Object" /> using
-        /// <see cref="System.Runtime.Serialization.Formatters.Binary.BinaryFormatter" /> class.
-        /// </summary>
-        /// <param name="input">
-        /// the DataInput stream to use for reading the object data
-        /// </param>
-        /// <returns>the deserialized object</returns>
         virtual void FromData(DataInput^ input);
 
-        /// <summary>
-        /// return the size of this object in bytes
-        /// </summary>
         virtual property System::UInt64 ObjectSize
         {
           virtual System::UInt64 get();

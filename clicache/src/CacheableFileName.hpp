@@ -64,47 +64,20 @@ namespace Apache
 
         // Region: ISerializable Members
 
-        /// <summary>
-        /// Serializes this object.
-        /// </summary>
-        /// <param name="output">
-        /// the DataOutput object to use for serializing the object
-        /// </param>
-        virtual void ToData(DataOutput^ output);
+         virtual void ToData(DataOutput^ output);
 
-        /// <summary>
-        /// Deserialize this object, typical implementation should return
-        /// the 'this' pointer.
-        /// </summary>
-        /// <param name="input">
-        /// the DataInput stream to use for reading the object data
-        /// </param>
-        /// <returns>the deserialized object</returns>
         virtual void FromData(DataInput^ input);
 
-        /// <summary>
-        /// return the size of this object in bytes
-        /// </summary>
         virtual property System::UInt64 ObjectSize
         {
           virtual System::UInt64 get();
         }
 
-        /// <summary>
-        /// Returns the classId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        /// <returns>the classId</returns>
         virtual property int8_t DsCode
         {
           virtual int8_t get();
         }
 
-        /// <summary>
-        /// Return a string representation of the object.
-        /// This returns the same string as <c>Value</c> property.
-        /// </summary>
         virtual String^ ToString() override
         {
           return m_str;
