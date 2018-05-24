@@ -223,7 +223,7 @@ namespace apache
           {
             auto managedclone = dynamic_cast<Apache::Geode::Client::IPdxSerializable^>(cloneable->Clone());
 
-            return std::shared_ptr<Delta>(dynamic_cast<PdxManagedCacheableKey*>(SafeGenericM2UMConvert(managedclone)));
+            return std::shared_ptr<Delta>(dynamic_cast<PdxManagedCacheableKey*>(GetNativeWrapperForManagedObject(managedclone)));
           }
         }
         catch (Apache::Geode::Client::GeodeException^ ex)

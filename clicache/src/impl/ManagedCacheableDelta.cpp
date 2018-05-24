@@ -164,7 +164,7 @@ namespace apache
             auto Mclone = 
               dynamic_cast<Apache::Geode::Client::ISerializable^>(cloneable->Clone());
             return std::shared_ptr<Delta>(dynamic_cast<ManagedCacheableDeltaGeneric*>(
-              GetNativeWrapperForManagedISerializable(Mclone)));
+              GetNativeWrapperForManagedObject(Mclone)));
           }
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {

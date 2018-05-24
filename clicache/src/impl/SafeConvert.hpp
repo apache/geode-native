@@ -124,59 +124,33 @@ namespace Apache
         return safe_cast<TValue>(converted);
       }
 
-      inline static native::Serializable* GetNativeWrapperForManagedISerializable(
-        Apache::Geode::Client::ISerializable^ mg_obj )
+      inline static native::Serializable* GetNativeWrapperForManagedObject(Object^ managedObject)
       {
-        if (auto dataSerializablePrimitive = dynamic_cast<IDataSerializablePrimitive^>(mg_obj))
+        if (managedObject == nullptr) return __nullptr;
+
+        if (auto dataSerializablePrimitive = dynamic_cast<IDataSerializablePrimitive^>(managedObject))
         {
           return new native::ManagedDataSerializablePrimitive(dataSerializablePrimitive);
         }
-        else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(mg_obj))
+        else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(managedObject))
         {
           return GetNativeWrapperForManagedIDataSerializable(dataSerializable);
         }
-        else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(mg_obj))
+        else if (auto pdxSerializable = dynamic_cast<IPdxSerializable^>(managedObject))
+        {
+          // TODO serializable delta pdx
+          return new native::PdxManagedCacheableKey(pdxSerializable);
+        }
+        else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(managedObject))
         {
           return new native::ManagedDataSerializableFixedId(dataSerializableFixedId);
         }
-        else if (auto dataSerializableInternal = dynamic_cast<IDataSerializableInternal^>(mg_obj))
+        else if (auto dataSerializableInternal = dynamic_cast<IDataSerializableInternal^>(managedObject))
         {
           return new native::ManagedDataSerializableInternal(dataSerializableInternal);
         }
 
-        // TODO what about PDX?
-        throw gcnew IllegalStateException("Unknown serialization type.");
-      }
-
-      generic<class TValue>
-      inline static native::Cacheable* SafeGenericM2UMConvert( TValue mg_val)
-      {
-        if (mg_val == nullptr) return NULL;
-
-				Object^ mg_obj = (Object^)mg_val;
-
-        if(auto pdxType = dynamic_cast<IPdxSerializable^>(mg_obj))
-        {
-					return new native::PdxManagedCacheableKey(pdxType);
-        }
-      
-				// TODO serializable - PDX/Delta and DataSerializable/Delta should be supported
-        if(auto sDelta = dynamic_cast<IGeodeDelta^> (mg_obj))
-				{
-          return new native::ManagedCacheableDeltaGeneric(sDelta);
-        }
-
-        if(auto dataSerializable = dynamic_cast<IDataSerializable^>(mg_obj))
-				{
-					return new native::ManagedCacheableKeyGeneric(dataSerializable);
-				}
-
-				if(auto dataSerializablePrimitive = dynamic_cast<IDataSerializablePrimitive^>(mg_obj))
-				{
-					return new native::ManagedDataSerializablePrimitive(dataSerializablePrimitive);
-				}
-
-        return new native::PdxManagedCacheableKey(gcnew PdxWrapper(mg_obj));
+        return new native::PdxManagedCacheableKey(gcnew PdxWrapper(managedObject));
       }
 
       inline static IPdxSerializable^ SafeUMSerializablePDXConvert( std::shared_ptr<native::Serializable> obj )

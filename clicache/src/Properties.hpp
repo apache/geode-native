@@ -245,8 +245,8 @@ namespace Apache
       public:
         void Visit(ICacheableKey^ key, ISerializable^ value)
         {
-          auto tpkey = TypeRegistry::GetManagedValueGeneric<TPropKey>(std::shared_ptr<apache::geode::client::Serializable>(GetNativeWrapperForManagedISerializable(key)));
-          auto tpvalue = TypeRegistry::GetManagedValueGeneric<TPropValue>(std::shared_ptr<apache::geode::client::Serializable>(GetNativeWrapperForManagedISerializable(value)));
+          auto tpkey = TypeRegistry::GetManagedValueGeneric<TPropKey>(std::shared_ptr<apache::geode::client::Serializable>(GetNativeWrapperForManagedObject(key)));
+          auto tpvalue = TypeRegistry::GetManagedValueGeneric<TPropValue>(std::shared_ptr<apache::geode::client::Serializable>(GetNativeWrapperForManagedObject(value)));
           m_visitor->Invoke(tpkey, tpvalue);
 
           //m_visitor->Invoke(safe_cast<TPropKey>(key), safe_cast<TPropValue>(value));

@@ -94,7 +94,7 @@ namespace Apache
       // TODO serializable PdxType?
       System::Int32 Serializable::GetPDXIdForType(native::Pool* pool, ISerializable^ pdxType, Cache^ cache)
       {
-        std::shared_ptr<native::Cacheable> kPtr(GetNativeWrapperForManagedISerializable(pdxType));
+        std::shared_ptr<native::Cacheable> kPtr(GetNativeWrapperForManagedObject(pdxType));
         return CacheRegionHelper::getCacheImpl(cache->GetNative().get())
             ->getSerializationRegistry()
             ->GetPDXIdForType(pool, kPtr);
@@ -111,7 +111,7 @@ namespace Apache
       // TODO serializable directly convert to native wrapper?
       int Serializable::GetEnumValue(Internal::EnumInfo^ ei, Cache^ cache)
       {
-        std::shared_ptr<native::Cacheable> kPtr(GetNativeWrapperForManagedISerializable(ei));
+        std::shared_ptr<native::Cacheable> kPtr(GetNativeWrapperForManagedObject(ei));
         auto&& cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
         return cacheImpl->getSerializationRegistry()->GetEnumValue(cacheImpl->getDefaultPool(), kPtr);
       }
@@ -272,7 +272,7 @@ namespace Apache
         }
         default:
         {
-          std::shared_ptr<native::Cacheable> kPtr(SafeGenericM2UMConvert(key));
+          std::shared_ptr<native::Cacheable> kPtr(GetNativeWrapperForManagedObject(key));
           return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
         }
         }
@@ -282,7 +282,7 @@ namespace Apache
         if (nullptr == managedObject) {
           return __nullptr;
         }
-        auto wrappedObject = std::shared_ptr<native::Serializable>(GetNativeWrapperForManagedISerializable(managedObject));
+        auto wrappedObject = std::shared_ptr<native::Serializable>(GetNativeWrapperForManagedObject(managedObject));
         return std::dynamic_pointer_cast<native::CacheableKey>(wrappedObject);
       }
 
