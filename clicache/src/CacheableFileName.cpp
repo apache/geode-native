@@ -52,9 +52,9 @@ namespace Apache
         }
       }
 
-      System::UInt32 CacheableFileName::ClassId::get()
+      int8_t CacheableFileName::DsCode::get()
       {
-        return GeodeClassIds::CacheableFileName;
+        return native::GeodeTypeIds::CacheableFileName;
       }
 
       System::UInt64 CacheableFileName::ObjectSize::get()

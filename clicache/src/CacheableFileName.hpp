@@ -22,7 +22,7 @@
 
 #include "geode_defs.hpp"
 #include "ICacheableKey.hpp"
-#include "IDataSerializable.hpp"
+#include "IDataSerializablePrimitive.hpp"
 
 
 using namespace System;
@@ -40,7 +40,7 @@ namespace Apache
       /// </summary>
       public ref class CacheableFileName
         : public ICacheableKey,
-          public IDataSerializable
+          public IDataSerializablePrimitive
       {
       public:
         /// <summary>
@@ -96,9 +96,9 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        virtual property int8_t DsCode
         {
-          virtual System::UInt32 get();
+          virtual int8_t get();
         }
 
         /// <summary>
