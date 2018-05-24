@@ -17,11 +17,8 @@
 
 #pragma once
 
-
 #include "geode_defs.hpp"
-#include "ISerializable.hpp"
-#include "GeodeClassIds.hpp"
-
+#include "IDataSerializablePrimitive.hpp"
 
 using namespace System;
 using namespace System::Collections::Generic;
@@ -40,7 +37,7 @@ namespace Apache
       /// semantics of .NET generic <c>List</c> class.
       /// </summary>
       public ref class CacheableObjectArray
-        : public List<Object^>, public ISerializable
+        : public List<Object^>, public IDataSerializablePrimitive
       {
       public:
         /// <summary>
@@ -98,43 +95,20 @@ namespace Apache
 
         // Region: ISerializable Members
 
-        /// <summary>
-        /// Serializes this object.
-        /// </summary>
-        /// <param name="output">
-        /// the DataOutput object to use for serializing the object
-        /// </param>
         virtual void ToData(DataOutput^ output);
 
-        /// <summary>
-        /// Deserialize this object, typical implementation should return
-        /// the 'this' pointer.
-        /// </summary>
-        /// <param name="input">
-        /// the DataInput stream to use for reading the object data
-        /// </param>
-        /// <returns>the deserialized object</returns>
         virtual void FromData(DataInput^ input);
 
-        /// <summary>
-        /// return the size of this object in bytes
-        /// </summary>
-        virtual property System::UInt64 ObjectSize
+        property System::UInt64 ObjectSize
         {
           virtual System::UInt64 get();
         }
 
-        /// <summary>
-        /// Returns the classId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get()
+          virtual int8_t get()
           {
-            return GeodeClassIds::CacheableObjectArray;
+            return GeodeTypeIds::CacheableObjectArray;
           }
         }
 
