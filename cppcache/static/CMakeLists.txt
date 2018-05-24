@@ -41,8 +41,7 @@ source_group("Configure Out Files" FILES ${CONFIGURE_OUT_FILES})
 
 if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU" AND ${USE_CPP_COVERAGE})
     set_target_properties(${PROJECT_NAME}
-        PROPERTIES APPEND_STRING COMPILE_FLAGS "--coverage"
-                   APPEND_STRING LINK_FLAGS "--coverage")
+        PROPERTIES APPEND_STRING LINK_FLAGS "--coverage")
 endif()
 
 if (USE_PCH)

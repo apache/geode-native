@@ -49,8 +49,7 @@ set_target_properties(apache-geode PROPERTIES
 
 if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU" AND ${USE_CPP_COVERAGE})
     set_target_properties(${PROJECT_NAME}
-         PROPERTIES APPEND_STRING COMPILE_FLAGS "--coverage"
-                    APPEND_STRING LINK_FLAGS "--coverage")
+         PROPERTIES APPEND_STRING LINK_FLAGS "--coverage")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")

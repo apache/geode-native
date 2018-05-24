@@ -66,8 +66,7 @@ add_dependencies(unit-tests ${PROJECT_NAME})
 
 if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU" AND ${USE_CPP_COVERAGE})
     set_target_properties(${PROJECT_NAME}
-        PROPERTIES APPEND_STRING COMPILE_FLAGS "--coverage"
-                   APPEND_STRING LINK_FLAGS "--coverage")
+        PROPERTIES APPEND_STRING LINK_FLAGS "--coverage")
 endif()
 
 enable_testing()
