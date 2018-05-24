@@ -178,10 +178,6 @@ namespace Apache
           {
             System::UInt64 get(){ return 0; }
           }
-          virtual property System::UInt32 ClassId
-          {
-            System::UInt32 get(){ return GeodeClassIds::PdxType; }
-          }
           virtual String^ ToString() override
           {
             return "PdxType";

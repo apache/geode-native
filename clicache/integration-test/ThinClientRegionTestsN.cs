@@ -253,7 +253,7 @@ namespace Apache.Geode.Client.UnitTests
       output.WriteInt32(m_accountid);
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {

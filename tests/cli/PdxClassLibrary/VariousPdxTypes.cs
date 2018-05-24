@@ -852,7 +852,7 @@ namespace PdxTests
 
     #region IDataSerializable Members
 
-    public uint ClassId
+    public Int32 ClassId
     {
       get { return 5005; }
     }

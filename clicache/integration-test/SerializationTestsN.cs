@@ -491,7 +491,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {
@@ -627,7 +627,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {
@@ -765,7 +765,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {
@@ -902,7 +902,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {
@@ -1040,7 +1040,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {
@@ -1178,7 +1178,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {

@@ -70,9 +70,9 @@ namespace Apache
         /// behaviour.
         /// </remarks>
         /// <returns>the classId</returns>
-        property System::UInt32 ClassId
+        property Int32 ClassId
         {
-          System::UInt32 get( );
+          Int32 get( );
         }
       };
 

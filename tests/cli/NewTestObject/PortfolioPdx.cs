@@ -233,7 +233,7 @@ namespace Apache.Geode.Client.Tests
 
     #endregion
 /*
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {

@@ -73,7 +73,7 @@ namespace Apache.Geode.Client.Tests
             FromDataCount++;
         }
 
-        public UInt32 ClassId
+        public Int32 ClassId
         {
             get
             {

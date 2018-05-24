@@ -225,7 +225,7 @@ namespace Apache.Geode.Client.Tests
       }
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {

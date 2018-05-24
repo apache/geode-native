@@ -157,7 +157,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #region IDataSerializable Members
 
-    public uint ClassId
+    public Int32 ClassId
     {
       get { return 0x04; }
     }

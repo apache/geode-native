@@ -45,7 +45,7 @@ namespace Apache.Geode.Client.Tests
         return 0;
       }
     }
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {
