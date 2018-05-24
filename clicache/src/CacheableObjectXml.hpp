@@ -19,8 +19,7 @@
 
 
 #include "geode_defs.hpp"
-#include "ISerializable.hpp"
-#include "GeodeClassIds.hpp"
+#include "IDataSerializablePrimitive.hpp"
 
 using namespace System;
 
@@ -97,17 +96,11 @@ namespace Apache
           virtual System::UInt64 get();
         }
 
-        /// <summary>
-        /// Returns the classId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          inline virtual System::UInt32 get()
+          virtual int8_t get()
           {
-            return GeodeClassIds::CacheableManagedObjectXml;
+            return apache::geode::client::GeodeTypeIds::CacheableManagedObjectXml;
           }
         }
 
