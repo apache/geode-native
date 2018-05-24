@@ -164,7 +164,6 @@ namespace Apache
 
       void DistributedSystem::RegisterDataSerializablePrimitivesOverrideNativeDeserialization(Cache^ cache)
       {
-        // TODO serializable - appears to register per cache while other types are global, make consistent.
         // Registers overrides in the C++ layer to incercept deserialization into managed layer.
 
         auto&& typeRegistry = cache->TypeRegistry;

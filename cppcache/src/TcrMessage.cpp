@@ -470,7 +470,6 @@ void TcrMessage::writeObjectPart(
   int8_t isObject = 1;
 
   // check if the type is a CacheableBytes
-  // TODO serializable - ManagedCacheableKey
   if (auto cacheableBytes = std::dynamic_pointer_cast<CacheableBytes>(se)) {
     // for an emty byte array write EMPTY_BYTEARRAY_CODE(2) to is object
     auto byteArrLength = cacheableBytes->length();
@@ -481,34 +480,6 @@ void TcrMessage::writeObjectPart(
     }
     isObject = 0;
   }
-
-  //  if (se != nullptr && se->typeId() == GeodeTypeIds::CacheableBytes) {
-  //    // for an emty byte array write EMPTY_BYTEARRAY_CODE(2) to is object
-  //    try {
-  //      int byteArrLength = -1;
-  //
-  //      if (auto cacheableBytes =
-  //      std::dynamic_pointer_cast<CacheableBytes>(se)) {
-  //        byteArrLength = cacheableBytes->length();
-  //      } else {
-  //        auto classname =
-  //            Utils::nullSafeToString(std::static_pointer_cast<CacheableKey>(se));
-  //        if (classname.find("apache::geode::client::ManagedCacheableKey") !=
-  //            std::string::npos) {
-  //          byteArrLength = se->objectSize();
-  //        }
-  //      }
-  //
-  //      if (byteArrLength == 0) {
-  //        isObject = 2;
-  //        m_request->write(isObject);
-  //        return;
-  //      }
-  //    } catch (const apache::geode::client::Exception& ex) {
-  //      LOGDEBUG("Exception in writing EMPTY_BYTE_ARRAY : %s", ex.what());
-  //    }
-  //    isObject = 0;
-  //  }
 
   if (isDelta) {
     m_request->write(static_cast<int8_t>(0));
