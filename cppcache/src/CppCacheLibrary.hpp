@@ -27,7 +27,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-// initialize GEMFIRE runtime if it has not already been initialized.
+// initialize GEODE runtime if it has not already been initialized.
 class APACHE_GEODE_EXPORT CppCacheLibrary {
  public:
   // Call to this to trigger initialization.

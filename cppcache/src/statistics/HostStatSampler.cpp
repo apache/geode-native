@@ -364,7 +364,7 @@ std::string HostStatSampler::getSystemDirectoryPath() {
 }
 
 std::string HostStatSampler::getProductDescription() {
-  return "Pivotal Geode Native Client ";
+  return "Apache Geode Native Client ";
 }
 
 void HostStatSampler::changeArchive(std::string filename) {
