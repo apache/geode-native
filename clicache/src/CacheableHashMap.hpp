@@ -21,7 +21,6 @@
 #include "geode_defs.hpp"
 #include "ISerializable.hpp"
 #include "IDataSerializablePrimitive.hpp"
-#include "GeodeClassIds.hpp"
 
 using namespace System;
 using namespace System::Collections::Generic;

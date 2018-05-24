@@ -21,7 +21,6 @@
 #include "geode_defs.hpp"
 #include "IDataSerializableFixedId.hpp"
 #include "ISerializable.hpp"
-#include "GeodeClassIds.hpp"
 #include "Log.hpp"
 
 using namespace System;

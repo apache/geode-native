@@ -31,6 +31,7 @@
 #include "impl/PdxHelper.hpp"
 #include "impl/PdxWrapper.hpp"
 #include "Cache.hpp"
+#include "GeodeClassIds.hpp"
 
 using namespace System;
 using namespace System::Runtime::InteropServices;

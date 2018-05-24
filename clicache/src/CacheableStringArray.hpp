@@ -26,7 +26,6 @@
 #include "end_native.hpp"
 
 #include "Serializable.hpp"
-#include "GeodeClassIds.hpp"
 #include "CacheableString.hpp"
 
 using namespace System;

@@ -40,6 +40,7 @@
 #include "Serializable.hpp"
 #include "impl/PdxHelper.hpp"
 #include "impl/PdxWrapper.hpp"
+#include "GeodeClassIds.hpp"
 
 using namespace System;
 using namespace System::IO;

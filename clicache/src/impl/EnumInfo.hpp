@@ -19,7 +19,6 @@
 
 #include "../IDataSerializableFixedId.hpp"
 #include "../ISerializable.hpp"
-#include "../GeodeClassIds.hpp"
 
 using namespace System;
 using namespace System::Collections::Generic;
@@ -70,7 +69,7 @@ namespace Apache
 
           property Int32 DSFID
           {
-            virtual Int32 get() { return GeodeClassIds::EnumInfo; }
+            virtual Int32 get() { return GeodeTypeIds::EnumInfo; }
           }
 
           virtual String^ ToString() override
