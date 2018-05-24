@@ -63,11 +63,10 @@ namespace Apache
         {
           return managedDataSerializable->ptr();
         }
-				//TODO serializable delta??
-				// else if (auto mg_obj_delta = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(serializableObject))
-    //    {
-    //      return mg_obj_delta->ptr();
-    //    }
+			  else if (auto managedCacheableDeltaGeneric = std::dynamic_pointer_cast<native::ManagedCacheableDeltaGeneric>(serializableObject))
+        {
+          return dynamic_cast<Apache::Geode::Client::IDataSerializable^>(managedCacheableDeltaGeneric->ptr());
+        }
 				else if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(serializableObject))
         {
           return gcnew UserFunctionExecutionException(mg_UFEEobj);
@@ -95,37 +94,9 @@ namespace Apache
         return gcnew Apache::Geode::Client::Serializable( serializableObject );
       }
 
-      /// <summary>
-      /// This function is to safely cast objects from managed class to native class.
-      /// </summary>
-      /// <remarks>
-      /// <para>
-      /// Consider the scenario that we have both native objects of class
-      /// <c>native::Serializable</c> and managed objects of class
-      /// <see cref="ISerializable" /> in a Region.
-      /// </para><para>
-      /// The former would be passed wrapped inside the
-      /// <see cref="Serializable" /> class.
-      /// When this object is passed to native methods, it would be wrapped
-      /// inside <c>ManagedSerializable</c> class. However, for the
-      /// former case it will result in double wrapping and loss of information
-      /// (since the <c>ManagedSerializable</c> would not be as rich as the
-      /// original native class). So for the former case we will directly
-      /// get the native object, while we need to wrap only for the latter case.
-      /// </para><para>
-      /// This template function does a dynamic_cast to check if the object is of
-      /// the given <c>NativeWrapper</c> type and if so, then simply return the
-      /// native object else create a new object that wraps the managed object.
-      /// </para>
-      /// </remarks>
-      template<typename ManagedType, typename ManagedWrapper,
-        typename NativeType, typename NativeWrapper>
-      inline static NativeType* SafeM2UMConvertGeneric( ManagedType^ mg_obj )
+      inline static native::Serializable* GetNativeWrapperForManagedIDataSerializable( IDataSerializable^ mg_obj )
       {
         if (mg_obj == nullptr) return __nullptr;
-        
-        // TODO serializable - looks like this may have once expected to get the native pointer from here and exit.
-        // NativeWrapper^ obj = dynamic_cast<NativeWrapper^>( mg_obj );
         
         if(auto sDelta = dynamic_cast<Apache::Geode::Client::IGeodeDelta^> (mg_obj))
         {
@@ -133,7 +104,7 @@ namespace Apache
         }
         else
         {
-          return new ManagedWrapper(mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId);
+          return new native::ManagedCacheableKeyGeneric(mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId);
         }
       }
 
@@ -161,16 +132,13 @@ namespace Apache
       inline static native::Serializable* SafeMSerializableConvertGeneric(
         Apache::Geode::Client::ISerializable^ mg_obj )
       {
-        //it is called for cacheables types  only
-        if (auto dataSerializable = dynamic_cast<IDataSerializable^>(mg_obj))
-        {
-          return SafeM2UMConvertGeneric<IDataSerializable,
-            native::ManagedCacheableKeyGeneric, native::Serializable,
-            Serializable>(dataSerializable);
-        }
-        else if (auto dataSerializablePrimitive = dynamic_cast<IDataSerializablePrimitive^>(mg_obj))
+        if (auto dataSerializablePrimitive = dynamic_cast<IDataSerializablePrimitive^>(mg_obj))
         {
           return new native::ManagedDataSerializablePrimitive(dataSerializablePrimitive);
+        }
+        else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(mg_obj))
+        {
+          return GetNativeWrapperForManagedIDataSerializable(dataSerializable);
         }
         else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(mg_obj))
         {
@@ -180,7 +148,8 @@ namespace Apache
         {
           return new native::ManagedDataSerializableInternal(dataSerializableInternal);
         }
-        // TODO serializable other serializable types here
+
+        // TODO what about PDX?
         throw gcnew IllegalStateException("Unknown serialization type.");
       }
 

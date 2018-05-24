@@ -100,34 +100,8 @@ namespace apache
 
       int32_t ManagedCacheableKeyGeneric::getClassId() const
       {
-        return (m_classId >= 0x80000000 ? 0 : m_classId);
+        return m_classId;
       }
-
-      /* TODO serializable
-      int8_t ManagedCacheableKeyGeneric::typeId() const
-      {
-        if (m_classId >= 0x80000000) {
-          return (int8_t)((m_classId - 0x80000000) % 0x20000000);
-        }
-        else if (m_classId <= 0x7F) {
-          return (int8_t)GeodeTypeIdsImpl::CacheableUserData;
-        }
-        else if (m_classId <= 0x7FFF) {
-          return (int8_t)GeodeTypeIdsImpl::CacheableUserData2;
-        }
-        else {
-          return (int8_t)GeodeTypeIdsImpl::CacheableUserData4;
-        }
-      }
-
-      int8_t ManagedCacheableKeyGeneric::DSFID() const
-      {
-        if (m_classId >= 0x80000000) {
-          return (int8_t)((m_classId - 0x80000000) / 0x20000000);
-        }
-        return 0;
-      }
-      */
 
       std::string ManagedCacheableKeyGeneric::toString() const
       {
