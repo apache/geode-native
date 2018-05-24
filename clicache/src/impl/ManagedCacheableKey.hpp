@@ -134,7 +134,7 @@ namespace apache
         ManagedDataSerializablePrimitive(const ManagedDataSerializablePrimitive&) = delete;
         ManagedDataSerializablePrimitive operator = (const ManagedDataSerializablePrimitive&) = delete;
 
-        size_t objectSize() const override { return 0; }
+        size_t objectSize() const override { return m_managedptr->ObjectSize; }
 
         std::string toString() const override;
 
