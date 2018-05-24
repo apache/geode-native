@@ -4,9 +4,9 @@
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,21 +16,21 @@
 cmake_minimum_required(VERSION 3.4)
 project(apache-geode-static LANGUAGES CXX)
 
-add_library(apache-geode-static STATIC ${SOURCES_ALL})
+add_library(${PROJECT_NAME} STATIC ${SOURCES_ALL})
 
 set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)
 
-target_compile_definitions(apache-geode-static PUBLIC
+target_compile_definitions(${PROJECT_NAME} PUBLIC
   APACHE_GEODE_STATIC_DEFINE
 )
 
-target_link_libraries(apache-geode-static
+target_link_libraries(${PROJECT_NAME}
   PUBLIC
     _apache-geode
   PRIVATE
     _WarningsAsError)
 
-add_dependencies(client-libraries apache-geode-static)
+add_dependencies(client-libraries ${PROJECT_NAME})
 
 
 # BEGIN Visual Studio organization
@@ -39,6 +39,10 @@ source_group("Configure In Files" FILES ${CONFIGURE_IN_FILES})
 source_group("Configure Out Files" FILES ${CONFIGURE_OUT_FILES})
 # END Visual Studio organization
 
+if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU" AND ${USE_CPP_COVERAGE})
+    set_target_properties(${PROJECT_NAME}
+        PROPERTIES APPEND_STRING LINK_FLAGS "--coverage")
+endif()
 
 if (USE_PCH)
   set(_COTIRE_PREFIX_HEADER_IGNORE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
@@ -49,7 +53,7 @@ if (USE_PCH)
       ${CMAKE_BINARY_DIR}/dependencies/boost/include/boost/stacktrace.hpp)
   endif()
 
-  set_target_properties(apache-geode-static PROPERTIES
+  set_target_properties(${PROJECT_NAME} PROPERTIES
     COTIRE_ENABLE_PRECOMPILED_HEADER TRUE
     COTIRE_ADD_UNITY_BUILD TRUE
     COTIRE_PREFIX_HEADER_IGNORE_PATH "${_COTIRE_PREFIX_HEADER_IGNORE_PATH}"
@@ -57,5 +61,5 @@ if (USE_PCH)
 
   set_source_files_properties(cppcache/version.h PROPERTIES GENERATED TRUE)
 
-  cotire(apache-geode-static)
+  cotire(${PROJECT_NAME})
 endif()

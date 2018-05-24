@@ -64,6 +64,10 @@ target_include_directories(${PROJECT_NAME}
 
 add_dependencies(unit-tests ${PROJECT_NAME})
 
+if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU" AND ${USE_CPP_COVERAGE})
+    set_target_properties(${PROJECT_NAME}
+        PROPERTIES APPEND_STRING LINK_FLAGS "--coverage")
+endif()
 
 enable_testing()
 add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)

@@ -17,6 +17,7 @@ cmake_minimum_required(VERSION 3.10)
 project(nativeclient LANGUAGES C CXX)
 
 option(USE_PCH "Use precompiled headers (PCH)." OFF)
+option(USE_CPP_COVERAGE "Enable profiling and coverage report analysis for apache-geode cpp library" OFF)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -256,7 +257,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
   # Enables multiprocess compiles
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-  
+
   # Enables whole program optimizaion and link time code generation for release.
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
   set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG:incremental")

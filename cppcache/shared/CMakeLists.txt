@@ -4,9 +4,9 @@
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,7 @@ else()
   set(EXPORT_HEADER_CUSTOM_CONTENT "#define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT")
 endif()
 include(GenerateExportHeader)
-generate_export_header(apache-geode 
+generate_export_header(apache-geode
   EXPORT_FILE_NAME ${EXPORT_FILE_NAME}
   CUSTOM_CONTENT_FROM_VARIABLE EXPORT_HEADER_CUSTOM_CONTENT)
 
@@ -46,6 +46,11 @@ set_target_properties(apache-geode PROPERTIES
   OUTPUT_NAME ${PRODUCT_LIB_NAME}
   CXX_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN ON)
+
+if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU" AND ${USE_CPP_COVERAGE})
+    set_target_properties(${PROJECT_NAME}
+         PROPERTIES APPEND_STRING LINK_FLAGS "--coverage")
+endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set_target_properties(apache-geode PROPERTIES
