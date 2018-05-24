@@ -124,12 +124,7 @@ namespace Apache
         return safe_cast<TValue>(converted);
       }
 
-      /// <summary>
-      /// Helper function to convert managed <see cref="ISerializable" />
-      /// object to native <c>native::Serializable</c> object using
-      /// <c>SafeM2UMConvert</c>.
-      /// </summary>
-      inline static native::Serializable* SafeMSerializableConvertGeneric(
+      inline static native::Serializable* GetNativeWrapperForManagedISerializable(
         Apache::Geode::Client::ISerializable^ mg_obj )
       {
         if (auto dataSerializablePrimitive = dynamic_cast<IDataSerializablePrimitive^>(mg_obj))

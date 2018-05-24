@@ -91,9 +91,10 @@ namespace Apache
         }
       }
 
+      // TODO serializable PdxType?
       System::Int32 Serializable::GetPDXIdForType(native::Pool* pool, ISerializable^ pdxType, Cache^ cache)
       {
-        std::shared_ptr<native::Cacheable> kPtr(SafeMSerializableConvertGeneric(pdxType));
+        std::shared_ptr<native::Cacheable> kPtr(GetNativeWrapperForManagedISerializable(pdxType));
         return CacheRegionHelper::getCacheImpl(cache->GetNative().get())
             ->getSerializationRegistry()
             ->GetPDXIdForType(pool, kPtr);
@@ -107,9 +108,10 @@ namespace Apache
         return SafeUMSerializableConvertGeneric(sPtr);
       }
 
+      // TODO serializable directly convert to native wrapper?
       int Serializable::GetEnumValue(Internal::EnumInfo^ ei, Cache^ cache)
       {
-        std::shared_ptr<native::Cacheable> kPtr(SafeMSerializableConvertGeneric(ei));
+        std::shared_ptr<native::Cacheable> kPtr(GetNativeWrapperForManagedISerializable(ei));
         auto&& cacheImpl = CacheRegionHelper::getCacheImpl(cache->GetNative().get());
         return cacheImpl->getSerializationRegistry()->GetEnumValue(cacheImpl->getDefaultPool(), kPtr);
       }
@@ -178,95 +180,95 @@ namespace Apache
         }
         case native::GeodeTypeIds::CacheableBytes:
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CacheableBytes::Create((array<Byte>^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableBytes::Create((array<Byte>^)key));
         }
         case native::GeodeTypeIds::CacheableDoubleArray:
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CacheableDoubleArray::Create((array<Double>^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableDoubleArray::Create((array<Double>^)key));
         }
         case native::GeodeTypeIds::CacheableFloatArray:
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CacheableFloatArray::Create((array<float>^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableFloatArray::Create((array<float>^)key));
         }
         case native::GeodeTypeIds::CacheableInt16Array:
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CacheableInt16Array::Create((array<Int16>^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableInt16Array::Create((array<Int16>^)key));
         }
         case native::GeodeTypeIds::CacheableInt32Array:
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CacheableInt32Array::Create((array<Int32>^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableInt32Array::Create((array<Int32>^)key));
         }
         case native::GeodeTypeIds::CacheableInt64Array:
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CacheableInt64Array::Create((array<Int64>^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableInt64Array::Create((array<Int64>^)key));
         }
         case native::GeodeTypeIds::CacheableStringArray:
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CacheableStringArray::Create((array<String^>^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableStringArray::Create((array<String^>^)key));
         }
         case native::GeodeTypeIds::CacheableFileName:
         {
-          return wrapIGeodeSerializable((Apache::Geode::Client::CacheableFileName^)key);
+          return GetNativeCacheableKeyWrapperForManagedISerializable((Apache::Geode::Client::CacheableFileName^)key);
         }
         case native::GeodeTypeIds::CacheableHashTable://collection::hashtable
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CacheableHashTable::Create((System::Collections::Hashtable^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableHashTable::Create((System::Collections::Hashtable^)key));
         }
         case native::GeodeTypeIds::CacheableHashMap://generic dictionary
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CacheableHashMap::Create((System::Collections::IDictionary^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableHashMap::Create((System::Collections::IDictionary^)key));
         }
         case native::GeodeTypeIds::CacheableVector://collection::arraylist
         {
-          return wrapIGeodeSerializable(CacheableVector::Create((System::Collections::IList^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(CacheableVector::Create((System::Collections::IList^)key));
         }
         case native::GeodeTypeIds::CacheableArrayList://generic ilist
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CacheableArrayList::Create((System::Collections::IList^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableArrayList::Create((System::Collections::IList^)key));
         }
         case native::GeodeTypeIds::CacheableLinkedList://generic linked list
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CacheableLinkedList::Create((System::Collections::Generic::LinkedList<Object^>^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableLinkedList::Create((System::Collections::Generic::LinkedList<Object^>^)key));
         }
         case native::GeodeTypeIds::CacheableStack:
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CacheableStack::Create((System::Collections::ICollection^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableStack::Create((System::Collections::ICollection^)key));
         }
         case native::GeodeTypeIds::CacheableManagedObject:
         {
-          return wrapIGeodeSerializable((Apache::Geode::Client::CacheableObject^)key);
+          return GetNativeCacheableKeyWrapperForManagedISerializable((Apache::Geode::Client::CacheableObject^)key);
         }
         case native::GeodeTypeIds::CacheableManagedObjectXml:
         {
-          return wrapIGeodeSerializable((Apache::Geode::Client::CacheableObjectXml^)key);
+          return GetNativeCacheableKeyWrapperForManagedISerializable((Apache::Geode::Client::CacheableObjectXml^)key);
         }
         case native::GeodeTypeIds::CacheableObjectArray:
         {
-          return wrapIGeodeSerializable((Apache::Geode::Client::CacheableObjectArray^)key);
+          return GetNativeCacheableKeyWrapperForManagedISerializable((Apache::Geode::Client::CacheableObjectArray^)key);
         }
         case native::GeodeTypeIds::CacheableIdentityHashMap:
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CacheableIdentityHashMap::Create((System::Collections::IDictionary^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableIdentityHashMap::Create((System::Collections::IDictionary^)key));
         }
         case native::GeodeTypeIds::CacheableHashSet://no need of it, default case should work
         {
-          return wrapIGeodeSerializable((Apache::Geode::Client::CacheableHashSet^)key);
+          return GetNativeCacheableKeyWrapperForManagedISerializable((Apache::Geode::Client::CacheableHashSet^)key);
         }
         case native::GeodeTypeIds::CacheableLinkedHashSet://no need of it, default case should work
         {
-          return wrapIGeodeSerializable((Apache::Geode::Client::CacheableLinkedHashSet^)key);
+          return GetNativeCacheableKeyWrapperForManagedISerializable((Apache::Geode::Client::CacheableLinkedHashSet^)key);
         }
         case native::GeodeTypeIds::CacheableDate:
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CacheableDate::Create((System::DateTime)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableDate::Create((System::DateTime)key));
         }
         case native::GeodeTypeIds::BooleanArray:
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::BooleanArray::Create((array<bool>^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::BooleanArray::Create((array<bool>^)key));
         }
         case native::GeodeTypeIds::CharArray:
         {
-          return wrapIGeodeSerializable(Apache::Geode::Client::CharArray::Create((array<Char>^)key));
+          return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CharArray::Create((array<Char>^)key));
         }
         default:
         {
@@ -276,12 +278,12 @@ namespace Apache
         }
       } //
       
-      std::shared_ptr<native::CacheableKey> Serializable::wrapIGeodeSerializable(ISerializable^ managedObject) {
+      std::shared_ptr<native::CacheableKey> Serializable::GetNativeCacheableKeyWrapperForManagedISerializable(ISerializable^ managedObject) {
         if (nullptr == managedObject) {
           return __nullptr;
         }
-        auto wrappedObject = dynamic_cast<native::CacheableKey*>(SafeMSerializableConvertGeneric(managedObject));
-        return std::shared_ptr<native::CacheableKey>(wrappedObject);
+        auto wrappedObject = std::shared_ptr<native::Serializable>(GetNativeWrapperForManagedISerializable(managedObject));
+        return std::dynamic_pointer_cast<native::CacheableKey>(wrappedObject);
       }
 
       // These are the new static methods to get/put data from c++

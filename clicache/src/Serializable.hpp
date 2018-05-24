@@ -111,7 +111,7 @@ namespace Apache
 
 
       internal:
-        static std::shared_ptr<CacheableKey> wrapIGeodeSerializable(ISerializable^ managedObject);
+        static std::shared_ptr<CacheableKey> GetNativeCacheableKeyWrapperForManagedISerializable(ISerializable^ managedObject);
 				static System::Int32 GetPDXIdForType(native::Pool* pool, ISerializable^ pdxType, Cache^ cache);
 				static ISerializable^ GetPDXTypeById(native::Pool* pool, System::Int32 typeId, Cache^ cache);
         
