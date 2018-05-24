@@ -25,7 +25,7 @@ add_library(${TEST_UTILS_LIB} STATIC
 target_link_libraries(${TEST_UTILS_LIB}
   PRIVATE
     ACE
-	  _WarningsAsError
+    _WarningsAsError
   PUBLIC
     apache-geode
     fwk
@@ -43,7 +43,7 @@ add_library(unit_test_callbacks SHARED LibraryCallbacks.cpp)
 target_link_libraries(unit_test_callbacks
   PRIVATE
     ACE
-	  _WarningsAsError
+    _WarningsAsError
   PUBLIC
     apache-geode
 )
@@ -85,7 +85,8 @@ foreach(FILE ${SOURCES})
     PRIVATE
       ACE
       ${TEST_UTILS_LIB}
-	    _WarningsAsError
+      _WarningsAsError
+      _CppCodeCoverage
       internal
     PUBLIC
       apache-geode

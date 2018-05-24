@@ -17,6 +17,7 @@ cmake_minimum_required(VERSION 3.10)
 project(nativeclient LANGUAGES C CXX)
 
 option(USE_PCH "Use precompiled headers (PCH)." OFF)
+option(USE_CPP_COVERAGE "Enable profiling and coverage report analysis for apache-geode cpp library" OFF)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -162,6 +163,7 @@ add_library(c++11 INTERFACE)
 
 # Interface for warning flags
 add_library(_WarningsAsError INTERFACE)
+add_library(_CppCodeCoverage INTERFACE)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
   # Force linker to error on undefined symbols in shared libraries
@@ -191,6 +193,11 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     # -Wshadow TODO fix
     # -Weffc++ TODO fix
     )
+
+  if (${USE_CPP_COVERAGE})
+    target_compile_options(_CppCodeCoverage INTERFACE --coverage)
+    target_link_libraries(_CppCodeCoverage INTERFACE --coverage)
+  endif()
 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   target_compile_options(_WarningsAsError INTERFACE
@@ -256,7 +263,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
   # Enables multiprocess compiles
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-  
+
   # Enables whole program optimizaion and link time code generation for release.
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
   set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG:incremental")
