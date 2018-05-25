@@ -21,7 +21,6 @@
 #include "../geode_defs.hpp"
 #include "../IPdxWriter.hpp"
 #include "PdxType.hpp"
-#include "../GeodeClassIds.hpp"
 #include "PdxRemotePreservedData.hpp"
 
 using namespace System;

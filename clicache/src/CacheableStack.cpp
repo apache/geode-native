@@ -25,7 +25,6 @@
 #include <GeodeTypeIdsImpl.hpp>
 #include "end_native.hpp"
 #include "impl/SafeConvert.hpp"
-#include "GeodeClassIds.hpp"
 
 using namespace System;
 using namespace System::Collections::Generic;

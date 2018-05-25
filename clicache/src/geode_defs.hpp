@@ -144,9 +144,6 @@
 /// @file ExpirationAction.hpp
 /// Declares the ExpirationAction enumeration and Expiration class.
 
-/// @file GeodeClassIds.hpp
-/// Declares the GeodeClassIds class.
-
 /// @file IRegionService.hpp
 /// Declares the IRegionService interface.
 

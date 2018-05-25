@@ -373,9 +373,9 @@ namespace Apache
           cache->TypeRegistry->UnregisterTypeGeneric(
             native::GeodeTypeIds::CacheableStack);
           cache->TypeRegistry->UnregisterTypeGeneric(
-            GeodeClassIds::CacheableManagedObject - 0x80000000);
+            native::GeodeTypeIds::CacheableManagedObject);
           cache->TypeRegistry->UnregisterTypeGeneric(
-            GeodeClassIds::CacheableManagedObjectXml - 0x80000000);
+            native::GeodeTypeIds::CacheableManagedObjectXml);
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }

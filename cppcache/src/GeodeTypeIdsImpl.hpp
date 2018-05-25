@@ -66,7 +66,7 @@ class GeodeTypeIdsImpl {
     LocatorListResponse = -51,
     ObjectTypeImpl = -61,
     PDX = 93,
-    // PDX_ENUM = 94,
+    PDX_ENUM = 94,
     PreferBytesCachedDeserializable = -65,
     QueueConnectionRequest = -52,
     QueueConnectionResponse = -49,

@@ -17,11 +17,8 @@
 
 #pragma once
 
-
 #include "PdxFieldType.hpp"
-//#include "../DataOutput.hpp"
-//#include "../DataInput.hpp"
-#include "../GeodeClassIds.hpp"
+
 using namespace System;
 using namespace System::Collections::Generic;
 
@@ -182,8 +179,8 @@ namespace Apache
           {
             return "PdxType";
           }
-          void AddFixedLengthTypeField(String^ fieldName, String^ className, Byte typeId, Int32 size);
-          void AddVariableLengthTypeField(String^ fieldName, String^ className, Byte typeId);
+          void AddFixedLengthTypeField(String^ fieldName, String^ className, PdxFieldTypes typeId, Int32 size);
+          void AddVariableLengthTypeField(String^ fieldName, String^ className, PdxFieldTypes typeId);
           void InitializeType(Cache^ cache);
           PdxType^ MergeVersion(PdxType^ otherVersion);
           Int32 GetFieldPosition(String^ fieldName, System::Byte* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen);

@@ -188,15 +188,13 @@ namespace Apache
           /// <param name="obj">The object to write.</param>
           virtual IPdxWriter^ WriteObject( String^ fieldName, Object^ obj ) override;
 
-          //TODO:
-          //virtual IPdxWriter^ WriteMap( String^ fieldName, System::Collections::IDictionary^ map );
-
+          
           /// <summary>
           /// Write an collection to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="collection">The collection to write.</param>
-          virtual IPdxWriter^ WriteCollection( String^ fieldName, System::Collections::IList^ collection) override;
+          //virtual IPdxWriter^ WriteCollection( String^ fieldName, System::Collections::IList^ collection) override;
 
           /// <summary>
           /// Write an collection to the <c>IPdxWriter</c>.
@@ -204,9 +202,6 @@ namespace Apache
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="date">The date to write.</param>
           virtual IPdxWriter^ WriteDate( String^ fieldName, System::DateTime date) override;
-          
-          //TODO:
-          //virtual IPdxWriter^ writeFile(String fieldName, File file) ;
 
           /// <summary>
           /// Write an collection to the <c>IPdxWriter</c>.

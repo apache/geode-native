@@ -27,7 +27,6 @@
 #include "ISerializable.hpp"
 #include "ExpirationAction.hpp"
 #include "DiskPolicyType.hpp"
-#include "GeodeClassIds.hpp"
 
 #include "ICacheLoader.hpp"
 #include "ICacheWriter.hpp"

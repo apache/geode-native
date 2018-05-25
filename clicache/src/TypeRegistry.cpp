@@ -431,12 +431,12 @@ namespace Apache
             auto ret = SafeGenericUMSerializableConvert<CacheableStack^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case 7: //GeodeClassIds::CacheableManagedObject
+          case native::GeodeTypeIds::CacheableManagedObject:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableObject^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret);
           }
-          case 8://GeodeClassIds::CacheableManagedObjectXml
+          case native::GeodeTypeIds::CacheableManagedObjectXml:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableObjectXml^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret);

@@ -40,7 +40,6 @@
 #include "Serializable.hpp"
 #include "impl/PdxHelper.hpp"
 #include "impl/PdxWrapper.hpp"
-#include "GeodeClassIds.hpp"
 
 using namespace System;
 using namespace System::IO;
@@ -665,7 +664,7 @@ namespace Apache
         if (compId == GeodeTypeIds::NullObj) {
           return nullptr;
         }
-        else if (compId == GeodeClassIds::PDX)
+        else if (compId == GeodeTypeIdsImpl::PDX)
         {
           //cache current state and reset after reading pdx object
           auto cacheCursor = m_cursor;
@@ -687,7 +686,7 @@ namespace Apache
           }
           return ret;
         }
-        else if (compId == GeodeClassIds::PDX_ENUM)
+        else if (compId == GeodeTypeIdsImpl::PDX_ENUM)
         {
           int8_t dsId = ReadByte();
           int tmp = ReadArrayLen();

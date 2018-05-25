@@ -38,7 +38,7 @@ namespace Apache
         private:
           PdxType^      m_newPdxType;
         
-					void checkType( String^ fieldName, Byte typeId, String^ fieldType);
+					void checkType( String^ fieldName, PdxFieldTypes typeId, String^ fieldType);
         public:
 
           PdxReaderWithTypeCollector(DataInput^ dataInput, PdxType^ pdxType, int pdxlen)
@@ -149,22 +149,18 @@ namespace Apache
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
         virtual Object^ ReadObject( String^ fieldName )override;
-        
-        //TODO:
-        //virtual void WriteMap( String^ fieldName, System::Collections::IDictionary^ map );
 
         /// <summary>
         /// Read a collection from the data.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual void ReadCollection( String^ fieldName, System::Collections::IList^ collection)override;
+        //virtual void ReadCollection( String^ fieldName, System::Collections::IList^ collection)override;
 
         /// <summary>
         /// Read a Date from the data. 
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
         virtual System::DateTime ReadDate( String^ fieldName) override;
-        //virtual void writeFile(String fieldName, File file) ;
 
         /// <summary>
         /// Read a boolean array from the data. 

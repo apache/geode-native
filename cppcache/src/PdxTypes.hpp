@@ -22,6 +22,10 @@
 
 #include <geode/internal/geode_globals.hpp>
 
+namespace apache {
+namespace geode {
+namespace client {
+
 class PdxTypes {
  public:
   static const int8_t BYTE_SIZE = 1;
@@ -42,5 +46,9 @@ class PdxTypes {
 
   static const int8_t DATE_SIZE = 8;
 };
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif  // GEODE_PDXTYPES_H_

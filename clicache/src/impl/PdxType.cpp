@@ -37,7 +37,7 @@ namespace Apache
       namespace Internal
       {
         void PdxType::AddFixedLengthTypeField(String^ fieldName, String^ className,
-                                              Byte typeId, Int32 size)
+                                              PdxFieldTypes typeId, Int32 size)
         {
           int current = m_pdxFieldTypes->Count;
           PdxFieldType^ pfType = gcnew PdxFieldType(fieldName, className, (Byte)typeId,
@@ -49,7 +49,7 @@ namespace Apache
         }
 
         void PdxType::AddVariableLengthTypeField(String^ fieldName, String^ className,
-                                                 Byte typeId)
+                                                 PdxFieldTypes typeId)
         {
           //we don't store offset of first var len field, this is the purpose of following check
           if (m_isVarLenFieldAdded)
@@ -70,8 +70,8 @@ namespace Apache
         void PdxType::ToData(DataOutput^ output)
         {
           //defaulf java Dataserializable require this
-          output->WriteByte(GeodeClassIds::DATA_SERIALIZABLE);
-          output->WriteByte(GeodeClassIds::JAVA_CLASS);
+          output->WriteByte(GeodeTypeIdsImpl::DataSerializable);
+          output->WriteByte(GeodeTypeIdsImpl::Class);
           output->WriteObject((Object^)m_javaPdxClass);
 
           //pdx type

@@ -19,7 +19,7 @@
 #include "CacheableFileName.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
-#include "GeodeClassIds.hpp"
+
 using namespace System;
 
 namespace Apache

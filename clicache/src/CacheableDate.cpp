@@ -20,7 +20,6 @@
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
 #include "Log.hpp"
-#include "GeodeClassIds.hpp"
 
 using namespace System;
 
