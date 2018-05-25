@@ -28,7 +28,6 @@
 #include "CacheableKey.hpp"
 #include "Serializable.hpp"
 #include "ExceptionTypes.hpp"
-#include "GeodeClassIds.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
 
@@ -421,94 +420,6 @@ namespace Apache
       };
 
 
-#define _GFCLI_CACHEABLE_ARRAY_DEF_NEW(m, mt)                                    \
-      ref class m : public CacheableBuiltinArray<            \
-        native::m, native::m, mt, GeodeClassIds::m>                  \
-            {                                                                       \
-      public:                                                                 \
-        /** <summary>
-      *  Static function to create a new instance copying
-      *  from the given array.
-      *  </summary>
-      *  <remarks>
-      *  Providing a null or zero size array will return a null object.
-      *  </remarks>
-      *  <param name="value">the array to create the new instance</param>
-      */                                                                   \
-      inline static m^ Create(array<mt>^ value)                             \
-      {                                                                     \
-      return (value != nullptr /*&& value->Length > 0*/ ? \
-      gcnew m(value) : nullptr);                                        \
-      }                                                                     \
-      /** <summary>
-       *  Static function to create a new instance copying
-       *  from the given array.
-       *  </summary>
-       *  <remarks>
-       *  Providing a null or zero size array will return a null object.
-       *  </remarks>
-       *  <param name="value">the array to create the new instance</param>
-       */                                                                   \
-       inline static m^ Create(array<mt>^ value, System::Int32 length)               \
-      {                                                                     \
-      return (value != nullptr && value->Length > 0 ? \
-      gcnew m(value, length) : nullptr);                                \
-      }                                                                     \
-      /** <summary>
-       * Explicit conversion operator to contained array type.
-       * </summary>
-       */                                                                   \
-       inline static explicit operator array<mt> ^ (m^ value)                 \
-      {                                                                     \
-      return (value != nullptr ? value->Value : nullptr);                 \
-      }                                                                     \
-      \
-      /** <summary>
-       * Factory function to register this class.
-       * </summary>
-       */                                                                   \
-       static ISerializable^ CreateDeserializable()                        \
-      {                                                                     \
-      return gcnew m();                                                   \
-      }                                                                     \
-      \
-            internal:                                                               \
-              static ISerializable^ Create(std::shared_ptr<native::Serializable> obj)            \
-      {                                                                     \
-      return (obj != nullptr ? gcnew m(obj) : nullptr);                   \
-      }                                                                     \
-      \
-            private:                                                                \
-            /** <summary>
-             * Allocates a new instance
-             *  </summary>
-             */                                                                   \
-             inline m()                                                            \
-             : CacheableBuiltinArray() { }                                       \
-             /** <summary>
-              * Allocates a new instance copying from the given array.
-              *  </summary>
-              *  <remarks>
-              *  Providing a null or zero size array will return a null object.
-              *  </remarks>
-              *  <param name="value">the array to create the new instance</param>
-              */                                                                   \
-              inline m(array<mt>^ value)                                            \
-              : CacheableBuiltinArray(value) { }                                  \
-              /** <summary>
-               * Allocates a new instance copying given length from the
-               * start of given array.
-               *  </summary>
-               *  <remarks>
-               *  Providing a null or zero size array will return a null object.
-               *  </remarks>
-               *  <param name="value">the array to create the new instance</param>
-               */                                                                   \
-               inline m(array<mt>^ value, System::Int32 length)                              \
-               : CacheableBuiltinArray(value, length) { }                          \
-               inline m(std::shared_ptr<native::Serializable> nativeptr)                            \
-               : CacheableBuiltinArray(nativeptr) { }                              \
-      };
 
 
       // Built-in CacheableKeys
