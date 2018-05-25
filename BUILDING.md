@@ -32,16 +32,14 @@ Building requires access to an installation of Geode. There are two ways to achi
     $ cmake --build . -- <platform-specific parallelism parameters (see below)>
 
 To explicitly specify the location in which the Native Client will be installed, add `-DCMAKE_INSTALL_PREFIX=/path/to/installation/destination` to this initial `cmake` execution command.
- 
+
 ### Generator
 CMake uses a "generator" to produce configuration files for use by a variety of build tools, e.g., UNIX makefiles, Visual Studio projects. By default a system-specific generator is used by CMake during configuration. (Please see [the CMake documentation](https://cmake.org/documentation/) for further information.) However, in many cases there is a better choice.
 
 #### CLion / Eclipse / Other
 The recommended generator for most unix platforms is 'Makefiles' (default):
 
-	$ cmake .. 
-
-For enabling C++ code coverage on Linux, see [Code Coverage](#code-coverage).
+	$ cmake ..
 
 #### Xcode
 The recommended generator for Xcode is `Xcode`:
@@ -68,7 +66,11 @@ For faster builds, use optional parallelism parameters in the last build step:
 
 ### Code Coverage
 
-If building on Linux, you can enable C++ code coverage by adding `-DUSE_CODE_COVERAGE=ON` to the CMake [Generator](#generator) command. You can then generate a C++ code coverage report by downloading [lcov](http://ltp.sourceforge.net/coverage/lcov.php).  After acquiring lcov, finish the [Steps to build](#Steps-to-build) section above.  Then, run the tests as described in the [CONTRIBUTING.md](CONTRIBUTING.md). Finally, run the following commands from the `build` directory:
+If building with GCC or Clang you can enable C++ code coverage by adding `-DUSE_CODE_COVERAGE=ON` to the CMake [Generator](#generator) command. 
+
+    $ cmake ... -DUSE_CODE_COVERAGE=ON ...
+
+You can then generate a C++ code coverage report by downloading [lcov](http://ltp.sourceforge.net/coverage/lcov.php).  After acquiring lcov, finish the [Steps to build](#Steps-to-build) section above.  Then, run the tests as described in the [CONTRIBUTING.md](CONTRIBUTING.md). Finally, run the following commands from the `build` directory:
 
     $ lcov --capture --directory . --output-file coverage.info
     $ genhtml coverage.info --output-directory coverage_report

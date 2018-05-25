@@ -194,7 +194,7 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     # -Weffc++ TODO fix
     )
 
-  if (${USE_CPP_COVERAGE})
+  if (USE_CPP_COVERAGE)
     target_compile_options(_CppCodeCoverage INTERFACE --coverage)
     target_link_libraries(_CppCodeCoverage INTERFACE --coverage)
   endif()
@@ -241,6 +241,11 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Wno-exit-time-destructors
     -Wno-documentation-unknown-command
     )
+
+  if (USE_CPP_COVERAGE)
+    target_compile_options(_CppCodeCoverage INTERFACE -fprofile-arcs -ftest-coverage)
+    target_link_libraries(_CppCodeCoverage INTERFACE --coverage)
+  endif()
 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(BUILD_CLI 1)
