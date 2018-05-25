@@ -243,7 +243,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     )
 
   if (USE_CPP_COVERAGE)
-    target_compile_options(_CppCodeCoverage INTERFACE -fprofile-arcs -ftest-coverage)
+    target_compile_options(_CppCodeCoverage INTERFACE --coverage)
     target_link_libraries(_CppCodeCoverage INTERFACE --coverage)
   endif()
 
