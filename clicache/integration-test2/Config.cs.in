@@ -19,14 +19,23 @@
 
 public class Config
 {
-  static public string GeodeGfsh
+  public static string GeodeGfsh
   {
     get { return @"@Geode_gfsh_EXECUTABLE@"; }
   }
 
-  static public string JavaobjectJarPath
+  public static string JavaobjectJarPath
   {
     get { return @"@JAVAOBJECT_JAR_PATH@"; }
   }
 
+  public static string CryptoImplPath
+  {
+    get { return @"/../../../cryptoimpl/@CMAKE_BUILD_TYPE@"; }
+  }
+
+  public static string OpenSSLPath
+  {
+    get { return @"/../../../dependencies/openssl/openssl-extern-prefix/@CMAKE_BUILD_TYPE@/bin"; }
+  }
 }

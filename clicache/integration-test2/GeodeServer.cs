@@ -11,18 +11,25 @@ public class GeodeServer : IDisposable
 
     public int LocatorPort { get; private set; }
 
+    private bool _useSsl;
+
     #endregion
 
     #region Public methods
 
-    public GeodeServer(string regionName = "testRegion", bool readSerialized = false)
+    public GeodeServer(string regionName = "testRegion", bool readSerialized = false, bool useSsl = false)
     {
+        _useSsl = useSsl;
         try
         {
             //Clean up previous server dirs
             foreach (var dir in new DirectoryInfo(Environment.CurrentDirectory).GetDirectories())
             {
-                dir.Delete(true);
+                if (!dir.Name.Equals("ServerSslKeys", StringComparison.OrdinalIgnoreCase) 
+                    && !dir.Name.Equals("ClientSslKeys", StringComparison.OrdinalIgnoreCase))
+                {
+                    dir.Delete(true);
+                }
             }
         }
         catch
@@ -35,25 +42,56 @@ public class GeodeServer : IDisposable
 
         var readSerializedStr = readSerialized ? "--read-serialized=true" : "--read-serialized=false";
 
-        var gfsh = new Process
+        Process gfsh;
+        if (_useSsl)
         {
-            StartInfo =
+            gfsh = new Process
             {
-                FileName = Config.GeodeGfsh,
-                Arguments = " -e \"start locator --bind-address=localhost --port=" + LocatorPort +
-                            " --J=-Dgemfire.jmx-manager-port=" + locatorJmxPort + " --http-service-port=0\"" +
-                            " -e \"connect --locator=localhost[" + LocatorPort + "]\"" +
-                            " -e \"configure pdx " + readSerializedStr + "\"" +
-                            " -e \"start server --bind-address=localhost --server-port=0 --log-level=all --classpath=" + Config.JavaobjectJarPath + "\"" +
-                            " -e \"create region --name=" + regionName + " --type=PARTITION\"" +
-                            " -e \"create region --name=testRegion1 --type=PARTITION\"",
-                WindowStyle = ProcessWindowStyle.Hidden,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true
-            }
-        };
+                StartInfo =
+                {
+                    FileName = Config.GeodeGfsh,
+                    Arguments = " -e \"start locator --bind-address=localhost --port=" + LocatorPort +
+                                " --J=-Dgemfire.jmx-manager-port=" + locatorJmxPort + " --http-service-port=0 --connect=false --J=-Dgemfire.ssl-enabled-components=locator,jmx" +
+                                " --J=-Dgemfire.ssl-keystore=" + Environment.CurrentDirectory + "/ServerSslKeys/server_keystore.jks --J=-Dgemfire.ssl-keystore-password=gemstone" +
+                                " --J=-Dgemfire.ssl-truststore=" + Environment.CurrentDirectory + "/ServerSslKeys/server_truststore.jks --J=-Dgemfire.ssl-truststore-password=gemstone\"" +
+                                " -e \"connect --locator=localhost[" + LocatorPort + "] --use-ssl --key-store=" + Environment.CurrentDirectory + "/ServerSslKeys/server_keystore.jks --key-store-password=gemstone " +
+                                " --trust-store=" + Environment.CurrentDirectory + "/ServerSslKeys/server_truststore.jks --trust-store-password=gemstone\"" +
+                                " -e \"configure pdx " + readSerializedStr + "\"" +
+                                " -e \"start server --bind-address=localhost --server-port=0 --log-level=all --classpath=" + Config.JavaobjectJarPath + "\"" +
+                                " --J=-Dgemfire.ssl-enabled-components=server,locator,jmx --J=-Dgemfire.ssl-keystore=" + Environment.CurrentDirectory + "/ServerSslKeys/server_keystore.jks" +
+                                " --J=-Dgemfire.ssl-keystore-password=gemstone --J=-Dgemfire.ssl-truststore=" + Environment.CurrentDirectory + "/ServerSslKeys/server_truststore.jks --J=-Dgemfire.ssl-truststore-password=gemstone\"" +
+                                " -e \"create region --name=" + regionName + " --type=PARTITION\"" +
+                                " -e \"create region --name=testRegion1 --type=PARTITION\"",
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = false
+                }
+            };
+        }
+        else
+        {
+            gfsh = new Process
+            {
+                StartInfo =
+                {
+                    FileName = Config.GeodeGfsh,
+                    Arguments = " -e \"start locator --bind-address=localhost --port=" + LocatorPort +
+                                " --J=-Dgemfire.jmx-manager-port=" + locatorJmxPort + " --http-service-port=0\"" +
+                                " -e \"connect --locator=localhost[" + LocatorPort + "]\"" +
+                                " -e \"configure pdx " + readSerializedStr + "\"" +
+                                " -e \"start server --bind-address=localhost --server-port=0 --log-level=all --classpath=" + Config.JavaobjectJarPath + "\"" +
+                                " -e \"create region --name=" + regionName + " --type=PARTITION\"" +
+                                " -e \"create region --name=testRegion1 --type=PARTITION\"",
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                }
+            };
+        }
 
         gfsh.OutputDataReceived += (sender, args) =>
         {
@@ -83,20 +121,43 @@ public class GeodeServer : IDisposable
     {
         try
         {
-            var gfsh = new Process
+            Process gfsh;
+
+            if (_useSsl)
             {
-                StartInfo =
+                gfsh = new Process
                 {
-                    FileName = Config.GeodeGfsh,
-                    Arguments = "-e \"connect --locator=localhost[" + LocatorPort +
-                                "]\" -e \"shutdown --include-locators true\" ",
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    CreateNoWindow = true
-                }
-            };
+                    StartInfo =
+                    {
+                        FileName = Config.GeodeGfsh,
+                        Arguments = "-e \"connect --locator=localhost[" + LocatorPort + "] --use-ssl --key-store=" + Environment.CurrentDirectory +
+                                    "/ServerSslKeys/server_keystore.jks --key-store-password=gemstone --trust-store=" + Environment.CurrentDirectory +
+                                    "/ServerSslKeys/server_truststore.jks --trust-store-password=gemstone\" -e \"shutdown --include-locators true\" ",
+                        WindowStyle = ProcessWindowStyle.Hidden,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    }
+                };
+            }
+            else
+            {
+                gfsh = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = Config.GeodeGfsh,
+                        Arguments = "-e \"connect --locator=localhost[" + LocatorPort +
+                                    "]\" -e \"shutdown --include-locators true\" ",
+                        WindowStyle = ProcessWindowStyle.Hidden,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    }
+                };
+            }
 
             gfsh.OutputDataReceived += (sender, args) =>
             {

@@ -30,15 +30,20 @@ add_library( ${PROJECT_NAME} SHARED
     GeodeServerTests.cs
     CacheXml.cs
     CacheXmlTests.cs
+    RegionTest.cs
+    RegionSSLTest.cs
     cache.xml
     geode.properties
     xunit.runner.json
     packages.config
-    RegionTest.cs
     SerializationTests.cs
+    ClientSslKeys/client_keystore.password.pem
+    ClientSslKeys/client_truststore.pem
+    ServerSslKeys/server_keystore.jks
+    ServerSslKeys/server_truststore.jks
 )
 
-set_source_files_properties(cache.xml xunit.runner.json geode.properties PROPERTIES
+set_source_files_properties(cache.xml xunit.runner.json geode.properties ClientSslKeys/client_keystore.password.pem ClientSslKeys/client_truststore.pem ServerSslKeys/server_keystore.jks ServerSslKeys/server_truststore.jks PROPERTIES
   VS_COPY_TO_OUT_DIR Always
   VS_TOOL_OVERRIDE "None"
 )
