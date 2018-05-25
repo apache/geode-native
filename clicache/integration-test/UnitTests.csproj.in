@@ -189,6 +189,9 @@
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\TallyWriterN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientRegionStepsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientRegionTestsN.cs" />
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\RegionFailoverTests.cs" />
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\RegionFailingTests.cs" />
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\RegionRemoveTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\UnitTestsN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientRegionInterestListTests.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\ThinClientRegionInterestListWithPdxTests.cs" />

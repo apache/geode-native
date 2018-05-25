@@ -636,6 +636,17 @@ namespace Apache
           virtual void Clear();
 
           /// <summary>
+          /// remove all entries in the region.	
+          /// For local region instance - remove all entries in the local region.
+          /// For distributed region instance - remove all entries in the local region,
+	      /// and propagate the operation to server.
+          /// </summary>
+          /// <param name="callbackArg">
+          /// argument that is passed to the callback functions
+          /// </param>
+          void Clear(Object^ callbackArg);
+
+          /// <summary>
           /// Copies the elements of the ICollection to an Array, starting at a particular Array index.
           /// This operation copies entries from local region only.
           /// </summary>
@@ -1867,17 +1878,6 @@ namespace Apache
           {
             bool get();
           }
-
-          /// <summary>
-          /// remove all entries in the region.	
-          /// For local region instance - remove all entries in the local region.
-          /// For distributed region instance - remove all entries in the local region, 
-	        /// and propagate the operation to server.
-          /// </summary>
-          /// <param name="callbackArg">
-          /// argument that is passed to the callback functions
-          /// </param>             
-          void Clear(Object^ callbackArg);
 
           /// <summary>
           /// Reteuns an instance of a Region<TKey, TValue> class that implements 

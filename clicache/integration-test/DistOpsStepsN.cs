@@ -121,7 +121,7 @@ namespace Apache.Geode.Client.UnitTests
           }
           else
           {
-            string cVal = region.Get(cKey, true).ToString();
+            string cVal = region.Get(cKey).ToString();
             Assert.IsNotNull(cVal, "Value should not be null.");
             if (cVal != val)
               testValueCnt++;
@@ -165,7 +165,7 @@ namespace Apache.Geode.Client.UnitTests
 
     protected virtual object GetEntry(string regionName, string key)
     {
-      object val = CacheHelper.GetVerifyRegion<string, string>(regionName).Get(key, null);
+      object val = CacheHelper.GetVerifyRegion<string, string>(regionName).Get(key);
       if (val != null)
       {
         Util.Log(
@@ -614,14 +614,6 @@ namespace Apache.Geode.Client.UnitTests
           Util.Log("Running warmup task which verifies the puts.");
           PutGetStepsAD(regionName, true, runQuery);
           Util.Log("End warmup task.");
-          /*LogTaskTiming(client1,
-            string.Format("IRegion<object, object>:{0},Key:{1},Value:{2},KeySize:{3},ValueSize:{4},NumOps:{5}",
-            regionName, keyType.Name, valueType.Name, KeySize, ValueSize, 4 * numKeys),
-            4 * numKeys);
-          */
-          //m_chw_forFirstAppDomain.InvalidateRegion(regionName);
-          // m_chw_forSecondAppDomain.InvalidateRegion(regionName);
-
         }
       }
 
@@ -639,9 +631,6 @@ namespace Apache.Geode.Client.UnitTests
         m_putGetTests_forFirstAppDomain.DoKeyChecksumPuts();
         m_putGetTests_forFirstAppDomain.DoValChecksumPuts();
         m_putGetTests_forSecondAppDomain.DoGetsVerify();
-        //InvalidateRegion(regionName, client1);
-        //m_chw_forFirstAppDomain.InvalidateRegion(regionName);
-        // m_chw_forSecondAppDomain.InvalidateRegion(regionName);
         if (runQuery)
         {
           // run a query for ThinClient regions to check for deserialization
@@ -2222,7 +2211,7 @@ namespace Apache.Geode.Client.UnitTests
       Util.Log("Idictionary_Array_Item_Add_Get_Set_Remove_Step 4 complete.");
 
       // Chk with old api that element that is added by new api exists.
-      Assert.AreEqual(type.GetArrayTypeItem<TValue>(ValueId, 0), region.Get(type.GetTypeItem<TKey>(KeyId, 0), null));
+      Assert.AreEqual(type.GetArrayTypeItem<TValue>(ValueId, 0), region.Get(type.GetTypeItem<TKey>(KeyId, 0)));
       Util.Log("Idictionary_Array_Item_Add_Get_Set_Remove_Step 5 complete.");
 
       // Try removing entry that does not exist in the region, no exception, but returns false.      
@@ -2328,7 +2317,7 @@ namespace Apache.Geode.Client.UnitTests
       Util.Log("Idictionary_Item_Add_Get_Set_Remove_Step 4 complete.");
 
       // Chk with old api that element that is added by new api exists.
-      Assert.AreEqual(type.GetTypeItem<TValue>(ValueId, 0), region.Get(type.GetTypeItem<TKey>(KeyId, 0), null));
+      Assert.AreEqual(type.GetTypeItem<TValue>(ValueId, 0), region.Get(type.GetTypeItem<TKey>(KeyId, 0)));
       Util.Log("Idictionary_Item_Add_Get_Set_Remove_Step 5 complete.");
 
       // Try removing entry that does not exist in the region, no exception, but returns false.      
