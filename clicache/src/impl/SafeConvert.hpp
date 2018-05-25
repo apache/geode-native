@@ -138,7 +138,6 @@ namespace Apache
         }
         else if (auto pdxSerializable = dynamic_cast<IPdxSerializable^>(managedObject))
         {
-          // TODO serializable delta pdx
           return new native::PdxManagedCacheableKey(pdxSerializable);
         }
         else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(managedObject))

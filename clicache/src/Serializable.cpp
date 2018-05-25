@@ -91,7 +91,6 @@ namespace Apache
         }
       }
 
-      // TODO serializable PdxType?
       System::Int32 Serializable::GetPDXIdForType(native::Pool* pool, ISerializable^ pdxType, Cache^ cache)
       {
         std::shared_ptr<native::Cacheable> kPtr(GetNativeWrapperForManagedObject(pdxType));
@@ -108,7 +107,6 @@ namespace Apache
         return SafeUMSerializableConvertGeneric(sPtr);
       }
 
-      // TODO serializable directly convert to native wrapper?
       int Serializable::GetEnumValue(Internal::EnumInfo^ ei, Cache^ cache)
       {
         std::shared_ptr<native::Cacheable> kPtr(GetNativeWrapperForManagedObject(ei));
