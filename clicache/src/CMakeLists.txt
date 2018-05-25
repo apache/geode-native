@@ -122,7 +122,7 @@ add_library(${PROJECT_NAME} SHARED
   IDataSerializablePrimitive.hpp
   IFixedPartitionResolver.hpp
   IGeodeCache.hpp
-  IGeodeDelta.hpp
+  IDelta.hpp
   ISerializable.hpp
   IPartitionResolver.hpp
   IPdxInstance.hpp

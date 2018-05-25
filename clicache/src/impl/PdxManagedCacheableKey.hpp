@@ -27,7 +27,7 @@
 
 #include "../geode_defs.hpp"
 #include "../IPdxSerializable.hpp"
-#include "../IGeodeDelta.hpp"
+#include "../IDelta.hpp"
 
 using namespace System;
 using namespace apache::geode::client;
@@ -68,7 +68,7 @@ namespace apache
           {
             m_className = marshal_as<std::string>(m_managedptr->GetType()->Name);
             m_hashcode = hashcode;
-            m_managedDeltaptr = dynamic_cast<Apache::Geode::Client::IGeodeDelta^>(managedptr);
+            m_managedDeltaptr = dynamic_cast<Apache::Geode::Client::IDelta^>(managedptr);
           }
 
           /// <summary>
@@ -130,7 +130,7 @@ namespace apache
           /// managed object may be created by the user and will be handled automatically by the GC.
           /// </summary>
           gcroot<Apache::Geode::Client::IPdxSerializable^> m_managedptr;
-          gcroot<Apache::Geode::Client::IGeodeDelta^> m_managedDeltaptr;
+          gcroot<Apache::Geode::Client::IDelta^> m_managedDeltaptr;
       };
     }  // namespace client
   }  // namespace geode

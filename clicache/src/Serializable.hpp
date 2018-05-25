@@ -25,7 +25,7 @@
 #include "end_native.hpp"
 
 #include "ISerializable.hpp"
-#include "IGeodeDelta.hpp"
+#include "IDelta.hpp"
 #include "native_shared_ptr.hpp"
 #include "impl/EnumInfo.hpp"
 #include "Log.hpp"

@@ -160,7 +160,7 @@ namespace apache
       {
         try {
           if (auto cloneable = dynamic_cast<ICloneable^>((
-            Apache::Geode::Client::IGeodeDelta^) m_managedptr)) {
+            Apache::Geode::Client::IDelta^) m_managedptr)) {
             auto Mclone = 
               dynamic_cast<Apache::Geode::Client::ISerializable^>(cloneable->Clone());
             return std::shared_ptr<Delta>(dynamic_cast<ManagedCacheableDeltaGeneric*>(

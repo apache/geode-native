@@ -20,7 +20,7 @@ using System;
 using Apache.Geode.Client;
 namespace Apache.Geode.Client.Tests
 {
-    public class DeltaEx : Apache.Geode.Client.IGeodeDelta, Apache.Geode.Client.ISerializable, ICloneable
+    public class DeltaEx : IDelta, IDataSerializable, ICloneable
     {
         private int counter;
         private bool IsDelta;

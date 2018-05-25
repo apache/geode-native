@@ -2240,7 +2240,7 @@ namespace javaobject
 
   #region Pdx Delta class
 
-  public class PdxDelta : IPdxSerializable, IGeodeDelta, ICloneable
+  public class PdxDelta : IPdxSerializable, IDelta, ICloneable
   {
     public static int GotDelta = 0;
     private int _delta = 0;
@@ -2276,7 +2276,7 @@ namespace javaobject
       get { return _delta; }
     }
 
-    #region IGeodeDelta Members
+    #region IDelta Members
 
     public void FromDelta(DataInput input)
     {

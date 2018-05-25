@@ -79,7 +79,7 @@ namespace Apache.Geode.Client.UnitTests
     private int m_valueCount;
   }
 
-  public class DeltaTestAD : IGeodeDelta, ISerializable
+  public class DeltaTestAD : IDelta, ISerializable
   {
     private int _deltaUpdate;
     private string _staticData;
@@ -96,7 +96,7 @@ namespace Apache.Geode.Client.UnitTests
     }
 
 
-    #region IGeodeDelta Members
+    #region IDelta Members
 
     public void FromDelta(DataInput input)
     {

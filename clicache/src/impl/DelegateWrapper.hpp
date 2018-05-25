@@ -83,7 +83,7 @@ namespace Apache
         std::shared_ptr<apache::geode::client::Serializable> NativeDelegateGeneric( )
         {
           auto tempObj = m_delegate( );
-          if(auto tempDelta = dynamic_cast<IGeodeDelta^>(tempObj))
+          if(auto tempDelta = dynamic_cast<IDelta^>(tempObj))
           {
             return std::shared_ptr<apache::geode::client::ManagedCacheableDeltaGeneric>(
               new apache::geode::client::ManagedCacheableDeltaGeneric(tempDelta));

@@ -98,7 +98,7 @@ namespace Apache
       {
         if (mg_obj == nullptr) return __nullptr;
         
-        if(auto sDelta = dynamic_cast<Apache::Geode::Client::IGeodeDelta^> (mg_obj))
+        if(auto sDelta = dynamic_cast<Apache::Geode::Client::IDelta^> (mg_obj))
         {
           return new native::ManagedCacheableDeltaGeneric(sDelta);
         }

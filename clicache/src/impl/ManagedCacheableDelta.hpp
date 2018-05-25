@@ -23,7 +23,7 @@
 #include "../geode_defs.hpp"
 #include "../begin_native.hpp"
 #include "../end_native.hpp"
-#include "../IGeodeDelta.hpp"
+#include "../IDelta.hpp"
 #include "../IDataSerializable.hpp"
 
 using namespace System;
@@ -36,7 +36,7 @@ namespace apache
     {
 
       /// <summary>
-      /// Wraps the managed <see cref="Apache.Geode.Client.IGeodeDelta" />
+      /// Wraps the managed <see cref="Apache.Geode.Client.IDelta" />
       /// object and implements the native <c>apache::geode::client::CacheableKey</c> interface.
       /// </summary>
       class ManagedCacheableDeltaGeneric
@@ -52,7 +52,7 @@ namespace apache
           /// The managed object.
           /// </param>
           inline ManagedCacheableDeltaGeneric(
-            Apache::Geode::Client::IGeodeDelta^ managedptr)
+            Apache::Geode::Client::IDelta^ managedptr)
             : Delta(), m_managedptr(managedptr)
           {
             m_managedSerializableptr = dynamic_cast<Apache::Geode::Client::IDataSerializable^>(managedptr);
@@ -61,7 +61,7 @@ namespace apache
           }
 
           inline ManagedCacheableDeltaGeneric(
-            Apache::Geode::Client::IGeodeDelta^ managedptr, int hashcode, int classId)
+            Apache::Geode::Client::IDelta^ managedptr, int hashcode, int classId)
             : Delta(),  m_managedptr(managedptr) 
           {
             m_hashcode = hashcode;
@@ -92,7 +92,7 @@ namespace apache
 
           virtual bool operator == (const ManagedCacheableDeltaGeneric& other) const;
 
-          inline Apache::Geode::Client::IGeodeDelta^ ptr() const
+          inline Apache::Geode::Client::IDelta^ ptr() const
           {
             return m_managedptr;
           }
@@ -107,11 +107,11 @@ namespace apache
 
           /// <summary>
           /// Using gcroot to hold the managed delegate pointer (since it cannot be stored directly).
-          /// Note: not using auto_gcroot since it will result in 'Dispose' of the IGeodeDelta
+          /// Note: not using auto_gcroot since it will result in 'Dispose' of the IDelta
           /// to be called which is not what is desired when this object is destroyed. Normally this
           /// managed object may be created by the user and will be handled automatically by the GC.
           /// </summary>
-          gcroot<Apache::Geode::Client::IGeodeDelta^> m_managedptr;
+          gcroot<Apache::Geode::Client::IDelta^> m_managedptr;
           gcroot<Apache::Geode::Client::IDataSerializable^> m_managedSerializableptr;
       };
 

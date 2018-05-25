@@ -219,7 +219,7 @@ namespace apache
       {
         try
         {
-          if (auto cloneable = dynamic_cast<ICloneable^>((Apache::Geode::Client::IGeodeDelta^) m_managedDeltaptr))
+          if (auto cloneable = dynamic_cast<ICloneable^>((Apache::Geode::Client::IDelta^) m_managedDeltaptr))
           {
             auto managedclone = dynamic_cast<Apache::Geode::Client::IPdxSerializable^>(cloneable->Clone());
 
