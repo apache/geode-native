@@ -41,6 +41,8 @@ The recommended generator for most unix platforms is 'Makefiles' (default):
 
 	$ cmake .. 
 
+For enabling C++ code coverage on Linux, see [Code Coverage](#code-coverage).
+
 #### Xcode
 The recommended generator for Xcode is `Xcode`:
 
@@ -63,6 +65,15 @@ For faster builds, use optional parallelism parameters in the last build step:
 #### Windows
 
 	$ cmake --build . -- /m
+
+### Code Coverage
+
+If building on Linux, you can enable C++ code coverage by adding `-DUSE_CODE_COVERAGE=ON` to the CMake [Generator](#generator) command. You can then generate a C++ code coverage report by downloading [lcov](http://ltp.sourceforge.net/coverage/lcov.php).  After acquiring lcov, finish the [Steps to build](#Steps-to-build) section above.  Then, run the tests as described in the [CONTRIBUTING.md](CONTRIBUTING.md). Finally, run the following commands from the `build` directory:
+
+    $ lcov --capture --directory . --output-file coverage.info
+    $ genhtml coverage.info --output-directory coverage_report
+
+You can then open the `index.html` file in the `coverage_report` directory using any browser.
 
 ## Installing
 By default a system-specific location is used by CMake as the destination of the `install` target, e.g., `/usr/local` on UNIX system. To explicitly specify the location in which the Native Client will be installed, add `-DCMAKE_INSTALL_PREFIX=/path/to/installation/destination` to the _initial_ `cmake` execution command.
