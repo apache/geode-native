@@ -494,7 +494,7 @@ namespace Apache
         case apache::geode::client::GeodeTypeIds::CacheableByte:
         {
           WriteByte(typeId);
-          WriteSByte((SByte)obj);
+          WriteByte((Byte)obj);
           return;
         }
         case apache::geode::client::GeodeTypeIds::CacheableBoolean:

@@ -123,7 +123,7 @@ namespace Apache
         //byte
         static Byte getByte(std::shared_ptr<native::Serializable> nativeptr);
         
-        static std::shared_ptr<native::CacheableKey> getCacheableByte(SByte val);
+        static std::shared_ptr<native::CacheableKey> getCacheableByte(Byte val);
         
         //boolean
         static bool getBoolean(std::shared_ptr<native::Serializable> nativeptr);

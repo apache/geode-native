@@ -454,7 +454,7 @@ namespace Apache
         {
         case apache::geode::client::GeodeTypeIds::CacheableByte:
         {
-          return ReadSByte();
+          return ReadByte();
         }
         case apache::geode::client::GeodeTypeIds::CacheableBoolean:
         {

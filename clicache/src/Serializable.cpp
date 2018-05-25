@@ -157,7 +157,7 @@ namespace Apache
         switch (typeId)
         {
         case native::GeodeTypeIds::CacheableByte: {
-          return Serializable::getCacheableByte((SByte)key);
+          return Serializable::getCacheableByte((Byte)key);
         }
         case native::GeodeTypeIds::CacheableBoolean:
           return Serializable::getCacheableBoolean((bool)key);
@@ -295,7 +295,7 @@ namespace Apache
         return ci->value();
       }
 
-      std::shared_ptr<native::CacheableKey> Serializable::getCacheableByte(SByte val)
+      std::shared_ptr<native::CacheableKey> Serializable::getCacheableByte(Byte val)
       {
         return native::CacheableByte::create(val);
       }

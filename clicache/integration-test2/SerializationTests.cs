@@ -81,7 +81,7 @@ namespace Apache.Geode.Client.IntegrationTests
             Assert.NotNull(region);
 
             putAndCheck(region, "CacheableString", "foo");
-            putAndCheck(region, "CacheableByte", (SByte)8);
+            putAndCheck(region, "CacheableByte", (Byte)8);
             putAndCheck(region, "CacheableInt16", (Int16)16);
             putAndCheck(region, "CacheableInt32", (Int32)32);
             putAndCheck(region, "CacheableInt64", (Int64)64);
@@ -91,7 +91,7 @@ namespace Apache.Geode.Client.IntegrationTests
             putAndCheck(region, "CacheableFloat", (float)2.5);
 
             putAndCheck(region, "CacheableStringArray", new String[] { "foo", "bar" });
-            putAndCheck(region, "CacheableBytes", new Byte[] { 8, 8 }); // TODO serializable not consistent with single byte
+            putAndCheck(region, "CacheableBytes", new Byte[] { 8, 8 });
             putAndCheck(region, "CacheableInt16Array", new Int16[] { 16, 16 });
             putAndCheck(region, "CacheableInt32Array", new Int32[] { 32, 32 });
             putAndCheck(region, "CacheableInt64Array", new Int64[] { 64, 64 });

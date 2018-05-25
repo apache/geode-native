@@ -482,7 +482,7 @@ namespace Apache
           {
             case native::GeodeTypeIds::CacheableByte:
             {
-              return (TValue)(int8_t)safe_cast<int8_t>(Serializable::getByte(dataSerializablePrimitive));
+              return safe_cast<TValue>(Serializable::getByte(dataSerializablePrimitive));
             }
             case native::GeodeTypeIds::CacheableBoolean:
             {
@@ -705,7 +705,7 @@ namespace Apache
 
         RegisterDataSerializablePrimitiveWrapper(
           gcnew DataSerializablePrimitiveWrapperDelegate(CacheableByte::Create),
-          native::GeodeTypeIds::CacheableByte, SByte::typeid);
+          native::GeodeTypeIds::CacheableByte, Byte::typeid);
 
         RegisterDataSerializablePrimitiveWrapper(
           gcnew DataSerializablePrimitiveWrapperDelegate(CacheableBoolean::Create),

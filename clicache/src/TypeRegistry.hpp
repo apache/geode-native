@@ -295,7 +295,7 @@ namespace Apache
           ManagedTypeToDsCode[stack->GetType()] = native::GeodeTypeIds::CacheableStack;
           ManagedTypeToDsCode[stack->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableStack;
 
-          ManagedTypeToDsCode[SByte::typeid] = native::GeodeTypeIds::CacheableByte;
+          ManagedTypeToDsCode[Byte::typeid] = native::GeodeTypeIds::CacheableByte;
           ManagedTypeToDsCode[Boolean::typeid] = native::GeodeTypeIds::CacheableBoolean;
           ManagedTypeToDsCode[Char::typeid] = native::GeodeTypeIds::CacheableCharacter;
           ManagedTypeToDsCode[Double::typeid] = native::GeodeTypeIds::CacheableDouble;
