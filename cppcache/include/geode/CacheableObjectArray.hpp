@@ -44,7 +44,7 @@ class DataOutput;
 class Serializable;
 
 class APACHE_GEODE_EXPORT CacheableObjectArray
- : public internal::DataSerializablePrimitive,
+    : public internal::DataSerializablePrimitive,
       public std::vector<std::shared_ptr<Cacheable>> {
  public:
   void toData(DataOutput& output) const override;

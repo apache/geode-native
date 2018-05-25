@@ -496,7 +496,7 @@ bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj,
 
   if (auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj)) {
     if (auto otherKeyType = std::dynamic_pointer_cast<CacheableKey>(otherObj)) {
-        return *keyType == *otherKeyType;
+      return *keyType == *otherKeyType;
     }
   }
 

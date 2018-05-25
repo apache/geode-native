@@ -31,8 +31,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class ClientHealthStats
- : public internal::DataSerializableFixedId_t<GeodeTypeIdsImpl::ClientHealthStats> {
+class ClientHealthStats : public internal::DataSerializableFixedId_t<
+                              GeodeTypeIdsImpl::ClientHealthStats> {
  public:
   void toData(DataOutput& output) const override;
 

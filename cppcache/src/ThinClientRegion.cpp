@@ -3456,8 +3456,7 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     // special case for scalar result
     partLen = input.readInt32();
     input.read();
-    auto intVal =
-        std::dynamic_pointer_cast<CacheableInt32>(input.readObject());
+    auto intVal = std::dynamic_pointer_cast<CacheableInt32>(input.readObject());
     m_queryResults->push_back(intVal);
 
     // TODO:
