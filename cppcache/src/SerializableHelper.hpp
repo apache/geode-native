@@ -87,7 +87,7 @@ inline bool SerializableHelper<DataSerializable>::metadataEqualTo(
 
 template <>
 inline bool SerializableHelper<PdxSerializable>::equalTo(
-    CacheImpl& cache, const PdxSerializable& lhs, const PdxSerializable& rhs) {
+    CacheImpl&, const PdxSerializable& lhs, const PdxSerializable& rhs) {
   return lhs == rhs;
 }
 
