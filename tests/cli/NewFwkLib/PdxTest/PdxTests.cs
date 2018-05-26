@@ -231,7 +231,7 @@ namespace Apache.Geode.Client.FwkLib
             pif.WriteByteArray("m_byte253", pt.Byte253);
             pif.WriteByteArray("m_byte65535", pt.Byte65535);
             pif.WriteByteArray("m_byte65536", pt.Byte65536);
-            //pif.WriteObject("m_pdxEnum", pt.PdxEnum);
+            pif.WriteObject("m_pdxEnum", pt.PdxEnum);
 
             pif.WriteObject("m_address", pt.AddressArray);
             pif.WriteObjectArray("m_objectArray", pt.ObjectArray);

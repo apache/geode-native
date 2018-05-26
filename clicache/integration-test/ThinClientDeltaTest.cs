@@ -194,11 +194,6 @@ namespace Apache.Geode.Client.UnitTests
       base.EndTest();
     }
 
-    public void createLRURegionAndAttachPool(string regionName, string poolName)
-    {
-      CacheHelper.CreateLRUTCRegion_Pool<object, object>(regionName, true, true, null, null, poolName, false, 3);
-    }
-
     public void createRegionAndAttachPool(string regionName, string poolName)
     {
       createRegionAndAttachPool(regionName, poolName, false);
@@ -210,11 +205,6 @@ namespace Apache.Geode.Client.UnitTests
         false, cloningEnabled);
     }
 
-    //public void createPooledRegion(string regionName, string poolName, string endpoints, string locators)
-    //{
-    //  CacheHelper.CreateTCRegion_Pool(regionName, true, true, null, endpoints, locators, poolName, false);
-    //}
-
     public void createPool(string name, string locators, string serverGroup,
       int redundancy, bool subscription)
     {
@@ -225,29 +215,6 @@ namespace Apache.Geode.Client.UnitTests
     {
       IRegion<object, object> region = CacheHelper.CreateExpirationRegion<object, object>(name,
           poolName, ExpirationAction.LocalInvalidate, TimeSpan.FromSeconds(5));
-    }
-
-    public void createExpirationRegion(string name)
-    {
-      createExpirationRegion(name, null);
-    }
-
-    public void CreateRegion(string name)
-    {
-      CreateRegion(name, false);
-    }
-
-    public void CreateRegion(string name, bool enableNotification)
-    {
-      CreateRegion(name, enableNotification, false);
-    }
-    public void CreateRegion(string name, bool enableNotification, bool cloningEnabled)
-    {
-      var regionAttributesFactory = new RegionAttributesFactory<object, object>();
-      regionAttributesFactory.SetCacheListener(new SimpleCacheListener<object, object>());
-      regionAttributesFactory.SetCloningEnabled(cloningEnabled);
-      var regionAttributes = regionAttributesFactory.Create();
-      CacheHelper.CreateRegion<object, object>(name, regionAttributes);
     }
 
     void DoPutWithDelta()
@@ -331,83 +298,6 @@ namespace Apache.Geode.Client.UnitTests
       //Check Contains with removed entry. Result should be false.
       bool updatedcontainsOpflag = reg.Contains(myentry);
       Assert.IsFalse(updatedcontainsOpflag, "Result should be false as key & value are removed");
-    }
-
-    void DoNotificationWithDelta()
-    {
-      try
-      {
-        CacheHelper.DCache.TypeRegistry.RegisterType(DeltaEx.create);
-      }
-      catch (IllegalStateException)
-      {
-        //do nothig.
-      }
-
-      string cKey = m_keys[0];
-      DeltaEx val = new DeltaEx();
-      IRegion<object, object> reg = CacheHelper.GetRegion<object, object>("DistRegionAck");
-      reg[cKey] = val;
-      val.SetDelta(true);
-      reg[cKey] = val;
-
-      string cKey1 = m_keys[1];
-      DeltaEx val1 = new DeltaEx();
-      reg[cKey1] = val1;
-      val1.SetDelta(true);
-      reg[cKey1] = val1;
-      DeltaEx.ToDeltaCount = 0;
-      DeltaEx.ToDataCount = 0;
-    }
-
-    void DoNotificationWithDefaultCloning()
-    {
-      string cKey = m_keys[0];
-      DeltaTestImpl val = new DeltaTestImpl();
-      IRegion<object, object> reg = CacheHelper.GetRegion<object, object>("DistRegionAck");
-      reg[cKey] = val;
-      val.SetIntVar(2);
-      val.SetDelta(true);
-      reg[cKey] = val;
-
-      javaobject.PdxDelta pd = new javaobject.PdxDelta(1001);
-      for (int i = 0; i < 10; i++)
-      {
-        reg["pdxdelta"] = pd;
-      }
-    }
-
-    void DoNotificationWithDeltaLRU()
-    {
-      try
-      {
-        CacheHelper.DCache.TypeRegistry.RegisterType(DeltaEx.create);
-      }
-      catch (IllegalStateException)
-      {
-        //do nothig.
-      }
-
-      string cKey1 = "key1";
-      string cKey2 = "key2";
-      string cKey3 = "key3";
-      string cKey4 = "key4";
-      string cKey5 = "key5";
-      string cKey6 = "key6";
-      DeltaEx val1 = new DeltaEx();
-      DeltaEx val2 = new DeltaEx();
-      IRegion<object, object> reg = CacheHelper.GetRegion<object, object>("DistRegionAck");
-      reg[cKey1] = val1;
-      reg[cKey2] = val1;
-      reg[cKey3] = val1;
-      reg[cKey4] = val1;
-      reg[cKey5] = val1;
-      reg[cKey6] = val1;
-      val2.SetDelta(true);
-      reg[cKey1] = val2;
-
-      DeltaEx.ToDeltaCount = 0;
-      DeltaEx.ToDataCount = 0;
     }
 
     void DoExpirationWithDelta()
@@ -621,64 +511,6 @@ namespace Apache.Geode.Client.UnitTests
       theQuery.Execute();
     }
 
-    void VerifyDeltaCount()
-    {
-      Thread.Sleep(1000);
-      Util.Log("Total Data count" + DeltaEx.FromDataCount);
-      Util.Log("Total Data count" + DeltaEx.FromDeltaCount);
-      if (DeltaEx.FromDataCount != 3)
-        Assert.Fail("Count of fromData called should be 3 ");
-      if (DeltaEx.FromDeltaCount != 2)
-        Assert.Fail("Count of fromDelta called should be 2 ");
-      if (SimpleCacheListener<object, object>.isSuccess == false)
-        Assert.Fail("Listener failure");
-      SimpleCacheListener<object, object>.isSuccess = false;
-      if (DeltaEx.CloneCount != 2)
-        Assert.Fail("Clone count should be 2, is " + DeltaEx.CloneCount);
-
-      DeltaEx.FromDataCount = 0;
-      DeltaEx.FromDeltaCount = 0;
-      DeltaEx.CloneCount = 0;
-    }
-
-    void VerifyCloning()
-    {
-      Thread.Sleep(1000);
-      string cKey = m_keys[0];
-      IRegion<object, object> reg = CacheHelper.GetRegion<object, object>("DistRegionAck");
-      DeltaTestImpl val = reg[cKey] as DeltaTestImpl;
-
-      if (val.GetIntVar() != 2)
-        Assert.Fail("Int value after cloning should be 2, is " + val.GetIntVar());
-      if (DeltaTestImpl.GetFromDataCount() != 2)
-        Assert.Fail("After cloning, fromDataCount should have been 2, is " + DeltaTestImpl.GetFromDataCount());
-      if (DeltaTestImpl.GetToDataCount() != 1)
-        Assert.Fail("After cloning, toDataCount should have been 1, is " + DeltaTestImpl.GetToDataCount());
-
-      System.Threading.Thread.Sleep(5000);
-      //Assert.Greater(javaobject.PdxDelta.GotDelta, 7, "this should have recieve delta");
-      javaobject.PdxDelta pd = (javaobject.PdxDelta)(reg.GetLocalView()["pdxdelta"]);
-      Assert.Greater(pd.Delta, 7, "this should have recieve delta");
-    }
-
-    void VerifyDeltaCountLRU()
-    {
-      Thread.Sleep(1000);
-      if (DeltaEx.FromDataCount != 8)
-      {
-        Util.Log("DeltaEx.FromDataCount = " + DeltaEx.FromDataCount);
-        Util.Log("DeltaEx.FromDeltaCount = " + DeltaEx.FromDeltaCount);
-        Assert.Fail("Count should have been 8. 6 for common put and two when pulled from database and deserialized");
-      }
-      if (DeltaEx.FromDeltaCount != 1)
-      {
-        Util.Log("DeltaEx.FromDeltaCount = " + DeltaEx.FromDeltaCount);
-        Assert.Fail("Count should have been 1");
-      }
-      DeltaEx.FromDataCount = 0;
-      DeltaEx.FromDeltaCount = 0;
-    }
-
     void VerifyCqDeltaCount()
     {
       // Wait for Cq event processing in listener
@@ -692,6 +524,7 @@ namespace Apache.Geode.Client.UnitTests
         Assert.Fail("Value from CQ event is incorrect");
       }
     }
+
     void VerifyExpirationDeltaCount()
     {
       Thread.Sleep(1000);
@@ -701,81 +534,6 @@ namespace Apache.Geode.Client.UnitTests
         Assert.Fail("Count should have been 0.");
       DeltaEx.FromDataCount = 0;
       DeltaEx.FromDeltaCount = 0;
-    }
-
-    void runNotificationWithDelta()
-    {
-      CacheHelper.SetupJavaServers(true, "cacheserver_with_delta.xml");
-      CacheHelper.StartJavaLocator(1, "GFELOC1");
-      CacheHelper.StartJavaServerWithLocators(1, "GFECS5", 1);
-
-      m_client1.Call(createPool, "__TEST_POOL1__", CacheHelper.Locators, (string)null, 0, true);
-      m_client1.Call(createRegionAndAttachPool, "DistRegionAck", "__TEST_POOL1__", true);
-
-      m_client2.Call(createPool, "__TEST_POOL1__", CacheHelper.Locators, (string)null, 0, true);
-      m_client2.Call(createRegionAndAttachPool, "DistRegionAck", "__TEST_POOL1__", true);
-
-      m_client2.Call(registerClassCl2);
-
-      m_client1.Call(DoNotificationWithDelta);
-      m_client2.Call(VerifyDeltaCount);
-      m_client1.Call(Close);
-      m_client2.Call(Close);
-
-      CacheHelper.StopJavaServer(1);
-      CacheHelper.StopJavaLocator(1);
-      CacheHelper.ClearEndpoints();
-      CacheHelper.ClearLocators();
-    }
-
-    void runNotificationWithDefaultCloning()
-    {
-      CacheHelper.SetupJavaServers(true, "cacheserver_with_delta_test_impl.xml");
-      CacheHelper.StartJavaLocator(1, "GFELOC1");
-      CacheHelper.StartJavaServerWithLocators(1, "GFECS5", 1);
-
-      m_client1.Call(createPool, "__TEST_POOL1__", CacheHelper.Locators, (string)null, 0, true);
-      m_client1.Call(createRegionAndAttachPool, "DistRegionAck", "__TEST_POOL1__", true);
-
-      m_client2.Call(createPool, "__TEST_POOL1__", CacheHelper.Locators, (string)null, 0, true);
-      m_client2.Call(createRegionAndAttachPool, "DistRegionAck", "__TEST_POOL1__", true);
-
-      m_client1.Call(registerClassDeltaTestImpl);
-      m_client2.Call(registerClassDeltaTestImpl);
-
-      m_client1.Call(DoNotificationWithDefaultCloning);
-      m_client2.Call(VerifyCloning);
-      m_client1.Call(Close);
-      m_client2.Call(Close);
-
-      CacheHelper.StopJavaServer(1);
-      CacheHelper.StopJavaLocator(1);
-      CacheHelper.ClearEndpoints();
-      CacheHelper.ClearLocators();
-    }
-
-    void runNotificationWithDeltaWithOverFlow()
-    {
-      CacheHelper.SetupJavaServers(true, "cacheserver_with_delta.xml");
-      CacheHelper.StartJavaLocator(1, "GFELOC1");
-      CacheHelper.StartJavaServerWithLocators(1, "GFECS1", 1);
-
-      m_client1.Call(createPool, "__TEST_POOL1__", CacheHelper.Locators, (string)null, 0, true);
-      m_client1.Call(createLRURegionAndAttachPool, "DistRegionAck", "__TEST_POOL1__");
-
-      m_client2.Call(createPool, "__TEST_POOL1__", CacheHelper.Locators, (string)null, 0, true);
-      m_client2.Call(createLRURegionAndAttachPool, "DistRegionAck", "__TEST_POOL1__");
-
-      m_client2.Call(registerClassCl2);
-
-      m_client1.Call(DoNotificationWithDeltaLRU);
-      m_client2.Call(VerifyDeltaCountLRU);
-      m_client1.Call(Close);
-      m_client2.Call(Close);
-      CacheHelper.StopJavaServer(1);
-      CacheHelper.StopJavaLocator(1);
-      CacheHelper.ClearEndpoints();
-      CacheHelper.ClearLocators();
     }
 
     void runCqWithDelta()
@@ -832,55 +590,31 @@ namespace Apache.Geode.Client.UnitTests
 
     //#region Tests
 
-    //[Test]
+    [Test]
     public void PutWithDeltaAD()
     {
       runDeltaWithAppdomian(false);
     }
 
-    //hangs [Test]
-    public void PutWithDeltaADWithCloning()
-    {
-      runDeltaWithAppdomian(true);
-    }
-
-    //passed [Test]
+    [Test]
     public void PutWithDelta()
     {
       runPutWithDelta();
     }
 
-    //passed [Test]
+    [Test]
     public void Put_Contains_Remove_WithDelta()
     {
       runPut_Contains_Remove_WithDelta();
     }
 
-    //hangs!! [Test]
-    public void NotificationWithDelta()
-    {
-      runNotificationWithDelta();
-    }
-
-    //hangs! [Test]
-    public void NotificationWithDefaultCloning()
-    {
-      runNotificationWithDefaultCloning();
-    }
-
-    //fails/hangs/dll load issues [Test]
-    public void NotificationWithDeltaWithOverFlow()
-    {
-      runNotificationWithDeltaWithOverFlow();
-    }
-
-    // passed [Test]
+    [Test]
     public void CqWithDelta()
     {
       runCqWithDelta();
     }
 
-    //passed [Test]
+    [Test]
     public void ExpirationWithDelta()
     {
       runExpirationWithDelta();
