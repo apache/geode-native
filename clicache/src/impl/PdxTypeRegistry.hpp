@@ -20,6 +20,7 @@
 #include "../begin_native.hpp"
 #include "SerializationRegistry.hpp"
 #include "../end_native.hpp"
+
 #include "PdxType.hpp"
 #include "PdxRemotePreservedData.hpp"
 #include "../IPdxSerializable.hpp"
@@ -44,6 +45,7 @@ namespace Apache
         public:
 
           PdxTypeRegistry(Cache^ cache) :m_cache(cache) {}
+
           //test hook;
           int testGetNumberOfPdxIds();
 

@@ -40,12 +40,12 @@ class APACHE_GEODE_EXPORT DataSerializable : public virtual Serializable {
   /**
    * @brief serialize this object
    **/
-  virtual void toData(DataOutput &dataOutput) const = 0;
+  virtual void toData(DataOutput& dataOutput) const = 0;
 
   /**
    * @brief deserialize this object.
    **/
-  virtual void fromData(DataInput &dataInput) = 0;
+  virtual void fromData(DataInput& dataInput) = 0;
 
   /**
    * @brief Return the classId of the instance being serialized.

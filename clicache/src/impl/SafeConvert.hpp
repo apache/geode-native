@@ -32,7 +32,6 @@
 #include "../CqEvent.hpp"
 #include "PdxManagedCacheableKey.hpp"
 #include "PdxWrapper.hpp"
-//TODO::split
 #include "../CqEvent.hpp"
 #include "../UserFunctionExecutionException.hpp"
 #include "../Cache.hpp"
@@ -45,7 +44,7 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
-			interface class IPdxSerializable;
+      interface class IPdxSerializable;
       public ref class SafeConvertClassGeneric
       {
       };
@@ -63,27 +62,27 @@ namespace Apache
         {
           return managedDataSerializable->ptr();
         }
-			  else if (auto managedCacheableDeltaGeneric = std::dynamic_pointer_cast<native::ManagedCacheableDeltaGeneric>(serializableObject))
+        else if (auto managedCacheableDeltaGeneric = std::dynamic_pointer_cast<native::ManagedCacheableDeltaGeneric>(serializableObject))
         {
           return dynamic_cast<Apache::Geode::Client::IDataSerializable^>(managedCacheableDeltaGeneric->ptr());
         }
-				else if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(serializableObject))
+        else if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(serializableObject))
         {
           return gcnew UserFunctionExecutionException(mg_UFEEobj);
         }
-				else if (auto managedPrimitive = std::dynamic_pointer_cast<native::ManagedDataSerializablePrimitive>(serializableObject))
-				{           
+        else if (auto managedPrimitive = std::dynamic_pointer_cast<native::ManagedDataSerializablePrimitive>(serializableObject))
+        {           
           return managedPrimitive->ptr();
         } 
-				else if (auto primitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(serializableObject))
-				{           
+        else if (auto primitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(serializableObject))
+        {           
           if (auto wrapperMethod = TypeRegistry::GetDataSerializablePrimitiveWrapperDelegateForDsCode(primitive->getDsCode()))
           {
             return wrapperMethod(primitive);
           }
         }
-				else if (auto dataSerializableFixedId = std::dynamic_pointer_cast<native::ManagedDataSerializableFixedId>(serializableObject))
-				{           
+        else if (auto dataSerializableFixedId = std::dynamic_pointer_cast<native::ManagedDataSerializableFixedId>(serializableObject))
+        {           
           return dataSerializableFixedId->ptr();
         }
         else if (auto dataSerializableInternal = std::dynamic_pointer_cast<native::ManagedDataSerializableInternal>(serializableObject))

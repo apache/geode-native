@@ -36,7 +36,6 @@ namespace Apache.Geode.Client.UnitTests
     }
   }
 
-  // VJR: TODO: IDataSerializable should be replaced by IPdxSerializable when ready
   class DefaultType : IDataSerializable
   {
     bool m_cacheableBoolean;

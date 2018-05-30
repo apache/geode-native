@@ -17,11 +17,9 @@
 
 #pragma once
 
-
 #include "../geode_defs.hpp"
 #include "PdxLocalWriter.hpp"
 #include "PdxType.hpp"
-//#include "../DataOutput.hpp"
 
 using namespace System;
 
@@ -33,14 +31,15 @@ namespace Apache
     {
 
       ref class DataOutput;
+
       namespace Internal
       {
         ref class PdxWriterWithTypeCollector : public PdxLocalWriter
         {
         private:
-        
+
           System::Collections::Generic::List<Int32>^ m_offsets;
-          void initialize();          
+          void initialize();
 
         public:
 
@@ -53,9 +52,9 @@ namespace Apache
           }
 
           virtual void AddOffset() override;
-          
+
           virtual void EndObjectWriting() override;
-          
+
           virtual Int32 calculateLenWithOffsets() override;
 
           virtual void WriteOffsets(Int32 len) override;
@@ -64,85 +63,85 @@ namespace Apache
 
           property PdxType^ PdxLocalType
           {
-            PdxType^ get() {return m_pdxType;}
+            PdxType^ get() { return m_pdxType; }
           }
-        
+
           /// <summary>
           /// Write a byte to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The byte to write.</param>
-          virtual IPdxWriter^ WriteByte( String^ fieldName, SByte value ) override;
+          virtual IPdxWriter^ WriteByte(String^ fieldName, SByte value) override;
 
           /// <summary>
           /// Write a signed byte to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The signed byte to write.</param>
-          virtual IPdxWriter^ WriteSByte( String^ fieldName, SByte value ) override;
+          virtual IPdxWriter^ WriteSByte(String^ fieldName, SByte value) override;
 
           /// <summary>
           /// Write a boolean value to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The boolean value to write.</param>
-					virtual IPdxWriter^ WriteBoolean( String^ fieldName, Boolean value ) override;
+          virtual IPdxWriter^ WriteBoolean(String^ fieldName, Boolean value) override;
 
           /// <summary>
           /// Write a char value to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The char value to write.</param>
-          virtual IPdxWriter^ WriteChar( String^ fieldName, Char value ) override;
+          virtual IPdxWriter^ WriteChar(String^ fieldName, Char value) override;
 
           /// <summary>
           /// Write an unsigned short integer (System::Int16) to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The unsigned 16-bit integer to write.</param>
-          virtual IPdxWriter^ WriteUInt16( String^ fieldName, System::UInt16 value ) override;
+          virtual IPdxWriter^ WriteUInt16(String^ fieldName, System::UInt16 value) override;
 
           /// <summary>
           /// Write an unsigned 32-bit integer to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The unsigned 32-bit integer to write.</param>
-          virtual IPdxWriter^ WriteUInt32( String^ fieldName, System::UInt32 value ) override;
+          virtual IPdxWriter^ WriteUInt32(String^ fieldName, System::UInt32 value) override;
 
           /// <summary>
           /// Write an unsigned 64-bit integer to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The unsigned 64-bit integer to write.</param>
-          virtual IPdxWriter^ WriteUInt64( String^ fieldName, System::UInt64 value ) override;
+          virtual IPdxWriter^ WriteUInt64(String^ fieldName, System::UInt64 value) override;
 
           /// <summary>
           /// Write a 16-bit integer to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The 16-bit integer to write.</param>
-          virtual IPdxWriter^ WriteShort( String^ fieldName, short value ) override;
+          virtual IPdxWriter^ WriteShort(String^ fieldName, short value) override;
 
           /// <summary>
           /// Write a 32-bit integer to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The 32-bit integer to write.</param>
-					virtual IPdxWriter^ WriteInt( String^ fieldName, Int32 value ) override;
+          virtual IPdxWriter^ WriteInt(String^ fieldName, Int32 value) override;
 
           /// <summary>
           /// Write a 64-bit integer to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The 64-bit integer to write.</param>
-          virtual IPdxWriter^ WriteLong( String^ fieldName, Int64 value ) override;
+          virtual IPdxWriter^ WriteLong(String^ fieldName, Int64 value) override;
 
           /// <summary>
           /// Write a float to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The float value to write.</param>
-          virtual IPdxWriter^ WriteFloat( String^ fieldName, float value ) override;
+          virtual IPdxWriter^ WriteFloat(String^ fieldName, float value) override;
 
           /// <summary>
           /// Write a double precision real number to the <c>IPdxWriter</c>.
@@ -151,7 +150,7 @@ namespace Apache
           /// <param name="value">
           /// The double precision real number to write.
           /// </param>
-          virtual IPdxWriter^ WriteDouble( String^ fieldName, double value ) override;
+          virtual IPdxWriter^ WriteDouble(String^ fieldName, double value) override;
 
           /// <summary>
           /// Write a string using java-modified UTF-8 encoding to
@@ -161,7 +160,7 @@ namespace Apache
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The UTF encoded string to write.</param>
-          virtual IPdxWriter^ WriteString( String^ fieldName, String^ value ) override;
+          virtual IPdxWriter^ WriteString(String^ fieldName, String^ value) override;
 
           /// <summary>
           /// Write a string using java-modified UTF-8 encoding to
@@ -170,7 +169,7 @@ namespace Apache
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The UTF encoded string to write.</param>
-          virtual IPdxWriter^ WriteUTFHuge( String^ fieldName, String^ value ) override;
+          virtual IPdxWriter^ WriteUTFHuge(String^ fieldName, String^ value) override;
 
           /// <summary>
           /// Write a string(only ASCII char) to
@@ -179,36 +178,28 @@ namespace Apache
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The UTF encoded string to write.</param>
-          virtual IPdxWriter^ WriteASCIIHuge( String^ fieldName, String^ value ) override;
+          virtual IPdxWriter^ WriteASCIIHuge(String^ fieldName, String^ value) override;
 
           /// <summary>
           /// Write an <c>Object</c> object to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="obj">The object to write.</param>
-          virtual IPdxWriter^ WriteObject( String^ fieldName, Object^ obj ) override;
-
-          
-          /// <summary>
-          /// Write an collection to the <c>IPdxWriter</c>.
-          /// </summary>
-          /// <param name="fieldName">The name of the field associated with the value.</param>
-          /// <param name="collection">The collection to write.</param>
-          //virtual IPdxWriter^ WriteCollection( String^ fieldName, System::Collections::IList^ collection) override;
+          virtual IPdxWriter^ WriteObject(String^ fieldName, Object^ obj) override;
 
           /// <summary>
           /// Write an collection to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="date">The date to write.</param>
-          virtual IPdxWriter^ WriteDate( String^ fieldName, System::DateTime date) override;
+          virtual IPdxWriter^ WriteDate(String^ fieldName, System::DateTime date) override;
 
           /// <summary>
           /// Write an collection to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="boolArray">The boolArray to write.</param>
-					virtual IPdxWriter^ WriteBooleanArray( String^ fieldName, array<Boolean>^ boolArray) override;
+          virtual IPdxWriter^ WriteBooleanArray(String^ fieldName, array<Boolean>^ boolArray) override;
 
           /// <summary>
           /// Write an collection to the <c>IPdxWriter</c>.
@@ -307,18 +298,18 @@ namespace Apache
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="byteArrays">The byteArrays to write.</param>
           virtual IPdxWriter^ WriteArrayOfByteArrays(String^ fieldName, array<array<Byte>^>^ byteArrays) override;
-          
+
           //TODO:
           //virtual IPdxWriter^ WriteEnum(String^ fieldName, Enum e) ;
           //virtual IPdxWriter^ WriteInetAddress(String^ fieldName, InetAddress address);
 
-          
+
           virtual IPdxWriter^ MarkIdentityField(String^ fieldName) override;
 
           virtual IPdxWriter^ WriteUnreadFields(IPdxUnreadFields^ unread) override;
-        };      
+        };
+
+      }  // namespace Internal
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-
-}

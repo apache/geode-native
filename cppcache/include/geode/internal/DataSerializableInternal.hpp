@@ -35,8 +35,8 @@ class APACHE_GEODE_EXPORT DataSerializableInternal
     : public virtual Serializable {
  public:
   ~DataSerializableInternal() override = default;
-  virtual void toData(DataOutput &dataOutput) const = 0;
-  virtual void fromData(DataInput &dataInput) = 0;
+  virtual void toData(DataOutput& dataOutput) const = 0;
+  virtual void fromData(DataInput& dataInput) = 0;
   virtual int8_t getInternalId() const = 0;
 };
 

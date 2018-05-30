@@ -35,7 +35,7 @@ add_library( ${PROJECT_NAME} SHARED
     xunit.runner.json
     packages.config
     RegionTest.cs
-	SerializationTests.cs
+    SerializationTests.cs
 )
 
 set_source_files_properties(cache.xml xunit.runner.json geode.properties PROPERTIES
@@ -46,7 +46,7 @@ set_source_files_properties(cache.xml xunit.runner.json geode.properties PROPERT
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
     Apache.Geode
-	PdxClassLibrary
+    PdxClassLibrary
 )
 
 set_target_properties( ${PROJECT_NAME} PROPERTIES

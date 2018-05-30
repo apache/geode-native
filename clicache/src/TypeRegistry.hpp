@@ -173,25 +173,25 @@ namespace Apache
         static inline int8_t GetDsCodeForManagedType(Type^ managedType)
         {
           int8_t retVal = 0;
-					if (!ManagedTypeToDsCode->TryGetValue(managedType, retVal))
-					{
-						if (managedType->IsGenericType)
-						{
-							ManagedTypeToDsCode->TryGetValue(managedType->GetGenericTypeDefinition(), retVal);
-						}
-					}
+          if (!ManagedTypeToDsCode->TryGetValue(managedType, retVal))
+          {
+            if (managedType->IsGenericType)
+            {
+              ManagedTypeToDsCode->TryGetValue(managedType->GetGenericTypeDefinition(), retVal);
+            }
+          }
           return retVal;
         }
 
-				inline TypeFactoryMethod^ GetDataSerializableFixedTypeFactoryMethodForFixedId(Int32 fixedId)
-				{
-				  return FixedIdToDataSerializableFixedIdTypeFactoryMethod[fixedId];
-				}
+        inline TypeFactoryMethod^ GetDataSerializableFixedTypeFactoryMethodForFixedId(Int32 fixedId)
+        {
+          return FixedIdToDataSerializableFixedIdTypeFactoryMethod[fixedId];
+        }
 
-				inline TypeFactoryMethod^ GetDataSerializablePrimitiveTypeFactoryMethodForDsCode(int8_t dsCode)
-				{
-				  return DsCodeToDataSerializablePrimitiveTypeFactoryMethod[dsCode];
-				}
+        inline TypeFactoryMethod^ GetDataSerializablePrimitiveTypeFactoryMethodForDsCode(int8_t dsCode)
+        {
+          return DsCodeToDataSerializablePrimitiveTypeFactoryMethod[dsCode];
+        }
 
         static inline DataSerializablePrimitiveWrapperDelegate^ GetDataSerializablePrimitiveWrapperDelegateForDsCode(int8_t dsCode)
         {
@@ -230,7 +230,7 @@ namespace Apache
         Dictionary<UInt32, TypeFactoryMethod^>^ DelegateMapGeneric =
           gcnew Dictionary<UInt32, TypeFactoryMethod^>();
 
-			  Dictionary<Byte, TypeFactoryMethod^>^ DsCodeToDataSerializablePrimitiveTypeFactoryMethod =
+        Dictionary<Byte, TypeFactoryMethod^>^ DsCodeToDataSerializablePrimitiveTypeFactoryMethod =
           gcnew Dictionary<Byte, TypeFactoryMethod^>();
 
         Dictionary<Byte, TypeFactoryNativeMethodGeneric^>^ DsCodeToDataSerializablePrimitiveNativeDelegate =
@@ -239,7 +239,7 @@ namespace Apache
         Dictionary<Int32, TypeFactoryMethod^>^ FixedIdToDataSerializableFixedIdTypeFactoryMethod =
           gcnew Dictionary<Int32, TypeFactoryMethod^>();
 
-			  Dictionary<Int32, TypeFactoryNativeMethodGeneric^>^ FixedIdToDataSerializableFixedIdNativeDelegate =
+        Dictionary<Int32, TypeFactoryNativeMethodGeneric^>^ FixedIdToDataSerializableFixedIdNativeDelegate =
           gcnew Dictionary<Int32, TypeFactoryNativeMethodGeneric^>();
 
         // Fixed .NET to DSCode mapping
@@ -321,4 +321,3 @@ namespace Apache
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-

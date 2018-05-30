@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-
-#include "PdxWriterWithTypeCollector.hpp"
-#include "../DataOutput.hpp"
 #include "../begin_native.hpp"
 #include <geode/GeodeTypeIds.hpp>
 #include <PdxTypes.hpp>
 #include "../end_native.hpp"
 
+#include "PdxWriterWithTypeCollector.hpp"
+#include "../DataOutput.hpp"
 #include "PdxHelper.hpp"
 
 using namespace System;
@@ -214,14 +213,6 @@ namespace Apache
           PdxLocalWriter::WriteObject(fieldName, obj);
           return this;
         }
-
-        //TODO serializable not a PdxFieldTypeId
-        //IPdxWriter^ PdxWriterWithTypeCollector::WriteCollection(String^ fieldName, System::Collections::IList^ obj)
-        //{
-        //  m_pdxType->AddVariableLengthTypeField(fieldName, /*obj->GetType()->FullName*/"Collection", apache::geode::client::GeodeTypeIds::CacheableArrayList);
-        //  PdxLocalWriter::WriteCollection(fieldName, obj);
-        //  return this;
-        //}
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteDate(String^ fieldName, System::DateTime date)
         {

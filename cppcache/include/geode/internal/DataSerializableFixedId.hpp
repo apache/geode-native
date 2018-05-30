@@ -36,9 +36,9 @@ class APACHE_GEODE_EXPORT DataSerializableFixedId
  public:
   ~DataSerializableFixedId() override = default;
 
-  virtual void toData(DataOutput &dataOutput) const = 0;
+  virtual void toData(DataOutput& dataOutput) const = 0;
 
-  virtual void fromData(DataInput &dataInput) = 0;
+  virtual void fromData(DataInput& dataInput) = 0;
 
   virtual int32_t getDSFID() const = 0;
 };

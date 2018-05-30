@@ -46,9 +46,7 @@ public class GeodeServer : IDisposable
                             " -e \"configure pdx " + readSerializedStr + "\"" +
                             " -e \"start server --bind-address=localhost --server-port=0 --log-level=all --classpath=" + Config.JavaobjectJarPath + "\"" +
                             " -e \"create region --name=" + regionName + " --type=PARTITION\"" +
-                            " -e \"create region --name=testRegion1 --type=PARTITION\"" +
-                            " -e \"create region --name=DistRegionAck --type=REPLICATE\"",
-//                            " -e \"create region --name=DistRegionAck --type=REPLICATE --cache-listener=javaobject.PdxCacheListener\"",
+                            " -e \"create region --name=testRegion1 --type=PARTITION\"",
                 WindowStyle = ProcessWindowStyle.Hidden,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,

@@ -151,12 +151,6 @@ namespace Apache
         virtual Object^ ReadObject( String^ fieldName )override;
 
         /// <summary>
-        /// Read a collection from the data.
-        /// </summary>
-        /// <param name="fieldName">The name of a member field whose value to read.</param>
-        //virtual void ReadCollection( String^ fieldName, System::Collections::IList^ collection)override;
-
-        /// <summary>
         /// Read a Date from the data. 
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
