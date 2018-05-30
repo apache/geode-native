@@ -43,7 +43,6 @@
 #include "GeodeTypeIdsImpl.hpp"
 #include "MemberListForVersionStamp.hpp"
 #include "config.h"
-//#include "PdxHelper.hpp"
 
 #if defined(_MACOSX)
 namespace ACE_VERSIONED_NAMESPACE_NAME {
