@@ -639,7 +639,7 @@ namespace Apache
           /// remove all entries in the region.	
           /// For local region instance - remove all entries in the local region.
           /// For distributed region instance - remove all entries in the local region,
-	      /// and propagate the operation to server.
+	  /// and propagate the operation to server.
           /// </summary>
           /// <param name="callbackArg">
           /// argument that is passed to the callback functions
