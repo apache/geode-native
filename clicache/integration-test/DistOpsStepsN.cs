@@ -121,7 +121,7 @@ namespace Apache.Geode.Client.UnitTests
           }
           else
           {
-            string cVal = region.Get(cKey).ToString();
+            var cVal = region.Get(cKey).ToString();
             Assert.IsNotNull(cVal, "Value should not be null.");
             if (cVal != val)
               testValueCnt++;
@@ -165,7 +165,7 @@ namespace Apache.Geode.Client.UnitTests
 
     protected virtual object GetEntry(string regionName, string key)
     {
-      object val = CacheHelper.GetVerifyRegion<string, string>(regionName).Get(key);
+      var val = CacheHelper.GetVerifyRegion<string, string>(regionName).Get(key);
       if (val != null)
       {
         Util.Log(
