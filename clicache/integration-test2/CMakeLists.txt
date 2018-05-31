@@ -20,6 +20,9 @@ set(CMAKE_CSharp_FLAGS "/langversion:5")
 
 get_target_property(JAVAOBJECT_JAR_PATH javaobject JAR_FILE)
 
+set(CRYPTO_IMPL_PATH "/../../../cryptoimpl/${CMAKE_BUILD_TYPE}")
+set(OPENSSL_PATH "/../../../dependencies/openssl/openssl-extern-prefix/${CMAKE_BUILD_TYPE}/bin")
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINARY_DIR}/packages.config COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cs.in ${CMAKE_CURRENT_BINARY_DIR}/Config.cs)
 

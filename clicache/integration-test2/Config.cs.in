@@ -31,11 +31,11 @@ public class Config
 
   public static string CryptoImplPath
   {
-    get { return @"/../../../cryptoimpl/@CMAKE_BUILD_TYPE@"; }
+    get { return @"@CRYPTO_IMPL_PATH@"; }
   }
 
   public static string OpenSSLPath
   {
-    get { return @"/../../../dependencies/openssl/openssl-extern-prefix/@CMAKE_BUILD_TYPE@/bin"; }
+    get { return @"@OPENSSL_PATH@"; }
   }
 }
