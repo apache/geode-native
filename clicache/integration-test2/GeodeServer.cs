@@ -57,7 +57,7 @@ public class GeodeServer : IDisposable
                                 " -e \"connect --locator=localhost[" + LocatorPort + "] --use-ssl --key-store=" + Environment.CurrentDirectory + "/ServerSslKeys/server_keystore.jks --key-store-password=gemstone " +
                                 " --trust-store=" + Environment.CurrentDirectory + "/ServerSslKeys/server_truststore.jks --trust-store-password=gemstone\"" +
                                 " -e \"configure pdx " + readSerializedStr + "\"" +
-                                " -e \"start server --bind-address=localhost --server-port=0 --log-level=all --classpath=" + Config.JavaobjectJarPath + "\"" +
+                                " -e \"start server --bind-address=localhost --server-port=0 --log-level=all" +
                                 " --J=-Dgemfire.ssl-enabled-components=server,locator,jmx --J=-Dgemfire.ssl-keystore=" + Environment.CurrentDirectory + "/ServerSslKeys/server_keystore.jks" +
                                 " --J=-Dgemfire.ssl-keystore-password=gemstone --J=-Dgemfire.ssl-truststore=" + Environment.CurrentDirectory + "/ServerSslKeys/server_truststore.jks --J=-Dgemfire.ssl-truststore-password=gemstone\"" +
                                 " -e \"create region --name=" + regionName + " --type=PARTITION\"" +
