@@ -196,26 +196,26 @@ void PdxTests::PdxType::fromData(PdxReader& pr) {
   m_byteArray = pr.readByteArray("m_byteArray");
   m_charArray = pr.readCharArray("m_charArray");
 
-  m_arraylist = std::static_pointer_cast<CacheableArrayList>(
+  m_arraylist = std::dynamic_pointer_cast<CacheableArrayList>(
       pr.readObject("m_arraylist"));
-  m_linkedlist = std::static_pointer_cast<CacheableLinkedList>(
+  m_linkedlist = std::dynamic_pointer_cast<CacheableLinkedList>(
       pr.readObject("m_linkedlist"));
-  m_map = std::static_pointer_cast<CacheableHashMap>(pr.readObject("m_map"));
+  m_map = std::dynamic_pointer_cast<CacheableHashMap>(pr.readObject("m_map"));
   // TODO:Check for the size
 
-  m_hashtable = std::static_pointer_cast<CacheableHashTable>(
+  m_hashtable = std::dynamic_pointer_cast<CacheableHashTable>(
       pr.readObject("m_hashtable"));
   // TODO:Check for the size
 
   m_vector =
-      std::static_pointer_cast<CacheableVector>(pr.readObject("m_vector"));
+      std::dynamic_pointer_cast<CacheableVector>(pr.readObject("m_vector"));
   // TODO::Check for size
 
-  m_chs = std::static_pointer_cast<CacheableHashSet>(pr.readObject("m_chs"));
+  m_chs = std::dynamic_pointer_cast<CacheableHashSet>(pr.readObject("m_chs"));
   // TODO::Size check
 
-  m_clhs =
-      std::static_pointer_cast<CacheableLinkedHashSet>(pr.readObject("m_clhs"));
+  m_clhs = std::dynamic_pointer_cast<CacheableLinkedHashSet>(
+      pr.readObject("m_clhs"));
   // TODO:Size check
 
   m_string = pr.readString("m_string");  // GenericValCompare

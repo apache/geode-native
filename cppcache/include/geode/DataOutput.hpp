@@ -38,6 +38,7 @@ class SerializationRegistry;
 class DataOutputInternal;
 class CacheImpl;
 class Pool;
+class TcrMessage;
 
 /**
  * Provide operations for writing primitive data values, byte arrays,
@@ -753,6 +754,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   friend CacheImpl;
   friend DataOutputInternal;
   friend CacheableString;
+  friend TcrMessage;
 };
 
 template void DataOutput::writeJavaModifiedUtf8(const std::u16string&);

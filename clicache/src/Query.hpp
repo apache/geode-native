@@ -25,7 +25,7 @@
 
 #include "native_shared_ptr.hpp"
 
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 
 
 namespace Apache

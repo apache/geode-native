@@ -117,10 +117,6 @@ std::shared_ptr<Serializable> EventId::createDeserializable() {
   // (for de-serialization)
 }
 
-int32_t EventId::classId() const { return 0; }
-
-int8_t EventId::typeId() const { return GeodeTypeIdsImpl::EventId; }
-
 EventId::EventId(char* memId, uint32_t memIdLen, int64_t thr, int64_t seq) {
   // TODO: statics being assigned; not thread-safe??
   ACE_OS::memcpy(m_eidMem, memId, memIdLen);

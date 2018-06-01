@@ -226,46 +226,27 @@ PdxWriter& PdxLocalWriter::writeStringArray(
 PdxWriter& PdxLocalWriter::writeObject(const std::string&,
                                        std::shared_ptr<Serializable> value) {
   addOffset();
-  std::shared_ptr<CacheableEnum> enumValPtr = nullptr;
-  std::shared_ptr<CacheableObjectArray> objArrPtr = nullptr;
-  /*if (value != nullptr) {
-    try {
-      enumValPtr = std::dynamic_pointer_cast<CacheableEnum>(value);
-    }
-    catch (const ClassCastException&) {
-      //ignore
-    }
-  }*/
 
-  if (value != nullptr &&
-      value->typeId() == static_cast<int8_t>(GeodeTypeIds::CacheableEnum)) {
-    enumValPtr = std::dynamic_pointer_cast<CacheableEnum>(value);
-  }
-
-  if (enumValPtr != nullptr) {
+  if (auto enumValPtr = std::dynamic_pointer_cast<CacheableEnum>(value)) {
     enumValPtr->toData(*m_dataOutput);
-  } else {
-    if (value != nullptr &&
-        value->typeId() == GeodeTypeIds::CacheableObjectArray) {
-      objArrPtr = std::dynamic_pointer_cast<CacheableObjectArray>(value);
-      m_dataOutput->write(
-          static_cast<int8_t>(GeodeTypeIds::CacheableObjectArray));
-      m_dataOutput->writeArrayLen(static_cast<int32_t>(objArrPtr->size()));
-      m_dataOutput->write(static_cast<int8_t>(GeodeTypeIdsImpl::Class));
+  } else if (auto objectArray =
+                 std::dynamic_pointer_cast<CacheableObjectArray>(value)) {
+    m_dataOutput->write(objectArray->getDsCode());
+    m_dataOutput->writeArrayLen(static_cast<int32_t>(objectArray->size()));
+    m_dataOutput->write(static_cast<int8_t>(GeodeTypeIdsImpl::Class));
 
-      auto iter = objArrPtr->begin();
-      const auto actualObjPtr =
-          std::dynamic_pointer_cast<PdxSerializable>(*iter);
+    auto iter = objectArray->begin();
+    const auto actualObjPtr = std::dynamic_pointer_cast<PdxSerializable>(*iter);
 
-      m_dataOutput->writeString(actualObjPtr->getClassName());
+    m_dataOutput->writeString(actualObjPtr->getClassName());
 
-      for (; iter != objArrPtr->end(); ++iter) {
-        m_dataOutput->writeObject(*iter);
-      }
-    } else {
-      m_dataOutput->writeObject(value);
+    for (; iter != objectArray->end(); ++iter) {
+      m_dataOutput->writeObject(*iter);
     }
+  } else {
+    m_dataOutput->writeObject(value);
   }
+
   return *this;
 }
 PdxWriter& PdxLocalWriter::writeBooleanArray(const std::string&,

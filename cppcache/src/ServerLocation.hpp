@@ -22,6 +22,7 @@
 
 #include <string>
 
+#include <geode/internal/DataSerializableInternal.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
@@ -35,7 +36,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT ServerLocation : public Serializable {
+class APACHE_GEODE_EXPORT ServerLocation
+    : public internal::DataSerializableInternal {
  public:
   ServerLocation(std::string serverName, int port)
       : Serializable(), m_serverName(std::move(serverName)), m_port(port) {
@@ -87,17 +89,7 @@ class APACHE_GEODE_EXPORT ServerLocation : public Serializable {
     return size;
   }
 
-  int8_t typeId() const override {
-    return 0;  // NOt needed infact
-  }
-
-  int8_t DSFID() const override {
-    return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);  // Never used
-  }
-
-  int32_t classId() const override {
-    return 0;  // Never used
-  }
+  int8_t getInternalId() const override { return 0; }
 
   void printInfo() {
     LOGDEBUG(" Got Host %s, and port %d", getServerName().c_str(), m_port);

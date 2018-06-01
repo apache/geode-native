@@ -40,7 +40,7 @@ void ChildPdx::fromData(PdxReader& pr) {
 
   m_childId = pr.readInt("m_childId");
   LOGINFO("ChildPdx::fromData() m_childId = %d ", m_childId);
-  m_enum = std::static_pointer_cast<CacheableEnum>(pr.readObject("m_enum"));
+  m_enum = std::dynamic_pointer_cast<CacheableEnum>(pr.readObject("m_enum"));
   m_childName = pr.readString("m_childName");
 
   LOGINFO("ChildPdx::fromData() end...");
@@ -94,7 +94,7 @@ void ParentPdx::fromData(PdxReader& pr) {
 
   m_parentId = pr.readInt("m_parentId");
   LOGINFO("ParentPdx::fromData() m_parentId = %d ", m_parentId);
-  m_enum = std::static_pointer_cast<CacheableEnum>(pr.readObject("m_enum"));
+  m_enum = std::dynamic_pointer_cast<CacheableEnum>(pr.readObject("m_enum"));
   LOGINFO("ParentPdx::fromData() read gender ");
   m_parentName = pr.readString("m_parentName");
   LOGINFO("ParentPdx::fromData() m_parentName = %s ", m_parentName.c_str());

@@ -19,8 +19,8 @@
 
 
 #include "geode_defs.hpp"
-#include "IGeodeSerializable.hpp"
-#include "GeodeClassIds.hpp"
+#include "IDataSerializablePrimitive.hpp"
+#include "ISerializable.hpp"
 
 
 using namespace System;
@@ -32,14 +32,15 @@ namespace Apache
   {
     namespace Client
     {
+			namespace native = apache::geode::client;
 
       /// <summary>
-      /// A mutable <c>IGeodeSerializable</c> vector wrapper that can serve as
+      /// A mutable <c>ISerializable</c> vector wrapper that can serve as
       /// a distributable object for caching. This class extends .NET generic
       /// <c>List</c> class.
       /// </summary>
       ref class CacheableVector
-        : public IGeodeSerializable
+        : public IDataSerializablePrimitive
       {
       public:
         /// <summary>
@@ -68,7 +69,7 @@ namespace Apache
         }
 
 
-        // Region: IGeodeSerializable Members
+        // Region: ISerializable Members
 
         /// <summary>
         /// Serializes this object.
@@ -102,11 +103,11 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get()
+          virtual int8_t get()
           {
-            return GeodeClassIds::CacheableVector;
+            return native::GeodeTypeIds::CacheableVector;
           }
         }
 
@@ -118,12 +119,12 @@ namespace Apache
           }
         }
 
-        // End Region: IGeodeSerializable Members
+        // End Region: ISerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableVector(gcnew System::Collections::ArrayList());
         }

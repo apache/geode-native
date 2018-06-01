@@ -31,7 +31,7 @@ namespace client {
 class RegionInternal;
 class CacheImpl;
 
-class VersionTag : public Cacheable {
+class VersionTag : public DataSerializableFixedId {
  protected:
   uint16_t m_bits;
   int32_t m_entryVersion;
@@ -58,13 +58,13 @@ class VersionTag : public Cacheable {
 
   ~VersionTag() override = default;
 
-  int32_t classId() const override;
-
-  int8_t typeId() const override;
-
   void toData(DataOutput& output) const override;
 
   void fromData(DataInput& input) override;
+
+  virtual int32_t getDSFID() const override {
+    return GeodeTypeIdsImpl::VersionTag;
+  }
 
   static std::shared_ptr<Serializable> createDeserializable(
       MemberListForVersionStamp& memberListForVersionStamp);

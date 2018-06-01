@@ -754,7 +754,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
   }
 
   try {
-    m_pdxEnum = std::static_pointer_cast<CacheableEnum>(pr.readObject(""));
+    m_pdxEnum = std::dynamic_pointer_cast<CacheableEnum>(pr.readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
     LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());

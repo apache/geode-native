@@ -35,7 +35,7 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
-      interface class IGeodeSerializable;
+      interface class ISerializable;
 
      // ref class Region;
       //interface class ICacheableKey;

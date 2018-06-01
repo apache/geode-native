@@ -36,7 +36,6 @@ namespace apache
   {
     namespace client
     {
-
       void ManagedCacheableDeltaGeneric::toData(DataOutput& output) const
       {
         try {
@@ -100,11 +99,10 @@ namespace apache
         return 0;
       }
 
-      System::Int32 ManagedCacheableDeltaGeneric::classId() const
+      int32_t ManagedCacheableDeltaGeneric::getClassId() const
       {
-        System::UInt32 classId;
         try {
-          classId = m_managedSerializableptr->ClassId;
+          return m_managedSerializableptr->ClassId;
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();
@@ -112,48 +110,8 @@ namespace apache
         catch (System::Exception^ ex) {
           Apache::Geode::Client::GeodeException::ThrowNative(ex);
         }
-        return (classId >= 0x80000000 ? 0 : classId);
-      }
 
-      int8_t ManagedCacheableDeltaGeneric::typeId() const
-      {
-        try {
-          System::UInt32 classId = m_classId;
-          if (classId >= 0x80000000) {
-            return (int8_t)((classId - 0x80000000) % 0x20000000);
-          }
-          else if (classId <= 0x7F) {
-            return (int8_t)GeodeTypeIdsImpl::CacheableUserData;
-          }
-          else if (classId <= 0x7FFF) {
-            return (int8_t)GeodeTypeIdsImpl::CacheableUserData2;
-          }
-          else {
-            return (int8_t)GeodeTypeIdsImpl::CacheableUserData4;
-          }
-        }
-        catch (Apache::Geode::Client::GeodeException^ ex) {
-          ex->ThrowNative();
-        }
-        catch (System::Exception^ ex) {
-          Apache::Geode::Client::GeodeException::ThrowNative(ex);
-        }
-        return 0;
-      }
-
-      int8_t ManagedCacheableDeltaGeneric::DSFID() const
-      {
-        // convention that [0x8000000, 0xa0000000) is for FixedIDDefault,
-        // [0xa000000, 0xc0000000) is for FixedIDByte,
-        // [0xc0000000, 0xe0000000) is for FixedIDShort
-        // and [0xe0000000, 0xffffffff] is for FixedIDInt
-        // Note: depends on fact that FixedIDByte is 1, FixedIDShort is 2
-        // and FixedIDInt is 3; if this changes then correct this accordingly
-        System::UInt32 classId = m_managedSerializableptr->ClassId;
-        if (classId >= 0x80000000) {
-          return (int8_t)((classId - 0x80000000) / 0x20000000);
-        }
-        return 0;
+        throw std::exception("unreachable");
       }
 
       bool ManagedCacheableDeltaGeneric::hasDelta() const
@@ -202,11 +160,11 @@ namespace apache
       {
         try {
           if (auto cloneable = dynamic_cast<ICloneable^>((
-            Apache::Geode::Client::IGeodeDelta^) m_managedptr)) {
+            Apache::Geode::Client::IDelta^) m_managedptr)) {
             auto Mclone = 
-              dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(cloneable->Clone());
-            return std::shared_ptr<Delta>(static_cast<ManagedCacheableDeltaGeneric*>(
-              SafeMSerializableConvertGeneric(Mclone)));
+              dynamic_cast<Apache::Geode::Client::ISerializable^>(cloneable->Clone());
+            return std::shared_ptr<Delta>(dynamic_cast<ManagedCacheableDeltaGeneric*>(
+              GetNativeWrapperForManagedObject(Mclone)));
           }
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {

@@ -20,34 +20,34 @@
 #ifndef GEODE_GETALLSERVERSREQUEST_H_
 #define GEODE_GETALLSERVERSREQUEST_H_
 
+#include <string>
+
+#include <geode/internal/DataSerializableFixedId.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/CacheableString.hpp>
+
 #include "GeodeTypeIdsImpl.hpp"
-#include <string>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class GetAllServersRequest : public Serializable {
+class GetAllServersRequest : public internal::DataSerializableFixedId_t<
+                                 GeodeTypeIdsImpl::GetAllServersRequest> {
   std::shared_ptr<CacheableString> m_serverGroup;
 
  public:
   GetAllServersRequest(const std::string& serverGroup) : Serializable() {
-    m_serverGroup = CacheableString::create(serverGroup.c_str());
+    m_serverGroup = CacheableString::create(serverGroup);
   }
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t classId() const override { return 0; }
-  int8_t typeId() const override {
-    return GeodeTypeIdsImpl::GetAllServersRequest;
+
+  size_t objectSize() const override {
+    return sizeof(GetAllServersRequest) + m_serverGroup->objectSize();
   }
-  int8_t DSFID() const override {
-    return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
-  }
-  size_t objectSize() const override { return m_serverGroup->length(); }
   ~GetAllServersRequest() override = default;
 };
 

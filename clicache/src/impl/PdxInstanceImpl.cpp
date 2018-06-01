@@ -15,10 +15,6 @@
  * limitations under the License.
  */
 
-
-
-
-
 #include "../begin_native.hpp"
 #include <geode/Cache.hpp>
 #include <CacheRegionHelper.hpp>
@@ -29,13 +25,14 @@
 #include "PdxInstanceImpl.hpp"
 #include "PdxHelper.hpp"
 #include "PdxTypeRegistry.hpp"
-#include "../GeodeClassIds.hpp"
 #include "PdxType.hpp"
 #include "PdxLocalWriter.hpp"
 #include "../DataInput.hpp"
 #include "DotNetTypes.hpp"
 #include "PdxType.hpp"
 #include "../Cache.hpp"
+
+#include "../GeodeClassIds.hpp"
 
 namespace Apache
 {
@@ -270,32 +267,32 @@ namespace Apache
 
             switch (fieldTypeId)
             {
-            case PdxTypes::CHAR:
-            case PdxTypes::BOOLEAN:
-            case PdxTypes::BYTE:
-            case PdxTypes::SHORT:
-            case PdxTypes::INT:
-            case PdxTypes::LONG:
-            case PdxTypes::DATE:
-            case PdxTypes::FLOAT:
-            case PdxTypes::DOUBLE:
-            case PdxTypes::STRING:
-            case PdxTypes::BOOLEAN_ARRAY:
-            case PdxTypes::CHAR_ARRAY:
-            case PdxTypes::BYTE_ARRAY:
-            case PdxTypes::SHORT_ARRAY:
-            case PdxTypes::INT_ARRAY:
-            case PdxTypes::LONG_ARRAY:
-            case PdxTypes::FLOAT_ARRAY:
-            case PdxTypes::DOUBLE_ARRAY:
-            case PdxTypes::STRING_ARRAY:
-            case PdxTypes::ARRAY_OF_BYTE_ARRAYS:
+            case PdxFieldTypes::CHAR:
+            case PdxFieldTypes::BOOLEAN:
+            case PdxFieldTypes::BYTE:
+            case PdxFieldTypes::SHORT:
+            case PdxFieldTypes::INT:
+            case PdxFieldTypes::LONG:
+            case PdxFieldTypes::DATE:
+            case PdxFieldTypes::FLOAT:
+            case PdxFieldTypes::DOUBLE:
+            case PdxFieldTypes::STRING:
+            case PdxFieldTypes::BOOLEAN_ARRAY:
+            case PdxFieldTypes::CHAR_ARRAY:
+            case PdxFieldTypes::BYTE_ARRAY:
+            case PdxFieldTypes::SHORT_ARRAY:
+            case PdxFieldTypes::INT_ARRAY:
+            case PdxFieldTypes::LONG_ARRAY:
+            case PdxFieldTypes::FLOAT_ARRAY:
+            case PdxFieldTypes::DOUBLE_ARRAY:
+            case PdxFieldTypes::STRING_ARRAY:
+            case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS:
             {
               if (!compareRawBytes(otherPdx, myPdxType, myPFT, myDataInput, otherPdxType, otherPFT, otherDataInput))
                 return false;
               break;
             }
-            case PdxTypes::OBJECT:
+            case PdxFieldTypes::OBJECT:
             {
               Object^ object = nullptr;
               Object^ otherObject = nullptr;
@@ -341,7 +338,7 @@ namespace Apache
 
               break;
             }
-            case PdxTypes::OBJECT_ARRAY:
+            case PdxFieldTypes::OBJECT_ARRAY:
             {
               Object^ objectArray = nullptr;
               Object^ otherObjectArray = nullptr;
@@ -578,33 +575,33 @@ namespace Apache
             //Log::Debug("hashcode for pdxfield " + pField->FieldName + " hashcode is " + hashCode);
             switch (pField->TypeId)
             {
-            case PdxTypes::CHAR:
-            case PdxTypes::BOOLEAN:
-            case PdxTypes::BYTE:
-            case PdxTypes::SHORT:
-            case PdxTypes::INT:
-            case PdxTypes::LONG:
-            case PdxTypes::DATE:
-            case PdxTypes::FLOAT:
-            case PdxTypes::DOUBLE:
-            case PdxTypes::STRING:
-            case PdxTypes::BOOLEAN_ARRAY:
-            case PdxTypes::CHAR_ARRAY:
-            case PdxTypes::BYTE_ARRAY:
-            case PdxTypes::SHORT_ARRAY:
-            case PdxTypes::INT_ARRAY:
-            case PdxTypes::LONG_ARRAY:
-            case PdxTypes::FLOAT_ARRAY:
-            case PdxTypes::DOUBLE_ARRAY:
-            case PdxTypes::STRING_ARRAY:
-            case PdxTypes::ARRAY_OF_BYTE_ARRAYS:
+            case PdxFieldTypes::CHAR:
+            case PdxFieldTypes::BOOLEAN:
+            case PdxFieldTypes::BYTE:
+            case PdxFieldTypes::SHORT:
+            case PdxFieldTypes::INT:
+            case PdxFieldTypes::LONG:
+            case PdxFieldTypes::DATE:
+            case PdxFieldTypes::FLOAT:
+            case PdxFieldTypes::DOUBLE:
+            case PdxFieldTypes::STRING:
+            case PdxFieldTypes::BOOLEAN_ARRAY:
+            case PdxFieldTypes::CHAR_ARRAY:
+            case PdxFieldTypes::BYTE_ARRAY:
+            case PdxFieldTypes::SHORT_ARRAY:
+            case PdxFieldTypes::INT_ARRAY:
+            case PdxFieldTypes::LONG_ARRAY:
+            case PdxFieldTypes::FLOAT_ARRAY:
+            case PdxFieldTypes::DOUBLE_ARRAY:
+            case PdxFieldTypes::STRING_ARRAY:
+            case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS:
             {
               int retH = getRawHashCode(pt, pField, dataInput);
               if (retH != 0)
                 hashCode = 31 * hashCode + retH;
               break;
             }
-            case PdxTypes::OBJECT:
+            case PdxFieldTypes::OBJECT:
             {
               setOffsetForObject(dataInput, pt, pField->SequenceId);
               Object^ object = dataInput->ReadObject();
@@ -636,7 +633,7 @@ namespace Apache
 
               break;
             }
-            case PdxTypes::OBJECT_ARRAY:
+            case PdxFieldTypes::OBJECT_ARRAY:
             {
               setOffsetForObject(dataInput, pt, pField->SequenceId);
               Object^ objectArray = dataInput->ReadObjectArray();
@@ -807,61 +804,61 @@ namespace Apache
           {
             switch (pField->TypeId)
             {
-            case PdxTypes::INT:
+            case PdxFieldTypes::INT:
             {
               return compareDefaulBytes(dataInput, start, end, Int_DefaultBytes);
             }
-            case PdxTypes::STRING:
+            case PdxFieldTypes::STRING:
             {
               return compareDefaulBytes(dataInput, start, end, String_DefaultBytes);
             }
-            case PdxTypes::BOOLEAN:
+            case PdxFieldTypes::BOOLEAN:
             {
               return compareDefaulBytes(dataInput, start, end, Boolean_DefaultBytes);
             }
-            case PdxTypes::FLOAT:
+            case PdxFieldTypes::FLOAT:
             {
               return compareDefaulBytes(dataInput, start, end, Float_DefaultBytes);
             }
-            case PdxTypes::DOUBLE:
+            case PdxFieldTypes::DOUBLE:
             {
               return compareDefaulBytes(dataInput, start, end, Double_DefaultBytes);
             }
-            case PdxTypes::CHAR:
+            case PdxFieldTypes::CHAR:
             {
               return compareDefaulBytes(dataInput, start, end, Char_DefaultBytes);
             }
-            case PdxTypes::BYTE:
+            case PdxFieldTypes::BYTE:
             {
               return compareDefaulBytes(dataInput, start, end, Byte_DefaultBytes);
             }
-            case PdxTypes::SHORT:
+            case PdxFieldTypes::SHORT:
             {
               return compareDefaulBytes(dataInput, start, end, Short_DefaultBytes);
             }
-            case PdxTypes::LONG:
+            case PdxFieldTypes::LONG:
             {
               return compareDefaulBytes(dataInput, start, end, Long_DefaultBytes);
             }
-            case PdxTypes::BYTE_ARRAY:
-            case PdxTypes::DOUBLE_ARRAY:
-            case PdxTypes::FLOAT_ARRAY:
-            case PdxTypes::SHORT_ARRAY:
-            case PdxTypes::INT_ARRAY:
-            case PdxTypes::LONG_ARRAY:
-            case PdxTypes::BOOLEAN_ARRAY:
-            case PdxTypes::CHAR_ARRAY:
-            case PdxTypes::STRING_ARRAY:
-            case PdxTypes::ARRAY_OF_BYTE_ARRAYS:
-            case PdxTypes::OBJECT_ARRAY:
+            case PdxFieldTypes::BYTE_ARRAY:
+            case PdxFieldTypes::DOUBLE_ARRAY:
+            case PdxFieldTypes::FLOAT_ARRAY:
+            case PdxFieldTypes::SHORT_ARRAY:
+            case PdxFieldTypes::INT_ARRAY:
+            case PdxFieldTypes::LONG_ARRAY:
+            case PdxFieldTypes::BOOLEAN_ARRAY:
+            case PdxFieldTypes::CHAR_ARRAY:
+            case PdxFieldTypes::STRING_ARRAY:
+            case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS:
+            case PdxFieldTypes::OBJECT_ARRAY:
             {
               return compareDefaulBytes(dataInput, start, end, NULL_ARRAY_DefaultBytes);
             }
-            case PdxTypes::DATE:
+            case PdxFieldTypes::DATE:
             {
               return compareDefaulBytes(dataInput, start, end, Date_DefaultBytes);
             }
-            case PdxTypes::OBJECT:
+            case PdxFieldTypes::OBJECT:
             {
               return compareDefaulBytes(dataInput, start, end, Object_DefaultBytes);
             }
@@ -1118,87 +1115,87 @@ namespace Apache
           {
             switch (typeId)
             {
-            case PdxTypes::INT:
+            case PdxFieldTypes::INT:
             {
               return dataInput->ReadInt32();
             }
-            case PdxTypes::STRING:
+            case PdxFieldTypes::STRING:
             {
               return dataInput->ReadString();
             }
-            case PdxTypes::BOOLEAN:
+            case PdxFieldTypes::BOOLEAN:
             {
               return dataInput->ReadBoolean();
             }
-            case PdxTypes::FLOAT:
+            case PdxFieldTypes::FLOAT:
             {
               return dataInput->ReadFloat();
             }
-            case PdxTypes::DOUBLE:
+            case PdxFieldTypes::DOUBLE:
             {
               return dataInput->ReadDouble();
             }
-            case PdxTypes::CHAR:
+            case PdxFieldTypes::CHAR:
             {
               return dataInput->ReadChar();
             }
-            case PdxTypes::BYTE:
+            case PdxFieldTypes::BYTE:
             {
               return dataInput->ReadSByte();
             }
-            case PdxTypes::SHORT:
+            case PdxFieldTypes::SHORT:
             {
               return dataInput->ReadInt16();
             }
-            case PdxTypes::LONG:
+            case PdxFieldTypes::LONG:
             {
               return dataInput->ReadInt64();
             }
-            case PdxTypes::BYTE_ARRAY:
+            case PdxFieldTypes::BYTE_ARRAY:
             {
               return dataInput->ReadBytes();
             }
-            case PdxTypes::DOUBLE_ARRAY:
+            case PdxFieldTypes::DOUBLE_ARRAY:
             {
               return dataInput->ReadDoubleArray();
             }
-            case PdxTypes::FLOAT_ARRAY:
+            case PdxFieldTypes::FLOAT_ARRAY:
             {
               return dataInput->ReadFloatArray();
             }
-            case PdxTypes::SHORT_ARRAY:
+            case PdxFieldTypes::SHORT_ARRAY:
             {
               return dataInput->ReadShortArray();
             }
-            case PdxTypes::INT_ARRAY:
+            case PdxFieldTypes::INT_ARRAY:
             {
               return dataInput->ReadIntArray();
             }
-            case PdxTypes::LONG_ARRAY:
+            case PdxFieldTypes::LONG_ARRAY:
             {
               return dataInput->ReadLongArray();
             }
-            case PdxTypes::BOOLEAN_ARRAY:
+            case PdxFieldTypes::BOOLEAN_ARRAY:
             {
               return dataInput->ReadBooleanArray();
             }
-            case PdxTypes::CHAR_ARRAY:
+            case PdxFieldTypes::CHAR_ARRAY:
             {
               return dataInput->ReadCharArray();
             }
-            case PdxTypes::STRING_ARRAY:
+            case PdxFieldTypes::STRING_ARRAY:
             {
               return dataInput->ReadStringArray();
             }
-            case PdxTypes::DATE:
+            case PdxFieldTypes::DATE:
             {
               return dataInput->ReadDate();
             }
-            case PdxTypes::ARRAY_OF_BYTE_ARRAYS:
+            case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS:
             {
               return dataInput->ReadArrayOfByteArrays();
             }
-            case PdxTypes::OBJECT_ARRAY:
+            case PdxFieldTypes::OBJECT_ARRAY:
             {
               return dataInput->ReadObjectArray();
             }
@@ -1216,88 +1213,88 @@ namespace Apache
             // Log::Fine("PdxInstanceImpl::checkType1 " + type->ToString() + "  " + typeId); 
             switch (typeId)
             {
-            case PdxTypes::INT:
+            case PdxFieldTypes::INT:
             {
               // Log::Fine("PdxInstanceImpl::checkType " + type->ToString() + " : " +DotNetTypes::IntType->ToString());
               return type->Equals(DotNetTypes::IntType);
             }
-            case PdxTypes::STRING:
+            case PdxFieldTypes::STRING:
             {
               return type->Equals(DotNetTypes::StringType);
             }
-            case PdxTypes::BOOLEAN:
+            case PdxFieldTypes::BOOLEAN:
             {
               return type->Equals(DotNetTypes::BooleanType);
             }
-            case PdxTypes::FLOAT:
+            case PdxFieldTypes::FLOAT:
             {
               return type->Equals(DotNetTypes::FloatType);
             }
-            case PdxTypes::DOUBLE:
+            case PdxFieldTypes::DOUBLE:
             {
               return type->Equals(DotNetTypes::DoubleType);
             }
-            case PdxTypes::CHAR:
+            case PdxFieldTypes::CHAR:
             {
               return type->Equals(DotNetTypes::CharType);
             }
-            case PdxTypes::BYTE:
+            case PdxFieldTypes::BYTE:
             {
               return type->Equals(DotNetTypes::SByteType);
             }
-            case PdxTypes::SHORT:
+            case PdxFieldTypes::SHORT:
             {
               return type->Equals(DotNetTypes::ShortType);
             }
-            case PdxTypes::LONG:
+            case PdxFieldTypes::LONG:
             {
               return type->Equals(DotNetTypes::LongType);
             }
-            case PdxTypes::BYTE_ARRAY:
+            case PdxFieldTypes::BYTE_ARRAY:
             {
               return type->Equals(DotNetTypes::ByteArrayType);
             }
-            case PdxTypes::DOUBLE_ARRAY:
+            case PdxFieldTypes::DOUBLE_ARRAY:
             {
               return type->Equals(DotNetTypes::DoubleArrayType);
             }
-            case PdxTypes::FLOAT_ARRAY:
+            case PdxFieldTypes::FLOAT_ARRAY:
             {
               return type->Equals(DotNetTypes::FloatArrayType);
             }
-            case PdxTypes::SHORT_ARRAY:
+            case PdxFieldTypes::SHORT_ARRAY:
             {
               return type->Equals(DotNetTypes::ShortArrayType);
             }
-            case PdxTypes::INT_ARRAY:
+            case PdxFieldTypes::INT_ARRAY:
             {
               return type->Equals(DotNetTypes::IntArrayType);
             }
-            case PdxTypes::LONG_ARRAY:
+            case PdxFieldTypes::LONG_ARRAY:
             {
               return type->Equals(DotNetTypes::LongArrayType);
             }
-            case PdxTypes::BOOLEAN_ARRAY:
+            case PdxFieldTypes::BOOLEAN_ARRAY:
             {
               return type->Equals(DotNetTypes::BoolArrayType);
             }
-            case PdxTypes::CHAR_ARRAY:
+            case PdxFieldTypes::CHAR_ARRAY:
             {
               return type->Equals(DotNetTypes::CharArrayType);
             }
-            case PdxTypes::STRING_ARRAY:
+            case PdxFieldTypes::STRING_ARRAY:
             {
               return type->Equals(DotNetTypes::StringArrayType);
             }
-            case PdxTypes::DATE:
+            case PdxFieldTypes::DATE:
             {
               return type->Equals(DotNetTypes::DateType);
             }
-            case PdxTypes::ARRAY_OF_BYTE_ARRAYS:
+            case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS:
             {
               return type->Equals(DotNetTypes::ByteArrayOfArrayType);
             }
-            case PdxTypes::OBJECT_ARRAY:
+            case PdxFieldTypes::OBJECT_ARRAY:
             {
               return type->Equals(DotNetTypes::ObjectArrayType);
             }
@@ -1314,107 +1311,107 @@ namespace Apache
           {
             switch (typeId)
             {
-            case PdxTypes::INT:
+            case PdxFieldTypes::INT:
             {
               writer->WriteInt(fieldName, (int)value);
               break;
             }
-            case PdxTypes::STRING:
+            case PdxFieldTypes::STRING:
             {
               writer->WriteString(fieldName, (String^)value);
               break;
             }
-            case PdxTypes::BOOLEAN:
+            case PdxFieldTypes::BOOLEAN:
             {
               writer->WriteBoolean(fieldName, (bool)value);
               break;
             }
-            case PdxTypes::FLOAT:
+            case PdxFieldTypes::FLOAT:
             {
               writer->WriteFloat(fieldName, (float)value);
               break;
             }
-            case PdxTypes::DOUBLE:
+            case PdxFieldTypes::DOUBLE:
             {
               writer->WriteDouble(fieldName, (double)value);
               break;
             }
-            case PdxTypes::CHAR:
+            case PdxFieldTypes::CHAR:
             {
               writer->WriteChar(fieldName, (Char)value);
               break;
             }
-            case PdxTypes::BYTE:
+            case PdxFieldTypes::BYTE:
             {
               writer->WriteByte(fieldName, (SByte)value);
               break;
             }
-            case PdxTypes::SHORT:
+            case PdxFieldTypes::SHORT:
             {
               writer->WriteShort(fieldName, (short)value);
               break;
             }
-            case PdxTypes::LONG:
+            case PdxFieldTypes::LONG:
             {
               writer->WriteLong(fieldName, (Int64)value);
               break;
             }
-            case PdxTypes::BYTE_ARRAY:
+            case PdxFieldTypes::BYTE_ARRAY:
             {
               writer->WriteByteArray(fieldName, (array<Byte>^)value);
               break;
             }
-            case PdxTypes::DOUBLE_ARRAY:
+            case PdxFieldTypes::DOUBLE_ARRAY:
             {
               writer->WriteDoubleArray(fieldName, (array<double>^)value);
               break;
             }
-            case PdxTypes::FLOAT_ARRAY:
+            case PdxFieldTypes::FLOAT_ARRAY:
             {
               writer->WriteFloatArray(fieldName, (array<float>^)value);
               break;
             }
-            case PdxTypes::SHORT_ARRAY:
+            case PdxFieldTypes::SHORT_ARRAY:
             {
               writer->WriteShortArray(fieldName, (array<short>^)value);
               break;
             }
-            case PdxTypes::INT_ARRAY:
+            case PdxFieldTypes::INT_ARRAY:
             {
               writer->WriteIntArray(fieldName, (array<int>^)value);
               break;
             }
-            case PdxTypes::LONG_ARRAY:
+            case PdxFieldTypes::LONG_ARRAY:
             {
               writer->WriteLongArray(fieldName, (array<Int64>^)value);
               break;
             }
-            case PdxTypes::BOOLEAN_ARRAY:
+            case PdxFieldTypes::BOOLEAN_ARRAY:
             {
               writer->WriteBooleanArray(fieldName, (array<bool>^)value);
               break;
             }
-            case PdxTypes::CHAR_ARRAY:
+            case PdxFieldTypes::CHAR_ARRAY:
             {
               writer->WriteCharArray(fieldName, (array<Char>^)value);
               break;
             }
-            case PdxTypes::STRING_ARRAY:
+            case PdxFieldTypes::STRING_ARRAY:
             {
               writer->WriteStringArray(fieldName, (array<String^>^)value);
               break;
             }
-            case PdxTypes::DATE:
+            case PdxFieldTypes::DATE:
             {
               writer->WriteDate(fieldName, (DateTime)value);
               break;
             }
-            case PdxTypes::ARRAY_OF_BYTE_ARRAYS:
+            case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS:
             {
               writer->WriteArrayOfByteArrays(fieldName, (array<array<Byte>^>^)value);
               break;
             }
-            case PdxTypes::OBJECT_ARRAY:
+            case PdxFieldTypes::OBJECT_ARRAY:
             {
               writer->WriteObjectArray(fieldName, (List<Object^>^)value);
               break;

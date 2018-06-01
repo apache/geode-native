@@ -107,7 +107,7 @@ void CacheTransactionManagerImpl::commit() {
     }
   }
 
-  auto commit = std::static_pointer_cast<TXCommitMessage>(reply.getValue());
+  auto commit = std::dynamic_pointer_cast<TXCommitMessage>(reply.getValue());
   txCleaner.clean();
   commit->apply(m_cache->getCache());
 
@@ -270,8 +270,7 @@ void CacheTransactionManagerImpl::rollback() {
 }
 
 GfErrType CacheTransactionManagerImpl::rollback(TXState*, bool) {
-  TcrMessageRollback request(
-      new DataOutput(m_cache->getCache()->createDataOutput()));
+  TcrMessageRollback request(new DataOutput(m_cache->createDataOutput()));
   TcrMessageReply reply(true, nullptr);
   GfErrType err = GF_NOERR;
   ThinClientPoolDM* tcr_dm = getDM();

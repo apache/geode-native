@@ -17,8 +17,7 @@
 
 #pragma once
 
-
-
+#include <msclr/marshal.h>
 
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
@@ -26,7 +25,7 @@
 #include "end_native.hpp"
 
 #include "CacheableKey.hpp"
-#include "GeodeClassIds.hpp"
+#include "IDataSerializablePrimitive.hpp"
 
 using namespace System;
 
@@ -42,7 +41,7 @@ namespace Apache
       /// key object for caching as well as being a string value.
       /// </summary>
       ref class CacheableString
-        : public CacheableKey
+        :  public IDataSerializablePrimitive, public CacheableKey
       {
       public:
         /// <summary>
@@ -80,45 +79,21 @@ namespace Apache
                   gcnew CacheableString(value, true) : nullptr);
         }
 
-        /// <summary>
-        /// Serializes this managed object.
-        /// </summary>
-        /// <param name="output">
-        /// the DataOutput object to use for serializing the object
-        /// </param>
-        virtual void ToData(DataOutput^ output) override;
+        virtual void ToData(DataOutput^ output);
 
-        /// <summary>
-        /// Deserializes the managed object -- returns an instance of the
-        /// <c>IGeodeSerializable</c> class.
-        /// </summary>
-        /// <param name="input">
-        /// the DataInput stream to use for reading the object data
-        /// </param>
-        /// <returns>the deserialized object</returns>
-        virtual void FromData(DataInput^ input) override;
+        virtual void FromData(DataInput^ input);
 
-        // <summary>
-        /// Returns the classId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get() override
+          virtual int8_t get()
           {
             return m_type;
           }
         }
 
-
-        /// <summary>
-        /// return the size of this object in bytes
-        /// </summary>
-        virtual property System::UInt64 ObjectSize
+        property System::UInt64 ObjectSize
         {
-          virtual System::UInt64 get() override;
+          System::UInt64 get() override;
         }
 
         /// <summary>
@@ -220,32 +195,35 @@ namespace Apache
         }
 
       internal:
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
-          return gcnew CacheableString(GeodeClassIds::CacheableASCIIString);
+          return gcnew CacheableString(GeodeTypeIds::CacheableASCIIString);
         }
 
-        static IGeodeSerializable^ createDeserializableHuge()
+        static ISerializable^ createDeserializableHuge()
         {
-          return gcnew CacheableString(GeodeClassIds::CacheableASCIIStringHuge);
+          return gcnew CacheableString(GeodeTypeIds::CacheableASCIIStringHuge);
         }
 
-        static IGeodeSerializable^ createUTFDeserializable()
+        static ISerializable^ createUTFDeserializable()
         {
-          return gcnew CacheableString(GeodeClassIds::CacheableString);
+          return gcnew CacheableString(GeodeTypeIds::CacheableString);
         }
 
-        static IGeodeSerializable^ createUTFDeserializableHuge()
+        static ISerializable^ createUTFDeserializableHuge()
         {
-          return gcnew CacheableString(GeodeClassIds::CacheableStringHuge);
+          return gcnew CacheableString(GeodeTypeIds::CacheableStringHuge);
         }
         /// <summary>
         /// Factory function to register wrapper
         /// </summary>
-        static IGeodeSerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj)
+        static ISerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj)
         {
-          return (obj != nullptr ?
-                  gcnew CacheableString(obj) : nullptr);
+          if (auto str = std::dynamic_pointer_cast<apache::geode::client::CacheableString>(obj)) {
+            return gcnew CacheableString(str);
+          }
+
+          return nullptr;
         }
 
         CacheableString(System::UInt32 type) : CacheableKey()
@@ -255,12 +233,12 @@ namespace Apache
 
       private:
         String^ m_value;
-        System::UInt32 m_type;
+        int8_t m_type;
         int m_hashcode;
 
         CacheableString() : CacheableKey()
         {
-          m_type = GeodeClassIds::CacheableASCIIString;
+          m_type = GeodeTypeIds::CacheableASCIIString;
         }
 
         void SetStringType();
@@ -280,8 +258,13 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheableString(std::shared_ptr<apache::geode::client::Serializable> nativeptr)
-          : CacheableKey(nativeptr) { }
+        inline CacheableString(std::shared_ptr<apache::geode::client::CacheableString> nativeptr)
+          : CacheableKey(nativeptr) {
+        
+          m_value = msclr::interop::marshal_as<String^>(nativeptr->value());
+          m_type = nativeptr->getDsCode();
+          m_hashcode = nativeptr->hashcode();
+        }
       };
     }  // namespace Client
   }  // namespace Geode

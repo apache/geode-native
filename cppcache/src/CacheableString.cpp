@@ -99,30 +99,12 @@ std::shared_ptr<CacheableString> CacheableString::create(
   return std::make_shared<CacheableString>(to_utf8(value));
 }
 
-int32_t CacheableString::classId() const { return 0; }
-
-int8_t CacheableString::typeId() const { return m_type; }
-
 bool CacheableString::operator==(const CacheableKey& other) const {
-  // use typeId() call instead of m_type to work correctly with derived
-  // classes like CacheableFileName
-  int8_t thisType = typeId();
-  int8_t otherType = other.typeId();
-  if (thisType != otherType) {
-    if (!(thisType == GeodeTypeIds::CacheableASCIIString ||
-          thisType == GeodeTypeIds::CacheableString ||
-          thisType == GeodeTypeIds::CacheableASCIIStringHuge ||
-          thisType == GeodeTypeIds::CacheableStringHuge) ||
-        !(otherType == GeodeTypeIds::CacheableASCIIString ||
-          otherType == GeodeTypeIds::CacheableString ||
-          otherType == GeodeTypeIds::CacheableASCIIStringHuge ||
-          otherType == GeodeTypeIds::CacheableStringHuge)) {
-      return false;
-    }
+  if (auto otherString = dynamic_cast<const CacheableString*>(&other)) {
+    return m_str == otherString->m_str;
   }
 
-  auto&& otherStr = static_cast<const CacheableString&>(other);
-  return m_str == otherStr.m_str;
+  return false;
 }
 
 int32_t CacheableString::hashcode() const {

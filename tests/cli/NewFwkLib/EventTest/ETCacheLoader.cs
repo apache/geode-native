@@ -30,7 +30,7 @@ namespace Apache.Geode.Client.FwkLib
 
     #region ICacheLoader Members
 
-    public IGeodeSerializable Load(Region rp, ICacheableKey key, IGeodeSerializable helper)
+    public ISerializable Load(Region rp, ICacheableKey key, ISerializable helper)
     {
       Util.BBIncrement(EventTest.EventCountersBB, "LOAD_CACHEABLE_STRING_COUNT");
       byte[] buffer = new byte[2000];

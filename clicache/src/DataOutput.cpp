@@ -25,7 +25,8 @@
 
 
 #include "DataOutput.hpp"
-#include "IGeodeSerializable.hpp"
+#include "IDataSerializable.hpp"
+#include "ISerializable.hpp"
 #include "CacheableObjectArray.hpp"
 #include "impl/PdxHelper.hpp"
 #include "impl/PdxWrapper.hpp"
@@ -322,7 +323,7 @@ namespace Apache
         this->WriteArrayLen(list->Count);
         WriteByte((int8_t)apache::geode::client::GeodeTypeIdsImpl::Class);
         String^ pdxDomainClassname = m_cache->TypeRegistry->GetPdxTypeName(objectArray->GetType()->GetElementType()->FullName);
-        WriteByte((int8_t)apache::geode::client::GeodeTypeIds::CacheableASCIIString);
+        WriteByte((int8_t)GeodeTypeIds::CacheableASCIIString);
         WriteUTF(pdxDomainClassname);
         for each(Object^ o in list)
           WriteObject(o);
@@ -428,12 +429,12 @@ namespace Apache
 
       /*void DataOutput::WriteObject( Object^ obj )
       {
-      WriteObjectInternal((IGeodeSerializable^)obj);
+      WriteObjectInternal((ISerializable^)obj);
       }*/
 
       /*void DataOutput::WriteObject( Object^ obj )
       {
-      WriteObject( (IGeodeSerializable^)obj );
+      WriteObject( (ISerializable^)obj );
       }*/
 
       int8_t DataOutput::GetTypeId(System::UInt32 classId)
@@ -479,41 +480,41 @@ namespace Apache
         {
           //need to set             
           int enumVal = Internal::PdxHelper::GetEnumValue(obj->GetType()->FullName, Enum::GetName(obj->GetType(), obj), obj->GetHashCode(), m_cache);
-          WriteByte(GeodeClassIds::PDX_ENUM);
+          WriteByte(GeodeTypeIdsImpl::PDX_ENUM);
           WriteByte(enumVal >> 24);
           WriteArrayLen(enumVal & 0xFFFFFF);
           return;
         }
 
-        Byte typeId = m_cache->TypeRegistry->GetManagedTypeMappingGeneric(obj->GetType());
+        Byte typeId = m_cache->TypeRegistry->GetDsCodeForManagedType(obj->GetType());
 
         switch (typeId)
         {
-        case apache::geode::client::GeodeTypeIds::CacheableByte:
+        case GeodeTypeIds::CacheableByte:
         {
           WriteByte(typeId);
-          WriteSByte((SByte)obj);
+          WriteByte((Byte)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableBoolean:
+        case GeodeTypeIds::CacheableBoolean:
         {
           WriteByte(typeId);
           WriteBoolean((bool)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableCharacter:
+        case GeodeTypeIds::CacheableCharacter:
         {
           WriteByte(typeId);
           WriteObject((Char)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableDouble:
+        case GeodeTypeIds::CacheableDouble:
         {
           WriteByte(typeId);
           WriteDouble((Double)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableASCIIString:
+        case GeodeTypeIds::CacheableASCIIString:
         {
           //CacheableString^ cStr = CacheableString::Create((String^)obj);
           ////  TODO: igfser mapping between generic and non generic
@@ -521,31 +522,31 @@ namespace Apache
           WriteStringWithType((String^)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableFloat:
+        case GeodeTypeIds::CacheableFloat:
         {
           WriteByte(typeId);
           WriteFloat((float)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableInt16:
+        case GeodeTypeIds::CacheableInt16:
         {
           WriteByte(typeId);
           WriteInt16((Int16)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableInt32:
+        case GeodeTypeIds::CacheableInt32:
         {
           WriteByte(typeId);
           WriteInt32((Int32)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableInt64:
+        case GeodeTypeIds::CacheableInt64:
         {
           WriteByte(typeId);
           WriteInt64((Int64)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableDate:
+        case GeodeTypeIds::CacheableDate:
         {
           //CacheableDate^ cd = gcnew CacheableDate((DateTime)obj);
           //  TODO: igfser mapping between generic and non generic
@@ -554,99 +555,99 @@ namespace Apache
           WriteDate((DateTime)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableBytes:
+        case GeodeTypeIds::CacheableBytes:
         {
           WriteByte(typeId);
           WriteBytes((array<Byte>^)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableDoubleArray:
+        case GeodeTypeIds::CacheableDoubleArray:
         {
           WriteByte(typeId);
           WriteObject((array<Double>^)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableFloatArray:
+        case GeodeTypeIds::CacheableFloatArray:
         {
           WriteByte(typeId);
           WriteObject((array<float>^)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableInt16Array:
+        case GeodeTypeIds::CacheableInt16Array:
         {
           WriteByte(typeId);
           WriteObject((array<Int16>^)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableInt32Array:
+        case GeodeTypeIds::CacheableInt32Array:
         {
           WriteByte(typeId);
           WriteObject((array<Int32>^)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableInt64Array:
+        case GeodeTypeIds::CacheableInt64Array:
         {
           WriteByte(typeId);
           WriteObject((array<Int64>^)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::BooleanArray:
+        case GeodeTypeIds::BooleanArray:
         {
           WriteByte(typeId);
           WriteObject((array<bool>^)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CharArray:
+        case GeodeTypeIds::CharArray:
         {
           WriteByte(typeId);
           WriteObject((array<char>^)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableStringArray:
+        case GeodeTypeIds::CacheableStringArray:
         {
           WriteByte(typeId);
           WriteObject((array<String^>^)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableHashTable:
-        case apache::geode::client::GeodeTypeIds::CacheableHashMap:
-        case apache::geode::client::GeodeTypeIds::CacheableIdentityHashMap:
+        case GeodeTypeIds::CacheableHashTable:
+        case GeodeTypeIds::CacheableHashMap:
+        case GeodeTypeIds::CacheableIdentityHashMap:
         {
           WriteByte(typeId);
           WriteDictionary((System::Collections::IDictionary^)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableVector:
+        case GeodeTypeIds::CacheableVector:
         {
           //CacheableVector^ cv = gcnew CacheableVector((System::Collections::IList^)obj);
           ////  TODO: igfser mapping between generic and non generic
           //WriteObjectInternal(cv);
-          WriteByte(apache::geode::client::GeodeTypeIds::CacheableVector);
+          WriteByte(GeodeTypeIds::CacheableVector);
           WriteList((System::Collections::IList^)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableLinkedList:
+        case GeodeTypeIds::CacheableLinkedList:
         {
           //CacheableArrayList^ cal = gcnew CacheableArrayList((System::Collections::IList^)obj);
           ////  TODO: igfser mapping between generic and non generic
           //WriteObjectInternal(cal);
-          WriteByte(apache::geode::client::GeodeTypeIds::CacheableLinkedList);
+          WriteByte(GeodeTypeIds::CacheableLinkedList);
           System::Collections::ICollection^ linkedList = (System::Collections::ICollection^)obj;
           this->WriteArrayLen(linkedList->Count);
           for each (Object^ o in linkedList)
             this->WriteObject(o);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableArrayList:
+        case GeodeTypeIds::CacheableArrayList:
         {
           //CacheableArrayList^ cal = gcnew CacheableArrayList((System::Collections::IList^)obj);
           ////  TODO: igfser mapping between generic and non generic
           //WriteObjectInternal(cal);
-          WriteByte(apache::geode::client::GeodeTypeIds::CacheableArrayList);
+          WriteByte(GeodeTypeIds::CacheableArrayList);
           WriteList((System::Collections::IList^)obj);
           return;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableStack:
+        case GeodeTypeIds::CacheableStack:
         {
           CacheableStack^ cs = gcnew CacheableStack((System::Collections::ICollection^)obj);
           //  TODO: igfser mapping between generic and non generic
@@ -655,10 +656,9 @@ namespace Apache
         }
         default:
         {
-          IPdxSerializable^ pdxObj = dynamic_cast<IPdxSerializable^>(obj);
-          if (pdxObj != nullptr)
+          if (auto pdxObj = dynamic_cast<IPdxSerializable^>(obj))
           {
-            WriteByte(GeodeClassIds::PDX);
+            WriteByte(GeodeTypeIdsImpl::PDX);
             Internal::PdxHelper::SerializePdx(this, pdxObj);
             return;
           }
@@ -667,21 +667,20 @@ namespace Apache
             //pdx serialization and is array of object
             if (m_ispdxSerialization && obj->GetType()->IsArray)
             {
-              WriteByte(apache::geode::client::GeodeTypeIds::CacheableObjectArray);
+              WriteByte(GeodeTypeIds::CacheableObjectArray);
               WriteDotNetObjectArray(obj);
               return;
             }
 
-            IGeodeSerializable^ ct = dynamic_cast<IGeodeSerializable^>(obj);
-            if (ct != nullptr) {
+            if (auto ct = dynamic_cast<ISerializable^>(obj)) {
               WriteObjectInternal(ct);
               return;
             }
 
             if (m_cache->TypeRegistry->PdxSerializer)
             {
-              pdxObj = gcnew PdxWrapper(obj);
-              WriteByte(GeodeClassIds::PDX);
+              auto pdxObj = gcnew PdxWrapper(obj);
+              WriteByte(GeodeTypeIdsImpl::PDX);
               Internal::PdxHelper::SerializePdx(this, pdxObj);
               return;
             }
@@ -707,42 +706,61 @@ namespace Apache
           WriteByte(-1);
       }
 
-      void DataOutput::WriteObjectInternal(IGeodeSerializable^ obj)
+      void DataOutput::WriteObjectInternal(ISerializable^ obj)
       {
         //CacheableKey^ key = gcnew CacheableKey();
         if (obj == nullptr) {
           WriteByte((int8_t)GeodeTypeIds::NullObj);
         }
-        else {
-          int8_t typeId = DataOutput::GetTypeId(obj->ClassId);
-          switch (DataOutput::DSFID(obj->ClassId)) {
-          case GeodeTypeIdsImpl::FixedIDByte:
-            WriteByte((int8_t)GeodeTypeIdsImpl::FixedIDByte);
-            WriteByte(typeId); // write the type ID.
-            break;
-          case GeodeTypeIdsImpl::FixedIDShort:
-            WriteByte((int8_t)GeodeTypeIdsImpl::FixedIDShort);
-            WriteInt16((System::Int16)typeId); // write the type ID.
-            break;
-          case GeodeTypeIdsImpl::FixedIDInt:
-            WriteByte((int8_t)GeodeTypeIdsImpl::FixedIDInt);
-            WriteInt32((System::Int32)typeId); // write the type ID.
-            break;
-          default:
-            WriteByte(typeId); // write the type ID.
-            break;
+        else if (auto dataSerializablePrimitive = dynamic_cast<IDataSerializablePrimitive^>(obj))
+        {
+          auto dsCode = dataSerializablePrimitive->DsCode;
+          WriteByte(dsCode);
+          dataSerializablePrimitive->ToData(this);
+        }
+        else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(obj))
+        {
+          auto id = dataSerializable->ClassId;
+          auto dsCode = getDataSerializableDsCode(id);
+          WriteByte(dsCode);
+          switch (dsCode) {
+            case GeodeTypeIdsImpl::CacheableUserData:
+              WriteByte(static_cast<int8_t>(id));
+              break;
+            case GeodeTypeIdsImpl::CacheableUserData2:
+              WriteInt16(static_cast<int16_t>(id));
+              break;
+            case GeodeTypeIdsImpl::CacheableUserData4:
+              WriteInt32(static_cast<int32_t>(id));
+              break;
+            default:
+              IllegalStateException("Invalid DS Code.");
           }
-
-          if ((System::Int32)typeId == GeodeTypeIdsImpl::CacheableUserData) {
-            WriteByte((int8_t)obj->ClassId);
+          dataSerializable->ToData(this);
+        }
+        else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(obj))
+        {
+          auto id = dataSerializableFixedId->DSFID;
+          auto dsCode = getDataSerializableFixedIdDsCode(id);
+          WriteByte(dsCode);
+          switch (dsCode) {
+            case GeodeTypeIdsImpl::FixedIDByte:
+              WriteByte(static_cast<int8_t>(id));
+              break;
+            case GeodeTypeIdsImpl::FixedIDShort:
+              WriteInt16(static_cast<int16_t>(id));
+              break;
+            case GeodeTypeIdsImpl::FixedIDInt:
+              WriteInt32(static_cast<int32_t>(id));
+              break;
+            default:
+              IllegalStateException("Invalid DS Code.");
           }
-          else if ((System::Int32)typeId == GeodeTypeIdsImpl::CacheableUserData2) {
-            WriteInt16((System::Int16)obj->ClassId);
-          }
-          else if ((System::Int32)typeId == GeodeTypeIdsImpl::CacheableUserData4) {
-            WriteInt32((System::Int32)obj->ClassId);
-          }
-          obj->ToData(this); // let the obj serialize itself.
+          dataSerializable->ToData(this);
+        }
+        else
+        {
+          throw gcnew IllegalStateException("Unknown serializable type.");
         }
       }
 

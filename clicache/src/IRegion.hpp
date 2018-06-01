@@ -17,22 +17,16 @@
 
 #pragma once
 
-
 #include "geode_defs.hpp"
-#include "ISubscriptionService.hpp"
+
 #include "begin_native.hpp"
 #include <geode/DataOutput.hpp>
 #include "end_native.hpp"
 
-//#include "ExceptionTypes.hpp"
+#include "ISubscriptionService.hpp"
 
 using namespace System;
 using namespace System::Collections::Generic;
-
-/*
-using namespace Apache::Geode::Client;
-using namespace Apache::Geode::Client;
-*/
 
 namespace Apache
 {
@@ -43,7 +37,6 @@ namespace Apache
 
       ref class Cache;
       ref class CacheStatistics;
-      //interface class IGeodeSerializable;
       interface class IRegionService;
 
       generic<class TResult>
@@ -924,7 +917,7 @@ namespace Apache
           /// </param>
           /// <param name="callbackArg">
           /// An argument passed into the CacheLoader if loader is used.
-          /// Has to be Serializable (i.e. implement <c>IGeodeSerializable</c>);
+          /// Has to be Serializable (i.e. implement <c>ISerializable</c>);
           /// can be null.
           /// </param>
           /// <returns>

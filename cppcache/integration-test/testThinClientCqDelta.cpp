@@ -62,7 +62,8 @@ class CqDeltaListener : public CqListener {
     if (newValue.getIntVar() == 5) {
       m_deltaCount++;
     }
-    auto dptr = std::static_pointer_cast<DeltaTestImpl>(aCqEvent.getNewValue());
+    auto dptr =
+        std::dynamic_pointer_cast<DeltaTestImpl>(aCqEvent.getNewValue());
     if (dptr->getIntVar() == 5) {
       m_valueCount++;
     }

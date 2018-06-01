@@ -20,6 +20,7 @@
 
 #include "geode_defs.hpp"
 #include "ICacheableKey.hpp"
+#include "IDataSerializablePrimitive.hpp"
 
 using namespace System;
 
@@ -35,7 +36,8 @@ namespace Apache
       /// key object for caching as well as being a string value.
       /// </summary>
       public ref class CacheableDate
-        : public ICacheableKey
+        : public ICacheableKey,
+          public IDataSerializablePrimitive
       {
       public:
         /// <summary>
@@ -70,7 +72,7 @@ namespace Apache
           return gcnew CacheableDate(dateTime);
         }
 
-        // Region: IGeodeSerializable Members
+        // Region: ISerializable Members
 
         /// <summary>
         /// Serializes this object.
@@ -107,9 +109,9 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get();
+          virtual int8_t get();
         }
 
         /// <summary>
@@ -117,7 +119,7 @@ namespace Apache
         /// </summary>
         virtual String^ ToString() override;
 
-        // End Region: IGeodeSerializable Members
+        // End Region: ISerializable Members
 
 
         // Region: ICacheableKey Members
@@ -159,7 +161,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableDate();
         }

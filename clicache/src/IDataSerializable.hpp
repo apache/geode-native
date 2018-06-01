@@ -17,11 +17,13 @@
 
 #pragma once
 
-
 #include "geode_defs.hpp"
+
 #include "begin_native.hpp"
 #include <geode/internal/geode_globals.hpp>
 #include "end_native.hpp"
+
+#include "ISerializable.hpp"
 
 using namespace System;
 
@@ -34,16 +36,10 @@ namespace Apache
 
       ref class DataOutput;
       ref class DataInput;
-      ref class Serializable;
 
-      /// <summary>
-      /// This interface class is the superclass of all user objects 
-      /// in the cache that can be serialized.
-      /// </summary>
-      public interface class IGeodeSerializable
+      public interface class IDataSerializable : public ISerializable
       {
       public:
-
         /// <summary>
         /// Serializes this object.
         /// </summary>
@@ -51,8 +47,6 @@ namespace Apache
         /// the DataOutput object to use for serializing the object
         /// </param>
         void ToData( DataOutput^ output );
-
-        //bool HasDelta();
 
         /// <summary>
         /// Deserialize this object, typical implementation should return
@@ -65,19 +59,6 @@ namespace Apache
         void FromData( DataInput^ input );
 
         /// <summary>
-        /// Get the size of this object in bytes.
-        /// This is only needed if you use the HeapLRU feature.
-        /// </summary>
-        /// <remarks>
-        /// Note that you can simply return zero if you are not using the HeapLRU feature.
-        /// </remarks>
-        /// <returns>the size of this object in bytes.</returns>
-        property System::UInt64 ObjectSize
-        {
-          System::UInt64 get( );
-        }
-
-        /// <summary>
         /// Returns the classId of the instance being serialized.
         /// This is used by deserialization to determine what instance
         /// type to create and deserialize into.
@@ -85,21 +66,17 @@ namespace Apache
         /// <remarks>
         /// The classId must be unique within an application suite
         /// and in the range 0 to ((2^31)-1) both inclusive. An application can
-        /// thus define upto 2^31 custom <c>IGeodeSerializable</c> classes.
+        /// thus define upto 2^31 custom <c>ISerializable</c> classes.
         /// Returning a value greater than ((2^31)-1) may result in undefined
         /// behaviour.
         /// </remarks>
         /// <returns>the classId</returns>
-        property System::UInt32 ClassId
+        property Int32 ClassId
         {
-          System::UInt32 get( );
+          Int32 get( );
         }
-
-        /// <summary>
-        /// Return a string representation of the object.
-        /// </summary>
-        String^ ToString( );
       };
+
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

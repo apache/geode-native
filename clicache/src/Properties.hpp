@@ -25,7 +25,7 @@
 #include "SerializationRegistry.hpp"
 #include "end_native.hpp"
 
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "ICacheableKey.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
@@ -46,7 +46,7 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
-      delegate void PropertyVisitor(Apache::Geode::Client::ICacheableKey^ key, Apache::Geode::Client::IGeodeSerializable^ value);
+      delegate void PropertyVisitor(Apache::Geode::Client::ICacheableKey^ key, Apache::Geode::Client::ISerializable^ value);
 
       generic <class TPropKey, class TPropValue>
       ref class PropertyVisitorProxy;
@@ -72,7 +72,7 @@ namespace Apache
       /// or an integer.
       /// </summary>
       public ref class Properties sealed
-        : public IGeodeSerializable //,public ISerializable
+        : public IDataSerializablePrimitive
       {
       public:
 
@@ -162,7 +162,7 @@ namespace Apache
         /// </returns>
         virtual String^ ToString( ) override;
 
-        // IGeodeSerializable members
+        // ISerializable members
 
         /// <summary>
         /// Serializes this Properties object.
@@ -189,33 +189,13 @@ namespace Apache
           virtual System::UInt64 get( ); 
         }
 
-        /// <summary>
-        /// Returns the classId of this class for serialization.
-        /// </summary>
-        /// <returns>classId of the Properties class</returns>
-        /// <seealso cref="IGeodeSerializable.ClassId" />
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          inline virtual System::UInt32 get( )
+          inline virtual int8_t get( )
           {
-            return GeodeClassIds::Properties;
+            return native::GeodeTypeIds::Properties;
           }
         }
-
-        // End: IGeodeSerializable members
-
-        // ISerializable members
-
-        //virtual void GetObjectData( SerializationInfo^ info,
-        //  StreamingContext context);
-
-        // End: ISerializable members
-
-      protected:
-
-        // For deserialization using the .NET serialization (ISerializable)
-        //Properties(SerializationInfo^ info, StreamingContext context, std::shared_ptr<native::SerializationRegistry> serializationRegistry);
-
 
       internal:
 
@@ -238,7 +218,7 @@ namespace Apache
           return m_nativeptr->get_shared_ptr();
         }
 
-        inline static IGeodeSerializable^ CreateDeserializable()
+        inline static ISerializable^ CreateDeserializable()
         {
           return Create();
         }
@@ -263,25 +243,22 @@ namespace Apache
       ref class PropertyVisitorProxy
       {
       public:
-        void Visit(Apache::Geode::Client::ICacheableKey^ key,
-          Apache::Geode::Client::IGeodeSerializable^ value)
+        void Visit(ICacheableKey^ key, ISerializable^ value)
         {
-          TPropKey tpkey = Apache::Geode::Client::TypeRegistry::
-            GetManagedValueGeneric<TPropKey>(std::shared_ptr<apache::geode::client::Serializable>(SafeMSerializableConvertGeneric(key)));
-          TPropValue tpvalue = Apache::Geode::Client::TypeRegistry::
-            GetManagedValueGeneric<TPropValue>(std::shared_ptr<apache::geode::client::Serializable>(SafeMSerializableConvertGeneric(value)));
+          auto tpkey = TypeRegistry::GetManagedValueGeneric<TPropKey>(std::shared_ptr<apache::geode::client::Serializable>(GetNativeWrapperForManagedObject(key)));
+          auto tpvalue = TypeRegistry::GetManagedValueGeneric<TPropValue>(std::shared_ptr<apache::geode::client::Serializable>(GetNativeWrapperForManagedObject(value)));
           m_visitor->Invoke(tpkey, tpvalue);
+
+          //m_visitor->Invoke(safe_cast<TPropKey>(key), safe_cast<TPropValue>(value));
         }
 
-        void SetPropertyVisitorGeneric(
-          Apache::Geode::Client::PropertyVisitorGeneric<TPropKey, TPropValue>^ visitor)
+        void SetPropertyVisitorGeneric(PropertyVisitorGeneric<TPropKey, TPropValue>^ visitor)
         {
           m_visitor = visitor;
         }
 
       private:
-
-        Apache::Geode::Client::PropertyVisitorGeneric<TPropKey, TPropValue>^ m_visitor;
+        PropertyVisitorGeneric<TPropKey, TPropValue>^ m_visitor;
       };
 
     }  // namespace Client

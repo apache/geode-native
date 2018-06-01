@@ -48,18 +48,14 @@ std::shared_ptr<Serializable> CacheableDate::createDeserializable() {
   return std::make_shared<CacheableDate>();
 }
 
-int32_t CacheableDate::classId() const { return 0; }
-
-int8_t CacheableDate::typeId() const { return GeodeTypeIds::CacheableDate; }
+int8_t CacheableDate::getDsCode() const { return GeodeTypeIds::CacheableDate; }
 
 bool CacheableDate::operator==(const CacheableKey& other) const {
-  if (other.typeId() != GeodeTypeIds::CacheableDate) {
-    return false;
+  if (auto otherDate = dynamic_cast<const CacheableDate*>(&other)) {
+    return m_timevalue == otherDate->m_timevalue;
   }
 
-  const CacheableDate& otherDt = static_cast<const CacheableDate&>(other);
-
-  return m_timevalue == otherDt.m_timevalue;
+  return false;
 }
 
 int64_t CacheableDate::milliseconds() const { return m_timevalue; }

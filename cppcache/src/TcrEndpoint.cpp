@@ -1091,7 +1091,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
     }
   } while (++sendRetryCount <= maxSendRetries);
   return error;
-}
+}  // namespace client
 
 void TcrEndpoint::setRetry(const TcrMessage& request, int& maxSendRetries) {
   int32_t type = request.getMessageType();

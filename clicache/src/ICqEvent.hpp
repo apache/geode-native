@@ -29,7 +29,7 @@ namespace Apache
     namespace Client
     {
 
-      interface class IGeodeSerializable;
+      interface class ISerializable;
 
 
       generic<class TKey, class TResult>

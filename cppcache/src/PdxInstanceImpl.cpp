@@ -440,81 +440,69 @@ bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj,
     return false;
   }
 
-  int8_t typeId = obj->typeId();
-  switch (typeId) {
-    case GeodeTypeIds::CacheableObjectArray: {
-      auto objArrayPtr = std::dynamic_pointer_cast<CacheableObjectArray>(obj);
-      auto otherObjArrayPtr =
-          std::dynamic_pointer_cast<CacheableObjectArray>(otherObj);
-      return enumerateObjectArrayEquals(objArrayPtr, otherObjArrayPtr);
-    }
-    case GeodeTypeIds::CacheableVector: {
-      auto vec = std::dynamic_pointer_cast<CacheableVector>(obj);
-      auto otherVec = std::dynamic_pointer_cast<CacheableVector>(otherObj);
-      return enumerateVectorEquals(vec, otherVec);
-    }
-    case GeodeTypeIds::CacheableArrayList: {
-      auto arrList = std::dynamic_pointer_cast<CacheableArrayList>(obj);
-      auto otherArrList =
-          std::dynamic_pointer_cast<CacheableArrayList>(otherObj);
-      return enumerateArrayListEquals(arrList, otherArrList);
-    }
-    case GeodeTypeIds::CacheableHashMap: {
-      auto map = std::dynamic_pointer_cast<CacheableHashMap>(obj);
-      auto otherMap = std::dynamic_pointer_cast<CacheableHashMap>(otherObj);
-      return enumerateMapEquals(map, otherMap);
-    }
-    case GeodeTypeIds::CacheableHashSet: {
-      auto hashset = std::dynamic_pointer_cast<CacheableHashSet>(obj);
-      auto otherHashset = std::dynamic_pointer_cast<CacheableHashSet>(otherObj);
-      return enumerateSetEquals(hashset, otherHashset);
-    }
-    case GeodeTypeIds::CacheableLinkedHashSet: {
-      auto linkedHashset =
-          std::dynamic_pointer_cast<CacheableLinkedHashSet>(obj);
-      auto otherLinkedHashset =
-          std::dynamic_pointer_cast<CacheableLinkedHashSet>(otherObj);
-      return enumerateLinkedSetEquals(linkedHashset, otherLinkedHashset);
-    }
-    case GeodeTypeIds::CacheableHashTable: {
-      auto hashTable = std::dynamic_pointer_cast<CacheableHashTable>(obj);
-      auto otherhashTable =
-          std::dynamic_pointer_cast<CacheableHashTable>(otherObj);
-      return enumerateHashTableEquals(hashTable, otherhashTable);
-    }
-    default: {
-      auto pdxInstPtr = std::dynamic_pointer_cast<PdxInstance>(obj);
-      auto otherPdxInstPtr = std::dynamic_pointer_cast<PdxInstance>(otherObj);
-      if (pdxInstPtr != nullptr && otherPdxInstPtr != nullptr) {
-        return (*pdxInstPtr.get() == *otherPdxInstPtr.get());
+  if (auto primitive =
+          std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+    switch (primitive->getDsCode()) {
+      case GeodeTypeIds::CacheableObjectArray: {
+        auto objArrayPtr = std::dynamic_pointer_cast<CacheableObjectArray>(obj);
+        auto otherObjArrayPtr =
+            std::dynamic_pointer_cast<CacheableObjectArray>(otherObj);
+        return enumerateObjectArrayEquals(objArrayPtr, otherObjArrayPtr);
       }
-      // Chk if it is of std::shared_ptr<CacheableKey> type, eg: CacheableInt32
-      else {
-        auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj);
-        auto otherKeyType = std::dynamic_pointer_cast<CacheableKey>(otherObj);
-        if (keyType != nullptr && otherKeyType != nullptr) {
-          return keyType->operator==(*otherKeyType);
-        }
+      case GeodeTypeIds::CacheableVector: {
+        auto vec = std::dynamic_pointer_cast<CacheableVector>(obj);
+        auto otherVec = std::dynamic_pointer_cast<CacheableVector>(otherObj);
+        return enumerateVectorEquals(vec, otherVec);
       }
-      char excpStr[256] = {0};
-      /* adongre  - Coverity II
-       * CID 29210: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-       * "sprintf" can cause a
-       * buffer overflow when done incorrectly. Because sprintf() assumes an
-       * arbitrarily long string,
-       * callers must be careful not to overflow the actual space of the
-       * destination.
-       * Use snprintf() instead, or correct precision specifiers.
-       * Fix : using ACE_OS::snprintf
-       */
-      ACE_OS::snprintf(excpStr, 256,
-                       "PdxInstance cannot calculate equals of the field %s "
-                       "since equals is only supported for CacheableKey "
-                       "derived types ",
-                       obj->toString().c_str());
-      throw IllegalStateException(excpStr);
+      case GeodeTypeIds::CacheableArrayList: {
+        auto arrList = std::dynamic_pointer_cast<CacheableArrayList>(obj);
+        auto otherArrList =
+            std::dynamic_pointer_cast<CacheableArrayList>(otherObj);
+        return enumerateArrayListEquals(arrList, otherArrList);
+      }
+      case GeodeTypeIds::CacheableHashMap: {
+        auto map = std::dynamic_pointer_cast<CacheableHashMap>(obj);
+        auto otherMap = std::dynamic_pointer_cast<CacheableHashMap>(otherObj);
+        return enumerateMapEquals(map, otherMap);
+      }
+      case GeodeTypeIds::CacheableHashSet: {
+        auto hashset = std::dynamic_pointer_cast<CacheableHashSet>(obj);
+        auto otherHashset =
+            std::dynamic_pointer_cast<CacheableHashSet>(otherObj);
+        return enumerateSetEquals(hashset, otherHashset);
+      }
+      case GeodeTypeIds::CacheableLinkedHashSet: {
+        auto linkedHashset =
+            std::dynamic_pointer_cast<CacheableLinkedHashSet>(obj);
+        auto otherLinkedHashset =
+            std::dynamic_pointer_cast<CacheableLinkedHashSet>(otherObj);
+        return enumerateLinkedSetEquals(linkedHashset, otherLinkedHashset);
+      }
+      case GeodeTypeIds::CacheableHashTable: {
+        auto hashTable = std::dynamic_pointer_cast<CacheableHashTable>(obj);
+        auto otherhashTable =
+            std::dynamic_pointer_cast<CacheableHashTable>(otherObj);
+        return enumerateHashTableEquals(hashTable, otherhashTable);
+      }
     }
   }
+
+  if (auto pdxInstance = std::dynamic_pointer_cast<PdxInstance>(obj)) {
+    if (auto otherPdxInstance =
+            std::dynamic_pointer_cast<PdxInstance>(otherObj)) {
+      return *pdxInstance == *otherPdxInstance;
+    }
+  }
+
+  if (auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj)) {
+    if (auto otherKeyType = std::dynamic_pointer_cast<CacheableKey>(otherObj)) {
+      return *keyType == *otherKeyType;
+    }
+  }
+
+  throw IllegalStateException(
+      "PdxInstance cannot calculate equals of the field " + obj->toString() +
+      " since equals is only supported for CacheableKey derived types.");
 }
 
 int PdxInstanceImpl::enumerateMapHashCode(
@@ -596,73 +584,56 @@ int PdxInstanceImpl::deepArrayHashCode(std::shared_ptr<Cacheable> obj) {
     return 0;
   }
 
-  int8_t typeId = obj->typeId();
-  switch (typeId) {
-    case GeodeTypeIds::CacheableObjectArray: {
-      return enumerateObjectArrayHashCode(
-          std::dynamic_pointer_cast<CacheableObjectArray>(obj));
-    }
-    case GeodeTypeIds::CacheableVector: {
-      return enumerateVectorHashCode(
-          std::dynamic_pointer_cast<CacheableVector>(obj));
-    }
-    case GeodeTypeIds::CacheableArrayList: {
-      return enumerateArrayListHashCode(
-          std::dynamic_pointer_cast<CacheableArrayList>(obj));
-    }
-    case GeodeTypeIds::CacheableLinkedList: {
-      return enumerateLinkedListHashCode(
-          std::dynamic_pointer_cast<CacheableLinkedList>(obj));
-    }
-    case GeodeTypeIds::CacheableHashMap: {
-      return enumerateMapHashCode(
-          std::dynamic_pointer_cast<CacheableHashMap>(obj));
-    }
-    case GeodeTypeIds::CacheableHashSet: {
-      return enumerateSetHashCode(
-          std::dynamic_pointer_cast<CacheableHashSet>(obj));
-    }
-    case GeodeTypeIds::CacheableLinkedHashSet: {
-      auto linkedHashSet =
-          std::dynamic_pointer_cast<CacheableLinkedHashSet>(obj);
-      return enumerateLinkedSetHashCode(linkedHashSet);
-    }
-    case GeodeTypeIds::CacheableHashTable: {
-      return enumerateHashTableCode(
-          std::dynamic_pointer_cast<CacheableHashTable>(obj));
-    }
-    default: {
-      auto pdxInstPtr = std::dynamic_pointer_cast<PdxInstance>(obj);
-      if (pdxInstPtr != nullptr) {
-        return pdxInstPtr->hashcode();
-      } else {
-        // Chk if it is of std::shared_ptr<CacheableKey> type, eg:
-        // CacheableInt32
-        auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj);
-        if (keyType != nullptr) {
-          return keyType->hashcode();
-        }
+  if (auto primitive =
+          std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+    switch (primitive->getDsCode()) {
+      case GeodeTypeIds::CacheableObjectArray: {
+        return enumerateObjectArrayHashCode(
+            std::dynamic_pointer_cast<CacheableObjectArray>(obj));
       }
-      // Else throwing exception since no type matched.
-      char excpStr[256] = {0};
-      /* adongre  - Coverity II
-       * CID 29211: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-       * "sprintf" can cause a
-       * buffer overflow when done incorrectly. Because sprintf() assumes an
-       * arbitrarily long string,
-       * callers must be careful not to overflow the actual space of the
-       * destination.
-       * Use snprintf() instead, or correct precision specifiers.
-       * Fix : using ACE_OS::snprintf
-       */
-      ACE_OS::snprintf(excpStr, 256,
-                       "PdxInstance cannot calculate hashcode of the field %s "
-                       "since hashcode is only supported for CacheableKey "
-                       "derived types ",
-                       obj->toString().c_str());
-      throw IllegalStateException(excpStr);
+      case GeodeTypeIds::CacheableVector: {
+        return enumerateVectorHashCode(
+            std::dynamic_pointer_cast<CacheableVector>(obj));
+      }
+      case GeodeTypeIds::CacheableArrayList: {
+        return enumerateArrayListHashCode(
+            std::dynamic_pointer_cast<CacheableArrayList>(obj));
+      }
+      case GeodeTypeIds::CacheableLinkedList: {
+        return enumerateLinkedListHashCode(
+            std::dynamic_pointer_cast<CacheableLinkedList>(obj));
+      }
+      case GeodeTypeIds::CacheableHashMap: {
+        return enumerateMapHashCode(
+            std::dynamic_pointer_cast<CacheableHashMap>(obj));
+      }
+      case GeodeTypeIds::CacheableHashSet: {
+        return enumerateSetHashCode(
+            std::dynamic_pointer_cast<CacheableHashSet>(obj));
+      }
+      case GeodeTypeIds::CacheableLinkedHashSet: {
+        auto linkedHashSet =
+            std::dynamic_pointer_cast<CacheableLinkedHashSet>(obj);
+        return enumerateLinkedSetHashCode(linkedHashSet);
+      }
+      case GeodeTypeIds::CacheableHashTable: {
+        return enumerateHashTableCode(
+            std::dynamic_pointer_cast<CacheableHashTable>(obj));
+      }
     }
   }
+
+  if (auto pdxInstance = std::dynamic_pointer_cast<PdxInstance>(obj)) {
+    return pdxInstance->hashcode();
+  }
+
+  if (auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj)) {
+    return keyType->hashcode();
+  }
+
+  throw IllegalStateException(
+      "PdxInstance cannot calculate hashcode of the field " + obj->toString() +
+      " since equals is only supported for CacheableKey derived types.");
 }
 
 int32_t PdxInstanceImpl::hashcode() const {

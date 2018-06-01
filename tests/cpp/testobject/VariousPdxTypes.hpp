@@ -20,6 +20,7 @@
 #ifndef GEODE_TESTOBJECT_VARIOUSPDXTYPES_H_
 #define GEODE_TESTOBJECT_VARIOUSPDXTYPES_H_
 
+#include <geode/DataSerializable.hpp>
 #include <geode/PdxSerializable.hpp>
 #include <geode/PdxWriter.hpp>
 #include <geode/PdxReader.hpp>
@@ -524,7 +525,7 @@ class TESTOBJECT_EXPORT MixedVersionNestedPdx : public PdxSerializable {
  *  PdxInsideIGeodeSerializable
  * *********************************************************/
 
-class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public Serializable {
+class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public DataSerializable {
  private:
   std::shared_ptr<NestedPdx> m_npdx;
   std::shared_ptr<PdxTypes3> m_pdx3;
@@ -551,7 +552,7 @@ class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public Serializable {
 
   void toData(DataOutput& output) const override;
 
-  virtual int32_t classId() const override { return 0x10; }
+  virtual int32_t getClassId() const override { return 0x10; }
 
   //  const std::string& getClassName() const override {
   //    static std::string className = "PdxTests.PdxInsideIGeodeSerializable";

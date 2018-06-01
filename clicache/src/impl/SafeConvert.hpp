@@ -32,7 +32,6 @@
 #include "../CqEvent.hpp"
 #include "PdxManagedCacheableKey.hpp"
 #include "PdxWrapper.hpp"
-//TODO::split
 #include "../CqEvent.hpp"
 #include "../UserFunctionExecutionException.hpp"
 #include "../Cache.hpp"
@@ -45,84 +44,66 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
-			interface class IPdxSerializable;
+      interface class IPdxSerializable;
       public ref class SafeConvertClassGeneric
       {
       };
 
       /// <summary>
       /// Helper function to convert native <c>apache::geode::client::Serializable</c> object
-      /// to managed <see cref="IGeodeSerializable" /> object.
+      /// to managed <see cref="ISerializable" /> object.
       /// </summary>
-      inline static Apache::Geode::Client::IGeodeSerializable^
+      inline static Apache::Geode::Client::ISerializable^
         SafeUMSerializableConvertGeneric(std::shared_ptr<native::Serializable> serializableObject)
       {
         if (serializableObject == nullptr) return nullptr;
 
-        if (auto mg_obj = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(serializableObject))
+        if (auto managedDataSerializable = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(serializableObject))
         {
-          return mg_obj->ptr();
+          return managedDataSerializable->ptr();
         }
-        if (auto mg_obj_delta = std::dynamic_pointer_cast<native::ManagedCacheableDeltaGeneric>(serializableObject))
+        else if (auto managedCacheableDeltaGeneric = std::dynamic_pointer_cast<native::ManagedCacheableDeltaGeneric>(serializableObject))
         {
-          return dynamic_cast<Apache::Geode::Client::IGeodeSerializable^>(mg_obj_delta->ptr());
+          return dynamic_cast<Apache::Geode::Client::IDataSerializable^>(managedCacheableDeltaGeneric->ptr());
         }
-
-        if (serializableObject->typeId() == 0)
+        else if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(serializableObject))
         {
-          if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(serializableObject))
+          return gcnew UserFunctionExecutionException(mg_UFEEobj);
+        }
+        else if (auto managedPrimitive = std::dynamic_pointer_cast<native::ManagedDataSerializablePrimitive>(serializableObject))
+        {           
+          return managedPrimitive->ptr();
+        } 
+        else if (auto primitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(serializableObject))
+        {           
+          if (auto wrapperMethod = TypeRegistry::GetDataSerializablePrimitiveWrapperDelegateForDsCode(primitive->getDsCode()))
           {
-            return gcnew UserFunctionExecutionException(mg_UFEEobj);
+            return wrapperMethod(primitive);
           }
         }
-
-        auto wrapperMethod = TypeRegistry::GetWrapperGeneric( serializableObject->typeId( ) );             
-        if (wrapperMethod != nullptr)
+        else if (auto dataSerializableFixedId = std::dynamic_pointer_cast<native::ManagedDataSerializableFixedId>(serializableObject))
+        {           
+          return dataSerializableFixedId->ptr();
+        }
+        else if (auto dataSerializableInternal = std::dynamic_pointer_cast<native::ManagedDataSerializableInternal>(serializableObject))
         {
-          return wrapperMethod(serializableObject);
+          return dataSerializableInternal->ptr();
         }
 
         return gcnew Apache::Geode::Client::Serializable( serializableObject );
       }
 
-      /// <summary>
-      /// This function is to safely cast objects from managed class to native class.
-      /// </summary>
-      /// <remarks>
-      /// <para>
-      /// Consider the scenario that we have both native objects of class
-      /// <c>native::Serializable</c> and managed objects of class
-      /// <see cref="IGeodeSerializable" /> in a Region.
-      /// </para><para>
-      /// The former would be passed wrapped inside the
-      /// <see cref="Serializable" /> class.
-      /// When this object is passed to native methods, it would be wrapped
-      /// inside <c>ManagedSerializable</c> class. However, for the
-      /// former case it will result in double wrapping and loss of information
-      /// (since the <c>ManagedSerializable</c> would not be as rich as the
-      /// original native class). So for the former case we will directly
-      /// get the native object, while we need to wrap only for the latter case.
-      /// </para><para>
-      /// This template function does a dynamic_cast to check if the object is of
-      /// the given <c>NativeWrapper</c> type and if so, then simply return the
-      /// native object else create a new object that wraps the managed object.
-      /// </para>
-      /// </remarks>
-      template<typename ManagedType, typename ManagedWrapper,
-        typename NativeType, typename NativeWrapper>
-      inline static NativeType* SafeM2UMConvertGeneric( ManagedType^ mg_obj )
+      inline static native::Serializable* GetNativeWrapperForManagedIDataSerializable( IDataSerializable^ mg_obj )
       {
         if (mg_obj == nullptr) return __nullptr;
         
-        NativeWrapper^ obj = dynamic_cast<NativeWrapper^>( mg_obj );
-        
-        if(auto sDelta = dynamic_cast<Apache::Geode::Client::IGeodeDelta^> (mg_obj))
+        if(auto sDelta = dynamic_cast<Apache::Geode::Client::IDelta^> (mg_obj))
         {
           return new native::ManagedCacheableDeltaGeneric(sDelta);
         }
         else
         {
-          return new ManagedWrapper(mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId);
+          return new native::ManagedCacheableKeyGeneric(mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId);
         }
       }
 
@@ -135,79 +116,39 @@ namespace Apache
       generic<class TValue>
       inline static TValue SafeGenericUMSerializableConvert( std::shared_ptr<native::Serializable> obj)
       {
+        auto converted = SafeUMSerializableConvertGeneric(obj);
 
-        if (obj == nullptr) return TValue();
+        if (converted == nullptr) return TValue();
         
-        if (auto mg_obj = std::dynamic_pointer_cast<native::ManagedCacheableKeyGeneric>(obj))
-        {
-          return (TValue)mg_obj->ptr();
-        }
-
-        if (auto mg_obj_delta = std::dynamic_pointer_cast<native::ManagedCacheableDeltaGeneric>(obj))
-        {
-          return safe_cast<TValue>(mg_obj_delta->ptr());
-        }
-
-        if (obj->typeId() == 0)
-        {
-          if (auto mg_UFEEobj = std::dynamic_pointer_cast<native::UserFunctionExecutionException>(obj))
-          {
-            return safe_cast<TValue> (gcnew UserFunctionExecutionException(mg_UFEEobj));
-          }
-        }
-
-        auto wrapperMethod = TypeRegistry::GetWrapperGeneric( obj->typeId( ) );             
-        if (wrapperMethod != nullptr)
-        {
-          return safe_cast<TValue>(wrapperMethod( obj ));
-        }
-
-        return safe_cast<TValue>(gcnew Apache::Geode::Client::Serializable( obj ));
+        return safe_cast<TValue>(converted);
       }
 
-      /// <summary>
-      /// Helper function to convert managed <see cref="IGeodeSerializable" />
-      /// object to native <c>native::Serializable</c> object using
-      /// <c>SafeM2UMConvert</c>.
-      /// </summary>
-      inline static native::Serializable* SafeMSerializableConvertGeneric(
-        Apache::Geode::Client::IGeodeSerializable^ mg_obj )
+      inline static native::Serializable* GetNativeWrapperForManagedObject(Object^ managedObject)
       {
-        //it is called for cacheables types  only
-        return SafeM2UMConvertGeneric<Apache::Geode::Client::IGeodeSerializable,
-          native::ManagedCacheableKeyGeneric, native::Serializable,
-          Apache::Geode::Client::Serializable>(mg_obj);
-      }
+        if (managedObject == nullptr) return __nullptr;
 
-      generic<class TValue>
-      inline static native::Cacheable* SafeGenericM2UMConvert( TValue mg_val)
-      {
-        if (mg_val == nullptr) return NULL;
-
-				Object^ mg_obj = (Object^)mg_val;
-
-        if(auto pdxType = dynamic_cast<IPdxSerializable^>(mg_obj))
+        if (auto dataSerializablePrimitive = dynamic_cast<IDataSerializablePrimitive^>(managedObject))
         {
-					return new native::PdxManagedCacheableKey(pdxType);
+          return new native::ManagedDataSerializablePrimitive(dataSerializablePrimitive);
         }
-      
-        if(auto sDelta = dynamic_cast<IGeodeDelta^> (mg_obj))
-				{
-          return new native::ManagedCacheableDeltaGeneric(sDelta);
+        else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(managedObject))
+        {
+          return GetNativeWrapperForManagedIDataSerializable(dataSerializable);
+        }
+        else if (auto pdxSerializable = dynamic_cast<IPdxSerializable^>(managedObject))
+        {
+          return new native::PdxManagedCacheableKey(pdxSerializable);
+        }
+        else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(managedObject))
+        {
+          return new native::ManagedDataSerializableFixedId(dataSerializableFixedId);
+        }
+        else if (auto dataSerializableInternal = dynamic_cast<IDataSerializableInternal^>(managedObject))
+        {
+          return new native::ManagedDataSerializableInternal(dataSerializableInternal);
         }
 
-        if(auto tmpIGFS = dynamic_cast<IGeodeSerializable^>(mg_obj))
-				{
-					return new native::ManagedCacheableKeyGeneric(tmpIGFS);
-				}
-
-        return new native::PdxManagedCacheableKey(gcnew PdxWrapper(mg_obj));
-      }
-
-      generic<class TValue>
-      inline static native::Cacheable* SafeGenericMSerializableConvert( TValue mg_obj)
-      {
-        return SafeGenericM2UMConvert<TValue>( mg_obj );
+        return new native::PdxManagedCacheableKey(gcnew PdxWrapper(managedObject));
       }
 
       inline static IPdxSerializable^ SafeUMSerializablePDXConvert( std::shared_ptr<native::Serializable> obj )
@@ -233,11 +174,14 @@ namespace Apache
             return (Client::ICacheableKey^)mg_obj->ptr( );
         }
 
-        auto wrapperMethod = TypeRegistry::GetWrapperGeneric( obj->typeId( ) );
-        if (wrapperMethod != nullptr)
-        {
-          return (Client::ICacheableKey^)wrapperMethod( obj );
+        if (auto primitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(obj)) {
+          auto wrapperMethod = TypeRegistry::GetDataSerializablePrimitiveWrapperDelegateForDsCode( primitive->getDsCode( ) );
+          if (wrapperMethod != nullptr)
+          {
+            return (Client::ICacheableKey^)wrapperMethod(primitive);
+          }
         }
+
         return gcnew Client::CacheableKey( obj );
       }
 

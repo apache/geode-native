@@ -188,19 +188,16 @@ void compareMaps(HashMapOfCacheable& map, HashMapOfCacheable& expectedMap) {
     const auto& expectedVal = expectedIter->second;
 
     if (std::dynamic_pointer_cast<PositionPdx>(expectedVal)) {
-      const std::shared_ptr<PositionPdx>& posVal =
-          std::dynamic_pointer_cast<PositionPdx>(val);
-      const std::shared_ptr<PositionPdx>& expectedPosVal =
-          std::static_pointer_cast<PositionPdx>(expectedVal);
+      auto posVal = std::dynamic_pointer_cast<PositionPdx>(val);
+      auto expectedPosVal = std::dynamic_pointer_cast<PositionPdx>(expectedVal);
       ASSERT(expectedPosVal->getSecId() == posVal->getSecId(),
              "Expected the secIDs to be equal in PositionPdx");
       ASSERT(expectedPosVal->getSharesOutstanding() ==
                  posVal->getSharesOutstanding(),
              "Expected the sharesOutstanding to be equal in PositionPdx");
     } else {
-      const std::shared_ptr<PortfolioPdx>& portVal =
-          std::dynamic_pointer_cast<PortfolioPdx>(val);
-      const std::shared_ptr<PortfolioPdx>& expectedPortVal =
+      auto portVal = std::dynamic_pointer_cast<PortfolioPdx>(val);
+      auto expectedPortVal =
           std::dynamic_pointer_cast<PortfolioPdx>(expectedVal);
       ASSERT(expectedPortVal->getID() == portVal->getID(),
              "Expected the IDs to be equal in PortfolioPdx");

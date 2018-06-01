@@ -73,13 +73,13 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(
       }
       result = std::dynamic_pointer_cast<Cacheable>(
           execution.withArgs(m_arguments->at(0))
-              .withFilter(
-                  std::static_pointer_cast<CacheableVector>(m_arguments->at(1)))
+              .withFilter(std::dynamic_pointer_cast<CacheableVector>(
+                  m_arguments->at(1)))
               .withCollector(std::dynamic_pointer_cast<ResultCollector>(
                   m_arguments->at(2)))
               .execute(m_arguments->at(3)->toString().c_str(),
                        std::chrono::milliseconds(
-                           std::static_pointer_cast<CacheableInt32>(
+                           std::dynamic_pointer_cast<CacheableInt32>(
                                m_arguments->at(4))
                                ->value())));
     } break;
@@ -96,13 +96,13 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(
       const auto result =
           std::static_pointer_cast<RegionInternal>(
               cacheImpl->getCache()->getRegion(m_regionName))
-              ->getAll_internal(
-                  *std::dynamic_pointer_cast<
-                      std::vector<std::shared_ptr<CacheableKey>>>(
-                      m_arguments->at(0)),
-                  nullptr,
-                  std::static_pointer_cast<CacheableBoolean>(m_arguments->at(3))
-                      ->value());
+              ->getAll_internal(*std::dynamic_pointer_cast<
+                                    std::vector<std::shared_ptr<CacheableKey>>>(
+                                    m_arguments->at(0)),
+                                nullptr,
+                                std::dynamic_pointer_cast<CacheableBoolean>(
+                                    m_arguments->at(3))
+                                    ->value());
 
       auto values =
           std::dynamic_pointer_cast<HashMapOfCacheable>(m_arguments->at(1));
@@ -144,7 +144,7 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(
               *std::dynamic_pointer_cast<HashMapOfCacheable>(
                   m_arguments->at(0)),
               std::chrono::milliseconds(
-                  std::static_pointer_cast<CacheableInt32>(m_arguments->at(1))
+                  std::dynamic_pointer_cast<CacheableInt32>(m_arguments->at(1))
                       ->value()));
       break;
     default:

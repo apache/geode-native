@@ -22,47 +22,50 @@ using Xunit;
 namespace Apache.Geode.Client.IntegrationTests
 {
   [Trait("Category", "Integration")]
-  public class RegionTest : IDisposable
+  public class RegionTest
   {
-    private readonly Cache _cacheOne;
-    private readonly Cache _cacheTwo;
-    private readonly GeodeServer _geodeServer;
-
-    public RegionTest()
-    {
-      _geodeServer = new GeodeServer();
-
-      var cacheFactory = new CacheFactory();
-      _cacheOne = cacheFactory.Create();
-      _cacheTwo = cacheFactory.Create();
-    }
-
-    public void Dispose()
-    {
-      _cacheOne.Close();
-      _cacheTwo.Close();
-      _geodeServer.Dispose();
-    }
 
     [Fact]
     public void PutOnOneCacheGetOnAnotherCache()
     {
-      using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), _geodeServer))
+      using (var geodeServer = new GeodeServer())
       {
-        _cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
-        _cacheTwo.InitializeDeclarativeCache(cacheXml.File.FullName);
+        using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), geodeServer))
+        {
+          var cacheFactory = new CacheFactory();
 
-        var regionForCache1 = _cacheOne.GetRegion<string, string>("testRegion1");
-        var regionForCache2 = _cacheTwo.GetRegion<string, string>("testRegion1");
+          var cacheOne = cacheFactory.Create();
+          try
+          {
+            cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
 
-        const string key = "hello";
-        const string expectedResult = "dave";
+            var cacheTwo = cacheFactory.Create();
+            try
+            {
+              cacheTwo.InitializeDeclarativeCache(cacheXml.File.FullName);
 
-        regionForCache1.Put(key, expectedResult, null);
-        var actualResult = regionForCache2.Get(key, null);
+              var regionForCache1 = cacheOne.GetRegion<string, string>("testRegion1");
+              var regionForCache2 = cacheTwo.GetRegion<string, string>("testRegion1");
 
-        Assert.Equal(expectedResult, actualResult);
+              const string key = "hello";
+              const string expectedResult = "dave";
+              regionForCache1.Put(key, expectedResult, null);
+              var actualResult = regionForCache2.Get(key, null);
+
+              Assert.Equal(expectedResult, actualResult);
+            }
+            finally
+            {
+              cacheTwo.Close();
+            }
+          }
+          finally
+          {
+            cacheOne.Close();
+          }
+        }
       }
     }
   }
+
 }

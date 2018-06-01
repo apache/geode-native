@@ -22,8 +22,10 @@
 
 #include <memory>
 
+#include "internal/DataSerializableFixedId.hpp"
 #include "internal/geode_globals.hpp"
 #include "Serializable.hpp"
+#include "GeodeTypeIds.hpp"
 
 /** @file
  */
@@ -32,24 +34,17 @@ namespace apache {
 namespace geode {
 namespace client {
 
-/**
- * Encapsulate an undefined query result.
- */
 class DataInput;
 class DataOutput;
 class Serializable;
 
-class APACHE_GEODE_EXPORT CacheableUndefined : public Cacheable {
+class APACHE_GEODE_EXPORT CacheableUndefined
+    : public internal::DataSerializableFixedId_t<
+          GeodeTypeIds::CacheableUndefined> {
  public:
-  /**
-   *@brief serialize this object
-   **/
-  void toData(DataOutput& output) const override;
+  void toData(DataOutput&) const override;
 
-  /**
-   *@brief deserialize this object
-   **/
-  virtual void fromData(DataInput& input) override;
+  void fromData(DataInput&) override;
 
   /**
    * @brief creation function for undefined query result
@@ -59,33 +54,11 @@ class APACHE_GEODE_EXPORT CacheableUndefined : public Cacheable {
   }
 
   /**
-   *@brief Return the classId of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int32_t classId() const override;
-
-  /**
-   *@brief return the typeId byte of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int8_t typeId() const override;
-
-  /**
-   * @brief Return the data serialization fixed ID size type for internal use.
-   * @since GFE 5.7
-   */
-  int8_t DSFID() const override;
-
-  /**
    * Factory method for creating the default instance of CacheableUndefined.
    */
   inline static std::shared_ptr<CacheableUndefined> create() {
     return std::make_shared<CacheableUndefined>();
   }
-
-  virtual size_t objectSize() const override;
 
  protected:
   /** Constructor, used for deserialization. */

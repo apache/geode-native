@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-
-
-
+#include "../begin_native.hpp"
+#include <geode/GeodeTypeIds.hpp>
+#include <PdxTypes.hpp>
+#include "../end_native.hpp"
 
 #include "PdxInstanceFactoryImpl.hpp"
 #include "PdxInstanceImpl.hpp"
@@ -34,6 +35,9 @@ namespace Apache
 
       namespace Internal
       {
+
+        namespace native = apache::geode::client;
+
         PdxInstanceFactoryImpl::PdxInstanceFactoryImpl(String^ className, Cache^ cache)
         {
           if (className == nullptr)
@@ -61,7 +65,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteChar(String^ fieldName, Char value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "char", PdxTypes::CHAR, GeodeClassIds::CHAR_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR, native::PdxTypes::CHAR_SIZE);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -69,7 +73,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteBoolean(String^ fieldName, Boolean value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "boolean", PdxTypes::BOOLEAN, GeodeClassIds::BOOLEAN_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "boolean", PdxFieldTypes::BOOLEAN, native::PdxTypes::BOOLEAN_SIZE);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -77,7 +81,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteByte(String^ fieldName, SByte value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxTypes::BYTE, GeodeClassIds::BYTE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -85,7 +89,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteShort(String^ fieldName, Int16 value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxTypes::SHORT, GeodeClassIds::SHORT_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT, native::PdxTypes::SHORT_SIZE);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -93,7 +97,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteInt(String^ fieldName, Int32 value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxTypes::INT, GeodeClassIds::INTEGER_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT, native::PdxTypes::INTEGER_SIZE);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -101,7 +105,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteLong(String^ fieldName, Int64 value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxTypes::LONG, GeodeClassIds::LONG_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG, native::PdxTypes::LONG_SIZE);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -109,7 +113,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteFloat(String^ fieldName, float value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "float", PdxTypes::FLOAT, GeodeClassIds::FLOAT_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "float", PdxFieldTypes::FLOAT, native::PdxTypes::FLOAT_SIZE);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -117,7 +121,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteDouble(String^ fieldName, double value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "double", PdxTypes::DOUBLE, GeodeClassIds::DOUBLE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "double", PdxFieldTypes::DOUBLE, native::PdxTypes::DOUBLE_SIZE);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -125,7 +129,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteDate(String^ fieldName, System::DateTime value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "Date", PdxTypes::DATE, GeodeClassIds::DATE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE, native::PdxTypes::DATE_SIZE);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -133,7 +137,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteString(String^ fieldName, String^ value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddVariableLengthTypeField(fieldName, "String", PdxTypes::STRING);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "String", PdxFieldTypes::STRING);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -141,7 +145,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteObject(String^ fieldName, Object^ value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddVariableLengthTypeField(fieldName, /*obj->GetType()->FullName*/"Object", PdxTypes::OBJECT);
+          m_pdxType->AddVariableLengthTypeField(fieldName, /*obj->GetType()->FullName*/"Object", PdxFieldTypes::OBJECT);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -149,7 +153,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteBooleanArray(String^ fieldName, array<Boolean>^ value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddVariableLengthTypeField(fieldName, "bool[]", PdxTypes::BOOLEAN_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "bool[]", PdxFieldTypes::BOOLEAN_ARRAY);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -157,7 +161,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteCharArray(String^ fieldName, array<Char>^ value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddVariableLengthTypeField(fieldName, "char[]", PdxTypes::CHAR_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "char[]", PdxFieldTypes::CHAR_ARRAY);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -165,7 +169,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteByteArray(String^ fieldName, array<Byte>^ value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddVariableLengthTypeField(fieldName, "byte[]", PdxTypes::BYTE_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "byte[]", PdxFieldTypes::BYTE_ARRAY);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -173,7 +177,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteShortArray(String^ fieldName, array<Int16>^ value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddVariableLengthTypeField(fieldName, "short[]", PdxTypes::SHORT_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "short[]", PdxFieldTypes::SHORT_ARRAY);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -181,7 +185,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteIntArray(String^ fieldName, array<Int32>^ value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddVariableLengthTypeField(fieldName, "int[]", PdxTypes::INT_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "int[]", PdxFieldTypes::INT_ARRAY);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -189,7 +193,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteLongArray(String^ fieldName, array<Int64>^ value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddVariableLengthTypeField(fieldName, "long[]", PdxTypes::LONG_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "long[]", PdxFieldTypes::LONG_ARRAY);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -197,7 +201,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteFloatArray(String^ fieldName, array<float>^ value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddVariableLengthTypeField(fieldName, "float[]", PdxTypes::FLOAT_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "float[]", PdxFieldTypes::FLOAT_ARRAY);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -205,7 +209,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteDoubleArray(String^ fieldName, array<double>^ value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddVariableLengthTypeField(fieldName, "double[]", PdxTypes::DOUBLE_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "double[]", PdxFieldTypes::DOUBLE_ARRAY);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -213,7 +217,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteStringArray(String^ fieldName, array<String^>^ value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddVariableLengthTypeField(fieldName, "String[]", PdxTypes::STRING_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "String[]", PdxFieldTypes::STRING_ARRAY);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -221,7 +225,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteObjectArray(String^ fieldName, System::Collections::Generic::List<Object^>^ value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddVariableLengthTypeField(fieldName, "Object[]", PdxTypes::OBJECT_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "Object[]", PdxFieldTypes::OBJECT_ARRAY);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -229,7 +233,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteArrayOfByteArrays(String^ fieldName, array<array<Byte>^>^ value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddVariableLengthTypeField(fieldName, "byte[][]", PdxTypes::ARRAY_OF_BYTE_ARRAYS);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "byte[][]", PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }

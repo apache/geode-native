@@ -294,7 +294,7 @@ namespace Apache.Geode.Client.FwkLib
                 string query = QueryStatics.ResultSetParamQueries[index].Query;
                 FwkInfo("QueryTests.VerifyResultSet: Query Category [{0}]," +
                 " QueryString [{1}], NumSet [{2}].", category - 1, query, numSet);
-                //IGeodeSerializable[] paramList = new IGeodeSerializable[QueryStatics.NoOfQueryParam[index]];
+                //ISerializable[] paramList = new ISerializable[QueryStatics.NoOfQueryParam[index]];
                 object[] paramList = new object[QueryStatics.NoOfQueryParam[index]];
                 Int32 numVal = 0;
                 for (Int32 ind = 0; ind < QueryStatics.NoOfQueryParam[index]; ind++)
@@ -689,9 +689,9 @@ namespace Apache.Geode.Client.FwkLib
           FwkInfo("isObjectRegistered value is {0}",isObjectRegistered);
         if (!isObjectRegistered)
         {
-          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Portfolio.CreateDeserializable);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterType(Portfolio.CreateDeserializable);
           FwkInfo("Completed Portfolio registeration");
-          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Position.CreateDeserializable);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterType(Position.CreateDeserializable);
           CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterPdxType(PortfolioPdx.CreateDeserializable);
           CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterPdxType(PositionPdx.CreateDeserializable);
           FwkInfo("Completed other object registeration");
@@ -1390,8 +1390,8 @@ namespace Apache.Geode.Client.FwkLib
         if (isTypeRegistered != "registered")
         {
           FwkInfo("Getting inside for registeration");
-          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Position.CreateDeserializable);
-          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterTypeGeneric(Portfolio.CreateDeserializable);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterType(Position.CreateDeserializable);
+          CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterType(Portfolio.CreateDeserializable);
           CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterPdxType(Apache.Geode.Client.Tests.PortfolioPdx.CreateDeserializable);
           CacheHelper<TKey, TVal>.DCache.TypeRegistry.RegisterPdxType(Apache.Geode.Client.Tests.PositionPdx.CreateDeserializable);
 

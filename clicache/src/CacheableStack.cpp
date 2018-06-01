@@ -25,7 +25,6 @@
 #include <GeodeTypeIdsImpl.hpp>
 #include "end_native.hpp"
 #include "impl/SafeConvert.hpp"
-#include "GeodeClassIds.hpp"
 
 using namespace System;
 using namespace System::Collections::Generic;
@@ -37,14 +36,15 @@ namespace Apache
     namespace Client
     {
 
-      // Region: IGeodeSerializable Members
+      // Region: ISerializable Members
 
       void CacheableStack::ToData(DataOutput^ output)
       {
         if (m_stack != nullptr)
         {
           output->WriteArrayLen((System::Int32)m_stack->Count);
-          for each (Object^ obj in m_stack) {
+          auto stack = safe_cast<System::Collections::Generic::Stack<Object^>^>(m_stack);
+          for each (auto obj in Linq::Enumerable::Reverse(stack)) {
             output->WriteObject(obj);
           }
         }
@@ -56,27 +56,27 @@ namespace Apache
 
       void CacheableStack::FromData(DataInput^ input)
       {
-        int len = input->ReadArrayLen();
+        auto len = input->ReadArrayLen();
         if (len > 0)
         {
-          System::Collections::Generic::Stack<Object^>^ stack = safe_cast<System::Collections::Generic::Stack<Object^>^>(m_stack);
+          auto stack = safe_cast<System::Collections::Generic::Stack<Object^>^>(m_stack);
           for (int i = 0; i < len; i++)
           {
-            (stack)->Push(input->ReadObject());
+            stack->Push(input->ReadObject());
           }
         }
       }
 
-      System::UInt32 CacheableStack::ClassId::get()
+      int8_t CacheableStack::DsCode::get()
       {
-        return GeodeClassIds::CacheableStack;
+        return native::GeodeTypeIds::CacheableStack;
       }
 
       System::UInt64 CacheableStack::ObjectSize::get()
       {
         //TODO:
         /*System::UInt32 size = static_cast<System::UInt32> (sizeof(CacheableStack^));
-        for each (IGeodeSerializable^ val in this) {
+        for each (ISerializable^ val in this) {
         if (val != nullptr) {
         size += val->ObjectSize;
         }

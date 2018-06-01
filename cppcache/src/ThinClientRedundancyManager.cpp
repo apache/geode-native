@@ -691,22 +691,20 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
 void ThinClientRedundancyManager::sendNotificationCloseMsgs() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
 
-  for (std::vector<TcrEndpoint*>::iterator iter = m_redundantEndpoints.begin();
-       iter != m_redundantEndpoints.end(); ++iter) {
+  for (auto&& endpoint : m_redundantEndpoints) {
     LOGDEBUG(
         "ThinClientRedundancyManager::sendNotificationCloseMsgs(): closing "
         "notification for endpoint %s",
-        (*iter)->name().c_str());
-    (*iter)->stopNoBlock();
+        endpoint->name().c_str());
+    endpoint->stopNoBlock();
   }
 
-  for (std::vector<TcrEndpoint*>::iterator iter = m_redundantEndpoints.begin();
-       iter != m_redundantEndpoints.end(); ++iter) {
+  for (auto&& endpoint : m_redundantEndpoints) {
     LOGDEBUG(
         "ThinClientRedundancyManager::sendNotificationCloseMsgs(): closing "
         "receiver for endpoint %s",
-        (*iter)->name().c_str());
-    (*iter)->stopNotifyReceiverAndCleanup();
+        endpoint->name().c_str());
+    endpoint->stopNotifyReceiverAndCleanup();
   }
 }
 
@@ -726,12 +724,11 @@ void ThinClientRedundancyManager::close() {
 
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
 
-  for (std::vector<TcrEndpoint*>::iterator iter = m_redundantEndpoints.begin();
-       iter != m_redundantEndpoints.end(); ++iter) {
+  for (auto&& endpoint : m_redundantEndpoints) {
     LOGDEBUG(
         "ThinClientRedundancyManager::close(): unregistering from endpoint %s",
-        (*iter)->name().c_str());
-    (*iter)->unregisterDM(true);
+        endpoint->name().c_str());
+    endpoint->unregisterDM(true);
   }
 
   m_redundantEndpoints.clear();

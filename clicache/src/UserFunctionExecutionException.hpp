@@ -26,7 +26,7 @@
 #include "end_native.hpp"
 
 #include "native_shared_ptr.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
 
@@ -44,67 +44,17 @@ namespace Apache
       /// UserFunctionExecutionException class is used to encapsulate geode sendException in case of Function execution. 
       /// </summary>
       public ref class UserFunctionExecutionException sealed
-        : public IGeodeSerializable
+        : public ISerializable
       {
       public:
-        // IGeodeSerializable members
+        // ISerializable members
 
-        /// <summary>
-        /// Serializes this object.
-        /// Users should not implement/call this api as it is only intended for internal use.
-        /// </summary>
-        /// <param name="output">
-        /// the DataOutput stream to use for serialization
-        /// </param>
-        /// <exception cref="IllegalStateException">
-        /// If this api is called from User code.
-        /// </exception>
-        virtual void ToData(DataOutput^ output);
-
-        /// <summary>
-        /// Deserializes this object.
-        /// Users should not implement/call this api as it is only intended for internal use.
-        /// </summary>
-        /// <param name="input">
-        /// the DataInput stream to use for reading data
-        /// </param>
-        /// <exception cref="IllegalStateException">
-        /// If this api is called from User code.
-        /// </exception>
-        /// <returns>the deserialized object</returns>
-        virtual void FromData(DataInput^ input);
-
-        /// <summary>
-        /// Returns the classId of this class for serialization.
-        /// Users should not implement/call this api as it is only intended for internal use.
-        /// </summary>
-        /// <exception cref="IllegalStateException">
-        /// If this api is called from User code.
-        /// </exception>
-        /// <returns>classId of this class</returns>
-        /// <seealso cref="IGeodeSerializable.ClassId" />
-        virtual property System::UInt32 ClassId
-        {
-          inline virtual System::UInt32 get()
-          {
-            throw gcnew IllegalStateException("UserFunctionExecutionException::ClassId is not intended for use.");
-            return 0;
-          }
-        }
-
-        /// <summary>
-        /// return the size of this object in bytes
-        /// Users should not implement/call this api as it is only intended for internal use.
-        /// </summary>
-        /// <exception cref="IllegalStateException">
-        /// If this api is called from User code.
-        /// </exception>
         virtual property System::UInt64 ObjectSize
         {
           virtual System::UInt64 get();
         }
 
-        // End: IGeodeSerializable members   
+        // End: ISerializable members   
 
         /// <summary>
         /// return as String the Exception message returned from geode sendException api.          

@@ -21,6 +21,7 @@
 #include "PdxFieldType.hpp"
 #include "../begin_native.hpp"
 #include <geode/GeodeTypeIds.hpp>
+#include <PdxTypes.hpp>
 #include "../end_native.hpp"
 
 
@@ -164,24 +165,24 @@ namespace Apache
         {
           switch (m_typeId)
           {
-          case PdxTypes::BYTE:
-          case PdxTypes::BOOLEAN:
-            return GeodeClassIds::BOOLEAN_SIZE;
-
-          case PdxTypes::SHORT:
-          case PdxTypes::CHAR:
-            //case apache::geode::client::GeodeTypeIds::CacheableChar: //TODO
-            return GeodeClassIds::CHAR_SIZE;
-
-          case PdxTypes::INT:
-          case PdxTypes::FLOAT:
-            //case DSCODE.ENUM:
-            return GeodeClassIds::INTEGER_SIZE;
-
-          case PdxTypes::LONG:
-          case PdxTypes::DOUBLE:
-          case PdxTypes::DATE:
-            return GeodeClassIds::LONG_SIZE;
+          case PdxFieldTypes::BYTE:
+            return PdxTypes::BYTE_SIZE;
+          case PdxFieldTypes::BOOLEAN:
+            return PdxTypes::BOOLEAN_SIZE;
+          case PdxFieldTypes::SHORT:
+            return PdxTypes::SHORT_SIZE;
+          case PdxFieldTypes::CHAR:
+            return PdxTypes::CHAR_SIZE;
+          case PdxFieldTypes::INT:
+            return PdxTypes::INTEGER_SIZE;
+          case PdxFieldTypes::FLOAT:
+            return PdxTypes::FLOAT_SIZE;
+          case PdxFieldTypes::LONG:
+            return PdxTypes::LONG_SIZE;
+          case PdxFieldTypes::DOUBLE:
+            return PdxTypes::DOUBLE_SIZE;
+          case PdxFieldTypes::DATE:
+            return PdxTypes::DATE_SIZE;
 
           default:
             return -1;

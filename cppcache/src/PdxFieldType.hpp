@@ -23,6 +23,7 @@
 #include <string>
 
 #include <geode/internal/geode_globals.hpp>
+#include <geode/internal/DataSerializableInternal.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
@@ -33,7 +34,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT PdxFieldType : public Serializable {
+class APACHE_GEODE_EXPORT PdxFieldType
+    : public internal::DataSerializableInternal {
  private:
   std::string m_fieldName;
   std::string m_className;
@@ -51,8 +53,9 @@ class APACHE_GEODE_EXPORT PdxFieldType : public Serializable {
   int32_t getFixedTypeSize() const;
 
  public:
-  PdxFieldType(std::string fieldName, std::string className, PdxFieldTypes typeId,
-               int32_t sequenceId, bool isVariableLengthType, int32_t fixedSize,
+  PdxFieldType(std::string fieldName, std::string className,
+               PdxFieldTypes typeId, int32_t sequenceId,
+               bool isVariableLengthType, int32_t fixedSize,
                int32_t varLenFieldIdx);
 
   PdxFieldType();
@@ -86,7 +89,9 @@ class APACHE_GEODE_EXPORT PdxFieldType : public Serializable {
 
   virtual void fromData(DataInput& input) override;
 
-  virtual int32_t classId() const override { return static_cast<int32_t>(m_typeId); }
+  virtual int8_t getInternalId() const override {
+    return static_cast<int32_t>(m_typeId);
+  }
 
   virtual size_t objectSize() const override {
     auto size = sizeof(PdxFieldType);

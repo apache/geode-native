@@ -21,7 +21,7 @@ namespace Apache.Geode.Client.Tests
 {
   using Apache.Geode.Client;
   public class Position
-    : IGeodeSerializable
+    : IDataSerializable
   {
     #region Private members
 
@@ -68,7 +68,7 @@ namespace Apache.Geode.Client.Tests
       m_pid = 0;
     }
 
-    private UInt64 GetObjectSize(IGeodeSerializable obj)
+    private UInt64 GetObjectSize(ISerializable obj)
     {
       return (obj == null ? 0 : obj.ObjectSize);
     }
@@ -157,7 +157,7 @@ namespace Apache.Geode.Client.Tests
 
     #endregion
 
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {
@@ -225,7 +225,7 @@ namespace Apache.Geode.Client.Tests
       }
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {
@@ -235,7 +235,7 @@ namespace Apache.Geode.Client.Tests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new Position();
     }

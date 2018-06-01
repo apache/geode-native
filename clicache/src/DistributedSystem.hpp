@@ -129,6 +129,13 @@ namespace Apache
         static void registerCliCallback();
 
         static void unregisterCliCallback();
+
+        static void RegisterDataSerializablePrimitives(Cache^ cache);
+
+        static void RegisterDataSerializablePrimitivesOverrideNativeDeserialization(Cache^ cache);
+
+        static void RegisterDataSerializableFixedIdsOverrideNativeDeserialization(Cache^ cache);
+
         /// <summary>
         /// Stuff that needs to be done for Connect in each AppDomain.
         /// </summary>
@@ -181,16 +188,6 @@ namespace Apache
         /// Timer task to periodically invoke <c>HandleMemoryPressure</c>.
         /// </summary>
         System::Threading::Timer^ m_memoryPressureHandler;
-
-        /// <summary>
-        /// Singleton instance of this class.
-        /// </summary>
-        static volatile DistributedSystem^ m_instance;
-
-        /// <summary>
-        /// Static lock object to protect the singleton instance of this class.
-        /// </summary>
-        static System::Object^ m_singletonSync = gcnew System::Object();
 
         static CliCallbackDelegate^ m_cliCallBackObj;
       };

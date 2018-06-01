@@ -103,7 +103,7 @@ namespace Apache
             typeId = Serializable::GetPDXIdForType(pool, pType, m_cache);            
             pType->TypeId = typeId;
 
-            IDictionary<PdxType^, Int32>^ newDict = gcnew Dictionary<PdxType^, Int32>(pdxTypeToTypeId);
+            auto newDict = gcnew Dictionary<PdxType^, Int32>(pdxTypeToTypeId);
             newDict[pType] = typeId;
             pdxTypeToTypeId = newDict;            
           }
@@ -138,7 +138,7 @@ namespace Apache
           try
           {
             g_readerWriterLock->AcquireWriterLock(-1);
-            IDictionary<Int32, PdxType^>^ newDict = gcnew Dictionary<Int32, PdxType^>(typeIdToPdxType);
+            auto newDict = gcnew Dictionary<Int32, PdxType^>(typeIdToPdxType);
             newDict[typeId] = pdxType;
             typeIdToPdxType = newDict;
           }
@@ -171,7 +171,7 @@ namespace Apache
           try
           {
             g_readerWriterLock->AcquireWriterLock(-1);
-            IDictionary<String^, PdxType^>^ tmp = gcnew Dictionary<String^, PdxType^>(localTypeToPdxType);
+            auto tmp = gcnew Dictionary<String^, PdxType^>(localTypeToPdxType);
             tmp[localType] = pdxType;
             localTypeToPdxType = tmp;
           }
@@ -186,7 +186,7 @@ namespace Apache
           try
           {
             //g_readerWriterLock->AcquireReaderLock(-1);
-            IDictionary<String^, PdxType^>^ tmp = localTypeToPdxType;
+            auto tmp = localTypeToPdxType;
             PdxType^ retVal = nullptr;
 
             tmp->TryGetValue(localType, retVal);
@@ -204,7 +204,7 @@ namespace Apache
           try
           {
             g_readerWriterLock->AcquireWriterLock(-1);
-            IDictionary<Int32, PdxType^>^ tmp = gcnew Dictionary<Int32, PdxType^>(remoteTypeIdToMergedPdxType);
+            auto tmp = gcnew Dictionary<Int32, PdxType^>(remoteTypeIdToMergedPdxType);
             tmp[remoteTypeId] = mergedType;
             remoteTypeIdToMergedPdxType = tmp;
           }
@@ -219,7 +219,7 @@ namespace Apache
           try
           {
             //g_readerWriterLock->AcquireReaderLock(-1);
-            IDictionary<Int32, PdxType^>^ tmp = remoteTypeIdToMergedPdxType;
+            auto tmp = remoteTypeIdToMergedPdxType;
             PdxType^ retVal = nullptr;
 
             tmp->TryGetValue(remoteTypeId, retVal);
@@ -265,7 +265,7 @@ namespace Apache
 
         Int32 PdxTypeRegistry::GetEnumValue(EnumInfo^ ei)
         {
-          IDictionary<EnumInfo^, Int32>^ tmp = enumToInt;
+          auto tmp = enumToInt;
           if(tmp->ContainsKey(ei))
             return tmp[ei];
           try
@@ -290,7 +290,7 @@ namespace Apache
 
         EnumInfo^ PdxTypeRegistry::GetEnum(Int32 enumVal)
         {
-          IDictionary<Int32, EnumInfo^>^ tmp = intToEnum;
+          auto tmp = intToEnum;
           EnumInfo^ ret = nullptr;
           tmp->TryGetValue(enumVal, ret);
 

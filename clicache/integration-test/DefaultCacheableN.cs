@@ -36,8 +36,7 @@ namespace Apache.Geode.Client.UnitTests
     }
   }
 
-  // VJR: TODO: IGeodeSerializable should be replaced by IPdxSerializable when ready
-  class DefaultType : IGeodeSerializable
+  class DefaultType : IDataSerializable
   {
     bool m_cacheableBoolean;
     int m_cacheableInt32;
@@ -155,9 +154,9 @@ namespace Apache.Geode.Client.UnitTests
       get { return m_cacheableObject; }
     }
 
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
-    public uint ClassId
+    public Int32 ClassId
     {
       get { return 0x04; }
     }
@@ -251,7 +250,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new DefaultType();
     }

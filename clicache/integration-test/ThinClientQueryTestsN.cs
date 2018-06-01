@@ -80,8 +80,8 @@ namespace Apache.Geode.Client.UnitTests
     public void InitClient()
     {
       CacheHelper.Init();
-      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(Portfolio.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(Position.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(Portfolio.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(Position.CreateDeserializable);
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PortfolioPdx.CreateDeserializable);
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(PositionPdx.CreateDeserializable);
     }
@@ -1444,9 +1444,9 @@ namespace Apache.Geode.Client.UnitTests
     //  if (map1.Count != map2.Count)
     //    Assert.Fail("Number of Keys dont match");
     //  if (map1.Count == 0) return;
-    //  foreach (KeyValuePair<ICacheableKey, IGeodeSerializable> entry in map1)
+    //  foreach (KeyValuePair<ICacheableKey, ISerializable> entry in map1)
     //  {
-    //    IGeodeSerializable value;
+    //    ISerializable value;
     //    if (!(map2.TryGetValue(entry.Key,out value)))
     //    {
     //      Assert.Fail("Key was not found");

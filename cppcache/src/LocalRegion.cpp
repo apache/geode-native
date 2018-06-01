@@ -36,6 +36,7 @@
 #include "util/bounds.hpp"
 #include "util/Log.hpp"
 #include "util/exception.hpp"
+#include "SerializableHelper.hpp"
 
 namespace apache {
 namespace geode {
@@ -1359,42 +1360,57 @@ class RemoveActions {
              Utils::nullSafeToString(key).c_str());
   }
 
+  bool serializedEqualTo(const std::shared_ptr<Cacheable>& lhs,
+                         const std::shared_ptr<Cacheable>& rhs) {
+    auto&& cache = *(m_region.getCacheImpl());
+
+    if (const auto dataSerializablePrimitive =
+            std::dynamic_pointer_cast<DataSerializablePrimitive>(lhs)) {
+      return SerializableHelper<DataSerializablePrimitive>{}.equalTo(
+          cache, dataSerializablePrimitive,
+          std::dynamic_pointer_cast<DataSerializablePrimitive>(rhs));
+    } else if (const auto dataSerializable =
+                   std::dynamic_pointer_cast<DataSerializable>(lhs)) {
+      return SerializableHelper<DataSerializable>{}.equalTo(
+          cache, dataSerializable,
+          std::dynamic_pointer_cast<DataSerializable>(rhs));
+    } else if (const auto pdxSerializable =
+                   std::dynamic_pointer_cast<PdxSerializable>(lhs)) {
+      return SerializableHelper<PdxSerializable>{}.equalTo(
+          cache, pdxSerializable,
+          std::dynamic_pointer_cast<PdxSerializable>(rhs));
+    } else if (const auto dataSerializableInternal =
+                   std::dynamic_pointer_cast<DataSerializableInternal>(lhs)) {
+      return SerializableHelper<DataSerializableInternal>{}.equalTo(
+          cache, dataSerializableInternal,
+          std::dynamic_pointer_cast<DataSerializableInternal>(rhs));
+    } else {
+      throw UnsupportedOperationException(
+          "Serialization type not implemented.");
+    }
+  }
+
   inline GfErrType remoteUpdate(
       const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Cacheable>& newValue,
       const std::shared_ptr<Serializable>& aCallbackArgument,
       std::shared_ptr<VersionTag>& versionTag) {
     // propagate the remove to remote server, if any
-    std::shared_ptr<Cacheable> valuePtr;
+    std::shared_ptr<Cacheable> oldValue;
     GfErrType err = GF_NOERR;
     if (!allowNULLValue && m_region.getAttributes().getCachingEnabled()) {
-      m_region.getEntry(key, valuePtr);
-      DataOutput out1 = m_region.getCacheImpl()->createDataOutput();
-      DataOutput out2 = m_region.getCacheImpl()->createDataOutput();
-
-      if (valuePtr != nullptr && value != nullptr) {
-        if (valuePtr->classId() != value->classId() ||
-            valuePtr->typeId() != value->typeId()) {
+      m_region.getEntry(key, oldValue);
+      if (oldValue != nullptr && newValue != nullptr) {
+        if (!serializedEqualTo(oldValue, newValue)) {
           err = GF_ENOENT;
           return err;
         }
-        valuePtr->toData(out1);
-        value->toData(out2);
-        if (out1.getBufferLength() != out2.getBufferLength()) {
-          err = GF_ENOENT;
-          return err;
-        }
-        if (memcmp(out1.getBuffer(), out2.getBuffer(),
-                   out1.getBufferLength()) != 0) {
-          err = GF_ENOENT;
-          return err;
-        }
-      } else if ((valuePtr == nullptr || CacheableToken::isInvalid(valuePtr))) {
+      } else if ((oldValue == nullptr || CacheableToken::isInvalid(oldValue))) {
         m_ServerResponse = m_region.removeNoThrow_remote(
-            key, value, aCallbackArgument, versionTag);
+            key, newValue, aCallbackArgument, versionTag);
 
         return m_ServerResponse;
-      } else if (valuePtr != nullptr && value == nullptr) {
+      } else if (oldValue != nullptr && newValue == nullptr) {
         err = GF_ENOENT;
         return err;
       }
@@ -1404,7 +1420,7 @@ class RemoveActions {
           m_region.removeNoThrowEX_remote(key, aCallbackArgument, versionTag);
     } else {
       m_ServerResponse = m_region.removeNoThrow_remote(
-          key, value, aCallbackArgument, versionTag);
+          key, newValue, aCallbackArgument, versionTag);
     }
     LOGDEBUG("serverResponse::%d", m_ServerResponse);
     return m_ServerResponse;
@@ -1424,22 +1440,8 @@ class RemoveActions {
     GfErrType err = GF_NOERR;
     if (!allowNULLValue && cachingEnabled) {
       m_region.getEntry(key, valuePtr);
-      DataOutput out1 = m_region.getCacheImpl()->createDataOutput();
-      DataOutput out2 = m_region.getCacheImpl()->createDataOutput();
       if (valuePtr != nullptr && value != nullptr) {
-        if (valuePtr->classId() != value->classId() ||
-            valuePtr->typeId() != value->typeId()) {
-          err = GF_ENOENT;
-          return err;
-        }
-        valuePtr->toData(out1);
-        value->toData(out2);
-        if (out1.getBufferLength() != out2.getBufferLength()) {
-          err = GF_ENOENT;
-          return err;
-        }
-        if (memcmp(out1.getBuffer(), out2.getBuffer(),
-                   out1.getBufferLength()) != 0) {
+        if (!serializedEqualTo(valuePtr, value)) {
           err = GF_ENOENT;
           return err;
         }
@@ -1448,13 +1450,11 @@ class RemoveActions {
         err = (m_ServerResponse == 0 && valuePtr == nullptr) ? GF_NOERR
                                                              : GF_ENOENT;
         if (updateCount >= 0 &&
-            !m_region.getAttributes()
-                 .getConcurrencyChecksEnabled()) {  // This means server has
-                                                    // deleted an entry &
-                                                    // same entry has been
-                                                    // destroyed locally
-          // So call removeTrackerForEntry to remove key that was added in the
-          // map during addTrackerForEntry call.
+            !m_region.getAttributes().getConcurrencyChecksEnabled()) {
+          // This means server has deleted an entry & same entry has been
+          // destroyed locally
+          // So call removeTrackerForEntry to remove key that
+          // was added in the  map during addTrackerForEntry call.
           m_region.m_entries->removeTrackerForEntry(key);
         }
         return err;

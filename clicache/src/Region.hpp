@@ -301,7 +301,6 @@ namespace Apache
 
         inline std::shared_ptr<apache::geode::client::Serializable> get(std::shared_ptr<apache::geode::client::CacheableKey>& key, std::shared_ptr<apache::geode::client::Serializable>& callbackArg);
         inline std::shared_ptr<apache::geode::client::Serializable> get(std::shared_ptr<apache::geode::client::CacheableKey>& key);
-        bool AreValuesEqual(std::shared_ptr<apache::geode::client::Cacheable>& val1, std::shared_ptr<apache::geode::client::Cacheable>& val2);
         bool isPoolInMultiuserMode();
         
         native_conditional_shared_ptr<native::Region>^ m_nativeptr;

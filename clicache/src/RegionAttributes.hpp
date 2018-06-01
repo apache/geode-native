@@ -24,10 +24,9 @@
 #include "end_native.hpp"
 
 #include "native_shared_ptr.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "ExpirationAction.hpp"
 #include "DiskPolicyType.hpp"
-#include "GeodeClassIds.hpp"
 
 #include "ICacheLoader.hpp"
 #include "ICacheWriter.hpp"
@@ -68,7 +67,7 @@ namespace Apache
       /// <seealso cref="Region.Attributes" />
       generic <class TKey, class TValue>
       public ref class RegionAttributes sealed
-        : public IGeodeSerializable
+        : public IDataSerializableInternal
       {
       public:
 
@@ -456,20 +455,6 @@ namespace Apache
             return 0;  //don't care
           }
         }
-
-        /// <summary>
-        /// Returns the classId of this class for serialization.
-        /// </summary>
-        /// <returns>classId of the Properties class</returns>
-        /// <seealso cref="../../IGeodeSerializable.ClassId" />
-        virtual property System::UInt32 ClassId
-        {
-          inline virtual System::UInt32 get()
-          {
-            return GeodeClassIds::RegionAttributes;
-          }
-        }
-
 
       internal:
 

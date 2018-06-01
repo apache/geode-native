@@ -76,7 +76,7 @@ namespace Apache.Geode.Client.UnitTests
         else
           m_eventCountBefore++;
 
-        //IGeodeSerializable val = ev.getNewValue();
+        //ISerializable val = ev.getNewValue();
         //ICacheableKey key = ev.getKey();
 
         TResult val = (TResult)ev.getNewValue();
@@ -258,8 +258,8 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.Init();
       try
       {
-        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(Portfolio.CreateDeserializable);
-        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(Position.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(Portfolio.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(Position.CreateDeserializable);
       }
       catch (IllegalStateException)
       {

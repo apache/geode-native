@@ -6,6 +6,7 @@
 /.project
 /.idea/
 .vs/
+.vscode/
 
 /examples/dotnet/*/bin/
 /examples/dotnet/*/obj/

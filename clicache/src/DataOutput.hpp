@@ -46,11 +46,11 @@ namespace Apache
       namespace native = apache::geode::client;
 
       ref class Cache;
-      interface class IGeodeSerializable;
+      interface class ISerializable;
 
       /// <summary>
       /// Provides operations for writing primitive data values, and
-      /// user-defined objects implementing IGeodeSerializable, to a byte stream.
+      /// user-defined objects implementing ISerializable, to a byte stream.
       /// This class is intentionally not thread safe.
       /// </summary>
       public ref class DataOutput sealed
@@ -220,7 +220,7 @@ namespace Apache
         /// Write a <c>Serializable</c> object to the <c>DataOutput</c>.
         /// This is provided to conveniently pass primitive types (like string)
         /// that shall be implicitly converted to corresponding
-        /// <c>IGeodeSerializable</c> wrapper types.
+        /// <c>ISerializable</c> wrapper types.
         /// </summary>
         /// <param name="obj">The object to write.</param>
         void WriteObject( Object^ obj );
@@ -482,7 +482,31 @@ namespace Apache
         
         static int8_t DSFID(System::UInt32 classId);        
   
-        void WriteObjectInternal( IGeodeSerializable^ obj );     
+        static inline int8_t getDataSerializableDsCode(int32_t classId) {
+          if (classId <= std::numeric_limits<int8_t>::max() &&
+              classId >= std::numeric_limits<int8_t>::min()) {
+            return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData);
+          } else if (classId <= std::numeric_limits<int16_t>::max() &&
+                     classId >= std::numeric_limits<int16_t>::min()) {
+            return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData2);
+          } else {
+            return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData4);
+          }
+        }
+
+				static inline int8_t getDataSerializableFixedIdDsCode(int32_t fixedId) {
+          if (fixedId <= std::numeric_limits<int8_t>::max() &&
+              fixedId >= std::numeric_limits<int8_t>::min()) {
+            return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
+          } else if (fixedId <= std::numeric_limits<int16_t>::max() &&
+                     fixedId >= std::numeric_limits<int16_t>::min()) {
+            return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDShort);
+          } else {
+            return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDInt);
+          }
+        }
+
+        void WriteObjectInternal( ISerializable^ obj );     
 
         void WriteBytesToUMDataOutput();
         

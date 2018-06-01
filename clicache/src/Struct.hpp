@@ -111,13 +111,13 @@ namespace Apache
         /// <summary>
         /// Factory function to register wrapper
         /// </summary>
-        inline static Apache::Geode::Client::IGeodeSerializable^ Create( ::std::shared_ptr<apache::geode::client::Serializable> obj )
+        inline static Apache::Geode::Client::ISerializable^ Create( ::std::shared_ptr<apache::geode::client::Serializable> obj )
         {
           return ( obj != nullptr ?
             gcnew Apache::Geode::Client::Struct( obj ) : nullptr );
         }
 
-        inline static Apache::Geode::Client::IGeodeSerializable^ CreateDeserializable( )
+        inline static Apache::Geode::Client::ISerializable^ CreateDeserializable( )
         {
           return gcnew Apache::Geode::Client::Struct(  ) ;
         }
@@ -126,4 +126,3 @@ namespace Apache
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-

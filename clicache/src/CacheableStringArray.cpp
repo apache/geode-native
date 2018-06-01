@@ -33,7 +33,6 @@ namespace Apache
     {
 
       CacheableStringArray::CacheableStringArray(array<String^>^ strings)
-        : Serializable()
       {
         m_value = strings;
       }

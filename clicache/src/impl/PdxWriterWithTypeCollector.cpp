@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
+#include "../begin_native.hpp"
+#include <geode/GeodeTypeIds.hpp>
+#include <PdxTypes.hpp>
+#include "../end_native.hpp"
 
 #include "PdxWriterWithTypeCollector.hpp"
 #include "../DataOutput.hpp"
-#include "../begin_native.hpp"
-#include <geode/GeodeTypeIds.hpp>
-#include "../end_native.hpp"
-
-#include "../GeodeClassIds.hpp"
 #include "PdxHelper.hpp"
 
 using namespace System;
@@ -105,234 +104,224 @@ namespace Apache
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteByte(String^ fieldName, SByte value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxTypes::BYTE, GeodeClassIds::BYTE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,  native::PdxTypes::BYTE_SIZE);
           PdxLocalWriter::WriteByte(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteSByte(String^ fieldName, SByte value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxTypes::BYTE, GeodeClassIds::BYTE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,  native::PdxTypes::BYTE_SIZE);
           PdxLocalWriter::WriteSByte(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteBoolean(String^ fieldName, bool value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "boolean", PdxTypes::BOOLEAN, GeodeClassIds::BOOLEAN_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "boolean", PdxFieldTypes::BOOLEAN,  native::PdxTypes::BOOLEAN_SIZE);
           PdxLocalWriter::WriteBoolean(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteChar(String^ fieldName, Char value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "char", PdxTypes::CHAR, GeodeClassIds::CHAR_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,  native::PdxTypes::CHAR_SIZE);
           PdxLocalWriter::WriteChar(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt16(String^ fieldName, System::UInt16 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxTypes::SHORT, GeodeClassIds::SHORT_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT,  native::PdxTypes::SHORT_SIZE);
           PdxLocalWriter::WriteUInt16(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt32(String^ fieldName, System::UInt32 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxTypes::INT, GeodeClassIds::INTEGER_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT,  native::PdxTypes::INTEGER_SIZE);
           PdxLocalWriter::WriteUInt32(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt64(String^ fieldName, System::UInt64 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxTypes::LONG, GeodeClassIds::LONG_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG,  native::PdxTypes::LONG_SIZE);
           PdxLocalWriter::WriteUInt64(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteShort(String^ fieldName, System::Int16 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxTypes::SHORT, GeodeClassIds::SHORT_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT,  native::PdxTypes::SHORT_SIZE);
           PdxLocalWriter::WriteShort(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteInt(String^ fieldName, System::Int32 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxTypes::INT, GeodeClassIds::INTEGER_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT,  native::PdxTypes::INTEGER_SIZE);
           PdxLocalWriter::WriteInt(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteLong(String^ fieldName, Int64 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxTypes::LONG, GeodeClassIds::LONG_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG,  native::PdxTypes::LONG_SIZE);
           PdxLocalWriter::WriteLong(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteFloat(String^ fieldName, float value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "float", PdxTypes::FLOAT, GeodeClassIds::FLOAT_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "float", PdxFieldTypes::FLOAT,  native::PdxTypes::FLOAT_SIZE);
           PdxLocalWriter::WriteFloat(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteDouble(String^ fieldName, double value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "double", PdxTypes::DOUBLE, GeodeClassIds::DOUBLE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "double", PdxFieldTypes::DOUBLE,  native::PdxTypes::DOUBLE_SIZE);
           PdxLocalWriter::WriteDouble(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteString(String^ fieldName, String^ value)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "String", PdxTypes::STRING);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "String", PdxFieldTypes::STRING);
           PdxLocalWriter::WriteString(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteUTFHuge(String^ fieldName, String^ value)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "stringUTFHuge", PdxTypes::STRING);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "stringUTFHuge", PdxFieldTypes::STRING);
           PdxLocalWriter::WriteUTFHuge(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteASCIIHuge(String^ fieldName, String^ value)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "stringASCIIHuge", PdxTypes::STRING);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "stringASCIIHuge", PdxFieldTypes::STRING);
           PdxLocalWriter::WriteASCIIHuge(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteObject(String^ fieldName, Object^ obj)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, /*obj->GetType()->FullName*/"Object", PdxTypes::OBJECT);
+          m_pdxType->AddVariableLengthTypeField(fieldName, /*obj->GetType()->FullName*/"Object", PdxFieldTypes::OBJECT);
           PdxLocalWriter::WriteObject(fieldName, obj);
-          return this;
-        }
-
-        //TODO:
-        //IPdxWriter^ PdxWriterWithTypeCollector::WriteMap( String^ fieldName, System::Collections::IDictionary^ map );
-
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteCollection(String^ fieldName, System::Collections::IList^ obj)
-        {
-          m_pdxType->AddVariableLengthTypeField(fieldName, /*obj->GetType()->FullName*/"Collection", apache::geode::client::GeodeTypeIds::CacheableArrayList);
-          PdxLocalWriter::WriteCollection(fieldName, obj);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteDate(String^ fieldName, System::DateTime date)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "Date", PdxTypes::DATE, GeodeClassIds::DATE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE,  native::PdxTypes::DATE_SIZE);
           PdxLocalWriter::WriteDate(fieldName, date);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteBooleanArray(String^ fieldName, array<bool>^ boolArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "bool[]", PdxTypes::BOOLEAN_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "bool[]", PdxFieldTypes::BOOLEAN_ARRAY);
           PdxLocalWriter::WriteBooleanArray(fieldName, boolArray);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteCharArray(String^ fieldName, array<Char>^ charArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "char[]", PdxTypes::CHAR_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "char[]", PdxFieldTypes::CHAR_ARRAY);
           PdxLocalWriter::WriteCharArray(fieldName, charArray);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteByteArray(String^ fieldName, array<Byte>^ byteArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "byte[]", PdxTypes::BYTE_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "byte[]", PdxFieldTypes::BYTE_ARRAY);
           PdxLocalWriter::WriteByteArray(fieldName, byteArray);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteSByteArray(String^ fieldName, array<SByte>^ sbyteArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "byte[]", PdxTypes::BYTE_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "byte[]", PdxFieldTypes::BYTE_ARRAY);
           PdxLocalWriter::WriteSByteArray(fieldName, sbyteArray);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteShortArray(String^ fieldName, array<System::Int16>^ shortArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "short[]", PdxTypes::SHORT_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "short[]", PdxFieldTypes::SHORT_ARRAY);
           PdxLocalWriter::WriteShortArray(fieldName, shortArray);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteUnsignedShortArray(String^ fieldName, array<System::UInt16>^ ushortArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "short[]", PdxTypes::SHORT_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "short[]", PdxFieldTypes::SHORT_ARRAY);
           PdxLocalWriter::WriteUnsignedShortArray(fieldName, ushortArray);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteIntArray(String^ fieldName, array<System::Int32>^ intArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "int[]", PdxTypes::INT_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "int[]", PdxFieldTypes::INT_ARRAY);
           PdxLocalWriter::WriteIntArray(fieldName, intArray);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteUnsignedIntArray(String^ fieldName, array<System::UInt32>^ uintArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "int[]", PdxTypes::INT_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "int[]", PdxFieldTypes::INT_ARRAY);
           PdxLocalWriter::WriteUnsignedIntArray(fieldName, uintArray);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteLongArray(String^ fieldName, array<Int64>^ longArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "long[]", PdxTypes::LONG_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "long[]", PdxFieldTypes::LONG_ARRAY);
           PdxLocalWriter::WriteLongArray(fieldName, longArray);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteUnsignedLongArray(String^ fieldName, array<System::UInt64>^ ulongArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "long[]", PdxTypes::LONG_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "long[]", PdxFieldTypes::LONG_ARRAY);
           PdxLocalWriter::WriteUnsignedLongArray(fieldName, ulongArray);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteFloatArray(String^ fieldName, array<float>^ floatArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "float[]", PdxTypes::FLOAT_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "float[]", PdxFieldTypes::FLOAT_ARRAY);
           PdxLocalWriter::WriteFloatArray(fieldName, floatArray);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteDoubleArray(String^ fieldName, array<double>^ doubleArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "double[]", PdxTypes::DOUBLE_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "double[]", PdxFieldTypes::DOUBLE_ARRAY);
           PdxLocalWriter::WriteDoubleArray(fieldName, doubleArray);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteStringArray(String^ fieldName, array<String^>^ stringArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "String[]", PdxTypes::STRING_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "String[]", PdxFieldTypes::STRING_ARRAY);
           PdxLocalWriter::WriteStringArray(fieldName, stringArray);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteObjectArray(String^ fieldName, List<Object^>^ objectArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "Object[]", PdxTypes::OBJECT_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "Object[]", PdxFieldTypes::OBJECT_ARRAY);
           PdxLocalWriter::WriteObjectArray(fieldName, objectArray);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteArrayOfByteArrays(String^ fieldName, array<array<Byte>^>^ byteArrays)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "byte[][]", PdxTypes::ARRAY_OF_BYTE_ARRAYS);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "byte[][]", PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS);
           PdxLocalWriter::WriteArrayOfByteArrays(fieldName, byteArrays);
           return this;
 

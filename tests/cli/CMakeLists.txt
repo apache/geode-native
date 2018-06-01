@@ -18,6 +18,7 @@ project(nativeclient.tests LANGUAGES NONE)
 
 add_subdirectory(PkcsWrapper)
 add_subdirectory(QueryHelper)
+add_subdirectory(PdxClassLibrary)
 
 set (NUNIT "C:\\Program Files (x86)\\NUnit 2.6.4")
 

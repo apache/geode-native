@@ -92,7 +92,7 @@ namespace Apache.Geode.Client.Tests
       output.WriteInt64(timestamp);
     }
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new FastAssetAccount();
     }

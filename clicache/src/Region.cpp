@@ -29,7 +29,7 @@
 #include "AttributesMutator.hpp"
 #include "RegionEntry.hpp"
 #include "ISelectResults.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "ResultSet.hpp"
 #include "StructSet.hpp"
 #include "impl/AuthenticatedView.hpp"
@@ -132,7 +132,7 @@ namespace Apache
           {
             GC::KeepAlive(m_nativeptr);
           }
-        
+
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
 
@@ -229,42 +229,6 @@ namespace Apache
           toArray[index] = KeyValuePair<TKey, TValue>(key, val);
         }
         return ((System::Collections::Generic::IEnumerable<Object^>^)toArray)->GetEnumerator();
-      }
-
-      generic<class TKey, class TValue>
-      bool Region<TKey, TValue>::AreValuesEqual(std::shared_ptr<native::Cacheable>& val1, std::shared_ptr<native::Cacheable>& val2)
-      {
-        if (val1 == nullptr && val2 == nullptr)
-        {
-          return true;
-        }
-        else if ((val1 == nullptr && val2 != nullptr) || (val1 != nullptr && val2 == nullptr))
-        {
-          return false;
-        }
-        else if (val1 != nullptr && val2 != nullptr)
-        {
-          if (val1->classId() != val2->classId() || val1->typeId() != val2->typeId())
-          {
-            return false;
-          }
-          auto out1 = m_nativeptr->get_conditional_shared_ptr()->getCache().createDataOutput();
-          auto out2 = m_nativeptr->get_conditional_shared_ptr()->getCache().createDataOutput();
-          val1->toData(out1);
-          val2->toData(out2);
-
-          GC::KeepAlive(m_nativeptr);
-          if (out1.getBufferLength() != out2.getBufferLength())
-          {
-            return false;
-          }
-          else if (memcmp(out1.getBuffer(), out2.getBuffer(), out1.getBufferLength()) != 0)
-          {
-            return false;
-          }
-          return true;
-        }
-        return false;
       }
 
       generic<class TKey, class TValue>
@@ -685,7 +649,7 @@ namespace Apache
           }
 
          native::HashMapOfCacheable native_value;
-        
+
           try
           {
             native_value = m_nativeptr->get()->getAll(vecKeys);
@@ -747,7 +711,7 @@ namespace Apache
               values->Add(key, val);
             }
           }
- 
+
           _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
         }
         else {
@@ -1212,7 +1176,7 @@ namespace Apache
                                                   bool receiveValues)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
-          
+
         try
         {
             m_nativeptr->get()->registerAllKeys(isDurable, getInitialValues, receiveValues);

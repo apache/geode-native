@@ -98,10 +98,12 @@ void PortfolioPdx::fromData(PdxReader& pr) {
   id = pr.readInt("ID");
   pkid = pr.readString("pkid");
 
-  position1 = std::static_pointer_cast<PositionPdx>(pr.readObject("position1"));
-  position2 = std::static_pointer_cast<PositionPdx>(pr.readObject("position2"));
+  position1 =
+      std::dynamic_pointer_cast<PositionPdx>(pr.readObject("position1"));
+  position2 =
+      std::dynamic_pointer_cast<PositionPdx>(pr.readObject("position2"));
   positions =
-      std::static_pointer_cast<CacheableHashMap>(pr.readObject("positions"));
+      std::dynamic_pointer_cast<CacheableHashMap>(pr.readObject("positions"));
   type = pr.readString("type");
   status = pr.readString("status");
 

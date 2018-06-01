@@ -206,7 +206,7 @@ namespace Apache
           auto durableCqsList = gcnew System::Collections::Generic::List<String^>();
           for (const auto& d : *durableCqsArrayListPtr)
           {
-            durableCqsList->Add(marshal_as<String^>(std::static_pointer_cast<apache::geode::client::CacheableString>(d)->toString()));
+            durableCqsList->Add(marshal_as<String^>(std::dynamic_pointer_cast<apache::geode::client::CacheableString>(d)->value()));
           }
           return durableCqsList;
         }

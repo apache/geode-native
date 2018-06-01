@@ -18,7 +18,7 @@
 
 #include "RegionEvent.hpp"
 #include "Region.hpp"
-#include "IGeodeSerializable.hpp"
+#include "ISerializable.hpp"
 #include "impl/SafeConvert.hpp"
 using namespace System;
 

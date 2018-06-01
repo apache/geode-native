@@ -20,7 +20,6 @@
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
 #include "Log.hpp"
-#include "GeodeClassIds.hpp"
 
 using namespace System;
 
@@ -69,9 +68,9 @@ namespace Apache
         return sizeof(DateTime);
       }
 
-      System::UInt32 CacheableDate::ClassId::get()
+      int8_t CacheableDate::DsCode::get()
       {
-        return GeodeClassIds::CacheableDate;
+        return native::GeodeTypeIds::CacheableDate;
       }
 
       String^ CacheableDate::ToString()
@@ -93,12 +92,7 @@ namespace Apache
 
       bool CacheableDate::Equals(ICacheableKey^ other)
       {
-        if (other == nullptr ||
-            other->ClassId != GeodeClassIds::CacheableDate) {
-          return false;
-        }
-        return m_dateTime.Equals(static_cast<CacheableDate^>(
-          other)->m_dateTime);
+        return Equals((Object^) other);
       }
 
       bool CacheableDate::Equals(Object^ obj)
@@ -110,9 +104,8 @@ namespace Apache
           return (m_dateTime == otherDate->m_dateTime);
         }
         return false;
-      }  // namespace Client
-    }  // namespace Geode
-  }  // namespace Apache
-
-} //namespace 
+      }
+    }  // namespace Client
+  }  // namespace Geode
+}  // namespace Apache
 

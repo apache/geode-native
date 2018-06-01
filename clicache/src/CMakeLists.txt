@@ -116,10 +116,14 @@ add_library(${PROJECT_NAME} SHARED
   ICqListener.hpp
   ICqResults.hpp
   ICqStatusListener.hpp
+  IDataSerializable.hpp
+  IDataSerializableFixedId.hpp
+  IDataSerializableInternal.hpp
+  IDataSerializablePrimitive.hpp
   IFixedPartitionResolver.hpp
   IGeodeCache.hpp
-  IGeodeDelta.hpp
-  IGeodeSerializable.hpp
+  IDelta.hpp
+  ISerializable.hpp
   IPartitionResolver.hpp
   IPdxInstance.hpp
   IPdxInstanceFactory.hpp
@@ -142,6 +146,7 @@ add_library(${PROJECT_NAME} SHARED
   LocalRegion.hpp
   Log.cpp
   Log.hpp
+  ManagedPdxTypeHandler.hpp
   native_conditional_shared_ptr.hpp
   native_conditional_unique_ptr.hpp
   native_shared_ptr.hpp
@@ -303,12 +308,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   VS_GLOBAL_PROJECT_TYPES "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
   VS_GLOBAL_ROOTNAMESPACE ${PROJECT_NAME}
   VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
-  VS_DOTNET_REFERENCES "System;System.Xml"
+  VS_DOTNET_REFERENCES "System;System.Xml;System.Core"
 )
 
 target_compile_options(${PROJECT_NAME}
   PRIVATE
 	/bigobj # C1128 - large number of templates causes too many section.
+	/Zm32   # C3859 - internal heap limit reached
 	#/doc # Documents to xml
 	# warnings as error
 	/we4488 # interfaces fully implemented.

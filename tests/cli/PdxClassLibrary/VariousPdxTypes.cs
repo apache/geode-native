@@ -804,7 +804,7 @@ namespace PdxTests
     #endregion
   }
     [Serializable]
-  public class PdxInsideIGeodeSerializable : IGeodeSerializable
+  public class PdxInsideIGeodeSerializable : IDataSerializable
   {
     NestedPdx m_npdx = new NestedPdx();
     PdxTypes3 m_pdx3 = new PdxTypes3();
@@ -816,7 +816,7 @@ namespace PdxTests
     int m_i4 = 73567;
 
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new PdxInsideIGeodeSerializable();
     }
@@ -850,9 +850,9 @@ namespace PdxTests
       return false;
     }
 
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
-    public uint ClassId
+    public Int32 ClassId
     {
       get { return 5005; }
     }

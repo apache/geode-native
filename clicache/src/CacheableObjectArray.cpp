@@ -37,7 +37,7 @@ namespace Apache
     namespace Client
     {
 
-      // Region: IGeodeSerializable Members
+      // Region: ISerializable Members
 
       void CacheableObjectArray::ToData(DataOutput^ output)
       {

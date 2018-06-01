@@ -18,6 +18,8 @@ project( Apache.Geode.IntegrationTests2 CSharp )
 
 set(CMAKE_CSharp_FLAGS "/langversion:5")
 
+get_target_property(JAVAOBJECT_JAR_PATH javaobject JAR_FILE)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINARY_DIR}/packages.config COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cs.in ${CMAKE_CURRENT_BINARY_DIR}/Config.cs)
 
@@ -28,11 +30,12 @@ add_library( ${PROJECT_NAME} SHARED
     GeodeServerTests.cs
     CacheXml.cs
     CacheXmlTests.cs
-    RegionTest.cs
     cache.xml
     geode.properties
     xunit.runner.json
     packages.config
+    RegionTest.cs
+    SerializationTests.cs
 )
 
 set_source_files_properties(cache.xml xunit.runner.json geode.properties PROPERTIES
@@ -43,6 +46,7 @@ set_source_files_properties(cache.xml xunit.runner.json geode.properties PROPERT
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
     Apache.Geode
+    PdxClassLibrary
 )
 
 set_target_properties( ${PROJECT_NAME} PROPERTIES

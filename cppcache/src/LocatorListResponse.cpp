@@ -26,11 +26,9 @@ void LocatorListResponse::fromData(DataInput& input) {
   m_isBalanced = input.readBoolean();
 }
 
-int8_t LocatorListResponse::typeId() const {
-  return static_cast<int8_t>(GeodeTypeIdsImpl::LocatorListResponse);
+int32_t LocatorListResponse::getDSFID() const {
+  return GeodeTypeIdsImpl::LocatorListResponse;
 }
-
-size_t LocatorListResponse::objectSize() const { return 0; }
 
 void LocatorListResponse::readList(DataInput& input) {
   uint32_t size = input.readInt32();

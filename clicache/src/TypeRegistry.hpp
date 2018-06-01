@@ -108,7 +108,7 @@ namespace Apache
         /// <summary>
         /// Register an instance factory method for a given type.
         /// This should be used when registering types that implement
-        /// IGeodeSerializable.
+        /// ISerializable.
         /// </summary>
         /// <param name="creationMethod">
         /// the creation function to register
@@ -121,23 +121,15 @@ namespace Apache
         /// in registering the type; check <c>Utils::LastError</c> for more
         /// information in the latter case.
         /// </exception>
-        void RegisterTypeGeneric(TypeFactoryMethodGeneric^ creationMethod);
+        void RegisterType(TypeFactoryMethod^ creationMethod);
 
-        /// <summary>
-        /// Register an instance factory method for a given type and typeId.
-        /// This should be used when registering types that implement
-        /// IGeodeSerializable.
-        /// </summary>
-        /// <param name="typeId">typeId of the type being registered.</param>
-        /// <param name="creationMethod">
-        /// the creation function to register
-        /// </param>
-        /// <exception cref="IllegalArgumentException">
-        /// if the method is null
-        /// </exception>
-        void RegisterTypeGeneric(Byte typeId, TypeFactoryMethodGeneric^ creationMethod, 
-          Type^ type);
+      internal:
+        void RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
+            int8_t dsCode, TypeFactoryMethod^ creationMethod, Type^ managedType);
 
+        void RegisterDataSerializableFixedIdTypeOverrideNativeDeserialization(
+            Int32 fixedId, TypeFactoryMethod^ creationMethod);
+        
 
         /// <summary>
         /// Unregister the type with the given typeId
@@ -148,29 +140,19 @@ namespace Apache
         /// <summary>
         /// This is to get manged delegates.
         /// </summary>
-        TypeFactoryMethodGeneric^ GetManagedDelegateGeneric(System::Int64 typeId)
+        TypeFactoryMethod^ GetManagedDelegateGeneric(System::Int64 typeId)
         {
-          TypeFactoryMethodGeneric^ ret = nullptr;
+          TypeFactoryMethod^ ret = nullptr;
           ManagedDelegatesGeneric->TryGetValue(typeId, ret);
           return ret;
         }
 
-      internal:
         generic<class TValue>
           static TValue GetManagedValueGeneric(std::shared_ptr<native::Serializable> val);
 
-        /// <summary>
-        /// Static method to register a managed wrapper for a native
-        /// <c>native::Serializable</c> type.
-        /// </summary>
-        /// <param name="wrapperMethod">
-        /// A factory delegate of the managed wrapper class that returns the
-        /// managed object given the native object.
-        /// </param>
-        /// <param name="typeId">The typeId of the native type.</param>
-        /// <seealso cref="NativeWrappers" />
-        static void RegisterWrapperGeneric(WrapperDelegateGeneric^ wrapperMethod,
-          Byte typeId, System::Type^ type);
+        static void RegisterDataSerializablePrimitiveWrapper(
+            DataSerializablePrimitiveWrapperDelegate^ wrapperMethod,
+            int8_t dsCode, System::Type^ type);
 
         /// <summary>
         /// Internal static method to remove managed artifacts created by
@@ -188,19 +170,32 @@ namespace Apache
           ClassNameVsCreateNewObjectArrayDelegate->Clear();
         }
 
-        static Byte GetManagedTypeMappingGeneric(Type^ type)
+        static inline int8_t GetDsCodeForManagedType(Type^ managedType)
         {
-          Byte retVal = 0;
-          ManagedTypeToTypeId->TryGetValue(type, retVal);
+          int8_t retVal = 0;
+          if (!ManagedTypeToDsCode->TryGetValue(managedType, retVal))
+          {
+            if (managedType->IsGenericType)
+            {
+              ManagedTypeToDsCode->TryGetValue(managedType->GetGenericTypeDefinition(), retVal);
+            }
+          }
           return retVal;
         }
 
-        static inline WrapperDelegateGeneric^ GetWrapperGeneric(Byte typeId)
+        inline TypeFactoryMethod^ GetDataSerializableFixedTypeFactoryMethodForFixedId(Int32 fixedId)
         {
-          if (typeId >= 0 && typeId <= WrapperEndGeneric) {
-            return NativeWrappersGeneric[typeId];
-          }
-          return nullptr;
+          return FixedIdToDataSerializableFixedIdTypeFactoryMethod[fixedId];
+        }
+
+        inline TypeFactoryMethod^ GetDataSerializablePrimitiveTypeFactoryMethodForDsCode(int8_t dsCode)
+        {
+          return DsCodeToDataSerializablePrimitiveTypeFactoryMethod[dsCode];
+        }
+
+        static inline DataSerializablePrimitiveWrapperDelegate^ GetDataSerializablePrimitiveWrapperDelegateForDsCode(int8_t dsCode)
+        {
+          return DsCodeToDataSerializablePrimitiveWrapperDelegate[dsCode];
         }
         
         delegate Object^ CreateNewObjectDelegate();
@@ -228,23 +223,31 @@ namespace Apache
         Dictionary<String^, PdxTypeFactoryMethod^>^ PdxDelegateMap =
           gcnew Dictionary<String^, PdxTypeFactoryMethod^>();
 
-        Dictionary<System::Int64, TypeFactoryMethodGeneric^>^ ManagedDelegatesGeneric =
-          gcnew Dictionary<System::Int64, TypeFactoryMethodGeneric^>();
+        Dictionary<System::Int64, TypeFactoryMethod^>^ ManagedDelegatesGeneric =
+          gcnew Dictionary<System::Int64, TypeFactoryMethod^>();
         List<TypeFactoryNativeMethodGeneric^>^ NativeDelegatesGeneric =
           gcnew List<TypeFactoryNativeMethodGeneric^>();
-        Dictionary<UInt32, TypeFactoryMethodGeneric^>^ DelegateMapGeneric =
-          gcnew Dictionary<UInt32, TypeFactoryMethodGeneric^>();
+        Dictionary<UInt32, TypeFactoryMethod^>^ DelegateMapGeneric =
+          gcnew Dictionary<UInt32, TypeFactoryMethod^>();
 
-        Dictionary<Byte, TypeFactoryNativeMethodGeneric^>^ BuiltInDelegatesGeneric =
+        Dictionary<Byte, TypeFactoryMethod^>^ DsCodeToDataSerializablePrimitiveTypeFactoryMethod =
+          gcnew Dictionary<Byte, TypeFactoryMethod^>();
+
+        Dictionary<Byte, TypeFactoryNativeMethodGeneric^>^ DsCodeToDataSerializablePrimitiveNativeDelegate =
           gcnew Dictionary<Byte, TypeFactoryNativeMethodGeneric^>();
 
-        // Fixed .NET to DSCode mapping
-        static Dictionary<System::Type^, Byte>^ ManagedTypeToTypeId =
-          gcnew Dictionary<System::Type^, Byte>();
+        Dictionary<Int32, TypeFactoryMethod^>^ FixedIdToDataSerializableFixedIdTypeFactoryMethod =
+          gcnew Dictionary<Int32, TypeFactoryMethod^>();
 
-        literal Byte WrapperEndGeneric = 128;
-        static array<WrapperDelegateGeneric^>^ NativeWrappersGeneric =
-          gcnew array<WrapperDelegateGeneric^>(WrapperEndGeneric + 1);
+        Dictionary<Int32, TypeFactoryNativeMethodGeneric^>^ FixedIdToDataSerializableFixedIdNativeDelegate =
+          gcnew Dictionary<Int32, TypeFactoryNativeMethodGeneric^>();
+
+        // Fixed .NET to DSCode mapping
+        static Dictionary<System::Type^, int8_t>^ ManagedTypeToDsCode =
+          gcnew Dictionary<System::Type^, int8_t>();
+
+        static array<DataSerializablePrimitiveWrapperDelegate^>^ DsCodeToDataSerializablePrimitiveWrapperDelegate =
+          gcnew array<DataSerializablePrimitiveWrapperDelegate^>(128);
 
         Type^ GetTypeFromRefrencedAssemblies(String^ className, Dictionary<Assembly^, bool>^ referedAssembly, Assembly^ currentAssembly);
         
@@ -261,58 +264,60 @@ namespace Apache
 
         static TypeRegistry()
         {
-          InitializeManagedTypeToTypeId();
+          InitializeManagedTypeToDsCode();
+          RegisterDataSerializablePrimitivesWrapNativeDeserialization();
         }
 
         /// <summary>
         /// Initializes a static map of .NET types to DataSerializable codes. Internally
         /// we call it TypeId.
         /// </summary>
-        static void InitializeManagedTypeToTypeId()
+        static void InitializeManagedTypeToDsCode()
         {
           Dictionary<Object^, Object^>^ dic = gcnew Dictionary<Object^, Object^>();
-          ManagedTypeToTypeId[dic->GetType()] = native::GeodeTypeIds::CacheableHashMap;
-          ManagedTypeToTypeId[dic->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableHashMap;
+          ManagedTypeToDsCode[dic->GetType()] = native::GeodeTypeIds::CacheableHashMap;
+          ManagedTypeToDsCode[dic->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableHashMap;
 
           System::Collections::ArrayList^ arr = gcnew System::Collections::ArrayList();
-          ManagedTypeToTypeId[arr->GetType()] = native::GeodeTypeIds::CacheableVector;
+          ManagedTypeToDsCode[arr->GetType()] = native::GeodeTypeIds::CacheableVector;
 
           System::Collections::Generic::LinkedList<Object^>^ linketList = gcnew  System::Collections::Generic::LinkedList<Object^>();
-          ManagedTypeToTypeId[linketList->GetType()] = native::GeodeTypeIds::CacheableLinkedList;
-          ManagedTypeToTypeId[linketList->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableLinkedList;
+          ManagedTypeToDsCode[linketList->GetType()] = native::GeodeTypeIds::CacheableLinkedList;
+          ManagedTypeToDsCode[linketList->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableLinkedList;
 
           System::Collections::Generic::IList<Object^>^ iList = gcnew System::Collections::Generic::List<Object^>();
-          ManagedTypeToTypeId[iList->GetType()] = native::GeodeTypeIds::CacheableArrayList;
-          ManagedTypeToTypeId[iList->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableArrayList;
+          ManagedTypeToDsCode[iList->GetType()] = native::GeodeTypeIds::CacheableArrayList;
+          ManagedTypeToDsCode[iList->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableArrayList;
 
           //TODO: Linked list, non generic stack, some other map types and see if more
 
           System::Collections::Generic::Stack<Object^>^ stack = gcnew System::Collections::Generic::Stack<Object^>();
-          ManagedTypeToTypeId[stack->GetType()] = native::GeodeTypeIds::CacheableStack;
-          ManagedTypeToTypeId[stack->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableStack;
+          ManagedTypeToDsCode[stack->GetType()] = native::GeodeTypeIds::CacheableStack;
+          ManagedTypeToDsCode[stack->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableStack;
 
-          ManagedTypeToTypeId[SByte::typeid] = native::GeodeTypeIds::CacheableByte;
-          ManagedTypeToTypeId[Boolean::typeid] = native::GeodeTypeIds::CacheableBoolean;
-          ManagedTypeToTypeId[Char::typeid] = native::GeodeTypeIds::CacheableCharacter;
-          ManagedTypeToTypeId[Double::typeid] = native::GeodeTypeIds::CacheableDouble;
-          ManagedTypeToTypeId[String::typeid] = native::GeodeTypeIds::CacheableASCIIString;
-          ManagedTypeToTypeId[float::typeid] = native::GeodeTypeIds::CacheableFloat;
-          ManagedTypeToTypeId[Int16::typeid] = native::GeodeTypeIds::CacheableInt16;
-          ManagedTypeToTypeId[Int32::typeid] = native::GeodeTypeIds::CacheableInt32;
-          ManagedTypeToTypeId[Int64::typeid] = native::GeodeTypeIds::CacheableInt64;
-          ManagedTypeToTypeId[Type::GetType("System.Byte[]")] = native::GeodeTypeIds::CacheableBytes;
-          ManagedTypeToTypeId[Type::GetType("System.Double[]")] = native::GeodeTypeIds::CacheableDoubleArray;
-          ManagedTypeToTypeId[Type::GetType("System.Single[]")] = native::GeodeTypeIds::CacheableFloatArray;
-          ManagedTypeToTypeId[Type::GetType("System.Int16[]")] = native::GeodeTypeIds::CacheableInt16Array;
-          ManagedTypeToTypeId[Type::GetType("System.Int32[]")] = native::GeodeTypeIds::CacheableInt32Array;
-          ManagedTypeToTypeId[Type::GetType("System.Int64[]")] = native::GeodeTypeIds::CacheableInt64Array;
-          ManagedTypeToTypeId[Type::GetType("System.String[]")] = native::GeodeTypeIds::CacheableStringArray;
-          ManagedTypeToTypeId[Type::GetType("System.DateTime")] = native::GeodeTypeIds::CacheableDate;
-          ManagedTypeToTypeId[Type::GetType("System.Collections.Hashtable")] = native::GeodeTypeIds::CacheableHashTable;
+          ManagedTypeToDsCode[Byte::typeid] = native::GeodeTypeIds::CacheableByte;
+          ManagedTypeToDsCode[Boolean::typeid] = native::GeodeTypeIds::CacheableBoolean;
+          ManagedTypeToDsCode[Char::typeid] = native::GeodeTypeIds::CacheableCharacter;
+          ManagedTypeToDsCode[Double::typeid] = native::GeodeTypeIds::CacheableDouble;
+          ManagedTypeToDsCode[String::typeid] = native::GeodeTypeIds::CacheableASCIIString;
+          ManagedTypeToDsCode[float::typeid] = native::GeodeTypeIds::CacheableFloat;
+          ManagedTypeToDsCode[Int16::typeid] = native::GeodeTypeIds::CacheableInt16;
+          ManagedTypeToDsCode[Int32::typeid] = native::GeodeTypeIds::CacheableInt32;
+          ManagedTypeToDsCode[Int64::typeid] = native::GeodeTypeIds::CacheableInt64;
+          ManagedTypeToDsCode[Type::GetType("System.Byte[]")] = native::GeodeTypeIds::CacheableBytes;
+          ManagedTypeToDsCode[Type::GetType("System.Double[]")] = native::GeodeTypeIds::CacheableDoubleArray;
+          ManagedTypeToDsCode[Type::GetType("System.Single[]")] = native::GeodeTypeIds::CacheableFloatArray;
+          ManagedTypeToDsCode[Type::GetType("System.Int16[]")] = native::GeodeTypeIds::CacheableInt16Array;
+          ManagedTypeToDsCode[Type::GetType("System.Int32[]")] = native::GeodeTypeIds::CacheableInt32Array;
+          ManagedTypeToDsCode[Type::GetType("System.Int64[]")] = native::GeodeTypeIds::CacheableInt64Array;
+          ManagedTypeToDsCode[Type::GetType("System.String[]")] = native::GeodeTypeIds::CacheableStringArray;
+          ManagedTypeToDsCode[Type::GetType("System.DateTime")] = native::GeodeTypeIds::CacheableDate;
+          ManagedTypeToDsCode[Type::GetType("System.Collections.Hashtable")] = native::GeodeTypeIds::CacheableHashTable;
         }
+
+        static void RegisterDataSerializablePrimitivesWrapNativeDeserialization();
 
       };
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
-

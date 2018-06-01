@@ -41,12 +41,6 @@ void Struct::skipClassName(DataInput& input) {
   }
 }
 
-int32_t Struct::classId() const { return 0; }
-
-int8_t Struct::typeId() const { return GeodeTypeIds::Struct; }
-
-int8_t Struct::DSFID() const { return GeodeTypeIdsImpl::FixedIDByte; }
-
 void Struct::toData(DataOutput&) const {
   throw UnsupportedOperationException("Struct::toData: should not be called.");
 }

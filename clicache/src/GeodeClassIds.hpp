@@ -17,15 +17,10 @@
 
 #pragma once
 
-
-
-
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
 #include <geode/GeodeTypeIds.hpp>
 #include "end_native.hpp"
-
-
 
 namespace Apache
 {
@@ -34,39 +29,11 @@ namespace Apache
     namespace Client
     {
 
-      struct PdxTypes
-      {
-        enum PdxTypesInternal
-        {
-          BOOLEAN,
-          BYTE,
-          CHAR,
-          SHORT,
-          INT,
-          LONG,
-          FLOAT,
-          DOUBLE,
-          DATE,
-          STRING,
-          OBJECT,
-          BOOLEAN_ARRAY,
-          CHAR_ARRAY,
-          BYTE_ARRAY,
-          SHORT_ARRAY,
-          INT_ARRAY,
-          LONG_ARRAY,
-          FLOAT_ARRAY,
-          DOUBLE_ARRAY,
-          STRING_ARRAY,
-          OBJECT_ARRAY,
-          ARRAY_OF_BYTE_ARRAYS
-        };
-      };
-
       /// <summary>
       /// Static class containing the classIds of the built-in cacheable types.
       /// </summary>
-      public ref class GeodeClassIds
+      [Obsolete("Used only to expose types to old integration tests.")]
+      private ref class GeodeClassIds
       {
       public:
 
@@ -102,8 +69,8 @@ namespace Apache
         literal System::UInt32 CacheableUndefined =
           apache::geode::client::GeodeTypeIds::CacheableUndefined + 0xa0000000;
 
-        literal System::UInt32 EnumInfo =
-          apache::geode::client::GeodeTypeIds::EnumInfo + 0xa0000000;
+        literal System::Int32 EnumInfo =
+          apache::geode::client::GeodeTypeIds::EnumInfo;
 
         /// <summary>
         /// ClassId of <c>Struct</c> class
@@ -315,56 +282,15 @@ namespace Apache
         /// <summary>
         /// ClassId of <c>CacheableObject</c> class
         /// </summary>
-        literal System::UInt32 CacheableManagedObject = 7 + 0x80000000;
+        literal System::UInt32 CacheableManagedObject = 
+          apache::geode::client::GeodeTypeIds::CacheableManagedObject + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableObjectXml</c> class
         /// </summary>
-        literal System::UInt32 CacheableManagedObjectXml = 8 + 0x80000000;
-      internal:
+        literal System::UInt32 CacheableManagedObjectXml = 
+          apache::geode::client::GeodeTypeIds::CacheableManagedObjectXml + 0x80000000;
 
-        literal System::UInt32 PdxType = apache::geode::client::GeodeTypeIds::PdxType + 0x80000000;
-
-        literal System::UInt32 DATA_SERIALIZABLE = 45;
-        literal System::UInt32 JAVA_CLASS = 43;
-
-        //internal geode typeids..
-        /*  literal Byte USERCLASS = 40;
-          literal Byte USERMAP = 94;
-          literal Byte USERCOLLECTION = 95;
-          literal Byte ARRAYOFBYTEARRAYS = 91;
-          literal Byte GEODEREGION =  98;
-
-          literal Byte BOOLEAN_TYPE = 17;
-          literal Byte CHARACTER_TYPE = 18;
-          literal Byte BYTE_TYPE = 19;
-          literal Byte SHORT_TYPE = 20;
-          literal Byte INTEGER_TYPE = 21;
-          literal Byte LONG_TYPE = 22;
-          literal Byte FLOAT_TYPE = 23;
-          literal Byte DOUBLE_TYPE = 24;
-          literal Byte VOID_TYPE = 25;   */
-
-        literal Byte PDX = 93;
-        literal Byte PDX_ENUM = 94;
-
-        literal Byte BYTE_SIZE = 1;
-
-        literal Byte BOOLEAN_SIZE = 1;
-
-        literal Byte CHAR_SIZE = 2;
-
-        literal Byte SHORT_SIZE = 2;
-
-        literal Byte INTEGER_SIZE = 4;
-
-        literal Byte FLOAT_SIZE = 4;
-
-        literal Byte LONG_SIZE = 8;
-
-        literal Byte DOUBLE_SIZE = 8;
-
-        literal Byte DATE_SIZE = 8;
       };
     }  // namespace Client
   }  // namespace Geode

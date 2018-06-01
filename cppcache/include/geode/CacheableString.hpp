@@ -21,6 +21,7 @@
 #define GEODE_CACHEABLESTRING_H_
 
 #include "internal/geode_globals.hpp"
+#include "internal/DataSerializablePrimitive.hpp"
 #include "CacheableKey.hpp"
 #include "GeodeTypeIds.hpp"
 
@@ -35,7 +36,9 @@ namespace client {
  * Implement a immutable C string wrapper that can serve as a distributable
  * key object for caching as well as being a string value.
  */
-class APACHE_GEODE_EXPORT CacheableString : public CacheableKey {
+class APACHE_GEODE_EXPORT CacheableString
+    : public internal::DataSerializablePrimitive,
+      public CacheableKey {
  protected:
   std::string m_str;
   int8_t m_type;
@@ -44,17 +47,11 @@ class APACHE_GEODE_EXPORT CacheableString : public CacheableKey {
   _GEODE_FRIEND_STD_SHARED_PTR(CacheableString)
 
  public:
-  /**
-   *@brief serialize this object
-   **/
   void toData(DataOutput& output) const override;
 
-  /**
-   *@brief deserialize this object
-   * Throw IllegalArgumentException if the packed CacheableString is not less
-   * than 64K bytes.
-   **/
-  virtual void fromData(DataInput& input) override;
+  void fromData(DataInput& input) override;
+
+  int8_t getDsCode() const override { return m_type; }
 
   /** creation function for strings */
   static std::shared_ptr<Serializable> createDeserializable();
@@ -67,30 +64,6 @@ class APACHE_GEODE_EXPORT CacheableString : public CacheableKey {
 
   /** creation function for wide strings > 64K length in UTF8 encoding */
   static std::shared_ptr<Serializable> createUTFDeserializableHuge();
-
-  /**
-   *@brief Return the classId of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int32_t classId() const override;
-
-  /**
-   * Return the typeId byte of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   *
-   * For a <code>CacheableString</code> this shall return
-   * <code>GeodeTypeIds::CacheableNullString</code> if the underlying
-   * string is null, <code>GeodeTypeIds::CacheableASCIIString</code>
-   * if the underlying string is a char*, and
-   * <code>GeodeTypeIds::CacheableString</code> if it is a wchar_t*.
-   * For strings larger than 64K it will return
-   * <code>GeodeTypeIds::CacheableASCIIStringHuge</code> and
-   * <code>GeodeTypeIds::CacheableStringHuge</code> for char* and wchar_t*
-   * respectively.
-   */
-  virtual int8_t typeId() const override;
 
   /** return true if this key matches other. */
   virtual bool operator==(const CacheableKey& other) const override;

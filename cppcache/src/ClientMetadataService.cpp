@@ -476,7 +476,7 @@ ClientMetadataService::groupByBucketOnClientSide(
     const std::shared_ptr<ClientMetadata>& metadata) {
   auto bucketToKeysMap = std::make_shared<BucketToKeysMap>();
   for (const auto& k : *keySet) {
-    const auto key = std::static_pointer_cast<CacheableKey>(k);
+    const auto key = std::dynamic_pointer_cast<CacheableKey>(k);
     const auto resolver = region->getAttributes().getPartitionResolver();
     std::shared_ptr<CacheableKey> resolvekey;
     EntryEvent event(region, key, nullptr, nullptr, nullptr, false);

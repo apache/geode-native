@@ -28,6 +28,7 @@
 #include <geode/CacheableFileName.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/CacheableUndefined.hpp>
+#include <geode/CacheableEnum.hpp>
 #include <geode/Struct.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
@@ -57,7 +58,7 @@
 #include "VersionTag.hpp"
 #include "DiskStoreId.hpp"
 #include "DiskVersionTag.hpp"
-#include <geode/CacheableEnum.hpp>
+#include "PdxHelper.hpp"
 
 namespace apache {
 namespace geode {
@@ -113,8 +114,7 @@ void TheTypeMap::setup() {
   bind2(ClientProxyMembershipID::createDeserializable);
   bind2(GetAllServersResponse::create);
   bind2(EnumInfo::createDeserializable);
-
-  rebind2(GeodeTypeIdsImpl::DiskStoreId, DiskStoreId::createDeserializable);
+  bind2(DiskStoreId::createDeserializable);
 }
 
 /** This starts at reading the typeid.. assumes the length has been read. */
@@ -123,10 +123,12 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
   bool findinternal = false;
   auto currentTypeId = typeId;
 
-  if (typeId == -1) currentTypeId = input.read();
+  if (typeId == -1) {
+    currentTypeId = input.read();
+  }
   int64_t compId = currentTypeId;
 
-  LOGDEBUG("SerializationRegistry::deserialize typeid = %d currentTypeId= %d ",
+  LOGDEBUG("SerializationRegistry::deserialize typeid = %d currentTypeId= %d",
            typeId, currentTypeId);
 
   switch (compId) {
@@ -138,7 +140,7 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
           CacheableString::createDeserializable());
     }
     case GeodeTypeIdsImpl::PDX: {
-      return pdxTypeHandler(input);
+      return pdxTypeHandler->deserialize(input);
     }
     case GeodeTypeIds::CacheableEnum: {
       auto enumObject = CacheableEnum::create(" ", " ", 0);
@@ -202,8 +204,71 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
   }
 
   std::shared_ptr<Serializable> obj(createType());
-  obj->fromData(input);
+
+  deserialize(input, obj);
+
   return obj;
+}
+
+void SerializationRegistry::deserialize(
+    DataInput& input, std::shared_ptr<Serializable> obj) const {
+  if (!obj) {
+    // nothing to read
+  } else if (const auto dataSerializableInternal =
+                 std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
+    deserialize(input, dataSerializableInternal);
+  } else if (const auto dataSerializableFixedId =
+                 std::dynamic_pointer_cast<DataSerializableFixedId>(obj)) {
+    deserialize(input, dataSerializableFixedId);
+  } else if (const auto dataSerializablePrimitive =
+                 std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+    deserialize(input, dataSerializablePrimitive);
+  } else if (const auto dataSerializable =
+                 std::dynamic_pointer_cast<DataSerializable>(obj)) {
+    deserialize(input, dataSerializable);
+  } else if (const auto pdxSerializable =
+                 std::dynamic_pointer_cast<PdxSerializable>(obj)) {
+    deserialize(input, pdxSerializable);
+  } else {
+    throw UnsupportedOperationException("Serialization type not implemented.");
+  }
+}
+
+void SerializationRegistry::deserialize(
+    DataInput& input,
+    std::shared_ptr<DataSerializableInternal> dataSerializableInternal) const {
+  dataSerializableInternal->fromData(input);
+}
+
+void SerializationRegistry::deserialize(
+    DataInput& input,
+    std::shared_ptr<DataSerializableFixedId> dataSerializableFixedId) const {
+  dataSerializableFixedId->fromData(input);
+}
+
+void SerializationRegistry::deserialize(
+    DataInput& input,
+    std::shared_ptr<DataSerializablePrimitive> dataSerializablePrimitive)
+    const {
+  dataSerializablePrimitive->fromData(input);
+}
+
+void SerializationRegistry::deserialize(
+    DataInput& input,
+    std::shared_ptr<DataSerializable> dataSerializable) const {
+  dataSerializable->fromData(input);
+}
+
+void SerializationRegistry::deserialize(
+    DataInput& /*input*/,
+    std::shared_ptr<PdxSerializable> /*pdxSerializable*/) const {
+  throw UnsupportedOperationException(
+      "SerializationRegistry::deserialize<PdxSerializable> not implemented");
+}
+
+void SerializationRegistry::serializeWithoutHeader(const PdxSerializable* obj,
+                                                   DataOutput& output) const {
+  pdxTypeHandler->serialize(*obj, output);
 }
 
 void SerializationRegistry::addType(TypeFactoryMethod func) {
@@ -323,13 +388,26 @@ void TheTypeMap::find2(int64_t id, TypeFactoryMethod& func) const {
 
 void TheTypeMap::bind(TypeFactoryMethod func) {
   auto obj = func();
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_mapLock);
-  int64_t compId = static_cast<int64_t>(obj->typeId());
-  if (compId == GeodeTypeIdsImpl::CacheableUserData ||
-      compId == GeodeTypeIdsImpl::CacheableUserData2 ||
-      compId == GeodeTypeIdsImpl::CacheableUserData4) {
-    compId |= ((static_cast<int64_t>(obj->classId())) << 32);
+  int64_t compId;
+
+  if (const auto dataSerializablePrimitive =
+          std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+    compId = static_cast<int64_t>(dataSerializablePrimitive->getDsCode());
+  } else if (const auto dataSerializableInternal =
+                 std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
+    compId = static_cast<int64_t>(dataSerializableInternal->getInternalId());
+  } else if (const auto dataSerializable =
+                 std::dynamic_pointer_cast<DataSerializable>(obj)) {
+    auto id = dataSerializable->getClassId();
+    compId = static_cast<int64_t>(
+                 SerializationRegistry::getSerializableDataDsCode(id)) |
+             static_cast<int64_t>(id) << 32;
+  } else {
+    throw UnsupportedOperationException(
+        "TheTypeMap::bind: Serialization type not implemented.");
   }
+
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_mapLock);
   int bindRes = m_map->bind(compId, func);
   if (bindRes == 1) {
     LOGERROR("A class with ID %d is already registered.", compId);
@@ -361,15 +439,17 @@ void TheTypeMap::unbind(int64_t compId) {
 
 void TheTypeMap::bind2(TypeFactoryMethod func) {
   auto obj = func();
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_map2Lock);
-  int8_t dsfid = obj->DSFID();
 
   int64_t compId = 0;
-  if (dsfid == GeodeTypeIdsImpl::FixedIDShort) {
-    compId = static_cast<int64_t>(obj->classId()) << 32;
+  if (const auto dataSerializableFixedId =
+          std::dynamic_pointer_cast<DataSerializableFixedId>(obj)) {
+    compId = static_cast<int64_t>(dataSerializableFixedId->getDSFID());
   } else {
-    compId = static_cast<int64_t>(obj->typeId());
+    throw UnsupportedOperationException(
+        "TheTypeMap::bind2: Unknown serialization type.");
   }
+
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_map2Lock);
   int bindRes = m_map2->bind(compId, func);
   if (bindRes == 1) {
     LOGERROR(
@@ -441,6 +521,16 @@ void TheTypeMap::rebindPdxType(std::string objFullName,
 void TheTypeMap::unbindPdxType(const std::string& objFullName) {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(m_pdxTypemapLock);
   m_pdxTypemap->unbind(objFullName);
+}
+
+void PdxTypeHandler::serialize(const PdxSerializable& pdxSerializable,
+                               DataOutput& dataOutput) const {
+  PdxHelper::serializePdx(dataOutput, pdxSerializable);
+}
+
+std::shared_ptr<PdxSerializable> PdxTypeHandler::deserialize(
+    DataInput& dataInput) const {
+  return PdxHelper::deserializePdx(dataInput, false);
 }
 
 }  // namespace client

@@ -19,8 +19,7 @@
 
 
 #include "geode_defs.hpp"
-#include "IGeodeSerializable.hpp"
-#include "GeodeClassIds.hpp"
+#include "IDataSerializablePrimitive.hpp"
 
 using namespace System;
 
@@ -44,7 +43,7 @@ namespace Apache
       /// of the object (or implement the <see cref="System.Xml.Serialization.IXmlSerializable" />)
       /// to change the serialization/deserialization. However, the latter should
       /// be avoided for efficiency reasons and the user should implement
-      /// <see cref="../../IGeodeSerializable" /> instead.
+      /// <see cref="../../ISerializable" /> instead.
       /// </para><para>
       /// The user must keep in mind that the rules that apply to <c>XmlSerializer</c>
       /// would be the rules that apply to this class. For instance the user
@@ -55,7 +54,7 @@ namespace Apache
       /// </para>
       /// </remarks>
       public ref class CacheableObjectXml
-        : public IGeodeSerializable
+        : public ISerializable
       {
       public:
         /// <summary>
@@ -70,44 +69,20 @@ namespace Apache
                   nullptr);
         }
 
-        /// <summary>
-        /// Serializes this <see cref="System.Object" /> using
-        /// <see cref="System.Xml.Serialization.XmlSerializer" /> class.
-        /// </summary>
-        /// <param name="output">
-        /// the DataOutput object to use for serializing the object
-        /// </param>
         virtual void ToData(DataOutput^ output);
 
-        /// <summary>
-        /// Deserializes the <see cref="System.Object" /> using
-        /// <see cref="System.Xml.Serialization.XmlSerializer" /> class.
-        /// </summary>
-        /// <param name="input">
-        /// the DataInput stream to use for reading the object data
-        /// </param>
-        /// <returns>the deserialized object</returns>
         virtual void FromData(DataInput^ input);
 
-        /// <summary>
-        /// return the size of this object in bytes
-        /// </summary>
         virtual property System::UInt64 ObjectSize
         {
           virtual System::UInt64 get();
         }
 
-        /// <summary>
-        /// Returns the classId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          inline virtual System::UInt32 get()
+          virtual int8_t get()
           {
-            return GeodeClassIds::CacheableManagedObjectXml;
+            return apache::geode::client::GeodeTypeIds::CacheableManagedObjectXml;
           }
         }
 
@@ -136,7 +111,7 @@ namespace Apache
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableObjectXml(nullptr);
         }

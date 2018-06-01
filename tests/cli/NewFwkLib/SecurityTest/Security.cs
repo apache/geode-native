@@ -68,9 +68,9 @@ namespace Apache.Geode.Client.FwkLib
       }
     }
 
-    private IGeodeSerializable GetUserObject(string objType)
+    private ISerializable GetUserObject(string objType)
     {
-      IGeodeSerializable usrObj = null;
+      ISerializable usrObj = null;
       ResetKey(EntryCount);
       int numOfKeys = GetUIntValue(EntryCount);
       ResetKey(ValueSizes);
@@ -268,8 +268,8 @@ namespace Apache.Geode.Client.FwkLib
       FwkInfo("DoEntryOperations will work for {0} secs using {1} byte values.", secondsToRun, valSize);
 
       CacheableKey key;
-      IGeodeSerializable value;
-      IGeodeSerializable tmpValue;
+      ISerializable value;
+      ISerializable tmpValue;
       PaceMeter meter = new PaceMeter(opsSec);
       string objectType = GetStringValue(ObjectType);
       while (now < end)
@@ -408,8 +408,8 @@ namespace Apache.Geode.Client.FwkLib
       FwkInfo("DoEntryOperations will work for {0} secs using {1} byte values.", secondsToRun, valSize);
 
       CacheableKey key;
-      IGeodeSerializable value;
-      IGeodeSerializable tmpValue;
+      ISerializable value;
+      ISerializable tmpValue;
       PaceMeter meter = new PaceMeter(opsSec);
       string objectType = GetStringValue(ObjectType);
       while (now < end)

@@ -46,17 +46,19 @@ namespace Apache
         /// A mutable <c>ICacheableKey</c> hash set wrapper that can serve as
         /// a distributable object for caching.
         /// </summary>
-        template <System::UInt32 TYPEID, typename HSTYPE>
+        template <int8_t TYPEID, typename HSTYPE>
         public ref class CacheableHashSetType
-          : public Serializable, public ICollection<Object^>
+          : public IDataSerializablePrimitive,
+            public Serializable,
+            public ICollection<Object^>
         {
         public:
 
-          virtual void ToData(DataOutput^ output) override
+          virtual void ToData(DataOutput^ output)
           {
             output->WriteArrayLen(this->Count);
 
-            auto set = static_cast<HSTYPE*>(m_nativeptr->get());
+            auto set = dynamic_cast<HSTYPE*>(m_nativeptr->get());
             for (const auto& iter : *set) {
               auto key = TypeRegistry::GetManagedValueGeneric<Object^>(iter);
               output->WriteObject(key);
@@ -65,7 +67,7 @@ namespace Apache
             GC::KeepAlive(this);
           }
 
-          virtual void FromData(DataInput^ input) override
+          virtual void FromData(DataInput^ input)
           {
             int len = input->ReadArrayLen();
             if (len > 0)
@@ -78,9 +80,9 @@ namespace Apache
             }
           }
 
-          virtual property System::UInt64 ObjectSize
+          property System::UInt64 ObjectSize
           {
-            virtual System::UInt64 get() override
+            System::UInt64 get() override
             {
               System::UInt64 size = 0;
               for each (Object^ key in this) {
@@ -93,7 +95,7 @@ namespace Apache
             }
           }
 
-          virtual int GetHashCode() override
+          int GetHashCode() override
           {
             IEnumerator<Object^>^ ie = GetEnumerator();
 
@@ -105,7 +107,7 @@ namespace Apache
             return h;
           }
 
-          virtual bool Equals(Object^ other)override
+          bool Equals(Object^ other) override
           {
             if (other == nullptr)
               return false;
@@ -178,14 +180,14 @@ namespace Apache
             virtual bool MoveNext()
             {
               auto nptr = m_nativeptr->get();
-              bool isEnd = static_cast<HSTYPE*>(m_set->m_nativeptr->get())->end() == *nptr;
+              bool isEnd = dynamic_cast<HSTYPE*>(m_set->m_nativeptr->get())->end() == *nptr;
               if (!m_started) {
                 m_started = true;
               }
               else {
                 if (!isEnd) {
                   (*nptr)++;
-                  isEnd = static_cast<HSTYPE*>(m_set->m_nativeptr->get())->end() == *nptr;
+                  isEnd = dynamic_cast<HSTYPE*>(m_set->m_nativeptr->get())->end() == *nptr;
                 }
               }
               GC::KeepAlive(this);
@@ -202,7 +204,7 @@ namespace Apache
               {
                 m_nativeptr = gcnew native_unique_ptr<typename HSTYPE::iterator>(
                     std::make_unique<typename HSTYPE::iterator>(
-                    static_cast<HSTYPE*>(m_set->m_nativeptr->get())->begin()));
+                    dynamic_cast<HSTYPE*>(m_set->m_nativeptr->get())->begin()));
               }
               finally
               {
@@ -257,15 +259,9 @@ namespace Apache
             native_unique_ptr<typename HSTYPE::iterator>^ m_nativeptr;
           };
 
-          /// <summary>
-          /// Returns the classId of the instance being serialized.
-          /// This is used by deserialization to determine what instance
-          /// type to create and deserialize into.
-          /// </summary>
-          /// <returns>the classId</returns>
-          virtual property System::UInt32 ClassId
+          property int8_t DsCode
           {
-            virtual System::UInt32 get() override
+            virtual int8_t get()
             {
               return TYPEID;
             }
@@ -280,7 +276,7 @@ namespace Apache
             {
               try
               {
-                return static_cast<int>(static_cast<HSTYPE*>(m_nativeptr->get())->max_size());
+                return static_cast<int>(dynamic_cast<HSTYPE*>(m_nativeptr->get())->max_size());
               }
               finally
               {
@@ -298,7 +294,7 @@ namespace Apache
             {
               try
               {
-                return static_cast<HSTYPE*>(m_nativeptr->get())->empty();
+                return dynamic_cast<HSTYPE*>(m_nativeptr->get())->empty();
               }
               finally
               {
@@ -316,7 +312,7 @@ namespace Apache
             {
               try
               {
-                return static_cast<int>(static_cast<HSTYPE*>(m_nativeptr->get())->bucket_count());
+                return static_cast<int>(dynamic_cast<HSTYPE*>(m_nativeptr->get())->bucket_count());
               }
               finally
               {
@@ -333,7 +329,7 @@ namespace Apache
           {
             try
             {
-              static_cast<HSTYPE*>(m_nativeptr->get())->reserve(size);
+              dynamic_cast<HSTYPE*>(m_nativeptr->get())->reserve(size);
             }
             finally
             {
@@ -353,8 +349,8 @@ namespace Apache
             try
             {
               if (other != nullptr) {
-                static_cast<HSTYPE*>(m_nativeptr->get())->swap(
-                  *static_cast<HSTYPE*>(other->m_nativeptr->get()));
+                dynamic_cast<HSTYPE*>(m_nativeptr->get())->swap(
+                  *dynamic_cast<HSTYPE*>(other->m_nativeptr->get()));
               }
             }
             finally
@@ -378,7 +374,7 @@ namespace Apache
 
             try
             {
-              static_cast<HSTYPE*>(m_nativeptr->get())->insert(Serializable::GetUnmanagedValueGeneric(item));
+              dynamic_cast<HSTYPE*>(m_nativeptr->get())->insert(Serializable::GetUnmanagedValueGeneric(item));
             }
             finally
             {
@@ -395,7 +391,7 @@ namespace Apache
           {
             try
             {
-              static_cast<HSTYPE*>(m_nativeptr->get())->clear();
+              dynamic_cast<HSTYPE*>(m_nativeptr->get())->clear();
             }
             finally
             {
@@ -418,7 +414,7 @@ namespace Apache
           {
             try
             {
-              return static_cast<HSTYPE*>(m_nativeptr->get())->find(Serializable::GetUnmanagedValueGeneric(item)) != static_cast<HSTYPE*>(m_nativeptr->get())->end();
+              return dynamic_cast<HSTYPE*>(m_nativeptr->get())->find(Serializable::GetUnmanagedValueGeneric(item)) != dynamic_cast<HSTYPE*>(m_nativeptr->get())->end();
             }
             finally
             {
@@ -455,7 +451,7 @@ namespace Apache
                                                    " array is null or array index is less than zero");
             }
 
-            auto set = static_cast<HSTYPE*>(m_nativeptr->get());
+            auto set = dynamic_cast<HSTYPE*>(m_nativeptr->get());
             System::Int32 index = arrayIndex;
 
             if (arrayIndex >= array->Length ||
@@ -482,7 +478,7 @@ namespace Apache
             {
               try
               {
-                return static_cast<int>(static_cast<HSTYPE*>(m_nativeptr->get())->size());
+                return static_cast<int>(dynamic_cast<HSTYPE*>(m_nativeptr->get())->size());
               }
               finally
               {
@@ -508,7 +504,7 @@ namespace Apache
           {
             try
             {
-              return (static_cast<HSTYPE*>(m_nativeptr->get())->erase(Serializable::GetUnmanagedValueGeneric(item)) > 0);
+              return (dynamic_cast<HSTYPE*>(m_nativeptr->get())->erase(Serializable::GetUnmanagedValueGeneric(item)) > 0);
             }
             finally
             {
@@ -553,7 +549,7 @@ namespace Apache
           /// <summary>
           /// Factory function to register wrapper
           /// </summary>
-          static IGeodeSerializable^ Create(apache::geode::client::Serializable* obj)
+          static ISerializable^ Create(apache::geode::client::Serializable* obj)
           {
             return (obj != NULL ?
                     gcnew CacheableHashSetType<TYPEID, HSTYPE>(obj) : nullptr);
@@ -603,7 +599,7 @@ namespace Apache
       }
 
 #define _GFCLI_CACHEABLEHASHSET_DEF_GENERIC(m, HSTYPE)                               \
-	public ref class m : public Internal::CacheableHashSetType<Apache::Geode::Client::GeodeClassIds::m, HSTYPE>      \
+	public ref class m : public Internal::CacheableHashSetType<native::GeodeTypeIds::m, HSTYPE>      \
             {                                                                       \
       public:                                                                 \
         /** <summary>
@@ -611,7 +607,7 @@ namespace Apache
       *  </summary>
       */                                                                   \
       inline m()                                                            \
-      : Internal::CacheableHashSetType<Apache::Geode::Client::GeodeClassIds::m, HSTYPE>() {}                      \
+      : Internal::CacheableHashSetType<native::GeodeTypeIds::m, HSTYPE>() {}                      \
       \
       /** <summary>
        *  Allocates a new instance with the given size.
@@ -619,7 +615,7 @@ namespace Apache
        *  <param name="size">the intial size of the new instance</param>
        */                                                                   \
        inline m(System::Int32 size)                                                 \
-       : Internal::CacheableHashSetType<Apache::Geode::Client::GeodeClassIds::m, HSTYPE>(size) {}                  \
+       : Internal::CacheableHashSetType<native::GeodeTypeIds::m, HSTYPE>(size) {}                  \
        \
        /** <summary>
         *  Static function to create a new empty instance.
@@ -643,20 +639,20 @@ namespace Apache
        * Factory function to register this class.
        * </summary>
        */                                                                   \
-       static IGeodeSerializable^ CreateDeserializable()                        \
+       static ISerializable^ CreateDeserializable()                        \
       {                                                                     \
       return gcnew m();                                                   \
       }                                                                     \
       \
             internal:                                                               \
-              static IGeodeSerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj)            \
+              static ISerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj)            \
       {                                                                     \
       return gcnew m(obj);                                                \
       }                                                                     \
       \
             private:                                                                \
               inline m(std::shared_ptr<apache::geode::client::Serializable> nativeptr)                            \
-              : Internal::CacheableHashSetType<Apache::Geode::Client::GeodeClassIds::m, HSTYPE>(nativeptr) { }             \
+              : Internal::CacheableHashSetType<native::GeodeTypeIds::m, HSTYPE>(nativeptr) { }             \
       };
 
       /// <summary>

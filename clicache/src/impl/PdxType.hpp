@@ -17,11 +17,8 @@
 
 #pragma once
 
-
 #include "PdxFieldType.hpp"
-//#include "../DataOutput.hpp"
-//#include "../DataInput.hpp"
-#include "../GeodeClassIds.hpp"
+
 using namespace System;
 using namespace System::Collections::Generic;
 
@@ -34,9 +31,10 @@ namespace Apache
 
       ref class DataOutput;
       ref class DataInput;
+
       namespace Internal
       {
-        public ref class PdxType : public IGeodeSerializable
+        private ref class PdxType : public IDataSerializableInternal
         {
         private:
           Object^                 m_lockObj;
@@ -46,7 +44,7 @@ namespace Apache
           Int32                   m_cachedHashcode;
 
           //Type^                 m_pdxDomainType;
-          String^               m_className;
+          String^                 m_className;
           Int32                   m_geodeTypeId;
           bool                    m_isLocal;
           Int32                   m_numberOfVarLenFields;
@@ -111,7 +109,7 @@ namespace Apache
             m_geodeTypeId = 0;
           }
 
-          static IGeodeSerializable^ CreateDeserializable()
+          static ISerializable^ CreateDeserializable()
           {
             return gcnew PdxType();
           }
@@ -177,16 +175,12 @@ namespace Apache
           {
             System::UInt64 get(){ return 0; }
           }
-          virtual property System::UInt32 ClassId
-          {
-            System::UInt32 get(){ return GeodeClassIds::PdxType; }
-          }
           virtual String^ ToString() override
           {
             return "PdxType";
           }
-          void AddFixedLengthTypeField(String^ fieldName, String^ className, Byte typeId, Int32 size);
-          void AddVariableLengthTypeField(String^ fieldName, String^ className, Byte typeId);
+          void AddFixedLengthTypeField(String^ fieldName, String^ className, PdxFieldTypes typeId, Int32 size);
+          void AddVariableLengthTypeField(String^ fieldName, String^ className, PdxFieldTypes typeId);
           void InitializeType(Cache^ cache);
           PdxType^ MergeVersion(PdxType^ otherVersion);
           Int32 GetFieldPosition(String^ fieldName, System::Byte* offsetPosition, Int32 offsetSize, Int32 pdxStreamlen);

@@ -28,6 +28,7 @@
 #include <ace/Null_Mutex.h>
 
 #include <geode/internal/geode_globals.hpp>
+#include <geode/internal/DataSerializableInternal.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/PdxSerializer.hpp>
 #include <geode/GeodeTypeIds.hpp>
@@ -35,6 +36,7 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Delta.hpp>
 #include <geode/PdxSerializable.hpp>
+#include <geode/DataSerializable.hpp>
 
 #include "util/concurrent/spinlock_mutex.hpp"
 #include "NonCopyable.hpp"
@@ -134,6 +136,19 @@ class TheTypeMap : private NonCopyable {
 
 class Pool;
 
+/**
+ * Used to register handlers for the PDX DsCode. .NET client extends this to
+ * intercept PDX (de)serialization.
+ */
+class PdxTypeHandler {
+ public:
+  virtual ~PdxTypeHandler() noexcept = default;
+  virtual void serialize(const PdxSerializable& pdxSerializable,
+                         DataOutput& dataOutput) const;
+  virtual std::shared_ptr<PdxSerializable> deserialize(
+      DataInput& dataInput) const;
+};
+
 class APACHE_GEODE_EXPORT SerializationRegistry {
  public:
   SerializationRegistry() : theTypeMap() {}
@@ -146,45 +161,54 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
                         bool isDelta = false) const {
     if (obj == nullptr) {
       output.write(static_cast<int8_t>(GeodeTypeIds::NullObj));
+    } else if (const auto dataSerializableFixedId =
+                   dynamic_cast<const DataSerializableFixedId*>(obj)) {
+      serialize(dataSerializableFixedId, output);
+    } else if (const auto dataSerializablePrimitive =
+                   dynamic_cast<const DataSerializablePrimitive*>(obj)) {
+      serialize(dataSerializablePrimitive, output);
+    } else if (const auto dataSerializable =
+                   dynamic_cast<const DataSerializable*>(obj)) {
+      serialize(dataSerializable, output, isDelta);
+    } else if (const auto pdxSerializable =
+                   dynamic_cast<const PdxSerializable*>(obj)) {
+      serialize(pdxSerializable, output);
+    } else if (const auto dataSerializableInternal =
+                   dynamic_cast<const DataSerializableInternal*>(obj)) {
+      serialize(dataSerializableInternal, output);
     } else {
-      int8_t typeId = obj->typeId();
-      switch (obj->DSFID()) {
-        case GeodeTypeIdsImpl::FixedIDByte:
-          output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte));
-          output.write(typeId);  // write the type ID.
-          break;
-        case GeodeTypeIdsImpl::FixedIDShort:
-          output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDShort));
-          output.writeInt(static_cast<int16_t>(typeId));  // write the type ID.
-          break;
-        case GeodeTypeIdsImpl::FixedIDInt:
-          output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDInt));
-          output.writeInt(static_cast<int32_t>(typeId));  // write the type ID.
-          break;
-        default:
-          output.write(typeId);  // write the type ID.
-          break;
-      }
-
-      if (static_cast<int32_t>(typeId) == GeodeTypeIdsImpl::CacheableUserData) {
-        output.write(static_cast<int8_t>(obj->classId()));
-      } else if (static_cast<int32_t>(typeId) ==
-                 GeodeTypeIdsImpl::CacheableUserData2) {
-        output.writeInt(static_cast<int16_t>(obj->classId()));
-      } else if (static_cast<int32_t>(typeId) ==
-                 GeodeTypeIdsImpl::CacheableUserData4) {
-        output.writeInt(obj->classId());
-      }
-      if (isDelta) {
-        const Delta* ptr = dynamic_cast<const Delta*>(obj);
-        ptr->toDelta(output);
-      } else {
-        obj->toData(output);  // let the obj serialize itself.
-      }
+      throw UnsupportedOperationException(
+          "SerializationRegistry::serialize: Serialization type not "
+          "implemented.");
     }
   }
 
-  inline void serialize(const std::shared_ptr<Serializable>& obj, DataOutput& output) const {
+  inline void serializeWithoutHeader(const Serializable* obj,
+                                     DataOutput& output) const {
+    if (const auto dataSerializableFixedId =
+            dynamic_cast<const DataSerializableFixedId*>(obj)) {
+      serializeWithoutHeader(dataSerializableFixedId, output);
+    } else if (const auto dataSerializablePrimitive =
+                   dynamic_cast<const DataSerializablePrimitive*>(obj)) {
+      serializeWithoutHeader(dataSerializablePrimitive, output);
+    } else if (const auto dataSerializable =
+                   dynamic_cast<const DataSerializable*>(obj)) {
+      serializeWithoutHeader(dataSerializable, output);
+    } else if (const auto pdxSerializable =
+                   dynamic_cast<const PdxSerializable*>(obj)) {
+      serializeWithoutHeader(pdxSerializable, output);
+    } else if (const auto dataSerializableInternal =
+                   dynamic_cast<const DataSerializableInternal*>(obj)) {
+      serializeWithoutHeader(dataSerializableInternal, output);
+    } else {
+      throw UnsupportedOperationException(
+          "SerializationRegistry::serializeWithoutHeader: Serialization type "
+          "not implemented.");
+    }
+  }
+
+  inline void serialize(const std::shared_ptr<Serializable>& obj,
+                        DataOutput& output) const {
     serialize(obj.get(), output);
   }
 
@@ -192,7 +216,8 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
    * Read the length, typeid, and run the objs fromData. Returns the New
    * object.
    */
-  std::shared_ptr<Serializable> deserialize(DataInput& input, int8_t typeId = -1) const;
+  std::shared_ptr<Serializable> deserialize(DataInput& input,
+                                            int8_t typeId = -1) const;
 
   void addType(TypeFactoryMethod func);
 
@@ -230,16 +255,134 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   std::shared_ptr<PdxSerializable> getPdxType(
       const std::string& className) const;
 
-  typedef std::function<std::shared_ptr<Serializable>(DataInput&)>
-      PdxTypeHandler;
-  void setPdxTypeHandler(const PdxTypeHandler& handler) {
-    this->pdxTypeHandler = handler;
+  void setPdxTypeHandler(PdxTypeHandler* handler) {
+    this->pdxTypeHandler = std::unique_ptr<PdxTypeHandler>(handler);
   }
 
  private:
+  std::unique_ptr<PdxTypeHandler> pdxTypeHandler;
   std::shared_ptr<PdxSerializer> pdxSerializer;
   TheTypeMap theTypeMap;
-  PdxTypeHandler pdxTypeHandler;
+
+  inline void serialize(const DataSerializableFixedId* obj,
+                        DataOutput& output) const {
+    auto id = obj->getDSFID();
+    if (id <= std::numeric_limits<int8_t>::max() &&
+        id >= std::numeric_limits<int8_t>::min()) {
+      output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte));
+      output.write(static_cast<int8_t>(id));
+    } else if (id <= std::numeric_limits<int16_t>::max() &&
+               id >= std::numeric_limits<int16_t>::min()) {
+      output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDShort));
+      output.writeInt(static_cast<int16_t>(id));
+    } else {
+      output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDInt));
+      output.writeInt(static_cast<int32_t>(id));
+    }
+
+    serializeWithoutHeader(obj, output);
+  }
+
+  inline void serializeWithoutHeader(const DataSerializableFixedId* obj,
+                                     DataOutput& output) const {
+    obj->toData(output);
+  }
+
+  inline void serialize(const DataSerializablePrimitive* obj,
+                        DataOutput& output) const {
+    auto id = obj->getDsCode();
+    output.write(static_cast<int8_t>(id));
+
+    serializeWithoutHeader(obj, output);
+  }
+
+  inline void serializeWithoutHeader(const DataSerializablePrimitive* obj,
+                                     DataOutput& output) const {
+    obj->toData(output);
+  }
+
+  inline void serialize(const DataSerializable* obj, DataOutput& output,
+                        bool isDelta) const {
+    auto id = obj->getClassId();
+    auto dsCode = getSerializableDataDsCode(id);
+
+    output.write(dsCode);
+    switch (dsCode) {
+      case GeodeTypeIdsImpl::CacheableUserData:
+        output.write(static_cast<int8_t>(id));
+        break;
+      case GeodeTypeIdsImpl::CacheableUserData2:
+        output.writeInt(static_cast<int16_t>(id));
+        break;
+      case GeodeTypeIdsImpl::CacheableUserData4:
+        output.writeInt(static_cast<int32_t>(id));
+        break;
+      default:
+        IllegalStateException("Invalid DS Code.");
+    }
+
+    if (isDelta) {
+      const Delta* ptr = dynamic_cast<const Delta*>(obj);
+      ptr->toDelta(output);
+    } else {
+      serializeWithoutHeader(obj, output);
+    }
+  }
+
+  inline void serializeWithoutHeader(const DataSerializable* obj,
+                                     DataOutput& output) const {
+    obj->toData(output);
+  }
+
+  inline void serialize(const PdxSerializable* obj, DataOutput& output) const {
+    output.write(static_cast<int8_t>(GeodeTypeIdsImpl::PDX));
+
+    serializeWithoutHeader(obj, output);
+  }
+
+  void serializeWithoutHeader(const PdxSerializable* obj,
+                              DataOutput& output) const;
+
+  inline void serialize(const DataSerializableInternal* obj,
+                        DataOutput& output) const {
+    serializeWithoutHeader(obj, output);
+  }
+
+  inline void serializeWithoutHeader(const DataSerializableInternal* obj,
+                                     DataOutput& output) const {
+    obj->toData(output);
+  }
+
+ public:
+  static inline int8_t getSerializableDataDsCode(int32_t classId) {
+    if (classId <= std::numeric_limits<int8_t>::max() &&
+        classId >= std::numeric_limits<int8_t>::min()) {
+      return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData);
+    } else if (classId <= std::numeric_limits<int16_t>::max() &&
+               classId >= std::numeric_limits<int16_t>::min()) {
+      return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData2);
+    } else {
+      return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData4);
+    }
+  }
+
+ private:
+  void deserialize(DataInput& input, std::shared_ptr<Serializable> obj) const;
+
+  void deserialize(DataInput& input,
+                   std::shared_ptr<DataSerializableInternal> obj) const;
+
+  void deserialize(DataInput& input,
+                   std::shared_ptr<DataSerializableFixedId> obj) const;
+
+  void deserialize(DataInput& input,
+                   std::shared_ptr<DataSerializablePrimitive> obj) const;
+
+  void deserialize(DataInput& input,
+                   std::shared_ptr<DataSerializable> obj) const;
+
+  [[noreturn]] void deserialize(DataInput& input,
+                                std::shared_ptr<PdxSerializable> obj) const;
 };
 
 }  // namespace client

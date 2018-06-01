@@ -118,7 +118,7 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
   const std::string& getParentName() { return m_parentName; }
 
   std::shared_ptr<ChildPdx> getChildPdx() {
-    return std::static_pointer_cast<ChildPdx>(m_childPdx);
+    return std::dynamic_pointer_cast<ChildPdx>(m_childPdx);
   }
 
   std::shared_ptr<CacheableEnum> getEnum() { return m_enum; }
@@ -199,7 +199,7 @@ class TESTOBJECT_EXPORT PdxEnumTestClass : public PdxSerializable {
   void fromData(PdxReader& pr) override {
     m_id = pr.readInt("m_id");
     m_enumid =
-        std::static_pointer_cast<CacheableEnum>(pr.readObject("m_enumid"));
+        std::dynamic_pointer_cast<CacheableEnum>(pr.readObject("m_enumid"));
   }
 
   std::string toString() const override { return "PdxEnumTestClass"; }

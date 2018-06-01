@@ -33,12 +33,12 @@ namespace Apache
     {
 
       /// <summary>
-      /// A mutable <c>IGeodeSerializable</c> vector wrapper that can serve as
+      /// A mutable <c>ISerializable</c> vector wrapper that can serve as
       /// a distributable object for caching. This class extends .NET generic
       /// <c>List</c> class.
       /// </summary>
       ref class CacheableLinkedList
-        : public IGeodeSerializable
+        : public IDataSerializablePrimitive
       {
         System::Collections::Generic::LinkedList<Object^>^ m_linkedList;
       public:
@@ -68,7 +68,7 @@ namespace Apache
         }
 
 
-        // Region: IGeodeSerializable Members
+        // Region: ISerializable Members
 
         /// <summary>
         /// Returns the classId of the instance being serialized.
@@ -76,15 +76,15 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get()
+          virtual int8_t get()
           {
-            return GeodeClassIds::CacheableLinkedList;
+            return native::GeodeTypeIds::CacheableLinkedList;
           }
         }
 
-        // Region: IGeodeSerializable Members
+        // Region: ISerializable Members
 
         virtual void ToData(DataOutput^ output)
         {
@@ -124,12 +124,12 @@ namespace Apache
             return m_linkedList;
           }
         }
-        // End Region: IGeodeSerializable Members
+        // End Region: ISerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableLinkedList(gcnew System::Collections::Generic::LinkedList<Object^>());
         }

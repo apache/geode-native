@@ -68,14 +68,11 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   // Serializable interface:
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t classId() const override { return 0; }
-  int8_t typeId() const override {
+  int32_t getDSFID() const override {
     return GeodeTypeIdsImpl::InternalDistributedMember;
   }
   size_t objectSize() const override { return 0; }
-  int8_t DSFID() const override {
-    return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
-  }
+
   void initObjectVars(const char* hostname, uint8_t* hostAddr,
                       uint32_t hostAddrLen, bool hostAddrLocalMem,
                       uint32_t hostPort, const char* durableClientId,

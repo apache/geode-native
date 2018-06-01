@@ -40,7 +40,7 @@ namespace Apache
       namespace native = apache::geode::client;
       /// <summary>
       /// Template class to wrap a managed <see cref="TypeFactoryMethod" />
-      /// delegate that returns an <see cref="IGeodeSerializable" /> object. It contains
+      /// delegate that returns an <see cref="ISerializable" /> object. It contains
       /// a method that converts the managed object gotten by invoking the
       /// delegate to the native <c>apache::geode::client::Serializable</c> object
       /// (using the provided wrapper class constructor).
@@ -69,7 +69,7 @@ namespace Apache
         /// <summary>
         /// Constructor to wrap the given managed delegate.
         /// </summary>
-        inline DelegateWrapperGeneric( TypeFactoryMethodGeneric^ typeDelegate )
+        inline DelegateWrapperGeneric( TypeFactoryMethod^ typeDelegate )
           : m_delegate( typeDelegate ) { }
 
         /// <summary>
@@ -83,22 +83,39 @@ namespace Apache
         std::shared_ptr<apache::geode::client::Serializable> NativeDelegateGeneric( )
         {
           auto tempObj = m_delegate( );
-          if(auto tempDelta = dynamic_cast<IGeodeDelta^>(tempObj))
+          if(auto tempDelta = dynamic_cast<IDelta^>(tempObj))
           {
             return std::shared_ptr<apache::geode::client::ManagedCacheableDeltaGeneric>(
               new apache::geode::client::ManagedCacheableDeltaGeneric(tempDelta));
           }
-          else
+          else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(tempObj))
           {
             return std::shared_ptr<apache::geode::client::ManagedCacheableKeyGeneric>(
-              new apache::geode::client::ManagedCacheableKeyGeneric(tempObj));
+              new apache::geode::client::ManagedCacheableKeyGeneric(dataSerializable));
           }
+          else if (auto dataSerializablePrimitive = dynamic_cast<IDataSerializablePrimitive^>(tempObj))
+          {
+            return std::shared_ptr<apache::geode::client::ManagedDataSerializablePrimitive>(
+              new apache::geode::client::ManagedDataSerializablePrimitive(dataSerializablePrimitive));
+          }
+          else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(tempObj))
+          {
+            return std::shared_ptr<apache::geode::client::ManagedDataSerializableFixedId>(
+              new apache::geode::client::ManagedDataSerializableFixedId(dataSerializableFixedId));
+          }
+          else if (auto dataSerializableInternal = dynamic_cast<IDataSerializableInternal^>(tempObj))
+          {
+            return std::shared_ptr<apache::geode::client::ManagedDataSerializableInternal>(
+              new apache::geode::client::ManagedDataSerializableInternal(dataSerializableInternal));
+          }
+
+          throw native::IllegalStateException("Unknown serialization type.");
         }
 
 
       private:
 
-        TypeFactoryMethodGeneric^ m_delegate;
+        TypeFactoryMethod^ m_delegate;
 
       };
     }  // namespace Client

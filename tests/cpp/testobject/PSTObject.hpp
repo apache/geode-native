@@ -55,7 +55,7 @@ class TESTOBJECT_EXPORT PSTObject : public TimestampedObject {
   ~PSTObject() override = default;
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t classId() const override { return 0x04; }
+  int32_t getClassId() const override { return 0x04; }
   std::string toString() const override;
 
   size_t objectSize() const override {

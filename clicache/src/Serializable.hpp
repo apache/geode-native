@@ -24,8 +24,8 @@
 #include <geode/CacheableBuiltins.hpp>
 #include "end_native.hpp"
 
-#include "IGeodeSerializable.hpp"
-#include "IGeodeDelta.hpp"
+#include "ISerializable.hpp"
+#include "IDelta.hpp"
 #include "native_shared_ptr.hpp"
 #include "impl/EnumInfo.hpp"
 #include "Log.hpp"
@@ -65,17 +65,17 @@ namespace Apache
       /// The delegate shall be stored in the internal <c>DelegateWrapper</c>
       /// class and an instance will be initialized in the
       /// <c>DelegateWrapper.NativeDelegate</c> method by a call to
-      /// <see cref="IGeodeSerializable.FromData" />.
+      /// <see cref="ISerializable.FromData" />.
       /// </summary>
-      public delegate Apache::Geode::Client::IGeodeSerializable^ TypeFactoryMethodGeneric();
+      public delegate Apache::Geode::Client::ISerializable^ TypeFactoryMethod();
       /// <summary>
       /// Delegate to wrap a native <c>native::Serializable</c> type.
       /// </summary>
       /// <remarks>
-      /// This delegate should return an object of type <c>IGeodeSerializable</c>
+      /// This delegate should return an object of type <c>ISerializable</c>
       /// given a native object.
       /// </remarks>
-      delegate Apache::Geode::Client::IGeodeSerializable^ WrapperDelegateGeneric(std::shared_ptr<native::Serializable> obj);
+      delegate Apache::Geode::Client::ISerializable^ DataSerializablePrimitiveWrapperDelegate(std::shared_ptr<native::Serializable> obj);
 
 			/// <summary>
       /// Signature of function delegates passed to
@@ -88,28 +88,12 @@ namespace Apache
       
       /// <summary>
       /// This class wraps the native C++ <c>native::Serializable</c> objects
-      /// as managed <see cref="IGeodeSerializable" /> objects.
+      /// as managed <see cref="ISerializable" /> objects.
       /// </summary>
       public ref class Serializable
-        : public Apache::Geode::Client::IGeodeSerializable
+        : public Apache::Geode::Client::ISerializable
       {
-      public:
-        /// <summary>
-        /// Serializes this native (C++) object.
-        /// </summary>
-        /// <param name="output">
-        /// the DataOutput object to use for serializing the object
-        /// </param>
-        virtual void ToData(Apache::Geode::Client::DataOutput^ output);
-
-        /// <summary>
-        /// Deserializes the native (C++) object with the native object wrapped inside.
-        /// </summary>
-        /// <param name="input">
-        /// the DataInput stream to use for reading the object data
-        /// </param>
-        virtual void FromData(Apache::Geode::Client::DataInput^ input);
-        
+      public:        
         /// <summary>
         /// return the size of this object in bytes
         /// </summary>
@@ -119,139 +103,17 @@ namespace Apache
         }
 
         /// <summary>
-        /// Returns the classId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
-        {
-          virtual System::UInt32 get();
-        }
-
-        /// <summary>
         /// Return a string representation of the object.
         /// It simply returns the string representation of the underlying
         /// native object by calling its <c>toString()</c> function.
         /// </summary>
         virtual String^ ToString() override;
 
-        // Static conversion function from primitive types string, integer
-        // and byte array.
-
-        /// <summary>
-        /// Implicit conversion operator from a boolean
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (bool value);
-
-        /// <summary>
-        /// Implicit conversion operator from a byte
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (Byte value);
-
-        /// <summary>
-        /// Implicit conversion operator from an array of bytes
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<Byte>^ value);
-
-        /// <summary>
-        /// Implicit conversion operator from an boolean array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<bool>^ value);
-
-        /// <summary>
-        /// Implicit conversion operator from a double
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (Double value);
-
-        /// <summary>
-        /// Implicit conversion operator from a double array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<Double>^ value);
-
-        /// <summary>
-        /// Implicit conversion operator from a float
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (Single value);
-
-        /// <summary>
-        /// Implicit conversion operator from a float array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<Single>^ value);
-
-        /// <summary>
-        /// Implicit conversion operator from a 16-bit integer
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (System::Int16 value);
-
-        /// <summary>
-        /// Implicit conversion operator from a character
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (Char value);
-
-        /// <summary>
-        /// Implicit conversion operator from a character array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<Char>^ value);
-
-        /// <summary>
-        /// Implicit conversion operator from a 16-bit integer array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<System::Int16>^ value);
-
-        /// <summary>
-        /// Implicit conversion operator from a 32-bit integer
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (System::Int32 value);
-
-        /// <summary>
-        /// Implicit conversion operator from a 32-bit integer array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<System::Int32>^ value);
-
-        /// <summary>
-        /// Implicit conversion operator from a 64-bit integer
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator /*Apache::Geode::Client::*/Serializable^ (System::Int64 value);
-
-        /// <summary>
-        /// Implicit conversion operator from a 64-bit integer array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<System::Int64>^ value);
-
-        /// <summary>
-        /// Implicit conversion operator from a string
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (String^ value);
-
-        /// <summary>
-        /// Implicit conversion operator from a string array
-        /// to a <c>Serializable</c>.
-        /// </summary>
-        static operator Apache::Geode::Client::Serializable^ (array<String^>^ value);
 
       internal:
-        static std::shared_ptr<CacheableKey> wrapIGeodeSerializable(IGeodeSerializable^ managedObject);
-				static System::Int32 GetPDXIdForType(native::Pool* pool, IGeodeSerializable^ pdxType, Cache^ cache);
-				static IGeodeSerializable^ GetPDXTypeById(native::Pool* pool, System::Int32 typeId, Cache^ cache);
-				static void RegisterPDXManagedCacheableKey(Cache^ cache);
+        static std::shared_ptr<CacheableKey> GetNativeCacheableKeyWrapperForManagedISerializable(ISerializable^ managedObject);
+				static System::Int32 GetPDXIdForType(native::Pool* pool, ISerializable^ pdxType, Cache^ cache);
+				static ISerializable^ GetPDXTypeById(native::Pool* pool, System::Int32 typeId, Cache^ cache);
         
         static int GetEnumValue(Internal::EnumInfo^ ei, Cache^ cache);
         static Internal::EnumInfo^ GetEnum(int val, Cache^ cache);
@@ -261,7 +123,7 @@ namespace Apache
         //byte
         static Byte getByte(std::shared_ptr<native::Serializable> nativeptr);
         
-        static std::shared_ptr<native::CacheableKey> getCacheableByte(SByte val);
+        static std::shared_ptr<native::CacheableKey> getCacheableByte(Byte val);
         
         //boolean
         static bool getBoolean(std::shared_ptr<native::Serializable> nativeptr);
@@ -298,31 +160,9 @@ namespace Apache
         
         static std::shared_ptr<native::CacheableKey> getCacheableInt64(System::Int64 val);
         
-        //cacheable ascii string
-        static String^ getASCIIString(std::shared_ptr<native::Serializable> nativeptr);
-
-        static std::shared_ptr<native::CacheableKey> getCacheableASCIIString(String^ val);
-        
-        //cacheable ascii string huge
-        static String^ getASCIIStringHuge(std::shared_ptr<native::Serializable> nativeptr);
-        
-        static std::shared_ptr<native::CacheableKey> getCacheableASCIIStringHuge(String^ val);
-
-        //cacheable string
-        static String^ getUTFString(std::shared_ptr<native::Serializable> nativeptr);
-
-        static std::shared_ptr<native::CacheableKey> getCacheableUTFString(String^ val);
-        
-
-        //cacheable string huge
-        static String^ getUTFStringHuge(std::shared_ptr<native::Serializable> nativeptr);
-        
-
-        static std::shared_ptr<native::CacheableKey> getCacheableUTFStringHuge(String^ val);
-        
-
+        static String^ getString(std::shared_ptr<native::Serializable> nativeptr);
+                
         static std::shared_ptr<native::CacheableString> GetCacheableString(String^ value);
-
 
         static array<Byte>^ getSByteArray(array<SByte>^ sArray);
         

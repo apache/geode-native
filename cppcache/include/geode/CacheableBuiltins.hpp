@@ -39,7 +39,8 @@ namespace client {
 
 /** Template CacheableKey class for primitive types. */
 template <typename TObj, int8_t TYPEID, const char* TYPENAME>
-class APACHE_GEODE_EXPORT CacheableKeyType : public CacheableKey {
+class APACHE_GEODE_EXPORT CacheableKeyType : public DataSerializablePrimitive,
+                                             public CacheableKey {
  protected:
   TObj m_value;
 
@@ -54,31 +55,15 @@ class APACHE_GEODE_EXPORT CacheableKeyType : public CacheableKey {
 
   // Cacheable methods
 
-  /** Serialize this object to given <code>DataOutput</code>. */
   virtual void toData(DataOutput& output) const override {
     apache::geode::client::serializer::writeObject(output, m_value);
   }
 
-  /** Deserialize this object from given <code>DataInput</code>. */
   virtual void fromData(DataInput& input) override {
     apache::geode::client::serializer::readObject(input, m_value);
   }
 
-  /**
-   * Return the classId of the instance being serialized.
-   *
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int32_t classId() const override { return 0; }
-
-  /**
-   * Return the typeId byte of the instance being serialized.
-   *
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int8_t typeId() const override { return TYPEID; }
+  virtual int8_t getDsCode() const override { return TYPEID; }
 
   /** Return a string representation of the object. */
   virtual std::string toString() const override {
@@ -94,11 +79,13 @@ class APACHE_GEODE_EXPORT CacheableKeyType : public CacheableKey {
 
   /** Return true if this key matches other. */
   virtual bool operator==(const CacheableKey& other) const override {
-    if (other.typeId() != TYPEID) {
-      return false;
+    if (const auto otherPrimitive =
+            dynamic_cast<const DataSerializablePrimitive*>(&other)) {
+      if (otherPrimitive->getDsCode() != TYPEID) {
+        return false;
+      }
     }
-    const CacheableKeyType& otherValue =
-        static_cast<const CacheableKeyType&>(other);
+    auto& otherValue = static_cast<const CacheableKeyType&>(other);
     return internal::equals(m_value, otherValue.m_value);
   }
 
@@ -140,8 +127,9 @@ inline void copyArray(std::shared_ptr<TObj>* dest,
 
 /** Template class for container Cacheable types. */
 template <typename TBase, int8_t TYPEID>
-class APACHE_GEODE_EXPORT CacheableContainerType : public Cacheable,
-                                                   public TBase {
+class APACHE_GEODE_EXPORT CacheableContainerType
+    : public DataSerializablePrimitive,
+      public TBase {
  protected:
   inline CacheableContainerType() : TBase() {}
 
@@ -150,41 +138,17 @@ class APACHE_GEODE_EXPORT CacheableContainerType : public Cacheable,
  public:
   // Cacheable methods
 
-  /** Serialize this object to the given <code>DataOutput</code>. */
-  virtual void toData(DataOutput& output) const override {
+  void toData(DataOutput& output) const override {
     apache::geode::client::serializer::writeObject(output, *this);
   }
 
-  /** Deserialize this object from the given <code>DataInput</code>. */
-  virtual void fromData(DataInput& input) override {
+  void fromData(DataInput& input) override {
     apache::geode::client::serializer::readObject(input, *this);
   }
 
-  /**
-   * Return the classId of the instance being serialized.
-   *
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int32_t classId() const override { return 0; }
+  int8_t getDsCode() const override { return TYPEID; }
 
-  /**
-   * Return the typeId byte of the instance being serialized.
-   *
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   */
-  virtual int8_t typeId() const override { return TYPEID; }
-
-  /**
-   * Return the size in bytes of the instance being serialized.
-   *
-   * This is used to determine whether the cache is using up more
-   * physical memory than it has been configured to use. The method can
-   * return zero if the user does not require the ability to control
-   * cache memory utilization.
-   */
-  virtual size_t objectSize() const override {
+  size_t objectSize() const override {
     return sizeof(CacheableContainerType) + serializer::objectSize(*this);
   }
 };
@@ -319,7 +283,7 @@ _GEODE_CACHEABLE_KEY_TYPE_(char16_t, CacheableCharacter)
 // Instantiations for array built-in Cacheables
 
 template <typename T, GeodeTypeIds::IdValues GeodeTypeId>
-class APACHE_GEODE_EXPORT CacheableArray : public Cacheable {
+class APACHE_GEODE_EXPORT CacheableArray : public DataSerializablePrimitive {
  protected:
   inline CacheableArray() = default;
 
@@ -330,9 +294,7 @@ class APACHE_GEODE_EXPORT CacheableArray : public Cacheable {
   template <typename TT>
   CacheableArray(TT&& value) : m_value(std::forward<TT>(value)) {}
 
-  virtual int32_t classId() const override { return 0; }
-
-  virtual int8_t typeId() const override { return GeodeTypeId; }
+  virtual int8_t getDsCode() const override { return GeodeTypeId; }
 
   virtual size_t objectSize() const override {
     return static_cast<uint32_t>(

@@ -35,14 +35,14 @@ class QueueConnectionResponse : public ServerLocationResponse {
 
   ~QueueConnectionResponse() override = default;
 
-  QueueConnectionResponse(const QueueConnectionResponse&) = delete;
-  void operator=(const QueueConnectionResponse&) = delete;
-
   void fromData(DataInput& input) override;
-  int8_t typeId() const override;
-  size_t objectSize() const override;
+
+  int32_t getDSFID() const override;
+
   virtual std::list<ServerLocation> getServers() { return m_list; }
+
   virtual bool isDurableQueueFound() { return m_durableQueueFound; }
+
   static std::shared_ptr<Serializable> create() {
     return std::make_shared<QueueConnectionResponse>();
   }

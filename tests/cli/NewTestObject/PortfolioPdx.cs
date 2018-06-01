@@ -46,7 +46,7 @@ namespace Apache.Geode.Client.Tests
     private static string[] m_secIds = { "SUN", "IBM", "YHOO", "GOOG", "MSFT",
       "AOL", "APPL", "ORCL", "SAP", "DELL" };
 
-    private UInt64 GetObjectSize(IGeodeSerializable obj)
+    private UInt64 GetObjectSize(ISerializable obj)
     {
       return (obj == null ? 0 : obj.ObjectSize);
     }
@@ -233,7 +233,7 @@ namespace Apache.Geode.Client.Tests
 
     #endregion
 /*
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {

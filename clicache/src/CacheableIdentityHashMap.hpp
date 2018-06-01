@@ -33,7 +33,7 @@ namespace Apache
     {
 
       /// <summary>
-      /// A mutable <c>ICacheableKey</c> to <c>IGeodeSerializable</c> hash map
+      /// A mutable <c>ICacheableKey</c> to <c>ISerializable</c> hash map
       /// that can serve as a distributable object for caching. This class
       /// extends .NET generic <c>Dictionary</c> class. This class is meant
       /// as a means to interoperate with java server side
@@ -97,7 +97,7 @@ namespace Apache
           return gcnew CacheableIdentityHashMap(capacity);
         }
 
-        // Region: IGeodeSerializable Members
+        // Region: ISerializable Members
 
         /// <summary>
         /// Returns the classId of the instance being serialized.
@@ -105,20 +105,20 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get() override
+          int8_t get() override
           {
-            return GeodeClassIds::CacheableIdentityHashMap;
+            return native::GeodeTypeIds::CacheableIdentityHashMap;
           }
         }
 
-        // End Region: IGeodeSerializable Members
+        // End Region: ISerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableIdentityHashMap();
         }

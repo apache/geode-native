@@ -32,6 +32,7 @@
 #include <geode/Cache.hpp>
 #include <geode/CacheAttributes.hpp>
 #include <geode/TypeRegistry.hpp>
+#include <geode/PoolManager.hpp>
 
 #include "DistributedSystem.hpp"
 #include "MapWithLock.hpp"
@@ -278,6 +279,10 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   inline CachePerfStats& getCachePerfStats() { return *m_cacheStats; }
 
   PoolManager& getPoolManager() const { return *m_poolManager; }
+
+  const std::shared_ptr<Pool>& getDefaultPool() {
+    return m_poolManager->getDefaultPool();
+  }
 
   SystemProperties& getSystemProperties() const {
     return m_distributedSystem.getSystemProperties();

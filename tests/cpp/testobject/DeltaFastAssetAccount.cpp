@@ -54,9 +54,9 @@ void DeltaFastAssetAccount::toData(
 
 void DeltaFastAssetAccount::fromData(apache::geode::client::DataInput& input) {
   acctId = input.readInt32();
-  customerName = std::static_pointer_cast<CacheableString>(input.readObject());
+  customerName = std::dynamic_pointer_cast<CacheableString>(input.readObject());
   netWorth = input.readDouble();
-  assets = std::static_pointer_cast<CacheableHashMap>(input.readObject());
+  assets = std::dynamic_pointer_cast<CacheableHashMap>(input.readObject());
   timestamp = input.readInt64();
 }
 

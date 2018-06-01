@@ -37,8 +37,7 @@
       const size_t number =
           std::stoi(pattern.substr(startPos, (patternPos - startPos)));
 
-      std::string::size_type pos =
-          actual.find_first_not_of("0123456789ABCDEFabcdef", actualPos);
+      auto pos = actual.find_first_not_of("0123456789ABCDEFabcdef", actualPos);
       if (pos == std::string::npos) {
         pos = actual.length();
       }

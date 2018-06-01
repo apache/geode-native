@@ -24,11 +24,15 @@
 #include <geode/CacheableString.hpp>
 #include <geode/CacheableKey.hpp>
 
+#include "geode/internal/DataSerializableFixedId.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT EnumInfo : public CacheableKey {
+class APACHE_GEODE_EXPORT EnumInfo
+    : public DataSerializableFixedId_t<GeodeTypeIds::EnumInfo>,
+      public CacheableKey {
  private:
   std::shared_ptr<CacheableString> m_enumClassName;
   std::shared_ptr<CacheableString> m_enumName;
@@ -38,11 +42,15 @@ class APACHE_GEODE_EXPORT EnumInfo : public CacheableKey {
   ~EnumInfo() override = default;
   EnumInfo();
   EnumInfo(const char* enumClassName, const char* enumName, int32_t m_ordinal);
+
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<EnumInfo>();
   }
+
   void toData(DataOutput& output) const override;
+
   virtual void fromData(DataInput& input) override;
+
   virtual size_t objectSize() const override {
     auto size = sizeof(EnumInfo);
     size += sizeof(int32_t);
@@ -50,17 +58,19 @@ class APACHE_GEODE_EXPORT EnumInfo : public CacheableKey {
     size += m_enumName->objectSize();
     return size;
   }
-  virtual int32_t classId() const override { return 0; }
-  virtual int8_t typeId() const override { return GeodeTypeIds::EnumInfo; }
+
   virtual std::string toString() const override { return "EnumInfo"; }
+
   virtual bool operator==(const CacheableKey& other) const override;
+
   virtual int32_t hashcode() const override;
 
-  int8_t DSFID() const override;
   std::shared_ptr<CacheableString> getEnumClassName() const {
     return m_enumClassName;
   }
+
   std::shared_ptr<CacheableString> getEnumName() const { return m_enumName; }
+
   int32_t getEnumOrdinal() const { return m_ordinal; }
 };
 

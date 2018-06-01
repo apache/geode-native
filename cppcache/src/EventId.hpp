@@ -20,12 +20,13 @@
 #ifndef GEODE_EVENTID_H_
 #define GEODE_EVENTID_H_
 
+#include <string>
+
 #include <geode/internal/geode_globals.hpp>
-#include <geode/Serializable.hpp>
-#include "GeodeTypeIdsImpl.hpp"
+#include <geode/internal/DataSerializableFixedId.hpp>
 #include <geode/DataOutput.hpp>
 
-#include <string>
+#include "GeodeTypeIdsImpl.hpp"
 
 /** @file
  */
@@ -38,7 +39,8 @@ namespace client {
  * EventID "token" with a Distributed Member ID, Thread ID and per-thread
  * Sequence ID
  */
-class APACHE_GEODE_EXPORT EventId : public Cacheable {
+class APACHE_GEODE_EXPORT EventId
+    : public internal::DataSerializableFixedId_t<GeodeTypeIdsImpl::EventId> {
  private:
   char m_eidMem[512];
   int32_t m_eidMemLen;
@@ -56,14 +58,8 @@ class APACHE_GEODE_EXPORT EventId : public Cacheable {
   int64_t getThrId() const;
   int64_t getSeqNum() const;
 
-  /**
-   *@brief serialize this object
-   **/
   void toData(DataOutput& output) const override;
 
-  /**
-   *@brief deserialize this object
-   **/
   void fromData(DataInput& input) override;
 
   size_t objectSize() const override {
@@ -81,25 +77,6 @@ class APACHE_GEODE_EXPORT EventId : public Cacheable {
    * @brief creation function for strings.
    */
   static std::shared_ptr<Serializable> createDeserializable();
-
-  /**
-   *@brief return the classId of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and derserialize into.
-   */
-  int32_t classId() const override;
-
-  /**
-   *@brief return the typeId of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and derserialize into.
-   */
-  int8_t typeId() const override;
-
-  /**
-   * Internal Data Serializable Fixed ID size type - since GFE 5.7
-   */
-  int8_t DSFID() const override { return GeodeTypeIdsImpl::FixedIDByte; };
 
   /** Returns a pointer to a new eventid value. */
   static std::shared_ptr<EventId> create(char* memId, uint32_t memIdLen,

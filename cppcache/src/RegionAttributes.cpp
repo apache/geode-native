@@ -281,9 +281,7 @@ std::shared_ptr<Serializable> RegionAttributes::createDeserializable() {
   return std::make_shared<RegionAttributes>();
 }
 
-int32_t RegionAttributes::classId() const { return 0; }
-
-int8_t RegionAttributes::typeId() const {
+int8_t RegionAttributes::getInternalId() const {
   return GeodeTypeIds::RegionAttributes;
 }
 
@@ -384,7 +382,7 @@ void RegionAttributes::fromData(DataInput& in) {
   apache::geode::client::impl::readString(in, m_persistenceLibrary);
   apache::geode::client::impl::readString(in, m_persistenceFactory);
   m_persistenceProperties =
-      std::static_pointer_cast<Properties>(in.readObject());
+      std::dynamic_pointer_cast<Properties>(in.readObject());
   apache::geode::client::impl::readString(in, m_poolName);
   apache::geode::client::impl::readBool(in, &m_isConcurrencyChecksEnabled);
 }

@@ -209,7 +209,7 @@ int32_t PdxTypeRegistry::getEnumValue(std::shared_ptr<EnumInfo> ei) {
   tmp = enumToInt;
   const auto& entry = tmp->find(ei);
   if (entry != tmp->end()) {
-    const auto val = std::static_pointer_cast<CacheableInt32>(entry->second);
+    const auto val = std::dynamic_pointer_cast<CacheableInt32>(entry->second);
     return val->value();
   }
 
@@ -217,7 +217,7 @@ int32_t PdxTypeRegistry::getEnumValue(std::shared_ptr<EnumInfo> ei) {
   tmp = enumToInt;
   const auto& entry2 = tmp->find(ei);
   if (entry2 != tmp->end()) {
-    const auto val2 = std::static_pointer_cast<CacheableInt32>(entry2->second);
+    const auto val2 = std::dynamic_pointer_cast<CacheableInt32>(entry2->second);
     return val2->value();
   }
 
@@ -239,7 +239,7 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
   {
     auto&& entry = tmp->find(enumValPtr);
     if (entry != tmp->end()) {
-      auto&& ret = std::static_pointer_cast<EnumInfo>(entry->second);
+      auto&& ret = std::dynamic_pointer_cast<EnumInfo>(entry->second);
       if (ret) {
         return ret;
       }
@@ -251,14 +251,14 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
   {
     auto&& entry = tmp->find(enumValPtr);
     if (entry != tmp->end()) {
-      auto&& ret = std::static_pointer_cast<EnumInfo>(entry->second);
+      auto&& ret = std::dynamic_pointer_cast<EnumInfo>(entry->second);
       if (ret) {
         return ret;
       }
     }
   }
 
-  auto&& ret = std::static_pointer_cast<EnumInfo>(
+  auto&& ret = std::dynamic_pointer_cast<EnumInfo>(
       std::static_pointer_cast<ThinClientPoolDM>(
           cache->getPoolManager().getAll().begin()->second)
           ->GetEnum(enumVal));

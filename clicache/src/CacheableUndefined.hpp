@@ -19,8 +19,8 @@
 
 
 #include "geode_defs.hpp"
-#include "IGeodeSerializable.hpp"
-#include "GeodeClassIds.hpp"
+#include "IDataSerializableFixedId.hpp"
+#include "ISerializable.hpp"
 #include "Log.hpp"
 
 using namespace System;
@@ -31,12 +31,14 @@ namespace Apache
   {
     namespace Client
     {
+		  
+			namespace native = apache::geode::client;
 
       /// <summary>
       /// Encapsulate an undefined result.
       /// </summary>
       public ref class CacheableUndefined
-        : public IGeodeSerializable
+        : public IDataSerializableFixedId
       {
       public:
         /// <summary>
@@ -52,7 +54,7 @@ namespace Apache
           return gcnew CacheableUndefined();
         }
 
-        // Region: IGeodeSerializable Members
+        // Region: ISerializable Members
 
         /// <summary>
         /// Serializes this object.
@@ -86,20 +88,20 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property Int32 DSFID
         {
-          inline virtual System::UInt32 get()
+          virtual Int32 get()
           {
-            return GeodeClassIds::CacheableUndefined;
+            return native::GeodeTypeIds::CacheableUndefined;
           }
         }
 
-        // End Region: IGeodeSerializable Members
+        // End Region: ISerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableUndefined();
         }

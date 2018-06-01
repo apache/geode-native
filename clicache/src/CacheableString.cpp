@@ -36,12 +36,12 @@ namespace Apache
 
       void CacheableString::ToData(DataOutput^ output)
       {
-        if (m_type == GeodeClassIds::CacheableASCIIString ||
-            m_type == GeodeClassIds::CacheableString)
+        if (m_type == GeodeTypeIds::CacheableASCIIString ||
+            m_type == GeodeTypeIds::CacheableString)
         {
           output->WriteUTF(m_value);
         }
-        else if (m_type == GeodeClassIds::CacheableASCIIStringHuge)
+        else if (m_type == GeodeTypeIds::CacheableASCIIStringHuge)
         {
           output->WriteASCIIHuge(m_value);
         }
@@ -53,12 +53,12 @@ namespace Apache
 
       void CacheableString::FromData(DataInput^ input)
       {
-        if (m_type == GeodeClassIds::CacheableASCIIString ||
-            m_type == GeodeClassIds::CacheableString)
+        if (m_type == GeodeTypeIds::CacheableASCIIString ||
+            m_type == GeodeTypeIds::CacheableString)
         {
           m_value = input->ReadUTF();
         }
-        else if (m_type == GeodeClassIds::CacheableASCIIStringHuge)
+        else if (m_type == GeodeTypeIds::CacheableASCIIStringHuge)
         {
           m_value = input->ReadASCIIHuge();
         }
@@ -113,17 +113,7 @@ namespace Apache
 
       bool CacheableString::Equals(Apache::Geode::Client::ICacheableKey^ other)
       {
-        if (other == nullptr || other->ClassId != ClassId) {
-          return false;
-        }
-
-        CacheableString^ otherStr =
-          dynamic_cast<CacheableString^>(other);
-
-        if (otherStr == nullptr)
-          return false;
-
-        return m_value->Equals(otherStr->Value);//TODO::
+        return Equals((Object^) other);
       }
 
       bool CacheableString::Equals(Object^ obj)
@@ -162,16 +152,16 @@ namespace Apache
         if (len == m_value->Length)//ASCII string
         {
           if (len > 0xFFFF)
-            m_type = GeodeClassIds::CacheableASCIIStringHuge;
+            m_type = GeodeTypeIds::CacheableASCIIStringHuge;
           else
-            m_type = GeodeClassIds::CacheableASCIIString;
+            m_type = GeodeTypeIds::CacheableASCIIString;
         }
         else
         {
           if (len > 0xFFFF)
-            m_type = GeodeClassIds::CacheableStringHuge;
+            m_type = GeodeTypeIds::CacheableStringHuge;
           else
-            m_type = GeodeClassIds::CacheableString;
+            m_type = GeodeTypeIds::CacheableString;
         }  // namespace Client
       }  // namespace Geode
     }  // namespace Apache

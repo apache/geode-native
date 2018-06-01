@@ -28,7 +28,6 @@
 #include "CacheableKey.hpp"
 #include "Serializable.hpp"
 #include "ExceptionTypes.hpp"
-#include "GeodeClassIds.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
 
@@ -48,9 +47,9 @@ namespace Apache
       /// An immutable template wrapper for C++ <c>CacheableKey</c>s that can
       /// serve as a distributable key object for caching.
       /// </summary>
-      template <typename TNative, typename TManaged, System::UInt32 TYPEID>
+      template <typename TNative, typename TManaged, int8_t TYPEID>
       ref class CacheableBuiltinKey
-        : public CacheableKey
+        : public IDataSerializablePrimitive, public CacheableKey
       {
       public:
         /// <summary>
@@ -72,15 +71,9 @@ namespace Apache
           m_nativeptr = gcnew native_shared_ptr<native::Serializable>(nativeptr);
         }
 
-        /// <summary>
-        /// Returns the classId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get() override
+          virtual int8_t get()
           {
             return TYPEID;
           }
@@ -90,11 +83,11 @@ namespace Apache
         /// Return a string representation of the object.
         /// This returns the string for the <c>Value</c> property.
         /// </summary>
-        virtual String^ ToString() override
+        String^ ToString() override
         {
           try
           {
-            return static_cast<TNative*>(m_nativeptr->get())->value().ToString();
+            return GetNative()->value().ToString();
           }
           finally
           {
@@ -113,8 +106,8 @@ namespace Apache
           if (auto o = dynamic_cast<CacheableBuiltinKey^>(other)) {
             try
             {
-              return static_cast<TNative*>(m_nativeptr->get())->operator==(
-                *static_cast<TNative*>(o->m_nativeptr->get()));
+              return GetNative()->operator==(
+                *dynamic_cast<TNative*>(o->m_nativeptr->get()));
             }
             finally
             {
@@ -143,7 +136,7 @@ namespace Apache
         {
           try
           {
-            return (static_cast<TNative*>(m_nativeptr->get())->value() == other);
+            return (GetNative()->value() == other);
           }
           finally
           {
@@ -161,13 +154,37 @@ namespace Apache
           {
             try
             {
-              return static_cast<TNative*>(m_nativeptr->get())->value();
+              return GetNative()->value();
             }
             finally
             {
               GC::KeepAlive(m_nativeptr);
             }
 
+          }
+        }
+
+        virtual void ToData(DataOutput^ dataOutput)
+        {
+          try
+          {
+            return GetNative()->toData(*dataOutput->GetNative());
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+        }
+
+        virtual void FromData(DataInput^ dataInput)
+        {
+          try
+          {
+            return GetNative()->fromData(*dataInput->GetNative());
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
           }
         }
 
@@ -179,6 +196,12 @@ namespace Apache
         /// <param name="nativeptr">The native object pointer</param>
         inline CacheableBuiltinKey(std::shared_ptr<native::Serializable> nativeptr)
           : CacheableKey(nativeptr) { }
+
+      private:
+        inline TNative* GetNative()
+        {
+          return dynamic_cast<TNative*>(m_nativeptr->get());
+        }
       };
 
 
@@ -187,9 +210,9 @@ namespace Apache
       /// distributable object for caching.
       /// </summary>
       template <typename TNative, typename TNativePtr, typename TManaged,
-        System::UInt32 TYPEID>
+        int8_t TYPEID>
       ref class CacheableBuiltinArray
-        : public Serializable
+        : public IDataSerializablePrimitive
       {
       public:
 
@@ -199,27 +222,27 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get() override
+          virtual int8_t get()
           {
             return TYPEID;
           }
         }
 
-        virtual void ToData(DataOutput^ output) override
+        virtual void ToData(DataOutput^ output)
         {
           output->WriteObject(m_value);
         }
 
-        virtual void FromData(DataInput^ input) override
+        virtual void FromData(DataInput^ input)
         {
           input->ReadObject(m_value);
         }
 
-        virtual property System::UInt64 ObjectSize
+        property System::UInt64 ObjectSize
         {
-          virtual System::UInt64 get() override
+          virtual System::UInt64 get()
           {
             return m_value->Length * sizeof(TManaged);
           }
@@ -281,9 +304,8 @@ namespace Apache
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
         inline CacheableBuiltinArray(std::shared_ptr<native::Serializable> nptr)
-          : Serializable(nptr)
         {
-          auto nativeptr = std::static_pointer_cast<TNative>(nptr);
+          auto nativeptr = std::dynamic_pointer_cast<TNative>(nptr);
           System::Int32 len = nativeptr->length();
           if (len > 0)
           {
@@ -342,7 +364,7 @@ namespace Apache
       //mt = managed type(bool, int)
 #define _GFCLI_CACHEABLE_KEY_DEF_NEW(n, m, mt)                                   \
       ref class m : public CacheableBuiltinKey<n, mt,        \
-        GeodeClassIds::m>                                                   \
+        GeodeTypeIds::m>                                                   \
       {                                                                       \
       public:                                                                 \
          /** <summary>
@@ -381,13 +403,13 @@ namespace Apache
             * Factory function to register this class.
             * </summary>
             */                                                                   \
-            static IGeodeSerializable^ CreateDeserializable()                        \
+            static ISerializable^ CreateDeserializable()                        \
            {                                                                     \
            return gcnew m();                                       \
            }                                                                     \
            \
            internal:                                                               \
-           static IGeodeSerializable^ Create(std::shared_ptr<native::Serializable> obj)            \
+           static ISerializable^ Create(std::shared_ptr<native::Serializable> obj)            \
            {                                                                     \
            return (obj != nullptr ? gcnew m(obj) : nullptr);                   \
            }                                                                     \
@@ -398,94 +420,6 @@ namespace Apache
       };
 
 
-#define _GFCLI_CACHEABLE_ARRAY_DEF_NEW(m, mt)                                    \
-      ref class m : public CacheableBuiltinArray<            \
-        native::m, native::m, mt, GeodeClassIds::m>                  \
-            {                                                                       \
-      public:                                                                 \
-        /** <summary>
-      *  Static function to create a new instance copying
-      *  from the given array.
-      *  </summary>
-      *  <remarks>
-      *  Providing a null or zero size array will return a null object.
-      *  </remarks>
-      *  <param name="value">the array to create the new instance</param>
-      */                                                                   \
-      inline static m^ Create(array<mt>^ value)                             \
-      {                                                                     \
-      return (value != nullptr /*&& value->Length > 0*/ ? \
-      gcnew m(value) : nullptr);                                        \
-      }                                                                     \
-      /** <summary>
-       *  Static function to create a new instance copying
-       *  from the given array.
-       *  </summary>
-       *  <remarks>
-       *  Providing a null or zero size array will return a null object.
-       *  </remarks>
-       *  <param name="value">the array to create the new instance</param>
-       */                                                                   \
-       inline static m^ Create(array<mt>^ value, System::Int32 length)               \
-      {                                                                     \
-      return (value != nullptr && value->Length > 0 ? \
-      gcnew m(value, length) : nullptr);                                \
-      }                                                                     \
-      /** <summary>
-       * Explicit conversion operator to contained array type.
-       * </summary>
-       */                                                                   \
-       inline static explicit operator array<mt> ^ (m^ value)                 \
-      {                                                                     \
-      return (value != nullptr ? value->Value : nullptr);                 \
-      }                                                                     \
-      \
-      /** <summary>
-       * Factory function to register this class.
-       * </summary>
-       */                                                                   \
-       static IGeodeSerializable^ CreateDeserializable()                        \
-      {                                                                     \
-      return gcnew m();                                                   \
-      }                                                                     \
-      \
-            internal:                                                               \
-              static IGeodeSerializable^ Create(std::shared_ptr<native::Serializable> obj)            \
-      {                                                                     \
-      return (obj != nullptr ? gcnew m(obj) : nullptr);                   \
-      }                                                                     \
-      \
-            private:                                                                \
-            /** <summary>
-             * Allocates a new instance
-             *  </summary>
-             */                                                                   \
-             inline m()                                                            \
-             : CacheableBuiltinArray() { }                                       \
-             /** <summary>
-              * Allocates a new instance copying from the given array.
-              *  </summary>
-              *  <remarks>
-              *  Providing a null or zero size array will return a null object.
-              *  </remarks>
-              *  <param name="value">the array to create the new instance</param>
-              */                                                                   \
-              inline m(array<mt>^ value)                                            \
-              : CacheableBuiltinArray(value) { }                                  \
-              /** <summary>
-               * Allocates a new instance copying given length from the
-               * start of given array.
-               *  </summary>
-               *  <remarks>
-               *  Providing a null or zero size array will return a null object.
-               *  </remarks>
-               *  <param name="value">the array to create the new instance</param>
-               */                                                                   \
-               inline m(array<mt>^ value, System::Int32 length)                              \
-               : CacheableBuiltinArray(value, length) { }                          \
-               inline m(std::shared_ptr<native::Serializable> nativeptr)                            \
-               : CacheableBuiltinArray(nativeptr) { }                              \
-      };
 
 
       // Built-in CacheableKeys
@@ -549,9 +483,9 @@ namespace Apache
 
       // Built-in Cacheable array types
 
-      template <typename NativeArray, typename ManagedType, System::UInt32 GeodeClassId>
+      template <typename NativeArray, typename ManagedType, int8_t DsCode>
       ref class CacheableArray : public CacheableBuiltinArray<
-          NativeArray, NativeArray, ManagedType, GeodeClassId> {
+          NativeArray, NativeArray, ManagedType, DsCode> {
       public:
           /** <summary>
           *  Static function to create a new instance copying
@@ -593,12 +527,12 @@ namespace Apache
           * Factory function to register this class.
           * </summary>
           */
-          static IGeodeSerializable^ CreateDeserializable()
+          static ISerializable^ CreateDeserializable()
           {
               return gcnew CacheableArray();
           }
         internal:
-          static IGeodeSerializable^ Create(std::shared_ptr<native::Serializable> obj)
+          static ISerializable^ Create(std::shared_ptr<native::Serializable> obj)
           {
               return (obj != nullptr ? gcnew CacheableArray(obj) : nullptr);
           }
@@ -636,49 +570,49 @@ namespace Apache
       /// An immutable wrapper for byte arrays that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableBytes = CacheableArray<native::CacheableArray<int8_t, native::GeodeTypeIds::CacheableBytes>, Byte, GeodeClassIds::CacheableBytes>;
+      using CacheableBytes = CacheableArray<native::CacheableArray<int8_t, native::GeodeTypeIds::CacheableBytes>, Byte, GeodeTypeIds::CacheableBytes>;
 
       /// <summary>
       /// An immutable wrapper for array of doubles that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableDoubleArray = CacheableArray<native::CacheableArray<double, native::GeodeTypeIds::CacheableDoubleArray>, Double, GeodeClassIds::CacheableDoubleArray>;
+      using CacheableDoubleArray = CacheableArray<native::CacheableArray<double, native::GeodeTypeIds::CacheableDoubleArray>, Double, GeodeTypeIds::CacheableDoubleArray>;
 
       /// <summary>
       /// An immutable wrapper for array of floats that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableFloatArray = CacheableArray<native::CacheableArray<float, native::GeodeTypeIds::CacheableFloatArray>, Single, GeodeClassIds::CacheableFloatArray>;
+      using CacheableFloatArray = CacheableArray<native::CacheableArray<float, native::GeodeTypeIds::CacheableFloatArray>, Single, GeodeTypeIds::CacheableFloatArray>;
 
       /// <summary>
       /// An immutable wrapper for array of 16-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableInt16Array = CacheableArray<native::CacheableArray<int16_t, native::GeodeTypeIds::CacheableInt16Array>, System::Int16, GeodeClassIds::CacheableInt16Array>;
+      using CacheableInt16Array = CacheableArray<native::CacheableArray<int16_t, native::GeodeTypeIds::CacheableInt16Array>, System::Int16, GeodeTypeIds::CacheableInt16Array>;
 
       /// <summary>
       /// An immutable wrapper for array of 32-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableInt32Array = CacheableArray<native::CacheableArray<int32_t, native::GeodeTypeIds::CacheableInt32Array>, System::Int32, GeodeClassIds::CacheableInt32Array>;
+      using CacheableInt32Array = CacheableArray<native::CacheableArray<int32_t, native::GeodeTypeIds::CacheableInt32Array>, System::Int32, GeodeTypeIds::CacheableInt32Array>;
 
       /// <summary>
       /// An immutable wrapper for array of 64-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableInt64Array = CacheableArray<native::CacheableArray<int64_t, native::GeodeTypeIds::CacheableInt64Array>, System::Int64, GeodeClassIds::CacheableInt64Array>;
+      using CacheableInt64Array = CacheableArray<native::CacheableArray<int64_t, native::GeodeTypeIds::CacheableInt64Array>, System::Int64, GeodeTypeIds::CacheableInt64Array>;
 
       /// <summary>
       /// An immutable wrapper for array of booleans that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using BooleanArray = CacheableArray<native::CacheableArray<bool, native::GeodeTypeIds::BooleanArray>, bool, GeodeClassIds::BooleanArray>;
+      using BooleanArray = CacheableArray<native::CacheableArray<bool, native::GeodeTypeIds::BooleanArray>, bool, GeodeTypeIds::BooleanArray>;
 
       /// <summary>
       /// An immutable wrapper for array of 16-bit characters that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CharArray = CacheableArray<native::CacheableArray<char16_t, native::GeodeTypeIds::CharArray>, Char, GeodeClassIds::CharArray>;
+      using CharArray = CacheableArray<native::CacheableArray<char16_t, native::GeodeTypeIds::CharArray>, Char, GeodeTypeIds::CharArray>;
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

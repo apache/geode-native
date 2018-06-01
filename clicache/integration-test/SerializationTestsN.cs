@@ -70,9 +70,9 @@ namespace Apache.Geode.Client.UnitTests
       base.EndTest();
     }
 
-    private IGeodeSerializable CreateOtherType(int i, int otherType)
+    private ISerializable CreateOtherType(int i, int otherType)
     {
-      IGeodeSerializable ot;
+      ISerializable ot;
       switch (otherType)
       {
         case OTHER_TYPE1: ot = new OtherType(i, i + 20000); break;
@@ -92,19 +92,19 @@ namespace Apache.Geode.Client.UnitTests
     {
       CacheHelper.CreateTCRegion2<object, object>(RegionNames[0], true, false,
         null, locators, false);
-      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType22.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType4.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType2.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType42.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType43.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType22.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType4.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType2.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType42.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType43.CreateDeserializable);
     }
 
     public void DoNPuts(int n)
     {
       try
       {
-        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable);
         Assert.Fail("Expected exception in registering the type again.");
       }
       catch (IllegalStateException ex)
@@ -126,7 +126,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        CacheHelper.DCache.TypeRegistry.RegisterTypeGeneric(OtherType.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable);
         Assert.Fail("Expected exception in registering the type again.");
       }
       catch (IllegalStateException ex)
@@ -147,7 +147,7 @@ namespace Apache.Geode.Client.UnitTests
       IRegion<object, object> region = CacheHelper.GetVerifyRegion<object, object>(RegionNames[0]);
       for (int i = 0; i < n; i++)
       {
-        IGeodeSerializable ot = CreateOtherType(i, otherType);
+        ISerializable ot = CreateOtherType(i, otherType);
         region[i + 10] = ot;
       }
     }
@@ -158,7 +158,7 @@ namespace Apache.Geode.Client.UnitTests
       for (int i = 0; i < n; i++)
       {
         object val = region[i + 10];
-        IGeodeSerializable ot = CreateOtherType(i, otherType);
+        ISerializable ot = CreateOtherType(i, otherType);
         Assert.IsTrue(ot.Equals(val), "Found unexpected value");
       }
     }
@@ -385,7 +385,7 @@ namespace Apache.Geode.Client.UnitTests
 
   };
 
-  public class OtherType : IGeodeSerializable
+  public class OtherType : IDataSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -427,18 +427,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
-    {
-      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
-      orig.ToData(dout);
-
-      //DataInput din = new DataInput(dout.GetBuffer());
-      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
-      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
-      return dup;
-    }
-
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {
@@ -502,7 +491,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {
@@ -512,7 +501,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType();
     }
@@ -533,7 +522,7 @@ namespace Apache.Geode.Client.UnitTests
     }
   }
 
-  public class OtherType2 : IGeodeSerializable
+  public class OtherType2 : IDataSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -574,18 +563,7 @@ namespace Apache.Geode.Client.UnitTests
         return m_struct;
       }
     }
-
-    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
-    {
-      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
-      orig.ToData(dout);
-
-      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
-      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
-      return dup;
-    }
-
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {
@@ -649,7 +627,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {
@@ -659,7 +637,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType2();
     }
@@ -681,7 +659,7 @@ namespace Apache.Geode.Client.UnitTests
 
   }
 
-  public class OtherType22 : IGeodeSerializable
+  public class OtherType22 : IDataSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -723,17 +701,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
-    {
-      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
-      orig.ToData(dout);
-
-      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
-      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
-      return dup;
-    }
-
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {
@@ -797,7 +765,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {
@@ -807,7 +775,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType22();
     }
@@ -828,7 +796,7 @@ namespace Apache.Geode.Client.UnitTests
     }
   }
 
-  public class OtherType4 : IGeodeSerializable
+  public class OtherType4 : IDataSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -870,17 +838,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
-    {
-      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
-      orig.ToData(dout);
-
-      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
-      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
-      return dup;
-    }
-
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {
@@ -944,7 +902,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {
@@ -954,7 +912,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType4();
     }
@@ -976,7 +934,7 @@ namespace Apache.Geode.Client.UnitTests
 
   }
 
-  public class OtherType42 : IGeodeSerializable
+  public class OtherType42 : IDataSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -1018,17 +976,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
-    {
-      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
-      orig.ToData(dout);
-
-      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
-      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
-      return dup;
-    }
-
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {
@@ -1092,7 +1040,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {
@@ -1102,7 +1050,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType42();
     }
@@ -1124,7 +1072,7 @@ namespace Apache.Geode.Client.UnitTests
 
   }
 
-  public class OtherType43 : IGeodeSerializable
+  public class OtherType43 : IDataSerializable
   {
     private CData m_struct;
     private ExceptionType m_exType;
@@ -1166,17 +1114,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public static IGeodeSerializable Duplicate(IGeodeSerializable orig)
-    {
-      DataOutput dout = CacheHelper.DCache.CreateDataOutput();
-      orig.ToData(dout);
-
-      DataInput din = CacheHelper.DCache.CreateDataInput(dout.GetBuffer());
-      IGeodeSerializable dup = (IGeodeSerializable)din.ReadObject();
-      return dup;
-    }
-
-    #region IGeodeSerializable Members
+    #region IDataSerializable Members
 
     public void FromData(DataInput input)
     {
@@ -1240,7 +1178,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public UInt32 ClassId
+    public Int32 ClassId
     {
       get
       {
@@ -1250,7 +1188,7 @@ namespace Apache.Geode.Client.UnitTests
 
     #endregion
 
-    public static IGeodeSerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType43();
     }

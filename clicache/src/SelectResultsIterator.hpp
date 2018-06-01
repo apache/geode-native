@@ -27,7 +27,7 @@ namespace Apache
   {
     namespace Client
     {
-      interface class IGeodeSerializable;
+      interface class ISerializable;
 
       /// <summary>
       /// Iterator for a query result.

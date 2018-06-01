@@ -33,7 +33,7 @@ namespace Apache
     {
 
       /// <summary>
-      /// A mutable <c>IGeodeSerializable</c> vector wrapper that can serve as
+      /// A mutable <c>ISerializable</c> vector wrapper that can serve as
       /// a distributable object for caching. This class extends .NET generic
       /// <c>List</c> class.
       /// </summary>
@@ -66,7 +66,7 @@ namespace Apache
         }
 
 
-        // Region: IGeodeSerializable Members
+        // Region: ISerializable Members
 
         /// <summary>
         /// Returns the classId of the instance being serialized.
@@ -74,20 +74,20 @@ namespace Apache
         /// type to create and deserialize into.
         /// </summary>
         /// <returns>the classId</returns>
-        virtual property System::UInt32 ClassId
+        property int8_t DsCode
         {
-          virtual System::UInt32 get() override
+          int8_t get() override
           {
-            return GeodeClassIds::CacheableArrayList;
+            return native::GeodeTypeIds::CacheableArrayList;
           }
         }
 
-        // End Region: IGeodeSerializable Members
+        // End Region: ISerializable Members
 
         /// <summary>
         /// Factory function to register this class.
         /// </summary>
-        static IGeodeSerializable^ CreateDeserializable()
+        static ISerializable^ CreateDeserializable()
         {
           return gcnew CacheableArrayList(gcnew System::Collections::Generic::List<Object^>());
         }

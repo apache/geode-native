@@ -40,7 +40,7 @@ namespace Apache
     {
       namespace native = apache::geode::client;
 
-			interface class IGeodeSerializable;
+			interface class ISerializable;
       
       /// <summary>
       /// This class encapsulates events that occur for cq.

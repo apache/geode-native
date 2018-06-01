@@ -18,7 +18,6 @@
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/ExceptionTypes.hpp>
-#include <geode/GeodeTypeIds.hpp>
 #include "GeodeTypeIdsImpl.hpp"
 
 namespace apache {
@@ -46,12 +45,6 @@ void CacheableObjectArray::fromData(DataInput& input) {
       push_back(obj);
     }
   }
-}
-
-int32_t CacheableObjectArray::classId() const { return 0; }
-
-int8_t CacheableObjectArray::typeId() const {
-  return GeodeTypeIds::CacheableObjectArray;
 }
 
 size_t CacheableObjectArray::objectSize() const {

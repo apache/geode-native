@@ -19,9 +19,9 @@
 #include "PdxReaderWithTypeCollector.hpp"
 #include "../begin_native.hpp"
 #include <geode/GeodeTypeIds.hpp>
+#include <PdxTypes.hpp>
 #include "../end_native.hpp"
 
-#include "../GeodeClassIds.hpp"
 using namespace System;
 
 namespace Apache
@@ -30,16 +30,17 @@ namespace Apache
   {
     namespace Client
     {
-
       namespace Internal
       {
-        void PdxReaderWithTypeCollector::checkType(String^ fieldName, Byte typeId, String^ fieldType)
+        namespace native = apache::geode::client;
+
+        void PdxReaderWithTypeCollector::checkType(String^ fieldName, PdxFieldTypes typeId, String^ fieldType)
         {
           PdxFieldType^ pft = m_pdxType->GetPdxField(fieldName);
 
           if (pft != nullptr)
           {
-            if (typeId != pft->TypeId)
+            if (static_cast<int8_t>(typeId) != pft->TypeId)
             {
               throw gcnew IllegalStateException("Expected " + fieldType + " field but found field of type " + pft);
             }
@@ -48,8 +49,8 @@ namespace Apache
 
         SByte PdxReaderWithTypeCollector::ReadByte(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::BYTE, "byte");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxTypes::BYTE, GeodeClassIds::BYTE_SIZE);
+          checkType(fieldName, PdxFieldTypes::BYTE, "byte");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -64,8 +65,8 @@ namespace Apache
 
         SByte PdxReaderWithTypeCollector::ReadSByte(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::BYTE, "byte");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxTypes::BYTE, GeodeClassIds::BYTE_SIZE);
+          checkType(fieldName, PdxFieldTypes::BYTE, "byte");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -79,8 +80,8 @@ namespace Apache
 
         Boolean PdxReaderWithTypeCollector::ReadBoolean(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::BOOLEAN, "boolean");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "boolean", PdxTypes::BOOLEAN, GeodeClassIds::BOOLEAN_SIZE);
+          checkType(fieldName, PdxFieldTypes::BOOLEAN, "boolean");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "boolean", PdxFieldTypes::BOOLEAN, native::PdxTypes::BOOLEAN_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           m_dataInput->AdvanceCursorPdx(position);
           bool retVal = PdxLocalReader::ReadBoolean(fieldName);
@@ -90,8 +91,8 @@ namespace Apache
 
         Char PdxReaderWithTypeCollector::ReadChar(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::CHAR, "char");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "char", PdxTypes::CHAR, GeodeClassIds::CHAR_SIZE);
+          checkType(fieldName, PdxFieldTypes::CHAR, "char");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR, native::PdxTypes::CHAR_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           m_dataInput->AdvanceCursorPdx(position);
           Char retVal = PdxLocalReader::ReadChar(fieldName);
@@ -101,8 +102,8 @@ namespace Apache
 
         System::UInt16 PdxReaderWithTypeCollector::ReadUInt16(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::SHORT, "short");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "short", PdxTypes::SHORT, GeodeClassIds::SHORT_SIZE);
+          checkType(fieldName, PdxFieldTypes::SHORT, "short");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT, native::PdxTypes::SHORT_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -116,8 +117,8 @@ namespace Apache
 
         System::UInt32 PdxReaderWithTypeCollector::ReadUInt32(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::INT, "int");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "int", PdxTypes::INT, GeodeClassIds::INTEGER_SIZE);
+          checkType(fieldName, PdxFieldTypes::INT, "int");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT, native::PdxTypes::INTEGER_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -131,8 +132,8 @@ namespace Apache
 
         System::UInt64 PdxReaderWithTypeCollector::ReadUInt64(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::LONG, "long");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "long", PdxTypes::LONG, GeodeClassIds::LONG_SIZE);
+          checkType(fieldName, PdxFieldTypes::LONG, "long");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG, native::PdxTypes::LONG_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -146,8 +147,8 @@ namespace Apache
 
         short PdxReaderWithTypeCollector::ReadShort(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::SHORT, "short");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "short", PdxTypes::SHORT, GeodeClassIds::SHORT_SIZE);
+          checkType(fieldName, PdxFieldTypes::SHORT, "short");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT, native::PdxTypes::SHORT_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -161,8 +162,8 @@ namespace Apache
 
         Int32 PdxReaderWithTypeCollector::ReadInt(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::INT, "int");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "int", PdxTypes::INT, GeodeClassIds::INTEGER_SIZE);
+          checkType(fieldName, PdxFieldTypes::INT, "int");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT, native::PdxTypes::INTEGER_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -176,8 +177,8 @@ namespace Apache
 
         Int64 PdxReaderWithTypeCollector::ReadLong(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::LONG, "long");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "long", PdxTypes::LONG, GeodeClassIds::LONG_SIZE);
+          checkType(fieldName, PdxFieldTypes::LONG, "long");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG, native::PdxTypes::LONG_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -191,8 +192,8 @@ namespace Apache
 
         float PdxReaderWithTypeCollector::ReadFloat(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::FLOAT, "float");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "float", PdxTypes::FLOAT, GeodeClassIds::FLOAT_SIZE);
+          checkType(fieldName, PdxFieldTypes::FLOAT, "float");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "float", PdxFieldTypes::FLOAT, native::PdxTypes::FLOAT_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -206,8 +207,8 @@ namespace Apache
 
         double PdxReaderWithTypeCollector::ReadDouble(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::DOUBLE, "double");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "double", PdxTypes::DOUBLE, GeodeClassIds::DOUBLE_SIZE);
+          checkType(fieldName, PdxFieldTypes::DOUBLE, "double");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "double", PdxFieldTypes::DOUBLE, native::PdxTypes::DOUBLE_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -221,8 +222,8 @@ namespace Apache
 
         String^ PdxReaderWithTypeCollector::ReadString(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::STRING, "String");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "String", PdxTypes::STRING);
+          checkType(fieldName, PdxFieldTypes::STRING, "String");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "String", PdxFieldTypes::STRING);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -236,8 +237,8 @@ namespace Apache
 
         String^ PdxReaderWithTypeCollector::ReadUTFHuge(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::STRING, "String");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "String", PdxTypes::STRING);
+          checkType(fieldName, PdxFieldTypes::STRING, "String");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "String", PdxFieldTypes::STRING);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -251,8 +252,8 @@ namespace Apache
 
         String^ PdxReaderWithTypeCollector::ReadASCIIHuge(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::STRING, "String");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "String", PdxTypes::STRING);
+          checkType(fieldName, PdxFieldTypes::STRING, "String");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "String", PdxFieldTypes::STRING);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -267,8 +268,8 @@ namespace Apache
         Object^ PdxReaderWithTypeCollector::ReadObject(String^ fieldName)
         {
           //field is collected after reading
-          checkType(fieldName, PdxTypes::OBJECT, "Object");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "Object"/*retVal->GetType()->FullName*/, PdxTypes::OBJECT);
+          checkType(fieldName, PdxFieldTypes::OBJECT, "Object");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "Object"/*retVal->GetType()->FullName*/, PdxFieldTypes::OBJECT);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -281,26 +282,10 @@ namespace Apache
           return nullptr;
         }
 
-        //TODO:
-        //void WriteMap( String^ fieldName, System::Collections::IDictionary^ map );
-
-        void PdxReaderWithTypeCollector::ReadCollection(String^ fieldName, System::Collections::IList^ obj)
-        {
-          checkType(fieldName, apache::geode::client::GeodeTypeIds::CacheableArrayList, "Collection");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, /*obj->GetType()->FullName*/"Collection", apache::geode::client::GeodeTypeIds::CacheableArrayList);
-          int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
-          if (position != -1)
-          {
-            m_dataInput->AdvanceCursorPdx(position);
-            PdxLocalReader::ReadCollection(fieldName, obj);
-            m_dataInput->RewindCursorPdx(position);
-          }
-        }
-
         System::DateTime PdxReaderWithTypeCollector::ReadDate(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::DATE, "Date");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "Date", PdxTypes::DATE, GeodeClassIds::DATE_SIZE);
+          checkType(fieldName, PdxFieldTypes::DATE, "Date");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE, native::PdxTypes::DATE_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -312,12 +297,11 @@ namespace Apache
           DateTime dt(0);
           return dt;
         }
-        //void writeFile(String fieldName, File file) ;
 
         array<bool>^ PdxReaderWithTypeCollector::ReadBooleanArray(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::BOOLEAN_ARRAY, "boolean[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "boolean[]", PdxTypes::BOOLEAN_ARRAY);
+          checkType(fieldName, PdxFieldTypes::BOOLEAN_ARRAY, "boolean[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "boolean[]", PdxFieldTypes::BOOLEAN_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -331,8 +315,8 @@ namespace Apache
 
         array<Char>^ PdxReaderWithTypeCollector::ReadCharArray(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::CHAR_ARRAY, "char[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "char[]", PdxTypes::CHAR_ARRAY);
+          checkType(fieldName, PdxFieldTypes::CHAR_ARRAY, "char[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "char[]", PdxFieldTypes::CHAR_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -346,8 +330,8 @@ namespace Apache
 
         array<Byte>^ PdxReaderWithTypeCollector::ReadByteArray(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::BYTE_ARRAY, "byte[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "byte[]", PdxTypes::BYTE_ARRAY);
+          checkType(fieldName, PdxFieldTypes::BYTE_ARRAY, "byte[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "byte[]", PdxFieldTypes::BYTE_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -361,8 +345,8 @@ namespace Apache
 
         array<SByte>^ PdxReaderWithTypeCollector::ReadSByteArray(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::BYTE_ARRAY, "byte[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "byte[]", PdxTypes::BYTE_ARRAY);
+          checkType(fieldName, PdxFieldTypes::BYTE_ARRAY, "byte[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "byte[]", PdxFieldTypes::BYTE_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -376,8 +360,8 @@ namespace Apache
 
         array<short>^ PdxReaderWithTypeCollector::ReadShortArray(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::SHORT_ARRAY, "short[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "short[]", PdxTypes::SHORT_ARRAY);
+          checkType(fieldName, PdxFieldTypes::SHORT_ARRAY, "short[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "short[]", PdxFieldTypes::SHORT_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -391,8 +375,8 @@ namespace Apache
 
         array<System::UInt16>^ PdxReaderWithTypeCollector::ReadUnsignedShortArray(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::SHORT_ARRAY, "short[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "short[]", PdxTypes::SHORT_ARRAY);
+          checkType(fieldName, PdxFieldTypes::SHORT_ARRAY, "short[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "short[]", PdxFieldTypes::SHORT_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -406,8 +390,8 @@ namespace Apache
 
         array<System::Int32>^ PdxReaderWithTypeCollector::ReadIntArray(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::INT_ARRAY, "int[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "int[]", PdxTypes::INT_ARRAY);
+          checkType(fieldName, PdxFieldTypes::INT_ARRAY, "int[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "int[]", PdxFieldTypes::INT_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -421,8 +405,8 @@ namespace Apache
 
         array<System::UInt32>^ PdxReaderWithTypeCollector::ReadUnsignedIntArray(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::INT_ARRAY, "int[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "int[]", PdxTypes::INT_ARRAY);
+          checkType(fieldName, PdxFieldTypes::INT_ARRAY, "int[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "int[]", PdxFieldTypes::INT_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -436,8 +420,8 @@ namespace Apache
 
         array<Int64>^ PdxReaderWithTypeCollector::ReadLongArray(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::LONG_ARRAY, "long[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "long[]", PdxTypes::LONG_ARRAY);
+          checkType(fieldName, PdxFieldTypes::LONG_ARRAY, "long[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "long[]", PdxFieldTypes::LONG_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -451,8 +435,8 @@ namespace Apache
 
         array<System::UInt64>^ PdxReaderWithTypeCollector::ReadUnsignedLongArray(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::LONG_ARRAY, "long[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "long[]", PdxTypes::LONG_ARRAY);
+          checkType(fieldName, PdxFieldTypes::LONG_ARRAY, "long[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "long[]", PdxFieldTypes::LONG_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -466,8 +450,8 @@ namespace Apache
 
         array<float>^ PdxReaderWithTypeCollector::ReadFloatArray(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::FLOAT_ARRAY, "float[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "float[]", PdxTypes::FLOAT_ARRAY);
+          checkType(fieldName, PdxFieldTypes::FLOAT_ARRAY, "float[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "float[]", PdxFieldTypes::FLOAT_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -481,8 +465,8 @@ namespace Apache
 
         array<double>^ PdxReaderWithTypeCollector::ReadDoubleArray(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::DOUBLE_ARRAY, "double[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "double[]", PdxTypes::DOUBLE_ARRAY);
+          checkType(fieldName, PdxFieldTypes::DOUBLE_ARRAY, "double[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "double[]", PdxFieldTypes::DOUBLE_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -496,8 +480,8 @@ namespace Apache
 
         array<String^>^ PdxReaderWithTypeCollector::ReadStringArray(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::STRING_ARRAY, "String[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "String[]", PdxTypes::STRING_ARRAY);
+          checkType(fieldName, PdxFieldTypes::STRING_ARRAY, "String[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "String[]", PdxFieldTypes::STRING_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -511,8 +495,8 @@ namespace Apache
 
         List<Object^>^ PdxReaderWithTypeCollector::ReadObjectArray(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::OBJECT_ARRAY, "Object[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "Object[]", PdxTypes::OBJECT_ARRAY);
+          checkType(fieldName, PdxFieldTypes::OBJECT_ARRAY, "Object[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "Object[]", PdxFieldTypes::OBJECT_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -527,8 +511,8 @@ namespace Apache
 
         array<array<Byte>^>^ PdxReaderWithTypeCollector::ReadArrayOfByteArrays(String^ fieldName)
         {
-          checkType(fieldName, PdxTypes::ARRAY_OF_BYTE_ARRAYS, "byte[][]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "byte[][]", PdxTypes::ARRAY_OF_BYTE_ARRAYS);
+          checkType(fieldName, PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS, "byte[][]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "byte[][]", PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -540,11 +524,7 @@ namespace Apache
           return nullptr;
         }
 
-        //TODO:
-        //void WriteEnum(String^ fieldName, Enum e) ;
-        //void WriteInetAddress(String^ fieldName, InetAddress address);
-      }  // namespace Client
-    }  // namespace Geode
-  }  // namespace Apache
-
-}
+      }  // namepsace Internal
+    }  // namespace Client
+  }  // namespace Geode
+}  // namespace Apache

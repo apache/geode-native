@@ -33,15 +33,19 @@ namespace client {
 
 class PdxReader;
 class PdxWriter;
-class DataInput;
-class DataOutput;
 
 class APACHE_GEODE_EXPORT PdxSerializable
-    : public CacheableKey,
+    : public virtual Serializable,
+      public virtual CacheableKey,
       public std::enable_shared_from_this<PdxSerializable> {
  public:
-  PdxSerializable() = default;
-  ~PdxSerializable() noexcept override {}
+  ~PdxSerializable() noexcept override{};
+
+  std::string toString() const override;
+
+  bool operator==(const CacheableKey& other) const override;
+
+  int32_t hashcode() const override;
 
   /**
    *@brief serialize this object in geode PDX format
@@ -54,47 +58,6 @@ class APACHE_GEODE_EXPORT PdxSerializable
    *@param PdxReader to Deserialize the PDX object
    **/
   virtual void fromData(PdxReader& input) = 0;
-
-  /**
-   *@brief return the typeId byte of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and deserialize into.
-   *
-   * Note that this should not be overridden by custom implementations
-   * and is reserved only for builtin types.
-   */
-  virtual int8_t typeId() const override;
-
-  /** return true if this key matches other. */
-  virtual bool operator==(const CacheableKey& other) const override;
-
-  /** return the hashcode for this key. */
-  virtual int32_t hashcode() const override;
-
-  /**
-   *@brief serialize this object
-   **/
-  void toData(DataOutput& output) const override;
-
-  /**
-   *@brief deserialize this object, typical implementation should return
-   * the 'this' pointer.
-   **/
-  virtual void fromData(DataInput& input) override;
-
-  /**
-   *@brief return the classId of the instance being serialized.
-   * This is used by deserialization to determine what instance
-   * type to create and derserialize into.
-   */
-  virtual int32_t classId() const override { return 0x10; }
-
-  /**
-   * Display this object as 'string', which depends on the implementation in
-   * the subclasses.
-   * The default implementation renders the classname.
-   */
-  virtual std::string toString() const override;
 
   /**
    * Get the Type for the Object. Equivalent to the C# Type->GetType() API.

@@ -73,7 +73,7 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.CreateDistribRegion(TestRegion, false, true);
       m_region = CacheHelper.GetVerifyRegion(TestRegion);
       DoGets(m_region, num);
-      IGeodeSerializable[] arr = m_region.GetKeys();
+      ISerializable[] arr = m_region.GetKeys();
       Assert.AreEqual(num, arr.Length);
     }
 
@@ -83,7 +83,7 @@ namespace Apache.Geode.Client.UnitTests
       Util.Log("Calling doGets for verify");
       //Thread.Sleep(2000);
       //doGets(m_region, load);
-      IGeodeSerializable[] arr = m_region.GetKeys();
+      ISerializable[] arr = m_region.GetKeys();
       Assert.AreEqual(num, arr.Length);
     }
 
@@ -97,7 +97,7 @@ namespace Apache.Geode.Client.UnitTests
       Thread.Sleep(100);
       DoGets(m_region, num);
       Assert.AreEqual(num, m_ldr.Loads);
-      IGeodeSerializable[] arr = m_region.GetKeys();
+      ISerializable[] arr = m_region.GetKeys();
       Assert.AreEqual(num, arr.Length);
     }
 

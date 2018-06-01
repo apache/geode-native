@@ -21,7 +21,7 @@
 using namespace System;
 #include "../DataOutput.hpp"
 #include "../DataInput.hpp"
-#include "../GeodeClassIds.hpp"
+#include "../IDataSerializableInternal.hpp"
 
 namespace Apache
 {
@@ -32,7 +32,7 @@ namespace Apache
 
       namespace Internal
       {
-        public ref class PdxFieldType : IGeodeSerializable
+        private ref class PdxFieldType : IDataSerializableInternal
         {
         private:
           String^ m_fieldName;
@@ -127,18 +127,18 @@ namespace Apache
           }
 
           virtual bool Equals(Object^ otherObj) override;
+          
           virtual Int32 GetHashCode() override;
 
           virtual void ToData(DataOutput^ output);
+          
           virtual void FromData(DataInput^ input);
+       
           virtual property System::UInt64 ObjectSize
           {
             System::UInt64 get(){ return 0; }
           }
-          virtual property System::UInt32 ClassId
-          {
-            System::UInt32 get(){ return m_typeId; }
-          }
+       
           virtual String^ ToString() override
           {
             return "PdxFieldName:" + m_fieldName + ", TypeId: " + m_typeId + ", VarLenFieldIdx:" + m_varLenFieldIdx + ", sequenceid:" + m_sequenceId;

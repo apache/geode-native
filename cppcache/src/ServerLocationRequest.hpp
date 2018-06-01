@@ -20,21 +20,18 @@
 #ifndef GEODE_SERVERLOCATIONREQUEST_H_
 #define GEODE_SERVERLOCATIONREQUEST_H_
 
-#include <geode/Serializable.hpp>
+#include <geode/internal/DataSerializableFixedId.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
-class ServerLocationRequest : public Serializable {
+
+class ServerLocationRequest : public internal::DataSerializableFixedId {
  public:
-  ServerLocationRequest() : Serializable() {}
-  void toData(DataOutput& output) const override = 0;
-  void fromData(DataInput& input) override = 0;
-  int32_t classId() const override;
-  int8_t typeId() const override = 0;
-  int8_t DSFID() const override;
-  size_t objectSize() const override = 0;
+  ServerLocationRequest() = default;
   ~ServerLocationRequest() override = default;
+
+  void fromData(DataInput&) final {}
 };
 
 }  // namespace client

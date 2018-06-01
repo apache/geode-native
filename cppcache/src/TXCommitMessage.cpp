@@ -113,12 +113,6 @@ void TXCommitMessage::fromData(DataInput& input) {
 
 void TXCommitMessage::toData(DataOutput&) const {}
 
-int32_t TXCommitMessage::classId() const { return 0; }
-
-int8_t TXCommitMessage::typeId() const {
-  return static_cast<int8_t>(GeodeTypeIdsImpl::TXCommitMessage);
-}
-
 std::shared_ptr<Serializable> TXCommitMessage::create(
     MemberListForVersionStamp& memberListForVersionStamp) {
   return std::make_shared<TXCommitMessage>(memberListForVersionStamp);

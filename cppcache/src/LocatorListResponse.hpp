@@ -30,6 +30,7 @@ namespace geode {
 namespace client {
 
 class DataInput;
+
 class LocatorListResponse : public ServerLocationResponse {
  private:
   std::vector<ServerLocation> m_locators;
@@ -37,17 +38,14 @@ class LocatorListResponse : public ServerLocationResponse {
   void readList(DataInput& input);
 
  public:
-  LocatorListResponse()
-      :                         /* adonre
-                                 * CID 28938: Uninitialized scalar field (UNINIT_CTOR) *
-                                 */
-        m_isBalanced(false) {}  // Default constru needed for de-serialization
+  LocatorListResponse() : m_isBalanced(false) {}
+  ~LocatorListResponse() override = default;
+
   void fromData(DataInput& input) override;
-  int8_t typeId() const override;
-  size_t objectSize() const override;
+  int32_t getDSFID() const override;
+
   const std::vector<ServerLocation>& getLocators() const;
   bool isBalanced() const;
-  ~LocatorListResponse() override = default;
   static std::shared_ptr<Serializable> create();
 };
 

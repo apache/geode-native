@@ -179,7 +179,9 @@ void TcrMessage::readVersionTag(
 
 void TcrMessage::readIntPart(DataInput& input, uint32_t* intValue) {
   uint32_t intLen = input.readInt32();
-  if (intLen != 4) throw Exception("int length should have been 4");
+  if (intLen != 4) {
+    throw Exception("int length should have been 4");
+  }
   if (input.read()) throw Exception("Integer is not an object");
   *intValue = input.readInt32();
 }
@@ -346,7 +348,7 @@ int64_t TcrMessage::getConnectionId(TcrConnection* conn) {
 
 int64_t TcrMessage::getUniqueId(TcrConnection* conn) {
   if (m_value != nullptr) {
-    auto encryptBytes = std::static_pointer_cast<CacheableBytes>(m_value);
+    auto encryptBytes = std::dynamic_pointer_cast<CacheableBytes>(m_value);
 
     auto tmp = conn->decryptBytes(encryptBytes);
 
@@ -374,9 +376,9 @@ inline void TcrMessage::readKeyPart(DataInput& input) {
   const auto isObj = input.readBoolean();
   if (lenObj > 0) {
     if (isObj) {
-      m_key = std::static_pointer_cast<CacheableKey>(input.readObject());
+      m_key = std::dynamic_pointer_cast<CacheableKey>(input.readObject());
     } else {
-      m_key = std::static_pointer_cast<CacheableKey>(
+      m_key = std::dynamic_pointer_cast<CacheableKey>(
           readCacheableString(input, lenObj));
     }
   }
@@ -462,34 +464,19 @@ void TcrMessage::writeObjectPart(
     const std::vector<std::shared_ptr<CacheableKey>>* getAllKeyList) {
   //  no nullptr check since for some messages nullptr object may be valid
   uint32_t size = 0;
-  m_request->writeInt(
-      static_cast<int32_t>(size));  // write a dummy size of 4 bytes.
-  // check if the type is a CacheableBytes
+  // write a dummy size of 4 bytes.
+  m_request->writeInt(static_cast<int32_t>(size));
+
   int8_t isObject = 1;
 
-  if (se != nullptr && se->typeId() == GeodeTypeIds::CacheableBytes) {
+  // check if the type is a CacheableBytes
+  if (auto cacheableBytes = std::dynamic_pointer_cast<CacheableBytes>(se)) {
     // for an emty byte array write EMPTY_BYTEARRAY_CODE(2) to is object
-    try {
-      size_t byteArrLength = -1;
-
-      if (auto cacheableBytes = std::dynamic_pointer_cast<CacheableBytes>(se)) {
-        byteArrLength = cacheableBytes->length();
-      } else {
-        auto classname =
-            Utils::nullSafeToString(std::static_pointer_cast<CacheableKey>(se));
-        if (classname.find("apache::geode::client::ManagedCacheableKey") !=
-            std::string::npos) {
-          byteArrLength = se->objectSize();
-        }
-      }
-
-      if (byteArrLength == 0) {
-        isObject = 2;
-        m_request->write(isObject);
-        return;
-      }
-    } catch (const apache::geode::client::Exception& ex) {
-      LOGDEBUG("Exception in writing EMPTY_BYTE_ARRAY : %s", ex.what());
+    auto byteArrLength = cacheableBytes->length();
+    if (byteArrLength == 0) {
+      isObject = 2;
+      m_request->write(isObject);
+      return;
     }
     isObject = 0;
   }
@@ -505,7 +492,10 @@ void TcrMessage::writeObjectPart(
     auto deltaPtr = std::dynamic_pointer_cast<Delta>(se);
     deltaPtr->toDelta(*m_request);
   } else if (isObject) {
-    if (!callToData) {
+    if (callToData) {
+      m_request->getSerializationRegistry().serializeWithoutHeader(se.get(),
+                                                                   *m_request);
+    } else {
       if (getAllKeyList != nullptr) {
         int8_t typeId = GeodeTypeIds::CacheableObjectArray;
         m_request->write(typeId);
@@ -518,8 +508,6 @@ void TcrMessage::writeObjectPart(
       } else {
         m_request->writeObject(se, isDelta);
       }
-    } else {
-      se->toData(*m_request);
     }
   } else {
     // TODO::
@@ -807,7 +795,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
           // of populating cache with registerAllKeys(), so that should be
           // documented since rolling that back may not be a good idea either.
           if (const auto& ex = m_chunkedResult->getException()) {
-            throw *ex;
+            throw Exception(*ex);
           }
         }
       } else if (TcrMessage::CQ_EXCEPTION_TYPE == m_msgType ||
@@ -1866,39 +1854,41 @@ TcrMessageRegisterInterestList::TcrMessageRegisterInterestList(
   m_isDurable = isDurable;
   m_receiveValues = receiveValues;
 
-  uint32_t numInItrestList = static_cast<int32_t>(keys.size());
-  GF_R_ASSERT(numInItrestList != 0);
-  uint32_t numOfParts = 2 + numInItrestList;
+  writeHeader(m_msgType, 6);
 
-  numOfParts += 2 - numInItrestList;
-
-  numOfParts += 2;
-  writeHeader(m_msgType, numOfParts);
+  // Part 1
   writeRegionPart(m_regionName);
+
+  // Part 2
   writeInterestResultPolicyPart(interestPolicy);
 
+  // Part 3
   writeBytePart(isDurable ? 1 : 0);  // keepalive
-  auto cal = CacheableArrayList::create();
 
-  for (uint32_t i = 0; i < numInItrestList; i++) {
-    if (keys[i] == nullptr) {
+  // Part 4
+  auto cal = CacheableArrayList::create();
+  for (auto&& key : keys) {
+    if (key == nullptr) {
       throw IllegalArgumentException(
           "keys in the interest list cannot be nullptr");
     }
-    cal->push_back(keys[i]);
+    cal->push_back(key);
   }
-
   writeObjectPart(cal);
 
+  // Part 5
   int8_t bytes[2];
   std::shared_ptr<CacheableBytes> byteArr = nullptr;
   bytes[0] = receiveValues ? 0 : 1;  // reveive values
   byteArr = CacheableBytes::create(std::vector<int8_t>(bytes, bytes + 1));
   writeObjectPart(byteArr);
+
+  // Part 6
   bytes[0] = isCachingEnabled ? 1 : 0;  // region policy
   bytes[1] = 0;                         // serialize values
   byteArr = CacheableBytes::create(std::vector<int8_t>(bytes, bytes + 2));
   writeObjectPart(byteArr);
+
   writeMessageLength();
   m_interestPolicy = interestPolicy.ordinal;
 }
@@ -2376,7 +2366,7 @@ TcrMessageExecuteRegionFunction::TcrMessageExecuteRegionFunction(
 
   if (routingObj && routingObj->size() == 1) {
     LOGDEBUG("setting up key");
-    m_key = std::static_pointer_cast<CacheableKey>(routingObj->at(0));
+    m_key = std::dynamic_pointer_cast<CacheableKey>(routingObj->at(0));
   }
 
   uint32_t numOfParts =
@@ -2877,7 +2867,7 @@ void TcrMessage::readEventIdPart(DataInput& input, bool skip, int32_t parts) {
   // read and ignore isObj
   input.read();
 
-  m_eventid = std::static_pointer_cast<EventId>(input.readObject());
+  m_eventid = std::dynamic_pointer_cast<EventId>(input.readObject());
 }
 std::shared_ptr<DSMemberForVersionStamp> TcrMessage::readDSMember(
     apache::geode::client::DataInput& input) {
@@ -2945,20 +2935,16 @@ void TcrMessage::readHashMapForGCVersions(
 void TcrMessage::readHashSetForGCVersions(
     apache::geode::client::DataInput& input,
     std::shared_ptr<CacheableHashSet>& value) {
-  uint8_t hashsettypeid = input.read();
+  auto hashsettypeid = input.read();
   if (hashsettypeid != GeodeTypeIds::CacheableHashSet) {
     throw Exception(
         "Reading HashSet For GC versions. Expecting type id of hash set. ");
   }
-  int32_t len = input.readArrayLength();
 
-  if (len > 0) {
-    std::shared_ptr<CacheableKey> key;
-    std::shared_ptr<Cacheable> val;
-    for (int32_t index = 0; index < len; index++) {
-      auto keyPtr = std::static_pointer_cast<CacheableKey>(input.readObject());
-      value->insert(keyPtr);
-    }
+  auto len = input.readArrayLength();
+  for (decltype(len) index = 0; index < len; index++) {
+    auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(input.readObject());
+    value->insert(keyPtr);
   }
 }
 

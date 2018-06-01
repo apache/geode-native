@@ -732,11 +732,11 @@ void NestedPdx::toData(PdxWriter &pw) const {
 
 void NestedPdx::fromData(PdxReader &pr) {
   m_i1 = pr.readInt("i1");
-  m_pd1 = std::static_pointer_cast<PdxTypes1>(pr.readObject("pd1"));
+  m_pd1 = std::dynamic_pointer_cast<PdxTypes1>(pr.readObject("pd1"));
   m_i2 = pr.readInt("i2");
   m_s1 = pr.readString("s1");
   m_s2 = pr.readString("s2");
-  m_pd2 = std::static_pointer_cast<PdxTypes2>(pr.readObject("pd2"));
+  m_pd2 = std::dynamic_pointer_cast<PdxTypes2>(pr.readObject("pd2"));
   m_i3 = pr.readInt("i3");
   m_i4 = pr.readInt("i4");
 }
@@ -814,12 +814,12 @@ void MixedVersionNestedPdx::toData(PdxWriter &pw) const {
 
 void MixedVersionNestedPdx::fromData(PdxReader &pr) {
   m_i1 = pr.readInt("i1");
-  m_pd1 = std::static_pointer_cast<PdxTypes1>(pr.readObject("pd1"));
+  m_pd1 = std::dynamic_pointer_cast<PdxTypes1>(pr.readObject("pd1"));
   m_i2 = pr.readInt("i2");
   m_s1 = pr.readString("s1");
   m_s2 = pr.readString("s2");
   // Mixed version missing: m_s3=pr.readString("m_s3")
-  m_pd2 = std::static_pointer_cast<PdxTypes2>(pr.readObject("pd2"));
+  m_pd2 = std::dynamic_pointer_cast<PdxTypes2>(pr.readObject("pd2"));
   m_i3 = pr.readInt("i3");
   m_i4 = pr.readInt("i4");
 }
@@ -883,11 +883,11 @@ void PdxInsideIGeodeSerializable::toData(DataOutput &output) const {
 
 void PdxInsideIGeodeSerializable::fromData(DataInput &input) {
   m_i1 = input.readInt32();
-  m_npdx = std::static_pointer_cast<NestedPdx>(input.readObject());
+  m_npdx = std::dynamic_pointer_cast<NestedPdx>(input.readObject());
   m_i2 = input.readInt32();
   m_s1 = input.readString();
   m_s2 = input.readString();
-  m_pdx3 = std::static_pointer_cast<PdxTypes3>(input.readObject());
+  m_pdx3 = std::dynamic_pointer_cast<PdxTypes3>(input.readObject());
   m_i3 = input.readInt32();
   m_i4 = input.readInt32();
 }

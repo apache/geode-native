@@ -15,15 +15,36 @@
  * limitations under the License.
  */
 
-#include "ServerLocationRequest.hpp"
-#include "GeodeTypeIdsImpl.hpp"
-using namespace apache::geode::client;
-/*int8_t ServerLocationRequest::typeId( ) const
-{
-  return (int8_t)GeodeTypeIdsImpl::FixedIDByte;
-}*/
-int8_t ServerLocationRequest::DSFID() const {
-  return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
-}
+#pragma once
 
-int32_t ServerLocationRequest::classId() const { return 0; }
+#include "geode_defs.hpp"
+
+#include "begin_native.hpp"
+#include <geode/internal/geode_globals.hpp>
+#include "end_native.hpp"
+
+#include "ISerializable.hpp"
+
+using namespace System;
+
+namespace Apache
+{
+  namespace Geode
+  {
+    namespace Client
+    {
+
+      ref class DataOutput;
+      ref class DataInput;
+     
+      private interface class IDataSerializableInternal : public ISerializable
+      {
+        void ToData( DataOutput^ output );
+
+        void FromData( DataInput^ input );
+      };
+
+    }  // namespace Client
+  }  // namespace Geode
+}  // namespace Apache
+

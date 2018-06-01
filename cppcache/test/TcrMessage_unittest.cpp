@@ -285,7 +285,7 @@ TEST_F(TcrMessageTest, testConstructor4) {
   EXPECT_EQ(TcrMessage::INVALID, message.getMessageType());
 }
 
-TEST_F(TcrMessageTest, testConstructor5WithREGISTER_INTERST_LIST) {
+TEST_F(TcrMessageTest, TcrMessageRegisterInterestList) {
   std::vector<std::shared_ptr<CacheableKey>> keys;
   keys.push_back(CacheableString::create("mykey"));
 
@@ -302,6 +302,28 @@ TEST_F(TcrMessageTest, testConstructor5WithREGISTER_INTERST_LIST) {
       "000000180000004200000006FFFFFFFF000000001300494E56414C49445F524547494F4E"
       "5F4E414D4500000003010125000000000100000000000A0141015700056D796B65790000"
       "0001000100000002000000",
+      message);
+}
+
+TEST_F(TcrMessageTest, TcrMessageRegisterInterestListWithManyKeys) {
+  auto keys = std::vector<std::shared_ptr<CacheableKey>>{
+      CacheableString::create("mykey1"), CacheableString::create("mykey2"),
+      CacheableString::create("mykey3"), CacheableString::create("mykey4")};
+
+  TcrMessageRegisterInterestList message(
+      new DataOutputUnderTest(), static_cast<const Region *>(nullptr), keys,
+      false,  // isDurable
+      false,  // isCacheingEnabled
+      false,  // receiveValues
+      InterestResultPolicy::NONE, static_cast<ThinClientBaseDM *>(nullptr));
+
+  EXPECT_EQ(TcrMessage::REGISTER_INTEREST_LIST, message.getMessageType());
+
+  EXPECT_MESSAGE_EQ(
+      "000000180000005E00000006FFFFFFFF000000001300494E56414C49445F524547494F4E"
+      "5F4E414D450000000301012500000000010000000000260141045700066D796B65793157"
+      "00066D796B6579325700066D796B6579335700066D796B65793400000001000100000002"
+      "000000",
       message);
 }
 

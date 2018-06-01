@@ -108,7 +108,7 @@ Cache CacheFactory::create() const {
       GeodeTypeIds::PdxType,
       std::bind(PdxType::CreateDeserializable, std::ref(*pdxTypeRegistry)));
 
-  serializationRegistry->addType(
+  serializationRegistry->addType2(
       std::bind(VersionTag::createDeserializable, memberListForVersionStamp));
 
   serializationRegistry->addType2(
@@ -116,9 +116,7 @@ Cache CacheFactory::create() const {
       std::bind(DiskVersionTag::createDeserializable,
                 memberListForVersionStamp));
 
-  serializationRegistry->setPdxTypeHandler([](DataInput& dataInput) {
-    return PdxHelper::deserializePdx(dataInput, false);
-  });
+  serializationRegistry->setPdxTypeHandler(new PdxTypeHandler());
 
   pdxTypeRegistry->setPdxIgnoreUnreadFields(cache.getPdxIgnoreUnreadFields());
   pdxTypeRegistry->setPdxReadSerialized(cache.getPdxReadSerialized());

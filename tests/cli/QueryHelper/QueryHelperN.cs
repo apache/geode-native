@@ -124,7 +124,7 @@ namespace Apache.Geode.Client.Tests
       if(names == null)
       {
          Util.Log("QueryHelper.PopulatePortfolioData: names is null");
-      } else 
+      } else
       {
 	      for(int i =0 ; i < names.Length; i++)
 	      {
@@ -304,14 +304,14 @@ namespace Apache.Geode.Client.Tests
 
       int foundRows = 0;
 
-      foreach (var ser in resultset)  
+      foreach (var ser in resultset)
       {
         if (ser == null)
         {
           Util.Log("QueryHelper.VerifyRS: Object is null.");
           return false;
         }
-        
+
         foundRows++;
       }
       Util.Log("QueryHelper.VerifyRS: found rows {0}, expected {1}",
@@ -343,8 +343,8 @@ namespace Apache.Geode.Client.Tests
         int foundFields = 0;
         for (int cols = 0; cols < si.Count; cols++)
         {
-          //IGeodeSerializable field = si[cols];
-          object field = (object)si[cols];
+          //ISerializable field = si[cols];
+          object field = si[cols];
           foundFields++;
         }
 

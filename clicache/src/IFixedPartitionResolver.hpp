@@ -30,7 +30,7 @@ namespace Apache
     namespace Client
     {
 
-      interface class IGeodeSerializable;
+      interface class ISerializable;
       /// <summary>
       /// Implementers of interface <code>FixedPartitionResolver</code> helps to
       /// achieve explicit mapping of a "user defined" partition to a data member node.

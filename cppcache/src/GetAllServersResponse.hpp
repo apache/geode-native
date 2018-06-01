@@ -20,17 +20,20 @@
 #ifndef GEODE_GETALLSERVERSRESPONSE_H_
 #define GEODE_GETALLSERVERSRESPONSE_H_
 
+#include <geode/internal/DataSerializableFixedId.hpp>
 #include <geode/Serializable.hpp>
-#include "ServerLocation.hpp"
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 #include <vector>
+
+#include "ServerLocation.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class GetAllServersResponse : public Serializable {
+class GetAllServersResponse : public internal::DataSerializableFixedId_t<
+                                  GeodeTypeIdsImpl::GetAllServersResponse> {
   std::vector<ServerLocation> m_servers;
 
  public:
@@ -40,14 +43,10 @@ class GetAllServersResponse : public Serializable {
   GetAllServersResponse() : Serializable() {}
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t classId() const override { return 0; }
-  int8_t typeId() const override {
-    return GeodeTypeIdsImpl::GetAllServersResponse;
+
+  size_t objectSize() const override {
+    return sizeof(GetAllServersResponse) + m_servers.capacity();
   }
-  int8_t DSFID() const override {
-    return static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte);
-  }
-  size_t objectSize() const override { return m_servers.size(); }
   std::vector<ServerLocation> getServers() { return m_servers; }
   ~GetAllServersResponse() override = default;
 };

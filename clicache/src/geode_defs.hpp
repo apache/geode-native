@@ -144,9 +144,6 @@
 /// @file ExpirationAction.hpp
 /// Declares the ExpirationAction enumeration and Expiration class.
 
-/// @file GeodeClassIds.hpp
-/// Declares the GeodeClassIds class.
-
 /// @file IRegionService.hpp
 /// Declares the IRegionService interface.
 
@@ -192,8 +189,8 @@
 /// @file ICacheWriter.hpp
 /// Declares the ICacheWriter interface.
 
-/// @file IGeodeSerializable.hpp
-/// Declares the IGeodeSerializable interface.
+/// @file ISerializable.hpp
+/// Declares the ISerializable interface.
 
 /// @file ISelectResults.hpp
 /// Declares the ISelectResults interface.

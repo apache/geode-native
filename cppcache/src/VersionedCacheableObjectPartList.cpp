@@ -118,7 +118,7 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
     len = static_cast<int32_t>(input.readUnsignedVL());
 
     for (int32_t index = 0; index < len; ++index) {
-      auto key = std::static_pointer_cast<CacheableKey>(input.readObject());
+      auto key = std::dynamic_pointer_cast<CacheableKey>(input.readObject());
       if (m_resultKeys != nullptr) {
         m_resultKeys->push_back(key);
       }
@@ -295,17 +295,6 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
   if (valuesNULL) m_values = nullptr;
 }
 
-int32_t VersionedCacheableObjectPartList::classId() const { return 0; }
-
-int8_t VersionedCacheableObjectPartList::typeId() const {
-  return GeodeTypeIdsImpl::VersionedObjectPartList;
-}
-
-int8_t VersionedCacheableObjectPartList::DSFID() const {
-  return GeodeTypeIdsImpl::FixedIDByte;
-}
-
-size_t VersionedCacheableObjectPartList::objectSize() const { return 0; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -27,12 +27,8 @@ void ClientConnectionRequest::toData(DataOutput& output) const {
   writeSetOfServerLocation(output);
 }
 
-void ClientConnectionRequest::fromData(DataInput&) {}
-
-size_t ClientConnectionRequest::objectSize() const { return 0; }
-
-int8_t ClientConnectionRequest::typeId() const {
-  return static_cast<int8_t>(GeodeTypeIdsImpl::ClientConnectionRequest);
+int32_t ClientConnectionRequest::getDSFID() const {
+  return GeodeTypeIdsImpl::ClientConnectionRequest;
 }
 
 void ClientConnectionRequest::writeSetOfServerLocation(

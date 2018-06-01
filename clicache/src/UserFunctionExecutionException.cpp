@@ -29,32 +29,10 @@ namespace Apache
     namespace Client
     {
 
-      // IGeodeSerializable methods
-
-      void UserFunctionExecutionException::ToData(DataOutput^ output)
-      {
-        throw gcnew IllegalStateException("UserFunctionExecutionException::ToData is not intended for use.");
-      }
-
-      void UserFunctionExecutionException::FromData(DataInput^ input)
-      {
-        throw gcnew IllegalStateException("UserFunctionExecutionException::FromData is not intended for use.");
-      }
-
+  
       System::UInt64 UserFunctionExecutionException::ObjectSize::get()
       {
-        _GF_MG_EXCEPTION_TRY2
-          throw gcnew IllegalStateException("UserFunctionExecutionException::ObjectSize is not intended for use.");
-        try
-        {
-          return m_nativeptr->get()->objectSize();
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        throw gcnew IllegalStateException("UserFunctionExecutionException::ObjectSize is not intended for use.");
       }
 
       String^ UserFunctionExecutionException::Message::get()

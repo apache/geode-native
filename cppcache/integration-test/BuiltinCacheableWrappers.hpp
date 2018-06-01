@@ -746,21 +746,27 @@ class CacheableHashMapTypeWrapper : public CacheableWrapper {
   }
 
   uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const override {
-    const HMAPTYPE* obj = dynamic_cast<const HMAPTYPE*>(object.get());
-    ASSERT(obj != nullptr, "getCheckSum: null object.");
+    auto map = std::dynamic_pointer_cast<const HMAPTYPE>(object);
+    ASSERT(map != nullptr, "getCheckSum: null object.");
     uint32_t chksum = 0;
 
-    for (const auto& iter : *obj) {
-      const auto cwpKey = std::unique_ptr<CacheableWrapper>(
-          CacheableWrapperFactory::createInstance(iter.first->typeId()));
-      const auto& cwpObj = iter.second;
-      uint32_t cwpObjCkSum = 0;
-      if (cwpObj != nullptr) {
-        const auto cwpVal = std::unique_ptr<CacheableWrapper>(
-            CacheableWrapperFactory::createInstance(cwpObj->typeId()));
-        cwpObjCkSum = cwpVal->getCheckSum(cwpObj);
+    for (const auto& obj : *map) {
+      if (const auto key =
+              std::dynamic_pointer_cast<DataSerializablePrimitive>(obj.first)) {
+        const auto cwpKey = std::unique_ptr<CacheableWrapper>(
+            CacheableWrapperFactory::createInstance(key->getDsCode()));
+
+        uint32_t cwpObjCkSum = 0;
+        if (const auto value =
+                std::dynamic_pointer_cast<DataSerializablePrimitive>(
+                    obj.second)) {
+          const auto cwpVal = std::unique_ptr<CacheableWrapper>(
+              CacheableWrapperFactory::createInstance(value->getDsCode()));
+          cwpObjCkSum = cwpVal->getCheckSum(value);
+        }
+
+        chksum ^= (cwpKey->getCheckSum(key) ^ cwpObjCkSum);
       }
-      chksum ^= (cwpKey->getCheckSum(iter.first) ^ cwpObjCkSum);
     }
 
     return chksum;
@@ -790,7 +796,7 @@ class CacheableHashSetTypeWrapper : public CacheableWrapper {
 
   void initRandomValue(int32_t maxSize) override {
     auto set =
-        std::static_pointer_cast<HSETTYPE>(HSETTYPE::createDeserializable());
+        std::dynamic_pointer_cast<HSETTYPE>(HSETTYPE::createDeserializable());
     auto keyTypeIds = CacheableWrapperFactory::getRegisteredKeyTypes();
     size_t sizeOfTheVector = keyTypeIds.size();
     maxSize = maxSize / static_cast<int32_t>(sizeOfTheVector) + 1;
@@ -807,15 +813,18 @@ class CacheableHashSetTypeWrapper : public CacheableWrapper {
   }
 
   uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const override {
-    auto&& obj = std::dynamic_pointer_cast<HSETTYPE>(object);
-    ASSERT(obj != nullptr, "getCheckSum: null object.");
+    auto set = std::dynamic_pointer_cast<HSETTYPE>(object);
+    ASSERT(set != nullptr, "getCheckSum: null object.");
     uint32_t checkSum = 0;
 
-    for (const auto& iter : *obj) {
-      const auto typeId = iter->typeId();
-      const auto wrapper = std::unique_ptr<CacheableWrapper>(
-          CacheableWrapperFactory::createInstance(typeId));
-      checkSum ^= wrapper->getCheckSum(iter);
+    for (const auto& obj : *set) {
+      if (auto primitive =
+              std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+        const auto typeId = primitive->getDsCode();
+        const auto wrapper = std::unique_ptr<CacheableWrapper>(
+            CacheableWrapperFactory::createInstance(typeId));
+        checkSum ^= wrapper->getCheckSum(primitive);
+      }
     }
     return checkSum;
   }
@@ -1082,7 +1091,7 @@ class CacheableVectorTypeWrapper : public CacheableWrapper {
 
   virtual void initRandomValue(int32_t maxSize) {
     auto vec =
-        std::static_pointer_cast<VECTTYPE>(VECTTYPE::createDeserializable());
+        std::dynamic_pointer_cast<VECTTYPE>(VECTTYPE::createDeserializable());
     auto valueTypeIds = CacheableWrapperFactory::getRegisteredValueTypes();
     size_t sizeOfTheVector = valueTypeIds.size();
     maxSize = maxSize / static_cast<int32_t>(sizeOfTheVector) + 1;
@@ -1099,18 +1108,17 @@ class CacheableVectorTypeWrapper : public CacheableWrapper {
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
-    auto&& vec = std::dynamic_pointer_cast<VECTTYPE>(object);
+    auto vec = std::dynamic_pointer_cast<VECTTYPE>(object);
     ASSERT(vec != nullptr, "getCheckSum: null object.");
     uint32_t checkSum = 0;
-    for (uint32_t index = 0; index < (uint32_t)vec->size(); ++index) {
-      auto obj = vec->at(index);
-      if (obj == nullptr) {
-        continue;
+    for (const auto& obj : *vec) {
+      if (auto primitive =
+              std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+        auto typeId = primitive->getDsCode();
+        auto wrapper = std::unique_ptr<CacheableWrapper>(
+            CacheableWrapperFactory::createInstance(typeId));
+        checkSum ^= wrapper->getCheckSum(primitive);
       }
-      int8_t typeId = obj->typeId();
-      auto wrapper = CacheableWrapperFactory::createInstance(typeId);
-      checkSum ^= wrapper->getCheckSum(obj);
-      delete wrapper;
     }
     return checkSum;
   }
@@ -1139,7 +1147,7 @@ class CacheableObjectArrayWrapper : public CacheableWrapper {
   // CacheableWrapper members
 
   virtual void initRandomValue(int32_t maxSize) {
-    auto arr = std::static_pointer_cast<CacheableObjectArray>(
+    auto arr = std::dynamic_pointer_cast<CacheableObjectArray>(
         CacheableObjectArray::createDeserializable());
     auto valueTypeIds = CacheableWrapperFactory::getRegisteredValueTypes();
     size_t sizeOfTheVector = valueTypeIds.size();
@@ -1160,16 +1168,14 @@ class CacheableObjectArrayWrapper : public CacheableWrapper {
     auto&& arr = std::dynamic_pointer_cast<CacheableObjectArray>(object);
     ASSERT(arr != nullptr, "getCheckSum: null object.");
     uint32_t checkSum = 0;
-    for (uint32_t index = 0; index < static_cast<uint32_t>(arr->size());
-         ++index) {
-      const auto obj = arr->at(index);
-      if (obj == nullptr) {
-        continue;
+    for (const auto& obj : *arr) {
+      if (auto primitive =
+              std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+        auto wrapper =
+            CacheableWrapperFactory::createInstance(primitive->getDsCode());
+        checkSum ^= wrapper->getCheckSum(obj);
+        delete wrapper;
       }
-      int8_t typeId = obj->typeId();
-      auto wrapper = CacheableWrapperFactory::createInstance(typeId);
-      checkSum ^= wrapper->getCheckSum(obj);
-      delete wrapper;
     }
     return checkSum;
   }

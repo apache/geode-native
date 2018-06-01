@@ -38,7 +38,7 @@ namespace Apache
 
       /// <summary>
       /// This class wraps the native C++ <c>apache::geode::client::Serializable</c> objects
-      /// as managed <see cref="../../IGeodeSerializable" /> objects.
+      /// as managed <see cref="../../ISerializable" /> objects.
       /// </summary>
       public ref class CacheableKey
         : public Serializable, public ICacheableKey

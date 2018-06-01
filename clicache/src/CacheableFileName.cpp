@@ -19,7 +19,7 @@
 #include "CacheableFileName.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
-#include "GeodeClassIds.hpp"
+
 using namespace System;
 
 namespace Apache
@@ -52,9 +52,9 @@ namespace Apache
         }
       }
 
-      System::UInt32 CacheableFileName::ClassId::get()
+      int8_t CacheableFileName::DsCode::get()
       {
-        return GeodeClassIds::CacheableFileName;
+        return native::GeodeTypeIds::CacheableFileName;
       }
 
       System::UInt64 CacheableFileName::ObjectSize::get()
@@ -82,11 +82,7 @@ namespace Apache
 
       bool CacheableFileName::Equals(ICacheableKey^ other)
       {
-        if (other == nullptr ||
-            other->ClassId != GeodeClassIds::CacheableFileName) {
-          return false;
-        }
-        return (m_str == static_cast<CacheableFileName^>(other)->m_str);
+        return Equals((Object^) other);
       }
 
       bool CacheableFileName::Equals(Object^ obj)
