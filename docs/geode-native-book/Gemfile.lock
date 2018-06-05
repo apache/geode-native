@@ -9,8 +9,8 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     ansi (1.5.0)
-    backports (3.11.1)
-    bookbindery (10.1.13)
+    backports (3.11.3)
+    bookbindery (10.1.14)
       ansi (~> 1.4)
       css_parser
       elasticsearch
@@ -22,7 +22,7 @@ GEM
       middleman-livereload
       middleman-sprockets
       middleman-syntax (= 2.1.0)
-      nokogiri (= 1.8.1)
+      nokogiri (= 1.8.2)
       puma
       rack-rewrite
       redcarpet (~> 3.2.3)
@@ -51,27 +51,27 @@ GEM
     contracts (0.13.0)
     css_parser (1.6.0)
       addressable
-    dotenv (2.2.1)
-    elasticsearch (6.0.1)
-      elasticsearch-api (= 6.0.1)
-      elasticsearch-transport (= 6.0.1)
-    elasticsearch-api (6.0.1)
+    dotenv (2.4.0)
+    elasticsearch (6.0.2)
+      elasticsearch-api (= 6.0.2)
+      elasticsearch-transport (= 6.0.2)
+    elasticsearch-api (6.0.2)
       multi_json
-    elasticsearch-transport (6.0.1)
+    elasticsearch-transport (6.0.2)
       faraday
       multi_json
     em-websocket (0.5.1)
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0.6.0)
     erubis (2.7.0)
-    eventmachine (1.2.5)
-    excon (0.60.0)
+    eventmachine (1.2.7)
+    excon (0.62.0)
     execjs (2.7.0)
-    faraday (0.14.0)
+    faraday (0.15.2)
       multipart-post (>= 1.2, < 3)
     fast_blank (1.0.0)
-    fastimage (2.1.1)
-    ffi (1.9.21)
+    fastimage (2.1.3)
+    ffi (1.9.25)
     fog-aws (0.7.6)
       fog-core (~> 1.27)
       fog-json (~> 1.0)
@@ -100,7 +100,7 @@ GEM
     http_parser.rb (0.6.0)
     i18n (0.7.0)
     ipaddress (0.8.3)
-    kramdown (1.16.2)
+    kramdown (1.17.0)
     libv8 (3.16.14.7)
     listen (3.0.8)
       rb-fsevent (~> 0.9, >= 0.9.4)
@@ -156,7 +156,7 @@ GEM
     minitest (5.11.3)
     multi_json (1.13.1)
     multipart-post (2.0.0)
-    nokogiri (1.8.1)
+    nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
     padrino-helpers (0.13.3.4)
       i18n (~> 0.6, >= 0.6.7)
@@ -166,12 +166,12 @@ GEM
       activesupport (>= 3.1)
     parallel (1.12.1)
     public_suffix (3.0.2)
-    puma (3.11.2)
-    rack (1.6.8)
-    rack-livereload (0.3.16)
+    puma (3.11.4)
+    rack (1.6.10)
+    rack-livereload (0.3.17)
       rack
     rack-rewrite (1.5.1)
-    rb-fsevent (0.10.2)
+    rb-fsevent (0.10.3)
     rb-inotify (0.9.10)
       ffi (>= 0.5.0, < 2)
     redcarpet (3.2.3)
@@ -202,4 +202,4 @@ DEPENDENCIES
   libv8 (= 3.16.14.7)
 
 BUNDLED WITH
-   1.11.2
+   1.16.1
