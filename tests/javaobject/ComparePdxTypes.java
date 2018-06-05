@@ -174,7 +174,7 @@ public class ComparePdxTypes extends FunctionAdapter implements Declarable{
     TypeRegistry registry = cache.getPdxRegistry();
     
     //this will clear pdx registry
-    registry.testClearTypeRegistry();
+    registry.clear();
     
     if(r.keySet().size() != 0) {
       throw new IllegalStateException("Java pdx types still has PdxTypes enteries " + r.keySet().size());
