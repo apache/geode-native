@@ -55,6 +55,12 @@ namespace Apache
       }
 
       generic<class TKey, class TValue>
+      TValue LocalRegion<TKey, TValue>::Get(TKey key)
+      {
+        return Get(key, nullptr);
+      }
+
+      generic<class TKey, class TValue>
       std::shared_ptr<apache::geode::client::Serializable> LocalRegion<TKey, TValue>::getRegionEntryValue(std::shared_ptr<apache::geode::client::CacheableKey>& keyptr)
       {
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
@@ -92,6 +98,12 @@ namespace Apache
         }
 
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+      }
+
+      generic<class TKey, class TValue>
+      void LocalRegion<TKey, TValue>::Put(TKey key, TValue value)
+      {
+        Put(key, value, nullptr);
       }
 
       generic<class TKey, class TValue>

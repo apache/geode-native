@@ -49,8 +49,9 @@ namespace Apache.Geode.Client.IntegrationTests
 
               const string key = "hello";
               const string expectedResult = "dave";
-              regionForCache1.Put(key, expectedResult, null);
-              var actualResult = regionForCache2.Get(key, null);
+
+              regionForCache1.Put(key, expectedResult);
+              var actualResult = regionForCache2.Get(key);
 
               Assert.Equal(expectedResult, actualResult);
             }

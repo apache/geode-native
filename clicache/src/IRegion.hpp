@@ -37,6 +37,7 @@ namespace Apache
 
       ref class Cache;
       ref class CacheStatistics;
+
       interface class IRegionService;
 
       generic<class TResult>
@@ -635,6 +636,17 @@ namespace Apache
           virtual void Clear();
 
           /// <summary>
+          /// remove all entries in the region.	
+          /// For local region instance - remove all entries in the local region.
+          /// For distributed region instance - remove all entries in the local region,
+	  /// and propagate the operation to server.
+          /// </summary>
+          /// <param name="callbackArg">
+          /// argument that is passed to the callback functions
+          /// </param>
+          void Clear(Object^ callbackArg);
+
+          /// <summary>
           /// Copies the elements of the ICollection to an Array, starting at a particular Array index.
           /// This operation copies entries from local region only.
           /// </summary>
@@ -891,6 +903,69 @@ namespace Apache
           void Put(TKey key, TValue value, Object^ callbackArg);
 
           /// <summary>
+          /// Puts a new value into an entry in this region with the specified key,
+          /// passing the callback argument to any cache writers and cache listeners
+          /// that are invoked in the operation.
+          /// </summary>
+          /// <remarks>
+          /// <para>
+          /// If there is already an entry associated with the specified key in
+          /// this region, the entry's previous value is overwritten.
+          /// The new put value is propogated to the java server to which it is connected with.
+          /// Put is intended for very simple caching situations. In general
+          /// it is better to create a <c>ICacheLoader</c> object and allow the
+          /// cache to manage the creation and loading of objects.
+          /// For local region instance - Puts a new value into an entry in this region in the local cache only.
+          /// For distributed region instance - Puts a new value into an entry in this region
+          /// and this operation is propogated to the Geode cache server to which it is connected with.
+          /// </para><para>
+          /// Updates the <see cref="CacheStatistics.LastAccessedTime" /> and
+          /// <see cref="CacheStatistics.LastModifiedTime" /> for this region and the entry.
+          /// </para><para>
+          /// If remote server put fails throwing back a <c>CacheServerException</c>
+          /// or security exception, then local put is tried to rollback. However,
+          /// if the entry has overflowed/evicted/expired then the rollback is
+          /// aborted since it may be due to a more recent notification or update
+          /// by another thread.
+          /// </para>
+          /// </remarks>
+          /// <param name="key">
+          /// a key object associated with the value to be put into this region.
+          /// </param>
+          /// <param name="value">the value to be put into this region</param>
+          /// <exception cref="IllegalArgumentException">
+          /// if key is null
+          /// </exception>
+          /// <exception cref="CacheWriterException">
+          /// if CacheWriter aborts the operation
+          /// </exception>
+          /// <exception cref="CacheListenerException">
+          /// if CacheListener throws an exception
+          /// </exception>
+          /// <exception cref="RegionDestroyedException">
+          /// if region has been destroyed
+          /// </exception>
+          /// <exception cref="CacheServerException">
+          /// If an exception is received from the Java cache server.
+          /// Only for Native Client regions.
+          /// </exception>
+          /// <exception cref="NotConnectedException">
+          /// if not connected to the Geode system because the client cannot
+          /// establish usable connections to any of the servers given to it.
+          /// For pools configured with locators, if no locators are available, innerException
+          /// of NotConnectedException is set to NoAvailableLocatorsException.
+          /// </exception>
+          /// <exception cref="TimeoutException">
+          /// if the operation timed out
+          /// </exception>
+          /// <exception cref="OutOfMemoryException">
+          /// if  there is not enough memory for the value
+          /// </exception>
+          /// <seealso cref="Get" />
+          /// <seealso cref="Add" />
+          void Put(TKey key, TValue value);
+
+          /// <summary>
           /// Returns the value for the given key, passing the callback argument
           /// to any cache loaders or that are invoked in the operation.
           /// </summary>
@@ -952,6 +1027,64 @@ namespace Apache
           /// </exception>
           /// <seealso cref="Put" />
           TValue Get(TKey key, Object^ callbackArg);
+
+          /// <summary>
+          /// Returns the value for the given key, passing the callback argument
+          /// to any cache loaders or that are invoked in the operation.
+          /// </summary>
+          /// <remarks>
+          /// <para>          
+          /// For local region instance - returns the value with the specified key from the local cache only.
+          /// For distributed region instance - If the value is not present locally then it is requested from
+          /// the java server. If even that is unsuccessful then a local CacheLoader will be invoked
+          /// if there is one.
+          /// </para>
+          /// <para>
+          /// The value returned by get is not copied, so multi-threaded applications
+          /// should not modify the value directly, but should use the update methods.
+          /// </para><para>
+          /// Updates the <see cref="CacheStatistics.LastAccessedTime" />
+          /// <see cref="CacheStatistics.HitCount" />, <see cref="CacheStatistics.MissCount" />,
+          /// and <see cref="CacheStatistics.LastModifiedTime" /> (if a new value is loaded)
+          /// for this region and the entry.
+          /// </para>
+          /// </remarks>
+          /// <param name="key">
+          /// key whose associated value is to be returned -- the key
+          /// object must implement the Equals and GetHashCode methods.
+          /// </param>
+          /// <returns>
+          /// value, or null if the value is not found and can't be loaded
+          /// </returns>
+          /// <exception cref="IllegalArgumentException">
+          /// if key is null
+          /// </exception>
+          /// <exception cref="CacheLoaderException">
+          /// if CacheLoader throws an exception
+          /// </exception>
+          /// <exception cref="CacheServerException">
+          /// If an exception is received from the Java cache server.
+          /// Only for Native Client regions.
+          /// </exception>
+          /// <exception cref="NotConnectedException">
+          /// if not connected to the Geode system because the client cannot
+          /// establish usable connections to any of the servers given to it.
+          /// For pools configured with locators, if no locators are available, innerException
+          /// of NotConnectedException is set to NoAvailableLocatorsException.
+          /// </exception>
+          /// <exception cref="MessageException">
+          /// If the message received from server could not be handled. This will
+          /// be the case when an unregistered typeId is received in the reply or
+          /// reply is not well formed. More information can be found in the log.
+          /// </exception>
+          /// <exception cref="TimeoutException">
+          /// if the operation timed out
+          /// </exception>
+          /// <exception cref="RegionDestroyedException">
+          /// if this region has been destroyed
+          /// </exception>
+          /// <seealso cref="Put" />
+          TValue Get(TKey key);
 
           /// <summary>
           /// Invalidates this region.
@@ -1745,17 +1878,6 @@ namespace Apache
           {
             bool get();
           }
-
-          /// <summary>
-          /// remove all entries in the region.	
-          /// For local region instance - remove all entries in the local region.
-          /// For distributed region instance - remove all entries in the local region, 
-	        /// and propagate the operation to server.
-          /// </summary>
-          /// <param name="callbackArg">
-          /// argument that is passed to the callback functions
-          /// </param>             
-          void Clear(Object^ callbackArg);
 
           /// <summary>
           /// Reteuns an instance of a Region<TKey, TValue> class that implements 

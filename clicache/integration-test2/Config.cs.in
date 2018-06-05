@@ -19,14 +19,23 @@
 
 public class Config
 {
-  static public string GeodeGfsh
+  public static string GeodeGfsh
   {
     get { return @"@Geode_gfsh_EXECUTABLE@"; }
   }
 
-  static public string JavaobjectJarPath
+  public static string JavaobjectJarPath
   {
     get { return @"@JAVAOBJECT_JAR_PATH@"; }
   }
 
+  public static string CryptoImplPath
+  {
+    get { return @"@CRYPTO_IMPL_PATH@"; }
+  }
+
+  public static string OpenSSLPath
+  {
+    get { return @"@OPENSSL_PATH@"; }
+  }
 }
