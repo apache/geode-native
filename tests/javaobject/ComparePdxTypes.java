@@ -162,22 +162,7 @@ public class ComparePdxTypes extends FunctionAdapter implements Declarable{
     }
     
     if(javaClassnameVsPdxTypes.size() != 11) {
-      throw new IllegalStateException("Java pdx types size are not equal to 10; and it is = " + javaClassnameVsPdxTypes.size());
-    }
-    
-    //now clear all java pdx types
-   /* for(Object k : r.keySet()) {
-      r.destroy(k);
-    }*/
-    
-    GemFireCacheImpl cache = (GemFireCacheImpl) CacheFactory.getAnyInstance();
-    TypeRegistry registry = cache.getPdxRegistry();
-    
-    //this will clear pdx registry
-    registry.clear();
-    
-    if(r.keySet().size() != 0) {
-      throw new IllegalStateException("Java pdx types still has PdxTypes enteries " + r.keySet().size());
+      throw new IllegalStateException("Java pdx types size are not equal to 11; and it is = " + javaClassnameVsPdxTypes.size());
     }
   }
   

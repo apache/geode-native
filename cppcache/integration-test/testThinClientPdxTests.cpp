@@ -4224,27 +4224,6 @@ void runPdxIgnoreUnreadFieldTest() {
   CALL_TASK(CloseLocator)
 }
 
-// runPdxMetadataCheckTest
-void runPdxMetadataCheckTest() {
-  CALL_TASK(StartLocator)
-  CALL_TASK(CreateServerWithLocator_PdxMetadataTest)
-  CALL_TASK(StepOnePoolLoc_PdxMetadataTest)
-  CALL_TASK(StepTwoPoolLoc_PdxMetadataTest)
-
-  CALL_TASK(generateJavaPdxType)
-
-  CALL_TASK(putAllPdxTypes)
-
-  CALL_TASK(verifyDotNetPdxTypes)
-
-  CALL_TASK(CloseCache1)
-  CALL_TASK(CloseCache2)
-  CALL_TASK(CloseServer)
-
-  CALL_TASK(CloseLocator)
-}
-// END runPdxMetadataCheckTest
-
 // runPdxBankTest
 void runPdxBankTest() {
   CALL_TASK(StartLocator)
@@ -4383,9 +4362,6 @@ DUNIT_MAIN {
     enableWeakHashMapC2();
     runPdxIgnoreUnreadFieldTest();
   }
-
-  // PdxMetadataCheckTest
-  { runPdxMetadataCheckTest(); }
 
   // PdxBankTest
   { runPdxBankTest(); }
