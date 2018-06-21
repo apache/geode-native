@@ -42,8 +42,7 @@
         "choco install notepadplusplus -confirm",
         "choco install googlechrome -confirm",
         "choco install sysinternals -confirm",
-        "choco install windbg -confirm",
-        "choco install emacs -confirm"
+        "choco install windbg -confirm"
       ]
     },
     {
