@@ -70,10 +70,12 @@
         "rhel/disable-selinux.sh",
         "rhel/add-user-build.sh",
         "rhel/install-repos.sh",
-        "rhel/install-jdk-1.8.sh",
-        "rhel/install-build-rpms.sh",
         "rhel/install-scl-devtoolset.sh",
-        "rhel/install-cmake.sh"
+        "rhel/install-scl-python27.sh",
+        "rhel/install-build-rpms.sh",
+        "rhel/install-coverage-tools.sh",
+        "rhel/install-cmake.sh",
+        "rhel/install-jdk-1.8.sh"
       ]
     },
     {
