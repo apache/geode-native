@@ -17,4 +17,8 @@
 
 set -x -e -o pipefail
 
+# for coveralls.io
 scl enable python27 'pip install cpp-coveralls'
+
+# For codecov.ip
+yum install -y lcov
