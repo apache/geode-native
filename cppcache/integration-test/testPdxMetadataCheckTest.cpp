@@ -49,7 +49,6 @@ using namespace PdxTests;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
-#define CLIENT3 s2p2
 #define LOCATOR s2p2
 #define SERVER1 s2p1
 
