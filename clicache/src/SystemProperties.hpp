@@ -37,7 +37,7 @@ namespace Apache
       namespace native = apache::geode::client;
 
       /// <summary>
-      /// A class for internal use, that encapsulates the properties that can be
+      /// A class for internal use that encapsulates the properties that can be
       /// set through <see cref="DistributedSystem.Connect" />
       /// or a geode.properties file.
       /// </summary>
@@ -260,7 +260,7 @@ namespace Apache
 
         // adongre
         /// <summary>
-        /// Returns the client keystore password..
+        /// Returns the client keystore password.
         /// </summary>
         /// <returns>Returns the client keystore password.</returns>
         property String^ SSLKeystorePassword

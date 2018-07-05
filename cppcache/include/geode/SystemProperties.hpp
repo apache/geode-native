@@ -37,7 +37,7 @@ namespace client {
  */
 
 /**
- * A class for internal use, that encapsulates the properties that can be
+ * A class for internal use that encapsulates the properties that can be
  * set from DistributedSystem::connect.
  *
  */
@@ -162,7 +162,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   int32_t maxSocketBufferSize() const { return m_maxSocketBufferSize; }
 
   /**
-   * Returns  the time between two consecutive ping to servers
+   * Returns  the time between two consecutive pings to servers
    */
   const std::chrono::seconds& pingInterval() const { return m_pingInterval; }
 
@@ -208,7 +208,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   }
 
   /**
-   * Returns the connect wait timeout(in millis) used for to connect to server
+   * Returns the connect wait timeout(in milliseconds) used for to connect to server
    * This is only applicable for linux
    */
   const std::chrono::milliseconds& connectWaitTimeout() const {
@@ -216,7 +216,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   }
 
   /**
-   * Returns the connect wait timeout(in millis) used for to connect to server
+   * Returns the connect wait timeout(in milliseconds) used for to connect to server
    * This is only applicable for linux
    */
   const std::chrono::milliseconds& bucketWaitTimeout() const {
@@ -270,7 +270,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   }
 
   /**
-   * returns true if app want to clear pdx type ids when client disconnect.
+   * returns true if app wants to clear pdx type ids when client disconnect.
    * deafult is false.
    */
   bool onClientDisconnectClearPdxTypeIds() const {
@@ -278,14 +278,14 @@ class APACHE_GEODE_EXPORT SystemProperties {
   }
 
   /**
-   * Set to true if app want to clear pdx type ids when client disconnect.
+   * Set to true if app wants to clear pdx type ids when client disconnect.
    * deafult is false.
    */
   void setOnClientDisconnectClearPdxTypeIds(bool set) {
     m_onClientDisconnectClearPdxTypeIds = set;
   }
 
-  /** Return the security diffie hellman secret key algo */
+  /** Return the security Diffie-Hellman secret key algo */
   const std::string& securityClientDhAlgo() const {
     return m_securityClientDhAlgo;
   }
@@ -319,7 +319,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
    * Checks to see if this native client is being invoked as part of small
    * grid jobs; use this setting to disable some creation of threads and
    * reducing start/stop time. Note that this setting can cause improper
-   * behaviour in some cases like:
+   * behavior in some cases like:
    *  1) client that is setup in listening mode and a server failure may not
    *     lead to failover by client
    *  2) while shutting down the client will not send a proper CLOSE_CONNECTION
@@ -351,7 +351,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   }
 
   /**
-   * Returns the tombstone timeout .
+   * Returns the tombstone timeout
    */
   const std::chrono::milliseconds tombstoneTimeout() const {
     return m_tombstoneTimeout;
