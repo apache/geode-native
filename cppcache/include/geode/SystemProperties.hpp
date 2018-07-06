@@ -37,7 +37,7 @@ namespace client {
  */
 
 /**
- * A class for internal use, that encapsulates the properties that can be
+ * A class for internal use that encapsulates the properties that can be
  * set from DistributedSystem::connect.
  *
  */
@@ -130,7 +130,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   LogLevel logLevel() const { return m_logLevel; }
 
   /**
-   * Returns  a boolean that specifies if heapLRULimit has been enabled for the
+   * Returns a boolean that specifies if heapLRULimit has been enabled for the
    * process. If enabled, the HeapLRULimit specifies the maximum amount of
    * memory
    * that values in a cache can use to store data before overflowing to disk or
@@ -141,7 +141,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   bool heapLRULimitEnabled() const { return (m_heapLRULimit > 0); }
 
   /**
-   * Returns  the HeapLRULimit value (in bytes), the maximum memory that values
+   * Returns the HeapLRULimit value (in bytes), the maximum memory that values
    * in a cache can use to store data before overflowing to disk or destroying
    * entries to ensure that the server process never runs out of memory due to
    * cache memory usage
@@ -150,24 +150,24 @@ class APACHE_GEODE_EXPORT SystemProperties {
   size_t heapLRULimit() const { return m_heapLRULimit; }
 
   /**
-   * Returns  the HeapLRUDelta value (a percent value). This specifies the
+   * Returns the HeapLRUDelta value (a percent value). This specifies the
    * percentage of entries the system will evict each time it detects that
    * it has exceeded the HeapLRULimit. Defaults to 10%
    */
   int32_t heapLRUDelta() const { return m_heapLRUDelta; }
 
   /**
-   * Returns  the maximum socket buffer size to use
+   * Returns the maximum socket buffer size to use
    */
   int32_t maxSocketBufferSize() const { return m_maxSocketBufferSize; }
 
   /**
-   * Returns  the time between two consecutive ping to servers
+   * Returns the time between two consecutive pings to servers
    */
   const std::chrono::seconds& pingInterval() const { return m_pingInterval; }
 
   /**
-   * Returns  the time between two consecutive checks for redundancy for HA
+   * Returns the time between two consecutive checks for redundancy for HA
    */
   const std::chrono::seconds& redundancyMonitorInterval() const {
     return m_redundancyMonitorInterval;
@@ -208,7 +208,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   }
 
   /**
-   * Returns the connect wait timeout(in millis) used for to connect to server
+   * Returns the connect wait timeout(in milliseconds) used for to connect to server
    * This is only applicable for linux
    */
   const std::chrono::milliseconds& connectWaitTimeout() const {
@@ -216,7 +216,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   }
 
   /**
-   * Returns the connect wait timeout(in millis) used for to connect to server
+   * Returns the connect wait timeout(in milliseconds) used for to connect to server
    * This is only applicable for linux
    */
   const std::chrono::milliseconds& bucketWaitTimeout() const {
@@ -270,7 +270,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   }
 
   /**
-   * returns true if app want to clear pdx type ids when client disconnect.
+   * Returns true if app wants to clear pdx type ids when client disconnect.
    * deafult is false.
    */
   bool onClientDisconnectClearPdxTypeIds() const {
@@ -278,14 +278,14 @@ class APACHE_GEODE_EXPORT SystemProperties {
   }
 
   /**
-   * Set to true if app want to clear pdx type ids when client disconnect.
-   * deafult is false.
+   * Set to true if app wants to clear pdx type ids when client disconnect.
+   * Default is false.
    */
   void setOnClientDisconnectClearPdxTypeIds(bool set) {
     m_onClientDisconnectClearPdxTypeIds = set;
   }
 
-  /** Return the security diffie hellman secret key algo */
+  /** Return the security Diffie-Hellman secret key algorithm */
   const std::string& securityClientDhAlgo() const {
     return m_securityClientDhAlgo;
   }
@@ -302,7 +302,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
     return m_securityPropertiesPtr;
   }
 
-  /** Checks whether list of endpoint is shuffeled or not.
+  /** Checks whether list of endpoint is shuffled or not.
    * @return  bool value.
    */
   inline bool isEndpointShufflingDisabled() const {
@@ -318,8 +318,8 @@ class APACHE_GEODE_EXPORT SystemProperties {
   /**
    * Checks to see if this native client is being invoked as part of small
    * grid jobs; use this setting to disable some creation of threads and
-   * reducing start/stop time. Note that this setting can cause improper
-   * behaviour in some cases like:
+   * reduce start/stop time. Note that this setting can cause improper
+   * behavior in some cases like:
    *  1) client that is setup in listening mode and a server failure may not
    *     lead to failover by client
    *  2) while shutting down the client will not send a proper CLOSE_CONNECTION
@@ -335,7 +335,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   /**
    * Whether a non durable client starts to receive and process
    * subscription events automatically.
-   * If set to false then a non durable client should call the
+   * If set to false then a non-durable client should call the
    * Cache::readyForEvents() method after all regions are created
    * and listeners attached for the client to start receiving events
    * whether the client is initialized programmatically or declaratively.
@@ -351,7 +351,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   }
 
   /**
-   * Returns the tombstone timeout .
+   * Returns the tombstone timeout
    */
   const std::chrono::milliseconds tombstoneTimeout() const {
     return m_tombstoneTimeout;
