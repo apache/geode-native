@@ -66,9 +66,9 @@ For faster builds, use optional parallelism parameters in the last build step:
 
 ### Code Coverage
 
-If building with GCC or Clang you can enable C++ code coverage by adding `-DUSE_CODE_COVERAGE=ON` to the CMake [Generator](#generator) command. 
+If building with GCC or Clang you can enable C++ code coverage by adding `-DUSE_CPP_COVERAGE=ON` to the CMake [Generator](#generator) command. 
 
-    $ cmake ... -DUSE_CODE_COVERAGE=ON ...
+    $ cmake ... -DUSE_CPP_COVERAGE=ON ...
 
 You can then generate a C++ code coverage report by downloading [lcov](http://ltp.sourceforge.net/coverage/lcov.php).  After acquiring lcov, finish the [Steps to build](#Steps-to-build) section above.  Then, run the tests as described in the [CONTRIBUTING.md](CONTRIBUTING.md). Finally, run the following commands from the `build` directory:
 
