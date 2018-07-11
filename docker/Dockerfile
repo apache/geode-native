@@ -30,7 +30,7 @@ RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=creadur
         tar xjf -
 
 ENV CMAKE_VERSION 3.10.3
-RUN wget "https://cmake.org/files/LatestRelease/cmake-${CMAKE_VERSION}-Linux-x86_64.sh" -O /tmp/cmake && \
+RUN wget "https://cmake.org/files/PreviousRelease/cmake-${CMAKE_VERSION}-Linux-x86_64.sh" -O /tmp/cmake && \
         bash /tmp/cmake --skip-license --prefix=/usr/local && \
         rm /tmp/cmake
 
