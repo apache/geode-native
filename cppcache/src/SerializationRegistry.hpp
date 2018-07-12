@@ -143,7 +143,7 @@ class Pool;
 class PdxTypeHandler {
  public:
   virtual ~PdxTypeHandler() noexcept = default;
-  virtual void serialize(const PdxSerializable& pdxSerializable,
+  virtual void serialize(const std::shared_ptr<PdxSerializable>& pdxSerializable,
                          DataOutput& dataOutput) const;
   virtual std::shared_ptr<PdxSerializable> deserialize(
       DataInput& dataInput) const;
@@ -170,9 +170,6 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     } else if (const auto dataSerializable =
                    dynamic_cast<const DataSerializable*>(obj)) {
       serialize(dataSerializable, output, isDelta);
-    } else if (const auto pdxSerializable =
-                   dynamic_cast<const PdxSerializable*>(obj)) {
-      serialize(pdxSerializable, output);
     } else if (const auto dataSerializableInternal =
                    dynamic_cast<const DataSerializableInternal*>(obj)) {
       serialize(dataSerializableInternal, output);
@@ -180,6 +177,18 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
       throw UnsupportedOperationException(
           "SerializationRegistry::serialize: Serialization type not "
           "implemented.");
+    }
+  }
+
+  inline void serialize(const std::shared_ptr<Serializable>& obj, DataOutput& output,
+                        bool isDelta = false) const {
+    if (obj == nullptr) {
+      output.write(static_cast<int8_t>(GeodeTypeIds::NullObj));
+    } else if (auto&& pdxSerializable =
+        std::dynamic_pointer_cast<PdxSerializable>(obj)) {
+      serialize(pdxSerializable, output);
+    } else {
+      serialize(obj.get(), output, isDelta);
     }
   }
 
@@ -204,6 +213,16 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
       throw UnsupportedOperationException(
           "SerializationRegistry::serializeWithoutHeader: Serialization type "
           "not implemented.");
+    }
+  }
+
+  inline void serializeWithoutHeader(const std::shared_ptr<Serializable>& obj, DataOutput& output
+                        ) const {
+    if (auto&& pdxSerializable =
+        std::dynamic_pointer_cast<PdxSerializable>(obj)) {
+      serializeWithoutHeader(pdxSerializable, output);
+    } else {
+      serializeWithoutHeader(obj.get(), output);
     }
   }
 
@@ -334,13 +353,13 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     obj->toData(output);
   }
 
-  inline void serialize(const PdxSerializable* obj, DataOutput& output) const {
+  inline void serialize(const std::shared_ptr<PdxSerializable>& obj, DataOutput& output) const {
     output.write(static_cast<int8_t>(GeodeTypeIdsImpl::PDX));
 
     serializeWithoutHeader(obj, output);
   }
 
-  void serializeWithoutHeader(const PdxSerializable* obj,
+  void serializeWithoutHeader(const std::shared_ptr<PdxSerializable>& obj,
                               DataOutput& output) const;
 
   inline void serialize(const DataSerializableInternal* obj,

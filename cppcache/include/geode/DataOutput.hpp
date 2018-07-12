@@ -353,7 +353,7 @@ class APACHE_GEODE_EXPORT DataOutput {
    */
   template <class PTR>
   void writeObject(const std::shared_ptr<PTR>& objptr, bool isDelta = false) {
-    writeObjectInternal(objptr.get(), isDelta);
+    writeObjectInternal(objptr, isDelta);
   }
 
   /**
@@ -516,6 +516,7 @@ class APACHE_GEODE_EXPORT DataOutput {
 
  private:
   void writeObjectInternal(const Serializable* ptr, bool isDelta = false);
+  void writeObjectInternal(const std::shared_ptr<Serializable>& ptr, bool isDelta = false);
 
   static void acquireLock();
   static void releaseLock();
