@@ -20,4 +20,4 @@ set -x -e -o pipefail
 yum-config-manager --enable rhui-REGION-rhel-server-rhscl
 yum -y install devtoolset-4-gcc-c++
 
-echo "source scl_source enable devtoolset-4" >> ~/.bashrc
+echo "source scl_source enable devtoolset-4" >> ~build/.bashrc
