@@ -21,4 +21,4 @@ yum-config-manager --enable rhui-REGION-rhel-server-rhscl
 yum -y install python27-python-pip
 scl enable python27 'pip install --upgrade pip'
 
-echo "source scl_source enable python27" >> ~/.bashrc
+echo "source scl_source enable python27" >> /etc/bashrc
