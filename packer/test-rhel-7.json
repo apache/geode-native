@@ -39,20 +39,6 @@
     },
     {
       "type":"file",
-      "source":"rhel/files",
-      "destination":"/tmp"
-    },
-    {
-      "type":"shell",
-      "execute_command":"{{.Vars}} sudo -E -S bash '{{.Path}}'",
-      "inline":[
-        "cp -rv /tmp/files/* /",
-        "rm -rf /tmp/files",
-        "chmod +x /etc/init-user.sh"
-      ]
-    },
-    {
-      "type":"file",
       "source":"rhel/init-hosts.rc.local",
       "destination":"/tmp/init-hosts.rc.local"
     },
@@ -68,7 +54,6 @@
       "execute_command":"{{.Vars}} sudo -E -S bash '{{.Path}}'",
       "scripts":[
         "rhel/disable-selinux.sh",
-        "rhel/add-user-build.sh",
         "rhel/install-repos.sh",
         "rhel/install-jdk-1.8.sh",
         "rhel/install-cmake.sh"
