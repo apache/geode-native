@@ -19,7 +19,6 @@
 
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
-#include <geode/GeodeTypeIds.hpp>
 #include "end_native.hpp"
 
 namespace Apache
@@ -41,25 +40,25 @@ namespace Apache
         /// ClassId of <c>Properties</c> class
         /// </summary>
         literal System::UInt32 Properties =
-          apache::geode::client::GeodeTypeIds::Properties + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::Properties) + 0x80000000;
 
         /// <summary>        
         /// ClassId of <c>CharArray</c> class
         /// </summary>
         literal System::UInt32 CharArray =
-          apache::geode::client::GeodeTypeIds::CharArray + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CharArray) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>BooleanArray</c> class
         /// </summary>
         literal System::UInt32 BooleanArray =
-          apache::geode::client::GeodeTypeIds::BooleanArray + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::BooleanArray) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>RegionAttributes</c> class
         /// </summary>
         literal System::UInt32 RegionAttributes =
-          apache::geode::client::GeodeTypeIds::RegionAttributes + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::RegionAttributes) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableUndefined</c> class
@@ -67,214 +66,214 @@ namespace Apache
         /// different increment.
         /// </summary>
         literal System::UInt32 CacheableUndefined =
-          apache::geode::client::GeodeTypeIds::CacheableUndefined + 0xa0000000;
+          static_cast<System::UInt32>(apache::geode::client::DSFid::CacheableUndefined) + 0xa0000000;
 
         literal System::Int32 EnumInfo =
-          apache::geode::client::GeodeTypeIds::EnumInfo;
+          static_cast<System::UInt32>(apache::geode::client::DSFid::EnumInfo);
 
         /// <summary>
         /// ClassId of <c>Struct</c> class
         /// </summary>
         literal System::UInt32 Struct =
-          apache::geode::client::GeodeTypeIds::Struct + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSFid::Struct) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableString</c> class
         /// </summary>
         literal System::UInt32 CacheableString =
-          apache::geode::client::GeodeTypeIds::CacheableString + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableString) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableString</c> class for huge strings
         /// </summary>
         literal System::UInt32 CacheableStringHuge =
-          apache::geode::client::GeodeTypeIds::CacheableStringHuge + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableStringHuge) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableBytes</c> class
         /// </summary>
         literal System::UInt32 CacheableBytes =
-          apache::geode::client::GeodeTypeIds::CacheableBytes + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableBytes) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableInt16Array</c> class
         /// </summary>
         literal System::UInt32 CacheableInt16Array =
-          apache::geode::client::GeodeTypeIds::CacheableInt16Array + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableInt16Array) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableInt32Array</c> class
         /// </summary>
         literal System::UInt32 CacheableInt32Array =
-          apache::geode::client::GeodeTypeIds::CacheableInt32Array + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableInt32Array) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableInt64Array</c> class
         /// </summary>
         literal System::UInt32 CacheableInt64Array =
-          apache::geode::client::GeodeTypeIds::CacheableInt64Array + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableInt64Array) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableFloatArray</c> class
         /// </summary>
         literal System::UInt32 CacheableFloatArray =
-          apache::geode::client::GeodeTypeIds::CacheableFloatArray + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableFloatArray) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableDoubleArray</c> class
         /// </summary>
         literal System::UInt32 CacheableDoubleArray =
-          apache::geode::client::GeodeTypeIds::CacheableDoubleArray + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableDoubleArray) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableVector</c> class for object arrays
         /// </summary>
         literal System::UInt32 CacheableObjectArray =
-          apache::geode::client::GeodeTypeIds::CacheableObjectArray + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableObjectArray) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableBoolean</c> class
         /// </summary>
         literal System::UInt32 CacheableBoolean =
-          apache::geode::client::GeodeTypeIds::CacheableBoolean + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableBoolean) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableInt16</c> class for wide-characters
         /// </summary>
         literal System::UInt32 CacheableCharacter =
-          apache::geode::client::GeodeTypeIds::CacheableCharacter + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableCharacter) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableByte</c> class
         /// </summary>
         literal System::UInt32 CacheableByte =
-          apache::geode::client::GeodeTypeIds::CacheableByte + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableByte) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableInt16</c> class
         /// </summary>
         literal System::UInt32 CacheableInt16 =
-          apache::geode::client::GeodeTypeIds::CacheableInt16 + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableInt16) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableInt32</c> class
         /// </summary>
         literal System::UInt32 CacheableInt32 =
-          apache::geode::client::GeodeTypeIds::CacheableInt32 + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableInt32) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableInt64</c> class
         /// </summary>
         literal System::UInt32 CacheableInt64 =
-          apache::geode::client::GeodeTypeIds::CacheableInt64 + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableInt64) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableFloat</c> class
         /// </summary>
         literal System::UInt32 CacheableFloat =
-          apache::geode::client::GeodeTypeIds::CacheableFloat + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableFloat) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableDouble</c> class
         /// </summary>
         literal System::UInt32 CacheableDouble =
-          apache::geode::client::GeodeTypeIds::CacheableDouble + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableDouble) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableDate</c> class
         /// </summary>
         literal System::UInt32 CacheableDate =
-          apache::geode::client::GeodeTypeIds::CacheableDate + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableDate) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableFileName</c> class
         /// </summary>
         literal System::UInt32 CacheableFileName =
-          apache::geode::client::GeodeTypeIds::CacheableFileName + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableFileName) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableStringArray</c> class
         /// </summary>
         literal System::UInt32 CacheableStringArray =
-          apache::geode::client::GeodeTypeIds::CacheableStringArray + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableStringArray) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableVector</c> class
         /// </summary>
         literal System::UInt32 CacheableVector =
-          apache::geode::client::GeodeTypeIds::CacheableVector + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableVector) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableStack</c> class
         /// </summary>
         literal System::UInt32 CacheableStack =
-          apache::geode::client::GeodeTypeIds::CacheableStack + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableStack) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableArrayList</c> class
         /// </summary>
         literal System::UInt32 CacheableArrayList =
-          apache::geode::client::GeodeTypeIds::CacheableArrayList + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableArrayList) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableArrayList</c> class
         /// </summary>
         literal System::UInt32 CacheableLinkedList =
-          apache::geode::client::GeodeTypeIds::CacheableLinkedList + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableLinkedList) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableHashSet</c> class
         /// </summary>
         literal System::UInt32 CacheableHashSet =
-          apache::geode::client::GeodeTypeIds::CacheableHashSet + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableHashSet) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableLinkedHashSet</c> class
         /// </summary>
         literal System::UInt32 CacheableLinkedHashSet =
-          apache::geode::client::GeodeTypeIds::CacheableLinkedHashSet + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableLinkedHashSet) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableHashMap</c> class
         /// </summary>
         literal System::UInt32 CacheableHashMap =
-          apache::geode::client::GeodeTypeIds::CacheableHashMap + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableHashMap) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableHashTable</c> class
         /// </summary>
         literal System::UInt32 CacheableHashTable =
-          apache::geode::client::GeodeTypeIds::CacheableHashTable + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableHashTable) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableIdentityHashMap</c> class
         /// </summary>
         literal System::UInt32 CacheableIdentityHashMap =
-          apache::geode::client::GeodeTypeIds::CacheableIdentityHashMap + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableIdentityHashMap) + 0x80000000;
 
         /// <summary>
         /// Not used.
         /// </summary>
         literal System::UInt32 CacheableTimeUnit =
-          apache::geode::client::GeodeTypeIds::CacheableTimeUnit + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableTimeUnit) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableString</c> class for null strings
         /// </summary>
         literal System::UInt32 CacheableNullString =
-          apache::geode::client::GeodeTypeIds::CacheableNullString + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableNullString) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableString</c> class for ASCII strings
         /// </summary>
         literal System::UInt32 CacheableASCIIString =
-          apache::geode::client::GeodeTypeIds::CacheableASCIIString + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableASCIIString) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableString</c> class for huge ASCII strings
         /// </summary>
         literal System::UInt32 CacheableASCIIStringHuge =
-          apache::geode::client::GeodeTypeIds::CacheableASCIIStringHuge + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::DSCode::CacheableASCIIStringHuge) + 0x80000000;
 
 
         // Built-in managed types.
@@ -283,13 +282,13 @@ namespace Apache
         /// ClassId of <c>CacheableObject</c> class
         /// </summary>
         literal System::UInt32 CacheableManagedObject = 
-          apache::geode::client::GeodeTypeIds::CacheableManagedObject + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::InternalId::CacheableManagedObject) + 0x80000000;
 
         /// <summary>
         /// ClassId of <c>CacheableObjectXml</c> class
         /// </summary>
         literal System::UInt32 CacheableManagedObjectXml = 
-          apache::geode::client::GeodeTypeIds::CacheableManagedObjectXml + 0x80000000;
+          static_cast<System::UInt32>(apache::geode::client::InternalId::CacheableManagedObjectXml) + 0x80000000;
 
       };
     }  // namespace Client

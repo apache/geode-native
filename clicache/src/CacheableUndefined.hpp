@@ -92,7 +92,7 @@ namespace Apache
         {
           virtual Int32 get()
           {
-            return native::GeodeTypeIds::CacheableUndefined;
+            return static_cast<Int32>(native::DSFid::CacheableUndefined);
           }
         }
 

@@ -16,7 +16,6 @@
  */
 
 #include <geode/Properties.hpp>
-#include <geode/GeodeTypeIds.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/ExceptionTypes.hpp>
@@ -196,7 +195,7 @@ std::shared_ptr<Serializable> Properties::createDeserializable() {
   return std::make_shared<Properties>();
 }
 
-int8_t Properties::getDsCode() const { return GeodeTypeIds::Properties; }
+DSCode Properties::getDsCode() const { return DSCode::Properties; }
 
 void Properties::toData(DataOutput& output) const {
   output.writeArrayLen(static_cast<uint32_t>(m_map.size()));

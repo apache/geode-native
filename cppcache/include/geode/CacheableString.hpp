@@ -23,7 +23,7 @@
 #include "internal/geode_globals.hpp"
 #include "internal/DataSerializablePrimitive.hpp"
 #include "CacheableKey.hpp"
-#include "GeodeTypeIds.hpp"
+#include "internal/DSCode.hpp"
 
 /** @file
  */
@@ -41,7 +41,7 @@ class APACHE_GEODE_EXPORT CacheableString
       public CacheableKey {
  protected:
   std::string m_str;
-  int8_t m_type;
+  internal::DSCode m_type;
   mutable int m_hashcode;
 
   _GEODE_FRIEND_STD_SHARED_PTR(CacheableString)
@@ -51,7 +51,7 @@ class APACHE_GEODE_EXPORT CacheableString
 
   void fromData(DataInput& input) override;
 
-  int8_t getDsCode() const override { return m_type; }
+  DSCode getDsCode() const override { return m_type; }
 
   /** creation function for strings */
   static std::shared_ptr<Serializable> createDeserializable();
@@ -115,7 +115,7 @@ class APACHE_GEODE_EXPORT CacheableString
 
  protected:
   /** Default constructor. */
-  inline CacheableString(int8_t type = GeodeTypeIds::CacheableASCIIString)
+  inline CacheableString(DSCode type = DSCode::CacheableASCIIString)
       : m_str(), m_type(type), m_hashcode(0) {}
 
   inline CacheableString(const std::string& value)
@@ -126,10 +126,10 @@ class APACHE_GEODE_EXPORT CacheableString
     bool ascii = isAscii(m_str);
 
     m_type = m_str.length() > std::numeric_limits<uint16_t>::max()
-                 ? ascii ? GeodeTypeIds::CacheableASCIIStringHuge
-                         : GeodeTypeIds::CacheableStringHuge
-                 : ascii ? GeodeTypeIds::CacheableASCIIString
-                         : GeodeTypeIds::CacheableString;
+                 ? ascii ? DSCode::CacheableASCIIStringHuge
+                         : DSCode::CacheableStringHuge
+                 : ascii ? DSCode::CacheableASCIIString
+                         : DSCode::CacheableString;
   }
 
  private:

@@ -21,7 +21,6 @@
 #define GEODE_VERSIONTAG_H_
 
 #include <geode/Serializable.hpp>
-#include "GeodeTypeIdsImpl.hpp"
 #include "MemberListForVersionStamp.hpp"
 
 namespace apache {
@@ -62,8 +61,8 @@ class VersionTag : public DataSerializableFixedId {
 
   void fromData(DataInput& input) override;
 
-  virtual int32_t getDSFID() const override {
-    return GeodeTypeIdsImpl::VersionTag;
+  DSFid getDSFID() const override {
+    return DSFid::VersionTag;
   }
 
   static std::shared_ptr<Serializable> createDeserializable(

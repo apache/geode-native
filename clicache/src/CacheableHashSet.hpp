@@ -599,7 +599,7 @@ namespace Apache
       }
 
 #define _GFCLI_CACHEABLEHASHSET_DEF_GENERIC(m, HSTYPE)                               \
-	public ref class m : public Internal::CacheableHashSetType<native::GeodeTypeIds::m, HSTYPE>      \
+	public ref class m : public Internal::CacheableHashSetType<static_cast<int8_t>(native::DSCode::m), HSTYPE>      \
             {                                                                       \
       public:                                                                 \
         /** <summary>
@@ -607,15 +607,15 @@ namespace Apache
       *  </summary>
       */                                                                   \
       inline m()                                                            \
-      : Internal::CacheableHashSetType<native::GeodeTypeIds::m, HSTYPE>() {}                      \
+      : Internal::CacheableHashSetType<static_cast<int8_t>(native::DSCode::m), HSTYPE>() {}                      \
       \
       /** <summary>
        *  Allocates a new instance with the given size.
        *  </summary>
-       *  <param name="size">the intial size of the new instance</param>
+       *  <param name="size">the initial size of the new instance</param>
        */                                                                   \
        inline m(System::Int32 size)                                                 \
-       : Internal::CacheableHashSetType<native::GeodeTypeIds::m, HSTYPE>(size) {}                  \
+       : Internal::CacheableHashSetType<static_cast<int8_t>(native::DSCode::m), HSTYPE>(size) {}                  \
        \
        /** <summary>
         *  Static function to create a new empty instance.
@@ -652,7 +652,7 @@ namespace Apache
       \
             private:                                                                \
               inline m(std::shared_ptr<apache::geode::client::Serializable> nativeptr)                            \
-              : Internal::CacheableHashSetType<native::GeodeTypeIds::m, HSTYPE>(nativeptr) { }             \
+              : Internal::CacheableHashSetType<static_cast<int8_t>(native::DSCode::m), HSTYPE>(nativeptr) { }             \
       };
 
       /// <summary>

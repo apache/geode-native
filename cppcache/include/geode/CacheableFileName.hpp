@@ -49,7 +49,7 @@ class APACHE_GEODE_EXPORT CacheableFileName : public CacheableString {
 
   virtual void fromData(DataInput& input) override;
 
-  virtual int8_t getDsCode() const override;
+  virtual DSCode getDsCode() const override;
 
   /**
    * @brief creation function for filenames.

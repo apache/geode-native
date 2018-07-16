@@ -70,7 +70,7 @@ namespace Apache
 
       int8_t CacheableDate::DsCode::get()
       {
-        return native::GeodeTypeIds::CacheableDate;
+        return static_cast<int8_t>(native::DSCode::CacheableDate);
       }
 
       String^ CacheableDate::ToString()

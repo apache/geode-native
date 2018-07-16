@@ -82,7 +82,7 @@ namespace Apache
         {
           virtual int8_t get()
           {
-            return apache::geode::client::GeodeTypeIds::CacheableManagedObjectXml;
+            return static_cast<int8_t>(apache::geode::client::internal::InternalId::CacheableManagedObjectXml);
           }
         }
 

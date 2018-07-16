@@ -18,7 +18,6 @@
 #include "ClientReplacementRequest.hpp"
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
-#include "GeodeTypeIdsImpl.hpp"
 
 using namespace apache::geode::client;
 
@@ -27,6 +26,6 @@ void ClientReplacementRequest::toData(DataOutput& output) const {
   this->m_serverLocation.toData(output);
 }
 
-int32_t ClientReplacementRequest::getDSFID() const {
-  return GeodeTypeIdsImpl::ClientReplacementRequest;
+DSFid ClientReplacementRequest::getDSFID() const {
+  return DSFid::ClientReplacementRequest;
 }

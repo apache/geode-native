@@ -30,7 +30,6 @@
 #include "geode/internal/DataSerializableFixedId.hpp"
 #include "MapWithLock.hpp"
 #include "HashMapOfException.hpp"
-#include "GeodeTypeIdsImpl.hpp"
 
 /** @file
  */
@@ -117,8 +116,8 @@ class CacheableObjectPartList : public DataSerializableFixedId {
 
   void fromData(DataInput& input) override;
 
-  int32_t getDSFID() const override {
-    return GeodeTypeIdsImpl::CacheableObjectPartList;
+  DSFid getDSFID() const override {
+    return DSFid::CacheableObjectPartList;
   }
 
   size_t objectSize() const override;

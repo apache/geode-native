@@ -26,7 +26,7 @@
 #include "internal/geode_globals.hpp"
 #include "internal/DataSerializablePrimitive.hpp"
 #include "Serializable.hpp"
-#include "GeodeTypeIds.hpp"
+#include "internal/DSCode.hpp"
 
 /** @file
  */
@@ -58,8 +58,8 @@ class APACHE_GEODE_EXPORT CacheableObjectArray
     return std::make_shared<CacheableObjectArray>();
   }
 
-  int8_t getDsCode() const override {
-    return GeodeTypeIds::CacheableObjectArray;
+  internal::DSCode getDsCode() const override {
+    return internal::DSCode::CacheableObjectArray;
   }
 
   /**

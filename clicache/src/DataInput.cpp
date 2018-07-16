@@ -18,7 +18,6 @@
 
 #include "begin_native.hpp"
 #include <geode/Cache.hpp>
-#include <GeodeTypeIdsImpl.hpp>
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
@@ -449,52 +448,52 @@ namespace Apache
 
       Object^ DataInput::ReadDotNetTypes(int8_t typeId)
       {
-        switch (typeId)
+        switch (static_cast<apache::geode::client::DSCode>(typeId))
         {
-        case apache::geode::client::GeodeTypeIds::CacheableByte:
+        case apache::geode::client::DSCode::CacheableByte:
         {
           return ReadByte();
         }
-        case apache::geode::client::GeodeTypeIds::CacheableBoolean:
+        case apache::geode::client::DSCode::CacheableBoolean:
         {
           bool obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableCharacter:
+        case apache::geode::client::DSCode::CacheableCharacter:
         {
           Char obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableDouble:
+        case apache::geode::client::DSCode::CacheableDouble:
         {
           Double obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableASCIIString:
+        case apache::geode::client::DSCode::CacheableASCIIString:
         {
           /*	CacheableString^ cs = static_cast<CacheableString^>(CacheableString::CreateDeserializable());
             cs->FromData(this);
             return cs->Value;*/
           return ReadUTF();
         }
-        case apache::geode::client::GeodeTypeIds::CacheableASCIIStringHuge:
+        case apache::geode::client::DSCode::CacheableASCIIStringHuge:
         {
           /*CacheableString^ cs = static_cast<CacheableString^>(CacheableString::createDeserializableHuge());
           cs->FromData(this);
           return cs->Value;*/
           return ReadASCIIHuge();
         }
-        case apache::geode::client::GeodeTypeIds::CacheableString:
+        case apache::geode::client::DSCode::CacheableString:
         {
           /*CacheableString^ cs = static_cast<CacheableString^>(CacheableString::createUTFDeserializable());
           cs->FromData(this);
           return cs->Value;*/
           return ReadUTF();
         }
-        case apache::geode::client::GeodeTypeIds::CacheableStringHuge:
+        case apache::geode::client::DSCode::CacheableStringHuge:
         {
           //TODO: need to look all strings types
           /*CacheableString^ cs = static_cast<CacheableString^>(CacheableString::createUTFDeserializableHuge());
@@ -502,103 +501,103 @@ namespace Apache
           return cs->Value;*/
           return ReadUTFHuge();
         }
-        case apache::geode::client::GeodeTypeIds::CacheableFloat:
+        case apache::geode::client::DSCode::CacheableFloat:
         {
           float obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableInt16:
+        case apache::geode::client::DSCode::CacheableInt16:
         {
           Int16 obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableInt32:
+        case apache::geode::client::DSCode::CacheableInt32:
         {
           Int32 obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableInt64:
+        case apache::geode::client::DSCode::CacheableInt64:
         {
           Int64 obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableDate:
+        case apache::geode::client::DSCode::CacheableDate:
         {
           CacheableDate^ cd = CacheableDate::Create();
           cd->FromData(this);
           return cd->Value;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableBytes:
+        case apache::geode::client::DSCode::CacheableBytes:
         {
           return ReadBytes();
         }
-        case apache::geode::client::GeodeTypeIds::CacheableDoubleArray:
+        case apache::geode::client::DSCode::CacheableDoubleArray:
         {
           array<Double>^ obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableFloatArray:
+        case apache::geode::client::DSCode::CacheableFloatArray:
         {
           array<float>^ obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableInt16Array:
+        case apache::geode::client::DSCode::CacheableInt16Array:
         {
           array<Int16>^ obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableInt32Array:
+        case apache::geode::client::DSCode::CacheableInt32Array:
         {
           array<Int32>^ obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::BooleanArray:
+        case apache::geode::client::DSCode::BooleanArray:
         {
           array<bool>^ obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::CharArray:
+        case apache::geode::client::DSCode::CharArray:
         {
           array<Char>^ obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableInt64Array:
+        case apache::geode::client::DSCode::CacheableInt64Array:
         {
           array<Int64>^ obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableStringArray:
+        case apache::geode::client::DSCode::CacheableStringArray:
         {
           return ReadStringArray();
         }
-        case apache::geode::client::GeodeTypeIds::CacheableHashTable:
+        case apache::geode::client::DSCode::CacheableHashTable:
         {
           return ReadHashtable();
         }
-        case apache::geode::client::GeodeTypeIds::CacheableHashMap:
+        case apache::geode::client::DSCode::CacheableHashMap:
         {
           CacheableHashMap^ chm = static_cast<CacheableHashMap^>(CacheableHashMap::CreateDeserializable());
           chm->FromData(this);
           return chm->Value;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableIdentityHashMap:
+        case apache::geode::client::DSCode::CacheableIdentityHashMap:
         {
           CacheableIdentityHashMap^ chm = static_cast<CacheableIdentityHashMap^>(CacheableIdentityHashMap::CreateDeserializable());
           chm->FromData(this);
           return chm->Value;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableVector:
+        case apache::geode::client::DSCode::CacheableVector:
         {
           /*CacheableVector^ cv = static_cast<CacheableVector^>(CacheableVector::CreateDeserializable());
           cv->FromData(this);
@@ -612,7 +611,7 @@ namespace Apache
           }
           return retA;
         }
-        case apache::geode::client::GeodeTypeIds::CacheableArrayList:
+        case apache::geode::client::DSCode::CacheableArrayList:
         {
           /*CacheableArrayList^ cv = static_cast<CacheableArrayList^>(CacheableArrayList::CreateDeserializable());
           cv->FromData(this);
@@ -626,7 +625,7 @@ namespace Apache
           return retA;
 
         }
-        case apache::geode::client::GeodeTypeIds::CacheableLinkedList:
+        case apache::geode::client::DSCode::CacheableLinkedList:
         {
           /*CacheableArrayList^ cv = static_cast<CacheableArrayList^>(CacheableArrayList::CreateDeserializable());
           cv->FromData(this);
@@ -640,7 +639,7 @@ namespace Apache
           return retA;
 
         }
-        case apache::geode::client::GeodeTypeIds::CacheableStack:
+        case apache::geode::client::DSCode::CacheableStack:
         {
           CacheableStack^ cv = static_cast<CacheableStack^>(CacheableStack::CreateDeserializable());
           cv->FromData(this);
@@ -655,129 +654,123 @@ namespace Apache
       {
         try
         {
-        //Log::Debug("DataInput::ReadInternalObject m_cursor " + m_cursor);
-        bool findinternal = false;
-        int8_t typeId = ReadByte();
-        System::Int64 compId = typeId;
-        TypeFactoryMethod^ createType = nullptr;
+          //Log::Debug("DataInput::ReadInternalObject m_cursor " + m_cursor);
+          bool findinternal = false;
+          int8_t typeId = ReadByte();
+          System::Int64 compId;
+          TypeFactoryMethod^ createType = nullptr;
 
-        if (compId == GeodeTypeIds::NullObj) {
-          return nullptr;
-        }
-        else if (compId == GeodeTypeIdsImpl::PDX)
-        {
-          //cache current state and reset after reading pdx object
-          auto cacheCursor = m_cursor;
-          System::Byte* cacheBuffer = m_buffer;
-          auto cacheBufferLength = m_bufferLength;
-          Object^ ret = Internal::PdxHelper::DeserializePdx(this, false, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
-          auto tmp = m_nativeptr->get()->getBytesRemaining();
-          m_cursor = cacheBufferLength - tmp;
-          m_buffer = cacheBuffer;
-          m_bufferLength = cacheBufferLength;
-          m_nativeptr->get()->rewindCursor(m_cursor);
-
-          if (ret != nullptr)
+          switch (static_cast<DSCode>(typeId)) 
           {
-            if (auto pdxWrapper = dynamic_cast<Apache::Geode::Client::PdxWrapper^>(ret))
+            case DSCode::NullObj:
+              return nullptr;
+            case DSCode::PDX: 
             {
-              return pdxWrapper->GetObject();
-            }
-          }
-          return ret;
-        }
-        else if (compId == GeodeTypeIdsImpl::PDX_ENUM)
-        {
-          int8_t dsId = ReadByte();
-          int tmp = ReadArrayLen();
-          int enumId = (dsId << 24) | (tmp & 0xFFFFFF);
+              //cache current state and reset after reading pdx object
+              auto cacheCursor = m_cursor;
+              System::Byte* cacheBuffer = m_buffer;
+              auto cacheBufferLength = m_bufferLength;
+              Object^ ret = Internal::PdxHelper::DeserializePdx(this, false, CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry().get());
+              auto tmp = m_nativeptr->get()->getBytesRemaining();
+              m_cursor = cacheBufferLength - tmp;
+              m_buffer = cacheBuffer;
+              m_bufferLength = cacheBufferLength;
+              m_nativeptr->get()->rewindCursor(m_cursor);
 
-          Object^ enumVal = Internal::PdxHelper::GetEnum(enumId, m_cache);
-          return enumVal;
-        }
-        else if (compId == GeodeTypeIds::CacheableNullString) {
-          //return SerializablePtr(CacheableString::createDeserializable());
-          //TODO::
-          return nullptr;
-        }
-        else if (compId == GeodeTypeIdsImpl::CacheableUserData) {
-          int8_t classId = ReadByte();
-          //compId |= ( ( (System::Int64)classId ) << 32 );
-          compId = (System::Int64)classId;
-        }
-        else if (compId == GeodeTypeIdsImpl::CacheableUserData2) {
-          System::Int16 classId = ReadInt16();
-          //compId |= ( ( (System::Int64)classId ) << 32 );
-          compId = (System::Int64)classId;
-        }
-        else if (compId == GeodeTypeIdsImpl::CacheableUserData4) {
-          System::Int32 classId = ReadInt32();
-          //compId |= ( ( (System::Int64)classId ) << 32 );
-          compId = (System::Int64)classId;
-        }
-        else if (compId == GeodeTypeIdsImpl::FixedIDByte) {//TODO: need to verify again
-          int8_t fixedId = ReadByte();
-          compId = fixedId;
-          findinternal = true;
-        }
-        else if (compId == GeodeTypeIdsImpl::FixedIDShort) {
-          System::Int16 fixedId = ReadInt16();
-          compId = fixedId;
-          findinternal = true;
-        }
-        else if (compId == GeodeTypeIdsImpl::FixedIDInt) {
-          System::Int32 fixedId = ReadInt32();
-          compId = fixedId;
-          findinternal = true;
-        }
-        if (findinternal) {
-          createType = m_cache->TypeRegistry->GetDataSerializableFixedTypeFactoryMethodForFixedId((Int32)compId);
-        }
-        else {
-          createType = m_cache->TypeRegistry->GetManagedDelegateGeneric(compId);
-          if (createType == nullptr)
+              if (ret != nullptr)
+              {
+                if (auto pdxWrapper = dynamic_cast<Apache::Geode::Client::PdxWrapper^>(ret))
+                {
+                  return pdxWrapper->GetObject();
+                }
+              }
+              return ret;
+            }
+            case DSCode::PDX_ENUM: 
+            {
+              int8_t dsId = ReadByte();
+              int tmp = ReadArrayLen();
+              int enumId = (dsId << 24) | (tmp & 0xFFFFFF);
+
+              Object^ enumVal = Internal::PdxHelper::GetEnum(enumId, m_cache);
+              return enumVal;
+            }
+            case DSCode::CacheableNullString:
+              return nullptr;
+            case DSCode::CacheableUserData:
+              compId = ReadByte();
+              break;
+            case DSCode::CacheableUserData2:
+              compId = ReadInt16();
+              break;
+            case DSCode::CacheableUserData4:
+              compId = ReadInt32();
+              break;
+            case DSCode::FixedIDByte:
+              compId = ReadByte();
+              findinternal = true;
+              break;
+            case DSCode::FixedIDShort:
+              compId = ReadInt16();
+              findinternal = true;
+              break;
+            case DSCode::FixedIDInt:
+              compId = ReadInt32();
+              findinternal = true;
+              break;
+          }
+
+          if (findinternal) 
           {
-            Object^ retVal = ReadDotNetTypes(typeId);
-
-            if (retVal != nullptr)
-              return retVal;
-
-            if (m_ispdxDesrialization && typeId == apache::geode::client::GeodeTypeIds::CacheableObjectArray)
-            {//object array and pdxSerialization
-              return readDotNetObjectArray();
-            }
-            
-            createType = m_cache->TypeRegistry->GetDataSerializablePrimitiveTypeFactoryMethodForDsCode(typeId);
+            createType = m_cache->TypeRegistry->GetDataSerializableFixedTypeFactoryMethodForFixedId(static_cast<Int32>(compId));
           }
-        }
+          else 
+          {
+            createType = m_cache->TypeRegistry->GetManagedDelegateGeneric(compId);
+            if (createType == nullptr)
+            {
+              Object^ retVal = ReadDotNetTypes(typeId);
 
-        if (createType == nullptr) {
-          throw gcnew IllegalStateException("Unregistered typeId " + typeId + " in deserialization, aborting.");
-        }
+              if (retVal != nullptr)
+                return retVal;
 
-        bool isPdxDeserialization = m_ispdxDesrialization;
-        m_ispdxDesrialization = false;//for nested objects
-        ISerializable^ newObj = createType();
+              if (m_ispdxDesrialization && static_cast<DSCode>(typeId) == DSCode::CacheableObjectArray)
+              {//object array and pdxSerialization
+                return readDotNetObjectArray();
+              }
+              
+              createType = m_cache->TypeRegistry->GetDataSerializablePrimitiveTypeFactoryMethodForDsCode(typeId);
+            }
+          }
 
-        if (auto dataSerializable = dynamic_cast<IDataSerializablePrimitive^>(newObj))
-        {
-          dataSerializable->FromData(this);
-        }
-        else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(newObj))
-        {
-          dataSerializable->FromData(this);
-        }
-        else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(newObj))
-        {
-          dataSerializableFixedId->FromData(this);
-        }
-        else
-        {
-          throw gcnew IllegalStateException("Unknown serialization type.");
-        }
+          if (createType == nullptr) 
+          {
+            throw gcnew IllegalStateException("Unregistered typeId " + typeId + " in deserialization, aborting.");
+          }
 
-        m_ispdxDesrialization = isPdxDeserialization;
-        return newObj;
+          bool isPdxDeserialization = m_ispdxDesrialization;
+          m_ispdxDesrialization = false;//for nested objects
+          ISerializable^ newObj = createType();
+
+          if (auto dataSerializable = dynamic_cast<IDataSerializablePrimitive^>(newObj))
+          {
+            dataSerializable->FromData(this);
+          }
+          else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(newObj))
+          {
+            dataSerializable->FromData(this);
+          }
+          else if (auto dataSerializableFixedId = dynamic_cast<IDataSerializableFixedId^>(newObj))
+          {
+            dataSerializableFixedId->FromData(this);
+          }
+          else
+          {
+            throw gcnew IllegalStateException("Unknown serialization type.");
+          }
+
+          m_ispdxDesrialization = isPdxDeserialization;
+          return newObj;
         }
         finally
         {
@@ -1077,23 +1070,17 @@ namespace Apache
 
       String^ DataInput::ReadString()
       {
-        UInt32 typeId = (Int32)ReadByte();
-
-        if (typeId == GeodeTypeIds::CacheableNullString)
-          return nullptr;
-
-        if (typeId == GeodeTypeIds::CacheableASCIIString ||
-            typeId == GeodeTypeIds::CacheableString)
+        switch (static_cast<DSCode>(ReadByte()))
         {
-          return ReadUTF();
-        }
-        else if (typeId == GeodeTypeIds::CacheableASCIIStringHuge)
-        {
-          return ReadASCIIHuge();
-        }
-        else
-        {
-          return ReadUTFHuge();
+          case DSCode::CacheableNullString:
+            return nullptr;
+          case DSCode::CacheableASCIIString:
+          case DSCode::CacheableString:
+            return ReadUTF();
+          case DSCode::CacheableASCIIStringHuge:
+            return ReadASCIIHuge();
+          default:
+            return ReadUTFHuge();
         }
       }
 

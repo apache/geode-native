@@ -40,9 +40,9 @@ int8_t PdxInstanceImpl::m_FloatDefaultBytes[] = {0, 0, 0, 0};
 int8_t PdxInstanceImpl::m_DoubleDefaultBytes[] = {0, 0, 0, 0, 0, 0, 0, 0};
 int8_t PdxInstanceImpl::m_DateDefaultBytes[] = {-1, -1, -1, -1, -1, -1, -1, -1};
 int8_t PdxInstanceImpl::m_StringDefaultBytes[] = {
-    apache::geode::client::GeodeTypeIds::CacheableNullString};
+    static_cast<int8_t>(apache::geode::client::DSCode::CacheableNullString)};
 int8_t PdxInstanceImpl::m_ObjectDefaultBytes[] = {
-    apache::geode::client::GeodeTypeIds::NullObj};
+    static_cast<int8_t>(apache::geode::client::DSCode::NullObj)};
 int8_t PdxInstanceImpl::m_NULLARRAYDefaultBytes[] = {-1};
 std::shared_ptr<PdxFieldType> PdxInstanceImpl::m_DefaultPdxFieldType(
     new PdxFieldType("default", "default", PdxFieldTypes::UNKNOWN,
@@ -157,7 +157,7 @@ void PdxInstanceImpl::writeField(PdxWriter& writer,
     }
     case PdxFieldTypes::BYTE_ARRAY: {
       if (auto&& val = std::dynamic_pointer_cast<
-              CacheableArray<int8_t, GeodeTypeIds::CacheableBytes>>(value)) {
+              CacheableArray<int8_t, DSCode::CacheableBytes>>(value)) {
         writer.writeByteArray(fieldName, val->value());
       }
       break;
@@ -443,47 +443,49 @@ bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj,
   if (auto primitive =
           std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
     switch (primitive->getDsCode()) {
-      case GeodeTypeIds::CacheableObjectArray: {
+      case DSCode::CacheableObjectArray: {
         auto objArrayPtr = std::dynamic_pointer_cast<CacheableObjectArray>(obj);
         auto otherObjArrayPtr =
             std::dynamic_pointer_cast<CacheableObjectArray>(otherObj);
         return enumerateObjectArrayEquals(objArrayPtr, otherObjArrayPtr);
       }
-      case GeodeTypeIds::CacheableVector: {
+      case DSCode::CacheableVector: {
         auto vec = std::dynamic_pointer_cast<CacheableVector>(obj);
         auto otherVec = std::dynamic_pointer_cast<CacheableVector>(otherObj);
         return enumerateVectorEquals(vec, otherVec);
       }
-      case GeodeTypeIds::CacheableArrayList: {
+      case DSCode::CacheableArrayList: {
         auto arrList = std::dynamic_pointer_cast<CacheableArrayList>(obj);
         auto otherArrList =
             std::dynamic_pointer_cast<CacheableArrayList>(otherObj);
         return enumerateArrayListEquals(arrList, otherArrList);
       }
-      case GeodeTypeIds::CacheableHashMap: {
+      case DSCode::CacheableHashMap: {
         auto map = std::dynamic_pointer_cast<CacheableHashMap>(obj);
         auto otherMap = std::dynamic_pointer_cast<CacheableHashMap>(otherObj);
         return enumerateMapEquals(map, otherMap);
       }
-      case GeodeTypeIds::CacheableHashSet: {
+      case DSCode::CacheableHashSet: {
         auto hashset = std::dynamic_pointer_cast<CacheableHashSet>(obj);
         auto otherHashset =
             std::dynamic_pointer_cast<CacheableHashSet>(otherObj);
         return enumerateSetEquals(hashset, otherHashset);
       }
-      case GeodeTypeIds::CacheableLinkedHashSet: {
+      case DSCode::CacheableLinkedHashSet: {
         auto linkedHashset =
             std::dynamic_pointer_cast<CacheableLinkedHashSet>(obj);
         auto otherLinkedHashset =
             std::dynamic_pointer_cast<CacheableLinkedHashSet>(otherObj);
         return enumerateLinkedSetEquals(linkedHashset, otherLinkedHashset);
       }
-      case GeodeTypeIds::CacheableHashTable: {
+      case DSCode::CacheableHashTable: {
         auto hashTable = std::dynamic_pointer_cast<CacheableHashTable>(obj);
         auto otherhashTable =
             std::dynamic_pointer_cast<CacheableHashTable>(otherObj);
         return enumerateHashTableEquals(hashTable, otherhashTable);
       }
+      default:
+        break;
     }
   }
 
@@ -587,39 +589,41 @@ int PdxInstanceImpl::deepArrayHashCode(std::shared_ptr<Cacheable> obj) {
   if (auto primitive =
           std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
     switch (primitive->getDsCode()) {
-      case GeodeTypeIds::CacheableObjectArray: {
+      case DSCode::CacheableObjectArray: {
         return enumerateObjectArrayHashCode(
             std::dynamic_pointer_cast<CacheableObjectArray>(obj));
       }
-      case GeodeTypeIds::CacheableVector: {
+      case DSCode::CacheableVector: {
         return enumerateVectorHashCode(
             std::dynamic_pointer_cast<CacheableVector>(obj));
       }
-      case GeodeTypeIds::CacheableArrayList: {
+      case DSCode::CacheableArrayList: {
         return enumerateArrayListHashCode(
             std::dynamic_pointer_cast<CacheableArrayList>(obj));
       }
-      case GeodeTypeIds::CacheableLinkedList: {
+      case DSCode::CacheableLinkedList: {
         return enumerateLinkedListHashCode(
             std::dynamic_pointer_cast<CacheableLinkedList>(obj));
       }
-      case GeodeTypeIds::CacheableHashMap: {
+      case DSCode::CacheableHashMap: {
         return enumerateMapHashCode(
             std::dynamic_pointer_cast<CacheableHashMap>(obj));
       }
-      case GeodeTypeIds::CacheableHashSet: {
+      case DSCode::CacheableHashSet: {
         return enumerateSetHashCode(
             std::dynamic_pointer_cast<CacheableHashSet>(obj));
       }
-      case GeodeTypeIds::CacheableLinkedHashSet: {
+      case DSCode::CacheableLinkedHashSet: {
         auto linkedHashSet =
             std::dynamic_pointer_cast<CacheableLinkedHashSet>(obj);
         return enumerateLinkedSetHashCode(linkedHashSet);
       }
-      case GeodeTypeIds::CacheableHashTable: {
+      case DSCode::CacheableHashTable: {
         return enumerateHashTableCode(
             std::dynamic_pointer_cast<CacheableHashTable>(obj));
       }
+      default:
+        break;
     }
   }
 
@@ -1815,7 +1819,7 @@ void PdxInstanceImpl::setField(const std::string& fieldName,
                                 (pft != nullptr ? pft->toString() : ""));
   }
   auto cacheableObject =
-      CacheableArray<int8_t, GeodeTypeIds::CacheableBytes>::create(value);
+      CacheableArray<int8_t, DSCode::CacheableBytes>::create(value);
   m_updatedFields[fieldName] = cacheableObject;
 }
 

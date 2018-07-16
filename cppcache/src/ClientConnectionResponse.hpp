@@ -32,7 +32,7 @@ class ClientConnectionResponse : public ServerLocationResponse {
  public:
   ClientConnectionResponse() : ServerLocationResponse(), m_serverFound(false) {}
   void fromData(DataInput& input) override;
-  int32_t getDSFID() const override;
+  DSFid getDSFID() const override;
   size_t objectSize() const override;
   virtual ServerLocation getServerLocation() const;
   void printInfo() { m_server.printInfo(); }

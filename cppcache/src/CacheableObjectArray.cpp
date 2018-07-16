@@ -18,7 +18,6 @@
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/ExceptionTypes.hpp>
-#include "GeodeTypeIdsImpl.hpp"
 
 namespace apache {
 namespace geode {
@@ -27,7 +26,7 @@ namespace client {
 void CacheableObjectArray::toData(DataOutput& output) const {
   int32_t len = static_cast<int32_t>(size());
   output.writeArrayLen(len);
-  output.write(static_cast<int8_t>(GeodeTypeIdsImpl::Class));
+  output.write(static_cast<int8_t>(DSCode::Class));
   output.writeString("java.lang.Object");
   for (const auto& iter : *this) {
     output.writeObject(iter);

@@ -17,7 +17,6 @@
 #include "LocatorListRequest.hpp"
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include "GeodeTypeIdsImpl.hpp"
 #include <geode/CacheableString.hpp>
 
 using namespace apache::geode::client;
@@ -29,6 +28,6 @@ void LocatorListRequest::toData(DataOutput& output) const {
   output.writeString(m_servergroup);
 }
 
-int32_t LocatorListRequest::getDSFID() const {
-  return GeodeTypeIdsImpl::LocatorListRequest;
+DSFid LocatorListRequest::getDSFID() const {
+  return DSFid::LocatorListRequest;
 }

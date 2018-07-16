@@ -25,7 +25,7 @@
 #include "internal/DataSerializableFixedId.hpp"
 #include "internal/geode_globals.hpp"
 #include "Serializable.hpp"
-#include "GeodeTypeIds.hpp"
+#include "internal/DSFixedId.hpp"
 
 /** @file
  */
@@ -39,8 +39,7 @@ class DataOutput;
 class Serializable;
 
 class APACHE_GEODE_EXPORT CacheableUndefined
-    : public internal::DataSerializableFixedId_t<
-          GeodeTypeIds::CacheableUndefined> {
+   : public internal::DataSerializableFixedId_t<internal::DSFid::CacheableUndefined> {
  public:
   void toData(DataOutput&) const override;
 

@@ -22,7 +22,6 @@
 
 #include <string>
 #include "ServerLocationRequest.hpp"
-#include "GeodeTypeIdsImpl.hpp"
 
 namespace apache {
 namespace geode {
@@ -40,7 +39,7 @@ class LocatorListRequest : public ServerLocationRequest {
   ~LocatorListRequest() override = default;
 
   void toData(DataOutput& output) const override;
-  int32_t getDSFID() const override;
+  internal::DSFid getDSFID() const override;
 };
 
 }  // namespace client

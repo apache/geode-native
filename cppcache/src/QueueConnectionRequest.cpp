@@ -16,7 +16,6 @@
  */
 
 #include "QueueConnectionRequest.hpp"
-#include "GeodeTypeIdsImpl.hpp"
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 
@@ -24,8 +23,8 @@ using namespace apache::geode::client;
 
 void QueueConnectionRequest::toData(DataOutput& output) const {
   output.writeString(m_serverGp);
-  output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte));
-  output.write(static_cast<int8_t>(GeodeTypeIdsImpl::ClientProxyMembershipId));
+  output.write(static_cast<int8_t>(DSCode::FixedIDByte));
+  output.write(static_cast<int8_t>(DSCode::ClientProxyMembershipId));
   uint32_t buffLen;
   const char* buff = m_membershipID.getDSMemberId(buffLen);
   output.writeBytes((uint8_t*)buff, buffLen);
@@ -35,8 +34,8 @@ void QueueConnectionRequest::toData(DataOutput& output) const {
   output.writeBoolean(m_findDurable);
 }
 
-int32_t QueueConnectionRequest::getDSFID() const {
-  return GeodeTypeIdsImpl::QueueConnectionRequest;
+DSFid QueueConnectionRequest::getDSFID() const {
+  return DSFid::QueueConnectionRequest;
 }
 
 std::set<ServerLocation> QueueConnectionRequest::getExcludedServer() const {

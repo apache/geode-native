@@ -444,8 +444,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForAllKeysTask)
     size_t keyTypeIndex = taskIndexPut / valueTypes.size();
     size_t valueTypeIndex = taskIndexPut % valueTypes.size();
 
-    int8_t keyTypeId = keyTypes[keyTypeIndex];
-    int8_t valTypeId = valueTypes[valueTypeIndex];
+    DSCode keyTypeId = keyTypes[keyTypeIndex];
+    DSCode valTypeId = valueTypes[valueTypeIndex];
 
     LOGDEBUG(
         "CheckPrSingleHopForAllKeysTask::keyType = %s and valType = %s and "

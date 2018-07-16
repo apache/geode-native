@@ -19,7 +19,6 @@
 #include <geode/Serializable.hpp>
 #include <geode/CacheableString.hpp>
 
-#include "GeodeTypeIdsImpl.hpp"
 #include "SerializationRegistry.hpp"
 #include "Utils.hpp"
 #include "CacheImpl.hpp"

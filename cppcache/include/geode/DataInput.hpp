@@ -28,7 +28,7 @@
 
 #include "internal/geode_globals.hpp"
 #include "ExceptionTypes.hpp"
-#include "GeodeTypeIds.hpp"
+#include "internal/DSCode.hpp"
 #include "ExceptionTypes.hpp"
 
 /**
@@ -310,22 +310,25 @@ class APACHE_GEODE_EXPORT DataInput {
   template <class CharT = char, class... Tail>
   inline std::basic_string<CharT, Tail...> readString() {
     std::basic_string<CharT, Tail...> value;
-    const uint8_t type = read();
+    auto type = static_cast<internal::DSCode >(read());
     switch (type) {
-      case GeodeTypeIds::CacheableString:
+      case internal::DSCode::CacheableString:
         readJavaModifiedUtf8(value);
         break;
-      case GeodeTypeIds::CacheableStringHuge:
+      case internal::DSCode::CacheableStringHuge:
         readUtf16Huge(value);
         break;
-      case GeodeTypeIds::CacheableASCIIString:
+      case internal::DSCode::CacheableASCIIString:
         readAscii(value);
         break;
-      case GeodeTypeIds::CacheableASCIIStringHuge:
+      case internal::DSCode::CacheableASCIIStringHuge:
         readAsciiHuge(value);
         break;
-      case GeodeTypeIds::CacheableNullString:
+      case internal::DSCode::CacheableNullString:
         // empty string
+        break;
+      // TODO: What's the right response here?
+      default:
         break;
     }
     return value;

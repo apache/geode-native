@@ -55,7 +55,7 @@ void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
     m_modSerialNum = input.read();
   }
 
-  if (input.read() != GeodeTypeIds::NullObj) {
+  if (input.read() != static_cast<int8_t>(DSCode::NullObj)) {
     input.rewindCursor(1);
     input.readObject(m_callbackArg);
   }
@@ -72,7 +72,7 @@ void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
       if (input.readBoolean()) {
         int32_t rewind = 1;
         int16_t fixedId = 0;
-        if (input.read() == GeodeTypeIdsImpl::FixedIDShort) {
+        if (input.read() == static_cast<int8_t>(DSCode::FixedIDShort)) {
           fixedId = input.readInt16();
           rewind += 2;
         }
@@ -116,11 +116,11 @@ void FarSideEntryOp::apply(std::shared_ptr<Region>& region) {
 
 void FarSideEntryOp::skipFilterRoutingInfo(DataInput& input) {
   std::shared_ptr<Cacheable> tmp;
-  auto structType = input.read();  // this is DataSerializable (45)
+  auto structType = static_cast<DSCode>(input.read());  // this is DataSerializable (45)
 
-  if (structType == GeodeTypeIds::NullObj) {
+  if (structType == DSCode::NullObj) {
     return;
-  } else if (structType == GeodeTypeIdsImpl::DataSerializable) {
+  } else if (structType == DSCode::DataSerializable) {
     input.read();  // ignore classbyte
     input.readObject(tmp);
     int32_t size = input.readInt32();

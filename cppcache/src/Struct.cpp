@@ -18,7 +18,6 @@
 #include <string>
 
 #include <geode/Struct.hpp>
-#include "GeodeTypeIdsImpl.hpp"
 #include <geode/DataInput.hpp>
 
 namespace apache {
@@ -30,7 +29,7 @@ Struct::Struct(StructSet* ssPtr,
     : m_parent(ssPtr), m_fieldValues(fieldValues) {}
 
 void Struct::skipClassName(DataInput& input) {
-  if (input.read() == GeodeTypeIdsImpl::Class) {
+  if (input.read() == static_cast<int8_t>(DSCode::Class)) {
     input.read();  // ignore string type id - assuming its a normal
                    // (under 64k) string.
     uint16_t len = input.readInt16();

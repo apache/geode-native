@@ -28,7 +28,6 @@
 #include <geode/DataOutput.hpp>
 #include <geode/internal/functional.hpp>
 
-#include "GeodeTypeIdsImpl.hpp"
 #include "DSMemberForVersionStamp.hpp"
 
 namespace apache {
@@ -68,8 +67,8 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   // Serializable interface:
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t getDSFID() const override {
-    return GeodeTypeIdsImpl::InternalDistributedMember;
+  DSFid getDSFID() const override {
+    return DSFid::InternalDistributedMember;
   }
   size_t objectSize() const override { return 0; }
 

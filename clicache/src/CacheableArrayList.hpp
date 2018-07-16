@@ -78,7 +78,7 @@ namespace Apache
         {
           int8_t get() override
           {
-            return native::GeodeTypeIds::CacheableArrayList;
+            return static_cast<int8_t>(native::DSCode::CacheableArrayList);
           }
         }
 

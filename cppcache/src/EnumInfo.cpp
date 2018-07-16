@@ -19,7 +19,6 @@
 
 #include "EnumInfo.hpp"
 #include "Utils.hpp"
-#include "GeodeTypeIdsImpl.hpp"
 
 namespace apache {
 namespace geode {

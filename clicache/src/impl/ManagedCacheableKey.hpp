@@ -22,7 +22,6 @@
 #include <vcclr.h>
 #include "../begin_native.hpp"
 #include <geode/CacheableKey.hpp>
-#include <GeodeTypeIdsImpl.hpp>
 #include "../end_native.hpp"
 
 #include "../IDataSerializable.hpp"
@@ -142,7 +141,7 @@ namespace apache
 
         void fromData(DataInput& input) override;
 
-        int8_t getDsCode() const override { return m_managedptr->DsCode; }
+        DSCode getDsCode() const override { return static_cast<DSCode>(m_managedptr->DsCode); }
 
         bool operator == (const CacheableKey& other) const override;
 
@@ -212,7 +211,7 @@ namespace apache
 
         void fromData(DataInput& input) override;
 
-        int32_t getDSFID() const override { return m_managedptr->DSFID; }
+        DSFid getDSFID() const override { return static_cast<DSFid>(m_managedptr->DSFID); }
 
         inline Apache::Geode::Client::IDataSerializableFixedId^ ptr() const
         {

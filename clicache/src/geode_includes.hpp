@@ -36,7 +36,7 @@
 #include <geode/CacheListener.hpp>
 #include <geode/FixedPartitionResolver.hpp>
 #include <geode/CacheWriter.hpp>
-#include <geode/GeodeTypeIds.hpp>
+#include <geode/internal/InternalId.hpp>
 #include "end_native.hpp"
 
 // Include private headers from CPP Cache

@@ -105,14 +105,15 @@ Cache CacheFactory::create() const {
       std::bind(TXCommitMessage::create, memberListForVersionStamp));
 
   serializationRegistry->addType(
-      GeodeTypeIds::PdxType,
+      //TODO: This looks like the only thing to do here, but I'm not sure
+      static_cast<int64_t>(DSCode::PdxType),
       std::bind(PdxType::CreateDeserializable, std::ref(*pdxTypeRegistry)));
 
   serializationRegistry->addType2(
       std::bind(VersionTag::createDeserializable, memberListForVersionStamp));
 
   serializationRegistry->addType2(
-      GeodeTypeIdsImpl::DiskVersionTag,
+      static_cast<int64_t>(DSFid::DiskVersionTag),
       std::bind(DiskVersionTag::createDeserializable,
                 memberListForVersionStamp));
 

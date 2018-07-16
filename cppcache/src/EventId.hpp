@@ -26,8 +26,6 @@
 #include <geode/internal/DataSerializableFixedId.hpp>
 #include <geode/DataOutput.hpp>
 
-#include "GeodeTypeIdsImpl.hpp"
-
 /** @file
  */
 
@@ -40,7 +38,7 @@ namespace client {
  * Sequence ID
  */
 class APACHE_GEODE_EXPORT EventId
-    : public internal::DataSerializableFixedId_t<GeodeTypeIdsImpl::EventId> {
+    : public internal::DataSerializableFixedId_t<DSFid::EventId> {
  private:
   char m_eidMem[512];
   int32_t m_eidMemLen;

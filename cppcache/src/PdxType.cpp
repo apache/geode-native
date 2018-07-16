@@ -23,7 +23,6 @@
 
 #include "PdxType.hpp"
 #include "PdxHelper.hpp"
-#include "GeodeTypeIdsImpl.hpp"
 #include "PdxFieldType.hpp"
 #include "Utils.hpp"
 #include "PdxTypeRegistry.hpp"
@@ -59,8 +58,8 @@ PdxType::PdxType(PdxTypeRegistry& pdxTypeRegistry,
       m_pdxTypeRegistry(pdxTypeRegistry) {}
 
 void PdxType::toData(DataOutput& output) const {
-  output.write(static_cast<int8_t>(GeodeTypeIdsImpl::DataSerializable));  // 45
-  output.write(static_cast<int8_t>(GeodeTypeIdsImpl::Class));             // 43
+  output.write(static_cast<int8_t>(DSCode::DataSerializable));  // 45
+  output.write(static_cast<int8_t>(DSCode::Class));             // 43
   output.writeString(m_javaPdxClass);
 
   // m_className

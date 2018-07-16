@@ -37,7 +37,7 @@ class QueueConnectionResponse : public ServerLocationResponse {
 
   void fromData(DataInput& input) override;
 
-  int32_t getDSFID() const override;
+  DSFid getDSFID() const override;
 
   virtual std::list<ServerLocation> getServers() { return m_list; }
 

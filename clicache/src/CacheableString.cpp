@@ -36,12 +36,12 @@ namespace Apache
 
       void CacheableString::ToData(DataOutput^ output)
       {
-        if (m_type == GeodeTypeIds::CacheableASCIIString ||
-            m_type == GeodeTypeIds::CacheableString)
+        if (m_type == DSCode::CacheableASCIIString ||
+            m_type == DSCode::CacheableString)
         {
           output->WriteUTF(m_value);
         }
-        else if (m_type == GeodeTypeIds::CacheableASCIIStringHuge)
+        else if (m_type == DSCode::CacheableASCIIStringHuge)
         {
           output->WriteASCIIHuge(m_value);
         }
@@ -53,12 +53,12 @@ namespace Apache
 
       void CacheableString::FromData(DataInput^ input)
       {
-        if (m_type == GeodeTypeIds::CacheableASCIIString ||
-            m_type == GeodeTypeIds::CacheableString)
+        if (m_type == DSCode::CacheableASCIIString ||
+            m_type == DSCode::CacheableString)
         {
           m_value = input->ReadUTF();
         }
-        else if (m_type == GeodeTypeIds::CacheableASCIIStringHuge)
+        else if (m_type == DSCode::CacheableASCIIStringHuge)
         {
           m_value = input->ReadASCIIHuge();
         }
@@ -152,16 +152,16 @@ namespace Apache
         if (len == m_value->Length)//ASCII string
         {
           if (len > 0xFFFF)
-            m_type = GeodeTypeIds::CacheableASCIIStringHuge;
+            m_type = DSCode::CacheableASCIIStringHuge;
           else
-            m_type = GeodeTypeIds::CacheableASCIIString;
+            m_type = DSCode::CacheableASCIIString;
         }
         else
         {
           if (len > 0xFFFF)
-            m_type = GeodeTypeIds::CacheableStringHuge;
+            m_type = DSCode::CacheableStringHuge;
           else
-            m_type = GeodeTypeIds::CacheableString;
+            m_type = DSCode::CacheableString;
         }  // namespace Client
       }  // namespace Geode
     }  // namespace Apache

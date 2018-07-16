@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include <geode/CacheableFileName.hpp>
-#include <geode/GeodeTypeIds.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 
@@ -27,17 +26,17 @@ namespace geode {
 namespace client {
 
 void CacheableFileName::toData(DataOutput& output) const {
-  output.write(m_type);
+  output.write(static_cast<int8_t >(m_type));
   CacheableString::toData(output);
 }
 
 void CacheableFileName::fromData(DataInput& input) {
-  m_type = input.read();
+  m_type = static_cast<DSCode>(input.read());
   CacheableString::fromData(input);
 }
 
-int8_t CacheableFileName::getDsCode() const {
-  return GeodeTypeIds::CacheableFileName;
+DSCode CacheableFileName::getDsCode() const {
+  return DSCode::CacheableFileName;
 }
 
 int32_t CacheableFileName::hashcode() const {

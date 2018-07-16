@@ -275,44 +275,44 @@ namespace Apache
         static void InitializeManagedTypeToDsCode()
         {
           Dictionary<Object^, Object^>^ dic = gcnew Dictionary<Object^, Object^>();
-          ManagedTypeToDsCode[dic->GetType()] = native::GeodeTypeIds::CacheableHashMap;
-          ManagedTypeToDsCode[dic->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableHashMap;
+          ManagedTypeToDsCode[dic->GetType()] = static_cast<int8_t>(native::DSCode::CacheableHashMap);
+          ManagedTypeToDsCode[dic->GetType()->GetGenericTypeDefinition()] = static_cast<int8_t>(native::DSCode::CacheableHashMap);
 
           System::Collections::ArrayList^ arr = gcnew System::Collections::ArrayList();
-          ManagedTypeToDsCode[arr->GetType()] = native::GeodeTypeIds::CacheableVector;
+          ManagedTypeToDsCode[arr->GetType()] = static_cast<int8_t>(native::DSCode::CacheableVector);
 
           System::Collections::Generic::LinkedList<Object^>^ linketList = gcnew  System::Collections::Generic::LinkedList<Object^>();
-          ManagedTypeToDsCode[linketList->GetType()] = native::GeodeTypeIds::CacheableLinkedList;
-          ManagedTypeToDsCode[linketList->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableLinkedList;
+          ManagedTypeToDsCode[linketList->GetType()] = static_cast<int8_t>(native::DSCode::CacheableLinkedList);
+          ManagedTypeToDsCode[linketList->GetType()->GetGenericTypeDefinition()] = static_cast<int8_t>(native::DSCode::CacheableLinkedList);
 
           System::Collections::Generic::IList<Object^>^ iList = gcnew System::Collections::Generic::List<Object^>();
-          ManagedTypeToDsCode[iList->GetType()] = native::GeodeTypeIds::CacheableArrayList;
-          ManagedTypeToDsCode[iList->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableArrayList;
+          ManagedTypeToDsCode[iList->GetType()] = static_cast<int8_t>(native::DSCode::CacheableArrayList);
+          ManagedTypeToDsCode[iList->GetType()->GetGenericTypeDefinition()] = static_cast<int8_t>(native::DSCode::CacheableArrayList);
 
           //TODO: Linked list, non generic stack, some other map types and see if more
 
           System::Collections::Generic::Stack<Object^>^ stack = gcnew System::Collections::Generic::Stack<Object^>();
-          ManagedTypeToDsCode[stack->GetType()] = native::GeodeTypeIds::CacheableStack;
-          ManagedTypeToDsCode[stack->GetType()->GetGenericTypeDefinition()] = native::GeodeTypeIds::CacheableStack;
+          ManagedTypeToDsCode[stack->GetType()] = static_cast<int8_t>(native::DSCode::CacheableStack);
+          ManagedTypeToDsCode[stack->GetType()->GetGenericTypeDefinition()] = static_cast<int8_t>(native::DSCode::CacheableStack);
 
-          ManagedTypeToDsCode[Byte::typeid] = native::GeodeTypeIds::CacheableByte;
-          ManagedTypeToDsCode[Boolean::typeid] = native::GeodeTypeIds::CacheableBoolean;
-          ManagedTypeToDsCode[Char::typeid] = native::GeodeTypeIds::CacheableCharacter;
-          ManagedTypeToDsCode[Double::typeid] = native::GeodeTypeIds::CacheableDouble;
-          ManagedTypeToDsCode[String::typeid] = native::GeodeTypeIds::CacheableASCIIString;
-          ManagedTypeToDsCode[float::typeid] = native::GeodeTypeIds::CacheableFloat;
-          ManagedTypeToDsCode[Int16::typeid] = native::GeodeTypeIds::CacheableInt16;
-          ManagedTypeToDsCode[Int32::typeid] = native::GeodeTypeIds::CacheableInt32;
-          ManagedTypeToDsCode[Int64::typeid] = native::GeodeTypeIds::CacheableInt64;
-          ManagedTypeToDsCode[Type::GetType("System.Byte[]")] = native::GeodeTypeIds::CacheableBytes;
-          ManagedTypeToDsCode[Type::GetType("System.Double[]")] = native::GeodeTypeIds::CacheableDoubleArray;
-          ManagedTypeToDsCode[Type::GetType("System.Single[]")] = native::GeodeTypeIds::CacheableFloatArray;
-          ManagedTypeToDsCode[Type::GetType("System.Int16[]")] = native::GeodeTypeIds::CacheableInt16Array;
-          ManagedTypeToDsCode[Type::GetType("System.Int32[]")] = native::GeodeTypeIds::CacheableInt32Array;
-          ManagedTypeToDsCode[Type::GetType("System.Int64[]")] = native::GeodeTypeIds::CacheableInt64Array;
-          ManagedTypeToDsCode[Type::GetType("System.String[]")] = native::GeodeTypeIds::CacheableStringArray;
-          ManagedTypeToDsCode[Type::GetType("System.DateTime")] = native::GeodeTypeIds::CacheableDate;
-          ManagedTypeToDsCode[Type::GetType("System.Collections.Hashtable")] = native::GeodeTypeIds::CacheableHashTable;
+          ManagedTypeToDsCode[Byte::typeid] = static_cast<int8_t>(native::DSCode::CacheableByte);
+          ManagedTypeToDsCode[Boolean::typeid] = static_cast<int8_t>(native::DSCode::CacheableBoolean);
+          ManagedTypeToDsCode[Char::typeid] = static_cast<int8_t>(native::DSCode::CacheableCharacter);
+          ManagedTypeToDsCode[Double::typeid] = static_cast<int8_t>(native::DSCode::CacheableDouble);
+          ManagedTypeToDsCode[String::typeid] = static_cast<int8_t>(native::DSCode::CacheableASCIIString);
+          ManagedTypeToDsCode[float::typeid] = static_cast<int8_t>(native::DSCode::CacheableFloat);
+          ManagedTypeToDsCode[Int16::typeid] = static_cast<int8_t>(native::DSCode::CacheableInt16);
+          ManagedTypeToDsCode[Int32::typeid] = static_cast<int8_t>(native::DSCode::CacheableInt32);
+          ManagedTypeToDsCode[Int64::typeid] = static_cast<int8_t>(native::DSCode::CacheableInt64);
+          ManagedTypeToDsCode[Type::GetType("System.Byte[]")] = static_cast<int8_t>(native::DSCode::CacheableBytes);
+          ManagedTypeToDsCode[Type::GetType("System.Double[]")] = static_cast<int8_t>(native::DSCode::CacheableDoubleArray);
+          ManagedTypeToDsCode[Type::GetType("System.Single[]")] = static_cast<int8_t>(native::DSCode::CacheableFloatArray);
+          ManagedTypeToDsCode[Type::GetType("System.Int16[]")] = static_cast<int8_t>(native::DSCode::CacheableInt16Array);
+          ManagedTypeToDsCode[Type::GetType("System.Int32[]")] = static_cast<int8_t>(native::DSCode::CacheableInt32Array);
+          ManagedTypeToDsCode[Type::GetType("System.Int64[]")] = static_cast<int8_t>(native::DSCode::CacheableInt64Array);
+          ManagedTypeToDsCode[Type::GetType("System.String[]")] = static_cast<int8_t>(native::DSCode::CacheableStringArray);
+          ManagedTypeToDsCode[Type::GetType("System.DateTime")] = static_cast<int8_t>(native::DSCode::CacheableDate);
+          ManagedTypeToDsCode[Type::GetType("System.Collections.Hashtable")] = static_cast<int8_t>(native::DSCode::CacheableHashTable);
         }
 
         static void RegisterDataSerializablePrimitivesWrapNativeDeserialization();

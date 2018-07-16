@@ -21,6 +21,7 @@
 #define GEODE_DATASERIALIZABLEFIXEDID_H_
 
 #include "../Serializable.hpp"
+#include "DSFixedId.hpp"
 
 namespace apache {
 namespace geode {
@@ -40,16 +41,16 @@ class APACHE_GEODE_EXPORT DataSerializableFixedId
 
   virtual void fromData(DataInput& dataInput) = 0;
 
-  virtual int32_t getDSFID() const = 0;
+  virtual DSFid getDSFID() const = 0;
 };
 
-template <int32_t _DSFID>
+template <DSFid _DSFID>
 class APACHE_GEODE_EXPORT DataSerializableFixedId_t
     : public DataSerializableFixedId {
  public:
   ~DataSerializableFixedId_t() override = default;
 
-  int32_t getDSFID() const final { return _DSFID; }
+  DSFid getDSFID() const final { return _DSFID; }
 };
 
 }  // namespace internal

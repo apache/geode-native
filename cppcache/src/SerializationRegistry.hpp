@@ -31,7 +31,6 @@
 #include <geode/internal/DataSerializableInternal.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/PdxSerializer.hpp>
-#include <geode/GeodeTypeIds.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Delta.hpp>
@@ -40,7 +39,6 @@
 
 #include "util/concurrent/spinlock_mutex.hpp"
 #include "NonCopyable.hpp"
-#include "GeodeTypeIdsImpl.hpp"
 #include "MemberListForVersionStamp.hpp"
 #include "config.h"
 
@@ -160,7 +158,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   inline void serialize(const Serializable* obj, DataOutput& output,
                         bool isDelta = false) const {
     if (obj == nullptr) {
-      output.write(static_cast<int8_t>(GeodeTypeIds::NullObj));
+      output.write(static_cast<int8_t>(DSCode::NullObj));
     } else if (const auto dataSerializableFixedId =
                    dynamic_cast<const DataSerializableFixedId*>(obj)) {
       serialize(dataSerializableFixedId, output);
@@ -183,7 +181,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   inline void serialize(const std::shared_ptr<Serializable>& obj, DataOutput& output,
                         bool isDelta = false) const {
     if (obj == nullptr) {
-      output.write(static_cast<int8_t>(GeodeTypeIds::NullObj));
+      output.write(static_cast<int8_t>(DSCode::NullObj));
     } else if (auto&& pdxSerializable =
         std::dynamic_pointer_cast<PdxSerializable>(obj)) {
       serialize(pdxSerializable, output);
@@ -285,17 +283,17 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
 
   inline void serialize(const DataSerializableFixedId* obj,
                         DataOutput& output) const {
-    auto id = obj->getDSFID();
+    auto id = static_cast<int32_t>(obj->getDSFID());
     if (id <= std::numeric_limits<int8_t>::max() &&
         id >= std::numeric_limits<int8_t>::min()) {
-      output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte));
+      output.write(static_cast<int8_t>(DSCode::FixedIDByte));
       output.write(static_cast<int8_t>(id));
     } else if (id <= std::numeric_limits<int16_t>::max() &&
                id >= std::numeric_limits<int16_t>::min()) {
-      output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDShort));
+      output.write(static_cast<int8_t>(DSCode::FixedIDShort));
       output.writeInt(static_cast<int16_t>(id));
     } else {
-      output.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDInt));
+      output.write(static_cast<int8_t>(DSCode::FixedIDInt));
       output.writeInt(static_cast<int32_t>(id));
     }
 
@@ -325,15 +323,15 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     auto id = obj->getClassId();
     auto dsCode = getSerializableDataDsCode(id);
 
-    output.write(dsCode);
+    output.write(static_cast<int8_t>(dsCode));
     switch (dsCode) {
-      case GeodeTypeIdsImpl::CacheableUserData:
+      case DSCode::CacheableUserData:
         output.write(static_cast<int8_t>(id));
         break;
-      case GeodeTypeIdsImpl::CacheableUserData2:
+      case DSCode::CacheableUserData2:
         output.writeInt(static_cast<int16_t>(id));
         break;
-      case GeodeTypeIdsImpl::CacheableUserData4:
+      case DSCode::CacheableUserData4:
         output.writeInt(static_cast<int32_t>(id));
         break;
       default:
@@ -354,7 +352,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   }
 
   inline void serialize(const std::shared_ptr<PdxSerializable>& obj, DataOutput& output) const {
-    output.write(static_cast<int8_t>(GeodeTypeIdsImpl::PDX));
+    output.write(static_cast<int8_t>(DSCode::PDX));
 
     serializeWithoutHeader(obj, output);
   }
@@ -373,15 +371,15 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   }
 
  public:
-  static inline int8_t getSerializableDataDsCode(int32_t classId) {
+  static inline DSCode getSerializableDataDsCode(int32_t classId) {
     if (classId <= std::numeric_limits<int8_t>::max() &&
         classId >= std::numeric_limits<int8_t>::min()) {
-      return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData);
+      return DSCode::CacheableUserData;
     } else if (classId <= std::numeric_limits<int16_t>::max() &&
                classId >= std::numeric_limits<int16_t>::min()) {
-      return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData2);
+      return DSCode::CacheableUserData2;
     } else {
-      return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableUserData4);
+      return DSCode::CacheableUserData4;
     }
   }
 

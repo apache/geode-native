@@ -29,7 +29,6 @@
 #include "ClientProxyMembershipID.hpp"
 #include "ThinClientPoolHADM.hpp"
 #include "TcrEndpoint.hpp"
-#include "GeodeTypeIdsImpl.hpp"
 #include "TcrConnectionManager.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "Version.hpp"
@@ -144,11 +143,11 @@ bool TcrConnection::InitTcrConnection(
   }
 
   // Write header for byte FixedID since GFE 5.7
-  handShakeMsg.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte));
+  handShakeMsg.write(static_cast<int8_t>(DSCode::FixedIDByte));
   // Writing byte for ClientProxyMembershipID class id=38 as registered on the
   // java server.
   handShakeMsg.write(
-      static_cast<int8_t>(GeodeTypeIdsImpl::ClientProxyMembershipId));
+      static_cast<int8_t>(DSCode::ClientProxyMembershipId));
   if (endpointObj->getPoolHADM()) {
     ClientProxyMembershipID* memId =
         endpointObj->getPoolHADM()->getMembershipId();
@@ -1333,11 +1332,11 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
   LOGDEBUG("Received string typeid as %d", cstypeid);
 
   uint32_t length = 0;
-  switch (static_cast<int8_t>(cstypeid)) {
-    case GeodeTypeIds::CacheableNullString: {
+  switch (static_cast<DSCode>(cstypeid)) {
+    case DSCode::CacheableNullString: {
       return nullptr;
     }
-    case GeodeTypeIds::CacheableASCIIString: {
+    case DSCode::CacheableASCIIString: {
       auto lenBytes = readHandshakeData(2, connectTimeout);
       auto lenDI = m_connectionManager->getCacheImpl()->createDataInput(
           reinterpret_cast<const uint8_t*>(lenBytes.data()), lenBytes.size());

@@ -81,8 +81,8 @@ void TcrMessage::setKeepAlive(bool keepalive) {
 void TcrMessage::writeInterestResultPolicyPart(InterestResultPolicy policy) {
   m_request->writeInt((int32_t)3);           // size
   m_request->write(static_cast<int8_t>(1));  // isObject
-  m_request->write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte));
-  m_request->write(static_cast<int8_t>(GeodeTypeIdsImpl::InterestResultPolicy));
+  m_request->write(static_cast<int8_t>(DSCode::FixedIDByte));
+  m_request->write(static_cast<int8_t>(DSCode::InterestResultPolicy));
   m_request->write(static_cast<int8_t>(policy.getOrdinal()));
 }
 
@@ -142,20 +142,20 @@ void TcrMessage::readPrMetaData(DataInput& input) {
 std::shared_ptr<VersionTag> TcrMessage::readVersionTagPart(
     DataInput& input, uint16_t endpointMemId,
     MemberListForVersionStamp& memberListForVersionStamp) {
-  auto isObj = input.read();
+  auto isObj = static_cast<DSCode>(input.read());
   std::shared_ptr<VersionTag> versionTag;
 
-  if (isObj == GeodeTypeIds::NullObj) return versionTag;
+  if (isObj == DSCode::NullObj) return versionTag;
 
-  if (isObj == GeodeTypeIdsImpl::FixedIDByte) {
+  if (isObj == DSCode::FixedIDByte) {
     versionTag = std::make_shared<VersionTag>(memberListForVersionStamp);
-    if (input.read() == GeodeTypeIdsImpl::VersionTag) {
+    if (static_cast<DSFid>(input.read()) == DSFid::VersionTag) {
       versionTag->fromData(input);
       versionTag->replaceNullMemberId(endpointMemId);
       return versionTag;
     }
-  } else if (isObj == GeodeTypeIdsImpl::FixedIDShort) {
-    if (input.readInt16() == GeodeTypeIdsImpl::DiskVersionTag) {
+  } else if (isObj == DSCode::FixedIDShort) {
+    if (input.readInt16() == static_cast<int16_t>(DSFid::DiskVersionTag)) {
       DiskVersionTag* disk = new DiskVersionTag(memberListForVersionStamp);
       disk->fromData(input);
       versionTag.reset(disk);
@@ -423,7 +423,7 @@ std::shared_ptr<Serializable> TcrMessage::readCacheableBytes(DataInput& input,
   }
 
   return input.readDirectObject(
-      static_cast<int8_t>(apache::geode::client::GeodeTypeIds::CacheableBytes));
+      static_cast<int8_t>(apache::geode::client::DSCode::CacheableBytes));
 }
 
 bool TcrMessage::readExceptionPart(DataInput& input, uint8_t isLastChunk,
@@ -497,10 +497,10 @@ void TcrMessage::writeObjectPart(
                                                                    *m_request);
     } else {
       if (getAllKeyList != nullptr) {
-        int8_t typeId = GeodeTypeIds::CacheableObjectArray;
+        int8_t typeId = static_cast<int8_t>(DSCode::CacheableObjectArray);
         m_request->write(typeId);
         m_request->writeArrayLen(static_cast<int32_t>(getAllKeyList->size()));
-        m_request->write(static_cast<int8_t>(GeodeTypeIdsImpl::Class));
+        m_request->write(static_cast<int8_t>(DSCode::Class));
         m_request->writeString("java.lang.Object");
         for (const auto& key : *getAllKeyList) {
           m_request->writeObject(key);
@@ -936,7 +936,7 @@ void TcrMessage::handleByteArrayResponse(
         // PdxType will come in response
         input.advanceCursor(5);  // part header
         m_value =
-            serializationRegistry.deserialize(input, GeodeTypeIds::PdxType);
+            serializationRegistry.deserialize(input, static_cast<int8_t>(DSCode::PdxType));
       } else if (m_msgTypeRequest == TcrMessage::GET_PDX_ENUM_BY_ID) {
         // PdxType will come in response
         input.advanceCursor(5);  // part header
@@ -1216,7 +1216,7 @@ void TcrMessage::handleByteArrayResponse(
         int32_t bits32 = input.readInt32();  // partlen;
         input.read();                        // isObj;
         auto bits8 = input.read();           // cacheable vector typeid
-        LOGDEBUG("Expected typeID %d, got %d", GeodeTypeIds::CacheableArrayList,
+        LOGDEBUG("Expected typeID %d, got %d", DSCode::CacheableArrayList,
                  bits8);
 
         bits32 = input.readArrayLength();  // array length
@@ -2873,8 +2873,8 @@ std::shared_ptr<DSMemberForVersionStamp> TcrMessage::readDSMember(
     apache::geode::client::DataInput& input) {
   uint8_t typeidLen = input.read();
   if (typeidLen == 1) {
-    uint8_t typeidofMember = input.read();
-    if (typeidofMember != GeodeTypeIdsImpl::InternalDistributedMember) {
+    auto typeidofMember = static_cast<DSCode>(input.read());
+    if (typeidofMember != DSCode::InternalDistributedMember) {
       throw Exception(
           "Reading DSMember. Expecting type id 92 for "
           "InternalDistributedMember. ");
@@ -2885,8 +2885,8 @@ std::shared_ptr<DSMemberForVersionStamp> TcrMessage::readDSMember(
     memId->fromData(input);
     return (std::shared_ptr<DSMemberForVersionStamp>)memId;
   } else if (typeidLen == 2) {
-    uint16_t typeidofMember = input.readInt16();
-    if (typeidofMember != GeodeTypeIdsImpl::DiskStoreId) {
+    auto typeidofMember = input.readInt16();
+    if (typeidofMember != static_cast<int16_t>(DSFid::DiskStoreId)) {
       throw Exception(
           "Reading DSMember. Expecting type id 2133 for DiskStoreId. ");
     }
@@ -2903,7 +2903,7 @@ void TcrMessage::readHashMapForGCVersions(
     apache::geode::client::DataInput& input,
     std::shared_ptr<CacheableHashMap>& value) {
   uint8_t hashmaptypeid = input.read();
-  if (hashmaptypeid != GeodeTypeIds::CacheableHashMap) {
+  if (hashmaptypeid != static_cast<int8_t>(DSCode::CacheableHashMap)) {
     throw Exception(
         "Reading HashMap For GC versions. Expecting type id of hash map. ");
   }
@@ -2936,7 +2936,7 @@ void TcrMessage::readHashSetForGCVersions(
     apache::geode::client::DataInput& input,
     std::shared_ptr<CacheableHashSet>& value) {
   auto hashsettypeid = input.read();
-  if (hashsettypeid != GeodeTypeIds::CacheableHashSet) {
+  if (hashsettypeid != static_cast<int8_t>(DSCode::CacheableHashSet)) {
     throw Exception(
         "Reading HashSet For GC versions. Expecting type id of hash set. ");
   }

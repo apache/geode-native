@@ -252,8 +252,8 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
 
   void fromData(DataInput& input) override;
 
-  int32_t getDSFID() const override {
-    return GeodeTypeIdsImpl::VersionedObjectPartList;
+  DSFid getDSFID() const override {
+    return DSFid::VersionedObjectPartList;
   }
 };
 

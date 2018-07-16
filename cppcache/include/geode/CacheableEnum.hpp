@@ -26,7 +26,6 @@
 
 #include "CacheableKey.hpp"
 #include "CacheableString.hpp"
-#include "GeodeTypeIds.hpp"
 #include "internal/geode_base.hpp"
 
 namespace apache {
@@ -81,8 +80,8 @@ class APACHE_GEODE_EXPORT CacheableEnum : public DataSerializablePrimitive,
     return size;
   }
 
-  virtual int8_t getDsCode() const override {
-    return static_cast<int8_t>(GeodeTypeIds::CacheableEnum);
+  virtual DSCode getDsCode() const override {
+    return DSCode::CacheableEnum;
   }
 
   /**

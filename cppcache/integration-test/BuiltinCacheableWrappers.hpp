@@ -175,17 +175,17 @@ inline uint32_t crc32Array(const std::vector<TPRIM> arr) {
   return crc32(output.getBuffer(), output.getBufferLength());
 }
 
-inline bool isContainerTypeId(int8_t typeId) {
-  return (typeId == GeodeTypeIds::CacheableObjectArray) ||
-         (typeId == GeodeTypeIds::CacheableVector) ||
-         (typeId == GeodeTypeIds::CacheableHashMap) ||
-         (typeId == GeodeTypeIds::CacheableHashSet) ||
-         (typeId == GeodeTypeIds::CacheableStack) ||
-         (typeId == GeodeTypeIds::CacheableArrayList) ||
-         (typeId == GeodeTypeIds::CacheableHashTable) ||
-         (typeId == GeodeTypeIds::CacheableIdentityHashMap) ||
-         (typeId == GeodeTypeIds::CacheableLinkedHashSet) ||
-         (typeId == GeodeTypeIds::CacheableLinkedList);
+inline bool isContainerTypeId(DSCode typeId) {
+  return (typeId == DSCode::CacheableObjectArray) ||
+         (typeId == DSCode::CacheableVector) ||
+         (typeId == DSCode::CacheableHashMap) ||
+         (typeId == DSCode::CacheableHashSet) ||
+         (typeId == DSCode::CacheableStack) ||
+         (typeId == DSCode::CacheableArrayList) ||
+         (typeId == DSCode::CacheableHashTable) ||
+         (typeId == DSCode::CacheableIdentityHashMap) ||
+         (typeId == DSCode::CacheableLinkedHashSet) ||
+         (typeId == DSCode::CacheableLinkedList);
 }
 }  // namespace CacheableHelper
 
@@ -701,27 +701,28 @@ class CacheableHashMapTypeWrapper : public CacheableWrapper {
     auto keyTypeIds = CacheableWrapperFactory::getRegisteredKeyTypes();
     auto valTypeIds = CacheableWrapperFactory::getRegisteredValueTypes();
 
-    for (std::vector<int8_t>::iterator keyIter = keyTypeIds.begin();
+    for (std::vector<DSCode>::iterator keyIter = keyTypeIds.begin();
          keyIter != keyTypeIds.end(); keyIter++) {
       int item = 0;
 
-      for (std::vector<int8_t>::iterator valIter = valTypeIds.begin();
+      for (std::vector<DSCode>::iterator valIter = valTypeIds.begin();
            valIter != valTypeIds.end(); valIter++) {
-        if (CacheableHelper::isContainerTypeId(*valIter)) {
+
+       if (CacheableHelper::isContainerTypeId(static_cast<DSCode>(*valIter))) {
           continue;
         }
-        if ((*valIter == GeodeTypeIds::CacheableASCIIStringHuge ||
-             *valIter == GeodeTypeIds::CacheableStringHuge) &&
-            !(*keyIter == GeodeTypeIds::CacheableBoolean)) {
+        if ((*valIter == DSCode::CacheableASCIIStringHuge ||
+             *valIter == DSCode::CacheableStringHuge) &&
+            !(*keyIter == DSCode::CacheableBoolean)) {
           continue;
         }
-        if ((*keyIter == GeodeTypeIds::CacheableASCIIStringHuge ||
-             *keyIter == GeodeTypeIds::CacheableStringHuge) &&
-            !(*valIter == GeodeTypeIds::CacheableBoolean)) {
+        if ((*keyIter == DSCode::CacheableASCIIStringHuge ||
+             *keyIter == DSCode::CacheableStringHuge) &&
+            !(*valIter == DSCode::CacheableBoolean)) {
           continue;
         }
         // null object does not work on server side during deserialization
-        if (*valIter == GeodeTypeIds::CacheableNullString) {
+        if (*valIter == DSCode::CacheableNullString) {
           continue;
         }
 
@@ -735,7 +736,7 @@ class CacheableHashMapTypeWrapper : public CacheableWrapper {
             CacheableWrapperFactory::createInstance(*valIter));
         ASSERT(valWrapper != nullptr,
                "initRandomValue: valWrapper null object.");
-        keyWrapper->initKey(((*keyIter) << 8) + item, maxSize);
+        keyWrapper->initKey(((static_cast<int8_t>(*keyIter)) << 8) + item, maxSize);
         valWrapper->initRandomValue(maxSize);
         chmp->emplace(
             std::dynamic_pointer_cast<CacheableKey>(keyWrapper->getCacheable()),
@@ -801,7 +802,7 @@ class CacheableHashSetTypeWrapper : public CacheableWrapper {
     size_t sizeOfTheVector = keyTypeIds.size();
     maxSize = maxSize / static_cast<int32_t>(sizeOfTheVector) + 1;
     for (size_t i = 0; i < sizeOfTheVector; i++) {
-      int8_t keyTypeId = keyTypeIds[i];
+      DSCode keyTypeId = keyTypeIds[i];
       auto wrapper = CacheableWrapperFactory::createInstance(keyTypeId);
       wrapper->initRandomValue(maxSize);
       auto cptr = wrapper->getCacheable();
@@ -1096,8 +1097,8 @@ class CacheableVectorTypeWrapper : public CacheableWrapper {
     size_t sizeOfTheVector = valueTypeIds.size();
     maxSize = maxSize / static_cast<int32_t>(sizeOfTheVector) + 1;
     for (size_t i = 0; i < sizeOfTheVector; i++) {
-      int8_t valueTypeId = valueTypeIds[i];
-      if (!CacheableHelper::isContainerTypeId(valueTypeId)) {
+      DSCode valueTypeId = valueTypeIds[i];
+      if (!CacheableHelper::isContainerTypeId(static_cast<DSCode>(valueTypeId))) {
         auto wrapper = CacheableWrapperFactory::createInstance(valueTypeId);
         wrapper->initRandomValue(maxSize);
         vec->push_back(wrapper->getCacheable());
@@ -1153,8 +1154,8 @@ class CacheableObjectArrayWrapper : public CacheableWrapper {
     size_t sizeOfTheVector = valueTypeIds.size();
     maxSize = maxSize / static_cast<int32_t>(sizeOfTheVector) + 1;
     for (size_t i = 0; i < sizeOfTheVector; i++) {
-      int8_t valueTypeId = valueTypeIds[i];
-      if (!CacheableHelper::isContainerTypeId(valueTypeId)) {
+      DSCode valueTypeId = valueTypeIds[i];
+      if (!CacheableHelper::isContainerTypeId(static_cast<DSCode>(valueTypeId))) {
         auto wrapper = CacheableWrapperFactory::createInstance(valueTypeId);
         wrapper->initRandomValue(maxSize);
         arr->push_back(wrapper->getCacheable());
@@ -1188,110 +1189,107 @@ void registerBuiltins(bool isRegisterFileName = false) {
   srand(getpid() + static_cast<int>(time(0)));
 
   // Register the builtin cacheable keys
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableBoolean,
+  CacheableWrapperFactory::registerType(DSCode::CacheableBoolean,
                                         "CacheableBoolean",
                                         CacheableBooleanWrapper::create, true);
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableByte,
+  CacheableWrapperFactory::registerType(DSCode::CacheableByte,
                                         "CacheableByte",
                                         CacheableByteWrapper::create, true);
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableDouble,
+  CacheableWrapperFactory::registerType(DSCode::CacheableDouble,
                                         "CacheableDouble",
                                         CacheableDoubleWrapper::create, true);
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableDate,
+  CacheableWrapperFactory::registerType(DSCode::CacheableDate,
                                         "CacheableDate",
                                         CacheableDateWrapper::create, true);
   if (isRegisterFileName) {
 #ifdef _WIN32
     // TODO: windows requires some serious tweaking to get this to work
     CacheableWrapperFactory::registerType(
-        GeodeTypeIds::CacheableFileName, "CacheableFileName",
+        DSCode::CacheableFileName, "CacheableFileName",
         CacheableFileNameWrapper::create, true);
 #endif
   }
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableFloat,
+  CacheableWrapperFactory::registerType(DSCode::CacheableFloat,
                                         "CacheableFloat",
                                         CacheableFloatWrapper::create, true);
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableInt16,
+  CacheableWrapperFactory::registerType(DSCode::CacheableInt16,
                                         "CacheableInt16",
                                         CacheableInt16Wrapper::create, true);
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableInt32,
+  CacheableWrapperFactory::registerType(DSCode::CacheableInt32,
                                         "CacheableInt32",
                                         CacheableInt32Wrapper::create, true);
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableInt64,
+  CacheableWrapperFactory::registerType(DSCode::CacheableInt64,
                                         "CacheableInt64",
                                         CacheableInt64Wrapper::create, true);
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableASCIIString,
+  CacheableWrapperFactory::registerType(DSCode::CacheableASCIIString,
                                         "CacheableString",
                                         CacheableStringWrapper::create, true);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableString, "CacheableUnicodeString",
+      DSCode::CacheableString, "CacheableUnicodeString",
       CacheableUnicodeStringWrapper::create, true);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableASCIIStringHuge, "CacheableHugeString",
+      DSCode::CacheableASCIIStringHuge, "CacheableHugeString",
       CacheableHugeStringWrapper::create, true);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableStringHuge, "CacheableHugeUnicodeString",
+      DSCode::CacheableStringHuge, "CacheableHugeUnicodeString",
       CacheableHugeUnicodeStringWrapper::create, true);
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableCharacter,
+  CacheableWrapperFactory::registerType(DSCode::CacheableCharacter,
                                         "CacheableCharacter",
                                         CacheableWideCharWrapper::create, true);
 
   // Register other builtin cacheables
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableHashMap,
+  CacheableWrapperFactory::registerType(DSCode::CacheableHashMap,
                                         "CacheableHashMap",
                                         CacheableHashMapWrapper::create, false);
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableHashSet,
+  CacheableWrapperFactory::registerType(DSCode::CacheableHashSet,
                                         "CacheableHashSet",
                                         CacheableHashSetWrapper::create, false);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableHashTable, "CacheableHashTable",
+      DSCode::CacheableHashTable, "CacheableHashTable",
       CacheableHashTableWrapper::create, false);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableIdentityHashMap, "CacheableIdentityHashMap",
+      DSCode::CacheableIdentityHashMap, "CacheableIdentityHashMap",
       CacheableIdentityHashMapWrapper::create, false);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableLinkedHashSet, "CacheableLinkedHashSet",
+      DSCode::CacheableLinkedHashSet, "CacheableLinkedHashSet",
       CacheableLinkedHashSetWrapper::create, false);
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableBytes,
+  CacheableWrapperFactory::registerType(DSCode::CacheableBytes,
                                         "CacheableBytes",
                                         CacheableBytesWrapper::create, false);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableDoubleArray, "CacheableDoubleArray",
+      DSCode::CacheableDoubleArray, "CacheableDoubleArray",
       CacheableDoubleArrayWrapper::create, false);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableFloatArray, "CacheableFloatArray",
+      DSCode::CacheableFloatArray, "CacheableFloatArray",
       CacheableFloatArrayWrapper::create, false);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableInt16Array, "CacheableInt16Array",
+      DSCode::CacheableInt16Array, "CacheableInt16Array",
       CacheableInt16ArrayWrapper::create, false);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableInt32Array, "CacheableInt32Array",
+      DSCode::CacheableInt32Array, "CacheableInt32Array",
       CacheableInt32ArrayWrapper::create, false);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableInt64Array, "CacheableInt64Array",
+      DSCode::CacheableInt64Array, "CacheableInt64Array",
       CacheableInt64ArrayWrapper::create, false);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableNullString, "CacheableNullString",
+      DSCode::CacheableNullString, "CacheableNullString",
       CacheableNullStringWrapper::create, false);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableObjectArray, "CacheableObjectArray",
+      DSCode::CacheableObjectArray, "CacheableObjectArray",
       CacheableObjectArrayWrapper::create, false);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableStringArray, "CacheableStringArray",
+      DSCode::CacheableStringArray, "CacheableStringArray",
       CacheableStringArrayWrapper::create, false);
-  CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableUndefined, "CacheableUndefined",
-      CacheableUndefinedWrapper::create, false);
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableVector,
+  CacheableWrapperFactory::registerType(DSCode::CacheableVector,
                                         "CacheableVector",
                                         CacheableVectorWrapper::create, false);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableArrayList, "CacheableArrayList",
+      DSCode::CacheableArrayList, "CacheableArrayList",
       CacheableArrayListWrapper::create, false);
   CacheableWrapperFactory::registerType(
-      GeodeTypeIds::CacheableLinkedList, "CacheableLinkedList",
+      DSCode::CacheableLinkedList, "CacheableLinkedList",
       CacheableLinkedListWrapper::create, false);
-  CacheableWrapperFactory::registerType(GeodeTypeIds::CacheableStack,
+  CacheableWrapperFactory::registerType(DSCode::CacheableStack,
                                         "CacheableStack",
                                         CacheableStackWrapper::create, false);
 }

@@ -19,7 +19,6 @@
 #include <geode/CacheableString.hpp>
 #include <geode/internal/CacheableKeys.hpp>
 
-#include "GeodeTypeIdsImpl.hpp"
 #include "PdxHelper.hpp"
 
 namespace apache {

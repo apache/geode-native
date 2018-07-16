@@ -144,7 +144,7 @@ class APACHE_GEODE_EXPORT Properties
 
   void fromData(DataInput& input) override;
 
-  int8_t getDsCode() const override;
+  DSCode getDsCode() const override;
 
   ~Properties() override = default;
   Properties(const Properties&) = delete;

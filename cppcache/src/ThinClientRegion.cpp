@@ -35,7 +35,6 @@
 #include "RegionGlobalLocks.hpp"
 #include "ReadWriteLock.hpp"
 #include "RemoteQuery.hpp"
-#include "GeodeTypeIdsImpl.hpp"
 #include "AutoDelete.hpp"
 #include "UserAttributes.hpp"
 #include "PutAllPartialResultServerException.hpp"
@@ -3339,9 +3338,9 @@ void ChunkedInterestResponse::handleChunk(const uint8_t* chunk,
 
   uint32_t partLen;
   if (TcrMessageHelper::readChunkPartHeader(
-          m_msg, input, 0, GeodeTypeIds::CacheableArrayList,
+          m_msg, input, DSCode::FixedIDDefault, static_cast<int32_t>(DSCode::CacheableArrayList),
           "ChunkedInterestResponse", partLen,
-          isLastChunkWithSecurity) != TcrMessageHelper::OBJECT) {
+          isLastChunkWithSecurity) != TcrMessageHelper::ChunkObjectType::OBJECT) {
     // encountered an exception part, so return without reading more
     m_replyMsg.readSecureObjectPart(input, false, true,
                                     isLastChunkWithSecurity);
@@ -3370,9 +3369,9 @@ void ChunkedKeySetResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
 
   uint32_t partLen;
   if (TcrMessageHelper::readChunkPartHeader(
-          m_msg, input, 0, GeodeTypeIds::CacheableArrayList,
+          m_msg, input, DSCode::FixedIDDefault, static_cast<int32_t>(DSCode::CacheableArrayList),
           "ChunkedKeySetResponse", partLen,
-          isLastChunkWithSecurity) != TcrMessageHelper::OBJECT) {
+          isLastChunkWithSecurity) != TcrMessageHelper::ChunkObjectType::OBJECT) {
     // encountered an exception part, so return without reading more
     m_replyMsg.readSecureObjectPart(input, false, true,
                                     isLastChunkWithSecurity);
@@ -3408,10 +3407,10 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
         input.readObject(value);
         m_queryResults->push_back(value);
       } else {
-        auto arrayType = input.read();
-        if (arrayType == GeodeTypeIdsImpl::FixedIDByte) {
-          arrayType = input.read();
-          if (arrayType != GeodeTypeIdsImpl::CacheableObjectPartList) {
+        auto code = static_cast<DSCode>(input.read());
+        if (code == DSCode::FixedIDByte) {
+          auto arrayType = static_cast<DSFid>(input.read());
+          if (arrayType != DSFid::CacheableObjectPartList) {
             LOGERROR(
                 "Query response got unhandled message format %d while "
                 "expecting struct set object part list; possible serialization "
@@ -3424,9 +3423,9 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
           readObjectPartList(input, true);
         } else {
           LOGERROR(
-              "Query response got unhandled message format %d while expecting "
+              "Query response got unhandled message format %" PRId8 "while expecting "
               "struct set object part list; possible serialization mismatch",
-              arrayType);
+              code);
           throw MessageException(
               "Query response got unhandled message format while expecting "
               "struct set object part list; possible serialization mismatch");
@@ -3437,22 +3436,21 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
 }
 
 void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
-                                       uint8_t isLastChunkWithSecurity,
-                                       const CacheImpl* cacheImpl) {
+                                     uint8_t isLastChunkWithSecurity,
+                                     const CacheImpl* cacheImpl) {
   LOGDEBUG("ChunkedQueryResponse::handleChunk..");
   auto input = cacheImpl->createDataInput(chunk, chunkLen, m_msg.getPool());
 
   uint32_t partLen;
-  TcrMessageHelper::ChunkObjectType objType;
-  if ((objType = TcrMessageHelper::readChunkPartHeader(
-           m_msg, input, GeodeTypeIdsImpl::FixedIDByte,
-           static_cast<uint8_t>(GeodeTypeIdsImpl::CollectionTypeImpl),
-           "ChunkedQueryResponse", partLen, isLastChunkWithSecurity)) ==
-      TcrMessageHelper::EXCEPTION) {
+  TcrMessageHelper::ChunkObjectType objType = TcrMessageHelper::readChunkPartHeader(
+      m_msg, input, DSCode::FixedIDByte,
+      static_cast<int32_t>(DSFid::CollectionTypeImpl),
+      "ChunkedQueryResponse" , partLen, isLastChunkWithSecurity);
+  if (objType == TcrMessageHelper::ChunkObjectType::EXCEPTION) {
     // encountered an exception part, so return without reading more
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
     return;
-  } else if (objType == TcrMessageHelper::NULL_OBJECT) {
+  } else if (objType == TcrMessageHelper::ChunkObjectType::NULL_OBJECT) {
     // special case for scalar result
     partLen = input.readInt32();
     input.read();
@@ -3514,9 +3512,9 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
 
   bool isResultSet = (m_structFieldNames.size() == 0);
 
-  auto arrayType = input.read();
+  auto arrayType = static_cast<DSCode>(input.read());
 
-  if (arrayType == GeodeTypeIds::CacheableObjectArray) {
+  if (arrayType == DSCode::CacheableObjectArray) {
     int32_t arraySize = input.readArrayLength();
     skipClass(input);
     for (int32_t arrayItem = 0; arrayItem < arraySize; ++arrayItem) {
@@ -3534,9 +3532,9 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
         }
       }
     }
-  } else if (arrayType == GeodeTypeIdsImpl::FixedIDByte) {
-    arrayType = input.read();
-    if (arrayType != GeodeTypeIdsImpl::CacheableObjectPartList) {
+  } else if (arrayType == DSCode::FixedIDByte) {
+    arrayType = static_cast<DSCode>(input.read());
+    if (static_cast<int32_t>(arrayType) != static_cast<int32_t>(DSFid::CacheableObjectPartList)) {
       LOGERROR(
           "Query response got unhandled message format %d while expecting "
           "object part list; possible serialization mismatch",
@@ -3560,8 +3558,8 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
 }
 
 void ChunkedQueryResponse::skipClass(DataInput& input) {
-  uint8_t classByte = input.read();
-  if (classByte == GeodeTypeIdsImpl::Class) {
+  auto classByte = static_cast<DSCode>(input.read());
+  if (classByte == DSCode::Class) {
     // ignore string type id - assuming its a normal (under 64k) string.
     input.read();
     uint16_t classLen = input.readInt16();
@@ -3585,11 +3583,10 @@ void ChunkedFunctionExecutionResponse::handleChunk(
 
   uint32_t partLen;
 
-  int8_t arrayType;
-  if ((arrayType = static_cast<TcrMessageHelper::ChunkObjectType>(
-           TcrMessageHelper::readChunkPartHeader(
+  TcrMessageHelper::ChunkObjectType arrayType;
+  if ((arrayType = TcrMessageHelper::readChunkPartHeader(
                m_msg, input, "ChunkedFunctionExecutionResponse", partLen,
-               isLastChunkWithSecurity))) == TcrMessageHelper::EXCEPTION) {
+               isLastChunkWithSecurity)) == TcrMessageHelper::ChunkObjectType::EXCEPTION) {
     // encountered an exception part, so return without reading more
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
     return;
@@ -3600,7 +3597,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
   }
 
   if (static_cast<TcrMessageHelper::ChunkObjectType>(arrayType) ==
-      TcrMessageHelper::NULL_OBJECT) {
+      TcrMessageHelper::ChunkObjectType::NULL_OBJECT) {
     LOGDEBUG("ChunkedFunctionExecutionResponse::handleChunk nullptr object");
     //	m_functionExecutionResults->push_back(nullptr);
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
@@ -3615,7 +3612,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
 
   // read a byte to determine whether to read exception part for sendException
   // or read objects.
-  uint8_t partType = input.read();
+  auto partType = static_cast<DSCode>(input.read());
   bool isExceptionPart = false;
   // See If partType is JavaSerializable
   const int CHUNK_HDR_LEN = 5;
@@ -3625,7 +3622,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
       "ChunkedFunctionExecutionResponse::handleChunk chunkLen = %d & partLen = "
       "%d ",
       chunkLen, partLen);
-  if (partType == GeodeTypeIdsImpl::JavaSerializable) {
+  if (partType == DSCode::JavaSerializable) {
     isExceptionPart = true;
     // reset the input.
     input.reset();
@@ -3654,7 +3651,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
 
       // Since it is contained as a part of other results, read arrayType which
       // is arrayList = 65.
-      arrayType = input.read();
+      int8_t ignored = input.read();
 
       // read and ignore its len which is 2
       input.readArrayLength();
@@ -3719,9 +3716,9 @@ void ChunkedGetAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
 
   uint32_t partLen;
   if (TcrMessageHelper::readChunkPartHeader(
-          m_msg, input, GeodeTypeIdsImpl::FixedIDByte,
-          GeodeTypeIdsImpl::VersionedObjectPartList, "ChunkedGetAllResponse",
-          partLen, isLastChunkWithSecurity) != TcrMessageHelper::OBJECT) {
+          m_msg, input, DSCode::FixedIDByte,
+          static_cast<int32_t>(DSFid::VersionedObjectPartList), "ChunkedGetAllResponse",
+          partLen, isLastChunkWithSecurity) != TcrMessageHelper::ChunkObjectType::OBJECT) {
     // encountered an exception part, so return without reading more
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
     return;
@@ -3772,21 +3769,19 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
   auto input = cacheImpl->createDataInput(chunk, chunkLen, m_msg.getPool());
 
   uint32_t partLen;
-  int8_t chunkType;
-  if ((chunkType = (TcrMessageHelper::ChunkObjectType)
-           TcrMessageHelper::readChunkPartHeader(
-               m_msg, input, GeodeTypeIdsImpl::FixedIDByte,
-               GeodeTypeIdsImpl::VersionedObjectPartList,
+  TcrMessageHelper::ChunkObjectType chunkType;
+  if ((chunkType = TcrMessageHelper::readChunkPartHeader(
+               m_msg, input, DSCode::FixedIDByte,
+               static_cast<int32_t>(DSFid::VersionedObjectPartList),
                "ChunkedPutAllResponse", partLen, isLastChunkWithSecurity)) ==
-      TcrMessageHelper::NULL_OBJECT) {
+      TcrMessageHelper::ChunkObjectType::NULL_OBJECT) {
     LOGDEBUG("ChunkedPutAllResponse::handleChunk nullptr object");
     // No issues it will be empty in case of disabled caching.
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
     return;
   }
 
-  if (static_cast<TcrMessageHelper::ChunkObjectType>(chunkType) ==
-      TcrMessageHelper::OBJECT) {
+  if (chunkType == TcrMessageHelper::ChunkObjectType::OBJECT) {
     LOGDEBUG("ChunkedPutAllResponse::handleChunk object");
     ACE_Recursive_Thread_Mutex responseLock;
     auto vcObjPart = std::make_shared<VersionedCacheableObjectPartList>(
@@ -3832,21 +3827,19 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
   auto input = cacheImpl->createDataInput(chunk, chunkLen, m_msg.getPool());
 
   uint32_t partLen;
-  int8_t chunkType;
-  if ((chunkType = (TcrMessageHelper::ChunkObjectType)
-           TcrMessageHelper::readChunkPartHeader(
-               m_msg, input, GeodeTypeIdsImpl::FixedIDByte,
-               GeodeTypeIdsImpl::VersionedObjectPartList,
+  TcrMessageHelper::ChunkObjectType chunkType;
+  if ((chunkType = TcrMessageHelper::readChunkPartHeader(
+               m_msg, input, DSCode::FixedIDByte,
+               static_cast<int32_t>(DSFid::VersionedObjectPartList),
                "ChunkedRemoveAllResponse", partLen, isLastChunkWithSecurity)) ==
-      TcrMessageHelper::NULL_OBJECT) {
+      TcrMessageHelper::ChunkObjectType::NULL_OBJECT) {
     LOGDEBUG("ChunkedRemoveAllResponse::handleChunk nullptr object");
     // No issues it will be empty in case of disabled caching.
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
     return;
   }
 
-  if (static_cast<TcrMessageHelper::ChunkObjectType>(chunkType) ==
-      TcrMessageHelper::OBJECT) {
+  if (chunkType == TcrMessageHelper::ChunkObjectType::OBJECT) {
     LOGDEBUG("ChunkedRemoveAllResponse::handleChunk object");
     ACE_Recursive_Thread_Mutex responseLock;
     auto vcObjPart = std::make_shared<VersionedCacheableObjectPartList>(
