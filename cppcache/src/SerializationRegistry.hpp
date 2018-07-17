@@ -22,6 +22,8 @@
 
 #include <string>
 #include <functional>
+#include <typeinfo>
+#include <iostream>
 
 #include <ace/Hash_Map_Manager.h>
 #include <ace/Thread_Mutex.h>
@@ -321,6 +323,10 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   inline void serialize(const DataSerializable* obj, DataOutput& output,
                         bool isDelta) const {
     auto id = obj->getClassId();
+    const std::type_info& dsClass = typeid(std::cout << obj);
+    std::cout << "obj has type: " << dsClass.name() << std::endl;
+
+    // typeid(*obj).name()
     auto dsCode = getSerializableDataDsCode(id);
 
     output.write(static_cast<int8_t>(dsCode));
