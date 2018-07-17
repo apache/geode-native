@@ -1,5 +1,5 @@
 ---
-title:  Transactions
+title:  Use the IPdxInstanceFactory to Create IPdxInstances
 ---
 
 <!--
@@ -19,4 +19,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-This page is a placeholder - it needs further expansion.
+You can use the `IPdxInstanceFactory` to create an `IPdxInstance` from raw data when the domain class is not available on the server.
+
+This option can be useful when you need an instance of a domain class for plug-in code such as a function or a loader. If you have the raw data for the domain object (the class name and each field's type and data), then you can explicitly create a `IPdxInstance`. The `IPdxInstanceFactory` is very similar to the `IPdxWriter` except that after writing each field, you need to call the create method which returns the created `IPdxInstance.`
+
+

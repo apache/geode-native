@@ -1,5 +1,5 @@
 ---
-title:  Serializing Data with the Serializable Interface
+title:  Serializing Data with the DataSerializable Interface
 ---
 
 <!--
@@ -19,7 +19,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The C++ client API provides a `Serializable` interface that you can use for fast and compact data serialization. This section discusses the <%=vars.product_name%> serializable interface, and presents implementation examples.
+The C++ client API provides a `DataSerializable` interface that you can use for fast and compact
+data serialization. 
+
+<%=vars.product_name%> Portable Data eXchange (PDX) serialization is the recommended option,
+but the `DataSerializable` interface can be a good option performance-wise if the size of your objects
+is small. 
+
+This section discusses the <%=vars.product_name%> `DataSerializable` interface, and
+presents implementation examples.
 
 ## <a id="concept_696AB5206C3E45898CC1A24CDD93D003__section_8143F965A8C6495E8AB104FD36DA366A" class="no-quick-link"></a>How Serialization Works
 
@@ -36,9 +44,11 @@ When your application subsequently receives a byte array, <%=vars.product_name%>
 2.  Invokes the `fromData` function with input from the data stream.
 3.  Decodes the data, then populates the data fields.
 
-## <a id="concept_696AB5206C3E45898CC1A24CDD93D003__section_786CF85FD80E4FE391135460E04D46CC" class="no-quick-link"></a>Implementing the Serializable Interface
+## <a id="concept_696AB5206C3E45898CC1A24CDD93D003__section_786CF85FD80E4FE391135460E04D46CC" class="no-quick-link"></a>Implementing the DataSerializable Interface
 
-To store your own data types in the cache, you need to derive a new subclass from the `Serializable` interface. In practical terms, this means that you need to implement a small set of helper functions:
+To store your own data types in the cache, you need to derive a new subclass from the `DataSerializable`
+interface. In practical terms, this means that you need to implement a small set of helper
+functions:
 
 1.  Write a `toData` function that serializes your data.
 
@@ -47,7 +57,6 @@ To store your own data types in the cache, you need to derive a new subclass fro
     ```
 
     The `toData` function is responsible for copying all of the object’s data fields to the object stream.
-
     The `DataOutput` class represents the output stream and provides methods for writing the primitives in a network byte order.
 
 2.  Write a `fromData` function that consumes a data input stream and repopulates the object’s data fields.
@@ -56,7 +65,9 @@ To store your own data types in the cache, you need to derive a new subclass fro
     void fromData (DataInput& input)
     ```
 
-    The `DataInput` class represents the input stream and provides methods for reading input elements. The `fromData` function must read the elements of the input stream in the same order that they were written by `toData`.
+    The `DataInput` class represents the input stream and provides methods for reading input
+    elements. The `fromData` function must read the elements of the input stream in the same order
+    that they were written by `toData`.
 
 ## Example 1. The Simple Class BankAccount
 
@@ -88,19 +99,19 @@ class BankAccount
 };
 ```
 
-To make `BankAccount` serializable, you would need to derive the class from `Serializable` and implement the following:
+To make `BankAccount` serializable, you would need to derive the class from `DataSerializable` and implement the following:
 
--   `toData`—a function to serialize the data.
--   `fromData`—a function to deserialize the data.
--   `classId`—a function to provide a unique integer for the class.
--   `TypeFactoryMethod`—a pointer to a function that returns a `Serializable*` to an uninitialized instance of the type.
+-   `toData` — a function to serialize the data.
+-   `fromData` — a function to deserialize the data.
+-   `getClassId` — a function to provide a unique integer for the class.
+-   `TypeFactoryMethod` — a pointer to a function that returns a `DataSerializable*` to an uninitialized instance of the type.
 
-## Example 2. Implementing a Serializable Class
+## Example 2. Implementing a DataSerializable Class
 
 This example shows a code sample that demonstrates how to implement a serializable class.
 
 ``` pre
-class BankAccount : public Serializable
+class BankAccount : public DataSerializable
 {
    private:
    int m_ownerId; 
@@ -119,21 +130,16 @@ int getAccount( )
     return m_accountId;
 }
 
-// Add the following for the Serializable interface
+// Add the following for the DataSerializable interface
 // Our TypeFactoryMethod
-static Serializable* createInstance( )
+static DataSerializable* createInstance( )
 {
     return new BankAccount( 0, 0 );
 }
 
-int32_t classId( )
+int32_t getClassId( )
 {
     return 10; // must be unique per class.
-}
-
-virtual size_t objectSize() const
-{
-    return 10;
 }
 
 void toData( DataOutput& output )
@@ -142,7 +148,7 @@ void toData( DataOutput& output )
     output.writeInt( m_accountId );
 }
 
-Serializable* fromData( DataInput& input )
+DataSerializable* fromData( DataInput& input )
 {
     input.readInt( &m_ownerId );
     input.readInt( &m_accountId );
@@ -153,10 +159,12 @@ Serializable* fromData( DataInput& input )
 
 ## <a id="concept_696AB5206C3E45898CC1A24CDD93D003__section_108942E549CE4DE68FF3956712DEC7AF" class="no-quick-link"></a>Registering the Type
 
-To be able to use the `BankAccount` type, you must register it with the type system so that when an incoming stream contains a `BankAccount`, it can be manufactured from the associated `TypeFactoryMethod`.
+To be able to use the `BankAccount` type, you must register it with the type system so that when an
+incoming stream contains a `BankAccount`, it can be manufactured from the associated
+`TypeFactoryMethod`.
 
 ``` pre
-Serializable::registerType( BankAccount::createInstance );
+DataSerializable::registerType( BankAccount::createInstance );
 ```
 
 Typically, you would register the type before calling the function `DistributedSystem::connect`.
@@ -166,17 +174,19 @@ Type IDs must be unique to only one class.
 
 ## <a id="concept_696AB5206C3E45898CC1A24CDD93D003__section_311C3661023C46328B406F26F4F16808" class="no-quick-link"></a>Custom Key Types
 
-If your application uses key types that are too complex to easily force into `CacheableString`, you can likely improve performance by deriving a new class from `CacheableKey`. If you have hybrid data types you can implement your own derivation of `CacheableKey` that encapsulates the data type.
+If your application uses key types that are too complex to easily force into `CacheableString`, you
+can likely improve performance by deriving a new class from `CacheableKey`. If you have hybrid data
+types you can implement your own derivation of `CacheableKey` that encapsulates the data type.
 
 See below for information about implementing key types for a client that is used with a Java cache server.
 
-To extend a `Serializable` class to be a `CacheableKey`, you need to modify the class definition as follows:
+To extend a `DataSerializable` class to be a `CacheableKey`, you need to modify the class definition as follows:
 
--   Change the class so that it derives from `CacheableKey` rather than `Serializable`.
+-   Change the class so that it derives from `CacheableKey` rather than `DataSerializable`.
 
 -   Implement `operator==` and `hashcode` functions.
 
-## Example 3. Extending a Serializable Class To Be a CacheableKey
+## Example 3. Extending a DataSerializable Class To Be a CacheableKey
 
 This example shows how to extend a serializable class to be a cacheable key.
 
@@ -202,7 +212,7 @@ int getAccount( )
 }
 
 // Our TypeFactoryMethod
-static Serializable* createInstance( )
+static DataSerializable* createInstance( )
 {
     return new BankAccount( 0, 0 );
 }
@@ -218,7 +228,7 @@ void toData( DataOutput& output )
     output.writeInt( m_accountId );
 }
 
-Serializable* fromData( DataInput& input )
+DataSerializable* fromData( DataInput& input )
 {
     input.readInt( &m_ownerId );
     input.readInt( &m_accountId );
@@ -252,5 +262,10 @@ virtual size_t objectSize() const
 
 ## <a id="concept_696AB5206C3E45898CC1A24CDD93D003__section_AFB685227E4048BF9FB4FD7C55AED274" class="no-quick-link"></a>Serialization in Native Client Mode with a Java Server
 
-Primitive object types supported in all languages (`CacheableInt32`, `CacheableString`, `CacheableBytes`) function without requiring custom definitions with the Java cache server. For the keys, the Java cache server has to deserialize them and locate the hashcode to be able to insert the internal maps. Because of this, key types for C++ clients used with a Java server are required to be registered on the Java server, but the value types do not need to be registered. This needs to be done even if there are no Java clients.
+Primitive object types supported in all languages (`CacheableInt32`, `CacheableString`,
+`CacheableBytes`) function without requiring custom definitions with the Java cache server. For the
+keys, the Java cache server has to deserialize them and locate the hashcode to be able to insert the
+internal maps. Because of this, key types for C++ clients used with a Java server are required to be
+registered on the Java server, but the value types do not need to be registered. This needs to be
+done even if there are no Java clients.
 

@@ -1,5 +1,5 @@
 ---
-title:  Serializing Data
+title:  Data Serialization &ndash; C++
 ---
 
 <!--
@@ -21,21 +21,20 @@ limitations under the License.
 
 All data moving out of the client cache must be serializable.
 
--   **[Region Data Requiring Serialization](region-data-requiring-serialization.html)**
-
-    Certain region types (including client regions) require serialization.
-
 -   **[Data Serialization Options](serialization-options.html)**
 
     The C++ client API provides two serialization options: the `apache::geode::client::Serializable` interface and <%=vars.product_name%> PDX serialization.
 
--   **[Serializing Data with PDX Serialization](pdx-serialization.html)**
+-   **[Using PDX Serialization](pdx-serialization.html)**
 
-    PDX is a cross-language data format that can reduce the cost of distributing and serializing your objects. PDX stores data in named fields that you can access individually to avoid the cost of deserializing the entire data object. When you use PDX serialization with a C++ client, you can register a PdxSerializer for the entire cache, implement PDX serialization for each domain object or use automatic PDX serialization by running the `pdxautoserializer` tool.
+    PDX is a cross-language data format that can reduce the cost of distributing and serializing your
+objects. PDX stores data in named fields that you can access individually to avoid the cost of
+deserializing the entire data object. When you use PDX serialization with a C++ client, you can
+implement PDX serialization for each domain object or register a PdxSerializer for the entire cache.
 
--   **[Serializing Data with the Serializable Interface](serialization-using-serializable.html)**
+-   **[Serializing Data with the DataSerializable Interface](serialization-using-serializable.html)**
 
-    The C++ client API provides a `Serializable` interface that you can use for fast and compact data serialization. This section discusses the <%=vars.product_name%> serializable interface, and presents implementation examples.
+    The C++ client API provides a `DataSerializable` interface that you can use for fast and compact data serialization. This section discusses the <%=vars.product_name%> DataSerializable interface and presents implementation examples.
 
 -   **[Serializing Object Graphs](object-graphs.html)**
 

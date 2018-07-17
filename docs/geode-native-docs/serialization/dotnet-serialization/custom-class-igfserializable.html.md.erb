@@ -1,5 +1,5 @@
 ---
-title:  Using a Custom Class With IGeodeSerializable
+title:  Using a Custom Class With IDataSerializable
 ---
 
 <!--
@@ -24,7 +24,7 @@ An example shows how to use the `BankAccount` custom key type and the `AccountHi
 ## Using a BankAccount Object
 
 ``` pre
-class AccountHistory : IGeodeSerializable   
+class AccountHistory : IDataSerializable   
    {
       #region Private members
       private List<string> m_history;
@@ -44,11 +44,11 @@ class AccountHistory : IGeodeSerializable
       {
          m_history.Add(entry);
       }
-         public static IGeodeSerializable CreateInstance()
+         public static IDataSerializable CreateInstance()
       {
          return new AccountHistory();
       }
-      #region IGeodeSerializable Members
+      #region IDataSerializable Members
       public void FromData(DataInput input)
       {
          int len = input.ReadInt32();

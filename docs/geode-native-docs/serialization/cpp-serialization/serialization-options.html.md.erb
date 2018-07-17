@@ -19,17 +19,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The C++ client API gives two serialization options: the `apache::geode::client::Serializable` interface and <%=vars.product_name%> PDX serialization.
+The C++ client API gives two serialization options: <%=vars.product_name%> PDX serialization and the `apache::geode::client::DataSerializable` interface.
 
-<%=vars.product_name%> Portable Data eXchange (PDX) serialization is the recommended option. PDX serialization provides portability for PDX serializable objects so that clients can share data with Java servers and other non-C++ clients. PDX is a cross-language data format that can reduce the cost of distributing and serializing your objects. PDX stores data in named fields that you can access individually in order to avoid the cost of deserializing the entire data object. PDX also allows you to mix versions of objects where you have added or removed fields.
+<%=vars.product_name%> Portable Data eXchange (PDX) serialization is the recommended option. PDX
+serialization provides portability for PDX serializable objects so that clients can share data with
+Java servers and other non-C++ clients. PDX is a cross-language data format that can reduce the cost
+of distributing and serializing your objects. PDX stores data in named fields that you can access
+individually in order to avoid the cost of deserializing the entire data object. PDX also allows you
+to mix versions of objects where you have added or removed fields.
 
-When using PDX serialization, you can use either `PdxSerializer` (for all your domain objects) or `PdxSerializable` (for a specific domain object).
-
-`PdxSerializer` is used when a user has registered a domain class for serialization in the cache using the `registerPdxSerializer` API.
+When using PDX serialization, you can use either `PdxSerializable` (for a specific domain object) or `PdxSerializer` (for all your domain objects).
 
 `PdxSerializable` is used when the domain class that a user wants to serialize/deserialize is inherited from the `PdxSerializable` interface, and the user has registered the domain class using the `registerPdxType(domainClass)` API.
 
-The non-PDX serialization option is to use the `apache::geode::client::Serializable` interface. This `Serializable` interface can be a good option performance-wise if the size of your objects is small. `Serializable` is used whenever a user domain class is not inherited by `PdxSerializable`, but the user has registered the class with the `registerType` API. See [Serializing Data with the Serializable Interface](serialization-using-serializable.html#concept_696AB5206C3E45898CC1A24CDD93D003) for more information.
+`PdxSerializer` is used when a user has registered a domain class for serialization in the cache using the `registerPdxSerializer` API.
+
+The non-PDX serialization option is to use the `apache::geode::client::DataSerializable` interface. This
+`DataSerializable` interface can be a good option performance-wise if the size of your objects is
+small. `DataSerializable` is used whenever a user domain class is not inherited by `PdxSerializable`,
+but the user has registered the class with the `registerType` API. See [Serializing Data with the
+DataSerializable
+Interface](serialization-using-serializable.html#concept_696AB5206C3E45898CC1A24CDD93D003) for more
+information.
 
 <a id="concept_7B6F272ACEA14753A723CB73B858ADBE__table_D61A94C4BFBE4712835F632F30BB488E"></a>
 
@@ -43,7 +54,7 @@ The non-PDX serialization option is to use the `apache::geode::client::Serializa
 <thead>
 <tr class="header">
 <th>Capability</th>
-<th>Serializable</th>
+<th>DataSerializable</th>
 <th>PdxSerializable</th>
 </tr>
 </thead>

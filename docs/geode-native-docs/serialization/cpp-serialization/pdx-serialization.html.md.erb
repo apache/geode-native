@@ -19,23 +19,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-PDX is a cross-language data format that can reduce the cost of distributing and serializing your objects. PDX stores data in named fields that you can access individually to avoid the cost of deserializing the entire data object. When you use PDX serialization with the C++ client API, you can register a `PdxSerializer` for the entire cache, implement PDX serialization for each domain object or use automatic PDX serialization by running the `pdxautoserializer` tool.
+PDX is a cross-language data format that can reduce the cost of
+distributing and serializing your objects. PDX stores data in named
+fields that you can access individually to avoid the cost of
+deserializing the entire data object. When you use PDX serialization
+with the C++ client API, you can implement PDX serialization for each
+domain object or register a `PdxSerializer` for the entire cache.
 
 You can also set the object preference of the cache to the `PdxInstance` type, which allows you to access fields of a PDX object without deserializing the entire object.
-
-When using the C++ client API, you can opt to use PDX autoserialization. The command line tool `pdxautoserializer` will automatically generate C++ code to PDX serialize the class you want to serialize.
-
--   **[Serialize Your Domain Objects with PdxSerializer and PdxWrapper](using-pdxserializer.html)**
-
-    For domain objects that you cannot or do not want to modify, use the `PdxSerializer` and the `PdxWrapper` classes to serialize and deserialize the object's fields.
 
 -   **[Serialize Using the PdxSerializable Class](pdxserializable-interface.html)**
 
     Domain classes need to inherit the `PdxSerializable` abstract class to serialize and de-serialize the object. When you write objects using PDX serialization, they are distributed to the server tier in PDX serialized form.
 
--   **[Using Automatic PDX Serialization](pdx-auto-serialization.html)**
+-   **[Serialize Your Domain Objects with PdxSerializer and PdxWrapper](using-pdxserializer.html)**
 
-    You can allow your C++ client applications to automatically PDX serialize and deserialize domain objects without having to add any extra code by using the `pdxautoserializer` command line tool.
+    For domain objects that you cannot or do not want to modify, use the `PdxSerializer` and the `PdxWrapper` classes to serialize and deserialize the object's fields.
 
 -   **[Programming Your Application to Use PdxInstances](using-pdxinstance.html)**
 
