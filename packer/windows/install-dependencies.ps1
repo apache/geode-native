@@ -14,7 +14,7 @@
 # limitations under the License.
 
 choco install jdk8 -confirm
-choco install cmake.portable -confirm
+choco install cmake.portable -version 3.11.4 -confirm
 choco install git.install -confirm
 choco install activeperl -confirm
 choco install doxygen.install --allowEmptyChecksums -confirm
