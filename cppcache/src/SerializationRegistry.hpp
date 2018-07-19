@@ -82,6 +82,9 @@ class TheTypeMap : private NonCopyable {
   mutable util::concurrent::spinlock_mutex m_map2Lock;
   mutable util::concurrent::spinlock_mutex m_pdxTypemapLock;
 
+ protected:
+  std::unordered_map<std::type_index, int32_t> typeToClassId;
+
  public:
   std::unordered_map<std::string, int32_t> typeToClassId;
 
@@ -252,7 +255,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   std::shared_ptr<Serializable> deserialize(DataInput& input,
                                             int8_t typeId = -1) const;
 
-  void addType(TypeFactoryMethod func, int32_t id);
+  void addType(TypeFactoryMethod func, uint32_t id);
 
   void addType(int64_t compId, TypeFactoryMethod func);
 
@@ -336,27 +339,13 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
 
   inline void serialize(const DataSerializable* obj, DataOutput& output,
                         bool isDelta) const {
+    // auto id = obj->getClassId();
     auto&& type = obj->getType();
-    auto typeIterator = theTypeMap.typeToClassId.find(type);
-    auto id = typeIterator->second;
+    //    auto id = typeToClassId[type];
+    std::string objname = typeid(obj).name();
+    // std::cout << "obj has type: " << dsClass.name() << std::endl;
 
-    typeid(*obj).name();
-    auto dsCode = getSerializableDataDsCode((int32_t)id);
-
-    output.write(static_cast<int8_t>(dsCode));
-    switch (dsCode) {
-      case DSCode::CacheableUserData:
-        output.write(static_cast<int8_t>(id));
-        break;
-      case DSCode::CacheableUserData2:
-        output.writeInt(static_cast<int16_t>(id));
-        break;
-      case DSCode::CacheableUserData4:
-        output.writeInt(static_cast<int32_t>(id));
-        break;
-      default:
-        IllegalStateException("Invalid DS Code.");
-    }
+    // typeid(*obj).name()
 
     if (isDelta) {
       const Delta* ptr = dynamic_cast<const Delta*>(obj);
