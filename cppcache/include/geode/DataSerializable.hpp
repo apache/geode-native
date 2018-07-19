@@ -55,7 +55,8 @@ class APACHE_GEODE_EXPORT DataSerializable : public virtual Serializable {
    * The classId must be unique within an application suite.
    * Using a negative value may result in undefined behavior.
    */
-  virtual int32_t getClassId() const = 0;
+  // virtual int32_t getClassId() const = 0;
+  const std::type_info& getType() const { return typeid(*this); }
 };
 
 }  // namespace client
