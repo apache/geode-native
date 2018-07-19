@@ -24,6 +24,9 @@
 #include <functional>
 #include <typeinfo>
 #include <iostream>
+#include <memory>
+#include <typeindex>
+#include <unordered_map>
 
 #include <ace/Hash_Map_Manager.h>
 #include <ace/Thread_Mutex.h>
@@ -79,6 +82,9 @@ class TheTypeMap : private NonCopyable {
   mutable util::concurrent::spinlock_mutex m_map2Lock;
   mutable util::concurrent::spinlock_mutex m_pdxTypemapLock;
 
+ protected:
+  std::unordered_map<std::type_index, int32_t> typeToClassId;
+
  public:
   TheTypeMap() {
     m_map = new IdToFactoryMap();
@@ -114,7 +120,7 @@ class TheTypeMap : private NonCopyable {
 
   void find2(int64_t id, TypeFactoryMethod& func) const;
 
-  void bind(TypeFactoryMethod func);
+  void bind(TypeFactoryMethod func, uint32_t id);
 
   inline void rebind(int64_t compId, TypeFactoryMethod func);
 
@@ -145,8 +151,9 @@ class Pool;
 class PdxTypeHandler {
  public:
   virtual ~PdxTypeHandler() noexcept = default;
-  virtual void serialize(const std::shared_ptr<PdxSerializable>& pdxSerializable,
-                         DataOutput& dataOutput) const;
+  virtual void serialize(
+      const std::shared_ptr<PdxSerializable>& pdxSerializable,
+      DataOutput& dataOutput) const;
   virtual std::shared_ptr<PdxSerializable> deserialize(
       DataInput& dataInput) const;
 };
@@ -182,12 +189,12 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     }
   }
 
-  inline void serialize(const std::shared_ptr<Serializable>& obj, DataOutput& output,
-                        bool isDelta = false) const {
+  inline void serialize(const std::shared_ptr<Serializable>& obj,
+                        DataOutput& output, bool isDelta = false) const {
     if (obj == nullptr) {
       output.write(static_cast<int8_t>(DSCode::NullObj));
     } else if (auto&& pdxSerializable =
-        std::dynamic_pointer_cast<PdxSerializable>(obj)) {
+                   std::dynamic_pointer_cast<PdxSerializable>(obj)) {
       serialize(pdxSerializable, output);
     } else {
       serialize(obj.get(), output, isDelta);
@@ -218,10 +225,10 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     }
   }
 
-  inline void serializeWithoutHeader(const std::shared_ptr<Serializable>& obj, DataOutput& output
-                        ) const {
+  inline void serializeWithoutHeader(const std::shared_ptr<Serializable>& obj,
+                                     DataOutput& output) const {
     if (auto&& pdxSerializable =
-        std::dynamic_pointer_cast<PdxSerializable>(obj)) {
+            std::dynamic_pointer_cast<PdxSerializable>(obj)) {
       serializeWithoutHeader(pdxSerializable, output);
     } else {
       serializeWithoutHeader(obj.get(), output);
@@ -240,7 +247,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   std::shared_ptr<Serializable> deserialize(DataInput& input,
                                             int8_t typeId = -1) const;
 
-  void addType(TypeFactoryMethod func);
+  void addType(TypeFactoryMethod func, uint32_t id);
 
   void addType(int64_t compId, TypeFactoryMethod func);
 
@@ -324,27 +331,13 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
 
   inline void serialize(const DataSerializable* obj, DataOutput& output,
                         bool isDelta) const {
-    auto id = obj->getClassId();
-    const std::type_info& dsClass = typeid(std::cout << obj);
-    std::cout << "obj has type: " << dsClass.name() << std::endl;
+    // auto id = obj->getClassId();
+    auto&& type = obj->getType();
+    //    auto id = typeToClassId[type];
+    std::string objname = typeid(obj).name();
+    // std::cout << "obj has type: " << dsClass.name() << std::endl;
 
     // typeid(*obj).name()
-    auto dsCode = getSerializableDataDsCode(id);
-
-    output.write(static_cast<int8_t>(dsCode));
-    switch (dsCode) {
-      case DSCode::CacheableUserData:
-        output.write(static_cast<int8_t>(id));
-        break;
-      case DSCode::CacheableUserData2:
-        output.writeInt(static_cast<int16_t>(id));
-        break;
-      case DSCode::CacheableUserData4:
-        output.writeInt(static_cast<int32_t>(id));
-        break;
-      default:
-        IllegalStateException("Invalid DS Code.");
-    }
 
     if (isDelta) {
       const Delta* ptr = dynamic_cast<const Delta*>(obj);
@@ -359,7 +352,8 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     obj->toData(output);
   }
 
-  inline void serialize(const std::shared_ptr<PdxSerializable>& obj, DataOutput& output) const {
+  inline void serialize(const std::shared_ptr<PdxSerializable>& obj,
+                        DataOutput& output) const {
     output.write(static_cast<int8_t>(DSCode::PDX));
 
     serializeWithoutHeader(obj, output);
@@ -408,7 +402,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
 
   [[noreturn]] void deserialize(DataInput& input,
                                 std::shared_ptr<PdxSerializable> obj) const;
-};
+};  // namespace client
 
 }  // namespace client
 }  // namespace geode
