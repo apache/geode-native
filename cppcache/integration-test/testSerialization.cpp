@@ -161,9 +161,12 @@ DUNIT_TASK(Sender, SetupAndPutInts)
     auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
-    serializationRegistry->addType(OtherType::createDeserializable);
-    serializationRegistry->addType(OtherType::createDeserializable2);
-    serializationRegistry->addType(OtherType::createDeserializable4);
+    serializationRegistry->addType(OtherType::createDeserializable,
+                                   g_classIdToReturn);
+    serializationRegistry->addType(OtherType::createDeserializable2,
+                                   g_classIdToReturn2);
+    serializationRegistry->addType(OtherType::createDeserializable4,
+                                   g_classIdToReturn);
 
     getHelper()->createPooledRegion("DistRegionAck", USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
