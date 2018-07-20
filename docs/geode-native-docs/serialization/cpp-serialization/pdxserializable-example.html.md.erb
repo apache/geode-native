@@ -19,10 +19,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-DRAFT - Dave's notes interspersed.
-
-Why is this called "customserializable", rather than "PdxSerializable"?
-
 ## Order.cpp:
 
 Front matter:
@@ -37,9 +33,7 @@ Front matter:
     namespace customserializable {
 
 - Must provide `fromData()` and `toData()`.
-- Specify the keys in the same order in fromData and toData.
-- The order (no pun intended) in which the keys appear IS SIGNIFICANT in PDX Serialization, though it probably 
-shouldn't be since we're supposedly indexing by name, not by position in the byte stream.
+- Specify the keys in the same order in `fromData()` and `toData()`. Use `PdxReader` and `PdxWriter`:
 
     ```
     void Order::fromData(PdxReader& pdxReader) {
@@ -60,14 +54,13 @@ shouldn't be since we're supposedly indexing by name, not by position in the byt
     }
     ```
 
-Ivan says "toString is an override." What does he mean by that? Required by interface spec, or what?
+Optionally override and add detailed methods as needed. In this example, we override `toString()` and implement `size()` and `classname()`.
 
     std::string Order::toString() const {
       return "OrderID: " + std::to_string(order_id_) + " Product Name: " + name_ +
 	     " Quantity: " + std::to_string(quantity_);
     }
 
-Do we need size?
 
     size_t Order::objectSize() const {
       auto objectSize = sizeof(Order);
@@ -75,14 +68,13 @@ Do we need size?
       return objectSize;
     }
 
-Do we need classname?
 
     const std::string& Order::getClassName() const {
       static const std::string CLASS_NAME = "com.example.Order";
       return CLASS_NAME;
     }
 
-Why `createDeserializable`?
+Provide a constructor in a parameter-less wrapper that can be called to create a prototypical instance (called `createDeserializable()` here).
 
     std::shared_ptr<PdxSerializable> Order::createDeserializable() {
       return std::make_shared<Order>(0, "", 0);
@@ -96,7 +88,7 @@ Why `createDeserializable`?
 
 ## main.cpp
 
-Front matter. Any of these **required** for serialization (e.g. TypeRegistry)?
+Front matter. You will need `TypeRegistry` to register your PdxSerializable class. Bring in the customary includes for I/O and cache, pool, and region creation.
 
     #include <iostream>
     #include <sstream>
@@ -109,12 +101,9 @@ Front matter. Any of these **required** for serialization (e.g. TypeRegistry)?
 
     #include "Order.hpp"
 
-Is `namespace apache::geode::client;` required for a client app?
-
     using namespace apache::geode::client;
     using namespace customserializable;
 
-Safe to assume that region & pool creation follow a template?
 
     int main(int argc, char** argv) {
       auto cacheFactory = CacheFactory();
@@ -128,11 +117,9 @@ Safe to assume that region & pool creation follow a template?
       auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
       auto region = regionFactory.setPoolName("pool").create("custom_orders");
 
-Again, why `createDeserializable`?
 
       cache.getTypeRegistry().registerPdxType(Order::createDeserializable);
 
-Invoke the example code, report on progress...
 
       std::cout << "Create orders" << std::endl;
       auto order1 = std::make_shared<Order>(1, "product x", 23);
@@ -159,7 +146,6 @@ Invoke the example code, report on progress...
 	std::cout << "Order 2 not found." << std::endl;
       }
 
-Is `cache.close();` conventional or required?
 
       cache.close();
     }
