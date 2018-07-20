@@ -404,6 +404,10 @@ void TheTypeMap::find2(int64_t id, TypeFactoryMethod& func) const {
   m_map2->find(id, func);
 }
 
+// int32_t TheTypeMap::findClassId(const std::type_info&& typeIndex) const {
+//  return typeToClassId[typeIndex];
+//}
+
 void TheTypeMap::bind(TypeFactoryMethod func, uint32_t id) {
   auto obj = func();
   int64_t compId;
@@ -417,7 +421,7 @@ void TheTypeMap::bind(TypeFactoryMethod func, uint32_t id) {
   } else if (const auto dataSerializable =
                  std::dynamic_pointer_cast<DataSerializable>(obj)) {
     // auto id = dataSerializable->getClassId();
-    typeToClassId[dataSerializable->getType()] = id;
+    typeToClassId[std::type_index(dataSerializable->getType())] = id;
     compId = static_cast<int64_t>(
                  SerializationRegistry::getSerializableDataDsCode(id)) |
              static_cast<int64_t>(id) << 32;
