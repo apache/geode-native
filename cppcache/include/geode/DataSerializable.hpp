@@ -17,6 +17,9 @@
 
 #pragma once
 
+#include <typeinfo>
+#include <typeindex>
+
 #ifndef GEODE_DATASERIALIZABLE_H_
 #define GEODE_DATASERIALIZABLE_H_
 
