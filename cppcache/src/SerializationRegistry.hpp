@@ -80,6 +80,7 @@ class TheTypeMap : private NonCopyable {
   mutable util::concurrent::spinlock_mutex m_map2Lock;
   mutable util::concurrent::spinlock_mutex m_pdxTypemapLock;
 
+ public:
   std::unordered_map<std::type_index, int32_t> typeToClassId;
 
  public:
@@ -333,9 +334,8 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     // auto id = obj->getClassId();
     auto&& type = obj->getType();
     // int32_t id = theTypeMap.findClassId(type);
-    int32_t id = typeToClassId[type];
-    // std::string objname = typeid(obj).name();
-    // std::cout << "obj has type: " << dsClass.name() << std::endl;
+    auto id = theTypeMap.typeToClassId.find(type);
+    auto number = id->second;
 
     if (isDelta) {
       const Delta* ptr = dynamic_cast<const Delta*>(obj);
