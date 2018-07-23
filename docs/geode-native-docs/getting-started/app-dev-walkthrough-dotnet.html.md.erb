@@ -34,7 +34,7 @@ directory for project-specific CMake files:
     ```
     MyProject\
       cmake\
-        FindGemFireNative.cmake
+        Find<%=vars.product_name%>Native.cmake
       CMakeLists.txt
       Program.cs
     ```
@@ -44,7 +44,7 @@ source file, `Program.cs`.
 
 ## <a id="configuring_cmake_dotnet"></a>Configuring CMake
 
-1. Copy the `FindGemFireNative.cmake` script from one of the Native Client examples to the `cmake` subdirectory.
+1. Copy the `Find<%=vars.product_name%>Native.cmake` script from one of the Native Client examples to the `cmake` subdirectory.
 
 1. Create CMakeLists.txt. Copy the file from an example, if you like, as a starting point. The CMakeLists.txt file
 should contain the following CMake instructions:
@@ -61,12 +61,12 @@ should contain the following CMake instructions:
     project(MyProject LANGUAGES CSharp)
     ```
 
-  - Path to the CMake modules directory where the `FindGemFireNative.cmake` script is located and an instruction
+  - Path to the CMake modules directory where the `Find<%=vars.product_name%>Native.cmake` script is located and an instruction
     telling CMake to use it:
 
     ```
     set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-    find_package(GemFireNative REQUIRED COMPONENTS dotnet)
+    find_package(<%=vars.product_name%>Native REQUIRED COMPONENTS dotnet)
     ```
 
   - The compilation target and the source(s) to be compiled
@@ -76,11 +76,11 @@ should contain the following CMake instructions:
 
     target_link_libraries(MyProject
       PUBLIC
-        GemFireNative::dotnet)
+        <%=vars.product_name%>Native::dotnet)
 
     set_target_properties(MyProject PROPERTIES
         VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
-        VS_DOTNET_REFERENCES "System;${GemFireNative_DOTNET_LIBRARY}")
+        VS_DOTNET_REFERENCES "System;${<%=vars.product_name%>Native_DOTNET_LIBRARY}")
     ```
 
 Combined, the above elements comprise the following CMakeLists.txt:
@@ -93,17 +93,17 @@ project(MyProject LANGUAGES CSharp)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-find_package(GemFireNative REQUIRED COMPONENTS dotnet)
+find_package(<%=vars.product_name%>Native REQUIRED COMPONENTS dotnet)
 
 add_executable(MyProject Program.cs)
 
 target_link_libraries(MyProject
   PUBLIC
-    GemFireNative::dotnet)
+    <%=vars.product_name%>Native::dotnet)
 
 set_target_properties(MyProject PROPERTIES
     VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
-    VS_DOTNET_REFERENCES "System;${GemFireNative_DOTNET_LIBRARY}")
+    VS_DOTNET_REFERENCES "System;${<%=vars.product_name%>Native_DOTNET_LIBRARY}")
 ```
 
 ## <a id="building_the_app_dotnet"></a>Configuring the App

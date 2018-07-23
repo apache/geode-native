@@ -38,7 +38,7 @@ directory for project-specific CMake files:
     ```
     MyProject/
       cmake/
-        FindGemFireNative.cmake
+        Find<%=vars.product_name%>Native.cmake
       CMakeLists.txt
       main.cpp
     ```
@@ -48,7 +48,7 @@ source file, `main.cpp`.
 
 ## <a id="configuring_cmake_cpp"></a>Configuring CMake
 
-1. Copy the `FindGemFireNative.cmake` script from one of the Native Client examples to the `cmake` subdirectory.
+1. Copy the `Find<%=vars.product_name%>Native.cmake` script from one of the Native Client examples to the `cmake` subdirectory.
 
 1. Create CMakeLists.txt. Copy the file from an example, if you like, as a starting point. The CMakeLists.txt file
 should contain the following CMake instructions:
@@ -71,12 +71,12 @@ should contain the following CMake instructions:
     set(CMAKE_CXX_STANDARD 11)
     ```
 
-  - Path to the CMake modules directory where the `FindGemFireNative.cmake` script is located and an instruction
+  - Path to the CMake modules directory where the `Find<%=vars.product_name%>Native.cmake` script is located and an instruction
     telling CMake to use it:
 
     ```
     set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-    find_package(GemFireNative REQUIRED COMPONENTS cpp)
+    find_package(<%=vars.product_name%>Native REQUIRED COMPONENTS cpp)
     ```
 
   - The compilation target and the source(s) to be compiled
@@ -86,7 +86,7 @@ should contain the following CMake instructions:
 
     target_link_libraries(MyProject
       PUBLIC
-        GemFireNative::cpp)
+        <%=vars.product_name%>Native::cpp)
     ```
 
 Combined, the above elements comprise the following CMakeLists.txt:
@@ -101,13 +101,13 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-find_package(GemFireNative REQUIRED COMPONENTS cpp)
+find_package(<%=vars.product_name%>Native REQUIRED COMPONENTS cpp)
 
 add_executable(MyProject main.cpp)
 
 target_link_libraries(MyProject
   PUBLIC
-    GemFireNative::cpp)
+    <%=vars.product_name%>Native::cpp)
 ```
 
 ## <a id="building_the_app_cpp"></a>Building the App
