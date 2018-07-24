@@ -37,12 +37,7 @@ When using PDX serialization, you can use either `PdxSerializable` (for a specif
 The non-PDX serialization option is to use the `apache::geode::client::DataSerializable` interface. This
 `DataSerializable` interface can be a good option performance-wise if the size of your objects is
 small. `DataSerializable` is used whenever a user domain class is not inherited by `PdxSerializable`,
-but the user has registered the class with the `registerType` API. See [Serializing Data with the
-DataSerializable
-Interface](serialization-using-serializable.html#concept_696AB5206C3E45898CC1A24CDD93D003) for more
-information.
-
-<a id="concept_7B6F272ACEA14753A723CB73B858ADBE__table_D61A94C4BFBE4712835F632F30BB488E"></a>
+but the user has registered the class with the `registerType` API.
 
 <table>
 <caption><span class="tablecap">Table 1. Serialization Options—Comparison of Features</span></caption>
@@ -60,7 +55,7 @@ information.
 </thead>
 <tbody>
 <tr class="odd">
-<td><p>Handles multiple versions of domain objects*</p></td>
+<td><p>Handles multiple versions of domain objects</p></td>
 <td></td>
 <td>X</td>
 </tr>
@@ -77,14 +72,10 @@ information.
 <tr class="even">
 <td><p>Works with Geode delta propagation</p></td>
 <td>X</td>
-<td>X**</td>
+<td>X</td>
 </tr>
 </tbody>
 </table>
 
 <span class="tablecap">**Table 1.** Serialization Options—Comparison of Features</span>
-
-\* You can mix domain object versions where the differences between versions are the addition and removal of object fields.
-
-\*\* See [Using PDX Serialization with Delta Propagation](pdx-with-delta-propagation.html#concept_F33AC930A8F14F0A9EE07AC31FFD8C8F) for requirements.
 
