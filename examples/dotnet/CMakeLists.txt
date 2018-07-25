@@ -50,6 +50,9 @@ endfunction()
 add_example(NAME AuthInitialize
 	SOURCE ExampleAuthInitialize.cs Program.cs)
 
+add_example(NAME DataSerializable
+	SOURCE Order.cs Program.cs)
+
 add_example(NAME PdxAutoSerializer
 	SOURCE Order.cs Program.cs)
 
