@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+#include <sstream>
 #include "Order.hpp"
 
 #include <geode/DataInput.hpp>
@@ -35,8 +36,10 @@ void Order::toData(DataOutput& dataOutput) const {
 }
 
 std::string Order::toString() const {
-  return "OrderID: " + std::to_string(order_id_) + " Product Name: " + name_ +
-         " Quantity: " + std::to_string(quantity_);
+  std::stringstream strm;
+
+  strm << "OrderID: " << order_id_ << " Product Name: " << name_ << " Quantity: " << quantity_;
+  return strm.str();
 }
 
 size_t Order::objectSize() const {
@@ -45,7 +48,7 @@ size_t Order::objectSize() const {
   return objectSize;
 }
 
-std::shared_ptr<DataSerializable> Order::createDeserializable() {
+std::shared_ptr<DataSerializable> Order::create() {
   return std::make_shared<Order>();
 }
 

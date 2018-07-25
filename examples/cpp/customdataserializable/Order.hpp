@@ -51,7 +51,7 @@ class Order : public DataSerializable {
 
   size_t objectSize() const override;
 
-  static std::shared_ptr<DataSerializable> createDeserializable();
+  static std::shared_ptr<DataSerializable> create();
   
   int32_t getClassId() const override;
 

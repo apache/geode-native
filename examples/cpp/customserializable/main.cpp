@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
   auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
   auto region = regionFactory.setPoolName("pool").create("custom_orders");
 
-  cache.getTypeRegistry().registerPdxType(Order::createDeserializable);
+  cache.getTypeRegistry().registerPdxType(Order::create);
 
   std::cout << "Create orders" << std::endl;
   auto order1 = std::make_shared<Order>(1, "product x", 23);
