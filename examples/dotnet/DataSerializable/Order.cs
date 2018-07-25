@@ -14,10 +14,12 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+using Apache.Geode.Client;
+using System;
 
 namespace Apache.Geode.Examples.Serializer
 {
-    public class Order
+    public class Order : IDataSerializable
     {
         public int OrderId { get; set; }
         public string Name { get; set; }
@@ -35,7 +37,36 @@ namespace Apache.Geode.Examples.Serializer
 
         public override string ToString()
         {
-            return "Order: [" + OrderId + ", " + Name + ", " + Quantity + "]";
+            return string.Format("Order: [{0}, {1}, {2}]", OrderId, Name, Quantity);
+        }
+
+        public void ToData(DataOutput output)
+        {
+            output.WriteInt32(OrderId);
+            output.WriteUTF(Name);
+            output.WriteInt16(Quantity);
+        }
+
+        public void FromData(DataInput input)
+        {
+            OrderId = input.ReadInt32();
+            Name = input.ReadUTF();
+            Quantity = input.ReadInt16();
+        }
+
+        public Int32 ClassId
+        {
+            get { return 0x42; }
+        }    
+
+        public ulong ObjectSize
+        {
+            get { return 0x04; }
+        }    
+        
+        public static ISerializable CreateDeserializable()
+        {
+            return new Order();
         }
     }
 }

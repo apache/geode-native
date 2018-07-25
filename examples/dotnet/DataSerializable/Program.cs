@@ -30,7 +30,7 @@ namespace Apache.Geode.Examples.Serializer
 
             Console.WriteLine("Registering for reflection-based auto serialization");
 
-            cache.TypeRegistry.PdxSerializer = new ReflectionBasedAutoSerializer();
+            cache.TypeRegistry.RegisterType(Order.CreateDeserializable);
 
             var poolFactory = cache.GetPoolFactory()
                 .AddLocator("localhost", 10334);
