@@ -28,7 +28,7 @@ namespace Apache.Geode.Examples.Serializer
                 .Set("log-level", "none");
             var cache = cacheFactory.Create();
 
-            Console.WriteLine("Registering for reflection-based auto serialization");
+            Console.WriteLine("Registering for data serialization");
 
             cache.TypeRegistry.RegisterType(Order.CreateDeserializable);
 
@@ -44,7 +44,7 @@ namespace Apache.Geode.Examples.Serializer
 
             const int orderKey = 65;
 
-            var order = new Order(orderKey, "Vox AC30", 11);
+            var order = new Order(orderKey, "Donuts", 12);
 
             Console.WriteLine("order to put is " + order);
             orderRegion.Put(orderKey, order, null);

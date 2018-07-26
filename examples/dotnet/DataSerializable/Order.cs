@@ -25,7 +25,7 @@ namespace Apache.Geode.Examples.Serializer
         public string Name { get; set; }
         public short Quantity { get; set; }
 
-        // A default constructor is required for reflection based autoserialization
+        // A default constructor is required for deserialization
         public Order() { }
 
         public Order(int orderId, string name, short quantity)
