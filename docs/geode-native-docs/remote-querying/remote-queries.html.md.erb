@@ -39,6 +39,13 @@ Query language features and grammar are described in the <%=vars.product_name%> 
 [Querying](geodeman/developing/querying_basics/chapter_overview.html). This section describes areas
 that are unique to the native client.
 
+### <a id="CreatingIndexes"></a>Creating Indexes
+
+An index can provide significant performance gains for query execution. You create and maintain indexes on the cache server.
+
+For detailed information about working with indexes configured on a cache server, 
+see [Working with Indexes](geodeman/developing/query_index/query_index.html) in the server's documentation.
+
 ## <a id="RemoteQueryAPI"></a>Remote Query API
 
 This section gives a general overview of the interfaces and classes that are provided by the Query
@@ -78,13 +85,6 @@ The query service is a data access tool, so it does not provide any cache update
 
 Retrieving the entry keys allows you to access the cached region entries for update. You cannot update the cache through the query engine.
 
-### <a id="CreatingIndexes"></a>Creating Indexes
-
-An index can provide significant performance gains for query execution. You create and maintain indexes on the cache server.
-
-For detailed information about working with indexes configured on a cache server, 
-see [Working with Indexes](geodeman/developing/query_index/query_index.html) in the server's documentation.
-
 ### <a id="UsingQueryStrings"></a>Using Query Strings in the Client
 
 To use a query string in a client, specify the string as a parameter in a `QueryService::newQuery`
@@ -94,7 +94,7 @@ In the context of a query, specify the name of a region by its full path, starti
 
 The query processor performs binary numeric promotion, method invocation conversion, and temporal type conversion.
 
-### Query Result Sets
+### <a id="QueryResultSets"></a>Query Result Sets
 
 -   **SelectResults**. Executes the query on the cache server and returns the results as either a `ResultSet` or a `StructSet`.
 -   **SelectResultsIterator**. Iterates over the items available in a `ResultSet` or `StructSet`.
