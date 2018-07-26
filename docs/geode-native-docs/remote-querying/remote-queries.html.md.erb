@@ -1,5 +1,5 @@
 ---
-title:  Remote Queries
+title: Remote Queries
 ---
 
 <!--
@@ -19,85 +19,56 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-Use the client query API to query your cached data stored on a cache server. The query is evaluated
-and executed on the cache server, and the results are returned to the client.
+Use the client query API to query your cached data stored on a cache server. 
 
-You can also optimize your queries by defining indexes on the cache server.
+## <a id="Remote Query Basics"></a>Remote Query Basics
 
-## <a id="Remote Query Basics"></a> Remote Query Basics
+Queries are evaluated and executed on the cache server, and the results are returned to the client.
+You can optimize your queries by defining indexes on the cache server.
 
-The query language for the native client is essentially a subset of OQL (ODMG 3.0 Object Data
-Management Group, [http://www.odmg.org](http://www.odmg.org).), which is based on SQL-92. OQL is a
-SQL-like language with extended functionality for querying complex objects, object attributes, and
-methods.
+Querying and indexing operate only on remote cache server contents.
 
-This section assumes that you have general familiarity with SQL querying and indexing, and with the information on the client cache.
+### <a id="QueryLanguage"></a>Query language: OQL
+<%=vars.product_name%> provides a SQL-like querying language called OQL that allows you to access data stored in <%=vars.product_name%> regions.
+
+<%=vars.product_name%> uses a query syntax based on OQL (Object Query Language) to query region
+data. OQL is very similar to SQL, but OQL allows you to query complex objects, object attributes,
+and methods.
 
 Query language features and grammar are described in the <%=vars.product_name%> manual at
 [Querying](geodeman/developing/querying_basics/chapter_overview.html). This section describes areas
 that are unique to the native client.
 
-### <a id="ConnectionPool"></a>Connection Pool
+## <a id="RemoteQueryAPI"></a>Remote Query API
 
-If you are using the pool API, you should obtain the QueryService from the pool.
+This section gives a general overview of the interfaces and classes that are provided by the Query
+package API, and the shortcut methods provided in the Region interface.
+
+### <a id="CreatingAndManagingQueries"></a>Creating and Managing Queries
+
+You create queries on the cache server by obtaining a `QueryService` method and manage them through
+the resulting `Query` object. The `Region` interface has several shortcut query methods.
+
+### <a id="Query"></a>Query
+
+A `Query` is obtained from a `QueryService` method, which is obtained from the cache. The `Query` interface provides methods for managing the compilation and execution of queries, and for retrieving an existing query string.
+
+You must obtain a `Query` object for each new query.
 
 ### <a id="ExecutingAQuery"></a>Executing a Query from the Client
 
--  If you are using the C++ client, get a pointer to the `QueryService` method.
+-  Get a pointer to the `QueryService` method. If you are using the pool API, you should obtain the `QueryService` from the pool.
 -  Create a `QueryPtr` to a query (C++) or create a query instance (.NET) that is compatible with the OQL specification.
 -  Use the `execute` method for the `Query` interface to submit the query string to the cache server. The server remotely evaluates the query string and returns the results to the client.
 -  You can iterate through the returned objects as part of the query process.
-
-## <a id="RemoteQueryingReqs"></a>Remote Querying Requirements
-
-### <a id="UsingRegionEndpoints"></a>Using Region Endpoints
-
-When you are using region endpoints, at least one region must exist on the client before a query can
-be executed through the client. All objects in the region belong to the same class hierarchy
-(homogenous types).
-
-### <a id="SettingServerRegionPolicy"></a>Setting Server Region Data Policy and Scope
-
-Remote querying accesses only the data that is available in the remote cache server region.
-Depending on the cache server region's scope and data-policy attribute settings, this could mean
-that your queries and indexes see only a part of the data available for the server region in the
-distributed cache.
-
-To ensure a complete data set for your queries and indexes, your cache server region must use one of
-the REPLICATE region shortcut settings in the region attribute refid or it must explicitly have its
-data policy set to `replicate` or `persistent-replicate`. Without replication, some server cache entries may not be available.
-
-Depending on your use of the server cache, the non-global distributed scopes `distributed-ack` and
-`distributed-no-ack` may encounter race conditions during entry distribution that cause the data set
-to be out of sync with the distributed region. The `global` scope guarantees data consistency across
-the distributed system, but at the cost of reduced performance.
-
-### <a id="SettingObjectConstraints"></a>Setting Object Type Constraints
-
-Performing queries on cache server regions containing heterogeneous objects, which are objects of
-different data types, may produce undesirable results. Queries should be performed only on regions
-that contain homogeneous objects of the same object type, although subtypes are allowed.
-
-### <a id="DataSerializationDefs"></a>Data Serialization and Class Definitions
-
-The C++ objects for the client must correspond to the Java objects for the <%=vars.product_name%>
-cache server. To ensure that an object on one side deserializes correctly on the other side,
-user-defined data types must implement the same serialization interface (such as `PDXSerializable`
-or `DataSerializable`) on the client side as the corresponding Java classes implement on the server.
 
 ## <a id="AccessingCachedData"></a>Accessing Cached Data
 
 Accessing your cached data through the querying service is similar to accessing database contents
 through SQL queries. How you specify your regions and region contents is particular to the client.
 
-The query language supports drilling down into nested object structures. Regions can contain nested
-data collections that are unavailable until referenced in the FROM clause.
-
-Querying and indexing only operate on remote cache server contents.
-
-### <a id="BasicRegionAccess"></a>Basic Region Access
-
-In the context of a query, specify the name of a region by its full path, starting with a forward slash (/ ).
+The query language supports drilling down into nested object structures.
+Nested data collections can be explicitly referenced in the FROM clause of a query.
 
 ### <a id="ModifyingCacheContents"></a>Modifying Cache Contents
 
@@ -119,32 +90,14 @@ see [Working with Indexes](geodeman/developing/query_index/query_index.html) in 
 To use a query string in a client, specify the string as a parameter in a `QueryService::newQuery`
 method, then execute the query using `Query::execute`, passing in the required parameters.
 
-If your query requires any `IMPORT` statements, you must include these before the `SELECT` statement
-in the query string that is passed to the query engine. It should be a fully qualified package name
-relative to the cache server. The Java class definition must exist and have the same signature as
-the client C++ class.
-
-### <a id="TypeConversions"></a>Type Conversions
-
-Java rules within a query string require the query processor to perform implicit conversions and
-promotions under certain cases in order to evaluate expressions that contain different types.
+In the context of a query, specify the name of a region by its full path, starting with a forward slash (/ ).
 
 The query processor performs binary numeric promotion, method invocation conversion, and temporal type conversion.
 
-## <a id="RemoteQueryAPI"></a>Remote Query API
+### Query Result Sets
 
-This section gives a general overview of the interfaces and classes that are provided by the Query
-package API, and the shortcut methods provided in the Region interface.
-
-### <a id="CreatingAndManagingQueries"></a>Creating and Managing Queries
-
-You create queries on the cache server by obtaining a `QueryService` method and manage them through
-the resulting `Query` object. The `Region` interface has several shortcut query methods.
-
-### <a id="Query"></a>Query
-
-A `Query` is obtained from a `QueryService` method, which is obtained from the cache. The `Query` interface provides methods for managing the compilation and execution of queries, and for retrieving an existing query string.
-
-You must obtain a `Query` object for each new query.
-
+-   **SelectResults**. Executes the query on the cache server and returns the results as either a `ResultSet` or a `StructSet`.
+-   **SelectResultsIterator**. Iterates over the items available in a `ResultSet` or `StructSet`.
+-   **ResultSet**. Obtained after executing a `Query`, which is obtained from a `QueryService` that is obtained from a Cache class.
+-   **StructSet**. Used when a `SELECT` statement returns more than one set of results. This is accompanied by a `Struct`, which provides the `StructSet` definition and contains its field values.
 
