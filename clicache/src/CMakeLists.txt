@@ -302,6 +302,7 @@ add_library(${PROJECT_NAME} SHARED
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
+  COMMON_LANGUAGE_RUNTIME "" 
   OUTPUT_NAME ${PRODUCT_DLL_NAME}
   VS_GLOBAL_CLRSupport "true"
   VS_GLOBAL_KEYWORD "ManagedCProj"
