@@ -46,10 +46,10 @@ function(add_example)
     DESTINATION examples/cpp/${ADD_EXAMPLE_NAME})
 endfunction()
 
-add_example(NAME customdataserializable
+add_example(NAME dataserializable
 	SOURCE main.cpp Order.cpp Order.hpp)
 
-add_example(NAME customserializable
+add_example(NAME pdxserializable
 	SOURCE main.cpp Order.cpp Order.hpp)
 
 add_example(NAME customserializer
