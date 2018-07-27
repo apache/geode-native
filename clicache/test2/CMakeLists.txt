@@ -36,6 +36,7 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 set_target_properties( ${PROJECT_NAME} PROPERTIES
+  COMMON_LANGUAGE_RUNTIME "" 
   VS_GLOBAL_ROOTNAMESPACE ${PROJECT_NAME}
   VS_GLOBAL_TreatWarningsAsErrors True
   VS_GLOBAL_TestProjectType UnitTest

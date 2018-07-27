@@ -253,7 +253,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   # Interface for C++/CLI language.
   add_library(c++cli INTERFACE)
   target_compile_options(c++cli INTERFACE
-    /clr
     /EHa)
 
   target_compile_options(_WarningsAsError INTERFACE

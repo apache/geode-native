@@ -33,6 +33,7 @@ add_library(Apache.Geode.Test MODULE
 )
 
 set_target_properties(Apache.Geode.Test PROPERTIES
+  COMMON_LANGUAGE_RUNTIME "" 
   VS_GLOBAL_CLRSupport "true"
   VS_GLOBAL_KEYWORD "ManagedCProj"
   VS_GLOBAL_TestProjectType UnitTest
