@@ -376,7 +376,7 @@ namespace Apache.Geode.Client.UnitTests
         Util.Log("done");
 
         System.Threading.Thread.Sleep(5000);
-        //Assert.Greater(javaobject.PdxDelta.GotDelta, 7, "this should have recieve delta");
+        //Assert.Greater(javaobject.PdxDelta.GotDelta, 7, "this should have receive delta");
         javaobject.PdxDelta pd = (javaobject.PdxDelta)(reg.GetLocalView()["pdxdelta"]);
         Assert.Greater(pd.Delta, 7, "this should have recieve delta");
       }
