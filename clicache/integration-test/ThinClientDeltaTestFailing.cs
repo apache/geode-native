@@ -376,9 +376,9 @@ namespace Apache.Geode.Client.UnitTests
         Util.Log("done");
 
         System.Threading.Thread.Sleep(5000);
-        //Assert.Greater(javaobject.PdxDelta.GotDelta, 7, "this should have receive delta");
+        //Assert.Greater(javaobject.PdxDelta.GotDelta, 7, "this should have received delta");
         javaobject.PdxDelta pd = (javaobject.PdxDelta)(reg.GetLocalView()["pdxdelta"]);
-        Assert.Greater(pd.Delta, 7, "this should have recieve delta");
+        Assert.Greater(pd.Delta, 7, "this should have received delta");
       }
 
       void runDeltaWithAppdomian(bool cloningenable)
@@ -502,9 +502,9 @@ namespace Apache.Geode.Client.UnitTests
           Assert.Fail("After cloning, toDataCount should have been 1, is " + DeltaTestImpl.GetToDataCount());
 
         System.Threading.Thread.Sleep(5000);
-        //Assert.Greater(javaobject.PdxDelta.GotDelta, 7, "this should have recieve delta");
+        //Assert.Greater(javaobject.PdxDelta.GotDelta, 7, "this should have received delta");
         javaobject.PdxDelta pd = (javaobject.PdxDelta)(reg.GetLocalView()["pdxdelta"]);
-        Assert.Greater(pd.Delta, 7, "this should have recieve delta");
+        Assert.Greater(pd.Delta, 7, "this should have received delta");
       }
 
       void VerifyDeltaCountLRU()
