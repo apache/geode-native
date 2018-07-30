@@ -36,8 +36,7 @@ class PdxWriter;
 
 class APACHE_GEODE_EXPORT PdxSerializable
     : public virtual Serializable,
-      public virtual CacheableKey,
-      public std::enable_shared_from_this<PdxSerializable> {
+      public virtual CacheableKey {
  public:
   ~PdxSerializable() noexcept override{};
 

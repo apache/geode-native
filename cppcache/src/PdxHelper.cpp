@@ -45,12 +45,6 @@ PdxHelper::PdxHelper() {}
 
 PdxHelper::~PdxHelper() {}
 
-void PdxHelper::serializePdx(DataOutput& output,
-                             const PdxSerializable& pdxObject) {
-  serializePdx(output, std::const_pointer_cast<PdxSerializable>(
-                           pdxObject.shared_from_this()));
-}
-
 void PdxHelper::serializePdx(
     DataOutput& output, const std::shared_ptr<PdxSerializable>& pdxObject) {
   auto pdxII = std::dynamic_pointer_cast<PdxInstanceImpl>(pdxObject);

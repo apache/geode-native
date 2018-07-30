@@ -38,10 +38,10 @@ namespace apache {
       public:
         ~ManagedPdxTypeHandler() noexcept override = default;
 
-        void serialize(const PdxSerializable& pdxSerializable,
+        void serialize(const std::shared_ptr<PdxSerializable>& pdxSerializable,
           DataOutput& dataOutput) const override
         {
-          if (auto wrappedPdxSerializable = dynamic_cast<const PdxManagedCacheableKey*>(&pdxSerializable))
+          if (auto wrappedPdxSerializable = dynamic_cast<const PdxManagedCacheableKey*>(pdxSerializable.get()))
           {
             try
             {

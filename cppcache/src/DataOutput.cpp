@@ -131,6 +131,10 @@ void DataOutput::writeObjectInternal(const Serializable* ptr, bool isDelta) {
   getSerializationRegistry().serialize(ptr, *this, isDelta);
 }
 
+void DataOutput::writeObjectInternal(const std::shared_ptr<Serializable>& ptr, bool isDelta) {
+  getSerializationRegistry().serialize(ptr, *this, isDelta);
+}
+
 void DataOutput::acquireLock() { g_bigBufferLock.acquire(); }
 
 void DataOutput::releaseLock() { g_bigBufferLock.release(); }

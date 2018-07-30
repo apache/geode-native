@@ -266,9 +266,9 @@ void SerializationRegistry::deserialize(
       "SerializationRegistry::deserialize<PdxSerializable> not implemented");
 }
 
-void SerializationRegistry::serializeWithoutHeader(const PdxSerializable* obj,
+void SerializationRegistry::serializeWithoutHeader(const std::shared_ptr<PdxSerializable>& obj,
                                                    DataOutput& output) const {
-  pdxTypeHandler->serialize(*obj, output);
+  pdxTypeHandler->serialize(obj, output);
 }
 
 void SerializationRegistry::addType(TypeFactoryMethod func) {
@@ -523,7 +523,7 @@ void TheTypeMap::unbindPdxType(const std::string& objFullName) {
   m_pdxTypemap->unbind(objFullName);
 }
 
-void PdxTypeHandler::serialize(const PdxSerializable& pdxSerializable,
+void PdxTypeHandler::serialize(const std::shared_ptr<PdxSerializable>& pdxSerializable,
                                DataOutput& dataOutput) const {
   PdxHelper::serializePdx(dataOutput, pdxSerializable);
 }
