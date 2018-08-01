@@ -57,3 +57,6 @@ add_example(NAME customserializer
 
 add_example(NAME put-get-remove
 	SOURCE main.cpp)
+
+add_example(NAME remotequery
+	SOURCE main.cpp Order.cpp Order.hpp
