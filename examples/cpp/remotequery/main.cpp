@@ -64,14 +64,14 @@ int main(int argc, char** argv) {
   queryService = pool->getQueryService();
 
   std::cout << "Getting the orders from the region" << std::endl;
-  auto query = queryService->newQuery("SELECT * FROM /custom_orders WHERE quantity > 5");
+  auto query = queryService->newQuery("SELECT * FROM /custom_orders WHERE quantity > 30");
   auto queryResults = query->execute();
 
-  std::cout << "Result size: " << queryResults->size() << std::endl;
+  std::cout << "The following orders have a quantity greater than 30:" << std::endl;
 
   for (auto&& value : *queryResults) {
     auto&& order = std::dynamic_pointer_cast<Order>(value);
-    std::cout << order->getOrderId() << std::endl;
+    std::cout << order->toString() << std::endl;
   }
 
   cache.close();
