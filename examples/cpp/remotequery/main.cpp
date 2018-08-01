@@ -69,5 +69,10 @@ int main(int argc, char** argv) {
 
   std::cout << "Result size: " << queryResults->size() << std::endl;
 
+  for (auto&& value : *queryResults) {
+    auto&& order = std::dynamic_pointer_cast<Order>(value);
+    std::cout << order->getOrderId() << std::endl;
+  }
+
   cache.close();
 }
