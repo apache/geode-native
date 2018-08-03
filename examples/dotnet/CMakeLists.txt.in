@@ -18,7 +18,8 @@ cmake_minimum_required(VERSION 3.10)
 project(@PRODUCT_DLL_NAME@.DotNet.Examples LANGUAGES NONE)
 
 add_subdirectory(AuthInitialize)
-add_subdirectory(DataSerializable)
+add_subdirectory(DataSerializableCs)
 add_subdirectory(PdxAutoSerializer)
+add_subdirectory(PdxSerializableCs)
 add_subdirectory(PutGetRemove)
 
