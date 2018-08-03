@@ -61,3 +61,6 @@ add_example(NAME PdxSerializableCs
 
 add_example(NAME PutGetRemove
 	SOURCE Program.cs)
+
+add_example(NAME RemoteQueryCs 
+	SOURCE Order.cs Program.cs)
