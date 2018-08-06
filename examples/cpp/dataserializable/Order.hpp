@@ -17,18 +17,18 @@
 
 #pragma once
 
-#ifndef CUSTOMSERIALIZABLE_ORDER_H
-#define CUSTOMSERIALIZABLE_ORDER_H
+#ifndef CUSTOMDATASERIALIZABLE_ORDER_H
+#define CUSTOMDATASERIALIZABLE_ORDER_H
 
 #include <string>
 
-#include <geode/PdxSerializable.hpp>
+#include <geode/DataSerializable.hpp>
 
 namespace customserializable {
 
 using namespace apache::geode::client;
 
-class Order : public PdxSerializable {
+class Order : public DataSerializable {
  public:
   inline Order() : Order(0, "", 0) {}
 
@@ -43,27 +43,19 @@ class Order : public PdxSerializable {
 
   inline uint16_t getQuantity() const { return quantity_; }
 
-  using PdxSerializable::fromData;
+  void fromData(DataInput& dataInput) override;
 
-  using PdxSerializable::toData;
-
-  void fromData(PdxReader& pdxReader) override;
-
-  void toData(PdxWriter& pdxWriter) const override;
+  void toData(DataOutput& dataOutput) const override;
 
   std::string toString() const override;
 
   size_t objectSize() const override;
 
-  const std::string& getClassName() const override;
-
-  static std::shared_ptr<PdxSerializable> createDeserializable();
+  static std::shared_ptr<DataSerializable> create();
+  
+  int32_t getClassId() const override;
 
  private:
-  static const std::string ORDER_ID_KEY_;
-  static const std::string NAME_KEY_;
-  static const std::string QUANTITY_KEY_;
-
   uint32_t order_id_;
   std::string name_;
   uint16_t quantity_;
@@ -71,4 +63,4 @@ class Order : public PdxSerializable {
 
 }  // namespace customserializable
 
-#endif  // CUSTOMSERIALIZABLE_ORDER_H
+#endif  // CUSTOMDATASERIALIZABLE_ORDER_H

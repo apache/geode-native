@@ -13,14 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.5)
 
-project(@PRODUCT_DLL_NAME@.DotNet.Examples LANGUAGES NONE)
+project(customdataserializable LANGUAGES CXX)
 
-add_subdirectory(AuthInitialize)
-add_subdirectory(DataSerializableCs)
-add_subdirectory(PdxAutoSerializer)
-add_subdirectory(PdxSerializableCs)
-add_subdirectory(PutGetRemove)
-add_subdirectory(RemoteQueryCs)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
+set(CMAKE_CXX_STANDARD 11)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
+    add_compile_options(-m64)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -m64")
+endif()
+
+find_package(GeodeNative REQUIRED COMPONENTS cpp)
+
+add_executable(${PROJECT_NAME} main.cpp;Order.cpp;Order.hpp)
+
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC
+    GeodeNative::cpp)

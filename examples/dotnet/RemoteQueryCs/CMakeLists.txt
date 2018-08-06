@@ -15,12 +15,17 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-project(@PRODUCT_DLL_NAME@.DotNet.Examples LANGUAGES NONE)
+project(RemoteQueryCs LANGUAGES CSharp)
 
-add_subdirectory(AuthInitialize)
-add_subdirectory(DataSerializableCs)
-add_subdirectory(PdxAutoSerializer)
-add_subdirectory(PdxSerializableCs)
-add_subdirectory(PutGetRemove)
-add_subdirectory(RemoteQueryCs)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
 
+find_package(GeodeNative REQUIRED COMPONENTS dotnet)
+
+add_executable(${PROJECT_NAME} Order.cs;Program.cs)
+
+target_link_libraries(${PROJECT_NAME}
+    GeodeNative::dotnet)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
+    VS_DOTNET_REFERENCES "System;${GeodeNative_DOTNET_LIBRARY}")

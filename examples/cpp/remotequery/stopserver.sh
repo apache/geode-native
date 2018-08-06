@@ -13,14 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
+#!/bin/env bash
+GFSH_PATH=""
+which gfsh 2> /dev/null
 
-project(@PRODUCT_DLL_NAME@.DotNet.Examples LANGUAGES NONE)
+if [ $? -eq 0 ]; then
+    GFSH_PATH="gfsh"
+else    
+    if [ "$GEODE_HOME" == "" ]; then
+        echo "Could not find gfsh. Please set the GEODE_HOME path."
+        echo "e.g. export GEODE_HOME=<path to Geode>"
+    else
+        GFSH_PATH=$GEODE_HOME/bin/gfsh
+    fi
+fi
 
-add_subdirectory(AuthInitialize)
-add_subdirectory(DataSerializableCs)
-add_subdirectory(PdxAutoSerializer)
-add_subdirectory(PdxSerializableCs)
-add_subdirectory(PutGetRemove)
-add_subdirectory(RemoteQueryCs)
-
+$GFSH_PATH -e "connect" -e "stop server --name=server" -e "stop locator --name=locator"

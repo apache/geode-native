@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <sstream>
 
 #include "Order.hpp"
 
@@ -40,8 +41,10 @@ void Order::toData(PdxWriter& pdxWriter) const {
 }
 
 std::string Order::toString() const {
-  return "OrderID: " + std::to_string(order_id_) + " Product Name: " + name_ +
-         " Quantity: " + std::to_string(quantity_);
+  std::stringstream strm;
+
+  strm << "OrderID: " << order_id_ << " Product Name: " << name_ << " Quantity: " << quantity_;
+  return strm.str();
 }
 
 size_t Order::objectSize() const {
@@ -55,7 +58,7 @@ const std::string& Order::getClassName() const {
   return CLASS_NAME;
 }
 
-std::shared_ptr<PdxSerializable> Order::createDeserializable() {
+std::shared_ptr<PdxSerializable> Order::create() {
   return std::make_shared<Order>();
 }
 
