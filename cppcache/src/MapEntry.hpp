@@ -53,32 +53,38 @@ class APACHE_GEODE_EXPORT ExpEntryProperties {
   typedef std::chrono::system_clock::time_point time_point;
 
   inline ExpEntryProperties(ExpiryTaskManager* expiryTaskManager)
-      : m_lastAccessTime(time_point()),
-        m_lastModifiedTime(time_point()),
-        m_expiryTaskId(-1),
+      :
+      m_lastAccessTime(0),
+      m_lastModifiedTime(0),
+      m_expiryTaskId(-1),
         m_expiryTaskManager(expiryTaskManager) {
     // The reactor always gives +ve id while scheduling.
     // -1 will indicate that an expiry task has not been scheduled
     // for this entry. // TODO confirm
   }
 
-  inline time_point getLastAccessTime() const { return m_lastAccessTime; }
+  inline time_point getLastAccessTime() const {
+    return time_point(std::chrono::system_clock::duration(m_lastAccessTime));
+  }
 
-  inline time_point getLastModifiedTime() const { return m_lastModifiedTime; }
+  inline time_point getLastModifiedTime() const {
+    return time_point(std::chrono::system_clock::duration(m_lastModifiedTime));
+  }
 
   //  moved time initialization outside of constructor to avoid
   // the costly gettimeofday call in MapSegment spinlock
   inline void initStartTime() {
-    m_lastModifiedTime = std::chrono::system_clock::now();
-    m_lastAccessTime = std::chrono::system_clock::now();
+    time_point currentTime = std::chrono::system_clock::now();
+    m_lastAccessTime = currentTime.time_since_epoch().count();
+    m_lastModifiedTime = currentTime.time_since_epoch().count();
   }
 
   inline void updateLastAccessTime(time_point currTime) {
-    m_lastAccessTime = currTime;
+    m_lastAccessTime = currTime.time_since_epoch().count();
   }
 
   inline void updateLastModifiedTime(time_point currTime) {
-    m_lastModifiedTime = currTime;
+    m_lastModifiedTime = currTime.time_since_epoch().count();
   }
 
   inline void setExpiryTaskId(long id) { m_expiryTaskId = id; }
@@ -95,13 +101,13 @@ class APACHE_GEODE_EXPORT ExpEntryProperties {
  protected:
   // this constructor deliberately skips initializing any fields
   inline explicit ExpEntryProperties(bool)
-      : m_lastAccessTime(time_point()), m_lastModifiedTime(time_point()) {}
+      : m_lastAccessTime(0), m_lastModifiedTime(0) {}
 
  private:
   /** last access time in secs, 32bit.. */
-  std::atomic<time_point> m_lastAccessTime;
+  std::atomic<time_point::duration::rep> m_lastAccessTime;
   /** last modified time in secs, 32bit.. */
-  std::atomic<time_point> m_lastModifiedTime;
+  std::atomic<time_point::duration::rep> m_lastModifiedTime;
   /** The expiry task id for this particular entry.. **/
   long m_expiryTaskId;
   ExpiryTaskManager* m_expiryTaskManager;
