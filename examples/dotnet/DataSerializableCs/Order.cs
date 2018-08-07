@@ -61,7 +61,7 @@ namespace Apache.Geode.Examples.Serializer
 
         public ulong ObjectSize
         {
-            get { return 0x04; }
+            get { return 0; }
         }    
         
         public static ISerializable CreateDeserializable()
