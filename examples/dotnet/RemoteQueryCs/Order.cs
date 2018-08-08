@@ -63,16 +63,6 @@ namespace Apache.Geode.Examples.Serializer
             Quantity = (short)input.ReadInt(QUANTITY_KEY_);
         }
 
-        public Int32 ClassId
-        {
-            get { return 0x42; }
-        }    
-
-        public ulong ObjectSize
-        {
-            get { return 0x04; }
-        }    
-        
         public static IPdxSerializable CreateDeserializable()
         {
             return new Order();

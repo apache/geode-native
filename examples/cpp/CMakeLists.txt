@@ -52,7 +52,7 @@ add_example(NAME dataserializable
 add_example(NAME pdxserializable
 	SOURCE main.cpp Order.cpp Order.hpp)
 
-add_example(NAME customserializer
+add_example(NAME pdxserializer
 	SOURCE main.cpp Order.cpp Order.hpp OrderSerializer.cpp OrderSerializer.hpp)
 
 add_example(NAME put-get-remove

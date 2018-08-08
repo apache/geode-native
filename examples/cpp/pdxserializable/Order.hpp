@@ -53,8 +53,6 @@ class Order : public PdxSerializable {
 
   std::string toString() const override;
 
-  size_t objectSize() const override;
-
   const std::string& getClassName() const override;
 
   static std::shared_ptr<PdxSerializable> create();

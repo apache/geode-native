@@ -47,12 +47,6 @@ std::string Order::toString() const {
   return strm.str();
 }
 
-size_t Order::objectSize() const {
-  auto objectSize = sizeof(Order);
-  objectSize += name_.capacity();
-  return objectSize;
-}
-
 const std::string& Order::getClassName() const {
   static const std::string CLASS_NAME = "com.example.Order";
   return CLASS_NAME;
