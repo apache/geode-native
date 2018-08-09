@@ -70,8 +70,8 @@ DUNIT_TASK(CLIENT1, StepOne)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
 
-    serializationRegistry->addType(Position::createDeserializable, 2);
-    serializationRegistry->addType(Portfolio::createDeserializable, 3);
+    serializationRegistry->addType(Position::createDeserializable, 1);
+    serializationRegistry->addType(Portfolio::createDeserializable, 2);
 
     auto regptr = getHelper()->createPooledRegion(
         _regionNames[0], USE_ACK, locHostPort, "__TEST_POOL1__", true, true);

@@ -32,50 +32,12 @@ namespace {
 
 using namespace apache::geode::client;
 
-class Simple : public DataSerializable {
- public:
-  inline Simple() : Simple("TestSimple", 30) {}
-
-  inline Simple(std::string name, int age)
-      : name_(std::move(name)), age_(age) {}
-
-  ~Simple() noexcept override = default;
-
-  using DataSerializable::fromData;
-  using DataSerializable::toData;
-
-  void fromData(DataInput& dataInput) override {
-    name_ = dataInput.readString();
-    age_ = dataInput.readInt32();
-  }
-
-  void toData(DataOutput& dataOutput) const override {
-    dataOutput.writeString(name_);
-    dataOutput.writeInt(age_);
-  }
-
-  static std::shared_ptr<DataSerializable> createDeserializable() {
-    return std::make_shared<Simple>();
-  }
-
-  std::string getName() { return name_; }
-  int getAge() { return age_; }
-
- private:
-  std::string name_;
-  int age_;
-};
-
 class DataSerializableObject : public DataSerializable {
  public:
   inline DataSerializableObject()
-      : DataSerializableObject("TestDataSerializableObject", nullptr, nullptr) {
-  }
+      : DataSerializableObject("TestDataSerializableObject") {}
 
-  inline DataSerializableObject(std::string name,
-                                std::shared_ptr<CacheableStringArray> csArray,
-                                std::shared_ptr<Simple> simple)
-      : name_(std::move(name)), csArray_(csArray), simple_(simple) {}
+  inline DataSerializableObject(std::string name) : name_(std::move(name)) {}
 
   ~DataSerializableObject() noexcept override = default;
 
@@ -84,16 +46,10 @@ class DataSerializableObject : public DataSerializable {
 
   void fromData(DataInput& dataInput) override {
     name_ = dataInput.readString();
-    csArray_ =
-        std::dynamic_pointer_cast<CacheableStringArray>(dataInput.readObject());
-
-    simple_ = std::dynamic_pointer_cast<Simple>(dataInput.readObject());
   }
 
   void toData(DataOutput& dataOutput) const override {
     dataOutput.writeString(name_);
-    dataOutput.writeObject(csArray_);
-    dataOutput.writeObject(simple_);
   }
 
   static std::shared_ptr<DataSerializable> createDeserializable() {
@@ -101,12 +57,9 @@ class DataSerializableObject : public DataSerializable {
   }
 
   std::string getName() { return name_; }
-  std::shared_ptr<CacheableStringArray> getCSArray() { return csArray_; }
 
  private:
   std::string name_;
-  std::shared_ptr<CacheableStringArray> csArray_;
-  std::shared_ptr<Simple> simple_;
 };
 
 TEST(DataSerializableTest, isSerializableAndDeserializable) {
@@ -123,24 +76,18 @@ TEST(DataSerializableTest, isSerializableAndDeserializable) {
                     .setPoolName("default")
                     .create("region");
 
-  std::vector<std::shared_ptr<CacheableString>> cstr{
-      CacheableString::create("Taaa"), CacheableString::create("Tbbb"),
-      CacheableString::create("Tccc"), CacheableString::create("Tddd")};
-  auto cacheStrArray = CacheableStringArray::create(cstr);
-
-  auto dsObject = std::make_shared<DataSerializableObject>(
-      "name", cacheStrArray, std::make_shared<Simple>("simple", 10));
-
   cache.getTypeRegistry().registerType(
-      DataSerializableObject::createDeserializable, 77);
-  cache.getTypeRegistry().registerType(Simple::createDeserializable, 78);
+      DataSerializableObject::createDeserializable, 0x04);
 
-  region->put("objectOne", dsObject);
+  auto objectOne = std::make_shared<DataSerializableObject>("one");
 
-  auto returnedObject = std::dynamic_pointer_cast<DataSerializableObject>(
+  region->put("objectOne", objectOne);
+
+  auto returnedObjectOne = std::dynamic_pointer_cast<DataSerializableObject>(
       region->get("objectOne"));
 
-  ASSERT_NE(nullptr, returnedObject);
-  EXPECT_EQ(dsObject->toString(), returnedObject->toString());
+  ASSERT_NE(nullptr, returnedObjectOne);
+
+  EXPECT_EQ("one", returnedObjectOne->getName());
 }
 }  // namespace
