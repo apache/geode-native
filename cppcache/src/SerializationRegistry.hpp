@@ -120,8 +120,6 @@ class TheTypeMap : private NonCopyable {
 
   void find2(int64_t id, TypeFactoryMethod& func) const;
 
-  // int32_t findClassId(const std::type_info&& typeIndex) const;
-
   void bind(TypeFactoryMethod func, uint32_t id);
 
   inline void rebind(int64_t compId, TypeFactoryMethod func);
@@ -356,7 +354,6 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   inline void serialize(const std::shared_ptr<PdxSerializable>& obj,
                         DataOutput& output) const {
     output.write(static_cast<int8_t>(DSCode::PDX));
-
     serializeWithoutHeader(obj, output);
   }
 

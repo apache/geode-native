@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#pragma once
+
 //#include "../../../ICacheWriter.hpp"
 #include "../CacheWriterAdapter.hpp"
 #include "../ICacheWriter.hpp"
