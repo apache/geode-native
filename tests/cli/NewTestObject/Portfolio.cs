@@ -146,7 +146,7 @@ namespace Apache.Geode.Client.Tests
     {
       get
       {
-        return m_type;
+        return this.GetType().ToString();
       }
     }
 
@@ -289,13 +289,13 @@ namespace Apache.Geode.Client.Tests
       }
     }
 
-    public Int32 ClassId
-    {
-      get
-      {
-        return 0x08;
-      }
-    }
+    //public Int32 ClassId
+    //{
+    //  get
+    //  {
+    //    return 0x08;
+    //  }
+    //}
 
     #endregion
 
