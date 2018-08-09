@@ -92,19 +92,19 @@ namespace Apache.Geode.Client.UnitTests
     {
       CacheHelper.CreateTCRegion2<object, object>(RegionNames[0], true, false,
         null, locators, false);
-      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType22.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType4.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType2.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType42.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType43.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable, 0);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType22.CreateDeserializable, 0x8C0);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType4.CreateDeserializable, 0x8FC0);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType2.CreateDeserializable, 0x8C);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType42.CreateDeserializable, 0x6F3F97);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType43.CreateDeserializable, 0x7FFFFFFF);
     }
 
     public void DoNPuts(int n)
     {
       try
       {
-        CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable, 0);
         Assert.Fail("Expected exception in registering the type again.");
       }
       catch (IllegalStateException ex)
@@ -126,7 +126,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable, 0);
         Assert.Fail("Expected exception in registering the type again.");
       }
       catch (IllegalStateException ex)
@@ -496,13 +496,13 @@ namespace Apache.Geode.Client.UnitTests
         get { return this.GetType().ToString(); }
     }
 
-    public Int32 ClassId
-    {
-      get
-      {
-        return 0x0;
-      }
-    }
+    //public Int32 ClassId
+    //{
+    //  get
+    //  {
+    //    return 0x0;
+    //  }
+    //}
 
     #endregion
 
@@ -632,17 +632,21 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public Int32 ClassId
+    //public Int32 ClassId
+    //{
+    //  get
+    //  {
+    //    return 0x8C;
+    //  }
+    //}
+
+    public String Type
     {
-      get
-      {
-        return 0x8C;
-      }
+        get { return this.GetType().ToString(); }
     }
+        #endregion
 
-    #endregion
-
-    public static ISerializable CreateDeserializable()
+        public static ISerializable CreateDeserializable()
     {
       return new OtherType2();
     }
@@ -770,17 +774,20 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public Int32 ClassId
+    //public Int32 ClassId
+    //{
+    //  get
+    //  {
+    //    return 0x8C0;
+    //  }
+    //}
+    public String Type
     {
-      get
-      {
-        return 0x8C0;
-      }
+        get { return this.GetType().ToString(); }
     }
+        #endregion
 
-    #endregion
-
-    public static ISerializable CreateDeserializable()
+        public static ISerializable CreateDeserializable()
     {
       return new OtherType22();
     }
@@ -907,17 +914,20 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public Int32 ClassId
+    //public Int32 ClassId
+    //{
+    //  get
+    //  {
+    //    return 0x8FC0;
+    //  }
+    //}
+    public String Type
     {
-      get
-      {
-        return 0x8FC0;
-      }
+        get { return this.GetType().ToString(); }
     }
+        #endregion
 
-    #endregion
-
-    public static ISerializable CreateDeserializable()
+        public static ISerializable CreateDeserializable()
     {
       return new OtherType4();
     }
@@ -1045,17 +1055,20 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public Int32 ClassId
+    //public Int32 ClassId
+    //{
+    //  get
+    //  {
+    //    return 0x6F3F97;
+    //  }
+    //}
+    public String Type
     {
-      get
-      {
-        return 0x6F3F97;
-      }
+        get { return this.GetType().ToString(); }
     }
+        #endregion
 
-    #endregion
-
-    public static ISerializable CreateDeserializable()
+        public static ISerializable CreateDeserializable()
     {
       return new OtherType42();
     }
@@ -1183,15 +1196,18 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public Int32 ClassId
+    //public Int32 ClassId
+    //{
+    //  get
+    //  {
+    //    return 0x7FFFFFFF;
+    //  }
+    //}
+    public String Type
     {
-      get
-      {
-        return 0x7FFFFFFF;
-      }
+        get { return this.GetType().ToString(); }
     }
-
-    #endregion
+        #endregion
 
     public static ISerializable CreateDeserializable()
     {

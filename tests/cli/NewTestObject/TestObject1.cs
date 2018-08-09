@@ -45,14 +45,19 @@ namespace Apache.Geode.Client.Tests
         return 0;
       }
     }
-    public Int32 ClassId
+    //public Int32 ClassId
+    //{
+    //  get
+    //  {
+    //    return 0x1F;
+    //  }
+    //}
+    public String Type
     {
-      get
-      {
-        return 0x1F;
-      }
+        get { return this.GetType().ToString(); }
     }
-    public void FromData(DataInput input)
+
+        public void FromData(DataInput input)
     {
       arr = input.ReadBytes();
       name = (string)input.ReadObject();

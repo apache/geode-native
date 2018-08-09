@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#pragma once
+
 #include "../ICacheListener.hpp"
 #include "../CacheListenerAdapter.hpp"
 #include "../ICacheListener.hpp"

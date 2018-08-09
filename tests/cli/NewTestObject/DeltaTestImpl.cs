@@ -87,13 +87,18 @@ namespace Apache.Geode.Client.Tests
         return 0;
       }
     }
-    public Int32 ClassId
+    //public Int32 ClassId
+    //{
+    //  get
+    //  {
+    //    return 0x1E;
+    //  }
+    //}
+    public String Type
     {
-      get
-      {
-        return 0x1E;
-      }
+        get { return this.GetType().ToString(); }
     }
+        
     public static ISerializable CreateDeserializable()
     {
       return new DeltaTestImpl();
