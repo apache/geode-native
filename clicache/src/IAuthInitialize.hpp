@@ -20,7 +20,7 @@
 
 #include "geode_defs.hpp"
 
-#include "Properties.hpp"
+//#include "Properties.hpp"
 
 using namespace System;
 
@@ -30,6 +30,9 @@ namespace Apache
   {
     namespace Client
     {
+
+      generic<class TPropKey, class TPropValue>
+      ref class Properties;
 
       /// <summary>
       /// Specifies the mechanism to obtain credentials for a client.

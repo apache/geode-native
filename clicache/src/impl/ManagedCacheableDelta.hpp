@@ -56,7 +56,6 @@ namespace apache
             : Delta(), m_managedptr(managedptr)
           {
             m_managedSerializableptr = dynamic_cast<Apache::Geode::Client::IDataSerializable^>(managedptr);
-            m_classId = m_managedSerializableptr->ClassId;
             m_objectSize = 0;
           }
 
@@ -65,7 +64,6 @@ namespace apache
             : Delta(),  m_managedptr(managedptr) 
           {
             m_hashcode = hashcode;
-            m_classId = classId;
             m_managedSerializableptr = dynamic_cast<Apache::Geode::Client::IDataSerializable^> (managedptr);
             m_objectSize = 0;
           }
@@ -75,8 +73,6 @@ namespace apache
           void toData(apache::geode::client::DataOutput& output) const override;
 
           void fromData(apache::geode::client::DataInput& input) override;
-
-          int32_t getClassId() const override;
 
           void toDelta(apache::geode::client::DataOutput& output) const override;
 
@@ -102,7 +98,6 @@ namespace apache
 
         private:
           int m_hashcode;
-          int m_classId;
           size_t m_objectSize;
 
           /// <summary>

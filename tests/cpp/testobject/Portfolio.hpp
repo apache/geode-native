@@ -128,7 +128,6 @@ class TESTOBJECT_EXPORT Portfolio : public DataSerializable {
 
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t getClassId() const override { return 0x03; }
   std::string toString() const override;
 };
 

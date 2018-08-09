@@ -552,13 +552,6 @@ class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public DataSerializable {
 
   void toData(DataOutput& output) const override;
 
-  virtual int32_t getClassId() const override { return 0x10; }
-
-  //  const std::string& getClassName() const override {
-  //    static std::string className = "PdxTests.PdxInsideIGeodeSerializable";
-  //    return className;
-  //  }
-
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<PdxInsideIGeodeSerializable>();
   }

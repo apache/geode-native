@@ -173,7 +173,7 @@ namespace Apache
         return retVal();
       }
 
-      void TypeRegistry::RegisterType(TypeFactoryMethod^ creationMethod)
+      void TypeRegistry::RegisterType(TypeFactoryMethod^ creationMethod, uint32_t id)
       {
         if (creationMethod == nullptr) {
           throw gcnew IllegalArgumentException("Serializable.RegisterType(): "
@@ -182,23 +182,24 @@ namespace Apache
 
         //--------------------------------------------------------------
 
-        int32_t classId;
+       // int32_t classId;
 
         //adding user type as well in global builtin hashmap
         auto obj = creationMethod();
-        if (auto dataSerializable = dynamic_cast<IDataSerializable^>(obj))
-        {
-          classId = dataSerializable->ClassId;
-        } else
-        {
+        auto dataSerializable = dynamic_cast<IDataSerializable^>(obj);
+        if (nullptr == dataSerializable) {
           throw gcnew IllegalArgumentException("Unknown serialization type.");
         }
 
-        if (!ManagedDelegatesGeneric->ContainsKey(classId))
+        if (!ManagedDelegatesGeneric->ContainsKey(id))
         {
-          ManagedDelegatesGeneric->Add(classId, creationMethod);
+          ManagedDelegatesGeneric->Add(id, creationMethod);
         }
-
+        
+        if (!ManagedTypeDelegates->ContainsKey(dataSerializable->Type))
+          {
+            ManagedTypeDelegates->Add(dataSerializable->Type, id);
+          }
         auto delegateObj = gcnew DelegateWrapperGeneric(creationMethod);
         auto nativeDelegate = gcnew TypeFactoryNativeMethodGeneric(delegateObj,
             &DelegateWrapperGeneric::NativeDelegateGeneric);
@@ -207,14 +208,14 @@ namespace Apache
         NativeDelegatesGeneric->Add(nativeDelegate);
 
         // register the type in the DelegateMap, this is pure c# for create domain object 
-        Log::Fine("Registering serializable class ID " + classId);
-        DelegateMapGeneric[classId] = creationMethod;
+        Log::Fine("Registering serializable class ID " + id);
+        DelegateMapGeneric[id] = creationMethod;
 
         _GF_MG_EXCEPTION_TRY2
           auto&& nativeTypeRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
           auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
               System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
-          nativeTypeRegistry->addType(nativeDelegateFunction);
+          nativeTypeRegistry->addType(nativeDelegateFunction, id);
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 

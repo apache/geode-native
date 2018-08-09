@@ -491,6 +491,11 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
+    public String Type
+    {
+        get { return this.GetType().ToString(); }
+    }
+
     public Int32 ClassId
     {
       get

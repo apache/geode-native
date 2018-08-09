@@ -56,10 +56,9 @@ void initClient() {
     auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
-    serializationRegistry->addType(Position::createDeserializable);
-    serializationRegistry->addType(Portfolio::createDeserializable);
-  }
-  catch (const IllegalStateException&) {
+    serializationRegistry->addType(Position::createDeserializable, 2);
+    serializationRegistry->addType(Portfolio::createDeserializable, 3);
+  } catch (const IllegalStateException&) {
     // ignore exception
   }
 }
