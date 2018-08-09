@@ -172,9 +172,9 @@ void initClientCq(const bool isthinClient, int clientIdx) {
     CacheImpl* cacheImpl =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get());
     cacheImpl->getSerializationRegistry()->addType(
-        Position::createDeserializable);
+        Position::createDeserializable, 2);
     cacheImpl->getSerializationRegistry()->addType(
-        Portfolio::createDeserializable);
+        Portfolio::createDeserializable, 3);
   } catch (const IllegalStateException&) {
     // ignore exception
   }

@@ -117,7 +117,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addType(DeltaEx::create);
+      serializationRegistry->addType(DeltaEx::create, 1);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
     }
@@ -156,7 +156,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_DisableDelta)
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
 
-      serializationRegistry->addType(DeltaEx::create);
+      serializationRegistry->addType(DeltaEx::create, 1);
     } catch (IllegalStateException&) {
       //  Ignore the exception caused by re-registration of DeltaEx.
     }

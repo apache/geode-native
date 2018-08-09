@@ -72,7 +72,6 @@ class TESTOBJECT_EXPORT Position : public DataSerializable {
   ~Position() override = default;
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t getClassId() const override { return 0x02; }
   std::string toString() const override;
 
   size_t objectSize() const override {

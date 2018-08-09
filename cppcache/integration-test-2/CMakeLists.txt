@@ -29,6 +29,7 @@ add_executable(integration-test-2
   PdxInstanceTest.cpp
   StructTest.cpp
   EnableChunkHandlerThreadTest.cpp
+  DataSerializableTest.cpp
   )
 
 target_compile_definitions(integration-test-2

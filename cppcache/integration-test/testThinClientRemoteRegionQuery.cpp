@@ -94,8 +94,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOnePoolLocator)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addType(Position::createDeserializable);
-      serializationRegistry->addType(Portfolio::createDeserializable);
+      serializationRegistry->addType(Position::createDeserializable, 2);
+      serializationRegistry->addType(Portfolio::createDeserializable, 3);
 
       serializationRegistry->addPdxType(PositionPdx::createDeserializable);
       serializationRegistry->addPdxType(PortfolioPdx::createDeserializable);
@@ -112,7 +112,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOnePoolLocator)
     createRegionAndAttachPool(qRegionNames[3], USE_ACK, poolNames[1]);
 
     auto regptr = getHelper()->getRegion(qRegionNames[0]);
-    auto subregPtr = regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
+    auto subregPtr =
+        regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
 
     LOG("StepOne complete.");
   }

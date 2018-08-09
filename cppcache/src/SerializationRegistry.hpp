@@ -333,11 +333,12 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
 
   inline void serialize(const DataSerializable* obj, DataOutput& output,
                         bool isDelta) const {
-    // auto id = obj->getClassId();
     auto&& type = obj->getType();
-    // int32_t id = theTypeMap.findClassId(type);
-    auto id = theTypeMap.typeToClassId.find(type);
-    auto number = id->second;
+    auto typeIterator = theTypeMap.typeToClassId.find(type);
+    auto id = typeIterator->second;
+
+    typeid(*obj).name();
+    auto dsCode = getSerializableDataDsCode(id);
 
     if (isDelta) {
       const Delta* ptr = dynamic_cast<const Delta*>(obj);

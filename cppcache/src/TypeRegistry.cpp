@@ -25,9 +25,10 @@ namespace client {
 
 TypeRegistry::TypeRegistry(CacheImpl* cache) : m_cache(cache) {}
 
-// void TypeRegistry::registerType(TypeFactoryMethod creationFunction) {
-//  m_cache->getSerializationRegistry()->addType(creationFunction);
-//}
+void TypeRegistry::registerType(TypeFactoryMethod creationFunction,
+                                uint32_t id) {
+  m_cache->getSerializationRegistry()->addType(creationFunction, id);
+}
 
 void TypeRegistry::registerPdxType(TypeFactoryMethodPdx creationFunction) {
   m_cache->getSerializationRegistry()->addPdxType(creationFunction);

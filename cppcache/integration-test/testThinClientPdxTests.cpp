@@ -1658,7 +1658,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGFSInGet)
             ->getSerializationRegistry();
     try {
       serializationRegistry->addType(
-          PdxInsideIGeodeSerializable::createDeserializable);
+          PdxInsideIGeodeSerializable::createDeserializable, 0x10);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -1737,7 +1737,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyPdxInGFSGetOnly)
             ->getSerializationRegistry();
     try {
       serializationRegistry->addType(
-          PdxInsideIGeodeSerializable::createDeserializable);
+          PdxInsideIGeodeSerializable::createDeserializable, 0x10);
     } catch (const IllegalStateException&) {
       // ignore exception
     }

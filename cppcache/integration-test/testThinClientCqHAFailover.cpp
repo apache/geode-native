@@ -123,8 +123,8 @@ void initClientCq() {
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
 
-    serializationRegistry->addType(Position::createDeserializable);
-    serializationRegistry->addType(Portfolio::createDeserializable);
+    serializationRegistry->addType(Position::createDeserializable, 2);
+    serializationRegistry->addType(Portfolio::createDeserializable, 3);
   } catch (const IllegalStateException&) {
     // ignore exception
   }
@@ -227,7 +227,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       auto count = results->size();
       sprintf(buf, "results size=%zd", count);
       LOG(buf);
-      for (auto&& ser: hacks::range(*results)) {
+      for (auto&& ser : hacks::range(*results)) {
         count--;
         if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(ser)) {
           printf("   query pulled portfolio object ID %d, pkid %s\n",
@@ -238,9 +238,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
                  position->getSharesOutstanding());
         } else if (ser) {
           printf(" query pulled object %s\n", ser->toString().c_str());
-          } else {
-            printf("   query pulled nullptr object\n");
-          }
+        } else {
+          printf("   query pulled nullptr object\n");
+        }
       }
       sprintf(buf, "results last count=%zd", count);
       LOG(buf);

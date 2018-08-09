@@ -103,7 +103,7 @@ namespace Apache
         }
         else
         {
-          return new native::ManagedCacheableKeyGeneric(mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId);
+          return new native::ManagedCacheableKeyGeneric(mg_obj, mg_obj->GetHashCode());
         }
       }
 
