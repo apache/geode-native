@@ -496,10 +496,13 @@ namespace Apache.Geode.Client.UnitTests
         get { return this.GetType().ToString(); }
     }
 
-    public Int32 ClassId
-    {
-        get { return this.GetType().ToString(); }
-    }
+    //public Int32 ClassId
+    //{
+    //  get
+    //  {
+    //    return 0x0;
+    //  }
+    //}
 
 
     #endregion
