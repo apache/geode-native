@@ -71,8 +71,8 @@ DUNIT_TASK(CLIENT1, StepOne)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
 
-    serializationRegistry->addType(Position::createDeserializable);
-    serializationRegistry->addType(Portfolio::createDeserializable);
+    serializationRegistry->addType(Position::createDeserializable, 1);
+    serializationRegistry->addType(Portfolio::createDeserializable, 2);
 
     auto regptr = getHelper()->createPooledRegion(
         _regionNames[0], USE_ACK, locHostPort, "__TEST_POOL1__", true, true);
@@ -114,7 +114,7 @@ DUNIT_TASK(CLIENT1, StepThree)
                  position->getSecId()->value().c_str(),
                  position->getSharesOutstanding());
         } else if (ser) {
-            printf(" query pulled object %s\n", ser->toString().c_str());
+          printf(" query pulled object %s\n", ser->toString().c_str());
         } else {
           printf("   query pulled nullptr object\n");
         }

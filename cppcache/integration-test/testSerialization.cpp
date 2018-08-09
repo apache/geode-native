@@ -68,8 +68,7 @@ class OtherType : public DataSerializable {
   CData m_struct;
   int32_t m_classIdToReturn;
 
-  explicit OtherType(int32_t classIdToReturn = g_classIdToReturn)
-      : m_classIdToReturn(classIdToReturn) {
+  explicit OtherType() {
     m_struct.a = 0;
     m_struct.b = 0;
     m_struct.c = 0;
@@ -90,24 +89,23 @@ class OtherType : public DataSerializable {
   }
 
   static std::shared_ptr<Serializable> createDeserializable() {
-    return std::make_shared<OtherType>(g_classIdToReturn);
+    return std::make_shared<OtherType>();
   }
 
-  static std::shared_ptr<Serializable> createDeserializable2() {
-    return std::make_shared<OtherType>(g_classIdToReturn2);
-  }
+  // static std::shared_ptr<Serializable> createDeserializable2() {
+  //  return std::make_shared<OtherType>();
+  //}
 
-  static std::shared_ptr<Serializable> createDeserializable4() {
-    return std::make_shared<OtherType>(g_classIdToReturn4);
-  }
+  // static std::shared_ptr<Serializable> createDeserializable4() {
+  //  return std::make_shared<OtherType>();
+  //}
 
-  int32_t getClassId() const override { return m_classIdToReturn; }
+  // int32_t getClassId() const override { return m_classIdToReturn; }
 
   uint32_t size() const { return sizeof(CData); }
 
-  static std::shared_ptr<Cacheable> uniqueCT(
-      int32_t i, int32_t classIdToReturn = g_classIdToReturn) {
-    auto ot = std::make_shared<OtherType>(classIdToReturn);
+  static std::shared_ptr<Cacheable> uniqueCT(int32_t i) {
+    auto ot = std::make_shared<OtherType>();
     ot->m_struct.a = (int)i;
     ot->m_struct.b = (i % 2 == 0) ? true : false;
     ot->m_struct.c = static_cast<char>(65) + i;
@@ -163,10 +161,10 @@ DUNIT_TASK(Sender, SetupAndPutInts)
             ->getSerializationRegistry();
     serializationRegistry->addType(OtherType::createDeserializable,
                                    g_classIdToReturn);
-    serializationRegistry->addType(OtherType::createDeserializable2,
-                                   g_classIdToReturn2);
-    serializationRegistry->addType(OtherType::createDeserializable4,
-                                   g_classIdToReturn);
+    // serializationRegistry->addType(OtherType::createDeserializable2,
+    //                               g_classIdToReturn2);
+    // serializationRegistry->addType(OtherType::createDeserializable4,
+    //                               g_classIdToReturn4);
 
     getHelper()->createPooledRegion("DistRegionAck", USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
@@ -183,9 +181,10 @@ DUNIT_TASK(Sender, SendCT)
   {
     for (int32_t i = 0; i < 30; i += 3) {
       try {
-        regionPtr->put(i, OtherType::uniqueCT(i, g_classIdToReturn));
-        regionPtr->put(i + 1, OtherType::uniqueCT(i + 1, g_classIdToReturn2));
-        regionPtr->put(i + 2, OtherType::uniqueCT(i + 2, g_classIdToReturn4));
+        regionPtr->put(i, OtherType::uniqueCT(i));
+        // regionPtr->put(i + 1, OtherType::uniqueCT(i + 1,
+        // g_classIdToReturn2)); regionPtr->put(i + 2, OtherType::uniqueCT(i +
+        // 2, g_classIdToReturn4));
       } catch (const apache::geode::client::TimeoutException&) {
       }
     }
@@ -196,8 +195,8 @@ DUNIT_TASK(Sender, RValidateCT)
   {
     for (int32_t i = 0; i < 30; i += 3) {
       OtherType::validateCT(i, regionPtr->get(i));
-      OtherType::validateCT(i + 1, regionPtr->get(i + 1));
-      OtherType::validateCT(i + 2, regionPtr->get(i + 2));
+      // OtherType::validateCT(i + 1, regionPtr->get(i + 1));
+      // OtherType::validateCT(i + 2, regionPtr->get(i + 2));
     }
   }
 ENDTASK

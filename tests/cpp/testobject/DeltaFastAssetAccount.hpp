@@ -117,7 +117,7 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public DataSerializable,
     }
   }
 
-  int32_t getClassId() const override { return 41; }
+  // int32_t getClassId() const override { return 41; }
 
   bool hasDelta() const override { return true; }
 

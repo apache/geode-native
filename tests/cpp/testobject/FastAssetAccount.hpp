@@ -62,7 +62,7 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
   ~FastAssetAccount() override = default;
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t getClassId() const override { return 23; }
+  // int32_t getClassId() const override { return 23; }
   std::string toString() const override;
 
   size_t objectSize() const override {

@@ -60,15 +60,13 @@ namespace apache
       {
       private:
         int m_hashcode;
-        int m_classId;
         size_t m_objectSize;
       public:
 
         inline ManagedCacheableKeyGeneric(
-          Apache::Geode::Client::IDataSerializable^ managedptr, int hashcode, int classId)
+          Apache::Geode::Client::IDataSerializable^ managedptr, int hashcode)
           : m_managedptr(managedptr) {
           m_hashcode = hashcode;
-          m_classId = classId;
           m_objectSize = 0;
         }
         /// <summary>
@@ -80,7 +78,6 @@ namespace apache
         inline ManagedCacheableKeyGeneric(Apache::Geode::Client::IDataSerializable^ managedptr)
           : m_managedptr(managedptr) {
           m_hashcode = 0;
-          m_classId = managedptr->ClassId;
           m_objectSize = 0;
         }
 
@@ -94,8 +91,6 @@ namespace apache
         void toData(apache::geode::client::DataOutput& output) const override;
 
         void fromData(apache::geode::client::DataInput& input) override;
-
-        int32_t getClassId() const override;
 
         bool operator == (const CacheableKey& other) const override;
 

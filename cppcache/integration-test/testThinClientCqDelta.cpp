@@ -153,7 +153,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1)
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
 
-      serializationRegistry->addType(DeltaTestImpl::create);
+      serializationRegistry->addType(DeltaTestImpl::create, 30);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
     }
@@ -170,7 +170,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2)
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
 
-      serializationRegistry->addType(DeltaTestImpl::create);
+      serializationRegistry->addType(DeltaTestImpl::create, 30);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
     }
@@ -200,7 +200,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1_NoPools)
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
 
-      serializationRegistry->addType(DeltaTestImpl::create);
+      serializationRegistry->addType(DeltaTestImpl::create, 30);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
     }
@@ -216,7 +216,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_NoPools)
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
 
-      serializationRegistry->addType(DeltaTestImpl::create);
+      serializationRegistry->addType(DeltaTestImpl::create, 30);
     } catch (IllegalStateException&) {
       //  ignore exception caused by type reregistration.
     }

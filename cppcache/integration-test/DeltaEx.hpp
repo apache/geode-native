@@ -70,7 +70,6 @@ class DeltaEx : public DataSerializable, public Delta {
     counter = input.readInt32();
     fromDataCount++;
   }
-  virtual int32_t getClassId() const override { return 1; }
   std::shared_ptr<Delta> clone() const override {
     cloneCount++;
     return std::make_shared<DeltaEx>(*this);

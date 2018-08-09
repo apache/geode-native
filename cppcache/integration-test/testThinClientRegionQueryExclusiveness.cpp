@@ -60,8 +60,8 @@ void clientOperations() {
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
 
-    serializationRegistry->addType(Position::createDeserializable);
-    serializationRegistry->addType(Portfolio::createDeserializable);
+    serializationRegistry->addType(Position::createDeserializable, 2);
+    serializationRegistry->addType(Portfolio::createDeserializable, 3);
   } catch (const IllegalStateException&) {
     // ignore exception
   }
