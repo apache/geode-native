@@ -25,14 +25,13 @@
 #include <geode/internal/DataSerializableFixedId.hpp>
 
 #include "util/Log.hpp"
-#include "GeodeTypeIdsImpl.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
 class ClientHealthStats : public internal::DataSerializableFixedId_t<
-                              GeodeTypeIdsImpl::ClientHealthStats> {
+                              DSFid::ClientHealthStats> {
  public:
   void toData(DataOutput& output) const override;
 

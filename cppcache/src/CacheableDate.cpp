@@ -21,7 +21,6 @@
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/ExceptionTypes.hpp>
-#include <geode/GeodeTypeIds.hpp>
 
 #include <cwchar>
 #include <ace/OS.h>
@@ -48,7 +47,7 @@ std::shared_ptr<Serializable> CacheableDate::createDeserializable() {
   return std::make_shared<CacheableDate>();
 }
 
-int8_t CacheableDate::getDsCode() const { return GeodeTypeIds::CacheableDate; }
+DSCode CacheableDate::getDsCode() const { return DSCode::CacheableDate; }
 
 bool CacheableDate::operator==(const CacheableKey& other) const {
   if (auto otherDate = dynamic_cast<const CacheableDate*>(&other)) {

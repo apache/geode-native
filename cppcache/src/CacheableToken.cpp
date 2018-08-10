@@ -21,7 +21,6 @@
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/CacheableString.hpp>
-#include "GeodeTypeIdsImpl.hpp"
 
 using namespace apache::geode::client;
 
@@ -50,7 +49,7 @@ void CacheableToken::fromData(DataInput& input) {
 }
 
 int8_t CacheableToken::getInternalId() const {
-  return static_cast<int8_t>(GeodeTypeIdsImpl::CacheableToken);
+  return static_cast<int8_t>(DSCode::CacheableToken);
 }
 
 //------ ctor

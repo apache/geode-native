@@ -32,11 +32,11 @@ namespace Apache
       void CacheableFileName::ToData(DataOutput^ output)
       {
         if (m_str->Length <= 0xFFFF) {
-          output->WriteByte(apache::geode::client::GeodeTypeIds::CacheableString);
+          output->WriteByte(static_cast<int8_t>(apache::geode::client::DSCode::CacheableString));
           output->WriteUTF(m_str);
         }
         else {
-          output->WriteByte(apache::geode::client::GeodeTypeIds::CacheableStringHuge);
+          output->WriteByte(static_cast<int8_t>(apache::geode::client::DSCode::CacheableStringHuge));
           output->WriteUTFHuge(m_str);
         }
       }
@@ -44,7 +44,7 @@ namespace Apache
       void CacheableFileName::FromData(DataInput^ input)
       {
         unsigned char filetype = input->ReadByte();
-        if (filetype == apache::geode::client::GeodeTypeIds::CacheableString) {
+        if (filetype == static_cast<int8_t>(apache::geode::client::DSCode::CacheableString)) {
           m_str = input->ReadUTF();
         }
         else {
@@ -54,7 +54,7 @@ namespace Apache
 
       int8_t CacheableFileName::DsCode::get()
       {
-        return native::GeodeTypeIds::CacheableFileName;
+        return static_cast<int8_t>(native::DSCode::CacheableFileName);
       }
 
       System::UInt64 CacheableFileName::ObjectSize::get()

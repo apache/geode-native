@@ -16,7 +16,6 @@
  */
 #include <geode/DataInput.hpp>
 #include "EventId.hpp"
-#include "GeodeTypeIdsImpl.hpp"
 #include "ClientProxyMembershipID.hpp"
 
 #include <cstring>

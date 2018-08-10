@@ -16,7 +16,6 @@
  */
 
 #include "QueueConnectionResponse.hpp"
-#include "GeodeTypeIdsImpl.hpp"
 #include <geode/DataInput.hpp>
 #include "ServerLocation.hpp"
 
@@ -27,8 +26,8 @@ void QueueConnectionResponse::fromData(DataInput& input) {
   readList(input);
 }
 
-int32_t QueueConnectionResponse::getDSFID() const {
-  return GeodeTypeIdsImpl::QueueConnectionResponse;
+DSFid QueueConnectionResponse::getDSFID() const {
+  return DSFid::QueueConnectionResponse;
 }
 
 void QueueConnectionResponse::readList(DataInput& input) {

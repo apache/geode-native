@@ -47,7 +47,7 @@ class StructSet;
  * is obtained from a Cache.
  */
 class APACHE_GEODE_EXPORT Struct
-    : public internal::DataSerializableFixedId_t<GeodeTypeIds::Struct> {
+   : public internal::DataSerializableFixedId_t<DSFid::Struct> {
  public:
   typedef std::vector<std::shared_ptr<Serializable>>::iterator iterator;
 

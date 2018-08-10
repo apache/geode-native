@@ -23,7 +23,6 @@
 #include "internal/geode_globals.hpp"
 #include "CacheableKey.hpp"
 #include "CacheableString.hpp"
-#include "GeodeTypeIds.hpp"
 #include "ExceptionTypes.hpp"
 
 #include <string>
@@ -64,7 +63,7 @@ class APACHE_GEODE_EXPORT CacheableDate : public DataSerializablePrimitive,
    */
   static std::shared_ptr<Serializable> createDeserializable();
 
-  virtual int8_t getDsCode() const override;
+  virtual DSCode getDsCode() const override;
 
   /** @return the size of the object in bytes */
   virtual size_t objectSize() const override { return sizeof(CacheableDate); }

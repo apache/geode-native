@@ -28,14 +28,13 @@
 #include <geode/DataOutput.hpp>
 #include <geode/CacheableString.hpp>
 
-#include "GeodeTypeIdsImpl.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
 class GetAllServersRequest : public internal::DataSerializableFixedId_t<
-                                 GeodeTypeIdsImpl::GetAllServersRequest> {
+                                 DSFid::GetAllServersRequest> {
   std::shared_ptr<CacheableString> m_serverGroup;
 
  public:

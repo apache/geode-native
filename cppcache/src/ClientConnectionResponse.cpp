@@ -27,8 +27,8 @@ void ClientConnectionResponse::fromData(DataInput& input) {
   }
 }
 
-int32_t ClientConnectionResponse::getDSFID() const {
-  return GeodeTypeIdsImpl::ClientConnectionResponse;
+DSFid ClientConnectionResponse::getDSFID() const {
+  return DSFid::ClientConnectionResponse;
 }
 
 size_t ClientConnectionResponse::objectSize() const {

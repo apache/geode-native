@@ -27,8 +27,6 @@
 
 #include "SerializationRegistry.hpp"
 #include <geode/CacheableString.hpp>
-#include <geode/GeodeTypeIds.hpp>
-#include "GeodeTypeIdsImpl.hpp"
 
 // Use to init lib when testing components.
 #include <CppCacheLibrary.hpp>

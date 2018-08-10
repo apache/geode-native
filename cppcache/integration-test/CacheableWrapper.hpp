@@ -60,22 +60,22 @@ typedef CacheableWrapper* (*CacheableWrapperFunc)(void);
 
 class CacheableWrapperFactory {
  public:
-  static CacheableWrapper* createInstance(int8_t typeId);
+  static CacheableWrapper* createInstance(DSCode typeId);
 
-  static void registerType(int8_t typeId, const std::string wrapperType,
+  static void registerType(DSCode typeId, const std::string wrapperType,
                            const CacheableWrapperFunc wrapperFunc,
                            const bool isKey);
 
-  static std::vector<int8_t> getRegisteredKeyTypes();
+  static std::vector<DSCode> getRegisteredKeyTypes();
 
-  static std::vector<int8_t> getRegisteredValueTypes();
+  static std::vector<DSCode> getRegisteredValueTypes();
 
-  static std::string getTypeForId(int8_t typeId);
+  static std::string getTypeForId(DSCode typeId);
 
  private:
-  static std::map<int8_t, CacheableWrapperFunc> m_registeredKeyMap;
-  static std::map<int8_t, CacheableWrapperFunc> m_registeredValueMap;
-  static std::map<int8_t, std::string> m_typeIdNameMap;
+  static std::map<DSCode, CacheableWrapperFunc> m_registeredKeyMap;
+  static std::map<DSCode, CacheableWrapperFunc> m_registeredValueMap;
+  static std::map<DSCode, std::string> m_typeIdNameMap;
 };
 
 

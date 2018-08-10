@@ -76,7 +76,7 @@ namespace Apache
         } 
         else if (auto primitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(serializableObject))
         {           
-          if (auto wrapperMethod = TypeRegistry::GetDataSerializablePrimitiveWrapperDelegateForDsCode(primitive->getDsCode()))
+          if (auto wrapperMethod = TypeRegistry::GetDataSerializablePrimitiveWrapperDelegateForDsCode(static_cast<int8_t>(primitive->getDsCode())))
           {
             return wrapperMethod(primitive);
           }
@@ -175,7 +175,7 @@ namespace Apache
         }
 
         if (auto primitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(obj)) {
-          auto wrapperMethod = TypeRegistry::GetDataSerializablePrimitiveWrapperDelegateForDsCode( primitive->getDsCode( ) );
+          auto wrapperMethod = TypeRegistry::GetDataSerializablePrimitiveWrapperDelegateForDsCode(static_cast<int8_t>(primitive->getDsCode()));
           if (wrapperMethod != nullptr)
           {
             return (Client::ICacheableKey^)wrapperMethod(primitive);

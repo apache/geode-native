@@ -21,7 +21,6 @@
 #define GEODE_LOCATORLISTRESPONSE_H_
 
 #include <vector>
-#include "GeodeTypeIdsImpl.hpp"
 #include "ServerLocationResponse.hpp"
 #include "ServerLocation.hpp"
 
@@ -42,7 +41,7 @@ class LocatorListResponse : public ServerLocationResponse {
   ~LocatorListResponse() override = default;
 
   void fromData(DataInput& input) override;
-  int32_t getDSFID() const override;
+  DSFid getDSFID() const override;
 
   const std::vector<ServerLocation>& getLocators() const;
   bool isBalanced() const;

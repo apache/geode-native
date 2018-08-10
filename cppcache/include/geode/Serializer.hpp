@@ -29,7 +29,6 @@
 #include "internal/geode_globals.hpp"
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
-#include "GeodeTypeIds.hpp"
 
 namespace apache {
 namespace geode {

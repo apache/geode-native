@@ -24,6 +24,8 @@
 #include <string>
 #include <map>
 #include <vector>
+#define __STDC_FORMAT_MACROS
+#include <cinttypes>
 
 #include <ace/OS.h>
 
@@ -41,7 +43,6 @@
 #include "EventId.hpp"
 #include "EventIdMap.hpp"
 #include "TcrChunkedContext.hpp"
-#include "GeodeTypeIdsImpl.hpp"
 #include "BucketServerLocation.hpp"
 #include "FixedPartitionAttributesImpl.hpp"
 #include "VersionTag.hpp"
@@ -1233,7 +1234,7 @@ class TcrMessageHelper {
   /**
    * result types returned by readChunkPartHeader
    */
-  enum ChunkObjectType { OBJECT = 0, EXCEPTION = 1, NULL_OBJECT = 2 };
+  enum class ChunkObjectType { OBJECT = 0, EXCEPTION = 1, NULL_OBJECT = 2 };
 
   /**
    * Tries to read an exception part and returns true if the exception
@@ -1256,7 +1257,7 @@ class TcrMessageHelper {
    * message type is encountered in the header.
    */
   inline static ChunkObjectType readChunkPartHeader(
-      TcrMessage& msg, DataInput& input, uint8_t expectedFirstType,
+      TcrMessage& msg, DataInput& input, DSCode expectedFirstType,
       int32_t expectedPartType, const char* methodName, uint32_t& partLen,
       uint8_t isLastChunk) {
     partLen = input.readInt32();
@@ -1264,7 +1265,7 @@ class TcrMessageHelper {
 
     if (partLen == 0) {
       // special null object is case for scalar query result
-      return NULL_OBJECT;
+      return ChunkObjectType::NULL_OBJECT;
     } else if (!isObj) {
       // otherwise we're currently always expecting an object
       char exMsg[256];
@@ -1274,18 +1275,19 @@ class TcrMessageHelper {
                        methodName);
       LOGDEBUG("%s ", exMsg);
       // throw MessageException(exMsg);
-      return EXCEPTION;
+      return ChunkObjectType::EXCEPTION;
     }
 
-    uint8_t partType = input.read();
-    int32_t compId = partType;
+    auto rawByte = input.read();
+    auto partType = static_cast<DSCode>(rawByte);
+    auto compId = static_cast<int32_t>(partType);
 
     //  ugly hack to check for exception chunk
-    if (partType == GeodeTypeIdsImpl::JavaSerializable) {
+    if (partType == DSCode::JavaSerializable) {
       input.reset();
       if (TcrMessageHelper::readExceptionPart(msg, input, isLastChunk)) {
         msg.setMessageType(TcrMessage::EXCEPTION);
-        return EXCEPTION;
+        return ChunkObjectType::EXCEPTION;
       } else {
         char exMsg[256];
         ACE_OS::snprintf(
@@ -1295,42 +1297,41 @@ class TcrMessageHelper {
             methodName);
         throw MessageException(exMsg);
       }
-    } else if (partType == GeodeTypeIds::NullObj) {
+    } else if (partType == DSCode::NullObj) {
       // special null object is case for scalar query result
-      return NULL_OBJECT;
+      return ChunkObjectType::NULL_OBJECT;
     }
 
-    if (expectedFirstType > 0) {
+    // TODO enum - wtf?
+    if (expectedFirstType > DSCode::FixedIDDefault) {
       if (partType != expectedFirstType) {
         char exMsg[256];
         ACE_OS::snprintf(exMsg, 255,
                          "TcrMessageHelper::readChunkPartHeader: "
-                         "%s: got unhandled object class = %d",
-                         methodName, partType);
+                         "%s: got unhandled object class = %" PRId8,
+                         methodName, static_cast<int8_t>(partType));
         throw MessageException(exMsg);
       }
       // This is for GETALL
-      if (expectedFirstType == GeodeTypeIdsImpl::FixedIDShort) {
+      if (expectedFirstType == DSCode::FixedIDShort) {
         compId = input.readInt16();
-        ;
       }  // This is for QUERY or REGISTER INTEREST.
-      else if (expectedFirstType == GeodeTypeIdsImpl::FixedIDByte ||
-               expectedFirstType == 0) {
-        partType = input.read();
-        compId = partType;
+      else if (expectedFirstType == DSCode::FixedIDByte) {
+        compId = input.read();
       }
     }
     if (compId != expectedPartType) {
       char exMsg[256];
       ACE_OS::snprintf(exMsg, 255,
                        "TcrMessageHelper::readChunkPartHeader: "
-                       "%s: got unhandled object type = %d",
-                       methodName, compId);
+                       "%s: got unhandled object type = %d, expected = %d, raw = %d",
+                       methodName, compId, expectedPartType, rawByte);
       throw MessageException(exMsg);
     }
-    return OBJECT;
+    return ChunkObjectType::OBJECT;
   }
-  inline static int8_t readChunkPartHeader(TcrMessage& msg, DataInput& input,
+
+  inline static ChunkObjectType readChunkPartHeader(TcrMessage& msg, DataInput& input,
                                            const char* methodName,
                                            uint32_t& partLen,
                                            uint8_t isLastChunk) {
@@ -1339,7 +1340,7 @@ class TcrMessageHelper {
 
     if (partLen == 0) {
       // special null object is case for scalar query result
-      return static_cast<int8_t>(NULL_OBJECT);
+      return ChunkObjectType::NULL_OBJECT;
     } else if (!isObj) {
       // otherwise we're currently always expecting an object
       char exMsg[256];
@@ -1350,13 +1351,13 @@ class TcrMessageHelper {
       throw MessageException(exMsg);
     }
 
-    const auto partType = input.read();
+    const auto partType = static_cast<const DSCode>(input.read());
     //  ugly hack to check for exception chunk
-    if (partType == GeodeTypeIdsImpl::JavaSerializable) {
+    if (partType == DSCode::JavaSerializable) {
       input.reset();
       if (TcrMessageHelper::readExceptionPart(msg, input, isLastChunk)) {
         msg.setMessageType(TcrMessage::EXCEPTION);
-        return static_cast<int8_t>(EXCEPTION);
+        return ChunkObjectType::EXCEPTION;
       } else {
         char exMsg[256];
         ACE_OS::snprintf(
@@ -1366,11 +1367,11 @@ class TcrMessageHelper {
             methodName);
         throw MessageException(exMsg);
       }
-    } else if (partType == GeodeTypeIds::NullObj) {
+    } else if (partType == DSCode::NullObj) {
       // special null object is case for scalar query result
-      return static_cast<int8_t>(NULL_OBJECT);
+      return ChunkObjectType::NULL_OBJECT;
     }
-    return partType;
+    return ChunkObjectType::OBJECT;
   }
 };
 }  // namespace client

@@ -87,7 +87,7 @@ namespace Apache
         {
           virtual int8_t get()
           {
-            return m_type;
+            return static_cast<int8_t>(m_type);
           }
         }
 
@@ -197,22 +197,22 @@ namespace Apache
       internal:
         static ISerializable^ CreateDeserializable()
         {
-          return gcnew CacheableString(GeodeTypeIds::CacheableASCIIString);
+          return gcnew CacheableString(static_cast<int8_t>(DSCode::CacheableASCIIString));
         }
 
         static ISerializable^ createDeserializableHuge()
         {
-          return gcnew CacheableString(GeodeTypeIds::CacheableASCIIStringHuge);
+          return gcnew CacheableString(static_cast<int8_t>(DSCode::CacheableASCIIStringHuge));
         }
 
         static ISerializable^ createUTFDeserializable()
         {
-          return gcnew CacheableString(GeodeTypeIds::CacheableString);
+          return gcnew CacheableString(static_cast<int8_t>(DSCode::CacheableString));
         }
 
         static ISerializable^ createUTFDeserializableHuge()
         {
-          return gcnew CacheableString(GeodeTypeIds::CacheableStringHuge);
+          return gcnew CacheableString(static_cast<int8_t>(DSCode::CacheableStringHuge));
         }
         /// <summary>
         /// Factory function to register wrapper
@@ -228,17 +228,17 @@ namespace Apache
 
         CacheableString(System::UInt32 type) : CacheableKey()
         {
-          m_type = type;
+          m_type = static_cast<DSCode>(type);
         }
 
       private:
         String^ m_value;
-        int8_t m_type;
+        DSCode m_type;
         int m_hashcode;
 
         CacheableString() : CacheableKey()
         {
-          m_type = GeodeTypeIds::CacheableASCIIString;
+          m_type = DSCode::CacheableASCIIString;
         }
 
         void SetStringType();

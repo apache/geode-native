@@ -23,7 +23,6 @@
 #include <geode/internal/geode_globals.hpp>
 #include <geode/DataInput.hpp>
 #include "DSMemberForVersionStamp.hpp"
-#include "GeodeTypeIdsImpl.hpp"
 
 namespace apache {
 namespace geode {
@@ -58,7 +57,7 @@ class DiskStoreId : public DSMemberForVersionStamp {
     m_leastSig = input.readInt64();
   }
 
-  int32_t getDSFID() const override { return GeodeTypeIdsImpl::DiskStoreId; }
+  DSFid getDSFID() const override { return DSFid::DiskStoreId; }
 
   int16_t compareTo(const DSMemberForVersionStamp& tagID) const override {
     const DiskStoreId& otherDiskStoreId =

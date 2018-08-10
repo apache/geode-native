@@ -22,7 +22,6 @@
 #include "DataOutput.hpp"
 #include "DataInput.hpp"
 #include "begin_native.hpp"
-#include <GeodeTypeIdsImpl.hpp>
 #include "end_native.hpp"
 #include "impl/SafeConvert.hpp"
 
@@ -69,7 +68,7 @@ namespace Apache
 
       int8_t CacheableStack::DsCode::get()
       {
-        return native::GeodeTypeIds::CacheableStack;
+        return static_cast<int8_t>(native::DSCode::CacheableStack);
       }
 
       System::UInt64 CacheableStack::ObjectSize::get()

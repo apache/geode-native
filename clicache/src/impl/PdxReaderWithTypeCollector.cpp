@@ -18,7 +18,6 @@
 
 #include "PdxReaderWithTypeCollector.hpp"
 #include "../begin_native.hpp"
-#include <geode/GeodeTypeIds.hpp>
 #include <PdxTypes.hpp>
 #include "../end_native.hpp"
 

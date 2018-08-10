@@ -21,13 +21,13 @@ void CacheableWrapper::initKey(int32_t, int32_t) {
   throw IllegalArgumentException("Cannot call initKey.");
 }
 
-std::map<int8_t, CacheableWrapperFunc>
+std::map<DSCode, CacheableWrapperFunc>
     CacheableWrapperFactory::m_registeredKeyMap;
-std::map<int8_t, CacheableWrapperFunc>
+std::map<DSCode, CacheableWrapperFunc>
     CacheableWrapperFactory::m_registeredValueMap;
-std::map<int8_t, std::string> CacheableWrapperFactory::m_typeIdNameMap;
+std::map<DSCode, std::string> CacheableWrapperFactory::m_typeIdNameMap;
 
-CacheableWrapper* CacheableWrapperFactory::createInstance(int8_t typeId) {
+CacheableWrapper* CacheableWrapperFactory::createInstance(DSCode typeId) {
   if (m_registeredValueMap.find(typeId) != m_registeredValueMap.end()) {
     CacheableWrapperFunc wrapperFunc = m_registeredValueMap[typeId];
     return wrapperFunc();
@@ -36,7 +36,7 @@ CacheableWrapper* CacheableWrapperFactory::createInstance(int8_t typeId) {
 }
 
 void CacheableWrapperFactory::registerType(
-    int8_t typeId, const std::string wrapperType,
+    DSCode typeId, const std::string wrapperType,
     const CacheableWrapperFunc factoryFunc, const bool isKey) {
   if (isKey) {
     m_registeredKeyMap[typeId] = factoryFunc;
@@ -45,9 +45,9 @@ void CacheableWrapperFactory::registerType(
   m_typeIdNameMap[typeId] = wrapperType;
 }
 
-std::vector<int8_t> CacheableWrapperFactory::getRegisteredKeyTypes() {
-  std::vector<int8_t> keyVector;
-  std::map<int8_t, CacheableWrapperFunc>::iterator keyMapIterator;
+std::vector<DSCode> CacheableWrapperFactory::getRegisteredKeyTypes() {
+  std::vector<DSCode> keyVector;
+  std::map<DSCode, CacheableWrapperFunc>::iterator keyMapIterator;
 
   for (keyMapIterator = m_registeredKeyMap.begin();
        keyMapIterator != m_registeredKeyMap.end(); ++keyMapIterator) {
@@ -56,9 +56,9 @@ std::vector<int8_t> CacheableWrapperFactory::getRegisteredKeyTypes() {
   return keyVector;
 }
 
-std::vector<int8_t> CacheableWrapperFactory::getRegisteredValueTypes() {
-  std::vector<int8_t> valueVector;
-  std::map<int8_t, CacheableWrapperFunc>::iterator valueMapIterator;
+std::vector<DSCode> CacheableWrapperFactory::getRegisteredValueTypes() {
+  std::vector<DSCode> valueVector;
+  std::map<DSCode, CacheableWrapperFunc>::iterator valueMapIterator;
 
   for (valueMapIterator = m_registeredValueMap.begin();
        valueMapIterator != m_registeredValueMap.end(); ++valueMapIterator) {
@@ -67,8 +67,8 @@ std::vector<int8_t> CacheableWrapperFactory::getRegisteredValueTypes() {
   return valueVector;
 }
 
-std::string CacheableWrapperFactory::getTypeForId(int8_t typeId) {
-  std::map<int8_t, std::string>::iterator findType =
+std::string CacheableWrapperFactory::getTypeForId(DSCode typeId) {
+  std::map<DSCode, std::string>::iterator findType =
       m_typeIdNameMap.find(typeId);
   if (findType != m_typeIdNameMap.end()) {
     return findType->second;

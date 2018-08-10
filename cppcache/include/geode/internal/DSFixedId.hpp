@@ -15,30 +15,37 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_DATASERIALIZABLEPRIMITIVE_H_
-#define GEODE_DATASERIALIZABLEPRIMITIVE_H_
-
-#include "../Serializable.hpp"
-#include "DSCode.hpp"
+#ifndef NATIVECLIENT_DSFIXEDID_HPP
+#define NATIVECLIENT_DSFIXEDID_HPP
 
 namespace apache {
 namespace geode {
 namespace client {
-
-class DataOutput;
-class DataInput;
-
 namespace internal {
 
-class APACHE_GEODE_EXPORT DataSerializablePrimitive
-    : public virtual Serializable {
- public:
-  ~DataSerializablePrimitive() override = default;
-  virtual void toData(DataOutput& dataOutput) const = 0;
-  virtual void fromData(DataInput& dataInput) = 0;
-  virtual DSCode getDsCode() const = 0;
+enum class DSFid : int32_t {
+  ClientHealthStats = -126,
+  VersionTag = -120,
+  CollectionTypeImpl = -59,
+  LocatorListRequest = -54,
+  ClientConnectionRequest = -53,
+  QueueConnectionRequest = -52,
+  LocatorListResponse = -51,
+  ClientConnectionResponse = -50,
+  QueueConnectionResponse = -49,
+  ClientReplacementRequest = -48,
+  GetAllServersRequest = -43,
+  GetAllServersResponse = -42,
+  VersionedObjectPartList = 7,
+  EnumInfo = 9,
+  CacheableObjectPartList = 25,
+  CacheableUndefined = 31,
+  Struct = 32,
+  EventId = 36,
+  InternalDistributedMember = 92,
+  TXCommitMessage = 110,
+  DiskVersionTag = 2131,
+  DiskStoreId = 2133
 };
 
 }  // namespace internal
@@ -46,4 +53,4 @@ class APACHE_GEODE_EXPORT DataSerializablePrimitive
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_DATASERIALIZABLEPRIMITIVE_H_
+#endif //NATIVECLIENT_DSFIXEDID_HPP

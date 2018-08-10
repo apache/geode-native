@@ -29,7 +29,7 @@ namespace geode {
 namespace client {
 
 class TXCommitMessage
-    : public DataSerializableFixedId_t<GeodeTypeIdsImpl::TXCommitMessage> {
+    : public DataSerializableFixedId_t<DSFid::TXCommitMessage> {
  public:
   TXCommitMessage(MemberListForVersionStamp& memberListForVersionStamp);
   ~TXCommitMessage() override = default;

@@ -25,7 +25,6 @@
 #include "PdxHelper.hpp"
 #include "PdxTypeRegistry.hpp"
 #include <geode/CacheableEnum.hpp>
-#include "GeodeTypeIdsImpl.hpp"
 
 namespace apache {
 namespace geode {
@@ -231,9 +230,9 @@ PdxWriter& PdxLocalWriter::writeObject(const std::string&,
     enumValPtr->toData(*m_dataOutput);
   } else if (auto objectArray =
                  std::dynamic_pointer_cast<CacheableObjectArray>(value)) {
-    m_dataOutput->write(objectArray->getDsCode());
+    m_dataOutput->write(static_cast<int8_t>(objectArray->getDsCode()));
     m_dataOutput->writeArrayLen(static_cast<int32_t>(objectArray->size()));
-    m_dataOutput->write(static_cast<int8_t>(GeodeTypeIdsImpl::Class));
+    m_dataOutput->write(static_cast<int8_t>(DSCode::Class));
 
     auto iter = objectArray->begin();
     const auto actualObjPtr = std::dynamic_pointer_cast<PdxSerializable>(*iter);

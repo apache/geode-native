@@ -17,7 +17,6 @@
 
 
 #include "begin_native.hpp"
-#include <GeodeTypeIdsImpl.hpp>
 #include "end_native.hpp"
 #include "CacheableObjectArray.hpp"
 #include "DataOutput.hpp"
@@ -42,8 +41,8 @@ namespace Apache
       void CacheableObjectArray::ToData(DataOutput^ output)
       {
         output->WriteArrayLen((System::Int32)Count);
-        output->WriteByte((int8_t)apache::geode::client::GeodeTypeIdsImpl::Class);
-        output->WriteByte((int8_t)apache::geode::client::GeodeTypeIds::CacheableASCIIString);
+        output->WriteByte((int8_t)apache::geode::client::DSCode::Class);
+        output->WriteByte((int8_t)apache::geode::client::DSCode::CacheableASCIIString);
         output->WriteUTF("java.lang.Object");
 
         for each (Object^ obj in this) {

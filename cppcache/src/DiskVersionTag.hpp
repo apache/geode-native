@@ -21,7 +21,6 @@
 #define GEODE_DISKVERSIONTAG_H_
 
 #include "VersionTag.hpp"
-#include "GeodeTypeIdsImpl.hpp"
 #include "DiskStoreId.hpp"
 
 namespace apache {
@@ -55,7 +54,7 @@ class DiskVersionTag : public VersionTag {
   DiskVersionTag(MemberListForVersionStamp& memberListForVersionStamp)
       : VersionTag(memberListForVersionStamp) {}
 
-  int32_t getDSFID() const override { return GeodeTypeIdsImpl::DiskVersionTag; }
+  DSFid getDSFID() const override { return DSFid::DiskVersionTag; }
 
   static std::shared_ptr<Serializable> createDeserializable(
       MemberListForVersionStamp& memberListForVersionStamp) {

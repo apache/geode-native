@@ -109,7 +109,7 @@ namespace Apache
         {
           int8_t get() override
           {
-            return native::GeodeTypeIds::CacheableIdentityHashMap;
+            return static_cast<int8_t>(native::DSCode::CacheableIdentityHashMap);
           }
         }
 

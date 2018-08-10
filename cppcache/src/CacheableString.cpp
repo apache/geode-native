@@ -27,7 +27,6 @@
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/ExceptionTypes.hpp>
-#include <geode/GeodeTypeIds.hpp>
 
 #include "DataOutputInternal.hpp"
 #include "SerializationRegistry.hpp"
@@ -39,44 +38,44 @@ namespace geode {
 namespace client {
 
 void CacheableString::toData(DataOutput& output) const {
-  if (m_type == GeodeTypeIds::CacheableASCIIString) {
+  if (m_type == DSCode::CacheableASCIIString) {
     output.writeAscii(m_str);
-  } else if (m_type == GeodeTypeIds::CacheableString) {
+  } else if (m_type == DSCode::CacheableString) {
     output.writeJavaModifiedUtf8(m_str);
-  } else if (m_type == GeodeTypeIds::CacheableASCIIStringHuge) {
+  } else if (m_type == DSCode::CacheableASCIIStringHuge) {
     output.writeAsciiHuge(m_str);
-  } else if (m_type == GeodeTypeIds::CacheableStringHuge) {
+  } else if (m_type == DSCode::CacheableStringHuge) {
     output.writeUtf16Huge(m_str);
   }
 }
 
 void CacheableString::fromData(DataInput& input) {
-  if (m_type == GeodeTypeIds::CacheableASCIIString) {
+  if (m_type == DSCode::CacheableASCIIString) {
     input.readAscii(m_str);
-  } else if (m_type == GeodeTypeIds::CacheableString) {
+  } else if (m_type == DSCode::CacheableString) {
     input.readJavaModifiedUtf8(m_str);
-  } else if (m_type == GeodeTypeIds::CacheableASCIIStringHuge) {
+  } else if (m_type == DSCode::CacheableASCIIStringHuge) {
     input.readAsciiHuge(m_str);
-  } else if (m_type == GeodeTypeIds::CacheableStringHuge) {
+  } else if (m_type == DSCode::CacheableStringHuge) {
     input.readUtf16Huge(m_str);
   }
 }
 
 std::shared_ptr<Serializable> CacheableString::createDeserializable() {
-  return std::make_shared<CacheableString>(GeodeTypeIds::CacheableASCIIString);
+  return std::make_shared<CacheableString>(DSCode::CacheableASCIIString);
 }
 
 std::shared_ptr<Serializable> CacheableString::createDeserializableHuge() {
   return std::make_shared<CacheableString>(
-      GeodeTypeIds::CacheableASCIIStringHuge);
+      DSCode::CacheableASCIIStringHuge);
 }
 
 std::shared_ptr<Serializable> CacheableString::createUTFDeserializable() {
-  return std::make_shared<CacheableString>(GeodeTypeIds::CacheableString);
+  return std::make_shared<CacheableString>(DSCode::CacheableString);
 }
 
 std::shared_ptr<Serializable> CacheableString::createUTFDeserializableHuge() {
-  return std::make_shared<CacheableString>(GeodeTypeIds::CacheableStringHuge);
+  return std::make_shared<CacheableString>(DSCode::CacheableStringHuge);
 }
 
 std::shared_ptr<CacheableString> CacheableString::create(

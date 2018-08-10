@@ -18,7 +18,6 @@
 #include "ClientConnectionRequest.hpp"
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
-#include "GeodeTypeIdsImpl.hpp"
 
 using namespace apache::geode::client;
 
@@ -27,8 +26,8 @@ void ClientConnectionRequest::toData(DataOutput& output) const {
   writeSetOfServerLocation(output);
 }
 
-int32_t ClientConnectionRequest::getDSFID() const {
-  return GeodeTypeIdsImpl::ClientConnectionRequest;
+DSFid ClientConnectionRequest::getDSFID() const {
+  return DSFid::ClientConnectionRequest;
 }
 
 void ClientConnectionRequest::writeSetOfServerLocation(

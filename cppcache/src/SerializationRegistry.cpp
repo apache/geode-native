@@ -32,7 +32,6 @@
 #include <geode/Struct.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/GeodeTypeIds.hpp>
 #include <geode/Region.hpp>
 #include <geode/Properties.hpp>
 #include <geode/ExceptionTypes.hpp>
@@ -66,7 +65,7 @@ namespace client {
 
 void TheTypeMap::setup() {
   // Register Geode builtins here!!
-  // update type ids in GeodeTypeIds.hpp
+  // update type ids in DSCode.hpp
 
   bind(CacheableByte::createDeserializable);
   bind(CacheableBoolean::createDeserializable);
@@ -121,61 +120,64 @@ void TheTypeMap::setup() {
 std::shared_ptr<Serializable> SerializationRegistry::deserialize(
     DataInput& input, int8_t typeId) const {
   bool findinternal = false;
-  auto currentTypeId = typeId;
+  auto typedTypeId = static_cast<DSCode>(typeId);
+  int64_t compId = typeId;
 
   if (typeId == -1) {
-    currentTypeId = input.read();
+    compId = input.read();
+    typedTypeId = static_cast<DSCode>(compId);
   }
-  int64_t compId = currentTypeId;
 
-  LOGDEBUG("SerializationRegistry::deserialize typeid = %d currentTypeId= %d",
-           typeId, currentTypeId);
+  LOGDEBUG("SerializationRegistry::deserialize typeid = %d currentTypeId= %" PRId8,
+           typeId, typedTypeId);
 
-  switch (compId) {
-    case GeodeTypeIds::NullObj: {
-      return nullptr;
-    }
-    case GeodeTypeIds::CacheableNullString: {
+  switch (typedTypeId) {
+    case DSCode::CacheableNullString: {
       return std::shared_ptr<Serializable>(
           CacheableString::createDeserializable());
     }
-    case GeodeTypeIdsImpl::PDX: {
+    case DSCode::PDX: {
       return pdxTypeHandler->deserialize(input);
     }
-    case GeodeTypeIds::CacheableEnum: {
+    case DSCode::CacheableEnum: {
       auto enumObject = CacheableEnum::create(" ", " ", 0);
       enumObject->fromData(input);
       return enumObject;
     }
-    case GeodeTypeIdsImpl::CacheableUserData: {
+    case DSCode::CacheableUserData: {
       compId |= ((static_cast<int64_t>(input.read())) << 32);
       break;
     }
-    case GeodeTypeIdsImpl::CacheableUserData2: {
+    case DSCode::CacheableUserData2: {
       compId |= ((static_cast<int64_t>(input.readInt16())) << 32);
       break;
     }
-    case GeodeTypeIdsImpl::CacheableUserData4: {
+    case DSCode::CacheableUserData4: {
       int32_t classId = input.readInt32();
       compId |= ((static_cast<int64_t>(classId)) << 32);
       break;
     }
-    case GeodeTypeIdsImpl::FixedIDByte: {
+    case DSCode::FixedIDByte: {
       compId = input.read();
       findinternal = true;
       break;
     }
-    case GeodeTypeIdsImpl::FixedIDShort: {
+    case DSCode::FixedIDShort: {
       compId = input.readInt16();
       findinternal = true;
       break;
     }
-    case GeodeTypeIdsImpl::FixedIDInt: {
+    case DSCode::FixedIDInt: {
       int32_t fixedId = input.readInt32();
       compId = fixedId;
       findinternal = true;
       break;
     }
+    case DSCode::NullObj: {
+      return nullptr;
+    }
+    default:
+      break;
   }
 
   TypeFactoryMethod createType = nullptr;

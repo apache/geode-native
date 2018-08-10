@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_DATASERIALIZABLEPRIMITIVE_H_
-#define GEODE_DATASERIALIZABLEPRIMITIVE_H_
-
-#include "../Serializable.hpp"
-#include "DSCode.hpp"
+#ifndef NATIVECLIENT_INTERNALID_HPP
+#define NATIVECLIENT_INTERNALID_HPP
 
 namespace apache {
 namespace geode {
 namespace client {
-
-class DataOutput;
-class DataInput;
-
 namespace internal {
 
-class APACHE_GEODE_EXPORT DataSerializablePrimitive
-    : public virtual Serializable {
- public:
-  ~DataSerializablePrimitive() override = default;
-  virtual void toData(DataOutput& dataOutput) const = 0;
-  virtual void fromData(DataInput& dataInput) = 0;
-  virtual DSCode getDsCode() const = 0;
+enum class InternalId : int8_t {
+  // Do not use IDs 7 and 8 which are used by .NET
+  // ManagedObject and ManagedObjectXml. If those are
+  // required then change those in GeodeTypeIdsM.hpp
+      CacheableManagedObject = 7,
+  CacheableManagedObjectXml = 8,
+
 };
 
 }  // namespace internal
@@ -46,4 +37,4 @@ class APACHE_GEODE_EXPORT DataSerializablePrimitive
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_DATASERIALIZABLEPRIMITIVE_H_
+#endif //NATIVECLIENT_INTERNALID_HPP

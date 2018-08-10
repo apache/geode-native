@@ -23,7 +23,6 @@
 
 #include <geode/Cache.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/GeodeTypeIds.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/Properties.hpp>
 
@@ -282,7 +281,7 @@ std::shared_ptr<Serializable> RegionAttributes::createDeserializable() {
 }
 
 int8_t RegionAttributes::getInternalId() const {
-  return GeodeTypeIds::RegionAttributes;
+  return static_cast<int8_t>(DSCode::RegionAttributes);
 }
 
 namespace impl {

@@ -26,8 +26,8 @@ void LocatorListResponse::fromData(DataInput& input) {
   m_isBalanced = input.readBoolean();
 }
 
-int32_t LocatorListResponse::getDSFID() const {
-  return GeodeTypeIdsImpl::LocatorListResponse;
+DSFid LocatorListResponse::getDSFID() const {
+  return DSFid::LocatorListResponse;
 }
 
 void LocatorListResponse::readList(DataInput& input) {

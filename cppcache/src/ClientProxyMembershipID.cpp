@@ -23,10 +23,8 @@
 
 #include <ace/OS.h>
 
-#include <geode/GeodeTypeIds.hpp>
 #include <geode/CacheableBuiltins.hpp>
 
-#include "GeodeTypeIdsImpl.hpp"
 #include "DistributedSystem.hpp"
 #include "DataOutputInternal.hpp"
 #include "Version.hpp"
@@ -118,9 +116,8 @@ void ClientProxyMembershipID::initObjectVars(
   }
 
   m_vmViewId = vmViewId;
-  m_memID.write(static_cast<int8_t>(GeodeTypeIdsImpl::FixedIDByte));
-  m_memID.write(
-      static_cast<int8_t>(GeodeTypeIdsImpl::InternalDistributedMember));
+  m_memID.write(static_cast<int8_t>(DSCode::FixedIDByte));
+  m_memID.write(static_cast<int8_t>(DSCode::InternalDistributedMember));
   m_memID.writeArrayLen(ADDRSIZE);
   // writing first 4 bytes of the address. This will be same until
   // IPV6 support is added in the client

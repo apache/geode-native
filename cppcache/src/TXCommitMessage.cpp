@@ -76,10 +76,10 @@ void TXCommitMessage::fromData(DataInput& input) {
     m_regions.push_back(rc);
   }
 
-  const auto fixedId = input.read();
-  if (fixedId == GeodeTypeIdsImpl::FixedIDByte) {
-    const auto dfsid = input.read();
-    if (dfsid == GeodeTypeIdsImpl::ClientProxyMembershipId) {
+  const auto fixedId = static_cast<const DSCode>(input.read());
+  if (fixedId == DSCode::FixedIDByte) {
+    const auto dscode = static_cast<const DSCode>(input.read());
+    if (dscode == DSCode::ClientProxyMembershipId) {
       ClientProxyMembershipID memId1;
 
       input.advanceCursor(input.readArrayLength());
@@ -87,16 +87,16 @@ void TXCommitMessage::fromData(DataInput& input) {
       input.readInt32();
     } else {
       LOGERROR(
-          "TXCommitMessage::fromData Unexpected type id: %d while "
+          "TXCommitMessage::fromData Unexpected type id: %" PRId8 "while "
           "desirializing commit response",
-          dfsid);
+          dscode);
       GfErrTypeThrowException(
           "TXCommitMessage::fromData Unable to handle commit response",
           GF_CACHE_ILLEGAL_STATE_EXCEPTION);
     }
-  } else if (fixedId != GeodeTypeIds::NullObj) {
+  } else if (fixedId != DSCode::NullObj) {
     LOGERROR(
-        "TXCommitMessage::fromData Unexpected type id: %d while desirializing "
+        "TXCommitMessage::fromData Unexpected type id: %" PRId8 "while desirializing "
         "commit response",
         fixedId);
     GfErrTypeThrowException(

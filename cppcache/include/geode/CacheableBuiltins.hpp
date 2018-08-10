@@ -38,7 +38,7 @@ namespace geode {
 namespace client {
 
 /** Template CacheableKey class for primitive types. */
-template <typename TObj, int8_t TYPEID, const char* TYPENAME>
+template <typename TObj, DSCode TYPEID, const char* TYPENAME>
 class APACHE_GEODE_EXPORT CacheableKeyType : public DataSerializablePrimitive,
                                              public CacheableKey {
  protected:
@@ -63,7 +63,7 @@ class APACHE_GEODE_EXPORT CacheableKeyType : public DataSerializablePrimitive,
     apache::geode::client::serializer::readObject(input, m_value);
   }
 
-  virtual int8_t getDsCode() const override { return TYPEID; }
+  virtual DSCode getDsCode() const override { return TYPEID; }
 
   /** Return a string representation of the object. */
   virtual std::string toString() const override {
@@ -126,7 +126,7 @@ inline void copyArray(std::shared_ptr<TObj>* dest,
 }
 
 /** Template class for container Cacheable types. */
-template <typename TBase, int8_t TYPEID>
+template <typename TBase, DSCode TYPEID>
 class APACHE_GEODE_EXPORT CacheableContainerType
     : public DataSerializablePrimitive,
       public TBase {
@@ -146,7 +146,7 @@ class APACHE_GEODE_EXPORT CacheableContainerType
     apache::geode::client::serializer::readObject(input, *this);
   }
 
-  int8_t getDsCode() const override { return TYPEID; }
+  DSCode getDsCode() const override { return TYPEID; }
 
   size_t objectSize() const override {
     return sizeof(CacheableContainerType) + serializer::objectSize(*this);
@@ -160,8 +160,8 @@ class APACHE_GEODE_EXPORT CacheableContainerType
 
 #define _GEODE_CACHEABLE_KEY_TYPE_DEF_(p, k)                      \
   extern const char tName_##k[];                                  \
-  template class CacheableKeyType<p, GeodeTypeIds::k, tName_##k>; \
-  typedef CacheableKeyType<p, GeodeTypeIds::k, tName_##k> _##k;
+  template class CacheableKeyType<p, DSCode::k, tName_##k>; \
+  typedef CacheableKeyType<p, DSCode::k, tName_##k> _##k;
 
 // use a class instead of typedef for bug #283
 #define _GEODE_CACHEABLE_KEY_TYPE_(p, k)                                \
@@ -195,8 +195,8 @@ class APACHE_GEODE_EXPORT CacheableContainerType
   }
 
 #define _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(p, c)           \
-  template class CacheableContainerType<p, GeodeTypeIds::c>; \
-  typedef CacheableContainerType<p, GeodeTypeIds::c> _##c;
+  template class CacheableContainerType<p, DSCode::c>; \
+  typedef CacheableContainerType<p, DSCode::c> _##c;
 
 // use a class instead of typedef for bug #283
 #define _GEODE_CACHEABLE_CONTAINER_TYPE_(p, c)                         \
@@ -282,7 +282,7 @@ _GEODE_CACHEABLE_KEY_TYPE_(char16_t, CacheableCharacter)
 
 // Instantiations for array built-in Cacheables
 
-template <typename T, GeodeTypeIds::IdValues GeodeTypeId>
+template <typename T, DSCode GeodeTypeId>
 class APACHE_GEODE_EXPORT CacheableArray : public DataSerializablePrimitive {
  protected:
   inline CacheableArray() = default;
@@ -294,7 +294,7 @@ class APACHE_GEODE_EXPORT CacheableArray : public DataSerializablePrimitive {
   template <typename TT>
   CacheableArray(TT&& value) : m_value(std::forward<TT>(value)) {}
 
-  virtual int8_t getDsCode() const override { return GeodeTypeId; }
+  virtual DSCode getDsCode() const override { return GeodeTypeId; }
 
   virtual size_t objectSize() const override {
     return static_cast<uint32_t>(
@@ -350,61 +350,61 @@ class APACHE_GEODE_EXPORT CacheableArray : public DataSerializablePrimitive {
  * An immutable wrapper for byte arrays that can serve as
  * a distributable object for caching.
  */
-using CacheableBytes = CacheableArray<int8_t, GeodeTypeIds::CacheableBytes>;
+using CacheableBytes = CacheableArray<int8_t, DSCode::CacheableBytes>;
 
 /**
  * An immutable wrapper for array of booleans that can serve as
  * a distributable object for caching.
  */
-using BooleanArray = CacheableArray<bool, GeodeTypeIds::BooleanArray>;
+using BooleanArray = CacheableArray<bool, DSCode::BooleanArray>;
 
 /**
  * An immutable wrapper for array of wide-characters that can serve as
  * a distributable object for caching.
  */
-using CharArray = CacheableArray<char16_t, GeodeTypeIds::CharArray>;
+using CharArray = CacheableArray<char16_t, DSCode::CharArray>;
 
 /**
  * An immutable wrapper for array of doubles that can serve as
  * a distributable object for caching.
  */
 using CacheableDoubleArray =
-    CacheableArray<double, GeodeTypeIds::CacheableDoubleArray>;
+    CacheableArray<double, DSCode::CacheableDoubleArray>;
 
 /**
  * An immutable wrapper for array of floats that can serve as
  * a distributable object for caching.
  */
 using CacheableFloatArray =
-    CacheableArray<float, GeodeTypeIds::CacheableFloatArray>;
+    CacheableArray<float, DSCode::CacheableFloatArray>;
 
 /**
  * An immutable wrapper for array of 16-bit integers that can serve as
  * a distributable object for caching.
  */
 using CacheableInt16Array =
-    CacheableArray<int16_t, GeodeTypeIds::CacheableInt16Array>;
+    CacheableArray<int16_t, DSCode::CacheableInt16Array>;
 
 /**
  * An immutable wrapper for array of 32-bit integers that can serve as
  * a distributable object for caching.
  */
 using CacheableInt32Array =
-    CacheableArray<int32_t, GeodeTypeIds::CacheableInt32Array>;
+    CacheableArray<int32_t, DSCode::CacheableInt32Array>;
 
 /**
  * An immutable wrapper for array of 64-bit integers that can serve as
  * a distributable object for caching.
  */
 using CacheableInt64Array =
-    CacheableArray<int64_t, GeodeTypeIds::CacheableInt64Array>;
+    CacheableArray<int64_t, DSCode::CacheableInt64Array>;
 
 /**
  * An immutable wrapper for array of strings that can serve as
  * a distributable object for caching.
  */
 using CacheableStringArray = CacheableArray<std::shared_ptr<CacheableString>,
-                                            GeodeTypeIds::CacheableStringArray>;
+                                            DSCode::CacheableStringArray>;
 
 // Instantiations for container types (Vector/HashMap/HashSet) Cacheables
 

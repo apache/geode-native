@@ -77,7 +77,7 @@ void createRegion(const char* name, bool ackMode,
   LOG("Region created.");
 }
 
-void checkGets(int maxKeys, int8_t keyTypeId, int8_t valTypeId,
+void checkGets(int maxKeys, DSCode keyTypeId, DSCode valTypeId,
                const std::shared_ptr<Region>& dataReg,
                const std::shared_ptr<Region>& verifyReg) {
   for (int i = 0; i < maxKeys; i++) {
@@ -156,8 +156,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
     size_t keyTypeIndex = taskIndexPut / valueTypes.size();
     size_t valueTypeIndex = taskIndexPut % valueTypes.size();
 
-    int8_t keyTypeId = keyTypes[keyTypeIndex];
-    int8_t valTypeId = valueTypes[valueTypeIndex];
+    DSCode keyTypeId = keyTypes[keyTypeIndex];
+    DSCode valTypeId = valueTypes[valueTypeIndex];
 
     printf("PutsTask::keyType = %s and valType = %s and taskIndexPut = %d\n",
            CacheableWrapperFactory::getTypeForId(keyTypeId).c_str(),
@@ -229,8 +229,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetsTask)
     size_t keyTypeIndex = taskIndexGet / valueTypes.size();
     size_t valueTypeIndex = taskIndexGet % valueTypes.size();
 
-    int8_t keyTypeId = keyTypes[keyTypeIndex];
-    int8_t valTypeId = valueTypes[valueTypeIndex];
+    DSCode keyTypeId = keyTypes[keyTypeIndex];
+    DSCode valTypeId = valueTypes[valueTypeIndex];
 
     printf("GetsTask::keyType = %s and valType = %s and taskIndexGet = %d\n",
            CacheableWrapperFactory::getTypeForId(keyTypeId).c_str(),

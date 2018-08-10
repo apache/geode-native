@@ -22,7 +22,6 @@
 #include <geode/CacheListener.hpp>
 #include <geode/FixedPartitionResolver.hpp>
 #include <geode/CacheWriter.hpp>
-#include <geode/GeodeTypeIds.hpp>
 #include <geode/Cache.hpp>
 #include <CacheImpl.hpp>
 #include <CacheXmlParser.hpp>
@@ -169,127 +168,127 @@ namespace Apache
         auto&& typeRegistry = cache->TypeRegistry;
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableBytes,
+            static_cast<int8_t>(native::DSCode::CacheableBytes),
             gcnew TypeFactoryMethod(CacheableBytes::CreateDeserializable),
             Type::GetType("System.Byte[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableDoubleArray,
+            static_cast<int8_t>(native::DSCode::CacheableDoubleArray),
             gcnew TypeFactoryMethod(CacheableDoubleArray::CreateDeserializable),
             Type::GetType("System.Double[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableFloatArray,
+            static_cast<int8_t>(native::DSCode::CacheableFloatArray),
             gcnew TypeFactoryMethod(CacheableFloatArray::CreateDeserializable),
             Type::GetType("System.Single[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableHashSet,
+            static_cast<int8_t>(native::DSCode::CacheableHashSet),
             gcnew TypeFactoryMethod(CacheableHashSet::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableLinkedHashSet,
+            static_cast<int8_t>(native::DSCode::CacheableLinkedHashSet),
             gcnew TypeFactoryMethod(CacheableLinkedHashSet::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableInt16Array,
+            static_cast<int8_t>(native::DSCode::CacheableInt16Array),
             gcnew TypeFactoryMethod(CacheableInt16Array::CreateDeserializable),
             Type::GetType("System.Int16[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableInt32Array,
+            static_cast<int8_t>(native::DSCode::CacheableInt32Array),
             gcnew TypeFactoryMethod(CacheableInt32Array::CreateDeserializable),
             Type::GetType("System.Int32[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableInt64Array,
+            static_cast<int8_t>(native::DSCode::CacheableInt64Array),
             gcnew TypeFactoryMethod(CacheableInt64Array::CreateDeserializable),
             Type::GetType("System.Int64[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::BooleanArray,
+            static_cast<int8_t>(native::DSCode::BooleanArray),
             gcnew TypeFactoryMethod(BooleanArray::CreateDeserializable),
             Type::GetType("System.Boolean[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CharArray,
+            static_cast<int8_t>(native::DSCode::CharArray),
             gcnew TypeFactoryMethod(CharArray::CreateDeserializable),
             Type::GetType("System.Char[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableStringArray,
+            static_cast<int8_t>(native::DSCode::CacheableStringArray),
             gcnew TypeFactoryMethod(CacheableStringArray::CreateDeserializable),
             Type::GetType("System.String[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::Struct,
+            static_cast<int8_t>(native::DSFid::Struct),
             gcnew TypeFactoryMethod(Struct::CreateDeserializable),
             nullptr);
         
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableDate,
+            static_cast<int8_t>(native::DSCode::CacheableDate),
             gcnew TypeFactoryMethod(CacheableDate::CreateDeserializable),
             Type::GetType("System.DateTime"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableFileName,
+            static_cast<int8_t>(native::DSCode::CacheableFileName),
             gcnew TypeFactoryMethod(CacheableFileName::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableHashMap,
+            static_cast<int8_t>(native::DSCode::CacheableHashMap),
             gcnew TypeFactoryMethod(CacheableHashMap::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableHashTable,
+            static_cast<int8_t>(native::DSCode::CacheableHashTable),
             gcnew TypeFactoryMethod(CacheableHashTable::CreateDeserializable),
             Type::GetType("System.Collections.Hashtable"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableIdentityHashMap,
+            static_cast<int8_t>(native::DSCode::CacheableIdentityHashMap),
             gcnew TypeFactoryMethod(CacheableIdentityHashMap::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableUndefined,
+            static_cast<int8_t>(native::DSFid::CacheableUndefined),
             gcnew TypeFactoryMethod(CacheableUndefined::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableVector,
+            static_cast<int8_t>(native::DSCode::CacheableVector),
             gcnew TypeFactoryMethod(CacheableVector::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableObjectArray,
+            static_cast<int8_t>(native::DSCode::CacheableObjectArray),
             gcnew TypeFactoryMethod(CacheableObjectArray::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableArrayList,
+            static_cast<int8_t>(native::DSCode::CacheableArrayList),
             gcnew TypeFactoryMethod(CacheableArrayList::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableLinkedList,
+            static_cast<int8_t>(native::DSCode::CacheableLinkedList),
             gcnew TypeFactoryMethod(CacheableLinkedList::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableStack,
+            static_cast<int8_t>(native::DSCode::CacheableStack),
             gcnew TypeFactoryMethod(CacheableStack::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableManagedObject,
+            static_cast<int8_t>(native::internal::InternalId::CacheableManagedObject),
             gcnew TypeFactoryMethod(CacheableObject::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::CacheableManagedObjectXml,
+            static_cast<int8_t>(native::internal::InternalId::CacheableManagedObjectXml),
             gcnew TypeFactoryMethod(CacheableObjectXml::CreateDeserializable),
             nullptr);
       }
@@ -299,7 +298,7 @@ namespace Apache
         auto&& typeRegistry = cache->TypeRegistry;
  
         typeRegistry->RegisterDataSerializableFixedIdTypeOverrideNativeDeserialization(
-            native::GeodeTypeIds::EnumInfo,
+            static_cast<int8_t>(native::DSFid::EnumInfo),
             gcnew TypeFactoryMethod(Internal::EnumInfo::CreateDeserializable));
       }
 
@@ -310,7 +309,7 @@ namespace Apache
 
         // Actually an internal type being registered as a primitive
         cache->TypeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            native::GeodeTypeIds::PdxType,
+            static_cast<int8_t>(native::DSCode::PdxType),
             gcnew TypeFactoryMethod(Apache::Geode::Client::Internal::PdxType::CreateDeserializable),
             nullptr);
 
@@ -355,27 +354,27 @@ namespace Apache
           TypeRegistry::UnregisterNativesGeneric(cache);
 
           cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableDate);
+            static_cast<int8_t>(native::DSCode::CacheableDate));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableFileName);
+            static_cast<int8_t>(native::DSCode::CacheableFileName));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableHashMap);
+            static_cast<int8_t>(native::DSCode::CacheableHashMap));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableHashTable);
+            static_cast<int8_t>(native::DSCode::CacheableHashTable));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableIdentityHashMap);
+            static_cast<int8_t>(native::DSCode::CacheableIdentityHashMap));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableVector);
+            static_cast<int8_t>(native::DSCode::CacheableVector));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableObjectArray);
+            static_cast<int8_t>(native::DSCode::CacheableObjectArray));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableArrayList);
+            static_cast<int8_t>(native::DSCode::CacheableArrayList));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableStack);
+            static_cast<int8_t>(native::DSCode::CacheableStack));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableManagedObject);
+            static_cast<int8_t>(native::InternalId::CacheableManagedObject));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            native::GeodeTypeIds::CacheableManagedObjectXml);
+            static_cast<int8_t>(native::InternalId::CacheableManagedObjectXml));
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }

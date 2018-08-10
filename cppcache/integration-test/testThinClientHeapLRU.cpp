@@ -43,9 +43,9 @@ void createOnekEntries() {
   auto dataReg = getHelper()->getRegion(_regionNames[0]);
   for (int i = 0; i < 2048; i++) {
     CacheableWrapper* tmpkey =
-        CacheableWrapperFactory::createInstance(GeodeTypeIds::CacheableInt32);
+        CacheableWrapperFactory::createInstance(DSCode::CacheableInt32);
     CacheableWrapper* tmpval =
-        CacheableWrapperFactory::createInstance(GeodeTypeIds::CacheableBytes);
+        CacheableWrapperFactory::createInstance(DSCode::CacheableBytes);
     tmpkey->initKey(i, 32);
     tmpval->initRandomValue(1024);
     ASSERT(tmpkey->getCacheable() != nullptr,

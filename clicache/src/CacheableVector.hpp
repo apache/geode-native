@@ -107,7 +107,7 @@ namespace Apache
         {
           virtual int8_t get()
           {
-            return native::GeodeTypeIds::CacheableVector;
+            return static_cast<int8_t>(native::DSCode::CacheableVector);
           }
         }
 

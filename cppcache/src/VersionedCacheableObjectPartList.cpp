@@ -16,7 +16,6 @@
  */
 #include "VersionedCacheableObjectPartList.hpp"
 #include <geode/ExceptionTypes.hpp>
-#include "GeodeTypeIdsImpl.hpp"
 #include <geode/CacheableString.hpp>
 #include "ThinClientRegion.hpp"
 #include "CacheableToken.hpp"

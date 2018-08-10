@@ -108,7 +108,7 @@ namespace Apache
         {
           virtual int8_t get()
           {
-            return GeodeTypeIds::CacheableObjectArray;
+            return static_cast<int8_t>(DSCode::CacheableObjectArray);
           }
         }
 

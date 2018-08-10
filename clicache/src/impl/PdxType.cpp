@@ -70,8 +70,8 @@ namespace Apache
         void PdxType::ToData(DataOutput^ output)
         {
           //defaulf java Dataserializable require this
-          output->WriteByte(GeodeTypeIdsImpl::DataSerializable);
-          output->WriteByte(GeodeTypeIdsImpl::Class);
+          output->WriteByte(static_cast<int8_t>(DSCode::DataSerializable));
+          output->WriteByte(static_cast<int8_t>(DSCode::Class));
           output->WriteObject((Object^)m_javaPdxClass);
 
           //pdx type

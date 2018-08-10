@@ -282,7 +282,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   inline void writeString(const _CharT* value) {
     // TODO string should we convert to empty string?
     if (nullptr == value) {
-      write(static_cast<uint8_t>(GeodeTypeIds::CacheableNullString));
+      write(static_cast<uint8_t>(DSCode::CacheableNullString));
     } else {
       writeString(std::basic_string<_CharT>(value));
     }
@@ -293,10 +293,10 @@ class APACHE_GEODE_EXPORT DataOutput {
     // without scanning string, making worst case choices.
     // TODO constexp for each string type to jmutf8 length conversion
     if (value.length() * 3 <= std::numeric_limits<uint16_t>::max()) {
-      write(static_cast<uint8_t>(GeodeTypeIds::CacheableString));
+      write(static_cast<uint8_t>(DSCode::CacheableString));
       writeJavaModifiedUtf8(value);
     } else {
-      write(static_cast<uint8_t>(GeodeTypeIds::CacheableStringHuge));
+      write(static_cast<uint8_t>(DSCode::CacheableStringHuge));
       writeUtf16Huge(value);
     }
   }
