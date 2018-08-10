@@ -19,9 +19,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-Use the client query API to query your cached data stored on a cache server. 
+Use the remote query API to query your cached data stored on a cache server. 
 
-## <a id="Remote Query Basics"></a>Remote Query Basics
+## <a id="RemoteQueryBasics"></a>Remote Query Basics
 
 Queries are evaluated and executed on the cache server, and the results are returned to the client.
 You can optimize your queries by defining indexes on the cache server.
@@ -30,74 +30,105 @@ Querying and indexing operate only on remote cache server contents.
 
 ### <a id="QueryLanguage"></a>Query language: OQL
 <%=vars.product_name%> provides a SQL-like querying language called OQL that allows you to access data stored in <%=vars.product_name%> regions.
+OQL is very similar to SQL, but OQL allows you to query complex objects, object attributes, and methods.
 
-<%=vars.product_name%> uses a query syntax based on OQL (Object Query Language) to query region
-data. OQL is very similar to SQL, but OQL allows you to query complex objects, object attributes,
-and methods.
+In the context of a query, specify the name of a region by its full path, starting with a forward slash (/ ).
+The query processor performs binary numeric promotion, method invocation conversion, and temporal type conversion.
+
+The query language supports drilling down into nested object structures.
+Nested data collections can be explicitly referenced in the FROM clause of a query.
+
+A query execution returns its results as either a `ResultSet` or a `StructSet`. 
 
 Query language features and grammar are described in the <%=vars.product_name%> manual at
-[Querying](geodeman/developing/querying_basics/chapter_overview.html). This section describes areas
-that are unique to the native client.
+[Querying](geodeman/developing/querying_basics/chapter_overview.html).
 
 ### <a id="CreatingIndexes"></a>Creating Indexes
 
-An index can provide significant performance gains for query execution. You create and maintain indexes on the cache server.
-
+Indexes can provide significant performance gains for query execution. You create and maintain indexes on the cache server.
 For detailed information about working with indexes configured on a cache server, 
 see [Working with Indexes](geodeman/developing/query_index/query_index.html) in the server's documentation.
 
 ## <a id="RemoteQueryAPI"></a>Remote Query API
 
-This section gives a general overview of the interfaces and classes that are provided by the Query
-package API, and the shortcut methods provided in the Region interface.
-
-### <a id="CreatingAndManagingQueries"></a>Creating and Managing Queries
-
-You create queries on the cache server by obtaining a `QueryService` method and manage them through
-the resulting `Query` object. The `Region` interface has several shortcut query methods.
+This section gives a general overview of the interfaces and classes that are provided by the query package API.
 
 ### <a id="Query"></a>Query
 
-A `Query` is obtained from a `QueryService` method, which is obtained from the cache. The `Query` interface provides methods for managing the compilation and execution of queries, and for retrieving an existing query string.
+A `Query` is obtained from a `QueryService` method, which is obtained from the cache. The `Query`
+interface provides methods for managing the compilation and execution of queries, and for retrieving
+an existing query string.
 
-You must obtain a `Query` object for each new query.
+You must create a `Query` object for each new query.
 
 ### <a id="ExecutingAQuery"></a>Executing a Query from the Client
 
--  Get a pointer to the `QueryService` method. If you are using the pool API, you should obtain the `QueryService` from the pool.
--  Create a `QueryPtr` to a query (C++) or create a query instance (.NET) that is compatible with the OQL specification.
--  Use the `execute` method for the `Query` interface to submit the query string to the cache server. The server remotely evaluates the query string and returns the results to the client.
--  You can iterate through the returned objects as part of the query process.
+The essential steps to create and execute a query are:
 
-## <a id="AccessingCachedData"></a>Accessing Cached Data
+1.  Create an instance of the `QueryService` class. If you are using the pool API, you should obtain the `QueryService` from the pool.
+1.  Create a `QueryPtr` to a query (C++) or create a query instance (.NET) that is compatible with the OQL specification.
+1.  Use the `Query.execute()` method to submit the query string to the cache server. The server
+   remotely evaluates the query string and returns the results to the client.
+1.  Iterate through the returned objects.
 
-Accessing your cached data through the querying service is similar to accessing database contents
-through SQL queries. How you specify your regions and region contents is particular to the client.
+### <a id="DotNetQueryExample"></a>.NET Query Example
 
-The query language supports drilling down into nested object structures.
-Nested data collections can be explicitly referenced in the FROM clause of a query.
+These C# code excerpts are from the `examples\dotnet\RemoteQueryCs` example included in your client
+distribution. See the example for full context.
 
-### <a id="ModifyingCacheContents"></a>Modifying Cache Contents
+Following the steps listed above,
 
-To modify the cache based on information retrieved through querying, retrieve the entry keys and use them in the standard entry update methods.
+  1. Obtain a `QueryService` object from the connection pool:
 
-The query service is a data access tool, so it does not provide any cache update functionality.
+    ```
+    var queryService = pool.GetQueryService();
+    ```
 
-Retrieving the entry keys allows you to access the cached region entries for update. You cannot update the cache through the query engine.
+  1. Create a `Query` object by calling `QueryService.NewQuery()`, specifying your OQL query as a string parameter:
 
-### <a id="UsingQueryStrings"></a>Using Query Strings in the Client
+    ```
+    var query = queryService.NewQuery<Order>("SELECT * FROM /custom_orders WHERE quantity > 30");
+    ```
 
-To use a query string in a client, specify the string as a parameter in a `QueryService::newQuery`
-method, then execute the query using `Query::execute`, passing in the required parameters.
+  1. Execute the query. Collect the query output, returned as either a `ResultSet` or a `StructSet`, and iterate through the results:
 
-In the context of a query, specify the name of a region by its full path, starting with a forward slash (/ ).
+    ```
+    var queryResults = query.Execute();
 
-The query processor performs binary numeric promotion, method invocation conversion, and temporal type conversion.
+    foreach (Order value in queryResults)
+    {
+      Console.WriteLine(value.ToString());
+    }
+    ```
 
-### <a id="QueryResultSets"></a>Query Result Sets
+### <a id="CppQueryExample"></a>C++ Query Example
 
--   **SelectResults**. Executes the query on the cache server and returns the results as either a `ResultSet` or a `StructSet`.
--   **SelectResultsIterator**. Iterates over the items available in a `ResultSet` or `StructSet`.
--   **ResultSet**. Obtained after executing a `Query`, which is obtained from a `QueryService` that is obtained from a Cache class.
--   **StructSet**. Used when a `SELECT` statement returns more than one set of results. This is accompanied by a `Struct`, which provides the `StructSet` definition and contains its field values.
+These C++ code excerpts are from the `examples/cpp/remotequery` example included in your client
+distribution. See the example for full context.
+
+Following the steps listed above,
+
+  1. Obtain pointer to a `QueryService` object from the connection pool:
+
+    ```
+    std::shared_ptr<QueryService> queryService = nullptr;
+    queryService = pool->getQueryService();
+    ```
+
+  1. Create a pointer to a `Query` object by calling `QueryService.newQuery()`, specifying your OQL query as a string parameter:
+
+    ```
+    auto query = queryService->newQuery("SELECT * FROM /custom_orders WHERE quantity > 30");    
+    ```
+
+  1. Execute the query. Collect the query output, returned as either a `ResultSet` or a `StructSet`, and iterate through the results:
+
+    ```
+    auto queryResults = query->execute();
+
+    for (auto&& value : *queryResults) {
+      auto&& order = std::dynamic_pointer_cast<Order>(value);
+      std::cout << order->toString() << std::endl;
+    }
+    ```
 
