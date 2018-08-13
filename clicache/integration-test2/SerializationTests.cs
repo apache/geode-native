@@ -24,6 +24,62 @@ using System.Collections.Generic;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
+  public class Order : IDataSerializable
+  {
+    public int OrderId { get; set; }
+    public string Name { get; set; }
+    public short Quantity { get; set; }
+
+    // A default constructor is required for deserialization
+    public Order() { }
+
+    public Order(int orderId, string name, short quantity)
+    {
+      OrderId = orderId;
+      Name = name;
+      Quantity = quantity;
+    }
+
+    public override string ToString()
+    {
+      return string.Format("Order: [{0}, {1}, {2}]", OrderId, Name, Quantity);
+    }
+
+    public void ToData(DataOutput output)
+    {
+      output.WriteInt32(OrderId);
+      output.WriteUTF(Name);
+      output.WriteInt16(Quantity);
+    }
+
+    public void FromData(DataInput input)
+    {
+      OrderId = input.ReadInt32();
+      Name = input.ReadUTF();
+      Quantity = input.ReadInt16();
+    }
+
+    //public Int32 ClassId
+    //{
+    //  get { return 0x42; }
+    //}
+
+    public ulong ObjectSize
+    {
+      get { return 0; }
+    }
+
+    public static ISerializable CreateDeserializable()
+    {
+      return new Order();
+    }
+
+    public String Type
+    {
+      get { return this.GetType().ToString(); }
+    }
+  }
+
   public struct CData
   {
     #region Private members
@@ -92,7 +148,6 @@ namespace Apache.Geode.Client.IntegrationTests
       return m_first.GetHashCode() ^ m_second.GetHashCode();
     }
   };
-
   public class OtherType : IDataSerializable
   {
     private CData m_struct;
@@ -203,6 +258,14 @@ namespace Apache.Geode.Client.IntegrationTests
     {
       get { return this.GetType().ToString(); }
     }
+
+    //public Int32 ClassId
+    //{
+    //  get
+    //  {
+    //    return 0x0;
+    //  }
+    //}
 
     #endregion
 
@@ -332,6 +395,14 @@ namespace Apache.Geode.Client.IntegrationTests
       }
     }
 
+    //public Int32 ClassId
+    //{
+    //  get
+    //  {
+    //    return 0x8C;
+    //  }
+    //}
+
     public String Type
     {
       get { return this.GetType().ToString(); }
@@ -359,9 +430,8 @@ namespace Apache.Geode.Client.IntegrationTests
     }
 
   }
-
   [Trait("Category", "Integration")]
-  public class SerializationTests : IDisposable
+    public class SerializationTests : IDisposable
     {
         private GeodeServer GeodeServer;
         private CacheXml CacheXml;
@@ -370,6 +440,11 @@ namespace Apache.Geode.Client.IntegrationTests
         public SerializationTests()
         {
             GeodeServer = new GeodeServer();
+            //CacheXml = new CacheXml(new FileInfo("cache.xml"), GeodeServer);
+
+            //var cacheFactory = new CacheFactory();
+            //Cache = cacheFactory.Create();
+            //Cache.InitializeDeclarativeCache(CacheXml.File.FullName);
         }
 
         public void Dispose()
@@ -400,108 +475,120 @@ namespace Apache.Geode.Client.IntegrationTests
 
         private void putAndCheck(IRegion<object, object> region, object key, object value)
         {
-          region[key] = value;
-          var retrievedValue = region[key];
-          Assert.Equal(value, retrievedValue);
+            region[key] = value;
+            Assert.Equal(value, region[key]);
         }
 
-        private void putAndCheckCustom(IRegion<object, object> region, object key, object value)
+        private void putAndCheck2(IRegion<String, OtherType> region, String key, OtherType value)
         {
           region[key] = value;
-          var retrievedValue = region[key];
-          Assert.True(value.Equals(retrievedValue), "Got unexpected value");
+          Assert.Equal(value, region[key]);
         }
-    [Fact]
-      public void BuiltInSerializableTypes()
-      {
-          var cacheFactory = new CacheFactory()
-              .Set("log-level", "none");
-          var cache = cacheFactory.Create();
 
-          var poolFactory = cache.GetPoolFactory()
-              .AddLocator("localhost", GeodeServer.LocatorPort);
-          poolFactory.Create("pool");
 
-          var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
-              .SetPoolName("pool");
-          var region = regionFactory.Create<object, object>("testRegion");
+        [Fact]
+        public void BuiltInSerializableTypes()
+        {
+            var region = Cache.GetRegion<object, object>("testRegion");
+            Assert.NotNull(region);
+
+            putAndCheck(region, "CacheableString", "foo");
+            putAndCheck(region, "CacheableByte", (Byte)8);
+            putAndCheck(region, "CacheableInt16", (Int16)16);
+            putAndCheck(region, "CacheableInt32", (Int32)32);
+            putAndCheck(region, "CacheableInt64", (Int64)64);
+            putAndCheck(region, "CacheableBoolean", (Boolean)true);
+            putAndCheck(region, "CacheableCharacter", 'c');
+            putAndCheck(region, "CacheableDouble", (Double)1.5);
+            putAndCheck(region, "CacheableFloat", (float)2.5);
+
+            putAndCheck(region, "CacheableStringArray", new String[] { "foo", "bar" });
+            putAndCheck(region, "CacheableBytes", new Byte[] { 8, 8 });
+            putAndCheck(region, "CacheableInt16Array", new Int16[] { 16, 16 });
+            putAndCheck(region, "CacheableInt32Array", new Int32[] { 32, 32 });
+            putAndCheck(region, "CacheableInt64Array", new Int64[] { 64, 64 });
+            putAndCheck(region, "CacheableBooleanArray", new Boolean[] { true, false });
+            putAndCheck(region, "CacheableCharacterArray", new Char[] { 'c', 'a' });
+            putAndCheck(region, "CacheableDoubleArray", new Double[] { 1.5, 1.7 });
+            putAndCheck(region, "CacheableFloatArray", new float[] { 2.5F, 2.7F });
+
+            putAndCheck(region, "CacheableDate", new DateTime());
+
+            putAndCheck(region, "CacheableHashMap", new Dictionary<int, string>() { { 1, "one" }, { 2, "two" } });
+            putAndCheck(region, "CacheableHashTable", new Hashtable() { { 1, "one" }, { 2, "two" } });
+            putAndCheck(region, "CacheableVector", new ArrayList() { "one", "two" });
+            putAndCheck(region, "CacheableArrayList", new List<string>() { "one", "two" });
+            putAndCheck(region, "CacheableLinkedList", new LinkedList<object>(new string[] { "one", "two" }));
+            putAndCheck(region, "CacheableStack", new Stack<object>(new string[] { "one", "two" }));
+
+            {
+                var cacheableHashSet = new CacheableHashSet();
+                cacheableHashSet.Add("one");
+                cacheableHashSet.Add("two");
+                putAndCheck(region, "CacheableHashSet", cacheableHashSet);
+            }
+
+            {
+                var cacheableLinkedHashSet = new CacheableLinkedHashSet();
+                cacheableLinkedHashSet.Add("one");
+                cacheableLinkedHashSet.Add("two");
+                putAndCheck(region, "CacheableLinkedHashSet", cacheableLinkedHashSet);
+            }
+
+            Cache.TypeRegistry.RegisterPdxType(PdxType.CreateDeserializable);
+            putAndCheck(region, "PdxType", new PdxType());
+        }
+
+        [Fact]
+        public void PutGetCustomSerializableTypes()
+        {
+          Cache.TypeRegistry.RegisterType(OtherType.CreateDeserializable, 0);
+          //Cache.TypeRegistry.RegisterType(OtherType2.CreateDeserializable, 0x8C);
+
+          var otherTypeZero = new OtherType(32, 64);
+          var otherTypeTwo = new OtherType2(64, 32);
+
+          var region = Cache.GetRegion<String, OtherType>("testRegion");
           Assert.NotNull(region);
 
-          putAndCheck(region, "CacheableString", "foo");
-          putAndCheck(region, "CacheableByte", (Byte)8);
-          putAndCheck(region, "CacheableInt16", (Int16)16);
-          putAndCheck(region, "CacheableInt32", (Int32)32);
-          putAndCheck(region, "CacheableInt64", (Int64)64);
-          putAndCheck(region, "CacheableBoolean", (Boolean)true);
-          putAndCheck(region, "CacheableCharacter", 'c');
-          putAndCheck(region, "CacheableDouble", (Double)1.5);
-          putAndCheck(region, "CacheableFloat", (float)2.5);
+      //putAndCheck2(region, "OtherType", new OtherType(32, 64));
+      //putAndCheck(region, "OtherType2", new OtherType2(64, 32));
 
-          putAndCheck(region, "CacheableStringArray", new String[] { "foo", "bar" });
-          putAndCheck(region, "CacheableBytes", new Byte[] { 8, 8 });
-          putAndCheck(region, "CacheableInt16Array", new Int16[] { 16, 16 });
-          putAndCheck(region, "CacheableInt32Array", new Int32[] { 32, 32 });
-          putAndCheck(region, "CacheableInt64Array", new Int64[] { 64, 64 });
-          putAndCheck(region, "CacheableBooleanArray", new Boolean[] { true, false });
-          putAndCheck(region, "CacheableCharacterArray", new Char[] { 'c', 'a' });
-          putAndCheck(region, "CacheableDoubleArray", new Double[] { 1.5, 1.7 });
-          putAndCheck(region, "CacheableFloatArray", new float[] { 2.5F, 2.7F });
+      var region1 = Cache.GetRegion<object, object>("testRegion");
+      Assert.NotNull(region1);
+      putAndCheck(region1, "OtherType", new OtherType(32, 64));
 
-          putAndCheck(region, "CacheableDate", new DateTime());
+    }
 
-          putAndCheck(region, "CacheableHashMap", new Dictionary<int, string>() { { 1, "one" }, { 2, "two" } });
-          putAndCheck(region, "CacheableHashTable", new Hashtable() { { 1, "one" }, { 2, "two" } });
-          putAndCheck(region, "CacheableVector", new ArrayList() { "one", "two" });
-          putAndCheck(region, "CacheableArrayList", new List<string>() { "one", "two" });
-          putAndCheck(region, "CacheableLinkedList", new LinkedList<object>(new string[] { "one", "two" }));
-          putAndCheck(region, "CacheableStack", new Stack<object>(new string[] { "one", "two" }));
+    [Fact]
+    public void JustLikeTheExampleCustomObject()
+    {
+      var cacheFactory = new CacheFactory()
+          .Set("log-level", "none");
+      var cache = cacheFactory.Create();
 
-          {
-              var cacheableHashSet = new CacheableHashSet();
-              cacheableHashSet.Add("one");
-              cacheableHashSet.Add("two");
-              putAndCheck(region, "CacheableHashSet", cacheableHashSet);
-          }
+      Console.WriteLine("Registering for data serialization");
 
-          {
-              var cacheableLinkedHashSet = new CacheableLinkedHashSet();
-              cacheableLinkedHashSet.Add("one");
-              cacheableLinkedHashSet.Add("two");
-              putAndCheck(region, "CacheableLinkedHashSet", cacheableLinkedHashSet);
-          }
+      cache.TypeRegistry.RegisterType(Order.CreateDeserializable, 0x42);
 
-          cache.TypeRegistry.RegisterPdxType(PdxType.CreateDeserializable);
-          putAndCheck(region, "PdxType", new PdxType());
+      var poolFactory = cache.GetPoolFactory()
+          .AddLocator("localhost", GeodeServer.LocatorPort);
+      poolFactory.Create("pool");
 
-          cache.Close();
-        }
+      var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
+          .SetPoolName("pool");
+      var orderRegion = regionFactory.Create<int, Order>("testRegion");
+      Assert.NotNull(orderRegion);
 
-      [Fact]
-      public void PutGetCustomSerializableTypes()
-      {
+      const int orderKey = 65;
+      var order = new Order(orderKey, "Donuts", 12);
 
-        var cacheFactory = new CacheFactory()
-            .Set("log-level", "none");
-        var cache = cacheFactory.Create();
+      orderRegion.Put(orderKey, order, null);
+      var orderRetrieved = orderRegion.Get(orderKey, null);
+      Assert.Equal(order.ToString(), orderRetrieved.ToString());
 
-        var poolFactory = cache.GetPoolFactory()
-            .AddLocator("localhost", GeodeServer.LocatorPort);
-        poolFactory.Create("pool");
-
-        var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
-            .SetPoolName("pool");
-        var region = regionFactory.Create<object, object>("testRegion");
-        Assert.NotNull(region);
-
-        cache.TypeRegistry.RegisterType(OtherType.CreateDeserializable, 0x9C);
-        cache.TypeRegistry.RegisterType(OtherType2.CreateDeserializable, 0x8C);
-
-        var otherType = new OtherType(64, 32);
-        var otherType2 = new OtherType2(65, 66);
-
-        putAndCheck(region, "OtherType", otherType);
-        putAndCheck(region, "OtherType2", otherType2);
-      }
+      cache.Close();
+    }
   }
 
 }
