@@ -21,7 +21,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_CURRENT_BIN
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt
-  BUILDING.md
+  BUILD-CPP-EXAMPLES.md
   DESTINATION examples/cpp)
 
 function(add_example)
@@ -41,6 +41,7 @@ function(add_example)
   install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${ADD_EXAMPLE_NAME}/CMakeLists.txt
     ${EXAMPLE_SOURCES_PATHS}
+    ${ADD_EXAMPLE_NAME}/README.md
     ${ADD_EXAMPLE_NAME}/startserver.sh
     ${ADD_EXAMPLE_NAME}/stopserver.sh
     DESTINATION examples/cpp/${ADD_EXAMPLE_NAME})
@@ -59,4 +60,4 @@ add_example(NAME put-get-remove
 	SOURCE main.cpp)
 
 add_example(NAME remotequery
-	SOURCE main.cpp Order.cpp Order.hpp README.md)
+	SOURCE main.cpp Order.cpp Order.hpp)

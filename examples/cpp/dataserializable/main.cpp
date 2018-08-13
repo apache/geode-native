@@ -62,8 +62,11 @@ int main(int argc, char** argv) {
     std::cout << "Order 1 not found." << std::endl;
   }
 
-  if (auto order2retrieved = region->get("Customer2")) {
-    std::cout << order2retrieved->toString() << std::endl;
+  if (auto order2retrieved =
+          std::dynamic_pointer_cast<Order>(region->get("Customer2"))) {
+    std::cout << "OrderID: " << order2retrieved->getOrderId() << std::endl;
+    std::cout << "Product Name: " << order2retrieved->getName() << std::endl;
+    std::cout << "Quantity: " << order2retrieved->getQuantity() << std::endl;
   } else {
     std::cout << "Order 2 not found." << std::endl;
   }
