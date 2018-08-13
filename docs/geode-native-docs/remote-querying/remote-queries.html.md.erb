@@ -32,7 +32,7 @@ Querying and indexing operate only on remote cache server contents.
 <%=vars.product_name%> provides a SQL-like querying language called OQL that allows you to access data stored in <%=vars.product_name%> regions.
 OQL is very similar to SQL, but OQL allows you to query complex objects, object attributes, and methods.
 
-In the context of a query, specify the name of a region by its full path, starting with a forward slash (/ ).
+In the context of a query, specify the name of a region by its full path, starting with a slash (`/`).
 The query processor performs binary numeric promotion, method invocation conversion, and temporal type conversion.
 
 The query language supports drilling down into nested object structures.
@@ -65,7 +65,7 @@ You must create a `Query` object for each new query.
 
 The essential steps to create and execute a query are:
 
-1.  Create an instance of the `QueryService` class. If you are using the pool API, you should obtain the `QueryService` from the pool.
+1.  Create an instance of the `QueryService` class. If you are using the pool API (recommended), you should obtain the `QueryService` from the pool.
 1.  Create a `QueryPtr` to a query (C++) or create a query instance (.NET) that is compatible with the OQL specification.
 1.  Use the `Query.execute()` method to submit the query string to the cache server. The server
    remotely evaluates the query string and returns the results to the client.
