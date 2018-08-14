@@ -44,9 +44,9 @@ namespace Apache
       /// A factory class that must be used to obtain instance of <see cref="Cache" />.
       /// </summary>
       /// <remarks>
-      /// To create a new cache instance, use <see cref="CacheFactory.CreateCacheFactory" />.
+      /// To create a new cache instance, use <see cref="CacheFactory.Create" />.
       /// <para>
-      /// To get an existing unclosed cache instance, use <see cref="CacheFactory.GetInstance" />.
+      /// To get an existing unclosed cache instance, use <see cref="Cache.GetInstance" />.
       /// </para>
       /// </remarks>
       public ref class CacheFactory
