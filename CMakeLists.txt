@@ -109,6 +109,20 @@ set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/dist/LICENSE")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
 set(CPACK_GENERATOR TGZ;ZIP)
 
+# Build a comprehensive list of things to leave out of the cpack package for our
+# source code releases.  Use .gitignore as a base, then use '.cpackignore' to
+# leave out .git and a couple other items we want in the repository but not in
+# the release.  Everything gets concatenated into a ';' separated list for
+# cpack.
+file(READ ".gitignore" IGNORED_PARTIAL)
+set(IGNORED_FULL ${IGNORED_PARTIAL})
+file(READ ".cpackignore" IGNORED_PARTIAL)
+string(CONCAT IGNORED_FULL ${IGNORED_FULL} ${IGNORED_PARTIAL})
+string(REGEX REPLACE "\n" ";" IGNORED_FULL "${IGNORED_FULL}")
+string(REGEX REPLACE " " "" IGNORED_FULL "${IGNORED_FULL}")
+
+list(APPEND CPACK_SOURCE_IGNORE_FILES ${IGNORED_FULL})
+
 option(ENABLE_CLANG_TIDY "Enable clang-tidy checks." false)
 if(ENABLE_CLANG_TIDY)
   find_program(CLANG_TIDY "clang-tidy")
