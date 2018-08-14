@@ -32,9 +32,7 @@ set(RESOURCES ${COMMON_SOURCE_DIR}/apache-geode.rc)
 find_package(Git 1.7 REQUIRED)
 
 string(REPLACE ";" "," PRODUCT_VERSION_RC "${PRODUCT_VERSION_LIST}")
-list(APPEND CONFIGURE_IN_FILES ${COMMON_SOURCE_DIR}/version.cmake.in)
-list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/version.cmake)
-configure_file(${COMMON_SOURCE_DIR}/version.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/version.cmake @ONLY)
+list(APPEND CONFIGURE_IN_FILES ${COMMON_SOURCE_DIR}/version.h.in)
 
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/version.h
@@ -58,6 +56,7 @@ endif()
 list(APPEND CONFIGURE_IN_FILES ${COMMON_SOURCE_DIR}/config.h.in)
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 configure_file(${COMMON_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 set(EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/apache-geode_export.h)
 list(APPEND CONFIGURE_OUT_FILES ${EXPORT_FILE_NAME})
