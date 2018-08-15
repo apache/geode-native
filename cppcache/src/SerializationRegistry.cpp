@@ -406,10 +406,21 @@ void TheTypeMap::bind(TypeFactoryMethod func, uint32_t id) {
     compId = static_cast<int64_t>(dataSerializableInternal->getInternalId());
   } else if (const auto dataSerializable =
                  std::dynamic_pointer_cast<DataSerializable>(obj)) {
-    typeToClassId[std::type_index(dataSerializable->getType())] = id;
-    compId = static_cast<int64_t>(
-                 SerializationRegistry::getSerializableDataDsCode(id)) |
-             static_cast<int64_t>(id) << 32;
+    std::string typeName(dataSerializable->getType());
+    std::string managedType("ManagedCacheableKeyGeneric");
+    std::size_t found = typeName.find(managedType);
+    if (found != std::string::npos) {
+      // managedTypeToClassId
+      typeToClassId[(dataSerializable->getType())] = id;
+      compId = static_cast<int64_t>(
+                   SerializationRegistry::getSerializableDataDsCode(id)) |
+               static_cast<int64_t>(id) << 32;
+    } else {
+      typeToClassId[(dataSerializable->getType())] = id;
+      compId = static_cast<int64_t>(
+                   SerializationRegistry::getSerializableDataDsCode(id)) |
+               static_cast<int64_t>(id) << 32;
+    }
   } else {
     throw UnsupportedOperationException(
         "TheTypeMap::bind: Serialization type not implemented.");
