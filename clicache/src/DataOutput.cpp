@@ -721,11 +721,6 @@ namespace Apache
         {
           auto id = m_cache->TypeRegistry->GetIdForManagedType(dataSerializable->Type);
 
-    //auto&& type = obj->getType();
-    //auto typeIterator = theTypeMap.typeToClassId.find(type);
-    //auto id = typeIterator->second;
-
-
           auto dsCode = getDataSerializableDsCode(id);
           WriteByte(static_cast<int8_t>(dsCode));
           switch (dsCode) {

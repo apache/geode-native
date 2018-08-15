@@ -56,7 +56,6 @@ class TESTOBJECT_EXPORT BatchObject : public TimestampedObject {
   ~BatchObject() override = default;
   virtual void toData(apache::geode::client::DataOutput& output) const override;
   virtual void fromData(apache::geode::client::DataInput& input) override;
-  // virtual int32_t getClassId() const override { return 25; }
   std::string toString() const override;
 
   virtual size_t objectSize() const override {

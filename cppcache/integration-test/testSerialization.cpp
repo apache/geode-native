@@ -97,16 +97,6 @@ class OtherType : public DataSerializable {
     return std::make_shared<OtherType>();
   }
 
-  // static std::shared_ptr<Serializable> createDeserializable2() {
-  //  return std::make_shared<OtherType>();
-  //}
-
-  // static std::shared_ptr<Serializable> createDeserializable4() {
-  //  return std::make_shared<OtherType>();
-  //}
-
-  // int32_t getClassId() const override { return m_classIdToReturn; }
-
   uint32_t size() const { return sizeof(CData); }
 
   static std::shared_ptr<Cacheable> uniqueCT(int32_t i) {

@@ -54,7 +54,6 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
   ~FastAsset() override = default;
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  // int32_t getClassId() const override { return 24; }
 
   size_t objectSize() const override {
     auto objectSize = sizeof(FastAsset);

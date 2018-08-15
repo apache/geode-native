@@ -79,7 +79,8 @@ public class GeodeServer : IDisposable
                     FileName = Config.GeodeGfsh,
                     Arguments = " -e \"start locator --bind-address=localhost --port=" + LocatorPort + "\"" +
                                 " -e \"start server --bind-address=localhost --server-port=0\"" +
-                                " -e \"create region --name=" + regionName + " --type=PARTITION\"",
+                                " -e \"create region --name=" + regionName + " --type=PARTITION\"" +
+                                " -e \"create region --name=testRegion1 --type=PARTITION\"",
                     WindowStyle = ProcessWindowStyle.Hidden,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
