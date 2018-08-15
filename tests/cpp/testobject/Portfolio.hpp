@@ -112,8 +112,6 @@ class TESTOBJECT_EXPORT Portfolio : public DataSerializable {
 
   int32_t getNewValSize() const { return newValSize; }
 
-  std::shared_ptr<CacheableString> getType() const { return this->type; }
-
   std::shared_ptr<CacheableDate> getCreationDate() const {
     return creationDate;
   }

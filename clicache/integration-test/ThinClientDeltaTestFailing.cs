@@ -122,10 +122,6 @@ namespace Apache.Geode.Client.UnitTests
 
       #region IDataSerializable Members
 
-      public int ClassId
-      {
-        get { return 151; }
-      }
       public String Type
       {
         get { return this.GetType().ToString(); }

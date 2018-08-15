@@ -240,13 +240,6 @@ namespace Apache.Geode.Client.UnitTests
       output.WriteInt32(MAccountid);
     }
 
-    public Int32 ClassId
-    {
-      get
-      {
-        return 0x04;
-      }
-    }
 
     public ulong ObjectSize
     {

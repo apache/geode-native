@@ -347,10 +347,6 @@ namespace Apache.Geode.Client.UnitTests
         else
           Util.Log("DoGetsVerify value is not null ");
         uint cksum = m_cKeys[keyIndex].GetChecksum();
-        //Util.Log("DoGetsVerify  key clasid " + m_region[(KeyChecksumPrefix + keyIndex).ClassId]);
-        //Util.Log("DoGetsVerify  key clasid " + m_region[(KeyChecksumPrefix + keyIndex).ClassId]);
-        //Util.Log("DoGetsVerify  key type " + m_region.Get(KeyChecksumPrefix + keyIndex).GetType().ToString());
-        //CacheableInt32 putCksum = m_region[KeyChecksumPrefix + keyIndex] as CacheableInt32;
         Util.Log("DoGetsVerify  key type " + m_region[KeyChecksumPrefix + keyIndex].GetType().ToString());
         int putCksum = (int)m_region[KeyChecksumPrefix + keyIndex];
         Assert.IsNotNull(putCksum,

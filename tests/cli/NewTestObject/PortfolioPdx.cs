@@ -232,15 +232,7 @@ namespace Apache.Geode.Client.Tests
     }
 
     #endregion
-/*
-    public Int32 ClassId
-    {
-      get
-      {
-        return 0x03;
-      }
-    }
-*/
+
     public static IPdxSerializable CreateDeserializable()
     {
       return new PortfolioPdx();

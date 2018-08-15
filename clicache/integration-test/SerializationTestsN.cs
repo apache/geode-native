@@ -496,13 +496,6 @@ namespace Apache.Geode.Client.UnitTests
         get { return this.GetType().ToString(); }
     }
 
-    //public Int32 ClassId
-    //{
-    //  get
-    //  {
-    //    return 0x0;
-    //  }
-    //}
 
     #endregion
 
@@ -632,13 +625,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    //public Int32 ClassId
-    //{
-    //  get
-    //  {
-    //    return 0x8C;
-    //  }
-    //}
 
     public String Type
     {
@@ -774,13 +760,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    //public Int32 ClassId
-    //{
-    //  get
-    //  {
-    //    return 0x8C0;
-    //  }
-    //}
+
     public String Type
     {
         get { return this.GetType().ToString(); }
@@ -914,13 +894,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    //public Int32 ClassId
-    //{
-    //  get
-    //  {
-    //    return 0x8FC0;
-    //  }
-    //}
+ 
     public String Type
     {
         get { return this.GetType().ToString(); }
@@ -1055,13 +1029,7 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    //public Int32 ClassId
-    //{
-    //  get
-    //  {
-    //    return 0x6F3F97;
-    //  }
-    //}
+
     public String Type
     {
         get { return this.GetType().ToString(); }
@@ -1196,13 +1164,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    //public Int32 ClassId
-    //{
-    //  get
-    //  {
-    //    return 0x7FFFFFFF;
-    //  }
-    //}
     public String Type
     {
         get { return this.GetType().ToString(); }
