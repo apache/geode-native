@@ -33,13 +33,8 @@ find_package(Git 1.7 REQUIRED)
 
 string(REPLACE ";" "," PRODUCT_VERSION_RC "${PRODUCT_VERSION_LIST}")
 list(APPEND CONFIGURE_IN_FILES ${COMMON_SOURCE_DIR}/version.h.in)
-
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/version.h
-  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/version.cmake
-  DEPENDS ${CMAKE_SOURCE_DIR}/.git/index ${CMAKE_CURRENT_BINARY_DIR}/version.cmake
-  MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/.git/index
-)
+
 # adds named target for version.h to avoid parallel generation under windows
 add_custom_target(version-header DEPENDS version.h)
 
