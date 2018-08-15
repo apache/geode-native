@@ -190,7 +190,6 @@ namespace Apache
       {
         if (mg_obj == nullptr) return NULL;
         //for cacheables types
-        //return new native::ManagedCacheableKey(mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId);
         {
           return new native::ManagedCacheableKeyGeneric( mg_obj, mg_obj->GetHashCode(), mg_obj->ClassId );
         }

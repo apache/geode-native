@@ -81,7 +81,7 @@ class TheTypeMap : private NonCopyable {
   mutable util::concurrent::spinlock_mutex m_pdxTypemapLock;
 
  public:
-  std::unordered_map<std::type_index, int32_t> typeToClassId;
+  std::unordered_map<std::string, int32_t> typeToClassId;
 
  public:
   TheTypeMap() {

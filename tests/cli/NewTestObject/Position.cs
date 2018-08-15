@@ -225,13 +225,6 @@ namespace Apache.Geode.Client.Tests
       }
     }
 
-    //public Int32 ClassId
-    //{
-    //  get
-    //  {
-    //    return 0x07;
-    //  }
-    //}
     public String Type
     {
         get { return this.GetType().ToString(); }
