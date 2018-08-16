@@ -120,10 +120,6 @@ class TheTypeMap : private NonCopyable {
 
   void bind(TypeFactoryMethod func, int32_t id);
 
-  void bind(TypeFactoryMethod func, DSCode id) {
-    bind(func, static_cast<int32_t>(id));
-  }
-
   inline void rebind(int64_t compId, TypeFactoryMethod func);
 
   inline void unbind(int64_t compId);
@@ -142,6 +138,11 @@ class TheTypeMap : private NonCopyable {
   inline void unbindPdxType(const std::string& objFullName);
 
   void rebindPdxType(std::string objFullName, TypeFactoryMethodPdx func);
+
+ private:
+  void bind(TypeFactoryMethod func, DSCode id) {
+    bind(func, static_cast<int32_t>(id));
+  }
 };
 
 class Pool;
