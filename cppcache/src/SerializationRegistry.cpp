@@ -67,58 +67,47 @@ void TheTypeMap::setup() {
   // Register Geode builtins here!!
   // update type ids in DSCode.hpp
 
-  bind(CacheableByte::createDeserializable, GeodeTypeIds::CacheableByte);
-  bind(CacheableBoolean::createDeserializable, GeodeTypeIds::CacheableBoolean);
-  bind(BooleanArray::createDeserializable, GeodeTypeIds::BooleanArray);
-  bind(CacheableBytes::createDeserializable, GeodeTypeIds::CacheableBytes);
-  bind(CacheableFloat::createDeserializable, GeodeTypeIds::CacheableFloat);
-  bind(CacheableFloatArray::createDeserializable,
-       GeodeTypeIds::CacheableFloatArray);
-  bind(CacheableDouble::createDeserializable, GeodeTypeIds::CacheableDouble);
+  bind(CacheableByte::createDeserializable, DSCode::CacheableByte);
+  bind(CacheableBoolean::createDeserializable, DSCode::CacheableBoolean);
+  bind(BooleanArray::createDeserializable, DSCode::BooleanArray);
+  bind(CacheableBytes::createDeserializable, DSCode::CacheableBytes);
+  bind(CacheableFloat::createDeserializable, DSCode::CacheableFloat);
+  bind(CacheableFloatArray::createDeserializable, DSCode::CacheableFloatArray);
+  bind(CacheableDouble::createDeserializable, DSCode::CacheableDouble);
   bind(CacheableDoubleArray::createDeserializable,
-       GeodeTypeIds::CacheableDoubleArray);
-  bind(CacheableDate::createDeserializable, GeodeTypeIds::CacheableDate);
-  bind(CacheableFileName::createDeserializable,
-       GeodeTypeIds::CacheableFileName);
-  bind(CacheableHashMap::createDeserializable, GeodeTypeIds::CacheableHashMap);
-  bind(CacheableHashSet::createDeserializable, GeodeTypeIds::CacheableHashSet);
-  bind(CacheableHashTable::createDeserializable,
-       GeodeTypeIds::CacheableHashTable);
+       DSCode::CacheableDoubleArray);
+  bind(CacheableDate::createDeserializable, DSCode::CacheableDate);
+  bind(CacheableFileName::createDeserializable, DSCode::CacheableFileName);
+  bind(CacheableHashMap::createDeserializable, DSCode::CacheableHashMap);
+  bind(CacheableHashSet::createDeserializable, DSCode::CacheableHashSet);
+  bind(CacheableHashTable::createDeserializable, DSCode::CacheableHashTable);
   bind(CacheableIdentityHashMap::createDeserializable,
-       GeodeTypeIds::CacheableIdentityHashMap);
+       DSCode::CacheableIdentityHashMap);
   bind(CacheableLinkedHashSet::createDeserializable,
-       GeodeTypeIds::CacheableLinkedHashSet);
-  bind(CacheableInt16::createDeserializable, GeodeTypeIds::CacheableInt16);
-  bind(CacheableInt16Array::createDeserializable,
-       GeodeTypeIds::CacheableInt16Array);
-  bind(CacheableInt32::createDeserializable, GeodeTypeIds::CacheableInt32);
-  bind(CacheableInt32Array::createDeserializable,
-       GeodeTypeIds::CacheableInt32Array);
-  bind(CacheableInt64::createDeserializable, GeodeTypeIds::CacheableInt64);
-  bind(CacheableInt64Array::createDeserializable,
-       GeodeTypeIds::CacheableInt64Array);
+       DSCode::CacheableLinkedHashSet);
+  bind(CacheableInt16::createDeserializable, DSCode::CacheableInt16);
+  bind(CacheableInt16Array::createDeserializable, DSCode::CacheableInt16Array);
+  bind(CacheableInt32::createDeserializable, DSCode::CacheableInt32);
+  bind(CacheableInt32Array::createDeserializable, DSCode::CacheableInt32Array);
+  bind(CacheableInt64::createDeserializable, DSCode::CacheableInt64);
+  bind(CacheableInt64Array::createDeserializable, DSCode::CacheableInt64Array);
   bind(CacheableObjectArray::createDeserializable,
-       GeodeTypeIds::CacheableObjectArray);
-  bind(CacheableString::createDeserializable, GeodeTypeIds::CacheableString);
-  bind(CacheableString::createDeserializableHuge,
-       GeodeTypeIds::CacheableString);
-  bind(CacheableString::createUTFDeserializable, GeodeTypeIds::CacheableString);
-  bind(CacheableString::createUTFDeserializableHuge,
-       GeodeTypeIds::CacheableString);
+       DSCode::CacheableObjectArray);
+  bind(CacheableString::createDeserializable, DSCode::CacheableString);
+  bind(CacheableString::createDeserializableHuge, DSCode::CacheableString);
+  bind(CacheableString::createUTFDeserializable, DSCode::CacheableString);
+  bind(CacheableString::createUTFDeserializableHuge, DSCode::CacheableString);
   bind(CacheableStringArray::createDeserializable,
-       GeodeTypeIds::CacheableStringArray);
-  bind(CacheableVector::createDeserializable, GeodeTypeIds::CacheableVector);
-  bind(CacheableArrayList::createDeserializable,
-       GeodeTypeIds::CacheableArrayList);
-  bind(CacheableLinkedList::createDeserializable,
-       GeodeTypeIds::CacheableLinkedList);
-  bind(CacheableStack::createDeserializable, GeodeTypeIds::CacheableStack);
-  bind(CacheableCharacter::createDeserializable,
-       GeodeTypeIds::CacheableCharacter);
-  bind(CharArray::createDeserializable, GeodeTypeIds::CharArray);
-  bind(CacheableToken::createDeserializable, GeodeTypeIds::CacheableToken);
-  bind(RegionAttributes::createDeserializable, GeodeTypeIds::RegionAttributes);
-  bind(Properties::createDeserializable, GeodeTypeIds::Properties);
+       DSCode::CacheableStringArray);
+  bind(CacheableVector::createDeserializable, DSCode::CacheableVector);
+  bind(CacheableArrayList::createDeserializable, DSCode::CacheableArrayList);
+  bind(CacheableLinkedList::createDeserializable, DSCode::CacheableLinkedList);
+  bind(CacheableStack::createDeserializable, DSCode::CacheableStack);
+  bind(CacheableCharacter::createDeserializable, DSCode::CacheableCharacter);
+  bind(CharArray::createDeserializable, DSCode::CharArray);
+  bind(CacheableToken::createDeserializable, DSCode::CacheableToken);
+  bind(RegionAttributes::createDeserializable, DSCode::RegionAttributes);
+  bind(Properties::createDeserializable, DSCode::Properties);
 
   bind2(CacheableUndefined::createDeserializable);
   bind2(EventId::createDeserializable);
@@ -144,8 +133,9 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
     typedTypeId = static_cast<DSCode>(compId);
   }
 
-  LOGDEBUG("SerializationRegistry::deserialize typeid = %d currentTypeId= %" PRId8,
-           typeId, typedTypeId);
+  LOGDEBUG(
+      "SerializationRegistry::deserialize typeid = %d currentTypeId= %" PRId8,
+      typeId, typedTypeId);
 
   switch (typedTypeId) {
     case DSCode::CacheableNullString: {
@@ -289,7 +279,7 @@ void SerializationRegistry::serializeWithoutHeader(
   pdxTypeHandler->serialize(obj, output);
 }
 
-void SerializationRegistry::addType(TypeFactoryMethod func, uint32_t id) {
+void SerializationRegistry::addType(TypeFactoryMethod func, int32_t id) {
   theTypeMap.bind(func, id);
 }
 
@@ -404,7 +394,7 @@ void TheTypeMap::find2(int64_t id, TypeFactoryMethod& func) const {
   m_map2->find(id, func);
 }
 
-void TheTypeMap::bind(TypeFactoryMethod func, uint32_t id) {
+void TheTypeMap::bind(TypeFactoryMethod func, int32_t id) {
   auto obj = func();
   int64_t compId;
 
