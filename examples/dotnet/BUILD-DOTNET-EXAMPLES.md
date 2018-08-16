@@ -19,7 +19,7 @@
     cd workspace\examples\dotnet
     mkdir build
     cd build
-    cmake .. -G"Visual Studio 14 2015 Win64" -DGeodeNative_ROOT="c:\Program Files\nativeclient"
+    cmake .. -G"Visual Studio 14 2015 Win64" -DGeodeNative_ROOT="<NC-install-root-dir>"
     ```
 The result is a Visual Studio solution for the .NET examples.
 1. Open the solution file, `examples.sln`, in [Visual Studio 2015](https://www.visualstudio.com/) or newer and build all projects.
