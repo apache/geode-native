@@ -394,7 +394,7 @@ void TheTypeMap::find2(int64_t id, TypeFactoryMethod& func) const {
   m_map2->find(id, func);
 }
 
-void TheTypeMap::bind(TypeFactoryMethod func, uint32_t id) {
+void TheTypeMap::bind(TypeFactoryMethod func, int32_t id) {
   auto obj = func();
   int64_t compId;
 

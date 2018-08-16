@@ -125,6 +125,10 @@ class TheTypeMap : private NonCopyable {
 
   void bind(TypeFactoryMethod func, int32_t id);
 
+  void bind(TypeFactoryMethod func, DSCode id) {
+    bind(func, static_cast<int32_t>(id));
+  }
+
   inline void rebind(int64_t compId, TypeFactoryMethod func);
 
   inline void unbind(int64_t compId);
@@ -255,7 +259,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   std::shared_ptr<Serializable> deserialize(DataInput& input,
                                             int8_t typeId = -1) const;
 
-  void addType(TypeFactoryMethod func, uint32_t id);
+  void addType(TypeFactoryMethod func, int32_t id);
 
   void addType(int64_t compId, TypeFactoryMethod func);
 
@@ -344,7 +348,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     auto id = typeIterator->second;
 
     typeid(*obj).name();
-    auto dsCode = getSerializableDataDsCode(id);
+    auto dsCode = getSerializableDataDsCode((int32_t)id);
 
     if (isDelta) {
       const Delta* ptr = dynamic_cast<const Delta*>(obj);
