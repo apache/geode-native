@@ -11,10 +11,10 @@ We then put, get, and remove some primitive data in the region.
 * `GEODE_HOME/bin` in the execution path.
 
 ## Running
-1. Set the current directory to the `put-get-remove` directory in the installed directory tree.
+1. Set the current directory to the `put-get-remove` directory in your example workspace.
 
   ```
-  $ cd <install-dir>/examples/cpp/put-get-remove
+  $ cd workspace/examples/cpp/put-get-remove
   ```
 
 1. Run the `startserver.sh` script to start the Geode server, create a region, and populate the region with sample data.

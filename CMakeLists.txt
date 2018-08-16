@@ -31,11 +31,11 @@ if(CMAKE_GENERATOR MATCHES Win64*)
     message(FATAL_ERROR "GEODE expects that a user must provide -Thost=x64 if you are using a"
             " 64-bit toolset, otherwise you may get a linker error when DLLs are larger"
             " than 2GB saying \"Unable to open file apache-geode-static.dll.\" This is due"
-            " to the 32bit toolset being used by default.")
+            " to Visual Studio using the 32-bit toolset by default.")
   endif()
 endif()
 
-set(BUILD_BITS 64 CACHE STRING "Build for 64 (default) or 32 bit.")
+set(BUILD_BITS 64 CACHE STRING "Build for 64 (Geode default) or 32 bit.")
 
 set(PRODUCT_VENDOR "Apache" CACHE STRING "Product vendor")
 set(PRODUCT_VENDOR_NAME "The Apache Software Foundation" CACHE STRING "Product vendor full legal name")

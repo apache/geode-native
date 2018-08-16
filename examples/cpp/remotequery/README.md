@@ -9,10 +9,10 @@ This is a simple example showing how to create and execute a remote query.
 * `GEODE_HOME/bin` in the execution path.
 
 ## Running
-1. Set the current directory to the `remotequery` directory in the installed directory tree.
+1. Set the current directory to the `remotequery` directory in your example workspace.
 
   ```
-  $ cd <install-dir>/examples/cpp/remotequery
+  $ cd workspace/examples/cpp/remotequery
   ```
 
 1. Run the `startserver.sh` script to start the Geode server, create a region, and populate the region with sample data.
