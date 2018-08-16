@@ -1,5 +1,5 @@
-# Remote Query Example
-This is a simple example showing how to create and execute a remote query.
+# PdxSerializable example
+This is a simple example showing how to register for serialization of custom objects using the PdxSerializable class.
 
 ## Prerequisites
 * An installation of Apache Geode.
@@ -9,10 +9,10 @@ This is a simple example showing how to create and execute a remote query.
 * `GEODE_HOME/bin` in the execution path.
 
 ## Running
-1. Set the current directory to the `remotequery` directory in your example workspace.
+1. Set the current directory to the `pdxserializable` directory in your example workspace.
 
   ```
-  $ cd workspace/examples/cpp/remotequery
+  $ cd workspace/examples/cpp/pdxserializable
   ```
 
 1. Run the `startserver.sh` script to start the Geode server, create a region, and populate the region with sample data.
@@ -32,17 +32,19 @@ This is a simple example showing how to create and execute a remote query.
   server | Region "/custom_orders" created on "server"
   ```
 
-1. Execute `remotequery`:
+1. Execute `pdxserializable`:
 
   ```
-  $ build/remotequery
+  $ build/pdxserializable
   Create orders
   Storing orders in the region
   Getting the orders from the region
-  The following orders have a quantity greater than 30:
-  OrderID: 2 Product Name: product y Quantity: 37
-  OrderID: 4 Product Name: product z Quantity: 102
-  OrderID: 6 Product Name: product z Quantity: 42
+  OrderID: 1
+  Product Name: product x
+  Quantity: 23
+  OrderID: 2
+  Product Name: product y
+  Quantity: 37
   ```
 
 1. Stop the server
