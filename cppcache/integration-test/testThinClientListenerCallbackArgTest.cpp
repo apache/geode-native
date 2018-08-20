@@ -222,8 +222,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1_Pool_Locator)
     auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
-    serializationRegistry->addType(Portfolio::createDeserializable, 2);
-    serializationRegistry->addType(Position::createDeserializable, 3);
+    serializationRegistry->addType(Portfolio::createDeserializable, 3);
+    serializationRegistry->addType(Position::createDeserializable, 2);
     reg1Listener1 = std::make_shared<CallbackListener>();
     callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
 
