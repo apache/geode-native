@@ -343,6 +343,21 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     typeid(*obj).name();
     auto dsCode = getSerializableDataDsCode((int32_t)id);
 
+    output.write(static_cast<int8_t>(dsCode));
+    switch (dsCode) {
+      case DSCode::CacheableUserData:
+        output.write(static_cast<int8_t>(id));
+        break;
+      case DSCode::CacheableUserData2:
+        output.writeInt(static_cast<int16_t>(id));
+        break;
+      case DSCode::CacheableUserData4:
+        output.writeInt(static_cast<int32_t>(id));
+        break;
+      default:
+        IllegalStateException("Invalid DS Code.");
+    }
+
     if (isDelta) {
       const Delta* ptr = dynamic_cast<const Delta*>(obj);
       ptr->toDelta(output);
