@@ -42,7 +42,9 @@ set(PRODUCT_VENDOR_NAME "The Apache Software Foundation" CACHE STRING "Product v
 set(PRODUCT_NAME "Geode Native" CACHE STRING "Product name")
 set(PRODUCT_VERSION "0.0.42-build.0" CACHE STRING "Product version")
 set(PRODUCT_PACKAGE_NAME "apache-geode-native" CACHE STRING "Product package name")
-
+set(PRODUCT_BUILDDATE "1970-01-01" CACHE STRING "Product build date")
+set(PRODUCT_SOURCE_REVISION "0000000000000000000000000000000000000000" CACHE STRING "Product source SHA")
+set(PRODUCT_SOURCE_REPOSITORY "<unspecified>" CACHE STRING "Product source branch")
 set(PRODUCT_BITS "${BUILD_BITS}bit")
 
 set(PRODUCT_LIB_NAME "apache-geode" CACHE STRING "Binary name")
