@@ -79,3 +79,7 @@ but the user has registered the class with the `registerType` API.
 
 <span class="tablecap">**Table 1.** Serialization Options—Comparison of Features</span>
 
+## Important points to remember when using DataSerializable
+
+1. Make sure to register the proper typeId when registering custom classes that have a corresponding server side jar (e.g. Portfolio and Position)
+2. Make sure to register any custom types in each process that uses those types. The cppcache framework uses four separate processes.
