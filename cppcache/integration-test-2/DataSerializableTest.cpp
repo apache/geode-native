@@ -149,7 +149,7 @@ TEST(DataSerializableTest, isSerializableAndDeserializable) {
   auto returnedArray = returnedObject->getCSArray();
   for(uint index = 0; index < 4; ++index)
   {
-      EXPECT_EQ(originalArray->operator[](index), returnedArray->operator[](index));
+      EXPECT_EQ(originalArray->operator[](index)->toString(), returnedArray->operator[](index)->toString());
   }
    
 }
