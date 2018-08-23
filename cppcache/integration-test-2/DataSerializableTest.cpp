@@ -102,6 +102,7 @@ class DataSerializableObject : public DataSerializable {
 
   std::string getName() { return name_; }
   std::shared_ptr<CacheableStringArray> getCSArray() { return csArray_; }
+  std::shared_ptr<Simple> getSimple() { return simple_; }
 
  private:
   std::string name_;
@@ -141,6 +142,15 @@ TEST(DataSerializableTest, isSerializableAndDeserializable) {
       region->get("objectOne"));
 
   ASSERT_NE(nullptr, returnedObject);
-  EXPECT_EQ(dsObject->toString(), returnedObject->toString());
+  EXPECT_EQ(dsObject->getName(), returnedObject->getName());
+  EXPECT_EQ(dsObject->getSimple()->getName(), returnedObject->getSimple()->getName());
+  EXPECT_EQ(dsObject->getSimple()->getAge(), returnedObject->getSimple()->getAge());
+  auto originalArray = dsObject->getCSArray();
+  auto returnedArray = returnedObject->getCSArray();
+  for(uint index = 0; index < 4; ++index)
+  {
+      EXPECT_EQ(originalArray->operator[](index), returnedArray->operator[](index));
+  }
+   
 }
 }  // namespace
