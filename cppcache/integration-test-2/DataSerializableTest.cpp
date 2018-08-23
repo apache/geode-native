@@ -147,7 +147,7 @@ TEST(DataSerializableTest, isSerializableAndDeserializable) {
   EXPECT_EQ(dsObject->getSimple()->getAge(), returnedObject->getSimple()->getAge());
   auto originalArray = dsObject->getCSArray();
   auto returnedArray = returnedObject->getCSArray();
-  for(uint index = 0; index < 4; ++index)
+  for(uint32_t index = 0; index < 4; ++index)
   {
       EXPECT_EQ(originalArray->operator[](index)->toString(), returnedArray->operator[](index)->toString());
   }
