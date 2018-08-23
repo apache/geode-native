@@ -110,6 +110,7 @@ set(CPACK_PACKAGING_INSTALL_PREFIX "/${CPACK_PACKAGE_NAME}")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/dist/LICENSE")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
 set(CPACK_GENERATOR TGZ;ZIP)
+set(CPACK_PACKAGE_CHECKSUM "SHA512")
 
 # Build a comprehensive list of things to leave out of the cpack package for our
 # source code releases.  Use .gitignore as a base, then use '.cpackignore' to
