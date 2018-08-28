@@ -72,7 +72,7 @@ class OtherType : public DataSerializable {
   CData m_struct;
   int32_t m_classIdToReturn;
 
-  explicit OtherType() {
+  OtherType() {
     m_struct.a = 0;
     m_struct.b = 0;
     m_struct.c = 0;
@@ -156,10 +156,6 @@ DUNIT_TASK(Sender, SetupAndPutInts)
             ->getSerializationRegistry();
     serializationRegistry->addType(OtherType::createDeserializable,
                                    g_classIdToReturn);
-    // serializationRegistry->addType(OtherType::createDeserializable2,
-    //                               g_classIdToReturn2);
-    // serializationRegistry->addType(OtherType::createDeserializable4,
-    //                               g_classIdToReturn4);
 
     getHelper()->createPooledRegion("DistRegionAck", USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
@@ -177,9 +173,6 @@ DUNIT_TASK(Sender, SendCT)
     for (int32_t i = 0; i < 30; i += 3) {
       try {
         regionPtr->put(i, OtherType::uniqueCT(i));
-        // regionPtr->put(i + 1, OtherType::uniqueCT(i + 1,
-        // g_classIdToReturn2)); regionPtr->put(i + 2, OtherType::uniqueCT(i +
-        // 2, g_classIdToReturn4));
       } catch (const apache::geode::client::TimeoutException&) {
       }
     }
@@ -190,8 +183,6 @@ DUNIT_TASK(Sender, RValidateCT)
   {
     for (int32_t i = 0; i < 30; i += 3) {
       OtherType::validateCT(i, regionPtr->get(i));
-      // OtherType::validateCT(i + 1, regionPtr->get(i + 1));
-      // OtherType::validateCT(i + 2, regionPtr->get(i + 2));
     }
   }
 ENDTASK
