@@ -335,11 +335,10 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   inline void serialize(const DataSerializable* obj, DataOutput& output,
                         bool isDelta) const {
     auto&& type = obj->getType();
-    auto typeIterator = theTypeMap.typeToClassId.find(type);
-    auto id = typeIterator->second;
+    auto&& typeIterator = theTypeMap.typeToClassId.find(type);
+    auto&& id = typeIterator->second;
 
-    typeid(*obj).name();
-    auto dsCode = getSerializableDataDsCode((int32_t)id);
+    auto dsCode = getSerializableDataDsCode(id);
 
     output.write(static_cast<int8_t>(dsCode));
     switch (dsCode) {
@@ -418,7 +417,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
 
   [[noreturn]] void deserialize(DataInput& input,
                                 std::shared_ptr<PdxSerializable> obj) const;
-};  // namespace client
+};
 
 }  // namespace client
 }  // namespace geode

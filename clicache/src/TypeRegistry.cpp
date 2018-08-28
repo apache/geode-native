@@ -173,16 +173,12 @@ namespace Apache
         return retVal();
       }
 
-      void TypeRegistry::RegisterType(TypeFactoryMethod^ creationMethod, uint32_t id)
+      void TypeRegistry::RegisterType(TypeFactoryMethod^ creationMethod, int32_t id)
       {
         if (creationMethod == nullptr) {
           throw gcnew IllegalArgumentException("Serializable.RegisterType(): "
             "null TypeFactoryMethod delegate passed");
         }
-
-        //--------------------------------------------------------------
-
-       // int32_t classId;
 
         //adding user type as well in global builtin hashmap
         auto obj = creationMethod();

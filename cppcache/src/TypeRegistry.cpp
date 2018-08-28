@@ -26,7 +26,7 @@
 TypeRegistry::TypeRegistry(CacheImpl* cache) : m_cache(cache) {}
 
 void TypeRegistry::registerType(TypeFactoryMethod creationFunction,
-                                uint32_t id) {
+                                int32_t id) {
   m_cache->getSerializationRegistry()->addType(creationFunction, id);
 }
 

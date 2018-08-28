@@ -121,7 +121,7 @@ namespace Apache
         /// in registering the type; check <c>Utils::LastError</c> for more
         /// information in the latter case.
         /// </exception>
-        void RegisterType(TypeFactoryMethod^ creationMethod, uint32_t id);
+        void RegisterType(TypeFactoryMethod^ creationMethod, int32_t id);
 
       internal:
         void RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
