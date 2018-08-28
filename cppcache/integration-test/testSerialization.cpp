@@ -77,7 +77,8 @@ class OtherType : public DataSerializable {
   }
 
   void toData(DataOutput& output) const override {
-    output.writeBytes((uint8_t*)&m_struct, sizeof(CData));
+    // TODO: refactor - this insane
+    output.writeBytes(reinterpret_cast<const uint8_t*>(&m_struct), sizeof(CData));
     output.writeInt(m_classIdToReturn);
   }
 

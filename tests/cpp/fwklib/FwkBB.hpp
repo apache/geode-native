@@ -104,7 +104,7 @@ class FwkBBMessage {
     //        FWKINFO( "FwkBBMessage::fromMessageStream: " << data );
     char* str = const_cast<char*>(data.c_str());
     char* tag = strstr(str, BB_ID_TAG);
-    if (tag == NULL) {
+    if (!tag) {
       FWKEXCEPTION("Invalid BB message: " << data);
     }
     tag += 3;
@@ -113,7 +113,7 @@ class FwkBBMessage {
     setId(id);
 
     tag = strstr(str, BB_COMMAND_TAG);
-    if (tag == NULL) {
+    if (!tag) {
       FWKEXCEPTION("Invalid BB message: " << data);
     }
     tag += 3;
@@ -122,7 +122,7 @@ class FwkBBMessage {
     setCommand(cmd);
 
     tag = strstr(str, BB_RESULT_TAG);
-    if (tag != NULL) {
+    if (tag) {
       tag += 3;
       len = static_cast<int32_t>(strcspn(tag, "<"));
       std::string result(tag, len);
@@ -130,7 +130,7 @@ class FwkBBMessage {
     }
 
     tag = strstr(str, BB_PARAMETER_TAG);
-    while (tag != NULL) {
+    while (tag) {
       tag += 3;
       len = static_cast<int32_t>(strcspn(tag, "<"));
       std::string param(tag, len);

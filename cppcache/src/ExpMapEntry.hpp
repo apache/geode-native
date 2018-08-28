@@ -44,7 +44,6 @@ class APACHE_GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
     }
   }
 
- protected:
   // this constructor deliberately skips touching or initializing any members
   inline explicit ExpMapEntry(bool)
       : MapEntryImpl(true), ExpEntryProperties(true) {}
@@ -62,16 +61,15 @@ class APACHE_GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
 class APACHE_GEODE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
                                                  public VersionStamp {
  public:
-  virtual ~VersionedExpMapEntry() {}
-
-  virtual VersionStamp& getVersionStamp() { return *this; }
-
- protected:
-  inline explicit VersionedExpMapEntry(bool) : ExpMapEntry(true) {}
-
   inline VersionedExpMapEntry(ExpiryTaskManager* expiryTaskManager,
                               const std::shared_ptr<CacheableKey>& key)
       : ExpMapEntry(expiryTaskManager, key) {}
+
+  inline explicit VersionedExpMapEntry(bool) : ExpMapEntry(true) {}
+
+  virtual ~VersionedExpMapEntry() {}
+
+  virtual VersionStamp& getVersionStamp() { return *this; }
 
  private:
   // disabled

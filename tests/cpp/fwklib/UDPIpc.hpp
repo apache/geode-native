@@ -24,6 +24,7 @@
 #include "PerfFwk.hpp"
 #include "FwkLog.hpp"
 #include "GsRandom.hpp"
+#include "config.h"
 
 #include <ace/Task.h>
 #include <ace/Thread_Mutex.h>
@@ -100,7 +101,7 @@ class UDPMessage : public IPCMessage {
 
   void setSender(ACE_INET_Addr& addr) { m_sender = addr; }
 
-  bool receiveFrom(ACE_SOCK_Dgram& io, const ACE_Time_Value* timeout = NULL);
+  bool receiveFrom(ACE_SOCK_Dgram& io, const ACE_Time_Value* timeout = nullptr);
 
   bool sendTo(ACE_SOCK_Dgram& io, ACE_INET_Addr& who);
 
@@ -186,7 +187,9 @@ class UDPMessageQueues : public SharedTaskObject {
 
   UDPMessage* getOutbound() {
     UDPMessage* msg = m_outbound.dequeue();
-    if (msg != NULL) m_cntOutbound++;
+    if (msg) {
+      m_cntOutbound++;
+    }
     return msg;
   }
 
@@ -206,7 +209,8 @@ class Receiver : public ServiceTask {
 
  public:
   Receiver(UDPMessageQueues* shared, uint16_t port)
-      : ServiceTask(shared), m_basePort(port), m_listener(0), m_mutex() {
+      : ServiceTask(shared), m_basePort(port), m_mutex() {
+    m_listener = ACE_Thread_NULL;
     m_queues = dynamic_cast<UDPMessageQueues*>(m_shared);
   }
 
@@ -258,7 +262,7 @@ class Processor : public ServiceTask {
   int32_t doTask() {
     while (*m_run) {
       UDPMessage* msg = m_queues->getInbound();
-      if (msg != NULL) {
+      if (msg) {
         m_queues->putOutbound(msg);
       }
     }

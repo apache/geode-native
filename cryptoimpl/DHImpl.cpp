@@ -33,10 +33,10 @@
 #include <geode/internal/geode_globals.hpp>
 
 /*
-static DH * m_dh = NULL;
+static DH * m_dh = nullptr;
 static string m_skAlgo;
 static int    m_keySize = 0;
-static BIGNUM * m_pubKeyOther = NULL;
+static BIGNUM * m_pubKeyOther = nullptr;
 static unsigned char m_key[128] = {0};
 static std::vector<X509*> m_serverCerts;
 */
@@ -80,7 +80,7 @@ ASN1_SEQUENCE(
   *dhCtx = (void *)dhimpl;
 
   // ksPath can be null
-  if (dhimpl->m_dh != NULL || dhAlgo == NULL || strlen(dhAlgo) == 0) {
+  if (dhimpl->m_dh || !dhAlgo || strlen(dhAlgo) == 0) {
     return errorCode;
   }
 
@@ -99,15 +99,16 @@ ASN1_SEQUENCE(
 
   dhimpl->m_dh = DH_new();
 
-  const BIGNUM *pbn, *gbn;
-  DH_get0_pqg(dhimpl->m_dh, &pbn, NULL, &gbn);
-  BN_dec2bn((BIGNUM **)&pbn, dhP);
+  BIGNUM* pbn = nullptr;
+  BIGNUM* gbn = nullptr;
+  DH_get0_pqg(dhimpl->m_dh, const_cast<const BIGNUM**>(&pbn), nullptr, const_cast<const BIGNUM**>(&gbn));
+  BN_dec2bn(&pbn, dhP);
 
   LOGDH(" DHInit: P ptr is %p", pbn);
   LOGDH(" DHInit: G ptr is %p", gbn);
   LOGDH(" DHInit: length is %d", DH_get_length(dhimpl->m_dh));
 
-  BN_dec2bn((BIGNUM **)&gbn, dhG);
+  BN_dec2bn(&gbn, dhG);
 
   DH_set_length(dhimpl->m_dh, dhL);
 
@@ -130,25 +131,25 @@ ASN1_SEQUENCE(
 
   LOGDH(" Loading keystore...");
 
-  if (ksPath == NULL || strlen(ksPath) == 0) {
-    LOGDH("Property \"security-client-kspath\" 's value is NULL.");
+  if (ksPath == nullptr || strlen(ksPath) == 0) {
+    LOGDH("Property \"security-client-kspath\" 's value is nullptr.");
     return errorCode;
   }
-  FILE *keyStoreFP = NULL;
+  FILE *keyStoreFP = nullptr;
   keyStoreFP = fopen(ksPath, "r");
 
   LOGDH(" kspath is [%s]", ksPath);
   LOGDH(" keystore FILE ptr is %p", keyStoreFP);
 
   // Read from pem file and put into.
-  X509 *cert = NULL;
+  X509 *cert = nullptr;
   do {
-    cert = PEM_read_X509(keyStoreFP, NULL, NULL, NULL);
+    cert = PEM_read_X509(keyStoreFP, nullptr, nullptr, nullptr);
 
-    if (cert != NULL) {
+    if (cert != nullptr) {
       dhimpl->m_serverCerts.push_back(cert);
     }
-  } while (cert != NULL);
+  } while (cert != nullptr);
 
   LOGDH(" Total certificats imported # %zd", dhimpl->m_serverCerts.size());
 
@@ -160,9 +161,9 @@ ASN1_SEQUENCE(
 void gf_clearDhKeys(void *dhCtx) {
   DHImpl *dhimpl = reinterpret_cast<DHImpl *>(dhCtx);
 
-  if (dhimpl->m_dh != NULL) {
+  if (dhimpl->m_dh != nullptr) {
     DH_free(dhimpl->m_dh);
-    dhimpl->m_dh = NULL;
+    dhimpl->m_dh = nullptr;
   }
 
   std::vector<X509 *>::const_iterator iter;
@@ -173,9 +174,9 @@ void gf_clearDhKeys(void *dhCtx) {
 
   dhimpl->m_serverCerts.clear();
 
-  if (dhimpl->m_pubKeyOther != NULL) {
+  if (dhimpl->m_pubKeyOther != nullptr) {
     BN_free(dhimpl->m_pubKeyOther);
-    dhimpl->m_pubKeyOther = NULL;
+    dhimpl->m_pubKeyOther = nullptr;
   }
 
   memset(dhimpl->m_key, 0, 128);
@@ -189,23 +190,23 @@ unsigned char *gf_getPublicKey(void *dhCtx, int *pLen) {
   const BIGNUM *pub_key, *priv_key;
   DH_get0_key(dhimpl->m_dh, &pub_key, &priv_key);
 
-  if (pub_key == NULL || pLen == NULL) {
-    return NULL;
+  if (pub_key == nullptr || pLen == nullptr) {
+    return nullptr;
   }
 
   int numBytes = BN_num_bytes(pub_key);
 
   if (numBytes <= 0) {
-    return NULL;
+    return nullptr;
   }
 
   EVP_PKEY *evppubkey = EVP_PKEY_new();
   LOGDH(" before assign DH ptr is %p\n", dhimpl->m_dh);
   EVP_PKEY_assign_DH(evppubkey, dhimpl->m_dh);
   LOGDH(" after assign DH ptr is %p\n", dhimpl->m_dh);
-  DH_PUBKEY *dhpubkey = NULL;
+  DH_PUBKEY *dhpubkey = nullptr;
   DH_PUBKEY_set(&dhpubkey, evppubkey);
-  int len = i2d_DH_PUBKEY(dhpubkey, NULL);
+  int len = i2d_DH_PUBKEY(dhpubkey, nullptr);
   unsigned char *pubkey = new unsigned char[len];
   unsigned char *temp = pubkey;
   //
@@ -230,13 +231,13 @@ void gf_setPublicKeyOther(void *dhCtx, const unsigned char *pubkey,
                           int length) {
   DHImpl *dhimpl = reinterpret_cast<DHImpl *>(dhCtx);
 
-  if (dhimpl->m_pubKeyOther != NULL) {
+  if (dhimpl->m_pubKeyOther != nullptr) {
     BN_free(dhimpl->m_pubKeyOther);
-    dhimpl->m_pubKeyOther = NULL;
+    dhimpl->m_pubKeyOther = nullptr;
   }
 
   const unsigned char *temp = pubkey;
-  DH_PUBKEY *dhpubkey = d2i_DH_PUBKEY(NULL, &temp, length);
+  DH_PUBKEY *dhpubkey = d2i_DH_PUBKEY(nullptr, &temp, length);
   LOGDH(" setPubKeyOther: after d2i_dhpubkey ptr is %p\n", dhpubkey);
   EVP_PKEY *evppkey = DH_PUBKEY_get(dhpubkey);
   LOGDH(" setPubKeyOther: after dhpubkey get evp ptr is %p\n", evppkey);
@@ -264,7 +265,7 @@ void gf_computeSharedSecret(void *dhCtx) {
   LOGDH("DHcomputeKey DHSize is %d", DH_size(dhimpl->m_dh));
   DH_compute_key(dhimpl->m_key, dhimpl->m_pubKeyOther, dhimpl->m_dh);
   LOGDH("DHcomputeKey : Compute err(%d): %s", ERR_get_error(),
-        ERR_error_string(ERR_get_error(), NULL));
+        ERR_error_string(ERR_get_error(), nullptr));
 }
 
 int DHImpl::setSkAlgo(const char *skalgo) {
@@ -333,7 +334,7 @@ const EVP_CIPHER *DHImpl::getCipherFunc() {
     return EVP_des_ede3_cbc();
   } else {
     LOGDH("ERROR: Unsupported DH Algorithm");
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -342,8 +343,8 @@ unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
   DHImpl *dhimpl = reinterpret_cast<DHImpl *>(dhCtx);
 
   // Validation
-  if (cleartext == NULL || len < 1 || retLen == NULL) {
-    return NULL;
+  if (cleartext == nullptr || len < 1 || retLen == nullptr) {
+    return nullptr;
   }
 
   LOGDH(" DH: gf_encryptDH using sk algo: %s, Keysize: %d",
@@ -359,23 +360,23 @@ unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
   // init openssl cipher context
   if (dhimpl->m_skAlgo == "AES") {
     int keySize = dhimpl->m_keySize > 128 ? dhimpl->m_keySize / 8 : 16;
-    EVP_EncryptInit_ex(ctx, cipherFunc, NULL, (unsigned char *)dhimpl->m_key,
+    EVP_EncryptInit_ex(ctx, cipherFunc, nullptr, (unsigned char *)dhimpl->m_key,
                        (unsigned char *)dhimpl->m_key + keySize);
   } else if (dhimpl->m_skAlgo == "Blowfish") {
     int keySize = dhimpl->m_keySize > 128 ? dhimpl->m_keySize / 8 : 16;
-    EVP_EncryptInit_ex(ctx, cipherFunc, NULL, NULL,
+    EVP_EncryptInit_ex(ctx, cipherFunc, nullptr, nullptr,
                        (unsigned char *)dhimpl->m_key + keySize);
     EVP_CIPHER_CTX_set_key_length(ctx, keySize);
     LOGDH("DHencrypt: BF keysize is %d", keySize);
-    EVP_EncryptInit_ex(ctx, NULL, NULL, (unsigned char *)dhimpl->m_key, NULL);
+    EVP_EncryptInit_ex(ctx, nullptr, nullptr, (unsigned char *)dhimpl->m_key, nullptr);
   } else if (dhimpl->m_skAlgo == "DESede") {
-    EVP_EncryptInit_ex(ctx, cipherFunc, NULL, (unsigned char *)dhimpl->m_key,
+    EVP_EncryptInit_ex(ctx, cipherFunc, nullptr, (unsigned char *)dhimpl->m_key,
                        (unsigned char *)dhimpl->m_key + 24);
   }
 
   if (!EVP_EncryptUpdate(ctx, ciphertext, &outlen, cleartext, len)) {
-    LOGDH(" DHencrypt: enc update ret NULL");
-    return NULL;
+    LOGDH(" DHencrypt: enc update ret nullptr");
+    return nullptr;
   }
   /* Buffer passed to EVP_EncryptFinal() must be after data just
    * encrypted to avoid overwriting it.
@@ -383,8 +384,8 @@ unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
   tmplen = 0;
 
   if (!EVP_EncryptFinal_ex(ctx, ciphertext + outlen, &tmplen)) {
-    LOGDH("DHencrypt: enc final ret NULL");
-    return NULL;
+    LOGDH("DHencrypt: enc final ret nullptr");
+    return nullptr;
   }
 
   outlen += tmplen;
@@ -402,8 +403,8 @@ unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
   DHImpl *dhimpl = reinterpret_cast<DHImpl *>(dhCtx);
 
   // Validation
-  if (cleartext == NULL || len < 1 || retLen == NULL) {
-    return NULL;
+  if (cleartext == nullptr || len < 1 || retLen == nullptr) {
+    return nullptr;
   }
 
   LOGDH(" DH: gf_encryptDH using sk algo: %s, Keysize: %d",
@@ -419,23 +420,23 @@ unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
   // init openssl cipher context
   if (dhimpl->m_skAlgo == "AES") {
     int keySize = dhimpl->m_keySize > 128 ? dhimpl->m_keySize / 8 : 16;
-    EVP_DecryptInit_ex(ctx, cipherFunc, NULL, (unsigned char *)dhimpl->m_key,
+    EVP_DecryptInit_ex(ctx, cipherFunc, nullptr, (unsigned char *)dhimpl->m_key,
                        (unsigned char *)dhimpl->m_key + keySize);
   } else if (dhimpl->m_skAlgo == "Blowfish") {
     int keySize = dhimpl->m_keySize > 128 ? dhimpl->m_keySize / 8 : 16;
-    EVP_DecryptInit_ex(ctx, cipherFunc, NULL, NULL,
+    EVP_DecryptInit_ex(ctx, cipherFunc, nullptr, nullptr,
                        (unsigned char *)dhimpl->m_key + keySize);
     EVP_CIPHER_CTX_set_key_length(ctx, keySize);
     LOGDH("DHencrypt: BF keysize is %d", keySize);
-    EVP_DecryptInit_ex(ctx, NULL, NULL, (unsigned char *)dhimpl->m_key, NULL);
+    EVP_DecryptInit_ex(ctx, nullptr, nullptr, (unsigned char *)dhimpl->m_key, nullptr);
   } else if (dhimpl->m_skAlgo == "DESede") {
-    EVP_DecryptInit_ex(ctx, cipherFunc, NULL, (unsigned char *)dhimpl->m_key,
+    EVP_DecryptInit_ex(ctx, cipherFunc, nullptr, (unsigned char *)dhimpl->m_key,
                        (unsigned char *)dhimpl->m_key + 24);
   }
 
   if (!EVP_DecryptUpdate(ctx, ciphertext, &outlen, cleartext, len)) {
-    LOGDH(" DHencrypt: enc update ret NULL");
-    return NULL;
+    LOGDH(" DHencrypt: enc update ret nullptr");
+    return nullptr;
   }
   /* Buffer passed to EVP_EncryptFinal() must be after data just
    * encrypted to avoid overwriting it.
@@ -443,8 +444,8 @@ unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
   tmplen = 0;
 
   if (!EVP_DecryptFinal_ex(ctx, ciphertext + outlen, &tmplen)) {
-    LOGDH("DHencrypt: enc final ret NULL");
-    return NULL;
+    LOGDH("DHencrypt: enc final ret nullptr");
+    return nullptr;
   }
 
   outlen += tmplen;
@@ -460,7 +461,7 @@ unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
 // std::shared_ptr<CacheableBytes> decrypt(const uint8_t * ciphertext, int len)
 // {
 //  LOGDH("DH: Used unimplemented decrypt!");
-//  return NULL;
+//  return nullptr;
 //}
 
 bool gf_verifyDH(void *dhCtx, const char *subject,
@@ -470,10 +471,10 @@ bool gf_verifyDH(void *dhCtx, const char *subject,
 
   LOGDH(" In Verify - looking for subject %s", subject);
 
-  EVP_PKEY *evpkey = NULL;
-  X509 *cert = NULL;
+  EVP_PKEY *evpkey = nullptr;
+  X509 *cert = nullptr;
 
-  char *certsubject = NULL;
+  char *certsubject = nullptr;
 
   int32_t count = static_cast<int32_t>(dhimpl->m_serverCerts.size());
   if (count == 0) {
@@ -483,7 +484,7 @@ bool gf_verifyDH(void *dhCtx, const char *subject,
 
   for (int item = 0; item < count; item++) {
     certsubject = X509_NAME_oneline(
-        X509_get_subject_name(dhimpl->m_serverCerts[item]), NULL, 0);
+        X509_get_subject_name(dhimpl->m_serverCerts[item]), nullptr, 0);
 
     // Ignore first letter for comparision, openssl adds / before subject name
     // e.g. /CN=geode1
@@ -495,7 +496,7 @@ bool gf_verifyDH(void *dhCtx, const char *subject,
     }
   }
 
-  if (evpkey == NULL || cert == NULL) {
+  if (evpkey == nullptr || cert == nullptr) {
     *reason = DH_ERR_SUBJECT_NOT_FOUND;
     LOGDH("Certificate not found!");
     return false;
@@ -503,19 +504,19 @@ bool gf_verifyDH(void *dhCtx, const char *subject,
 
   const ASN1_OBJECT *macobj;
   const X509_ALGOR *algorithm = nullptr;
-  X509_ALGOR_get0(&macobj, NULL, NULL, algorithm);
+  X509_ALGOR_get0(&macobj, nullptr, nullptr, algorithm);
   if (algorithm == nullptr) {
     LOGDH("algo is null \n");
   }
 
   const EVP_MD *signatureDigest = EVP_get_digestbyobj(macobj);
   LOGDH("after EVP_get_digestbyobj  :  err(%d): %s", ERR_get_error(),
-        ERR_error_string(ERR_get_error(), NULL));
+        ERR_error_string(ERR_get_error(), nullptr));
   EVP_MD_CTX *signatureCtx = EVP_MD_CTX_new();
 
-  int result1 = EVP_VerifyInit_ex(signatureCtx, signatureDigest, NULL);
+  int result1 = EVP_VerifyInit_ex(signatureCtx, signatureDigest, nullptr);
   LOGDH("after EVP_VerifyInit_ex ret %d : err(%d): %s", result1,
-        ERR_get_error(), ERR_error_string(ERR_get_error(), NULL));
+        ERR_get_error(), ERR_error_string(ERR_get_error(), nullptr));
   LOGDH(" Result of VerifyInit is %s \n", ERR_lib_error_string(result1));
   LOGDH(" Result of VerifyInit is %s \n", ERR_func_error_string(result1));
   LOGDH(" Result of VerifyInit is %s \n", ERR_reason_error_string(result1));
@@ -540,29 +541,29 @@ bool gf_verifyDH(void *dhCtx, const char *subject,
 }
 
 int DH_PUBKEY_set(DH_PUBKEY **x, EVP_PKEY *pkey) {
-  DH_PUBKEY *pk = NULL;
+  DH_PUBKEY *pk = nullptr;
   X509_ALGOR *a;
   ASN1_OBJECT *o;
-  unsigned char *s, *p = NULL;
+  unsigned char *s, *p = nullptr;
   int i;
-  ASN1_INTEGER *asn1int = NULL;
+  ASN1_INTEGER *asn1int = nullptr;
   DH *dh = EVP_PKEY_get1_DH(pkey);
 
-  if (x == NULL) return (0);
+  if (x == nullptr) return (0);
 
-  if ((pk = DH_PUBKEY_new()) == NULL) goto err;
+  if ((pk = DH_PUBKEY_new()) == nullptr) goto err;
   a = pk->algor;
 
   LOGDH(" key type for OBJ NID is %d", EVP_PKEY_base_id(pkey));
 
   /* set the algorithm id */
-  if ((o = OBJ_nid2obj(EVP_PKEY_base_id(pkey))) == NULL) goto err;
+  if ((o = OBJ_nid2obj(EVP_PKEY_base_id(pkey))) == nullptr) goto err;
   ASN1_OBJECT_free(a->algorithm);
   a->algorithm = o;
 
   /* Set the parameter list */
   if (EVP_PKEY_base_id(pkey) == EVP_PKEY_RSA) {
-    if ((a->parameter == NULL) || (a->parameter->type != V_ASN1_NULL)) {
+    if ((a->parameter == nullptr) || (a->parameter->type != V_ASN1_NULL)) {
       ASN1_TYPE_free(a->parameter);
       if (!(a->parameter = ASN1_TYPE_new())) {
         X509err(X509_F_X509_PUBKEY_SET, ERR_R_MALLOC_FAILURE);
@@ -573,7 +574,7 @@ int DH_PUBKEY_set(DH_PUBKEY **x, EVP_PKEY *pkey) {
   } else if (EVP_PKEY_base_id(pkey) == EVP_PKEY_DH) {
     unsigned char *pp;
     ASN1_TYPE_free(a->parameter);
-    if ((i = i2d_DHparams(dh, NULL)) <= 0) goto err;
+    if ((i = i2d_DHparams(dh, nullptr)) <= 0) goto err;
     if (!(p = reinterpret_cast<unsigned char *>(OPENSSL_malloc(i)))) {
       X509err(X509_F_X509_PUBKEY_SET, ERR_R_MALLOC_FAILURE);
       goto err;
@@ -605,9 +606,9 @@ int DH_PUBKEY_set(DH_PUBKEY **x, EVP_PKEY *pkey) {
   const BIGNUM *pub_key, *priv_key;
   DH_get0_key(dh, &pub_key, &priv_key);
 
-  asn1int = BN_to_ASN1_INTEGER(pub_key, NULL);
-  if ((i = i2d_ASN1_INTEGER(asn1int, NULL)) <= 0) goto err;
-  if ((s = reinterpret_cast<unsigned char *>(OPENSSL_malloc(i + 1))) == NULL) {
+  asn1int = BN_to_ASN1_INTEGER(pub_key, nullptr);
+  if ((i = i2d_ASN1_INTEGER(asn1int, nullptr)) <= 0) goto err;
+  if ((s = reinterpret_cast<unsigned char *>(OPENSSL_malloc(i + 1))) == nullptr) {
     X509err(X509_F_X509_PUBKEY_SET, ERR_R_MALLOC_FAILURE);
     goto err;
   }
@@ -623,47 +624,47 @@ int DH_PUBKEY_set(DH_PUBKEY **x, EVP_PKEY *pkey) {
 
   OPENSSL_free(s);
 
-  if (*x != NULL) DH_PUBKEY_free(*x);
+  if (*x != nullptr) DH_PUBKEY_free(*x);
 
   *x = pk;
 
   return 1;
 err:
-  if (asn1int != NULL) ASN1_INTEGER_free(asn1int);
-  if (pk != NULL) DH_PUBKEY_free(pk);
+  if (asn1int != nullptr) ASN1_INTEGER_free(asn1int);
+  if (pk != nullptr) DH_PUBKEY_free(pk);
   return 0;
 }
 
 EVP_PKEY *DH_PUBKEY_get(DH_PUBKEY *key) {
-  EVP_PKEY *ret = NULL;
+  EVP_PKEY *ret = nullptr;
   long j;
   const unsigned char *p;
   const unsigned char *cp;
   X509_ALGOR *a;
-  ASN1_INTEGER *asn1int = NULL;
+  ASN1_INTEGER *asn1int = nullptr;
 
-  if (key == NULL) {
-    if (asn1int != NULL) ASN1_INTEGER_free(asn1int);
-    if (ret != NULL) EVP_PKEY_free(ret);
-    return (NULL);
+  if (key == nullptr) {
+    if (asn1int != nullptr) ASN1_INTEGER_free(asn1int);
+    if (ret != nullptr) EVP_PKEY_free(ret);
+    return (nullptr);
   }
 
-  if (key->pkey != NULL) {
+  if (key->pkey != nullptr) {
     EVP_PKEY_up_ref(key->pkey);
     return (key->pkey);
   }
 
-  if (key->public_key == NULL) {
-    if (asn1int != NULL) ASN1_INTEGER_free(asn1int);
-    if (ret != NULL) EVP_PKEY_free(ret);
-    return (NULL);
+  if (key->public_key == nullptr) {
+    if (asn1int != nullptr) ASN1_INTEGER_free(asn1int);
+    if (ret != nullptr) EVP_PKEY_free(ret);
+    return (nullptr);
   }
 
-  if ((ret = EVP_PKEY_new()) == NULL) {
+  if ((ret = EVP_PKEY_new()) == nullptr) {
     X509err(X509_F_X509_PUBKEY_DECODE, ERR_R_MALLOC_FAILURE);
-    if (asn1int != NULL) ASN1_INTEGER_free(asn1int);
-    if (ret != NULL) EVP_PKEY_free(ret);
-    return (NULL);
+    if (asn1int != nullptr) ASN1_INTEGER_free(asn1int);
+    if (ret != nullptr) EVP_PKEY_free(ret);
+    return (nullptr);
   }
 
   LOGDH(" DHPUBKEY evppkey type is %d", EVP_PKEY_base_id(ret));
@@ -676,17 +677,17 @@ EVP_PKEY *DH_PUBKEY_get(DH_PUBKEY *key) {
     if (a->parameter && (a->parameter->type == V_ASN1_SEQUENCE)) {
       if ((EVP_PKEY_set1_DH(ret, DH_new())) == 0) {
         X509err(X509_F_X509_PUBKEY_DECODE, ERR_R_MALLOC_FAILURE);
-        if (asn1int != NULL) ASN1_INTEGER_free(asn1int);
-        if (ret != NULL) EVP_PKEY_free(ret);
-        return (NULL);
+        if (asn1int != nullptr) ASN1_INTEGER_free(asn1int);
+        if (ret != nullptr) EVP_PKEY_free(ret);
+        return (nullptr);
       }
       cp = p = a->parameter->value.sequence->data;
       j = a->parameter->value.sequence->length;
       DH *dh = EVP_PKEY_get1_DH(ret);
       if (!d2i_DHparams(&dh, &cp, j)) {
-        if (asn1int != NULL) ASN1_INTEGER_free(asn1int);
-        if (ret != NULL) EVP_PKEY_free(ret);
-        return (NULL);
+        if (asn1int != nullptr) ASN1_INTEGER_free(asn1int);
+        if (ret != nullptr) EVP_PKEY_free(ret);
+        return (nullptr);
       }
     }
   }
@@ -694,16 +695,16 @@ EVP_PKEY *DH_PUBKEY_get(DH_PUBKEY *key) {
   p = key->public_key->data;
   j = key->public_key->length;
 
-  asn1int = d2i_ASN1_INTEGER(NULL, &p, j);
+  asn1int = d2i_ASN1_INTEGER(nullptr, &p, j);
   LOGDH("after d2i asn1 integer ptr is %p", asn1int);
 
   DH *dh = EVP_PKEY_get1_DH(ret);
-  DH_set0_key(dh, ASN1_INTEGER_to_BN(asn1int, NULL), NULL);
+  DH_set0_key(dh, ASN1_INTEGER_to_BN(asn1int, nullptr), nullptr);
   // LOGDH(" after asn1int to bn ptr is %p", ret->pkey.dh->pub_key);
 
   key->pkey = ret;
   EVP_PKEY_up_ref(ret);
 
-  if (asn1int != NULL) ASN1_INTEGER_free(asn1int);
+  if (asn1int != nullptr) ASN1_INTEGER_free(asn1int);
   return (ret);
 }

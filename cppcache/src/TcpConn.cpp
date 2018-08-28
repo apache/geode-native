@@ -162,9 +162,9 @@ void TcpConn::listen(ACE_INET_Addr addr,
   int32_t retVal = 0;
   if (waitSeconds > std::chrono::microseconds::zero()) {
     ACE_Time_Value wtime(waitSeconds);
-    retVal = listener.accept(*m_io, 0, &wtime);
+    retVal = listener.accept(*m_io, nullptr, &wtime);
   } else {
-    retVal = listener.accept(*m_io, 0);
+    retVal = listener.accept(*m_io, nullptr);
   }
   if (retVal == -1) {
     char msg[256];

@@ -18,6 +18,7 @@
 #include "ClientProxyMembershipID.hpp"
 
 #include <ctime>
+#include <iostream>
 #include <string>
 #include <memory>
 
@@ -146,7 +147,7 @@ void ClientProxyMembershipID::initObjectVars(
   }
   writeVersion(Version::getOrdinal(), m_memID);
   size_t len;
-  char* buf = (char*)m_memID.getBuffer(&len);
+  char* buf = reinterpret_cast<char*>(const_cast<uint8_t*>(m_memID.getBuffer(&len)));
   m_memIDStr.append(buf, len);
 
   char PID[15] = {0};

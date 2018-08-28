@@ -39,7 +39,7 @@ class DummyCredentialGenerator3 : public CredentialGenerator {
   std::string getInitArgs(std::string workingDir, bool userMode) {
     std::string additionalArgs;
     char* buildDir = ACE_OS::getenv("BUILDDIR");
-    if (buildDir != NULL && workingDir.length() == 0) {
+    if (buildDir && workingDir.length() == 0) {
       workingDir = std::string(buildDir);
       workingDir += std::string("/framework/xml/Security/");
     }
@@ -87,14 +87,14 @@ class DummyCredentialGenerator3 : public CredentialGenerator {
 
   void getAllowedCredentialsForOps(opCodeList& opCodes,
                                    std::shared_ptr<Properties>& p,
-                                   stringList* regionNames = NULL) {
+                                   stringList* regionNames = nullptr) {
     XmlAuthzCredentialGenerator authz(id());
     authz.getAllowedCredentials(opCodes, p, regionNames);
   }
 
   void getDisallowedCredentialsForOps(opCodeList& opCodes,
                                       std::shared_ptr<Properties>& p,
-                                      stringList* regionNames = NULL) {
+                                      stringList* regionNames = nullptr) {
     XmlAuthzCredentialGenerator authz(id());
     authz.getDisallowedCredentials(opCodes, p, regionNames);
   }

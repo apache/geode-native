@@ -145,7 +145,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, PutData)
     for (int i = 1; i < 150; i++) {
       port = std::shared_ptr<Cacheable>(new PortfolioPdx(i, 150));
 
-      auto keyport = CacheableKey::create((char*)"port1-1");
+      auto keyport = CacheableKey::create("port1-1");
       regPtr0->put(keyport, port);
       SLEEP(100);  // sleep a while to allow server query to complete
     }
@@ -170,9 +170,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
     }
 
     auto cqAttr = CqAttributesFactory().create();
-
-    // char* qryStr = (char*)"select * from /Portfolios p where p.ID != 2";
-    // qry->execute();
 
     auto qryStr = "select * from /Portfolios where ID != 2";
     auto qry = qs->newCq(cqName, qryStr, cqAttr);

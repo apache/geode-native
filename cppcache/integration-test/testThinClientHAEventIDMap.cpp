@@ -59,7 +59,7 @@ class DupChecker : public CacheListener {
  public:
   DupChecker() : m_ops(0) {}
 
-  ~DupChecker() { m_map.clear(); }
+  ~DupChecker() override { m_map.clear(); }
 
   void validate() {
     ASSERT(m_map.size() == 4, "Expected 4 keys for the region");
@@ -118,14 +118,14 @@ CacheHelper* getHelper() {
 void _verifyEntry(const char* name, const char* key, const char* val,
                   bool noKey, bool isCreated = false) {
   // Verify key and value exist in this region, in this process.
-  const char* value = (val == 0) ? "" : val;
+  const char* value = val ? val : "";
   char* buf =
       reinterpret_cast<char*>(malloc(1024 + strlen(key) + strlen(value)));
   ASSERT(buf, "Unable to malloc buffer for logging.");
   if (!isCreated) {
     if (noKey) {
       sprintf(buf, "Verify key %s does not exist in region %s", key, name);
-    } else if (val == 0) {
+    } else if (!val) {
       sprintf(buf, "Verify value for key %s does not exist in region %s", key,
               name);
     } else {

@@ -70,11 +70,11 @@ class XmlAuthzCredentialGenerator {
         Writers(WArr, WArr + sizeof WArr / sizeof *WArr),
         Query(QArr, QArr + sizeof QArr / sizeof *QArr),
         QueryRegions(QRArr, QRArr + sizeof QRArr / sizeof *QRArr) {
-    m_opCode = NULL;
-    m_regionNames = NULL;
-    m_prop = NULL;
+    m_opCode = nullptr;
+    m_regionNames = nullptr;
+    m_prop = nullptr;
     /* initialize random seed: */
-    srand(static_cast<unsigned int>(time(NULL)));
+    srand(static_cast<unsigned int>(time(nullptr)));
   }
   virtual ~XmlAuthzCredentialGenerator() { ; }
 
@@ -108,9 +108,9 @@ class XmlAuthzCredentialGenerator {
   }
 
   void reset() {
-    m_opCode = NULL;
-    m_regionNames = NULL;
-    m_prop = NULL;
+    m_opCode = nullptr;
+    m_regionNames = nullptr;
+    m_prop = nullptr;
   }
 
   virtual void getDisallowedCredentials(opCodeList& opCode,
@@ -291,21 +291,6 @@ class XmlAuthzCredentialGenerator {
       role = WRITER_ROLE;
     } else if (requireQuery) {
       role = QUERY_ROLE;
-      /*
-       if( m_regionNames != NULL && m_regionNames->size() > 0 ) {
-         bool queryUsers = true;
-         for( stringList::iterator rit = m_regionNames->begin(); rit !=
-       m_regionNames->end(); rit++) {
-            if( queryUsers && std::find(QueryRegions.begin(),
-       QueryRegions.end(),(*rit)) == QueryRegions.end() ) {
-              queryUsers = false;
-            }
-         }
-         if( queryUsers ) {
-           role = QUERY_ROLE;
-         }
-       }
-       */
     }
 
     return role;

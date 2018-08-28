@@ -93,22 +93,22 @@ class MyCqListener1 : public CqListener {
   static int m_cntEvents;
   void onEvent(const CqEvent& cqe) override {
     m_cntEvents++;
-    char* opStr = (char*)"Default";
+    const char* opStr = "Default";
     std::shared_ptr<CacheableInt32> value(
         std::dynamic_pointer_cast<CacheableInt32>(cqe.getNewValue()));
     std::shared_ptr<CacheableInt32> key(
         std::dynamic_pointer_cast<CacheableInt32>(cqe.getKey()));
     switch (cqe.getQueryOperation()) {
       case CqOperation::OP_TYPE_CREATE: {
-        opStr = (char*)"CREATE";
+        opStr = "CREATE";
         break;
       }
       case CqOperation::OP_TYPE_UPDATE: {
-        opStr = (char*)"UPDATE";
+        opStr = "UPDATE";
         break;
       }
       case CqOperation::OP_TYPE_DESTROY: {
-        opStr = (char*)"UPDATE";
+        opStr = "UPDATE";
         break;
       }
       default:
@@ -230,7 +230,7 @@ void RunDurableCqClient() {
 
   // create a new Cq Query
   const char* qryStr = "select * from /DistRegionAck ";
-  auto qry = qrySvcPtr->newCq((char*)"MyCq", qryStr, cqAttr, true);
+  auto qry = qrySvcPtr->newCq("MyCq", qryStr, cqAttr, true);
 
   LOGINFO("Created new CqQuery");
 

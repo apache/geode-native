@@ -62,7 +62,7 @@ class TestClient : public ACE_Task_Base {
   }
 
   inline ACE_Time_Value* getUntil(uint32_t seconds) {
-    ACE_Time_Value* until = 0;
+    ACE_Time_Value* until = nullptr;
     if (seconds != 0) {
       until = new ACE_Time_Value(seconds);
       *until += ACE_OS::gettimeofday();

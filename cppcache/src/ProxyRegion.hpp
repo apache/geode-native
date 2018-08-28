@@ -581,8 +581,6 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
   AuthenticatedView* m_authenticatedView;
   std::shared_ptr<RegionInternal> m_realRegion;
   friend class FunctionService;
-
-  _GEODE_FRIEND_STD_SHARED_PTR(ProxyRegion)
 };
 
 }  // namespace client

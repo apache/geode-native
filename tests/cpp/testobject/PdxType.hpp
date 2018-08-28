@@ -174,7 +174,7 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
   bool equals(CharTypes& other) const {
     LOGDEBUG("Inside CharTypes equals");
     CharTypes* ot = dynamic_cast<CharTypes*>(&other);
-    if (ot == NULL) {
+    if (!ot) {
       return false;
     }
     if (ot == this) {
@@ -247,7 +247,7 @@ class TESTOBJECT_EXPORT Address : public PdxSerializable {
   bool equals(Address& other) const {
     LOGDEBUG("Inside Address equals");
     Address* ot = dynamic_cast<Address*>(&other);
-    if (ot == NULL) {
+    if (!ot) {
       return false;
     }
     if (ot == this) {

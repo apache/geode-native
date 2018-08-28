@@ -79,7 +79,6 @@ class APACHE_GEODE_EXPORT CacheableObjectArray
 
   virtual size_t objectSize() const override;
 
- protected:
   /** Constructor, used for deserialization. */
   inline CacheableObjectArray() : std::vector<std::shared_ptr<Cacheable>>() {}
   /** Create a vector with n elements allocated. */
@@ -90,8 +89,6 @@ class APACHE_GEODE_EXPORT CacheableObjectArray
   // never implemented.
   CacheableObjectArray& operator=(const CacheableObjectArray& other) = delete;
   CacheableObjectArray(const CacheableObjectArray& other) = delete;
-
-  _GEODE_FRIEND_STD_SHARED_PTR(CacheableObjectArray)
 };
 
 }  // namespace client

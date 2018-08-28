@@ -346,7 +346,7 @@ ThinClientRegion::ThinClientRegion(
     const std::shared_ptr<RegionInternal>& rPtr, RegionAttributes attributes,
     const std::shared_ptr<CacheStatistics>& stats, bool shared)
     : LocalRegion(name, cacheImpl, rPtr, attributes, stats, shared),
-      m_tcrdm((ThinClientBaseDM*)0),
+      m_tcrdm(nullptr),
       m_notifyRelease(false),
       m_notificationSema(1),
       m_isMetaDataRefreshed(false) {
@@ -3689,7 +3689,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
     } else {
       result = value;
     }
-    if (m_resultCollectorLock.get() != 0) {
+    if (m_resultCollectorLock.get() != nullptr) {
       ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*m_resultCollectorLock);
       m_rc->addResult(result);
     } else {

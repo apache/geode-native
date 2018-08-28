@@ -118,7 +118,7 @@ DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer1)
         printf("Input to server cmd is -->  %s",
                cmdServerAuthenticator.c_str());
         CacheHelper::initServer(
-            1, NULL, locHostPort,
+            1, nullptr, locHostPort,
             const_cast<char*>(cmdServerAuthenticator.c_str()));
         LOG("Server1 started");
       }

@@ -44,13 +44,13 @@ namespace testframework {
 
 using util::concurrent::spinlock_mutex;
 
-static UdpIpc *g_test = NULL;
+static UdpIpc *g_test = nullptr;
 
 // ----------------------------------------------------------------------------
 
 TESTTASK initialize(const char *initArgs) {
   int32_t result = FWK_SUCCESS;
-  if (g_test == NULL) {
+  if (!g_test) {
     FWKINFO("Initializing Fwk library.");
     try {
       g_test = new UdpIpc(initArgs);
@@ -67,10 +67,10 @@ TESTTASK initialize(const char *initArgs) {
 TESTTASK finalize() {
   int32_t result = FWK_SUCCESS;
   FWKINFO("Finalizing Fwk library.");
-  if (g_test != NULL) {
+  if (g_test) {
     g_test->cacheFinalize();
     delete g_test;
-    g_test = NULL;
+    g_test = nullptr;
   }
   return result;
 }
@@ -163,7 +163,7 @@ void UdpIpc::doService() {
   }
 
   char *fqdn = ACE_OS::getenv("GF_FQDN");
-  if (fqdn == NULL) {
+  if (!fqdn) {
     FWKEXCEPTION("GF_FQDN not set in the environment.");
   }
 

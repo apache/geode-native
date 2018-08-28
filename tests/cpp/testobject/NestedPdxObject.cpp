@@ -55,7 +55,7 @@ bool ChildPdx::equals(ChildPdx& other) const {
   LOGINFO("ChildPdx::equals");
   ChildPdx* ot = dynamic_cast<ChildPdx*>(&other);
   // Cacheable* ot = dynamic_cast<Cacheable*>(&other);
-  if (ot == NULL) {
+  if (!ot) {
     LOGINFO("ChildPdx::equals1");
     return false;
   }

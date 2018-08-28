@@ -135,7 +135,7 @@ class CacheHelper {
       const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
       const std::chrono::seconds& rit = std::chrono::seconds::zero(),
       int lel = 0, ExpirationAction action = ExpirationAction::DESTROY,
-      const char* endpoints = 0, bool clientNotificationEnabled = false);
+      const char* endpoints = nullptr, bool clientNotificationEnabled = false);
 
   std::shared_ptr<Pool> createPool(
       const std::string& poolName, const char* locators,
@@ -188,7 +188,7 @@ class CacheHelper {
                                   bool poolLocators = true);
 
   std::shared_ptr<Region> createPooledRegion(
-      const char* name, bool ack, const char* locators = 0,
+      const char* name, bool ack, const char* locators = nullptr,
       const char* poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false,
       const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
@@ -200,7 +200,7 @@ class CacheHelper {
       ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createPooledRegionConcurrencyCheckDisabled(
-      const char* name, bool ack, const char* locators = 0,
+      const char* name, bool ack, const char* locators = nullptr,
       const char* poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false,
       bool concurrencyCheckEnabled = true,
@@ -222,7 +222,7 @@ class CacheHelper {
       int lel = 0, ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createPooledRegionDiscOverFlow(
-      const char* name, bool ack, const char* locators = 0,
+      const char* name, bool ack, const char* locators = nullptr,
       const char* poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false,
       const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
@@ -234,7 +234,7 @@ class CacheHelper {
       ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createPooledRegionSticky(
-      const char* name, bool ack, const char* locators = 0,
+      const char* name, bool ack, const char* locators = nullptr,
       const char* poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false,
       const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
@@ -246,7 +246,7 @@ class CacheHelper {
       ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createPooledRegionStickySingleHop(
-      const char* name, bool ack, const char* locators = 0,
+      const char* name, bool ack, const char* locators = nullptr,
       const char* poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false,
       const std::chrono::seconds& ettl = std::chrono::seconds::zero(),

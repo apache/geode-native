@@ -273,8 +273,6 @@ class CqQueryImpl : public CqQuery,
   void sendStopOrClose(TcrMessage::MsgType requestType);
   ThinClientBaseDM* m_tccdm;
   AuthenticatedView* m_authenticatedView;
-
-  _GEODE_FRIEND_STD_SHARED_PTR(CqQueryImpl)
 };
 
 }  // namespace client

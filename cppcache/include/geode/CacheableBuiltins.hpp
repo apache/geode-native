@@ -158,20 +158,17 @@ class APACHE_GEODE_EXPORT CacheableContainerType
 #pragma warning(disable : 4231)
 #endif
 
-#define _GEODE_CACHEABLE_KEY_TYPE_DEF_(p, k)                      \
-  extern const char tName_##k[];                                  \
+#define _GEODE_CACHEABLE_KEY_TYPE_DEF_(p, k)                \
+  extern const char tName_##k[];                            \
   template class CacheableKeyType<p, DSCode::k, tName_##k>; \
   typedef CacheableKeyType<p, DSCode::k, tName_##k> _##k;
 
 // use a class instead of typedef for bug #283
 #define _GEODE_CACHEABLE_KEY_TYPE_(p, k)                                \
   class APACHE_GEODE_EXPORT k : public _##k {                           \
-   protected:                                                           \
+   public:                                                              \
     inline k() : _##k() {}                                              \
     inline k(const p value) : _##k(value) {}                            \
-    _GEODE_FRIEND_STD_SHARED_PTR(k)                                     \
-                                                                        \
-   public:                                                              \
     /** Factory function registered with serialization registry. */     \
     static std::shared_ptr<Serializable> createDeserializable() {       \
       return std::make_shared<k>();                                     \
@@ -194,20 +191,17 @@ class APACHE_GEODE_EXPORT CacheableContainerType
     return k::create(value);                                            \
   }
 
-#define _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(p, c)           \
+#define _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(p, c)     \
   template class CacheableContainerType<p, DSCode::c>; \
   typedef CacheableContainerType<p, DSCode::c> _##c;
 
 // use a class instead of typedef for bug #283
 #define _GEODE_CACHEABLE_CONTAINER_TYPE_(p, c)                         \
   class APACHE_GEODE_EXPORT c : public _##c {                          \
-   protected:                                                          \
+   public:                                                             \
     inline c() : _##c() {}                                             \
     inline c(const int32_t n) : _##c(n) {}                             \
                                                                        \
-    _GEODE_FRIEND_STD_SHARED_PTR(c)                                    \
-                                                                       \
-   public:                                                             \
     /** Factory function registered with serialization registry. */    \
     static std::shared_ptr<Serializable> createDeserializable() {      \
       return std::make_shared<c>();                                    \
@@ -284,15 +278,15 @@ _GEODE_CACHEABLE_KEY_TYPE_(char16_t, CacheableCharacter)
 
 template <typename T, DSCode GeodeTypeId>
 class APACHE_GEODE_EXPORT CacheableArray : public DataSerializablePrimitive {
- protected:
+ public:
   inline CacheableArray() = default;
+  template <typename TT>
+  CacheableArray(TT&& value) : m_value(std::forward<TT>(value)) {}
 
+ protected:
   CacheableArray(const CacheableArray& other) = delete;
 
   CacheableArray& operator=(const CacheableArray& other) = delete;
-
-  template <typename TT>
-  CacheableArray(TT&& value) : m_value(std::forward<TT>(value)) {}
 
   virtual DSCode getDsCode() const override { return GeodeTypeId; }
 
@@ -302,8 +296,6 @@ class APACHE_GEODE_EXPORT CacheableArray : public DataSerializablePrimitive {
   }
 
  private:
-  _GEODE_FRIEND_STD_SHARED_PTR(CacheableArray)
-
   std::vector<T> m_value;
 
  public:
@@ -375,8 +367,7 @@ using CacheableDoubleArray =
  * An immutable wrapper for array of floats that can serve as
  * a distributable object for caching.
  */
-using CacheableFloatArray =
-    CacheableArray<float, DSCode::CacheableFloatArray>;
+using CacheableFloatArray = CacheableArray<float, DSCode::CacheableFloatArray>;
 
 /**
  * An immutable wrapper for array of 16-bit integers that can serve as

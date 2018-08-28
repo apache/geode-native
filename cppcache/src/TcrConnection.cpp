@@ -152,8 +152,8 @@ bool TcrConnection::InitTcrConnection(
     ClientProxyMembershipID* memId =
         endpointObj->getPoolHADM()->getMembershipId();
     uint32_t memIdBufferLength;
-    const char* memIdBuffer = memId->getDSMemberId(memIdBufferLength);
-    handShakeMsg.writeBytes((int8_t*)memIdBuffer, memIdBufferLength);
+    auto memIdBuffer = memId->getDSMemberId(memIdBufferLength);
+    handShakeMsg.writeBytes(reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)), memIdBufferLength);
   } else {
     ACE_TCHAR hostName[256];
     ACE_OS::hostname(hostName, sizeof(hostName) - 1);
@@ -169,10 +169,10 @@ bool TcrConnection::InitTcrConnection(
 
     // Write ClientProxyMembershipID serialized object.
     uint32_t memIdBufferLength;
-    const auto memId = cacheImpl->getClientProxyMembershipIDFactory().create(
+    auto memId = cacheImpl->getClientProxyMembershipIDFactory().create(
         hostName, hostAddr, hostPort, durableId.c_str(), durableTimeOut);
-    const auto memIdBuffer = memId->getDSMemberId(memIdBufferLength);
-    handShakeMsg.writeBytes((int8_t*)memIdBuffer, memIdBufferLength);
+    auto memIdBuffer = memId->getDSMemberId(memIdBufferLength);
+    handShakeMsg.writeBytes(reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)), memIdBufferLength);
   }
   handShakeMsg.writeInt((int32_t)1);
 
@@ -293,12 +293,12 @@ bool TcrConnection::InitTcrConnection(
     }
   }
 
-  size_t msgLengh;
-  char* data = (char*)handShakeMsg.getBuffer(&msgLengh);
+  size_t msgLength;
+  auto data = reinterpret_cast<char*>(const_cast<uint8_t*>(handShakeMsg.getBuffer(&msgLength)));
   LOGFINE("Attempting handshake with endpoint %s for %s%s connection", endpoint,
           isClientNotification ? (isSecondary ? "secondary " : "primary ") : "",
           isClientNotification ? "subscription" : "client");
-  ConnErrType error = sendData(data, msgLengh, connectTimeout, false);
+  ConnErrType error = sendData(data, msgLength, connectTimeout, false);
 
   if (error == CONN_NOERR) {
     auto acceptanceCode = readHandshakeData(1, connectTimeout);
@@ -358,10 +358,10 @@ bool TcrConnection::InitTcrConnection(
 
       auto sendCreds = cacheImpl->createDataOutput();
       ciphertext->toData(sendCreds);
-      size_t credLen;
-      char* credData = (char*)sendCreds.getBuffer(&credLen);
+      size_t credLength;
+      auto credData = reinterpret_cast<char*>(const_cast<uint8_t*>(sendCreds.getBuffer(&credLength)));
       // send the encrypted bytes and check the response
-      error = sendData(credData, credLen, connectTimeout, false);
+      error = sendData(credData, credLength, connectTimeout, false);
 
       if (error == CONN_NOERR) {
         acceptanceCode = readHandshakeData(1, connectTimeout);

@@ -803,7 +803,7 @@ std::string InvalidPdxUsage::toString() const {
 bool InvalidPdxUsage::equals(PdxTests::InvalidPdxUsage& other,
                              bool isPdxReadSerialized) const {
   InvalidPdxUsage* ot = dynamic_cast<InvalidPdxUsage*>(&other);
-  if (ot == NULL) {
+  if (!ot) {
     return false;
   }
   if (ot == this) {

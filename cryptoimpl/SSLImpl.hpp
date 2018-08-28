@@ -58,7 +58,7 @@ class SSLImpl : public apache::geode::client::Ssl {
  public:
   SSLImpl(ACE_HANDLE sock, const char* pubkeyfile, const char* privkeyfile,
           const char* password);
-  virtual ~SSLImpl();
+  virtual ~SSLImpl() override;
 
   int setOption(int, int, void*, int) override;
   int listen(ACE_INET_Addr, std::chrono::microseconds) override;

@@ -46,11 +46,11 @@ using namespace apache::geode::client::testframework;
 
 #endif  // WIN32
 
-FILE* TaskClient::m_pipe = (FILE*)0;
+FILE* TaskClient::m_pipe = nullptr;
 uint32_t TaskClient::m_refCnt = 0;
 
 void TaskClient::writePipe(const char* cmd) {
-  if (m_pipe == (FILE*)0) {
+  if (!m_pipe) {
     openPipe();
   }
   fwrite(cmd, 1, strlen(cmd), m_pipe);
@@ -64,7 +64,7 @@ void TaskClient::openPipe() {
 
   sprintf(cbuf, cmd, pid);
   m_pipe = popen(cbuf, MODE);
-  if (m_pipe == (FILE*)0) {
+  if (!m_pipe) {
     FWKEXCEPTION("Failed to open pipe, errno: " << errno);
   }
 }
@@ -79,7 +79,7 @@ void TaskClient::start() {
             m_testFile, m_logDirectory, m_port);
     writePipe(buf);
     ACE_SOCK_Stream* conn = new ACE_SOCK_Stream();
-    if (m_listener->accept(*conn, 0, new ACE_Time_Value(120)) == 0) {
+    if (m_listener->accept(*conn, nullptr, new ACE_Time_Value(120)) == 0) {
       FWKINFO("Client " << m_id << " connected.");
       m_ipc = new IpcHandler(conn);
     } else {
@@ -87,10 +87,10 @@ void TaskClient::start() {
       FWKEXCEPTION("Client " << m_id << " failed to register.");
     }
   } else {
-    if (m_program == NULL) {
+    if (!m_program) {
       FWKEXCEPTION("Program not specified for Client " << m_id);
     } else {
-      const char* args = (m_arguments == NULL) ? "" : m_arguments;
+      const char* args = m_arguments ? m_arguments : "";
       sprintf(buf, "goHost %s startClient %d %s %s %d \"%s\" \"%s\"\n", m_host,
               m_id, "none", m_logDirectory, 0, m_program, args);
       writePipe(buf);

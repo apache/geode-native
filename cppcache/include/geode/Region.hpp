@@ -1482,8 +1482,6 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   virtual ~Region();
 
   CacheImpl* m_cacheImpl;
-
-  _GEODE_FRIEND_STD_SHARED_PTR(Region)
 };
 
 }  // namespace client

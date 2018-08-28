@@ -47,8 +47,8 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
       m_maxConnections(cacheImpl->getDistributedSystem()
                            .getSystemProperties()
                            .connectionPoolSize()),
-      m_notifyConnection(0),
-      m_notifyReceiver(0),
+      m_notifyConnection(nullptr),
+      m_notifyReceiver(nullptr),
       m_numRegionListener(0),
       m_isQueueHosted(false),
       m_cacheImpl(cacheImpl),

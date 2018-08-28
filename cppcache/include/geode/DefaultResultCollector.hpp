@@ -41,7 +41,7 @@ namespace client {
 class APACHE_GEODE_EXPORT DefaultResultCollector : public ResultCollector {
  public:
   DefaultResultCollector();
-  virtual ~DefaultResultCollector() noexcept;
+  virtual ~DefaultResultCollector() noexcept override;
 
   virtual std::shared_ptr<CacheableVector> getResult(
       std::chrono::milliseconds timeout =

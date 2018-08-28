@@ -59,7 +59,7 @@ long ExpiryTaskManager::scheduleExpiryTask(ACE_Event_Handler* handler,
 
   ACE_Time_Value expTimeValue(expTime);
   ACE_Time_Value intervalValue(interval);
-  return m_reactor->schedule_timer(handler, 0, expTimeValue, intervalValue);
+  return m_reactor->schedule_timer(handler, nullptr, expTimeValue, intervalValue);
 }
 
 long ExpiryTaskManager::scheduleExpiryTask(ACE_Event_Handler* handler,
@@ -70,7 +70,7 @@ long ExpiryTaskManager::scheduleExpiryTask(ACE_Event_Handler* handler,
     m_reactor->cancel_timer(handler, 1);
   }
 
-  return m_reactor->schedule_timer(handler, 0, expTimeValue, intervalVal);
+  return m_reactor->schedule_timer(handler, nullptr, expTimeValue, intervalVal);
 }
 
 int ExpiryTaskManager::resetTask(ExpiryTaskManager::id_type id, uint32_t sec) {
@@ -79,7 +79,7 @@ int ExpiryTaskManager::resetTask(ExpiryTaskManager::id_type id, uint32_t sec) {
 }
 
 int ExpiryTaskManager::cancelTask(ExpiryTaskManager::id_type id) {
-  return m_reactor->cancel_timer(id, 0, 0);
+  return m_reactor->cancel_timer(id, nullptr, 0);
 }
 
 int ExpiryTaskManager::svc() {

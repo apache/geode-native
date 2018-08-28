@@ -44,8 +44,6 @@ class APACHE_GEODE_EXPORT CacheableString
   internal::DSCode m_type;
   mutable int m_hashcode;
 
-  _GEODE_FRIEND_STD_SHARED_PTR(CacheableString)
-
  public:
   void toData(DataOutput& output) const override;
 
@@ -113,7 +111,6 @@ class APACHE_GEODE_EXPORT CacheableString
 
   virtual size_t objectSize() const override;
 
- protected:
   /** Default constructor. */
   inline CacheableString(DSCode type = DSCode::CacheableASCIIString)
       : m_str(), m_type(type), m_hashcode(0) {}

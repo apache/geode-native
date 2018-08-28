@@ -72,7 +72,7 @@ long long ntohl64(long long value) {
 // ----------------------------------------------------------------------------
 
 int32_t TimeSync::svc() {
-  if (m_delta == NULL) {
+  if (!m_delta) {
     sendTimeSync();
   } else {
     recvTimeSync();

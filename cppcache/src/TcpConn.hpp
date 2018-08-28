@@ -87,7 +87,7 @@ class APACHE_GEODE_EXPORT TcpConn : public Connector {
   TcpConn(const char* ipaddr, std::chrono::microseconds waitSeconds,
           int32_t maxBuffSizePool);
 
-  virtual ~TcpConn() { close(); }
+  virtual ~TcpConn() override { close(); }
 
   // Close this tcp connection
   virtual void close() override;
