@@ -50,7 +50,7 @@ class ServiceTask {
   SharedTaskObject* m_shared;
 
  public:
-  ServiceTask(SharedTaskObject* shared) : m_run(NULL), m_shared(shared) {}
+  ServiceTask(SharedTaskObject* shared) : m_run(nullptr), m_shared(shared) {}
 
   virtual ~ServiceTask() {}
 
@@ -120,7 +120,7 @@ class SafeQueue {
       until += ACE_OS::gettimeofday();
       ;
       int32_t res = m_cond.wait(&until);
-      if (res == -1) return NULL;
+      if (res == -1) return nullptr;
     }
     return m_queue.delete_head();
   }

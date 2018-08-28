@@ -76,8 +76,6 @@ class APACHE_GEODE_EXPORT CacheableToken
 
   ~CacheableToken() override = default;
 
-  _GEODE_FRIEND_STD_SHARED_PTR(CacheableToken)
-
   inline bool isInvalid() { return m_value == INVALID; }
 
   inline bool isDestroyed() { return m_value == DESTROYED; }
@@ -116,9 +114,8 @@ class APACHE_GEODE_EXPORT CacheableToken
 
   virtual size_t objectSize() const override;
 
- protected:
-  CacheableToken(TokenType value);
   CacheableToken();  // used for deserialization.
+  CacheableToken(TokenType value);
 
  private:
   // never implemented.

@@ -71,7 +71,7 @@ class OperMonitor : public CacheListener {
     LOGINFO("Inside OperMonitor %d ", m_id);
   }
 
-  ~OperMonitor() { m_map.clear(); }
+  ~OperMonitor() override { m_map.clear(); }
 
   void validate(size_t keyCount, int eventcount, int durableValue,
                 int nonDurableValue) {

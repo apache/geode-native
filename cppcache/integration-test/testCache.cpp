@@ -29,17 +29,16 @@
 using namespace apache::geode::client;
 
 BEGIN_TEST(CacheFunction)
-  char* host_name = (char*)"TESTCACHE";
   const uint32_t totalSubRegions = 3;
-  char* regionName = (char*)"TESTCACHE_ROOT_REGION";
-  char* subRegionName1 = (char*)"TESTCACHE_SUB_REGION1";
-  char* subRegionName2 = (char*)"TESTCACHE_SUB_REGION2";
-  char* subRegionName21 = (char*)"TESTCACHE_SUB_REGION21";
+  const char* regionName = "TESTCACHE_ROOT_REGION";
+  const char* subRegionName1 = "TESTCACHE_SUB_REGION1";
+  const char* subRegionName2 = "TESTCACHE_SUB_REGION2";
+  const char* subRegionName21 = "TESTCACHE_SUB_REGION21";
   std::shared_ptr<Cache> cptr;
   if (cptr != nullptr) {
     std::cout << "cptr is not null" << std::endl;
   }
-  std::cout << "create Cache with name=" << host_name
+  std::cout << "create Cache with name=TESTCACHE"
             << " and unitialized system" << std::endl;
   auto cacheFactory = CacheFactory();
   cptr = std::make_shared<Cache>(cacheFactory.create());
@@ -58,7 +57,7 @@ BEGIN_TEST(CacheFunction)
     cacheImpl->createRegion(regionName, regionAttributes, rptr);
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
-    ASSERT(false, (char*)"attribute create failed");
+    ASSERT(false, "attribute create failed");
   }
   std::cout << "create Sub Region with name=" << subRegionName1 << std::endl;
   std::shared_ptr<Region> subRptr1;
@@ -66,7 +65,7 @@ BEGIN_TEST(CacheFunction)
     subRptr1 = rptr->createSubregion(subRegionName1, regionAttributes);
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
-    ASSERT(false, (char*)"subregion create failed");
+    ASSERT(false, "subregion create failed");
   }
   std::cout << "create Sub Region with name=" << subRegionName2 << std::endl;
   std::shared_ptr<Region> subRptr2;
@@ -74,7 +73,7 @@ BEGIN_TEST(CacheFunction)
     subRptr2 = rptr->createSubregion(subRegionName2, regionAttributes);
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
-    ASSERT(false, (char*)"subregion create failed");
+    ASSERT(false, "subregion create failed");
   }
   std::cout << "create Sub Region with name=" << subRegionName21
             << "inside region=" << subRegionName2 << std::endl;
@@ -83,7 +82,7 @@ BEGIN_TEST(CacheFunction)
     subRptr21 = subRptr2->createSubregion(subRegionName21, regionAttributes);
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
-    ASSERT(false, (char*)"subregion create failed");
+    ASSERT(false, "subregion create failed");
   }
   std::vector<std::shared_ptr<Region>> vr = rptr->subregions(true);
   std::cout << "  vr.size=" << vr.size() << std::endl;
@@ -119,10 +118,10 @@ BEGIN_TEST(CacheFunction)
     region = cptr->getRegion(root.c_str());
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
-    ASSERT(false, (char*)"getRegion");
+    ASSERT(false, "getRegion");
   }
   if (region == nullptr) {
-    ASSERT(false, (char*)"did not find it");
+    ASSERT(false, "did not find it");
   } else {
     std::cout << "found :" << region->getName() << std::endl;
   }
@@ -131,10 +130,10 @@ BEGIN_TEST(CacheFunction)
     region = cptr->getRegion(subRegion1.c_str());
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
-    ASSERT(false, (char*)"getRegion");
+    ASSERT(false, "getRegion");
   }
   if (region == nullptr) {
-    ASSERT(false, (char*)"did not find it");
+    ASSERT(false, "did not find it");
   } else {
     std::cout << "found :" << region->getName() << std::endl;
   }
@@ -143,10 +142,10 @@ BEGIN_TEST(CacheFunction)
     region = cptr->getRegion(subRegion21.c_str());
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
-    ASSERT(false, (char*)"getRegion");
+    ASSERT(false, "getRegion");
   }
   if (region == nullptr) {
-    ASSERT(false, (char*)"did not find it");
+    ASSERT(false, "did not find it");
   } else {
     std::cout << "found :" << region->getName() << std::endl;
   }
@@ -156,10 +155,10 @@ BEGIN_TEST(CacheFunction)
     region = cptr->getRegion(subRegion21.c_str());
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
-    ASSERT(false, (char*)"getRegion");
+    ASSERT(false, "getRegion");
   }
   if (region == nullptr) {
-    ASSERT(false, (char*)"did not find it");
+    ASSERT(false, "did not find it");
   } else {
     std::cout << "found :" << region->getName() << std::endl;
   }
@@ -169,11 +168,11 @@ BEGIN_TEST(CacheFunction)
     region = cptr->getRegion(notExist);
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;
-    ASSERT(false, (char*)"getRegion");
+    ASSERT(false, "getRegion");
   }
   if (region == nullptr) {
     std::cout << "not found !" << std::endl;
   } else {
-    ASSERT(false, (char*)"found it");
+    ASSERT(false, "found it");
   }
 END_TEST(CacheFunction)

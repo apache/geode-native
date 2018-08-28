@@ -57,10 +57,11 @@ class ClientHealthStats : public internal::DataSerializableFixedId_t<
   }
   ~ClientHealthStats() override = default;
 
+  ClientHealthStats();
+
  private:
   ClientHealthStats(int gets, int puts, int misses, int listCalls,
                     int numThreads, int64_t cpuTime, int cpus);
-  ClientHealthStats();
 
   int m_numGets;                // CachePerfStats.gets
   int m_numPuts;                // CachePerfStats.puts
@@ -70,8 +71,6 @@ class ClientHealthStats : public internal::DataSerializableFixedId_t<
   int64_t m_processCpuTime;     //
   int m_cpus;
   std::shared_ptr<CacheableDate> m_updateTime;  // Last updateTime
-
-  _GEODE_FRIEND_STD_SHARED_PTR(ClientHealthStats)
 };
 
 }  // namespace client

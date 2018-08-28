@@ -204,10 +204,10 @@ TEST(PdxInstanceTest, testPdxInstance) {
   EXPECT_EQ(1, cachePerfStats.getPdxInstanceDeserializations())
       << "pdxInstanceDeserialization should be equal to 1.";
 
-  EXPECT_EQ(0, cachePerfStats.getPdxInstanceCreations())
+  EXPECT_TRUE(cachePerfStats.getPdxInstanceCreations() == 0)
       << "pdxInstanceCreations should be equal to 0.";
 
-  EXPECT_EQ(0, cachePerfStats.getPdxInstanceDeserializationTime())
+  EXPECT_TRUE(cachePerfStats.getPdxInstanceDeserializationTime() == 0)
       << "pdxInstanceDeserializationTime should be equal to 0.";
 
   auto pdxTypeFromPdxTypeInstance =
@@ -225,7 +225,7 @@ TEST(PdxInstanceTest, testPdxInstance) {
   EXPECT_EQ(1, cachePerfStats.getPdxInstanceDeserializations())
       << "pdxInstanceDeserialization should be equal to 1.";
 
-  EXPECT_EQ(0, cachePerfStats.getPdxInstanceCreations())
+  EXPECT_TRUE(cachePerfStats.getPdxInstanceCreations() == 0)
       << "pdxInstanceCreations should be equal to 0.";
 
   EXPECT_LT(0, cachePerfStats.getPdxInstanceDeserializationTime())
@@ -257,7 +257,7 @@ TEST(PdxInstanceTest, testPdxInstance) {
 
   EXPECT_EQ(1, cachePerfStats.getPdxInstanceDeserializations())
       << "pdxInstanceDeserialization should be equal to 1.";
-  EXPECT_EQ(0, cachePerfStats.getPdxInstanceCreations())
+  EXPECT_TRUE(cachePerfStats.getPdxInstanceCreations() == 0)
       << "pdxInstanceCreations should be equal to 0.";
   EXPECT_LT(0, cachePerfStats.getPdxInstanceDeserializationTime())
       << "pdxInstanceDeserializationTime should be greater than 0.";

@@ -31,7 +31,7 @@ ConcurrentEntriesMap::ConcurrentEntriesMap(
     : EntriesMap(std::move(entryFactory)),
       m_expiryTaskManager(expiryTaskManager),
       m_concurrency(0),
-      m_segments((MapSegment*)0),
+      m_segments(nullptr),
       m_size(0),
       m_region(region),
       m_numDestroyTrackers(0),

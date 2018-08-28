@@ -40,7 +40,7 @@ void getNumOfEntries(std::shared_ptr<Region>& regionPtr, uint32_t num) {
   auto vecValues = regionPtr->values();
   printf("Values vector size is %zd\n", vecValues.size());
   printf("Num is %d\n", num);
-  ASSERT(vecValues.size() == num, (char*)"size of value vec and num not equal");
+  ASSERT(vecValues.size() == num, "size of value vec and num not equal");
 }
 
 void setAttributes(RegionAttributes regionAttributes,
@@ -234,11 +234,11 @@ void testEntryDestroy(std::shared_ptr<Region>& regionPtr, uint32_t num) {
       regionPtr->destroy(v.at(i));
     } catch (Exception& ex) {
       std::cout << ex.what() << std::endl;
-      ASSERT(false, (char*)"entry missing");
+      ASSERT(false, "entry missing");
     }
   }
   v = regionPtr->keys();
-  ASSERT(v.size() == num - 5, (char*)"size of key vec not equal");
+  ASSERT(v.size() == num - 5, "size of key vec not equal");
 }
 
 void testEntryInvalidate(std::shared_ptr<Region>& regionPtr, uint32_t num) {
@@ -251,11 +251,11 @@ void testEntryInvalidate(std::shared_ptr<Region>& regionPtr, uint32_t num) {
       regionPtr->invalidate(v.at(i));
     } catch (Exception& ex) {
       std::cout << ex.what() << std::endl;
-      ASSERT(false, (char*)"entry missing");
+      ASSERT(false, "entry missing");
     }
   }
   v = regionPtr->keys();
-  ASSERT(v.size() == num, (char*)"size of key vec not equal");
+  ASSERT(v.size() == num, "size of key vec not equal");
 }
 
 class PutThread : public ACE_Task_Base {

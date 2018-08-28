@@ -36,7 +36,7 @@ using namespace apache::geode::client;
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
-char* exFuncNameSendException = (char*)"executeFunction_SendException";
+const char* exFuncNameSendException = "executeFunction_SendException";
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};

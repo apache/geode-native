@@ -38,7 +38,7 @@ using namespace apache::geode::client;
 class CustomFixedPartitionResolver1 : public FixedPartitionResolver {
  public:
   CustomFixedPartitionResolver1() {}
-  ~CustomFixedPartitionResolver1() {}
+  ~CustomFixedPartitionResolver1() override {}
   const std::string& getName() override {
     static std::string name = "CustomFixedPartitionResolver1";
     LOG("CustomFixedPartitionResolver1::getName()");
@@ -86,7 +86,7 @@ auto cptr1 = std::make_shared<CustomFixedPartitionResolver1>();
 class CustomFixedPartitionResolver2 : public FixedPartitionResolver {
  public:
   CustomFixedPartitionResolver2() {}
-  ~CustomFixedPartitionResolver2() {}
+  ~CustomFixedPartitionResolver2() override {}
   const std::string& getName() override {
     static std::string name = "CustomFixedPartitionResolver2";
     LOG("CustomFixedPartitionResolver2::getName()");
@@ -134,7 +134,7 @@ auto cptr2 = std::make_shared<CustomFixedPartitionResolver2>();
 class CustomFixedPartitionResolver3 : public FixedPartitionResolver {
  public:
   CustomFixedPartitionResolver3() {}
-  ~CustomFixedPartitionResolver3() {}
+  ~CustomFixedPartitionResolver3() override {}
   const std::string& getName() override {
     static std::string name = "CustomFixedPartitionResolver3";
     LOG("CustomFixedPartitionResolver3::getName()");

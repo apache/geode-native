@@ -46,17 +46,17 @@ const char* poolRegNames[] = {"partition_region", "PoolRegion2"};
 
 const char* serverGroup = "ServerGroup1";
 
-char* getFuncIName = (char*)"MultiGetFunctionI";
-char* putFuncIName = (char*)"MultiPutFunctionI";
-char* getFuncName = (char*)"MultiGetFunction";
-char* putFuncName = (char*)"MultiPutFunction";
-char* rjFuncName = (char*)"RegionOperationsFunction";
-char* exFuncName = (char*)"ExceptionHandlingFunction";
-char* exFuncNameSendException = (char*)"executeFunction_SendException";
-char* exFuncNamePdxType = (char*)"PdxFunctionTest";
-char* FEOnRegionPrSHOP = (char*)"FEOnRegionPrSHOP";
-char* FEOnRegionPrSHOP_OptimizeForWrite =
-    (char*)"FEOnRegionPrSHOP_OptimizeForWrite";
+const char* getFuncIName = "MultiGetFunctionI";
+const char* putFuncIName = "MultiPutFunctionI";
+const char* getFuncName = "MultiGetFunction";
+const char* putFuncName = "MultiPutFunction";
+const char* rjFuncName = "RegionOperationsFunction";
+const char* exFuncName = "ExceptionHandlingFunction";
+const char* exFuncNameSendException = "executeFunction_SendException";
+const char* exFuncNamePdxType = "PdxFunctionTest";
+const char* FEOnRegionPrSHOP = "FEOnRegionPrSHOP";
+const char* FEOnRegionPrSHOP_OptimizeForWrite =
+    "FEOnRegionPrSHOP_OptimizeForWrite";
 
 class MyResultCollector : public DefaultResultCollector {
  public:

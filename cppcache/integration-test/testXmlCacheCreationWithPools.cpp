@@ -258,11 +258,10 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
 }
 
 int testXmlCacheCreationWithPools() {
-  char* host_name = (char*)"XML_CACHE_CREATION_TEST";
   auto cacheFactory = CacheFactory();
   std::shared_ptr<Cache> cptr;
 
-  std::cout << "create DistributedSytem with name=" << host_name << std::endl;
+  std::cout << "create DistributedSytem with name=XML_CACHE_CREATION_TEST" << std::endl;
   std::cout
       << "Create cache with the configurations provided in valid_cache_pool.xml"
       << std::endl;

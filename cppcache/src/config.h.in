@@ -41,4 +41,11 @@
 // TODO relace with CMake checks
 #define WITH_ACE_Select_Reactor 1
 
+// ACE_Thread is a pointer on MacOS *only*
+#if defined(_MACOSX)
+#define ACE_Thread_NULL nullptr
+#else
+#define ACE_Thread_NULL 0
+#endif
+
 #endif  // GEODE_CONFIG_H_

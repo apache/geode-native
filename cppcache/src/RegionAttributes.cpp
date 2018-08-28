@@ -293,7 +293,7 @@ void writeBool(DataOutput& out, bool field) {
 void readBool(DataInput& in, bool* field) { *field = in.read() ? true : false; }
 
 void writeString(DataOutput& out, const std::string& field) {
-  out.writeBytes((int8_t*)field.c_str(),
+  out.writeBytes(reinterpret_cast<int8_t*>(const_cast<char*>(field.c_str())),
                  static_cast<uint32_t>(field.length()) + 1);
 }
 

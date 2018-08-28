@@ -42,7 +42,7 @@ class LdapUserCredentialGenerator : public CredentialGenerator {
   std::string getInitArgs(std::string workingDir, bool) override {
     std::string additionalArgs;
     char* buildDir = ACE_OS::getenv("BUILDDIR");
-    if (buildDir != NULL && workingDir.length() == 0) {
+    if (buildDir != nullptr && workingDir.length() == 0) {
       workingDir = std::string(buildDir);
       workingDir += std::string("/framework/xml/Security/");
     }
@@ -52,18 +52,18 @@ class LdapUserCredentialGenerator : public CredentialGenerator {
 
     char* ldapSrv = ACE_OS::getenv("LDAP_SERVER");
     additionalArgs += std::string(" --J=-Dgemfire.security-ldap-server=") +
-                      (ldapSrv != NULL ? ldapSrv : "ldap");
+                      (ldapSrv != nullptr ? ldapSrv : "ldap");
 
     char* ldapRoot = ACE_OS::getenv("LDAP_BASEDN");
     additionalArgs +=
         std::string(" --J=\\\"-Dgemfire.security-ldap-basedn=") +
-        (ldapRoot != NULL ? ldapRoot
+        (ldapRoot != nullptr ? ldapRoot
                           : "ou=ldapTesting,dc=ldap,dc=apache,dc=org") +
         "\\\"";
 
     char* ldapSSL = ACE_OS::getenv("LDAP_USESSL");
     additionalArgs += std::string(" --J=-Dgemfire.security-ldap-usessl=") +
-                      (ldapSSL != NULL ? ldapSSL : "false");
+                      (ldapSSL != nullptr ? ldapSSL : "false");
 
     return additionalArgs;
   }
@@ -102,14 +102,14 @@ class LdapUserCredentialGenerator : public CredentialGenerator {
 
   void getAllowedCredentialsForOps(opCodeList& opCodes,
                                    std::shared_ptr<Properties>& p,
-                                   stringList* regionNames = NULL) override {
+                                   stringList* regionNames = nullptr) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getAllowedCredentials(opCodes, p, regionNames);
   }
 
   void getDisallowedCredentialsForOps(opCodeList& opCodes,
                                       std::shared_ptr<Properties>& p,
-                                      stringList* regionNames = NULL) override {
+                                      stringList* regionNames = nullptr) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getDisallowedCredentials(opCodes, p, regionNames);
   }

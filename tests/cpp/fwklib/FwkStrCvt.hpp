@@ -139,11 +139,11 @@ class FwkStrCvt {
   }
 
   /** @brief gets double value */
-  double toDouble() { return ACE_OS::strtod(m_sText.c_str(), 0); };
+  double toDouble() { return ACE_OS::strtod(m_sText.c_str(), nullptr); };
 
   /** @brief gets float value */
   float toFloat() {
-    return static_cast<float>(ACE_OS::strtod(m_sText.c_str(), 0));
+    return static_cast<float>(ACE_OS::strtod(m_sText.c_str(), nullptr));
   };
 
   /** @brief gets int32_t value */
@@ -193,8 +193,10 @@ class FwkStrCvt {
 
   /** @brief gets float value */
   static float toFloat(const char* value) {
-    if (value == NULL) return 0.0;
-    return static_cast<float>(ACE_OS::strtod(value, 0));
+    if (!value) {
+      return 0.0;
+    }
+    return static_cast<float>(ACE_OS::strtod(value, nullptr));
   };
 
   /** @brief gets float value */
@@ -207,8 +209,10 @@ class FwkStrCvt {
 
   /** @brief gets double value */
   static double toDouble(const char* value) {
-    if (value == NULL) return 0.0;
-    return ACE_OS::strtod(value, 0);
+    if (!value) {
+      return 0.0;
+    }
+    return ACE_OS::strtod(value, nullptr);
   };
 
   /** @brief gets double value */
@@ -221,7 +225,9 @@ class FwkStrCvt {
 
   /** @brief gets int32_t value */
   static int32_t toInt32(const char* value) {
-    if (value == NULL) return 0;
+    if (!value) {
+      return 0;
+    }
     return ACE_OS::atoi(value);
   };
 
@@ -235,7 +241,7 @@ class FwkStrCvt {
 
   /** @brief gets uint32_t value */
   static uint32_t toUInt32(const char* value) {
-    if (value == NULL) return 0;
+    if (!value) return 0;
     return static_cast<uint32_t>(ACE_OS::atoi(value));
   };
 
@@ -258,7 +264,7 @@ class FwkStrCvt {
   /** @brief gets uint64_t value */
   static uint64_t toUInt64(const char* value) {
     uint64_t uiValue = 0;
-    if (value == NULL) return uiValue;
+    if (!value) return uiValue;
     sscanf(value, UInt64_FMT, &uiValue);
     return uiValue;
   };
@@ -274,7 +280,9 @@ class FwkStrCvt {
   /** @brief gets int64_t value */
   static int64_t toInt64(const char* value) {
     int64_t iValue = 0;
-    if (value == NULL) return iValue;
+    if (!value) {
+      return iValue;
+    }
     sscanf(value, Int64_FMT, &iValue);
     return iValue;
   };
@@ -303,7 +311,9 @@ class FwkStrCvt {
 
   /** @brief gets bool value */
   static bool toBool(const char* value) {
-    if ((value != NULL) && ((*value == 't') || (*value == 'T'))) return true;
+    if (value && ((*value == 't') || (*value == 'T'))) {
+      return true;
+    }
     return false;
   }
 

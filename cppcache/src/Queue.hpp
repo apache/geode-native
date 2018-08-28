@@ -54,12 +54,12 @@ class APACHE_GEODE_EXPORT Queue {
   T* getUntil(uint32_t sec, uint32_t usec = 0) {
     T* mp = get();
 
-    if (mp == 0) {
+    if (mp == nullptr) {
       ACE_Time_Value interval(sec + usec / 1000000, usec % 1000000);
       ACE_Time_Value stopAt(ACE_OS::gettimeofday());
       stopAt += interval;
 
-      while (!m_closed && mp == 0 && ACE_OS::gettimeofday() < stopAt) {
+      while (!m_closed && mp == nullptr && ACE_OS::gettimeofday() < stopAt) {
         ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
         if (m_cond.wait(&stopAt) != -1) mp = getNoLock();
       }
@@ -131,7 +131,7 @@ class APACHE_GEODE_EXPORT Queue {
 
  private:
   inline T* getNoLock() {
-    T* mp = 0;
+    T* mp = nullptr;
 
     uint32_t queueSize = static_cast<uint32_t>(m_queue.size());
     if (queueSize > 0) {

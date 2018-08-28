@@ -149,13 +149,10 @@ class APACHE_GEODE_EXPORT Properties
   ~Properties() override = default;
   Properties(const Properties&) = delete;
   Properties& operator=(const Properties&) = delete;
+  Properties() = default;
 
  private:
   HashMapOfCacheable m_map;
-
-  Properties() = default;
-
-  _GEODE_FRIEND_STD_SHARED_PTR(Properties)
 };
 
 }  // namespace client

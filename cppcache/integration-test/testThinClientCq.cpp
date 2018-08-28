@@ -435,7 +435,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
        std::shared_ptr<CqListener> cqLstner(new MyCqListener1026);
        cqFac.addCqListener(cqLstner);
        auto cqAttr = cqFac.create();
-       auto qry = qs->newCq((char*)"1026_MyCq", qryStr, cqAttr);
+       auto qry = qs->newCq("1026_MyCq", qryStr, cqAttr);
 
        // execute Cq Query with initial Results
        auto resultsPtr = qry->executeWithInitialResults();

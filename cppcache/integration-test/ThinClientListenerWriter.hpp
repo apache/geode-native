@@ -53,7 +53,7 @@ class SimpleCacheListener : public CacheListener {
     LOGINFO("SimpleCacheListener contructor called");
   }
 
-  virtual ~SimpleCacheListener() {}
+  virtual ~SimpleCacheListener() override {}
   int getCreates() { return m_creates; }
 
   int getClears() { return m_clears; }

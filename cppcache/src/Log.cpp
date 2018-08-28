@@ -110,7 +110,7 @@ static int selector(const dirent* d) {
     size_t fileHyphenPos = tempname.find_last_of('-');
     if (fileHyphenPos != std::string::npos) {
       std::string buff1 = tempname.substr(0, fileHyphenPos);
-      if (ACE_OS::strstr(filebasename.c_str(), buff1.c_str()) == 0) {
+      if (strstr(filebasename.c_str(), buff1.c_str()) == nullptr) {
         return 0;
       }
       if (fileHyphenPos != actualHyphenPos) return 0;

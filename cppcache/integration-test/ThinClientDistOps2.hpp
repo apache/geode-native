@@ -160,7 +160,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
     // re-create region with caching enabled
     reg0->localDestroyRegion();
     reg0 = nullptr;
-    getHelper()->createPooledRegion(regionNames[0], USE_ACK, 0,
+    getHelper()->createPooledRegion(regionNames[0], USE_ACK, nullptr,
                                     "__TEST_POOL1__", true, true);
     reg0 = getHelper()->getRegion(_regionNames[0]);
     // check for IllegalArgumentException for empty key list

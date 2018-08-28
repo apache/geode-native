@@ -59,7 +59,7 @@ class StatisticsTypeImpl : public StatisticsType {
   StatisticsTypeImpl(std::string name, std::string description,
                      StatisticDescriptor** stats, int32_t statsLength);
 
-  ~StatisticsTypeImpl();
+  ~StatisticsTypeImpl() override;
 
   ////////////////  StatisticsType(Base class) Methods ///////////////////
 

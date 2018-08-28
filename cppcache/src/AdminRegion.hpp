@@ -61,17 +61,14 @@ class AdminRegion : private NonCopyable,
                        const std::shared_ptr<Cacheable>& valuePtr);
   TcrConnectionManager* getConnectionManager();
 
+ public:
   AdminRegion()
       : m_distMngr(nullptr),
         m_fullPath("/__ADMIN_CLIENT_HEALTH_MONITORING__"),
         m_connectionMgr(nullptr),
         m_destroyPending(false) {}
-
   ~AdminRegion();
 
-  _GEODE_FRIEND_STD_SHARED_PTR(AdminRegion)
-
- public:
   static std::shared_ptr<AdminRegion> create(
       CacheImpl* cache, ThinClientBaseDM* distMan = nullptr);
   ACE_RW_Thread_Mutex& getRWLock();

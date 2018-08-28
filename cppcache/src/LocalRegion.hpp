@@ -130,7 +130,7 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
               RegionAttributes attributes,
               const std::shared_ptr<CacheStatistics>& stats,
               bool enableTimeStatistics = true);
-  virtual ~LocalRegion();
+  virtual ~LocalRegion() override;
 
   const std::string& getName() const override;
   const std::string& getFullPath() const override;

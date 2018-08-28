@@ -56,13 +56,13 @@ std::string REGIONSBB("Regions");
 std::string CLIENTSBB("ClientsBb");
 std::string READYCLIENTS("ReadyClients");
 
-Security *g_test = NULL;
+Security *g_test = nullptr;
 
 // ----------------------------------------------------------------------------
 
 TESTTASK initialize(const char *initArgs) {
   int32_t result = FWK_SUCCESS;
-  if (g_test == NULL) {
+  if (!g_test) {
     FWKINFO("Initializing Security library.");
     try {
       g_test = new Security(initArgs);
@@ -79,10 +79,10 @@ TESTTASK initialize(const char *initArgs) {
 TESTTASK finalize() {
   int32_t result = FWK_SUCCESS;
   FWKINFO("Finalizing Security library.");
-  if (g_test != NULL) {
+  if (g_test) {
     g_test->cacheFinalize();
     delete g_test;
-    g_test = NULL;
+    g_test = nullptr;
   }
   return result;
 }
@@ -92,7 +92,7 @@ TESTTASK finalize() {
 TESTTASK doCloseCache() {
   int32_t result = FWK_SUCCESS;
   FWKINFO("Closing cache, disconnecting from distributed system.");
-  if (g_test != NULL) {
+  if (g_test) {
     g_test->cacheFinalize();
   }
   return result;
@@ -356,12 +356,12 @@ server reports " << keys << " keys." );
 // ========================================================================
 
 void Security::clearKeys() {
-  if (m_KeysA != NULL) {
+  if (m_KeysA) {
     for (int32_t i = 0; i < m_MaxKeys; i++) {
       m_KeysA[i] = nullptr;
     }
     delete[] m_KeysA;
-    m_KeysA = NULL;
+    m_KeysA = nullptr;
     m_MaxKeys = 0;
   }
 }
@@ -433,7 +433,7 @@ int32_t Security::initValues(int32_t numKeys, int32_t siz, bool useDefault) {
     numKeys = 5000;
   }
 
-  if (m_CValue != NULL) {
+  if (m_CValue) {
     for (int32_t i = 0; i < m_MaxValues; i++) {
       m_CValue[i] = nullptr;
     }
@@ -742,7 +742,7 @@ std::shared_ptr<Region> Security::getRegionPtr(const char *reg) {
   std::shared_ptr<Region> region;
   std::string name;
 
-  if (reg == NULL) {
+  if (!reg) {
     name = getStringValue("regionName");
     if (name.empty()) {
       try {

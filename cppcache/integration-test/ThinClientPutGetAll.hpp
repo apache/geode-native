@@ -194,7 +194,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetAllAfterLocalDestroyRegionOnClientTwo)
     auto reg0 = getHelper()->getRegion(_regionNames[0]);
     reg0->localDestroyRegion();
     reg0 = nullptr;
-    getHelper()->createPooledRegion(regionNames[0], USE_ACK, 0,
+    getHelper()->createPooledRegion(regionNames[0], USE_ACK, nullptr,
                                     "__TEST_POOL1__", true, true);
     reg0 = getHelper()->getRegion(_regionNames[0]);
     verifyGetAll(reg0, _nvals, 0);

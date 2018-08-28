@@ -58,7 +58,9 @@ bool allSpace(std::string& str) {
 }
 
 int32_t traverseChildElements(const DOMNode* node) {
-  if (node == NULL) return 0;
+  if (!node) {
+    return 0;
+  }
   const DOMNode* child;
   int32_t count = 0;
   switch (node->getNodeType()) {
@@ -79,7 +81,7 @@ int32_t traverseChildElements(const DOMNode* node) {
         }
       }
       FWKINFO("------ Children of " << name);
-      for (child = node->getFirstChild(); child != NULL;
+      for (child = node->getFirstChild(); child!= nullptr;
            child = child->getNextSibling()) {
         count += traverseChildElements(child);
       }
@@ -87,7 +89,7 @@ int32_t traverseChildElements(const DOMNode* node) {
     } break;
     case DOMNode::TEXT_NODE: {
       //      DOMText * tnode = dynamic_cast< DOMText * > ( ( DOMNode * )node );
-      DOMText* tnode = (DOMText*)node;
+      const DOMText* tnode = dynamic_cast<const DOMText*>(node);
       std::string tname = XMLChToStr(tnode->getNodeName());
       std::string text = XMLChToStr(tnode->getNodeValue());
       std::string ftext = XMLChToStr(tnode->getNodeValue());
@@ -138,7 +140,7 @@ void TestDriver::fromXmlNode(const DOMNode* node) {
   //  int32_t count = traverseChildElements( node );
   //  FWKINFO( "Total of " << count << " elements." );
   DOMNode* child = node->getFirstChild();
-  while (child != NULL) {
+  while (child) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       std::string name = XMLChToStr(child->getNodeName());
       if (name == LOCALFILE_TAG) {
@@ -153,9 +155,9 @@ void TestDriver::fromXmlNode(const DOMNode* node) {
         addTest(new FwkTest(child));
       } else if (name == HOSTGROUP_TAG) {
         DOMNamedNodeMap* map = child->getAttributes();
-        if (map != NULL) {
+        if (map) {
           DOMNode* tag = map->getNamedItem(StrToXMLCh("tag"));
-          if (tag != NULL) {
+          if (tag) {
             addHostGroup(XMLChToStr(tag->getNodeValue()));
           }
         }
@@ -169,30 +171,30 @@ FwkTest::FwkTest(const DOMNode* node) : m_waitTime(0), m_timesToRun(1) {
   //  FWKINFO( "Instantiate FwkTest" );
   //  traverseChildElements( node );
   DOMNamedNodeMap* map = node->getAttributes();
-  if (map != NULL) {
+  if (map) {
     DOMNode* nameNode = map->getNamedItem(StrToXMLCh("name"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setName(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("waitTime"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setWaitTime(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("description"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setDescription(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("timesToRun"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setTimesToRun(XMLChToStr(nameNode->getNodeValue()));
     }
   }
 
   DOMNode* child = node->getFirstChild();
-  while (child != NULL) {
+  while (child) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       addTask(new FwkTask(child));
     }
@@ -206,14 +208,14 @@ void PersistManager::addProperty(const DOMNode* node) {
   DOMNamedNodeMap* map = node->getAttributes();
   std::string name;
   std::string value;
-  if (map != NULL) {
+  if (map) {
     DOMNode* nameNode = map->getNamedItem(StrToXMLCh("name"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       name = XMLChToStr(nameNode->getNodeValue());
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("value"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       value = XMLChToStr(nameNode->getNodeValue());
     }
     m_properties->insert(name.c_str(), value.c_str());
@@ -226,7 +228,7 @@ void PersistManager::addProperties(const DOMNode* node) {
   m_properties = Properties::create();
 
   DOMNode* child = node->getFirstChild();
-  while (child != NULL) {
+  while (child) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       std::string name = XMLChToStr(child->getNodeName());
       if (name == PROPERTY_TAG) {
@@ -241,20 +243,20 @@ PersistManager::PersistManager(const DOMNode* node) {
   //  FWKINFO( "Instantiate PersistManager" );
   //  traverseChildElements( node );
   DOMNamedNodeMap* map = node->getAttributes();
-  if (map != NULL) {
+  if (map) {
     DOMNode* nameNode = map->getNamedItem(StrToXMLCh("library"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setLibraryName(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("function"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setLibraryFunctionName(XMLChToStr(nameNode->getNodeValue()));
     }
   }
 
   DOMNode* child = node->getFirstChild();
-  while (child != NULL) {
+  while (child) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       std::string name = XMLChToStr(child->getNodeName());
       if (name == PROPERTIES_TAG) {
@@ -272,61 +274,61 @@ FwkTask::FwkTask(const DOMNode* node)
       m_parallel(false),
       m_timesRan(0),
       m_continue(false),
-      m_clientSet(NULL),
-      m_dataSet(NULL),
-      m_parent(NULL) {
+      m_clientSet(nullptr),
+      m_dataSet(nullptr),
+      m_parent(nullptr) {
   //  FWKINFO( "Instantiate FwkTask" );
   //  traverseChildElements( node );
   DOMNamedNodeMap* map = node->getAttributes();
-  if (map != NULL) {
+  if (map) {
     DOMNode* nameNode = map->getNamedItem(StrToXMLCh("name"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setName(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("action"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setAction(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("class"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setClass(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("container"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setContainer(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("waitTime"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setWaitTime(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("timesToRun"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setTimesToRun(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("threadCount"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setThreadCount(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("parallel"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setParallel(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("continueOnError"));
-    if (nameNode != NULL) {
+    if (nameNode) {
       setContinueOnError(XMLChToStr(nameNode->getNodeValue()));
     }
   }
 
   DOMNode* child = node->getFirstChild();
-  while (child != NULL) {
+  while (child) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       std::string name = XMLChToStr(child->getNodeName());
       if (name == CLIENTSET_TAG) {
@@ -343,26 +345,26 @@ LocalFile::LocalFile(const DOMNode* node) : m_append(false) {
   //  FWKINFO( "Instantiate LocalFile" );
   //  traverseChildElements( node );
   DOMNamedNodeMap* map = node->getAttributes();
-  if (map != NULL) {
+  if (map != nullptr) {
     DOMNode* nameNode = map->getNamedItem(StrToXMLCh("name"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setName(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("append"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setAppend(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("description"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setDescription(XMLChToStr(nameNode->getNodeValue()));
     }
   }
 
   bool done = false;
   DOMNode* child = node->getFirstChild();
-  while ((child != NULL) && !done) {
+  while ((child != nullptr) && !done) {
     if (child->getNodeType() == DOMNode::TEXT_NODE) {
       //      DOMText * tnode = dynamic_cast< DOMText * >( child );
       DOMText* tnode = (DOMText*)child;
@@ -388,9 +390,9 @@ FwkClientSet::FwkClientSet(const DOMNode* node)
   DOMNode* attNode;
   std::string name;
   DOMNamedNodeMap* map = node->getAttributes();
-  if (map != NULL) {
+  if (map != nullptr) {
     attNode = map->getNamedItem(StrToXMLCh("name"));
-    if (attNode != NULL) {
+    if (attNode != nullptr) {
       value = XMLChToStr(attNode->getNodeValue());
     }
   }
@@ -401,32 +403,32 @@ FwkClientSet::FwkClientSet(const DOMNode* node)
   }
   setName(name);
 
-  if (map != NULL) {
+  if (map != nullptr) {
     attNode = map->getNamedItem(StrToXMLCh("exclude"));
-    if (attNode != NULL) {
+    if (attNode != nullptr) {
       setExclude(XMLChToStr(attNode->getNodeValue()));
     }
     attNode = map->getNamedItem(StrToXMLCh("count"));
-    if (attNode != NULL) {
+    if (attNode != nullptr) {
       setCount(XMLChToStr(attNode->getNodeValue()));
     }
     attNode = map->getNamedItem(StrToXMLCh("begin"));
-    if (attNode != NULL) {
+    if (attNode != nullptr) {
       setBegin(XMLChToStr(attNode->getNodeValue()));
     }
     attNode = map->getNamedItem(StrToXMLCh("hostGroup"));
-    if (attNode != NULL) {
+    if (attNode != nullptr) {
       setHostGroup(XMLChToStr(attNode->getNodeValue()));
     }
     attNode = map->getNamedItem(StrToXMLCh("remaining"));
-    if (attNode != NULL) {
+    if (attNode != nullptr) {
       setRemaining(XMLChToStr(attNode->getNodeValue()));
     }
   }
 
   int32_t childCnt = 0;
   DOMNode* child = node->getFirstChild();
-  while (child != NULL) {
+  while (child != nullptr) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       addClient(new FwkClient(child));
       childCnt++;
@@ -446,15 +448,15 @@ FwkClientSet::FwkClientSet(const DOMNode* node)
 }
 
 FwkClient::FwkClient(const DOMNode* node)
-    : m_program(NULL), m_arguments(NULL), m_remaining(false) {
+    : m_program(nullptr), m_arguments(nullptr), m_remaining(false) {
   //  FWKINFO( "Instantiate FwkClient" );
   //  traverseChildElements( node );
   std::string value;
   DOMNode* attNode;
   DOMNamedNodeMap* map = node->getAttributes();
-  if (map != NULL) {
+  if (map != nullptr) {
     attNode = map->getNamedItem(StrToXMLCh("name"));
-    if (attNode != NULL) {
+    if (attNode != nullptr) {
       value = XMLChToStr(attNode->getNodeValue());
     }
   }
@@ -464,32 +466,32 @@ FwkClient::FwkClient(const DOMNode* node)
     setName(value);
   }
 
-  if (map != NULL) {
+  if (map != nullptr) {
     attNode = map->getNamedItem(StrToXMLCh("program"));
-    if (attNode != NULL) {
+    if (attNode != nullptr) {
       setProgram(XMLChToStr(attNode->getNodeValue()));
     }
     attNode = map->getNamedItem(StrToXMLCh("arguments"));
-    if (attNode != NULL) {
+    if (attNode != nullptr) {
       setArguments(XMLChToStr(attNode->getNodeValue()));
     }
   }
 }
 
-FwkRegion::FwkRegion(const DOMNode* node) : m_attributes(NULL) {
+FwkRegion::FwkRegion(const DOMNode* node) : m_attributes(nullptr) {
   //  FWKINFO( "Instantiate FwkRegion" );
   //  traverseChildElements( node );
   std::string name;
   DOMNamedNodeMap* map = node->getAttributes();
-  if (map != NULL) {
+  if (map != nullptr) {
     DOMNode* nameNode = map->getNamedItem(StrToXMLCh("name"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setName(XMLChToStr(nameNode->getNodeValue()));
     }
   }
 
   DOMNode* child = node->getFirstChild();
-  while (child != NULL) {
+  while (child != nullptr) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       setAttributes(new Attributes(child));
     }
@@ -502,49 +504,49 @@ Attributes::Attributes(const DOMNode* node)
   //  FWKINFO( "Instantiate Attributes" );
   //  traverseChildElements( node );
   DOMNamedNodeMap* map = node->getAttributes();
-  if (map != NULL) {
+  if (map != nullptr) {
     DOMNode* nameNode = map->getNamedItem(StrToXMLCh("caching-enabled"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setCachingEnabled(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("load-factor"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setLoadFactor(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("concurrency-level"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setConcurrencyLevel(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("lru-entries-limit"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setLruEntriesLimit(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("initial-capacity"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setInitialCapacity(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("pool-name"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setPoolName(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("cloning-enabled"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setCloningEnabled(XMLChToStr(nameNode->getNodeValue()));
     }
     nameNode = map->getNamedItem(StrToXMLCh("concurrency-checks-enabled"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setConcurrencyCheckEnabled(XMLChToStr(nameNode->getNodeValue()));
     }
   }
 
   DOMNode* child = node->getFirstChild();
-  while (child != NULL) {
+  while (child != nullptr) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       std::string name = XMLChToStr(child->getNodeName());
       if (name == REGIONTIMETOLIVE_TAG) {
@@ -579,7 +581,7 @@ FwkPool::FwkPool(const DOMNode* node)
   setAttributesToFactory(node);
 
   /*DOMNode * child = node->getFirstChild();
-  while ( child != NULL ) {
+  while ( child != nullptr ) {
     if ( child->getNodeType() == DOMNode::ELEMENT_NODE ) {
     }
     child = child->getNextSibling();
@@ -588,100 +590,100 @@ FwkPool::FwkPool(const DOMNode* node)
 
 void FwkPool::setAttributesToFactory(const DOMNode* node) {
   DOMNamedNodeMap* map = node->getAttributes();
-  if (map != NULL) {
+  if (map != nullptr) {
     DOMNode* nameNode = map->getNamedItem(StrToXMLCh("name"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setName(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("free-connection-timeout"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setFreeConnectionTimeout(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("idle-timeout"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setIdleTimeout(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("load-conditioning-interval"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setLoadConditioningInterval(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("max-connections"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setMaxConnections(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("min-connections"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setMinConnections(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("ping-interval"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setPingInterval(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("read-timeout"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setReadTimeout(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("retry-attempts"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setRetryAttempts(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("server-group"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setServerGroup(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("socket-buffer-size"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setSocketBufferSize(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("subscription-ack-interval"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setSubscriptionAckInterval(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("subscription-enabled"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setSubscriptionEnabled(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode =
         map->getNamedItem(StrToXMLCh("subscription-message-tracking-timeout"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setSubscriptionMessageTrackingTimeout(
           XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("subscription-redundancy"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setSubscriptionRedundancy(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("thread-local-connections"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setThreadLocalConnections(XMLChToStr(nameNode->getNodeValue()));
     }
     nameNode = map->getNamedItem(StrToXMLCh("pr-single-hop-enabled"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setPRSingleHopEnabled(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("locators"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setLocatorsFlag(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("servers"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setServersFlag(XMLChToStr(nameNode->getNodeValue()));
     }
   }
@@ -691,14 +693,14 @@ ActionPair::ActionPair(const DOMNode* node) {
   //  FWKINFO( "Instantiate ActionPair" );
   //  traverseChildElements( node );
   DOMNamedNodeMap* map = node->getAttributes();
-  if (map != NULL) {
+  if (map != nullptr) {
     DOMNode* nameNode = map->getNamedItem(StrToXMLCh("library"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setLibraryName(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("function"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setLibraryFunctionName(XMLChToStr(nameNode->getNodeValue()));
     }
   }
@@ -708,27 +710,27 @@ ExpiryAttributes* Attributes::getExpiryAttributes(const DOMNode* node) {
   //  FWKINFO( "Instantiate getExpiryAttributes" );
   //  traverseChildElements( node );
   DOMNode* child = node->getFirstChild();
-  while (child != NULL) {
+  while (child != nullptr) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       return new ExpiryAttributes(child);
     }
     child = child->getNextSibling();
   }
-  return NULL;
+  return nullptr;
 }
 
 ExpiryAttributes::ExpiryAttributes(const DOMNode* node) : m_timeout(0) {
   //  FWKINFO( "Instantiate ExpiryAttributes" );
   //  traverseChildElements( node );
   DOMNamedNodeMap* map = node->getAttributes();
-  if (map != NULL) {
+  if (map != nullptr) {
     DOMNode* nameNode = map->getNamedItem(StrToXMLCh("timeout"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setTimeout(XMLChToStr(nameNode->getNodeValue()));
     }
 
     nameNode = map->getNamedItem(StrToXMLCh("action"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       setAction(XMLChToStr(nameNode->getNodeValue()));
     }
   }
@@ -739,9 +741,9 @@ FwkDataSet::FwkDataSet(const DOMNode* node) {
   //  traverseChildElements( node );
   std::string name;
   DOMNamedNodeMap* map = node->getAttributes();
-  if (map != NULL) {
+  if (map != nullptr) {
     DOMNode* nameNode = map->getNamedItem(StrToXMLCh("name"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       name = XMLChToStr(nameNode->getNodeValue());
     }
   }
@@ -752,7 +754,7 @@ FwkDataSet::FwkDataSet(const DOMNode* node) {
   }
 
   DOMNode* child = node->getFirstChild();
-  while (child != NULL) {
+  while (child != nullptr) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       add(new FwkData(child));
     }
@@ -761,18 +763,18 @@ FwkDataSet::FwkDataSet(const DOMNode* node) {
 }
 
 FwkData::FwkData(const DOMNode* node)
-    : m_dataList(NULL),
-      m_dataOneof(NULL),
-      m_dataRange(NULL),
-      m_snippet(NULL),
-      m_dataType(DATA_TYPE_NULL) {
+    : m_dataList(nullptr),
+      m_dataOneof(nullptr),
+      m_dataRange(nullptr),
+      m_snippet(nullptr),
+      m_dataType(DATA_TYPE_nullptr) {
   //  FWKINFO( "Instantiate FwkData" );
   //  traverseChildElements( node );
   std::string name;
   DOMNamedNodeMap* map = node->getAttributes();
-  if (map != NULL) {
+  if (map != nullptr) {
     DOMNode* nameNode = map->getNamedItem(StrToXMLCh("name"));
-    if (nameNode != NULL) {
+    if (nameNode != nullptr) {
       name = XMLChToStr(nameNode->getNodeValue());
     }
   }
@@ -783,7 +785,7 @@ FwkData::FwkData(const DOMNode* node)
   }
 
   DOMNode* child = node->getFirstChild();
-  while ((child != NULL) && (m_dataType == DATA_TYPE_NULL)) {
+  while ((child != nullptr) && (m_dataType == DATA_TYPE_nullptr)) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       name = XMLChToStr(child->getNodeName());
       if (name == LIST_TAG) {
@@ -811,21 +813,21 @@ DataRange::DataRange(const DOMNode* node) {
   //  FWKINFO( "Instantiate DataRange" );
   //  traverseChildElements( node );
   DOMNamedNodeMap* map = node->getAttributes();
-  if (map != NULL) {
+  if (map != nullptr) {
     DOMNode* attNode = map->getNamedItem(StrToXMLCh("low"));
-    if (attNode != NULL) {
+    if (attNode != nullptr) {
       setLow(XMLChToStr(attNode->getNodeValue()));
     }
     attNode = map->getNamedItem(StrToXMLCh("high"));
-    if (attNode != NULL) {
+    if (attNode != nullptr) {
       setHigh(XMLChToStr(attNode->getNodeValue()));
     }
   }
 }
 
-DataSnippet::DataSnippet(const DOMNode* node) : m_region(NULL), m_pool(NULL) {
+DataSnippet::DataSnippet(const DOMNode* node) : m_region(nullptr), m_pool(nullptr) {
   DOMNode* child = node->getFirstChild();
-  while (child != NULL) {
+  while (child != nullptr) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       std::string name = XMLChToStr(child->getNodeName());
       if (name == REGION_TAG) {
@@ -843,12 +845,12 @@ DataList::DataList(const DOMNode* node) {
   //  traverseChildElements( node );
   // for all children, process ITEM_TAG elements
   DOMNode* child = node->getFirstChild();
-  while (child != NULL) {
+  while (child != nullptr) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       std::string tag = XMLChToStr(child->getNodeName());
       if (tag == ITEM_TAG) {  // now find all TEXT_NODE children of item
         DOMNode* tchild = child->getFirstChild();
-        while (tchild != NULL) {
+        while (tchild != nullptr) {
           if (tchild->getNodeType() == DOMNode::TEXT_NODE) {
             //            DOMText * tnode = dynamic_cast< DOMText * >( tchild );
             DOMText* tnode = (DOMText*)tchild;
@@ -870,12 +872,12 @@ DataOneof::DataOneof(const DOMNode* node) {
   //  traverseChildElements( node );
   // for all children, process ITEM_TAG elements
   DOMNode* child = node->getFirstChild();
-  while (child != NULL) {
+  while (child != nullptr) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       std::string tag = XMLChToStr(child->getNodeName());
       if (tag == ITEM_TAG) {  // now find all TEXT_NODE children of item
         DOMNode* tchild = child->getFirstChild();
-        while (tchild != NULL) {
+        while (tchild != nullptr) {
           if (tchild->getNodeType() == DOMNode::TEXT_NODE) {
             //            DOMText * tnode = dynamic_cast< DOMText * >( tchild );
             DOMText* tnode = (DOMText*)tchild;
@@ -925,15 +927,15 @@ TestDriver::TestDriver(const char* xmlfile) {
   DOMImplementation* domImpl =
       DOMImplementationRegistry::getDOMImplementation(ls);
 
-  if (domImpl == NULL) {
+  if (domImpl == nullptr) {
     FWKEXCEPTION("TestDriver::fromXmlFile() Failed to instantiate domImpl.");
   }
 
   DOMLSParser* builder =
       ((DOMImplementationLS*)domImpl)
-          ->createLSParser(DOMImplementationLS::MODE_SYNCHRONOUS, 0);
+          ->createLSParser(DOMImplementationLS::MODE_SYNCHRONOUS, nullptr);
 
-  if (builder == NULL) {
+  if (builder == nullptr) {
     FWKEXCEPTION(
         "TestDriver::fromXmlFile() Failed to instantiate dom builder.");
   }
@@ -955,7 +957,7 @@ TestDriver::TestDriver(const char* xmlfile) {
   builder->getDomConfig()->setParameter(XMLUni::fgDOMErrorHandler,
                                         &errorHandler);
 
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* doc = 0;
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* doc = nullptr;
 
   // Does the cache file exist?
   if (ACE_OS::access(xmlfile, F_OK) == -1) {
@@ -982,7 +984,7 @@ TestDriver::TestDriver(const char* xmlfile) {
   }
 
   DOMNode* node = (DOMNode*)doc->getDocumentElement();
-  if (node != NULL) {
+  if (node != nullptr) {
     fromXmlNode(node);
   }
 
@@ -1014,13 +1016,13 @@ const FwkDataSet* FwkTask::getDataSet(const char* name) const {
 
 /** brief Get FwkData pointer */
 const FwkData* FwkTask::getData(const char* name) const {
-  const FwkData* data = NULL;
+  const FwkData* data = nullptr;
 
   if (m_dataSet) {
     data = m_dataSet->find(name);
   }
 
-  if ((data == NULL) && m_parent) {  // ask our parent
+  if ((data == nullptr) && m_parent) {  // ask our parent
     data = m_parent->getData(name);
   }
 

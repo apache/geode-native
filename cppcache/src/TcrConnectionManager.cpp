@@ -185,7 +185,7 @@ void TcrConnectionManager::close() {
 
     m_redundancyManager->close();
     delete m_redundancyManager;
-    m_redundancyManager = 0;
+    m_redundancyManager = nullptr;
 
     removeHAEndpoints();
   }

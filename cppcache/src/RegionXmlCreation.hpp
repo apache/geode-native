@@ -73,7 +73,7 @@ class APACHE_GEODE_EXPORT RegionXmlCreation {
   /**
    * Creates a new <code>RegionCreation</code> with the given name.
    */
-  RegionXmlCreation(char* name, bool isRoot = false);
+  RegionXmlCreation(const char* name, bool isRoot = false);
 
   /**
    * Adds a subregion with the given name to this region

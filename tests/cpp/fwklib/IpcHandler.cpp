@@ -53,16 +53,18 @@ IpcHandler::~IpcHandler() {
 }
 
 void IpcHandler::close() {
-  if (m_io != 0) {
+  if (m_io) {
     m_io->close();
     delete m_io;
-    m_io = 0;
+    m_io = nullptr;
   }
 }
 
 bool IpcHandler::checkPipe() {
   static ACE_Time_Value next;
-  if (m_io == NULL) return false;
+  if (!m_io) {
+    return false;
+  }
   ACE_Time_Value now = ACE_OS::gettimeofday();
   if (next < now) {
     ACE_Time_Value interval(60);
@@ -113,23 +115,23 @@ int32_t IpcHandler::readInt(int32_t waitSeconds) {
 
 char *IpcHandler::checkBuffer(int32_t len) {
   static int32_t length = 512;
-  static char *buffer = NULL;
+  static char *buffer = nullptr;
 
   if (len == -12) {
     delete[] buffer;
-    buffer = NULL;
+    buffer = nullptr;
     return buffer;
   }
 
   if (length < len) {
     length = len + 32;
-    if (buffer != NULL) {
+    if (buffer != nullptr) {
       delete[] buffer;
-      buffer = NULL;
+      buffer = nullptr;
     }
   }
 
-  if (buffer == NULL) {
+  if (buffer == nullptr) {
     buffer = new char[length];
   }
 

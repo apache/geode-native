@@ -64,7 +64,7 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
                    const std::shared_ptr<CacheStatistics>& stats,
                    bool shared = false);
   virtual void initTCR();
-  virtual ~ThinClientRegion();
+  virtual ~ThinClientRegion() override;
 
   /** @brief Public Methods from Region
    */

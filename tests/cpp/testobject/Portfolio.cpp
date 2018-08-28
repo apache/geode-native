@@ -49,15 +49,15 @@ Portfolio::Portfolio(int32_t i, uint32_t size,
   memset(newVal, 'B', size);
   newVal[size] = '\0';
   newValSize = size;
-  creationDate = CacheableDate::create(time(NULL));
-  arrayNull = NULL;
-  arrayZeroSize = NULL;
+  creationDate = CacheableDate::create(time(nullptr));
+  arrayNull = nullptr;
+  arrayZeroSize = nullptr;
 }
 
 Portfolio::~Portfolio() noexcept {
-  if (newVal != NULL) {
+  if (newVal) {
     delete[] newVal;
-    newVal = NULL;
+    newVal = nullptr;
   }
 }
 

@@ -651,7 +651,7 @@ class QueryHelper {
   static QueryHelper* singleton;
 
   static QueryHelper& getHelper() {
-    if (singleton == NULL) {
+    if (!singleton) {
       singleton = new QueryHelper();
     }
     return *singleton;
@@ -675,7 +675,7 @@ class QueryHelper {
                                     int setSize, int numSets);
   virtual void populatePortfolioPdxData(std::shared_ptr<Region>& pregion,
                                         int setSize, int numSets,
-                                        int32_t objSize = 1, char** nm = NULL);
+                                        int32_t objSize = 1, char** nm = nullptr);
   virtual void populatePositionPdxData(std::shared_ptr<Region>& pregion,
                                        int setSize, int numSets);
   virtual void destroyPortfolioOrPositionData(std::shared_ptr<Region>& pregion,
@@ -782,7 +782,7 @@ class QueryHelper {
   int positionNumSets;
 };
 
-QueryHelper* QueryHelper::singleton = NULL;
+QueryHelper* QueryHelper::singleton = nullptr;
 
 //===========================================================================================
 
@@ -802,7 +802,7 @@ bool QueryHelper::compareTwoPositionObjects(
   Position* p1 = dynamic_cast<Position*>(pos1.get());
   Position* p2 = dynamic_cast<Position*>(pos2.get());
 
-  if (p1 == NULL || p2 == NULL) {
+  if (!p1 || !p2) {
     printf("ERROR: The object(s) passed are not of Portflio type\n");
     return false;
   }
@@ -1046,7 +1046,7 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
 
     Struct* siptr = dynamic_cast<Struct*>(ser.get());
 
-    if (siptr == NULL) {
+    if (!siptr) {
       LOGINFO("siptr is NULL \n\n");
       return false;
     }
