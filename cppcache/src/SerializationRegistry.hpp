@@ -73,11 +73,11 @@ typedef ACE_Hash_Map_Manager<std::string, TypeFactoryMethodPdx, ACE_Null_Mutex>
 
 class TheTypeMap : private NonCopyable {
  private:
-  IdToFactoryMap* m_map;
-  IdToFactoryMap* m_map2;  // to hold Fixed IDs since GFE 5.7.
+  IdToFactoryMap* m_UserDataSerializablesMap;
+  IdToFactoryMap* m_InternalsMap;
   StrToPdxFactoryMap* m_pdxTypemap;
-  mutable util::concurrent::spinlock_mutex m_mapLock;
-  mutable util::concurrent::spinlock_mutex m_map2Lock;
+  mutable util::concurrent::spinlock_mutex m_UserDataSerializablesMapLock;
+  mutable util::concurrent::spinlock_mutex m_InternalsMapLock;
   mutable util::concurrent::spinlock_mutex m_pdxTypemapLock;
 
  public:
@@ -85,10 +85,10 @@ class TheTypeMap : private NonCopyable {
 
  public:
   TheTypeMap() {
-    m_map = new IdToFactoryMap();
+    m_UserDataSerializablesMap = new IdToFactoryMap();
 
     // second map to hold internal Data Serializable Fixed IDs - since GFE 5.7
-    m_map2 = new IdToFactoryMap();
+    m_InternalsMap = new IdToFactoryMap();
 
     // map to hold PDX types <string, funptr>.
     m_pdxTypemap = new StrToPdxFactoryMap();
@@ -97,12 +97,12 @@ class TheTypeMap : private NonCopyable {
   }
 
   virtual ~TheTypeMap() {
-    if (m_map != nullptr) {
-      delete m_map;
+    if (m_UserDataSerializablesMap != nullptr) {
+      delete m_UserDataSerializablesMap;
     }
 
-    if (m_map2 != nullptr) {
-      delete m_map2;
+    if (m_InternalsMap != nullptr) {
+      delete m_InternalsMap;
     }
 
     if (m_pdxTypemap != nullptr) {
@@ -114,21 +114,21 @@ class TheTypeMap : private NonCopyable {
 
   void clear();
 
-  void find(int64_t id, TypeFactoryMethod& func) const;
+  void findSerializable(int32_t id, TypeFactoryMethod& func) const;
 
-  void find2(int64_t id, TypeFactoryMethod& func) const;
+  void findInternal(int32_t id, TypeFactoryMethod& func) const;
 
   void bind(TypeFactoryMethod func, int32_t id);
 
-  inline void rebind(int64_t compId, TypeFactoryMethod func);
+  inline void rebind(int32_t id, TypeFactoryMethod func);
 
-  inline void unbind(int64_t compId);
+  inline void unbind(int32_t id);
 
   inline void bind2(TypeFactoryMethod func);
 
-  inline void rebind2(int64_t compId, TypeFactoryMethod func);
+  inline void rebind2(int32_t idd, TypeFactoryMethod func);
 
-  inline void unbind2(int64_t compId);
+  inline void unbind2(int32_t id);
 
   inline void bindPdxType(TypeFactoryMethodPdx func);
 
@@ -252,7 +252,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
 
   void addType(TypeFactoryMethod func, int32_t id);
 
-  void addType(int64_t compId, TypeFactoryMethod func);
+  void addType(int32_t idd, TypeFactoryMethod func);
 
   void addPdxType(TypeFactoryMethodPdx func);
 
@@ -260,16 +260,16 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
 
   std::shared_ptr<PdxSerializer> getPdxSerializer();
 
-  void removeType(int64_t compId);
+  void removeType(int32_t id);
 
   // following for internal types with Data Serializable Fixed IDs  - since GFE
   // 5.7
 
   void addType2(TypeFactoryMethod func);
 
-  void addType2(int64_t compId, TypeFactoryMethod func);
+  void addType2(int32_t id, TypeFactoryMethod func);
 
-  void removeType2(int64_t compId);
+  void removeType2(int32_t id);
 
   int32_t GetPDXIdForType(Pool* pool,
                           std::shared_ptr<Serializable> pdxType) const;
