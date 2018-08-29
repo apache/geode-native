@@ -121,7 +121,7 @@ namespace Apache
         /// in registering the type; check <c>Utils::LastError</c> for more
         /// information in the latter case.
         /// </exception>
-        void RegisterType(TypeFactoryMethod^ creationMethod);
+        void RegisterType(TypeFactoryMethod^ creationMethod, int32_t id);
 
       internal:
         void RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
@@ -144,6 +144,12 @@ namespace Apache
         {
           TypeFactoryMethod^ ret = nullptr;
           ManagedDelegatesGeneric->TryGetValue(typeId, ret);
+          return ret;
+        }
+        System::Int32  GetIdForManagedType(System::String^ s)
+        {
+          System::Int32 ret;
+          ManagedTypeDelegates->TryGetValue(s, ret);
           return ret;
         }
 
@@ -229,6 +235,9 @@ namespace Apache
           gcnew List<TypeFactoryNativeMethodGeneric^>();
         Dictionary<UInt32, TypeFactoryMethod^>^ DelegateMapGeneric =
           gcnew Dictionary<UInt32, TypeFactoryMethod^>();
+
+        Dictionary<System::String^, System::Int32>^ ManagedTypeDelegates =
+          gcnew Dictionary<System::String^, System::Int32>();
 
         Dictionary<Byte, TypeFactoryMethod^>^ DsCodeToDataSerializablePrimitiveTypeFactoryMethod =
           gcnew Dictionary<Byte, TypeFactoryMethod^>();

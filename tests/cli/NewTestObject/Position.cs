@@ -225,17 +225,14 @@ namespace Apache.Geode.Client.Tests
       }
     }
 
-    public Int32 ClassId
+    public String Type
     {
-      get
-      {
-        return 0x07;
-      }
+        get { return this.GetType().ToString(); }
     }
 
-    #endregion
+        #endregion
 
-    public static ISerializable CreateDeserializable()
+        public static ISerializable CreateDeserializable()
     {
       return new Position();
     }

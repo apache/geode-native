@@ -98,21 +98,6 @@ namespace apache
         return 0;
       }
 
-      int32_t ManagedCacheableDeltaGeneric::getClassId() const
-      {
-        try {
-          return m_managedSerializableptr->ClassId;
-        }
-        catch (Apache::Geode::Client::GeodeException^ ex) {
-          ex->ThrowNative();
-        }
-        catch (System::Exception^ ex) {
-          Apache::Geode::Client::GeodeException::ThrowNative(ex);
-        }
-
-        throw std::exception("unreachable");
-      }
-
       bool ManagedCacheableDeltaGeneric::hasDelta() const
       {
         return m_managedptr->HasDelta();

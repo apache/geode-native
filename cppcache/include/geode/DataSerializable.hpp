@@ -17,6 +17,9 @@
 
 #pragma once
 
+#include <typeinfo>
+#include <typeindex>
+
 #ifndef GEODE_DATASERIALIZABLE_H_
 #define GEODE_DATASERIALIZABLE_H_
 
@@ -48,14 +51,13 @@ class APACHE_GEODE_EXPORT DataSerializable : public virtual Serializable {
   virtual void fromData(DataInput& dataInput) = 0;
 
   /**
-   * @brief Return the classId of the instance being serialized.
+   * @brief Return the type name of the instance being serialized.
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    *
-   * The classId must be unique within an application suite.
-   * Using a negative value may result in undefined behavior.
+   * The type must be unique within an application suite.
    */
-  virtual int32_t getClassId() const = 0;
+  virtual const std::string getType() const { return typeid(*this).name(); }
 };
 
 }  // namespace client

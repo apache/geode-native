@@ -51,8 +51,6 @@ class TESTOBJECT_EXPORT TestObject1 : public DataSerializable {
 
   int32_t getIdentifier() { return identifier; }
 
-  int32_t getClassId() const override { return 31; }
-
   static Serializable* create();
 };
 

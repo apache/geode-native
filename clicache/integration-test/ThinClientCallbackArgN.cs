@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 using System;
 using System.Threading;
 
@@ -248,8 +248,8 @@ namespace Apache.Geode.Client.UnitTests
       GIRegion region = null;
       region = CacheHelper.CreateTCRegion_Pool<int, object>(RegionName, true, caching,
         callbackLis, locators, "__TESTPOOL1_", true);
-      CacheHelper.DCache.TypeRegistry.RegisterType(Portfolio.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterType(Position.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(Portfolio.CreateDeserializable, 8);
+      CacheHelper.DCache.TypeRegistry.RegisterType(Position.CreateDeserializable, 7);
     }
 
     public void ValidateLocalListenerWriterData()
@@ -454,7 +454,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       if (!isRegistered)
       {
-        CacheHelper.DCache.TypeRegistry.RegisterType(DefaultType.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(DefaultType.CreateDeserializable, 4);
         isRegistered = true;
       }
     }

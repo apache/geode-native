@@ -852,11 +852,6 @@ namespace PdxTests
 
     #region IDataSerializable Members
 
-    public Int32 ClassId
-    {
-      get { return 5005; }
-    }
-
     public void FromData(DataInput input)
     {
       m_i1 = input.ReadInt32();
@@ -886,8 +881,13 @@ namespace PdxTests
       output.WriteInt32(m_i4); 
     }
 
+    public String Type
+    {
+        get { return this.GetType().ToString(); }
+    }
+
     #endregion
-  }
+    }
 
   #region Test class for all primitives types array
   public class AllPdxTypes : IPdxSerializable

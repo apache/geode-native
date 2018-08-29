@@ -82,7 +82,7 @@ inline bool SerializableHelper<DataSerializablePrimitive>::metadataEqualTo(
 template <>
 inline bool SerializableHelper<DataSerializable>::metadataEqualTo(
     const DataSerializable& lhs, const DataSerializable& rhs) {
-  return lhs.getClassId() == rhs.getClassId();
+  return lhs.getType() == rhs.getType();
 }
 
 template <>

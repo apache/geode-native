@@ -60,16 +60,17 @@ namespace apache
       {
       private:
         int m_hashcode;
-        int m_classId;
         size_t m_objectSize;
+        std::string m_type;
       public:
 
         inline ManagedCacheableKeyGeneric(
-          Apache::Geode::Client::IDataSerializable^ managedptr, int hashcode, int classId)
+          Apache::Geode::Client::IDataSerializable^ managedptr, int hashcode)
           : m_managedptr(managedptr) {
           m_hashcode = hashcode;
-          m_classId = classId;
           m_objectSize = 0;
+          msclr::interop::marshal_context context;
+          m_type = context.marshal_as<std::string>(managedptr->Type);
         }
         /// <summary>
         /// Constructor to initialize with the provided managed object.
@@ -80,8 +81,9 @@ namespace apache
         inline ManagedCacheableKeyGeneric(Apache::Geode::Client::IDataSerializable^ managedptr)
           : m_managedptr(managedptr) {
           m_hashcode = 0;
-          m_classId = managedptr->ClassId;
           m_objectSize = 0;
+          msclr::interop::marshal_context context;
+          m_type = context.marshal_as<std::string>(managedptr->Type);
         }
 
         ManagedCacheableKeyGeneric(const ManagedCacheableKeyGeneric&) = delete;
@@ -95,8 +97,6 @@ namespace apache
 
         void fromData(apache::geode::client::DataInput& input) override;
 
-        int32_t getClassId() const override;
-
         bool operator == (const CacheableKey& other) const override;
 
         virtual bool operator == (const ManagedCacheableKeyGeneric& other) const;
@@ -106,6 +106,11 @@ namespace apache
         inline Apache::Geode::Client::IDataSerializable^ ptr() const
         {
           return m_managedptr;
+        }
+
+        const std::string getType() const 
+        {       
+          return m_type;
         }
 
 

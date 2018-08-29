@@ -73,13 +73,9 @@ namespace Apache.Geode.Client.Tests
             FromDataCount++;
         }
 
-        public Int32 ClassId
+        public String Type
         {
-            get
-            {
-                //UInt32 classId = 1;
-              return 0x01;
-            }
+            get { return this.GetType().ToString(); }
         }
 
         public UInt64 ObjectSize

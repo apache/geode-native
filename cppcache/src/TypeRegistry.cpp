@@ -25,8 +25,9 @@
 
 TypeRegistry::TypeRegistry(CacheImpl* cache) : m_cache(cache) {}
 
-void TypeRegistry::registerType(TypeFactoryMethod creationFunction) {
-  m_cache->getSerializationRegistry()->addType(creationFunction);
+void TypeRegistry::registerType(TypeFactoryMethod creationFunction,
+                                int32_t id) {
+  m_cache->getSerializationRegistry()->addType(creationFunction, id);
 }
 
 void TypeRegistry::registerPdxType(TypeFactoryMethodPdx creationFunction) {

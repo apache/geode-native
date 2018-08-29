@@ -98,7 +98,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        CacheHelper.DCache.TypeRegistry.RegisterType(PdxInsideIGeodeSerializable.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(PdxInsideIGeodeSerializable.CreateDeserializable, 5005);
         CacheHelper.DCache.TypeRegistry.RegisterPdxType(NestedPdx.CreateDeserializable);
         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes1.CreateDeserializable);
         CacheHelper.DCache.TypeRegistry.RegisterPdxType(PdxTypes2.CreateDeserializable);
