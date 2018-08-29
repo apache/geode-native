@@ -126,11 +126,11 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
     DataInput& input, int8_t typeId) const {
   bool findinternal = false;
   auto typedTypeId = static_cast<DSCode>(typeId);
-  int64_t compId = typeId;
+  int32_t classId = typeId;
 
   if (typeId == -1) {
-    compId = input.read();
-    typedTypeId = static_cast<DSCode>(compId);
+    classId = input.read();
+    typedTypeId = static_cast<DSCode>(classId);
   }
 
   LOGDEBUG(
@@ -151,31 +151,29 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
       return enumObject;
     }
     case DSCode::CacheableUserData: {
-      compId |= ((static_cast<int64_t>(input.read())) << 32);
+      classId = input.read();
       break;
     }
     case DSCode::CacheableUserData2: {
-      compId |= ((static_cast<int64_t>(input.readInt16())) << 32);
+      classId = input.readInt16();
       break;
     }
     case DSCode::CacheableUserData4: {
-      int32_t classId = input.readInt32();
-      compId |= ((static_cast<int64_t>(classId)) << 32);
+      classId = input.readInt32();
       break;
     }
     case DSCode::FixedIDByte: {
-      compId = input.read();
+      classId = input.read();
       findinternal = true;
       break;
     }
     case DSCode::FixedIDShort: {
-      compId = input.readInt16();
+      classId = input.readInt16();
       findinternal = true;
       break;
     }
     case DSCode::FixedIDInt: {
-      int32_t fixedId = input.readInt32();
-      compId = fixedId;
+      classId = input.readInt32();
       findinternal = true;
       break;
     }
@@ -189,9 +187,9 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
   TypeFactoryMethod createType = nullptr;
 
   if (findinternal) {
-    theTypeMap.find2(compId, createType);
+    theTypeMap.findInternal(classId, createType);
   } else {
-    theTypeMap.find(compId, createType);
+    theTypeMap.findSerializable(classId, createType);
   }
 
   if (createType == nullptr) {
@@ -199,12 +197,12 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
       LOGERROR(
           "Unregistered class ID %d during deserialization: Did the "
           "application register serialization types?",
-          compId);
+          classId);
     } else {
       LOGERROR(
           "Unregistered class ID %d during deserialization: Did the "
           "application register serialization types?",
-          (compId >> 32));
+          classId);
     }
 
     // instead of a null key or null value... an Exception should be thrown..
@@ -287,25 +285,21 @@ void SerializationRegistry::addPdxType(TypeFactoryMethodPdx func) {
   theTypeMap.bindPdxType(func);
 }
 
-void SerializationRegistry::addType(int64_t compId, TypeFactoryMethod func) {
-  theTypeMap.rebind(compId, func);
+void SerializationRegistry::addType(int32_t id, TypeFactoryMethod func) {
+  theTypeMap.rebind(id, func);
 }
 
-void SerializationRegistry::removeType(int64_t compId) {
-  theTypeMap.unbind(compId);
-}
+void SerializationRegistry::removeType(int32_t id) { theTypeMap.unbind(id); }
 
 void SerializationRegistry::addType2(TypeFactoryMethod func) {
   theTypeMap.bind2(func);
 }
 
-void SerializationRegistry::addType2(int64_t compId, TypeFactoryMethod func) {
-  theTypeMap.rebind2(compId, func);
+void SerializationRegistry::addType2(int32_t id, TypeFactoryMethod func) {
+  theTypeMap.rebind2(id, func);
 }
 
-void SerializationRegistry::removeType2(int64_t compId) {
-  theTypeMap.unbind2(compId);
-}
+void SerializationRegistry::removeType2(int32_t id) { theTypeMap.unbind2(id); }
 
 std::shared_ptr<PdxSerializable> SerializationRegistry::getPdxType(
     const std::string& className) const {
@@ -374,96 +368,99 @@ std::shared_ptr<Serializable> SerializationRegistry::GetEnum(
 }
 
 void TheTypeMap::clear() {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_mapLock);
-  m_map->unbind_all();
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(
+      m_UserDataSerializablesMapLock);
+  m_UserDataSerializablesMap->unbind_all();
 
-  std::lock_guard<util::concurrent::spinlock_mutex> guard2(m_map2Lock);
-  m_map2->unbind_all();
+  std::lock_guard<util::concurrent::spinlock_mutex> guard2(m_InternalsMapLock);
+  m_InternalsMap->unbind_all();
 
   std::lock_guard<util::concurrent::spinlock_mutex> guard3(m_pdxTypemapLock);
   m_pdxTypemap->unbind_all();
 }
 
-void TheTypeMap::find(int64_t id, TypeFactoryMethod& func) const {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_mapLock);
-  m_map->find(id, func);
+void TheTypeMap::findSerializable(int32_t id, TypeFactoryMethod& func) const {
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(
+      m_UserDataSerializablesMapLock);
+  m_UserDataSerializablesMap->find(id, func);
 }
 
-void TheTypeMap::find2(int64_t id, TypeFactoryMethod& func) const {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_map2Lock);
-  m_map2->find(id, func);
+void TheTypeMap::findInternal(int32_t id, TypeFactoryMethod& func) const {
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_InternalsMapLock);
+  m_InternalsMap->find(id, func);
 }
 
 void TheTypeMap::bind(TypeFactoryMethod func, int32_t id) {
   auto obj = func();
-  int64_t compId;
+  int32_t classId;
 
   if (const auto dataSerializablePrimitive =
           std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
-    compId = static_cast<int64_t>(dataSerializablePrimitive->getDsCode());
+    classId = static_cast<int32_t>(dataSerializablePrimitive->getDsCode());
   } else if (const auto dataSerializableInternal =
                  std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
-    compId = static_cast<int64_t>(dataSerializableInternal->getInternalId());
+    classId = dataSerializableInternal->getInternalId();
   } else if (const auto dataSerializable =
                  std::dynamic_pointer_cast<DataSerializable>(obj)) {
-    typeToClassId[(dataSerializable->getType())] = id;
-    compId = static_cast<int64_t>(
-                 SerializationRegistry::getSerializableDataDsCode(id)) |
-             static_cast<int64_t>(id) << 32;
+    typeToClassId.emplace((dataSerializable->getType()), id);
+    classId = id;
   } else {
     throw UnsupportedOperationException(
         "TheTypeMap::bind: Serialization type not implemented.");
   }
 
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_mapLock);
-  int bindRes = m_map->bind(compId, func);
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(
+      m_UserDataSerializablesMapLock);
+  int bindRes = m_UserDataSerializablesMap->bind(classId, func);
   if (bindRes == 1) {
-    LOGERROR("A class with ID %d is already registered.", compId);
+    LOGERROR("A class with ID %d is already registered.", classId);
     throw IllegalStateException("A class with given ID is already registered.");
   } else if (bindRes == -1) {
-    LOGERROR("Unknown error while adding class ID %d to map.", compId);
+    LOGERROR("Unknown error while adding class ID %d to map.", classId);
     throw IllegalStateException("Unknown error while adding type to map.");
   }
 }
 
-void TheTypeMap::rebind(int64_t compId, TypeFactoryMethod func) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_mapLock);
-  int bindRes = m_map->rebind(compId, func);
+void TheTypeMap::rebind(int32_t id, TypeFactoryMethod func) {
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(
+      m_UserDataSerializablesMapLock);
+  int bindRes = m_UserDataSerializablesMap->rebind(id, func);
   if (bindRes == -1) {
     LOGERROR(
         "Unknown error "
         "while adding class ID %d to map.",
-        compId);
+        id);
     throw IllegalStateException(
         "Unknown error "
         "while adding type to map.");
   }
 }
 
-void TheTypeMap::unbind(int64_t compId) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_mapLock);
-  m_map->unbind(compId);
+void TheTypeMap::unbind(int32_t id) {
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(
+      m_UserDataSerializablesMapLock);
+  m_UserDataSerializablesMap->unbind(id);
 }
 
 void TheTypeMap::bind2(TypeFactoryMethod func) {
   auto obj = func();
 
-  int64_t compId = 0;
+  int32_t id = 0;
   if (const auto dataSerializableFixedId =
           std::dynamic_pointer_cast<DataSerializableFixedId>(obj)) {
-    compId = static_cast<int64_t>(dataSerializableFixedId->getDSFID());
+    id = static_cast<int64_t>(dataSerializableFixedId->getDSFID());
   } else {
     throw UnsupportedOperationException(
         "TheTypeMap::bind2: Unknown serialization type.");
   }
 
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_map2Lock);
-  int bindRes = m_map2->bind(compId, func);
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_InternalsMapLock);
+  int bindRes = m_InternalsMap->bind(id, func);
   if (bindRes == 1) {
     LOGERROR(
         "A fixed class with "
         "ID %d is already registered.",
-        compId);
+        id);
     throw IllegalStateException(
         "A fixed class with "
         "given ID is already registered.");
@@ -471,21 +468,21 @@ void TheTypeMap::bind2(TypeFactoryMethod func) {
     LOGERROR(
         "Unknown error "
         "while adding class ID %d to map2.",
-        compId);
+        id);
     throw IllegalStateException(
         "Unknown error "
         "while adding to map2.");
   }
 }
 
-void TheTypeMap::rebind2(int64_t compId, TypeFactoryMethod func) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_map2Lock);
-  m_map2->rebind(compId, func);
+void TheTypeMap::rebind2(int32_t id, TypeFactoryMethod func) {
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_InternalsMapLock);
+  m_InternalsMap->rebind(id, func);
 }
 
-void TheTypeMap::unbind2(int64_t compId) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_map2Lock);
-  m_map2->unbind(compId);
+void TheTypeMap::unbind2(int32_t id) {
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_InternalsMapLock);
+  m_InternalsMap->unbind(id);
 }
 
 void TheTypeMap::bindPdxType(TypeFactoryMethodPdx func) {
