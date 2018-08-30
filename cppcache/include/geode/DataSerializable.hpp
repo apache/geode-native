@@ -57,7 +57,7 @@ class APACHE_GEODE_EXPORT DataSerializable : public virtual Serializable {
    *
    * The type must be unique within an application suite.
    */
-  virtual const std::string getType() const { return typeid(*this).name(); }
+  const std::type_info& getType() const { return typeid(*this); }
 };
 
 }  // namespace client
