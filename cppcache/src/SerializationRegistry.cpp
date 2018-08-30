@@ -67,58 +67,87 @@ void TheTypeMap::setup() {
   // Register Geode builtins here!!
   // update type ids in DSCode.hpp
 
-  bind(CacheableByte::createDeserializable, DSCode::CacheableByte);
-  bind(CacheableBoolean::createDeserializable, DSCode::CacheableBoolean);
-  bind(BooleanArray::createDeserializable, DSCode::BooleanArray);
-  bind(CacheableBytes::createDeserializable, DSCode::CacheableBytes);
-  bind(CacheableFloat::createDeserializable, DSCode::CacheableFloat);
-  bind(CacheableFloatArray::createDeserializable, DSCode::CacheableFloatArray);
-  bind(CacheableDouble::createDeserializable, DSCode::CacheableDouble);
-  bind(CacheableDoubleArray::createDeserializable,
-       DSCode::CacheableDoubleArray);
-  bind(CacheableDate::createDeserializable, DSCode::CacheableDate);
-  bind(CacheableFileName::createDeserializable, DSCode::CacheableFileName);
-  bind(CacheableHashMap::createDeserializable, DSCode::CacheableHashMap);
-  bind(CacheableHashSet::createDeserializable, DSCode::CacheableHashSet);
-  bind(CacheableHashTable::createDeserializable, DSCode::CacheableHashTable);
-  bind(CacheableIdentityHashMap::createDeserializable,
-       DSCode::CacheableIdentityHashMap);
-  bind(CacheableLinkedHashSet::createDeserializable,
-       DSCode::CacheableLinkedHashSet);
-  bind(CacheableInt16::createDeserializable, DSCode::CacheableInt16);
-  bind(CacheableInt16Array::createDeserializable, DSCode::CacheableInt16Array);
-  bind(CacheableInt32::createDeserializable, DSCode::CacheableInt32);
-  bind(CacheableInt32Array::createDeserializable, DSCode::CacheableInt32Array);
-  bind(CacheableInt64::createDeserializable, DSCode::CacheableInt64);
-  bind(CacheableInt64Array::createDeserializable, DSCode::CacheableInt64Array);
-  bind(CacheableObjectArray::createDeserializable,
-       DSCode::CacheableObjectArray);
-  bind(CacheableString::createDeserializable, DSCode::CacheableString);
-  bind(CacheableString::createDeserializableHuge, DSCode::CacheableString);
-  bind(CacheableString::createUTFDeserializable, DSCode::CacheableString);
-  bind(CacheableString::createUTFDeserializableHuge, DSCode::CacheableString);
-  bind(CacheableStringArray::createDeserializable,
-       DSCode::CacheableStringArray);
-  bind(CacheableVector::createDeserializable, DSCode::CacheableVector);
-  bind(CacheableArrayList::createDeserializable, DSCode::CacheableArrayList);
-  bind(CacheableLinkedList::createDeserializable, DSCode::CacheableLinkedList);
-  bind(CacheableStack::createDeserializable, DSCode::CacheableStack);
-  bind(CacheableCharacter::createDeserializable, DSCode::CacheableCharacter);
-  bind(CharArray::createDeserializable, DSCode::CharArray);
-  bind(CacheableToken::createDeserializable, DSCode::CacheableToken);
-  bind(RegionAttributes::createDeserializable, DSCode::RegionAttributes);
-  bind(Properties::createDeserializable, DSCode::Properties);
+  bindDataSerializable(CacheableByte::createDeserializable,
+                       DSCode::CacheableByte);
+  bindDataSerializable(CacheableBoolean::createDeserializable,
+                       DSCode::CacheableBoolean);
+  bindDataSerializable(BooleanArray::createDeserializable,
+                       DSCode::BooleanArray);
+  bindDataSerializable(CacheableBytes::createDeserializable,
+                       DSCode::CacheableBytes);
+  bindDataSerializable(CacheableFloat::createDeserializable,
+                       DSCode::CacheableFloat);
+  bindDataSerializable(CacheableFloatArray::createDeserializable,
+                       DSCode::CacheableFloatArray);
+  bindDataSerializable(CacheableDouble::createDeserializable,
+                       DSCode::CacheableDouble);
+  bindDataSerializable(CacheableDoubleArray::createDeserializable,
+                       DSCode::CacheableDoubleArray);
+  bindDataSerializable(CacheableDate::createDeserializable,
+                       DSCode::CacheableDate);
+  bindDataSerializable(CacheableFileName::createDeserializable,
+                       DSCode::CacheableFileName);
+  bindDataSerializable(CacheableHashMap::createDeserializable,
+                       DSCode::CacheableHashMap);
+  bindDataSerializable(CacheableHashSet::createDeserializable,
+                       DSCode::CacheableHashSet);
+  bindDataSerializable(CacheableHashTable::createDeserializable,
+                       DSCode::CacheableHashTable);
+  bindDataSerializable(CacheableIdentityHashMap::createDeserializable,
+                       DSCode::CacheableIdentityHashMap);
+  bindDataSerializable(CacheableLinkedHashSet::createDeserializable,
+                       DSCode::CacheableLinkedHashSet);
+  bindDataSerializable(CacheableInt16::createDeserializable,
+                       DSCode::CacheableInt16);
+  bindDataSerializable(CacheableInt16Array::createDeserializable,
+                       DSCode::CacheableInt16Array);
+  bindDataSerializable(CacheableInt32::createDeserializable,
+                       DSCode::CacheableInt32);
+  bindDataSerializable(CacheableInt32Array::createDeserializable,
+                       DSCode::CacheableInt32Array);
+  bindDataSerializable(CacheableInt64::createDeserializable,
+                       DSCode::CacheableInt64);
+  bindDataSerializable(CacheableInt64Array::createDeserializable,
+                       DSCode::CacheableInt64Array);
+  bindDataSerializable(CacheableObjectArray::createDeserializable,
+                       DSCode::CacheableObjectArray);
+  bindDataSerializable(CacheableString::createDeserializable,
+                       DSCode::CacheableString);
+  bindDataSerializable(CacheableString::createDeserializableHuge,
+                       DSCode::CacheableString);
+  bindDataSerializable(CacheableString::createUTFDeserializable,
+                       DSCode::CacheableString);
+  bindDataSerializable(CacheableString::createUTFDeserializableHuge,
+                       DSCode::CacheableString);
+  bindDataSerializable(CacheableStringArray::createDeserializable,
+                       DSCode::CacheableStringArray);
+  bindDataSerializable(CacheableVector::createDeserializable,
+                       DSCode::CacheableVector);
+  bindDataSerializable(CacheableArrayList::createDeserializable,
+                       DSCode::CacheableArrayList);
+  bindDataSerializable(CacheableLinkedList::createDeserializable,
+                       DSCode::CacheableLinkedList);
+  bindDataSerializable(CacheableStack::createDeserializable,
+                       DSCode::CacheableStack);
+  bindDataSerializable(CacheableCharacter::createDeserializable,
+                       DSCode::CacheableCharacter);
+  bindDataSerializable(CharArray::createDeserializable, DSCode::CharArray);
+  bindDataSerializable(Properties::createDeserializable, DSCode::Properties);
+  bindDataSerializable(CacheableToken::createDeserializable,
+                       DSCode::CacheableToken);
+  bindDataSerializable(RegionAttributes::createDeserializable,
+                       DSCode::RegionAttributes);
 
-  bind2(CacheableUndefined::createDeserializable);
-  bind2(EventId::createDeserializable);
-  bind2(Struct::createDeserializable);
-  bind2(ClientConnectionResponse::create);
-  bind2(QueueConnectionResponse::create);
-  bind2(LocatorListResponse::create);
-  bind2(ClientProxyMembershipID::createDeserializable);
-  bind2(GetAllServersResponse::create);
-  bind2(EnumInfo::createDeserializable);
-  bind2(DiskStoreId::createDeserializable);
+  bindDataSerializableFixedId(CacheableUndefined::createDeserializable);
+  bindDataSerializableFixedId(EventId::createDeserializable);
+  bindDataSerializableFixedId(Struct::createDeserializable);
+  bindDataSerializableFixedId(ClientConnectionResponse::create);
+  bindDataSerializableFixedId(QueueConnectionResponse::create);
+  bindDataSerializableFixedId(LocatorListResponse::create);
+  bindDataSerializableFixedId(ClientProxyMembershipID::createDeserializable);
+  bindDataSerializableFixedId(GetAllServersResponse::create);
+  bindDataSerializableFixedId(EnumInfo::createDeserializable);
+  bindDataSerializableFixedId(DiskStoreId::createDeserializable);
 }
 
 /** This starts at reading the typeid.. assumes the length has been read. */
@@ -187,9 +216,9 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
   TypeFactoryMethod createType = nullptr;
 
   if (findinternal) {
-    theTypeMap.findInternal(classId, createType);
+    theTypeMap.findDataSerializableFixedId(classId, createType);
   } else {
-    theTypeMap.findSerializable(classId, createType);
+    theTypeMap.findDataSerializable(classId, createType);
   }
 
   if (createType == nullptr) {
@@ -278,7 +307,7 @@ void SerializationRegistry::serializeWithoutHeader(
 }
 
 void SerializationRegistry::addType(TypeFactoryMethod func, int32_t id) {
-  theTypeMap.bind(func, id);
+  theTypeMap.bindDataSerializable(func, id);
 }
 
 void SerializationRegistry::addPdxType(TypeFactoryMethodPdx func) {
@@ -286,20 +315,24 @@ void SerializationRegistry::addPdxType(TypeFactoryMethodPdx func) {
 }
 
 void SerializationRegistry::addType(int32_t id, TypeFactoryMethod func) {
-  theTypeMap.rebind(id, func);
+  theTypeMap.rebindDataSerializable(id, func);
 }
 
-void SerializationRegistry::removeType(int32_t id) { theTypeMap.unbind(id); }
+void SerializationRegistry::removeType(int32_t id) {
+  theTypeMap.unbindDataSerializable(id);
+}
 
 void SerializationRegistry::addType2(TypeFactoryMethod func) {
-  theTypeMap.bind2(func);
+  theTypeMap.bindDataSerializableFixedId(func);
 }
 
 void SerializationRegistry::addType2(int32_t id, TypeFactoryMethod func) {
-  theTypeMap.rebind2(id, func);
+  theTypeMap.rebindDataSerializableFixedId(id, func);
 }
 
-void SerializationRegistry::removeType2(int32_t id) { theTypeMap.unbind2(id); }
+void SerializationRegistry::removeType2(int32_t id) {
+  theTypeMap.unbindDataSerializableFixedId(id);
+}
 
 std::shared_ptr<PdxSerializable> SerializationRegistry::getPdxType(
     const std::string& className) const {
@@ -369,62 +402,65 @@ std::shared_ptr<Serializable> SerializationRegistry::GetEnum(
 
 void TheTypeMap::clear() {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_UserDataSerializablesMapLock);
-  m_UserDataSerializablesMap->unbind_all();
+      m_DataSerializableMapLock);
+  m_DataSerializableMap->unbind_all();
 
-  std::lock_guard<util::concurrent::spinlock_mutex> guard2(m_InternalsMapLock);
-  m_InternalsMap->unbind_all();
+  std::lock_guard<util::concurrent::spinlock_mutex> guard2(
+      m_DataSerializableFixedIdMapLock);
+  m_DataSerializableFixedIdMap->unbind_all();
 
   std::lock_guard<util::concurrent::spinlock_mutex> guard3(m_pdxTypemapLock);
   m_pdxTypemap->unbind_all();
 }
 
-void TheTypeMap::findSerializable(int32_t id, TypeFactoryMethod& func) const {
+void TheTypeMap::findDataSerializable(int32_t id,
+                                      TypeFactoryMethod& func) const {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_UserDataSerializablesMapLock);
-  m_UserDataSerializablesMap->find(id, func);
+      m_DataSerializableMapLock);
+  m_DataSerializableMap->find(id, func);
 }
 
-void TheTypeMap::findInternal(int32_t id, TypeFactoryMethod& func) const {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_InternalsMapLock);
-  m_InternalsMap->find(id, func);
+void TheTypeMap::findDataSerializableFixedId(int32_t id,
+                                             TypeFactoryMethod& func) const {
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(
+      m_DataSerializableFixedIdMapLock);
+  m_DataSerializableFixedIdMap->find(id, func);
 }
-
-void TheTypeMap::bind(TypeFactoryMethod func, int32_t id) {
+void TheTypeMap::bindDataSerializable(TypeFactoryMethod func, int32_t id) {
   auto obj = func();
-  int32_t classId;
+  int32_t objectId;
 
-  if (const auto dataSerializablePrimitive =
-          std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
-    classId = static_cast<int32_t>(dataSerializablePrimitive->getDsCode());
+  if (const auto dataSerializable =
+          std::dynamic_pointer_cast<DataSerializable>(obj)) {
+    typeToClassId.emplace(dataSerializable->getType(), id);
+    objectId = id;
+  } else if (const auto dataSerializablePrimitive =
+                 std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+    objectId = static_cast<int32_t>(dataSerializablePrimitive->getDsCode());
   } else if (const auto dataSerializableInternal =
                  std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
-    classId = dataSerializableInternal->getInternalId();
-  } else if (const auto dataSerializable =
-                 std::dynamic_pointer_cast<DataSerializable>(obj)) {
-    typeToClassId.emplace((dataSerializable->getType()), id);
-    classId = id;
+    objectId = static_cast<int32_t>(dataSerializableInternal->getInternalId());
   } else {
     throw UnsupportedOperationException(
         "TheTypeMap::bind: Serialization type not implemented.");
   }
 
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_UserDataSerializablesMapLock);
-  int bindRes = m_UserDataSerializablesMap->bind(classId, func);
+      m_DataSerializableMapLock);
+  int bindRes = m_DataSerializableMap->bind(objectId, func);
   if (bindRes == 1) {
-    LOGERROR("A class with ID %d is already registered.", classId);
+    LOGERROR("A class with ID %d is already registered.", objectId);
     throw IllegalStateException("A class with given ID is already registered.");
   } else if (bindRes == -1) {
-    LOGERROR("Unknown error while adding class ID %d to map.", classId);
+    LOGERROR("Unknown error while adding class ID %d to map.", objectId);
     throw IllegalStateException("Unknown error while adding type to map.");
   }
 }
 
-void TheTypeMap::rebind(int32_t id, TypeFactoryMethod func) {
+void TheTypeMap::rebindDataSerializable(int32_t id, TypeFactoryMethod func) {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_UserDataSerializablesMapLock);
-  int bindRes = m_UserDataSerializablesMap->rebind(id, func);
+      m_DataSerializableMapLock);
+  int bindRes = m_DataSerializableMap->rebind(id, func);
   if (bindRes == -1) {
     LOGERROR(
         "Unknown error "
@@ -436,13 +472,13 @@ void TheTypeMap::rebind(int32_t id, TypeFactoryMethod func) {
   }
 }
 
-void TheTypeMap::unbind(int32_t id) {
+void TheTypeMap::unbindDataSerializable(int32_t id) {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_UserDataSerializablesMapLock);
-  m_UserDataSerializablesMap->unbind(id);
+      m_DataSerializableMapLock);
+  m_DataSerializableMap->unbind(id);
 }
 
-void TheTypeMap::bind2(TypeFactoryMethod func) {
+void TheTypeMap::bindDataSerializableFixedId(TypeFactoryMethod func) {
   auto obj = func();
 
   int32_t id = 0;
@@ -451,11 +487,13 @@ void TheTypeMap::bind2(TypeFactoryMethod func) {
     id = static_cast<int64_t>(dataSerializableFixedId->getDSFID());
   } else {
     throw UnsupportedOperationException(
-        "TheTypeMap::bind2: Unknown serialization type.");
+        "TheTypeMap::bindDataSerializableInternal: Unknown serialization "
+        "type.");
   }
 
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_InternalsMapLock);
-  int bindRes = m_InternalsMap->bind(id, func);
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(
+      m_DataSerializableFixedIdMapLock);
+  int bindRes = m_DataSerializableFixedIdMap->bind(id, func);
   if (bindRes == 1) {
     LOGERROR(
         "A fixed class with "
@@ -475,14 +513,17 @@ void TheTypeMap::bind2(TypeFactoryMethod func) {
   }
 }
 
-void TheTypeMap::rebind2(int32_t id, TypeFactoryMethod func) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_InternalsMapLock);
-  m_InternalsMap->rebind(id, func);
+void TheTypeMap::rebindDataSerializableFixedId(int32_t id,
+                                               TypeFactoryMethod func) {
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(
+      m_DataSerializableFixedIdMapLock);
+  m_DataSerializableFixedIdMap->rebind(id, func);
 }
 
-void TheTypeMap::unbind2(int32_t id) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(m_InternalsMapLock);
-  m_InternalsMap->unbind(id);
+void TheTypeMap::unbindDataSerializableFixedId(int32_t id) {
+  std::lock_guard<util::concurrent::spinlock_mutex> guard(
+      m_DataSerializableFixedIdMapLock);
+  m_DataSerializableFixedIdMap->unbind(id);
 }
 
 void TheTypeMap::bindPdxType(TypeFactoryMethodPdx func) {

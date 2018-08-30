@@ -75,11 +75,11 @@ typedef ACE_Hash_Map_Manager<std::string, TypeFactoryMethodPdx, ACE_Null_Mutex>
 
 class TheTypeMap : private NonCopyable {
  private:
-  IdToFactoryMap* m_UserDataSerializablesMap;
-  IdToFactoryMap* m_InternalsMap;
+  IdToFactoryMap* m_DataSerializableMap;
+  IdToFactoryMap* m_DataSerializableFixedIdMap;
   StrToPdxFactoryMap* m_pdxTypemap;
-  mutable util::concurrent::spinlock_mutex m_UserDataSerializablesMapLock;
-  mutable util::concurrent::spinlock_mutex m_InternalsMapLock;
+  mutable util::concurrent::spinlock_mutex m_DataSerializableMapLock;
+  mutable util::concurrent::spinlock_mutex m_DataSerializableFixedIdMapLock;
   mutable util::concurrent::spinlock_mutex m_pdxTypemapLock;
 
  public:
@@ -90,10 +90,11 @@ class TheTypeMap : private NonCopyable {
 
  public:
   TheTypeMap() {
-    m_UserDataSerializablesMap = new IdToFactoryMap();
+    // map to hold Data Serializable IDs
+    m_DataSerializableMap = new IdToFactoryMap();
 
-    // second map to hold internal Data Serializable Fixed IDs - since GFE 5.7
-    m_InternalsMap = new IdToFactoryMap();
+    // map to hold internal Data Serializable Fixed IDs
+    m_DataSerializableFixedIdMap = new IdToFactoryMap();
 
     // map to hold PDX types <string, funptr>.
     m_pdxTypemap = new StrToPdxFactoryMap();
@@ -102,12 +103,12 @@ class TheTypeMap : private NonCopyable {
   }
 
   virtual ~TheTypeMap() {
-    if (m_UserDataSerializablesMap != nullptr) {
-      delete m_UserDataSerializablesMap;
+    if (m_DataSerializableMap != nullptr) {
+      delete m_DataSerializableMap;
     }
 
-    if (m_InternalsMap != nullptr) {
-      delete m_InternalsMap;
+    if (m_DataSerializableFixedIdMap != nullptr) {
+      delete m_DataSerializableFixedIdMap;
     }
 
     if (m_pdxTypemap != nullptr) {
@@ -119,21 +120,22 @@ class TheTypeMap : private NonCopyable {
 
   void clear();
 
-  void findSerializable(int32_t id, TypeFactoryMethod& func) const;
+  void findDataSerializable(int32_t id, TypeFactoryMethod& func) const;
 
-  void findInternal(int32_t id, TypeFactoryMethod& func) const;
+  void bindDataSerializable(TypeFactoryMethod func, int32_t id);
 
-  void bind(TypeFactoryMethod func, int32_t id);
+  inline void rebindDataSerializable(int32_t id, TypeFactoryMethod func);
 
-  inline void rebind(int32_t id, TypeFactoryMethod func);
+  inline void unbindDataSerializable(int32_t id);
 
-  inline void unbind(int32_t id);
+  void findDataSerializableFixedId(int32_t id, TypeFactoryMethod& func) const;
 
-  inline void bind2(TypeFactoryMethod func);
+  inline void bindDataSerializableFixedId(TypeFactoryMethod func);
 
-  inline void rebind2(int32_t idd, TypeFactoryMethod func);
+  inline void rebindDataSerializableFixedId(int32_t idd,
+                                            TypeFactoryMethod func);
 
-  inline void unbind2(int32_t id);
+  inline void unbindDataSerializableFixedId(int32_t id);
 
   inline void bindPdxType(TypeFactoryMethodPdx func);
 
@@ -145,8 +147,8 @@ class TheTypeMap : private NonCopyable {
   void rebindPdxType(std::string objFullName, TypeFactoryMethodPdx func);
 
  private:
-  void bind(TypeFactoryMethod func, DSCode id) {
-    bind(func, static_cast<int32_t>(id));
+  void bindDataSerializable(TypeFactoryMethod func, DSCode id) {
+    bindDataSerializable(func, static_cast<int32_t>(id));
   }
 };
 
