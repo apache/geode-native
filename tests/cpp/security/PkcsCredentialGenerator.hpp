@@ -46,12 +46,12 @@ class PKCSCredentialGenerator : public CredentialGenerator {
     std::string additionalArgs;
     char* buildDir = ACE_OS::getenv("BUILDDIR");
 
-    if (buildDir != NULL && workingDir.length() == 0) {
+    if (buildDir && workingDir.length() == 0) {
       workingDir = std::string(buildDir);
       workingDir += std::string("/framework/xml/Security/");
     }
 
-    if (buildDir != NULL && workingDir.length() == 0) {
+    if (buildDir && workingDir.length() == 0) {
       workingDir = std::string(buildDir);
       workingDir += std::string("/framework/xml/Security/");
     }
@@ -60,7 +60,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
     additionalArgs =
         std::string(" --J=-Dgemfire.security-authz-xml-uri=") +
         std::string(workingDir) +
-        std::string(authzXmlUri != NULL ? authzXmlUri : "authz-pkcs.xml");
+        std::string(authzXmlUri ? authzXmlUri : "authz-pkcs.xml");
 
     return additionalArgs;
   }
@@ -84,10 +84,10 @@ class PKCSCredentialGenerator : public CredentialGenerator {
   void insertKeyStorePath(std::shared_ptr<Properties>& p,
                           const char* username) {
     char keystoreFilePath[1024];
-    char* tempPath = NULL;
+    char* tempPath = nullptr;
     tempPath = ACE_OS::getenv("TESTSRC");
     std::string path = "";
-    if (tempPath == NULL) {
+    if (!tempPath) {
       tempPath = ACE_OS::getenv("BUILDDIR");
       path = std::string(tempPath) + "/framework/data";
     } else {
@@ -127,7 +127,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
 
   void getAllowedCredentialsForOps(opCodeList& opCodes,
                                    std::shared_ptr<Properties>& p,
-                                   stringList* regionNames = NULL) override {
+                                   stringList* regionNames = nullptr) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getAllowedCredentials(opCodes, p, regionNames);
     const char* username = p->find("security-alias")->value().c_str();
@@ -136,7 +136,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
 
   void getDisallowedCredentialsForOps(opCodeList& opCodes,
                                       std::shared_ptr<Properties>& p,
-                                      stringList* regionNames = NULL) override {
+                                      stringList* regionNames = nullptr) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getDisallowedCredentials(opCodes, p, regionNames);
     const char* username = p->find("security-alias")->value().c_str();

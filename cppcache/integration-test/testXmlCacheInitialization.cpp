@@ -43,13 +43,12 @@ using namespace test;
 using namespace std;
 
 int testXmlDeclarativeCacheCreation() {
-  char* host_name = (char*)"XML_DECLARATIVE_CACHE_CREATION_TEST";
   auto cacheFactory = CacheFactory();
   std::shared_ptr<Cache> cptr;
 
   std::string directory(ACE_OS::getenv("TESTSRC"));
 
-  std::cout << "create DistributedSytem with name=" << host_name << std::endl;
+  std::cout << "create DistributedSytem with name=XML_DECLARATIVE_CACHE_CREATION_TEST" << std::endl;
 
   try {
     const auto filePath =

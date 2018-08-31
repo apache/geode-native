@@ -1770,7 +1770,7 @@ void ThinClientPoolDM::reducePoolSize(int num) {
   LOGFINE("removing connection %d ,  pool-size =%d", num, m_poolSize.load());
   m_poolSize -= num;
   if (m_poolSize <= 0) {
-    if (m_cliCallbackTask != NULL) m_cliCallbackSema.release();
+    if (m_cliCallbackTask != nullptr) m_cliCallbackSema.release();
   }
 }
 GfErrType ThinClientPoolDM::createPoolConnection(

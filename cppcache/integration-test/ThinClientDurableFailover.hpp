@@ -82,7 +82,7 @@ class OperMonitor : public CacheListener {
  public:
   OperMonitor() : m_ops(0) {}
 
-  ~OperMonitor() { m_map.clear(); }
+  ~OperMonitor() override { m_map.clear(); }
 
   void validate(size_t keyCount, int eventcount, int durableValue,
                 int nonDurableValue) {

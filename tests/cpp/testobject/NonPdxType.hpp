@@ -56,7 +56,7 @@ class TESTOBJECT_EXPORT NonPdxAddress {
   bool equals(NonPdxAddress& other) const {
     LOGDEBUG("Inside NonPdxAddress equals");
     NonPdxAddress* ot = dynamic_cast<NonPdxAddress*>(&other);
-    if (ot == NULL) {
+    if (!ot) {
       return false;
     }
     if (ot == this) {

@@ -69,12 +69,12 @@ class APACHE_GEODE_EXPORT CacheableFileName : public CacheableString {
   /** return the hashcode for this key. */
   virtual int32_t hashcode() const override;
 
- protected:
-  _GEODE_FRIEND_STD_SHARED_PTR(CacheableFileName)
-
   /** Default constructor. */
-  inline CacheableFileName() : CacheableString(), m_hashcode(0) {}
+  inline CacheableFileName() : CacheableString() {}
+
   inline CacheableFileName(const std::string& value) : CacheableString(value) {}
+
+ protected:
   inline CacheableFileName(std::string&& value)
       : CacheableString(std::move(value)) {}
 
@@ -82,9 +82,6 @@ class APACHE_GEODE_EXPORT CacheableFileName : public CacheableString {
   // never implemented.
   void operator=(const CacheableFileName& other) = delete;
   CacheableFileName(const CacheableFileName& other) = delete;
-
- private:
-  mutable int m_hashcode;
 };
 
 }  // namespace client

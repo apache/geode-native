@@ -38,15 +38,7 @@ namespace client {
 
 class APACHE_GEODE_EXPORT FunctionServiceImpl : public FunctionService {
  public:
-  /**
-   * This function is used in multiuser mode to execute function on server.
-   */
-  // virtual std::shared_ptr<Execution> onServer();
-
-  /**
-   * This function is used in multiuser mode to execute function on server.
-   */
-  // virtual std::shared_ptr<Execution> onServers();
+  FunctionServiceImpl(AuthenticatedView* authenticatedView);
 
   virtual ~FunctionServiceImpl() {}
 
@@ -54,16 +46,12 @@ class APACHE_GEODE_EXPORT FunctionServiceImpl : public FunctionService {
   FunctionServiceImpl(const FunctionService&);
   FunctionServiceImpl& operator=(const FunctionService&);
 
-  FunctionServiceImpl(AuthenticatedView* authenticatedView);
-
   static std::shared_ptr<FunctionService> getFunctionService(
       AuthenticatedView* authenticatedView);
 
   AuthenticatedView* m_authenticatedView;
 
   friend class AuthenticatedView;
-
-  _GEODE_FRIEND_STD_SHARED_PTR(FunctionServiceImpl)
 };
 }  // namespace client
 }  // namespace geode

@@ -52,13 +52,13 @@ class RegionHelper {
  public:
   /** Fill in this instance of RegionHelper based on the spec named by sname.
    */
-  RegionHelper(const FrameworkTest* test) : m_region(NULL) {
+  RegionHelper(const FrameworkTest* test) : m_region(nullptr) {
     m_spec = test->getStringValue("regionSpec");
     if (m_spec.empty()) {
       FWKEXCEPTION("Failed to find regionSpec definition.");
     }
     m_region = test->getSnippet(m_spec);
-    if (m_region == NULL) {
+    if (!m_region) {
       FWKEXCEPTION("Failed to find region definition.");
     }
   }

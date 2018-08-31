@@ -68,13 +68,13 @@ CacheHelper* getHelper() {
 void _verifyEntry(const char* name, const char* key, const char* val,
                   bool noKey) {
   // Verify key and value exist in this region, in this process.
-  const char* value = (val == 0) ? "" : val;
+  const char* value = val ? val : "";
   char* buf =
       reinterpret_cast<char*>(malloc(1024 + strlen(key) + strlen(value)));
   ASSERT(buf, "Unable to malloc buffer for logging.");
   if (noKey) {
     sprintf(buf, "Verify key %s does not exist in region %s", key, name);
-  } else if (val == 0) {
+  } else if (!val) {
     sprintf(buf, "Verify value for key %s does not exist in region %s", key,
             name);
   } else {

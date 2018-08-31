@@ -69,7 +69,7 @@ class TESTOBJECT_EXPORT CharTypesWithInvalidUsage : public PdxSerializable {
     LOGDEBUG("Inside CharTypesWithInvalidUsage equals");
     CharTypesWithInvalidUsage* ot =
         dynamic_cast<CharTypesWithInvalidUsage*>(&other);
-    if (ot == NULL) {
+    if (!ot) {
       return false;
     }
     if (ot == this) {
@@ -144,7 +144,7 @@ class TESTOBJECT_EXPORT AddressWithInvalidAPIUsage : public PdxSerializable {
     LOGDEBUG("Inside AddressWithInvalidAPIUsage equals");
     AddressWithInvalidAPIUsage* ot =
         dynamic_cast<AddressWithInvalidAPIUsage*>(&other);
-    if (ot == NULL) {
+    if (!ot) {
       return false;
     }
     if (ot == this) {

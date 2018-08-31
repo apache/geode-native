@@ -136,7 +136,7 @@ class APACHE_GEODE_EXPORT PersistenceManager {
  protected:
   /** Region for this persistence manager.
    */
-  const std::shared_ptr<Region> m_regionPtr;
+  std::shared_ptr<Region> m_regionPtr;
 };
 }  // namespace client
 }  // namespace geode

@@ -27,7 +27,7 @@ using namespace apache::geode::client::testframework::security;
 using namespace apache::geode::client;
 
 CredentialGenerator::registeredClassMap* CredentialGenerator::generatormap =
-    NULL;
+    nullptr;
 std::shared_ptr<CredentialGenerator> CredentialGenerator::create(
     std::string scheme) {
   if (generators().find(scheme) != generators().end()) {

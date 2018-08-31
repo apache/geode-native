@@ -264,8 +264,6 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
   friend class FunctionService;
   friend class CacheXmlCreation;
   friend class RegionXmlCreation;
-
-  _GEODE_FRIEND_STD_SHARED_PTR(Cache)
 };
 }  // namespace client
 }  // namespace geode

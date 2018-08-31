@@ -358,7 +358,7 @@ class CacheableFileNameWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
     auto&& obj = std::dynamic_pointer_cast<CacheableFileName>(object);
-    return (obj ? CacheableHelper::crc32((uint8_t*)obj->value().c_str(),
+    return (obj ? CacheableHelper::crc32(reinterpret_cast<const uint8_t*>(obj->value().c_str()),
                                          obj->length())
                 : 0);
   }
@@ -516,7 +516,7 @@ class CacheableStringWrapper : public CacheableWrapper {
     const CacheableString* obj =
         dynamic_cast<const CacheableString*>(object.get());
     return (obj != nullptr ? CacheableHelper::crc32(
-                                 (uint8_t*)obj->value().c_str(), obj->length())
+        reinterpret_cast<const uint8_t*>(obj->value().c_str()), obj->length())
                            : 0);
   }
 };
@@ -559,7 +559,7 @@ class CacheableHugeStringWrapper : public CacheableWrapper {
     const CacheableString* obj =
         dynamic_cast<const CacheableString*>(object.get());
     ASSERT(obj != nullptr, "getCheckSum: null object.");
-    return CacheableHelper::crc32((uint8_t*)obj->value().c_str(),
+    return CacheableHelper::crc32(reinterpret_cast<const uint8_t*>(obj->value().c_str()),
                                   obj->length());
   }
 };
@@ -604,7 +604,7 @@ class CacheableHugeUnicodeStringWrapper : public CacheableWrapper {
     auto&& obj = std::dynamic_pointer_cast<CacheableString>(object);
     ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32(
-        (uint8_t*)obj->value().c_str(),
+        reinterpret_cast<const uint8_t*>(obj->value().c_str()),
         obj->length() * sizeof(std::string::value_type));
   }
 };
@@ -646,7 +646,7 @@ class CacheableUnicodeStringWrapper : public CacheableWrapper {
     auto&& obj = std::dynamic_pointer_cast<CacheableString>(object);
     ASSERT(obj != nullptr, "getCheckSum: null object.");
     return CacheableHelper::crc32(
-        (uint8_t*)obj->value().c_str(),
+        reinterpret_cast<const uint8_t*>(obj->value().c_str()),
         obj->length() * sizeof(std::string::value_type));
   }
 };
@@ -1050,7 +1050,7 @@ class CacheableStringArrayWrapper : public CacheableWrapper {
     for (int32_t index = 0; index < obj->length(); index++) {
       str = obj->operator[](index);
       checkSum ^= CacheableHelper::crc32(
-          (uint8_t*)str->value().c_str(),
+          reinterpret_cast<const uint8_t*>(str->value().c_str()),
           str->length() * sizeof(std::string::value_type));
     }
     return checkSum;
@@ -1186,7 +1186,7 @@ namespace CacheableHelper {
 
 void registerBuiltins(bool isRegisterFileName = false) {
   // Initialize the random number generator.
-  srand(getpid() + static_cast<int>(time(0)));
+  srand(getpid() + static_cast<int>(time(nullptr)));
 
   // Register the builtin cacheable keys
   CacheableWrapperFactory::registerType(DSCode::CacheableBoolean,

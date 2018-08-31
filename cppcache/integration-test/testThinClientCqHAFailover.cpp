@@ -274,7 +274,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepThree2)
     for (int i = 1; i < 150; i++) {
       auto port = std::make_shared<Portfolio>(i, 20);
 
-      auto keyport = CacheableKey::create((char*)"port1-1");
+      auto keyport = CacheableKey::create("port1-1");
       regPtr0->put(keyport, port);
       SLEEP(100);  // sleep a while to allow server query to complete
     }

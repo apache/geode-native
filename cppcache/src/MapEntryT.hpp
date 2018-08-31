@@ -126,13 +126,10 @@ class MapEntryT final : public TBase {
     return std::make_shared<MapEntryT>(expiryTaskManager, key);
   }
 
- protected:
   inline MapEntryT(const std::shared_ptr<CacheableKey>& key) : TBase(key) {}
   inline MapEntryT(ExpiryTaskManager* expiryTaskManager,
                    const std::shared_ptr<CacheableKey>& key)
       : TBase(expiryTaskManager, key) {}
-
-  _GEODE_FRIEND_STD_SHARED_PTR(MapEntryT)
 };
 
 // specialization of MapEntryT to terminate the recursive template definition

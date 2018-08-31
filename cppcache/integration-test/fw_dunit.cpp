@@ -163,7 +163,7 @@ class NamingContextImpl : virtual public NamingContext {
   virtual int rebind(const char* key, const char* value) {
     int res = -1;
     int attempts = 10;
-    while ((res = m_context.rebind(key, value, (char*)"")) == -1 &&
+    while ((res = m_context.rebind(key, value, const_cast<char*>(""))) == -1 &&
            attempts--) {
       millisleep(10);
     }
@@ -1081,8 +1081,8 @@ ThreadLauncher::ThreadLauncher(int thrCount, Thread& thr)
       m_stopSemaphore((-1 * thrCount) + 1),
       m_cleanSemaphore(0),
       m_termSemaphore((-1 * thrCount) + 1),
-      m_startTime(0),
-      m_stopTime(0),
+      m_startTime(nullptr),
+      m_stopTime(nullptr),
       m_threadDef(thr) {
   m_threadDef.init(this);
 }
@@ -1109,10 +1109,10 @@ void ThreadLauncher::go() {
 }
 
 ThreadLauncher::~ThreadLauncher() {
-  if (m_startTime != 0) {
+  if (m_startTime) {
     delete m_startTime;
   }
-  if (m_stopTime != 0) {
+  if (m_stopTime) {
     delete m_stopTime;
   }
 }

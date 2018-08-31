@@ -110,7 +110,9 @@ class CredentialGenerator {
   }
   virtual ~CredentialGenerator() {}
   bool operator==(const CredentialGenerator* other) {
-    if (other == NULL) return false;
+    if (!other) {
+      return false;
+    }
     return (m_id == other->m_id && m_name == other->m_name);
   };
 
@@ -127,7 +129,7 @@ class CredentialGenerator {
   static registeredClassMap& getRegisteredSchemes() { return generators(); }
 
   static registeredClassMap& generators() {
-    if (CredentialGenerator::generatormap == NULL) {
+    if (!CredentialGenerator::generatormap) {
       CredentialGenerator::generatormap = new registeredClassMap;
     }
     return *CredentialGenerator::generatormap;
@@ -165,10 +167,10 @@ class CredentialGenerator {
   }
 
   std::string getPublickeyfile() {
-    char* tempPath = NULL;
+    char* tempPath = nullptr;
     tempPath = ACE_OS::getenv("TESTSRC");
     std::string path = "";
-    if (tempPath == NULL) {
+    if (!tempPath) {
       tempPath = ACE_OS::getenv("BUILDDIR");
       path = std::string(tempPath) + "/framework/data";
     } else {
@@ -231,11 +233,11 @@ class CredentialGenerator {
 
   virtual void getAllowedCredentialsForOps(opCodeList& opCodes,
                                            std::shared_ptr<Properties>& p,
-                                           stringList* regionNames = NULL);
+                                           stringList* regionNames = nullptr);
 
   virtual void getDisallowedCredentialsForOps(opCodeList& opCodes,
                                               std::shared_ptr<Properties>& p,
-                                              stringList* regionNames = NULL);
+                                              stringList* regionNames = nullptr);
 
   static registeredClassMap& getRegisterdSchemes() {
     if (generators().size() == 0) {

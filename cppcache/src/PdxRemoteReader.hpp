@@ -38,7 +38,7 @@ class PdxRemoteReader : public PdxLocalReader {
     m_currentIndex = 0;
   }
 
-  virtual ~PdxRemoteReader();
+  virtual ~PdxRemoteReader() override;
 
   virtual char16_t readChar(const std::string& fieldName) override;
 

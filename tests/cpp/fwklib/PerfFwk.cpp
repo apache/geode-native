@@ -23,7 +23,7 @@ using namespace apache::geode::client;
 using namespace apache::geode::client::testframework;
 using namespace apache::geode::client::testframework::perf;
 
-ACE_utsname* PerfSuite::utsname = NULL;
+ACE_utsname* PerfSuite::utsname = nullptr;
 
 // void perf::logSignals( const char * tag ) {
 //  if ( tag == NULL ) {
@@ -76,7 +76,7 @@ void perf::logSize(const char* tag) {
 
   sprintf(procFileName, "/proc/%u/status", pid);
   fil = fopen(procFileName, "rb"); /* read only */
-  if (fil == (FILE*)0) {
+  if (fil == nullptr) {
     FWKINFO("Unable to read status file.");
     return;
   }
@@ -85,7 +85,7 @@ void perf::logSize(const char* tag) {
   double vs = -1;
   double rs = -1;
   char rbuff[1024];
-  while (fgets(rbuff, 1023, fil) != 0) {
+  while (fgets(rbuff, 1023, fil)) {
     if ((ACE_OS::strncasecmp(rbuff, "VmSize:", 7) == 0) &&
         (sscanf(rbuff, "%*s %u", &val) == 1)) {
       vs = static_cast<double>(val);
@@ -100,7 +100,7 @@ void perf::logSize(const char* tag) {
   char pbuf[1024];
   sprintf(pbuf, "Size of Process %u: Size: %.4f (%.4f) Mb  RSS: %.4f (%.4f) Mb",
           pid, vs, vsizeMax, rs, rssMax);
-  if (tag == NULL) {
+  if (!tag) {
     FWKINFO(pbuf);
     FWKINFO(":CSV Size::::," << pid << "," << vs << "," << rs);
   } else {

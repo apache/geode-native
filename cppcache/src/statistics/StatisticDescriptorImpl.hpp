@@ -111,7 +111,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
   /**
    * Destructor
    */
-  ~StatisticDescriptorImpl();
+  ~StatisticDescriptorImpl() override;
 
   /////////////////////////// Static Methods////////////////////////////////////
 

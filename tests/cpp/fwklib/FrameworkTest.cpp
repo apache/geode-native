@@ -61,20 +61,20 @@ FrameworkTest::FrameworkTest(const char* initArgs) {
 }
 
 FrameworkTest::~FrameworkTest() {
-  if (m_coll != NULL) {
+  if (m_coll) {
     delete m_coll;
-    m_coll = NULL;
+    m_coll = nullptr;
   }
 
-  if (m_bbc != NULL) {
+  if (m_bbc) {
     delete m_bbc;
-    m_bbc = NULL;
+    m_bbc = nullptr;
   }
 
-  if (m_timeSync != NULL) {
+  if (m_timeSync) {
     m_timeSync->stop();
     delete m_timeSync;
-    m_timeSync = NULL;
+    m_timeSync = nullptr;
   }
 
   if (m_cache != nullptr) {
@@ -85,7 +85,7 @@ FrameworkTest::~FrameworkTest() {
 // ----------------------------------------------------------------------------
 
 const FwkRegion* FrameworkTest::getSnippet(const std::string& name) const {
-  FwkRegion* value = NULL;
+  FwkRegion* value = nullptr;
   const FwkData* data = getData(name.c_str());
   if (data) {
     value = const_cast<FwkRegion*>(data->getSnippet());
@@ -130,7 +130,7 @@ const FwkRegion* FrameworkTest::getSnippet(const std::string& name) const {
   }
   if (!endPts.empty()) {
     Attributes* atts = value->getAttributes();
-    if ((atts != NULL) && (!atts->isLocal()) && (!atts->isWithPool()) &&
+    if (atts && (!atts->isLocal()) && (!atts->isWithPool()) &&
         (!isDC) && (redundancyLevel <= 0)) {
       // atts->setEndpoints( endPts );
       FWKINFO("Setting EndPoints to: " << endPts);
@@ -167,7 +167,7 @@ std::vector<std::string> FrameworkTest::getRoundRobinEP() const {
 // ----------------------------------------------------------------------------
 
 const FwkPool* FrameworkTest::getPoolSnippet(const std::string& name) const {
-  FwkPool* value = NULL;
+  FwkPool* value = nullptr;
   const FwkData* data = getData(name.c_str());
   if (data) {
     value = const_cast<FwkPool*>(data->getPoolSnippet());

@@ -47,7 +47,7 @@ namespace client {
 namespace testframework {
 namespace perf {
 
-void logSize(const char* tag = NULL);
+void logSize(const char* tag = nullptr);
 
 inline void sleepSeconds(int32_t secs) {
   ACE_Time_Value sleepTime(secs, 0);
@@ -144,7 +144,7 @@ class Record {
   void setDate(std::string date) { m_runDate = date; }
 
   void setDate() {
-    time_t esecs = time(0);
+    time_t esecs = time(nullptr);
     struct tm* now = localtime(&esecs);
     char tmp[32];
     sprintf(tmp, "%d/%d/%d %d:%d:%d", now->tm_mon + 1, now->tm_mday,
@@ -230,35 +230,35 @@ class PerfSuite {
   PerfSuite();
 
   static inline const char* getSysName() {
-    if (utsname == NULL) {
+    if (!utsname) {
       utsname = new ACE_utsname();
       ACE_OS::uname(utsname);
     }
     return utsname->sysname;
   }
   static inline const char* getNodeName() {
-    if (utsname == NULL) {
+    if (!utsname) {
       utsname = new ACE_utsname();
       ACE_OS::uname(utsname);
     }
     return utsname->nodename;
   }
   static inline const char* getRelease() {
-    if (utsname == NULL) {
+    if (!utsname) {
       utsname = new ACE_utsname();
       ACE_OS::uname(utsname);
     }
     return utsname->release;
   }
   static inline const char* getVersion() {
-    if (utsname == NULL) {
+    if (!utsname) {
       utsname = new ACE_utsname();
       ACE_OS::uname(utsname);
     }
     return utsname->version;
   }
   static inline const char* getMachine() {
-    if (utsname == NULL) {
+    if (!utsname) {
       utsname = new ACE_utsname();
       ACE_OS::uname(utsname);
     }

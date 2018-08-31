@@ -68,68 +68,68 @@ class TaskClient : public ACE_Task_Base {
  public:
   TaskClient(int32_t port, const char* logDir, const char* testFile,
              ACE_SOCK_Acceptor* listener, int32_t id, const char* name = " ")
-      : m_host(NULL),
+      : m_host(nullptr),
         m_port(port),
         m_logDirectory(strdup(logDir)),
         m_testFile(strdup(testFile)),
-        m_ipc(0),
+        m_ipc(nullptr),
         m_id(id),
         m_busy(false),
         m_assigned(false),
         m_name(name),
         m_listener(listener),
         m_runsTasks(true),
-        m_program(NULL),
-        m_arguments(NULL),
+        m_program(nullptr),
+        m_arguments(nullptr),
         m_hostGroup(FwkClientSet::m_defaultGroup) {
     m_refCnt++;
   }
 
   TaskClient(const char* logDir, int32_t id, const char* program,
              const char* arguments, const char* name = " ")
-      : m_host(NULL),
+      : m_host(nullptr),
         m_port(0),
         m_logDirectory(strdup(logDir)),
-        m_testFile(NULL),
-        m_ipc(0),
+        m_testFile(nullptr),
+        m_ipc(nullptr),
         m_id(id),
         m_busy(false),
         m_assigned(false),
         m_name(name),
-        m_listener(NULL),
+        m_listener(nullptr),
         m_runsTasks(false),
-        m_program((program == NULL) ? NULL : strdup(program)),
-        m_arguments((arguments == NULL) ? NULL : strdup(arguments)),
+        m_program((program == nullptr) ? nullptr : strdup(program)),
+        m_arguments((arguments == nullptr) ? nullptr : strdup(arguments)),
         m_hostGroup(FwkClientSet::m_defaultGroup) {
     m_refCnt++;
   }
 
   ~TaskClient() {
     m_refCnt--;
-    if ((m_refCnt < 1) && (m_pipe != (FILE*)0)) {
+    if ((m_refCnt < 1) && m_pipe) {
       // FWKINFO( "Closing pipe." );
       const char* pexit = "exit\n";
       writePipe(pexit);
       perf::sleepSeconds(3);
       pclose(m_pipe);
-      m_pipe = (FILE*)0;
+      m_pipe = nullptr;
       // FWKINFO( "Pipe closed." );
     }
-    if (m_host != NULL) {
+    if (m_host) {
       free(m_host);
-      m_host = NULL;
+      m_host = nullptr;
     }
-    if (m_logDirectory != NULL) {
+    if (m_logDirectory) {
       free(m_logDirectory);
-      m_logDirectory = NULL;
+      m_logDirectory = nullptr;
     }
-    if (m_testFile != NULL) {
+    if (m_testFile) {
       free(m_testFile);
-      m_testFile = NULL;
+      m_testFile = nullptr;
     }
-    if (m_ipc != NULL) {
+    if (m_ipc) {
       delete m_ipc;
-      m_ipc = NULL;
+      m_ipc = nullptr;
     }
   }
 
@@ -165,8 +165,8 @@ class TaskClient : public ACE_Task_Base {
 
   const char* getHost() { return m_host; }
   void setHost(const char* host) {
-    if (host != NULL) {
-      if (m_host != NULL) free(m_host);
+    if (host) {
+      if (m_host) free(m_host);
       m_host = strdup(host);
     }
   }

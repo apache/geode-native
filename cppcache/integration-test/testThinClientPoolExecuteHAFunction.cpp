@@ -36,10 +36,10 @@ const char* poolName = "__TEST_POOL1__";
 
 const char* serverGroup = "ServerGroup1";
 
-char* OnServerHAExceptionFunction = (char*)"OnServerHAExceptionFunction";
-char* OnServerHAShutdownFunction = (char*)"OnServerHAShutdownFunction";
+const char* OnServerHAExceptionFunction = "OnServerHAExceptionFunction";
+const char* OnServerHAShutdownFunction = "OnServerHAShutdownFunction";
 
-char* RegionOperationsHAFunction = (char*)"RegionOperationsHAFunction";
+const char* RegionOperationsHAFunction = "RegionOperationsHAFunction";
 #define verifyGetResults()                                      \
   bool found = false;                                           \
   for (int j = 0; j < 34; j++) {                                \

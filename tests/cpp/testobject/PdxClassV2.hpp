@@ -523,7 +523,7 @@ class TestPdxSerializerForV2 : public PdxSerializer {
 
     } else {
       LOGINFO("TestPdxSerializerForV2::fromdata() Invalid Class Name");
-      return NULL;
+      return nullptr;
     }
   }
 

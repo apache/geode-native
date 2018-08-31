@@ -59,7 +59,6 @@ class APACHE_GEODE_EXPORT CacheableUndefined
     return std::make_shared<CacheableUndefined>();
   }
 
- protected:
   /** Constructor, used for deserialization. */
   inline CacheableUndefined() = default;
 
@@ -67,8 +66,6 @@ class APACHE_GEODE_EXPORT CacheableUndefined
   // never implemented.
   CacheableUndefined& operator=(const CacheableUndefined& other) = delete;
   CacheableUndefined(const CacheableUndefined& other) = delete;
-
-  _GEODE_FRIEND_STD_SHARED_PTR(CacheableUndefined)
 };
 
 }  // namespace client

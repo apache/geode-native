@@ -75,7 +75,7 @@ SSLImpl::SSLImpl(ACE_HANDLE sock, const char *pubkeyfile,
 SSLImpl::~SSLImpl() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(SSLImpl::s_mutex);
 
-  if (m_io != NULL) {
+  if (m_io) {
     delete m_io;
   }
 }
@@ -83,7 +83,7 @@ SSLImpl::~SSLImpl() {
 void SSLImpl::close() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(SSLImpl::s_mutex);
 
-  if (m_io != NULL) {
+  if (m_io) {
     m_io->close();
   }
 }
@@ -96,9 +96,9 @@ int SSLImpl::listen(ACE_INET_Addr addr, std::chrono::microseconds waitSeconds) {
   ACE_SSL_SOCK_Acceptor listener(addr, 1);
   if (waitSeconds > std::chrono::microseconds::zero()) {
     ACE_Time_Value wtime(waitSeconds);
-    return listener.accept(*m_io, 0, &wtime);
+    return listener.accept(*m_io, nullptr, &wtime);
   } else {
-    return listener.accept(*m_io, 0);
+    return listener.accept(*m_io, nullptr);
   }
 }
 

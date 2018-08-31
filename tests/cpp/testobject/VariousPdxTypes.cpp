@@ -94,7 +94,7 @@ void PdxTypes1::fromData(PdxReader &pr) {
  *  PdxTypes2
  * *********************************************************/
 PdxTypes2::PdxTypes2() {
-  m_s1 = (char *)"one";
+  m_s1 = "one";
   m_i1 = 34324;
   m_i2 = 2144;
   m_i3 = 4645734;
@@ -153,7 +153,7 @@ void PdxTypes2::fromData(PdxReader &pr) {
  *  PdxTypes3
  * *********************************************************/
 PdxTypes3::PdxTypes3() {
-  m_s1 = (char *)"one";
+  m_s1 = "one";
   m_i1 = 34324;
   m_i2 = 2144;
   m_i3 = 4645734;
@@ -209,7 +209,7 @@ void PdxTypes3::fromData(PdxReader &pr) {
  *  PdxTypes4
  * *********************************************************/
 PdxTypes4::PdxTypes4() {
-  m_s1 = (char *)"one";
+  m_s1 = "one";
   m_i1 = 34324;
   m_i2 = 2144;
   m_i3 = 4645734;

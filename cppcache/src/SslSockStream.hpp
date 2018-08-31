@@ -78,11 +78,11 @@ class SslSockStream {
 
   int connect(ACE_INET_Addr ipaddr, unsigned waitSeconds);
 
-  ssize_t recv_n(void *buf, size_t len, const ACE_Time_Value *timeout = 0,
-                 size_t *bytes_transferred = 0) const;
+  ssize_t recv_n(void *buf, size_t len, const ACE_Time_Value *timeout = nullptr,
+                 size_t *bytes_transferred = nullptr) const;
 
-  ssize_t send_n(const void *buf, size_t len, const ACE_Time_Value *timeout = 0,
-                 size_t *bytes_transferred = 0) const;
+  ssize_t send_n(const void *buf, size_t len, const ACE_Time_Value *timeout = nullptr,
+                 size_t *bytes_transferred = nullptr) const;
 
   int get_local_addr(ACE_Addr &) const;
 

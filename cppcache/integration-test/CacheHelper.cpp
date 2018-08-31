@@ -464,12 +464,11 @@ std::shared_ptr<Pool> CacheHelper::createPool2(
     int subscriptionAckInterval, int connections) {
   auto poolFac = getCache()->getPoolManager().createFactory();
 
-  if (servers != 0)  // with explicit server list
-  {
+  if (servers) {
     addServerLocatorEPs(servers, poolFac, false);
     // do region creation with end
-  } else if (locators != 0)  // with locator
-  {
+  }
+  else if (locators) {
     addServerLocatorEPs(locators, poolFac);
     if (serverGroup) {
       poolFac.setServerGroup(serverGroup);

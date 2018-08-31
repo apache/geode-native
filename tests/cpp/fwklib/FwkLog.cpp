@@ -29,7 +29,7 @@ const char* apache::geode::client::testframework::getNodeName() {
 }
 
 const char* apache::geode::client::testframework::dirAndFile(const char* str) {
-  if (str == NULL) {
+  if (!str) {
     return "NULL";
   }
 

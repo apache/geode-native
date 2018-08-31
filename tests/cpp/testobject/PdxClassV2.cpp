@@ -217,11 +217,11 @@ bool PdxTypes3V2::m_useWeakHashMap = false;
 PdxTypes3V2::PdxTypes3V2() {
   m_i1 = 1;
   m_i2 = 21;
-  m_str1 = (char *)"common";
+  m_str1 = "common";
   m_i4 = 41;
   m_i3 = 31;
   m_i6 = 0;
-  m_str3 = (char *)"0";
+  m_str3 = "0";
 }
 
 PdxTypes3V2::~PdxTypes3V2() noexcept {
@@ -408,7 +408,7 @@ PdxTypesR2V2::PdxTypesR2V2() {
   m_i5 = 798243;
   m_i6 = 9900;
 
-  m_str1 = (char *)"0";
+  m_str1 = "0";
 }
 
 PdxTypesR2V2::~PdxTypesR2V2() noexcept {

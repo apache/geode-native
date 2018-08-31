@@ -23,7 +23,7 @@ using namespace testobject;
 
 EqStruct::EqStruct(int index) {
   myIndex = index;  // index
-  state = (char *)"1";
+  state = "1";
   ACE_Time_Value startTime;
   startTime = ACE_OS::gettimeofday();
   ACE_UINT64 tusec = 0;
@@ -35,48 +35,48 @@ EqStruct::EqStruct(int index) {
   availQty = 100;
   positionQty = 10.0;
   isRestricted = 1;
-  demandInd = (char *)"ASDSAD";
-  side = (char *)"16";
+  demandInd = "ASDSAD";
+  side = "16";
   orderQty = 3000;
   price = 78.9;
-  ordType = (char *)"D";
+  ordType = "D";
   stopPx = 22.3;
-  senderCompID = (char *)"dsafdsf";
-  tarCompID = (char *)"dsafsadfsaf";
-  tarSubID = (char *)"rwetwj";
-  handlInst = (char *)"M N";
-  orderID = (char *)"sample";
-  timeInForce = (char *)"4";
-  clOrdID = (char *)"sample";
-  orderCapacity = (char *)"6";
+  senderCompID = "dsafdsf";
+  tarCompID = "dsafsadfsaf";
+  tarSubID = "rwetwj";
+  handlInst = "M N";
+  orderID = "sample";
+  timeInForce = "4";
+  clOrdID = "sample";
+  orderCapacity = "6";
   cumQty = 0;
-  symbol = (char *)"MSFT";
-  symbolSfx = (char *)"0";
-  execInst = (char *)"A";
-  oldClOrdID = (char *)"";
+  symbol = "MSFT";
+  symbolSfx = "0";
+  execInst = "A";
+  oldClOrdID = "";
   pegDifference = 0.1;
-  discretionInst = (char *)"G";
+  discretionInst = "G";
   discretionOffset = 300.0;
-  financeInd = (char *)"dsagfdsa";
-  securityID = (char *)"MSFT.O";
-  targetCompID = (char *)"LBLB";
-  targetSubID = (char *)"EQUITY";
+  financeInd = "dsagfdsa";
+  securityID = "MSFT.O";
+  targetCompID = "LBLB";
+  targetSubID = "EQUITY";
   isDoneForDay = 1;
   revisionSeqNum = 140;
   replaceQty = 0;
   usedClientAvailability = 45;
-  clientAvailabilityKey = (char *)"UUUU";
+  clientAvailabilityKey = "UUUU";
   isIrregularSettlmnt = 1;
 
-  var1 = (char *)"abcdefghijklmnopqrstuvwxyz";
-  var2 = (char *)"abcdefghijklmnopqrstuvwxyz";
-  var3 = (char *)"abcdefghijklmnopqrstuvwxyz";
-  var4 = (char *)"abcdefghijklmnopqrstuvwxyz";
-  var5 = (char *)"abcdefghijklmnopqrstuvwxyz";
-  var6 = (char *)"abcdefghijklmnopqrstuvwxyz";
-  var7 = (char *)"abcdefghijklmnopqrstuvwxyz";
-  var8 = (char *)"abcdefghijklmnopqrstuvwxyz";
-  var9 = (char *)"abcdefghijklmnopqrstuvwxyz";
+  var1 = "abcdefghijklmnopqrstuvwxyz";
+  var2 = "abcdefghijklmnopqrstuvwxyz";
+  var3 = "abcdefghijklmnopqrstuvwxyz";
+  var4 = "abcdefghijklmnopqrstuvwxyz";
+  var5 = "abcdefghijklmnopqrstuvwxyz";
+  var6 = "abcdefghijklmnopqrstuvwxyz";
+  var7 = "abcdefghijklmnopqrstuvwxyz";
+  var8 = "abcdefghijklmnopqrstuvwxyz";
+  var9 = "abcdefghijklmnopqrstuvwxyz";
 }
 
 void EqStruct::toData(apache::geode::client::DataOutput &out) const {

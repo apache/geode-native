@@ -270,7 +270,7 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
 
   bool equals(SerializePdx& other) const {
     SerializePdx* ot = dynamic_cast<SerializePdx*>(&other);
-    if (ot == NULL) {
+    if (ot) {
       LOGINFO("SerializePdx::equals1");
       return false;
     }

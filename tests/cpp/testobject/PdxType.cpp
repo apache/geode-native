@@ -275,7 +275,7 @@ std::string PdxTests::PdxType::toString() const {
 bool PdxTests::PdxType::equals(PdxTests::PdxType& other,
                                bool isPdxReadSerialized) const {
   PdxType* ot = dynamic_cast<PdxType*>(&other);
-  if (ot == NULL) {
+  if (!ot) {
     return false;
   }
   if (ot == this) {

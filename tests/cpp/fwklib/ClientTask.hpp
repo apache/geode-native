@@ -23,6 +23,7 @@
 #include <atomic>
 #include "fwklib/PerfFwk.hpp"
 #include "fwklib/FwkObjects.hpp"
+#include "config.h"
 
 #include <string>
 
@@ -112,14 +113,16 @@ class ExitTask : public ClientTask {
  public:
   ExitTask() { m_Exit = true; }
   bool doSetup(ACE_thread_t id) {
-    id = 0;
+    id = ACE_Thread_NULL;
     return true;
   }
   uint32_t doTask(ACE_thread_t id) {
-    id = 0;
+    id = ACE_Thread_NULL;
     return 0;
   }
-  void doCleanup(ACE_thread_t id) { id = 0; }
+  void doCleanup(ACE_thread_t id) {
+    id = ACE_Thread_NULL;
+  }
 };
 
 class ThreadedTask : public ClientTask {
@@ -130,7 +133,7 @@ class ThreadedTask : public ClientTask {
   ThreadedTask(FwkAction func, std::string args) : m_func(func), m_args(args) {}
 
   uint32_t doTask(ACE_thread_t id) {
-    id = 0;
+    id = ACE_Thread_NULL;
     int32_t result = m_func(m_args.c_str());
     if (result != FWK_SUCCESS) {
       failed();
@@ -141,10 +144,12 @@ class ThreadedTask : public ClientTask {
   }
 
   bool doSetup(ACE_thread_t id) {
-    id = 0;
+    id = ACE_Thread_NULL;
     return true;
   }
-  void doCleanup(ACE_thread_t id) { id = 0; }
+  void doCleanup(ACE_thread_t id) {
+    id = ACE_Thread_NULL;
+  }
 };
 
 }  // namespace testframework

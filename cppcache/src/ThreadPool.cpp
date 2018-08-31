@@ -25,7 +25,13 @@
 using namespace apache::geode::client;
 
 ThreadPoolWorker::ThreadPoolWorker(IThreadPool* manager)
-    : manager_(manager), threadId_(0), queue_(msg_queue()), shutdown_(0) {}
+    : manager_(manager), queue_(msg_queue()), shutdown_(0) {
+#if defined(_MACOSX)
+  threadId_ = nullptr;
+#else
+  threadId_ = 0;
+#endif
+}
 
 ThreadPoolWorker::~ThreadPoolWorker() { shutDown(); }
 
@@ -38,7 +44,7 @@ int ThreadPoolWorker::svc(void) {
   threadId_ = ACE_Thread::self();
   while (1) {
     ACE_Method_Request* request = this->queue_.dequeue();
-    if (request == 0) {
+    if (request == nullptr) {
       shutDown();
       break;
     }
@@ -86,7 +92,7 @@ int ThreadPool::svc(void) {
   while (!done()) {
     // Get the next message
     ACE_Method_Request* request = this->queue_.dequeue();
-    if (request == 0) {
+    if (request == nullptr) {
       shutDown();
       break;
     }
@@ -116,7 +122,7 @@ int ThreadPool::returnToWork(ThreadPoolWorker* worker) {
 }
 
 ThreadPoolWorker* ThreadPool::chooseWorker(void) {
-  ACE_GUARD_RETURN(ACE_Thread_Mutex, workerMon, this->workersLock_, 0);
+  ACE_GUARD_RETURN(ACE_Thread_Mutex, workerMon, this->workersLock_, nullptr);
   while (this->workers_.is_empty()) workersCond_.wait();
   ThreadPoolWorker* worker;
   this->workers_.dequeue_head(worker);

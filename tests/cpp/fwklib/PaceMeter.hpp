@@ -52,7 +52,7 @@ class Waiter {
     struct timeval tv;
     tv.tv_sec = interval.sec();
     tv.tv_usec = interval.usec();
-    select(1, NULL, NULL, NULL, &tv);
+    select(1, nullptr, nullptr, nullptr, &tv);
 #endif
   }
 };

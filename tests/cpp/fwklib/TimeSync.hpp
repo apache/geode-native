@@ -57,7 +57,7 @@ class TimeSync : public ACE_Task_Base {
   void recvTimeSync();
 
  public:
-  inline TimeSync(int32_t port, int32_t* delta = NULL, bool report = false)
+  inline TimeSync(int32_t port, int32_t* delta = nullptr, bool report = false)
       : m_delta(delta),
         m_done(false),
         m_port(port),
@@ -77,7 +77,7 @@ class TimeSync : public ACE_Task_Base {
     int64_t retVal;
     ACE_Time_Value tv = ACE_OS::gettimeofday();
     retVal = timevalMicros(tv);
-    if (m_delta != NULL) {
+    if (m_delta != nullptr) {
       retVal += *m_delta;
     }
     return retVal;

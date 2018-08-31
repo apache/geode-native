@@ -180,7 +180,7 @@ void ThinClientPoolHADM::destroy(bool keepAlive) {
 
     m_redundancyManager->close();
     delete m_redundancyManager;
-    m_redundancyManager = 0;
+    m_redundancyManager = nullptr;
 
     m_destroyPendingHADM = true;
     ThinClientPoolDM::destroy(keepAlive);

@@ -21,7 +21,7 @@ using namespace apache::geode::client;
 
 TEST(ByteArrayTest, TestNoArgConstructor) {
   const ByteArray ba;
-  EXPECT_EQ(0U, ba.size()) << "Zero size for no-arg constructor";
+  EXPECT_TRUE(ba.size() == 0) << "Zero size for no-arg constructor";
   EXPECT_EQ((const uint8_t *)nullptr, (const uint8_t *)ba)
       << "Null pointer for no-arg constructor";
 }
@@ -68,7 +68,7 @@ TEST(ByteArrayTest, TestAssignmentOperator) {
 TEST(ByteArrayTest, TestFromStringForEmpty) {
   const std::string empty;
   const ByteArray ba(ByteArray::fromString(empty));
-  EXPECT_EQ(0U, ba.size()) << "Zero size for empty string";
+  EXPECT_TRUE(ba.size() == 0) << "Zero size for empty string";
   EXPECT_EQ((const uint8_t *)nullptr, (const uint8_t *)ba)
       << "Null pointer for empty string";
 }

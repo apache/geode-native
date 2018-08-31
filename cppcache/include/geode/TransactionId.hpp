@@ -37,8 +37,6 @@ class APACHE_GEODE_EXPORT TransactionId {
  public:
   TransactionId();
   virtual ~TransactionId();
-
-  _GEODE_FRIEND_STD_SHARED_PTR(TransactionId)
 };
 }  // namespace client
 }  // namespace geode

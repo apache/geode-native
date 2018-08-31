@@ -125,7 +125,7 @@ void PropertiesFile::readFile(const std::string& fileName) {
        */
       buf[len] = '\0';
       char* tmp = buf;
-      char* line = 0;
+      char* line = nullptr;
       while ((line = nextBufferLine(&tmp, buf, len)) != nullptr) {
         parseLine(line);
       }
@@ -137,7 +137,7 @@ void PropertiesFile::readFile(const std::string& fileName) {
 char* PropertiesFile::nextBufferLine(char** cursor, char* bufbegin,
                                      size_t totalLen) {
   if (static_cast<size_t>((*cursor) - bufbegin) >= totalLen) {
-    return 0;
+    return nullptr;
   }
 
   char* lineBegin = *cursor;

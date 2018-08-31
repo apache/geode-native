@@ -112,7 +112,6 @@ class APACHE_GEODE_EXPORT CacheableDate : public DataSerializablePrimitive,
   /** Destructor */
   ~CacheableDate() override = default;
 
- protected:
   /** Constructor, used for deserialization. */
   CacheableDate(const time_t value = 0);
 
@@ -130,8 +129,6 @@ class APACHE_GEODE_EXPORT CacheableDate : public DataSerializablePrimitive,
   // never implemented.
   void operator=(const CacheableDate& other);
   CacheableDate(const CacheableDate& other);
-
-  _GEODE_FRIEND_STD_SHARED_PTR(CacheableDate)
 };
 
 template <>

@@ -86,7 +86,7 @@ class OperMonitor : public CacheListener {
   OperMonitor(const char* clientName, const char* regionName)
       : m_ops(0), m_clientName(clientName), m_regionName(regionName) {}
 
-  ~OperMonitor() { m_map.clear(); }
+  ~OperMonitor() override { m_map.clear(); }
 
   void validate(size_t keyCount, int eventcount, int durableValue,
                 int nonDurableValue) {

@@ -157,7 +157,7 @@ class BBProcessor : public ServiceTask {
     while (*m_run) {
       try {
         UDPMessage* msg = m_queues->getInbound();
-        if (msg != NULL) {
+        if (msg) {
           // Construct the FwkBBMessage
           FwkBBMessage message;
           message.fromMessageStream(msg->what());

@@ -56,7 +56,7 @@ int SqLiteHelper::createTable() {
 
   // prepare statement
   int retCode;
-  retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, 0);
+  retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, nullptr);
 
   // execute statement
   if (retCode == SQLITE_OK) retCode = sqlite3_step(stmt);
@@ -72,11 +72,11 @@ int SqLiteHelper::insertKeyValue(void *keyData, int keyDataSize,
 
   // prepare statement
   sqlite3_stmt *stmt;
-  int retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, 0);
+  int retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, nullptr);
   if (retCode == SQLITE_OK) {
     // bind parameters and execte statement
-    sqlite3_bind_blob(stmt, 1, keyData, keyDataSize, 0);
-    sqlite3_bind_blob(stmt, 2, valueData, valueDataSize, 0);
+    sqlite3_bind_blob(stmt, 1, keyData, keyDataSize, nullptr);
+    sqlite3_bind_blob(stmt, 2, valueData, valueDataSize, nullptr);
     retCode = sqlite3_step(stmt);
   }
 
@@ -91,10 +91,10 @@ int SqLiteHelper::removeKey(void *keyData, int keyDataSize) {
 
   // prepare statement
   sqlite3_stmt *stmt;
-  int retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, 0);
+  int retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, nullptr);
   if (retCode == SQLITE_OK) {
     // bind parameters and execte statement
-    sqlite3_bind_blob(stmt, 1, keyData, keyDataSize, 0);
+    sqlite3_bind_blob(stmt, 1, keyData, keyDataSize, nullptr);
     retCode = sqlite3_step(stmt);
   }
 
@@ -112,10 +112,10 @@ int SqLiteHelper::getValue(void *keyData, int keyDataSize, void *&valueData,
 
   // prepare statement
   sqlite3_stmt *stmt;
-  int retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, 0);
+  int retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, nullptr);
   if (retCode == SQLITE_OK) {
     // bind parameters and execte statement
-    sqlite3_bind_blob(stmt, 1, keyData, keyDataSize, 0);
+    sqlite3_bind_blob(stmt, 1, keyData, keyDataSize, nullptr);
     retCode = sqlite3_step(stmt);
     if (retCode == SQLITE_ROW)  // we will get only one row
     {
@@ -140,7 +140,7 @@ int SqLiteHelper::dropTable() {
   // prepare statement
   sqlite3_stmt *stmt;
   int retCode;
-  retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, 0);
+  retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, nullptr);
 
   // execute statement
   if (retCode == SQLITE_OK) retCode = sqlite3_step(stmt);
@@ -166,7 +166,7 @@ int SqLiteHelper::executePragma(const char *pragmaName, int pragmaValue) {
   // prepare statement
   sqlite3_stmt *stmt;
   int retCode;
-  retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, 0);
+  retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, nullptr);
 
   // execute PRAGMA
   if (retCode == SQLITE_OK &&

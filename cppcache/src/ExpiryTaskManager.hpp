@@ -105,7 +105,7 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
         if (expired == nullptr) return 0;
       }
 
-      const void* upcall_act = 0;
+      const void* upcall_act = nullptr;
 
       // Preinvoke (handles refcount if needed, etc.)
       this->preinvoke(info, cur_time, upcall_act);
@@ -164,7 +164,7 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
       ACE_Timer_Node_T<TYPE>* expired = nullptr;
       ACE_Timer_Node_Dispatch_Info_T<TYPE> info;
       while ((expired = this->getFirstNode(cur_time, info)) != nullptr) {
-        const void* upcall_act = 0;
+        const void* upcall_act = nullptr;
         this->preinvoke(info, cur_time, upcall_act);
 
         this->upcall(info, cur_time);
@@ -258,7 +258,7 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
     ACE_Time_Value expTimeValue(expTime);
     ACE_Time_Value intervalValue(interval);
     LOGFINER("Scheduled expiration ... in %d seconds.", expTime.count());
-    return m_reactor->schedule_timer(handler, 0, expTimeValue, intervalValue);
+    return m_reactor->schedule_timer(handler, nullptr, expTimeValue, intervalValue);
   }
 
   /**
