@@ -27,6 +27,64 @@ Whether you are developing a C++ or .NET application, you will need some essenti
 Your compiler must have access to the Native Client header files, and the dynamic loader must have access to the Native Client libraries.
 The header files and libraries are located in the Native Client installation directory (referred to as *native-client-dir* elsewhere in this guide).
 
+### <a id="connecting_to_server"></a>Connecting to the Server
+
+To connect to a server, your application must follow these steps:
+
+1. Instantiate a `CacheFactory`, setting characteristics of interest (for example, `log-level`).
+1. Create a cache and use it to instantiate a PoolFactory, specifying the hostname and port for the server locator.
+1. Instantiate a proxy region and connect it by name to its counterpart on the server.
+
+Once the connection pool and the shared region are in place, your client application is ready to share data with the server.
+
+This example of connecting to the server is taken from the C++ put-get-remove example:
+
+``` cpp
+int main(int argc, char** argv) {
+
+  auto cacheFactory = CacheFactory();                         // instantiate cache factory
+  cacheFactory.set("log-level", "none");                      // set cache log-level characteristics
+  auto cache = cacheFactory.create();                         // create cache
+  auto poolFactory = cache.getPoolManager().createFactory();  // instantiate pool factory
+
+  poolFactory.addLocator("localhost", 10334);                 // add locator to pool factory
+  auto pool = poolFactory.create("pool");                     // create a pool called "pool" that knows where the server is
+  auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY); // instantiate region factory with PROXY characteristics
+  auto region = regionFactory.setPoolName("pool").create("example_userinfo"); // create a connection to the region "example_userinfo" on the server
+
+  ...            // do something
+
+  cache.close(); // clean up
+}
+```
+
+This example of connecting to the server is taken from the C# PutGetRemove example:
+
+``` csharp
+static void Main(string[] args)
+{
+    var cacheFactory = new CacheFactory()     // instantiate cache factory
+        .Set("log-level", "none");            // set cache log-level characteristics
+    var cache = cacheFactory.Create();        // create cache
+
+    var poolFactory = cache.GetPoolFactory()  // instantiate pool factory
+        .AddLocator("localhost", 10334);      // add locator to pool factory
+    poolFactory.Create("pool");               // create a pool called "pool" that knows where the server is
+
+    var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY) // instantiate region factory with PROXY characteristics
+        .SetPoolName("pool");
+    var region = regionFactory.Create<string, string>("example_userinfo"); // create a connection to the region "example_userinfo" on the server
+
+    ...            // do something
+
+    cache.Close(); // clean up
+}
+```
+
+See the _<%=vars.product_name%> User Guide_ section [Configuring a Client/Server System](/serverman/topologies_and_comm/cs_configuration/setting_up_a_client_server_system.html)
+for more details.
+
+
 ### <a id="app_dev_walkthroughs"></a>Application Development Walkthroughs
 
 - [C++ App Development Walkthrough](app-dev-walkthrough-cpp.html)
@@ -51,16 +109,23 @@ The directory structure resembles this hierarchy (some entries are omitted for c
         CMakeLists.txt.in
         cmake/
         cpp/
-          BUILDING.md
-          customserializable/
-          customserializer/
+          BUILD-CPP-EXAMPLES.md
+          CMakeLists.txt
+          dataserializable/
+          pdxserializable/
+          pdxserializer/
           put-get-remove/
+          remotequery/
         dotnet/
-          AuthInitialize/
-          PdxAutoSerializer/
-          PutGetRemove/
-          README.md
+	  AuthInitialize/
+	  BUILD-DOTNET-EXAMPLES.md
+	  CMakeLists.txt
+	  DataSerializableCs/
+	  PdxAutoSerializer/
+	  PdxSerializableCs/
+	  PutGetRemove/
+	  RemoteQueryCs/
 
-See the `BUILDING.md` or `README.md` file in each directory for detailed instructions on building
+See the `BUILD-platform-EXAMPLES.md` or `README.md` file in each directory for detailed instructions on building
 and executing the examples, and read the source code to understand how the examples are constructed.
 
