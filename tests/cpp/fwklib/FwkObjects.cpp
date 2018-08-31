@@ -767,7 +767,7 @@ FwkData::FwkData(const DOMNode* node)
       m_dataOneof(nullptr),
       m_dataRange(nullptr),
       m_snippet(nullptr),
-      m_dataType(DATA_TYPE_nullptr) {
+      m_dataType(DATA_TYPE_NULL) {
   //  FWKINFO( "Instantiate FwkData" );
   //  traverseChildElements( node );
   std::string name;
@@ -785,7 +785,7 @@ FwkData::FwkData(const DOMNode* node)
   }
 
   DOMNode* child = node->getFirstChild();
-  while ((child != nullptr) && (m_dataType == DATA_TYPE_nullptr)) {
+  while ((child != nullptr) && (m_dataType == DATA_TYPE_NULL)) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
       name = XMLChToStr(child->getNodeName());
       if (name == LIST_TAG) {

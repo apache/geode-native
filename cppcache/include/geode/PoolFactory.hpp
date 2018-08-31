@@ -548,6 +548,8 @@ class APACHE_GEODE_EXPORT PoolFactory {
   friend class PoolManagerImpl;
   friend class CacheFactory;
   friend class CacheXmlCreation;
+
+  _GEODE_FRIEND_STD_SHARED_PTR(PoolFactory)
 };
 
 }  // namespace client

@@ -51,15 +51,13 @@ class APACHE_GEODE_EXPORT Struct
  public:
   typedef std::vector<std::shared_ptr<Serializable>>::iterator iterator;
 
-  Struct() = default;
-
   /**
    * Constructor - meant only for internal use.
    */
   Struct(StructSet* ssPtr,
          std::vector<std::shared_ptr<Serializable>>& fieldValues);
 
-  ~Struct() override = default;
+  ~Struct() noexcept override = default;
 
   /**
    * Factory function for registration of <code>Struct</code>.
@@ -122,6 +120,8 @@ class APACHE_GEODE_EXPORT Struct
   }
 
  private:
+  Struct() = default;
+
   void skipClassName(DataInput& input);
 
   typedef std::unordered_map<std::string, int32_t> FieldNameToIndexMap;
@@ -129,6 +129,8 @@ class APACHE_GEODE_EXPORT Struct
   StructSet* m_parent = nullptr;
   std::vector<std::shared_ptr<Serializable>> m_fieldValues;
   FieldNameToIndexMap m_fieldNameToIndex;
+
+  _GEODE_FRIEND_STD_SHARED_PTR(Struct)
 };
 }  // namespace client
 }  // namespace geode

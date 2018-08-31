@@ -59,11 +59,6 @@ class APACHE_GEODE_EXPORT CacheableEnum : public DataSerializablePrimitive,
   int32_t m_hashcode;
 
  public:
-  CacheableEnum();
-
-  CacheableEnum(std::string enumClassName, std::string enumName,
-                int32_t ordinal);
-
   /** Destructor */
   ~CacheableEnum() override = default;
 
@@ -126,12 +121,17 @@ class APACHE_GEODE_EXPORT CacheableEnum : public DataSerializablePrimitive,
   virtual bool operator==(const CacheableKey& other) const override;
 
  protected:
+  CacheableEnum();
+  CacheableEnum(std::string enumClassName, std::string enumName,
+                int32_t ordinal);
   void calculateHashcode();
 
  private:
   // never implemented.
   void operator=(const CacheableEnum& other);
   CacheableEnum(const CacheableEnum& other);
+
+  _GEODE_FRIEND_STD_SHARED_PTR(CacheableEnum)
 };
 
 }  // namespace client

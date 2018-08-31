@@ -82,7 +82,7 @@ class APACHE_GEODE_EXPORT Serializable {
     return value;
   }
 
-  virtual ~Serializable() = default;
+  virtual ~Serializable() noexcept = default;
 
  protected:
 };
