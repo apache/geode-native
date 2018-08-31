@@ -73,7 +73,7 @@ class TcpSslConn : public TcpConn {
 
   // TODO:  Watch out for virt dtor calling virt methods!
 
-  virtual ~TcpSslConn() {}
+  virtual ~TcpSslConn() override {}
 
   // Close this tcp connection
   void close() override;

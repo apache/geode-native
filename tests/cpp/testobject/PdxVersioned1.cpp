@@ -343,7 +343,7 @@ std::string PdxTests::PdxVersioned1::toString() const {
 
 bool PdxTests::PdxVersioned1::equals(PdxTests::PdxVersioned1& other) const {
   PdxVersioned1* ot = dynamic_cast<PdxVersioned1*>(&other);
-  if (ot == NULL) {
+  if (!ot) {
     return false;
   }
   if (ot == this) {

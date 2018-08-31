@@ -73,7 +73,7 @@ bool PdxTests::NonPdxType::selfCheck() { return false; }
 bool PdxTests::NonPdxType::equals(PdxTests::NonPdxType& other,
                                   bool isPdxReadSerialized) const {
   NonPdxType* ot = dynamic_cast<NonPdxType*>(&other);
-  if (ot == NULL) {
+  if (!ot) {
     return false;
   }
   if (ot == this) {

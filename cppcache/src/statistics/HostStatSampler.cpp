@@ -81,7 +81,7 @@ int selector(const dirent* d) {
     size_t fileHyphenPos = tempname.find_last_of('-');
     if (fileHyphenPos != std::string::npos) {
       std::string buff1 = tempname.substr(0, fileHyphenPos);
-      if (ACE_OS::strstr(filebasename.c_str(), buff1.c_str()) == 0) {
+      if (ACE_OS::strstr(filebasename.c_str(), buff1.c_str()) == nullptr) {
         return 0;
       }
       if (fileHyphenPos != actualHyphenPos) return 0;
@@ -563,12 +563,12 @@ void HostStatSampler::putStatsInAdminRegion() {
             Statistics* cachePerfStats =
                 gf->findFirstStatisticsByType(cacheStatType);
             if (cachePerfStats) {
-              puts = cachePerfStats->getInt((char*)"puts");
-              gets = cachePerfStats->getInt((char*)"gets");
-              misses = cachePerfStats->getInt((char*)"misses");
-              creates = cachePerfStats->getInt((char*)"creates");
+              puts = cachePerfStats->getInt("puts");
+              gets = cachePerfStats->getInt("gets");
+              misses = cachePerfStats->getInt("misses");
+              creates = cachePerfStats->getInt("creates");
               numListeners =
-                  cachePerfStats->getInt((char*)"cacheListenerCallsCompleted");
+                  cachePerfStats->getInt("cacheListenerCallsCompleted");
               puts += creates;
             }
           }

@@ -146,7 +146,7 @@ class TFwkSet {
   /** @brief Prints collection of objects */
   void print() const {
     const FWK_OBJECT* obj = getFirst();
-    while (obj != NULL) {
+    while (obj != nullptr) {
       obj->print();
       obj = getNext(obj);
     }
@@ -156,7 +156,7 @@ class TFwkSet {
    * @param key Object key to find
    */
   const FWK_OBJECT* find(const std::string& key) const {
-    const FWK_OBJECT* obj = NULL;
+    const FWK_OBJECT* obj = nullptr;
     int32_t pos = findIdx(key);
     if (pos != -1) {
       obj = m_vec.at(pos);
@@ -166,7 +166,7 @@ class TFwkSet {
 
   /** @brief Get first object in collection */
   const FWK_OBJECT* getFirst() const {
-    const FWK_OBJECT* obj = NULL;
+    const FWK_OBJECT* obj = nullptr;
     int32_t siz = static_cast<int32_t>(m_vec.size());
     if (siz > 0) {
       return m_vec.at(0);
@@ -176,8 +176,8 @@ class TFwkSet {
 
   /** @brief Get next object in collection */
   const FWK_OBJECT* getNext(const FWK_OBJECT* prev) const {
-    const FWK_OBJECT* obj = NULL;
-    if (prev == NULL) {
+    const FWK_OBJECT* obj = nullptr;
+    if (prev == nullptr) {
       return getFirst();
     }
     int32_t siz = static_cast<int32_t>(m_vec.size());
@@ -208,13 +208,13 @@ class TFwkSet {
    * @param obj Object to add
    */
   void add(const FWK_OBJECT* obj) {
-    if (obj != NULL) {
+    if (obj != nullptr) {
       m_vec.push_back(obj);
     }
   }
 
   const FWK_OBJECT* at(int32_t idx) const {
-    if ((idx < 0) || (idx > size())) return NULL;
+    if ((idx < 0) || (idx > size())) return nullptr;
     return m_vec.at(idx);
   }
 
@@ -253,13 +253,13 @@ typedef std::vector<std::string> StringVector;
 class XMLStringConverter {
  public:
   XMLStringConverter(const char* const toTranscode) {
-    m_charForm = NULL;
+    m_charForm = nullptr;
     // Call the private transcoding method
     m_unicodeForm = XMLString::transcode(toTranscode);
   }
 
   XMLStringConverter(const XMLCh* toTranscode) {
-    m_unicodeForm = NULL;
+    m_unicodeForm = nullptr;
     m_charForm = XMLString::transcode(toTranscode);
   }
 
@@ -470,9 +470,9 @@ class FwkRegion {
  public:
   FwkRegion(const DOMNode* node);
   ~FwkRegion() {
-    if (m_attributes != NULL) {
+    if (m_attributes != nullptr) {
       delete m_attributes;
-      m_attributes = NULL;
+      m_attributes = nullptr;
     }
   }
 
@@ -640,13 +640,13 @@ class DataSnippet {
  public:
   DataSnippet(const DOMNode* node);
   ~DataSnippet() {
-    if (m_region != NULL) {
+    if (m_region != nullptr) {
       delete m_region;
-      m_region = NULL;
+      m_region = nullptr;
     }
-    if (m_pool != NULL) {
+    if (m_pool != nullptr) {
       delete m_pool;
-      m_pool = NULL;
+      m_pool = nullptr;
     }
   }
 
@@ -791,21 +791,21 @@ class FwkData : public FwkObject {
   FwkData(const DOMNode* node);
 
   ~FwkData() {
-    if (m_dataList != NULL) {
+    if (m_dataList != nullptr) {
       delete m_dataList;
-      m_dataList = NULL;
+      m_dataList = nullptr;
     }
-    if (m_dataOneof != NULL) {
+    if (m_dataOneof != nullptr) {
       delete m_dataOneof;
-      m_dataOneof = NULL;
+      m_dataOneof = nullptr;
     }
-    if (m_dataRange != NULL) {
+    if (m_dataRange != nullptr) {
       delete m_dataRange;
-      m_dataRange = NULL;
+      m_dataRange = nullptr;
     }
-    if (m_snippet != NULL) {
+    if (m_snippet != nullptr) {
       delete m_snippet;
-      m_snippet = NULL;
+      m_snippet = nullptr;
     }
   }
 
@@ -838,14 +838,14 @@ class FwkData : public FwkObject {
     if (m_dataType == DATA_TYPE_SNIPPET) {
       return m_snippet->getRegion();
     }
-    return NULL;
+    return nullptr;
   }
 
   const FwkPool* getPoolSnippet() const {
     if (m_dataType == DATA_TYPE_SNIPPET) {
       return m_snippet->getPool();
     }
-    return NULL;
+    return nullptr;
   }
 
   const std::string getValue() const {
@@ -934,18 +934,18 @@ class FwkClient : public FwkObject {
   FwkClient(const DOMNode* node);
 
   FwkClient(std::string name)
-      : m_program(NULL), m_arguments(NULL), m_remaining(false) {
+      : m_program(nullptr), m_arguments(nullptr), m_remaining(false) {
     setName(name);
   }
 
   ~FwkClient() {
-    if (m_program != NULL) {
+    if (m_program != nullptr) {
       free((void*)m_program);
-      m_program = NULL;
+      m_program = nullptr;
     }
-    if (m_arguments != NULL) {
+    if (m_arguments != nullptr) {
       free((void*)m_arguments);
-      m_arguments = NULL;
+      m_arguments = nullptr;
     }
   }
 
@@ -1051,13 +1051,13 @@ class FwkTask : public FwkObject {
   FwkTask(const DOMNode* node);
 
   ~FwkTask() {
-    if (m_clientSet != NULL) {
+    if (m_clientSet != nullptr) {
       delete m_clientSet;
-      m_clientSet = NULL;
+      m_clientSet = nullptr;
     }
-    if (m_dataSet != NULL) {
+    if (m_dataSet != nullptr) {
       delete m_dataSet;
-      m_dataSet = NULL;
+      m_dataSet = nullptr;
     }
     m_clients.clear();
   }
@@ -1127,7 +1127,7 @@ class FwkTask : public FwkObject {
 
   /** brief Get char pointer */
   const FwkRegion* getSnippet(const std::string& name) const {
-    const FwkRegion* value = NULL;
+    const FwkRegion* value = nullptr;
     const FwkData* data = getData(name.c_str());
     if (data) {
       value = data->getSnippet();
@@ -1136,7 +1136,7 @@ class FwkTask : public FwkObject {
   }
 
   const FwkPool* getPoolSnippet(const std::string& name) const {
-    const FwkPool* value = NULL;
+    const FwkPool* value = nullptr;
     const FwkData* data = getData(name.c_str());
     if (data) {
       value = data->getPoolSnippet();
@@ -1146,7 +1146,7 @@ class FwkTask : public FwkObject {
 
   void resetValue(const char* name) const {
     FwkData* data = const_cast<FwkData*>(getData(name));
-    if (data != NULL) data->reset();
+    if (data != nullptr) data->reset();
   }
 
   TaskClientIdxList* getTaskClients() { return &m_clients; }
@@ -1165,11 +1165,11 @@ class FwkTask : public FwkObject {
                      << "  TimesToRun: " << m_timesToRun << "  Threads: "
                      << m_threadCount << "  Parallel: " << m_parallel
                      << "  ContinueOnError: " << m_continue);
-    if (m_clientSet != NULL) {
+    if (m_clientSet != nullptr) {
       FWKINFO("Clients: ");
       m_clientSet->print();
     }
-    if (m_dataSet != NULL) {
+    if (m_dataSet != nullptr) {
       FWKINFO("Data: ");
       m_dataSet->print();
     }
@@ -1209,7 +1209,7 @@ class FwkTask : public FwkObject {
   }
 
   void setDataSet(FwkDataSet* dataSet) {
-    if (m_dataSet == NULL) m_dataSet = dataSet;
+    if (m_dataSet == nullptr) m_dataSet = dataSet;
   }
 
   /** @brief Add ClientSet
@@ -1217,7 +1217,7 @@ class FwkTask : public FwkObject {
    */
   void addClientSet(FwkClientSet* set) {
     const FwkClient* client = set->getFirst();
-    while (client != NULL) {
+    while (client != nullptr) {
       addClient(client);
       client = set->getNext(client);
     }
@@ -1227,14 +1227,14 @@ class FwkTask : public FwkObject {
   }
 
   void addClient(const FwkClient* client) {
-    if (m_clientSet == NULL) {
+    if (m_clientSet == nullptr) {
       m_clientSet = new FwkClientSet();
     }
     m_clientSet->add(client);
   }
 
   void addData(FwkData* data) {
-    if (m_dataSet == NULL) {
+    if (m_dataSet == nullptr) {
       m_dataSet = new FwkDataSet();
     }
     m_dataSet->add(data);
@@ -1307,7 +1307,7 @@ class FwkTest : public FwkObject {
 
   const FwkTask* getTaskById(std::string& id) {
     FwkTask* task = const_cast<FwkTask*>(m_taskSet.getFirst());
-    while (task != NULL) {
+    while (task != nullptr) {
       if (task->getTaskId() == id) {
         return task;
       }
@@ -1447,7 +1447,7 @@ class TestDriver {
     FwkClient* client = const_cast<FwkClient*>(clientSet->getFirst());
     std::string grp = clientSet->getHostGroup();
     bool remaining = clientSet->getRemaining();
-    while (client != NULL) {
+    while (client != nullptr) {
       client->setHostGroup(grp);
       client->setRemaining(remaining);
       m_clients.add(client);
@@ -1461,7 +1461,7 @@ class TestDriver {
     test->setKey(m_tests.size());
     const FwkTask* task = test->getFirst();
     int32_t cnt = 1;
-    while (task != NULL) {
+    while (task != nullptr) {
       (const_cast<FwkTask*>(task))->setKey(cnt++);
       m_tasks.add(task);
       task = test->getNext(task);
@@ -1500,7 +1500,7 @@ class TestDriver {
     }
     errno = 0;
     FILE* out = fopen(fil->getName().c_str(), mode);
-    if (out == (FILE*)0) {
+    if (!out) {
       int32_t err = errno;
       FWKEXCEPTION("Unable to open file " << fil->getName() << " with mode: "
                                           << what << " error: " << err);
@@ -1526,7 +1526,7 @@ class TestDriver {
   void writeFiles() {
     const LocalFile* fil = m_localFiles.getFirst();
     //        FILE * out = fopen( "local.files", "wb" );
-    while (fil != NULL) {
+    while (fil != nullptr) {
       writeLocalFile(fil);
       //          fprintf( out, "%s\n", fil->getName().c_str() );
       fil = m_localFiles.getNext(fil);
@@ -1538,11 +1538,11 @@ class TestDriver {
 
   const FwkTask* getTaskById(std::string id) {
     const FwkTask* task = m_tasks.getFirst();
-    while (task != NULL) {
+    while (task != nullptr) {
       if (id == task->getTaskId()) return task;
       task = m_tasks.getNext(task);
     }
-    return NULL;
+    return nullptr;
   }
 
   const StringVector& getHostGroups() { return m_hostGroups; }
@@ -1561,7 +1561,7 @@ class TestDriver {
 
   /** brief Get FwkDataSet pointer */
   const FwkDataSet* getDataSet(const char* name) const {
-    if (name == NULL) return NULL;
+    if (name == nullptr) return nullptr;
 
     std::map<std::string, FwkDataSet*>::const_iterator iter =
         m_dataSetMap.find(name);
@@ -1569,24 +1569,11 @@ class TestDriver {
     if (iter != m_dataSetMap.end()) {
       return (*iter).second;
     }
-    return NULL;
+    return nullptr;
   }
 
   /** brief Get FwkData pointer */
   const FwkData* getData(const char* name) const { return m_data.find(name); }
-
-  //      /** brief Get char pointer */
-  //      const char * getValue( const char * name ) const {
-  //        const char * value = NULL;
-  //        const FwkData * data = getData( name );
-  //        if ( data ) {
-  //          std::string val = data->getValue();
-  //          if ( !val.empty() ) {
-  //            value = val.c_str();
-  //          }
-  //        }
-  //        return value;
-  //      }
 
   /** brief Get char pointer */
   const std::string getStringValue(const char* name) const {

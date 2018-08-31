@@ -35,7 +35,7 @@ namespace internal {
 class APACHE_GEODE_EXPORT DataSerializableFixedId
     : public virtual Serializable {
  public:
-  ~DataSerializableFixedId() override = default;
+  ~DataSerializableFixedId() noexcept override = default;
 
   virtual void toData(DataOutput& dataOutput) const = 0;
 

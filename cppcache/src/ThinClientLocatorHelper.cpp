@@ -107,7 +107,7 @@ GfErrType ThinClientLocatorHelper::getAllServers(
       data.writeInt((int32_t)1001);  // GOSSIPVERSION
       data.writeObject(&request);
       auto sentLength = conn->send(
-          (char*)(data.getBuffer()), data.getBufferLength(),
+          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : std::chrono::seconds(10));
       if (sentLength <= 0) {
         // conn->close(); delete conn; conn = nullptr;
@@ -200,7 +200,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
       data.writeInt((int32_t)1001);  // GOSSIPVERSION
       data.writeObject(&request);
       auto sentLength = conn->send(
-          (char*)(data.getBuffer()), data.getBufferLength(),
+          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       if (sentLength <= 0) {
         // conn->close(); delete conn; conn = nullptr;
@@ -300,7 +300,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
         data.writeObject(&request);
       }
       auto sentLength = conn->send(
-          (char*)(data.getBuffer()), data.getBufferLength(),
+          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       if (sentLength <= 0) {
         // conn->close();
@@ -388,7 +388,7 @@ GfErrType ThinClientLocatorHelper::updateLocators(
       data.writeInt((int32_t)1001);  // GOSSIPVERSION
       data.writeObject(&request);
       auto sentLength = conn->send(
-          (char*)(data.getBuffer()), data.getBufferLength(),
+          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
       if (sentLength <= 0) {
         //  conn->close();

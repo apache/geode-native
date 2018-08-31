@@ -72,10 +72,15 @@
  * Allows std::shared_ptr to access protected constructors and destructors.
  */
 #if defined(__clang__)
+#if defined(__apple_build_version__) && __apple_build_version__ >= 9020039
+#define _GEODE_FRIEND_STD_SHARED_PTR(_T) \
+  friend std::__1::__compressed_pair_elem<_T, 1, false>;
+#else
 #define _GEODE_FRIEND_STD_SHARED_PTR(_T)                               \
   friend std::__libcpp_compressed_pair_imp<std::allocator<_T>, _T, 1>; \
   friend std::__shared_ptr_emplace<_T, std::allocator<_T> >;           \
   friend std::default_delete<_T>;
+#endif
 #elif defined(__GNUC__) || defined(__SUNPRO_CC)
 #define _GEODE_FRIEND_STD_SHARED_PTR(_T) friend __gnu_cxx::new_allocator<_T>;
 #elif defined(_MSC_VER)

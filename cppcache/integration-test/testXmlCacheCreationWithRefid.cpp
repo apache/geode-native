@@ -27,14 +27,14 @@
 using namespace apache::geode::client;
 
 int testXmlCacheCreationWithRefid(const char* fileName) {
-  char* host_name = (char*)"XML_CACHE_CREATION_TEST";
   auto cacheFactory = CacheFactory();
   std::shared_ptr<Cache> cptr;
 
   char* path = ACE_OS::getenv("TESTSRC");
   std::string directory(path);
 
-  std::cout << "create DistributedSytem with name=" << host_name << std::endl;
+  std::cout << "create DistributedSytem with name=XML_CACHE_CREATION_TEST" << std::endl;
+
   std::cout << "Create cache with the configurations provided in "
                "valid_cache_refid.xml"
             << std::endl;

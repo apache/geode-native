@@ -40,7 +40,7 @@ class APACHE_GEODE_EXPORT TcrHADistributionManager
   TcrHADistributionManager(ThinClientRegion* theRegion,
                            TcrConnectionManager& connManager,
                            std::shared_ptr<CacheAttributes> cacheAttributes);
-  ~TcrHADistributionManager() = default;
+  ~TcrHADistributionManager() override = default;
   TcrHADistributionManager(const TcrHADistributionManager&) = delete;
   TcrHADistributionManager& operator=(const TcrHADistributionManager&) = delete;
 

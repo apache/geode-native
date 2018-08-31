@@ -51,7 +51,7 @@ class SimpleCacheListener : public CacheListener {
 
   SimpleCacheListener() : m_totalEvents(0) {}
 
-  ~SimpleCacheListener() {}
+  ~SimpleCacheListener() override {}
 
  public:
   // The Cache Listener callbacks.

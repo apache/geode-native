@@ -43,7 +43,7 @@ bool starts_with(const _T &input, const _T &match) {
 class GfshExecute : public Gfsh {
  public:
   GfshExecute() = default;
-  virtual ~GfshExecute() = default;
+  virtual ~GfshExecute() override = default;
 
   class Connect : public Command<void> {
    public:

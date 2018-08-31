@@ -38,7 +38,7 @@ Service::Service(int32_t threadCnt)
 int32_t Service::svc() {
   while (m_run) {
     ServiceTask* task = getQ();
-    if (task != NULL) {
+    if (task) {
       try {
         task->initialize();
         task->doTask();

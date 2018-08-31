@@ -99,13 +99,13 @@ CacheHelper* getHelper() {
 void _verifyEntry(const char* name, const char* key, const char* val,
                   bool noKey) {
   // Verify key and value exist in this region, in this process.
-  const char* value = (val == 0) ? "" : val;
+  const char* value = val ? val : "";
   char* buf =
       reinterpret_cast<char*>(malloc(1024 + strlen(key) + strlen(value)));
   ASSERT(buf, "Unable to malloc buffer for logging.");
   if (noKey) {
     sprintf(buf, "Verify key %s does not exist in region %s", key, name);
-  } else if (val == 0) {
+  } else if (!val) {
     sprintf(buf, "Verify value for key %s does not exist in region %s", key,
             name);
   } else {
@@ -171,26 +171,6 @@ void _verifyEntry(const char* name, const char* key, const char* val,
     }
     dunit::sleep(SLEEP);
   }
-}
-
-#define verifyInvalid(x, y) _verifyInvalid(x, y, __LINE__)
-
-void _verifyInvalid(const char* name, const char* key, int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyInvalid() called from %d.\n", line);
-  LOG(logmsg);
-  _verifyEntry(name, key, 0, false);
-  LOG("Entry invalidated.");
-}
-
-#define verifyDestroyed(x, y) _verifyDestroyed(x, y, __LINE__)
-
-void _verifyDestroyed(const char* name, const char* key, int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyDestroyed() called from %d.\n", line);
-  LOG(logmsg);
-  _verifyEntry(name, key, 0, true);
-  LOG("Entry destroyed.");
 }
 
 #define verifyEntry(x, y, z) _verifyEntry(x, y, z, __LINE__)

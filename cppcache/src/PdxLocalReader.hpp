@@ -56,7 +56,7 @@ class PdxLocalReader : public PdxReader {
                  int32_t pdxLen,
                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
-  virtual ~PdxLocalReader();
+  virtual ~PdxLocalReader() override;
 
   void moveStream();
 

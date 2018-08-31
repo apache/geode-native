@@ -621,7 +621,7 @@ void TcrMessage::writeRegionPart(const std::string& regionName) {
   int32_t len = static_cast<int32_t>(regionName.length());
   m_request->writeInt(len);
   m_request->write(static_cast<int8_t>(0));  // isObject = 0
-  m_request->writeBytesOnly((int8_t*)regionName.c_str(), len);
+  m_request->writeBytesOnly(reinterpret_cast<int8_t*>(const_cast<char*>(regionName.c_str())), len);
 }
 
 void TcrMessage::writeStringPart(const std::string& str) {
@@ -896,7 +896,7 @@ void TcrMessage::handleByteArrayResponse(
     const SerializationRegistry& serializationRegistry,
     MemberListForVersionStamp& memberListForVersionStamp) {
   auto input = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-      (uint8_t*)bytearray, len, getPool());
+      reinterpret_cast<uint8_t*>(const_cast<char*>(bytearray)), len, getPool());
   // TODO:: this need to make sure that pool is there
   //  if(m_tcdm == nullptr)
   //  throw IllegalArgumentException("Pool is nullptr in TcrMessage");
@@ -2818,15 +2818,15 @@ const std::shared_ptr<Cacheable>& TcrMessage::getCallbackArgumentRef() const {
 }
 
 const char* TcrMessage::getMsgData() const {
-  return (char*)m_request->getBuffer();
+  return reinterpret_cast<const char*>(m_request->getBuffer());
 }
 
 const char* TcrMessage::getMsgHeader() const {
-  return (char*)m_request->getBuffer();
+  return reinterpret_cast<const char*>(m_request->getBuffer());
 }
 
 const char* TcrMessage::getMsgBody() const {
-  return (char*)m_request->getBuffer() + g_headerLen;
+  return reinterpret_cast<const char*>(m_request->getBuffer() + g_headerLen);
 }
 
 size_t TcrMessage::getMsgLength() const { return m_request->getBufferLength(); }

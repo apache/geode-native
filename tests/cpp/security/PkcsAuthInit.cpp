@@ -34,7 +34,7 @@ namespace client {
 std::shared_ptr<CacheableString> convertBytesToString(const uint8_t* bytes,
                                                       int32_t length,
                                                       size_t maxLength) {
-  if (bytes != NULL) {
+  if (bytes) {
     std::string str;
     size_t totalBytes = 0;
     char byteStr[20];
@@ -61,42 +61,42 @@ SECURITY_EXPORT AuthInitialize* createPKCSAuthInitInstance() {
 uint8_t* createSignature(EVP_PKEY* key, X509* cert,
                          const unsigned char* inputBuffer,
                          uint32_t inputBufferLen, unsigned int* signatureLen) {
-  if (key == NULL || cert == NULL || inputBuffer == NULL) {
-    return NULL;
+  if (!key || !cert || !inputBuffer) {
+    return nullptr;
   }
   const ASN1_OBJECT* macobj;
   const X509_ALGOR* algorithm = nullptr;
-  X509_ALGOR_get0(&macobj, NULL, NULL, algorithm);
+  X509_ALGOR_get0(&macobj, nullptr, nullptr, algorithm);
   const EVP_MD* signatureDigest = EVP_get_digestbyobj(macobj);
   EVP_MD_CTX* signatureCtx = EVP_MD_CTX_new();
   uint8_t* signatureData = new uint8_t[EVP_PKEY_size(key)];
-  bool result = (EVP_SignInit_ex(signatureCtx, signatureDigest, NULL) &&
+  bool result = (EVP_SignInit_ex(signatureCtx, signatureDigest, nullptr) &&
                  EVP_SignUpdate(signatureCtx, inputBuffer, inputBufferLen) &&
                  EVP_SignFinal(signatureCtx, signatureData, signatureLen, key));
   EVP_MD_CTX_free(signatureCtx);
   if (result) {
     return signatureData;
   }
-  return NULL;
+  return nullptr;
 }
 
 bool readPKCSPublicPrivateKey(FILE* keyStoreFP, const char* keyStorePassword,
                               EVP_PKEY** outPrivateKey, X509** outCertificate) {
   PKCS12* p12;
 
-  if ((keyStoreFP == NULL) || (keyStorePassword == NULL) ||
+  if (!keyStoreFP || !keyStorePassword ||
       (keyStorePassword[0] == '\0')) {
     return (false);
   }
 
-  p12 = d2i_PKCS12_fp(keyStoreFP, NULL);
+  p12 = d2i_PKCS12_fp(keyStoreFP, nullptr);
 
-  if (p12 == NULL) {
+  if (!p12) {
     return (false);
   }
 
   if (!PKCS12_parse(p12, keyStorePassword, outPrivateKey, outCertificate,
-                    NULL)) {
+                    nullptr)) {
     return (false);
   }
 
@@ -132,7 +132,7 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
 
   const char* keyStorePath = keyStoreptr->value().c_str();
 
-  if (keyStorePath == NULL) {
+  if (!keyStorePath) {
     throw AuthenticationFailedException(
         "PKCSAuthInit::getCredentials: "
         "key-store file path property KEYSTORE_FILE_PATH not set.");
@@ -142,7 +142,7 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
 
   const char* alias = aliasptr->value().c_str();
 
-  if (alias == NULL) {
+  if (!alias) {
     throw AuthenticationFailedException(
         "PKCSAuthInit::getCredentials: "
         "key-store alias property KEYSTORE_ALIAS not set.");
@@ -152,22 +152,22 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
 
   const char* keyStorePass = keyStorePassptr->value().c_str();
 
-  if (keyStorePass == NULL) {
+  if (!keyStorePass) {
     throw AuthenticationFailedException(
         "PKCSAuthInit::getCredentials: "
         "key-store password property KEYSTORE_PASSWORD not set.");
   }
 
   FILE* keyStoreFP = fopen(keyStorePath, "r");
-  if (keyStoreFP == NULL) {
+  if (!keyStoreFP) {
     char msg[1024];
     sprintf(msg, "PKCSAuthInit::getCredentials: Unable to open keystore %s",
             keyStorePath);
     throw AuthenticationFailedException(msg);
   }
 
-  EVP_PKEY* privateKey = NULL;
-  X509* cert = NULL;
+  EVP_PKEY* privateKey = nullptr;
+  X509* cert = nullptr;
 
   /* Read the Public and Private Key from keystore in file */
   if (!readPKCSPublicPrivateKey(keyStoreFP, keyStorePass, &privateKey, &cert)) {
@@ -188,7 +188,7 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
       static_cast<uint32_t>(strlen(alias)), &lengthEncryptedData);
   EVP_PKEY_free(privateKey);
   X509_free(cert);
-  if (signatureData == NULL) {
+  if (!signatureData) {
     throw AuthenticationFailedException(
         "PKCSAuthInit::getCredentials: "
         "Unable to create signature");

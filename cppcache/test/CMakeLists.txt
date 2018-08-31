@@ -18,7 +18,7 @@ project(apache-geode_unittests LANGUAGES CXX)
 
 file(GLOB_RECURSE SOURCES "*.cpp")
 
-add_executable(${PROJECT_NAME}
+add_executable(apache-geode_unittests
   AutoDeleteTest.cpp
   ByteArray.cpp
   ByteArray.hpp
@@ -44,11 +44,16 @@ add_executable(${PROJECT_NAME}
   TcrMessage_unittest.cpp
 )
 
+target_compile_definitions(apache-geode_unittests
+  PUBLIC
+    GTEST_ELLIPSIS_NEEDS_POD_
+)
+
 if (MSVC)
-  target_compile_options(${PROJECT_NAME} PRIVATE "/MD$<$<CONFIG:Debug>:d>")
+  target_compile_options(apache-geode_unittests PRIVATE "/MD$<$<CONFIG:Debug>:d>")
 endif()
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(apache-geode_unittests
   PRIVATE
     apache-geode-static
     GTest::GTest
@@ -58,12 +63,12 @@ target_link_libraries(${PROJECT_NAME}
     _CppCodeCoverage
 )
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(apache-geode_unittests
   PRIVATE
     $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
-add_dependencies(unit-tests ${PROJECT_NAME})
+add_dependencies(unit-tests apache-geode_unittests)
 
 enable_testing()
 add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)

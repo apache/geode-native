@@ -60,10 +60,10 @@ class TESTOBJECT_EXPORT Portfolio : public DataSerializable {
         pkid(nullptr),
         type(nullptr),
         status(),
-        newVal(NULL),
+        newVal(nullptr),
         creationDate(nullptr),
-        arrayNull(NULL),
-        arrayZeroSize(NULL) {}
+        arrayNull(nullptr),
+        arrayZeroSize(nullptr) {}
   Portfolio(int32_t id, uint32_t size = 0,
             std::shared_ptr<CacheableStringArray> nm = nullptr);
   ~Portfolio() noexcept override;
@@ -85,7 +85,7 @@ class TESTOBJECT_EXPORT Portfolio : public DataSerializable {
   int32_t getID() { return ID; }
   void showNames(const char* label) {
     LOGINFO(label);
-    if (names == nullptr) {
+    if (!names) {
       LOGINFO("names is NULL");
       return;
     }

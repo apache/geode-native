@@ -86,7 +86,7 @@ class DHImpl {
   const EVP_CIPHER* getCipherFunc();
   int setSkAlgo(const char* skalgo);
 
-  DHImpl() : m_dh(NULL), m_keySize(0), m_pubKeyOther(NULL) {
+  DHImpl() : m_dh(nullptr), m_keySize(0), m_pubKeyOther(nullptr) {
     /* adongre
      * CID 28924: Uninitialized scalar field (UNINIT_CTOR)
      */

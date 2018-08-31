@@ -144,7 +144,7 @@ class RegionInternal : public Region {
   /**
    * @brief destructor
    */
-  virtual ~RegionInternal();
+  virtual ~RegionInternal() override;
   /** @brief Default implementation of Public Methods from Region
    */
   virtual void registerKeys(

@@ -59,7 +59,7 @@ bool UDPMessage::receiveFrom(ACE_SOCK_Dgram& io,
                              const ACE_Time_Value* timeout) {
   bool ok = true;
   ACE_Time_Value wait(2);
-  if (timeout == NULL) {
+  if (!timeout) {
     timeout = &wait;
   }
   iovec buffs;
@@ -270,7 +270,7 @@ void Receiver::initialize() {
         char hbuff[256];
         char* hst = &hbuff[0];
         char* fqdn = ACE_OS::getenv("GF_FQDN");
-        if (fqdn != NULL) {
+        if (fqdn) {
           hst = fqdn;
         } else {
           addr.get_host_name(hbuff, 255);
@@ -322,7 +322,7 @@ void STReceiver::initialize() {
     char hbuff[256];
     char* hst = &hbuff[0];
     char* fqdn = ACE_OS::getenv("GF_FQDN");
-    if (fqdn != NULL) {
+    if (fqdn) {
       hst = fqdn;
     } else {
       addr.get_host_name(hbuff, 255);
@@ -341,7 +341,7 @@ int32_t Responder::doTask() {
   try {
     while (*m_run) {
       UDPMessage* msg = m_queues->getOutbound();
-      if (msg != NULL) {
+      if (msg) {
         msg->send(*m_io);
         delete msg;
       }

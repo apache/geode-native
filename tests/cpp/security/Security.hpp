@@ -61,15 +61,15 @@ class Security : public FrameworkTest {
  public:
   Security(const char* initArgs)
       : FrameworkTest(initArgs),
-        m_KeysA(NULL),
+        m_KeysA(nullptr),
         m_MaxKeys(0),
         m_KeyIndexBegin(0),
         m_MaxValues(0),
-        m_CValue(NULL) {}
+        m_CValue(nullptr) {}
 
   virtual ~Security(void) {
     clearKeys();
-    m_CValue = NULL;
+    m_CValue = nullptr;
   }
 
   void onRegisterMembers(void);
@@ -102,7 +102,7 @@ class Security : public FrameworkTest {
   void clearKeys();
   void initStrKeys(int32_t low, int32_t high, const std::string& keyBase);
   int32_t initValues(int32_t num, int32_t siz = 0, bool useDefault = true);
-  std::shared_ptr<Region> getRegionPtr(const char* reg = NULL);
+  std::shared_ptr<Region> getRegionPtr(const char* reg = nullptr);
   bool checkReady(int32_t numClients);
 
   std::shared_ptr<CacheableString>* m_KeysA;

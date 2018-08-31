@@ -86,14 +86,14 @@ class FrameworkTest  // Base class all test classes written for xml testing
 
   const std::string getTaskId() {
     std::string id;
-    if (m_task != NULL) {
+    if (m_task) {
       return m_task->getTaskId();
     }
     return id;
   }
 
   int32_t getWaitTime() {
-    if (m_task != NULL) {
+    if (m_task) {
       return m_task->getWaitTime();
     }
     return 0;
@@ -109,7 +109,7 @@ class FrameworkTest  // Base class all test classes written for xml testing
 
   /** brief Get std::string */
   const std::string getStringValue(const char* name) const {
-    if (m_task == NULL) {
+    if (!m_task) {
       return m_coll->getStringValue(name);
     }
     return m_task->getStringValue(name);
@@ -138,12 +138,14 @@ class FrameworkTest  // Base class all test classes written for xml testing
 
   void resetValue(const char* name) const {
     FwkData* data = const_cast<FwkData*>(getData(name));
-    if (data != NULL) data->reset();
+    if (data) {
+      data->reset();
+    }
   }
 
   /** brief Get FwkData pointer */
   const FwkData* getData(const char* name) const {
-    if (m_task == NULL) {
+    if (!m_task) {
       return m_coll->getData(name);
     }
     return m_task->getData(name);

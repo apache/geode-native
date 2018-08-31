@@ -144,8 +144,8 @@ class ThinClientPoolDM
                                  std::set<ServerLocation>& excludeServers,
                                  bool& maxConnLimit,
                                  const TcrConnection* currentServer = nullptr);
-  ThinClientLocatorHelper* getLocatorHelper() volatile {
-    return (ThinClientLocatorHelper*)m_locHelper;
+  ThinClientLocatorHelper* getLocatorHelper() {
+    return m_locHelper;
   }
   virtual void releaseThreadLocalConnection();
   virtual void setThreadLocalConnection(TcrConnection* conn);
@@ -167,7 +167,7 @@ class ThinClientPoolDM
 
   virtual void sendUserCacheCloseMessage(bool keepAlive);
 
-  virtual inline PoolStats& getStats() { return *(PoolStats*)m_stats; }
+  virtual inline PoolStats& getStats() { return *m_stats; }
 
   size_t getNumberOfEndPoints() const { return m_endpoints.current_size(); }
 
@@ -210,7 +210,7 @@ class ThinClientPoolDM
   ACE_Recursive_Thread_Mutex m_endpointsLock;
   ACE_Recursive_Thread_Mutex m_endpointSelectionLock;
   std::string m_poolName;
-  volatile PoolStats* m_stats;
+  PoolStats* m_stats;
   bool m_sticky;
   // PoolStats * m_stats;
   // PoolStatType* m_poolStatType;
@@ -306,7 +306,7 @@ class ThinClientPoolDM
 
   bool excludeServer(std::string, std::set<ServerLocation>&);
 
-  volatile ThinClientLocatorHelper* m_locHelper;
+  ThinClientLocatorHelper* m_locHelper;
 
   std::atomic<int32_t> m_poolSize;  // Actual Size of Pool
   int m_numRegions;

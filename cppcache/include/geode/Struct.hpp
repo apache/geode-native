@@ -57,7 +57,7 @@ class APACHE_GEODE_EXPORT Struct
   Struct(StructSet* ssPtr,
          std::vector<std::shared_ptr<Serializable>>& fieldValues);
 
-  ~Struct() = default;
+  ~Struct() noexcept override = default;
 
   /**
    * Factory function for registration of <code>Struct</code>.

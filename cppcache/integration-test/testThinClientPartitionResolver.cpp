@@ -42,7 +42,7 @@ class CustomPartitionResolver : public PartitionResolver {
   bool called;
 
   CustomPartitionResolver() : called(false) {}
-  ~CustomPartitionResolver() {}
+  ~CustomPartitionResolver() override {}
   const std::string &getName() override {
     static std::string name = "CustomPartitionResolver";
     LOG("CustomPartitionResolver::getName()");

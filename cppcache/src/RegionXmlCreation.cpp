@@ -62,7 +62,7 @@ void RegionXmlCreation::create(std::shared_ptr<Region> parent) {
   fillIn(subRegPtr);
 }
 
-RegionXmlCreation::RegionXmlCreation(char* name, bool isRootRegion) {
+RegionXmlCreation::RegionXmlCreation(const char* name, bool isRootRegion) {
   std::string tempName(name);
   regionName = tempName;
   isRoot = isRootRegion;

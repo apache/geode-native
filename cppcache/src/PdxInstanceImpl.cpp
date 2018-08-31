@@ -1043,7 +1043,7 @@ std::string PdxInstanceImpl::toString() const {
         break;
       }
       case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS: {
-        int8_t** value = 0;
+        int8_t** value = nullptr;
         int32_t arrayLength;
         int32_t* elementLength;
         getField(identityFields.at(i)->getFieldName(), &value, arrayLength,

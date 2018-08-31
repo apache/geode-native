@@ -29,7 +29,6 @@ namespace client {
 
 class PdxWriterWithTypeCollector : public PdxLocalWriter {
  private:
-  std::vector<int32_t> m_offsets;
   void initialize();
 
  public:

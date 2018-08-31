@@ -22,17 +22,17 @@ using namespace apache::geode::client;
 using namespace apache::geode::client::testframework;
 using namespace apache::geode::client::testframework::perf;
 
-TestClient* TestClient::m_instance = NULL;
+TestClient* TestClient::m_instance = nullptr;
 
 TestClient* TestClient::createTestClient(int32_t threadCnt) {
-  if (m_instance == NULL) {
+  if (!m_instance) {
     m_instance = new TestClient(threadCnt);
   }
   return m_instance;
 }
 
 TestClient* TestClient::getTestClient() {
-  if (m_instance == NULL) {
+  if (!m_instance) {
     FWKEXCEPTION(
         "TestClient is NULL, expected it to be initialized in Client.");
   }
@@ -40,9 +40,9 @@ TestClient* TestClient::getTestClient() {
 }
 
 void TestClient::destroyTestClient() {
-  if (m_instance != NULL) {
+  if (m_instance) {
     delete m_instance;
-    m_instance = NULL;
+    m_instance = nullptr;
   }
 }
 
@@ -130,7 +130,7 @@ int32_t TestClient::svc() {
   int32_t runTaskStatus;
   while (!done) {
     ClientTask* task = getQ();
-    if (task != 0) {
+    if (task) {
       if (task->mustExit()) {
         done = true;
       } else {

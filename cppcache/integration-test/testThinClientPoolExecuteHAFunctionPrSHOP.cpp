@@ -34,12 +34,12 @@ const char* poolName = "__TEST_POOL1__";
 
 const char* serverGroup = "ServerGroup1";
 
-char* OnServerHAExceptionFunction = (char*)"OnServerHAExceptionFunction";
-char* OnServerHAShutdownFunction = (char*)"OnServerHAShutdownFunction";
+const char* OnServerHAExceptionFunction = "OnServerHAExceptionFunction";
+const char* OnServerHAShutdownFunction = "OnServerHAShutdownFunction";
 
-char* RegionOperationsHAFunction = (char*)"RegionOperationsHAFunction";
-char* RegionOperationsHAFunctionPrSHOP =
-    (char*)"RegionOperationsHAFunctionPrSHOP";
+const char* RegionOperationsHAFunction = "RegionOperationsHAFunction";
+const char* RegionOperationsHAFunctionPrSHOP =
+    "RegionOperationsHAFunctionPrSHOP";
 #define verifyGetResults()                                      \
   bool found = false;                                           \
   for (int j = 0; j < 34; j++) {                                \
@@ -59,7 +59,7 @@ class MyResultCollector : public DefaultResultCollector {
  public:
   MyResultCollector()
       : m_endResultCount(0), m_addResultCount(0), m_getResultCount(0) {}
-  ~MyResultCollector() noexcept {}
+  ~MyResultCollector() noexcept override {}
 
   std::shared_ptr<CacheableVector> getResult(
       std::chrono::milliseconds timeout) override {

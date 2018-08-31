@@ -39,7 +39,7 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
                              std::shared_ptr<PdxType> pdxType, int pdxlen,
                              std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
-  virtual ~PdxReaderWithTypeCollector();
+  virtual ~PdxReaderWithTypeCollector() override;
 
   std::shared_ptr<PdxType> getLocalType() const { return m_newPdxType; }
 

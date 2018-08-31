@@ -34,6 +34,7 @@ add_executable(integration-test-2
 target_compile_definitions(integration-test-2
   PUBLIC
     BOOST_ASIO_HAS_MOVE
+    GTEST_ELLIPSIS_NEEDS_POD_
 )
 
 target_include_directories(integration-test-2

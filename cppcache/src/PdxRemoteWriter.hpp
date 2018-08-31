@@ -34,8 +34,6 @@ class PdxRemoteWriter : public PdxLocalWriter {
 
   int32_t m_remoteTolocalMapLength;
 
-  std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
-
   void initialize();
   void writePreserveData();
 

@@ -88,9 +88,9 @@ OsStatisticsImpl::OsStatisticsImpl(StatisticsType* typeArg,
   /* adongre
    * CID 28981: Uninitialized pointer field (UNINIT_CTOR)
    */
-  doubleStorage = (double*)0;
-  intStorage = (int32_t*)0;
-  longStorage = (int64_t*)0;
+  doubleStorage = nullptr;
+  intStorage = nullptr;
+  longStorage = nullptr;
 
   if (statsType != nullptr) {
     int32_t intCount = statsType->getIntStatCount();

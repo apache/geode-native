@@ -110,7 +110,7 @@ bool TcpIpc::listen(int32_t waitSecs) {
   ACE_INET_Addr addr(m_ipaddr.c_str());
   ACE_SOCK_Acceptor listener(addr, 1);
 
-  if (listener.accept(*m_io, 0, new ACE_Time_Value(waitSecs)) != 0) {
+  if (listener.accept(*m_io, nullptr, new ACE_Time_Value(waitSecs)) != 0) {
     FWKSEVERE("Accept failed with errno: " << errno);
     return false;
   }
@@ -118,7 +118,7 @@ bool TcpIpc::listen(int32_t waitSecs) {
 }
 
 bool TcpIpc::accept(ACE_SOCK_Acceptor *acceptor, int32_t waitSecs) {
-  if (acceptor->accept(*m_io, 0, new ACE_Time_Value(waitSecs)) != 0) {
+  if (acceptor->accept(*m_io, nullptr, new ACE_Time_Value(waitSecs)) != 0) {
     FWKSEVERE("Accept failed with errno: " << errno);
     return false;
   }
@@ -148,17 +148,17 @@ bool TcpIpc::connect(int32_t waitSecs) {
 TcpIpc::~TcpIpc() { close(); }
 
 void TcpIpc::close() {
-  if (m_io != NULL) {
+  if (m_io != nullptr) {
     m_io->close();
     delete m_io;
-    m_io = NULL;
+    m_io = nullptr;
   }
 }
 
 int32_t TcpIpc::readBuffer(char **buffer, int32_t waitSecs) {
   ACE_Time_Value wtime(waitSecs);
   iovec buffs;
-  buffs.iov_base = NULL;
+  buffs.iov_base = nullptr;
   buffs.iov_len = 0;
   int32_t red = static_cast<int32_t>(m_io->recvv(&buffs, &wtime));
   if ((red == -1) && ((errno == ECONNRESET) || (errno == EPIPE))) {

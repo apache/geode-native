@@ -248,11 +248,11 @@ bool PdxType3V1::m_useWeakHashMap = false;
 PdxType3V1::PdxType3V1() {
   m_i1 = 1;
   m_i2 = 21;
-  m_str1 = (char *)"common";
+  m_str1 = "common";
   m_i3 = 31;
   m_i4 = 41;
   m_i5 = 0;
-  m_str2 = (char *)"0";
+  m_str2 = "0";
 }
 
 PdxType3V1::~PdxType3V1() noexcept {
@@ -676,8 +676,8 @@ TestDiffTypePdxSV1::TestDiffTypePdxSV1() {}
 
 TestDiffTypePdxSV1::TestDiffTypePdxSV1(bool init) {
   if (init) {
-    _id = (char *)"id:100";
-    _name = (char *)"HK";
+    _id = "id:100";
+    _name = "HK";
   }
 }
 
@@ -696,7 +696,7 @@ bool TestDiffTypePdxSV1::equals(const TestDiffTypePdxSV1& obj) {
 TestEqualsV1::TestEqualsV1() {
   i1 = 1;
   i2 = 0;
-  s1 = (char *)"s1";
+  s1 = "s1";
   // TODO: Uncomment it.
   // sArr = ;
   // intArr = ;

@@ -70,7 +70,7 @@ class TestProcessor : public ServiceTask {
     std::string str("A result for you.");
     while (*m_run) {
       UDPMessage* msg = m_queues->getInbound();
-      if (msg != NULL) {
+      if (msg) {
         if (m_sendReply) {
           msg->setMessage(str);
           m_queues->putOutbound(msg);
