@@ -54,6 +54,8 @@
 
 #ifdef SOLARIS_USE_BB
 #include "BBNamingContext.hpp"
+using apache::geode::client::testframework::BBNamingContextClient;
+using apache::geode::client::testframework::BBNamingContextServer;
 #else
 #include <ace/Naming_Context.h>
 #endif
@@ -69,7 +71,6 @@
 #define __DUNIT_NO_MAIN__
 #include "fw_dunit.hpp"
 
-typedef unsigned int uint32_t;
 
 ACE_TCHAR* g_programName = nullptr;
 uint32_t g_masterPid = 0;
@@ -1174,4 +1175,3 @@ void Semaphore::release(int t) {
 
 }  // namespace perf
 
-namespace test {}  // namespace test

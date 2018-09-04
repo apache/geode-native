@@ -28,6 +28,7 @@
 
 namespace apache {
 namespace geode {
+
 namespace client {
 
 class CacheImpl;
@@ -36,27 +37,30 @@ class AdminRegion;
 class ThinClientPoolDM;
 
 }  // namespace client
+
 namespace statistics {
 
+using client::AdminRegion;
 using client::CacheImpl;
 using client::ThinClientPoolDM;
-using client::AdminRegion;
 
 class StatisticsManager;
+
 class APACHE_GEODE_EXPORT PoolStatsSampler : public ACE_Task_Base {
  public:
+  PoolStatsSampler() = delete;
   PoolStatsSampler(std::chrono::milliseconds sampleRate, CacheImpl* cache,
                    ThinClientPoolDM* distMan);
+  PoolStatsSampler& operator=(const PoolStatsSampler&) = delete;
+  PoolStatsSampler(const PoolStatsSampler& PoolStatsSampler) = delete;
+  ~PoolStatsSampler() noexcept override = default;
+
   void start();
   void stop();
-  int32_t svc(void);
+  int32_t svc(void) override;
   bool isRunning();
-  virtual ~PoolStatsSampler();
 
  private:
-  PoolStatsSampler();
-  PoolStatsSampler& operator=(const PoolStatsSampler&);
-  PoolStatsSampler(const PoolStatsSampler& PoolStatsSampler);
   void putStatsInAdminRegion();
   volatile bool m_running;
   volatile bool m_stopRequested;
@@ -67,7 +71,9 @@ class APACHE_GEODE_EXPORT PoolStatsSampler : public ACE_Task_Base {
   static const char* NC_PSS_Thread;
   GeodeStatisticsFactory* m_statisticsFactory;
 };
+
 }  // namespace statistics
+
 }  // namespace geode
 }  // namespace apache
 

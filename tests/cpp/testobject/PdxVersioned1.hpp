@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TESTOBJECT_PDXVERSIONED1_H_
-#define GEODE_TESTOBJECT_PDXVERSIONED1_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * PdxObject.hpp
- *
- *  Created on: Sep 29, 2011
- *      Author: npatel
- */
+
+#pragma once
+
+#ifndef GEODE_TESTOBJECT_PDXVERSIONED1_H_
+#define GEODE_TESTOBJECT_PDXVERSIONED1_H_
 
 #include <geode/PdxSerializable.hpp>
 #include <geode/CacheableEnum.hpp>
@@ -34,9 +28,17 @@
 
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-
 namespace PdxTests {
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableArrayList;
+using apache::geode::client::CacheableDate;
+using apache::geode::client::CacheableEnum;
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::PdxReader;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::PdxWriter;
 
 class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
  private:

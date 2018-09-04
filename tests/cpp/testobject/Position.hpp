@@ -33,7 +33,10 @@
 
 namespace testobject {
 
-using namespace apache::geode::client;
+using apache::geode::client::CacheableString;
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataSerializable;
 
 class TESTOBJECT_EXPORT Position : public DataSerializable {
  private:

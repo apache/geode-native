@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTPUTGETALL_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTPUTGETALL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTPUTGETALL_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTPUTGETALL_H_
+
 #include "fw_dunit.hpp"
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
@@ -34,13 +34,24 @@
 #include "testobject/PdxClassV1.hpp"
 #include "testobject/PdxClassV2.hpp"
 
-using namespace PdxTests;
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
+
+using PdxTests::PdxTypes1;
+using PdxTests::PdxTypes10;
+using PdxTests::PdxTypes2;
+using PdxTests::PdxTypes3;
+using PdxTests::PdxTypes4;
+using PdxTests::PdxTypes5;
+using PdxTests::PdxTypes6;
+using PdxTests::PdxTypes7;
+using PdxTests::PdxTypes8;
+using PdxTests::PdxTypes9;
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::IllegalStateException;
 
 static bool isLocalServer = false;
 static bool isLocator = false;

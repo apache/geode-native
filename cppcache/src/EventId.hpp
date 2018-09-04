@@ -33,6 +33,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+using internal::DSFid;
+
 /**
  * EventID "token" with a Distributed Member ID, Thread ID and per-thread
  * Sequence ID

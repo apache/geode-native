@@ -31,7 +31,9 @@
 #include "ThinClientPoolStickyHADM.hpp"
 #include "CacheRegionHelper.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 const std::chrono::milliseconds PoolFactory::DEFAULT_FREE_CONNECTION_TIMEOUT =
     std::chrono::seconds{10};
@@ -314,3 +316,7 @@ PoolFactory& PoolFactory::addCheck(const std::string& host, int port) {
   }
   return *this;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

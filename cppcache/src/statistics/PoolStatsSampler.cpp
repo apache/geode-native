@@ -48,12 +48,8 @@ PoolStatsSampler::PoolStatsSampler(milliseconds sampleRate, CacheImpl* cache,
   m_adminRegion = AdminRegion::create(cache, distMan);
 }
 
-PoolStatsSampler::~PoolStatsSampler() {
-  // _GEODE_SAFE_DELETE(m_adminRegion);
-}
-
 int32_t PoolStatsSampler::svc() {
-  DistributedSystemImpl::setThreadName(NC_PSS_Thread);
+  client::DistributedSystemImpl::setThreadName(NC_PSS_Thread);
   // ACE_Guard < ACE_Recursive_Thread_Mutex > _guard( m_lock );
   while (!m_stopRequested) {
     auto sampleStart = high_resolution_clock::now();
@@ -110,19 +106,19 @@ void PoolStatsSampler::putStatsInAdminRegion() {
         }
       }
       static int numCPU = ACE_OS::num_processors();
-      auto obj = ClientHealthStats::create(gets, puts, misses, numListeners,
-                                           numThreads, cpuTime, numCPU);
+      auto obj = client::ClientHealthStats::create(
+          gets, puts, misses, numListeners, numThreads, cpuTime, numCPU);
       const auto memId = m_distMan->getMembershipId();
       clientId = memId->getDSMemberIdForThinClientUse();
-      auto keyPtr = CacheableString::create(clientId.c_str());
+      auto keyPtr = client::CacheableString::create(clientId.c_str());
       m_adminRegion->put(keyPtr, obj);
     }
-  } catch (const AllConnectionsInUseException&) {
+  } catch (const client::AllConnectionsInUseException&) {
     LOGDEBUG("All connection are in use, trying again.");
-  } catch (const NotConnectedException& ex) {
+  } catch (const client::NotConnectedException& ex) {
     try {
       std::rethrow_if_nested(ex);
-    } catch (const NoAvailableLocatorsException&) {
+    } catch (const client::NoAvailableLocatorsException&) {
       LOGDEBUG("No locators available, trying again.");
     } catch (...) {
       LOGDEBUG("Not connected to geode, trying again.");

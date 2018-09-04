@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTSECURITY_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTSECURITY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,18 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * ThinClientSecurity.hpp
- *
- *  Created on: Nov 13, 2008
- *      Author: vrao
- */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTSECURITY_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTSECURITY_H_
 
 #include <geode/AuthenticatedView.hpp>
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "CacheImplHelper.hpp"
 #include "testUtils.hpp"
+
+using apache::geode::client::AuthenticatedView;
 
 static bool isLocalServer = false;
 static bool isLocator = false;

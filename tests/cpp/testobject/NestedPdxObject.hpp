@@ -32,10 +32,16 @@
 
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-
 namespace testobject {
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableEnum;
+using apache::geode::client::PdxReader;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::PdxWriter;
+
 enum Gender { male, female, other };
+
 class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
  private:
   int m_childId;

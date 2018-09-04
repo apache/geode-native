@@ -22,7 +22,9 @@
 #include <geode/DataOutput.hpp>
 #include <geode/CacheableString.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 //---- statics
 std::shared_ptr<CacheableToken> CacheableToken::invalidToken =
@@ -73,3 +75,7 @@ std::string CacheableToken::toString() const {
 }
 
 size_t CacheableToken::objectSize() const { return sizeof(m_value); }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -25,10 +25,12 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 bool isLocalServer = false;
+
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::Properties;
 
 CacheHelper* cacheHelper = nullptr;
 volatile int g_redundancyLevel = 0;

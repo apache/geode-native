@@ -26,7 +26,9 @@
 
 #include <geode/CacheableBuiltins.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::Cacheable;
+using apache::geode::client::IllegalArgumentException;
+using apache::geode::client::internal::DSCode;
 
 class CacheableWrapper {
  protected:

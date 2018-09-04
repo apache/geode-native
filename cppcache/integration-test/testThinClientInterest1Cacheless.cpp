@@ -24,8 +24,7 @@
 
 #include "locator_globals.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::EntryEvent;
 
 class MyListener;
 

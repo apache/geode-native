@@ -16,7 +16,9 @@
  */
 #include "EventIdMap.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 EventIdMap::~EventIdMap() { clear(); }
 
@@ -202,3 +204,7 @@ void EventSequence::setDeadline(ACE_Time_Value deadline) {
 bool EventSequence::operator<=(const EventSequence& rhs) const {
   return this->m_seqNum <= (&rhs)->m_seqNum;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

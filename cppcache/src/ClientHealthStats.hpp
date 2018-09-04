@@ -31,7 +31,7 @@ namespace geode {
 namespace client {
 
 class ClientHealthStats : public internal::DataSerializableFixedId_t<
-                              DSFid::ClientHealthStats> {
+                              internal::DSFid::ClientHealthStats> {
  public:
   void toData(DataOutput& output) const override;
 

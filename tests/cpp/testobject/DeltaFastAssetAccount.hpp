@@ -33,9 +33,13 @@
 #include "FastAsset.hpp"
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-using namespace testframework;
 namespace testobject {
+
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableString;
+using apache::geode::client::DataSerializable;
+using apache::geode::client::Delta;
 
 class TESTOBJECT_EXPORT DeltaFastAssetAccount : public DataSerializable,
                                                 public Delta {

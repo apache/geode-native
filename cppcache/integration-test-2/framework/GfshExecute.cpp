@@ -25,10 +25,15 @@
 std::mutex g_child_mutex;
 #endif
 
+using boost::process::args;
+using boost::process::child;
+using boost::process::environment;
+using boost::process::ipstream;
+using boost::process::std_err;
+using boost::process::std_out;
+
 void GfshExecute::execute(const std::string &command) {
   BOOST_LOG_TRIVIAL(info) << "Gfsh::execute: " << command;
-
-  using namespace boost::process;
 
   std::vector<std::string> commands;
   if (!connection_.empty()) {
@@ -65,11 +70,9 @@ void GfshExecute::execute(const std::string &command) {
   extractConnectionCommand(command);
 }
 
-boost::process::child GfshExecute::executeChild(
-    std::vector<std::string> &commands, boost::process::environment &env,
-    boost::process::ipstream &outStream, boost::process::ipstream &errStream) {
-  using namespace boost::process;
-
+child GfshExecute::executeChild(std::vector<std::string> &commands,
+                                environment &env, ipstream &outStream,
+                                ipstream &errStream) {
 #if defined(_WINDOWS)
   // https://github.com/klemens-morgenstern/boost-process/issues/159
   std::lock_guard<std::mutex> guard(g_child_mutex);

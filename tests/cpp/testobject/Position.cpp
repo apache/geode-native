@@ -20,8 +20,7 @@
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 
-using namespace apache::geode::client;
-using namespace testobject;
+namespace testobject {
 
 int32_t Position::cnt = 0;
 
@@ -118,3 +117,5 @@ std::string Position::toString() const {
           this->sharesOutstanding, this->pid);
   return buf;
 }
+
+}  // namespace testobject

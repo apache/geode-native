@@ -477,7 +477,7 @@ void FrameworkTest::setTestScheme() {
 }
 
 std::string FrameworkTest::poolAttributesToString(std::shared_ptr<Pool>& pool) {
-  using namespace apache::geode::internal::chrono::duration;
+  using apache::geode::internal::chrono::duration::to_string;
 
   std::string sString;
   sString += "\npoolName: ";

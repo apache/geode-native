@@ -19,7 +19,9 @@
 #include "LRUEntriesMap.hpp"
 #include "CacheImpl.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 bool LRULocalDestroyAction::evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
   std::shared_ptr<CacheableKey> keyPtr;
@@ -34,3 +36,7 @@ bool LRULocalDestroyAction::evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
       versionTag);
   return (err == GF_NOERR);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

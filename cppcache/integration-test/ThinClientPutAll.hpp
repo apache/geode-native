@@ -33,8 +33,17 @@
 #define ROOT_SCOPE DISTRIBUTED_ACK
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableInt64;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::Exception;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::IllegalArgumentException;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2

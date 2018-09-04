@@ -41,8 +41,19 @@
 #define ROOT_SCOPE LOCAL
 #endif
 
-using namespace apache::geode::client;
-using namespace PdxTests;
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::DataOutputInternal;
+using apache::geode::client::Exception;
+using apache::geode::client::Region;
+using apache::geode::client::ResultSet;
+using apache::geode::client::SelectResults;
+using apache::geode::client::Serializable;
+using apache::geode::client::Struct;
+using apache::geode::client::StructSet;
+
+using testobject::Portfolio;
+using testobject::Position;
 
 namespace testData {
 
@@ -643,8 +654,19 @@ const int cqResultsetRowCounts[CQRS_ARRAY_SIZE] = {20, 1,  19, 0, 0, 0,  0, 20,
 
 const int constantExpectedRowsCQRS[1] = {35};
 }  // namespace testData
-using namespace testData;
-using namespace testobject;
+
+using testData::constantExpectedRowsCQRS;
+using testData::constantExpectedRowsPQRS;
+using testData::constantExpectedRowsRS;
+using testData::constantExpectedRowsSS;
+using testData::constantExpectedRowsSSPQ;
+using testData::multiRegion;
+using testData::nestedQueries;
+using testData::queryCategory;
+using testData::QueryStrings;
+using testData::resultsetQueries;
+using testData::structsetQueries;
+using testData::unsupported;
 
 class QueryHelper {
  public:
@@ -675,7 +697,8 @@ class QueryHelper {
                                     int setSize, int numSets);
   virtual void populatePortfolioPdxData(std::shared_ptr<Region>& pregion,
                                         int setSize, int numSets,
-                                        int32_t objSize = 1, char** nm = nullptr);
+                                        int32_t objSize = 1,
+                                        char** nm = nullptr);
   virtual void populatePositionPdxData(std::shared_ptr<Region>& pregion,
                                        int setSize, int numSets);
   virtual void destroyPortfolioOrPositionData(std::shared_ptr<Region>& pregion,

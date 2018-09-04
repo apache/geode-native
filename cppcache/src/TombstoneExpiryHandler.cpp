@@ -27,7 +27,9 @@
 #include "MapEntry.hpp"
 #include "RegionInternal.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 TombstoneExpiryHandler::TombstoneExpiryHandler(
     std::shared_ptr<TombstoneEntry> entryPtr, TombstoneList* tombstoneList,
@@ -90,3 +92,7 @@ inline void TombstoneExpiryHandler::DoTheExpirationAction(
       Utils::nullSafeToString(key).c_str());
   m_tombstoneList->removeEntryFromMapSegment(key);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

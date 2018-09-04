@@ -22,7 +22,13 @@
 
 #include "fw_helper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheXmlException;
+using apache::geode::client::DiskPolicyType;
+using apache::geode::client::Exception;
+using apache::geode::client::ExpirationAction;
+using apache::geode::client::Region;
 
 int testXmlCacheCreationWithOverflow() {
   auto cacheFactory = CacheFactory();
@@ -33,7 +39,8 @@ int testXmlCacheCreationWithOverflow() {
   char* path = ACE_OS::getenv("TESTSRC");
   std::string directory(path);
 
-  std::cout << "create DistributedSytem with name=XML_CACHE_CREATION_TEST" << std::endl;
+  std::cout << "create DistributedSytem with name=XML_CACHE_CREATION_TEST"
+            << std::endl;
   std::cout << "Create cache with the configurations provided in "
                "valid_overflowAttr.xml"
             << std::endl;

@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
 #include "FastAssetAccount.hpp"
 #include "FastAsset.hpp"
 
-using namespace apache::geode::client;
-using namespace testframework;
-using namespace testobject;
+namespace testobject {
+
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::CacheableInt32;
 
 FastAssetAccount::FastAssetAccount(int idx, bool encodeTimestp, int maxVal,
                                    int asstSize)
@@ -71,3 +71,5 @@ std::string FastAssetAccount::toString() const {
           acctId, customerName->toString().c_str(), netWorth, timestamp);
   return buf;
 }
+
+}  // namespace testobject

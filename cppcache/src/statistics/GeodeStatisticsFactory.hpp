@@ -39,8 +39,6 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
-using namespace apache::geode::client;
-
 class StatisticsManager;
 
 /**

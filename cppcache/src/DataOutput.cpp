@@ -34,8 +34,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-using namespace internal;
-
 ACE_Recursive_Thread_Mutex g_bigBufferLock;
 size_t DataOutput::m_highWaterMark = 50 * 1024 * 1024;
 size_t DataOutput::m_lowWaterMark = 8192;
@@ -188,7 +186,7 @@ void DataOutput::writeJavaModifiedUtf8(const char32_t* data, size_t len) {
 
 size_t DataOutput::getJavaModifiedUtf8EncodedLength(const char16_t* data,
                                                     size_t length) {
-  return JavaModifiedUtf8::encodedLength(data, length);
+  return internal::JavaModifiedUtf8::encodedLength(data, length);
 }
 
 template <class _Traits, class _Allocator>

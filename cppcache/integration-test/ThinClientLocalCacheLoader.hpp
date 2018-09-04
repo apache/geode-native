@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTLOCALCACHELOADER_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTLOCALCACHELOADER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTLOCALCACHELOADER_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTLOCALCACHELOADER_H_
+
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "TallyLoader.hpp"
@@ -28,8 +28,8 @@
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::CacheFactory;
+
 std::shared_ptr<TallyLoader> reg1Loader1;
 int numLoads = 0;
 std::shared_ptr<Cache> cachePtr;
@@ -42,20 +42,19 @@ class ThinClientTallyLoader : public TallyLoader {
   virtual ~ThinClientTallyLoader() = default;
 
   std::shared_ptr<Cacheable> load(
-      Region& rp,
-      const std::shared_ptr<CacheableKey>& key,
+      Region& rp, const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Serializable>& aCallbackArgument) {
     int32_t loadValue = std::dynamic_pointer_cast<CacheableInt32>(
                             TallyLoader::load(rp, key, aCallbackArgument))
                             ->value();
     char lstrvalue[32];
     sprintf(lstrvalue, "%i", loadValue);
-   auto lreturnValue = CacheableString::create(lstrvalue);
-   if (key != nullptr && (!rp.getAttributes().getEndpoints().empty() ||
-                          !rp.getAttributes().getPoolName().empty())) {
-     LOGDEBUG("Putting the value (%s) for local region clients only ",
-              lstrvalue);
-     rp.put(key, lreturnValue);
+    auto lreturnValue = CacheableString::create(lstrvalue);
+    if (key != nullptr && (!rp.getAttributes().getEndpoints().empty() ||
+                           !rp.getAttributes().getPoolName().empty())) {
+      LOGDEBUG("Putting the value (%s) for local region clients only ",
+               lstrvalue);
+      rp.put(key, lreturnValue);
     }
     return lreturnValue;
   }
@@ -108,9 +107,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient)
     LOGINFO("Obtained the Region from the Cache");
 
     // Plugin the ThinClientTallyLoader to the Region.
-   auto attrMutatorPtr = regionPtr->getAttributesMutator();
-   reg1Loader1 = std::make_shared<ThinClientTallyLoader>();
-   attrMutatorPtr->setCacheLoader(reg1Loader1);
+    auto attrMutatorPtr = regionPtr->getAttributesMutator();
+    reg1Loader1 = std::make_shared<ThinClientTallyLoader>();
+    attrMutatorPtr->setCacheLoader(reg1Loader1);
   }
 END_TASK_DEFINITION
 
@@ -124,115 +123,115 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testLoader)
   {
-   auto keyPtr = CacheableKey::create("Key0");
+    auto keyPtr = CacheableKey::create("Key0");
 
-   ASSERT(!regionPtr->containsKey(keyPtr),
-          "Key should not have been found in region.");
-   // now having the Callbacks set, lets call the loader
-   ASSERT(regionPtr->get(keyPtr) != nullptr, "Expected non null value");
+    ASSERT(!regionPtr->containsKey(keyPtr),
+           "Key should not have been found in region.");
+    // now having the Callbacks set, lets call the loader
+    ASSERT(regionPtr->get(keyPtr) != nullptr, "Expected non null value");
 
-   auto regEntryPtr = regionPtr->getEntry(keyPtr);
-   auto valuePtr = regEntryPtr->getValue();
-   int val = atoi(valuePtr->toString().c_str());
-   LOGFINE("val for keyPtr is %d", val);
-   numLoads++;
-   validateEventCount(__LINE__);
+    auto regEntryPtr = regionPtr->getEntry(keyPtr);
+    auto valuePtr = regEntryPtr->getValue();
+    int val = atoi(valuePtr->toString().c_str());
+    LOGFINE("val for keyPtr is %d", val);
+    numLoads++;
+    validateEventCount(__LINE__);
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testDestroy)
   {
-   auto keyPtr2 = CacheableKey::create("Key1");
-   regionPtr->destroy(keyPtr2);
-   // Verify the sequence destroy()->get() :- CacheLoader to be invoked.
-   regionPtr->get(keyPtr2);
-   auto regEntryPtr2 = regionPtr->getEntry(keyPtr2);
-   auto valuePtr2 = regEntryPtr2->getValue();
-   int val2 = atoi(valuePtr2->toString().c_str());
-   LOGFINE("val2 for keyPtr2 is %d", val2);
-   numLoads++;
-   validateEventCount(__LINE__);
+    auto keyPtr2 = CacheableKey::create("Key1");
+    regionPtr->destroy(keyPtr2);
+    // Verify the sequence destroy()->get() :- CacheLoader to be invoked.
+    regionPtr->get(keyPtr2);
+    auto regEntryPtr2 = regionPtr->getEntry(keyPtr2);
+    auto valuePtr2 = regEntryPtr2->getValue();
+    int val2 = atoi(valuePtr2->toString().c_str());
+    LOGFINE("val2 for keyPtr2 is %d", val2);
+    numLoads++;
+    validateEventCount(__LINE__);
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateKey)
   {
-   auto keyPtr2 = CacheableKey::create("Key2");
-   regionPtr->put(keyPtr2, "Value2");
-   regionPtr->invalidate(keyPtr2);
-   // Verify the sequence invalidate()->get() :- CacheLoader to be invoked.
-   regionPtr->get(keyPtr2);
-   auto regEntryPtr = regionPtr->getEntry(keyPtr2);
-   auto valuePtr = regEntryPtr->getValue();
-   int val = atoi(valuePtr->toString().c_str());
-   LOGFINE("val for keyPtr1 is %d", val);
-   numLoads++;
-   validateEventCount(__LINE__);
+    auto keyPtr2 = CacheableKey::create("Key2");
+    regionPtr->put(keyPtr2, "Value2");
+    regionPtr->invalidate(keyPtr2);
+    // Verify the sequence invalidate()->get() :- CacheLoader to be invoked.
+    regionPtr->get(keyPtr2);
+    auto regEntryPtr = regionPtr->getEntry(keyPtr2);
+    auto valuePtr = regEntryPtr->getValue();
+    int val = atoi(valuePtr->toString().c_str());
+    LOGFINE("val for keyPtr1 is %d", val);
+    numLoads++;
+    validateEventCount(__LINE__);
 
-   // Verify the sequence put()->invalidate()->get()->invalidate()->get() :-
-   // CacheLoader to be invoked twice
-   // once after each get.
-   auto keyPtr4 = CacheableKey::create("Key4");
-   regionPtr->put(keyPtr4, "Value4");
-   regionPtr->invalidate(keyPtr4);
-   regionPtr->get(keyPtr4);
-   auto regEntryPtr1 = regionPtr->getEntry(keyPtr4);
-   auto valuePtr1 = regEntryPtr1->getValue();
-   int val1 = atoi(valuePtr1->toString().c_str());
-   LOGFINE("val1 for keyPtr4 is %d", val1);
-   numLoads++;
-   validateEventCount(__LINE__);
+    // Verify the sequence put()->invalidate()->get()->invalidate()->get() :-
+    // CacheLoader to be invoked twice
+    // once after each get.
+    auto keyPtr4 = CacheableKey::create("Key4");
+    regionPtr->put(keyPtr4, "Value4");
+    regionPtr->invalidate(keyPtr4);
+    regionPtr->get(keyPtr4);
+    auto regEntryPtr1 = regionPtr->getEntry(keyPtr4);
+    auto valuePtr1 = regEntryPtr1->getValue();
+    int val1 = atoi(valuePtr1->toString().c_str());
+    LOGFINE("val1 for keyPtr4 is %d", val1);
+    numLoads++;
+    validateEventCount(__LINE__);
 
-   regionPtr->invalidate(keyPtr4);
-   regionPtr->get(keyPtr4);
-   auto regEntryPtr2 = regionPtr->getEntry(keyPtr4);
-   auto valuePtr2 = regEntryPtr2->getValue();
-   int val2 = atoi(valuePtr2->toString().c_str());
-   LOGFINE("val2 for keyPtr4 is %d", val2);
-   numLoads++;
-   validateEventCount(__LINE__);
+    regionPtr->invalidate(keyPtr4);
+    regionPtr->get(keyPtr4);
+    auto regEntryPtr2 = regionPtr->getEntry(keyPtr4);
+    auto valuePtr2 = regEntryPtr2->getValue();
+    int val2 = atoi(valuePtr2->toString().c_str());
+    LOGFINE("val2 for keyPtr4 is %d", val2);
+    numLoads++;
+    validateEventCount(__LINE__);
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateRegion)
   {
-   auto keyPtr3 = CacheableKey::create("Key3");
-   regionPtr->put(keyPtr3, "Value3");
-   // Verify the sequence invalidateRegion()->get() :- CacheLoader to be
-   // invoked.
-   regionPtr->invalidateRegion();
-   regionPtr->get(keyPtr3);
-   auto regEntryPtr = regionPtr->getEntry(keyPtr3);
-   auto valuePtr = regEntryPtr->getValue();
-   int val = atoi(valuePtr->toString().c_str());
-   LOGFINE("val for keyPtr3 is %d", val);
-   numLoads++;
-   validateEventCount(__LINE__);
+    auto keyPtr3 = CacheableKey::create("Key3");
+    regionPtr->put(keyPtr3, "Value3");
+    // Verify the sequence invalidateRegion()->get() :- CacheLoader to be
+    // invoked.
+    regionPtr->invalidateRegion();
+    regionPtr->get(keyPtr3);
+    auto regEntryPtr = regionPtr->getEntry(keyPtr3);
+    auto valuePtr = regEntryPtr->getValue();
+    int val = atoi(valuePtr->toString().c_str());
+    LOGFINE("val for keyPtr3 is %d", val);
+    numLoads++;
+    validateEventCount(__LINE__);
 
-   // Verify the sequence
-   // put()->invalidateRegion()->get()->invalidateRegion()->get() :-
-   // CacheLoader
-   // to be invoked twice.
-   // once after each get.
-   auto keyPtr4 = CacheableKey::create("Key4");
-   regionPtr->put(keyPtr4, "Value4");
-   regionPtr->invalidateRegion();
-   regionPtr->get(keyPtr4);
-   auto regEntryPtr1 = regionPtr->getEntry(keyPtr4);
-   auto valuePtr1 = regEntryPtr1->getValue();
-   int val1 = atoi(valuePtr1->toString().c_str());
-   LOGFINE("val1 for keyPtr4 is %d", val1);
-   numLoads++;
-   validateEventCount(__LINE__);
+    // Verify the sequence
+    // put()->invalidateRegion()->get()->invalidateRegion()->get() :-
+    // CacheLoader
+    // to be invoked twice.
+    // once after each get.
+    auto keyPtr4 = CacheableKey::create("Key4");
+    regionPtr->put(keyPtr4, "Value4");
+    regionPtr->invalidateRegion();
+    regionPtr->get(keyPtr4);
+    auto regEntryPtr1 = regionPtr->getEntry(keyPtr4);
+    auto valuePtr1 = regEntryPtr1->getValue();
+    int val1 = atoi(valuePtr1->toString().c_str());
+    LOGFINE("val1 for keyPtr4 is %d", val1);
+    numLoads++;
+    validateEventCount(__LINE__);
 
-   regionPtr->invalidateRegion();
-   regionPtr->get(keyPtr4);
-   auto regEntryPtr2 = regionPtr->getEntry(keyPtr4);
-   auto valuePtr2 = regEntryPtr2->getValue();
-   int val2 = atoi(valuePtr2->toString().c_str());
-   LOGFINE("val2 for keyPtr4 is %d", val2);
-   numLoads++;
-   validateEventCount(__LINE__);
+    regionPtr->invalidateRegion();
+    regionPtr->get(keyPtr4);
+    auto regEntryPtr2 = regionPtr->getEntry(keyPtr4);
+    auto valuePtr2 = regEntryPtr2->getValue();
+    int val2 = atoi(valuePtr2->toString().c_str());
+    LOGFINE("val2 for keyPtr4 is %d", val2);
+    numLoads++;
+    validateEventCount(__LINE__);
   }
 END_TASK_DEFINITION
 

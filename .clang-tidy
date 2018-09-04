@@ -1,11 +1,10 @@
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,-*,google-*,-google-readability-todo,-google-explicit-constructor'
-WarningsAsErrors: ''
-HeaderFilterRegex: ''
+Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references'
+WarningsAsErrors: 'google-build-using-namespace'
+HeaderFilterRegex: '\.(h|hpp)$'
 AnalyzeTemporaryDtors: false
-CheckOptions:    
-  - key:             cert-oop11-cpp.UseCERTSemantics
-    value:           '1'
+FormatStyle:     file
+CheckOptions:
   - key:             google-build-namespaces.HeaderFileExtensions
     value:           h,hh,hpp,hxx
   - key:             google-global-names-in-headers.HeaderFileExtensions
@@ -15,6 +14,10 @@ CheckOptions:
   - key:             google-readability-function-size.BranchThreshold
     value:           '4294967295'
   - key:             google-readability-function-size.LineThreshold
+    value:           '4294967295'
+  - key:             google-readability-function-size.NestingThreshold
+    value:           '4294967295'
+  - key:             google-readability-function-size.ParameterThreshold
     value:           '4294967295'
   - key:             google-readability-function-size.StatementThreshold
     value:           '800'
@@ -28,6 +31,8 @@ CheckOptions:
     value:           ''
   - key:             google-runtime-int.UnsignedTypePrefix
     value:           uint
+  - key:             google-runtime-references.WhiteListTypes
+    value:           ''
   - key:             modernize-loop-convert.MaxCopySize
     value:           '16'
   - key:             modernize-loop-convert.MinConfidence
@@ -42,6 +47,6 @@ CheckOptions:
     value:           'NULL'
 ...
 
-
-# google-explicit-constructor - disabled due to SharedBase issues.
-# google-readability-todo - disabled because it adds names.
+# Disable Checks
+# google-runtime-references - We have diverged from this rule due to both legacy and disagreement with the rule.
+# google-readability-todo - Adds current user name when fix applied.

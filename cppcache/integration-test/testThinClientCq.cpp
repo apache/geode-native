@@ -38,16 +38,22 @@
 
 #include "ThinClientCQ.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testData;
-
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define CLIENT2 s1p2
 #define LOCATORSERVER s2p2
 
 #define MAX_LISTNER 8
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CqAttributesFactory;
+using apache::geode::client::CqEvent;
+using apache::geode::client::CqListener;
+using apache::geode::client::CqOperation;
+using apache::geode::client::CqStatusListener;
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
 
 // CacheHelper* cacheHelper = nullptr;
 

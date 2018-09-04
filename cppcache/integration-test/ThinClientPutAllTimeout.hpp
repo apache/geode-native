@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTPUTALLTIMEOUT_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTPUTALLTIMEOUT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTPUTALLTIMEOUT_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTPUTALLTIMEOUT_H_
+
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "TallyListener.hpp"
@@ -29,8 +29,9 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::Exception;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::TimeoutException;
 
 bool isLocalServer = true;
 static bool isLocator = false;

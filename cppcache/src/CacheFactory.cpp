@@ -80,9 +80,9 @@ Cache CacheFactory::create() const {
     } else {
       cache.m_cacheImpl->initServices();
     }
-  } catch (const apache::geode::client::RegionExistsException&) {
+  } catch (const RegionExistsException&) {
     LOGWARN("Attempt to create existing regions declaratively");
-  } catch (const apache::geode::client::Exception&) {
+  } catch (const Exception&) {
     if (!cache.isClosed()) {
       cache.close();
     }
@@ -91,8 +91,7 @@ Cache CacheFactory::create() const {
     if (!cache.isClosed()) {
       cache.close();
     }
-    throw apache::geode::client::UnknownException(
-        "Exception thrown in CacheFactory::create");
+    throw UnknownException("Exception thrown in CacheFactory::create");
   }
 
   auto& cacheImpl = cache.m_cacheImpl;
@@ -140,9 +139,9 @@ Cache CacheFactory::create(
     } else {
       cache.m_cacheImpl->initServices();
     }
-  } catch (const apache::geode::client::RegionExistsException&) {
+  } catch (const RegionExistsException&) {
     LOGWARN("Attempt to create existing regions declaratively");
-  } catch (const apache::geode::client::Exception&) {
+  } catch (const Exception&) {
     if (!cache.isClosed()) {
       cache.close();
     }
@@ -151,8 +150,7 @@ Cache CacheFactory::create(
     if (!cache.isClosed()) {
       cache.close();
     }
-    throw apache::geode::client::UnknownException(
-        "Exception thrown in CacheFactory::create");
+    throw UnknownException("Exception thrown in CacheFactory::create");
   }
 
   return cache;

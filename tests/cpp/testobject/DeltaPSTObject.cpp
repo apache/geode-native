@@ -19,9 +19,7 @@
 #include "ArrayOfByte.hpp"
 #include "DeltaPSTObject.hpp"
 
-using namespace apache::geode::client;
-using namespace testframework;
-using namespace testobject;
+namespace testobject {
 
 DeltaPSTObject::DeltaPSTObject(int size, bool encodeKey) : Delta() {
   ACE_Time_Value startTime;
@@ -70,3 +68,5 @@ std::string DeltaPSTObject::toString() const {
           timestamp, field1, field2, valueData->length());
   return buf;
 }
+
+}  // namespace testobject

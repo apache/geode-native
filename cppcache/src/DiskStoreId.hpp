@@ -28,6 +28,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+using internal::DSFid;
+
 class DiskStoreId : public DSMemberForVersionStamp {
  public:
   DiskStoreId() : m_hashCode(""), m_mostSig(0), m_leastSig(0) {}

@@ -17,9 +17,15 @@
 
 #include "InterestResultPolicy.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 char InterestResultPolicy::nextOrdinal = 0;
 InterestResultPolicy InterestResultPolicy::NONE;
 InterestResultPolicy InterestResultPolicy::KEYS;
 InterestResultPolicy InterestResultPolicy::KEYS_VALUES;
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

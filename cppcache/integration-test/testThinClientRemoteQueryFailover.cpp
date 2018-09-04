@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "fw_dunit.hpp"
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
@@ -37,14 +38,20 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testobject;
-
 #define CLIENT1 s1p1
 #define LOCATOR s1p2
 #define SERVER1 s2p1
 #define SERVER2 s2p2
+
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
+using apache::geode::client::SelectResults;
+
+using testobject::Portfolio;
+using testobject::PortfolioPdx;
+using testobject::Position;
+using testobject::PositionPdx;
 
 class KillServerThread : public ACE_Task_Base {
  public:
@@ -231,15 +238,17 @@ DUNIT_TASK_DEFINITION(LOCATOR, CloseLocator)
   }
 END_TASK_DEFINITION
 
-void runRemoteQueryFailoverTest(){
-    CALL_TASK(StartLocator) CALL_TASK(CreateServer1WithLocator)
-        CALL_TASK(RegisterTypesAndCreatePoolAndRegion)
-            CALL_TASK(CreateServer2WithLocator)
-                CALL_TASK(ValidateQueryExecutionAcrossServerFailure)
-                    CALL_TASK(CloseCache1) CALL_TASK(CloseServer2)
-                        CALL_TASK(CloseLocator)}
-
-DUNIT_MAIN {
-  runRemoteQueryFailoverTest();
+void runRemoteQueryFailoverTest() {
+  CALL_TASK(StartLocator);
+  CALL_TASK(CreateServer1WithLocator);
+  CALL_TASK(RegisterTypesAndCreatePoolAndRegion);
+  CALL_TASK(CreateServer2WithLocator);
+  CALL_TASK(ValidateQueryExecutionAcrossServerFailure);
+  CALL_TASK(CloseCache1);
+  CALL_TASK(CloseServer2);
+  CALL_TASK(CloseLocator);
 }
+
+DUNIT_MAIN
+  { runRemoteQueryFailoverTest(); }
 END_MAIN

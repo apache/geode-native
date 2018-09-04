@@ -19,7 +19,11 @@
 #include <geode/DataInput.hpp>
 #include "ServerLocation.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
+
+using internal::DSFid;
 
 void QueueConnectionResponse::fromData(DataInput& input) {
   m_durableQueueFound = input.readBoolean();
@@ -38,3 +42,7 @@ void QueueConnectionResponse::readList(DataInput& input) {
     m_list.push_back(temp);
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

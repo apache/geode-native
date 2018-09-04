@@ -155,7 +155,21 @@ namespace client {
 
 LogLevel Log::s_logLevel = LogLevel::Default;
 
-using namespace apache::geode::log::globals;
+using apache::geode::log::globals::g_bytesWritten;
+using apache::geode::log::globals::g_diskSpaceLimit;
+using apache::geode::log::globals::g_fileInfo;
+using apache::geode::log::globals::g_fileInfoPair;
+using apache::geode::log::globals::g_fileSizeLimit;
+using apache::geode::log::globals::g_isLogFileOpened;
+using apache::geode::log::globals::g_log;
+using apache::geode::log::globals::g_logFile;
+using apache::geode::log::globals::g_logFileNameBuffer;
+using apache::geode::log::globals::g_logFileWithExt;
+using apache::geode::log::globals::g_logMutex;
+using apache::geode::log::globals::g_pid;
+using apache::geode::log::globals::g_rollIndex;
+using apache::geode::log::globals::g_spaceUsed;
+using apache::geode::log::globals::g_uname;
 
 /*****************************************************************************/
 

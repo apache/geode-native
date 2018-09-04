@@ -19,8 +19,6 @@
 
 #include <AutoDelete.hpp>
 
-using namespace apache::geode::client;
-
 namespace {
 class TestSharedBase {
  public:

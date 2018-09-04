@@ -27,7 +27,9 @@
 #include <geode/CacheAttributes.hpp>
 #include <algorithm>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 ThinClientCacheDistributionManager::ThinClientCacheDistributionManager(
     TcrConnectionManager& connManager)
@@ -196,3 +198,7 @@ bool ThinClientCacheDistributionManager::postFailoverAction(
   }
   return true;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

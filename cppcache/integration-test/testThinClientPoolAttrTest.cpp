@@ -29,6 +29,9 @@
 #define LOCATOR1 s2p1
 #define SERVER s2p2
 
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
+
 bool isLocalServer = false;
 bool isLocator = false;
 

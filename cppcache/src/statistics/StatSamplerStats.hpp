@@ -27,16 +27,12 @@
 #include "Statistics.hpp"
 #include "StatisticsFactory.hpp"
 
-using namespace apache::geode::client;
-
-/** @file
- */
-
 namespace apache {
 namespace geode {
 namespace statistics {
 
 class StatisticsFactory;
+
 /**
  * Statistics related to the statistic sampler.
  */

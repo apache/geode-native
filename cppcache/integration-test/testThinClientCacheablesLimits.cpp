@@ -30,11 +30,11 @@
 #include "CacheHelper.hpp"
 #include "ThinClientHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
+
+using apache::geode::client::CacheHelper;
+using apache::geode::client::OutOfMemoryException;
 
 static bool isLocator = false;
 static bool isLocalServer = true;

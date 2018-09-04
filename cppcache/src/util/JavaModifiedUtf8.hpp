@@ -31,8 +31,6 @@ namespace geode {
 namespace client {
 namespace internal {
 
-using namespace apache::geode::client;
-
 struct JavaModifiedUtf8 {
   /**
    * Calculate the length of the given UTF-8 string when encoded in Java

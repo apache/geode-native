@@ -20,7 +20,9 @@
 #include "ThinClientCacheDistributionManager.hpp"
 #include "TcrMessage.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 CqEventImpl::CqEventImpl(std::shared_ptr<CqQuery>& cQuery, CqOperation baseOp,
                          CqOperation cqOp, std::shared_ptr<CacheableKey>& key,
                          std::shared_ptr<Cacheable>& value,
@@ -102,3 +104,7 @@ std::string CqEventImpl::toString() {
 std::shared_ptr<CacheableBytes> CqEventImpl::getDeltaValue() const {
   return m_deltaValue;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

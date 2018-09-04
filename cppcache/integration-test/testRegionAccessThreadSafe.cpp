@@ -19,7 +19,7 @@
 #include <ace/Task.h>
 #include <ace/Recursive_Thread_Mutex.h>
 
-using namespace apache::geode::client;
+using apache::geode::client::Exception;
 
 class GetRegionThread : public ACE_Task_Base {
  public:

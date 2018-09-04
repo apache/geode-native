@@ -29,7 +29,22 @@
 
 #include "fw_helper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheableToken;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::DiskPolicyType;
+using apache::geode::client::Exception;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::PersistenceManager;
+using apache::geode::client::Properties;
+using apache::geode::client::Region;
+using apache::geode::client::RegionAttributes;
+using apache::geode::client::RegionAttributesFactory;
+using apache::geode::client::RegionShortcut;
 
 uint32_t numOfEnt;
 std::string sqlite_dir = "SqLiteRegionData";
@@ -579,7 +594,7 @@ BEGIN_TEST(OverFlowTest_MultiThreaded)
 
     /** Create a region with caching and LRU. */
     std::shared_ptr<Region> regionPtr;
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
+    auto cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
     cacheImpl->createRegion("OverFlowRegion", regionAttributes, regionPtr);
     ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
     validateAttribute(regionPtr);
@@ -619,7 +634,7 @@ BEGIN_TEST(OverFlowTest_PutGetAll)
 
     /** Create a region with caching and LRU. */
     std::shared_ptr<Region> regionPtr;
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
+    auto cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
     cacheImpl->createRegion("OverFlowRegion", regionAttributes, regionPtr);
     ASSERT(regionPtr != nullptr, "Expected regionPtr to be NON-nullptr");
     validateAttribute(regionPtr);

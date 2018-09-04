@@ -34,7 +34,17 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheServerException;
+using apache::geode::client::EntryExistsException;
+using apache::geode::client::EntryNotFoundException;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::InternalCacheTransactionManager2PC;
+using apache::geode::client::Properties;
+using apache::geode::client::TransactionException;
+using apache::geode::client::TransactionId;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2

@@ -38,6 +38,8 @@
 #include "testobject/PortfolioPdx.hpp"
 #include "testobject/PositionPdx.hpp"
 #include <hacks/range.h>
+#include "QueryStrings.hpp"
+#include "fw_dunit.hpp"
 
 //#include <geode/Struct.hpp>
 
@@ -49,10 +51,23 @@
 #define ROOT_SCOPE LOCAL
 #endif
 
-using namespace apache::geode::client;
-using namespace testData;
-using namespace PdxTests;
-using namespace testobject;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableStringArray;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::Region;
+using apache::geode::client::ResultSet;
+using apache::geode::client::SelectResults;
+using apache::geode::client::Struct;
+using apache::geode::client::StructSet;
+using testData::constantExpectedRowsPQRS;
+using testData::constantExpectedRowsRS;
+using testData::constantExpectedRowsSS;
+using testData::constantExpectedRowsSSPQ;
+using testobject::Portfolio;
+using testobject::PortfolioPdx;
+using testobject::Position;
+using testobject::PositionPdx;
+
 class QueryHelper {
  public:
   static QueryHelper* singleton;

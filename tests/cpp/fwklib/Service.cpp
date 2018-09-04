@@ -14,11 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "Service.hpp"
 #include "fwklib/FwkLog.hpp"
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 Service::Service(int32_t threadCnt)
     : m_ThreadCount(threadCnt), m_run(true), m_Mutex() {
@@ -64,3 +67,8 @@ int32_t Service::runThreaded(ServiceTask* task, uint32_t threads) {
 
   return threads;
 }
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

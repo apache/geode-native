@@ -24,8 +24,9 @@
 #include "PdxVersioned2.hpp"
 #include <util/Log.hpp>
 
-using namespace apache::geode::client;
-using namespace PdxTests;
+namespace PdxTests {
+
+using apache::geode::client::CacheableInt32;
 
 // TEST_EXPORT Serializable * createPdxVersioned2(const char* key) {
 TEST_EXPORT PdxVersioned2* createPdxVersioned2() { return new PdxVersioned2(); }
@@ -394,15 +395,24 @@ bool PdxTests::PdxVersioned2::equals(PdxTests::PdxVersioned2& other) const {
   if (ot->m_string != m_string) {
     return false;
   }
-  genericCompare(ot->m_byteArray.data(), m_byteArray.data(), m_byteArray.size());
-  genericCompare(ot->m_int16Array.data(), m_int16Array.data(), m_int16Array.size());
-  genericCompare(ot->m_int32Array.data(), m_int32Array.data(), m_int32Array.size());
-  genericCompare(ot->m_longArray.data(), m_longArray.data(), m_longArray.size());
-  genericCompare(ot->m_uint32Array.data(), m_uint32Array.data(), m_uint32Array.size());
-  genericCompare(ot->m_ulongArray.data(), m_ulongArray.data(), m_ulongArray.size());
-  genericCompare(ot->m_uint16Array.data(), m_uint16Array.data(), m_uint16Array.size());
-  genericCompare(ot->m_sbyteArray.data(), m_sbyteArray.data(), m_sbyteArray.size());
-  genericCompare(ot->m_charArray.data(), m_charArray.data(), m_charArray.size());
+  genericCompare(ot->m_byteArray.data(), m_byteArray.data(),
+                 m_byteArray.size());
+  genericCompare(ot->m_int16Array.data(), m_int16Array.data(),
+                 m_int16Array.size());
+  genericCompare(ot->m_int32Array.data(), m_int32Array.data(),
+                 m_int32Array.size());
+  genericCompare(ot->m_longArray.data(), m_longArray.data(),
+                 m_longArray.size());
+  genericCompare(ot->m_uint32Array.data(), m_uint32Array.data(),
+                 m_uint32Array.size());
+  genericCompare(ot->m_ulongArray.data(), m_ulongArray.data(),
+                 m_ulongArray.size());
+  genericCompare(ot->m_uint16Array.data(), m_uint16Array.data(),
+                 m_uint16Array.size());
+  genericCompare(ot->m_sbyteArray.data(), m_sbyteArray.data(),
+                 m_sbyteArray.size());
+  genericCompare(ot->m_charArray.data(), m_charArray.data(),
+                 m_charArray.size());
   // generic2DCompare(ot->m_byteByteArray, m_byteByteArray, byteByteArrayLen,
   // lengthArr);
 
@@ -422,3 +432,4 @@ bool PdxTests::PdxVersioned2::equals(PdxTests::PdxVersioned2& other) const {
   LOGINFO("PdxObject::equals DOne Line_201");
   return true;
 }
+}  // namespace PdxTests

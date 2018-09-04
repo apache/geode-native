@@ -30,8 +30,10 @@
 
 #include "config.h"
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 void TcpIpc::clearNagle(ACE_HANDLE sock) {
   int32_t val = 1;
@@ -198,3 +200,8 @@ int32_t TcpIpc::sendBuffers(int32_t cnt, char *buffers[], int32_t lengths[],
   }
   return wrote;
 }
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

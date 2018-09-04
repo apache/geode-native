@@ -19,7 +19,9 @@
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 void ClientConnectionRequest::toData(DataOutput& output) const {
   output.writeString(m_servergroup);
@@ -41,3 +43,7 @@ void ClientConnectionRequest::writeSetOfServerLocation(
     it++;
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

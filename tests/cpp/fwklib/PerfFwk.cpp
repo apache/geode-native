@@ -14,58 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "PerfFwk.hpp"
 #include "fwklib/FwkLog.hpp"
 #include "ace/OS.h"
 #include <signal.h>
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
-using namespace apache::geode::client::testframework::perf;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
+namespace perf {
 
 ACE_utsname* PerfSuite::utsname = nullptr;
 
-// void perf::logSignals( const char * tag ) {
-//  if ( tag == NULL ) {
-//    tag = "perf::logSignals";
-//  }
-//
-//  struct sigaction sa;
-//
-//  int32_t blockedSignals = 0;
-//  sigset_t set;
-//  sigset_t old;
-//  sigemptyset( &set );
-//  sigemptyset( &old );
-//  int32_t ret = sigprocmask( SIG_BLOCK, &set, &old );
-//
-//  for ( int32_t i = 1; i < 32; i++ ) {
-//    if ( ret == 0 ) {
-//      int32_t blocked = sigismember( &old, i );
-//      if ( blocked == 1 ) {
-//        blockedSignals++;
-//        FWKINFO( tag << " Signal " << i << " is blocked." );
-//      }
-//    }
-//    int32_t retVal = sigaction( i, 0, &sa );
-//    if ( retVal == 0 ) {
-//      if ( sa.sa_handler == SIG_DFL ) {
-//        FWKINFO( tag << " 'Default' for signal " << i );
-//      }
-//      else
-//      if ( sa.sa_handler == SIG_IGN ) {
-//        FWKINFO( tag << " 'Ignore' for signal " << i );
-//      }
-//      else {
-//        FWKINFO( tag << " 'Application specified' for signal " << i );
-//      }
-//    }
-//  }
-//  FWKINFO( tag << " Number of signals blocked: " << blockedSignals );
-//}
-
 // Not thread safe, not critical that it be
-void perf::logSize(const char* tag) {
+void logSize(const char* tag) {
 #ifndef WIN32
   static double vsizeMax = 0;
   static double rssMax = 0;
@@ -200,3 +164,9 @@ void Semaphore::release(int32_t t) {
     m_cond.broadcast();
   }
 }
+
+}  // namespace perf
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

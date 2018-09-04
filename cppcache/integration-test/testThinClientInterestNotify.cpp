@@ -35,6 +35,9 @@ invalidates).
 #define SERVER_AND_FEEDER s2p2
 #define SERVER1 s2p2  // duplicate definition required for a helper file
 
+using apache::geode::client::EntryEvent;
+using apache::geode::client::Exception;
+
 class EventListener : public CacheListener {
  public:
   int m_creates;

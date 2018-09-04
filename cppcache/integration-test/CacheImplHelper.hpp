@@ -33,8 +33,11 @@ ROOT_NAME++ + DEFINE ROOT_NAME before including CacheHelper.hpp
 #define ROOT_SCOPE LOCAL
 #endif
 
-              using namespace apache::geode::client;
-using namespace unitTests;
+              using apache::geode::client::Properties;
+using apache::geode::client::Properties;
+using apache::geode::client::RegionAttributesFactory;
+
+using unitTests::TestUtils;
 
 class CacheImplHelper : public CacheHelper {
  public:

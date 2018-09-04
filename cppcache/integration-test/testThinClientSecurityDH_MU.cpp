@@ -55,8 +55,7 @@ portion in this test.
 #define CORRECT_CREDENTIALS 'C'
 #define INCORRECT_CREDENTIALS 'I'
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::testframework::security::CredentialGenerator;
 
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);

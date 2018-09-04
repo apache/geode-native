@@ -20,7 +20,10 @@
 #include <ClientConnectionResponse.hpp>
 #include <DataInputInternal.hpp>
 #include <DataOutputInternal.hpp>
-using namespace apache::geode::client;
+
+using apache::geode::client::ClientConnectionResponse;
+using apache::geode::client::DataInputInternal;
+using apache::geode::client::DataOutputInternal;
 
 TEST(ClientConnectionResponseTest, testDefaultServerFound) {
   ClientConnectionResponse clientConnectionResponse;

@@ -22,7 +22,16 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::ExpirationAction;
+using apache::geode::client::Properties;
+using apache::geode::client::Region;
+using apache::geode::client::RegionAttributes;
+using apache::geode::client::RegionAttributesFactory;
 
 ExpirationAction action = ExpirationAction::DESTROY;
 
@@ -100,7 +109,7 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(cache != nullptr, "Expected cache to be NON-nullptr");
 
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
+    auto cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
 
     size_t n;
 

@@ -28,7 +28,9 @@
 #include "RegionExpiryHandler.hpp"
 #include "RegionInternal.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 RegionExpiryHandler::RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
                                          ExpirationAction action,
@@ -135,3 +137,7 @@ void RegionExpiryHandler::DoTheExpirationAction() {
     }
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

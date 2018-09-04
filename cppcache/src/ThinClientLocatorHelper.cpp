@@ -30,7 +30,9 @@
 #include "LocatorListRequest.hpp"
 #include <set>
 #include <algorithm>
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 const int BUFF_SIZE = 3000;
 
 class ConnectionWrapper {
@@ -451,3 +453,7 @@ GfErrType ThinClientLocatorHelper::updateLocators(
   }
   return GF_NOTCON;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

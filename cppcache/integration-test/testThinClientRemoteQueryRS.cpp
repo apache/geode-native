@@ -34,13 +34,25 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testData;
-
 #define CLIENT1 s1p1
 #define LOCATOR s1p2
 #define SERVER1 s2p1
+
+using testData::noofQueryParam;
+using testData::queryparamSet;
+using testData::QueryStrings;
+using testData::resultsetparamQueries;
+using testData::resultsetQueries;
+using testData::resultsetQueriesOPL;
+using testData::resultsetRowCounts;
+using testData::resultsetRowCountsOPL;
+using testData::resultsetRowCountsPQ;
+using testData::unsupported;
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
 
 bool isLocator = false;
 bool isLocalServer = false;
@@ -74,7 +86,8 @@ void stepOne() {
   createRegionAndAttachPool(qRegionNames[3], USE_ACK, poolNames[0]);
 
   auto regptr = getHelper()->getRegion(qRegionNames[0]);
-  auto subregPtr = regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
+  auto subregPtr =
+      regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
 
   LOG("StepOne complete.");
 }

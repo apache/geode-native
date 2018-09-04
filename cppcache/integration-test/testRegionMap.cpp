@@ -19,11 +19,14 @@
 
 #include "fw_helper.hpp"
 
-using namespace apache::geode::client;
-
 #define ROOT_NAME "testRegionMap"
 
 #include "CacheHelper.hpp"
+
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::Region;
 
 /**
  * @brief Test putting and getting entries without LRU enabled.
@@ -43,7 +46,7 @@ BEGIN_TEST(TestRegionLRULastTen)
     sprintf(buf, "value of %d", i);
     auto valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
-    std::vector<std::shared_ptr<CacheableKey>> vecKeys = regionPtr->keys();
+    auto&& vecKeys = regionPtr->keys();
     ASSERT(vecKeys.size() == (i + 1), "expected more entries");
   }
   for (i = 10; i < 20; i++) {
@@ -53,11 +56,11 @@ BEGIN_TEST(TestRegionLRULastTen)
     sprintf(buf, "value of %d", i);
     auto valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
-    std::vector<std::shared_ptr<CacheableKey>> vecKeys = regionPtr->keys();
+    auto&& vecKeys = regionPtr->keys();
     cacheHelper.showKeys(vecKeys);
     ASSERT(vecKeys.size() == (10), "expected 10 entries");
   }
-  std::vector<std::shared_ptr<CacheableKey>> vecKeys = regionPtr->keys();
+  auto&& vecKeys = regionPtr->keys();
   ASSERT(vecKeys.size() == 10, "expected 10 entries");
   // verify it is the last 10 keys..
   int expected = 0;
@@ -87,7 +90,7 @@ BEGIN_TEST(TestRegionNoLRU)
     sprintf(buf, "value of %d", i);
     auto valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
-    std::vector<std::shared_ptr<CacheableKey>> vecKeys = regionPtr->keys();
+    auto&& vecKeys = regionPtr->keys();
     cacheHelper.showKeys(vecKeys);
     ASSERT(vecKeys.size() == (i + 1), "unexpected entries count");
   }
@@ -113,7 +116,7 @@ BEGIN_TEST(TestRegionLRULocal)
     sprintf(buf, "value of %d", i);
     auto valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
-    std::vector<std::shared_ptr<CacheableKey>> vecKeys = regionPtr->keys();
+    auto&& vecKeys = regionPtr->keys();
     ASSERT(vecKeys.size() == (i < 10 ? i + 1 : 10), "expected more entries");
   }
 
@@ -150,7 +153,7 @@ BEGIN_TEST(TestRecentlyUsedBit)
     auto key = CacheableKey::create(buf);
     auto valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
-    std::vector<std::shared_ptr<CacheableKey>> vecKeys = regionPtr->keys();
+    auto&& vecKeys = regionPtr->keys();
     cacheHelper.showKeys(vecKeys);
     ASSERT(vecKeys.size() == 10, "expected more entries");
   }
@@ -160,7 +163,7 @@ BEGIN_TEST(TestRecentlyUsedBit)
     auto key = CacheableKey::create(buf);
     auto valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
-    std::vector<std::shared_ptr<CacheableKey>> vecKeys = regionPtr->keys();
+    auto&& vecKeys = regionPtr->keys();
     cacheHelper.showKeys(vecKeys);
     ASSERT(vecKeys.size() == 10, "expected more entries");
   }
@@ -182,7 +185,7 @@ BEGIN_TEST(TestEmptiedMap)
     sprintf(buf, "value of %d", i);
     auto valuePtr = cacheHelper.createCacheable(buf);
     regionPtr->put(key, valuePtr);
-    std::vector<std::shared_ptr<CacheableKey>> vecKeys = regionPtr->keys();
+    auto&& vecKeys = regionPtr->keys();
     ASSERT(vecKeys.size() == (i + 1), "expected more entries");
   }
   for (i = 0; i < 10; i++) {
@@ -195,7 +198,7 @@ BEGIN_TEST(TestEmptiedMap)
         << std::dynamic_pointer_cast<CacheableString>(key)->value().c_str()
         << std::endl;
   }
-  std::vector<std::shared_ptr<CacheableKey>> vecKeys = regionPtr->keys();
+  auto&& vecKeys = regionPtr->keys();
   ASSERT(vecKeys.size() == 0, "expected more entries");
   for (i = 20; i < 40; i++) {
     char buf[100];

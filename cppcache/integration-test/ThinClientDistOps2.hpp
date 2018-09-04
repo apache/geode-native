@@ -31,13 +31,21 @@
 
 #include "ThinClientHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 #define SERVER2 s2p2
+
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableInt64;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheServerException;
+using apache::geode::client::EntryExistsException;
+using apache::geode::client::IllegalArgumentException;
+using apache::geode::client::Properties;
 
 static bool isLocalServer = false;
 static bool isLocator = false;

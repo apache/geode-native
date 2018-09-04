@@ -28,6 +28,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+using internal::DSFid;
+
 class DataInput;
 
 class LocatorListResponse : public ServerLocationResponse {

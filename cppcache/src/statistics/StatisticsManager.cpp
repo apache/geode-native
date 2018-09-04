@@ -35,7 +35,8 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
-using namespace apache::geode::client;
+using client::Exception;
+using client::Log;
 
 StatisticsManager::StatisticsManager(
     const char* filePath, const std::chrono::milliseconds sampleInterval,

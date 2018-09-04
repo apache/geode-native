@@ -37,12 +37,11 @@
 #include "CacheImpl.hpp"
 #include <hacks/range.h>
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testobject;
-
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
+
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
 
 static int numberOfLocators = 1;
 bool isLocalServer = true;

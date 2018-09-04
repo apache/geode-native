@@ -29,8 +29,6 @@
 #include <sys/stat.h>
 #endif
 
-using namespace apache::geode::client;
-
 #ifdef _WIN32
 #define SNPRINTF _snprintf
 #else

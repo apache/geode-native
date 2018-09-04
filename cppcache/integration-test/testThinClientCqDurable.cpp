@@ -41,13 +41,21 @@
 #include "QueryHelper.hpp"
 #include "ThinClientCQ.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testData;
 
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define CLIENT2 s1p2
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CqAttributesFactory;
+using apache::geode::client::CqEvent;
+using apache::geode::client::CqListener;
+using apache::geode::client::CqOperation;
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
+using apache::geode::client::RegionShortcut;
 
 const char* durableIds[] = {"DurableId1", "DurableId2"};
 

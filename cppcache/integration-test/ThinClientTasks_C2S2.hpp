@@ -32,6 +32,8 @@
 #define PROCESS3 s2p1
 #define PROCESS4 s2p2
 
+using apache::geode::client::CacheHelper;
+
 DUNIT_TASK_DEFINITION(SERVER1, StartLocator)
   {
     CacheHelper::initLocator(1);

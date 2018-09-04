@@ -22,7 +22,9 @@
 #include <geode/Cache.hpp>
 #include <geode/PoolManager.hpp>
 #include "CacheImpl.hpp"
-using namespace apache::geode::client;
+
+using apache::geode::client::CacheFactory;
+using apache::geode::client::PoolFactory;
 
 BEGIN_TEST(POOLFACTORY)
 {

@@ -32,16 +32,14 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
-using namespace apache::geode::client;
-
 /**
  * An implementation of {@link Statistics} that stores its statistics
  * in local memory and does not support atomic operations.
  *
  */
 class OsStatisticsImpl : public Statistics,
-                         private NonCopyable,
-                         private NonAssignable {
+                         private client::NonCopyable,
+                         private client::NonAssignable {
  private:
   /** The type of this statistics instance */
   StatisticsTypeImpl* statsType;

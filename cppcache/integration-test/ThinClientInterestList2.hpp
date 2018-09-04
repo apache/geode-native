@@ -29,12 +29,14 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
+
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
 
 CacheHelper* cacheHelper = nullptr;
 bool isLocalServer = false;

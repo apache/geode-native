@@ -26,6 +26,8 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
+using client::IllegalArgumentException;
+
 /**
  * An implementation of {@link Statistics} that stores its statistics
  * in local  memory and does not support atomic operations.

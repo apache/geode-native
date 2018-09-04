@@ -22,8 +22,7 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::CacheableBytes;
 
 #include "locator_globals.hpp"
 
@@ -90,9 +89,11 @@ DUNIT_TASK(SERVER1, StopServer)
     LOG("SERVER stopped");
   }
 END_TASK(StopServer)
+
 DUNIT_TASK(CLIENT1, CloseCache1)
   { cleanProc(); }
 END_TASK(CloseCache1)
+
 DUNIT_TASK(CLIENT2, CloseCache2)
   { cleanProc(); }
 END_TASK(CloseCache2)

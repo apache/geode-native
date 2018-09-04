@@ -35,7 +35,12 @@
 
 namespace {
 
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableString;
+using apache::geode::client::Region;
+using apache::geode::client::RegionShortcut;
+using apache::geode::client::Struct;
 
 std::shared_ptr<Region> setupRegion(Cache& cache) {
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)

@@ -24,6 +24,8 @@
 #include "locator_globals.hpp"
 #include "LocatorHelper.hpp"
 
+using apache::geode::client::EntryNotFoundException;
+
 DUNIT_TASK_DEFINITION(SERVER1, CreateServerWithNBSTrue)
   {
     // starting server with notify_subscription true

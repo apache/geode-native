@@ -40,8 +40,9 @@ namespace client {
  * can serve as a distributable key object for caching as well as being a date
  * value.
  */
-class APACHE_GEODE_EXPORT CacheableDate : public DataSerializablePrimitive,
-                                          public CacheableKey {
+class APACHE_GEODE_EXPORT CacheableDate
+    : public internal::DataSerializablePrimitive,
+      public CacheableKey {
  private:
   /**
    * Milliseconds since January 1, 1970, 00:00:00 GMT to be consistent with Java

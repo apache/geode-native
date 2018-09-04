@@ -30,9 +30,15 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testobject;
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::CqAttributesFactory;
+using apache::geode::client::CqEvent;
+using apache::geode::client::CqListener;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
 
 CacheHelper* cacheHelper = nullptr;
 
@@ -42,6 +48,8 @@ CacheHelper* cacheHelper = nullptr;
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 #include "LocatorHelper.hpp"
+
+using testobject::DeltaTestImpl;
 
 CacheHelper* getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");

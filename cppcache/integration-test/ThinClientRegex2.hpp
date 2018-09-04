@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTREGEX2_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTREGEX2_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTREGEX2_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTREGEX2_H_
+
 #include "fw_dunit.hpp"
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
@@ -29,12 +30,14 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
+
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
 
 CacheHelper* cacheHelper = nullptr;
 bool isLocalServer = false;

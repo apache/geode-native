@@ -23,6 +23,9 @@
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #include <geode/CacheListener.hpp>
+
+using apache::geode::client::RegionEvent;
+
 // CacheHelper* cacheHelper = nullptr;
 static bool isLocator = false;
 static bool isLocalServer = true;
@@ -31,8 +34,7 @@ static bool isRegionLive[4] = {false, false, false, false};
 static bool isRegionDead[4] = {false, false, false, false};
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
-using namespace apache::geode::client;
-using namespace test;
+
 class DisconnectCacheListioner : public CacheListener {
   int m_index;
 

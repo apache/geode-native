@@ -19,7 +19,11 @@
 #include <geode/DataOutput.hpp>
 #include <geode/CacheableString.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
+
+using internal::DSFid;
 
 LocatorListRequest::LocatorListRequest(const std::string& servergroup)
     : m_servergroup(servergroup) {}
@@ -31,3 +35,7 @@ void LocatorListRequest::toData(DataOutput& output) const {
 DSFid LocatorListRequest::getDSFID() const {
   return DSFid::LocatorListRequest;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

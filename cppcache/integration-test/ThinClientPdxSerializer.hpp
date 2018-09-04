@@ -34,14 +34,17 @@
 #include "ThinClientPdxSerializers.hpp"
 #include "CacheRegionHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace PdxTests;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define LOCATOR s2p2
 #define SERVER1 s2p1
+
+using apache::geode::client::CacheableBoolean;
+using apache::geode::client::UserObjectSizer;
+
+using PdxTests::PdxWrapper;
+using PdxTests::TestPdxSerializerForV1;
 
 bool isLocator = false;
 bool isLocalServer = false;

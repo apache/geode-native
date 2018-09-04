@@ -23,8 +23,6 @@
 
 #include "locator_globals.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
 
 const char* durableIds[] = {"DurableId1", "DurableId2"};
 

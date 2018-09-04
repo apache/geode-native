@@ -24,8 +24,10 @@
 #include "ThinClientHelper.hpp"
 #include "ThinClientSecurity.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::AuthenticationFailedException;
+using apache::geode::client::AuthInitialize;
+using apache::geode::client::Cacheable;
+using apache::geode::client::testframework::security::CredentialGenerator;
 
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);

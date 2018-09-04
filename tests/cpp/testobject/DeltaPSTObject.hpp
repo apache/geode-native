@@ -33,9 +33,10 @@
 #include "testobject/PSTObject.hpp"
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-using namespace testframework;
 namespace testobject {
+
+using apache::geode::client::Delta;
+
 class TESTOBJECT_EXPORT DeltaPSTObject : public DataSerializable, public Delta {
  private:
   uint64_t timestamp;

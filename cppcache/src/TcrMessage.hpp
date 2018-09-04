@@ -24,7 +24,6 @@
 #include <string>
 #include <map>
 #include <vector>
-#define __STDC_FORMAT_MACROS
 #include <cinttypes>
 
 #include <ace/OS.h>

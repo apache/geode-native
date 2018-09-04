@@ -38,13 +38,15 @@
 
 #include "ThinClientHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define CLIENT2 s2p1
 #define CLIENT3 s1p2
 #define SERVER1 s2p2
+
+using apache::geode::client::CacheServerException;
+using apache::geode::client::CacheWriterException;
+using apache::geode::client::Exception;
+using apache::geode::client::HashMapOfException;
 
 bool isLocalServer = false;
 

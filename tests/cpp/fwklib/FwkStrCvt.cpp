@@ -18,10 +18,10 @@
 #include "fwklib/FwkStrCvt.hpp"
 #include "fwklib/FwkLog.hpp"
 
-using namespace apache::geode::client;
-using namespace testframework;
-
-// ----------------------------------------------------------------------------
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 static const short int wrd = 0x0001;
 static const char* byt = reinterpret_cast<const char*>(&wrd);
@@ -168,3 +168,8 @@ int32_t FwkStrCvt::asSeconds(int32_t val, char typ) {
   }
   return ret;
 }
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

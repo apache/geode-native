@@ -33,9 +33,13 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
 
 #include "locator_globals.hpp"
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataSerializable;
 
 int32_t g_classIdToReturn = 0x04;
 int32_t g_classIdToReturn2 = 0x1234;

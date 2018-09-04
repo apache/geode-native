@@ -58,7 +58,6 @@ class PoolStatsSampler;
 
 namespace client {
 
-using namespace apache::geode::statistics;
 
 class CacheImpl;
 class FunctionExecution;

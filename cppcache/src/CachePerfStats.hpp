@@ -31,7 +31,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::statistics;
+using statistics::StatisticDescriptor;
+using statistics::Statistics;
+using statistics::StatisticsFactory;
 
 /** hold statistics for cache.. */
 class APACHE_GEODE_EXPORT CachePerfStats {
@@ -280,9 +282,7 @@ class APACHE_GEODE_EXPORT CachePerfStats {
     m_cachePerfStats->incInt(m_pdxInstanceDeserializationsId, 1);
   }
 
-  inline apache::geode::statistics::Statistics* getStat() {
-    return m_cachePerfStats;
-  }
+  inline Statistics* getStat() { return m_cachePerfStats; }
 
   inline int32_t getPdxInstanceDeserializationTimeId() {
     return m_pdxInstanceDeserializationTimeId;

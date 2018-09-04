@@ -50,8 +50,9 @@ class DataInput;
 class DataOutput;
 class Serializable;
 
-class APACHE_GEODE_EXPORT CacheableEnum : public DataSerializablePrimitive,
-                                          public CacheableKey {
+class APACHE_GEODE_EXPORT CacheableEnum
+    : public internal::DataSerializablePrimitive,
+      public CacheableKey {
  private:
   std::string m_enumClassName;
   std::string m_enumName;

@@ -24,8 +24,6 @@
 
 #include "Statistics.hpp"
 
-using namespace apache::geode::client;
-
 /** @file
 */
 

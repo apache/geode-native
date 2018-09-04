@@ -35,7 +35,9 @@
 #define VMKIND 13
 #define ROLEARRLENGTH 0
 static int synch_counter = 2;
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 namespace {
 static class RandomInitializer {
@@ -398,3 +400,7 @@ void ClientProxyMembershipID::writeVersion(int16_t ordinal,
     LOGDEBUG("ClientProxyMembershipID::writeVersion ordinal = %d ", ordinal);
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

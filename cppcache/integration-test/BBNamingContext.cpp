@@ -26,7 +26,10 @@
 
 #define ERR_MAX 10
 
-using namespace apache::geode::client::testframework;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 static int hashcode(char* str) {
   if (str == nullptr) {
@@ -284,5 +287,10 @@ BBNamingContextServer::~BBNamingContextServer() {
     m_impl = nullptr;
   }
 }
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif

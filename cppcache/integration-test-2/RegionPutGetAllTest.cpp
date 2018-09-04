@@ -36,9 +36,23 @@
 
 namespace {
 
-using namespace apache::geode::client;
-using namespace std::chrono;
-using namespace PdxTests;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::Region;
+using apache::geode::client::RegionShortcut;
+using apache::geode::client::TypeFactoryMethodPdx;
+
+using PdxTests::PdxTypes1;
+using PdxTests::PdxTypes10;
+using PdxTests::PdxTypes2;
+using PdxTests::PdxTypes3;
+using PdxTests::PdxTypes4;
+using PdxTests::PdxTypes5;
+using PdxTests::PdxTypes6;
+using PdxTests::PdxTypes7;
+using PdxTests::PdxTypes8;
+using PdxTests::PdxTypes9;
 
 template <int32_t Index, class PdxType>
 struct PdxTypesHelper {

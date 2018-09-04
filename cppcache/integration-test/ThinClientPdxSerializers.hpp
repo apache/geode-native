@@ -20,6 +20,21 @@
 #ifndef GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
 #define GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
 
+using apache::geode::client::CacheableArrayList;
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::CacheableHashSet;
+using apache::geode::client::CacheableHashTable;
+using apache::geode::client::CacheableLinkedHashSet;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::PdxReader;
+using apache::geode::client::PdxSerializer;
+using apache::geode::client::PdxWriter;
+using apache::geode::client::UserObjectSizer;
+
+using PdxTests::TestPdxSerializerForV2;
+using PdxTests::V1CLASSNAME2;
+using PdxTests::V2CLASSNAME4;
+
 static const char *CLASSNAME1 = "PdxTests.PdxType";
 static const char *CLASSNAME2 = "PdxTests.Address";
 

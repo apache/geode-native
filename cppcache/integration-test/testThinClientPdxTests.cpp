@@ -55,16 +55,53 @@ END_MAIN*/
 #include "CachePerfStats.hpp"
 #include <LocalRegion.hpp>
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testData;
-using namespace PdxTests;
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define CLIENT3 s2p2
 #define LOCATOR s2p2
 #define SERVER1 s2p1
+
+using PdxTests::Address;
+using PdxTests::AddressWithInvalidAPIUsage;
+using PdxTests::InvalidPdxUsage;
+using PdxTests::MixedVersionNestedPdx;
+using PdxTests::NestedPdx;
+using PdxTests::PdxInsideIGeodeSerializable;
+using PdxTests::PdxType1V1;
+using PdxTests::PdxType2V1;
+using PdxTests::PdxType3V1;
+using PdxTests::PdxTypes1;
+using PdxTests::PdxTypes10;
+using PdxTests::PdxTypes1V2;
+using PdxTests::PdxTypes2;
+using PdxTests::PdxTypes2V2;
+using PdxTests::PdxTypes3;
+using PdxTests::PdxTypes3V2;
+using PdxTests::PdxTypes4;
+using PdxTests::PdxTypes5;
+using PdxTests::PdxTypes6;
+using PdxTests::PdxTypes7;
+using PdxTests::PdxTypes8;
+using PdxTests::PdxTypes9;
+using PdxTests::PdxTypesIgnoreUnreadFieldsV1;
+using PdxTests::PdxTypesIgnoreUnreadFieldsV2;
+using PdxTests::PdxTypesR1V2;
+using PdxTests::PdxTypesR2V2;
+using PdxTests::PdxTypesV1R1;
+using PdxTests::PdxTypesV1R2;
+
+using apache::geode::client::CacheableBoolean;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableInt64;
+using apache::geode::client::CacheableLinkedList;
+using apache::geode::client::CacheableObjectArray;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::ClassCastException;
+using apache::geode::client::FunctionService;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::LocalRegion;
+using apache::geode::client::PdxInstance;
+using apache::geode::client::UserFunctionExecutionException;
 
 bool isLocator = false;
 bool isLocalServer = false;

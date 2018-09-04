@@ -51,6 +51,11 @@ Shutdown
 #define SERVER1 s2p1
 #define FEEDER s2p2
 
+using apache::geode::client::EntryEvent;
+using apache::geode::client::Exception;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::RegionEvent;
+
 class OperMonitor : public CacheListener {
   int m_ops;
   HashMapOfCacheable m_map;

@@ -40,7 +40,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::internal::chrono::duration;
+using ::apache::geode::internal::chrono::duration::to_string;
 
 /**
  * @class ExpiryTaskManager ExpiryTaskManager.hpp

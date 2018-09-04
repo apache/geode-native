@@ -34,7 +34,7 @@ namespace geode {
 namespace client {
 
 class GetAllServersRequest : public internal::DataSerializableFixedId_t<
-                                 DSFid::GetAllServersRequest> {
+                                 internal::DSFid::GetAllServersRequest> {
   std::shared_ptr<CacheableString> m_serverGroup;
 
  public:

@@ -33,7 +33,7 @@ namespace geode {
 namespace client {
 
 class GetAllServersResponse : public internal::DataSerializableFixedId_t<
-                                  DSFid::GetAllServersResponse> {
+                                  internal::DSFid::GetAllServersResponse> {
   std::vector<ServerLocation> m_servers;
 
  public:

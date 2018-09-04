@@ -31,8 +31,10 @@
 #include <unistd.h>
 #endif
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 #ifdef WIN32
 
@@ -107,9 +109,7 @@ void TaskClient::kill() {
   m_busy = false;
 }
 
-// void TaskClient::killAll( std::string & host ) {
-//  FWKINFO( "Stopping clients on " << host );
-//  char buf[1024];
-//  sprintf( buf, "goHost %s stopAll -l \n", host.c_str() );
-//  writePipe( buf );
-//}
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -17,6 +17,8 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
+using apache::geode::client::NoAvailableLocatorsException;
+
 bool isLocalServer = false;
 bool isLocator = false;
 

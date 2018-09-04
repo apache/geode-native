@@ -26,7 +26,12 @@
 #include "CacheImpl.hpp"
 #include "fw_helper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::Exception;
+using apache::geode::client::Region;
+using apache::geode::client::RegionAttributesFactory;
 
 BEGIN_TEST(CacheFunction)
   const uint32_t totalSubRegions = 3;
@@ -53,7 +58,7 @@ BEGIN_TEST(CacheFunction)
   }
   std::cout << "create Region with name=" << regionName << std::endl;
   try {
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cptr.get());
+    auto cacheImpl = CacheRegionHelper::getCacheImpl(cptr.get());
     cacheImpl->createRegion(regionName, regionAttributes, rptr);
   } catch (Exception& ex) {
     std::cout << ex.what() << std::endl;

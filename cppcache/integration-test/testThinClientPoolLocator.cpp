@@ -17,6 +17,10 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
+using apache::geode::client::Exception;
+using apache::geode::client::NoAvailableLocatorsException;
+using apache::geode::client::NotConnectedException;
+
 bool isLocalServer = false;
 bool isLocator = false;
 

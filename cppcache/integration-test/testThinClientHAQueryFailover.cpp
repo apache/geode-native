@@ -36,13 +36,20 @@
 
 #include "testobject/Portfolio.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testobject;
 
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define SERVER2 s2p2
+
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
+using apache::geode::client::SelectResults;
+
+using testobject::Portfolio;
+using testobject::Position;
 
 CacheHelper* cacheHelper = nullptr;
 static bool isLocalServer = false;

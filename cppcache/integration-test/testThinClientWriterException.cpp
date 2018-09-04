@@ -30,8 +30,15 @@
    thrown and no data in local region.
    4. test also check the localput operation.
 */
-using namespace apache::geode::client::testframework::security;
-using namespace apache::geode::client;
+
+using apache::geode::client::testframework::security::CredentialGenerator;
+using apache::geode::client::testframework::security::OP_CONTAINS_KEY;
+using apache::geode::client::testframework::security::OP_GET;
+using apache::geode::client::testframework::security::OP_KEY_SET;
+using apache::geode::client::testframework::security::OP_REGISTER_INTEREST;
+using apache::geode::client::testframework::security::OP_UNREGISTER_INTEREST;
+using apache::geode::client::testframework::security::opCodeList;
+
 std::shared_ptr<TallyListener> regListener;
 std::shared_ptr<TallyWriter> regWriter;
 
@@ -39,43 +46,43 @@ const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 const char* regionNamesAuth[] = {"DistRegionAck"};
- std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
+std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
- std::string getXmlPath() {
-   char xmlPath[1000] = {'\0'};
-   const char* path = ACE_OS::getenv("TESTSRC");
-   ASSERT(path != nullptr,
-          "Environment variable TESTSRC for test source directory is not set.");
-   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
-   strcat(xmlPath, "xml/Security/");
-   return std::string(xmlPath);
- }
+std::string getXmlPath() {
+  char xmlPath[1000] = {'\0'};
+  const char* path = ACE_OS::getenv("TESTSRC");
+  ASSERT(path != nullptr,
+         "Environment variable TESTSRC for test source directory is not set.");
+  strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
+  strcat(xmlPath, "xml/Security/");
+  return std::string(xmlPath);
+}
 
- void initCredentialGenerator() {
-   static int loopNum = 1;
+void initCredentialGenerator() {
+  static int loopNum = 1;
 
-   switch (loopNum) {
-     case 1: {
-       credentialGeneratorHandler = CredentialGenerator::create("DUMMY");
-       break;
-     }
-     case 2: {
-       credentialGeneratorHandler = CredentialGenerator::create("LDAP");
-       break;
-     }
-     default:
-     case 3: {
-       credentialGeneratorHandler = CredentialGenerator::create("PKCS");
-       break;
-     }
-   }
+  switch (loopNum) {
+    case 1: {
+      credentialGeneratorHandler = CredentialGenerator::create("DUMMY");
+      break;
+    }
+    case 2: {
+      credentialGeneratorHandler = CredentialGenerator::create("LDAP");
+      break;
+    }
+    default:
+    case 3: {
+      credentialGeneratorHandler = CredentialGenerator::create("PKCS");
+      break;
+    }
+  }
 
-   if (credentialGeneratorHandler == nullptr) {
-     FAIL("credentialGeneratorHandler is nullptr");
-   }
+  if (credentialGeneratorHandler == nullptr) {
+    FAIL("credentialGeneratorHandler is nullptr");
+  }
 
-   loopNum++;
-   if (loopNum > 2) loopNum = 1;
+  loopNum++;
+  if (loopNum > 2) loopNum = 1;
 }
 
 opCodeList::value_type tmpRArr[] = {OP_GET, OP_REGISTER_INTEREST,
@@ -102,7 +109,7 @@ opCodeList::value_type tmpRArr[] = {OP_GET, OP_REGISTER_INTEREST,
 #define READER_CLIENT s2p1
 
 void initClientAuth() {
- auto config = Properties::create();
+  auto config = Properties::create();
   opCodeList rt(tmpRArr, tmpRArr + sizeof tmpRArr / sizeof *tmpRArr);
   credentialGeneratorHandler->getAuthInit(config);
   credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config, nullptr);
@@ -118,10 +125,11 @@ void initClientAuth() {
   }
 }
 
-void setCacheWriter(const char* regName, std::shared_ptr<TallyWriter> regWriter) {
- auto reg = getHelper()->getRegion(regName);
- auto attrMutator = reg->getAttributesMutator();
- attrMutator->setCacheWriter(regWriter);
+void setCacheWriter(const char* regName,
+                    std::shared_ptr<TallyWriter> regWriter) {
+  auto reg = getHelper()->getRegion(regName);
+  auto attrMutator = reg->getAttributesMutator();
+  attrMutator->setCacheWriter(regWriter);
 }
 
 DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StartServer1)

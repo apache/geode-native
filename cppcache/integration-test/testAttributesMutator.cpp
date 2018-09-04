@@ -24,9 +24,13 @@
 
 #include "fw_dunit.hpp"
 
-// this is a test.
-
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::ExpirationAction;
+using apache::geode::client::Region;
+using apache::geode::client::RegionAttributesFactory;
 
 class TestData {
  public:
@@ -48,7 +52,7 @@ DUNIT_TASK(A, Init)
         ExpirationAction::LOCAL_INVALIDATE, std::chrono::seconds(5));
     auto regionAttributes = regionAttributesFactory.create();
 
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(Test.m_cache.get());
+    auto&& cacheImpl = CacheRegionHelper::getCacheImpl(Test.m_cache.get());
     cacheImpl->createRegion("Local_ETTL_LI", regionAttributes, Test.m_region);
   }
 ENDTASK

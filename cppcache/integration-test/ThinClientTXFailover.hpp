@@ -31,8 +31,11 @@
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "CacheHelper.hpp"
-using namespace apache::geode::client;
-using namespace test;
+
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::TransactionDataNodeHasDepartedException;
 
 bool isLocalServer = false;
 

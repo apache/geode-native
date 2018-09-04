@@ -39,12 +39,14 @@
 
 #include <cctype>
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 const std::string FwkClientSet::m_defaultGroup = "DEFAULT";
 
-XERCES_CPP_NAMESPACE_USE
+// XERCES_CPP_NAMESPACE_USE
 
 bool allSpace(std::string& str) {
   bool space = true;
@@ -1028,3 +1030,8 @@ const FwkData* FwkTask::getData(const char* name) const {
 
   return data;
 }
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

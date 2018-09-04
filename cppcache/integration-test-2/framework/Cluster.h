@@ -210,7 +210,8 @@ class Cluster {
 
 
   apache::geode::client::Cache createCache(const std::unordered_map<std::string, std::string>& properties) {
-    using namespace apache::geode::client;
+    using apache::geode::client::CacheFactory;
+
     CacheFactory cacheFactory;
 
     for (auto&& property : properties) {

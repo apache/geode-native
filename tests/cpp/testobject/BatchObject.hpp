@@ -32,9 +32,10 @@
 #include "TimestampedObject.hpp"
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-using namespace testframework;
 namespace testobject {
+
+using apache::geode::client::CacheableBytes;
+
 /**
  * @brief User class for testing the cq functionality.
  */

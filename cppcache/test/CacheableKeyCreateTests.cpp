@@ -24,7 +24,17 @@
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/CacheableDate.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::CacheableBoolean;
+using apache::geode::client::CacheableByte;
+using apache::geode::client::CacheableCharacter;
+using apache::geode::client::CacheableDate;
+using apache::geode::client::CacheableDouble;
+using apache::geode::client::CacheableFloat;
+using apache::geode::client::CacheableInt16;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableInt64;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
 
 TEST(CacheableKeyCreateTests, forArrayOf_constchar) {
   const auto cacheableKey = CacheableKey::create("test");

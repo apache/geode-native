@@ -39,8 +39,10 @@
 #include <arpa/inet.h>
 #endif
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 // Our configuration parameters
 #define TIME_SYNC_ADDR "224.0.37.37"
@@ -253,4 +255,7 @@ void TimeSync::recvTimeSync() {
   }
 }
 
-// ----------------------------------------------------------------------------
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -27,7 +27,8 @@
 
 #include "fw_helper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::DataInputInternal;
+using apache::geode::client::DataOutputInternal;
 
 void dumpnbytes(const uint8_t* buf, size_t length) {
   for (size_t i = 0; i < length; i++) {

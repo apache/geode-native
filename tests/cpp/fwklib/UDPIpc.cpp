@@ -24,9 +24,10 @@
 #include "FwkStrCvt.hpp"
 #include "config.h"
 
-using namespace std;
-using namespace apache::geode::client;
-using namespace testframework;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 bool UDPMessage::ping(ACE_SOCK_Dgram& io, ACE_INET_Addr& who) {
   clear();
@@ -368,3 +369,8 @@ void Responder::initialize() {
     FWKEXCEPTION("Server failed to open io, " << errno);
   }
 }
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

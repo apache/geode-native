@@ -27,13 +27,19 @@
 
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-
 namespace PdxTests {
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataSerializable;
+using apache::geode::client::PdxReader;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::PdxWriter;
+
 /************************************************************
  *  PdxTypes1
  * *********************************************************/
-
 class TESTOBJECT_EXPORT PdxTypes1 : public PdxSerializable {
  private:
   int32_t m_i1;

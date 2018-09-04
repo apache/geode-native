@@ -38,7 +38,9 @@
 #include <set>
 #include <algorithm>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 const char* ThinClientRedundancyManager::NC_PerodicACK = "NC PerodicACK";
 
@@ -1304,3 +1306,7 @@ GfErrType ThinClientRedundancyManager::sendRequestToPrimary(
   }
   return err;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

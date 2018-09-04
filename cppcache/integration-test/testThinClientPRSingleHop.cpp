@@ -38,13 +38,14 @@
 
 #include "ThinClientHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define SERVER2 s1p2
 #define SERVER3 s2p2
+
+using apache::geode::client::CacheServerException;
+using apache::geode::client::CacheWriterException;
+using apache::geode::client::Exception;
 
 bool isLocalServer = false;
 const char* endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);

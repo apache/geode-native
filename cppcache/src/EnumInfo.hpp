@@ -29,6 +29,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
+using internal::DataSerializableFixedId_t;
+using internal::DSFid;
+
 class APACHE_GEODE_EXPORT EnumInfo
  : public DataSerializableFixedId_t<DSFid::EnumInfo>,
       public CacheableKey {

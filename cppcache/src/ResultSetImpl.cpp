@@ -21,7 +21,9 @@
  * @file
  */
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 ResultSetImpl::ResultSetImpl(const std::shared_ptr<CacheableVector>& response)
     : m_resultSetVector(response) {}
@@ -45,3 +47,7 @@ SelectResults::iterator ResultSetImpl::begin() {
 SelectResults::iterator ResultSetImpl::end() {
   return m_resultSetVector->end();
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

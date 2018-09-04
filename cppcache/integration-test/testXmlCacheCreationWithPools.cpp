@@ -31,6 +31,13 @@
 
 #include "CacheHelper.hpp"
 
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableStringArray;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::Exception;
+using apache::geode::client::Pool;
+
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
@@ -40,11 +47,10 @@ const char* locatorsG =
 
 #include "LocatorHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace std;
+using std::string;
+using std::vector;
 
-#define SLIST vector<string>
+using SLIST = vector<string>;
 
 bool findString(string& item, std::shared_ptr<CacheableStringArray> array) {
   for (int size = 0; size < array->length(); size++) {
@@ -85,7 +91,7 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
                       int subscriptionAckInterval, int subscriptionRedundancy,
                       int statisticInterval, bool prSingleHopEnabled,
                       int updateLocatorListInterval) {
-  using namespace apache::geode::internal::chrono::duration;
+  using apache::geode::internal::chrono::duration::to_string;
 
   char logmsg[500] = {0};
 
@@ -303,7 +309,7 @@ int testXmlCacheCreationWithPools() {
   }
   auto regPtr1 = vrp.at(0);
 
-  std::vector<std::shared_ptr<Region>> vr = regPtr1->subregions(true);
+  auto&& vr = regPtr1->subregions(true);
   std::cout << "Test if the number of sub regions with the root region Root1 "
                "are correct"
             << std::endl;

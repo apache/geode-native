@@ -21,12 +21,12 @@
  */
 
 /**
-  * @file    FwkLog.hpp
-  * @since   1.0
-  * @version 1.0
-  * @see
-  *
-  */
+ * @file    FwkLog.hpp
+ * @since   1.0
+ * @version 1.0
+ * @see
+ *
+ */
 
 // ----------------------------------------------------------------------------
 
@@ -77,47 +77,53 @@ const char* getNodeName();
 
 #endif
 
-#define FWKINFO(x)                                      \
-  {                                                     \
-    std::ostringstream os;                              \
-    os << x;                                            \
-    plog("Info", os.str().c_str(), __FILE__, __LINE__); \
+#define FWKINFO(x)                                                       \
+  {                                                                      \
+    std::ostringstream os;                                               \
+    os << x;                                                             \
+    apache::geode::client::testframework::plog("Info", os.str().c_str(), \
+                                               __FILE__, __LINE__);      \
   }
-#define FWKWARN(x)                                      \
-  {                                                     \
-    std::ostringstream os;                              \
-    os << x;                                            \
-    plog("Warn", os.str().c_str(), __FILE__, __LINE__); \
+#define FWKWARN(x)                                                       \
+  {                                                                      \
+    std::ostringstream os;                                               \
+    os << x;                                                             \
+    apache::geode::client::testframework::plog("Warn", os.str().c_str(), \
+                                               __FILE__, __LINE__);      \
   }
-#define FWKERROR(x)                                      \
-  {                                                      \
-    std::ostringstream os;                               \
-    os << x;                                             \
-    plog("Error", os.str().c_str(), __FILE__, __LINE__); \
+#define FWKERROR(x)                                                       \
+  {                                                                       \
+    std::ostringstream os;                                                \
+    os << x;                                                              \
+    apache::geode::client::testframework::plog("Error", os.str().c_str(), \
+                                               __FILE__, __LINE__);       \
   }
-#define FWKSEVERE(x)                                      \
-  {                                                       \
-    std::ostringstream os;                                \
-    os << x;                                              \
-    plog("Severe", os.str().c_str(), __FILE__, __LINE__); \
+#define FWKSEVERE(x)                                                       \
+  {                                                                        \
+    std::ostringstream os;                                                 \
+    os << x;                                                               \
+    apache::geode::client::testframework::plog("Severe", os.str().c_str(), \
+                                               __FILE__, __LINE__);        \
   }
 #define FWKEXCEPTION(x)                                              \
   {                                                                  \
     std::ostringstream os;                                           \
     os << x << " In file: " << __FILE__ << " at line: " << __LINE__; \
-    throw FwkException(os.str().c_str());                            \
+    throw apache::geode::client::testframework::FwkException(        \
+        os.str().c_str());                                           \
   }
 
 #define WAITFORDEBUGGER(x)                                               \
   {                                                                      \
-    plog("Info", "Waiting for debugger ...", __FILE__, __LINE__);        \
+    apache::geode::client::testframework::plog(                          \
+        "Info", "Waiting for debugger ...", __FILE__, __LINE__);         \
     for (int32_t i = x; i > 0; i--) ACE_OS::sleep(ACE_Time_Value(1, 0)); \
   }
 
-#define DUMPSTACK(x) \
-  {                  \
-    FWKSEVERE(x);    \
-    dumpStack();     \
+#define DUMPSTACK(x)                                   \
+  {                                                    \
+    FWKSEVERE(x);                                      \
+    apache::geode::client::testframework::dumpStack(); \
   }
 
 }  // namespace  testframework

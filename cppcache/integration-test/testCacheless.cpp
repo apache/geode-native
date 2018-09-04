@@ -22,7 +22,10 @@
 #include "ThinClientHelper.hpp"
 #include "TallyListener.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheListener;
+
 std::shared_ptr<CacheListener> nullListenerPtr;
 
 class RegionWrapper {

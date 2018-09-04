@@ -17,7 +17,9 @@
 #include "ThinClientPoolStickyDM.hpp"
 #include "TssConnectionWrapper.hpp"
 #include <algorithm>
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
     GfErrType* error, std::set<ServerLocation>& excludeServers, bool isBGThread,
     TcrMessage& request, int8_t& version, bool& match, bool& connFound,
@@ -146,3 +148,7 @@ void ThinClientPoolStickyDM::setThreadLocalConnection(TcrConnection* conn) {
 bool ThinClientPoolStickyDM::canItBeDeletedNoImpl(TcrConnection* conn) {
   return ThinClientPoolDM::canItBeDeleted(conn);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

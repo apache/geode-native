@@ -38,21 +38,25 @@
 
 #include "ThinClientCQ.hpp"
 
-using namespace test;
-using namespace testData;
-
 #include "CacheHelper.hpp"
 #include "ThinClientHelper.hpp"
 #include "ace/Process.h"
 
-//#include "ThinClientSecurity.hpp"
-
-using namespace apache::geode::client::testframework::security;
-using namespace apache::geode::client;
+using apache::geode::client::AuthenticatedView;
+using apache::geode::client::CqAttributesFactory;
+using apache::geode::client::CqEvent;
+using apache::geode::client::CqListener;
+using apache::geode::client::CqOperation;
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
+using apache::geode::client::testframework::security::CredentialGenerator;
 
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
+
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
+
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define CLIENT2 s1p2

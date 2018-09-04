@@ -16,7 +16,9 @@
  */
 #include "GetAllServersResponse.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 void GetAllServersResponse::toData(DataOutput& output) const {
   int32_t length = static_cast<int32_t>(m_servers.size());
@@ -34,3 +36,7 @@ void GetAllServersResponse::fromData(DataInput& input) {
     m_servers.push_back(sLoc);
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

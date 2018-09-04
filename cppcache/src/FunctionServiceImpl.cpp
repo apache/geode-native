@@ -19,7 +19,9 @@
 #include "ExecutionImpl.hpp"
 #include <geode/PoolManager.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 FunctionServiceImpl::FunctionServiceImpl(AuthenticatedView* authenticatedView) {
   m_authenticatedView = authenticatedView;
@@ -29,3 +31,7 @@ std::shared_ptr<FunctionService> FunctionServiceImpl::getFunctionService(
     AuthenticatedView* authenticatedView) {
   return std::make_shared<FunctionServiceImpl>(authenticatedView);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

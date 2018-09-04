@@ -21,7 +21,46 @@
 
 #include "fw_helper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::AlreadyConnectedException;
+using apache::geode::client::AttributesMutator;
+using apache::geode::client::Cache;
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheClosedException;
+using apache::geode::client::CacheExistsException;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheListener;
+using apache::geode::client::CacheLoader;
+using apache::geode::client::CacheLoaderException;
+using apache::geode::client::CacheWriter;
+using apache::geode::client::CacheWriterException;
+using apache::geode::client::CacheXmlException;
+using apache::geode::client::ClassCastException;
+using apache::geode::client::ConcurrentModificationException;
+using apache::geode::client::EntryDestroyedException;
+using apache::geode::client::EntryExistsException;
+using apache::geode::client::EntryNotFoundException;
+using apache::geode::client::Exception;
+using apache::geode::client::FileNotFoundException;
+using apache::geode::client::GeodeConfigException;
+using apache::geode::client::GeodeIOException;
+using apache::geode::client::IllegalArgumentException;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::InterruptedException;
+using apache::geode::client::LeaseExpiredException;
+using apache::geode::client::NoSystemException;
+using apache::geode::client::NullPointerException;
+using apache::geode::client::Region;
+using apache::geode::client::RegionAttributesFactory;
+using apache::geode::client::RegionDestroyedException;
+using apache::geode::client::RegionEntry;
+using apache::geode::client::RegionExistsException;
+using apache::geode::client::Serializable;
+using apache::geode::client::StatisticsDisabledException;
+using apache::geode::client::TimeoutException;
+using apache::geode::client::UnknownException;
+using apache::geode::client::UnsupportedOperationException;
 
 /**
  * @brief Test that we can link to all classes.

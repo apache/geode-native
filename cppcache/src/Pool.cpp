@@ -27,7 +27,9 @@
  * @file
  */
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 Pool::Pool(std::shared_ptr<PoolAttributes> attr) : m_attrs(attr) {}
 Pool::~Pool() {}
@@ -139,3 +141,7 @@ int Pool::getPendingEventCount() const {
   }
   return poolHADM->getPrimaryServerQueueSize();
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
