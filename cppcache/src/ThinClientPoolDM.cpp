@@ -718,7 +718,7 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
     return CacheableStringArray::create(
         std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
   } else if (!m_attrs->m_initLocList.empty()) {
-    std::vector<ServerLocation> vec;
+    std::vector<std::shared_ptr<ServerLocation>> vec;
     // TODO thread - why is this member volatile?
     const_cast<ThinClientLocatorHelper*>(
         reinterpret_cast<volatile ThinClientLocatorHelper*>(m_locHelper))
@@ -727,8 +727,8 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
     auto ptrArr = new std::shared_ptr<CacheableString>[vec.size()];
     int32_t i = 0;
     for (auto&& serLoc : vec) {
-      ptrArr[i++] = CacheableString::create(serLoc.getServerName() + ":" +
-                                            std::to_string(serLoc.getPort()));
+      ptrArr[i++] = CacheableString::create(serLoc->getServerName() + ":" +
+                                            std::to_string(serLoc->getPort()));
     }
     return CacheableStringArray::create(
         std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));

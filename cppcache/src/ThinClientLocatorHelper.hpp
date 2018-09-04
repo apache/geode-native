@@ -50,8 +50,9 @@ class ThinClientLocatorHelper {
       const std::set<ServerLocation>& exclEndPts,
       /*const std::set<TcrEndpoint*>& exclEndPts,*/
       const std::string& serverGrp);
-  GfErrType getAllServers(std::vector<ServerLocation>& servers,
-                          const std::string& serverGrp);
+  GfErrType getAllServers(
+      std::vector<std::shared_ptr<ServerLocation> >& servers,
+      const std::string& serverGrp);
   int32_t getCurLocatorsNum() {
     return static_cast<int32_t>(m_locHostPort.size());
   }

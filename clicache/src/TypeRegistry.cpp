@@ -187,15 +187,15 @@ namespace Apache
           throw gcnew IllegalArgumentException("Unknown serialization type.");
         }
 
-        if (!ManagedDelegatesGeneric->ContainsKey(id))
+        if (!ObjectIDDelegatesMap->ContainsKey(id))
         {
-          ManagedDelegatesGeneric->Add(id, creationMethod);
+          ObjectIDDelegatesMap->Add(id, creationMethod);
         }
         
-        if (!ManagedTypeDelegates->ContainsKey(dataSerializable->Type))
-          {
-            ManagedTypeDelegates->Add(dataSerializable->Type, id);
-          }
+        if (!ObjectTypeIDMap->ContainsKey(dataSerializable->Type))
+        {
+          ObjectTypeIDMap->Add(dataSerializable->Type, id);
+        }
         auto delegateObj = gcnew DelegateWrapperGeneric(creationMethod);
         auto nativeDelegate = gcnew TypeFactoryNativeMethodGeneric(delegateObj,
             &DelegateWrapperGeneric::NativeDelegateGeneric);

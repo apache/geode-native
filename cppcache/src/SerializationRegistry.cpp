@@ -246,22 +246,22 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
 }
 
 void SerializationRegistry::deserialize(
-    DataInput& input, std::shared_ptr<Serializable> obj) const {
+    DataInput& input, const std::shared_ptr<Serializable>& obj) const {
   if (!obj) {
     // nothing to read
-  } else if (const auto dataSerializableInternal =
+  } else if (const auto&& dataSerializableInternal =
                  std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
     deserialize(input, dataSerializableInternal);
-  } else if (const auto dataSerializableFixedId =
+  } else if (const auto&& dataSerializableFixedId =
                  std::dynamic_pointer_cast<DataSerializableFixedId>(obj)) {
     deserialize(input, dataSerializableFixedId);
-  } else if (const auto dataSerializablePrimitive =
+  } else if (const auto&& dataSerializablePrimitive =
                  std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
     deserialize(input, dataSerializablePrimitive);
-  } else if (const auto dataSerializable =
+  } else if (const auto&& dataSerializable =
                  std::dynamic_pointer_cast<DataSerializable>(obj)) {
     deserialize(input, dataSerializable);
-  } else if (const auto pdxSerializable =
+  } else if (const auto&& pdxSerializable =
                  std::dynamic_pointer_cast<PdxSerializable>(obj)) {
     deserialize(input, pdxSerializable);
   } else {
@@ -271,32 +271,34 @@ void SerializationRegistry::deserialize(
 
 void SerializationRegistry::deserialize(
     DataInput& input,
-    std::shared_ptr<DataSerializableInternal> dataSerializableInternal) const {
+    const std::shared_ptr<DataSerializableInternal>& dataSerializableInternal)
+    const {
   dataSerializableInternal->fromData(input);
 }
 
 void SerializationRegistry::deserialize(
     DataInput& input,
-    std::shared_ptr<DataSerializableFixedId> dataSerializableFixedId) const {
+    const std::shared_ptr<DataSerializableFixedId>& dataSerializableFixedId)
+    const {
   dataSerializableFixedId->fromData(input);
 }
 
 void SerializationRegistry::deserialize(
     DataInput& input,
-    std::shared_ptr<DataSerializablePrimitive> dataSerializablePrimitive)
+    const std::shared_ptr<DataSerializablePrimitive>& dataSerializablePrimitive)
     const {
   dataSerializablePrimitive->fromData(input);
 }
 
 void SerializationRegistry::deserialize(
     DataInput& input,
-    std::shared_ptr<DataSerializable> dataSerializable) const {
+    const std::shared_ptr<DataSerializable>& dataSerializable) const {
   dataSerializable->fromData(input);
 }
 
 void SerializationRegistry::deserialize(
     DataInput& /*input*/,
-    std::shared_ptr<PdxSerializable> /*pdxSerializable*/) const {
+    const std::shared_ptr<PdxSerializable>& /*pdxSerializable*/) const {
   throw UnsupportedOperationException(
       "SerializationRegistry::deserialize<PdxSerializable> not implemented");
 }
@@ -578,6 +580,17 @@ void PdxTypeHandler::serialize(
 std::shared_ptr<PdxSerializable> PdxTypeHandler::deserialize(
     DataInput& dataInput) const {
   return PdxHelper::deserializePdx(dataInput, false);
+}
+
+void DataSerializableHandler::serialize(
+    const std::shared_ptr<DataSerializable>& dataSerializable,
+    DataOutput& dataOutput) const {
+  dataSerializable->toData(dataOutput);
+}
+
+std::shared_ptr<DataSerializable> DataSerializableHandler::deserialize(
+    DataInput& dataInput, int8_t typeId) const {
+  return nullptr;
 }
 
 }  // namespace client

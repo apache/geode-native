@@ -104,7 +104,7 @@ Cache CacheFactory::create() const {
       std::bind(TXCommitMessage::create, memberListForVersionStamp));
 
   serializationRegistry->addType(
-      //TODO: This looks like the only thing to do here, but I'm not sure
+      // TODO: This looks like the only thing to do here, but I'm not sure
       static_cast<int64_t>(DSCode::PdxType),
       std::bind(PdxType::CreateDeserializable, std::ref(*pdxTypeRegistry)));
 
@@ -117,6 +117,8 @@ Cache CacheFactory::create() const {
                 memberListForVersionStamp));
 
   serializationRegistry->setPdxTypeHandler(new PdxTypeHandler());
+  serializationRegistry->setDataSerializableHandler(
+      new DataSerializableHandler());
 
   pdxTypeRegistry->setPdxIgnoreUnreadFields(cache.getPdxIgnoreUnreadFields());
   pdxTypeRegistry->setPdxReadSerialized(cache.getPdxReadSerialized());

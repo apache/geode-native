@@ -143,13 +143,13 @@ namespace Apache
         TypeFactoryMethod^ GetManagedDelegateGeneric(System::Int64 typeId)
         {
           TypeFactoryMethod^ ret = nullptr;
-          ManagedDelegatesGeneric->TryGetValue(typeId, ret);
+          ObjectIDDelegatesMap->TryGetValue(typeId, ret);
           return ret;
         }
         System::Int32  GetIdForManagedType(System::String^ s)
         {
           System::Int32 ret;
-          ManagedTypeDelegates->TryGetValue(s, ret);
+          ObjectTypeIDMap->TryGetValue(s, ret);
           return ret;
         }
 
@@ -229,14 +229,14 @@ namespace Apache
         Dictionary<String^, PdxTypeFactoryMethod^>^ PdxDelegateMap =
           gcnew Dictionary<String^, PdxTypeFactoryMethod^>();
 
-        Dictionary<System::Int64, TypeFactoryMethod^>^ ManagedDelegatesGeneric =
+        Dictionary<System::Int64, TypeFactoryMethod^>^ ObjectIDDelegatesMap =
           gcnew Dictionary<System::Int64, TypeFactoryMethod^>();
         List<TypeFactoryNativeMethodGeneric^>^ NativeDelegatesGeneric =
           gcnew List<TypeFactoryNativeMethodGeneric^>();
         Dictionary<UInt32, TypeFactoryMethod^>^ DelegateMapGeneric =
           gcnew Dictionary<UInt32, TypeFactoryMethod^>();
 
-        Dictionary<System::String^, System::Int32>^ ManagedTypeDelegates =
+        Dictionary<System::String^, System::Int32>^ ObjectTypeIDMap =
           gcnew Dictionary<System::String^, System::Int32>();
 
         Dictionary<Byte, TypeFactoryMethod^>^ DsCodeToDataSerializablePrimitiveTypeFactoryMethod =

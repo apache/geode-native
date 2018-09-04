@@ -494,7 +494,7 @@ void TcrMessage::writeObjectPart(
     deltaPtr->toDelta(*m_request);
   } else if (isObject) {
     if (callToData) {
-      m_request->getSerializationRegistry().serializeWithoutHeader(se.get(),
+      m_request->getSerializationRegistry().serializeWithoutHeader(se,
                                                                    *m_request);
     } else {
       if (getAllKeyList != nullptr) {
@@ -936,8 +936,8 @@ void TcrMessage::handleByteArrayResponse(
       } else if (m_msgTypeRequest == TcrMessage::GET_PDX_TYPE_BY_ID) {
         // PdxType will come in response
         input.advanceCursor(5);  // part header
-        m_value =
-            serializationRegistry.deserialize(input, static_cast<int8_t>(DSCode::PdxType));
+        m_value = serializationRegistry.deserialize(
+            input, static_cast<int8_t>(DSCode::PdxType));
       } else if (m_msgTypeRequest == TcrMessage::GET_PDX_ENUM_BY_ID) {
         // PdxType will come in response
         input.advanceCursor(5);  // part header

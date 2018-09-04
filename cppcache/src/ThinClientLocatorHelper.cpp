@@ -83,7 +83,8 @@ Connector* ThinClientLocatorHelper::createConnection(
 }
 
 GfErrType ThinClientLocatorHelper::getAllServers(
-    std::vector<ServerLocation>& servers, const std::string& serverGrp) {
+    std::vector<std::shared_ptr<ServerLocation> >& servers,
+    const std::string& serverGrp) {
   ACE_Guard<ACE_Thread_Mutex> guard(m_locatorLock);
 
   auto& sysProps = m_poolDM->getConnectionManager()
@@ -103,11 +104,12 @@ GfErrType ThinClientLocatorHelper::getAllServers(
       ConnectionWrapper cw(conn);
       createConnection(conn, loc.getServerName().c_str(), loc.getPort(),
                        sysProps.connectTimeout(), buffSize);
-      GetAllServersRequest request(serverGrp);
+      std::shared_ptr<GetAllServersRequest> request =
+          std::make_shared<GetAllServersRequest>(serverGrp);
       auto data =
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
       data.writeInt((int32_t)1001);  // GOSSIPVERSION
-      data.writeObject(&request);
+      data.writeObject(request);
       auto sentLength = conn->send(
           reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : std::chrono::seconds(10));
@@ -195,12 +197,13 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
       ConnectionWrapper cw(conn);
       createConnection(conn, loc.getServerName().c_str(), loc.getPort(),
                        sysProps.connectTimeout(), buffSize);
-      QueueConnectionRequest request(memId, exclEndPts, redundancy, false,
-                                     serverGrp);
+      std::shared_ptr<QueueConnectionRequest> request =
+          std::make_shared<QueueConnectionRequest>(
+              memId, exclEndPts, redundancy, false, serverGrp);
       auto data =
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
       data.writeInt((int32_t)1001);  // GOSSIPVERSION
-      data.writeObject(&request);
+      data.writeObject(request);
       auto sentLength = conn->send(
           reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
@@ -292,14 +295,17 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
       data.writeInt(1001);  // GOSSIPVERSION
       if (currentServer == nullptr) {
         LOGDEBUG("Creating ClientConnectionRequest");
-        ClientConnectionRequest request(exclEndPts, serverGrp);
-        data.writeObject(&request);
+        std::shared_ptr<ClientConnectionRequest> request =
+            std::make_shared<ClientConnectionRequest>(exclEndPts, serverGrp);
+        data.writeObject(request);
       } else {
         LOGDEBUG("Creating ClientReplacementRequest for connection: ",
                  currentServer->getEndpointObject()->name().c_str());
-        ClientReplacementRequest request(
-            currentServer->getEndpointObject()->name(), exclEndPts, serverGrp);
-        data.writeObject(&request);
+        std::shared_ptr<ClientReplacementRequest> request =
+            std::make_shared<ClientReplacementRequest>(
+                currentServer->getEndpointObject()->name(), exclEndPts,
+                serverGrp);
+        data.writeObject(request);
       }
       auto sentLength = conn->send(
           reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),
@@ -384,11 +390,12 @@ GfErrType ThinClientLocatorHelper::updateLocators(
       ConnectionWrapper cw(conn);
       createConnection(conn, serLoc.getServerName().c_str(), serLoc.getPort(),
                        sysProps.connectTimeout(), buffSize);
-      LocatorListRequest request(serverGrp);
+      std::shared_ptr<LocatorListRequest> request =
+          std::make_shared<LocatorListRequest>(serverGrp);
       auto data =
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
       data.writeInt((int32_t)1001);  // GOSSIPVERSION
-      data.writeObject(&request);
+      data.writeObject(request);
       auto sentLength = conn->send(
           reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),
           m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
