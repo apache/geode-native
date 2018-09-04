@@ -54,6 +54,24 @@ class APACHE_GEODE_EXPORT CacheableDate : public DataSerializablePrimitive,
   typedef std::chrono::time_point<clock> time_point;
   typedef std::chrono::milliseconds duration;
 
+  /** Constructor, used for deserialization. */
+  CacheableDate(const time_t value = 0);
+
+  /**
+   * Construct from std::chrono::time_point<std::chrono::system_clock>.
+   */
+  CacheableDate(const time_point& value);
+
+  /**
+   * Construct from std::chrono::seconds since POSIX epoch.
+   */
+  CacheableDate(const duration& value);
+
+  ~CacheableDate() noexcept override = default;
+
+  void operator=(const CacheableDate& other) = delete;
+  CacheableDate(const CacheableDate& other) = delete;
+
   void toData(DataOutput& output) const override;
 
   virtual void fromData(DataInput& input) override;
@@ -108,30 +126,6 @@ class APACHE_GEODE_EXPORT CacheableDate : public DataSerializablePrimitive,
   }
 
   std::string toString() const override;
-
-  /** Destructor */
-  ~CacheableDate() override = default;
-
- protected:
-  /** Constructor, used for deserialization. */
-  CacheableDate(const time_t value = 0);
-
-  /**
-   * Construct from std::chrono::time_point<std::chrono::system_clock>.
-   */
-  CacheableDate(const time_point& value);
-
-  /**
-   * Construct from std::chrono::seconds since POSIX epoch.
-   */
-  CacheableDate(const duration& value);
-
- private:
-  // never implemented.
-  void operator=(const CacheableDate& other);
-  CacheableDate(const CacheableDate& other);
-
-  _GEODE_FRIEND_STD_SHARED_PTR(CacheableDate)
 };
 
 template <>

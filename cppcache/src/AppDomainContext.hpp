@@ -31,6 +31,8 @@ class AppDomainContext {
   typedef AppDomainContext* (*factory)();
   typedef std::function<void()> runnable;
 
+  virtual ~AppDomainContext() noexcept = default;
+
   virtual void run(runnable func) = 0;
 };
 

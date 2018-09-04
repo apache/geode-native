@@ -23,14 +23,12 @@
 #include "internal/geode_globals.hpp"
 #include "CqEvent.hpp"
 
-/**
- * @file
- */
-
 namespace apache {
 namespace geode {
 namespace client {
+
 class CacheListener;
+
 /**
  * @class CqListener CqListener.hpp
  *
@@ -41,6 +39,10 @@ class CacheListener;
  */
 class APACHE_GEODE_EXPORT CqListener {
  public:
+  virtual ~CqListener() noexcept = default;
+  CqListener(const CacheListener& other) = delete;
+  void operator=(const CqListener& other) = delete;
+
   /**
    * This method is invoked when an event is occurred on the region
    * that satisfied the query condition of this CQ.
@@ -83,10 +85,6 @@ class APACHE_GEODE_EXPORT CqListener {
    */
   CqListener();
 
- private:
-  // never implemented.
-  CqListener(const CacheListener& other);
-  void operator=(const CqListener& other);
 };
 }  // namespace client
 }  // namespace geode

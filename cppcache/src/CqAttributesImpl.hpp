@@ -49,6 +49,8 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT CqAttributesImpl : public CqAttributes {
  public:
+  ~CqAttributesImpl() noexcept override = default;
+
   listener_container_type getCqListeners() override;
 
   /**

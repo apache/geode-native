@@ -27,19 +27,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-CacheableEnum::CacheableEnum()
-    : m_enumClassName(nullptr),
-      m_enumName(nullptr),
-      m_ordinal(-1),
-      m_hashcode(0) {}
-
-CacheableEnum::CacheableEnum(std::string enumClassName, std::string enumName,
-                             int32_t ordinal)
-    : m_enumClassName(std::move(enumClassName)),
-      m_enumName(std::move(enumName)),
-      m_ordinal(ordinal),
-      m_hashcode(0) {}
-
 void CacheableEnum::toData(apache::geode::client::DataOutput& output) const {
   int enumVal = PdxHelper::getEnumValue(
       m_enumClassName.c_str(), m_enumName.c_str(), m_ordinal,

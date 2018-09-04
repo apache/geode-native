@@ -94,6 +94,7 @@ class MyCqListener : public CqListener {
         m_numUpdates(0),
         m_numDeletes(0),
         m_numEvents(0) {}
+  ~MyCqListener() noexcept override = default;
   inline void updateCount(const CqEvent& cqEvent) {
     printf(" in cqEvent.getQueryOperation() %d id = %d\n",
            static_cast<int>(cqEvent.getQueryOperation()), m_id);
@@ -119,15 +120,15 @@ class MyCqListener : public CqListener {
            m_numUpdates, m_numDeletes);
   }
 
-  void onEvent(const CqEvent& cqe) {
+  void onEvent(const CqEvent& cqe) override {
     LOG("MyCqListener::OnEvent called");
     updateCount(cqe);
   }
-  void onError(const CqEvent& cqe) {
+  void onError(const CqEvent& cqe) override {
     updateCount(cqe);
     LOG("MyCqListener::OnError called");
   }
-  void close() { LOG("MyCqListener::close called"); }
+  void close() override { LOG("MyCqListener::close called"); }
 };
 
 std::string getXmlPath() {

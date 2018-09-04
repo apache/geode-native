@@ -41,6 +41,11 @@ class Serializable;
 class APACHE_GEODE_EXPORT CacheableUndefined
    : public internal::DataSerializableFixedId_t<internal::DSFid::CacheableUndefined> {
  public:
+  inline CacheableUndefined() = default;
+  virtual ~CacheableUndefined() noexcept override = default;
+  CacheableUndefined& operator=(const CacheableUndefined& other) = delete;
+  CacheableUndefined(const CacheableUndefined& other) = delete;
+
   void toData(DataOutput&) const override;
 
   void fromData(DataInput&) override;
@@ -58,17 +63,6 @@ class APACHE_GEODE_EXPORT CacheableUndefined
   inline static std::shared_ptr<CacheableUndefined> create() {
     return std::make_shared<CacheableUndefined>();
   }
-
- protected:
-  /** Constructor, used for deserialization. */
-  inline CacheableUndefined() = default;
-
- private:
-  // never implemented.
-  CacheableUndefined& operator=(const CacheableUndefined& other) = delete;
-  CacheableUndefined(const CacheableUndefined& other) = delete;
-
-  _GEODE_FRIEND_STD_SHARED_PTR(CacheableUndefined)
 };
 
 }  // namespace client

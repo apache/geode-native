@@ -42,6 +42,8 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT CqAttributes {
  public:
+  virtual ~CqAttributes() noexcept = default;
+
   /**
    * CqListeners type
    */
