@@ -44,19 +44,9 @@ namespace client {
  * <code>createNoopAuthInitInstance</code>.
  */
 class NoopAuthInit : public AuthInitialize {
-  /**
-   * @brief public methods
-   */
  public:
-  /**
-   * @brief constructor
-   */
-  NoopAuthInit() {}
-
-  /**
-   * @brief destructor
-   */
-  ~NoopAuthInit() {}
+  NoopAuthInit() = default;
+  ~NoopAuthInit() noexcept override = default;
 
   /**@brief initialize with the given set of security properties
    * and return the credentials for the client as properties.

@@ -45,19 +45,9 @@ namespace client {
  * <code>createUserPasswordAuthInitInstance</code>.
  */
 class UserPasswordAuthInit : public AuthInitialize {
-  /**
-   * @brief public methods
-   */
  public:
-  /**
-   * @brief constructor
-   */
-  UserPasswordAuthInit() {}
-
-  /**
-   * @brief destructor
-   */
-  ~UserPasswordAuthInit() {}
+  UserPasswordAuthInit() = default;
+  ~UserPasswordAuthInit() noexcept override = default;
 
   /**@brief initialize with the given set of security properties
    * and return the credentials for the client as properties.

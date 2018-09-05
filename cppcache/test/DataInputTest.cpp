@@ -41,6 +41,7 @@ using namespace apache::geode::client;
 class DataInputUnderTest : public DataInputInternal {
  public:
   using DataInputInternal::DataInputInternal;
+  ~DataInputUnderTest() noexcept override {}
 
   virtual const SerializationRegistry &getSerializationRegistry()
       const override {
@@ -159,9 +160,7 @@ class TestDataInput {
 
 class DataInputTest : public ::testing::Test, protected ByteArrayFixture {
  public:
-  virtual ~DataInputTest() {
-    // NOP
-  }
+  ~DataInputTest() noexcept override {} 
 };
 
 TEST_F(DataInputTest, ThrowsWhenReadingInputWithSizeZero) {
