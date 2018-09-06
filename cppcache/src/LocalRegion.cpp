@@ -1991,8 +1991,7 @@ GfErrType LocalRegion::putAllNoThrow(
               "usermap");
         }
 
-        if (versionedObjPartListPtr != nullptr &&
-            versionedObjPartListPtr.get() != nullptr) {
+        if (versionedObjPartListPtr) {
           LOGDEBUG("versionedObjPartListPtr->getVersionedTagptr().size() = %d ",
                    versionedObjPartListPtr->getVersionedTagptr().size());
           if (versionedObjPartListPtr->getVersionedTagptr().size() > 0) {
@@ -2030,8 +2029,7 @@ GfErrType LocalRegion::putAllNoThrow(
         const auto& value = iter.second;
         auto& p = oldValueMap[key];
 
-        if (versionedObjPartListPtr != nullptr &&
-            versionedObjPartListPtr.get() != nullptr) {
+        if (versionedObjPartListPtr) {
           LOGDEBUG("versionedObjPartListPtr->getVersionedTagptr().size() = %d ",
                    versionedObjPartListPtr->getVersionedTagptr().size());
           if (versionedObjPartListPtr->getVersionedTagptr().size() > 0) {
@@ -2104,8 +2102,7 @@ GfErrType LocalRegion::removeAllNoThrow(
 
     for (size_t keyIndex = 0; keyIndex < keysPtr->size(); keyIndex++) {
       auto key = keysPtr->at(keyIndex);
-      if (versionedObjPartListPtr != nullptr &&
-          versionedObjPartListPtr.get() != nullptr) {
+      if (versionedObjPartListPtr) {
         LOGDEBUG("versionedObjPartListPtr->getVersionedTagptr().size() = %d ",
                  versionedObjPartListPtr->getVersionedTagptr().size());
         if (versionedObjPartListPtr->getVersionedTagptr().size() > 0) {

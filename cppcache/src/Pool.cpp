@@ -109,9 +109,8 @@ AuthenticatedView Pool::createAuthenticatedView(
       throw IllegalStateException("cache has been closed. ");
     }
 
-    if (credentials != nullptr && credentials.get() == nullptr) {
+    if (!credentials) {
       LOGDEBUG("Pool::createSecureUserCache creds are null");
-      credentials = nullptr;
     }
 
     return AuthenticatedView(credentials, shared_from_this(), cacheImpl);

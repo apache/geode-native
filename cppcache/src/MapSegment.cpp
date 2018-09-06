@@ -34,8 +34,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-#define _VERSION_TAG_NULL_CHK \
-  (versionTag != nullptr && versionTag.get() != nullptr)
 bool MapSegment::boolVal = false;
 MapSegment::~MapSegment() {
   delete m_map;
@@ -101,7 +99,7 @@ GfErrType MapSegment::create(const std::shared_ptr<CacheableKey>& key,
         VersionStamp versionStamp;
         if (m_concurrencyChecksEnabled) {
           versionStamp = entry->getVersionStamp();
-          if (_VERSION_TAG_NULL_CHK) {
+          if (versionTag) {
             err = versionStamp.processVersionTag(m_region, key, versionTag,
                                                  false);
             if (err != GF_NOERR) return err;
@@ -172,7 +170,7 @@ GfErrType MapSegment::put(const std::shared_ptr<CacheableKey>& key,
       VersionStamp versionStamp;
       if (m_concurrencyChecksEnabled) {
         versionStamp = entry->getVersionStamp();
-        if (_VERSION_TAG_NULL_CHK) {
+        if (versionTag) {
           if (delta == nullptr) {
             err = versionStamp.processVersionTag(m_region, key, versionTag,
                                                  false);
@@ -220,7 +218,7 @@ GfErrType MapSegment::invalidate(const std::shared_ptr<CacheableKey>& key,
     VersionStamp versionStamp;
     if (m_concurrencyChecksEnabled) {
       versionStamp = entry->getVersionStamp();
-      if (_VERSION_TAG_NULL_CHK) {
+      if (versionTag) {
         err = versionStamp.processVersionTag(m_region, key, versionTag, false);
         if (err != GF_NOERR) return err;
         versionStamp.setVersions(versionTag);
@@ -269,7 +267,7 @@ GfErrType MapSegment::removeWhenConcurrencyEnabled(
     // If the version tag is null, use the version tag of
     // the existing entry
     versionStamp = entry->getVersionStamp();
-    if (_VERSION_TAG_NULL_CHK) {
+    if (versionTag) {
       std::shared_ptr<CacheableKey> keyPtr;
       entry->getImplPtr()->getKeyI(keyPtr);
       if ((err = entry->getVersionStamp().processVersionTag(
@@ -303,7 +301,7 @@ GfErrType MapSegment::removeWhenConcurrencyEnabled(
     // If entry not found than add a tombstone for this entry
     // so that any future updates for this entry are checked for version
     // no entry
-    if (_VERSION_TAG_NULL_CHK) {
+    if (versionTag) {
       std::shared_ptr<MapEntryImpl> mapEntry;
       putNoEntry(key, CacheableToken::tombstone(), mapEntry, -1, 0, versionTag);
       m_tombstoneList->add(mapEntry->getImplPtr(), handler, expiryTaskID);
@@ -649,7 +647,8 @@ GfErrType MapSegment::putForTrackedEntry(
     auto* thinClientRegion = dynamic_cast<ThinClientRegion*>(m_region);
     ThinClientPoolDM* m_poolDM = nullptr;
     if (thinClientRegion) {
-      m_poolDM = dynamic_cast<ThinClientPoolDM*>(thinClientRegion->getDistMgr());
+      m_poolDM =
+          dynamic_cast<ThinClientPoolDM*>(thinClientRegion->getDistMgr());
     }
 
     if (delta != nullptr) {

@@ -172,9 +172,8 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
         case TcrMessage::RESPONSE: {
           auto commit = std::dynamic_pointer_cast<TXCommitMessage>(
               replyCommitAfter.getValue());
-          if (commit.get() !=
-              nullptr)  // e.g. when afterCompletion(STATUS_ROLLEDBACK) called
-          {
+          if (commit) {
+            // e.g. when afterCompletion(STATUS_ROLLEDBACK) called
             txCleaner.clean();
             commit->apply(this->getCache());
           }
