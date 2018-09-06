@@ -97,7 +97,7 @@ class PutAllWork : public PooledWork<GfErrType>,
   {
     m_request = new TcrMessagePutAll(
         new DataOutput(m_region->getCache().createDataOutput()), m_region.get(),
-        *m_map.get(), m_timeout, m_poolDM, aCallbackArgument);
+        *m_map, m_timeout, m_poolDM, aCallbackArgument);
     m_reply = new TcrMessageReply(true, m_poolDM);
 
     // create new instanceof VCOPL
@@ -867,9 +867,9 @@ void ThinClientRegion::clear(
 
   /** @brief Create message and send to bridge server */
 
-  TcrMessageClearRegion request(
-      new DataOutput(m_cacheImpl->createDataOutput()), this, aCallbackArgument,
-      std::chrono::milliseconds(-1), m_tcrdm);
+  TcrMessageClearRegion request(new DataOutput(m_cacheImpl->createDataOutput()),
+                                this, aCallbackArgument,
+                                std::chrono::milliseconds(-1), m_tcrdm);
   TcrMessageReply reply(true, m_tcrdm);
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) GfErrTypeToException("Region::clear", err);
@@ -1545,7 +1545,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
 
     std::shared_ptr<VersionedCacheableObjectPartList> vcopListPtr;
     GfErrType errCode = multiHopPutAllNoThrow_remote(
-        *newSubMap.get(), vcopListPtr, timeout, aCallbackArgument);
+        *newSubMap, vcopListPtr, timeout, aCallbackArgument);
     if (errCode == GF_NOERR) {
       result->addKeysAndVersions(vcopListPtr);
     } else if (errCode == GF_PUTALL_PARTIAL_RESULT_EXCEPTION) {
@@ -3338,9 +3338,10 @@ void ChunkedInterestResponse::handleChunk(const uint8_t* chunk,
 
   uint32_t partLen;
   if (TcrMessageHelper::readChunkPartHeader(
-          m_msg, input, DSCode::FixedIDDefault, static_cast<int32_t>(DSCode::CacheableArrayList),
-          "ChunkedInterestResponse", partLen,
-          isLastChunkWithSecurity) != TcrMessageHelper::ChunkObjectType::OBJECT) {
+          m_msg, input, DSCode::FixedIDDefault,
+          static_cast<int32_t>(DSCode::CacheableArrayList),
+          "ChunkedInterestResponse", partLen, isLastChunkWithSecurity) !=
+      TcrMessageHelper::ChunkObjectType::OBJECT) {
     // encountered an exception part, so return without reading more
     m_replyMsg.readSecureObjectPart(input, false, true,
                                     isLastChunkWithSecurity);
@@ -3369,9 +3370,10 @@ void ChunkedKeySetResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
 
   uint32_t partLen;
   if (TcrMessageHelper::readChunkPartHeader(
-          m_msg, input, DSCode::FixedIDDefault, static_cast<int32_t>(DSCode::CacheableArrayList),
-          "ChunkedKeySetResponse", partLen,
-          isLastChunkWithSecurity) != TcrMessageHelper::ChunkObjectType::OBJECT) {
+          m_msg, input, DSCode::FixedIDDefault,
+          static_cast<int32_t>(DSCode::CacheableArrayList),
+          "ChunkedKeySetResponse", partLen, isLastChunkWithSecurity) !=
+      TcrMessageHelper::ChunkObjectType::OBJECT) {
     // encountered an exception part, so return without reading more
     m_replyMsg.readSecureObjectPart(input, false, true,
                                     isLastChunkWithSecurity);
@@ -3423,7 +3425,8 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
           readObjectPartList(input, true);
         } else {
           LOGERROR(
-              "Query response got unhandled message format %" PRId8 "while expecting "
+              "Query response got unhandled message format %" PRId8
+              "while expecting "
               "struct set object part list; possible serialization mismatch",
               code);
           throw MessageException(
@@ -3436,16 +3439,17 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
 }
 
 void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
-                                     uint8_t isLastChunkWithSecurity,
-                                     const CacheImpl* cacheImpl) {
+                                       uint8_t isLastChunkWithSecurity,
+                                       const CacheImpl* cacheImpl) {
   LOGDEBUG("ChunkedQueryResponse::handleChunk..");
   auto input = cacheImpl->createDataInput(chunk, chunkLen, m_msg.getPool());
 
   uint32_t partLen;
-  TcrMessageHelper::ChunkObjectType objType = TcrMessageHelper::readChunkPartHeader(
-      m_msg, input, DSCode::FixedIDByte,
-      static_cast<int32_t>(DSFid::CollectionTypeImpl),
-      "ChunkedQueryResponse" , partLen, isLastChunkWithSecurity);
+  TcrMessageHelper::ChunkObjectType objType =
+      TcrMessageHelper::readChunkPartHeader(
+          m_msg, input, DSCode::FixedIDByte,
+          static_cast<int32_t>(DSFid::CollectionTypeImpl),
+          "ChunkedQueryResponse", partLen, isLastChunkWithSecurity);
   if (objType == TcrMessageHelper::ChunkObjectType::EXCEPTION) {
     // encountered an exception part, so return without reading more
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
@@ -3534,7 +3538,8 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     }
   } else if (arrayType == DSCode::FixedIDByte) {
     arrayType = static_cast<DSCode>(input.read());
-    if (static_cast<int32_t>(arrayType) != static_cast<int32_t>(DSFid::CacheableObjectPartList)) {
+    if (static_cast<int32_t>(arrayType) !=
+        static_cast<int32_t>(DSFid::CacheableObjectPartList)) {
       LOGERROR(
           "Query response got unhandled message format %d while expecting "
           "object part list; possible serialization mismatch",
@@ -3585,8 +3590,9 @@ void ChunkedFunctionExecutionResponse::handleChunk(
 
   TcrMessageHelper::ChunkObjectType arrayType;
   if ((arrayType = TcrMessageHelper::readChunkPartHeader(
-               m_msg, input, "ChunkedFunctionExecutionResponse", partLen,
-               isLastChunkWithSecurity)) == TcrMessageHelper::ChunkObjectType::EXCEPTION) {
+           m_msg, input, "ChunkedFunctionExecutionResponse", partLen,
+           isLastChunkWithSecurity)) ==
+      TcrMessageHelper::ChunkObjectType::EXCEPTION) {
     // encountered an exception part, so return without reading more
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
     return;
@@ -3689,7 +3695,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
     } else {
       result = value;
     }
-    if (m_resultCollectorLock.get() != nullptr) {
+    if (m_resultCollectorLock) {
       ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*m_resultCollectorLock);
       m_rc->addResult(result);
     } else {
@@ -3717,8 +3723,9 @@ void ChunkedGetAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
   uint32_t partLen;
   if (TcrMessageHelper::readChunkPartHeader(
           m_msg, input, DSCode::FixedIDByte,
-          static_cast<int32_t>(DSFid::VersionedObjectPartList), "ChunkedGetAllResponse",
-          partLen, isLastChunkWithSecurity) != TcrMessageHelper::ChunkObjectType::OBJECT) {
+          static_cast<int32_t>(DSFid::VersionedObjectPartList),
+          "ChunkedGetAllResponse", partLen, isLastChunkWithSecurity) !=
+      TcrMessageHelper::ChunkObjectType::OBJECT) {
     // encountered an exception part, so return without reading more
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
     return;
@@ -3771,9 +3778,9 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
   uint32_t partLen;
   TcrMessageHelper::ChunkObjectType chunkType;
   if ((chunkType = TcrMessageHelper::readChunkPartHeader(
-               m_msg, input, DSCode::FixedIDByte,
-               static_cast<int32_t>(DSFid::VersionedObjectPartList),
-               "ChunkedPutAllResponse", partLen, isLastChunkWithSecurity)) ==
+           m_msg, input, DSCode::FixedIDByte,
+           static_cast<int32_t>(DSFid::VersionedObjectPartList),
+           "ChunkedPutAllResponse", partLen, isLastChunkWithSecurity)) ==
       TcrMessageHelper::ChunkObjectType::NULL_OBJECT) {
     LOGDEBUG("ChunkedPutAllResponse::handleChunk nullptr object");
     // No issues it will be empty in case of disabled caching.
@@ -3829,9 +3836,9 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
   uint32_t partLen;
   TcrMessageHelper::ChunkObjectType chunkType;
   if ((chunkType = TcrMessageHelper::readChunkPartHeader(
-               m_msg, input, DSCode::FixedIDByte,
-               static_cast<int32_t>(DSFid::VersionedObjectPartList),
-               "ChunkedRemoveAllResponse", partLen, isLastChunkWithSecurity)) ==
+           m_msg, input, DSCode::FixedIDByte,
+           static_cast<int32_t>(DSFid::VersionedObjectPartList),
+           "ChunkedRemoveAllResponse", partLen, isLastChunkWithSecurity)) ==
       TcrMessageHelper::ChunkObjectType::NULL_OBJECT) {
     LOGDEBUG("ChunkedRemoveAllResponse::handleChunk nullptr object");
     // No issues it will be empty in case of disabled caching.

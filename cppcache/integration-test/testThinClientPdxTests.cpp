@@ -609,7 +609,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet1)
     auto boolPtr =
         std::dynamic_pointer_cast<CacheableBoolean>(regPtr0->get("success"));
 
-    bool isEqual = boolPtr.get()->value();
+    bool isEqual = boolPtr->value();
     ASSERT(isEqual == true,
            "Task JavaPutGet:Objects of type PdxType should be equal");
 
@@ -680,7 +680,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
 
     auto boolPtr =
         std::dynamic_pointer_cast<CacheableBoolean>(regPtr0->get("success"));
-    bool isEqual = boolPtr.get()->value();
+    bool isEqual = boolPtr->value();
     LOGDEBUG("Task:JavaPutGet: isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Task JavaPutGet:Objects of type PdxType should be equal");

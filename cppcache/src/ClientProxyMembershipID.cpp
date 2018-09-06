@@ -149,7 +149,8 @@ void ClientProxyMembershipID::initObjectVars(
   }
   writeVersion(Version::getOrdinal(), m_memID);
   size_t len;
-  char* buf = reinterpret_cast<char*>(const_cast<uint8_t*>(m_memID.getBuffer(&len)));
+  char* buf =
+      reinterpret_cast<char*>(const_cast<uint8_t*>(m_memID.getBuffer(&len)));
   m_memIDStr.append(buf, len);
 
   char PID[15] = {0};
@@ -244,7 +245,7 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
   readVersion(splitbrain, input);
 
   if (vmKind != ClientProxyMembershipID::LONER_DM_TYPE) {
-    vmViewId = std::stoi(uniqueTag.get()->value());
+    vmViewId = std::stoi(uniqueTag->value());
     initObjectVars(hostname->value().c_str(), hostAddr, len, true, hostPort,
                    durableClientId->value().c_str(), durableClntTimeOut, dcport,
                    vPID, vmKind, splitbrain, dsName->value().c_str(), nullptr,
@@ -288,7 +289,7 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
   } else {
     vmViewIdstr =
         std::dynamic_pointer_cast<CacheableString>(input.readObject());
-    vmViewId = atoi(vmViewIdstr.get()->value().c_str());
+    vmViewId = std::stoi(vmViewIdstr->value());
   }
 
   dsName = std::dynamic_pointer_cast<CacheableString>(input.readObject());
