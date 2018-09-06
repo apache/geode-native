@@ -59,29 +59,6 @@ XML equivalent:
   </region>
 ```
 
-## <a id="config_connecting_to_the_server"></a>Connecting to the Server
-
-Example of connecting to the Server, taken from the put-get-remove example.
-
-``` cpp
-int main(int argc, char** argv) {
-
-  auto cacheFactory = CacheFactory();                         // instantiate cache factory
-  cacheFactory.set("log-level", "none");                      // set cache log-level characteristics
-  auto cache = cacheFactory.create();                         // create cache
-  auto poolFactory = cache.getPoolManager().createFactory();  // instantiate pool factory
-
-  poolFactory.addLocator("localhost", 10334);                 // add locator to pool factory
-  auto pool = poolFactory.create("pool");                     // create a pool called "pool" that knows where the server is
-  auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY); // instantiate region factory with PROXY characteristics
-  auto region = regionFactory.setPoolName("pool").create("example_userinfo"); // create a connection to the region "example_userinfo" on the server
-
-  ...            // do something
-
-  cache.close(); // clean up
-}
-```
-
 ## Tables of properties
 
 See [System Properties](sysprops.html) for a list of system properties that can be configured
