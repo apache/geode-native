@@ -508,7 +508,6 @@ class APACHE_GEODE_EXPORT DataOutput {
   virtual const SerializationRegistry& getSerializationRegistry() const;
 
  private:
-  void writeObjectInternal(const Serializable* ptr, bool isDelta = false);
   void writeObjectInternal(const std::shared_ptr<Serializable>& ptr,
                            bool isDelta = false);
 

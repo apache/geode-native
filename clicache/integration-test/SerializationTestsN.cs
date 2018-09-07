@@ -90,6 +90,9 @@ namespace Apache.Geode.Client.UnitTests
 
     public void CreateRegionForOT(string locators)
     {
+      Util.LogFile = "mikesLog.log";
+      CacheHelper.SetLogging();
+
       CacheHelper.CreateTCRegion2<object, object>(RegionNames[0], true, false,
         null, locators, false);
       CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable, 0);
@@ -107,16 +110,13 @@ namespace Apache.Geode.Client.UnitTests
         CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable, 0);
         Assert.Fail("Expected exception in registering the type again.");
       }
-      catch (IllegalStateException ex)
+      catch (IllegalArgumentException ex)
       {
         Util.Log("Got expected exception in RegisterType: {0}", ex);
       }
       IRegion<object, object> region = CacheHelper.GetVerifyRegion<object, object>(RegionNames[0]);
       for (int i = 0; i < n; i++)
       {
-        //CacheableInt32 key = new CacheableInt32(i);
-        //region.Put(key, key);
-
         int key = i;
         region[key] = key;
       }
@@ -129,7 +129,7 @@ namespace Apache.Geode.Client.UnitTests
         CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable, 0);
         Assert.Fail("Expected exception in registering the type again.");
       }
-      catch (IllegalStateException ex)
+      catch (IllegalArgumentException ex)
       {
         Util.Log("Got expected exception in RegisterType: {0}", ex);
       }

@@ -58,6 +58,7 @@
 #include "DiskStoreId.hpp"
 #include "DiskVersionTag.hpp"
 #include "PdxHelper.hpp"
+#include "CacheRegionHelper.hpp"
 
 namespace apache {
 namespace geode {
@@ -179,17 +180,10 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
       enumObject->fromData(input);
       return enumObject;
     }
-    case DSCode::CacheableUserData: {
-      classId = input.read();
-      break;
-    }
-    case DSCode::CacheableUserData2: {
-      classId = input.readInt16();
-      break;
-    }
+    case DSCode::CacheableUserData:
+    case DSCode::CacheableUserData2:
     case DSCode::CacheableUserData4: {
-      classId = input.readInt32();
-      break;
+      return dataSerializeableHandler->deserialize(input, typedTypeId);
     }
     case DSCode::FixedIDByte: {
       classId = input.read();
@@ -251,56 +245,16 @@ void SerializationRegistry::deserialize(
     // nothing to read
   } else if (const auto&& dataSerializableInternal =
                  std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
-    deserialize(input, dataSerializableInternal);
+    dataSerializableInternal->fromData(input);
   } else if (const auto&& dataSerializableFixedId =
                  std::dynamic_pointer_cast<DataSerializableFixedId>(obj)) {
-    deserialize(input, dataSerializableFixedId);
+    dataSerializableFixedId->fromData(input);
   } else if (const auto&& dataSerializablePrimitive =
                  std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
-    deserialize(input, dataSerializablePrimitive);
-  } else if (const auto&& dataSerializable =
-                 std::dynamic_pointer_cast<DataSerializable>(obj)) {
-    deserialize(input, dataSerializable);
-  } else if (const auto&& pdxSerializable =
-                 std::dynamic_pointer_cast<PdxSerializable>(obj)) {
-    deserialize(input, pdxSerializable);
+    dataSerializablePrimitive->fromData(input);
   } else {
     throw UnsupportedOperationException("Serialization type not implemented.");
   }
-}
-
-void SerializationRegistry::deserialize(
-    DataInput& input,
-    const std::shared_ptr<DataSerializableInternal>& dataSerializableInternal)
-    const {
-  dataSerializableInternal->fromData(input);
-}
-
-void SerializationRegistry::deserialize(
-    DataInput& input,
-    const std::shared_ptr<DataSerializableFixedId>& dataSerializableFixedId)
-    const {
-  dataSerializableFixedId->fromData(input);
-}
-
-void SerializationRegistry::deserialize(
-    DataInput& input,
-    const std::shared_ptr<DataSerializablePrimitive>& dataSerializablePrimitive)
-    const {
-  dataSerializablePrimitive->fromData(input);
-}
-
-void SerializationRegistry::deserialize(
-    DataInput& input,
-    const std::shared_ptr<DataSerializable>& dataSerializable) const {
-  dataSerializable->fromData(input);
-}
-
-void SerializationRegistry::deserialize(
-    DataInput& /*input*/,
-    const std::shared_ptr<PdxSerializable>& /*pdxSerializable*/) const {
-  throw UnsupportedOperationException(
-      "SerializationRegistry::deserialize<PdxSerializable> not implemented");
 }
 
 void SerializationRegistry::serializeWithoutHeader(
@@ -584,13 +538,76 @@ std::shared_ptr<PdxSerializable> PdxTypeHandler::deserialize(
 
 void DataSerializableHandler::serialize(
     const std::shared_ptr<DataSerializable>& dataSerializable,
-    DataOutput& dataOutput) const {
-  dataSerializable->toData(dataOutput);
+    DataOutput& dataOutput, bool isDelta) const {
+  auto&& cacheImpl = CacheRegionHelper::getCacheImpl(dataOutput.getCache());
+  auto&& type = dataSerializable->getType();
+
+  auto&& objectId =
+      cacheImpl->getSerializationRegistry()->GetIdForDataSerializableType(type);
+  auto&& dsCode = SerializationRegistry::getSerializableDataDsCode(objectId);
+
+  dataOutput.write(static_cast<int8_t>(dsCode));
+  switch (dsCode) {
+    case DSCode::CacheableUserData:
+      dataOutput.write(static_cast<int8_t>(objectId));
+      break;
+    case DSCode::CacheableUserData2:
+      dataOutput.writeInt(static_cast<int16_t>(objectId));
+      break;
+    case DSCode::CacheableUserData4:
+      dataOutput.writeInt(static_cast<int32_t>(objectId));
+      break;
+    default:
+      IllegalStateException("Invalid DS Code.");
+  }
+
+  if (isDelta) {
+    const Delta* ptr = dynamic_cast<const Delta*>(dataSerializable.get());
+    ptr->toDelta(dataOutput);
+  } else {
+    dataSerializable->toData(dataOutput);
+    ;
+  }
 }
 
 std::shared_ptr<DataSerializable> DataSerializableHandler::deserialize(
-    DataInput& dataInput, int8_t typeId) const {
-  return nullptr;
+    DataInput& input, DSCode typeId) const {
+  int32_t classId = -1;
+  switch (typeId) {
+    case DSCode::CacheableUserData: {
+      classId = input.read();
+      break;
+    }
+    case DSCode::CacheableUserData2: {
+      classId = input.readInt16();
+      break;
+    }
+    case DSCode::CacheableUserData4: {
+      classId = input.readInt32();
+      break;
+    }
+    default:
+      break;
+  }
+  TypeFactoryMethod createType =
+      input.getCache()->getTypeRegistry().getCreationFunction(classId);
+
+  if (createType == nullptr) {
+    LOGERROR(
+        "Unregistered class ID %d during deserialization: Did the "
+        "application register serialization types?",
+        classId);
+
+    // instead of a null key or null value... an Exception should be thrown..
+    throw IllegalStateException("Unregistered class ID in deserialization");
+  }
+
+  std::shared_ptr<DataSerializable> serializableObject(
+      std::dynamic_pointer_cast<DataSerializable>(createType()));
+
+  serializableObject->fromData(input);
+
+  return serializableObject;
 }
 
 }  // namespace client

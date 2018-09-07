@@ -140,7 +140,7 @@ namespace Apache
         /// <summary>
         /// This is to get manged delegates.
         /// </summary>
-        TypeFactoryMethod^ GetManagedDelegateGeneric(System::Int64 typeId)
+        TypeFactoryMethod^ GetManagedObjectFactory(System::Int64 typeId)
         {
           TypeFactoryMethod^ ret = nullptr;
           ObjectIDDelegatesMap->TryGetValue(typeId, ret);

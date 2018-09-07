@@ -726,7 +726,7 @@ namespace Apache
           }
           else 
           {
-            createType = m_cache->TypeRegistry->GetManagedDelegateGeneric(compId);
+            createType = m_cache->TypeRegistry->GetManagedObjectFactory(compId);
             if (createType == nullptr)
             {
               Object^ retVal = ReadDotNetTypes(typeId);

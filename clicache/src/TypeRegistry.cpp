@@ -191,28 +191,18 @@ namespace Apache
         {
           ObjectIDDelegatesMap->Add(id, creationMethod);
         }
+		else
+		{
+			throw gcnew IllegalArgumentException("A class with given ID is already registered");
+		}
         
         if (!ObjectTypeIDMap->ContainsKey(dataSerializable->Type))
         {
           ObjectTypeIDMap->Add(dataSerializable->Type, id);
         }
-        auto delegateObj = gcnew DelegateWrapperGeneric(creationMethod);
-        auto nativeDelegate = gcnew TypeFactoryNativeMethodGeneric(delegateObj,
-            &DelegateWrapperGeneric::NativeDelegateGeneric);
-
-        // this is avoid object being Gced
-        NativeDelegatesGeneric->Add(nativeDelegate);
-
         // register the type in the DelegateMap, this is pure c# for create domain object 
         Log::Fine("Registering serializable class ID " + id);
         DelegateMapGeneric[id] = creationMethod;
-
-        _GF_MG_EXCEPTION_TRY2
-          auto&& nativeTypeRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
-          auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
-              System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
-          nativeTypeRegistry->addType(nativeDelegateFunction, id);
-        _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
       void TypeRegistry::RegisterDataSerializablePrimitiveOverrideNativeDeserialization(

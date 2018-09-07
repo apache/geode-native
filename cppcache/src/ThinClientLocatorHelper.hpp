@@ -47,9 +47,7 @@ class ThinClientLocatorHelper {
   GfErrType getEndpointForNewCallBackConn(
       ClientProxyMembershipID& memId, std::list<ServerLocation>& outEndpoint,
       std::string& additionalLoc, int redundancy,
-      const std::set<ServerLocation>& exclEndPts,
-      /*const std::set<TcrEndpoint*>& exclEndPts,*/
-      const std::string& serverGrp);
+      const std::set<ServerLocation>& exclEndPts, const std::string& serverGrp);
   GfErrType getAllServers(
       std::vector<std::shared_ptr<ServerLocation> >& servers,
       const std::string& serverGrp);

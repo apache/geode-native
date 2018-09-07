@@ -23,6 +23,7 @@
 
 #include "impl/CacheResolver.hpp"
 #include "impl/ManagedCacheableKey.hpp"
+#include "impl/SafeConvert.hpp"
 
 namespace apache {
 	namespace geode {
@@ -38,156 +39,82 @@ namespace apache {
 				~ManagedDataSerializableHandler() noexcept override = default;
 
 				void serialize(const std::shared_ptr<DataSerializable>& dataSerializable,
-					DataOutput& dataOutput) const override
+					DataOutput& dataOutput, bool isDelta) const override
 				{
-					if (auto wrappedDataSerializable = dynamic_cast<const ManagedCacheableKeyGeneric*>(dataSerializable.get()))
-					{
-						try
-						{
-							auto&& cache = CacheResolver::Lookup(dataOutput.getCache());
-							Managed::DataOutput managedDataOutput(&dataOutput, true, cache);
-							auto&& type = wrappedDataSerializable->getType();
-							auto&& typeIterator = ManagedTypeDelegates.find(type);
-							auto&& id = typeIterator->second;
+					Managed::ISerializable^ data = Managed::SafeUMSerializableConvertGeneric(dataSerializable);
+					auto&& cache = CacheResolver::Lookup(dataOutput.getCache());
 
-							auto dsCode = getSerializableDataDsCode(id);
+					String^ typeName = gcnew String(data->GetType()->ToString());
+					int32_t objectID = cache->GetTypeRegistry()->GetIdForManagedType(typeName);
+					
+					auto&& dsCode = SerializationRegistry::getSerializableDataDsCode(objectID);
 
-							output.write(static_cast<int8_t>(dsCode));
-							switch (dsCode) {
-							  case DSCode::CacheableUserData:
-								output.write(static_cast<int8_t>(id));
-								break;
-							  case DSCode::CacheableUserData2:
-								output.writeInt(static_cast<int16_t>(id));
-								break;
-							  case DSCode::CacheableUserData4:
-								output.writeInt(static_cast<int32_t>(id));
-								break;
-							  default:
-								IllegalStateException("Invalid DS Code.");
-							}
-
-							if (isDelta) {
-							  const Delta* ptr = dynamic_cast<const Delta*>(obj);
-							  ptr->toDelta(output);
-							} else {
-								        
-              auto&& managedPdx = wrappedPdxSerializable->ptr();
-              Managed::Internal::PdxHelper::SerializePdx(%managedDataOutput, managedPdx);
-              
-              managedDataOutput.WriteBytesToUMDataOutput();
-								obj->toData(output);
-							}
-						}
-						catch (Apache::Geode::Client::GeodeException^ ex)
-						{
-							ex->ThrowNative();
-						}
-						catch (System::Exception^ ex)
-						{
-							Apache::Geode::Client::GeodeException::ThrowNative(ex);
-						}
+					dataOutput.write(static_cast<int8_t>(dsCode));
+					switch (dsCode) {
+					case DSCode::CacheableUserData:
+						dataOutput.write(static_cast<int8_t>(objectID));
+						break;
+					case DSCode::CacheableUserData2:
+						dataOutput.writeInt(static_cast<int16_t>(objectID));
+						break;
+					case DSCode::CacheableUserData4:
+						dataOutput.writeInt(static_cast<int32_t>(objectID));
+						break;
+					default:
+						IllegalStateException("Invalid DS Code.");
 					}
-					else
-					{
-						throw IllegalStateException("Not managed DataSerializable object.");
+
+					if (isDelta) {
+						const Delta* ptr = dynamic_cast<const Delta*>(dataSerializable.get());
+						ptr->toDelta(dataOutput);
+					}
+					else {
+						dataSerializable->toData(dataOutput);
 					}
 				}
 
-				std::shared_ptr<DataSerializable> deserialize(DataInput& dataInput,  int8_t typeId) const override
+				std::shared_ptr<DataSerializable> deserialize(DataInput& dataInput,  DSCode typeId) const override
 				{
 					try
 					{
-						bool findinternal = false;
-						auto typedTypeId = static_cast<DSCode>(typeId);
-						int32_t classId = typeId;
+						int32_t classId = -1;
 
-						if (typeId == -1) {
-						classId = dataInput.read();
-						typedTypeId = static_cast<DSCode>(classId);
+						switch (typeId) {
+							case DSCode::CacheableUserData: {
+								classId = dataInput.read();
+								break;
+							}
+							case DSCode::CacheableUserData2: {
+								classId = dataInput.readInt16();
+								break;
+							}
+							case DSCode::CacheableUserData4: {
+								classId = dataInput.readInt32();
+								break;
+							}
+							default:
+								break;
 						}
-
-						LOGDEBUG(
-							"SerializationRegistry::deserialize typeid = %d currentTypeId= %" PRId8,
-							typeId, typedTypeId);
-
-						switch (typedTypeId) {
-						case DSCode::CacheableNullString: {
-							return std::shared_ptr<Serializable>(
-								CacheableString::createDeserializable());
-						}
-						case DSCode::CacheableEnum: {
-							auto enumObject = CacheableEnum::create(" ", " ", 0);
-							enumObject->fromData(input);
-							return enumObject;
-						}
-						case DSCode::CacheableUserData: {
-							classId = dataInput.read();
-							break;
-						}
-						case DSCode::CacheableUserData2: {
-							classId = dataInput.readInt16();
-							break;
-						}
-						case DSCode::CacheableUserData4: {
-							classId = dataInput.readInt32();
-							break;
-						}
-						case DSCode::FixedIDByte: {
-							classId = dataInput.read();
-							findinternal = true;
-							break;
-						}
-						case DSCode::FixedIDShort: {
-							classId = dataInput.readInt16();
-							findinternal = true;
-							break;
-						}
-						case DSCode::FixedIDInt: {
-							classId = dataInput.readInt32();
-							findinternal = true;
-							break;
-						}
-						case DSCode::NullObj: {
-							return nullptr;
-						}
-						default:
-							break;
-						}
-
-						TypeFactoryMethod createType = nullptr;
-						
-						auto&& cache = CacheResolver::Lookup(dataInput.getCache());
-						if (findinternal) {
-							// need manaaged map
-							cache->TypeRegistry().some map dot find...
-						theTypeMap.findDataSerializableFixedId(classId, createType);
-						} else {
-						theTypeMap.findDataSerializable(classId, createType);
-						}
+											
+						auto cache = CacheResolver::Lookup(dataInput.getCache());
+						auto createType = cache->GetTypeRegistry()->GetManagedObjectFactory(classId);
 
 						if (createType == nullptr) {
-						if (findinternal) {
 							LOGERROR(
-								"Unregistered class ID %d during deserialization: Did the "
-								"application register serialization types?",
-								classId);
-						} else {
-							LOGERROR(
-								"Unregistered class ID %d during deserialization: Did the "
-								"application register serialization types?",
-								classId);
+									"Unregistered class ID %d during deserialization: Did the "
+									"application register serialization types?",
+									classId);
+
+							// instead of a null key or null value... an Exception should be thrown..
+							throw IllegalStateException("Unregistered class ID in deserialization");
 						}
 
-						// instead of a null key or null value... an Exception should be thrown..
-						throw IllegalStateException("Unregistered class ID in deserialization");
-						}
+						auto managedDataSerializable = (Apache::Geode::Client::IDataSerializable^) createType();
+						auto nativeDataSerializable = std::shared_ptr<DataSerializable>(
+							dynamic_cast<DataSerializable*>(GetNativeWrapperForManagedIDataSerializable(managedDataSerializable)));
+						nativeDataSerializable->fromData(dataInput);
 
-						std::shared_ptr<Serializable> obj(createType());
-
-						deserialize(input, obj);
-
-						return obj;
+						return nativeDataSerializable;
 					}
 					catch (Apache::Geode::Client::GeodeException^ ex)
 					{
@@ -200,7 +127,18 @@ namespace apache {
 
 					return nullptr;
 				}
-
+				 inline DSCode getSerializableDataDsCode(int32_t classId) {
+					if (classId <= std::numeric_limits<int8_t>::max() &&
+						classId >= std::numeric_limits<int8_t>::min()) {
+					  return DSCode::CacheableUserData;
+					} else if (classId <= std::numeric_limits<int16_t>::max() &&
+							   classId >= std::numeric_limits<int16_t>::min()) {
+					  return DSCode::CacheableUserData2;
+					} else {
+					  return DSCode::CacheableUserData4;
+					}
+				  }
+  
 			};
 
 		} //  namespace client

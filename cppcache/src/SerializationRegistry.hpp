@@ -177,9 +177,9 @@ class DataSerializableHandler {
   virtual ~DataSerializableHandler() noexcept = default;
   virtual void serialize(
       const std::shared_ptr<DataSerializable>& dataSerializable,
-      DataOutput& dataOutput) const;
-  virtual std::shared_ptr<DataSerializable> deserialize(DataInput& dataInput,
-                                                        int8_t typeId) const;
+      DataOutput& dataOutput, bool isDelta) const;
+  virtual std::shared_ptr<DataSerializable> deserialize(DataInput& input,
+                                                        DSCode typeId) const;
 };
 
 class APACHE_GEODE_EXPORT SerializationRegistry {
@@ -205,7 +205,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
       serialize(dataSerializablePrimitive, output);
     } else if (const auto&& dataSerializable =
                    std::dynamic_pointer_cast<DataSerializable>(obj)) {
-      serialize(dataSerializable, output, isDelta);
+      dataSerializeableHandler->serialize(dataSerializable, output, isDelta);
     } else if (const auto&& dataSerializableInternal =
                    std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
       serialize(dataSerializableInternal, output);
@@ -294,6 +294,18 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
         std::unique_ptr<DataSerializableHandler>(handler);
   }
 
+  TypeFactoryMethod getDataSerializableCreationMethod(int32_t objectId) {
+    TypeFactoryMethod createType;
+    theTypeMap.findDataSerializable(objectId, createType);
+    return createType;
+  }
+
+  int32_t GetIdForDataSerializableType(std::type_index objectType) const {
+    auto&& typeIterator = theTypeMap.typeToClassId.find(objectType);
+    auto&& id = typeIterator->second;
+    return id;
+  }
+
  private:
   std::unique_ptr<PdxTypeHandler> pdxTypeHandler;
   std::shared_ptr<PdxSerializer> pdxSerializer;
@@ -339,45 +351,6 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     obj->toData(output);
   }
 
-  inline void serialize(const std::shared_ptr<DataSerializable>& obj,
-                        DataOutput& output, bool isDelta) const {
-    auto&& type = obj->getType();
-    auto&& typeIterator = theTypeMap.typeToClassId.find(type);
-    auto&& id = typeIterator->second;
-
-    auto dsCode = getSerializableDataDsCode(id);
-
-    output.write(static_cast<int8_t>(dsCode));
-    switch (dsCode) {
-      case DSCode::CacheableUserData:
-        output.write(static_cast<int8_t>(id));
-        break;
-      case DSCode::CacheableUserData2:
-        output.writeInt(static_cast<int16_t>(id));
-        break;
-      case DSCode::CacheableUserData4:
-        output.writeInt(static_cast<int32_t>(id));
-        break;
-      default:
-        IllegalStateException("Invalid DS Code.");
-    }
-
-    if (isDelta) {
-      const Delta* ptr = dynamic_cast<const Delta*>(obj.get());
-      ptr->toDelta(output);
-    } else {
-      dataSerializeableHandler->serialize(obj, output);
-      serializeWithoutHeader(obj, output);
-    }
-  }
-
-  // inline void serializeWithoutHeader(
-  //    const std::shared_ptr<DataSerializable>& obj, DataOutput& output) const
-  //    {
-  //  // obj->toData(output);
-  //  dataSerializeableHandler->serialize(obj, output);
-  //}
-
   inline void serialize(const std::shared_ptr<PdxSerializable>& obj,
                         DataOutput& output) const {
     output.write(static_cast<int8_t>(DSCode::PDX));
@@ -414,21 +387,6 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
  private:
   void deserialize(DataInput& input,
                    const std::shared_ptr<Serializable>& obj) const;
-
-  void deserialize(DataInput& input,
-                   const std::shared_ptr<DataSerializableInternal>& obj) const;
-
-  void deserialize(DataInput& input,
-                   const std::shared_ptr<DataSerializableFixedId>& obj) const;
-
-  void deserialize(DataInput& input,
-                   const std::shared_ptr<DataSerializablePrimitive>& obj) const;
-
-  void deserialize(DataInput& input,
-                   const std::shared_ptr<DataSerializable>& obj) const;
-
-  [[noreturn]] void deserialize(
-      DataInput& input, const std::shared_ptr<PdxSerializable>& obj) const;
 };
 
 }  // namespace client

@@ -43,6 +43,11 @@ std::shared_ptr<PdxSerializer> TypeRegistry::getPdxSerializer() {
   return m_cache->getSerializationRegistry()->getPdxSerializer();
 }
 
+TypeFactoryMethod TypeRegistry::getCreationFunction(int32_t objectId) {
+  return m_cache->getSerializationRegistry()->getDataSerializableCreationMethod(
+      objectId);
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

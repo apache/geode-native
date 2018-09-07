@@ -540,33 +540,12 @@ namespace Apache.Geode.Client.IntegrationTests
             putAndCheck(region, "PdxType", new PdxType());
         }
 
-        [Fact]
-        public void PutGetCustomSerializableTypes()
-        {
-          Cache.TypeRegistry.RegisterType(OtherType.CreateDeserializable, 0);
-          //Cache.TypeRegistry.RegisterType(OtherType2.CreateDeserializable, 0x8C);
-
-          var otherTypeZero = new OtherType(32, 64);
-          var otherTypeTwo = new OtherType2(64, 32);
-
-          var region = Cache.GetRegion<String, OtherType>("testRegion");
-          Assert.NotNull(region);
-
-      //putAndCheck2(region, "OtherType", new OtherType(32, 64));
-      //putAndCheck(region, "OtherType2", new OtherType2(64, 32));
-
-      var region1 = Cache.GetRegion<object, object>("testRegion");
-      Assert.NotNull(region1);
-      putAndCheck(region1, "OtherType", new OtherType(32, 64));
-
-    }
-
-    [Fact]
-    public void JustLikeTheExampleCustomObject()
-    {
-      var cacheFactory = new CacheFactory()
-          .Set("log-level", "none");
-      var cache = cacheFactory.Create();
+      [Fact]
+      public void PutGetCustomSerializableTypes()
+      {
+        var cacheFactory = new CacheFactory()
+            .Set("log-level", "none");
+        var cache = cacheFactory.Create();
 
       Console.WriteLine("Registering for data serialization");
 

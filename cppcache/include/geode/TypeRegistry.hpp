@@ -61,6 +61,8 @@ class APACHE_GEODE_EXPORT TypeRegistry {
    */
   void registerPdxSerializer(std::shared_ptr<PdxSerializer> pdxSerializer);
 
+  TypeFactoryMethod getCreationFunction(int32_t);
+
   std::shared_ptr<PdxSerializer> getPdxSerializer();
 
  private:
