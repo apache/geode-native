@@ -192,7 +192,7 @@ class APACHE_GEODE_EXPORT ResourceInst : private NonCopyable,
   /* This will contain the previous values of the descriptors */
   int64_t *archivedStatValues;
   StatDataOutput *dataOut;
-  /* Number of descriptors this resource instnace has */
+  /* Number of descriptors this resource instance has */
   int32_t numOfDescps;
   /* To know whether the instance has come for the first time */
   bool firstTime;
