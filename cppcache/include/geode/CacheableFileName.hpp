@@ -45,6 +45,14 @@ class Serializable;
 
 class APACHE_GEODE_EXPORT CacheableFileName : public CacheableString {
  public:
+  inline CacheableFileName() = default;
+  inline CacheableFileName(const std::string& value) : CacheableString(value) {}
+  inline CacheableFileName(std::string&& value)
+      : CacheableString(std::move(value)) {}
+  ~CacheableFileName() noexcept override = default;
+  void operator=(const CacheableFileName& other) = delete;
+  CacheableFileName(const CacheableFileName& other) = delete;
+
   void toData(DataOutput& output) const override;
 
   virtual void fromData(DataInput& input) override;
@@ -68,20 +76,6 @@ class APACHE_GEODE_EXPORT CacheableFileName : public CacheableString {
 
   /** return the hashcode for this key. */
   virtual int32_t hashcode() const override;
-
- protected:
-  _GEODE_FRIEND_STD_SHARED_PTR(CacheableFileName)
-
-  /** Default constructor. */
-  inline CacheableFileName() = default;
-  inline CacheableFileName(const std::string& value) : CacheableString(value) {}
-  inline CacheableFileName(std::string&& value)
-      : CacheableString(std::move(value)) {}
-
- private:
-  // never implemented.
-  void operator=(const CacheableFileName& other) = delete;
-  CacheableFileName(const CacheableFileName& other) = delete;
 };
 
 }  // namespace client

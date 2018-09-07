@@ -42,7 +42,6 @@ class APACHE_GEODE_EXPORT CacheableKey : public virtual Cacheable {
   CacheableKey() = default;
   ~CacheableKey() override = default;
 
-  _GEODE_FRIEND_STD_SHARED_PTR(CacheableKey)
 
  public:
   /** return true if this key matches other. */

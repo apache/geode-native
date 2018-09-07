@@ -32,6 +32,7 @@ class DataOutputUnderTest : public DataOutput {
  public:
   using DataOutput::DataOutput;
   DataOutputUnderTest() : DataOutput(nullptr, nullptr) {}
+  ~DataOutputUnderTest() noexcept override {}
 
  protected:
   virtual const SerializationRegistry &getSerializationRegistry()

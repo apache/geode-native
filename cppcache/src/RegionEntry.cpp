@@ -30,7 +30,7 @@ RegionEntry::RegionEntry(const std::shared_ptr<Region>& region,
                          const std::shared_ptr<Cacheable>& value)
     : m_region(region), m_key(key), m_value(value), m_destroyed(false) {}
 
-RegionEntry::~RegionEntry() {}
+RegionEntry::~RegionEntry() noexcept {}
 std::shared_ptr<CacheableKey> RegionEntry::getKey() { return m_key; }
 std::shared_ptr<Cacheable> RegionEntry::getValue() {
   return CacheableToken::isInvalid(m_value) ? nullptr : m_value;

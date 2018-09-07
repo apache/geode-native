@@ -48,6 +48,8 @@ class Properties;
  */
 class APACHE_GEODE_EXPORT AuthInitialize {
  public:
+  virtual ~AuthInitialize() noexcept = default;
+
   /**@brief initialize with the given set of security properties
    * and return the credentials for the client as properties.
    * @param props the set of security properties provided to the

@@ -44,9 +44,29 @@ class APACHE_GEODE_EXPORT CacheableString
   internal::DSCode m_type;
   mutable int m_hashcode;
 
-  _GEODE_FRIEND_STD_SHARED_PTR(CacheableString)
-
  public:
+  inline CacheableString(DSCode type = DSCode::CacheableASCIIString)
+      : m_str(), m_type(type), m_hashcode(0) {}
+
+  inline CacheableString(const std::string& value)
+      : CacheableString(std::string(value)) {}
+
+  inline CacheableString(std::string&& value)
+      : m_str(std::move(value)), m_hashcode(0) {
+    bool ascii = isAscii(m_str);
+
+    m_type =
+        m_str.length() > std::numeric_limits<uint16_t>::max()
+            ? ascii ? DSCode::CacheableASCIIStringHuge
+                    : DSCode::CacheableStringHuge
+            : ascii ? DSCode::CacheableASCIIString : DSCode::CacheableString;
+  }
+
+  ~CacheableString() noexcept override = default;
+
+  void operator=(const CacheableString& other) = delete;
+  CacheableString(const CacheableString& other) = delete;
+
   void toData(DataOutput& output) const override;
 
   void fromData(DataInput& input) override;
@@ -108,34 +128,9 @@ class APACHE_GEODE_EXPORT CacheableString
 
   virtual std::string toString() const override;
 
-  /** Destructor */
-  ~CacheableString() override = default;
-
   virtual size_t objectSize() const override;
 
- protected:
-  /** Default constructor. */
-  inline CacheableString(DSCode type = DSCode::CacheableASCIIString)
-      : m_str(), m_type(type), m_hashcode(0) {}
-
-  inline CacheableString(const std::string& value)
-      : CacheableString(std::string(value)) {}
-
-  inline CacheableString(std::string&& value)
-      : m_str(std::move(value)), m_hashcode(0) {
-    bool ascii = isAscii(m_str);
-
-    m_type = m_str.length() > std::numeric_limits<uint16_t>::max()
-                 ? ascii ? DSCode::CacheableASCIIStringHuge
-                         : DSCode::CacheableStringHuge
-                 : ascii ? DSCode::CacheableASCIIString
-                         : DSCode::CacheableString;
-  }
-
  private:
-  void operator=(const CacheableString& other) = delete;
-  CacheableString(const CacheableString& other) = delete;
-
   static bool isAscii(const std::string& str);
 };
 

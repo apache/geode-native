@@ -34,6 +34,7 @@ namespace client {
 
 class RegionInternal;
 class Region;
+
 /**
  * @class RegionEntry RegionEntry.hpp
  * An object in a Region that represents an entry, i.e., a key-value pair.
@@ -49,6 +50,15 @@ class Region;
  */
 class APACHE_GEODE_EXPORT RegionEntry {
  public:
+  /**
+   * @brief constructors
+   * created by region
+   */
+  RegionEntry(const std::shared_ptr<Region>& region,
+              const std::shared_ptr<CacheableKey>& key,
+              const std::shared_ptr<Cacheable>& value);
+  virtual ~RegionEntry() noexcept;
+
   /** Returns the key for this entry.
    *
    * @return the key for this entry
@@ -85,27 +95,13 @@ class APACHE_GEODE_EXPORT RegionEntry {
    */
   bool isDestroyed() const;
 
-  /**
-   * @brief destructor
-   */
-  virtual ~RegionEntry();
-
  private:
-  /**
-    * @brief constructors
-    * created by region
-    */
-  RegionEntry(const std::shared_ptr<Region>& region,
-              const std::shared_ptr<CacheableKey>& key,
-              const std::shared_ptr<Cacheable>& value);
   std::shared_ptr<Region> m_region;
   std::shared_ptr<CacheableKey> m_key;
   std::shared_ptr<Cacheable> m_value;
   std::shared_ptr<CacheStatistics> m_statistics;
   bool m_destroyed;
   friend class RegionInternal;
-
-  _GEODE_FRIEND_STD_SHARED_PTR(RegionEntry)
 };
 }  // namespace client
 }  // namespace geode

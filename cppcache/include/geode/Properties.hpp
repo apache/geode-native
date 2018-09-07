@@ -58,6 +58,11 @@ class APACHE_GEODE_EXPORT Properties
     virtual ~Visitor() {}
   };
 
+  Properties() = default;
+  ~Properties() noexcept override = default;
+  Properties(const Properties&) = delete;
+  Properties& operator=(const Properties&) = delete;
+
   /**
    * Return the value for the given key, or nullptr if not found.
    *
@@ -146,16 +151,9 @@ class APACHE_GEODE_EXPORT Properties
 
   DSCode getDsCode() const override;
 
-  ~Properties() override = default;
-  Properties(const Properties&) = delete;
-  Properties& operator=(const Properties&) = delete;
 
  private:
   HashMapOfCacheable m_map;
-
-  Properties() = default;
-
-  _GEODE_FRIEND_STD_SHARED_PTR(Properties)
 };
 
 }  // namespace client

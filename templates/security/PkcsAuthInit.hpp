@@ -66,19 +66,9 @@ namespace client {
  */
 
 class PKCSAuthInit : public AuthInitialize {
-  /**
-   * @brief public methods
-   */
  public:
-  /**
-   * @brief constructor
-   */
-  PKCSAuthInit() {}
-
-  /**
-   * @brief destructor
-   */
-  ~PKCSAuthInit() {}
+  PKCSAuthInit() = default;
+  ~PKCSAuthInit() noexcept override = default;
 
   /**@brief initialize with the given set of security properties
    * and return the credentials for the client as properties.

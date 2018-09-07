@@ -492,15 +492,16 @@ class APACHE_GEODE_EXPORT DataOutput {
 
   virtual Cache* getCache() const;
 
+  DataOutput() = delete;
+
   /** Destruct a DataOutput, including releasing the created buffer. */
-  ~DataOutput() {
+  virtual ~DataOutput() noexcept {
     reset();
     if (m_bytes) {
       DataOutput::checkinBuffer(m_bytes.release(), m_size);
     }
   }
 
-  DataOutput() = delete;
   DataOutput(const DataOutput&) = delete;
   DataOutput& operator=(const DataOutput&) = delete;
   DataOutput(DataOutput&&) = default;

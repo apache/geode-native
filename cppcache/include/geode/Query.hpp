@@ -48,6 +48,8 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT Query {
  public:
+  virtual ~Query() noexcept = default;
+
   /**
    * Executes the OQL Query on the cache server and returns the results.
    *

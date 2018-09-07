@@ -46,9 +46,9 @@ std::string getXmlPath() {
 #define SECURITY_PASSWORD "security-password"
 class UserPasswordAuthInit : public AuthInitialize {
  public:
-  UserPasswordAuthInit() {}
+  UserPasswordAuthInit() = default;
 
-  ~UserPasswordAuthInit() {}
+  ~UserPasswordAuthInit() noexcept override = default;
 
   std::shared_ptr<Properties> getCredentials(
       const std::shared_ptr<Properties>& securityprops,

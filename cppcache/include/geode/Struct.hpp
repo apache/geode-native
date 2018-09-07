@@ -57,6 +57,8 @@ class APACHE_GEODE_EXPORT Struct
   Struct(StructSet* ssPtr,
          std::vector<std::shared_ptr<Serializable>>& fieldValues);
 
+  Struct() = default;
+
   ~Struct() noexcept override = default;
 
   /**
@@ -120,7 +122,6 @@ class APACHE_GEODE_EXPORT Struct
   }
 
  private:
-  Struct() = default;
 
   void skipClassName(DataInput& input);
 
@@ -129,8 +130,6 @@ class APACHE_GEODE_EXPORT Struct
   StructSet* m_parent = nullptr;
   std::vector<std::shared_ptr<Serializable>> m_fieldValues;
   FieldNameToIndexMap m_fieldNameToIndex;
-
-  _GEODE_FRIEND_STD_SHARED_PTR(Struct)
 };
 }  // namespace client
 }  // namespace geode

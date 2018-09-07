@@ -43,7 +43,7 @@ class TestDataOutput : public DataOutputInternal {
     // NOP
   }
 
-  virtual ~TestDataOutput() {
+  ~TestDataOutput() noexcept override {
     delete m_byteArray;
     m_byteArray = nullptr;
   }

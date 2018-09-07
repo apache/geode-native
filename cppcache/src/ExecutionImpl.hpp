@@ -58,6 +58,7 @@ class ExecutionImpl {
         m_allServer(allServer),
         m_pool(pool),
         m_authenticatedView(authenticatedView) {}
+  virtual ~ExecutionImpl() noexcept = default;
   virtual Execution withFilter(std::shared_ptr<CacheableVector> routingObj);
   virtual Execution withArgs(std::shared_ptr<Cacheable> args);
   virtual Execution withCollector(std::shared_ptr<ResultCollector> rs);
