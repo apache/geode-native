@@ -193,7 +193,7 @@ namespace Apache
         {
           inline virtual int8_t get( )
           {
-            return static_cast<int8_t>(native::DSCode::Properties);
+            return static_cast<int8_t>(native::internal::DSCode::Properties);
           }
         }
 

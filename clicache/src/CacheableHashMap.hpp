@@ -120,7 +120,7 @@ namespace Apache
         {
           virtual int8_t get()
           {
-            return static_cast<int8_t>(native::DSCode::CacheableHashMap);
+            return static_cast<int8_t>(native::internal::DSCode::CacheableHashMap);
           }
         }
 

@@ -448,52 +448,52 @@ namespace Apache
 
       Object^ DataInput::ReadDotNetTypes(int8_t typeId)
       {
-        switch (static_cast<apache::geode::client::DSCode>(typeId))
+        switch (static_cast<apache::geode::client::internal::DSCode>(typeId))
         {
-        case apache::geode::client::DSCode::CacheableByte:
+        case apache::geode::client::internal::DSCode::CacheableByte:
         {
           return ReadByte();
         }
-        case apache::geode::client::DSCode::CacheableBoolean:
+        case apache::geode::client::internal::DSCode::CacheableBoolean:
         {
           bool obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::DSCode::CacheableCharacter:
+        case apache::geode::client::internal::DSCode::CacheableCharacter:
         {
           Char obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::DSCode::CacheableDouble:
+        case apache::geode::client::internal::DSCode::CacheableDouble:
         {
           Double obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::DSCode::CacheableASCIIString:
+        case apache::geode::client::internal::DSCode::CacheableASCIIString:
         {
           /*	CacheableString^ cs = static_cast<CacheableString^>(CacheableString::CreateDeserializable());
             cs->FromData(this);
             return cs->Value;*/
           return ReadUTF();
         }
-        case apache::geode::client::DSCode::CacheableASCIIStringHuge:
+        case apache::geode::client::internal::DSCode::CacheableASCIIStringHuge:
         {
           /*CacheableString^ cs = static_cast<CacheableString^>(CacheableString::createDeserializableHuge());
           cs->FromData(this);
           return cs->Value;*/
           return ReadASCIIHuge();
         }
-        case apache::geode::client::DSCode::CacheableString:
+        case apache::geode::client::internal::DSCode::CacheableString:
         {
           /*CacheableString^ cs = static_cast<CacheableString^>(CacheableString::createUTFDeserializable());
           cs->FromData(this);
           return cs->Value;*/
           return ReadUTF();
         }
-        case apache::geode::client::DSCode::CacheableStringHuge:
+        case apache::geode::client::internal::DSCode::CacheableStringHuge:
         {
           //TODO: need to look all strings types
           /*CacheableString^ cs = static_cast<CacheableString^>(CacheableString::createUTFDeserializableHuge());
@@ -501,103 +501,103 @@ namespace Apache
           return cs->Value;*/
           return ReadUTFHuge();
         }
-        case apache::geode::client::DSCode::CacheableFloat:
+        case apache::geode::client::internal::DSCode::CacheableFloat:
         {
           float obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::DSCode::CacheableInt16:
+        case apache::geode::client::internal::DSCode::CacheableInt16:
         {
           Int16 obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::DSCode::CacheableInt32:
+        case apache::geode::client::internal::DSCode::CacheableInt32:
         {
           Int32 obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::DSCode::CacheableInt64:
+        case apache::geode::client::internal::DSCode::CacheableInt64:
         {
           Int64 obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::DSCode::CacheableDate:
+        case apache::geode::client::internal::DSCode::CacheableDate:
         {
           CacheableDate^ cd = CacheableDate::Create();
           cd->FromData(this);
           return cd->Value;
         }
-        case apache::geode::client::DSCode::CacheableBytes:
+        case apache::geode::client::internal::DSCode::CacheableBytes:
         {
           return ReadBytes();
         }
-        case apache::geode::client::DSCode::CacheableDoubleArray:
+        case apache::geode::client::internal::DSCode::CacheableDoubleArray:
         {
           array<Double>^ obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::DSCode::CacheableFloatArray:
+        case apache::geode::client::internal::DSCode::CacheableFloatArray:
         {
           array<float>^ obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::DSCode::CacheableInt16Array:
+        case apache::geode::client::internal::DSCode::CacheableInt16Array:
         {
           array<Int16>^ obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::DSCode::CacheableInt32Array:
+        case apache::geode::client::internal::DSCode::CacheableInt32Array:
         {
           array<Int32>^ obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::DSCode::BooleanArray:
+        case apache::geode::client::internal::DSCode::BooleanArray:
         {
           array<bool>^ obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::DSCode::CharArray:
+        case apache::geode::client::internal::DSCode::CharArray:
         {
           array<Char>^ obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::DSCode::CacheableInt64Array:
+        case apache::geode::client::internal::DSCode::CacheableInt64Array:
         {
           array<Int64>^ obj;
           ReadObject(obj);
           return obj;
         }
-        case apache::geode::client::DSCode::CacheableStringArray:
+        case apache::geode::client::internal::DSCode::CacheableStringArray:
         {
           return ReadStringArray();
         }
-        case apache::geode::client::DSCode::CacheableHashTable:
+        case apache::geode::client::internal::DSCode::CacheableHashTable:
         {
           return ReadHashtable();
         }
-        case apache::geode::client::DSCode::CacheableHashMap:
+        case apache::geode::client::internal::DSCode::CacheableHashMap:
         {
           CacheableHashMap^ chm = static_cast<CacheableHashMap^>(CacheableHashMap::CreateDeserializable());
           chm->FromData(this);
           return chm->Value;
         }
-        case apache::geode::client::DSCode::CacheableIdentityHashMap:
+        case apache::geode::client::internal::DSCode::CacheableIdentityHashMap:
         {
           CacheableIdentityHashMap^ chm = static_cast<CacheableIdentityHashMap^>(CacheableIdentityHashMap::CreateDeserializable());
           chm->FromData(this);
           return chm->Value;
         }
-        case apache::geode::client::DSCode::CacheableVector:
+        case apache::geode::client::internal::DSCode::CacheableVector:
         {
           /*CacheableVector^ cv = static_cast<CacheableVector^>(CacheableVector::CreateDeserializable());
           cv->FromData(this);
@@ -611,7 +611,7 @@ namespace Apache
           }
           return retA;
         }
-        case apache::geode::client::DSCode::CacheableArrayList:
+        case apache::geode::client::internal::DSCode::CacheableArrayList:
         {
           /*CacheableArrayList^ cv = static_cast<CacheableArrayList^>(CacheableArrayList::CreateDeserializable());
           cv->FromData(this);
@@ -625,7 +625,7 @@ namespace Apache
           return retA;
 
         }
-        case apache::geode::client::DSCode::CacheableLinkedList:
+        case apache::geode::client::internal::DSCode::CacheableLinkedList:
         {
           /*CacheableArrayList^ cv = static_cast<CacheableArrayList^>(CacheableArrayList::CreateDeserializable());
           cv->FromData(this);
@@ -639,7 +639,7 @@ namespace Apache
           return retA;
 
         }
-        case apache::geode::client::DSCode::CacheableStack:
+        case apache::geode::client::internal::DSCode::CacheableStack:
         {
           CacheableStack^ cv = static_cast<CacheableStack^>(CacheableStack::CreateDeserializable());
           cv->FromData(this);
