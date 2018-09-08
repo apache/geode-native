@@ -53,7 +53,7 @@ class APACHE_GEODE_EXPORT PoolStatsSampler : public ACE_Task_Base {
                    ThinClientPoolDM* distMan);
   PoolStatsSampler& operator=(const PoolStatsSampler&) = delete;
   PoolStatsSampler(const PoolStatsSampler& PoolStatsSampler) = delete;
-  ~PoolStatsSampler() noexcept override = default;
+  ~PoolStatsSampler() noexcept override {}
 
   void start();
   void stop();
