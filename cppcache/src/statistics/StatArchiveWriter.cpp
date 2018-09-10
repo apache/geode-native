@@ -179,7 +179,6 @@ ResourceInst::ResourceInst(int32_t idArg, Statistics *resourceArg,
   for (int32_t i = 0; i < cnt; i++) {
     archivedStatValues[i] = 0;
   }
-  numOfDescps = cnt;
   firstTime = true;
 }
 
