@@ -69,7 +69,7 @@ if(WIN32)
  foreach (_target apache-geode testobject)
    add_custom_command(TARGET integration-test-2 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
        "$<TARGET_FILE:${_target}>"
-       "$<TARGET_PDB_FILE:${_target}>"
+       "$<$<CONFIG:Debug>:$<TARGET_PDB_FILE:${_target}>>"
        "$<TARGET_FILE_DIR:integration-test-2>")
  endforeach()
 endif()
