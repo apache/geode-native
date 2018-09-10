@@ -41,7 +41,9 @@
 
 #pragma error_messages(off, SEC_UNINITIALIZED_MEM_READ)
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 static const uint32_t REGULAR_EXPRESSION =
     1;  // come from Java InterestType.REGULAR_EXPRESSION
 
@@ -397,7 +399,7 @@ inline void TcrMessage::writeInt(uint8_t* buffer, uint32_t value) {
 }
 std::shared_ptr<Serializable> TcrMessage::readCacheableString(DataInput& input,
                                                               int lenObj) {
-  auto decoded = JavaModifiedUtf8::decode(
+  auto decoded = internal::JavaModifiedUtf8::decode(
       reinterpret_cast<const char*>(input.currentBufferPosition()), lenObj);
   input.advanceCursor(lenObj);
 
@@ -422,8 +424,7 @@ std::shared_ptr<Serializable> TcrMessage::readCacheableBytes(DataInput& input,
     writeInt(buffer + 1, static_cast<uint32_t>(lenObj));
   }
 
-  return input.readDirectObject(
-      static_cast<int8_t>(apache::geode::client::DSCode::CacheableBytes));
+  return input.readDirectObject(static_cast<int8_t>(DSCode::CacheableBytes));
 }
 
 bool TcrMessage::readExceptionPart(DataInput& input, uint8_t isLastChunk,
@@ -2949,3 +2950,7 @@ void TcrMessage::readHashSetForGCVersions(
 }
 
 #pragma error_messages(default, SEC_UNINITIALIZED_MEM_READ)
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

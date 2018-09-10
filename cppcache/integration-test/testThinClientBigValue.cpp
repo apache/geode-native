@@ -27,13 +27,14 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define MEGABYTE (1024 * 1024)
 #define GROWTH 5 * MEGABYTE
 #define MAX_PAYLOAD 20 * MEGABYTE
 #define MAX_PUTS 100000
+
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableInt64;
 
 void grow(int* iptr) { *iptr = *iptr + GROWTH; }
 

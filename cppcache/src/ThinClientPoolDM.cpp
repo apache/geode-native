@@ -41,8 +41,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::statistics;
-
 /* adongre
  * CID 28730: Other violation (MISSING_COPY)
  * Class "GetAllWork" owns resources that are managed in its constructor and
@@ -367,7 +365,7 @@ void ThinClientPoolDM::startBackgroundThreads() {
   if (m_PoolStatsSampler == nullptr &&
       getStatisticInterval() > std::chrono::milliseconds::zero() &&
       props.statisticsEnabled()) {
-    m_PoolStatsSampler = new PoolStatsSampler(
+    m_PoolStatsSampler = new statistics::PoolStatsSampler(
         getStatisticInterval(), m_connManager.getCacheImpl(), this);
     m_PoolStatsSampler->start();
   }

@@ -33,10 +33,8 @@
 #define SERVER1 s2p1
 
 #include "testobject/Portfolio.hpp"
-using namespace testobject;
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::ClassCastException;
 
 bool isLocalServer = true;
 static bool isLocator = false;
@@ -44,9 +42,8 @@ const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 
-//---------------------------------------------------------------------------------
-using namespace apache::geode::client;
-class CallbackListener;
+using testobject::Portfolio;
+using testobject::Position;
 
 class CallbackListener : public CacheListener {
  private:

@@ -35,13 +35,23 @@
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testData;
-
 #define CLIENT1 s1p1
 #define LOCATOR s1p2
 #define SERVER1 s2p1
+
+using testData::numSSQueryParam;
+using testData::queryparamSetSS;
+using testData::resultsetQueries;
+using testData::structsetParamQueries;
+using testData::structsetQueries;
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalArgumentException;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
+using apache::geode::client::TimeoutException;
 
 bool isLocalServer = false;
 bool isLocator = false;
@@ -73,7 +83,8 @@ void stepOne() {
   createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
 
   auto regptr = getHelper()->getRegion(qRegionNames[0]);
-  auto subregPtr = regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
+  auto subregPtr =
+      regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
 
   LOG("StepOne complete.");
 }

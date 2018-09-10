@@ -23,7 +23,6 @@
 #include <memory>
 #include <string>
 
-#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
 #include <boost/stacktrace.hpp>
 
 namespace apache {

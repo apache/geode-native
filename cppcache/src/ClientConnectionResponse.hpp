@@ -28,6 +28,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+using internal::DSFid;
+
 class ClientConnectionResponse : public ServerLocationResponse {
  public:
   ClientConnectionResponse() : ServerLocationResponse(), m_serverFound(false) {}

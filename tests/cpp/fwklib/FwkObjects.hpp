@@ -44,10 +44,6 @@
 
 #include <xercesc/dom/DOM.hpp>
 
-XERCES_CPP_NAMESPACE_USE
-
-using namespace apache::geode::client::testframework;
-
 #define HOSTGROUP_TAG "hostGroup"
 #define LOCALFILE_TAG "localFile"
 #define DATA_TAG "data"
@@ -76,19 +72,34 @@ using namespace apache::geode::client::testframework;
 
 #define CLIENT_STATUS_BB "clientStatusBB"
 
-namespace apache {
-namespace geode {
-namespace client {
-namespace testframework {
-
-// ----------------------------------------------------------------------------
-
 #define FWK_SUCCESS 0
 #define FWK_WARNING 1
 #define FWK_ERROR 2
 #define FWK_SEVERE 3
 
-// ----------------------------------------------------------------------------
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
+
+using XERCES_CPP_NAMESPACE::chLatin_L;
+using XERCES_CPP_NAMESPACE::chLatin_S;
+using XERCES_CPP_NAMESPACE::chNull;
+using XERCES_CPP_NAMESPACE::DOMAttr;
+using XERCES_CPP_NAMESPACE::DOMError;
+using XERCES_CPP_NAMESPACE::DOMErrorHandler;
+using XERCES_CPP_NAMESPACE::DOMException;
+using XERCES_CPP_NAMESPACE::DOMImplementation;
+using XERCES_CPP_NAMESPACE::DOMImplementationLS;
+using XERCES_CPP_NAMESPACE::DOMImplementationRegistry;
+using XERCES_CPP_NAMESPACE::DOMLSParser;
+using XERCES_CPP_NAMESPACE::DOMNamedNodeMap;
+using XERCES_CPP_NAMESPACE::DOMNode;
+using XERCES_CPP_NAMESPACE::DOMText;
+using XERCES_CPP_NAMESPACE::XMLException;
+using XERCES_CPP_NAMESPACE::XMLPlatformUtils;
+using XERCES_CPP_NAMESPACE::XMLString;
+using XERCES_CPP_NAMESPACE::XMLUni;
 
 /** @brief Table of object enumeration data types */
 typedef enum eFwkDataType {
@@ -440,9 +451,7 @@ class Attributes {
  public:
   Attributes(const DOMNode* node);
 
-  RegionAttributes getAttributes() {
-    return m_factory.create();
-  }
+  RegionAttributes getAttributes() { return m_factory.create(); }
 
   void setPoolName(std::string val) {
     if (!val.empty()) {

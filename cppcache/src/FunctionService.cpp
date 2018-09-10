@@ -25,7 +25,10 @@
 #include "ExecutionImpl.hpp"
 #include "CacheImpl.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
+
 Execution FunctionService::onRegion(const std::shared_ptr<Region>& region) {
   LOGDEBUG("FunctionService::onRegion(std::shared_ptr<Region> region)");
   if (region == nullptr) {
@@ -57,7 +60,8 @@ Execution FunctionService::onRegion(const std::shared_ptr<Region>& region) {
       }
       // getting real region to execute function on region
       if (!realRegion->getCache().isClosed()) {
-        realRegion = realRegion->getCache().m_cacheImpl->getRegion(realRegion->getName());
+        realRegion = realRegion->getCache().m_cacheImpl->getRegion(
+            realRegion->getName());
       } else {
         throw IllegalStateException("Cache has been closed");
       }
@@ -149,3 +153,7 @@ Execution FunctionService::onServersWithCache(RegionService& cache) {
         realcache.m_cacheImpl->getPoolManager().getDefaultPool());
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

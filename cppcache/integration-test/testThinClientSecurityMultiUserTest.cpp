@@ -23,7 +23,8 @@
 #include "ThinClientSecurity.hpp"
 #include "ThinClientHelper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::RegionShortcut;
 
 #define CLIENT1 s1p1
 #define LOCATORSERVER s2p2

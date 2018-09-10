@@ -30,6 +30,8 @@ namespace Apache
     namespace Client
     {
 
+      using namespace apache::geode::client;
+
       /// <summary>
       /// A mutable <c>ISerializable</c> object array wrapper that can serve
       /// as a distributable object for caching. Though this class provides
@@ -108,7 +110,7 @@ namespace Apache
         {
           virtual int8_t get()
           {
-            return static_cast<int8_t>(DSCode::CacheableObjectArray);
+            return static_cast<int8_t>(internal::DSCode::CacheableObjectArray);
           }
         }
 

@@ -19,7 +19,9 @@
 #include "MapSegment.hpp"
 #include <unordered_map>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 #define SIZEOF_PTR (sizeof(void*))
 #define SIZEOF_SHAREDPTR (SIZEOF_PTR + 4)
@@ -176,3 +178,7 @@ void TombstoneList::cleanUp() {
     delete queIter.second->getHandler();
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

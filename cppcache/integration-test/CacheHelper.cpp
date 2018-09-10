@@ -63,10 +63,11 @@
 #define PATH_SEP "/"
 #endif
 
-using namespace apache::geode::client;
-using namespace apache::geode::internal::chrono::duration;
-
 extern ClientCleanup gClientCleanup;
+
+namespace apache {
+namespace geode {
+namespace client {
 
 #define RANDOM_NUMBER_OFFSET 14000
 #define RANDOM_NUMBER_DIVIDER 15000
@@ -467,8 +468,7 @@ std::shared_ptr<Pool> CacheHelper::createPool2(
   if (servers) {
     addServerLocatorEPs(servers, poolFac, false);
     // do region creation with end
-  }
-  else if (locators) {
+  } else if (locators) {
     addServerLocatorEPs(locators, poolFac);
     if (serverGroup) {
       poolFac.setServerGroup(serverGroup);
@@ -490,7 +490,8 @@ std::shared_ptr<Pool> CacheHelper::createPool2(
 }
 
 void CacheHelper::logPoolAttributes(std::shared_ptr<Pool>& pool) {
-  using namespace apache::geode::internal::chrono::duration;
+  using apache::geode::internal::chrono::duration::to_string;
+
   LOG("logPoolAttributes() entered");
   LOGINFO("CPPTEST: Pool attributes for pool %s are as follows" +
           pool->getName());
@@ -1908,3 +1909,7 @@ std::string CacheHelper::generateGeodeProperties(
   LOG(geodeFile.c_str());
   return geodeFile;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -31,7 +31,9 @@
 #include <ace/Dev_Poll_Reactor.h>
 #endif
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 const char* ExpiryTaskManager::NC_ETM_Thread = "NC ETM Thread";
 
@@ -59,7 +61,8 @@ long ExpiryTaskManager::scheduleExpiryTask(ACE_Event_Handler* handler,
 
   ACE_Time_Value expTimeValue(expTime);
   ACE_Time_Value intervalValue(interval);
-  return m_reactor->schedule_timer(handler, nullptr, expTimeValue, intervalValue);
+  return m_reactor->schedule_timer(handler, nullptr, expTimeValue,
+                                   intervalValue);
 }
 
 long ExpiryTaskManager::scheduleExpiryTask(ACE_Event_Handler* handler,
@@ -115,3 +118,7 @@ ExpiryTaskManager::~ExpiryTaskManager() {
   delete m_reactor;
   m_reactor = nullptr;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

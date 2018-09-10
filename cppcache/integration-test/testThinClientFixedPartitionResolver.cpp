@@ -31,10 +31,15 @@
 
 #include "ThinClientHelper.hpp"
 
+using apache::geode::client::CacheServerException;
+using apache::geode::client::CacheWriterException;
+using apache::geode::client::EntryEvent;
+using apache::geode::client::Exception;
+using apache::geode::client::FixedPartitionResolver;
+
 const char* partitionRegionNames[] = {"R1", "R2", "R3"};
 const char* partitionRegionName;
 
-using namespace apache::geode::client;
 class CustomFixedPartitionResolver1 : public FixedPartitionResolver {
  public:
   CustomFixedPartitionResolver1() {}

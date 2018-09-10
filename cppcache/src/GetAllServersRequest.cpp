@@ -17,7 +17,9 @@
 
 #include "GetAllServersRequest.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 void GetAllServersRequest::toData(DataOutput& output) const {
   output.writeObject(m_serverGroup);
@@ -27,3 +29,7 @@ void GetAllServersRequest::fromData(DataInput& input) {
   m_serverGroup =
       std::dynamic_pointer_cast<CacheableString>(input.readObject());
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_TALLYLOADER_H_
-#define GEODE_INTEGRATION_TEST_TALLYLOADER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,10 +15,17 @@
  * limitations under the License.
  */
 
-using namespace apache::geode::client;
-using namespace test;
+#pragma once
 
-class TallyLoader;
+#ifndef GEODE_INTEGRATION_TEST_TALLYLOADER_H_
+#define GEODE_INTEGRATION_TEST_TALLYLOADER_H_
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheLoader;
+using apache::geode::client::Region;
+using apache::geode::client::Serializable;
 
 class TallyLoader : virtual public CacheLoader {
  private:

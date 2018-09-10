@@ -37,8 +37,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::statistics;
-
 DistributedSystem::DistributedSystem(const std::string& name,
                                      std::unique_ptr<SystemProperties> sysProps)
     : m_impl(new DistributedSystemImpl(name, this, std::move(sysProps))) {}

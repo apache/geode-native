@@ -20,7 +20,10 @@
 
 #include <StructSetImpl.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::Struct;
+using apache::geode::client::StructSetImpl;
 
 TEST(StructSetTest, Basic) {
   auto values = CacheableVector::create();

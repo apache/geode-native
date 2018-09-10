@@ -17,7 +17,7 @@
 
 #include "DeltaTestImpl.hpp"
 
-using namespace testobject;
+namespace testobject {
 
 uint8_t DeltaTestImpl::INT_MASK = 0x1;
 uint8_t DeltaTestImpl::STR_MASK = 0x2;
@@ -134,3 +134,5 @@ std::string DeltaTestImpl::toString() const {
           m_hasDelta, intVar, doubleVar, str->toString().c_str());
   return buf;
 }
+
+}  // namespace testobject

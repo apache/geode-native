@@ -23,8 +23,11 @@
 #include "PkcsCredentialGenerator.hpp"
 #include "NoopCredentialGenerator.hpp"
 
-using namespace apache::geode::client::testframework::security;
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
+namespace security {
 
 CredentialGenerator::registeredClassMap* CredentialGenerator::generatormap =
     nullptr;
@@ -67,3 +70,9 @@ void CredentialGenerator::getDisallowedCredentialsForOps(
     opCodeList&, std::shared_ptr<Properties>&, stringList*) {}
 
 std::string CredentialGenerator::getInitArgs(std::string, bool) { return ""; }
+
+}  // namespace security
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

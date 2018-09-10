@@ -34,7 +34,9 @@
 #include "FunctionServiceImpl.hpp"
 #include "ThinClientPoolDM.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 /**
  * Indicates if this cache has been closed.
@@ -174,3 +176,6 @@ PdxInstanceFactory AuthenticatedView::createPdxInstanceFactory(
                                 .getSystemProperties()
                                 .getEnableTimeStatistics());
 }
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

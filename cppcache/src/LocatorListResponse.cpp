@@ -19,7 +19,11 @@
 #include <geode/DataInput.hpp>
 #include <vector>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
+
+using internal::DSFid;
 
 void LocatorListResponse::fromData(DataInput& input) {
   readList(input);
@@ -48,3 +52,7 @@ bool LocatorListResponse::isBalanced() const { return m_isBalanced; }
 std::shared_ptr<Serializable> LocatorListResponse::create() {
   return std::make_shared<LocatorListResponse>();
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

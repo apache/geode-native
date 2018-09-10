@@ -38,6 +38,10 @@ using std::chrono::nanoseconds;
 using std::chrono::steady_clock;
 using std::chrono::system_clock;
 
+using client::GeodeIOException;
+using client::IllegalArgumentException;
+using client::NullPointerException;
+
 // Constructor and Member functions of StatDataOutput class
 
 StatDataOutput::StatDataOutput(CacheImpl *cacheImpl)

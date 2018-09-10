@@ -24,7 +24,10 @@
 #include <geode/CacheableString.hpp>
 #include <geode/internal/functional.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::dereference_equal_to;
+using apache::geode::client::dereference_hash;
 
 TEST(CacheableStringEqualityTest, StdHashSpecializationViaStdSharedPtr) {
   auto s = CacheableString::create("test");

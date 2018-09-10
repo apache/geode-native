@@ -42,6 +42,7 @@ namespace Apache
   {
     namespace Client
     {
+      using namespace apache::geode::client;
       namespace native = apache::geode::client;
 
         interface class IPdxSerializable;

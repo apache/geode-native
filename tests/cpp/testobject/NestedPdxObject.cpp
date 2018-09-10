@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 /*
-* NestedPdxObject.cpp
-*
-*/
+ * NestedPdxObject.cpp
+ *
+ */
 
 #include "NestedPdxObject.hpp"
 
-using namespace apache::geode::client;
-using namespace testobject;
+namespace testobject {
 
 void ChildPdx::toData(PdxWriter& pw) const {
   LOGDEBUG("ChildPdx::toData() Started......");
@@ -122,7 +121,6 @@ bool ParentPdx::equals(const ParentPdx& other, bool isPdxReadSerialized) const {
       (m_enum->getEnumClassName() == other.m_enum->getEnumClassName()) &&
       (m_enum->getEnumName() == other.m_enum->getEnumName()) &&
       m_char == other.m_char && m_charArray == other.m_charArray) {
-
     if (!isPdxReadSerialized) {
       ChildPdx* ch1 = dynamic_cast<ChildPdx*>(m_childPdx.get());
       ChildPdx* ch2 = dynamic_cast<ChildPdx*>(other.m_childPdx.get());
@@ -136,3 +134,4 @@ bool ParentPdx::equals(const ParentPdx& other, bool isPdxReadSerialized) const {
 
   return false;
 }
+}  // namespace testobject

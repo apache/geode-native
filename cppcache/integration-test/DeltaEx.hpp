@@ -30,6 +30,15 @@
 
 #include "CacheHelper.hpp"
 
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataSerializable;
+using apache::geode::client::Delta;
+using apache::geode::client::InvalidDeltaException;
+using apache::geode::client::PdxReader;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::PdxWriter;
+
 class DeltaEx : public DataSerializable, public Delta {
  public:
   int counter;

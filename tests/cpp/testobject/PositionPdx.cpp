@@ -18,8 +18,7 @@
 #include <cwchar>
 #include <wchar.h>
 
-using namespace apache::geode::client;
-using namespace testobject;
+namespace testobject {
 
 int32_t PositionPdx::cnt = 0;
 
@@ -143,3 +142,5 @@ std::string PositionPdx::toString() const {
   sprintf(buf, "PositionPdx Object:[ id=%d ]", this->pid);
   return buf;
 }
+
+}  // namespace testobject

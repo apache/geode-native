@@ -17,9 +17,9 @@
 
 #include "BatchObject.hpp"
 
-using namespace apache::geode::client;
-using namespace testframework;
-using namespace testobject;
+namespace testobject {
+
+using apache::geode::client::CacheableBytes;
 
 BatchObject::BatchObject(int32_t anIndex, int32_t batchSize, int32_t size) {
   index = anIndex;
@@ -53,3 +53,5 @@ std::string BatchObject::toString() const {
           index, timestamp, batch, byteArray->length());
   return buf;
 }
+
+}  // namespace testobject

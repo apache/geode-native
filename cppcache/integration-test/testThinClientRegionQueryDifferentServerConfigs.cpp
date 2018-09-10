@@ -31,14 +31,15 @@
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testobject;
-
 #define CLIENT1 s1p1
 #define LOCATOR s1p2
 #define SERVER1 s2p1
 #define SERVER2 s2p2
+
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::Query;
+using apache::geode::client::QueryException;
+using apache::geode::client::QueryService;
 
 bool isLocalServer = false;
 bool isLocator = false;
@@ -58,8 +59,7 @@ void initClient() {
             ->getSerializationRegistry();
     serializationRegistry->addType(Position::createDeserializable);
     serializationRegistry->addType(Portfolio::createDeserializable);
-  }
-  catch (const IllegalStateException&) {
+  } catch (const IllegalStateException&) {
     // ignore exception
   }
 }

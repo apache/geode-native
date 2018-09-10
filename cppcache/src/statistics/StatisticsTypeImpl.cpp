@@ -27,6 +27,9 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
+using client::IllegalArgumentException;
+using client::NullPointerException;
+
 StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
                                        std::string descriptionArg,
                                        StatisticDescriptor** statsArg,

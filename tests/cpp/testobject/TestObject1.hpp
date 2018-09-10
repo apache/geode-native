@@ -27,8 +27,13 @@
 
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
 namespace testobject {
+
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::CacheableString;
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataSerializable;
 
 class TESTOBJECT_EXPORT TestObject1 : public DataSerializable {
  private:

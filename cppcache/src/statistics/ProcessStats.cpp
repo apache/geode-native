@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 #include "ProcessStats.hpp"
-using namespace apache::geode::statistics;
+
+namespace apache {
+namespace geode {
+namespace statistics {
 
 /**
  * Creates a new <code>ProcessStats</code> that wraps the given
@@ -26,3 +29,7 @@ ProcessStats::ProcessStats() {}
 int64_t ProcessStats::getProcessSize() { return 0; }
 
 ProcessStats::~ProcessStats() {}
+
+}  // namespace statistics
+}  // namespace geode
+}  // namespace apache

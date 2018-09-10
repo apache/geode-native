@@ -25,8 +25,6 @@
 
 #include "ThinClientHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
 
 #define CLIENT1 s1p1
 #define SERVER1 s2p1

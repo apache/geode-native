@@ -24,7 +24,10 @@
 
 #define LENGTH_OF_BANNER 16
 
-using namespace apache::geode::client;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::Log;
+using apache::geode::client::LogFn;
+using apache::geode::client::LogLevel;
 
 int numOfLinesInFile(const char* fname) {
   char line[2048];
@@ -118,10 +121,16 @@ END_TEST(REINIT)
 BEGIN_TEST(ALL_LEVEL)
   {
     for (LogLevel level : {
-        LogLevel::Error, LogLevel::Warning, LogLevel::Info,
-        LogLevel::Default, LogLevel::Config, LogLevel::Fine,
-        LogLevel::Finer, LogLevel::Finest, LogLevel::Debug,
-    }) {
+             LogLevel::Error,
+             LogLevel::Warning,
+             LogLevel::Info,
+             LogLevel::Default,
+             LogLevel::Config,
+             LogLevel::Fine,
+             LogLevel::Finer,
+             LogLevel::Finest,
+             LogLevel::Debug,
+         }) {
       Log::init(level, "all_logfile");
 
       Log::error("Error Message");
@@ -148,10 +157,16 @@ END_TEST(ALL_LEVEL)
 BEGIN_TEST(ALL_LEVEL_MACRO)
   {
     for (LogLevel level : {
-        LogLevel::Error, LogLevel::Warning, LogLevel::Info,
-        LogLevel::Default, LogLevel::Config, LogLevel::Fine,
-        LogLevel::Finer, LogLevel::Finest, LogLevel::Debug,
-    }) {
+             LogLevel::Error,
+             LogLevel::Warning,
+             LogLevel::Info,
+             LogLevel::Default,
+             LogLevel::Config,
+             LogLevel::Fine,
+             LogLevel::Finer,
+             LogLevel::Finest,
+             LogLevel::Debug,
+         }) {
       Log::init(level, "all_logfile");
 
       LOGERROR("Error Message");
@@ -181,12 +196,18 @@ BEGIN_TEST(FILE_LIMIT)
 #ifdef _WIN32
 // Fail to roll file over to timestamp file on windows.
 #else
-      for (LogLevel level : {
-          LogLevel::Error, LogLevel::Warning, LogLevel::Info,
-          LogLevel::Default, LogLevel::Config, LogLevel::Fine,
-          LogLevel::Finer, LogLevel::Finest, LogLevel::Debug,
-      }) {
-        if (level == LogLevel::Default) continue;
+    for (LogLevel level : {
+             LogLevel::Error,
+             LogLevel::Warning,
+             LogLevel::Info,
+             LogLevel::Default,
+             LogLevel::Config,
+             LogLevel::Fine,
+             LogLevel::Finer,
+             LogLevel::Finest,
+             LogLevel::Debug,
+         }) {
+      if (level == LogLevel::Default) continue;
       Log::init(level, "logfile", 1);
 
       Log::error("Error Message");
@@ -199,15 +220,15 @@ BEGIN_TEST(FILE_LIMIT)
       Log::debug("Debug Message");
 
       int lines = numOfLinesInFile("logfile.log");
-        int expectedLines = static_cast<int>(level) + LENGTH_OF_BANNER -
-            (level >= LogLevel::Default ? 1 : 0);
-        printf("lines = %d expectedLines = %d level = %d\n", lines,
-               expectedLines, static_cast<int>(level));
+      int expectedLines = static_cast<int>(level) + LENGTH_OF_BANNER -
+                          (level >= LogLevel::Default ? 1 : 0);
+      printf("lines = %d expectedLines = %d level = %d\n", lines, expectedLines,
+             static_cast<int>(level));
 
-        ASSERT(lines == expectedLines, "Wrong number of lines");
+      ASSERT(lines == expectedLines, "Wrong number of lines");
 
-        Log::close();
-        unlink("logfile.log");
+      Log::close();
+      unlink("logfile.log");
     }
 #endif
   }
@@ -315,10 +336,16 @@ END_TEST(NO_LOG)
 BEGIN_TEST(LOGFN)
   {
     for (LogLevel level : {
-        LogLevel::Error, LogLevel::Warning, LogLevel::Info,
-        LogLevel::Default, LogLevel::Config, LogLevel::Fine,
-        LogLevel::Finer, LogLevel::Finest, LogLevel::Debug,
-    }) {
+             LogLevel::Error,
+             LogLevel::Warning,
+             LogLevel::Info,
+             LogLevel::Default,
+             LogLevel::Config,
+             LogLevel::Fine,
+             LogLevel::Finer,
+             LogLevel::Finest,
+             LogLevel::Debug,
+         }) {
       Log::init(level, "logfile");
 
       testLogFnError();

@@ -32,9 +32,12 @@
 #include "testobject_export.h"
 #include "TimestampedObject.hpp"
 
-using namespace apache::geode::client;
-using namespace testframework;
 namespace testobject {
+
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+
 /**
  * @brief User class for testing the put functionality for object.
  */

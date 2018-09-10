@@ -32,7 +32,9 @@ END_TEST(NotOnWindows)
 #include <LRUList.cpp>
 #include <geode/CacheableKey.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::LRUEntryProperties;
+using apache::geode::client::LRUList;
 
 class MyNode : public LRUEntryProperties {
  public:

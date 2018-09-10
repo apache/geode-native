@@ -37,6 +37,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+using internal::DataSerializablePrimitive;
+
 /** Template CacheableKey class for primitive types. */
 template <typename TObj, DSCode TYPEID, const char* TYPENAME>
 class APACHE_GEODE_EXPORT CacheableKeyType : public DataSerializablePrimitive,

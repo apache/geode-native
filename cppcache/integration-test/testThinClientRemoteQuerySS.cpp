@@ -34,13 +34,31 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testData;
-
 #define CLIENT1 s1p1
 #define LOCATOR s1p2
 #define SERVER1 s2p1
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableBoolean;
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
+
+using testData::numSSQueryParam;
+using testData::queryparamSetSS;
+using testData::QueryStrings;
+using testData::structsetFieldCounts;
+using testData::structsetFieldCountsOPL;
+using testData::structsetFieldCountsPQ;
+using testData::structsetParamQueries;
+using testData::structsetQueries;
+using testData::structsetQueriesOPL;
+using testData::structsetRowCounts;
+using testData::structsetRowCountsOPL;
+using testData::structsetRowCountsPQ;
+using testData::unsupported;
 
 bool isLocator = false;
 bool isLocalServer = false;

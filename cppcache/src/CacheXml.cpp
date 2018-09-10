@@ -17,7 +17,9 @@
 
 #include "CacheXml.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 CacheXml::CacheXml() {
   /** The name of the <code>cache</code> element */
@@ -184,3 +186,7 @@ CacheXml::CacheXml() {
   REFID = "refid";
   PR_SINGLE_HOP_ENABLED = "pr-single-hop-enabled";
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -14,17 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * PdxClassV1.cpp
- *
- *  Created on: Feb 3, 2012
- *      Author: npatel
- */
 
 #include "PdxClassV2.hpp"
 
-using namespace apache::geode::client;
-using namespace PdxTests;
+namespace PdxTests {
+
+using apache::geode::client::Exception;
 
 /************************************************************
  *  PdxType1V2
@@ -712,7 +707,7 @@ std::string PdxVersionedV2::toString() const {
 
 TestKeyV2::TestKeyV2() {}
 
-TestKeyV2::TestKeyV2(char *id) { _id = id; }
+TestKeyV2::TestKeyV2(char* id) { _id = id; }
 
 /************************************************************
  *  TestDiffTypePdxSV2
@@ -743,43 +738,4 @@ bool TestDiffTypePdxSV2::equals(const TestDiffTypePdxSV2& other) {
   return false;
 }
 
-/************************************************************
- *  TestEqualsV1
- * *********************************************************/
-/****
- TestEqualsV1::TestEqualsV1(){
- i1 = 1;
- i2 = 0;
- s1 = "s1";
- //TODO: Uncomment it.
- //sArr = ;
- //intArr = ;
- }
-
- void TestEqualsV1::toData( PdxWriter& pw )  {
- pw.writeInt("i1", i1);
- pw.writeInt("i2", i2);
- pw.writeString("s1", s1);
- //pw.writeStringArray("sArr", sArr, 2);
- //pw.writeIntArray("intArr", intArr, 2);
- //pw.writeObject("intArrObject", intArr);
- //pw.writeObject("sArrObject", sArr);
- }
-
- void TestEqualsV1::fromData( PdxReader& pr )
- {
- i1 = pr.readInt("i1");
- i2 = pr.readInt("i2");
- s1 = pr.readString("s1");
- //sArr = pr.readStringArray("sArr");
- //intArr = pr.readIntArray("intArr");
- //intArr = (int[]) reader.ReadObject("intArrObject");
- //sArr = (string[]) reader.ReadObject("sArrObject");
- }
-
- std::string TestEqualsV1::toString() const {
- char idbuf[1024];
- sprintf(idbuf,"TestEqualsV1:[i1=%d ] [i2=%d] ", i1, i2 );
- return CacheableString::create( idbuf );
- }
- ****/
+}  // namespace PdxTests

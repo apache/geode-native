@@ -25,7 +25,9 @@
 #include "ExpiryTaskManager.hpp"
 #include "SuspendedTxExpiryHandler.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 SuspendedTxExpiryHandler::SuspendedTxExpiryHandler(
     CacheTransactionManagerImpl* cacheTxMgr, TransactionId& tid)
@@ -49,3 +51,7 @@ int SuspendedTxExpiryHandler::handle_timeout(const ACE_Time_Value&,
 int SuspendedTxExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
   return 0;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

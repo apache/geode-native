@@ -19,7 +19,7 @@
 
 #include <geode/ExceptionTypes.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::AssertionException;
 
 TEST(ExceptionTypesTest, getName) {
   AssertionException e("an exception message");

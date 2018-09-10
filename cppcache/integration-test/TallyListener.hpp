@@ -24,7 +24,12 @@
 #include <string>
 #include <util/Log.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheListener;
+using apache::geode::client::EntryEvent;
+using apache::geode::client::RegionEvent;
 
 class TallyListener : public CacheListener {
  private:

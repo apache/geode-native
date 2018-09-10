@@ -144,9 +144,6 @@ void ThinClientHARegion::destroyDM(bool keepEndpoints) {
     ThinClientRegion::destroyDM(keepEndpoints);
   }
 }
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
 
 void ThinClientHARegion::addDisMessToQueue() {
   if (m_poolDM) {
@@ -183,3 +180,7 @@ GfErrType ThinClientHARegion::getNoThrow_FullObject(
   versionTag = reply.getVersionTag();
   return err;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

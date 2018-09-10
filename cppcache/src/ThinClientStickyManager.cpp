@@ -16,7 +16,9 @@
  */
 #include "ThinClientStickyManager.hpp"
 #include "ThinClientPoolDM.hpp"
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 bool ThinClientStickyManager::getStickyConnection(
     TcrConnection*& conn, GfErrType* error,
     std::set<ServerLocation>& excludeServers, bool forTransaction) {
@@ -216,3 +218,7 @@ void ThinClientStickyManager::getAnyConnection(TcrConnection*& conn) {
   conn = (*TssConnectionWrapper::s_geodeTSSConn)
              ->getAnyConnection(m_dm->getName().c_str());
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -16,8 +16,7 @@
  */
 #include "Portfolio.hpp"
 
-using namespace apache::geode::client;
-using namespace testobject;
+namespace testobject {
 
 const char* Portfolio::secIds[] = {"SUN", "IBM",  "YHOO", "GOOG", "MSFT",
                                    "AOL", "APPL", "ORCL", "SAP",  "DELL"};
@@ -127,3 +126,5 @@ std::string Portfolio::toString() const {
           position1buf, position2buf);
   return stringBuf;
 }
+
+}  // namespace testobject

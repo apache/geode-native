@@ -17,7 +17,9 @@
 
 #include <geode/DefaultResultCollector.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 DefaultResultCollector::DefaultResultCollector()
     : resultList(CacheableVector::create()), ready(false) {}
@@ -35,7 +37,8 @@ std::shared_ptr<CacheableVector> DefaultResultCollector::getResult(
       "getResult() method");
 }
 
-void DefaultResultCollector::addResult(const std::shared_ptr<Cacheable>& result) {
+void DefaultResultCollector::addResult(
+    const std::shared_ptr<Cacheable>& result) {
   resultList->push_back(result);
 }
 
@@ -48,3 +51,7 @@ void DefaultResultCollector::endResults() {
 }
 
 void DefaultResultCollector::clearResults() { resultList->clear(); }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

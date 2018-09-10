@@ -34,20 +34,22 @@
 
 #include "ThinClientHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define CLIENT2 s2p1
 #define SERVER1 s1p2
 #define SERVER2 s2p2
+
+using apache::geode::client::Exception;
+using apache::geode::client::HashMapOfCacheable;
+
 std::shared_ptr<TallyListener> reg1Listener1;
 bool isLocalServer = false;
 static bool isLocator = false;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-void setCacheListener(const char* regName, std::shared_ptr<TallyListener> regListener) {
+void setCacheListener(const char* regName,
+                      std::shared_ptr<TallyListener> regListener) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
@@ -105,35 +107,35 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_RegisterAllKeys)
   {
-   auto regPtr0 = getHelper()->getRegion(regionNames[0]);
-   regPtr0->registerAllKeys();
-   auto regPtr1 = getHelper()->getRegion(regionNames[1]);
-   regPtr1->registerAllKeys();
-   LOG("StepTwo_Pooled_EndPoint_RegisterAllKeys complete.");
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+    regPtr0->registerAllKeys();
+    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
+    regPtr1->registerAllKeys();
+    LOG("StepTwo_Pooled_EndPoint_RegisterAllKeys complete.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, PutAllOneTask)
   {
     LOG("PutAllOneTask started.");
-   auto dataReg = getHelper()->getRegion(regionNames[0]);
-   HashMapOfCacheable entryMap;
-   entryMap.clear();
-   char key[256];
-   char value[256];
-   for (int32_t item = 0; item < 1000; item++) {
-     sprintf(key, "key-%d", item);
-     sprintf(value, "%d", item);
-     entryMap.emplace(CacheableKey::create(key),
-                      CacheableString::create(value));
-     LOGDEBUG(
-         "CPPTEST:PutAllOneTask Doing PutAll on key using key: = %s: & value: "
-         "= "
-         "%s",
-         key, value);
-   }
-   try {
-     dataReg->putAll(entryMap);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    HashMapOfCacheable entryMap;
+    entryMap.clear();
+    char key[256];
+    char value[256];
+    for (int32_t item = 0; item < 1000; item++) {
+      sprintf(key, "key-%d", item);
+      sprintf(value, "%d", item);
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
+      LOGDEBUG(
+          "CPPTEST:PutAllOneTask Doing PutAll on key using key: = %s: & value: "
+          "= "
+          "%s",
+          key, value);
+    }
+    try {
+      dataReg->putAll(entryMap);
     } catch (Exception& ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
@@ -149,24 +151,24 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutAllTwoTask)
   {
     LOG("PutAllTwoTask started.");
-   auto dataReg = getHelper()->getRegion(regionNames[0]);
-   HashMapOfCacheable entryMap;
-   entryMap.clear();
-   char key[256];
-   char value[256];
-   for (int32_t item = 1000; item < 2000; item++) {
-     sprintf(key, "key-%d", item);
-     sprintf(value, "%d", item);
-     LOGDEBUG(
-         "CPPTEST:PutAllTwoTask Doing PutAll on key using key: = %s: & value: "
-         "= "
-         "%s",
-         key, value);
-     entryMap.emplace(CacheableKey::create(key),
-                      CacheableString::create(value));
-   }
-   try {
-     dataReg->putAll(entryMap);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    HashMapOfCacheable entryMap;
+    entryMap.clear();
+    char key[256];
+    char value[256];
+    for (int32_t item = 1000; item < 2000; item++) {
+      sprintf(key, "key-%d", item);
+      sprintf(value, "%d", item);
+      LOGDEBUG(
+          "CPPTEST:PutAllTwoTask Doing PutAll on key using key: = %s: & value: "
+          "= "
+          "%s",
+          key, value);
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
+    }
+    try {
+      dataReg->putAll(entryMap);
     } catch (Exception& ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
@@ -182,24 +184,24 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutAllThreeTask)
   {
     LOG("PutAllThreeTask started.");
-   auto dataReg = getHelper()->getRegion(regionNames[0]);
-   HashMapOfCacheable entryMap;
-   entryMap.clear();
-   char key[256];
-   char value[256];
-   for (int32_t item = 2000; item < 3000; item++) {
-     sprintf(key, "key-%d", item);
-     sprintf(value, "%d", item);
-     LOGDEBUG(
-         "CPPTEST:PutAllThreeTask Doing PutAll on key using key: = %s: & "
-         "value: "
-         "= %s",
-         key, value);
-     entryMap.emplace(CacheableKey::create(key),
-                      CacheableString::create(value));
-   }
-   try {
-     dataReg->putAll(entryMap);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    HashMapOfCacheable entryMap;
+    entryMap.clear();
+    char key[256];
+    char value[256];
+    for (int32_t item = 2000; item < 3000; item++) {
+      sprintf(key, "key-%d", item);
+      sprintf(value, "%d", item);
+      LOGDEBUG(
+          "CPPTEST:PutAllThreeTask Doing PutAll on key using key: = %s: & "
+          "value: "
+          "= %s",
+          key, value);
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
+    }
+    try {
+      dataReg->putAll(entryMap);
     } catch (Exception& ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
@@ -215,24 +217,24 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutAllFourTask)
   {
     LOG("PutAllFourTask started.");
-   auto dataReg = getHelper()->getRegion(regionNames[0]);
-   HashMapOfCacheable entryMap;
-   entryMap.clear();
-   char key[256];
-   char value[256];
-   for (int32_t item = 3000; item < 4000; item++) {
-     sprintf(key, "key-%d", item);
-     sprintf(value, "%d", item);
-     LOGDEBUG(
-         "CPPTEST:PutAllFourTask Doing PutAll on key using key: = %s: & "
-         "value: "
-         "= %s",
-         key, value);
-     entryMap.emplace(CacheableKey::create(key),
-                      CacheableString::create(value));
-   }
-   try {
-     dataReg->putAll(entryMap);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    HashMapOfCacheable entryMap;
+    entryMap.clear();
+    char key[256];
+    char value[256];
+    for (int32_t item = 3000; item < 4000; item++) {
+      sprintf(key, "key-%d", item);
+      sprintf(value, "%d", item);
+      LOGDEBUG(
+          "CPPTEST:PutAllFourTask Doing PutAll on key using key: = %s: & "
+          "value: "
+          "= %s",
+          key, value);
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
+    }
+    try {
+      dataReg->putAll(entryMap);
     } catch (Exception& ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
@@ -249,55 +251,55 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyAllPutAllTask)
   {
     LOG("VerifyAllPutAllTask started.");
 
-   auto dataReg = getHelper()->getRegion(regionNames[0]);
-   ASSERT(dataReg != nullptr, "Region not found.");
-   LOGINFO("dataregion size is %d: ", dataReg->size());
-   LOGINFO("dataregion getCreates is %d: ", reg1Listener1->getCreates());
-   ASSERT(reg1Listener1->getCreates() == 4000,
-          "Got wrong number of creation events.");
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    ASSERT(dataReg != nullptr, "Region not found.");
+    LOGINFO("dataregion size is %d: ", dataReg->size());
+    LOGINFO("dataregion getCreates is %d: ", reg1Listener1->getCreates());
+    ASSERT(reg1Listener1->getCreates() == 4000,
+           "Got wrong number of creation events.");
 
-   ASSERT(dataReg->size() == 4000, "Expected 4000 entries in region");
-   char key[256];
-   char value[256];
-   for (int32_t item = 0; item < 4000; item++) {
-     sprintf(key, "key-%d", item);
-     sprintf(value, "%d", item);
-     LOGDEBUG("CPPTEST:VerifyAllPutAllTask Doing get on key using: = %s: ",
-              key);
-     auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
-         dataReg->get(CacheableKey::create(key)));
-     ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-     LOGDEBUG("CPPTEST:VerifyAllPutAllTask value is: = %s: ",
-              checkPtr->value().c_str());
-     ASSERT(atoi(checkPtr->value().c_str()) == item, "Value did not match.");
-   }
-   LOG("VerifyAllPutAllTask completed.");
+    ASSERT(dataReg->size() == 4000, "Expected 4000 entries in region");
+    char key[256];
+    char value[256];
+    for (int32_t item = 0; item < 4000; item++) {
+      sprintf(key, "key-%d", item);
+      sprintf(value, "%d", item);
+      LOGDEBUG("CPPTEST:VerifyAllPutAllTask Doing get on key using: = %s: ",
+               key);
+      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
+          dataReg->get(CacheableKey::create(key)));
+      ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
+      LOGDEBUG("CPPTEST:VerifyAllPutAllTask value is: = %s: ",
+               checkPtr->value().c_str());
+      ASSERT(atoi(checkPtr->value().c_str()) == item, "Value did not match.");
+    }
+    LOG("VerifyAllPutAllTask completed.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllOneTask)
   {
     LOG("RemoveAllOneTask started.");
-   auto dataReg = getHelper()->getRegion(regionNames[0]);
-   HashMapOfCacheable entryMap;
-   std::vector<std::shared_ptr<CacheableKey>> keys;
-   entryMap.clear();
-   char key[256];
-   char value[256];
-   for (int32_t item = 0; item < 1000; item++) {
-     sprintf(key, "key-%d", item);
-     sprintf(value, "%d", item);
-     entryMap.emplace(CacheableKey::create(key),
-                      CacheableString::create(value));
-     keys.push_back(CacheableKey::create(key));
-     LOGDEBUG(
-         "CPPTEST:RemoveAllOneTask Doing PutAll on key using key: = %s: & "
-         "value: = %s",
-         key, value);
-   }
-   try {
-     dataReg->putAll(entryMap);
-     dataReg->removeAll(keys);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    HashMapOfCacheable entryMap;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
+    entryMap.clear();
+    char key[256];
+    char value[256];
+    for (int32_t item = 0; item < 1000; item++) {
+      sprintf(key, "key-%d", item);
+      sprintf(value, "%d", item);
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
+      keys.push_back(CacheableKey::create(key));
+      LOGDEBUG(
+          "CPPTEST:RemoveAllOneTask Doing PutAll on key using key: = %s: & "
+          "value: = %s",
+          key, value);
+    }
+    try {
+      dataReg->putAll(entryMap);
+      dataReg->removeAll(keys);
     } catch (Exception& ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
@@ -313,26 +315,26 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllTwoTask)
   {
     LOG("RemoveAllTwoTask started.");
-   auto dataReg = getHelper()->getRegion(regionNames[0]);
-   HashMapOfCacheable entryMap;
-   std::vector<std::shared_ptr<CacheableKey>> keys;
-   entryMap.clear();
-   char key[256];
-   char value[256];
-   for (int32_t item = 1000; item < 2000; item++) {
-     sprintf(key, "key-%d", item);
-     sprintf(value, "%d", item);
-     entryMap.emplace(CacheableKey::create(key),
-                      CacheableString::create(value));
-     keys.push_back(CacheableKey::create(key));
-     LOGDEBUG(
-         "CPPTEST:RemoveAllTwoTask Doing RemoveAll on key using key: = %s: & "
-         "value: = %s",
-         key, value);
-   }
-   try {
-     dataReg->putAll(entryMap);
-     dataReg->removeAll(keys);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    HashMapOfCacheable entryMap;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
+    entryMap.clear();
+    char key[256];
+    char value[256];
+    for (int32_t item = 1000; item < 2000; item++) {
+      sprintf(key, "key-%d", item);
+      sprintf(value, "%d", item);
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
+      keys.push_back(CacheableKey::create(key));
+      LOGDEBUG(
+          "CPPTEST:RemoveAllTwoTask Doing RemoveAll on key using key: = %s: & "
+          "value: = %s",
+          key, value);
+    }
+    try {
+      dataReg->putAll(entryMap);
+      dataReg->removeAll(keys);
     } catch (Exception& ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
@@ -348,27 +350,27 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllThreeTask)
   {
     LOG("RemoveAllThreeTask started.");
-   auto dataReg = getHelper()->getRegion(regionNames[0]);
-   HashMapOfCacheable entryMap;
-   std::vector<std::shared_ptr<CacheableKey>> keys;
-   entryMap.clear();
-   char key[256];
-   char value[256];
-   for (int32_t item = 2000; item < 3000; item++) {
-     sprintf(key, "key-%d", item);
-     sprintf(value, "%d", item);
-     entryMap.emplace(CacheableKey::create(key),
-                      CacheableString::create(value));
-     keys.push_back(CacheableKey::create(key));
-     LOGDEBUG(
-         "CPPTEST:RemoveAllThreeTask Doing RemoveAll on key using key: = %s: "
-         "& "
-         "value: = %s",
-         key, value);
-   }
-   try {
-     dataReg->putAll(entryMap);
-     dataReg->removeAll(keys);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    HashMapOfCacheable entryMap;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
+    entryMap.clear();
+    char key[256];
+    char value[256];
+    for (int32_t item = 2000; item < 3000; item++) {
+      sprintf(key, "key-%d", item);
+      sprintf(value, "%d", item);
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
+      keys.push_back(CacheableKey::create(key));
+      LOGDEBUG(
+          "CPPTEST:RemoveAllThreeTask Doing RemoveAll on key using key: = %s: "
+          "& "
+          "value: = %s",
+          key, value);
+    }
+    try {
+      dataReg->putAll(entryMap);
+      dataReg->removeAll(keys);
     } catch (Exception& ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
@@ -385,26 +387,26 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllFourTask)
   {
     LOG("RemoveAllFourTask started.");
-   auto dataReg = getHelper()->getRegion(regionNames[0]);
-   HashMapOfCacheable entryMap;
-   std::vector<std::shared_ptr<CacheableKey>> keys;
-   entryMap.clear();
-   char key[256];
-   char value[256];
-   for (int32_t item = 3000; item < 4000; item++) {
-     sprintf(key, "key-%d", item);
-     sprintf(value, "%d", item);
-     entryMap.emplace(CacheableKey::create(key),
-                      CacheableString::create(value));
-     keys.push_back(CacheableKey::create(key));
-     LOGDEBUG(
-         "CPPTEST:RemoveAllFourTask Doing RemoveAll on key using key: = %s: & "
-         "value: = %s",
-         key, value);
-   }
-   try {
-     dataReg->putAll(entryMap);
-     dataReg->removeAll(keys);
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    HashMapOfCacheable entryMap;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
+    entryMap.clear();
+    char key[256];
+    char value[256];
+    for (int32_t item = 3000; item < 4000; item++) {
+      sprintf(key, "key-%d", item);
+      sprintf(value, "%d", item);
+      entryMap.emplace(CacheableKey::create(key),
+                       CacheableString::create(value));
+      keys.push_back(CacheableKey::create(key));
+      LOGDEBUG(
+          "CPPTEST:RemoveAllFourTask Doing RemoveAll on key using key: = %s: & "
+          "value: = %s",
+          key, value);
+    }
+    try {
+      dataReg->putAll(entryMap);
+      dataReg->removeAll(keys);
     } catch (Exception& ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
@@ -422,14 +424,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyAllRemoveAllTask)
   {
     LOG("VerifyAllRemoveAllTask started.");
 
-   auto dataReg = getHelper()->getRegion(regionNames[0]);
-   ASSERT(dataReg != nullptr, "Region not found.");
-   LOGINFO("dataregion size is %d: ", dataReg->size());
-   LOGINFO("dataregion getDestroys is %d: ", reg1Listener1->getDestroys());
-   ASSERT(reg1Listener1->getDestroys() == 4000,
-          "Got wrong number of destroy events.");
-   ASSERT(dataReg->size() == 0, "Expected 0 entries in region");
-   LOG("VerifyAllRemoveAllTask completed.");
+    auto dataReg = getHelper()->getRegion(regionNames[0]);
+    ASSERT(dataReg != nullptr, "Region not found.");
+    LOGINFO("dataregion size is %d: ", dataReg->size());
+    LOGINFO("dataregion getDestroys is %d: ", reg1Listener1->getDestroys());
+    ASSERT(reg1Listener1->getDestroys() == 4000,
+           "Got wrong number of destroy events.");
+    ASSERT(dataReg->size() == 0, "Expected 0 entries in region");
+    LOG("VerifyAllRemoveAllTask completed.");
   }
 END_TASK_DEFINITION
 

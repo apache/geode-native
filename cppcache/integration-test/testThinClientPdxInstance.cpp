@@ -39,10 +39,32 @@
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testobject;
-using namespace PdxTests;
+using PdxTests::Address;
+
+using testobject::ChildPdx;
+using testobject::ParentPdx;
+using testobject::SerializePdx;
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableArrayList;
+using apache::geode::client::CacheableDate;
+using apache::geode::client::CacheableEnum;
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::CacheableHashSet;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableLinkedHashSet;
+using apache::geode::client::CacheableObjectArray;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::LocalRegion;
+using apache::geode::client::PdxFieldTypes;
+using apache::geode::client::PdxInstance;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::Properties;
+using apache::geode::client::WritablePdxInstance;
 
 bool isLocalServer = false;
 

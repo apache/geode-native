@@ -34,9 +34,10 @@
 
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-using namespace testframework;
 namespace testobject {
+
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
 
 class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
  private:

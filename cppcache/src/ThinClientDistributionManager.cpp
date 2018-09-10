@@ -25,7 +25,9 @@
 #include "DistributedSystemImpl.hpp"
 #include "util/exception.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 ThinClientDistributionManager::ThinClientDistributionManager(
     TcrConnectionManager& connManager, ThinClientRegion* region)
     : ThinClientBaseDM(connManager, region), m_activeEndpoint(-1) {}
@@ -430,3 +432,7 @@ GfErrType ThinClientDistributionManager::sendRequestToEP(
   }
   return error;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

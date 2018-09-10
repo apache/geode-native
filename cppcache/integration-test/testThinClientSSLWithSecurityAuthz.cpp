@@ -28,11 +28,32 @@
 
 #include "ThinClientSecurity.hpp"
 
-using namespace apache::geode::client::testframework::security;
-using namespace apache::geode::client;
+using apache::geode::client::CqAttributesFactory;
+using apache::geode::client::FunctionService;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::HashSetOfCacheableKey;
+using apache::geode::client::QueryService;
+using apache::geode::client::testframework::security::CredentialGenerator;
+using apache::geode::client::testframework::security::OP_CONTAINS_KEY;
+using apache::geode::client::testframework::security::OP_CREATE;
+using apache::geode::client::testframework::security::OP_DESTROY;
+using apache::geode::client::testframework::security::OP_EXECUTE_FUNCTION;
+using apache::geode::client::testframework::security::OP_GET;
+using apache::geode::client::testframework::security::OP_GETALL;
+using apache::geode::client::testframework::security::OP_INVALIDATE;
+using apache::geode::client::testframework::security::OP_KEY_SET;
+using apache::geode::client::testframework::security::OP_PUTALL;
+using apache::geode::client::testframework::security::OP_QUERY;
+using apache::geode::client::testframework::security::OP_REGION_CLEAR;
+using apache::geode::client::testframework::security::OP_REGISTER_CQ;
+using apache::geode::client::testframework::security::OP_REGISTER_INTEREST;
+using apache::geode::client::testframework::security::OP_UNREGISTER_INTEREST;
+using apache::geode::client::testframework::security::OP_UPDATE;
+using apache::geode::client::testframework::security::opCodeList;
 
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
+
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {

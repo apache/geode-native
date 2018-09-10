@@ -29,9 +29,6 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
@@ -47,6 +44,10 @@ bool isLocalServer = false;
 #endif
 #define KEYSIZE 256
 #define VALUESIZE 1024
+
+using apache::geode::client::EntryNotFoundException;
+using apache::geode::client::Region;
+using apache::geode::client::Utils;
 
 void initClient(const bool isthinClient) {
   if (cacheHelper == nullptr) {

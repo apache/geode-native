@@ -38,13 +38,15 @@
 #include "ThinClientCQ.hpp"
 #include <hacks/range.h>
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testData;
-
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define CLIENT2 s1p2
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CqAttributesFactory;
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
 
 const char* cqName = "MyCq";
 

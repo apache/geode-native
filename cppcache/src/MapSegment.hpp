@@ -45,7 +45,7 @@
 
 #include "util/concurrent/spinlock_mutex.hpp"
 
-ACE_BEGIN_VERSIONED_NAMESPACE_DECL
+namespace ACE_VERSIONED_NAMESPACE_NAME {
 
 template <>
 class ACE_Hash<std::shared_ptr<apache::geode::client::CacheableKey>> {
@@ -65,7 +65,8 @@ class ACE_Equal_To<std::shared_ptr<apache::geode::client::CacheableKey>> {
     return key1->operator==(*key2);
   }
 };
-ACE_END_VERSIONED_NAMESPACE_DECL
+
+}  // namespace ACE_VERSIONED_NAMESPACE_NAME
 
 namespace apache {
 namespace geode {

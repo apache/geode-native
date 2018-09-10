@@ -25,12 +25,11 @@
 #include "ThinClientSecurity.hpp"
 #include <geode/CacheTransactionManager.hpp>
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CORRECT_CREDENTIALS 'C'
 #define INCORRECT_CREDENTIALS 'I'
 #define NOT_PROVIDED_CREDENTIALS 'N'
+
+using apache::geode::client::testframework::security::CredentialGenerator;
 
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);

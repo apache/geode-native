@@ -20,7 +20,9 @@
 #include "LRUEntriesMap.hpp"
 #include "CacheImpl.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 LRUAction* LRUAction::newLRUAction(const LRUAction::Action& actionType,
                                    RegionInternal* regionPtr,
@@ -116,3 +118,7 @@ bool LRULocalInvalidateAction::evict(
   }
   return (err == GF_NOERR);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

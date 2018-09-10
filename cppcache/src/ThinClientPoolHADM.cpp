@@ -21,7 +21,9 @@
 #include "ExpiryHandler_T.hpp"
 #include "util/exception.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 const char* ThinClientPoolHADM::NC_Redundancy = "NC Redundancy";
 ThinClientPoolHADM::ThinClientPoolHADM(const char* name,
                                        std::shared_ptr<PoolAttributes> poolAttr,
@@ -284,3 +286,7 @@ void ThinClientPoolHADM::sendNotConMesToAllregions() {
     (*it)->receiveNotification(TcrMessage::getAllEPDisMess());
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

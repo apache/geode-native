@@ -29,10 +29,12 @@ namespace apache {
 namespace geode {
 namespace client {
 
+using internal::dereference_equal_to;
+using internal::dereference_hash;
+
 class CacheableKey;
 class Exception;
 
-using namespace apache::geode::client::internal;
 typedef std::unordered_map<std::shared_ptr<CacheableKey>,
                            std::shared_ptr<Exception>,
                            dereference_hash<std::shared_ptr<CacheableKey>>,

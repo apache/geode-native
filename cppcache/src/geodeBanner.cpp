@@ -1,5 +1,7 @@
 #include "geodeBanner.hpp"
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 std::string geodeBanner::getBanner() {
   std::string str =
       "------------------------------------------------------------------------"
@@ -24,3 +26,7 @@ std::string geodeBanner::getBanner() {
       "---\n";
   return str;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

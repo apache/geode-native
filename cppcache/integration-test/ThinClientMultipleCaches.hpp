@@ -29,11 +29,15 @@
 #include "CacheHelper.hpp"
 #include "fw_dunit.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
 
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
+
+using apache::geode::client::Cache;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::Region;
+using apache::geode::client::RegionShortcut;
 
 static bool isLocalServer = false;
 static bool isLocator = false;

@@ -33,13 +33,21 @@
 #include "CacheRegionHelper.hpp"
 #include "SerializationRegistry.hpp"
 #include "CacheImpl.hpp"
-using namespace apache::geode::client;
-using namespace test;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 #define SERVER2 s2p2
+
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableInt64;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::Exception;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::IllegalArgumentException;
 
 CacheHelper* cacheHelper = nullptr;
 static bool isLocalServer = false;
@@ -377,17 +385,21 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, RegisterClient1Keys)
   {
-
     try {
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
 
-      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::Address::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::PdxTypes3::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::Address::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes3::createDeserializable);
     } catch (Exception e) {
       LOG("Got expected Exception for Serialization, already registered");
     }
@@ -423,11 +435,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, RegisterClient2Keys)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::Address::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::PdxTypes3::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::Address::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes3::createDeserializable);
     } catch (Exception e) {
       LOG("Got expected Exception for Serialization, already registered");
     }

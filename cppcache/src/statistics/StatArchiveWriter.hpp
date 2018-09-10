@@ -39,7 +39,6 @@
 #include "../NonCopyable.hpp"
 #include "../SerializationRegistry.hpp"
 
-using namespace apache::geode::client;
 /**
  * some constants to be used while archiving
  */
@@ -66,8 +65,12 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
-using std::chrono::system_clock;
+using apache::geode::client::CacheImpl;
+using apache::geode::client::DataOutput;
+using apache::geode::client::NonAssignable;
+using apache::geode::client::NonCopyable;
 using std::chrono::steady_clock;
+using std::chrono::system_clock;
 
 /**
  * Some of the classes which are used by the StatArchiveWriter Class

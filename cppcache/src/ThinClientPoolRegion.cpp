@@ -27,7 +27,9 @@
 #include "ThinClientPoolDM.hpp"
 #include <geode/PoolManager.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 ThinClientPoolRegion::ThinClientPoolRegion(
     const std::string& name, CacheImpl* cache,
@@ -61,3 +63,7 @@ void ThinClientPoolRegion::initTCR() {
 void ThinClientPoolRegion::destroyDM(bool) {
   dynamic_cast<ThinClientPoolDM*>(m_tcrdm)->decRegionCount();
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

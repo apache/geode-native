@@ -39,10 +39,20 @@
 
 namespace {
 
-using namespace apache::geode::client;
-using namespace std::chrono;
-using namespace PdxTests;
-using namespace testobject;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::LocalRegion;
+using apache::geode::client::PdxInstanceFactory;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::Region;
+using apache::geode::client::RegionShortcut;
+
+using PdxTests::Address;
+using PdxTests::PdxType;
+
+using testobject::ChildPdx;
+using testobject::ParentPdx;
 
 std::shared_ptr<Region> setupRegion(Cache& cache) {
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
@@ -52,8 +62,7 @@ std::shared_ptr<Region> setupRegion(Cache& cache) {
   return region;
 }
 
-void clonePdxInstance(PdxTests::PdxType& source,
-                      PdxInstanceFactory& destination) {
+void clonePdxInstance(PdxType& source, PdxInstanceFactory& destination) {
   destination.writeBoolean("m_bool", source.getBool());
   destination.markIdentityField("m_bool");
   destination.writeByte("m_byte", source.getByte());

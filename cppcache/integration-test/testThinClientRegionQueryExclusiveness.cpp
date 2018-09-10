@@ -37,13 +37,16 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testobject;
 
 #define CLIENT1 s1p1
 #define SERVER s2p1
 #define LOCATOR s2p2
+
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
+
+using testobject::Portfolio;
+using testobject::Position;
 
 bool isLocator = false;
 bool isLocalServer = false;

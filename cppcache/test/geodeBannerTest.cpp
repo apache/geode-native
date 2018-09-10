@@ -19,7 +19,7 @@
 
 #include <geodeBanner.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::geodeBanner;
 
 TEST(geodeBannerTest, ValidateBanner) {
   EXPECT_LT(static_cast<size_t>(0), geodeBanner::getBanner().size())

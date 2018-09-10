@@ -31,8 +31,6 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
-using namespace apache::geode::client;
-
 /**
  * Used to describe a logical collection of StatisticDescriptors. These
  * descriptions
@@ -43,7 +41,6 @@ using namespace apache::geode::client;
  * {@link StatisticsFactory}.
  *
  */
-
 class APACHE_GEODE_EXPORT StatisticsType {
  public:
   /**
@@ -92,8 +89,7 @@ class APACHE_GEODE_EXPORT StatisticsType {
    * Destructor
    */
   virtual ~StatisticsType() {}
-
-};  // class
+};
 
 }  // namespace statistics
 }  // namespace geode

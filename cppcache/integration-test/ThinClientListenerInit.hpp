@@ -30,8 +30,6 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-using namespace apache::geode::client;
-using namespace test;
 
 static bool isLocator = false;
 static bool isLocalServer = true;

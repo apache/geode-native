@@ -27,7 +27,6 @@
 #include <geode/FunctionService.hpp>
 #include <geode/DefaultResultCollector.hpp>
 
-using namespace PdxTests;
 /* This is to test
 1- funtion execution on pool
  */
@@ -35,6 +34,14 @@ using namespace PdxTests;
 #define CLIENT1 s1p1
 #define LOCATOR1 s2p1
 #define SERVER s2p2
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableArrayList;
+using apache::geode::client::CacheableBoolean;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::DefaultResultCollector;
+using apache::geode::client::FunctionService;
+using apache::geode::client::UserFunctionExecutionException;
 
 bool isLocalServer = false;
 bool isLocator = false;

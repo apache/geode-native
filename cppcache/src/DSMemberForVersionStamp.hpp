@@ -30,6 +30,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+using internal::DataSerializableFixedId;
+
 class DSMemberForVersionStamp;
 
 class DSMemberForVersionStamp : public CacheableKey,

@@ -52,6 +52,11 @@ Client 1 is with R =0 and Client 2 with R = 1
 #define SERVER1 s2p1
 #define FEEDER s2p2
 
+using apache::geode::client::EntryEvent;
+using apache::geode::client::Exception;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::RegionEvent;
+
 class OperMonitor : public CacheListener {
   int m_ops;
   HashMapOfCacheable m_map;

@@ -60,6 +60,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+using internal::DataSerializableInternal;
+
 typedef ACE_Hash_Map_Manager<int64_t, TypeFactoryMethod, ACE_Null_Mutex>
     IdToFactoryMap;
 

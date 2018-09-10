@@ -31,8 +31,6 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
-using namespace apache::geode::client;
-
 /**
  * Describes an individual statistic whose value is updated by an
  * application and may be archived by Geode.  These descriptions are

@@ -20,7 +20,9 @@
 
 #include "PoolXmlCreation.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 /*
 void PoolXmlCreation::addLocator(const char * host, const char * port)
@@ -45,3 +47,7 @@ PoolXmlCreation::PoolXmlCreation(const char* name, std::shared_ptr<PoolFactory> 
 }
 
 PoolXmlCreation::~PoolXmlCreation() {}
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

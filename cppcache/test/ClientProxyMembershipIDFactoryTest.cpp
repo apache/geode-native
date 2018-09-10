@@ -21,7 +21,7 @@
 
 #include <ClientProxyMembershipIDFactory.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::ClientProxyMembershipIDFactory;
 
 TEST(ClientProxyMembershipIDFactoryTest, testCreate) {
   ClientProxyMembershipIDFactory factory("myDs");

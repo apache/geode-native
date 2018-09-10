@@ -63,8 +63,6 @@ typedef std::vector<std::pair<std::string, int64_t> > g_fileInfo;
 
 namespace {
 
-using namespace apache::geode::statistics::globals;
-
 // extern "C" {
 
 int selector(const dirent* d) {
@@ -129,6 +127,8 @@ using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 using std::chrono::nanoseconds;
 
+using client::Exception;
+
 const char* HostStatSampler::NC_HSS_Thread = "NC HSS Thread";
 
 HostStatSampler::HostStatSampler(const char* filePath,
@@ -147,11 +147,11 @@ HostStatSampler::HostStatSampler(const char* filePath,
   m_pid = ACE_OS::getpid();
   m_statMngr = statMngr;
   m_archiveFileName = filePath;
-  g_statFile = filePath;
+  globals::g_statFile = filePath;
   m_sampleRate = sampleIntervalMs;
   rollIndex = 0;
   m_archiveDiskSpaceLimit = statDiskSpaceLimit;
-  g_spaceUsed = 0;
+  globals::g_spaceUsed = 0;
 
   if (statDiskSpaceLimit != 0) {
     m_isStatDiskSpaceEnabled = true;
@@ -375,7 +375,7 @@ void HostStatSampler::changeArchive(std::string filename) {
   }
   filename = chkForGFSExt(filename);
   if (m_archiver != nullptr) {
-    g_previoussamplesize = m_archiver->getSampleSize();
+    globals::g_previoussamplesize = m_archiver->getSampleSize();
     m_archiver->closeFile();
   }
   // create new file only when tis file has some data; otherwise reuse it
@@ -546,7 +546,7 @@ void HostStatSampler::putStatsInAdminRegion() {
     if (conn_man->isNetDown()) {
       return;
     }
-    TryReadGuard _guard(adminRgn->getRWLock(), adminRgn->isDestroyed());
+    client::TryReadGuard _guard(adminRgn->getRWLock(), adminRgn->isDestroyed());
     if (!adminRgn->isDestroyed()) {
       if (conn_man->getNumEndPoints() > 0) {
         if (!initDone) {
@@ -574,8 +574,8 @@ void HostStatSampler::putStatsInAdminRegion() {
           }
         }
         static int numCPU = ACE_OS::num_processors();
-        auto obj = ClientHealthStats::create(gets, puts, misses, numListeners,
-                                             numThreads, cpuTime, numCPU);
+        auto obj = client::ClientHealthStats::create(
+            gets, puts, misses, numListeners, numThreads, cpuTime, numCPU);
         if (clientId.empty()) {
           ACE_TCHAR hostName[256];
           ACE_OS::hostname(hostName, sizeof(hostName) - 1);
@@ -590,7 +590,7 @@ void HostStatSampler::putStatsInAdminRegion() {
           clientId = memId->getDSMemberIdForThinClientUse();
         }
 
-        auto keyPtr = CacheableString::create(clientId.c_str());
+        auto keyPtr = client::CacheableString::create(clientId.c_str());
         adminRgn->put(keyPtr, obj);
       }
     }
@@ -637,10 +637,10 @@ void HostStatSampler::doSample(std::string& archivefilename) {
         changeArchive(archivefilename);
       }
     }
-    g_spaceUsed += m_archiver->bytesWritten();
+    globals::g_spaceUsed += m_archiver->bytesWritten();
     // delete older stat files if disk limit is about to be exceeded.
     if ((m_archiveDiskSpaceLimit != 0) &&
-        (g_spaceUsed >=
+        (globals::g_spaceUsed >=
          (m_archiveDiskSpaceLimit - m_archiver->getSampleSize()))) {
       checkDiskLimit();
     }
@@ -653,8 +653,8 @@ void HostStatSampler::doSample(std::string& archivefilename) {
 }
 
 void HostStatSampler::checkDiskLimit() {
-  g_fileInfo fileInfo;
-  g_spaceUsed = 0;
+  globals::g_fileInfo fileInfo;
+  globals::g_spaceUsed = 0;
   char fullpath[512] = {0};
   std::string dirname = ACE::dirname(globals::g_statFile.c_str());
   // struct dirent **resultArray;
@@ -697,7 +697,7 @@ void HostStatSampler::checkDiskLimit() {
 }
 
 int32_t HostStatSampler::svc(void) {
-  DistributedSystemImpl::setThreadName(NC_HSS_Thread);
+  client::DistributedSystemImpl::setThreadName(NC_HSS_Thread);
   try {
     initSpecialStats();
     // createArchiveFileName instead of getArchiveFileName here because

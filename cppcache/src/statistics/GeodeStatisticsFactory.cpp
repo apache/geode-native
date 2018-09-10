@@ -35,7 +35,10 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
-using namespace apache::geode::client;
+using client::Exception;
+using client::IllegalArgumentException;
+using client::Log;
+using client::OutOfMemoryException;
 
 GeodeStatisticsFactory::GeodeStatisticsFactory(StatisticsManager* statMngr) {
   m_name = "GeodeStatisticsFactory";

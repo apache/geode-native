@@ -38,6 +38,8 @@ Server side two
 #define SERVER1 s2p1
 #define FEEDER s2p2
 
+using apache::geode::client::EntryEvent;
+
 class OperMonitor : public CacheListener {
   int m_events;
   int m_value;

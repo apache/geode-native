@@ -24,6 +24,14 @@
 #define LOCATOR1 s2p1
 #define SERVER s2p2
 
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableArrayList;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::DefaultResultCollector;
+using apache::geode::client::Exception;
+using apache::geode::client::FunctionService;
+
 bool isLocalServer = false;
 bool isLocator = false;
 bool isPoolWithEndpoint = false;

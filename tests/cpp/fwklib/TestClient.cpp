@@ -18,9 +18,10 @@
 #include "fwklib/Timer.hpp"
 #include "fwklib/FwkLog.hpp"
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
-using namespace apache::geode::client::testframework::perf;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 TestClient* TestClient::m_instance = nullptr;
 
@@ -88,8 +89,7 @@ int32_t TestClient::runTask(ClientTask* task, ACE_thread_t id) {
     state = CLEAN;
   } catch (FwkException& ex) {
     cleanup = true;
-    FWKSEVERE(
-        "FwkException caught in TestClient::runTask: " << ex.what());
+    FWKSEVERE("FwkException caught in TestClient::runTask: " << ex.what());
     fwkResult = FWK_SEVERE;
   } catch (Exception& ex) {
     cleanup = true;
@@ -108,10 +108,10 @@ int32_t TestClient::runTask(ClientTask* task, ACE_thread_t id) {
     switch (state) {
       case ENTERED:
         m_Ready.release();
-      // and fall thru
+        // and fall thru
       case READY:
         m_Done.release();
-      // and fall thru
+        // and fall thru
       case DONE:
         m_Clean.release();
         break;
@@ -260,3 +260,8 @@ bool TestClient::timeMillisInterval(ClientTask* task, uint32_t millis,
   m_TotalMicros = timer.elapsedMicros();
   return m_Clean.acquire(until, threads);
 }
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

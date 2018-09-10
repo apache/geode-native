@@ -20,7 +20,9 @@
 #include "TcrEndpoint.hpp"
 #include <geode/ExceptionTypes.hpp>
 #include "Utils.hpp"
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 TcrDistributionManager::TcrDistributionManager(
     ThinClientRegion* region, TcrConnectionManager& connManager)
@@ -58,3 +60,7 @@ bool TcrDistributionManager::postFailoverAction(TcrEndpoint* endpoint) {
   }
   return true;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

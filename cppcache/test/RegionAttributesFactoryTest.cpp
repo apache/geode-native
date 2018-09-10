@@ -19,7 +19,8 @@
 
 #include <geode/RegionAttributesFactory.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::ExpirationAction;
+using apache::geode::client::RegionAttributesFactory;
 
 TEST(RegionAttributesFactoryTest, setEntryIdleTimeoutSeconds) {
   RegionAttributesFactory regionAttributesFactory;

@@ -22,7 +22,9 @@
 #include "DistributedSystemImpl.hpp"
 #include "CacheImpl.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 ThreadPoolWorker::ThreadPoolWorker(IThreadPool* manager)
     : manager_(manager), queue_(msg_queue()), shutdown_(0) {
@@ -145,3 +147,7 @@ int ThreadPool::done(void) { return (shutdown_ == 1); }
 ACE_thread_t ThreadPool::threadId(ThreadPoolWorker* worker) {
   return worker->threadId();
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

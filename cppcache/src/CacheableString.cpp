@@ -108,7 +108,7 @@ bool CacheableString::operator==(const CacheableKey& other) const {
 
 int32_t CacheableString::hashcode() const {
   if (m_hashcode == 0) {
-    m_hashcode = geode_hash<std::string>{}(m_str);
+    m_hashcode = internal::geode_hash<std::string>{}(m_str);
   }
   return m_hashcode;
 }

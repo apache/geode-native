@@ -31,30 +31,33 @@
 
 #include "ThinClientSecurity.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::Exception;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::HashMapOfException;
+using apache::geode::client::NotAuthorizedException;
 
 const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-#define HANDLE_NO_NOT_AUTHORIZED_EXCEPTION                       \
-  catch (const apache::geode::client::NotAuthorizedException&) { \
-    LOG("NotAuthorizedException Caught");                        \
-    FAIL("should not have caught NotAuthorizedException");       \
-  }                                                              \
-  catch (const apache::geode::client::Exception& other) {        \
-    LOG("Got apache::geode::client::Exception& other ");         \
-    LOG(other.getStackTrace().c_str());                          \
-    FAIL(other.what());                                          \
+#define HANDLE_NO_NOT_AUTHORIZED_EXCEPTION                 \
+  catch (const NotAuthorizedException&) {                  \
+    LOG("NotAuthorizedException Caught");                  \
+    FAIL("should not have caught NotAuthorizedException"); \
+  }                                                        \
+  catch (const Exception& other) {                         \
+    LOG("Got apache::geode::client::Exception& other ");   \
+    LOG(other.getStackTrace().c_str());                    \
+    FAIL(other.what());                                    \
   }
 
-#define HANDLE_NOT_AUTHORIZED_EXCEPTION                          \
-  catch (const apache::geode::client::NotAuthorizedException&) { \
-    LOG("NotAuthorizedException Caught");                        \
-    LOG("Success");                                              \
-  }                                                              \
-  catch (const apache::geode::client::Exception& other) {        \
-    LOG(other.getStackTrace().c_str());                          \
-    FAIL(other.what());                                          \
+#define HANDLE_NOT_AUTHORIZED_EXCEPTION   \
+  catch (const NotAuthorizedException&) { \
+    LOG("NotAuthorizedException Caught"); \
+    LOG("Success");                       \
+  }                                       \
+  catch (const Exception& other) {        \
+    LOG(other.getStackTrace().c_str());   \
+    FAIL(other.what());                   \
   }
 
 #define ADMIN_CLIENT s1p1

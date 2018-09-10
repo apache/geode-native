@@ -33,7 +33,9 @@
 
 namespace testobject {
 
-using namespace apache::geode::client;
+using apache::geode::client::PdxReader;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::PdxWriter;
 
 class TESTOBJECT_EXPORT PositionPdx : public PdxSerializable {
  private:

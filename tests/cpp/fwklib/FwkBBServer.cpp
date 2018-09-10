@@ -15,15 +15,6 @@
  * limitations under the License.
  */
 
-/**
-  * @file    FwkBBServer.cpp
-  * @since   1.0
-  * @version 1.0
-  * @see
-  */
-
-// ----------------------------------------------------------------------------
-
 #include "FwkBBServer.hpp"
 #include "FwkStrCvt.hpp"
 #include "FwkLog.hpp"
@@ -31,10 +22,10 @@
 
 #include <set>
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
-
-// ----------------------------------------------------------------------------
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 FwkBBServer::~FwkBBServer() {
   //  stop();
@@ -519,3 +510,8 @@ int64_t FwkBBServer::setIfLess(const std::string& BBName,
 }
 
 // ----------------------------------------------------------------------------
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

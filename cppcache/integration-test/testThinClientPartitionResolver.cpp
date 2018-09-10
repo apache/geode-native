@@ -35,7 +35,8 @@
 
 #include "ThinClientHelper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::EntryEvent;
+using apache::geode::client::PartitionResolver;
 
 class CustomPartitionResolver : public PartitionResolver {
  public:

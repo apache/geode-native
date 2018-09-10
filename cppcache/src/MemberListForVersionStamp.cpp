@@ -17,7 +17,9 @@
 #include "MemberListForVersionStamp.hpp"
 #include "util/Log.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 MemberListForVersionStamp::MemberListForVersionStamp() { m_memberCounter = 0; }
 
@@ -54,3 +56,7 @@ std::shared_ptr<DSMemberForVersionStamp> MemberListForVersionStamp::getDSMember(
   if (it != m_members1.end()) return (*it).second;
   return nullptr;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

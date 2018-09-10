@@ -31,6 +31,8 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
+using client::IllegalArgumentException;
+
 int64_t AtomicStatisticsImpl::calcNumericId(StatisticsFactory* system,
                                             int64_t userValue) {
   int64_t result;

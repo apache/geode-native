@@ -29,6 +29,11 @@
 
 #include "CacheHelper.hpp"
 
+using apache::geode::client::Cache;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::Exception;
+
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
@@ -37,10 +42,6 @@ const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 #include "LocatorHelper.hpp"
-
-using namespace apache::geode::client;
-using namespace test;
-using namespace std;
 
 int testXmlDeclarativeCacheCreation() {
   auto cacheFactory = CacheFactory();

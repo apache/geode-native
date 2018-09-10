@@ -32,13 +32,18 @@
 
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
-using namespace apache::geode::client;
-using namespace test;
-using namespace testData;
 
 #define CLIENT1 s1p1
 #define LOCATOR s1p2
 #define SERVER1 s2p1
+
+using testData::QueryStrings;
+using testData::regionQueries;
+using testData::regionQueryRowCounts;
+using testData::unsupported;
+
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryException;
 
 bool isLocalServer = false;
 bool isLocator = false;

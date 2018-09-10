@@ -22,8 +22,10 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::CacheWriter;
+using apache::geode::client::RegionEvent;
+
 class MyCacheWriter : public CacheWriter {
   uint32_t m_clear;
 

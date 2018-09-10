@@ -19,7 +19,9 @@
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 void ClientReplacementRequest::toData(DataOutput& output) const {
   ClientConnectionRequest::toData(output);
@@ -29,3 +31,7 @@ void ClientReplacementRequest::toData(DataOutput& output) const {
 DSFid ClientReplacementRequest::getDSFID() const {
   return DSFid::ClientReplacementRequest;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

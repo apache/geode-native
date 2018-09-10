@@ -17,7 +17,10 @@
 #include "EvictionThread.hpp"
 #include "EvictionController.hpp"
 #include "DistributedSystemImpl.hpp"
-using namespace apache::geode::client;
+
+namespace apache {
+namespace geode {
+namespace client {
 
 const char* EvictionThread::NC_Evic_Thread = "NC Evic Thread";
 EvictionThread::EvictionThread(EvictionController* parent)
@@ -48,3 +51,7 @@ void EvictionThread::processEvictions() {
 }
 
 void EvictionThread::putEvictionInfo(int32_t info) { m_queue.put(info); }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

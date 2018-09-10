@@ -30,7 +30,9 @@
 #include "PreservedDataExpiryHandler.hpp"
 #include "PdxTypeRegistry.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 PreservedDataExpiryHandler::PreservedDataExpiryHandler(
     const std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
@@ -61,3 +63,7 @@ int PreservedDataExpiryHandler::handle_timeout(const ACE_Time_Value&,
 int PreservedDataExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
   return 0;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -30,9 +30,11 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 
-
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::IllegalStateException;
 
 CacheHelper* cacheHelper = nullptr;
 

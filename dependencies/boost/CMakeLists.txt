@@ -57,6 +57,8 @@ if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   set ( _B2_FLAGS ${_B2_FLAGS} define=BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES)
 elseif ("Windows" STREQUAL ${CMAKE_SYSTEM_NAME})
   set ( CMAKE_STATIC_LIBRARY_PREFIX lib )
+elseif ("Clang" STREQUAL ${CMAKE_CXX_COMPILER_ID})
+  set ( _BOOTSTRAP_COMMAND ${_BOOTSTRAP_COMMAND} --with-toolset=clang )
 endif()
 
 ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}

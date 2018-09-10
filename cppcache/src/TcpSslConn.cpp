@@ -57,7 +57,7 @@ void TcpSslConn::createSocket(ACE_HANDLE sock) {
 
 void TcpSslConn::listen(ACE_INET_Addr addr,
                         std::chrono::microseconds waitSeconds) {
-  using namespace apache::geode::internal::chrono::duration;
+  using apache::geode::internal::chrono::duration::to_string;
 
   GF_DEV_ASSERT(m_ssl != nullptr);
 
@@ -80,7 +80,7 @@ void TcpSslConn::listen(ACE_INET_Addr addr,
 }
 
 void TcpSslConn::connect() {
-  using namespace apache::geode::internal::chrono::duration;
+  using apache::geode::internal::chrono::duration::to_string;
 
   GF_DEV_ASSERT(m_ssl != nullptr);
 

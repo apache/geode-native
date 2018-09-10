@@ -36,6 +36,8 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
+using apache::geode::client::AdminRegion;
+
 class GeodeStatisticsFactory;
 
 /**
@@ -68,7 +70,7 @@ class StatisticsManager {
  public:
   StatisticsManager(const char* filePath,
                     std::chrono::milliseconds sampleIntervalMs, bool enabled,
-                    CacheImpl* cache, int64_t statFileLimit = 0,
+                    client::CacheImpl* cache, int64_t statFileLimit = 0,
                     int64_t statDiskSpaceLimit = 0);
 
   void RegisterAdminRegion(std::shared_ptr<AdminRegion> adminRegPtr) {

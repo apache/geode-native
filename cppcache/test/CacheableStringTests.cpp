@@ -33,7 +33,12 @@
 
 namespace {
 
-using namespace apache::geode::client;
+using apache::geode::client::ByteArray;
+using apache::geode::client::CacheableString;
+using apache::geode::client::DataInputInternal;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataOutputInternal;
+using apache::geode::client::SerializationRegistry;
 
 class TestDataOutput : public DataOutputInternal {
  public:

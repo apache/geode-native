@@ -20,7 +20,9 @@
 
 #include <algorithm>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 bool EntriesMap::boolVal = false;
 
@@ -248,3 +250,7 @@ GfErrType ConcurrentEntriesMap::isTombstone(std::shared_ptr<CacheableKey>& key,
                                             bool& result) {
   return segmentFor(key)->isTombstone(key, me, result);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

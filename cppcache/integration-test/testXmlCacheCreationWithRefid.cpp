@@ -24,7 +24,11 @@
 
 #include "fw_helper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheXmlException;
+using apache::geode::client::ExpirationAction;
+using apache::geode::client::Region;
 
 int testXmlCacheCreationWithRefid(const char* fileName) {
   auto cacheFactory = CacheFactory();

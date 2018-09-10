@@ -33,8 +33,11 @@
 
 namespace {
 
-using namespace apache::geode::client;
-using namespace std::chrono;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableString;
+using apache::geode::client::Region;
+using apache::geode::client::RegionShortcut;
+using std::chrono::minutes;
 
 std::shared_ptr<Region> setupRegion(Cache& cache) {
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)

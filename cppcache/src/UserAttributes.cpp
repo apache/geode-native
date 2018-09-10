@@ -17,7 +17,9 @@
 #include "UserAttributes.hpp"
 #include <geode/AuthenticatedView.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 UserAttributes::UserAttributes(std::shared_ptr<Properties> credentials,
                                std::shared_ptr<Pool> pool,
@@ -154,3 +156,7 @@ GuardUserAttributes::~GuardUserAttributes() {
         nullptr);
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

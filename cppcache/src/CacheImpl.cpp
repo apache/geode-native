@@ -47,7 +47,9 @@
 
 #define DEFAULT_DS_NAME "default_GeodeDS"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
                      bool ignorePdxUnreadFields, bool readPdxSerialized,
@@ -77,6 +79,8 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
       m_threadPool(new ThreadPool(
           m_distributedSystem.getSystemProperties().threadPoolSize())),
       m_authInitialize(authInitialize) {
+  using apache::geode::statistics::StatisticsManager;
+
   m_cacheTXManager = std::shared_ptr<InternalCacheTransactionManager2PC>(
       new InternalCacheTransactionManager2PCImpl(this));
 
@@ -172,7 +176,7 @@ CacheImpl::RegionKind CacheImpl::getRegionKind(
                              pPtr->getSubscriptionEnabled())) ||
         m_tcrConnectionManager->isDurable()) {
       regionKind = THINCLIENT_HA_REGION;  // As of now ThinClinetHARegion deals
-                                          // with Pool as well.
+      // with Pool as well.
     } else {
       regionKind = THINCLIENT_POOL_REGION;
     }
@@ -869,3 +873,6 @@ AuthenticatedView CacheImpl::createAuthenticatedView(
 }
 
 void CacheImpl::setCache(Cache* cache) { m_cache = cache; }
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

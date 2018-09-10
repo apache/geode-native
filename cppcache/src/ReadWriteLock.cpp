@@ -18,7 +18,9 @@
 #include "ReadWriteLock.hpp"
 #include <ace/Guard_T.h>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 TimedTryWriteGuard::TimedTryWriteGuard(ACE_RW_Thread_Mutex& lock, uint32_t usec)
     : lock_(lock), isAcquired_(false), mutex_(), cond_(mutex_) {
@@ -81,3 +83,7 @@ TryWriteGuard::TryWriteGuard(ACE_RW_Thread_Mutex& lock,
     ACE_OS::thr_yield();
   } while (!exitCondition);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

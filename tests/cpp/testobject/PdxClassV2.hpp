@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TESTOBJECT_PDXCLASSV2_H_
-#define GEODE_TESTOBJECT_PDXCLASSV2_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * PdxClassV1.hpp
- *
- *  Created on: Feb 3, 2012
- *      Author: npatel
- */
+
+#pragma once
+
+#ifndef GEODE_TESTOBJECT_PDXCLASSV2_H_
+#define GEODE_TESTOBJECT_PDXCLASSV2_H_
 
 #include <geode/PdxSerializable.hpp>
 #include <geode/PdxSerializer.hpp>
@@ -35,9 +29,15 @@
 
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-
 namespace PdxTests {
+
+using apache::geode::client::CacheableDate;
+using apache::geode::client::PdxReader;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::PdxSerializer;
+using apache::geode::client::PdxUnreadFields;
+using apache::geode::client::PdxWriter;
+using apache::geode::client::UserObjectSizer;
 
 /************************************************************
  *  PdxTypes1V2

@@ -20,7 +20,9 @@
 #include "MemberListForVersionStamp.hpp"
 #include "ClientProxyMembershipID.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 VersionTag::VersionTag(MemberListForVersionStamp& memberListForVersionStamp)
     : VersionTag(0, 0, 0, 0, 0, memberListForVersionStamp) {}
@@ -91,3 +93,7 @@ void VersionTag::readMembers(uint16_t flags, DataInput& input) {
     }
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

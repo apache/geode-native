@@ -30,8 +30,14 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheListener;
+using apache::geode::client::EntryEvent;
+using apache::geode::client::Exception;
+using apache::geode::client::Region;
+using apache::geode::client::RegionEvent;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -147,8 +153,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_Locator)
 
     // create subregion
     auto regptr = getHelper()->getRegion(regionNames[2]);
-    auto subregPtr1 = regptr->createSubregion(regionNames[3], regptr->getAttributes());
-    auto subregPtr2 = regptr->createSubregion(regionNames[4], regptr->getAttributes());
+    auto subregPtr1 =
+        regptr->createSubregion(regionNames[3], regptr->getAttributes());
+    auto subregPtr2 =
+        regptr->createSubregion(regionNames[4], regptr->getAttributes());
 
     LOGINFO(
         "NIL: CLIENT1 StepOne_Pool_Locator subregions created successfully");
@@ -177,8 +185,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_Locator)
 
     // create subregion
     auto regptr = getHelper()->getRegion(regionNames[2]);
-    auto subregPtr1 = regptr->createSubregion(regionNames[3], regptr->getAttributes());
-    auto subregPtr2 = regptr->createSubregion(regionNames[4], regptr->getAttributes());
+    auto subregPtr1 =
+        regptr->createSubregion(regionNames[3], regptr->getAttributes());
+    auto subregPtr2 =
+        regptr->createSubregion(regionNames[4], regptr->getAttributes());
 
     LOGINFO(
         "NIL: CLIENT2 StepTwo_Pool_Locator:: subregions created successfully");

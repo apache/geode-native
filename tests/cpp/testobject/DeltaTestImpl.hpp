@@ -33,9 +33,15 @@
 #include "TestObject1.hpp"
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-
 namespace testobject {
+
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::CacheableString;
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataSerializable;
+using apache::geode::client::Delta;
+using apache::geode::client::Serializable;
 
 class TESTOBJECT_EXPORT DeltaTestImpl : public DataSerializable, public Delta {
  private:

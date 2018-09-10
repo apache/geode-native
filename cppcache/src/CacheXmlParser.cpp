@@ -42,7 +42,7 @@ void* getFactoryFunc(const std::string& lib, const std::string& funcName);
 
 namespace {
 
-using namespace apache::geode::client::impl;
+using apache::geode::client::impl::getFactoryFunc;
 
 std::vector<std::pair<std::string, int>> parseEndPoints(
     const std::string& str) {
@@ -638,7 +638,7 @@ void CacheXmlParser::endPool() {
 
 void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
                                  const char* value) {
-  using namespace apache::geode::internal::chrono::duration;
+  using apache::geode::internal::chrono::duration::from_string;
 
   if (strcmp(name, FREE_CONNECTION_TIMEOUT) == 0) {
     factory->setFreeConnectionTimeout(
@@ -1048,6 +1048,8 @@ void CacheXmlParser::endRegionAttributes() {
  * the element's attributes and push it on the _stack.
  */
 void CacheXmlParser::startExpirationAttributes(const xmlChar** atts) {
+  using apache::geode::internal::chrono::duration::from_string;
+
   if (!atts) {
     std::string s = "XML:No attributes provided for <expiration-attributes> ";
     throw CacheXmlException(s.c_str());

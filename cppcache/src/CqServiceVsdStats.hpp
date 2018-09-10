@@ -104,7 +104,7 @@ class APACHE_GEODE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
   }
 
  private:
-  apache::geode::statistics::Statistics* m_cqServiceVsdStats;
+  Statistics* m_cqServiceVsdStats;
 
   int32_t m_numCqsActiveId;
   int32_t m_numCqsCreatedId;

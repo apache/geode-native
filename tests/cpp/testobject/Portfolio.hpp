@@ -29,9 +29,11 @@
 #include "Position.hpp"
 #include <util/Log.hpp>
 
-using namespace apache::geode::client;
-
 namespace testobject {
+
+using apache::geode::client::CacheableDate;
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::CacheableStringArray;
 
 class TESTOBJECT_EXPORT Portfolio : public DataSerializable {
  private:

@@ -39,8 +39,6 @@
 
 #include "../NonCopyable.hpp"
 
-using namespace apache::geode::client;
-
 /** @file
  */
 #ifndef GEMFIRE_MAX_STATS_FILE_LIMIT
@@ -54,6 +52,9 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
+using apache::geode::client::CacheImpl;
+using apache::geode::client::NonAssignable;
+using apache::geode::client::NonCopyable;
 using std::chrono::system_clock;
 
 class StatArchiveWriter;

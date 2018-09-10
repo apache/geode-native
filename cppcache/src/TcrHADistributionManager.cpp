@@ -24,7 +24,9 @@
 #include "CacheImpl.hpp"
 #include "RemoteQueryService.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 TcrHADistributionManager::TcrHADistributionManager(
     ThinClientRegion* theRegion, TcrConnectionManager& connManager,
@@ -95,3 +97,7 @@ GfErrType TcrHADistributionManager::sendSyncRequestRegisterInterest(
   return m_connManager.sendSyncRequestRegisterInterest(
       request, reply, attemptFailover, endpoint, this, m_region);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

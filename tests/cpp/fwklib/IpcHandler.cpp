@@ -27,8 +27,10 @@
 #include <ace/SOCK_Connector.h>
 #include <ace/OS.h>
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 // This class is not thread safe, and its use in the test framework
 // does not require it to be.
@@ -267,3 +269,8 @@ bool IpcHandler::sendBuffer(IpcMsg msg, const char *str) {
   }
   FWKEXCEPTION("Tried to write " << length << " bytes, only wrote " << wrote);
 }
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

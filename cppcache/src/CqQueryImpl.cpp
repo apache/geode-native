@@ -30,7 +30,9 @@
 #include "util/Log.hpp"
 #include "util/exception.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 CqQueryImpl::CqQueryImpl(
     const std::shared_ptr<CqService>& cqService, const std::string& cqName,
@@ -593,3 +595,7 @@ bool CqQueryImpl::isClosed() const {
  * @return true if durable, false otherwise
  */
 bool CqQueryImpl::isDurable() const { return m_isDurable; }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

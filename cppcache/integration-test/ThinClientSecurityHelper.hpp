@@ -23,8 +23,26 @@
 #include "ThinClientHelper.hpp"
 #include "ace/Process.h"
 
-using namespace apache::geode::client::testframework::security;
-using namespace apache::geode::client;
+using apache::geode::client::CacheableBoolean;
+using apache::geode::client::Exception;
+using apache::geode::client::testframework::security::CredentialGenerator;
+using apache::geode::client::testframework::security::OP_CONTAINS_KEY;
+using apache::geode::client::testframework::security::OP_CREATE;
+using apache::geode::client::testframework::security::OP_DESTROY;
+using apache::geode::client::testframework::security::OP_EXECUTE_FUNCTION;
+using apache::geode::client::testframework::security::OP_GET;
+using apache::geode::client::testframework::security::OP_GETALL;
+using apache::geode::client::testframework::security::OP_INVALIDATE;
+using apache::geode::client::testframework::security::OP_KEY_SET;
+using apache::geode::client::testframework::security::OP_PUTALL;
+using apache::geode::client::testframework::security::OP_QUERY;
+using apache::geode::client::testframework::security::OP_REGION_CLEAR;
+using apache::geode::client::testframework::security::OP_REGISTER_CQ;
+using apache::geode::client::testframework::security::OP_REGISTER_INTEREST;
+using apache::geode::client::testframework::security::OP_UNREGISTER_INTEREST;
+using apache::geode::client::testframework::security::OP_UPDATE;
+using apache::geode::client::testframework::security::opCodeList;
+
 bool isLocator = false;
 bool isLocalServer = false;
 

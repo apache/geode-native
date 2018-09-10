@@ -24,7 +24,11 @@
 
 #include "fw_helper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::IllegalArgumentException;
+using apache::geode::client::RegionShortcut;
 
 /* testing attributes with invalid value */
 /* testing with negative values */          /*see bug no #865 */

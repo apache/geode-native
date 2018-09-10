@@ -44,7 +44,9 @@
 #define ROOT_SCOPE LOCAL
 #endif
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 class CacheHelper {
  public:
@@ -392,5 +394,9 @@ int CacheHelper::staticLocatorHostPort1 = CacheHelper::getRandomAvailablePort();
 int CacheHelper::staticLocatorHostPort2 = CacheHelper::getRandomAvailablePort();
 int CacheHelper::staticLocatorHostPort3 = CacheHelper::getRandomAvailablePort();
 #endif
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif  // GEODE_INTEGRATION_TEST_CACHEHELPER_H_

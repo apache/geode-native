@@ -42,15 +42,28 @@
 #include "CachePerfStats.hpp"
 #include <LocalRegion.hpp>
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testData;
-using namespace PdxTests;
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define LOCATOR s2p2
 #define SERVER1 s2p1
+
+using apache::geode::client::CacheableBoolean;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::ClassCastException;
+using apache::geode::client::FunctionService;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::UserFunctionExecutionException;
+
+using PdxTests::PdxTypes1;
+using PdxTests::PdxTypes10;
+using PdxTests::PdxTypes2;
+using PdxTests::PdxTypes3;
+using PdxTests::PdxTypes4;
+using PdxTests::PdxTypes5;
+using PdxTests::PdxTypes6;
+using PdxTests::PdxTypes7;
+using PdxTests::PdxTypes8;
+using PdxTests::PdxTypes9;
 
 bool isLocator = false;
 bool isLocalServer = false;

@@ -16,13 +16,11 @@
  */
 
 /**
-  * @file    FwkBBClient.cpp
-  * @since   1.0
-  * @version 1.0
-  * @see
-  */
-
-// ----------------------------------------------------------------------------
+ * @file    FwkBBClient.cpp
+ * @since   1.0
+ * @version 1.0
+ * @see
+ */
 
 #include "FwkBBClient.hpp"
 #include "FwkLog.hpp"
@@ -31,10 +29,10 @@
 #include "ace/Synch.h"
 #include "ace/OS.h"
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
-
-// ----------------------------------------------------------------------------
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 void FwkBBClient::sendToServer(FwkBBMessage& message) {
   message.setId(FwkStrCvt(getNewMessageId()).toString());
@@ -291,3 +289,8 @@ int64_t FwkBBClient::setIfLess(const std::string& BBName,
 }
 
 // ----------------------------------------------------------------------------
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
