@@ -181,17 +181,10 @@ CacheHelper::CacheHelper(const bool,
   if (pp == nullptr) {
     pp = Properties::create();
   }
-  try {
-    LOG(" in cachehelper before createCacheFactory");
-    auto cacheFactory = CacheFactory(pp);
-    cachePtr = std::make_shared<Cache>(cacheFactory.create());
-    m_doDisconnect = false;
-  } catch (const Exception& excp) {
-    LOG("Geode exception while creating cache, logged in following line");
-    LOG(excp.what());
-  } catch (...) {
-    LOG("Throwing exception while creating cache....");
-  }
+  LOG(" in cachehelper before createCacheFactory");
+  auto cacheFactory = CacheFactory(pp);
+  cachePtr = std::make_shared<Cache>(cacheFactory.create());
+  m_doDisconnect = false;
 }
 
 CacheHelper::CacheHelper(const bool, bool pdxIgnoreUnreadFields,
