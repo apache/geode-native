@@ -55,8 +55,6 @@ std::shared_ptr<Region> setupProxyRegion(Cache& cache) {
   return region;
 }
 
-/**
- */
 TEST(RegisterKeysTest, RegisterAllWithCachingRegion) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.getGfsh()
@@ -104,8 +102,6 @@ TEST(RegisterKeysTest, RegisterAllWithCachingRegion) {
   }
 }
 
-/**
- */
 TEST(RegisterKeysTest, RegisterAnyWithCachingRegion) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.getGfsh()
@@ -152,8 +148,6 @@ TEST(RegisterKeysTest, RegisterAnyWithCachingRegion) {
   }
 }
 
-/**
- */
 TEST(RegisterKeysTest, RegisterAllWithProxyRegion) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.getGfsh()
@@ -173,8 +167,6 @@ TEST(RegisterKeysTest, RegisterAllWithProxyRegion) {
   cache.close();
 }
 
-/**
- */
 TEST(RegisterKeysTest, RegisterAnyWithProxyRegion) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.getGfsh()
