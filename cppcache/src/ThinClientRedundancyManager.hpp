@@ -50,11 +50,11 @@ class ThinClientRedundancyManager {
   void close();
   void sendNotificationCloseMsgs();
 
-  ThinClientRedundancyManager(TcrConnectionManager* theConnManager,
-                              int redundencyLevel = 0,
-                              ThinClientPoolHADM* poolHADM = nullptr,
-                              bool sentReadyForEvents = false,
-                              bool globalProcessedMarker = false);
+  explicit ThinClientRedundancyManager(TcrConnectionManager* theConnManager,
+                                       int redundencyLevel = 0,
+                                       ThinClientPoolHADM* poolHADM = nullptr,
+                                       bool sentReadyForEvents = false,
+                                       bool globalProcessedMarker = false);
   GfErrType sendSyncRequestRegisterInterest(TcrMessage& request,
                                             TcrMessageReply& reply,
                                             bool attemptFailover,

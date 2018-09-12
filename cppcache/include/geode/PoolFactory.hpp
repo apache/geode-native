@@ -536,7 +536,7 @@ class APACHE_GEODE_EXPORT PoolFactory {
   PoolFactory(const PoolFactory&) = default;
 
  private:
-  PoolFactory(const Cache& cache);
+  explicit PoolFactory(const Cache& cache);
   PoolFactory& addCheck(const std::string& host, int port);
   std::shared_ptr<PoolAttributes> m_attrs;
   bool m_isSubscriptionRedundancy;

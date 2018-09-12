@@ -43,8 +43,8 @@ class StackTrace;
 class APACHE_GEODE_EXPORT Exception : public std::exception {
  public:
   explicit Exception(const std::string& message);
-  Exception(std::string&& message);
-  Exception(const char* message);
+  explicit Exception(std::string&& message);
+  explicit Exception(const char* message);
   Exception(const Exception&) = default;
   Exception& operator=(const Exception&) = default;
   Exception(Exception&&) noexcept = default;

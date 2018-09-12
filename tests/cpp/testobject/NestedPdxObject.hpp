@@ -51,7 +51,7 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
  public:
   ChildPdx() {}
 
-  ChildPdx(int id) {
+  explicit ChildPdx(int id) {
     m_childId = id;
     m_childName = "name-" + std::to_string(id);
     m_enum = CacheableEnum::create("Gender", "female", 5);
@@ -101,7 +101,7 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
  public:
   ParentPdx() {}
 
-  ParentPdx(int id) {
+  explicit ParentPdx(int id) {
     m_parentId = id;
     m_parentName = "name-" + std::to_string(id);
     m_childPdx = std::make_shared<ChildPdx>(id /** 1393*/);
@@ -166,7 +166,7 @@ class TESTOBJECT_EXPORT PdxEnumTestClass : public PdxSerializable {
 
   std::shared_ptr<CacheableEnum> getEnumID() { return m_enumid; }
 
-  PdxEnumTestClass(int id) {
+  explicit PdxEnumTestClass(int id) {
     m_id = id;
     switch (m_id) {
       case 0:
@@ -230,7 +230,7 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
  public:
   SerializePdx() {}
 
-  SerializePdx(bool init) {
+  explicit SerializePdx(bool init) {
     if (init) {
       i1 = 1;
       i2 = 2;

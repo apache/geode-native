@@ -66,8 +66,8 @@ class TESTOBJECT_EXPORT Portfolio : public DataSerializable {
         creationDate(nullptr),
         arrayNull(nullptr),
         arrayZeroSize(nullptr) {}
-  Portfolio(int32_t id, uint32_t size = 0,
-            std::shared_ptr<CacheableStringArray> nm = nullptr);
+  explicit Portfolio(int32_t id, uint32_t size = 0,
+                     std::shared_ptr<CacheableStringArray> nm = nullptr);
   ~Portfolio() noexcept override;
 
   size_t objectSize() const override {

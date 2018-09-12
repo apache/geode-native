@@ -43,7 +43,7 @@ namespace testframework {
 
 class UdpIpc : public FrameworkTest {
  public:
-  UdpIpc(const char* initArgs) : FrameworkTest(initArgs) {}
+  explicit UdpIpc(const char* initArgs) : FrameworkTest(initArgs) {}
 
   virtual ~UdpIpc() {}
 
@@ -59,7 +59,7 @@ class TestProcessor : public ServiceTask {
   bool m_sendReply;
 
  public:
-  TestProcessor(UDPMessageQueues* shared, bool sendReply = false)
+  explicit TestProcessor(UDPMessageQueues* shared, bool sendReply = false)
       : ServiceTask(shared), m_sendReply(sendReply) {
     m_queues = dynamic_cast<UDPMessageQueues*>(m_shared);
   }

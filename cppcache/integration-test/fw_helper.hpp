@@ -173,7 +173,7 @@ class TestOp {
 
 class SuiteMember {
  public:
-  SuiteMember(TestOp* test) : m_test(test) {}
+  explicit SuiteMember(TestOp* test) : m_test(test) {}
   TestOp* m_test;
 };
 

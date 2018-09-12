@@ -75,7 +75,7 @@ class CacheableObjectPartList : public internal::DataSerializableFixedId {
         m_destroyTracker(0),
         m_addToLocalCache(false) {}
 
-  inline CacheableObjectPartList(ThinClientRegion* region)
+  inline explicit CacheableObjectPartList(ThinClientRegion* region)
       : m_keys(nullptr),
         m_keysOffset(nullptr),
         m_values(nullptr),

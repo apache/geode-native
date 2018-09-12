@@ -45,7 +45,7 @@ class APACHE_GEODE_EXPORT StatSamplerStats {
   StatisticDescriptor** statDescriptorArr;
 
  public:
-  StatSamplerStats(StatisticsFactory* statFactory);
+  explicit StatSamplerStats(StatisticsFactory* statFactory);
   void tookSample(int64_t nanosSpentWorking);
   void close();
   void setInitialValues();

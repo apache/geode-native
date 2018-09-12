@@ -46,10 +46,12 @@ namespace testframework {
 class FwkException {
  public:
   /** @brief exception message to handle */
-  inline FwkException(const std::string& sMessage) : m_sMessage(sMessage) {}
+  inline explicit FwkException(const std::string& sMessage)
+      : m_sMessage(sMessage) {}
 
   /** @brief exception message to handle */
-  inline FwkException(const char* pszMessage) : m_sMessage(pszMessage) {}
+  inline explicit FwkException(const char* pszMessage)
+      : m_sMessage(pszMessage) {}
 
   /** @brief get message */
   inline const char* getMessage() const { return m_sMessage.c_str(); }

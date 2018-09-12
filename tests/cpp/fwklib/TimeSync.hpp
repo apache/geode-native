@@ -57,7 +57,8 @@ class TimeSync : public ACE_Task_Base {
   void recvTimeSync();
 
  public:
-  inline TimeSync(int32_t port, int32_t* delta = nullptr, bool report = false)
+  inline explicit TimeSync(int32_t port, int32_t* delta = nullptr,
+                           bool report = false)
       : m_delta(delta),
         m_done(false),
         m_port(port),

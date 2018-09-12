@@ -82,7 +82,7 @@ namespace testframework {
   */
 class FwkBBMessage {
  public:
-  FwkBBMessage(const char* cmd) : m_cmd(cmd) {}
+  explicit FwkBBMessage(const char* cmd) : m_cmd(cmd) {}
   FwkBBMessage() {}
   virtual ~FwkBBMessage() {}
 

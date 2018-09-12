@@ -178,7 +178,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
 
     auto regionGetSuccess =
         std::dynamic_pointer_cast<CacheableBoolean>(region0->get("success"));
-    bool actualValue = regionGetSuccess.get()->value();
+    bool actualValue = regionGetSuccess->value();
 
     ASSERT(actualValue == true,
            "Task JavaPutGet:Objects of type NonPdxType should be equal");

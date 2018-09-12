@@ -69,7 +69,7 @@ class APACHE_GEODE_EXPORT LRUEntryProperties {
 
  protected:
   // this constructor deliberately skips initializing any fields
-  inline LRUEntryProperties(bool) {}
+  inline explicit LRUEntryProperties(bool) {}
 
  private:
   std::atomic<uint32_t> m_bits;
@@ -93,7 +93,7 @@ class LRUList {
    */
   class LRUListNode {
    public:
-    inline LRUListNode(const std::shared_ptr<TEntry>& entry)
+    inline explicit LRUListNode(const std::shared_ptr<TEntry>& entry)
         : m_entry(entry), m_nextLRUListNode(nullptr) {}
 
     inline ~LRUListNode() {}

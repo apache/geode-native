@@ -59,7 +59,7 @@ namespace security {
 
 class Security : public FrameworkTest {
  public:
-  Security(const char* initArgs)
+  explicit Security(const char* initArgs)
       : FrameworkTest(initArgs),
         m_KeysA(nullptr),
         m_MaxKeys(0),

@@ -53,7 +53,7 @@ class FrameworkTest  // Base class all test classes written for xml testing
   static spinlock_mutex m_lck;
 
  public:
-  FrameworkTest(const char* initArgs);
+  explicit FrameworkTest(const char* initArgs);
   ~FrameworkTest();
 
   int32_t initialize() { return FWK_SUCCESS; }

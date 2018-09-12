@@ -35,7 +35,7 @@ class CacheableWrapper {
   std::shared_ptr<Cacheable> m_cacheableObject;
 
  public:
-  CacheableWrapper(const std::shared_ptr<Cacheable> cacheableObject)
+  explicit CacheableWrapper(const std::shared_ptr<Cacheable> cacheableObject)
       : m_cacheableObject(cacheableObject) {}
 
   virtual std::shared_ptr<Cacheable> getCacheable() const {

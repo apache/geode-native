@@ -109,7 +109,7 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
       init(key);
     }*/
   PdxVersioned1() { init("def"); }
-  PdxVersioned1(const char* key);
+  explicit PdxVersioned1(const char* key);
   void init(const char* key);
   inline bool compareBool(bool b, bool b2) {
     if (b == b2) return b;

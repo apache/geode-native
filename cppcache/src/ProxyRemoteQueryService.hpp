@@ -38,7 +38,7 @@ class ThinClientPoolDM;
 
 class APACHE_GEODE_EXPORT ProxyRemoteQueryService : public QueryService {
  public:
-  ProxyRemoteQueryService(AuthenticatedView* cptr);
+  explicit ProxyRemoteQueryService(AuthenticatedView* cptr);
   virtual ~ProxyRemoteQueryService() = default;
 
   std::shared_ptr<Query> newQuery(std::string querystring) override;

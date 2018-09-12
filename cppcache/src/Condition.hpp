@@ -40,7 +40,7 @@ class APACHE_GEODE_EXPORT Condition {
   /**
    * Create a Condition protected by the mutex provided.
    */
-  Condition(ACE_Recursive_Thread_Mutex& mutex);
+  explicit Condition(ACE_Recursive_Thread_Mutex& mutex);
 
   ~Condition() {}
 

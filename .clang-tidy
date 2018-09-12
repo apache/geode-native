@@ -1,7 +1,7 @@
 ---
 Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references'
-WarningsAsErrors: 'google-build-using-namespace'
-HeaderFilterRegex: '\.(h|hpp)$'
+WarningsAsErrors: 'google-build-using-namespace,google-explicit-constructor'
+HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
 FormatStyle:     file
 CheckOptions:

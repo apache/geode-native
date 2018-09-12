@@ -43,7 +43,7 @@ class TESTOBJECT_EXPORT TestObject1 : public DataSerializable {
 
  public:
   TestObject1();
-  TestObject1(int32_t id)
+  explicit TestObject1(int32_t id)
       : name(nullptr),
         arr(CacheableBytes::create(std::vector<int8_t>(4 * 1024))),
         identifier(id) {}

@@ -119,7 +119,7 @@ class APACHE_GEODE_EXPORT Execution {
  private:
   std::unique_ptr<ExecutionImpl> impl_;
 
-  Execution(std::unique_ptr<ExecutionImpl> impl);
+  explicit Execution(std::unique_ptr<ExecutionImpl> impl);
 
   friend ExecutionImpl;
   friend FunctionService;

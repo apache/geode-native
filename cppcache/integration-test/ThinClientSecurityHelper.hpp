@@ -175,7 +175,8 @@ void initClientAuth(char UserType) {
 
 class putThread : public ACE_Task_Base {
  public:
-  putThread(std::shared_ptr<Region> r, bool regInt = false, int waitTime = 0) {
+  explicit putThread(std::shared_ptr<Region> r, bool regInt = false,
+                     int waitTime = 0) {
     m_reg = r;
     m_regInt = regInt;
     m_numthreads = 1;

@@ -556,7 +556,7 @@ class LogFn {
   LogLevel m_level;
 
  public:
-  LogFn(const char* functionName, LogLevel level = LogLevel::Finest)
+  explicit LogFn(const char* functionName, LogLevel level = LogLevel::Finest)
       : m_functionName(functionName), m_level(level) {
     if (Log::enabled(m_level)) Log::enterFn(m_level, m_functionName);
   }

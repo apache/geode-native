@@ -104,7 +104,7 @@ class IThreadPool {
 
 class ThreadPoolWorker : public ACE_Task<ACE_MT_SYNCH> {
  public:
-  ThreadPoolWorker(IThreadPool* manager);
+  explicit ThreadPoolWorker(IThreadPool* manager);
   virtual ~ThreadPoolWorker();
   int perform(ACE_Method_Request* req);
   int shutDown(void);
@@ -123,7 +123,7 @@ class ThreadPool : public ACE_Task_Base, IThreadPool {
   friend class ACE_Singleton<ThreadPool, ACE_Recursive_Thread_Mutex>;
 
  public:
-  ThreadPool(uint32_t threadPoolSize);
+  explicit ThreadPool(uint32_t threadPoolSize);
   virtual ~ThreadPool();
   int perform(ACE_Method_Request* req);
   int svc(void);

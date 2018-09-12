@@ -38,7 +38,8 @@ class GetAllServersRequest : public internal::DataSerializableFixedId_t<
   std::shared_ptr<CacheableString> m_serverGroup;
 
  public:
-  GetAllServersRequest(const std::string& serverGroup) : Serializable() {
+  explicit GetAllServersRequest(const std::string& serverGroup)
+      : Serializable() {
     m_serverGroup = CacheableString::create(serverGroup);
   }
   void toData(DataOutput& output) const override;

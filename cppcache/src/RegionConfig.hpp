@@ -41,7 +41,7 @@ class RegionConfig;
 
 class APACHE_GEODE_EXPORT RegionConfig {
  public:
-  RegionConfig(const std::string& capacity);
+  explicit RegionConfig(const std::string& capacity);
 
   unsigned long entries();
   void setConcurrency(const std::string& str);

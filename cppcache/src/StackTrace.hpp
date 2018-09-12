@@ -31,7 +31,7 @@ namespace client {
 
 class StackTrace {
  public:
-  StackTrace(size_t skip = 0);
+  explicit StackTrace(size_t skip = 0);
   ~StackTrace() noexcept;
   std::string getString() const;
 

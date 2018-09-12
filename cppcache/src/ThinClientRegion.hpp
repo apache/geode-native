@@ -438,7 +438,7 @@ class ChunkedQueryResponse : public TcrChunkedResult {
   ChunkedQueryResponse& operator=(const ChunkedQueryResponse&);
 
  public:
-  inline ChunkedQueryResponse(TcrMessage& msg)
+  inline explicit ChunkedQueryResponse(TcrMessage& msg)
       : TcrChunkedResult(),
         m_msg(msg),
         m_queryResults(CacheableVector::create()) {}
@@ -674,7 +674,7 @@ class ChunkedDurableCQListResponse : public TcrChunkedResult {
   ChunkedDurableCQListResponse& operator=(const ChunkedDurableCQListResponse&);
 
  public:
-  inline ChunkedDurableCQListResponse(TcrMessage& msg)
+  inline explicit ChunkedDurableCQListResponse(TcrMessage& msg)
       : TcrChunkedResult(),
         m_msg(msg),
         m_resultList(CacheableArrayList::create()) {}

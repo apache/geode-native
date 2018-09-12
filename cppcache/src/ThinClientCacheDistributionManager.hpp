@@ -36,7 +36,8 @@ class TcrConnection;
 class APACHE_GEODE_EXPORT ThinClientCacheDistributionManager
     : public ThinClientDistributionManager {
  public:
-  ThinClientCacheDistributionManager(TcrConnectionManager& connManager);
+  explicit ThinClientCacheDistributionManager(
+      TcrConnectionManager& connManager);
   ~ThinClientCacheDistributionManager(){};
 
   void init();

@@ -40,7 +40,7 @@ using apache::geode::client::SerializationRegistry;
 
 class TestDataOutput : public DataOutputInternal {
  public:
-  TestDataOutput(Cache*)
+  explicit TestDataOutput(Cache*)
       : DataOutputInternal(nullptr),
         m_byteArray(nullptr),
         m_serializationRegistry() {

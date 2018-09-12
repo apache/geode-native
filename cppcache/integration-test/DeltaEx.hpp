@@ -51,7 +51,7 @@ class DeltaEx : public DataSerializable, public Delta {
   static int fromDataCount;
   static int cloneCount;
   DeltaEx() : Delta(), counter(1), isDelta(false) {}
-  DeltaEx(int count) : Delta(), counter(count), isDelta(false) {}
+  explicit DeltaEx(int count) : Delta(), counter(count), isDelta(false) {}
   DeltaEx(const DeltaEx& rhs) = default;
 
   virtual bool hasDelta() const override { return isDelta; }
@@ -103,7 +103,8 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
   static int m_fromDataCount;
   static int m_cloneCount;
   PdxDeltaEx() : Delta(), m_counter(1), m_isDelta(false) {}
-  PdxDeltaEx(int count) : Delta(), m_counter(count), m_isDelta(false) {}
+  explicit PdxDeltaEx(int count)
+      : Delta(), m_counter(count), m_isDelta(false) {}
   PdxDeltaEx(const PdxDeltaEx& rhs)
       : Delta(), m_counter(rhs.m_counter), m_isDelta(rhs.m_isDelta) {}
   virtual bool hasDelta() const override { return m_isDelta; }

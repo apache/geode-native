@@ -44,7 +44,7 @@
   // Listing 1 code/ch10
   class Manager : virtual public ACE_Process {
    public:
-    Manager(const ACE_TCHAR *program_name) : ACE_Process() {
+    explicit Manager(const ACE_TCHAR *program_name) : ACE_Process() {
       ACE_OS::strcpy(programName_, program_name);
     }
 

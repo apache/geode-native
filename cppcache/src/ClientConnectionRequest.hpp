@@ -32,8 +32,9 @@ namespace client {
 
 class ClientConnectionRequest : public ServerLocationRequest {
  public:
-  ClientConnectionRequest(const std::set<ServerLocation>& excludeServergroup,
-                          std::string servergroup = "")
+  explicit ClientConnectionRequest(
+      const std::set<ServerLocation>& excludeServergroup,
+      std::string servergroup = "")
       : ServerLocationRequest(),
         m_servergroup(servergroup),
         m_excludeServergroup_serverLocation(excludeServergroup) {}

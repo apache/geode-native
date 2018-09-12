@@ -64,7 +64,7 @@ class XmlAuthzCredentialGenerator {
   stringList QueryRegions;
 
  public:
-  XmlAuthzCredentialGenerator(ID id)
+  explicit XmlAuthzCredentialGenerator(ID id)
       : m_id(id),
         Readers(RArr, RArr + sizeof RArr / sizeof *RArr),
         Writers(WArr, WArr + sizeof WArr / sizeof *WArr),

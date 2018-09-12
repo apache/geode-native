@@ -52,7 +52,7 @@ class RegionHelper {
  public:
   /** Fill in this instance of RegionHelper based on the spec named by sname.
    */
-  RegionHelper(const FrameworkTest* test) : m_region(nullptr) {
+  explicit RegionHelper(const FrameworkTest* test) : m_region(nullptr) {
     m_spec = test->getStringValue("regionSpec");
     if (m_spec.empty()) {
       FWKEXCEPTION("Failed to find regionSpec definition.");

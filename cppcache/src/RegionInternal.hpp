@@ -56,7 +56,7 @@ class CacheEventFlags {
   static const uint8_t GF_NOCACHEWRITER = 0x80;
 
   // private constructor
-  inline CacheEventFlags(const uint8_t flags) : m_flags(flags) {}
+  inline explicit CacheEventFlags(const uint8_t flags) : m_flags(flags) {}
 
   // disable constructors and assignment
   CacheEventFlags();

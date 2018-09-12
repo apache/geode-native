@@ -70,7 +70,7 @@ class TestClient : public ACE_Task_Base {
     return until;
   }
 
-  TestClient(int32_t threadCnt);
+  explicit TestClient(int32_t threadCnt);
 
   inline ~TestClient() {
     stopThreads();

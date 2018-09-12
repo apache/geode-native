@@ -62,7 +62,8 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
         arrayNull(),
         arrayZeroSize() {}
 
-  PortfolioPdx(int32_t id, int32_t size = 0, std::vector<std::string> nm = {});
+  explicit PortfolioPdx(int32_t id, int32_t size = 0,
+                        std::vector<std::string> nm = {});
 
   int32_t getID() { return id; }
 

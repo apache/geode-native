@@ -70,7 +70,7 @@ class Semaphore {
   volatile int m_count;
 
  public:
-  Semaphore(int count);
+  explicit Semaphore(int count);
   ~Semaphore();
   void acquire(int t = 1);
   void release(int t = 1);
@@ -88,7 +88,7 @@ class TimeStamp {
  public:
   TimeStamp();
   TimeStamp(const TimeStamp& other);
-  TimeStamp(int64_t msec);
+  explicit TimeStamp(int64_t msec);
   TimeStamp& operator=(const TimeStamp& other);
 
   ~TimeStamp();
@@ -133,7 +133,7 @@ class PerfSuite {
   RecordMap m_records;
 
  public:
-  PerfSuite(const char* suiteName);
+  explicit PerfSuite(const char* suiteName);
 
   void addRecord(std::string testName, const long ops, const TimeStamp& start,
                  const TimeStamp& stop);

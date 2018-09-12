@@ -674,7 +674,7 @@ void destroyRegion(const std::string& name) {
 
 class RegionOperations {
  public:
-  RegionOperations(const char* name)
+  explicit RegionOperations(const char* name)
       : m_regionPtr(getHelper()->getRegion(name)) {}
 
   void putOp(int keys = 1,

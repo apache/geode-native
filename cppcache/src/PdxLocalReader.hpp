@@ -50,7 +50,7 @@ class PdxLocalReader : public PdxReader {
   void resettoPdxHead();
 
  public:
-  PdxLocalReader(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
+  explicit PdxLocalReader(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
   PdxLocalReader(DataInput& input, std::shared_ptr<PdxType> remoteType,
                  int32_t pdxLen,

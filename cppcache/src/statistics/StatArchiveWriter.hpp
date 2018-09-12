@@ -84,7 +84,7 @@ using std::chrono::system_clock;
 
 class APACHE_GEODE_EXPORT StatDataOutput {
  public:
-  StatDataOutput(CacheImpl* cache);
+  explicit StatDataOutput(CacheImpl *cache);
   StatDataOutput(std::string, CacheImpl* cache);
   ~StatDataOutput();
   /**

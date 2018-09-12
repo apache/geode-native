@@ -48,7 +48,7 @@ class Gfsh {
   class Verb {
    public:
    protected:
-    Verb(Gfsh &gfsh) : gfsh_(gfsh) {}
+    explicit Verb(Gfsh &gfsh) : gfsh_(gfsh) {}
     Gfsh &gfsh_;
   };
 
@@ -66,7 +66,7 @@ class Gfsh {
 
   class Start {
    public:
-    Start(Gfsh &gfsh) : gfsh_(gfsh) {}
+    explicit Start(Gfsh &gfsh) : gfsh_(gfsh) {}
 
     class Server;
     Server server() { return Server{gfsh_}; };
@@ -76,7 +76,7 @@ class Gfsh {
 
     class Locator : public Command<void> {
      public:
-      Locator(Gfsh &gfsh) : Command(gfsh, "start locator") {}
+      explicit Locator(Gfsh &gfsh) : Command(gfsh, "start locator") {}
 
       Locator &withName(const std::string &name) {
         command_ += " --name=" + name;
@@ -122,7 +122,7 @@ class Gfsh {
 
     class Server : public Command<void> {
      public:
-      Server(Gfsh &gfsh) : Command(gfsh, "start server") {}
+      explicit Server(Gfsh &gfsh) : Command(gfsh, "start server") {}
 
       Server &withName(const std::string &name) {
         command_ += " --name=" + name;
@@ -166,7 +166,7 @@ class Gfsh {
 
   class Stop {
    public:
-    Stop(Gfsh &gfsh) : gfsh_(gfsh) {}
+    explicit Stop(Gfsh &gfsh) : gfsh_(gfsh) {}
 
     class Server;
     Server server() { return Server{gfsh_}; };
@@ -176,7 +176,7 @@ class Gfsh {
 
     class Locator : public Command<void> {
      public:
-      Locator(Gfsh &gfsh) : Command(gfsh, "stop locator") {}
+      explicit Locator(Gfsh &gfsh) : Command(gfsh, "stop locator") {}
 
       Locator &withName(const std::string &name) {
         command_ += " --name=" + name;
@@ -191,7 +191,7 @@ class Gfsh {
 
     class Server : public Command<void> {
      public:
-      Server(Gfsh &gfsh) : Command(gfsh, "stop server") {}
+      explicit Server(Gfsh &gfsh) : Command(gfsh, "stop server") {}
 
       Server &withName(const std::string &name) {
         command_ += " --name=" + name;
@@ -210,14 +210,14 @@ class Gfsh {
 
   class Create : public Verb {
    public:
-    Create(Gfsh &gfsh) : Verb{gfsh} {}
+    explicit Create(Gfsh &gfsh) : Verb{gfsh} {}
 
     class Region;
     Region region() { return Region{gfsh_}; };
 
     class Region : public Command<void> {
      public:
-      Region(Gfsh &gfsh) : Command(gfsh, "create region") {}
+      explicit Region(Gfsh &gfsh) : Command(gfsh, "create region") {}
 
       Region &withName(const std::string &name) {
         command_ += " --name=" + name;
@@ -233,7 +233,7 @@ class Gfsh {
 
   class Connect : public Command<void> {
    public:
-    Connect(Gfsh &gfsh) : Command{gfsh, "connect"} {}
+    explicit Connect(Gfsh &gfsh) : Command{gfsh, "connect"} {}
 
     Connect &withJmxManager(const std::string &jmxManager) {
       command_ += " --jmx-manager=" + jmxManager;
@@ -243,7 +243,7 @@ class Gfsh {
 
   class Shutdown : public Command<void> {
    public:
-    Shutdown(Gfsh &gfsh) : Command{gfsh, "shutdown"} {}
+    explicit Shutdown(Gfsh &gfsh) : Command{gfsh, "shutdown"} {}
 
     Shutdown &withIncludeLocators(bool includeLocators) {
       command_ += " --include-locators=" +

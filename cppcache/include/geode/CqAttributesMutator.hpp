@@ -45,7 +45,7 @@ class APACHE_GEODE_EXPORT CqAttributesMutator {
   /** Constructs a <code>CqAttributesMutator</code> with the given {@link
    * CqAttributes}.
    */
-  CqAttributesMutator(const std::shared_ptr<CqAttributes>& impl);
+  explicit CqAttributesMutator(const std::shared_ptr<CqAttributes>& impl);
 
   /**
    * Adds a CQ listener to the end of the list of CQ listeners on this CqQuery.

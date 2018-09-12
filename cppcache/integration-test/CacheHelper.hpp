@@ -63,20 +63,20 @@ class CacheHelper {
   static std::string unitTestOutputFile();
   static int getNumLocatorListUpdates(const char* s);
 
-  CacheHelper(const char* member_id,
-              const std::shared_ptr<Properties>& configPtr = nullptr,
-              const bool noRootRegion = false);
+  explicit CacheHelper(const char* member_id,
+                       const std::shared_ptr<Properties>& configPtr = nullptr,
+                       const bool noRootRegion = false);
 
   /** rootRegionPtr will still be null... */
   CacheHelper(const char* member_id, const char* cachexml,
               const std::shared_ptr<Properties>& configPtr = nullptr);
 
-  CacheHelper(const std::shared_ptr<Properties>& configPtr = nullptr,
-              const bool noRootRegion = false);
+  explicit CacheHelper(const std::shared_ptr<Properties>& configPtr = nullptr,
+                       const bool noRootRegion = false);
 
-  CacheHelper(const bool isThinclient,
-              const std::shared_ptr<Properties>& configPtr = nullptr,
-              const bool noRootRegion = false);
+  explicit CacheHelper(const bool isThinclient,
+                       const std::shared_ptr<Properties>& configPtr = nullptr,
+                       const bool noRootRegion = false);
 
   CacheHelper(const bool isThinclient,
               const std::shared_ptr<AuthInitialize>& authInitialize,
@@ -95,8 +95,8 @@ class CacheHelper {
               int loadConditioningInterval = -1, bool isMultiuserMode = false,
               bool prSingleHop = false, bool threadLocal = false);
 
-  CacheHelper(const int redundancyLevel,
-              const std::shared_ptr<Properties>& configPtr = nullptr);
+  explicit CacheHelper(const int redundancyLevel,
+                       const std::shared_ptr<Properties>& configPtr = nullptr);
 
   virtual ~CacheHelper();
 

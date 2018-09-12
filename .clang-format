@@ -77,20 +77,10 @@ IndentWrappedFunctionNames: false
 JavaScriptQuotes: Leave
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: false
-MacroBlockBegin: "^\
-BEGIN_TEST|\
-DUNIT_TASK|\
-DUNIT_TASK_DEFINITION|\
-DUNIT_MAIN$"
-MacroBlockEnd:   "^\
-END_TEST|\
-ENDTASK|\
-END_TASK|\
-END_TASK_DEFINITION|\
-END_MAIN$"
+MacroBlockBegin: '^BEGIN_TEST|DUNIT_TASK|DUNIT_TASK_DEFINITION|DUNIT_MAIN$'
+MacroBlockEnd:   '^END_TEST|ENDTASK|END_TASK|END_TASK_DEFINITION|END_MAIN$'
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
-ObjCBinPackProtocolList: Never
 ObjCBlockIndentWidth: 2
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: true
@@ -103,13 +93,8 @@ PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 200
 PointerAlignment: Left
 RawStringFormats: 
-  - Language:        TextProto
-    Delimiters:      
-      - pb
-      - PB
-      - proto
-      - PROTO
-    CanonicalDelimiter: ''
+  - Delimiter:       pb
+    Language:        TextProto
     BasedOnStyle:    google
 ReflowComments:  true
 #SortIncludes:    true
@@ -118,10 +103,7 @@ SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
 SpaceAfterTemplateKeyword: true
 SpaceBeforeAssignmentOperators: true
-SpaceBeforeCtorInitializerColon: true
-SpaceBeforeInheritanceColon: true
 SpaceBeforeParens: ControlStatements
-SpaceBeforeRangeBasedForLoopColon: true
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 2
 SpacesInAngles:  false

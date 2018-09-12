@@ -47,13 +47,13 @@ class APACHE_GEODE_EXPORT CacheableString
   mutable int m_hashcode;
 
  public:
-  inline CacheableString(DSCode type = DSCode::CacheableASCIIString)
+  inline explicit CacheableString(DSCode type = DSCode::CacheableASCIIString)
       : m_str(), m_type(type), m_hashcode(0) {}
 
-  inline CacheableString(const std::string& value)
+  inline explicit CacheableString(const std::string& value)
       : CacheableString(std::string(value)) {}
 
-  inline CacheableString(std::string&& value)
+  inline explicit CacheableString(std::string&& value)
       : m_str(std::move(value)), m_hashcode(0) {
     bool ascii = isAscii(m_str);
 

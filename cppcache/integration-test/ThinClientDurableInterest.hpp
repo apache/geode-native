@@ -71,7 +71,7 @@ class OperMonitor : public CacheListener {
  public:
   OperMonitor() : m_ops(0), m_id(-1) {}
 
-  OperMonitor(int id) : m_ops(0), m_id(id) {
+  explicit OperMonitor(int id) : m_ops(0), m_id(id) {
     LOGINFO("Inside OperMonitor %d ", m_id);
   }
 

@@ -37,7 +37,7 @@ class APACHE_GEODE_EXPORT Queue {
    * Constructor with parameter to specify whether the contained objects
    * should be deleted in the destructor, and maximum size of queue.
    */
-  Queue(bool deleteObjs = true, const uint32_t maxSize = 0)
+  explicit Queue(bool deleteObjs = true, const uint32_t maxSize = 0)
       : m_cond(m_mutex),
         m_deleteObjs(deleteObjs),
         m_maxSize(maxSize),
