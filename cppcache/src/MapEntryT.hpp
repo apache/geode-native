@@ -126,7 +126,8 @@ class MapEntryT final : public TBase {
     return std::make_shared<MapEntryT>(expiryTaskManager, key);
   }
 
-  inline MapEntryT(const std::shared_ptr<CacheableKey>& key) : TBase(key) {}
+  inline explicit MapEntryT(const std::shared_ptr<CacheableKey>& key)
+      : TBase(key) {}
   inline MapEntryT(ExpiryTaskManager* expiryTaskManager,
                    const std::shared_ptr<CacheableKey>& key)
       : TBase(expiryTaskManager, key) {}

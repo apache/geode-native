@@ -883,7 +883,7 @@ class TcrMessageTxSynchronization : public TcrMessage {
 
 class TcrMessageClientReady : public TcrMessage {
  public:
-  TcrMessageClientReady(DataOutput* dataOutput);
+  explicit TcrMessageClientReady(DataOutput* dataOutput);
 
   virtual ~TcrMessageClientReady() {}
 
@@ -892,7 +892,7 @@ class TcrMessageClientReady : public TcrMessage {
 
 class TcrMessageCommit : public TcrMessage {
  public:
-  TcrMessageCommit(DataOutput* dataOutput);
+  explicit TcrMessageCommit(DataOutput* dataOutput);
 
   virtual ~TcrMessageCommit() {}
 
@@ -901,7 +901,7 @@ class TcrMessageCommit : public TcrMessage {
 
 class TcrMessageRollback : public TcrMessage {
  public:
-  TcrMessageRollback(DataOutput* dataOutput);
+  explicit TcrMessageRollback(DataOutput* dataOutput);
 
   virtual ~TcrMessageRollback() {}
 
@@ -910,7 +910,7 @@ class TcrMessageRollback : public TcrMessage {
 
 class TcrMessageTxFailover : public TcrMessage {
  public:
-  TcrMessageTxFailover(DataOutput* dataOutput);
+  explicit TcrMessageTxFailover(DataOutput* dataOutput);
 
   virtual ~TcrMessageTxFailover() {}
 

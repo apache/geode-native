@@ -263,13 +263,13 @@ typedef std::vector<std::string> StringVector;
  */
 class XMLStringConverter {
  public:
-  XMLStringConverter(const char* const toTranscode) {
+  explicit XMLStringConverter(const char* const toTranscode) {
     m_charForm = nullptr;
     // Call the private transcoding method
     m_unicodeForm = XMLString::transcode(toTranscode);
   }
 
-  XMLStringConverter(const XMLCh* toTranscode) {
+  explicit XMLStringConverter(const XMLCh* toTranscode) {
     m_unicodeForm = nullptr;
     m_charForm = XMLString::transcode(toTranscode);
   }
@@ -314,7 +314,7 @@ class ActionPair {
   }
 
  public:
-  ActionPair(const DOMNode* node);
+  explicit ActionPair(const DOMNode* node);
 
   const char* getLibraryName() { return m_libraryName.c_str(); }
   const char* getLibraryFunctionName() { return m_libraryFunctionName.c_str(); }
@@ -344,7 +344,7 @@ class ExpiryAttributes {
   }
 
  public:
-  ExpiryAttributes(const DOMNode* node);
+  explicit ExpiryAttributes(const DOMNode* node);
 
   ExpirationAction getAction() { return m_action; }
   std::chrono::seconds getTimeout() { return m_timeout; }
@@ -365,7 +365,7 @@ class PersistManager {
   void addProperty(const DOMNode* node);
 
  public:
-  PersistManager(const DOMNode* node);
+  explicit PersistManager(const DOMNode* node);
   ~PersistManager() { m_properties = nullptr; }
 
   const char* getLibraryName() { return m_libraryName.c_str(); }
@@ -449,7 +449,7 @@ class Attributes {
   ExpiryAttributes* getExpiryAttributes(const DOMNode* node);
 
  public:
-  Attributes(const DOMNode* node);
+  explicit Attributes(const DOMNode* node);
 
   RegionAttributes getAttributes() { return m_factory.create(); }
 
@@ -477,7 +477,7 @@ class FwkRegion {
   void setAttributes(Attributes* attributes) { m_attributes = attributes; }
 
  public:
-  FwkRegion(const DOMNode* node);
+  explicit FwkRegion(const DOMNode* node);
   ~FwkRegion() {
     if (m_attributes != nullptr) {
       delete m_attributes;
@@ -596,7 +596,7 @@ class FwkPool {
   void setServersFlag(std::string val) { m_servers = FwkStrCvt::toBool(val); }
 
  public:
-  FwkPool(const DOMNode* node);
+  explicit FwkPool(const DOMNode* node);
   ~FwkPool() = default;
   bool isPoolWithLocators() { return m_locators; }
   bool isPoolWithServers() { return m_servers; }
@@ -647,7 +647,7 @@ class DataSnippet {
   void setPool(FwkPool* pool) { m_pool = pool; }
 
  public:
-  DataSnippet(const DOMNode* node);
+  explicit DataSnippet(const DOMNode* node);
   ~DataSnippet() {
     if (m_region != nullptr) {
       delete m_region;
@@ -675,7 +675,7 @@ class DataOneof {
   std::string m_empty;
 
  public:
-  DataOneof(const DOMNode* node);
+  explicit DataOneof(const DOMNode* node);
 
   ~DataOneof() { m_values.clear(); }
 
@@ -733,7 +733,7 @@ class DataList {
   }
 
  public:
-  DataList(const DOMNode* node);
+  explicit DataList(const DOMNode* node);
 
   ~DataList() {
     m_map.clear();
@@ -779,7 +779,7 @@ class DataRange {
   void setHigh(double high) { m_high = high; }
 
  public:
-  DataRange(const DOMNode* node);
+  explicit DataRange(const DOMNode* node);
 
   const std::string getValue() const {
     return FwkStrCvt(GsRandom::random(m_low, m_high)).asString();
@@ -797,7 +797,7 @@ class DataRange {
  */
 class FwkData : public FwkObject {
  public:
-  FwkData(const DOMNode* node);
+  explicit FwkData(const DOMNode* node);
 
   ~FwkData() {
     if (m_dataList != nullptr) {
@@ -928,7 +928,7 @@ class FwkData : public FwkObject {
 class FwkDataSet : public TFwkSet<FwkData> {
  public:
   FwkDataSet() {}
-  FwkDataSet(const DOMNode* node);
+  explicit FwkDataSet(const DOMNode* node);
 };
 
 // ----------------------------------------------------------------------------
@@ -940,9 +940,9 @@ class FwkDataSet : public TFwkSet<FwkData> {
  */
 class FwkClient : public FwkObject {
  public:
-  FwkClient(const DOMNode* node);
+  explicit FwkClient(const DOMNode* node);
 
-  FwkClient(std::string name)
+  explicit FwkClient(std::string name)
       : m_program(nullptr), m_arguments(nullptr), m_remaining(false) {
     setName(name);
   }
@@ -1017,7 +1017,7 @@ class FwkClientSet : public TFwkSet<FwkClient> {
 
   FwkClientSet()
       : m_exclude(false), m_count(1), m_begin(1), m_remaining(false) {}
-  FwkClientSet(const DOMNode* node);
+  explicit FwkClientSet(const DOMNode* node);
 
   void setExclude(bool exclude) { m_exclude = exclude; }
 
@@ -1057,7 +1057,7 @@ class FwkTest;
  */
 class FwkTask : public FwkObject {
  public:
-  FwkTask(const DOMNode* node);
+  explicit FwkTask(const DOMNode* node);
 
   ~FwkTask() {
     if (m_clientSet != nullptr) {
@@ -1291,7 +1291,7 @@ class TestDriver;
  */
 class FwkTest : public FwkObject {
  public:
-  FwkTest(const DOMNode* node);
+  explicit FwkTest(const DOMNode* node);
 
   /** brief Get FwkDataSet pointer */
   const FwkDataSet* getDataSet(const char* name) const;
@@ -1395,7 +1395,7 @@ class LocalFile : public FwkObject {
   void setAppend(std::string append) { m_append = FwkStrCvt::toBool(append); }
 
  public:
-  LocalFile(const DOMNode* node);
+  explicit LocalFile(const DOMNode* node);
 
   const std::string& getContent() const { return m_content; }
 
@@ -1522,7 +1522,7 @@ class TestDriver {
   }
 
  public:
-  TestDriver(const char* file);
+  explicit TestDriver(const char* file);
   ~TestDriver() {
     m_clients.setNoDelete();
     m_tasks.setNoDelete();

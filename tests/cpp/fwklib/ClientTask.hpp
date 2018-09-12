@@ -45,7 +45,7 @@ class ClientTask {
   int32_t m_Loop;
 
  public:
-  ClientTask(int32_t iterations = 0)
+  explicit ClientTask(int32_t iterations = 0)
       : m_Exit(false), m_Run(true), m_Iterations(iterations), m_Loop(-1) {}
 
   virtual ~ClientTask() {}

@@ -38,7 +38,7 @@ namespace client {
 
 class RegionCommit {
  public:
-  RegionCommit(MemberListForVersionStamp& memberListForVersionStamp)
+  explicit RegionCommit(MemberListForVersionStamp& memberListForVersionStamp)
       : m_memberListForVersionStamp(memberListForVersionStamp){};
   virtual ~RegionCommit(){};
 

@@ -68,7 +68,7 @@ class TESTOBJECT_EXPORT Position : public DataSerializable {
   Position();
   Position(const char* id, int32_t out);
   // This constructor is just for some internal data validation test
-  Position(int32_t iForExactVal);
+  explicit Position(int32_t iForExactVal);
   ~Position() override = default;
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;

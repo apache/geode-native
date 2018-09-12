@@ -39,9 +39,9 @@ typedef std::map<std::string, std::vector<int8_t>*>
 
 class ExecutionImpl {
  public:
-  ExecutionImpl(std::shared_ptr<Region> rptr = nullptr,
-                AuthenticatedView* authenticatedView = nullptr,
-                std::shared_ptr<Pool> pp = nullptr)
+  explicit ExecutionImpl(std::shared_ptr<Region> rptr = nullptr,
+                         AuthenticatedView* authenticatedView = nullptr,
+                         std::shared_ptr<Pool> pp = nullptr)
       : m_routingObj(nullptr),
         m_args(nullptr),
         m_rc(nullptr),
@@ -49,8 +49,8 @@ class ExecutionImpl {
         m_allServer(false),
         m_pool(pp),
         m_authenticatedView(authenticatedView) {}
-  ExecutionImpl(std::shared_ptr<Pool> pool, bool allServer = false,
-                AuthenticatedView* authenticatedView = nullptr)
+  explicit ExecutionImpl(std::shared_ptr<Pool> pool, bool allServer = false,
+                         AuthenticatedView* authenticatedView = nullptr)
       : m_routingObj(nullptr),
         m_args(nullptr),
         m_rc(nullptr),

@@ -88,7 +88,7 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
   std::shared_ptr<CacheableHashMap> intToEnum;
 
  public:
-  PdxTypeRegistry(CacheImpl* cache);
+  explicit PdxTypeRegistry(CacheImpl* cache);
   PdxTypeRegistry(const PdxTypeRegistry& other) = delete;
 
   virtual ~PdxTypeRegistry();

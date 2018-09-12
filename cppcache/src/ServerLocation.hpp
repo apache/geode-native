@@ -52,7 +52,7 @@ class APACHE_GEODE_EXPORT ServerLocation
         m_port(-1)  // Default constructor for deserialiozation.
   {}
 
-  ServerLocation(std::string name) {
+  explicit ServerLocation(std::string name) {
     /*
     name = Utils::convertHostToCanonicalForm(name.c_str());
     */

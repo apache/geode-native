@@ -81,7 +81,9 @@ class PRbuckets {
   BucketStatus* m_buckets;
 
  public:
-  PRbuckets(int32_t nBuckets) { m_buckets = new BucketStatus[nBuckets]; }
+  explicit PRbuckets(int32_t nBuckets) {
+    m_buckets = new BucketStatus[nBuckets];
+  }
   ~PRbuckets() { delete[] m_buckets; }
 
   bool isBucketTimedOut(int32_t bucketId, std::chrono::milliseconds millis) {
@@ -96,7 +98,7 @@ class ClientMetadataService : public ACE_Task_Base,
                               private NonAssignable {
  public:
   ~ClientMetadataService();
-  ClientMetadataService(Pool* pool);
+  explicit ClientMetadataService(Pool* pool);
 
   inline void start() {
     m_run = true;

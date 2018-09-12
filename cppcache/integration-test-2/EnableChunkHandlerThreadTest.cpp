@@ -40,7 +40,7 @@ class SerializableWithThreadId : public PdxSerializable {
  public:
   SerializableWithThreadId() : SerializableWithThreadId(0) {}
 
-  SerializableWithThreadId(uint32_t id) : id_(id) {}
+  explicit SerializableWithThreadId(uint32_t id) : id_(id) {}
 
   ~SerializableWithThreadId() noexcept override = default;
 

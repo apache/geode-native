@@ -366,7 +366,7 @@ class TESTOBJECT_EXPORT PdxVersionedV2 : public PdxSerializable {
  public:
   PdxVersionedV2();
 
-  PdxVersionedV2(int32_t size);
+  explicit PdxVersionedV2(int32_t size);
 
   ~PdxVersionedV2() noexcept override;
 
@@ -402,7 +402,7 @@ class TESTOBJECT_EXPORT TestKeyV2 {
  public:
   TestKeyV2();
 
-  TestKeyV2(char* id);
+  explicit TestKeyV2(char* id);
 };
 
 /************************************************************
@@ -419,7 +419,7 @@ class TESTOBJECT_EXPORT TestDiffTypePdxSV2 {
  public:
   TestDiffTypePdxSV2();
 
-  TestDiffTypePdxSV2(bool init);
+  explicit TestDiffTypePdxSV2(bool init);
 
   bool equals(const TestDiffTypePdxSV2& obj);
 };

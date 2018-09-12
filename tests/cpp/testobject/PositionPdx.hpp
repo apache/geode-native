@@ -65,7 +65,7 @@ class TESTOBJECT_EXPORT PositionPdx : public PdxSerializable {
   PositionPdx();
   PositionPdx(const char* id, int32_t out);
   // This constructor is just for some internal data validation test
-  PositionPdx(int32_t iForExactVal);
+  explicit PositionPdx(int32_t iForExactVal);
   ~PositionPdx() override = default;
 
   using PdxSerializable::fromData;

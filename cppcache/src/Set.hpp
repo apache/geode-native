@@ -52,7 +52,7 @@ class APACHE_GEODE_EXPORT Set : private NonAssignable {
     Set<T>& m_set;
     typename std::unordered_set<T>::const_iterator m_iter;
 
-    Iterator(Set<T>& set) : m_set(set) {
+    explicit Iterator(Set<T>& set) : m_set(set) {
       m_set.m_mutex.acquire();
       m_iter = set.m_set.begin();
     }

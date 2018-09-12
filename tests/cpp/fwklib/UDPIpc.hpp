@@ -78,13 +78,13 @@ class UDPMessage : public IPCMessage {
     m_msg.clear();
   }
 
-  UDPMessage(UdpCmds cmd) {
+  explicit UDPMessage(UdpCmds cmd) {
     clearHdr();
     m_msg.clear();
     setCmd(cmd);
   }
 
-  UDPMessage(std::string content) : IPCMessage(content) { clearHdr(); }
+  explicit UDPMessage(std::string content) : IPCMessage(content) { clearHdr(); }
 
   UDPMessage(UDPMessage& msg) : IPCMessage(msg.what()) {
     clearHdr();
@@ -141,7 +141,7 @@ class UDPMessageClient {
   ACE_SOCK_Dgram m_io;
 
  public:
-  UDPMessageClient(std::string server);
+  explicit UDPMessageClient(std::string server);
 
   ~UDPMessageClient() { m_io.close(); }
 
@@ -162,7 +162,7 @@ class UDPMessageQueues : public SharedTaskObject {
   std::string m_label;
 
  public:
-  UDPMessageQueues(std::string label) : m_label(label) {}
+  explicit UDPMessageQueues(std::string label) : m_label(label) {}
   ~UDPMessageQueues() {
     FWKINFO(m_label << "MessageQueues::Inbound   count: " << m_cntInbound);
     FWKINFO(m_label << "MessageQueues::Processed count: " << m_cntProcessed);
@@ -253,7 +253,7 @@ class Processor : public ServiceTask {
   // UNUSED bool m_sendReply;
 
  public:
-  Processor(UDPMessageQueues* shared) : ServiceTask(shared) {
+  explicit Processor(UDPMessageQueues* shared) : ServiceTask(shared) {
     m_queues = dynamic_cast<UDPMessageQueues*>(m_shared);
   }
 

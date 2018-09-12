@@ -41,11 +41,13 @@ using unitTests::TestUtils;
 
 class CacheImplHelper : public CacheHelper {
  public:
-  CacheImplHelper(const char* member_id,
-                  const std::shared_ptr<Properties>& configPtr = nullptr)
+  explicit CacheImplHelper(
+      const char* member_id,
+      const std::shared_ptr<Properties>& configPtr = nullptr)
       : CacheHelper(member_id, configPtr) {}
 
-  CacheImplHelper(const std::shared_ptr<Properties>& configPtr = nullptr)
+  explicit CacheImplHelper(
+      const std::shared_ptr<Properties>& configPtr = nullptr)
       : CacheHelper(configPtr) {}
 
   virtual void createRegion(const char* regionName,

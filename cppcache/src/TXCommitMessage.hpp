@@ -31,7 +31,8 @@ namespace client {
 class TXCommitMessage
     : public DataSerializableFixedId_t<DSFid::TXCommitMessage> {
  public:
-  TXCommitMessage(MemberListForVersionStamp& memberListForVersionStamp);
+  explicit TXCommitMessage(
+      MemberListForVersionStamp& memberListForVersionStamp);
   ~TXCommitMessage() override = default;
 
   void fromData(DataInput& input) override;

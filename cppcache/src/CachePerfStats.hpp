@@ -38,7 +38,7 @@ using statistics::StatisticsFactory;
 /** hold statistics for cache.. */
 class APACHE_GEODE_EXPORT CachePerfStats {
  public:
-  CachePerfStats(StatisticsFactory* factory) {
+  explicit CachePerfStats(StatisticsFactory* factory) {
     auto statsType = factory->findType("CachePerfStats");
 
     if (statsType == nullptr) {

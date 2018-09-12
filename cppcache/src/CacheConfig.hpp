@@ -50,7 +50,7 @@ typedef std::map<std::string, std::shared_ptr<RegionConfig>> RegionConfigMapT;
 
 class APACHE_GEODE_EXPORT CacheConfig {
  public:
-  CacheConfig(const char* xmlFileName);
+  explicit CacheConfig(const char* xmlFileName);
 
   bool parse();
 

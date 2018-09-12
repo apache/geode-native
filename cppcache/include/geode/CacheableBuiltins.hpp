@@ -49,7 +49,7 @@ class APACHE_GEODE_EXPORT CacheableKeyType : public DataSerializablePrimitive,
   inline CacheableKeyType()
       : m_value(apache::geode::client::serializer::zeroObject<TObj>()) {}
 
-  inline CacheableKeyType(const TObj value) : m_value(value) {}
+  inline explicit CacheableKeyType(const TObj value) : m_value(value) {}
 
  public:
   /** Gets the contained value. */
@@ -134,8 +134,7 @@ class APACHE_GEODE_EXPORT CacheableContainerType
       public TBase {
  protected:
   inline CacheableContainerType() : TBase() {}
-
-  inline CacheableContainerType(const int32_t n) : TBase(n) {}
+  inline explicit CacheableContainerType(const int32_t n) : TBase(n) {}
 
  public:
   // Cacheable methods
@@ -170,7 +169,7 @@ class APACHE_GEODE_EXPORT CacheableContainerType
   class APACHE_GEODE_EXPORT k : public _##k {                           \
    public:                                                              \
     inline k() : _##k() {}                                              \
-    inline k(const p value) : _##k(value) {}                            \
+    inline explicit k(const p value) : _##k(value) {}                   \
                                                                         \
     /** Factory function registered with serialization registry. */     \
     static std::shared_ptr<Serializable> createDeserializable() {       \
@@ -203,7 +202,7 @@ class APACHE_GEODE_EXPORT CacheableContainerType
   class APACHE_GEODE_EXPORT c : public _##c {                          \
    public:                                                             \
     inline c() : _##c() {}                                             \
-    inline c(const int32_t n) : _##c(n) {}                             \
+    inline explicit c(const int32_t n) : _##c(n) {}                    \
                                                                        \
     /** Factory function registered with serialization registry. */    \
     static std::shared_ptr<Serializable> createDeserializable() {      \
@@ -296,7 +295,8 @@ class APACHE_GEODE_EXPORT CacheableArray : public DataSerializablePrimitive {
   inline CacheableArray() = default;
 
   template <typename TT>
-  CacheableArray(TT&& value) : m_value(std::forward<TT>(value)) {}
+  inline explicit CacheableArray(TT&& value)
+      : m_value(std::forward<TT>(value)) {}
 
   ~CacheableArray() noexcept override = default;
 

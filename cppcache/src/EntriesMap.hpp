@@ -43,7 +43,8 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT EntriesMap {
  public:
-  EntriesMap(std::unique_ptr<EntryFactory> entryFactory) : m_entryFactory(std::move(entryFactory)) {}
+  explicit EntriesMap(std::unique_ptr<EntryFactory> entryFactory)
+      : m_entryFactory(std::move(entryFactory)) {}
   virtual ~EntriesMap() {}
 
   /**

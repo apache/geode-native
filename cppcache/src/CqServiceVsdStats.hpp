@@ -41,8 +41,8 @@ using util::concurrent::spinlock_mutex;
 class APACHE_GEODE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
  public:
   /** hold statistics for a cq. */
-  CqServiceVsdStats(statistics::StatisticsFactory* factory,
-                    const std::string& cqName = "CqServiceVsdStats");
+  explicit CqServiceVsdStats(statistics::StatisticsFactory* factory,
+                             const std::string& cqName = "CqServiceVsdStats");
 
   /** disable stat collection for this item. */
   virtual ~CqServiceVsdStats();

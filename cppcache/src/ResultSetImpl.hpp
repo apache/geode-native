@@ -32,7 +32,7 @@ namespace client {
 
 class APACHE_GEODE_EXPORT ResultSetImpl : public ResultSet {
  public:
-  ResultSetImpl(const std::shared_ptr<CacheableVector>& response);
+  explicit ResultSetImpl(const std::shared_ptr<CacheableVector>& response);
   ~ResultSetImpl() noexcept override = default;
 
   size_t size() const override;

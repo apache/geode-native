@@ -116,7 +116,7 @@ class APACHE_GEODE_EXPORT PoolManager {
 
   std::shared_ptr<PoolManagerImpl> m_pimpl;
 
-  PoolManager(CacheImpl* cache);
+  explicit PoolManager(CacheImpl* cache);
 
   friend Cache;
   friend CacheImpl;

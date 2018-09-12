@@ -52,11 +52,10 @@ class APACHE_GEODE_EXPORT ExpEntryProperties {
  public:
   typedef std::chrono::system_clock::time_point time_point;
 
-  inline ExpEntryProperties(ExpiryTaskManager* expiryTaskManager)
-      :
-      m_lastAccessTime(0),
-      m_lastModifiedTime(0),
-      m_expiryTaskId(-1),
+  inline explicit ExpEntryProperties(ExpiryTaskManager* expiryTaskManager)
+      : m_lastAccessTime(0),
+        m_lastModifiedTime(0),
+        m_expiryTaskId(-1),
         m_expiryTaskManager(expiryTaskManager) {
     // The reactor always gives +ve id while scheduling.
     // -1 will indicate that an expiry task has not been scheduled
@@ -259,7 +258,7 @@ class MapEntryImpl : public MapEntry,
  protected:
   inline explicit MapEntryImpl(bool) : MapEntry(true) {}
 
-  inline MapEntryImpl(const std::shared_ptr<CacheableKey>& key)
+  inline explicit MapEntryImpl(const std::shared_ptr<CacheableKey>& key)
       : MapEntry(), m_key(key) {}
 
   std::shared_ptr<Cacheable> m_value;
@@ -276,7 +275,8 @@ class APACHE_GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
  protected:
   inline explicit VersionedMapEntryImpl(bool) : MapEntryImpl(true) {}
 
-  inline VersionedMapEntryImpl(const std::shared_ptr<CacheableKey>& key)
+  inline explicit VersionedMapEntryImpl(
+      const std::shared_ptr<CacheableKey>& key)
       : MapEntryImpl(key) {}
 
  private:
@@ -287,7 +287,7 @@ class APACHE_GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
 
 class APACHE_GEODE_EXPORT EntryFactory {
  public:
-  EntryFactory(const bool concurrencyChecksEnabled)
+  explicit EntryFactory(const bool concurrencyChecksEnabled)
       : m_concurrencyChecksEnabled(concurrencyChecksEnabled) {}
 
   virtual ~EntryFactory() {}

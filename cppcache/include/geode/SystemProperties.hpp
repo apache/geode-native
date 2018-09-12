@@ -51,8 +51,8 @@ class APACHE_GEODE_EXPORT SystemProperties {
    * If useMemType is true, use the given member type; if false, always set
    * member type to SERVER.
    */
-  SystemProperties(const std::shared_ptr<Properties>& propertiesPtr,
-                   const std::string& configFile = "");
+  explicit SystemProperties(const std::shared_ptr<Properties>& propertiesPtr,
+                            const std::string& configFile = "");
 
   SystemProperties(const SystemProperties& rhs) = delete;
   void operator=(const SystemProperties& rhs) = delete;

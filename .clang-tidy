@@ -1,7 +1,7 @@
 ---
 Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references'
-WarningsAsErrors: 'google-build-using-namespace,google-readability-redundant-smartptr-get'
-HeaderFilterRegex: '\.(h|hpp)$'
+WarningsAsErrors: 'google-build-using-namespace,google-readability-redundant-smartptr-get,google-explicit-constructor'
+HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
 FormatStyle:     file
 CheckOptions:

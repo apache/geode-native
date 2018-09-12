@@ -72,7 +72,8 @@ class Semaphore {
 
  public:
   Semaphore() : m_mutex(), m_cond(m_mutex), m_count(0) {}
-  Semaphore(int32_t count) : m_mutex(), m_cond(m_mutex), m_count(count) {}
+  explicit Semaphore(int32_t count)
+      : m_mutex(), m_cond(m_mutex), m_count(count) {}
   //  Semaphore( const Semaphore& other ) : m_mutex(), m_cond( m_mutex ),
   //    m_count( other.getCount() ) {}
 

@@ -53,7 +53,8 @@ namespace testframework {
   */
 class FwkBBClient {
  public:
-  FwkBBClient(std::string serverAddr) : m_client(serverAddr), m_messageId(0) {}
+  explicit FwkBBClient(std::string serverAddr)
+      : m_client(serverAddr), m_messageId(0) {}
 
   ~FwkBBClient() {}
 

@@ -69,7 +69,7 @@ class APACHE_GEODE_EXPORT ExpirationAttributes {
    * @param expirationAction the action to take when the value expires
    * @throws IllegalArgumentException if expirationTime is nonpositive
    */
-  ExpirationAttributes(
+  explicit ExpirationAttributes(
       const std::chrono::seconds& expirationTime,
       const ExpirationAction expirationAction = ExpirationAction::INVALIDATE);
 

@@ -175,7 +175,7 @@ class APACHE_GEODE_EXPORT RegionAttributesFactory {
    * @param regionAttributes the <code>RegionAttributes</code> used to
    * initialize this RegionAttributesFactory
    */
-  RegionAttributesFactory(const RegionAttributes regionAttributes);
+  explicit RegionAttributesFactory(const RegionAttributes regionAttributes);
 
   RegionAttributesFactory(const RegionAttributesFactory&) = default;
 

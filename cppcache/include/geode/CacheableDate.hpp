@@ -56,17 +56,17 @@ class APACHE_GEODE_EXPORT CacheableDate
   typedef std::chrono::milliseconds duration;
 
   /** Constructor, used for deserialization. */
-  CacheableDate(const time_t value = 0);
+  explicit CacheableDate(const time_t value = 0);
 
   /**
    * Construct from std::chrono::time_point<std::chrono::system_clock>.
    */
-  CacheableDate(const time_point& value);
+  explicit CacheableDate(const time_point& value);
 
   /**
    * Construct from std::chrono::seconds since POSIX epoch.
    */
-  CacheableDate(const duration& value);
+  explicit CacheableDate(const duration& value);
 
   ~CacheableDate() noexcept override = default;
 
@@ -101,11 +101,11 @@ class APACHE_GEODE_EXPORT CacheableDate
    * @return the hashcode for this object. */
   virtual int32_t hashcode() const override;
 
-  operator time_t() const { return m_timevalue / 1000; }
-  operator time_point() const {
+  explicit operator time_t() const { return m_timevalue / 1000; }
+  explicit operator time_point() const {
     return clock::from_time_t(0) + duration(m_timevalue);
   }
-  operator duration() const { return duration(m_timevalue); }
+  explicit operator duration() const { return duration(m_timevalue); }
 
   /**
    * Factory method for creating an instance of CacheableDate

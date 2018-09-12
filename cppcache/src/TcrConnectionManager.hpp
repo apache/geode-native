@@ -53,7 +53,7 @@ class ThinClientRegion;
  */
 class APACHE_GEODE_EXPORT TcrConnectionManager {
  public:
-  TcrConnectionManager(CacheImpl* cache);
+  explicit TcrConnectionManager(CacheImpl* cache);
   ~TcrConnectionManager();
   void init(bool isPool = false);
   void startFailoverAndCleanupThreads(bool isPool = false);
@@ -204,7 +204,7 @@ class DistManagersLockGuard {
   TcrConnectionManager& m_tccm;
 
  public:
-  DistManagersLockGuard(TcrConnectionManager& tccm) : m_tccm(tccm) {
+  explicit DistManagersLockGuard(TcrConnectionManager& tccm) : m_tccm(tccm) {
     m_tccm.m_distMngrsLock.acquire();
   }
 

@@ -1478,7 +1478,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   Region& operator=(const Region&) = delete;
 
  protected:
-  Region(CacheImpl* cacheImpl);
+  explicit Region(CacheImpl* cacheImpl);
   virtual ~Region();
 
   CacheImpl* m_cacheImpl;

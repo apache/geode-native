@@ -47,7 +47,7 @@ class BucketServerLocation : public ServerLocation {
         m_serverGroups(nullptr),
         m_numServerGroups(static_cast<int8_t>(0)) {}
 
-  BucketServerLocation(std::string host)
+  explicit BucketServerLocation(std::string host)
       : ServerLocation(host),
         m_bucketId(-1),
         m_isPrimary(false),

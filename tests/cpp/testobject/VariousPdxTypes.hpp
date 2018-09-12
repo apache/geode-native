@@ -451,7 +451,7 @@ class TESTOBJECT_EXPORT NestedPdx : public PdxSerializable {
 
  public:
   NestedPdx();
-  NestedPdx(char* key);
+  explicit NestedPdx(char* key);
 
   ~NestedPdx() noexcept override;
 
@@ -498,7 +498,7 @@ class TESTOBJECT_EXPORT MixedVersionNestedPdx : public PdxSerializable {
 
  public:
   MixedVersionNestedPdx();
-  MixedVersionNestedPdx(char* key);
+  explicit MixedVersionNestedPdx(char* key);
 
   ~MixedVersionNestedPdx() noexcept override;
 

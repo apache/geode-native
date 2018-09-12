@@ -126,7 +126,7 @@ class APACHE_GEODE_EXPORT PersistenceManager {
    */
   virtual void close() = 0;
 
-  PersistenceManager(const std::shared_ptr<Region>& regionPtr)
+  explicit PersistenceManager(const std::shared_ptr<Region>& regionPtr)
       : m_regionPtr(regionPtr) {}
 
   PersistenceManager() = default;

@@ -51,7 +51,7 @@ class DiskVersionTag : public VersionTag {
   }
 
  public:
-  DiskVersionTag(MemberListForVersionStamp& memberListForVersionStamp)
+  explicit DiskVersionTag(MemberListForVersionStamp& memberListForVersionStamp)
       : VersionTag(memberListForVersionStamp) {}
 
   DSFid getDSFID() const override { return DSFid::DiskVersionTag; }

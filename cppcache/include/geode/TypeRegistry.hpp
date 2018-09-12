@@ -34,7 +34,7 @@ class PdxSerializer;
 
 class APACHE_GEODE_EXPORT TypeRegistry {
  public:
-  TypeRegistry(CacheImpl* cache);
+  explicit TypeRegistry(CacheImpl* cache);
 
   /**
    * @brief register an instance factory method for a given type.

@@ -30,7 +30,7 @@ namespace client {
 
 class ClientProxyMembershipIDFactory {
  public:
-  ClientProxyMembershipIDFactory(std::string dsName);
+  explicit ClientProxyMembershipIDFactory(std::string dsName);
 
   std::unique_ptr<ClientProxyMembershipID> create(
       const char* hostname, uint32_t hostAddr, uint32_t hostPort,

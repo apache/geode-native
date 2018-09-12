@@ -68,7 +68,7 @@ class TimeBomb : public ACE_Task_Base {
  public:
   ACE_Time_Value m_sleep;
 
-  TimeBomb(void (*cleanupFunc)() = nullptr)
+  explicit TimeBomb(void (*cleanupFunc)() = nullptr)
       : m_sleep(0) /* UNUSED , m_numberOfClient( -1 )*/
   {
     char* sleepEnv = ACE_OS::getenv("TIMEBOMB");

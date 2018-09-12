@@ -51,7 +51,7 @@ class APACHE_GEODE_EXPORT CacheableObjectArray
   inline CacheableObjectArray() : std::vector<std::shared_ptr<Cacheable>>() {}
 
   /** Create a vector with n elements allocated. */
-  inline CacheableObjectArray(int32_t n)
+  inline explicit CacheableObjectArray(int32_t n)
       : std::vector<std::shared_ptr<Cacheable>>(n) {}
 
   ~CacheableObjectArray() noexcept override = default;

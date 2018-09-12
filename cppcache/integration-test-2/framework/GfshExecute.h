@@ -47,7 +47,7 @@ class GfshExecute : public Gfsh {
 
   class Connect : public Command<void> {
    public:
-    Connect(Gfsh &gfsh) : Command{gfsh, "connect"} {}
+    explicit Connect(Gfsh &gfsh) : Command{gfsh, "connect"} {}
 
     Connect &withJmxManager(const std::string &jmxManager) {
       command_ += " --jmx-manager=" + jmxManager;

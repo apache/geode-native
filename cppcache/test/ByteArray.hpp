@@ -45,9 +45,11 @@ class ByteArray {
 
   ByteArray &operator=(const ByteArray &other);
 
-  operator const uint8_t *() const { return m_bytes.get(); }
+  uint8_t operator[](const size_t index) const { return m_bytes.get()[index]; }
 
-  operator uint8_t *() { return m_bytes.get(); }
+  explicit operator const uint8_t *() const { return m_bytes.get(); }
+
+  explicit operator uint8_t *() { return m_bytes.get(); }
 
   const uint8_t *get() const { return m_bytes.get(); }
 

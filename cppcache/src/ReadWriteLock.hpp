@@ -44,7 +44,9 @@ class TimedTryWriteGuard {
 
 class APACHE_GEODE_EXPORT ReadGuard {
  public:
-  ReadGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) { lock_.acquire_read(); }
+  explicit ReadGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) {
+    lock_.acquire_read();
+  }
 
   ~ReadGuard() { lock_.release(); }
   bool isAcquired() { return true; }
@@ -55,7 +57,9 @@ class APACHE_GEODE_EXPORT ReadGuard {
 
 class WriteGuard {
  public:
-  WriteGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) { lock_.acquire_write(); }
+  explicit WriteGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) {
+    lock_.acquire_write();
+  }
 
   ~WriteGuard() { lock_.release(); }
 

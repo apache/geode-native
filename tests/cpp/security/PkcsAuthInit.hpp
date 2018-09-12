@@ -68,7 +68,7 @@ namespace client {
 
 class PKCSAuthInitInternal : public AuthInitialize {
  public:
-  PKCSAuthInitInternal(bool makeString = false)
+  explicit PKCSAuthInitInternal(bool makeString = false)
       : m_stringCredentials(makeString) {}
   ~PKCSAuthInitInternal() noexcept override = default;
 

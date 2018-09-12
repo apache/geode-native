@@ -66,7 +66,7 @@ class PaceMeter {
   ACE_Time_Value m_timeLimit;
 
  public:
-  PaceMeter(int32_t ops, int32_t seconds = 1)
+  explicit PaceMeter(int32_t ops, int32_t seconds = 1)
       : m_opsLimit(0),
         m_current(0),
         m_waitSeconds(0),
