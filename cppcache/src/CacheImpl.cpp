@@ -256,7 +256,7 @@ DistributedSystem& CacheImpl::getDistributedSystem() {
   return m_distributedSystem;
 }
 
-TypeRegistry& CacheImpl::getTypeRegistry() { return *m_typeRegistry.get(); }
+TypeRegistry& CacheImpl::getTypeRegistry() { return *m_typeRegistry; }
 
 void CacheImpl::sendNotificationCloseMsgs() {
   for (const auto& iter : getPoolManager().getAll()) {

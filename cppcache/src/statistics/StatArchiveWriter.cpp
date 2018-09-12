@@ -170,16 +170,15 @@ ResourceInst::ResourceInst(int32_t idArg, Statistics *resourceArg,
                            const ResourceType *typeArg,
                            StatDataOutput *dataOutArg)
     : type(typeArg) {
-  this->id = idArg;
-  this->resource = resourceArg;
-  this->dataOut = dataOutArg;
+  id = idArg;
+  resource = resourceArg;
+  dataOut = dataOutArg;
   int32_t cnt = type->getNumOfDescriptors();
   archivedStatValues = new int64_t[cnt];
   // initialize to zero
   for (int32_t i = 0; i < cnt; i++) {
     archivedStatValues[i] = 0;
   }
-  numOfDescps = cnt;
   firstTime = true;
 }
 
@@ -198,31 +197,32 @@ int64_t ResourceInst::getStatValue(StatisticDescriptor *f) {
 void ResourceInst::writeSample() {
   bool wroteInstId = false;
   bool checkForChange = true;
-  StatisticDescriptor **stats = this->type->getStats();
+  StatisticDescriptor **stats = type->getStats();
   GF_D_ASSERT(stats != nullptr);
   GF_D_ASSERT(*stats != nullptr);
-  if (this->resource->isClosed()) {
+  if (resource->isClosed()) {
     return;
   }
   if (firstTime) {
     firstTime = false;
     checkForChange = false;
   }
-  for (int32_t i = 0; i < numOfDescps; i++) {
+  auto count = type->getNumOfDescriptors();
+  for (int32_t i = 0; i < count; i++) {
     int64_t value = getStatValue(stats[i]);
     if (!checkForChange || value != archivedStatValues[i]) {
       int64_t delta = value - archivedStatValues[i];
       archivedStatValues[i] = value;
       if (!wroteInstId) {
         wroteInstId = true;
-        writeResourceInst(this->dataOut, this->id);
+        writeResourceInst(dataOut, id);
       }
-      this->dataOut->writeByte(i);
+      dataOut->writeByte(i);
       writeStatValue(stats[i], delta);
     }
   }
   if (wroteInstId) {
-    this->dataOut->writeByte(static_cast<unsigned char>(ILLEGAL_STAT_OFFSET));
+    dataOut->writeByte(static_cast<unsigned char>(ILLEGAL_STAT_OFFSET));
   }
 }
 

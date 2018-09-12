@@ -227,7 +227,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckUpdateASCIIAsWideStrings)
       auto val = std::dynamic_pointer_cast<CacheableString>(reg0->get(key));
       auto expectedVal = getUAString(index + 10);
       ASSERT(val != nullptr, "expected non-null value in get");
-      ASSERT(*val.get() == *expectedVal.get(), "unexpected value in get");
+      ASSERT(*val == *expectedVal, "unexpected value in get");
     }
     LOG("CheckUpdateASCIIAsWideStrings complete.");
   }

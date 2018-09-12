@@ -174,7 +174,7 @@ class APACHE_GEODE_EXPORT MapSegment {
     m_entryFactory->newMapEntry(m_expiryTaskManager, key, newEntry);
     newEntry->setValueI(newValue);
     if (m_concurrencyChecksEnabled) {
-      if (versionTag != nullptr && versionTag.get() != nullptr) {
+      if (versionTag) {
         newEntry->getVersionStamp().setVersions(versionTag);
       } else if (versionStamp != nullptr) {
         newEntry->getVersionStamp().setVersions(*versionStamp);
