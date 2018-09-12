@@ -67,6 +67,9 @@ void GfshExecute::execute(const std::string &command) {
   auto exit_code = gfsh.exit_code();
   BOOST_LOG_TRIVIAL(debug) << "Gfsh::execute: exit:" << exit_code;
 
+  if (exit_code) {
+    throw new GfshExecuteException("gfsh error", exit_code);
+  }
   extractConnectionCommand(command);
 }
 

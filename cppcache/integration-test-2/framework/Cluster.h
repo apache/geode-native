@@ -182,7 +182,6 @@ class Cluster {
         initialServers_(initialServers.get()) {
     jmxManagerPort_ = Framework::getAvailablePort();
 
-    // Clean up from previous run, if any, to ensure a clean server
     removeServerDirectory();
     start();
   }
@@ -211,7 +210,7 @@ class Cluster {
   void stop();
 
   void removeServerDirectory() {
-    boost::filesystem::path serverDir = boost::filesystem::current_path().concat("/" + name_);
+    boost::filesystem::path serverDir = boost::filesystem::relative(name_);
     boost::filesystem::remove_all(serverDir);
   }
 
