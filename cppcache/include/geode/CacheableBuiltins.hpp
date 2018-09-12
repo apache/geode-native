@@ -39,14 +39,17 @@ namespace client {
 
 using internal::DataSerializablePrimitive;
 
-template<typename TObj, DSCode TYPEID>
-class APACHE_GEODE_EXPORT CacheableKeyPrimitive : public DataSerializablePrimitive,
-                                                  public CacheableKey {
+/**
+ * Template class for primitive key types.
+ */
+template <typename TObj, DSCode TYPEID>
+class APACHE_GEODE_EXPORT CacheableKeyPrimitive
+    : public DataSerializablePrimitive,
+      public CacheableKey {
  private:
   TObj value_;
 
  public:
-
   inline CacheableKeyPrimitive() = default;
 
   inline explicit CacheableKeyPrimitive(const TObj value) : value_(value) {}
@@ -66,19 +69,15 @@ class APACHE_GEODE_EXPORT CacheableKeyPrimitive : public DataSerializablePrimiti
 
   DSCode getDsCode() const override { return TYPEID; }
 
-  std::string toString() const override {
-    return std::to_string(value_);
-  }
+  std::string toString() const override { return std::to_string(value_); }
 
-  int32_t hashcode() const override {
-    return internal::hashcode(value_);
-  }
+  int32_t hashcode() const override { return internal::hashcode(value_); }
 
   bool operator==(const CacheableKey& other) const override {
     // TODO change to using dynamic_cast of this template specialization
 
     if (const auto otherPrimitive =
-        dynamic_cast<const DataSerializablePrimitive*>(&other)) {
+            dynamic_cast<const DataSerializablePrimitive*>(&other)) {
       if (otherPrimitive->getDsCode() != TYPEID) {
         return false;
       }
@@ -107,15 +106,14 @@ class APACHE_GEODE_EXPORT CacheableKeyPrimitive : public DataSerializablePrimiti
   }
 
   /** Factory function to create an instance with the given value. */
-  inline static std::shared_ptr<CacheableKeyPrimitive> create(const TObj value) {
+  inline static std::shared_ptr<CacheableKeyPrimitive> create(
+      const TObj value) {
     return std::make_shared<CacheableKeyPrimitive>(value);
   }
-
 };
 
-
 /** Function to copy an array from source to destination. */
-template<typename TObj>
+template <typename TObj>
 inline void copyArray(TObj* dest, const TObj* src, size_t length) {
   std::memcpy(dest, src, length * sizeof(TObj));
 }
@@ -124,7 +122,7 @@ inline void copyArray(TObj* dest, const TObj* src, size_t length) {
  * Function to copy an array of <code>std::shared_ptr</code>s from
  * source to destination.
  */
-template<typename TObj>
+template <typename TObj>
 inline void copyArray(std::shared_ptr<TObj>* dest,
                       const std::shared_ptr<TObj>* src, size_t length) {
   for (size_t index = 0; index < length; index++) {
@@ -132,70 +130,17 @@ inline void copyArray(std::shared_ptr<TObj>* dest,
   }
 }
 
-/** Template class for container Cacheable types. */
-template<typename TBase, DSCode TYPEID>
-class APACHE_GEODE_EXPORT CacheableContainerType
-    : public DataSerializablePrimitive,
-      public TBase {
- protected:
-  inline CacheableContainerType() : TBase() {}
-  inline explicit CacheableContainerType(const int32_t n) : TBase(n) {}
-
- public:
-  // Cacheable methods
-
-  void toData(DataOutput& output) const override {
-    apache::geode::client::serializer::writeObject(output, *this);
-  }
-
-  void fromData(DataInput& input) override {
-    apache::geode::client::serializer::readObject(input, *this);
-  }
-
-  DSCode getDsCode() const override { return TYPEID; }
-
-  size_t objectSize() const override {
-    return sizeof(CacheableContainerType) + serializer::objectSize(*this);
-  }
-};
-
-
-#define _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(p, c)     \
-  template class CacheableContainerType<p, DSCode::c>; \
-  typedef CacheableContainerType<p, DSCode::c> _##c;
-
-// use a class instead of typedef for bug #283
-#define _GEODE_CACHEABLE_CONTAINER_TYPE_(p, c)                         \
-  class APACHE_GEODE_EXPORT c : public _##c {                          \
-   public:                                                             \
-    inline c() : _##c() {}                                             \
-    inline explicit c(const int32_t n) : _##c(n) {}                    \
-                                                                       \
-    /** Factory function registered with serialization registry. */    \
-    static std::shared_ptr<Serializable> createDeserializable() {      \
-      return std::make_shared<c>();                                    \
-    }                                                                  \
-    /** Factory function to create a default instance. */              \
-    inline static std::shared_ptr<c> create() {                        \
-      return std::make_shared<c>();                                    \
-    }                                                                  \
-    /** Factory function to create an instance with the given size. */ \
-    inline static std::shared_ptr<c> create(const int32_t n) {         \
-      return std::make_shared<c>(n);                                   \
-    }                                                                  \
-  };
-
-
 /**
  * An immutable wrapper for bool that can serve as
  * a distributable key object for caching.
  */
-using CacheableBoolean = CacheableKeyPrimitive<bool, internal::DSCode::CacheableBoolean>;
-template<>
+using CacheableBoolean =
+    CacheableKeyPrimitive<bool, internal::DSCode::CacheableBoolean>;
+template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(bool value) {
   return CacheableBoolean::create(value);
 }
-template<>
+template <>
 inline std::shared_ptr<Cacheable> Serializable::create(bool value) {
   return CacheableBoolean::create(value);
 }
@@ -204,12 +149,13 @@ inline std::shared_ptr<Cacheable> Serializable::create(bool value) {
  * An immutable wrapper for byte that can serve as
  * a distributable key object for caching.
  */
-using CacheableByte = CacheableKeyPrimitive<int8_t, internal::DSCode::CacheableByte>;
-template<>
+using CacheableByte =
+    CacheableKeyPrimitive<int8_t, internal::DSCode::CacheableByte>;
+template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(int8_t value) {
   return CacheableByte::create(value);
 }
-template<>
+template <>
 inline std::shared_ptr<Cacheable> Serializable::create(int8_t value) {
   return CacheableByte::create(value);
 }
@@ -218,12 +164,13 @@ inline std::shared_ptr<Cacheable> Serializable::create(int8_t value) {
  * An immutable wrapper for doubles that can serve as
  * a distributable key object for caching.
  */
-using CacheableDouble = CacheableKeyPrimitive<double, internal::DSCode::CacheableDouble>;
-template<>
+using CacheableDouble =
+    CacheableKeyPrimitive<double, internal::DSCode::CacheableDouble>;
+template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(double value) {
   return CacheableDouble::create(value);
 }
-template<>
+template <>
 inline std::shared_ptr<Cacheable> Serializable::create(double value) {
   return CacheableDouble::create(value);
 }
@@ -232,12 +179,13 @@ inline std::shared_ptr<Cacheable> Serializable::create(double value) {
  * An immutable wrapper for floats that can serve as
  * a distributable key object for caching.
  */
-using CacheableFloat = CacheableKeyPrimitive<float, internal::DSCode::CacheableFloat>;
-template<>
+using CacheableFloat =
+    CacheableKeyPrimitive<float, internal::DSCode::CacheableFloat>;
+template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(float value) {
   return CacheableFloat::create(value);
 }
-template<>
+template <>
 inline std::shared_ptr<Cacheable> Serializable::create(float value) {
   return CacheableFloat::create(value);
 }
@@ -246,12 +194,13 @@ inline std::shared_ptr<Cacheable> Serializable::create(float value) {
  * An immutable wrapper for 16-bit integers that can serve as
  * a distributable key object for caching.
  */
-using CacheableInt16 = CacheableKeyPrimitive<int16_t, internal::DSCode::CacheableInt16>;
-template<>
+using CacheableInt16 =
+    CacheableKeyPrimitive<int16_t, internal::DSCode::CacheableInt16>;
+template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(int16_t value) {
   return CacheableInt16::create(value);
 }
-template<>
+template <>
 inline std::shared_ptr<Cacheable> Serializable::create(int16_t value) {
   return CacheableInt16::create(value);
 }
@@ -260,12 +209,13 @@ inline std::shared_ptr<Cacheable> Serializable::create(int16_t value) {
  * An immutable wrapper for 132-bit integers that can serve as
  * a distributable key object for caching.
  */
-using CacheableInt32 = CacheableKeyPrimitive<int32_t, internal::DSCode::CacheableInt32>;
-template<>
+using CacheableInt32 =
+    CacheableKeyPrimitive<int32_t, internal::DSCode::CacheableInt32>;
+template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(int32_t value) {
   return CacheableInt32::create(value);
 }
-template<>
+template <>
 inline std::shared_ptr<Cacheable> Serializable::create(int32_t value) {
   return CacheableInt32::create(value);
 }
@@ -274,12 +224,13 @@ inline std::shared_ptr<Cacheable> Serializable::create(int32_t value) {
  * An immutable wrapper for 64-bit integers that can serve as
  * a distributable key object for caching.
  */
-using CacheableInt64 = CacheableKeyPrimitive<int64_t, internal::DSCode::CacheableInt64>;
-template<>
+using CacheableInt64 =
+    CacheableKeyPrimitive<int64_t, internal::DSCode::CacheableInt64>;
+template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(int64_t value) {
   return CacheableInt64::create(value);
 }
-template<>
+template <>
 inline std::shared_ptr<Cacheable> Serializable::create(int64_t value) {
   return CacheableInt64::create(value);
 }
@@ -288,23 +239,22 @@ inline std::shared_ptr<Cacheable> Serializable::create(int64_t value) {
  * An immutable wrapper for 64-bit integers that can serve as
  * a distributable key object for caching.
  */
-using CacheableCharacter = CacheableKeyPrimitive<char16_t, internal::DSCode::CacheableCharacter>;
-template<>
+using CacheableCharacter =
+    CacheableKeyPrimitive<char16_t, internal::DSCode::CacheableCharacter>;
+template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(char16_t value) {
   return CacheableCharacter::create(value);
 }
-template<>
+template <>
 inline std::shared_ptr<Cacheable> Serializable::create(char16_t value) {
   return CacheableCharacter::create(value);
 }
 
-
-
-
 // Instantiations for array built-in Cacheables
 
-template<typename T, DSCode GeodeTypeId>
-class APACHE_GEODE_EXPORT CacheableArray : public DataSerializablePrimitive {
+template <typename T, DSCode GeodeTypeId>
+class APACHE_GEODE_EXPORT CacheableArrayPrimitive
+    : public DataSerializablePrimitive {
  protected:
   DSCode getDsCode() const override { return GeodeTypeId; }
 
@@ -317,47 +267,46 @@ class APACHE_GEODE_EXPORT CacheableArray : public DataSerializablePrimitive {
   std::vector<T> m_value;
 
  public:
-  inline CacheableArray() = default;
+  inline CacheableArrayPrimitive() = default;
 
-  template<typename TT>
-  CacheableArray(TT&& value) : m_value(std::forward<TT>(value)) {}
+  template <typename TT>
+  CacheableArrayPrimitive(TT&& value) : m_value(std::forward<TT>(value)) {}
 
-  ~CacheableArray() noexcept override = default;
+  ~CacheableArrayPrimitive() noexcept override = default;
 
-  CacheableArray(const CacheableArray& other) = delete;
+  CacheableArrayPrimitive(const CacheableArrayPrimitive& other) = delete;
 
-  CacheableArray& operator=(const CacheableArray& other) = delete;
+  CacheableArrayPrimitive& operator=(const CacheableArrayPrimitive& other) =
+      delete;
 
   inline const std::vector<T>& value() const { return m_value; }
 
   inline int32_t length() const { return static_cast<int32_t>(m_value.size()); }
 
   static std::shared_ptr<Serializable> createDeserializable() {
-    return std::make_shared<CacheableArray < T, GeodeTypeId>>
-    ();
+    return std::make_shared<CacheableArrayPrimitive<T, GeodeTypeId>>();
   }
 
-  inline static std::shared_ptr<CacheableArray<T, GeodeTypeId>> create() {
-    return std::make_shared<CacheableArray < T, GeodeTypeId>>
-    ();
+  inline static std::shared_ptr<CacheableArrayPrimitive<T, GeodeTypeId>>
+  create() {
+    return std::make_shared<CacheableArrayPrimitive<T, GeodeTypeId>>();
   }
 
-  inline static std::shared_ptr<CacheableArray<T, GeodeTypeId>> create(
+  inline static std::shared_ptr<CacheableArrayPrimitive<T, GeodeTypeId>> create(
       const std::vector<T>& value) {
-    return std::make_shared<CacheableArray < T, GeodeTypeId>>
-    (value);
+    return std::make_shared<CacheableArrayPrimitive<T, GeodeTypeId>>(value);
   }
 
-  inline static std::shared_ptr<CacheableArray<T, GeodeTypeId>> create(
+  inline static std::shared_ptr<CacheableArrayPrimitive<T, GeodeTypeId>> create(
       std::vector<T>&& value) {
-    return std::make_shared<CacheableArray < T, GeodeTypeId>>
-    (std::move(value));
+    return std::make_shared<CacheableArrayPrimitive<T, GeodeTypeId>>(
+        std::move(value));
   }
 
   inline T operator[](int32_t index) const {
     if (index >= static_cast<int32_t>(m_value.size())) {
       throw OutOfRangeException(
-          "CacheableArray::operator[]: Index out of range.");
+          "CacheableArrayPrimitive::operator[]: Index out of range.");
     }
     return m_value[index];
   }
@@ -375,123 +324,155 @@ class APACHE_GEODE_EXPORT CacheableArray : public DataSerializablePrimitive {
  * An immutable wrapper for byte arrays that can serve as
  * a distributable object for caching.
  */
-using CacheableBytes = CacheableArray<int8_t, DSCode::CacheableBytes>;
+using CacheableBytes = CacheableArrayPrimitive<int8_t, DSCode::CacheableBytes>;
 
 /**
  * An immutable wrapper for array of booleans that can serve as
  * a distributable object for caching.
  */
-using BooleanArray = CacheableArray<bool, DSCode::BooleanArray>;
+using BooleanArray = CacheableArrayPrimitive<bool, DSCode::BooleanArray>;
 
 /**
  * An immutable wrapper for array of wide-characters that can serve as
  * a distributable object for caching.
  */
-using CharArray = CacheableArray<char16_t, DSCode::CharArray>;
+using CharArray = CacheableArrayPrimitive<char16_t, DSCode::CharArray>;
 
 /**
  * An immutable wrapper for array of doubles that can serve as
  * a distributable object for caching.
  */
 using CacheableDoubleArray =
-CacheableArray<double, DSCode::CacheableDoubleArray>;
+    CacheableArrayPrimitive<double, DSCode::CacheableDoubleArray>;
 
 /**
  * An immutable wrapper for array of floats that can serve as
  * a distributable object for caching.
  */
-using CacheableFloatArray = CacheableArray<float, DSCode::CacheableFloatArray>;
+using CacheableFloatArray =
+    CacheableArrayPrimitive<float, DSCode::CacheableFloatArray>;
 
 /**
  * An immutable wrapper for array of 16-bit integers that can serve as
  * a distributable object for caching.
  */
 using CacheableInt16Array =
-CacheableArray<int16_t, DSCode::CacheableInt16Array>;
+    CacheableArrayPrimitive<int16_t, DSCode::CacheableInt16Array>;
 
 /**
  * An immutable wrapper for array of 32-bit integers that can serve as
  * a distributable object for caching.
  */
 using CacheableInt32Array =
-CacheableArray<int32_t, DSCode::CacheableInt32Array>;
+    CacheableArrayPrimitive<int32_t, DSCode::CacheableInt32Array>;
 
 /**
  * An immutable wrapper for array of 64-bit integers that can serve as
  * a distributable object for caching.
  */
 using CacheableInt64Array =
-CacheableArray<int64_t, DSCode::CacheableInt64Array>;
+    CacheableArrayPrimitive<int64_t, DSCode::CacheableInt64Array>;
 
 /**
  * An immutable wrapper for array of strings that can serve as
  * a distributable object for caching.
  */
-using CacheableStringArray = CacheableArray<std::shared_ptr<CacheableString>,
-                                            DSCode::CacheableStringArray>;
+using CacheableStringArray =
+    CacheableArrayPrimitive<std::shared_ptr<CacheableString>,
+                            DSCode::CacheableStringArray>;
 
-// Instantiations for container types (Vector/HashMap/HashSet) Cacheables
+/** Template class for container Cacheable types. */
+template <typename TBase, DSCode TYPEID>
+class APACHE_GEODE_EXPORT CacheableContainerPrimitive
+    : public DataSerializablePrimitive,
+      public TBase {
+ public:
+  inline CacheableContainerPrimitive() : TBase() {}
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>,
-                                     CacheableVector)
+  inline explicit CacheableContainerPrimitive(const int32_t n) : TBase(n) {}
+
+  void toData(DataOutput& output) const override {
+    apache::geode::client::serializer::writeObject(output, *this);
+  }
+
+  void fromData(DataInput& input) override {
+    apache::geode::client::serializer::readObject(input, *this);
+  }
+
+  DSCode getDsCode() const override { return TYPEID; }
+
+  size_t objectSize() const override {
+    return sizeof(CacheableContainerPrimitive) + serializer::objectSize(*this);
+  }
+
+  /** Factory function registered with serialization registry. */
+  static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<CacheableContainerPrimitive>();
+  }
+  /** Factory function to create a default instance. */
+  inline static std::shared_ptr<CacheableContainerPrimitive> create() {
+    return std::make_shared<CacheableContainerPrimitive>();
+  }
+  /** Factory function to create an instance with the given size. */
+  inline static std::shared_ptr<CacheableContainerPrimitive> create(
+      const int32_t n) {
+    return std::make_shared<CacheableContainerPrimitive>(n);
+  }
+};
+
 /**
  * A mutable <code>Cacheable</code> vector wrapper that can serve as
  * a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(std::vector<std::shared_ptr<Cacheable>>,
-                                 CacheableVector)
+using CacheableVector =
+    CacheableContainerPrimitive<std::vector<std::shared_ptr<Cacheable>>,
+                                DSCode::CacheableVector>;
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable, CacheableHashMap)
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableHashMap)
+using CacheableHashMap =
+    CacheableContainerPrimitive<HashMapOfCacheable, DSCode::CacheableHashMap>;
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey, CacheableHashSet)
 /**
  * A mutable <code>CacheableKey</code> hash set wrapper that can serve as
  * a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableHashSet)
+using CacheableHashSet = CacheableContainerPrimitive<HashSetOfCacheableKey,
+                                                     DSCode::CacheableHashSet>;
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>,
-                                     CacheableArrayList)
 /**
  * A mutable <code>Cacheable</code> array list wrapper that can serve as
  * a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(std::vector<std::shared_ptr<Cacheable>>,
-                                 CacheableArrayList)
+using CacheableArrayList =
+    CacheableContainerPrimitive<std::vector<std::shared_ptr<Cacheable>>,
+                                DSCode::CacheableArrayList>;
 
-// linketlist for JSON formattor issue
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>,
-                                     CacheableLinkedList)
 /**
  * A mutable <code>Cacheable</code> array list wrapper that can serve as
  * a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(std::vector<std::shared_ptr<Cacheable>>,
-                                 CacheableLinkedList)
+using CacheableLinkedList =
+    CacheableContainerPrimitive<std::vector<std::shared_ptr<Cacheable>>,
+                                DSCode::CacheableLinkedList>;
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(std::vector<std::shared_ptr<Cacheable>>,
-                                     CacheableStack)
 /**
  * A mutable <code>Cacheable</code> stack wrapper that can serve as
  * a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(std::vector<std::shared_ptr<Cacheable>>,
-                                 CacheableStack)
+using CacheableStack =
+    CacheableContainerPrimitive<std::vector<std::shared_ptr<Cacheable>>,
+                                DSCode::CacheableStack>;
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable, CacheableHashTable)
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableHashTable)
+using CacheableHashTable =
+    CacheableContainerPrimitive<HashMapOfCacheable, DSCode::CacheableHashTable>;
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable,
-                                     CacheableIdentityHashMap)
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
  * hash map that can serve as a distributable object for caching. This is
@@ -499,10 +480,10 @@ _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashMapOfCacheable,
  * to <code>CacheableHashMap</code> i.e. does not provide the semantics of
  * java <code>IdentityHashMap</code>.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashMapOfCacheable, CacheableIdentityHashMap)
+using CacheableIdentityHashMap =
+    CacheableContainerPrimitive<HashMapOfCacheable,
+                                DSCode::CacheableIdentityHashMap>;
 
-_GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey,
-                                     CacheableLinkedHashSet)
 /**
  * A mutable <code>CacheableKey</code> hash set wrapper that can serve as
  * a distributable object for caching. This is provided for compability
@@ -510,7 +491,9 @@ _GEODE_CACHEABLE_CONTAINER_TYPE_DEF_(HashSetOfCacheableKey,
  * <code>CacheableHashSet</code> i.e. does not provide the predictable
  * iteration semantics of java <code>LinkedHashSet</code>.
  */
-_GEODE_CACHEABLE_CONTAINER_TYPE_(HashSetOfCacheableKey, CacheableLinkedHashSet)
+using CacheableLinkedHashSet =
+    CacheableContainerPrimitive<HashSetOfCacheableKey,
+                                DSCode::CacheableLinkedHashSet>;
 
 }  // namespace client
 }  // namespace geode

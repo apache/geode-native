@@ -30,7 +30,6 @@
 
 #include "ThinClientSecurity.hpp"
 
-using apache::geode::client::CacheableArray;
 using apache::geode::client::CacheableArrayList;
 using apache::geode::client::CacheableBoolean;
 using apache::geode::client::CacheableVector;
