@@ -30,7 +30,7 @@ $ cd build
 $ cmake .. <platform-specific generator parameters (see below)>
 # build step
 $ cmake --build . -- <platform-specific parallelism parameters (see below)>
-```console
+```
 
 To explicitly specify the location in which the Native Client will be installed, add `-DCMAKE_INSTALL_PREFIX=/path/to/installation/destination` to this initial `cmake` execution command.
 
