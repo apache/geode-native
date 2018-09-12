@@ -17,14 +17,14 @@
 
 #pragma once
 
-#ifndef REMOTEQUERY_ORDER_H
-#define REMOTEQUERY_ORDER_H
+#ifndef CONTINUOUSQUERY_ORDER_H
+#define CONTINUOUSQUERY_ORDER_H
 
 #include <string>
 
 #include <geode/PdxSerializable.hpp>
 
-namespace remotequery {
+namespace continuousquery {
 
 using namespace apache::geode::client;
 
@@ -67,6 +67,6 @@ class Order : public PdxSerializable {
   uint16_t quantity_;
 };
 
-}  // namespace remotequery
+}  // namespace continuousquery
 
-#endif  // REMOTEQUERY_ORDER_H
+#endif  // CONTINUOUSQUERY_ORDER_H

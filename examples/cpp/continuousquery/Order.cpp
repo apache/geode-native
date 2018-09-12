@@ -20,7 +20,7 @@
 #include <geode/PdxReader.hpp>
 #include <geode/PdxWriter.hpp>
 
-namespace remotequery {
+namespace continuousquery {
 
 void Order::fromData(PdxReader& pdxReader) {
   order_id_ = static_cast<uint32_t>(pdxReader.readLong(ORDER_ID_KEY_));
