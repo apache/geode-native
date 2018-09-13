@@ -68,16 +68,12 @@ class APACHE_GEODE_EXPORT CacheableKeyPrimitive
   int32_t hashcode() const override { return internal::hashcode(value_); }
 
   bool operator==(const CacheableKey& other) const override {
-    // TODO change to using dynamic_cast of this template specialization
-
-    if (const auto otherPrimitive =
-            dynamic_cast<const DataSerializablePrimitive*>(&other)) {
-      if (otherPrimitive->getDsCode() != TYPEID) {
-        return false;
-      }
+    if (auto&& otherPrimitive =
+            dynamic_cast<const CacheableKeyPrimitive*>(&other)) {
+      return internal::equals(value_, otherPrimitive->value_);
     }
-    auto& otherValue = static_cast<const CacheableKeyPrimitive&>(other);
-    return internal::equals(value_, otherValue.value_);
+
+    return false;
   }
 
   /** Return true if this key matches other key value. */
