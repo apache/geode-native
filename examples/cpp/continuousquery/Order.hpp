@@ -32,12 +32,12 @@ class Order : public PdxSerializable {
  public:
   inline Order() : Order(0, "", 0) {}
 
-  inline Order(uint32_t order_id, std::string name, uint16_t quantity)
+  inline Order(int32_t order_id, std::string name, int16_t quantity)
       : order_id_(order_id), name_(std::move(name)), quantity_(quantity) {}
 
   ~Order() override = default;
 
-  inline uint32_t getOrderId() const { return order_id_; }
+  inline int32_t getOrderId() const { return order_id_; }
 
   inline const std::string& getName() const { return name_; }
 
@@ -62,9 +62,9 @@ class Order : public PdxSerializable {
   static const std::string NAME_KEY_;
   static const std::string QUANTITY_KEY_;
 
-  uint32_t order_id_;
+  int32_t order_id_;
   std::string name_;
-  uint16_t quantity_;
+  int16_t quantity_;
 };
 
 }  // namespace continuousquery

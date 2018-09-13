@@ -41,9 +41,6 @@ class APACHE_GEODE_EXPORT CqListener {
  public:
   virtual ~CqListener() noexcept = default;
 
-  /**
-   * @brief constructors
-   */
   CqListener();
   CqListener(const CacheListener& other) = delete;
 

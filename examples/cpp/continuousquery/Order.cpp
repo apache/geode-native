@@ -23,19 +23,19 @@
 namespace continuousquery {
 
 void Order::fromData(PdxReader& pdxReader) {
-  order_id_ = static_cast<uint32_t>(pdxReader.readLong(ORDER_ID_KEY_));
+  order_id_ = pdxReader.readInt(ORDER_ID_KEY_);
   name_ = pdxReader.readString(NAME_KEY_);
-  quantity_ = static_cast<uint16_t>(pdxReader.readInt(QUANTITY_KEY_));
+  quantity_ = pdxReader.readShort(QUANTITY_KEY_);
 }
 
 void Order::toData(PdxWriter& pdxWriter) const {
-  pdxWriter.writeLong(ORDER_ID_KEY_, order_id_);
+  pdxWriter.writeInt(ORDER_ID_KEY_, order_id_);
   pdxWriter.markIdentityField(ORDER_ID_KEY_);
 
   pdxWriter.writeString(NAME_KEY_, name_);
   pdxWriter.markIdentityField(NAME_KEY_);
 
-  pdxWriter.writeInt(QUANTITY_KEY_, quantity_);
+  pdxWriter.writeShort(QUANTITY_KEY_, quantity_);
   pdxWriter.markIdentityField(QUANTITY_KEY_);
 }
 
